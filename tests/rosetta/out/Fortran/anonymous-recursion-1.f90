@@ -9,7 +9,7 @@ program anonymous_recursion_1
     integer :: i0
         character(len=100) :: s1
         character(len=100) :: s2
-  main()
+  call main()
   contains
   recursive integer function fib(n) result(res)
     integer, intent(in) :: n
@@ -29,7 +29,7 @@ program anonymous_recursion_1
     res = b
     return
   end function fib
-  recursive integer function main() result(res)
+  recursive subroutine main()
     do i0 = 1, 9
       n = arr0(i0)
       if ((n < 0)) then
@@ -40,5 +40,5 @@ program anonymous_recursion_1
         print *, trim(trim('fib ' // s1) // ' = ') // s2
       end if
     end do
-  end function main
+  end subroutine main
 end program anonymous_recursion_1

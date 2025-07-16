@@ -11,8 +11,8 @@ program average_loop_length
     integer :: sum
     integer :: seed
     integer :: t
-      integer, dimension(0) :: visited
-        integer, allocatable, dimension(:) :: app2
+      integer, allocatable, dimension(:) :: visited
+        logical, allocatable, dimension(:) :: app2
     integer :: nn
     integer :: term
     integer :: nmax
@@ -20,7 +20,7 @@ program average_loop_length
       integer :: b
       integer :: err
       integer :: line
-  main()
+  call main()
   contains
   recursive real function absf(x) result(res)
     real, intent(in) :: x
@@ -100,9 +100,10 @@ program average_loop_length
     seed = 1
     t = 0
     do while ((t < tests))
-      visited = (//)
+      allocate(visited(0))
       i = 0
       do while ((i < n))
+        if (allocated(app2)) deallocate(app2)
         allocate(app2(size(visited)+1))
         app2(1:size(visited)) = visited
         app2(size(visited)+1) = .false.
@@ -135,7 +136,7 @@ program average_loop_length
     res = sum
     return
   end function ana
-  recursive integer function main() result(res)
+  recursive subroutine main()
     nmax = 20
     print *, ' N    average    analytical    (error)'
     print *, '===  =========  ============  ========='
@@ -148,5 +149,5 @@ program average_loop_length
       print *, line
       n = (n + 1)
     end do
-  end function main
+  end subroutine main
 end program average_loop_length

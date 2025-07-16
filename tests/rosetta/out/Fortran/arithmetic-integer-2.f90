@@ -18,9 +18,9 @@ program arithmetic_integer_2
     character(len=100) :: s12
     character(len=100) :: s13
     character(len=100) :: s14
-  main()
+  call main()
   contains
-  recursive integer function main() result(res)
+  recursive subroutine main()
     a = 12345678
     b = 98765
     write(s0,'(G0)') a
@@ -43,5 +43,5 @@ program arithmetic_integer_2
     write(s13,'(G0)') b
     write(s14,'(G0)') mod(a,b)
     print *, trim(trim(trim(s12 // ' rem ') // s13) // ' = ') // s14
-  end function main
+  end subroutine main
 end program arithmetic_integer_2

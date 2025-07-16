@@ -1,9 +1,4 @@
 gfortran: exit status 1
-/tmp/append-a-record-to-the-end-of-a-text-file.f90:5:3:
-
-    5 |   main()
-      |   1
-Error: Unclassifiable statement at (1)
 /tmp/append-a-record-to-the-end-of-a-text-file.f90:8:132:
 
     8 |     res = (/'jsmith:x:1001:1000:Joe Smith,Room 1007,(234)555-8917,(234)555-0077,jsmith@rosettacode.org:/home/jsmith:/bin/bash','jdoe:x:1002:1000:Jane Doe,Room 1004,(234)555-8914,(234)555-0044,jdoe@rosettacode.org:/home/jsmith:/bin/bash'/)
@@ -14,54 +9,49 @@ Error: Line truncated at (1) [-Werror=line-truncation]
     8 |     res = (/'jsmith:x:1001:1000:Joe Smith,Room 1007,(234)555-8917,(234)555-0077,jsmith@rosettacode.org:/home/jsmith:/bin/bash','jdoe:x:1002:1000:Jane Doe,Room 1004,(234)555-8914,(234)555-0044,jdoe@rosettacode.org:/home/jsmith:/bin/bash'/)
       |                                                                                                                                 1
 Error: Unterminated character constant beginning at (1)
-/tmp/append-a-record-to-the-end-of-a-text-file.f90:22:132:
+/tmp/append-a-record-to-the-end-of-a-text-file.f90:23:132:
 
-   22 |     if ((((size(lines) >= 3) .and. lines(((2)+1))) == 'xyz:x:1003:1000:X Yz,Room 1003,(234)555-8913,(234)555-0033,xyz@rosettacode.org:/home/xyz:/bin/bash')) then
+   23 |     if ((((size(lines) >= 3) .and. lines(((2)+1))) == 'xyz:x:1003:1000:X Yz,Room 1003,(234)555-8913,(234)555-0033,xyz@rosettacode.org:/home/xyz:/bin/bash')) then
       |                                                                                                                                    1
 Error: Line truncated at (1) [-Werror=line-truncation]
-/tmp/append-a-record-to-the-end-of-a-text-file.f90:22:41:
+/tmp/append-a-record-to-the-end-of-a-text-file.f90:23:41:
 
-   22 |     if ((((size(lines) >= 3) .and. lines(((2)+1))) == 'xyz:x:1003:1000:X Yz,Room 1003,(234)555-8913,(234)555-0033,xyz@rosettacode.org:/home/xyz:/bin/bash')) then
+   23 |     if ((((size(lines) >= 3) .and. lines(((2)+1))) == 'xyz:x:1003:1000:X Yz,Room 1003,(234)555-8913,(234)555-0033,xyz@rosettacode.org:/home/xyz:/bin/bash')) then
       |                                         1
 Error: Expected a right parenthesis in expression at (1)
-/tmp/append-a-record-to-the-end-of-a-text-file.f90:24:8:
+/tmp/append-a-record-to-the-end-of-a-text-file.f90:25:8:
 
-   24 |     else
+   25 |     else
       |        1
 Error: Unexpected ELSE statement at (1)
-/tmp/append-a-record-to-the-end-of-a-text-file.f90:25:25:
+/tmp/append-a-record-to-the-end-of-a-text-file.f90:27:7:
 
-   25 |       print *, 'it didn't work'
-      |                         1
-Error: Syntax error in PRINT statement at (1)
-/tmp/append-a-record-to-the-end-of-a-text-file.f90:26:7:
-
-   26 |     end if
+   27 |     end if
       |       1
-Error: Expecting END FUNCTION statement at (1)
-/tmp/append-a-record-to-the-end-of-a-text-file.f90:20:9:
+Error: Expecting END SUBROUTINE statement at (1)
+/tmp/append-a-record-to-the-end-of-a-text-file.f90:21:9:
 
-   20 |     lines = writeTwo()
+   21 |     lines = writeTwo()
       |         1
 Error: Symbol ‘lines’ at (1) has no IMPLICIT type
-/tmp/append-a-record-to-the-end-of-a-text-file.f90:13:23:
+/tmp/append-a-record-to-the-end-of-a-text-file.f90:14:23:
 
-   13 |     allocate(app0(size(lines)+1))
+   14 |     allocate(app0(size(lines)+1))
       |                       1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/append-a-record-to-the-end-of-a-text-file.f90:14:16:
+/tmp/append-a-record-to-the-end-of-a-text-file.f90:15:16:
 
-   14 |     app0(1:size(lines)) = lines
+   15 |     app0(1:size(lines)) = lines
       |                1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/append-a-record-to-the-end-of-a-text-file.f90:15:14:
+/tmp/append-a-record-to-the-end-of-a-text-file.f90:16:14:
 
-   15 |     app0(size(lines)+1) = 'xyz:x:1003:1000:X Yz,Room 1003,(234)555-8913,(234)555-0033,xyz@rosettacode.org:/home/xyz:/bin/bash'
+   16 |     app0(size(lines)+1) = 'xyz:x:1003:1000:X Yz,Room 1003,(234)555-8913,(234)555-0033,xyz@rosettacode.org:/home/xyz:/bin/bash'
       |              1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/append-a-record-to-the-end-of-a-text-file.f90:16:4:
+/tmp/append-a-record-to-the-end-of-a-text-file.f90:17:10:
 
-   16 |     res = app0
-      |    1
-Error: Incompatible ranks 0 and 1 in assignment at (1)
+   17 |     res = app0
+      |          1
+Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
 f951: some warnings being treated as errors

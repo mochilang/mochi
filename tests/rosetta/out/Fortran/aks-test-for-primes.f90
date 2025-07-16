@@ -15,7 +15,7 @@ program aks_test_for_primes
     character(len=100) :: line
           character(len=100) :: s5
           character(len=100) :: s6
-  main()
+  call main()
   contains
   recursive character(len=100) function poly(p) result(res)
     integer, intent(in) :: p
@@ -71,7 +71,7 @@ program aks_test_for_primes
     res = .true.
     return
   end function aks
-  recursive integer function main() result(res)
+  recursive subroutine main()
     p = 0
     do while ((p <= 7))
       write(s4,'(G0)') p
@@ -95,5 +95,5 @@ program aks_test_for_primes
       p = (p + 1)
     end do
     print *, line
-  end function main
+  end subroutine main
 end program aks_test_for_primes

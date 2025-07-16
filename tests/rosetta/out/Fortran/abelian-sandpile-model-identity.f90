@@ -10,7 +10,7 @@ program abelian_sandpile_model_identity
   integer, dimension(9) :: s3_id
   integer :: s4b
   integer :: s5
-    integer, dimension(0) :: res
+    integer, allocatable, dimension(:) :: res
     integer :: i
       integer, allocatable, dimension(:) :: app0
     integer :: v
@@ -23,16 +23,14 @@ program abelian_sandpile_model_identity
     integer :: r
       integer :: c
         character(len=100) :: s3
-  print *, 'Avalanche of topplings:
-'
+  print *, 'Avalanche of topplings:'//char(10)//''
   s4 = (/4,3,3,3,1,2,0,2,3/)
   print *, pileString(s4)
   do while (.not. isStable(s4))
     topple(s4)
     print *, pileString(s4)
   end do
-  print *, 'Commutative additions:
-'
+  print *, 'Commutative additions:'//char(10)//''
   s1 = (/1,2,0,2,1,1,0,1,3/)
   s2 = (/2,1,3,1,0,1,0,1,0/)
   s3_a = plus(s1,s2)
@@ -43,50 +41,22 @@ program abelian_sandpile_model_identity
   do while (.not. isStable(s3_b))
     topple(s3_b)
   end do
-  print *, trim(trim(trim(pileString(s1) // '
-plus
-
-') // pileString(s2)) // '
-equals
-
-') // pileString(s3_a)
-  print *, trim(trim(trim(trim('and
-
-' // pileString(s2)) // '
-plus
-
-') // pileString(s1)) // '
-also equals
-
-') // pileString(s3_b)
-  print *, 'Addition of identity sandpile:
-'
+  print *, trim(trim(trim(pileString(s1) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s2)) // ''//char(10)//'equals'//char(10)//''//char(10)//'') // pileString(s3_a)
+  print *, trim(trim(trim(trim('and'//char(10)//''//char(10)//'' // pileString(s2)) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s1)) // ''//char(10)//'also equals'//char(10)//''//char(10)//'') // pileString(s3_b)
+  print *, 'Addition of identity sandpile:'//char(10)//''
   s3 = (/3,3,3,3,3,3,3,3,3/)
   s3_id = (/2,1,2,1,0,1,2,1,2/)
   s4b = plus(s3,s3_id)
   do while (.not. isStable(s4b))
     topple(s4b)
   end do
-  print *, trim(trim(trim(pileString(s3) // '
-plus
-
-') // pileString(s3_id)) // '
-equals
-
-') // pileString(s4b)
-  print *, 'Addition of identities:
-'
+  print *, trim(trim(trim(pileString(s3) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s3_id)) // ''//char(10)//'equals'//char(10)//''//char(10)//'') // pileString(s4b)
+  print *, 'Addition of identities:'//char(10)//''
   s5 = plus(s3_id,s3_id)
   do while (.not. isStable(s5))
     topple(s5)
   end do
-  print *, trim(trim(trim(pileString(s3_id) // '
-plus
-
-') // pileString(s3_id)) // '
-equals
-
-') // pileString(s5)
+  print *, trim(trim(trim(pileString(s3_id) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s3_id)) // ''//char(10)//'equals'//char(10)//''//char(10)//'') // pileString(s5)
   contains
   recursive integer function neighborsList() result(res)
     res = (/(/1,3/),(/0,2,4/),(/1,5/),(/0,4,6/),(/1,3,5,7/),(/2,4,8/),(/3,7/),(/4,6,8/),(/5,7/)/)
@@ -95,9 +65,10 @@ equals
   recursive integer function plus(a,b) result(res)
     integer, intent(in) :: a
     integer, intent(in) :: b
-    res = (//)
+    allocate(res(0))
     i = 0
     do while ((i < size(a)))
+      if (allocated(app0)) deallocate(app0)
       allocate(app0(size(res)+1))
       app0(1:size(res)) = res
       app0(size(res)+1) = (a(((i)+1)) + b(((i)+1)))
@@ -150,8 +121,7 @@ equals
         s = (s + s3) // ' '
         c = (c + 1)
       end do
-      s = s // '
-'
+      s = s // ''//char(10)//''
       r = (r + 1)
     end do
     res = s

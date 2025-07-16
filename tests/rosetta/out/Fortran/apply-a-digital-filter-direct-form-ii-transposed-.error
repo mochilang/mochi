@@ -14,11 +14,6 @@ Error: Syntax error in array constructor at (1)
    21 |     print *, res(((k)+1))
       |                 1
 Error: Syntax error in PRINT statement at (1)
-/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:29:14:
-
-   29 |     out = (//)
-      |              1
-Error: Empty array constructor at (1) is not allowed
 /tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:25:48:
 
    25 |   recursive integer function applyFilter(input,a,b) result(res)
@@ -59,9 +54,9 @@ Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/INTEGER(4)
    32 |     do while ((i < size(input)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:50:4:
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:51:4:
 
-   50 |     res = out
+   51 |     res = out
       |    1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
 /tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:15:10:

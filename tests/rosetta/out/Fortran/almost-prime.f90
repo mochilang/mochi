@@ -3,11 +3,11 @@ program almost_prime
   implicit none
     integer :: nf
     integer :: i
-    integer, dimension(0) :: r
+    integer, allocatable, dimension(:) :: r
         integer, allocatable, dimension(:) :: app0
       character(len=100) :: s1
       character(len=100) :: s2
-  main()
+  call main()
   contains
   recursive logical function kPrime(n,k) result(res)
     integer, intent(in) :: n
@@ -31,10 +31,11 @@ program almost_prime
   recursive integer function gen(k,count) result(res)
     integer, intent(in) :: k
     integer, intent(in) :: count
-    r = (//)
+    allocate(r(0))
     n = 2
     do while ((size(r) < count))
       if (kPrime(n,k)) then
+        if (allocated(app0)) deallocate(app0)
         allocate(app0(size(r)+1))
         app0(1:size(r)) = r
         app0(size(r)+1) = n
@@ -45,7 +46,7 @@ program almost_prime
     res = r
     return
   end function gen
-  recursive integer function main() result(res)
+  recursive subroutine main()
     k = 1
     do while ((k <= 5))
       write(s1,'(G0)') k
@@ -53,5 +54,5 @@ program almost_prime
       print *, trim(s1 // ' ') // s2
       k = (k + 1)
     end do
-  end function main
+  end subroutine main
 end program almost_prime

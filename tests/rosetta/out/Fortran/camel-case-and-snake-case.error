@@ -1,9 +1,4 @@
 gfortran: exit status 1
-/tmp/camel-case-and-snake-case.f90:18:3:
-
-   18 |   main()
-      |   1
-Error: Unclassifiable statement at (1)
 /tmp/camel-case-and-snake-case.f90:145:132:
 
   145 |     samples = (/'snakeCase','snake_case','snake-case','snake case','snake CASE','snake.case','variable_10_case','variable10Case','ɛrgo rE tHis','hurry-up-joe!','c://my-docs/happy_Flag-Day/12.doc',' spaces '/)

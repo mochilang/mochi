@@ -1,8 +1,202 @@
-type: error[T007]: argument 2: expected int, got bigint
-  --> /workspace/mochi/tests/rosetta/x/Mochi/99-bottles-of-beer-2.mochi:98:11
+gfortran: exit status 1
+/tmp/99-bottles-of-beer-2.f90:72:132:
 
- 98 |   s = s + substring(p, len(p) - 1, len(p))
-    |           ^
+   72 |     small = (/'no','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'/)
+      |                                                                                                                                    1
+Error: Line truncated at (1) [-Werror=line-truncation]
+/tmp/99-bottles-of-beer-2.f90:72:130:
 
-help:
-  Ensure the argument type matches the function’s signature.
+   72 |     small = (/'no','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'/)
+      |                                                                                                                                  1
+Error: Unterminated character constant beginning at (1)
+/tmp/99-bottles-of-beer-2.f90:158:132:
+
+  158 |       print *, trim(trim(trim(slur(numberName(i),i) // ' ') // pluralizeFirst(slur('bottle of',i),i)) // ' ') // slur('beer on the wall',i)
+      |                                                                                                                                    1
+Error: Line truncated at (1) [-Werror=line-truncation]
+/tmp/99-bottles-of-beer-2.f90:158:120:
+
+  158 |       print *, trim(trim(trim(slur(numberName(i),i) // ' ') // pluralizeFirst(slur('bottle of',i),i)) // ' ') // slur('beer on the wall',i)
+      |                                                                                                                        1
+Error: Unterminated character constant beginning at (1)
+/tmp/99-bottles-of-beer-2.f90:161:132:
+
+  161 |       print *, trim(trim(trim(slur(numberName((i - 1)),i) // ' ') // pluralizeFirst(slur('bottle of',i),(i - 1))) // ' ') // slur('beer on the wall',i)
+      |                                                                                                                                    1
+Error: Line truncated at (1) [-Werror=line-truncation]
+/tmp/99-bottles-of-beer-2.f90:161:132:
+
+  161 |       print *, trim(trim(trim(slur(numberName((i - 1)),i) // ' ') // pluralizeFirst(slur('bottle of',i),(i - 1))) // ' ') // slur('beer on the wall',i)
+      |                                                                                                                                    1
+Error: Unterminated character constant beginning at (1)
+/tmp/99-bottles-of-beer-2.f90:144:5:
+
+  144 |     s = p(0+1:1)
+      |     1
+Error: Symbol ‘s’ at (1) has no IMPLICIT type
+/tmp/99-bottles-of-beer-2.f90:133:8:
+
+  133 |     seed = d
+      |        1
+Error: Symbol ‘seed’ at (1) has no IMPLICIT type
+/tmp/99-bottles-of-beer-2.f90:84:7:
+
+   84 |       s = mod(n,10)
+      |       1
+Error: Symbol ‘s’ at (1) has no IMPLICIT type
+/tmp/99-bottles-of-beer-2.f90:55:47:
+
+   55 |   recursive character(len=100) function join(xs,sep) result(res)
+      |                                               1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘xs’ at (1)
+/tmp/99-bottles-of-beer-2.f90:159:118:
+
+  159 |       print *, trim(trim(trim(slur(numberName(i),i) // ' ') // pluralizeFirst(slur('bottle of',i),i)) // ' ') // slur('beer',i)
+      |                                                                                                                      1
+Warning: Character length of actual argument shorter than of dummy argument ‘p’ (4/100) at (1)
+/tmp/99-bottles-of-beer-2.f90:118:14:
+
+  118 |     if ((size(p) <= 2)) then
+      |              1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/99-bottles-of-beer-2.f90:128:24:
+
+  128 |       app2(size(a)+1) = p(i+1:(i + 1))
+      |                        1
+Error: Cannot convert CHARACTER(*) to INTEGER(4) at (1)
+/tmp/99-bottles-of-beer-2.f90:124:25:
+
+  124 |     do while (((i < size(p)) - 1))
+      |                         1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/99-bottles-of-beer-2.f90:150:21:
+
+  150 |     s = (s + p((size(p) - 1)+1:size(p)))
+      |                     1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/99-bottles-of-beer-2.f90:152:15:
+
+  152 |     res = join(w,' ')
+      |               1
+Error: Expected a procedure for argument ‘xs’ at (1)
+/tmp/99-bottles-of-beer-2.f90:152:17:
+
+  152 |     res = join(w,' ')
+      |                 1
+Warning: Character length of actual argument shorter than of dummy argument ‘sep’ (1/100) at (1)
+/tmp/99-bottles-of-beer-2.f90:62:15:
+
+   62 |         res = (res + sep)
+      |               1
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
+/tmp/99-bottles-of-beer-2.f90:64:13:
+
+   64 |       res = (res + xs(((i)+1)))
+      |             1
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/INTEGER(4)
+/tmp/99-bottles-of-beer-2.f90:60:24:
+
+   60 |     do while ((i < size(xs)))
+      |                        1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/99-bottles-of-beer-2.f90:159:83:
+
+  159 |       print *, trim(trim(trim(slur(numberName(i),i) // ' ') // pluralizeFirst(slur('bottle of',i),i)) // ' ') // slur('beer',i)
+      |                                                                                   1
+Warning: Character length of actual argument shorter than of dummy argument ‘p’ (9/100) at (1)
+/tmp/99-bottles-of-beer-2.f90:30:11:
+
+   30 |       ch = s(i+1:(i + 1))
+      |           1
+Error: Cannot convert CHARACTER(*) to INTEGER(4) at (1)
+/tmp/99-bottles-of-beer-2.f90:31:15:
+
+   31 |       if ((((((ch == ' ') .or. ch) == ''//char(10)//'') .or. ch) == '   ')) then
+      |               1
+Error: Operands of comparison operator ‘==’ at (1) are INTEGER(4)/CHARACTER(1)
+/tmp/99-bottles-of-beer-2.f90:32:18:
+
+   32 |         if ((size(cur) > 0)) then
+      |                  1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/99-bottles-of-beer-2.f90:36:32:
+
+   36 |           app0(size(words)+1) = cur
+      |                                1
+Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
+/tmp/99-bottles-of-beer-2.f90:41:15:
+
+   41 |         cur = (cur + ch)
+      |               1
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/INTEGER(4)
+/tmp/99-bottles-of-beer-2.f90:29:24:
+
+   29 |     do while ((i < size(s)))
+      |                        1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/99-bottles-of-beer-2.f90:45:14:
+
+   45 |     if ((size(cur) > 0)) then
+      |              1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/99-bottles-of-beer-2.f90:49:28:
+
+   49 |       app1(size(words)+1) = cur
+      |                            1
+Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
+/tmp/99-bottles-of-beer-2.f90:52:4:
+
+   52 |     res = words
+      |    1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/99-bottles-of-beer-2.f90:102:14:
+
+  102 |     if ((size(w) > 0)) then
+      |              1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/99-bottles-of-beer-2.f90:105:15:
+
+  105 |     res = join(w,' ')
+      |               1
+Error: Expected a procedure for argument ‘xs’ at (1)
+/tmp/99-bottles-of-beer-2.f90:105:17:
+
+  105 |     res = join(w,' ')
+      |                 1
+Warning: Character length of actual argument shorter than of dummy argument ‘sep’ (1/100) at (1)
+/tmp/99-bottles-of-beer-2.f90:73:20:
+
+   73 |     tens = (/'ones','ten','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'/)
+      |                    1
+Error: Different CHARACTER lengths (4/3) in array constructor at (1)
+/tmp/99-bottles-of-beer-2.f90:79:12:
+
+   79 |       res = small(((n)+1))
+      |            1
+Error: Cannot convert INTEGER(4) to CHARACTER(100) at (1)
+/tmp/99-bottles-of-beer-2.f90:86:17:
+
+   86 |         t = trim(t // ' ') // small(((s)+1))
+      |                 1
+Error: Operands of string concatenation operator at (1) are INTEGER(4)/CHARACTER(1)
+/tmp/99-bottles-of-beer-2.f90:88:12:
+
+   88 |       res = t
+      |            1
+Error: Cannot convert INTEGER(4) to CHARACTER(100) at (1)
+/tmp/99-bottles-of-beer-2.f90:160:92:
+
+  160 |       print *, trim(trim(trim(slur('take one',i) // ' ') // slur('down',i)) // ' ') // slur('pass it around',i)
+      |                                                                                            1
+Warning: Character length of actual argument shorter than of dummy argument ‘p’ (14/100) at (1)
+/tmp/99-bottles-of-beer-2.f90:160:65:
+
+  160 |       print *, trim(trim(trim(slur('take one',i) // ' ') // slur('down',i)) // ' ') // slur('pass it around',i)
+      |                                                                 1
+Warning: Character length of actual argument shorter than of dummy argument ‘p’ (4/100) at (1)
+/tmp/99-bottles-of-beer-2.f90:160:35:
+
+  160 |       print *, trim(trim(trim(slur('take one',i) // ' ') // slur('down',i)) // ' ') // slur('pass it around',i)
+      |                                   1
+Warning: Character length of actual argument shorter than of dummy argument ‘p’ (8/100) at (1)
+f951: some warnings being treated as errors

@@ -1,9 +1,4 @@
 gfortran: exit status 1
-/tmp/abundant-deficient-and-perfect-number-classifications.f90:13:3:
-
-   13 |   main()
-      |   1
-Error: Unclassifiable statement at (1)
 /tmp/abundant-deficient-and-perfect-number-classifications.f90:32:5:
 
    32 |     i = 1

@@ -6,9 +6,9 @@ program canny_edge_detector
     integer :: w
     integer :: n
     integer :: half
-    integer, dimension(0) :: out
+    integer, allocatable, dimension(:) :: out
     integer :: y
-      integer, dimension(0) :: row
+      integer, allocatable, dimension(:) :: row
       integer :: x
         integer :: sum
         integer :: j
@@ -31,7 +31,7 @@ program canny_edge_detector
         character(len=100) :: s7
     integer :: edges
   PI = 3.141592653589793
-  main()
+  call main()
   contains
   recursive integer function conv2d(img,k) result(res)
     integer, intent(in) :: img
@@ -40,10 +40,10 @@ program canny_edge_detector
     w = size(img(((0)+1)))
     n = size(k)
     half = (n / 2)
-    out = (//)
+    allocate(out(0))
     y = 0
     do while ((y < h))
-      row = (//)
+      allocate(row(0))
       x = 0
       do while ((x < w))
         sum = 0
@@ -70,12 +70,14 @@ program canny_edge_detector
           end do
           j = (j + 1)
         end do
+        if (allocated(app0)) deallocate(app0)
         allocate(app0(size(row)+1))
         app0(1:size(row)) = row
         app0(size(row)+1) = sum
         row = app0
         x = (x + 1)
       end do
+      if (allocated(app1)) deallocate(app1)
       allocate(app1(size(out)+1))
       app1(1:size(out)) = out
       app1(size(out)+1) = row
@@ -93,19 +95,21 @@ program canny_edge_detector
     gy = conv2d(img,hy)
     h = size(img)
     w = size(img(((0)+1)))
-    out = (//)
+    allocate(out(0))
     y = 0
     do while ((y < h))
-      row = (//)
+      allocate(row(0))
       x = 0
       do while ((x < w))
         g = (((gx(((y)+1),((x)+1)) * gx(((y)+1),((x)+1))) + gy(((y)+1),((x)+1))) * gy(((y)+1),((x)+1)))
+        if (allocated(app2)) deallocate(app2)
         allocate(app2(size(row)+1))
         app2(1:size(row)) = row
         app2(size(row)+1) = g
         row = app2
         x = (x + 1)
       end do
+      if (allocated(app3)) deallocate(app3)
       allocate(app3(size(out)+1))
       app3(1:size(out)) = out
       app3(size(out)+1) = row
@@ -120,18 +124,20 @@ program canny_edge_detector
     real, intent(in) :: t
     h = size(g)
     w = size(g(((0)+1)))
-    out = (//)
+    allocate(out(0))
     y = 0
     do while ((y < h))
-      row = (//)
+      allocate(row(0))
       x = 0
       do while ((x < w))
         if ((g(((y)+1),((x)+1)) >= t)) then
+          if (allocated(app4)) deallocate(app4)
           allocate(app4(size(row)+1))
           app4(1:size(row)) = row
           app4(size(row)+1) = 1
           row = app4
         else
+          if (allocated(app5)) deallocate(app5)
           allocate(app5(size(row)+1))
           app5(1:size(row)) = row
           app5(size(row)+1) = 0
@@ -139,6 +145,7 @@ program canny_edge_detector
         end if
         x = (x + 1)
       end do
+      if (allocated(app6)) deallocate(app6)
       allocate(app6(size(out)+1))
       app6(1:size(out)) = out
       app6(size(out)+1) = row
@@ -148,7 +155,7 @@ program canny_edge_detector
     res = out
     return
   end function threshold
-  recursive integer function printMatrix(m) result(res)
+  recursive subroutine printMatrix(m)
     integer, intent(in) :: m
     y = 0
     do while ((y < size(m)))
@@ -165,11 +172,11 @@ program canny_edge_detector
       print *, line
       y = (y + 1)
     end do
-  end function printMatrix
-  recursive integer function main() result(res)
+  end subroutine printMatrix
+  recursive subroutine main()
     img = reshape((/0,0,0,0,0,0,255,255,255,0,0,255,255,255,0,0,255,255,255,0,0,0,0,0,0/),(/5,5/))
     g = gradient(img)
     edges = threshold(g,(1020 * 1020))
-    printMatrix(edges)
-  end function main
+    call printMatrix(edges)
+  end subroutine main
 end program canny_edge_detector

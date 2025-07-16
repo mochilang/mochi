@@ -1,9 +1,4 @@
 gfortran: exit status 1
-/tmp/catalan-numbers-1.f90:8:3:
-
-    8 |   main()
-      |   1
-Error: Unclassifiable statement at (1)
 /tmp/catalan-numbers-1.f90:13:22:
 
    13 |     if ((((k < 0) .or. k) > n)) then

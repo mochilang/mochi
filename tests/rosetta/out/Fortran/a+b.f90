@@ -3,11 +3,11 @@ program a+b
   implicit none
     integer :: a
     integer :: b
-  main()
+  call main()
   contains
-  recursive integer function main() result(res)
+  recursive subroutine main()
     a = int(input())
     b = int(input())
     print *, (a + b)
-  end function main
+  end subroutine main
 end program a+b

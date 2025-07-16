@@ -4,16 +4,16 @@ program chaos_game
   integer :: width
   integer :: height
   integer :: iterations
-  integer, dimension(0) :: grid
+  integer, allocatable, dimension(:) :: grid
   integer :: y
   integer :: seed
   integer, dimension(3,2) :: vertices
   integer :: px
   integer :: py
   integer :: i
-    integer, dimension(0) :: line
+    integer, allocatable, dimension(:) :: line
     integer :: x
-      integer, allocatable, dimension(:) :: app0
+      character(len=100), allocatable, dimension(:) :: app0
     integer, allocatable, dimension(:) :: app1
     integer :: r
     integer :: idx
@@ -22,18 +22,20 @@ program chaos_game
   width = 60
   height = int(((real(width) * 0.86602540378)))
   iterations = 5000
-  grid = (//)
+  allocate(grid(0))
   y = 0
   do while ((y < height))
-    line = (//)
+    allocate(line(0))
     x = 0
     do while ((x < width))
+      if (allocated(app0)) deallocate(app0)
       allocate(app0(size(line)+1))
       app0(1:size(line)) = line
       app0(size(line)+1) = ' '
       line = app0
       x = (x + 1)
     end do
+    if (allocated(app1)) deallocate(app1)
     allocate(app1(size(grid)+1))
     app1(1:size(grid)) = grid
     app1(size(grid)+1) = line

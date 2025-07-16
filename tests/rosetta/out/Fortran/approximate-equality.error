@@ -1,9 +1,4 @@
 gfortran: exit status 1
-/tmp/approximate-equality.f90:17:3:
-
-   17 |   main()
-      |   1
-Error: Unclassifiable statement at (1)
 /tmp/approximate-equality.f90:60:132:
 
    60 |     pairs = reshape((/1.0000000000000002e+14,1.0000000000000002e+14,100.01,100.011,(1.0000000000000002e+13 / 10000),1.0000000000000001e+09,0.001,0.0010000001,1.01e-22,0,(root2 * root2),2,((-root2) * root2),-2,1e+17,1e+17,3.141592653589793,3.141592653589793/),(/9,2/))

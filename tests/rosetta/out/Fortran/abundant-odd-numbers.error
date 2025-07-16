@@ -1,8 +1,81 @@
-type: error[T007]: argument 3: expected int, got bigint
-  --> /workspace/mochi/tests/rosetta/x/Mochi/abundant-odd-numbers.mochi:41:10
+gfortran: exit status 1
+/tmp/abundant-odd-numbers.f90:141:16:
 
- 41 |   return substring(s, 0, len(s) - 3)
-    |          ^
+  141 |     abundantOdd(n,max,1000,.true.)
+      |                1
+Error: ‘abundantodd’ at (1) is not a variable
+/tmp/abundant-odd-numbers.f90:143:16:
 
-help:
-  Ensure the argument type matches the function’s signature.
+  143 |     abundantOdd(1000000001,0,1,.true.)
+      |                1
+Error: ‘abundantodd’ at (1) is not a variable
+/tmp/abundant-odd-numbers.f90:139:5:
+
+  139 |     n = abundantOdd(1,0,max,.false.)
+      |     1
+Error: Symbol ‘n’ at (1) has no IMPLICIT type
+/tmp/abundant-odd-numbers.f90:110:5:
+
+  110 |     n = searchFrom
+      |     1
+Error: Symbol ‘n’ at (1) has no IMPLICIT type
+/tmp/abundant-odd-numbers.f90:71:49:
+
+   71 |   recursive character(len=100) function sumStr(xs) result(res)
+      |                                                 1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘xs’ at (1)
+/tmp/abundant-odd-numbers.f90:61:35:
+
+   61 |   recursive integer function sum(xs) result(res)
+      |                                   1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘xs’ at (1)
+/tmp/abundant-odd-numbers.f90:113:16:
+
+  113 |       tot = sum(divs)
+      |                1
+Error: Rank mismatch in argument ‘xs’ at (1) (scalar and rank-1)
+/tmp/abundant-odd-numbers.f90:64:20:
+
+   64 |     do i3 = 1, size(xs)
+      |                    1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/abundant-odd-numbers.f90:116:28:
+
+  116 |         if (((printOne .and. count) < countTo)) then
+      |                            1
+Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/INTEGER(4)
+/tmp/abundant-odd-numbers.f90:120:19:
+
+  120 |         s = sumStr(divs)
+      |                   1
+Error: Rank mismatch in argument ‘xs’ at (1) (scalar and rank-1)
+/tmp/abundant-odd-numbers.f90:77:11:
+
+   77 |       s = (s + s4) // ' + '
+      |           1
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
+/tmp/abundant-odd-numbers.f90:75:24:
+
+   75 |     do while ((i < size(xs)))
+      |                        1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/abundant-odd-numbers.f90:80:22:
+
+   80 |     res = s(0+1:(size(s) - 3))
+      |                      1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/abundant-odd-numbers.f90:87:14:
+
+   87 |     if ((size(s) < 2)) then
+      |              1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/abundant-odd-numbers.f90:98:20:
+
+   98 |     do while ((size(s) < 5))
+      |                    1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/abundant-odd-numbers.f90:58:4:
+
+   58 |     res = divs
+      |    1
+Error: Incompatible ranks 0 and 1 in assignment at (1)

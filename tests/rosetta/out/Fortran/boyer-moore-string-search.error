@@ -1,52 +1,37 @@
 gfortran: exit status 1
-/tmp/boyer-moore-string-search.f90:19:3:
+/tmp/boyer-moore-string-search.f90:87:132:
 
-   19 |   main()
-      |   1
-Error: Unclassifiable statement at (1)
-/tmp/boyer-moore-string-search.f90:50:17:
-
-   50 |     result = (//)
-      |                 1
-Error: Empty array constructor at (1) is not allowed
-/tmp/boyer-moore-string-search.f90:86:132:
-
-   86 |     texts = (/'GCTAGCTCTACGAGTCTA','GGCTATAATGCGTA','there would have been a time for such a word','needle need noodle needle','DKnuthusesandprogramsanimaginarycomputertheMIXanditsassociatedmachinecodeandassemblylanguages','Nearby farms grew an acre of alfalfa on the dairy's behalf, with bales of that alfalfa exchanged for milk.'/)
+   87 |     texts = (/'GCTAGCTCTACGAGTCTA','GGCTATAATGCGTA','there would have been a time for such a word','needle need noodle needle','DKnuthusesandprogramsanimaginarycomputertheMIXanditsassociatedmachinecodeandassemblylanguages','Nearby farms grew an acre of alfalfa on the dairy''s behalf, with bales of that alfalfa exchanged for milk.'/)
       |                                                                                                                                    1
 Error: Line truncated at (1) [-Werror=line-truncation]
-/tmp/boyer-moore-string-search.f90:86:129:
+/tmp/boyer-moore-string-search.f90:87:129:
 
-   86 |     texts = (/'GCTAGCTCTACGAGTCTA','GGCTATAATGCGTA','there would have been a time for such a word','needle need noodle needle','DKnuthusesandprogramsanimaginarycomputertheMIXanditsassociatedmachinecodeandassemblylanguages','Nearby farms grew an acre of alfalfa on the dairy's behalf, with bales of that alfalfa exchanged for milk.'/)
+   87 |     texts = (/'GCTAGCTCTACGAGTCTA','GGCTATAATGCGTA','there would have been a time for such a word','needle need noodle needle','DKnuthusesandprogramsanimaginarycomputertheMIXanditsassociatedmachinecodeandassemblylanguages','Nearby farms grew an acre of alfalfa on the dairy''s behalf, with bales of that alfalfa exchanged for milk.'/)
       |                                                                                                                                 1
 Error: Unterminated character constant beginning at (1)
-/tmp/boyer-moore-string-search.f90:99:78:
+/tmp/boyer-moore-string-search.f90:70:52:
 
-   99 |       print *, trim(trim(trim(trim('Found "' // patterns(((j)+1))) // '" in 'text') // s3) // '' at indexes ') // display(idxs)
-      |                                                                              1
-Error: Syntax error in argument list at (1)
-/tmp/boyer-moore-string-search.f90:69:52:
-
-   69 |   recursive character(len=100) function display(nums) result(res)
+   70 |   recursive character(len=100) function display(nums) result(res)
       |                                                    1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘nums’ at (1)
-/tmp/boyer-moore-string-search.f90:87:24:
+/tmp/boyer-moore-string-search.f90:88:24:
 
-   87 |     patterns = (/'TCTA','TAATAAA','word','needle','and','alfalfa'/)
+   88 |     patterns = (/'TCTA','TAATAAA','word','needle','and','alfalfa'/)
       |                        1
 Error: Different CHARACTER lengths (4/7) in array constructor at (1)
-/tmp/boyer-moore-string-search.f90:91:14:
+/tmp/boyer-moore-string-search.f90:92:14:
 
-   91 |       print *, trim(trim('text' // s2) // ' = ') // texts(((i)+1))
+   92 |       print *, trim(trim('text' // s2) // ' = ') // texts(((i)+1))
       |              1
 Error: Operands of string concatenation operator at (1) are CHARACTER(*)/INTEGER(4)
-/tmp/boyer-moore-string-search.f90:97:13:
+/tmp/boyer-moore-string-search.f90:98:13:
 
-   97 |       idxs = stringSearch(texts(((j)+1)),patterns(((j)+1)))
+   98 |       idxs = stringSearch(texts(((j)+1)),patterns(((j)+1)))
       |             1
 Error: Type mismatch in argument ‘h’ at (1); passed INTEGER(4) to CHARACTER(100)
-/tmp/boyer-moore-string-search.f90:97:13:
+/tmp/boyer-moore-string-search.f90:98:13:
 
-   97 |       idxs = stringSearch(texts(((j)+1)),patterns(((j)+1)))
+   98 |       idxs = stringSearch(texts(((j)+1)),patterns(((j)+1)))
       |             1
 Error: Type mismatch in argument ‘n’ at (1); passed INTEGER(4) to CHARACTER(100)
 /tmp/boyer-moore-string-search.f90:52:16:
@@ -74,19 +59,29 @@ Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
    31 |     do while (((i <= hlen) - nlen))
       |               1
 Error: Operands of binary numeric operator ‘-’ at (1) are LOGICAL(4)/INTEGER(4)
-/tmp/boyer-moore-string-search.f90:66:4:
+/tmp/boyer-moore-string-search.f90:67:4:
 
-   66 |     res = result
+   67 |     res = result
       |    1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/boyer-moore-string-search.f90:78:11:
+/tmp/boyer-moore-string-search.f90:100:124:
 
-   78 |       s = (s + s1)
+  100 |       print *, trim(trim(trim(trim('Found "' // patterns(((j)+1))) // '" in ''text') // s3) // ''' at indexes ') // display(idxs)
+      |                                                                                                                            1
+Error: Expected a procedure for argument ‘nums’ at (1)
+/tmp/boyer-moore-string-search.f90:79:11:
+
+   79 |       s = (s + s1)
       |           1
 Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
-/tmp/boyer-moore-string-search.f90:73:24:
+/tmp/boyer-moore-string-search.f90:74:24:
 
-   73 |     do while ((i < size(nums)))
+   74 |     do while ((i < size(nums)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/boyer-moore-string-search.f90:100:35:
+
+  100 |       print *, trim(trim(trim(trim('Found "' // patterns(((j)+1))) // '" in ''text') // s3) // ''' at indexes ') // display(idxs)
+      |                                   1
+Error: Operands of string concatenation operator at (1) are CHARACTER(7)/INTEGER(4)
 f951: some warnings being treated as errors

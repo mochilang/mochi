@@ -1,101 +1,65 @@
 gfortran: exit status 1
-/tmp/csv-to-html-translation-2.f90:20:28:
+/tmp/csv-to-html-translation-2.f90:20:132:
 
-   20 |   c = trim(trim(trim(trim('Character,Speech
-      |                            1
+   20 |   c = trim(trim(trim(trim('Character,Speech'//char(10)//'' // 'The multitude,The messiah! Show us the messiah!'//char(10)//'') // 'Brians mother,<angry>Now you listen here! He''s not the messiah; he''s a very naughty boy! Now go away!</angry>'//char(10)//'') // 'The multitude,Who are you?'//char(10)//'') // 'Brians mother,I''m his mother; that''s who!'//char(10)//'') // 'The multitude,Behold his mother! Behold his mother!'
+      |                                                                                                                                    1
+Error: Line truncated at (1) [-Werror=line-truncation]
+/tmp/csv-to-html-translation-2.f90:20:132:
+
+   20 |   c = trim(trim(trim(trim('Character,Speech'//char(10)//'' // 'The multitude,The messiah! Show us the messiah!'//char(10)//'') // 'Brians mother,<angry>Now you listen here! He''s not the messiah; he''s a very naughty boy! Now go away!</angry>'//char(10)//'') // 'The multitude,Who are you?'//char(10)//'') // 'Brians mother,I''m his mother; that''s who!'//char(10)//'') // 'The multitude,Behold his mother! Behold his mother!'
+      |                                                                                                                                    1
 Error: Unterminated character constant beginning at (1)
-/tmp/csv-to-html-translation-2.f90:21:2:
+/tmp/csv-to-html-translation-2.f90:23:21:
 
-   21 | ' // 'The multitude,The messiah! Show us the messiah!
-      |  1
+   23 |     line = split(c,''//char(10)//'')(i0)
+      |                     1
 Error: Invalid character in name at (1)
-/tmp/csv-to-html-translation-2.f90:22:2:
+/tmp/csv-to-html-translation-2.f90:27:25:
 
-   22 | ') // 'Brians mother,<angry>Now you listen here! He's not the messiah; he's a very naughty boy! Now go away!</angry>
-      |  1
-Error: Invalid character in name at (1)
-/tmp/csv-to-html-translation-2.f90:23:2:
-
-   23 | ') // 'The multitude,Who are you?
-      |  1
-Error: Invalid character in name at (1)
-/tmp/csv-to-html-translation-2.f90:24:2:
-
-   24 | ') // 'Brians mother,I'm his mother; that's who!
-      |  1
-Error: Invalid character in name at (1)
-/tmp/csv-to-html-translation-2.f90:25:2:
-
-   25 | ') // 'The multitude,Behold his mother! Behold his mother!'
-      |  1
-Error: Invalid character in name at (1)
-/tmp/csv-to-html-translation-2.f90:26:13:
-
-   26 |   rows = (//)
-      |             1
-Error: Empty array constructor at (1) is not allowed
-/tmp/csv-to-html-translation-2.f90:27:27:
-
-   27 |   do i0 = 1, size(split(c,'
-      |                           1
-Error: Missing ‘)’ in statement at or before (1)
-/tmp/csv-to-html-translation-2.f90:28:2:
-
-   28 | '))
-      |  1
-Error: Invalid character in name at (1)
-/tmp/csv-to-html-translation-2.f90:29:20:
-
-   29 |     line = split(c,'
-      |                    1
-Error: Unterminated character constant beginning at (1)
-/tmp/csv-to-html-translation-2.f90:30:2:
-
-   30 | ')(i0)
-      |  1
-Error: Invalid character in name at (1)
-/tmp/csv-to-html-translation-2.f90:35:5:
-
-   35 |   end do
-      |     1
-Error: Expecting END PROGRAM statement at (1)
-/tmp/csv-to-html-translation-2.f90:33:25:
-
-   33 |     app1(size(rows)+1) = split(line,',')
+   27 |     app1(size(rows)+1) = split(line,',')
       |                         1
 Error: Function ‘split’ at (1) has no IMPLICIT type
-/tmp/csv-to-html-translation-2.f90:43:18:
+/tmp/csv-to-html-translation-2.f90:22:18:
 
-   43 |         th = trim(trim(th // '<th>') // h) // '</th>'
+   22 |   do i0 = 1, size(split(c,''//char(10)//''))
+      |                  1
+Error: Function ‘split’ at (1) has no IMPLICIT type
+/tmp/csv-to-html-translation-2.f90:37:18:
+
+   37 |         th = trim(trim(th // '<th>') // h) // '</th>'
       |                  1
 Error: Operands of string concatenation operator at (1) are CHARACTER(*)/INTEGER(4)
-/tmp/csv-to-html-translation-2.f90:41:27:
+/tmp/csv-to-html-translation-2.f90:35:22:
 
-   41 |       do i2 = 1, size(rows(((0)+1)))
-      |                           1
-Warning: Array reference at (1) is out of bounds (1 > 0) in dimension 1
-/tmp/csv-to-html-translation-2.f90:41:22:
-
-   41 |       do i2 = 1, size(rows(((0)+1)))
+   35 |       do i2 = 1, size(rows(((0)+1)))
       |                      1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/csv-to-html-translation-2.f90:54:23:
+/tmp/csv-to-html-translation-2.f90:48:23:
 
-   54 |           cells = trim(trim(cells // '<td>') // cell) // '</td>'
+   48 |           cells = trim(trim(cells // '<td>') // cell) // '</td>'
       |                       1
 Error: Operands of string concatenation operator at (1) are CHARACTER(*)/INTEGER(4)
-/tmp/csv-to-html-translation-2.f90:52:24:
+/tmp/csv-to-html-translation-2.f90:46:24:
 
-   52 |         do i3 = 1, size(rows(((i)+1)))
+   46 |         do i3 = 1, size(rows(((i)+1)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/csv-to-html-translation-2.f90:67:21:
+/tmp/csv-to-html-translation-2.f90:61:21:
 
-   67 |         cells = trim(trim(cells // '<td>') // cell) // '</td>'
+   61 |         cells = trim(trim(cells // '<td>') // cell) // '</td>'
       |                     1
 Error: Operands of string concatenation operator at (1) are CHARACTER(*)/INTEGER(4)
-/tmp/csv-to-html-translation-2.f90:65:22:
+/tmp/csv-to-html-translation-2.f90:59:22:
 
-   65 |       do i5 = 1, size(row)
+   59 |       do i5 = 1, size(row)
       |                      1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/csv-to-html-translation-2.f90:27:31:
+
+   22 |   do i0 = 1, size(split(c,''//char(10)//''))
+      |                        2       
+......
+   27 |     app1(size(rows)+1) = split(line,',')
+      |                               1
+Error: Type mismatch between actual argument at (1) and actual argument at (2) (INTEGER(4)/CHARACTER(*)).
+f951: some warnings being treated as errors

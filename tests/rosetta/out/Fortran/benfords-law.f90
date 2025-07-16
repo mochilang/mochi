@@ -8,7 +8,7 @@ program benfords_law
       integer :: decs
     integer :: a
     integer :: b
-    integer, dimension(0) :: res
+    integer, allocatable, dimension(:) :: res
       integer, allocatable, dimension(:) :: app1
       integer :: t
     integer, dimension(9) :: counts
@@ -20,7 +20,7 @@ program benfords_law
       integer :: obs
       character(len=100) :: line
       character(len=100) :: s3
-  main()
+  call main()
   contains
   recursive real function floorf(x) result(res)
     real, intent(in) :: x
@@ -76,9 +76,10 @@ program benfords_law
   recursive integer function fib1000() result(res)
     a = 0
     b = 1
-    res = (//)
+    allocate(res(0))
     i = 0
     do while ((i < 1000))
+      if (allocated(app1)) deallocate(app1)
       allocate(app1(size(res)+1))
       app1(1:size(res)) = res
       app1(size(res)+1) = b
@@ -105,7 +106,7 @@ program benfords_law
     res = int(x)
     return
   end function leadingDigit
-  recursive integer function show(nums,title) result(res)
+  recursive subroutine show(nums,title)
     integer, intent(in) :: nums
     character(len=100), intent(in) :: title
     counts = (/0,0,0,0,0,0,0,0,0/)
@@ -128,8 +129,8 @@ program benfords_law
       print *, line
       i = (i + 1)
     end do
-  end function show
-  recursive integer function main() result(res)
-    show(fib1000(),'First 1000 Fibonacci numbers')
-  end function main
+  end subroutine show
+  recursive subroutine main()
+    call show(fib1000(),'First 1000 Fibonacci numbers')
+  end subroutine main
 end program benfords_law

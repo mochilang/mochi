@@ -1,17 +1,7 @@
 gfortran: exit status 1
-/tmp/almost-prime.f90:10:3:
+/tmp/almost-prime.f90:50:5:
 
-   10 |   main()
-      |   1
-Error: Unclassifiable statement at (1)
-/tmp/almost-prime.f90:34:12:
-
-   34 |     r = (//)
-      |            1
-Error: Empty array constructor at (1) is not allowed
-/tmp/almost-prime.f90:49:5:
-
-   49 |     k = 1
+   50 |     k = 1
       |     1
 Error: Symbol ‘k’ at (1) has no IMPLICIT type
 /tmp/almost-prime.f90:35:5:
@@ -19,9 +9,9 @@ Error: Symbol ‘k’ at (1) has no IMPLICIT type
    35 |     n = 2
       |     1
 Error: Symbol ‘n’ at (1) has no IMPLICIT type
-/tmp/almost-prime.f90:45:4:
+/tmp/almost-prime.f90:46:4:
 
-   45 |     res = r
+   46 |     res = r
       |    1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
 /tmp/almost-prime.f90:24:8:

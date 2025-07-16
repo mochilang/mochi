@@ -1,9 +1,4 @@
 gfortran: exit status 1
-/tmp/averages-pythagorean-means.f90:21:3:
-
-   21 |   main()
-      |   1
-Error: Unclassifiable statement at (1)
 /tmp/averages-pythagorean-means.f90:57:5:
 
    57 |     n = 1

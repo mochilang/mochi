@@ -2,7 +2,7 @@
 program csv_to_html_translation_2
   implicit none
   character(len=100) :: c
-  integer, dimension(0) :: rows
+  integer, allocatable, dimension(:) :: rows
   logical :: headings
   integer :: line
   integer :: i0
@@ -17,17 +17,11 @@ program csv_to_html_translation_2
     integer :: row
     integer :: i4
       integer :: i5
-  c = trim(trim(trim(trim('Character,Speech
-' // 'The multitude,The messiah! Show us the messiah!
-') // 'Brians mother,<angry>Now you listen here! He's not the messiah; he's a very naughty boy! Now go away!</angry>
-') // 'The multitude,Who are you?
-') // 'Brians mother,I'm his mother; that's who!
-') // 'The multitude,Behold his mother! Behold his mother!'
-  rows = (//)
-  do i0 = 1, size(split(c,'
-'))
-    line = split(c,'
-')(i0)
+  c = trim(trim(trim(trim('Character,Speech'//char(10)//'' // 'The multitude,The messiah! Show us the messiah!'//char(10)//'') // 'Brians mother,<angry>Now you listen here! He''s not the messiah; he''s a very naughty boy! Now go away!</angry>'//char(10)//'') // 'The multitude,Who are you?'//char(10)//'') // 'Brians mother,I''m his mother; that''s who!'//char(10)//'') // 'The multitude,Behold his mother! Behold his mother!'
+  allocate(rows(0))
+  do i0 = 1, size(split(c,''//char(10)//''))
+    line = split(c,''//char(10)//'')(i0)
+    if (allocated(app1)) deallocate(app1)
     allocate(app1(size(rows)+1))
     app1(1:size(rows)) = rows
     app1(size(rows)+1) = split(line,',')

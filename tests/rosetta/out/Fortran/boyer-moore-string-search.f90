@@ -4,7 +4,7 @@ program boyer_moore_string_search
     integer :: hlen
     integer :: nlen
     integer :: i
-    integer, dimension(0) :: result
+    integer, allocatable, dimension(:) :: result
     integer :: start
       integer :: idx
         integer, allocatable, dimension(:) :: app0
@@ -16,7 +16,7 @@ program boyer_moore_string_search
     integer :: j
       integer :: idxs
       character(len=100) :: s3
-  main()
+  call main()
   contains
   recursive integer function indexOfStr(h,n) result(res)
     character(len=100), intent(in) :: h
@@ -47,13 +47,14 @@ program boyer_moore_string_search
   recursive integer function stringSearch(h,n) result(res)
     character(len=100), intent(in) :: h
     character(len=100), intent(in) :: n
-    result = (//)
+    allocate(result(0))
     start = 0
     hlen = size(h)
     nlen = size(n)
     do while ((start < hlen))
       idx = indexOfStr(h(start+1:hlen),n)
       if ((idx >= 0)) then
+        if (allocated(app0)) deallocate(app0)
         allocate(app0(size(result)+1))
         app0(1:size(result)) = result
         app0(size(result)+1) = (start + idx)
@@ -82,8 +83,8 @@ program boyer_moore_string_search
     res = s
     return
   end function display
-  recursive integer function main() result(res)
-    texts = (/'GCTAGCTCTACGAGTCTA','GGCTATAATGCGTA','there would have been a time for such a word','needle need noodle needle','DKnuthusesandprogramsanimaginarycomputertheMIXanditsassociatedmachinecodeandassemblylanguages','Nearby farms grew an acre of alfalfa on the dairy's behalf, with bales of that alfalfa exchanged for milk.'/)
+  recursive subroutine main()
+    texts = (/'GCTAGCTCTACGAGTCTA','GGCTATAATGCGTA','there would have been a time for such a word','needle need noodle needle','DKnuthusesandprogramsanimaginarycomputertheMIXanditsassociatedmachinecodeandassemblylanguages','Nearby farms grew an acre of alfalfa on the dairy''s behalf, with bales of that alfalfa exchanged for milk.'/)
     patterns = (/'TCTA','TAATAAA','word','needle','and','alfalfa'/)
     i = 0
     do while ((i < size(texts)))
@@ -96,8 +97,8 @@ program boyer_moore_string_search
     do while ((j < size(texts)))
       idxs = stringSearch(texts(((j)+1)),patterns(((j)+1)))
       write(s3,'(G0)') (j + 1)
-      print *, trim(trim(trim(trim('Found "' // patterns(((j)+1))) // '" in 'text') // s3) // '' at indexes ') // display(idxs)
+      print *, trim(trim(trim(trim('Found "' // patterns(((j)+1))) // '" in ''text') // s3) // ''' at indexes ') // display(idxs)
       j = (j + 1)
     end do
-  end function main
+  end subroutine main
 end program boyer_moore_string_search

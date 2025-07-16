@@ -310,6 +310,24 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			c.writeln("print *, " + strings.Join(args, ", "))
 			return nil
 		}
+		if call := callExpr(s.Expr.Expr); call != nil {
+			if t, err := c.env.GetVar(call.Func); err == nil {
+				if ft, ok := t.(types.FuncType); ok {
+					if _, ok := ft.Return.(types.VoidType); ok {
+						args := make([]string, len(call.Args))
+						for i, a := range call.Args {
+							v, err := c.compileExpr(a)
+							if err != nil {
+								return err
+							}
+							args[i] = v
+						}
+						c.writeln("call " + call.Func + "(" + strings.Join(args, ",") + ")")
+						return nil
+					}
+				}
+			}
+		}
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
 			return err
@@ -657,14 +675,23 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		params[i] = p.Name
 	}
 	retType := c.typeName(fn.Return)
+	isVoid := false
 	if fn.Return == nil {
 		if t, err := c.env.GetVar(fn.Name); err == nil {
 			if ft, ok := t.(types.FuncType); ok {
-				retType = c.typeNameFromTypes(ft.Return)
+				if _, ok := ft.Return.(types.VoidType); ok {
+					isVoid = true
+				} else {
+					retType = c.typeNameFromTypes(ft.Return)
+				}
 			}
 		}
 	}
-	c.writeln(fmt.Sprintf("recursive %s function %s(%s) result(res)", retType, fn.Name, strings.Join(params, ",")))
+	if isVoid {
+		c.writeln(fmt.Sprintf("recursive subroutine %s(%s)", fn.Name, strings.Join(params, ",")))
+	} else {
+		c.writeln(fmt.Sprintf("recursive %s function %s(%s) result(res)", retType, fn.Name, strings.Join(params, ",")))
+	}
 	c.indent++
 	for _, p := range fn.Params {
 		c.writeln(fmt.Sprintf("%s, intent(in) :: %s", c.typeName(p.Type), p.Name))
@@ -679,7 +706,11 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	}
 	c.currentFunc = prev
 	c.indent--
-	c.writeln(fmt.Sprintf("end function %s", fn.Name))
+	if isVoid {
+		c.writeln(fmt.Sprintf("end subroutine %s", fn.Name))
+	} else {
+		c.writeln(fmt.Sprintf("end function %s", fn.Name))
+	}
 	return nil
 }
 
@@ -1220,7 +1251,15 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 		}
 		return ".false."
 	case l.Str != nil:
-		return fmt.Sprintf("'%s'", *l.Str)
+		s := strings.ReplaceAll(*l.Str, "'", "''")
+		if strings.Contains(s, "\n") {
+			parts := strings.Split(s, "\n")
+			for i, p := range parts {
+				parts[i] = fmt.Sprintf("'%s'", p)
+			}
+			return strings.Join(parts, "//char(10)//")
+		}
+		return fmt.Sprintf("'%s'", s)
 	default:
 		return "0"
 	}
@@ -1384,6 +1423,8 @@ func (c *Compiler) typeNameFromTypes(t types.Type) string {
 	case types.StructType:
 		st := t.(types.StructType)
 		return fmt.Sprintf("type(%s)", c.structName(st.Name))
+	case types.VoidType:
+		return ""
 	default:
 		return "integer"
 	}

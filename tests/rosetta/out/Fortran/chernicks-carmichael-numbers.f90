@@ -2,9 +2,9 @@
 program chernicks_carmichael_numbers
   implicit none
     integer :: d
-    integer, dimension(0) :: digits
+    integer, allocatable, dimension(:) :: digits
       integer, allocatable, dimension(:) :: app0
-    integer, dimension(0) :: res
+    integer, allocatable, dimension(:) :: res
     integer :: carry
     integer :: i
       integer :: prod
@@ -16,7 +16,7 @@ program chernicks_carmichael_numbers
     integer :: p
         integer :: num
           character(len=100) :: s4
-  ccNumbers(3,9)
+  call ccNumbers(3,9)
   contains
   recursive logical function isPrime(n) result(res)
     integer, intent(in) :: n
@@ -64,9 +64,10 @@ program chernicks_carmichael_numbers
       res = (/0/)
       return
     end if
-    digits = (//)
+    allocate(digits(0))
     n = x
     do while ((n > 0))
+      if (allocated(app0)) deallocate(app0)
       allocate(app0(size(digits)+1))
       app0(1:size(digits)) = digits
       app0(size(digits)+1) = mod(n,10)
@@ -83,11 +84,12 @@ program chernicks_carmichael_numbers
       res = (/0/)
       return
     end if
-    res = (//)
+    allocate(res(0))
     carry = 0
     i = 0
     do while ((i < size(a)))
       prod = ((a(((i)+1)) * m) + carry)
+      if (allocated(app1)) deallocate(app1)
       allocate(app1(size(res)+1))
       app1(1:size(res)) = res
       app1(size(res)+1) = mod(prod,10)
@@ -96,6 +98,7 @@ program chernicks_carmichael_numbers
       i = (i + 1)
     end do
     do while ((carry > 0))
+      if (allocated(app2)) deallocate(app2)
       allocate(app2(size(res)+1))
       app2(1:size(res)) = res
       app2(size(res)+1) = mod(carry,10)
@@ -156,7 +159,7 @@ program chernicks_carmichael_numbers
     res = prod
     return
   end function ccFactors
-  recursive integer function ccNumbers(start,end) result(res)
+  recursive subroutine ccNumbers(start,end)
     integer, intent(in) :: start
     integer, intent(in) :: end
     n = start
@@ -180,5 +183,5 @@ program chernicks_carmichael_numbers
       end do
       n = (n + 1)
     end do
-  end function ccNumbers
+  end subroutine ccNumbers
 end program chernicks_carmichael_numbers

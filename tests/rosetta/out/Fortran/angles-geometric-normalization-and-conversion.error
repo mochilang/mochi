@@ -1,24 +1,4 @@
 gfortran: exit status 1
-/tmp/angles-geometric-normalization-and-conversion.f90:30:3:
-
-   30 |   main()
-      |   1
-Error: Unclassifiable statement at (1)
-/tmp/angles-geometric-normalization-and-conversion.f90:124:14:
-
-  124 |     print *, '
-      |              1
-Error: Unterminated character constant beginning at (1)
-/tmp/angles-geometric-normalization-and-conversion.f90:135:14:
-
-  135 |     print *, '
-      |              1
-Error: Unterminated character constant beginning at (1)
-/tmp/angles-geometric-normalization-and-conversion.f90:146:14:
-
-  146 |     print *, '
-      |              1
-Error: Unterminated character constant beginning at (1)
 /tmp/angles-geometric-normalization-and-conversion.f90:113:27:
 
   113 |     angles = (/-2,-1,0,1,2,6.2831853,16,57.2957795,359,399,6399,1e+06/)
@@ -49,9 +29,9 @@ Error: Type mismatch in argument ‘d’ at (1); passed INTEGER(4) to REAL(4)
   121 |       write(s5,'(G0)') d2r(a)
       |                      1
 Error: Type mismatch in argument ‘d’ at (1); passed INTEGER(4) to REAL(4)
-/tmp/angles-geometric-normalization-and-conversion.f90:129:22:
+/tmp/angles-geometric-normalization-and-conversion.f90:128:22:
 
-  129 |       write(s8,'(G0)') g2g(a)
+  128 |       write(s8,'(G0)') g2g(a)
       |                      1
 Error: Type mismatch in argument ‘g’ at (1); passed INTEGER(4) to REAL(4)
 /tmp/angles-geometric-normalization-and-conversion.f90:39:16:
@@ -59,24 +39,24 @@ Error: Type mismatch in argument ‘g’ at (1); passed INTEGER(4) to REAL(4)
    39 |     res = mod(g,400)
       |                1
 Error: ‘a’ and ‘p’ arguments of ‘mod’ intrinsic at (1) must have the same type
-/tmp/angles-geometric-normalization-and-conversion.f90:130:22:
+/tmp/angles-geometric-normalization-and-conversion.f90:129:22:
 
-  130 |       write(s9,'(G0)') g2d(a)
+  129 |       write(s9,'(G0)') g2d(a)
       |                      1
+Error: Type mismatch in argument ‘g’ at (1); passed INTEGER(4) to REAL(4)
+/tmp/angles-geometric-normalization-and-conversion.f90:130:23:
+
+  130 |       write(s10,'(G0)') g2m(a)
+      |                       1
 Error: Type mismatch in argument ‘g’ at (1); passed INTEGER(4) to REAL(4)
 /tmp/angles-geometric-normalization-and-conversion.f90:131:23:
 
-  131 |       write(s10,'(G0)') g2m(a)
+  131 |       write(s11,'(G0)') g2r(a)
       |                       1
 Error: Type mismatch in argument ‘g’ at (1); passed INTEGER(4) to REAL(4)
-/tmp/angles-geometric-normalization-and-conversion.f90:132:23:
+/tmp/angles-geometric-normalization-and-conversion.f90:138:23:
 
-  132 |       write(s11,'(G0)') g2r(a)
-      |                       1
-Error: Type mismatch in argument ‘g’ at (1); passed INTEGER(4) to REAL(4)
-/tmp/angles-geometric-normalization-and-conversion.f90:140:23:
-
-  140 |       write(s14,'(G0)') m2m(a)
+  138 |       write(s14,'(G0)') m2m(a)
       |                       1
 Error: Type mismatch in argument ‘m’ at (1); passed INTEGER(4) to REAL(4)
 /tmp/angles-geometric-normalization-and-conversion.f90:44:16:
@@ -84,38 +64,38 @@ Error: Type mismatch in argument ‘m’ at (1); passed INTEGER(4) to REAL(4)
    44 |     res = mod(m,6400)
       |                1
 Error: ‘a’ and ‘p’ arguments of ‘mod’ intrinsic at (1) must have the same type
+/tmp/angles-geometric-normalization-and-conversion.f90:139:23:
+
+  139 |       write(s15,'(G0)') m2d(a)
+      |                       1
+Error: Type mismatch in argument ‘m’ at (1); passed INTEGER(4) to REAL(4)
+/tmp/angles-geometric-normalization-and-conversion.f90:140:23:
+
+  140 |       write(s16,'(G0)') m2g(a)
+      |                       1
+Error: Type mismatch in argument ‘m’ at (1); passed INTEGER(4) to REAL(4)
 /tmp/angles-geometric-normalization-and-conversion.f90:141:23:
 
-  141 |       write(s15,'(G0)') m2d(a)
+  141 |       write(s17,'(G0)') m2r(a)
       |                       1
 Error: Type mismatch in argument ‘m’ at (1); passed INTEGER(4) to REAL(4)
-/tmp/angles-geometric-normalization-and-conversion.f90:142:23:
+/tmp/angles-geometric-normalization-and-conversion.f90:148:23:
 
-  142 |       write(s16,'(G0)') m2g(a)
+  148 |       write(s20,'(G0)') r2r(a)
       |                       1
-Error: Type mismatch in argument ‘m’ at (1); passed INTEGER(4) to REAL(4)
-/tmp/angles-geometric-normalization-and-conversion.f90:143:23:
+Error: Type mismatch in argument ‘r’ at (1); passed INTEGER(4) to REAL(4)
+/tmp/angles-geometric-normalization-and-conversion.f90:149:23:
 
-  143 |       write(s17,'(G0)') m2r(a)
+  149 |       write(s21,'(G0)') r2d(a)
       |                       1
-Error: Type mismatch in argument ‘m’ at (1); passed INTEGER(4) to REAL(4)
+Error: Type mismatch in argument ‘r’ at (1); passed INTEGER(4) to REAL(4)
+/tmp/angles-geometric-normalization-and-conversion.f90:150:23:
+
+  150 |       write(s22,'(G0)') r2g(a)
+      |                       1
+Error: Type mismatch in argument ‘r’ at (1); passed INTEGER(4) to REAL(4)
 /tmp/angles-geometric-normalization-and-conversion.f90:151:23:
 
-  151 |       write(s20,'(G0)') r2r(a)
-      |                       1
-Error: Type mismatch in argument ‘r’ at (1); passed INTEGER(4) to REAL(4)
-/tmp/angles-geometric-normalization-and-conversion.f90:152:23:
-
-  152 |       write(s21,'(G0)') r2d(a)
-      |                       1
-Error: Type mismatch in argument ‘r’ at (1); passed INTEGER(4) to REAL(4)
-/tmp/angles-geometric-normalization-and-conversion.f90:153:23:
-
-  153 |       write(s22,'(G0)') r2g(a)
-      |                       1
-Error: Type mismatch in argument ‘r’ at (1); passed INTEGER(4) to REAL(4)
-/tmp/angles-geometric-normalization-and-conversion.f90:154:23:
-
-  154 |       write(s23,'(G0)') r2m(a)
+  151 |       write(s23,'(G0)') r2m(a)
       |                       1
 Error: Type mismatch in argument ‘r’ at (1); passed INTEGER(4) to REAL(4)

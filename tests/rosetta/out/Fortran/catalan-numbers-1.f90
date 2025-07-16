@@ -5,7 +5,7 @@ program catalan_numbers_1
     integer :: res
     integer :: i
       character(len=100) :: s0
-  main()
+  call main()
   contains
   recursive integer function binom(n,k) result(res)
     integer, intent(in) :: n
@@ -33,10 +33,10 @@ program catalan_numbers_1
     res = int(((binom((2 * n),n) / ((n + 1)))))
     return
   end function catalan
-  recursive integer function main() result(res)
+  recursive subroutine main()
     do i = 0, 15
       write(s0,'(G0)') catalan(i)
       print *, s0
     end do
-  end function main
+  end subroutine main
 end program catalan_numbers_1

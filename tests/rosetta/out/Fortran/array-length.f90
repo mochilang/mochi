@@ -4,12 +4,12 @@ program array_length
     integer, dimension(3) :: arr
     character(len=100) :: s0
     character(len=100) :: s1
-  main()
+  call main()
   contains
-  recursive integer function main() result(res)
+  recursive subroutine main()
     arr = (/'apple','orange','pear'/)
     write(s0,'(G0)') arr
     write(s1,'(G0)') size(arr)
     print *, trim(trim(trim('Length of ' // s0) // ' is ') // s1) // '.'
-  end function main
+  end subroutine main
 end program array_length

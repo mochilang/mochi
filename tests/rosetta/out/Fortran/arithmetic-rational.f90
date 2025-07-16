@@ -16,7 +16,7 @@ program arithmetic_rational
         character(len=100) :: perfect
         character(len=100) :: s1
         character(len=100) :: s2
-  main()
+  call main()
   contains
   recursive integer function intSqrt(x) result(res)
     integer, intent(in) :: x
@@ -62,7 +62,7 @@ program arithmetic_rational
     res = s
     return
   end function sumRecip
-  recursive integer function main() result(res)
+  recursive subroutine main()
     nums = (/6,28,120,496,672,8128,30240,32760,523776/)
     do i0 = 1, size(nums)
       n = nums(i0)
@@ -78,5 +78,5 @@ program arithmetic_rational
         print *, trim(trim(trim(trim('Sum of recipr. factors of ' // s1) // ' = ') // s2) // ' exactly ') // perfect
       end if
     end do
-  end function main
+  end subroutine main
 end program arithmetic_rational

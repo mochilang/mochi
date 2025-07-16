@@ -10,9 +10,9 @@ program p_9_billion_names_of_god_the_integer
   integer :: i0
     character(len=100) :: s1
     integer :: n
-    integer, dimension(0) :: digits
+    integer, allocatable, dimension(:) :: digits
       integer, allocatable, dimension(:) :: app2
-    integer, dimension(0) :: res
+    integer, allocatable, dimension(:) :: res
     integer :: carry
       integer :: av
       integer :: bv
@@ -29,7 +29,7 @@ program p_9_billion_names_of_god_the_integer
         integer, allocatable, dimension(:) :: app6
       integer, allocatable, dimension(:) :: app7
     integer :: e
-    integer, dimension(0) :: out
+    integer, allocatable, dimension(:) :: out
       integer, allocatable, dimension(:) :: app8
   print *, 'rows:'
   x = 1
@@ -69,9 +69,10 @@ program p_9_billion_names_of_god_the_integer
       res = (/0/)
       return
     end if
-    digits = (//)
+    allocate(digits(0))
     n = x
     do while ((n > 0))
+      if (allocated(app2)) deallocate(app2)
       allocate(app2(size(digits)+1))
       app2(1:size(digits)) = digits
       app2(size(digits)+1) = mod(n,10)
@@ -84,7 +85,7 @@ program p_9_billion_names_of_god_the_integer
   recursive integer function bigAdd(a,b) result(res)
     integer, intent(in) :: a
     integer, intent(in) :: b
-    res = (//)
+    allocate(res(0))
     carry = 0
     i = 0
     do while ((((((i < size(a)) .or. i) < size(b)) .or. carry) > 0))
@@ -97,6 +98,7 @@ program p_9_billion_names_of_god_the_integer
         bv = b(((i)+1))
       end if
       s = ((av + bv) + carry)
+      if (allocated(app3)) deallocate(app3)
       allocate(app3(size(res)+1))
       app3(1:size(res)) = res
       app3(size(res)+1) = mod(s,10)
@@ -110,7 +112,7 @@ program p_9_billion_names_of_god_the_integer
   recursive integer function bigSub(a,b) result(res)
     integer, intent(in) :: a
     integer, intent(in) :: b
-    res = (//)
+    allocate(res(0))
     borrow = 0
     i = 0
     do while ((i < size(a)))
@@ -126,6 +128,7 @@ program p_9_billion_names_of_god_the_integer
       else
         borrow = 0
       end if
+      if (allocated(app4)) deallocate(app4)
       allocate(app4(size(res)+1))
       app4(1:size(res)) = res
       app4(size(res)+1) = diff
@@ -167,12 +170,14 @@ program p_9_billion_names_of_god_the_integer
       x = 1
       do while ((x <= y))
         val = cache((((y - x))+1),((minInt(x,(y - x)))+1))
+        if (allocated(app6)) deallocate(app6)
         allocate(app6(size(row)+1))
         app6(1:size(row)) = row
         app6(size(row)+1) = bigAdd(row((((size(row) - 1))+1)),val)
         row = app6
         x = (x + 1)
       end do
+      if (allocated(app7)) deallocate(app7)
       allocate(app7(size(cache)+1))
       app7(1:size(cache)) = cache
       app7(size(cache)+1) = row
@@ -185,10 +190,11 @@ program p_9_billion_names_of_god_the_integer
   recursive integer function row(n) result(res)
     integer, intent(in) :: n
     e = cumu(n)
-    out = (//)
+    allocate(out(0))
     i = 0
     do while ((i < n))
       diff = bigSub(e((((i + 1))+1)),e(((i)+1)))
+      if (allocated(app8)) deallocate(app8)
       allocate(app8(size(out)+1))
       app8(1:size(out)) = out
       app8(size(out)+1) = bigToString(diff)

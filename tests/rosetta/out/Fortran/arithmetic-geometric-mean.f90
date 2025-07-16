@@ -7,7 +7,7 @@ program arithmetic_geometric_mean
       integer :: newA
       integer :: newG
     character(len=100) :: s0
-  main()
+  call main()
   contains
   recursive real function abs(x) result(res)
     real, intent(in) :: x
@@ -42,8 +42,8 @@ program arithmetic_geometric_mean
     res = a
     return
   end function agm
-  recursive integer function main() result(res)
+  recursive subroutine main()
     write(s0,'(G0)') agm(1,(1 / sqrtApprox(2)))
     print *, s0
-  end function main
+  end subroutine main
 end program arithmetic_geometric_mean

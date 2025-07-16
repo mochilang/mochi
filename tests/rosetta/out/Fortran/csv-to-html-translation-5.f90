@@ -2,7 +2,7 @@
 program csv_to_html_translation_5
   implicit none
   character(len=100) :: c
-  integer, dimension(0) :: rows
+  integer, allocatable, dimension(:) :: rows
   integer :: line
   integer :: i0
     integer, allocatable, dimension(:) :: app1
@@ -11,24 +11,18 @@ program csv_to_html_translation_5
     character(len=100) :: cells
     integer :: cell
     integer :: i3
-    integer, dimension(0) :: out
+    integer, allocatable, dimension(:) :: out
     integer :: start
     integer :: i
     integer :: n
         integer, allocatable, dimension(:) :: app4
     integer, allocatable, dimension(:) :: app5
       integer :: ch
-  c = trim(trim(trim(trim('Character,Speech
-' // 'The multitude,The messiah! Show us the messiah!
-') // 'Brians mother,<angry>Now you listen here! He's not the messiah; he's a very naughty boy! Now go away!</angry>
-') // 'The multitude,Who are you?
-') // 'Brians mother,I'm his mother; that's who!
-') // 'The multitude,Behold his mother! Behold his mother!'
-  rows = (//)
-  do i0 = 1, size(split(c,'
-'))
-    line = split(c,'
-')(i0)
+  c = trim(trim(trim(trim('Character,Speech'//char(10)//'' // 'The multitude,The messiah! Show us the messiah!'//char(10)//'') // 'Brians mother,<angry>Now you listen here! He''s not the messiah; he''s a very naughty boy! Now go away!</angry>'//char(10)//'') // 'The multitude,Who are you?'//char(10)//'') // 'Brians mother,I''m his mother; that''s who!'//char(10)//'') // 'The multitude,Behold his mother! Behold his mother!'
+  allocate(rows(0))
+  do i0 = 1, size(split(c,''//char(10)//''))
+    line = split(c,''//char(10)//'')(i0)
+    if (allocated(app1)) deallocate(app1)
     allocate(app1(size(rows)+1))
     app1(1:size(rows)) = rows
     app1(size(rows)+1) = split(line,',')
@@ -49,12 +43,13 @@ program csv_to_html_translation_5
   recursive integer function split(s,sep) result(res)
     character(len=100), intent(in) :: s
     character(len=100), intent(in) :: sep
-    out = (//)
+    allocate(out(0))
     start = 0
     i = 0
     n = size(sep)
     do while (((i <= size(s)) - n))
       if ((s(i+1:(i + n)) == sep)) then
+        if (allocated(app4)) deallocate(app4)
         allocate(app4(size(out)+1))
         app4(1:size(out)) = out
         app4(size(out)+1) = s(start+1:i)
@@ -65,6 +60,7 @@ program csv_to_html_translation_5
         i = (i + 1)
       end if
     end do
+    if (allocated(app5)) deallocate(app5)
     allocate(app5(size(out)+1))
     app5(1:size(out)) = out
     app5(size(out)+1) = s(start+1:size(s))

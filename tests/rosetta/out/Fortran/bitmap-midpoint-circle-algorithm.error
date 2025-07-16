@@ -4,156 +4,156 @@ gfortran: exit status 1
    17 |     row = g(i0)
       |     1
 Error: Unclassifiable statement at (1)
-/tmp/bitmap-midpoint-circle-algorithm.f90:23:12:
+/tmp/bitmap-midpoint-circle-algorithm.f90:23:13:
 
-   23 |     g = (//)
-      |            1
-Error: Empty array constructor at (1) is not allowed
-/tmp/bitmap-midpoint-circle-algorithm.f90:26:16:
+   23 |     allocate(g(0))
+      |             1
+Error: Allocate-object at (1) is neither a data pointer nor an allocatable variable
+/tmp/bitmap-midpoint-circle-algorithm.f90:26:15:
 
-   26 |       row = (//)
-      |                1
-Error: Empty array constructor at (1) is not allowed
-/tmp/bitmap-midpoint-circle-algorithm.f90:29:27:
+   26 |       allocate(row(0))
+      |               1
+Error: Allocate-object at (1) is neither a data pointer nor an allocatable variable
+/tmp/bitmap-midpoint-circle-algorithm.f90:30:27:
 
-   29 |         allocate(app1(size(row)+1))
+   30 |         allocate(app1(size(row)+1))
       |                           1
 Error: Invalid form of array reference at (1)
-/tmp/bitmap-midpoint-circle-algorithm.f90:30:20:
+/tmp/bitmap-midpoint-circle-algorithm.f90:31:20:
 
-   30 |         app1(1:size(row)) = row
+   31 |         app1(1:size(row)) = row
       |                    1
 Error: Invalid form of array reference at (1)
-/tmp/bitmap-midpoint-circle-algorithm.f90:31:18:
+/tmp/bitmap-midpoint-circle-algorithm.f90:32:18:
 
-   31 |         app1(size(row)+1) = ' '
+   32 |         app1(size(row)+1) = ' '
       |                  1
 Error: Invalid form of array reference at (1)
-/tmp/bitmap-midpoint-circle-algorithm.f90:35:25:
+/tmp/bitmap-midpoint-circle-algorithm.f90:37:25:
 
-   35 |       allocate(app2(size(g)+1))
+   37 |       allocate(app2(size(g)+1))
       |                         1
 Error: Invalid form of array reference at (1)
-/tmp/bitmap-midpoint-circle-algorithm.f90:36:18:
+/tmp/bitmap-midpoint-circle-algorithm.f90:38:18:
 
-   36 |       app2(1:size(g)) = g
+   38 |       app2(1:size(g)) = g
       |                  1
 Error: Invalid form of array reference at (1)
-/tmp/bitmap-midpoint-circle-algorithm.f90:37:16:
+/tmp/bitmap-midpoint-circle-algorithm.f90:39:16:
 
-   37 |       app2(size(g)+1) = row
+   39 |       app2(size(g)+1) = row
       |                1
 Error: Invalid form of array reference at (1)
-/tmp/bitmap-midpoint-circle-algorithm.f90:54:9:
+/tmp/bitmap-midpoint-circle-algorithm.f90:56:9:
 
-   54 |     size = ((r * 2) + 1)
+   56 |     size = ((r * 2) + 1)
       |         1
 Error: ‘size’ at (1) is not a variable
-/tmp/bitmap-midpoint-circle-algorithm.f90:60:10:
+/tmp/bitmap-midpoint-circle-algorithm.f90:81:53:
 
-   60 |       set(g,(r + x),(r + y))
-      |          1
-Error: ‘set’ at (1) is not a variable
-/tmp/bitmap-midpoint-circle-algorithm.f90:61:10:
-
-   61 |       set(g,(r + y),(r + x))
-      |          1
-Error: ‘set’ at (1) is not a variable
-/tmp/bitmap-midpoint-circle-algorithm.f90:62:10:
-
-   62 |       set(g,(r - x),(r + y))
-      |          1
-Error: ‘set’ at (1) is not a variable
-/tmp/bitmap-midpoint-circle-algorithm.f90:63:10:
-
-   63 |       set(g,(r - y),(r + x))
-      |          1
-Error: ‘set’ at (1) is not a variable
-/tmp/bitmap-midpoint-circle-algorithm.f90:64:10:
-
-   64 |       set(g,(r - x),(r - y))
-      |          1
-Error: ‘set’ at (1) is not a variable
-/tmp/bitmap-midpoint-circle-algorithm.f90:65:10:
-
-   65 |       set(g,(r - y),(r - x))
-      |          1
-Error: ‘set’ at (1) is not a variable
-/tmp/bitmap-midpoint-circle-algorithm.f90:66:10:
-
-   66 |       set(g,(r + x),(r - y))
-      |          1
-Error: ‘set’ at (1) is not a variable
-/tmp/bitmap-midpoint-circle-algorithm.f90:67:10:
-
-   67 |       set(g,(r + y),(r - x))
-      |          1
-Error: ‘set’ at (1) is not a variable
-/tmp/bitmap-midpoint-circle-algorithm.f90:79:53:
-
-   79 |   recursive character(len=100) function trimRight(row) result(res)
+   81 |   recursive character(len=100) function trimRight(row) result(res)
       |                                                     1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘row’ at (1)
-/tmp/bitmap-midpoint-circle-algorithm.f90:44:34:
+/tmp/bitmap-midpoint-circle-algorithm.f90:46:28:
 
-   44 |   recursive integer function set(g,x,y) result(res)
-      |                                  1
+   46 |   recursive subroutine set(g,x,y)
+      |                            1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘g’ at (1)
-/tmp/bitmap-midpoint-circle-algorithm.f90:81:15:
+/tmp/bitmap-midpoint-circle-algorithm.f90:83:15:
 
-   81 |     end = size(row)
+   83 |     end = size(row)
       |               1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/bitmap-midpoint-circle-algorithm.f90:82:31:
+/tmp/bitmap-midpoint-circle-algorithm.f90:84:31:
 
-   82 |     do while ((((end > 0) .and. row((((end - 1))+1))) == ' '))
+   84 |     do while ((((end > 0) .and. row((((end - 1))+1))) == ' '))
       |                               1
 Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/INTEGER(4)
-/tmp/bitmap-midpoint-circle-algorithm.f90:88:11:
+/tmp/bitmap-midpoint-circle-algorithm.f90:90:11:
 
-   88 |       s = (s + row(((i)+1)))
+   90 |       s = (s + row(((i)+1)))
       |           1
 Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/INTEGER(4)
-/tmp/bitmap-midpoint-circle-algorithm.f90:55:17:
+/tmp/bitmap-midpoint-circle-algorithm.f90:57:17:
 
-   55 |     g = initGrid(size)
+   57 |     g = initGrid(size)
       |                 1
 Error: Intrinsic ‘size’ at (1) is not allowed as an actual argument
-/tmp/bitmap-midpoint-circle-algorithm.f90:55:17:
+/tmp/bitmap-midpoint-circle-algorithm.f90:57:17:
 
-   55 |     g = initGrid(size)
+   57 |     g = initGrid(size)
       |                 1
 Error: Invalid procedure argument at (1)
-/tmp/bitmap-midpoint-circle-algorithm.f90:32:8:
+/tmp/bitmap-midpoint-circle-algorithm.f90:33:14:
 
-   32 |         row = app1
-      |        1
-Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/bitmap-midpoint-circle-algorithm.f90:38:6:
+   33 |         row = app1
+      |              1
+Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
+/tmp/bitmap-midpoint-circle-algorithm.f90:40:6:
 
-   38 |       g = app2
+   40 |       g = app2
       |      1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/bitmap-midpoint-circle-algorithm.f90:48:77:
+/tmp/bitmap-midpoint-circle-algorithm.f90:62:15:
 
-   48 |     if ((((((((x >= 0) .and. x) < size(g(((0)+1)))) .and. y) >= 0) .and. y) < size(g))) then
+   62 |       call set(g,(r + x),(r + y))
+      |               1
+Error: Expected a procedure for argument ‘g’ at (1)
+/tmp/bitmap-midpoint-circle-algorithm.f90:50:77:
+
+   50 |     if ((((((((x >= 0) .and. x) < size(g(((0)+1)))) .and. y) >= 0) .and. y) < size(g))) then
       |                                                                             1
 Error: Generic function ‘size’ at (1) is not consistent with a specific intrinsic interface
-/tmp/bitmap-midpoint-circle-algorithm.f90:48:33:
+/tmp/bitmap-midpoint-circle-algorithm.f90:50:33:
 
-   48 |     if ((((((((x >= 0) .and. x) < size(g(((0)+1)))) .and. y) >= 0) .and. y) < size(g))) then
+   50 |     if ((((((((x >= 0) .and. x) < size(g(((0)+1)))) .and. y) >= 0) .and. y) < size(g))) then
       |                                 1
 Error: Generic function ‘size’ at (1) is not consistent with a specific intrinsic interface
-/tmp/bitmap-midpoint-circle-algorithm.f90:48:28:
+/tmp/bitmap-midpoint-circle-algorithm.f90:50:28:
 
-   48 |     if ((((((((x >= 0) .and. x) < size(g(((0)+1)))) .and. y) >= 0) .and. y) < size(g))) then
+   50 |     if ((((((((x >= 0) .and. x) < size(g(((0)+1)))) .and. y) >= 0) .and. y) < size(g))) then
       |                            1
 Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/INTEGER(4)
-/tmp/bitmap-midpoint-circle-algorithm.f90:49:6:
+/tmp/bitmap-midpoint-circle-algorithm.f90:51:6:
 
-   49 |       g(((y)+1),((x)+1)) = '#'
+   51 |       g(((y)+1),((x)+1)) = '#'
       |      1
 Error: The function result on the lhs of the assignment at (1) must have the pointer attribute.
+/tmp/bitmap-midpoint-circle-algorithm.f90:63:15:
+
+   63 |       call set(g,(r + y),(r + x))
+      |               1
+Error: Expected a procedure for argument ‘g’ at (1)
+/tmp/bitmap-midpoint-circle-algorithm.f90:64:15:
+
+   64 |       call set(g,(r - x),(r + y))
+      |               1
+Error: Expected a procedure for argument ‘g’ at (1)
+/tmp/bitmap-midpoint-circle-algorithm.f90:65:15:
+
+   65 |       call set(g,(r - y),(r + x))
+      |               1
+Error: Expected a procedure for argument ‘g’ at (1)
+/tmp/bitmap-midpoint-circle-algorithm.f90:66:15:
+
+   66 |       call set(g,(r - x),(r - y))
+      |               1
+Error: Expected a procedure for argument ‘g’ at (1)
+/tmp/bitmap-midpoint-circle-algorithm.f90:67:15:
+
+   67 |       call set(g,(r - y),(r - x))
+      |               1
+Error: Expected a procedure for argument ‘g’ at (1)
+/tmp/bitmap-midpoint-circle-algorithm.f90:68:15:
+
+   68 |       call set(g,(r + x),(r - y))
+      |               1
+Error: Expected a procedure for argument ‘g’ at (1)
+/tmp/bitmap-midpoint-circle-algorithm.f90:69:15:
+
+   69 |       call set(g,(r + y),(r - x))
+      |               1
+Error: Expected a procedure for argument ‘g’ at (1)
 /tmp/bitmap-midpoint-circle-algorithm.f90:18:23:
 
    18 |     print *, trimRight(row)

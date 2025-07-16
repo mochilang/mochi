@@ -1,9 +1,4 @@
 gfortran: exit status 1
-/tmp/arithmetic-geometric-mean.f90:10:3:
-
-   10 |   main()
-      |   1
-Error: Unclassifiable statement at (1)
 /tmp/arithmetic-geometric-mean.f90:46:42:
 
    46 |     write(s0,'(G0)') agm(1,(1 / sqrtApprox(2)))
