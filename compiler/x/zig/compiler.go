@@ -3090,6 +3090,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				return fmt.Sprintf("_sum_float(%s)", arg), nil
 			}
 		}
+		if c.isFloatListExpr(call.Args[0]) {
+			c.needsSumFloat = true
+			return fmt.Sprintf("_sum_float(%s)", arg), nil
+		}
 		c.needsSumInt = true
 		return fmt.Sprintf("_sum_int(%s)", arg), nil
 	}
@@ -4162,6 +4166,13 @@ func (c *Compiler) isFloatListExpr(e *parser.Expr) bool {
 	}
 	if p.Target != nil && p.Target.List != nil && len(p.Target.List.Elems) > 0 {
 		return c.isFloatExpr(p.Target.List.Elems[0])
+	}
+	if p.Target != nil && p.Target.Query != nil {
+		if lt, ok := c.inferExprType(e).(types.ListType); ok {
+			if _, ok := lt.Elem.(types.FloatType); ok {
+				return true
+			}
+		}
 	}
 	if p.Target != nil && p.Target.Selector != nil && c.env != nil {
 		if t, err := c.env.GetVar(p.Target.Selector.Root); err == nil {
