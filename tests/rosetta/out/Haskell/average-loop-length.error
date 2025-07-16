@@ -1,0 +1,9 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/average-loop-length.hs:174:1: error:
+    Multiple declarations of ‘main’
+    Declared at: /workspace/mochi/tests/rosetta/out/Haskell/average-loop-length.hs:167:1
+                 /workspace/mochi/tests/rosetta/out/Haskell/average-loop-length.hs:174:1
+    |
+174 | main = do
+    | ^^^^

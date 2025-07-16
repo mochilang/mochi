@@ -1,0 +1,775 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:109:60: error:
+    • Found hole: _asInt :: Int -> Int
+      Or perhaps ‘_asInt’ is mis-spelled, or not in scope
+    • In the first argument of ‘(<)’, namely ‘_asInt (i)’
+      In the expression: _asInt (i) < length a
+      In the first argument of ‘whileLoop’, namely
+        ‘(\ () -> (_asInt (i) < length a))’
+    • Relevant bindings include
+        i :: Int
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:109:27)
+        res :: forall {a}. [a]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:109:10)
+        b :: [Int]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:107:8)
+        a :: [Int]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:107:6)
+        plus :: [Int] -> [Int] -> [Int]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:107:1)
+      Valid hole fits include
+        negate :: forall a. Num a => a -> a
+          with negate @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Num’))
+        fromIntegral :: forall a b. (Integral a, Num b) => a -> b
+          with fromIntegral @Int @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        id :: forall a. a -> a
+          with id @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Base’))
+        fromEnum :: forall a. Enum a => a -> Int
+          with fromEnum @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Enum’))
+        pred :: forall a. Enum a => a -> a
+          with pred @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Enum’))
+        succ :: forall a. Enum a => a -> a
+          with succ @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Enum’))
+        (Some hole fits suppressed; use -fmax-valid-hole-fits=N or -fno-max-valid-hole-fits)
+    |
+109 |     (let res = [] in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length a)) (\() -> (let res = (res ++ [((a !! i) + (b !! i))]) in (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> Just (res)))
+    |                                                            ^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:109:149: error:
+    • Found hole: _asInt :: t0 -> t0
+      Where: ‘t0’ is an ambiguous type variable
+      Or perhaps ‘_asInt’ is mis-spelled, or not in scope
+    • In the first argument of ‘(+)’, namely ‘_asInt (i)’
+      In the expression: _asInt (i) + 1
+      In an equation for ‘i’: i = (_asInt (i) + 1)
+    • Relevant bindings include
+        i :: t0
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:109:144)
+        res :: [Int]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:109:97)
+        b :: [Int]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:107:8)
+        a :: [Int]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:107:6)
+        plus :: [Int] -> [Int] -> [Int]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:107:1)
+      Valid hole fits include
+        fromInteger :: forall a. Num a => Integer -> a
+          with fromInteger @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Num’))
+        negate :: forall a. Num a => a -> a
+          with negate @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Num’))
+        fromIntegral :: forall a b. (Integral a, Num b) => a -> b
+          with fromIntegral @Integer @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        realToFrac :: forall a b. (Real a, Fractional b) => a -> b
+          with realToFrac @Double @Double
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        toInteger :: forall a. Integral a => a -> Integer
+          with toInteger @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        id :: forall a. a -> a
+          with id @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Base’))
+        (Some hole fits suppressed; use -fmax-valid-hole-fits=N or -fno-max-valid-hole-fits)
+    |
+109 |     (let res = [] in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length a)) (\() -> (let res = (res ++ [((a !! i) + (b !! i))]) in (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> Just (res)))
+    |                                                                                                                                                     ^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:113:34: error:
+    • Found hole: _asInt :: Int -> a0
+      Where: ‘a0’ is an ambiguous type variable
+      Or perhaps ‘_asInt’ is mis-spelled, or not in scope
+    • In the first argument of ‘(>)’, namely ‘_asInt (v)’
+      In the expression: _asInt (v) > 3
+      In the expression:
+        if (_asInt (v) > 3) then Just (False) else Nothing
+    • Relevant bindings include
+        acc :: Maybe Bool
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:113:18)
+        v :: Int
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:113:16)
+        p :: [Int]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:112:10)
+        isStable :: [Int] -> Bool
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:112:1)
+      Valid hole fits include
+        negate :: forall a. Num a => a -> a
+          with negate @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Num’))
+        toInteger :: forall a. Integral a => a -> Integer
+          with toInteger @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        toRational :: forall a. Real a => a -> Rational
+          with toRational @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        id :: forall a. a -> a
+          with id @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Base’))
+        fromEnum :: forall a. Enum a => a -> Int
+          with fromEnum @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Enum’))
+        pred :: forall a. Enum a => a -> a
+          with pred @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Enum’))
+        (Some hole fits suppressed; use -fmax-valid-hole-fits=N or -fno-max-valid-hole-fits)
+    |
+113 |   case foldr (\v acc -> case if (_asInt (v) > 3) then Just (False) else Nothing of Just v -> Just v; Nothing -> acc) Nothing p of Just v -> Just v; Nothing -> Just (True)
+    |                                  ^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:118:77: error:
+    • Found hole: _asInt :: Int -> Int
+      Or perhaps ‘_asInt’ is mis-spelled, or not in scope
+    • In the first argument of ‘(<)’, namely ‘_asInt (i)’
+      In the expression: _asInt (i) < length p
+      In the first argument of ‘whileLoop’, namely
+        ‘(\ () -> (_asInt (i) < length p))’
+    • Relevant bindings include
+        i :: Int
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:118:44)
+        neighbors :: [[Int]]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:118:10)
+        p :: [Int]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:116:8)
+        topple :: [Int] -> Int
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:116:1)
+      Valid hole fits include
+        negate :: forall a. Num a => a -> a
+          with negate @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Num’))
+        fromIntegral :: forall a b. (Integral a, Num b) => a -> b
+          with fromIntegral @Int @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        id :: forall a. a -> a
+          with id @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Base’))
+        fromEnum :: forall a. Enum a => a -> Int
+          with fromEnum @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Enum’))
+        pred :: forall a. Enum a => a -> a
+          with pred @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Enum’))
+        succ :: forall a. Enum a => a -> a
+          with succ @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Enum’))
+        (Some hole fits suppressed; use -fmax-valid-hole-fits=N or -fno-max-valid-hole-fits)
+    |
+118 |     (let neighbors = neighborsList in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length p)) (\() -> case if (_asInt ((p !! i)) > 3) then (let p = Map.insert i (_asInt ((p !! i)) - 4) p in (let nbs = (neighbors !! i) in case foldr (\j acc -> case (let p = Map.insert j (_asInt ((p !! j)) + 1) p in Nothing) of Just v -> Just v; Nothing -> acc) Nothing nbs of Just v -> Just v; Nothing -> Just (0))) else Nothing of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing)) of Just v -> Just v; Nothing -> Just (0)))
+    |                                                                             ^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:118:118: error:
+    • Found hole: _asInt :: Int -> a1
+      Where: ‘a1’ is an ambiguous type variable
+      Or perhaps ‘_asInt’ is mis-spelled, or not in scope
+    • In the first argument of ‘(>)’, namely ‘_asInt ((p !! i))’
+      In the expression: _asInt ((p !! i)) > 3
+      In the expression:
+        if (_asInt ((p !! i)) > 3) then
+            (let p = Map.insert i (_asInt ((p !! i)) - 4) p
+             in
+               (let nbs = (neighbors !! i)
+                in
+                  case
+                      foldr
+                        (\ j acc
+                           -> case (let ... in Nothing) of
+                                Just v -> Just v
+                                Nothing -> acc)
+                        Nothing nbs
+                  of
+                    Just v -> Just v
+                    Nothing -> Just (0)))
+        else
+            Nothing
+    • Relevant bindings include
+        i :: Int
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:118:44)
+        neighbors :: [[Int]]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:118:10)
+        p :: [Int]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:116:8)
+        topple :: [Int] -> Int
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:116:1)
+      Valid hole fits include
+        negate :: forall a. Num a => a -> a
+          with negate @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Num’))
+        toInteger :: forall a. Integral a => a -> Integer
+          with toInteger @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        toRational :: forall a. Real a => a -> Rational
+          with toRational @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        id :: forall a. a -> a
+          with id @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Base’))
+        fromEnum :: forall a. Enum a => a -> Int
+          with fromEnum @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Enum’))
+        pred :: forall a. Enum a => a -> a
+          with pred @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Enum’))
+        (Some hole fits suppressed; use -fmax-valid-hole-fits=N or -fno-max-valid-hole-fits)
+    |
+118 |     (let neighbors = neighborsList in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length p)) (\() -> case if (_asInt ((p !! i)) > 3) then (let p = Map.insert i (_asInt ((p !! i)) - 4) p in (let nbs = (neighbors !! i) in case foldr (\j acc -> case (let p = Map.insert j (_asInt ((p !! j)) + 1) p in Nothing) of Just v -> Just v; Nothing -> acc) Nothing nbs of Just v -> Just v; Nothing -> Just (0))) else Nothing of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing)) of Just v -> Just v; Nothing -> Just (0)))
+    |                                                                                                                      ^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:118:169: error:
+    • Found hole: _asInt :: t1 -> a
+      Where: ‘t1’ is an ambiguous type variable
+             ‘a’ is a rigid type variable bound by
+               the inferred type of p :: Map.Map Int a
+               at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:118:151-192
+      Or perhaps ‘_asInt’ is mis-spelled, or not in scope
+    • In the first argument of ‘(-)’, namely ‘_asInt ((p !! i))’
+      In the second argument of ‘Map.insert’, namely
+        ‘(_asInt ((p !! i)) - 4)’
+      In the expression: Map.insert i (_asInt ((p !! i)) - 4) p
+    • Relevant bindings include
+        p :: Map.Map Int a
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:118:151)
+        i :: Int
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:118:44)
+        neighbors :: [[Int]]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:118:10)
+        topple :: [Int] -> Int
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:116:1)
+    |
+118 |     (let neighbors = neighborsList in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length p)) (\() -> case if (_asInt ((p !! i)) > 3) then (let p = Map.insert i (_asInt ((p !! i)) - 4) p in (let nbs = (neighbors !! i) in case foldr (\j acc -> case (let p = Map.insert j (_asInt ((p !! j)) + 1) p in Nothing) of Just v -> Just v; Nothing -> acc) Nothing nbs of Just v -> Just v; Nothing -> Just (0))) else Nothing of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing)) of Just v -> Just v; Nothing -> Just (0)))
+    |                                                                                                                                                                         ^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:118:178: error:
+    • Couldn't match expected type: [t1]
+                  with actual type: Map.Map Int a
+    • In the first argument of ‘(!!)’, namely ‘p’
+      In the first argument of ‘_asInt’, namely ‘((p !! i))’
+      In the first argument of ‘(-)’, namely ‘_asInt ((p !! i))’
+    • Relevant bindings include
+        p :: Map.Map Int a
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:118:151)
+    |
+118 |     (let neighbors = neighborsList in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length p)) (\() -> case if (_asInt ((p !! i)) > 3) then (let p = Map.insert i (_asInt ((p !! i)) - 4) p in (let nbs = (neighbors !! i) in case foldr (\j acc -> case (let p = Map.insert j (_asInt ((p !! j)) + 1) p in Nothing) of Just v -> Just v; Nothing -> acc) Nothing nbs of Just v -> Just v; Nothing -> Just (0))) else Nothing of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing)) of Just v -> Just v; Nothing -> Just (0)))
+    |                                                                                                                                                                                  ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:118:278: error:
+    • Found hole: _asInt :: t2 -> a
+      Where: ‘t2’ is an ambiguous type variable
+             ‘a’ is a rigid type variable bound by
+               the inferred type of p :: Map.Map Int a
+               at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:118:260-301
+      Or perhaps ‘_asInt’ is mis-spelled, or not in scope
+    • In the first argument of ‘(+)’, namely ‘_asInt ((p !! j))’
+      In the second argument of ‘Map.insert’, namely
+        ‘(_asInt ((p !! j)) + 1)’
+      In the expression: Map.insert j (_asInt ((p !! j)) + 1) p
+    • Relevant bindings include
+        p :: Map.Map Int a
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:118:260)
+        acc :: Maybe Int
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:118:243)
+        j :: Int
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:118:241)
+        nbs :: [Int]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:118:202)
+        i :: Int
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:118:44)
+        neighbors :: [[Int]]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:118:10)
+        (Some bindings suppressed; use -fmax-relevant-binds=N or -fno-max-relevant-binds)
+    |
+118 |     (let neighbors = neighborsList in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length p)) (\() -> case if (_asInt ((p !! i)) > 3) then (let p = Map.insert i (_asInt ((p !! i)) - 4) p in (let nbs = (neighbors !! i) in case foldr (\j acc -> case (let p = Map.insert j (_asInt ((p !! j)) + 1) p in Nothing) of Just v -> Just v; Nothing -> acc) Nothing nbs of Just v -> Just v; Nothing -> Just (0))) else Nothing of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing)) of Just v -> Just v; Nothing -> Just (0)))
+    |                                                                                                                                                                                                                                                                                      ^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:118:287: error:
+    • Couldn't match expected type: [t2]
+                  with actual type: Map.Map Int a
+    • In the first argument of ‘(!!)’, namely ‘p’
+      In the first argument of ‘_asInt’, namely ‘((p !! j))’
+      In the first argument of ‘(+)’, namely ‘_asInt ((p !! j))’
+    • Relevant bindings include
+        p :: Map.Map Int a
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:118:260)
+    |
+118 |     (let neighbors = neighborsList in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length p)) (\() -> case if (_asInt ((p !! i)) > 3) then (let p = Map.insert i (_asInt ((p !! i)) - 4) p in (let nbs = (neighbors !! i) in case foldr (\j acc -> case (let p = Map.insert j (_asInt ((p !! j)) + 1) p in Nothing) of Just v -> Just v; Nothing -> acc) Nothing nbs of Just v -> Just v; Nothing -> Just (0))) else Nothing of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing)) of Just v -> Just v; Nothing -> Just (0)))
+    |                                                                                                                                                                                                                                                                                               ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:118:462: error:
+    • Found hole: _asInt :: t3 -> t3
+      Where: ‘t3’ is an ambiguous type variable
+      Or perhaps ‘_asInt’ is mis-spelled, or not in scope
+    • In the first argument of ‘(+)’, namely ‘_asInt (i)’
+      In the expression: _asInt (i) + 1
+      In an equation for ‘i’: i = (_asInt (i) + 1)
+    • Relevant bindings include
+        i :: t3
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:118:457)
+        neighbors :: [[Int]]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:118:10)
+        p :: [Int]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:116:8)
+        topple :: [Int] -> Int
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:116:1)
+      Valid hole fits include
+        fromInteger :: forall a. Num a => Integer -> a
+          with fromInteger @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Num’))
+        negate :: forall a. Num a => a -> a
+          with negate @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Num’))
+        fromIntegral :: forall a b. (Integral a, Num b) => a -> b
+          with fromIntegral @Integer @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        realToFrac :: forall a b. (Real a, Fractional b) => a -> b
+          with realToFrac @Double @Double
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        toInteger :: forall a. Integral a => a -> Integer
+          with toInteger @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        id :: forall a. a -> a
+          with id @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Base’))
+        (Some hole fits suppressed; use -fmax-valid-hole-fits=N or -fno-max-valid-hole-fits)
+    |
+118 |     (let neighbors = neighborsList in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length p)) (\() -> case if (_asInt ((p !! i)) > 3) then (let p = Map.insert i (_asInt ((p !! i)) - 4) p in (let nbs = (neighbors !! i) in case foldr (\j acc -> case (let p = Map.insert j (_asInt ((p !! j)) + 1) p in Nothing) of Just v -> Just v; Nothing -> acc) Nothing nbs of Just v -> Just v; Nothing -> Just (0))) else Nothing of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing)) of Just v -> Just v; Nothing -> Just (0)))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                              ^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:125:58: error:
+    • Found hole: _asInt :: t7 -> a3
+      Where: ‘t7’ is an ambiguous type variable
+             ‘a3’ is an ambiguous type variable
+      Or perhaps ‘_asInt’ is mis-spelled, or not in scope
+    • In the first argument of ‘(<)’, namely ‘_asInt (r)’
+      In the expression: _asInt (r) < 3
+      In the first argument of ‘whileLoop’, namely
+        ‘(\ () -> (_asInt (r) < 3))’
+    • Relevant bindings include
+        r :: t7
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:125:25)
+        s :: String
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:125:10)
+        p :: [Int]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:123:12)
+        pileString :: [Int] -> String
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:123:1)
+    |
+125 |     (let s = "" in (let r = 0 in case whileLoop (\() -> (_asInt (r) < 3)) (\() -> (let c = 0 in case whileLoop (\() -> (_asInt (c) < 3)) (\() -> (let s = ((s + show (p !! ((3 * _asInt (r)) + _asInt (c)))) + " ") in (let c = (_asInt (c) + 1) in Nothing))) of Just v -> Just v; Nothing -> (let s = (s + "\n") in (let r = (_asInt (r) + 1) in Nothing)))) of Just v -> Just v; Nothing -> Just (s)))
+    |                                                          ^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:125:121: error:
+    • Found hole: _asInt :: t6 -> a2
+      Where: ‘t6’ is an ambiguous type variable
+             ‘a2’ is an ambiguous type variable
+      Or perhaps ‘_asInt’ is mis-spelled, or not in scope
+    • In the first argument of ‘(<)’, namely ‘_asInt (c)’
+      In the expression: _asInt (c) < 3
+      In the first argument of ‘whileLoop’, namely
+        ‘(\ () -> (_asInt (c) < 3))’
+    • Relevant bindings include
+        c :: t6
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:125:88)
+        r :: t7
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:125:25)
+        s :: String
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:125:10)
+        p :: [Int]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:123:12)
+        pileString :: [Int] -> String
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:123:1)
+      Valid hole fits include
+        r :: t6 -> a2
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:125:25)
+        topple :: [Int] -> Int
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:116:1)
+        avg :: forall a. Integral a => [a] -> a
+          with avg @Integer
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:33:1)
+        key :: forall k a. MGroup k a -> k
+          with key @Integer @a4
+          (defined at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:37:27)
+        fromInteger :: forall a. Num a => Integer -> a
+          with fromInteger @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Num’))
+        fromRational :: forall a. Fractional a => Rational -> a
+          with fromRational @Double
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        (Some hole fits suppressed; use -fmax-valid-hole-fits=N or -fno-max-valid-hole-fits)
+    |
+125 |     (let s = "" in (let r = 0 in case whileLoop (\() -> (_asInt (r) < 3)) (\() -> (let c = 0 in case whileLoop (\() -> (_asInt (c) < 3)) (\() -> (let s = ((s + show (p !! ((3 * _asInt (r)) + _asInt (c)))) + " ") in (let c = (_asInt (c) + 1) in Nothing))) of Just v -> Just v; Nothing -> (let s = (s + "\n") in (let r = (_asInt (r) + 1) in Nothing)))) of Just v -> Just v; Nothing -> Just (s)))
+    |                                                                                                                         ^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:125:178: error:
+    • Found hole: _asInt :: t7 -> Int
+      Where: ‘t7’ is an ambiguous type variable
+      Or perhaps ‘_asInt’ is mis-spelled, or not in scope
+    • In the second argument of ‘(*)’, namely ‘_asInt (r)’
+      In the first argument of ‘(+)’, namely ‘(3 * _asInt (r))’
+      In the second argument of ‘(!!)’, namely
+        ‘((3 * _asInt (r)) + _asInt (c))’
+    • Relevant bindings include
+        s :: String
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:125:151)
+        c :: ()
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:125:88)
+        r :: () -> a3
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:125:25)
+        p :: [Int]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:123:12)
+        pileString :: [Int] -> String
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:123:1)
+    |
+125 |     (let s = "" in (let r = 0 in case whileLoop (\() -> (_asInt (r) < 3)) (\() -> (let c = 0 in case whileLoop (\() -> (_asInt (c) < 3)) (\() -> (let s = ((s + show (p !! ((3 * _asInt (r)) + _asInt (c)))) + " ") in (let c = (_asInt (c) + 1) in Nothing))) of Just v -> Just v; Nothing -> (let s = (s + "\n") in (let r = (_asInt (r) + 1) in Nothing)))) of Just v -> Just v; Nothing -> Just (s)))
+    |                                                                                                                                                                                  ^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:125:192: error:
+    • Found hole: _asInt :: t6 -> Int
+      Where: ‘t6’ is an ambiguous type variable
+      Or perhaps ‘_asInt’ is mis-spelled, or not in scope
+    • In the second argument of ‘(+)’, namely ‘_asInt (c)’
+      In the second argument of ‘(!!)’, namely
+        ‘((3 * _asInt (r)) + _asInt (c))’
+      In the first argument of ‘show’, namely
+        ‘(p !! ((3 * _asInt (r)) + _asInt (c)))’
+    • Relevant bindings include
+        s :: String
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:125:151)
+        c :: ()
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:125:88)
+        r :: () -> a3
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:125:25)
+        p :: [Int]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:123:12)
+        pileString :: [Int] -> String
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:123:1)
+      Valid hole fits include
+        r :: () -> Int
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:125:25)
+        fromEnum :: forall a. Enum a => a -> Int
+          with fromEnum @()
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Enum’))
+    |
+125 |     (let s = "" in (let r = 0 in case whileLoop (\() -> (_asInt (r) < 3)) (\() -> (let c = 0 in case whileLoop (\() -> (_asInt (c) < 3)) (\() -> (let s = ((s + show (p !! ((3 * _asInt (r)) + _asInt (c)))) + " ") in (let c = (_asInt (c) + 1) in Nothing))) of Just v -> Just v; Nothing -> (let s = (s + "\n") in (let r = (_asInt (r) + 1) in Nothing)))) of Just v -> Just v; Nothing -> Just (s)))
+    |                                                                                                                                                                                                ^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:125:226: error:
+    • Found hole: _asInt :: t4 -> t4
+      Where: ‘t4’ is an ambiguous type variable
+      Or perhaps ‘_asInt’ is mis-spelled, or not in scope
+    • In the first argument of ‘(+)’, namely ‘_asInt (c)’
+      In the expression: _asInt (c) + 1
+      In an equation for ‘c’: c = (_asInt (c) + 1)
+    • Relevant bindings include
+        c :: t4
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:125:221)
+        s :: String
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:125:151)
+        r :: () -> Int
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:125:25)
+        p :: [Int]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:123:12)
+        pileString :: [Int] -> String
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:123:1)
+      Valid hole fits include
+        fromInteger :: forall a. Num a => Integer -> a
+          with fromInteger @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Num’))
+        negate :: forall a. Num a => a -> a
+          with negate @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Num’))
+        fromIntegral :: forall a b. (Integral a, Num b) => a -> b
+          with fromIntegral @Integer @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        realToFrac :: forall a b. (Real a, Fractional b) => a -> b
+          with realToFrac @Double @Double
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        toInteger :: forall a. Integral a => a -> Integer
+          with toInteger @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        id :: forall a. a -> a
+          with id @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Base’))
+        (Some hole fits suppressed; use -fmax-valid-hole-fits=N or -fno-max-valid-hole-fits)
+    |
+125 |     (let s = "" in (let r = 0 in case whileLoop (\() -> (_asInt (r) < 3)) (\() -> (let c = 0 in case whileLoop (\() -> (_asInt (c) < 3)) (\() -> (let s = ((s + show (p !! ((3 * _asInt (r)) + _asInt (c)))) + " ") in (let c = (_asInt (c) + 1) in Nothing))) of Just v -> Just v; Nothing -> (let s = (s + "\n") in (let r = (_asInt (r) + 1) in Nothing)))) of Just v -> Just v; Nothing -> Just (s)))
+    |                                                                                                                                                                                                                                  ^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:125:321: error:
+    • Found hole: _asInt :: t5 -> t5
+      Where: ‘t5’ is an ambiguous type variable
+      Or perhaps ‘_asInt’ is mis-spelled, or not in scope
+    • In the first argument of ‘(+)’, namely ‘_asInt (r)’
+      In the expression: _asInt (r) + 1
+      In an equation for ‘r’: r = (_asInt (r) + 1)
+    • Relevant bindings include
+        r :: t5
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:125:316)
+        s :: String
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:125:293)
+        c :: ()
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:125:88)
+        p :: [Int]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:123:12)
+        pileString :: [Int] -> String
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:123:1)
+      Valid hole fits include
+        fromInteger :: forall a. Num a => Integer -> a
+          with fromInteger @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Num’))
+        negate :: forall a. Num a => a -> a
+          with negate @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Num’))
+        fromIntegral :: forall a b. (Integral a, Num b) => a -> b
+          with fromIntegral @Integer @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        realToFrac :: forall a b. (Real a, Fractional b) => a -> b
+          with realToFrac @Double @Double
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        toInteger :: forall a. Integral a => a -> Integer
+          with toInteger @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        id :: forall a. a -> a
+          with id @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:5:8-11
+           (and originally defined in ‘GHC.Base’))
+        (Some hole fits suppressed; use -fmax-valid-hole-fits=N or -fno-max-valid-hole-fits)
+    |
+125 |     (let s = "" in (let r = 0 in case whileLoop (\() -> (_asInt (r) < 3)) (\() -> (let c = 0 in case whileLoop (\() -> (_asInt (c) < 3)) (\() -> (let s = ((s + show (p !! ((3 * _asInt (r)) + _asInt (c)))) + " ") in (let c = (_asInt (c) + 1) in Nothing))) of Just v -> Just v; Nothing -> (let s = (s + "\n") in (let r = (_asInt (r) + 1) in Nothing)))) of Just v -> Just v; Nothing -> Just (s)))
+    |                                                                                                                                                                                                                                                                                                                                 ^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:149:29: error:
+    • Couldn't match expected type ‘[Int] -> Bool’
+                  with actual type ‘Bool’
+    • The function ‘not’ is applied to two value arguments,
+        but its type ‘Bool -> Bool’ has only one
+      In the expression: not isStable s4
+      In the first argument of ‘whileLoop’, namely
+        ‘(\ () -> not isStable s4)’
+    |
+149 |   let _ = whileLoop (\() -> not isStable s4) (\() -> Nothing <$ (fromMaybe () (case (let _ = topple s4 in Nothing) of Just v -> Just v; Nothing -> (let _ = putStrLn (pileString s4) in Nothing)))) in return ()
+    |                             ^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:149:33: error:
+    • Couldn't match expected type ‘Bool’
+                  with actual type ‘[Int] -> Bool’
+    • Probable cause: ‘isStable’ is applied to too few arguments
+      In the first argument of ‘not’, namely ‘isStable’
+      In the expression: not isStable s4
+      In the first argument of ‘whileLoop’, namely
+        ‘(\ () -> not isStable s4)’
+    |
+149 |   let _ = whileLoop (\() -> not isStable s4) (\() -> Nothing <$ (fromMaybe () (case (let _ = topple s4 in Nothing) of Just v -> Just v; Nothing -> (let _ = putStrLn (pileString s4) in Nothing)))) in return ()
+    |                                 ^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:149:76: error:
+    • Couldn't match expected type ‘Maybe b0’ with actual type ‘()’
+    • In the first argument of ‘fromMaybe’, namely ‘()’
+      In the second argument of ‘(<$)’, namely
+        ‘(fromMaybe
+            ()
+            (case (let _ = topple s4 in Nothing) of
+               Just v -> Just v
+               Nothing -> (let _ = putStrLn (pileString s4) in Nothing)))’
+      In the expression:
+        Nothing
+          <$
+            (fromMaybe
+               ()
+               (case (let _ = topple s4 in Nothing) of
+                  Just v -> Just v
+                  Nothing -> (let _ = putStrLn (pileString s4) in Nothing)))
+    |
+149 |   let _ = whileLoop (\() -> not isStable s4) (\() -> Nothing <$ (fromMaybe () (case (let _ = topple s4 in Nothing) of Just v -> Just v; Nothing -> (let _ = putStrLn (pileString s4) in Nothing)))) in return ()
+    |                                                                            ^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:151:29: error:
+    • Couldn't match expected type ‘[Int] -> Bool’
+                  with actual type ‘Bool’
+    • The function ‘not’ is applied to two value arguments,
+        but its type ‘Bool -> Bool’ has only one
+      In the expression: not isStable s3_a
+      In the first argument of ‘whileLoop’, namely
+        ‘(\ () -> not isStable s3_a)’
+    |
+151 |   let _ = whileLoop (\() -> not isStable s3_a) (\() -> Nothing <$ (topple s3_a)) in return ()
+    |                             ^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:151:33: error:
+    • Couldn't match expected type ‘Bool’
+                  with actual type ‘[Int] -> Bool’
+    • Probable cause: ‘isStable’ is applied to too few arguments
+      In the first argument of ‘not’, namely ‘isStable’
+      In the expression: not isStable s3_a
+      In the first argument of ‘whileLoop’, namely
+        ‘(\ () -> not isStable s3_a)’
+    |
+151 |   let _ = whileLoop (\() -> not isStable s3_a) (\() -> Nothing <$ (topple s3_a)) in return ()
+    |                                 ^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:151:68: error:
+    • Couldn't match expected type ‘Maybe b1’ with actual type ‘Int’
+    • In the second argument of ‘(<$)’, namely ‘(topple s3_a)’
+      In the expression: Nothing <$ (topple s3_a)
+      In the second argument of ‘whileLoop’, namely
+        ‘(\ () -> Nothing <$ (topple s3_a))’
+    |
+151 |   let _ = whileLoop (\() -> not isStable s3_a) (\() -> Nothing <$ (topple s3_a)) in return ()
+    |                                                                    ^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:152:29: error:
+    • Couldn't match expected type ‘[Int] -> Bool’
+                  with actual type ‘Bool’
+    • The function ‘not’ is applied to two value arguments,
+        but its type ‘Bool -> Bool’ has only one
+      In the expression: not isStable s3_b
+      In the first argument of ‘whileLoop’, namely
+        ‘(\ () -> not isStable s3_b)’
+    |
+152 |   let _ = whileLoop (\() -> not isStable s3_b) (\() -> Nothing <$ (topple s3_b)) in return ()
+    |                             ^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:152:33: error:
+    • Couldn't match expected type ‘Bool’
+                  with actual type ‘[Int] -> Bool’
+    • Probable cause: ‘isStable’ is applied to too few arguments
+      In the first argument of ‘not’, namely ‘isStable’
+      In the expression: not isStable s3_b
+      In the first argument of ‘whileLoop’, namely
+        ‘(\ () -> not isStable s3_b)’
+    |
+152 |   let _ = whileLoop (\() -> not isStable s3_b) (\() -> Nothing <$ (topple s3_b)) in return ()
+    |                                 ^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:152:68: error:
+    • Couldn't match expected type ‘Maybe b2’ with actual type ‘Int’
+    • In the second argument of ‘(<$)’, namely ‘(topple s3_b)’
+      In the expression: Nothing <$ (topple s3_b)
+      In the second argument of ‘whileLoop’, namely
+        ‘(\ () -> Nothing <$ (topple s3_b))’
+    |
+152 |   let _ = whileLoop (\() -> not isStable s3_b) (\() -> Nothing <$ (topple s3_b)) in return ()
+    |                                                                    ^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:156:29: error:
+    • Couldn't match expected type ‘[Int] -> Bool’
+                  with actual type ‘Bool’
+    • The function ‘not’ is applied to two value arguments,
+        but its type ‘Bool -> Bool’ has only one
+      In the expression: not isStable s4b
+      In the first argument of ‘whileLoop’, namely
+        ‘(\ () -> not isStable s4b)’
+    |
+156 |   let _ = whileLoop (\() -> not isStable s4b) (\() -> Nothing <$ (topple s4b)) in return ()
+    |                             ^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:156:33: error:
+    • Couldn't match expected type ‘Bool’
+                  with actual type ‘[Int] -> Bool’
+    • Probable cause: ‘isStable’ is applied to too few arguments
+      In the first argument of ‘not’, namely ‘isStable’
+      In the expression: not isStable s4b
+      In the first argument of ‘whileLoop’, namely
+        ‘(\ () -> not isStable s4b)’
+    |
+156 |   let _ = whileLoop (\() -> not isStable s4b) (\() -> Nothing <$ (topple s4b)) in return ()
+    |                                 ^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:156:67: error:
+    • Couldn't match expected type ‘Maybe b3’ with actual type ‘Int’
+    • In the second argument of ‘(<$)’, namely ‘(topple s4b)’
+      In the expression: Nothing <$ (topple s4b)
+      In the second argument of ‘whileLoop’, namely
+        ‘(\ () -> Nothing <$ (topple s4b))’
+    |
+156 |   let _ = whileLoop (\() -> not isStable s4b) (\() -> Nothing <$ (topple s4b)) in return ()
+    |                                                                   ^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:159:29: error:
+    • Couldn't match expected type ‘[Int] -> Bool’
+                  with actual type ‘Bool’
+    • The function ‘not’ is applied to two value arguments,
+        but its type ‘Bool -> Bool’ has only one
+      In the expression: not isStable s5
+      In the first argument of ‘whileLoop’, namely
+        ‘(\ () -> not isStable s5)’
+    |
+159 |   let _ = whileLoop (\() -> not isStable s5) (\() -> Nothing <$ (topple s5)) in return ()
+    |                             ^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:159:33: error:
+    • Couldn't match expected type ‘Bool’
+                  with actual type ‘[Int] -> Bool’
+    • Probable cause: ‘isStable’ is applied to too few arguments
+      In the first argument of ‘not’, namely ‘isStable’
+      In the expression: not isStable s5
+      In the first argument of ‘whileLoop’, namely
+        ‘(\ () -> not isStable s5)’
+    |
+159 |   let _ = whileLoop (\() -> not isStable s5) (\() -> Nothing <$ (topple s5)) in return ()
+    |                                 ^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/abelian-sandpile-model-identity.hs:159:66: error:
+    • Couldn't match expected type ‘Maybe b4’ with actual type ‘Int’
+    • In the second argument of ‘(<$)’, namely ‘(topple s5)’
+      In the expression: Nothing <$ (topple s5)
+      In the second argument of ‘whileLoop’, namely
+        ‘(\ () -> Nothing <$ (topple s5))’
+    |
+159 |   let _ = whileLoop (\() -> not isStable s5) (\() -> Nothing <$ (topple s5)) in return ()
+    |                                                                  ^^^^^^^^^

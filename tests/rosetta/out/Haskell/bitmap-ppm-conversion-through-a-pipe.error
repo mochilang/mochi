@@ -1,0 +1,7 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/bitmap-ppm-conversion-through-a-pipe.hs:101:5: error:
+    parse error on input ‘R’
+    |
+101 |     R :: Int,
+    |     ^

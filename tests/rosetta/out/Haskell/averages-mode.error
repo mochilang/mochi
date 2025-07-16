@@ -1,0 +1,61 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-mode.hs:133:17: error:
+    The last statement in a 'do' block must be an expression
+      let counts1
+            = Map.insert
+                v (fromMaybe (error "missing") (Map.lookup v counts1) + 1) counts1
+    |
+133 |                 let counts1 = Map.insert v (fromMaybe (error "missing") (Map.lookup v counts1) + 1) counts1
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-mode.hs:136:17: error:
+    The last statement in a 'do' block must be an expression
+      let keys1 = (keys1 ++ [v])
+    |
+136 |                 let keys1 = (keys1 ++ [v])
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-mode.hs:148:17: error:
+    The last statement in a 'do' block must be an expression
+      let max1 = c
+    |
+148 |                 let max1 = c
+    |                 ^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-mode.hs:160:17: error:
+    The last statement in a 'do' block must be an expression
+      let modes1 = (modes1 ++ [k])
+    |
+160 |                 let modes1 = (modes1 ++ [k])
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-mode.hs:173:17: error:
+    The last statement in a 'do' block must be an expression
+      let counts2
+            = Map.insert
+                v (fromMaybe (error "missing") (Map.lookup v counts2) + 1) counts2
+    |
+173 |                 let counts2 = Map.insert v (fromMaybe (error "missing") (Map.lookup v counts2) + 1) counts2
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-mode.hs:176:17: error:
+    The last statement in a 'do' block must be an expression
+      let keys2 = (keys2 ++ [v])
+    |
+176 |                 let keys2 = (keys2 ++ [v])
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-mode.hs:188:17: error:
+    The last statement in a 'do' block must be an expression
+      let max2 = c
+    |
+188 |                 let max2 = c
+    |                 ^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-mode.hs:200:17: error:
+    The last statement in a 'do' block must be an expression
+      let modes2 = (modes2 ++ [k])
+    |
+200 |                 let modes2 = (modes2 ++ [k])
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^

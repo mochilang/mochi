@@ -1,0 +1,9 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/arithmetic-integer-1.hs:18:1: error:
+    Multiple declarations of ‘main’
+    Declared at: /workspace/mochi/tests/rosetta/out/Haskell/arithmetic-integer-1.hs:10:1
+                 /workspace/mochi/tests/rosetta/out/Haskell/arithmetic-integer-1.hs:18:1
+   |
+18 | main = do
+   | ^^^^

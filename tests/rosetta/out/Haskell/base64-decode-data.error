@@ -1,0 +1,640 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:130:90: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘AnyValue’
+    • In the second argument of ‘(!!)’, namely ‘i’
+      In the first argument of ‘(==)’, namely ‘(s !! i)’
+      In the expression: (s !! i) == ch
+    |
+130 |     (let i = 0 in case whileLoop (\() -> (_asInt (i) < length s)) (\() -> case if ((s !! i) == ch) then Just (i) else Nothing of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing)) of Just v -> Just v; Nothing -> Just ((-1)))
+    |                                                                                          ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:130:96: error:
+    • Couldn't match type ‘[Char]’ with ‘Char’
+      Expected: Char
+        Actual: String
+    • In the second argument of ‘(==)’, namely ‘ch’
+      In the expression: (s !! i) == ch
+      In the expression: if ((s !! i) == ch) then Just (i) else Nothing
+    |
+130 |     (let i = 0 in case whileLoop (\() -> (_asInt (i) < length s)) (\() -> case if ((s !! i) == ch) then Just (i) else Nothing of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing)) of Just v -> Just v; Nothing -> Just ((-1)))
+    |                                                                                                ^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:130:177: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(i)’
+      In the first argument of ‘(+)’, namely ‘_asInt (i)’
+      In the expression: _asInt (i) + 1
+    |
+130 |     (let i = 0 in case whileLoop (\() -> (_asInt (i) < length s)) (\() -> case if ((s !! i) == ch) then Just (i) else Nothing of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing)) of Just v -> Just v; Nothing -> Just ((-1)))
+    |                                                                                                                                                                                 ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:130:216: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘AnyValue’
+    • In the first argument of ‘Just’, namely ‘v’
+      In the expression: Just v
+      In a case alternative: Just v -> Just v
+    |
+130 |     (let i = 0 in case whileLoop (\() -> (_asInt (i) < length s)) (\() -> case if ((s !! i) == ch) then Just (i) else Nothing of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing)) of Just v -> Just v; Nothing -> Just ((-1)))
+    |                                                                                                                                                                                                                        ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:135:70: error:
+    • Couldn't match type ‘Char’ with ‘Bool’
+      Expected: [Bool]
+        Actual: String
+    • In the first argument of ‘(!!)’, namely ‘str’
+      In the second argument of ‘(&&)’, namely ‘(str !! 0)’
+      In the first argument of ‘(==)’, namely
+        ‘((length str > 0) && (str !! 0))’
+    |
+135 |     (let i = 0 in (let neg = False in case if (((length str > 0) && (str !! 0)) == "-") then (let neg = True in (let i = 1 in Nothing)) else Nothing of Just v -> Just v; Nothing -> (let n = 0 in (let digits = Map.fromList [("0", (0 :: Int)), ("1", (1 :: Int)), ("2", (2 :: Int)), ("3", (3 :: Int)), ("4", (4 :: Int)), ("5", (5 :: Int)), ("6", (6 :: Int)), ("7", (7 :: Int)), ("8", (8 :: Int)), ("9", (9 :: Int))] in case whileLoop (\() -> (_asInt (i) < length str)) (\() -> (let n = ((_asInt (n) * 10) + _asInt ((digits !! (str !! i)))) in (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> case if _asBool (neg) then (let n = (-(_asInt (n))) in Nothing) else Nothing of Just v -> Just v; Nothing -> Just (n)))))
+    |                                                                      ^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:135:84: error:
+    • Couldn't match type ‘[Char]’ with ‘Bool’
+      Expected: Bool
+        Actual: String
+    • In the second argument of ‘(==)’, namely ‘"-"’
+      In the expression: ((length str > 0) && (str !! 0)) == "-"
+      In the expression:
+        if (((length str > 0) && (str !! 0)) == "-") then
+            (let neg = True in (let i = 1 in Nothing))
+        else
+            Nothing
+    |
+135 |     (let i = 0 in (let neg = False in case if (((length str > 0) && (str !! 0)) == "-") then (let neg = True in (let i = 1 in Nothing)) else Nothing of Just v -> Just v; Nothing -> (let n = 0 in (let digits = Map.fromList [("0", (0 :: Int)), ("1", (1 :: Int)), ("2", (2 :: Int)), ("3", (3 :: Int)), ("4", (4 :: Int)), ("5", (5 :: Int)), ("6", (6 :: Int)), ("7", (7 :: Int)), ("8", (8 :: Int)), ("9", (9 :: Int))] in case whileLoop (\() -> (_asInt (i) < length str)) (\() -> (let n = ((_asInt (n) * 10) + _asInt ((digits !! (str !! i)))) in (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> case if _asBool (neg) then (let n = (-(_asInt (n))) in Nothing) else Nothing of Just v -> Just v; Nothing -> Just (n)))))
+    |                                                                                    ^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:135:494: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(n)’
+      In the first argument of ‘(*)’, namely ‘_asInt (n)’
+      In the first argument of ‘(+)’, namely ‘(_asInt (n) * 10)’
+    |
+135 |     (let i = 0 in (let neg = False in case if (((length str > 0) && (str !! 0)) == "-") then (let neg = True in (let i = 1 in Nothing)) else Nothing of Just v -> Just v; Nothing -> (let n = 0 in (let digits = Map.fromList [("0", (0 :: Int)), ("1", (1 :: Int)), ("2", (2 :: Int)), ("3", (3 :: Int)), ("4", (4 :: Int)), ("5", (5 :: Int)), ("6", (6 :: Int)), ("7", (7 :: Int)), ("8", (8 :: Int)), ("9", (9 :: Int))] in case whileLoop (\() -> (_asInt (i) < length str)) (\() -> (let n = ((_asInt (n) * 10) + _asInt ((digits !! (str !! i)))) in (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> case if _asBool (neg) then (let n = (-(_asInt (n))) in Nothing) else Nothing of Just v -> Just v; Nothing -> Just (n)))))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:135:514: error:
+    • Couldn't match expected type: [AnyValue]
+                  with actual type: Map.Map String Int
+    • In the first argument of ‘(!!)’, namely ‘digits’
+      In the first argument of ‘_asInt’, namely
+        ‘((digits !! (str !! i)))’
+      In the second argument of ‘(+)’, namely
+        ‘_asInt ((digits !! (str !! i)))’
+    |
+135 |     (let i = 0 in (let neg = False in case if (((length str > 0) && (str !! 0)) == "-") then (let neg = True in (let i = 1 in Nothing)) else Nothing of Just v -> Just v; Nothing -> (let n = 0 in (let digits = Map.fromList [("0", (0 :: Int)), ("1", (1 :: Int)), ("2", (2 :: Int)), ("3", (3 :: Int)), ("4", (4 :: Int)), ("5", (5 :: Int)), ("6", (6 :: Int)), ("7", (7 :: Int)), ("8", (8 :: Int)), ("9", (9 :: Int))] in case whileLoop (\() -> (_asInt (i) < length str)) (\() -> (let n = ((_asInt (n) * 10) + _asInt ((digits !! (str !! i)))) in (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> case if _asBool (neg) then (let n = (-(_asInt (n))) in Nothing) else Nothing of Just v -> Just v; Nothing -> Just (n)))))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  ^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:135:525: error:
+    • Couldn't match type ‘Char’ with ‘Int’
+      Expected: [Int]
+        Actual: String
+    • In the first argument of ‘(!!)’, namely ‘str’
+      In the second argument of ‘(!!)’, namely ‘(str !! i)’
+      In the first argument of ‘_asInt’, namely
+        ‘((digits !! (str !! i)))’
+    |
+135 |     (let i = 0 in (let neg = False in case if (((length str > 0) && (str !! 0)) == "-") then (let neg = True in (let i = 1 in Nothing)) else Nothing of Just v -> Just v; Nothing -> (let n = 0 in (let digits = Map.fromList [("0", (0 :: Int)), ("1", (1 :: Int)), ("2", (2 :: Int)), ("3", (3 :: Int)), ("4", (4 :: Int)), ("5", (5 :: Int)), ("6", (6 :: Int)), ("7", (7 :: Int)), ("8", (8 :: Int)), ("9", (9 :: Int))] in case whileLoop (\() -> (_asInt (i) < length str)) (\() -> (let n = ((_asInt (n) * 10) + _asInt ((digits !! (str !! i)))) in (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> case if _asBool (neg) then (let n = (-(_asInt (n))) in Nothing) else Nothing of Just v -> Just v; Nothing -> Just (n)))))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             ^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:135:532: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘AnyValue’
+    • In the second argument of ‘(!!)’, namely ‘i’
+      In the second argument of ‘(!!)’, namely ‘(str !! i)’
+      In the first argument of ‘_asInt’, namely
+        ‘((digits !! (str !! i)))’
+    |
+135 |     (let i = 0 in (let neg = False in case if (((length str > 0) && (str !! 0)) == "-") then (let neg = True in (let i = 1 in Nothing)) else Nothing of Just v -> Just v; Nothing -> (let n = 0 in (let digits = Map.fromList [("0", (0 :: Int)), ("1", (1 :: Int)), ("2", (2 :: Int)), ("3", (3 :: Int)), ("4", (4 :: Int)), ("5", (5 :: Int)), ("6", (6 :: Int)), ("7", (7 :: Int)), ("8", (8 :: Int)), ("9", (9 :: Int))] in case whileLoop (\() -> (_asInt (i) < length str)) (\() -> (let n = ((_asInt (n) * 10) + _asInt ((digits !! (str !! i)))) in (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> case if _asBool (neg) then (let n = (-(_asInt (n))) in Nothing) else Nothing of Just v -> Just v; Nothing -> Just (n)))))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:135:559: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(i)’
+      In the first argument of ‘(+)’, namely ‘_asInt (i)’
+      In the expression: _asInt (i) + 1
+    |
+135 |     (let i = 0 in (let neg = False in case if (((length str > 0) && (str !! 0)) == "-") then (let neg = True in (let i = 1 in Nothing)) else Nothing of Just v -> Just v; Nothing -> (let n = 0 in (let digits = Map.fromList [("0", (0 :: Int)), ("1", (1 :: Int)), ("2", (2 :: Int)), ("3", (3 :: Int)), ("4", (4 :: Int)), ("5", (5 :: Int)), ("6", (6 :: Int)), ("7", (7 :: Int)), ("8", (8 :: Int)), ("9", (9 :: Int))] in case whileLoop (\() -> (_asInt (i) < length str)) (\() -> (let n = ((_asInt (n) * 10) + _asInt ((digits !! (str !! i)))) in (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> case if _asBool (neg) then (let n = (-(_asInt (n))) in Nothing) else Nothing of Just v -> Just v; Nothing -> Just (n)))))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:135:630: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Bool’
+    • In the first argument of ‘_asBool’, namely ‘(neg)’
+      In the expression: _asBool (neg)
+      In the expression:
+        if _asBool (neg) then
+            (let n = (- (_asInt (n))) in Nothing)
+        else
+            Nothing
+    |
+135 |     (let i = 0 in (let neg = False in case if (((length str > 0) && (str !! 0)) == "-") then (let neg = True in (let i = 1 in Nothing)) else Nothing of Just v -> Just v; Nothing -> (let n = 0 in (let digits = Map.fromList [("0", (0 :: Int)), ("1", (1 :: Int)), ("2", (2 :: Int)), ("3", (3 :: Int)), ("4", (4 :: Int)), ("5", (5 :: Int)), ("6", (6 :: Int)), ("7", (7 :: Int)), ("8", (8 :: Int)), ("9", (9 :: Int))] in case whileLoop (\() -> (_asInt (i) < length str)) (\() -> (let n = ((_asInt (n) * 10) + _asInt ((digits !! (str !! i)))) in (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> case if _asBool (neg) then (let n = (-(_asInt (n))) in Nothing) else Nothing of Just v -> Just v; Nothing -> Just (n)))))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:135:660: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(n)’
+      In the expression: _asInt (n)
+      In the expression: - (_asInt (n))
+    |
+135 |     (let i = 0 in (let neg = False in case if (((length str > 0) && (str !! 0)) == "-") then (let neg = True in (let i = 1 in Nothing)) else Nothing of Just v -> Just v; Nothing -> (let n = 0 in (let digits = Map.fromList [("0", (0 :: Int)), ("1", (1 :: Int)), ("2", (2 :: Int)), ("3", (3 :: Int)), ("4", (4 :: Int)), ("5", (5 :: Int)), ("6", (6 :: Int)), ("7", (7 :: Int)), ("8", (8 :: Int)), ("9", (9 :: Int))] in case whileLoop (\() -> (_asInt (i) < length str)) (\() -> (let n = ((_asInt (n) * 10) + _asInt ((digits !! (str !! i)))) in (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> case if _asBool (neg) then (let n = (-(_asInt (n))) in Nothing) else Nothing of Just v -> Just v; Nothing -> Just (n)))))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:140:143: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(idx)’
+      In the first argument of ‘(>=)’, namely ‘_asInt (idx)’
+      In the expression: _asInt (idx) >= 0
+    |
+140 |     (let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in (let lower = "abcdefghijklmnopqrstuvwxyz" in (let idx = indexOf upper ch in case if (_asInt (idx) >= 0) then Just ((65 + _asInt (idx))) else Nothing of Just v -> Just v; Nothing -> (let idx = indexOf lower ch in case if (_asInt (idx) >= 0) then Just ((97 + _asInt (idx))) else Nothing of Just v -> Just v; Nothing -> case if (((ch >= "0") && ch) <= "9") then Just ((48 + parseIntStr ch)) else Nothing of Just v -> Just v; Nothing -> case if (ch == "+") then Just (43) else Nothing of Just v -> Just v; Nothing -> case if (ch == "/") then Just (47) else Nothing of Just v -> Just v; Nothing -> case if (ch == " ") then Just (32) else Nothing of Just v -> Just v; Nothing -> case if (ch == "=") then Just (61) else Nothing of Just v -> Just v; Nothing -> Just (0)))))
+    |                                                                                                                                               ^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:140:179: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(idx)’
+      In the second argument of ‘(+)’, namely ‘_asInt (idx)’
+      In the first argument of ‘Just’, namely ‘((65 + _asInt (idx)))’
+    |
+140 |     (let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in (let lower = "abcdefghijklmnopqrstuvwxyz" in (let idx = indexOf upper ch in case if (_asInt (idx) >= 0) then Just ((65 + _asInt (idx))) else Nothing of Just v -> Just v; Nothing -> (let idx = indexOf lower ch in case if (_asInt (idx) >= 0) then Just ((97 + _asInt (idx))) else Nothing of Just v -> Just v; Nothing -> case if (((ch >= "0") && ch) <= "9") then Just ((48 + parseIntStr ch)) else Nothing of Just v -> Just v; Nothing -> case if (ch == "+") then Just (43) else Nothing of Just v -> Just v; Nothing -> case if (ch == "/") then Just (47) else Nothing of Just v -> Just v; Nothing -> case if (ch == " ") then Just (32) else Nothing of Just v -> Just v; Nothing -> case if (ch == "=") then Just (61) else Nothing of Just v -> Just v; Nothing -> Just (0)))))
+    |                                                                                                                                                                                   ^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:140:279: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(idx)’
+      In the first argument of ‘(>=)’, namely ‘_asInt (idx)’
+      In the expression: _asInt (idx) >= 0
+    |
+140 |     (let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in (let lower = "abcdefghijklmnopqrstuvwxyz" in (let idx = indexOf upper ch in case if (_asInt (idx) >= 0) then Just ((65 + _asInt (idx))) else Nothing of Just v -> Just v; Nothing -> (let idx = indexOf lower ch in case if (_asInt (idx) >= 0) then Just ((97 + _asInt (idx))) else Nothing of Just v -> Just v; Nothing -> case if (((ch >= "0") && ch) <= "9") then Just ((48 + parseIntStr ch)) else Nothing of Just v -> Just v; Nothing -> case if (ch == "+") then Just (43) else Nothing of Just v -> Just v; Nothing -> case if (ch == "/") then Just (47) else Nothing of Just v -> Just v; Nothing -> case if (ch == " ") then Just (32) else Nothing of Just v -> Just v; Nothing -> case if (ch == "=") then Just (61) else Nothing of Just v -> Just v; Nothing -> Just (0)))))
+    |                                                                                                                                                                                                                                                                                       ^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:140:315: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(idx)’
+      In the second argument of ‘(+)’, namely ‘_asInt (idx)’
+      In the first argument of ‘Just’, namely ‘((97 + _asInt (idx)))’
+    |
+140 |     (let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in (let lower = "abcdefghijklmnopqrstuvwxyz" in (let idx = indexOf upper ch in case if (_asInt (idx) >= 0) then Just ((65 + _asInt (idx))) else Nothing of Just v -> Just v; Nothing -> (let idx = indexOf lower ch in case if (_asInt (idx) >= 0) then Just ((97 + _asInt (idx))) else Nothing of Just v -> Just v; Nothing -> case if (((ch >= "0") && ch) <= "9") then Just ((48 + parseIntStr ch)) else Nothing of Just v -> Just v; Nothing -> case if (ch == "+") then Just (43) else Nothing of Just v -> Just v; Nothing -> case if (ch == "/") then Just (47) else Nothing of Just v -> Just v; Nothing -> case if (ch == " ") then Just (32) else Nothing of Just v -> Just v; Nothing -> case if (ch == "=") then Just (61) else Nothing of Just v -> Just v; Nothing -> Just (0)))))
+    |                                                                                                                                                                                                                                                                                                                           ^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:140:392: error:
+    • Couldn't match type ‘[Char]’ with ‘Bool’
+      Expected: Bool
+        Actual: String
+    • In the second argument of ‘(&&)’, namely ‘ch’
+      In the first argument of ‘(<=)’, namely ‘((ch >= "0") && ch)’
+      In the expression: ((ch >= "0") && ch) <= "9"
+    |
+140 |     (let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in (let lower = "abcdefghijklmnopqrstuvwxyz" in (let idx = indexOf upper ch in case if (_asInt (idx) >= 0) then Just ((65 + _asInt (idx))) else Nothing of Just v -> Just v; Nothing -> (let idx = indexOf lower ch in case if (_asInt (idx) >= 0) then Just ((97 + _asInt (idx))) else Nothing of Just v -> Just v; Nothing -> case if (((ch >= "0") && ch) <= "9") then Just ((48 + parseIntStr ch)) else Nothing of Just v -> Just v; Nothing -> case if (ch == "+") then Just (43) else Nothing of Just v -> Just v; Nothing -> case if (ch == "/") then Just (47) else Nothing of Just v -> Just v; Nothing -> case if (ch == " ") then Just (32) else Nothing of Just v -> Just v; Nothing -> case if (ch == "=") then Just (61) else Nothing of Just v -> Just v; Nothing -> Just (0)))))
+    |                                                                                                                                                                                                                                                                                                                                                                                                        ^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:140:399: error:
+    • Couldn't match type ‘[Char]’ with ‘Bool’
+      Expected: Bool
+        Actual: String
+    • In the second argument of ‘(<=)’, namely ‘"9"’
+      In the expression: ((ch >= "0") && ch) <= "9"
+      In the expression:
+        if (((ch >= "0") && ch) <= "9") then
+            Just ((48 + parseIntStr ch))
+        else
+            Nothing
+    |
+140 |     (let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in (let lower = "abcdefghijklmnopqrstuvwxyz" in (let idx = indexOf upper ch in case if (_asInt (idx) >= 0) then Just ((65 + _asInt (idx))) else Nothing of Just v -> Just v; Nothing -> (let idx = indexOf lower ch in case if (_asInt (idx) >= 0) then Just ((97 + _asInt (idx))) else Nothing of Just v -> Just v; Nothing -> case if (((ch >= "0") && ch) <= "9") then Just ((48 + parseIntStr ch)) else Nothing of Just v -> Just v; Nothing -> case if (ch == "+") then Just (43) else Nothing of Just v -> Just v; Nothing -> case if (ch == "/") then Just (47) else Nothing of Just v -> Just v; Nothing -> case if (ch == " ") then Just (32) else Nothing of Just v -> Just v; Nothing -> case if (ch == "=") then Just (61) else Nothing of Just v -> Just v; Nothing -> Just (0)))))
+    |                                                                                                                                                                                                                                                                                                                                                                                                               ^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:148:114: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(n)’
+      In the first argument of ‘(>=)’, namely ‘_asInt (n)’
+      In the first argument of ‘(&&)’, namely ‘(_asInt (n) >= 65)’
+    |
+148 |     (let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in (let lower = "abcdefghijklmnopqrstuvwxyz" in case if (((_asInt (n) >= 65) && n) < 91) then Just (take ((_asInt (n) - 64) - (_asInt (n) - 65)) (drop (_asInt (n) - 65) upper)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 97) && n) < 123) then Just (take ((_asInt (n) - 96) - (_asInt (n) - 97)) (drop (_asInt (n) - 97) lower)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 48) && n) < 58) then (let digits = "0123456789" in Just (take ((_asInt (n) - 47) - (_asInt (n) - 48)) (drop (_asInt (n) - 48) digits))) else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 43) then Just ("+") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 47) then Just ("/") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 32) then Just (" ") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 61) then Just ("=") else Nothing of Just v -> Just v; Nothing -> Just ("?")))
+    |                                                                                                                  ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:148:127: error:
+    • Couldn't match expected type ‘Bool’ with actual type ‘Int’
+    • In the second argument of ‘(&&)’, namely ‘n’
+      In the first argument of ‘(<)’, namely ‘((_asInt (n) >= 65) && n)’
+      In the expression: ((_asInt (n) >= 65) && n) < 91
+    |
+148 |     (let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in (let lower = "abcdefghijklmnopqrstuvwxyz" in case if (((_asInt (n) >= 65) && n) < 91) then Just (take ((_asInt (n) - 64) - (_asInt (n) - 65)) (drop (_asInt (n) - 65) upper)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 97) && n) < 123) then Just (take ((_asInt (n) - 96) - (_asInt (n) - 97)) (drop (_asInt (n) - 97) lower)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 48) && n) < 58) then (let digits = "0123456789" in Just (take ((_asInt (n) - 47) - (_asInt (n) - 48)) (drop (_asInt (n) - 48) digits))) else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 43) then Just ("+") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 47) then Just ("/") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 32) then Just (" ") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 61) then Just ("=") else Nothing of Just v -> Just v; Nothing -> Just ("?")))
+    |                                                                                                                               ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:148:162: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(n)’
+      In the first argument of ‘(-)’, namely ‘_asInt (n)’
+      In the first argument of ‘(-)’, namely ‘(_asInt (n) - 64)’
+    |
+148 |     (let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in (let lower = "abcdefghijklmnopqrstuvwxyz" in case if (((_asInt (n) >= 65) && n) < 91) then Just (take ((_asInt (n) - 64) - (_asInt (n) - 65)) (drop (_asInt (n) - 65) upper)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 97) && n) < 123) then Just (take ((_asInt (n) - 96) - (_asInt (n) - 97)) (drop (_asInt (n) - 97) lower)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 48) && n) < 58) then (let digits = "0123456789" in Just (take ((_asInt (n) - 47) - (_asInt (n) - 48)) (drop (_asInt (n) - 48) digits))) else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 43) then Just ("+") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 47) then Just ("/") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 32) then Just (" ") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 61) then Just ("=") else Nothing of Just v -> Just v; Nothing -> Just ("?")))
+    |                                                                                                                                                                  ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:148:182: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(n)’
+      In the first argument of ‘(-)’, namely ‘_asInt (n)’
+      In the second argument of ‘(-)’, namely ‘(_asInt (n) - 65)’
+    |
+148 |     (let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in (let lower = "abcdefghijklmnopqrstuvwxyz" in case if (((_asInt (n) >= 65) && n) < 91) then Just (take ((_asInt (n) - 64) - (_asInt (n) - 65)) (drop (_asInt (n) - 65) upper)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 97) && n) < 123) then Just (take ((_asInt (n) - 96) - (_asInt (n) - 97)) (drop (_asInt (n) - 97) lower)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 48) && n) < 58) then (let digits = "0123456789" in Just (take ((_asInt (n) - 47) - (_asInt (n) - 48)) (drop (_asInt (n) - 48) digits))) else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 43) then Just ("+") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 47) then Just ("/") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 32) then Just (" ") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 61) then Just ("=") else Nothing of Just v -> Just v; Nothing -> Just ("?")))
+    |                                                                                                                                                                                      ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:148:207: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(n)’
+      In the first argument of ‘(-)’, namely ‘_asInt (n)’
+      In the first argument of ‘drop’, namely ‘(_asInt (n) - 65)’
+    |
+148 |     (let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in (let lower = "abcdefghijklmnopqrstuvwxyz" in case if (((_asInt (n) >= 65) && n) < 91) then Just (take ((_asInt (n) - 64) - (_asInt (n) - 65)) (drop (_asInt (n) - 65) upper)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 97) && n) < 123) then Just (take ((_asInt (n) - 96) - (_asInt (n) - 97)) (drop (_asInt (n) - 97) lower)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 48) && n) < 58) then (let digits = "0123456789" in Just (take ((_asInt (n) - 47) - (_asInt (n) - 48)) (drop (_asInt (n) - 48) digits))) else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 43) then Just ("+") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 47) then Just ("/") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 32) then Just (" ") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 61) then Just ("=") else Nothing of Just v -> Just v; Nothing -> Just ("?")))
+    |                                                                                                                                                                                                               ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:148:288: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(n)’
+      In the first argument of ‘(>=)’, namely ‘_asInt (n)’
+      In the first argument of ‘(&&)’, namely ‘(_asInt (n) >= 97)’
+    |
+148 |     (let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in (let lower = "abcdefghijklmnopqrstuvwxyz" in case if (((_asInt (n) >= 65) && n) < 91) then Just (take ((_asInt (n) - 64) - (_asInt (n) - 65)) (drop (_asInt (n) - 65) upper)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 97) && n) < 123) then Just (take ((_asInt (n) - 96) - (_asInt (n) - 97)) (drop (_asInt (n) - 97) lower)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 48) && n) < 58) then (let digits = "0123456789" in Just (take ((_asInt (n) - 47) - (_asInt (n) - 48)) (drop (_asInt (n) - 48) digits))) else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 43) then Just ("+") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 47) then Just ("/") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 32) then Just (" ") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 61) then Just ("=") else Nothing of Just v -> Just v; Nothing -> Just ("?")))
+    |                                                                                                                                                                                                                                                                                                ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:148:301: error:
+    • Couldn't match expected type ‘Bool’ with actual type ‘Int’
+    • In the second argument of ‘(&&)’, namely ‘n’
+      In the first argument of ‘(<)’, namely ‘((_asInt (n) >= 97) && n)’
+      In the expression: ((_asInt (n) >= 97) && n) < 123
+    |
+148 |     (let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in (let lower = "abcdefghijklmnopqrstuvwxyz" in case if (((_asInt (n) >= 65) && n) < 91) then Just (take ((_asInt (n) - 64) - (_asInt (n) - 65)) (drop (_asInt (n) - 65) upper)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 97) && n) < 123) then Just (take ((_asInt (n) - 96) - (_asInt (n) - 97)) (drop (_asInt (n) - 97) lower)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 48) && n) < 58) then (let digits = "0123456789" in Just (take ((_asInt (n) - 47) - (_asInt (n) - 48)) (drop (_asInt (n) - 48) digits))) else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 43) then Just ("+") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 47) then Just ("/") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 32) then Just (" ") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 61) then Just ("=") else Nothing of Just v -> Just v; Nothing -> Just ("?")))
+    |                                                                                                                                                                                                                                                                                                             ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:148:337: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(n)’
+      In the first argument of ‘(-)’, namely ‘_asInt (n)’
+      In the first argument of ‘(-)’, namely ‘(_asInt (n) - 96)’
+    |
+148 |     (let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in (let lower = "abcdefghijklmnopqrstuvwxyz" in case if (((_asInt (n) >= 65) && n) < 91) then Just (take ((_asInt (n) - 64) - (_asInt (n) - 65)) (drop (_asInt (n) - 65) upper)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 97) && n) < 123) then Just (take ((_asInt (n) - 96) - (_asInt (n) - 97)) (drop (_asInt (n) - 97) lower)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 48) && n) < 58) then (let digits = "0123456789" in Just (take ((_asInt (n) - 47) - (_asInt (n) - 48)) (drop (_asInt (n) - 48) digits))) else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 43) then Just ("+") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 47) then Just ("/") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 32) then Just (" ") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 61) then Just ("=") else Nothing of Just v -> Just v; Nothing -> Just ("?")))
+    |                                                                                                                                                                                                                                                                                                                                                 ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:148:357: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(n)’
+      In the first argument of ‘(-)’, namely ‘_asInt (n)’
+      In the second argument of ‘(-)’, namely ‘(_asInt (n) - 97)’
+    |
+148 |     (let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in (let lower = "abcdefghijklmnopqrstuvwxyz" in case if (((_asInt (n) >= 65) && n) < 91) then Just (take ((_asInt (n) - 64) - (_asInt (n) - 65)) (drop (_asInt (n) - 65) upper)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 97) && n) < 123) then Just (take ((_asInt (n) - 96) - (_asInt (n) - 97)) (drop (_asInt (n) - 97) lower)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 48) && n) < 58) then (let digits = "0123456789" in Just (take ((_asInt (n) - 47) - (_asInt (n) - 48)) (drop (_asInt (n) - 48) digits))) else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 43) then Just ("+") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 47) then Just ("/") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 32) then Just (" ") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 61) then Just ("=") else Nothing of Just v -> Just v; Nothing -> Just ("?")))
+    |                                                                                                                                                                                                                                                                                                                                                                     ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:148:382: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(n)’
+      In the first argument of ‘(-)’, namely ‘_asInt (n)’
+      In the first argument of ‘drop’, namely ‘(_asInt (n) - 97)’
+    |
+148 |     (let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in (let lower = "abcdefghijklmnopqrstuvwxyz" in case if (((_asInt (n) >= 65) && n) < 91) then Just (take ((_asInt (n) - 64) - (_asInt (n) - 65)) (drop (_asInt (n) - 65) upper)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 97) && n) < 123) then Just (take ((_asInt (n) - 96) - (_asInt (n) - 97)) (drop (_asInt (n) - 97) lower)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 48) && n) < 58) then (let digits = "0123456789" in Just (take ((_asInt (n) - 47) - (_asInt (n) - 48)) (drop (_asInt (n) - 48) digits))) else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 43) then Just ("+") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 47) then Just ("/") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 32) then Just (" ") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 61) then Just ("=") else Nothing of Just v -> Just v; Nothing -> Just ("?")))
+    |                                                                                                                                                                                                                                                                                                                                                                                              ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:148:463: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(n)’
+      In the first argument of ‘(>=)’, namely ‘_asInt (n)’
+      In the first argument of ‘(&&)’, namely ‘(_asInt (n) >= 48)’
+    |
+148 |     (let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in (let lower = "abcdefghijklmnopqrstuvwxyz" in case if (((_asInt (n) >= 65) && n) < 91) then Just (take ((_asInt (n) - 64) - (_asInt (n) - 65)) (drop (_asInt (n) - 65) upper)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 97) && n) < 123) then Just (take ((_asInt (n) - 96) - (_asInt (n) - 97)) (drop (_asInt (n) - 97) lower)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 48) && n) < 58) then (let digits = "0123456789" in Just (take ((_asInt (n) - 47) - (_asInt (n) - 48)) (drop (_asInt (n) - 48) digits))) else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 43) then Just ("+") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 47) then Just ("/") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 32) then Just (" ") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 61) then Just ("=") else Nothing of Just v -> Just v; Nothing -> Just ("?")))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:148:476: error:
+    • Couldn't match expected type ‘Bool’ with actual type ‘Int’
+    • In the second argument of ‘(&&)’, namely ‘n’
+      In the first argument of ‘(<)’, namely ‘((_asInt (n) >= 48) && n)’
+      In the expression: ((_asInt (n) >= 48) && n) < 58
+    |
+148 |     (let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in (let lower = "abcdefghijklmnopqrstuvwxyz" in case if (((_asInt (n) >= 65) && n) < 91) then Just (take ((_asInt (n) - 64) - (_asInt (n) - 65)) (drop (_asInt (n) - 65) upper)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 97) && n) < 123) then Just (take ((_asInt (n) - 96) - (_asInt (n) - 97)) (drop (_asInt (n) - 97) lower)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 48) && n) < 58) then (let digits = "0123456789" in Just (take ((_asInt (n) - 47) - (_asInt (n) - 48)) (drop (_asInt (n) - 48) digits))) else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 43) then Just ("+") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 47) then Just ("/") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 32) then Just (" ") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 61) then Just ("=") else Nothing of Just v -> Just v; Nothing -> Just ("?")))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:148:541: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(n)’
+      In the first argument of ‘(-)’, namely ‘_asInt (n)’
+      In the first argument of ‘(-)’, namely ‘(_asInt (n) - 47)’
+    |
+148 |     (let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in (let lower = "abcdefghijklmnopqrstuvwxyz" in case if (((_asInt (n) >= 65) && n) < 91) then Just (take ((_asInt (n) - 64) - (_asInt (n) - 65)) (drop (_asInt (n) - 65) upper)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 97) && n) < 123) then Just (take ((_asInt (n) - 96) - (_asInt (n) - 97)) (drop (_asInt (n) - 97) lower)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 48) && n) < 58) then (let digits = "0123456789" in Just (take ((_asInt (n) - 47) - (_asInt (n) - 48)) (drop (_asInt (n) - 48) digits))) else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 43) then Just ("+") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 47) then Just ("/") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 32) then Just (" ") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 61) then Just ("=") else Nothing of Just v -> Just v; Nothing -> Just ("?")))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:148:561: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(n)’
+      In the first argument of ‘(-)’, namely ‘_asInt (n)’
+      In the second argument of ‘(-)’, namely ‘(_asInt (n) - 48)’
+    |
+148 |     (let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in (let lower = "abcdefghijklmnopqrstuvwxyz" in case if (((_asInt (n) >= 65) && n) < 91) then Just (take ((_asInt (n) - 64) - (_asInt (n) - 65)) (drop (_asInt (n) - 65) upper)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 97) && n) < 123) then Just (take ((_asInt (n) - 96) - (_asInt (n) - 97)) (drop (_asInt (n) - 97) lower)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 48) && n) < 58) then (let digits = "0123456789" in Just (take ((_asInt (n) - 47) - (_asInt (n) - 48)) (drop (_asInt (n) - 48) digits))) else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 43) then Just ("+") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 47) then Just ("/") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 32) then Just (" ") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 61) then Just ("=") else Nothing of Just v -> Just v; Nothing -> Just ("?")))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:148:586: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(n)’
+      In the first argument of ‘(-)’, namely ‘_asInt (n)’
+      In the first argument of ‘drop’, namely ‘(_asInt (n) - 48)’
+    |
+148 |     (let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in (let lower = "abcdefghijklmnopqrstuvwxyz" in case if (((_asInt (n) >= 65) && n) < 91) then Just (take ((_asInt (n) - 64) - (_asInt (n) - 65)) (drop (_asInt (n) - 65) upper)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 97) && n) < 123) then Just (take ((_asInt (n) - 96) - (_asInt (n) - 97)) (drop (_asInt (n) - 97) lower)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 48) && n) < 58) then (let digits = "0123456789" in Just (take ((_asInt (n) - 47) - (_asInt (n) - 48)) (drop (_asInt (n) - 48) digits))) else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 43) then Just ("+") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 47) then Just ("/") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 32) then Just (" ") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 61) then Just ("=") else Nothing of Just v -> Just v; Nothing -> Just ("?")))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:148:667: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(n)’
+      In the first argument of ‘(==)’, namely ‘_asInt (n)’
+      In the expression: _asInt (n) == 43
+    |
+148 |     (let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in (let lower = "abcdefghijklmnopqrstuvwxyz" in case if (((_asInt (n) >= 65) && n) < 91) then Just (take ((_asInt (n) - 64) - (_asInt (n) - 65)) (drop (_asInt (n) - 65) upper)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 97) && n) < 123) then Just (take ((_asInt (n) - 96) - (_asInt (n) - 97)) (drop (_asInt (n) - 97) lower)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 48) && n) < 58) then (let digits = "0123456789" in Just (take ((_asInt (n) - 47) - (_asInt (n) - 48)) (drop (_asInt (n) - 48) digits))) else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 43) then Just ("+") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 47) then Just ("/") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 32) then Just (" ") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 61) then Just ("=") else Nothing of Just v -> Just v; Nothing -> Just ("?")))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:148:755: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(n)’
+      In the first argument of ‘(==)’, namely ‘_asInt (n)’
+      In the expression: _asInt (n) == 47
+    |
+148 |     (let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in (let lower = "abcdefghijklmnopqrstuvwxyz" in case if (((_asInt (n) >= 65) && n) < 91) then Just (take ((_asInt (n) - 64) - (_asInt (n) - 65)) (drop (_asInt (n) - 65) upper)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 97) && n) < 123) then Just (take ((_asInt (n) - 96) - (_asInt (n) - 97)) (drop (_asInt (n) - 97) lower)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 48) && n) < 58) then (let digits = "0123456789" in Just (take ((_asInt (n) - 47) - (_asInt (n) - 48)) (drop (_asInt (n) - 48) digits))) else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 43) then Just ("+") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 47) then Just ("/") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 32) then Just (" ") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 61) then Just ("=") else Nothing of Just v -> Just v; Nothing -> Just ("?")))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:148:843: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(n)’
+      In the first argument of ‘(==)’, namely ‘_asInt (n)’
+      In the expression: _asInt (n) == 32
+    |
+148 |     (let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in (let lower = "abcdefghijklmnopqrstuvwxyz" in case if (((_asInt (n) >= 65) && n) < 91) then Just (take ((_asInt (n) - 64) - (_asInt (n) - 65)) (drop (_asInt (n) - 65) upper)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 97) && n) < 123) then Just (take ((_asInt (n) - 96) - (_asInt (n) - 97)) (drop (_asInt (n) - 97) lower)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 48) && n) < 58) then (let digits = "0123456789" in Just (take ((_asInt (n) - 47) - (_asInt (n) - 48)) (drop (_asInt (n) - 48) digits))) else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 43) then Just ("+") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 47) then Just ("/") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 32) then Just (" ") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 61) then Just ("=") else Nothing of Just v -> Just v; Nothing -> Just ("?")))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:148:931: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(n)’
+      In the first argument of ‘(==)’, namely ‘_asInt (n)’
+      In the expression: _asInt (n) == 61
+    |
+148 |     (let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in (let lower = "abcdefghijklmnopqrstuvwxyz" in case if (((_asInt (n) >= 65) && n) < 91) then Just (take ((_asInt (n) - 64) - (_asInt (n) - 65)) (drop (_asInt (n) - 65) upper)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 97) && n) < 123) then Just (take ((_asInt (n) - 96) - (_asInt (n) - 97)) (drop (_asInt (n) - 97) lower)) else Nothing of Just v -> Just v; Nothing -> case if (((_asInt (n) >= 48) && n) < 58) then (let digits = "0123456789" in Just (take ((_asInt (n) - 47) - (_asInt (n) - 48)) (drop (_asInt (n) - 48) digits))) else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 43) then Just ("+") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 47) then Just ("/") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 32) then Just (" ") else Nothing of Just v -> Just v; Nothing -> case if (_asInt (n) == 61) then Just ("=") else Nothing of Just v -> Just v; Nothing -> Just ("?")))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:156:142: error:
+    • Couldn't match type ‘Int’ with ‘[Char]’
+      Expected: String
+        Actual: Int
+    • In the expression: read ((div val 2)) :: Int
+      In an equation for ‘val’: val = (read ((div val 2)) :: Int)
+      In the expression:
+        let val = (read ((div val 2)) :: Int)
+        in (let i = (_asInt (i) + 1) in Nothing)
+    |
+156 |     (let b = "" in (let val = n in (let i = 0 in case whileLoop (\() -> (i < bits)) (\() -> (let b = (show (val `mod` 2) + b) in (let val = (read ((div val 2)) :: Int) in (let i = (_asInt (i) + 1) in Nothing)))) of Just v -> Just v; Nothing -> Just (b))))
+    |                                                                                                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:156:190: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(i)’
+      In the first argument of ‘(+)’, namely ‘_asInt (i)’
+      In the expression: _asInt (i) + 1
+    |
+156 |     (let b = "" in (let val = n in (let i = 0 in case whileLoop (\() -> (i < bits)) (\() -> (let b = (show (val `mod` 2) + b) in (let val = (read ((div val 2)) :: Int) in (let i = (_asInt (i) + 1) in Nothing)))) of Just v -> Just v; Nothing -> Just (b))))
+    |                                                                                                                                                                                              ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:161:111: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(n)’
+      In the first argument of ‘(*)’, namely ‘_asInt (n)’
+      In the first argument of ‘(+)’, namely ‘(_asInt (n) * 2)’
+    |
+161 |     (let n = 0 in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length bits)) (\() -> (let n = ((_asInt (n) * 2) + parseIntStr take ((_asInt (i) + 1) - i) (drop i bits)) in (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> Just (n)))
+    |                                                                                                               ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:161:121: error:
+    • Couldn't match expected type ‘Int -> [Char] -> Int’
+                  with actual type ‘Int’
+    • The function ‘parseIntStr’ is applied to three value arguments,
+        but its type ‘String -> Int’ has only one
+      In the second argument of ‘(+)’, namely
+        ‘parseIntStr take ((_asInt (i) + 1) - i) (drop i bits)’
+      In the expression:
+        (_asInt (n) * 2)
+          + parseIntStr take ((_asInt (i) + 1) - i) (drop i bits)
+    |
+161 |     (let n = 0 in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length bits)) (\() -> (let n = ((_asInt (n) * 2) + parseIntStr take ((_asInt (i) + 1) - i) (drop i bits)) in (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> Just (n)))
+    |                                                                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:161:133: error:
+    • Couldn't match type: Int -> [a1] -> [a1]
+                     with: [Char]
+      Expected: String
+        Actual: Int -> [a1] -> [a1]
+    • Probable cause: ‘take’ is applied to too few arguments
+      In the first argument of ‘parseIntStr’, namely ‘take’
+      In the second argument of ‘(+)’, namely
+        ‘parseIntStr take ((_asInt (i) + 1) - i) (drop i bits)’
+      In the expression:
+        (_asInt (n) * 2)
+          + parseIntStr take ((_asInt (i) + 1) - i) (drop i bits)
+    |
+161 |     (let n = 0 in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length bits)) (\() -> (let n = ((_asInt (n) * 2) + parseIntStr take ((_asInt (i) + 1) - i) (drop i bits)) in (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> Just (n)))
+    |                                                                                                                                     ^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:161:158: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘AnyValue’
+    • In the second argument of ‘(-)’, namely ‘i’
+      In the second argument of ‘parseIntStr’, namely
+        ‘((_asInt (i) + 1) - i)’
+      In the second argument of ‘(+)’, namely
+        ‘parseIntStr take ((_asInt (i) + 1) - i) (drop i bits)’
+    |
+161 |     (let n = 0 in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length bits)) (\() -> (let n = ((_asInt (n) * 2) + parseIntStr take ((_asInt (i) + 1) - i) (drop i bits)) in (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> Just (n)))
+    |                                                                                                                                                              ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:161:167: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘AnyValue’
+    • In the first argument of ‘drop’, namely ‘i’
+      In the third argument of ‘parseIntStr’, namely ‘(drop i bits)’
+      In the second argument of ‘(+)’, namely
+        ‘parseIntStr take ((_asInt (i) + 1) - i) (drop i bits)’
+    |
+161 |     (let n = 0 in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length bits)) (\() -> (let n = ((_asInt (n) * 2) + parseIntStr take ((_asInt (i) + 1) - i) (drop i bits)) in (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> Just (n)))
+    |                                                                                                                                                                       ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:161:197: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(i)’
+      In the first argument of ‘(+)’, namely ‘_asInt (i)’
+      In the expression: _asInt (i) + 1
+    |
+161 |     (let n = 0 in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length bits)) (\() -> (let n = ((_asInt (n) * 2) + parseIntStr take ((_asInt (i) + 1) - i) (drop i bits)) in (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> Just (n)))
+    |                                                                                                                                                                                                     ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:166:154: error:
+    • Couldn't match expected type: t0 -> t
+                  with actual type: [Char]
+    • The function ‘toBinary’ is applied to three value arguments,
+        but its type ‘Int -> Int -> [Char]’ has only two
+      In the second argument of ‘(+)’, namely ‘toBinary ord ch 8’
+      In the expression: bin + toBinary ord ch 8
+    • Relevant bindings include
+        bin :: t
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:166:141)
+    |
+166 |     (let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/" in (let bin = "" in case foldr (\ch acc -> case (let bin = (bin + toBinary ord ch 8) in Nothing) of Just v -> Just v; Nothing -> acc) Nothing text of Just v -> Just v; Nothing -> case whileLoop (\() -> ((length bin `mod` 6) /= 0)) (\() -> (let bin = (bin + "0") in Nothing)) of Just v -> Just v; Nothing -> (let out = "" in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length bin)) (\() -> (let chunk = take ((_asInt (i) + 6) - i) (drop i bin) in (let val = binToInt chunk in (let out = (out + take ((_asInt (val) + 1) - val) (drop val alphabet)) in (let i = (_asInt (i) + 6) in Nothing))))) of Just v -> Just v; Nothing -> (let pad = (((3 - ((length text `mod` 3)))) `mod` 3) in case if (_asInt (pad) == 1) then (let out = (take ((length out - 1) - 0) (drop 0 out) + "=") in Nothing) else Nothing of Just v -> Just v; Nothing -> case if (_asInt (pad) == 2) then (let out = (take ((length out - 2) - 0) (drop 0 out) + "==") in Nothing) else Nothing of Just v -> Just v; Nothing -> Just (out))))))
+    |                                                                                                                                                          ^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:166:163: error:
+    • Couldn't match expected type ‘Int’
+                  with actual type ‘String -> Int’
+    • Probable cause: ‘ord’ is applied to too few arguments
+      In the first argument of ‘toBinary’, namely ‘ord’
+      In the second argument of ‘(+)’, namely ‘toBinary ord ch 8’
+      In the expression: bin + toBinary ord ch 8
+    |
+166 |     (let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/" in (let bin = "" in case foldr (\ch acc -> case (let bin = (bin + toBinary ord ch 8) in Nothing) of Just v -> Just v; Nothing -> acc) Nothing text of Just v -> Just v; Nothing -> case whileLoop (\() -> ((length bin `mod` 6) /= 0)) (\() -> (let bin = (bin + "0") in Nothing)) of Just v -> Just v; Nothing -> (let out = "" in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length bin)) (\() -> (let chunk = take ((_asInt (i) + 6) - i) (drop i bin) in (let val = binToInt chunk in (let out = (out + take ((_asInt (val) + 1) - val) (drop val alphabet)) in (let i = (_asInt (i) + 6) in Nothing))))) of Just v -> Just v; Nothing -> (let pad = (((3 - ((length text `mod` 3)))) `mod` 3) in case if (_asInt (pad) == 1) then (let out = (take ((length out - 1) - 0) (drop 0 out) + "=") in Nothing) else Nothing of Just v -> Just v; Nothing -> case if (_asInt (pad) == 2) then (let out = (take ((length out - 2) - 0) (drop 0 out) + "==") in Nothing) else Nothing of Just v -> Just v; Nothing -> Just (out))))))
+    |                                                                                                                                                                   ^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:166:230: error:
+    • Couldn't match type ‘Char’ with ‘Int’
+      Expected: [Int]
+        Actual: String
+    • In the third argument of ‘foldr’, namely ‘text’
+      In the expression:
+        foldr
+          (\ ch acc
+             -> case (let bin = (bin + toBinary ord ch 8) in Nothing) of
+                  Just v -> Just v
+                  Nothing -> acc)
+          Nothing text
+      In the expression:
+        case
+            foldr
+              (\ ch acc
+                 -> case (let bin = ... in Nothing) of
+                      Just v -> Just v
+                      Nothing -> acc)
+              Nothing text
+        of
+          Just v -> Just v
+          Nothing
+            -> case
+                   whileLoop
+                     (\ () -> ((length bin `mod` 6) /= 0))
+                     (\ () -> (let ... in Nothing))
+               of
+                 Just v -> Just v
+                 Nothing
+                   -> (let ...
+                       in
+                         (let ...
+                          in
+                            case whileLoop (\ () -> ...) (\ () -> ...) of
+                              Just v -> ...
+                              Nothing -> ...))
+    |
+166 |     (let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/" in (let bin = "" in case foldr (\ch acc -> case (let bin = (bin + toBinary ord ch 8) in Nothing) of Just v -> Just v; Nothing -> acc) Nothing text of Just v -> Just v; Nothing -> case whileLoop (\() -> ((length bin `mod` 6) /= 0)) (\() -> (let bin = (bin + "0") in Nothing)) of Just v -> Just v; Nothing -> (let out = "" in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length bin)) (\() -> (let chunk = take ((_asInt (i) + 6) - i) (drop i bin) in (let val = binToInt chunk in (let out = (out + take ((_asInt (val) + 1) - val) (drop val alphabet)) in (let i = (_asInt (i) + 6) in Nothing))))) of Just v -> Just v; Nothing -> (let pad = (((3 - ((length text `mod` 3)))) `mod` 3) in case if (_asInt (pad) == 1) then (let out = (take ((length out - 1) - 0) (drop 0 out) + "=") in Nothing) else Nothing of Just v -> Just v; Nothing -> case if (_asInt (pad) == 2) then (let out = (take ((length out - 2) - 0) (drop 0 out) + "==") in Nothing) else Nothing of Just v -> Just v; Nothing -> Just (out))))))
+    |                                                                                                                                                                                                                                      ^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:166:522: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘AnyValue’
+    • In the second argument of ‘(-)’, namely ‘i’
+      In the first argument of ‘take’, namely ‘((_asInt (i) + 6) - i)’
+      In the expression: take ((_asInt (i) + 6) - i) (drop i bin)
+    |
+166 |     (let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/" in (let bin = "" in case foldr (\ch acc -> case (let bin = (bin + toBinary ord ch 8) in Nothing) of Just v -> Just v; Nothing -> acc) Nothing text of Just v -> Just v; Nothing -> case whileLoop (\() -> ((length bin `mod` 6) /= 0)) (\() -> (let bin = (bin + "0") in Nothing)) of Just v -> Just v; Nothing -> (let out = "" in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length bin)) (\() -> (let chunk = take ((_asInt (i) + 6) - i) (drop i bin) in (let val = binToInt chunk in (let out = (out + take ((_asInt (val) + 1) - val) (drop val alphabet)) in (let i = (_asInt (i) + 6) in Nothing))))) of Just v -> Just v; Nothing -> (let pad = (((3 - ((length text `mod` 3)))) `mod` 3) in case if (_asInt (pad) == 1) then (let out = (take ((length out - 1) - 0) (drop 0 out) + "=") in Nothing) else Nothing of Just v -> Just v; Nothing -> case if (_asInt (pad) == 2) then (let out = (take ((length out - 2) - 0) (drop 0 out) + "==") in Nothing) else Nothing of Just v -> Just v; Nothing -> Just (out))))))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:166:531: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘AnyValue’
+    • In the first argument of ‘drop’, namely ‘i’
+      In the second argument of ‘take’, namely ‘(drop i bin)’
+      In the expression: take ((_asInt (i) + 6) - i) (drop i bin)
+    |
+166 |     (let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/" in (let bin = "" in case foldr (\ch acc -> case (let bin = (bin + toBinary ord ch 8) in Nothing) of Just v -> Just v; Nothing -> acc) Nothing text of Just v -> Just v; Nothing -> case whileLoop (\() -> ((length bin `mod` 6) /= 0)) (\() -> (let bin = (bin + "0") in Nothing)) of Just v -> Just v; Nothing -> (let out = "" in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length bin)) (\() -> (let chunk = take ((_asInt (i) + 6) - i) (drop i bin) in (let val = binToInt chunk in (let out = (out + take ((_asInt (val) + 1) - val) (drop val alphabet)) in (let i = (_asInt (i) + 6) in Nothing))))) of Just v -> Just v; Nothing -> (let pad = (((3 - ((length text `mod` 3)))) `mod` 3) in case if (_asInt (pad) == 1) then (let out = (take ((length out - 1) - 0) (drop 0 out) + "=") in Nothing) else Nothing of Just v -> Just v; Nothing -> case if (_asInt (pad) == 2) then (let out = (take ((length out - 2) - 0) (drop 0 out) + "==") in Nothing) else Nothing of Just v -> Just v; Nothing -> Just (out))))))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:166:603: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(val)’
+      In the first argument of ‘(+)’, namely ‘_asInt (val)’
+      In the first argument of ‘(-)’, namely ‘(_asInt (val) + 1)’
+    |
+166 |     (let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/" in (let bin = "" in case foldr (\ch acc -> case (let bin = (bin + toBinary ord ch 8) in Nothing) of Just v -> Just v; Nothing -> acc) Nothing text of Just v -> Just v; Nothing -> case whileLoop (\() -> ((length bin `mod` 6) /= 0)) (\() -> (let bin = (bin + "0") in Nothing)) of Just v -> Just v; Nothing -> (let out = "" in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length bin)) (\() -> (let chunk = take ((_asInt (i) + 6) - i) (drop i bin) in (let val = binToInt chunk in (let out = (out + take ((_asInt (val) + 1) - val) (drop val alphabet)) in (let i = (_asInt (i) + 6) in Nothing))))) of Just v -> Just v; Nothing -> (let pad = (((3 - ((length text `mod` 3)))) `mod` 3) in case if (_asInt (pad) == 1) then (let out = (take ((length out - 1) - 0) (drop 0 out) + "=") in Nothing) else Nothing of Just v -> Just v; Nothing -> case if (_asInt (pad) == 2) then (let out = (take ((length out - 2) - 0) (drop 0 out) + "==") in Nothing) else Nothing of Just v -> Just v; Nothing -> Just (out))))))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:166:662: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(i)’
+      In the first argument of ‘(+)’, namely ‘_asInt (i)’
+      In the expression: _asInt (i) + 6
+    |
+166 |     (let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/" in (let bin = "" in case foldr (\ch acc -> case (let bin = (bin + toBinary ord ch 8) in Nothing) of Just v -> Just v; Nothing -> acc) Nothing text of Just v -> Just v; Nothing -> case whileLoop (\() -> ((length bin `mod` 6) /= 0)) (\() -> (let bin = (bin + "0") in Nothing)) of Just v -> Just v; Nothing -> (let out = "" in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length bin)) (\() -> (let chunk = take ((_asInt (i) + 6) - i) (drop i bin) in (let val = binToInt chunk in (let out = (out + take ((_asInt (val) + 1) - val) (drop val alphabet)) in (let i = (_asInt (i) + 6) in Nothing))))) of Just v -> Just v; Nothing -> (let pad = (((3 - ((length text `mod` 3)))) `mod` 3) in case if (_asInt (pad) == 1) then (let out = (take ((length out - 1) - 0) (drop 0 out) + "=") in Nothing) else Nothing of Just v -> Just v; Nothing -> case if (_asInt (pad) == 2) then (let out = (take ((length out - 2) - 0) (drop 0 out) + "==") in Nothing) else Nothing of Just v -> Just v; Nothing -> Just (out))))))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:166:791: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(pad)’
+      In the first argument of ‘(==)’, namely ‘_asInt (pad)’
+      In the expression: _asInt (pad) == 1
+    |
+166 |     (let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/" in (let bin = "" in case foldr (\ch acc -> case (let bin = (bin + toBinary ord ch 8) in Nothing) of Just v -> Just v; Nothing -> acc) Nothing text of Just v -> Just v; Nothing -> case whileLoop (\() -> ((length bin `mod` 6) /= 0)) (\() -> (let bin = (bin + "0") in Nothing)) of Just v -> Just v; Nothing -> (let out = "" in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length bin)) (\() -> (let chunk = take ((_asInt (i) + 6) - i) (drop i bin) in (let val = binToInt chunk in (let out = (out + take ((_asInt (val) + 1) - val) (drop val alphabet)) in (let i = (_asInt (i) + 6) in Nothing))))) of Just v -> Just v; Nothing -> (let pad = (((3 - ((length text `mod` 3)))) `mod` 3) in case if (_asInt (pad) == 1) then (let out = (take ((length out - 1) - 0) (drop 0 out) + "=") in Nothing) else Nothing of Just v -> Just v; Nothing -> case if (_asInt (pad) == 2) then (let out = (take ((length out - 2) - 0) (drop 0 out) + "==") in Nothing) else Nothing of Just v -> Just v; Nothing -> Just (out))))))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:166:941: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(pad)’
+      In the first argument of ‘(==)’, namely ‘_asInt (pad)’
+      In the expression: _asInt (pad) == 2
+    |
+166 |     (let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/" in (let bin = "" in case foldr (\ch acc -> case (let bin = (bin + toBinary ord ch 8) in Nothing) of Just v -> Just v; Nothing -> acc) Nothing text of Just v -> Just v; Nothing -> case whileLoop (\() -> ((length bin `mod` 6) /= 0)) (\() -> (let bin = (bin + "0") in Nothing)) of Just v -> Just v; Nothing -> (let out = "" in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length bin)) (\() -> (let chunk = take ((_asInt (i) + 6) - i) (drop i bin) in (let val = binToInt chunk in (let out = (out + take ((_asInt (val) + 1) - val) (drop val alphabet)) in (let i = (_asInt (i) + 6) in Nothing))))) of Just v -> Just v; Nothing -> (let pad = (((3 - ((length text `mod` 3)))) `mod` 3) in case if (_asInt (pad) == 1) then (let out = (take ((length out - 1) - 0) (drop 0 out) + "=") in Nothing) else Nothing of Just v -> Just v; Nothing -> case if (_asInt (pad) == 2) then (let out = (take ((length out - 2) - 0) (drop 0 out) + "==") in Nothing) else Nothing of Just v -> Just v; Nothing -> Just (out))))))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             ^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:173:198: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘AnyValue’
+    • In the second argument of ‘(!!)’, namely ‘i’
+      In the expression: enc !! i
+      In the expression: [enc !! i]
+    |
+173 |     (let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/" in (let bin = "" in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length enc)) (\() -> (let ch = [enc !! i] in case if (ch == "=") then Just () else Nothing of Just v -> Just v; Nothing -> (let idx = indexOf alphabet ch in (let bin = (bin + toBinary idx 6) in (let i = (_asInt (i) + 1) in Nothing))))) of Just v -> Just v; Nothing -> (let out = "" in (let i = 0 in case whileLoop (\() -> ((_asInt (i) + 8) <= length bin)) (\() -> (let chunk = take ((_asInt (i) + 8) - i) (drop i bin) in (let val = binToInt chunk in (let out = (out + chr val) in (let i = (_asInt (i) + 8) in Nothing))))) of Just v -> Just v; Nothing -> Just (out))))))
+    |                                                                                                                                                                                                      ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:173:371: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(i)’
+      In the first argument of ‘(+)’, namely ‘_asInt (i)’
+      In the expression: _asInt (i) + 1
+    |
+173 |     (let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/" in (let bin = "" in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length enc)) (\() -> (let ch = [enc !! i] in case if (ch == "=") then Just () else Nothing of Just v -> Just v; Nothing -> (let idx = indexOf alphabet ch in (let bin = (bin + toBinary idx 6) in (let i = (_asInt (i) + 1) in Nothing))))) of Just v -> Just v; Nothing -> (let out = "" in (let i = 0 in case whileLoop (\() -> ((_asInt (i) + 8) <= length bin)) (\() -> (let chunk = take ((_asInt (i) + 8) - i) (drop i bin) in (let val = binToInt chunk in (let out = (out + chr val) in (let i = (_asInt (i) + 8) in Nothing))))) of Just v -> Just v; Nothing -> Just (out))))))
+    |                                                                                                                                                                                                                                                                                                                                                                                   ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:173:413: error:
+    • Couldn't match type ‘()’ with ‘[Char]’
+      Expected: String
+        Actual: ()
+    • In the first argument of ‘Just’, namely ‘v’
+      In the expression: Just v
+      In a case alternative: Just v -> Just v
+    |
+173 |     (let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/" in (let bin = "" in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length enc)) (\() -> (let ch = [enc !! i] in case if (ch == "=") then Just () else Nothing of Just v -> Just v; Nothing -> (let idx = indexOf alphabet ch in (let bin = (bin + toBinary idx 6) in (let i = (_asInt (i) + 1) in Nothing))))) of Just v -> Just v; Nothing -> (let out = "" in (let i = 0 in case whileLoop (\() -> ((_asInt (i) + 8) <= length bin)) (\() -> (let chunk = take ((_asInt (i) + 8) - i) (drop i bin) in (let val = binToInt chunk in (let out = (out + chr val) in (let i = (_asInt (i) + 8) in Nothing))))) of Just v -> Just v; Nothing -> Just (out))))))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                             ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:173:561: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘AnyValue’
+    • In the second argument of ‘(-)’, namely ‘i’
+      In the first argument of ‘take’, namely ‘((_asInt (i) + 8) - i)’
+      In the expression: take ((_asInt (i) + 8) - i) (drop i bin)
+    |
+173 |     (let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/" in (let bin = "" in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length enc)) (\() -> (let ch = [enc !! i] in case if (ch == "=") then Just () else Nothing of Just v -> Just v; Nothing -> (let idx = indexOf alphabet ch in (let bin = (bin + toBinary idx 6) in (let i = (_asInt (i) + 1) in Nothing))))) of Just v -> Just v; Nothing -> (let out = "" in (let i = 0 in case whileLoop (\() -> ((_asInt (i) + 8) <= length bin)) (\() -> (let chunk = take ((_asInt (i) + 8) - i) (drop i bin) in (let val = binToInt chunk in (let out = (out + chr val) in (let i = (_asInt (i) + 8) in Nothing))))) of Just v -> Just v; Nothing -> Just (out))))))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:173:570: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘AnyValue’
+    • In the first argument of ‘drop’, namely ‘i’
+      In the second argument of ‘take’, namely ‘(drop i bin)’
+      In the expression: take ((_asInt (i) + 8) - i) (drop i bin)
+    |
+173 |     (let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/" in (let bin = "" in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length enc)) (\() -> (let ch = [enc !! i] in case if (ch == "=") then Just () else Nothing of Just v -> Just v; Nothing -> (let idx = indexOf alphabet ch in (let bin = (bin + toBinary idx 6) in (let i = (_asInt (i) + 1) in Nothing))))) of Just v -> Just v; Nothing -> (let out = "" in (let i = 0 in case whileLoop (\() -> ((_asInt (i) + 8) <= length bin)) (\() -> (let chunk = take ((_asInt (i) + 8) - i) (drop i bin) in (let val = binToInt chunk in (let out = (out + chr val) in (let i = (_asInt (i) + 8) in Nothing))))) of Just v -> Just v; Nothing -> Just (out))))))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/base64-decode-data.hs:173:657: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(i)’
+      In the first argument of ‘(+)’, namely ‘_asInt (i)’
+      In the expression: _asInt (i) + 8
+    |
+173 |     (let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/" in (let bin = "" in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length enc)) (\() -> (let ch = [enc !! i] in case if (ch == "=") then Just () else Nothing of Just v -> Just v; Nothing -> (let idx = indexOf alphabet ch in (let bin = (bin + toBinary idx 6) in (let i = (_asInt (i) + 1) in Nothing))))) of Just v -> Just v; Nothing -> (let out = "" in (let i = 0 in case whileLoop (\() -> ((_asInt (i) + 8) <= length bin)) (\() -> (let chunk = take ((_asInt (i) + 8) - i) (drop i bin) in (let val = binToInt chunk in (let out = (out + chr val) in (let i = (_asInt (i) + 8) in Nothing))))) of Just v -> Just v; Nothing -> Just (out))))))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ^

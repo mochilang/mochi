@@ -1,0 +1,539 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:92: error:
+    • Couldn't match expected type ‘IO Int’ with actual type ‘Int’
+    • In the second argument of ‘mod’, namely ‘length arr’
+      In the expression: _now `mod` length arr
+      In an equation for ‘px’: px = (_now `mod` length arr)
+    |
+110 |     (let arr = a in case whileLoop (\() -> (length arr > 1)) (\() -> (let px = (_now `mod` length arr) in (let pv = (arr !! px) in (let last = (length arr - 1) in (let tmp = (arr !! px) in (let arr = Map.insert px (arr !! last) arr in (let arr = Map.insert last tmp arr in (let px = 0 in (let i = 0 in case whileLoop (\() -> (i < last)) (\() -> (let v = (arr !! i) in case if (v < pv) then (let tmp2 = (arr !! px) in (let arr = Map.insert px (arr !! i) arr in (let arr = Map.insert i tmp2 arr in (let px = (_asInt (px) + 1) in Nothing)))) else Nothing of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> case if (px == k) then Just (pv) else Nothing of Just v -> Just v; Nothing -> if (k < px) then (let arr = take (px - 0) (drop 0 arr) in Nothing) else (let tmp2 = (arr !! px) in (let arr = Map.insert px pv arr in (let arr = Map.insert last tmp2 arr in (let arr = take (length arr - ((_asInt (px) + 1))) (drop ((_asInt (px) + 1)) arr) in (let k = (k - ((_asInt (px) + 1))) in Nothing)))))))))))))) of Just v -> Just v; Nothing -> Just ((arr !! 0)))
+    |                                                                                            ^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:125: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘IO Int’
+    • In the second argument of ‘(!!)’, namely ‘px’
+      In the expression: arr !! px
+      In an equation for ‘pv’: pv = (arr !! px)
+    |
+110 |     (let arr = a in case whileLoop (\() -> (length arr > 1)) (\() -> (let px = (_now `mod` length arr) in (let pv = (arr !! px) in (let last = (length arr - 1) in (let tmp = (arr !! px) in (let arr = Map.insert px (arr !! last) arr in (let arr = Map.insert last tmp arr in (let px = 0 in (let i = 0 in case whileLoop (\() -> (i < last)) (\() -> (let v = (arr !! i) in case if (v < pv) then (let tmp2 = (arr !! px) in (let arr = Map.insert px (arr !! i) arr in (let arr = Map.insert i tmp2 arr in (let px = (_asInt (px) + 1) in Nothing)))) else Nothing of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> case if (px == k) then Just (pv) else Nothing of Just v -> Just v; Nothing -> if (k < px) then (let arr = take (px - 0) (drop 0 arr) in Nothing) else (let tmp2 = (arr !! px) in (let arr = Map.insert px pv arr in (let arr = Map.insert last tmp2 arr in (let arr = take (length arr - ((_asInt (px) + 1))) (drop ((_asInt (px) + 1)) arr) in (let k = (k - ((_asInt (px) + 1))) in Nothing)))))))))))))) of Just v -> Just v; Nothing -> Just ((arr !! 0)))
+    |                                                                                                                             ^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:183: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘IO Int’
+    • In the second argument of ‘(!!)’, namely ‘px’
+      In the expression: arr !! px
+      In an equation for ‘tmp’: tmp = (arr !! px)
+    |
+110 |     (let arr = a in case whileLoop (\() -> (length arr > 1)) (\() -> (let px = (_now `mod` length arr) in (let pv = (arr !! px) in (let last = (length arr - 1) in (let tmp = (arr !! px) in (let arr = Map.insert px (arr !! last) arr in (let arr = Map.insert last tmp arr in (let px = 0 in (let i = 0 in case whileLoop (\() -> (i < last)) (\() -> (let v = (arr !! i) in case if (v < pv) then (let tmp2 = (arr !! px) in (let arr = Map.insert px (arr !! i) arr in (let arr = Map.insert i tmp2 arr in (let px = (_asInt (px) + 1) in Nothing)))) else Nothing of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> case if (px == k) then Just (pv) else Nothing of Just v -> Just v; Nothing -> if (k < px) then (let arr = take (px - 0) (drop 0 arr) in Nothing) else (let tmp2 = (arr !! px) in (let arr = Map.insert px pv arr in (let arr = Map.insert last tmp2 arr in (let arr = take (length arr - ((_asInt (px) + 1))) (drop ((_asInt (px) + 1)) arr) in (let k = (k - ((_asInt (px) + 1))) in Nothing)))))))))))))) of Just v -> Just v; Nothing -> Just ((arr !! 0)))
+    |                                                                                                                                                                                       ^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:216: error:
+    • Couldn't match expected type: [a]
+                  with actual type: Map.Map (IO Int) a
+    • In the first argument of ‘(!!)’, namely ‘arr’
+      In the second argument of ‘Map.insert’, namely ‘(arr !! last)’
+      In the expression: Map.insert px (arr !! last) arr
+    • Relevant bindings include
+        arr :: Map.Map (IO Int) a
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:195)
+    |
+110 |     (let arr = a in case whileLoop (\() -> (length arr > 1)) (\() -> (let px = (_now `mod` length arr) in (let pv = (arr !! px) in (let last = (length arr - 1) in (let tmp = (arr !! px) in (let arr = Map.insert px (arr !! last) arr in (let arr = Map.insert last tmp arr in (let px = 0 in (let i = 0 in case whileLoop (\() -> (i < last)) (\() -> (let v = (arr !! i) in case if (v < pv) then (let tmp2 = (arr !! px) in (let arr = Map.insert px (arr !! i) arr in (let arr = Map.insert i tmp2 arr in (let px = (_asInt (px) + 1) in Nothing)))) else Nothing of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> case if (px == k) then Just (pv) else Nothing of Just v -> Just v; Nothing -> if (k < px) then (let arr = take (px - 0) (drop 0 arr) in Nothing) else (let tmp2 = (arr !! px) in (let arr = Map.insert px pv arr in (let arr = Map.insert last tmp2 arr in (let arr = take (length arr - ((_asInt (px) + 1))) (drop ((_asInt (px) + 1)) arr) in (let k = (k - ((_asInt (px) + 1))) in Nothing)))))))))))))) of Just v -> Just v; Nothing -> Just ((arr !! 0)))
+    |                                                                                                                                                                                                                        ^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:356: error:
+    • Couldn't match expected type: [a]
+                  with actual type: Map.Map Int Double
+    • In the first argument of ‘(!!)’, namely ‘arr’
+      In the expression: arr !! i
+      In an equation for ‘v’: v = (arr !! i)
+    • Relevant bindings include
+        v :: a
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:351)
+    |
+110 |     (let arr = a in case whileLoop (\() -> (length arr > 1)) (\() -> (let px = (_now `mod` length arr) in (let pv = (arr !! px) in (let last = (length arr - 1) in (let tmp = (arr !! px) in (let arr = Map.insert px (arr !! last) arr in (let arr = Map.insert last tmp arr in (let px = 0 in (let i = 0 in case whileLoop (\() -> (i < last)) (\() -> (let v = (arr !! i) in case if (v < pv) then (let tmp2 = (arr !! px) in (let arr = Map.insert px (arr !! i) arr in (let arr = Map.insert i tmp2 arr in (let px = (_asInt (px) + 1) in Nothing)))) else Nothing of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> case if (px == k) then Just (pv) else Nothing of Just v -> Just v; Nothing -> if (k < px) then (let arr = take (px - 0) (drop 0 arr) in Nothing) else (let tmp2 = (arr !! px) in (let arr = Map.insert px pv arr in (let arr = Map.insert last tmp2 arr in (let arr = take (length arr - ((_asInt (px) + 1))) (drop ((_asInt (px) + 1)) arr) in (let k = (k - ((_asInt (px) + 1))) in Nothing)))))))))))))) of Just v -> Just v; Nothing -> Just ((arr !! 0)))
+    |                                                                                                                                                                                                                                                                                                                                                                    ^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:404: error:
+    • Couldn't match expected type: [a]
+                  with actual type: Map.Map Int Double
+    • In the first argument of ‘(!!)’, namely ‘arr’
+      In the expression: arr !! px
+      In an equation for ‘tmp2’: tmp2 = (arr !! px)
+    • Relevant bindings include
+        tmp2 :: a
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:396)
+    |
+110 |     (let arr = a in case whileLoop (\() -> (length arr > 1)) (\() -> (let px = (_now `mod` length arr) in (let pv = (arr !! px) in (let last = (length arr - 1) in (let tmp = (arr !! px) in (let arr = Map.insert px (arr !! last) arr in (let arr = Map.insert last tmp arr in (let px = 0 in (let i = 0 in case whileLoop (\() -> (i < last)) (\() -> (let v = (arr !! i) in case if (v < pv) then (let tmp2 = (arr !! px) in (let arr = Map.insert px (arr !! i) arr in (let arr = Map.insert i tmp2 arr in (let px = (_asInt (px) + 1) in Nothing)))) else Nothing of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> case if (px == k) then Just (pv) else Nothing of Just v -> Just v; Nothing -> if (k < px) then (let arr = take (px - 0) (drop 0 arr) in Nothing) else (let tmp2 = (arr !! px) in (let arr = Map.insert px pv arr in (let arr = Map.insert last tmp2 arr in (let arr = take (length arr - ((_asInt (px) + 1))) (drop ((_asInt (px) + 1)) arr) in (let k = (k - ((_asInt (px) + 1))) in Nothing)))))))))))))) of Just v -> Just v; Nothing -> Just ((arr !! 0)))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                    ^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:444: error:
+    • Couldn't match expected type: [a]
+                  with actual type: Map.Map Int a
+    • In the first argument of ‘(!!)’, namely ‘arr’
+      In the second argument of ‘Map.insert’, namely ‘(arr !! i)’
+      In the expression: Map.insert px (arr !! i) arr
+    • Relevant bindings include
+        arr :: Map.Map Int a
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:423)
+    |
+110 |     (let arr = a in case whileLoop (\() -> (length arr > 1)) (\() -> (let px = (_now `mod` length arr) in (let pv = (arr !! px) in (let last = (length arr - 1) in (let tmp = (arr !! px) in (let arr = Map.insert px (arr !! last) arr in (let arr = Map.insert last tmp arr in (let px = 0 in (let i = 0 in case whileLoop (\() -> (i < last)) (\() -> (let v = (arr !! i) in case if (v < pv) then (let tmp2 = (arr !! px) in (let arr = Map.insert px (arr !! i) arr in (let arr = Map.insert i tmp2 arr in (let px = (_asInt (px) + 1) in Nothing)))) else Nothing of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> case if (px == k) then Just (pv) else Nothing of Just v -> Just v; Nothing -> if (k < px) then (let arr = take (px - 0) (drop 0 arr) in Nothing) else (let tmp2 = (arr !! px) in (let arr = Map.insert px pv arr in (let arr = Map.insert last tmp2 arr in (let arr = take (length arr - ((_asInt (px) + 1))) (drop ((_asInt (px) + 1)) arr) in (let k = (k - ((_asInt (px) + 1))) in Nothing)))))))))))))) of Just v -> Just v; Nothing -> Just ((arr !! 0)))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                            ^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:508: error:
+    • Found hole: _asInt :: t0 -> t0
+      Where: ‘t0’ is an ambiguous type variable
+      Or perhaps ‘_asInt’ is mis-spelled, or not in scope
+    • In the first argument of ‘(+)’, namely ‘_asInt (px)’
+      In the expression: _asInt (px) + 1
+      In an equation for ‘px’: px = (_asInt (px) + 1)
+    • Relevant bindings include
+        px :: t0
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:502)
+        arr :: forall {a}. Map.Map Int a
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:466)
+        tmp2 :: forall {a}. a
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:396)
+        v :: forall {a}. a
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:351)
+        i :: Int
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:294)
+        tmp :: Double
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:169)
+        (Some bindings suppressed; use -fmax-relevant-binds=N or -fno-max-relevant-binds)
+      Valid hole fits include
+        v :: forall {a}. a
+          with v
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:351)
+        tmp2 :: forall {a}. a
+          with tmp2
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:396)
+        fromInteger :: forall a. Num a => Integer -> a
+          with fromInteger @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Num’))
+        negate :: forall a. Num a => a -> a
+          with negate @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Num’))
+        fromIntegral :: forall a b. (Integral a, Num b) => a -> b
+          with fromIntegral @Integer @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        realToFrac :: forall a b. (Real a, Fractional b) => a -> b
+          with realToFrac @Double @Double
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        (Some hole fits suppressed; use -fmax-valid-hole-fits=N or -fno-max-valid-hole-fits)
+    |
+110 |     (let arr = a in case whileLoop (\() -> (length arr > 1)) (\() -> (let px = (_now `mod` length arr) in (let pv = (arr !! px) in (let last = (length arr - 1) in (let tmp = (arr !! px) in (let arr = Map.insert px (arr !! last) arr in (let arr = Map.insert last tmp arr in (let px = 0 in (let i = 0 in case whileLoop (\() -> (i < last)) (\() -> (let v = (arr !! i) in case if (v < pv) then (let tmp2 = (arr !! px) in (let arr = Map.insert px (arr !! i) arr in (let arr = Map.insert i tmp2 arr in (let px = (_asInt (px) + 1) in Nothing)))) else Nothing of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> case if (px == k) then Just (pv) else Nothing of Just v -> Just v; Nothing -> if (k < px) then (let arr = take (px - 0) (drop 0 arr) in Nothing) else (let tmp2 = (arr !! px) in (let arr = Map.insert px pv arr in (let arr = Map.insert last tmp2 arr in (let arr = take (length arr - ((_asInt (px) + 1))) (drop ((_asInt (px) + 1)) arr) in (let k = (k - ((_asInt (px) + 1))) in Nothing)))))))))))))) of Just v -> Just v; Nothing -> Just ((arr !! 0)))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:595: error:
+    • Found hole: _asInt :: t1 -> t1
+      Where: ‘t1’ is an ambiguous type variable
+      Or perhaps ‘_asInt’ is mis-spelled, or not in scope
+    • In the first argument of ‘(+)’, namely ‘_asInt (i)’
+      In the expression: _asInt (i) + 1
+      In an equation for ‘i’: i = (_asInt (i) + 1)
+    • Relevant bindings include
+        i :: t1
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:590)
+        v :: forall {a}. a
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:351)
+        px :: Int
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:279)
+        arr :: Map.Map Int Double
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:241)
+        tmp :: Double
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:169)
+        last :: Int
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:137)
+        (Some bindings suppressed; use -fmax-relevant-binds=N or -fno-max-relevant-binds)
+      Valid hole fits include
+        v :: forall {a}. a
+          with v
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:351)
+        fromInteger :: forall a. Num a => Integer -> a
+          with fromInteger @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Num’))
+        negate :: forall a. Num a => a -> a
+          with negate @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Num’))
+        fromIntegral :: forall a b. (Integral a, Num b) => a -> b
+          with fromIntegral @Integer @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        realToFrac :: forall a b. (Real a, Fractional b) => a -> b
+          with realToFrac @Double @Double
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        toInteger :: forall a. Integral a => a -> Integer
+          with toInteger @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        (Some hole fits suppressed; use -fmax-valid-hole-fits=N or -fno-max-valid-hole-fits)
+    |
+110 |     (let arr = a in case whileLoop (\() -> (length arr > 1)) (\() -> (let px = (_now `mod` length arr) in (let pv = (arr !! px) in (let last = (length arr - 1) in (let tmp = (arr !! px) in (let arr = Map.insert px (arr !! last) arr in (let arr = Map.insert last tmp arr in (let px = 0 in (let i = 0 in case whileLoop (\() -> (i < last)) (\() -> (let v = (arr !! i) in case if (v < pv) then (let tmp2 = (arr !! px) in (let arr = Map.insert px (arr !! i) arr in (let arr = Map.insert i tmp2 arr in (let px = (_asInt (px) + 1) in Nothing)))) else Nothing of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> case if (px == k) then Just (pv) else Nothing of Just v -> Just v; Nothing -> if (k < px) then (let arr = take (px - 0) (drop 0 arr) in Nothing) else (let tmp2 = (arr !! px) in (let arr = Map.insert px pv arr in (let arr = Map.insert last tmp2 arr in (let arr = take (length arr - ((_asInt (px) + 1))) (drop ((_asInt (px) + 1)) arr) in (let k = (k - ((_asInt (px) + 1))) in Nothing)))))))))))))) of Just v -> Just v; Nothing -> Just ((arr !! 0)))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:820: error:
+    • Couldn't match expected type: [a]
+                  with actual type: Map.Map Int Double
+    • In the first argument of ‘(!!)’, namely ‘arr’
+      In the expression: arr !! px
+      In an equation for ‘tmp2’: tmp2 = (arr !! px)
+    • Relevant bindings include
+        tmp2 :: a
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:812)
+    |
+110 |     (let arr = a in case whileLoop (\() -> (length arr > 1)) (\() -> (let px = (_now `mod` length arr) in (let pv = (arr !! px) in (let last = (length arr - 1) in (let tmp = (arr !! px) in (let arr = Map.insert px (arr !! last) arr in (let arr = Map.insert last tmp arr in (let px = 0 in (let i = 0 in case whileLoop (\() -> (i < last)) (\() -> (let v = (arr !! i) in case if (v < pv) then (let tmp2 = (arr !! px) in (let arr = Map.insert px (arr !! i) arr in (let arr = Map.insert i tmp2 arr in (let px = (_asInt (px) + 1) in Nothing)))) else Nothing of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> case if (px == k) then Just (pv) else Nothing of Just v -> Just v; Nothing -> if (k < px) then (let arr = take (px - 0) (drop 0 arr) in Nothing) else (let tmp2 = (arr !! px) in (let arr = Map.insert px pv arr in (let arr = Map.insert last tmp2 arr in (let arr = take (length arr - ((_asInt (px) + 1))) (drop ((_asInt (px) + 1)) arr) in (let k = (k - ((_asInt (px) + 1))) in Nothing)))))))))))))) of Just v -> Just v; Nothing -> Just ((arr !! 0)))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:940: error:
+    • Found hole: _asInt :: Int -> Int
+      Or perhaps ‘_asInt’ is mis-spelled, or not in scope
+    • In the first argument of ‘(+)’, namely ‘_asInt (px)’
+      In the second argument of ‘(-)’, namely ‘((_asInt (px) + 1))’
+      In the first argument of ‘take’, namely
+        ‘(length arr - ((_asInt (px) + 1)))’
+    • Relevant bindings include
+        arr :: [a]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:913)
+        tmp2 :: forall {a}. a
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:812)
+        i :: Int
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:294)
+        px :: Int
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:279)
+        tmp :: Double
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:169)
+        last :: Int
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:137)
+        (Some bindings suppressed; use -fmax-relevant-binds=N or -fno-max-relevant-binds)
+      Valid hole fits include
+        tmp2 :: forall {a}. a
+          with tmp2
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:812)
+        negate :: forall a. Num a => a -> a
+          with negate @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Num’))
+        fromIntegral :: forall a b. (Integral a, Num b) => a -> b
+          with fromIntegral @Int @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        id :: forall a. a -> a
+          with id @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Base’))
+        fromEnum :: forall a. Enum a => a -> Int
+          with fromEnum @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Enum’))
+        pred :: forall a. Enum a => a -> a
+          with pred @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Enum’))
+        (Some hole fits suppressed; use -fmax-valid-hole-fits=N or -fno-max-valid-hole-fits)
+    |
+110 |     (let arr = a in case whileLoop (\() -> (length arr > 1)) (\() -> (let px = (_now `mod` length arr) in (let pv = (arr !! px) in (let last = (length arr - 1) in (let tmp = (arr !! px) in (let arr = Map.insert px (arr !! last) arr in (let arr = Map.insert last tmp arr in (let px = 0 in (let i = 0 in case whileLoop (\() -> (i < last)) (\() -> (let v = (arr !! i) in case if (v < pv) then (let tmp2 = (arr !! px) in (let arr = Map.insert px (arr !! i) arr in (let arr = Map.insert i tmp2 arr in (let px = (_asInt (px) + 1) in Nothing)))) else Nothing of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> case if (px == k) then Just (pv) else Nothing of Just v -> Just v; Nothing -> if (k < px) then (let arr = take (px - 0) (drop 0 arr) in Nothing) else (let tmp2 = (arr !! px) in (let arr = Map.insert px pv arr in (let arr = Map.insert last tmp2 arr in (let arr = take (length arr - ((_asInt (px) + 1))) (drop ((_asInt (px) + 1)) arr) in (let k = (k - ((_asInt (px) + 1))) in Nothing)))))))))))))) of Just v -> Just v; Nothing -> Just ((arr !! 0)))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:967: error:
+    • Found hole: _asInt :: Int -> Int
+      Or perhaps ‘_asInt’ is mis-spelled, or not in scope
+    • In the first argument of ‘(+)’, namely ‘_asInt (px)’
+      In the first argument of ‘drop’, namely ‘((_asInt (px) + 1))’
+      In the second argument of ‘take’, namely
+        ‘(drop ((_asInt (px) + 1)) arr)’
+    • Relevant bindings include
+        arr :: [a]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:913)
+        tmp2 :: forall {a}. a
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:812)
+        i :: Int
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:294)
+        px :: Int
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:279)
+        tmp :: Double
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:169)
+        last :: Int
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:137)
+        (Some bindings suppressed; use -fmax-relevant-binds=N or -fno-max-relevant-binds)
+      Valid hole fits include
+        tmp2 :: forall {a}. a
+          with tmp2
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:812)
+        negate :: forall a. Num a => a -> a
+          with negate @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Num’))
+        fromIntegral :: forall a b. (Integral a, Num b) => a -> b
+          with fromIntegral @Int @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        id :: forall a. a -> a
+          with id @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Base’))
+        fromEnum :: forall a. Enum a => a -> Int
+          with fromEnum @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Enum’))
+        pred :: forall a. Enum a => a -> a
+          with pred @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Enum’))
+        (Some hole fits suppressed; use -fmax-valid-hole-fits=N or -fno-max-valid-hole-fits)
+    |
+110 |     (let arr = a in case whileLoop (\() -> (length arr > 1)) (\() -> (let px = (_now `mod` length arr) in (let pv = (arr !! px) in (let last = (length arr - 1) in (let tmp = (arr !! px) in (let arr = Map.insert px (arr !! last) arr in (let arr = Map.insert last tmp arr in (let px = 0 in (let i = 0 in case whileLoop (\() -> (i < last)) (\() -> (let v = (arr !! i) in case if (v < pv) then (let tmp2 = (arr !! px) in (let arr = Map.insert px (arr !! i) arr in (let arr = Map.insert i tmp2 arr in (let px = (_asInt (px) + 1) in Nothing)))) else Nothing of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> case if (px == k) then Just (pv) else Nothing of Just v -> Just v; Nothing -> if (k < px) then (let arr = take (px - 0) (drop 0 arr) in Nothing) else (let tmp2 = (arr !! px) in (let arr = Map.insert px pv arr in (let arr = Map.insert last tmp2 arr in (let arr = take (length arr - ((_asInt (px) + 1))) (drop ((_asInt (px) + 1)) arr) in (let k = (k - ((_asInt (px) + 1))) in Nothing)))))))))))))) of Just v -> Just v; Nothing -> Just ((arr !! 0)))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:1009: error:
+    • Found hole: _asInt :: Int -> t2
+      Where: ‘t2’ is an ambiguous type variable
+      Or perhaps ‘_asInt’ is mis-spelled, or not in scope
+    • In the first argument of ‘(+)’, namely ‘_asInt (px)’
+      In the second argument of ‘(-)’, namely ‘((_asInt (px) + 1))’
+      In the expression: k - ((_asInt (px) + 1))
+    • Relevant bindings include
+        k :: t2
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:998)
+        arr :: forall {a}. [a]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:913)
+        tmp2 :: forall {a}. a
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:812)
+        i :: Int
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:294)
+        px :: Int
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:279)
+        tmp :: Double
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:169)
+        (Some bindings suppressed; use -fmax-relevant-binds=N or -fno-max-relevant-binds)
+      Valid hole fits include
+        tmp2 :: forall {a}. a
+          with tmp2
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:110:812)
+        negate :: forall a. Num a => a -> a
+          with negate @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Num’))
+        toInteger :: forall a. Integral a => a -> Integer
+          with toInteger @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        toRational :: forall a. Real a => a -> Rational
+          with toRational @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        id :: forall a. a -> a
+          with id @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Base’))
+        fromEnum :: forall a. Enum a => a -> Int
+          with fromEnum @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Enum’))
+        (Some hole fits suppressed; use -fmax-valid-hole-fits=N or -fno-max-valid-hole-fits)
+    |
+110 |     (let arr = a in case whileLoop (\() -> (length arr > 1)) (\() -> (let px = (_now `mod` length arr) in (let pv = (arr !! px) in (let last = (length arr - 1) in (let tmp = (arr !! px) in (let arr = Map.insert px (arr !! last) arr in (let arr = Map.insert last tmp arr in (let px = 0 in (let i = 0 in case whileLoop (\() -> (i < last)) (\() -> (let v = (arr !! i) in case if (v < pv) then (let tmp2 = (arr !! px) in (let arr = Map.insert px (arr !! i) arr in (let arr = Map.insert i tmp2 arr in (let px = (_asInt (px) + 1) in Nothing)))) else Nothing of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> case if (px == k) then Just (pv) else Nothing of Just v -> Just v; Nothing -> if (k < px) then (let arr = take (px - 0) (drop 0 arr) in Nothing) else (let tmp2 = (arr !! px) in (let arr = Map.insert px pv arr in (let arr = Map.insert last tmp2 arr in (let arr = take (length arr - ((_asInt (px) + 1))) (drop ((_asInt (px) + 1)) arr) in (let k = (k - ((_asInt (px) + 1))) in Nothing)))))))))))))) of Just v -> Just v; Nothing -> Just ((arr !! 0)))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:115:48: error:
+    • Couldn't match type ‘Int’ with ‘[Char]’
+      Expected: t3 a2 -> String
+        Actual: t3 a2 -> Int
+    • In the first argument of ‘div’, namely ‘length’
+      In the first argument of ‘read’, namely ‘((div length arr 2))’
+      In the expression: read ((div length arr 2)) :: Int
+    |
+115 |     (let arr = list in (let half = (read ((div length arr 2)) :: Int) in (let med = qsel arr half in case if ((length arr `mod` 2) == 0) then Just ((_asDouble (((_asDouble (med) + qsel arr (_asInt (half) - 1)))) / 2.0)) else Nothing of Just v -> Just v; Nothing -> Just (med))))
+    |                                                ^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:115:55: error:
+    • Couldn't match expected type: t3 a2 -> String
+                  with actual type: [Double]
+    • In the second argument of ‘div’, namely ‘arr’
+      In the first argument of ‘read’, namely ‘((div length arr 2))’
+      In the expression: read ((div length arr 2)) :: Int
+    |
+115 |     (let arr = list in (let half = (read ((div length arr 2)) :: Int) in (let med = qsel arr half in case if ((length arr `mod` 2) == 0) then Just ((_asDouble (((_asDouble (med) + qsel arr (_asInt (half) - 1)))) / 2.0)) else Nothing of Just v -> Just v; Nothing -> Just (med))))
+    |                                                       ^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:115:150: error:
+    • Found hole: _asDouble :: Double -> Double
+      Or perhaps ‘_asDouble’ is mis-spelled, or not in scope
+    • In the first argument of ‘(/)’, namely
+        ‘_asDouble (((_asDouble (med) + qsel arr (_asInt (half) - 1))))’
+      In the first argument of ‘Just’, namely
+        ‘((_asDouble (((_asDouble (med) + qsel arr (_asInt (half) - 1))))
+             / 2.0))’
+      In the expression:
+        Just
+          ((_asDouble (((_asDouble (med) + qsel arr (_asInt (half) - 1))))
+              / 2.0))
+    • Relevant bindings include
+        med :: Double
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:115:79)
+        half :: Int
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:115:29)
+        arr :: [Double]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:115:10)
+        list :: [Double]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:113:8)
+        median :: [Double] -> Double
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:113:1)
+      Valid hole fits include
+        negate :: forall a. Num a => a -> a
+          with negate @Double
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Num’))
+        realToFrac :: forall a b. (Real a, Fractional b) => a -> b
+          with realToFrac @Double @Double
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        id :: forall a. a -> a
+          with id @Double
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Base’))
+        pred :: forall a. Enum a => a -> a
+          with pred @Double
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Enum’))
+        succ :: forall a. Enum a => a -> a
+          with succ @Double
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Enum’))
+        acos :: forall a. Floating a => a -> a
+          with acos @Double
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Float’))
+        (Some hole fits suppressed; use -fmax-valid-hole-fits=N or -fno-max-valid-hole-fits)
+    |
+115 |     (let arr = list in (let half = (read ((div length arr 2)) :: Int) in (let med = qsel arr half in case if ((length arr `mod` 2) == 0) then Just ((_asDouble (((_asDouble (med) + qsel arr (_asInt (half) - 1)))) / 2.0)) else Nothing of Just v -> Just v; Nothing -> Just (med))))
+    |                                                                                                                                                      ^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:115:163: error:
+    • Found hole: _asDouble :: Double -> Double
+      Or perhaps ‘_asDouble’ is mis-spelled, or not in scope
+    • In the first argument of ‘(+)’, namely ‘_asDouble (med)’
+      In the first argument of ‘_asDouble’, namely
+        ‘(((_asDouble (med) + qsel arr (_asInt (half) - 1))))’
+      In the first argument of ‘(/)’, namely
+        ‘_asDouble (((_asDouble (med) + qsel arr (_asInt (half) - 1))))’
+    • Relevant bindings include
+        med :: Double
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:115:79)
+        half :: Int
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:115:29)
+        arr :: [Double]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:115:10)
+        list :: [Double]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:113:8)
+        median :: [Double] -> Double
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:113:1)
+      Valid hole fits include
+        negate :: forall a. Num a => a -> a
+          with negate @Double
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Num’))
+        realToFrac :: forall a b. (Real a, Fractional b) => a -> b
+          with realToFrac @Double @Double
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        id :: forall a. a -> a
+          with id @Double
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Base’))
+        pred :: forall a. Enum a => a -> a
+          with pred @Double
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Enum’))
+        succ :: forall a. Enum a => a -> a
+          with succ @Double
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Enum’))
+        acos :: forall a. Floating a => a -> a
+          with acos @Double
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Float’))
+        (Some hole fits suppressed; use -fmax-valid-hole-fits=N or -fno-max-valid-hole-fits)
+    |
+115 |     (let arr = list in (let half = (read ((div length arr 2)) :: Int) in (let med = qsel arr half in case if ((length arr `mod` 2) == 0) then Just ((_asDouble (((_asDouble (med) + qsel arr (_asInt (half) - 1)))) / 2.0)) else Nothing of Just v -> Just v; Nothing -> Just (med))))
+    |                                                                                                                                                                   ^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:115:191: error:
+    • Found hole: _asInt :: Int -> Int
+      Or perhaps ‘_asInt’ is mis-spelled, or not in scope
+    • In the first argument of ‘(-)’, namely ‘_asInt (half)’
+      In the second argument of ‘qsel’, namely ‘(_asInt (half) - 1)’
+      In the second argument of ‘(+)’, namely
+        ‘qsel arr (_asInt (half) - 1)’
+    • Relevant bindings include
+        med :: Double
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:115:79)
+        half :: Int
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:115:29)
+        arr :: [Double]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:115:10)
+        list :: [Double]
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:113:8)
+        median :: [Double] -> Double
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:113:1)
+      Valid hole fits include
+        negate :: forall a. Num a => a -> a
+          with negate @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Num’))
+        fromIntegral :: forall a b. (Integral a, Num b) => a -> b
+          with fromIntegral @Int @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        id :: forall a. a -> a
+          with id @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Base’))
+        fromEnum :: forall a. Enum a => a -> Int
+          with fromEnum @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Enum’))
+        pred :: forall a. Enum a => a -> a
+          with pred @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Enum’))
+        succ :: forall a. Enum a => a -> a
+          with succ @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:5:8-11
+           (and originally defined in ‘GHC.Enum’))
+        (Some hole fits suppressed; use -fmax-valid-hole-fits=N or -fno-max-valid-hole-fits)
+    |
+115 |     (let arr = list in (let half = (read ((div length arr 2)) :: Int) in (let med = qsel arr half in case if ((length arr `mod` 2) == 0) then Just ((_asDouble (((_asDouble (med) + qsel arr (_asInt (half) - 1)))) / 2.0)) else Nothing of Just v -> Just v; Nothing -> Just (med))))
+    |                                                                                                                                                                                               ^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:119:13: error:
+    • Couldn't match expected type: [a1] -> String
+                  with actual type: [Char]
+    • The function ‘show’ is applied to two value arguments,
+        but its type ‘([Double] -> Double) -> [Char]’ has only one
+      In the first argument of ‘putStrLn’, namely
+        ‘(show median [3.0, 1.0, 4.0, 1.0])’
+      In a stmt of a 'do' block:
+        putStrLn (show median [3.0, 1.0, 4.0, 1.0])
+    |
+119 |   putStrLn (show median [3.0, 1.0, 4.0, 1.0])
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-median-3.hs:120:13: error:
+    • Couldn't match expected type: [a0] -> String
+                  with actual type: [Char]
+    • The function ‘show’ is applied to two value arguments,
+        but its type ‘([Double] -> Double) -> [Char]’ has only one
+      In the first argument of ‘putStrLn’, namely
+        ‘(show median [3.0, 1.0, 4.0, 1.0, ....])’
+      In a stmt of a 'do' block:
+        putStrLn (show median [3.0, 1.0, 4.0, 1.0, ....])
+    |
+120 |   putStrLn (show median [3.0, 1.0, 4.0, 1.0, 5.0])
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

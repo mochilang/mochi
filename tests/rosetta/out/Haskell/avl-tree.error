@@ -1,0 +1,9 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/avl-tree.hs:119:1: error:
+    Invalid type signature: Node :: ...
+    Suggested fix:
+      A type signature should be of form <variables> :: <type>
+    |
+119 | Node :: Int -> Map.Map String ()
+    | ^^^^

@@ -1,0 +1,531 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:130:127: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Bool’
+    • In the first argument of ‘(+)’, namely ‘((length sep > 0) && i)’
+      In the first argument of ‘_asInt’, namely
+        ‘((((length sep > 0) && i) + length sep))’
+      In the first argument of ‘(<=)’, namely
+        ‘_asInt ((((length sep > 0) && i) + length sep))’
+    |
+130 |     (let parts = [] in (let cur = "" in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length s)) (\() -> if (((_asInt ((((length sep > 0) && i) + length sep)) <= length s) && take ((_asInt (i) + length sep) - i) (drop i s)) == sep) then (let parts = (parts ++ [cur]) in (let cur = "" in (let i = (_asInt (i) + length sep) in Nothing))) else (let cur = (cur + take ((_asInt (i) + 1) - i) (drop i s)) in (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> (let parts = (parts ++ [cur]) in Just (parts)))))
+    |                                                                                                                               ^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:130:147: error:
+    • Couldn't match expected type ‘Bool’ with actual type ‘AnyValue’
+    • In the second argument of ‘(&&)’, namely ‘i’
+      In the first argument of ‘(+)’, namely ‘((length sep > 0) && i)’
+      In the first argument of ‘_asInt’, namely
+        ‘((((length sep > 0) && i) + length sep))’
+    |
+130 |     (let parts = [] in (let cur = "" in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length s)) (\() -> if (((_asInt ((((length sep > 0) && i) + length sep)) <= length s) && take ((_asInt (i) + length sep) - i) (drop i s)) == sep) then (let parts = (parts ++ [cur]) in (let cur = "" in (let i = (_asInt (i) + length sep) in Nothing))) else (let cur = (cur + take ((_asInt (i) + 1) - i) (drop i s)) in (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> (let parts = (parts ++ [cur]) in Just (parts)))))
+    |                                                                                                                                                   ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:130:152: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the second argument of ‘(+)’, namely ‘length sep’
+      In the first argument of ‘_asInt’, namely
+        ‘((((length sep > 0) && i) + length sep))’
+      In the first argument of ‘(<=)’, namely
+        ‘_asInt ((((length sep > 0) && i) + length sep))’
+    |
+130 |     (let parts = [] in (let cur = "" in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length s)) (\() -> if (((_asInt ((((length sep > 0) && i) + length sep)) <= length s) && take ((_asInt (i) + length sep) - i) (drop i s)) == sep) then (let parts = (parts ++ [cur]) in (let cur = "" in (let i = (_asInt (i) + length sep) in Nothing))) else (let cur = (cur + take ((_asInt (i) + 1) - i) (drop i s)) in (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> (let parts = (parts ++ [cur]) in Just (parts)))))
+    |                                                                                                                                                        ^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:130:181: error:
+    • Couldn't match expected type ‘Bool’ with actual type ‘[Char]’
+    • In the second argument of ‘(&&)’, namely
+        ‘take ((_asInt (i) + length sep) - i) (drop i s)’
+      In the first argument of ‘(==)’, namely
+        ‘((_asInt ((((length sep > 0) && i) + length sep)) <= length s)
+            && take ((_asInt (i) + length sep) - i) (drop i s))’
+      In the expression:
+        ((_asInt ((((length sep > 0) && i) + length sep)) <= length s)
+           && take ((_asInt (i) + length sep) - i) (drop i s))
+          == sep
+    |
+130 |     (let parts = [] in (let cur = "" in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length s)) (\() -> if (((_asInt ((((length sep > 0) && i) + length sep)) <= length s) && take ((_asInt (i) + length sep) - i) (drop i s)) == sep) then (let parts = (parts ++ [cur]) in (let cur = "" in (let i = (_asInt (i) + length sep) in Nothing))) else (let cur = (cur + take ((_asInt (i) + 1) - i) (drop i s)) in (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> (let parts = (parts ++ [cur]) in Just (parts)))))
+    |                                                                                                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:130:215: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘AnyValue’
+    • In the second argument of ‘(-)’, namely ‘i’
+      In the first argument of ‘take’, namely
+        ‘((_asInt (i) + length sep) - i)’
+      In the second argument of ‘(&&)’, namely
+        ‘take ((_asInt (i) + length sep) - i) (drop i s)’
+    |
+130 |     (let parts = [] in (let cur = "" in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length s)) (\() -> if (((_asInt ((((length sep > 0) && i) + length sep)) <= length s) && take ((_asInt (i) + length sep) - i) (drop i s)) == sep) then (let parts = (parts ++ [cur]) in (let cur = "" in (let i = (_asInt (i) + length sep) in Nothing))) else (let cur = (cur + take ((_asInt (i) + 1) - i) (drop i s)) in (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> (let parts = (parts ++ [cur]) in Just (parts)))))
+    |                                                                                                                                                                                                                       ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:130:224: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘AnyValue’
+    • In the first argument of ‘drop’, namely ‘i’
+      In the second argument of ‘take’, namely ‘(drop i s)’
+      In the second argument of ‘(&&)’, namely
+        ‘take ((_asInt (i) + length sep) - i) (drop i s)’
+    |
+130 |     (let parts = [] in (let cur = "" in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length s)) (\() -> if (((_asInt ((((length sep > 0) && i) + length sep)) <= length s) && take ((_asInt (i) + length sep) - i) (drop i s)) == sep) then (let parts = (parts ++ [cur]) in (let cur = "" in (let i = (_asInt (i) + length sep) in Nothing))) else (let cur = (cur + take ((_asInt (i) + 1) - i) (drop i s)) in (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> (let parts = (parts ++ [cur]) in Just (parts)))))
+    |                                                                                                                                                                                                                                ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:130:233: error:
+    • Couldn't match type ‘[Char]’ with ‘Bool’
+      Expected: Bool
+        Actual: String
+    • In the second argument of ‘(==)’, namely ‘sep’
+      In the expression:
+        ((_asInt ((((length sep > 0) && i) + length sep)) <= length s)
+           && take ((_asInt (i) + length sep) - i) (drop i s))
+          == sep
+      In the expression:
+        if (((_asInt ((((length sep > 0) && i) + length sep)) <= length s)
+               && take ((_asInt (i) + length sep) - i) (drop i s))
+              == sep) then
+            (let parts = (parts ++ [...])
+             in
+               (let cur = "" in (let i = (_asInt (i) + length sep) in Nothing)))
+        else
+            (let cur = (cur + take ((_asInt (i) + 1) - i) (drop i s))
+             in (let i = (_asInt (i) + 1) in Nothing))
+    |
+130 |     (let parts = [] in (let cur = "" in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length s)) (\() -> if (((_asInt ((((length sep > 0) && i) + length sep)) <= length s) && take ((_asInt (i) + length sep) - i) (drop i s)) == sep) then (let parts = (parts ++ [cur]) in (let cur = "" in (let i = (_asInt (i) + length sep) in Nothing))) else (let cur = (cur + take ((_asInt (i) + 1) - i) (drop i s)) in (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> (let parts = (parts ++ [cur]) in Just (parts)))))
+    |                                                                                                                                                                                                                                         ^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:130:311: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(i)’
+      In the first argument of ‘(+)’, namely ‘_asInt (i)’
+      In the expression: _asInt (i) + length sep
+    |
+130 |     (let parts = [] in (let cur = "" in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length s)) (\() -> if (((_asInt ((((length sep > 0) && i) + length sep)) <= length s) && take ((_asInt (i) + length sep) - i) (drop i s)) == sep) then (let parts = (parts ++ [cur]) in (let cur = "" in (let i = (_asInt (i) + length sep) in Nothing))) else (let cur = (cur + take ((_asInt (i) + 1) - i) (drop i s)) in (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> (let parts = (parts ++ [cur]) in Just (parts)))))
+    |                                                                                                                                                                                                                                                                                                                       ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:130:390: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘AnyValue’
+    • In the second argument of ‘(-)’, namely ‘i’
+      In the first argument of ‘take’, namely ‘((_asInt (i) + 1) - i)’
+      In the second argument of ‘(+)’, namely
+        ‘take ((_asInt (i) + 1) - i) (drop i s)’
+    |
+130 |     (let parts = [] in (let cur = "" in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length s)) (\() -> if (((_asInt ((((length sep > 0) && i) + length sep)) <= length s) && take ((_asInt (i) + length sep) - i) (drop i s)) == sep) then (let parts = (parts ++ [cur]) in (let cur = "" in (let i = (_asInt (i) + length sep) in Nothing))) else (let cur = (cur + take ((_asInt (i) + 1) - i) (drop i s)) in (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> (let parts = (parts ++ [cur]) in Just (parts)))))
+    |                                                                                                                                                                                                                                                                                                                                                                                                      ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:130:399: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘AnyValue’
+    • In the first argument of ‘drop’, namely ‘i’
+      In the second argument of ‘take’, namely ‘(drop i s)’
+      In the second argument of ‘(+)’, namely
+        ‘take ((_asInt (i) + 1) - i) (drop i s)’
+    |
+130 |     (let parts = [] in (let cur = "" in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length s)) (\() -> if (((_asInt ((((length sep > 0) && i) + length sep)) <= length s) && take ((_asInt (i) + length sep) - i) (drop i s)) == sep) then (let parts = (parts ++ [cur]) in (let cur = "" in (let i = (_asInt (i) + length sep) in Nothing))) else (let cur = (cur + take ((_asInt (i) + 1) - i) (drop i s)) in (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> (let parts = (parts ++ [cur]) in Just (parts)))))
+    |                                                                                                                                                                                                                                                                                                                                                                                                               ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:130:426: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(i)’
+      In the first argument of ‘(+)’, namely ‘_asInt (i)’
+      In the expression: _asInt (i) + 1
+    |
+130 |     (let parts = [] in (let cur = "" in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length s)) (\() -> if (((_asInt ((((length sep > 0) && i) + length sep)) <= length s) && take ((_asInt (i) + length sep) - i) (drop i s)) == sep) then (let parts = (parts ++ [cur]) in (let cur = "" in (let i = (_asInt (i) + length sep) in Nothing))) else (let cur = (cur + take ((_asInt (i) + 1) - i) (drop i s)) in (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> (let parts = (parts ++ [cur]) in Just (parts)))))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                          ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:135:64: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(n)’
+      In the first argument of ‘(>)’, namely ‘_asInt (n)’
+      In the first argument of ‘(&&)’, namely ‘(_asInt (n) > 0)’
+    |
+135 |     (let n = length words in case whileLoop (\() -> (((_asInt (n) > 0) && (words !! (_asInt (n) - 1))) == "")) (\() -> (let n = (_asInt (n) - 1) in Nothing)) of Just v -> Just v; Nothing -> Just (take (n - 0) (drop 0 words)))
+    |                                                                ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:135:76: error:
+    • Couldn't match type ‘[Char]’ with ‘Bool’
+      Expected: [Bool]
+        Actual: [String]
+    • In the first argument of ‘(!!)’, namely ‘words’
+      In the second argument of ‘(&&)’, namely
+        ‘(words !! (_asInt (n) - 1))’
+      In the first argument of ‘(==)’, namely
+        ‘((_asInt (n) > 0) && (words !! (_asInt (n) - 1)))’
+    |
+135 |     (let n = length words in case whileLoop (\() -> (((_asInt (n) > 0) && (words !! (_asInt (n) - 1))) == "")) (\() -> (let n = (_asInt (n) - 1) in Nothing)) of Just v -> Just v; Nothing -> Just (take (n - 0) (drop 0 words)))
+    |                                                                            ^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:135:94: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(n)’
+      In the first argument of ‘(-)’, namely ‘_asInt (n)’
+      In the second argument of ‘(!!)’, namely ‘(_asInt (n) - 1)’
+    |
+135 |     (let n = length words in case whileLoop (\() -> (((_asInt (n) > 0) && (words !! (_asInt (n) - 1))) == "")) (\() -> (let n = (_asInt (n) - 1) in Nothing)) of Just v -> Just v; Nothing -> Just (take (n - 0) (drop 0 words)))
+    |                                                                                              ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:135:107: error:
+    • Couldn't match type ‘[Char]’ with ‘Bool’
+      Expected: Bool
+        Actual: String
+    • In the second argument of ‘(==)’, namely ‘""’
+      In the expression:
+        ((_asInt (n) > 0) && (words !! (_asInt (n) - 1))) == ""
+      In the first argument of ‘whileLoop’, namely
+        ‘(\ ()
+            -> (((_asInt (n) > 0) && (words !! (_asInt (n) - 1))) == ""))’
+    |
+135 |     (let n = length words in case whileLoop (\() -> (((_asInt (n) > 0) && (words !! (_asInt (n) - 1))) == "")) (\() -> (let n = (_asInt (n) - 1) in Nothing)) of Just v -> Just v; Nothing -> Just (take (n - 0) (drop 0 words)))
+    |                                                                                                           ^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:135:138: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(n)’
+      In the first argument of ‘(-)’, namely ‘_asInt (n)’
+      In the expression: _asInt (n) - 1
+    |
+135 |     (let n = length words in case whileLoop (\() -> (((_asInt (n) > 0) && (words !! (_asInt (n) - 1))) == "")) (\() -> (let n = (_asInt (n) - 1) in Nothing)) of Just v -> Just v; Nothing -> Just (take (n - 0) (drop 0 words)))
+    |                                                                                                                                          ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:140:120: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(i)’
+      In the first argument of ‘(+)’, namely ‘_asInt (i)’
+      In the expression: _asInt (i) + 1
+    |
+140 |     (let out = "" in (let i = 0 in case whileLoop (\() -> (i < n)) (\() -> (let out = (out + " ") in (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> Just (out)))
+    |                                                                                                                        ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:145:26: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(width)’
+      In the first argument of ‘(-)’, namely ‘_asInt (width)’
+      In the expression: _asInt (width) - length word
+    |
+145 |     (let diff = (_asInt (width) - length word) in case if (_asInt (align) == 0) then Just ((word + spaces diff)) else Nothing of Just v -> Just v; Nothing -> case if (_asInt (align) == 2) then Just ((spaces diff + word)) else Nothing of Just v -> Just v; Nothing -> (let left = (read ((div diff 2)) :: Int) in (let right = (diff - left) in Just (((spaces left + word) + spaces right)))))
+    |                          ^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:145:68: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(align)’
+      In the first argument of ‘(==)’, namely ‘_asInt (align)’
+      In the expression: _asInt (align) == 0
+    |
+145 |     (let diff = (_asInt (width) - length word) in case if (_asInt (align) == 0) then Just ((word + spaces diff)) else Nothing of Just v -> Just v; Nothing -> case if (_asInt (align) == 2) then Just ((spaces diff + word)) else Nothing of Just v -> Just v; Nothing -> (let left = (read ((div diff 2)) :: Int) in (let right = (diff - left) in Just (((spaces left + word) + spaces right)))))
+    |                                                                    ^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:145:176: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(align)’
+      In the first argument of ‘(==)’, namely ‘_asInt (align)’
+      In the expression: _asInt (align) == 2
+    |
+145 |     (let diff = (_asInt (width) - length word) in case if (_asInt (align) == 0) then Just ((word + spaces diff)) else Nothing of Just v -> Just v; Nothing -> case if (_asInt (align) == 2) then Just ((spaces diff + word)) else Nothing of Just v -> Just v; Nothing -> (let left = (read ((div diff 2)) :: Int) in (let right = (diff - left) in Just (((spaces left + word) + spaces right)))))
+    |                                                                                                                                                                                ^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:145:291: error:
+    • Couldn't match type ‘Int’ with ‘[Char]’
+      Expected: String
+        Actual: Int
+    • In the first argument of ‘div’, namely ‘diff’
+      In the first argument of ‘read’, namely ‘((div diff 2))’
+      In the expression: read ((div diff 2)) :: Int
+    |
+145 |     (let diff = (_asInt (width) - length word) in case if (_asInt (align) == 0) then Just ((word + spaces diff)) else Nothing of Just v -> Just v; Nothing -> case if (_asInt (align) == 2) then Just ((spaces diff + word)) else Nothing of Just v -> Just v; Nothing -> (let left = (read ((div diff 2)) :: Int) in (let right = (diff - left) in Just (((spaces left + word) + spaces right)))))
+    |                                                                                                                                                                                                                                                                                                   ^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:147:21: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(width)’
+      In the first argument of ‘(-)’, namely ‘_asInt (width)’
+      In the expression: _asInt (width) - length word
+    |
+147 |     diff = (_asInt (width) - length word)
+    |                     ^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:151:14: error:
+    • Couldn't match expected type ‘Map.Map String ()’
+                  with actual type ‘()’
+    • In the first argument of ‘fromMaybe’, namely ‘(())’
+      In the first argument of ‘($)’, namely ‘fromMaybe (())’
+      In the expression:
+        fromMaybe (())
+          $ (let lines = split text "\n"
+             in
+               (let fmtLines = []
+                in
+                  (let width = []
+                   in
+                     (let i = 0
+                      in
+                        case
+                            whileLoop
+                              (\ () -> (_asInt (i) < length lines))
+                              (\ ()
+                                 -> case
+                                        if (length (lines !! i) == 0) then
+                                            (let ... in Nothing)
+                                        else
+                                            Nothing
+                                    of
+                                      Just v -> Just v
+                                      Nothing
+                                        -> (let ...
+                                            in
+                                              (let ...
+                                               in
+                                                 (let ...
+                                                  in
+                                                    case whileLoop (\ () -> ...) (\ () -> ...) of
+                                                      Just v -> ...
+                                                      Nothing -> ...))))
+                        of
+                          Just v -> Just v
+                          Nothing
+                            -> Just (Map.fromList [("text", fmtLines), ("width", width)])))))
+    |
+151 |   fromMaybe (()) $
+    |              ^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:152:178: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘AnyValue’
+    • In the second argument of ‘(!!)’, namely ‘i’
+      In the first argument of ‘length’, namely ‘(lines !! i)’
+      In the first argument of ‘(==)’, namely ‘length (lines !! i)’
+    |
+152 |     (let lines = split text "\n" in (let fmtLines = [] in (let width = [] in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length lines)) (\() -> case if (length (lines !! i) == 0) then (let i = (_asInt (i) + 1) in Nothing) else Nothing of Just v -> Just v; Nothing -> (let words = rstripEmpty split (lines !! i) "$" in (let fmtLines = (fmtLines ++ [words]) in (let j = 0 in case whileLoop (\() -> (_asInt (j) < length words)) (\() -> (let wlen = length (words !! j) in case if (_asInt (j) == length width) then (let width = (width ++ [wlen]) in Nothing) else if (wlen > (width !! j)) then (let width = Map.insert j wlen width in Nothing) else Nothing of Just v -> Just v; Nothing -> (let j = (_asInt (j) + 1) in Nothing))) of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))))) of Just v -> Just v; Nothing -> Just (Map.fromList [("text", fmtLines), ("width", width)])))))
+    |                                                                                                                                                                                  ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:152:210: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(i)’
+      In the first argument of ‘(+)’, namely ‘_asInt (i)’
+      In the expression: _asInt (i) + 1
+    |
+152 |     (let lines = split text "\n" in (let fmtLines = [] in (let width = [] in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length lines)) (\() -> case if (length (lines !! i) == 0) then (let i = (_asInt (i) + 1) in Nothing) else Nothing of Just v -> Just v; Nothing -> (let words = rstripEmpty split (lines !! i) "$" in (let fmtLines = (fmtLines ++ [words]) in (let j = 0 in case whileLoop (\() -> (_asInt (j) < length words)) (\() -> (let wlen = length (words !! j) in case if (_asInt (j) == length width) then (let width = (width ++ [wlen]) in Nothing) else if (wlen > (width !! j)) then (let width = Map.insert j wlen width in Nothing) else Nothing of Just v -> Just v; Nothing -> (let j = (_asInt (j) + 1) in Nothing))) of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))))) of Just v -> Just v; Nothing -> Just (Map.fromList [("text", fmtLines), ("width", width)])))))
+    |                                                                                                                                                                                                                  ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:152:288: error:
+    • Couldn't match expected type: String -> String -> t
+                  with actual type: [String]
+    • The function ‘rstripEmpty’ is applied to three value arguments,
+        but its type ‘[String] -> [String]’ has only one
+      In the expression: rstripEmpty split (lines !! i) "$"
+      In an equation for ‘words’:
+          words = rstripEmpty split (lines !! i) "$"
+    • Relevant bindings include
+        words :: t
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:152:280)
+    |
+152 |     (let lines = split text "\n" in (let fmtLines = [] in (let width = [] in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length lines)) (\() -> case if (length (lines !! i) == 0) then (let i = (_asInt (i) + 1) in Nothing) else Nothing of Just v -> Just v; Nothing -> (let words = rstripEmpty split (lines !! i) "$" in (let fmtLines = (fmtLines ++ [words]) in (let j = 0 in case whileLoop (\() -> (_asInt (j) < length words)) (\() -> (let wlen = length (words !! j) in case if (_asInt (j) == length width) then (let width = (width ++ [wlen]) in Nothing) else if (wlen > (width !! j)) then (let width = Map.insert j wlen width in Nothing) else Nothing of Just v -> Just v; Nothing -> (let j = (_asInt (j) + 1) in Nothing))) of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))))) of Just v -> Just v; Nothing -> Just (Map.fromList [("text", fmtLines), ("width", width)])))))
+    |                                                                                                                                                                                                                                                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:152:300: error:
+    • Couldn't match expected type: [String]
+                  with actual type: String -> String -> [String]
+    • Probable cause: ‘split’ is applied to too few arguments
+      In the first argument of ‘rstripEmpty’, namely ‘split’
+      In the expression: rstripEmpty split (lines !! i) "$"
+      In an equation for ‘words’:
+          words = rstripEmpty split (lines !! i) "$"
+    |
+152 |     (let lines = split text "\n" in (let fmtLines = [] in (let width = [] in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length lines)) (\() -> case if (length (lines !! i) == 0) then (let i = (_asInt (i) + 1) in Nothing) else Nothing of Just v -> Just v; Nothing -> (let words = rstripEmpty split (lines !! i) "$" in (let fmtLines = (fmtLines ++ [words]) in (let j = 0 in case whileLoop (\() -> (_asInt (j) < length words)) (\() -> (let wlen = length (words !! j) in case if (_asInt (j) == length width) then (let width = (width ++ [wlen]) in Nothing) else if (wlen > (width !! j)) then (let width = Map.insert j wlen width in Nothing) else Nothing of Just v -> Just v; Nothing -> (let j = (_asInt (j) + 1) in Nothing))) of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))))) of Just v -> Just v; Nothing -> Just (Map.fromList [("text", fmtLines), ("width", width)])))))
+    |                                                                                                                                                                                                                                                                                                            ^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:152:316: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘AnyValue’
+    • In the second argument of ‘(!!)’, namely ‘i’
+      In the second argument of ‘rstripEmpty’, namely ‘(lines !! i)’
+      In the expression: rstripEmpty split (lines !! i) "$"
+    |
+152 |     (let lines = split text "\n" in (let fmtLines = [] in (let width = [] in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length lines)) (\() -> case if (length (lines !! i) == 0) then (let i = (_asInt (i) + 1) in Nothing) else Nothing of Just v -> Just v; Nothing -> (let words = rstripEmpty split (lines !! i) "$" in (let fmtLines = (fmtLines ++ [words]) in (let j = 0 in case whileLoop (\() -> (_asInt (j) < length words)) (\() -> (let wlen = length (words !! j) in case if (_asInt (j) == length width) then (let width = (width ++ [wlen]) in Nothing) else if (wlen > (width !! j)) then (let width = Map.insert j wlen width in Nothing) else Nothing of Just v -> Just v; Nothing -> (let j = (_asInt (j) + 1) in Nothing))) of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))))) of Just v -> Just v; Nothing -> Just (Map.fromList [("text", fmtLines), ("width", width)])))))
+    |                                                                                                                                                                                                                                                                                                                            ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:152:470: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘AnyValue’
+    • In the second argument of ‘(!!)’, namely ‘j’
+      In the first argument of ‘length’, namely ‘(words !! j)’
+      In the expression: length (words !! j)
+    |
+152 |     (let lines = split text "\n" in (let fmtLines = [] in (let width = [] in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length lines)) (\() -> case if (length (lines !! i) == 0) then (let i = (_asInt (i) + 1) in Nothing) else Nothing of Just v -> Just v; Nothing -> (let words = rstripEmpty split (lines !! i) "$" in (let fmtLines = (fmtLines ++ [words]) in (let j = 0 in case whileLoop (\() -> (_asInt (j) < length words)) (\() -> (let wlen = length (words !! j) in case if (_asInt (j) == length width) then (let width = (width ++ [wlen]) in Nothing) else if (wlen > (width !! j)) then (let width = Map.insert j wlen width in Nothing) else Nothing of Just v -> Just v; Nothing -> (let j = (_asInt (j) + 1) in Nothing))) of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))))) of Just v -> Just v; Nothing -> Just (Map.fromList [("text", fmtLines), ("width", width)])))))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:152:587: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘AnyValue’
+    • In the second argument of ‘(!!)’, namely ‘j’
+      In the second argument of ‘(>)’, namely ‘(width !! j)’
+      In the expression: wlen > (width !! j)
+    |
+152 |     (let lines = split text "\n" in (let fmtLines = [] in (let width = [] in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length lines)) (\() -> case if (length (lines !! i) == 0) then (let i = (_asInt (i) + 1) in Nothing) else Nothing of Just v -> Just v; Nothing -> (let words = rstripEmpty split (lines !! i) "$" in (let fmtLines = (fmtLines ++ [words]) in (let j = 0 in case whileLoop (\() -> (_asInt (j) < length words)) (\() -> (let wlen = length (words !! j) in case if (_asInt (j) == length width) then (let width = (width ++ [wlen]) in Nothing) else if (wlen > (width !! j)) then (let width = Map.insert j wlen width in Nothing) else Nothing of Just v -> Just v; Nothing -> (let j = (_asInt (j) + 1) in Nothing))) of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))))) of Just v -> Just v; Nothing -> Just (Map.fromList [("text", fmtLines), ("width", width)])))))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:152:708: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(j)’
+      In the first argument of ‘(+)’, namely ‘_asInt (j)’
+      In the expression: _asInt (j) + 1
+    |
+152 |     (let lines = split text "\n" in (let fmtLines = [] in (let width = [] in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length lines)) (\() -> case if (length (lines !! i) == 0) then (let i = (_asInt (i) + 1) in Nothing) else Nothing of Just v -> Just v; Nothing -> (let words = rstripEmpty split (lines !! i) "$" in (let fmtLines = (fmtLines ++ [words]) in (let j = 0 in case whileLoop (\() -> (_asInt (j) < length words)) (\() -> (let wlen = length (words !! j) in case if (_asInt (j) == length width) then (let width = (width ++ [wlen]) in Nothing) else if (wlen > (width !! j)) then (let width = Map.insert j wlen width in Nothing) else Nothing of Just v -> Just v; Nothing -> (let j = (_asInt (j) + 1) in Nothing))) of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))))) of Just v -> Just v; Nothing -> Just (Map.fromList [("text", fmtLines), ("width", width)])))))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:152:780: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(i)’
+      In the first argument of ‘(+)’, namely ‘_asInt (i)’
+      In the expression: _asInt (i) + 1
+    |
+152 |     (let lines = split text "\n" in (let fmtLines = [] in (let width = [] in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length lines)) (\() -> case if (length (lines !! i) == 0) then (let i = (_asInt (i) + 1) in Nothing) else Nothing of Just v -> Just v; Nothing -> (let words = rstripEmpty split (lines !! i) "$" in (let fmtLines = (fmtLines ++ [words]) in (let j = 0 in case whileLoop (\() -> (_asInt (j) < length words)) (\() -> (let wlen = length (words !! j) in case if (_asInt (j) == length width) then (let width = (width ++ [wlen]) in Nothing) else if (wlen > (width !! j)) then (let width = Map.insert j wlen width in Nothing) else Nothing of Just v -> Just v; Nothing -> (let j = (_asInt (j) + 1) in Nothing))) of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))))) of Just v -> Just v; Nothing -> Just (Map.fromList [("text", fmtLines), ("width", width)])))))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:152:865: error:
+    • Couldn't match expected type ‘()’ with actual type ‘[a0]’
+    • In the expression: fmtLines
+      In the expression: ("text", fmtLines)
+      In the first argument of ‘Map.fromList’, namely
+        ‘[("text", fmtLines), ("width", width)]’
+    |
+152 |     (let lines = split text "\n" in (let fmtLines = [] in (let width = [] in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length lines)) (\() -> case if (length (lines !! i) == 0) then (let i = (_asInt (i) + 1) in Nothing) else Nothing of Just v -> Just v; Nothing -> (let words = rstripEmpty split (lines !! i) "$" in (let fmtLines = (fmtLines ++ [words]) in (let j = 0 in case whileLoop (\() -> (_asInt (j) < length words)) (\() -> (let wlen = length (words !! j) in case if (_asInt (j) == length width) then (let width = (width ++ [wlen]) in Nothing) else if (wlen > (width !! j)) then (let width = Map.insert j wlen width in Nothing) else Nothing of Just v -> Just v; Nothing -> (let j = (_asInt (j) + 1) in Nothing))) of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))))) of Just v -> Just v; Nothing -> Just (Map.fromList [("text", fmtLines), ("width", width)])))))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:152:886: error:
+    • Couldn't match expected type ‘()’ with actual type ‘[a1]’
+    • In the expression: width
+      In the expression: ("width", width)
+      In the first argument of ‘Map.fromList’, namely
+        ‘[("text", fmtLines), ("width", width)]’
+    |
+152 |     (let lines = split text "\n" in (let fmtLines = [] in (let width = [] in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length lines)) (\() -> case if (length (lines !! i) == 0) then (let i = (_asInt (i) + 1) in Nothing) else Nothing of Just v -> Just v; Nothing -> (let words = rstripEmpty split (lines !! i) "$" in (let fmtLines = (fmtLines ++ [words]) in (let j = 0 in case whileLoop (\() -> (_asInt (j) < length words)) (\() -> (let wlen = length (words !! j) in case if (_asInt (j) == length width) then (let width = (width ++ [wlen]) in Nothing) else if (wlen > (width !! j)) then (let width = Map.insert j wlen width in Nothing) else Nothing of Just v -> Just v; Nothing -> (let j = (_asInt (j) + 1) in Nothing))) of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))))) of Just v -> Just v; Nothing -> Just (Map.fromList [("text", fmtLines), ("width", width)])))))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:157:196: error:
+    • Couldn't match expected type ‘t1 a2’ with actual type ‘()’
+    • In the first argument of ‘length’, namely ‘lines’
+      In the second argument of ‘(<)’, namely ‘length lines’
+      In the expression: _asInt (i) < length lines
+    |
+157 |     (let lines = fromMaybe (error "missing") (Map.lookup "text" f) in (let width = fromMaybe (error "missing") (Map.lookup "width" f) in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length lines)) (\() -> (let words = (lines !! i) in (let line = "" in (let j = 0 in case whileLoop (\() -> (_asInt (j) < length words)) (\() -> (let line = ((line + pad (words !! j) (width !! j) align) + " ") in (let j = (_asInt (j) + 1) in Nothing))) of Just v -> Just v; Nothing -> case (let _ = putStrLn (_showAny (line)) in Nothing) of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))))) of Just v -> Just v; Nothing -> (let _ = putStrLn ("") in Nothing))))
+    |                                                                                                                                                                                                    ^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:157:226: error:
+    • Couldn't match expected type ‘[a]’ with actual type ‘()’
+    • In the first argument of ‘(!!)’, namely ‘lines’
+      In the expression: lines !! i
+      In an equation for ‘words’: words = (lines !! i)
+    • Relevant bindings include
+        words :: a
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:157:217)
+    |
+157 |     (let lines = fromMaybe (error "missing") (Map.lookup "text" f) in (let width = fromMaybe (error "missing") (Map.lookup "width" f) in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length lines)) (\() -> (let words = (lines !! i) in (let line = "" in (let j = 0 in case whileLoop (\() -> (_asInt (j) < length words)) (\() -> (let line = ((line + pad (words !! j) (width !! j) align) + " ") in (let j = (_asInt (j) + 1) in Nothing))) of Just v -> Just v; Nothing -> case (let _ = putStrLn (_showAny (line)) in Nothing) of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))))) of Just v -> Just v; Nothing -> (let _ = putStrLn ("") in Nothing))))
+    |                                                                                                                                                                                                                                  ^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:157:235: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘AnyValue’
+    • In the second argument of ‘(!!)’, namely ‘i’
+      In the expression: lines !! i
+      In an equation for ‘words’: words = (lines !! i)
+    |
+157 |     (let lines = fromMaybe (error "missing") (Map.lookup "text" f) in (let width = fromMaybe (error "missing") (Map.lookup "width" f) in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length lines)) (\() -> (let words = (lines !! i) in (let line = "" in (let j = 0 in case whileLoop (\() -> (_asInt (j) < length words)) (\() -> (let line = ((line + pad (words !! j) (width !! j) align) + " ") in (let j = (_asInt (j) + 1) in Nothing))) of Just v -> Just v; Nothing -> case (let _ = putStrLn (_showAny (line)) in Nothing) of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))))) of Just v -> Just v; Nothing -> (let _ = putStrLn ("") in Nothing))))
+    |                                                                                                                                                                                                                                           ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:157:368: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘AnyValue’
+    • In the second argument of ‘(!!)’, namely ‘j’
+      In the first argument of ‘pad’, namely ‘(words !! j)’
+      In the second argument of ‘(+)’, namely
+        ‘pad (words !! j) (width !! j) align’
+    |
+157 |     (let lines = fromMaybe (error "missing") (Map.lookup "text" f) in (let width = fromMaybe (error "missing") (Map.lookup "width" f) in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length lines)) (\() -> (let words = (lines !! i) in (let line = "" in (let j = 0 in case whileLoop (\() -> (_asInt (j) < length words)) (\() -> (let line = ((line + pad (words !! j) (width !! j) align) + " ") in (let j = (_asInt (j) + 1) in Nothing))) of Just v -> Just v; Nothing -> case (let _ = putStrLn (_showAny (line)) in Nothing) of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))))) of Just v -> Just v; Nothing -> (let _ = putStrLn ("") in Nothing))))
+    |                                                                                                                                                                                                                                                                                                                                                                                ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:157:372: error:
+    • Couldn't match expected type ‘[Int]’ with actual type ‘()’
+    • In the first argument of ‘(!!)’, namely ‘width’
+      In the second argument of ‘pad’, namely ‘(width !! j)’
+      In the second argument of ‘(+)’, namely
+        ‘pad (words !! j) (width !! j) align’
+    |
+157 |     (let lines = fromMaybe (error "missing") (Map.lookup "text" f) in (let width = fromMaybe (error "missing") (Map.lookup "width" f) in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length lines)) (\() -> (let words = (lines !! i) in (let line = "" in (let j = 0 in case whileLoop (\() -> (_asInt (j) < length words)) (\() -> (let line = ((line + pad (words !! j) (width !! j) align) + " ") in (let j = (_asInt (j) + 1) in Nothing))) of Just v -> Just v; Nothing -> case (let _ = putStrLn (_showAny (line)) in Nothing) of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))))) of Just v -> Just v; Nothing -> (let _ = putStrLn ("") in Nothing))))
+    |                                                                                                                                                                                                                                                                                                                                                                                    ^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:157:381: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘AnyValue’
+    • In the second argument of ‘(!!)’, namely ‘j’
+      In the second argument of ‘pad’, namely ‘(width !! j)’
+      In the second argument of ‘(+)’, namely
+        ‘pad (words !! j) (width !! j) align’
+    |
+157 |     (let lines = fromMaybe (error "missing") (Map.lookup "text" f) in (let width = fromMaybe (error "missing") (Map.lookup "width" f) in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length lines)) (\() -> (let words = (lines !! i) in (let line = "" in (let j = 0 in case whileLoop (\() -> (_asInt (j) < length words)) (\() -> (let line = ((line + pad (words !! j) (width !! j) align) + " ") in (let j = (_asInt (j) + 1) in Nothing))) of Just v -> Just v; Nothing -> case (let _ = putStrLn (_showAny (line)) in Nothing) of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))))) of Just v -> Just v; Nothing -> (let _ = putStrLn ("") in Nothing))))
+    |                                                                                                                                                                                                                                                                                                                                                                                             ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:157:419: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(j)’
+      In the first argument of ‘(+)’, namely ‘_asInt (j)’
+      In the expression: _asInt (j) + 1
+    |
+157 |     (let lines = fromMaybe (error "missing") (Map.lookup "text" f) in (let width = fromMaybe (error "missing") (Map.lookup "width" f) in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length lines)) (\() -> (let words = (lines !! i) in (let line = "" in (let j = 0 in case whileLoop (\() -> (_asInt (j) < length words)) (\() -> (let line = ((line + pad (words !! j) (width !! j) align) + " ") in (let j = (_asInt (j) + 1) in Nothing))) of Just v -> Just v; Nothing -> case (let _ = putStrLn (_showAny (line)) in Nothing) of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))))) of Just v -> Just v; Nothing -> (let _ = putStrLn ("") in Nothing))))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                   ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:157:507: error:
+    • Couldn't match type ‘[Char]’ with ‘AnyValue’
+      Expected: AnyValue
+        Actual: String
+    • In the first argument of ‘_showAny’, namely ‘(line)’
+      In the first argument of ‘putStrLn’, namely ‘(_showAny (line))’
+      In the expression: putStrLn (_showAny (line))
+    |
+157 |     (let lines = fromMaybe (error "missing") (Map.lookup "text" f) in (let width = fromMaybe (error "missing") (Map.lookup "width" f) in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length lines)) (\() -> (let words = (lines !! i) in (let line = "" in (let j = 0 in case whileLoop (\() -> (_asInt (j) < length words)) (\() -> (let line = ((line + pad (words !! j) (width !! j) align) + " ") in (let j = (_asInt (j) + 1) in Nothing))) of Just v -> Just v; Nothing -> case (let _ = putStrLn (_showAny (line)) in Nothing) of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))))) of Just v -> Just v; Nothing -> (let _ = putStrLn ("") in Nothing))))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:157:576: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(i)’
+      In the first argument of ‘(+)’, namely ‘_asInt (i)’
+      In the expression: _asInt (i) + 1
+    |
+157 |     (let lines = fromMaybe (error "missing") (Map.lookup "text" f) in (let width = fromMaybe (error "missing") (Map.lookup "width" f) in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length lines)) (\() -> (let words = (lines !! i) in (let line = "" in (let j = 0 in case whileLoop (\() -> (_asInt (j) < length words)) (\() -> (let line = ((line + pad (words !! j) (width !! j) align) + " ") in (let j = (_asInt (j) + 1) in Nothing))) of Just v -> Just v; Nothing -> case (let _ = putStrLn (_showAny (line)) in Nothing) of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))))) of Just v -> Just v; Nothing -> (let _ = putStrLn ("") in Nothing))))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:168:3: error:
+    • Couldn't match expected type ‘IO a3’ with actual type ‘()’
+    • In a stmt of a 'do' block: printFmt f 0
+      In the expression:
+        do printFmt f 0
+           printFmt f 1
+           printFmt f 2
+      In an equation for ‘main’:
+          main
+            = do printFmt f 0
+                 printFmt f 1
+                 printFmt f 2
+    |
+168 |   printFmt f 0
+    |   ^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:169:3: error:
+    • Couldn't match expected type ‘IO a4’ with actual type ‘()’
+    • In a stmt of a 'do' block: printFmt f 1
+      In the expression:
+        do printFmt f 0
+           printFmt f 1
+           printFmt f 2
+      In an equation for ‘main’:
+          main
+            = do printFmt f 0
+                 printFmt f 1
+                 printFmt f 2
+    |
+169 |   printFmt f 1
+    |   ^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/align-columns.hs:170:3: error:
+    • Couldn't match expected type ‘IO ()’ with actual type ‘()’
+    • In a stmt of a 'do' block: printFmt f 2
+      In the expression:
+        do printFmt f 0
+           printFmt f 1
+           printFmt f 2
+      In an equation for ‘main’:
+          main
+            = do printFmt f 0
+                 printFmt f 1
+                 printFmt f 2
+    |
+170 |   printFmt f 2
+    |   ^^^^^^^^^^^^

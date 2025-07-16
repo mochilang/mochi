@@ -1,0 +1,73 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/algebraic-data-types.hs:43:18: error:
+    Not in scope: ‘Map.lookup’
+    NB: no module named ‘Map’ is imported.
+   |
+43 |          in case Map.lookup k m of
+   |                  ^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/algebraic-data-types.hs:44:33: error:
+    Not in scope: ‘Map.insert’
+    NB: no module named ‘Map’ is imported.
+    Suggested fix: Perhaps use ‘Main.insert’ (line 118)
+   |
+44 |               Just is -> go xs (Map.insert k (is ++ [x]) m) order
+   |                                 ^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/algebraic-data-types.hs:45:33: error:
+    Not in scope: ‘Map.insert’
+    NB: no module named ‘Map’ is imported.
+    Suggested fix: Perhaps use ‘Main.insert’ (line 118)
+   |
+45 |               Nothing -> go xs (Map.insert k [x] m) (order ++ [k])
+   |                                 ^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/algebraic-data-types.hs:46:27: error:
+    Not in scope: ‘Map.empty’
+    NB: no module named ‘Map’ is imported.
+   |
+46 |       (m, order) = go src Map.empty []
+   |                           ^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/algebraic-data-types.hs:47:32: error:
+    Not in scope: ‘Map.lookup’
+    NB: no module named ‘Map’ is imported.
+   |
+47 |    in [MGroup k (fromMaybe [] (Map.lookup k m)) | k <- order]
+   |                                ^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/algebraic-data-types.hs:83:41: error:
+    Not in scope: type constructor or class ‘Map.Map’
+    NB: no module named ‘Map’ is imported.
+   |
+83 | _parseCSV :: String -> Bool -> Char -> [Map.Map String String]
+   |                                         ^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/algebraic-data-types.hs:96:21: error:
+    Not in scope: ‘Map.fromList’
+    NB: no module named ‘Map’ is imported.
+   |
+96 |                  in Map.fromList
+   |                     ^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/algebraic-data-types.hs:102:38: error:
+    Not in scope: type constructor or class ‘Map.Map’
+    NB: no module named ‘Map’ is imported.
+    |
+102 | node :: String -> () -> Int -> () -> Map.Map String ()
+    |                                      ^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/algebraic-data-types.hs:103:20: error:
+    Not in scope: ‘Map.fromList’
+    NB: no module named ‘Map’ is imported.
+    |
+103 | node cl le aa ri = Map.fromList [("cl", cl), ("le", le), ("aa", aa), ("ri", ri)]
+    |                    ^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/algebraic-data-types.hs:117:24: error:
+    Not in scope: type constructor or class ‘Map.Map’
+    NB: no module named ‘Map’ is imported.
+    |
+117 | insert :: () -> Int -> Map.Map String ()
+    |                        ^^^^^^^

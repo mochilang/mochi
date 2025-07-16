@@ -1,0 +1,9 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/bitmap-b-zier-curves-cubic.hs:158:1: error:
+    Multiple declarations of ‘b’
+    Declared at: /workspace/mochi/tests/rosetta/out/Haskell/bitmap-b-zier-curves-cubic.hs:107:5
+                 /workspace/mochi/tests/rosetta/out/Haskell/bitmap-b-zier-curves-cubic.hs:158:1
+    |
+158 | b = newBitmap 400 300
+    | ^

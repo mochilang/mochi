@@ -1,0 +1,74 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-root-mean-square.hs:34:22: error:
+    Ambiguous occurrence ‘sum’
+    It could refer to
+       either ‘Prelude.sum’,
+              imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-root-mean-square.hs:5:8-11
+              (and originally defined in ‘Data.Foldable’)
+           or ‘Main.sum’,
+              defined at /workspace/mochi/tests/rosetta/out/Haskell/averages-root-mean-square.hs:109:1
+   |
+34 |   | otherwise = div (sum xs) (fromIntegral (length xs))
+   |                      ^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-root-mean-square.hs:43:18: error:
+    Not in scope: ‘Map.lookup’
+    NB: no module named ‘Map’ is imported.
+   |
+43 |          in case Map.lookup k m of
+   |                  ^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-root-mean-square.hs:44:33: error:
+    Not in scope: ‘Map.insert’
+    NB: no module named ‘Map’ is imported.
+   |
+44 |               Just is -> go xs (Map.insert k (is ++ [x]) m) order
+   |                                 ^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-root-mean-square.hs:45:33: error:
+    Not in scope: ‘Map.insert’
+    NB: no module named ‘Map’ is imported.
+   |
+45 |               Nothing -> go xs (Map.insert k [x] m) (order ++ [k])
+   |                                 ^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-root-mean-square.hs:46:27: error:
+    Not in scope: ‘Map.empty’
+    NB: no module named ‘Map’ is imported.
+   |
+46 |       (m, order) = go src Map.empty []
+   |                           ^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-root-mean-square.hs:47:32: error:
+    Not in scope: ‘Map.lookup’
+    NB: no module named ‘Map’ is imported.
+   |
+47 |    in [MGroup k (fromMaybe [] (Map.lookup k m)) | k <- order]
+   |                                ^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-root-mean-square.hs:83:41: error:
+    Not in scope: type constructor or class ‘Map.Map’
+    NB: no module named ‘Map’ is imported.
+   |
+83 | _parseCSV :: String -> Bool -> Char -> [Map.Map String String]
+   |                                         ^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-root-mean-square.hs:96:21: error:
+    Not in scope: ‘Map.fromList’
+    NB: no module named ‘Map’ is imported.
+   |
+96 |                  in Map.fromList
+   |                     ^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-root-mean-square.hs:113:19: error:
+    Ambiguous occurrence ‘sum’
+    It could refer to
+       either ‘Prelude.sum’,
+              imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/averages-root-mean-square.hs:5:8-11
+              (and originally defined in ‘Data.Foldable’)
+           or ‘Main.sum’,
+              defined at /workspace/mochi/tests/rosetta/out/Haskell/averages-root-mean-square.hs:109:1
+    |
+113 | rms = sqrtApprox (sum / ((read n :: Double)))
+    |                   ^^^

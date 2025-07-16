@@ -1,0 +1,9 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/apply-a-callback-to-an-array-2.hs:98:1: error:
+    Invalid type signature: Map :: ...
+    Suggested fix:
+      A type signature should be of form <variables> :: <type>
+   |
+98 | Map :: [Int] -> (Int -> Int) -> [Int]
+   | ^^^

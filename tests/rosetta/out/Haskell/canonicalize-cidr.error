@@ -1,0 +1,13 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/canonicalize-cidr.hs:165:401: error:
+    Ambiguous occurrence ‘repeat’
+    It could refer to
+       either ‘Prelude.repeat’,
+              imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/canonicalize-cidr.hs:5:8-11
+              (and originally defined in ‘GHC.List’)
+           or ‘Main.repeat’,
+              defined at /workspace/mochi/tests/rosetta/out/Haskell/canonicalize-cidr.hs:138:1
+    |
+165 |     (let parts = split cidr "/" in (let dotted = (parts !! 0) in (let size = parseIntStr (parts !! 1) in (let binParts = [] in case foldr (\p acc -> case (let binParts = (binParts ++ [toBinary parseIntStr p 8]) in Nothing) of Just v -> Just v; Nothing -> acc) Nothing split dotted "." of Just v -> Just v; Nothing -> (let binary = join binParts "" in (let binary = (take (size - 0) (drop 0 binary) + repeat "0" (32 - _asInt (size))) in (let canonParts = [] in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length binary)) (\() -> (let canonParts = (canonParts ++ [show binToInt take ((_asInt (i) + 8) - i) (drop i binary)]) in (let i = (_asInt (i) + 8) in Nothing))) of Just v -> Just v; Nothing -> Just (((join canonParts "." ++ "/") + (parts !! 1)))))))))))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                 ^^^^^^

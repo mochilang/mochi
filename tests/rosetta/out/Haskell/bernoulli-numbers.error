@@ -1,0 +1,150 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/bernoulli-numbers.hs:130:107: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(m)’
+      In the first argument of ‘(+)’, namely ‘_asInt (m)’
+      In the second argument of ‘(/)’, namely ‘(((_asInt (m) + 1)))’
+    |
+130 |     (let a = [] in (let m = 0 in case whileLoop (\() -> (m <= n)) (\() -> (let a = (a ++ [(1 / (((_asInt (m) + 1))))]) in (let j = m in case whileLoop (\() -> (_asInt (j) >= 1)) (\() -> (let a = Map.insert (_asInt (j) - 1) ((j) * (((a !! (_asInt (j) - 1)) - (a !! j)))) a in (let j = (_asInt (j) - 1) in Nothing))) of Just v -> Just v; Nothing -> (let m = (_asInt (m) + 1) in Nothing)))) of Just v -> Just v; Nothing -> Just ((a !! 0))))
+    |                                                                                                           ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/bernoulli-numbers.hs:130:216: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(j)’
+      In the first argument of ‘(-)’, namely ‘_asInt (j)’
+      In the first argument of ‘Map.insert’, namely ‘(_asInt (j) - 1)’
+    |
+130 |     (let a = [] in (let m = 0 in case whileLoop (\() -> (m <= n)) (\() -> (let a = (a ++ [(1 / (((_asInt (m) + 1))))]) in (let j = m in case whileLoop (\() -> (_asInt (j) >= 1)) (\() -> (let a = Map.insert (_asInt (j) - 1) ((j) * (((a !! (_asInt (j) - 1)) - (a !! j)))) a in (let j = (_asInt (j) - 1) in Nothing))) of Just v -> Just v; Nothing -> (let m = (_asInt (m) + 1) in Nothing)))) of Just v -> Just v; Nothing -> Just ((a !! 0))))
+    |                                                                                                                                                                                                                        ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/bernoulli-numbers.hs:130:234: error:
+    • Couldn't match expected type: [Int]
+                  with actual type: Map.Map Int Int
+    • In the first argument of ‘(!!)’, namely ‘a’
+      In the first argument of ‘(-)’, namely ‘(a !! (_asInt (j) - 1))’
+      In the second argument of ‘(*)’, namely
+        ‘(((a !! (_asInt (j) - 1)) - (a !! j)))’
+    |
+130 |     (let a = [] in (let m = 0 in case whileLoop (\() -> (m <= n)) (\() -> (let a = (a ++ [(1 / (((_asInt (m) + 1))))]) in (let j = m in case whileLoop (\() -> (_asInt (j) >= 1)) (\() -> (let a = Map.insert (_asInt (j) - 1) ((j) * (((a !! (_asInt (j) - 1)) - (a !! j)))) a in (let j = (_asInt (j) - 1) in Nothing))) of Just v -> Just v; Nothing -> (let m = (_asInt (m) + 1) in Nothing)))) of Just v -> Just v; Nothing -> Just ((a !! 0))))
+    |                                                                                                                                                                                                                                          ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/bernoulli-numbers.hs:130:248: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(j)’
+      In the first argument of ‘(-)’, namely ‘_asInt (j)’
+      In the second argument of ‘(!!)’, namely ‘(_asInt (j) - 1)’
+    |
+130 |     (let a = [] in (let m = 0 in case whileLoop (\() -> (m <= n)) (\() -> (let a = (a ++ [(1 / (((_asInt (m) + 1))))]) in (let j = m in case whileLoop (\() -> (_asInt (j) >= 1)) (\() -> (let a = Map.insert (_asInt (j) - 1) ((j) * (((a !! (_asInt (j) - 1)) - (a !! j)))) a in (let j = (_asInt (j) - 1) in Nothing))) of Just v -> Just v; Nothing -> (let m = (_asInt (m) + 1) in Nothing)))) of Just v -> Just v; Nothing -> Just ((a !! 0))))
+    |                                                                                                                                                                                                                                                        ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/bernoulli-numbers.hs:130:260: error:
+    • Couldn't match expected type: [Int]
+                  with actual type: Map.Map Int Int
+    • In the first argument of ‘(!!)’, namely ‘a’
+      In the second argument of ‘(-)’, namely ‘(a !! j)’
+      In the second argument of ‘(*)’, namely
+        ‘(((a !! (_asInt (j) - 1)) - (a !! j)))’
+    |
+130 |     (let a = [] in (let m = 0 in case whileLoop (\() -> (m <= n)) (\() -> (let a = (a ++ [(1 / (((_asInt (m) + 1))))]) in (let j = m in case whileLoop (\() -> (_asInt (j) >= 1)) (\() -> (let a = Map.insert (_asInt (j) - 1) ((j) * (((a !! (_asInt (j) - 1)) - (a !! j)))) a in (let j = (_asInt (j) - 1) in Nothing))) of Just v -> Just v; Nothing -> (let m = (_asInt (m) + 1) in Nothing)))) of Just v -> Just v; Nothing -> Just ((a !! 0))))
+    |                                                                                                                                                                                                                                                                    ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/bernoulli-numbers.hs:130:294: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(j)’
+      In the first argument of ‘(-)’, namely ‘_asInt (j)’
+      In the expression: _asInt (j) - 1
+    |
+130 |     (let a = [] in (let m = 0 in case whileLoop (\() -> (m <= n)) (\() -> (let a = (a ++ [(1 / (((_asInt (m) + 1))))]) in (let j = m in case whileLoop (\() -> (_asInt (j) >= 1)) (\() -> (let a = Map.insert (_asInt (j) - 1) ((j) * (((a !! (_asInt (j) - 1)) - (a !! j)))) a in (let j = (_asInt (j) - 1) in Nothing))) of Just v -> Just v; Nothing -> (let m = (_asInt (m) + 1) in Nothing)))) of Just v -> Just v; Nothing -> Just ((a !! 0))))
+    |                                                                                                                                                                                                                                                                                                      ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/bernoulli-numbers.hs:130:366: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(m)’
+      In the first argument of ‘(+)’, namely ‘_asInt (m)’
+      In the expression: _asInt (m) + 1
+    |
+130 |     (let a = [] in (let m = 0 in case whileLoop (\() -> (m <= n)) (\() -> (let a = (a ++ [(1 / (((_asInt (m) + 1))))]) in (let j = m in case whileLoop (\() -> (_asInt (j) >= 1)) (\() -> (let a = Map.insert (_asInt (j) - 1) ((j) * (((a !! (_asInt (j) - 1)) - (a !! j)))) a in (let j = (_asInt (j) - 1) in Nothing))) of Just v -> Just v; Nothing -> (let m = (_asInt (m) + 1) in Nothing)))) of Just v -> Just v; Nothing -> Just ((a !! 0))))
+    |                                                                                                                                                                                                                                                                                                                                                                              ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/bernoulli-numbers.hs:134:58: error:
+    Variable not in scope: num :: () -> a2
+    Suggested fix:
+      Perhaps use one of these:
+        ‘List.nub’ (imported from Data.List), ‘sum’ (imported from Prelude)
+    |
+134 |   mapM_ (\i -> fromMaybe () ((let b = bernoulli i in if (num b /= 0) then (let numStr = show num b in (let denStr = show denom b in (let _ = putStrLn (_showAny (((((("B(" + show i 2 " ") + ") =") + fromMaybe (error "missing") (Map.lookup "padStart" (numStr)) 45 " ") + "/") + denStr))) in Nothing))) else Nothing))) [0 .. 61 - 1]
+    |                                                          ^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/bernoulli-numbers.hs:134:94: error:
+    Variable not in scope: num
+    Suggested fix:
+      Perhaps use one of these:
+        ‘List.nub’ (imported from Data.List), ‘sum’ (imported from Prelude)
+    |
+134 |   mapM_ (\i -> fromMaybe () ((let b = bernoulli i in if (num b /= 0) then (let numStr = show num b in (let denStr = show denom b in (let _ = putStrLn (_showAny (((((("B(" + show i 2 " ") + ") =") + fromMaybe (error "missing") (Map.lookup "padStart" (numStr)) 45 " ") + "/") + denStr))) in Nothing))) else Nothing))) [0 .. 61 - 1]
+    |                                                                                              ^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/bernoulli-numbers.hs:134:122: error:
+    Variable not in scope: denom
+    |
+134 |   mapM_ (\i -> fromMaybe () ((let b = bernoulli i in if (num b /= 0) then (let numStr = show num b in (let denStr = show denom b in (let _ = putStrLn (_showAny (((((("B(" + show i 2 " ") + ") =") + fromMaybe (error "missing") (Map.lookup "padStart" (numStr)) 45 " ") + "/") + denStr))) in Nothing))) else Nothing))) [0 .. 61 - 1]
+    |                                                                                                                          ^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/bernoulli-numbers.hs:134:167: error:
+    • Couldn't match type ‘[Char]’ with ‘AnyValue’
+      Expected: AnyValue
+        Actual: String
+    • In the first argument of ‘(+)’, namely ‘"B("’
+      In the first argument of ‘(+)’, namely ‘("B(" + show i 2 " ")’
+      In the first argument of ‘(+)’, namely
+        ‘(("B(" + show i 2 " ") + ") =")’
+    |
+134 |   mapM_ (\i -> fromMaybe () ((let b = bernoulli i in if (num b /= 0) then (let numStr = show num b in (let denStr = show denom b in (let _ = putStrLn (_showAny (((((("B(" + show i 2 " ") + ") =") + fromMaybe (error "missing") (Map.lookup "padStart" (numStr)) 45 " ") + "/") + denStr))) in Nothing))) else Nothing))) [0 .. 61 - 1]
+    |                                                                                                                                                                       ^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/bernoulli-numbers.hs:134:174: error:
+    • Couldn't match expected type: t0 -> String -> AnyValue
+                  with actual type: [Char]
+    • The function ‘show’ is applied to three value arguments,
+        but its type ‘Int -> [Char]’ has only one
+      In the second argument of ‘(+)’, namely ‘show i 2 " "’
+      In the first argument of ‘(+)’, namely ‘("B(" + show i 2 " ")’
+    |
+134 |   mapM_ (\i -> fromMaybe () ((let b = bernoulli i in if (num b /= 0) then (let numStr = show num b in (let denStr = show denom b in (let _ = putStrLn (_showAny (((((("B(" + show i 2 " ") + ") =") + fromMaybe (error "missing") (Map.lookup "padStart" (numStr)) 45 " ") + "/") + denStr))) in Nothing))) else Nothing))) [0 .. 61 - 1]
+    |                                                                                                                                                                              ^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/bernoulli-numbers.hs:134:190: error:
+    • Couldn't match type ‘[Char]’ with ‘AnyValue’
+      Expected: AnyValue
+        Actual: String
+    • In the second argument of ‘(+)’, namely ‘") ="’
+      In the first argument of ‘(+)’, namely
+        ‘(("B(" + show i 2 " ") + ") =")’
+      In the first argument of ‘(+)’, namely
+        ‘((("B(" + show i 2 " ") + ") =")
+            + fromMaybe
+                (error "missing") (Map.lookup "padStart" (numStr)) 45 " ")’
+    |
+134 |   mapM_ (\i -> fromMaybe () ((let b = bernoulli i in if (num b /= 0) then (let numStr = show num b in (let denStr = show denom b in (let _ = putStrLn (_showAny (((((("B(" + show i 2 " ") + ") =") + fromMaybe (error "missing") (Map.lookup "padStart" (numStr)) 45 " ") + "/") + denStr))) in Nothing))) else Nothing))) [0 .. 61 - 1]
+    |                                                                                                                                                                                              ^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/bernoulli-numbers.hs:134:270: error:
+    • Couldn't match type ‘[Char]’ with ‘AnyValue’
+      Expected: AnyValue
+        Actual: String
+    • In the second argument of ‘(+)’, namely ‘"/"’
+      In the first argument of ‘(+)’, namely
+        ‘(((("B(" + show i 2 " ") + ") =")
+             + fromMaybe
+                 (error "missing") (Map.lookup "padStart" (numStr)) 45 " ")
+            + "/")’
+      In the first argument of ‘_showAny’, namely
+        ‘(((((("B(" + show i 2 " ") + ") =")
+               + fromMaybe
+                   (error "missing") (Map.lookup "padStart" (numStr)) 45 " ")
+              + "/")
+             + denStr))’
+    |
+134 |   mapM_ (\i -> fromMaybe () ((let b = bernoulli i in if (num b /= 0) then (let numStr = show num b in (let denStr = show denom b in (let _ = putStrLn (_showAny (((((("B(" + show i 2 " ") + ") =") + fromMaybe (error "missing") (Map.lookup "padStart" (numStr)) 45 " ") + "/") + denStr))) in Nothing))) else Nothing))) [0 .. 61 - 1]
+    |                                                                                                                                                                                                                                                                              ^^^

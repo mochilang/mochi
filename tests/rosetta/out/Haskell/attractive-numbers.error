@@ -1,0 +1,9 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/attractive-numbers.hs:147:1: error:
+    Multiple declarations of ‘main’
+    Declared at: /workspace/mochi/tests/rosetta/out/Haskell/attractive-numbers.hs:140:1
+                 /workspace/mochi/tests/rosetta/out/Haskell/attractive-numbers.hs:147:1
+    |
+147 | main = do
+    | ^^^^

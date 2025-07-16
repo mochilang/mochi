@@ -1,0 +1,9 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/achilles-numbers.hs:172:1: error:
+    Multiple declarations of ‘main’
+    Declared at: /workspace/mochi/tests/rosetta/out/Haskell/achilles-numbers.hs:163:1
+                 /workspace/mochi/tests/rosetta/out/Haskell/achilles-numbers.hs:172:1
+    |
+172 | main = do
+    | ^^^^

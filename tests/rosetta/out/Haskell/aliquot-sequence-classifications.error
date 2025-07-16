@@ -1,0 +1,15 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/aliquot-sequence-classifications.hs:172:1: error:
+    Not in scope: data constructor ‘THRESHOLD’
+    |
+172 | THRESHOLD = 140737488355328
+    | ^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/aliquot-sequence-classifications.hs:175:1: error:
+    Multiple declarations of ‘main’
+    Declared at: /workspace/mochi/tests/rosetta/out/Haskell/aliquot-sequence-classifications.hs:169:1
+                 /workspace/mochi/tests/rosetta/out/Haskell/aliquot-sequence-classifications.hs:175:1
+    |
+175 | main = do
+    | ^^^^
