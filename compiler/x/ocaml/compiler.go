@@ -338,6 +338,7 @@ func (c *Compiler) compileLocalLet(l *parser.LetStmt) error {
 		}
 		c.localTypes[l.Name] = types.ExprType(l.Value, c.env)
 	}
+	delete(c.vars, l.Name)
 	return nil
 }
 
@@ -431,9 +432,9 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 			}
 			switch typ.(type) {
 			case types.MapType:
-				c.writeln(fmt.Sprintf("%s := map_set !%s %s %s;", a.Name, a.Name, idx, val))
+				c.writeln(fmt.Sprintf("%s := map_set !%s %s (%s);", a.Name, a.Name, idx, val))
 			default:
-				c.writeln(fmt.Sprintf("%s := list_set !%s %s %s;", a.Name, a.Name, idx, val))
+				c.writeln(fmt.Sprintf("%s := list_set !%s %s (%s);", a.Name, a.Name, idx, val))
 			}
 			return nil
 		}
@@ -448,9 +449,9 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 			}
 			switch typ.(type) {
 			case types.MapType:
-				c.writeln(fmt.Sprintf("%s := map_set !%s %s (map_set (map_get !%s %s) %s %s);", a.Name, a.Name, idx1, a.Name, idx1, idx2, val))
+				c.writeln(fmt.Sprintf("%s := map_set !%s %s (map_set (map_get !%s %s) %s (%s));", a.Name, a.Name, idx1, a.Name, idx1, idx2, val))
 			default:
-				c.writeln(fmt.Sprintf("%s := list_set !%s %s (list_set (List.nth !%s %s) %s %s);", a.Name, a.Name, idx1, a.Name, idx1, idx2, val))
+				c.writeln(fmt.Sprintf("%s := list_set !%s %s (list_set (List.nth !%s %s) %s (%s));", a.Name, a.Name, idx1, a.Name, idx1, idx2, val))
 			}
 			return nil
 		}
@@ -535,7 +536,7 @@ func (c *Compiler) compileFor(fr *parser.ForStmt) error {
 		c.indent--
 		c.writeln("done")
 		c.indent--
-		c.writeln("with Break -> ()")
+		c.writeln("with Break -> () ;")
 		return nil
 	}
 	src, err := c.compileExpr(fr.Source)
@@ -568,6 +569,12 @@ func (c *Compiler) compileFor(fr *parser.ForStmt) error {
 		}
 	}
 	oldEnv := c.env
+	oldVars := c.vars
+	tmpVars := make(map[string]bool, len(c.vars))
+	for k, v := range c.vars {
+		tmpVars[k] = v
+	}
+	c.vars = tmpVars
 	loopEnv := types.NewEnv(oldEnv)
 	loopEnv.SetVar(fr.Name, elemType, true)
 	c.env = loopEnv
@@ -592,6 +599,7 @@ func (c *Compiler) compileFor(fr *parser.ForStmt) error {
 	for _, st := range fr.Body {
 		if err := c.compileStmt(st); err != nil {
 			c.env = oldEnv
+			c.vars = oldVars
 			return err
 		}
 	}
@@ -603,6 +611,8 @@ func (c *Compiler) compileFor(fr *parser.ForStmt) error {
 	c.indent--
 	c.writeln("in")
 	c.writeln(fmt.Sprintf("try %s %s with Break -> ()", loopName, src))
+	c.writeln(";")
+	c.vars = oldVars
 	return nil
 }
 
@@ -611,6 +621,12 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 	if err != nil {
 		return err
 	}
+	oldVars := c.vars
+	tmpVars := make(map[string]bool, len(c.vars))
+	for k, v := range c.vars {
+		tmpVars[k] = v
+	}
+	c.vars = tmpVars
 	loopName := fmt.Sprintf("__loop%d", c.loop)
 	c.loop++
 	c.writeln(fmt.Sprintf("let rec %s () =", loopName))
@@ -631,6 +647,8 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 	c.writeln(") else ()")
 	c.indent--
 	c.writeln(fmt.Sprintf("in try %s () with Break -> ()", loopName))
+	c.writeln(";")
+	c.vars = oldVars
 	return nil
 }
 
@@ -1681,11 +1699,21 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				continue
 			}
 		}
-		if opStr == "+" && isStringUnary(b.Left) && isStringExprExpr(op.Right) {
-			res = fmt.Sprintf("(%s ^ %s)", res, r)
-		} else {
-			res = fmt.Sprintf("(%s %s %s)", res, opStr, r)
+		if opStr == "+" {
+			if isStringUnary(b.Left) || isStringExprExpr(op.Right) {
+				res = fmt.Sprintf("(%s ^ %s)", res, r)
+				continue
+			}
+			lt := types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: b.Left}}, c.env)
+			rt := types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}, c.env)
+			if _, ok := lt.(types.StringType); ok {
+				if _, ok2 := rt.(types.StringType); ok2 {
+					res = fmt.Sprintf("(%s ^ %s)", res, r)
+					continue
+				}
+			}
 		}
+		res = fmt.Sprintf("(%s %s %s)", res, opStr, r)
 	}
 	return res, nil
 }
