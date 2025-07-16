@@ -316,6 +316,7 @@ type Compiler struct {
 	needGroup      bool
 	needJSON       bool
 	needStringLib  bool
+	needTime       bool
 	loops          []loopCtx
 	tmpCount       int
 	mainStmts      []*parser.Statement
@@ -377,7 +378,7 @@ func hasLoopCtrlIf(ifst *parser.IfStmt) bool {
 
 // New creates a new Scheme compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, vars: map[string]string{}, loops: []loopCtx{}, needDataset: false, needListOps: false, needSlice: false, needGroup: false, needJSON: false, needStringLib: false, tmpCount: 0, mainStmts: nil, tests: []testInfo{}}
+	return &Compiler{env: env, vars: map[string]string{}, loops: []loopCtx{}, needDataset: false, needListOps: false, needSlice: false, needGroup: false, needJSON: false, needStringLib: false, needTime: false, tmpCount: 0, mainStmts: nil, tests: []testInfo{}}
 }
 
 func (c *Compiler) writeIndent() {
@@ -403,6 +404,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.needSlice = false
 	c.needJSON = false
 	c.needStringLib = false
+	c.needTime = false
 	c.mainStmts = nil
 	c.tests = nil
 	// Declarations and tests
@@ -456,7 +458,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("(when (> failures 0) (display \"\\n[FAIL] \") (display failures) (display \" test(s) failed.\\n\"))")
 	}
 	code := c.buf.Bytes()
-	if c.needListSet || c.needStringSet || c.needMapHelpers || c.needDataset || c.needListOps || c.needSlice || c.needGroup || c.needJSON || c.needStringLib || len(c.tests) > 0 {
+	if c.needListSet || c.needStringSet || c.needMapHelpers || c.needDataset || c.needListOps || c.needSlice || c.needGroup || c.needJSON || c.needStringLib || c.needTime || len(c.tests) > 0 {
 		var pre bytes.Buffer
 		if c.needListSet {
 			pre.WriteString("(define (list-set lst idx val)\n")
@@ -491,6 +493,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 		if c.needStringLib {
 			pre.WriteString("(import (chibi string))\n")
+		}
+		if c.needTime {
+			pre.WriteString("(import (chibi time))\n")
 		}
 		if c.needListOps {
 			pre.WriteString(listOpHelpers)
@@ -1532,6 +1537,12 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 			return "", fmt.Errorf("pow expects 2 args")
 		}
 		return fmt.Sprintf("(expt %s %s)", args[0], args[1]), nil
+	case "now":
+		if len(args) != 0 {
+			return "", fmt.Errorf("now expects no args")
+		}
+		c.needTime = true
+		return "(* (current-seconds) 1000000000)", nil
 	case "json":
 		if len(args) != 1 {
 			return "", fmt.Errorf("json expects 1 arg")
