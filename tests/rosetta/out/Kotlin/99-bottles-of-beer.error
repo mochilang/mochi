@@ -1,0 +1,13 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/99-bottles-of-beer.kt:23:1: error: conflicting overloads: public fun main(): Unit defined in root package in file 99-bottles-of-beer.kt, public fun main(): Unit defined in root package in file 99-bottles-of-beer.kt
+fun main(): Unit {
+^
+/tmp/99-bottles-of-beer.kt:34:1: error: conflicting overloads: public fun main(): Unit defined in root package in file 99-bottles-of-beer.kt, public fun main(): Unit defined in root package in file 99-bottles-of-beer.kt
+fun main() {
+^
+/tmp/99-bottles-of-beer.kt:35:5: error: overload resolution ambiguity: 
+public fun main(): Unit defined in root package in file 99-bottles-of-beer.kt
+public fun main(): Unit defined in root package in file 99-bottles-of-beer.kt
+    main()
+    ^
