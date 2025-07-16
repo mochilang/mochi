@@ -473,6 +473,11 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: StringType{},
 		Pure:   true,
 	}, false)
+	env.SetVar("int", FuncType{
+		Params: []Type{AnyType{}},
+		Return: IntType{},
+		Pure:   true,
+	}, false)
 	env.SetVar("upper", FuncType{
 		Params: []Type{StringType{}},
 		Return: StringType{},
@@ -2399,6 +2404,7 @@ var builtinArity = map[string]int{
 	"json":      1,
 	"to_json":   1,
 	"str":       1,
+	"int":       1,
 	"upper":     1,
 	"lower":     1,
 	"reverse":   1,
@@ -2436,13 +2442,21 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 			return errArgCount(pos, name, 0, len(args))
 		}
 		return nil
-	case "json", "to_json", "str", "upper", "lower", "eval":
+	case "json", "to_json", "str", "upper", "lower", "int", "eval":
 		if len(args) != 1 {
 			return errArgCount(pos, name, 1, len(args))
 		}
-		if name == "eval" {
+		switch name {
+		case "eval":
 			if _, ok := args[0].(StringType); !ok {
 				return errArgTypeMismatch(pos, 0, StringType{}, args[0])
+			}
+		case "int":
+			switch args[0].(type) {
+			case StringType, IntType, FloatType, AnyType:
+				// ok
+			default:
+				return fmt.Errorf("int() expects numeric or string")
 			}
 		}
 		return nil

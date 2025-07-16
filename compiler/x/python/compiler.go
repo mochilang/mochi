@@ -958,6 +958,8 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		return fmt.Sprintf("print(json.dumps(%s, default=lambda o: vars(o)))", argStr), nil
 	case "str":
 		return fmt.Sprintf("str(%s)", argStr), nil
+	case "int":
+		return fmt.Sprintf("int(%s)", argStr), nil
 	case "input":
 		return "input()", nil
 	case "count":
