@@ -1531,6 +1531,8 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 	}
 	c.use("_load")
 	c.use("_parse_csv")
+	c.use("_parse_yaml")
+	c.use("_yaml_value")
 	return fmt.Sprintf("_load(%s, %s)", path, opts), nil
 }
 

@@ -69,11 +69,52 @@ defp _json(v), do: IO.puts(_to_json(v))
 
 	helperParseCSV = "defp _parse_csv(text, header, delim) do\n  lines = text |> String.trim() |> String.split(~r/\\r?\\n/, trim: true)\n  if lines == [] do\n    []\n  else\n    {headers, start} = if header do\n      {String.split(hd(lines), delim), 1}\n    else\n      cols = String.split(hd(lines), delim)\n      {Enum.map(0..length(cols)-1, fn i -> \"c\" <> Integer.to_string(i) end), 0}\n    end\n    Enum.drop(lines, start)\n    |> Enum.map(fn line ->\n      parts = String.split(line, delim)\n      Enum.with_index(headers)\n      |> Enum.reduce(%{}, fn {h,i}, acc ->\n        val = if i < length(parts), do: Enum.at(parts, i), else: \"\"\n        value = case Integer.parse(val) do\n          {int, \"\"} -> int\n          _ -> case Float.parse(val) do\n            {f, \"\"} -> f\n            _ -> val\n          end\n        end\n        Map.put(acc, h, value)\n      end)\n    end)\n  end\nend\n"
 
+	helperYamlValue = `defp _yaml_value(v) do
+  case Integer.parse(v) do
+    {i, ""} -> i
+    _ ->
+      case Float.parse(v) do
+        {f, ""} -> f
+        _ -> v
+      end
+  end
+end
+`
+
+	helperParseYAML = `defp _parse_yaml(text) do
+  lines = String.split(String.trim(text), ~r/\r?\n/)
+  {rows, cur} = Enum.reduce(lines, {[], %{}}, fn line, {rows, cur} ->
+    line = String.trim(line)
+    cond do
+      String.starts_with?(line, "-") ->
+        rows = if map_size(cur) > 0, do: rows ++ [cur], else: rows
+        cur = %{}
+        rest = String.trim_leading(line, "-") |> String.trim()
+        cur =
+          if rest != "" and String.contains?(rest, ":") do
+            [k, v] = String.split(rest, ":", parts: 2)
+            Map.put(cur, String.trim(k), _yaml_value(String.trim(v)))
+          else
+            cur
+          end
+        {rows, cur}
+      String.contains?(line, ":") ->
+        [k, v] = String.split(line, ":", parts: 2)
+        {rows, Map.put(cur, String.trim(k), _yaml_value(String.trim(v)))}
+      true ->
+        {rows, cur}
+    end
+  end)
+  rows = if map_size(cur) > 0, do: rows ++ [cur], else: rows
+  rows
+end
+`
+
 	helperToCSV = "defp _to_csv(rows, header, delim) do\n  headers = if rows == [], do: [], else: rows |> hd() |> Map.keys() |> Enum.sort()\n  lines = if header, do: [Enum.join(headers, delim)], else: []\n  lines = lines ++ Enum.map(rows, fn row ->\n    Enum.map(headers, fn h ->\n      val = Map.get(row, h)\n      cond do\n        is_map(val) or is_list(val) -> Jason.encode!(val)\n        val == nil -> \"\"\n        true -> to_string(val)\n      end\n    end) |> Enum.join(delim)\n  end)\n  Enum.join(lines, \"\\n\")\nend\n"
 
 	helperToMapList = "defp _to_map_list(v) do\n  cond do\n    is_list(v) and Enum.all?(v, &is_map/1) -> v\n    true -> raise \"save source must be list of maps\"\n  end\nend\n"
 
-	helperLoad = "defp _load(path, opts \\\\ nil) do\n  format = if opts, do: Map.get(opts, \"format\", \"csv\"), else: \"csv\"\n  header = if opts && Map.has_key?(opts, \"header\"), do: opts[\"header\"], else: true\n  delim = if opts && Map.has_key?(opts, \"delimiter\"), do: String.first(to_string(opts[\"delimiter\"] || \",\")), else: \",\"\n  text = case path do\n    nil -> IO.read(:stdio, :eof)\n    \"\" -> IO.read(:stdio, :eof)\n    \"-\" -> IO.read(:stdio, :eof)\n    _ -> File.read!(path)\n  end\n  case format do\n    \"jsonl\" -> String.trim(text) |> String.split(~r/\\r?\\n/, trim: true) |> Enum.map(&Jason.decode!/1)\n    \"json\" -> case Jason.decode!(text) do\n                list when is_list(list) -> list\n                obj -> [obj]\n              end\n    \"tsv\" -> _parse_csv(text, header, \"\t\")\n    _ -> _parse_csv(text, header, delim)\n  end\nend\n"
+	helperLoad = "defp _load(path, opts \\\\ nil) do\n  format = if opts, do: Map.get(opts, \"format\", \"csv\"), else: \"csv\"\n  header = if opts && Map.has_key?(opts, \"header\"), do: opts[\"header\"], else: true\n  delim = if opts && Map.has_key?(opts, \"delimiter\"), do: String.first(to_string(opts[\"delimiter\"] || \",\")), else: \",\"\n  text = case path do\n    nil -> IO.read(:stdio, :eof)\n    \"\" -> IO.read(:stdio, :eof)\n    \"-\" -> IO.read(:stdio, :eof)\n    _ -> File.read!(path)\n  end\n  case format do\n    \"jsonl\" -> String.trim(text) |> String.split(~r/\\r?\\n/, trim: true) |> Enum.map(&Jason.decode!/1)\n    \"json\" -> case Jason.decode!(text) do\n                list when is_list(list) -> list\n                obj -> [obj]\n              end\n    \"yaml\" -> _parse_yaml(text)\n    \"tsv\" -> _parse_csv(text, header, \"\t\")\n    _ -> _parse_csv(text, header, delim)\n  end\nend\n"
 
 	helperSave = "defp _save(data, path, opts \\\\ nil) do\n  rows = _to_map_list(data)\n  format = if opts, do: Map.get(opts, \"format\", \"csv\"), else: \"csv\"\n  header = if opts && Map.has_key?(opts, \"header\"), do: opts[\"header\"], else: false\n  delim = if opts && Map.has_key?(opts, \"delimiter\"), do: String.first(to_string(opts[\"delimiter\"] || \",\")), else: \",\"\n  out = case format do\n    \"json\" -> Jason.encode!(rows)\n    \"jsonl\" -> Enum.map(rows, &Jason.encode!/1) |> Enum.join(\"\\n\") |> Kernel.<>(\"\\n\")\n    \"tsv\" -> _to_csv(rows, header, \"\t\")\n    _ -> _to_csv(rows, header, delim)\n  end\n  case path do\n    nil -> IO.write(:stdio, out)\n    \"\" -> IO.write(:stdio, out)\n    \"-\" -> IO.write(:stdio, out)\n    _ -> File.write!(path, out)\n  end\nend\n"
 
@@ -184,6 +225,8 @@ var helperMap = map[string]string{
 	"_group":        helperGroup,
 	"_group_by":     helperGroupBy,
 	"_parse_csv":    helperParseCSV,
+	"_yaml_value":   helperYamlValue,
+	"_parse_yaml":   helperParseYAML,
 	"_to_csv":       helperToCSV,
 	"_to_map_list":  helperToMapList,
 	"_load":         helperLoad,
