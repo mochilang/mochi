@@ -1,0 +1,7 @@
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a binary
+
+    :erlang.binary_to_float(2)
+    /tmp/q90.exs:46: Main.main/0
+    /tmp/q90.exs:82: (file)

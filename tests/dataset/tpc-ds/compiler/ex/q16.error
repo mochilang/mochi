@@ -1,0 +1,85 @@
+error: undefined variable "contains"
+    │
+ 12 │           if !contains.(out, x) do
+    │               ^^^^^^^^
+    │
+    └─ /tmp/q16.exs:12:15: Main.distinct/1
+
+    warning: variable "out" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 13 │             out = out ++ [x]
+    │             ~
+    │
+    └─ /tmp/q16.exs:13:13: Main.distinct/1
+
+    warning: variable "d" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 73 │                  on: fn cs1, d, ca ->
+    │                              ~
+    │
+    └─ /tmp/q16.exs:73:30: Main.main/0
+
+    warning: variable "ca" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 79 │                  on: fn cs1, d, ca, cc ->
+    │                                 ~
+    │
+    └─ /tmp/q16.exs:79:33: Main.main/0
+
+    warning: variable "d" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 79 │                  on: fn cs1, d, ca, cc ->
+    │                              ~
+    │
+    └─ /tmp/q16.exs:79:30: Main.main/0
+
+    warning: variable "ca" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 93 │                where: fn [cs1, d, ca, cc] ->
+    │                                   ~
+    │
+    └─ /tmp/q16.exs:93:35: Main.main/0
+
+    warning: variable "cc" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 93 │                where: fn [cs1, d, ca, cc] ->
+    │                                       ~
+    │
+    └─ /tmp/q16.exs:93:39: Main.main/0
+
+    warning: variable "d" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 93 │                where: fn [cs1, d, ca, cc] ->
+    │                                ~
+    │
+    └─ /tmp/q16.exs:93:32: Main.main/0
+
+     warning: variable "ca" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 107 │          groups = _group_by(rows, fn %{cs1: cs1, d: d, ca: ca, cc: cc} -> %{} end)
+     │                                                            ~
+     │
+     └─ /tmp/q16.exs:107:60: Main.main/0
+
+     warning: variable "cc" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 107 │          groups = _group_by(rows, fn %{cs1: cs1, d: d, ca: ca, cc: cc} -> %{} end)
+     │                                                                    ~
+     │
+     └─ /tmp/q16.exs:107:68: Main.main/0
+
+     warning: variable "cs1" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 107 │          groups = _group_by(rows, fn %{cs1: cs1, d: d, ca: ca, cc: cc} -> %{} end)
+     │                                             ~
+     │
+     └─ /tmp/q16.exs:107:45: Main.main/0
+
+     warning: variable "d" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 107 │          groups = _group_by(rows, fn %{cs1: cs1, d: d, ca: ca, cc: cc} -> %{} end)
+     │                                                     ~
+     │
+     └─ /tmp/q16.exs:107:53: Main.main/0
+
+** (CompileError) /tmp/q16.exs: cannot compile module Main (errors have been logged)

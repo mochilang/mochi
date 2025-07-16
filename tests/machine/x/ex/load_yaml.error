@@ -3,11 +3,11 @@
  19 │   defp _load(path, opts \\ nil) do
     │        ~
     │
-    └─ /tmp/TestExCompiler_VMValid_Goldenload_yaml4147297599/001/main.exs:19:8: Main (module)
+    └─ /tmp/TestExCompiler_VMValid_Goldenload_yaml1657422827/001/main.exs:19:8: Main (module)
 
 ** (UndefinedFunctionError) function Person.__struct__/0 is undefined (module Person is not available). Make sure the module name is correct and has been specified in full (or that an alias has been defined)
     Person.__struct__()
     (elixir 1.18.3) lib/kernel.ex:2474: Kernel.struct/3
     (elixir 1.18.3) lib/enum.ex:1714: Enum."-map/2-lists^map/1-1-"/2
-    /tmp/TestExCompiler_VMValid_Goldenload_yaml4147297599/001/main.exs:6: Main.main/0
-    /tmp/TestExCompiler_VMValid_Goldenload_yaml4147297599/001/main.exs:168: (file)
+    /tmp/TestExCompiler_VMValid_Goldenload_yaml1657422827/001/main.exs:6: Main.main/0
+    /tmp/TestExCompiler_VMValid_Goldenload_yaml1657422827/001/main.exs:168: (file)

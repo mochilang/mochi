@@ -1,1 +1,1 @@
-[{"i_category":"A","i_class":"C1","i_current_price":10,"i_item_desc":"Item One","i_item_id":"ITEM1","itemrevenue":200,"revenueratio":50},{"i_category":"A","i_class":"C1","i_current_price":20,"i_item_desc":"Item Two","i_item_id":"ITEM2","itemrevenue":200,"revenueratio":50}]
+[{"i_category":"A","i_class":"C1","i_current_price":10,"i_item_desc":"Item One","i_item_id":"ITEM1","itemrevenue":200,"revenueratio":50.0},{"i_category":"A","i_class":"C1","i_current_price":20,"i_item_desc":"Item Two","i_item_id":"ITEM2","itemrevenue":200,"revenueratio":50.0}]

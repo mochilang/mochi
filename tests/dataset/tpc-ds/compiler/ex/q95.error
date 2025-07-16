@@ -1,0 +1,16 @@
+** (SyntaxError) invalid syntax found on /tmp/q95.exs:33:382:
+    error: unexpected expression after keyword list. Keyword lists must always come as the last argument. Therefore, this is not allowed:
+
+        function_call(1, some: :option, 2)
+
+    Instead, wrap the keyword in brackets:
+
+        function_call(1, [some: :option], 2)
+
+    Syntax error after: ','
+    │
+ 33 │ 		filtered = for ws <- web_sales, d <- date_dim, ca <- customer_address, w <- web_site, ((ws.ws_ship_date_sk == d.d_date_sk) && (ws.ws_ship_addr_sk == ca.ca_address_sk) && (ws.ws_web_site_sk == w.web_site_sk)) && (((((ca.ca_state == "CA") && (w.web_company_name == "pri")) && (if is_map(for x <- ws_wh, do: x.ws_order_number), do: Map.has_key?(for x <- ws_wh, do: x.ws_order_number, ws.ws_order_number), else: Enum.member?(for x <- ws_wh, do: x.ws_order_number, ws.ws_order_number))) && (if is_map(for wr <- web_returns, do: wr.wr_order_number), do: Map.has_key?(for wr <- web_returns, do: wr.wr_order_number, ws.ws_order_number), else: Enum.member?(for wr <- web_returns, do: wr.wr_order_number, ws.ws_order_number)))), do: ws
+    │                                                                                                                                                                                                                                                                                                                                                                                              ^
+    │
+    └─ /tmp/q95.exs:33:382
+    (elixir 1.18.3) lib/code.ex:1525: Code.require_file/2

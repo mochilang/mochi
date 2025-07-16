@@ -1,0 +1,12 @@
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a binary
+
+    :erlang.binary_to_integer(1.2)
+    /tmp/q54.exs:6: Main.int/1
+    /tmp/q54.exs:51: anonymous fn/1 in Main.main/0
+    /tmp/q54.exs:103: anonymous fn/3 in Main._group_by/2
+    (elixir 1.18.3) lib/enum.ex:2546: Enum."-reduce/3-lists^foldl/2-0-"/3
+    /tmp/q54.exs:97: Main._group_by/2
+    /tmp/q54.exs:51: Main.main/0
+    /tmp/q54.exs:158: (file)

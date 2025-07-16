@@ -1,0 +1,22 @@
+** (SyntaxError) invalid syntax found on /tmp/q77.exs:94:6:
+    error: unexpected comma. Parentheses are required to solve ambiguity in nested calls.
+
+    This error happens when you have nested function calls without parentheses. For example:
+
+        parent_call a, nested_call b, c, d
+
+    In the example above, we don't know if the parameters "c" and "d" apply to the function "parent_call" or "nested_call". You can solve this by explicitly adding parentheses:
+
+        parent_call a, nested_call(b, c, d)
+
+    Or by adding commas (in case a nested call is not intended):
+
+        parent_call a, nested_call, b, c, d
+
+    Elixir cannot compile otherwise. Syntax error before: ','
+    │
+ 94 │ end, for c <- cs, r <- cr, (c.cs_call_center_sk == r.cr_call_center_sk), do: %{channel: "catalog channel", id: c.cs_call_center_sk, sales: c.sales, returns: r.returns, profit: (c.profit - r.profit_loss)}), for w <- ws do
+    │      ^
+    │
+    └─ /tmp/q77.exs:94:6
+    (elixir 1.18.3) lib/code.ex:1525: Code.require_file/2
