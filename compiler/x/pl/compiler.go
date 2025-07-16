@@ -1150,15 +1150,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, bool, error) {
 		if c.mutVars[p.Selector.Root] {
 			tmp := c.newTmp()
 			c.writeln(fmt.Sprintf("nb_getval(%s, %s),", sanitizeAtom(p.Selector.Root), tmp))
-			return tmp, false, nil
+			return tmp, true, nil
 		}
 		if v, ok := c.vars[p.Selector.Root]; ok {
-			return v, false, nil
+			return v, true, nil
 		}
 		if len(p.Selector.Root) > 0 && unicode.IsUpper(rune(p.Selector.Root[0])) {
-			return sanitizeAtom(p.Selector.Root), false, nil
+			return sanitizeAtom(p.Selector.Root), true, nil
 		}
-		return sanitizeVar(p.Selector.Root), false, nil
+		return sanitizeVar(p.Selector.Root), true, nil
 	case p.Selector != nil:
 		var val string
 		if v, ok := c.vars[p.Selector.Root]; ok {
@@ -1932,25 +1932,28 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, bool, error) {
 	}
 	c.funcArity[implName] = len(implParams)
 
-	// wrapper predicate that partially applies captured vars
+	// wrapper predicate that forwards to the implementation
 	lambdaName := fmt.Sprintf("p__lambda%d", c.tmp)
 	c.tmp++
-	c.writeln(fmt.Sprintf("%s(%s, _Res) :-", lambdaName, strings.Join(makeParamNames(len(fn.Params)), ", ")))
+	totalParams := len(keys) + len(fn.Params)
+	params := makeParamNames(totalParams)
+	c.writeln(fmt.Sprintf("%s(%s, _Res) :-", lambdaName, strings.Join(params, ", ")))
 	c.indent++
-	capturedVals := make([]string, 0, len(keys)+len(fn.Params))
-	for _, k := range keys {
-		capturedVals = append(capturedVals, c.lookupVar(k))
-	}
-	for i := 0; i < len(fn.Params); i++ {
-		capturedVals = append(capturedVals, fmt.Sprintf("P%d", i))
-	}
-	c.writeln(fmt.Sprintf("%s(%s, _Res).", sanitizeAtom(implName), strings.Join(capturedVals, ", ")))
+	c.writeln(fmt.Sprintf("%s(%s, _Res).", sanitizeAtom(implName), strings.Join(params, ", ")))
 	c.indent--
 	c.writeln("")
 	c.indent = oldIndent
 	c.out = oldOut
-	c.funcArity[lambdaName] = len(fn.Params)
-	return lambdaName, false, nil
+	c.funcArity[lambdaName] = totalParams
+
+	capturedVals := make([]string, 0, len(keys))
+	for _, k := range keys {
+		capturedVals = append(capturedVals, c.lookupVar(k))
+	}
+	if len(capturedVals) == 0 {
+		return lambdaName, false, nil
+	}
+	return fmt.Sprintf("%s(%s)", lambdaName, strings.Join(capturedVals, ", ")), false, nil
 }
 
 func (c *Compiler) compilePartialCall(call *parser.CallExpr, arity int) (string, bool, error) {
