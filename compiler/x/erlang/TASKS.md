@@ -1,6 +1,7 @@
 # Erlang Compiler Tasks
 
 ## Recent updates
+- [2025-07-16 11:58] Improved loop mutation analysis to handle nested assignments and regenerated Rosetta outputs.
 - [2025-07-13 05:22] Removed support for `MOCHI_HEADER_TIME` and
   `MOCHI_HEADER_VERSION`. The compiler now always uses the repository
   version and the current UTC time.

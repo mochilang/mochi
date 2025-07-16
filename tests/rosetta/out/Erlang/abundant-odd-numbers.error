@@ -1,3 +1,8 @@
-run error: exit status 127
-/workspace/mochi/tests/rosetta/out/Erlang/abundant-odd-numbers.erl:9:60: syntax error before: 'rem'
-escript: There were compilation errors.
+type: error[T007]: argument 3: expected int, got bigint
+  --> /workspace/mochi/tests/rosetta/x/Mochi/abundant-odd-numbers.mochi:41:10
+
+ 41 |   return substring(s, 0, len(s) - 3)
+    |          ^
+
+help:
+  Ensure the argument type matches the function’s signature.

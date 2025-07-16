@@ -1,34 +1,70 @@
 run: exit status 127
-/tmp/100-doors.erl:9:120: variable 'Doors2' is unbound
-%    9|     lists:foreach(fun(Row) -> Line0 = "", lists:foreach(fun(Col) -> Idx = ((Row * 10) + Col), (case lists:nth((Idx)+1, Doors2) of undefined -> Line2 = Line1 ++ "0"; false -> Line2 = Line1 ++ "0"; _ -> Line1 = Line0 ++ "1" end), (case (Col < 9) of true -> Line3 = Line2 ++ " "; _ -> ok end) end, lists:seq(0, (10)-1)), io:format("~p~n", [Line3]) end, lists:seq(0, (10)-1)).
-%     |                                                                                                                        ^
+/tmp/100-doors.erl:8:311: variable 'Doors2' is unbound
+%    8|     {Doors2, Idx1} = lists:foldl(fun(Pass, {Doors, Idx}) -> Idx0 = (Pass - 1), (fun Loop0(Doors, Idx) -> case (Idx < 100) of true -> Doors2 = lists:sublist(Doors, Idx) ++ [not lists:nth((Idx)+1, Doors)] ++ lists:nthtail((Idx)+1, Doors), Idx1 = (Idx + Pass), Loop0(Doors2, Idx1); _ -> ok end end)(Doors, Idx), {Doors2, Idx1} end, {Doors1, Idx}, lists:seq(1, (101)-1)),
+%     |                                                                                                                                                                                                                                                                                                                       ^
 
-/tmp/100-doors.erl:9:152: variable 'Line1' is unbound
-%    9|     lists:foreach(fun(Row) -> Line0 = "", lists:foreach(fun(Col) -> Idx = ((Row * 10) + Col), (case lists:nth((Idx)+1, Doors2) of undefined -> Line2 = Line1 ++ "0"; false -> Line2 = Line1 ++ "0"; _ -> Line1 = Line0 ++ "1" end), (case (Col < 9) of true -> Line3 = Line2 ++ " "; _ -> ok end) end, lists:seq(0, (10)-1)), io:format("~p~n", [Line3]) end, lists:seq(0, (10)-1)).
-%     |                                                                                                                                                        ^
+/tmp/100-doors.erl:8:319: variable 'Idx1' is unbound
+%    8|     {Doors2, Idx1} = lists:foldl(fun(Pass, {Doors, Idx}) -> Idx0 = (Pass - 1), (fun Loop0(Doors, Idx) -> case (Idx < 100) of true -> Doors2 = lists:sublist(Doors, Idx) ++ [not lists:nth((Idx)+1, Doors)] ++ lists:nthtail((Idx)+1, Doors), Idx1 = (Idx + Pass), Loop0(Doors2, Idx1); _ -> ok end end)(Doors, Idx), {Doors2, Idx1} end, {Doors1, Idx}, lists:seq(1, (101)-1)),
+%     |                                                                                                                                                                                                                                                                                                                               ^
 
-/tmp/100-doors.erl:9:183: variable 'Line1' is unbound
-%    9|     lists:foreach(fun(Row) -> Line0 = "", lists:foreach(fun(Col) -> Idx = ((Row * 10) + Col), (case lists:nth((Idx)+1, Doors2) of undefined -> Line2 = Line1 ++ "0"; false -> Line2 = Line1 ++ "0"; _ -> Line1 = Line0 ++ "1" end), (case (Col < 9) of true -> Line3 = Line2 ++ " "; _ -> ok end) end, lists:seq(0, (10)-1)), io:format("~p~n", [Line3]) end, lists:seq(0, (10)-1)).
-%     |                                                                                                                                                                                       ^
+/tmp/100-doors.erl:8:339: variable 'Idx' is unbound
+%    8|     {Doors2, Idx1} = lists:foldl(fun(Pass, {Doors, Idx}) -> Idx0 = (Pass - 1), (fun Loop0(Doors, Idx) -> case (Idx < 100) of true -> Doors2 = lists:sublist(Doors, Idx) ++ [not lists:nth((Idx)+1, Doors)] ++ lists:nthtail((Idx)+1, Doors), Idx1 = (Idx + Pass), Loop0(Doors2, Idx1); _ -> ok end end)(Doors, Idx), {Doors2, Idx1} end, {Doors1, Idx}, lists:seq(1, (101)-1)),
+%     |                                                                                                                                                                                                                                                                                                                                                   ^
 
-/tmp/100-doors.erl:9:264: variable 'Line2' unsafe in 'case' (line 9, column 96)
-%    9|     lists:foreach(fun(Row) -> Line0 = "", lists:foreach(fun(Col) -> Idx = ((Row * 10) + Col), (case lists:nth((Idx)+1, Doors2) of undefined -> Line2 = Line1 ++ "0"; false -> Line2 = Line1 ++ "0"; _ -> Line1 = Line0 ++ "1" end), (case (Col < 9) of true -> Line3 = Line2 ++ " "; _ -> ok end) end, lists:seq(0, (10)-1)), io:format("~p~n", [Line3]) end, lists:seq(0, (10)-1)).
-%     |                                                                                                                                                                                                                                                                        ^
+/tmp/100-doors.erl:9:184: variable 'Line1' is unbound
+%    9|     {Line3} = lists:foldl(fun(Row, {Line}) -> Line0 = "", {Line3} = lists:foldl(fun(Col, {Line}) -> Idx = ((Row * 10) + Col), (case lists:nth((Idx)+1, Doors2) of undefined -> Line2 = Line1 ++ "0"; false -> Line2 = Line1 ++ "0"; _ -> Line1 = Line ++ "1" end), (case (Col < 9) of true -> Line3 = Line2 ++ " "; _ -> ok end), {Line3} end, {Line}, lists:seq(0, (10)-1)), io:format("~p~n", [Line3]), {Line3} end, {Line}, lists:seq(0, (10)-1)).
+%     |                                                                                                                                                                                        ^
 
-/tmp/100-doors.erl:9:338: variable 'Line3' is unbound
-%    9|     lists:foreach(fun(Row) -> Line0 = "", lists:foreach(fun(Col) -> Idx = ((Row * 10) + Col), (case lists:nth((Idx)+1, Doors2) of undefined -> Line2 = Line1 ++ "0"; false -> Line2 = Line1 ++ "0"; _ -> Line1 = Line0 ++ "1" end), (case (Col < 9) of true -> Line3 = Line2 ++ " "; _ -> ok end) end, lists:seq(0, (10)-1)), io:format("~p~n", [Line3]) end, lists:seq(0, (10)-1)).
-%     |                                                                                                                                                                                                                                                                                                                                                  ^
+/tmp/100-doors.erl:9:215: variable 'Line1' is unbound
+%    9|     {Line3} = lists:foldl(fun(Row, {Line}) -> Line0 = "", {Line3} = lists:foldl(fun(Col, {Line}) -> Idx = ((Row * 10) + Col), (case lists:nth((Idx)+1, Doors2) of undefined -> Line2 = Line1 ++ "0"; false -> Line2 = Line1 ++ "0"; _ -> Line1 = Line ++ "1" end), (case (Col < 9) of true -> Line3 = Line2 ++ " "; _ -> ok end), {Line3} end, {Line}, lists:seq(0, (10)-1)), io:format("~p~n", [Line3]), {Line3} end, {Line}, lists:seq(0, (10)-1)).
+%     |                                                                                                                                                                                                                       ^
+
+/tmp/100-doors.erl:9:295: variable 'Line2' unsafe in 'case' (line 9, column 128)
+%    9|     {Line3} = lists:foldl(fun(Row, {Line}) -> Line0 = "", {Line3} = lists:foldl(fun(Col, {Line}) -> Idx = ((Row * 10) + Col), (case lists:nth((Idx)+1, Doors2) of undefined -> Line2 = Line1 ++ "0"; false -> Line2 = Line1 ++ "0"; _ -> Line1 = Line ++ "1" end), (case (Col < 9) of true -> Line3 = Line2 ++ " "; _ -> ok end), {Line3} end, {Line}, lists:seq(0, (10)-1)), io:format("~p~n", [Line3]), {Line3} end, {Line}, lists:seq(0, (10)-1)).
+%     |                                                                                                                                                                                                                                                                                                       ^
+
+/tmp/100-doors.erl:9:324: variable 'Line3' unsafe in 'case' (line 9, column 261)
+%    9|     {Line3} = lists:foldl(fun(Row, {Line}) -> Line0 = "", {Line3} = lists:foldl(fun(Col, {Line}) -> Idx = ((Row * 10) + Col), (case lists:nth((Idx)+1, Doors2) of undefined -> Line2 = Line1 ++ "0"; false -> Line2 = Line1 ++ "0"; _ -> Line1 = Line ++ "1" end), (case (Col < 9) of true -> Line3 = Line2 ++ " "; _ -> ok end), {Line3} end, {Line}, lists:seq(0, (10)-1)), io:format("~p~n", [Line3]), {Line3} end, {Line}, lists:seq(0, (10)-1)).
+%     |                                                                                                                                                                                                                                                                                                                                    ^
+
+/tmp/100-doors.erl:9:409: variable 'Line' is unbound
+%    9|     {Line3} = lists:foldl(fun(Row, {Line}) -> Line0 = "", {Line3} = lists:foldl(fun(Col, {Line}) -> Idx = ((Row * 10) + Col), (case lists:nth((Idx)+1, Doors2) of undefined -> Line2 = Line1 ++ "0"; false -> Line2 = Line1 ++ "0"; _ -> Line1 = Line ++ "1" end), (case (Col < 9) of true -> Line3 = Line2 ++ " "; _ -> ok end), {Line3} end, {Line}, lists:seq(0, (10)-1)), io:format("~p~n", [Line3]), {Line3} end, {Line}, lists:seq(0, (10)-1)).
+%     |                                                                                                                                                                                                                                                                                                                                                                                                                         ^
 
 /tmp/100-doors.erl:7:32: Warning: variable 'I' is unused
 %    7|     {Doors1} = lists:foldl(fun(I, {Doors}) -> Doors1 = Doors ++ [false], {Doors1} end, {Doors0}, lists:seq(0, (100)-1)),
 %     |                                ^
 
-/tmp/100-doors.erl:9:202: Warning: variable 'Line1' is unused
-%    9|     lists:foreach(fun(Row) -> Line0 = "", lists:foreach(fun(Col) -> Idx = ((Row * 10) + Col), (case lists:nth((Idx)+1, Doors2) of undefined -> Line2 = Line1 ++ "0"; false -> Line2 = Line1 ++ "0"; _ -> Line1 = Line0 ++ "1" end), (case (Col < 9) of true -> Line3 = Line2 ++ " "; _ -> ok end) end, lists:seq(0, (10)-1)), io:format("~p~n", [Line3]) end, lists:seq(0, (10)-1)).
-%     |                                                                                                                                                                                                          ^
+/tmp/100-doors.erl:8:14: Warning: variable 'Idx1' is unused
+%    8|     {Doors2, Idx1} = lists:foldl(fun(Pass, {Doors, Idx}) -> Idx0 = (Pass - 1), (fun Loop0(Doors, Idx) -> case (Idx < 100) of true -> Doors2 = lists:sublist(Doors, Idx) ++ [not lists:nth((Idx)+1, Doors)] ++ lists:nthtail((Idx)+1, Doors), Idx1 = (Idx + Pass), Loop0(Doors2, Idx1); _ -> ok end end)(Doors, Idx), {Doors2, Idx1} end, {Doors1, Idx}, lists:seq(1, (101)-1)),
+%     |              ^
 
-/tmp/100-doors.erl:9:256: Warning: variable 'Line3' is unused
-%    9|     lists:foreach(fun(Row) -> Line0 = "", lists:foreach(fun(Col) -> Idx = ((Row * 10) + Col), (case lists:nth((Idx)+1, Doors2) of undefined -> Line2 = Line1 ++ "0"; false -> Line2 = Line1 ++ "0"; _ -> Line1 = Line0 ++ "1" end), (case (Col < 9) of true -> Line3 = Line2 ++ " "; _ -> ok end) end, lists:seq(0, (10)-1)), io:format("~p~n", [Line3]) end, lists:seq(0, (10)-1)).
-%     |                                                                                                                                                                                                                                                                ^
+/tmp/100-doors.erl:8:61: Warning: variable 'Idx0' is unused
+%    8|     {Doors2, Idx1} = lists:foldl(fun(Pass, {Doors, Idx}) -> Idx0 = (Pass - 1), (fun Loop0(Doors, Idx) -> case (Idx < 100) of true -> Doors2 = lists:sublist(Doors, Idx) ++ [not lists:nth((Idx)+1, Doors)] ++ lists:nthtail((Idx)+1, Doors), Idx1 = (Idx + Pass), Loop0(Doors2, Idx1); _ -> ok end end)(Doors, Idx), {Doors2, Idx1} end, {Doors1, Idx}, lists:seq(1, (101)-1)),
+%     |                                                             ^
+
+/tmp/100-doors.erl:8:91: Warning: variable 'Doors' shadowed in 'fun'
+%    8|     {Doors2, Idx1} = lists:foldl(fun(Pass, {Doors, Idx}) -> Idx0 = (Pass - 1), (fun Loop0(Doors, Idx) -> case (Idx < 100) of true -> Doors2 = lists:sublist(Doors, Idx) ++ [not lists:nth((Idx)+1, Doors)] ++ lists:nthtail((Idx)+1, Doors), Idx1 = (Idx + Pass), Loop0(Doors2, Idx1); _ -> ok end end)(Doors, Idx), {Doors2, Idx1} end, {Doors1, Idx}, lists:seq(1, (101)-1)),
+%     |                                                                                           ^
+
+/tmp/100-doors.erl:8:98: Warning: variable 'Idx' shadowed in 'fun'
+%    8|     {Doors2, Idx1} = lists:foldl(fun(Pass, {Doors, Idx}) -> Idx0 = (Pass - 1), (fun Loop0(Doors, Idx) -> case (Idx < 100) of true -> Doors2 = lists:sublist(Doors, Idx) ++ [not lists:nth((Idx)+1, Doors)] ++ lists:nthtail((Idx)+1, Doors), Idx1 = (Idx + Pass), Loop0(Doors2, Idx1); _ -> ok end end)(Doors, Idx), {Doors2, Idx1} end, {Doors1, Idx}, lists:seq(1, (101)-1)),
+%     |                                                                                                  ^
+
+/tmp/100-doors.erl:9:6: Warning: variable 'Line3' is unused
+%    9|     {Line3} = lists:foldl(fun(Row, {Line}) -> Line0 = "", {Line3} = lists:foldl(fun(Col, {Line}) -> Idx = ((Row * 10) + Col), (case lists:nth((Idx)+1, Doors2) of undefined -> Line2 = Line1 ++ "0"; false -> Line2 = Line1 ++ "0"; _ -> Line1 = Line ++ "1" end), (case (Col < 9) of true -> Line3 = Line2 ++ " "; _ -> ok end), {Line3} end, {Line}, lists:seq(0, (10)-1)), io:format("~p~n", [Line3]), {Line3} end, {Line}, lists:seq(0, (10)-1)).
+%     |      ^
+
+/tmp/100-doors.erl:9:47: Warning: variable 'Line0' is unused
+%    9|     {Line3} = lists:foldl(fun(Row, {Line}) -> Line0 = "", {Line3} = lists:foldl(fun(Col, {Line}) -> Idx = ((Row * 10) + Col), (case lists:nth((Idx)+1, Doors2) of undefined -> Line2 = Line1 ++ "0"; false -> Line2 = Line1 ++ "0"; _ -> Line1 = Line ++ "1" end), (case (Col < 9) of true -> Line3 = Line2 ++ " "; _ -> ok end), {Line3} end, {Line}, lists:seq(0, (10)-1)), io:format("~p~n", [Line3]), {Line3} end, {Line}, lists:seq(0, (10)-1)).
+%     |                                               ^
+
+/tmp/100-doors.erl:9:91: Warning: variable 'Line' shadowed in 'fun'
+%    9|     {Line3} = lists:foldl(fun(Row, {Line}) -> Line0 = "", {Line3} = lists:foldl(fun(Col, {Line}) -> Idx = ((Row * 10) + Col), (case lists:nth((Idx)+1, Doors2) of undefined -> Line2 = Line1 ++ "0"; false -> Line2 = Line1 ++ "0"; _ -> Line1 = Line ++ "1" end), (case (Col < 9) of true -> Line3 = Line2 ++ " "; _ -> ok end), {Line3} end, {Line}, lists:seq(0, (10)-1)), io:format("~p~n", [Line3]), {Line3} end, {Line}, lists:seq(0, (10)-1)).
+%     |                                                                                           ^
+
+/tmp/100-doors.erl:9:234: Warning: variable 'Line1' is unused
+%    9|     {Line3} = lists:foldl(fun(Row, {Line}) -> Line0 = "", {Line3} = lists:foldl(fun(Col, {Line}) -> Idx = ((Row * 10) + Col), (case lists:nth((Idx)+1, Doors2) of undefined -> Line2 = Line1 ++ "0"; false -> Line2 = Line1 ++ "0"; _ -> Line1 = Line ++ "1" end), (case (Col < 9) of true -> Line3 = Line2 ++ " "; _ -> ok end), {Line3} end, {Line}, lists:seq(0, (10)-1)), io:format("~p~n", [Line3]), {Line3} end, {Line}, lists:seq(0, (10)-1)).
+%     |                                                                                                                                                                                                                                          ^
 
 escript: There were compilation errors.

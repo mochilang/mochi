@@ -607,16 +607,31 @@ func (c *Compiler) compileIfStmt(ifst *parser.IfStmt) (string, error) {
 	return fmt.Sprintf("(case %s of undefined -> %s; false -> %s; _ -> %s end)", cond, elseCode, elseCode, thenCode), nil
 }
 
-func (c *Compiler) compileFor(fr *parser.ForStmt) (string, error) {
-	mutated := map[string]bool{}
-	for _, st := range fr.Body {
-		if st.Assign != nil {
+func collectMutated(sts []*parser.Statement, mutated map[string]bool) {
+	for _, st := range sts {
+		switch {
+		case st.Assign != nil:
 			mutated[st.Assign.Name] = true
-		}
-		if st.Update != nil {
+		case st.Update != nil:
 			mutated[st.Update.Target] = true
+		case st.For != nil:
+			collectMutated(st.For.Body, mutated)
+		case st.While != nil:
+			collectMutated(st.While.Body, mutated)
+		case st.If != nil:
+			collectMutated(st.If.Then, mutated)
+			collectMutated(st.If.Else, mutated)
+			if st.If.ElseIf != nil {
+				collectMutated(st.If.ElseIf.Then, mutated)
+				collectMutated(st.If.ElseIf.Else, mutated)
+			}
 		}
 	}
+}
+
+func (c *Compiler) compileFor(fr *parser.ForStmt) (string, error) {
+	mutated := map[string]bool{}
+	collectMutated(fr.Body, mutated)
 
 	hasBC := hasBreakOrContinue(fr.Body)
 

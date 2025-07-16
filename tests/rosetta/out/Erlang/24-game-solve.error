@@ -1,0 +1,3 @@
+run: exit status 127
+/tmp/24-game-solve.erl:33:128: syntax error before: 'rem'
+escript: There were compilation errors.

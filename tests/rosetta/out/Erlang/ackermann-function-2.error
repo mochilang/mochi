@@ -1,5 +1,5 @@
-run error: exit status 127
-/workspace/mochi/tests/rosetta/out/Erlang/ackermann-function-2.erl:9:5: variable 'Result1' is unbound
+run: exit status 127
+/tmp/ackermann-function-2.erl:9:5: variable 'Result1' is unbound
 %    9|     Result1.
 %     |     ^
 

@@ -1,4 +1,4 @@
-run error: exit status 127
-/workspace/mochi/tests/rosetta/out/Erlang/achilles-numbers.erl:15:62: syntax error before: 'rem'
-/workspace/mochi/tests/rosetta/out/Erlang/achilles-numbers.erl:47:106: syntax error before: '('
+run: exit status 127
+/tmp/achilles-numbers.erl:15:62: syntax error before: 'rem'
+/tmp/achilles-numbers.erl:47:106: syntax error before: '('
 escript: There were compilation errors.

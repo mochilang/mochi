@@ -1,0 +1,4 @@
+run: exit status 127
+/tmp/100-prisoners.erl:8:55: syntax error before: 'rem'
+/tmp/100-prisoners.erl:14:869: syntax error before: 'rem'
+escript: There were compilation errors.

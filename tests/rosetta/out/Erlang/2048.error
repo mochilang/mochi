@@ -1,0 +1,3 @@
+run: exit status 127
+/tmp/2048.erl:16:12: syntax error before: 'rem'
+escript: There were compilation errors.
