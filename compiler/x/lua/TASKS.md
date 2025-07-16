@@ -34,3 +34,9 @@
 
 ## Progress (2025-07-15 07:35)
 - Updated query runtime to preserve nil join columns, fixing q40 and q93 runtime errors.
+
+## Progress (2025-07-16 09:45)
+- Added `compile_rosetta_lua.go` and golden tests for Rosetta examples.
+- Implemented `__str` helper and improved `print`/`str` handling for lists and maps.
+- Added support for `upper` builtin function.
+- Generated Lua code and outputs for first few Rosetta tasks.
