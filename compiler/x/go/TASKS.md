@@ -88,3 +88,4 @@ TPC-H progress:
 - 2025-07-16 13:10 - Added VM golden tests for valid programs and removed stale `.error` files after successful runs
 - 2025-07-16 16:55 - Stabilised VM valid golden tests with fixed header time; new failing cases logged.
 - 2025-07-16 23:59 - Replaced compiler_test.go with vm_golden_test.go using golden.Run and updated README generation
+- 2025-07-17 00:00 - VM golden tests now summarize pass/fail counts and duplicate runtime tests were removed.

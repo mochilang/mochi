@@ -34,11 +34,12 @@ func Run(t *testing.T, dir, srcExt, goldenExt string, fn Runner) {
 		t.Fatalf("no test files found: %s", pattern)
 	}
 
+	var pass, fail int
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), srcExt)
 		wantPath := filepath.Join(rootDir, dir, name+goldenExt)
 
-		t.Run(name, func(t *testing.T) {
+		ok := t.Run(name, func(t *testing.T) {
 			input, err := os.ReadFile(src)
 			if err != nil {
 				t.Fatalf("failed to read input: %v", err)
@@ -109,7 +110,15 @@ func Run(t *testing.T, dir, srcExt, goldenExt string, fn Runner) {
 			model.Status = "ok"
 			log()
 		})
+
+		if ok {
+			pass++
+		} else {
+			fail++
+		}
 	}
+
+	t.Logf("SUMMARY: %d passed, %d failed", pass, fail)
 }
 
 // findRepoRoot walks up to locate the `go.mod` file.
