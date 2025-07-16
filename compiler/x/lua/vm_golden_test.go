@@ -4,7 +4,6 @@ package luacode_test
 
 import (
 	"bytes"
-	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -12,7 +11,7 @@ import (
 	"testing"
 
 	luacode "mochi/compiler/x/lua"
-	"mochi/golden"
+	"mochi/compiler/x/testutil"
 	"mochi/parser"
 	"mochi/types"
 )
@@ -21,56 +20,62 @@ func TestLuaCompiler_VMValid_Golden(t *testing.T) {
 	if err := luacode.EnsureLua(); err != nil {
 		t.Skipf("lua not installed: %v", err)
 	}
-	root := findRepoRoot(t)
-	outDir := filepath.Join(root, "tests", "machine", "x", "lua")
-	if err := os.MkdirAll(outDir, 0o755); err != nil {
-		t.Fatal(err)
-	}
+	root := testutil.FindRepoRoot(t)
+	srcDir := filepath.Join(root, "tests", "vm", "valid")
+	goldenDir := filepath.Join(root, "tests", "machine", "x", "lua")
 
-	golden.Run(t, "tests/vm/valid", ".mochi", ".out", func(src string) ([]byte, error) {
-		data, err := os.ReadFile(src)
-		if err != nil {
-			return nil, fmt.Errorf("read src: %w", err)
-		}
-		prog, err := parser.Parse(src)
+	files, err := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	if err != nil {
+		t.Fatalf("glob: %v", err)
+	}
+	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		if err != nil {
-			errPath := filepath.Join(outDir, name+".error")
-			writeError(errPath, data, err)
-			return nil, err
-		}
-		env := types.NewEnv(nil)
-		if errs := types.Check(prog, env); len(errs) > 0 {
-			errPath := filepath.Join(outDir, name+".error")
-			writeError(errPath, data, errs[0])
-			return nil, errs[0]
-		}
-		code, err := luacode.New(env).Compile(prog)
-		if err != nil {
-			errPath := filepath.Join(outDir, name+".error")
-			writeError(errPath, data, err)
-			return nil, err
-		}
-		codePath := filepath.Join(outDir, name+".lua")
-		if err := os.WriteFile(codePath, code, 0o644); err != nil {
-			return nil, err
-		}
-		cmd := exec.Command("lua", codePath)
-		if inData, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
-			cmd.Stdin = bytes.NewReader(inData)
-		}
-		out, err := cmd.CombinedOutput()
-		if err != nil {
-			errPath := filepath.Join(outDir, name+".error")
-			writeError(errPath, data, fmt.Errorf("run error: %w\n%s", err, out))
-			return nil, err
-		}
-		out = bytes.TrimSpace(out)
-		outFile := filepath.Join(outDir, name+".out")
-		if err := os.WriteFile(outFile, out, 0o644); err != nil {
-			return nil, err
-		}
-		os.Remove(filepath.Join(outDir, name+".error"))
-		return out, nil
-	})
+		t.Run(name, func(t *testing.T) {
+			prog, err := parser.Parse(src)
+			if err != nil {
+				if _, err2 := os.Stat(filepath.Join(goldenDir, name+".error")); err2 == nil {
+					return
+				}
+				t.Fatalf("parse error: %v", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				if _, err2 := os.Stat(filepath.Join(goldenDir, name+".error")); err2 == nil {
+					return
+				}
+				t.Fatalf("type error: %v", errs[0])
+			}
+			code, err := luacode.New(env).Compile(prog)
+			if err != nil {
+				if _, err2 := os.Stat(filepath.Join(goldenDir, name+".error")); err2 == nil {
+					return
+				}
+				t.Fatalf("compile error: %v", err)
+			}
+			dir := t.TempDir()
+			file := filepath.Join(dir, "main.lua")
+			if err := os.WriteFile(file, code, 0644); err != nil {
+				t.Fatalf("write error: %v", err)
+			}
+			cmd := exec.Command("lua", file)
+			if in, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+				cmd.Stdin = bytes.NewReader(in)
+			}
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				if _, err2 := os.Stat(filepath.Join(goldenDir, name+".error")); err2 == nil {
+					return
+				}
+				t.Fatalf("run error: %v\n%s", err, out)
+			}
+			got := bytes.TrimSpace(out)
+			wantOut, err := os.ReadFile(filepath.Join(goldenDir, name+".out"))
+			if err != nil {
+				t.Fatalf("read golden out: %v", err)
+			}
+			if !bytes.Equal(got, bytes.TrimSpace(wantOut)) {
+				t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s", name, got, bytes.TrimSpace(wantOut))
+			}
+		})
+	}
 }
