@@ -1,0 +1,30 @@
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/associative-array-merging.pas
+associative-array-merging.pas(10,49) Error: Identifier not found "any"
+associative-array-merging.pas(10,52) Error: Type identifier expected
+associative-array-merging.pas(10,90) Error: Identifier not found "any"
+associative-array-merging.pas(10,93) Error: Type identifier expected
+associative-array-merging.pas(10,124) Error: Identifier not found "any"
+associative-array-merging.pas(10,127) Error: Type identifier expected
+associative-array-merging.pas(19,26) Error: Illegal qualifier
+associative-array-merging.pas(21,5) Error: Identifier not found "k"
+associative-array-merging.pas(21,15) Error: Illegal qualifier
+associative-array-merging.pas(22,13) Error: Identifier not found "k"
+associative-array-merging.pas(22,24) Error: Illegal qualifier
+associative-array-merging.pas(22,32) Error: Identifier not found "k"
+associative-array-merging.pas(24,28) Error: Illegal qualifier
+associative-array-merging.pas(26,5) Error: Identifier not found "k"
+associative-array-merging.pas(26,17) Error: Illegal qualifier
+associative-array-merging.pas(27,13) Error: Identifier not found "k"
+associative-array-merging.pas(27,26) Error: Illegal qualifier
+associative-array-merging.pas(27,34) Error: Identifier not found "k"
+associative-array-merging.pas(45,11) Error: Incompatible types: got "TFPGMap<System.ShortString,System.Variant>" expected "TFPGMap<System.ShortString,System.LongInt>"
+associative-array-merging.pas(50,13) Error: Incompatible types: got "TFPGMap<System.ShortString,System.Variant>" expected "TFPGMap<System.ShortString,System.LongInt>"
+associative-array-merging.pas(51,32) Error: Incompatible type for arg no. 2: Got "TFPGMap<System.ShortString,System.LongInt>", expected "<erroneous type>"
+associative-array-merging.pas(52,18) Error: Can't read or write variables of this type
+associative-array-merging.pas(58) Fatal: There were 22 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

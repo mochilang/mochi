@@ -1,0 +1,23 @@
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/biorhythms.pas
+biorhythms.pas(18,10) Error: Incompatible types: got "Double" expected "<procedure variable type of function(Variant):Double is nested;Register>"
+biorhythms.pas(22,14) Error: Incompatible types: got "Double" expected "<procedure variable type of function(Variant):LongInt is nested;Register>"
+biorhythms.pas(23,27) Error: Operator is not overloaded: "Variant" div "<procedure variable type of function(Variant):LongInt is nested;Register>"
+biorhythms.pas(24,16) Error: Operator is not overloaded: "<procedure variable type of function(Variant):Double is nested;Register>" + "Variant"
+biorhythms.pas(27,13) Error: Incompatible types: got "<procedure variable type of function(Variant):Double is nested;Register>" expected "Double"
+biorhythms.pas(65,30) Error: Identifier not found "_sliceString"
+biorhythms.pas(82,13) Error: Incompatible types: got "TFPGMap<System.ShortString,System.LongInt>" expected "TFPGMap<System.Variant,System.Variant>"
+biorhythms.pas(85,26) Error: Identifier not found "_sliceString"
+biorhythms.pas(99,20) Error: Identifier not found "_sliceString"
+biorhythms.pas(100,20) Error: Identifier not found "_sliceString"
+biorhythms.pas(101,20) Error: Identifier not found "_sliceString"
+biorhythms.pas(128,91) Error: Incompatible types: got "TArray$1$crc9F312717" expected "TArray$1$crcE41905E8"
+biorhythms.pas(253,91) Error: Incompatible types: got "TArray$1$crc862A1656" expected "TArray$1$crcE41905E8"
+biorhythms.pas(255,298) Error: Incompatible types: got "TArray$1$crcA585BAD3" expected "TArray$1$crcE41905E8"
+biorhythms.pas(259,27) Error: Identifier not found "_indexList"
+biorhythms.pas(259,54) Fatal: Syntax error, ")" expected but "," found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

@@ -1,0 +1,27 @@
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/box-the-compass.pas
+box-the-compass.pas(16,10) Note: Call to subroutine "operator :=(const source:Int64):Variant;" marked as inline is not inlined
+box-the-compass.pas(17,9) Note: Call to subroutine "operator >(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+box-the-compass.pas(17,12) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+box-the-compass.pas(20,12) Note: Call to subroutine "operator -(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+box-the-compass.pas(20,12) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+box-the-compass.pas(31,10) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+box-the-compass.pas(32,8) Note: Call to subroutine "operator :=(const source:Byte):Variant;" marked as inline is not inlined
+box-the-compass.pas(33,9) Note: Call to subroutine "operator <(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+box-the-compass.pas(33,12) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+box-the-compass.pas(35,16) Note: Call to subroutine "operator +(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+box-the-compass.pas(35,16) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+box-the-compass.pas(36,12) Note: Call to subroutine "operator +(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+box-the-compass.pas(36,12) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+box-the-compass.pas(38,13) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+box-the-compass.pas(49,9) Error: Identifier not found "_sliceString"
+box-the-compass.pas(62,18) Error: Incompatible type for arg no. 1: Got "Double", expected "QWord"
+box-the-compass.pas(72,12) Error: Identifier not found "_sliceString"
+box-the-compass.pas(98,24) Error: Identifier not found "_indexList"
+box-the-compass.pas(98,43) Error: Identifier not found "compassPoint"
+box-the-compass.pas(98,55) Fatal: Syntax error, ")" expected but "," found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

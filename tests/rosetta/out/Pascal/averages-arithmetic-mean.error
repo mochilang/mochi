@@ -1,0 +1,12 @@
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/averages-arithmetic-mean.pas
+averages-arithmetic-mean.pas(10,73) Error: Identifier not found "any"
+averages-arithmetic-mean.pas(10,76) Error: Type identifier expected
+averages-arithmetic-mean.pas(18,10) Error: Incompatible types: got "ShortInt" expected "<procedure variable type of function(Variant):Double is nested;Register>"
+averages-arithmetic-mean.pas(22,29) Error: Identifier not found "_indexList"
+averages-arithmetic-mean.pas(22,50) Fatal: Syntax error, ")" expected but "," found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

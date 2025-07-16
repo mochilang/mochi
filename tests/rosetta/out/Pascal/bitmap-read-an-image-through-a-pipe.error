@@ -1,0 +1,8 @@
+parse: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/bitmap-read-an-image-through-a-pipe.mochi:1:1: lexer: invalid input text "# Parse a simple..."
+  --> /workspace/mochi/tests/rosetta/x/Mochi/bitmap-read-an-image-through-a-pipe.mochi:1:1
+
+  1 | # Parse a simple P3 PPM image from a string to simulate reading from a pipe
+    | ^
+
+help:
+  String literals must be properly closed with a `"`.

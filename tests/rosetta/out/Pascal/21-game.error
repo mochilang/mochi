@@ -1,0 +1,12 @@
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/21-game.pas
+21-game.pas(20,30) Error: Identifier not found "_sliceString"
+21-game.pas(37,13) Error: Incompatible types: got "TFPGMap<System.ShortString,System.LongInt>" expected "TFPGMap<System.Variant,System.Variant>"
+21-game.pas(40,26) Error: Identifier not found "_sliceString"
+21-game.pas(60,22) Error: Operator is not overloaded: "TDateTime" mod "ShortInt"
+21-game.pas(61,11) Fatal: String exceeds line
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

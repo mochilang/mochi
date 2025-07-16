@@ -782,12 +782,15 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	for _, st := range fun.Body {
 		if st.Fun != nil {
 			tmpBuf := c.buf
+			savedVars := c.varTypes
 			c.buf = nested
 			if err := c.compileFun(st.Fun); err != nil {
 				c.buf = prevBuf
 				c.indent = prevIndent
+				c.varTypes = savedVars
 				return err
 			}
+			c.varTypes = savedVars
 			if !strings.HasSuffix(nested.String(), "\n") {
 				c.writeln("")
 			}

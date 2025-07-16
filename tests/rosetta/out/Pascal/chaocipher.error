@@ -1,0 +1,21 @@
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/chaocipher.pas
+chaocipher.pas(17,9) Error: Identifier not found "_sliceString"
+chaocipher.pas(26,13) Error: Identifier not found "_sliceString"
+chaocipher.pas(26,45) Error: Identifier not found "_sliceString"
+chaocipher.pas(32,13) Error: Identifier not found "_sliceString"
+chaocipher.pas(32,37) Error: Identifier not found "_sliceString"
+chaocipher.pas(32,62) Error: Identifier not found "_sliceString"
+chaocipher.pas(32,86) Error: Identifier not found "_sliceString"
+chaocipher.pas(38,13) Error: Identifier not found "_sliceString"
+chaocipher.pas(38,37) Error: Identifier not found "_sliceString"
+chaocipher.pas(38,62) Error: Identifier not found "_sliceString"
+chaocipher.pas(38,86) Error: Identifier not found "_sliceString"
+chaocipher.pas(38,119) Error: Identifier not found "_sliceString"
+chaocipher.pas(57,11) Error: Identifier not found "_sliceString"
+chaocipher.pas(107) Fatal: There were 13 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

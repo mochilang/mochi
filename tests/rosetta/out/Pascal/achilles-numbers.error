@@ -1,0 +1,23 @@
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/achilles-numbers.pas
+achilles-numbers.pas(59,12) Error: Incompatible types: got "LongInt" expected "<procedure variable type of function(ShortString):ShortString is nested;Register>"
+achilles-numbers.pas(61,16) Error: Operator is not overloaded: "Int64" < "<procedure variable type of function(ShortString):ShortString is nested;Register>"
+achilles-numbers.pas(67,13) Error: Operator is not overloaded: "LongInt" >= "<procedure variable type of function(ShortString):ShortString is nested;Register>"
+achilles-numbers.pas(68,7) Error: Identifier not found "pps"
+achilles-numbers.pas(85,12) Error: Incompatible types: got "LongInt" expected "<procedure variable type of function(Variant):ShortString is nested;Register>"
+achilles-numbers.pas(86,12) Error: Incompatible types: got "LongInt" expected "<procedure variable type of function(ShortString):ShortString is nested;Register>"
+achilles-numbers.pas(88,15) Error: Incompatible types: got "TFPGMap<System.ShortString,System.LongInt>" expected "TFPGMap<System.LongInt,System.Boolean>"
+achilles-numbers.pas(90,20) Error: Operator is not overloaded: "Int64" < "<procedure variable type of function(ShortString):ShortString is nested;Register>"
+achilles-numbers.pas(97,13) Error: Operator is not overloaded: "LongInt" >= "<procedure variable type of function(ShortString):ShortString is nested;Register>"
+achilles-numbers.pas(98,13) Error: Operator is not overloaded: "LongInt" >= "<procedure variable type of function(Variant):ShortString is nested;Register>"
+achilles-numbers.pas(121,15) Error: Incompatible types: got "Variant" expected "<procedure variable type of function(Variant):Variant is nested;Register>"
+achilles-numbers.pas(126,18) Error: Operator is not overloaded: "Variant" < "<procedure variable type of function(Variant):Variant is nested;Register>"
+achilles-numbers.pas(128,19) Error: Incompatible types: got "Variant" expected "<procedure variable type of function(Variant):Variant is nested;Register>"
+achilles-numbers.pas(133,42) Error: Illegal expression
+achilles-numbers.pas(133,50) Error: Type identifier expected
+achilles-numbers.pas(133,50) Fatal: Syntax error, "," expected but "(" found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

@@ -1,0 +1,8 @@
+parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/bulls-and-cows.mochi:48:31: unexpected token "-" (expected PostfixExpr)
+  --> /workspace/mochi/tests/rosetta/x/Mochi/bulls-and-cows.mochi:48:31
+
+ 48 |       if indexOf(seen, cg) != -1 {
+    |                               ^
+
+help:
+  Parse error occurred. Check syntax near this location.

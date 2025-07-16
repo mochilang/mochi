@@ -1,0 +1,26 @@
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/bitwise-operations.pas
+bitwise-operations.pas(14,8) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+bitwise-operations.pas(15,6) Note: Call to subroutine "operator <(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+bitwise-operations.pas(15,9) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+bitwise-operations.pas(16,15) Note: Call to subroutine "operator :=(const source:Variant):LongInt;" marked as inline is not inlined
+bitwise-operations.pas(16,15) Note: Call to subroutine "operator mod(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+bitwise-operations.pas(16,15) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+bitwise-operations.pas(29,7) Error: Identifier not found "i"
+bitwise-operations.pas(29,7) Error: Ordinal expression expected
+bitwise-operations.pas(29,7) Error: Illegal counter variable
+bitwise-operations.pas(56,7) Error: Identifier not found "i"
+bitwise-operations.pas(56,7) Error: Ordinal expression expected
+bitwise-operations.pas(56,7) Error: Illegal counter variable
+bitwise-operations.pas(78,7) Error: Identifier not found "i"
+bitwise-operations.pas(78,7) Error: Ordinal expression expected
+bitwise-operations.pas(78,7) Error: Illegal counter variable
+bitwise-operations.pas(102,7) Error: Identifier not found "i"
+bitwise-operations.pas(102,7) Error: Ordinal expression expected
+bitwise-operations.pas(102,7) Error: Illegal counter variable
+bitwise-operations.pas(124,10) Fatal: Syntax error, "identifier" expected but "shl" found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

@@ -1,0 +1,14 @@
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/brazilian-numbers.pas
+brazilian-numbers.pas(14,10) Note: Call to subroutine "operator :=(const source:Int64):Variant;" marked as inline is not inlined
+brazilian-numbers.pas(18,17) Note: Call to subroutine "operator =(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+brazilian-numbers.pas(18,17) Note: Call to subroutine "operator :=(const source:Int64):Variant;" marked as inline is not inlined
+brazilian-numbers.pas(66,64) Error: Incompatible types: got "TArray$1$crc862A1656" expected "TArray$1$crcE41905E8"
+brazilian-numbers.pas(67,7) Error: Identifier not found "kind"
+brazilian-numbers.pas(69,26) Error: Identifier not found "kind"
+brazilian-numbers.pas(80,19) Fatal: String exceeds line
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

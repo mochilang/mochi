@@ -1,0 +1,13 @@
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/active-directory-search-for-a-user.pas
+fgl.pp(1668,8) Note: Call to subroutine "function TFPGMap<System.ShortString,ActiveDirectorySearchForAUser.TArray$1$crc862A1656>.IndexOf(const AKey:ShortString):LongInt;" marked as inline is not inlined
+active-directory-search-for-a-user.pas(12,22) Note: Call to subroutine "function TFPGMap<System.ShortString,ActiveDirectorySearchForAUser.TArray$1$crc862A1656>.GetKeyData(const AKey:ShortString):{Dynamic} Array Of ShortString;" marked as inline is not inlined
+active-directory-search-for-a-user.pas(31,13) Error: Incompatible types: got "TFPGMap<System.ShortString,System.Variant>" expected "TFPGMap<System.Variant,System.Variant>"
+active-directory-search-for-a-user.pas(35,16) Error: Incompatible types: got "TFPGMap<System.ShortString,ActiveDirectorySearchForAUser.TArray$1$crc862A1656>" expected "TFPGMap<System.Variant,System.Variant>"
+active-directory-search-for-a-user.pas(36,34) Error: Incompatible type for arg no. 1: Got "TFPGMap<System.Variant,System.Variant>", expected "TFPGMap<System.ShortString,ActiveDirectorySearchForAUser.TArray$1$crc862A1656>"
+active-directory-search-for-a-user.pas(58) Fatal: There were 3 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

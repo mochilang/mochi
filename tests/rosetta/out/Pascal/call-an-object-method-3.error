@@ -1,0 +1,12 @@
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/call-an-object-method-3.pas
+call-an-object-method-3.pas(21,8) Error: Incompatible types: got "Box" expected "Variant"
+call-an-object-method-3.pas(22,13) Error: Incompatible types: got "Variant" expected "Box"
+call-an-object-method-3.pas(31,8) Error: identifier idents no member "TellSecret"
+call-an-object-method-3.pas(31,19) Error: Illegal expression
+call-an-object-method-3.pas(31,20) Fatal: Syntax error, ")" expected but ";" found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode
