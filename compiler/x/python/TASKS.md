@@ -1,3 +1,6 @@
+## Recent Enhancements (2025-07-16 18:00)
+- Removed generated code comparisons from tests to rely solely on runtime output.
+- Deprecated `.py.out` files in `tests/compiler/py`.
 ## Recent Enhancements (2025-07-16 15:45)
 - Added golden tests for `tests/vm/valid` to verify compiled Python output.
 - `_save` helper now dumps JSON with sorted keys and compact separators, fixing `save_jsonl_stdout` mismatch.

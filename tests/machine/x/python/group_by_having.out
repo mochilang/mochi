@@ -1,1 +1,6 @@
-[{"city": "Paris", "num": 4}]
+[
+  {
+    "city": "Paris",
+    "num": 4
+  }
+]
