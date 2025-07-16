@@ -1,0 +1,24 @@
+/workspace/mochi/tests/rosetta/out/Smalltalk/averages-median-3.st:35: invalid assignment to argument k
+Object: '' error: Invalid argument 1: must be a Character
+SystemExceptions.WrongClass(Exception)>>signal (ExcHandling.st:254)
+SystemExceptions.WrongClass class>>signalOn:mustBe: (SysExcept.st:778)
+SystemExceptions.WrongClass class>>signalOn:mustBe: (SysExcept.st:774)
+String(Object)>>checkIndexableBounds:put: (Object.st:825)
+String>>at:put: (String.st:329)
+String(SequenceableCollection)>>replaceFrom:to:with:startingAt: (SeqCollect.st:558)
+String>>replaceFrom:to:with:startingAt: (String.st:296)
+String(SequenceableCollection)>>replaceFrom:to:with: (SeqCollect.st:572)
+Array(Collection)>>asString (Collection.st:438)
+UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/averages-median-3.st:47)
+Object: '' error: Invalid argument 5: must be a Character
+SystemExceptions.WrongClass(Exception)>>signal (ExcHandling.st:254)
+SystemExceptions.WrongClass class>>signalOn:mustBe: (SysExcept.st:778)
+SystemExceptions.WrongClass class>>signalOn:mustBe: (SysExcept.st:774)
+String(Object)>>"Global garbage collection... done"
+checkIndexableBounds:put: (Object.st:825)
+String>>at:put: (String.st:329)
+String(SequenceableCollection)>>replaceFrom:to:with:startingAt: (SeqCollect.st:558)
+String>>replaceFrom:to:with:startingAt: (String.st:296)
+String(SequenceableCollection)>>replaceFrom:to:with: (SeqCollect.st:572)
+Array(Collection)>>asString (Collection.st:438)
+UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/averages-median-3.st:48)

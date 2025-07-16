@@ -1,0 +1,72 @@
+Object: '' error: Invalid argument 121: must be a Character
+SystemExceptions.WrongClass(Exception)>>signal (ExcHandling.st:254)
+SystemExceptions.WrongClass class>>signalOn:mustBe: (SysExcept.st:778)
+SystemExceptions.WrongClass class>>signalOn:mustBe: (SysExcept.st:774)
+String(Object)>>checkIndexableBounds:put: (Object.st:825)
+String>>at:put: (String.st:329)
+String(SequenceableCollection)>>replaceFrom:to:with:startingAt: (SeqCollect.st:558)
+String>>replaceFrom:to:with:startingAt: (String.st:296)
+String(SequenceableCollection)>>replaceFrom:to:with: (SeqCollect.st:572)
+Array(Collection)>>asString (Collection.st:438)
+UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/binary-strings.st:19)
+Object: '' error: Invalid argument 121: must be a Character
+SystemExceptions.WrongClass(Exception)>>signal (ExcHandling.st:254)
+SystemExceptions.WrongClass class>>signalOn:mustBe: (SysExcept.st:778)
+SystemExceptions.WrongClass class>>signalOn:mustBe: (SysExcept.st:774)
+String("Global garbage collection... done"
+Object)>>checkIndexableBounds:put: (Object.st:825)
+String>>at:put: (String.st:329)
+String(SequenceableCollection)>>replaceFrom:to:with:startingAt: (SeqCollect.st:558)
+String>>replaceFrom:to:with:startingAt: (String.st:296)
+String(SequenceableCollection)>>replaceFrom:to:with: (SeqCollect.st:572)
+Array(Collection)>>asString (Collection.st:438)
+UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/binary-strings.st:21)
+Object: true error: did not understand #asString
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+True(Object)>>doesNotUnderstand: #asString (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/binary-strings.st:22)
+Object: Array new: 0 "<0x7f6680846c80>" error: did not understand #copyWith:at:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+Array(Object)>>doesNotUnderstand: #copyWith:at: (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/binary-strings.st:26)
+Object: Array new: 0 "<0x7f6680846c80>" error: Invalid index 1: index out of range
+SystemExceptions.IndexOutOfRange(Exception)>>signal (ExcHandling.st:254)
+SystemExceptions.IndexOutOfRange class>>signalOn:withIndex: (SysExcept.st:660)
+Array(Object)>>checkIndexableBounds:put: (Object.st:814)
+Array(Object)>>at:put: (Object.st:875)
+UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/binary-strings.st:30)
+Object: Array new: 0 "<0x7f6680846c80>" error: Invalid index 4: index out of range
+SystemExceptions.IndexOutOfRange(Exception)>>signal (ExcHandling.st:254)
+SystemExceptions.IndexOutOfRange class>>signalOn:withIndex: (SysExcept.st:660)
+Array(Object)>>checkIndexableBounds:put: (Object.st:814)
+Array(Object)>>at:put: (Object.st:875)
+UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/binary-strings.st:31)
+Object: '' error: did not understand #+
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #+ (SysExcept.st:1448)
+optimized [] in UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/binary-strings.st:13)
+UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/binary-strings.st:32)
+''
+Object: false error: did not understand #asString
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+False(Object)>>doesNotUnderstand: #asString (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/binary-strings.st:34)
+Object: '' error: did not understand #+
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #+ (SysExcept.st:1448)
+optimized [] in UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/binary-strings.st:13)
+UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/binary-strings.st:36)
+''
+Object: Array new: 0 "<0x7f6680846c80>" error: did not understand #+
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+Array(Object)>>doesNotUnderstand: #+ (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/binary-strings.st:51)
+Object: Array new: 0 "<0x7f668084e730>" error: did not understand #copyWith:at:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+Array(Object)>>doesNotUnderstand: #copyWith:at: (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/binary-strings.st:53)
+Object: Array new: 0 "<0x7f668084e730>" error: did not understand #copyWith:at:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+Array(Object)>>doesNotUnderstand: #copyWith:at: (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/binary-strings.st:56)
+''

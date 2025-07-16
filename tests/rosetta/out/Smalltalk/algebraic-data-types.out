@@ -1,0 +1,11 @@
+Object: BlockClosure new "<0x7f66808122a0>" error: did not understand #value:value:value:value:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+BlockClosure(Object)>>doesNotUnderstand: #value:value:value:value: (SysExcept.st:1448)
+optimized [] in UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/algebraic-data-types.st:59)
+optimized [] in UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/algebraic-data-types.st:68)
+UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/algebraic-data-types.st:77)
+Object: 'T(' error: did not understand #+
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #+ (SysExcept.st:1448)
+optimized [] in UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/algebraic-data-types.st:9)
+UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/algebraic-data-types.st:81)
