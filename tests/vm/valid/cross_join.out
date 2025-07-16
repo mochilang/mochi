@@ -1,10 +1,10 @@
 --- Cross Join: All order-customer pairs ---
-Order VInt 100 (customerId: VInt 1 , total: $ VInt 250 ) paired with VString "Alice"
-Order VInt 100 (customerId: VInt 1 , total: $ VInt 250 ) paired with VString "Bob"
-Order VInt 100 (customerId: VInt 1 , total: $ VInt 250 ) paired with VString "Charlie"
-Order VInt 101 (customerId: VInt 2 , total: $ VInt 125 ) paired with VString "Alice"
-Order VInt 101 (customerId: VInt 2 , total: $ VInt 125 ) paired with VString "Bob"
-Order VInt 101 (customerId: VInt 2 , total: $ VInt 125 ) paired with VString "Charlie"
-Order VInt 102 (customerId: VInt 1 , total: $ VInt 300 ) paired with VString "Alice"
-Order VInt 102 (customerId: VInt 1 , total: $ VInt 300 ) paired with VString "Bob"
-Order VInt 102 (customerId: VInt 1 , total: $ VInt 300 ) paired with VString "Charlie"
+Order 100 (customerId: 1 , total: $ 250 ) paired with Alice
+Order 100 (customerId: 1 , total: $ 250 ) paired with Bob
+Order 100 (customerId: 1 , total: $ 250 ) paired with Charlie
+Order 101 (customerId: 2 , total: $ 125 ) paired with Alice
+Order 101 (customerId: 2 , total: $ 125 ) paired with Bob
+Order 101 (customerId: 2 , total: $ 125 ) paired with Charlie
+Order 102 (customerId: 1 , total: $ 300 ) paired with Alice
+Order 102 (customerId: 1 , total: $ 300 ) paired with Bob
+Order 102 (customerId: 1 , total: $ 300 ) paired with Charlie
