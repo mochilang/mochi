@@ -248,6 +248,8 @@ out
 !tests/rosetta/out/**
 !tests/rosetta/out/Go
 !tests/rosetta/out/Go/*
+!tests/rosetta/out/TypeScript
+!tests/rosetta/out/TypeScript/*
 
 # Nuxt.js build / generate output
 .nuxt
