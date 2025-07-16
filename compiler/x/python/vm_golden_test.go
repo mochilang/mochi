@@ -49,6 +49,7 @@ func TestPythonCompiler_VMValid_Golden(t *testing.T) {
 			return nil, err
 		}
 		cmd := exec.Command("python3", pyFile)
+		cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root)
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			cmd.Stdin = bytes.NewReader(data)
 		}
