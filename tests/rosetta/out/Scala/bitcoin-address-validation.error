@@ -1,0 +1,8 @@
+type error: error[T003]: unknown function: sha256
+  --> /workspace/mochi/tests/rosetta/x/Mochi/bitcoin-address-validation.mochi:43:15
+
+ 43 |   let first = sha256(bs)
+    |               ^
+
+help:
+  Ensure the function is defined before it's called.
