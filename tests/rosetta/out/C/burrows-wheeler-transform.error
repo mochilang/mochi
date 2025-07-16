@@ -1,0 +1,172 @@
+cc: exit status 1
+/tmp/burrows-wheeler-transform.c: In function ‘sortStrings’:
+/tmp/burrows-wheeler-transform.c:108:13: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  108 |   int arr = xs;
+      |             ^~
+/tmp/burrows-wheeler-transform.c:109:14: error: request for member ‘len’ in something not a structure or union
+  109 |   int n = arr.len;
+      |              ^
+/tmp/burrows-wheeler-transform.c:114:22: error: request for member ‘data’ in something not a structure or union
+  114 |       if ((strcmp(arr.data[j], arr.data[j + 1]) > 0)) {
+      |                      ^
+/tmp/burrows-wheeler-transform.c:114:35: error: request for member ‘data’ in something not a structure or union
+  114 |       if ((strcmp(arr.data[j], arr.data[j + 1]) > 0)) {
+      |                                   ^
+/tmp/burrows-wheeler-transform.c:115:30: error: request for member ‘data’ in something not a structure or union
+  115 |         const char *tmp = arr.data[j];
+      |                              ^
+/tmp/burrows-wheeler-transform.c:116:12: error: request for member ‘data’ in something not a structure or union
+  116 |         arr.data[j] = arr.data[j + 1];
+      |            ^
+/tmp/burrows-wheeler-transform.c:116:26: error: request for member ‘data’ in something not a structure or union
+  116 |         arr.data[j] = arr.data[j + 1];
+      |                          ^
+/tmp/burrows-wheeler-transform.c:117:12: error: request for member ‘data’ in something not a structure or union
+  117 |         arr.data[j + 1] = tmp;
+      |            ^
+/tmp/burrows-wheeler-transform.c: In function ‘bwt’:
+/tmp/burrows-wheeler-transform.c:128:12: error: incompatible types when returning type ‘tmp_item_t’ but ‘int’ was expected
+  128 |     return (tmp_item_t){.err = 1, .res = ""};
+      |            ^
+/tmp/burrows-wheeler-transform.c:135:15: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  135 |   int table = tmp3;
+      |               ^~~~
+/tmp/burrows-wheeler-transform.c:138:46: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  138 |     const char *rot = slice_string(s, i, le) + slice_string(s, 0, i);
+      |                       ~~~~~~~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~
+      |                       |                        |
+      |                       char *                   char *
+/tmp/burrows-wheeler-transform.c:140:18: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  140 |     tmp4.data[0] = rot;
+      |                  ^
+/tmp/burrows-wheeler-transform.c:141:43: error: incompatible type for argument 1 of ‘concat_list_string’
+  141 |     list_string tmp5 = concat_list_string(table, tmp4);
+      |                                           ^~~~~
+      |                                           |
+      |                                           int
+/tmp/burrows-wheeler-transform.c:21:51: note: expected ‘list_string’ but argument is of type ‘int’
+   21 | static list_string concat_list_string(list_string a, list_string b) {
+      |                                       ~~~~~~~~~~~~^
+/tmp/burrows-wheeler-transform.c:142:13: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+  142 |     table = tmp5;
+      |             ^~~~
+/tmp/burrows-wheeler-transform.c:145:23: error: incompatible type for argument 1 of ‘sortStrings’
+  145 |   table = sortStrings(table);
+      |                       ^~~~~
+      |                       |
+      |                       int
+/tmp/burrows-wheeler-transform.c:107:29: note: expected ‘list_string’ but argument is of type ‘int’
+  107 | int sortStrings(list_string xs) {
+      |                 ~~~~~~~~~~~~^~
+/tmp/burrows-wheeler-transform.c:149:37: error: request for member ‘data’ in something not a structure or union
+  149 |     last = last + slice_string(table.data[i], le - 1, le);
+      |                                     ^
+/tmp/burrows-wheeler-transform.c:152:10: error: incompatible types when returning type ‘tmp_item1_t’ but ‘int’ was expected
+  152 |   return (tmp_item1_t){.err = 0, .res = last};
+      |          ^
+/tmp/burrows-wheeler-transform.c: In function ‘ibwt’:
+/tmp/burrows-wheeler-transform.c:158:15: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  158 |   int table = tmp6;
+      |               ^~~~
+/tmp/burrows-wheeler-transform.c:163:43: error: incompatible type for argument 1 of ‘concat_list_string’
+  163 |     list_string tmp8 = concat_list_string(table, tmp7);
+      |                                           ^~~~~
+      |                                           |
+      |                                           int
+/tmp/burrows-wheeler-transform.c:21:51: note: expected ‘list_string’ but argument is of type ‘int’
+   21 | static list_string concat_list_string(list_string a, list_string b) {
+      |                                       ~~~~~~~~~~~~^
+/tmp/burrows-wheeler-transform.c:164:13: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+  164 |     table = tmp8;
+      |             ^~~~
+/tmp/burrows-wheeler-transform.c:171:12: error: request for member ‘data’ in something not a structure or union
+  171 |       table.data[i] = slice_string(r, i, i + 1) + table.data[i];
+      |            ^
+/tmp/burrows-wheeler-transform.c:171:56: error: request for member ‘data’ in something not a structure or union
+  171 |       table.data[i] = slice_string(r, i, i + 1) + table.data[i];
+      |                                                        ^
+/tmp/burrows-wheeler-transform.c:174:25: error: incompatible type for argument 1 of ‘sortStrings’
+  174 |     table = sortStrings(table);
+      |                         ^~~~~
+      |                         |
+      |                         int
+/tmp/burrows-wheeler-transform.c:107:29: note: expected ‘list_string’ but argument is of type ‘int’
+  107 | int sortStrings(list_string xs) {
+      |                 ~~~~~~~~~~~~^~
+/tmp/burrows-wheeler-transform.c:179:27: error: request for member ‘data’ in something not a structure or union
+  179 |     if (slice_string(table.data[i], le - 1, le) == etx) {
+      |                           ^
+/tmp/burrows-wheeler-transform.c:180:32: error: request for member ‘data’ in something not a structure or union
+  180 |       return slice_string(table.data[i], 1, le - 1);
+      |                                ^
+/tmp/burrows-wheeler-transform.c: In function ‘makePrintable’:
+/tmp/burrows-wheeler-transform.c:193:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  193 |       char *tmp9 = concat_string(out, "^");
+      |                                  ^~~
+/tmp/burrows-wheeler-transform.c:29:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   29 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/burrows-wheeler-transform.c:196:35: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  196 |       char *tmp10 = concat_string(out, "|");
+      |                                   ^~~
+/tmp/burrows-wheeler-transform.c:29:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   29 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/burrows-wheeler-transform.c:199:35: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  199 |       char *tmp11 = concat_string(out, ch);
+      |                                   ^~~
+/tmp/burrows-wheeler-transform.c:29:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   29 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/burrows-wheeler-transform.c:199:40: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  199 |       char *tmp11 = concat_string(out, ch);
+      |                                        ^~
+/tmp/burrows-wheeler-transform.c:29:43: note: expected ‘char *’ but argument is of type ‘const char *’
+   29 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
+/tmp/burrows-wheeler-transform.c: In function ‘main’:
+/tmp/burrows-wheeler-transform.c:214:35: warning: hex escape sequence out of range
+  214 |   examples.data[5] = "\x02ABC\x03";
+      |                                   ^
+/tmp/burrows-wheeler-transform.c:215:7: error: conflicting types for ‘examples’; have ‘int’
+  215 |   int examples = examples;
+      |       ^~~~~~~~
+/tmp/burrows-wheeler-transform.c:208:15: note: previous definition of ‘examples’ with type ‘list_string’
+  208 |   list_string examples = list_string_create(6);
+      |               ^~~~~~~~
+/tmp/burrows-wheeler-transform.c:220:13: error: request for member ‘data’ in something not a structure or union
+  220 |     if ((res.data["err"])) {
+      |             ^
+/tmp/burrows-wheeler-transform.c:224:37: error: request for member ‘data’ in something not a structure or union
+  224 |       const char *enc = (char *)(res.data["res"]);
+      |                                     ^
+/tmp/burrows-wheeler-transform.c:225:46: warning: passing argument 1 of ‘makePrintable’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  225 |       printf("%s\n", " --> " + makePrintable(enc));
+      |                                              ^~~
+/tmp/burrows-wheeler-transform.c:187:33: note: expected ‘char *’ but argument is of type ‘const char *’
+  187 | const char *makePrintable(char *s) {
+      |                           ~~~~~~^
+/tmp/burrows-wheeler-transform.c:225:30: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
+  225 |       printf("%s\n", " --> " + makePrintable(enc));
+      |                      ~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~
+      |                      |         |
+      |                      char *    const char *
+/tmp/burrows-wheeler-transform.c:226:28: warning: passing argument 1 of ‘ibwt’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  226 |       const char *r = ibwt(enc);
+      |                            ^~~
+/tmp/burrows-wheeler-transform.c:155:24: note: expected ‘char *’ but argument is of type ‘const char *’
+  155 | const char *ibwt(char *r) {
+      |                  ~~~~~~^
+/tmp/burrows-wheeler-transform.c:227:44: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  227 |       char *tmp13 = concat_string(" --> ", r);
+      |                                            ^
+/tmp/burrows-wheeler-transform.c:29:43: note: expected ‘char *’ but argument is of type ‘const char *’
+   29 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
+/tmp/burrows-wheeler-transform.c: At top level:
+/tmp/burrows-wheeler-transform.c:234:5: error: redefinition of ‘main’
+  234 | int main() {
+      |     ^~~~
+/tmp/burrows-wheeler-transform.c:207:5: note: previous definition of ‘main’ with type ‘int()’
+  207 | int main() {
+      |     ^~~~

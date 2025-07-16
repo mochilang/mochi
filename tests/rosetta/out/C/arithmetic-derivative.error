@@ -1,0 +1,68 @@
+cc: exit status 1
+/tmp/arithmetic-derivative.c: In function ‘primeFactors’:
+/tmp/arithmetic-derivative.c:47:15: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+   47 |     factors = 0;
+      |               ^
+/tmp/arithmetic-derivative.c: In function ‘repeat’:
+/tmp/arithmetic-derivative.c:76:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   76 |     char *tmp5 = concat_string(s, ch);
+      |                                ^
+/tmp/arithmetic-derivative.c:29:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   29 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/arithmetic-derivative.c: In function ‘D’:
+/tmp/arithmetic-derivative.c:96:15: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+   96 |     factors = 0;
+      |               ^
+/tmp/arithmetic-derivative.c: In function ‘pad’:
+/tmp/arithmetic-derivative.c:128:38: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  128 |     char *tmp13 = concat_string(" ", s);
+      |                                      ^
+/tmp/arithmetic-derivative.c:29:43: note: expected ‘char *’ but argument is of type ‘const char *’
+   29 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
+/tmp/arithmetic-derivative.c: In function ‘main’:
+/tmp/arithmetic-derivative.c:138:12: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  138 |     vals = 0;
+      |            ^
+/tmp/arithmetic-derivative.c:146:19: error: invalid operands to binary + (have ‘const char *’ and ‘const char *’)
+  146 |       line = line + pad(vals.data[i + j]);
+      |                   ^ ~~~~~~~~~~~~~~~~~~~~~
+      |                     |
+      |                     const char *
+/tmp/arithmetic-derivative.c:148:37: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  148 |         char *tmp14 = concat_string(line, " ");
+      |                                     ^~~~
+/tmp/arithmetic-derivative.c:29:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   29 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/arithmetic-derivative.c:163:35: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  163 |       char *tmp16 = concat_string(exp, " ");
+      |                                   ^~~
+/tmp/arithmetic-derivative.c:29:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   29 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/arithmetic-derivative.c:167:29: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
+  167 |     const char *res = tmp17 + repeat("0", m - 1);
+      |                             ^ ~~~~~~~~~~~~~~~~~~
+      |                               |
+      |                               const char *
+/tmp/arithmetic-derivative.c:168:42: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  168 |     char *tmp18 = concat_string("D(10^", exp);
+      |                                          ^~~
+/tmp/arithmetic-derivative.c:29:43: note: expected ‘char *’ but argument is of type ‘const char *’
+   29 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
+/tmp/arithmetic-derivative.c:170:40: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  170 |     char *tmp20 = concat_string(tmp19, res);
+      |                                        ^~~
+/tmp/arithmetic-derivative.c:29:43: note: expected ‘char *’ but argument is of type ‘const char *’
+   29 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
+/tmp/arithmetic-derivative.c: At top level:
+/tmp/arithmetic-derivative.c:176:5: error: redefinition of ‘main’
+  176 | int main() {
+      |     ^~~~
+/tmp/arithmetic-derivative.c:134:5: note: previous definition of ‘main’ with type ‘int()’
+  134 | int main() {
+      |     ^~~~

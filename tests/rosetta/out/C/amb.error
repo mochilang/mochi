@@ -1,0 +1,127 @@
+cc: exit status 1
+/tmp/amb.c: In function ‘amb’:
+/tmp/amb.c:84:22: error: request for member ‘len’ in something not a structure or union
+   84 |   if (idx == wordsets.len) {
+      |                      ^
+/tmp/amb.c:92:22: error: request for member ‘data’ in something not a structure or union
+   92 |   while (i < wordsets.data[idx].len) {
+      |                      ^
+/tmp/amb.c:93:29: error: request for member ‘data’ in something not a structure or union
+   93 |     const char *w = wordsets.data[idx].data[i];
+      |                             ^
+/tmp/amb.c:94:34: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   94 |     if (idx == 0 || slice_string(prev, strlen(prev) - 1, strlen(prev)) ==
+      |                                  ^~~~
+/tmp/amb.c:66:33: note: expected ‘char *’ but argument is of type ‘const char *’
+   66 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/amb.c:95:38: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   95 |                         slice_string(w, 0, 1)) {
+      |                                      ^
+/tmp/amb.c:66:33: note: expected ‘char *’ but argument is of type ‘const char *’
+   66 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/amb.c:96:21: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   96 |       res.data[idx] = w;
+      |                     ^
+/tmp/amb.c: In function ‘main’:
+/tmp/amb.c:111:15: error: redefinition of ‘wordset’
+  111 |   list_string wordset = list_string_create(3);
+      |               ^~~~~~~
+/tmp/amb.c:107:15: note: previous definition of ‘wordset’ with type ‘list_string’
+  107 |   list_string wordset = list_string_create(3);
+      |               ^~~~~~~
+/tmp/amb.c:115:15: error: redefinition of ‘wordset’
+  115 |   list_string wordset = list_string_create(3);
+      |               ^~~~~~~
+/tmp/amb.c:111:15: note: previous definition of ‘wordset’ with type ‘list_string’
+  111 |   list_string wordset = list_string_create(3);
+      |               ^~~~~~~
+/tmp/amb.c:119:15: error: redefinition of ‘wordset’
+  119 |   list_string wordset = list_string_create(2);
+      |               ^~~~~~~
+/tmp/amb.c:115:15: note: previous definition of ‘wordset’ with type ‘list_string’
+  115 |   list_string wordset = list_string_create(3);
+      |               ^~~~~~~
+/tmp/amb.c:122:30: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  122 |   list_int wordset_data[] = {wordset, wordset, wordset, wordset};
+      |                              ^~~~~~~
+/tmp/amb.c:122:39: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
+  122 |   list_int wordset_data[] = {wordset, wordset, wordset, wordset};
+      |                                       ^~~~~~~
+/tmp/amb.c:122:48: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  122 |   list_int wordset_data[] = {wordset, wordset, wordset, wordset};
+      |                                                ^~~~~~~
+/tmp/amb.c:122:57: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
+  122 |   list_int wordset_data[] = {wordset, wordset, wordset, wordset};
+      |                                                         ^~~~~~~
+/tmp/amb.c:123:17: error: conflicting types for ‘wordset’; have ‘list_list_int’
+  123 |   list_list_int wordset = {4, wordset_data};
+      |                 ^~~~~~~
+/tmp/amb.c:119:15: note: previous definition of ‘wordset’ with type ‘list_string’
+  119 |   list_string wordset = list_string_create(2);
+      |               ^~~~~~~
+/tmp/amb.c:124:12: error: conflicting types for ‘wordset’; have ‘list_int’
+  124 |   list_int wordset = wordset;
+      |            ^~~~~~~
+/tmp/amb.c:123:17: note: previous definition of ‘wordset’ with type ‘list_list_int’
+  123 |   list_list_int wordset = {4, wordset_data};
+      |                 ^~~~~~~
+/tmp/amb.c:126:13: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  126 |   int res = tmp1;
+      |             ^~~~
+/tmp/amb.c:131:43: error: incompatible type for argument 1 of ‘concat_list_string’
+  131 |     list_string tmp3 = concat_list_string(res, tmp2);
+      |                                           ^~~
+      |                                           |
+      |                                           int
+/tmp/amb.c:49:51: note: expected ‘list_string’ but argument is of type ‘int’
+   49 | static list_string concat_list_string(list_string a, list_string b) {
+      |                                       ~~~~~~~~~~~~^
+/tmp/amb.c:132:11: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+  132 |     res = tmp3;
+      |           ^~~~
+/tmp/amb.c:135:11: error: incompatible type for argument 1 of ‘amb’
+  135 |   if (amb(wordset, res, 0)) {
+      |           ^~~~~~~
+      |           |
+      |           list_int
+/tmp/amb.c:83:13: note: expected ‘int’ but argument is of type ‘list_int’
+   83 | int amb(int wordsets, list_string res, int idx) {
+      |         ~~~~^~~~~~~~
+/tmp/amb.c:135:20: error: incompatible type for argument 2 of ‘amb’
+  135 |   if (amb(wordset, res, 0)) {
+      |                    ^~~
+      |                    |
+      |                    int
+/tmp/amb.c:83:35: note: expected ‘list_string’ but argument is of type ‘int’
+   83 | int amb(int wordsets, list_string res, int idx) {
+      |                       ~~~~~~~~~~~~^~~
+/tmp/amb.c:136:40: error: request for member ‘data’ in something not a structure or union
+  136 |     char *tmp4 = concat_string("[", res.data[0]);
+      |                                        ^
+/tmp/amb.c:139:19: error: request for member ‘len’ in something not a structure or union
+  139 |     while (j < res.len) {
+      |                   ^
+/tmp/amb.c:140:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  140 |       char *tmp5 = concat_string(out, " ");
+      |                                  ^~~
+/tmp/amb.c:57:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   57 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/amb.c:141:43: error: request for member ‘data’ in something not a structure or union
+  141 |       char *tmp6 = concat_string(tmp5, res.data[j]);
+      |                                           ^
+/tmp/amb.c:145:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  145 |     char *tmp7 = concat_string(out, "]");
+      |                                ^~~
+/tmp/amb.c:57:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   57 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/amb.c: At top level:
+/tmp/amb.c:153:5: error: redefinition of ‘main’
+  153 | int main() {
+      |     ^~~~
+/tmp/amb.c:106:5: note: previous definition of ‘main’ with type ‘int()’
+  106 | int main() {
+      |     ^~~~

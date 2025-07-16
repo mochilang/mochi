@@ -1,0 +1,32 @@
+cc: exit status 1
+/tmp/csv-to-html-translation-1.c: In function ‘main’:
+/tmp/csv-to-html-translation-1.c:45:29: warning: implicit declaration of function ‘split’ [-Wimplicit-function-declaration]
+   45 |   for (int tmp7 = 0; tmp7 < split(c, "\n").len; tmp7++) {
+      |                             ^~~~~
+/tmp/csv-to-html-translation-1.c:45:43: error: request for member ‘len’ in something not a structure or union
+   45 |   for (int tmp7 = 0; tmp7 < split(c, "\n").len; tmp7++) {
+      |                                           ^
+/tmp/csv-to-html-translation-1.c:46:32: error: request for member ‘data’ in something not a structure or union
+   46 |     char *line = split(c, "\n").data[tmp7];
+      |                                ^
+/tmp/csv-to-html-translation-1.c:47:12: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+   47 |     rows = 0;
+      |            ^
+/tmp/csv-to-html-translation-1.c:53:34: error: request for member ‘len’ in something not a structure or union
+   53 |     for (int tmp9 = 0; tmp9 < row.len; tmp9++) {
+      |                                  ^
+/tmp/csv-to-html-translation-1.c:54:23: error: request for member ‘data’ in something not a structure or union
+   54 |       char *cell = row.data[tmp9];
+      |                       ^
+/tmp/csv-to-html-translation-1.c:55:35: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   55 |       char *tmp10 = concat_string(cells, "<td>");
+      |                                   ^~~~~
+/tmp/csv-to-html-translation-1.c:21:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   21 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/csv-to-html-translation-1.c:60:45: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   60 |     char *tmp13 = concat_string("    <tr>", cells);
+      |                                             ^~~~~
+/tmp/csv-to-html-translation-1.c:21:43: note: expected ‘char *’ but argument is of type ‘const char *’
+   21 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^

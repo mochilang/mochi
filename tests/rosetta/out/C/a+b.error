@@ -1,0 +1,32 @@
+cc: exit status 1
+/tmp/a+b.c: In function ‘_input’:
+/tmp/a+b.c:9:12: warning: implicit declaration of function ‘strdup’ [-Wimplicit-function-declaration]
+    9 |     return strdup("");
+      |            ^~~~~~
+/tmp/a+b.c:9:12: warning: incompatible implicit declaration of built-in function ‘strdup’ [-Wbuiltin-declaration-mismatch]
+/tmp/a+b.c:10:16: warning: implicit declaration of function ‘strlen’ [-Wimplicit-function-declaration]
+   10 |   size_t len = strlen(buf);
+      |                ^~~~~~
+/tmp/a+b.c:5:1: note: include ‘<string.h>’ or provide a declaration of ‘strlen’
+    4 | #include <stdlib.h>
+  +++ |+#include <string.h>
+    5 | 
+/tmp/a+b.c:10:16: warning: incompatible implicit declaration of built-in function ‘strlen’ [-Wbuiltin-declaration-mismatch]
+   10 |   size_t len = strlen(buf);
+      |                ^~~~~~
+/tmp/a+b.c:10:16: note: include ‘<string.h>’ or provide a declaration of ‘strlen’
+/tmp/a+b.c:13:10: warning: incompatible implicit declaration of built-in function ‘strdup’ [-Wbuiltin-declaration-mismatch]
+   13 |   return strdup(buf);
+      |          ^~~~~~
+/tmp/a+b.c: In function ‘main’:
+/tmp/a+b.c:16:11: warning: implicit declaration of function ‘_int’; did you mean ‘_input’? [-Wimplicit-function-declaration]
+   16 |   int a = _int(_input());
+      |           ^~~~
+      |           _input
+/tmp/a+b.c: At top level:
+/tmp/a+b.c:21:5: error: redefinition of ‘main’
+   21 | int main() {
+      |     ^~~~
+/tmp/a+b.c:15:5: note: previous definition of ‘main’ with type ‘int()’
+   15 | int main() {
+      |     ^~~~

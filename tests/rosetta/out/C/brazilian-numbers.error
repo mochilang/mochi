@@ -1,0 +1,15 @@
+cc: exit status 1
+/tmp/brazilian-numbers.c: In function ‘main’:
+/tmp/brazilian-numbers.c:93:7: error: conflicting types for ‘kinds’; have ‘int’
+   93 |   int kinds = kinds;
+      |       ^~~~~
+/tmp/brazilian-numbers.c:89:15: note: previous definition of ‘kinds’ with type ‘list_string’
+   89 |   list_string kinds = list_string_create(3);
+      |               ^~~~~
+/tmp/brazilian-numbers.c: At top level:
+/tmp/brazilian-numbers.c:139:5: error: redefinition of ‘main’
+  139 | int main() {
+      |     ^~~~
+/tmp/brazilian-numbers.c:88:5: note: previous definition of ‘main’ with type ‘int()’
+   88 | int main() {
+      |     ^~~~

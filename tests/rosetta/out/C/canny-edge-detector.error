@@ -1,0 +1,193 @@
+cc: exit status 1
+/tmp/canny-edge-detector.c: In function ‘conv2d’:
+/tmp/canny-edge-detector.c:90:14: error: request for member ‘len’ in something not a structure or union
+   90 |   int h = img.len;
+      |              ^
+/tmp/canny-edge-detector.c:91:14: error: request for member ‘data’ in something not a structure or union
+   91 |   int w = img.data[0].len;
+      |              ^
+/tmp/canny-edge-detector.c:92:12: error: request for member ‘len’ in something not a structure or union
+   92 |   int n = k.len;
+      |            ^
+/tmp/canny-edge-detector.c:95:13: error: incompatible types when initializing type ‘int’ using type ‘list_int’
+   95 |   int out = tmp1;
+      |             ^~~~
+/tmp/canny-edge-detector.c:121:26: error: request for member ‘data’ in something not a structure or union
+  121 |           sum = sum + img.data[yy].data[xx] * k.data[j].data[i];
+      |                          ^
+/tmp/canny-edge-detector.c:121:48: error: request for member ‘data’ in something not a structure or union
+  121 |           sum = sum + img.data[yy].data[xx] * k.data[j].data[i];
+      |                                                ^
+/tmp/canny-edge-detector.c: In function ‘gradient’:
+/tmp/canny-edge-detector.c:143:14: error: redefinition of ‘hx’
+  143 |   list_float hx = list_float_create(3);
+      |              ^~
+/tmp/canny-edge-detector.c:139:14: note: previous definition of ‘hx’ with type ‘list_float’
+  139 |   list_float hx = list_float_create(3);
+      |              ^~
+/tmp/canny-edge-detector.c:147:14: error: redefinition of ‘hx’
+  147 |   list_float hx = list_float_create(3);
+      |              ^~
+/tmp/canny-edge-detector.c:143:14: note: previous definition of ‘hx’ with type ‘list_float’
+  143 |   list_float hx = list_float_create(3);
+      |              ^~
+/tmp/canny-edge-detector.c:151:25: error: incompatible types when initializing type ‘int’ using type ‘list_float’
+  151 |   list_int hx_data[] = {hx, hx, hx};
+      |                         ^~
+/tmp/canny-edge-detector.c:151:29: error: incompatible types when initializing type ‘int *’ using type ‘list_float’
+  151 |   list_int hx_data[] = {hx, hx, hx};
+      |                             ^~
+/tmp/canny-edge-detector.c:151:33: error: incompatible types when initializing type ‘int’ using type ‘list_float’
+  151 |   list_int hx_data[] = {hx, hx, hx};
+      |                                 ^~
+/tmp/canny-edge-detector.c:152:17: error: conflicting types for ‘hx’; have ‘list_list_int’
+  152 |   list_list_int hx = {3, hx_data};
+      |                 ^~
+/tmp/canny-edge-detector.c:147:14: note: previous definition of ‘hx’ with type ‘list_float’
+  147 |   list_float hx = list_float_create(3);
+      |              ^~
+/tmp/canny-edge-detector.c:153:7: error: conflicting types for ‘hx’; have ‘int’
+  153 |   int hx = hx;
+      |       ^~
+/tmp/canny-edge-detector.c:152:17: note: previous definition of ‘hx’ with type ‘list_list_int’
+  152 |   list_list_int hx = {3, hx_data};
+      |                 ^~
+/tmp/canny-edge-detector.c:158:14: error: redefinition of ‘hy’
+  158 |   list_float hy = list_float_create(3);
+      |              ^~
+/tmp/canny-edge-detector.c:154:14: note: previous definition of ‘hy’ with type ‘list_float’
+  154 |   list_float hy = list_float_create(3);
+      |              ^~
+/tmp/canny-edge-detector.c:162:14: error: redefinition of ‘hy’
+  162 |   list_float hy = list_float_create(3);
+      |              ^~
+/tmp/canny-edge-detector.c:158:14: note: previous definition of ‘hy’ with type ‘list_float’
+  158 |   list_float hy = list_float_create(3);
+      |              ^~
+/tmp/canny-edge-detector.c:166:25: error: incompatible types when initializing type ‘int’ using type ‘list_float’
+  166 |   list_int hy_data[] = {hy, hy, hy};
+      |                         ^~
+/tmp/canny-edge-detector.c:166:29: error: incompatible types when initializing type ‘int *’ using type ‘list_float’
+  166 |   list_int hy_data[] = {hy, hy, hy};
+      |                             ^~
+/tmp/canny-edge-detector.c:166:33: error: incompatible types when initializing type ‘int’ using type ‘list_float’
+  166 |   list_int hy_data[] = {hy, hy, hy};
+      |                                 ^~
+/tmp/canny-edge-detector.c:167:17: error: conflicting types for ‘hy’; have ‘list_list_int’
+  167 |   list_list_int hy = {3, hy_data};
+      |                 ^~
+/tmp/canny-edge-detector.c:162:14: note: previous definition of ‘hy’ with type ‘list_float’
+  162 |   list_float hy = list_float_create(3);
+      |              ^~
+/tmp/canny-edge-detector.c:168:7: error: conflicting types for ‘hy’; have ‘int’
+  168 |   int hy = hy;
+      |       ^~
+/tmp/canny-edge-detector.c:167:17: note: previous definition of ‘hy’ with type ‘list_list_int’
+  167 |   list_list_int hy = {3, hy_data};
+      |                 ^~
+/tmp/canny-edge-detector.c:171:14: error: request for member ‘len’ in something not a structure or union
+  171 |   int h = img.len;
+      |              ^
+/tmp/canny-edge-detector.c:172:14: error: request for member ‘data’ in something not a structure or union
+  172 |   int w = img.data[0].len;
+      |              ^
+/tmp/canny-edge-detector.c:174:13: error: incompatible types when initializing type ‘int’ using type ‘list_int’
+  174 |   int out = tmp5;
+      |             ^~~~
+/tmp/canny-edge-detector.c:181:20: error: request for member ‘data’ in something not a structure or union
+  181 |       double g = gx.data[y].data[x] * gx.data[y].data[x] +
+      |                    ^
+/tmp/canny-edge-detector.c:181:41: error: request for member ‘data’ in something not a structure or union
+  181 |       double g = gx.data[y].data[x] * gx.data[y].data[x] +
+      |                                         ^
+/tmp/canny-edge-detector.c:182:20: error: request for member ‘data’ in something not a structure or union
+  182 |                  gy.data[y].data[x] * gy.data[y].data[x];
+      |                    ^
+/tmp/canny-edge-detector.c:182:41: error: request for member ‘data’ in something not a structure or union
+  182 |                  gy.data[y].data[x] * gy.data[y].data[x];
+      |                                         ^
+/tmp/canny-edge-detector.c: In function ‘threshold’:
+/tmp/canny-edge-detector.c:196:12: error: request for member ‘len’ in something not a structure or union
+  196 |   int h = g.len;
+      |            ^
+/tmp/canny-edge-detector.c:197:12: error: request for member ‘data’ in something not a structure or union
+  197 |   int w = g.data[0].len;
+      |            ^
+/tmp/canny-edge-detector.c:205:12: error: request for member ‘data’ in something not a structure or union
+  205 |       if (g.data[y].data[x] >= t) {
+      |            ^
+/tmp/canny-edge-detector.c:206:15: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  206 |         row = 0;
+      |               ^
+/tmp/canny-edge-detector.c: In function ‘printMatrix’:
+/tmp/canny-edge-detector.c:232:35: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  232 |       char *tmp15 = concat_string(line, tmp14);
+      |                                   ^~~~
+/tmp/canny-edge-detector.c:73:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   73 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/canny-edge-detector.c:235:37: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  235 |         char *tmp16 = concat_string(line, " ");
+      |                                     ^~~~
+/tmp/canny-edge-detector.c:73:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   73 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/canny-edge-detector.c: In function ‘main’:
+/tmp/canny-edge-detector.c:252:14: error: redefinition of ‘img’
+  252 |   list_float img = list_float_create(5);
+      |              ^~~
+/tmp/canny-edge-detector.c:246:14: note: previous definition of ‘img’ with type ‘list_float’
+  246 |   list_float img = list_float_create(5);
+      |              ^~~
+/tmp/canny-edge-detector.c:258:14: error: redefinition of ‘img’
+  258 |   list_float img = list_float_create(5);
+      |              ^~~
+/tmp/canny-edge-detector.c:252:14: note: previous definition of ‘img’ with type ‘list_float’
+  252 |   list_float img = list_float_create(5);
+      |              ^~~
+/tmp/canny-edge-detector.c:264:14: error: redefinition of ‘img’
+  264 |   list_float img = list_float_create(5);
+      |              ^~~
+/tmp/canny-edge-detector.c:258:14: note: previous definition of ‘img’ with type ‘list_float’
+  258 |   list_float img = list_float_create(5);
+      |              ^~~
+/tmp/canny-edge-detector.c:270:14: error: redefinition of ‘img’
+  270 |   list_float img = list_float_create(5);
+      |              ^~~
+/tmp/canny-edge-detector.c:264:14: note: previous definition of ‘img’ with type ‘list_float’
+  264 |   list_float img = list_float_create(5);
+      |              ^~~
+/tmp/canny-edge-detector.c:276:26: error: incompatible types when initializing type ‘int’ using type ‘list_float’
+  276 |   list_int img_data[] = {img, img, img, img, img};
+      |                          ^~~
+/tmp/canny-edge-detector.c:276:31: error: incompatible types when initializing type ‘int *’ using type ‘list_float’
+  276 |   list_int img_data[] = {img, img, img, img, img};
+      |                               ^~~
+/tmp/canny-edge-detector.c:276:36: error: incompatible types when initializing type ‘int’ using type ‘list_float’
+  276 |   list_int img_data[] = {img, img, img, img, img};
+      |                                    ^~~
+/tmp/canny-edge-detector.c:276:41: error: incompatible types when initializing type ‘int *’ using type ‘list_float’
+  276 |   list_int img_data[] = {img, img, img, img, img};
+      |                                         ^~~
+/tmp/canny-edge-detector.c:276:46: error: incompatible types when initializing type ‘int’ using type ‘list_float’
+  276 |   list_int img_data[] = {img, img, img, img, img};
+      |                                              ^~~
+/tmp/canny-edge-detector.c:277:17: error: conflicting types for ‘img’; have ‘list_list_int’
+  277 |   list_list_int img = {5, img_data};
+      |                 ^~~
+/tmp/canny-edge-detector.c:270:14: note: previous definition of ‘img’ with type ‘list_float’
+  270 |   list_float img = list_float_create(5);
+      |              ^~~
+/tmp/canny-edge-detector.c:278:7: error: conflicting types for ‘img’; have ‘int’
+  278 |   int img = img;
+      |       ^~~
+/tmp/canny-edge-detector.c:277:17: note: previous definition of ‘img’ with type ‘list_list_int’
+  277 |   list_list_int img = {5, img_data};
+      |                 ^~~
+/tmp/canny-edge-detector.c: At top level:
+/tmp/canny-edge-detector.c:284:5: error: redefinition of ‘main’
+  284 | int main() {
+      |     ^~~~
+/tmp/canny-edge-detector.c:245:5: note: previous definition of ‘main’ with type ‘int()’
+  245 | int main() {
+      |     ^~~~

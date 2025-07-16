@@ -1045,6 +1045,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if c.env != nil {
 			curT, _ = c.env.GetVar(s.Assign.Name)
 		}
+		if call, ok := callPattern(s.Assign.Value); ok && call.Func == "append" && len(call.Args) == 2 {
+			delete(c.listLens, lhs)
+			delete(c.listVals, lhs)
+		}
 		if len(s.Assign.Index) == 1 {
 			if c.env != nil {
 				if tv := curT; tv != nil {
@@ -1110,6 +1114,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				if elem != nil {
 					c.env.SetVar(s.Assign.Name, types.ListType{Elem: elem}, true)
 				}
+				delete(c.listLens, lhs)
+				delete(c.listVals, lhs)
 			}
 		}
 	case s.Return != nil:

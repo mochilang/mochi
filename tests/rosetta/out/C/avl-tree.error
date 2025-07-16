@@ -1,0 +1,247 @@
+cc: exit status 1
+/tmp/avl-tree.c: In function ‘Node’:
+/tmp/avl-tree.c:154:59: error: incompatible types when initializing type ‘int’ using type ‘list_int’
+  154 |   return (tmp_item_t){.data = data, .balance = 0, .link = tmp1};
+      |                                                           ^~~~
+/tmp/avl-tree.c: At top level:
+/tmp/avl-tree.c:157:13: error: unknown type name ‘map_string_int’
+  157 | int getLink(map_string_int n, int dir) {
+      |             ^~~~~~~~~~~~~~
+/tmp/avl-tree.c:161:13: error: unknown type name ‘map_string_int’
+  161 | int setLink(map_string_int n, int dir, int v) {
+      |             ^~~~~~~~~~~~~~
+/tmp/avl-tree.c:169:12: error: unknown type name ‘map_string_int’
+  169 | int single(map_string_int root, int dir) {
+      |            ^~~~~~~~~~~~~~
+/tmp/avl-tree.c:176:13: error: unknown type name ‘map_string_int’
+  176 | int _double(map_string_int root, int dir) {
+      |             ^~~~~~~~~~~~~~
+/tmp/avl-tree.c:187:19: error: unknown type name ‘map_string_int’
+  187 | int adjustBalance(map_string_int root, int dir, int bal) {
+      |                   ^~~~~~~~~~~~~~
+/tmp/avl-tree.c:203:19: error: unknown type name ‘map_string_int’
+  203 | int insertBalance(map_string_int root, int dir) {
+      |                   ^~~~~~~~~~~~~~
+/tmp/avl-tree.c: In function ‘insertR’:
+/tmp/avl-tree.c:217:26: error: ‘tmp_item_t’ has no member named ‘node’
+  217 |     return (tmp_item_t){.node = Node(data), .done = 0};
+      |                          ^~~~
+/tmp/avl-tree.c:217:46: error: ‘tmp_item_t’ has no member named ‘done’
+  217 |     return (tmp_item_t){.node = Node(data), .done = 0};
+      |                                              ^~~~
+/tmp/avl-tree.c:217:12: error: incompatible types when returning type ‘tmp_item_t’ but ‘int’ was expected
+  217 |     return (tmp_item_t){.node = Node(data), .done = 0};
+      |            ^
+/tmp/avl-tree.c:219:15: error: ‘map_string_int’ undeclared (first use in this function)
+  219 |   int node = (map_string_int)(root);
+      |               ^~~~~~~~~~~~~~
+/tmp/avl-tree.c:219:15: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/avl-tree.c:221:18: error: request for member ‘data’ in something not a structure or union
+  221 |   if (((int)(node.data["Data"])) < data) {
+      |                  ^
+/tmp/avl-tree.c:224:19: warning: implicit declaration of function ‘getLink’; did you mean ‘getline’? [-Wimplicit-function-declaration]
+  224 |   int r = insertR(getLink(node, dir), data);
+      |                   ^~~~~~~
+      |                   getline
+/tmp/avl-tree.c:225:3: warning: implicit declaration of function ‘setLink’ [-Wimplicit-function-declaration]
+  225 |   setLink(node, dir, r.data["node"]);
+      |   ^~~~~~~
+/tmp/avl-tree.c:225:23: error: request for member ‘data’ in something not a structure or union
+  225 |   setLink(node, dir, r.data["node"]);
+      |                       ^
+/tmp/avl-tree.c:226:9: error: request for member ‘data’ in something not a structure or union
+  226 |   if ((r.data["done"])) {
+      |         ^
+/tmp/avl-tree.c:227:12: error: incompatible types when returning type ‘tmp_item1_t’ but ‘int’ was expected
+  227 |     return (tmp_item1_t){.node = node, .done = 1};
+      |            ^
+/tmp/avl-tree.c:229:7: error: request for member ‘data’ in something not a structure or union
+  229 |   node.data["Balance"] = ((int)(node.data["Balance"])) + (2 * dir - 1);
+      |       ^
+/tmp/avl-tree.c:229:37: error: request for member ‘data’ in something not a structure or union
+  229 |   node.data["Balance"] = ((int)(node.data["Balance"])) + (2 * dir - 1);
+      |                                     ^
+/tmp/avl-tree.c:230:12: error: request for member ‘data’ in something not a structure or union
+  230 |   if ((node.data["Balance"] == 0)) {
+      |            ^
+/tmp/avl-tree.c:231:12: error: incompatible types when returning type ‘tmp_item2_t’ but ‘int’ was expected
+  231 |     return (tmp_item2_t){.node = node, .done = 1};
+      |            ^
+/tmp/avl-tree.c:233:12: error: request for member ‘data’ in something not a structure or union
+  233 |   if ((node.data["Balance"] == 1 || node.data["Balance"] == ((-1)))) {
+      |            ^
+/tmp/avl-tree.c:233:41: error: request for member ‘data’ in something not a structure or union
+  233 |   if ((node.data["Balance"] == 1 || node.data["Balance"] == ((-1)))) {
+      |                                         ^
+/tmp/avl-tree.c:234:12: error: incompatible types when returning type ‘tmp_item3_t’ but ‘int’ was expected
+  234 |     return (tmp_item3_t){.node = node, .done = 0};
+      |            ^
+/tmp/avl-tree.c:236:32: warning: implicit declaration of function ‘insertBalance’ [-Wimplicit-function-declaration]
+  236 |   return (tmp_item4_t){.node = insertBalance(node, dir), .done = 1};
+      |                                ^~~~~~~~~~~~~
+/tmp/avl-tree.c:236:10: error: incompatible types when returning type ‘tmp_item4_t’ but ‘int’ was expected
+  236 |   return (tmp_item4_t){.node = insertBalance(node, dir), .done = 1};
+      |          ^
+/tmp/avl-tree.c: In function ‘Insert’:
+/tmp/avl-tree.c:241:11: error: request for member ‘data’ in something not a structure or union
+  241 |   return r.data["node"];
+      |           ^
+/tmp/avl-tree.c: At top level:
+/tmp/avl-tree.c:244:19: error: unknown type name ‘map_string_int’
+  244 | int removeBalance(map_string_int root, int dir) {
+      |                   ^~~~~~~~~~~~~~
+/tmp/avl-tree.c: In function ‘removeR’:
+/tmp/avl-tree.c:263:26: error: ‘tmp_item_t’ has no member named ‘node’
+  263 |     return (tmp_item_t){.node = 0, .done = 0};
+      |                          ^~~~
+/tmp/avl-tree.c:263:37: error: ‘tmp_item_t’ has no member named ‘done’
+  263 |     return (tmp_item_t){.node = 0, .done = 0};
+      |                                     ^~~~
+/tmp/avl-tree.c:263:12: error: incompatible types when returning type ‘tmp_item_t’ but ‘int’ was expected
+  263 |     return (tmp_item_t){.node = 0, .done = 0};
+      |            ^
+/tmp/avl-tree.c:265:15: error: ‘map_string_int’ undeclared (first use in this function)
+  265 |   int node = (map_string_int)(root);
+      |               ^~~~~~~~~~~~~~
+/tmp/avl-tree.c:266:18: error: request for member ‘data’ in something not a structure or union
+  266 |   if (((int)(node.data["Data"])) == data) {
+      |                  ^
+/tmp/avl-tree.c:268:14: error: incompatible types when returning type ‘tmp_item1_t’ but ‘int’ was expected
+  268 |       return (tmp_item1_t){.node = getLink(node, 1), .done = 0};
+      |              ^
+/tmp/avl-tree.c:271:14: error: incompatible types when returning type ‘tmp_item2_t’ but ‘int’ was expected
+  271 |       return (tmp_item2_t){.node = getLink(node, 0), .done = 0};
+      |              ^
+/tmp/avl-tree.c:277:9: error: request for member ‘data’ in something not a structure or union
+  277 |     node.data["Data"] = heir.data["Data"];
+      |         ^
+/tmp/avl-tree.c:277:29: error: request for member ‘data’ in something not a structure or union
+  277 |     node.data["Data"] = heir.data["Data"];
+      |                             ^
+/tmp/avl-tree.c:278:22: error: request for member ‘data’ in something not a structure or union
+  278 |     data = (int)(heir.data["Data"]);
+      |                      ^
+/tmp/avl-tree.c:281:18: error: request for member ‘data’ in something not a structure or union
+  281 |   if (((int)(node.data["Data"])) < data) {
+      |                  ^
+/tmp/avl-tree.c:285:23: error: request for member ‘data’ in something not a structure or union
+  285 |   setLink(node, dir, r.data["node"]);
+      |                       ^
+/tmp/avl-tree.c:286:9: error: request for member ‘data’ in something not a structure or union
+  286 |   if ((r.data["done"])) {
+      |         ^
+/tmp/avl-tree.c:287:12: error: incompatible types when returning type ‘tmp_item3_t’ but ‘int’ was expected
+  287 |     return (tmp_item3_t){.node = node, .done = 1};
+      |            ^
+/tmp/avl-tree.c:289:7: error: request for member ‘data’ in something not a structure or union
+  289 |   node.data["Balance"] = ((int)(node.data["Balance"])) + 1 - 2 * dir;
+      |       ^
+/tmp/avl-tree.c:289:37: error: request for member ‘data’ in something not a structure or union
+  289 |   node.data["Balance"] = ((int)(node.data["Balance"])) + 1 - 2 * dir;
+      |                                     ^
+/tmp/avl-tree.c:290:12: error: request for member ‘data’ in something not a structure or union
+  290 |   if ((node.data["Balance"] == 1 || node.data["Balance"] == ((-1)))) {
+      |            ^
+/tmp/avl-tree.c:290:41: error: request for member ‘data’ in something not a structure or union
+  290 |   if ((node.data["Balance"] == 1 || node.data["Balance"] == ((-1)))) {
+      |                                         ^
+/tmp/avl-tree.c:291:12: error: incompatible types when returning type ‘tmp_item4_t’ but ‘int’ was expected
+  291 |     return (tmp_item4_t){.node = node, .done = 1};
+      |            ^
+/tmp/avl-tree.c:293:12: error: request for member ‘data’ in something not a structure or union
+  293 |   if ((node.data["Balance"] == 0)) {
+      |            ^
+/tmp/avl-tree.c:294:12: error: incompatible types when returning type ‘tmp_item5_t’ but ‘int’ was expected
+  294 |     return (tmp_item5_t){.node = node, .done = 0};
+      |            ^
+/tmp/avl-tree.c:296:10: warning: implicit declaration of function ‘removeBalance’ [-Wimplicit-function-declaration]
+  296 |   return removeBalance(node, dir);
+      |          ^~~~~~~~~~~~~
+/tmp/avl-tree.c: In function ‘Remove’:
+/tmp/avl-tree.c:301:11: error: request for member ‘data’ in something not a structure or union
+  301 |   return r.data["node"];
+      |           ^
+/tmp/avl-tree.c: In function ‘indentStr’:
+/tmp/avl-tree.c:308:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  308 |     char *tmp2 = concat_string(s, " ");
+      |                                ^
+/tmp/avl-tree.c:21:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   21 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/avl-tree.c: In function ‘dumpNode’:
+/tmp/avl-tree.c:318:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  318 |     char *tmp3 = concat_string(sp, "null");
+      |                                ^~
+/tmp/avl-tree.c:21:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   21 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/avl-tree.c:321:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  321 |       char *tmp4 = concat_string(line, ",");
+      |                                  ^~~~
+/tmp/avl-tree.c:21:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   21 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/avl-tree.c:326:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  326 |     char *tmp5 = concat_string(sp, "{");
+      |                                ^~
+/tmp/avl-tree.c:21:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   21 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/avl-tree.c:328:27: error: request for member ‘data’ in something not a structure or union
+  328 |     char *tmp6 = _str(node.data["Data"]);
+      |                           ^
+/tmp/avl-tree.c:329:27: error: request for member ‘data’ in something not a structure or union
+  329 |     char *tmp7 = _str(node.data["Data"]);
+      |                           ^
+/tmp/avl-tree.c:330:42: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
+  330 |     printf("%d\n", indentStr(indent + 3) + "\"Data\": " + tmp7 + ",");
+      |                    ~~~~~~~~~~~~~~~~~~~~~ ^
+      |                    |                     |
+      |                    const char *          char *
+/tmp/avl-tree.c:331:27: error: request for member ‘data’ in something not a structure or union
+  331 |     char *tmp8 = _str(node.data["Balance"]);
+      |                           ^
+/tmp/avl-tree.c:332:27: error: request for member ‘data’ in something not a structure or union
+  332 |     char *tmp9 = _str(node.data["Balance"]);
+      |                           ^
+/tmp/avl-tree.c:333:42: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
+  333 |     printf("%d\n", indentStr(indent + 3) + "\"Balance\": " + tmp9 + ",");
+      |                    ~~~~~~~~~~~~~~~~~~~~~ ^
+      |                    |                     |
+      |                    const char *          char *
+/tmp/avl-tree.c:334:42: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
+  334 |     printf("%s\n", indentStr(indent + 3) + "\"Link\": [");
+      |                    ~~~~~~~~~~~~~~~~~~~~~ ^
+      |                    |                     |
+      |                    const char *          char *
+/tmp/avl-tree.c:337:42: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
+  337 |     printf("%s\n", indentStr(indent + 3) + "]");
+      |                    ~~~~~~~~~~~~~~~~~~~~~ ^
+      |                    |                     |
+      |                    const char *          char *
+/tmp/avl-tree.c:338:33: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  338 |     char *tmp10 = concat_string(sp, "}");
+      |                                 ^~
+/tmp/avl-tree.c:21:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   21 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/avl-tree.c:341:35: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  341 |       char *tmp11 = concat_string(end, ",");
+      |                                   ^~~
+/tmp/avl-tree.c:21:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   21 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/avl-tree.c: In function ‘main’:
+/tmp/avl-tree.c:366:12: error: ‘map_string_int’ undeclared (first use in this function)
+  366 |   int t = (map_string_int)(tree);
+      |            ^~~~~~~~~~~~~~
+/tmp/avl-tree.c:367:4: error: request for member ‘data’ in something not a structure or union
+  367 |   t.data["Balance"] = 0;
+      |    ^
+/tmp/avl-tree.c: At top level:
+/tmp/avl-tree.c:372:5: error: redefinition of ‘main’
+  372 | int main() {
+      |     ^~~~
+/tmp/avl-tree.c:350:5: note: previous definition of ‘main’ with type ‘int()’
+  350 | int main() {
+      |     ^~~~

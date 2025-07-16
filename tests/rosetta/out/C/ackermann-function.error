@@ -1,0 +1,7 @@
+cc: exit status 1
+/tmp/ackermann-function.c:46:5: error: redefinition of ‘main’
+   46 | int main() {
+      |     ^~~~
+/tmp/ackermann-function.c:31:5: note: previous definition of ‘main’ with type ‘int()’
+   31 | int main() {
+      |     ^~~~

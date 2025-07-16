@@ -1,0 +1,26 @@
+cc: exit status 1
+/tmp/99-bottles-of-beer.c: In function ‘main’:
+/tmp/99-bottles-of-beer.c:36:31: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
+   36 |     printf("%s\n", bottles(i) + " of beer on the wall");
+      |                    ~~~~~~~~~~ ^
+      |                    |          |
+      |                    |          char *
+      |                    const char *
+/tmp/99-bottles-of-beer.c:37:31: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
+   37 |     printf("%s\n", bottles(i) + " of beer");
+      |                    ~~~~~~~~~~ ^
+      |                    |          |
+      |                    |          char *
+      |                    const char *
+/tmp/99-bottles-of-beer.c:39:35: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
+   39 |     printf("%s\n", bottles(i - 1) + " of beer on the wall");
+      |                    ~~~~~~~~~~~~~~ ^
+      |                    |              |
+      |                    const char *   char *
+/tmp/99-bottles-of-beer.c: At top level:
+/tmp/99-bottles-of-beer.c:44:5: error: redefinition of ‘main’
+   44 | int main() {
+      |     ^~~~
+/tmp/99-bottles-of-beer.c:33:5: note: previous definition of ‘main’ with type ‘int()’
+   33 | int main() {
+      |     ^~~~

@@ -1,0 +1,15 @@
+cc: exit status 1
+/tmp/array-length.c: In function ‘main’:
+/tmp/array-length.c:40:7: error: conflicting types for ‘arr’; have ‘int’
+   40 |   int arr = arr;
+      |       ^~~
+/tmp/array-length.c:36:15: note: previous definition of ‘arr’ with type ‘list_string’
+   36 |   list_string arr = list_string_create(3);
+      |               ^~~
+/tmp/array-length.c: At top level:
+/tmp/array-length.c:50:5: error: redefinition of ‘main’
+   50 | int main() {
+      |     ^~~~
+/tmp/array-length.c:35:5: note: previous definition of ‘main’ with type ‘int()’
+   35 | int main() {
+      |     ^~~~

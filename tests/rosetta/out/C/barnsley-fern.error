@@ -1,0 +1,28 @@
+cc: exit status 1
+/tmp/barnsley-fern.c: In function ‘main’:
+/tmp/barnsley-fern.c:71:16: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+   71 |     int line = tmp3;
+      |                ^~~~
+/tmp/barnsley-fern.c:76:45: error: incompatible type for argument 1 of ‘concat_list_string’
+   76 |       list_string tmp5 = concat_list_string(line, tmp4);
+      |                                             ^~~~
+      |                                             |
+      |                                             int
+/tmp/barnsley-fern.c:35:51: note: expected ‘list_string’ but argument is of type ‘int’
+   35 | static list_string concat_list_string(list_string a, list_string b) {
+      |                                       ~~~~~~~~~~~~^
+/tmp/barnsley-fern.c:77:14: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+   77 |       line = tmp5;
+      |              ^~~~
+/tmp/barnsley-fern.c:80:12: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+   80 |     grid = 0;
+      |            ^
+/tmp/barnsley-fern.c:86:18: error: request for member ‘data’ in something not a structure or union
+   86 |     grid.data[iy].data[ix] = "*";
+      |                  ^
+/tmp/barnsley-fern.c:114:20: error: request for member ‘data’ in something not a structure or union
+  114 |       grid.data[iy].data[ix] = "*";
+      |                    ^
+/tmp/barnsley-fern.c:123:35: error: request for member ‘data’ in something not a structure or union
+  123 |       line = line + grid.data[row].data[col];
+      |                                   ^

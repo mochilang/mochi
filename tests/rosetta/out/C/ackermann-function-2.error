@@ -1,0 +1,14 @@
+cc: exit status 1
+/tmp/ackermann-function-2.c:21:5: warning: conflicting types for built-in function ‘pow’; expected ‘double(double,  double)’ [-Wbuiltin-declaration-mismatch]
+   21 | int pow(int base, int exp) {
+      |     ^~~
+/tmp/ackermann-function-2.c:6:1: note: ‘pow’ is declared in header ‘<math.h>’
+    5 | #include <string.h>
+  +++ |+#include <math.h>
+    6 | 
+/tmp/ackermann-function-2.c:65:5: error: redefinition of ‘main’
+   65 | int main() {
+      |     ^~~~
+/tmp/ackermann-function-2.c:50:5: note: previous definition of ‘main’ with type ‘int()’
+   50 | int main() {
+      |     ^~~~

@@ -1,0 +1,179 @@
+cc: exit status 1
+/tmp/base64-decode-data.c:123:7: error: duplicate member ‘_’
+  123 |   int _;
+      |       ^
+/tmp/base64-decode-data.c:124:7: error: duplicate member ‘_’
+  124 |   int _;
+      |       ^
+/tmp/base64-decode-data.c:125:7: error: duplicate member ‘_’
+  125 |   int _;
+      |       ^
+/tmp/base64-decode-data.c:126:7: error: duplicate member ‘_’
+  126 |   int _;
+      |       ^
+/tmp/base64-decode-data.c:127:7: error: duplicate member ‘_’
+  127 |   int _;
+      |       ^
+/tmp/base64-decode-data.c:128:7: error: duplicate member ‘_’
+  128 |   int _;
+      |       ^
+/tmp/base64-decode-data.c:129:7: error: duplicate member ‘_’
+  129 |   int _;
+      |       ^
+/tmp/base64-decode-data.c:130:7: error: duplicate member ‘_’
+  130 |   int _;
+      |       ^
+/tmp/base64-decode-data.c:131:7: error: duplicate member ‘_’
+  131 |   int _;
+      |       ^
+/tmp/base64-decode-data.c: In function ‘parseIntStr’:
+/tmp/base64-decode-data.c:164:11: error: request for member ‘len’ in something not a structure or union
+  164 |   if ((str.len > 0 && tmp2 == "-")) {
+      |           ^
+/tmp/base64-decode-data.c:169:27: error: invalid initializer
+  169 |   map_string_int digits = (tmp_item_t){._ = 0,
+      |                           ^
+/tmp/base64-decode-data.c:179:18: error: request for member ‘len’ in something not a structure or union
+  179 |   while ((i < str.len)) {
+      |                  ^
+/tmp/base64-decode-data.c: In function ‘ord’:
+/tmp/base64-decode-data.c:193:29: warning: passing argument 1 of ‘index_of_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  193 |   int idx = index_of_string(upper, ch);
+      |                             ^~~~~
+/tmp/base64-decode-data.c:96:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   96 | static int index_of_string(char *s, char *sub) {
+      |                            ~~~~~~^
+/tmp/base64-decode-data.c:197:25: warning: passing argument 1 of ‘index_of_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  197 |   idx = index_of_string(lower, ch);
+      |                         ^~~~~
+/tmp/base64-decode-data.c:96:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   96 | static int index_of_string(char *s, char *sub) {
+      |                            ~~~~~~^
+/tmp/base64-decode-data.c: In function ‘chr’:
+/tmp/base64-decode-data.c:223:31: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  223 |     char *tmp4 = slice_string(upper, n - 65, n - 64);
+      |                               ^~~~~
+/tmp/base64-decode-data.c:102:33: note: expected ‘char *’ but argument is of type ‘const char *’
+  102 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/base64-decode-data.c:227:31: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  227 |     char *tmp5 = slice_string(lower, n - 97, n - 96);
+      |                               ^~~~~
+/tmp/base64-decode-data.c:102:33: note: expected ‘char *’ but argument is of type ‘const char *’
+  102 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/base64-decode-data.c:232:31: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  232 |     char *tmp6 = slice_string(digits, n - 48, n - 47);
+      |                               ^~~~~~
+/tmp/base64-decode-data.c:102:33: note: expected ‘char *’ but argument is of type ‘const char *’
+  102 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/base64-decode-data.c: In function ‘toBinary’:
+/tmp/base64-decode-data.c:256:38: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  256 |     char *tmp8 = concat_string(tmp7, b);
+      |                                      ^
+/tmp/base64-decode-data.c:69:43: note: expected ‘char *’ but argument is of type ‘const char *’
+   69 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
+/tmp/base64-decode-data.c: In function ‘base64Encode’:
+/tmp/base64-decode-data.c:283:15: error: invalid operands to binary + (have ‘const char *’ and ‘const char *’)
+  283 |     bin = bin + toBinary(ord(ch), 8);
+      |               ^ ~~~~~~~~~~~~~~~~~~~~
+      |                 |
+      |                 const char *
+/tmp/base64-decode-data.c:286:33: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  286 |     char *tmp11 = concat_string(bin, "0");
+      |                                 ^~~
+/tmp/base64-decode-data.c:69:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   69 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/base64-decode-data.c:292:32: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  292 |     char *tmp12 = slice_string(bin, i, i + 6);
+      |                                ^~~
+/tmp/base64-decode-data.c:102:33: note: expected ‘char *’ but argument is of type ‘const char *’
+  102 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/base64-decode-data.c:294:24: warning: passing argument 1 of ‘binToInt’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  294 |     int val = binToInt(chunk);
+      |                        ^~~~~
+/tmp/base64-decode-data.c:264:20: note: expected ‘char *’ but argument is of type ‘const char *’
+  264 | int binToInt(char *bits) {
+      |              ~~~~~~^~~~
+/tmp/base64-decode-data.c:295:32: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  295 |     char *tmp13 = slice_string(alphabet, val, val + 1);
+      |                                ^~~~~~~~
+/tmp/base64-decode-data.c:102:33: note: expected ‘char *’ but argument is of type ‘const char *’
+  102 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/base64-decode-data.c:296:33: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  296 |     char *tmp14 = concat_string(out, tmp13);
+      |                                 ^~~
+/tmp/base64-decode-data.c:69:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   69 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/base64-decode-data.c:302:32: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  302 |     char *tmp15 = slice_string(out, 0, strlen(out) - 1);
+      |                                ^~~
+/tmp/base64-decode-data.c:102:33: note: expected ‘char *’ but argument is of type ‘const char *’
+  102 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/base64-decode-data.c:307:32: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  307 |     char *tmp17 = slice_string(out, 0, strlen(out) - 2);
+      |                                ^~~
+/tmp/base64-decode-data.c:102:33: note: expected ‘char *’ but argument is of type ‘const char *’
+  102 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/base64-decode-data.c: In function ‘base64Decode’:
+/tmp/base64-decode-data.c:325:31: warning: passing argument 1 of ‘index_of_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  325 |     int idx = index_of_string(alphabet, ch);
+      |                               ^~~~~~~~
+/tmp/base64-decode-data.c:96:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   96 | static int index_of_string(char *s, char *sub) {
+      |                            ~~~~~~^
+/tmp/base64-decode-data.c:325:41: warning: passing argument 2 of ‘index_of_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  325 |     int idx = index_of_string(alphabet, ch);
+      |                                         ^~
+/tmp/base64-decode-data.c:96:43: note: expected ‘char *’ but argument is of type ‘const char *’
+   96 | static int index_of_string(char *s, char *sub) {
+      |                                     ~~~~~~^~~
+/tmp/base64-decode-data.c:326:15: error: invalid operands to binary + (have ‘const char *’ and ‘const char *’)
+  326 |     bin = bin + toBinary(idx, 6);
+      |               ^ ~~~~~~~~~~~~~~~~
+      |                 |
+      |                 const char *
+/tmp/base64-decode-data.c:332:32: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  332 |     char *tmp20 = slice_string(bin, i, i + 8);
+      |                                ^~~
+/tmp/base64-decode-data.c:102:33: note: expected ‘char *’ but argument is of type ‘const char *’
+  102 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/base64-decode-data.c:334:24: warning: passing argument 1 of ‘binToInt’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  334 |     int val = binToInt(chunk);
+      |                        ^~~~~
+/tmp/base64-decode-data.c:264:20: note: expected ‘char *’ but argument is of type ‘const char *’
+  264 | int binToInt(char *bits) {
+      |              ~~~~~~^~~~
+/tmp/base64-decode-data.c:335:15: error: invalid operands to binary + (have ‘const char *’ and ‘const char *’)
+  335 |     out = out + chr(val);
+      |               ^ ~~~~~~~~
+      |                 |
+      |                 const char *
+/tmp/base64-decode-data.c: In function ‘main’:
+/tmp/base64-decode-data.c:345:48: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  345 |   char *tmp22 = concat_string("\nEncoded  : ", enc);
+      |                                                ^~~
+/tmp/base64-decode-data.c:69:43: note: expected ‘char *’ but argument is of type ‘const char *’
+   69 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
+/tmp/base64-decode-data.c:347:34: warning: passing argument 1 of ‘base64Decode’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  347 |   const char *dec = base64Decode(enc);
+      |                                  ^~~
+/tmp/base64-decode-data.c:314:32: note: expected ‘char *’ but argument is of type ‘const char *’
+  314 | const char *base64Decode(char *enc) {
+      |                          ~~~~~~^~~
+/tmp/base64-decode-data.c:348:48: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  348 |   char *tmp23 = concat_string("\nDecoded  : ", dec);
+      |                                                ^~~
+/tmp/base64-decode-data.c:69:43: note: expected ‘char *’ but argument is of type ‘const char *’
+   69 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^

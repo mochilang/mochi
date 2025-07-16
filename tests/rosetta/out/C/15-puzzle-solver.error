@@ -1,0 +1,6 @@
+cc: exit status 1
+/tmp/15-puzzle-solver.c: In function ‘main’:
+/tmp/15-puzzle-solver.c:7:18: error: ‘testpkg’ undeclared (first use in this function)
+    7 |   printf("%d\n", testpkg.fifteen_puzzle_example());
+      |                  ^~~~~~~
+/tmp/15-puzzle-solver.c:7:18: note: each undeclared identifier is reported only once for each function it appears in

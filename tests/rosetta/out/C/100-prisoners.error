@@ -1,0 +1,16 @@
+cc: exit status 1
+/tmp/100-prisoners.c: In function ‘doTrials’:
+/tmp/100-prisoners.c:83:17: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+   83 |       drawers = 0;
+      |                 ^
+/tmp/100-prisoners.c: In function ‘main’:
+/tmp/100-prisoners.c:158:19: error: subscripted value is neither array nor pointer nor vector
+  158 |     int np = tmp12[tmp13];
+      |                   ^
+/tmp/100-prisoners.c: At top level:
+/tmp/100-prisoners.c:176:5: error: redefinition of ‘main’
+  176 | int main() {
+      |     ^~~~
+/tmp/100-prisoners.c:152:5: note: previous definition of ‘main’ with type ‘int()’
+  152 | int main() {
+      |     ^~~~

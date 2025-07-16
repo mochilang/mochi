@@ -1,8 +1,98 @@
-parse error: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/bitmap-flood-fill.mochi:14:30: unexpected token "}" (expected PostfixExpr)
-  --> /workspace/mochi/tests/rosetta/x/Mochi/bitmap-flood-fill.mochi:14:30
-
- 14 |   if target == repl { return }
-    |                              ^
-
-help:
-  Parse error occurred. Check syntax near this location.
+cc: exit status 1
+/tmp/bitmap-flood-fill.c: In function ‘ff’:
+/tmp/bitmap-flood-fill.c:62:69: error: request for member ‘len’ in something not a structure or union
+   62 |   if (px < 0 || py < 0 || py >= ff_grid.len || px >= ff_grid.data[0].len) {
+      |                                                                     ^
+/tmp/bitmap-flood-fill.c:63:5: warning: ‘return’ with no value, in function returning non-void
+   63 |     return;
+      |     ^~~~~~
+/tmp/bitmap-flood-fill.c:61:5: note: declared here
+   61 | int ff(int px, int py) {
+      |     ^~
+/tmp/bitmap-flood-fill.c:65:23: error: request for member ‘data’ in something not a structure or union
+   65 |   if (ff_grid.data[py].data[px] != ff_target) {
+      |                       ^
+/tmp/bitmap-flood-fill.c:66:5: warning: ‘return’ with no value, in function returning non-void
+   66 |     return;
+      |     ^~~~~~
+/tmp/bitmap-flood-fill.c:61:5: note: declared here
+   61 | int ff(int px, int py) {
+      |     ^~
+/tmp/bitmap-flood-fill.c:68:3: error: ‘grid’ undeclared (first use in this function)
+   68 |   grid.data[py].data[px] = ff_repl;
+      |   ^~~~
+/tmp/bitmap-flood-fill.c:68:3: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/bitmap-flood-fill.c: In function ‘flood’:
+/tmp/bitmap-flood-fill.c:76:24: error: ‘grid’ undeclared (first use in this function)
+   76 |   const char *target = grid.data[y].data[x];
+      |                        ^~~~
+/tmp/bitmap-flood-fill.c:78:5: warning: ‘return’ with no value, in function returning non-void
+   78 |     return;
+      |     ^~~~~~
+/tmp/bitmap-flood-fill.c:75:5: note: declared here
+   75 | int flood(int x, int y, char *repl) {
+      |     ^~~~~
+/tmp/bitmap-flood-fill.c: In function ‘main’:
+/tmp/bitmap-flood-fill.c:90:15: error: redefinition of ‘grid’
+   90 |   list_string grid = list_string_create(5);
+      |               ^~~~
+/tmp/bitmap-flood-fill.c:84:15: note: previous definition of ‘grid’ with type ‘list_string’
+   84 |   list_string grid = list_string_create(5);
+      |               ^~~~
+/tmp/bitmap-flood-fill.c:96:15: error: redefinition of ‘grid’
+   96 |   list_string grid = list_string_create(5);
+      |               ^~~~
+/tmp/bitmap-flood-fill.c:90:15: note: previous definition of ‘grid’ with type ‘list_string’
+   90 |   list_string grid = list_string_create(5);
+      |               ^~~~
+/tmp/bitmap-flood-fill.c:102:15: error: redefinition of ‘grid’
+  102 |   list_string grid = list_string_create(5);
+      |               ^~~~
+/tmp/bitmap-flood-fill.c:96:15: note: previous definition of ‘grid’ with type ‘list_string’
+   96 |   list_string grid = list_string_create(5);
+      |               ^~~~
+/tmp/bitmap-flood-fill.c:108:15: error: redefinition of ‘grid’
+  108 |   list_string grid = list_string_create(5);
+      |               ^~~~
+/tmp/bitmap-flood-fill.c:102:15: note: previous definition of ‘grid’ with type ‘list_string’
+  102 |   list_string grid = list_string_create(5);
+      |               ^~~~
+/tmp/bitmap-flood-fill.c:114:27: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  114 |   list_int grid_data[] = {grid, grid, grid, grid, grid};
+      |                           ^~~~
+/tmp/bitmap-flood-fill.c:114:33: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
+  114 |   list_int grid_data[] = {grid, grid, grid, grid, grid};
+      |                                 ^~~~
+/tmp/bitmap-flood-fill.c:114:39: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  114 |   list_int grid_data[] = {grid, grid, grid, grid, grid};
+      |                                       ^~~~
+/tmp/bitmap-flood-fill.c:114:45: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
+  114 |   list_int grid_data[] = {grid, grid, grid, grid, grid};
+      |                                             ^~~~
+/tmp/bitmap-flood-fill.c:114:51: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  114 |   list_int grid_data[] = {grid, grid, grid, grid, grid};
+      |                                                   ^~~~
+/tmp/bitmap-flood-fill.c:115:17: error: conflicting types for ‘grid’; have ‘list_list_int’
+  115 |   list_list_int grid = {5, grid_data};
+      |                 ^~~~
+/tmp/bitmap-flood-fill.c:108:15: note: previous definition of ‘grid’ with type ‘list_string’
+  108 |   list_string grid = list_string_create(5);
+      |               ^~~~
+/tmp/bitmap-flood-fill.c:116:12: error: conflicting types for ‘grid’; have ‘list_int’
+  116 |   list_int grid = grid;
+      |            ^~~~
+/tmp/bitmap-flood-fill.c:115:17: note: previous definition of ‘grid’ with type ‘list_list_int’
+  115 |   list_list_int grid = {5, grid_data};
+      |                 ^~~~
+/tmp/bitmap-flood-fill.c:121:34: error: request for member ‘len’ in something not a structure or union
+  121 |     for (int tmp2 = 0; tmp2 < row.len; tmp2++) {
+      |                                  ^
+/tmp/bitmap-flood-fill.c:122:21: error: request for member ‘data’ in something not a structure or union
+  122 |       char *ch = row.data[tmp2];
+      |                     ^
+/tmp/bitmap-flood-fill.c:123:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  123 |       char *tmp3 = concat_string(line, ch);
+      |                                  ^~~~
+/tmp/bitmap-flood-fill.c:49:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   49 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^

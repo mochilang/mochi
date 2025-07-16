@@ -1,0 +1,155 @@
+cc: exit status 1
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:36:3: error: unknown type name ‘pixel_t’
+   36 |   pixel_t *data;
+      |   ^~~~~~~
+/tmp/bitmap-ppm-conversion-through-a-pipe.c: In function ‘create_pixel_list’:
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:41:31: error: ‘pixel_t’ undeclared (first use in this function); did you mean ‘Pixel’?
+   41 |   l.data = calloc(len, sizeof(pixel_t));
+      |                               ^~~~~~~
+      |                               Pixel
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:41:31: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/bitmap-ppm-conversion-through-a-pipe.c: At top level:
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:56:3: error: unknown type name ‘bitmap_t’
+   56 |   bitmap_t *data;
+      |   ^~~~~~~~
+/tmp/bitmap-ppm-conversion-through-a-pipe.c: In function ‘create_bitmap_list’:
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:61:31: error: ‘bitmap_t’ undeclared (first use in this function); did you mean ‘Bitmap’?
+   61 |   l.data = calloc(len, sizeof(bitmap_t));
+      |                               ^~~~~~~~
+      |                               Bitmap
+/tmp/bitmap-ppm-conversion-through-a-pipe.c: At top level:
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:69:1: error: unknown type name ‘pixel_t’; did you mean ‘Pixel’?
+   69 | pixel_t pixelFromRgb(int c) {
+      | ^~~~~~~
+      | Pixel
+/tmp/bitmap-ppm-conversion-through-a-pipe.c: In function ‘pixelFromRgb’:
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:73:19: error: ‘Pixel’ {aka ‘struct Pixel’} has no member named ‘r’
+   73 |   return (Pixel){.r = r, .g = g, .b = b};
+      |                   ^
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:73:27: error: ‘Pixel’ {aka ‘struct Pixel’} has no member named ‘g’
+   73 |   return (Pixel){.r = r, .g = g, .b = b};
+      |                           ^
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:73:35: error: ‘Pixel’ {aka ‘struct Pixel’} has no member named ‘b’
+   73 |   return (Pixel){.r = r, .g = g, .b = b};
+      |                                   ^
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:73:10: error: incompatible types when returning type ‘Pixel’ {aka ‘struct Pixel’} but ‘int’ was expected
+   73 |   return (Pixel){.r = r, .g = g, .b = b};
+      |          ^
+/tmp/bitmap-ppm-conversion-through-a-pipe.c: In function ‘rgbFromPixel’:
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:76:38: error: ‘Pixel’ {aka ‘struct Pixel’} has no member named ‘r’
+   76 | int rgbFromPixel(Pixel *p) { return p->r * 65536 + p->g * 256 + p->b; }
+      |                                      ^~
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:76:53: error: ‘Pixel’ {aka ‘struct Pixel’} has no member named ‘g’
+   76 | int rgbFromPixel(Pixel *p) { return p->r * 65536 + p->g * 256 + p->b; }
+      |                                                     ^~
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:76:66: error: ‘Pixel’ {aka ‘struct Pixel’} has no member named ‘b’
+   76 | int rgbFromPixel(Pixel *p) { return p->r * 65536 + p->g * 256 + p->b; }
+      |                                                                  ^~
+/tmp/bitmap-ppm-conversion-through-a-pipe.c: At top level:
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:78:1: error: unknown type name ‘bitmap_t’; did you mean ‘Bitmap’?
+   78 | bitmap_t NewBitmap(int x, int y) {
+      | ^~~~~~~~
+      | Bitmap
+/tmp/bitmap-ppm-conversion-through-a-pipe.c: In function ‘NewBitmap’:
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:80:14: error: incompatible types when initializing type ‘int’ using type ‘list_int’
+   80 |   int data = tmp1;
+      |              ^~~~
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:84:22: error: invalid initializer
+   84 |     pixel_list_t r = tmp2;
+      |                      ^~~~
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:87:11: error: incompatible types when assigning to type ‘pixel_list_t’ from type ‘int’
+   87 |       r = 0;
+      |           ^
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:93:10: error: incompatible types when returning type ‘Bitmap’ {aka ‘struct Bitmap’} but ‘int’ was expected
+   93 |   return (Bitmap){.cols = x, .rows = y, .px = data};
+      |          ^
+/tmp/bitmap-ppm-conversion-through-a-pipe.c: In function ‘FillRgb’:
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:98:3: error: unknown type name ‘pixel_t’; did you mean ‘Pixel’?
+   98 |   pixel_t p = pixelFromRgb(c);
+      |   ^~~~~~~
+      |   Pixel
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:102:16: error: incompatible types when initializing type ‘int’ using type ‘list_int’
+  102 |       int px = b->px;
+      |                ^
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:103:28: error: request for member ‘data’ in something not a structure or union
+  103 |       pixel_list_t row = px.data[y];
+      |                            ^
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:105:9: error: request for member ‘data’ in something not a structure or union
+  105 |       px.data[y] = row;
+      |         ^
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:106:15: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  106 |       b->px = px;
+      |               ^~
+/tmp/bitmap-ppm-conversion-through-a-pipe.c: In function ‘SetPxRgb’:
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:117:12: error: incompatible types when initializing type ‘int’ using type ‘list_int’
+  117 |   int px = b->px;
+      |            ^
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:118:24: error: request for member ‘data’ in something not a structure or union
+  118 |   pixel_list_t row = px.data[y];
+      |                        ^
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:120:5: error: request for member ‘data’ in something not a structure or union
+  120 |   px.data[y] = row;
+      |     ^
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:121:11: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  121 |   b->px = px;
+      |           ^~
+/tmp/bitmap-ppm-conversion-through-a-pipe.c: In function ‘main’:
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:128:3: error: unknown type name ‘bitmap_t’; did you mean ‘Bitmap’?
+  128 |   bitmap_t bm = NewBitmap(400, 300);
+      |   ^~~~~~~~
+      |   Bitmap
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:129:11: warning: passing argument 1 of ‘FillRgb’ from incompatible pointer type [-Wincompatible-pointer-types]
+  129 |   FillRgb(&bm, 12615744);
+      |           ^~~
+      |           |
+      |           int *
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:96:21: note: expected ‘Bitmap *’ {aka ‘struct Bitmap *’} but argument is of type ‘int *’
+   96 | int FillRgb(Bitmap *b, int c) {
+      |             ~~~~~~~~^
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:137:14: warning: passing argument 1 of ‘SetPxRgb’ from incompatible pointer type [-Wincompatible-pointer-types]
+  137 |     SetPxRgb(&bm, x, y, 8405024);
+      |              ^~~
+      |              |
+      |              int *
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:113:22: note: expected ‘Bitmap *’ {aka ‘struct Bitmap *’} but argument is of type ‘int *’
+  113 | int SetPxRgb(Bitmap *b, int x, int y, int c) {
+      |              ~~~~~~~~^
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:144:16: warning: passing argument 1 of ‘SetPxRgb’ from incompatible pointer type [-Wincompatible-pointer-types]
+  144 |       SetPxRgb(&bm, x, y, 8405024);
+      |                ^~~
+      |                |
+      |                int *
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:113:22: note: expected ‘Bitmap *’ {aka ‘struct Bitmap *’} but argument is of type ‘int *’
+  113 | int SetPxRgb(Bitmap *b, int x, int y, int c) {
+      |              ~~~~~~~~^
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:149:16: warning: passing argument 1 of ‘SetPxRgb’ from incompatible pointer type [-Wincompatible-pointer-types]
+  149 |       SetPxRgb(&bm, x, y, 8405024);
+      |                ^~~
+      |                |
+      |                int *
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:113:22: note: expected ‘Bitmap *’ {aka ‘struct Bitmap *’} but argument is of type ‘int *’
+  113 | int SetPxRgb(Bitmap *b, int x, int y, int c) {
+      |              ~~~~~~~~^
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:158:16: warning: passing argument 1 of ‘SetPxRgb’ from incompatible pointer type [-Wincompatible-pointer-types]
+  158 |       SetPxRgb(&bm, x, y, 8405024);
+      |                ^~~
+      |                |
+      |                int *
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:113:22: note: expected ‘Bitmap *’ {aka ‘struct Bitmap *’} but argument is of type ‘int *’
+  113 | int SetPxRgb(Bitmap *b, int x, int y, int c) {
+      |              ~~~~~~~~^
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:163:16: warning: passing argument 1 of ‘SetPxRgb’ from incompatible pointer type [-Wincompatible-pointer-types]
+  163 |       SetPxRgb(&bm, x, y, 8405024);
+      |                ^~~
+      |                |
+      |                int *
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:113:22: note: expected ‘Bitmap *’ {aka ‘struct Bitmap *’} but argument is of type ‘int *’
+  113 | int SetPxRgb(Bitmap *b, int x, int y, int c) {
+      |              ~~~~~~~~^
+/tmp/bitmap-ppm-conversion-through-a-pipe.c: At top level:
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:170:5: error: redefinition of ‘main’
+  170 | int main() {
+      |     ^~~~
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:127:5: note: previous definition of ‘main’ with type ‘int()’
+  127 | int main() {
+      |     ^~~~

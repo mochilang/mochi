@@ -1,0 +1,403 @@
+cc: exit status 1
+/tmp/bitmap-read-a-ppm-file.c:141:7: error: duplicate member ‘_’
+  141 |   int _;
+      |       ^
+/tmp/bitmap-read-a-ppm-file.c:142:7: error: duplicate member ‘_’
+  142 |   int _;
+      |       ^
+/tmp/bitmap-read-a-ppm-file.c:143:7: error: duplicate member ‘_’
+  143 |   int _;
+      |       ^
+/tmp/bitmap-read-a-ppm-file.c:144:7: error: duplicate member ‘_’
+  144 |   int _;
+      |       ^
+/tmp/bitmap-read-a-ppm-file.c:145:7: error: duplicate member ‘_’
+  145 |   int _;
+      |       ^
+/tmp/bitmap-read-a-ppm-file.c:146:7: error: duplicate member ‘_’
+  146 |   int _;
+      |       ^
+/tmp/bitmap-read-a-ppm-file.c:147:7: error: duplicate member ‘_’
+  147 |   int _;
+      |       ^
+/tmp/bitmap-read-a-ppm-file.c:148:7: error: duplicate member ‘_’
+  148 |   int _;
+      |       ^
+/tmp/bitmap-read-a-ppm-file.c:149:7: error: duplicate member ‘_’
+  149 |   int _;
+      |       ^
+/tmp/bitmap-read-a-ppm-file.c:173:3: error: unknown type name ‘pixel_t’
+  173 |   pixel_t *data;
+      |   ^~~~~~~
+/tmp/bitmap-read-a-ppm-file.c: In function ‘create_pixel_list’:
+/tmp/bitmap-read-a-ppm-file.c:178:31: error: ‘pixel_t’ undeclared (first use in this function); did you mean ‘Pixel’?
+  178 |   l.data = calloc(len, sizeof(pixel_t));
+      |                               ^~~~~~~
+      |                               Pixel
+/tmp/bitmap-read-a-ppm-file.c:178:31: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/bitmap-read-a-ppm-file.c: At top level:
+/tmp/bitmap-read-a-ppm-file.c:194:3: error: unknown type name ‘bitmap_t’
+  194 |   bitmap_t *data;
+      |   ^~~~~~~~
+/tmp/bitmap-read-a-ppm-file.c: In function ‘create_bitmap_list’:
+/tmp/bitmap-read-a-ppm-file.c:199:31: error: ‘bitmap_t’ undeclared (first use in this function); did you mean ‘Bitmap’?
+  199 |   l.data = calloc(len, sizeof(bitmap_t));
+      |                               ^~~~~~~~
+      |                               Bitmap
+/tmp/bitmap-read-a-ppm-file.c: At top level:
+/tmp/bitmap-read-a-ppm-file.c:207:1: error: unknown type name ‘bitmap_t’; did you mean ‘Bitmap’?
+  207 | bitmap_t newBitmap(int w, int h, int max) {
+      | ^~~~~~~~
+      | Bitmap
+/tmp/bitmap-read-a-ppm-file.c: In function ‘newBitmap’:
+/tmp/bitmap-read-a-ppm-file.c:209:14: error: incompatible types when initializing type ‘int’ using type ‘list_int’
+  209 |   int rows = tmp1;
+      |              ^~~~
+/tmp/bitmap-read-a-ppm-file.c:213:24: error: invalid initializer
+  213 |     pixel_list_t row = tmp2;
+      |                        ^~~~
+/tmp/bitmap-read-a-ppm-file.c:216:13: error: incompatible types when assigning to type ‘pixel_list_t’ from type ‘int’
+  216 |       row = 0;
+      |             ^
+/tmp/bitmap-read-a-ppm-file.c:222:10: error: incompatible types when returning type ‘Bitmap’ {aka ‘struct Bitmap’} but ‘int’ was expected
+  222 |   return (Bitmap){.w = w, .h = h, .max = max, .data = rows};
+      |          ^
+/tmp/bitmap-read-a-ppm-file.c: In function ‘setPx’:
+/tmp/bitmap-read-a-ppm-file.c:226:14: error: incompatible types when initializing type ‘int’ using type ‘list_int’
+  226 |   int rows = b->data;
+      |              ^
+/tmp/bitmap-read-a-ppm-file.c:227:26: error: request for member ‘data’ in something not a structure or union
+  227 |   pixel_list_t row = rows.data[y];
+      |                          ^
+/tmp/bitmap-read-a-ppm-file.c:228:15: warning: assignment to ‘int’ from ‘Pixel *’ {aka ‘struct Pixel *’} makes integer from pointer without a cast [-Wint-conversion]
+  228 |   row.data[x] = p;
+      |               ^
+/tmp/bitmap-read-a-ppm-file.c:229:7: error: request for member ‘data’ in something not a structure or union
+  229 |   rows.data[y] = row;
+      |       ^
+/tmp/bitmap-read-a-ppm-file.c:230:13: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  230 |   b->data = rows;
+      |             ^~~~
+/tmp/bitmap-read-a-ppm-file.c: At top level:
+/tmp/bitmap-read-a-ppm-file.c:233:1: error: unknown type name ‘pixel_t’; did you mean ‘Pixel’?
+  233 | pixel_t getPx(Bitmap *b, int x, int y) { return b->data.data[y].data[x]; }
+      | ^~~~~~~
+      | Pixel
+/tmp/bitmap-read-a-ppm-file.c: In function ‘getPx’:
+/tmp/bitmap-read-a-ppm-file.c:233:64: error: request for member ‘data’ in something not a structure or union
+  233 | pixel_t getPx(Bitmap *b, int x, int y) { return b->data.data[y].data[x]; }
+      |                                                                ^
+/tmp/bitmap-read-a-ppm-file.c: In function ‘splitLines’:
+/tmp/bitmap-read-a-ppm-file.c:237:13: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  237 |   int out = tmp3;
+      |             ^~~~
+/tmp/bitmap-read-a-ppm-file.c:241:22: warning: implicit declaration of function ‘substr’; did you mean ‘strstr’? [-Wimplicit-function-declaration]
+  241 |     const char *ch = substr(s, i, i + 1);
+      |                      ^~~~~~
+      |                      strstr
+/tmp/bitmap-read-a-ppm-file.c:241:22: warning: initialization of ‘const char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+/tmp/bitmap-read-a-ppm-file.c:244:20: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  244 |       tmp4.data[0] = cur;
+      |                    ^
+/tmp/bitmap-read-a-ppm-file.c:245:45: error: incompatible type for argument 1 of ‘concat_list_string’
+  245 |       list_string tmp5 = concat_list_string(out, tmp4);
+      |                                             ^~~
+      |                                             |
+      |                                             int
+/tmp/bitmap-read-a-ppm-file.c:97:51: note: expected ‘list_string’ but argument is of type ‘int’
+   97 | static list_string concat_list_string(list_string a, list_string b) {
+      |                                       ~~~~~~~~~~~~^
+/tmp/bitmap-read-a-ppm-file.c:246:13: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+  246 |       out = tmp5;
+      |             ^~~~
+/tmp/bitmap-read-a-ppm-file.c:249:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  249 |       char *tmp6 = concat_string(cur, ch);
+      |                                  ^~~
+/tmp/bitmap-read-a-ppm-file.c:105:34: note: expected ‘char *’ but argument is of type ‘const char *’
+  105 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/bitmap-read-a-ppm-file.c:249:39: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  249 |       char *tmp6 = concat_string(cur, ch);
+      |                                       ^~
+/tmp/bitmap-read-a-ppm-file.c:105:43: note: expected ‘char *’ but argument is of type ‘const char *’
+  105 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
+/tmp/bitmap-read-a-ppm-file.c:255:16: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  255 |   tmp7.data[0] = cur;
+      |                ^
+/tmp/bitmap-read-a-ppm-file.c:256:41: error: incompatible type for argument 1 of ‘concat_list_string’
+  256 |   list_string tmp8 = concat_list_string(out, tmp7);
+      |                                         ^~~
+      |                                         |
+      |                                         int
+/tmp/bitmap-read-a-ppm-file.c:97:51: note: expected ‘list_string’ but argument is of type ‘int’
+   97 | static list_string concat_list_string(list_string a, list_string b) {
+      |                                       ~~~~~~~~~~~~^
+/tmp/bitmap-read-a-ppm-file.c:257:9: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+  257 |   out = tmp8;
+      |         ^~~~
+/tmp/bitmap-read-a-ppm-file.c: In function ‘splitWS’:
+/tmp/bitmap-read-a-ppm-file.c:263:13: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  263 |   int out = tmp9;
+      |             ^~~~
+/tmp/bitmap-read-a-ppm-file.c:267:22: warning: initialization of ‘const char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+  267 |     const char *ch = substr(s, i, i + 1);
+      |                      ^~~~~~
+/tmp/bitmap-read-a-ppm-file.c:271:23: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  271 |         tmp10.data[0] = cur;
+      |                       ^
+/tmp/bitmap-read-a-ppm-file.c:272:48: error: incompatible type for argument 1 of ‘concat_list_string’
+  272 |         list_string tmp11 = concat_list_string(out, tmp10);
+      |                                                ^~~
+      |                                                |
+      |                                                int
+/tmp/bitmap-read-a-ppm-file.c:97:51: note: expected ‘list_string’ but argument is of type ‘int’
+   97 | static list_string concat_list_string(list_string a, list_string b) {
+      |                                       ~~~~~~~~~~~~^
+/tmp/bitmap-read-a-ppm-file.c:273:15: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+  273 |         out = tmp11;
+      |               ^~~~~
+/tmp/bitmap-read-a-ppm-file.c:277:35: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  277 |       char *tmp12 = concat_string(cur, ch);
+      |                                   ^~~
+/tmp/bitmap-read-a-ppm-file.c:105:34: note: expected ‘char *’ but argument is of type ‘const char *’
+  105 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/bitmap-read-a-ppm-file.c:277:40: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  277 |       char *tmp12 = concat_string(cur, ch);
+      |                                        ^~
+/tmp/bitmap-read-a-ppm-file.c:105:43: note: expected ‘char *’ but argument is of type ‘const char *’
+  105 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
+/tmp/bitmap-read-a-ppm-file.c:284:19: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  284 |     tmp13.data[0] = cur;
+      |                   ^
+/tmp/bitmap-read-a-ppm-file.c:285:44: error: incompatible type for argument 1 of ‘concat_list_string’
+  285 |     list_string tmp14 = concat_list_string(out, tmp13);
+      |                                            ^~~
+      |                                            |
+      |                                            int
+/tmp/bitmap-read-a-ppm-file.c:97:51: note: expected ‘list_string’ but argument is of type ‘int’
+   97 | static list_string concat_list_string(list_string a, list_string b) {
+      |                                       ~~~~~~~~~~~~^
+/tmp/bitmap-read-a-ppm-file.c:286:11: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+  286 |     out = tmp14;
+      |           ^~~~~
+/tmp/bitmap-read-a-ppm-file.c: In function ‘parseIntStr’:
+/tmp/bitmap-read-a-ppm-file.c:295:11: error: request for member ‘len’ in something not a structure or union
+  295 |   if ((str.len > 0 && tmp15 == "-")) {
+      |           ^
+/tmp/bitmap-read-a-ppm-file.c:300:27: error: invalid initializer
+  300 |   map_string_int digits = (tmp_item_t){._ = 0,
+      |                           ^
+/tmp/bitmap-read-a-ppm-file.c:310:18: error: request for member ‘len’ in something not a structure or union
+  310 |   while ((i < str.len)) {
+      |                  ^
+/tmp/bitmap-read-a-ppm-file.c: In function ‘tokenize’:
+/tmp/bitmap-read-a-ppm-file.c:324:14: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  324 |   int toks = tmp17;
+      |              ^~~~~
+/tmp/bitmap-read-a-ppm-file.c:326:19: error: request for member ‘len’ in something not a structure or union
+  326 |   while (i < lines.len) {
+      |                   ^
+/tmp/bitmap-read-a-ppm-file.c:327:29: error: request for member ‘data’ in something not a structure or union
+  327 |     const char *line = lines.data[i];
+      |                             ^
+/tmp/bitmap-read-a-ppm-file.c:328:48: warning: comparison between pointer and integer
+  328 |     if (strlen(line) > 0 && substr(line, 0, 1) == "#") {
+      |                                                ^~
+/tmp/bitmap-read-a-ppm-file.c:332:25: warning: passing argument 1 of ‘splitWS’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  332 |     int parts = splitWS(line);
+      |                         ^~~~
+/tmp/bitmap-read-a-ppm-file.c:261:19: note: expected ‘char *’ but argument is of type ‘const char *’
+  261 | int splitWS(char *s) {
+      |             ~~~~~~^
+/tmp/bitmap-read-a-ppm-file.c:334:21: error: request for member ‘len’ in something not a structure or union
+  334 |     while (j < parts.len) {
+      |                     ^
+/tmp/bitmap-read-a-ppm-file.c:336:28: error: request for member ‘data’ in something not a structure or union
+  336 |       tmp18.data[0] = parts.data[j];
+      |                            ^
+/tmp/bitmap-read-a-ppm-file.c:337:46: error: incompatible type for argument 1 of ‘concat_list_string’
+  337 |       list_string tmp19 = concat_list_string(toks, tmp18);
+      |                                              ^~~~
+      |                                              |
+      |                                              int
+/tmp/bitmap-read-a-ppm-file.c:97:51: note: expected ‘list_string’ but argument is of type ‘int’
+   97 | static list_string concat_list_string(list_string a, list_string b) {
+      |                                       ~~~~~~~~~~~~^
+/tmp/bitmap-read-a-ppm-file.c:338:14: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+  338 |       toks = tmp19;
+      |              ^~~~~
+/tmp/bitmap-read-a-ppm-file.c: At top level:
+/tmp/bitmap-read-a-ppm-file.c:346:1: error: unknown type name ‘bitmap_t’; did you mean ‘Bitmap’?
+  346 | bitmap_t readP3(char *text) {
+      | ^~~~~~~~
+      | Bitmap
+/tmp/bitmap-read-a-ppm-file.c: In function ‘readP3’:
+/tmp/bitmap-read-a-ppm-file.c:348:11: error: request for member ‘len’ in something not a structure or union
+  348 |   if (toks.len < 4) {
+      |           ^
+/tmp/bitmap-read-a-ppm-file.c:351:19: error: request for member ‘data’ in something not a structure or union
+  351 |   if ((strcmp(toks.data[0], "P3") != 0)) {
+      |                   ^
+/tmp/bitmap-read-a-ppm-file.c:354:27: error: request for member ‘data’ in something not a structure or union
+  354 |   int w = parseIntStr(toks.data[1]);
+      |                           ^
+/tmp/bitmap-read-a-ppm-file.c:355:27: error: request for member ‘data’ in something not a structure or union
+  355 |   int h = parseIntStr(toks.data[2]);
+      |                           ^
+/tmp/bitmap-read-a-ppm-file.c:356:30: error: request for member ‘data’ in something not a structure or union
+  356 |   int maxv = parseIntStr(toks.data[3]);
+      |                              ^
+/tmp/bitmap-read-a-ppm-file.c:358:3: error: unknown type name ‘bitmap_t’; did you mean ‘Bitmap’?
+  358 |   bitmap_t bm = newBitmap(w, h, maxv);
+      |   ^~~~~~~~
+      |   Bitmap
+/tmp/bitmap-read-a-ppm-file.c:363:31: error: request for member ‘data’ in something not a structure or union
+  363 |       int r = parseIntStr(toks.data[idx]);
+      |                               ^
+/tmp/bitmap-read-a-ppm-file.c:364:31: error: request for member ‘data’ in something not a structure or union
+  364 |       int g = parseIntStr(toks.data[idx + 1]);
+      |                               ^
+/tmp/bitmap-read-a-ppm-file.c:365:31: error: request for member ‘data’ in something not a structure or union
+  365 |       int b = parseIntStr(toks.data[idx + 2]);
+      |                               ^
+/tmp/bitmap-read-a-ppm-file.c:366:34: error: ‘Pixel’ {aka ‘struct Pixel’} has no member named ‘r’
+  366 |       setPx(&bm, x, y, &(Pixel){.r = r, .g = g, .b = b});
+      |                                  ^
+/tmp/bitmap-read-a-ppm-file.c:366:42: error: ‘Pixel’ {aka ‘struct Pixel’} has no member named ‘g’
+  366 |       setPx(&bm, x, y, &(Pixel){.r = r, .g = g, .b = b});
+      |                                          ^
+/tmp/bitmap-read-a-ppm-file.c:366:50: error: ‘Pixel’ {aka ‘struct Pixel’} has no member named ‘b’
+  366 |       setPx(&bm, x, y, &(Pixel){.r = r, .g = g, .b = b});
+      |                                                  ^
+/tmp/bitmap-read-a-ppm-file.c:366:13: warning: passing argument 1 of ‘setPx’ from incompatible pointer type [-Wincompatible-pointer-types]
+  366 |       setPx(&bm, x, y, &(Pixel){.r = r, .g = g, .b = b});
+      |             ^~~
+      |             |
+      |             int *
+/tmp/bitmap-read-a-ppm-file.c:225:19: note: expected ‘Bitmap *’ {aka ‘struct Bitmap *’} but argument is of type ‘int *’
+  225 | int setPx(Bitmap *b, int x, int y, Pixel *p) {
+      |           ~~~~~~~~^
+/tmp/bitmap-read-a-ppm-file.c: In function ‘toGrey’:
+/tmp/bitmap-read-a-ppm-file.c:383:7: error: unknown type name ‘pixel_t’; did you mean ‘Pixel’?
+  383 |       pixel_t p = getPx(&b, x, y);
+      |       ^~~~~~~
+      |       Pixel
+/tmp/bitmap-read-a-ppm-file.c:383:25: warning: passing argument 1 of ‘getPx’ from incompatible pointer type [-Wincompatible-pointer-types]
+  383 |       pixel_t p = getPx(&b, x, y);
+      |                         ^~
+      |                         |
+      |                         Bitmap ** {aka struct Bitmap **}
+/tmp/bitmap-read-a-ppm-file.c:233:23: note: expected ‘Bitmap *’ {aka ‘struct Bitmap *’} but argument is of type ‘Bitmap **’ {aka ‘struct Bitmap **’}
+  233 | pixel_t getPx(Bitmap *b, int x, int y) { return b->data.data[y].data[x]; }
+      |               ~~~~~~~~^
+/tmp/bitmap-read-a-ppm-file.c:384:20: error: request for member ‘r’ in something not a structure or union
+  384 |       double l = (p.r * 2126 + p.g * 7152 + p.b * 722) / 10000;
+      |                    ^
+/tmp/bitmap-read-a-ppm-file.c:384:33: error: request for member ‘g’ in something not a structure or union
+  384 |       double l = (p.r * 2126 + p.g * 7152 + p.b * 722) / 10000;
+      |                                 ^
+/tmp/bitmap-read-a-ppm-file.c:384:46: error: request for member ‘b’ in something not a structure or union
+  384 |       double l = (p.r * 2126 + p.g * 7152 + p.b * 722) / 10000;
+      |                                              ^
+/tmp/bitmap-read-a-ppm-file.c:388:32: error: ‘Pixel’ {aka ‘struct Pixel’} has no member named ‘r’
+  388 |       setPx(&b, x, y, (Pixel){.r = l, .g = l, .b = l});
+      |                                ^
+/tmp/bitmap-read-a-ppm-file.c:388:40: error: ‘Pixel’ {aka ‘struct Pixel’} has no member named ‘g’
+  388 |       setPx(&b, x, y, (Pixel){.r = l, .g = l, .b = l});
+      |                                        ^
+/tmp/bitmap-read-a-ppm-file.c:388:48: error: ‘Pixel’ {aka ‘struct Pixel’} has no member named ‘b’
+  388 |       setPx(&b, x, y, (Pixel){.r = l, .g = l, .b = l});
+      |                                                ^
+/tmp/bitmap-read-a-ppm-file.c:388:13: warning: passing argument 1 of ‘setPx’ from incompatible pointer type [-Wincompatible-pointer-types]
+  388 |       setPx(&b, x, y, (Pixel){.r = l, .g = l, .b = l});
+      |             ^~
+      |             |
+      |             Bitmap ** {aka struct Bitmap **}
+/tmp/bitmap-read-a-ppm-file.c:225:19: note: expected ‘Bitmap *’ {aka ‘struct Bitmap *’} but argument is of type ‘Bitmap **’ {aka ‘struct Bitmap **’}
+  225 | int setPx(Bitmap *b, int x, int y, Pixel *p) {
+      |           ~~~~~~~~^
+/tmp/bitmap-read-a-ppm-file.c:388:30: error: incompatible type for argument 4 of ‘setPx’
+  388 |       setPx(&b, x, y, (Pixel){.r = l, .g = l, .b = l});
+      |                              ^~~~~~~~~~~~~~~~~~~~~~~~
+      |                              |
+      |                              Pixel {aka struct Pixel}
+/tmp/bitmap-read-a-ppm-file.c:225:43: note: expected ‘Pixel *’ {aka ‘struct Pixel *’} but argument is of type ‘Pixel’ {aka ‘struct Pixel’}
+  225 | int setPx(Bitmap *b, int x, int y, Pixel *p) {
+      |                                    ~~~~~~~^
+/tmp/bitmap-read-a-ppm-file.c: In function ‘pad’:
+/tmp/bitmap-read-a-ppm-file.c:403:38: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  403 |     char *tmp21 = concat_string(" ", s);
+      |                                      ^
+/tmp/bitmap-read-a-ppm-file.c:105:43: note: expected ‘char *’ but argument is of type ‘const char *’
+  105 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
+/tmp/bitmap-read-a-ppm-file.c: In function ‘writeP3’:
+/tmp/bitmap-read-a-ppm-file.c:431:7: error: unknown type name ‘pixel_t’; did you mean ‘Pixel’?
+  431 |       pixel_t p = getPx(&b, x, y);
+      |       ^~~~~~~
+      |       Pixel
+/tmp/bitmap-read-a-ppm-file.c:431:25: warning: passing argument 1 of ‘getPx’ from incompatible pointer type [-Wincompatible-pointer-types]
+  431 |       pixel_t p = getPx(&b, x, y);
+      |                         ^~
+      |                         |
+      |                         Bitmap ** {aka struct Bitmap **}
+/tmp/bitmap-read-a-ppm-file.c:233:23: note: expected ‘Bitmap *’ {aka ‘struct Bitmap *’} but argument is of type ‘Bitmap **’ {aka ‘struct Bitmap **’}
+  233 | pixel_t getPx(Bitmap *b, int x, int y) { return b->data.data[y].data[x]; }
+      |               ~~~~~~~~^
+/tmp/bitmap-read-a-ppm-file.c:432:35: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  432 |       char *tmp32 = concat_string(line, "   ");
+      |                                   ^~~~
+/tmp/bitmap-read-a-ppm-file.c:105:34: note: expected ‘char *’ but argument is of type ‘const char *’
+  105 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/bitmap-read-a-ppm-file.c:433:27: error: request for member ‘r’ in something not a structure or union
+  433 |       line = tmp32 + pad(p.r, digits) + " " + pad(p.g, digits) + " " +
+      |                           ^
+/tmp/bitmap-read-a-ppm-file.c:433:52: error: request for member ‘g’ in something not a structure or union
+  433 |       line = tmp32 + pad(p.r, digits) + " " + pad(p.g, digits) + " " +
+      |                                                    ^
+/tmp/bitmap-read-a-ppm-file.c:434:19: error: request for member ‘b’ in something not a structure or union
+  434 |              pad(p.b, digits);
+      |                   ^
+/tmp/bitmap-read-a-ppm-file.c:437:33: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  437 |     char *tmp33 = concat_string(out, line);
+      |                                 ^~~
+/tmp/bitmap-read-a-ppm-file.c:105:34: note: expected ‘char *’ but argument is of type ‘const char *’
+  105 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/bitmap-read-a-ppm-file.c:437:38: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  437 |     char *tmp33 = concat_string(out, line);
+      |                                      ^~~~
+/tmp/bitmap-read-a-ppm-file.c:105:43: note: expected ‘char *’ but argument is of type ‘const char *’
+  105 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
+/tmp/bitmap-read-a-ppm-file.c: In function ‘main’:
+/tmp/bitmap-read-a-ppm-file.c:460:3: error: unknown type name ‘bitmap_t’; did you mean ‘Bitmap’?
+  460 |   bitmap_t bm = readP3(ppmtxt);
+      |   ^~~~~~~~
+      |   Bitmap
+/tmp/bitmap-read-a-ppm-file.c:460:24: warning: passing argument 1 of ‘readP3’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  460 |   bitmap_t bm = readP3(ppmtxt);
+      |                        ^~~~~~
+/tmp/bitmap-read-a-ppm-file.c:346:23: note: expected ‘char *’ but argument is of type ‘const char *’
+  346 | bitmap_t readP3(char *text) {
+      |                 ~~~~~~^~~~
+/tmp/bitmap-read-a-ppm-file.c:462:10: warning: passing argument 1 of ‘toGrey’ from incompatible pointer type [-Wincompatible-pointer-types]
+  462 |   toGrey(&bm);
+      |          ^~~
+      |          |
+      |          int *
+/tmp/bitmap-read-a-ppm-file.c:375:20: note: expected ‘Bitmap *’ {aka ‘struct Bitmap *’} but argument is of type ‘int *’
+  375 | int toGrey(Bitmap *b) {
+      |            ~~~~~~~~^
+/tmp/bitmap-read-a-ppm-file.c:463:29: warning: passing argument 1 of ‘writeP3’ from incompatible pointer type [-Wincompatible-pointer-types]
+  463 |   const char *out = writeP3(&bm);
+      |                             ^~~
+      |                             |
+      |                             int *
+/tmp/bitmap-read-a-ppm-file.c:409:29: note: expected ‘Bitmap *’ {aka ‘struct Bitmap *’} but argument is of type ‘int *’
+  409 | const char *writeP3(Bitmap *b) {
+      |                     ~~~~~~~~^

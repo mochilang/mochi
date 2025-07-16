@@ -1,0 +1,7 @@
+cc: exit status 1
+/tmp/call-a-function-4.c:78:5: error: redefinition of ‘main’
+   78 | int main() {
+      |     ^~~~
+/tmp/call-a-function-4.c:71:5: note: previous definition of ‘main’ with type ‘int()’
+   71 | int main() {
+      |     ^~~~

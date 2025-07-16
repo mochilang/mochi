@@ -1,0 +1,220 @@
+cc: exit status 1
+/tmp/2048.c: In function ‘newBoard’:
+/tmp/2048.c:121:13: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  121 |       row = 0;
+      |             ^
+/tmp/2048.c: In function ‘spawnTile’:
+/tmp/2048.c:154:12: error: incompatible types when returning type ‘tmp_item_t’ but ‘int’ was expected
+  154 |     return (tmp_item_t){.board = b, .full = 1};
+      |            ^
+/tmp/2048.c:163:10: error: incompatible types when returning type ‘tmp_item1_t’ but ‘int’ was expected
+  163 |   return (tmp_item1_t){.board = b, .full = empty.len == 1};
+      |          ^
+/tmp/2048.c: In function ‘pad’:
+/tmp/2048.c:173:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  173 |     char *tmp9 = concat_string(out, " ");
+      |                                ^~~
+/tmp/2048.c:44:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   44 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/2048.c:177:31: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  177 |   char *tmp10 = concat_string(out, s);
+      |                               ^~~
+/tmp/2048.c:44:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   44 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/2048.c:177:36: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  177 |   char *tmp10 = concat_string(out, s);
+      |                                    ^
+/tmp/2048.c:44:43: note: expected ‘char *’ but argument is of type ‘const char *’
+   44 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
+/tmp/2048.c: In function ‘draw’:
+/tmp/2048.c:193:37: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  193 |         char *tmp13 = concat_string(line, "    |");
+      |                                     ^~~~
+/tmp/2048.c:44:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   44 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/2048.c:196:21: error: invalid operands to binary + (have ‘const char *’ and ‘const char *’)
+  196 |         line = line + pad(v) + "|";
+      |                     ^ ~~~~~~
+      |                       |
+      |                       const char *
+/tmp/2048.c: In function ‘reverseRow’:
+/tmp/2048.c:211:11: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  211 |     out = 0;
+      |           ^
+/tmp/2048.c: In function ‘slideLeft’:
+/tmp/2048.c:222:12: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  222 |       xs = 0;
+      |            ^
+/tmp/2048.c:233:13: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  233 |       res = 0;
+      |             ^
+/tmp/2048.c:236:13: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  236 |       res = 0;
+      |             ^
+/tmp/2048.c:241:11: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  241 |     res = 0;
+      |           ^
+/tmp/2048.c:243:24: error: ‘tmp_item_t’ has no member named ‘row’
+  243 |   return (tmp_item_t){.row = res, .gain = gain};
+      |                        ^~~
+/tmp/2048.c:243:30: error: incompatible types when initializing type ‘int’ using type ‘list_int’
+  243 |   return (tmp_item_t){.row = res, .gain = gain};
+      |                              ^~~
+/tmp/2048.c:243:36: error: ‘tmp_item_t’ has no member named ‘gain’
+  243 |   return (tmp_item_t){.row = res, .gain = gain};
+      |                                    ^~~~
+/tmp/2048.c: In function ‘moveLeft’:
+/tmp/2048.c:251:16: error: request for member ‘data’ in something not a structure or union
+  251 |     int new = r.data["row"];
+      |                ^
+/tmp/2048.c:252:22: error: request for member ‘data’ in something not a structure or union
+  252 |     score = score + r.data["gain"];
+      |                      ^
+/tmp/2048.c:255:36: error: request for member ‘data’ in something not a structure or union
+  255 |       if ((b.data[y].data[x] != new.data[x])) {
+      |                                    ^
+/tmp/2048.c:258:30: error: request for member ‘data’ in something not a structure or union
+  258 |       b.data[y].data[x] = new.data[x];
+      |                              ^
+/tmp/2048.c:263:36: error: ‘tmp_item_t’ has no member named ‘score’
+  263 |   return (tmp_item_t){.board = b, .score = score, .moved = moved};
+      |                                    ^~~~~
+/tmp/2048.c:263:52: error: ‘tmp_item_t’ has no member named ‘moved’
+  263 |   return (tmp_item_t){.board = b, .score = score, .moved = moved};
+      |                                                    ^~~~~
+/tmp/2048.c:263:60: warning: excess elements in struct initializer
+  263 |   return (tmp_item_t){.board = b, .score = score, .moved = moved};
+      |                                                            ^~~~~
+/tmp/2048.c:263:60: note: (near initialization for ‘(anonymous)’)
+/tmp/2048.c:263:10: error: incompatible types when returning type ‘tmp_item_t’ but ‘int’ was expected
+  263 |   return (tmp_item_t){.board = b, .score = score, .moved = moved};
+      |          ^
+/tmp/2048.c: In function ‘moveRight’:
+/tmp/2048.c:272:12: error: request for member ‘data’ in something not a structure or union
+  272 |     rev = r.data["row"];
+      |            ^
+/tmp/2048.c:273:22: error: request for member ‘data’ in something not a structure or union
+  273 |     score = score + r.data["gain"];
+      |                      ^
+/tmp/2048.c:285:36: error: ‘tmp_item_t’ has no member named ‘score’
+  285 |   return (tmp_item_t){.board = b, .score = score, .moved = moved};
+      |                                    ^~~~~
+/tmp/2048.c:285:52: error: ‘tmp_item_t’ has no member named ‘moved’
+  285 |   return (tmp_item_t){.board = b, .score = score, .moved = moved};
+      |                                                    ^~~~~
+/tmp/2048.c:285:60: warning: excess elements in struct initializer
+  285 |   return (tmp_item_t){.board = b, .score = score, .moved = moved};
+      |                                                            ^~~~~
+/tmp/2048.c:285:60: note: (near initialization for ‘(anonymous)’)
+/tmp/2048.c:285:10: error: incompatible types when returning type ‘tmp_item_t’ but ‘int’ was expected
+  285 |   return (tmp_item_t){.board = b, .score = score, .moved = moved};
+      |          ^
+/tmp/2048.c: In function ‘getCol’:
+/tmp/2048.c:292:11: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  292 |     col = 0;
+      |           ^
+/tmp/2048.c: In function ‘moveUp’:
+/tmp/2048.c:312:16: error: request for member ‘data’ in something not a structure or union
+  312 |     int new = r.data["row"];
+      |                ^
+/tmp/2048.c:313:22: error: request for member ‘data’ in something not a structure or union
+  313 |     score = score + r.data["gain"];
+      |                      ^
+/tmp/2048.c:316:36: error: request for member ‘data’ in something not a structure or union
+  316 |       if ((b.data[y].data[x] != new.data[y])) {
+      |                                    ^
+/tmp/2048.c:319:30: error: request for member ‘data’ in something not a structure or union
+  319 |       b.data[y].data[x] = new.data[y];
+      |                              ^
+/tmp/2048.c:324:36: error: ‘tmp_item_t’ has no member named ‘score’
+  324 |   return (tmp_item_t){.board = b, .score = score, .moved = moved};
+      |                                    ^~~~~
+/tmp/2048.c:324:52: error: ‘tmp_item_t’ has no member named ‘moved’
+  324 |   return (tmp_item_t){.board = b, .score = score, .moved = moved};
+      |                                                    ^~~~~
+/tmp/2048.c:324:60: warning: excess elements in struct initializer
+  324 |   return (tmp_item_t){.board = b, .score = score, .moved = moved};
+      |                                                            ^~~~~
+/tmp/2048.c:324:60: note: (near initialization for ‘(anonymous)’)
+/tmp/2048.c:324:10: error: incompatible types when returning type ‘tmp_item_t’ but ‘int’ was expected
+  324 |   return (tmp_item_t){.board = b, .score = score, .moved = moved};
+      |          ^
+/tmp/2048.c: In function ‘moveDown’:
+/tmp/2048.c:333:12: error: request for member ‘data’ in something not a structure or union
+  333 |     col = r.data["row"];
+      |            ^
+/tmp/2048.c:334:22: error: request for member ‘data’ in something not a structure or union
+  334 |     score = score + r.data["gain"];
+      |                      ^
+/tmp/2048.c:346:36: error: ‘tmp_item_t’ has no member named ‘score’
+  346 |   return (tmp_item_t){.board = b, .score = score, .moved = moved};
+      |                                    ^~~~~
+/tmp/2048.c:346:52: error: ‘tmp_item_t’ has no member named ‘moved’
+  346 |   return (tmp_item_t){.board = b, .score = score, .moved = moved};
+      |                                                    ^~~~~
+/tmp/2048.c:346:60: warning: excess elements in struct initializer
+  346 |   return (tmp_item_t){.board = b, .score = score, .moved = moved};
+      |                                                            ^~~~~
+/tmp/2048.c:346:60: note: (near initialization for ‘(anonymous)’)
+/tmp/2048.c:346:10: error: incompatible types when returning type ‘tmp_item_t’ but ‘int’ was expected
+  346 |   return (tmp_item_t){.board = b, .score = score, .moved = moved};
+      |          ^
+/tmp/2048.c: In function ‘main’:
+/tmp/2048.c:388:12: error: request for member ‘data’ in something not a structure or union
+  388 |   board = r.data["board"];
+      |            ^
+/tmp/2048.c:389:15: error: request for member ‘data’ in something not a structure or union
+  389 |   int full = r.data["full"];
+      |               ^
+/tmp/2048.c:391:12: error: request for member ‘data’ in something not a structure or union
+  391 |   board = r.data["board"];
+      |            ^
+/tmp/2048.c:392:11: error: request for member ‘data’ in something not a structure or union
+  392 |   full = r.data["full"];
+      |           ^
+/tmp/2048.c:400:16: error: request for member ‘data’ in something not a structure or union
+  400 |       board = m.data["board"];
+      |                ^
+/tmp/2048.c:401:16: error: request for member ‘data’ in something not a structure or union
+  401 |       score = m.data["score"];
+      |                ^
+/tmp/2048.c:402:16: error: request for member ‘data’ in something not a structure or union
+  402 |       moved = m.data["moved"];
+      |                ^
+/tmp/2048.c:406:16: error: request for member ‘data’ in something not a structure or union
+  406 |       board = m.data["board"];
+      |                ^
+/tmp/2048.c:407:16: error: request for member ‘data’ in something not a structure or union
+  407 |       score = m.data["score"];
+      |                ^
+/tmp/2048.c:408:16: error: request for member ‘data’ in something not a structure or union
+  408 |       moved = m.data["moved"];
+      |                ^
+/tmp/2048.c:412:16: error: request for member ‘data’ in something not a structure or union
+  412 |       board = m.data["board"];
+      |                ^
+/tmp/2048.c:413:16: error: request for member ‘data’ in something not a structure or union
+  413 |       score = m.data["score"];
+      |                ^
+/tmp/2048.c:414:16: error: request for member ‘data’ in something not a structure or union
+  414 |       moved = m.data["moved"];
+      |                ^
+/tmp/2048.c:418:16: error: request for member ‘data’ in something not a structure or union
+  418 |       board = m.data["board"];
+      |                ^
+/tmp/2048.c:419:16: error: request for member ‘data’ in something not a structure or union
+  419 |       score = m.data["score"];
+      |                ^
+/tmp/2048.c:420:16: error: request for member ‘data’ in something not a structure or union
+  420 |       moved = m.data["moved"];
+      |                ^
+/tmp/2048.c:427:17: error: request for member ‘data’ in something not a structure or union
+  427 |       board = r2.data["board"];
+      |                 ^
+/tmp/2048.c:428:16: error: request for member ‘data’ in something not a structure or union
+  428 |       full = r2.data["full"];
+      |                ^

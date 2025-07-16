@@ -1,0 +1,7 @@
+cc: exit status 1
+/tmp/catalan-numbers-1.c:38:5: error: redefinition of ‘main’
+   38 | int main() {
+      |     ^~~~
+/tmp/catalan-numbers-1.c:31:5: note: previous definition of ‘main’ with type ‘int()’
+   31 | int main() {
+      |     ^~~~

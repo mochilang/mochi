@@ -1,0 +1,94 @@
+cc: exit status 1
+/tmp/brilliant-numbers.c:77:9: error: expected identifier or ‘(’ before ‘)’ token
+   77 |   int (*)(int) bc;
+      |         ^
+/tmp/brilliant-numbers.c: In function ‘primesUpTo’:
+/tmp/brilliant-numbers.c:141:13: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  141 |       res = 0;
+      |             ^
+/tmp/brilliant-numbers.c: In function ‘sortInts’:
+/tmp/brilliant-numbers.c:162:11: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  162 |     res = 0;
+      |           ^
+/tmp/brilliant-numbers.c:167:15: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  167 |         out = 0;
+      |               ^
+/tmp/brilliant-numbers.c: In function ‘commatize’:
+/tmp/brilliant-numbers.c:181:31: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  181 |     char *tmp5 = slice_string(s, 0, i);
+      |                               ^
+/tmp/brilliant-numbers.c:43:33: note: expected ‘char *’ but argument is of type ‘const char *’
+   43 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/brilliant-numbers.c:183:31: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  183 |     char *tmp7 = slice_string(s, i, strlen(s));
+      |                               ^
+/tmp/brilliant-numbers.c:43:33: note: expected ‘char *’ but argument is of type ‘const char *’
+   43 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/brilliant-numbers.c: In function ‘getBrilliant’:
+/tmp/brilliant-numbers.c:195:14: warning: overflow in conversion from ‘long int’ to ‘int’ changes value from ‘999999999999999’ to ‘-1530494977’ [-Woverflow]
+  195 |   int next = 999999999999999;
+      |              ^~~~~~~~~~~~~~~
+/tmp/brilliant-numbers.c:199:31: error: ‘primes’ undeclared (first use in this function)
+  199 |     for (int tmp9 = 0; tmp9 < primes.len; tmp9++) {
+      |                               ^~~~~~
+/tmp/brilliant-numbers.c:199:31: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/brilliant-numbers.c:205:13: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  205 |         s = 0;
+      |             ^
+/tmp/brilliant-numbers.c:217:25: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  217 |             brilliant = 0;
+      |                         ^
+/tmp/brilliant-numbers.c:233:26: error: ‘tmp_item_t’ has no member named ‘bc’
+  233 |     return (tmp_item_t){.bc = count, .next = next};
+      |                          ^~
+/tmp/brilliant-numbers.c:233:12: error: incompatible types when returning type ‘tmp_item_t’ but ‘int’ was expected
+  233 |     return (tmp_item_t){.bc = count, .next = next};
+      |            ^
+/tmp/brilliant-numbers.c:235:10: error: incompatible types when returning type ‘tmp_item1_t’ but ‘int’ was expected
+  235 |   return (tmp_item1_t){.bc = brilliant, .next = next};
+      |          ^
+/tmp/brilliant-numbers.c: In function ‘main’:
+/tmp/brilliant-numbers.c:241:27: error: request for member ‘data’ in something not a structure or union
+  241 |   list_int br = sortInts(r.data["bc"]);
+      |                           ^
+/tmp/brilliant-numbers.c:248:23: error: called object ‘tmp12’ is not a function or function pointer
+  248 |     printf("%d %s\n", tmp12(4, " ") + " ", (0) ? "true" : "false");
+      |                       ^~~~~
+/tmp/brilliant-numbers.c:247:11: note: declared here
+  247 |     char *tmp12 = _str(br.data[i]);
+      |           ^~~~~
+/tmp/brilliant-numbers.c:257:17: warning: implicit declaration of function ‘pow’ [-Wimplicit-function-declaration]
+  257 |     int limit = pow(10, k);
+      |                 ^~~
+/tmp/brilliant-numbers.c:6:1: note: include ‘<math.h>’ or provide a declaration of ‘pow’
+    5 | #include <string.h>
+  +++ |+#include <math.h>
+    6 | 
+/tmp/brilliant-numbers.c:257:17: warning: incompatible implicit declaration of built-in function ‘pow’ [-Wbuiltin-declaration-mismatch]
+  257 |     int limit = pow(10, k);
+      |                 ^~~
+/tmp/brilliant-numbers.c:257:17: note: include ‘<math.h>’ or provide a declaration of ‘pow’
+/tmp/brilliant-numbers.c:259:19: error: request for member ‘data’ in something not a structure or union
+  259 |     int total = r2.data["bc"];
+      |                   ^
+/tmp/brilliant-numbers.c:260:18: error: request for member ‘data’ in something not a structure or union
+  260 |     int next = r2.data["next"];
+      |                  ^
+/tmp/brilliant-numbers.c:264:40: error: request for member ‘pad_start’ in something not a structure or union
+  264 |     printf("%d\n", "First >= " + climit.pad_start(18, " ") + " is " +
+      |                                        ^
+/tmp/brilliant-numbers.c:265:30: error: request for member ‘pad_start’ in something not a structure or union
+  265 |                        ctotal.pad_start(14, " ") +
+      |                              ^
+/tmp/brilliant-numbers.c:266:50: error: request for member ‘pad_start’ in something not a structure or union
+  266 |                        " in the series: " + cnext.pad_start(18, " "));
+      |                                                  ^
+/tmp/brilliant-numbers.c: At top level:
+/tmp/brilliant-numbers.c:271:5: error: redefinition of ‘main’
+  271 | int main() {
+      |     ^~~~
+/tmp/brilliant-numbers.c:238:5: note: previous definition of ‘main’ with type ‘int()’
+  238 | int main() {
+      |     ^~~~

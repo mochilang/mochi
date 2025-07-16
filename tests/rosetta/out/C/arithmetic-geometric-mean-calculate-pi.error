@@ -1,0 +1,14 @@
+cc: exit status 1
+/tmp/arithmetic-geometric-mean-calculate-pi.c:11:8: error: conflicting types for ‘abs’; have ‘double(double)’
+   11 | double abs(double x) {
+      |        ^~~
+In file included from /tmp/arithmetic-geometric-mean-calculate-pi.c:4:
+/usr/include/stdlib.h:980:12: note: previous declaration of ‘abs’ with type ‘int(int)’
+  980 | extern int abs (int __x) __THROW __attribute__ ((__const__)) __wur;
+      |            ^~~
+/tmp/arithmetic-geometric-mean-calculate-pi.c:51:5: error: redefinition of ‘main’
+   51 | int main() {
+      |     ^~~~
+/tmp/arithmetic-geometric-mean-calculate-pi.c:46:5: note: previous definition of ‘main’ with type ‘int()’
+   46 | int main() {
+      |     ^~~~

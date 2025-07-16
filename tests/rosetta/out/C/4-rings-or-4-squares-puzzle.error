@@ -1,0 +1,37 @@
+cc: exit status 1
+/tmp/4-rings-or-4-squares-puzzle.c:44:9: error: expected identifier or ‘(’ before ‘)’ token
+   44 |   int (*)(int) count;
+      |         ^
+/tmp/4-rings-or-4-squares-puzzle.c: In function ‘isUnique’:
+/tmp/4-rings-or-4-squares-puzzle.c:79:12: error: redefinition of ‘nums’
+   79 |   list_int nums = nums;
+      |            ^~~~
+/tmp/4-rings-or-4-squares-puzzle.c:71:12: note: previous definition of ‘nums’ with type ‘list_int’
+   71 |   list_int nums = list_int_create(7);
+      |            ^~~~
+/tmp/4-rings-or-4-squares-puzzle.c: In function ‘getCombs’:
+/tmp/4-rings-or-4-squares-puzzle.c:128:30: error: incompatible types when assigning to type ‘int’ from type ‘list_int’
+  128 |               tmp2.data[0] = tmp1;
+      |                              ^~~~
+/tmp/4-rings-or-4-squares-puzzle.c:138:24: error: ‘tmp_item_t’ has no member named ‘count’
+  138 |   return (tmp_item_t){.count = count, .list = valid};
+      |                        ^~~~~
+/tmp/4-rings-or-4-squares-puzzle.c:138:10: error: incompatible types when returning type ‘tmp_item_t’ but ‘int’ was expected
+  138 |   return (tmp_item_t){.count = count, .list = valid};
+      |          ^
+/tmp/4-rings-or-4-squares-puzzle.c: In function ‘main’:
+/tmp/4-rings-or-4-squares-puzzle.c:143:23: error: request for member ‘data’ in something not a structure or union
+  143 |   char *tmp4 = _str(r1.data["count"]);
+      |                       ^
+/tmp/4-rings-or-4-squares-puzzle.c:146:20: error: request for member ‘data’ in something not a structure or union
+  146 |   printf("%d\n", r1.data["list"]);
+      |                    ^
+/tmp/4-rings-or-4-squares-puzzle.c:148:23: error: request for member ‘data’ in something not a structure or union
+  148 |   char *tmp6 = _str(r2.data["count"]);
+      |                       ^
+/tmp/4-rings-or-4-squares-puzzle.c:151:20: error: request for member ‘data’ in something not a structure or union
+  151 |   printf("%d\n", r2.data["list"]);
+      |                    ^
+/tmp/4-rings-or-4-squares-puzzle.c:153:23: error: request for member ‘data’ in something not a structure or union
+  153 |   char *tmp8 = _str(r3.data["count"]);
+      |                       ^

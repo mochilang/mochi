@@ -1,0 +1,242 @@
+cc: exit status 1
+/tmp/bitmap-write-a-ppm-file.c:45:3: error: unknown type name ‘colour_t’
+   45 |   colour_t *data;
+      |   ^~~~~~~~
+/tmp/bitmap-write-a-ppm-file.c: In function ‘create_colour_list’:
+/tmp/bitmap-write-a-ppm-file.c:50:31: error: ‘colour_t’ undeclared (first use in this function); did you mean ‘Colour’?
+   50 |   l.data = calloc(len, sizeof(colour_t));
+      |                               ^~~~~~~~
+      |                               Colour
+/tmp/bitmap-write-a-ppm-file.c:50:31: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/bitmap-write-a-ppm-file.c: At top level:
+/tmp/bitmap-write-a-ppm-file.c:65:3: error: unknown type name ‘bitmap_t’
+   65 |   bitmap_t *data;
+      |   ^~~~~~~~
+/tmp/bitmap-write-a-ppm-file.c: In function ‘create_bitmap_list’:
+/tmp/bitmap-write-a-ppm-file.c:70:31: error: ‘bitmap_t’ undeclared (first use in this function); did you mean ‘Bitmap’?
+   70 |   l.data = calloc(len, sizeof(bitmap_t));
+      |                               ^~~~~~~~
+      |                               Bitmap
+/tmp/bitmap-write-a-ppm-file.c: At top level:
+/tmp/bitmap-write-a-ppm-file.c:78:1: error: unknown type name ‘bitmap_t’; did you mean ‘Bitmap’?
+   78 | bitmap_t newBitmap(int w, int h, Colour *c) {
+      | ^~~~~~~~
+      | Bitmap
+/tmp/bitmap-write-a-ppm-file.c: In function ‘newBitmap’:
+/tmp/bitmap-write-a-ppm-file.c:80:14: error: incompatible types when initializing type ‘int’ using type ‘list_int’
+   80 |   int rows = tmp1;
+      |              ^~~~
+/tmp/bitmap-write-a-ppm-file.c:84:25: error: invalid initializer
+   84 |     colour_list_t row = tmp2;
+      |                         ^~~~
+/tmp/bitmap-write-a-ppm-file.c:87:13: error: incompatible types when assigning to type ‘colour_list_t’ from type ‘int’
+   87 |       row = 0;
+      |             ^
+/tmp/bitmap-write-a-ppm-file.c:93:10: error: incompatible types when returning type ‘Bitmap’ {aka ‘struct Bitmap’} but ‘int’ was expected
+   93 |   return (Bitmap){.width = w, .height = h, .pixels = rows};
+      |          ^
+/tmp/bitmap-write-a-ppm-file.c: In function ‘setPixel’:
+/tmp/bitmap-write-a-ppm-file.c:97:14: error: incompatible types when initializing type ‘int’ using type ‘list_int’
+   97 |   int rows = b->pixels;
+      |              ^
+/tmp/bitmap-write-a-ppm-file.c:98:27: error: request for member ‘data’ in something not a structure or union
+   98 |   colour_list_t row = rows.data[y];
+      |                           ^
+/tmp/bitmap-write-a-ppm-file.c:99:15: warning: assignment to ‘int’ from ‘Colour *’ {aka ‘struct Colour *’} makes integer from pointer without a cast [-Wint-conversion]
+   99 |   row.data[x] = c;
+      |               ^
+/tmp/bitmap-write-a-ppm-file.c:100:7: error: request for member ‘data’ in something not a structure or union
+  100 |   rows.data[y] = row;
+      |       ^
+/tmp/bitmap-write-a-ppm-file.c:101:15: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  101 |   b->pixels = rows;
+      |               ^~~~
+/tmp/bitmap-write-a-ppm-file.c: In function ‘fillRect’:
+/tmp/bitmap-write-a-ppm-file.c:109:16: warning: passing argument 1 of ‘setPixel’ from incompatible pointer type [-Wincompatible-pointer-types]
+  109 |       setPixel(&b, xx, yy, &c);
+      |                ^~
+      |                |
+      |                Bitmap ** {aka struct Bitmap **}
+/tmp/bitmap-write-a-ppm-file.c:96:22: note: expected ‘Bitmap *’ {aka ‘struct Bitmap *’} but argument is of type ‘Bitmap **’ {aka ‘struct Bitmap **’}
+   96 | int setPixel(Bitmap *b, int x, int y, Colour *c) {
+      |              ~~~~~~~~^
+/tmp/bitmap-write-a-ppm-file.c:109:28: warning: passing argument 4 of ‘setPixel’ from incompatible pointer type [-Wincompatible-pointer-types]
+  109 |       setPixel(&b, xx, yy, &c);
+      |                            ^~
+      |                            |
+      |                            Colour ** {aka struct Colour **}
+/tmp/bitmap-write-a-ppm-file.c:96:47: note: expected ‘Colour *’ {aka ‘struct Colour *’} but argument is of type ‘Colour **’ {aka ‘struct Colour **’}
+   96 | int setPixel(Bitmap *b, int x, int y, Colour *c) {
+      |                                       ~~~~~~~~^
+/tmp/bitmap-write-a-ppm-file.c: In function ‘pad’:
+/tmp/bitmap-write-a-ppm-file.c:120:37: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  120 |     char *tmp4 = concat_string(" ", s);
+      |                                     ^
+/tmp/bitmap-write-a-ppm-file.c:21:43: note: expected ‘char *’ but argument is of type ‘const char *’
+   21 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
+/tmp/bitmap-write-a-ppm-file.c: In function ‘writePPMP3’:
+/tmp/bitmap-write-a-ppm-file.c:132:7: error: unknown type name ‘colour_t’; did you mean ‘Colour’?
+  132 |       colour_t p = b->pixels.data[y].data[x];
+      |       ^~~~~~~~
+      |       Colour
+/tmp/bitmap-write-a-ppm-file.c:132:37: error: request for member ‘data’ in something not a structure or union
+  132 |       colour_t p = b->pixels.data[y].data[x];
+      |                                     ^
+/tmp/bitmap-write-a-ppm-file.c:133:12: error: request for member ‘r’ in something not a structure or union
+  133 |       if (p.r > maxv) {
+      |            ^
+/tmp/bitmap-write-a-ppm-file.c:134:17: error: request for member ‘r’ in something not a structure or union
+  134 |         maxv = p.r;
+      |                 ^
+/tmp/bitmap-write-a-ppm-file.c:136:12: error: request for member ‘g’ in something not a structure or union
+  136 |       if (p.g > maxv) {
+      |            ^
+/tmp/bitmap-write-a-ppm-file.c:137:17: error: request for member ‘g’ in something not a structure or union
+  137 |         maxv = p.g;
+      |                 ^
+/tmp/bitmap-write-a-ppm-file.c:139:12: error: request for member ‘b’ in something not a structure or union
+  139 |       if (p.b > maxv) {
+      |            ^
+/tmp/bitmap-write-a-ppm-file.c:140:17: error: request for member ‘b’ in something not a structure or union
+  140 |         maxv = p.b;
+      |                 ^
+/tmp/bitmap-write-a-ppm-file.c:163:7: error: unknown type name ‘colour_t’; did you mean ‘Colour’?
+  163 |       colour_t p = b->pixels.data[y].data[x];
+      |       ^~~~~~~~
+      |       Colour
+/tmp/bitmap-write-a-ppm-file.c:163:37: error: request for member ‘data’ in something not a structure or union
+  163 |       colour_t p = b->pixels.data[y].data[x];
+      |                                     ^
+/tmp/bitmap-write-a-ppm-file.c:164:35: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  164 |       char *tmp15 = concat_string(line, "   ");
+      |                                   ^~~~
+/tmp/bitmap-write-a-ppm-file.c:21:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   21 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/bitmap-write-a-ppm-file.c:165:27: error: request for member ‘r’ in something not a structure or union
+  165 |       line = tmp15 + pad(p.r, numsize) + " " + pad(p.g, numsize) + " " +
+      |                           ^
+/tmp/bitmap-write-a-ppm-file.c:165:53: error: request for member ‘g’ in something not a structure or union
+  165 |       line = tmp15 + pad(p.r, numsize) + " " + pad(p.g, numsize) + " " +
+      |                                                     ^
+/tmp/bitmap-write-a-ppm-file.c:166:19: error: request for member ‘b’ in something not a structure or union
+  166 |              pad(p.b, numsize);
+      |                   ^
+/tmp/bitmap-write-a-ppm-file.c:169:33: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  169 |     char *tmp16 = concat_string(out, line);
+      |                                 ^~~
+/tmp/bitmap-write-a-ppm-file.c:21:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   21 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/bitmap-write-a-ppm-file.c:169:38: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  169 |     char *tmp16 = concat_string(out, line);
+      |                                      ^~~~
+/tmp/bitmap-write-a-ppm-file.c:21:43: note: expected ‘char *’ but argument is of type ‘const char *’
+   21 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
+/tmp/bitmap-write-a-ppm-file.c:172:35: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  172 |       char *tmp17 = concat_string(out, "\n");
+      |                                   ^~~
+/tmp/bitmap-write-a-ppm-file.c:21:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   21 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/bitmap-write-a-ppm-file.c:175:35: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  175 |       char *tmp18 = concat_string(out, "\n");
+      |                                   ^~~
+/tmp/bitmap-write-a-ppm-file.c:21:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   21 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/bitmap-write-a-ppm-file.c: In function ‘main’:
+/tmp/bitmap-write-a-ppm-file.c:184:3: error: unknown type name ‘colour_t’; did you mean ‘Colour’?
+  184 |   colour_t black = (Colour){.r = 0, .g = 0, .b = 0};
+      |   ^~~~~~~~
+      |   Colour
+/tmp/bitmap-write-a-ppm-file.c:184:30: error: ‘Colour’ {aka ‘struct Colour’} has no member named ‘r’
+  184 |   colour_t black = (Colour){.r = 0, .g = 0, .b = 0};
+      |                              ^
+/tmp/bitmap-write-a-ppm-file.c:184:38: error: ‘Colour’ {aka ‘struct Colour’} has no member named ‘g’
+  184 |   colour_t black = (Colour){.r = 0, .g = 0, .b = 0};
+      |                                      ^
+/tmp/bitmap-write-a-ppm-file.c:184:46: error: ‘Colour’ {aka ‘struct Colour’} has no member named ‘b’
+  184 |   colour_t black = (Colour){.r = 0, .g = 0, .b = 0};
+      |                                              ^
+/tmp/bitmap-write-a-ppm-file.c:184:20: error: incompatible types when initializing type ‘int’ using type ‘Colour’ {aka ‘struct Colour’}
+  184 |   colour_t black = (Colour){.r = 0, .g = 0, .b = 0};
+      |                    ^
+/tmp/bitmap-write-a-ppm-file.c:185:3: error: unknown type name ‘colour_t’; did you mean ‘Colour’?
+  185 |   colour_t white = (Colour){.r = 255, .g = 255, .b = 255};
+      |   ^~~~~~~~
+      |   Colour
+/tmp/bitmap-write-a-ppm-file.c:185:30: error: ‘Colour’ {aka ‘struct Colour’} has no member named ‘r’
+  185 |   colour_t white = (Colour){.r = 255, .g = 255, .b = 255};
+      |                              ^
+/tmp/bitmap-write-a-ppm-file.c:185:40: error: ‘Colour’ {aka ‘struct Colour’} has no member named ‘g’
+  185 |   colour_t white = (Colour){.r = 255, .g = 255, .b = 255};
+      |                                        ^
+/tmp/bitmap-write-a-ppm-file.c:185:50: error: ‘Colour’ {aka ‘struct Colour’} has no member named ‘b’
+  185 |   colour_t white = (Colour){.r = 255, .g = 255, .b = 255};
+      |                                                  ^
+/tmp/bitmap-write-a-ppm-file.c:185:20: error: incompatible types when initializing type ‘int’ using type ‘Colour’ {aka ‘struct Colour’}
+  185 |   colour_t white = (Colour){.r = 255, .g = 255, .b = 255};
+      |                    ^
+/tmp/bitmap-write-a-ppm-file.c:186:3: error: unknown type name ‘bitmap_t’; did you mean ‘Bitmap’?
+  186 |   bitmap_t bm = newBitmap(4, 4, &black);
+      |   ^~~~~~~~
+      |   Bitmap
+/tmp/bitmap-write-a-ppm-file.c:186:33: warning: passing argument 3 of ‘newBitmap’ from incompatible pointer type [-Wincompatible-pointer-types]
+  186 |   bitmap_t bm = newBitmap(4, 4, &black);
+      |                                 ^~~~~~
+      |                                 |
+      |                                 int *
+/tmp/bitmap-write-a-ppm-file.c:78:42: note: expected ‘Colour *’ {aka ‘struct Colour *’} but argument is of type ‘int *’
+   78 | bitmap_t newBitmap(int w, int h, Colour *c) {
+      |                                  ~~~~~~~~^
+/tmp/bitmap-write-a-ppm-file.c:187:12: warning: passing argument 1 of ‘fillRect’ from incompatible pointer type [-Wincompatible-pointer-types]
+  187 |   fillRect(&bm, 1, 0, 1, 2, &white);
+      |            ^~~
+      |            |
+      |            int *
+/tmp/bitmap-write-a-ppm-file.c:104:22: note: expected ‘Bitmap *’ {aka ‘struct Bitmap *’} but argument is of type ‘int *’
+  104 | int fillRect(Bitmap *b, int x, int y, int w, int h, Colour *c) {
+      |              ~~~~~~~~^
+/tmp/bitmap-write-a-ppm-file.c:187:29: warning: passing argument 6 of ‘fillRect’ from incompatible pointer type [-Wincompatible-pointer-types]
+  187 |   fillRect(&bm, 1, 0, 1, 2, &white);
+      |                             ^~~~~~
+      |                             |
+      |                             int *
+/tmp/bitmap-write-a-ppm-file.c:104:61: note: expected ‘Colour *’ {aka ‘struct Colour *’} but argument is of type ‘int *’
+  104 | int fillRect(Bitmap *b, int x, int y, int w, int h, Colour *c) {
+      |                                                     ~~~~~~~~^
+/tmp/bitmap-write-a-ppm-file.c:188:34: error: ‘Colour’ {aka ‘struct Colour’} has no member named ‘r’
+  188 |   setPixel(&bm, 3, 3, &(Colour){.r = 127, .g = 0, .b = 63});
+      |                                  ^
+/tmp/bitmap-write-a-ppm-file.c:188:44: error: ‘Colour’ {aka ‘struct Colour’} has no member named ‘g’
+  188 |   setPixel(&bm, 3, 3, &(Colour){.r = 127, .g = 0, .b = 63});
+      |                                            ^
+/tmp/bitmap-write-a-ppm-file.c:188:52: error: ‘Colour’ {aka ‘struct Colour’} has no member named ‘b’
+  188 |   setPixel(&bm, 3, 3, &(Colour){.r = 127, .g = 0, .b = 63});
+      |                                                    ^
+/tmp/bitmap-write-a-ppm-file.c:188:12: warning: passing argument 1 of ‘setPixel’ from incompatible pointer type [-Wincompatible-pointer-types]
+  188 |   setPixel(&bm, 3, 3, &(Colour){.r = 127, .g = 0, .b = 63});
+      |            ^~~
+      |            |
+      |            int *
+/tmp/bitmap-write-a-ppm-file.c:96:22: note: expected ‘Bitmap *’ {aka ‘struct Bitmap *’} but argument is of type ‘int *’
+   96 | int setPixel(Bitmap *b, int x, int y, Colour *c) {
+      |              ~~~~~~~~^
+/tmp/bitmap-write-a-ppm-file.c:189:32: warning: passing argument 1 of ‘writePPMP3’ from incompatible pointer type [-Wincompatible-pointer-types]
+  189 |   const char *ppm = writePPMP3(&bm);
+      |                                ^~~
+      |                                |
+      |                                int *
+/tmp/bitmap-write-a-ppm-file.c:126:32: note: expected ‘Bitmap *’ {aka ‘struct Bitmap *’} but argument is of type ‘int *’
+  126 | const char *writePPMP3(Bitmap *b) {
+      |                        ~~~~~~~~^
+/tmp/bitmap-write-a-ppm-file.c: At top level:
+/tmp/bitmap-write-a-ppm-file.c:193:5: error: redefinition of ‘main’
+  193 | int main() {
+      |     ^~~~
+/tmp/bitmap-write-a-ppm-file.c:183:5: note: previous definition of ‘main’ with type ‘int()’
+  183 | int main() {
+      |     ^~~~

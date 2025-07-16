@@ -1,0 +1,5 @@
+cc: exit status 1
+/tmp/apply-a-callback-to-an-array-1.c: In function ‘main’:
+/tmp/apply-a-callback-to-an-array-1.c:33:17: error: subscripted value is neither array nor pointer nor vector
+   33 |     int i = tmp1[tmp2];
+      |                 ^

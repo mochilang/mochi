@@ -1,0 +1,12 @@
+cc: exit status 1
+/tmp/anonymous-recursion-1.c: In function ‘main’:
+/tmp/anonymous-recursion-1.c:63:17: error: subscripted value is neither array nor pointer nor vector
+   63 |     int n = tmp1[tmp2];
+      |                 ^
+/tmp/anonymous-recursion-1.c: At top level:
+/tmp/anonymous-recursion-1.c:77:5: error: redefinition of ‘main’
+   77 | int main() {
+      |     ^~~~
+/tmp/anonymous-recursion-1.c:51:5: note: previous definition of ‘main’ with type ‘int()’
+   51 | int main() {
+      |     ^~~~

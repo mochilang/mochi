@@ -1,0 +1,111 @@
+cc: exit status 1
+/tmp/casting-out-nines.c: In function ‘parseIntBase’:
+/tmp/casting-out-nines.c:92:24: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   92 |       if (slice_string(digits, j, j + 1) == tmp1) {
+      |                        ^~~~~~
+/tmp/casting-out-nines.c:43:33: note: expected ‘char *’ but argument is of type ‘const char *’
+   43 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/casting-out-nines.c: In function ‘intToBase’:
+/tmp/casting-out-nines.c:113:31: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  113 |     char *tmp2 = slice_string(digits, d, d + 1);
+      |                               ^~~~~~
+/tmp/casting-out-nines.c:43:33: note: expected ‘char *’ but argument is of type ‘const char *’
+   43 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/casting-out-nines.c:114:38: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  114 |     char *tmp3 = concat_string(tmp2, out);
+      |                                      ^~~
+/tmp/casting-out-nines.c:29:43: note: expected ‘char *’ but argument is of type ‘const char *’
+   29 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
+/tmp/casting-out-nines.c: In function ‘subset’:
+/tmp/casting-out-nines.c:125:13: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  125 |   int out = tmp4;
+      |             ^~~~
+/tmp/casting-out-nines.c:130:27: warning: passing argument 1 of ‘parseIntBase’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  130 |     int r1 = parseIntBase(ks, base) % mod;
+      |                           ^~
+/tmp/casting-out-nines.c:83:24: note: expected ‘char *’ but argument is of type ‘const char *’
+   83 | int parseIntBase(char *s, int base) {
+      |                  ~~~~~~^
+/tmp/casting-out-nines.c:131:28: warning: passing argument 1 of ‘parseIntBase’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  131 |     int r2 = (parseIntBase(ks, base) * parseIntBase(ks, base)) % mod;
+      |                            ^~
+/tmp/casting-out-nines.c:83:24: note: expected ‘char *’ but argument is of type ‘const char *’
+   83 | int parseIntBase(char *s, int base) {
+      |                  ~~~~~~^
+/tmp/casting-out-nines.c:131:53: warning: passing argument 1 of ‘parseIntBase’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  131 |     int r2 = (parseIntBase(ks, base) * parseIntBase(ks, base)) % mod;
+      |                                                     ^~
+/tmp/casting-out-nines.c:83:24: note: expected ‘char *’ but argument is of type ‘const char *’
+   83 | int parseIntBase(char *s, int base) {
+      |                  ~~~~~~^
+/tmp/casting-out-nines.c:134:20: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  134 |       tmp5.data[0] = ks;
+      |                    ^
+/tmp/casting-out-nines.c:135:45: error: incompatible type for argument 1 of ‘concat_list_string’
+  135 |       list_string tmp6 = concat_list_string(out, tmp5);
+      |                                             ^~~
+      |                                             |
+      |                                             int
+/tmp/casting-out-nines.c:21:51: note: expected ‘list_string’ but argument is of type ‘int’
+   21 | static list_string concat_list_string(list_string a, list_string b) {
+      |                                       ~~~~~~~~~~~~^
+/tmp/casting-out-nines.c:136:13: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+  136 |       out = tmp6;
+      |             ^~~~
+/tmp/casting-out-nines.c: In function ‘main’:
+/tmp/casting-out-nines.c:150:15: error: redefinition of ‘testCases’
+  150 |   list_string testCases = list_string_create(3);
+      |               ^~~~~~~~~
+/tmp/casting-out-nines.c:144:15: note: previous definition of ‘testCases’ with type ‘list_string’
+  144 |   list_string testCases = list_string_create(5);
+      |               ^~~~~~~~~
+/tmp/casting-out-nines.c:154:15: error: conflicting types for ‘testCases’; have ‘test_case_t[]’
+  154 |   test_case_t testCases[] = {
+      |               ^~~~~~~~~
+/tmp/casting-out-nines.c:150:15: note: previous definition of ‘testCases’ with type ‘list_string’
+  150 |   list_string testCases = list_string_create(3);
+      |               ^~~~~~~~~
+/tmp/casting-out-nines.c:168:26: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
+  168 |     printf("%d\n", tmp12 + tc.begin + ", end = " + tc.end + ":");
+      |                          ^ ~~~~~~~~
+      |                              |
+      |                              const char *
+/tmp/casting-out-nines.c:169:31: warning: passing argument 2 of ‘subset’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  169 |     int s = subset(tc.base, tc.begin, tc.end);
+      |                             ~~^~~~~~
+/tmp/casting-out-nines.c:121:28: note: expected ‘char *’ but argument is of type ‘const char *’
+  121 | int subset(int base, char *begin, char *end) {
+      |                      ~~~~~~^~~~~
+/tmp/casting-out-nines.c:169:41: warning: passing argument 3 of ‘subset’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  169 |     int s = subset(tc.base, tc.begin, tc.end);
+      |                                       ~~^~~~
+/tmp/casting-out-nines.c:121:41: note: expected ‘char *’ but argument is of type ‘const char *’
+  121 | int subset(int base, char *begin, char *end) {
+      |                                   ~~~~~~^~~
+/tmp/casting-out-nines.c:177:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
+  177 |     printf("%d\n", tmp18);
+      |             ~^     ~~~~~
+      |              |     |
+      |              int   char *
+      |             %s
+/tmp/casting-out-nines.c:181:28: error: request for member ‘len’ in something not a structure or union
+  181 |     while ((i < tc.kaprekar.len)) {
+      |                            ^
+/tmp/casting-out-nines.c:182:26: error: request for member ‘data’ in something not a structure or union
+  182 |       int k = tc.kaprekar.data[i];
+      |                          ^
+/tmp/casting-out-nines.c:184:20: error: request for member ‘len’ in something not a structure or union
+  184 |       while (sx < s.len) {
+      |                    ^
+/tmp/casting-out-nines.c:185:15: error: request for member ‘data’ in something not a structure or union
+  185 |         if ((s.data[sx] == k)) {
+      |               ^
+/tmp/casting-out-nines.c:193:36: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  193 |         printf("%d\n", "Fail:" + k + " not in subset");
+      |                        ~~~~~~~~~~~ ^
+      |                                |   |
+      |                                |   char *
+      |                                char *

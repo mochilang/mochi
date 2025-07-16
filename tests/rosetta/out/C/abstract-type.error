@@ -1,0 +1,174 @@
+cc: exit status 1
+/tmp/abstract-type.c: In function ‘beastKind’:
+/tmp/abstract-type.c:29:3: error: unknown type name ‘beast_t’; did you mean ‘Beast’?
+   29 |   beast_t tmp1 = b;
+      |   ^~~~~~~
+      |   Beast
+/tmp/abstract-type.c:29:18: error: incompatible types when initializing type ‘int’ using type ‘Beast’ {aka ‘struct Beast’}
+   29 |   beast_t tmp1 = b;
+      |                  ^
+/tmp/abstract-type.c:31:15: error: request for member ‘tag’ in something not a structure or union
+   31 |   switch (tmp1.tag) {
+      |               ^
+/tmp/abstract-type.c:33:25: error: request for member ‘value’ in something not a structure or union
+   33 |     const char *k = tmp1.value.Dog.kind;
+      |                         ^
+/tmp/abstract-type.c:34:25: error: request for member ‘value’ in something not a structure or union
+   34 |     const char *_ = tmp1.value.Dog.name;
+      |                         ^
+/tmp/abstract-type.c:35:10: warning: assignment to ‘int’ from ‘const char *’ makes integer from pointer without a cast [-Wint-conversion]
+   35 |     tmp2 = k;
+      |          ^
+/tmp/abstract-type.c:38:17: error: redefinition of ‘k’
+   38 |     const char *k = tmp1.value.Cat.kind;
+      |                 ^
+/tmp/abstract-type.c:33:17: note: previous definition of ‘k’ with type ‘const char *’
+   33 |     const char *k = tmp1.value.Dog.kind;
+      |                 ^
+/tmp/abstract-type.c:38:25: error: request for member ‘value’ in something not a structure or union
+   38 |     const char *k = tmp1.value.Cat.kind;
+      |                         ^
+/tmp/abstract-type.c:39:17: error: redefinition of ‘_’
+   39 |     const char *_ = tmp1.value.Cat.name;
+      |                 ^
+/tmp/abstract-type.c:34:17: note: previous definition of ‘_’ with type ‘const char *’
+   34 |     const char *_ = tmp1.value.Dog.name;
+      |                 ^
+/tmp/abstract-type.c:39:25: error: request for member ‘value’ in something not a structure or union
+   39 |     const char *_ = tmp1.value.Cat.name;
+      |                         ^
+/tmp/abstract-type.c:40:10: warning: assignment to ‘int’ from ‘const char *’ makes integer from pointer without a cast [-Wint-conversion]
+   40 |     tmp2 = k;
+      |          ^
+/tmp/abstract-type.c:46:10: warning: returning ‘int’ from a function with return type ‘const char *’ makes pointer from integer without a cast [-Wint-conversion]
+   46 |   return tmp2;
+      |          ^~~~
+/tmp/abstract-type.c: In function ‘beastName’:
+/tmp/abstract-type.c:50:3: error: unknown type name ‘beast_t’; did you mean ‘Beast’?
+   50 |   beast_t tmp3 = b;
+      |   ^~~~~~~
+      |   Beast
+/tmp/abstract-type.c:50:18: error: incompatible types when initializing type ‘int’ using type ‘Beast’ {aka ‘struct Beast’}
+   50 |   beast_t tmp3 = b;
+      |                  ^
+/tmp/abstract-type.c:52:15: error: request for member ‘tag’ in something not a structure or union
+   52 |   switch (tmp3.tag) {
+      |               ^
+/tmp/abstract-type.c:54:25: error: request for member ‘value’ in something not a structure or union
+   54 |     const char *_ = tmp3.value.Dog.kind;
+      |                         ^
+/tmp/abstract-type.c:55:25: error: request for member ‘value’ in something not a structure or union
+   55 |     const char *n = tmp3.value.Dog.name;
+      |                         ^
+/tmp/abstract-type.c:56:10: warning: assignment to ‘int’ from ‘const char *’ makes integer from pointer without a cast [-Wint-conversion]
+   56 |     tmp4 = n;
+      |          ^
+/tmp/abstract-type.c:59:17: error: redefinition of ‘_’
+   59 |     const char *_ = tmp3.value.Cat.kind;
+      |                 ^
+/tmp/abstract-type.c:54:17: note: previous definition of ‘_’ with type ‘const char *’
+   54 |     const char *_ = tmp3.value.Dog.kind;
+      |                 ^
+/tmp/abstract-type.c:59:25: error: request for member ‘value’ in something not a structure or union
+   59 |     const char *_ = tmp3.value.Cat.kind;
+      |                         ^
+/tmp/abstract-type.c:60:17: error: redefinition of ‘n’
+   60 |     const char *n = tmp3.value.Cat.name;
+      |                 ^
+/tmp/abstract-type.c:55:17: note: previous definition of ‘n’ with type ‘const char *’
+   55 |     const char *n = tmp3.value.Dog.name;
+      |                 ^
+/tmp/abstract-type.c:60:25: error: request for member ‘value’ in something not a structure or union
+   60 |     const char *n = tmp3.value.Cat.name;
+      |                         ^
+/tmp/abstract-type.c:61:10: warning: assignment to ‘int’ from ‘const char *’ makes integer from pointer without a cast [-Wint-conversion]
+   61 |     tmp4 = n;
+      |          ^
+/tmp/abstract-type.c:67:10: warning: returning ‘int’ from a function with return type ‘const char *’ makes pointer from integer without a cast [-Wint-conversion]
+   67 |   return tmp4;
+      |          ^~~~
+/tmp/abstract-type.c: In function ‘beastCry’:
+/tmp/abstract-type.c:71:3: error: unknown type name ‘beast_t’; did you mean ‘Beast’?
+   71 |   beast_t tmp5 = b;
+      |   ^~~~~~~
+      |   Beast
+/tmp/abstract-type.c:71:18: error: incompatible types when initializing type ‘int’ using type ‘Beast’ {aka ‘struct Beast’}
+   71 |   beast_t tmp5 = b;
+      |                  ^
+/tmp/abstract-type.c:73:15: error: request for member ‘tag’ in something not a structure or union
+   73 |   switch (tmp5.tag) {
+      |               ^
+/tmp/abstract-type.c:75:25: error: request for member ‘value’ in something not a structure or union
+   75 |     const char *_ = tmp5.value.Dog.kind;
+      |                         ^
+/tmp/abstract-type.c:76:17: error: redefinition of ‘_’
+   76 |     const char *_ = tmp5.value.Dog.name;
+      |                 ^
+/tmp/abstract-type.c:75:17: note: previous definition of ‘_’ with type ‘const char *’
+   75 |     const char *_ = tmp5.value.Dog.kind;
+      |                 ^
+/tmp/abstract-type.c:76:25: error: request for member ‘value’ in something not a structure or union
+   76 |     const char *_ = tmp5.value.Dog.name;
+      |                         ^
+/tmp/abstract-type.c:80:17: error: redefinition of ‘_’
+   80 |     const char *_ = tmp5.value.Cat.kind;
+      |                 ^
+/tmp/abstract-type.c:76:17: note: previous definition of ‘_’ with type ‘const char *’
+   76 |     const char *_ = tmp5.value.Dog.name;
+      |                 ^
+/tmp/abstract-type.c:80:25: error: request for member ‘value’ in something not a structure or union
+   80 |     const char *_ = tmp5.value.Cat.kind;
+      |                         ^
+/tmp/abstract-type.c:81:17: error: redefinition of ‘_’
+   81 |     const char *_ = tmp5.value.Cat.name;
+      |                 ^
+/tmp/abstract-type.c:80:17: note: previous definition of ‘_’ with type ‘const char *’
+   80 |     const char *_ = tmp5.value.Cat.kind;
+      |                 ^
+/tmp/abstract-type.c:81:25: error: request for member ‘value’ in something not a structure or union
+   81 |     const char *_ = tmp5.value.Cat.name;
+      |                         ^
+/tmp/abstract-type.c: In function ‘bprint’:
+/tmp/abstract-type.c:92:31: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
+   92 |   printf("%s\n", beastName(b) + ", who's a " + beastKind(b) + ", cries: \"" +
+      |                  ~~~~~~~~~~~~ ^
+      |                  |            |
+      |                  const char * char *
+/tmp/abstract-type.c: In function ‘main’:
+/tmp/abstract-type.c:97:3: error: unknown type name ‘beast_t’; did you mean ‘Beast’?
+   97 |   beast_t d = (Beast){.tag = Beast_Dog,
+      |   ^~~~~~~
+      |   Beast
+/tmp/abstract-type.c:97:15: error: incompatible types when initializing type ‘int’ using type ‘Beast’ {aka ‘struct Beast’}
+   97 |   beast_t d = (Beast){.tag = Beast_Dog,
+      |               ^
+/tmp/abstract-type.c:99:3: error: unknown type name ‘beast_t’; did you mean ‘Beast’?
+   99 |   beast_t c = (Beast){.tag = Beast_Cat,
+      |   ^~~~~~~
+      |   Beast
+/tmp/abstract-type.c:99:15: error: incompatible types when initializing type ‘int’ using type ‘Beast’ {aka ‘struct Beast’}
+   99 |   beast_t c = (Beast){.tag = Beast_Cat,
+      |               ^
+/tmp/abstract-type.c:101:10: error: incompatible type for argument 1 of ‘bprint’
+  101 |   bprint(d);
+      |          ^
+      |          |
+      |          int
+/tmp/abstract-type.c:91:18: note: expected ‘Beast’ {aka ‘struct Beast’} but argument is of type ‘int’
+   91 | int bprint(Beast b) {
+      |            ~~~~~~^
+/tmp/abstract-type.c:102:10: error: incompatible type for argument 1 of ‘bprint’
+  102 |   bprint(c);
+      |          ^
+      |          |
+      |          int
+/tmp/abstract-type.c:91:18: note: expected ‘Beast’ {aka ‘struct Beast’} but argument is of type ‘int’
+   91 | int bprint(Beast b) {
+      |            ~~~~~~^
+/tmp/abstract-type.c: At top level:
+/tmp/abstract-type.c:105:5: error: redefinition of ‘main’
+  105 | int main() {
+      |     ^~~~
+/tmp/abstract-type.c:96:5: note: previous definition of ‘main’ with type ‘int()’
+   96 | int main() {
+      |     ^~~~

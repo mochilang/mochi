@@ -1,0 +1,175 @@
+cc: exit status 1
+/tmp/abbreviations-easy.c: In function ‘fields’:
+/tmp/abbreviations-easy.c:71:15: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+   71 |   int words = tmp1;
+      |               ^~~~
+/tmp/abbreviations-easy.c:79:22: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   79 |         tmp2.data[0] = cur;
+      |                      ^
+/tmp/abbreviations-easy.c:80:47: error: incompatible type for argument 1 of ‘concat_list_string’
+   80 |         list_string tmp3 = concat_list_string(words, tmp2);
+      |                                               ^~~~~
+      |                                               |
+      |                                               int
+/tmp/abbreviations-easy.c:35:51: note: expected ‘list_string’ but argument is of type ‘int’
+   35 | static list_string concat_list_string(list_string a, list_string b) {
+      |                                       ~~~~~~~~~~~~^
+/tmp/abbreviations-easy.c:81:17: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+   81 |         words = tmp3;
+      |                 ^~~~
+/tmp/abbreviations-easy.c:85:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   85 |       char *tmp4 = concat_string(cur, ch);
+      |                                  ^~~
+/tmp/abbreviations-easy.c:43:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   43 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/abbreviations-easy.c:85:39: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   85 |       char *tmp4 = concat_string(cur, ch);
+      |                                       ^~
+/tmp/abbreviations-easy.c:43:43: note: expected ‘char *’ but argument is of type ‘const char *’
+   43 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
+/tmp/abbreviations-easy.c:92:18: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   92 |     tmp5.data[0] = cur;
+      |                  ^
+/tmp/abbreviations-easy.c:93:43: error: incompatible type for argument 1 of ‘concat_list_string’
+   93 |     list_string tmp6 = concat_list_string(words, tmp5);
+      |                                           ^~~~~
+      |                                           |
+      |                                           int
+/tmp/abbreviations-easy.c:35:51: note: expected ‘list_string’ but argument is of type ‘int’
+   35 | static list_string concat_list_string(list_string a, list_string b) {
+      |                                       ~~~~~~~~~~~~^
+/tmp/abbreviations-easy.c:94:13: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+   94 |     words = tmp6;
+      |             ^~~~
+/tmp/abbreviations-easy.c: In function ‘padRight’:
+/tmp/abbreviations-easy.c:103:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  103 |     char *tmp7 = concat_string(out, " ");
+      |                                ^~~
+/tmp/abbreviations-easy.c:43:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   43 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/abbreviations-easy.c: In function ‘join’:
+/tmp/abbreviations-easy.c:115:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  115 |       char *tmp8 = concat_string(res, sep);
+      |                                  ^~~
+/tmp/abbreviations-easy.c:43:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   43 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/abbreviations-easy.c:118:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  118 |     char *tmp9 = concat_string(res, xs.data[i]);
+      |                                ^~~
+/tmp/abbreviations-easy.c:43:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   43 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/abbreviations-easy.c: In function ‘validate’:
+/tmp/abbreviations-easy.c:127:17: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  127 |   int results = tmp10;
+      |                 ^~~~~
+/tmp/abbreviations-easy.c:140:25: warning: implicit declaration of function ‘upper’ [-Wimplicit-function-declaration]
+  140 |         const char *c = upper(cmd);
+      |                         ^~~~~
+/tmp/abbreviations-easy.c:140:25: warning: initialization of ‘const char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+/tmp/abbreviations-easy.c:141:26: warning: initialization of ‘const char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+  141 |         const char *ww = upper(w);
+      |                          ^~~~~
+/tmp/abbreviations-easy.c:142:26: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  142 |         if (slice_string(c, 0, wlen) == ww) {
+      |                          ^
+/tmp/abbreviations-easy.c:52:33: note: expected ‘char *’ but argument is of type ‘const char *’
+   52 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/abbreviations-easy.c:144:25: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  144 |           tmp11.data[0] = c;
+      |                         ^
+/tmp/abbreviations-easy.c:145:50: error: incompatible type for argument 1 of ‘concat_list_string’
+  145 |           list_string tmp12 = concat_list_string(results, tmp11);
+      |                                                  ^~~~~~~
+      |                                                  |
+      |                                                  int
+/tmp/abbreviations-easy.c:35:51: note: expected ‘list_string’ but argument is of type ‘int’
+   35 | static list_string concat_list_string(list_string a, list_string b) {
+      |                                       ~~~~~~~~~~~~^
+/tmp/abbreviations-easy.c:146:21: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+  146 |           results = tmp12;
+      |                     ^~~~~
+/tmp/abbreviations-easy.c:156:46: error: incompatible type for argument 1 of ‘concat_list_string’
+  156 |       list_string tmp14 = concat_list_string(results, tmp13);
+      |                                              ^~~~~~~
+      |                                              |
+      |                                              int
+/tmp/abbreviations-easy.c:35:51: note: expected ‘list_string’ but argument is of type ‘int’
+   35 | static list_string concat_list_string(list_string a, list_string b) {
+      |                                       ~~~~~~~~~~~~^
+/tmp/abbreviations-easy.c:157:17: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+  157 |       results = tmp14;
+      |                 ^~~~~
+/tmp/abbreviations-easy.c: In function ‘main’:
+/tmp/abbreviations-easy.c:183:25: warning: passing argument 1 of ‘fields’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  183 |   int commands = fields(table);
+      |                         ^~~~~
+/tmp/abbreviations-easy.c:69:18: note: expected ‘char *’ but argument is of type ‘const char *’
+   69 | int fields(char *s) {
+      |            ~~~~~~^
+/tmp/abbreviations-easy.c:186:22: error: request for member ‘len’ in something not a structure or union
+  186 |   while (i < commands.len) {
+      |                      ^
+/tmp/abbreviations-easy.c:189:31: error: request for member ‘data’ in something not a structure or union
+  189 |     const char *cmd = commands.data[i];
+      |                               ^
+/tmp/abbreviations-easy.c:191:37: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  191 |       const char *ch = slice_string(cmd, j, j + 1);
+      |                                     ^~~
+/tmp/abbreviations-easy.c:52:33: note: expected ‘char *’ but argument is of type ‘const char *’
+   52 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/abbreviations-easy.c:197:12: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  197 |     mins = 0;
+      |            ^
+/tmp/abbreviations-easy.c:202:22: warning: passing argument 1 of ‘fields’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  202 |   int words = fields(sentence);
+      |                      ^~~~~~~~
+/tmp/abbreviations-easy.c:69:18: note: expected ‘char *’ but argument is of type ‘const char *’
+   69 | int fields(char *s) {
+      |            ~~~~~~^
+/tmp/abbreviations-easy.c:203:26: error: incompatible type for argument 1 of ‘validate’
+  203 |   int results = validate(commands, words, mins);
+      |                          ^~~~~~~~
+      |                          |
+      |                          int
+/tmp/abbreviations-easy.c:125:26: note: expected ‘list_string’ but argument is of type ‘int’
+  125 | int validate(list_string commands, list_string words, list_int mins) {
+      |              ~~~~~~~~~~~~^~~~~~~~
+/tmp/abbreviations-easy.c:203:36: error: incompatible type for argument 2 of ‘validate’
+  203 |   int results = validate(commands, words, mins);
+      |                                    ^~~~~
+      |                                    |
+      |                                    int
+/tmp/abbreviations-easy.c:125:48: note: expected ‘list_string’ but argument is of type ‘int’
+  125 | int validate(list_string commands, list_string words, list_int mins) {
+      |                                    ~~~~~~~~~~~~^~~~~
+/tmp/abbreviations-easy.c:206:19: error: request for member ‘len’ in something not a structure or union
+  206 |   while (k < words.len) {
+      |                   ^
+/tmp/abbreviations-easy.c:207:33: error: request for member ‘data’ in something not a structure or union
+  207 |     out1 = out1 + padRight(words.data[k], results.data[k].len) + " ";
+      |                                 ^
+/tmp/abbreviations-easy.c:207:50: error: request for member ‘data’ in something not a structure or union
+  207 |     out1 = out1 + padRight(words.data[k], results.data[k].len) + " ";
+      |                                                  ^
+/tmp/abbreviations-easy.c:211:41: error: incompatible type for argument 1 of ‘join’
+  211 |   printf("%s\n", "full words:  " + join(results, " "));
+      |                                         ^~~~~~~
+      |                                         |
+      |                                         int
+/tmp/abbreviations-easy.c:110:30: note: expected ‘list_string’ but argument is of type ‘int’
+  110 | const char *join(list_string xs, char *sep) {
+      |                  ~~~~~~~~~~~~^~
+/tmp/abbreviations-easy.c: At top level:
+/tmp/abbreviations-easy.c:214:5: error: redefinition of ‘main’
+  214 | int main() {
+      |     ^~~~
+/tmp/abbreviations-easy.c:164:5: note: previous definition of ‘main’ with type ‘int()’
+  164 | int main() {
+      |     ^~~~

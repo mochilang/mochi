@@ -1,0 +1,71 @@
+cc: exit status 1
+/tmp/active-directory-connect.c:45:3: error: unknown type name ‘l_d_a_p_client_t’
+   45 |   l_d_a_p_client_t *data;
+      |   ^~~~~~~~~~~~~~~~
+/tmp/active-directory-connect.c: In function ‘create_l_d_a_p_client_list’:
+/tmp/active-directory-connect.c:50:31: error: ‘l_d_a_p_client_t’ undeclared (first use in this function); did you mean ‘l_d_a_p_client_list_t’?
+   50 |   l.data = calloc(len, sizeof(l_d_a_p_client_t));
+      |                               ^~~~~~~~~~~~~~~~
+      |                               l_d_a_p_client_list_t
+/tmp/active-directory-connect.c:50:31: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/active-directory-connect.c: In function ‘connect’:
+/tmp/active-directory-connect.c:59:26: error: ‘LDAPClient’ {aka ‘struct LDAPClient’} has no member named ‘host’; did you mean ‘Host’?
+   59 |   return (strcmp(client->host, "") != 0) && client->port > 0;
+      |                          ^~~~
+      |                          Host
+/tmp/active-directory-connect.c:59:53: error: ‘LDAPClient’ {aka ‘struct LDAPClient’} has no member named ‘port’; did you mean ‘Port’?
+   59 |   return (strcmp(client->host, "") != 0) && client->port > 0;
+      |                                                     ^~~~
+      |                                                     Port
+/tmp/active-directory-connect.c: In function ‘main’:
+/tmp/active-directory-connect.c:68:3: error: unknown type name ‘l_d_a_p_client_t’; did you mean ‘l_d_a_p_client_list_t’?
+   68 |   l_d_a_p_client_t client =
+      |   ^~~~~~~~~~~~~~~~
+      |   l_d_a_p_client_list_t
+/tmp/active-directory-connect.c:68:20: error: conflicting types for ‘client’; have ‘int’
+   68 |   l_d_a_p_client_t client =
+      |                    ^~~~~~
+/tmp/active-directory-connect.c:63:15: note: previous definition of ‘client’ with type ‘list_string’
+   63 |   list_string client = list_string_create(4);
+      |               ^~~~~~
+/tmp/active-directory-connect.c:69:21: error: ‘LDAPClient’ {aka ‘struct LDAPClient’} has no member named ‘base’; did you mean ‘Base’?
+   69 |       (LDAPClient){.base = "dc=example,dc=com",
+      |                     ^~~~
+      |                     Base
+/tmp/active-directory-connect.c:70:21: error: ‘LDAPClient’ {aka ‘struct LDAPClient’} has no member named ‘host’; did you mean ‘Host’?
+   70 |                    .host = "ldap.example.com",
+      |                     ^~~~
+      |                     Host
+/tmp/active-directory-connect.c:71:21: error: ‘LDAPClient’ {aka ‘struct LDAPClient’} has no member named ‘port’; did you mean ‘Port’?
+   71 |                    .port = 389,
+      |                     ^~~~
+      |                     Port
+/tmp/active-directory-connect.c:72:21: error: ‘LDAPClient’ {aka ‘struct LDAPClient’} has no member named ‘use_s_s_l’
+   72 |                    .use_s_s_l = 0,
+      |                     ^~~~~~~~~
+/tmp/active-directory-connect.c:73:21: error: ‘LDAPClient’ {aka ‘struct LDAPClient’} has no member named ‘bind_d_n’
+   73 |                    .bind_d_n = "uid=readonlyuser,ou=People,dc=example,dc=com",
+      |                     ^~~~~~~~
+/tmp/active-directory-connect.c:74:21: error: ‘LDAPClient’ {aka ‘struct LDAPClient’} has no member named ‘bind_password’; did you mean ‘BindPassword’?
+   74 |                    .bind_password = "readonlypassword",
+      |                     ^~~~~~~~~~~~~
+      |                     BindPassword
+/tmp/active-directory-connect.c:75:21: error: ‘LDAPClient’ {aka ‘struct LDAPClient’} has no member named ‘user_filter’; did you mean ‘UserFilter’?
+   75 |                    .user_filter = "(uid=%s)",
+      |                     ^~~~~~~~~~~
+      |                     UserFilter
+/tmp/active-directory-connect.c:76:21: error: ‘LDAPClient’ {aka ‘struct LDAPClient’} has no member named ‘group_filter’; did you mean ‘GroupFilter’?
+   76 |                    .group_filter = "(memberUid=%s)",
+      |                     ^~~~~~~~~~~~
+      |                     GroupFilter
+/tmp/active-directory-connect.c:77:21: error: ‘LDAPClient’ {aka ‘struct LDAPClient’} has no member named ‘attributes’; did you mean ‘Attributes’?
+   77 |                    .attributes = client};
+      |                     ^~~~~~~~~~
+      |                     Attributes
+/tmp/active-directory-connect.c: At top level:
+/tmp/active-directory-connect.c:86:5: error: redefinition of ‘main’
+   86 | int main() {
+      |     ^~~~
+/tmp/active-directory-connect.c:62:5: note: previous definition of ‘main’ with type ‘int()’
+   62 | int main() {
+      |     ^~~~

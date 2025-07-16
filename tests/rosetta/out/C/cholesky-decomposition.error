@@ -1,0 +1,89 @@
+cc: exit status 1
+/tmp/cholesky-decomposition.c: In function ‘cholesky’:
+/tmp/cholesky-decomposition.c:82:12: error: request for member ‘len’ in something not a structure or union
+   82 |   int n = a.len;
+      |            ^
+/tmp/cholesky-decomposition.c:84:11: error: incompatible types when initializing type ‘int’ using type ‘list_int’
+   84 |   int l = tmp1;
+      |           ^~~~
+/tmp/cholesky-decomposition.c:104:21: error: request for member ‘data’ in something not a structure or union
+  104 |       double sum = a.data[i].data[j];
+      |                     ^
+/tmp/cholesky-decomposition.c:107:22: error: request for member ‘data’ in something not a structure or union
+  107 |         sum = sum - l.data[i].data[k] * l.data[j].data[k];
+      |                      ^
+/tmp/cholesky-decomposition.c:107:42: error: request for member ‘data’ in something not a structure or union
+  107 |         sum = sum - l.data[i].data[k] * l.data[j].data[k];
+      |                                          ^
+/tmp/cholesky-decomposition.c:111:10: error: request for member ‘data’ in something not a structure or union
+  111 |         l.data[i].data[j] = sqrtApprox(sum);
+      |          ^
+/tmp/cholesky-decomposition.c:113:10: error: request for member ‘data’ in something not a structure or union
+  113 |         l.data[i].data[j] = sum / l.data[j].data[j];
+      |          ^
+/tmp/cholesky-decomposition.c:113:36: error: request for member ‘data’ in something not a structure or union
+  113 |         l.data[i].data[j] = sum / l.data[j].data[j];
+      |                                    ^
+/tmp/cholesky-decomposition.c: In function ‘printMat’:
+/tmp/cholesky-decomposition.c:124:15: error: request for member ‘len’ in something not a structure or union
+  124 |   while (i < m.len) {
+      |               ^
+/tmp/cholesky-decomposition.c:127:17: error: request for member ‘data’ in something not a structure or union
+  127 |     while (j < m.data[i].len) {
+      |                 ^
+/tmp/cholesky-decomposition.c:128:26: error: request for member ‘data’ in something not a structure or union
+  128 |       char *tmp5 = _str(m.data[i].data[j]);
+      |                          ^
+/tmp/cholesky-decomposition.c:129:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  129 |       char *tmp6 = concat_string(line, tmp5);
+      |                                  ^~~~
+/tmp/cholesky-decomposition.c:57:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   57 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/cholesky-decomposition.c:131:16: error: request for member ‘data’ in something not a structure or union
+  131 |       if (j < m.data[i].len - 1) {
+      |                ^
+/tmp/cholesky-decomposition.c:132:36: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  132 |         char *tmp7 = concat_string(line, " ");
+      |                                    ^~~~
+/tmp/cholesky-decomposition.c:57:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   57 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/cholesky-decomposition.c: In function ‘main’:
+/tmp/cholesky-decomposition.c:163:27: error: incompatible types when initializing type ‘int’ using type ‘list_float’
+  163 |   list_int tmp8_data[] = {tmp9, tmp10, tmp11};
+      |                           ^~~~
+/tmp/cholesky-decomposition.c:163:33: error: incompatible types when initializing type ‘int *’ using type ‘list_float’
+  163 |   list_int tmp8_data[] = {tmp9, tmp10, tmp11};
+      |                                 ^~~~~
+/tmp/cholesky-decomposition.c:163:40: error: incompatible types when initializing type ‘int’ using type ‘list_float’
+  163 |   list_int tmp8_data[] = {tmp9, tmp10, tmp11};
+      |                                        ^~~~~
+/tmp/cholesky-decomposition.c:165:8: error: incompatible type for argument 1 of ‘demo’
+  165 |   demo(tmp8);
+      |        ^~~~
+      |        |
+      |        list_list_int
+/tmp/cholesky-decomposition.c:142:14: note: expected ‘int’ but argument is of type ‘list_list_int’
+  142 | int demo(int a) {
+      |          ~~~~^
+/tmp/cholesky-decomposition.c:186:28: error: incompatible types when initializing type ‘int’ using type ‘list_float’
+  186 |   list_int tmp12_data[] = {tmp13, tmp14, tmp15, tmp16};
+      |                            ^~~~~
+/tmp/cholesky-decomposition.c:186:35: error: incompatible types when initializing type ‘int *’ using type ‘list_float’
+  186 |   list_int tmp12_data[] = {tmp13, tmp14, tmp15, tmp16};
+      |                                   ^~~~~
+/tmp/cholesky-decomposition.c:186:42: error: incompatible types when initializing type ‘int’ using type ‘list_float’
+  186 |   list_int tmp12_data[] = {tmp13, tmp14, tmp15, tmp16};
+      |                                          ^~~~~
+/tmp/cholesky-decomposition.c:186:49: error: incompatible types when initializing type ‘int *’ using type ‘list_float’
+  186 |   list_int tmp12_data[] = {tmp13, tmp14, tmp15, tmp16};
+      |                                                 ^~~~~
+/tmp/cholesky-decomposition.c:188:8: error: incompatible type for argument 1 of ‘demo’
+  188 |   demo(tmp12);
+      |        ^~~~~
+      |        |
+      |        list_list_int
+/tmp/cholesky-decomposition.c:142:14: note: expected ‘int’ but argument is of type ‘list_list_int’
+  142 | int demo(int a) {
+      |          ~~~~^

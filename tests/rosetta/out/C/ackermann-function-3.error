@@ -1,8 +1,43 @@
-parse error: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/ackermann-function-3.mochi:57:3: unexpected token "}" (expected PostfixExpr)
-  --> /workspace/mochi/tests/rosetta/x/Mochi/ackermann-function-3.mochi:57:3
-
- 57 |   }
-    |   ^
-
-help:
-  Parse error occurred. Check syntax near this location.
+cc: exit status 1
+/tmp/ackermann-function-3.c: In function ‘ackermann2’:
+/tmp/ackermann-function-3.c:69:14: warning: implicit declaration of function ‘_int’ [-Wimplicit-function-declaration]
+   69 |     int mi = _int(m);
+      |              ^~~~
+/tmp/ackermann-function-3.c: In function ‘show’:
+/tmp/ackermann-function-3.c:110:5: warning: ‘return’ with no value, in function returning non-void
+  110 |     return;
+      |     ^~~~~~
+/tmp/ackermann-function-3.c:98:5: note: declared here
+   98 | int show(int m, int n) {
+      |     ^~~~
+/tmp/ackermann-function-3.c:125:36: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  125 |     const char *pre = slice_string(s, 0, 20);
+      |                                    ^
+/tmp/ackermann-function-3.c:21:33: note: expected ‘char *’ but argument is of type ‘const char *’
+   21 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/ackermann-function-3.c:126:36: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  126 |     const char *suf = slice_string(s, strlen(s) - 20, strlen(s));
+      |                                    ^
+/tmp/ackermann-function-3.c:21:33: note: expected ‘char *’ but argument is of type ‘const char *’
+   21 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/ackermann-function-3.c:136:40: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  136 |     char *tmp29 = concat_string(tmp28, pre);
+      |                                        ^~~
+/tmp/ackermann-function-3.c:7:43: note: expected ‘char *’ but argument is of type ‘const char *’
+    7 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
+/tmp/ackermann-function-3.c:138:40: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  138 |     char *tmp31 = concat_string(tmp30, suf);
+      |                                        ^~~
+/tmp/ackermann-function-3.c:7:43: note: expected ‘char *’ but argument is of type ‘const char *’
+    7 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
+/tmp/ackermann-function-3.c: At top level:
+/tmp/ackermann-function-3.c:154:5: error: redefinition of ‘main’
+  154 | int main() {
+      |     ^~~~
+/tmp/ackermann-function-3.c:143:5: note: previous definition of ‘main’ with type ‘int()’
+  143 | int main() {
+      |     ^~~~
