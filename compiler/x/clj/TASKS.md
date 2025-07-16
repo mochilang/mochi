@@ -12,6 +12,10 @@ Recent updates (2025-07-16 11:36):
 - Added generated code for Rosetta tasks `100-prisoners` and `2048`.
 - Recorded parse/runtime errors for `15-puzzle-game` and `15-puzzle-solver`.
 
+2025-07-17 16:32:
+- Fixed default indexing to use `get` when element type is unknown.
+- Regenerated machine translations for `tests/vm/valid`.
+
 Remaining work:
 - [ ] Fix runtime failure in `outer_join.mochi` due to arity mismatch.
 - [ ] Support reading relative files for `load_yaml.mochi` during tests.
