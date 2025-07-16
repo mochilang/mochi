@@ -31,6 +31,9 @@
 - 2025-07-16 17:30: Fixed `nested_function` implementation and removed
   code comparisons from dataset golden tests, further reducing `.error`
   files.
+- 2025-07-17 00:44: Switched VM valid golden test to `golden.RunWithSummary`
+  and removed the obsolete `tpch_test.go` file. All examples compile
+  without errors.
 
 ## Remaining Work
 - [x] Support query compilation with joins and group-by for TPC-H `q1.mochi`.
