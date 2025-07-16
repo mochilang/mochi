@@ -1,0 +1,8 @@
+error[P001]: /workspace/mochi/tests/rosetta/x/Mochi/add-a-variable-to-a-class-instance-at-runtime.mochi:20:28: unexpected token "=" (expected "}")
+  --> /workspace/mochi/tests/rosetta/x/Mochi/add-a-variable-to-a-class-instance-at-runtime.mochi:20:28
+
+ 20 |     ss.runtimeFields[name] = value
+    |                            ^
+
+help:
+  Check for a missing `{` or `}` to close the block.

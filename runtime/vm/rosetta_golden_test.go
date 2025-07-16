@@ -4,12 +4,14 @@ package vm_test
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
+	_ "mochi/golden"
 	"mochi/parser"
 	"mochi/runtime/vm"
 	"mochi/types"
@@ -18,21 +20,22 @@ import (
 func TestVM_RosettaTasks(t *testing.T) {
 	root := findRepoRoot(t)
 	dir := filepath.Join(root, "tests/rosetta/x/Mochi")
+	pattern := filepath.Join(dir, "*.mochi")
+	if only := os.Getenv("MOCHI_ROSETTA_ONLY"); only != "" {
+		pattern = filepath.Join(dir, only+".mochi")
+	}
 
-	outs, err := filepath.Glob(filepath.Join(dir, "*.out"))
+	files, err := filepath.Glob(pattern)
 	if err != nil {
 		t.Fatalf("glob: %v", err)
 	}
-	if len(outs) == 0 {
-		t.Fatal("no Mochi Rosetta tests found")
+	if len(files) == 0 {
+		t.Fatalf("no Mochi Rosetta tests found: %s", pattern)
 	}
 
-	for _, out := range outs {
-		name := strings.TrimSuffix(filepath.Base(out), ".out")
-		src := filepath.Join(dir, name+".mochi")
-		if _, err := os.Stat(src); err != nil {
-			t.Fatalf("missing source for %s", name)
-		}
+	for _, src := range files {
+		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
+		out := strings.TrimSuffix(src, ".mochi") + ".out"
 
 		t.Run(name, func(t *testing.T) {
 			got, err := runMochi(src)
@@ -41,12 +44,28 @@ func TestVM_RosettaTasks(t *testing.T) {
 			}
 			want, err := os.ReadFile(out)
 			if err != nil {
+				if shouldUpdate() {
+					if err2 := os.WriteFile(out, append(got, '\n'), 0644); err2 == nil {
+						t.Logf("updated: %s", out)
+						return
+					} else {
+						t.Fatalf("write golden: %v", err2)
+					}
+				}
 				t.Fatalf("read golden: %v", err)
 			}
 
 			got = bytes.TrimSpace(got)
 			want = bytes.TrimSpace(want)
 			if !bytes.Equal(got, want) {
+				if shouldUpdate() {
+					if err2 := os.WriteFile(out, append(got, '\n'), 0644); err2 == nil {
+						t.Logf("updated: %s", out)
+						return
+					} else {
+						t.Fatalf("write golden: %v", err2)
+					}
+				}
 				t.Errorf("golden mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", name, got, want)
 			}
 		})
@@ -110,4 +129,9 @@ func findRepoRoot(t *testing.T) string {
 	}
 	t.Fatal("go.mod not found (not in Go module)")
 	return ""
+}
+
+func shouldUpdate() bool {
+	f := flag.Lookup("update")
+	return f != nil && f.Value.String() == "true"
 }
