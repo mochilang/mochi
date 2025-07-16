@@ -1,3 +1,7 @@
+## Recent Enhancements (2025-07-16 15:45)
+- Added golden tests for `tests/vm/valid` to verify compiled Python output.
+- `_save` helper now dumps JSON with sorted keys and compact separators, fixing `save_jsonl_stdout` mismatch.
+
 ## Recent Enhancements (2025-07-15 05:54)
 - Updated _sort_key to handle nested lists and tuples
 - Regenerated TPCDS q1-q3 Python outputs

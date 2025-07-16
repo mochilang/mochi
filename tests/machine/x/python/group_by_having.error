@@ -1,0 +1,7 @@
+output mismatch
+-- got --
+[{"city": "Paris", "num": 4}]
+
+-- want --
+[{"city":"Paris","num":4}]
+

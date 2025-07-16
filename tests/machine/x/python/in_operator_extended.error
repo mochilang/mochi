@@ -1,0 +1,12 @@
+run: exit status 1
+true
+false
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/machine/x/python/in_operator_extended.py", line 19, in <module>
+    print(str("a" in m).lower())
+              ^^^^^^^^
+  File "/workspace/mochi/tests/machine/x/python/in_operator_extended.py", line 11, in __getitem__
+    return getattr(self, key)
+           ^^^^^^^^^^^^^^^^^^
+TypeError: attribute name must be string, not 'int'
+

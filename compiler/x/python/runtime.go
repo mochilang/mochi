@@ -273,7 +273,7 @@ var helperSave = "def _save(rows, path, opts):\n" +
 	"                for h in headers:\n" +
 	"                    val = row.get(h)\n" +
 	"                    if isinstance(val, (dict, list)):\n" +
-	"                        rec.append(json.dumps(val))\n" +
+	"                        rec.append(json.dumps(val, separators=(',', ':'), sort_keys=True))\n" +
 	"                    elif val is None:\n" +
 	"                        rec.append('')\n" +
 	"                    else:\n" +
@@ -281,10 +281,10 @@ var helperSave = "def _save(rows, path, opts):\n" +
 	"                w.writerow(rec)\n" +
 	"            return\n" +
 	"        elif fmt == 'json':\n" +
-	"            json.dump(rows, f)\n" +
+	"            json.dump(rows, f, separators=(',', ':'), sort_keys=True)\n" +
 	"        elif fmt == 'jsonl':\n" +
 	"            for row in rows:\n" +
-	"                f.write(json.dumps(row))\n" +
+	"                f.write(json.dumps(row, separators=(',', ':'), sort_keys=True))\n" +
 	"                f.write('\\n')\n" +
 	"        elif fmt == 'yaml':\n" +
 	"            import yaml\n" +
