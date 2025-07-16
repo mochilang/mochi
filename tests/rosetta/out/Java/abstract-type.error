@@ -1,0 +1,8 @@
+javac error: exit status 1
+/tmp/TestMochiToJavaabstract-type655402896/001/AbstractType.java:36: error: incompatible types: Object cannot be converted to String
+}}).get();
+       ^
+/tmp/TestMochiToJavaabstract-type655402896/001/AbstractType.java:50: error: incompatible types: Object cannot be converted to String
+}}).get();
+       ^
+2 errors

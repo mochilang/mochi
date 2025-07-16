@@ -1,0 +1,49 @@
+javac error: exit status 1
+/tmp/TestMochiToJavachat-server1658506088/001/ChatServer.java:17: error: incompatible types: Object is not a functional interface
+        Object broadcast = msg -> {
+                           ^
+/tmp/TestMochiToJavachat-server1658506088/001/ChatServer.java:20: error: incompatible types: Object is not a functional interface
+        Object add = name -> {
+                     ^
+/tmp/TestMochiToJavachat-server1658506088/001/ChatServer.java:24: error: incompatible types: Object is not a functional interface
+        Object send = (name, msg) -> {
+                      ^
+/tmp/TestMochiToJavachat-server1658506088/001/ChatServer.java:27: error: incompatible types: Object is not a functional interface
+        Object remove = name -> {
+                        ^
+/tmp/TestMochiToJavachat-server1658506088/001/ChatServer.java:31: error: cannot find symbol
+        add("Alice");
+        ^
+  symbol:   method add(String)
+  location: class ChatServer
+/tmp/TestMochiToJavachat-server1658506088/001/ChatServer.java:32: error: cannot find symbol
+        add("Bob");
+        ^
+  symbol:   method add(String)
+  location: class ChatServer
+/tmp/TestMochiToJavachat-server1658506088/001/ChatServer.java:33: error: cannot find symbol
+        send("Alice", "Hello Bob!");
+        ^
+  symbol:   method send(String,String)
+  location: class ChatServer
+/tmp/TestMochiToJavachat-server1658506088/001/ChatServer.java:34: error: cannot find symbol
+        send("Bob", "Hi Alice!");
+        ^
+  symbol:   method send(String,String)
+  location: class ChatServer
+/tmp/TestMochiToJavachat-server1658506088/001/ChatServer.java:35: error: cannot find symbol
+        remove("Bob");
+        ^
+  symbol:   method remove(String)
+  location: class ChatServer
+/tmp/TestMochiToJavachat-server1658506088/001/ChatServer.java:36: error: cannot find symbol
+        remove("Alice");
+        ^
+  symbol:   method remove(String)
+  location: class ChatServer
+/tmp/TestMochiToJavachat-server1658506088/001/ChatServer.java:37: error: cannot find symbol
+        broadcast("Server stopping!\n");
+        ^
+  symbol:   method broadcast(String)
+  location: class ChatServer
+11 errors

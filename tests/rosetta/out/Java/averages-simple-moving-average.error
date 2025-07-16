@@ -1,0 +1,25 @@
+javac error: exit status 1
+/tmp/TestMochiToJavaaverages-simple-moving-average2663857713/001/AveragesSimpleMovingAverage.java:17: error: incompatible types: double cannot be converted to String
+        double y = Double.parseDouble(String.valueOf(Integer.parseInt(((x * 1000.000000) + 0.500000)))) / 1000.000000;
+                                                                                         ^
+/tmp/TestMochiToJavaaverages-simple-moving-average2663857713/001/AveragesSimpleMovingAverage.java:69: error: incompatible types: String cannot be converted to Number
+            int line = ((Number)((Number)((Number)((Number)pad(fmt3(xs.get(i)), 5)).doubleValue() + "  ").doubleValue() + ((Number)pad(fmt3(sma3.get(i)), 5)).doubleValue()).doubleValue() + "  ").doubleValue() + ((Number)pad(fmt3(sma5.get(i)), 5)).doubleValue();
+                                                              ^
+/tmp/TestMochiToJavaaverages-simple-moving-average2663857713/001/AveragesSimpleMovingAverage.java:69: error: cannot find symbol
+            int line = ((Number)((Number)((Number)((Number)pad(fmt3(xs.get(i)), 5)).doubleValue() + "  ").doubleValue() + ((Number)pad(fmt3(sma3.get(i)), 5)).doubleValue()).doubleValue() + "  ").doubleValue() + ((Number)pad(fmt3(sma5.get(i)), 5)).doubleValue();
+                                                                                                         ^
+  symbol:   method doubleValue()
+  location: class String
+/tmp/TestMochiToJavaaverages-simple-moving-average2663857713/001/AveragesSimpleMovingAverage.java:69: error: incompatible types: String cannot be converted to Number
+            int line = ((Number)((Number)((Number)((Number)pad(fmt3(xs.get(i)), 5)).doubleValue() + "  ").doubleValue() + ((Number)pad(fmt3(sma3.get(i)), 5)).doubleValue()).doubleValue() + "  ").doubleValue() + ((Number)pad(fmt3(sma5.get(i)), 5)).doubleValue();
+                                                                                                                                      ^
+/tmp/TestMochiToJavaaverages-simple-moving-average2663857713/001/AveragesSimpleMovingAverage.java:69: error: cannot find symbol
+            int line = ((Number)((Number)((Number)((Number)pad(fmt3(xs.get(i)), 5)).doubleValue() + "  ").doubleValue() + ((Number)pad(fmt3(sma3.get(i)), 5)).doubleValue()).doubleValue() + "  ").doubleValue() + ((Number)pad(fmt3(sma5.get(i)), 5)).doubleValue();
+                                                                                                                                                                                                  ^
+  symbol:   method doubleValue()
+  location: class String
+/tmp/TestMochiToJavaaverages-simple-moving-average2663857713/001/AveragesSimpleMovingAverage.java:69: error: incompatible types: String cannot be converted to Number
+            int line = ((Number)((Number)((Number)((Number)pad(fmt3(xs.get(i)), 5)).doubleValue() + "  ").doubleValue() + ((Number)pad(fmt3(sma3.get(i)), 5)).doubleValue()).doubleValue() + "  ").doubleValue() + ((Number)pad(fmt3(sma5.get(i)), 5)).doubleValue();
+                                                                                                                                                                                                                               ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+6 errors

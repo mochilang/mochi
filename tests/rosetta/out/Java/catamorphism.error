@@ -1,0 +1,23 @@
+javac error: exit status 1
+/tmp/TestMochiToJavacatamorphism3011279078/001/Catamorphism.java:16: error: incompatible types: Integer cannot be converted to List<Integer>
+        List<Integer> r = xs.get(0);
+                                ^
+/tmp/TestMochiToJavacatamorphism3011279078/001/Catamorphism.java:19: error: cannot find symbol
+            r = f(r, xs.get(i));
+                ^
+  symbol:   method f(List<Integer>,Integer)
+  location: class Catamorphism
+/tmp/TestMochiToJavacatamorphism3011279078/001/Catamorphism.java:22: error: incompatible types: List<Integer> cannot be converted to int
+        return r;
+               ^
+/tmp/TestMochiToJavacatamorphism3011279078/001/Catamorphism.java:26: error: incompatible types: Object is not a functional interface
+    System.out.println(fold((a, b) -> add(a, b), n));
+                       ^
+/tmp/TestMochiToJavacatamorphism3011279078/001/Catamorphism.java:27: error: incompatible types: Object is not a functional interface
+    System.out.println(fold((a, b) -> sub(a, b), n));
+                       ^
+/tmp/TestMochiToJavacatamorphism3011279078/001/Catamorphism.java:28: error: incompatible types: Object is not a functional interface
+    System.out.println(fold((a, b) -> mul(a, b), n));
+                       ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+6 errors

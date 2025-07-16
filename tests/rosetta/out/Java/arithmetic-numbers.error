@@ -1,0 +1,44 @@
+javac error: exit status 1
+/tmp/TestMochiToJavaarithmetic-numbers2867678723/001/ArithmeticNumbers.java:68: error: incompatible types: int cannot be converted to String
+            int mid = Integer.parseInt(((lo + hi) / 2));
+                                                  ^
+/tmp/TestMochiToJavaarithmetic-numbers2867678723/001/ArithmeticNumbers.java:94: error: incompatible types: Integer cannot be converted to List<Integer>
+                    List<Integer> p = spf.get(x);
+                                             ^
+/tmp/TestMochiToJavaarithmetic-numbers2867678723/001/ArithmeticNumbers.java:96: error: incompatible types: int cannot be converted to List<Integer>
+                        p = x;
+                            ^
+/tmp/TestMochiToJavaarithmetic-numbers2867678723/001/ArithmeticNumbers.java:101: error: bad operand types for binary operator '%'
+                    while (Objects.equals(x % p, 0)) {
+                                            ^
+  first type:  int
+  second type: List<Integer>
+/tmp/TestMochiToJavaarithmetic-numbers2867678723/001/ArithmeticNumbers.java:102: error: bad operand types for binary operator '/'
+                        x = (int)(x / p);
+                                    ^
+  first type:  int
+  second type: List<Integer>
+/tmp/TestMochiToJavaarithmetic-numbers2867678723/001/ArithmeticNumbers.java:104: error: bad operand types for binary operator '+'
+                        sum = (int)(sum + power);
+                                        ^
+  first type:  int
+  second type: List<Integer>
+/tmp/TestMochiToJavaarithmetic-numbers2867678723/001/ArithmeticNumbers.java:105: error: bad operand types for binary operator '*'
+                        power = power * p;
+                                      ^
+  first type:  List<Integer>
+  second type: List<Integer>
+/tmp/TestMochiToJavaarithmetic-numbers2867678723/001/ArithmeticNumbers.java:129: error: incompatible types: String cannot be converted to Number
+                line = line + ((Number)pad3(arr.get(i + j))).doubleValue();
+                                           ^
+/tmp/TestMochiToJavaarithmetic-numbers2867678723/001/ArithmeticNumbers.java:139: error: incompatible types: Integer cannot be converted to List<Integer>
+            List<Integer> last = arr.get(x - 1);
+                                        ^
+/tmp/TestMochiToJavaarithmetic-numbers2867678723/001/ArithmeticNumbers.java:140: error: incompatible types: List<Integer> cannot be converted to int
+            String lastc = commatize(last);
+                                     ^
+/tmp/TestMochiToJavaarithmetic-numbers2867678723/001/ArithmeticNumbers.java:142: error: incompatible types: List<Integer> cannot be converted to int
+            int pc = primeCount(primes, last, spf);
+                                        ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+11 errors

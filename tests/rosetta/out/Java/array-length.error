@@ -1,0 +1,5 @@
+output mismatch
+-- got --
+Length of [apple, orange, pear] is 3.
+-- want --
+Length of [apple orange pear] is 3.

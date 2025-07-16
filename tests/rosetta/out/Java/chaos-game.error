@@ -1,0 +1,29 @@
+javac error: exit status 1
+/tmp/TestMochiToJavachaos-game3648022889/001/ChaosGame.java:17: error: incompatible types: double cannot be converted to String
+    int height = Integer.parseInt((Double.parseDouble(String.valueOf(width)) * 0.866025));
+                                                                             ^
+/tmp/TestMochiToJavachaos-game3648022889/001/ChaosGame.java:32: error: incompatible types: int cannot be converted to String
+    List<List<Integer>> vertices = Arrays.asList(Arrays.asList(0, height - 1), Arrays.asList(width - 1, height - 1), Arrays.asList(Integer.parseInt((width / 2)), 0));
+                                                                                                                                                           ^
+/tmp/TestMochiToJavachaos-game3648022889/001/ChaosGame.java:33: error: incompatible types: int cannot be converted to String
+    int px = Integer.parseInt((width / 2));
+                                     ^
+/tmp/TestMochiToJavachaos-game3648022889/001/ChaosGame.java:34: error: incompatible types: int cannot be converted to String
+    int py = Integer.parseInt((height / 2));
+                                      ^
+/tmp/TestMochiToJavachaos-game3648022889/001/ChaosGame.java:39: error: incompatible types: Integer cannot be converted to List
+        int idx = Integer.parseInt(((List)r.get(1)));
+                                               ^
+/tmp/TestMochiToJavachaos-game3648022889/001/ChaosGame.java:40: error: incompatible types: List<Integer> cannot be converted to List<List<Integer>>
+        List<List<Integer>> v = vertices.get(idx);
+                                            ^
+/tmp/TestMochiToJavachaos-game3648022889/001/ChaosGame.java:41: error: incompatible types: double cannot be converted to String
+        px = (int)(Integer.parseInt((((Number)(px + ((Number)v.get(0)).doubleValue())).doubleValue() / 2)));
+                                                                                                     ^
+/tmp/TestMochiToJavachaos-game3648022889/001/ChaosGame.java:42: error: incompatible types: double cannot be converted to String
+        py = (int)(Integer.parseInt((((Number)(py + ((Number)v.get(1)).doubleValue())).doubleValue() / 2)));
+                                                                                                     ^
+Note: /tmp/TestMochiToJavachaos-game3648022889/001/ChaosGame.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+8 errors

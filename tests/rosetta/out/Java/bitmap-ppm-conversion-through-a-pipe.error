@@ -1,0 +1,5 @@
+javac error: exit status 1
+/tmp/TestMochiToJavabitmap-ppm-conversion-through-a-pipe1637408361/001/BitmapPpmConversionThroughAPipe.java:94: error: integer number too large
+        return (seed * 1664525 + 1013904223) % 2147483648;
+                                               ^
+1 error

@@ -1,8 +1,53 @@
-parse error: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/bitmap-read-an-image-through-a-pipe.mochi:1:1: lexer: invalid input text "# Parse a simple..."
-  --> /workspace/mochi/tests/rosetta/x/Mochi/bitmap-read-an-image-through-a-pipe.mochi:1:1
-
-  1 | # Parse a simple P3 PPM image from a string to simulate reading from a pipe
-    | ^
-
-help:
-  String literals must be properly closed with a `"`.
+javac error: exit status 1
+/tmp/TestMochiToJavabitmap-read-an-image-through-a-pipe2870745927/001/BitmapReadAnImageThroughAPipe.java:46: error: cannot find symbol
+    static Map<String,any> parsePpm(String data) {
+                      ^
+  symbol:   class any
+  location: class BitmapReadAnImageThroughAPipe
+/tmp/TestMochiToJavabitmap-read-an-image-through-a-pipe2870745927/001/BitmapReadAnImageThroughAPipe.java:14: error: cannot find symbol
+        M0123456789 digits = new M0123456789(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+        ^
+  symbol:   class M0123456789
+  location: class BitmapReadAnImageThroughAPipe
+/tmp/TestMochiToJavabitmap-read-an-image-through-a-pipe2870745927/001/BitmapReadAnImageThroughAPipe.java:14: error: cannot find symbol
+        M0123456789 digits = new M0123456789(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+                                 ^
+  symbol:   class M0123456789
+  location: class BitmapReadAnImageThroughAPipe
+/tmp/TestMochiToJavabitmap-read-an-image-through-a-pipe2870745927/001/BitmapReadAnImageThroughAPipe.java:49: error: cannot find symbol
+            return new Err(true);
+                       ^
+  symbol:   class Err
+  location: class BitmapReadAnImageThroughAPipe
+/tmp/TestMochiToJavabitmap-read-an-image-through-a-pipe2870745927/001/BitmapReadAnImageThroughAPipe.java:51: error: incompatible types: String cannot be converted to List<String>
+        List<String> magic = toks.get(0);
+                                     ^
+/tmp/TestMochiToJavabitmap-read-an-image-through-a-pipe2870745927/001/BitmapReadAnImageThroughAPipe.java:61: error: cannot find symbol
+        return new MagicWHMaxPx(magic, w, h, maxv, px);
+                   ^
+  symbol:   class MagicWHMaxPx
+  location: class BitmapReadAnImageThroughAPipe
+/tmp/TestMochiToJavabitmap-read-an-image-through-a-pipe2870745927/001/BitmapReadAnImageThroughAPipe.java:70: error: cannot find symbol
+    Map<String,any> img = parsePpm(ppmData);
+               ^
+  symbol:   class any
+  location: class BitmapReadAnImageThroughAPipe
+/tmp/TestMochiToJavabitmap-read-an-image-through-a-pipe2870745927/001/BitmapReadAnImageThroughAPipe.java:71: error: incompatible types: String cannot be converted to Number
+    System.out.println(((Number)((Number)"width=" + ((Number)String.valueOf(((Map<String,any>)img).get("w"))).doubleValue()).doubleValue() + " height=").doubleValue() + ((Number)String.valueOf(((Map<String,any>)img).get("h"))).doubleValue());
+                                         ^
+/tmp/TestMochiToJavabitmap-read-an-image-through-a-pipe2870745927/001/BitmapReadAnImageThroughAPipe.java:71: error: cannot find symbol
+    System.out.println(((Number)((Number)"width=" + ((Number)String.valueOf(((Map<String,any>)img).get("w"))).doubleValue()).doubleValue() + " height=").doubleValue() + ((Number)String.valueOf(((Map<String,any>)img).get("h"))).doubleValue());
+                                                                                         ^
+  symbol:   class any
+  location: class BitmapReadAnImageThroughAPipe
+/tmp/TestMochiToJavabitmap-read-an-image-through-a-pipe2870745927/001/BitmapReadAnImageThroughAPipe.java:71: error: cannot find symbol
+    System.out.println(((Number)((Number)"width=" + ((Number)String.valueOf(((Map<String,any>)img).get("w"))).doubleValue()).doubleValue() + " height=").doubleValue() + ((Number)String.valueOf(((Map<String,any>)img).get("h"))).doubleValue());
+                                                                                                                                                        ^
+  symbol:   method doubleValue()
+  location: class String
+/tmp/TestMochiToJavabitmap-read-an-image-through-a-pipe2870745927/001/BitmapReadAnImageThroughAPipe.java:71: error: cannot find symbol
+    System.out.println(((Number)((Number)"width=" + ((Number)String.valueOf(((Map<String,any>)img).get("w"))).doubleValue()).doubleValue() + " height=").doubleValue() + ((Number)String.valueOf(((Map<String,any>)img).get("h"))).doubleValue());
+                                                                                                                                                                                                              ^
+  symbol:   class any
+  location: class BitmapReadAnImageThroughAPipe
+11 errors

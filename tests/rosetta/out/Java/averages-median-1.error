@@ -1,0 +1,41 @@
+javac error: exit status 1
+/tmp/TestMochiToJavaaverages-median-11667738785/001/AveragesMedian1.java:14: error: incompatible types: CAP#1 cannot be converted to List<? extends Number>
+                    List<? extends Number> tmp = arr.get(j);
+                                                        ^
+  where CAP#1 is a fresh type-variable:
+    CAP#1 extends Number from capture of ? extends Number
+/tmp/TestMochiToJavaaverages-median-11667738785/001/AveragesMedian1.java:15: error: incompatible types: Number cannot be converted to CAP#1
+                    arr.set(j, arr.get(j + 1));
+                                      ^
+  where CAP#1 is a fresh type-variable:
+    CAP#1 extends Number from capture of ? extends Number
+/tmp/TestMochiToJavaaverages-median-11667738785/001/AveragesMedian1.java:16: error: incompatible types: List<CAP#1> cannot be converted to CAP#2
+                    arr.set(j + 1, tmp);
+                                   ^
+  where CAP#1,CAP#2 are fresh type-variables:
+    CAP#1 extends Number from capture of ? extends Number
+    CAP#2 extends Number from capture of ? extends Number
+/tmp/TestMochiToJavaaverages-median-11667738785/001/AveragesMedian1.java:22: error: incompatible types: List<CAP#1> cannot be converted to List<Double>
+        return arr;
+               ^
+  where CAP#1 is a fresh type-variable:
+    CAP#1 extends Number from capture of ? extends Number
+/tmp/TestMochiToJavaaverages-median-11667738785/001/AveragesMedian1.java:26: error: incompatible types: int cannot be converted to String
+        int half = Integer.parseInt((arr.size() / 2));
+                                                ^
+/tmp/TestMochiToJavaaverages-median-11667738785/001/AveragesMedian1.java:27: error: incompatible types: Double cannot be converted to List<Double>
+        List<Double> m = arr.get(half);
+                                ^
+/tmp/TestMochiToJavaaverages-median-11667738785/001/AveragesMedian1.java:29: error: bad operand types for binary operator '+'
+            m = ((Number)(m + ((Number)arr.get(half - 1)).doubleValue())).doubleValue() / 2.000000;
+                            ^
+  first type:  List<Double>
+  second type: double
+/tmp/TestMochiToJavaaverages-median-11667738785/001/AveragesMedian1.java:29: error: incompatible types: double cannot be converted to List<Double>
+            m = ((Number)(m + ((Number)arr.get(half - 1)).doubleValue())).doubleValue() / 2.000000;
+                                                                                        ^
+/tmp/TestMochiToJavaaverages-median-11667738785/001/AveragesMedian1.java:31: error: incompatible types: List<Double> cannot be converted to double
+        return m;
+               ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+9 errors
