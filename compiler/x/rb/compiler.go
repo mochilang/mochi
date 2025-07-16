@@ -2069,7 +2069,11 @@ func (c *Compiler) compileBuiltinCall(name string, args []string, origArgs []*pa
 	switch name {
 	case "print":
 		if len(args) == 1 && len(origArgs) == 1 {
-			if c.isListExpr(origArgs[0]) || c.isMapExpr(origArgs[0]) {
+			if c.isListExpr(origArgs[0]) {
+				c.use("_format_list")
+				return fmt.Sprintf("puts(_format_list(%s))", args[0]), true, nil
+			}
+			if c.isMapExpr(origArgs[0]) {
 				return fmt.Sprintf("puts(%s.inspect)", args[0]), true, nil
 			}
 			return fmt.Sprintf("puts(%s)", args[0]), true, nil
