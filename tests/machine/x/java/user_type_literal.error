@@ -1,0 +1,7 @@
+javac error: exit status 1
+/tmp/TestJavaCompiler_VMValidProgramsuser_type_literal1523154055/001/UserTypeLiteral.java:40: error: cannot find symbol
+    System.out.println(book.author.name);
+                                  ^
+  symbol:   variable name
+  location: variable author of type Object
+1 error

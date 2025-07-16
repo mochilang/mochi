@@ -1,0 +1,10 @@
+javac error: exit status 1
+/tmp/TestJavaCompiler_VMValidProgramsgroup_items_iteration1741365168/001/GroupItemsIteration.java:74: error: incompatible types: TagVal cannot be converted to Number
+        for (Number x : g.items) {
+                         ^
+/tmp/TestJavaCompiler_VMValidProgramsgroup_items_iteration1741365168/001/GroupItemsIteration.java:75: error: cannot find symbol
+            total = (int)(total + x.val);
+                                   ^
+  symbol:   variable val
+  location: variable x of type Number
+2 errors

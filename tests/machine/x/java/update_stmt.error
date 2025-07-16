@@ -1,0 +1,22 @@
+javac error: exit status 1
+/tmp/TestJavaCompiler_VMValidProgramsupdate_stmt1620858534/001/UpdateStmt.java:27: error: cannot find symbol
+        if (!(age >= 18)) continue;
+              ^
+  symbol:   variable age
+  location: class UpdateStmt
+/tmp/TestJavaCompiler_VMValidProgramsupdate_stmt1620858534/001/UpdateStmt.java:28: error: cannot find symbol
+        _it0.status = "adult";
+            ^
+  symbol:   variable status
+  location: variable _it0 of type Object
+/tmp/TestJavaCompiler_VMValidProgramsupdate_stmt1620858534/001/UpdateStmt.java:29: error: cannot find symbol
+        _it0.age = age + 1;
+            ^
+  symbol:   variable age
+  location: variable _it0 of type Object
+/tmp/TestJavaCompiler_VMValidProgramsupdate_stmt1620858534/001/UpdateStmt.java:29: error: cannot find symbol
+        _it0.age = age + 1;
+                   ^
+  symbol:   variable age
+  location: class UpdateStmt
+4 errors

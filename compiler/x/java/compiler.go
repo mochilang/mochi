@@ -840,7 +840,7 @@ func maybeBool(c *Compiler, expr string) string {
 		if strings.ContainsAny(expr, "<>=!+-*/%") || strings.Contains(expr, "==") || strings.Contains(expr, "!=") || strings.Contains(expr, "Objects.equals") {
 			return expr
 		}
-		return fmt.Sprintf("%s != null", expr)
+		return fmt.Sprintf("Boolean.TRUE.equals(%s)", expr)
 	}
 	if t, ok := c.vars[expr]; ok {
 		if t != "boolean" && t != "int" && t != "double" {
@@ -2380,7 +2380,15 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 		return "", err
 	}
 	for i := len(u.Ops) - 1; i >= 0; i-- {
-		val = u.Ops[i] + val
+		op := u.Ops[i]
+		if op == "!" {
+			typ := c.exprType(val)
+			if typ != "boolean" {
+				val = fmt.Sprintf("!((Boolean)%s)", val)
+				continue
+			}
+		}
+		val = op + val
 	}
 	return val, nil
 }

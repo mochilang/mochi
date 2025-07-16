@@ -25,3 +25,4 @@
 - 2025-07-16 11:30 - added generic cast fallback to reduce Rosetta .error files.
 - 2025-07-16 12:20 - default unknown types to Object and cast without errors to further reduce Rosetta .error files.
 - 2025-07-16 13:00 - added Java Rosetta golden tests and script; unknown expr types now default to Object.
+- 2025-07-16 14:10 - added VM valid golden tests and boolean casting for list elements to reduce .error files.

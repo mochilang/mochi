@@ -1,0 +1,12 @@
+java run error: exit status 1
+Exception in thread "main" java.lang.RuntimeException: java.io.FileNotFoundException: ../interpreter/valid/people.yaml (No such file or directory)
+	at LoadYaml.loadYaml(LoadYaml.java:73)
+	at LoadYaml.main(LoadYaml.java:77)
+Caused by: java.io.FileNotFoundException: ../interpreter/valid/people.yaml (No such file or directory)
+	at java.base/java.io.FileInputStream.open0(Native Method)
+	at java.base/java.io.FileInputStream.open(FileInputStream.java:213)
+	at java.base/java.io.FileInputStream.<init>(FileInputStream.java:152)
+	at java.base/java.io.FileInputStream.<init>(FileInputStream.java:106)
+	at java.base/java.io.FileReader.<init>(FileReader.java:60)
+	at LoadYaml.loadYaml(LoadYaml.java:57)
+	... 1 more
