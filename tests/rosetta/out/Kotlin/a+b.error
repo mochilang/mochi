@@ -1,8 +1,8 @@
-type: error[T003]: unknown function: int
-  --> /workspace/mochi/tests/rosetta/x/Mochi/a+b.mochi:2:11
-
-  2 |   let a = int(input())
-    |           ^
-
-help:
-  Ensure the function is defined before it's called.
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/a+b.kt:11:13: error: unresolved reference: int
+    val a = int(_input())
+            ^
+/tmp/a+b.kt:12:13: error: unresolved reference: int
+    val b = int(_input())
+            ^

@@ -1,162 +1,114 @@
 kotlinc: exit status 1
 OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-/tmp/2048.kt:82:8: error: expecting property name or receiver type
-    var val = 4
-       ^
-/tmp/2048.kt:82:12: error: expecting property name or receiver type
-    var val = 4
-           ^
-/tmp/2048.kt:84:12: error: expecting property name or receiver type
-        val = 2
-           ^
-/tmp/2048.kt:86:32: error: expecting property name or receiver type
-    b[cell[1]]!![cell[0]] = val
-                               ^
-/tmp/2048.kt:50:19: error: type inference failed. Expected type mismatch: inferred type is List<Int> but MutableList<Int> was expected
-            row = row + 0
-                  ^
-/tmp/2048.kt:53:13: error: type inference failed. Expected type mismatch: inferred type is List<Any> but MutableList<MutableList<Int>> was expected
-        b = b + row
-            ^
-/tmp/2048.kt:71:25: error: type inference failed. Expected type mismatch: inferred type is List<Any> but MutableList<MutableList<Int>> was expected
-                empty = empty + mutableListOf(x, y)
-                        ^
-/tmp/2048.kt:80:15: error: unresolved reference: now
-    var idx = now() % empty.size
-              ^
-/tmp/2048.kt:83:9: error: unresolved reference: now
-    if (now() % 10 < 9) {
-        ^
-/tmp/2048.kt:87:12: error: type inference failed: fun <K, V> mutableMapOf(vararg pairs: Pair<K, V>): MutableMap<K, V>
+/tmp/2048.kt:95:12: error: type inference failed: fun <K, V> mutableMapOf(vararg pairs: Pair<K, V>): MutableMap<K, V>
 cannot be applied to
 (Pair<String, MutableList<MutableList<Int>>>,Boolean)
 
     return mutableMapOf("board" to b, "full" to empty.size == 1)
            ^
-/tmp/2048.kt:87:39: error: operator '==' cannot be applied to 'Pair<String, Int>' and 'Int'
+/tmp/2048.kt:95:39: error: operator '==' cannot be applied to 'Pair<String, Int>' and 'Int'
     return mutableMapOf("board" to b, "full" to empty.size == 1)
                                       ^
-/tmp/2048.kt:87:39: error: type mismatch: inferred type is Boolean but Pair<String, Any> was expected
+/tmp/2048.kt:95:39: error: type mismatch: inferred type is Boolean but Pair<String, Any> was expected
     return mutableMapOf("board" to b, "full" to empty.size == 1)
                                       ^
-/tmp/2048.kt:145:15: error: type inference failed. Expected type mismatch: inferred type is List<Int> but MutableList<Int> was expected
-        out = out + r[i]
-              ^
-/tmp/2048.kt:161:18: error: type inference failed. Expected type mismatch: inferred type is List<Int> but MutableList<Int> was expected
-            xs = xs + row[i]
-                 ^
-/tmp/2048.kt:172:19: error: type inference failed. Expected type mismatch: inferred type is List<Int> but MutableList<Int> was expected
-            res = res + v
-                  ^
-/tmp/2048.kt:176:19: error: type inference failed. Expected type mismatch: inferred type is List<Int> but MutableList<Int> was expected
-            res = res + xs[i]
-                  ^
-/tmp/2048.kt:181:15: error: type inference failed. Expected type mismatch: inferred type is List<Int> but MutableList<Int> was expected
-        res = res + 0
-              ^
-/tmp/2048.kt:198:9: error: val cannot be reassigned
+/tmp/2048.kt:206:9: error: val cannot be reassigned
         score = score + toInt(r["gain"])
         ^
-/tmp/2048.kt:201:17: error: operator '!=' cannot be applied to 'Int' and 'Double'
+/tmp/2048.kt:209:17: error: operator '!=' cannot be applied to 'Int' and 'Double'
             if ((b[y] as MutableList<Int>)[x] != toDouble(new[x])) {
                 ^
-/tmp/2048.kt:201:59: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+/tmp/2048.kt:209:59: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
 @InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out Int, Any?>.get(key: Int): Any? defined in kotlin.collections
             if ((b[y] as MutableList<Int>)[x] != toDouble(new[x])) {
                                                           ^
-/tmp/2048.kt:201:62: error: no get method providing array access
+/tmp/2048.kt:209:62: error: no get method providing array access
             if ((b[y] as MutableList<Int>)[x] != toDouble(new[x])) {
                                                              ^
-/tmp/2048.kt:204:25: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+/tmp/2048.kt:212:25: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
 @InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out Int, Int>.get(key: Int): Int? defined in kotlin.collections
             b[y]!![x] = new[x]
                         ^
-/tmp/2048.kt:204:28: error: no get method providing array access
+/tmp/2048.kt:212:28: error: no get method providing array access
             b[y]!![x] = new[x]
                            ^
-/tmp/2048.kt:224:15: error: type mismatch: inferred type is Any? but MutableList<Int> was expected
+/tmp/2048.kt:232:15: error: type mismatch: inferred type is Any? but MutableList<Int> was expected
         rev = r["row"]
               ^
-/tmp/2048.kt:225:9: error: val cannot be reassigned
+/tmp/2048.kt:233:9: error: val cannot be reassigned
         score = score + toInt(r["gain"])
         ^
-/tmp/2048.kt:250:15: error: type inference failed. Expected type mismatch: inferred type is List<Int> but MutableList<Int> was expected
-        col = col + (b[y] as MutableList<Int>)[x]
-              ^
-/tmp/2048.kt:283:9: error: val cannot be reassigned
+/tmp/2048.kt:291:9: error: val cannot be reassigned
         score = score + toInt(r["gain"])
         ^
-/tmp/2048.kt:286:17: error: operator '!=' cannot be applied to 'Int' and 'Double'
+/tmp/2048.kt:294:17: error: operator '!=' cannot be applied to 'Int' and 'Double'
             if ((b[y] as MutableList<Int>)[x] != toDouble(new[y])) {
                 ^
-/tmp/2048.kt:286:59: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+/tmp/2048.kt:294:59: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
 @InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out Int, Any?>.get(key: Int): Any? defined in kotlin.collections
             if ((b[y] as MutableList<Int>)[x] != toDouble(new[y])) {
                                                           ^
-/tmp/2048.kt:286:62: error: no get method providing array access
+/tmp/2048.kt:294:62: error: no get method providing array access
             if ((b[y] as MutableList<Int>)[x] != toDouble(new[y])) {
                                                              ^
-/tmp/2048.kt:289:25: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+/tmp/2048.kt:297:25: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
 @InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out Int, Int>.get(key: Int): Int? defined in kotlin.collections
             b[y]!![x] = new[y]
                         ^
-/tmp/2048.kt:289:28: error: no get method providing array access
+/tmp/2048.kt:297:28: error: no get method providing array access
             b[y]!![x] = new[y]
                            ^
-/tmp/2048.kt:309:15: error: type mismatch: inferred type is Any? but MutableList<Int> was expected
+/tmp/2048.kt:317:15: error: type mismatch: inferred type is Any? but MutableList<Int> was expected
         col = r["row"]
               ^
-/tmp/2048.kt:310:9: error: val cannot be reassigned
+/tmp/2048.kt:318:9: error: val cannot be reassigned
         score = score + toInt(r["gain"])
         ^
-/tmp/2048.kt:372:13: error: type mismatch: inferred type is Any? but MutableList<MutableList<Int>> was expected
+/tmp/2048.kt:380:13: error: type mismatch: inferred type is Any? but MutableList<MutableList<Int>> was expected
     board = r["board"]
             ^
-/tmp/2048.kt:374:13: error: type mismatch: inferred type is Any? but MutableList<MutableList<Int>> was expected
+/tmp/2048.kt:382:13: error: type mismatch: inferred type is Any? but MutableList<MutableList<Int>> was expected
     board = r["board"]
             ^
-/tmp/2048.kt:379:19: error: unresolved reference: input
-        val cmd = input()
-                  ^
-/tmp/2048.kt:383:21: error: type mismatch: inferred type is Any? but MutableList<MutableList<Int>> was expected
+/tmp/2048.kt:391:21: error: type mismatch: inferred type is Any? but MutableList<MutableList<Int>> was expected
             board = m["board"]
                     ^
-/tmp/2048.kt:384:21: error: type mismatch: inferred type is Any? but Int was expected
+/tmp/2048.kt:392:21: error: type mismatch: inferred type is Any? but Int was expected
             score = m["score"]
                     ^
-/tmp/2048.kt:385:21: error: type mismatch: inferred type is Any? but Boolean was expected
+/tmp/2048.kt:393:21: error: type mismatch: inferred type is Any? but Boolean was expected
             moved = m["moved"]
                     ^
-/tmp/2048.kt:389:21: error: type mismatch: inferred type is Any? but MutableList<MutableList<Int>> was expected
+/tmp/2048.kt:397:21: error: type mismatch: inferred type is Any? but MutableList<MutableList<Int>> was expected
             board = m["board"]
                     ^
-/tmp/2048.kt:390:21: error: type mismatch: inferred type is Any? but Int was expected
+/tmp/2048.kt:398:21: error: type mismatch: inferred type is Any? but Int was expected
             score = m["score"]
                     ^
-/tmp/2048.kt:391:21: error: type mismatch: inferred type is Any? but Boolean was expected
+/tmp/2048.kt:399:21: error: type mismatch: inferred type is Any? but Boolean was expected
             moved = m["moved"]
                     ^
-/tmp/2048.kt:395:21: error: type mismatch: inferred type is Any? but MutableList<MutableList<Int>> was expected
+/tmp/2048.kt:403:21: error: type mismatch: inferred type is Any? but MutableList<MutableList<Int>> was expected
             board = m["board"]
                     ^
-/tmp/2048.kt:396:21: error: type mismatch: inferred type is Any? but Int was expected
+/tmp/2048.kt:404:21: error: type mismatch: inferred type is Any? but Int was expected
             score = m["score"]
                     ^
-/tmp/2048.kt:397:21: error: type mismatch: inferred type is Any? but Boolean was expected
+/tmp/2048.kt:405:21: error: type mismatch: inferred type is Any? but Boolean was expected
             moved = m["moved"]
                     ^
-/tmp/2048.kt:401:21: error: type mismatch: inferred type is Any? but MutableList<MutableList<Int>> was expected
+/tmp/2048.kt:409:21: error: type mismatch: inferred type is Any? but MutableList<MutableList<Int>> was expected
             board = m["board"]
                     ^
-/tmp/2048.kt:402:21: error: type mismatch: inferred type is Any? but Int was expected
+/tmp/2048.kt:410:21: error: type mismatch: inferred type is Any? but Int was expected
             score = m["score"]
                     ^
-/tmp/2048.kt:403:21: error: type mismatch: inferred type is Any? but Boolean was expected
+/tmp/2048.kt:411:21: error: type mismatch: inferred type is Any? but Boolean was expected
             moved = m["moved"]
                     ^
-/tmp/2048.kt:410:21: error: type mismatch: inferred type is Any? but MutableList<MutableList<Int>> was expected
+/tmp/2048.kt:418:21: error: type mismatch: inferred type is Any? but MutableList<MutableList<Int>> was expected
             board = r2["board"]
                     ^
-/tmp/2048.kt:412:24: error: type mismatch: inferred type is Any? but Boolean was expected
+/tmp/2048.kt:420:24: error: type mismatch: inferred type is Any? but Boolean was expected
             if (toBool(full && (!hasMoves(board)))) {
                        ^

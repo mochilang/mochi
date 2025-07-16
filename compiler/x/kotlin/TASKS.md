@@ -16,6 +16,7 @@
 - 2025-07-15 07:18 UTC: Generated Kotlin code for additional TPC-DS queries (`q63`-`q69`, `q72`, `q78`, `q80`, `q82`-`q86`, `q89`, `q97`) and added golden test.
 - 2025-07-15 07:48 UTC: Began implementing operator precedence handling in Kotlin compiler; initial attempt compiles but `q1` still fails due to type casting issues.
 - 2025-07-16 11:40 UTC: Escaped reserved identifiers like `this`, fixed `now()` cast and skipped wrapper `main` when user-defined main exists.
+- 2025-07-16 12:06 UTC: Empty list and map literals now use typed zero values when variables have explicit types, reducing Rosetta compile errors.
 
 ## Remaining Work
 - [ ] Implement dataset join and group-by operations fully.
