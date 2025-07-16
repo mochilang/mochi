@@ -1,34 +1,10 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/box-the-compass.dart:7:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    n = (n as num) - 1;
-                   ^
-../../tests/rosetta/out/Dart/box-the-compass.dart:42:37: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
-      s = s.toString().substring(0, need);
-                                    ^
-../../tests/rosetta/out/Dart/box-the-compass.dart:54:34: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+run: exit status 254
+/tmp/box-the-compass.dart:57:34: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
   var x = int.parse(((h / 11.25) + 0.5));
                                  ^
-../../tests/rosetta/out/Dart/box-the-compass.dart:55:18: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-  x = (x as num) % 32;
-                 ^
-../../tests/rosetta/out/Dart/box-the-compass.dart:57:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    x = (x as num) + 32;
-                   ^
-../../tests/rosetta/out/Dart/box-the-compass.dart:77:35: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
+/tmp/box-the-compass.dart:80:35: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
     var cp = degrees2compasspoint(h);
                                   ^
-../../tests/rosetta/out/Dart/box-the-compass.dart:78:81: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
+/tmp/box-the-compass.dart:81:81: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
     print(padLeft(idx.toString(), 4) + '   ' + padRight(cp, 19) + ' ' + format2(h) + '°');
                                                                                 ^
-../../tests/rosetta/out/Dart/box-the-compass.dart:104:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/box-the-compass.dart:133:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/box-the-compass.dart:138:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/box-the-compass.dart:142:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

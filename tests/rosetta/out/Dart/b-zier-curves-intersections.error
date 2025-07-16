@@ -1,8 +1,71 @@
-parse error: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/b-zier-curves-intersections.mochi:1:1: lexer: invalid input text "# Mochi implemen..."
-  --> /workspace/mochi/tests/rosetta/x/Mochi/b-zier-curves-intersections.mochi:1:1
-
-  1 | # Mochi implementation of Rosetta "B'zier curves/Intersections" task
-    | ^
-
-help:
-  String literals must be properly closed with a `"`.
+run: exit status 254
+/tmp/b-zier-curves-intersections.dart:178:6: Error: 'main' is already declared in this scope.
+void main() {
+     ^^^^
+/tmp/b-zier-curves-intersections.dart:164:6: Context: Previous declaration of 'main'.
+void main() {
+     ^^^^
+/tmp/b-zier-curves-intersections.dart:90:13: Error: Type 'any' not found.
+Map<String, any> testIntersect(QuadCurve p, QuadCurve q, double tol) {
+            ^^^
+/tmp/b-zier-curves-intersections.dart:73:15: Error: The operator '[]' isn't defined for the class 'QuadSpline'.
+ - 'QuadSpline' is from '/tmp/b-zier-curves-intersections.dart'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+  u.c2 = s * u['c1'] + t * v['c1'];
+              ^
+/tmp/b-zier-curves-intersections.dart:73:29: Error: The operator '[]' isn't defined for the class 'QuadSpline'.
+ - 'QuadSpline' is from '/tmp/b-zier-curves-intersections.dart'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+  u.c2 = s * u['c1'] + t * v['c1'];
+                            ^
+/tmp/b-zier-curves-intersections.dart:74:11: Error: The operator '[]' isn't defined for the class 'QuadSpline'.
+ - 'QuadSpline' is from '/tmp/b-zier-curves-intersections.dart'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+  v.c0 = u['c2'];
+          ^
+/tmp/b-zier-curves-intersections.dart:123:16: Error: The operator '[]' isn't defined for the class 'Point'.
+ - 'Point' is from '/tmp/b-zier-curves-intersections.dart'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+    if (absf(pt['x'] - xy.x) < spacing && absf(pt['y'] - xy.y) < spacing) {
+               ^
+/tmp/b-zier-curves-intersections.dart:123:50: Error: The operator '[]' isn't defined for the class 'Point'.
+ - 'Point' is from '/tmp/b-zier-curves-intersections.dart'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+    if (absf(pt['x'] - xy.x) < spacing && absf(pt['y'] - xy.y) < spacing) {
+                                                 ^
+/tmp/b-zier-curves-intersections.dart:137:49: Error: The method 'substring' isn't defined for the class 'List<Map<String, QuadCurve>>'.
+ - 'List' is from 'dart:core'.
+ - 'Map' is from 'dart:core'.
+ - 'QuadCurve' is from '/tmp/b-zier-curves-intersections.dart'.
+Try correcting the name to the name of an existing method, or defining a method named 'substring'.
+    workload = ((workload is String) ? workload.substring(0, idx) : (workload as List).sublist(0, idx));
+                                                ^^^^^^^^^
+/tmp/b-zier-curves-intersections.dart:138:33: Error: The argument type 'QuadCurve?' can't be assigned to the parameter type 'QuadCurve' because 'QuadCurve?' is nullable and 'QuadCurve' isn't.
+ - 'QuadCurve' is from '/tmp/b-zier-curves-intersections.dart'.
+    var res = testIntersect(work['p'], work['q'], tol);
+                                ^
+/tmp/b-zier-curves-intersections.dart:138:44: Error: The argument type 'QuadCurve?' can't be assigned to the parameter type 'QuadCurve' because 'QuadCurve?' is nullable and 'QuadCurve' isn't.
+ - 'QuadCurve' is from '/tmp/b-zier-curves-intersections.dart'.
+    var res = testIntersect(work['p'], work['q'], tol);
+                                           ^
+/tmp/b-zier-curves-intersections.dart:149:39: Error: The argument type 'QuadCurve?' can't be assigned to the parameter type 'QuadCurve' because 'QuadCurve?' is nullable and 'QuadCurve' isn't.
+ - 'QuadCurve' is from '/tmp/b-zier-curves-intersections.dart'.
+      var ps = subdivideQuadCurve(work['p'], 0.5);
+                                      ^
+/tmp/b-zier-curves-intersections.dart:150:39: Error: The argument type 'QuadCurve?' can't be assigned to the parameter type 'QuadCurve' because 'QuadCurve?' is nullable and 'QuadCurve' isn't.
+ - 'QuadCurve' is from '/tmp/b-zier-curves-intersections.dart'.
+      var qs = subdivideQuadCurve(work['q'], 0.5);
+                                      ^
+/tmp/b-zier-curves-intersections.dart:173:19: Error: The operator '[]' isn't defined for the class 'Point'.
+ - 'Point' is from '/tmp/b-zier-curves-intersections.dart'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+    print('(' + pt['x'].toString() + ', ' + pt['y'].toString() + ')');
+                  ^
+/tmp/b-zier-curves-intersections.dart:173:47: Error: The operator '[]' isn't defined for the class 'Point'.
+ - 'Point' is from '/tmp/b-zier-curves-intersections.dart'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+    print('(' + pt['x'].toString() + ', ' + pt['y'].toString() + ')');
+                                              ^
+/tmp/b-zier-curves-intersections.dart:179:3: Error: Can't use 'main' because it is declared more than once.
+  main();
+  ^

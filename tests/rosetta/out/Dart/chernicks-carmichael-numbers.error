@@ -1,82 +1,10 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/chernicks-carmichael-numbers.dart:17:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    d = (d as num) + 2;
-                   ^
-../../tests/rosetta/out/Dart/chernicks-carmichael-numbers.dart:21:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    d = (d as num) + 4;
-                   ^
-../../tests/rosetta/out/Dart/chernicks-carmichael-numbers.dart:28:67: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-  while (n.toString().compareTo(1.toString()) > 0 && a[(n as num) - 1] == 0) {
-                                                                  ^
-../../tests/rosetta/out/Dart/chernicks-carmichael-numbers.dart:29:33: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
-    a = a.sublist(0, (n as num) - 1);
-                                ^
-../../tests/rosetta/out/Dart/chernicks-carmichael-numbers.dart:30:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    n = (n as num) - 1;
-                   ^
-../../tests/rosetta/out/Dart/chernicks-carmichael-numbers.dart:42:48: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
-    digits = List.from(digits)..add((n as num) % 10);
-                                               ^
-../../tests/rosetta/out/Dart/chernicks-carmichael-numbers.dart:43:20: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-    n = (n as num) / 10;
-                   ^
-../../tests/rosetta/out/Dart/chernicks-carmichael-numbers.dart:57:45: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
-    res = List.from(res)..add((prod as num) % 10);
-                                            ^
-../../tests/rosetta/out/Dart/chernicks-carmichael-numbers.dart:58:27: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-    carry = (prod as num) / 10;
-                          ^
-../../tests/rosetta/out/Dart/chernicks-carmichael-numbers.dart:59:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/chernicks-carmichael-numbers.dart:62:46: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
-    res = List.from(res)..add((carry as num) % 10);
-                                             ^
-../../tests/rosetta/out/Dart/chernicks-carmichael-numbers.dart:63:28: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-    carry = (carry as num) / 10;
-                           ^
-../../tests/rosetta/out/Dart/chernicks-carmichael-numbers.dart:73:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) - 1;
-                   ^
-../../tests/rosetta/out/Dart/chernicks-carmichael-numbers.dart:82:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    r = (r as num) * 2;
-                   ^
-../../tests/rosetta/out/Dart/chernicks-carmichael-numbers.dart:83:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/chernicks-carmichael-numbers.dart:100:39: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-  while (i.toString().compareTo(n - 2.toString()) <= 0) {
-                                      ^
-../../tests/rosetta/out/Dart/chernicks-carmichael-numbers.dart:100:35: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
-  while (i.toString().compareTo(n - 2.toString()) <= 0) {
-                                  ^
-../../tests/rosetta/out/Dart/chernicks-carmichael-numbers.dart:106:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/chernicks-carmichael-numbers.dart:125:19: Error: 'num' isn't a type.
-        m = (m as num) + 1;
-                  ^^^
-../../tests/rosetta/out/Dart/chernicks-carmichael-numbers.dart:128:19: Error: 'num' isn't a type.
-        m = (m as num) + pow2((n as num) - 4);
-                  ^^^
-../../tests/rosetta/out/Dart/chernicks-carmichael-numbers.dart:128:37: Error: 'num' isn't a type.
-        m = (m as num) + pow2((n as num) - 4);
-                                    ^^^
-../../tests/rosetta/out/Dart/chernicks-carmichael-numbers.dart:116:27: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
-      m = pow2((n as num) - 4);
-                          ^
-../../tests/rosetta/out/Dart/chernicks-carmichael-numbers.dart:131:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    n = (n as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/chernicks-carmichael-numbers.dart:160:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/chernicks-carmichael-numbers.dart:189:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/chernicks-carmichael-numbers.dart:194:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/chernicks-carmichael-numbers.dart:198:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^
+run: exit status 254
+/tmp/chernicks-carmichael-numbers.dart:46:11: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    n = n / 10;
+          ^
+/tmp/chernicks-carmichael-numbers.dart:61:18: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    carry = prod / 10;
+                 ^
+/tmp/chernicks-carmichael-numbers.dart:66:19: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    carry = carry / 10;
+                  ^

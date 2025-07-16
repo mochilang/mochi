@@ -1,91 +1,58 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/circles-of-given-radius-through-two-points.dart:34:6: Error: Type 'any' not found.
+run: exit status 254
+/tmp/circles-of-given-radius-through-two-points.dart:37:6: Error: Type 'any' not found.
 List<any> circles(Point p1, Point p2, double r) {
      ^^^
-../../tests/rosetta/out/Dart/circles-of-given-radius-through-two-points.dart:13:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/circles-of-given-radius-through-two-points.dart:47:36: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-  if (q.toString().compareTo(2 * r.toString()) > 0) {
-                                   ^
-../../tests/rosetta/out/Dart/circles-of-given-radius-through-two-points.dart:47:32: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
-  if (q.toString().compareTo(2 * r.toString()) > 0) {
-                               ^
-../../tests/rosetta/out/Dart/circles-of-given-radius-through-two-points.dart:57:19: Error: The operator '[]' isn't defined for the class 'Point'.
- - 'Point' is from '../../tests/rosetta/out/Dart/circles-of-given-radius-through-two-points.dart'.
+/tmp/circles-of-given-radius-through-two-points.dart:60:18: Error: The operator '[]' isn't defined for the class 'Point'.
+ - 'Point' is from '/tmp/circles-of-given-radius-through-two-points.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
-  return [Point((m['x'] as num) - (oy as num), (m['y'] as num) + (ox as num)), Point((m['x'] as num) + (oy as num), (m['y'] as num) - (ox as num)), 'Two circles.'];
-                  ^
-../../tests/rosetta/out/Dart/circles-of-given-radius-through-two-points.dart:57:50: Error: The operator '[]' isn't defined for the class 'Point'.
- - 'Point' is from '../../tests/rosetta/out/Dart/circles-of-given-radius-through-two-points.dart'.
+  return [Point(m['x'] - oy, m['y'] + ox), Point(m['x'] + oy, m['y'] - ox), 'Two circles.'];
+                 ^
+/tmp/circles-of-given-radius-through-two-points.dart:60:31: Error: The operator '[]' isn't defined for the class 'Point'.
+ - 'Point' is from '/tmp/circles-of-given-radius-through-two-points.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
-  return [Point((m['x'] as num) - (oy as num), (m['y'] as num) + (ox as num)), Point((m['x'] as num) + (oy as num), (m['y'] as num) - (ox as num)), 'Two circles.'];
-                                                 ^
-../../tests/rosetta/out/Dart/circles-of-given-radius-through-two-points.dart:57:33: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
-  return [Point((m['x'] as num) - (oy as num), (m['y'] as num) + (ox as num)), Point((m['x'] as num) + (oy as num), (m['y'] as num) - (ox as num)), 'Two circles.'];
-                                ^
-../../tests/rosetta/out/Dart/circles-of-given-radius-through-two-points.dart:57:64: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
-  return [Point((m['x'] as num) - (oy as num), (m['y'] as num) + (ox as num)), Point((m['x'] as num) + (oy as num), (m['y'] as num) - (ox as num)), 'Two circles.'];
+  return [Point(m['x'] - oy, m['y'] + ox), Point(m['x'] + oy, m['y'] - ox), 'Two circles.'];
+                              ^
+/tmp/circles-of-given-radius-through-two-points.dart:60:51: Error: The operator '[]' isn't defined for the class 'Point'.
+ - 'Point' is from '/tmp/circles-of-given-radius-through-two-points.dart'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+  return [Point(m['x'] - oy, m['y'] + ox), Point(m['x'] + oy, m['y'] - ox), 'Two circles.'];
+                                                  ^
+/tmp/circles-of-given-radius-through-two-points.dart:60:64: Error: The operator '[]' isn't defined for the class 'Point'.
+ - 'Point' is from '/tmp/circles-of-given-radius-through-two-points.dart'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+  return [Point(m['x'] - oy, m['y'] + ox), Point(m['x'] + oy, m['y'] - ox), 'Two circles.'];
                                                                ^
-../../tests/rosetta/out/Dart/circles-of-given-radius-through-two-points.dart:57:88: Error: The operator '[]' isn't defined for the class 'Point'.
- - 'Point' is from '../../tests/rosetta/out/Dart/circles-of-given-radius-through-two-points.dart'.
-Try correcting the operator to an existing operator, or defining a '[]' operator.
-  return [Point((m['x'] as num) - (oy as num), (m['y'] as num) + (ox as num)), Point((m['x'] as num) + (oy as num), (m['y'] as num) - (ox as num)), 'Two circles.'];
-                                                                                       ^
-../../tests/rosetta/out/Dart/circles-of-given-radius-through-two-points.dart:57:119: Error: The operator '[]' isn't defined for the class 'Point'.
- - 'Point' is from '../../tests/rosetta/out/Dart/circles-of-given-radius-through-two-points.dart'.
-Try correcting the operator to an existing operator, or defining a '[]' operator.
-  return [Point((m['x'] as num) - (oy as num), (m['y'] as num) + (ox as num)), Point((m['x'] as num) + (oy as num), (m['y'] as num) - (ox as num)), 'Two circles.'];
-                                                                                                                      ^
-../../tests/rosetta/out/Dart/circles-of-given-radius-through-two-points.dart:57:102: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
-  return [Point((m['x'] as num) - (oy as num), (m['y'] as num) + (ox as num)), Point((m['x'] as num) + (oy as num), (m['y'] as num) - (ox as num)), 'Two circles.'];
-                                                                                                     ^
-../../tests/rosetta/out/Dart/circles-of-given-radius-through-two-points.dart:57:133: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
-  return [Point((m['x'] as num) - (oy as num), (m['y'] as num) + (ox as num)), Point((m['x'] as num) + (oy as num), (m['y'] as num) - (ox as num)), 'Two circles.'];
-                                                                                                                                    ^
-../../tests/rosetta/out/Dart/circles-of-given-radius-through-two-points.dart:67:24: Error: The operator '[]' isn't defined for the class 'Object'.
+/tmp/circles-of-given-radius-through-two-points.dart:70:24: Error: The operator '[]' isn't defined for the class 'Object'.
  - 'Object' is from 'dart:core'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
     print('p1:  {' + p1['x'].toString() + ' ' + p1['y'].toString() + '}');
                        ^
-../../tests/rosetta/out/Dart/circles-of-given-radius-through-two-points.dart:67:51: Error: The operator '[]' isn't defined for the class 'Object'.
+/tmp/circles-of-given-radius-through-two-points.dart:70:51: Error: The operator '[]' isn't defined for the class 'Object'.
  - 'Object' is from 'dart:core'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
     print('p1:  {' + p1['x'].toString() + ' ' + p1['y'].toString() + '}');
                                                   ^
-../../tests/rosetta/out/Dart/circles-of-given-radius-through-two-points.dart:68:24: Error: The operator '[]' isn't defined for the class 'Object'.
+/tmp/circles-of-given-radius-through-two-points.dart:71:24: Error: The operator '[]' isn't defined for the class 'Object'.
  - 'Object' is from 'dart:core'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
     print('p2:  {' + p2['x'].toString() + ' ' + p2['y'].toString() + '}');
                        ^
-../../tests/rosetta/out/Dart/circles-of-given-radius-through-two-points.dart:68:51: Error: The operator '[]' isn't defined for the class 'Object'.
+/tmp/circles-of-given-radius-through-two-points.dart:71:51: Error: The operator '[]' isn't defined for the class 'Object'.
  - 'Object' is from 'dart:core'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
     print('p2:  {' + p2['x'].toString() + ' ' + p2['y'].toString() + '}');
                                                   ^
-../../tests/rosetta/out/Dart/circles-of-given-radius-through-two-points.dart:70:23: Error: The argument type 'Object' can't be assigned to the parameter type 'Point'.
+/tmp/circles-of-given-radius-through-two-points.dart:73:23: Error: The argument type 'Object' can't be assigned to the parameter type 'Point'.
  - 'Object' is from 'dart:core'.
- - 'Point' is from '../../tests/rosetta/out/Dart/circles-of-given-radius-through-two-points.dart'.
+ - 'Point' is from '/tmp/circles-of-given-radius-through-two-points.dart'.
     var res = circles(p1, p2, r);
                       ^
-../../tests/rosetta/out/Dart/circles-of-given-radius-through-two-points.dart:70:27: Error: The argument type 'Object' can't be assigned to the parameter type 'Point'.
+/tmp/circles-of-given-radius-through-two-points.dart:73:27: Error: The argument type 'Object' can't be assigned to the parameter type 'Point'.
  - 'Object' is from 'dart:core'.
- - 'Point' is from '../../tests/rosetta/out/Dart/circles-of-given-radius-through-two-points.dart'.
+ - 'Point' is from '/tmp/circles-of-given-radius-through-two-points.dart'.
     var res = circles(p1, p2, r);
                           ^
-../../tests/rosetta/out/Dart/circles-of-given-radius-through-two-points.dart:70:31: Error: The argument type 'Object' can't be assigned to the parameter type 'double'.
+/tmp/circles-of-given-radius-through-two-points.dart:73:31: Error: The argument type 'Object' can't be assigned to the parameter type 'double'.
  - 'Object' is from 'dart:core'.
     var res = circles(p1, p2, r);
                               ^
-../../tests/rosetta/out/Dart/circles-of-given-radius-through-two-points.dart:109:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/circles-of-given-radius-through-two-points.dart:138:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/circles-of-given-radius-through-two-points.dart:143:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/circles-of-given-radius-through-two-points.dart:147:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

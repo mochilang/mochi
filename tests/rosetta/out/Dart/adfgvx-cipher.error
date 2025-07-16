@@ -1,0 +1,218 @@
+run: exit status 254
+/tmp/adfgvx-cipher.dart:35:9: Error: String starting with ' must end with '.
+  print('6 x 6 Polybius square:
+        ^^^^^^^^^^^^^^^^^^^^^^^
+/tmp/adfgvx-cipher.dart:36:1: Error: String starting with ' must end with '.
+');
+^^^
+/tmp/adfgvx-cipher.dart:35:8: Error: Can't find ')' to match '('.
+  print('6 x 6 Polybius square:
+       ^
+/tmp/adfgvx-cipher.dart:69:9: Error: String starting with ' must end with '.
+  print('
+        ^
+/tmp/adfgvx-cipher.dart:70:12: Error: String starting with ' must end with '.
+The key is ' + key);
+           ^^^^^^^^^
+/tmp/adfgvx-cipher.dart:69:8: Error: Can't find ')' to match '('.
+  print('
+       ^
+/tmp/adfgvx-cipher.dart:275:9: Error: String starting with ' must end with '.
+  print('
+        ^
+/tmp/adfgvx-cipher.dart:276:13: Error: String starting with ' must end with '.
+Plaintext : ' + plainText);
+            ^^^^^^^^^^^^^^^
+/tmp/adfgvx-cipher.dart:278:9: Error: String starting with ' must end with '.
+  print('
+        ^
+/tmp/adfgvx-cipher.dart:279:13: Error: String starting with ' must end with '.
+Encrypted : ' + cipherText);
+            ^^^^^^^^^^^^^^^^
+/tmp/adfgvx-cipher.dart:281:9: Error: String starting with ' must end with '.
+  print('
+        ^
+/tmp/adfgvx-cipher.dart:282:13: Error: String starting with ' must end with '.
+Decrypted : ' + plainText2);
+            ^^^^^^^^^^^^^^^^
+/tmp/adfgvx-cipher.dart:281:8: Error: Can't find ')' to match '('.
+  print('
+       ^
+/tmp/adfgvx-cipher.dart:278:8: Error: Can't find ')' to match '('.
+  print('
+       ^
+/tmp/adfgvx-cipher.dart:275:8: Error: Can't find ')' to match '('.
+  print('
+       ^
+/tmp/adfgvx-cipher.dart:285:6: Error: 'main' is already declared in this scope.
+void main() {
+     ^^^^
+/tmp/adfgvx-cipher.dart:271:6: Context: Previous declaration of 'main'.
+void main() {
+     ^^^^
+/tmp/adfgvx-cipher.dart:13:25: Error: A value of type 'num' can't be assigned to a variable of type 'List<String>'.
+ - 'List' is from 'dart:core'.
+    arr = arr + ([s[i]] as num);
+                        ^
+/tmp/adfgvx-cipher.dart:37:3: Error: Expected ',' before this.
+  print('  | A D F G V X');
+  ^^^^^
+/tmp/adfgvx-cipher.dart:35:8: Error: Too many positional arguments: 1 allowed, but 2 found.
+Try removing the extra positional arguments.
+  print('6 x 6 Polybius square:
+       ^
+org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
+void print(Object? object) {
+     ^^^^^
+/tmp/adfgvx-cipher.dart:43:20: Error: A value of type 'num' can't be assigned to a variable of type 'List<String>'.
+ - 'List' is from 'dart:core'.
+    p = p + ([row] as num);
+                   ^
+/tmp/adfgvx-cipher.dart:47:24: Error: The operator '[]' isn't defined for the class 'Object'.
+ - 'Object' is from 'dart:core'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+      line = line + row[j] + ' ';
+                       ^
+/tmp/adfgvx-cipher.dart:70:1: Error: Expected ',' before this.
+The key is ' + key);
+^^^
+/tmp/adfgvx-cipher.dart:70:5: Error: Expected ',' before this.
+The key is ' + key);
+    ^^^
+/tmp/adfgvx-cipher.dart:70:12: Error: Expected a type, but got '' + key);''.
+The key is ' + key);
+           ^^^^^^^^^
+/tmp/adfgvx-cipher.dart:70:12: Error: This couldn't be parsed.
+The key is ' + key);
+           ^
+/tmp/adfgvx-cipher.dart:70:12: Error: Expected ',' before this.
+The key is ' + key);
+           ^^^^^^^^^
+/tmp/adfgvx-cipher.dart:70:1: Error: Undefined name 'The'.
+The key is ' + key);
+^^^
+/tmp/adfgvx-cipher.dart:69:8: Error: Too many positional arguments: 1 allowed, but 4 found.
+Try removing the extra positional arguments.
+  print('
+       ^
+org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
+void print(Object? object) {
+     ^^^^^
+/tmp/adfgvx-cipher.dart:70:12: Error: Expected ';' after this.
+The key is ' + key);
+           ^^^^^^^^^
+/tmp/adfgvx-cipher.dart:66:89: Error: The operator '+' isn't defined for the class 'Object'.
+ - 'Object' is from 'dart:core'.
+Try correcting the operator to an existing operator, or defining a '+' operator.
+    pool = ((pool is String) ? pool.substring(0, idx) : (pool as List).sublist(0, idx)) + ((pool is String) ? pool.substring(idx + 1, pool.length) : (pool as List).sublist(idx + 1, pool.length));
+                                                                                        ^
+/tmp/adfgvx-cipher.dart:78:36: Error: A value of type 'num' can't be assigned to a variable of type 'List<dynamic>'.
+ - 'List' is from 'dart:core'.
+    pairs = pairs + ([[key[i], i]] as num);
+                                   ^
+/tmp/adfgvx-cipher.dart:98:43: Error: A value of type 'num' can't be assigned to a variable of type 'List<dynamic>'.
+ - 'List' is from 'dart:core'.
+    res = res + ([int.parse(pairs[i][1])] as num);
+                                          ^
+/tmp/adfgvx-cipher.dart:101:10: Error: A value of type 'List<dynamic>' can't be returned from a function with return type 'List<int>'.
+ - 'List' is from 'dart:core'.
+  return res;
+         ^
+/tmp/adfgvx-cipher.dart:131:25: Error: A value of type 'num' can't be assigned to a variable of type 'List<String>'.
+ - 'List' is from 'dart:core'.
+      row = row + ([''] as num);
+                        ^
+/tmp/adfgvx-cipher.dart:134:28: Error: A value of type 'num' can't be assigned to a variable of type 'List<List<String>>'.
+ - 'List' is from 'dart:core'.
+    table = table + ([row] as num);
+                           ^
+/tmp/adfgvx-cipher.dart:141:11: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    table[row][col] = ((temp is String) ? temp.substring(idx, idx + 1) : (temp as List).sublist(idx, idx + 1));
+          ^
+/tmp/adfgvx-cipher.dart:141:41: Error: A value of type 'Object' can't be assigned to a variable of type 'String'.
+ - 'Object' is from 'dart:core'.
+    table[row][col] = ((temp is String) ? temp.substring(idx, idx + 1) : (temp as List).sublist(idx, idx + 1));
+                                        ^
+/tmp/adfgvx-cipher.dart:154:29: Error: A value of type 'num' can't be assigned to a variable of type 'List<String>'.
+ - 'List' is from 'dart:core'.
+    cols = cols + ([colStr] as num);
+                            ^
+/tmp/adfgvx-cipher.dart:186:61: Error: A value of type 'num' can't be assigned to a variable of type 'List<String>'.
+ - 'List' is from 'dart:core'.
+      colStrs = colStrs + ([cipherText.substring(start, i)] as num);
+                                                            ^
+/tmp/adfgvx-cipher.dart:206:25: Error: A value of type 'num' can't be assigned to a variable of type 'List<String>'.
+ - 'List' is from 'dart:core'.
+      ls = ls + ([s[j]] as num);
+                        ^
+/tmp/adfgvx-cipher.dart:214:32: Error: A value of type 'num' can't be assigned to a variable of type 'List<String>'.
+ - 'List' is from 'dart:core'.
+          pad = pad + ([ls[k]] as num);
+                               ^
+/tmp/adfgvx-cipher.dart:217:29: Error: A value of type 'num' can't be assigned to a variable of type 'List<String>'.
+ - 'List' is from 'dart:core'.
+          pad = pad + ([''] as num);
+                            ^
+/tmp/adfgvx-cipher.dart:221:28: Error: A value of type 'num' can't be assigned to a variable of type 'List<List<String>>'.
+ - 'List' is from 'dart:core'.
+      cols = cols + ([pad] as num);
+                           ^
+/tmp/adfgvx-cipher.dart:224:27: Error: A value of type 'num' can't be assigned to a variable of type 'List<List<String>>'.
+ - 'List' is from 'dart:core'.
+      cols = cols + ([ls] as num);
+                          ^
+/tmp/adfgvx-cipher.dart:234:25: Error: A value of type 'num' can't be assigned to a variable of type 'List<String>'.
+ - 'List' is from 'dart:core'.
+      row = row + ([''] as num);
+                        ^
+/tmp/adfgvx-cipher.dart:237:28: Error: A value of type 'num' can't be assigned to a variable of type 'List<List<String>>'.
+ - 'List' is from 'dart:core'.
+    table = table + ([row] as num);
+                           ^
+/tmp/adfgvx-cipher.dart:263:50: Error: The argument type 'Object' can't be assigned to the parameter type 'String'.
+ - 'Object' is from 'dart:core'.
+    var rIdx = indexOf(adfgvx, ((temp is String) ? temp.substring(idx, idx + 1) : (temp as List).sublist(idx, idx + 1)));
+                                                 ^
+/tmp/adfgvx-cipher.dart:264:50: Error: The argument type 'Object' can't be assigned to the parameter type 'String'.
+ - 'Object' is from 'dart:core'.
+    var cIdx = indexOf(adfgvx, ((temp is String) ? temp.substring(idx + 1, idx + 2) : (temp as List).sublist(idx + 1, idx + 2)));
+                                                 ^
+/tmp/adfgvx-cipher.dart:276:1: Error: Expected ',' before this.
+Plaintext : ' + plainText);
+^^^^^^^^^
+/tmp/adfgvx-cipher.dart:276:1: Error: No named parameter with the name 'Plaintext'.
+Plaintext : ' + plainText);
+^^^^^^^^^
+org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
+void print(Object? object) {
+     ^^^^^
+/tmp/adfgvx-cipher.dart:276:13: Error: Expected ';' after this.
+Plaintext : ' + plainText);
+            ^^^^^^^^^^^^^^^
+/tmp/adfgvx-cipher.dart:279:1: Error: Expected ',' before this.
+Encrypted : ' + cipherText);
+^^^^^^^^^
+/tmp/adfgvx-cipher.dart:279:1: Error: No named parameter with the name 'Encrypted'.
+Encrypted : ' + cipherText);
+^^^^^^^^^
+org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
+void print(Object? object) {
+     ^^^^^
+/tmp/adfgvx-cipher.dart:279:13: Error: Expected ';' after this.
+Encrypted : ' + cipherText);
+            ^^^^^^^^^^^^^^^^
+/tmp/adfgvx-cipher.dart:282:1: Error: Expected ',' before this.
+Decrypted : ' + plainText2);
+^^^^^^^^^
+/tmp/adfgvx-cipher.dart:282:1: Error: No named parameter with the name 'Decrypted'.
+Decrypted : ' + plainText2);
+^^^^^^^^^
+org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
+void print(Object? object) {
+     ^^^^^
+/tmp/adfgvx-cipher.dart:282:13: Error: Expected ';' after this.
+Decrypted : ' + plainText2);
+            ^^^^^^^^^^^^^^^^
+/tmp/adfgvx-cipher.dart:286:3: Error: Can't use 'main' because it is declared more than once.
+  main();
+  ^

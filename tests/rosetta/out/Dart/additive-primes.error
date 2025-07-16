@@ -1,46 +1,16 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/additive-primes.dart:76:6: Error: 'main' is already declared in this scope.
+run: exit status 254
+/tmp/additive-primes.dart:79:6: Error: 'main' is already declared in this scope.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/additive-primes.dart:46:6: Context: Previous declaration of 'main'.
+/tmp/additive-primes.dart:49:6: Context: Previous declaration of 'main'.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/additive-primes.dart:17:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    d = (d as num) + 2;
-                   ^
-../../tests/rosetta/out/Dart/additive-primes.dart:21:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    d = (d as num) + 4;
-                   ^
-../../tests/rosetta/out/Dart/additive-primes.dart:30:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    s = (s as num) + ((x as num) % 10 as num);
-                   ^
-../../tests/rosetta/out/Dart/additive-primes.dart:31:31: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-    x = int.parse(((x as num) / 10));
-                              ^
-../../tests/rosetta/out/Dart/additive-primes.dart:54:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+/tmp/additive-primes.dart:34:22: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    x = int.parse((x / 10));
+                     ^
+/tmp/additive-primes.dart:57:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
       count = (count as num) + 1;
                              ^
-../../tests/rosetta/out/Dart/additive-primes.dart:56:38: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      lineCount = (lineCount as num) + 1;
-                                     ^
-../../tests/rosetta/out/Dart/additive-primes.dart:64:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      i = (i as num) + 2;
-                     ^
-../../tests/rosetta/out/Dart/additive-primes.dart:67:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      i = (i as num) + 1;
-                     ^
-../../tests/rosetta/out/Dart/additive-primes.dart:77:3: Error: Can't use 'main' because it is declared more than once.
+/tmp/additive-primes.dart:80:3: Error: Can't use 'main' because it is declared more than once.
   main();
   ^
-../../tests/rosetta/out/Dart/additive-primes.dart:101:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/additive-primes.dart:130:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/additive-primes.dart:135:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/additive-primes.dart:139:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

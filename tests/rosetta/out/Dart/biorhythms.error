@@ -1,121 +1,55 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/biorhythms.dart:208:6: Error: 'main' is already declared in this scope.
+run: exit status 254
+/tmp/biorhythms.dart:211:6: Error: 'main' is already declared in this scope.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/biorhythms.dart:198:6: Context: Previous declaration of 'main'.
+/tmp/biorhythms.dart:201:6: Context: Previous declaration of 'main'.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/biorhythms.dart:11:57: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
-    var denom = double.parse((((2 * (n as num)) as num) * (((2 * (n as num) as num) + 1) as num)));
-                                                        ^
-../../tests/rosetta/out/Dart/biorhythms.dart:13:24: Error: A value of type 'num' can't be assigned to a variable of type 'double'.
-    sum = (sum as num) + (term as num);
-                       ^
-../../tests/rosetta/out/Dart/biorhythms.dart:14:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    n = (n as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/biorhythms.dart:20:21: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+/tmp/biorhythms.dart:14:39: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+    var denom = double.parse(((2 * n) * (2 * n + 1)));
+                                      ^
+/tmp/biorhythms.dart:23:21: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
   var i = int.parse(x);
                     ^
-../../tests/rosetta/out/Dart/biorhythms.dart:21:21: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/biorhythms.dart:24:21: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
   if ((double.parse(i)) > x) {
                     ^
-../../tests/rosetta/out/Dart/biorhythms.dart:22:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) - 1;
-                   ^
-../../tests/rosetta/out/Dart/biorhythms.dart:24:23: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/biorhythms.dart:27:23: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
   return double.parse(i);
                       ^
-../../tests/rosetta/out/Dart/biorhythms.dart:51:72: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
-    n = ((n as num) * 10 as num) + (digits[str.substring(i, (i as num) + 1)] as num);
-                                                                       ^
-../../tests/rosetta/out/Dart/biorhythms.dart:51:34: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    n = ((n as num) * 10 as num) + (digits[str.substring(i, (i as num) + 1)] as num);
-                                 ^
-../../tests/rosetta/out/Dart/biorhythms.dart:52:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/biorhythms.dart:55:9: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    n = -(n as num);
-        ^
-../../tests/rosetta/out/Dart/biorhythms.dart:90:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      dd = (dd as num) + 1;
+/tmp/biorhythms.dart:54:24: Error: A value of type 'int?' can't be assigned to a variable of type 'num' because 'int?' is nullable and 'num' isn't.
+    n = n * 10 + digits[str.substring(i, i + 1)];
                        ^
-../../tests/rosetta/out/Dart/biorhythms.dart:93:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-        mm = (mm as num) + 1;
-                         ^
-../../tests/rosetta/out/Dart/biorhythms.dart:96:28: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-          yy = (yy as num) + 1;
-                           ^
-../../tests/rosetta/out/Dart/biorhythms.dart:99:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      i = (i as num) + 1;
-                     ^
-../../tests/rosetta/out/Dart/biorhythms.dart:105:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      dd = (dd as num) - 1;
-                       ^
-../../tests/rosetta/out/Dart/biorhythms.dart:107:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-        mm = (mm as num) - 1;
-                         ^
-../../tests/rosetta/out/Dart/biorhythms.dart:110:28: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-          yy = (yy as num) - 1;
-                           ^
-../../tests/rosetta/out/Dart/biorhythms.dart:114:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      i = (i as num) - 1;
-                     ^
-../../tests/rosetta/out/Dart/biorhythms.dart:133:45: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+/tmp/biorhythms.dart:54:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = n * 10 + digits[str.substring(i, i + 1)];
+               ^
+/tmp/biorhythms.dart:136:45: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
   var part2 = int.parse(((7 * (int.parse((y + ((m + 9) / 12))))) / 4));
                                             ^
-../../tests/rosetta/out/Dart/biorhythms.dart:133:66: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+/tmp/biorhythms.dart:136:66: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
   var part2 = int.parse(((7 * (int.parse((y + ((m + 9) / 12))))) / 4));
                                                                  ^
-../../tests/rosetta/out/Dart/biorhythms.dart:134:36: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+/tmp/biorhythms.dart:137:36: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
   var part3 = int.parse(((275 * m) / 9));
                                    ^
-../../tests/rosetta/out/Dart/biorhythms.dart:135:90: Error: A value of type 'num' can't be returned from a function with return type 'int'.
-  return ((((part1 as num) - (part2 as num) as num) + (part3 as num) as num) + d as num) - 730530;
-                                                                                         ^
-../../tests/rosetta/out/Dart/biorhythms.dart:183:12: Error: Method not found: 'contains'.
+/tmp/biorhythms.dart:186:12: Error: Method not found: 'contains'.
       if (!contains(pct, '.')) {
            ^^^^^^^^
-../../tests/rosetta/out/Dart/biorhythms.dart:159:52: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
+/tmp/biorhythms.dart:162:52: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
     var percent = sinApprox(2 * PI * (double.parse(position)) / (double.parse(length)));
                                                    ^
-../../tests/rosetta/out/Dart/biorhythms.dart:159:79: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/biorhythms.dart:162:79: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
     var percent = sinApprox(2 * PI * (double.parse(position)) / (double.parse(length)));
                                                                               ^
-../../tests/rosetta/out/Dart/biorhythms.dart:175:37: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+/tmp/biorhythms.dart:178:37: Error: The argument type 'double' can't be assigned to the parameter type 'int'.
       var res = addDays(ty, tm, td, daysToAdd);
                                     ^
-../../tests/rosetta/out/Dart/biorhythms.dart:180:29: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+/tmp/biorhythms.dart:183:29: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
       var trend = quadrants[quadrant][0];
                             ^
-../../tests/rosetta/out/Dart/biorhythms.dart:181:28: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+/tmp/biorhythms.dart:184:28: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
       var next = quadrants[quadrant][1];
                            ^
-../../tests/rosetta/out/Dart/biorhythms.dart:192:46: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-    print((cycle as num) + (posStr as num) + ' : ' + description);
-                                             ^
-../../tests/rosetta/out/Dart/biorhythms.dart:192:54: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-    print((cycle as num) + (posStr as num) + ' : ' + description);
-                                                     ^
-../../tests/rosetta/out/Dart/biorhythms.dart:193:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/biorhythms.dart:204:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    idx = (idx as num) + 1;
-                       ^
-../../tests/rosetta/out/Dart/biorhythms.dart:209:3: Error: Can't use 'main' because it is declared more than once.
+/tmp/biorhythms.dart:212:3: Error: Can't use 'main' because it is declared more than once.
   main();
   ^
-../../tests/rosetta/out/Dart/biorhythms.dart:233:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/biorhythms.dart:262:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/biorhythms.dart:267:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/biorhythms.dart:271:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

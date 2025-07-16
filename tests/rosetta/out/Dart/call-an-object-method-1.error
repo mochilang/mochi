@@ -1,43 +1,31 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/call-an-object-method-1.dart:11:11: Error: The method 'ValueMethod' isn't defined for the class 'Foo'.
- - 'Foo' is from '../../tests/rosetta/out/Dart/call-an-object-method-1.dart'.
+run: exit status 254
+/tmp/call-an-object-method-1.dart:14:11: Error: The method 'ValueMethod' isn't defined for the class 'Foo'.
+ - 'Foo' is from '/tmp/call-an-object-method-1.dart'.
 Try correcting the name to the name of an existing method, or defining a method named 'ValueMethod'.
   myValue.ValueMethod(0);
           ^^^^^^^^^^^
-../../tests/rosetta/out/Dart/call-an-object-method-1.dart:12:13: Error: The method 'PointerMethod' isn't defined for the class 'Foo'.
- - 'Foo' is from '../../tests/rosetta/out/Dart/call-an-object-method-1.dart'.
+/tmp/call-an-object-method-1.dart:15:13: Error: The method 'PointerMethod' isn't defined for the class 'Foo'.
+ - 'Foo' is from '/tmp/call-an-object-method-1.dart'.
 Try correcting the name to the name of an existing method, or defining a method named 'PointerMethod'.
   myPointer.PointerMethod(0);
             ^^^^^^^^^^^^^
-../../tests/rosetta/out/Dart/call-an-object-method-1.dart:13:13: Error: The method 'ValueMethod' isn't defined for the class 'Foo'.
- - 'Foo' is from '../../tests/rosetta/out/Dart/call-an-object-method-1.dart'.
+/tmp/call-an-object-method-1.dart:16:13: Error: The method 'ValueMethod' isn't defined for the class 'Foo'.
+ - 'Foo' is from '/tmp/call-an-object-method-1.dart'.
 Try correcting the name to the name of an existing method, or defining a method named 'ValueMethod'.
   myPointer.ValueMethod(0);
             ^^^^^^^^^^^
-../../tests/rosetta/out/Dart/call-an-object-method-1.dart:14:11: Error: The method 'PointerMethod' isn't defined for the class 'Foo'.
- - 'Foo' is from '../../tests/rosetta/out/Dart/call-an-object-method-1.dart'.
+/tmp/call-an-object-method-1.dart:17:11: Error: The method 'PointerMethod' isn't defined for the class 'Foo'.
+ - 'Foo' is from '/tmp/call-an-object-method-1.dart'.
 Try correcting the name to the name of an existing method, or defining a method named 'PointerMethod'.
   myValue.PointerMethod(0);
           ^^^^^^^^^^^^^
-../../tests/rosetta/out/Dart/call-an-object-method-1.dart:15:11: Error: The method 'ValueMethod' isn't defined for the class 'Foo'.
- - 'Foo' is from '../../tests/rosetta/out/Dart/call-an-object-method-1.dart'.
+/tmp/call-an-object-method-1.dart:18:11: Error: The method 'ValueMethod' isn't defined for the class 'Foo'.
+ - 'Foo' is from '/tmp/call-an-object-method-1.dart'.
 Try correcting the name to the name of an existing method, or defining a method named 'ValueMethod'.
   myValue.ValueMethod(0);
           ^^^^^^^^^^^
-../../tests/rosetta/out/Dart/call-an-object-method-1.dart:16:13: Error: The method 'PointerMethod' isn't defined for the class 'Foo'.
- - 'Foo' is from '../../tests/rosetta/out/Dart/call-an-object-method-1.dart'.
+/tmp/call-an-object-method-1.dart:19:13: Error: The method 'PointerMethod' isn't defined for the class 'Foo'.
+ - 'Foo' is from '/tmp/call-an-object-method-1.dart'.
 Try correcting the name to the name of an existing method, or defining a method named 'PointerMethod'.
   myPointer.PointerMethod(0);
             ^^^^^^^^^^^^^
-../../tests/rosetta/out/Dart/call-an-object-method-1.dart:40:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/call-an-object-method-1.dart:69:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/call-an-object-method-1.dart:74:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/call-an-object-method-1.dart:78:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

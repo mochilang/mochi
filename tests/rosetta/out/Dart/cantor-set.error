@@ -1,49 +1,8 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/cantor-set.dart:20:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      j = (j as num) + 1;
-                     ^
-../../tests/rosetta/out/Dart/cantor-set.dart:30:42: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-    var seg = int.parse(((lenSeg as num) / 3));
-                                         ^
-../../tests/rosetta/out/Dart/cantor-set.dart:37:80: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-      while (j.toString().compareTo((start as num) + (2 * (seg as num) as num).toString()) < 0) {
-                                                                               ^
-../../tests/rosetta/out/Dart/cantor-set.dart:37:52: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
-      while (j.toString().compareTo((start as num) + (2 * (seg as num) as num).toString()) < 0) {
-                                                   ^
-../../tests/rosetta/out/Dart/cantor-set.dart:38:15: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
-        lines[i] = setChar(lines[i], j, ' ');
-              ^
-../../tests/rosetta/out/Dart/cantor-set.dart:38:34: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
-        lines[i] = setChar(lines[i], j, ' ');
-                                 ^
-../../tests/rosetta/out/Dart/cantor-set.dart:38:38: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
-        lines[i] = setChar(lines[i], j, ' ');
-                                     ^
-../../tests/rosetta/out/Dart/cantor-set.dart:41:22: Error: A value of type 'num' can't be assigned to a variable of type 'int?'.
-      i = (i as num) + 1;
-                     ^
-../../tests/rosetta/out/Dart/cantor-set.dart:43:45: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
-    stack = List.from(stack)..add({'start': start, 'len': seg, 'index': (index as num) + 1});
-                                            ^
-../../tests/rosetta/out/Dart/cantor-set.dart:43:88: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    stack = List.from(stack)..add({'start': start, 'len': seg, 'index': (index as num) + 1});
-                                                                                       ^
-../../tests/rosetta/out/Dart/cantor-set.dart:44:60: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    stack = List.from(stack)..add({'start': (start as num) + ((seg as num) * 2 as num), 'len': seg, 'index': (index as num) + 1});
-                                                           ^
-../../tests/rosetta/out/Dart/cantor-set.dart:44:125: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    stack = List.from(stack)..add({'start': (start as num) + ((seg as num) * 2 as num), 'len': seg, 'index': (index as num) + 1});
-                                                                                                                            ^
-../../tests/rosetta/out/Dart/cantor-set.dart:72:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/cantor-set.dart:101:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/cantor-set.dart:106:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/cantor-set.dart:110:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^
+type: error[T007]: argument 2: expected int, got bigint
+  --> /workspace/mochi/tests/rosetta/x/Mochi/cantor-set.mochi:19:38
+
+ 19 |   return substring(s, 0, idx) + ch + substring(s, idx+1, len(s))
+    |                                      ^
+
+help:
+  Ensure the argument type matches the function’s signature.

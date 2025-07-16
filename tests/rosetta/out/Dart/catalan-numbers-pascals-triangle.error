@@ -1,31 +1,8 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/catalan-numbers-pascals-triangle.dart:7:19: Error: Undefined name '_'.
-  for (var _ = 0; _ < (n + 2); _++) {
-                  ^
-../../tests/rosetta/out/Dart/catalan-numbers-pascals-triangle.dart:7:32: Error: Getter not found: '_'.
-  for (var _ = 0; _ < (n + 2); _++) {
-                               ^
-../../tests/rosetta/out/Dart/catalan-numbers-pascals-triangle.dart:14:35: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      t[j] = (t[j] + t[(j as num) - 1] as int);
-                                  ^
-../../tests/rosetta/out/Dart/catalan-numbers-pascals-triangle.dart:15:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      j = (j as num) - 1;
-                     ^
-../../tests/rosetta/out/Dart/catalan-numbers-pascals-triangle.dart:20:35: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      t[j] = (t[j] + t[(j as num) - 1] as int);
-                                  ^
-../../tests/rosetta/out/Dart/catalan-numbers-pascals-triangle.dart:21:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      j = (j as num) - 1;
-                     ^
-../../tests/rosetta/out/Dart/catalan-numbers-pascals-triangle.dart:54:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/catalan-numbers-pascals-triangle.dart:83:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/catalan-numbers-pascals-triangle.dart:88:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/catalan-numbers-pascals-triangle.dart:92:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^
+type: error[T015]: index must be an integer
+  --> /workspace/mochi/tests/rosetta/x/Mochi/catalan-numbers-pascals-triangle.mochi:19:4
+
+ 19 |   t[i+1] = t[i]
+    |    ^
+
+help:
+  Use an `int` value for indexing (e.g., `list[0]`).

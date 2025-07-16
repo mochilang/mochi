@@ -1,31 +1,19 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/call-a-function-6.dart:14:6: Error: 'main' is already declared in this scope.
+run: exit status 254
+/tmp/call-a-function-6.dart:17:6: Error: 'main' is already declared in this scope.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/call-a-function-6.dart:6:6: Context: Previous declaration of 'main'.
+/tmp/call-a-function-6.dart:9:6: Context: Previous declaration of 'main'.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/call-a-function-6.dart:11:11: Error: The argument type 'int?' can't be assigned to the parameter type 'int' because 'int?' is nullable and 'int' isn't.
+/tmp/call-a-function-6.dart:14:11: Error: The argument type 'int?' can't be assigned to the parameter type 'int' because 'int?' is nullable and 'int' isn't.
   bar(args['a'], args['b'], args['c']);
           ^
-../../tests/rosetta/out/Dart/call-a-function-6.dart:11:22: Error: The argument type 'int?' can't be assigned to the parameter type 'int' because 'int?' is nullable and 'int' isn't.
+/tmp/call-a-function-6.dart:14:22: Error: The argument type 'int?' can't be assigned to the parameter type 'int' because 'int?' is nullable and 'int' isn't.
   bar(args['a'], args['b'], args['c']);
                      ^
-../../tests/rosetta/out/Dart/call-a-function-6.dart:11:33: Error: The argument type 'int?' can't be assigned to the parameter type 'int' because 'int?' is nullable and 'int' isn't.
+/tmp/call-a-function-6.dart:14:33: Error: The argument type 'int?' can't be assigned to the parameter type 'int' because 'int?' is nullable and 'int' isn't.
   bar(args['a'], args['b'], args['c']);
                                 ^
-../../tests/rosetta/out/Dart/call-a-function-6.dart:15:3: Error: Can't use 'main' because it is declared more than once.
+/tmp/call-a-function-6.dart:18:3: Error: Can't use 'main' because it is declared more than once.
   main();
   ^
-../../tests/rosetta/out/Dart/call-a-function-6.dart:39:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/call-a-function-6.dart:68:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/call-a-function-6.dart:73:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/call-a-function-6.dart:77:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

@@ -1,0 +1,28 @@
+run: exit status 254
+/tmp/100-prisoners.dart:85:83: Error: String starting with ' must end with '.
+    print('Results from ' + trials.toString() + ' trials with ' + np.toString() + ' prisoners:
+                                                                                  ^^^^^^^^^^^^
+/tmp/100-prisoners.dart:86:1: Error: String starting with ' must end with '.
+');
+^^^
+/tmp/100-prisoners.dart:85:10: Error: Can't find ')' to match '('.
+    print('Results from ' + trials.toString() + ' trials with ' + np.toString() + ' prisoners:
+         ^
+/tmp/100-prisoners.dart:93:6: Error: 'main' is already declared in this scope.
+void main() {
+     ^^^^
+/tmp/100-prisoners.dart:82:6: Context: Previous declaration of 'main'.
+void main() {
+     ^^^^
+/tmp/100-prisoners.dart:78:26: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+  var rf = (double.parse(pardoned)) / (double.parse(trials)) * 100;
+                         ^
+/tmp/100-prisoners.dart:78:53: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+  var rf = (double.parse(pardoned)) / (double.parse(trials)) * 100;
+                                                    ^
+/tmp/100-prisoners.dart:86:1: Error: Expected ';' after this.
+');
+^^^
+/tmp/100-prisoners.dart:94:3: Error: Can't use 'main' because it is declared more than once.
+  main();
+  ^

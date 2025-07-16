@@ -1,166 +1,130 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/circular-primes.dart:93:9: Error: String starting with ' must end with '.
+run: exit status 254
+/tmp/circular-primes.dart:96:9: Error: String starting with ' must end with '.
   print('
         ^
-../../tests/rosetta/out/Dart/circular-primes.dart:94:52: Error: String starting with ' must end with '.
+/tmp/circular-primes.dart:97:52: Error: String starting with ' must end with '.
 The next 4 circular primes, in repunit format, are:');
                                                    ^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:96:9: Error: String starting with ' must end with '.
+/tmp/circular-primes.dart:99:9: Error: String starting with ' must end with '.
   print('
         ^
-../../tests/rosetta/out/Dart/circular-primes.dart:97:53: Error: String starting with ' must end with '.
+/tmp/circular-primes.dart:100:53: Error: String starting with ' must end with '.
 The following repunits are probably circular primes:');
                                                     ^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:96:8: Error: Can't find ')' to match '('.
+/tmp/circular-primes.dart:99:8: Error: Can't find ')' to match '('.
   print('
        ^
-../../tests/rosetta/out/Dart/circular-primes.dart:93:8: Error: Can't find ')' to match '('.
+/tmp/circular-primes.dart:96:8: Error: Can't find ')' to match '('.
   print('
        ^
-../../tests/rosetta/out/Dart/circular-primes.dart:17:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    d = (d as num) + 2;
-                   ^
-../../tests/rosetta/out/Dart/circular-primes.dart:21:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    d = (d as num) + 4;
-                   ^
-../../tests/rosetta/out/Dart/circular-primes.dart:32:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    pow = (pow as num) * 10;
-                       ^
-../../tests/rosetta/out/Dart/circular-primes.dart:33:22: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-    nn = (nn as num) / 10;
-                     ^
-../../tests/rosetta/out/Dart/circular-primes.dart:37:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    nn = (nn as num) * 10;
-                     ^
-../../tests/rosetta/out/Dart/circular-primes.dart:39:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    nn = (nn as num) + ((f as num) * ((1 - (pow as num)) as num) as num);
-                     ^
-../../tests/rosetta/out/Dart/circular-primes.dart:63:46: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-    if (i.toString().compareTo(xs.length - 1.toString()) < 0) {
-                                             ^
-../../tests/rosetta/out/Dart/circular-primes.dart:63:42: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
-    if (i.toString().compareTo(xs.length - 1.toString()) < 0) {
-                                         ^
-../../tests/rosetta/out/Dart/circular-primes.dart:66:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/circular-primes.dart:94:1: Error: Expected ',' before this.
+/tmp/circular-primes.dart:36:13: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    nn = nn / 10;
+            ^
+/tmp/circular-primes.dart:42:13: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    nn = nn + f * (1 - pow);
+            ^
+/tmp/circular-primes.dart:97:1: Error: Expected ',' before this.
 The next 4 circular primes, in repunit format, are:');
 ^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:94:5: Error: Expected ',' before this.
+/tmp/circular-primes.dart:97:5: Error: Expected ',' before this.
 The next 4 circular primes, in repunit format, are:');
     ^^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:94:10: Error: Expected ',' before this.
+/tmp/circular-primes.dart:97:10: Error: Expected ',' before this.
 The next 4 circular primes, in repunit format, are:');
          ^
-../../tests/rosetta/out/Dart/circular-primes.dart:94:12: Error: Expected ',' before this.
+/tmp/circular-primes.dart:97:12: Error: Expected ',' before this.
 The next 4 circular primes, in repunit format, are:');
            ^^^^^^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:94:21: Error: Expected ',' before this.
+/tmp/circular-primes.dart:97:21: Error: Expected ',' before this.
 The next 4 circular primes, in repunit format, are:');
                     ^^^^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:94:29: Error: 'in' can't be used as an identifier because it's a keyword.
+/tmp/circular-primes.dart:97:29: Error: 'in' can't be used as an identifier because it's a keyword.
 Try renaming this to be an identifier that isn't a keyword.
 The next 4 circular primes, in repunit format, are:');
                             ^^
-../../tests/rosetta/out/Dart/circular-primes.dart:94:32: Error: Expected ',' before this.
+/tmp/circular-primes.dart:97:32: Error: Expected ',' before this.
 The next 4 circular primes, in repunit format, are:');
                                ^^^^^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:94:40: Error: Expected ',' before this.
+/tmp/circular-primes.dart:97:40: Error: Expected ',' before this.
 The next 4 circular primes, in repunit format, are:');
                                        ^^^^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:95:3: Error: Expected ',' before this.
+/tmp/circular-primes.dart:98:3: Error: Expected ',' before this.
   print('[R(19) R(23) R(317) R(1031)]');
   ^^^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:94:1: Error: Undefined name 'The'.
+/tmp/circular-primes.dart:97:1: Error: Undefined name 'The'.
 The next 4 circular primes, in repunit format, are:');
 ^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:94:5: Error: Undefined name 'next'.
+/tmp/circular-primes.dart:97:5: Error: Undefined name 'next'.
 The next 4 circular primes, in repunit format, are:');
     ^^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:94:12: Error: Undefined name 'circular'.
+/tmp/circular-primes.dart:97:12: Error: Undefined name 'circular'.
 The next 4 circular primes, in repunit format, are:');
            ^^^^^^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:94:21: Error: Undefined name 'primes'.
+/tmp/circular-primes.dart:97:21: Error: Undefined name 'primes'.
 The next 4 circular primes, in repunit format, are:');
                     ^^^^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:94:29: Error: Undefined name 'in'.
+/tmp/circular-primes.dart:97:29: Error: Undefined name 'in'.
 The next 4 circular primes, in repunit format, are:');
                             ^^
-../../tests/rosetta/out/Dart/circular-primes.dart:94:32: Error: Undefined name 'repunit'.
+/tmp/circular-primes.dart:97:32: Error: Undefined name 'repunit'.
 The next 4 circular primes, in repunit format, are:');
                                ^^^^^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:94:40: Error: Undefined name 'format'.
+/tmp/circular-primes.dart:97:40: Error: Undefined name 'format'.
 The next 4 circular primes, in repunit format, are:');
                                        ^^^^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:93:8: Error: Too many positional arguments: 1 allowed, but 10 found.
+/tmp/circular-primes.dart:96:8: Error: Too many positional arguments: 1 allowed, but 10 found.
 Try removing the extra positional arguments.
   print('
        ^
 org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
 void print(Object? object) {
      ^^^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:97:1: Error: Expected ',' before this.
+/tmp/circular-primes.dart:100:1: Error: Expected ',' before this.
 The following repunits are probably circular primes:');
 ^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:97:5: Error: Expected ',' before this.
+/tmp/circular-primes.dart:100:5: Error: Expected ',' before this.
 The following repunits are probably circular primes:');
     ^^^^^^^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:97:15: Error: Expected ',' before this.
+/tmp/circular-primes.dart:100:15: Error: Expected ',' before this.
 The following repunits are probably circular primes:');
               ^^^^^^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:97:24: Error: Expected ',' before this.
+/tmp/circular-primes.dart:100:24: Error: Expected ',' before this.
 The following repunits are probably circular primes:');
                        ^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:97:28: Error: Expected ',' before this.
+/tmp/circular-primes.dart:100:28: Error: Expected ',' before this.
 The following repunits are probably circular primes:');
                            ^^^^^^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:97:37: Error: Expected ',' before this.
+/tmp/circular-primes.dart:100:37: Error: Expected ',' before this.
 The following repunits are probably circular primes:');
                                     ^^^^^^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:97:46: Error: Expected ',' before this.
+/tmp/circular-primes.dart:100:46: Error: Expected ',' before this.
 The following repunits are probably circular primes:');
                                              ^^^^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:97:1: Error: Undefined name 'The'.
+/tmp/circular-primes.dart:100:1: Error: Undefined name 'The'.
 The following repunits are probably circular primes:');
 ^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:97:5: Error: Undefined name 'following'.
+/tmp/circular-primes.dart:100:5: Error: Undefined name 'following'.
 The following repunits are probably circular primes:');
     ^^^^^^^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:97:15: Error: Undefined name 'repunits'.
+/tmp/circular-primes.dart:100:15: Error: Undefined name 'repunits'.
 The following repunits are probably circular primes:');
               ^^^^^^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:97:24: Error: Undefined name 'are'.
+/tmp/circular-primes.dart:100:24: Error: Undefined name 'are'.
 The following repunits are probably circular primes:');
                        ^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:97:28: Error: Undefined name 'probably'.
+/tmp/circular-primes.dart:100:28: Error: Undefined name 'probably'.
 The following repunits are probably circular primes:');
                            ^^^^^^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:97:37: Error: Undefined name 'circular'.
+/tmp/circular-primes.dart:100:37: Error: Undefined name 'circular'.
 The following repunits are probably circular primes:');
                                     ^^^^^^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:96:8: Error: Too many positional arguments: 1 allowed, but 7 found.
+/tmp/circular-primes.dart:99:8: Error: Too many positional arguments: 1 allowed, but 7 found.
 Try removing the extra positional arguments.
   print('
        ^
 org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
 void print(Object? object) {
      ^^^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:97:53: Error: Expected ';' after this.
+/tmp/circular-primes.dart:100:53: Error: Expected ';' after this.
 The following repunits are probably circular primes:');
                                                     ^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:87:56: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
-        q = List.from(q)..add(((f as num) * 10 as num) + d);
-                                                       ^
-../../tests/rosetta/out/Dart/circular-primes.dart:124:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:153:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:158:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/circular-primes.dart:162:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

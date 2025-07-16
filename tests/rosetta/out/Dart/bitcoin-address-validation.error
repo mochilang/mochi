@@ -1,8 +1,15 @@
-type error: error[T003]: unknown function: sha256
-  --> /workspace/mochi/tests/rosetta/x/Mochi/bitcoin-address-validation.mochi:43:15
-
- 43 |   let first = sha256(bs)
-    |               ^
-
-help:
-  Ensure the function is defined before it's called.
+run: exit status 254
+/tmp/bitcoin-address-validation.dart:35:24: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+      c = int.parse((c / 256));
+                       ^
+/tmp/bitcoin-address-validation.dart:47:15: Error: Method not found: 'sha256'.
+  var first = sha256(bs);
+              ^^^^^^
+/tmp/bitcoin-address-validation.dart:48:10: Error: Method not found: 'sha256'.
+  return sha256(first);
+         ^^^^^^
+/tmp/bitcoin-address-validation.dart:53:35: Error: The method 'substring' isn't defined for the class 'List<int>'.
+ - 'List' is from 'dart:core'.
+Try correcting the name to the name of an existing method, or defining a method named 'substring'.
+  return ((hash is String) ? hash.substring(0, 4) : (hash as List).sublist(0, 4));
+                                  ^^^^^^^^^

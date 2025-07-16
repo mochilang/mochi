@@ -1,728 +1,716 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/chowla-numbers.dart:3:9: Error: String starting with ' must end with '.
+run: exit status 254
+/tmp/chowla-numbers.dart:6:9: Error: String starting with ' must end with '.
   print('chowla( 1) = 0
         ^^^^^^^^^^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:53:42: Error: String starting with ' must end with '.
+/tmp/chowla-numbers.dart:56:42: Error: String starting with ' must end with '.
 There are 5 perfect numbers <= 35,000,000');
                                          ^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:3:8: Error: Can't find ')' to match '('.
+/tmp/chowla-numbers.dart:6:8: Error: Can't find ')' to match '('.
   print('chowla( 1) = 0
        ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:4:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:7:1: Error: Expected ',' before this.
 chowla( 2) = 0
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:4:9: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:7:9: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla( 2) = 0
         ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:4:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:7:1: Error: 'chowla' isn't a type.
 chowla( 2) = 0
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:5:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:8:1: Error: Expected ',' before this.
 chowla( 3) = 0
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:5:9: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:8:9: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla( 3) = 0
         ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:5:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:8:1: Error: 'chowla' isn't a type.
 chowla( 3) = 0
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:6:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:9:1: Error: Expected ',' before this.
 chowla( 4) = 2
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:6:9: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:9:9: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla( 4) = 2
         ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:6:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:9:1: Error: 'chowla' isn't a type.
 chowla( 4) = 2
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:7:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:10:1: Error: Expected ',' before this.
 chowla( 5) = 0
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:7:9: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:10:9: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla( 5) = 0
         ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:7:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:10:1: Error: 'chowla' isn't a type.
 chowla( 5) = 0
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:8:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:11:1: Error: Expected ',' before this.
 chowla( 6) = 5
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:8:9: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:11:9: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla( 6) = 5
         ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:8:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:11:1: Error: 'chowla' isn't a type.
 chowla( 6) = 5
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:9:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:12:1: Error: Expected ',' before this.
 chowla( 7) = 0
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:9:9: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:12:9: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla( 7) = 0
         ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:9:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:12:1: Error: 'chowla' isn't a type.
 chowla( 7) = 0
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:10:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:13:1: Error: Expected ',' before this.
 chowla( 8) = 6
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:10:9: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:13:9: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla( 8) = 6
         ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:10:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:13:1: Error: 'chowla' isn't a type.
 chowla( 8) = 6
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:11:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:14:1: Error: Expected ',' before this.
 chowla( 9) = 3
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:11:9: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:14:9: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla( 9) = 3
         ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:11:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:14:1: Error: 'chowla' isn't a type.
 chowla( 9) = 3
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:12:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:15:1: Error: Expected ',' before this.
 chowla(10) = 7
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:12:8: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:15:8: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla(10) = 7
        ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:12:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:15:1: Error: 'chowla' isn't a type.
 chowla(10) = 7
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:13:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:16:1: Error: Expected ',' before this.
 chowla(11) = 0
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:13:8: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:16:8: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla(11) = 0
        ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:13:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:16:1: Error: 'chowla' isn't a type.
 chowla(11) = 0
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:14:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:17:1: Error: Expected ',' before this.
 chowla(12) = 15
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:14:8: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:17:8: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla(12) = 15
        ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:14:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:17:1: Error: 'chowla' isn't a type.
 chowla(12) = 15
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:15:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:18:1: Error: Expected ',' before this.
 chowla(13) = 0
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:15:8: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:18:8: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla(13) = 0
        ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:15:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:18:1: Error: 'chowla' isn't a type.
 chowla(13) = 0
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:16:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:19:1: Error: Expected ',' before this.
 chowla(14) = 9
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:16:8: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:19:8: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla(14) = 9
        ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:16:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:19:1: Error: 'chowla' isn't a type.
 chowla(14) = 9
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:17:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:20:1: Error: Expected ',' before this.
 chowla(15) = 8
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:17:8: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:20:8: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla(15) = 8
        ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:17:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:20:1: Error: 'chowla' isn't a type.
 chowla(15) = 8
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:18:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:21:1: Error: Expected ',' before this.
 chowla(16) = 14
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:18:8: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:21:8: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla(16) = 14
        ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:18:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:21:1: Error: 'chowla' isn't a type.
 chowla(16) = 14
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:19:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:22:1: Error: Expected ',' before this.
 chowla(17) = 0
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:19:8: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:22:8: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla(17) = 0
        ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:19:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:22:1: Error: 'chowla' isn't a type.
 chowla(17) = 0
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:20:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:23:1: Error: Expected ',' before this.
 chowla(18) = 20
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:20:8: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:23:8: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla(18) = 20
        ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:20:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:23:1: Error: 'chowla' isn't a type.
 chowla(18) = 20
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:21:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:24:1: Error: Expected ',' before this.
 chowla(19) = 0
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:21:8: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:24:8: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla(19) = 0
        ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:21:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:24:1: Error: 'chowla' isn't a type.
 chowla(19) = 0
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:22:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:25:1: Error: Expected ',' before this.
 chowla(20) = 21
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:22:8: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:25:8: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla(20) = 21
        ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:22:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:25:1: Error: 'chowla' isn't a type.
 chowla(20) = 21
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:23:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:26:1: Error: Expected ',' before this.
 chowla(21) = 10
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:23:8: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:26:8: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla(21) = 10
        ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:23:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:26:1: Error: 'chowla' isn't a type.
 chowla(21) = 10
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:24:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:27:1: Error: Expected ',' before this.
 chowla(22) = 13
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:24:8: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:27:8: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla(22) = 13
        ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:24:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:27:1: Error: 'chowla' isn't a type.
 chowla(22) = 13
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:25:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:28:1: Error: Expected ',' before this.
 chowla(23) = 0
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:25:8: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:28:8: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla(23) = 0
        ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:25:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:28:1: Error: 'chowla' isn't a type.
 chowla(23) = 0
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:26:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:29:1: Error: Expected ',' before this.
 chowla(24) = 35
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:26:8: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:29:8: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla(24) = 35
        ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:26:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:29:1: Error: 'chowla' isn't a type.
 chowla(24) = 35
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:27:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:30:1: Error: Expected ',' before this.
 chowla(25) = 5
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:27:8: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:30:8: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla(25) = 5
        ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:27:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:30:1: Error: 'chowla' isn't a type.
 chowla(25) = 5
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:28:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:31:1: Error: Expected ',' before this.
 chowla(26) = 15
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:28:8: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:31:8: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla(26) = 15
        ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:28:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:31:1: Error: 'chowla' isn't a type.
 chowla(26) = 15
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:29:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:32:1: Error: Expected ',' before this.
 chowla(27) = 12
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:29:8: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:32:8: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla(27) = 12
        ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:29:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:32:1: Error: 'chowla' isn't a type.
 chowla(27) = 12
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:30:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:33:1: Error: Expected ',' before this.
 chowla(28) = 27
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:30:8: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:33:8: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla(28) = 27
        ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:30:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:33:1: Error: 'chowla' isn't a type.
 chowla(28) = 27
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:31:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:34:1: Error: Expected ',' before this.
 chowla(29) = 0
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:31:8: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:34:8: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla(29) = 0
        ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:31:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:34:1: Error: 'chowla' isn't a type.
 chowla(29) = 0
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:32:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:35:1: Error: Expected ',' before this.
 chowla(30) = 41
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:32:8: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:35:8: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla(30) = 41
        ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:32:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:35:1: Error: 'chowla' isn't a type.
 chowla(30) = 41
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:33:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:36:1: Error: Expected ',' before this.
 chowla(31) = 0
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:33:8: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:36:8: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla(31) = 0
        ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:33:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:36:1: Error: 'chowla' isn't a type.
 chowla(31) = 0
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:34:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:37:1: Error: Expected ',' before this.
 chowla(32) = 30
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:34:8: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:37:8: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla(32) = 30
        ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:34:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:37:1: Error: 'chowla' isn't a type.
 chowla(32) = 30
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:35:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:38:1: Error: Expected ',' before this.
 chowla(33) = 14
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:35:8: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:38:8: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla(33) = 14
        ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:35:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:38:1: Error: 'chowla' isn't a type.
 chowla(33) = 14
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:36:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:39:1: Error: Expected ',' before this.
 chowla(34) = 19
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:36:8: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:39:8: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla(34) = 19
        ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:36:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:39:1: Error: 'chowla' isn't a type.
 chowla(34) = 19
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:37:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:40:1: Error: Expected ',' before this.
 chowla(35) = 12
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:37:8: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:40:8: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla(35) = 12
        ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:37:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:40:1: Error: 'chowla' isn't a type.
 chowla(35) = 12
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:38:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:41:1: Error: Expected ',' before this.
 chowla(36) = 54
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:38:8: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:41:8: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla(36) = 54
        ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:38:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:41:1: Error: 'chowla' isn't a type.
 chowla(36) = 54
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:39:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:42:1: Error: Expected ',' before this.
 chowla(37) = 0
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:39:8: Error: A pattern field in an object pattern must be named.
+/tmp/chowla-numbers.dart:42:8: Error: A pattern field in an object pattern must be named.
 Try adding a pattern name or ':' before the pattern.
 chowla(37) = 0
        ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:39:1: Error: 'chowla' isn't a type.
+/tmp/chowla-numbers.dart:42:1: Error: 'chowla' isn't a type.
 chowla(37) = 0
 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:41:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:44:1: Error: Expected ',' before this.
 Count of primes up to 100        = 25
 ^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:41:7: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:44:7: Error: Expected ',' before this.
 Count of primes up to 100        = 25
       ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:41:10: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:44:10: Error: Expected ',' before this.
 Count of primes up to 100        = 25
          ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:41:17: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:44:17: Error: Expected ',' before this.
 Count of primes up to 100        = 25
                 ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:41:20: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:44:20: Error: Expected ',' before this.
 Count of primes up to 100        = 25
                    ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:41:23: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:44:23: Error: Expected ',' before this.
 Count of primes up to 100        = 25
                       ^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:41:34: Error: Can't assign to this.
+/tmp/chowla-numbers.dart:44:34: Error: Can't assign to this.
 Count of primes up to 100        = 25
                                  ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:42:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:45:1: Error: Expected ',' before this.
 Count of primes up to 1,000      = 168
 ^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:42:7: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:45:7: Error: Expected ',' before this.
 Count of primes up to 1,000      = 168
       ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:42:10: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:45:10: Error: Expected ',' before this.
 Count of primes up to 1,000      = 168
          ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:42:17: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:45:17: Error: Expected ',' before this.
 Count of primes up to 1,000      = 168
                 ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:42:20: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:45:20: Error: Expected ',' before this.
 Count of primes up to 1,000      = 168
                    ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:42:23: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:45:23: Error: Expected ',' before this.
 Count of primes up to 1,000      = 168
                       ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:42:34: Error: Can't assign to this.
+/tmp/chowla-numbers.dart:45:34: Error: Can't assign to this.
 Count of primes up to 1,000      = 168
                                  ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:43:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:46:1: Error: Expected ',' before this.
 Count of primes up to 10,000     = 1,229
 ^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:43:7: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:46:7: Error: Expected ',' before this.
 Count of primes up to 10,000     = 1,229
       ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:43:10: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:46:10: Error: Expected ',' before this.
 Count of primes up to 10,000     = 1,229
          ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:43:17: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:46:17: Error: Expected ',' before this.
 Count of primes up to 10,000     = 1,229
                 ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:43:20: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:46:20: Error: Expected ',' before this.
 Count of primes up to 10,000     = 1,229
                    ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:43:23: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:46:23: Error: Expected ',' before this.
 Count of primes up to 10,000     = 1,229
                       ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:43:34: Error: Can't assign to this.
+/tmp/chowla-numbers.dart:46:34: Error: Can't assign to this.
 Count of primes up to 10,000     = 1,229
                                  ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:44:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:47:1: Error: Expected ',' before this.
 Count of primes up to 100,000    = 9,592
 ^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:44:7: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:47:7: Error: Expected ',' before this.
 Count of primes up to 100,000    = 9,592
       ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:44:10: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:47:10: Error: Expected ',' before this.
 Count of primes up to 100,000    = 9,592
          ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:44:17: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:47:17: Error: Expected ',' before this.
 Count of primes up to 100,000    = 9,592
                 ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:44:20: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:47:20: Error: Expected ',' before this.
 Count of primes up to 100,000    = 9,592
                    ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:44:23: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:47:23: Error: Expected ',' before this.
 Count of primes up to 100,000    = 9,592
                       ^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:44:34: Error: Can't assign to this.
+/tmp/chowla-numbers.dart:47:34: Error: Can't assign to this.
 Count of primes up to 100,000    = 9,592
                                  ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:45:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:48:1: Error: Expected ',' before this.
 Count of primes up to 1,000,000  = 78,498
 ^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:45:7: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:48:7: Error: Expected ',' before this.
 Count of primes up to 1,000,000  = 78,498
       ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:45:10: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:48:10: Error: Expected ',' before this.
 Count of primes up to 1,000,000  = 78,498
          ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:45:17: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:48:17: Error: Expected ',' before this.
 Count of primes up to 1,000,000  = 78,498
                 ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:45:20: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:48:20: Error: Expected ',' before this.
 Count of primes up to 1,000,000  = 78,498
                    ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:45:23: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:48:23: Error: Expected ',' before this.
 Count of primes up to 1,000,000  = 78,498
                       ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:45:34: Error: Can't assign to this.
+/tmp/chowla-numbers.dart:48:34: Error: Can't assign to this.
 Count of primes up to 1,000,000  = 78,498
                                  ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:46:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:49:1: Error: Expected ',' before this.
 Count of primes up to 10,000,000 = 664,579
 ^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:46:7: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:49:7: Error: Expected ',' before this.
 Count of primes up to 10,000,000 = 664,579
       ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:46:10: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:49:10: Error: Expected ',' before this.
 Count of primes up to 10,000,000 = 664,579
          ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:46:17: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:49:17: Error: Expected ',' before this.
 Count of primes up to 10,000,000 = 664,579
                 ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:46:20: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:49:20: Error: Expected ',' before this.
 Count of primes up to 10,000,000 = 664,579
                    ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:46:23: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:49:23: Error: Expected ',' before this.
 Count of primes up to 10,000,000 = 664,579
                       ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:46:34: Error: Can't assign to this.
+/tmp/chowla-numbers.dart:49:34: Error: Can't assign to this.
 Count of primes up to 10,000,000 = 664,579
                                  ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:48:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:51:1: Error: Expected ',' before this.
 6 is a perfect number
 ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:48:6: Error: 'a' isn't a type.
+/tmp/chowla-numbers.dart:51:6: Error: 'a' isn't a type.
 6 is a perfect number
      ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:48:8: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:51:8: Error: Expected ',' before this.
 6 is a perfect number
        ^^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:48:16: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:51:16: Error: Expected ',' before this.
 6 is a perfect number
                ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:49:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:52:1: Error: Expected ',' before this.
 28 is a perfect number
 ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:49:7: Error: 'a' isn't a type.
+/tmp/chowla-numbers.dart:52:7: Error: 'a' isn't a type.
 28 is a perfect number
       ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:49:9: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:52:9: Error: Expected ',' before this.
 28 is a perfect number
         ^^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:49:17: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:52:17: Error: Expected ',' before this.
 28 is a perfect number
                 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:50:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:53:1: Error: Expected ',' before this.
 496 is a perfect number
 ^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:50:8: Error: 'a' isn't a type.
+/tmp/chowla-numbers.dart:53:8: Error: 'a' isn't a type.
 496 is a perfect number
        ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:50:10: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:53:10: Error: Expected ',' before this.
 496 is a perfect number
          ^^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:50:18: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:53:18: Error: Expected ',' before this.
 496 is a perfect number
                  ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:51:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:54:1: Error: Expected ',' before this.
 8,128 is a perfect number
 ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:51:10: Error: 'a' isn't a type.
+/tmp/chowla-numbers.dart:54:10: Error: 'a' isn't a type.
 8,128 is a perfect number
          ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:51:12: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:54:12: Error: Expected ',' before this.
 8,128 is a perfect number
            ^^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:51:20: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:54:20: Error: Expected ',' before this.
 8,128 is a perfect number
                    ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:52:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:55:1: Error: Expected ',' before this.
 33,550,336 is a perfect number
 ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:52:15: Error: 'a' isn't a type.
+/tmp/chowla-numbers.dart:55:15: Error: 'a' isn't a type.
 33,550,336 is a perfect number
               ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:52:17: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:55:17: Error: Expected ',' before this.
 33,550,336 is a perfect number
                 ^^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:52:25: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:55:25: Error: Expected ',' before this.
 33,550,336 is a perfect number
                         ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:53:1: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:56:1: Error: Expected ',' before this.
 There are 5 perfect numbers <= 35,000,000');
 ^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:53:7: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:56:7: Error: Expected ',' before this.
 There are 5 perfect numbers <= 35,000,000');
       ^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:53:11: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:56:11: Error: Expected ',' before this.
 There are 5 perfect numbers <= 35,000,000');
           ^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:53:13: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:56:13: Error: Expected ',' before this.
 There are 5 perfect numbers <= 35,000,000');
             ^^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:53:21: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:56:21: Error: Expected ',' before this.
 There are 5 perfect numbers <= 35,000,000');
                     ^^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:53:21: Error: Undefined name 'numbers'.
+/tmp/chowla-numbers.dart:56:21: Error: Undefined name 'numbers'.
 There are 5 perfect numbers <= 35,000,000');
                     ^^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:53:42: Error: Expected ',' before this.
+/tmp/chowla-numbers.dart:56:42: Error: Expected ',' before this.
 There are 5 perfect numbers <= 35,000,000');
                                          ^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:41:1: Error: Undefined name 'Count'.
+/tmp/chowla-numbers.dart:44:1: Error: Undefined name 'Count'.
 Count of primes up to 100        = 25
 ^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:41:7: Error: Undefined name 'of'.
+/tmp/chowla-numbers.dart:44:7: Error: Undefined name 'of'.
 Count of primes up to 100        = 25
       ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:41:10: Error: Undefined name 'primes'.
+/tmp/chowla-numbers.dart:44:10: Error: Undefined name 'primes'.
 Count of primes up to 100        = 25
          ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:41:17: Error: Undefined name 'up'.
+/tmp/chowla-numbers.dart:44:17: Error: Undefined name 'up'.
 Count of primes up to 100        = 25
                 ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:41:20: Error: Undefined name 'to'.
+/tmp/chowla-numbers.dart:44:20: Error: Undefined name 'to'.
 Count of primes up to 100        = 25
                    ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:42:1: Error: Undefined name 'Count'.
+/tmp/chowla-numbers.dart:45:1: Error: Undefined name 'Count'.
 Count of primes up to 1,000      = 168
 ^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:42:7: Error: Undefined name 'of'.
+/tmp/chowla-numbers.dart:45:7: Error: Undefined name 'of'.
 Count of primes up to 1,000      = 168
       ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:42:10: Error: Undefined name 'primes'.
+/tmp/chowla-numbers.dart:45:10: Error: Undefined name 'primes'.
 Count of primes up to 1,000      = 168
          ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:42:17: Error: Undefined name 'up'.
+/tmp/chowla-numbers.dart:45:17: Error: Undefined name 'up'.
 Count of primes up to 1,000      = 168
                 ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:42:20: Error: Undefined name 'to'.
+/tmp/chowla-numbers.dart:45:20: Error: Undefined name 'to'.
 Count of primes up to 1,000      = 168
                    ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:43:1: Error: Undefined name 'Count'.
+/tmp/chowla-numbers.dart:46:1: Error: Undefined name 'Count'.
 Count of primes up to 10,000     = 1,229
 ^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:43:7: Error: Undefined name 'of'.
+/tmp/chowla-numbers.dart:46:7: Error: Undefined name 'of'.
 Count of primes up to 10,000     = 1,229
       ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:43:10: Error: Undefined name 'primes'.
+/tmp/chowla-numbers.dart:46:10: Error: Undefined name 'primes'.
 Count of primes up to 10,000     = 1,229
          ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:43:17: Error: Undefined name 'up'.
+/tmp/chowla-numbers.dart:46:17: Error: Undefined name 'up'.
 Count of primes up to 10,000     = 1,229
                 ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:43:20: Error: Undefined name 'to'.
+/tmp/chowla-numbers.dart:46:20: Error: Undefined name 'to'.
 Count of primes up to 10,000     = 1,229
                    ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:44:1: Error: Undefined name 'Count'.
+/tmp/chowla-numbers.dart:47:1: Error: Undefined name 'Count'.
 Count of primes up to 100,000    = 9,592
 ^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:44:7: Error: Undefined name 'of'.
+/tmp/chowla-numbers.dart:47:7: Error: Undefined name 'of'.
 Count of primes up to 100,000    = 9,592
       ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:44:10: Error: Undefined name 'primes'.
+/tmp/chowla-numbers.dart:47:10: Error: Undefined name 'primes'.
 Count of primes up to 100,000    = 9,592
          ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:44:17: Error: Undefined name 'up'.
+/tmp/chowla-numbers.dart:47:17: Error: Undefined name 'up'.
 Count of primes up to 100,000    = 9,592
                 ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:44:20: Error: Undefined name 'to'.
+/tmp/chowla-numbers.dart:47:20: Error: Undefined name 'to'.
 Count of primes up to 100,000    = 9,592
                    ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:45:1: Error: Undefined name 'Count'.
+/tmp/chowla-numbers.dart:48:1: Error: Undefined name 'Count'.
 Count of primes up to 1,000,000  = 78,498
 ^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:45:7: Error: Undefined name 'of'.
+/tmp/chowla-numbers.dart:48:7: Error: Undefined name 'of'.
 Count of primes up to 1,000,000  = 78,498
       ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:45:10: Error: Undefined name 'primes'.
+/tmp/chowla-numbers.dart:48:10: Error: Undefined name 'primes'.
 Count of primes up to 1,000,000  = 78,498
          ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:45:17: Error: Undefined name 'up'.
+/tmp/chowla-numbers.dart:48:17: Error: Undefined name 'up'.
 Count of primes up to 1,000,000  = 78,498
                 ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:45:20: Error: Undefined name 'to'.
+/tmp/chowla-numbers.dart:48:20: Error: Undefined name 'to'.
 Count of primes up to 1,000,000  = 78,498
                    ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:46:1: Error: Undefined name 'Count'.
+/tmp/chowla-numbers.dart:49:1: Error: Undefined name 'Count'.
 Count of primes up to 10,000,000 = 664,579
 ^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:46:7: Error: Undefined name 'of'.
+/tmp/chowla-numbers.dart:49:7: Error: Undefined name 'of'.
 Count of primes up to 10,000,000 = 664,579
       ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:46:10: Error: Undefined name 'primes'.
+/tmp/chowla-numbers.dart:49:10: Error: Undefined name 'primes'.
 Count of primes up to 10,000,000 = 664,579
          ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:46:17: Error: Undefined name 'up'.
+/tmp/chowla-numbers.dart:49:17: Error: Undefined name 'up'.
 Count of primes up to 10,000,000 = 664,579
                 ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:46:20: Error: Undefined name 'to'.
+/tmp/chowla-numbers.dart:49:20: Error: Undefined name 'to'.
 Count of primes up to 10,000,000 = 664,579
                    ^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:48:8: Error: Undefined name 'perfect'.
+/tmp/chowla-numbers.dart:51:8: Error: Undefined name 'perfect'.
 6 is a perfect number
        ^^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:48:16: Error: Undefined name 'number'.
+/tmp/chowla-numbers.dart:51:16: Error: Undefined name 'number'.
 6 is a perfect number
                ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:49:9: Error: Undefined name 'perfect'.
+/tmp/chowla-numbers.dart:52:9: Error: Undefined name 'perfect'.
 28 is a perfect number
         ^^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:49:17: Error: Undefined name 'number'.
+/tmp/chowla-numbers.dart:52:17: Error: Undefined name 'number'.
 28 is a perfect number
                 ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:50:10: Error: Undefined name 'perfect'.
+/tmp/chowla-numbers.dart:53:10: Error: Undefined name 'perfect'.
 496 is a perfect number
          ^^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:50:18: Error: Undefined name 'number'.
+/tmp/chowla-numbers.dart:53:18: Error: Undefined name 'number'.
 496 is a perfect number
                  ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:51:12: Error: Undefined name 'perfect'.
+/tmp/chowla-numbers.dart:54:12: Error: Undefined name 'perfect'.
 8,128 is a perfect number
            ^^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:51:20: Error: Undefined name 'number'.
+/tmp/chowla-numbers.dart:54:20: Error: Undefined name 'number'.
 8,128 is a perfect number
                    ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:52:17: Error: Undefined name 'perfect'.
+/tmp/chowla-numbers.dart:55:17: Error: Undefined name 'perfect'.
 33,550,336 is a perfect number
                 ^^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:52:25: Error: Undefined name 'number'.
+/tmp/chowla-numbers.dart:55:25: Error: Undefined name 'number'.
 33,550,336 is a perfect number
                         ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:53:1: Error: Undefined name 'There'.
+/tmp/chowla-numbers.dart:56:1: Error: Undefined name 'There'.
 There are 5 perfect numbers <= 35,000,000');
 ^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:53:7: Error: Undefined name 'are'.
+/tmp/chowla-numbers.dart:56:7: Error: Undefined name 'are'.
 There are 5 perfect numbers <= 35,000,000');
       ^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:53:13: Error: Undefined name 'perfect'.
+/tmp/chowla-numbers.dart:56:13: Error: Undefined name 'perfect'.
 There are 5 perfect numbers <= 35,000,000');
             ^^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:3:8: Error: Too many positional arguments: 1 allowed, but 110 found.
+/tmp/chowla-numbers.dart:6:8: Error: Too many positional arguments: 1 allowed, but 110 found.
 Try removing the extra positional arguments.
   print('chowla( 1) = 0
        ^
 org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
 void print(Object? object) {
      ^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:53:42: Error: Expected ';' after this.
+/tmp/chowla-numbers.dart:56:42: Error: Expected ';' after this.
 There are 5 perfect numbers <= 35,000,000');
                                          ^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:77:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:106:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:111:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/chowla-numbers.dart:115:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

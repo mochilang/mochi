@@ -1,70 +1,16 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/bitmap-histogram.dart:101:6: Error: 'main' is already declared in this scope.
+run: exit status 254
+/tmp/bitmap-histogram.dart:104:6: Error: 'main' is already declared in this scope.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/bitmap-histogram.dart:91:6: Context: Previous declaration of 'main'.
+/tmp/bitmap-histogram.dart:94:6: Context: Previous declaration of 'main'.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/bitmap-histogram.dart:14:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/bitmap-histogram.dart:22:63: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-      var idx = int.parse(((((p as num) * (bins - 1)) as num) / 65535));
-                                                              ^
-../../tests/rosetta/out/Dart/bitmap-histogram.dart:23:32: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      h[idx] = (h[idx] as num) + 1;
-                               ^
-../../tests/rosetta/out/Dart/bitmap-histogram.dart:24:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      x = (x as num) + 1;
-                     ^
-../../tests/rosetta/out/Dart/bitmap-histogram.dart:26:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    y = (y as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/bitmap-histogram.dart:37:74: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-    if ((lSum as num) + h[lb].toString().compareTo((uSum as num) + h[ub].toString()) < 0) {
-                                                                         ^
-../../tests/rosetta/out/Dart/bitmap-histogram.dart:37:66: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
-    if ((lSum as num) + h[lb].toString().compareTo((uSum as num) + h[ub].toString()) < 0) {
-                                                                 ^
-../../tests/rosetta/out/Dart/bitmap-histogram.dart:38:28: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      lSum = (lSum as num) + h[lb];
-                           ^
-../../tests/rosetta/out/Dart/bitmap-histogram.dart:39:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      lb = (lb as num) + 1;
-                       ^
-../../tests/rosetta/out/Dart/bitmap-histogram.dart:42:28: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      uSum = (uSum as num) + h[ub];
-                           ^
-../../tests/rosetta/out/Dart/bitmap-histogram.dart:43:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      ub = (ub as num) - 1;
-                       ^
-../../tests/rosetta/out/Dart/bitmap-histogram.dart:46:52: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-  return int.parse(((((ub as num) * 65535) as num) / h.length));
-                                                   ^
-../../tests/rosetta/out/Dart/bitmap-histogram.dart:63:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      x = (x as num) + 1;
-                     ^
-../../tests/rosetta/out/Dart/bitmap-histogram.dart:66:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    y = (y as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/bitmap-histogram.dart:84:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      x = (x as num) + 1;
-                     ^
-../../tests/rosetta/out/Dart/bitmap-histogram.dart:87:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    y = (y as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/bitmap-histogram.dart:102:3: Error: Can't use 'main' because it is declared more than once.
+/tmp/bitmap-histogram.dart:25:45: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+      var idx = int.parse(((p * (bins - 1)) / 65535));
+                                            ^
+/tmp/bitmap-histogram.dart:49:34: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+  return int.parse(((ub * 65535) / h.length));
+                                 ^
+/tmp/bitmap-histogram.dart:105:3: Error: Can't use 'main' because it is declared more than once.
   main();
   ^
-../../tests/rosetta/out/Dart/bitmap-histogram.dart:126:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/bitmap-histogram.dart:155:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/bitmap-histogram.dart:160:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/bitmap-histogram.dart:164:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

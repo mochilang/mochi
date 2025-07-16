@@ -1,118 +1,31 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/atomic-updates.dart:87:6: Error: 'main' is already declared in this scope.
+run: exit status 254
+/tmp/atomic-updates.dart:90:6: Error: 'main' is already declared in this scope.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/atomic-updates.dart:12:6: Context: Previous declaration of 'main'.
+/tmp/atomic-updates.dart:15:6: Context: Previous declaration of 'main'.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/atomic-updates.dart:4:31: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-  return [next, (next as num) % n];
-                              ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:9:31: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-  return [next, (next as num) % n];
-                              ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:23:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) - 1;
-                   ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:24:18: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+/tmp/atomic-updates.dart:27:18: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
     buckets[i] = v;
                  ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:25:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    dist = (dist as num) - (v as num);
+/tmp/atomic-updates.dart:28:17: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    dist = dist - v;
+                ^
+/tmp/atomic-updates.dart:46:36: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+      var a = int.parse(((v1 - v2) / 2));
+                                   ^
+/tmp/atomic-updates.dart:54:36: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+      var a = int.parse(((v2 - v1) / 2));
+                                   ^
+/tmp/atomic-updates.dart:78:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      sum = (sum as num) + buckets[idx];
                          ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:41:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    var v2 = buckets[b2];
-                     ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:43:63: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-      var a = int.parse(((((v1 as num) - (v2 as num)) as num) / 2));
-                                                              ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:47:42: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      buckets[b1] = (buckets[b1] as num) - (a as num);
-                                         ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:48:15: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      buckets[b2] = (buckets[b2] as num) + (a as num);
-              ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:48:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      buckets[b2] = (buckets[b2] as num) + (a as num);
-                             ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:48:42: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      buckets[b2] = (buckets[b2] as num) + (a as num);
-                                         ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:51:63: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-      var a = int.parse(((((v2 as num) - (v1 as num)) as num) / 2));
-                                                              ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:52:42: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      if (a.toString().compareTo(buckets[b2].toString()) > 0) {
-                                         ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:53:21: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-        a = buckets[b2];
-                    ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:55:15: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      buckets[b2] = (buckets[b2] as num) - (a as num);
-              ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:55:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      buckets[b2] = (buckets[b2] as num) - (a as num);
-                             ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:55:42: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      buckets[b2] = (buckets[b2] as num) - (a as num);
-                                         ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:56:42: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      buckets[b1] = (buckets[b1] as num) + (a as num);
-                                         ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:58:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    tc0 = (tc0 as num) + 1;
-                       ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:63:51: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
-    r = randChaos(seedChaos, (buckets[b1] as num) + 1);
-                                                  ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:69:40: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    buckets[b1] = (buckets[b1] as num) - (amt as num);
-                                       ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:70:13: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    buckets[b2] = (buckets[b2] as num) + (amt as num);
-            ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:70:28: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    buckets[b2] = (buckets[b2] as num) + (amt as num);
-                           ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:70:40: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    buckets[b2] = (buckets[b2] as num) + (amt as num);
-                                       ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:71:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    tc1 = (tc1 as num) + 1;
-                       ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:75:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      sum = (sum as num) + (buckets[idx] as num);
-                         ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:76:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      idx = (idx as num) + 1;
-                         ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:78:52: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    total = ((total as num) + (tc0 as num) as num) + (tc1 as num);
-                                                   ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:79:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    nTicks = (nTicks as num) + 1;
-                             ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:80:113: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-    print(sum.toString() + ' ' + tc0.toString() + ' ' + tc1.toString() + ' ' + (total as num) / (nTicks as num).toString() + '  ' + buckets.toString());
-                                                                                                                ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:80:95: Error: A value of type 'double' can't be assigned to a variable of type 'String'.
-    print(sum.toString() + ' ' + tc0.toString() + ' ' + tc1.toString() + ' ' + (total as num) / (nTicks as num).toString() + '  ' + buckets.toString());
+/tmp/atomic-updates.dart:83:95: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+    print(sum.toString() + ' ' + tc0.toString() + ' ' + tc1.toString() + ' ' + total / nTicks.toString() + '  ' + buckets.toString());
                                                                                               ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:83:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    t = (t as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:88:3: Error: Can't use 'main' because it is declared more than once.
+/tmp/atomic-updates.dart:83:86: Error: A value of type 'double' can't be assigned to a variable of type 'String'.
+    print(sum.toString() + ' ' + tc0.toString() + ' ' + tc1.toString() + ' ' + total / nTicks.toString() + '  ' + buckets.toString());
+                                                                                     ^
+/tmp/atomic-updates.dart:91:3: Error: Can't use 'main' because it is declared more than once.
   main();
   ^
-../../tests/rosetta/out/Dart/atomic-updates.dart:112:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/atomic-updates.dart:141:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/atomic-updates.dart:146:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/atomic-updates.dart:150:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

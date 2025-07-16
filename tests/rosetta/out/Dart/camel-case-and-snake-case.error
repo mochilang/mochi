@@ -1,113 +1,34 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:138:6: Error: 'main' is already declared in this scope.
+run: exit status 254
+/tmp/camel-case-and-snake-case.dart:141:6: Error: 'main' is already declared in this scope.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:123:6: Context: Previous declaration of 'main'.
+/tmp/camel-case-and-snake-case.dart:126:6: Context: Previous declaration of 'main'.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:4:99: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
-  while (start.toString().compareTo(s.length.toString()) < 0 && s.substring(start, (start as num) + 1) == ' ') {
-                                                                                                  ^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:5:28: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    start = (start as num) + 1;
-                           ^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:8:85: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
-  while (end.toString().compareTo(start.toString()) > 0 && s.substring((end as num) - 1, end) == ' ') {
-                                                                                    ^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:9:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    end = (end as num) - 1;
-                       ^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:23:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    n = (n as num) - 1;
-                   ^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:41:19: Error: Method not found: 'lower'.
+/tmp/camel-case-and-snake-case.dart:44:19: Error: Method not found: 'lower'.
       out = out + lower(ch);
                   ^^^^^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:47:19: Error: Method not found: 'upper'.
+/tmp/camel-case-and-snake-case.dart:50:19: Error: Method not found: 'upper'.
       out = out + upper(ch);
                   ^^^^^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:34:40: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
-    var ch = s.substring(i, (i as num) + 1);
-                                       ^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:37:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      i = (i as num) + 1;
-                     ^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:43:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      i = (i as num) + 1;
-                     ^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:51:26: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
-      out = (out as num) + (ch as num);
-                         ^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:53:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:85:19: Error: Method not found: 'lower'.
+/tmp/camel-case-and-snake-case.dart:88:19: Error: Method not found: 'lower'.
       out = out + lower(ch);
                   ^^^^^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:89:19: Error: Method not found: 'lower'.
+/tmp/camel-case-and-snake-case.dart:92:19: Error: Method not found: 'lower'.
       out = out + lower(ch);
                   ^^^^^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:64:40: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
-    var ch = s.substring(i, (i as num) + 1);
-                                       ^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:70:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      i = (i as num) + 1;
-                     ^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:78:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      i = (i as num) + 1;
-                     ^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:92:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:95:122: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
-  while (start.toString().compareTo(out.length.toString()) < 0 && ((out is String) ? out.substring(start, (start as num) + 1) : (out as List).sublist(start, (start as num) + 1)) == '_') {
-                                                                                                                         ^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:95:173: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
-  while (start.toString().compareTo(out.length.toString()) < 0 && ((out is String) ? out.substring(start, (start as num) + 1) : (out as List).sublist(start, (start as num) + 1)) == '_') {
-                                                                                                                                                                            ^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:96:28: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    start = (start as num) + 1;
-                           ^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:99:106: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
-  while (end.toString().compareTo(start.toString()) > 0 && ((out is String) ? out.substring((end as num) - 1, end) : (out as List).sublist((end as num) - 1, end)) == '_') {
-                                                                                                         ^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:99:153: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
-  while (end.toString().compareTo(start.toString()) > 0 && ((out is String) ? out.substring((end as num) - 1, end) : (out as List).sublist((end as num) - 1, end)) == '_') {
-                                                                                                                                                        ^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:100:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    end = (end as num) - 1;
-                       ^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:102:26: Error: A value of type 'Object' can't be assigned to a variable of type 'String'.
+/tmp/camel-case-and-snake-case.dart:105:26: Error: A value of type 'Object' can't be assigned to a variable of type 'String'.
  - 'Object' is from 'dart:core'.
   out = ((out is String) ? out.substring(start, end) : (out as List).sublist(start, end));
                          ^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:107:60: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
-    var c = ((out is String) ? out.substring(j, (j as num) + 1) : (out as List).sublist(j, (j as num) + 1));
-                                                           ^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:107:103: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
-    var c = ((out is String) ? out.substring(j, (j as num) + 1) : (out as List).sublist(j, (j as num) + 1));
-                                                                                                      ^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:110:28: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
-        res = (res as num) + (c as num);
-                           ^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:115:26: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
-      res = (res as num) + (c as num);
-                         ^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:118:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    j = (j as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:139:3: Error: Can't use 'main' because it is declared more than once.
+/tmp/camel-case-and-snake-case.dart:113:21: Error: A value of type 'Object' can't be assigned to a variable of type 'String'.
+ - 'Object' is from 'dart:core'.
+        res = res + c;
+                    ^
+/tmp/camel-case-and-snake-case.dart:118:19: Error: A value of type 'Object' can't be assigned to a variable of type 'String'.
+ - 'Object' is from 'dart:core'.
+      res = res + c;
+                  ^
+/tmp/camel-case-and-snake-case.dart:142:3: Error: Can't use 'main' because it is declared more than once.
   main();
   ^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:163:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:192:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:197:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/camel-case-and-snake-case.dart:201:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

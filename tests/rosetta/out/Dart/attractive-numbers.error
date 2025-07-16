@@ -1,43 +1,16 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/attractive-numbers.dart:91:6: Error: 'main' is already declared in this scope.
+run: exit status 254
+/tmp/attractive-numbers.dart:94:6: Error: 'main' is already declared in this scope.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/attractive-numbers.dart:65:6: Context: Previous declaration of 'main'.
+/tmp/attractive-numbers.dart:68:6: Context: Previous declaration of 'main'.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/attractive-numbers.dart:17:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    d = (d as num) + 2;
-                   ^
-../../tests/rosetta/out/Dart/attractive-numbers.dart:21:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    d = (d as num) + 4;
-                   ^
-../../tests/rosetta/out/Dart/attractive-numbers.dart:37:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+/tmp/attractive-numbers.dart:40:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
       count = (count as num) + 1;
                              ^
-../../tests/rosetta/out/Dart/attractive-numbers.dart:48:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      f = (f as num) + 2;
-                     ^
-../../tests/rosetta/out/Dart/attractive-numbers.dart:76:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+/tmp/attractive-numbers.dart:79:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
       count = (count as num) + 1;
                              ^
-../../tests/rosetta/out/Dart/attractive-numbers.dart:77:38: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      lineCount = (lineCount as num) + 1;
-                                     ^
-../../tests/rosetta/out/Dart/attractive-numbers.dart:84:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/attractive-numbers.dart:92:3: Error: Can't use 'main' because it is declared more than once.
+/tmp/attractive-numbers.dart:95:3: Error: Can't use 'main' because it is declared more than once.
   main();
   ^
-../../tests/rosetta/out/Dart/attractive-numbers.dart:116:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/attractive-numbers.dart:145:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/attractive-numbers.dart:150:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/attractive-numbers.dart:154:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

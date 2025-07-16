@@ -1,1 +1,36 @@
-compile error: casts not supported
+run: exit status 254
+/tmp/bernoulli-numbers.dart:5:1: Error: Type 'bigrat' not found.
+bigrat bernoulli(int n) {
+^^^^^^
+/tmp/bernoulli-numbers.dart:6:8: Error: 'bigrat' isn't a type.
+  List<bigrat> a = [];
+       ^^^^^^
+/tmp/bernoulli-numbers.dart:9:33: Error: 'bigrat' isn't a type.
+    a = List.from(a)..add((1 as bigrat) / (((m + 1) as bigrat)));
+                                ^^^^^^
+/tmp/bernoulli-numbers.dart:9:56: Error: 'bigrat' isn't a type.
+    a = List.from(a)..add((1 as bigrat) / (((m + 1) as bigrat)));
+                                                       ^^^^^^
+/tmp/bernoulli-numbers.dart:12:25: Error: 'bigrat' isn't a type.
+      a[j - 1] = ((j as bigrat)) * (a[j - 1] - a[j]);
+                        ^^^^^^
+/tmp/bernoulli-numbers.dart:23:9: Error: The class 'num' is abstract and can't be instantiated.
+    if (num(b) != 0) {
+        ^^^
+/tmp/bernoulli-numbers.dart:24:20: Error: The class 'num' is abstract and can't be instantiated.
+      var numStr = num(b).toString();
+                   ^^^
+/tmp/bernoulli-numbers.dart:25:20: Error: Method not found: 'denom'.
+      var denStr = denom(b).toString();
+                   ^^^^^
+/tmp/bernoulli-numbers.dart:26:33: Error: The method 'padStart' isn't defined for the class 'String'.
+Try correcting the name to the name of an existing method, or defining a method named 'padStart'.
+      print('B(' + i.toString().padStart(2, ' ') + ') =' + numStr['padStart'](45, ' ') + '/' + denStr);
+                                ^^^^^^^^
+/tmp/bernoulli-numbers.dart:26:67: Error: A value of type 'String' can't be assigned to a variable of type 'int'.
+      print('B(' + i.toString().padStart(2, ' ') + ') =' + numStr['padStart'](45, ' ') + '/' + denStr);
+                                                                  ^
+/tmp/bernoulli-numbers.dart:26:78: Error: The method 'call' isn't defined for the class 'String'.
+Try correcting the name to the name of an existing method, or defining a method named 'call'.
+      print('B(' + i.toString().padStart(2, ' ') + ') =' + numStr['padStart'](45, ' ') + '/' + denStr);
+                                                                             ^

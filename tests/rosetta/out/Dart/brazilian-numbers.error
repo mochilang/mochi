@@ -1,80 +1,35 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/brazilian-numbers.dart:67:17: Error: String starting with ' must end with '.
+run: exit status 254
+/tmp/brazilian-numbers.dart:70:17: Error: String starting with ' must end with '.
           print('
                 ^
-../../tests/rosetta/out/Dart/brazilian-numbers.dart:68:1: Error: String starting with ' must end with '.
+/tmp/brazilian-numbers.dart:71:1: Error: String starting with ' must end with '.
 ');
 ^^^
-../../tests/rosetta/out/Dart/brazilian-numbers.dart:67:16: Error: Can't find ')' to match '('.
+/tmp/brazilian-numbers.dart:70:16: Error: Can't find ')' to match '('.
           print('
                ^
-../../tests/rosetta/out/Dart/brazilian-numbers.dart:100:6: Error: 'main' is already declared in this scope.
+/tmp/brazilian-numbers.dart:103:6: Error: 'main' is already declared in this scope.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/brazilian-numbers.dart:55:6: Context: Previous declaration of 'main'.
+/tmp/brazilian-numbers.dart:58:6: Context: Previous declaration of 'main'.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/brazilian-numbers.dart:4:21: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+/tmp/brazilian-numbers.dart:7:21: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
   n = (int.parse((n / b)) as int);
                     ^
-../../tests/rosetta/out/Dart/brazilian-numbers.dart:9:23: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+/tmp/brazilian-numbers.dart:12:23: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
     n = (int.parse((n / b)) as int);
                       ^
-../../tests/rosetta/out/Dart/brazilian-numbers.dart:22:39: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-  while (b.toString().compareTo(n - 1.toString()) < 0) {
-                                      ^
-../../tests/rosetta/out/Dart/brazilian-numbers.dart:22:35: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
-  while (b.toString().compareTo(n - 1.toString()) < 0) {
-                                  ^
-../../tests/rosetta/out/Dart/brazilian-numbers.dart:26:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    b = (b as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/brazilian-numbers.dart:46:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    d = (d as num) + 2;
-                   ^
-../../tests/rosetta/out/Dart/brazilian-numbers.dart:50:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    d = (d as num) + 4;
-                   ^
-../../tests/rosetta/out/Dart/brazilian-numbers.dart:68:1: Error: Expected ';' after this.
+/tmp/brazilian-numbers.dart:71:1: Error: Expected ';' after this.
 ');
 ^^^
-../../tests/rosetta/out/Dart/brazilian-numbers.dart:65:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-        c = (c as num) + 1;
-                       ^
-../../tests/rosetta/out/Dart/brazilian-numbers.dart:73:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-        n = (n as num) + 1;
-                       ^
-../../tests/rosetta/out/Dart/brazilian-numbers.dart:77:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-        n = (n as num) + 2;
-                       ^
-../../tests/rosetta/out/Dart/brazilian-numbers.dart:81:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-          n = (n as num) + 2;
-                         ^
-../../tests/rosetta/out/Dart/brazilian-numbers.dart:93:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      c = (c as num) + 1;
-                     ^
-../../tests/rosetta/out/Dart/brazilian-numbers.dart:95:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    n = (n as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/brazilian-numbers.dart:97:49: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
-  print('The 100,000th Brazilian number: ' + (n as num) - 1.toString());
-                                                ^
-../../tests/rosetta/out/Dart/brazilian-numbers.dart:97:57: Error: The operator '-' isn't defined for the class 'String'.
+/tmp/brazilian-numbers.dart:100:46: Error: A value of type 'int' can't be assigned to a variable of type 'String'.
+  print('The 100,000th Brazilian number: ' + n - 1.toString());
+                                             ^
+/tmp/brazilian-numbers.dart:100:48: Error: The operator '-' isn't defined for the class 'String'.
 Try correcting the operator to an existing operator, or defining a '-' operator.
-  print('The 100,000th Brazilian number: ' + (n as num) - 1.toString());
-                                                        ^
-../../tests/rosetta/out/Dart/brazilian-numbers.dart:101:3: Error: Can't use 'main' because it is declared more than once.
+  print('The 100,000th Brazilian number: ' + n - 1.toString());
+                                               ^
+/tmp/brazilian-numbers.dart:104:3: Error: Can't use 'main' because it is declared more than once.
   main();
   ^
-../../tests/rosetta/out/Dart/brazilian-numbers.dart:125:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/brazilian-numbers.dart:154:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/brazilian-numbers.dart:159:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/brazilian-numbers.dart:163:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

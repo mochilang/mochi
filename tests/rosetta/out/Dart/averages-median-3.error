@@ -1,38 +1,14 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/averages-median-3.dart:5:14: Error: Method not found: 'now'.
-    var px = now() % arr.length;
-             ^^^
-../../tests/rosetta/out/Dart/averages-median-3.dart:21:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      i = (i as num) + 1;
-                     ^
-../../tests/rosetta/out/Dart/averages-median-3.dart:27:36: Error: The method 'substring' isn't defined for the class 'List<double>'.
+run: exit status 254
+/tmp/averages-median-3.dart:30:36: Error: The method 'substring' isn't defined for the class 'List<double>'.
  - 'List' is from 'dart:core'.
 Try correcting the name to the name of an existing method, or defining a method named 'substring'.
       arr = ((arr is String) ? arr.substring(0, px) : (arr as List).sublist(0, px));
                                    ^^^^^^^^^
-../../tests/rosetta/out/Dart/averages-median-3.dart:33:36: Error: The method 'substring' isn't defined for the class 'List<double>'.
+/tmp/averages-median-3.dart:36:36: Error: The method 'substring' isn't defined for the class 'List<double>'.
  - 'List' is from 'dart:core'.
 Try correcting the name to the name of an existing method, or defining a method named 'substring'.
-      arr = ((arr is String) ? arr.substring(((px as num) + 1), arr.length) : (arr as List).sublist(((px as num) + 1), arr.length));
+      arr = ((arr is String) ? arr.substring((px + 1), arr.length) : (arr as List).sublist((px + 1), arr.length));
                                    ^^^^^^^^^
-../../tests/rosetta/out/Dart/averages-median-3.dart:33:114: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
-      arr = ((arr is String) ? arr.substring(((px as num) + 1), arr.length) : (arr as List).sublist(((px as num) + 1), arr.length));
-                                                                                                                 ^
-../../tests/rosetta/out/Dart/averages-median-3.dart:42:36: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+/tmp/averages-median-3.dart:45:36: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
   var half = int.parse((arr.length / 2));
                                    ^
-../../tests/rosetta/out/Dart/averages-median-3.dart:45:53: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
-    return (((med as num) + qsel(arr, (half as num) - 1)) as num) / 2;
-                                                    ^
-../../tests/rosetta/out/Dart/averages-median-3.dart:76:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/averages-median-3.dart:105:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/averages-median-3.dart:110:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/averages-median-3.dart:114:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

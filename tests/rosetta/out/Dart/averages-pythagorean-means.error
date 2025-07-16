@@ -1,68 +1,47 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/averages-pythagorean-means.dart:49:6: Error: 'main' is already declared in this scope.
+run: exit status 254
+/tmp/averages-pythagorean-means.dart:52:6: Error: 'main' is already declared in this scope.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/averages-pythagorean-means.dart:29:6: Context: Previous declaration of 'main'.
+/tmp/averages-pythagorean-means.dart:32:6: Context: Previous declaration of 'main'.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/averages-pythagorean-means.dart:6:30: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-    result = (result as num) * base;
-                             ^
-../../tests/rosetta/out/Dart/averages-pythagorean-means.dart:7:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/averages-pythagorean-means.dart:9:10: Error: A value of type 'int' can't be returned from a function with return type 'double'.
+/tmp/averages-pythagorean-means.dart:9:21: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    result = result * base;
+                    ^
+/tmp/averages-pythagorean-means.dart:12:10: Error: A value of type 'int' can't be returned from a function with return type 'double'.
   return result;
          ^
-../../tests/rosetta/out/Dart/averages-pythagorean-means.dart:22:13: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+/tmp/averages-pythagorean-means.dart:25:13: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
       low = mid;
             ^
-../../tests/rosetta/out/Dart/averages-pythagorean-means.dart:24:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/averages-pythagorean-means.dart:26:10: Error: A value of type 'int' can't be returned from a function with return type 'double'.
+/tmp/averages-pythagorean-means.dart:29:10: Error: A value of type 'int' can't be returned from a function with return type 'double'.
   return low;
          ^
-../../tests/rosetta/out/Dart/averages-pythagorean-means.dart:35:26: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/averages-pythagorean-means.dart:38:26: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
     var f = double.parse(n);
                          ^
-../../tests/rosetta/out/Dart/averages-pythagorean-means.dart:36:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    sum = (sum as num) + (f as num);
+/tmp/averages-pythagorean-means.dart:39:24: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    sum = (sum as num) + f;
                        ^
-../../tests/rosetta/out/Dart/averages-pythagorean-means.dart:37:34: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    sumRecip = (sumRecip as num) + (1 / (f as num) as num);
-                                 ^
-../../tests/rosetta/out/Dart/averages-pythagorean-means.dart:38:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    prod = (prod as num) * (f as num);
-                         ^
-../../tests/rosetta/out/Dart/averages-pythagorean-means.dart:39:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    n = (n as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/averages-pythagorean-means.dart:43:19: Error: The argument type 'int' can't be assigned to the parameter type 'double'.
+/tmp/averages-pythagorean-means.dart:40:25: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    sumRecip = sumRecip + 1 / f;
+                        ^
+/tmp/averages-pythagorean-means.dart:41:17: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    prod = prod * f;
+                ^
+/tmp/averages-pythagorean-means.dart:46:19: Error: The argument type 'int' can't be assigned to the parameter type 'double'.
   var g = nthRoot(prod, 10);
                   ^
-../../tests/rosetta/out/Dart/averages-pythagorean-means.dart:46:40: Error: A value of type 'int' can't be assigned to a variable of type 'String'.
-  print('A >= G >= H: ' + a.toString().compareTo(g.toString()) >= 0 && g.toString().compareTo(h.toString()) >= 0.toString());
-                                       ^
-../../tests/rosetta/out/Dart/averages-pythagorean-means.dart:46:64: Error: The operator '>=' isn't defined for the class 'String'.
+/tmp/averages-pythagorean-means.dart:49:27: Error: A value of type 'double' can't be assigned to a variable of type 'String'.
+  print('A >= G >= H: ' + a >= g && g >= h.toString());
+                          ^
+/tmp/averages-pythagorean-means.dart:49:29: Error: The operator '>=' isn't defined for the class 'String'.
 Try correcting the operator to an existing operator, or defining a '>=' operator.
-  print('A >= G >= H: ' + a.toString().compareTo(g.toString()) >= 0 && g.toString().compareTo(h.toString()) >= 0.toString());
-                                                               ^^
-../../tests/rosetta/out/Dart/averages-pythagorean-means.dart:46:114: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-  print('A >= G >= H: ' + a.toString().compareTo(g.toString()) >= 0 && g.toString().compareTo(h.toString()) >= 0.toString());
-                                                                                                                 ^
-../../tests/rosetta/out/Dart/averages-pythagorean-means.dart:50:3: Error: Can't use 'main' because it is declared more than once.
+  print('A >= G >= H: ' + a >= g && g >= h.toString());
+                            ^^
+/tmp/averages-pythagorean-means.dart:49:44: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+  print('A >= G >= H: ' + a >= g && g >= h.toString());
+                                           ^
+/tmp/averages-pythagorean-means.dart:53:3: Error: Can't use 'main' because it is declared more than once.
   main();
   ^
-../../tests/rosetta/out/Dart/averages-pythagorean-means.dart:74:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/averages-pythagorean-means.dart:103:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/averages-pythagorean-means.dart:108:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/averages-pythagorean-means.dart:112:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

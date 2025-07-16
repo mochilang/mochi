@@ -1,52 +1,8 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/arbitrary-precision-integers-included-.dart:34:1: Error: Type 'bigint' not found.
-bigint base = 5;
-^^^^^^
-../../tests/rosetta/out/Dart/arbitrary-precision-integers-included-.dart:36:1: Error: Type 'bigint' not found.
-bigint x = pow_big(base, e2);
-^^^^^^
-../../tests/rosetta/out/Dart/arbitrary-precision-integers-included-.dart:16:1: Error: Type 'bigint' not found.
-bigint pow_big(bigint base, int exp) {
-^^^^^^
-../../tests/rosetta/out/Dart/arbitrary-precision-integers-included-.dart:16:16: Error: Type 'bigint' not found.
-bigint pow_big(bigint base, int exp) {
-               ^^^^^^
-../../tests/rosetta/out/Dart/arbitrary-precision-integers-included-.dart:8:32: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      result = (result as num) * (b as num);
-                               ^
-../../tests/rosetta/out/Dart/arbitrary-precision-integers-included-.dart:10:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    b = (b as num) * (b as num);
-                   ^
-../../tests/rosetta/out/Dart/arbitrary-precision-integers-included-.dart:11:31: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-    e = int.parse(((e as num) / 2));
-                              ^
-../../tests/rosetta/out/Dart/arbitrary-precision-integers-included-.dart:16:16: Error: 'bigint' isn't a type.
-bigint pow_big(bigint base, int exp) {
-               ^^^^^^
-../../tests/rosetta/out/Dart/arbitrary-precision-integers-included-.dart:17:3: Error: 'bigint' isn't a type.
-  bigint result = 1;
-  ^^^^^^
-../../tests/rosetta/out/Dart/arbitrary-precision-integers-included-.dart:18:3: Error: 'bigint' isn't a type.
-  bigint b = base;
-  ^^^^^^
-../../tests/rosetta/out/Dart/arbitrary-precision-integers-included-.dart:25:31: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-    e = int.parse(((e as num) / 2));
-                              ^
-../../tests/rosetta/out/Dart/arbitrary-precision-integers-included-.dart:34:1: Error: 'bigint' isn't a type.
-bigint base = 5;
-^^^^^^
-../../tests/rosetta/out/Dart/arbitrary-precision-integers-included-.dart:36:1: Error: 'bigint' isn't a type.
-bigint x = pow_big(base, e2);
-^^^^^^
-../../tests/rosetta/out/Dart/arbitrary-precision-integers-included-.dart:65:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/arbitrary-precision-integers-included-.dart:94:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/arbitrary-precision-integers-included-.dart:99:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/arbitrary-precision-integers-included-.dart:103:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^
+type: error[T007]: argument 2: expected int, got bigint
+  --> /workspace/mochi/tests/rosetta/x/Mochi/arbitrary-precision-integers-included-.mochi:32:73
+
+ 32 | print("5^(4^(3^2)) has", len(s), "digits:", substring(s, 0, 20), "...", substring(s, len(s)-20, len(s)))
+    |                                                                         ^
+
+help:
+  Ensure the argument type matches the function’s signature.

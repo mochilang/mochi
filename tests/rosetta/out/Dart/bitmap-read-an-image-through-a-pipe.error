@@ -1,8 +1,131 @@
-parse error: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/bitmap-read-an-image-through-a-pipe.mochi:1:1: lexer: invalid input text "# Parse a simple..."
-  --> /workspace/mochi/tests/rosetta/x/Mochi/bitmap-read-an-image-through-a-pipe.mochi:1:1
-
-  1 | # Parse a simple P3 PPM image from a string to simulate reading from a pipe
-    | ^
-
-help:
-  String literals must be properly closed with a `"`.
+run: exit status 254
+/tmp/bitmap-read-an-image-through-a-pipe.dart:30:28: Error: String starting with ' must end with '.
+    if (ch == ' ' || ch == '
+                           ^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:31:28: Error: String starting with ' must end with '.
+' || ch == '  ' || ch == '') {
+                           ^^^^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:30:8: Error: Can't find ')' to match '('.
+    if (ch == ' ' || ch == '
+       ^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:66:15: Error: String starting with ' must end with '.
+var ppmData = 'P3
+              ^^^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:70:1: Error: String starting with ' must end with '.
+';
+^^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:42:3: Error: 'if' can't be used as an identifier because it's a keyword.
+Try renaming this to be an identifier that isn't a keyword.
+  if (cur.length > 0) {
+  ^^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:42:18: Error: Expected an identifier, but got '>'.
+Try inserting an identifier before '>'.
+  if (cur.length > 0) {
+                 ^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:42:20: Error: Expected ')' before this.
+  if (cur.length > 0) {
+                   ^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:45:3: Error: Variables must be declared using the keywords 'const', 'final', 'var' or a type name.
+Try adding the name of the type of the variable or the keyword 'var'.
+  return parts;
+  ^^^^^^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:45:3: Error: 'return' can't be used as an identifier because it's a keyword.
+Try renaming this to be an identifier that isn't a keyword.
+  return parts;
+  ^^^^^^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:45:3: Error: Expected ';' after this.
+  return parts;
+  ^^^^^^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:45:10: Error: Variables must be declared using the keywords 'const', 'final', 'var' or a type name.
+Try adding the name of the type of the variable or the keyword 'var'.
+  return parts;
+         ^^^^^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:46:1: Error: Expected a declaration, but got '}'.
+}
+^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:66:15: Error: Expected ';' after this.
+var ppmData = 'P3
+              ^^^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:67:1: Error: Expected a declaration, but got '2'.
+2 2
+^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:67:3: Error: Expected a declaration, but got '2'.
+2 2
+  ^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:68:1: Error: Expected a declaration, but got '1'.
+1
+^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:69:1: Error: Expected a declaration, but got '0'.
+0 1 1 0 1 0 0 1 1 1 0 0
+^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:69:3: Error: Expected a declaration, but got '1'.
+0 1 1 0 1 0 0 1 1 1 0 0
+  ^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:69:5: Error: Expected a declaration, but got '1'.
+0 1 1 0 1 0 0 1 1 1 0 0
+    ^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:69:7: Error: Expected a declaration, but got '0'.
+0 1 1 0 1 0 0 1 1 1 0 0
+      ^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:69:9: Error: Expected a declaration, but got '1'.
+0 1 1 0 1 0 0 1 1 1 0 0
+        ^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:69:11: Error: Expected a declaration, but got '0'.
+0 1 1 0 1 0 0 1 1 1 0 0
+          ^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:69:13: Error: Expected a declaration, but got '0'.
+0 1 1 0 1 0 0 1 1 1 0 0
+            ^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:69:15: Error: Expected a declaration, but got '1'.
+0 1 1 0 1 0 0 1 1 1 0 0
+              ^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:69:17: Error: Expected a declaration, but got '1'.
+0 1 1 0 1 0 0 1 1 1 0 0
+                ^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:69:19: Error: Expected a declaration, but got '1'.
+0 1 1 0 1 0 0 1 1 1 0 0
+                  ^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:69:21: Error: Expected a declaration, but got '0'.
+0 1 1 0 1 0 0 1 1 1 0 0
+                    ^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:69:23: Error: Expected a declaration, but got '0'.
+0 1 1 0 1 0 0 1 1 1 0 0
+                      ^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:70:1: Error: Expected a declaration, but got '';''.
+';
+^^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:42:7: Error: 'cur.length' can't be used as a type because 'cur' doesn't refer to an import prefix.
+  if (cur.length > 0) {
+      ^^^^^^^^^^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:48:13: Error: Type 'any' not found.
+Map<String, any> parsePpm(String data) {
+            ^^^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:15:24: Error: A value of type 'int?' can't be assigned to a variable of type 'num' because 'int?' is nullable and 'num' isn't.
+    n = n * 10 + digits[str.substring(i, i + 1)];
+                       ^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:15:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = n * 10 + digits[str.substring(i, i + 1)];
+               ^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:37:5: Error: Expected an identifier, but got 'else'.
+Try inserting an identifier before 'else'.
+    else {
+    ^^^^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:36:5: Error: Expected ';' after this.
+    }
+    ^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:37:5: Error: Unexpected token ';'.
+    else {
+    ^^^^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:38:19: Error: Undefined name 'ch'.
+      cur = cur + ch;
+                  ^^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:24:14: Error: A non-null value must be returned since the return type 'List<String>' doesn't allow null.
+ - 'List' is from 'dart:core'.
+List<String> splitWs(String s) {
+             ^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:42:7: Error: 'cur.length' can't be used as a type because 'cur' isn't defined.
+  if (cur.length > 0) {
+      ^^^^^^^^^^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:43:35: Error: Undefined name 'cur'.
+    parts = List.from(parts)..add(cur);
+                                  ^^^

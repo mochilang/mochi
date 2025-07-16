@@ -1,31 +1,10 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/arithmetic-geometric-mean.dart:34:6: Error: 'main' is already declared in this scope.
+run: exit status 254
+/tmp/arithmetic-geometric-mean.dart:37:6: Error: 'main' is already declared in this scope.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/arithmetic-geometric-mean.dart:30:6: Context: Previous declaration of 'main'.
+/tmp/arithmetic-geometric-mean.dart:33:6: Context: Previous declaration of 'main'.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/arithmetic-geometric-mean.dart:14:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/arithmetic-geometric-mean.dart:21:64: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-  while (abs(a - g).toString().compareTo(abs(a) * (eps as num).toString()) > 0) {
-                                                               ^
-../../tests/rosetta/out/Dart/arithmetic-geometric-mean.dart:21:49: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
-  while (abs(a - g).toString().compareTo(abs(a) * (eps as num).toString()) > 0) {
-                                                ^
-../../tests/rosetta/out/Dart/arithmetic-geometric-mean.dart:35:3: Error: Can't use 'main' because it is declared more than once.
+/tmp/arithmetic-geometric-mean.dart:38:3: Error: Can't use 'main' because it is declared more than once.
   main();
   ^
-../../tests/rosetta/out/Dart/arithmetic-geometric-mean.dart:59:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/arithmetic-geometric-mean.dart:88:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/arithmetic-geometric-mean.dart:93:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/arithmetic-geometric-mean.dart:97:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

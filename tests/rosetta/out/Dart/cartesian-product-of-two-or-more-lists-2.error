@@ -1,1 +1,22 @@
-compile error: casts not supported
+run: exit status 254
+/tmp/cartesian-product-of-two-or-more-lists-2.dart:97:6: Error: 'main' is already declared in this scope.
+void main() {
+     ^^^^
+/tmp/cartesian-product-of-two-or-more-lists-2.dart:79:6: Context: Previous declaration of 'main'.
+void main() {
+     ^^^^
+/tmp/cartesian-product-of-two-or-more-lists-2.dart:33:23: Error: Type 'any' not found.
+List<List<int>> cartN(any lists) {
+                      ^^^
+/tmp/cartesian-product-of-two-or-more-lists-2.dart:33:23: Error: 'any' isn't a type.
+List<List<int>> cartN(any lists) {
+                      ^^^
+/tmp/cartesian-product-of-two-or-more-lists-2.dart:44:11: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    c = c * xs.length;
+          ^
+/tmp/cartesian-product-of-two-or-more-lists-2.dart:74:28: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    count = (count as num) + 1;
+                           ^
+/tmp/cartesian-product-of-two-or-more-lists-2.dart:98:3: Error: Can't use 'main' because it is declared more than once.
+  main();
+  ^

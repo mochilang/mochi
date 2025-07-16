@@ -1,40 +1,10 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/cartesian-product-of-two-or-more-lists-1.dart:43:6: Error: 'main' is already declared in this scope.
+run: exit status 254
+/tmp/cartesian-product-of-two-or-more-lists-1.dart:46:6: Error: 'main' is already declared in this scope.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/cartesian-product-of-two-or-more-lists-1.dart:36:6: Context: Previous declaration of 'main'.
+/tmp/cartesian-product-of-two-or-more-lists-1.dart:39:6: Context: Previous declaration of 'main'.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/cartesian-product-of-two-or-more-lists-1.dart:21:49: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-      if (j.toString().compareTo(row.length - 1.toString()) < 0) {
-                                                ^
-../../tests/rosetta/out/Dart/cartesian-product-of-two-or-more-lists-1.dart:21:45: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
-      if (j.toString().compareTo(row.length - 1.toString()) < 0) {
-                                            ^
-../../tests/rosetta/out/Dart/cartesian-product-of-two-or-more-lists-1.dart:24:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      j = (j as num) + 1;
-                     ^
-../../tests/rosetta/out/Dart/cartesian-product-of-two-or-more-lists-1.dart:27:47: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-    if (i.toString().compareTo(lst.length - 1.toString()) < 0) {
-                                              ^
-../../tests/rosetta/out/Dart/cartesian-product-of-two-or-more-lists-1.dart:27:43: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
-    if (i.toString().compareTo(lst.length - 1.toString()) < 0) {
-                                          ^
-../../tests/rosetta/out/Dart/cartesian-product-of-two-or-more-lists-1.dart:30:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/cartesian-product-of-two-or-more-lists-1.dart:44:3: Error: Can't use 'main' because it is declared more than once.
+/tmp/cartesian-product-of-two-or-more-lists-1.dart:47:3: Error: Can't use 'main' because it is declared more than once.
   main();
   ^
-../../tests/rosetta/out/Dart/cartesian-product-of-two-or-more-lists-1.dart:68:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/cartesian-product-of-two-or-more-lists-1.dart:97:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/cartesian-product-of-two-or-more-lists-1.dart:102:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/cartesian-product-of-two-or-more-lists-1.dart:106:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

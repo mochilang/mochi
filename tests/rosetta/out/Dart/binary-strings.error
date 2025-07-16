@@ -1,20 +1,8 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/binary-strings.dart:8:57: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
-  return letters.toString().substring(idx, (idx as num) + 1);
-                                                        ^
-../../tests/rosetta/out/Dart/binary-strings.dart:50:19: Error: The argument type 'List<dynamic>' can't be assigned to the parameter type 'List<int>'.
- - 'List' is from 'dart:core'.
-  print(fromBytes(z));
-                  ^
-../../tests/rosetta/out/Dart/binary-strings.dart:94:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/binary-strings.dart:123:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/binary-strings.dart:128:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/binary-strings.dart:132:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^
+type: error[T007]: argument 2: expected int, got bigint
+  --> /workspace/mochi/tests/rosetta/x/Mochi/binary-strings.mochi:7:10
+
+  7 |   return substring(letters, idx, idx + 1)
+    |          ^
+
+help:
+  Ensure the argument type matches the function’s signature.

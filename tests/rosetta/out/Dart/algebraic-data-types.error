@@ -1,1 +1,82 @@
-compile error: casts not supported
+run: exit status 254
+/tmp/algebraic-data-types.dart:90:1: Error: Type 'any' not found.
+any tr = null;
+^^^
+/tmp/algebraic-data-types.dart:5:13: Error: Type 'any' not found.
+Map<String, any> node(String cl, any le, int aa, any ri) {
+            ^^^
+/tmp/algebraic-data-types.dart:5:34: Error: Type 'any' not found.
+Map<String, any> node(String cl, any le, int aa, any ri) {
+                                 ^^^
+/tmp/algebraic-data-types.dart:5:50: Error: Type 'any' not found.
+Map<String, any> node(String cl, any le, int aa, any ri) {
+                                                 ^^^
+/tmp/algebraic-data-types.dart:9:19: Error: Type 'any' not found.
+String treeString(any t) {
+                  ^^^
+/tmp/algebraic-data-types.dart:17:1: Error: Type 'any' not found.
+any balance(any t) {
+^^^
+/tmp/algebraic-data-types.dart:17:13: Error: Type 'any' not found.
+any balance(any t) {
+            ^^^
+/tmp/algebraic-data-types.dart:68:1: Error: Type 'any' not found.
+any ins(any tr, int x) {
+^^^
+/tmp/algebraic-data-types.dart:68:9: Error: Type 'any' not found.
+any ins(any tr, int x) {
+        ^^^
+/tmp/algebraic-data-types.dart:81:1: Error: Type 'any' not found.
+any insert(any tr, int x) {
+^^^
+/tmp/algebraic-data-types.dart:81:12: Error: Type 'any' not found.
+any insert(any tr, int x) {
+           ^^^
+/tmp/algebraic-data-types.dart:5:34: Error: 'any' isn't a type.
+Map<String, any> node(String cl, any le, int aa, any ri) {
+                                 ^^^
+/tmp/algebraic-data-types.dart:5:50: Error: 'any' isn't a type.
+Map<String, any> node(String cl, any le, int aa, any ri) {
+                                                 ^^^
+/tmp/algebraic-data-types.dart:9:19: Error: 'any' isn't a type.
+String treeString(any t) {
+                  ^^^
+/tmp/algebraic-data-types.dart:13:29: Error: 'any' isn't a type.
+  var m = (t as Map<String, any>);
+                            ^^^
+/tmp/algebraic-data-types.dart:17:13: Error: 'any' isn't a type.
+any balance(any t) {
+            ^^^
+/tmp/algebraic-data-types.dart:21:29: Error: 'any' isn't a type.
+  var m = (t as Map<String, any>);
+                            ^^^
+/tmp/algebraic-data-types.dart:28:36: Error: 'any' isn't a type.
+    var leMap = (le as Map<String, any>);
+                                   ^^^
+/tmp/algebraic-data-types.dart:32:44: Error: 'any' isn't a type.
+        var leleMap = (lele as Map<String, any>);
+                                           ^^^
+/tmp/algebraic-data-types.dart:39:44: Error: 'any' isn't a type.
+        var leriMap = (leri as Map<String, any>);
+                                           ^^^
+/tmp/algebraic-data-types.dart:47:36: Error: 'any' isn't a type.
+    var riMap = (ri as Map<String, any>);
+                                   ^^^
+/tmp/algebraic-data-types.dart:51:44: Error: 'any' isn't a type.
+        var rileMap = (rile as Map<String, any>);
+                                           ^^^
+/tmp/algebraic-data-types.dart:58:44: Error: 'any' isn't a type.
+        var ririMap = (riri as Map<String, any>);
+                                           ^^^
+/tmp/algebraic-data-types.dart:68:9: Error: 'any' isn't a type.
+any ins(any tr, int x) {
+        ^^^
+/tmp/algebraic-data-types.dart:81:12: Error: 'any' isn't a type.
+any insert(any tr, int x) {
+           ^^^
+/tmp/algebraic-data-types.dart:86:29: Error: 'any' isn't a type.
+  var m = (t as Map<String, any>);
+                            ^^^
+/tmp/algebraic-data-types.dart:90:1: Error: 'any' isn't a type.
+any tr = null;
+^^^
