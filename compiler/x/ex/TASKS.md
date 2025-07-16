@@ -2,6 +2,8 @@
 
 ## Recent Enhancements (2025-07-13 05:12)
 - Documented machine output checklist and TPCH progress.
+- Added builtin handling for `go_testpkg.FifteenPuzzleExample` so
+  `15-puzzle-solver.mochi` compiles without errors.
 
 ## TPC-H Progress (2025-07-13 22:45)
 All twenty-two queries (`q1` to `q22`) now compile and execute correctly. The
