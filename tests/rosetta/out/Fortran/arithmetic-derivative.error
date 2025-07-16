@@ -1,1 +1,261 @@
-panic: runtime error: index out of range [0] with length 0
+gfortran: exit status 1
+/tmp/arithmetic-derivative.f90:30:3:
+
+   30 |   main()
+      |   1
+Error: Unclassifiable statement at (1)
+/tmp/arithmetic-derivative.f90:34:18:
+
+   34 |     factors = (//)
+      |                  1
+Error: Empty array constructor at (1) is not allowed
+/tmp/arithmetic-derivative.f90:75:28:
+
+   75 |   recursive real function D(n) result(res)
+      |                            1
+Error: Procedure ‘d’ at (1) has an explicit interface from a previous declaration
+/tmp/arithmetic-derivative.f90:76:25:
+
+   76 |     real, intent(in) :: n
+      |                         1
+Error: Unexpected data declaration statement in CONTAINS section at (1)
+/tmp/arithmetic-derivative.f90:77:21:
+
+   77 |     if ((n < 0)) then
+      |                     1
+Error: Unexpected block IF statement in CONTAINS section at (1)
+/tmp/arithmetic-derivative.f90:78:18:
+
+   78 |       res = -D(-n)
+      |                  1
+Error: Unexpected assignment statement in CONTAINS section at (1)
+/tmp/arithmetic-derivative.f90:79:12:
+
+   79 |       return
+      |            1
+Error: Unexpected RETURN statement in CONTAINS section at (1)
+/tmp/arithmetic-derivative.f90:80:7:
+
+   80 |     end if
+      |       1
+Error: Expecting END PROGRAM statement at (1)
+/tmp/arithmetic-derivative.f90:81:21:
+
+   81 |     if ((n < 2)) then
+      |                     1
+Error: Unexpected block IF statement in CONTAINS section at (1)
+/tmp/arithmetic-derivative.f90:82:13:
+
+   82 |       res = 0
+      |             1
+Error: Unexpected assignment statement in CONTAINS section at (1)
+/tmp/arithmetic-derivative.f90:83:12:
+
+   83 |       return
+      |            1
+Error: Unexpected RETURN statement in CONTAINS section at (1)
+/tmp/arithmetic-derivative.f90:84:7:
+
+   84 |     end if
+      |       1
+Error: Expecting END PROGRAM statement at (1)
+/tmp/arithmetic-derivative.f90:85:18:
+
+   85 |     factors = (//)
+      |                  1
+Error: Empty array constructor at (1) is not allowed
+/tmp/arithmetic-derivative.f90:86:25:
+
+   86 |     if ((n < 1e+19)) then
+      |                         1
+Error: Unexpected block IF statement in CONTAINS section at (1)
+/tmp/arithmetic-derivative.f90:87:38:
+
+   87 |       factors = primeFactors(int((n)))
+      |                                      1
+Error: Unexpected assignment statement in CONTAINS section at (1)
+/tmp/arithmetic-derivative.f90:88:8:
+
+   88 |     else
+      |        1
+Error: Unexpected ELSE statement in CONTAINS section at (1)
+/tmp/arithmetic-derivative.f90:89:26:
+
+   89 |       g = int(((n / 100)))
+      |                          1
+Error: Unexpected assignment statement in CONTAINS section at (1)
+/tmp/arithmetic-derivative.f90:90:31:
+
+   90 |       factors = primeFactors(g)
+      |                               1
+Error: Unexpected assignment statement in CONTAINS section at (1)
+/tmp/arithmetic-derivative.f90:91:15:
+
+   91 |       allocate(app3(size(factors)+1))
+      |               1
+Error: Allocate-object at (1) is neither a data pointer nor an allocatable variable
+/tmp/arithmetic-derivative.f90:94:20:
+
+   94 |       factors = app3
+      |                    1
+Error: Unexpected assignment statement in CONTAINS section at (1)
+/tmp/arithmetic-derivative.f90:95:15:
+
+   95 |       allocate(app4(size(factors)+1))
+      |               1
+Error: Allocate-object at (1) is neither a data pointer nor an allocatable variable
+/tmp/arithmetic-derivative.f90:98:20:
+
+   98 |       factors = app4
+      |                    1
+Error: Unexpected assignment statement in CONTAINS section at (1)
+/tmp/arithmetic-derivative.f90:99:15:
+
+   99 |       allocate(app5(size(factors)+1))
+      |               1
+Error: Allocate-object at (1) is neither a data pointer nor an allocatable variable
+/tmp/arithmetic-derivative.f90:102:20:
+
+  102 |       factors = app5
+      |                    1
+Error: Unexpected assignment statement in CONTAINS section at (1)
+/tmp/arithmetic-derivative.f90:103:15:
+
+  103 |       allocate(app6(size(factors)+1))
+      |               1
+Error: Allocate-object at (1) is neither a data pointer nor an allocatable variable
+/tmp/arithmetic-derivative.f90:106:20:
+
+  106 |       factors = app6
+      |                    1
+Error: Unexpected assignment statement in CONTAINS section at (1)
+/tmp/arithmetic-derivative.f90:107:7:
+
+  107 |     end if
+      |       1
+Error: Expecting END PROGRAM statement at (1)
+/tmp/arithmetic-derivative.f90:108:21:
+
+  108 |     c = size(factors)
+      |                     1
+Error: Unexpected assignment statement in CONTAINS section at (1)
+/tmp/arithmetic-derivative.f90:109:22:
+
+  109 |     if ((c == 1)) then
+      |                      1
+Error: Unexpected block IF statement in CONTAINS section at (1)
+/tmp/arithmetic-derivative.f90:110:13:
+
+  110 |       res = 1
+      |             1
+Error: Unexpected assignment statement in CONTAINS section at (1)
+/tmp/arithmetic-derivative.f90:111:12:
+
+  111 |       return
+      |            1
+Error: Unexpected RETURN statement in CONTAINS section at (1)
+/tmp/arithmetic-derivative.f90:112:7:
+
+  112 |     end if
+      |       1
+Error: Expecting END PROGRAM statement at (1)
+/tmp/arithmetic-derivative.f90:113:22:
+
+  113 |     if ((c == 2)) then
+      |                      1
+Error: Unexpected block IF statement in CONTAINS section at (1)
+/tmp/arithmetic-derivative.f90:114:57:
+
+  114 |       res = real(((factors(((0)+1)) + factors(((1)+1)))))
+      |                                                         1
+Error: Unexpected assignment statement in CONTAINS section at (1)
+/tmp/arithmetic-derivative.f90:115:12:
+
+  115 |       return
+      |            1
+Error: Unexpected RETURN statement in CONTAINS section at (1)
+/tmp/arithmetic-derivative.f90:116:7:
+
+  116 |     end if
+      |       1
+Error: Expecting END PROGRAM statement at (1)
+/tmp/arithmetic-derivative.f90:117:38:
+
+  117 |     d = (n / (real(factors(((0)+1)))))
+      |                                      1
+Error: Unexpected assignment statement in CONTAINS section at (1)
+/tmp/arithmetic-derivative.f90:118:49:
+
+  118 |     res = ((D(d) * (real(factors(((0)+1))))) + d)
+      |                                                 1
+Error: Function ‘d’ requires an argument list at (1)
+/tmp/arithmetic-derivative.f90:119:10:
+
+  119 |     return
+      |          1
+Error: Unexpected RETURN statement in CONTAINS section at (1)
+/tmp/arithmetic-derivative.f90:120:5:
+
+  120 |   end function D
+      |     1
+Error: Expecting END PROGRAM statement at (1)
+/tmp/arithmetic-derivative.f90:132:15:
+
+  132 |     vals = (//)
+      |               1
+Error: Empty array constructor at (1) is not allowed
+/tmp/arithmetic-derivative.f90:133:5:
+
+  133 |     n = -99
+      |     1
+Error: Symbol ‘n’ at (1) has no IMPLICIT type
+/tmp/arithmetic-derivative.f90:125:20:
+
+  125 |     do while ((size(s) < 4))
+      |                    1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/arithmetic-derivative.f90:146:16:
+
+  146 |         line = (line + pad(vals((((i + j))+1))))
+      |                1
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
+/tmp/arithmetic-derivative.f90:160:12:
+
+  160 |       exp = s9
+      |            1
+Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
+/tmp/arithmetic-derivative.f90:161:16:
+
+  161 |       if ((size(exp) < 2)) then
+      |                1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/arithmetic-derivative.f90:162:14:
+
+  162 |         exp = exp // ' '
+      |              1
+Error: Operands of string concatenation operator at (1) are INTEGER(4)/CHARACTER(1)
+/tmp/arithmetic-derivative.f90:165:26:
+
+  165 |       res = (s10 + repeat('0',(m - 1)))
+      |                          1
+Warning: Character length of actual argument shorter than of dummy argument ‘ch’ (1/100) at (1)
+/tmp/arithmetic-derivative.f90:69:11:
+
+   69 |       s = (s + ch)
+      |           1
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
+/tmp/arithmetic-derivative.f90:165:13:
+
+  165 |       res = (s10 + repeat('0',(m - 1)))
+      |             1
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
+/tmp/arithmetic-derivative.f90:166:25:
+
+  166 |       print *, trim(trim('D(10^' // exp) // ') / 7 = ') // res
+      |                         1
+Error: Operands of string concatenation operator at (1) are CHARACTER(5)/INTEGER(4)
+/tmp/arithmetic-derivative.f90:60:4:
+
+   60 |     res = factors
+      |    1
+Error: Incompatible ranks 0 and 1 in assignment at (1)

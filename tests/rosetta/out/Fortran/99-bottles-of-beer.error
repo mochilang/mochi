@@ -1,12 +1,6 @@
-gfortran error: exit status 1
-/workspace/mochi/tests/rosetta/out/Fortran/99-bottles-of-beer.f90:2:8:
+gfortran: exit status 1
+/tmp/99-bottles-of-beer.f90:6:3:
 
-    2 | program 99_bottles_of_beer
-      |        1
-Error: Invalid form of PROGRAM statement at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/99-bottles-of-beer.f90:32:13:
-
-   32 | end program 99_bottles_of_beer
-      |             1
-Error: Expected terminating name at (1)
-f951: Error: Unexpected end of file in ‘/workspace/mochi/tests/rosetta/out/Fortran/99-bottles-of-beer.f90’
+    6 |   main()
+      |   1
+Error: Unclassifiable statement at (1)

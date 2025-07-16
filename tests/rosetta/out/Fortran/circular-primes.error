@@ -1,1 +1,56 @@
-panic: runtime error: index out of range [0] with length 0
+gfortran: exit status 1
+/tmp/circular-primes.f90:24:14:
+
+   24 |   circs = (//)
+      |              1
+Error: Empty array constructor at (1) is not allowed
+/tmp/circular-primes.f90:60:12:
+
+   60 |   print *, '
+      |            1
+Error: Unterminated character constant beginning at (1)
+/tmp/circular-primes.f90:63:12:
+
+   63 |   print *, '
+      |            1
+Error: Unterminated character constant beginning at (1)
+/tmp/circular-primes.f90:125:51:
+
+  125 |   recursive character(len=100) function showList(xs) result(res)
+      |                                                   1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘xs’ at (1)
+/tmp/circular-primes.f90:131:13:
+
+  131 |       out = (out + s6)
+      |             1
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
+/tmp/circular-primes.f90:132:21:
+
+  132 |       if (((i < size(xs)) - 1)) then
+      |                     1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/circular-primes.f90:129:24:
+
+  129 |     do while ((i < size(xs)))
+      |                        1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/circular-primes.f90:43:4:
+
+   43 |     q = q((1)+1:size(q))
+      |    1
+Error: Different shape for array assignment at (1) on dimension 1 (6 and 5)
+/tmp/circular-primes.f90:44:4:
+
+   44 |     fq = fq((1)+1:size(fq))
+      |    1
+Error: Different shape for array assignment at (1) on dimension 1 (6 and 5)
+/tmp/circular-primes.f90:45:24:
+
+   45 |     if ((((f /= 2) .and. f) /= 5)) then
+      |                        1
+Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/INTEGER(4)
+/tmp/circular-primes.f90:59:20:
+
+   59 |   print *, showList(circs)
+      |                    1
+Error: Rank mismatch in argument ‘xs’ at (1) (scalar and rank-1)

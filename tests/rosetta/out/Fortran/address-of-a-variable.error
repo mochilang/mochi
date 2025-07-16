@@ -1,7 +1,0 @@
-output mismatch
--- got --
-value as float:   3.14000010    
- address: <not available>
--- want --
-value as float: 3.14
-address: <not available>

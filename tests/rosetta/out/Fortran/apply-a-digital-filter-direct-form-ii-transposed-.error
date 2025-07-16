@@ -1,1 +1,92 @@
-panic: runtime error: index out of range [0] with length 0
+gfortran: exit status 1
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:17:132:
+
+   17 |   sig = (/-0.917843918645,0.141984778794,1.20536903482,0.190286794412,-0.662370894973,-1.00700480494,-0.404707073677,0.800482325044,0.743500089861,1.01090520172,0.741527555207,0.277841675195,0.400833448236,-0.2085993586,-0.172842103641,-0.134316096293,0.0259303398477,0.490105989562,0.549391221511,0.9047198589/)
+      |                                                                                                                                    1
+Error: Line truncated at (1) [-Werror=line-truncation]
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:17:132:
+
+   17 |   sig = (/-0.917843918645,0.141984778794,1.20536903482,0.190286794412,-0.662370894973,-1.00700480494,-0.404707073677,0.800482325044,0.743500089861,1.01090520172,0.741527555207,0.277841675195,0.400833448236,-0.2085993586,-0.172842103641,-0.134316096293,0.0259303398477,0.490105989562,0.549391221511,0.9047198589/)
+      |                                                                                                                                    1
+Error: Syntax error in array constructor at (1)
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:21:17:
+
+   21 |     print *, res(((k)+1))
+      |                 1
+Error: Syntax error in PRINT statement at (1)
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:29:14:
+
+   29 |     out = (//)
+      |              1
+Error: Empty array constructor at (1) is not allowed
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:25:48:
+
+   25 |   recursive integer function applyFilter(input,a,b) result(res)
+      |                                                1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘a’ at (1)
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:25:50:
+
+   25 |   recursive integer function applyFilter(input,a,b) result(res)
+      |                                                  1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘b’ at (1)
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:25:46:
+
+   25 |   recursive integer function applyFilter(input,a,b) result(res)
+      |                                              1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘input’ at (1)
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:35:43:
+
+   35 |       do while ((((j <= i) .and. j) < size(b)))
+      |                                           1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:35:32:
+
+   35 |       do while ((((j <= i) .and. j) < size(b)))
+      |                                1
+Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/INTEGER(4)
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:40:48:
+
+   40 |       do while (((((j < i) .and. j) + 1) < size(a)))
+      |                                                1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:40:32:
+
+   40 |       do while (((((j < i) .and. j) + 1) < size(a)))
+      |                                1
+Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/INTEGER(4)
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:32:24:
+
+   32 |     do while ((i < size(input)))
+      |                        1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:50:4:
+
+   50 |     res = out
+      |    1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:15:10:
+
+   15 |   a = (/1,-2.7756e-16,0.33333333,-1.85e-17/)
+      |          1
+Error: Element in INTEGER(4) array constructor at (1) is REAL(4)
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:18:20:
+
+   18 |   res = applyFilter(sig,a,b)
+      |                    1
+Error: Rank mismatch in argument ‘input’ at (1) (scalar and rank-1)
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:18:24:
+
+   18 |   res = applyFilter(sig,a,b)
+      |                        1
+Error: Rank mismatch in argument ‘a’ at (1) (scalar and rank-1)
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:18:26:
+
+   18 |   res = applyFilter(sig,a,b)
+      |                          1
+Error: Rank mismatch in argument ‘b’ at (1) (scalar and rank-1)
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:20:22:
+
+   20 |   do while ((k < size(res)))
+      |                      1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+f951: some warnings being treated as errors

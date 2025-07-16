@@ -1,0 +1,12 @@
+gfortran: exit status 1
+/tmp/a+b.f90:2:8:
+
+    2 | program a+b
+      |        1
+Error: Invalid form of PROGRAM statement at (1)
+/tmp/a+b.f90:13:14:
+
+   13 | end program a+b
+      |              1
+Error: Syntax error in END PROGRAM statement at (1)
+f951: Error: Unexpected end of file in ‘/tmp/a+b.f90’

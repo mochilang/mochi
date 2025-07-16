@@ -1,250 +1,215 @@
-gfortran error: exit status 1
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:18:3:
+gfortran: exit status 1
+/tmp/camel-case-and-snake-case.f90:18:3:
 
    18 |   main()
       |   1
 Error: Unclassifiable statement at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:117:46:
-
-  117 |     do while ((((start < size(out)) .and. out((start)+1:(start + 1))) == '_'))
-      |                                              1
-Error: Expected a right parenthesis in expression at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:119:7:
-
-  119 |     end do
-      |       1
-Error: Expecting END FUNCTION statement at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:121:40:
-
-  121 |     do while ((((end > start) .and. out(((end - 1))+1:end)) == '_'))
-      |                                        1
-Error: Expected a right parenthesis in expression at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:123:7:
-
-  123 |     end do
-      |       1
-Error: Expecting END FUNCTION statement at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:145:132:
+/tmp/camel-case-and-snake-case.f90:145:132:
 
   145 |     samples = (/'snakeCase','snake_case','snake-case','snake case','snake CASE','snake.case','variable_10_case','variable10Case','ɛrgo rE tHis','hurry-up-joe!','c://my-docs/happy_Flag-Day/12.doc',' spaces '/)
       |                                                                                                                                     
 Error: Line truncated at (1) [-Werror=line-truncation]
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:145:131:
+/tmp/camel-case-and-snake-case.f90:145:131:
 
   145 |     samples = (/'snakeCase','snake_case','snake-case','snake case','snake CASE','snake.case','variable_10_case','variable10Case','ɛrgo rE tHis','hurry-up-joe!','c://my-docs/happy_Flag-Day/12.doc',' spaces '/)
       |                                                                                                                                   1
 Error: Unterminated character constant beginning at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:148:7:
+/tmp/camel-case-and-snake-case.f90:148:7:
 
   148 |       s = samples(i0)
       |       1
 Error: Symbol ‘s’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:87:8:
+/tmp/camel-case-and-snake-case.f90:87:8:
 
    87 |       ch = s((i)+1:(i + 1))
       |        1
 Error: Symbol ‘ch’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:57:8:
+/tmp/camel-case-and-snake-case.f90:57:8:
 
    57 |       ch = s((i)+1:(i + 1))
       |        1
 Error: Symbol ‘ch’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:23:30:
+/tmp/camel-case-and-snake-case.f90:23:30:
 
    23 |     do while ((((start < size(s)) .and. s((start)+1:(start + 1))) == ' '))
       |                              1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:26:15:
+/tmp/camel-case-and-snake-case.f90:26:15:
 
    26 |     end = size(s)
       |               1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:27:35:
+/tmp/camel-case-and-snake-case.f90:27:35:
 
    27 |     do while ((((end > start) .and. s(((end - 1))+1:end)) == ' '))
       |                                   1
 Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/CHARACTER(*)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:82:4:
+/tmp/camel-case-and-snake-case.f90:82:4:
 
    82 |     s = trimSpace(s)
       |    1
 Error: Dummy argument ‘s’ with INTENT(IN) in variable definition context (assignment) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:83:10:
-
-   83 |     out = ''
-      |          1
-Error: Cannot convert CHARACTER(0) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:84:14:
+/tmp/camel-case-and-snake-case.f90:84:14:
 
    84 |     prevUnd = .false.
       |              1
 Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:89:39:
+/tmp/camel-case-and-snake-case.f90:89:39:
 
    89 |         if (((.not. prevUnd .and. size(out)) > 0)) then
       |                                       1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:89:19:
+/tmp/camel-case-and-snake-case.f90:89:19:
 
    89 |         if (((.not. prevUnd .and. size(out)) > 0)) then
       |                   1
 Error: Operand of .not. operator at (1) is INTEGER(4)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:90:16:
-
-   90 |           out = out // '_'
-      |                1
-Error: Operands of string concatenation operator at (1) are INTEGER(4)/CHARACTER(1)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:91:20:
+/tmp/camel-case-and-snake-case.f90:91:20:
 
    91 |           prevUnd = .true.
       |                    1
 Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:97:39:
+/tmp/camel-case-and-snake-case.f90:97:39:
 
    97 |         if (((.not. prevUnd .and. size(out)) > 0)) then
       |                                       1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:97:19:
+/tmp/camel-case-and-snake-case.f90:97:19:
 
    97 |         if (((.not. prevUnd .and. size(out)) > 0)) then
       |                   1
 Error: Operand of .not. operator at (1) is INTEGER(4)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:98:16:
-
-   98 |           out = out // '_'
-      |                1
-Error: Operands of string concatenation operator at (1) are INTEGER(4)/CHARACTER(1)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:99:20:
+/tmp/camel-case-and-snake-case.f90:99:20:
 
    99 |           prevUnd = .true.
       |                    1
 Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:105:33:
+/tmp/camel-case-and-snake-case.f90:105:33:
 
   105 |         if (((i > 0) .and. (.not. prevUnd))) then
       |                                 1
 Error: Operand of .not. operator at (1) is INTEGER(4)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:106:16:
-
-  106 |           out = out // '_'
-      |                1
-Error: Operands of string concatenation operator at (1) are INTEGER(4)/CHARACTER(1)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:109:18:
+/tmp/camel-case-and-snake-case.f90:109:18:
 
   109 |         prevUnd = .false.
       |                  1
 Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:112:18:
+/tmp/camel-case-and-snake-case.f90:112:18:
 
   112 |         prevUnd = .false.
       |                  1
 Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:86:24:
+/tmp/camel-case-and-snake-case.f90:86:24:
 
    86 |     do while ((i < size(s)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:120:15:
+/tmp/camel-case-and-snake-case.f90:117:30:
+
+  117 |     do while ((((start < size(out)) .and. out((start)+1:(start + 1))) == '_'))
+      |                              1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/camel-case-and-snake-case.f90:120:15:
 
   120 |     end = size(out)
       |               1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:127:14:
+/tmp/camel-case-and-snake-case.f90:121:35:
+
+  121 |     do while ((((end > start) .and. out(((end - 1))+1:end)) == '_'))
+      |                                   1
+Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/CHARACTER(*)
+/tmp/camel-case-and-snake-case.f90:127:14:
 
   127 |     lastUnd = .false.
       |              1
 Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:130:11:
+/tmp/camel-case-and-snake-case.f90:129:10:
+
+  129 |       c = out((j)+1:(j + 1))
+      |          1
+Error: Cannot convert CHARACTER(*) to INTEGER(4) at (1)
+/tmp/camel-case-and-snake-case.f90:130:11:
 
   130 |       if ((c == '_')) then
       |           1
 Error: Operands of comparison operator ‘==’ at (1) are INTEGER(4)/CHARACTER(1)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:131:17:
+/tmp/camel-case-and-snake-case.f90:131:17:
 
   131 |         if (.not. lastUnd) then
       |                 1
 Error: Operand of .not. operator at (1) is INTEGER(4)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:132:17:
+/tmp/camel-case-and-snake-case.f90:132:17:
 
   132 |           res = (res + c)
       |                 1
 Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/INTEGER(4)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:134:18:
+/tmp/camel-case-and-snake-case.f90:134:18:
 
   134 |         lastUnd = .true.
       |                  1
 Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:136:15:
+/tmp/camel-case-and-snake-case.f90:136:15:
 
   136 |         res = (res + c)
       |               1
 Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/INTEGER(4)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:137:18:
+/tmp/camel-case-and-snake-case.f90:137:18:
 
   137 |         lastUnd = .false.
       |                  1
 Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:128:24:
+/tmp/camel-case-and-snake-case.f90:128:24:
 
   128 |     do while ((j < size(out)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:52:4:
+/tmp/camel-case-and-snake-case.f90:52:4:
 
    52 |     s = trimSpace(s)
       |    1
 Error: Dummy argument ‘s’ with INTENT(IN) in variable definition context (assignment) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:53:10:
-
-   53 |     out = ''
-      |          1
-Error: Cannot convert CHARACTER(0) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:54:9:
+/tmp/camel-case-and-snake-case.f90:54:9:
 
    54 |     up = .false.
       |         1
 Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:59:13:
+/tmp/camel-case-and-snake-case.f90:59:13:
 
    59 |         up = .true.
       |             1
 Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:65:13:
+/tmp/camel-case-and-snake-case.f90:65:13:
 
    65 |         up = .false.
       |             1
 Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:69:10:
+/tmp/camel-case-and-snake-case.f90:69:10:
 
    69 |       if (up) then
       |          1
 Error: IF clause at (1) requires a scalar LOGICAL expression
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:71:13:
+/tmp/camel-case-and-snake-case.f90:71:13:
 
    71 |         up = .false.
       |             1
 Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:56:24:
+/tmp/camel-case-and-snake-case.f90:56:24:
 
    56 |     do while ((i < size(s)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:77:10:
-
-   77 |     res = out
-      |          1
-Error: Cannot convert INTEGER(4) to CHARACTER(100) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:42:18:
+/tmp/camel-case-and-snake-case.f90:42:18:
 
    42 |     n = (w - size(s))
       |                  1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:47:11:
+/tmp/camel-case-and-snake-case.f90:47:11:
 
    47 |     res = (res + s)
       |           1
 Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
-/workspace/mochi/tests/rosetta/out/Fortran/camel-case-and-snake-case.f90:35:29:
+/tmp/camel-case-and-snake-case.f90:35:29:
 
    35 |     res = (((ch >= 'A') .and. ch) <= 'Z')
       |                             1

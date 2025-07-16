@@ -1,13 +1,5 @@
-output mismatch
--- got --
 1                                                                                                   
  4                                                                                                   
  9                                                                                                   
  16                                                                                                  
  25
--- want --
-1
-4
-9
-16
-25

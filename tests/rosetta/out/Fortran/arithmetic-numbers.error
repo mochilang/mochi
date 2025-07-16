@@ -1,1 +1,131 @@
-panic: runtime error: index out of range [0] with length 0
+gfortran: exit status 1
+/tmp/arithmetic-numbers.f90:35:3:
+
+   35 |   main()
+      |   1
+Error: Unclassifiable statement at (1)
+/tmp/arithmetic-numbers.f90:39:14:
+
+   39 |     spf = (//)
+      |              1
+Error: Empty array constructor at (1) is not allowed
+/tmp/arithmetic-numbers.f90:70:17:
+
+   70 |     primes = (//)
+      |                 1
+Error: Empty array constructor at (1) is not allowed
+/tmp/arithmetic-numbers.f90:102:15:
+
+  102 |       out = (s(i+1:(i + 1)) + out)
+      |               1
+Error: Expected a right parenthesis in expression at (1)
+/tmp/arithmetic-numbers.f90:201:26:
+
+  201 |       print *, trim(trim('
+      |                          1
+Error: Unterminated character constant beginning at (1)
+/tmp/arithmetic-numbers.f90:199:10:
+
+  199 |       last = arr((((x - 1))+1))
+      |          1
+Error: Symbol ‘last’ at (1) has no IMPLICIT type
+/tmp/arithmetic-numbers.f90:178:9:
+
+  178 |     limit = 1228663
+      |         1
+Error: Symbol ‘limit’ at (1) has no IMPLICIT type
+/tmp/arithmetic-numbers.f90:137:5:
+
+  137 |     n = 3
+      |     1
+Error: Symbol ‘n’ at (1) has no IMPLICIT type
+/tmp/arithmetic-numbers.f90:133:56:
+
+  133 |   recursive integer function arithmeticNumbers(limit,spf) result(res)
+      |                                                        1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘spf’ at (1)
+/tmp/arithmetic-numbers.f90:112:46:
+
+  112 |   recursive integer function primeCount(primes,last,spf) result(res)
+      |                                              1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘primes’ at (1)
+/tmp/arithmetic-numbers.f90:112:55:
+
+  112 |   recursive integer function primeCount(primes,last,spf) result(res)
+      |                                                       1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘spf’ at (1)
+/tmp/arithmetic-numbers.f90:67:43:
+
+   67 |   recursive integer function primesFrom(spf,limit) result(res)
+      |                                           1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘spf’ at (1)
+/tmp/arithmetic-numbers.f90:181:36:
+
+  181 |     arr = arithmeticNumbers(1000000,spf)
+      |                                    1
+Error: Rank mismatch in argument ‘spf’ at (1) (scalar and rank-1)
+/tmp/arithmetic-numbers.f90:174:4:
+
+  174 |     res = arr
+      |    1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/arithmetic-numbers.f90:87:8:
+
+   87 |     s = s2
+      |        1
+Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
+/tmp/arithmetic-numbers.f90:89:10:
+
+   89 |       s = ' ' // s
+      |          1
+Error: Operands of string concatenation operator at (1) are CHARACTER(1)/INTEGER(4)
+/tmp/arithmetic-numbers.f90:88:20:
+
+   88 |     do while ((size(s) < 3))
+      |                    1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/arithmetic-numbers.f90:91:10:
+
+   91 |     res = s
+      |          1
+Error: Cannot convert INTEGER(4) to CHARACTER(100) at (1)
+/tmp/arithmetic-numbers.f90:188:16:
+
+  188 |         line = (line + pad3(arr((((i + j))+1))))
+      |                1
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
+/tmp/arithmetic-numbers.f90:97:8:
+
+   97 |     s = s3
+      |        1
+Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
+/tmp/arithmetic-numbers.f90:99:14:
+
+   99 |     i = (size(s) - 1)
+      |              1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/arithmetic-numbers.f90:104:33:
+
+  104 |       if ((((mod(c,3) == 0) .and. i) > 0)) then
+      |                                 1
+Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/INTEGER(4)
+/tmp/arithmetic-numbers.f90:205:30:
+
+  205 |       print *, trim(trim(trim('The count of such numbers <= ' // lastc) // ' which are composite is ') // commatize(comp)) // '.'
+      |                              1
+Error: Operands of string concatenation operator at (1) are CHARACTER(29)/INTEGER(4)
+/tmp/arithmetic-numbers.f90:117:14:
+
+  117 |     hi = size(primes)
+      |              1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/arithmetic-numbers.f90:81:4:
+
+   81 |     res = primes
+      |    1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/arithmetic-numbers.f90:64:4:
+
+   64 |     res = spf
+      |    1
+Error: Incompatible ranks 0 and 1 in assignment at (1)

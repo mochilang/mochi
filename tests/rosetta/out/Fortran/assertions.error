@@ -1,5 +1,5 @@
-gfortran error: exit status 1
-/workspace/mochi/tests/rosetta/out/Fortran/assertions.f90:5:3:
+gfortran: exit status 1
+/tmp/assertions.f90:5:3:
 
     5 |   main()
       |   1

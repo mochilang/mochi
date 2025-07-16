@@ -1,115 +1,90 @@
-gfortran error: exit status 1
-/workspace/mochi/tests/rosetta/out/Fortran/caesar-cipher-2.f90:16:3:
+gfortran: exit status 1
+/tmp/caesar-cipher-2.f90:16:3:
 
    16 |   main()
       |   1
 Error: Unclassifiable statement at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/caesar-cipher-2.f90:97:9:
-
-   97 |     pt = 'The five boxing wizards jump quickly'
-      |         1
-Error: Cannot convert CHARACTER(36) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/caesar-cipher-2.f90:98:12:
-
-   98 |     print *, 'Plaintext: ' // pt
-      |            1
-Error: Operands of string concatenation operator at (1) are CHARACTER(11)/INTEGER(4)
-/workspace/mochi/tests/rosetta/out/Fortran/caesar-cipher-2.f90:101:26:
+/tmp/caesar-cipher-2.f90:101:26:
 
   101 |       if ((((key < 1) .or. key) > 25)) then
       |                          1
 Error: Operands of logical operator ‘.or.’ at (1) are LOGICAL(4)/INTEGER(4)
-/workspace/mochi/tests/rosetta/out/Fortran/caesar-cipher-2.f90:106:11:
-
-  106 |       ct = encipher(pt,key)
-      |           1
-Error: Type mismatch in argument ‘s’ at (1); passed INTEGER(4) to CHARACTER(100)
-/workspace/mochi/tests/rosetta/out/Fortran/caesar-cipher-2.f90:81:10:
-
-   81 |     out = ''
-      |          1
-Error: Cannot convert CHARACTER(0) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/caesar-cipher-2.f90:67:26:
+/tmp/caesar-cipher-2.f90:67:26:
 
    67 |     if ((((r >= 'a') .and. r) <= 'z')) then
       |                          1
 Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/CHARACTER(100)
-/workspace/mochi/tests/rosetta/out/Fortran/caesar-cipher-2.f90:34:12:
+/tmp/caesar-cipher-2.f90:34:12:
 
    34 |     upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
       |            1
 Error: Cannot convert CHARACTER(26) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/caesar-cipher-2.f90:35:12:
+/tmp/caesar-cipher-2.f90:35:12:
 
    35 |     lower = 'abcdefghijklmnopqrstuvwxyz'
       |            1
 Error: Cannot convert CHARACTER(26) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/caesar-cipher-2.f90:36:10:
+/tmp/caesar-cipher-2.f90:36:10:
 
    36 |     idx = indexOf(upper,ch)
       |          1
 Error: Type mismatch in argument ‘s’ at (1); passed INTEGER(4) to CHARACTER(100)
-/workspace/mochi/tests/rosetta/out/Fortran/caesar-cipher-2.f90:22:24:
+/tmp/caesar-cipher-2.f90:22:24:
 
    22 |     do while ((i < size(s)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/workspace/mochi/tests/rosetta/out/Fortran/caesar-cipher-2.f90:41:10:
+/tmp/caesar-cipher-2.f90:41:10:
 
    41 |     idx = indexOf(lower,ch)
       |          1
 Error: Type mismatch in argument ‘s’ at (1); passed INTEGER(4) to CHARACTER(100)
-/workspace/mochi/tests/rosetta/out/Fortran/caesar-cipher-2.f90:51:12:
+/tmp/caesar-cipher-2.f90:51:12:
 
    51 |     upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
       |            1
 Error: Cannot convert CHARACTER(26) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/caesar-cipher-2.f90:52:12:
+/tmp/caesar-cipher-2.f90:52:12:
 
    52 |     lower = 'abcdefghijklmnopqrstuvwxyz'
       |            1
 Error: Cannot convert CHARACTER(26) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/caesar-cipher-2.f90:53:25:
+/tmp/caesar-cipher-2.f90:53:25:
 
    53 |     if ((((n >= 65) .and. n) < 91)) then
       |                         1
 Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/INTEGER(4)
-/workspace/mochi/tests/rosetta/out/Fortran/caesar-cipher-2.f90:57:25:
+/tmp/caesar-cipher-2.f90:57:25:
 
    57 |     if ((((n >= 97) .and. n) < 123)) then
       |                         1
 Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/INTEGER(4)
-/workspace/mochi/tests/rosetta/out/Fortran/caesar-cipher-2.f90:71:26:
+/tmp/caesar-cipher-2.f90:71:26:
 
    71 |     if ((((r >= 'A') .and. r) <= 'Z')) then
       |                          1
 Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/CHARACTER(100)
-/workspace/mochi/tests/rosetta/out/Fortran/caesar-cipher-2.f90:84:13:
+/tmp/caesar-cipher-2.f90:84:13:
 
    84 |       out = (out + shiftRune(s((i)+1:(i + 1)),k))
       |             1
-Error: Operands of binary numeric operator ‘+’ at (1) are INTEGER(4)/CHARACTER(100)
-/workspace/mochi/tests/rosetta/out/Fortran/caesar-cipher-2.f90:83:24:
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
+/tmp/caesar-cipher-2.f90:83:24:
 
    83 |     do while ((i < size(s)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/workspace/mochi/tests/rosetta/out/Fortran/caesar-cipher-2.f90:87:10:
-
-   87 |     res = out
-      |          1
-Error: Cannot convert INTEGER(4) to CHARACTER(100) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/caesar-cipher-2.f90:106:11:
+/tmp/caesar-cipher-2.f90:106:11:
 
   106 |       ct = encipher(pt,key)
       |           1
 Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/caesar-cipher-2.f90:109:14:
+/tmp/caesar-cipher-2.f90:109:14:
 
   109 |       print *, '  Enciphered: ' // ct
       |              1
 Error: Operands of string concatenation operator at (1) are CHARACTER(14)/INTEGER(4)
-/workspace/mochi/tests/rosetta/out/Fortran/caesar-cipher-2.f90:110:34:
+/tmp/caesar-cipher-2.f90:110:34:
 
   110 |       print *, '  Deciphered: ' // decipher(ct,key)
       |                                  1

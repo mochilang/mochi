@@ -1,0 +1,127 @@
+gfortran: exit status 1
+/tmp/100-prisoners.f90:30:49:
+
+   30 |       integer, dimension(2) :: arr7 = (/'random','optimal'/)
+      |                                                 1
+Error: Different CHARACTER lengths (6/7) in array constructor at (1)
+/tmp/100-prisoners.f90:55:20:
+
+   55 |       drawers = (//)
+      |                    1
+Error: Empty array constructor at (1) is not allowed
+/tmp/100-prisoners.f90:82:23:
+
+   82 |           opened = (//)
+      |                       1
+Error: Empty array constructor at (1) is not allowed
+/tmp/100-prisoners.f90:119:132:
+
+  119 |     print *, trim(trim(trim(trim(trim('  strategy = ' // strategy) // '  pardoned = ') // s2) // ' relative frequency = ') // s3) // '%'
+      |                                                                                                                                    1
+Error: Line truncated at (1) [-Werror=line-truncation]
+/tmp/100-prisoners.f90:119:132:
+
+  119 |     print *, trim(trim(trim(trim(trim('  strategy = ' // strategy) // '  pardoned = ') // s2) // ' relative frequency = ') // s3) // '%'
+      |                                                                                                                                    1
+Error: Syntax error in expression at (1)
+/tmp/100-prisoners.f90:127:85:
+
+  127 |       print *, trim(trim(trim('Results from ' // s5) // ' trials with ') // s6) // ' prisoners:
+      |                                                                                     1
+Error: Unterminated character constant beginning at (1)
+/tmp/100-prisoners.f90:128:1:
+
+  128 | '
+      | 1
+Error: Invalid character in name at (1)
+/tmp/100-prisoners.f90:131:17:
+
+  131 |         doTrials(trials,np,strat)
+      |                 1
+Error: ‘dotrials’ at (1) is not a variable
+/tmp/100-prisoners.f90:124:8:
+
+  124 |       np = arr4(i4)
+      |        1
+Error: Symbol ‘np’ at (1) has no IMPLICIT type
+/tmp/100-prisoners.f90:122:10:
+
+  122 |     trials = 1000
+      |          1
+Error: Symbol ‘trials’ at (1) has no IMPLICIT type
+/tmp/100-prisoners.f90:130:16:
+
+  130 |         strat = arr7(i7)
+      |                1
+Error: Function ‘arr7’ at (1) has no IMPLICIT type
+/tmp/100-prisoners.f90:64:24:
+
+   64 |       drawers = shuffle(drawers)
+      |                        1
+Error: Rank mismatch in argument ‘xs’ at (1) (scalar and rank-1)
+/tmp/100-prisoners.f90:39:14:
+
+   39 |       j = mod(now(),((i + 1)))
+      |              1
+Error: Function ‘now’ at (1) has no IMPLICIT type
+/tmp/100-prisoners.f90:66:16:
+
+   66 |       success = .true.
+      |                1
+Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
+/tmp/100-prisoners.f90:68:16:
+
+   68 |         found = .false.
+      |                1
+Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
+/tmp/100-prisoners.f90:75:22:
+
+   75 |               found = .true.
+      |                      1
+Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
+/tmp/100-prisoners.f90:87:35:
+
+   87 |             app1(size(opened)+1) = .false.
+      |                                   1
+Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
+/tmp/100-prisoners.f90:93:20:
+
+   93 |             n = mod(now(),100)
+      |                    1
+Error: Function ‘now’ at (1) has no IMPLICIT type
+/tmp/100-prisoners.f90:95:22:
+
+   95 |               n = mod(now(),100)
+      |                      1
+Error: Function ‘now’ at (1) has no IMPLICIT type
+/tmp/100-prisoners.f90:94:22:
+
+   94 |             do while (opened(((n)+1)))
+      |                      1
+Error: Exit condition of DO WHILE loop at (1) must be a scalar LOGICAL expression
+/tmp/100-prisoners.f90:97:30:
+
+   97 |             opened(((n)+1)) = .true.
+      |                              1
+Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
+/tmp/100-prisoners.f90:99:22:
+
+   99 |               found = .true.
+      |                      1
+Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
+/tmp/100-prisoners.f90:105:17:
+
+  105 |         if (.not. found) then
+      |                 1
+Error: Operand of .not. operator at (1) is INTEGER(4)
+/tmp/100-prisoners.f90:106:20:
+
+  106 |           success = .false.
+      |                    1
+Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
+/tmp/100-prisoners.f90:111:10:
+
+  111 |       if (success) then
+      |          1
+Error: IF clause at (1) requires a scalar LOGICAL expression
+f951: some warnings being treated as errors

@@ -1,5 +1,0 @@
-output mismatch
--- got --
-The smallest number whose square ends with 269696 is25264
--- want --
-The smallest number whose square ends with 269696 is 25264

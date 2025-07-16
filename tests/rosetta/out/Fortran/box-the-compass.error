@@ -1,85 +1,85 @@
-gfortran error: exit status 1
-/workspace/mochi/tests/rosetta/out/Fortran/box-the-compass.f90:17:132:
+gfortran: exit status 1
+/tmp/box-the-compass.f90:17:132:
 
    17 |   compassPoint = (/'North','North by east','North-northeast','Northeast by north','Northeast','Northeast by east','East-northeast','East by north','East','East by south','East-southeast','Southeast by east','Southeast','Southeast by south','South-southeast','South by east','South','South by west','South-southwest','Southwest by south','Southwest','Southwest by west','West-southwest','West by south','West','West by north','West-northwest','Northwest by west','Northwest','Northwest by north','North-northwest','North by west'/)
       |                                                                                                                                    1
 Error: Line truncated at (1) [-Werror=line-truncation]
-/workspace/mochi/tests/rosetta/out/Fortran/box-the-compass.f90:17:132:
+/tmp/box-the-compass.f90:17:132:
 
    17 |   compassPoint = (/'North','North by east','North-northeast','Northeast by north','Northeast','Northeast by east','East-northeast','East by north','East','East by south','East-southeast','Southeast by east','Southeast','Southeast by south','South-southeast','South by east','South','South by west','South-southwest','Southwest by south','Southwest','Southwest by west','West-southwest','West by south','West','West by north','West-northwest','Northwest by west','Northwest','Northwest by north','North-northwest','North by west'/)
       |                                                                                                                                    1
 Error: Unterminated character constant beginning at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/box-the-compass.f90:18:132:
+/tmp/box-the-compass.f90:18:132:
 
    18 |   headings = (/0,16.87,16.88,33.75,50.62,50.63,67.5,84.37,84.38,101.25,118.12,118.13,135,151.87,151.88,168.75,185.62,185.63,202.5,219.37,219.38,236.25,253.12,253.13,270,286.87,286.88,303.75,320.62,320.63,337.5,354.37,354.38/)
       |                                                                                                                                    1
 Error: Line truncated at (1) [-Werror=line-truncation]
-/workspace/mochi/tests/rosetta/out/Fortran/box-the-compass.f90:18:132:
+/tmp/box-the-compass.f90:18:132:
 
    18 |   headings = (/0,16.87,16.88,33.75,50.62,50.63,67.5,84.37,84.38,101.25,118.12,118.13,135,151.87,151.88,168.75,185.62,185.63,202.5,219.37,219.38,236.25,253.12,253.13,270,286.87,286.88,303.75,320.62,320.63,337.5,354.37,354.38/)
       |                                                                                                                                    1
 Error: Syntax error in array constructor at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/box-the-compass.f90:71:5:
+/tmp/box-the-compass.f90:71:5:
 
    71 |     s = s1
       |     1
 Error: Symbol ‘s’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/box-the-compass.f90:100:10:
+/tmp/box-the-compass.f90:100:10:
 
   100 |     res = compassPoint(((cpx(h))+1))
       |          1
 Error: Cannot convert INTEGER(4) to CHARACTER(100) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/box-the-compass.f90:58:24:
+/tmp/box-the-compass.f90:58:24:
 
    58 |     do while ((i < size(s)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/workspace/mochi/tests/rosetta/out/Fortran/box-the-compass.f90:45:10:
+/tmp/box-the-compass.f90:45:10:
 
    45 |     out = s
       |          1
 Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/box-the-compass.f90:46:13:
+/tmp/box-the-compass.f90:46:13:
 
    46 |     i = size(s)
       |             1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/workspace/mochi/tests/rosetta/out/Fortran/box-the-compass.f90:48:12:
+/tmp/box-the-compass.f90:48:12:
 
    48 |       out = out // ' '
       |            1
 Error: Operands of string concatenation operator at (1) are INTEGER(4)/CHARACTER(1)
-/workspace/mochi/tests/rosetta/out/Fortran/box-the-compass.f90:51:10:
+/tmp/box-the-compass.f90:51:10:
 
    51 |     res = out
       |          1
 Error: Cannot convert INTEGER(4) to CHARACTER(100) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/box-the-compass.f90:34:18:
+/tmp/box-the-compass.f90:34:18:
 
    34 |     n = (w - size(s))
       |                  1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/workspace/mochi/tests/rosetta/out/Fortran/box-the-compass.f90:39:11:
+/tmp/box-the-compass.f90:39:11:
 
    39 |     res = (res + s)
       |           1
 Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
-/workspace/mochi/tests/rosetta/out/Fortran/box-the-compass.f90:24:9:
+/tmp/box-the-compass.f90:24:9:
 
    24 |     cp = degrees2compasspoint(h)
       |         1
 Error: Type mismatch in argument ‘h’ at (1); passed INTEGER(4) to REAL(4)
-/workspace/mochi/tests/rosetta/out/Fortran/box-the-compass.f90:24:9:
+/tmp/box-the-compass.f90:24:9:
 
    24 |     cp = degrees2compasspoint(h)
       |         1
 Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/box-the-compass.f90:26:87:
+/tmp/box-the-compass.f90:26:87:
 
    26 |     print *, trim(trim(trim(trim(padLeft(s0,4) // '   ') // padRight(cp,19)) // ' ') // format2(h)) // '°'
       |                                                                                       1
 Error: Type mismatch in argument ‘f’ at (1); passed INTEGER(4) to REAL(4)
-/workspace/mochi/tests/rosetta/out/Fortran/box-the-compass.f90:26:59:
+/tmp/box-the-compass.f90:26:59:
 
    26 |     print *, trim(trim(trim(trim(padLeft(s0,4) // '   ') // padRight(cp,19)) // ' ') // format2(h)) // '°'
       |                                                           1

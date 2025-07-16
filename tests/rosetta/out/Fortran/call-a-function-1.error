@@ -1,0 +1,6 @@
+gfortran: exit status 1
+/tmp/call-a-function-1.f90:6:4:
+
+    6 |     res = (/0,0/)
+      |    1
+Error: Incompatible ranks 0 and 1 in assignment at (1)

@@ -1,15 +1,15 @@
-gfortran error: exit status 1
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-1.f90:12:13:
+gfortran: exit status 1
+/tmp/checkpoint-synchronization-1.f90:12:13:
 
    12 |   partList = (/'A','B','C','D'/)
       |             1
 Error: Cannot convert CHARACTER(1) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-1.f90:19:14:
+/tmp/checkpoint-synchronization-1.f90:19:14:
 
    19 |       print *, p // ' worker begins part'
       |              1
 Error: Operands of string concatenation operator at (1) are INTEGER(4)/CHARACTER(19)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-1.f90:23:14:
+/tmp/checkpoint-synchronization-1.f90:23:14:
 
    23 |       print *, p // ' worker completes part'
       |              1

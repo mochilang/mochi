@@ -1,20 +1,10 @@
-gfortran error: exit status 1
-/workspace/mochi/tests/rosetta/out/Fortran/call-a-foreign-language-function.f90:6:3:
+gfortran: exit status 1
+/tmp/call-a-foreign-language-function.f90:6:3:
 
     6 |   main()
       |   1
 Error: Unclassifiable statement at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/call-a-foreign-language-function.f90:14:10:
-
-   14 |     go1 = 'hello C'
-      |          1
-Error: Cannot convert CHARACTER(7) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/call-a-foreign-language-function.f90:15:9:
-
-   15 |     c2 = strdup(go1)
-      |         1
-Error: Type mismatch in argument ‘s’ at (1); passed INTEGER(4) to CHARACTER(100)
-/workspace/mochi/tests/rosetta/out/Fortran/call-a-foreign-language-function.f90:15:9:
+/tmp/call-a-foreign-language-function.f90:15:9:
 
    15 |     c2 = strdup(go1)
       |         1

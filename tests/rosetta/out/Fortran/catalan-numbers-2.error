@@ -1,5 +1,5 @@
-gfortran error: exit status 1
-/workspace/mochi/tests/rosetta/out/Fortran/catalan-numbers-2.f90:10:3:
+gfortran: exit status 1
+/tmp/catalan-numbers-2.f90:10:3:
 
    10 |   main()
       |   1

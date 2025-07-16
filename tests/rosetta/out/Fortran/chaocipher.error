@@ -1,135 +1,65 @@
-gfortran error: exit status 1
-/workspace/mochi/tests/rosetta/out/Fortran/chaocipher.f90:11:3:
+gfortran: exit status 1
+/tmp/chaocipher.f90:11:3:
 
    11 |   main()
       |   1
 Error: Unclassifiable statement at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/chaocipher.f90:55:26:
-
-   55 |         out = (out + left((idx)+1:(idx + 1)))
-      |                          1
-Error: Expected a right parenthesis in expression at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/chaocipher.f90:58:27:
-
-   58 |         out = (out + right((idx)+1:(idx + 1)))
-      |                           1
-Error: Expected a right parenthesis in expression at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/chaocipher.f90:51:8:
+/tmp/chaocipher.f90:51:8:
 
    51 |       ch = text((i)+1:(i + 1))
       |        1
 Error: Symbol ‘ch’ at (1) has no IMPLICIT type; did you mean ‘chao’?
-/workspace/mochi/tests/rosetta/out/Fortran/chaocipher.f90:70:12:
+/tmp/chaocipher.f90:55:15:
 
-   70 |     plain = 'WELLDONEISBETTERTHANWELLSAID'
-      |            1
-Error: Cannot convert CHARACTER(28) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/chaocipher.f90:71:13:
+   55 |         out = (out + left((idx)+1:(idx + 1)))
+      |               1
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(*)
+/tmp/chaocipher.f90:58:15:
 
-   71 |     cipher = chao(plain,.true.)
-      |             1
-Error: Type mismatch in argument ‘text’ at (1); passed INTEGER(4) to CHARACTER(100)
-/workspace/mochi/tests/rosetta/out/Fortran/chaocipher.f90:46:11:
-
-   46 |     left = 'HXUCZVAMDSLKPEFJRIGTWOBNYQ'
-      |           1
-Error: Cannot convert CHARACTER(26) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/chaocipher.f90:47:12:
-
-   47 |     right = 'PTLNBQDEOYSFAVZKGJRIHWXUMC'
-      |            1
-Error: Cannot convert CHARACTER(26) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/chaocipher.f90:48:10:
-
-   48 |     out = ''
-      |          1
-Error: Cannot convert CHARACTER(0) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/chaocipher.f90:60:13:
-
-   60 |       left = rotate(left,idx)
-      |             1
-Error: Type mismatch in argument ‘s’ at (1); passed INTEGER(4) to CHARACTER(100)
-/workspace/mochi/tests/rosetta/out/Fortran/chaocipher.f90:30:24:
+   58 |         out = (out + right((idx)+1:(idx + 1)))
+      |               1
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(*)
+/tmp/chaocipher.f90:30:24:
 
    30 |     res = (s((n)+1:size(s)) + s(1:n))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/workspace/mochi/tests/rosetta/out/Fortran/chaocipher.f90:60:13:
-
-   60 |       left = rotate(left,idx)
-      |             1
-Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/chaocipher.f90:61:14:
-
-   61 |       right = rotate(right,idx)
-      |              1
-Error: Type mismatch in argument ‘s’ at (1); passed INTEGER(4) to CHARACTER(100)
-/workspace/mochi/tests/rosetta/out/Fortran/chaocipher.f90:61:14:
-
-   61 |       right = rotate(right,idx)
-      |              1
-Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/chaocipher.f90:62:13:
-
-   62 |       left = scrambleLeft(left)
-      |             1
-Error: Type mismatch in argument ‘s’ at (1); passed INTEGER(4) to CHARACTER(100)
-/workspace/mochi/tests/rosetta/out/Fortran/chaocipher.f90:35:65:
+/tmp/chaocipher.f90:35:65:
 
    35 |     res = (((s(1:1) + s((2)+1:14)) + s((1)+1:2)) + s((14)+1:size(s)))
       |                                                                 1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/workspace/mochi/tests/rosetta/out/Fortran/chaocipher.f90:35:13:
+/tmp/chaocipher.f90:35:13:
 
    35 |     res = (((s(1:1) + s((2)+1:14)) + s((1)+1:2)) + s((14)+1:size(s)))
       |             1
 Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(*)/CHARACTER(*)
-/workspace/mochi/tests/rosetta/out/Fortran/chaocipher.f90:62:13:
-
-   62 |       left = scrambleLeft(left)
-      |             1
-Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/chaocipher.f90:63:14:
-
-   63 |       right = scrambleRight(right)
-      |              1
-Error: Type mismatch in argument ‘s’ at (1); passed INTEGER(4) to CHARACTER(100)
-/workspace/mochi/tests/rosetta/out/Fortran/chaocipher.f90:40:70:
+/tmp/chaocipher.f90:40:70:
 
    40 |     res = ((((s((1)+1:3) + s((4)+1:15)) + s((3)+1:4)) + s((15)+1:size(s))) + s(1:1))
       |                                                                      1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/workspace/mochi/tests/rosetta/out/Fortran/chaocipher.f90:40:14:
+/tmp/chaocipher.f90:40:14:
 
    40 |     res = ((((s((1)+1:3) + s((4)+1:15)) + s((3)+1:4)) + s((15)+1:size(s))) + s(1:1))
       |              1
 Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(*)/CHARACTER(*)
-/workspace/mochi/tests/rosetta/out/Fortran/chaocipher.f90:63:14:
-
-   63 |       right = scrambleRight(right)
-      |              1
-Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/chaocipher.f90:50:24:
+/tmp/chaocipher.f90:50:24:
 
    50 |     do while ((i < size(text)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/workspace/mochi/tests/rosetta/out/Fortran/chaocipher.f90:66:10:
-
-   66 |     res = out
-      |          1
-Error: Cannot convert INTEGER(4) to CHARACTER(100) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/chaocipher.f90:71:13:
+/tmp/chaocipher.f90:71:13:
 
    71 |     cipher = chao(plain,.true.)
       |             1
 Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/chaocipher.f90:74:12:
+/tmp/chaocipher.f90:74:12:
 
    74 |     print *, chao(cipher,.false.)
       |            1
 Error: Type mismatch in argument ‘text’ at (1); passed INTEGER(4) to CHARACTER(100)
-/workspace/mochi/tests/rosetta/out/Fortran/chaocipher.f90:17:24:
+/tmp/chaocipher.f90:17:24:
 
    17 |     do while ((i < size(s)))
       |                        1

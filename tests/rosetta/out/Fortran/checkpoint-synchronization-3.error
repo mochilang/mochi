@@ -1,75 +1,45 @@
-gfortran error: exit status 1
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-3.f90:47:20:
-
-   47 |       if ((ch == up(i+1:(i + 1)))) then
-      |                    1
-Error: Expected a right parenthesis in expression at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-3.f90:50:9:
-
-   50 |       end if
-      |         1
-Error: Expecting END DO statement at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-3.f90:43:9:
-
-   43 |     up = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-      |         1
-Error: Cannot convert CHARACTER(26) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-3.f90:44:10:
-
-   44 |     low = 'abcdefghijklmnopqrstuvwxyz'
-      |          1
-Error: Cannot convert CHARACTER(26) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-3.f90:46:24:
+gfortran: exit status 1
+/tmp/checkpoint-synchronization-3.f90:46:24:
 
    46 |     do while ((i < size(up)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-3.f90:17:13:
+/tmp/checkpoint-synchronization-3.f90:17:13:
 
    17 |   partList = (/'A','B','C','D'/)
       |             1
 Error: Cannot convert CHARACTER(1) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-3.f90:21:12:
+/tmp/checkpoint-synchronization-3.f90:21:12:
 
    21 |     print *, p // ' worker running'
       |            1
 Error: Operands of string concatenation operator at (1) are INTEGER(4)/CHARACTER(15)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-3.f90:26:8:
-
-   26 |     a = ''
-      |        1
-Error: Cannot convert CHARACTER(0) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-3.f90:29:14:
+/tmp/checkpoint-synchronization-3.f90:29:14:
 
    29 |       print *, p // ' worker begins part'
       |              1
 Error: Operands of string concatenation operator at (1) are INTEGER(4)/CHARACTER(19)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-3.f90:30:49:
+/tmp/checkpoint-synchronization-3.f90:30:49:
 
    30 |       print *, trim(p // ' worker completed ') // lower(p)
       |                                                 1
 Error: Type mismatch in argument ‘ch’ at (1); passed INTEGER(4) to CHARACTER(100)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-3.f90:30:20:
+/tmp/checkpoint-synchronization-3.f90:30:20:
 
    30 |       print *, trim(p // ' worker completed ') // lower(p)
       |                    1
 Error: Operands of string concatenation operator at (1) are INTEGER(4)/CHARACTER(18)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-3.f90:31:20:
+/tmp/checkpoint-synchronization-3.f90:31:20:
 
    31 |       a = (a + lower(p))
       |                    1
 Error: Type mismatch in argument ‘ch’ at (1); passed INTEGER(4) to CHARACTER(100)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-3.f90:31:11:
+/tmp/checkpoint-synchronization-3.f90:31:11:
 
    31 |       a = (a + lower(p))
       |           1
-Error: Operands of binary numeric operator ‘+’ at (1) are INTEGER(4)/CHARACTER(100)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-3.f90:34:23:
-
-   34 |     print *, trim(trim(a // ' assembled.  cycle ') // s3) // ' complete'
-      |                       1
-Error: Operands of string concatenation operator at (1) are INTEGER(4)/CHARACTER(19)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-3.f90:38:12:
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
+/tmp/checkpoint-synchronization-3.f90:38:12:
 
    38 |     print *, p // ' worker stopped'
       |            1

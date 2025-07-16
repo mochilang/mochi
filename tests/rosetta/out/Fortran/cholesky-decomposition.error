@@ -1,1 +1,106 @@
-panic: runtime error: index out of range [0] with length 0
+gfortran: exit status 1
+/tmp/cholesky-decomposition.f90:16:3:
+
+   16 |   demo((/(/25,15,-5/),(/15,18,0/),(/-5,0,11/)/))
+      |   1
+Error: Unclassifiable statement at (1)
+/tmp/cholesky-decomposition.f90:33:12:
+
+   33 |     l = (//)
+      |            1
+Error: Empty array constructor at (1) is not allowed
+/tmp/cholesky-decomposition.f90:36:16:
+
+   36 |       row = (//)
+      |                1
+Error: Empty array constructor at (1) is not allowed
+/tmp/cholesky-decomposition.f90:94:13:
+
+   94 |     printMat(a)
+      |             1
+Error: ‘printmat’ at (1) is not a variable
+/tmp/cholesky-decomposition.f90:97:13:
+
+   97 |     printMat(l)
+      |             1
+Error: ‘printmat’ at (1) is not a variable
+/tmp/cholesky-decomposition.f90:73:39:
+
+   73 |   recursive integer function printMat(m) result(res)
+      |                                       1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘m’ at (1)
+/tmp/cholesky-decomposition.f90:30:39:
+
+   30 |   recursive integer function cholesky(a) result(res)
+      |                                       1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘a’ at (1)
+/tmp/cholesky-decomposition.f90:95:17:
+
+   95 |     l = cholesky(a)
+      |                 1
+Error: Expected a procedure for argument ‘a’ at (1)
+/tmp/cholesky-decomposition.f90:32:13:
+
+   32 |     n = size(a)
+      |             1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/cholesky-decomposition.f90:47:6:
+
+   47 |       app1(size(l)+1) = row
+      |      1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/cholesky-decomposition.f90:58:47:
+
+   58 |           sum = ((sum - l(((i)+1),((k)+1))) * l(((j)+1),((k)+1)))
+      |                                               1
+Error: Rank mismatch in array reference at (1) (2/1)
+/tmp/cholesky-decomposition.f90:58:25:
+
+   58 |           sum = ((sum - l(((i)+1),((k)+1))) * l(((j)+1),((k)+1)))
+      |                         1
+Error: Rank mismatch in array reference at (1) (2/1)
+/tmp/cholesky-decomposition.f90:62:11:
+
+   62 |           l(((i)+1),((j)+1)) = sqrtApprox(sum)
+      |           1
+Error: Rank mismatch in array reference at (1) (2/1)
+/tmp/cholesky-decomposition.f90:62:31:
+
+   62 |           l(((i)+1),((j)+1)) = sqrtApprox(sum)
+      |                               1
+Error: Type mismatch in argument ‘x’ at (1); passed INTEGER(4) to REAL(4)
+/tmp/cholesky-decomposition.f90:64:11:
+
+   64 |           l(((i)+1),((j)+1)) = (sum / l(((j)+1),((j)+1)))
+      |           1
+Error: Rank mismatch in array reference at (1) (2/1)
+/tmp/cholesky-decomposition.f90:64:39:
+
+   64 |           l(((i)+1),((j)+1)) = (sum / l(((j)+1),((j)+1)))
+      |                                       1
+Error: Rank mismatch in array reference at (1) (2/1)
+/tmp/cholesky-decomposition.f90:70:4:
+
+   70 |     res = l
+      |    1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/cholesky-decomposition.f90:81:16:
+
+   81 |         line = (line + s2)
+      |                1
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
+/tmp/cholesky-decomposition.f90:82:23:
+
+   82 |         if (((j < size(m(((i)+1)))) - 1)) then
+      |                       1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/cholesky-decomposition.f90:79:26:
+
+   79 |       do while ((j < size(m(((i)+1)))))
+      |                          1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/cholesky-decomposition.f90:76:24:
+
+   76 |     do while ((i < size(m)))
+      |                        1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array

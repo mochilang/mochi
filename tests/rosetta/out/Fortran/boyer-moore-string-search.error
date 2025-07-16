@@ -1,1 +1,92 @@
-panic: runtime error: index out of range [0] with length 0
+gfortran: exit status 1
+/tmp/boyer-moore-string-search.f90:19:3:
+
+   19 |   main()
+      |   1
+Error: Unclassifiable statement at (1)
+/tmp/boyer-moore-string-search.f90:50:17:
+
+   50 |     result = (//)
+      |                 1
+Error: Empty array constructor at (1) is not allowed
+/tmp/boyer-moore-string-search.f90:86:132:
+
+   86 |     texts = (/'GCTAGCTCTACGAGTCTA','GGCTATAATGCGTA','there would have been a time for such a word','needle need noodle needle','DKnuthusesandprogramsanimaginarycomputertheMIXanditsassociatedmachinecodeandassemblylanguages','Nearby farms grew an acre of alfalfa on the dairy's behalf, with bales of that alfalfa exchanged for milk.'/)
+      |                                                                                                                                    1
+Error: Line truncated at (1) [-Werror=line-truncation]
+/tmp/boyer-moore-string-search.f90:86:129:
+
+   86 |     texts = (/'GCTAGCTCTACGAGTCTA','GGCTATAATGCGTA','there would have been a time for such a word','needle need noodle needle','DKnuthusesandprogramsanimaginarycomputertheMIXanditsassociatedmachinecodeandassemblylanguages','Nearby farms grew an acre of alfalfa on the dairy's behalf, with bales of that alfalfa exchanged for milk.'/)
+      |                                                                                                                                 1
+Error: Unterminated character constant beginning at (1)
+/tmp/boyer-moore-string-search.f90:99:78:
+
+   99 |       print *, trim(trim(trim(trim('Found "' // patterns(((j)+1))) // '" in 'text') // s3) // '' at indexes ') // display(idxs)
+      |                                                                              1
+Error: Syntax error in argument list at (1)
+/tmp/boyer-moore-string-search.f90:69:52:
+
+   69 |   recursive character(len=100) function display(nums) result(res)
+      |                                                    1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘nums’ at (1)
+/tmp/boyer-moore-string-search.f90:87:24:
+
+   87 |     patterns = (/'TCTA','TAATAAA','word','needle','and','alfalfa'/)
+      |                        1
+Error: Different CHARACTER lengths (4/7) in array constructor at (1)
+/tmp/boyer-moore-string-search.f90:91:14:
+
+   91 |       print *, trim(trim('text' // s2) // ' = ') // texts(((i)+1))
+      |              1
+Error: Operands of string concatenation operator at (1) are CHARACTER(*)/INTEGER(4)
+/tmp/boyer-moore-string-search.f90:97:13:
+
+   97 |       idxs = stringSearch(texts(((j)+1)),patterns(((j)+1)))
+      |             1
+Error: Type mismatch in argument ‘h’ at (1); passed INTEGER(4) to CHARACTER(100)
+/tmp/boyer-moore-string-search.f90:97:13:
+
+   97 |       idxs = stringSearch(texts(((j)+1)),patterns(((j)+1)))
+      |             1
+Error: Type mismatch in argument ‘n’ at (1); passed INTEGER(4) to CHARACTER(100)
+/tmp/boyer-moore-string-search.f90:52:16:
+
+   52 |     hlen = size(h)
+      |                1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/boyer-moore-string-search.f90:53:16:
+
+   53 |     nlen = size(n)
+      |                1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/boyer-moore-string-search.f90:24:16:
+
+   24 |     hlen = size(h)
+      |                1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/boyer-moore-string-search.f90:25:16:
+
+   25 |     nlen = size(n)
+      |                1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/boyer-moore-string-search.f90:31:15:
+
+   31 |     do while (((i <= hlen) - nlen))
+      |               1
+Error: Operands of binary numeric operator ‘-’ at (1) are LOGICAL(4)/INTEGER(4)
+/tmp/boyer-moore-string-search.f90:66:4:
+
+   66 |     res = result
+      |    1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/boyer-moore-string-search.f90:78:11:
+
+   78 |       s = (s + s1)
+      |           1
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
+/tmp/boyer-moore-string-search.f90:73:24:
+
+   73 |     do while ((i < size(nums)))
+      |                        1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+f951: some warnings being treated as errors

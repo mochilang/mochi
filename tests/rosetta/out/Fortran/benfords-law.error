@@ -1,1 +1,111 @@
-panic: runtime error: index out of range [0] with length 0
+gfortran: exit status 1
+/tmp/benfords-law.f90:23:3:
+
+   23 |   main()
+      |   1
+Error: Unclassifiable statement at (1)
+/tmp/benfords-law.f90:79:14:
+
+   79 |     res = (//)
+      |              1
+Error: Empty array constructor at (1) is not allowed
+/tmp/benfords-law.f90:133:9:
+
+  133 |     show(fib1000(),'First 1000 Fibonacci numbers')
+      |         1
+Error: ‘show’ at (1) is not a variable
+/tmp/benfords-law.f90:108:38:
+
+  108 |   recursive integer function show(nums,title) result(res)
+      |                                      1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘nums’ at (1)
+/tmp/benfords-law.f90:69:5:
+
+   69 |     s = fmtF3(x)
+      |     1
+Error: Symbol ‘s’ at (1) has no IMPLICIT type
+/tmp/benfords-law.f90:48:5:
+
+   48 |     s = s0
+      |     1
+Error: Symbol ‘s’ at (1) has no IMPLICIT type
+/tmp/benfords-law.f90:114:10:
+
+  114 |       d = leadingDigit(n)
+      |          1
+Error: Type mismatch in argument ‘x’ at (1); passed INTEGER(4) to REAL(4)
+/tmp/benfords-law.f90:97:6:
+
+   97 |       x = -x
+      |      1
+Error: Dummy argument ‘x’ with INTENT(IN) in variable definition context (assignment) at (1)
+/tmp/benfords-law.f90:100:6:
+
+  100 |       x = (x / 10)
+      |      1
+Error: Dummy argument ‘x’ with INTENT(IN) in variable definition context (assignment) at (1)
+/tmp/benfords-law.f90:103:6:
+
+  103 |       x = (x * 10)
+      |      1
+Error: Dummy argument ‘x’ with INTENT(IN) in variable definition context (assignment) at (1)
+/tmp/benfords-law.f90:102:29:
+
+  102 |     do while ((((x > 0) .and. x) < 1))
+      |                             1
+Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/REAL(4)
+/tmp/benfords-law.f90:115:26:
+
+  115 |       if ((((d >= 1) .and. d) <= 9)) then
+      |                          1
+Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/INTEGER(4)
+/tmp/benfords-law.f90:112:20:
+
+  112 |     do i2 = 1, size(nums)
+      |                    1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/benfords-law.f90:120:17:
+
+  120 |     total = size(nums)
+      |                 1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/benfords-law.f90:127:86:
+
+  127 |       line = trim(trim(trim(trim('  ' // s3) // '  ') // padFloat3(obs,9)) // '  ') // padFloat3(preds(((i)+1)),8)
+      |                                                                                      1
+Error: Type mismatch in argument ‘x’ at (1); passed INTEGER(4) to REAL(4)
+/tmp/benfords-law.f90:50:9:
+
+   50 |     if (((dot == 0) - 1)) then
+      |         1
+Error: Operands of binary numeric operator ‘-’ at (1) are LOGICAL(4)/INTEGER(4)
+/tmp/benfords-law.f90:127:56:
+
+  127 |       line = trim(trim(trim(trim('  ' // s3) // '  ') // padFloat3(obs,9)) // '  ') // padFloat3(preds(((i)+1)),8)
+      |                                                        1
+Error: Type mismatch in argument ‘x’ at (1); passed INTEGER(4) to REAL(4)
+/tmp/benfords-law.f90:82:25:
+
+   82 |       allocate(app1(size(res)+1))
+      |                         1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/benfords-law.f90:83:18:
+
+   83 |       app1(1:size(res)) = res
+      |                  1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/benfords-law.f90:84:16:
+
+   84 |       app1(size(res)+1) = b
+      |                1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/benfords-law.f90:85:6:
+
+   85 |       res = app1
+      |      1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/benfords-law.f90:34:24:
+
+   34 |     do while ((i < size(s)))
+      |                        1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array

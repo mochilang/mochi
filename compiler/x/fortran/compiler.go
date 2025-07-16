@@ -349,24 +349,26 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 	}
 	if l.Value != nil {
 		if lst := listLiteral(l.Value); lst != nil {
-			if inner := listLiteral(lst.Elems[0]); inner != nil {
-				cols := len(inner.Elems)
-				flat := make([]string, 0, len(lst.Elems)*cols)
-				for _, it := range lst.Elems {
-					in := listLiteral(it)
-					if in == nil || len(in.Elems) != cols {
-						return fmt.Errorf("irregular nested list")
-					}
-					for _, e := range in.Elems {
-						v, err := c.compileExpr(e)
-						if err != nil {
-							return err
+			if len(lst.Elems) > 0 {
+				if inner := listLiteral(lst.Elems[0]); inner != nil {
+					cols := len(inner.Elems)
+					flat := make([]string, 0, len(lst.Elems)*cols)
+					for _, it := range lst.Elems {
+						in := listLiteral(it)
+						if in == nil || len(in.Elems) != cols {
+							return fmt.Errorf("irregular nested list")
 						}
-						flat = append(flat, v)
+						for _, e := range in.Elems {
+							v, err := c.compileExpr(e)
+							if err != nil {
+								return err
+							}
+							flat = append(flat, v)
+						}
 					}
+					c.writeln(fmt.Sprintf("%s = reshape((/%s/),(/%d,%d/))", l.Name, strings.Join(flat, ","), len(lst.Elems), cols))
+					return nil
 				}
-				c.writeln(fmt.Sprintf("%s = reshape((/%s/),(/%d,%d/))", l.Name, strings.Join(flat, ","), len(lst.Elems), cols))
-				return nil
 			}
 			elems := make([]string, len(lst.Elems))
 			for i, e := range lst.Elems {

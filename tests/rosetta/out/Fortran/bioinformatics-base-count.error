@@ -1,45 +1,45 @@
-gfortran error: exit status 1
-/workspace/mochi/tests/rosetta/out/Fortran/bioinformatics-base-count.f90:22:132:
+gfortran: exit status 1
+/tmp/bioinformatics-base-count.f90:22:132:
 
    22 |   dna = trim(trim(trim(trim(trim(trim(trim(trim(trim('' // 'CGTAAAAAATTACAACGTCCTTTGGCTATCTCTTAAACTCCTGCTAAATG') // 'CTCGTGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTG') // 'AGGACAAAGGTCAAGATGGAGCGCATCGAACGCAATAAGGATCATTTGAT') // 'GGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTT') // 'CGATTCTGCTTATAACACTATGTTCTTATGAAATGGATGTTCTGAGTTGG') // 'TCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTATA') // 'TTTAATTTTTCTATATAGCGATCTGTATTTAAGCAATTCATTTAGGTTAT') // 'CGCCGCGATGCTCGGTTCGGACCGCCAAGCATCTGGCTCCACTGCTAGTG') // 'TCCTAAATTTGAATGGCAAACACAAATAAGATTTAGCAATTCGTGTAGAC') // 'GACCGGGGACTTGCATGATGGGAGCAGCTTTGTTAAACTACGAACGTAAT'
       |                                                                                                                                    1
 Error: Line truncated at (1) [-Werror=line-truncation]
-/workspace/mochi/tests/rosetta/out/Fortran/bioinformatics-base-count.f90:22:118:
+/tmp/bioinformatics-base-count.f90:22:118:
 
    22 |   dna = trim(trim(trim(trim(trim(trim(trim(trim(trim('' // 'CGTAAAAAATTACAACGTCCTTTGGCTATCTCTTAAACTCCTGCTAAATG') // 'CTCGTGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTG') // 'AGGACAAAGGTCAAGATGGAGCGCATCGAACGCAATAAGGATCATTTGAT') // 'GGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTT') // 'CGATTCTGCTTATAACACTATGTTCTTATGAAATGGATGTTCTGAGTTGG') // 'TCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTATA') // 'TTTAATTTTTCTATATAGCGATCTGTATTTAAGCAATTCATTTAGGTTAT') // 'CGCCGCGATGCTCGGTTCGGACCGCCAAGCATCTGGCTCCACTGCTAGTG') // 'TCCTAAATTTGAATGGCAAACACAAATAAGATTTAGCAATTCGTGTAGAC') // 'GACCGGGGACTTGCATGATGGGAGCAGCTTTGTTAAACTACGAACGTAAT'
       |                                                                                                                      1
 Error: Unterminated character constant beginning at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/bioinformatics-base-count.f90:78:18:
+/tmp/bioinformatics-base-count.f90:78:18:
 
    78 |     n = (w - size(s))
       |                  1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/workspace/mochi/tests/rosetta/out/Fortran/bioinformatics-base-count.f90:83:11:
+/tmp/bioinformatics-base-count.f90:83:11:
 
    83 |     res = (res + s)
       |           1
 Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
-/workspace/mochi/tests/rosetta/out/Fortran/bioinformatics-base-count.f90:41:9:
+/tmp/bioinformatics-base-count.f90:41:9:
 
    41 |     ch = dna(idx+1:(idx + 1))
       |         1
 Error: Cannot convert CHARACTER(*) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/bioinformatics-base-count.f90:42:9:
+/tmp/bioinformatics-base-count.f90:42:9:
 
    42 |     if ((ch == 'A')) then
       |         1
 Error: Operands of comparison operator ‘==’ at (1) are INTEGER(4)/CHARACTER(1)
-/workspace/mochi/tests/rosetta/out/Fortran/bioinformatics-base-count.f90:45:11:
+/tmp/bioinformatics-base-count.f90:45:11:
 
    45 |       if ((ch == 'C')) then
       |           1
 Error: Operands of comparison operator ‘==’ at (1) are INTEGER(4)/CHARACTER(1)
-/workspace/mochi/tests/rosetta/out/Fortran/bioinformatics-base-count.f90:48:13:
+/tmp/bioinformatics-base-count.f90:48:13:
 
    48 |         if ((ch == 'G')) then
       |             1
 Error: Operands of comparison operator ‘==’ at (1) are INTEGER(4)/CHARACTER(1)
-/workspace/mochi/tests/rosetta/out/Fortran/bioinformatics-base-count.f90:51:15:
+/tmp/bioinformatics-base-count.f90:51:15:
 
    51 |           if ((ch == 'T')) then
       |               1

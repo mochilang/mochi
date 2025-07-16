@@ -1,1 +1,291 @@
-panic: runtime error: index out of range [0] with length 0
+gfortran: exit status 1
+/tmp/9-billion-names-of-god-the-integer.f90:41:41:
+
+   41 |       line = trim(trim(line // ' ') // r(((i)+1))) // ' '
+      |                                         1
+Error: Syntax error in argument list at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:53:46:
+
+   53 |     print *, trim(s1 // ' ') // bigToString(r((((size(r) - 1))+1)))
+      |                                              1
+Error: Syntax error in argument list at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:60:8:
+
+   60 |       a = a(1:(n - 1))
+      |        1
+Error: ‘a’ at (1) is not a variable
+/tmp/9-billion-names-of-god-the-integer.f90:63:11:
+
+   63 |     res = a
+      |           1
+Error: Function ‘a’ requires an argument list at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:72:17:
+
+   72 |     digits = (//)
+      |                 1
+Error: Empty array constructor at (1) is not allowed
+/tmp/9-billion-names-of-god-the-integer.f90:87:14:
+
+   87 |     res = (//)
+      |              1
+Error: Empty array constructor at (1) is not allowed
+/tmp/9-billion-names-of-god-the-integer.f90:113:14:
+
+  113 |     res = (//)
+      |              1
+Error: Empty array constructor at (1) is not allowed
+/tmp/9-billion-names-of-god-the-integer.f90:185:33:
+
+  185 |   recursive integer function row(n) result(res)
+      |                                 1
+Error: Procedure ‘row’ at (1) has an explicit interface from a previous declaration
+/tmp/9-billion-names-of-god-the-integer.f90:186:28:
+
+  186 |     integer, intent(in) :: n
+      |                            1
+Error: Unexpected data declaration statement in CONTAINS section at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:187:15:
+
+  187 |     e = cumu(n)
+      |               1
+Error: Unexpected assignment statement in CONTAINS section at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:188:14:
+
+  188 |     out = (//)
+      |              1
+Error: Empty array constructor at (1) is not allowed
+/tmp/9-billion-names-of-god-the-integer.f90:189:9:
+
+  189 |     i = 0
+      |         1
+Error: Unexpected assignment statement in CONTAINS section at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:190:22:
+
+  190 |     do while ((i < n))
+      |                      1
+Error: Unexpected DO statement in CONTAINS section at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:191:48:
+
+  191 |       diff = bigSub(e((((i + 1))+1)),e(((i)+1)))
+      |                                                1
+Error: Unexpected assignment statement in CONTAINS section at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:192:15:
+
+  192 |       allocate(app8(size(out)+1))
+      |               1
+Error: Allocate-object at (1) is neither a data pointer nor an allocatable variable
+/tmp/9-billion-names-of-god-the-integer.f90:195:16:
+
+  195 |       out = app8
+      |                1
+Error: Unexpected assignment statement in CONTAINS section at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:196:17:
+
+  196 |       i = (i + 1)
+      |                 1
+Error: Unexpected assignment statement in CONTAINS section at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:197:7:
+
+  197 |     end do
+      |       1
+Error: Expecting END PROGRAM statement at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:198:13:
+
+  198 |     res = out
+      |             1
+Error: Unexpected assignment statement in CONTAINS section at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:199:10:
+
+  199 |     return
+      |          1
+Error: Unexpected RETURN statement in CONTAINS section at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:200:5:
+
+  200 |   end function row
+      |     1
+Error: Expecting END PROGRAM statement at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:138:53:
+
+  138 |   recursive character(len=100) function bigToString(a) result(res)
+      |                                                     1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘a’ at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:110:37:
+
+  110 |   recursive integer function bigSub(a,b) result(res)
+      |                                     1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘a’ at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:110:39:
+
+  110 |   recursive integer function bigSub(a,b) result(res)
+      |                                       1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘b’ at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:84:37:
+
+   84 |   recursive integer function bigAdd(a,b) result(res)
+      |                                     1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘a’ at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:84:39:
+
+   84 |   recursive integer function bigAdd(a,b) result(res)
+      |                                       1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘b’ at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:56:38:
+
+   56 |   recursive integer function bigTrim(a) result(res)
+      |                                      1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘a’ at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:69:6:
+
+   69 |       res = (/0/)
+      |      1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:81:4:
+
+   81 |     res = digits
+      |    1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:172:35:
+
+  172 |         app6(size(row)+1) = bigAdd(row((((size(row) - 1))+1)),val)
+      |                                   1
+Error: Expected a procedure for argument ‘a’ at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:172:62:
+
+  172 |         app6(size(row)+1) = bigAdd(row((((size(row) - 1))+1)),val)
+      |                                                              1
+Error: Expected a procedure for argument ‘b’ at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:92:20:
+
+   92 |       if ((i < size(a))) then
+      |                    1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/9-billion-names-of-god-the-integer.f90:96:20:
+
+   96 |       if ((i < size(b))) then
+      |                    1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/9-billion-names-of-god-the-integer.f90:100:25:
+
+  100 |       allocate(app3(size(res)+1))
+      |                         1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/9-billion-names-of-god-the-integer.f90:101:18:
+
+  101 |       app3(1:size(res)) = res
+      |                  1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/9-billion-names-of-god-the-integer.f90:102:16:
+
+  102 |       app3(size(res)+1) = mod(s,10)
+      |                1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/9-billion-names-of-god-the-integer.f90:103:6:
+
+  103 |       res = app3
+      |      1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:90:47:
+
+   90 |     do while ((((((i < size(a)) .or. i) < size(b)) .or. carry) > 0))
+      |                                               1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/9-billion-names-of-god-the-integer.f90:90:28:
+
+   90 |     do while ((((((i < size(a)) .or. i) < size(b)) .or. carry) > 0))
+      |                            1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/9-billion-names-of-god-the-integer.f90:107:18:
+
+  107 |     res = bigTrim(res)
+      |                  1
+Error: Expected a procedure for argument ‘a’ at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:58:13:
+
+   58 |     n = size(a)
+      |             1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/9-billion-names-of-god-the-integer.f90:59:29:
+
+   59 |     do while ((((n > 1) .and. a((((n - 1))+1))) == 0))
+      |                             1
+Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/INTEGER(4)
+/tmp/9-billion-names-of-god-the-integer.f90:177:6:
+
+  177 |       app7(1:size(cache)) = cache
+      |      1
+Error: Incompatible ranks 1 and 2 in assignment at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:178:6:
+
+  178 |       app7(size(cache)+1) = row
+      |      1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:179:6:
+
+  179 |       cache = app7
+      |      1
+Error: Incompatible ranks 2 and 1 in assignment at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:182:15:
+
+  182 |     res = cache(((n)+1))
+      |               1
+Error: Rank mismatch in array reference at (1) (1/2)
+/tmp/9-billion-names-of-god-the-integer.f90:140:8:
+
+  140 |     s = ''
+      |        1
+Error: Cannot convert CHARACTER(0) to INTEGER(4) at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:141:14:
+
+  141 |     i = (size(a) - 1)
+      |              1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/9-billion-names-of-god-the-integer.f90:144:11:
+
+  144 |       s = (s + s5)
+      |           1
+Error: Operands of binary numeric operator ‘+’ at (1) are INTEGER(4)/CHARACTER(100)
+/tmp/9-billion-names-of-god-the-integer.f90:147:10:
+
+  147 |     res = s
+      |          1
+Error: Cannot convert INTEGER(4) to CHARACTER(100) at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:119:20:
+
+  119 |       if ((i < size(b))) then
+      |                    1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/9-billion-names-of-god-the-integer.f90:129:25:
+
+  129 |       allocate(app4(size(res)+1))
+      |                         1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/9-billion-names-of-god-the-integer.f90:130:18:
+
+  130 |       app4(1:size(res)) = res
+      |                  1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/9-billion-names-of-god-the-integer.f90:131:16:
+
+  131 |       app4(size(res)+1) = diff
+      |                1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/9-billion-names-of-god-the-integer.f90:132:6:
+
+  132 |       res = app4
+      |      1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:116:24:
+
+  116 |     do while ((i < size(a)))
+      |                        1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/9-billion-names-of-god-the-integer.f90:135:18:
+
+  135 |     res = bigTrim(res)
+      |                  1
+Error: Expected a procedure for argument ‘a’ at (1)
+/tmp/9-billion-names-of-god-the-integer.f90:40:24:
+
+   40 |     do while ((i < size(r)))
+      |                        1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array

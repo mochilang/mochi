@@ -1,16 +1,6 @@
-gfortran error: exit status 1
-/workspace/mochi/tests/rosetta/out/Fortran/binary-digits.f90:18:11:
-
-   18 |     bits = ''
-      |           1
-Error: Cannot convert CHARACTER(0) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/binary-digits.f90:22:14:
+gfortran: exit status 1
+/tmp/binary-digits.f90:22:14:
 
    22 |       bits = (s0 + bits)
       |              1
-Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/INTEGER(4)
-/workspace/mochi/tests/rosetta/out/Fortran/binary-digits.f90:25:10:
-
-   25 |     res = bits
-      |          1
-Error: Cannot convert INTEGER(4) to CHARACTER(100) at (1)
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
