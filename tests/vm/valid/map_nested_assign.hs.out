@@ -7,7 +7,7 @@ module Main where
 import qualified Data.Map as Map
 import Data.Maybe (fromMaybe)
 
-_data = Map.fromList [("outer", Map.fromList [("inner", (1 :: Int))])]
+_data = (Map.fromList [("outer", (Map.fromList [("inner", (1 :: Int))]))])
 
 main :: IO ()
 main = do

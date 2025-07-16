@@ -48,7 +48,7 @@ _group_by src keyfn =
               Just is -> go xs (Map.insert k (is ++ [x]) m) order
               Nothing -> go xs (Map.insert k [x] m) (order ++ [k])
       (m, order) = go src Map.empty []
-   in [MGroup k (fromMaybe [] (Map.lookup k m)) | k <- order]
+   in [MGroup k (Map.findWithDefault [] k m) | k <- order]
 
 _indexString :: String -> Int -> String
 _indexString s i =
@@ -177,8 +177,8 @@ _save rows path opts =
               text = unlines (if null headers then [] else intercalate "," headers : map toLine rows)
            in _writeOutput path text
 
-people = [Map.fromList [("name", VString ("Alice")), ("age", VInt (30))], Map.fromList [("name", VString ("Bob")), ("age", VInt (25))]]
+people = [(Map.fromList [("name", VString ("Alice")), ("age", VInt (30))]), (Map.fromList [("name", VString ("Bob")), ("age", VInt (25))])]
 
 main :: IO ()
 main = do
-  _save people Just "-" Just (Map.fromList [("format", "jsonl")])
+  _save people Just "-" Just ((Map.fromList [("format", "jsonl")]))

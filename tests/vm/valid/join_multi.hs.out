@@ -45,7 +45,7 @@ _group_by src keyfn =
               Just is -> go xs (Map.insert k (is ++ [x]) m) order
               Nothing -> go xs (Map.insert k [x] m) (order ++ [k])
       (m, order) = go src Map.empty []
-   in [MGroup k (fromMaybe [] (Map.lookup k m)) | k <- order]
+   in [MGroup k (Map.findWithDefault [] k m) | k <- order]
 
 _indexString :: String -> Int -> String
 _indexString s i =
@@ -124,13 +124,13 @@ _showAny (VDouble d) = show d
 _showAny (VString s) = s
 _showAny (VBool b) = if b then "true" else "false"
 
-customers = [Map.fromList [("id", VInt (1)), ("name", VString ("Alice"))], Map.fromList [("id", VInt (2)), ("name", VString ("Bob"))]]
+customers = [(Map.fromList [("id", VInt (1)), ("name", VString ("Alice"))]), (Map.fromList [("id", VInt (2)), ("name", VString ("Bob"))])]
 
-orders = [Map.fromList [("id", (100 :: Int)), ("customerId", (1 :: Int))], Map.fromList [("id", (101 :: Int)), ("customerId", (2 :: Int))]]
+orders = [(Map.fromList [("id", (100 :: Int)), ("customerId", (1 :: Int))]), (Map.fromList [("id", (101 :: Int)), ("customerId", (2 :: Int))])]
 
-items = [Map.fromList [("orderId", VInt (100)), ("sku", VString ("a"))], Map.fromList [("orderId", VInt (101)), ("sku", VString ("b"))]]
+items = [(Map.fromList [("orderId", VInt (100)), ("sku", VString ("a"))]), (Map.fromList [("orderId", VInt (101)), ("sku", VString ("b"))])]
 
-result = [Map.fromList [("name", fromMaybe (error "missing") (Map.lookup "name" c)), ("sku", fromMaybe (error "missing") (Map.lookup "sku" i))] | o <- orders, c <- customers, i <- items, (fromMaybe (error "missing") (Map.lookup "customerId" (o)) == fromMaybe (error "missing") (Map.lookup "id" (c))), (fromMaybe (error "missing") (Map.lookup "id" (o)) == fromMaybe (error "missing") (Map.lookup "orderId" (i)))]
+result = [(Map.fromList [("name", fromMaybe (error "missing") (Map.lookup "name" c)), ("sku", fromMaybe (error "missing") (Map.lookup "sku" i))]) | o <- orders, c <- customers, i <- items, (fromMaybe (error "missing") (Map.lookup "customerId" (o)) == fromMaybe (error "missing") (Map.lookup "id" (c))), (fromMaybe (error "missing") (Map.lookup "id" (o)) == fromMaybe (error "missing") (Map.lookup "orderId" (i)))]
 
 main :: IO ()
 main = do

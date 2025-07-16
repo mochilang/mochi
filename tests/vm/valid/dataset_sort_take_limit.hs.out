@@ -45,7 +45,7 @@ _group_by src keyfn =
               Just is -> go xs (Map.insert k (is ++ [x]) m) order
               Nothing -> go xs (Map.insert k [x] m) (order ++ [k])
       (m, order) = go src Map.empty []
-   in [MGroup k (fromMaybe [] (Map.lookup k m)) | k <- order]
+   in [MGroup k (Map.findWithDefault [] k m) | k <- order]
 
 _indexString :: String -> Int -> String
 _indexString s i =
@@ -124,7 +124,7 @@ _showAny (VDouble d) = show d
 _showAny (VString s) = s
 _showAny (VBool b) = if b then "true" else "false"
 
-products = [Map.fromList [("name", VString ("Laptop")), ("price", VInt (1500))], Map.fromList [("name", VString ("Smartphone")), ("price", VInt (900))], Map.fromList [("name", VString ("Tablet")), ("price", VInt (600))], Map.fromList [("name", VString ("Monitor")), ("price", VInt (300))], Map.fromList [("name", VString ("Keyboard")), ("price", VInt (100))], Map.fromList [("name", VString ("Mouse")), ("price", VInt (50))], Map.fromList [("name", VString ("Headphones")), ("price", VInt (200))]]
+products = [(Map.fromList [("name", VString ("Laptop")), ("price", VInt (1500))]), (Map.fromList [("name", VString ("Smartphone")), ("price", VInt (900))]), (Map.fromList [("name", VString ("Tablet")), ("price", VInt (600))]), (Map.fromList [("name", VString ("Monitor")), ("price", VInt (300))]), (Map.fromList [("name", VString ("Keyboard")), ("price", VInt (100))]), (Map.fromList [("name", VString ("Mouse")), ("price", VInt (50))]), (Map.fromList [("name", VString ("Headphones")), ("price", VInt (200))])]
 
 expensive = take 3 (drop 1 (map snd (List.sortOn fst [((-(_asInt (fromMaybe (error "missing") (Map.lookup "price" (p))))), p) | p <- products])))
 

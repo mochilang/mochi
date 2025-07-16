@@ -8,4 +8,4 @@ import qualified Data.Map as Map
 
 main :: IO ()
 main = do
-  print (length Map.fromList [("a", (1 :: Int)), ("b", (2 :: Int))])
+  print (length (Map.fromList [("a", (1 :: Int)), ("b", (2 :: Int))]))

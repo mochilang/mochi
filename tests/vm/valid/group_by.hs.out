@@ -45,7 +45,7 @@ _group_by src keyfn =
               Just is -> go xs (Map.insert k (is ++ [x]) m) order
               Nothing -> go xs (Map.insert k [x] m) (order ++ [k])
       (m, order) = go src Map.empty []
-   in [MGroup k (fromMaybe [] (Map.lookup k m)) | k <- order]
+   in [MGroup k (Map.findWithDefault [] k m) | k <- order]
 
 _indexString :: String -> Int -> String
 _indexString s i =
@@ -124,9 +124,9 @@ _showAny (VDouble d) = show d
 _showAny (VString s) = s
 _showAny (VBool b) = if b then "true" else "false"
 
-people = [Map.fromList [("name", VString ("Alice")), ("age", VInt (30)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Bob")), ("age", VInt (15)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Charlie")), ("age", VInt (65)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Diana")), ("age", VInt (45)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Eve")), ("age", VInt (70)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Frank")), ("age", VInt (22)), ("city", VString ("Hanoi"))]]
+people = [(Map.fromList [("name", VString ("Alice")), ("age", VInt (30)), ("city", VString ("Paris"))]), (Map.fromList [("name", VString ("Bob")), ("age", VInt (15)), ("city", VString ("Hanoi"))]), (Map.fromList [("name", VString ("Charlie")), ("age", VInt (65)), ("city", VString ("Paris"))]), (Map.fromList [("name", VString ("Diana")), ("age", VInt (45)), ("city", VString ("Hanoi"))]), (Map.fromList [("name", VString ("Eve")), ("age", VInt (70)), ("city", VString ("Paris"))]), (Map.fromList [("name", VString ("Frank")), ("age", VInt (22)), ("city", VString ("Hanoi"))])]
 
-stats = [Map.fromList [("city", VString (key (g))), ("count", VInt (length (items g))), ("avg_age", VDouble ((sum [fromMaybe (error "missing") (Map.lookup "age" (p)) | p <- g] `div` length [fromMaybe (error "missing") (Map.lookup "age" (p)) | p <- g])))] | g <- _group_by people (\person -> fromMaybe (error "missing") (Map.lookup "city" person)), let g = g]
+stats = [(Map.fromList [("city", VString (key (g))), ("count", VInt (length (items g))), ("avg_age", VDouble ((sum [fromMaybe (error "missing") (Map.lookup "age" (p)) | p <- g] `div` length [fromMaybe (error "missing") (Map.lookup "age" (p)) | p <- g])))]) | g <- _group_by people (\person -> fromMaybe (error "missing") (Map.lookup "city" person)), let g = g]
 
 main :: IO ()
 main = do

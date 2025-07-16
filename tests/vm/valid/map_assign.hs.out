@@ -7,7 +7,7 @@ module Main where
 import qualified Data.Map as Map
 import Data.Maybe (fromMaybe)
 
-scores = Map.fromList [("alice", (1 :: Int))]
+scores = (Map.fromList [("alice", (1 :: Int))])
 
 main :: IO ()
 main = do

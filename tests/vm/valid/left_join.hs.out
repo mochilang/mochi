@@ -45,7 +45,7 @@ _group_by src keyfn =
               Just is -> go xs (Map.insert k (is ++ [x]) m) order
               Nothing -> go xs (Map.insert k [x] m) (order ++ [k])
       (m, order) = go src Map.empty []
-   in [MGroup k (fromMaybe [] (Map.lookup k m)) | k <- order]
+   in [MGroup k (Map.findWithDefault [] k m) | k <- order]
 
 _indexString :: String -> Int -> String
 _indexString s i =
@@ -124,11 +124,11 @@ _showAny (VDouble d) = show d
 _showAny (VString s) = s
 _showAny (VBool b) = if b then "true" else "false"
 
-customers = [Map.fromList [("id", VInt (1)), ("name", VString ("Alice"))], Map.fromList [("id", VInt (2)), ("name", VString ("Bob"))]]
+customers = [(Map.fromList [("id", VInt (1)), ("name", VString ("Alice"))]), (Map.fromList [("id", VInt (2)), ("name", VString ("Bob"))])]
 
-orders = [Map.fromList [("id", (100 :: Int)), ("customerId", (1 :: Int)), ("total", (250 :: Int))], Map.fromList [("id", (101 :: Int)), ("customerId", (3 :: Int)), ("total", (80 :: Int))]]
+orders = [(Map.fromList [("id", (100 :: Int)), ("customerId", (1 :: Int)), ("total", (250 :: Int))]), (Map.fromList [("id", (101 :: Int)), ("customerId", (3 :: Int)), ("total", (80 :: Int))])]
 
-result = [Map.fromList [("orderId", VInt (fromMaybe (error "missing") (Map.lookup "id" o))), ("customer", VString (c)), ("total", VInt (fromMaybe (error "missing") (Map.lookup "total" o)))] | o <- orders, c <- let _ms0 = [c | c <- customers, (fromMaybe (error "missing") (Map.lookup "customerId" (o)) == fromMaybe (error "missing") (Map.lookup "id" (c)))] in if null _ms0 then [Map.empty] else _ms0]
+result = [(Map.fromList [("orderId", VInt (fromMaybe (error "missing") (Map.lookup "id" o))), ("customer", VString (c)), ("total", VInt (fromMaybe (error "missing") (Map.lookup "total" o)))]) | o <- orders, c <- let _ms0 = [c | c <- customers, (fromMaybe (error "missing") (Map.lookup "customerId" (o)) == fromMaybe (error "missing") (Map.lookup "id" (c)))] in if null _ms0 then [Map.empty] else _ms0]
 
 main :: IO ()
 main = do

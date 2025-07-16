@@ -52,7 +52,7 @@ _group_by src keyfn =
               Just is -> go xs (Map.insert k (is ++ [x]) m) order
               Nothing -> go xs (Map.insert k [x] m) (order ++ [k])
       (m, order) = go src Map.empty []
-   in [MGroup k (fromMaybe [] (Map.lookup k m)) | k <- order]
+   in [MGroup k (Map.findWithDefault [] k m) | k <- order]
 
 _indexString :: String -> Int -> String
 _indexString s i =
@@ -188,9 +188,9 @@ data Person = Person
   }
   deriving (Eq, Show, Generic)
 
-people = _load Just "../interpreter/valid/people.yaml" Just (Map.fromList [("format", "yaml")])
+people = _load Just "../interpreter/valid/people.yaml" Just ((Map.fromList [("format", "yaml")]))
 
-adults = [Map.fromList [("name", name (p)), ("email", email (p))] | p <- filter (\p -> (age (p) >= 18)) people]
+adults = [(Map.fromList [("name", name (p)), ("email", email (p))]) | p <- filter (\p -> (age (p) >= 18)) people]
 
 main :: IO ()
 main = do

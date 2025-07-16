@@ -47,7 +47,7 @@ _group_by src keyfn =
               Just is -> go xs (Map.insert k (is ++ [x]) m) order
               Nothing -> go xs (Map.insert k [x] m) (order ++ [k])
       (m, order) = go src Map.empty []
-   in [MGroup k (fromMaybe [] (Map.lookup k m)) | k <- order]
+   in [MGroup k (Map.findWithDefault [] k m) | k <- order]
 
 _indexString :: String -> Int -> String
 _indexString s i =
@@ -129,9 +129,9 @@ _showAny (VDouble d) = show d
 _showAny (VString s) = s
 _showAny (VBool b) = if b then "true" else "false"
 
-people = [Map.fromList [("name", "Alice"), ("city", "Paris")], Map.fromList [("name", "Bob"), ("city", "Hanoi")], Map.fromList [("name", "Charlie"), ("city", "Paris")], Map.fromList [("name", "Diana"), ("city", "Hanoi")], Map.fromList [("name", "Eve"), ("city", "Paris")], Map.fromList [("name", "Frank"), ("city", "Hanoi")], Map.fromList [("name", "George"), ("city", "Paris")]]
+people = [(Map.fromList [("name", "Alice"), ("city", "Paris")]), (Map.fromList [("name", "Bob"), ("city", "Hanoi")]), (Map.fromList [("name", "Charlie"), ("city", "Paris")]), (Map.fromList [("name", "Diana"), ("city", "Hanoi")]), (Map.fromList [("name", "Eve"), ("city", "Paris")]), (Map.fromList [("name", "Frank"), ("city", "Hanoi")]), (Map.fromList [("name", "George"), ("city", "Paris")])]
 
-big = [Map.fromList [("city", VString (key (g))), ("num", VInt (length (items g)))] | g <- _group_by people (\p -> fromMaybe (error "missing") (Map.lookup "city" p)), let g = g]
+big = [(Map.fromList [("city", VString (key (g))), ("num", VInt (length (items g)))]) | g <- _group_by people (\p -> fromMaybe (error "missing") (Map.lookup "city" p)), let g = g]
 
 main :: IO ()
 main = do

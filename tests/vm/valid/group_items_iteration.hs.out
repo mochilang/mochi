@@ -45,7 +45,7 @@ _group_by src keyfn =
               Just is -> go xs (Map.insert k (is ++ [x]) m) order
               Nothing -> go xs (Map.insert k [x] m) (order ++ [k])
       (m, order) = go src Map.empty []
-   in [MGroup k (fromMaybe [] (Map.lookup k m)) | k <- order]
+   in [MGroup k (Map.findWithDefault [] k m) | k <- order]
 
 _indexString :: String -> Int -> String
 _indexString s i =
@@ -124,7 +124,7 @@ _showAny (VDouble d) = show d
 _showAny (VString s) = s
 _showAny (VBool b) = if b then "true" else "false"
 
-_data = [Map.fromList [("tag", VString ("a")), ("val", VInt (1))], Map.fromList [("tag", VString ("a")), ("val", VInt (2))], Map.fromList [("tag", VString ("b")), ("val", VInt (3))]]
+_data = [(Map.fromList [("tag", VString ("a")), ("val", VInt (1))]), (Map.fromList [("tag", VString ("a")), ("val", VInt (2))]), (Map.fromList [("tag", VString ("b")), ("val", VInt (3))])]
 
 groups = [g | g <- _group_by _data (\d -> fromMaybe (error "missing") (Map.lookup "tag" d)), let g = g]
 
@@ -134,5 +134,5 @@ result = map snd (List.sortOn fst [(fromMaybe (error "missing") (Map.lookup "tag
 
 main :: IO ()
 main = do
-  mapM_ (\g -> fromMaybe () ((let total = 0 in case foldr (\x acc -> case (let total = (total + fromMaybe (error "missing") (Map.lookup "val" (x))) in Nothing) of Just v -> Just v; Nothing -> acc) Nothing items (g) of Just v -> Just v; Nothing -> (let tmp = (tmp ++ [Map.fromList [("tag", key (g)), ("total", total)]]) in Nothing)))) groups
+  mapM_ (\g -> fromMaybe () ((let total = 0 in case foldr (\x acc -> case (let total = (total + fromMaybe (error "missing") (Map.lookup "val" (x))) in Nothing) of Just v -> Just v; Nothing -> acc) Nothing items (g) of Just v -> Just v; Nothing -> (let tmp = (tmp ++ [(Map.fromList [("tag", key (g)), ("total", total)])]) in Nothing)))) groups
   print (result)

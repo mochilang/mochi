@@ -45,7 +45,7 @@ _group_by src keyfn =
               Just is -> go xs (Map.insert k (is ++ [x]) m) order
               Nothing -> go xs (Map.insert k [x] m) (order ++ [k])
       (m, order) = go src Map.empty []
-   in [MGroup k (fromMaybe [] (Map.lookup k m)) | k <- order]
+   in [MGroup k (Map.findWithDefault [] k m) | k <- order]
 
 _indexString :: String -> Int -> String
 _indexString s i =
@@ -124,9 +124,9 @@ _showAny (VDouble d) = show d
 _showAny (VString s) = s
 _showAny (VBool b) = if b then "true" else "false"
 
-items = [Map.fromList [("cat", VString ("a")), ("val", VInt (3))], Map.fromList [("cat", VString ("a")), ("val", VInt (1))], Map.fromList [("cat", VString ("b")), ("val", VInt (5))], Map.fromList [("cat", VString ("b")), ("val", VInt (2))]]
+items = [(Map.fromList [("cat", VString ("a")), ("val", VInt (3))]), (Map.fromList [("cat", VString ("a")), ("val", VInt (1))]), (Map.fromList [("cat", VString ("b")), ("val", VInt (5))]), (Map.fromList [("cat", VString ("b")), ("val", VInt (2))])]
 
-grouped = map snd (List.sortOn fst [((-sum [fromMaybe (error "missing") (Map.lookup "val" (x)) | x <- g]), Map.fromList [("cat", VString (key (g))), ("total", VDouble (sum [fromMaybe (error "missing") (Map.lookup "val" (x)) | x <- g]))]) | g <- _group_by [(i) | i <- items] (\(i) -> fromMaybe (error "missing") (Map.lookup "cat" i))])
+grouped = map snd (List.sortOn fst [((-sum [fromMaybe (error "missing") (Map.lookup "val" (x)) | x <- g]), (Map.fromList [("cat", VString (key (g))), ("total", VDouble (sum [fromMaybe (error "missing") (Map.lookup "val" (x)) | x <- g]))])) | g <- _group_by [(i) | i <- items] (\(i) -> fromMaybe (error "missing") (Map.lookup "cat" i))])
 
 main :: IO ()
 main = do

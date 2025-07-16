@@ -1446,7 +1446,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			items[i] = fmt.Sprintf("(%s, %s)", k, v)
 		}
-		return fmt.Sprintf("Map.fromList [%s]", strings.Join(items, ", ")), nil
+		return fmt.Sprintf("(Map.fromList [%s])", strings.Join(items, ", ")), nil
 	case p.Load != nil:
 		return c.compileLoadExpr(p.Load)
 	case p.Save != nil:
@@ -2053,6 +2053,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.env = orig
 		c.usesMap = true
 		c.usesList = true
+		c.usesMaybe = true
 		expr := fmt.Sprintf("[ %s | g <- _group_by %s (\\%s -> %s), let %s = g ]", valExpr, src, sanitizeName(q.Var), keyExpr, sanitizeName(q.Group.Name))
 		return expr, nil
 	}
@@ -2115,6 +2116,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		c.usesMap = true
 		c.usesList = true
+		c.usesMaybe = true
 		return res, nil
 	}
 

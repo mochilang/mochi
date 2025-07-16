@@ -45,7 +45,7 @@ _group_by src keyfn =
               Just is -> go xs (Map.insert k (is ++ [x]) m) order
               Nothing -> go xs (Map.insert k [x] m) (order ++ [k])
       (m, order) = go src Map.empty []
-   in [MGroup k (fromMaybe [] (Map.lookup k m)) | k <- order]
+   in [MGroup k (Map.findWithDefault [] k m) | k <- order]
 
 _indexString :: String -> Int -> String
 _indexString s i =
@@ -124,7 +124,7 @@ _showAny (VDouble d) = show d
 _showAny (VString s) = s
 _showAny (VBool b) = if b then "true" else "false"
 
-items = [Map.fromList [("n", VInt (1)), ("v", VString ("a"))], Map.fromList [("n", VInt (1)), ("v", VString ("b"))], Map.fromList [("n", VInt (2)), ("v", VString ("c"))]]
+items = [(Map.fromList [("n", VInt (1)), ("v", VString ("a"))]), (Map.fromList [("n", VInt (1)), ("v", VString ("b"))]), (Map.fromList [("n", VInt (2)), ("v", VString ("c"))])]
 
 result = map snd (List.sortOn fst [(fromMaybe (error "missing") (Map.lookup "n" (i)), fromMaybe (error "missing") (Map.lookup "v" i)) | i <- items])
 

@@ -45,7 +45,7 @@ _group_by src keyfn =
               Just is -> go xs (Map.insert k (is ++ [x]) m) order
               Nothing -> go xs (Map.insert k [x] m) (order ++ [k])
       (m, order) = go src Map.empty []
-   in [MGroup k (fromMaybe [] (Map.lookup k m)) | k <- order]
+   in [MGroup k (Map.findWithDefault [] k m) | k <- order]
 
 _indexString :: String -> Int -> String
 _indexString s i =
@@ -124,15 +124,15 @@ _showAny (VDouble d) = show d
 _showAny (VString s) = s
 _showAny (VBool b) = if b then "true" else "false"
 
-nations = [Map.fromList [("id", VInt (1)), ("name", VString ("A"))], Map.fromList [("id", VInt (2)), ("name", VString ("B"))]]
+nations = [(Map.fromList [("id", VInt (1)), ("name", VString ("A"))]), (Map.fromList [("id", VInt (2)), ("name", VString ("B"))])]
 
-suppliers = [Map.fromList [("id", (1 :: Int)), ("nation", (1 :: Int))], Map.fromList [("id", (2 :: Int)), ("nation", (2 :: Int))]]
+suppliers = [(Map.fromList [("id", (1 :: Int)), ("nation", (1 :: Int))]), (Map.fromList [("id", (2 :: Int)), ("nation", (2 :: Int))])]
 
-partsupp = [Map.fromList [("part", VInt (100)), ("supplier", VInt (1)), ("cost", VDouble (10.0)), ("qty", VInt (2))], Map.fromList [("part", VInt (100)), ("supplier", VInt (2)), ("cost", VDouble (20.0)), ("qty", VInt (1))], Map.fromList [("part", VInt (200)), ("supplier", VInt (1)), ("cost", VDouble (5.0)), ("qty", VInt (3))]]
+partsupp = [(Map.fromList [("part", VInt (100)), ("supplier", VInt (1)), ("cost", VDouble (10.0)), ("qty", VInt (2))]), (Map.fromList [("part", VInt (100)), ("supplier", VInt (2)), ("cost", VDouble (20.0)), ("qty", VInt (1))]), (Map.fromList [("part", VInt (200)), ("supplier", VInt (1)), ("cost", VDouble (5.0)), ("qty", VInt (3))])]
 
-filtered = [Map.fromList [("part", fromMaybe (error "missing") (Map.lookup "part" ps)), ("value", (fromMaybe (error "missing") (Map.lookup "cost" ps) * fromMaybe (error "missing") (Map.lookup "qty" ps)))] | ps <- partsupp, s <- suppliers, n <- nations, (fromMaybe (error "missing") (Map.lookup "id" (s)) == fromMaybe (error "missing") (Map.lookup "supplier" (ps))), (fromMaybe (error "missing") (Map.lookup "id" (n)) == fromMaybe (error "missing") (Map.lookup "nation" (s))), (fromMaybe (error "missing") (Map.lookup "name" n) == "A")]
+filtered = [(Map.fromList [("part", fromMaybe (error "missing") (Map.lookup "part" ps)), ("value", (fromMaybe (error "missing") (Map.lookup "cost" ps) * fromMaybe (error "missing") (Map.lookup "qty" ps)))]) | ps <- partsupp, s <- suppliers, n <- nations, (fromMaybe (error "missing") (Map.lookup "id" (s)) == fromMaybe (error "missing") (Map.lookup "supplier" (ps))), (fromMaybe (error "missing") (Map.lookup "id" (n)) == fromMaybe (error "missing") (Map.lookup "nation" (s))), (fromMaybe (error "missing") (Map.lookup "name" n) == "A")]
 
-grouped = [Map.fromList [("part", VString (key (g))), ("total", VDouble (sum [fromMaybe (error "missing") (Map.lookup "value" (r)) | r <- g]))] | g <- _group_by filtered (\x -> fromMaybe (error "missing") (Map.lookup "part" x)), let g = g]
+grouped = [(Map.fromList [("part", VString (key (g))), ("total", VDouble (sum [fromMaybe (error "missing") (Map.lookup "value" (r)) | r <- g]))]) | g <- _group_by filtered (\x -> fromMaybe (error "missing") (Map.lookup "part" x)), let g = g]
 
 main :: IO ()
 main = do

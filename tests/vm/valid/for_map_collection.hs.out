@@ -44,7 +44,7 @@ _group_by src keyfn =
               Just is -> go xs (Map.insert k (is ++ [x]) m) order
               Nothing -> go xs (Map.insert k [x] m) (order ++ [k])
       (m, order) = go src Map.empty []
-   in [MGroup k (fromMaybe [] (Map.lookup k m)) | k <- order]
+   in [MGroup k (Map.findWithDefault [] k m) | k <- order]
 
 _indexString :: String -> Int -> String
 _indexString s i =
@@ -99,7 +99,7 @@ _parseCSV text header delim =
                       ]
            in map row (drop start ls)
 
-m = Map.fromList [("a", (1 :: Int)), ("b", (2 :: Int))]
+m = (Map.fromList [("a", (1 :: Int)), ("b", (2 :: Int))])
 
 main :: IO ()
 main = do

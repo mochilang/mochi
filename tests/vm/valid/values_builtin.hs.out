@@ -6,7 +6,7 @@ module Main where
 
 import qualified Data.Map as Map
 
-m = Map.fromList [("a", (1 :: Int)), ("b", (2 :: Int)), ("c", (3 :: Int))]
+m = (Map.fromList [("a", (1 :: Int)), ("b", (2 :: Int)), ("c", (3 :: Int))])
 
 main :: IO ()
 main = do

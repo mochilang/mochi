@@ -10,7 +10,7 @@ xs = [1, 2, 3]
 
 ys = [x | x <- filter (\x -> ((x `mod` 2) == 1)) xs]
 
-m = Map.fromList [("a", (1 :: Int))]
+m = (Map.fromList [("a", (1 :: Int))])
 
 s = "hello"
 

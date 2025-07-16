@@ -6,6 +6,17 @@
 - Regenerated all `.hs.out` files which removed stale `Data.Aeson` imports and
   reduced the number of `.error` files.
 
+## Recent Updates (2025-07-20 05:00)
+- Fixed `Map.fromList` parenthesisation so `len_map.mochi` compiles.
+- Added missing `Data.Maybe` import when `_group_by` helper is used.
+- Removed the old `compiler_test.go` which duplicated the VM valid golden tests.
+
+## Recent Updates (2025-07-21 05:00)
+- Replaced `fromMaybe` usage in the `_group_by` runtime helper with
+  `Map.findWithDefault` so loops no longer require importing `Data.Maybe`.
+- Regenerated VM valid golden files and updated machine outputs.
+- Verified loop examples compile and run, removing several `.error` files.
+
 -## Recent Updates (2025-07-18 05:00)
 - Automatically import `Data.Map` whenever runtime helpers are emitted so
   generated programs compile cleanly.

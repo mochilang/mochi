@@ -45,7 +45,7 @@ _group_by src keyfn =
               Just is -> go xs (Map.insert k (is ++ [x]) m) order
               Nothing -> go xs (Map.insert k [x] m) (order ++ [k])
       (m, order) = go src Map.empty []
-   in [MGroup k (fromMaybe [] (Map.lookup k m)) | k <- order]
+   in [MGroup k (Map.findWithDefault [] k m) | k <- order]
 
 _indexString :: String -> Int -> String
 _indexString s i =
@@ -100,9 +100,9 @@ _parseCSV text header delim =
                       ]
            in map row (drop start ls)
 
-_data = [Map.fromList [("a", (1 :: Int)), ("b", (2 :: Int))], Map.fromList [("a", (1 :: Int)), ("b", (1 :: Int))], Map.fromList [("a", (0 :: Int)), ("b", (5 :: Int))]]
+_data = [(Map.fromList [("a", (1 :: Int)), ("b", (2 :: Int))]), (Map.fromList [("a", (1 :: Int)), ("b", (1 :: Int))]), (Map.fromList [("a", (0 :: Int)), ("b", (5 :: Int))])]
 
-sorted = map snd (List.sortOn fst [(Map.fromList [("a", fromMaybe (error "missing") (Map.lookup "a" (x))), ("b", fromMaybe (error "missing") (Map.lookup "b" (x)))], x) | x <- _data])
+sorted = map snd (List.sortOn fst [((Map.fromList [("a", fromMaybe (error "missing") (Map.lookup "a" (x))), ("b", fromMaybe (error "missing") (Map.lookup "b" (x)))]), x) | x <- _data])
 
 main :: IO ()
 main = do

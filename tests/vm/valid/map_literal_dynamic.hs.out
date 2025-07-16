@@ -11,7 +11,7 @@ x = 3
 
 y = 4
 
-m = Map.fromList [("a", (x :: Int)), ("b", (y :: Int))]
+m = (Map.fromList [("a", (x :: Int)), ("b", (y :: Int))])
 
 main :: IO ()
 main = do
