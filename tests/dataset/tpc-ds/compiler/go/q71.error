@@ -1,3 +1,13 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq712789022907/001/main.go:493:2: syntax error: unexpected name ny after top level declaration
+/tmp/TestGoCompiler_TPCDSq713418635440/001/main.go:205:8: unknown field Item_sk in struct literal of type v
+/tmp/TestGoCompiler_TPCDSq713418635440/001/main.go:206:8: unknown field Time_sk in struct literal of type v
+/tmp/TestGoCompiler_TPCDSq713418635440/001/main.go:213:7: cannot use func() []v {…}() (value of type []v) as []any value in argument to append
+/tmp/TestGoCompiler_TPCDSq713418635440/001/main.go:224:8: unknown field Item_sk in struct literal of type v
+/tmp/TestGoCompiler_TPCDSq713418635440/001/main.go:225:8: unknown field Time_sk in struct literal of type v
+/tmp/TestGoCompiler_TPCDSq713418635440/001/main.go:232:11: cannot use func() []v {…}() (value of type []v) as []any value in argument to append
+/tmp/TestGoCompiler_TPCDSq713418635440/001/main.go:243:8: unknown field Item_sk in struct literal of type v
+/tmp/TestGoCompiler_TPCDSq713418635440/001/main.go:244:8: unknown field Time_sk in struct literal of type v
+/tmp/TestGoCompiler_TPCDSq713418635440/001/main.go:294:60: any does not satisfy constraints.Integer | constraints.Float
+/tmp/TestGoCompiler_TPCDSq713418635440/001/main.go:298:44: x.S undefined (type Item has no field or method S)
+/tmp/TestGoCompiler_TPCDSq713418635440/001/main.go:294:60: too many errors

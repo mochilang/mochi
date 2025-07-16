@@ -1,3 +1,8 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq941141036140/001/main.go:328:2: syntax error: unexpected name at64 after top level declaration
+/tmp/TestGoCompiler_TPCDSq941446778209/001/main.go:121:3: undefined: Order_count
+/tmp/TestGoCompiler_TPCDSq941446778209/001/main.go:122:3: undefined: Total_shipping_cost
+/tmp/TestGoCompiler_TPCDSq941446778209/001/main.go:123:3: undefined: Total_net_profit
+/tmp/TestGoCompiler_TPCDSq941446778209/001/main.go:241:3: undefined: Order_count
+/tmp/TestGoCompiler_TPCDSq941446778209/001/main.go:248:3: undefined: Total_shipping_cost
+/tmp/TestGoCompiler_TPCDSq941446778209/001/main.go:255:3: undefined: Total_net_profit

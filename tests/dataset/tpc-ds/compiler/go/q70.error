@@ -1,3 +1,4 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq704180203890/001/main.go:329:2: syntax error: unexpected name ny after top level declaration
+/tmp/TestGoCompiler_TPCDSq703218798943/001/main.go:206:20: any does not satisfy constraints.Integer | constraints.Float
+/tmp/TestGoCompiler_TPCDSq703218798943/001/main.go:210:45: x.Ss undefined (type Store_sale has no field or method Ss)

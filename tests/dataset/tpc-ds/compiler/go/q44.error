@@ -1,3 +1,13 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq443747352340/001/main.go:505:2: syntax error: unexpected name ny after top level declaration
+/tmp/TestGoCompiler_TPCDSq443400591785/001/main.go:64:3: undefined: Best_performing
+/tmp/TestGoCompiler_TPCDSq443400591785/001/main.go:65:3: undefined: Worst_performing
+/tmp/TestGoCompiler_TPCDSq443400591785/001/main.go:116:4: declared and not used: g
+/tmp/TestGoCompiler_TPCDSq443400591785/001/main.go:118:5: undefined: Item_sk
+/tmp/TestGoCompiler_TPCDSq443400591785/001/main.go:119:5: undefined: Avg_profit
+/tmp/TestGoCompiler_TPCDSq443400591785/001/main.go:132:24: cannot use func() []any {…}() (value of type []any) as []v value in argument to _firstSlice[v]
+/tmp/TestGoCompiler_TPCDSq443400591785/001/main.go:149:14: x.Avg_profit undefined (type v has no field or method Avg_profit)
+/tmp/TestGoCompiler_TPCDSq443400591785/001/main.go:157:25: cannot use func() []any {…}() (value of type []any) as []v value in argument to _firstSlice[v]
+/tmp/TestGoCompiler_TPCDSq443400591785/001/main.go:174:13: x.Avg_profit undefined (type v has no field or method Avg_profit)
+/tmp/TestGoCompiler_TPCDSq443400591785/001/main.go:182:34: cannot use func() []any {…}() (value of type []any) as []string value in argument to _firstSlice[string]
+/tmp/TestGoCompiler_TPCDSq443400591785/001/main.go:182:34: too many errors

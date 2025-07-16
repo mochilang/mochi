@@ -1,3 +1,13 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq234909661/001/main.go:400:2: syntax error: unexpected name at64 after top level declaration
+/tmp/TestGoCompiler_TPCDSq22141290847/001/main.go:182:5: unknown field Sold_date_sk in struct literal of type v
+/tmp/TestGoCompiler_TPCDSq22141290847/001/main.go:183:5: unknown field Sales_price in struct literal of type v
+/tmp/TestGoCompiler_TPCDSq22141290847/001/main.go:184:5: unknown field Day in struct literal of type v
+/tmp/TestGoCompiler_TPCDSq22141290847/001/main.go:192:5: unknown field Sold_date_sk in struct literal of type v
+/tmp/TestGoCompiler_TPCDSq22141290847/001/main.go:193:5: unknown field Sales_price in struct literal of type v
+/tmp/TestGoCompiler_TPCDSq22141290847/001/main.go:194:5: unknown field Day in struct literal of type v
+/tmp/TestGoCompiler_TPCDSq22141290847/001/main.go:204:12: w.Sold_date_sk undefined (type v has no field or method Sold_date_sk)
+/tmp/TestGoCompiler_TPCDSq22141290847/001/main.go:230:12: x.Day undefined (type v has no field or method Day)
+/tmp/TestGoCompiler_TPCDSq22141290847/001/main.go:231:13: x.Day undefined (type v has no field or method Day)
+/tmp/TestGoCompiler_TPCDSq22141290847/001/main.go:232:37: x.Sales_price undefined (type v has no field or method Sales_price)
+/tmp/TestGoCompiler_TPCDSq22141290847/001/main.go:232:37: too many errors

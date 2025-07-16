@@ -1,3 +1,13 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq751488311632/001/main.go:469:2: syntax error: unexpected name at64 after top level declaration
+/tmp/TestGoCompiler_TPCDSq752970067984/001/main.go:106:3: undefined: Prev_year
+/tmp/TestGoCompiler_TPCDSq752970067984/001/main.go:107:3: undefined: Year
+/tmp/TestGoCompiler_TPCDSq752970067984/001/main.go:108:3: undefined: I_brand_id
+/tmp/TestGoCompiler_TPCDSq752970067984/001/main.go:109:3: undefined: I_class_id
+/tmp/TestGoCompiler_TPCDSq752970067984/001/main.go:110:3: undefined: I_category_id
+/tmp/TestGoCompiler_TPCDSq752970067984/001/main.go:111:3: undefined: I_manufact_id
+/tmp/TestGoCompiler_TPCDSq752970067984/001/main.go:112:3: undefined: Prev_yr_cnt
+/tmp/TestGoCompiler_TPCDSq752970067984/001/main.go:113:3: undefined: Curr_yr_cnt
+/tmp/TestGoCompiler_TPCDSq752970067984/001/main.go:114:3: undefined: Sales_cnt_diff
+/tmp/TestGoCompiler_TPCDSq752970067984/001/main.go:115:3: undefined: Sales_amt_diff
+/tmp/TestGoCompiler_TPCDSq752970067984/001/main.go:115:3: too many errors

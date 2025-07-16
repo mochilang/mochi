@@ -1,3 +1,4 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq593421103518/001/main.go:140:2: syntax error: unexpected name TypeOf after top level declaration
+/tmp/TestGoCompiler_TPCDSq593960436003/001/main.go:66:3: undefined: S_store_id1
+/tmp/TestGoCompiler_TPCDSq593960436003/001/main.go:67:3: undefined: Ratio

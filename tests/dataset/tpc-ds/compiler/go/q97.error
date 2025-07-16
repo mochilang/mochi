@@ -1,3 +1,5 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq974038577712/001/main.go:281:2: syntax error: unexpected name TypeOf after top level declaration
+/tmp/TestGoCompiler_TPCDSq97136315893/001/main.go:240:3: undefined: Store_only
+/tmp/TestGoCompiler_TPCDSq97136315893/001/main.go:241:3: undefined: Catalog_only
+/tmp/TestGoCompiler_TPCDSq97136315893/001/main.go:242:3: undefined: Store_and_catalog

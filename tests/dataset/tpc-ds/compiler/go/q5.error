@@ -1,3 +1,5 @@
-go run error: exit status 1
-# command-line-arguments
-/tmp/TestGoCompiler_TPCDSq52320292909/001/main.go:81:2: syntax error: unexpected name al after top level declaration
+vm mismatch
+-- go --
+[{"channel":"catalog channel","id":"catalog_page100","sales":30,"returns":3,"profit":8},{"channel":"store channel","id":"store10","sales":20,"returns":2,"profit":4},{"channel":"web channel","id":"web_site200","sales":40,"returns":4,"profit":10}]
+-- vm --
+[{"channel":"catalog channel","id":"catalog_page100","profit":8,"returns":3,"sales":30},{"channel":"store channel","id":"store10","profit":4,"returns":2,"sales":20},{"channel":"web channel","id":"web_site200","profit":10,"returns":4,"sales":40}]

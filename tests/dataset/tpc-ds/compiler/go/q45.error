@@ -1,3 +1,9 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq452195487568/001/main.go:356:2: syntax error: unexpected name at64 after top level declaration
+/tmp/TestGoCompiler_TPCDSq451096614346/001/main.go:87:3: undefined: Ca_zip
+/tmp/TestGoCompiler_TPCDSq451096614346/001/main.go:88:3: undefined: Sum_ws_sales_price
+/tmp/TestGoCompiler_TPCDSq451096614346/001/main.go:90:3: undefined: Ca_zip
+/tmp/TestGoCompiler_TPCDSq451096614346/001/main.go:91:3: undefined: Sum_ws_sales_price
+/tmp/TestGoCompiler_TPCDSq451096614346/001/main.go:159:29: cannot use func() []Base {…}() (value of type []Base) as []v value in argument to _convSlice[v, Base]
+/tmp/TestGoCompiler_TPCDSq451096614346/001/main.go:203:29: any does not satisfy constraints.Integer | constraints.Float
+/tmp/TestGoCompiler_TPCDSq451096614346/001/main.go:207:45: x.Ws undefined (type Web_sale has no field or method Ws)

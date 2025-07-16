@@ -1,3 +1,11 @@
 go run error: exit status 1
-# command-line-arguments
-/tmp/TestGoCompiler_TPCDSq984275437158/001/main.go:625:2: syntax error: unexpected name ny after top level declaration
+panic: interface conversion: interface {} is *data.Group, not main.Grouped
+
+goroutine 1 [running]:
+main.main.main.func2.func6(...)
+	/tmp/TestGoCompiler_TPCDSq982079470765/001/main.go:247
+main.main.func2(...)
+	/tmp/TestGoCompiler_TPCDSq982079470765/001/main.go:251
+main.main()
+	/tmp/TestGoCompiler_TPCDSq982079470765/001/main.go:255 +0x1505
+exit status 2

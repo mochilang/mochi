@@ -1,3 +1,13 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq542731821647/001/main.go:295:2: syntax error: unexpected name at64 after top level declaration
+/tmp/TestGoCompiler_TPCDSq542309049647/001/main.go:23:20: int is not a type
+/tmp/TestGoCompiler_TPCDSq542309049647/001/main.go:24:20: int is not a type
+/tmp/TestGoCompiler_TPCDSq542309049647/001/main.go:28:16: int is not a type
+/tmp/TestGoCompiler_TPCDSq542309049647/001/main.go:34:14: int is not a type
+/tmp/TestGoCompiler_TPCDSq542309049647/001/main.go:35:14: int is not a type
+/tmp/TestGoCompiler_TPCDSq542309049647/001/main.go:39:6: int is not a type
+/tmp/TestGoCompiler_TPCDSq542309049647/001/main.go:43:11: int is not a type
+/tmp/TestGoCompiler_TPCDSq542309049647/001/main.go:49:16: int is not a type
+/tmp/TestGoCompiler_TPCDSq542309049647/001/main.go:54:13: int is not a type
+/tmp/TestGoCompiler_TPCDSq542309049647/001/main.go:60:12: int is not a type
+/tmp/TestGoCompiler_TPCDSq542309049647/001/main.go:60:12: too many errors

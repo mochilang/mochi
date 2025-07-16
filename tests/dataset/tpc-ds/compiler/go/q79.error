@@ -1,3 +1,7 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq791880694156/001/main.go:653:2: syntax error: unexpected name ny after top level declaration
+/tmp/TestGoCompiler_TPCDSq793560430117/001/main.go:156:27: cannot use func() []Agg {…}() (value of type []Agg) as []v value in argument to _convSlice[v, Agg]
+/tmp/TestGoCompiler_TPCDSq793560430117/001/main.go:199:14: any does not satisfy constraints.Integer | constraints.Float
+/tmp/TestGoCompiler_TPCDSq793560430117/001/main.go:203:45: x.Ss undefined (type Store_sale has no field or method Ss)
+/tmp/TestGoCompiler_TPCDSq793560430117/001/main.go:207:17: any does not satisfy constraints.Integer | constraints.Float
+/tmp/TestGoCompiler_TPCDSq793560430117/001/main.go:211:45: x.Ss undefined (type Store_sale has no field or method Ss)

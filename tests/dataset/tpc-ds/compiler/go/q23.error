@@ -1,3 +1,7 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq23431971651/001/main.go:457:2: syntax error: unexpected name at64 after top level declaration
+/tmp/TestGoCompiler_TPCDSq232709509950/001/main.go:276:50: cannot use func() []Customer_total {…}() (value of type []Customer_total) as []v value in argument to _convSlice[v, Customer_total]
+/tmp/TestGoCompiler_TPCDSq232709509950/001/main.go:332:79: invalid operation: (cs.Cs_bill_customer_sk) (variable of type int) is not an interface
+/tmp/TestGoCompiler_TPCDSq232709509950/001/main.go:333:80: invalid operation: (cs.Cs_bill_customer_sk) (variable of type int) is not an interface
+/tmp/TestGoCompiler_TPCDSq232709509950/001/main.go:348:79: invalid operation: (ws.Ws_bill_customer_sk) (variable of type int) is not an interface
+/tmp/TestGoCompiler_TPCDSq232709509950/001/main.go:349:80: invalid operation: (ws.Ws_bill_customer_sk) (variable of type int) is not an interface

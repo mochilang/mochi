@@ -1,3 +1,13 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq912447302063/001/main.go:344:2: syntax error: unexpected name at64 after top level declaration
+/tmp/TestGoCompiler_TPCDSq913016582789/001/main.go:137:3: undefined: Call_Center
+/tmp/TestGoCompiler_TPCDSq913016582789/001/main.go:138:3: undefined: Call_Center_Name
+/tmp/TestGoCompiler_TPCDSq913016582789/001/main.go:139:3: undefined: Manager
+/tmp/TestGoCompiler_TPCDSq913016582789/001/main.go:140:3: undefined: Returns_Loss
+/tmp/TestGoCompiler_TPCDSq913016582789/001/main.go:190:26: cannot use func() []any {…}() (value of type []any) as []v value in argument to _firstSlice[v]
+/tmp/TestGoCompiler_TPCDSq913016582789/001/main.go:245:10: declared and not used: g
+/tmp/TestGoCompiler_TPCDSq913016582789/001/main.go:247:5: undefined: Call_Center
+/tmp/TestGoCompiler_TPCDSq913016582789/001/main.go:248:5: undefined: Call_Center_Name
+/tmp/TestGoCompiler_TPCDSq913016582789/001/main.go:249:5: undefined: Manager
+/tmp/TestGoCompiler_TPCDSq913016582789/001/main.go:250:5: undefined: Returns_Loss
+/tmp/TestGoCompiler_TPCDSq913016582789/001/main.go:245:10: too many errors

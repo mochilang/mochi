@@ -1,3 +1,10 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq423945810873/001/main.go:525:2: syntax error: unexpected name ny after top level declaration
+/tmp/TestGoCompiler_TPCDSq422403408513/001/main.go:92:3: undefined: D_year
+/tmp/TestGoCompiler_TPCDSq422403408513/001/main.go:93:3: undefined: I_category_id
+/tmp/TestGoCompiler_TPCDSq422403408513/001/main.go:94:3: undefined: I_category
+/tmp/TestGoCompiler_TPCDSq422403408513/001/main.go:95:3: undefined: Sum_ss_ext_sales_price
+/tmp/TestGoCompiler_TPCDSq422403408513/001/main.go:97:3: undefined: D_year
+/tmp/TestGoCompiler_TPCDSq422403408513/001/main.go:98:3: undefined: I_category_id
+/tmp/TestGoCompiler_TPCDSq422403408513/001/main.go:99:3: undefined: I_category
+/tmp/TestGoCompiler_TPCDSq422403408513/001/main.go:100:3: undefined: Sum_ss_ext_sales_price

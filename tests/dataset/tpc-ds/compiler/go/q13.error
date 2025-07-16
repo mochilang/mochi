@@ -1,3 +1,5 @@
-go run error: exit status 1
-# command-line-arguments
-/tmp/TestGoCompiler_TPCDSq131172494549/001/main.go:323:2: syntax error: unexpected name at64 after top level declaration
+vm mismatch
+-- go --
+[{"avg_ss_quantity":10,"avg_ss_ext_sales_price":100,"avg_ss_ext_wholesale_cost":50,"sum_ss_ext_wholesale_cost":50}]
+-- vm --
+[{"avg_ss_ext_sales_price":100,"avg_ss_ext_wholesale_cost":50,"avg_ss_quantity":10,"sum_ss_ext_wholesale_cost":50}]

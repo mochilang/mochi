@@ -1,3 +1,13 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq332835625376/001/main.go:414:2: syntax error: unexpected name at64 after top level declaration
+/tmp/TestGoCompiler_TPCDSq33358158561/001/main.go:181:10: unknown field Manu in struct literal of type v
+/tmp/TestGoCompiler_TPCDSq33358158561/001/main.go:182:10: unknown field Price in struct literal of type v
+/tmp/TestGoCompiler_TPCDSq33358158561/001/main.go:191:7: cannot use func() []v {…}() (value of type []v) as []any value in argument to append
+/tmp/TestGoCompiler_TPCDSq33358158561/001/main.go:209:10: unknown field Manu in struct literal of type v
+/tmp/TestGoCompiler_TPCDSq33358158561/001/main.go:210:10: unknown field Price in struct literal of type v
+/tmp/TestGoCompiler_TPCDSq33358158561/001/main.go:219:11: cannot use func() []v {…}() (value of type []v) as []any value in argument to append
+/tmp/TestGoCompiler_TPCDSq33358158561/001/main.go:237:10: unknown field Manu in struct literal of type v
+/tmp/TestGoCompiler_TPCDSq33358158561/001/main.go:238:10: unknown field Price in struct literal of type v
+/tmp/TestGoCompiler_TPCDSq33358158561/001/main.go:273:42: any does not satisfy constraints.Integer | constraints.Float
+/tmp/TestGoCompiler_TPCDSq33358158561/001/main.go:312:22: any does not satisfy constraints.Integer | constraints.Float
+/tmp/TestGoCompiler_TPCDSq33358158561/001/main.go:312:22: too many errors
