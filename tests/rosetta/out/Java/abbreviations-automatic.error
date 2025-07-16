@@ -1,0 +1,17 @@
+javac error: exit status 1
+/tmp/TestMochiToJavaabbreviations-automatic39043616/001/AbbreviationsAutomatic.java:45: error: incompatible types: String cannot be converted to List<String>
+            List<String> x = xs.get(i);
+                                   ^
+/tmp/TestMochiToJavaabbreviations-automatic39043616/001/AbbreviationsAutomatic.java:47: error: incompatible types: List<String> cannot be converted to String
+                m.put(x, true);
+                      ^
+/tmp/TestMochiToJavaabbreviations-automatic39043616/001/AbbreviationsAutomatic.java:48: error: incompatible types: List<String> cannot be converted to String
+                out.add(x);
+                        ^
+/tmp/TestMochiToJavaabbreviations-automatic39043616/001/AbbreviationsAutomatic.java:84: error: incompatible types: String cannot be converted to Number
+            System.out.println(pad2(l) + "  " + ((Number)lines.get(i)).doubleValue());
+                                                                  ^
+Note: /tmp/TestMochiToJavaabbreviations-automatic39043616/001/AbbreviationsAutomatic.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+4 errors

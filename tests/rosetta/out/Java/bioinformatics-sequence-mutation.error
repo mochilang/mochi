@@ -1,0 +1,70 @@
+javac error: exit status 1
+/tmp/TestMochiToJavabioinformatics-sequence-mutation148737400/001/BioinformaticsSequenceMutation.java:19: error: cannot find symbol
+    static List<any> makeSeq(int s, int le) {
+                ^
+  symbol:   class any
+  location: class BioinformaticsSequenceMutation
+/tmp/TestMochiToJavabioinformatics-sequence-mutation148737400/001/BioinformaticsSequenceMutation.java:32: error: cannot find symbol
+    static List<any> mutate(int s, String dna, List<Integer> w) {
+                ^
+  symbol:   class any
+  location: class BioinformaticsSequenceMutation
+/tmp/TestMochiToJavabioinformatics-sequence-mutation148737400/001/BioinformaticsSequenceMutation.java:26: error: incompatible types: Integer cannot be converted to List
+            int idx = Integer.parseInt(((List)r.get(1)));
+                                                   ^
+/tmp/TestMochiToJavabioinformatics-sequence-mutation148737400/001/BioinformaticsSequenceMutation.java:37: error: incompatible types: Integer cannot be converted to List
+        int p = Integer.parseInt(((List)r.get(1)));
+                                             ^
+/tmp/TestMochiToJavabioinformatics-sequence-mutation148737400/001/BioinformaticsSequenceMutation.java:40: error: incompatible types: Integer cannot be converted to List
+        int x = Integer.parseInt(((List)r.get(1)));
+                                             ^
+/tmp/TestMochiToJavabioinformatics-sequence-mutation148737400/001/BioinformaticsSequenceMutation.java:50: error: incompatible types: Integer cannot be converted to List
+            int idx = Integer.parseInt(((List)r.get(1)));
+                                                   ^
+/tmp/TestMochiToJavabioinformatics-sequence-mutation148737400/001/BioinformaticsSequenceMutation.java:52: error: incompatible types: String cannot be converted to Number
+            System.out.println(((Number)((Number)((Number)"  Change @" + padLeft(String.valueOf(p), 3) + " '" + ((Number)arr.get(p)).doubleValue()).doubleValue() + "' to '").doubleValue() + b).doubleValue() + "'");
+                                                          ^
+/tmp/TestMochiToJavabioinformatics-sequence-mutation148737400/001/BioinformaticsSequenceMutation.java:52: error: incompatible types: String cannot be converted to Number
+            System.out.println(((Number)((Number)((Number)"  Change @" + padLeft(String.valueOf(p), 3) + " '" + ((Number)arr.get(p)).doubleValue()).doubleValue() + "' to '").doubleValue() + b).doubleValue() + "'");
+                                                                                                                                ^
+/tmp/TestMochiToJavabioinformatics-sequence-mutation148737400/001/BioinformaticsSequenceMutation.java:52: error: cannot find symbol
+            System.out.println(((Number)((Number)((Number)"  Change @" + padLeft(String.valueOf(p), 3) + " '" + ((Number)arr.get(p)).doubleValue()).doubleValue() + "' to '").doubleValue() + b).doubleValue() + "'");
+                                                                                                                                                                             ^
+  symbol:   method doubleValue()
+  location: class String
+/tmp/TestMochiToJavabioinformatics-sequence-mutation148737400/001/BioinformaticsSequenceMutation.java:52: error: cannot find symbol
+            System.out.println(((Number)((Number)((Number)"  Change @" + padLeft(String.valueOf(p), 3) + " '" + ((Number)arr.get(p)).doubleValue()).doubleValue() + "' to '").doubleValue() + b).doubleValue() + "'");
+                                                                                                                                                                                                ^
+  symbol:   method doubleValue()
+  location: class String
+/tmp/TestMochiToJavabioinformatics-sequence-mutation148737400/001/BioinformaticsSequenceMutation.java:58: error: incompatible types: String cannot be converted to Number
+            out = out + ((Number)arr.get(i)).doubleValue();
+                                        ^
+/tmp/TestMochiToJavabioinformatics-sequence-mutation148737400/001/BioinformaticsSequenceMutation.java:113: error: incompatible types: String cannot be converted to Number
+        return ((Number)((Number)((Number)((Number)((Number)"  Change: " + ((Number)String.valueOf(w.get(0))).doubleValue()).doubleValue() + "\n  Delete: ").doubleValue() + ((Number)String.valueOf(w.get(1))).doubleValue()).doubleValue() + "\n  Insert: ").doubleValue() + ((Number)String.valueOf(w.get(2))).doubleValue()).doubleValue() + "\n";
+                                                            ^
+/tmp/TestMochiToJavabioinformatics-sequence-mutation148737400/001/BioinformaticsSequenceMutation.java:113: error: incompatible types: String cannot be converted to Number
+        return ((Number)((Number)((Number)((Number)((Number)"  Change: " + ((Number)String.valueOf(w.get(0))).doubleValue()).doubleValue() + "\n  Delete: ").doubleValue() + ((Number)String.valueOf(w.get(1))).doubleValue()).doubleValue() + "\n  Insert: ").doubleValue() + ((Number)String.valueOf(w.get(2))).doubleValue()).doubleValue() + "\n";
+                                                                                                  ^
+/tmp/TestMochiToJavabioinformatics-sequence-mutation148737400/001/BioinformaticsSequenceMutation.java:113: error: cannot find symbol
+        return ((Number)((Number)((Number)((Number)((Number)"  Change: " + ((Number)String.valueOf(w.get(0))).doubleValue()).doubleValue() + "\n  Delete: ").doubleValue() + ((Number)String.valueOf(w.get(1))).doubleValue()).doubleValue() + "\n  Insert: ").doubleValue() + ((Number)String.valueOf(w.get(2))).doubleValue()).doubleValue() + "\n";
+                                                                                                                                                            ^
+  symbol:   method doubleValue()
+  location: class String
+/tmp/TestMochiToJavabioinformatics-sequence-mutation148737400/001/BioinformaticsSequenceMutation.java:113: error: incompatible types: String cannot be converted to Number
+        return ((Number)((Number)((Number)((Number)((Number)"  Change: " + ((Number)String.valueOf(w.get(0))).doubleValue()).doubleValue() + "\n  Delete: ").doubleValue() + ((Number)String.valueOf(w.get(1))).doubleValue()).doubleValue() + "\n  Insert: ").doubleValue() + ((Number)String.valueOf(w.get(2))).doubleValue()).doubleValue() + "\n";
+                                                                                                                                                                                                    ^
+/tmp/TestMochiToJavabioinformatics-sequence-mutation148737400/001/BioinformaticsSequenceMutation.java:113: error: cannot find symbol
+        return ((Number)((Number)((Number)((Number)((Number)"  Change: " + ((Number)String.valueOf(w.get(0))).doubleValue()).doubleValue() + "\n  Delete: ").doubleValue() + ((Number)String.valueOf(w.get(1))).doubleValue()).doubleValue() + "\n  Insert: ").doubleValue() + ((Number)String.valueOf(w.get(2))).doubleValue()).doubleValue() + "\n";
+                                                                                                                                                                                                                                                              ^
+  symbol:   method doubleValue()
+  location: class String
+/tmp/TestMochiToJavabioinformatics-sequence-mutation148737400/001/BioinformaticsSequenceMutation.java:113: error: incompatible types: String cannot be converted to Number
+        return ((Number)((Number)((Number)((Number)((Number)"  Change: " + ((Number)String.valueOf(w.get(0))).doubleValue()).doubleValue() + "\n  Delete: ").doubleValue() + ((Number)String.valueOf(w.get(1))).doubleValue()).doubleValue() + "\n  Insert: ").doubleValue() + ((Number)String.valueOf(w.get(2))).doubleValue()).doubleValue() + "\n";
+                                                                                                                                                                                                                                                                                                      ^
+/tmp/TestMochiToJavabioinformatics-sequence-mutation148737400/001/BioinformaticsSequenceMutation.java:117: error: cannot find symbol
+        List<any> res = makeSeq(seed, 250);
+             ^
+  symbol:   class any
+  location: class BioinformaticsSequenceMutation
+18 errors

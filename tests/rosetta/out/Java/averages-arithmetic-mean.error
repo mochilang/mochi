@@ -1,0 +1,26 @@
+javac error: exit status 1
+/tmp/TestMochiToJavaaverages-arithmetic-mean4228335200/001/AveragesArithmeticMean.java:6: error: cannot find symbol
+    static Map<String,any> mean(List<? extends Number> v) {
+                      ^
+  symbol:   class any
+  location: class AveragesArithmeticMean
+/tmp/TestMochiToJavaaverages-arithmetic-mean4228335200/001/AveragesArithmeticMean.java:8: error: cannot find symbol
+            return new Ok(false);
+                       ^
+  symbol:   class Ok
+  location: class AveragesArithmeticMean
+/tmp/TestMochiToJavaaverages-arithmetic-mean4228335200/001/AveragesArithmeticMean.java:16: error: cannot find symbol
+        return new OkMean(true, sum / (Double.parseDouble(String.valueOf(v.size()))));
+                   ^
+  symbol:   class OkMean
+  location: class AveragesArithmeticMean
+/tmp/TestMochiToJavaaverages-arithmetic-mean4228335200/001/AveragesArithmeticMean.java:22: error: cannot find symbol
+            Map<String,any> r = mean(v);
+                       ^
+  symbol:   class any
+  location: class AveragesArithmeticMean
+/tmp/TestMochiToJavaaverages-arithmetic-mean4228335200/001/AveragesArithmeticMean.java:22: error: incompatible types: List<Object> cannot be converted to List<? extends Number>
+            Map<String,any> r = mean(v);
+                                     ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+5 errors

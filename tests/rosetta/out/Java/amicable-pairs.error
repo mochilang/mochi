@@ -1,0 +1,22 @@
+javac error: exit status 1
+/tmp/TestMochiToJavaamicable-pairs963315126/001/AmicablePairs.java:39: error: incompatible types: Integer cannot be converted to List<Integer>
+            List<Integer> m = sums.get(n);
+                                      ^
+/tmp/TestMochiToJavaamicable-pairs963315126/001/AmicablePairs.java:40: error: bad operand types for binary operator '>'
+            if (m > n && m < 20000 && Objects.equals(n, sums.get(m))) {
+                  ^
+  first type:  List<Integer>
+  second type: int
+/tmp/TestMochiToJavaamicable-pairs963315126/001/AmicablePairs.java:40: error: bad operand types for binary operator '<'
+            if (m > n && m < 20000 && Objects.equals(n, sums.get(m))) {
+                           ^
+  first type:  List<Integer>
+  second type: int
+/tmp/TestMochiToJavaamicable-pairs963315126/001/AmicablePairs.java:40: error: incompatible types: List<Integer> cannot be converted to int
+            if (m > n && m < 20000 && Objects.equals(n, sums.get(m))) {
+                                                                 ^
+/tmp/TestMochiToJavaamicable-pairs963315126/001/AmicablePairs.java:41: error: incompatible types: List<Integer> cannot be converted to int
+                System.out.println("  " + pad(n, 5) + " and " + pad(m, 5));
+                                                                    ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+5 errors

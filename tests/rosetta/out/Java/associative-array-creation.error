@@ -1,0 +1,12 @@
+javac error: exit status 1
+/tmp/TestMochiToJavaassociative-array-creation1750365441/001/AssociativeArrayCreation.java:19: error: incompatible types: Integer cannot be converted to Map<String,Integer>
+        Map<String,Integer> y1 = x.get("bar");
+                                      ^
+/tmp/TestMochiToJavaassociative-array-creation1750365441/001/AssociativeArrayCreation.java:24: error: cannot find symbol
+        x = new FooBarBaz(2, 42, -1);
+                ^
+  symbol:   class FooBarBaz
+  location: class AssociativeArrayCreation
+Note: /tmp/TestMochiToJavaassociative-array-creation1750365441/001/AssociativeArrayCreation.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+2 errors

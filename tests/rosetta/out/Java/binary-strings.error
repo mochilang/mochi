@@ -1,0 +1,14 @@
+javac error: exit status 1
+/tmp/TestMochiToJavabinary-strings3760300398/001/BinaryStrings.java:7: error: <identifier> expected
+    static String char(int n) {
+                 ^
+/tmp/TestMochiToJavabinary-strings3760300398/001/BinaryStrings.java:7: error: <identifier> expected
+    static String char(int n) {
+                      ^
+/tmp/TestMochiToJavabinary-strings3760300398/001/BinaryStrings.java:19: error: '.class' expected
+            s = s + ((Number)char(bs.get(i))).doubleValue();
+                                 ^
+/tmp/TestMochiToJavabinary-strings3760300398/001/BinaryStrings.java:19: error: ';' expected
+            s = s + ((Number)char(bs.get(i))).doubleValue();
+                                           ^
+4 errors

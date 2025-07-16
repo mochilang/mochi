@@ -1,0 +1,8 @@
+javac error: exit status 1
+/tmp/TestMochiToJavaachilles-numbers2543056927/001/AchillesNumbers.java:115: error: ')' expected
+        for (Number k : (List<Number>)((Map<Integer,Boolean>)achSet).get("keys")()) {
+                                                                                ^
+/tmp/TestMochiToJavaachilles-numbers2543056927/001/AchillesNumbers.java:115: error: -> expected
+        for (Number k : (List<Number>)((Map<Integer,Boolean>)achSet).get("keys")()) {
+                                                                                  ^
+2 errors

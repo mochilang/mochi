@@ -1,0 +1,27 @@
+javac error: exit status 1
+/tmp/TestMochiToJavaaverages-median-2510104803/001/AveragesMedian2.java:17: error: incompatible types: CAP#1 cannot be converted to List<? extends Number>
+            List<? extends Number> tmp = list.get(i);
+                                                 ^
+  where CAP#1 is a fresh type-variable:
+    CAP#1 extends Number from capture of ? extends Number
+/tmp/TestMochiToJavaaverages-median-2510104803/001/AveragesMedian2.java:18: error: incompatible types: Number cannot be converted to CAP#1
+            list.set(i, list.get(minIndex));
+                                ^
+  where CAP#1 is a fresh type-variable:
+    CAP#1 extends Number from capture of ? extends Number
+/tmp/TestMochiToJavaaverages-median-2510104803/001/AveragesMedian2.java:19: error: incompatible types: List<CAP#1> cannot be converted to CAP#2
+            list.set(minIndex, tmp);
+                               ^
+  where CAP#1,CAP#2 are fresh type-variables:
+    CAP#1 extends Number from capture of ? extends Number
+    CAP#2 extends Number from capture of ? extends Number
+/tmp/TestMochiToJavaaverages-median-2510104803/001/AveragesMedian2.java:22: error: incompatible types: CAP#1 cannot be converted to double
+        return list.get(k);
+                       ^
+  where CAP#1 is a fresh type-variable:
+    CAP#1 extends Number from capture of ? extends Number
+/tmp/TestMochiToJavaaverages-median-2510104803/001/AveragesMedian2.java:26: error: incompatible types: int cannot be converted to String
+        int half = Integer.parseInt((arr.size() / 2));
+                                                ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+5 errors

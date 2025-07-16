@@ -1,0 +1,6 @@
+javac error: exit status 1
+/tmp/TestMochiToJavacalculating-the-value-of-e3574120541/001/CalculatingTheValueOfE.java:23: error: incompatible types: double cannot be converted to String
+        Object n = (Integer.parseInt(scaled));
+                                     ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+1 error

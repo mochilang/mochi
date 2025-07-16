@@ -1,0 +1,5 @@
+javac error: exit status 1
+/tmp/TestMochiToJavaattractive-numbers612676403/001/AttractiveNumbers.java:50: error: unreachable statement
+        return count;
+        ^
+1 error

@@ -1,0 +1,14 @@
+javac error: exit status 1
+/tmp/TestMochiToJavaburrows-wheeler-transform2634184570/001/BurrowsWheelerTransform.java:6: error: illegal escape character
+    static String stx = "\x02";
+                          ^
+/tmp/TestMochiToJavaburrows-wheeler-transform2634184570/001/BurrowsWheelerTransform.java:7: error: illegal escape character
+    static String etx = "\x03";
+                          ^
+/tmp/TestMochiToJavaburrows-wheeler-transform2634184570/001/BurrowsWheelerTransform.java:98: error: illegal escape character
+        List<String> examples = new ArrayList<>(Arrays.asList("banana", "appellee", "dogwood", "TO BE OR NOT TO BE OR WANT TO BE OR NOT?", "SIX.MIXED.PIXIES.SIFT.SIXTY.PIXIE.DUST.BOXES", "\x02ABC\x03"));
+                                                                                                                                                                                             ^
+/tmp/TestMochiToJavaburrows-wheeler-transform2634184570/001/BurrowsWheelerTransform.java:98: error: illegal escape character
+        List<String> examples = new ArrayList<>(Arrays.asList("banana", "appellee", "dogwood", "TO BE OR NOT TO BE OR WANT TO BE OR NOT?", "SIX.MIXED.PIXIES.SIFT.SIXTY.PIXIE.DUST.BOXES", "\x02ABC\x03"));
+                                                                                                                                                                                                    ^
+4 errors

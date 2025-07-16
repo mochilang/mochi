@@ -1,0 +1,14 @@
+javac error: exit status 1
+/tmp/TestMochiToJavabioinformatics-base-count3221695148/001/BioinformaticsBaseCount.java:16: error: incompatible types: String cannot be converted to int
+    int dna = "" + "CGTAAAAAATTACAACGTCCTTTGGCTATCTCTTAAACTCCTGCTAAATG" + "CTCGTGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTG" + "AGGACAAAGGTCAAGATGGAGCGCATCGAACGCAATAAGGATCATTTGAT" + "GGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTT" + "CGATTCTGCTTATAACACTATGTTCTTATGAAATGGATGTTCTGAGTTGG" + "TCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTATA" + "TTTAATTTTTCTATATAGCGATCTGTATTTAAGCAATTCATTTAGGTTAT" + "CGCCGCGATGCTCGGTTCGGACCGCCAAGCATCTGGCTCCACTGCTAGTG" + "TCCTAAATTTGAATGGCAAACACAAATAAGATTTAGCAATTCGTGTAGAC" + "GACCGGGGACTTGCATGATGGGAGCAGCTTTGTTAAACTACGAACGTAAT";
+              ^
+/tmp/TestMochiToJavabioinformatics-base-count3221695148/001/BioinformaticsBaseCount.java:18: error: int cannot be dereferenced
+    int le = dna.size();
+                ^
+/tmp/TestMochiToJavabioinformatics-base-count3221695148/001/BioinformaticsBaseCount.java:25: error: incompatible types: int cannot be converted to List
+        System.out.println(padLeft(String.valueOf(i), 5) + ": " + ((List)dna).subList(i, k));
+                                                                         ^
+/tmp/TestMochiToJavabioinformatics-base-count3221695148/001/BioinformaticsBaseCount.java:34: error: int cannot be dereferenced
+        String ch = dna.substring(idx, idx + 1);
+                       ^
+4 errors
