@@ -585,6 +585,41 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			c.needJSONLib = true
 			c.needRuntime = true
 			return fmt.Sprintf("(displayln (jsexpr->string (_json-fix %s)))", args[0]), nil
+		case "push":
+			if len(args) != 2 {
+				return "", fmt.Errorf("push expects 2 args")
+			}
+			return fmt.Sprintf("(append %s (list %s))", args[0], args[1]), nil
+		case "keys":
+			if len(args) != 1 {
+				return "", fmt.Errorf("keys expects 1 arg")
+			}
+			return fmt.Sprintf("(hash-keys %s)", args[0]), nil
+		case "input":
+			if len(args) != 0 {
+				return "", fmt.Errorf("input expects no args")
+			}
+			return "(read-line)", nil
+		case "pow":
+			if len(args) != 2 {
+				return "", fmt.Errorf("pow expects 2 args")
+			}
+			return fmt.Sprintf("(expt %s %s)", args[0], args[1]), nil
+		case "now":
+			if len(args) != 0 {
+				return "", fmt.Errorf("now expects no args")
+			}
+			return "(inexact->exact (floor (* (current-inexact-milliseconds) 1000000)))", nil
+		case "int":
+			if len(args) != 1 {
+				return "", fmt.Errorf("int expects 1 arg")
+			}
+			return fmt.Sprintf("(let ((_v %[1]s)) (inexact->exact (if (string? _v) (string->number _v) _v)))", args[0]), nil
+		case "float":
+			if len(args) != 1 {
+				return "", fmt.Errorf("float expects 1 arg")
+			}
+			return fmt.Sprintf("(let ((_v %[1]s)) (exact->inexact (if (string? _v) (string->number _v) _v)))", args[0]), nil
 		default:
 			if ar, ok := c.funArity[p.Call.Func]; ok && len(args) < ar {
 				c.needFuncLib = true

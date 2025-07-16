@@ -2,6 +2,10 @@
 
 Recent enhancements:
 
+- 2025-07-16 12:24 - Implemented built-in functions `input`, `int`, `float`,
+  `push`, `keys`, `pow` and `now`. Rosetta Code golden tests update the first
+  few tasks automatically.
+
 - 2025-07-21 05:04 - Added Rosetta Code golden tests and compile script
   `compile_rosetta_racket.go`.
 
