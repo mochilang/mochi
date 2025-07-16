@@ -8,6 +8,10 @@ Recent updates (2025-07-16 11:36):
 - Fixed `_input` helper to return empty string when no input is provided.
 - Clojure Rosetta tests use `SOURCE_DATE_EPOCH` for reproducible headers.
 
+2025-07-17 07:27:
+- Added generated code for Rosetta tasks `100-prisoners` and `2048`.
+- Recorded parse/runtime errors for `15-puzzle-game` and `15-puzzle-solver`.
+
 Remaining work:
 - [ ] Fix runtime failure in `outer_join.mochi` due to arity mismatch.
 - [ ] Support reading relative files for `load_yaml.mochi` during tests.
