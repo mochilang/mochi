@@ -8,6 +8,7 @@
 - 2025-07-13 17:48 - Expanded TPCH golden tests to compile and run q1-q22 with output verification.
 - 2025-07-16 00:00 - Renamed user-defined `main` to `user_main` to prevent conflicts with the exported entry point.
 - 2025-07-16 02:00 - Added VM valid golden tests and improved float sum detection.
+- 2025-07-16 04:00 - Enhanced float type detection for nested selectors in `isFloatPrimary`.
 
 ## Remaining Work
 - Support struct field type inference for TPCH data sets.

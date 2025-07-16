@@ -4151,6 +4151,22 @@ func (c *Compiler) isFloatPrimary(p *parser.Primary) bool {
 			if _, ok := t.(types.FloatType); ok {
 				return true
 			}
+			ft := t
+			for _, name := range p.Selector.Tail {
+				st, ok := ft.(types.StructType)
+				if !ok {
+					ft = types.AnyType{}
+					break
+				}
+				if val, ok2 := st.Fields[name]; ok2 {
+					ft = val
+				} else {
+					ft = types.AnyType{}
+				}
+			}
+			if _, ok := ft.(types.FloatType); ok {
+				return true
+			}
 		}
 	}
 	return false
@@ -4170,6 +4186,11 @@ func (c *Compiler) isFloatListExpr(e *parser.Expr) bool {
 	if p.Target != nil && p.Target.Query != nil {
 		if lt, ok := c.inferExprType(e).(types.ListType); ok {
 			if _, ok := lt.Elem.(types.FloatType); ok {
+				return true
+			}
+		}
+		if q := p.Target.Query; q.Select != nil {
+			if c.isFloatExpr(q.Select) {
 				return true
 			}
 		}

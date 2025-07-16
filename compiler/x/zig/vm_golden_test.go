@@ -72,12 +72,16 @@ func TestZigCompiler_VMValid_Golden(t *testing.T) {
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			writeError(filepath.Join(outDir, name+".error"), code, fmt.Errorf("run error: %w\n%s", err, out))
+			os.Remove(exe)
+			os.Remove(exe + ".o")
 			return nil, err
 		}
 		out = bytes.TrimSpace(out)
 		if err := os.WriteFile(filepath.Join(outDir, name+".out"), out, 0o644); err != nil {
 			return nil, err
 		}
+		os.Remove(exe)
+		os.Remove(exe + ".o")
 		os.Remove(filepath.Join(outDir, name+".error"))
 		return out, nil
 	})
