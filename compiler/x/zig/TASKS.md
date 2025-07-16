@@ -7,6 +7,7 @@
 - 2025-07-13 05:12 - Added `ensureGroupSlice` helper to avoid repeated `.Items.items` chains when iterating grouped data.
 - 2025-07-13 17:48 - Expanded TPCH golden tests to compile and run q1-q22 with output verification.
 - 2025-07-16 00:00 - Renamed user-defined `main` to `user_main` to prevent conflicts with the exported entry point.
+- 2025-07-16 02:00 - Added golden tests for `tests/vm/valid` and improved float sum detection to compile TPCH q3.
 
 ## Remaining Work
 - Support struct field type inference for TPCH data sets.

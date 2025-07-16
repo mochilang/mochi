@@ -3090,6 +3090,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				return fmt.Sprintf("_sum_float(%s)", arg), nil
 			}
 		}
+		if c.isFloatListExpr(call.Args[0]) {
+			c.needsSumFloat = true
+			return fmt.Sprintf("_sum_float(%s)", arg), nil
+		}
 		c.needsSumInt = true
 		return fmt.Sprintf("_sum_int(%s)", arg), nil
 	}
