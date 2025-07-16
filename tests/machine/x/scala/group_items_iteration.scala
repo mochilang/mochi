@@ -8,7 +8,7 @@ object group_items_iteration {
   def main(args: Array[String]): Unit = {
     val data = List(Data(tag = "a", `val` = 1), Data(tag = "a", `val` = 2), Data(tag = "b", `val` = 3))
     val groups = ((for { d <- data } yield (d.tag, d)).groupBy(_._1).map{ case(k,list) => _Group(k, list.map(_._2)) }.toList).map{ g => g }.toList
-    var tmp = scala.collection.mutable.ArrayBuffer()
+    var tmp = scala.collection.mutable.ArrayBuffer[Any]()
     for(g <- groups) {
       var total = 0
       for(x <- g.items) {
