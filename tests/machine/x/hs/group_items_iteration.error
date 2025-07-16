@@ -1,14 +1,135 @@
 
-/workspace/mochi/tests/machine/x/hs/group_items_iteration.hs:180:6: error:
-    parse error on input ‘=’
+/workspace/mochi/tests/machine/x/hs/group_items_iteration.hs:137:26: error:
+    • Couldn't match expected type ‘IO b0’ with actual type ‘()’
+    • In the first argument of ‘fromMaybe’, namely ‘()’
+      In the expression:
+        fromMaybe
+          ()
+          ((let total = 0
+            in
+              case
+                  foldr
+                    (\ x acc
+                       -> case (let total = ... in Nothing) of
+                            Just v -> Just v
+                            Nothing -> acc)
+                    Nothing items (g)
+              of
+                Just v -> Just v
+                Nothing -> (let tmp = (tmp ++ ...) in Nothing)))
+      In the first argument of ‘mapM_’, namely
+        ‘(\ g
+            -> fromMaybe
+                 ()
+                 ((let total = 0
+                   in
+                     case
+                         foldr
+                           (\ x acc
+                              -> case (let ... in Nothing) of
+                                   Just v -> Just v
+                                   Nothing -> acc)
+                           Nothing items (g)
+                     of
+                       Just v -> Just v
+                       Nothing -> (let tmp = ... in Nothing))))’
     |
-180 | data = [Map.fromList [("tag", VString ("a")), ("val", VInt (1))], Map.fromList [("tag", VString ("a")), ("val", VInt (2))], Map.fromList [("tag", VString ("b")), ("val", VInt (3))]]
-    |      ^
+137 |   mapM_ (\g -> fromMaybe () ((let total = 0 in case foldr (\x acc -> case (let total = (total + fromMaybe (error "missing") (Map.lookup "val" (x))) in Nothing) of Just v -> Just v; Nothing -> acc) Nothing items (g) of Just v -> Just v; Nothing -> (let tmp = (tmp ++ [Map.fromList [("tag", key (g)), ("total", total)]]) in Nothing)))) groups
+    |                          ^^
 
+/workspace/mochi/tests/machine/x/hs/group_items_iteration.hs:137:174: error:
+    • Couldn't match expected type: MGroup a4 a2 -> Maybe (IO b0)
+                  with actual type: Maybe a0
+    • Possible cause: ‘Just’ is applied to too many arguments
+      In the expression: Just v
+      In a case alternative: Just v -> Just v
+      In the expression:
+        case
+            (let
+               total
+                 = (total + fromMaybe (error "missing") (Map.lookup "val" (x)))
+             in Nothing)
+        of
+          Just v -> Just v
+          Nothing -> acc
+    • Relevant bindings include
+        v :: a0
+          (bound at /workspace/mochi/tests/machine/x/hs/group_items_iteration.hs:137:169)
+        acc :: MGroup a4 a2 -> Maybe (IO b0)
+          (bound at /workspace/mochi/tests/machine/x/hs/group_items_iteration.hs:137:63)
+        total :: a4
+          (bound at /workspace/mochi/tests/machine/x/hs/group_items_iteration.hs:137:35)
+        g :: MGroup a4 a2
+          (bound at /workspace/mochi/tests/machine/x/hs/group_items_iteration.hs:137:11)
+    |
+137 |   mapM_ (\g -> fromMaybe () ((let total = 0 in case foldr (\x acc -> case (let total = (total + fromMaybe (error "missing") (Map.lookup "val" (x))) in Nothing) of Just v -> Just v; Nothing -> acc) Nothing items (g) of Just v -> Just v; Nothing -> (let tmp = (tmp ++ [Map.fromList [("tag", key (g)), ("total", total)]]) in Nothing)))) groups
+    |                                                                                                                                                                              ^^^^^^
 
-Context around line 180:
-  178| 
-  179| 
-  180| data = [Map.fromList [("tag", VString ("a")), ("val", VInt (1))], Map.fromList [("tag", VString ("a")), ("val", VInt (2))], Map.fromList [("tag", VString ("b")), ("val", VInt (3))]]
-  181| 
-  182| groups = [ g | g <- _group_by data (\d -> fromMaybe (error "missing") (Map.lookup "tag" d)), let g = g ]
+/workspace/mochi/tests/machine/x/hs/group_items_iteration.hs:137:198: error:
+    • Couldn't match expected type: MGroup a4 a2 -> Maybe (IO b0)
+                  with actual type: Maybe a1
+    • In the second argument of ‘foldr’, namely ‘Nothing’
+      In the expression:
+        foldr
+          (\ x acc
+             -> case
+                    (let
+                       total
+                         = (total + fromMaybe (error "missing") (Map.lookup "val" (x)))
+                     in Nothing)
+                of
+                  Just v -> Just v
+                  Nothing -> acc)
+          Nothing items (g)
+      In the expression:
+        case
+            foldr
+              (\ x acc
+                 -> case (let total = ... in Nothing) of
+                      Just v -> Just v
+                      Nothing -> acc)
+              Nothing items (g)
+        of
+          Just v -> Just v
+          Nothing -> (let tmp = (tmp ++ ...) in Nothing)
+    • Relevant bindings include
+        total :: a4
+          (bound at /workspace/mochi/tests/machine/x/hs/group_items_iteration.hs:137:35)
+        g :: MGroup a4 a2
+          (bound at /workspace/mochi/tests/machine/x/hs/group_items_iteration.hs:137:11)
+    |
+137 |   mapM_ (\g -> fromMaybe () ((let total = 0 in case foldr (\x acc -> case (let total = (total + fromMaybe (error "missing") (Map.lookup "val" (x))) in Nothing) of Just v -> Just v; Nothing -> acc) Nothing items (g) of Just v -> Just v; Nothing -> (let tmp = (tmp ++ [Map.fromList [("tag", key (g)), ("total", total)]]) in Nothing)))) groups
+    |                                                                                                                                                                                                      ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_items_iteration.hs:137:206: error:
+    • Couldn't match type: [a3]
+                     with: Map.Map String t0
+      Expected: MGroup k0 a3 -> Map.Map String t0
+        Actual: MGroup k0 a3 -> [a3]
+    • In the third argument of ‘foldr’, namely ‘items’
+      In the expression:
+        foldr
+          (\ x acc
+             -> case
+                    (let
+                       total
+                         = (total + fromMaybe (error "missing") (Map.lookup "val" (x)))
+                     in Nothing)
+                of
+                  Just v -> Just v
+                  Nothing -> acc)
+          Nothing items (g)
+      In the expression:
+        case
+            foldr
+              (\ x acc
+                 -> case (let total = ... in Nothing) of
+                      Just v -> Just v
+                      Nothing -> acc)
+              Nothing items (g)
+        of
+          Just v -> Just v
+          Nothing -> (let tmp = (tmp ++ ...) in Nothing)
+    |
+137 |   mapM_ (\g -> fromMaybe () ((let total = 0 in case foldr (\x acc -> case (let total = (total + fromMaybe (error "missing") (Map.lookup "val" (x))) in Nothing) of Just v -> Just v; Nothing -> acc) Nothing items (g) of Just v -> Just v; Nothing -> (let tmp = (tmp ++ [Map.fromList [("tag", key (g)), ("total", total)]]) in Nothing)))) groups
+    |                                                                                                                                                                                                              ^^^^^

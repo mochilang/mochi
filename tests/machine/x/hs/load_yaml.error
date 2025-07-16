@@ -1,38 +1,62 @@
 
-/workspace/mochi/tests/machine/x/hs/load_yaml.hs:6:1: error:
-    Could not find module ‘Data.Aeson’
-    Perhaps you meant Data.Version (from base-4.17.2.0)
-    Use -v (or `:set -v` in ghci) to see a list of the files searched for.
-  |
-6 | import qualified Data.Aeson as Aeson
-  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/workspace/mochi/tests/machine/x/hs/load_yaml.hs:191:10: error:
+    • Couldn't match expected type: (a0 -> Maybe a0)
+                                    -> Map.Map String String -> t
+                  with actual type: IO [Map.Map String String]
+    • The function ‘_load’ is applied to four value arguments,
+        but its type ‘Maybe String
+                      -> Maybe (Map.Map String String) -> IO [Map.Map String String]’
+        has only two
+      In the expression:
+        _load
+          Just "../interpreter/valid/people.yaml" Just
+          (Map.fromList [("format", "yaml")])
+      In an equation for ‘people’:
+          people
+            = _load
+                Just "../interpreter/valid/people.yaml" Just
+                (Map.fromList [("format", "yaml")])
+    • Relevant bindings include
+        people :: t
+          (bound at /workspace/mochi/tests/machine/x/hs/load_yaml.hs:191:1)
+    |
+191 | people = _load Just "../interpreter/valid/people.yaml" Just (Map.fromList [("format", "yaml")])
+    |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-/workspace/mochi/tests/machine/x/hs/load_yaml.hs:7:1: error:
-    Could not find module ‘Data.Aeson.Key’
-    Use -v (or `:set -v` in ghci) to see a list of the files searched for.
-  |
-7 | import qualified Data.Aeson.Key as Key
-  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/workspace/mochi/tests/machine/x/hs/load_yaml.hs:191:16: error:
+    • Couldn't match expected type: Maybe String
+                  with actual type: a1 -> Maybe a1
+    • Probable cause: ‘Just’ is applied to too few arguments
+      In the first argument of ‘_load’, namely ‘Just’
+      In the expression:
+        _load
+          Just "../interpreter/valid/people.yaml" Just
+          (Map.fromList [("format", "yaml")])
+      In an equation for ‘people’:
+          people
+            = _load
+                Just "../interpreter/valid/people.yaml" Just
+                (Map.fromList [("format", "yaml")])
+    |
+191 | people = _load Just "../interpreter/valid/people.yaml" Just (Map.fromList [("format", "yaml")])
+    |                ^^^^
 
-/workspace/mochi/tests/machine/x/hs/load_yaml.hs:8:1: error:
-    Could not find module ‘Data.Aeson.KeyMap’
-    Use -v (or `:set -v` in ghci) to see a list of the files searched for.
-  |
-8 | import qualified Data.Aeson.KeyMap as KeyMap
-  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-/workspace/mochi/tests/machine/x/hs/load_yaml.hs:16:1: error:
-    Could not find module ‘Data.Vector’
-    Perhaps you meant Data.Functor (from base-4.17.2.0)
-    Use -v (or `:set -v` in ghci) to see a list of the files searched for.
-   |
-16 | import qualified Data.Vector as V
-   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-
-Context around line 6:
-    4| module Main where
-    5| 
-    6| import qualified Data.Aeson as Aeson
-    7| import qualified Data.Aeson.Key as Key
-    8| import qualified Data.Aeson.KeyMap as KeyMap
+/workspace/mochi/tests/machine/x/hs/load_yaml.hs:191:21: error:
+    • Couldn't match type: [Char]
+                     with: Maybe (Map.Map String String)
+      Expected: Maybe (Map.Map String String)
+        Actual: String
+    • In the second argument of ‘_load’, namely
+        ‘"../interpreter/valid/people.yaml"’
+      In the expression:
+        _load
+          Just "../interpreter/valid/people.yaml" Just
+          (Map.fromList [("format", "yaml")])
+      In an equation for ‘people’:
+          people
+            = _load
+                Just "../interpreter/valid/people.yaml" Just
+                (Map.fromList [("format", "yaml")])
+    |
+191 | people = _load Just "../interpreter/valid/people.yaml" Just (Map.fromList [("format", "yaml")])
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

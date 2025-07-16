@@ -1,0 +1,6 @@
+
+/workspace/mochi/tests/machine/x/hs/list_set_ops.hs:47:18: error:
+    Variable not in scope: fromMaybe :: [a4] -> Maybe [a] -> [a]
+   |
+47 |    in [MGroup k (fromMaybe [] (Map.lookup k m)) | k <- order]
+   |                  ^^^^^^^^^

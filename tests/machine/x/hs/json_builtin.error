@@ -1,16 +1,6 @@
 
-/workspace/mochi/tests/machine/x/hs/json_builtin.hs:6:1: error:
-    Could not find module ‘Data.Aeson’
-    Perhaps you meant Data.Version (from base-4.17.2.0)
-    Use -v (or `:set -v` in ghci) to see a list of the files searched for.
-  |
-6 | import qualified Data.Aeson as Aeson
-  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-
-Context around line 6:
-    4| module Main where
-    5| 
-    6| import qualified Data.Aeson as Aeson
-    7| import qualified Data.ByteString.Lazy.Char8 as BSL
-    8| import Data.List (intercalate, isInfixOf, isPrefixOf)
+/workspace/mochi/tests/machine/x/hs/json_builtin.hs:47:18: error:
+    Variable not in scope: fromMaybe :: [a0] -> Maybe [a] -> [a]
+   |
+47 |    in [MGroup k (fromMaybe [] (Map.lookup k m)) | k <- order]
+   |                  ^^^^^^^^^
