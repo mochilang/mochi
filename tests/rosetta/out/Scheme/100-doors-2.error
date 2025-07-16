@@ -1,4 +1,0 @@
-run error: exit status 70
-ERROR on line 7 of file /workspace/mochi/tests/rosetta/out/Scheme/100-doors-2.scm: unexpected define: (define line (string-append (string-append "Door " (let ((s (open-output-string))) (write current s) (get-output-string s))) " "))
-  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
-  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
