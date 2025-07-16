@@ -3,10 +3,13 @@ error: fpc error: exit status 1
 Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
-Compiling /workspace/mochi/tests/machine/x/pascal/partial_application.pas
-partial_application.pas(20,11) Error: Wrong number of parameters specified for call to "add"
-partial_application.pas(10,10) Error: Found declaration: add(LongInt;LongInt):LongInt;
-partial_application.pas(23) Fatal: There were 2 errors compiling module, stopping
+Compiling /tmp/TestPascalCompiler_VMValid_Goldenpartial_application1921954697/001/main.pas
+main.pas(20,11) Error: Wrong number of parameters specified for call to "add"
+main.pas(13,10) Error: Found declaration: add(LongInt;LongInt):LongInt;
+main.pas(23) Fatal: There were 2 errors compiling module, stopping
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode
 
+  21:   writeln(add5(3));
+  22: end.
+  23: 

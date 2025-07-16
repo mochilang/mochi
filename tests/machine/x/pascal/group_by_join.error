@@ -1,14 +1,17 @@
-line: 61
+line: 62
 error: fpc error: exit status 1
 Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
-Compiling /workspace/mochi/tests/machine/x/pascal/group_by_join.pas
-group_by_join.pas(45,11) Error: Identifier not found "c"
-group_by_join.pas(47,46) Error: Identifier not found "c"
-group_by_join.pas(49,38) Error: Identifier not found "g"
-group_by_join.pas(50,46) Error: Identifier not found "g"
-group_by_join.pas(61) Fatal: There were 4 errors compiling module, stopping
+Compiling /tmp/TestPascalCompiler_VMValid_Goldengroup_by_join3254442988/001/main.pas
+main.pas(48,18) Error: identifier idents no member "customerId"
+main.pas(48,33) Error: identifier idents no member "id"
+main.pas(50,34) Error: Identifier not found "g"
+main.pas(51,42) Error: Identifier not found "g"
+main.pas(62) Fatal: There were 4 errors compiling module, stopping
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode
 
+  60:   end;
+  61: end.
+  62: 

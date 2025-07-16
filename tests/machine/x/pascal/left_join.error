@@ -3,13 +3,15 @@ error: fpc error: exit status 1
 Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
-Compiling /workspace/mochi/tests/machine/x/pascal/left_join.pas
-left_join.pas(46,11) Error: Identifier not found "c"
-left_join.pas(48,46) Error: Identifier not found "c"
-left_join.pas(52,42) Error: Identifier not found "c"
-left_join.pas(58,11) Error: Identifier not found "c"
-left_join.pas(61,42) Error: Identifier not found "c"
-left_join.pas(74) Fatal: There were 5 errors compiling module, stopping
+Compiling /tmp/TestPascalCompiler_VMValid_Goldenleft_join4165684062/001/main.pas
+main.pas(49,18) Error: identifier idents no member "customerId"
+main.pas(49,33) Error: identifier idents no member "id"
+main.pas(53,39) Error: Incompatible type for arg no. 2: Got "TFPGMap<System.ShortString,System.Variant>", expected "Variant"
+main.pas(62,39) Error: Incompatible type for arg no. 2: Got "TFPGMap<System.ShortString,System.Variant>", expected "Variant"
+main.pas(74) Fatal: There were 4 errors compiling module, stopping
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode
 
+  72:   end;
+  73: end.
+  74: 
