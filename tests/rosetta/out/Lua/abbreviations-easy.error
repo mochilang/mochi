@@ -1,0 +1,7 @@
+run error: exit status 1
+lua: ...space/mochi/tests/rosetta/out/Lua/abbreviations-easy.lua:141: attempt to call a nil value (global 'upper')
+stack traceback:
+	...space/mochi/tests/rosetta/out/Lua/abbreviations-easy.lua:141: in function 'validate'
+	...space/mochi/tests/rosetta/out/Lua/abbreviations-easy.lua:180: in function 'main'
+	...space/mochi/tests/rosetta/out/Lua/abbreviations-easy.lua:191: in main chunk
+	[C]: in ?
