@@ -2,6 +2,10 @@
 
 Recent enhancements:
 
+- 2025-07-16 17:33 - VM golden tests now run with summary output and
+  generated sources stored under `tests/machine/x/racket`. Duplicate
+  compile tests removed.
+
 - 2025-08-30 05:04 - Added golden tests for `tests/vm/valid` to
   verify generated Racket code and runtime output.
 
