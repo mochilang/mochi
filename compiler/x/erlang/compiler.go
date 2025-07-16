@@ -644,28 +644,53 @@ func (c *Compiler) compileIfStmt(ifst *parser.IfStmt) (string, error) {
 }
 
 func collectMutations(sts []*parser.Statement, mutated map[string]bool) {
+	collectMutationsScoped(sts, map[string]bool{}, mutated)
+}
+
+func collectMutationsScoped(sts []*parser.Statement, locals, mutated map[string]bool) {
 	for _, st := range sts {
-		if st.Assign != nil {
-			mutated[st.Assign.Name] = true
+		switch {
+		case st.Var != nil:
+			locals[st.Var.Name] = true
+		case st.Let != nil:
+			locals[st.Let.Name] = true
+		case st.Assign != nil:
+			if !locals[st.Assign.Name] {
+				mutated[st.Assign.Name] = true
+			}
+		case st.Update != nil:
+			if !locals[st.Update.Target] {
+				mutated[st.Update.Target] = true
+			}
 		}
-		if st.Update != nil {
-			mutated[st.Update.Target] = true
-		}
+
 		if st.If != nil {
-			collectMutations(st.If.Then, mutated)
-			collectMutations(st.If.Else, mutated)
+			c1 := cloneStringBoolMap(locals)
+			collectMutationsScoped(st.If.Then, c1, mutated)
+			collectMutationsScoped(st.If.Else, cloneStringBoolMap(locals), mutated)
 			if st.If.ElseIf != nil {
-				collectMutations(st.If.ElseIf.Then, mutated)
-				collectMutations(st.If.ElseIf.Else, mutated)
+				collectMutationsScoped(st.If.ElseIf.Then, cloneStringBoolMap(locals), mutated)
+				collectMutationsScoped(st.If.ElseIf.Else, cloneStringBoolMap(locals), mutated)
 			}
 		}
 		if st.For != nil {
-			collectMutations(st.For.Body, mutated)
+			collectMutationsScoped(st.For.Body, cloneStringBoolMap(locals), mutated)
 		}
 		if st.While != nil {
-			collectMutations(st.While.Body, mutated)
+			collectMutationsScoped(st.While.Body, cloneStringBoolMap(locals), mutated)
+		}
+		if st.Test != nil {
+			collectMutationsScoped(st.Test.Body, cloneStringBoolMap(locals), mutated)
 		}
 	}
+}
+
+func cloneStringBoolMap(m map[string]bool) map[string]bool {
+	c := make(map[string]bool, len(m))
+	for k, v := range m {
+		c[k] = v
+	}
+	return c
 }
 
 func (c *Compiler) compileFor(fr *parser.ForStmt) (string, error) {

@@ -28,10 +28,11 @@
 - [2025-07-16 12:40] Improved `if` statement compilation to reuse variable names
   across branches, preventing unbound variable errors in several Rosetta
   examples. Regenerated outputs for the first few tasks.
+- [2025-07-17 12:00] Added VM valid golden tests and refined mutation analysis
+  to ignore loop-local variables, fixing `group_items_iteration`.
 
 ## Remaining work
 - [ ] Implement auto FFI handling for `go_auto` and `python_auto` programs.
-- [ ] Fix nested accumulation bug in `group_items_iteration`.
 - [ ] Support extern values for `python_math`.
 - [x] Compile TPC-H query `q1.mochi` successfully.
 - [x] Compile TPC-H queries `q2` through `q22` successfully.
