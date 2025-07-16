@@ -1,0 +1,9 @@
+run error: exit status 1
+/tmp/TestMochiToCS4-rings-or-4-squares-puzzle2333697774/001/Program.cs(53,42): error CS1525: Invalid expression term '||' [/tmp/TestMochiToCS4-rings-or-4-squares-puzzle2333697774/001/app.csproj]
+/tmp/TestMochiToCS4-rings-or-4-squares-puzzle2333697774/001/Program.cs(53,56): error CS1002: ; expected [/tmp/TestMochiToCS4-rings-or-4-squares-puzzle2333697774/001/app.csproj]
+/tmp/TestMochiToCS4-rings-or-4-squares-puzzle2333697774/001/Program.cs(56,42): error CS1525: Invalid expression term '||' [/tmp/TestMochiToCS4-rings-or-4-squares-puzzle2333697774/001/app.csproj]
+/tmp/TestMochiToCS4-rings-or-4-squares-puzzle2333697774/001/Program.cs(56,56): error CS1002: ; expected [/tmp/TestMochiToCS4-rings-or-4-squares-puzzle2333697774/001/app.csproj]
+/tmp/TestMochiToCS4-rings-or-4-squares-puzzle2333697774/001/Program.cs(67,42): error CS1525: Invalid expression term '||' [/tmp/TestMochiToCS4-rings-or-4-squares-puzzle2333697774/001/app.csproj]
+/tmp/TestMochiToCS4-rings-or-4-squares-puzzle2333697774/001/Program.cs(67,75): error CS1002: ; expected [/tmp/TestMochiToCS4-rings-or-4-squares-puzzle2333697774/001/app.csproj]
+
+The build failed. Fix the build errors and run again.

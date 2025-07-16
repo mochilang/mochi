@@ -1,0 +1,5 @@
+run error: exit status 1
+/tmp/TestMochiToCSabc-problem701865728/001/Program.cs(47,71): error CS1525: Invalid expression term '||' [/tmp/TestMochiToCSabc-problem701865728/001/app.csproj]
+/tmp/TestMochiToCSabc-problem701865728/001/Program.cs(47,129): error CS1002: ; expected [/tmp/TestMochiToCSabc-problem701865728/001/app.csproj]
+
+The build failed. Fix the build errors and run again.
