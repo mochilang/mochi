@@ -1,0 +1,57 @@
+run: exit status 1
+    warning: variable "v" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 28 │                     v = j
+    │                     ~
+    │
+    └─ /tmp/casting-out-nines.exs:28:21: Main.parseIntBase/2
+
+     warning: variable "out" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 127 │               out = out ++ [ks]
+     │               ~
+     │
+     └─ /tmp/casting-out-nines.exs:127:15: Main.subset/3
+
+     warning: variable "found" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 186 │                         found = true
+     │                         ~
+     │
+     └─ /tmp/casting-out-nines.exs:186:25: Main.main/0
+
+     warning: variable "sx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 187 │                         sx = sx + 1
+     │                         ~
+     │
+     └─ /tmp/casting-out-nines.exs:187:25: Main.main/0
+
+     warning: variable "valid" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 208 │                   valid = false
+     │                   ~
+     │
+     └─ /tmp/casting-out-nines.exs:208:19: Main.main/0
+
+** (FunctionClauseError) no function clause matching in Enum.at/3    
+    
+    The following arguments were given to Enum.at/3:
+    
+        # 1
+        %{"base" => 10, "begin" => "1", "end" => "100", "kaprekar" => ["1", "9", "45", "55", "99"]}
+    
+        # 2
+        "base"
+    
+        # 3
+        nil
+    
+    Attempted function clauses (showing 1 out of 1):
+    
+        def at(+enumerable+, +index+, +default+) when -is_integer(index)-
+    
+    (elixir 1.18.3) lib/enum.ex:478: Enum.at/3
+    /tmp/casting-out-nines.exs:161: anonymous fn/2 in Main.main/0
+    /tmp/casting-out-nines.exs:243: Main.main/0
+    /tmp/casting-out-nines.exs:259: (file)

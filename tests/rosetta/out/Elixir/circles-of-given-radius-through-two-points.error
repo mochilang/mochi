@@ -1,0 +1,9 @@
+run: exit status 1
+** (SyntaxError) invalid syntax found on /tmp/circles-of-given-radius-through-two-points.exs:8:7:
+    error: syntax error before: "Two circles."
+    │
+  8 │ 	@Two "Two circles."
+    │       ^
+    │
+    └─ /tmp/circles-of-given-radius-through-two-points.exs:8:7
+    (elixir 1.18.3) lib/code.ex:1525: Code.require_file/2

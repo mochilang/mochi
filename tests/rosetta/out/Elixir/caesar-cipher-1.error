@@ -1,0 +1,17 @@
+run: exit status 1
+     warning: this clause for main/0 cannot match because a previous clause at line 142 always matches
+     │
+ 170 │   def main do
+     │       ~
+     │
+     └─ /tmp/caesar-cipher-1.exs:170:7
+
+** (ArithmeticError) bad argument in arithmetic expression: "" + "U"
+    :erlang.+("", "U")
+    /tmp/caesar-cipher-1.exs:111: anonymous fn/5 in Main.encipher/2
+    /tmp/caesar-cipher-1.exs:123: Main.encipher/2
+    /tmp/caesar-cipher-1.exs:155: anonymous fn/2 in Main.main/0
+    (elixir 1.18.3) lib/enum.ex:4968: Enumerable.List.reduce/3
+    (elixir 1.18.3) lib/enum.ex:2600: Enum.reduce_while/3
+    /tmp/caesar-cipher-1.exs:148: Main.main/0
+    /tmp/caesar-cipher-1.exs:196: (file)
