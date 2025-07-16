@@ -1,1 +1,0 @@
-expect condition failed at tests/vm/valid/update_stmt.mochi:22: expect people == [

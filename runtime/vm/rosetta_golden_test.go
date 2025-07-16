@@ -111,6 +111,7 @@ func removeErr(src string) {
 	base := strings.TrimSuffix(src, filepath.Ext(src))
 	os.Remove(base + ".error")
 	os.Remove(base + ".mochi.error")
+	os.Remove(base + ".vm.error")
 }
 
 func findRepoRoot(t *testing.T) string {
