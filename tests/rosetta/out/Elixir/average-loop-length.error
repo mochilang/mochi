@@ -1,0 +1,29 @@
+run: exit status 1
+    warning: variable "s" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 74 │           s = _slice_string(s, 0, dot + 5)
+    │           ~
+    │
+    └─ /tmp/average-loop-length.exs:74:11: Main.fmtF/1
+
+    warning: variable "s" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 68 │         s = s <> ".0000"
+    │         ~
+    │
+    └─ /tmp/average-loop-length.exs:68:9: Main.fmtF/1
+
+     warning: this clause for main/0 cannot match because a previous clause at line 283 always matches
+     │
+ 322 │   def main do
+     │       ~
+     │
+     └─ /tmp/average-loop-length.exs:322:7
+
+** (BadMapError) expected a map, got: [false]
+    /tmp/average-loop-length.exs:203: anonymous fn/6 in Main.avgLen/1
+    /tmp/average-loop-length.exs:217: anonymous fn/5 in Main.avgLen/1
+    /tmp/average-loop-length.exs:233: Main.avgLen/1
+    /tmp/average-loop-length.exs:294: anonymous fn/2 in Main.main/0
+    /tmp/average-loop-length.exs:315: Main.main/0
+    /tmp/average-loop-length.exs:338: (file)

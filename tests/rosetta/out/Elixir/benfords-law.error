@@ -1,0 +1,47 @@
+run: exit status 1
+    warning: variable "s" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 61 │           s = _slice_string(s, 0, dot + 4)
+    │           ~
+    │
+    └─ /tmp/benfords-law.exs:61:11: Main.fmtF3/1
+
+    warning: variable "s" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 55 │         s = s <> ".000"
+    │         ~
+    │
+    └─ /tmp/benfords-law.exs:55:9: Main.fmtF3/1
+
+     warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 164 │         x = -x
+     │         ~
+     │
+     └─ /tmp/benfords-law.exs:164:9: Main.leadingDigit/1
+
+     warning: variable "counts" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 217 │             counts = Map.put(counts, d - 1, Enum.at(counts, d - 1) + 1)
+     │             ~
+     │
+     └─ /tmp/benfords-law.exs:217:13: Main.show/2
+
+     warning: this clause for main/0 cannot match because a previous clause at line 261 always matches
+     │
+ 269 │   def main do
+     │       ~
+     │
+     └─ /tmp/benfords-law.exs:269:7
+
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a binary
+
+    :erlang.binary_to_integer(1)
+    /tmp/benfords-law.exs:200: Main.leadingDigit/1
+    /tmp/benfords-law.exs:214: anonymous fn/2 in Main.show/2
+    (elixir 1.18.3) lib/enum.ex:2546: Enum."-reduce/3-lists^foldl/2-0-"/3
+    /tmp/benfords-law.exs:213: Main.show/2
+    /tmp/benfords-law.exs:263: Main.main/0
+    /tmp/benfords-law.exs:293: (file)

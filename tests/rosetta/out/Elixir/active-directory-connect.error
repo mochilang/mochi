@@ -1,0 +1,11 @@
+run: exit status 1
+    error: invalid alias: "client.Host". If you wanted to define an alias, an alias must expand to an atom at compile time but it did not, you may use Module.concat/2 to build it at runtime. If instead you wanted to invoke a function or access a field, wrap the function or field name in double quotes
+    │
+ 11 │       throw({:return, client.Host != "" && client.Port > 0})
+    │                             ^
+    │
+    └─ /tmp/active-directory-connect.exs:11:29: Main.connect/1
+
+** (CompileError) /tmp/active-directory-connect.exs: cannot compile module Main (errors have been logged)
+    (elixir 1.18.3) expanding macro: Kernel.&&/2
+    /tmp/active-directory-connect.exs:11: Main.connect/1

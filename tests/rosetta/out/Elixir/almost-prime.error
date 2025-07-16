@@ -1,0 +1,24 @@
+run: exit status 1
+    warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 69 │               r = r ++ [n]
+    │               ~
+    │
+    └─ /tmp/almost-prime.exs:69:15: Main.gen/2
+
+     warning: this clause for main/0 cannot match because a previous clause at line 93 always matches
+     │
+ 120 │   def main do
+     │       ~
+     │
+     └─ /tmp/almost-prime.exs:120:7
+
+** (ArithmeticError) bad argument in arithmetic expression: rem(1.0, 2)
+    :erlang.rem(1.0, 2)
+    /tmp/almost-prime.exs:16: anonymous fn/5 in Main.kPrime/2
+    /tmp/almost-prime.exs:23: anonymous fn/5 in Main.kPrime/2
+    /tmp/almost-prime.exs:33: anonymous fn/5 in Main.kPrime/2
+    /tmp/almost-prime.exs:47: Main.kPrime/2
+    /tmp/almost-prime.exs:68: anonymous fn/5 in Main.gen/2
+    /tmp/almost-prime.exs:83: Main.gen/2
+    /tmp/almost-prime.exs:101: anonymous fn/2 in Main.main/0

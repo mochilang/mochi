@@ -1,0 +1,53 @@
+run: exit status 1
+    warning: variable "pile" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 69 │             pile = handlePile(pile, x, y - 1)
+    │             ~
+    │
+    └─ /tmp/abelian-sandpile-model.exs:69:13: Main.handlePile/3
+
+    warning: variable "pile" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 77 │             pile = handlePile(pile, x - 1, y)
+    │             ~
+    │
+    └─ /tmp/abelian-sandpile-model.exs:77:13: Main.handlePile/3
+
+    warning: variable "pile" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 85 │             pile = handlePile(pile, x, y + 1)
+    │             ~
+    │
+    └─ /tmp/abelian-sandpile-model.exs:85:13: Main.handlePile/3
+
+    warning: variable "pile" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 93 │             pile = handlePile(pile, x + 1, y)
+    │             ~
+    │
+    └─ /tmp/abelian-sandpile-model.exs:93:13: Main.handlePile/3
+
+    warning: variable "pile" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 97 │         pile = handlePile(pile, x, y)
+    │         ~
+    │
+    └─ /tmp/abelian-sandpile-model.exs:97:9: Main.handlePile/3
+
+     warning: variable "v" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 128 │                     v = 3
+     │                     ~
+     │
+     └─ /tmp/abelian-sandpile-model.exs:128:21: Main.drawPile/2
+
+     warning: this clause for main/0 cannot match because a previous clause at line 166 always matches
+     │
+ 179 │   def main do
+     │       ~
+     │
+     └─ /tmp/abelian-sandpile-model.exs:179:7
+
+** (BadMapError) expected a map, got: [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+    /tmp/abelian-sandpile-model.exs:171: Main.main/0
+    /tmp/abelian-sandpile-model.exs:184: (file)

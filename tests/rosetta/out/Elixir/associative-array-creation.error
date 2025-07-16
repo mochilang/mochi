@@ -1,0 +1,42 @@
+run: exit status 1
+    warning: variable "out" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 12 │             out = Map.put(out, key, Enum.at(m, key))
+    │             ~
+    │
+    └─ /tmp/associative-array-creation.exs:12:13: Main.removeKey/2
+
+    warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 36 │       x = removeKey(x, "foo")
+    │       ~
+    │
+    └─ /tmp/associative-array-creation.exs:36:7: Main.main/0
+
+    warning: this clause for main/0 cannot match because a previous clause at line 26 always matches
+    │
+ 50 │   def main do
+    │       ~
+    │
+    └─ /tmp/associative-array-creation.exs:50:7
+
+** (FunctionClauseError) no function clause matching in Enum.at/3    
+    
+    The following arguments were given to Enum.at/3:
+    
+        # 1
+        %{"foo" => 3}
+    
+        # 2
+        "bar"
+    
+        # 3
+        nil
+    
+    Attempted function clauses (showing 1 out of 1):
+    
+        def at(+enumerable+, +index+, +default+) when -is_integer(index)-
+    
+    (elixir 1.18.3) lib/enum.ex:478: Enum.at/3
+    /tmp/associative-array-creation.exs:32: Main.main/0
+    /tmp/associative-array-creation.exs:63: (file)

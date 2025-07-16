@@ -1,0 +1,9 @@
+run: exit status 1
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a binary
+
+    :erlang.binary_to_float(1)
+    /tmp/averages-root-mean-square.exs:47: anonymous fn/3 in Main.main/0
+    /tmp/averages-root-mean-square.exs:59: Main.main/0
+    /tmp/averages-root-mean-square.exs:68: (file)

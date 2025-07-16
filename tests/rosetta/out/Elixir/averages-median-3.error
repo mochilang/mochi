@@ -1,0 +1,44 @@
+run: exit status 1
+    warning: variable "arr" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 32 │                     arr = Map.put(arr, i, tmp2)
+    │                     ~
+    │
+    └─ /tmp/averages-median-3.exs:32:21: Main.qsel/2
+
+    warning: variable "px" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 33 │                     px = px + 1
+    │                     ~
+    │
+    └─ /tmp/averages-median-3.exs:33:21: Main.qsel/2
+
+    warning: variable "arr" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 62 │               arr = Enum.slice(arr, px + 1, length(String.graphemes(arr)) - (px + 1))
+    │               ~
+    │
+    └─ /tmp/averages-median-3.exs:62:15: Main.qsel/2
+
+    warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 63 │               k = k - (px + 1)
+    │               ~
+    │
+    └─ /tmp/averages-median-3.exs:63:15: Main.qsel/2
+
+    warning: variable "arr" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 57 │               arr = Enum.slice(arr, 0, px - 0)
+    │               ~
+    │
+    └─ /tmp/averages-median-3.exs:57:15: Main.qsel/2
+
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a binary
+
+    :erlang.binary_to_integer(2.0)
+    /tmp/averages-median-3.exs:90: Main.median/1
+    /tmp/averages-median-3.exs:104: Main.main/0
+    /tmp/averages-median-3.exs:113: (file)

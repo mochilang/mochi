@@ -1,0 +1,87 @@
+run: exit status 1
+     warning: variable "arr" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 187 │           arr = Map.put(arr, p, b)
+     │           ~
+     │
+     └─ /tmp/bioinformatics-sequence-mutation.exs:187:11: Main.mutate/3
+
+     warning: variable "s" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 161 │           s = Enum.at(r, 0)
+     │           ~
+     │
+     └─ /tmp/bioinformatics-sequence-mutation.exs:161:11: Main.mutate/3
+
+     warning: variable "arr" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 158 │           arr = Enum.slice(arr, 0, length(arr) - 1 - 0)
+     │           ~
+     │
+     └─ /tmp/bioinformatics-sequence-mutation.exs:158:11: Main.mutate/3
+
+     warning: variable "arr" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 130 │         arr = Map.put(arr, p, b)
+     │         ~
+     │
+     └─ /tmp/bioinformatics-sequence-mutation.exs:130:9: Main.mutate/3
+
+     warning: variable "s" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 121 │         s = Enum.at(r, 0)
+     │         ~
+     │
+     └─ /tmp/bioinformatics-sequence-mutation.exs:121:9: Main.mutate/3
+
+     warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 234 │               k = le
+     │               ~
+     │
+     └─ /tmp/bioinformatics-sequence-mutation.exs:234:15: Main.prettyPrint/2
+
+     warning: variable "t" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 277 │                     t = t + 1
+     │                     ~
+     │
+     └─ /tmp/bioinformatics-sequence-mutation.exs:277:21: Main.prettyPrint/2
+
+     warning: variable "g" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 274 │                   g = g + 1
+     │                   ~
+     │
+     └─ /tmp/bioinformatics-sequence-mutation.exs:274:19: Main.prettyPrint/2
+
+     warning: variable "c" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 271 │                 c = c + 1
+     │                 ~
+     │
+     └─ /tmp/bioinformatics-sequence-mutation.exs:271:17: Main.prettyPrint/2
+
+     warning: variable "a" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 268 │               a = a + 1
+     │               ~
+     │
+     └─ /tmp/bioinformatics-sequence-mutation.exs:268:15: Main.prettyPrint/2
+
+     warning: this clause for main/0 cannot match because a previous clause at line 328 always matches
+     │
+ 375 │   def main do
+     │       ~
+     │
+     └─ /tmp/bioinformatics-sequence-mutation.exs:375:7
+
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a binary
+
+    :erlang.binary_to_integer(0)
+    /tmp/bioinformatics-sequence-mutation.exs:60: anonymous fn/5 in Main.makeSeq/2
+    /tmp/bioinformatics-sequence-mutation.exs:73: Main.makeSeq/2
+    /tmp/bioinformatics-sequence-mutation.exs:332: Main.main/0
+    /tmp/bioinformatics-sequence-mutation.exs:391: (file)

@@ -1,0 +1,53 @@
+run: exit status 1
+    warning: variable "arr" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 46 │                     arr = Map.put(arr, j + 1, tmp)
+    │                     ~
+    │
+    └─ /tmp/anagrams-deranged-anagrams.exs:46:21: Main.sortRunes/1
+
+     warning: variable "m" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 164 │               m = Map.put(m, k, [w])
+     │               ~
+     │
+     └─ /tmp/anagrams-deranged-anagrams.exs:164:15: Main.main/0
+
+     warning: variable "bestLen" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 173 │                     bestLen = length(w)
+     │                     ~
+     │
+     └─ /tmp/anagrams-deranged-anagrams.exs:173:21: Main.main/0
+
+     warning: variable "w1" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 174 │                     w1 = c
+     │                     ~
+     │
+     └─ /tmp/anagrams-deranged-anagrams.exs:174:21: Main.main/0
+
+     warning: variable "w2" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 175 │                     w2 = w
+     │                     ~
+     │
+     └─ /tmp/anagrams-deranged-anagrams.exs:175:21: Main.main/0
+
+     warning: this clause for main/0 cannot match because a previous clause at line 142 always matches
+     │
+ 207 │   def main do
+     │       ~
+     │
+     └─ /tmp/anagrams-deranged-anagrams.exs:207:7
+
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a list
+
+    :erlang.length("constitutionalism")
+    /tmp/anagrams-deranged-anagrams.exs:157: anonymous fn/2 in Main.main/0
+    (elixir 1.18.3) lib/enum.ex:4968: Enumerable.List.reduce/3
+    (elixir 1.18.3) lib/enum.ex:2600: Enum.reduce_while/3
+    /tmp/anagrams-deranged-anagrams.exs:155: Main.main/0
+    /tmp/anagrams-deranged-anagrams.exs:220: (file)

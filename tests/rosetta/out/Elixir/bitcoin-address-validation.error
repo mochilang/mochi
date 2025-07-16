@@ -1,0 +1,17 @@
+run: exit status 1
+     error: undefined variable "sha256"
+     │
+ 129 │       first = sha256.(bs)
+     │               ^^^^^^
+     │
+     └─ /tmp/bitcoin-address-validation.exs:129:15: Main.doubleSHA256/1
+
+     error: undefined variable "sha256"
+     │
+ 130 │       throw({:return, sha256.(first)})
+     │                       ^^^^^^
+     │
+     └─ /tmp/bitcoin-address-validation.exs:130:23: Main.doubleSHA256/1
+
+** (CompileError) /tmp/bitcoin-address-validation.exs: cannot compile module Main (errors have been logged)
+

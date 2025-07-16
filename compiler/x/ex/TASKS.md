@@ -11,6 +11,7 @@ the expected `.out` file. The generated sources live under
 `tests/dataset/tpc-h/compiler/ex`.
 
 ## Remaining Enhancements
+- [x] Added `_now` helper so `now()` compiles and runs properly, reducing `.error` files in Rosetta tests.
 - [ ] Finish YAML loader support for `load_yaml.mochi`.
 - [ ] Improve formatting of generated code.
 

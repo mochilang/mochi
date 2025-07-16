@@ -1,0 +1,75 @@
+run: exit status 1
+    warning: variable "arr" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 46 │                     arr = Map.put(arr, j + 1, tmp)
+    │                     ~
+    │
+    └─ /tmp/anagrams.exs:46:21: Main.sortRunes/1
+
+     warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 129 │                     idx = i
+     │                     ~
+     │
+     └─ /tmp/anagrams.exs:129:21: Main.sortStrings/1
+
+     warning: variable "min" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 128 │                     min = Enum.at(tmp, i)
+     │                     ~
+     │
+     └─ /tmp/anagrams.exs:128:21: Main.sortStrings/1
+
+     warning: variable "out" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 157 │                     out = out ++ [Enum.at(tmp, j)]
+     │                     ~
+     │
+     └─ /tmp/anagrams.exs:157:21: Main.sortStrings/1
+
+     warning: variable "groups" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 242 │             groups = Map.put(groups, k, Enum.at(groups, k) ++ [w])
+     │             ~
+     │
+     └─ /tmp/anagrams.exs:242:13: Main.main/0
+
+     warning: variable "groups" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 240 │             groups = Map.put(groups, k, [w])
+     │             ~
+     │
+     └─ /tmp/anagrams.exs:240:13: Main.main/0
+
+     warning: variable "maxLen" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 246 │             maxLen = length(Enum.at(groups, k))
+     │             ~
+     │
+     └─ /tmp/anagrams.exs:246:13: Main.main/0
+
+     warning: variable "printed" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 290 │               printed = Map.put(printed, k, true)
+     │               ~
+     │
+     └─ /tmp/anagrams.exs:290:15: Main.main/0
+
+     warning: this clause for main/0 cannot match because a previous clause at line 195 always matches
+     │
+ 303 │   def main do
+     │       ~
+     │
+     └─ /tmp/anagrams.exs:303:7
+
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a list
+
+    :erlang.length("abel")
+    /tmp/anagrams.exs:13: anonymous fn/4 in Main.sortRunes/1
+    /tmp/anagrams.exs:26: Main.sortRunes/1
+    /tmp/anagrams.exs:237: anonymous fn/2 in Main.main/0
+    (elixir 1.18.3) lib/enum.ex:2546: Enum."-reduce/3-lists^foldl/2-0-"/3
+    /tmp/anagrams.exs:236: Main.main/0
+    /tmp/anagrams.exs:316: (file)

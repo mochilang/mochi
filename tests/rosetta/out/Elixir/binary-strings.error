@@ -1,0 +1,32 @@
+run: exit status 1
+     warning: variable "f" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 113 │             f = f ++ [val]
+     │             ~
+     │
+     └─ /tmp/binary-strings.exs:113:13: Main.main/0
+
+     warning: variable "f" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 111 │             f = f ++ [109]
+     │             ~
+     │
+     └─ /tmp/binary-strings.exs:111:13: Main.main/0
+
+    warning: the call to length/1 will fail with a 'badarg' exception
+    │
+  9 │       if idx < 0 || idx >= length(letters) do
+    │                            ~
+    │
+    └─ /tmp/binary-strings.exs:9:28
+
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a list
+
+    :erlang.length("abcdefghijklmnopqrstuvwxyz")
+    /tmp/binary-strings.exs:9: Main.char/1
+    /tmp/binary-strings.exs:31: anonymous fn/4 in Main.fromBytes/1
+    /tmp/binary-strings.exs:43: Main.fromBytes/1
+    /tmp/binary-strings.exs:89: Main.main/0
+    /tmp/binary-strings.exs:170: (file)

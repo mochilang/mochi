@@ -1,0 +1,82 @@
+run: exit status 1
+    warning: variable "h" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 69 │               h =
+    │               ~
+    │
+    └─ /tmp/babylonian-spiral.exs:69:15: Main.step/3
+
+     warning: variable "list" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 108 │             list = list ++ [[Enum.at(p, 1), Enum.at(p, 0)]]
+     │             ~
+     │
+     └─ /tmp/babylonian-spiral.exs:108:13: Main.step/3
+
+     warning: variable "list" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 120 │             list = list ++ [[Enum.at(p, 0), -Enum.at(p, 1)]]
+     │             ~
+     │
+     └─ /tmp/babylonian-spiral.exs:120:13: Main.step/3
+
+     warning: variable "list" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 132 │             list = list ++ [[-Enum.at(p, 0), Enum.at(p, 1)]]
+     │             ~
+     │
+     └─ /tmp/babylonian-spiral.exs:132:13: Main.step/3
+
+     warning: variable "best" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 153 │               best = p
+     │               ~
+     │
+     └─ /tmp/babylonian-spiral.exs:153:15: Main.step/3
+
+     warning: variable "bestDot" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 152 │               bestDot = dot
+     │               ~
+     │
+     └─ /tmp/babylonian-spiral.exs:152:15: Main.step/3
+
+     warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 274 │               line = ""
+     │               ~
+     │
+     └─ /tmp/babylonian-spiral.exs:274:15: Main.main/0
+
+     warning: this clause for main/0 cannot match because a previous clause at line 250 always matches
+     │
+ 296 │   def main do
+     │       ~
+     │
+     └─ /tmp/babylonian-spiral.exs:296:7
+
+** (FunctionClauseError) no function clause matching in Enum.at/3    
+    
+    The following arguments were given to Enum.at/3:
+    
+        # 1
+        %{"a" => 1, "b" => 0, "s" => 1}
+    
+        # 2
+        "s"
+    
+        # 3
+        nil
+    
+    Attempted function clauses (showing 1 out of 1):
+    
+        def at(+enumerable+, +index+, +default+) when -is_integer(index)-
+    
+    (elixir 1.18.3) lib/enum.ex:478: Enum.at/3
+    /tmp/babylonian-spiral.exs:41: anonymous fn/3 in Main.step/3
+    /tmp/babylonian-spiral.exs:44: anonymous fn/3 in Main.step/3
+    /tmp/babylonian-spiral.exs:54: Main.step/3
+    /tmp/babylonian-spiral.exs:190: anonymous fn/9 in Main.positions/1
+    /tmp/babylonian-spiral.exs:207: Main.positions/1
+    /tmp/babylonian-spiral.exs:252: Main.main/0
+    /tmp/babylonian-spiral.exs:309: (file)

@@ -1,0 +1,82 @@
+run: exit status 1
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 13 │         i = 1
+    │         ~
+    │
+    └─ /tmp/21-game.exs:13:9: Main.parseIntStr/1
+
+    warning: variable "neg" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 12 │         neg = true
+    │         ~
+    │
+    └─ /tmp/21-game.exs:12:9: Main.parseIntStr/1
+
+    warning: variable "n" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 52 │         n = -n
+    │         ~
+    │
+    └─ /tmp/21-game.exs:52:9: Main.parseIntStr/1
+
+     warning: variable "done" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 119 │ ...                   done = true
+     │                       ~
+     │
+     └─ /tmp/21-game.exs:119:29: Main.main/0
+
+     warning: variable "done" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 161 │                       done = true
+     │                       ~
+     │
+     └─ /tmp/21-game.exs:161:23: Main.main/0
+
+    warning: variable "choice" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 99 │                       choice = 21 - total
+    │                       ~
+    │
+    └─ /tmp/21-game.exs:99:23: Main.main/0
+
+    warning: variable "choice" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 97 │                       choice = rem(_now(), 3) + 1
+    │                       ~
+    │
+    └─ /tmp/21-game.exs:97:23: Main.main/0
+
+     warning: variable "done" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 108 │                       done = true
+     │                       ~
+     │
+     └─ /tmp/21-game.exs:108:23: Main.main/0
+
+     warning: this clause for main/0 cannot match because a previous clause at line 62 always matches
+     │
+ 204 │   def main do
+     │       ~
+     │
+     └─ /tmp/21-game.exs:204:7
+
+** (FunctionClauseError) no function clause matching in String.trim/1    
+    
+    The following arguments were given to String.trim/1:
+    
+        # 1
+        :eof
+    
+    Attempted function clauses (showing 1 out of 1):
+    
+        def trim(+string+) when -is_binary(string)-
+    
+    (elixir 1.18.3) lib/string.ex:1321: String.trim/1
+    /tmp/21-game.exs:115: anonymous fn/3 in Main.main/0
+    /tmp/21-game.exs:155: anonymous fn/5 in Main.main/0
+    /tmp/21-game.exs:168: anonymous fn/5 in Main.main/0
+    /tmp/21-game.exs:178: anonymous fn/5 in Main.main/0
+    /tmp/21-game.exs:194: Main.main/0
+    /tmp/21-game.exs:217: (file)

@@ -1,0 +1,41 @@
+run: exit status 1
+    warning: variable "divs2" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 21 │                 divs2 = divs2 ++ [j]
+    │                 ~
+    │
+    └─ /tmp/abundant-odd-numbers.exs:21:17: Main.divisors/1
+
+    warning: variable "divs" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 18 │               divs = divs ++ [i]
+    │               ~
+    │
+    └─ /tmp/abundant-odd-numbers.exs:18:15: Main.divisors/1
+
+     warning: variable "n" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 180 │                 n = n + 2
+     │                 ~
+     │
+     └─ /tmp/abundant-odd-numbers.exs:180:17: Main.abundantOdd/4
+
+     warning: this clause for main/0 cannot match because a previous clause at line 217 always matches
+     │
+ 232 │   def main do
+     │       ~
+     │
+     └─ /tmp/abundant-odd-numbers.exs:232:7
+
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a binary
+
+    :erlang.binary_to_integer(3.0)
+    /tmp/abundant-odd-numbers.exs:17: anonymous fn/5 in Main.divisors/1
+    /tmp/abundant-odd-numbers.exs:26: anonymous fn/5 in Main.divisors/1
+    /tmp/abundant-odd-numbers.exs:36: Main.divisors/1
+    /tmp/abundant-odd-numbers.exs:173: anonymous fn/5 in Main.abundantOdd/4
+    /tmp/abundant-odd-numbers.exs:197: anonymous fn/5 in Main.abundantOdd/4
+    /tmp/abundant-odd-numbers.exs:207: Main.abundantOdd/4
+    /tmp/abundant-odd-numbers.exs:222: Main.main/0

@@ -1,0 +1,101 @@
+run: exit status 1
+    warning: variable "u" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 10 │         u = u + 65536
+    │         ~
+    │
+    └─ /tmp/bitwise-operations.exs:10:9: Main.toUnsigned16/1
+
+    warning: variable "bits" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 35 │             bits = bits <> "0"
+    │             ~
+    │
+    └─ /tmp/bitwise-operations.exs:35:13: Main.bin16/1
+
+    warning: variable "bits" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 32 │             bits = bits <> "1"
+    │             ~
+    │
+    └─ /tmp/bitwise-operations.exs:32:13: Main.bin16/1
+
+    warning: variable "u" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 33 │             u = u - mask
+    │             ~
+    │
+    └─ /tmp/bitwise-operations.exs:33:13: Main.bin16/1
+
+    warning: variable "i" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 30 │         Enum.reduce(0..(16 - 1), {bits, mask, u}, fn i, {bits, mask, u} ->
+    │                                                      ~
+    │
+    └─ /tmp/bitwise-operations.exs:30:54: Main.bin16/1
+
+    warning: variable "res" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 66 │             res = res + bit
+    │             ~
+    │
+    └─ /tmp/bitwise-operations.exs:66:13: Main.bit_and/2
+
+    warning: variable "i" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 64 │         Enum.reduce(0..(16 - 1), {bit, res, ua, ub}, fn i, {bit, res, ua, ub} ->
+    │                                                         ~
+    │
+    └─ /tmp/bitwise-operations.exs:64:57: Main.bit_and/2
+
+     warning: variable "res" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 100 │             res = res + bit
+     │             ~
+     │
+     └─ /tmp/bitwise-operations.exs:100:13: Main.bit_or/2
+
+    warning: variable "i" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 98 │         Enum.reduce(0..(16 - 1), {bit, res, ua, ub}, fn i, {bit, res, ua, ub} ->
+    │                                                         ~
+    │
+    └─ /tmp/bitwise-operations.exs:98:57: Main.bit_or/2
+
+     warning: variable "res" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 137 │             res = res + bit
+     │             ~
+     │
+     └─ /tmp/bitwise-operations.exs:137:13: Main.bit_xor/2
+
+     warning: variable "i" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 132 │         Enum.reduce(0..(16 - 1), {bit, res, ua, ub}, fn i, {bit, res, ua, ub} ->
+     │                                                         ~
+     │
+     └─ /tmp/bitwise-operations.exs:132:57: Main.bit_xor/2
+
+     warning: variable "val" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 254 │               val = String.to_integer((val - 1) / 2)
+     │               ~
+     │
+     └─ /tmp/bitwise-operations.exs:254:15: Main.ras/2
+
+     warning: variable "val" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 252 │               val = String.to_integer(val / 2)
+     │               ~
+     │
+     └─ /tmp/bitwise-operations.exs:252:15: Main.ras/2
+
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a binary
+
+    :erlang.binary_to_integer(16384.0)
+    (elixir 1.18.3) lib/enum.ex:4507: Enum.reduce/3
+    /tmp/bitwise-operations.exs:30: Main.bin16/1
+    /tmp/bitwise-operations.exs:306: Main.bitwise/2
+    /tmp/bitwise-operations.exs:337: (file)

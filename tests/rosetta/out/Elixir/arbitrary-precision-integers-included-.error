@@ -1,0 +1,24 @@
+run: exit status 1
+    warning: variable "result" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 17 │               result = result * b
+    │               ~
+    │
+    └─ /tmp/arbitrary-precision-integers-included-.exs:17:15: Main.pow_int/2
+
+    warning: variable "result" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 56 │               result = result * b
+    │               ~
+    │
+    └─ /tmp/arbitrary-precision-integers-included-.exs:56:15: Main.pow_big/2
+
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a binary
+
+    :erlang.binary_to_integer(1.0)
+    /tmp/arbitrary-precision-integers-included-.exs:21: anonymous fn/4 in Main.pow_int/2
+    /tmp/arbitrary-precision-integers-included-.exs:32: Main.pow_int/2
+    /tmp/arbitrary-precision-integers-included-.exs:83: Main.main/0
+    /tmp/arbitrary-precision-integers-included-.exs:128: (file)

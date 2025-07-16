@@ -1,0 +1,53 @@
+run: exit status 1
+     warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 126 │                 line = ""
+     │                 ~
+     │
+     └─ /tmp/additive-primes.exs:126:17: Main.main/0
+
+     warning: variable "lineCount" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 127 │                 lineCount = 0
+     │                 ~
+     │
+     └─ /tmp/additive-primes.exs:127:17: Main.main/0
+
+     warning: variable "count" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 120 │               count = count + 1
+     │               ~
+     │
+     └─ /tmp/additive-primes.exs:120:15: Main.main/0
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 134 │               i = i + 1
+     │               ~
+     │
+     └─ /tmp/additive-primes.exs:134:15: Main.main/0
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 132 │               i = i + 2
+     │               ~
+     │
+     └─ /tmp/additive-primes.exs:132:15: Main.main/0
+
+     warning: this clause for main/0 cannot match because a previous clause at line 103 always matches
+     │
+ 163 │   def main do
+     │       ~
+     │
+     └─ /tmp/additive-primes.exs:163:7
+
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a binary
+
+    :erlang.binary_to_integer(0.2)
+    /tmp/additive-primes.exs:65: anonymous fn/3 in Main.sumDigits/1
+    /tmp/additive-primes.exs:76: Main.sumDigits/1
+    /tmp/additive-primes.exs:119: anonymous fn/5 in Main.main/0
+    /tmp/additive-primes.exs:147: Main.main/0
+    /tmp/additive-primes.exs:179: (file)

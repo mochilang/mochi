@@ -1,0 +1,60 @@
+run: exit status 1
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 14 │         i = 1
+    │         ~
+    │
+    └─ /tmp/bitmap-read-an-image-through-a-pipe.exs:14:9: Main.parseIntStr/1
+
+    warning: variable "neg" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 13 │         neg = true
+    │         ~
+    │
+    └─ /tmp/bitmap-read-an-image-through-a-pipe.exs:13:9: Main.parseIntStr/1
+
+    warning: variable "n" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 53 │         n = -n
+    │         ~
+    │
+    └─ /tmp/bitmap-read-an-image-through-a-pipe.exs:53:9: Main.parseIntStr/1
+
+    warning: variable "cur" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 83 │               cur = cur + ch
+    │               ~
+    │
+    └─ /tmp/bitmap-read-an-image-through-a-pipe.exs:83:15: Main.splitWs/1
+
+    warning: variable "cur" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 80 │                 cur = ""
+    │                 ~
+    │
+    └─ /tmp/bitmap-read-an-image-through-a-pipe.exs:80:17: Main.splitWs/1
+
+    warning: variable "parts" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 79 │                 parts = parts ++ [cur]
+    │                 ~
+    │
+    └─ /tmp/bitmap-read-an-image-through-a-pipe.exs:79:17: Main.splitWs/1
+
+     warning: variable "parts" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 103 │         parts = parts ++ [cur]
+     │         ~
+     │
+     └─ /tmp/bitmap-read-an-image-through-a-pipe.exs:103:9: Main.splitWs/1
+
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a list
+
+    :erlang.length("P3\n2 2\n1\n0 1 1 0 1 0 0 1 1 1 0 0\n")
+    /tmp/bitmap-read-an-image-through-a-pipe.exs:74: anonymous fn/5 in Main.splitWs/1
+    /tmp/bitmap-read-an-image-through-a-pipe.exs:97: Main.splitWs/1
+    /tmp/bitmap-read-an-image-through-a-pipe.exs:115: Main.parsePpm/1
+    /tmp/bitmap-read-an-image-through-a-pipe.exs:156: Main.main/0
+    /tmp/bitmap-read-an-image-through-a-pipe.exs:172: (file)

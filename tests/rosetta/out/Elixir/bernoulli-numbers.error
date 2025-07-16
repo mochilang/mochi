@@ -1,0 +1,37 @@
+run: exit status 1
+    error: undefined variable "num"
+    │
+ 60 │       if num.(b) != 0 do
+    │          ^^^
+    │
+    └─ /tmp/bernoulli-numbers.exs:60:10: Main.main/0
+
+    error: undefined variable "num"
+    │
+ 61 │         numStr = to_string(num.(b))
+    │                            ^^^
+    │
+    └─ /tmp/bernoulli-numbers.exs:61:28: Main.main/0
+
+    error: undefined variable "denom"
+    │
+ 62 │         denStr = to_string(denom.(b))
+    │                            ^^^^^
+    │
+    └─ /tmp/bernoulli-numbers.exs:62:28: Main.main/0
+
+    error: invalid call to_string(i)(2, " ")
+    │
+ 65 │           (((("B(" <> to_string(i)(2, " ")) <> ") =") <> numStr.padStart(45, " ")) <> "/") <>
+    │                       ^
+    │
+    └─ /tmp/bernoulli-numbers.exs:65:23: Main.main/0
+
+** (CompileError) /tmp/bernoulli-numbers.exs: cannot compile module Main (errors have been logged)
+    (elixir 1.18.3) src/elixir_bitstring.erl:34: :elixir_bitstring.expand/8
+    (elixir 1.18.3) src/elixir_bitstring.erl:26: :elixir_bitstring.expand/5
+    (elixir 1.18.3) expanding macro: Kernel.<>/2
+    /tmp/bernoulli-numbers.exs:65: Main.main/0
+    (elixir 1.18.3) expanding macro: Kernel.<>/2
+    /tmp/bernoulli-numbers.exs:65: Main.main/0
+    (elixir 1.18.3) expanding macro: Kernel.<>/2

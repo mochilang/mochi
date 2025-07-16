@@ -1,0 +1,94 @@
+run: exit status 1
+    warning: variable "b" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 77 │       b = %{b | data: rows}
+    │       ~
+    │
+    └─ /tmp/bitmap-read-a-ppm-file.exs:77:7: Main.setPx/4
+
+     warning: variable "cur" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 112 │               cur = cur + ch
+     │               ~
+     │
+     └─ /tmp/bitmap-read-a-ppm-file.exs:112:15: Main.splitLines/1
+
+     warning: variable "cur" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 110 │               cur = ""
+     │               ~
+     │
+     └─ /tmp/bitmap-read-a-ppm-file.exs:110:15: Main.splitLines/1
+
+     warning: variable "out" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 109 │               out = out ++ [cur]
+     │               ~
+     │
+     └─ /tmp/bitmap-read-a-ppm-file.exs:109:15: Main.splitLines/1
+
+     warning: variable "cur" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 159 │               cur = cur + ch
+     │               ~
+     │
+     └─ /tmp/bitmap-read-a-ppm-file.exs:159:15: Main.splitWS/1
+
+     warning: variable "cur" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 156 │                 cur = ""
+     │                 ~
+     │
+     └─ /tmp/bitmap-read-a-ppm-file.exs:156:17: Main.splitWS/1
+
+     warning: variable "out" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 155 │                 out = out ++ [cur]
+     │                 ~
+     │
+     └─ /tmp/bitmap-read-a-ppm-file.exs:155:17: Main.splitWS/1
+
+     warning: variable "out" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 179 │         out = out ++ [cur]
+     │         ~
+     │
+     └─ /tmp/bitmap-read-a-ppm-file.exs:179:9: Main.splitWS/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 198 │         i = 1
+     │         ~
+     │
+     └─ /tmp/bitmap-read-a-ppm-file.exs:198:9: Main.parseIntStr/1
+
+     warning: variable "neg" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 197 │         neg = true
+     │         ~
+     │
+     └─ /tmp/bitmap-read-a-ppm-file.exs:197:9: Main.parseIntStr/1
+
+     warning: variable "n" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 237 │         n = -n
+     │         ~
+     │
+     └─ /tmp/bitmap-read-a-ppm-file.exs:237:9: Main.parseIntStr/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 261 │               i = i + 1
+     │               ~
+     │
+     └─ /tmp/bitmap-read-a-ppm-file.exs:261:15: Main.tokenize/1
+
+     error: invalid alias: "p.R". If you wanted to define an alias, an alias must expand to an atom at compile time but it did not, you may use Module.concat/2 to build it at runtime. If instead you wanted to invoke a function or access a field, wrap the function or field name in double quotes
+     │
+ 399 │                   l = (p.R * 2126 + p.G * 7152 + p.B * 722) / 10000
+     │                         ^
+     │
+     └─ /tmp/bitmap-read-a-ppm-file.exs:399:25: Main.toGrey/1
+
+** (CompileError) /tmp/bitmap-read-a-ppm-file.exs: cannot compile module Main (errors have been logged)
+    (elixir 1.18.3) expanding macro: Kernel.if/2

@@ -624,6 +624,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		case "input":
 			c.use("_input")
 			return "_input()", nil
+		case "now":
+			c.use("_now")
+			return "_now()", nil
 		case "json":
 			c.use("_json")
 			return fmt.Sprintf("_json(%s)", argStr), nil

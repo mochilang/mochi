@@ -1,0 +1,59 @@
+run: exit status 1
+    warning: variable "f" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 88 │                 f = 3
+    │                 ~
+    │
+    └─ /tmp/attractive-numbers.exs:88:17: Main.countPrimeFactors/1
+
+    warning: variable "f" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 86 │                 f = f + 2
+    │                 ~
+    │
+    └─ /tmp/attractive-numbers.exs:86:17: Main.countPrimeFactors/1
+
+    warning: variable "f" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 82 │                 f = n
+    │                 ~
+    │
+    └─ /tmp/attractive-numbers.exs:82:17: Main.countPrimeFactors/1
+
+     warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 168 │                 line = ""
+     │                 ~
+     │
+     └─ /tmp/attractive-numbers.exs:168:17: Main.main/0
+
+     warning: variable "lineCount" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 169 │                 lineCount = 0
+     │                 ~
+     │
+     └─ /tmp/attractive-numbers.exs:169:17: Main.main/0
+
+     warning: variable "count" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 163 │               count = count + 1
+     │               ~
+     │
+     └─ /tmp/attractive-numbers.exs:163:15: Main.main/0
+
+     warning: this clause for main/0 cannot match because a previous clause at line 141 always matches
+     │
+ 198 │   def main do
+     │       ~
+     │
+     └─ /tmp/attractive-numbers.exs:198:7
+
+** (ArithmeticError) bad argument in arithmetic expression: rem(2.0, 2)
+    :erlang.rem(2.0, 2)
+    /tmp/attractive-numbers.exs:10: Main.isPrime/1
+    /tmp/attractive-numbers.exs:81: anonymous fn/4 in Main.countPrimeFactors/1
+    /tmp/attractive-numbers.exs:102: Main.countPrimeFactors/1
+    /tmp/attractive-numbers.exs:159: anonymous fn/5 in Main.main/0
+    /tmp/attractive-numbers.exs:174: anonymous fn/5 in Main.main/0
+    /tmp/attractive-numbers.exs:184: Main.main/0
+    /tmp/attractive-numbers.exs:203: (file)

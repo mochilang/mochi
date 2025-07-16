@@ -1,0 +1,80 @@
+run: exit status 1
+    warning: variable "cur" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 24 │               cur = cur + ch
+    │               ~
+    │
+    └─ /tmp/abbreviations-easy.exs:24:15: Main.fields/1
+
+    warning: variable "cur" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 21 │                 cur = ""
+    │                 ~
+    │
+    └─ /tmp/abbreviations-easy.exs:21:17: Main.fields/1
+
+    warning: variable "words" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 20 │                 words = words ++ [cur]
+    │                 ~
+    │
+    └─ /tmp/abbreviations-easy.exs:20:17: Main.fields/1
+
+    warning: variable "words" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 44 │         words = words ++ [cur]
+    │         ~
+    │
+    └─ /tmp/abbreviations-easy.exs:44:9: Main.fields/1
+
+    warning: variable "res" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 97 │               res = res + sep
+    │               ~
+    │
+    └─ /tmp/abbreviations-easy.exs:97:15: Main.join/2
+
+     error: undefined variable "upper"
+     │
+ 150 │                     c = upper.(cmd)
+     │                         ^^^^^
+     │
+     └─ /tmp/abbreviations-easy.exs:150:25: Main.validate/3
+
+     error: undefined variable "upper"
+     │
+ 151 │                     ww = upper.(w)
+     │                          ^^^^^
+     │
+     └─ /tmp/abbreviations-easy.exs:151:26: Main.validate/3
+
+     warning: variable "found" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 155 │                       found = true
+     │                       ~
+     │
+     └─ /tmp/abbreviations-easy.exs:155:23: Main.validate/3
+
+     warning: variable "results" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 154 │                       results = results ++ [c]
+     │                       ~
+     │
+     └─ /tmp/abbreviations-easy.exs:154:23: Main.validate/3
+
+     warning: variable "results" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 177 │               results = results ++ ["*error*"]
+     │               ~
+     │
+     └─ /tmp/abbreviations-easy.exs:177:15: Main.validate/3
+
+     warning: variable "count" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 234 │                     count = count + 1
+     │                     ~
+     │
+     └─ /tmp/abbreviations-easy.exs:234:21: Main.main/0
+
+** (CompileError) /tmp/abbreviations-easy.exs: cannot compile module Main (errors have been logged)
+

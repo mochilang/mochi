@@ -1,0 +1,54 @@
+run: exit status 1
+    warning: variable "i" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 32 │         Enum.reduce(0..(nBuckets - 1), {buckets}, fn i, {buckets} ->
+    │                                                      ~
+    │
+    └─ /tmp/atomic-updates.exs:32:54: Main.main/0
+
+     warning: variable "a" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 108 │                 a = Enum.at(buckets, b2)
+     │                 ~
+     │
+     └─ /tmp/atomic-updates.exs:108:17: Main.main/0
+
+     warning: variable "buckets" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 112 │               buckets = Map.put(buckets, b1, Enum.at(buckets, b1) + a)
+     │               ~
+     │
+     └─ /tmp/atomic-updates.exs:112:15: Main.main/0
+
+    warning: variable "a" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 98 │                 a = Enum.at(buckets, b1)
+    │                 ~
+    │
+    └─ /tmp/atomic-updates.exs:98:17: Main.main/0
+
+     warning: variable "buckets" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 102 │               buckets = Map.put(buckets, b2, Enum.at(buckets, b2) + a)
+     │               ~
+     │
+     └─ /tmp/atomic-updates.exs:102:15: Main.main/0
+
+     warning: variable "amt" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 126 │               amt = Enum.at(buckets, b1)
+     │               ~
+     │
+     └─ /tmp/atomic-updates.exs:126:15: Main.main/0
+
+     warning: this clause for main/0 cannot match because a previous clause at line 24 always matches
+     │
+ 193 │   def main do
+     │       ~
+     │
+     └─ /tmp/atomic-updates.exs:193:7
+
+** (BadMapError) expected a map, got: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    /tmp/atomic-updates.exs:48: anonymous fn/4 in Main.main/0
+    /tmp/atomic-updates.exs:60: Main.main/0
+    /tmp/atomic-updates.exs:198: (file)

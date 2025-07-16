@@ -1,0 +1,24 @@
+run: exit status 1
+    warning: variable "x" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 23 │       x = accumulator(1)
+    │       ~
+    │
+    └─ /tmp/accumulator-factory.exs:23:7: Main.main/0
+
+    error: undefined function x/1 (expected Main to define such a function or for it to be imported, but none are available)
+    │
+ 24 │       x(5)
+    │       ^
+    │
+    └─ /tmp/accumulator-factory.exs:24:7: Main.main/0
+
+    error: undefined function x/1 (expected Main to define such a function or for it to be imported, but none are available)
+    │
+ 26 │       IO.puts(to_string(x(2.3)))
+    │                         ^
+    │
+    └─ /tmp/accumulator-factory.exs:26:25: Main.main/0
+
+** (CompileError) /tmp/accumulator-factory.exs: cannot compile module Main (errors have been logged)
+

@@ -1,0 +1,43 @@
+run: signal: killed
+    warning: variable "right" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 31 │               right = mid - 1
+    │               ~
+    │
+    └─ /tmp/arithmetic-rational.exs:31:15: Main.intSqrt/1
+
+    warning: variable "ans" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 29 │               ans = mid
+    │               ~
+    │
+    └─ /tmp/arithmetic-rational.exs:29:15: Main.intSqrt/1
+
+    warning: variable "left" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 28 │               left = mid + 1
+    │               ~
+    │
+    └─ /tmp/arithmetic-rational.exs:28:15: Main.intSqrt/1
+
+    warning: variable "s" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 71 │                 s = s + f
+    │                 ~
+    │
+    └─ /tmp/arithmetic-rational.exs:71:17: Main.sumRecip/1
+
+     warning: variable "perfect" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 109 │             perfect = "perfect!"
+     │             ~
+     │
+     └─ /tmp/arithmetic-rational.exs:109:13: Main.main/0
+
+     warning: this clause for main/0 cannot match because a previous clause at line 96 always matches
+     │
+ 123 │   def main do
+     │       ~
+     │
+     └─ /tmp/arithmetic-rational.exs:123:7
+

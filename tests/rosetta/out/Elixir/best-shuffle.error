@@ -1,0 +1,33 @@
+run: exit status 1
+     warning: variable "arr" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 141 │                     arr = Map.put(arr, j, tmp)
+     │                     ~
+     │
+     └─ /tmp/best-shuffle.exs:141:21: Main.bestShuffle/2
+
+     warning: variable "count" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 182 │               count = count + 1
+     │               ~
+     │
+     └─ /tmp/best-shuffle.exs:182:15: Main.bestShuffle/2
+
+     warning: this clause for main/0 cannot match because a previous clause at line 228 always matches
+     │
+ 263 │   def main do
+     │       ~
+     │
+     └─ /tmp/best-shuffle.exs:263:7
+
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a list
+
+    :erlang.length("abracadabra")
+    /tmp/best-shuffle.exs:22: anonymous fn/4 in Main.shuffleChars/2
+    /tmp/best-shuffle.exs:35: Main.shuffleChars/2
+    /tmp/best-shuffle.exs:98: Main.bestShuffle/2
+    /tmp/best-shuffle.exs:239: anonymous fn/3 in Main.main/0
+    /tmp/best-shuffle.exs:255: Main.main/0
+    /tmp/best-shuffle.exs:279: (file)

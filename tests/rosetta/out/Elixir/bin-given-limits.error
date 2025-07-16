@@ -1,0 +1,21 @@
+run: exit status 1
+    warning: variable "index" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 49 │                     index = index + 1
+    │                     ~
+    │
+    └─ /tmp/bin-given-limits.exs:49:21: Main.getBins/2
+
+     warning: this clause for main/0 cannot match because a previous clause at line 171 always matches
+     │
+ 459 │   def main do
+     │       ~
+     │
+     └─ /tmp/bin-given-limits.exs:459:7
+
+** (BadMapError) expected a map, got: [0, 0, 0, 0, 0, 0, 0]
+    /tmp/bin-given-limits.exs:66: anonymous fn/5 in Main.getBins/2
+    /tmp/bin-given-limits.exs:78: Main.getBins/2
+    /tmp/bin-given-limits.exs:439: anonymous fn/2 in Main.main/0
+    /tmp/bin-given-limits.exs:452: Main.main/0
+    /tmp/bin-given-limits.exs:464: (file)

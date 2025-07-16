@@ -1,0 +1,45 @@
+run: exit status 1
+    warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 63 │             k = le
+    │             ~
+    │
+    └─ /tmp/bioinformatics-base-count.exs:63:13: Main.main/0
+
+     warning: variable "t" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 111 │                   t = t + 1
+     │                   ~
+     │
+     └─ /tmp/bioinformatics-base-count.exs:111:19: Main.main/0
+
+     warning: variable "g" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 108 │                 g = g + 1
+     │                 ~
+     │
+     └─ /tmp/bioinformatics-base-count.exs:108:17: Main.main/0
+
+     warning: variable "c" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 105 │               c = c + 1
+     │               ~
+     │
+     └─ /tmp/bioinformatics-base-count.exs:105:15: Main.main/0
+
+     warning: variable "a" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 102 │             a = a + 1
+     │             ~
+     │
+     └─ /tmp/bioinformatics-base-count.exs:102:13: Main.main/0
+
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a list
+
+    :erlang.length("0")
+    /tmp/bioinformatics-base-count.exs:8: Main.padLeft/2
+    /tmp/bioinformatics-base-count.exs:66: anonymous fn/3 in Main.main/0
+    /tmp/bioinformatics-base-count.exs:78: Main.main/0
+    /tmp/bioinformatics-base-count.exs:157: (file)

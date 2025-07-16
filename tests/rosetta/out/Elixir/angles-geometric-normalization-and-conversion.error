@@ -1,0 +1,15 @@
+run: exit status 1
+     warning: this clause for main/0 cannot match because a previous clause at line 148 always matches
+     │
+ 191 │   def main do
+     │       ~
+     │
+     └─ /tmp/angles-geometric-normalization-and-conversion.exs:191:7
+
+** (ArithmeticError) bad argument in arithmetic expression: rem(6.2831853, 360)
+    :erlang.rem(6.2831853, 360)
+    /tmp/angles-geometric-normalization-and-conversion.exs:6: Main.d2d/1
+    /tmp/angles-geometric-normalization-and-conversion.exs:155: anonymous fn/2 in Main.main/0
+    (elixir 1.18.3) lib/enum.ex:2546: Enum."-reduce/3-lists^foldl/2-0-"/3
+    /tmp/angles-geometric-normalization-and-conversion.exs:153: Main.main/0
+    /tmp/angles-geometric-normalization-and-conversion.exs:204: (file)
