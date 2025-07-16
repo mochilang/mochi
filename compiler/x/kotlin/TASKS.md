@@ -18,6 +18,8 @@
 - 2025-07-16 11:40 UTC: Escaped reserved identifiers like `this`, fixed `now()` cast and skipped wrapper `main` when user-defined main exists.
 - 2025-07-16 12:06 UTC: Empty list and map literals now use typed zero values when variables have explicit types, reducing Rosetta compile errors.
 - 2025-07-16 12:42 UTC: Added `int` builtin support and deterministic headers, reducing Rosetta compile errors.
+- 2025-07-16 14:00 UTC: Added VM golden tests for `tests/vm/valid` and removed
+  stale `.error` files when compilation succeeds.
 
 ## Remaining Work
 - [ ] Implement dataset join and group-by operations fully.
