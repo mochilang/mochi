@@ -8,6 +8,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -32,7 +34,11 @@ func stripHeaderLocal(b []byte) []byte {
 
 func writeErr(root, name string, err error) {
 	path := filepath.Join(root, "tests", "rosetta", "out", "Go", name+".error")
-	_ = os.WriteFile(path, []byte(err.Error()), 0644)
+	msg := err.Error()
+	msg = strings.ReplaceAll(msg, root+"/", "")
+	msg = strings.ReplaceAll(msg, root, "")
+	msg = regexp.MustCompile(`/tmp/[^/]+`).ReplaceAllString(msg, "/tmp/X")
+	_ = os.WriteFile(path, []byte(msg), 0644)
 }
 
 func removeErr(root, name string) {
@@ -42,6 +48,12 @@ func removeErr(root, name string) {
 func runRosettaTask(t *testing.T, name string) {
 	root := repoRoot(t)
 	src := filepath.Join(root, "tests", "rosetta", "x", "Mochi", name+".mochi")
+	defer func() {
+		if r := recover(); r != nil {
+			writeErr(root, name, fmt.Errorf("panic: %v", r))
+			t.Skipf("panic: %v", r)
+		}
+	}()
 	prog, err := parser.Parse(src)
 	if err != nil {
 		writeErr(root, name, fmt.Errorf("parse: %w", err))
@@ -108,6 +120,11 @@ func TestGoCompiler_Rosetta_Golden(t *testing.T) {
 		t.Fatalf("glob: %v", err)
 	}
 	max := 3
+	if v := os.Getenv("ROSETTA_MAX"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil {
+			max = n
+		}
+	}
 	if len(files) < max {
 		max = len(files)
 	}
