@@ -57,6 +57,7 @@ const (
 	needInMapStringInt       = "in_map_string_int"
 	needInMapIntString       = "in_map_int_string"
 	needNow                  = "now"
+	needSHA256               = "sha256"
 	needJSON                 = "json"
 	needLoadJSON             = "load_json"
 	needSaveJSON             = "save_json"

@@ -474,6 +474,9 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	if c.has(needNow) {
 		c.writeln("#include <time.h>")
 	}
+	if c.has(needSHA256) {
+		c.writeln("#include <openssl/sha.h>")
+	}
 	c.writeln("")
 	c.emitRuntime()
 	if c.buf.Len() > 0 && c.buf.Bytes()[c.buf.Len()-1] != '\n' {
@@ -5038,6 +5041,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			s := c.compileExpr(p.Call.Args[0])
 			sub := c.compileExpr(p.Call.Args[1])
 			return fmt.Sprintf("index_of_string(%s, %s)", s, sub)
+		} else if p.Call.Func == "sha256" {
+			arg := c.compileExpr(p.Call.Args[0])
+			if isStringArg(p.Call.Args[0], c.env) {
+				c.need(needStringHeader)
+				c.need(needSHA256)
+				return fmt.Sprintf("_sha256_string(%s)", arg)
+			}
+			c.need(needSHA256)
+			return fmt.Sprintf("_sha256_list(%s)", arg)
 		} else if p.Call.Func == "print" {
 			simple := true
 			for _, a := range p.Call.Args {
