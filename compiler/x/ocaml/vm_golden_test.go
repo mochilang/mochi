@@ -70,7 +70,9 @@ func TestOCamlCompiler_VMValid_Golden(t *testing.T) {
 				}
 				return
 			}
+			os.Setenv("SOURCE_DATE_EPOCH", "0")
 			code, err := ocaml.New(env).Compile(prog, src)
+			os.Unsetenv("SOURCE_DATE_EPOCH")
 			if err != nil {
 				_ = os.WriteFile(errPath, []byte(err.Error()), 0644)
 				if !shouldUpdateValid() {

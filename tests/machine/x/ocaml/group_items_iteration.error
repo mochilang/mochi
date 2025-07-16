@@ -1,4 +1,4 @@
-File "/tmp/TestOCamlCompiler_VMValid_Goldengroup_items_iteration1286102532/001/group_items_iteration.ml", line 39, characters 2-18:
+File "/tmp/TestOCamlCompiler_VMValid_Goldengroup_items_iteration2711768295/001/group_items_iteration.ml", line 39, characters 2-18:
 39 |   List.rev !__res0)
        ^^^^^^^^^^^^^^^^
 Error: This expression has type (string, record1) group list

@@ -1,6 +1,0 @@
-File "/tmp/TestOCamlCompiler_VMValid_Goldengroup_by_sort2082586037/001/group_by_sort.ml", line 41, characters 0-16:
-41 | List.rev !__res1)
-     ^^^^^^^^^^^^^^^^
-Error: This expression has type int list
-       but an expression was expected of type float list
-       Type int is not compatible with type float 

@@ -1,4 +1,4 @@
-File "/tmp/TestOCamlCompiler_VMValid_Goldenin_operator_extended2317061863/001/in_operator_extended.ml", line 30, characters 18-38:
+File "/tmp/TestOCamlCompiler_VMValid_Goldenin_operator_extended2257517953/001/in_operator_extended.ml", line 30, characters 18-38:
 30 | let m : record1 = [("a",Obj.repr (1))]
                        ^^^^^^^^^^^^^^^^^^^^
 Error: This expression should not be a list literal, the expected type is
