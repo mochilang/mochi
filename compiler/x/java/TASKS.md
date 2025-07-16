@@ -27,3 +27,4 @@
 - 2025-07-16 13:00 - added Java Rosetta golden tests and script; unknown expr types now default to Object.
 - 2025-07-16 14:10 - added VM valid golden tests and boolean casting for list elements to reduce .error files.
 - 2025-07-16 16:30 - preserved group metadata after queries and set MOCHI_ROOT for VM golden tests; all valid programs compile and run without errors.
+- 2025-07-16 17:00 - simplified golden tests to check only runtime output and removed duplicate compile test.

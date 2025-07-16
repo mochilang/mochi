@@ -79,13 +79,8 @@ func TestJavaCompiler_TPCHQueries(t *testing.T) {
 					t.Fatalf("write golden: %v", err)
 				}
 			}
-			wantCode, err := os.ReadFile(codeWant)
-			if err == nil {
-				got := stripHeader(bytes.TrimSpace(code))
-				want := stripHeader(bytes.TrimSpace(wantCode))
-				if !bytes.Equal(got, want) {
-					t.Logf("generated code mismatch for %s.java", base)
-				}
+			if _, err := os.Stat(codeWant); err != nil {
+				t.Fatalf("read golden: %v", err)
 			}
 			dir := t.TempDir()
 			className := classNameFromVar(base)

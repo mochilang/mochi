@@ -117,14 +117,10 @@ func TestJavaCompiler_VMValidPrograms(t *testing.T) {
 					t.Fatalf("write golden: %v", err)
 				}
 			}
-			if want, err := os.ReadFile(codeWant); err == nil {
-				got := stripHeaderValid(bytes.TrimSpace(code))
-				want = stripHeaderValid(bytes.TrimSpace(want))
-				if !bytes.Equal(got, want) {
-					t.Logf("generated code mismatch for %s.java", name)
+			if !updating {
+				if _, err := os.Stat(codeWant); err != nil {
+					t.Fatalf("read golden: %v", err)
 				}
-			} else if !updating {
-				t.Fatalf("read golden: %v", err)
 			}
 			dir := t.TempDir()
 			className := classNameFromVarLocal(name)
