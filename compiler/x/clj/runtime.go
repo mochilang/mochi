@@ -24,7 +24,10 @@ const (
 `
 
 	helperInput = `(defn _input []
-  (clojure.string/trim (read-line)))
+  (let [s (read-line)]
+    (if s
+      (clojure.string/trim s)
+      "")))
 `
 
 	helperRelPath = `(defn _rel_path [p]
