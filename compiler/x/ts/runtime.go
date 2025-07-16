@@ -190,6 +190,9 @@ const (
 		"}\n"
 
 	helperEqual = "function _equal(a: any, b: any): boolean {\n" +
+		"  if (typeof a === 'number' && typeof b === 'number') {\n" +
+		"    return Math.abs(a - b) < 1e-9;\n" +
+		"  }\n" +
 		"  if (Array.isArray(a) && Array.isArray(b)) {\n" +
 		"    if (a.length !== b.length) return false;\n" +
 		"    for (let i = 0; i < a.length; i++) { if (!_equal(a[i], b[i])) return false; }\n" +
