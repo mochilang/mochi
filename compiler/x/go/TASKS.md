@@ -82,3 +82,4 @@ TPC-H progress:
 - 2025-07-16 00:58 - Regenerated TPCDS Go code; numerous queries still skip due to runtime mismatches
 - 2025-07-16 01:32 - Added rosetta_golden_test.go and enabled `#` comments in the parser so more Rosetta tasks compile
 - 2025-07-16 11:31 - Handled bool values in `_exists` and added type assertion for unary `!`; regenerated Rosetta Go outputs
+- 2025-07-16 12:45 - Improved indexing on `any` by casting to `map[string]any` or `[]any`; infer simple map types from literals

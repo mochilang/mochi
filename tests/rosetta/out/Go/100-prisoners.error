@@ -1,0 +1,4 @@
+run: exit status 1
+# command-line-arguments
+/tmp/TestGoCompiler_Rosetta_Golden100-prisoners11273137/001/main.go:103:6: main redeclared in this block
+	/tmp/TestGoCompiler_Rosetta_Golden100-prisoners11273137/001/main.go:93:6: other declaration of main

@@ -422,6 +422,8 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 					t = st
 					c.env.SetStruct(st.Name, st)
 					c.compileStructType(st)
+				} else if mt, ok := c.inferSimpleMap(ml); ok {
+					t = mt
 				}
 			} else if qe := s.Value.Binary.Left.Value.Target.Query; qe != nil {
 				if ml := mapLiteral(qe.Select); ml != nil {
@@ -528,6 +530,8 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 					typ = st
 					c.env.SetStruct(st.Name, st)
 					c.compileStructType(st)
+				} else if mt, ok := c.inferSimpleMap(ml); ok {
+					typ = mt
 				}
 			} else if qe := s.Value.Binary.Left.Value.Target.Query; qe != nil {
 				if ml := mapLiteral(qe.Select); ml != nil {
@@ -1122,6 +1126,28 @@ func (c *Compiler) inferStructFromMapEnv(ml *parser.MapLiteral, name string, env
 
 func (c *Compiler) inferStructFromMap(ml *parser.MapLiteral, name string) (types.StructType, bool) {
 	return c.inferStructFromMapEnv(ml, name, c.env)
+}
+
+// inferSimpleMap attempts to infer a typed map from a map literal with
+// homogeneous string keys and consistent value types. It returns false if the
+// literal is empty or contains mixed key/value types.
+func (c *Compiler) inferSimpleMap(ml *parser.MapLiteral) (types.MapType, bool) {
+	if ml == nil || len(ml.Items) == 0 {
+		return types.MapType{}, false
+	}
+	var valType types.Type
+	for i, it := range ml.Items {
+		if _, ok := simpleStringKey(it.Key); !ok {
+			return types.MapType{}, false
+		}
+		t := types.ExprType(it.Value, c.env)
+		if i == 0 {
+			valType = t
+		} else if !equalTypes(valType, t) {
+			return types.MapType{}, false
+		}
+	}
+	return types.MapType{Key: types.StringType{}, Value: valType}, true
 }
 
 func (c *Compiler) queryEnv(q *parser.QueryExpr) *types.Env {
@@ -2185,6 +2211,14 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				case types.StringType:
 					val = fmt.Sprintf("string([]rune(%s)[%s])", val, key)
 					typ = types.StringType{}
+				case types.AnyType:
+					keyT := c.inferExprType(idx.Start)
+					if isInt(keyT) {
+						val = fmt.Sprintf("(%s).([]any)[%s]", val, key)
+					} else {
+						val = fmt.Sprintf("(%s).(map[string]any)[%s]", val, key)
+					}
+					typ = types.AnyType{}
 				default:
 					return "", fmt.Errorf("cannot index into type %s", typ)
 				}
@@ -2216,6 +2250,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 						end = fmt.Sprintf("len([]rune(%s))", val)
 					}
 					val = fmt.Sprintf("string([]rune(%s)[%s:%s])", val, start, end)
+				case types.AnyType:
+					if idx.End == nil {
+						end = fmt.Sprintf("len(%s)", val)
+					}
+					val = fmt.Sprintf("(%s).([]any)[%s:%s]", val, start, end)
+					typ = types.ListType{Elem: types.AnyType{}}
 				default:
 					if idx.End == nil {
 						end = fmt.Sprintf("len(%s)", val)
