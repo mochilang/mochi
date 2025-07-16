@@ -3230,9 +3230,29 @@ func sanitizeName(name string) string {
 }
 
 func stripParens(s string) string {
-	for strings.HasPrefix(s, "(") && strings.HasSuffix(s, ")") {
-		s = strings.TrimPrefix(s, "(")
-		s = strings.TrimSuffix(s, ")")
+	for {
+		s = strings.TrimSpace(s)
+		if len(s) < 2 || s[0] != '(' || s[len(s)-1] != ')' {
+			break
+		}
+		depth := 0
+		balanced := true
+		for i, r := range s {
+			switch r {
+			case '(':
+				depth++
+			case ')':
+				depth--
+				if depth == 0 && i != len(s)-1 {
+					balanced = false
+					break
+				}
+			}
+		}
+		if !balanced || depth != 0 {
+			break
+		}
+		s = s[1 : len(s)-1]
 	}
 	return s
 }
