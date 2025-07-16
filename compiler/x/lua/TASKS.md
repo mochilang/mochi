@@ -45,3 +45,7 @@
 - Updated Rosetta golden files using new `__print` helper.
 - `4-rings-or-4-squares-puzzle` now passes and its `.error` file was removed.
 - Added generated Lua code for additional tasks (e.g. `100-prisoners`).
+
+## Progress (2025-07-17 08:10)
+- Added golden tests for `tests/vm/valid` that compile programs with the Lua backend and verify runtime output.
+- All examples compile and run successfully, producing 0 `.error` files.
