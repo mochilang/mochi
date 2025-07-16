@@ -1,0 +1,106 @@
+run error: exit status 127
+/workspace/mochi/tests/rosetta/out/Erlang/abbreviations-easy.erl:9:273: variable 'Cur1' is unbound
+%    9|     (fun Loop0(I) -> case (I < length(S)) of true -> Ch = string:substr(S, (I)+1, ((I + 1))-(I)), (case (((Ch == " ") orelse (Ch == "\n")) orelse (Ch == "\t")) of true -> (case (length(Cur0) > 0) of true -> Words1 = Words0 ++ [Cur0], Cur1 = ""; _ -> ok end); _ -> Cur2 = (Cur1 + Ch) end), I1 = (I + 1), Loop0(I1); _ -> ok end end(I0)),
+%     |                                                                                                                                                                                                                                                                                 ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abbreviations-easy.erl:10:19: variable 'Cur2' is unbound
+%   10|     (case (length(Cur2) > 0) of true -> Words2 = Words1 ++ [Cur2]; _ -> ok end),
+%     |                   ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abbreviations-easy.erl:10:50: variable 'Words1' is unbound
+%   10|     (case (length(Cur2) > 0) of true -> Words2 = Words1 ++ [Cur2]; _ -> ok end),
+%     |                                                  ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abbreviations-easy.erl:11:5: variable 'Words2' unsafe in 'case' (line 10, column 6)
+%   11|     Words2.
+%     |     ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abbreviations-easy.erl:17:5: variable 'Out1' is unbound
+%   17|     Out1.
+%     |     ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abbreviations-easy.erl:23:5: variable 'Res2' is unbound
+%   23|     Res2.
+%     |     ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abbreviations-easy.erl:27:19: variable 'Words2' is unbound
+%   27|     (case (length(Words2) == 0) of true -> Results0; _ -> ok end),
+%     |                   ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abbreviations-easy.erl:29:356: function upper/1 undefined
+%   29|     (fun Loop4(Wi) -> case (Wi < length(Words2)) of true -> W = lists:nth((Wi)+1, Words2), Found0 = false, Wlen = length(W), Ci0 = 0, (fun Loop3(Ci) -> case (Ci < length(Commands)) of true -> Cmd = lists:nth((Ci)+1, Commands), (case (((lists:nth((Ci)+1, Mins) /= 0) andalso (Wlen >= lists:nth((Ci)+1, Mins))) andalso (Wlen =< length(Cmd))) of true -> C = upper(Cmd), Ww = upper(W), (case (string:substr(C, (0)+1, (Wlen)-(0)) == Ww) of true -> Results1 = Results0 ++ [C], Found1 = true, throw(break); _ -> ok end); _ -> ok end), Ci1 = (Ci + 1), Loop3(Ci1); _ -> ok end end(Ci0)), (case not Found1 of true -> Results2 = Results1 ++ ["*error*"]; _ -> ok end), Wi1 = (Wi + 1), Loop4(Wi1); _ -> ok end end(Wi0)),
+%     |                                                                                                                                                                                                                                                                                                                                                                    ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abbreviations-easy.erl:29:373: function upper/1 undefined
+%   29|     (fun Loop4(Wi) -> case (Wi < length(Words2)) of true -> W = lists:nth((Wi)+1, Words2), Found0 = false, Wlen = length(W), Ci0 = 0, (fun Loop3(Ci) -> case (Ci < length(Commands)) of true -> Cmd = lists:nth((Ci)+1, Commands), (case (((lists:nth((Ci)+1, Mins) /= 0) andalso (Wlen >= lists:nth((Ci)+1, Mins))) andalso (Wlen =< length(Cmd))) of true -> C = upper(Cmd), Ww = upper(W), (case (string:substr(C, (0)+1, (Wlen)-(0)) == Ww) of true -> Results1 = Results0 ++ [C], Found1 = true, throw(break); _ -> ok end); _ -> ok end), Ci1 = (Ci + 1), Loop3(Ci1); _ -> ok end end(Ci0)), (case not Found1 of true -> Results2 = Results1 ++ ["*error*"]; _ -> ok end), Wi1 = (Wi + 1), Loop4(Wi1); _ -> ok end end(Wi0)),
+%     |                                                                                                                                                                                                                                                                                                                                                                                     ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abbreviations-easy.erl:29:590: variable 'Found1' is unbound
+%   29|     (fun Loop4(Wi) -> case (Wi < length(Words2)) of true -> W = lists:nth((Wi)+1, Words2), Found0 = false, Wlen = length(W), Ci0 = 0, (fun Loop3(Ci) -> case (Ci < length(Commands)) of true -> Cmd = lists:nth((Ci)+1, Commands), (case (((lists:nth((Ci)+1, Mins) /= 0) andalso (Wlen >= lists:nth((Ci)+1, Mins))) andalso (Wlen =< length(Cmd))) of true -> C = upper(Cmd), Ww = upper(W), (case (string:substr(C, (0)+1, (Wlen)-(0)) == Ww) of true -> Results1 = Results0 ++ [C], Found1 = true, throw(break); _ -> ok end); _ -> ok end), Ci1 = (Ci + 1), Loop3(Ci1); _ -> ok end end(Ci0)), (case not Found1 of true -> Results2 = Results1 ++ ["*error*"]; _ -> ok end), Wi1 = (Wi + 1), Loop4(Wi1); _ -> ok end end(Wi0)),
+%     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abbreviations-easy.erl:29:619: variable 'Results1' is unbound
+%   29|     (fun Loop4(Wi) -> case (Wi < length(Words2)) of true -> W = lists:nth((Wi)+1, Words2), Found0 = false, Wlen = length(W), Ci0 = 0, (fun Loop3(Ci) -> case (Ci < length(Commands)) of true -> Cmd = lists:nth((Ci)+1, Commands), (case (((lists:nth((Ci)+1, Mins) /= 0) andalso (Wlen >= lists:nth((Ci)+1, Mins))) andalso (Wlen =< length(Cmd))) of true -> C = upper(Cmd), Ww = upper(W), (case (string:substr(C, (0)+1, (Wlen)-(0)) == Ww) of true -> Results1 = Results0 ++ [C], Found1 = true, throw(break); _ -> ok end); _ -> ok end), Ci1 = (Ci + 1), Loop3(Ci1); _ -> ok end end(Ci0)), (case not Found1 of true -> Results2 = Results1 ++ ["*error*"]; _ -> ok end), Wi1 = (Wi + 1), Loop4(Wi1); _ -> ok end end(Wi0)),
+%     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abbreviations-easy.erl:30:5: variable 'Results2' is unbound
+%   30|     Results2.
+%     |     ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abbreviations-easy.erl:37:371: variable 'Count1' is unbound
+%   37|     (fun Loop6(Mins, I) -> case (I < length(Commands)) of true -> Count0 = 0, J0 = 0, Cmd = lists:nth((I)+1, Commands), (fun Loop5(J) -> case (J < length(Cmd)) of true -> Ch = string:substr(Cmd, (J)+1, ((J + 1))-(J)), (case ((Ch >= "A") andalso (Ch =< "Z")) of true -> Count1 = (Count0 + 1); _ -> ok end), J1 = (J + 1), Loop5(J1); _ -> ok end end(J0)), Mins1 = Mins ++ [Count1], I7 = (I + 1), Loop6(Mins1, I7); _ -> ok end end(Mins0, I6)),
+%     |                                                                                                                                                                                                                                                                                                                                                                                   ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abbreviations-easy.erl:38:20: variable 'Sentence' is unbound
+%   38|     Words = fields(Sentence),
+%     |                    ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abbreviations-easy.erl:39:41: variable 'Mins1' is unbound
+%   39|     Results = validate(Commands, Words, Mins1),
+%     |                                         ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abbreviations-easy.erl:43:24: variable 'Out11' is unbound
+%   43|     io:format("~p~n", [Out11]),
+%     |                        ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abbreviations-easy.erl:9:208: Warning: variable 'Words1' is unused
+%    9|     (fun Loop0(I) -> case (I < length(S)) of true -> Ch = string:substr(S, (I)+1, ((I + 1))-(I)), (case (((Ch == " ") orelse (Ch == "\n")) orelse (Ch == "\t")) of true -> (case (length(Cur0) > 0) of true -> Words1 = Words0 ++ [Cur0], Cur1 = ""; _ -> ok end); _ -> Cur2 = (Cur1 + Ch) end), I1 = (I + 1), Loop0(I1); _ -> ok end end(I0)),
+%     |                                                                                                                                                                                                                ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abbreviations-easy.erl:9:235: Warning: variable 'Cur1' is unused
+%    9|     (fun Loop0(I) -> case (I < length(S)) of true -> Ch = string:substr(S, (I)+1, ((I + 1))-(I)), (case (((Ch == " ") orelse (Ch == "\n")) orelse (Ch == "\t")) of true -> (case (length(Cur0) > 0) of true -> Words1 = Words0 ++ [Cur0], Cur1 = ""; _ -> ok end); _ -> Cur2 = (Cur1 + Ch) end), I1 = (I + 1), Loop0(I1); _ -> ok end end(I0)),
+%     |                                                                                                                                                                                                                                           ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abbreviations-easy.erl:9:265: Warning: variable 'Cur2' is unused
+%    9|     (fun Loop0(I) -> case (I < length(S)) of true -> Ch = string:substr(S, (I)+1, ((I + 1))-(I)), (case (((Ch == " ") orelse (Ch == "\n")) orelse (Ch == "\t")) of true -> (case (length(Cur0) > 0) of true -> Words1 = Words0 ++ [Cur0], Cur1 = ""; _ -> ok end); _ -> Cur2 = (Cur1 + Ch) end), I1 = (I + 1), Loop0(I1); _ -> ok end end(I0)),
+%     |                                                                                                                                                                                                                                                                         ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abbreviations-easy.erl:22:85: Warning: variable 'Res1' is unused
+%   22|     (fun Loop2(Res, I) -> case (I < length(Xs)) of true -> (case (I > 0) of true -> Res1 = (Res + Sep); _ -> ok end), Res2 = (Res + lists:nth((I)+1, Xs)), I5 = (I + 1), Loop2(Res2, I5); _ -> ok end end(Res0, I4)),
+%     |                                                                                     ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abbreviations-easy.erl:25:20: Warning: variable 'Words' is unused
+%   25| validate(Commands, Words, Mins) ->
+%     |                    ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abbreviations-easy.erl:29:92: Warning: variable 'Found0' is unused
+%   29|     (fun Loop4(Wi) -> case (Wi < length(Words2)) of true -> W = lists:nth((Wi)+1, Words2), Found0 = false, Wlen = length(W), Ci0 = 0, (fun Loop3(Ci) -> case (Ci < length(Commands)) of true -> Cmd = lists:nth((Ci)+1, Commands), (case (((lists:nth((Ci)+1, Mins) /= 0) andalso (Wlen >= lists:nth((Ci)+1, Mins))) andalso (Wlen =< length(Cmd))) of true -> C = upper(Cmd), Ww = upper(W), (case (string:substr(C, (0)+1, (Wlen)-(0)) == Ww) of true -> Results1 = Results0 ++ [C], Found1 = true, throw(break); _ -> ok end); _ -> ok end), Ci1 = (Ci + 1), Loop3(Ci1); _ -> ok end end(Ci0)), (case not Found1 of true -> Results2 = Results1 ++ ["*error*"]; _ -> ok end), Wi1 = (Wi + 1), Loop4(Wi1); _ -> ok end end(Wi0)),
+%     |                                                                                            ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abbreviations-easy.erl:29:444: Warning: variable 'Results1' is unused
+%   29|     (fun Loop4(Wi) -> case (Wi < length(Words2)) of true -> W = lists:nth((Wi)+1, Words2), Found0 = false, Wlen = length(W), Ci0 = 0, (fun Loop3(Ci) -> case (Ci < length(Commands)) of true -> Cmd = lists:nth((Ci)+1, Commands), (case (((lists:nth((Ci)+1, Mins) /= 0) andalso (Wlen >= lists:nth((Ci)+1, Mins))) andalso (Wlen =< length(Cmd))) of true -> C = upper(Cmd), Ww = upper(W), (case (string:substr(C, (0)+1, (Wlen)-(0)) == Ww) of true -> Results1 = Results0 ++ [C], Found1 = true, throw(break); _ -> ok end); _ -> ok end), Ci1 = (Ci + 1), Loop3(Ci1); _ -> ok end end(Ci0)), (case not Found1 of true -> Results2 = Results1 ++ ["*error*"]; _ -> ok end), Wi1 = (Wi + 1), Loop4(Wi1); _ -> ok end end(Wi0)),
+%     |                                                                                                                                                                                                                                                                                                                                                                                                                                                            ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abbreviations-easy.erl:29:472: Warning: variable 'Found1' is unused
+%   29|     (fun Loop4(Wi) -> case (Wi < length(Words2)) of true -> W = lists:nth((Wi)+1, Words2), Found0 = false, Wlen = length(W), Ci0 = 0, (fun Loop3(Ci) -> case (Ci < length(Commands)) of true -> Cmd = lists:nth((Ci)+1, Commands), (case (((lists:nth((Ci)+1, Mins) /= 0) andalso (Wlen >= lists:nth((Ci)+1, Mins))) andalso (Wlen =< length(Cmd))) of true -> C = upper(Cmd), Ww = upper(W), (case (string:substr(C, (0)+1, (Wlen)-(0)) == Ww) of true -> Results1 = Results0 ++ [C], Found1 = true, throw(break); _ -> ok end); _ -> ok end), Ci1 = (Ci + 1), Loop3(Ci1); _ -> ok end end(Ci0)), (case not Found1 of true -> Results2 = Results1 ++ ["*error*"]; _ -> ok end), Wi1 = (Wi + 1), Loop4(Wi1); _ -> ok end end(Wi0)),
+%     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abbreviations-easy.erl:29:608: Warning: variable 'Results2' is unused
+%   29|     (fun Loop4(Wi) -> case (Wi < length(Words2)) of true -> W = lists:nth((Wi)+1, Words2), Found0 = false, Wlen = length(W), Ci0 = 0, (fun Loop3(Ci) -> case (Ci < length(Commands)) of true -> Cmd = lists:nth((Ci)+1, Commands), (case (((lists:nth((Ci)+1, Mins) /= 0) andalso (Wlen >= lists:nth((Ci)+1, Mins))) andalso (Wlen =< length(Cmd))) of true -> C = upper(Cmd), Ww = upper(W), (case (string:substr(C, (0)+1, (Wlen)-(0)) == Ww) of true -> Results1 = Results0 ++ [C], Found1 = true, throw(break); _ -> ok end); _ -> ok end), Ci1 = (Ci + 1), Loop3(Ci1); _ -> ok end end(Ci0)), (case not Found1 of true -> Results2 = Results1 ++ ["*error*"]; _ -> ok end), Wi1 = (Wi + 1), Loop4(Wi1); _ -> ok end end(Wi0)),
+%     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abbreviations-easy.erl:37:270: Warning: variable 'Count1' is unused
+%   37|     (fun Loop6(Mins, I) -> case (I < length(Commands)) of true -> Count0 = 0, J0 = 0, Cmd = lists:nth((I)+1, Commands), (fun Loop5(J) -> case (J < length(Cmd)) of true -> Ch = string:substr(Cmd, (J)+1, ((J + 1))-(J)), (case ((Ch >= "A") andalso (Ch =< "Z")) of true -> Count1 = (Count0 + 1); _ -> ok end), J1 = (J + 1), Loop5(J1); _ -> ok end end(J0)), Mins1 = Mins ++ [Count1], I7 = (I + 1), Loop6(Mins1, I7); _ -> ok end end(Mins0, I6)),
+%     |                                                                                                                                                                                                                                                                              ^
+
+escript: There were compilation errors.

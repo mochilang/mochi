@@ -1,0 +1,3 @@
+run error: exit status 127
+/workspace/mochi/tests/rosetta/out/Erlang/abundant-odd-numbers.erl:9:60: syntax error before: 'rem'
+escript: There were compilation errors.
