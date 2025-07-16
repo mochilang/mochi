@@ -24,3 +24,4 @@
 - 2025-07-15 08:22 - added group cleanup, improved row vars and sum type handling; generated Java code for TPCH queries with update, new q9.java and error logs.
 - 2025-07-16 11:30 - added generic cast fallback to reduce Rosetta .error files.
 - 2025-07-16 12:20 - default unknown types to Object and cast without errors to further reduce Rosetta .error files.
+- 2025-07-16 13:00 - added Java Rosetta golden tests and script; unknown expr types now default to Object.

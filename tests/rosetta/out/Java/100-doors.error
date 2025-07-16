@@ -1,0 +1,8 @@
+javac: exit status 1
+/tmp/M100Doors.java:19: error: bad operand type Object for unary operator '!'
+            doors.set(idx, !doors.get(idx));
+                           ^
+/tmp/M100Doors.java:27: error: incompatible types: Object cannot be converted to boolean
+            if (doors.get(idx)) {
+                         ^
+2 errors
