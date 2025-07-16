@@ -1,8 +1,1 @@
-parse error: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/ackermann-function-3.mochi:57:3: unexpected token "}" (expected PostfixExpr)
-  --> /workspace/mochi/tests/rosetta/x/Mochi/ackermann-function-3.mochi:57:3
-
- 57 |   }
-    |   ^
-
-help:
-  Parse error occurred. Check syntax near this location.
+compile error: nil expr

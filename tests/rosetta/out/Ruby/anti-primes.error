@@ -1,7 +1,7 @@
 type error: error[T007]: argument 3: expected int, got bigint
-  --> /workspace/mochi/tests/rosetta/x/Mochi/abundant-odd-numbers.mochi:41:10
+  --> /workspace/mochi/tests/rosetta/x/Mochi/anti-primes.mochi:27:10
 
- 41 |   return substring(s, 0, len(s) - 3)
+ 27 |   line = substring(line, 0, len(line) - 1)
     |          ^
 
 help:
