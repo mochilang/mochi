@@ -1,6 +1,0 @@
-Error on line 0: output mismatch
--- got --
-{100 20} {200 15}
--- want --
-[object Object] [object Object]
-1: //go:build ignore
