@@ -1,6 +1,8 @@
 # Rust Compiler Tasks
 
 ## Recent Enhancements
+- 2025-07-18 00:10 - Replaced VM valid tests with `golden.Run` framework and
+  removed code comparison from golden tests.
 - 2025-07-17 16:30 - Improved map indexing to use `get()` and `insert` for
   `BTreeMap` values and regenerated VM golden tests.
 - 2025-07-17 12:00 - Added golden tests for `tests/vm/valid` and fixed map indexing to reduce `.error` files.
