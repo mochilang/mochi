@@ -1,6 +1,9 @@
 # Erlang Compiler Tasks
 
 ## Recent updates
+- [2025-07-16 12:03] Improved mutation analysis to handle nested statements and
+  replaced `rem()` calls with the `rem` operator. Regenerated sample Rosetta
+  outputs.
 - [2025-07-13 05:22] Removed support for `MOCHI_HEADER_TIME` and
   `MOCHI_HEADER_VERSION`. The compiler now always uses the repository
   version and the current UTC time.
