@@ -40,3 +40,6 @@
 - Implemented `__str` helper and improved `print`/`str` handling for lists and maps.
 - Added support for `upper` builtin function.
 - Generated Lua code and outputs for first few Rosetta tasks.
+
+## Progress (2025-07-16 12:12)
+- Ran Rosetta golden tests and updated outputs for the first three tasks.
