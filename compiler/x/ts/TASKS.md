@@ -63,3 +63,7 @@
 - Fixed join logic in runtime to keep rows with NULL values.
 - Added custom channel order in _cmp to satisfy q76 sorting.
 - Regenerated TPC-DS outputs for q40 and q76; all queries now compile and run.
+
+### 2025-07-16 11:41 UTC
+- Added nil check in `compileExpr` to prevent panics on malformed ASTs. Failing
+  Rosetta examples now emit `.error` files instead of crashing the test suite.

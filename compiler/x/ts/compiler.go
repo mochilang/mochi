@@ -1411,6 +1411,9 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 // --- Expression Compilation ---
 
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
+	if e == nil || e.Binary == nil {
+		return "", fmt.Errorf("invalid nil expression")
+	}
 	return c.compileBinaryExpr(e.Binary)
 }
 
