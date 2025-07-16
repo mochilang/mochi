@@ -1061,7 +1061,7 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 		if err != nil {
 			return err
 		}
-		t := types.TypeOfPostfixBasic(prefix, c.env)
+		t := types.TypeOfPostfix(prefix.Value, c.env)
 		if types.IsMapType(t) {
 			target = fmt.Sprintf("%s[&%s]", target, idxStr)
 		} else {
@@ -1716,7 +1716,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 		case op.Index != nil:
 			prefix := &parser.Unary{Value: &parser.PostfixExpr{Target: p.Target, Ops: p.Ops[:opIndex]}}
-			t := types.TypeOfPostfixBasic(prefix, c.env)
+			t := types.TypeOfPostfix(prefix.Value, c.env)
 			if op.Index.Colon != nil || op.Index.End != nil || op.Index.Colon2 != nil || op.Index.Step != nil {
 				start := "0"
 				if op.Index.Start != nil {
@@ -1757,8 +1757,15 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
+				if !types.IsMapType(t) {
+					if root := prefix.Value.Target.Selector; root != nil {
+						if vt, err2 := c.env.GetVar(root.Root); err2 == nil && types.IsMapType(vt) {
+							t = vt
+						}
+					}
+				}
 				if types.IsMapType(t) {
-					val = fmt.Sprintf("%s[&%s]", val, idxVal)
+					val = fmt.Sprintf("*%s.get(&%s).unwrap()", val, idxVal)
 				} else if types.IsStringType(t) {
 					if isIntLiteral(op.Index.Start) {
 						val = fmt.Sprintf("%s.chars().nth(%s).unwrap()", val, idxVal)
@@ -1775,7 +1782,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 		case op.Field != nil:
 			prefix := &parser.Unary{Value: &parser.PostfixExpr{Target: p.Target, Ops: p.Ops[:opIndex]}}
-			t := types.TypeOfPostfixBasic(prefix, c.env)
+			t := types.TypeOfPostfix(prefix.Value, c.env)
 			if types.IsMapType(t) {
 				val = fmt.Sprintf("%s[\"%s\"]", val, op.Field.Name)
 			} else {

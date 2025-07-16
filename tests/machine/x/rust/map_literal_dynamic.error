@@ -1,5 +1,5 @@
 error[E0308]: mismatched types
- --> /tmp/TestRustCompiler_VMValid_Goldenmap_literal_dynamic2793198898/001/prog.rs:6:37
+ --> /tmp/TestRustCompiler_VMValid_Goldenmap_literal_dynamic2971242478/001/prog.rs:6:37
   |
 6 |     println!("{:?} {:?}", m.clone()["a" as usize], m.clone()["b" as usize]);
   |                                     ^^^^^^^^^^^^ expected `&_`, found `usize`
@@ -12,7 +12,7 @@ help: consider borrowing here
   |                                     ++            +
 
 error[E0308]: mismatched types
- --> /tmp/TestRustCompiler_VMValid_Goldenmap_literal_dynamic2793198898/001/prog.rs:6:62
+ --> /tmp/TestRustCompiler_VMValid_Goldenmap_literal_dynamic2971242478/001/prog.rs:6:62
   |
 6 |     println!("{:?} {:?}", m.clone()["a" as usize], m.clone()["b" as usize]);
   |                                                              ^^^^^^^^^^^^ expected `&_`, found `usize`
@@ -25,7 +25,7 @@ help: consider borrowing here
   |                                                              ++            +
 
 error[E0606]: casting `&'static str` as `usize` is invalid
- --> /tmp/TestRustCompiler_VMValid_Goldenmap_literal_dynamic2793198898/001/prog.rs:6:37
+ --> /tmp/TestRustCompiler_VMValid_Goldenmap_literal_dynamic2971242478/001/prog.rs:6:37
   |
 6 |     println!("{:?} {:?}", m.clone()["a" as usize], m.clone()["b" as usize]);
   |                                     ^^^^^^^^^^^^
@@ -33,7 +33,7 @@ error[E0606]: casting `&'static str` as `usize` is invalid
   = help: cast through a raw pointer first
 
 error[E0606]: casting `&'static str` as `usize` is invalid
- --> /tmp/TestRustCompiler_VMValid_Goldenmap_literal_dynamic2793198898/001/prog.rs:6:62
+ --> /tmp/TestRustCompiler_VMValid_Goldenmap_literal_dynamic2971242478/001/prog.rs:6:62
   |
 6 |     println!("{:?} {:?}", m.clone()["a" as usize], m.clone()["b" as usize]);
   |                                                              ^^^^^^^^^^^^

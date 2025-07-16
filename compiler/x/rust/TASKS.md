@@ -1,6 +1,8 @@
 # Rust Compiler Tasks
 
 ## Recent Enhancements
+- 2025-07-17 16:30 - Improved map indexing to use `get()` and `insert` for
+  `BTreeMap` values and regenerated VM golden tests.
 - 2025-07-17 12:00 - Added golden tests for `tests/vm/valid` and fixed map indexing to reduce `.error` files.
 - 2025-07-17 00:20 - Added `compile_rosetta_rust.go` and golden test for Rosetta tasks. Initialized mutable
   string variables with `String::new()` or `String::from` to avoid `+=` errors.
