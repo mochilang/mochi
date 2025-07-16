@@ -24,6 +24,27 @@ import (
 	"mochi/types"
 )
 
+var (
+	seededNow bool
+	nowSeed   int64
+)
+
+func init() {
+	if s := os.Getenv("MOCHI_NOW_SEED"); s != "" {
+		if v, err := strconv.ParseInt(s, 10, 64); err == nil {
+			nowSeed = v
+			seededNow = true
+		}
+	}
+}
+
+// SetNowSeed enables deterministic values for the now() builtin.
+// It is primarily used by tests to ensure stable output.
+func SetNowSeed(n int64) {
+	seededNow = true
+	nowSeed = n
+}
+
 // Value represents a runtime value handled by the VM.
 // The definition lives in value.go and mirrors the interpreter's Value without
 // requiring that package.
@@ -1215,7 +1236,12 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			fmt.Fprintln(m.writer, strings.TrimSpace(sb.String()))
 		case OpNow:
-			fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(time.Now().UnixNano())}
+			if seededNow {
+				nowSeed = nowSeed*1664525 + 1013904223
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(nowSeed)}
+			} else {
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(time.Now().UnixNano())}
+			}
 		case OpJSON:
 			b, _ := json.Marshal(fr.regs[ins.A].ToAny())
 			fmt.Fprintln(m.writer, string(b))
