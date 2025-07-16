@@ -2065,6 +2065,7 @@ type compiler struct {
 	fnIndex map[string]int
 	types   []types.Type
 	imports map[string]importMod
+	globals map[string]int
 }
 
 type importMod struct {
@@ -2120,6 +2121,24 @@ func (c *compiler) addType(t types.Type) int {
 	return idx
 }
 
+func newFuncCompiler(c *compiler) *funcCompiler {
+	fc := &funcCompiler{
+		comp:      c,
+		vars:      map[string]int{},
+		scopes:    nil,
+		loops:     nil,
+		tags:      map[int]regTag{},
+		groupVar:  "",
+		constRegs: map[string]int{},
+	}
+	for name, idx := range c.globals {
+		fc.vars[name] = idx
+	}
+	fc.idx = len(c.globals)
+	fc.fn.NumRegs = fc.idx
+	return fc
+}
+
 // Compile turns an AST into a Program supporting a limited subset of Mochi.
 func Compile(p *parser.Program, env *types.Env) (*Program, error) {
 	var src string
@@ -2145,7 +2164,20 @@ func CompileWithSource(p *parser.Program, env *types.Env, src string) (*Program,
 }
 
 func compileProgram(p *parser.Program, env *types.Env) (*Program, error) {
-	c := &compiler{prog: p, env: env, fnIndex: map[string]int{}, imports: map[string]importMod{}}
+	c := &compiler{prog: p, env: env, fnIndex: map[string]int{}, imports: map[string]importMod{}, globals: map[string]int{}}
+	// collect global variables
+	for _, st := range p.Statements {
+		switch {
+		case st.Var != nil:
+			if _, ok := c.globals[st.Var.Name]; !ok {
+				c.globals[st.Var.Name] = len(c.globals)
+			}
+		case st.Let != nil:
+			if _, ok := c.globals[st.Let.Name]; !ok {
+				c.globals[st.Let.Name] = len(c.globals)
+			}
+		}
+	}
 	c.funcs = append(c.funcs, Function{})
 	for _, st := range p.Statements {
 		switch {
@@ -2179,17 +2211,18 @@ func compileProgram(p *parser.Program, env *types.Env) (*Program, error) {
 }
 
 func (c *compiler) compileFun(fn *parser.FunStmt) (Function, error) {
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, groupVar: "", constRegs: map[string]int{}}
+	fc := newFuncCompiler(c)
 	fc.fn.Name = fn.Name
 	fc.fn.Line = fn.Pos.Line
-	fc.fn.NumParams = len(fn.Params)
+	fc.fn.NumParams = len(c.globals) + len(fn.Params)
 	for i, p := range fn.Params {
-		fc.vars[p.Name] = i
-		if i >= fc.fn.NumRegs {
-			fc.fn.NumRegs = i + 1
+		idx := len(c.globals) + i
+		fc.vars[p.Name] = idx
+		if idx >= fc.fn.NumRegs {
+			fc.fn.NumRegs = idx + 1
 		}
 	}
-	fc.idx = len(fn.Params)
+	fc.idx = fc.fn.NumParams
 	for _, st := range fn.Body {
 		if err := fc.compileStmt(st); err != nil {
 			return Function{}, err
@@ -2203,19 +2236,20 @@ func (c *compiler) compileFun(fn *parser.FunStmt) (Function, error) {
 }
 
 func (c *compiler) compileMethod(st types.StructType, fn *parser.FunStmt) (Function, error) {
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, groupVar: "", constRegs: map[string]int{}}
+	fc := newFuncCompiler(c)
 	fc.fn.Name = st.Name + "." + fn.Name
 	fc.fn.Line = fn.Pos.Line
-	fc.fn.NumParams = len(st.Order) + len(fn.Params)
+	fc.fn.NumParams = len(c.globals) + len(st.Order) + len(fn.Params)
 	// struct fields as parameters
 	for i, field := range st.Order {
-		fc.vars[field] = i
-		if i >= fc.fn.NumRegs {
-			fc.fn.NumRegs = i + 1
+		idx := len(c.globals) + i
+		fc.vars[field] = idx
+		if idx >= fc.fn.NumRegs {
+			fc.fn.NumRegs = idx + 1
 		}
 	}
 	for i, p := range fn.Params {
-		idx := len(st.Order) + i
+		idx := len(c.globals) + len(st.Order) + i
 		fc.vars[p.Name] = idx
 		if idx >= fc.fn.NumRegs {
 			fc.fn.NumRegs = idx + 1
@@ -2257,17 +2291,18 @@ func (c *compiler) compileTypeMethods(td *parser.TypeDecl) error {
 }
 
 func (c *compiler) compileFunExpr(fn *parser.FunExpr, captures []string) int {
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, groupVar: "", constRegs: map[string]int{}}
+	fc := newFuncCompiler(c)
 	fc.fn.Line = fn.Pos.Line
-	fc.fn.NumParams = len(captures) + len(fn.Params)
+	fc.fn.NumParams = len(c.globals) + len(captures) + len(fn.Params)
 	for i, name := range captures {
-		fc.vars[name] = i
-		if i >= fc.fn.NumRegs {
-			fc.fn.NumRegs = i + 1
+		idx := len(c.globals) + i
+		fc.vars[name] = idx
+		if idx >= fc.fn.NumRegs {
+			fc.fn.NumRegs = idx + 1
 		}
 	}
 	for i, p := range fn.Params {
-		idx := len(captures) + i
+		idx := len(c.globals) + len(captures) + i
 		fc.vars[p.Name] = idx
 		if idx >= fc.fn.NumRegs {
 			fc.fn.NumRegs = idx + 1
@@ -2299,18 +2334,19 @@ func (c *compiler) compileNamedFunExpr(name string, fn *parser.FunExpr, captures
 	prev, exists := c.fnIndex[name]
 	c.fnIndex[name] = idx
 
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, groupVar: "", constRegs: map[string]int{}}
+	fc := newFuncCompiler(c)
 	fc.fn.Name = name
 	fc.fn.Line = fn.Pos.Line
-	fc.fn.NumParams = len(captures) + len(fn.Params)
+	fc.fn.NumParams = len(c.globals) + len(captures) + len(fn.Params)
 	for i, name := range captures {
-		fc.vars[name] = i
-		if i >= fc.fn.NumRegs {
-			fc.fn.NumRegs = i + 1
+		idx := len(c.globals) + i
+		fc.vars[name] = idx
+		if idx >= fc.fn.NumRegs {
+			fc.fn.NumRegs = idx + 1
 		}
 	}
 	for i, p := range fn.Params {
-		idxp := len(captures) + i
+		idxp := len(c.globals) + len(captures) + i
 		fc.vars[p.Name] = idxp
 		if idxp >= fc.fn.NumRegs {
 			fc.fn.NumRegs = idxp + 1
@@ -2341,10 +2377,10 @@ func (c *compiler) compileNamedFunExpr(name string, fn *parser.FunExpr, captures
 }
 
 func (c *compiler) compileMain(p *parser.Program) (Function, error) {
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, groupVar: "", constRegs: map[string]int{}}
+	fc := newFuncCompiler(c)
 	fc.fn.Name = "main"
 	fc.fn.Line = 0
-	fc.fn.NumParams = 0
+	fc.fn.NumParams = len(c.globals)
 	for _, st := range p.Statements {
 		if st.Fun != nil {
 			continue
@@ -2510,7 +2546,13 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) error {
 				r = dst
 			}
 		}
-		fc.vars[s.Let.Name] = r
+		reg, ok := fc.vars[s.Let.Name]
+		if !ok {
+			reg = fc.newReg()
+			fc.vars[s.Let.Name] = reg
+		}
+		fc.emit(s.Let.Pos, Instr{Op: OpMove, A: reg, B: r})
+		fc.tags[reg] = fc.tags[r]
 		if v, ok := fc.evalConstExpr(s.Let.Value); ok {
 			if typ, err := fc.comp.env.GetVar(s.Let.Name); err == nil {
 				cv, err2 := castValue(typ, v.ToAny())
@@ -2523,7 +2565,11 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) error {
 		return nil
 	case s.Var != nil:
 		r := fc.compileExpr(s.Var.Value)
-		reg := fc.newReg()
+		reg, exists := fc.vars[s.Var.Name]
+		if !exists {
+			reg = fc.newReg()
+			fc.vars[s.Var.Name] = reg
+		}
 		if typ, err := fc.comp.env.GetVar(s.Var.Name); err == nil {
 			if _, ok := typ.(types.BigIntType); ok {
 				idx := fc.comp.addType(typ)
@@ -2532,7 +2578,6 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) error {
 				r = dst
 			}
 		}
-		fc.vars[s.Var.Name] = reg
 		fc.emit(s.Var.Pos, Instr{Op: OpMove, A: reg, B: r})
 		fc.tags[reg] = fc.tags[r]
 		return nil
