@@ -375,10 +375,11 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 	} else {
 		val = defaultValue(typ)
 	}
+	name := escapeIdent(l.Name)
 	if typ == "" {
-		c.writeln(fmt.Sprintf("var %s = %s;", l.Name, val))
+		c.writeln(fmt.Sprintf("var %s = %s;", name, val))
 	} else {
-		c.writeln(fmt.Sprintf("%s %s = %s;", typ, l.Name, val))
+		c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
 	}
 	return nil
 }
@@ -395,16 +396,17 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	} else {
 		val = defaultValue(typ)
 	}
+	name := escapeIdent(v.Name)
 	if typ == "" {
-		c.writeln(fmt.Sprintf("var %s = %s;", v.Name, val))
+		c.writeln(fmt.Sprintf("var %s = %s;", name, val))
 	} else {
-		c.writeln(fmt.Sprintf("%s %s = %s;", typ, v.Name, val))
+		c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
 	}
 	return nil
 }
 
 func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
-	target := a.Name
+	target := escapeIdent(a.Name)
 	typ, _ := c.env.GetVar(a.Name)
 	if c.mapVars[a.Name] {
 		typ = types.MapType{}
@@ -452,17 +454,17 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	for _, f := range a.Field {
 		switch t := typ.(type) {
 		case types.MapType:
-			target += fmt.Sprintf("['%s']", f.Name)
+			target += fmt.Sprintf("['%s']", escapeIdent(f.Name))
 			typ = t.Value
 		case types.StructType:
-			target += "." + f.Name
+			target += "." + escapeIdent(f.Name)
 			if ft, ok := t.Fields[f.Name]; ok {
 				typ = ft
 			} else {
 				typ = types.AnyType{}
 			}
 		default:
-			target += "." + f.Name
+			target += "." + escapeIdent(f.Name)
 			typ = types.AnyType{}
 		}
 	}
@@ -496,8 +498,9 @@ func (c *Compiler) compileType(td *parser.TypeDecl) error {
 			if typ == "" {
 				typ = "dynamic"
 			}
-			c.writeln(fmt.Sprintf("%s %s;", typ, name))
-			fields[i] = "this." + name
+			ename := escapeIdent(name)
+			c.writeln(fmt.Sprintf("%s %s;", typ, ename))
+			fields[i] = "this." + ename
 		}
 		c.writeln(fmt.Sprintf("%s(%s);", td.Name, strings.Join(fields, ", ")))
 		c.indent--
@@ -537,8 +540,9 @@ func (c *Compiler) compileType(td *parser.TypeDecl) error {
 				if typ == "" {
 					typ = "dynamic"
 				}
-				c.writeln(fmt.Sprintf("%s %s;", typ, f))
-				fields[i] = "this." + f
+				ef := escapeIdent(f)
+				c.writeln(fmt.Sprintf("%s %s;", typ, ef))
+				fields[i] = "this." + ef
 			}
 			if len(st.Order) > 0 {
 				c.writeln(fmt.Sprintf("%s(%s);", name, strings.Join(fields, ", ")))
@@ -563,9 +567,9 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 		if pt == "" {
 			pt = "dynamic"
 		}
-		params[i] = fmt.Sprintf("%s %s", pt, p.Name)
+		params[i] = fmt.Sprintf("%s %s", pt, escapeIdent(p.Name))
 	}
-	c.writeln(fmt.Sprintf("%s %s(%s) {", ret, f.Name, strings.Join(params, ", ")))
+	c.writeln(fmt.Sprintf("%s %s(%s) {", ret, escapeIdent(f.Name), strings.Join(params, ", ")))
 	c.indent++
 	origEnv := c.env
 	child := types.NewEnv(c.env)
@@ -1631,7 +1635,7 @@ func (c *Compiler) simpleIdentifier(e *parser.Expr) (string, bool) {
 	if len(p.Ops) > 0 || p.Target == nil || p.Target.Selector == nil || len(p.Target.Selector.Tail) > 0 {
 		return "", false
 	}
-	return p.Target.Selector.Root, true
+	return escapeIdent(p.Target.Selector.Root), true
 }
 
 func (c *Compiler) simpleString(e *parser.Expr) (string, bool) {
@@ -1719,7 +1723,8 @@ func (c *Compiler) simpleMapQuery(q *parser.QueryExpr) (string, bool) {
 }
 
 func (c *Compiler) compileSelector(sel *parser.SelectorExpr) string {
-	root := sel.Root
+	rootOrig := sel.Root
+	root := escapeIdent(sel.Root)
 	tail := sel.Tail
 	if key, ok := c.groupKeys[root]; ok {
 		if len(tail) > 0 && tail[0] == "key" {
@@ -1732,11 +1737,11 @@ func (c *Compiler) compileSelector(sel *parser.SelectorExpr) string {
 			return root
 		}
 	}
-	typ, err := c.env.GetVar(root)
+	typ, err := c.env.GetVar(rootOrig)
 	if ot, ok := typ.(types.OptionType); ok {
 		typ = ot.Elem
 	}
-	if ok := c.mapVars[root]; ok {
+	if ok := c.mapVars[rootOrig]; ok {
 		typ = types.MapType{}
 	}
 	if _, ok := c.groupKeys[sel.Root]; ok && root != sel.Root {
@@ -1762,7 +1767,11 @@ func (c *Compiler) compileSelector(sel *parser.SelectorExpr) string {
 			for _, k := range c.groupKeys {
 				s := fmt.Sprintf("%s['%s']", k, root)
 				if len(tail) > 0 {
-					s += fmt.Sprintf("['%s']", strings.Join(tail, "']['"))
+					esc := make([]string, len(tail))
+					for i, t := range tail {
+						esc[i] = escapeIdent(t)
+					}
+					s += fmt.Sprintf("['%s']", strings.Join(esc, "']['"))
 				}
 				return s
 			}
@@ -1774,7 +1783,7 @@ func (c *Compiler) compileSelector(sel *parser.SelectorExpr) string {
 		for i, part := range tail {
 			switch tt := tcur.(type) {
 			case types.MapType:
-				s += fmt.Sprintf("['%s']", part)
+				s += fmt.Sprintf("['%s']", escapeIdent(part))
 				if tt.Value == nil {
 					if i+1 < len(tail) {
 						nx := tail[i+1]
@@ -1801,7 +1810,7 @@ func (c *Compiler) compileSelector(sel *parser.SelectorExpr) string {
 					tcur = tt.Value
 				}
 			case types.StructType:
-				s += "." + part
+				s += "." + escapeIdent(part)
 				if ft, ok := tt.Fields[part]; ok {
 					tcur = ft
 				} else {
@@ -1809,9 +1818,9 @@ func (c *Compiler) compileSelector(sel *parser.SelectorExpr) string {
 				}
 			default:
 				if i == 0 {
-					s += fmt.Sprintf("['%s']", part)
+					s += fmt.Sprintf("['%s']", escapeIdent(part))
 				} else {
-					s = fmt.Sprintf("(%s as dynamic).%s", s, part)
+					s = fmt.Sprintf("(%s as dynamic).%s", s, escapeIdent(part))
 				}
 				tcur = types.AnyType{}
 			}
@@ -1821,13 +1830,13 @@ func (c *Compiler) compileSelector(sel *parser.SelectorExpr) string {
 	if _, ok := typ.(types.GroupType); ok {
 		s := root
 		for _, part := range tail {
-			s += fmt.Sprintf("['%s']", part)
+			s += fmt.Sprintf("['%s']", escapeIdent(part))
 		}
 		return s
 	}
 	s := root
 	for _, part := range tail {
-		s += "." + part
+		s += "." + escapeIdent(part)
 	}
 	return s
 }
@@ -1949,6 +1958,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("exists expects 1 arg")
 		}
 		return fmt.Sprintf("%s.isNotEmpty", args[0]), nil
+	case "now":
+		if len(args) != 0 {
+			return "", fmt.Errorf("now expects no args")
+		}
+		return "DateTime.now().microsecondsSinceEpoch", nil
 	case "json":
 		if len(args) != 1 {
 			return "", fmt.Errorf("json expects 1 arg")
@@ -1957,7 +1971,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		return fmt.Sprintf("print(jsonEncode(%s))", args[0]), nil
 	}
 
-	return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ", ")), nil
+	return fmt.Sprintf("%s(%s)", escapeIdent(call.Func), strings.Join(args, ", ")), nil
 }
 
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {

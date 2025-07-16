@@ -4,9 +4,33 @@ package dart
 
 import (
 	"bytes"
+	"regexp"
 
 	meta "mochi/compiler/meta"
 )
+
+var dartKeywords = map[string]bool{
+	"this":   true,
+	"class":  true,
+	"enum":   true,
+	"mixin":  true,
+	"super":  true,
+	"switch": true,
+	"case":   true,
+	"var":    true,
+	"final":  true,
+	"void":   true,
+	"while":  true,
+}
+
+var identRE = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_]*$`)
+
+func escapeIdent(name string) string {
+	if dartKeywords[name] || !identRE.MatchString(name) {
+		return "_" + name
+	}
+	return name
+}
 
 // formatDart runs `dart format` if available, falling back to simple formatting.
 func formatDart(src []byte) []byte {
