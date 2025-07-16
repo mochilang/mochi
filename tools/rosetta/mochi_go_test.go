@@ -17,6 +17,9 @@ import (
 )
 
 func TestMochiToGo(t *testing.T) {
+	os.Setenv("SOURCE_DATE_EPOCH", "1136214245")
+	defer os.Unsetenv("SOURCE_DATE_EPOCH")
+
 	if _, err := exec.LookPath("go"); err != nil {
 		t.Skip("go toolchain not installed")
 	}
