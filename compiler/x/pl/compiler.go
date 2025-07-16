@@ -940,7 +940,7 @@ func (c *Compiler) buildBinary(left string, leftArith bool, op string, right str
 	concat := false
 	switch op {
 	case "+", "-", "*", "/":
-		if op == "+" && (strings.HasPrefix(left, "\"") || strings.HasPrefix(right, "\"")) {
+		if op == "+" && (!leftArith || !rightArith) && (strings.HasPrefix(left, "\"") || strings.HasPrefix(right, "\"") || (!leftArith && !rightArith)) {
 			tmp := c.newTmp()
 			c.writeln(fmt.Sprintf("string_concat(%s, %s, %s),", left, right, tmp))
 			left = tmp

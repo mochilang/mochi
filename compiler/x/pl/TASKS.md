@@ -9,3 +9,5 @@
 - Extended the Prolog backend with support for `null` literals and `strings.ToUpper`.
 - Regenerated TPC-DS Prolog outputs for previously failing queries via `compile_tpcds_pl.go`.
 
+- Improved binary `+` handling so expressions use `string_concat` only when both operands are non-numeric. This prevents runtime failures on numeric additions in Rosetta tasks.
+- Regenerated Rosetta outputs via `go test` with `UPDATE=1`.
