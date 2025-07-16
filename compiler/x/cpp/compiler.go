@@ -2260,12 +2260,33 @@ func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error
 		}
 		fieldNames[i] = f.Name
 		ftype := fmt.Sprintf("decltype(%s)", val)
+		if dot := strings.Index(val, "."); dot != -1 {
+			base := val[:dot]
+			if t := c.varStruct[base]; t != "" {
+				baseType := strings.TrimSuffix(t, "{}")
+				ftype = fmt.Sprintf("decltype(std::declval<%s>().%s)", baseType, val[dot+1:])
+			} else if t := c.elemType[base]; t != "" {
+				baseType := strings.TrimSuffix(t, "{}")
+				ftype = fmt.Sprintf("decltype(std::declval<%s>().%s)", baseType, val[dot+1:])
+			}
+		}
 		for v, t := range c.varStruct {
 			if t == "" {
 				continue
 			}
 			if strings.Contains(val, v+".") {
 				ftype = replaceVarRef(ftype, v, t)
+			}
+		}
+		if strings.HasPrefix(ftype, "decltype(") && strings.Contains(ftype, ".") {
+			if t := inferExprType(val); t != "" {
+				if t == "string" {
+					ftype = "std::string"
+				} else {
+					ftype = t
+				}
+			} else {
+				ftype = "int"
 			}
 		}
 		if dot := strings.Index(val, "."); dot != -1 {

@@ -1,26 +1,26 @@
-/tmp/TestCPPCompiler_VMValid_Goldenright_join2006030880/001/prog.cpp:16:12: error: ‘c’ was not declared in this scope
+/tmp/TestCPPCompiler_VMValid_Goldenright_join1988658772/001/prog.cpp:16:12: error: ‘c’ was not declared in this scope
    16 |   decltype(c.name) customerName;
       |            ^
-/tmp/TestCPPCompiler_VMValid_Goldenright_join2006030880/001/prog.cpp:16:12: error: ‘c’ was not declared in this scope
-/tmp/TestCPPCompiler_VMValid_Goldenright_join2006030880/001/prog.cpp:17:12: error: ‘o’ was not declared in this scope
+/tmp/TestCPPCompiler_VMValid_Goldenright_join1988658772/001/prog.cpp:16:12: error: ‘c’ was not declared in this scope
+/tmp/TestCPPCompiler_VMValid_Goldenright_join1988658772/001/prog.cpp:17:12: error: ‘o’ was not declared in this scope
    17 |   decltype(o) order;
       |            ^
-/tmp/TestCPPCompiler_VMValid_Goldenright_join2006030880/001/prog.cpp:17:12: error: ‘o’ was not declared in this scope
-/tmp/TestCPPCompiler_VMValid_Goldenright_join2006030880/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_VMValid_Goldenright_join2006030880/001/prog.cpp:34:38: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
+/tmp/TestCPPCompiler_VMValid_Goldenright_join1988658772/001/prog.cpp:17:12: error: ‘o’ was not declared in this scope
+/tmp/TestCPPCompiler_VMValid_Goldenright_join1988658772/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_VMValid_Goldenright_join1988658772/001/prog.cpp:34:38: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
    34 |           __items.push_back(Result{c.name, o});
       |                                    ~~^~~~
       |                                      |
       |                                      std::string {aka std::__cxx11::basic_string<char>}
-/tmp/TestCPPCompiler_VMValid_Goldenright_join2006030880/001/prog.cpp:38:38: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
+/tmp/TestCPPCompiler_VMValid_Goldenright_join1988658772/001/prog.cpp:38:38: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
    38 |           __items.push_back(Result{c.name, o});
       |                                    ~~^~~~
       |                                      |
       |                                      std::string {aka std::__cxx11::basic_string<char>}
-/tmp/TestCPPCompiler_VMValid_Goldenright_join2006030880/001/prog.cpp: In function ‘int main()’:
-/tmp/TestCPPCompiler_VMValid_Goldenright_join2006030880/001/prog.cpp:54:34: error: request for member ‘id’ in ‘entry.Result::order’, which is of non-class type ‘int’
+/tmp/TestCPPCompiler_VMValid_Goldenright_join1988658772/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_VMValid_Goldenright_join1988658772/001/prog.cpp:54:34: error: request for member ‘id’ in ‘entry.Result::order’, which is of non-class type ‘int’
    54 |         std::cout << entry.order.id;
       |                                  ^~
-/tmp/TestCPPCompiler_VMValid_Goldenright_join2006030880/001/prog.cpp:58:34: error: request for member ‘total’ in ‘entry.Result::order’, which is of non-class type ‘int’
+/tmp/TestCPPCompiler_VMValid_Goldenright_join1988658772/001/prog.cpp:58:34: error: request for member ‘total’ in ‘entry.Result::order’, which is of non-class type ‘int’
    58 |         std::cout << entry.order.total;
       |                                  ^~~~~

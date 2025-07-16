@@ -32,6 +32,10 @@
   in sync and to automatically regenerate `.cpp` and `.out` files (2025-07-16
   15:24 UTC).
 
+## Recent Enhancements (2025-07-16 16:35 UTC)
+- Added fallback scalar type inference for struct fields referencing query
+  variables when their struct information is missing.
+
 ## Remaining Enhancements
 - [ ] Improve formatting to better match human examples.
 - [ ] Implement additional TPCH optimizations.

@@ -1,21 +1,21 @@
-/tmp/TestCPPCompiler_VMValid_Goldendataset_where_filter33620586/001/prog.cpp:11:12: error: ‘person’ was not declared in this scope; did you mean ‘perror’?
+/tmp/TestCPPCompiler_VMValid_Goldendataset_where_filter1583935992/001/prog.cpp:11:12: error: ‘person’ was not declared in this scope; did you mean ‘perror’?
    11 |   decltype(person.name) name;
       |            ^~~~~~
       |            perror
-/tmp/TestCPPCompiler_VMValid_Goldendataset_where_filter33620586/001/prog.cpp:11:12: error: ‘person’ was not declared in this scope; did you mean ‘perror’?
+/tmp/TestCPPCompiler_VMValid_Goldendataset_where_filter1583935992/001/prog.cpp:11:12: error: ‘person’ was not declared in this scope; did you mean ‘perror’?
    11 |   decltype(person.name) name;
       |            ^~~~~~
       |            perror
-/tmp/TestCPPCompiler_VMValid_Goldendataset_where_filter33620586/001/prog.cpp:12:12: error: ‘person’ was not declared in this scope; did you mean ‘perror’?
+/tmp/TestCPPCompiler_VMValid_Goldendataset_where_filter1583935992/001/prog.cpp:12:12: error: ‘person’ was not declared in this scope; did you mean ‘perror’?
    12 |   decltype(person.age) age;
       |            ^~~~~~
       |            perror
-/tmp/TestCPPCompiler_VMValid_Goldendataset_where_filter33620586/001/prog.cpp:12:12: error: ‘person’ was not declared in this scope; did you mean ‘perror’?
+/tmp/TestCPPCompiler_VMValid_Goldendataset_where_filter1583935992/001/prog.cpp:12:12: error: ‘person’ was not declared in this scope; did you mean ‘perror’?
    12 |   decltype(person.age) age;
       |            ^~~~~~
       |            perror
-/tmp/TestCPPCompiler_VMValid_Goldendataset_where_filter33620586/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_VMValid_Goldendataset_where_filter33620586/001/prog.cpp:24:38: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
+/tmp/TestCPPCompiler_VMValid_Goldendataset_where_filter1583935992/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_VMValid_Goldendataset_where_filter1583935992/001/prog.cpp:24:38: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
    24 |       __items.push_back(Adult{person.name, person.age, (person.age >= 60)});
       |                               ~~~~~~~^~~~
       |                                      |
