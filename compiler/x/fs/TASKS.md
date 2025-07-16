@@ -6,6 +6,8 @@
   generated record fields use concrete types.
 - 2025-07-13 05:19 - Fixed binary expression inference crash by wrapping
   the left-hand side in an `Expr` node.
+- 2025-07-16 02:15 UTC - Added Rosetta golden tests and implemented
+  `padStart` method calls and `pow` builtin support.
 
 ## Remaining Work
 
