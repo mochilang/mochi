@@ -1,7 +1,12 @@
 program match_full
   implicit none
-  integer :: x = 2
+  integer :: x
   character(len=10) :: label
+  character(len=3) :: day
+  character(len=10) :: mood
+  logical :: ok
+  character(len=10) :: status
+  x = 2
   select case (x)
   case(1)
     label = 'one'
@@ -13,9 +18,7 @@ program match_full
     label = 'unknown'
   end select
   print *, trim(label)
-
-  character(len=3) :: day = 'sun'
-  character(len=10) :: mood
+  day = 'sun'
   select case (day)
   case('mon')
     mood = 'tired'
@@ -28,8 +31,7 @@ program match_full
   end select
   print *, trim(mood)
 
-  logical :: ok = .true.
-  character(len=10) :: status
+  ok = .true.
   if (ok) then
     status = 'confirmed'
   else
