@@ -1,0 +1,6 @@
+File "/workspace/mochi/tests/machine/x/ocaml/sum_builtin.ml", line 24, characters 37-38:
+24 |   print_endline (__show ((sum_float [1;2;3])));
+                                          ^
+Error: This expression has type int but an expression was expected of type
+         float
+  Hint: Did you mean `1.'?

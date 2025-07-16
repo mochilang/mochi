@@ -1,0 +1,6 @@
+File "/workspace/mochi/tests/machine/x/ocaml/for_map_collection.ml", line 25, characters 22-65:
+25 | let m : record1 ref = ref [("a",Obj.repr (1));("b",Obj.repr (2))]
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This expression has type (string * Obj.t) list ref
+       but an expression was expected of type record1 ref
+       Type (string * Obj.t) list is not compatible with type record1 

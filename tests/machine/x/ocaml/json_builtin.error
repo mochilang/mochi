@@ -1,0 +1,4 @@
+File "/workspace/mochi/tests/machine/x/ocaml/json_builtin.ml", line 7, characters 2-6:
+7 |   json m;
+      ^^^^
+Error: Unbound value json

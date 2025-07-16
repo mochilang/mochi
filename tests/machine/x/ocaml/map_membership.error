@@ -1,0 +1,5 @@
+File "/workspace/mochi/tests/machine/x/ocaml/map_membership.ml", line 22, characters 18-57:
+22 | let m : record1 = [("a",Obj.repr (1));("b",Obj.repr (2))]
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This expression should not be a list literal, the expected type is
+       record1

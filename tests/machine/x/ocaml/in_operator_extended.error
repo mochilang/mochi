@@ -1,0 +1,5 @@
+File "/workspace/mochi/tests/machine/x/ocaml/in_operator_extended.ml", line 30, characters 18-38:
+30 | let m : record1 = [("a",Obj.repr (1))]
+                       ^^^^^^^^^^^^^^^^^^^^
+Error: This expression should not be a list literal, the expected type is
+       record1

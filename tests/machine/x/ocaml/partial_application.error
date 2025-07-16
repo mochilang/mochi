@@ -1,0 +1,10 @@
+File "/workspace/mochi/tests/machine/x/ocaml/partial_application.ml", line 23, characters 17-22:
+23 | let add5 : int = add 5
+                      ^^^^^
+Warning 5 [ignored-partial-application]: this function application is partial,
+maybe some arguments are missing.
+File "/workspace/mochi/tests/machine/x/ocaml/partial_application.ml", line 23, characters 17-22:
+23 | let add5 : int = add 5
+                      ^^^^^
+Error: This expression has type int -> int
+       but an expression was expected of type int

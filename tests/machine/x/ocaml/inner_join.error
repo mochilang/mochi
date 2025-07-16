@@ -1,0 +1,5 @@
+File "/workspace/mochi/tests/machine/x/ocaml/inner_join.ml", line 33, characters 53-57:
+33 |         __res0 := { orderId = o.id; customerName = c.name; total = o.total } :: !__res0;
+                                                          ^^^^
+Error: This expression has type record2
+       There is no field name within type record2

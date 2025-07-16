@@ -1,0 +1,4 @@
+File "/workspace/mochi/tests/machine/x/ocaml/group_by_conditional_sum.ml", line 23, characters 47-50:
+23 | type record1 = { mutable cat : string; mutable val : int; mutable flag : bool }
+                                                    ^^^
+Error: Syntax error

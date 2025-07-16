@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from the Mochi programs in `tests/vm/valid` using the OCaml compiler. Each program was compiled and executed with `ocamlc`. Successful runs produced an `.out` file while failures produced an `.error` file.
 
-Compiled programs: 76/100 successful.
+Compiled programs: 75/100 successful.
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -28,7 +28,7 @@ Compiled programs: 76/100 successful.
 - [x] fun_three_args.mochi
 - [x] go_auto.mochi
 - [x] group_by.mochi
-- [x] group_by_conditional_sum.mochi
+- [ ] group_by_conditional_sum.mochi
 - [ ] group_by_having.mochi
 - [x] group_by_join.mochi
 - [ ] group_by_left_join.mochi
@@ -110,7 +110,3 @@ Compiled programs: 76/100 successful.
 - [ ] Integrate an OCaml runtime to execute compiled programs in CI
 - [x] Expand anonymous record typing for clearer generated code
 - [x] Emit native `for` loops when iterating over numeric ranges
-- [ ] Finalize float aggregation for TPC-H `q1`
-
-## TPCH Progress
-- [ ] q1.mochi - pending float sum support

@@ -1,0 +1,6 @@
+File "/workspace/mochi/tests/machine/x/ocaml/map_nested_assign.ml", line 30, characters 25-76:
+30 | let data : record2 ref = ref [("outer",Obj.repr ([("inner",Obj.repr (1))]))]
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This expression has type (string * Obj.t) list ref
+       but an expression was expected of type record2 ref
+       Type (string * Obj.t) list is not compatible with type record2 

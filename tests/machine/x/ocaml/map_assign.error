@@ -1,0 +1,6 @@
+File "/workspace/mochi/tests/machine/x/ocaml/map_assign.ml", line 27, characters 27-55:
+27 | let scores : record1 ref = ref [("alice",Obj.repr (1))]
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This expression has type (string * Obj.t) list ref
+       but an expression was expected of type record1 ref
+       Type (string * Obj.t) list is not compatible with type record1 
