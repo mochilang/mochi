@@ -1017,6 +1017,7 @@ func (c *Compiler) compileStructType(st types.StructType) {
 	c.indent--
 	c.writeln("}")
 	c.writeln("")
+	c.decls = c.buf
 	c.buf = oldBuf
 	c.indent = oldIndent
 	for _, ft := range st.Fields {
@@ -1214,6 +1215,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		c.writeln(iface)
 		for _, v := range t.Variants {
 			vname := sanitizeName(v.Name)
+			c.structs[vname] = true
 			c.writeln(fmt.Sprintf("type %s struct {", vname))
 			c.indent++
 			for _, f := range v.Fields {
@@ -1247,6 +1249,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 				c.env.SetUnion(t.Name, ut)
 			}
 		}
+		c.decls = c.buf
 		c.buf = oldBuf
 		c.indent = oldIndent
 		return nil
@@ -3777,6 +3780,23 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	retType := goType(retT)
 	if retType == "" {
 		retType = "any"
+	}
+	if retType == "any" && len(m.Cases) > 0 {
+		t0 := c.inferExprType(m.Cases[0].Result)
+		same := true
+		for _, cs := range m.Cases[1:] {
+			if !equalTypes(t0, c.inferExprType(cs.Result)) {
+				same = false
+				break
+			}
+		}
+		if same {
+			retT = t0
+			retType = goType(t0)
+			if retType == "" {
+				retType = "any"
+			}
+		}
 	}
 	var buf bytes.Buffer
 	buf.WriteString("func() " + retType + " {\n")
