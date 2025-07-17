@@ -1,0 +1,7 @@
+/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_multi_join48232815/001/main.swift:71:41: error: cannot convert value of type '(part: Int, value: Double)' to expected argument type 'Filtered'
+69 |     for x in filtered {
+70 |         let _k = x.part
+71 |         _groups[_k, default: []].append(x)
+   |                                         `- error: cannot convert value of type '(part: Int, value: Double)' to expected argument type 'Filtered'
+72 |     }
+73 |     var _tmp: [(key: Int, items: [Filtered])] = []

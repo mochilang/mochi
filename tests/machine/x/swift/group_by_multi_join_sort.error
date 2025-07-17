@@ -1,0 +1,47 @@
+/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_multi_join_sort2082124513/001/main.swift:92:4: error: consecutive statements on a line must be separated by ';'
+90 | 	_tmp.sort { _sum($0.items.map { x in ((x["l"] as! Lineitem)["l_extendedprice"] as! Double) * (1 - ((x["l"] as! Lineitem)["l_discount"] as! Double)) }) > _sum($1.items.map { x in ((x["l"] as! Lineitem)["l_extendedprice"] as! Double) * (1 - ((x["l"] as! Lineitem)["l_discount"] as! Double)) }) }
+91 | 	return _tmp.map { g in ["c_custkey": (g.key["c_custkey"] as! Int), "c_name": (g.key["c_name"] as! String), "revenue": _sum(g.items.map { x in ((x["l"] as! Lineitem)["l_extendedprice"] as! Double) * (1 - ((x["l"] as! Lineitem)["l_discount"] as! Double)) }), "c_acctbal": (g.key["c_acctbal"] as! Double), "n_name": (g.key["n_name"] as! String), "c_address": (g.key["c_address"] as! String), "c_phone": (g.key["c_phone"] as! String), "c_comment": (g.key["c_comment"] as! String)] }
+92 | }())
+   |    `- error: consecutive statements on a line must be separated by ';'
+93 | print(result)
+94 | 
+
+/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_multi_join_sort2082124513/001/main.swift:92:4: error: expected expression
+90 | 	_tmp.sort { _sum($0.items.map { x in ((x["l"] as! Lineitem)["l_extendedprice"] as! Double) * (1 - ((x["l"] as! Lineitem)["l_discount"] as! Double)) }) > _sum($1.items.map { x in ((x["l"] as! Lineitem)["l_extendedprice"] as! Double) * (1 - ((x["l"] as! Lineitem)["l_discount"] as! Double)) }) }
+91 | 	return _tmp.map { g in ["c_custkey": (g.key["c_custkey"] as! Int), "c_name": (g.key["c_name"] as! String), "revenue": _sum(g.items.map { x in ((x["l"] as! Lineitem)["l_extendedprice"] as! Double) * (1 - ((x["l"] as! Lineitem)["l_discount"] as! Double)) }), "c_acctbal": (g.key["c_acctbal"] as! Double), "n_name": (g.key["n_name"] as! String), "c_address": (g.key["c_address"] as! String), "c_phone": (g.key["c_phone"] as! String), "c_comment": (g.key["c_comment"] as! String)] }
+92 | }())
+   |    `- error: expected expression
+93 | print(result)
+94 | 
+
+/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_multi_join_sort2082124513/001/main.swift:90:61: error: value of type 'Lineitem' has no subscripts
+88 | 	    }
+89 | 	}
+90 | 	_tmp.sort { _sum($0.items.map { x in ((x["l"] as! Lineitem)["l_extendedprice"] as! Double) * (1 - ((x["l"] as! Lineitem)["l_discount"] as! Double)) }) > _sum($1.items.map { x in ((x["l"] as! Lineitem)["l_extendedprice"] as! Double) * (1 - ((x["l"] as! Lineitem)["l_discount"] as! Double)) }) }
+   |                                                             `- error: value of type 'Lineitem' has no subscripts
+91 | 	return _tmp.map { g in ["c_custkey": (g.key["c_custkey"] as! Int), "c_name": (g.key["c_name"] as! String), "revenue": _sum(g.items.map { x in ((x["l"] as! Lineitem)["l_extendedprice"] as! Double) * (1 - ((x["l"] as! Lineitem)["l_discount"] as! Double)) }), "c_acctbal": (g.key["c_acctbal"] as! Double), "n_name": (g.key["n_name"] as! String), "c_address": (g.key["c_address"] as! String), "c_phone": (g.key["c_phone"] as! String), "c_comment": (g.key["c_comment"] as! String)] }
+92 | }())
+
+/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_multi_join_sort2082124513/001/main.swift:90:122: error: value of type 'Lineitem' has no subscripts
+88 | 	    }
+89 | 	}
+90 | 	_tmp.sort { _sum($0.items.map { x in ((x["l"] as! Lineitem)["l_extendedprice"] as! Double) * (1 - ((x["l"] as! Lineitem)["l_discount"] as! Double)) }) > _sum($1.items.map { x in ((x["l"] as! Lineitem)["l_extendedprice"] as! Double) * (1 - ((x["l"] as! Lineitem)["l_discount"] as! Double)) }) }
+   |                                                                                                                          `- error: value of type 'Lineitem' has no subscripts
+91 | 	return _tmp.map { g in ["c_custkey": (g.key["c_custkey"] as! Int), "c_name": (g.key["c_name"] as! String), "revenue": _sum(g.items.map { x in ((x["l"] as! Lineitem)["l_extendedprice"] as! Double) * (1 - ((x["l"] as! Lineitem)["l_discount"] as! Double)) }), "c_acctbal": (g.key["c_acctbal"] as! Double), "n_name": (g.key["n_name"] as! String), "c_address": (g.key["c_address"] as! String), "c_phone": (g.key["c_phone"] as! String), "c_comment": (g.key["c_comment"] as! String)] }
+92 | }())
+
+/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_multi_join_sort2082124513/001/main.swift:90:202: error: value of type 'Lineitem' has no subscripts
+88 | 	    }
+89 | 	}
+90 | 	_tmp.sort { _sum($0.items.map { x in ((x["l"] as! Lineitem)["l_extendedprice"] as! Double) * (1 - ((x["l"] as! Lineitem)["l_discount"] as! Double)) }) > _sum($1.items.map { x in ((x["l"] as! Lineitem)["l_extendedprice"] as! Double) * (1 - ((x["l"] as! Lineitem)["l_discount"] as! Double)) }) }
+   |                                                                                                                                                                                                          `- error: value of type 'Lineitem' has no subscripts
+91 | 	return _tmp.map { g in ["c_custkey": (g.key["c_custkey"] as! Int), "c_name": (g.key["c_name"] as! String), "revenue": _sum(g.items.map { x in ((x["l"] as! Lineitem)["l_extendedprice"] as! Double) * (1 - ((x["l"] as! Lineitem)["l_discount"] as! Double)) }), "c_acctbal": (g.key["c_acctbal"] as! Double), "n_name": (g.key["n_name"] as! String), "c_address": (g.key["c_address"] as! String), "c_phone": (g.key["c_phone"] as! String), "c_comment": (g.key["c_comment"] as! String)] }
+92 | }())
+
+/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_multi_join_sort2082124513/001/main.swift:90:263: error: value of type 'Lineitem' has no subscripts
+88 | 	    }
+89 | 	}
+90 | 	_tmp.sort { _sum($0.items.map { x in ((x["l"] as! Lineitem)["l_extendedprice"] as! Double) * (1 - ((x["l"] as! Lineitem)["l_discount"] as! Double)) }) > _sum($1.items.map { x in ((x["l"] as! Lineitem)["l_extendedprice"] as! Double) * (1 - ((x["l"] as! Lineitem)["l_discount"] as! Double)) }) }
+   |                                                                                                                                                                                                                                                                       `- error: value of type 'Lineitem' has no subscripts
+91 | 	return _tmp.map { g in ["c_custkey": (g.key["c_custkey"] as! Int), "c_name": (g.key["c_name"] as! String), "revenue": _sum(g.items.map { x in ((x["l"] as! Lineitem)["l_extendedprice"] as! Double) * (1 - ((x["l"] as! Lineitem)["l_discount"] as! Double)) }), "c_acctbal": (g.key["c_acctbal"] as! Double), "n_name": (g.key["n_name"] as! String), "c_address": (g.key["c_address"] as! String), "c_phone": (g.key["c_phone"] as! String), "c_comment": (g.key["c_comment"] as! String)] }
+92 | }())
