@@ -99,3 +99,4 @@ TPC-H progress:
 - 2025-07-20 13:10 - Improved OptionType handling in selectors and query environments; left_join program compiles
 - 2025-07-21 00:00 - Optimised exists() for option types to avoid runtime helper
 - 2025-07-21 12:34 - Added optimised outer join translation using maps; outer_join program compiles
+ - 2025-07-21 18:00 - Expanded exists() and castExpr to avoid runtime helpers for common types

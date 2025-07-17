@@ -292,8 +292,20 @@ func (c *Compiler) castExpr(expr string, from, to types.Type) string {
 		return fmt.Sprintf("%s(%s)", toGo, expr)
 	}
 
-	if isBool(to) && strings.HasPrefix(fromGo, "*") {
-		return fmt.Sprintf("%s != nil", expr)
+	if isBool(to) {
+		switch from.(type) {
+		case types.OptionType:
+			return fmt.Sprintf("%s != nil", expr)
+		case types.ListType, types.MapType:
+			return fmt.Sprintf("len(%s) > 0", expr)
+		case types.StringType:
+			return fmt.Sprintf("len([]rune(%s)) > 0", expr)
+		case types.GroupType:
+			return fmt.Sprintf("len(%s.Items) > 0", expr)
+		}
+		if strings.HasPrefix(fromGo, "*") {
+			return fmt.Sprintf("%s != nil", expr)
+		}
 	}
 
 	if _, ok := from.(types.AnyType); ok {
