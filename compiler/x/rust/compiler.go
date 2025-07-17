@@ -1666,16 +1666,48 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			}
 		case "union":
 			if op.All {
+				if c.env != nil {
+					if _, ok := types.TypeOfUnary(leftAST, c.env).(types.ListType); ok {
+						if _, ok := types.TypeOfPostfix(op.Right, c.env).(types.ListType); ok {
+							res = fmt.Sprintf("{ let mut tmp = %s; tmp.extend(%s); tmp }", res, r)
+							break
+						}
+					}
+				}
 				c.helpers["_union_all"] = true
 				res = fmt.Sprintf("_union_all(%s, %s)", res, r)
 			} else {
+				if c.env != nil {
+					if lt, ok := types.TypeOfUnary(leftAST, c.env).(types.ListType); ok && isEqHashable(lt.Elem) {
+						if _, ok := types.TypeOfPostfix(op.Right, c.env).(types.ListType); ok {
+							res = fmt.Sprintf("{ let mut set: std::collections::HashSet<_> = %s.into_iter().collect(); set.extend(%s.into_iter()); let mut v: Vec<_> = set.into_iter().collect(); v.sort(); v }", res, r)
+							break
+						}
+					}
+				}
 				c.helpers["_union"] = true
 				res = fmt.Sprintf("_union(%s, %s)", res, r)
 			}
 		case "except":
+			if c.env != nil {
+				if lt, ok := types.TypeOfUnary(leftAST, c.env).(types.ListType); ok && isEqHashable(lt.Elem) {
+					if _, ok := types.TypeOfPostfix(op.Right, c.env).(types.ListType); ok {
+						res = fmt.Sprintf("{ let set: std::collections::HashSet<_> = %s.into_iter().collect(); %s.into_iter().filter(|x| !set.contains(x)).collect::<Vec<_>>() }", r, res)
+						break
+					}
+				}
+			}
 			c.helpers["_except"] = true
 			res = fmt.Sprintf("_except(%s, %s)", res, r)
 		case "intersect":
+			if c.env != nil {
+				if lt, ok := types.TypeOfUnary(leftAST, c.env).(types.ListType); ok && isEqHashable(lt.Elem) {
+					if _, ok := types.TypeOfPostfix(op.Right, c.env).(types.ListType); ok {
+						res = fmt.Sprintf("{ let set: std::collections::HashSet<_> = %s.into_iter().collect(); %s.into_iter().filter(|x| set.contains(x)).collect::<Vec<_>>() }", r, res)
+						break
+					}
+				}
+			}
 			c.helpers["_intersect"] = true
 			res = fmt.Sprintf("_intersect(%s, %s)", res, r)
 		default:
@@ -3987,6 +4019,12 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 				s = strings.ReplaceAll(s, "{", "{{")
 				s = strings.ReplaceAll(s, "}", "}}")
 				return fmt.Sprintf("println!(%q)", s), nil
+			} else if s, ok2 := c.constListJSON[id]; ok2 {
+				lines := strings.Split(s, "\n")
+				json := "[" + strings.Join(lines, ",") + "]"
+				json = strings.ReplaceAll(json, "{", "{{")
+				json = strings.ReplaceAll(json, "}", "}}")
+				return fmt.Sprintf("println!(%q)", json), nil
 			}
 		}
 		return fmt.Sprintf("println!(\"{:?}\", %s)", args[0]), nil

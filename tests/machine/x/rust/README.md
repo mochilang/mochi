@@ -4,8 +4,9 @@ This directory contains Rust source code generated from the Mochi programs in `t
 
 Compiled programs: 100/100
 
-The compiler now inlines the `append` and `json` builtins when the element
-types are known, so no helper functions are emitted for these programs.
+The compiler now inlines the `append`, `json`, and list set operations (`union`,
+`except`, `intersect`) when the element types are known. Constant list values
+are printed directly without calling runtime helpers.
 
 ## Checklist
 
