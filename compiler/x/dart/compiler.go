@@ -931,6 +931,9 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 		return fmt.Sprintf("%s.where((x) => %s.contains(x)).toList()", left, right), leftType, nil
 	default:
 		if op == "==" || op == "!=" {
+			if left == "null" || right == "null" {
+				return fmt.Sprintf("%s %s %s", left, op, right), types.BoolType{}, nil
+			}
 			if isListType(leftType) || isListType(rightType) || isMapType(leftType) || isMapType(rightType) {
 				c.useEqual = true
 				expr := fmt.Sprintf("_equal(%s, %s)", left, right)
