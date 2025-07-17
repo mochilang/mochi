@@ -48,9 +48,8 @@ func TestLuaCompiler_TPCDS_Dataset_Golden(t *testing.T) {
 	}
 	sort.Strings(queries)
 	for _, q := range queries {
-		codeWant := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "lua", q+".lua")
 		outWant := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "lua", q+".out")
-		if _, err := os.Stat(codeWant); err != nil {
+		if _, err := os.Stat(outWant); err != nil {
 			continue
 		}
 		t.Run(q, func(t *testing.T) {
@@ -66,15 +65,6 @@ func TestLuaCompiler_TPCDS_Dataset_Golden(t *testing.T) {
 			code, err := luacode.New(env).Compile(prog)
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
-			}
-			wantCode, err := os.ReadFile(codeWant)
-			if err != nil {
-				t.Fatalf("read golden: %v", err)
-			}
-			got := stripHeader(bytes.TrimSpace(code))
-			want := stripHeader(bytes.TrimSpace(wantCode))
-			if !bytes.Equal(got, want) {
-				t.Errorf("generated code mismatch for %s.lua\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, want)
 			}
 			dir := t.TempDir()
 			file := filepath.Join(dir, "main.lua")

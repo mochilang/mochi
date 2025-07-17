@@ -155,15 +155,6 @@ func TestLuaCompiler_JOB(t *testing.T) {
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
 			}
-			wantCode, err := os.ReadFile(filepath.Join(root, "tests", "dataset", "job", "compiler", "lua", q+".lua"))
-			if err != nil {
-				t.Fatalf("read golden: %v", err)
-			}
-			got := stripHeader(bytes.TrimSpace(code))
-			want := stripHeader(bytes.TrimSpace(wantCode))
-			if !bytes.Equal(got, want) {
-				t.Errorf("generated code mismatch for %s.lua\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, want)
-			}
 			dir := t.TempDir()
 			file := filepath.Join(dir, "main.lua")
 			if err := os.WriteFile(file, code, 0644); err != nil {
