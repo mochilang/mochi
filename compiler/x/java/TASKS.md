@@ -34,3 +34,4 @@
 - 2025-07-17 08:00 - generated machine outputs for all VM valid programs.
 - 2025-07-17 12:34 - regenerated VM valid Java outputs and added README checklist.
 - 2025-07-17T07:19 - fixed indentation in main method
+- 2025-07-17T07:55 - singularized data class names from variable context
