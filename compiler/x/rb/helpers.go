@@ -250,11 +250,9 @@ func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
 	if p.Call != nil && p.Call.Func == "str" {
 		return true
 	}
-	if p.Selector != nil && len(p.Selector.Tail) == 0 && c.env != nil {
-		if t, err := c.env.GetVar(p.Selector.Root); err == nil {
-			if _, ok := t.(types.StringType); ok {
-				return true
-			}
+	if c.env != nil {
+		if _, ok := c.inferPrimaryType(p).(types.StringType); ok {
+			return true
 		}
 	}
 	return false
@@ -264,6 +262,11 @@ func (c *Compiler) isStringPostfix(p *parser.PostfixExpr) bool {
 	if p == nil {
 		return false
 	}
+	if c.env != nil {
+		if _, ok := c.inferPostfixType(&parser.Unary{Value: p}).(types.StringType); ok {
+			return true
+		}
+	}
 	return c.isStringPrimary(p.Target)
 }
 
@@ -271,11 +274,9 @@ func (c *Compiler) isStringExpr(e *parser.Expr) bool {
 	if e == nil {
 		return false
 	}
-	if name, ok := identName(e); ok && c.env != nil {
-		if t, err := c.env.GetVar(name); err == nil {
-			if _, ok := t.(types.StringType); ok {
-				return true
-			}
+	if c.env != nil {
+		if _, ok := c.inferExprType(e).(types.StringType); ok {
+			return true
 		}
 	}
 	if len(e.Binary.Right) == 0 {
@@ -291,11 +292,9 @@ func (c *Compiler) isListExpr(e *parser.Expr) bool {
 	if e == nil {
 		return false
 	}
-	if name, ok := identName(e); ok && c.env != nil {
-		if t, err := c.env.GetVar(name); err == nil {
-			if _, ok := t.(types.ListType); ok {
-				return true
-			}
+	if c.env != nil {
+		if _, ok := c.inferExprType(e).(types.ListType); ok {
+			return true
 		}
 	}
 	if len(e.Binary.Right) == 0 {
@@ -314,11 +313,9 @@ func (c *Compiler) isMapExpr(e *parser.Expr) bool {
 	if e == nil {
 		return false
 	}
-	if name, ok := identName(e); ok && c.env != nil {
-		if t, err := c.env.GetVar(name); err == nil {
-			if _, ok := t.(types.MapType); ok {
-				return true
-			}
+	if c.env != nil {
+		if _, ok := c.inferExprType(e).(types.MapType); ok {
+			return true
 		}
 	}
 	if len(e.Binary.Right) == 0 {

@@ -1,6 +1,9 @@
 # Ruby Compiler Tasks
 
 ## Recent Enhancements (2025-07-13 05:26)
+- 2025-07-30 14:20 - Extended basic type inference in helper checks so built-in
+  Ruby operations are used more often, reducing emitted runtime helpers. Added
+  `bigint_ops` to machine outputs.
 - Added versioned header comments to generated Ruby files.
 - Recompiled all `tests/vm/valid` programs with the new header.
 - Verified `tpc-h/q1.mochi` compiles and runs successfully.
