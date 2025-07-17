@@ -88,7 +88,7 @@ const (
 		"    }\n" +
 		"    return x;\n" +
 		"  }\n" +
-		"  return JSON.stringify(_sort(v), null, 2);\n" +
+		"  return JSON.stringify(_sort(v));\n" +
 		"}\n"
 
 	helperFmt = "function _fmt(v: any): string {\n" +
@@ -104,7 +104,15 @@ const (
 	helperPrint = "function _print(...args: any[]): void {\n" +
 		"  const out = args.map(a => {\n" +
 		"    if (Array.isArray(a)) return a.join(' ');\n" +
-		"    if (a && typeof a === 'object') return JSON.stringify(a);\n" +
+		"    if (typeof a === 'boolean') return String(a);\n" +
+		"    if (a && typeof a === 'object') return '[object Object]';\n" +
+		"    if (typeof a === 'number') {\n" +
+		"      let s = String(a);\n" +
+		"      if (/\\.\\d{6,}/.test(s)) {\n" +
+		"        s = Number(a.toFixed(6)).toString();\n" +
+		"      }\n" +
+		"      return s;\n" +
+		"    }\n" +
 		"    return String(a);\n" +
 		"  }).join(' ').trimEnd();\n" +
 		"  console.log(out);\n" +

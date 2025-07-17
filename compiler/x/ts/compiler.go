@@ -1548,7 +1548,7 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 			return fmt.Sprintf("%s + %s", left, right), types.StringType{}, nil
 		}
 		if op == "/" && ((isInt(leftType) || isInt64(leftType)) || (isInt(rightType) || isInt64(rightType))) {
-			return fmt.Sprintf("Math.trunc(%s / %s)", left, right), types.IntType{}, nil
+			return fmt.Sprintf("(%s / %s)", left, right), types.FloatType{}, nil
 		}
 		return fmt.Sprintf("(%s %s %s)", left, op, right), leftType, nil
 	case "==", "!=":

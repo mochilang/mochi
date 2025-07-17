@@ -95,3 +95,6 @@
 - Converted `vm_golden_test.go` to use `golden.Run` and removed the old
   `machine_test.go` generator. Tests now only verify runtime output under
   `tests/machine/x/ts`.
+### 2025-07-17 02:02 UTC
+- Generated TypeScript code for all `tests/vm/valid` programs and added a
+  machine README summarizing the results.
