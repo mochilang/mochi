@@ -2648,8 +2648,12 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		if isStringAnyMapLike(c.inferExprType(l.With)) {
+		t := c.inferExprType(l.With)
+		if isStringAnyMapLike(t) {
 			opts = v
+		} else if isStringMapLike(t) {
+			c.use("_copyToMap")
+			opts = fmt.Sprintf("func() map[string]any { m := map[string]any{}; _copyToMap(m, %s); return m }()", v)
 		} else {
 			opts = v
 		}
@@ -2661,6 +2665,9 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 		t := c.resolveTypeRef(l.Type)
 		if st, ok := c.env.GetStruct(*l.Type.Simple); t == (types.AnyType{}) && ok {
 			t = st
+		}
+		if st, ok := t.(types.StructType); ok {
+			c.compileStructType(st)
 		}
 		goT := goType(t)
 		if goT == "" {
@@ -2674,7 +2681,8 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 		if goT == "any" {
 			buf.WriteString("\t\tout[i] = r\n")
 		} else {
-			buf.WriteString(fmt.Sprintf("\t\tout[i] = r.(%s)\n", goT))
+			c.use("_cast")
+			buf.WriteString(fmt.Sprintf("\t\tout[i] = _cast[%s](r)\n", goT))
 		}
 		buf.WriteString("\t}\n")
 		buf.WriteString("\treturn out\n")
@@ -2699,8 +2707,12 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		if isStringAnyMapLike(c.inferExprType(s.With)) {
+		t := c.inferExprType(s.With)
+		if isStringAnyMapLike(t) {
 			opts = v
+		} else if isStringMapLike(t) {
+			c.use("_copyToMap")
+			opts = fmt.Sprintf("func() map[string]any { m := map[string]any{}; _copyToMap(m, %s); return m }()", v)
 		} else {
 			opts = v
 		}

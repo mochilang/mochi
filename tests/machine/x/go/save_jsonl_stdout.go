@@ -6,9 +6,11 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"mochi/runtime/data"
 	"os"
 	"reflect"
+	"strings"
 )
 
 type v = People
@@ -26,7 +28,58 @@ func main() {
 		Name: "Bob",
 		Age:  25,
 	}}
-	_save(people, "-", map[string]string{"format": "jsonl"})
+	_save(people, "-", func() map[string]any {
+		m := map[string]any{}
+		_copyToMap(m, map[string]string{"format": "jsonl"})
+		return m
+	}())
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		key := fmt.Sprint(k)
+		if sub, ok := v.(map[any]any); ok {
+			out[key] = _convertMapAny(sub)
+		} else {
+			out[key] = v
+		}
+	}
+	return out
+}
+
+func _copyToMap(dst map[string]any, src any) {
+	switch m := src.(type) {
+	case map[string]any:
+		for k, v := range m {
+			dst[k] = v
+		}
+	case map[string]string:
+		for k, v := range m {
+			dst[k] = v
+		}
+	case map[any]any:
+		for k, v := range _convertMapAny(m) {
+			dst[k] = v
+		}
+	default:
+		rv := reflect.ValueOf(m)
+		if rv.Kind() == reflect.Struct {
+			rt := rv.Type()
+			for i := 0; i < rv.NumField(); i++ {
+				name := rt.Field(i).Name
+				if tag := rt.Field(i).Tag.Get("json"); tag != "" {
+					if c := strings.Index(tag, ","); c >= 0 {
+						tag = tag[:c]
+					}
+					if tag != "-" {
+						name = tag
+					}
+				}
+				dst[name] = rv.Field(i).Interface()
+			}
+		}
+	}
 }
 
 func _save(src any, path string, opts map[string]any) {

@@ -5,9 +5,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"mochi/runtime/data"
 	"os"
+	"reflect"
 	"strings"
 )
 
@@ -20,10 +22,14 @@ type Adult struct {
 
 func main() {
 	people := func() []Person {
-		rows := _load("../../../tests/interpreter/valid/people.yaml", map[string]string{"format": "yaml"})
+		rows := _load("../../../tests/interpreter/valid/people.yaml", func() map[string]any {
+			m := map[string]any{}
+			_copyToMap(m, map[string]string{"format": "yaml"})
+			return m
+		}())
 		out := make([]Person, len(rows))
 		for i, r := range rows {
-			out[i] = r.(Person)
+			out[i] = _cast[Person](r)
 		}
 		return out
 	}()
@@ -43,6 +49,100 @@ func main() {
 	}()
 	for _, a := range adults {
 		fmt.Println(strings.TrimSpace(fmt.Sprintln(a.Name, a.Email)))
+	}
+}
+
+func _cast[T any](v any) T {
+	if tv, ok := v.(T); ok {
+		return tv
+	}
+	var out T
+	switch any(out).(type) {
+	case int:
+		switch vv := v.(type) {
+		case int:
+			return any(vv).(T)
+		case float64:
+			return any(int(vv)).(T)
+		case float32:
+			return any(int(vv)).(T)
+		}
+	case float64:
+		switch vv := v.(type) {
+		case int:
+			return any(float64(vv)).(T)
+		case float64:
+			return any(vv).(T)
+		case float32:
+			return any(float64(vv)).(T)
+		}
+	case float32:
+		switch vv := v.(type) {
+		case int:
+			return any(float32(vv)).(T)
+		case float64:
+			return any(float32(vv)).(T)
+		case float32:
+			return any(vv).(T)
+		}
+	}
+	if m, ok := v.(map[any]any); ok {
+		v = _convertMapAny(m)
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(data, &out); err != nil {
+		panic(err)
+	}
+	return out
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		key := fmt.Sprint(k)
+		if sub, ok := v.(map[any]any); ok {
+			out[key] = _convertMapAny(sub)
+		} else {
+			out[key] = v
+		}
+	}
+	return out
+}
+
+func _copyToMap(dst map[string]any, src any) {
+	switch m := src.(type) {
+	case map[string]any:
+		for k, v := range m {
+			dst[k] = v
+		}
+	case map[string]string:
+		for k, v := range m {
+			dst[k] = v
+		}
+	case map[any]any:
+		for k, v := range _convertMapAny(m) {
+			dst[k] = v
+		}
+	default:
+		rv := reflect.ValueOf(m)
+		if rv.Kind() == reflect.Struct {
+			rt := rv.Type()
+			for i := 0; i < rv.NumField(); i++ {
+				name := rt.Field(i).Name
+				if tag := rt.Field(i).Tag.Get("json"); tag != "" {
+					if c := strings.Index(tag, ","); c >= 0 {
+						tag = tag[:c]
+					}
+					if tag != "-" {
+						name = tag
+					}
+				}
+				dst[name] = rv.Field(i).Interface()
+			}
+		}
 	}
 }
 
