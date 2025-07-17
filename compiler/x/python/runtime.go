@@ -327,7 +327,11 @@ var helperFirst = "def _first(lst: list[T]) -> T | None:\n" +
 	"    return lst[0] if len(lst) > 0 else None\n"
 
 var helperUnionAll = "def _union_all(a: list[T], b: list[T]) -> list[T]:\n" +
-	"    return list(a) + list(b)\n"
+	"    res = list(a)\n" +
+	"    for it in b:\n" +
+	"        if it not in res:\n" +
+	"            res.append(it)\n" +
+	"    return res\n"
 
 var helperUnion = "def _union(a: list[T], b: list[T]) -> list[T]:\n" +
 	"    res = list(a)\n" +
