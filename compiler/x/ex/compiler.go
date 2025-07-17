@@ -1147,9 +1147,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 			merge := paramCopy[0]
 			for _, p := range paramCopy[1:] {
-				merge = fmt.Sprintf("Map.merge(%s, %s)", merge, p)
+				merge = fmt.Sprintf("_merge_map(%s, %s)", merge, p)
 			}
-			selectFn = fmt.Sprintf("fn %s -> Map.merge(%s, %%{ %s }) end", allParams, merge, strings.Join(pairs, ", "))
+			selectFn = fmt.Sprintf("fn %s -> _merge_map(%s, %%{ %s }) end", allParams, merge, strings.Join(pairs, ", "))
+			c.use("_merge_map")
 			pattern = fmt.Sprintf("%%{%s}", strings.Join(pairs, ", "))
 		}
 		whereFn := ""

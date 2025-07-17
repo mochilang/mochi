@@ -42,6 +42,8 @@ defp _json(v), do: IO.puts(_to_json(v))
 
 	helperConcat = "defp _concat(a, b) do\n  if is_list(a) and is_list(b) do\n    a ++ b\n  else\n    raise \"concat expects lists\"\n  end\nend\n"
 
+	helperMergeMap = "defp _merge_map(a, b) do\n  cond do\n    is_map(a) and is_map(b) -> Map.merge(a, b)\n    is_map(a) -> a\n    is_map(b) -> b\n    true -> %{}\n  end\nend\n"
+
 	helperLength = "defp _length(v) do\n  cond do\n    is_binary(v) -> String.length(v)\n    is_list(v) -> length(v)\n    is_map(v) and Map.has_key?(v, :items) -> length(Map.get(v, :items))\n    is_map(v) -> map_size(v)\n    true -> raise \"len expects list, map or string\"\n  end\nend\n"
 
 	helperGroup = "defmodule Group do\n  defstruct key: nil, items: []\n" +
@@ -220,6 +222,7 @@ var helperMap = map[string]string{
 	"_reverse":      helperReverse,
 	"_now":          helperNow,
 	"_concat":       helperConcat,
+	"_merge_map":    helperMergeMap,
 	"_length":       helperLength,
 	"_json":         helperJson,
 	"_group":        helperGroup,
