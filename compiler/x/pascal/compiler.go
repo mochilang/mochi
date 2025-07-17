@@ -1833,6 +1833,27 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				c.use("_minList")
 				return fmt.Sprintf("specialize _minList<Variant>(%s)", args[0]), nil
 			}
+		case "max":
+			if len(args) != 1 {
+				return "", fmt.Errorf("max expects 1 argument")
+			}
+			t := types.TypeOfExpr(p.Call.Args[0], c.env)
+			switch tt := t.(type) {
+			case types.GroupType:
+				elem := typeString(tt.Elem)
+				c.use("_variantLess")
+				c.use("_maxList")
+				return fmt.Sprintf("specialize _maxList<%s>(%s.Items)", elem, args[0]), nil
+			case types.ListType:
+				elem := typeString(tt.Elem)
+				c.use("_variantLess")
+				c.use("_maxList")
+				return fmt.Sprintf("specialize _maxList<%s>(%s)", elem, args[0]), nil
+			default:
+				c.use("_variantLess")
+				c.use("_maxList")
+				return fmt.Sprintf("specialize _maxList<Variant>(%s)", args[0]), nil
+			}
 		case "append":
 			if len(args) != 2 {
 				return "", fmt.Errorf("append expects 2 arguments")
@@ -2794,7 +2815,7 @@ func (c *Compiler) emitHelpers() {
 	sort.Strings(names)
 	// ensure helper dependencies appear before their dependents
 	var iAvg, iSum = -1, -1
-	var iVarLess, iMin = -1, -1
+	var iVarLess, iMin, iMax = -1, -1, -1
 	for i, n := range names {
 		if n == "_avgList" {
 			iAvg = i
@@ -2804,6 +2825,8 @@ func (c *Compiler) emitHelpers() {
 			iVarLess = i
 		} else if n == "_minList" {
 			iMin = i
+		} else if n == "_maxList" {
+			iMax = i
 		}
 	}
 	if iAvg >= 0 && iSum >= 0 && iSum > iAvg {
@@ -2811,6 +2834,9 @@ func (c *Compiler) emitHelpers() {
 	}
 	if iVarLess >= 0 && iMin >= 0 && iVarLess > iMin {
 		names[iVarLess], names[iMin] = names[iMin], names[iVarLess]
+	}
+	if iVarLess >= 0 && iMax >= 0 && iVarLess > iMax {
+		names[iVarLess], names[iMax] = names[iMax], names[iVarLess]
 	}
 	for _, n := range names {
 		switch n {
@@ -3423,6 +3449,21 @@ func (c *Compiler) emitHelpers() {
 			c.writeln("for i := 1 to High(arr) do")
 			c.indent++
 			c.writeln("if _variantLess(arr[i], m) then m := arr[i];")
+			c.indent--
+			c.writeln("Result := m;")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_maxList":
+			c.writeln("generic function _maxList<T>(arr: specialize TArray<T>): T;")
+			c.writeln("var i: integer; m: T;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("if Length(arr) = 0 then exit(Default(T));")
+			c.writeln("m := arr[0];")
+			c.writeln("for i := 1 to High(arr) do")
+			c.indent++
+			c.writeln("if _variantLess(m, arr[i]) then m := arr[i];")
 			c.indent--
 			c.writeln("Result := m;")
 			c.indent--

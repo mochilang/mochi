@@ -19,6 +19,8 @@
 - [2025-09-04 10:20] Register temporary variables in the type environment and
   sanitize map literal generics to `Variant` when unknown, allowing
   `map_nested_assign` to compile.
+- [2025-07-17 17:44] Added `max` builtin using `_maxList` helper and updated
+  helper ordering; compiled `min_max_builtin` successfully.
 
 ## Remaining Work
 - [x] Support advanced dataset queries required for TPC-H Q1.
