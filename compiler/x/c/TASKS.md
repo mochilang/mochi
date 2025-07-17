@@ -129,3 +129,5 @@ should compile and run successfully.
 - 2025-09-13 - Corrected `in` operator generation for constant integer lists to
   call `contains_list_int`. `membership.mochi` and `in_operator.mochi` now
   compile and run successfully.
+- 2025-09-14 - Fixed slice generation to avoid wrapping `list_int` values in
+  temporary structs; `slice.mochi` now compiles and runs.

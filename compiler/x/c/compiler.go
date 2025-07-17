@@ -4656,7 +4656,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 					isStringList = false
 				} else {
 					c.need(needSliceListInt)
-					if _, ok := c.listLens[expr]; ok {
+					if c.isStackArrayExpr(expr) {
 						// wrap stack-based array as list_int
 						wrapper := c.newTemp()
 						c.need(needListInt)
