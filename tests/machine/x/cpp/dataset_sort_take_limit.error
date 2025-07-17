@@ -1,0 +1,82 @@
+/workspace/mochi/tests/machine/x/cpp/dataset_sort_take_limit.cpp: In lambda function:
+/workspace/mochi/tests/machine/x/cpp/dataset_sort_take_limit.cpp:46:38: error: ‘p’ was not declared in this scope
+   46 |     std::vector<std::pair<decltype((-p.price)), decltype(p)>> __items;
+      |                                      ^
+/workspace/mochi/tests/machine/x/cpp/dataset_sort_take_limit.cpp:46:49: error: template argument 1 is invalid
+   46 |     std::vector<std::pair<decltype((-p.price)), decltype(p)>> __items;
+      |                                                 ^~~~~~~~~~~
+/workspace/mochi/tests/machine/x/cpp/dataset_sort_take_limit.cpp:46:49: error: template argument 2 is invalid
+/workspace/mochi/tests/machine/x/cpp/dataset_sort_take_limit.cpp:46:60: error: template argument 1 is invalid
+   46 |     std::vector<std::pair<decltype((-p.price)), decltype(p)>> __items;
+      |                                                            ^~
+/workspace/mochi/tests/machine/x/cpp/dataset_sort_take_limit.cpp:46:60: error: template argument 2 is invalid
+/workspace/mochi/tests/machine/x/cpp/dataset_sort_take_limit.cpp:48:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+   48 |       __items.push_back({(-p.price), p});
+      |               ^~~~~~~~~
+/workspace/mochi/tests/machine/x/cpp/dataset_sort_take_limit.cpp:50:23: error: request for member ‘begin’ in ‘__items’, which is of non-class type ‘int’
+   50 |     std::sort(__items.begin(), __items.end(),
+      |                       ^~~~~
+/workspace/mochi/tests/machine/x/cpp/dataset_sort_take_limit.cpp:50:40: error: request for member ‘end’ in ‘__items’, which is of non-class type ‘int’
+   50 |     std::sort(__items.begin(), __items.end(),
+      |                                        ^~~
+/workspace/mochi/tests/machine/x/cpp/dataset_sort_take_limit.cpp:52:29: error: request for member ‘size’ in ‘__items’, which is of non-class type ‘int’
+   52 |     if ((size_t)1 < __items.size())
+      |                             ^~~~
+/workspace/mochi/tests/machine/x/cpp/dataset_sort_take_limit.cpp:53:15: error: request for member ‘erase’ in ‘__items’, which is of non-class type ‘int’
+   53 |       __items.erase(__items.begin(), __items.begin() + 1);
+      |               ^~~~~
+/workspace/mochi/tests/machine/x/cpp/dataset_sort_take_limit.cpp:53:29: error: request for member ‘begin’ in ‘__items’, which is of non-class type ‘int’
+   53 |       __items.erase(__items.begin(), __items.begin() + 1);
+      |                             ^~~~~
+/workspace/mochi/tests/machine/x/cpp/dataset_sort_take_limit.cpp:53:46: error: request for member ‘begin’ in ‘__items’, which is of non-class type ‘int’
+   53 |       __items.erase(__items.begin(), __items.begin() + 1);
+      |                                              ^~~~~
+/workspace/mochi/tests/machine/x/cpp/dataset_sort_take_limit.cpp:54:29: error: request for member ‘size’ in ‘__items’, which is of non-class type ‘int’
+   54 |     if ((size_t)3 < __items.size())
+      |                             ^~~~
+/workspace/mochi/tests/machine/x/cpp/dataset_sort_take_limit.cpp:55:15: error: request for member ‘resize’ in ‘__items’, which is of non-class type ‘int’
+   55 |       __items.resize(3);
+      |               ^~~~~~
+/workspace/mochi/tests/machine/x/cpp/dataset_sort_take_limit.cpp:56:28: error: template argument 1 is invalid
+   56 |     std::vector<decltype(p)> __res;
+      |                            ^
+/workspace/mochi/tests/machine/x/cpp/dataset_sort_take_limit.cpp:56:28: error: template argument 2 is invalid
+/workspace/mochi/tests/machine/x/cpp/dataset_sort_take_limit.cpp:57:20: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+   57 |     for (auto &p : __items)
+      |                    ^~~~~~~
+      |                    std::begin
+In file included from /usr/include/c++/13/string:53,
+                 from /usr/include/c++/13/bits/locale_classes.h:40,
+                 from /usr/include/c++/13/bits/ios_base.h:41,
+                 from /usr/include/c++/13/ios:44,
+                 from /usr/include/c++/13/ostream:40,
+                 from /usr/include/c++/13/iostream:41,
+                 from /workspace/mochi/tests/machine/x/cpp/dataset_sort_take_limit.cpp:4:
+/usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
+  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
+      |                                     ^~~~~
+/workspace/mochi/tests/machine/x/cpp/dataset_sort_take_limit.cpp:57:20: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+   57 |     for (auto &p : __items)
+      |                    ^~~~~~~
+      |                    std::end
+/usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
+  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
+      |                                     ^~~
+/workspace/mochi/tests/machine/x/cpp/dataset_sort_take_limit.cpp:58:13: error: request for member ‘push_back’ in ‘__res’, which is of non-class type ‘int’
+   58 |       __res.push_back(p.second);
+      |             ^~~~~~~~~
+/workspace/mochi/tests/machine/x/cpp/dataset_sort_take_limit.cpp: In function ‘int main()’:
+/workspace/mochi/tests/machine/x/cpp/dataset_sort_take_limit.cpp:63:20: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+   63 |   for (auto item : expensive) {
+      |                    ^~~~~~~~~
+      |                    std::begin
+/usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
+  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
+      |                                     ^~~~~
+/workspace/mochi/tests/machine/x/cpp/dataset_sort_take_limit.cpp:63:20: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+   63 |   for (auto item : expensive) {
+      |                    ^~~~~~~~~
+      |                    std::end
+/usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
+  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
+      |                                     ^~~

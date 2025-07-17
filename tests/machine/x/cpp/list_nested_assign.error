@@ -1,0 +1,7 @@
+/workspace/mochi/tests/machine/x/cpp/list_nested_assign.cpp: In function ‘int main()’:
+/workspace/mochi/tests/machine/x/cpp/list_nested_assign.cpp:33:12: error: no match for ‘operator[]’ (operand types are ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} and ‘int’)
+   33 |   matrix[1][0] = 5;
+      |            ^
+/workspace/mochi/tests/machine/x/cpp/list_nested_assign.cpp:34:25: error: no match for ‘operator[]’ (operand types are ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} and ‘int’)
+   34 |   std::cout << matrix[1][0] << std::endl;
+      |                         ^

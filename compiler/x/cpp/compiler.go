@@ -164,6 +164,12 @@ func (c *Compiler) defineStruct(info *structInfo) {
 		if strings.Contains(t, ".") && strings.HasPrefix(t, "decltype(") {
 			t = "std::any"
 			c.usesAny = true
+		} else if strings.HasPrefix(t, "decltype(") {
+			inner := strings.TrimSuffix(strings.TrimPrefix(t, "decltype("), ")")
+			if c.vars[inner] == "" && c.varStruct[inner] == "" && c.elemType[inner] == "" {
+				t = "std::any"
+				c.usesAny = true
+			}
 		}
 		info.Types[i] = t
 	}

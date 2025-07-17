@@ -56,6 +56,11 @@
   leftover `decltype` placeholders with types inferred from `vars` or
   `elemType` (2025-07-17 01:30 UTC).
 
+## Recent Enhancements (2025-07-17 02:00 UTC)
+- `defineStruct` now treats unresolved `decltype(name)` field types as
+  `std::any` when the referenced variable has no known type, reducing
+  C++ compilation failures for grouped queries.
+
 ## Remaining Enhancements
 - [ ] Improve formatting to better match human examples.
 - [ ] Implement additional TPCH optimizations.
