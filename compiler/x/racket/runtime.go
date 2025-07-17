@@ -68,4 +68,28 @@ const runtimeHelpers = `(define (_date_number s)
     [(list? v) (map _json-fix v)]
     [(hash? v) (for/hash ([(k val) v]) (values k (_json-fix val)))]
     [else v]))
+
+(define (_simple-yaml-parse s)
+  (define items '())
+  (define current #f)
+  (for ([ln (string-split s "\n")])
+    (define t (string-trim ln))
+    (cond
+      [(regexp-match? #px"^-" t)
+       (when current (set! items (cons current items)))
+       (set! current (make-hash))
+       (set! t (string-trim (substring t 1)))
+       (let ([m (regexp-match #px"^([^:]+):\\s*(.*)$" t)])
+         (when m
+           (define k (string->symbol (string-trim (list-ref m 1))))
+           (define v (string-trim (list-ref m 2)))
+           (hash-set! current k (if (regexp-match? #px"^[0-9]+$" v) (string->number v) v))))]
+      [current
+       (let ([m (regexp-match #px"^([^:]+):\\s*(.*)$" t)])
+         (when m
+           (define k (string->symbol (string-trim (list-ref m 1))))
+           (define v (string-trim (list-ref m 2)))
+           (hash-set! current k (if (regexp-match? #px"^[0-9]+$" v) (string->number v) v))))]))
+  (when current (set! items (cons current items)))
+  (reverse items))
 `
