@@ -1,8 +1,0 @@
-exit status 1
-/workspace/mochi/tests/machine/x/c/slice.c: In function ‘_mochi_main’:
-/workspace/mochi/tests/machine/x/c/slice.c:79:23: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-   79 |   list_int tmp3 = {3, tmp1};
-      |                       ^~~~
-/workspace/mochi/tests/machine/x/c/slice.c:87:23: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-   87 |   list_int tmp6 = {3, tmp4};
-      |                       ^~~~
