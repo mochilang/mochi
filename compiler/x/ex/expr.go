@@ -353,14 +353,53 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 						res = fmt.Sprintf("_length(%s)", args[0])
 					}
 				case "count":
-					c.use("_count")
-					res = fmt.Sprintf("_count(%s)", argStr)
+					if len(args) != 1 {
+						return "", fmt.Errorf("count expects 1 arg")
+					}
+					t := c.inferExprType(op.Call.Args[0])
+					switch t.(type) {
+					case types.ListType:
+						res = fmt.Sprintf("length(%s)", args[0])
+					case types.GroupType:
+						res = fmt.Sprintf("length(%s.items)", args[0])
+					default:
+						c.use("_count")
+						res = fmt.Sprintf("_count(%s)", argStr)
+					}
 				case "exists":
-					c.use("_exists")
-					res = fmt.Sprintf("_exists(%s)", argStr)
+					if len(args) != 1 {
+						return "", fmt.Errorf("exists expects 1 arg")
+					}
+					t := c.inferExprType(op.Call.Args[0])
+					switch t.(type) {
+					case types.ListType:
+						res = fmt.Sprintf("length(%s) > 0", args[0])
+					case types.MapType:
+						res = fmt.Sprintf("map_size(%s) > 0", args[0])
+					case types.GroupType:
+						res = fmt.Sprintf("length(%s.items) > 0", args[0])
+					case types.StringType:
+						res = fmt.Sprintf("String.length(%s) > 0", args[0])
+					case types.OptionType:
+						res = fmt.Sprintf("%s != nil", args[0])
+					default:
+						c.use("_exists")
+						res = fmt.Sprintf("_exists(%s)", argStr)
+					}
 				case "avg":
-					c.use("_avg")
-					res = fmt.Sprintf("_avg(%s)", argStr)
+					if len(args) != 1 {
+						return "", fmt.Errorf("avg expects 1 arg")
+					}
+					t := c.inferExprType(op.Call.Args[0])
+					switch t.(type) {
+					case types.ListType:
+						res = fmt.Sprintf("(Enum.sum(%s) / Enum.count(%s))", args[0], args[0])
+					case types.GroupType:
+						res = fmt.Sprintf("(Enum.sum(%s.items) / Enum.count(%s.items))", args[0], args[0])
+					default:
+						c.use("_avg")
+						res = fmt.Sprintf("_avg(%s)", argStr)
+					}
 				case "min":
 					c.use("_min")
 					res = fmt.Sprintf("_min(%s)", argStr)
@@ -580,17 +619,67 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return fmt.Sprintf("_length(%s)", args[0]), nil
 			}
 		case "count":
-			c.use("_count")
-			return fmt.Sprintf("_count(%s)", argStr), nil
+			if len(args) != 1 {
+				return "", fmt.Errorf("count expects 1 arg")
+			}
+			t := c.inferExprType(p.Call.Args[0])
+			switch t.(type) {
+			case types.ListType:
+				return fmt.Sprintf("length(%s)", args[0]), nil
+			case types.GroupType:
+				return fmt.Sprintf("length(%s.items)", args[0]), nil
+			default:
+				c.use("_count")
+				return fmt.Sprintf("_count(%s)", argStr), nil
+			}
 		case "exists":
-			c.use("_exists")
-			return fmt.Sprintf("_exists(%s)", argStr), nil
+			if len(args) != 1 {
+				return "", fmt.Errorf("exists expects 1 arg")
+			}
+			t := c.inferExprType(p.Call.Args[0])
+			switch t.(type) {
+			case types.ListType:
+				return fmt.Sprintf("length(%s) > 0", args[0]), nil
+			case types.MapType:
+				return fmt.Sprintf("map_size(%s) > 0", args[0]), nil
+			case types.GroupType:
+				return fmt.Sprintf("length(%s.items) > 0", args[0]), nil
+			case types.StringType:
+				return fmt.Sprintf("String.length(%s) > 0", args[0]), nil
+			case types.OptionType:
+				return fmt.Sprintf("%s != nil", args[0]), nil
+			default:
+				c.use("_exists")
+				return fmt.Sprintf("_exists(%s)", argStr), nil
+			}
 		case "sum":
-			c.use("_sum")
-			return fmt.Sprintf("_sum(%s)", argStr), nil
+			if len(args) != 1 {
+				return "", fmt.Errorf("sum expects 1 arg")
+			}
+			t := c.inferExprType(p.Call.Args[0])
+			switch t.(type) {
+			case types.ListType:
+				return fmt.Sprintf("Enum.sum(%s)", args[0]), nil
+			case types.GroupType:
+				return fmt.Sprintf("Enum.sum(%s.items)", args[0]), nil
+			default:
+				c.use("_sum")
+				return fmt.Sprintf("_sum(%s)", argStr), nil
+			}
 		case "avg":
-			c.use("_avg")
-			return fmt.Sprintf("_avg(%s)", argStr), nil
+			if len(args) != 1 {
+				return "", fmt.Errorf("avg expects 1 arg")
+			}
+			t := c.inferExprType(p.Call.Args[0])
+			switch t.(type) {
+			case types.ListType:
+				return fmt.Sprintf("(Enum.sum(%s) / Enum.count(%s))", args[0], args[0]), nil
+			case types.GroupType:
+				return fmt.Sprintf("(Enum.sum(%s.items) / Enum.count(%s.items))", args[0], args[0]), nil
+			default:
+				c.use("_avg")
+				return fmt.Sprintf("_avg(%s)", argStr), nil
+			}
 		case "min":
 			c.use("_min")
 			return fmt.Sprintf("_min(%s)", argStr), nil
@@ -598,11 +687,33 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			c.use("_max")
 			return fmt.Sprintf("_max(%s)", argStr), nil
 		case "first":
-			c.use("_first")
-			return fmt.Sprintf("_first(%s)", argStr), nil
+			if len(args) != 1 {
+				return "", fmt.Errorf("first expects 1 arg")
+			}
+			t := c.inferExprType(p.Call.Args[0])
+			switch t.(type) {
+			case types.ListType:
+				return fmt.Sprintf("Enum.at(%s, 0)", args[0]), nil
+			case types.GroupType:
+				return fmt.Sprintf("Enum.at(%s.items, 0)", args[0]), nil
+			default:
+				c.use("_first")
+				return fmt.Sprintf("_first(%s)", argStr), nil
+			}
 		case "reverse":
-			c.use("_reverse")
-			return fmt.Sprintf("_reverse(%s)", argStr), nil
+			if len(args) != 1 {
+				return "", fmt.Errorf("reverse expects 1 arg")
+			}
+			t := c.inferExprType(p.Call.Args[0])
+			switch t.(type) {
+			case types.ListType:
+				return fmt.Sprintf("Enum.reverse(%s)", args[0]), nil
+			case types.StringType:
+				return fmt.Sprintf("String.reverse(%s)", args[0]), nil
+			default:
+				c.use("_reverse")
+				return fmt.Sprintf("_reverse(%s)", argStr), nil
+			}
 		case "concat":
 			if len(args) < 2 {
 				return "", fmt.Errorf("concat expects at least 2 args")
