@@ -660,6 +660,20 @@ const (
 	helperEqual = "func _equal(a, b any) bool {\n" +
 		"    av := reflect.ValueOf(a)\n" +
 		"    bv := reflect.ValueOf(b)\n" +
+		"    if av.Kind() == reflect.Struct && bv.Kind() == reflect.Map {\n" +
+		"        am := map[string]any{}\n" +
+		"        _copyToMap(am, a)\n" +
+		"        bm := map[string]any{}\n" +
+		"        _copyToMap(bm, b)\n" +
+		"        return _equal(am, bm)\n" +
+		"    }\n" +
+		"    if av.Kind() == reflect.Map && bv.Kind() == reflect.Struct {\n" +
+		"        am := map[string]any{}\n" +
+		"        _copyToMap(am, a)\n" +
+		"        bm := map[string]any{}\n" +
+		"        _copyToMap(bm, b)\n" +
+		"        return _equal(am, bm)\n" +
+		"    }\n" +
 		"    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {\n" +
 		"        if av.Len() != bv.Len() { return false }\n" +
 		"        for i := 0; i < av.Len(); i++ {\n" +
@@ -1008,6 +1022,10 @@ func (c *Compiler) use(name string) {
 		c.imports["strings"] = true
 		c.imports["reflect"] = true
 		c.helpers["_equal"] = true
+	}
+	if name == "_equal" {
+		c.imports["reflect"] = true
+		c.use("_copyToMap")
 	}
 	if name == "_minOrdered" || name == "_maxOrdered" || name == "_avgOrdered" || name == "_sumOrdered" {
 		c.imports["golang.org/x/exp/constraints"] = true

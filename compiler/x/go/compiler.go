@@ -4554,13 +4554,17 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "count":
 		if len(call.Args) == 1 {
 			at := c.inferExprType(call.Args[0])
+			arg := args[0]
+			if strings.HasPrefix(arg, "any(") && strings.HasSuffix(arg, ")") {
+				arg = strings.TrimSuffix(strings.TrimPrefix(arg, "any("), ")")
+			}
 			switch at.(type) {
 			case types.ListType, types.MapType:
-				return fmt.Sprintf("len(%s)", args[0]), nil
+				return fmt.Sprintf("len(%s)", arg), nil
 			case types.StringType:
-				return fmt.Sprintf("len([]rune(%s))", args[0]), nil
+				return fmt.Sprintf("len([]rune(%s))", arg), nil
 			case types.GroupType:
-				return fmt.Sprintf("len(%s.Items)", args[0]), nil
+				return fmt.Sprintf("len(%s.Items)", arg), nil
 			}
 		}
 		c.imports["mochi/runtime/data"] = true
