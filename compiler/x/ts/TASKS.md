@@ -115,3 +115,6 @@
 ### 2025-08-22 00:00 UTC
 - Aggregator queries now inline native operations instead of helper functions
   when the argument is a list of primitives.
+### 2025-09-15 00:00 UTC
+- String slicing and indexing now emit native `slice` and `[]` operations instead of helper functions.
+- Regenerated VM golden outputs.

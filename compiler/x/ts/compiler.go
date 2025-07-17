@@ -1727,8 +1727,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if idx.End == nil {
 					end = fmt.Sprintf("%s.length", expr)
 				}
-				c.use("_sliceString")
-				expr = fmt.Sprintf("_sliceString(%s, %s, %s)", expr, start, end)
+				expr = fmt.Sprintf("%s.slice(%s, %s)", expr, start, end)
 				typ = types.StringType{}
 			default:
 				c.use("_slice")
@@ -1748,8 +1747,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				expr = fmt.Sprintf("%s[%s]", expr, idxExpr)
 				typ = tt.Value
 			case types.StringType:
-				c.use("_indexString")
-				expr = fmt.Sprintf("_indexString(%s, %s)", expr, idxExpr)
+				expr = fmt.Sprintf("%s[%s]", expr, idxExpr)
 				typ = types.StringType{}
 			default:
 				expr = fmt.Sprintf("(%s as any)[%s]", expr, idxExpr)

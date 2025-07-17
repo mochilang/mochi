@@ -8,9 +8,9 @@ let s2: string;
 function main(): void {
   prefix = "fore";
   s1 = "forest";
-  _print(_sliceString(s1, 0, prefix.length) == prefix);
+  _print(s1.slice(0, prefix.length) == prefix);
   s2 = "desert";
-  _print(_sliceString(s2, 0, prefix.length) == prefix);
+  _print(s2.slice(0, prefix.length) == prefix);
 }
 function _print(...args: unknown[]): void {
   const out = args.map((a) => {
@@ -19,19 +19,6 @@ function _print(...args: unknown[]): void {
     return String(a);
   }).join(" ").trimEnd();
   console.log(out);
-}
-
-function _sliceString(s: string, i: number, j: number): string {
-  let start = i;
-  let end = j;
-  const runes = Array.from(s);
-  const n = runes.length;
-  if (start < 0) start += n;
-  if (end < 0) end += n;
-  if (start < 0) start = 0;
-  if (end > n) end = n;
-  if (end < start) end = start;
-  return runes.slice(start, end).join("");
 }
 
 main();
