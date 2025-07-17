@@ -96,19 +96,25 @@ const datasetHelpers = `(import (srfi 1) (srfi 95) (chibi json) (chibi io) (chib
       (close-output-port out))))
 
 (define (_date_number s)
-  (let* ((d (if (> (string-length s) 10)
-                (substring s 0 10)
-                s))
-         (clean (string-map (lambda (c) (if (char=? c #\/)
-                                           #\-
-                                           c))
-                             d))
-         (parts (string-split clean #\-)))
-    (if (= (length parts) 3)
-        (+ (* (string->number (list-ref parts 0)) 10000)
-           (* (string->number (list-ref parts 1)) 100)
-           (string->number (list-ref parts 2)))
-        #f)))
+  (let* ((d s)
+         (len (string-length d)))
+    (cond
+      ((>= len 10) (set! d (substring d 0 10)))
+      ((= len 8)
+       (set! d (string-append (substring d 0 4) "-"
+                              (substring d 4 6) "-"
+                              (substring d 6 8)))))
+    (let* ((clean (string-map (lambda (c)
+                                (if (char=? c #\/)
+                                    #\-
+                                    c))
+                              d))
+           (parts (string-split clean #\-)))
+      (if (= (length parts) 3)
+          (+ (* (string->number (list-ref parts 0)) 10000)
+             (* (string->number (list-ref parts 1)) 100)
+             (string->number (list-ref parts 2)))
+          #f)))
 
 (define (_lt a b)
   (cond

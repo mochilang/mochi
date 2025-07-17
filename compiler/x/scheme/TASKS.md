@@ -19,6 +19,8 @@ The Scheme backend now targets chibi-scheme and can compile the `tpc-h/q1.mochi`
   enabled Python `math` imports without the `auto` keyword.
 - 2025-07-17 01:30 – Improved `_date_number` to handle timestamps and `/`-based
   separators when comparing dates.
+- 2025-07-17 02:00 – `_date_number` now supports 8-digit `YYYYMMDD` strings for
+  JOB benchmarks.
 
 ### Remaining Work
 - [ ] Better handling of date comparisons and sorting when running JOB benchmarks

@@ -105,7 +105,7 @@ This directory contains Scheme code generated from the Mochi programs in `tests/
 - [x] while_loop
 
 ## Remaining tasks
-- [ ] Better handling of date comparisons and sorting when running JOB benchmarks
+- [x] Better handling of date comparisons and sorting when running JOB benchmarks
 - [ ] More efficient dataset grouping and aggregation
 - [ ] Support for concurrent agents and streaming primitives
 - [ ] Improve macro support for generated Scheme code
