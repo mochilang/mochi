@@ -1,4 +1,0 @@
-exit status 254
-../../../tests/machine/x/dart/fun_three_args.dart:6:26: Error: Expected ')' before this.
-  return ((a + b) as int + c) as int;
-                         ^
