@@ -211,10 +211,10 @@ func (c *Compiler) cType(t *parser.TypeRef) string {
 		default:
 			if c.env != nil {
 				if _, ok := c.env.GetStruct(*t.Simple); ok {
-					return sanitizeName(*t.Simple)
+					return sanitizeTypeName(*t.Simple)
 				}
 				if _, ok := c.env.GetUnion(*t.Simple); ok {
-					return sanitizeName(*t.Simple)
+					return sanitizeTypeName(*t.Simple)
 				}
 			}
 		}
@@ -792,7 +792,7 @@ func (c *Compiler) compileTypeMethod(structName string, fun *parser.FunStmt) err
 	c.buf.WriteString(ret + " ")
 	c.buf.WriteString(sanitizeName(structName) + "_" + sanitizeName(fun.Name))
 	c.buf.WriteByte('(')
-	c.buf.WriteString(sanitizeName(structName) + "* self")
+	c.buf.WriteString(sanitizeTypeName(structName) + "* self")
 	for _, p := range fun.Params {
 		c.buf.WriteString(", ")
 		c.buf.WriteString(c.cType(p.Type))
@@ -4877,10 +4877,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		}
 		if c.env != nil {
 			if ut, ok := c.env.FindUnionByVariant(p.Struct.Name); ok {
-				return fmt.Sprintf("(%s){.tag=%s_%s, .value.%s=(%s){%s}}", sanitizeName(ut.Name), sanitizeName(ut.Name), sanitizeName(p.Struct.Name), sanitizeName(p.Struct.Name), sanitizeName(p.Struct.Name), strings.Join(parts, ", "))
+				return fmt.Sprintf("(%s){.tag=%s_%s, .value.%s=(%s){%s}}", sanitizeTypeName(ut.Name), sanitizeTypeName(ut.Name), sanitizeTypeName(p.Struct.Name), sanitizeTypeName(p.Struct.Name), sanitizeTypeName(p.Struct.Name), strings.Join(parts, ", "))
 			}
 		}
-		return fmt.Sprintf("(%s){%s}", sanitizeName(p.Struct.Name), strings.Join(parts, ", "))
+		return fmt.Sprintf("(%s){%s}", sanitizeTypeName(p.Struct.Name), strings.Join(parts, ", "))
 	case p.List != nil:
 		var name string
 		if c.assignVar != "" {
