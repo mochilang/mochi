@@ -64,3 +64,5 @@ fails if any `.error` file is present.
 - `union` and related set operations inline list logic when operands are lists.
 - `print` now uses `IO.inspect` for lists so outputs match the VM.
 - Regenerated machine outputs for `append_builtin`, `values_builtin`, and `list_set_ops`.
+- `len()` on lists now compiles to `length(list)` instead of calling `_length`.
+  Regenerated machine outputs for `len_builtin`, `count_builtin`, and `list_set_ops`.

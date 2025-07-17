@@ -659,6 +659,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return fmt.Sprintf("map_size(%s)", args[0]), nil
 			case types.GroupType:
 				return fmt.Sprintf("length(%s.items)", args[0]), nil
+			case types.ListType:
+				return fmt.Sprintf("length(%s)", args[0]), nil
 			default:
 				c.use("_length")
 				return fmt.Sprintf("_length(%s)", args[0]), nil
