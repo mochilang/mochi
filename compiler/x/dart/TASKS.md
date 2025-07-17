@@ -29,5 +29,7 @@
   hand-written examples. VM outputs regenerated.
 - [2025-07-20 00:00 UTC] Added multiline formatting for list and map literals,
   improving readability of generated code.
+- [2025-07-17 07:47 UTC] Improved equality handling so comparisons with `null`
+  do not trigger the `_equal` helper, keeping generated programs smaller.
 ## Remaining Enhancements
 - None.
