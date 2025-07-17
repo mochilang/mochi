@@ -3269,11 +3269,61 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		groupsVar = c.tmpName("groups")
 	}
 
-	// simple right or outer join without additional clauses
+	// simple left/right/outer join without additional clauses
 	if q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct &&
 		len(q.Froms) == 0 && len(q.Joins) == 1 && q.Where == nil {
 		j := q.Joins[0]
-		if j.Side != nil && (*j.Side == "right" || *j.Side == "outer") {
+		if j.Side != nil && *j.Side == "left" {
+			if left, right, ok := simpleEqJoin(j.On, q.Var, j.Var); ok {
+				js, err := c.compileExpr(j.Src)
+				if err != nil {
+					c.vars = oldVars
+					return "", err
+				}
+				onLeft, err := c.compileExpr(left)
+				if err != nil {
+					c.vars = oldVars
+					return "", err
+				}
+				onRight, err := c.compileExpr(right)
+				if err != nil {
+					c.vars = oldVars
+					return "", err
+				}
+				sel, err := c.compileExpr(q.Select)
+				if err != nil {
+					c.vars = oldVars
+					return "", err
+				}
+				keyType := c.inferType(right)
+				if keyType == "var" {
+					keyType = "Object"
+				}
+				mapVar := c.tmpName("map")
+				mapType := fmt.Sprintf("Map<%s,List<%s>>", wrapperType(keyType), c.vars[j.Var])
+				var b strings.Builder
+				b.WriteString(fmt.Sprintf("(new java.util.function.Supplier<%s>(){public %s get(){\n", listType, listType))
+				b.WriteString(fmt.Sprintf("\t%s %s = new LinkedHashMap<>();\n", mapType, mapVar))
+				b.WriteString(fmt.Sprintf("\tfor (var %s : %s) {\n", j.Var, js))
+				b.WriteString(fmt.Sprintf("\t\t%s key = %s;\n", keyType, onRight))
+				b.WriteString(fmt.Sprintf("\t\tList<%s> _b = %s.get(key);\n", c.vars[j.Var], mapVar))
+				b.WriteString(fmt.Sprintf("\t\tif (_b == null) { _b = new ArrayList<>(); %s.put(key, _b); }\n", mapVar))
+				b.WriteString(fmt.Sprintf("\t\t_b.add(%s);\n", j.Var))
+				b.WriteString("\t}\n")
+				b.WriteString(fmt.Sprintf("\t%s %s = new ArrayList<>();\n", listType, resVar))
+				b.WriteString(fmt.Sprintf("\tfor (var %s : %s) {\n", q.Var, src))
+				b.WriteString(fmt.Sprintf("\t\tList<%s> _tmp = %s.get(%s);\n", c.vars[j.Var], mapVar, onLeft))
+				b.WriteString(fmt.Sprintf("\t\tif (_tmp == null) _tmp = Arrays.asList((%s)null);\n", c.vars[j.Var]))
+				b.WriteString(fmt.Sprintf("\t\tfor (var %s : _tmp) {\n", j.Var))
+				b.WriteString(fmt.Sprintf("\t\t\t%[1]s.add(%s);\n", resVar, sel))
+				b.WriteString("\t\t}\n")
+				b.WriteString("\t}\n")
+				b.WriteString(fmt.Sprintf("\treturn %s;\n", resVar))
+				b.WriteString("}}).get()")
+				c.vars = oldVars
+				return b.String(), nil
+			}
+		} else if j.Side != nil && (*j.Side == "right" || *j.Side == "outer") {
 			js, err := c.compileExpr(j.Src)
 			if err != nil {
 				c.vars = oldVars
@@ -4159,4 +4209,44 @@ func exprUsesVarInIfExpr(name string, ife *parser.IfExpr) bool {
 		return true
 	}
 	return false
+}
+
+func selectorRootFromUnary(u *parser.Unary) (string, bool) {
+	if u == nil || len(u.Ops) != 0 || u.Value == nil {
+		return "", false
+	}
+	return selectorRootFromPostfix(u.Value)
+}
+
+func selectorRootFromPostfix(p *parser.PostfixExpr) (string, bool) {
+	if p == nil || len(p.Ops) != 0 || p.Target == nil || p.Target.Selector == nil {
+		return "", false
+	}
+	return p.Target.Selector.Root, true
+}
+
+func simpleEqJoin(on *parser.Expr, leftVar, rightVar string) (*parser.Expr, *parser.Expr, bool) {
+	if on == nil || on.Binary == nil || len(on.Binary.Right) != 1 {
+		return nil, nil, false
+	}
+	op := on.Binary.Right[0]
+	if op.Op != "==" {
+		return nil, nil, false
+	}
+	lroot, ok1 := selectorRootFromUnary(on.Binary.Left)
+	rroot, ok2 := selectorRootFromPostfix(op.Right)
+	if !ok1 || !ok2 {
+		return nil, nil, false
+	}
+	if lroot == leftVar && rroot == rightVar {
+		l := &parser.Expr{Binary: &parser.BinaryExpr{Left: on.Binary.Left}}
+		r := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}
+		return l, r, true
+	}
+	if lroot == rightVar && rroot == leftVar {
+		l := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}
+		r := &parser.Expr{Binary: &parser.BinaryExpr{Left: on.Binary.Left}}
+		return l, r, true
+	}
+	return nil, nil, false
 }
