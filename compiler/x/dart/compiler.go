@@ -15,7 +15,7 @@ import (
 	"mochi/types"
 )
 
-const dartHelpers = `
+const dartEqualHelper = `
 bool _equal(dynamic a, dynamic b) {
     if (a is List && b is List) {
         if (a.length != b.length) return false;
@@ -29,7 +29,9 @@ bool _equal(dynamic a, dynamic b) {
     }
     return a == b;
 }
+`
 
+const dartHelpers = `
 String _formatDuration(Duration d) {
     if (d.inMicroseconds < 1000) return '${d.inMicroseconds}µs';
     if (d.inMilliseconds < 1000) return '${d.inMilliseconds}ms';
@@ -121,6 +123,7 @@ type Compiler struct {
 	useYAML    bool
 	useLoad    bool
 	useSave    bool
+	useEqual   bool
 	tmp        int
 	mapVars    map[string]bool
 	groupKeys  map[string]string
@@ -158,6 +161,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.useYAML = false
 	c.useLoad = false
 	c.useSave = false
+	c.useEqual = false
 	c.mapVars = make(map[string]bool)
 	c.groupKeys = make(map[string]string)
 	c.fieldTypes = make(map[string]map[string]types.Type)
@@ -348,6 +352,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	out.Write(fnBuf.Bytes())
 	out.Write(mainBytes)
+	if c.useEqual {
+		out.WriteString(dartEqualHelper)
+	}
 	out.WriteString(dartHelpers)
 	return formatDart(out.Bytes()), nil
 }
@@ -923,6 +930,17 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 	case "intersect":
 		return fmt.Sprintf("%s.where((x) => %s.contains(x)).toList()", left, right), leftType, nil
 	default:
+		if op == "==" || op == "!=" {
+			if isListType(leftType) || isListType(rightType) || isMapType(leftType) || isMapType(rightType) {
+				c.useEqual = true
+				expr := fmt.Sprintf("_equal(%s, %s)", left, right)
+				if op == "!=" {
+					expr = "!" + expr
+				}
+				return expr, types.BoolType{}, nil
+			}
+			return fmt.Sprintf("%s %s %s", left, op, right), types.BoolType{}, nil
+		}
 		if op == "<" || op == "<=" || op == ">" || op == ">=" {
 			l := left
 			r := right
@@ -2494,6 +2512,14 @@ func isMapType(t types.Type) bool {
 		t = ot.Elem
 	}
 	_, ok := t.(types.MapType)
+	return ok
+}
+
+func isListType(t types.Type) bool {
+	if ot, ok := t.(types.OptionType); ok {
+		t = ot.Elem
+	}
+	_, ok := t.(types.ListType)
 	return ok
 }
 
