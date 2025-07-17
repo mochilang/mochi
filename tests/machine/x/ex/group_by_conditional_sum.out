@@ -1,8 +1,0 @@
-warning: default values for the optional arguments in _query/3 are never used
-    │
- 97 │   defp _query(src, joins, opts \\ %{}) do
-    │        ~
-    │
-    └─ tests/machine/x/ex/group_by_conditional_sum.exs:97:8: Main (module)
-
-[%{cat: "a", share: 0.6666666666666666}, %{cat: "b", share: 1.0}]
