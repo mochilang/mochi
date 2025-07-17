@@ -6,7 +6,7 @@ package main
 
 import (
 	"fmt"
-	"reflect"
+	"sort"
 	"strings"
 )
 
@@ -18,39 +18,16 @@ func main() {
 		"b": 2,
 		"c": 3,
 	}
-	fmt.Println(strings.TrimSpace(strings.Join([]string{strings.Trim(strings.Trim(fmt.Sprint(_values(m)), "[]"), " ")}, " ")))
-}
-
-func _values(v any) []any {
-	switch m := v.(type) {
-	case map[string]any:
-		res := make([]any, 0, len(m))
-		for _, vv := range m {
-			res = append(res, vv)
+	fmt.Println(strings.TrimSpace(strings.Join([]string{strings.Trim(strings.Trim(fmt.Sprint(func() []int {
+		keys := make([]string, 0, len(m))
+		for k := range m {
+			keys = append(keys, k)
 		}
-		return res
-	case map[any]any:
-		res := make([]any, 0, len(m))
-		for _, vv := range m {
-			res = append(res, vv)
+		sort.Strings(keys)
+		vals := make([]int, 0, len(keys))
+		for _, k := range keys {
+			vals = append(vals, m[k])
 		}
-		return res
-	}
-	rv := reflect.ValueOf(v)
-	if rv.Kind() == reflect.Map {
-		res := make([]any, 0, rv.Len())
-		for _, k := range rv.MapKeys() {
-			res = append(res, rv.MapIndex(k).Interface())
-		}
-		return res
-	}
-	if rv.Kind() == reflect.Struct {
-		n := rv.NumField()
-		res := make([]any, 0, n)
-		for i := 0; i < n; i++ {
-			res = append(res, rv.Field(i).Interface())
-		}
-		return res
-	}
-	panic("values() expects map")
+		return vals
+	}()), "[]"), " ")}, " ")))
 }
