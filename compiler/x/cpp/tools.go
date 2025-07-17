@@ -22,7 +22,9 @@ func FormatCPP(src []byte) []byte {
 		}
 		return src
 	}
-	cmd := exec.Command(path, "-style=LLVM")
+	// Use LLVM style with 4-space indentation to better match the
+	// human-crafted examples in tests/human/x/cpp.
+	cmd := exec.Command(path, "-style={BasedOnStyle: LLVM, IndentWidth: 4}")
 	cmd.Stdin = bytes.NewReader(src)
 	var out bytes.Buffer
 	cmd.Stdout = &out

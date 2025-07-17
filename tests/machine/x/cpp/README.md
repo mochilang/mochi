@@ -106,3 +106,20 @@ Compiled programs: 100/100
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+
+
+## Remaining Tasks
+
+The following enhancements are planned for the C++ backend:
+
+- [ ] Improve formatting to better match human examples
+- [ ] Implement additional TPCH optimizations
+- [ ] Support more idiomatic use of `std::optional`
+- [ ] Reduce unnecessary `std::any` usage
+- [ ] Simplify nested loop generation
+- [ ] Improve error messages for unsupported constructs
+- [ ] Generate more compact struct definitions
+- [ ] Support constant folding for string operations
+- [ ] Handle user-defined generics
+- [ ] Improve dead code elimination
+
