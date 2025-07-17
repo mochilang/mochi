@@ -1,0 +1,5 @@
+exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/group_by_left_join.go:73:9: declared and not used: o
+../../../tests/machine/x/go/group_by_left_join.go:97:20: r.O undefined (type Customer has no field or method O)
+../../../tests/machine/x/go/group_by_left_join.go:98:21: r.O undefined (type Customer has no field or method O)

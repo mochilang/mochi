@@ -1,0 +1,5 @@
+exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/left_join.go:57:18: cannot use &v (value of type *Customer) as Customer value in assignment
+../../../tests/machine/x/go/left_join.go:59:18: cannot use nil as Customer value in assignment
+../../../tests/machine/x/go/left_join.go:67:24: invalid operation: entry.Customer != nil (mismatched types Customer and untyped nil)

@@ -1,0 +1,3 @@
+exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/right_join.go:115:11: cannot convert entry.Order (variable of struct type Order) to type bool
