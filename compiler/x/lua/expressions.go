@@ -124,7 +124,12 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					lt := typesList[i]
 					rt := typesList[i+1]
 					if isPrimitive(lt) && isPrimitive(rt) {
-						expr = fmt.Sprintf("(%s == %s)", l, r)
+						if isString(lt) && isString(rt) {
+							expr = fmt.Sprintf("((%s == %s) and 1 or 0)", l, r)
+							resNum = true
+						} else {
+							expr = fmt.Sprintf("(%s == %s)", l, r)
+						}
 					} else {
 						c.helpers["eq"] = true
 						expr = fmt.Sprintf("__eq(%s, %s)", l, r)
@@ -134,7 +139,12 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					lt := typesList[i]
 					rt := typesList[i+1]
 					if isPrimitive(lt) && isPrimitive(rt) {
-						expr = fmt.Sprintf("(%s ~= %s)", l, r)
+						if isString(lt) && isString(rt) {
+							expr = fmt.Sprintf("((%s ~= %s) and 1 or 0)", l, r)
+							resNum = true
+						} else {
+							expr = fmt.Sprintf("(%s ~= %s)", l, r)
+						}
 					} else {
 						c.helpers["eq"] = true
 						expr = fmt.Sprintf("not __eq(%s, %s)", l, r)
@@ -161,7 +171,12 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					expr = fmt.Sprintf("__intersect(%s, %s)", l, r)
 					resStr = false
 				default:
-					expr = fmt.Sprintf("(%s %s %s)", l, opstr, r)
+					if (opstr == "<" || opstr == "<=" || opstr == ">" || opstr == ">=") && strs[i] && strs[i+1] {
+						expr = fmt.Sprintf("((%s %s %s) and 1 or 0)", l, opstr, r)
+						resNum = true
+					} else {
+						expr = fmt.Sprintf("(%s %s %s)", l, opstr, r)
+					}
 					resStr = false
 				}
 				operands[i] = expr
@@ -411,13 +426,6 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	argStr := strings.Join(args, ", ")
 	switch name {
 	case "print":
-		if len(call.Args) == 1 {
-			c.helpers["print"] = true
-			c.helpers["str"] = true
-			if n, ok := identName(call.Args[0]); !ok || !c.uninitVars[n] {
-				return fmt.Sprintf("__print(%s)", args[0]), nil
-			}
-		}
 		if len(args) > 1 {
 			parts := make([]string, len(args))
 			for i, a := range args {
@@ -428,15 +436,14 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 					parts[i] = fmt.Sprintf("__str(%s)", a)
 				}
 			}
-			return fmt.Sprintf("print(%s)", strings.Join(parts, " .. \" \" .. ")), nil
-		}
-		if n, ok := identName(call.Args[0]); !ok || !c.uninitVars[n] {
 			c.helpers["print"] = true
-			c.helpers["str"] = true
-			return fmt.Sprintf("__print(%s)", args[0]), nil
+			return fmt.Sprintf("__print(%s)", strings.Join(parts, ", ")), nil
 		}
 		c.helpers["print"] = true
 		c.helpers["str"] = true
+		if n, ok := identName(call.Args[0]); !ok || !c.uninitVars[n] {
+			return fmt.Sprintf("__print(%s)", args[0]), nil
+		}
 		return fmt.Sprintf("__print(%s)", args[0]), nil
 	case "str":
 		c.helpers["str"] = true
