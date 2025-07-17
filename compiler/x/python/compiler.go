@@ -937,18 +937,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	}
 	switch call.Func {
 	case "print":
-		c.use("_fmt")
-		for i, a := range call.Args {
-			arg := args[i]
-			if _, ok := c.inferExprType(a).(types.BoolType); ok {
-				arg = fmt.Sprintf("str(%s).lower()", arg)
-			}
-			args[i] = fmt.Sprintf("_fmt(%s)", arg)
+		if len(args) == 0 {
+			return "print()", nil
 		}
-		if len(args) == 1 {
-			return fmt.Sprintf("print(%s)", args[0]), nil
-		}
-		return fmt.Sprintf("print(' '.join([%s]).rstrip())", strings.Join(args, ", ")), nil
+		return fmt.Sprintf("print(%s)", strings.Join(args, ", ")), nil
 	case "len":
 		return fmt.Sprintf("len(%s)", argStr), nil
 	case "now":

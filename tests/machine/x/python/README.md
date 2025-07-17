@@ -103,3 +103,17 @@ Compiled programs: 100/100 successful.
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
+
+## Remaining Tasks
+* [ ] Remove the `_fmt` helper for plain print calls.
+* [ ] Emit dataclasses only when struct fields require them.
+* [ ] Align list literals with the manual examples.
+* [ ] Enable type hints for all generated functions.
+* [ ] Reduce helper emission when unused.
+* [ ] Improve error reporting for failed compilations.
+* [ ] Support LLM stubs in `go_auto` and `python_auto` examples.
+* [ ] Verify dataset path resolution across platforms.
+* [ ] Add negative tests for import failures.
+* [ ] Document environment variables used by the compiler.
+* [ ] Explore caching compiled Python modules for speed.
+
