@@ -1,23 +1,32 @@
 exit status 1
-/workspace/mochi/tests/machine/x/c/tree_sum.c:12:3: error: unknown type name ‘Tree’
-   12 |   Tree *left;
-      |   ^~~~
-/workspace/mochi/tests/machine/x/c/tree_sum.c:14:3: error: unknown type name ‘Tree’
-   14 |   Tree *right;
-      |   ^~~~
-/workspace/mochi/tests/machine/x/c/tree_sum.c:26:14: error: unknown type name ‘Tree’; did you mean ‘tree_t’?
-   26 | int sum_tree(Tree t) {
-      |              ^~~~
-      |              tree_t
+/workspace/mochi/tests/machine/x/c/tree_sum.c: In function ‘sum_tree’:
+/workspace/mochi/tests/machine/x/c/tree_sum.c:30:8: error: ‘Tree_Leaf’ undeclared (first use in this function)
+   30 |   case Tree_Leaf:
+      |        ^~~~~~~~~
+/workspace/mochi/tests/machine/x/c/tree_sum.c:30:8: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/machine/x/c/tree_sum.c:33:8: error: ‘Tree_Node’ undeclared (first use in this function)
+   33 |   case Tree_Node:
+      |        ^~~~~~~~~
+/workspace/mochi/tests/machine/x/c/tree_sum.c:34:31: error: ‘union <anonymous>’ has no member named ‘Node’; did you mean ‘node_t’?
+   34 |     tree_t left = *tmp1.value.Node.left;
+      |                               ^~~~
+      |                               node_t
+/workspace/mochi/tests/machine/x/c/tree_sum.c:35:28: error: ‘union <anonymous>’ has no member named ‘Node’; did you mean ‘node_t’?
+   35 |     int value = tmp1.value.Node.value;
+      |                            ^~~~
+      |                            node_t
+/workspace/mochi/tests/machine/x/c/tree_sum.c:36:32: error: ‘union <anonymous>’ has no member named ‘Node’; did you mean ‘node_t’?
+   36 |     tree_t right = *tmp1.value.Node.right;
+      |                                ^~~~
+      |                                node_t
 /workspace/mochi/tests/machine/x/c/tree_sum.c: In function ‘_mochi_main’:
-/workspace/mochi/tests/machine/x/c/tree_sum.c:48:8: error: ‘Tree’ undeclared (first use in this function); did you mean ‘free’?
-   48 |       (Tree){.tag = Tree_Node,
-      |        ^~~~
-      |        free
-/workspace/mochi/tests/machine/x/c/tree_sum.c:48:8: note: each undeclared identifier is reported only once for each function it appears in
-/workspace/mochi/tests/machine/x/c/tree_sum.c:48:13: error: expected ‘,’ or ‘;’ before ‘{’ token
-   48 |       (Tree){.tag = Tree_Node,
-      |             ^
-/workspace/mochi/tests/machine/x/c/tree_sum.c:57:18: warning: implicit declaration of function ‘sum_tree’ [-Wimplicit-function-declaration]
-   57 |   printf("%d\n", sum_tree(t));
-      |                  ^~~~~~~~
+/workspace/mochi/tests/machine/x/c/tree_sum.c:50:21: error: ‘Tree’ undeclared (first use in this function); did you mean ‘free’?
+   50 |           .left = &(Tree){.tag = Tree_Leaf},
+      |                     ^~~~
+      |                     free
+/workspace/mochi/tests/machine/x/c/tree_sum.c:50:26: error: expected ‘}’ before ‘{’ token
+   50 |           .left = &(Tree){.tag = Tree_Leaf},
+      |                          ^
+/workspace/mochi/tests/machine/x/c/tree_sum.c:49:31: note: to match this ‘{’
+   49 |       .value.node_t = (node_t){
+      |                               ^

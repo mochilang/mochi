@@ -27,10 +27,11 @@ person_list_t create_person_list(int len) {
 
 static person_list_t test_update_adult_status_people;
 static void test_update_adult_status() {
-  person_t tmp1[] = {(Person){.name = "Alice", .age = 17, .status = "minor"},
-                     (Person){.name = "Bob", .age = 26, .status = "adult"},
-                     (Person){.name = "Charlie", .age = 19, .status = "adult"},
-                     (Person){.name = "Diana", .age = 16, .status = "minor"}};
+  person_t tmp1[] = {
+      (person_t){.name = "Alice", .age = 17, .status = "minor"},
+      (person_t){.name = "Bob", .age = 26, .status = "adult"},
+      (person_t){.name = "Charlie", .age = 19, .status = "adult"},
+      (person_t){.name = "Diana", .age = 16, .status = "minor"}};
   int tmp1_len = sizeof(tmp1) / sizeof(tmp1[0]);
   int tmp2 = 1;
   if (test_update_adult_status_people.len != tmp1_len) {
@@ -55,10 +56,10 @@ static void test_update_adult_status() {
 
 int _mochi_main() {
   person_t people[] = {
-      (Person){.name = "Alice", .age = 17, .status = "minor"},
-      (Person){.name = "Bob", .age = 25, .status = "unknown"},
-      (Person){.name = "Charlie", .age = 18, .status = "unknown"},
-      (Person){.name = "Diana", .age = 16, .status = "minor"}};
+      (person_t){.name = "Alice", .age = 17, .status = "minor"},
+      (person_t){.name = "Bob", .age = 25, .status = "unknown"},
+      (person_t){.name = "Charlie", .age = 18, .status = "unknown"},
+      (person_t){.name = "Diana", .age = 16, .status = "minor"}};
   int people_len = sizeof(people) / sizeof(people[0]);
   for (int tmp4 = 0; tmp4 < people.len; tmp4++) {
     person_t tmp5 = people.data[tmp4];

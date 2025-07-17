@@ -1093,11 +1093,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				}
 			}
 			ix := c.compileExpr(idx.Start)
-			if _, ok := c.listLens[target]; ok {
-				target = fmt.Sprintf("%s[%s]", target, ix)
-			} else {
-				target = fmt.Sprintf("%s.data[%s]", target, ix)
-			}
+			target = c.listItemExpr(target, ix)
 			if lt, ok := curT.(types.ListType); ok {
 				curT = lt.Elem
 			} else if mt, ok := curT.(types.MapType); ok {
@@ -4115,7 +4111,11 @@ func (c *Compiler) aggregateExpr(name, list string, elem types.Type) string {
 				total += v
 			}
 			avg := float64(total) / float64(len(vals))
-			return strconv.FormatFloat(avg, 'f', -1, 64)
+			s := strconv.FormatFloat(avg, 'f', -1, 64)
+			if !strings.ContainsAny(s, ".eE") {
+				s += ".0"
+			}
+			return s
 		case "min":
 			if len(vals) == 0 {
 				return "0"
@@ -5491,7 +5491,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					total += v
 				}
 				avg := float64(total) / float64(len(vals))
-				return strconv.FormatFloat(avg, 'f', -1, 64)
+				s := strconv.FormatFloat(avg, 'f', -1, 64)
+				if !strings.ContainsAny(s, ".eE") {
+					s += ".0"
+				}
+				return s
 			}
 			arg := c.compileExpr(p.Call.Args[0])
 			if isListIntExpr(p.Call.Args[0], c.env) {
@@ -5588,6 +5592,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			elem := listElemType(p.Call.Args[0], c.env)
 			return c.aggregateExpr("max", arg, elem)
 		} else if p.Call.Func == "reduce" {
+			list := c.compileExpr(p.Call.Args[0])
 			fn := c.compileExpr(p.Call.Args[1])
 			init := c.compileExpr(p.Call.Args[2])
 			switch listElemType(p.Call.Args[0], c.env).(type) {

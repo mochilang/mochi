@@ -139,3 +139,4 @@ should compile and run successfully.
 - 2025-07-17 - Updated group by list allocation to use create_* helpers; now group_by and join queries compile.
 - 2025-09-16 - Fixed struct literal generation to use sanitized type names. record_assign.mochi compiles.
 - 2025-09-17 - Precomputed aggregates for constant integer lists to remove runtime helpers.
+- 2025-09-18 - Fixed list index assignments to use `listItemExpr`; `list_assign.mochi` compiles and runs.

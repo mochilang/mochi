@@ -2,31 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct {
-  int len;
-  int *data;
-} list_int;
-static list_int list_int_create(int len) {
-  list_int l;
-  l.len = len;
-  l.data = calloc(len, sizeof(int));
-  if (!l.data && len > 0) {
-    fprintf(stderr, "alloc failed\n");
-    exit(1);
-  }
-  return l;
-}
 int _mochi_main() {
-  list_int tmp1 = list_int_create(3);
-  tmp1.data[0] = 1;
-  tmp1.data[1] = 2;
-  tmp1.data[2] = 3;
-  int tmp2 = 0;
-  for (int i3 = 0; i3 < 3; i3++) {
-    tmp2 += tmp1.data[i3];
-  }
-  double tmp4 = tmp2 / (double)3;
-  printf("%.17g\n", tmp4);
+  printf("%.17g\n", 2.0);
   return 0;
 }
 int main() { return _mochi_main(); }

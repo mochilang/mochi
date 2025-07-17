@@ -26,7 +26,7 @@ person_list_t create_person_list(int len) {
 
 typedef struct book_t {
   char *title;
-  Person author;
+  person_t author;
 } book_t;
 typedef struct {
   int len;
@@ -45,7 +45,7 @@ book_list_t create_book_list(int len) {
 
 int _mochi_main() {
   book_t book =
-      (Book){.title = "Go", .author = (Person){.name = "Bob", .age = 42}};
+      (book_t){.title = "Go", .author = (person_t){.name = "Bob", .age = 42}};
   printf("%s\n", book.author.name);
   return 0;
 }
