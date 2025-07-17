@@ -1,6 +1,8 @@
 # Scala Compiler Tasks
 
 ## Recent Enhancements
+- 2025-07-22 00:00 - Improved detection of `Option` values in `if` expressions to
+  reduce `.error` files for join examples
 - 2025-07-13 05:13 - Top-level `let` bindings move inside `main` when no functions follow
 - 2025-07-13 07:24 - Fixed `$` interpolation, improved `json` handling, GROUP BY keys use case classes, empty mutable lists default to `ArrayBuffer[Any]`
 - 2025-07-13 16:29 - Added generated code and tests for TPCH queries q3 and q4

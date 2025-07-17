@@ -133,6 +133,48 @@ func truthyExpr(expr string, t types.Type) string {
 	}
 }
 
+// maybeOptionExpr returns true if the given expression likely evaluates to an
+// Option value based on the current static environment. This is used when the
+// type checker returns `any` but we still want to emit idiomatic `.nonEmpty`
+// checks for Option values.
+func (c *Compiler) maybeOptionExpr(e *parser.Expr) bool {
+	if e == nil {
+		return false
+	}
+	if sel, ok := selectorOfExpr(e); ok {
+		t, err := c.env.GetVar(sel.Root)
+		if err != nil {
+			return false
+		}
+		for i, f := range sel.Tail {
+			if ot, ok := t.(types.OptionType); ok {
+				t = ot.Elem
+			}
+			st, ok := t.(types.StructType)
+			if !ok {
+				return false
+			}
+			ft, ok := st.Fields[f]
+			if !ok {
+				return false
+			}
+			t = ft
+			if i == len(sel.Tail)-1 {
+				_, ok := t.(types.OptionType)
+				return ok
+			}
+		}
+		return false
+	}
+	if id, ok := identName(e); ok {
+		if t, err := c.env.GetVar(id); err == nil {
+			_, ok := t.(types.OptionType)
+			return ok
+		}
+	}
+	return false
+}
+
 func (c *Compiler) emitHelpers(out *bytes.Buffer, indent int) {
 	if len(c.helpers) == 0 {
 		return
@@ -754,7 +796,11 @@ func (c *Compiler) compileIf(s *parser.IfStmt) error {
 	}
 	t := types.ExprType(s.Cond, c.env)
 	if _, ok := t.(types.BoolType); !ok {
-		cond = truthyExpr(cond, t)
+		if _, ok := t.(types.AnyType); ok && c.maybeOptionExpr(s.Cond) {
+			cond = cond + ".nonEmpty"
+		} else {
+			cond = truthyExpr(cond, t)
+		}
 	}
 	c.writeln(fmt.Sprintf("if (%s) {", cond))
 	c.indent += indentStep
@@ -795,7 +841,11 @@ func (c *Compiler) compileIfExpr(e *parser.IfExpr) (string, error) {
 	}
 	t := types.ExprType(e.Cond, c.env)
 	if _, ok := t.(types.BoolType); !ok {
-		cond = truthyExpr(cond, t)
+		if _, ok := t.(types.AnyType); ok && c.maybeOptionExpr(e.Cond) {
+			cond = cond + ".nonEmpty"
+		} else {
+			cond = truthyExpr(cond, t)
+		}
 	}
 	thenExpr, err := c.compileExpr(e.Then)
 	if err != nil {
@@ -2512,6 +2562,21 @@ func identOfUnary(u *parser.Unary) (string, bool) {
 		return "", false
 	}
 	return p.Target.Selector.Root, true
+}
+
+func selectorOfExpr(e *parser.Expr) (*parser.SelectorExpr, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Selector == nil {
+		return nil, false
+	}
+	return p.Target.Selector, true
 }
 
 func queryExpr(e *parser.Expr) (*parser.QueryExpr, bool) {
