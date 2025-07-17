@@ -21,25 +21,26 @@ var identifierRegexp = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_]*$`)
 // subset of Mochi. It is intentionally minimal and only handles the
 // constructs required by a few simple programs.
 type Compiler struct {
-	buf           bytes.Buffer
-	prelude       bytes.Buffer
-	indent        int
-	vars          map[string]string
-	structs       map[string]map[string]string
-	groups        map[string]bool
-	maps          map[string]bool
-	anon          map[string]string
-	anonCnt       int
-	usesJson      bool
-	usesYaml      bool
-	usesBreak     bool
-	usesContinue  bool
-	usesUnion     bool
-	usesExcept    bool
-	usesIntersect bool
-	usesGroupBy   bool
-	hints         map[string]string
-	tuples        map[string][]string
+	buf             bytes.Buffer
+	prelude         bytes.Buffer
+	indent          int
+	vars            map[string]string
+	structs         map[string]map[string]string
+	groups          map[string]bool
+	maps            map[string]bool
+	anon            map[string]string
+	anonCnt         int
+	usesJson        bool
+	usesYaml        bool
+	usesBreak       bool
+	usesContinue    bool
+	usesUnion       bool
+	usesExcept      bool
+	usesIntersect   bool
+	usesGroupBy     bool
+	hints           map[string]string
+	tuples          map[string][]string
+	collectingHints bool
 }
 
 func defaultValue(typ string) string {
@@ -77,21 +78,22 @@ func (c *Compiler) compileType(t *parser.TypeRef) (string, error) {
 // New creates a new F# compiler instance.
 func New() *Compiler {
 	return &Compiler{
-		vars:          make(map[string]string),
-		structs:       make(map[string]map[string]string),
-		groups:        make(map[string]bool),
-		maps:          make(map[string]bool),
-		anon:          make(map[string]string),
-		usesJson:      false,
-		usesYaml:      false,
-		usesBreak:     false,
-		usesContinue:  false,
-		usesUnion:     false,
-		usesExcept:    false,
-		usesIntersect: false,
-		usesGroupBy:   false,
-		hints:         make(map[string]string),
-		tuples:        make(map[string][]string),
+		vars:            make(map[string]string),
+		structs:         make(map[string]map[string]string),
+		groups:          make(map[string]bool),
+		maps:            make(map[string]bool),
+		anon:            make(map[string]string),
+		usesJson:        false,
+		usesYaml:        false,
+		usesBreak:       false,
+		usesContinue:    false,
+		usesUnion:       false,
+		usesExcept:      false,
+		usesIntersect:   false,
+		usesGroupBy:     false,
+		hints:           make(map[string]string),
+		tuples:          make(map[string][]string),
+		collectingHints: false,
 	}
 }
 
@@ -116,7 +118,9 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.usesGroupBy = false
 	c.hints = make(map[string]string)
 	c.tuples = make(map[string][]string)
+	c.collectingHints = true
 	c.gatherHints(p.Statements)
+	c.collectingHints = false
 
 	for _, s := range p.Statements {
 		if err := c.compileStmt(s); err != nil {
@@ -1292,6 +1296,9 @@ func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
 }
 
 func (c *Compiler) mapLiteralType(m *parser.MapLiteral) string {
+	if c.collectingHints {
+		return ""
+	}
 	names := make([]string, len(m.Items))
 	types := make([]string, len(m.Items))
 	allSimple := true
@@ -1379,6 +1386,9 @@ func (c *Compiler) compileStruct(s *parser.StructLiteral) (string, error) {
 }
 
 func (c *Compiler) ensureAnonStruct(names, types []string, typeMap map[string]string) string {
+	if c.collectingHints {
+		return ""
+	}
 	key := strings.Join(names, ",") + "|" + strings.Join(types, ",")
 	typ, ok := c.anon[key]
 	if !ok {
@@ -2214,6 +2224,56 @@ func (c *Compiler) collectionElemType(e *parser.Expr) string {
 func (c *Compiler) inferQueryElemType(q *parser.QueryExpr) string {
 	if q == nil {
 		return "obj"
+	}
+	if len(q.Joins) == 1 && q.Joins[0].Side != nil {
+		j := q.Joins[0]
+		left := c.collectionElemType(q.Source)
+		right := c.collectionElemType(j.Src)
+		if p := rootPrimary(q.Select); p != nil && p.Struct != nil {
+			names := []string{}
+			types := []string{}
+			typeMap := map[string]string{}
+			for _, f := range p.Struct.Fields {
+				names = append(names, sanitizeIdent(f.Name))
+				t := c.inferType(f.Value)
+				types = append(types, t)
+				typeMap[sanitizeIdent(f.Name)] = t
+			}
+			switch *j.Side {
+			case "left":
+				for i, f := range p.Struct.Fields {
+					if name, ok := c.simpleIdentifier(f.Value); ok && name == j.Var {
+						types[i] = right + " option"
+						typeMap[sanitizeIdent(f.Name)] = types[i]
+					}
+				}
+			case "right":
+				if len(q.Froms) == 0 && len(q.Joins) == 1 {
+					for i, f := range p.Struct.Fields {
+						if name, ok := c.simpleIdentifier(f.Value); ok && name == q.Var {
+							types[i] = left + " option"
+							typeMap[sanitizeIdent(f.Name)] = types[i]
+						}
+					}
+				}
+			case "outer":
+				if len(q.Froms) == 0 {
+					for i, f := range p.Struct.Fields {
+						if name, ok := c.simpleIdentifier(f.Value); ok {
+							if name == q.Var {
+								types[i] = left + " option"
+								typeMap[sanitizeIdent(f.Name)] = types[i]
+							}
+							if name == j.Var {
+								types[i] = right + " option"
+								typeMap[sanitizeIdent(f.Name)] = types[i]
+							}
+						}
+					}
+				}
+			}
+			return c.ensureAnonStruct(names, types, typeMap)
+		}
 	}
 	return c.inferType(q.Select)
 }

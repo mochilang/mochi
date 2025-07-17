@@ -1,6 +1,8 @@
 # F# Compiler Enhancement Notes
 
 ## Recent Updates
+- 2025-09-06 - Added option-aware join inference and disabled anonymous struct
+  generation during hint collection; 77 of 100 programs compile and run.
 - 2025-07-27 00:00 UTC - Improved builtin type inference for common functions and fixed module import syntax.
 - 2025-07-27 12:00 UTC - Fixed string `in` operator orientation, corrected group
   bindings formatting, and inferred numeric map key types.
