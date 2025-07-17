@@ -1,4 +1,6 @@
 # C# Compiler TODO
+## Recent Updates (2025-07-20 15:00)
+- Added C# machine output for `append_builtin` bringing totals to 6/100.
 ## Recent Updates (2025-07-19 09:00)
 - Verified VM golden tests run with dotnet and regenerated outputs.
 - All 100 `tests/vm/valid` programs compile and execute successfully.
