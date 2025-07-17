@@ -2677,12 +2677,20 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr, asReturn bool) (string,
 				if c.isMapPostfix(p) {
 					expr = fmt.Sprintf("(%s.get(%s) orelse unreachable)", expr, idx)
 				} else if c.isStringPostfix(p) {
-					c.needsIndexString = true
-					expr = fmt.Sprintf("_index_string(%s, %s)", expr, idx)
+					if v, ok := c.intConst(op.Index.Start); ok && v >= 0 {
+						expr = fmt.Sprintf("%s[%d..%d]", expr, v, v+1)
+					} else {
+						c.needsIndexString = true
+						expr = fmt.Sprintf("_index_string(%s, %s)", expr, idx)
+					}
 				} else if c.isListPostfix(p) {
-					elem := c.listElemTypePostfix(p)
-					c.needsIndex = true
-					expr = fmt.Sprintf("_index_list(%s, %s, %s)", elem, expr, idx)
+					if v, ok := c.intConst(op.Index.Start); ok && v >= 0 {
+						expr = fmt.Sprintf("%s[%d]", expr, v)
+					} else {
+						elem := c.listElemTypePostfix(p)
+						c.needsIndex = true
+						expr = fmt.Sprintf("_index_list(%s, %s, %s)", elem, expr, idx)
+					}
 				} else {
 					expr = fmt.Sprintf("%s[%s]", expr, idx)
 				}
@@ -2714,12 +2722,54 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr, asReturn bool) (string,
 					step = st
 				}
 				if c.isStringPostfix(p) || c.isStringPrimary(p.Target) {
-					c.needsSliceString = true
-					expr = fmt.Sprintf("_slice_string(%s, %s, %s, %s)", expr, start, end, step)
+					if st, okS := c.intConst(op.Index.Start); okS && st >= 0 {
+						stepOne := true
+						if op.Index.Step != nil {
+							if sv, okSt := c.intConst(op.Index.Step); !okSt || sv != 1 {
+								stepOne = false
+							}
+						}
+						if stepOne {
+							if en, okE := c.intConst(op.Index.End); okE && en >= st {
+								expr = fmt.Sprintf("%s[%d..%d]", expr, st, en)
+							} else {
+								c.needsSliceString = true
+								expr = fmt.Sprintf("_slice_string(%s, %s, %s, %s)", expr, start, end, step)
+							}
+						} else {
+							c.needsSliceString = true
+							expr = fmt.Sprintf("_slice_string(%s, %s, %s, %s)", expr, start, end, step)
+						}
+					} else {
+						c.needsSliceString = true
+						expr = fmt.Sprintf("_slice_string(%s, %s, %s, %s)", expr, start, end, step)
+					}
 				} else if c.isListPostfix(p) || c.isListPrimary(p.Target) {
-					elem := c.listElemTypePostfix(p)
-					c.needsSlice = true
-					expr = fmt.Sprintf("_slice_list(%s, %s, %s, %s, %s)", elem, expr, start, end, step)
+					if st, okS := c.intConst(op.Index.Start); okS && st >= 0 {
+						stepOne := true
+						if op.Index.Step != nil {
+							if sv, okSt := c.intConst(op.Index.Step); !okSt || sv != 1 {
+								stepOne = false
+							}
+						}
+						if stepOne {
+							if en, okE := c.intConst(op.Index.End); okE && en >= st {
+								expr = fmt.Sprintf("%s[%d..%d]", expr, st, en)
+							} else {
+								elem := c.listElemTypePostfix(p)
+								c.needsSlice = true
+								expr = fmt.Sprintf("_slice_list(%s, %s, %s, %s, %s)", elem, expr, start, end, step)
+							}
+						} else {
+							elem := c.listElemTypePostfix(p)
+							c.needsSlice = true
+							expr = fmt.Sprintf("_slice_list(%s, %s, %s, %s, %s)", elem, expr, start, end, step)
+						}
+					} else {
+						elem := c.listElemTypePostfix(p)
+						c.needsSlice = true
+						expr = fmt.Sprintf("_slice_list(%s, %s, %s, %s, %s)", elem, expr, start, end, step)
+					}
 				} else {
 					expr = fmt.Sprintf("%s[%s..%s]", expr, start, end)
 				}
@@ -4429,6 +4479,35 @@ func (c *Compiler) isListVar(name string) bool {
 		}
 	}
 	return false
+}
+
+// intConst returns the integer value of an expression if it is a constant
+// literal possibly prefixed with unary +/- operators. The second return value
+// reports success.
+func (c *Compiler) intConst(e *parser.Expr) (int, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return 0, false
+	}
+	u := e.Binary.Left
+	if u == nil {
+		return 0, false
+	}
+	sign := 1
+	for _, op := range u.Ops {
+		switch op {
+		case "-":
+			sign = -sign
+		case "+":
+			// ignore
+		default:
+			return 0, false
+		}
+	}
+	p := u.Value
+	if p == nil || len(p.Ops) != 0 || p.Target == nil || p.Target.Lit == nil || p.Target.Lit.Int == nil {
+		return 0, false
+	}
+	return sign * (*p.Target.Lit.Int), true
 }
 
 func stripOuterParens(s string) string {
