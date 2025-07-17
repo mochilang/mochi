@@ -284,19 +284,19 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 				}
 			}
 		}
-		if s.Type != nil {
-			name := sanitizeName(s.Type.Name)
-			if !forwardSet[name] {
-				forwardSet[name] = true
-				forward = append(forward, name)
-			}
-			for _, v := range s.Type.Variants {
-				vname := sanitizeName(v.Name)
-				if !forwardSet[vname] {
-					forwardSet[vname] = true
-					forward = append(forward, vname)
-				}
-			}
+                if s.Type != nil {
+                        name := sanitizeTypeName(s.Type.Name)
+                        if !forwardSet[name] {
+                                forwardSet[name] = true
+                                forward = append(forward, name)
+                        }
+                        for _, v := range s.Type.Variants {
+                                vname := sanitizeTypeName(v.Name)
+                                if !forwardSet[vname] {
+                                        forwardSet[vname] = true
+                                        forward = append(forward, vname)
+                                }
+                        }
 		}
 		// collect simple global variables so functions can use them
 		if s.Var != nil && s.Var.Value != nil {
@@ -515,16 +515,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
-	name := sanitizeName(t.Name)
-	if c.structs[name] {
-		return nil
-	}
-	c.structs[name] = true
-	if len(t.Variants) > 0 {
+    name := sanitizeTypeName(t.Name)
+    if c.structs[name] {
+        return nil
+    }
+    c.structs[name] = true
+    if len(t.Variants) > 0 {
 		// compile variant structs
-		for _, v := range t.Variants {
-			vname := sanitizeName(v.Name)
-			c.writeln(fmt.Sprintf("typedef struct %s {", vname))
+                for _, v := range t.Variants {
+                        vname := sanitizeTypeName(v.Name)
+                        c.writeln(fmt.Sprintf("typedef struct %s {", vname))
 			c.indent++
 			for _, f := range v.Fields {
 				typ := c.cType(f.Type)
@@ -542,10 +542,10 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		c.writeln("int tag;")
 		c.writeln("union {")
 		c.indent++
-		for _, v := range t.Variants {
-			vname := sanitizeName(v.Name)
-			c.writeln(fmt.Sprintf("%s %s;", vname, vname))
-		}
+                for _, v := range t.Variants {
+                        vname := sanitizeTypeName(v.Name)
+                        c.writeln(fmt.Sprintf("%s %s;", vname, vname))
+                }
 		c.indent--
 		c.writeln("} value;")
 		c.indent--
@@ -3893,11 +3893,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 		return c.aggregateExpr(agg, tmp, argT)
 	}
 
-	val := c.compileExpr(q.Select)
-	retT := c.exprType(q.Select)
-	if hasStruct {
-		retT = selStruct
-	}
+        val := c.compileExpr(q.Select)
+        retT := c.exprType(q.Select)
+        if st, ok := retT.(types.StructType); ok && !hasStruct {
+                selStruct = st
+                hasStruct = true
+        }
+        if hasStruct {
+                retT = selStruct
+        }
 	retList := types.ListType{Elem: retT}
 	listC := cTypeFromType(retList)
 	var listCreate string

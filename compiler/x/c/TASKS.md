@@ -129,3 +129,6 @@ should compile and run successfully.
 - 2025-09-13 - Corrected `in` operator generation for constant integer lists to
   call `contains_list_int`. `membership.mochi` and `in_operator.mochi` now
   compile and run successfully.
+- 2025-09-14 - Normalized struct type names to use snake_case `_t` suffixes and
+  recognized struct results in query expressions. `cast_struct.mochi` and
+  `dataset_sort_take_limit.mochi` now compile.

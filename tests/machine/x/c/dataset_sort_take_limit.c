@@ -30,7 +30,7 @@ int _mochi_main() {
                           (product_t){.name = "Mouse", .price = 50},
                           (product_t){.name = "Headphones", .price = 200}};
   int products_len = sizeof(products) / sizeof(products[0]);
-  product_list_t tmp1 = product_list_t_create(products_len);
+  product_list_t tmp1 = create_product_list(products_len);
   int *tmp4 = (int *)malloc(sizeof(int) * products_len);
   int tmp2 = 0;
   int tmp5 = 1;

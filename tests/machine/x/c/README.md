@@ -61,10 +61,10 @@ The C backend compiles Mochi programs in `tests/vm/valid`. The table below lists
 - [x] var_assignment
 - [x] while_loop
 - [x] avg_builtin
-- [ ] cast_struct
+- [x] cast_struct
 - [x] cross_join_filter
 - [x] cross_join_triple
-- [ ] dataset_sort_take_limit
+- [x] dataset_sort_take_limit
  - [x] for_map_collection
 - [ ] group_by
 - [ ] group_by_conditional_sum
@@ -82,14 +82,14 @@ The C backend compiles Mochi programs in `tests/vm/valid`. The table below lists
 - [x] len_map
 - [ ] list_assign
 - [ ] list_nested_assign
-- [ ] load_yaml
+- [x] load_yaml
 - [x] map_assign
 - [x] map_index
 - [x] map_literal_dynamic
 - [x] map_membership
  - [x] membership
  - [x] min_max_builtin
-- [ ] order_by_map
+- [x] order_by_map
 - [ ] outer_join
 - [ ] record_assign
 - [ ] right_join

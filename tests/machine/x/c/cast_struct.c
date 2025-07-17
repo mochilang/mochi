@@ -2,11 +2,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct Todo Todo;
+typedef struct todo_t todo_t;
 
-typedef struct Todo {
+typedef struct todo_t {
   char *title;
-} Todo;
+} todo_t;
 typedef struct {
   int len;
   todo_t *data;
