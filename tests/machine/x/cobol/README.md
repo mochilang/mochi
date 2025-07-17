@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Mochi to COBOL Machine Outputs
 
 This directory contains COBOL code generated from the programs in `tests/vm/valid`.
@@ -105,3 +106,5 @@ Compiled programs: 40/100
 - [ ] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
+=======
+>>>>>>> 15d0dc4b5 (Truncate all README.md)

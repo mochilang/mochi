@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # OCaml Machine Translations
 
 This directory contains OCaml code generated from the Mochi programs in `tests/vm/valid` using the OCaml compiler. Each program was compiled and executed with `ocamlc`. Successful runs produced an `.out` file while failures produced an `.error` file.
@@ -110,3 +111,5 @@ Compiled programs: 75/100 successful.
 - [ ] Integrate an OCaml runtime to execute compiled programs in CI
 - [x] Expand anonymous record typing for clearer generated code
 - [x] Emit native `for` loops when iterating over numeric ranges
+=======
+>>>>>>> 15d0dc4b5 (Truncate all README.md)

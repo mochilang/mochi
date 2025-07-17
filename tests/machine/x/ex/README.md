@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Elixir Machine Output
 
 This directory contains Elixir source code generated from Mochi programs and the corresponding outputs.
@@ -109,3 +110,5 @@ Checklist:
 
 ### Remaining tasks
 - [ ] load_yaml
+=======
+>>>>>>> 15d0dc4b5 (Truncate all README.md)

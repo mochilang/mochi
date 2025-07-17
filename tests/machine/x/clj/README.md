@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Clojure Machine Translations
 
 This directory contains Clojure code generated from the Mochi programs in `tests/vm/valid` using the Clojure compiler. Each program was compiled and executed. Successful runs produced an `.out` file while failures produced an `.error` file.
@@ -109,3 +110,5 @@ Compiled programs: 98/100 successful.
 
 ## Remaining tasks
 - [ ] Fix failing examples
+=======
+>>>>>>> 15d0dc4b5 (Truncate all README.md)

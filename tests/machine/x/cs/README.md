@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # C# Machine Output
 
 This directory holds C# source generated from the Mochi programs in `tests/vm/valid`. Each compiled program has a `.cs` file and the expected output in a matching `.out`. If the compiler failed a `.error` file will be present instead.
@@ -106,3 +107,5 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+=======
+>>>>>>> 15d0dc4b5 (Truncate all README.md)

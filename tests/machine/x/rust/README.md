@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Mochi to Rust Machine Outputs
 
 This directory contains Rust code generated from the Mochi programs in `tests/vm/valid` using the Rust compiler. Each file was built with `rustc` and executed. Successful runs have a `.out` file, while failures produce a `.error` file.
@@ -120,3 +121,5 @@ Compiled programs: 100/100
 - [ ] Enhance type inference for nested structs
 - [ ] Implement benchmarking harness
 - [ ] Add code formatting similar to rustfmt
+=======
+>>>>>>> 15d0dc4b5 (Truncate all README.md)

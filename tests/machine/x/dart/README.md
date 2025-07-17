@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Dart Machine Output
 
 This directory contains Dart code generated from Mochi programs. Successful runs have a .out file, failures a .error file.
@@ -106,3 +107,5 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+=======
+>>>>>>> 15d0dc4b5 (Truncate all README.md)

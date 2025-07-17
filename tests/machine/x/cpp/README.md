@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # C++ Machine Output
 
 This directory contains C++ source code generated from Mochi programs and the corresponding outputs or error logs.
@@ -106,3 +107,5 @@ Compiled programs: 100/100
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+=======
+>>>>>>> 15d0dc4b5 (Truncate all README.md)
