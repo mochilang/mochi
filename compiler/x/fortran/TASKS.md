@@ -40,6 +40,8 @@
   removed the old compile-only test. Running the suite now populates
   `tests/machine/x/fortran` with `.f90` and `.out` files, reducing duplicate
   logic.
+- 2025-07-17 02:30: Added auto-import support for `cos` and generated
+  compilation checklist in `tests/machine/x/fortran/README.md`.
 
 ## Remaining Work
 - [x] Support query compilation with joins and group-by for TPC-H `q1.mochi`.
