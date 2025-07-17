@@ -2324,7 +2324,7 @@ func defaultValue(typ string) string {
 
 func isNumericType(t types.Type) bool {
 	switch t.(type) {
-	case types.IntType, types.Int64Type, types.FloatType, types.BigIntType, types.BigRatType, types.AnyType:
+	case types.IntType, types.Int64Type, types.FloatType, types.BigIntType, types.BigRatType:
 		return true
 	default:
 		return false
