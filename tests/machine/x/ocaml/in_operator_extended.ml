@@ -33,7 +33,7 @@ let ys : int list = (let __res0 = ref [] in
   ) xs;
 List.rev !__res0)
 
-let m : (string * Obj.t) list = [("a",Obj.repr (1))]
+let m = [("a",Obj.repr (1))]
 let s : string = "hello"
 
 let () =

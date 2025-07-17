@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from the Mochi programs in `tests/vm/valid` using the OCaml compiler. Each program was compiled and executed with `ocamlc`. Successful runs produced an `.out` file while failures produced an `.error` file.
 
-Compiled programs: 77/100 successful.
+Compiled programs: 79/100 successful.
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -61,7 +61,7 @@ Compiled programs: 77/100 successful.
 - [x] map_int_key.mochi
 - [x] map_literal_dynamic.mochi
 - [x] map_membership.mochi
-- [ ] map_nested_assign.mochi
+- [x] map_nested_assign.mochi
 - [x] match_expr.mochi
 - [x] match_full.mochi
 - [x] math_ops.mochi
@@ -88,7 +88,7 @@ Compiled programs: 77/100 successful.
 - [x] string_concat.mochi
 - [x] string_contains.mochi
 - [x] string_in_operator.mochi
-- [ ] string_index.mochi
+- [x] string_index.mochi
 - [ ] string_prefix_slice.mochi
 - [x] substring_builtin.mochi
 - [x] sum_builtin.mochi

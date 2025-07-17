@@ -20,7 +20,7 @@ let rec __show v =
 type record1 = { mutable n : int; mutable v : string }
 
 let items : record1 list = [{ n = 1; v = "a" };{ n = 1; v = "b" };{ n = 2; v = "c" }]
-let result : Obj.t list = (let __res0 = ref [] in
+let result = (let __res0 = ref [] in
   List.iter (fun (i : record1) ->
       __res0 := i.v :: !__res0;
   ) items;

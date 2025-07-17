@@ -20,6 +20,8 @@
 - [2025-07-13 17:51] Regenerated TPCH OCaml code for q1–q22 with float sum fixes.
 - [2025-07-15 04:49] Generated OCaml code for available TPC-DS queries and added tests.
 - [2025-07-15 06:32] Added basic cast support for floats and list types and generated code for TPC-DS q51, q65, q90.
+- [2025-07-17 07:10] Added type annotations in inner joins and skipped emitting
+  global `let` type hints when they contained `Obj.t` to improve inference.
 
 ## Remaining Enhancements
 - [ ] Verify floating point aggregates for full TPC-H q1

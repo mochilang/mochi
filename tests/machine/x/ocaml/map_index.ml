@@ -17,7 +17,7 @@ let rec __show v =
     | _ -> "<value>"
 
 
-let m : (string * Obj.t) list = [("a",Obj.repr (1));("b",Obj.repr (2))]
+let m = [("a",Obj.repr (1));("b",Obj.repr (2))]
 
 let () =
-  print_endline (__show (Obj.obj (List.assoc "b" m)));
+  print_endline (__show (Obj.obj (List.assoc "b" (m))));

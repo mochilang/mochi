@@ -26,4 +26,4 @@ let scores = ref [("alice",Obj.repr (1))]
 
 let () =
   scores := map_set !scores "bob" (2);
-  print_endline (__show (Obj.obj (List.assoc "bob" (!scores))));
+  print_endline (__show (Obj.obj (List.assoc "bob" ((!scores)))));
