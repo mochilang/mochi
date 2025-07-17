@@ -4491,6 +4491,8 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				return fmt.Sprintf("len([]rune(%s)) > 0", args[0]), nil
 			case types.GroupType:
 				return fmt.Sprintf("len(%s.Items) > 0", args[0]), nil
+			case types.OptionType:
+				return fmt.Sprintf("%s != nil", args[0]), nil
 			}
 		}
 		// Fallback to the runtime helper for imprecise types.
