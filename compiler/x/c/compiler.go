@@ -3897,6 +3897,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 	retT := c.exprType(q.Select)
 	if hasStruct {
 		retT = selStruct
+	} else if st, ok := retT.(types.StructType); ok {
+		selStruct = st
+		hasStruct = true
 	}
 	retList := types.ListType{Elem: retT}
 	listC := cTypeFromType(retList)

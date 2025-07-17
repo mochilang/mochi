@@ -132,3 +132,6 @@ should compile and run successfully.
 - 2025-09-14 - Fixed slice generation to avoid wrapping `list_int` values in
   temporary structs; `slice.mochi` now compiles and runs.
 - 2025-07-17 - Updated struct forward declarations to use sanitized type names so `cast_struct.mochi` compiles.
+- 2025-09-15 - Fixed list allocation for struct query results when the select
+  expression isn't a map literal. `dataset_sort_take_limit.mochi` now compiles
+  and runs.
