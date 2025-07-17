@@ -1,0 +1,107 @@
+# F# Machine Output
+
+Generated F# code for Mochi programs under `tests/vm/valid`.
+
+Compiled programs: 61/100
+
+Checklist:
+- [x] append_builtin
+- [x] avg_builtin
+- [x] basic_compare
+- [x] binary_precedence
+- [x] bool_chain
+- [x] break_continue
+- [x] cast_string_to_int
+- [x] cast_struct
+- [x] closure
+- [x] count_builtin
+- [x] cross_join
+- [x] cross_join_filter
+- [x] cross_join_triple
+- [x] dataset_sort_take_limit
+- [x] dataset_where_filter
+- [x] exists_builtin
+- [x] for_list_collection
+- [x] for_loop
+- [x] for_map_collection
+- [x] fun_call
+- [x] fun_expr_in_let
+- [x] fun_three_args
+- [x] go_auto
+- [ ] group_by
+- [ ] group_by_conditional_sum
+- [ ] group_by_having
+- [ ] group_by_join
+- [ ] group_by_left_join
+- [ ] group_by_multi_join
+- [ ] group_by_multi_join_sort
+- [ ] group_by_sort
+- [ ] group_items_iteration
+- [x] if_else
+- [x] if_then_else
+- [x] if_then_else_nested
+- [x] in_operator
+- [ ] in_operator_extended
+- [x] inner_join
+- [x] join_multi
+- [ ] json_builtin
+- [ ] left_join
+- [ ] left_join_multi
+- [x] len_builtin
+- [ ] len_map
+- [x] len_string
+- [x] let_and_print
+- [x] list_assign
+- [x] list_index
+- [ ] list_nested_assign
+- [x] list_set_ops
+- [ ] load_yaml
+- [ ] map_assign
+- [ ] map_in_operator
+- [x] map_index
+- [ ] map_int_key
+- [x] map_literal_dynamic
+- [ ] map_membership
+- [ ] map_nested_assign
+- [x] match_expr
+- [x] match_full
+- [x] math_ops
+- [x] membership
+- [x] min_max_builtin
+- [x] nested_function
+- [x] order_by_map
+- [ ] outer_join
+- [ ] partial_application
+- [x] print_hello
+- [x] pure_fold
+- [x] pure_global_fold
+- [x] python_auto
+- [x] python_math
+- [ ] query_sum_select
+- [ ] record_assign
+- [ ] right_join
+- [ ] save_jsonl_stdout
+- [x] short_circuit
+- [x] slice
+- [x] sort_stable
+- [x] str_builtin
+- [ ] string_compare
+- [ ] string_concat
+- [ ] string_contains
+- [ ] string_in_operator
+- [ ] string_index
+- [ ] string_prefix_slice
+- [x] substring_builtin
+- [x] sum_builtin
+- [ ] tail_recursion
+- [x] test_block
+- [ ] tree_sum
+- [ ] two-sum
+- [x] typed_let
+- [x] typed_var
+- [x] unary_neg
+- [ ] update_stmt
+- [x] user_type_literal
+- [x] values_builtin
+- [ ] var_assignment
+- [ ] while_loop
