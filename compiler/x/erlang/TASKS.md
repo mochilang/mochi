@@ -1,6 +1,7 @@
 # Erlang Compiler Tasks
 
 ## Recent updates
+- [2025-07-17 16:26] Added group variable type inference so group_by programs no longer use mochi_get. Regenerated machine outputs.
 - [2025-07-17 13:05] Regenerated `cross_join`, `cross_join_filter`, and
   `dataset_sort_take_limit` with refined type inference so `maps:get` replaces
   `mochi_get`.
