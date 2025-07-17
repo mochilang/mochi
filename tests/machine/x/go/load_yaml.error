@@ -1,0 +1,6 @@
+exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/load_yaml.go:22:21: undefined: Person
+../../../tests/machine/x/go/load_yaml.go:23:65: cannot use map[string]string{…} (value of type map[string]string) as map[string]any value in argument to _load
+../../../tests/machine/x/go/load_yaml.go:24:17: undefined: Person
+../../../tests/machine/x/go/load_yaml.go:26:13: invalid operation: r (variable of type map[string]any) is not an interface
