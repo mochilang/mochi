@@ -73,3 +73,7 @@
 - Struct field types now update from `std::any` when later elements provide
   concrete types, reducing helper usage at runtime.
 
+## Recent Enhancements (2025-07-17 17:08 UTC)
+- Vector element types now persist after trimming redundant initializers,
+  fixing `dataset_sort_take_limit` and similar queries.
+

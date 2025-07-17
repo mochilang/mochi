@@ -2,7 +2,7 @@
 
 Generated C++ code for the programs under `tests/vm/valid`. Each file here has a `.cpp` source produced by the compiler and an `.out` file with its runtime output. If compilation failed, a `.error` file captures the g++ output.
 
-Compiled programs: 81/100
+Compiled programs: 82/100
 
 ## Checklist
 - [x] append_builtin
@@ -18,7 +18,7 @@ Compiled programs: 81/100
 - [x] cross_join
 - [x] cross_join_filter
 - [x] cross_join_triple
-- [ ] dataset_sort_take_limit
+- [x] dataset_sort_take_limit
 - [x] dataset_where_filter
 - [x] exists_builtin
 - [x] for_list_collection
