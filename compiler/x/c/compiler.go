@@ -285,13 +285,13 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 			}
 		}
 		if s.Type != nil {
-			name := sanitizeName(s.Type.Name)
+			name := sanitizeTypeName(s.Type.Name)
 			if !forwardSet[name] {
 				forwardSet[name] = true
 				forward = append(forward, name)
 			}
 			for _, v := range s.Type.Variants {
-				vname := sanitizeName(v.Name)
+				vname := sanitizeTypeName(v.Name)
 				if !forwardSet[vname] {
 					forwardSet[vname] = true
 					forward = append(forward, vname)
@@ -515,7 +515,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
-	name := sanitizeName(t.Name)
+	name := sanitizeTypeName(t.Name)
 	if c.structs[name] {
 		return nil
 	}
@@ -523,7 +523,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	if len(t.Variants) > 0 {
 		// compile variant structs
 		for _, v := range t.Variants {
-			vname := sanitizeName(v.Name)
+			vname := sanitizeTypeName(v.Name)
 			c.writeln(fmt.Sprintf("typedef struct %s {", vname))
 			c.indent++
 			for _, f := range v.Fields {
@@ -543,7 +543,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		c.writeln("union {")
 		c.indent++
 		for _, v := range t.Variants {
-			vname := sanitizeName(v.Name)
+			vname := sanitizeTypeName(v.Name)
 			c.writeln(fmt.Sprintf("%s %s;", vname, vname))
 		}
 		c.indent--
@@ -553,11 +553,11 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		// tag constants
 		keys := make([]string, len(t.Variants))
 		for i, v := range t.Variants {
-			keys[i] = sanitizeName(v.Name)
+			keys[i] = sanitizeTypeName(v.Name)
 		}
 		sort.Strings(keys)
 		for i, k := range keys {
-			c.writeln(fmt.Sprintf("#define %s_%s %d", sanitizeName(t.Name), k, i))
+			c.writeln(fmt.Sprintf("#define %s_%s %d", sanitizeTypeName(t.Name), k, i))
 		}
 		if c.env != nil {
 			ut := types.UnionType{Name: t.Name, Variants: map[string]types.StructType{}}
