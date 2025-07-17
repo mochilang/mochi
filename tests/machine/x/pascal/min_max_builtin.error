@@ -1,0 +1,14 @@
+line: 43
+error: fpc error: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/TestPascalCompiler_VMValid_Goldenmin_max_builtin4219616361/001/main.pas
+main.pas(15,8) Error: Identifier not found "_variantLess"
+main.pas(43) Fatal: There were 1 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode
+
+  41:   writeln(specialize _maxList<integer>(nums));
+  42: end.
+  43: 

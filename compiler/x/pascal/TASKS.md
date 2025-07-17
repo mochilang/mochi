@@ -21,6 +21,8 @@
   `map_nested_assign` to compile.
 - [2025-07-17 17:44] Added `max` builtin using `_maxList` helper and updated
   helper ordering; compiled `min_max_builtin` successfully.
+- [2025-09-05 10:00] Enhanced group query inference and variable replacement
+  so more VM valid examples compile (71/100 passing).
 
 ## Remaining Work
 - [x] Support advanced dataset queries required for TPC-H Q1.

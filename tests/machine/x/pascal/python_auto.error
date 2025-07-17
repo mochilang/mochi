@@ -3,7 +3,7 @@ error: fpc error: exit status 1
 Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
-Compiling /tmp/TestPascalCompiler_VMValid_Goldenpython_auto1394022242/001/main.pas
+Compiling /tmp/TestPascalCompiler_VMValid_Goldenpython_auto1566339437/001/main.pas
 main.pas(11,11) Error: Identifier not found "math"
 main.pas(12,11) Error: Identifier not found "math"
 main.pas(14) Fatal: There were 2 errors compiling module, stopping
