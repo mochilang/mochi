@@ -6,6 +6,9 @@
   printing semantics and booleans are no longer rendered numerically.
 ## Recent Enhancements (2025-07-23 12:00)
 - Unused runtime helpers are pruned by scanning generated code.
+## Recent Enhancements (2025-07-24 00:00)
+- Builtin operations now detect optional list and map types, avoiding helper
+  emission when Python primitives suffice.
 
 ## Recent Enhancements (2025-07-17 01:20)
 - Print calls skip `_fmt` for constant string arguments and attempt to collapse
