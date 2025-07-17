@@ -1,6 +1,0 @@
-exit status 1
-/workspace/mochi/tests/machine/x/c/join_multi.c: In function ‘_mochi_main’:
-/workspace/mochi/tests/machine/x/c/join_multi.c:92:7: warning: implicit declaration of function ‘result_item_list_t_create’ [-Wimplicit-function-declaration]
-   92 |       result_item_list_t_create(orders_len * customers_len * items_len);
-      |       ^~~~~~~~~~~~~~~~~~~~~~~~~
-/workspace/mochi/tests/machine/x/c/join_multi.c:92:7: error: invalid initializer

@@ -89,7 +89,7 @@ int _mochi_main() {
                     (item_t){.order_id = 101, .sku = "b"}};
   int items_len = sizeof(items) / sizeof(items[0]);
   result_item_list_t tmp1 =
-      result_item_list_t_create(orders_len * customers_len * items_len);
+      create_result_item_list(orders_len * customers_len * items_len);
   int tmp2 = 0;
   for (int tmp3 = 0; tmp3 < orders_len; tmp3++) {
     order_t o = orders[tmp3];

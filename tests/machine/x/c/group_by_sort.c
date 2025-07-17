@@ -136,7 +136,7 @@ int _mochi_main() {
   int tmp7 = 0;
   for (int gi = 0; gi < tmp5.len; gi++) {
     _GroupString _gp = tmp5.data[gi];
-    item_list_t tmp9 = item_list_t_create(_gp.items.len);
+    item_list_t tmp9 = create_item_list(_gp.items.len);
     for (int i10 = 0; i10 < _gp.items.len; i10++) {
       tmp9.data[i10] = tmp1.data[_gp.items.data[i10]];
     }

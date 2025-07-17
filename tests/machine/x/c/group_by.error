@@ -1,9 +1,0 @@
-exit status 1
-/workspace/mochi/tests/machine/x/c/group_by.c: In function ‘_mochi_main’:
-/workspace/mochi/tests/machine/x/c/group_by.c:136:21: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  136 |     tmp2.data[tmp3] = person.city;
-      |                     ^
-/workspace/mochi/tests/machine/x/c/group_by.c:146:26: warning: implicit declaration of function ‘people_list_t_create’ [-Wimplicit-function-declaration]
-  146 |     people_list_t tmp8 = people_list_t_create(_gp.items.len);
-      |                          ^~~~~~~~~~~~~~~~~~~~
-/workspace/mochi/tests/machine/x/c/group_by.c:146:26: error: invalid initializer

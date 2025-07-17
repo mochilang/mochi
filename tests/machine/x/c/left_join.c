@@ -68,8 +68,7 @@ int _mochi_main() {
   order_t orders[] = {(order_t){.id = 100, .customer_id = 1, .total = 250},
                       (order_t){.id = 101, .customer_id = 3, .total = 80}};
   int orders_len = sizeof(orders) / sizeof(orders[0]);
-  result_item_list_t tmp1 =
-      result_item_list_t_create(orders_len * customers_len);
+  result_item_list_t tmp1 = create_result_item_list(orders_len * customers_len);
   int tmp2 = 0;
   for (int tmp3 = 0; tmp3 < orders_len; tmp3++) {
     order_t o = orders[tmp3];

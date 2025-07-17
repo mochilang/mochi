@@ -1,9 +1,0 @@
-exit status 1
-/workspace/mochi/tests/machine/x/c/group_by_multi_join.c: In function ‘_mochi_main’:
-/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:188:7: warning: implicit declaration of function ‘filtered_item_list_t_create’ [-Wimplicit-function-declaration]
-  188 |       filtered_item_list_t_create(partsupp_len * suppliers_len * nations_len);
-      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:188:7: error: invalid initializer
-/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:230:34: error: invalid initializer
-  230 |     filtered_item_list_t tmp13 = filtered_item_list_t_create(_gp.items.len);
-      |                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~

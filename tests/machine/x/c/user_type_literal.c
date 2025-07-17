@@ -2,13 +2,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct Person Person;
-typedef struct Book Book;
+typedef struct person_t person_t;
+typedef struct book_t book_t;
 
-typedef struct Person {
+typedef struct person_t {
   char *name;
   int age;
-} Person;
+} person_t;
 typedef struct {
   int len;
   person_t *data;
@@ -24,10 +24,10 @@ person_list_t create_person_list(int len) {
   return l;
 }
 
-typedef struct Book {
+typedef struct book_t {
   char *title;
   Person author;
-} Book;
+} book_t;
 typedef struct {
   int len;
   book_t *data;

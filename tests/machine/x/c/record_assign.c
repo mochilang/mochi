@@ -2,11 +2,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct Counter Counter;
+typedef struct counter_t counter_t;
 
-typedef struct Counter {
+typedef struct counter_t {
   int n;
-} Counter;
+} counter_t;
 typedef struct {
   int len;
   counter_t *data;

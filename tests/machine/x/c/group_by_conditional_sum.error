@@ -1,9 +1,0 @@
-exit status 1
-/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c: In function ‘_mochi_main’:
-/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:129:21: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  129 |     tmp2.data[tmp3] = i.cat;
-      |                     ^
-/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:140:24: warning: implicit declaration of function ‘item_list_t_create’ [-Wimplicit-function-declaration]
-  140 |     item_list_t tmp9 = item_list_t_create(_gp.items.len);
-      |                        ^~~~~~~~~~~~~~~~~~
-/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:140:24: error: invalid initializer
