@@ -2,16 +2,16 @@
 // cross_join.mochi
 import java.util.*;
 
-class IdName {
+class Customer {
     int id;
     String name;
-    IdName(int id, String name) {
+    Customer(int id, String name) {
         this.id = id;
         this.name = name;
     }
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof IdName other)) return false;
+        if (!(o instanceof Customer other)) return false;
         return Objects.equals(this.id, other.id) && Objects.equals(this.name, other.name);
     }
     @Override public int hashCode() {
@@ -19,18 +19,18 @@ class IdName {
     }
     int size() { return 2; }
 }
-class IdCustomerIdTotal {
+class Order {
     int id;
     int customerId;
     int total;
-    IdCustomerIdTotal(int id, int customerId, int total) {
+    Order(int id, int customerId, int total) {
         this.id = id;
         this.customerId = customerId;
         this.total = total;
     }
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof IdCustomerIdTotal other)) return false;
+        if (!(o instanceof Order other)) return false;
         return Objects.equals(this.id, other.id) && Objects.equals(this.customerId, other.customerId) && Objects.equals(this.total, other.total);
     }
     @Override public int hashCode() {
@@ -38,12 +38,12 @@ class IdCustomerIdTotal {
     }
     int size() { return 3; }
 }
-class OrderIdOrderCustomerIdPairedCustomerNameOrderTotal {
+class Result {
     int orderId;
     int orderCustomerId;
     String pairedCustomerName;
     int orderTotal;
-    OrderIdOrderCustomerIdPairedCustomerNameOrderTotal(int orderId, int orderCustomerId, String pairedCustomerName, int orderTotal) {
+    Result(int orderId, int orderCustomerId, String pairedCustomerName, int orderTotal) {
         this.orderId = orderId;
         this.orderCustomerId = orderCustomerId;
         this.pairedCustomerName = pairedCustomerName;
@@ -51,7 +51,7 @@ class OrderIdOrderCustomerIdPairedCustomerNameOrderTotal {
     }
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof OrderIdOrderCustomerIdPairedCustomerNameOrderTotal other)) return false;
+        if (!(o instanceof Result other)) return false;
         return Objects.equals(this.orderId, other.orderId) && Objects.equals(this.orderCustomerId, other.orderCustomerId) && Objects.equals(this.pairedCustomerName, other.pairedCustomerName) && Objects.equals(this.orderTotal, other.orderTotal);
     }
     @Override public int hashCode() {
@@ -61,20 +61,20 @@ class OrderIdOrderCustomerIdPairedCustomerNameOrderTotal {
 }
 public class CrossJoin {
     public static void main(String[] args) {
-    List<IdName> customers = new ArrayList<>(Arrays.asList(new IdName(1, "Alice"), new IdName(2, "Bob"), new IdName(3, "Charlie")));
-    List<IdCustomerIdTotal> orders = new ArrayList<>(Arrays.asList(new IdCustomerIdTotal(100, 1, 250), new IdCustomerIdTotal(101, 2, 125), new IdCustomerIdTotal(102, 1, 300)));
-    List<OrderIdOrderCustomerIdPairedCustomerNameOrderTotal> result = (new java.util.function.Supplier<List<OrderIdOrderCustomerIdPairedCustomerNameOrderTotal>>(){public List<OrderIdOrderCustomerIdPairedCustomerNameOrderTotal> get(){
-    List<OrderIdOrderCustomerIdPairedCustomerNameOrderTotal> res0 = new ArrayList<>();
+        List<Customer> customers = new ArrayList<>(Arrays.asList(new Customer(1, "Alice"), new Customer(2, "Bob"), new Customer(3, "Charlie")));
+        List<Order> orders = new ArrayList<>(Arrays.asList(new Order(100, 1, 250), new Order(101, 2, 125), new Order(102, 1, 300)));
+        List<Result> result = (new java.util.function.Supplier<List<Result>>(){public List<Result> get(){
+    List<Result> res0 = new ArrayList<>();
     for (var o : orders) {
         for (var c : customers) {
-            res0.add(new OrderIdOrderCustomerIdPairedCustomerNameOrderTotal(o.id, o.customerId, c.name, o.total));
+            res0.add(new Result(o.id, o.customerId, c.name, o.total));
         }
     }
     return res0;
 }}).get();
-    System.out.println("--- Cross Join: All order-customer pairs ---");
-    for (OrderIdOrderCustomerIdPairedCustomerNameOrderTotal entry : result) {
-        System.out.println("Order" + " " + entry.orderId + " " + "(customerId:" + " " + entry.orderCustomerId + " " + ", total: $" + " " + entry.orderTotal + " " + ") paired with" + " " + entry.pairedCustomerName);
-    }
+        System.out.println("--- Cross Join: All order-customer pairs ---");
+        for (Result entry : result) {
+            System.out.println("Order" + " " + entry.orderId + " " + "(customerId:" + " " + entry.orderCustomerId + " " + ", total: $" + " " + entry.orderTotal + " " + ") paired with" + " " + entry.pairedCustomerName);
+        }
     }
 }

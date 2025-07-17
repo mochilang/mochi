@@ -6,6 +6,6 @@ public class PureGlobalFold {
         return x + k;
     }
     public static void main(String[] args) {
-    System.out.println(inc(3));
+        System.out.println(inc(3));
     }
 }

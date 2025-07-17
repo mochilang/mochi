@@ -40,3 +40,4 @@
 - 2025-07-17T08:21 - regenerated print_hello output with newline and improved indentation
 - 2025-07-17T08:52 - avoided data class conversion for small maps used with `in` operator
 - 2025-07-17T09:15 - removed unused append helper by rewriting self-assignments
+- 2025-07-17T09:45 - replaced mapOfEntries helper with Map.ofEntries for map literals

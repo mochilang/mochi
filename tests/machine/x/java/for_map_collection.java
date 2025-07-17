@@ -2,16 +2,16 @@
 // for_map_collection.mochi
 import java.util.*;
 
-class AB {
+class M {
     int a;
     int b;
-    AB(int a, int b) {
+    M(int a, int b) {
         this.a = a;
         this.b = b;
     }
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof AB other)) return false;
+        if (!(o instanceof M other)) return false;
         return Objects.equals(this.a, other.a) && Objects.equals(this.b, other.b);
     }
     @Override public int hashCode() {
@@ -21,9 +21,9 @@ class AB {
 }
 public class ForMapCollection {
     public static void main(String[] args) {
-    AB m = new AB(1, 2);
-    for (String k : Arrays.asList("a", "b")) {
-        System.out.println(k);
-    }
+        M m = new M(1, 2);
+        for (String k : Arrays.asList("a", "b")) {
+            System.out.println(k);
+        }
     }
 }

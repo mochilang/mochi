@@ -31,6 +31,6 @@ public class TreeSum {
 }}).get();
     }
     public static void main(String[] args) {
-    System.out.println(sum_tree(t));
+        System.out.println(sum_tree(t));
     }
 }

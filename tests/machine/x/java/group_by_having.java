@@ -2,16 +2,16 @@
 // group_by_having.mochi
 import java.util.*;
 
-class NameCity {
+class People {
     String name;
     String city;
-    NameCity(String name, String city) {
+    People(String name, String city) {
         this.name = name;
         this.city = city;
     }
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof NameCity other)) return false;
+        if (!(o instanceof People other)) return false;
         return Objects.equals(this.name, other.name) && Objects.equals(this.city, other.city);
     }
     @Override public int hashCode() {
@@ -19,16 +19,16 @@ class NameCity {
     }
     int size() { return 2; }
 }
-class CityNum {
+class Big {
     String city;
     int num;
-    CityNum(String city, int num) {
+    Big(String city, int num) {
         this.city = city;
         this.num = num;
     }
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof CityNum other)) return false;
+        if (!(o instanceof Big other)) return false;
         return Objects.equals(this.city, other.city) && Objects.equals(this.num, other.num);
     }
     @Override public int hashCode() {
@@ -84,25 +84,25 @@ public class GroupByHaving {
     }
     static void json(Object o) { System.out.println(toJson(o)); }
     public static void main(String[] args) {
-    List<NameCity> people = new ArrayList<>(Arrays.asList(new NameCity("Alice", "Paris"), new NameCity("Bob", "Hanoi"), new NameCity("Charlie", "Paris"), new NameCity("Diana", "Hanoi"), new NameCity("Eve", "Paris"), new NameCity("Frank", "Hanoi"), new NameCity("George", "Paris")));
-    List<CityNum> big = (new java.util.function.Supplier<List<CityNum>>(){public List<CityNum> get(){
-    List<CityNum> res0 = new ArrayList<>();
-    Map<String,List<NameCity>> groups1 = new LinkedHashMap<>();
+        List<People> people = new ArrayList<>(Arrays.asList(new People("Alice", "Paris"), new People("Bob", "Hanoi"), new People("Charlie", "Paris"), new People("Diana", "Hanoi"), new People("Eve", "Paris"), new People("Frank", "Hanoi"), new People("George", "Paris")));
+        List<Big> big = (new java.util.function.Supplier<List<Big>>(){public List<Big> get(){
+    List<Big> res0 = new ArrayList<>();
+    Map<String,List<People>> groups1 = new LinkedHashMap<>();
     for (var p : people) {
         var row2 = p;
         String key3 = p.city;
-        List<NameCity> bucket4 = groups1.get(key3);
+        List<People> bucket4 = groups1.get(key3);
         if (bucket4 == null) { bucket4 = new ArrayList<>(); groups1.put(key3, bucket4); }
         bucket4.add(row2);
     }
-    for (Map.Entry<String,List<NameCity>> __e : groups1.entrySet()) {
+    for (Map.Entry<String,List<People>> __e : groups1.entrySet()) {
         String g_key = __e.getKey();
-        Group<String,NameCity> g = new Group<>(g_key, __e.getValue());
+        Group<String,People> g = new Group<>(g_key, __e.getValue());
         if (!(g.size() >= 4)) continue;
-        res0.add(new CityNum(g.key, g.size()));
+        res0.add(new Big(g.key, g.size()));
     }
     return res0;
 }}).get();
-    json(big);
+        json(big);
     }
 }

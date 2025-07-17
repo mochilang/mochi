@@ -4,9 +4,9 @@ import java.util.*;
 
 public class ListSetOps {
     public static void main(String[] args) {
-    System.out.println(java.util.stream.Stream.concat(Arrays.asList(1, 2).stream(), Arrays.asList(2, 3).stream()).distinct().collect(java.util.stream.Collectors.toList()));
-    System.out.println(Arrays.asList(1, 2, 3).stream().filter(x -> !Arrays.asList(2).contains(x)).collect(java.util.stream.Collectors.toList()));
-    System.out.println(Arrays.asList(1, 2, 3).stream().filter(Arrays.asList(2, 4)::contains).distinct().collect(java.util.stream.Collectors.toList()));
-    System.out.println(java.util.stream.Stream.concat(Arrays.asList(1, 2).stream(), Arrays.asList(2, 3).stream()).collect(java.util.stream.Collectors.toList()).size());
+        System.out.println(java.util.stream.Stream.concat(Arrays.asList(1, 2).stream(), Arrays.asList(2, 3).stream()).distinct().collect(java.util.stream.Collectors.toList()));
+        System.out.println(Arrays.asList(1, 2, 3).stream().filter(x -> !Arrays.asList(2).contains(x)).collect(java.util.stream.Collectors.toList()));
+        System.out.println(Arrays.asList(1, 2, 3).stream().filter(Arrays.asList(2, 4)::contains).distinct().collect(java.util.stream.Collectors.toList()));
+        System.out.println(java.util.stream.Stream.concat(Arrays.asList(1, 2).stream(), Arrays.asList(2, 3).stream()).collect(java.util.stream.Collectors.toList()).size());
     }
 }

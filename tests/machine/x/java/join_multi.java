@@ -2,16 +2,16 @@
 // join_multi.mochi
 import java.util.*;
 
-class IdName {
+class Customer {
     int id;
     String name;
-    IdName(int id, String name) {
+    Customer(int id, String name) {
         this.id = id;
         this.name = name;
     }
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof IdName other)) return false;
+        if (!(o instanceof Customer other)) return false;
         return Objects.equals(this.id, other.id) && Objects.equals(this.name, other.name);
     }
     @Override public int hashCode() {
@@ -19,16 +19,16 @@ class IdName {
     }
     int size() { return 2; }
 }
-class IdCustomerId {
+class Order {
     int id;
     int customerId;
-    IdCustomerId(int id, int customerId) {
+    Order(int id, int customerId) {
         this.id = id;
         this.customerId = customerId;
     }
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof IdCustomerId other)) return false;
+        if (!(o instanceof Order other)) return false;
         return Objects.equals(this.id, other.id) && Objects.equals(this.customerId, other.customerId);
     }
     @Override public int hashCode() {
@@ -36,16 +36,16 @@ class IdCustomerId {
     }
     int size() { return 2; }
 }
-class OrderIdSku {
+class Item {
     int orderId;
     String sku;
-    OrderIdSku(int orderId, String sku) {
+    Item(int orderId, String sku) {
         this.orderId = orderId;
         this.sku = sku;
     }
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof OrderIdSku other)) return false;
+        if (!(o instanceof Item other)) return false;
         return Objects.equals(this.orderId, other.orderId) && Objects.equals(this.sku, other.sku);
     }
     @Override public int hashCode() {
@@ -53,16 +53,16 @@ class OrderIdSku {
     }
     int size() { return 2; }
 }
-class NameSku {
+class Result {
     String name;
     String sku;
-    NameSku(String name, String sku) {
+    Result(String name, String sku) {
         this.name = name;
         this.sku = sku;
     }
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof NameSku other)) return false;
+        if (!(o instanceof Result other)) return false;
         return Objects.equals(this.name, other.name) && Objects.equals(this.sku, other.sku);
     }
     @Override public int hashCode() {
@@ -72,25 +72,25 @@ class NameSku {
 }
 public class JoinMulti {
     public static void main(String[] args) {
-    List<IdName> customers = new ArrayList<>(Arrays.asList(new IdName(1, "Alice"), new IdName(2, "Bob")));
-    List<IdCustomerId> orders = new ArrayList<>(Arrays.asList(new IdCustomerId(100, 1), new IdCustomerId(101, 2)));
-    List<OrderIdSku> items = new ArrayList<>(Arrays.asList(new OrderIdSku(100, "a"), new OrderIdSku(101, "b")));
-    List<NameSku> result = (new java.util.function.Supplier<List<NameSku>>(){public List<NameSku> get(){
-    List<NameSku> res0 = new ArrayList<>();
+        List<Customer> customers = new ArrayList<>(Arrays.asList(new Customer(1, "Alice"), new Customer(2, "Bob")));
+        List<Order> orders = new ArrayList<>(Arrays.asList(new Order(100, 1), new Order(101, 2)));
+        List<Item> items = new ArrayList<>(Arrays.asList(new Item(100, "a"), new Item(101, "b")));
+        List<Result> result = (new java.util.function.Supplier<List<Result>>(){public List<Result> get(){
+    List<Result> res0 = new ArrayList<>();
     for (var o : orders) {
         for (var c : customers) {
             if (!(o.customerId == c.id)) continue;
             for (var i : items) {
                 if (!(o.id == i.orderId)) continue;
-                res0.add(new NameSku(c.name, i.sku));
+                res0.add(new Result(c.name, i.sku));
             }
         }
     }
     return res0;
 }}).get();
-    System.out.println("--- Multi Join ---");
-    for (NameSku r : result) {
-        System.out.println(r.name + " " + "bought item" + " " + r.sku);
-    }
+        System.out.println("--- Multi Join ---");
+        for (Result r : result) {
+            System.out.println(r.name + " " + "bought item" + " " + r.sku);
+        }
     }
 }

@@ -6,7 +6,7 @@ public class ShortCircuit {
         return true;
     }
     public static void main(String[] args) {
-    System.out.println(false && boom(1, 2));
-    System.out.println(true || boom(1, 2));
+        System.out.println(false && boom(1, 2));
+        System.out.println(true || boom(1, 2));
     }
 }
