@@ -538,6 +538,35 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 	header := fmt.Sprintf("let rec %s %s =", f.Name, paramStr)
 	c.writeln(header)
 	c.indent++
+
+	// special case: if body is `if ... return X` followed by `return Y`
+	if len(f.Body) == 2 && f.Body[0].If != nil && f.Body[1].Return != nil &&
+		len(f.Body[0].If.Then) == 1 && f.Body[0].If.Then[0].Return != nil &&
+		f.Body[0].If.Else == nil && f.Body[0].If.ElseIf == nil {
+		cond, err := c.compileExpr(f.Body[0].If.Cond)
+		if err != nil {
+			return err
+		}
+		thn, err := c.compileExpr(f.Body[0].If.Then[0].Return.Value)
+		if err != nil {
+			return err
+		}
+		els, err := c.compileExpr(f.Body[1].Return.Value)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("if %s then", cond))
+		c.indent++
+		c.writeln(thn)
+		c.indent--
+		c.writeln("else")
+		c.indent++
+		c.writeln(els)
+		c.indent--
+		c.indent--
+		return nil
+	}
+
 	for i, st := range f.Body {
 		if i == len(f.Body)-1 {
 			if st.Return != nil {
@@ -1179,11 +1208,15 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return fmt.Sprintf("Seq.toList (%s.Values)", args[0]), nil
 		}
 	default:
-		argStr := strings.Join(args, " ")
-		if argStr == "" {
+		if len(args) == 0 {
 			return fmt.Sprintf("%s()", call.Func), nil
 		}
-		return fmt.Sprintf("%s %s", call.Func, argStr), nil
+		for i, a := range args {
+			if !identifierRegexp.MatchString(a) && !strings.HasPrefix(a, "(") && !strings.HasPrefix(a, "[") && !strings.HasPrefix(a, "{") && !strings.HasPrefix(a, "\"") {
+				args[i] = fmt.Sprintf("(%s)", a)
+			}
+		}
+		return fmt.Sprintf("%s %s", call.Func, strings.Join(args, " ")), nil
 	}
 	return "", fmt.Errorf("unsupported call %s", call.Func)
 }
