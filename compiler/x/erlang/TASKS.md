@@ -1,6 +1,9 @@
 # Erlang Compiler Tasks
 
 ## Recent updates
+- [2025-07-17 12:01] Added query result type inference so lists of maps are
+  recognized. This removes `mochi_get` usage in `cross_join_triple` and similar
+  programs. Regenerated machine output for `cross_join_triple`.
 - [2025-07-17 08:59] Improved type inference for struct casts and list iteration variables, eliminating more `mochi_get` calls. Regenerated machine outputs.
 - [2025-07-17 08:49] Used type inference to emit `maps:get` for known map fields,
   removing unnecessary `mochi_get` calls. Regenerated machine outputs.
