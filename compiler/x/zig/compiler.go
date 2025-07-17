@@ -3706,7 +3706,9 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	} else {
 		callParams = "self: @This()"
 	}
-	return fmt.Sprintf("(struct { %sfn call(%s) %s {\n%s} }{ %s }).call", decl, callParams, ret, body, init), nil
+	tmpVar := fmt.Sprintf("_clo%d", c.tmpCount)
+	c.tmpCount++
+	return fmt.Sprintf("(blk: { var %s = struct { %sfn call(%s) %s {\n%s} }{ %s }; break :blk %s.call; })", tmpVar, decl, callParams, ret, body, init, tmpVar), nil
 }
 
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {

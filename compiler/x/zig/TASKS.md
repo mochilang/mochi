@@ -10,6 +10,7 @@
 - 2025-07-16 02:00 - Added VM valid golden tests and improved float sum detection.
 - 2025-07-16 17:30 - `_append` now returns an owned slice and lists print via `_print_list`.
 - 2025-07-16 18:00 - Added `vm_valid_golden_test.go` and fixed float printing to always show one decimal place.
+- 2025-07-21 00:00 - Switched VM valid suite to `golden.RunWithSummary` and fixed closure return code generation.
 
 ## Remaining Work
 - Support struct field type inference for TPCH data sets.

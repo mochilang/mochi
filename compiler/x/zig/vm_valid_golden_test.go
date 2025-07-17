@@ -35,7 +35,7 @@ func TestZigCompiler_VMValid_GoldenRun(t *testing.T) {
 	if err := os.MkdirAll(outDir, 0o755); err != nil {
 		t.Fatal(err)
 	}
-	golden.Run(t, "tests/vm/valid", ".mochi", ".out", func(src string) ([]byte, error) {
+	golden.RunWithSummary(t, "tests/vm/valid", ".mochi", ".out", func(src string) ([]byte, error) {
 		data, err := os.ReadFile(src)
 		if err != nil {
 			return nil, fmt.Errorf("read src: %w", err)
