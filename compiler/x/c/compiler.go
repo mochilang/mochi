@@ -1093,7 +1093,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				}
 			}
 			ix := c.compileExpr(idx.Start)
-			if _, ok := c.listLens[target]; ok {
+			if c.isStackArrayExpr(target) {
 				target = fmt.Sprintf("%s[%s]", target, ix)
 			} else {
 				target = fmt.Sprintf("%s.data[%s]", target, ix)
@@ -4932,7 +4932,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			for i, el := range p.List.Elems {
 				v := c.compileExpr(el)
 				if l, ok := c.listLens[v]; ok {
-					vals[i] = fmt.Sprintf("{%d, %s}", l, v)
+					vals[i] = fmt.Sprintf("{%d, %s.data}", l, v)
 				} else {
 					vals[i] = v
 				}

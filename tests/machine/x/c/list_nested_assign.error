@@ -1,8 +1,0 @@
-exit status 1
-/workspace/mochi/tests/machine/x/c/list_nested_assign.c: In function ‘_mochi_main’:
-/workspace/mochi/tests/machine/x/c/list_nested_assign.c:40:33: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-   40 |   list_int matrix_data[] = {{2, tmp1}, {2, tmp2}};
-      |                                 ^~~~
-/workspace/mochi/tests/machine/x/c/list_nested_assign.c:40:44: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-   40 |   list_int matrix_data[] = {{2, tmp1}, {2, tmp2}};
-      |                                            ^~~~

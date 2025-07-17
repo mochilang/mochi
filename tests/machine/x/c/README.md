@@ -80,8 +80,8 @@ The C backend compiles Mochi programs in `tests/vm/valid`. The table below lists
 - [x] left_join
 - [x] left_join_multi
 - [x] len_map
-- [ ] list_assign
-- [ ] list_nested_assign
+ - [x] list_assign
+ - [x] list_nested_assign
 - [x] load_yaml
 - [x] map_assign
 - [x] map_index
