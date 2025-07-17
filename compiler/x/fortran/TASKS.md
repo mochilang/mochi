@@ -49,6 +49,9 @@
 - 2025-07-17 10:00: List set operations (`union`, `union_all`, `except`,
   `intersect`) compute at compile time when both operands are integer list
   literals, eliminating helper functions at runtime.
+- 2025-07-17 11:00: Constant integer lists propagate through variables so
+  `append` on known lists is resolved at compile time, removing temporary
+  buffers.
 
 ## Remaining Work
 - [x] Support query compilation with joins and group-by for TPC-H `q1.mochi`.
