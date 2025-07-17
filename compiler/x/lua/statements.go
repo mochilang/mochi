@@ -72,6 +72,23 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	}
 }
 
+func zeroValueLua(t *parser.TypeRef) string {
+	if t == nil {
+		return "nil"
+	}
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int", "int64", "float", "bigint", "bigrat":
+			return "0"
+		case "bool":
+			return "false"
+		case "string":
+			return "\"\""
+		}
+	}
+	return "nil"
+}
+
 func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	name := sanitizeName(s.Name)
 	val := "nil"
@@ -82,10 +99,13 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		}
 		val = expr
 	} else if s.Type != nil {
-		if c.uninitVars == nil {
-			c.uninitVars = map[string]bool{}
+		val = zeroValueLua(s.Type)
+		if val == "nil" {
+			if c.uninitVars == nil {
+				c.uninitVars = map[string]bool{}
+			}
+			c.uninitVars[s.Name] = true
 		}
-		c.uninitVars[s.Name] = true
 	}
 	prefix := "local "
 	if c.indent == 0 {
