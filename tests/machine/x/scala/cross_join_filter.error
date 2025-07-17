@@ -1,0 +1,8 @@
+exit status 1
+/workspace/mochi/tests/machine/x/scala/cross_join_filter.scala:11: error: value n is not a member of scala.collection.immutable.Map[String,Any]
+      println(s"${p.n} ${p.l}")
+                    ^
+/workspace/mochi/tests/machine/x/scala/cross_join_filter.scala:11: error: value l is not a member of scala.collection.immutable.Map[String,Any]
+      println(s"${p.n} ${p.l}")
+                           ^
+two errors found

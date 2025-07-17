@@ -1,0 +1,8 @@
+exit status 1
+/workspace/mochi/tests/machine/x/scala/group_by_having.scala:10: error: value city is not a member of scala.collection.immutable.Map[String,String]
+    val big = (((for { p <- people } yield (p.city, p)).groupBy(_._1).map{ case(k,list) => _Group(k, list.map(_._2)) }.toList).filter{ g => (g).size >= 4 }).map{ g => Map("city" -> g.key, "num" -> (g).size) }.toList
+                                              ^
+/workspace/mochi/tests/machine/x/scala/group_by_having.scala:10: error: value map is not a member of Any
+    val big = (((for { p <- people } yield (p.city, p)).groupBy(_._1).map{ case(k,list) => _Group(k, list.map(_._2)) }.toList).filter{ g => (g).size >= 4 }).map{ g => Map("city" -> g.key, "num" -> (g).size) }.toList
+                                                                                                          ^
+two errors found

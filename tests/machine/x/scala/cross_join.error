@@ -1,0 +1,26 @@
+exit status 1
+/workspace/mochi/tests/machine/x/scala/cross_join.scala:10: error: value id is not a member of scala.collection.immutable.Map[String,Int]
+    val result = for { o <- orders; c <- customers } yield Map("orderId" -> o.id, "orderCustomerId" -> o.customerId, "pairedCustomerName" -> c.name, "orderTotal" -> o.total)
+                                                                              ^
+/workspace/mochi/tests/machine/x/scala/cross_join.scala:10: error: value customerId is not a member of scala.collection.immutable.Map[String,Int]
+    val result = for { o <- orders; c <- customers } yield Map("orderId" -> o.id, "orderCustomerId" -> o.customerId, "pairedCustomerName" -> c.name, "orderTotal" -> o.total)
+                                                                                                         ^
+/workspace/mochi/tests/machine/x/scala/cross_join.scala:10: error: value name is not a member of scala.collection.immutable.Map[String,Any]
+    val result = for { o <- orders; c <- customers } yield Map("orderId" -> o.id, "orderCustomerId" -> o.customerId, "pairedCustomerName" -> c.name, "orderTotal" -> o.total)
+                                                                                                                                               ^
+/workspace/mochi/tests/machine/x/scala/cross_join.scala:10: error: value total is not a member of scala.collection.immutable.Map[String,Int]
+    val result = for { o <- orders; c <- customers } yield Map("orderId" -> o.id, "orderCustomerId" -> o.customerId, "pairedCustomerName" -> c.name, "orderTotal" -> o.total)
+                                                                                                                                                                       ^
+/workspace/mochi/tests/machine/x/scala/cross_join.scala:13: error: value orderId is not a member of Nothing
+      println(s"Order ${entry.orderId} (customerId: ${entry.orderCustomerId}, total: $$${entry.orderTotal}) paired with ${entry.pairedCustomerName}")
+                              ^
+/workspace/mochi/tests/machine/x/scala/cross_join.scala:13: error: value orderCustomerId is not a member of Nothing
+      println(s"Order ${entry.orderId} (customerId: ${entry.orderCustomerId}, total: $$${entry.orderTotal}) paired with ${entry.pairedCustomerName}")
+                                                            ^
+/workspace/mochi/tests/machine/x/scala/cross_join.scala:13: error: value orderTotal is not a member of Nothing
+      println(s"Order ${entry.orderId} (customerId: ${entry.orderCustomerId}, total: $$${entry.orderTotal}) paired with ${entry.pairedCustomerName}")
+                                                                                               ^
+/workspace/mochi/tests/machine/x/scala/cross_join.scala:13: error: value pairedCustomerName is not a member of Nothing
+      println(s"Order ${entry.orderId} (customerId: ${entry.orderCustomerId}, total: $$${entry.orderTotal}) paired with ${entry.pairedCustomerName}")
+                                                                                                                                ^
+8 errors found

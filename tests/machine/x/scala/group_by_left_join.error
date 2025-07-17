@@ -1,0 +1,24 @@
+exit status 1
+/workspace/mochi/tests/machine/x/scala/group_by_left_join.scala:13: error: value customerId is not a member of scala.collection.immutable.Map[String,Int]
+    val stats = ((for { c <- customers; o = orders.find(o => (o.customerId).asInstanceOf[Int] == c.id) } yield (c.name, Stat(c = c, o = o))).groupBy(_._1).map{ case(k,list) => _Group(k, list.map(_._2)) }.toList).map{ g => Map("name" -> g.key, "count" -> (for { r <- g; if r.o.nonEmpty } yield r).size) }.toList
+                                                                ^
+/workspace/mochi/tests/machine/x/scala/group_by_left_join.scala:13: error: value id is not a member of scala.collection.immutable.Map[String,Any]
+    val stats = ((for { c <- customers; o = orders.find(o => (o.customerId).asInstanceOf[Int] == c.id) } yield (c.name, Stat(c = c, o = o))).groupBy(_._1).map{ case(k,list) => _Group(k, list.map(_._2)) }.toList).map{ g => Map("name" -> g.key, "count" -> (for { r <- g; if r.o.nonEmpty } yield r).size) }.toList
+                                                                                                   ^
+/workspace/mochi/tests/machine/x/scala/group_by_left_join.scala:13: error: value name is not a member of Any
+    val stats = ((for { c <- customers; o = orders.find(o => (o.customerId).asInstanceOf[Int] == c.id) } yield (c.name, Stat(c = c, o = o))).groupBy(_._1).map{ case(k,list) => _Group(k, list.map(_._2)) }.toList).map{ g => Map("name" -> g.key, "count" -> (for { r <- g; if r.o.nonEmpty } yield r).size) }.toList
+                                                                                                                  ^
+/workspace/mochi/tests/machine/x/scala/group_by_left_join.scala:13: error: type mismatch;
+ found   : Any
+ required: group_by_left_join.Customer
+    val stats = ((for { c <- customers; o = orders.find(o => (o.customerId).asInstanceOf[Int] == c.id) } yield (c.name, Stat(c = c, o = o))).groupBy(_._1).map{ case(k,list) => _Group(k, list.map(_._2)) }.toList).map{ g => Map("name" -> g.key, "count" -> (for { r <- g; if r.o.nonEmpty } yield r).size) }.toList
+                                                                                                                                 ^
+/workspace/mochi/tests/machine/x/scala/group_by_left_join.scala:13: error: type mismatch;
+ found   : Any
+ required: Option[group_by_left_join.Order]
+    val stats = ((for { c <- customers; o = orders.find(o => (o.customerId).asInstanceOf[Int] == c.id) } yield (c.name, Stat(c = c, o = o))).groupBy(_._1).map{ case(k,list) => _Group(k, list.map(_._2)) }.toList).map{ g => Map("name" -> g.key, "count" -> (for { r <- g; if r.o.nonEmpty } yield r).size) }.toList
+                                                                                                                                        ^
+/workspace/mochi/tests/machine/x/scala/group_by_left_join.scala:13: error: value map is not a member of Any
+    val stats = ((for { c <- customers; o = orders.find(o => (o.customerId).asInstanceOf[Int] == c.id) } yield (c.name, Stat(c = c, o = o))).groupBy(_._1).map{ case(k,list) => _Group(k, list.map(_._2)) }.toList).map{ g => Map("name" -> g.key, "count" -> (for { r <- g; if r.o.nonEmpty } yield r).size) }.toList
+                                                                                                                                                                                               ^
+6 errors found
