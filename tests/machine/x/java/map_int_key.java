@@ -10,7 +10,7 @@ public class MapIntKey {
         return m;
     }
     public static void main(String[] args) {
-    Map<Integer,String> m = new HashMap<>(mapOfEntries(entry(1, "a"), entry(2, "b")));
-    System.out.println(m.get(1));
+        Map<Integer,String> m = new HashMap<>(mapOfEntries(entry(1, "a"), entry(2, "b")));
+        System.out.println(m.get(1));
     }
 }

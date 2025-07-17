@@ -21,6 +21,6 @@ class AB {
 }
 public class LenMap {
     public static void main(String[] args) {
-    System.out.println(new AB(1, 2).size());
+        System.out.println(new AB(1, 2).size());
     }
 }

@@ -2,16 +2,16 @@
 // group_by_join.mochi
 import java.util.*;
 
-class IdName {
+class Customer {
     int id;
     String name;
-    IdName(int id, String name) {
+    Customer(int id, String name) {
         this.id = id;
         this.name = name;
     }
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof IdName other)) return false;
+        if (!(o instanceof Customer other)) return false;
         return Objects.equals(this.id, other.id) && Objects.equals(this.name, other.name);
     }
     @Override public int hashCode() {
@@ -19,16 +19,16 @@ class IdName {
     }
     int size() { return 2; }
 }
-class IdCustomerId {
+class Order {
     int id;
     int customerId;
-    IdCustomerId(int id, int customerId) {
+    Order(int id, int customerId) {
         this.id = id;
         this.customerId = customerId;
     }
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof IdCustomerId other)) return false;
+        if (!(o instanceof Order other)) return false;
         return Objects.equals(this.id, other.id) && Objects.equals(this.customerId, other.customerId);
     }
     @Override public int hashCode() {
@@ -36,16 +36,16 @@ class IdCustomerId {
     }
     int size() { return 2; }
 }
-class OC {
-    IdCustomerId o;
-    IdName c;
-    OC(IdCustomerId o, IdName c) {
+class Stat {
+    Order o;
+    Customer c;
+    Stat(Order o, Customer c) {
         this.o = o;
         this.c = c;
     }
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof OC other)) return false;
+        if (!(o instanceof Stat other)) return false;
         return Objects.equals(this.o, other.o) && Objects.equals(this.c, other.c);
     }
     @Override public int hashCode() {
@@ -79,31 +79,31 @@ public class GroupByJoin {
         int size() { return items.size(); }
     }
     public static void main(String[] args) {
-    List<IdName> customers = new ArrayList<>(Arrays.asList(new IdName(1, "Alice"), new IdName(2, "Bob")));
-    List<IdCustomerId> orders = new ArrayList<>(Arrays.asList(new IdCustomerId(100, 1), new IdCustomerId(101, 1), new IdCustomerId(102, 2)));
-    List<NameCount> stats = (new java.util.function.Supplier<List<NameCount>>(){public List<NameCount> get(){
+        List<Customer> customers = new ArrayList<>(Arrays.asList(new Customer(1, "Alice"), new Customer(2, "Bob")));
+        List<Order> orders = new ArrayList<>(Arrays.asList(new Order(100, 1), new Order(101, 1), new Order(102, 2)));
+        List<NameCount> stats = (new java.util.function.Supplier<List<NameCount>>(){public List<NameCount> get(){
     List<NameCount> res0 = new ArrayList<>();
-    Map<String,List<OC>> groups1 = new LinkedHashMap<>();
+    Map<String,List<Stat>> groups1 = new LinkedHashMap<>();
     for (var o : orders) {
         for (var c : customers) {
             if (!(o.customerId == c.id)) continue;
-            OC row2 = new OC(o, c);
+            Stat row2 = new Stat(o, c);
             String key3 = c.name;
-            List<OC> bucket4 = groups1.get(key3);
+            List<Stat> bucket4 = groups1.get(key3);
             if (bucket4 == null) { bucket4 = new ArrayList<>(); groups1.put(key3, bucket4); }
             bucket4.add(row2);
         }
     }
-    for (Map.Entry<String,List<OC>> __e : groups1.entrySet()) {
+    for (Map.Entry<String,List<Stat>> __e : groups1.entrySet()) {
         String g_key = __e.getKey();
-        Group<String,OC> g = new Group<>(g_key, __e.getValue());
+        Group<String,Stat> g = new Group<>(g_key, __e.getValue());
         res0.add(new NameCount(g.key, g.size()));
     }
     return res0;
 }}).get();
-    System.out.println("--- Orders per customer ---");
-    for (NameCount s : stats) {
-        System.out.println(s.name + " " + "orders:" + " " + s.count);
-    }
+        System.out.println("--- Orders per customer ---");
+        for (NameCount s : stats) {
+            System.out.println(s.name + " " + "orders:" + " " + s.count);
+        }
     }
 }

@@ -2,16 +2,16 @@
 // map_membership.mochi
 import java.util.*;
 
-class AB {
+class M {
     int a;
     int b;
-    AB(int a, int b) {
+    M(int a, int b) {
         this.a = a;
         this.b = b;
     }
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof AB other)) return false;
+        if (!(o instanceof M other)) return false;
         return Objects.equals(this.a, other.a) && Objects.equals(this.b, other.b);
     }
     @Override public int hashCode() {
@@ -27,8 +27,8 @@ public class MapMembership {
         return false;
     }
     public static void main(String[] args) {
-    AB m = new AB(1, 2);
-    System.out.println(inOp("a", m));
-    System.out.println(inOp("c", m));
+        M m = new M(1, 2);
+        System.out.println(inOp("a", m));
+        System.out.println(inOp("c", m));
     }
 }

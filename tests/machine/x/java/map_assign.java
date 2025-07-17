@@ -25,8 +25,8 @@ public class MapAssign {
         return m;
     }
     public static void main(String[] args) {
-    Map<String,Integer> scores = mapOfEntries(entry("alice", 1));
-    scores.put("bob", 2);
-    System.out.println(scores.get("bob"));
+        Map<String,Integer> scores = mapOfEntries(entry("alice", 1));
+        scores.put("bob", 2);
+        System.out.println(scores.get("bob"));
     }
 }

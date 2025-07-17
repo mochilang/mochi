@@ -10,7 +10,7 @@ class math {
 }
 public class PythonAuto {
     public static void main(String[] args) {
-    System.out.println(math.sqrt(16.000000));
-    System.out.println(math.pi);
+        System.out.println(math.sqrt(16.000000));
+        System.out.println(math.pi);
     }
 }

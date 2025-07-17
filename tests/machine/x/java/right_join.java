@@ -2,16 +2,16 @@
 // right_join.mochi
 import java.util.*;
 
-class IdName {
+class Customer {
     int id;
     String name;
-    IdName(int id, String name) {
+    Customer(int id, String name) {
         this.id = id;
         this.name = name;
     }
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof IdName other)) return false;
+        if (!(o instanceof Customer other)) return false;
         return Objects.equals(this.id, other.id) && Objects.equals(this.name, other.name);
     }
     @Override public int hashCode() {
@@ -19,18 +19,18 @@ class IdName {
     }
     int size() { return 2; }
 }
-class IdCustomerIdTotal {
+class Order {
     int id;
     int customerId;
     int total;
-    IdCustomerIdTotal(int id, int customerId, int total) {
+    Order(int id, int customerId, int total) {
         this.id = id;
         this.customerId = customerId;
         this.total = total;
     }
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof IdCustomerIdTotal other)) return false;
+        if (!(o instanceof Order other)) return false;
         return Objects.equals(this.id, other.id) && Objects.equals(this.customerId, other.customerId) && Objects.equals(this.total, other.total);
     }
     @Override public int hashCode() {
@@ -38,16 +38,16 @@ class IdCustomerIdTotal {
     }
     int size() { return 3; }
 }
-class CustomerNameOrder {
+class Result {
     String customerName;
-    IdCustomerIdTotal order;
-    CustomerNameOrder(String customerName, IdCustomerIdTotal order) {
+    Order order;
+    Result(String customerName, Order order) {
         this.customerName = customerName;
         this.order = order;
     }
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof CustomerNameOrder other)) return false;
+        if (!(o instanceof Result other)) return false;
         return Objects.equals(this.customerName, other.customerName) && Objects.equals(this.order, other.order);
     }
     @Override public int hashCode() {
@@ -57,12 +57,12 @@ class CustomerNameOrder {
 }
 public class RightJoin {
     public static void main(String[] args) {
-    List<IdName> customers = new ArrayList<>(Arrays.asList(new IdName(1, "Alice"), new IdName(2, "Bob"), new IdName(3, "Charlie"), new IdName(4, "Diana")));
-    List<IdCustomerIdTotal> orders = new ArrayList<>(Arrays.asList(new IdCustomerIdTotal(100, 1, 250), new IdCustomerIdTotal(101, 2, 125), new IdCustomerIdTotal(102, 1, 300)));
-    List<CustomerNameOrder> result = (new java.util.function.Supplier<List<CustomerNameOrder>>(){public List<CustomerNameOrder> get(){
-    List<CustomerNameOrder> res0 = new ArrayList<>();
+        List<Customer> customers = new ArrayList<>(Arrays.asList(new Customer(1, "Alice"), new Customer(2, "Bob"), new Customer(3, "Charlie"), new Customer(4, "Diana")));
+        List<Order> orders = new ArrayList<>(Arrays.asList(new Order(100, 1, 250), new Order(101, 2, 125), new Order(102, 1, 300)));
+        List<Result> result = (new java.util.function.Supplier<List<Result>>(){public List<Result> get(){
+    List<Result> res0 = new ArrayList<>();
     for (var c : customers) {
-        List<IdCustomerIdTotal> tmp1 = new ArrayList<>();
+        List<Order> tmp1 = new ArrayList<>();
         for (var it2 : orders) {
             var o = it2;
             if (!(o.customerId == c.id)) continue;
@@ -70,19 +70,19 @@ public class RightJoin {
         }
         if (tmp1.isEmpty()) tmp1.add(null);
         for (var o : tmp1) {
-            res0.add(new CustomerNameOrder(c.name, o));
+            res0.add(new Result(c.name, o));
         }
     }
     return res0;
 }}).get();
-    System.out.println("--- Right Join using syntax ---");
-    for (CustomerNameOrder entry : result) {
-        if (entry.order != null) {
-            System.out.println("Customer" + " " + entry.customerName + " " + "has order" + " " + entry.order.id + " " + "- $" + " " + entry.order.total);
+        System.out.println("--- Right Join using syntax ---");
+        for (Result entry : result) {
+            if (entry.order != null) {
+                System.out.println("Customer" + " " + entry.customerName + " " + "has order" + " " + entry.order.id + " " + "- $" + " " + entry.order.total);
+            }
+            else {
+                System.out.println("Customer" + " " + entry.customerName + " " + "has no orders");
+            }
         }
-        else {
-            System.out.println("Customer" + " " + entry.customerName + " " + "has no orders");
-        }
-    }
     }
 }

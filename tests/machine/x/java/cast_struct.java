@@ -16,14 +16,14 @@ class Todo {
         return Objects.hash(title);
     }
 }
-class Title {
+class Todo {
     String title;
-    Title(String title) {
+    Todo(String title) {
         this.title = title;
     }
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Title other)) return false;
+        if (!(o instanceof Todo other)) return false;
         return Objects.equals(this.title, other.title);
     }
     @Override public int hashCode() {
@@ -33,7 +33,7 @@ class Title {
 }
 public class CastStruct {
     public static void main(String[] args) {
-    Todo todo = new Todo("hi");
-    System.out.println(todo.title);
+        Todo todo = new Todo("hi");
+        System.out.println(todo.title);
     }
 }

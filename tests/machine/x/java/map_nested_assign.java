@@ -40,8 +40,8 @@ public class MapNestedAssign {
         return m;
     }
     public static void main(String[] args) {
-    Map<String,Inner> data = mapOfEntries(entry("outer", new Inner(1)));
-    ((Inner)data.get("outer")).inner = 2;
-    System.out.println(((Inner)data.get("outer")).inner);
+        Map<String,Inner> data = mapOfEntries(entry("outer", new Inner(1)));
+        ((Inner)data.get("outer")).inner = 2;
+        System.out.println(((Inner)data.get("outer")).inner);
     }
 }

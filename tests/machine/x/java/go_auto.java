@@ -7,8 +7,8 @@ class testpkg {
 }
 public class GoAuto {
     public static void main(String[] args) {
-    System.out.println(testpkg.Add(2, 3));
-    System.out.println(testpkg.Pi);
-    System.out.println(testpkg.Answer);
+        System.out.println(testpkg.Add(2, 3));
+        System.out.println(testpkg.Pi);
+        System.out.println(testpkg.Answer);
     }
 }
