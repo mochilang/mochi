@@ -1,5 +1,9 @@
 # Haskell Backend Progress
 
+## Recent Updates (2025-07-25 05:00)
+- Renamed `MGroup` record fields to `gKey` and `gItems` so dataset variables like
+  `items` no longer clash with generated selectors.
+
 ## Recent Updates (2025-07-17 07:18)
 - Group-by queries now cast dynamic keys to strings when necessary so generated Haskell code compiles without missing `Ord` instances.
 

@@ -25,7 +25,7 @@ avg :: (Real a, Fractional b) => [a] -> b
 avg xs | null xs = 0
        | otherwise = realToFrac (sum xs) / fromIntegral (length xs)
 
-data MGroup k a = MGroup { key :: k, items :: [a] } deriving (Show)
+data MGroup k a = MGroup { gKey :: k, gItems :: [a] } deriving (Show)
 
 _group_by :: Ord k => [a] -> (a -> k) -> [MGroup k a]
 _group_by src keyfn =
