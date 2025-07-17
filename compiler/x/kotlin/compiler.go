@@ -198,11 +198,12 @@ func buildRuntime(used map[string]bool) string {
 
 // Compiler converts a subset of Mochi programs to Kotlin source code.
 type Compiler struct {
-	buf      bytes.Buffer
-	indent   int
-	env      *types.Env
-	tmpCount int
-	used     map[string]bool
+	buf         bytes.Buffer
+	indent      int
+	env         *types.Env
+	tmpCount    int
+	structCount int
+	used        map[string]bool
 
 	// inferred struct types from list of maps
 	inferred map[string]types.StructType
@@ -214,12 +215,13 @@ type Compiler struct {
 // New creates a new Kotlin compiler.
 func New(env *types.Env, srcName string) *Compiler {
 	return &Compiler{
-		env:      env,
-		tmpCount: 0,
-		used:     make(map[string]bool),
-		inferred: make(map[string]types.StructType),
-		mapNodes: make(map[*parser.MapLiteral]string),
-		srcName:  srcName,
+		env:         env,
+		tmpCount:    0,
+		structCount: 0,
+		used:        make(map[string]bool),
+		inferred:    make(map[string]types.StructType),
+		mapNodes:    make(map[*parser.MapLiteral]string),
+		srcName:     srcName,
 	}
 }
 
@@ -265,20 +267,6 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			}
 			c.writeln("")
 		}
-	}
-	names := make([]string, 0, len(c.inferred))
-	for name := range c.inferred {
-		names = append(names, name)
-	}
-	sort.Strings(names)
-	for _, name := range names {
-		st := c.inferred[name]
-		fields := make([]string, len(st.Order))
-		for i, f := range st.Order {
-			fields[i] = fmt.Sprintf("var %s: %s", escapeIdent(f), kotlinTypeOf(st.Fields[f]))
-		}
-		c.writeln(fmt.Sprintf("data class %s(%s)", st.Name, strings.Join(fields, ", ")))
-		c.writeln("")
 	}
 	// emit global variable declarations before functions so they are
 	// visible to all functions
@@ -326,9 +314,29 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 
 	body := c.buf.Bytes()
+
+	// Emit any inferred structs discovered during compilation.
+	names := make([]string, 0, len(c.inferred))
+	for name := range c.inferred {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	var structsBuf bytes.Buffer
+	for _, name := range names {
+		st := c.inferred[name]
+		fields := make([]string, len(st.Order))
+		for i, f := range st.Order {
+			fields[i] = fmt.Sprintf("var %s: %s", escapeIdent(f), kotlinTypeOf(st.Fields[f]))
+		}
+		structsBuf.WriteString(fmt.Sprintf("data class %s(%s)\n\n", st.Name, strings.Join(fields, ", ")))
+	}
+
 	rt := buildRuntime(c.used)
 	var out bytes.Buffer
 	out.Write(meta.Header("//"))
+	if structsBuf.Len() > 0 {
+		out.Write(structsBuf.Bytes())
+	}
 	if rt != "" {
 		out.WriteString(rt)
 		out.WriteByte('\n')
@@ -1629,7 +1637,15 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		elem = gt.Elem
 	}
 	if len(q.Froms) > 0 || len(q.Joins) > 0 {
-		elem = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
+		if st, ok := c.queryRowStruct(q); ok {
+			elem = st
+			if _, exists := c.inferred[st.Name]; !exists {
+				c.inferred[st.Name] = st
+				c.env.SetStruct(st.Name, st)
+			}
+		} else {
+			elem = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
+		}
 	}
 	var keyType types.Type
 	selEnv := child
@@ -1789,19 +1805,30 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(indent(lvl))
 		b.WriteString("}\n")
 		b.WriteString(indent(lvl))
-		rowParts := []string{fmt.Sprintf("\"%s\" to %s", q.Var, q.Var)}
-		for _, f := range q.Froms {
-			rowParts = append(rowParts, fmt.Sprintf("\"%s\" to %s", f.Var, f.Var))
-		}
-		for _, j := range q.Joins {
-			rowParts = append(rowParts, fmt.Sprintf("\"%s\" to %s", j.Var, j.Var))
-		}
 		var row string
-		rowType := kotlinTypeOf(elem)
-		if len(rowParts) == 1 {
-			row = q.Var
+		if st, ok := elem.(types.StructType); ok {
+			fields := []string{fmt.Sprintf("%s = %s", escapeIdent(q.Var), q.Var)}
+			for _, f := range q.Froms {
+				fields = append(fields, fmt.Sprintf("%s = %s", escapeIdent(f.Var), f.Var))
+			}
+			for _, j := range q.Joins {
+				fields = append(fields, fmt.Sprintf("%s = %s", escapeIdent(j.Var), j.Var))
+			}
+			row = fmt.Sprintf("%s(%s)", st.Name, strings.Join(fields, ", "))
 		} else {
-			row = fmt.Sprintf("mutableMapOf(%s) as %s", strings.Join(rowParts, ", "), rowType)
+			rowParts := []string{fmt.Sprintf("\"%s\" to %s", q.Var, q.Var)}
+			for _, f := range q.Froms {
+				rowParts = append(rowParts, fmt.Sprintf("\"%s\" to %s", f.Var, f.Var))
+			}
+			for _, j := range q.Joins {
+				rowParts = append(rowParts, fmt.Sprintf("\"%s\" to %s", j.Var, j.Var))
+			}
+			rowType := kotlinTypeOf(elem)
+			if len(rowParts) == 1 {
+				row = q.Var
+			} else {
+				row = fmt.Sprintf("mutableMapOf(%s) as %s", strings.Join(rowParts, ", "), rowType)
+			}
 		}
 		b.WriteString(fmt.Sprintf("__g.add(%s)\n", row))
 	} else {
@@ -2219,6 +2246,47 @@ func listLiteral(e *parser.Expr) (*parser.ListLiteral, bool) {
 		return pf.Target.List, true
 	}
 	return nil, false
+}
+
+// queryRowStruct attempts to infer a struct type for the implicit rows produced
+// by a query with join or from clauses. It returns the struct type and true on
+// success.
+func (c *Compiler) queryRowStruct(q *parser.QueryExpr) (types.StructType, bool) {
+	fields := map[string]types.Type{}
+	order := []string{}
+
+	addField := func(name string, src *parser.Expr) {
+		t := c.inferExprType(src)
+		if lt, ok := t.(types.ListType); ok {
+			t = lt.Elem
+		} else if gt, ok := t.(types.GroupType); ok {
+			t = gt.Elem
+		}
+		fields[name] = t
+		order = append(order, name)
+	}
+
+	if !identRE.MatchString(q.Var) {
+		return types.StructType{}, false
+	}
+	addField(q.Var, q.Source)
+	for _, f := range q.Froms {
+		if !identRE.MatchString(f.Var) {
+			return types.StructType{}, false
+		}
+		addField(f.Var, f.Src)
+	}
+	for _, j := range q.Joins {
+		if !identRE.MatchString(j.Var) {
+			return types.StructType{}, false
+		}
+		addField(j.Var, j.Src)
+	}
+
+	name := fmt.Sprintf("Row%d", c.structCount)
+	c.structCount++
+	st := types.StructType{Name: name, Fields: fields, Order: order}
+	return st, true
 }
 
 // discoverStructs scans the program for list literals consisting of map
