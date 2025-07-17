@@ -28,6 +28,8 @@
   Removed obsolete BuildX Kotlin golden test.
 - 2025-07-17 00:56 UTC: Match expressions omit the `else` branch when all union
   variants are covered; reran VM golden tests (71 passed, 29 failed).
+- 2025-07-17 06:44 UTC: Fixed map literal parentheses handling and compiled
+  `dataset_where_filter`.
 
 ## Remaining Work
 - [ ] Implement dataset join and group-by operations fully.
