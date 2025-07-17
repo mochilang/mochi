@@ -1,14 +1,14 @@
 warning: default values for the optional arguments in _query/3 are never used
     │
- 67 │   defp _query(src, joins, opts \\ %{}) do
+ 75 │   defp _query(src, joins, opts \\ %{}) do
     │        ~
     │
-    └─ tests/machine/x/ex/outer_join.exs:67:8: Main (module)
+    └─ tests/machine/x/ex/outer_join.exs:75:8: Main (module)
 
 --- Outer Join using syntax ---
-"Order" 100 "by" "Alice" "- $" 250
-"Order" 101 "by" "Bob" "- $" 125
-"Order" 102 "by" "Alice" "- $" 300
-"Order" 103 "by" "Unknown" "- $" 80
-"Customer" "Charlie" "has no orders"
-"Customer" "Diana" "has no orders"
+Order 100 by Alice - $ 250
+Order 101 by Bob - $ 125
+Order 102 by Alice - $ 300
+Order 103 by Unknown - $ 80
+Customer Charlie has no orders
+Customer Diana has no orders

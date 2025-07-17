@@ -1,1 +1,8 @@
+warning: default values for the optional arguments in _query/3 are never used
+     │
+ 123 │   defp _query(src, joins, opts \\ %{}) do
+     │        ~
+     │
+     └─ tests/machine/x/ex/group_by_conditional_sum.exs:123:8: Main (module)
+
 [object Object] [object Object]

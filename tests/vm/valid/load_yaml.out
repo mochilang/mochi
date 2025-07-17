@@ -1,2 +1,22 @@
-Alice alice@example.com
-Charlie charlie@example.com
+warning: default values for the optional arguments in _load/2 are never used
+    │
+ 46 │   defp _load(path, opts \\ nil) do
+    │        ~
+    │
+    └─ tests/machine/x/ex/load_yaml.exs:46:8: Main (module)
+
+null null
+null null
+null null
+null null
+null null
+null null
+null null
+null null
+    warning: Jason.decode!/1 is undefined (module Jason is not available or is yet to be defined). Make sure the module name is correct and has been specified in full (or that an alias has been defined)
+    │
+ 68 │         case Jason.decode!(text) do
+    │                    ~
+    │
+    └─ tests/machine/x/ex/load_yaml.exs:68:20: Main._load/2
+    └─ tests/machine/x/ex/load_yaml.exs:65:85: Main._load/2

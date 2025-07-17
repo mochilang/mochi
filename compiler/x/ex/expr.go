@@ -323,19 +323,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			} else {
 				switch res {
 				case "print":
-					if len(args) == 1 {
-						t := c.inferExprType(op.Call.Args[0])
-						switch t.(type) {
-						case types.StringType:
-							res = fmt.Sprintf("IO.puts(%s)", args[0])
-						case types.ListType, types.GroupType:
-							res = fmt.Sprintf("IO.puts(Enum.map_join(%s, \" \", &inspect(&1)))", args[0])
-						default:
-							res = fmt.Sprintf("IO.inspect(%s)", args[0])
-						}
-					} else {
-						res = fmt.Sprintf("IO.puts(Enum.join(Enum.map([%s], &inspect(&1)), \" \"))", argStr)
-					}
+					c.use("_print")
+					c.use("_fmt")
+					res = fmt.Sprintf("_print([%s])", argStr)
 				case "len":
 					if len(args) != 1 {
 						return "", fmt.Errorf("len expects 1 arg")
@@ -549,18 +539,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		switch p.Call.Func {
 		case "print":
-			if len(args) == 1 {
-				t := c.inferExprType(p.Call.Args[0])
-				switch t.(type) {
-				case types.StringType:
-					return fmt.Sprintf("IO.puts(%s)", args[0]), nil
-				case types.ListType, types.GroupType:
-					return fmt.Sprintf("IO.puts(Enum.map_join(%s, \" \", &inspect(&1)))", args[0]), nil
-				default:
-					return fmt.Sprintf("IO.inspect(%s)", args[0]), nil
-				}
-			}
-			return fmt.Sprintf("IO.puts(Enum.join(Enum.map([%s], &inspect(&1)), \" \"))", argStr), nil
+			c.use("_print")
+			c.use("_fmt")
+			return fmt.Sprintf("_print([%s])", argStr), nil
 		case "len":
 			if len(args) != 1 {
 				return "", fmt.Errorf("len expects 1 arg")

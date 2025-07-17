@@ -38,6 +38,10 @@ defp _json(v), do: IO.puts(_to_json(v))
 
 	helperReverse = "defp _reverse(v) do\n  cond do\n    is_list(v) -> Enum.reverse(v)\n    is_binary(v) -> String.graphemes(v) |> Enum.reverse() |> Enum.join()\n    true -> raise \"reverse expects list or string\"\n  end\nend\n"
 
+	helperFmt = "defp _fmt(v) do\n  cond do\n    is_list(v) -> Enum.map_join(v, \" \", &_fmt/1)\n    v == nil -> \"null\"\n    is_float(v) -> if v == Float.floor(v), do: Integer.to_string(trunc(v)), else: Float.to_string(v)\n    is_boolean(v) -> if v, do: \"1\", else: \"0\"\n    is_map(v) -> \"[object Object]\"\n    true -> to_string(v)\n  end\nend\n"
+
+	helperPrint = "defp _print(args) do\n  IO.puts(Enum.map_join(args, \" \", &_fmt/1))\nend\n"
+
 	helperNow = "defp _now() do\n  System.os_time(:millisecond)\nend\n"
 
 	helperConcat = "defp _concat(a, b) do\n  if is_list(a) and is_list(b) do\n    a ++ b\n  else\n    raise \"concat expects lists\"\n  end\nend\n"
@@ -220,6 +224,8 @@ var helperMap = map[string]string{
 	"_max":          helperMax,
 	"_first":        helperFirst,
 	"_reverse":      helperReverse,
+	"_fmt":          helperFmt,
+	"_print":        helperPrint,
 	"_now":          helperNow,
 	"_concat":       helperConcat,
 	"_merge_map":    helperMergeMap,

@@ -40,6 +40,10 @@ the expected `.out` file. The generated sources live under
 - Fixed left join grouping by introducing `_merge_map` helper and using it when merging joined rows.
 - Regenerated machine output for `group_by_left_join.mochi`; now all 100 programs pass.
 
+## VM Test Updates (2025-07-18 00:00)
+- Added `_fmt` and `_print` helpers for VM-compatible printing.
+- `print` now uses these helpers. 80/100 programs pass.
+
 ## TPC-DS Progress (2025-07-15 04:45)
 Initial golden test `TestExCompiler_TPCDSQueries` verifies the Elixir compiler
 against the available TPC-DS query outputs. A new helper script

@@ -1,3 +1,10 @@
+warning: default values for the optional arguments in _query/3 are never used
+    │
+ 75 │   defp _query(src, joins, opts \\ %{}) do
+    │        ~
+    │
+    └─ tests/machine/x/ex/outer_join.exs:75:8: Main (module)
+
 --- Outer Join using syntax ---
 Order 100 by Alice - $ 250
 Order 101 by Bob - $ 125
