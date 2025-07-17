@@ -1488,6 +1488,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		genv := types.NewEnv(child)
 		genv.SetVar(q.Group.Name, types.GroupType{Key: keyT, Elem: elemType}, true)
+		var resStruct types.StructType
+		c.env = genv
 		if ml := extractMapLiteral(q.Select); ml != nil {
 			structName := c.newStructName()
 			if name, ok := c.matchStructFromMapLiteral(ml); ok {
@@ -1508,6 +1510,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 					}
 					genv.SetStruct(structName, st)
 					keyT = st
+					resStruct = st
 				}
 			}
 		}
@@ -1555,6 +1558,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 		}
 		resTT := c.inferExprType(q.Select)
+		if resStruct.Name != "" {
+			resTT = resStruct
+		}
 		if lt, ok := resTT.(types.ListType); ok {
 			if st, ok2 := lt.Elem.(types.StructType); ok2 && st.Name == "" {
 				name := c.newStructName()
@@ -1565,6 +1571,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				}
 				resTT = types.ListType{Elem: st}
 			}
+		} else if st, ok := resTT.(types.StructType); ok && st.Name == "" {
+			name := c.newStructName()
+			st.Name = name
+			st = c.nameNestedStructs(name, st).(types.StructType)
+			if orig != nil {
+				orig.SetStruct(name, st)
+			}
+			resTT = st
 		}
 		resType := zigTypeOf(resTT)
 		c.env = orig
@@ -3038,13 +3052,15 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
+		var expr string
 		if c.isMapExpr(call.Args[0]) {
-			return fmt.Sprintf("%s.count()", arg), nil
+			expr = fmt.Sprintf("%s.count()", arg)
+		} else if c.isGroupExpr(call.Args[0]) {
+			expr = fmt.Sprintf("(%s.Items.items.len)", arg)
+		} else {
+			expr = fmt.Sprintf("(%s).len", arg)
 		}
-		if c.isGroupExpr(call.Args[0]) {
-			return fmt.Sprintf("(%s.Items.items.len)", arg), nil
-		}
-		return fmt.Sprintf("(%s).len", arg), nil
+		return fmt.Sprintf("@as(i32, @intCast(%s))", expr), nil
 	}
 	if name == "keys" && len(call.Args) == 1 {
 		arg, err := c.compileExpr(call.Args[0], false)
@@ -4337,12 +4353,20 @@ func (c *Compiler) listElemTypeUnary(u *parser.Unary) string {
 	if u == nil {
 		return "i32"
 	}
+	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: u}}
+	if lt, ok := c.inferExprType(expr).(types.ListType); ok {
+		return zigTypeOf(lt.Elem)
+	}
 	return c.listElemTypePostfix(u.Value)
 }
 
 func (c *Compiler) listElemTypePostfix(p *parser.PostfixExpr) string {
 	if p == nil {
 		return "i32"
+	}
+	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: p}}}
+	if lt, ok := c.inferExprType(expr).(types.ListType); ok {
+		return zigTypeOf(lt.Elem)
 	}
 	if p.Target != nil {
 		if p.Target.List != nil && len(p.Target.List.Elems) > 0 {
