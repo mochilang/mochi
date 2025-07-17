@@ -65,6 +65,8 @@ func cobolName(name string) string {
 	switch s {
 	case "TITLE":
 		return "TITLE-V"
+	case "NUMBER", "NUMBERS":
+		return s + "-V"
 	}
 	return s
 }
@@ -1054,7 +1056,9 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		rightType := types.TypeOfPostfix(op.Right, c.env)
 		opStr := op.Op
 		if op.Op == "+" && (types.IsStringType(leftType) || types.IsStringType(rightType)) {
-			res = fmt.Sprintf("FUNCTION CONCATENATE(%s, %s)", res, r)
+			c.ensureTmpVar()
+			c.writeln(fmt.Sprintf("STRING %s DELIMITED BY SIZE %s DELIMITED BY SIZE INTO %s", res, r, c.tmpStrVar))
+			res = c.tmpStrVar
 			leftType = types.StringType{}
 			continue
 		}
