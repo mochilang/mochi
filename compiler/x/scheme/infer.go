@@ -132,6 +132,117 @@ func (c *Compiler) isFloatExpr(e *parser.Expr) bool {
 	return false
 }
 
+func (c *Compiler) isIntExpr(e *parser.Expr) bool {
+	if e == nil {
+		return false
+	}
+	if name, ok := identName(e); ok {
+		if t, ok2 := c.vars[name]; ok2 && t == "int" {
+			return true
+		}
+		if c.env != nil {
+			if tt, err := c.env.GetVar(name); err == nil {
+				if _, ok := tt.(types.IntType); ok {
+					return true
+				}
+			}
+		}
+	}
+	if len(e.Binary.Right) == 0 {
+		u := e.Binary.Left
+		if len(u.Ops) == 0 && u.Value != nil {
+			p := u.Value
+			if len(p.Ops) == 0 && p.Target != nil && p.Target.Lit != nil && p.Target.Lit.Int != nil {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (c *Compiler) isIntUnary(u *parser.Unary) bool {
+	if u == nil {
+		return false
+	}
+	if c.isIntPostfix(u.Value) {
+		return true
+	}
+	root := rootNameUnary(u)
+	if root != "" {
+		if t, ok := c.vars[root]; ok && t == "int" {
+			return true
+		}
+		if c.env != nil {
+			if tt, err := c.env.GetVar(root); err == nil {
+				if _, ok := tt.(types.IntType); ok {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func (c *Compiler) isIntPostfix(p *parser.PostfixExpr) bool {
+	if p == nil {
+		return false
+	}
+	if c.isIntPrimary(p.Target) {
+		return true
+	}
+	for _, op := range p.Ops {
+		if op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil && *op.Cast.Type.Simple == "int" {
+			return true
+		}
+	}
+	root := rootNamePostfix(p)
+	if root != "" {
+		if t, ok := c.vars[root]; ok && t == "int" {
+			return true
+		}
+		if c.env != nil {
+			if tt, err := c.env.GetVar(root); err == nil {
+				if _, ok := tt.(types.IntType); ok {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func (c *Compiler) isIntPrimary(p *parser.Primary) bool {
+	if p == nil {
+		return false
+	}
+	switch {
+	case p.Lit != nil && p.Lit.Int != nil:
+		return true
+	case p.Selector != nil:
+		if t, ok := c.vars[p.Selector.Root]; ok && t == "int" {
+			return true
+		}
+		if c.env != nil {
+			if tt, err := c.env.GetVar(p.Selector.Root); err == nil {
+				if _, ok := tt.(types.IntType); ok {
+					return true
+				}
+			}
+		}
+	case p.Call != nil && c.env != nil:
+		if t, err := c.env.GetVar(p.Call.Func); err == nil {
+			if ft, ok := t.(types.FuncType); ok {
+				if _, ok2 := ft.Return.(types.IntType); ok2 {
+					return true
+				}
+			}
+		}
+	case p.Group != nil:
+		return c.isIntExpr(p.Group)
+	}
+	return false
+}
+
 func (c *Compiler) isFloatUnary(u *parser.Unary) bool {
 	if u == nil {
 		return false
