@@ -168,6 +168,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
+	if prog != nil && c.env != nil {
+		_ = types.Check(prog, c.env)
+	}
+
 	c.buf.Reset()
 	c.buf.Write(meta.Header("!"))
 	c.decl.Reset()
