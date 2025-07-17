@@ -2836,7 +2836,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 		if lt, ok := jt.(types.ListType); ok {
 			jelem = lt.Elem
 		}
-		child.SetVar(j.Var, jelem, true)
+		if j.Side != nil && (*j.Side == "left" || *j.Side == "right" || *j.Side == "outer") {
+			child.SetVar(j.Var, types.OptionType{Elem: jelem}, true)
+			if *j.Side == "right" || *j.Side == "outer" {
+				child.SetVar(q.Var, types.OptionType{Elem: elemType}, true)
+			}
+		} else {
+			child.SetVar(j.Var, jelem, true)
+		}
 		joinElemType[i] = jelem
 		joinIsMap[i] = isStringMapLike(jelem)
 	}
@@ -2981,6 +2988,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 	joinLeftKeys := make([]string, len(q.Joins))
 	joinRightKeys := make([]string, len(q.Joins))
 	joinLeftTypes := make([]types.Type, len(q.Joins))
+	leftOptional := false
 	for i, j := range q.Joins {
 		js, err := c.compileExpr(j.Src)
 		if err != nil {
@@ -3012,7 +3020,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 		if t == "" {
 			t = "any"
 		}
-		joinTypes[i] = t
+		if j.Side != nil && (*j.Side == "left" || *j.Side == "right" || *j.Side == "outer") {
+			joinTypes[i] = "*" + t
+			if *j.Side == "right" || *j.Side == "outer" {
+				leftOptional = true
+			}
+		} else {
+			joinTypes[i] = t
+		}
 	}
 	varNames := []string{q.Var}
 	for _, f := range q.Froms {
@@ -3266,6 +3281,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 	if needsHelper {
 		varNames := []string{sanitizeName(q.Var)}
 		paramTypes := []string{goType(elemType)}
+		if leftOptional {
+			t := paramTypes[0]
+			if t == "" {
+				t = "any"
+			}
+			paramTypes[0] = "*" + t
+		}
 		for _, f := range q.Froms {
 			varNames = append(varNames, sanitizeName(f.Var))
 			ft := c.inferExprType(f.Src)
@@ -3295,7 +3317,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 				}
 				if typ != "any" {
 					tmp := fmt.Sprintf("tmp%d", i)
-					parts[i] = fmt.Sprintf("%s := _a[%d]; var %s %s; if %s != nil { %s = %s.(%s) }; _ = %s", tmp, i, n, typ, tmp, n, tmp, typ, n)
+					if strings.HasPrefix(typ, "*") {
+						base := strings.TrimPrefix(typ, "*")
+						parts[i] = fmt.Sprintf("%s := _a[%d]; var %s %s; if %s != nil { v := %s.(%s); %s = &v }; _ = %s", tmp, i, n, typ, tmp, tmp, base, n, n)
+					} else {
+						parts[i] = fmt.Sprintf("%s := _a[%d]; var %s %s; if %s != nil { %s = %s.(%s) }; _ = %s", tmp, i, n, typ, tmp, n, tmp, typ, n)
+					}
 				} else {
 					parts[i] = fmt.Sprintf("%s := _a[%d]; _ = %s", n, i, n)
 				}
