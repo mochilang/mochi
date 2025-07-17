@@ -239,8 +239,16 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					}
 					end = e
 				}
-				c.helpers["slice"] = true
-				expr = fmt.Sprintf("__slice(%s, %s, %s)", expr, start, end)
+				t := c.inferPrimaryType(p.Target)
+				switch {
+				case isString(t):
+					expr = fmt.Sprintf("string.sub(%s, (%s)+1, %s)", expr, start, end)
+				case isList(t):
+					expr = fmt.Sprintf("(function(_l,_i,_j)local _o={} for k=_i+1,_j do _o[#_o+1]=_l[k] end return _o end)(%s,%s,%s)", expr, start, end)
+				default:
+					c.helpers["slice"] = true
+					expr = fmt.Sprintf("__slice(%s, %s, %s)", expr, start, end)
+				}
 			} else {
 				idx, err := c.compileExpr(op.Index.Start)
 				if err != nil {
@@ -554,6 +562,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if len(args) != 3 {
 			return "", fmt.Errorf("substr expects 3 args")
 		}
+		if c.isStringExpr(call.Args[0]) {
+			return fmt.Sprintf("string.sub(%s, (%s)+1, %s)", args[0], args[1], args[2]), nil
+		}
 		c.helpers["slice"] = true
 		return fmt.Sprintf("__slice(%s, %s, %s)", args[0], args[1], args[2]), nil
 	case "reverse":
@@ -601,6 +612,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "substring":
 		if len(args) != 3 {
 			return "", fmt.Errorf("substring expects 3 args")
+		}
+		if c.isStringExpr(call.Args[0]) {
+			return fmt.Sprintf("string.sub(%s, (%s)+1, %s)", args[0], args[1], args[2]), nil
 		}
 		c.helpers["slice"] = true
 		return fmt.Sprintf("__slice(%s, %s, %s)", args[0], args[1], args[2]), nil

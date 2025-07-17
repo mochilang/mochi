@@ -87,3 +87,7 @@
 ## Progress (2025-07-19 12:00)
 - List and string indexing now compiled directly without helper calls when types are known.
 - Regenerated Lua sources and outputs after updating __str to return 'True'/'False'.
+## Progress (2025-07-19 12:30)
+- Slice and substring operations now compile directly for strings and lists when types are known, avoiding the `__slice` helper.
+- Regenerated Lua sources and outputs for affected programs.
+
