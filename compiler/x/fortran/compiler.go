@@ -21,18 +21,19 @@ import (
 // Only basic constructs used by the simpler test programs are supported.
 // Unsupported syntax results in a compilation error.
 type Compiler struct {
-	buf         bytes.Buffer
-	decl        bytes.Buffer
-	indent      int
-	functions   []*parser.FunStmt
-	currentFunc string
-	env         *types.Env
-	declared    map[string]bool
-	tmpIndex    int
-	helpers     map[string]bool
-	autoImports map[string]string
-	structNames map[string]string
-	constLists  map[string][]int
+	buf          bytes.Buffer
+	decl         bytes.Buffer
+	indent       int
+	functions    []*parser.FunStmt
+	currentFunc  string
+	env          *types.Env
+	declared     map[string]bool
+	tmpIndex     int
+	helpers      map[string]bool
+	autoImports  map[string]string
+	structNames  map[string]string
+	constLists   map[string][]int
+	constStrings map[string]string
 }
 
 func (c *Compiler) structName(name string) string {
@@ -66,11 +67,12 @@ func (c *Compiler) structName(name string) string {
 // New creates a new compiler instance.
 func New(env *types.Env) *Compiler {
 	return &Compiler{
-		env:         env,
-		declared:    make(map[string]bool),
-		helpers:     make(map[string]bool),
-		autoImports: make(map[string]string),
-		constLists:  make(map[string][]int),
+		env:          env,
+		declared:     make(map[string]bool),
+		helpers:      make(map[string]bool),
+		autoImports:  make(map[string]string),
+		constLists:   make(map[string][]int),
+		constStrings: make(map[string]string),
 	}
 }
 
@@ -83,6 +85,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.functions = nil
 		c.declared = make(map[string]bool)
 		c.constLists = make(map[string][]int)
+		c.constStrings = make(map[string]string)
 		c.tmpIndex = 0
 		c.writeln("program q1")
 		c.indent++
@@ -128,6 +131,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.functions = nil
 		c.declared = make(map[string]bool)
 		c.constLists = make(map[string][]int)
+		c.constStrings = make(map[string]string)
 		c.tmpIndex = 0
 		c.writeln("program q2")
 		c.indent++
@@ -187,6 +191,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.functions = nil
 	c.declared = make(map[string]bool)
 	c.constLists = make(map[string][]int)
+	c.constStrings = make(map[string]string)
 	c.tmpIndex = 0
 	name := "main"
 	if prog.Package != "" {
@@ -395,6 +400,11 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 		} else {
 			delete(c.constLists, l.Name)
 		}
+		if s, ok := c.constStringExpr(l.Value); ok {
+			c.constStrings[l.Name] = s
+		} else {
+			delete(c.constStrings, l.Name)
+		}
 		if lst := listLiteral(l.Value); lst != nil {
 			if len(lst.Elems) > 0 {
 				if inner := listLiteral(lst.Elems[0]); inner != nil {
@@ -510,6 +520,11 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 			c.constLists[a.Name] = append([]int(nil), ints...)
 		} else {
 			delete(c.constLists, a.Name)
+		}
+		if s, ok := c.constStringExpr(a.Value); ok {
+			c.constStrings[a.Name] = s
+		} else {
+			delete(c.constStrings, a.Name)
 		}
 	}
 	target := a.Name
@@ -1224,6 +1239,9 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if n, ok := c.constListLenExpr(call.Args[0]); ok {
 			return fmt.Sprintf("%d", n), nil
 		}
+		if s, ok := c.constStringExpr(call.Args[0]); ok {
+			return fmt.Sprintf("%d", len(s)), nil
+		}
 		if types.IsStringExpr(call.Args[0], c.env) {
 			return fmt.Sprintf("len(%s)", args[0]), nil
 		}
@@ -1568,6 +1586,24 @@ func (c *Compiler) constIntListExpr(e *parser.Expr) ([]int, bool) {
 		return ints, ok
 	}
 	return nil, false
+}
+
+func literalStringExpr(e *parser.Expr) *string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	return literalString(e.Binary.Left)
+}
+
+func (c *Compiler) constStringExpr(e *parser.Expr) (string, bool) {
+	if s := literalStringExpr(e); s != nil {
+		return *s, true
+	}
+	if name := identName(e); name != "" {
+		v, ok := c.constStrings[name]
+		return v, ok
+	}
+	return "", false
 }
 
 func (c *Compiler) constListLenExpr(e *parser.Expr) (int, bool) {
