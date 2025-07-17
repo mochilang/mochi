@@ -520,6 +520,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if len(args) == 0 {
 				return "", fmt.Errorf("print expects at least 1 arg")
 			}
+			if len(args) == 1 && isStringLiteralExpr(p.Call.Args[0]) {
+				return fmt.Sprintf("(displayln %s)", args[0]), nil
+			}
 			c.needRuntime = true
 			if len(args) == 1 {
 				return fmt.Sprintf("(displayln (_to_string %s))", args[0]), nil
