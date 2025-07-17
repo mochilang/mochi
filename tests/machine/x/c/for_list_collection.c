@@ -22,7 +22,7 @@ int _mochi_main() {
   tmp1.data[1] = 2;
   tmp1.data[2] = 3;
   for (int tmp2 = 0; tmp2 < 3; tmp2++) {
-    int n = tmp1[tmp2];
+    int n = tmp1.data[tmp2];
     printf("%d\n", n);
   }
   return 0;

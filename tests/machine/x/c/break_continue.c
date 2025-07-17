@@ -38,7 +38,7 @@ int _mochi_main() {
   tmp1.data[7] = 8;
   tmp1.data[8] = 9;
   for (int tmp2 = 0; tmp2 < 9; tmp2++) {
-    int n = tmp1[tmp2];
+    int n = tmp1.data[tmp2];
     if (n % 2 == 0) {
       continue;
     }
