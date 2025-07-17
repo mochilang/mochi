@@ -318,3 +318,42 @@ func (c *Compiler) isFloatPrimary(p *parser.Primary) bool {
 	}
 	return false
 }
+
+// isNumericListExpr returns true if e is a list whose elements are
+// statically known to be numbers (ints or floats).
+func (c *Compiler) isNumericListExpr(e *parser.Expr) bool {
+	if !c.isListExpr(e) {
+		return false
+	}
+	if name, ok := identName(e); ok && c.env != nil {
+		if t, err := c.env.GetVar(name); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				switch lt.Elem.(type) {
+				case types.IntType, types.Int64Type, types.FloatType:
+					return true
+				}
+			}
+		}
+	}
+	if e.Binary != nil && len(e.Binary.Right) == 0 {
+		u := e.Binary.Left
+		if len(u.Ops) == 0 && u.Value != nil {
+			p := u.Value
+			if len(p.Ops) == 0 && p.Target.List != nil {
+				lst := p.Target.List.Elems
+				if len(lst) == 0 {
+					return true
+				}
+				ok := true
+				for _, el := range lst {
+					if !(c.isIntExpr(el) || c.isFloatExpr(el)) {
+						ok = false
+						break
+					}
+				}
+				return ok
+			}
+		}
+	}
+	return false
+}

@@ -46,7 +46,6 @@ func main() {
 			os.Remove(scmPath)
 			continue
 		}
-		code = schemecode.FormatScheme(code)
 		os.WriteFile(scmPath, code, 0644)
 		os.Remove(errPath)
 	}

@@ -1506,12 +1506,20 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 		if len(args) != 1 {
 			return "", fmt.Errorf("avg expects 1 arg")
 		}
+		if c.isNumericListExpr(call.Args[0]) {
+			lst := args[0]
+			return fmt.Sprintf("(let ((lst %s)) (if (= (length lst) 0) 0 (/ (apply + lst) (length lst))))", lst), nil
+		}
 		c.needGroup = true
 		c.needDataset = true
 		return fmt.Sprintf("(_avg %s)", args[0]), nil
 	case "max":
 		if len(args) != 1 {
 			return "", fmt.Errorf("max expects 1 arg")
+		}
+		if c.isNumericListExpr(call.Args[0]) {
+			lst := args[0]
+			return fmt.Sprintf("(let ((lst %s)) (if (null? lst) 0 (apply max lst)))", lst), nil
 		}
 		c.needGroup = true
 		c.needDataset = true
@@ -1520,12 +1528,19 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 		if len(args) != 1 {
 			return "", fmt.Errorf("min expects 1 arg")
 		}
+		if c.isNumericListExpr(call.Args[0]) {
+			lst := args[0]
+			return fmt.Sprintf("(let ((lst %s)) (if (null? lst) 0 (apply min lst)))", lst), nil
+		}
 		c.needGroup = true
 		c.needDataset = true
 		return fmt.Sprintf("(_min %s)", args[0]), nil
 	case "sum":
 		if len(args) != 1 {
 			return "", fmt.Errorf("sum expects 1 arg")
+		}
+		if c.isNumericListExpr(call.Args[0]) {
+			return fmt.Sprintf("(apply + %s)", args[0]), nil
 		}
 		c.needGroup = true
 		c.needDataset = true
