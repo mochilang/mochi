@@ -2610,6 +2610,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	} else if t := c.elemType[val]; t != "" {
 		itemType = t
 	}
+	if t := c.varStruct[q.Var]; t != "" {
+		if idx := strings.Index(t, "{"); idx != -1 {
+			t = t[:idx]
+		}
+		itemType = t
+	} else if t := c.elemType[q.Var]; t != "" && strings.HasPrefix(itemType, "decltype(") {
+		itemType = t
+	}
 	key := ""
 	keyType := ""
 	if q.Sort != nil {
@@ -2640,6 +2648,20 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				}
 				fld := key[start:end]
 				keyType = fmt.Sprintf("decltype(std::declval<%s>().%s)", vt, fld)
+			} else {
+				keyType = strings.ReplaceAll(keyType, q.Var+".", fmt.Sprintf("std::declval<%s>().", vt))
+			}
+		}
+		if strings.Contains(keyType, q.Var+".") {
+			if vt := c.varStruct[q.Var]; vt != "" {
+				vt = strings.TrimSuffix(vt, "{}")
+				keyType = strings.ReplaceAll(keyType, q.Var+".", fmt.Sprintf("std::declval<%s>().", vt))
+			}
+		}
+		if strings.Contains(keyType, q.Var+".") {
+			if vt := c.varStruct[q.Var]; vt != "" {
+				vt = strings.TrimSuffix(vt, "{}")
+				keyType = strings.ReplaceAll(keyType, q.Var+".", fmt.Sprintf("std::declval<%s>().", vt))
 			}
 		}
 	}
@@ -3315,7 +3337,12 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 			itemInit := itemStruct + "{" + strings.Join(itemVars, ", ") + "}"
 			buf.WriteString("bool __found = false;\n")
 			indent(indentLevel)
-			buf.WriteString("for (auto &__g : __groups) { if (__g.key == __key) { __g.items.push_back(" + itemInit + "); __found = true; break; } }\n")
+			eq := "__g.key == __key"
+			if strings.Contains(keyType, "std::any") {
+				eq = "__any_eq(__g.key, __key)"
+				c.usesAny = true
+			}
+			buf.WriteString("for (auto &__g : __groups) { if (" + eq + ") { __g.items.push_back(" + itemInit + "); __found = true; break; } }\n")
 			indent(indentLevel)
 			buf.WriteString("if (!__found) { __groups.push_back(" + groupStruct + "{__key, std::vector<" + itemStruct + ">{" + itemInit + "}}); }\n")
 			return
