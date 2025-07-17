@@ -5382,14 +5382,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 				if l, ok := c.listLens[arg]; ok {
 					sum := c.newTemp()
 					loop := c.newLoopVar()
-					c.writeln(fmt.Sprintf("int %s = 0;", sum))
+					c.writeln(fmt.Sprintf("double %s = 0;", sum))
 					c.writeln(fmt.Sprintf("for (int %s=0; %s<%d; %s++) {", loop, loop, l, loop))
 					c.indent++
-					c.writeln(fmt.Sprintf("%s += %s[%s];", sum, arg, loop))
+					c.writeln(fmt.Sprintf("%s += %s;", sum, c.listItemExpr(arg, loop)))
 					c.indent--
 					c.writeln("}")
 					if c.env != nil {
-						c.env.SetVar(sum, types.IntType{}, true)
+						c.env.SetVar(sum, types.FloatType{}, true)
 					}
 					return sum
 				}
@@ -5405,7 +5405,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					c.writeln(fmt.Sprintf("int %s = 0;", sum))
 					c.writeln(fmt.Sprintf("for (int %s=0; %s<%d; %s++) {", loop, loop, l, loop))
 					c.indent++
-					c.writeln(fmt.Sprintf("%s += %s[%s];", sum, arg, loop))
+					c.writeln(fmt.Sprintf("%s += %s;", sum, c.listItemExpr(arg, loop)))
 					c.indent--
 					c.writeln("}")
 					res := c.newTemp()
@@ -5425,10 +5425,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					min := c.newTemp()
 					loop := c.newLoopVar()
 					if l > 0 {
-						c.writeln(fmt.Sprintf("int %s = %s[0];", min, arg))
+						c.writeln(fmt.Sprintf("int %s = %s;", min, c.listItemExpr(arg, "0")))
 						c.writeln(fmt.Sprintf("for (int %s=1; %s<%d; %s++) {", loop, loop, l, loop))
 						c.indent++
-						c.writeln(fmt.Sprintf("if (%s[%s] < %s) %s = %s[%s];", arg, loop, min, min, arg, loop))
+						c.writeln(fmt.Sprintf("if (%s < %s) %s = %s;", c.listItemExpr(arg, loop), min, min, c.listItemExpr(arg, loop)))
 						c.indent--
 						c.writeln("}")
 					} else {
@@ -5449,10 +5449,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					max := c.newTemp()
 					loop := c.newLoopVar()
 					if l > 0 {
-						c.writeln(fmt.Sprintf("int %s = %s[0];", max, arg))
+						c.writeln(fmt.Sprintf("int %s = %s;", max, c.listItemExpr(arg, "0")))
 						c.writeln(fmt.Sprintf("for (int %s=1; %s<%d; %s++) {", loop, loop, l, loop))
 						c.indent++
-						c.writeln(fmt.Sprintf("if (%s[%s] > %s) %s = %s[%s];", arg, loop, max, max, arg, loop))
+						c.writeln(fmt.Sprintf("if (%s > %s) %s = %s;", c.listItemExpr(arg, loop), max, max, c.listItemExpr(arg, loop)))
 						c.indent--
 						c.writeln("}")
 					} else {

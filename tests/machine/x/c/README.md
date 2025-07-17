@@ -60,7 +60,7 @@ The C backend compiles Mochi programs in `tests/vm/valid`. The table below lists
 - [x] unary_neg
 - [x] var_assignment
 - [x] while_loop
-- [ ] avg_builtin
+- [x] avg_builtin
 - [ ] cast_struct
 - [x] cross_join_filter
 - [x] cross_join_triple
@@ -88,7 +88,7 @@ The C backend compiles Mochi programs in `tests/vm/valid`. The table below lists
 - [ ] map_literal_dynamic
 - [ ] map_membership
 - [ ] membership
-- [ ] min_max_builtin
+ - [x] min_max_builtin
 - [ ] order_by_map
 - [ ] outer_join
 - [ ] record_assign
@@ -96,7 +96,7 @@ The C backend compiles Mochi programs in `tests/vm/valid`. The table below lists
 - [ ] save_jsonl_stdout
 - [ ] slice
 - [ ] sort_stable
-- [ ] sum_builtin
+ - [x] sum_builtin
 - [ ] test_block
 - [ ] tree_sum
 - [ ] update_stmt

@@ -21,9 +21,9 @@ int _mochi_main() {
   tmp1.data[0] = 1;
   tmp1.data[1] = 2;
   tmp1.data[2] = 3;
-  int tmp2 = 0;
+  double tmp2 = 0;
   for (int i3 = 0; i3 < 3; i3++) {
-    tmp2 += tmp1[i3];
+    tmp2 += tmp1.data[i3];
   }
   printf("%.17g\n", tmp2);
   return 0;
