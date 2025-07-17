@@ -158,16 +158,17 @@ function _save(rows: any[], path: string | null, opts: any): void {
   }
 }
 
-function _print(...args: any[]): void {
+function _print(...args: unknown[]): void {
   const out = args.map((a) => {
     if (Array.isArray(a)) return a.join(" ");
+    if (typeof a === "boolean") return a ? "1" : "0";
     return String(a);
   }).join(" ").trimEnd();
   console.log(out);
 }
 
-function _toAnyMap(m: any): { [key: string]: any } {
-  return m as { [key: string]: any };
+function _toAnyMap(m: unknown): Record<string, unknown> {
+  return m as Record<string, unknown>;
 }
 
 main();

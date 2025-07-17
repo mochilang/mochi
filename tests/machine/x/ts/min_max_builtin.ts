@@ -8,7 +8,7 @@ function main(): void {
   _print(_min(nums));
   _print(_max(nums));
 }
-function _max(v: any): number {
+function _max(v: unknown): number {
   let list: any[] | null = null;
   if (Array.isArray(v)) list = v;
   else if (v && typeof v === "object") {
@@ -24,7 +24,7 @@ function _max(v: any): number {
   return m;
 }
 
-function _min(v: any): any {
+function _min(v: unknown): unknown {
   let list: any[] | null = null;
   if (Array.isArray(v)) list = v;
   else if (v && typeof v === "object") {
@@ -45,9 +45,10 @@ function _min(v: any): any {
   return mv;
 }
 
-function _print(...args: any[]): void {
+function _print(...args: unknown[]): void {
   const out = args.map((a) => {
     if (Array.isArray(a)) return a.join(" ");
+    if (typeof a === "boolean") return a ? "1" : "0";
     return String(a);
   }).join(" ").trimEnd();
   console.log(out);

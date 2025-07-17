@@ -73,7 +73,7 @@ function main(): void {
   _print("ok");
   test_update_adult_status();
 }
-function _equal(a: any, b: any): boolean {
+function _equal(a: unknown, b: unknown): boolean {
   if (typeof a === "number" && typeof b === "number") {
     return Math.abs(a - b) < 1e-9;
   }
@@ -96,9 +96,10 @@ function _equal(a: any, b: any): boolean {
   return a === b;
 }
 
-function _print(...args: any[]): void {
+function _print(...args: unknown[]): void {
   const out = args.map((a) => {
     if (Array.isArray(a)) return a.join(" ");
+    if (typeof a === "boolean") return a ? "1" : "0";
     return String(a);
   }).join(" ").trimEnd();
   console.log(out);

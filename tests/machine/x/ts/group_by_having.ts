@@ -62,7 +62,7 @@ function main(): void {
   })();
   console.log(_json(big));
 }
-function _count(v: any): number {
+function _count(v: unknown): number {
   if (Array.isArray(v)) return v.length;
   if (v && typeof v === "object") {
     if (Array.isArray((v as any).items)) return (v as any).items.length;

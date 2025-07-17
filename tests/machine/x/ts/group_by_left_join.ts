@@ -66,7 +66,7 @@ function main(): void {
     _print(s.name, "orders:", s.count);
   }
 }
-function _count(v: any): number {
+function _count(v: unknown): number {
   if (Array.isArray(v)) return v.length;
   if (v && typeof v === "object") {
     if (Array.isArray((v as any).items)) return (v as any).items.length;
@@ -75,9 +75,10 @@ function _count(v: any): number {
   return 0;
 }
 
-function _print(...args: any[]): void {
+function _print(...args: unknown[]): void {
   const out = args.map((a) => {
     if (Array.isArray(a)) return a.join(" ");
+    if (typeof a === "boolean") return a ? "1" : "0";
     return String(a);
   }).join(" ").trimEnd();
   console.log(out);
