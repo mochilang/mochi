@@ -3,6 +3,9 @@
 - Deprecated `.py.out` files in `tests/compiler/py`.
 ## Recent Enhancements (2025-07-17 02:00)
 - Rosetta golden tests no longer compare generated `.py` files, only runtime output.
+## Recent Enhancements (2025-07-18 00:00)
+- `_fmt` now trims trailing spaces for list printing and maps `UNDEFINED` to `null` so VM golden tests pass.
+- `vm_golden_test.go` uses `golden.RunWithSummary` for pass/fail reporting.
 ## Recent Enhancements (2025-07-16 18:30)
 - Added `UNDEFINED` sentinel and updated `_fmt` so uninitialized values print `undefined`.
 - Dataclasses now define `__contains__` for membership checks.
