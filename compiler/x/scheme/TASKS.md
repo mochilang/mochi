@@ -17,6 +17,8 @@ The Scheme backend now targets chibi-scheme and can compile the `tpc-h/q1.mochi`
   integers, reducing runtime errors for several Rosetta tasks.
 - 2025-07-16 13:10 – Added golden tests for `tests/vm/valid` programs and
   enabled Python `math` imports without the `auto` keyword.
+- 2025-07-17 01:30 – Improved `_date_number` to handle timestamps and `/`-based
+  separators when comparing dates.
 
 ### Remaining Work
 - [ ] Better handling of date comparisons and sorting when running JOB benchmarks
