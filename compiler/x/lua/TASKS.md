@@ -67,3 +67,7 @@
 - Enhanced `__print` to support variadic arguments and trim trailing spaces.
 - Typed variables now initialize to zero for basic numeric types.
 - VM valid test pass count increased after addressing spacing and initialization issues.
+
+## Progress (2025-07-18 12:45)
+- Added basic `bigint` support via `tonumber` casts.
+- Generated Lua code and output for `bigint_ops.mochi`.
