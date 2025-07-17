@@ -2159,13 +2159,13 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 
 func (c *Compiler) compileListLiteral(l *parser.ListLiteral) (string, error) {
 	elems := make([]string, len(l.Elems))
-	multiline := len(l.Elems) > 1
+	multiline := len(l.Elems) > 4
 	for i, e := range l.Elems {
 		v, err := c.compileExpr(e)
 		if err != nil {
 			return "", err
 		}
-		if strings.Contains(v, "\n") {
+		if strings.Contains(v, "\n") || len(v) > 15 {
 			multiline = true
 		}
 		elems[i] = v
