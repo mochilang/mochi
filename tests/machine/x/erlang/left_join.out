@@ -1,10 +1,10 @@
-/workspace/mochi/tests/machine/x/erlang/left_join.erl:8:106: Warning: variable 'O' shadowed in generate
-%    8|     Result = [#{orderId => maps:get(id, O), customer => C, total => maps:get(total, O)} || O <- Orders, {O, C} <- mochi_left_join_item(O, Customers, fun(O, C) -> (maps:get(customerId, O) == maps:get(id, C)) end)],
-%     |                                                                                                          ^
+/workspace/mochi/tests/machine/x/erlang/left_join.erl:8:108: Warning: variable 'O' shadowed in generate
+%    8|     Result = [#{orderId => mochi_get(id, O), customer => C, total => mochi_get(total, O)} || O <- Orders, {O, C} <- mochi_left_join_item(O, Customers, fun(O, C) -> (mochi_get(customerId, O) == mochi_get(id, C)) end)],
+%     |                                                                                                            ^
 
-/workspace/mochi/tests/machine/x/erlang/left_join.erl:8:154: Warning: variable 'O' shadowed in 'fun'
-%    8|     Result = [#{orderId => maps:get(id, O), customer => C, total => maps:get(total, O)} || O <- Orders, {O, C} <- mochi_left_join_item(O, Customers, fun(O, C) -> (maps:get(customerId, O) == maps:get(id, C)) end)],
-%     |                                                                                                                                                          ^
+/workspace/mochi/tests/machine/x/erlang/left_join.erl:8:156: Warning: variable 'O' shadowed in 'fun'
+%    8|     Result = [#{orderId => mochi_get(id, O), customer => C, total => mochi_get(total, O)} || O <- Orders, {O, C} <- mochi_left_join_item(O, Customers, fun(O, C) -> (mochi_get(customerId, O) == mochi_get(id, C)) end)],
+%     |                                                                                                                                                            ^
 
 /workspace/mochi/tests/machine/x/erlang/left_join.erl:19:1: Warning: function mochi_left_join/3 is unused
 %   19| mochi_left_join(L, R, Fun) ->

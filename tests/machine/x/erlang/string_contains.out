@@ -1,2 +1,6 @@
+/workspace/mochi/tests/machine/x/erlang/string_contains.erl:9:1: Warning: function mochi_get/2 is unused
+%    9| mochi_get(K, M) ->
+%     | ^
+
 true
 false

@@ -1,10 +1,10 @@
-/workspace/mochi/tests/machine/x/erlang/left_join_multi.erl:9:116: Warning: variable 'O' shadowed in generate
-%    9|     Result = [#{orderId => maps:get(id, O), name => maps:get(name, C), item => I} || O <- Orders, C <- Customers, {O, I} <- mochi_left_join_item(O, Items, fun(O, I) -> (maps:get(id, O) == maps:get(orderId, I)) end), (maps:get(customerId, O) == maps:get(id, C))],
-%     |                                                                                                                    ^
+/workspace/mochi/tests/machine/x/erlang/left_join_multi.erl:9:118: Warning: variable 'O' shadowed in generate
+%    9|     Result = [#{orderId => mochi_get(id, O), name => mochi_get(name, C), item => I} || O <- Orders, C <- Customers, {O, I} <- mochi_left_join_item(O, Items, fun(O, I) -> (mochi_get(id, O) == mochi_get(orderId, I)) end), (mochi_get(customerId, O) == mochi_get(id, C))],
+%     |                                                                                                                      ^
 
-/workspace/mochi/tests/machine/x/erlang/left_join_multi.erl:9:160: Warning: variable 'O' shadowed in 'fun'
-%    9|     Result = [#{orderId => maps:get(id, O), name => maps:get(name, C), item => I} || O <- Orders, C <- Customers, {O, I} <- mochi_left_join_item(O, Items, fun(O, I) -> (maps:get(id, O) == maps:get(orderId, I)) end), (maps:get(customerId, O) == maps:get(id, C))],
-%     |                                                                                                                                                                ^
+/workspace/mochi/tests/machine/x/erlang/left_join_multi.erl:9:162: Warning: variable 'O' shadowed in 'fun'
+%    9|     Result = [#{orderId => mochi_get(id, O), name => mochi_get(name, C), item => I} || O <- Orders, C <- Customers, {O, I} <- mochi_left_join_item(O, Items, fun(O, I) -> (mochi_get(id, O) == mochi_get(orderId, I)) end), (mochi_get(customerId, O) == mochi_get(id, C))],
+%     |                                                                                                                                                                  ^
 
 /workspace/mochi/tests/machine/x/erlang/left_join_multi.erl:20:1: Warning: function mochi_left_join/3 is unused
 %   20| mochi_left_join(L, R, Fun) ->

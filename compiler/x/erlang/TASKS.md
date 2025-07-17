@@ -31,7 +31,7 @@
 
 ## Remaining work
 - [ ] Implement auto FFI handling for `go_auto` and `python_auto` programs.
-- [ ] Fix nested accumulation bug in `group_items_iteration`.
+- [x] Fix nested accumulation bug in `group_items_iteration`.
 - [ ] Support extern values for `python_math`.
 - [x] Compile TPC-H query `q1.mochi` successfully.
 - [x] Compile TPC-H queries `q2` through `q22` successfully.
