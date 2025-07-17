@@ -52,6 +52,9 @@
 - `defineStruct` now falls back to `std::any` if unresolved variable
   references remain after replacement, avoiding g++ errors when struct
   field types reference undefined variables.
+- Improved `compileStructLiteral` and `structFromVars` to replace
+  leftover `decltype` placeholders with types inferred from `vars` or
+  `elemType` (2025-07-17 01:30 UTC).
 
 ## Remaining Enhancements
 - [ ] Improve formatting to better match human examples.
