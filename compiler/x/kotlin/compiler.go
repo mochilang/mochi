@@ -280,9 +280,22 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			c.writeln("")
 		}
 	}
-	// emit global variable declarations before functions so they are
-	// visible to all functions
-	for _, s := range prog.Statements {
+	// emit variable declarations that appear before the first
+	// non-declaration statement so they are visible to all functions
+	firstNonDecl := len(prog.Statements)
+	for i, s := range prog.Statements {
+		if s.Type != nil || s.Fun != nil || s.Import != nil {
+			continue
+		}
+		if s.Let == nil && s.Var == nil {
+			firstNonDecl = i
+			break
+		}
+	}
+	for i, s := range prog.Statements {
+		if i >= firstNonDecl {
+			break
+		}
 		if s.Type != nil || s.Fun != nil || s.Import != nil {
 			continue
 		}
@@ -309,11 +322,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if !hasMain {
 		c.writeln("fun main() {")
 		c.indent++
-		for _, s := range prog.Statements {
+		for i, s := range prog.Statements {
 			if s.Fun != nil || s.Type != nil || s.Import != nil {
 				continue
 			}
-			if s.Let != nil || s.Var != nil {
+			if i < firstNonDecl && (s.Let != nil || s.Var != nil) {
 				// already emitted as global variable
 				continue
 			}
