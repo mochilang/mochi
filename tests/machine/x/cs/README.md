@@ -2,7 +2,7 @@
 
 This directory holds C# source generated from the Mochi programs in `tests/vm/valid`. Each compiled program has a `.cs` file and the expected output in a matching `.out`. If the compiler failed a `.error` file will be present instead.
 
-Compiled programs: 9/100
+Compiled programs: 12/100
 
 Checklist:
 
@@ -83,7 +83,7 @@ Checklist:
 - [ ] right_join
 - [ ] save_jsonl_stdout
 - [ ] short_circuit
-- [ ] slice
+ - [x] slice
 - [ ] sort_stable
 - [ ] str_builtin
 - [ ] string_compare
@@ -91,8 +91,8 @@ Checklist:
 - [ ] string_contains
 - [ ] string_in_operator
 - [ ] string_index
-- [ ] string_prefix_slice
-- [ ] substring_builtin
+- [x] string_prefix_slice
+- [x] substring_builtin
 - [x] sum_builtin
 - [ ] tail_recursion
 - [ ] test_block

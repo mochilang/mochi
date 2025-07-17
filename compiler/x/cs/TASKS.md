@@ -3,6 +3,10 @@
 - Improved compile-time casting so numeric conversions no longer rely on the
   `_cast` helper when types are known. Machine output added for
   `cast_string_to_int` bringing totals to 8/100.
+## Recent Updates (2025-07-22 00:00)
+- Slicing of typed strings and lists now uses `Substring` and `GetRange`
+  instead of helper functions. Generated machine output for `slice`,
+  `substring_builtin` and `string_prefix_slice` bringing totals to 12/100.
 ## Recent Updates (2025-07-20 15:00)
 - Added C# machine output for `append_builtin` bringing totals to 6/100.
 ## Recent Updates (2025-07-19 09:00)

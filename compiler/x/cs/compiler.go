@@ -1390,12 +1390,27 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					}
 					end = e
 				}
+				var preType types.Type
+				if c.env != nil {
+					prefix := &parser.PostfixExpr{Target: p.Target, Ops: p.Ops[:i]}
+					preType = c.inferPostfixType(prefix)
+				}
 				if isStr {
-					c.use("_sliceString")
-					expr = fmt.Sprintf("_sliceString(%s, %s, %s)", expr, start, end)
+					if _, ok := preType.(types.StringType); ok {
+						length := fmt.Sprintf("((int)(%s) - (int)(%s))", end, start)
+						expr = fmt.Sprintf("%s.Substring((int)%s, %s)", expr, start, length)
+					} else {
+						c.use("_sliceString")
+						expr = fmt.Sprintf("_sliceString(%s, %s, %s)", expr, start, end)
+					}
 				} else {
-					c.use("_sliceList")
-					expr = fmt.Sprintf("_sliceList(%s, %s, %s)", expr, start, end)
+					if _, ok := preType.(types.ListType); ok {
+						length := fmt.Sprintf("((int)(%s) - (int)(%s))", end, start)
+						expr = fmt.Sprintf("%s.GetRange((int)%s, %s)", expr, start, length)
+					} else {
+						c.use("_sliceList")
+						expr = fmt.Sprintf("_sliceList(%s, %s, %s)", expr, start, end)
+					}
 				}
 			} else {
 				idx := start
@@ -3178,12 +3193,21 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if len(args) != 3 {
 			return "", fmt.Errorf("substr expects 3 args")
 		}
+		t := c.inferExprType(call.Args[0])
+		if _, ok := t.(types.StringType); ok {
+			return fmt.Sprintf("%s.Substring((int)%s, (int)%s)", args[0], args[1], args[2]), nil
+		}
 		c.use("_sliceString")
 		end := fmt.Sprintf("(%s)+(%s)", args[1], args[2])
 		return fmt.Sprintf("_sliceString(%s, %s, %s)", args[0], args[1], end), nil
 	case "substring":
 		if len(args) != 3 {
 			return "", fmt.Errorf("substring expects 3 args")
+		}
+		t := c.inferExprType(call.Args[0])
+		if _, ok := t.(types.StringType); ok {
+			length := fmt.Sprintf("((int)(%s) - (int)(%s))", args[2], args[1])
+			return fmt.Sprintf("%s.Substring((int)%s, %s)", args[0], args[1], length), nil
 		}
 		c.use("_sliceString")
 		return fmt.Sprintf("_sliceString(%s, %s, %s)", args[0], args[1], args[2]), nil
