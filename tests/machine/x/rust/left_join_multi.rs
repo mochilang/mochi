@@ -31,6 +31,6 @@ fn main() {
     let result = { let mut tmp1 = Vec::new();for o in &orders { for c in &customers { if !(o.customerId == c.id) { continue; } let mut _matched = false; for i in &items { if !(o.id == i.orderId) { continue; } _matched = true; tmp1.push(Result { orderId: o.id, name: c.name, item: i.clone() }); } if !_matched { let i: Item = Default::default(); tmp1.push(Result { orderId: o.id, name: c.name, item: i.clone() }); } } } tmp1 };
     println!("--- Left Join Multi ---");
     for r in result {
-        println!("{}", vec![format!("{}", r.orderId), format!("{}", r.name), format!("{}", r.item)].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+        println!("{}", vec![format!("{}", r.orderId), format!("{}", r.name), format!("{}", if r.item == Item::default() { "null" } else { "[object Object]" })].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
     }
 }

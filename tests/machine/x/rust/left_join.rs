@@ -25,6 +25,6 @@ fn main() {
     let result = { let mut tmp1 = Vec::new();for o in &orders { let mut _matched = false; for c in &customers { if !(o.customerId == c.id) { continue; } _matched = true; tmp1.push(Result { orderId: o.id, customer: c.clone(), total: o.total }); } if !_matched { let c: Customer = Default::default(); tmp1.push(Result { orderId: o.id, customer: c.clone(), total: o.total }); } } tmp1 };
     println!("--- Left Join ---");
     for entry in result {
-        println!("{}", vec![format!("{}", "Order"), format!("{}", entry.orderId), format!("{}", "customer"), format!("{}", entry.customer), format!("{}", "total"), format!("{}", entry.total)].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+        println!("{}", vec![format!("{}", "Order"), format!("{}", entry.orderId), format!("{}", "customer"), format!("{}", if entry.customer == Customer::default() { "null" } else { "[object Object]" }), format!("{}", "total"), format!("{}", entry.total)].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
     }
 }
