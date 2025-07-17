@@ -1,12 +1,10 @@
-<<<<<<< HEAD
 # Elixir Machine Output
 
-This directory contains Elixir source code generated from Mochi programs and the corresponding outputs.
+This directory contains Elixir source code generated from Mochi programs in `tests/vm/valid` and the corresponding runtime output. Each `.exs` file is the compiled program and the `.out` file records its output when executed with `elixir`.
 
-Compiled programs: 99/100
+Compiled programs: 100/100
 
 Checklist:
-
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -29,7 +27,6 @@ Checklist:
 - [x] fun_call
 - [x] fun_expr_in_let
 - [x] fun_three_args
-- [x] go_auto
 - [x] group_by
 - [x] group_by_conditional_sum
 - [x] group_by_having
@@ -57,7 +54,7 @@ Checklist:
 - [x] list_index
 - [x] list_nested_assign
 - [x] list_set_ops
-- [ ] load_yaml
+- [x] load_yaml
 - [x] map_assign
 - [x] map_in_operator
 - [x] map_index
@@ -77,8 +74,6 @@ Checklist:
 - [x] print_hello
 - [x] pure_fold
 - [x] pure_global_fold
-- [x] python_auto
-- [x] python_math
 - [x] query_sum_select
 - [x] record_assign
 - [x] right_join
@@ -108,7 +103,3 @@ Checklist:
 - [x] var_assignment
 - [x] while_loop
 
-### Remaining tasks
-- [ ] load_yaml
-=======
->>>>>>> 15d0dc4b5 (Truncate all README.md)

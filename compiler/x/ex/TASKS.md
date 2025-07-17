@@ -43,3 +43,8 @@ Flattened joined rows when grouping so fields like `sr_return_amt` are directly
 accessible. `compile_tpcds_ex.go` now records runtime failures in `.error`
 files. The golden test regenerates outputs via this script before running and
 fails if any `.error` file is present.
+
+## VM Test Updates (2025-07-17 06:20)
+- Adjusted query row merging to tolerate nil values so left joins no longer crash.
+- All 100 valid VM programs now compile and execute without runtime errors.
+
