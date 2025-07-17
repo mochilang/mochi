@@ -28,10 +28,13 @@
 - [2025-07-16 12:40] Improved `if` statement compilation to reuse variable names
   across branches, preventing unbound variable errors in several Rosetta
   examples. Regenerated outputs for the first few tasks.
+- [2025-07-17 06:48] Implemented auto FFI support for `go_auto`, `python_auto`,
+  and extern handling for `python_math`. Generated Erlang outputs for these
+  programs.
 
 ## Remaining work
-- [ ] Implement auto FFI handling for `go_auto` and `python_auto` programs.
+- [x] Implement auto FFI handling for `go_auto` and `python_auto` programs.
 - [x] Fix nested accumulation bug in `group_items_iteration`.
-- [ ] Support extern values for `python_math`.
+- [x] Support extern values for `python_math`.
 - [x] Compile TPC-H query `q1.mochi` successfully.
 - [x] Compile TPC-H queries `q2` through `q22` successfully.

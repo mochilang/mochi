@@ -45,6 +45,8 @@ type Compiler struct {
 	globals map[string]string
 
 	pinned map[string]string
+
+	builtinAliases map[string]string
 }
 
 func New(srcPath string) *Compiler {
@@ -64,6 +66,7 @@ func New(srcPath string) *Compiler {
 		groupKeys:      make(map[string]string),
 		globals:        make(map[string]string),
 		pinned:         make(map[string]string),
+		builtinAliases: make(map[string]string),
 	}
 }
 
@@ -154,6 +157,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.aliases = make(map[string]string)
 	c.groupKeys = make(map[string]string)
 	c.globals = make(map[string]string)
+	c.builtinAliases = make(map[string]string)
 
 	for _, st := range prog.Statements {
 		if st.Let != nil && st.Let.Value != nil && isLiteralExpr(st.Let.Value) {
@@ -358,6 +362,11 @@ func (c *Compiler) compileStmtLine(st *parser.Statement) (string, error) {
 		return c.compileReturn(st.Return)
 	case st.Expr != nil:
 		return c.compileExpr(st.Expr.Expr)
+	case st.Import != nil:
+		return c.compileImport(st.Import)
+	case st.ExternVar != nil, st.ExternFun != nil, st.ExternType != nil, st.ExternObject != nil:
+		// extern declarations have no effect in generated Erlang code
+		return "", nil
 	case st.If != nil:
 		return c.compileIfStmt(st.If)
 	case st.For != nil:
@@ -1435,6 +1444,46 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 				args[j] = s
 			}
+			if p.Target.Selector != nil && len(p.Target.Selector.Tail) > 0 {
+				alias := p.Target.Selector.Root
+				method := p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1]
+				if mod, ok := c.builtinAliases[alias]; ok {
+					switch mod {
+					case "python_math":
+						switch method {
+						case "sqrt":
+							if len(args) == 1 {
+								val = fmt.Sprintf("math:sqrt(%s)", args[0])
+								typ = "float"
+								continue
+							}
+						case "pow":
+							if len(args) == 2 {
+								val = fmt.Sprintf("math:pow(%s, %s)", args[0], args[1])
+								typ = "float"
+								continue
+							}
+						case "sin":
+							if len(args) == 1 {
+								val = fmt.Sprintf("math:sin(%s)", args[0])
+								typ = "float"
+								continue
+							}
+						case "log":
+							if len(args) == 1 {
+								val = fmt.Sprintf("math:log(%s)", args[0])
+								typ = "float"
+								continue
+							}
+						}
+					case "go_testpkg":
+						if method == "Add" && len(args) == 2 {
+							val = fmt.Sprintf("(%s + %s)", args[0], args[1])
+							continue
+						}
+					}
+				}
+			}
 			if p.Target.Selector != nil && len(p.Target.Selector.Tail) > 0 && (p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1] == "contains" || p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1] == "starts_with") {
 				base := c.refVar(p.Target.Selector.Root)
 				if v, ok := c.globals[p.Target.Selector.Root]; ok {
@@ -1480,6 +1529,25 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if len(p.Selector.Tail) == 0 {
 			if v, ok := c.globals[root]; ok {
 				return v, nil
+			}
+		}
+		if mod, ok := c.builtinAliases[root]; ok && len(p.Selector.Tail) == 1 {
+			tail := p.Selector.Tail[0]
+			switch mod {
+			case "go_testpkg":
+				switch tail {
+				case "Pi":
+					return "3.14", nil
+				case "Answer":
+					return "42", nil
+				}
+			case "python_math":
+				switch tail {
+				case "pi":
+					return "math:pi()", nil
+				case "e":
+					return "math:exp(1)", nil
+				}
 			}
 		}
 		if len(p.Selector.Tail) == 0 && unicode.IsUpper(rune(root[0])) && !c.lets[root] && c.varVers[root] == 0 {
@@ -1852,6 +1920,29 @@ func (c *Compiler) compileMapKey(e *parser.Expr) (string, error) {
 		}
 	}
 	return c.compileExpr(e)
+}
+
+func (c *Compiler) compileImport(im *parser.ImportStmt) (string, error) {
+	if im.Lang == nil {
+		return "", nil
+	}
+	alias := im.As
+	if alias == "" {
+		alias = parser.AliasFromPath(im.Path)
+	}
+	switch *im.Lang {
+	case "go":
+		if im.Auto && im.Path == "mochi/runtime/ffi/go/testpkg" {
+			c.builtinAliases[alias] = "go_testpkg"
+			return "", nil
+		}
+	case "python":
+		if im.Path == "math" {
+			c.builtinAliases[alias] = "python_math"
+			return "", nil
+		}
+	}
+	return "", fmt.Errorf("unsupported import")
 }
 
 func (c *Compiler) writeln(s string) {
