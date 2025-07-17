@@ -189,9 +189,7 @@ end`
     list = v.to_a
   end
   return 0 if !list || list.empty?
-  s = 0.0
-  list.each { |n| s += n.to_f }
-  s
+  list.sum(0.0)
 end`
 
 	helperAvg = `def _avg(v)

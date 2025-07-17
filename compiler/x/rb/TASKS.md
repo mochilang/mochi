@@ -18,6 +18,8 @@
 - 2025-07-20 09:15 - Removed obsolete `compiler_test.go` in favor of
   `vm_golden_test.go` and verified VM tests pass.
 - 2025-07-21 13:45 - Added machine README with checklist of compiled programs.
+- 2025-07-17 06:42 - Simplified `_sum` helper to use Ruby's native `sum`
+  for clearer generated code. Regenerated VM and dataset outputs.
 
 ## Progress (2025-07-15 04:48)
 - Recompiled `tpc-h` queries `q4`-`q22` using the updated compiler.
