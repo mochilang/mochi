@@ -463,12 +463,13 @@ func equalTypes(a, b types.Type) bool {
 	return reflect.DeepEqual(a, b)
 }
 
-func isInt64(t types.Type) bool  { _, ok := t.(types.Int64Type); return ok }
-func isInt(t types.Type) bool    { _, ok := t.(types.IntType); return ok }
-func isFloat(t types.Type) bool  { _, ok := t.(types.FloatType); return ok }
-func isBool(t types.Type) bool   { _, ok := t.(types.BoolType); return ok }
-func isString(t types.Type) bool { _, ok := t.(types.StringType); return ok }
-func isList(t types.Type) bool   { _, ok := t.(types.ListType); return ok }
+func isInt64(t types.Type) bool   { _, ok := t.(types.Int64Type); return ok }
+func isInt(t types.Type) bool     { _, ok := t.(types.IntType); return ok }
+func isFloat(t types.Type) bool   { _, ok := t.(types.FloatType); return ok }
+func isBool(t types.Type) bool    { _, ok := t.(types.BoolType); return ok }
+func isString(t types.Type) bool  { _, ok := t.(types.StringType); return ok }
+func isList(t types.Type) bool    { _, ok := t.(types.ListType); return ok }
+func isAnyType(t types.Type) bool { _, ok := t.(types.AnyType); return ok }
 
 func canInferType(e *parser.Expr, t types.Type) bool {
 	if e == nil {

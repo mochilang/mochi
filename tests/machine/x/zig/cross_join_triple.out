@@ -1,0 +1,9 @@
+--- Cross Join of three lists ---
+1 { 65 } true
+1 { 65 } false
+1 { 66 } true
+1 { 66 } false
+2 { 65 } true
+2 { 65 } false
+2 { 66 } true
+2 { 66 } false

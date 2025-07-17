@@ -3268,7 +3268,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				case types.BoolType:
 					format += " {}"
 				default:
-					if zigTypeOf(t) == "[]const u8" {
+					if zigTypeOf(t) == "[]const u8" || (isAnyType(t) && c.isStringExpr(a)) {
 						format += " {s}"
 					} else {
 						format += " {any}"
@@ -3301,7 +3301,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			case types.BoolType:
 				fmtParts[i] = "{}"
 			default:
-				if zigTypeOf(t) == "[]const u8" {
+				if zigTypeOf(t) == "[]const u8" || (isAnyType(t) && c.isStringExpr(a)) {
 					fmtParts[i] = "{s}"
 				} else {
 					fmtParts[i] = "{any}"
