@@ -2364,6 +2364,15 @@ func (c *Compiler) compileBinaryOp(left string, op *parser.BinaryOp, right strin
 			return fmt.Sprintf("%s.contains(%s)", right, left), nil
 		} else if strings.HasPrefix(typ, "Map<") {
 			return fmt.Sprintf("%s.containsKey(%s)", right, left), nil
+		} else if dc := c.dataClassByName(typ); dc != nil {
+			var checks []string
+			for _, f := range dc.fields {
+				checks = append(checks, fmt.Sprintf("Objects.equals(%s, \"%s\")", left, f))
+			}
+			if len(checks) == 0 {
+				return "false", nil
+			}
+			return strings.Join(checks, " || "), nil
 		}
 		c.helpers["in"] = true
 		return fmt.Sprintf("inOp(%s, %s)", left, right), nil
