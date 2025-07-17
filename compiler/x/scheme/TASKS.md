@@ -25,6 +25,8 @@ The Scheme backend now targets chibi-scheme and can compile the `tpc-h/q1.mochi`
   emitting dataset helper functions when operands are numeric or strings.
 - 2025-07-17 09:12 – Aggregate builtins now use Scheme primitives when operating
   on numeric lists, removing unnecessary helper functions.
+- 2025-07-17 14:05 – Built-in sorting uses SRFI-95 when keys are numeric or
+  strings and YAML loader converts keys to symbols to avoid runtime type errors.
 
 ### Remaining Work
 - [ ] Better handling of date comparisons and sorting when running JOB benchmarks
