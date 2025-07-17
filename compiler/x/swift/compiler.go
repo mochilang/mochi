@@ -2730,7 +2730,9 @@ func (c *compiler) joinSingleSide(q *parser.QueryExpr, src, joinSrc, onExpr, sid
 		b.WriteString("\t\t}\n")
 		b.WriteString("\t\tif !_m {\n")
 		b.WriteString(fmt.Sprintf("\t\t\tlet %s: %s? = nil\n", qv, qvType))
-		selNil := replaceIdent(sel, qv, "nil")
+		selNil := replaceVarField(sel, qv)
+		selNil = replaceIdent(selNil, qv, "nil")
+		selNil = regexp.MustCompile(`nil(\.[A-Za-z_][A-Za-z0-9_]*|\[[^\]]+\])`).ReplaceAllString(selNil, "nil")
 		b.WriteString(fmt.Sprintf("\t\t\t_res.append(%s)\n", selNil))
 		b.WriteString("\t\t}\n")
 		b.WriteString("\t}\n")
@@ -3071,6 +3073,17 @@ func (c *compiler) saveExpr(s *parser.SaveExpr) (string, error) {
 	src, err := c.expr(s.Src)
 	if err != nil {
 		return "", err
+	}
+	typ := c.exprType(s.Src)
+	if strings.HasPrefix(typ, "list_") {
+		st := strings.TrimPrefix(typ, "list_")
+		if fields, ok := c.structs[st]; ok {
+			parts := make([]string, len(fields))
+			for i, f := range fields {
+				parts[i] = fmt.Sprintf("\"%s\": $0.%s", f, f)
+			}
+			src = fmt.Sprintf("%s.map { [%s] }", src, strings.Join(parts, ", "))
+		}
 	}
 	path := "\"\""
 	if s.Path != nil {

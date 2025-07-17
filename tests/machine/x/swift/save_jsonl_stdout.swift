@@ -29,4 +29,4 @@ struct People: Equatable {
 }
 
 var people = [People(age: 30, name: "Alice"), People(age: 25, name: "Bob")]
-_save(people, path: "-", opts: ["format": "jsonl"])
+_save(people.map { ["age": $0.age, "name": $0.name] }, path: "-", opts: ["format": "jsonl"])

@@ -35,7 +35,7 @@ var result = ({
 		}
 		if !_m {
 			let c: Customer? = nil
-			_res.append(CJoin(customerName: nil.name, order: o))
+                        _res.append(CJoin(customerName: nil, order: o))
 		}
 	}
 	return _res
