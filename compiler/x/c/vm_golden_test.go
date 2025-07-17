@@ -28,7 +28,7 @@ func TestCCompiler_VMValid_Golden(t *testing.T) {
 	outDir := filepath.Join(root, "tests", "machine", "x", "c")
 	os.MkdirAll(outDir, 0o755)
 
-	golden.Run(t, "tests/vm/valid", ".mochi", ".out", func(src string) ([]byte, error) {
+    golden.RunWithSummary(t, "tests/vm/valid", ".mochi", ".out", func(src string) ([]byte, error) {
 		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
 		codePath := filepath.Join(outDir, base+".c")
 		outPath := filepath.Join(outDir, base+".out")
