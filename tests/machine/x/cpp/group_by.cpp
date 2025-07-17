@@ -29,16 +29,13 @@ inline void __print_any(const std::any &a) {
 }
 
 struct People {
-  std::any name;
+  std::string name;
   int age;
-  std::any city;
+  std::string city;
 };
-struct Stat {
-  std::any person;
-};
-struct __struct3 {
+struct __struct2 {
   std::any key;
-  std::vector<Stat> items;
+  std::vector<People> items;
 };
 template <typename T> double __avg(const std::vector<T> &v) {
   if (v.empty())
@@ -48,7 +45,7 @@ template <typename T> double __avg(const std::vector<T> &v) {
     s += x;
   return s / v.size();
 }
-struct __struct4 {
+struct Stat {
   std::any city;
   int count;
   double avg_age;
@@ -62,38 +59,37 @@ int main() {
       People{std::string("Eve"), 70, std::string("Paris")},
       People{std::string("Frank"), 22, std::string("Hanoi")}};
   std::vector<Stat> stats = ([&]() {
-    std::vector<__struct3> __groups;
+    std::vector<__struct2> __groups;
     for (auto person : people) {
       auto __key = person.city;
       bool __found = false;
       for (auto &__g : __groups) {
-        if (__g.key == __key) {
-          __g.items.push_back(Stat{person});
+        if (__any_eq(__g.key, __key)) {
+          __g.items.push_back(person);
           __found = true;
           break;
         }
       }
       if (!__found) {
-        __groups.push_back(__struct3{__key, std::vector<Stat>{Stat{person}}});
+        __groups.push_back(__struct2{__key, std::vector<People>{person}});
       }
     }
-    std::vector<__struct4> __items;
+    std::vector<Stat> __items;
     for (auto &g : __groups) {
-      __items.push_back(
-          __struct4{g.key, ((int)g.items.size()), __avg(([&]() {
-                      std::vector<decltype(std::declval<Stat>().age)> __items;
-                      for (auto p : g.items) {
-                        __items.push_back(p.age);
-                      }
-                      return __items;
-                    })())});
+      __items.push_back(Stat{g.key, ((int)g.items.size()), __avg(([&]() {
+                               std::vector<int> __items;
+                               for (auto p : g.items) {
+                                 __items.push_back(p.age);
+                               }
+                               return __items;
+                             })())});
     }
     return __items;
   })();
   std::cout << std::string("--- People grouped by city ---") << std::endl;
   for (auto s : stats) {
     {
-      std::cout << s.city;
+      __print_any(s.city);
       std::cout << ' ';
       std::cout << std::string(": count =");
       std::cout << ' ';
