@@ -5,14 +5,6 @@ let a: number[];
 
 function main(): void {
   a = [1, 2];
-  _print([...a, 3]);
+  console.log([...a, 3].join(" "));
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

@@ -22,17 +22,9 @@ function main(): void {
     }
     return _res;
   })();
-  _print("--- Even pairs ---");
+  console.log("--- Even pairs ---");
   for (const p of pairs) {
-    _print(p.n, p.l);
+    console.log(p.n, p.l);
   }
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

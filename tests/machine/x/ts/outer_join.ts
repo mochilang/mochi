@@ -83,11 +83,11 @@ function main(): void {
     }
     return _res;
   })();
-  _print("--- Outer Join using syntax ---");
+  console.log("--- Outer Join using syntax ---");
   for (const row of result) {
     if (row.order) {
       if (row.customer) {
-        _print(
+        console.log(
           "Order",
           row.order.id,
           "by",
@@ -96,19 +96,18 @@ function main(): void {
           row.order.total,
         );
       } else {
-        _print("Order", row.order.id, "by", "Unknown", "- $", row.order.total);
+        console.log(
+          "Order",
+          row.order.id,
+          "by",
+          "Unknown",
+          "- $",
+          row.order.total,
+        );
       }
     } else {
-      _print("Customer", row.customer.name, "has no orders");
+      console.log("Customer", row.customer.name, "has no orders");
     }
   }
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

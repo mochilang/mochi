@@ -10,16 +10,8 @@ function main(): void {
     const _items = nums.filter((n) => (n > 1)).map((n) => n);
     return _sum(_items);
   })();
-  _print(result);
+  console.log(result);
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 function _sum(v: any): number {
   let list: any[] | null = null;
   if (Array.isArray(v)) list = v;

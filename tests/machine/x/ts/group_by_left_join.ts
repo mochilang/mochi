@@ -61,9 +61,9 @@ function main(): void {
     }
     return _res;
   })();
-  _print("--- Group Left Join ---");
+  console.log("--- Group Left Join ---");
   for (const s of stats) {
-    _print(s.name, "orders:", s.count);
+    console.log(s.name, "orders:", s.count);
   }
 }
 function _count(v: any): number {
@@ -73,14 +73,6 @@ function _count(v: any): number {
     if (Array.isArray((v as any).Items)) return (v as any).Items.length;
   }
   return 0;
-}
-
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
 }
 
 function _query(src: any[], joins: any[], opts: any): any {

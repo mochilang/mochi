@@ -6,16 +6,8 @@ var i: number;
 function main(): void {
   i = 0;
   while ((i < 3)) {
-    _print(i);
+    console.log(i);
     i = i + 1;
   }
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

@@ -2,15 +2,7 @@
 // Source: /workspace/mochi/tests/vm/valid/unary_neg.mochi
 
 function main(): void {
-  _print(-3);
-  _print(5 + (-2));
+  console.log(-3);
+  console.log(5 + (-2));
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

@@ -2,17 +2,9 @@
 // Source: /workspace/mochi/tests/vm/valid/string_compare.mochi
 
 function main(): void {
-  _print("a" < "b");
-  _print("a" <= "a");
-  _print("b" > "a");
-  _print("b" >= "b");
+  console.log(("a" < "b") ? 1 : 0);
+  console.log(("a" <= "a") ? 1 : 0);
+  console.log(("b" > "a") ? 1 : 0);
+  console.log(("b" >= "b") ? 1 : 0);
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

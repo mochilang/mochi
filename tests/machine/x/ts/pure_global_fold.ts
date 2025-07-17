@@ -9,14 +9,6 @@ let k: number;
 
 function main(): void {
   k = 2;
-  _print(inc(3));
+  console.log(inc(3));
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

@@ -8,15 +8,11 @@ function main(): void {
     "a": 1,
     "b": 2,
   };
-  _print(Object.prototype.hasOwnProperty.call(m, String("a")) ? 1 : 0);
-  _print(Object.prototype.hasOwnProperty.call(m, String("c")) ? 1 : 0);
+  console.log(
+    (Object.prototype.hasOwnProperty.call(m, String("a")) ? 1 : 0) ? 1 : 0,
+  );
+  console.log(
+    (Object.prototype.hasOwnProperty.call(m, String("c")) ? 1 : 0) ? 1 : 0,
+  );
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

@@ -11,14 +11,6 @@ let add10: (p0: number) => number;
 
 function main(): void {
   add10 = makeAdder(10);
-  _print(add10(7));
+  console.log(add10(7));
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

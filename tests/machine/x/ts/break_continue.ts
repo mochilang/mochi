@@ -22,15 +22,7 @@ function main(): void {
     if ((n > 7)) {
       break;
     }
-    _print("odd number:", n);
+    console.log("odd number:", n);
   }
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

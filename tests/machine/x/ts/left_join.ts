@@ -54,9 +54,9 @@ function main(): void {
     }
     return _res;
   })();
-  _print("--- Left Join ---");
+  console.log("--- Left Join ---");
   for (const entry of result) {
-    _print(
+    console.log(
       "Order",
       entry.orderId,
       "customer",
@@ -66,12 +66,4 @@ function main(): void {
     );
   }
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

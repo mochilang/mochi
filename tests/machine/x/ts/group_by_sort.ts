@@ -55,7 +55,7 @@ function main(): void {
     }
     return _res;
   })();
-  _print(grouped);
+  console.log(grouped.join(" "));
 }
 function _cmp(a: any, b: any): number {
   if (Array.isArray(a) && Array.isArray(b)) {
@@ -75,14 +75,6 @@ function _cmp(a: any, b: any): number {
     return a < b ? -1 : (a > b ? 1 : 0);
   }
   return String(a) < String(b) ? -1 : (String(a) > String(b) ? 1 : 0);
-}
-
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
 }
 
 function _sum(v: any): number {

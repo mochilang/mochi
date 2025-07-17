@@ -2,20 +2,12 @@
 // Source: /workspace/mochi/tests/vm/valid/short_circuit.mochi
 
 function boom(a: number, b: number): boolean {
-  _print("boom");
+  console.log("boom");
   return true;
 }
 
 function main(): void {
-  _print(false && boom(1, 2));
-  _print(true || boom(1, 2));
+  console.log(false && boom(1, 2));
+  console.log(true || boom(1, 2));
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

@@ -7,14 +7,6 @@ let x: number;
 function main(): void {
   x = 12;
   msg = (x > 10) ? "yes" : "no";
-  _print(msg);
+  console.log(msg);
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

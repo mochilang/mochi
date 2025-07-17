@@ -101,6 +101,9 @@
 - Updated `_print` helper to mimic `console.log` output for objects and booleans.
 ### 2025-07-30 00:00 UTC
 - `_print` now prints `1` or `0` for booleans and math division always returns a float.
+### 2025-08-30 00:00 UTC
+- Inlined `console.log` for print calls and removed `_print` helper when possible.
+  Boolean comparison results are normalized to `1` or `0`.
 ### 2025-07-17 00:00 UTC
 - Short list literals are now emitted on a single line for closer parity with
   the hand-written examples.

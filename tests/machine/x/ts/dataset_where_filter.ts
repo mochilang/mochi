@@ -28,17 +28,14 @@ function main(): void {
     "age": person.age,
     "is_senior": (person.age >= 60),
   }));
-  _print("--- Adults ---");
+  console.log("--- Adults ---");
   for (const person of adults) {
-    _print(person.name, "is", person.age, person.is_senior ? " (senior)" : "");
+    console.log(
+      person.name,
+      "is",
+      person.age,
+      person.is_senior ? " (senior)" : "",
+    );
   }
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

@@ -6,14 +6,6 @@ var scores: { [key: string]: number };
 function main(): void {
   scores = { "alice": 1 };
   scores["bob"] = 2;
-  _print(scores["bob"]);
+  console.log(scores["bob"]);
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

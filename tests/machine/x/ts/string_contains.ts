@@ -5,15 +5,7 @@ let s: string;
 
 function main(): void {
   s = "catch";
-  _print(s.includes("cat"));
-  _print(s.includes("dog"));
+  console.log(s.includes("cat") ? 1 : 0);
+  console.log(s.includes("dog") ? 1 : 0);
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

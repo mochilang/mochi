@@ -11,15 +11,7 @@ const math = {
 };
 
 function main(): void {
-  _print(math.sqrt(16));
-  _print(math.pi);
+  console.log(math.sqrt(16));
+  console.log(math.pi);
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

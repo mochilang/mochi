@@ -1897,8 +1897,21 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	}
 	switch call.Func {
 	case "print":
-		c.use("_print")
-		return fmt.Sprintf("_print(%s)", strings.Join(args, ", ")), nil
+		parts := make([]string, len(args))
+		for i, a := range args {
+			arg := call.Args[i]
+			t := c.inferExprType(arg)
+			if isList(t) {
+				parts[i] = fmt.Sprintf("%s.join(' ')", a)
+				continue
+			}
+			if isComparisonExpr(arg) || (isBool(t) && !isLogicalExpr(arg)) {
+				parts[i] = fmt.Sprintf("(%s ? 1 : 0)", a)
+				continue
+			}
+			parts[i] = a
+		}
+		return fmt.Sprintf("console.log(%s)", strings.Join(parts, ", ")), nil
 	case "keys":
 		if len(call.Args) == 1 {
 			t := c.inferExprType(call.Args[0])

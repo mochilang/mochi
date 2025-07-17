@@ -7,14 +7,6 @@ let x: number;
 function main(): void {
   x = 8;
   msg = (x > 10) ? "big" : ((x > 5) ? "medium" : "small");
-  _print(msg);
+  console.log(msg);
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

@@ -6,14 +6,6 @@ var data: { [key: string]: { [key: string]: number } };
 function main(): void {
   data = { "outer": { "inner": 1 } };
   data["outer"]["inner"] = 2;
-  _print(data["outer"]["inner"]);
+  console.log(data["outer"]["inner"]);
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

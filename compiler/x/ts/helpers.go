@@ -230,6 +230,11 @@ func isString(t types.Type) bool {
 	return ok
 }
 
+func isBool(t types.Type) bool {
+	_, ok := t.(types.BoolType)
+	return ok
+}
+
 func isList(t types.Type) bool {
 	_, ok := t.(types.ListType)
 	return ok
@@ -343,6 +348,38 @@ func isAny(t types.Type) bool {
 func contains(sl []string, s string) bool {
 	for _, v := range sl {
 		if v == s {
+			return true
+		}
+	}
+	return false
+}
+
+func isComparisonExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	if len(e.Binary.Right) == 0 {
+		return false
+	}
+	for _, part := range e.Binary.Right {
+		switch part.Op {
+		case "<", "<=", ">", ">=", "==", "!=":
+		default:
+			return false
+		}
+	}
+	return true
+}
+
+func isLogicalExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	if len(e.Binary.Right) == 0 {
+		return false
+	}
+	for _, part := range e.Binary.Right {
+		if part.Op == "&&" || part.Op == "||" {
 			return true
 		}
 	}

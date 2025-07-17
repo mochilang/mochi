@@ -2,14 +2,6 @@
 // Source: /workspace/mochi/tests/vm/valid/str_builtin.mochi
 
 function main(): void {
-  _print("123");
+  console.log("123");
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

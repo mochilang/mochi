@@ -17,15 +17,7 @@ let result: number[];
 
 function main(): void {
   result = twoSum([2, 7, 11, 15], 9);
-  _print(result[0]);
-  _print(result[1]);
+  console.log(result[0]);
+  console.log(result[1]);
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

@@ -14,14 +14,6 @@ var c: Counter;
 function main(): void {
   c = { n: 0 };
   inc(c);
-  _print(c.n);
+  console.log(c.n);
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

@@ -7,7 +7,7 @@ let flag: boolean;
 function main(): void {
   data = [1, 2];
   flag = _exists(data.filter((x) => (x == 1)).map((x) => x));
-  _print(flag);
+  console.log(flag ? 1 : 0);
 }
 function _exists(v: any): boolean {
   if (Array.isArray(v)) return v.length > 0;
@@ -18,14 +18,6 @@ function _exists(v: any): boolean {
   }
   if (typeof v === "string") return v.length > 0;
   return false;
-}
-
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
 }
 
 main();

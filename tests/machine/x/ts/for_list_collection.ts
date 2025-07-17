@@ -3,15 +3,7 @@
 
 function main(): void {
   for (const n of [1, 2, 3]) {
-    _print(n);
+    console.log(n);
   }
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

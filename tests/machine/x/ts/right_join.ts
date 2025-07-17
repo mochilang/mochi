@@ -65,10 +65,10 @@ function main(): void {
     }
     return _res;
   })();
-  _print("--- Right Join using syntax ---");
+  console.log("--- Right Join using syntax ---");
   for (const entry of result) {
     if (entry.order) {
-      _print(
+      console.log(
         "Customer",
         entry.customerName,
         "has order",
@@ -77,16 +77,8 @@ function main(): void {
         entry.order.total,
       );
     } else {
-      _print("Customer", entry.customerName, "has no orders");
+      console.log("Customer", entry.customerName, "has no orders");
     }
   }
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

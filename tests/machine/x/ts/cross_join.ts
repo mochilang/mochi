@@ -52,9 +52,9 @@ function main(): void {
     }
     return _res;
   })();
-  _print("--- Cross Join: All order-customer pairs ---");
+  console.log("--- Cross Join: All order-customer pairs ---");
   for (const entry of result) {
-    _print(
+    console.log(
       "Order",
       entry.orderId,
       "(customerId:",
@@ -66,12 +66,4 @@ function main(): void {
     );
   }
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

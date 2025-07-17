@@ -9,14 +9,6 @@ let todo: Todo;
 
 function main(): void {
   todo = { "title": "hi" } as Todo;
-  _print(todo.title);
+  console.log(todo.title);
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

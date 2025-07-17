@@ -9,15 +9,7 @@ function main(): void {
     "b": 2,
   };
   for (const k of Object.keys(m)) {
-    _print(k);
+    console.log(k);
   }
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

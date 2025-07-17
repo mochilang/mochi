@@ -26,7 +26,7 @@ function main(): void {
     if (_equal(_t, 3)) return "three";
     return "unknown";
   })();
-  _print(label);
+  console.log(label);
   day = "sun";
   mood = (() => {
     const _t = day;
@@ -35,7 +35,7 @@ function main(): void {
     if (_equal(_t, "sun")) return "relaxed";
     return "normal";
   })();
-  _print(mood);
+  console.log(mood);
   ok = true;
   status = (() => {
     const _t = ok;
@@ -43,9 +43,9 @@ function main(): void {
     if (_equal(_t, false)) return "denied";
     return undefined;
   })();
-  _print(status);
-  _print(classify(0));
-  _print(classify(5));
+  console.log(status);
+  console.log(classify(0));
+  console.log(classify(5));
 }
 function _equal(a: any, b: any): boolean {
   if (typeof a === "number" && typeof b === "number") {
@@ -68,14 +68,6 @@ function _equal(a: any, b: any): boolean {
     return true;
   }
   return a === b;
-}
-
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
 }
 
 main();

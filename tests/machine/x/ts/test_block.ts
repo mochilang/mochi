@@ -7,15 +7,7 @@ function test_addition_works(): void {
 }
 
 function main(): void {
-  _print("ok");
+  console.log("ok");
   test_addition_works();
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

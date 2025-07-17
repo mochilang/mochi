@@ -8,14 +8,6 @@ function main(): void {
     [1]: "a",
     [2]: "b",
   };
-  _print(m[1]);
+  console.log(m[1]);
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

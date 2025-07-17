@@ -2,14 +2,6 @@
 // Source: /workspace/mochi/tests/vm/valid/print_hello.mochi
 
 function main(): void {
-  _print("hello");
+  console.log("hello");
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

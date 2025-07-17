@@ -7,14 +7,6 @@ function main(): void {
   square = function (x: number): number {
     return (x * x);
   };
-  _print(square(6));
+  console.log(square(6));
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

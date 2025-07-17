@@ -12,14 +12,6 @@ function main(): void {
     "a": x,
     "b": y,
   };
-  _print(m["a"], m["b"]);
+  console.log(m["a"], m["b"]);
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

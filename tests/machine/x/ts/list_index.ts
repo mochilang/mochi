@@ -5,14 +5,6 @@ let xs: number[];
 
 function main(): void {
   xs = [10, 20, 30];
-  _print(xs[1]);
+  console.log(xs[1]);
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

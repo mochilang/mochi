@@ -9,14 +9,6 @@ function sum_rec(n: number, acc: number): number {
 }
 
 function main(): void {
-  _print(sum_rec(10, 0));
+  console.log(sum_rec(10, 0));
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

@@ -2,16 +2,8 @@
 // Source: /workspace/mochi/tests/vm/valid/math_ops.mochi
 
 function main(): void {
-  _print(6 * 7);
-  _print(7 / 2);
-  _print(7 % 2);
+  console.log(6 * 7);
+  console.log(7 / 2);
+  console.log(7 % 2);
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

@@ -6,14 +6,6 @@ function sum3(a: number, b: number, c: number): number {
 }
 
 function main(): void {
-  _print(6);
+  console.log(6);
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

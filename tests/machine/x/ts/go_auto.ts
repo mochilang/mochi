@@ -4,16 +4,8 @@
 const testpkg = { Add: (a: number, b: number) => a + b, Pi: 3.14, Answer: 42 };
 
 function main(): void {
-  _print(testpkg.Add(2, 3));
-  _print(testpkg.Pi);
-  _print(testpkg.Answer);
+  console.log(testpkg.Add(2, 3));
+  console.log(testpkg.Pi);
+  console.log(testpkg.Answer);
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

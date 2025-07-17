@@ -5,15 +5,7 @@ let xs: number[];
 
 function main(): void {
   xs = [1, 2, 3];
-  _print(xs.includes(2) ? 1 : 0);
-  _print(!(xs.includes(5) ? 1 : 0));
+  console.log((xs.includes(2) ? 1 : 0) ? 1 : 0);
+  console.log((!(xs.includes(5) ? 1 : 0)) ? 1 : 0);
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

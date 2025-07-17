@@ -21,14 +21,6 @@ function main(): void {
       age: 42,
     },
   };
-  _print(book.author.name);
+  console.log(book.author.name);
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

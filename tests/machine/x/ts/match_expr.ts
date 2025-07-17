@@ -13,7 +13,7 @@ function main(): void {
     if (_equal(_t, 3)) return "three";
     return "unknown";
   })();
-  _print(label);
+  console.log(label);
 }
 function _equal(a: any, b: any): boolean {
   if (typeof a === "number" && typeof b === "number") {
@@ -36,14 +36,6 @@ function _equal(a: any, b: any): boolean {
     return true;
   }
   return a === b;
-}
-
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
 }
 
 main();

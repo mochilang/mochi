@@ -9,16 +9,8 @@ function main(): void {
     "b": 2,
     "c": 3,
   };
-  _print(_values(m));
+  console.log(_values(m).join(" "));
 }
-function _print(...args: any[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 function _values<T>(m: { [key: string]: T }): T[] {
   if (m && typeof m === "object" && !Array.isArray(m)) {
     return Object.values(m);
