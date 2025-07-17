@@ -124,6 +124,12 @@ func goType(t types.Type) string {
 		return fmt.Sprintf("map[%s]%s", goType(tt.Key), goType(tt.Value))
 	case types.GroupType:
 		return "*data.Group"
+	case types.OptionType:
+		elem := goType(tt.Elem)
+		if elem == "" {
+			elem = "any"
+		}
+		return "*" + elem
 	case types.StructType:
 		return sanitizeName(tt.Name)
 	case types.UnionType:
@@ -460,6 +466,10 @@ func (c *Compiler) castExpr(expr string, from, to types.Type) string {
 		return fmt.Sprintf("%s(%s)", toGo, expr)
 	}
 
+	if isBool(to) && strings.HasPrefix(fromGo, "*") {
+		return fmt.Sprintf("%s != nil", expr)
+	}
+
 	if _, ok := from.(types.AnyType); ok {
 		if isBool(to) {
 			c.use("_exists")
@@ -723,6 +733,8 @@ func zeroValue(t types.Type) string {
 		return fmt.Sprintf("map[%s]%s{}", goType(tt.Key), goType(tt.Value))
 	case types.StructType:
 		return fmt.Sprintf("%s{}", sanitizeName(tt.Name))
+	case types.OptionType:
+		return "nil"
 	default:
 		return "nil"
 	}
