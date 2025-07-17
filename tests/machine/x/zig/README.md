@@ -7,4 +7,4 @@ their program output.
 ## Completed
 
 - [x] dataset_sort_take_limit.mochi
-- [ ] exists_builtin.mochi
+- [x] exists_builtin.mochi
