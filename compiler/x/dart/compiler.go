@@ -1159,6 +1159,25 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			elems[i] = s
 		}
+		multi := len(elems) > 3
+		if !multi {
+			for _, e := range elems {
+				if strings.ContainsAny(e, "[]{}\n") || len(e) > 20 {
+					multi = true
+					break
+				}
+			}
+		}
+		if multi {
+			indent := strings.Repeat("  ", c.indent)
+			var b bytes.Buffer
+			b.WriteString("[\n")
+			for _, e := range elems {
+				b.WriteString(indent + "  " + e + ",\n")
+			}
+			b.WriteString(indent + "]")
+			return b.String(), nil
+		}
 		return "[" + strings.Join(elems, ", ") + "]", nil
 	case p.Map != nil:
 		items := make([]string, len(p.Map.Items))
@@ -1172,6 +1191,25 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", err
 			}
 			items[i] = fmt.Sprintf("%s: %s", k, v)
+		}
+		multi := len(items) > 3
+		if !multi {
+			for _, it := range items {
+				if strings.ContainsAny(it, "[]{}\n") || len(it) > 20 {
+					multi = true
+					break
+				}
+			}
+		}
+		if multi {
+			indent := strings.Repeat("  ", c.indent)
+			var b bytes.Buffer
+			b.WriteString("{\n")
+			for _, it := range items {
+				b.WriteString(indent + "  " + it + ",\n")
+			}
+			b.WriteString(indent + "}")
+			return b.String(), nil
 		}
 		return "{" + strings.Join(items, ", ") + "}", nil
 	case p.Struct != nil:

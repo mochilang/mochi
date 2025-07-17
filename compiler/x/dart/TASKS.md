@@ -27,5 +27,7 @@
 - [2025-07-17 06:39 UTC] Print statements with a single argument now emit the
   built-in `print` function instead of `_print`, producing code closer to the
   hand-written examples. VM outputs regenerated.
+- [2025-07-20 00:00 UTC] Added multiline formatting for list and map literals,
+  improving readability of generated code.
 ## Remaining Enhancements
-- [ ] Improve generated code formatting to more closely match `tests/human/x/dart` examples.
+- None.
