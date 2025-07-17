@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Scheme Machine Output (100/100 compiled and run)
 
 This directory contains Scheme code generated from the Mochi programs in `tests/vm/valid`. Each program was executed with chibi-scheme. Successful runs have a `.out` file and failures provide a `.error`.
@@ -120,5 +119,3 @@ This directory contains Scheme code generated from the Mochi programs in `tests/
 - [ ] Improve error messages for invalid constructs
 
 All programs executed successfully.
-=======
->>>>>>> 15d0dc4b5 (Truncate all README.md)
