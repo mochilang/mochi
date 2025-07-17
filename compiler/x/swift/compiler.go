@@ -1801,6 +1801,8 @@ func (c *compiler) inferType(t *parser.TypeRef, val *parser.Expr) string {
 				return "float"
 			case p.Target.Lit != nil && p.Target.Lit.Int != nil:
 				return "int"
+			case p.Target.Struct != nil:
+				return p.Target.Struct.Name
 			case p.Target.List != nil:
 				if len(p.Target.List.Elems) > 0 && p.Target.List.Elems[0].Binary != nil {
 					et := c.exprType(p.Target.List.Elems[0])
@@ -1838,6 +1840,16 @@ func (c *compiler) inferType(t *parser.TypeRef, val *parser.Expr) string {
 				return "list_" + et
 			}
 			return "list"
+		}
+		if len(p.Ops) == 1 && p.Ops[0].Cast != nil && p.Target.Map != nil {
+			if typ := inferTypeRef(p.Ops[0].Cast.Type); typ != "" {
+				if _, ok := c.structs[typ]; ok {
+					return typ
+				}
+			}
+		}
+		if typ := c.exprType(val); typ != "" {
+			return typ
 		}
 	}
 	return ""
@@ -1909,6 +1921,9 @@ func (c *compiler) exprType(e *parser.Expr) string {
 	if p.Target.Map != nil {
 		return "map"
 	}
+	if p.Target.Struct != nil {
+		return p.Target.Struct.Name
+	}
 	if p.Target.Query != nil {
 		t := c.exprType(p.Target.Query.Select)
 		if t != "" {
@@ -1940,6 +1955,8 @@ func (c *compiler) primaryType(p *parser.Primary) string {
 		return "list"
 	case p.Map != nil:
 		return "map"
+	case p.Struct != nil:
+		return p.Struct.Name
 	case p.Query != nil:
 		t := c.exprType(p.Query.Select)
 		if t != "" {
