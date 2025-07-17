@@ -137,3 +137,4 @@ should compile and run successfully.
   and runs.
 - 2025-07-17 - Fixed YAML loader to deduplicate struct fields so `load_yaml.mochi` compiles.
 - 2025-07-17 - Updated group by list allocation to use create_* helpers; now group_by and join queries compile.
+- 2025-09-16 - Fixed struct literal generation to use sanitized type names. record_assign.mochi compiles.

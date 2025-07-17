@@ -22,10 +22,10 @@ counter_list_t create_counter_list(int len) {
   return l;
 }
 
-int inc(Counter *c) { c->n = c->n + 1; }
+int inc(counter_t *c) { c->n = c->n + 1; }
 
 int _mochi_main() {
-  counter_t c = (Counter){.n = 0};
+  counter_t c = (counter_t){.n = 0};
   inc(&c);
   printf("%d\n", c.n);
   return 0;
