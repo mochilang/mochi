@@ -1,4 +1,0 @@
-exit status 1
-# command-line-arguments
-../../../tests/machine/x/go/outer_join.go:123:11: cannot convert row.Order (variable of struct type Order) to type bool
-../../../tests/machine/x/go/outer_join.go:124:12: cannot convert row.Customer (variable of struct type Customer) to type bool
