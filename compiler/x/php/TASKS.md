@@ -33,3 +33,4 @@
 - 2025-07-19 13:20 - Verified that all 100 VM valid programs compile and run successfully with the PHP backend. Updated README checklist accordingly.
 - 2025-07-20 10:00 - Generated PHP machine outputs for all VM valid programs and added README checklist.
 - 2025-07-21 08:00 - Printing now uses `var_dump`; `_print` helper removed.
+- 2025-07-21 12:00 - Avg builtin inlines numeric lists to avoid runtime helper.

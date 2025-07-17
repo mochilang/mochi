@@ -292,6 +292,37 @@ func isSimpleLiteralExpr(e *parser.Expr) bool {
 	return p.Target.Lit != nil
 }
 
+func isNumericListLiteral(e *parser.Expr) bool {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target.List == nil {
+		return false
+	}
+	for _, el := range p.Target.List.Elems {
+		if el == nil || len(el.Binary.Right) != 0 {
+			return false
+		}
+		u2 := el.Binary.Left
+		if len(u2.Ops) != 0 {
+			return false
+		}
+		p2 := u2.Value
+		if len(p2.Ops) != 0 || p2.Target.Lit == nil {
+			return false
+		}
+		if p2.Target.Lit.Int == nil && p2.Target.Lit.Float == nil {
+			return false
+		}
+	}
+	return true
+}
+
 func (c *Compiler) use(name string) {
 	if c.helpers == nil {
 		c.helpers = map[string]bool{}
