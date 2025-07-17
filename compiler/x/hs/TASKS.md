@@ -1,4 +1,7 @@
 # Haskell Backend Progress
+## Recent Updates (2025-07-30 05:00)
+- Added fine-grained tracking for AnyValue cast helpers. The runtime now omits
+  `_asInt` and related functions when they are not referenced in generated code.
 ## Recent Updates (2025-07-27 05:00)
 - Type inference now uses `types.CheckExprType` when an environment is available.
   This improves precision for nested expressions and reduces `_asInt` casts in generated code.
