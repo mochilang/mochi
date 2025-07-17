@@ -31,17 +31,7 @@ bool _equal(dynamic a, dynamic b) {
 }
 `
 
-const dartHelpers = `
-String _formatDuration(Duration d) {
-    if (d.inMicroseconds < 1000) return '${d.inMicroseconds}µs';
-    if (d.inMilliseconds < 1000) return '${d.inMilliseconds}ms';
-    return '${(d.inMilliseconds/1000).toStringAsFixed(2)}s';
-}
-
-void _json(dynamic v) {
-    print(jsonEncode(v));
-}
-
+const dartPrintHelper = `
 void _print(List<dynamic> args) {
     for (var i = 0; i < args.length; i++) {
         if (i > 0) stdout.write(' ');
@@ -56,22 +46,9 @@ void _print(List<dynamic> args) {
     }
     stdout.writeln();
 }
+`
 
-bool _runTest(String name, void Function() f) {
-    stdout.write('   test $name ...');
-    var start = DateTime.now();
-    try {
-        f();
-        var d = DateTime.now().difference(start);
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        return true;
-    } catch (e) {
-        var d = DateTime.now().difference(start);
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        return false;
-    }
-}
-
+const dartRepoHelper = `
 String findRepoRoot() {
     var dir = Directory.current;
     for (var i = 0; i < 10; i++) {
@@ -127,6 +104,7 @@ type Compiler struct {
 	useEqual   bool
 	useMin     bool
 	useSum     bool
+	usePrint   bool
 	tmp        int
 	mapVars    map[string]bool
 	groupKeys  map[string]string
@@ -155,18 +133,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.indent = 0
 	c.useIn = false
-	// Helpers currently always reference jsonEncode and stdout even if the
-	// generated program itself does not.  Without these imports the
-	// generated code fails to compile.  Default to true so simple programs
-	// work without explicit JSON or IO usage.
-	c.useJSON = true
-	c.useIO = true
+	c.useJSON = false
+	c.useIO = false
 	c.useYAML = false
 	c.useLoad = false
 	c.useSave = false
 	c.useEqual = false
 	c.useMin = false
 	c.useSum = false
+	c.usePrint = false
 	c.mapVars = make(map[string]bool)
 	c.groupKeys = make(map[string]string)
 	c.fieldTypes = make(map[string]map[string]types.Type)
@@ -360,7 +335,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if c.useEqual {
 		out.WriteString(dartEqualHelper)
 	}
-	out.WriteString(dartHelpers)
+	if c.usePrint {
+		out.WriteString(dartPrintHelper)
+	}
+	if c.useLoad {
+		out.WriteString(dartRepoHelper)
+	}
 	if c.useMin || c.useSum {
 		out.WriteString(dartAggHelpers)
 	}
@@ -2095,6 +2075,8 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) == 1 {
 			return fmt.Sprintf("print(%s)", args[0]), nil
 		}
+		c.usePrint = true
+		c.useIO = true
 		return fmt.Sprintf("_print([%s])", strings.Join(args, ", ")), nil
 	case "append":
 		if len(args) != 2 {
