@@ -277,16 +277,7 @@ func unify(a, b Type, subst Subst) bool {
 	case UnionType:
 		switch bt := b.(type) {
 		case UnionType:
-			if at.Name != bt.Name || len(at.Variants) != len(bt.Variants) {
-				return false
-			}
-			for k, v := range at.Variants {
-				bv, ok := bt.Variants[k]
-				if !ok || !unify(v, bv, subst) {
-					return false
-				}
-			}
-			return true
+			return at.Name == bt.Name
 		case StructType:
 			if vt, ok := at.Variants[bt.Name]; ok {
 				return unify(vt, bt, subst)
@@ -1108,7 +1099,13 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 			return nil
 		}
 		if len(s.Type.Variants) > 0 {
+			// Build the union with a shared variants map so recursive
+			// references resolve correctly as variants are populated.
 			variants := map[string]StructType{}
+			ut := UnionType{Name: s.Type.Name, Variants: variants}
+			env.SetUnion(s.Type.Name, ut)
+			env.types[s.Type.Name] = ut
+
 			for _, v := range s.Type.Variants {
 				vf := map[string]Type{}
 				order := []string{}
@@ -1125,7 +1122,6 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 				}
 				env.SetFuncType(v.Name, FuncType{Params: params, Return: UnionType{Name: s.Type.Name, Variants: nil}})
 			}
-			ut := UnionType{Name: s.Type.Name, Variants: variants}
 			env.SetUnion(s.Type.Name, ut)
 			env.types[s.Type.Name] = ut
 			return nil
