@@ -1,7 +1,8 @@
-<<<<<<< HEAD
-# Mochi to Smalltalk Machine Outputs (100/100 compiled and run)
+# Mochi to Smalltalk Machine Outputs
 
-This directory contains Smalltalk source code generated from the Mochi programs in `tests/vm/valid`. A checkbox indicates the program compiled and executed successfully during tests.
+This directory contains Smalltalk source code generated from the Mochi programs in `tests/vm/valid`. A checkbox indicates the program compiled and executed successfully using GNU Smalltalk.
+
+Compiled programs: 100/100
 
 ## Checklist
 - [x] append_builtin.mochi
@@ -105,10 +106,4 @@ This directory contains Smalltalk source code generated from the Mochi programs 
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
 
-## TODO
-- [x] full outer join semantics
-- [x] right join semantics
-
 All programs executed successfully with GNU Smalltalk.
-=======
->>>>>>> 15d0dc4b5 (Truncate all README.md)

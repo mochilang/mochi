@@ -19,6 +19,7 @@ type Compiler struct {
 	indent       int
 	needBreak    bool
 	needContinue bool
+	fallbackVar  string
 }
 
 // New returns a new compiler instance.
@@ -638,6 +639,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				expr = fmt.Sprintf("%s at: '%s'", expr, s)
 			}
 			return expr, nil
+		}
+		if c.fallbackVar != "" && len(p.Selector.Tail) == 0 {
+			return fmt.Sprintf("%s at: '%s'", c.fallbackVar, name), nil
 		}
 		for _, s := range p.Selector.Tail {
 			name += "." + s
@@ -1478,7 +1482,10 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 	c.writeln(fmt.Sprintf("%s do: [:it |", list))
 	c.indent++
 	if u.Where != nil {
+		prev := c.fallbackVar
+		c.fallbackVar = "it"
 		cond, err := c.compileExpr(u.Where)
+		c.fallbackVar = prev
 		if err != nil {
 			return err
 		}
@@ -1486,7 +1493,10 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 		c.indent++
 	}
 	for _, it := range u.Set.Items {
+		prev := c.fallbackVar
+		c.fallbackVar = "it"
 		val, err := c.compileExpr(it.Value)
+		c.fallbackVar = prev
 		if err != nil {
 			return err
 		}
