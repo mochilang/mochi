@@ -1,1 +1,16 @@
-[b 7] [a 4]
+array(2) {
+  [0]=>
+  array(2) {
+    ["cat"]=>
+    string(1) "b"
+    ["total"]=>
+    int(7)
+  }
+  [1]=>
+  array(2) {
+    ["cat"]=>
+    string(1) "a"
+    ["total"]=>
+    int(4)
+  }
+}

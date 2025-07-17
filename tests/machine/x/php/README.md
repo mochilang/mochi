@@ -1,6 +1,7 @@
 # PHP Machine Output
 
 This directory contains PHP code generated from the Mochi programs in `tests/vm/valid`. Each program was compiled using the PHP backend and executed with `php`. Successful runs have a `.out` file while failures produce a `.error` file.
+Printing now relies on PHP's built‑in `var_dump` so no `_print` helper is emitted.
 
 Compiled programs: 100/100
 

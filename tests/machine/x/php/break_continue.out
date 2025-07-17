@@ -1,4 +1,8 @@
-odd number: 1
-odd number: 3
-odd number: 5
-odd number: 7
+string(11) "odd number:"
+int(1)
+string(11) "odd number:"
+int(3)
+string(11) "odd number:"
+int(5)
+string(11) "odd number:"
+int(7)
