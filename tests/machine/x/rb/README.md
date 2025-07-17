@@ -2,7 +2,7 @@
 
 This directory contains Ruby source code generated from the Mochi programs in `tests/vm/valid`. Each compiled program has a `.rb` file and a matching `.out` file with the expected output. If compilation failed, a `.error` file would be present instead.
 
-Compiled programs: 100/100
+Compiled programs: 101/101
 
 ## Checklist
 
@@ -103,4 +103,5 @@ Compiled programs: 100/100
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+- [x] bigint_ops
 Last updated: 2025-07-17
