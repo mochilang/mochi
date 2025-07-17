@@ -1006,7 +1006,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					return "", err
 				}
 				if mt, ok := t.(types.MapType); ok {
-					val = fmt.Sprintf("(%s as Map)[%s]", val, idx)
+					val = fmt.Sprintf("(%s as Map)[%s]!", val, idx)
 					t = mt.Value
 				} else {
 					val = fmt.Sprintf("%s[%s]", val, idx)

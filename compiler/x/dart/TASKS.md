@@ -21,5 +21,7 @@
 - [2025-07-17 00:45 UTC] Normalized numeric printing so integers don't appear
   with trailing `.0` and set `SOURCE_DATE_EPOCH` in VM golden tests to generate
   stable headers.
+- [2025-07-21 00:00 UTC] Added non-null map indexing (`[key]!`) for numeric
+  operations to reduce `.error` files in `tests/vm/valid`.
 ## Remaining Enhancements
 - [ ] Improve generated code formatting to more closely match `tests/human/x/dart` examples.
