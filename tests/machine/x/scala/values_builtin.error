@@ -1,5 +1,0 @@
-exit status 1
-/workspace/mochi/tests/machine/x/scala/values_builtin.scala:7: error: value values is not a member of values_builtin.M
-    println(m.values.toList)
-              ^
-one error found
