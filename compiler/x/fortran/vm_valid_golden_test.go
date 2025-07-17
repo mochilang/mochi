@@ -44,8 +44,10 @@ func TestFortranCompiler_VMValid_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("parse error: %v", err)
 			}
-			env := types.NewEnv(nil)
-			if errs := types.Check(prog, env); len(errs) > 0 {
+                       env := types.NewEnv(nil)
+                       os.Setenv("MOCHI_HEADER_TIME", "2006-01-02T15:04:05Z")
+                       defer os.Unsetenv("MOCHI_HEADER_TIME")
+                       if errs := types.Check(prog, env); len(errs) > 0 {
 				t.Fatalf("type error: %v", errs[0])
 			}
 			code, err := ftncode.New(env).Compile(prog)
