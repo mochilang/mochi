@@ -17,3 +17,8 @@
 - Confirm length handling for group expressions.
 - 2025-07-17 compiled dataset_sort_take_limit.mochi in Zig
 - 2025-07-17 compiled exists_builtin.mochi in Zig
+- 2025-07-17 compiled break_continue.mochi in Zig
+- 2025-07-17 compiled cast_string_to_int.mochi in Zig
+- 2025-07-17 compiled cast_struct.mochi in Zig
+- 2025-07-17 compiled closure.mochi in Zig
+- 2025-07-17 compiled count_builtin.mochi in Zig
