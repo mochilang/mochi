@@ -1842,7 +1842,11 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 			for _, j := range q.Joins {
 				fields = append(fields, fmt.Sprintf("%s = %s", escapeIdent(j.Var), j.Var))
 			}
-			row = fmt.Sprintf("%s(%s)", st.Name, strings.Join(fields, ", "))
+			if len(q.Froms) == 0 && len(q.Joins) == 0 && len(fields) == 1 {
+				row = q.Var
+			} else {
+				row = fmt.Sprintf("%s(%s)", st.Name, strings.Join(fields, ", "))
+			}
 		} else {
 			rowParts := []string{fmt.Sprintf("\"%s\" to %s", q.Var, q.Var)}
 			for _, f := range q.Froms {

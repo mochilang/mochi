@@ -1056,7 +1056,7 @@ func TypeOfPrimaryBasic(p *parser.Primary, env *Env) Type {
 				}
 			}
 			if t, err := env.GetVar(p.Selector.Root); err == nil {
-				return t
+				return FieldType(t, p.Selector.Tail)
 			}
 		}
 	}
@@ -1071,3 +1071,37 @@ func IsMapType(t Type) bool { _, ok := t.(MapType); return ok }
 
 // IsStringType reports whether t is a string type.
 func IsStringType(t Type) bool { return isString(t) }
+
+// FieldType returns the type reached by following path through the given type.
+// It returns AnyType if the path cannot be resolved.
+func FieldType(t Type, path []string) Type {
+	for _, p := range path {
+		switch tt := t.(type) {
+		case StructType:
+			if f, ok := tt.Fields[p]; ok {
+				t = f
+			} else {
+				return AnyType{}
+			}
+		case MapType:
+			t = tt.Value
+		case ListType:
+			if p == "size" {
+				t = IntType{}
+			} else {
+				t = tt.Elem
+			}
+		case GroupType:
+			if p == "key" {
+				t = tt.Key
+			} else if p == "items" {
+				t = ListType{Elem: tt.Elem}
+			} else {
+				return AnyType{}
+			}
+		default:
+			return AnyType{}
+		}
+	}
+	return t
+}
