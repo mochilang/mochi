@@ -28,7 +28,7 @@ func TestRustCompiler_VMValid_Golden(t *testing.T) {
 	outDir := filepath.Join(root, "tests", "machine", "x", "rust")
 	os.MkdirAll(outDir, 0o755)
 
-	golden.Run(t, "tests/vm/valid", ".mochi", ".out", func(src string) ([]byte, error) {
+	golden.RunWithSummary(t, "tests/vm/valid", ".mochi", ".out", func(src string) ([]byte, error) {
 		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
 		codePath := filepath.Join(outDir, base+".rs")
 		errPath := filepath.Join(outDir, base+".error")
@@ -43,7 +43,11 @@ func TestRustCompiler_VMValid_Golden(t *testing.T) {
 			os.WriteFile(errPath, []byte(errs[0].Error()), 0o644)
 			return nil, errs[0]
 		}
+		t.Setenv("MOCHI_HEADER_TIME", "2006-01-02T15:04:05Z")
+		t.Setenv("SOURCE_DATE_EPOCH", "0")
 		code, err := rustcode.New(env).Compile(prog)
+		t.Setenv("MOCHI_HEADER_TIME", "")
+		t.Setenv("SOURCE_DATE_EPOCH", "")
 		if err != nil {
 			os.WriteFile(errPath, []byte(err.Error()), 0o644)
 			return nil, err

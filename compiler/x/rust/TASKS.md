@@ -1,6 +1,8 @@
 # Rust Compiler Tasks
 
 ## Recent Enhancements
+- 2025-07-18 01:30 - Added deterministic headers in `vm_golden_test.go` and
+  switched to `golden.RunWithSummary` to report totals.
 - 2025-07-18 00:10 - Replaced VM valid tests with `golden.Run` framework and
   removed code comparison from golden tests.
 - 2025-07-17 16:30 - Improved map indexing to use `get()` and `insert` for
