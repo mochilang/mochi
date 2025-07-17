@@ -2,6 +2,8 @@
 
 This directory contains Dart code generated from Mochi programs. Successful runs have a .out file, failures a .error file.
 
+Helper functions are now emitted only when referenced, so generated code is closer to the human examples.
+
 Compiled programs: 100/100
 
 Checklist:

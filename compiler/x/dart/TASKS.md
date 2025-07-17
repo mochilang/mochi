@@ -36,5 +36,7 @@
 - [2025-07-20 13:00 UTC] Improved type inference to emit builtin `fold` and
   `reduce` operations for `sum` and `min` when list element types are known.
   `_sum` and `_min` helpers are now only included when required.
+- [2025-07-20 14:00 UTC] Helpers like `_print` and repo lookup are now emitted
+  only when referenced, so simple programs produce cleaner output.
 ## Remaining Enhancements
 - None.
