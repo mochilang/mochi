@@ -45,7 +45,11 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			return "", err
 		}
 		operands = append(operands, operand{expr: r, isList: isListPostfix(part.Right, c.env), isString: isStringPostfix(part.Right, c.env)})
-		ops = append(ops, part.Op)
+		op := part.Op
+		if part.Op == "union" && part.All {
+			op = "union_all"
+		}
+		ops = append(ops, op)
 	}
 
 	levels := [][]string{
@@ -106,20 +110,36 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					expr = fmt.Sprintf("(if is_map(%s), do: Map.has_key?(%s, %s), else: Enum.member?(%s, %s))", r.expr, r.expr, l.expr, r.expr, l.expr)
 				}
 			case "union_all":
-				c.use("_union_all")
-				expr = fmt.Sprintf("_union_all((%s), (%s))", l.expr, r.expr)
+				if l.isList && r.isList {
+					expr = fmt.Sprintf("(%s ++ %s)", l.expr, r.expr)
+				} else {
+					c.use("_union_all")
+					expr = fmt.Sprintf("_union_all((%s), (%s))", l.expr, r.expr)
+				}
 				isList = true
 			case "union":
-				c.use("_union")
-				expr = fmt.Sprintf("_union((%s), (%s))", l.expr, r.expr)
+				if l.isList && r.isList {
+					expr = fmt.Sprintf("Enum.uniq(%s ++ %s)", l.expr, r.expr)
+				} else {
+					c.use("_union")
+					expr = fmt.Sprintf("_union((%s), (%s))", l.expr, r.expr)
+				}
 				isList = true
 			case "except":
-				c.use("_except")
-				expr = fmt.Sprintf("_except((%s), (%s))", l.expr, r.expr)
+				if l.isList && r.isList {
+					expr = fmt.Sprintf("Enum.reject(%s, fn x -> Enum.member?(%s, x) end)", l.expr, r.expr)
+				} else {
+					c.use("_except")
+					expr = fmt.Sprintf("_except((%s), (%s))", l.expr, r.expr)
+				}
 				isList = true
 			case "intersect":
-				c.use("_intersect")
-				expr = fmt.Sprintf("_intersect((%s), (%s))", l.expr, r.expr)
+				if l.isList && r.isList {
+					expr = fmt.Sprintf("Enum.filter(%s, fn x -> Enum.member?(%s, x) end) |> Enum.uniq()", l.expr, r.expr)
+				} else {
+					c.use("_intersect")
+					expr = fmt.Sprintf("_intersect((%s), (%s))", l.expr, r.expr)
+				}
 				isList = true
 			default:
 				return "", fmt.Errorf("unsupported operator %s", op)
@@ -329,7 +349,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 						case types.StringType:
 							res = fmt.Sprintf("IO.puts(%s)", args[0])
 						case types.ListType, types.GroupType:
-							res = fmt.Sprintf("IO.puts(Enum.map_join(%s, \" \", &inspect(&1)))", args[0])
+							res = fmt.Sprintf("IO.inspect(%s)", args[0])
 						default:
 							res = fmt.Sprintf("IO.inspect(%s)", args[0])
 						}
@@ -621,7 +641,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				case types.StringType:
 					return fmt.Sprintf("IO.puts(%s)", args[0]), nil
 				case types.ListType, types.GroupType:
-					return fmt.Sprintf("IO.puts(Enum.map_join(%s, \" \", &inspect(&1)))", args[0]), nil
+					return fmt.Sprintf("IO.inspect(%s)", args[0]), nil
 				default:
 					return fmt.Sprintf("IO.inspect(%s)", args[0]), nil
 				}
