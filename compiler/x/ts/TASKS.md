@@ -131,3 +131,6 @@
 - Regenerated VM golden outputs for updated examples.
 ### 2025-09-30 00:00 UTC
 - Improved numeric aggregator code to avoid Number() conversions when element types are numeric.
+### 2025-10-01 00:00 UTC
+- Added `underlyingType` helper to unwrap option and simple union types during code generation.
+- Builtin functions like `count`, `exists`, `values`, `contains`, `sum`, `avg`, `min`, and `max` now use native operations whenever the underlying type is known, further reducing reliance on runtime helpers.

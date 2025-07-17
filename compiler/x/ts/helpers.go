@@ -389,3 +389,26 @@ func tsZeroValue(t types.Type) string {
 		return "null"
 	}
 }
+
+func underlyingType(t types.Type) types.Type {
+        for {
+                switch tt := t.(type) {
+                case types.OptionType:
+                        t = tt.Elem
+                case types.UnionType:
+                        if len(tt.Variants) == 1 {
+                                for _, v := range tt.Variants {
+                                        if len(v.Fields) == 1 {
+                                                for _, ft := range v.Fields {
+                                                        t = ft
+                                                }
+                                                continue
+                                        }
+                                }
+                        }
+                        return t
+                default:
+                        return t
+                }
+        }
+}

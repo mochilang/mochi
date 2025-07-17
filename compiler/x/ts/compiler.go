@@ -1624,7 +1624,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 						return "", err2
 					}
 					rootExpr := &parser.Primary{Selector: &parser.SelectorExpr{Root: sel.Root}}
-					rootTyp := c.inferPrimaryType(rootExpr)
+                                       rootTyp := underlyingType(c.inferPrimaryType(rootExpr))
 					root := sanitizeName(sel.Root)
 					switch method {
 					case "keys":
@@ -1895,10 +1895,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	}
 	switch call.Func {
 	case "print":
-		if len(args) == 1 {
-			t := c.inferExprType(call.Args[0])
-			switch t.(type) {
-			case types.BoolType:
+               if len(args) == 1 {
+                       t := underlyingType(c.inferExprType(call.Args[0]))
+                       switch t.(type) {
+                       case types.BoolType:
 				return fmt.Sprintf("console.log(%s ? 'True' : 'False')", args[0]), nil
 			case types.ListType:
 				return fmt.Sprintf("console.log(%s.join(' '))", args[0]), nil
@@ -1909,9 +1909,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			}
 		}
 		parts := make([]string, len(args))
-		for i, a := range args {
-			t := c.inferExprType(call.Args[i])
-			switch t.(type) {
+               for i, a := range args {
+                       t := underlyingType(c.inferExprType(call.Args[i]))
+                       switch t.(type) {
 			case types.BoolType:
 				parts[i] = fmt.Sprintf("(%s ? 'True' : 'False')", a)
 			case types.ListType:
@@ -1923,21 +1923,21 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			}
 		}
 		return fmt.Sprintf("console.log(%s)", strings.Join(parts, " + ' ' + ")), nil
-	case "keys":
-		if len(call.Args) == 1 {
-			t := c.inferExprType(call.Args[0])
-			if mt, ok := t.(types.MapType); ok {
-				if isInt(mt.Key) || isInt64(mt.Key) || isFloat(mt.Key) {
-					return fmt.Sprintf("Object.keys(%s).map(k => Number(k))", args[0]), nil
-				}
-			}
-			return fmt.Sprintf("Object.keys(%s)", args[0]), nil
-		}
-		return "Object.keys()", nil
-	case "len":
-		if len(call.Args) == 1 {
-			t := c.inferExprType(call.Args[0])
-			switch t.(type) {
+       case "keys":
+               if len(call.Args) == 1 {
+                       t := underlyingType(c.inferExprType(call.Args[0]))
+                       if mt, ok := t.(types.MapType); ok {
+                               if isInt(mt.Key) || isInt64(mt.Key) || isFloat(mt.Key) {
+                                       return fmt.Sprintf("Object.keys(%s).map(k => Number(k))", args[0]), nil
+                               }
+                       }
+                       return fmt.Sprintf("Object.keys(%s)", args[0]), nil
+               }
+               return "Object.keys()", nil
+       case "len":
+               if len(call.Args) == 1 {
+                       t := underlyingType(c.inferExprType(call.Args[0]))
+                       switch t.(type) {
 			case types.ListType, types.StringType:
 				return fmt.Sprintf("%s.length", args[0]), nil
 			case types.MapType, types.StructType, types.UnionType:
@@ -1954,17 +1954,17 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		c.use("_input")
 		return "_input()", nil
 	case "count":
-		if len(call.Args) == 1 {
-			t := c.inferExprType(call.Args[0])
-			switch t.(type) {
-			case types.ListType, types.StringType:
-				return fmt.Sprintf("%s.length", args[0]), nil
-			case types.MapType, types.StructType, types.UnionType:
-				return fmt.Sprintf("Object.keys(%s).length", args[0]), nil
-			case types.GroupType:
-				return fmt.Sprintf("%s.items.length", args[0]), nil
-			}
-		}
+               if len(call.Args) == 1 {
+                       t := underlyingType(c.inferExprType(call.Args[0]))
+                       switch t.(type) {
+                       case types.ListType, types.StringType:
+                               return fmt.Sprintf("%s.length", args[0]), nil
+                       case types.MapType, types.StructType, types.UnionType:
+                               return fmt.Sprintf("Object.keys(%s).length", args[0]), nil
+                       case types.GroupType:
+                               return fmt.Sprintf("%s.items.length", args[0]), nil
+                       }
+               }
 		c.use("_count")
 		return fmt.Sprintf("_count(%s)", argStr), nil
 	case "append":
@@ -1977,14 +1977,14 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if len(args) != 2 {
 			return "", fmt.Errorf("contains expects 2 args")
 		}
-		if len(call.Args) == 2 {
-			t := c.inferExprType(call.Args[0])
-			switch t.(type) {
-			case types.ListType, types.StringType:
-				return fmt.Sprintf("%s.includes(%s)", args[0], args[1]), nil
-			case types.MapType, types.StructType, types.UnionType:
-				return fmt.Sprintf("Object.prototype.hasOwnProperty.call(%s, String(%s))", args[0], args[1]), nil
-			}
+               if len(call.Args) == 2 {
+                       t := underlyingType(c.inferExprType(call.Args[0]))
+                       switch t.(type) {
+                       case types.ListType, types.StringType:
+                               return fmt.Sprintf("%s.includes(%s)", args[0], args[1]), nil
+                       case types.MapType, types.StructType, types.UnionType:
+                               return fmt.Sprintf("Object.prototype.hasOwnProperty.call(%s, String(%s))", args[0], args[1]), nil
+                       }
 		}
 		c.use("_contains")
 		return fmt.Sprintf("_contains(%s, %s)", args[0], args[1]), nil
@@ -1994,36 +1994,36 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.use("_starts_with")
 		return fmt.Sprintf("_starts_with(%s, %s)", args[0], args[1]), nil
-	case "values":
-		if len(args) != 1 {
-			return "", fmt.Errorf("values expects 1 arg")
-		}
-		if len(call.Args) == 1 {
-			t := c.inferExprType(call.Args[0])
-			switch t.(type) {
-			case types.MapType, types.StructType, types.UnionType:
-				return fmt.Sprintf("Object.values(%s)", args[0]), nil
-			}
-		}
-		c.use("_values")
-		return fmt.Sprintf("_values(%s)", args[0]), nil
-	case "exists":
-		if len(args) == 1 {
-			t := c.inferExprType(call.Args[0])
-			switch t.(type) {
-			case types.ListType, types.StringType:
-				return fmt.Sprintf("(%s.length > 0)", args[0]), nil
-			case types.MapType, types.StructType, types.UnionType:
-				return fmt.Sprintf("(Object.keys(%s).length > 0)", args[0]), nil
-			}
-		}
-		c.use("_exists")
-		return fmt.Sprintf("_exists(%s)", argStr), nil
+       case "values":
+               if len(args) != 1 {
+                       return "", fmt.Errorf("values expects 1 arg")
+               }
+               if len(call.Args) == 1 {
+                       t := underlyingType(c.inferExprType(call.Args[0]))
+                       switch t.(type) {
+                       case types.MapType, types.StructType, types.UnionType:
+                               return fmt.Sprintf("Object.values(%s)", args[0]), nil
+                       }
+               }
+               c.use("_values")
+               return fmt.Sprintf("_values(%s)", args[0]), nil
+       case "exists":
+               if len(args) == 1 {
+                       t := underlyingType(c.inferExprType(call.Args[0]))
+                       switch t.(type) {
+                       case types.ListType, types.StringType:
+                               return fmt.Sprintf("(%s.length > 0)", args[0]), nil
+                       case types.MapType, types.StructType, types.UnionType:
+                               return fmt.Sprintf("(Object.keys(%s).length > 0)", args[0]), nil
+                       }
+               }
+               c.use("_exists")
+               return fmt.Sprintf("_exists(%s)", argStr), nil
 	case "avg":
-		if len(call.Args) == 1 {
-			t := c.inferExprType(call.Args[0])
-			switch tt := t.(type) {
-			case types.ListType:
+               if len(call.Args) == 1 {
+                       t := underlyingType(c.inferExprType(call.Args[0]))
+                       switch tt := t.(type) {
+                       case types.ListType:
 				if isNumericType(tt.Elem) {
 					return fmt.Sprintf("(%s.reduce((a,b)=>a+b,0) / %s.length)", args[0], args[0]), nil
 				}
@@ -2045,10 +2045,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.use("_reduce")
 		return fmt.Sprintf("_reduce(%s, %s, %s)", args[0], args[1], args[2]), nil
-	case "sum":
-		if len(call.Args) == 1 {
-			t := c.inferExprType(call.Args[0])
-			switch tt := t.(type) {
+       case "sum":
+               if len(call.Args) == 1 {
+                       t := underlyingType(c.inferExprType(call.Args[0]))
+                       switch tt := t.(type) {
 			case types.ListType:
 				if isNumericType(tt.Elem) {
 					return fmt.Sprintf("%s.reduce((a,b)=>a+b,0)", args[0]), nil
@@ -2063,10 +2063,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.use("_sum")
 		return fmt.Sprintf("_sum(%s)", argStr), nil
-	case "min":
-		if len(call.Args) == 1 {
-			t := c.inferExprType(call.Args[0])
-			switch t.(type) {
+       case "min":
+               if len(call.Args) == 1 {
+                       t := underlyingType(c.inferExprType(call.Args[0]))
+                       switch t.(type) {
 			case types.ListType:
 				return fmt.Sprintf("Math.min(...%s)", args[0]), nil
 			case types.GroupType:
@@ -2075,10 +2075,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.use("_min")
 		return fmt.Sprintf("_min(%s)", argStr), nil
-	case "max":
-		if len(call.Args) == 1 {
-			t := c.inferExprType(call.Args[0])
-			switch t.(type) {
+       case "max":
+               if len(call.Args) == 1 {
+                       t := underlyingType(c.inferExprType(call.Args[0]))
+                       switch t.(type) {
 			case types.ListType:
 				return fmt.Sprintf("Math.max(...%s)", args[0]), nil
 			case types.GroupType:
@@ -2107,13 +2107,13 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return fmt.Sprintf("(%s).substring(%s, (%s)+(%s))", args[0], args[1], args[1], args[2]), nil
 		}
 		return fmt.Sprintf("(%s).substring(%s)", args[0], args[1]), nil
-	case "reverse":
-		if len(args) == 1 {
-			t := c.inferExprType(call.Args[0])
-			if _, ok := t.(types.StringType); ok {
-				return fmt.Sprintf("%s.split('') .reverse().join('')", args[0]), nil
-			}
-			return fmt.Sprintf("%s.slice().reverse()", args[0]), nil
+       case "reverse":
+               if len(args) == 1 {
+                       t := underlyingType(c.inferExprType(call.Args[0]))
+                       if _, ok := t.(types.StringType); ok {
+                               return fmt.Sprintf("%s.split('') .reverse().join('')", args[0]), nil
+                       }
+                       return fmt.Sprintf("%s.slice().reverse()", args[0]), nil
 		}
 		return fmt.Sprintf("[].concat(%s).reverse()", strings.Join(args, ", ")), nil
 	case "first":
