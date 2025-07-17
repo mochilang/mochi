@@ -147,26 +147,26 @@ func (c *Compiler) defineStruct(info *structInfo) {
 					fmt.Sprintf("std::declval<%s>().", base))
 			}
 		}
-                if matches := re.FindAllStringSubmatch(t, -1); matches != nil {
-                        for _, m := range matches {
-                                name := m[1]
-                                if st := c.varStruct[name]; st != "" {
-                                        base := strings.TrimSuffix(st, "{}")
-                                        t = strings.ReplaceAll(t, name+".",
-                                                fmt.Sprintf("std::declval<%s>().", base))
-                                } else if et := c.elemType[name]; et != "" && c.isStructName(et) {
-                                        base := strings.TrimSuffix(et, "{}")
-                                        t = strings.ReplaceAll(t, name+".",
-                                                fmt.Sprintf("std::declval<%s>().", base))
-                                }
-                        }
-                }
-                if strings.Contains(t, ".") && strings.HasPrefix(t, "decltype(") {
-                        t = "std::any"
-                        c.usesAny = true
-                }
-                info.Types[i] = t
-        }
+		if matches := re.FindAllStringSubmatch(t, -1); matches != nil {
+			for _, m := range matches {
+				name := m[1]
+				if st := c.varStruct[name]; st != "" {
+					base := strings.TrimSuffix(st, "{}")
+					t = strings.ReplaceAll(t, name+".",
+						fmt.Sprintf("std::declval<%s>().", base))
+				} else if et := c.elemType[name]; et != "" && c.isStructName(et) {
+					base := strings.TrimSuffix(et, "{}")
+					t = strings.ReplaceAll(t, name+".",
+						fmt.Sprintf("std::declval<%s>().", base))
+				}
+			}
+		}
+		if strings.Contains(t, ".") && strings.HasPrefix(t, "decltype(") {
+			t = "std::any"
+			c.usesAny = true
+		}
+		info.Types[i] = t
+	}
 	var def strings.Builder
 	def.WriteString("struct " + info.Name + " {")
 	for i, n := range info.Fields {
@@ -362,11 +362,11 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 		out.WriteString("template<typename K,typename V> void __json(const std::unordered_map<K,V>& m){ std::cout<<\"{\"; bool first=true; for(const auto&kv:m){ if(!first) std::cout<<\",\"; first=false; __json(kv.first); std::cout<<\":\"; __json(kv.second);} std::cout<<\"}\"; }\n")
 		out.WriteByte('\n')
 	}
-        if c.usesAny {
-                out.WriteString("inline bool __any_eq(const std::any&a,const std::any&b){ if(a.type()!=b.type()) return false; if(a.type()==typeid(int)) return std::any_cast<int>(a)==std::any_cast<int>(b); if(a.type()==typeid(double)) return std::any_cast<double>(a)==std::any_cast<double>(b); if(a.type()==typeid(bool)) return std::any_cast<bool>(a)==std::any_cast<bool>(b); if(a.type()==typeid(std::string)) return std::any_cast<std::string>(a)==std::any_cast<std::string>(b); return false; }\n")
-                out.WriteString("inline void __print_any(const std::any&a){ if(a.type()==typeid(int)) std::cout<<std::any_cast<int>(a); else if(a.type()==typeid(double)) std::cout<<std::any_cast<double>(a); else if(a.type()==typeid(bool)) std::cout<<(std::any_cast<bool>(a)?\"true\":\"false\"); else if(a.type()==typeid(std::string)) std::cout<<std::any_cast<std::string>(a); }\n")
-                out.WriteByte('\n')
-        }
+	if c.usesAny {
+		out.WriteString("inline bool __any_eq(const std::any&a,const std::any&b){ if(a.type()!=b.type()) return false; if(a.type()==typeid(int)) return std::any_cast<int>(a)==std::any_cast<int>(b); if(a.type()==typeid(double)) return std::any_cast<double>(a)==std::any_cast<double>(b); if(a.type()==typeid(bool)) return std::any_cast<bool>(a)==std::any_cast<bool>(b); if(a.type()==typeid(std::string)) return std::any_cast<std::string>(a)==std::any_cast<std::string>(b); return false; }\n")
+		out.WriteString("inline void __print_any(const std::any&a){ if(a.type()==typeid(int)) std::cout<<std::any_cast<int>(a); else if(a.type()==typeid(double)) std::cout<<std::any_cast<double>(a); else if(a.type()==typeid(bool)) std::cout<<(std::any_cast<bool>(a)?\"true\":\"false\"); else if(a.type()==typeid(std::string)) std::cout<<std::any_cast<std::string>(a); }\n")
+		out.WriteByte('\n')
+	}
 	out.Write(src)
 	return FormatCPP(out.Bytes()), nil
 }
@@ -868,7 +868,10 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 				c.vars[st.Name] = et
 			} else if et == "std::any" {
 				c.vars[st.Name] = "any"
+			} else if c.isStructName(et) {
+				c.varStruct[st.Name] = et
 			}
+			c.elemType[st.Name] = et
 		}
 	}
 	if c.vars[src] == "map" {
@@ -1214,14 +1217,14 @@ func (c *Compiler) compilePrint(args []*parser.Expr) error {
 		} else if t := c.structLiteralType(s); t != "" {
 			structType = t
 		}
-                if typ != "vector" {
-                        c.writeIndent()
-                        if typ == "" && structType == "" && c.isAnyExpr(s) {
-                                c.buf.WriteString("__print_any(" + s + "); std::cout << std::endl;")
-                                c.buf.WriteByte('\n')
-                                return nil
-                        }
-                        switch typ {
+		if typ != "vector" {
+			c.writeIndent()
+			if typ == "" && structType == "" && c.isAnyExpr(s) {
+				c.buf.WriteString("__print_any(" + s + "); std::cout << std::endl;")
+				c.buf.WriteByte('\n')
+				return nil
+			}
+			switch typ {
 			case "bool":
 				c.buf.WriteString("std::cout << (" + s + " ? \"true\" : \"false\") << std::endl;")
 			case "int", "double", "string":
@@ -1299,8 +1302,8 @@ func (c *Compiler) compilePrint(args []*parser.Expr) error {
 		if i > 0 {
 			c.buf.WriteString("std::cout << ' '; ")
 		}
-                switch typ {
-                case "vector":
+		switch typ {
+		case "vector":
 			tmp := c.newTmp()
 			c.buf.WriteString("auto " + tmp + " = " + s + "; bool first=true; for(const auto &_x : " + tmp + "){ if(!first) std::cout<<' '; first=false; ")
 			if et := c.elemType[s]; et != "" && c.isStructName(et) {
@@ -1315,20 +1318,20 @@ func (c *Compiler) compilePrint(args []*parser.Expr) error {
 			c.buf.WriteString("std::cout << " + s + "; ")
 		case "pair":
 			c.buf.WriteString("std::cout << std::boolalpha << " + s + ".first << ' ' << " + s + ".second; ")
-                case "":
-                        if structType != "" {
-                                c.usesJSON = true
-                                c.buf.WriteString("__json(" + s + "); ")
-                        } else {
-                                if c.isAnyExpr(s) {
-                                        c.buf.WriteString("__print_any(" + s + "); ")
-                                } else {
-                                c.buf.WriteString("std::cout << " + s + "; ")
-                                }
-                        }
-                default:
-                        c.buf.WriteString("std::cout << " + s + "; ")
-                }
+		case "":
+			if structType != "" {
+				c.usesJSON = true
+				c.buf.WriteString("__json(" + s + "); ")
+			} else {
+				if c.isAnyExpr(s) {
+					c.buf.WriteString("__print_any(" + s + "); ")
+				} else {
+					c.buf.WriteString("std::cout << " + s + "; ")
+				}
+			}
+		default:
+			c.buf.WriteString("std::cout << " + s + "; ")
+		}
 	}
 	c.buf.WriteString("std::cout << std::endl; }")
 	c.buf.WriteByte('\n')
@@ -2354,6 +2357,23 @@ func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error
 				ftype = typ
 			}
 		}
+		if strings.HasPrefix(ftype, "decltype(") {
+			if typ, ok := c.vars[val]; ok {
+				switch typ {
+				case "string":
+					ftype = "std::string"
+				case "int", "double", "bool":
+					ftype = typ
+				}
+			} else if t := c.elemType[val]; t != "" {
+				ftype = t
+			} else if t := c.predictElemType(val); t != "" {
+				ftype = t
+			} else {
+				ftype = "std::any"
+				c.usesAny = true
+			}
+		}
 		fieldTypes[i] = ftype
 		inits[i] = val
 	}
@@ -2449,6 +2469,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		case c.isStructName(et):
 			c.varStruct[q.Var] = et
 		}
+		c.elemType[q.Var] = et
 	}
 	fromSrcs := make([]string, len(q.Froms))
 	for i, f := range q.Froms {
@@ -2472,6 +2493,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			case c.isStructName(et):
 				c.varStruct[f.Var] = et
 			}
+			c.elemType[f.Var] = et
 		}
 	}
 	joinSrcs := make([]string, len(q.Joins))
@@ -2497,6 +2519,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			case c.isStructName(et):
 				c.varStruct[j.Var] = et
 			}
+			c.elemType[j.Var] = et
 		}
 		on, err := c.compileExpr(j.On)
 		if err != nil {
@@ -3722,30 +3745,30 @@ func (c *Compiler) extractVectorElemType(expr string) string {
 }
 
 func (c *Compiler) isAnyExpr(expr string) bool {
-        if c.vars[expr] == "any" || c.elemType[expr] == "std::any" {
-                return true
-        }
-        if idx := strings.Index(expr, "["); idx != -1 {
-                base := expr[:idx]
-                if c.elemType[base] == "std::any" {
-                        return true
-                }
-        }
-        if dot := strings.Index(expr, "."); dot != -1 {
-                base := expr[:dot]
-                fld := sanitizeName(expr[dot+1:])
-                if st := c.varStruct[base]; st != "" {
-                        st = strings.TrimSuffix(st, "{}")
-                        if info, ok := c.structByName[st]; ok {
-                                for i, f := range info.Fields {
-                                        if f == fld && info.Types[i] == "std::any" {
-                                                return true
-                                        }
-                                }
-                        }
-                }
-        }
-        return strings.Contains(expr, "std::any")
+	if c.vars[expr] == "any" || c.elemType[expr] == "std::any" {
+		return true
+	}
+	if idx := strings.Index(expr, "["); idx != -1 {
+		base := expr[:idx]
+		if c.elemType[base] == "std::any" {
+			return true
+		}
+	}
+	if dot := strings.Index(expr, "."); dot != -1 {
+		base := expr[:dot]
+		fld := sanitizeName(expr[dot+1:])
+		if st := c.varStruct[base]; st != "" {
+			st = strings.TrimSuffix(st, "{}")
+			if info, ok := c.structByName[st]; ok {
+				for i, f := range info.Fields {
+					if f == fld && info.Types[i] == "std::any" {
+						return true
+					}
+				}
+			}
+		}
+	}
+	return strings.Contains(expr, "std::any")
 }
 
 func (c *Compiler) structLiteralType(expr string) string {
@@ -3790,6 +3813,18 @@ func (c *Compiler) structFromVars(names []string) string {
 		} else {
 			fieldType = "std::any"
 			c.usesAny = true
+		}
+		if strings.HasPrefix(fieldType, "decltype(") {
+			if typ, ok := c.vars[n]; ok {
+				switch typ {
+				case "string":
+					fieldType = "std::string"
+				case "int", "double", "bool":
+					fieldType = typ
+				}
+			} else if t := c.elemType[n]; t != "" {
+				fieldType = t
+			}
 		}
 		if info.Types[i] == "" || strings.Contains(info.Types[i], n) {
 			info.Types[i] = fieldType
