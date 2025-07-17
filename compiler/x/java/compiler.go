@@ -738,6 +738,16 @@ func classNameFromVar(s string) string {
 	return name
 }
 
+func singularize(s string) string {
+	if strings.HasSuffix(s, "ies") && len(s) > 3 {
+		return s[:len(s)-3] + "y"
+	}
+	if strings.HasSuffix(s, "s") && len(s) > 1 {
+		return s[:len(s)-1]
+	}
+	return s
+}
+
 func mapValueType(t string) string {
 	t = strings.TrimSpace(t)
 	if !strings.HasPrefix(t, "Map<") || !strings.HasSuffix(t, ">") {
@@ -1457,9 +1467,18 @@ func (c *Compiler) dataClassFor(m *parser.MapLiteral) string {
 		}
 		return dc.name
 	}
-	name := classNameFromVar(strings.Join(keys, "_"))
-	if name == "" || c.dataClassByName(name) != nil {
-		name = fmt.Sprintf("DataClass%d", len(c.dataClasses)+1)
+	name := ""
+	if c.curVar != "" {
+		cand := classNameFromVar(singularize(c.curVar))
+		if cand != "" && c.dataClassByName(cand) == nil {
+			name = cand
+		}
+	}
+	if name == "" {
+		name = classNameFromVar(strings.Join(keys, "_"))
+		if name == "" || c.dataClassByName(name) != nil {
+			name = fmt.Sprintf("DataClass%d", len(c.dataClasses)+1)
+		}
 	}
 	c.dataClasses[shape] = &dataClass{name: name, fields: keys, types: types}
 	c.dataClassOrder = append(c.dataClassOrder, shape)
@@ -1480,11 +1499,20 @@ func (c *Compiler) rowDataClassFor(vars []string) string {
 	if dc, ok := c.dataClasses[shape]; ok {
 		return dc.name
 	}
-	name := fmt.Sprintf("DataClass%d", len(c.dataClasses)+1)
-	if len(vars) > 0 {
-		n := classNameFromVar(strings.Join(vars, "_"))
-		if c.dataClassByName(n) == nil {
-			name = n
+	name := ""
+	if c.curVar != "" {
+		cand := classNameFromVar(singularize(c.curVar))
+		if cand != "" && c.dataClassByName(cand) == nil {
+			name = cand
+		}
+	}
+	if name == "" {
+		name = fmt.Sprintf("DataClass%d", len(c.dataClasses)+1)
+		if len(vars) > 0 {
+			n := classNameFromVar(strings.Join(vars, "_"))
+			if c.dataClassByName(n) == nil {
+				name = n
+			}
 		}
 	}
 	var fields, types []string
