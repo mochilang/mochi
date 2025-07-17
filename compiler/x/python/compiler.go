@@ -644,11 +644,14 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 						return "", err
 					}
 				}
-				switch typ.(type) {
+				base := unwrapOption(typ)
+				switch base.(type) {
 				case types.ListType, types.StringType:
 					expr = fmt.Sprintf("%s[%s:%s]", expr, start, end)
-					if _, ok := typ.(types.StringType); ok {
+					if _, ok := base.(types.StringType); ok {
 						typ = types.StringType{}
+					} else {
+						typ = base
 					}
 				default:
 					startArg, endArg := "0", "0"
@@ -667,7 +670,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				switch tt := typ.(type) {
+				base := unwrapOption(typ)
+				switch tt := base.(type) {
 				case types.ListType:
 					expr = fmt.Sprintf("%s[%s]", expr, idxExpr)
 					typ = tt.Elem

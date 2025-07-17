@@ -9,6 +9,9 @@
 ## Recent Enhancements (2025-07-24 00:00)
 - Builtin operations now detect optional list and map types, avoiding helper
   emission when Python primitives suffice.
+## Recent Enhancements (2025-07-24 12:00)
+- Indexing and slicing optional lists or strings now skips the `_slice` helper
+  in favour of native Python slices.
 
 ## Recent Enhancements (2025-07-17 01:20)
 - Print calls skip `_fmt` for constant string arguments and attempt to collapse
