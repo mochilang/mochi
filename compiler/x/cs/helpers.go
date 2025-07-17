@@ -279,6 +279,44 @@ func (c *Compiler) findStructByFields(st types.StructType) (string, bool) {
 	return "", false
 }
 
+// compileStructLiteral builds a struct literal for ml using the provided type.
+func (c *Compiler) compileStructLiteral(ml *parser.MapLiteral, st types.StructType) (string, error) {
+	items := make([]string, len(ml.Items))
+	for i, it := range ml.Items {
+		field := ""
+		if n, ok := selectorName(it.Key); ok {
+			field = sanitizeName(n)
+		} else if s, ok := stringLiteral(it.Key); ok {
+			field = sanitizeName(s)
+		} else {
+			field = sanitizeName(fmt.Sprintf("f%d", i))
+		}
+		v, err := c.compileExpr(it.Value)
+		if err != nil {
+			return "", err
+		}
+		items[i] = fmt.Sprintf("%s = %s", field, v)
+	}
+	return fmt.Sprintf("new %s { %s }", sanitizeName(st.Name), strings.Join(items, ", ")), nil
+}
+
+func (c *Compiler) compileListWithStruct(ll *parser.ListLiteral, st types.StructType) (string, error) {
+	elemType := csTypeOf(st)
+	if len(ll.Elems) == 0 {
+		return fmt.Sprintf("new List<%s>()", elemType), nil
+	}
+	elems := make([]string, len(ll.Elems))
+	for i, e := range ll.Elems {
+		ml := e.Binary.Left.Value.Target.Map
+		lit, err := c.compileStructLiteral(ml, st)
+		if err != nil {
+			return "", err
+		}
+		elems[i] = lit
+	}
+	return fmt.Sprintf("new List<%s> { %s }", elemType, strings.Join(elems, ", ")), nil
+}
+
 // assignTypeNames attaches generated names to anonymous struct types so that
 // compiled code can avoid "dynamic" fields. The returned type mirrors t but
 // with any unnamed structs replaced by named versions.

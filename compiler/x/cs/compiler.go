@@ -692,11 +692,13 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				}
 			} else {
 				inferredT := c.inferExprType(s.Let.Value)
+				var listStruct *types.StructType
 				if ll := listLiteral(s.Let.Value); ll != nil {
 					if st, ok := c.inferStructFromList(ll, s.Let.Name); ok {
 						inferredT = types.ListType{Elem: st}
 						c.env.SetStruct(st.Name, st)
 						c.compileStructType(st)
+						listStruct = &st
 					}
 				} else if ml := mapLiteral(s.Let.Value); ml != nil {
 					if mt, ok := c.inferSimpleMap(ml); ok {
@@ -723,7 +725,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				typ = csTypeOf(inferredT)
 				static = inferredT
 				c.structHint = singular(name)
-				expr, err = c.compileExpr(s.Let.Value)
+				if listStruct != nil {
+					expr, err = c.compileListWithStruct(listLiteral(s.Let.Value), *listStruct)
+				} else {
+					expr, err = c.compileExpr(s.Let.Value)
+				}
 				c.structHint = ""
 				if err != nil {
 					return err
@@ -2855,6 +2861,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		t := c.inferPrimaryType(p)
 		elemType := "dynamic"
 		if lt, ok := t.(types.ListType); ok {
+			if _, ok2 := lt.Elem.(types.StructType); !ok2 && c.structHint != "" {
+				if st, ok3 := c.env.GetStruct(pascalCase(c.structHint)); ok3 {
+					lt.Elem = st
+				}
+			}
 			if st, ok2 := lt.Elem.(types.StructType); ok2 && st.Name == "" && !c.DictMode {
 				base := c.structHint
 				if base == "" {
@@ -2885,6 +2896,51 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return fmt.Sprintf("new List<%s> { %s }", elemType, strings.Join(elems, ", ")), nil
 	case p.Map != nil:
+		if !c.DictMode {
+			if c.structHint != "" {
+				if st, ok := c.env.GetStruct(pascalCase(c.structHint)); ok {
+					name := st.Name
+					items := make([]string, len(p.Map.Items))
+					for i, it := range p.Map.Items {
+						field := ""
+						if n, ok := selectorName(it.Key); ok {
+							field = sanitizeName(n)
+						} else if s, ok := stringLiteral(it.Key); ok {
+							field = sanitizeName(s)
+						} else {
+							field = sanitizeName(fmt.Sprintf("f%d", i))
+						}
+						v, err := c.compileExpr(it.Value)
+						if err != nil {
+							return "", err
+						}
+						items[i] = fmt.Sprintf("%s = %s", field, v)
+					}
+					return fmt.Sprintf("new %s { %s }", name, strings.Join(items, ", ")), nil
+				}
+			}
+			if st, ok := types.InferStructFromMapEnv(p.Map, c.env); ok {
+				if name, ok := c.findStructByFields(st); ok {
+					items := make([]string, len(p.Map.Items))
+					for i, it := range p.Map.Items {
+						field := ""
+						if n, ok := selectorName(it.Key); ok {
+							field = sanitizeName(n)
+						} else if s, ok := stringLiteral(it.Key); ok {
+							field = sanitizeName(s)
+						} else {
+							field = sanitizeName(fmt.Sprintf("f%d", i))
+						}
+						v, err := c.compileExpr(it.Value)
+						if err != nil {
+							return "", err
+						}
+						items[i] = fmt.Sprintf("%s = %s", field, v)
+					}
+					return fmt.Sprintf("new %s { %s }", name, strings.Join(items, ", ")), nil
+				}
+			}
+		}
 		t := c.inferPrimaryType(p)
 		if st, ok := t.(types.StructType); ok && !c.DictMode {
 			name := st.Name
