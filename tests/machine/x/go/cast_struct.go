@@ -15,7 +15,7 @@ type Todo struct {
 type v = Todo
 
 func main() {
-	todo := Todo{Title: "hi"}
+	todo := map[string]string{"title": "hi"}
 	_ = todo
-	fmt.Println(todo.Title)
+	fmt.Println(todo["title"])
 }

@@ -57,10 +57,7 @@ func main() {
 		for _, x := range g.Items {
 			total = (total + x.Val)
 		}
-		tmp = append(tmp, v{
-			Tag:   g.Key.(string),
-			Total: total,
-		})
+		tmp = append(tmp, map[string]any{"tag": g.Key.(string), "total": total})
 	}
 	result := func() []any {
 		src := tmp

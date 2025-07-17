@@ -11,8 +11,5 @@ import (
 type v map[string]any
 
 func main() {
-	fmt.Println(len(v{
-		A: 1,
-		B: 2,
-	}))
+	fmt.Println(len(map[string]int{"a": 1, "b": 2}))
 }

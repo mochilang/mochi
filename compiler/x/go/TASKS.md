@@ -90,3 +90,6 @@ TPC-H progress:
 - 2025-07-16 23:59 - Replaced compiler_test.go with vm_golden_test.go using golden.Run and updated README generation
 - 2025-07-19 08:01 - Updated golden helpers to delete `.mochi.error` files when running VM tests
 - 2025-07-19 12:00 - Renamed VM test to vm_valid_golden_test.go and summarized pass/fail counts
+- 2025-07-19 18:30 - Simple map literals now infer `map[string]T` before struct
+  inference, allowing `for k in m` loops to compile. VM golden tests pass 78/100
+  programs.

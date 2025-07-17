@@ -1,0 +1,9 @@
+exit status 1
+panic: values() expects map
+
+goroutine 1 [running]:
+main._values({0x4a4740?, 0xc0001120f0?})
+	/workspace/mochi/tests/machine/x/go/values_builtin.go:48 +0x36b
+main.main()
+	/workspace/mochi/tests/machine/x/go/values_builtin.go:21 +0x97
+exit status 2

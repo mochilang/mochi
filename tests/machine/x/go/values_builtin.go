@@ -10,19 +10,13 @@ import (
 	"strings"
 )
 
-type M struct {
-	A int `json:"a"`
-	B int `json:"b"`
-	C int `json:"c"`
-}
-
-type v = M
+type v map[string]any
 
 func main() {
-	m := M{
-		A: 1,
-		B: 2,
-		C: 3,
+	m := map[string]int{
+		"a": 1,
+		"b": 2,
+		"c": 3,
 	}
 	fmt.Println(strings.TrimSpace(strings.Join([]string{strings.Trim(strings.Trim(fmt.Sprint(_values(m)), "[]"), " ")}, " ")))
 }

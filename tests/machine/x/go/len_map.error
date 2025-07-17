@@ -1,4 +1,0 @@
-exit status 1
-# command-line-arguments
-../../../tests/machine/x/go/len_map.go:15:3: undefined: A
-../../../tests/machine/x/go/len_map.go:16:3: undefined: B

@@ -45,10 +45,7 @@ func main() {
 				x = tmp0.(DataVar)
 			}
 			_ = x
-			return v{
-				A: x.A,
-				B: x.B,
-			}
+			return map[string]int{"a": x.A, "b": x.B}
 		}, skip: -1, take: -1})
 		out := make([]DataVar, len(resAny))
 		for i, v := range resAny {
