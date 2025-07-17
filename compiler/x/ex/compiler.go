@@ -622,9 +622,14 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	} else if strings.HasPrefix(srcExpr, "\"") && strings.HasSuffix(srcExpr, "\"") {
 		srcExpr = fmt.Sprintf("String.graphemes(%s)", srcExpr)
 	} else {
-		if _, ok := t.(types.MapType); ok {
+		switch t.(type) {
+		case types.MapType:
 			srcExpr = fmt.Sprintf("Map.keys(%s)", srcExpr)
-		} else if _, ok := t.(types.AnyType); ok {
+		case types.StringType:
+			srcExpr = fmt.Sprintf("String.graphemes(%s)", srcExpr)
+		case types.GroupType:
+			srcExpr = fmt.Sprintf("%s.items", srcExpr)
+		case types.AnyType:
 			c.use("_iter")
 			srcExpr = fmt.Sprintf("_iter(%s)", srcExpr)
 		}

@@ -5,4 +5,4 @@ warning: default values for the optional arguments in _query/3 are never used
     │
     └─ tests/machine/x/ex/group_by_sort.exs:75:8: Main (module)
 
-[%{total: 7, cat: "b"}, %{total: 4, cat: "a"}]
+%{total: 7, cat: "b"} %{total: 4, cat: "a"}
