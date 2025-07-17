@@ -156,19 +156,25 @@ _showAny (VString s) = s
 _showAny (VBool b) = if b then "true" else "false"
 `
 
-const anyCastRuntime = `
+const asIntRuntime = `
 _asInt :: AnyValue -> Int
 _asInt (VInt n) = n
 _asInt v = error ("expected int, got " ++ show v)
+`
 
+const asDoubleRuntime = `
 _asDouble :: AnyValue -> Double
 _asDouble (VDouble d) = d
 _asDouble v = error ("expected double, got " ++ show v)
+`
 
+const asStringRuntime = `
 _asString :: AnyValue -> String
 _asString (VString s) = s
 _asString v = error ("expected string, got " ++ show v)
+`
 
+const asBoolRuntime = `
 _asBool :: AnyValue -> Bool
 _asBool (VBool b) = b
 _asBool v = error ("expected bool, got " ++ show v)
