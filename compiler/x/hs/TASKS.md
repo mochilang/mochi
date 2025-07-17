@@ -1,5 +1,12 @@
 # Haskell Backend Progress
 
+## Recent Updates (2025-07-22 05:00)
+- Function compilation now creates a scoped environment for parameters so
+  expressions inside the body infer the correct types. This removes spurious
+  `_asInt` casts in simple programs like `pure_fold`.
+- The runtime `avg` helper now returns a fractional value and is used for the
+  `avg` builtin.
+
 ## Recent Updates (2025-07-21 05:00)
 - Runtime helpers now always import `Data.Maybe` when included which fixes
   `break_continue` and similar programs. Updated VM golden tests regenerate the

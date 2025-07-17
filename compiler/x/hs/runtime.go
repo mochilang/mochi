@@ -21,9 +21,9 @@ whileLoop cond body = go ()
               Nothing -> go ()
          | otherwise = Nothing
 
-avg :: Integral a => [a] -> a
+avg :: (Real a, Fractional b) => [a] -> b
 avg xs | null xs = 0
-       | otherwise = div (sum xs) (fromIntegral (length xs))
+       | otherwise = realToFrac (sum xs) / fromIntegral (length xs)
 
 data MGroup k a = MGroup { key :: k, items :: [a] } deriving (Show)
 
