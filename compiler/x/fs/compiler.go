@@ -1929,27 +1929,34 @@ func isBoolExpr(e *parser.Expr) bool {
 }
 
 func (c *Compiler) isStringExpr(e *parser.Expr) bool {
-	if p := rootPrimary(e); p != nil {
-		if p.Lit != nil && p.Lit.Str != nil {
-			return true
-		}
-		if p.Selector != nil {
-			if t, ok := c.vars[p.Selector.Root]; ok {
-				if t == "string" {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	// Expressions with operators generally do not evaluate to string.
+	if len(e.Binary.Right) > 0 {
+		return false
+	}
+	p := rootPrimary(e)
+	if p == nil {
+		return false
+	}
+	if p.Lit != nil && p.Lit.Str != nil {
+		return true
+	}
+	if p.Selector != nil {
+		if t, ok := c.vars[p.Selector.Root]; ok {
+			if t == "string" {
+				return true
+			}
+			if fields, ok := c.structs[t]; ok && len(p.Selector.Tail) == 1 {
+				if ft, ok := fields[p.Selector.Tail[0]]; ok && ft == "string" {
 					return true
-				}
-				if fields, ok := c.structs[t]; ok {
-					if len(p.Selector.Tail) == 1 {
-						if ft, ok := fields[p.Selector.Tail[0]]; ok && ft == "string" {
-							return true
-						}
-					}
 				}
 			}
 		}
-		if p.If != nil {
-			return c.isStringExpr(p.If.Then) && c.isStringExpr(p.If.Else)
-		}
+	}
+	if p.If != nil {
+		return c.isStringExpr(p.If.Then) && c.isStringExpr(p.If.Else)
 	}
 	return false
 }

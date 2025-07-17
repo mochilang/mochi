@@ -2,7 +2,7 @@
 
 This directory contains F# source code generated from Mochi programs. Successful runs have a `.out` file, failures produce a `.error` file.
 
-Compiled programs: 75/100
+Compiled programs: 76/100
 
 Checklist:
 - [x] append_builtin
