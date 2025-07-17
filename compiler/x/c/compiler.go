@@ -2783,7 +2783,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 							keyType = "int"
 						}
 					}
-					c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len);", listRes, res, listRes, groups))
+					c.writeln(fmt.Sprintf("%s %s = %s(%s.len);", listRes, res, listResCreate, groups))
 					if keyType != "" {
 						keyArr = c.newTemp()
 						c.writeln(fmt.Sprintf("%s *%s = (%s*)malloc(sizeof(%s)*%s.len);", keyType, keyArr, keyType, keyType, groups))
@@ -2971,7 +2971,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 								keyType = "int"
 							}
 						}
-						c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len);", listRes, res, listRes, groups))
+						c.writeln(fmt.Sprintf("%s %s = %s(%s.len);", listRes, res, listResCreate, groups))
 						if keyType != "" {
 							keyArr = c.newTemp()
 							c.writeln(fmt.Sprintf("%s *%s = (%s*)malloc(sizeof(%s)*%s.len);", keyType, keyArr, keyType, keyType, groups))
