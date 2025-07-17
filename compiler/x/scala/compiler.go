@@ -690,7 +690,22 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 	if s.Type != nil {
 		typ = types.ResolveTypeRef(s.Type, c.env)
 	} else if s.Value != nil {
-		typ = c.namedType(types.ExprType(s.Value, c.env))
+		if mp := s.Value.Binary.Left.Value.Target.Map; mp != nil && c.mapVars[s.Name] {
+			var valT types.Type = types.AnyType{}
+			if len(mp.Items) > 0 {
+				valT = c.namedType(types.ExprType(mp.Items[0].Value, c.env))
+				for _, it := range mp.Items[1:] {
+					t := c.namedType(types.ExprType(it.Value, c.env))
+					if !sameType(valT, t) {
+						valT = types.AnyType{}
+						break
+					}
+				}
+			}
+			typ = types.MapType{Key: types.StringType{}, Value: valT}
+		} else {
+			typ = c.namedType(types.ExprType(s.Value, c.env))
+		}
 	}
 	if c.env != nil {
 		c.env.SetVar(s.Name, typ, true)
@@ -1629,12 +1644,25 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("len expects 1 arg")
 		}
+		argStr := args[0]
+		if call.Args[0] != nil && call.Args[0].Binary != nil {
+			if ml := call.Args[0].Binary.Left.Value.Target.Map; ml != nil {
+				old := c.forceMap
+				c.forceMap = true
+				var err error
+				argStr, err = c.compileExpr(call.Args[0])
+				c.forceMap = old
+				if err != nil {
+					return "", err
+				}
+			}
+		}
 		t := types.ExprType(call.Args[0], c.env)
 		switch t.(type) {
 		case types.MapType:
-			return fmt.Sprintf("%s.size", args[0]), nil
+			return fmt.Sprintf("%s.size", argStr), nil
 		default:
-			return fmt.Sprintf("%s.length", args[0]), nil
+			return fmt.Sprintf("%s.length", argStr), nil
 		}
 	case "min":
 		if len(args) != 1 {
@@ -1829,6 +1857,17 @@ func (c *Compiler) compileList(l *parser.ListLiteral, mutable bool) (string, err
 }
 
 func (c *Compiler) compileMap(m *parser.MapLiteral, mutable bool) (string, error) {
+	if c.inSort {
+		vals := make([]string, len(m.Items))
+		for i, it := range m.Items {
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			vals[i] = v
+		}
+		return fmt.Sprintf("(%s)", strings.Join(vals, ", ")), nil
+	}
 	// determine if this map corresponds to a struct type
 	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Map: m}}}}}
 	t := c.namedType(types.ExprType(expr, c.env))
@@ -2776,7 +2815,7 @@ func collectPrimaryMapUses(p *parser.Primary, out map[string]bool) {
 		collectExprMapUses(p.Query.Sort, out)
 		collectExprMapUses(p.Query.Select, out)
 	case p.Call != nil:
-		if p.Call.Func == "len" || p.Call.Func == "json" || p.Call.Func == "to_json" {
+		if p.Call.Func == "len" || p.Call.Func == "json" || p.Call.Func == "to_json" || p.Call.Func == "values" {
 			for _, a := range p.Call.Args {
 				if name, ok := identName(a); ok {
 					out[name] = true
