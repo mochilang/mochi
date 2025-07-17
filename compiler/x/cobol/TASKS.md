@@ -14,6 +14,9 @@
   invoke `cobc` with `-free`.
 - 2025-07-18 09:30 - Added `vm_golden_test.go` for `tests/vm/valid` and fixed
   function result variable names.
+- 2025-07-17 08:00 - Handle COBOL reserved words `NUMBER`/`NUMBERS` and replace
+  `FUNCTION CONCATENATE` with a `STRING` statement. `break_continue` and
+  `string_concat` now compile and run.
 
 ## Remaining Work
 - [ ] Support dataset queries (`group by`, joins) needed for TPCH programs such as `q1.mochi`.

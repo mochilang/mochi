@@ -2,7 +2,7 @@
 
 The COBOL backend compiles each Mochi program under `tests/vm/valid`. This directory stores the generated `.cob` source files and their runtime output. Any compilation or runtime failures produce a corresponding `.error` file.
 
-Compiled programs: 39/100
+Compiled programs: 41/100
 
 Checklist:
 - [x] append_builtin
@@ -10,7 +10,7 @@ Checklist:
 - [x] basic_compare
 - [x] binary_precedence
 - [x] bool_chain
-- [ ] break_continue
+- [x] break_continue
 - [x] cast_string_to_int
 - [x] cast_struct
 - [ ] closure
@@ -86,7 +86,7 @@ Checklist:
 - [ ] sort_stable
 - [x] str_builtin
 - [x] string_compare
-- [ ] string_concat
+- [x] string_concat
 - [x] string_contains
 - [x] string_in_operator
 - [x] string_index
