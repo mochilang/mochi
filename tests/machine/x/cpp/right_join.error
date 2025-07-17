@@ -1,0 +1,12 @@
+/workspace/mochi/tests/machine/x/cpp/right_join.cpp: In function ‘int main()’:
+/workspace/mochi/tests/machine/x/cpp/right_join.cpp:71:15: error: could not convert ‘entry.Result::order’ from ‘std::any’ to ‘bool’
+   71 |     if (entry.order) {
+      |         ~~~~~~^~~~~
+      |               |
+      |               std::any
+/workspace/mochi/tests/machine/x/cpp/right_join.cpp:79:34: error: ‘class std::any’ has no member named ‘id’
+   79 |         std::cout << entry.order.id;
+      |                                  ^~
+/workspace/mochi/tests/machine/x/cpp/right_join.cpp:83:34: error: ‘class std::any’ has no member named ‘total’
+   83 |         std::cout << entry.order.total;
+      |                                  ^~~~~
