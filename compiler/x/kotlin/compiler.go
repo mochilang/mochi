@@ -1719,7 +1719,10 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 			c.env = oldEnv
 			return code, err
 		} else if j.Side != nil && *j.Side == "right" {
-			// TODO: implement basic right join
+			c.env = child
+			code, err := c.simpleLeftOuterJoin(src, q, j, selType, false)
+			c.env = oldEnv
+			return code, err
 		}
 	}
 	c.env = child
@@ -2160,6 +2163,70 @@ func (c *Compiler) simpleRightOuterJoin(src string, q *parser.QueryExpr, j *pars
 	return b.String(), nil
 }
 
+func (c *Compiler) simpleLeftOuterJoin(src string, q *parser.QueryExpr, j *parser.JoinClause, selType types.Type, outer bool) (string, error) {
+	var b strings.Builder
+	indent := func(n int) string { return strings.Repeat("    ", n) }
+	lvl := 1
+
+	js, err := c.expr(j.Src)
+	if err != nil {
+		return "", err
+	}
+	cond, err := c.expr(j.On)
+	if err != nil {
+		return "", err
+	}
+	if _, ok := c.inferExprType(j.On).(types.BoolType); !ok {
+		c.use("toBool")
+		cond = "toBool(" + cond + ")"
+	}
+	sel, err := c.expr(q.Select)
+	if err != nil {
+		return "", err
+	}
+
+	b.WriteString("run {\n")
+	b.WriteString(indent(lvl))
+	b.WriteString(fmt.Sprintf("val __res = mutableListOf<%s>()\n", kotlinTypeOf(selType)))
+	b.WriteString(indent(lvl))
+	b.WriteString(fmt.Sprintf("for (%s in %s) {\n", j.Var, js))
+	lvl++
+	b.WriteString(indent(lvl))
+	b.WriteString("val __tmp = mutableListOf<Any?>()\n")
+	b.WriteString(indent(lvl))
+	b.WriteString(fmt.Sprintf("for (%s in %s) {\n", q.Var, src))
+	lvl++
+	b.WriteString(indent(lvl))
+	b.WriteString(fmt.Sprintf("if (%s) {\n", cond))
+	lvl++
+	b.WriteString(indent(lvl))
+	b.WriteString(fmt.Sprintf("__tmp.add(%s)\n", q.Var))
+	lvl--
+	b.WriteString(indent(lvl))
+	b.WriteString("}\n")
+	lvl--
+	b.WriteString(indent(lvl))
+	b.WriteString("}\n")
+	b.WriteString(indent(lvl))
+	b.WriteString("if (__tmp.isEmpty()) __tmp.add(null)\n")
+	b.WriteString(indent(lvl))
+	b.WriteString(fmt.Sprintf("for (%s in __tmp) {\n", q.Var))
+	lvl++
+	b.WriteString(indent(lvl))
+	b.WriteString(fmt.Sprintf("__res.add(%s)\n", sel))
+	lvl--
+	b.WriteString(indent(lvl))
+	b.WriteString("}\n")
+	lvl--
+	b.WriteString(indent(lvl))
+	b.WriteString("}\n")
+	b.WriteString(indent(lvl))
+	b.WriteString("__res\n")
+	b.WriteString("}")
+	c.queryTypes[q] = types.ListType{Elem: selType}
+	return b.String(), nil
+}
+
 func (c *Compiler) loadExpr(l *parser.LoadExpr) (string, error) {
 	c.use("_load")
 	path := "null"
@@ -2420,12 +2487,45 @@ func (c *Compiler) discoverStructs(prog *parser.Program) {
 				}
 			}
 		} else if q != nil {
-			if id, ok := identName(q.Select); ok && id == q.Var {
+			child := types.NewEnv(c.env)
+			if lt, ok := types.TypeOfExprBasic(q.Source, c.env).(types.ListType); ok {
+				child.SetVar(q.Var, lt.Elem, true)
+			} else if gt, ok := types.TypeOfExprBasic(q.Source, c.env).(types.GroupType); ok {
+				child.SetVar(q.Var, gt.Elem, true)
+			} else {
+				child.SetVar(q.Var, types.AnyType{}, true)
+			}
+			for _, f := range q.Froms {
+				if lt, ok := types.TypeOfExprBasic(f.Src, c.env).(types.ListType); ok {
+					child.SetVar(f.Var, lt.Elem, true)
+				} else if gt, ok := types.TypeOfExprBasic(f.Src, c.env).(types.GroupType); ok {
+					child.SetVar(f.Var, gt.Elem, true)
+				} else {
+					child.SetVar(f.Var, types.AnyType{}, true)
+				}
+			}
+			for _, j := range q.Joins {
+				if lt, ok := types.TypeOfExprBasic(j.Src, c.env).(types.ListType); ok {
+					child.SetVar(j.Var, lt.Elem, true)
+				} else if gt, ok := types.TypeOfExprBasic(j.Src, c.env).(types.GroupType); ok {
+					child.SetVar(j.Var, gt.Elem, true)
+				} else {
+					child.SetVar(j.Var, types.AnyType{}, true)
+				}
+			}
+			if ml, ok := mapLiteral(q.Select); ok && q.Group == nil {
+				if st, ok := c.structFromMapLiteral(ml, child); ok {
+					c.inferred[st.Name] = st
+					c.env.SetStruct(st.Name, st)
+					c.mapNodes[ml] = st.Name
+					c.env.SetVar(name, types.ListType{Elem: st}, mutable)
+				}
+			} else if id, ok := identName(q.Select); ok && id == q.Var {
 				if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
 					c.env.SetVar(name, types.ListType{Elem: lt.Elem}, mutable)
 				}
 			} else {
-				if t := selectorType(q.Select, c.env); t != nil {
+				if t := selectorType(q.Select, child); t != nil {
 					if st, ok := t.(types.StructType); ok {
 						c.env.SetVar(name, types.ListType{Elem: st}, mutable)
 					}
