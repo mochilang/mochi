@@ -56,3 +56,6 @@ fails if any `.error` file is present.
 - Regenerated machine outputs so all 100 programs under `tests/vm/valid` now have corresponding Elixir sources and output files.
 - Loops now iterate over strings and groups without relying on the `_iter` helper.
 - `len()` on groups is compiled to `length(g.items)` instead of calling `_length`.
+- `concat` now emits `++` or `<>` when all arguments are lists or strings.
+- `avg` uses integer division when the element type is integer so results match the VM.
+- `min` and `max` call `Enum.min`/`Enum.max` for lists and groups.

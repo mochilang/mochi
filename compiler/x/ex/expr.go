@@ -391,18 +391,43 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 						return "", fmt.Errorf("avg expects 1 arg")
 					}
 					t := c.inferExprType(op.Call.Args[0])
-					switch t.(type) {
+					switch tt := t.(type) {
 					case types.ListType:
-						res = fmt.Sprintf("(Enum.sum(%s) / Enum.count(%s))", args[0], args[0])
+						if _, ok := tt.Elem.(types.IntType); ok {
+							res = fmt.Sprintf("div(Enum.sum(%s), Enum.count(%s))", args[0], args[0])
+						} else if _, ok := tt.Elem.(types.Int64Type); ok {
+							res = fmt.Sprintf("div(Enum.sum(%s), Enum.count(%s))", args[0], args[0])
+						} else {
+							res = fmt.Sprintf("(Enum.sum(%s) / Enum.count(%s))", args[0], args[0])
+						}
 					case types.GroupType:
-						res = fmt.Sprintf("(Enum.sum(%s.items) / Enum.count(%s.items))", args[0], args[0])
+						if _, ok := tt.Elem.(types.IntType); ok {
+							res = fmt.Sprintf("div(Enum.sum(%s.items), Enum.count(%s.items))", args[0], args[0])
+						} else if _, ok := tt.Elem.(types.Int64Type); ok {
+							res = fmt.Sprintf("div(Enum.sum(%s.items), Enum.count(%s.items))", args[0], args[0])
+						} else {
+							res = fmt.Sprintf("(Enum.sum(%s.items) / Enum.count(%s.items))", args[0], args[0])
+						}
 					default:
 						c.use("_avg")
 						res = fmt.Sprintf("_avg(%s)", argStr)
 					}
 				case "min":
-					c.use("_min")
-					res = fmt.Sprintf("_min(%s)", argStr)
+					if len(args) == 1 {
+						t := c.inferExprType(op.Call.Args[0])
+						switch t.(type) {
+						case types.ListType:
+							res = fmt.Sprintf("Enum.min(%s)", args[0])
+						case types.GroupType:
+							res = fmt.Sprintf("Enum.min(%s.items)", args[0])
+						default:
+							c.use("_min")
+							res = fmt.Sprintf("_min(%s)", argStr)
+						}
+					} else {
+						c.use("_min")
+						res = fmt.Sprintf("_min(%s)", argStr)
+					}
 				case "str":
 					res = fmt.Sprintf("to_string(%s)", argStr)
 				case "input":
@@ -671,21 +696,53 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", fmt.Errorf("avg expects 1 arg")
 			}
 			t := c.inferExprType(p.Call.Args[0])
-			switch t.(type) {
+			switch tt := t.(type) {
 			case types.ListType:
+				if _, ok := tt.Elem.(types.IntType); ok {
+					return fmt.Sprintf("div(Enum.sum(%s), Enum.count(%s))", args[0], args[0]), nil
+				} else if _, ok := tt.Elem.(types.Int64Type); ok {
+					return fmt.Sprintf("div(Enum.sum(%s), Enum.count(%s))", args[0], args[0]), nil
+				}
 				return fmt.Sprintf("(Enum.sum(%s) / Enum.count(%s))", args[0], args[0]), nil
 			case types.GroupType:
+				if _, ok := tt.Elem.(types.IntType); ok {
+					return fmt.Sprintf("div(Enum.sum(%s.items), Enum.count(%s.items))", args[0], args[0]), nil
+				} else if _, ok := tt.Elem.(types.Int64Type); ok {
+					return fmt.Sprintf("div(Enum.sum(%s.items), Enum.count(%s.items))", args[0], args[0]), nil
+				}
 				return fmt.Sprintf("(Enum.sum(%s.items) / Enum.count(%s.items))", args[0], args[0]), nil
 			default:
 				c.use("_avg")
 				return fmt.Sprintf("_avg(%s)", argStr), nil
 			}
 		case "min":
-			c.use("_min")
-			return fmt.Sprintf("_min(%s)", argStr), nil
+			if len(args) != 1 {
+				return "", fmt.Errorf("min expects 1 arg")
+			}
+			t := c.inferExprType(p.Call.Args[0])
+			switch t.(type) {
+			case types.ListType:
+				return fmt.Sprintf("Enum.min(%s)", args[0]), nil
+			case types.GroupType:
+				return fmt.Sprintf("Enum.min(%s.items)", args[0]), nil
+			default:
+				c.use("_min")
+				return fmt.Sprintf("_min(%s)", argStr), nil
+			}
 		case "max":
-			c.use("_max")
-			return fmt.Sprintf("_max(%s)", argStr), nil
+			if len(args) != 1 {
+				return "", fmt.Errorf("max expects 1 arg")
+			}
+			t := c.inferExprType(p.Call.Args[0])
+			switch t.(type) {
+			case types.ListType:
+				return fmt.Sprintf("Enum.max(%s)", args[0]), nil
+			case types.GroupType:
+				return fmt.Sprintf("Enum.max(%s.items)", args[0]), nil
+			default:
+				c.use("_max")
+				return fmt.Sprintf("_max(%s)", argStr), nil
+			}
 		case "first":
 			if len(args) != 1 {
 				return "", fmt.Errorf("first expects 1 arg")
@@ -718,8 +775,33 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if len(args) < 2 {
 				return "", fmt.Errorf("concat expects at least 2 args")
 			}
-			c.use("_concat")
+			allList := true
+			allString := true
+			for _, a := range p.Call.Args {
+				t := c.inferExprType(a)
+				_, isList := t.(types.ListType)
+				_, isString := t.(types.StringType)
+				if !isList {
+					allList = false
+				}
+				if !isString {
+					allString = false
+				}
+			}
 			expr := args[0]
+			if allList {
+				for i := 1; i < len(args); i++ {
+					expr = fmt.Sprintf("%s ++ %s", expr, args[i])
+				}
+				return expr, nil
+			}
+			if allString {
+				for i := 1; i < len(args); i++ {
+					expr = fmt.Sprintf("%s <> %s", expr, args[i])
+				}
+				return expr, nil
+			}
+			c.use("_concat")
 			for i := 1; i < len(args); i++ {
 				expr = fmt.Sprintf("_concat(%s, %s)", expr, args[i])
 			}
