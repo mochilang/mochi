@@ -57,31 +57,6 @@ void _print(List<dynamic> args) {
     stdout.writeln();
 }
 
-
-dynamic _min(dynamic v) {
-    List<dynamic>? list;
-    if (v is List) list = v;
-    else if (v is Map && v['items'] is List) list = (v['items'] as List);
-    else if (v is Map && v['Items'] is List) list = (v['Items'] as List);
-    else { try { var it = (v as dynamic).items; if (it is List) list = it; } catch (_) {} }
-    if (list == null || list.isEmpty) return 0;
-    var m = list[0];
-    for (var n in list) { if ((n as Comparable).compareTo(m) < 0) m = n; }
-    return m;
-}
-
-num _sum(dynamic v) {
-    Iterable<dynamic>? list;
-    if (v is Iterable) list = v;
-    else if (v is Map && v['items'] is Iterable) list = (v['items'] as Iterable);
-    else if (v is Map && v['Items'] is Iterable) list = (v['Items'] as Iterable);
-    else { try { var it = (v as dynamic).items; if (it is Iterable) list = it; } catch (_) {} }
-    if (list == null) return 0;
-    num s = 0;
-    for (var n in list) s += (n as num);
-    return s;
-}
-
 bool _runTest(String name, void Function() f) {
     stdout.write('   test $name ...');
     var start = DateTime.now();
@@ -109,6 +84,32 @@ String findRepoRoot() {
 }
 `
 
+const dartAggHelpers = `
+dynamic _min(dynamic v) {
+    List<dynamic>? list;
+    if (v is List) list = v;
+    else if (v is Map && v['items'] is List) list = (v['items'] as List);
+    else if (v is Map && v['Items'] is List) list = (v['Items'] as List);
+    else { try { var it = (v as dynamic).items; if (it is List) list = it; } catch (_) {} }
+    if (list == null || list.isEmpty) return 0;
+    var m = list[0];
+    for (var n in list) { if ((n as Comparable).compareTo(m) < 0) m = n; }
+    return m;
+}
+
+num _sum(dynamic v) {
+    Iterable<dynamic>? list;
+    if (v is Iterable) list = v;
+    else if (v is Map && v['items'] is Iterable) list = (v['items'] as Iterable);
+    else if (v is Map && v['Items'] is Iterable) list = (v['Items'] as Iterable);
+    else { try { var it = (v as dynamic).items; if (it is Iterable) list = it; } catch (_) {} }
+    if (list == null) return 0;
+    num s = 0;
+    for (var n in list) s += (n as num);
+    return s;
+}
+`
+
 // Compiler is a very small proof-of-concept translator that converts a limited
 // subset of Mochi programs into Dart code.  For many of the test programs this
 // translation is incomplete, but it is sufficient for simple examples such as
@@ -124,6 +125,8 @@ type Compiler struct {
 	useLoad    bool
 	useSave    bool
 	useEqual   bool
+	useMin     bool
+	useSum     bool
 	tmp        int
 	mapVars    map[string]bool
 	groupKeys  map[string]string
@@ -162,6 +165,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.useLoad = false
 	c.useSave = false
 	c.useEqual = false
+	c.useMin = false
+	c.useSum = false
 	c.mapVars = make(map[string]bool)
 	c.groupKeys = make(map[string]string)
 	c.fieldTypes = make(map[string]map[string]types.Type)
@@ -356,6 +361,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		out.WriteString(dartEqualHelper)
 	}
 	out.WriteString(dartHelpers)
+	if c.useMin || c.useSum {
+		out.WriteString(dartAggHelpers)
+	}
 	return formatDart(out.Bytes()), nil
 }
 
@@ -918,6 +926,16 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, all bool, right string, rightType types.Type) (string, types.Type, error) {
 	switch op {
 	case "in":
+		rt := rightType
+		if ot, ok := rt.(types.OptionType); ok {
+			rt = ot.Elem
+		}
+		switch rt.(type) {
+		case types.MapType:
+			return fmt.Sprintf("%s.containsKey(%s)", right, left), types.BoolType{}, nil
+		case types.ListType, types.StringType:
+			return fmt.Sprintf("%s.contains(%s)", right, left), types.BoolType{}, nil
+		}
 		c.useIn = true
 		return fmt.Sprintf("_in(%s, %s)", left, right), types.BoolType{}, nil
 	case "union":
@@ -1875,10 +1893,12 @@ func (c *Compiler) aggregateExpr(name, list string) string {
 	case "count", "len":
 		return fmt.Sprintf("%s.length", list)
 	case "sum":
+		c.useSum = true
 		return fmt.Sprintf("_sum(%s)", list)
 	case "avg":
 		return fmt.Sprintf("(%s.isEmpty ? 0 : %s.reduce((a, b) => a + b) / %s.length)", list, list, list)
 	case "min":
+		c.useMin = true
 		return fmt.Sprintf("_min(%s)", list)
 	case "max":
 		return fmt.Sprintf("%s.reduce((a, b) => a > b ? a : b)", list)
@@ -2103,10 +2123,21 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		if arg := call.Args[0]; arg != nil && arg.Binary != nil && len(arg.Binary.Right) == 0 && arg.Binary.Left != nil && arg.Binary.Left.Value != nil && arg.Binary.Left.Value.Target != nil && arg.Binary.Left.Value.Target.Query != nil {
 			if expr, ok := c.simpleMapQuery(arg.Binary.Left.Value.Target.Query); ok {
+				c.useSum = true
 				return fmt.Sprintf("_sum(%s)", expr), nil
 			}
 		}
 		a := args[0]
+		typ := types.TypeOfExpr(call.Args[0], c.env)
+		if isNumericListType(typ) {
+			if _, ok := c.simpleIdentifier(call.Args[0]); ok {
+				return fmt.Sprintf("%s.fold(0, (a, b) => a + b)", a), nil
+			}
+			tmp := fmt.Sprintf("_t%d", c.tmp)
+			c.tmp++
+			return fmt.Sprintf("(() { var %s = %s; return %s.fold(0, (a, b) => a + b); })()", tmp, a, tmp), nil
+		}
+		c.useSum = true
 		if _, ok := c.simpleIdentifier(call.Args[0]); ok {
 			return fmt.Sprintf("_sum(%s)", a), nil
 		}
@@ -2118,6 +2149,16 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("min expects 1 arg")
 		}
 		a := args[0]
+		typ := types.TypeOfExpr(call.Args[0], c.env)
+		if isComparableListType(typ) {
+			if _, ok := c.simpleIdentifier(call.Args[0]); ok {
+				return fmt.Sprintf("(%s.isEmpty ? 0 : %s.reduce((a, b) => a < b ? a : b))", a, a), nil
+			}
+			tmp := fmt.Sprintf("_t%d", c.tmp)
+			c.tmp++
+			return fmt.Sprintf("(() { var %s = %s; return (%s.isEmpty ? 0 : %s.reduce((a, b) => a < b ? a : b)); })()", tmp, a, tmp, tmp), nil
+		}
+		c.useMin = true
 		if _, ok := c.simpleIdentifier(call.Args[0]); ok {
 			return fmt.Sprintf("_min(%s)", a), nil
 		}
@@ -2562,6 +2603,26 @@ func isListType(t types.Type) bool {
 	}
 	_, ok := t.(types.ListType)
 	return ok
+}
+
+func isNumericListType(t types.Type) bool {
+	if ot, ok := t.(types.OptionType); ok {
+		t = ot.Elem
+	}
+	if lt, ok := t.(types.ListType); ok {
+		return isNumericType(lt.Elem)
+	}
+	return false
+}
+
+func isComparableListType(t types.Type) bool {
+	if ot, ok := t.(types.OptionType); ok {
+		t = ot.Elem
+	}
+	if lt, ok := t.(types.ListType); ok {
+		return isComparableType(lt.Elem)
+	}
+	return false
 }
 
 func findRepoRoot() string {
