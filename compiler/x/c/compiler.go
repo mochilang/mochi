@@ -2479,6 +2479,18 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 				}
 			}
 		} else if len(q.Group.Exprs) == 1 {
+			if ml := asMapLiteral(q.Group.Exprs[0]); ml != nil && len(ml.Items) == 2 {
+				if _, ok := c.exprType(ml.Items[0].Value).(types.StringType); ok {
+					if _, ok2 := c.exprType(ml.Items[1].Value).(types.StringType); ok2 {
+						// rewrite into two-expression grouping to reuse pair-string logic
+						newQ := *q
+						newGroup := *q.Group
+						newGroup.Exprs = []*parser.Expr{ml.Items[0].Value, ml.Items[1].Value}
+						newQ.Group = &newGroup
+						return c.compileQueryExpr(&newQ)
+					}
+				}
+			}
 			src := c.compileExpr(q.Source)
 			srcT := c.exprType(q.Source)
 			if lt, ok := srcT.(types.ListType); ok {
