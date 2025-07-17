@@ -1,0 +1,7 @@
+/tmp/TestSwiftCompiler_VMValid_Goldenouter_join1001027921/001/main.swift:36:32: error: argument 'customer' must precede argument 'order'
+34 | 			_matched[ri] = true
+35 | 			_m = true
+36 | 			_res.append(OJoin(order: o, customer: c))
+   |                                `- error: argument 'customer' must precede argument 'order'
+37 | 		}
+38 | 		if !_m {

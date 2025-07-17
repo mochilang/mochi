@@ -1,6 +1,8 @@
 # Swift Compiler Progress
 
 ## Recent Enhancements
+- 2025-07-21 07:27 – struct casts no longer track map fields so `cast_struct`
+  compiles correctly.
 - 2025-07-20 09:00 – numeric literal inference now distinguishes ints and floats so
   join and group queries with decimal fields compile correctly.
 - 2025-07-19 12:00 – tuple output for query map literals and identifier keys

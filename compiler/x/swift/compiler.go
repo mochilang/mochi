@@ -1699,13 +1699,14 @@ func inferTypeRef(t *parser.TypeRef) string {
 		return ""
 	}
 	if t.Simple != nil {
-		switch strings.ToLower(*t.Simple) {
+		name := *t.Simple
+		switch strings.ToLower(name) {
 		case "string":
 			return "string"
 		case "int", "float", "bool":
 			return "number"
 		default:
-			return strings.ToLower(*t.Simple)
+			return name
 		}
 	}
 	return ""
@@ -1731,11 +1732,14 @@ func (c *compiler) inferType(t *parser.TypeRef, val *parser.Expr) string {
 			return ty
 		}
 		if t.Simple != nil {
-			switch strings.ToLower(*t.Simple) {
+			name := *t.Simple
+			switch strings.ToLower(name) {
 			case "string":
 				return "string"
 			case "int", "float", "bool":
 				return "number"
+			default:
+				return name
 			}
 		}
 	}
@@ -3316,6 +3320,7 @@ func (c *compiler) recordMapFields(name string, e *parser.Expr) {
 			if err == nil {
 				if _, ok := c.structs[typ]; ok {
 					// result is a struct, not a map
+					delete(c.mapFields, name)
 					return
 				}
 			}
