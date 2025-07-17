@@ -368,3 +368,24 @@ func fieldType(t types.Type, field string) types.Type {
 	}
 	return types.AnyType{}
 }
+
+func tsZeroValue(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType, types.Int64Type, types.FloatType:
+		return "0"
+	case types.StringType:
+		return "\"\""
+	case types.BoolType:
+		return "false"
+	case types.ListType:
+		return "[]"
+	case types.MapType:
+		return "{}"
+	case types.StructType:
+		// Initialize structs with an empty object to keep field access valid
+		return "{}"
+	default:
+		_ = tt
+		return "null"
+	}
+}

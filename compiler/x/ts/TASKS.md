@@ -4,6 +4,10 @@
 ### 2025-07-21 00:00 UTC
 - Added `_print` helper to trim trailing spaces and default typed variables to `null`.
   Regenerated VM golden outputs.
+### 2025-07-23 00:00 UTC
+- Initialized typed variables with language-specific zero values instead of `null`.
+- Generated an updated checklist under `tests/machine/x/ts/README.md`.
+
 ### 2025-07-16 16:48 UTC
 - Simplified `vm_golden_test.go` to only verify runtime output. Generated
   TypeScript files are still written for reference but no longer compared to
