@@ -228,7 +228,7 @@ func (c *Compiler) compileGlobalLet(l *parser.LetStmt) error {
 		} else {
 			t := types.ExprType(l.Value, c.env)
 			typGuess := c.ocamlType(t)
-			if typGuess != "" && typGuess != "Obj.t" {
+			if typGuess != "" && !strings.Contains(typGuess, "Obj.t") {
 				typ = typGuess
 			}
 		}
@@ -1411,8 +1411,16 @@ func (c *Compiler) compileJoin(q *parser.QueryExpr) (string, error) {
 	c.loop++
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("(let %s = ref [] in\n", resName))
-	buf.WriteString(fmt.Sprintf("  List.iter (fun %s ->\n", q.Var))
-	buf.WriteString(fmt.Sprintf("    List.iter (fun %s ->\n", join.Var))
+	leftParam := q.Var
+	if t := c.loopTypeForSource(q.Source); t != "" {
+		leftParam = fmt.Sprintf("(%s : %s)", q.Var, t)
+	}
+	buf.WriteString(fmt.Sprintf("  List.iter (fun %s ->\n", leftParam))
+	rightParam := join.Var
+	if t := c.loopTypeForSource(join.Src); t != "" {
+		rightParam = fmt.Sprintf("(%s : %s)", join.Var, t)
+	}
+	buf.WriteString(fmt.Sprintf("    List.iter (fun %s ->\n", rightParam))
 	buf.WriteString(fmt.Sprintf("      if %s then (\n", on))
 	if where != "" {
 		buf.WriteString(fmt.Sprintf("        if %s then %s := %s :: !%s;\n", where, resName, sel, resName))

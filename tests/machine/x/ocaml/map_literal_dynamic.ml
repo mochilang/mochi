@@ -22,4 +22,4 @@ let y : int ref = ref 4
 let m = ref [("a",Obj.repr ((!x)));("b",Obj.repr ((!y)))]
 
 let () =
-  print_endline (__show (Obj.obj (List.assoc "a" (!m))) ^ " " ^ __show (Obj.obj (List.assoc "b" (!m))));
+  print_endline (__show (Obj.obj (List.assoc "a" ((!m)))) ^ " " ^ __show (Obj.obj (List.assoc "b" ((!m)))));

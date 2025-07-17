@@ -27,8 +27,8 @@
 let customers : record1 list = [{ id = 1; name = "Alice" };{ id = 2; name = "Bob" };{ id = 3; name = "Charlie" }]
 let orders : record2 list = [{ id = 100; customerId = 1; total = 250 };{ id = 101; customerId = 2; total = 125 };{ id = 102; customerId = 1; total = 300 };{ id = 103; customerId = 4; total = 80 }]
 let result : record3 list = (let __res0 = ref [] in
-  List.iter (fun o ->
-    List.iter (fun c ->
+  List.iter (fun (o : record2) ->
+    List.iter (fun (c : record1) ->
       if (o.customerId = c.id) then (
         __res0 := { orderId = o.id; customerName = c.name; total = o.total } :: !__res0;
       )

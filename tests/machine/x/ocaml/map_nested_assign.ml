@@ -28,4 +28,4 @@ let data = ref [("outer",Obj.repr ([("inner",Obj.repr (1))]))]
 
 let () =
   data := map_set !data "outer" (map_set (map_get !data "outer") "inner" (2));
-  print_endline (__show (Obj.obj (List.assoc "inner" Obj.obj (List.assoc "outer" (!data)))));
+  print_endline (__show (Obj.obj (List.assoc "inner" (Obj.obj (List.assoc "outer" ((!data)))))));

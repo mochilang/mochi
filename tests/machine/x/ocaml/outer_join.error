@@ -1,4 +1,4 @@
-File "/tmp/TestOCamlCompiler_VMValid_Goldenouter_join2300391213/001/outer_join.ml", line 34, characters 42-43:
+File "/tmp/TestOCamlCompiler_VMValid_Goldenouter_join3240564590/001/outer_join.ml", line 34, characters 42-43:
 34 |         __res0 := { order = o; customer = c } :: !__res0;
                                                ^
 Error: This expression has type record2
