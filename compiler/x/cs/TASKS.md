@@ -1,4 +1,8 @@
 # C# Compiler TODO
+## Recent Updates (2025-07-22 14:00)
+- Avoid converting typed strings in comparisons and generated machine output for
+  `len_map`, `len_string`, `string_compare`, `string_concat` and `string_index`
+  bringing totals to 20/100.
 ## Recent Updates (2025-07-21 12:00)
 - Avoid emitting `_cast` when assigning values already typed, using direct
   numeric casts where possible. Machine output added for `binary_precedence`,

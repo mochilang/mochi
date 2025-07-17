@@ -1292,7 +1292,15 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 			case "<", "<=", ">", ">=":
 				leftStr = false
 				if isStringType(typs[i]) || isStringType(typs[i+1]) || strs[i] || strs[i+1] {
-					cmp := fmt.Sprintf("string.Compare(Convert.ToString(%s), Convert.ToString(%s))", left, right)
+					cmpLeft := left
+					cmpRight := right
+					if csTypeOf(typs[i]) != "string" {
+						cmpLeft = fmt.Sprintf("Convert.ToString(%s)", left)
+					}
+					if csTypeOf(typs[i+1]) != "string" {
+						cmpRight = fmt.Sprintf("Convert.ToString(%s)", right)
+					}
+					cmp := fmt.Sprintf("string.Compare(%s, %s)", cmpLeft, cmpRight)
 					switch op {
 					case "<":
 						expr = fmt.Sprintf("%s < 0", cmp)
