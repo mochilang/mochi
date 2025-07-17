@@ -17,6 +17,9 @@
 - 2025-07-17 08:00 - Handle COBOL reserved words `NUMBER`/`NUMBERS` and replace
   `FUNCTION CONCATENATE` with a `STRING` statement. `break_continue` and
   `string_concat` now compile and run.
+- 2025-07-21 00:00 - Added support for map and list element assignments and
+  dynamic literal initialization. Temporary variables now use a signed PIC to
+  preserve negative values.
 
 ## Remaining Work
 - [ ] Support dataset queries (`group by`, joins) needed for TPCH programs such as `q1.mochi`.
