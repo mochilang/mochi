@@ -1427,6 +1427,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 		case op.Field != nil:
 			name := op.Field.Name
+			if ot, ok := typ.(types.OptionType); ok {
+				s = fmt.Sprintf("%s.get", s)
+				typ = ot.Elem
+			}
 			if i+1 < len(p.Ops) && p.Ops[i+1].Call != nil {
 				call := p.Ops[i+1].Call
 				args := make([]string, len(call.Args))
@@ -1647,6 +1651,10 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 				if lt, ok2 := vt.(types.ListType); ok2 {
 					if _, any := lt.Elem.(types.AnyType); any {
 						elemT := c.namedType(types.ExprType(call.Args[1], c.env))
+						if st, ok := c.detectStructMap(call.Args[1], c.env); ok {
+							st = c.ensureStructName(st)
+							elemT = st
+						}
 						c.env.SetVarDeep(name, types.ListType{Elem: elemT}, true)
 					}
 				}
@@ -2340,7 +2348,7 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 	if l.Path != nil {
 		p := *l.Path
 		if strings.HasPrefix(p, "../interpreter/valid/") {
-			p = filepath.Join("tests", "interpreter", "valid", strings.TrimPrefix(p, "../interpreter/valid/"))
+			p = filepath.Join("..", "..", "tests", "interpreter", "valid", strings.TrimPrefix(p, "../interpreter/valid/"))
 		}
 		path = fmt.Sprintf("%q", p)
 	}
