@@ -129,6 +129,9 @@ func (c *Compiler) newTypedVar(typ string) string {
 	if c.varTypes != nil {
 		c.varTypes[name] = typ
 	}
+	if c.env != nil {
+		c.env.SetVar(name, parsePasType(typ), true)
+	}
 	return name
 }
 
