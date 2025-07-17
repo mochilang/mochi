@@ -174,7 +174,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	body := new(bytes.Buffer)
 	origBuf := c.buf
 	c.buf = body
-	c.indent = 1
+	c.indent = 2
 	for _, s := range prog.Statements {
 		if s.Var != nil {
 			if !c.globalUsed[s.Var.Name] {
