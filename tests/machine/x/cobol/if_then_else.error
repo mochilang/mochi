@@ -1,3 +1,0 @@
-/tmp/TestCobolCompiler_VMValid_Goldenif_then_else685538857/001/prog.cob:7: warning: value size exceeds data size [-Wothers]
-/tmp/TestCobolCompiler_VMValid_Goldenif_then_else685538857/001/prog.cob:12: warning: 'literal "yes"' is not a numeric value [-Wignored-error]
-/tmp/TestCobolCompiler_VMValid_Goldenif_then_else685538857/001/prog.cob:14: error: 'literal "no"' is not a numeric value

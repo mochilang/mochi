@@ -1,3 +1,0 @@
-/tmp/TestCobolCompiler_VMValid_Goldenvalues_builtin484640436/001/prog.cob:13: error: syntax error, unexpected USING
-/tmp/TestCobolCompiler_VMValid_Goldenvalues_builtin484640436/001/prog.cob:14: error: 'FN-VALUES-RES' is not defined
-/tmp/TestCobolCompiler_VMValid_Goldenvalues_builtin484640436/001/prog.cob:13: error: 'FN_VALUES' is not defined
