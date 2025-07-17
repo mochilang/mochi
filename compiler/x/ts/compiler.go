@@ -2022,10 +2022,16 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "avg":
 		if len(call.Args) == 1 {
 			t := c.inferExprType(call.Args[0])
-			switch t.(type) {
+			switch tt := t.(type) {
 			case types.ListType:
+				if isNumericType(tt.Elem) {
+					return fmt.Sprintf("(%s.reduce((a,b)=>a+b,0) / %s.length)", args[0], args[0]), nil
+				}
 				return fmt.Sprintf("(%s.reduce((a,b)=>a+Number(b),0) / %s.length)", args[0], args[0]), nil
 			case types.GroupType:
+				if isNumericType(tt.Elem) {
+					return fmt.Sprintf("(%s.items.reduce((a,b)=>a+b,0) / %s.items.length)", args[0], args[0]), nil
+				}
 				return fmt.Sprintf("(%s.items.reduce((a,b)=>a+Number(b),0) / %s.items.length)", args[0], args[0]), nil
 			}
 		}
@@ -2042,10 +2048,16 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "sum":
 		if len(call.Args) == 1 {
 			t := c.inferExprType(call.Args[0])
-			switch t.(type) {
+			switch tt := t.(type) {
 			case types.ListType:
+				if isNumericType(tt.Elem) {
+					return fmt.Sprintf("%s.reduce((a,b)=>a+b,0)", args[0]), nil
+				}
 				return fmt.Sprintf("%s.reduce((a,b)=>a+Number(b),0)", args[0]), nil
 			case types.GroupType:
+				if isNumericType(tt.Elem) {
+					return fmt.Sprintf("%s.items.reduce((a,b)=>a+b,0)", args[0]), nil
+				}
 				return fmt.Sprintf("%s.items.reduce((a,b)=>a+Number(b),0)", args[0]), nil
 			}
 		}
@@ -2557,10 +2569,18 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				case "count":
 					agg.WriteString("\treturn _items.length;\n")
 				case "sum":
-					agg.WriteString("\treturn _items.reduce((a,b)=>a+Number(b),0);\n")
+					if isNumericType(argType) {
+						agg.WriteString("\treturn _items.reduce((a,b)=>a+b,0);\n")
+					} else {
+						agg.WriteString("\treturn _items.reduce((a,b)=>a+Number(b),0);\n")
+					}
 				case "avg":
 					agg.WriteString("\tconst _c = _items.length;\n")
-					agg.WriteString("\treturn _c ? _items.reduce((a,b)=>a+Number(b),0) / _c : 0;\n")
+					if isNumericType(argType) {
+						agg.WriteString("\treturn _c ? _items.reduce((a,b)=>a+b,0) / _c : 0;\n")
+					} else {
+						agg.WriteString("\treturn _c ? _items.reduce((a,b)=>a+Number(b),0) / _c : 0;\n")
+					}
 				case "min":
 					if isNumericType(argType) || isStringType(argType) {
 						agg.WriteString("\treturn _items.length ? Math.min(..._items) : 0;\n")
