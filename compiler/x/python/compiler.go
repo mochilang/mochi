@@ -974,10 +974,6 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		return "time.time_ns()", nil
 	case "json":
 		c.imports["json"] = "json"
-		t := c.inferExprType(call.Args[0])
-		if _, ok := t.(types.ListType); ok {
-			return fmt.Sprintf("print(json.dumps(%s, indent=2, default=lambda o: vars(o)))", argStr), nil
-		}
 		return fmt.Sprintf("print(json.dumps(%s, separators=(',', ':'), default=lambda o: vars(o)))", argStr), nil
 	case "str":
 		return fmt.Sprintf("str(%s)", argStr), nil
@@ -1256,6 +1252,9 @@ func (c *Compiler) maybeFStringPrint(exprs []*parser.Expr) (string, bool, error)
 func (c *Compiler) needsNumericBool(e *parser.Expr) bool {
 	if e == nil || e.Binary == nil {
 		return false
+	}
+	if _, ok := c.inferExprType(e).(types.BoolType); ok {
+		return true
 	}
 	u := e.Binary.Left
 	if len(u.Ops) > 0 && u.Ops[0] == "!" {
