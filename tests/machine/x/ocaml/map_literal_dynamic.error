@@ -1,6 +1,0 @@
-File "/tmp/TestOCamlCompiler_VMValid_Goldenmap_literal_dynamic3954409939/001/map_literal_dynamic.ml", line 24, characters 22-71:
-24 | let m : record1 ref = ref [("a",Obj.repr ((!x)));("b",Obj.repr ((!y)))]
-                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Error: This expression has type (string * Obj.t) list ref
-       but an expression was expected of type record1 ref
-       Type (string * Obj.t) list is not compatible with type record1 

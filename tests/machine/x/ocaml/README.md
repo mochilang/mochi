@@ -1,9 +1,8 @@
-<<<<<<< HEAD
 # OCaml Machine Translations
 
 This directory contains OCaml code generated from the Mochi programs in `tests/vm/valid` using the OCaml compiler. Each program was compiled and executed with `ocamlc`. Successful runs produced an `.out` file while failures produced an `.error` file.
 
-Compiled programs: 75/100 successful.
+Compiled programs: 77/100 successful.
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -41,7 +40,7 @@ Compiled programs: 75/100 successful.
 - [x] if_then_else.mochi
 - [x] if_then_else_nested.mochi
 - [x] in_operator.mochi
-- [ ] in_operator_extended.mochi
+- [x] in_operator_extended.mochi
 - [x] inner_join.mochi
 - [x] join_multi.mochi
 - [ ] json_builtin.mochi
@@ -88,7 +87,7 @@ Compiled programs: 75/100 successful.
 - [x] string_compare.mochi
 - [x] string_concat.mochi
 - [x] string_contains.mochi
-- [ ] string_in_operator.mochi
+- [x] string_in_operator.mochi
 - [ ] string_index.mochi
 - [ ] string_prefix_slice.mochi
 - [x] substring_builtin.mochi
@@ -111,5 +110,3 @@ Compiled programs: 75/100 successful.
 - [ ] Integrate an OCaml runtime to execute compiled programs in CI
 - [x] Expand anonymous record typing for clearer generated code
 - [x] Emit native `for` loops when iterating over numeric ranges
-=======
->>>>>>> 15d0dc4b5 (Truncate all README.md)
