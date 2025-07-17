@@ -340,21 +340,6 @@ var helperUnion = "def _union(a: list[T], b: list[T]) -> list[T]:\n" +
 	"            res.append(it)\n" +
 	"    return res\n"
 
-var helperFmt = "def _fmt(v):\n" +
-	"    if isinstance(v, list):\n" +
-	"        return ' '.join(_fmt(x) for x in v).rstrip()\n" +
-	"    if v is UNDEFINED:\n" +
-	"        return 'null'\n" +
-	"    if v is None:\n" +
-	"        return 'null'\n" +
-	"    if isinstance(v, float):\n" +
-	"        if v.is_integer():\n" +
-	"            return str(int(v))\n" +
-	"        return repr(v)\n" +
-	"    if isinstance(v, dict) or hasattr(v, '__dataclass_fields__'):\n" +
-	"        return '[object Object]'\n" +
-	"    return str(v)\n"
-
 var helperExcept = "def _except(a: list[T], b: list[T]) -> list[T]:\n" +
 	"    res = []\n" +
 	"    for it in a:\n" +
@@ -543,7 +528,6 @@ var helperMap = map[string]string{
 	"_contains":   helperContains,
 	"_values":     helperValues,
 	"_fetch":      helperFetch,
-	"_fmt":        helperFmt,
 	"_load":       helperLoad,
 	"_save":       helperSave,
 	"_slice":      helperSlice,
