@@ -2027,6 +2027,9 @@ func (c *compiler) exprType(e *parser.Expr) string {
 	if p.Target.Map != nil {
 		return "map"
 	}
+	if p.Target.Struct != nil {
+		return p.Target.Struct.Name
+	}
 	if p.Target.Query != nil {
 		t := c.exprType(p.Target.Query.Select)
 		if t != "" {
@@ -2058,6 +2061,8 @@ func (c *compiler) primaryType(p *parser.Primary) string {
 		return "list"
 	case p.Map != nil:
 		return "map"
+	case p.Struct != nil:
+		return p.Struct.Name
 	case p.Query != nil:
 		t := c.exprType(p.Query.Select)
 		if t != "" {

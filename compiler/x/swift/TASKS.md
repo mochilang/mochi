@@ -1,6 +1,7 @@
 # Swift Compiler Progress
 
 ## Recent Enhancements
+- 2025-07-26 12:00 – struct literals now infer their concrete type so `_equal` helper is skipped when comparing typed lists.
 - 2025-07-25 09:30 – improved expression type detection for arithmetic chains so direct comparisons avoid `_equal` when possible
 - 2025-07-24 09:00 – arithmetic expressions now infer numeric types so expectation comparisons use `==` without the `_equal` helper when possible
 - 2025-07-23 10:00 – direct equality for typed values avoids _equal helper when possible
