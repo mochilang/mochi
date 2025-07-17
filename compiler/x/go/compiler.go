@@ -2801,7 +2801,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 	needsHelper := q.Sort != nil
 	for _, j := range q.Joins {
 		if j.Side != nil {
-			if !(len(q.Joins) == 1 && *j.Side == "left" && len(q.Froms) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil) {
+			simple := len(q.Joins) == 1 && len(q.Froms) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil
+			if !simple || (*j.Side != "left" && *j.Side != "right" && *j.Side != "outer") {
 				needsHelper = true
 				break
 			}
