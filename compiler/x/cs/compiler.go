@@ -692,6 +692,30 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				}
 			} else {
 				inferredT := c.inferExprType(s.Let.Value)
+				if ll := listLiteral(s.Let.Value); ll != nil {
+					if st, ok := c.inferStructFromList(ll, s.Let.Name); ok {
+						inferredT = types.ListType{Elem: st}
+						c.env.SetStruct(st.Name, st)
+						c.compileStructType(st)
+					}
+				} else if ml := mapLiteral(s.Let.Value); ml != nil {
+					if mt, ok := c.inferSimpleMap(ml); ok {
+						inferredT = mt
+					} else if st, ok := c.inferStructFromMap(ml, s.Let.Name); ok {
+						inferredT = st
+						c.env.SetStruct(st.Name, st)
+						c.compileStructType(st)
+					}
+				} else if qe := s.Let.Value.Binary.Left.Value.Target.Query; qe != nil {
+					if ml := mapLiteral(qe.Select); ml != nil {
+						qenv := c.queryEnv(qe)
+						if st, ok := c.inferStructFromMapEnv(ml, s.Let.Name, qenv); ok {
+							inferredT = types.ListType{Elem: st}
+							c.env.SetStruct(st.Name, st)
+							c.compileStructType(st)
+						}
+					}
+				}
 				if !isGroupQuery(s.Let.Value) {
 					inferredT = c.assignTypeNames(inferredT, singular(name))
 					c.registerStructs(inferredT)
@@ -782,6 +806,30 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				}
 			} else {
 				inferredT := c.inferExprType(s.Var.Value)
+				if ll := listLiteral(s.Var.Value); ll != nil {
+					if st, ok := c.inferStructFromList(ll, s.Var.Name); ok {
+						inferredT = types.ListType{Elem: st}
+						c.env.SetStruct(st.Name, st)
+						c.compileStructType(st)
+					}
+				} else if ml := mapLiteral(s.Var.Value); ml != nil {
+					if mt, ok := c.inferSimpleMap(ml); ok {
+						inferredT = mt
+					} else if st, ok := c.inferStructFromMap(ml, s.Var.Name); ok {
+						inferredT = st
+						c.env.SetStruct(st.Name, st)
+						c.compileStructType(st)
+					}
+				} else if qe := s.Var.Value.Binary.Left.Value.Target.Query; qe != nil {
+					if ml := mapLiteral(qe.Select); ml != nil {
+						qenv := c.queryEnv(qe)
+						if st, ok := c.inferStructFromMapEnv(ml, s.Var.Name, qenv); ok {
+							inferredT = types.ListType{Elem: st}
+							c.env.SetStruct(st.Name, st)
+							c.compileStructType(st)
+						}
+					}
+				}
 				if !isGroupQuery(s.Var.Value) {
 					inferredT = c.assignTypeNames(inferredT, singular(name))
 					c.registerStructs(inferredT)
@@ -3509,6 +3557,30 @@ func isEmptyListLiteral(e *parser.Expr) bool {
 	u := e.Binary.Left
 	p := u.Value
 	return len(p.Target.List.Elems) == 0
+}
+
+func isEmptyMapLiteral(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	if ml := e.Binary.Left.Value.Target.Map; ml != nil {
+		return len(ml.Items) == 0
+	}
+	return false
+}
+
+func mapLiteral(e *parser.Expr) *parser.MapLiteral {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	return e.Binary.Left.Value.Target.Map
+}
+
+func listLiteral(e *parser.Expr) *parser.ListLiteral {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	return e.Binary.Left.Value.Target.List
 }
 
 // isStringExpr reports whether the expression is a simple string literal or
