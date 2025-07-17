@@ -1655,7 +1655,11 @@ func swiftTypeOf(t string) string {
 		return "String"
 	case "bool":
 		return "Bool"
-	case "number", "int", "float":
+	case "int":
+		return "Int"
+	case "float":
+		return "Double"
+	case "number":
 		return "Int"
 	case "map":
 		return "[String:Any]"
@@ -1743,8 +1747,10 @@ func (c *compiler) inferType(t *parser.TypeRef, val *parser.Expr) string {
 				return "string"
 			case p.Target.Lit != nil && p.Target.Lit.Bool != nil:
 				return "bool"
-			case p.Target.Lit != nil && (p.Target.Lit.Int != nil || p.Target.Lit.Float != nil):
-				return "number"
+			case p.Target.Lit != nil && p.Target.Lit.Float != nil:
+				return "float"
+			case p.Target.Lit != nil && p.Target.Lit.Int != nil:
+				return "int"
 			case p.Target.List != nil:
 				if len(p.Target.List.Elems) > 0 && p.Target.List.Elems[0].Binary != nil {
 					et := c.exprType(p.Target.List.Elems[0])
@@ -1833,8 +1839,13 @@ func (c *compiler) exprType(e *parser.Expr) string {
 	if p.Target.Lit != nil && p.Target.Lit.Bool != nil {
 		return "bool"
 	}
-	if p.Target.Lit != nil && (p.Target.Lit.Int != nil || p.Target.Lit.Float != nil) {
-		return "number"
+	if p.Target.Lit != nil {
+		if p.Target.Lit.Float != nil {
+			return "float"
+		}
+		if p.Target.Lit.Int != nil {
+			return "int"
+		}
 	}
 	if p.Target.List != nil {
 		if len(p.Target.List.Elems) > 0 {
