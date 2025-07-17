@@ -1,6 +1,8 @@
 # Scala Compiler Tasks
 
 ## Recent Enhancements
+- 2025-07-23 12:00 - Improved list element inference for `append` and preserved
+  `Option` types on selector expressions to remove unnecessary helpers
 - 2025-07-22 00:00 - Improved detection of `Option` values in `if` expressions to
   reduce `.error` files for join examples
 - 2025-07-13 05:13 - Top-level `let` bindings move inside `main` when no functions follow

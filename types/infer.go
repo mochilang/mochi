@@ -303,7 +303,11 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 					case MapType:
 						cur = tt.Value
 					case OptionType:
-						cur = tt.Elem
+						if last {
+							cur = tt
+						} else {
+							cur = tt.Elem
+						}
 					case ListType:
 						if field == "contains" {
 							cur = FuncType{Params: []Type{tt.Elem}, Return: BoolType{}}
