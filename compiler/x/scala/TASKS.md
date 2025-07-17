@@ -19,7 +19,9 @@
 - 2025-07-21 05:00 - VM valid tests now use `RunWithSummary` and sanitize object names for files like `two-sum`
 - 2025-07-22 12:00 - Improved map handling in `len` builtin and sort expressions; fixed map type inference for `var` bindings
 - 2025-07-22 12:30 - Added zero-value defaults for typed `let` and `var` statements
+- 2025-07-23 00:00 - List literals now emit case classes directly and detect struct maps in queries
 - 2025-07-16 00:00 - Added VM valid golden tests and cleaned up dataset tests
+
 
 ## Remaining Work
 - [ ] Review generated Scala for idiomatic improvements

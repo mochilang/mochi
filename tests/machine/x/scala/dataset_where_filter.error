@@ -1,5 +1,0 @@
-exit status 1
-/workspace/mochi/tests/machine/x/scala/dataset_where_filter.scala:8: error: value age is not a member of scala.collection.immutable.Map[String,Any]
-    val adults = for { person <- people; if person.age >= 18 } yield Map("name" -> person.name, "age" -> person.age, "is_senior" -> person.age >= 60)
-                                                   ^
-one error found

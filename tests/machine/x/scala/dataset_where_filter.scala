@@ -4,8 +4,8 @@ object dataset_where_filter {
   case class People(name: String, age: Int)
 
   def main(args: Array[String]): Unit = {
-    val people = List(Map("name" -> "Alice", "age" -> 30), Map("name" -> "Bob", "age" -> 15), Map("name" -> "Charlie", "age" -> 65), Map("name" -> "Diana", "age" -> 45))
-    val adults = for { person <- people; if person.age >= 18 } yield Map("name" -> person.name, "age" -> person.age, "is_senior" -> person.age >= 60)
+    val people = List(People(name = "Alice", age = 30), People(name = "Bob", age = 15), People(name = "Charlie", age = 65), People(name = "Diana", age = 45))
+    val adults = for { person <- people; if person.age >= 18 } yield Adult(name = person.name, age = person.age, is_senior = person.age >= 60)
     println("--- Adults ---")
     for(person <- adults) {
       println(s"${person.name} is ${person.age} ${(if (person.is_senior) " (senior)" else "")}")
