@@ -2,7 +2,7 @@
 
 This directory contains Rust source code generated from the Mochi programs in `tests/vm/valid`. Each program was compiled and executed with `rustc`. Successful runs produced an `.out` file while failures produced an `.error` file.
 
-Compiled programs: 100/100
+Compiled programs: 85/100
 
 ## Checklist
 
@@ -29,15 +29,15 @@ Compiled programs: 100/100
 - [x] fun_expr_in_let
 - [x] fun_three_args
 - [x] go_auto
-- [x] group_by
-- [x] group_by_conditional_sum
-- [x] group_by_having
+- [ ] group_by
+- [ ] group_by_conditional_sum
+- [ ] group_by_having
 - [x] group_by_join
 - [x] group_by_left_join
-- [x] group_by_multi_join
-- [x] group_by_multi_join_sort
-- [x] group_by_sort
-- [x] group_items_iteration
+- [ ] group_by_multi_join
+- [ ] group_by_multi_join_sort
+- [ ] group_by_sort
+- [ ] group_items_iteration
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
@@ -45,9 +45,9 @@ Compiled programs: 100/100
 - [x] in_operator_extended
 - [x] inner_join
 - [x] join_multi
-- [x] json_builtin
-- [x] left_join
-- [x] left_join_multi
+- [ ] json_builtin
+- [ ] left_join
+- [ ] left_join_multi
 - [x] len_builtin
 - [x] len_map
 - [x] len_string
@@ -56,7 +56,7 @@ Compiled programs: 100/100
 - [x] list_index
 - [x] list_nested_assign
 - [x] list_set_ops
-- [x] load_yaml
+- [ ] load_yaml
 - [x] map_assign
 - [x] map_in_operator
 - [x] map_index
@@ -70,7 +70,7 @@ Compiled programs: 100/100
 - [x] membership
 - [x] min_max_builtin
 - [x] nested_function
-- [x] order_by_map
+- [ ] order_by_map
 - [x] outer_join
 - [x] partial_application
 - [x] print_hello
@@ -78,13 +78,13 @@ Compiled programs: 100/100
 - [x] pure_global_fold
 - [x] python_auto
 - [x] python_math
-- [x] query_sum_select
+- [ ] query_sum_select
 - [x] record_assign
 - [x] right_join
-- [x] save_jsonl_stdout
+- [ ] save_jsonl_stdout
 - [x] short_circuit
 - [x] slice
-- [x] sort_stable
+- [ ] sort_stable
 - [x] str_builtin
 - [x] string_compare
 - [x] string_concat

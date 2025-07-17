@@ -1,0 +1,13 @@
+exit status 1
+error: invalid format string: expected `}`, found `\"`
+ --> /workspace/mochi/tests/machine/x/rust/json_builtin.rs:4:16
+  |
+4 |     println!("{\"a\":1,\"b\":2}");
+  |               -^ expected `}` in format string
+  |               |
+  |               because of this opening brace
+  |
+  = note: if you intended to print `{`, you can escape it using `{{`
+
+error: aborting due to 1 previous error
+
