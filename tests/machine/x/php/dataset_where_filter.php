@@ -18,7 +18,7 @@ $adults = (function() use ($people) {
     }
     return $result;
 })();
-_print("--- Adults ---");
+echo "--- Adults ---", PHP_EOL;
 foreach ($adults as $person) {
     _print($person['name'], "is", $person['age'], ($person['is_senior'] ? " (senior)" : ""));
 }

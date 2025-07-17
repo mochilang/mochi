@@ -1,6 +1,6 @@
 <?php
 function boom() {
-    _print("boom");
+    echo "boom", PHP_EOL;
     return true;
 }
 _print((1 < 2) && (2 < 3) && (3 < 4));

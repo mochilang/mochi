@@ -29,7 +29,7 @@ $stats = (function() use ($customers, $orders) {
     }
     return $result;
 })();
-_print("--- Orders per customer ---");
+echo "--- Orders per customer ---", PHP_EOL;
 foreach ($stats as $s) {
     _print($s['name'], "orders:", $s['count']);
 }

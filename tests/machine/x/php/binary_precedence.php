@@ -1,8 +1,8 @@
 <?php
-_print(1 + 2 * 3);
+echo 1 + 2 * 3, PHP_EOL;
 _print((1 + 2) * 3);
-_print(2 * 3 + 1);
-_print(2 * (3 + 1));
+echo 2 * 3 + 1, PHP_EOL;
+echo 2 * (3 + 1), PHP_EOL;
 function _print(...$args) {
     $first = true;
     foreach ($args as $a) {

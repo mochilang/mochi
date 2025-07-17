@@ -6,7 +6,7 @@ $label = match($x) {
     3 => "three",
     default => "unknown",
 };
-_print($label);
+echo $label, PHP_EOL;
 $day = "sun";
 $mood = match($day) {
     "mon" => "tired",
@@ -14,14 +14,14 @@ $mood = match($day) {
     "sun" => "relaxed",
     default => "normal",
 };
-_print($mood);
+echo $mood, PHP_EOL;
 $ok = true;
 $status = match($ok) {
     true => "confirmed",
     false => "denied",
     default => null,
 };
-_print($status);
+echo $status, PHP_EOL;
 function classify($n) {
     return match($n) {
     0 => "zero",

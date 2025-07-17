@@ -1,34 +1,5 @@
 <?php
 $m = [1 => "a", 2 => "b"];
-_print(array_key_exists(1, $m));
-_print(array_key_exists(3, $m));
-function _print(...$args) {
-    $first = true;
-    foreach ($args as $a) {
-        if (!$first) echo ' ';
-        $first = false;
-        if (is_array($a)) {
-            if (array_is_list($a)) {
-                if ($a && is_array($a[0])) {
-                    $parts = [];
-                    foreach ($a as $sub) {
-                        if (is_array($sub)) {
-                            $parts[] = '[' . implode(' ', $sub) . ']';
-                        } else {
-                            $parts[] = strval($sub);
-                        }
-                    }
-                    echo implode(' ', $parts);
-                } else {
-                    echo '[' . implode(' ', array_map('strval', $a)) . ']';
-                }
-            } else {
-                echo json_encode($a);
-            }
-        } else {
-            echo strval($a);
-        }
-    }
-    echo PHP_EOL;
-}
+echo array_key_exists(1, $m), PHP_EOL;
+echo array_key_exists(3, $m), PHP_EOL;
 ?>

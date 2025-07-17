@@ -18,7 +18,7 @@ $expensive = (function() use ($products) {
     $result = array_slice($result, 1, 3);
     return $result;
 })();
-_print("--- Top products (excluding most expensive) ---");
+echo "--- Top products (excluding most expensive) ---", PHP_EOL;
 foreach ($expensive as $item) {
     _print($item['name'], "costs $", $item['price']);
 }

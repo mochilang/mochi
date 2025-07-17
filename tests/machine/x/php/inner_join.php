@@ -41,7 +41,7 @@ $result = (function() use ($customers, $orders) {
     }
     return $result;
 })();
-_print("--- Orders with customer info ---");
+echo "--- Orders with customer info ---", PHP_EOL;
 foreach ($result as $entry) {
     _print("Order", $entry['orderId'], "by", $entry['customerName'], "- $", $entry['total']);
 }

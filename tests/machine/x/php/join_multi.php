@@ -29,7 +29,7 @@ $result = (function() use ($customers, $items, $orders) {
     }
     return $result;
 })();
-_print("--- Multi Join ---");
+echo "--- Multi Join ---", PHP_EOL;
 foreach ($result as $r) {
     _print($r['name'], "bought item", $r['sku']);
 }

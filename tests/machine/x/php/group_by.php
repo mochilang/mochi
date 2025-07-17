@@ -55,7 +55,7 @@ $stats = (function() use ($people) {
     }
     return $result;
 })();
-_print("--- People grouped by city ---");
+echo "--- People grouped by city ---", PHP_EOL;
 foreach ($stats as $s) {
     _print($s['city'], ": count =", $s['count'], ", avg_age =", $s['avg_age']);
 }

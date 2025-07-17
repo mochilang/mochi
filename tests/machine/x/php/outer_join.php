@@ -28,7 +28,7 @@ $orders = [
     ]
 ];
 $result = _query($orders, [['items'=>$customers, 'on'=>function($o, $c) use ($customers, $orders){return $o['customerId'] == $c['id'];}, 'left'=>true, 'right'=>true]], [ 'select' => function($o, $c) use ($customers, $orders){return ["order" => $o, "customer" => $c];} ]);
-_print("--- Outer Join using syntax ---");
+echo "--- Outer Join using syntax ---", PHP_EOL;
 foreach ($result as $row) {
     if ($row['order']) {
         if ($row['customer']) {
