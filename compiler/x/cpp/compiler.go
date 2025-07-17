@@ -2957,9 +2957,9 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 				cap = "[]"
 			}
 			buf.WriteString("(" + cap + "() {\n")
-			buf.WriteString("    std::map<" + keyType + ", std::vector<" + itemStruct + ">> __groups;\n")
-			buf.WriteString("    for (auto " + q.Var + " : " + src + ") {\n")
-			buf.WriteString("        __groups[" + keyExpr + "].push_back(" + itemStruct + "{" + q.Var + "});\n")
+                        buf.WriteString("    std::map<" + keyType + ", std::vector<" + itemStruct + ">> __groups;\n")
+                        buf.WriteString("    for (auto " + q.Var + " : " + src + ") {\n")
+                        buf.WriteString("        __groups[" + keyExpr + "].push_back(" + q.Var + ");\n")
 			buf.WriteString("    }\n")
 			buf.WriteString("    std::vector<" + groupStruct + "> __items;\n")
 			buf.WriteString("    for (auto &kv : __groups) {\n")
@@ -3334,7 +3334,10 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 			indent(indentLevel)
 			buf.WriteString("auto __key = " + keyExpr + ";\n")
 			indent(indentLevel)
-			itemInit := itemStruct + "{" + strings.Join(itemVars, ", ") + "}"
+                        itemInit := strings.Join(itemVars, ", ")
+                        if len(itemVars) > 1 || itemStruct == "auto" {
+                                itemInit = itemStruct + "{" + itemInit + "}"
+                        }
 			buf.WriteString("bool __found = false;\n")
 			indent(indentLevel)
 			eq := "__g.key == __key"
@@ -3596,10 +3599,13 @@ func (c *Compiler) inferType(expr string) string {
 // inferExprType returns a simple C++ type for the given expression string.
 // It is used when generating struct field declarations.
 func inferExprType(expr string) string {
-	trimmed := strings.TrimSpace(expr)
-	if _, err := strconv.Atoi(trimmed); err == nil {
-		return "int"
-	}
+        trimmed := strings.TrimSpace(expr)
+        if strings.HasPrefix(trimmed, "std::string(") {
+                return "std::string"
+        }
+        if _, err := strconv.Atoi(trimmed); err == nil {
+                return "int"
+        }
 	if _, err := strconv.ParseFloat(trimmed, 64); err == nil && strings.Contains(trimmed, ".") {
 		return "double"
 	}
