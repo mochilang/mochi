@@ -136,3 +136,6 @@
 - Builtin functions like `count`, `exists`, `values`, `contains`, `sum`, `avg`, `min`, and `max` now use native operations whenever the underlying type is known, further reducing reliance on runtime helpers.
 ### 2025-10-08 00:00 UTC
 - `starts_with` now compiles to `String.startsWith` when both arguments are strings, removing the `_starts_with` helper in those cases.
+
+### 2025-10-10 00:00 UTC
+- Sort expressions inline numeric, string, or boolean comparisons instead of calling the `_cmp` helper when the key type is known.
