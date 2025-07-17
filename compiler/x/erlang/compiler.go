@@ -1150,9 +1150,16 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 
 		c.aliases[q.Group.Name] = vvar
 		c.lets[q.Group.Name] = true
+		prevGrpTyp, hadGrpTyp := c.types[q.Group.Name]
+		c.types[q.Group.Name] = "list_map"
 		defer func(n string) {
 			delete(c.aliases, n)
 			delete(c.lets, n)
+			if hadGrpTyp {
+				c.types[n] = prevGrpTyp
+			} else {
+				delete(c.types, n)
+			}
 			c.groupKeys = prevKeys
 		}(q.Group.Name)
 
