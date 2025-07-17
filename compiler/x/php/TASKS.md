@@ -34,3 +34,5 @@
 - 2025-07-20 10:00 - Generated PHP machine outputs for all VM valid programs and added README checklist.
 - 2025-07-21 08:00 - Printing now uses `var_dump`; `_print` helper removed.
 - 2025-07-21 12:00 - Avg builtin inlines numeric lists to avoid runtime helper.
+- 2025-07-21 12:30 - Avg builtin now uses full type inference so group queries
+  may inline numeric averages without runtime helpers.

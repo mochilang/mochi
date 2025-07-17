@@ -902,7 +902,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("avg expects 1 arg")
 		}
 		src := args[0]
-		typ := types.TypeOfExprBasic(call.Args[0], c.env)
+               typ := types.ExprType(call.Args[0], c.env)
 		if isNumericListLiteral(call.Args[0]) {
 			return fmt.Sprintf("count(%s) ? array_sum(%s) / count(%s) : 0", src, src, src), nil
 		}
