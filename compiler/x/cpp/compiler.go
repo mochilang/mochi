@@ -581,11 +581,14 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 	if err != nil {
 		return err
 	}
+	var elemHint string
 	if st.Type == nil {
 		if et := c.extractVectorElemType(exprStr); et != "" {
 			typ = fmt.Sprintf("std::vector<%s>", et)
+			elemHint = et
 		} else if et := c.elemType[exprStr]; et != "" {
 			typ = fmt.Sprintf("std::vector<%s>", et)
+			elemHint = et
 		}
 	}
 
@@ -625,7 +628,9 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 	} else if t := c.varStruct[exprStr]; t != "" {
 		c.varStruct[st.Name] = t
 	}
-	if et := c.extractVectorElemType(exprStr); et != "" {
+	if elemHint != "" {
+		c.elemType[st.Name] = elemHint
+	} else if et := c.extractVectorElemType(exprStr); et != "" {
 		c.elemType[st.Name] = et
 	} else if t := c.elemType[exprStr]; t != "" {
 		c.elemType[st.Name] = t
@@ -650,11 +655,14 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 	if err != nil {
 		return err
 	}
+	var elemHint string
 	if st.Type == nil {
 		if et := c.extractVectorElemType(exprStr); et != "" {
 			typ = fmt.Sprintf("std::vector<%s>", et)
+			elemHint = et
 		} else if et := c.elemType[exprStr]; et != "" {
 			typ = fmt.Sprintf("std::vector<%s>", et)
+			elemHint = et
 		} else if isEmptyListExpr(st.Value) {
 			if et := c.predictElemType(st.Name); et != "" {
 				typ = fmt.Sprintf("std::vector<%s>", et)
@@ -710,7 +718,9 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 	} else if t := c.varStruct[exprStr]; t != "" {
 		c.varStruct[st.Name] = t
 	}
-	if et := c.extractVectorElemType(exprStr); et != "" {
+	if elemHint != "" {
+		c.elemType[st.Name] = elemHint
+	} else if et := c.extractVectorElemType(exprStr); et != "" {
 		c.elemType[st.Name] = et
 	} else if t := c.elemType[exprStr]; t != "" {
 		c.elemType[st.Name] = t
@@ -2647,6 +2657,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			itemType = strings.ReplaceAll(itemType, q.Var+".", fmt.Sprintf("std::declval<%s>().", vt))
 		}
 	}
+	if itemType == fmt.Sprintf("decltype(%s)", q.Var) {
+		if et := c.elemType[src]; et != "" {
+			itemType = et
+		} else if t := c.varStruct[src]; t != "" {
+			if idx := strings.Index(t, "{"); idx != -1 {
+				t = t[:idx]
+			}
+			itemType = t
+		}
+	}
 	key := ""
 	keyType := ""
 	if q.Sort != nil {
@@ -2695,6 +2715,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		if vt := c.varStruct[q.Var]; vt != "" && keyType == fmt.Sprintf("decltype(%s)", q.Var) {
 			keyType = vt
+		}
+		if keyType == fmt.Sprintf("decltype(%s)", q.Var) {
+			if et := c.elemType[src]; et != "" {
+				keyType = et
+			} else if t := c.varStruct[src]; t != "" {
+				if idx := strings.Index(t, "{"); idx != -1 {
+					t = t[:idx]
+				}
+				keyType = t
+			}
 		}
 	}
 	skip := ""
