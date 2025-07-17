@@ -125,3 +125,7 @@
 - Match expressions now emit direct comparisons for primitive patterns,
   avoiding the `_equal` helper when possible.
 - Regenerated VM golden outputs.
+### 2025-09-25 00:00 UTC
+- Enhanced boolean printing to match `True`/`False` output and improved type
+  inference for floats and strings to eliminate helper functions when possible.
+- Regenerated VM golden outputs for updated examples.

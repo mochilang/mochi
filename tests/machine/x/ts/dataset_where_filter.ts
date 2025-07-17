@@ -34,10 +34,10 @@ function main(): void {
       [person.name, "is", person.age, person.is_senior ? " (senior)" : ""].map(
         (a) => {
           if (Array.isArray(a)) return a.join(" ");
-          if (typeof a === "boolean") return a ? "1" : "0";
+          if (typeof a === "boolean") return a ? "True" : "False";
           return String(a);
         },
-      ).join(" ").trimEnd(),
+      ).join(" "),
     );
   }
 }

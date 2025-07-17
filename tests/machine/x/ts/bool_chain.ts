@@ -7,8 +7,8 @@ function boom(): boolean {
 }
 
 function main(): void {
-  console.log((((1 < 2) && (2 < 3)) && (3 < 4)) ? 1 : 0);
-  console.log((((1 < 2) && (2 > 3)) && boom()) ? 1 : 0);
-  console.log(((((1 < 2) && (2 < 3)) && (3 > 4)) && boom()) ? 1 : 0);
+  console.log((((1 < 2) && (2 < 3)) && (3 < 4)) ? "True" : "False");
+  console.log((((1 < 2) && (2 > 3)) && boom()) ? "True" : "False");
+  console.log(((((1 < 2) && (2 < 3)) && (3 > 4)) && boom()) ? "True" : "False");
 }
 main();

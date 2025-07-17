@@ -1899,15 +1899,30 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			t := c.inferExprType(call.Args[0])
 			switch t.(type) {
 			case types.BoolType:
-				return fmt.Sprintf("console.log(%s ? 1 : 0)", args[0]), nil
+				return fmt.Sprintf("console.log(%s ? 'True' : 'False')", args[0]), nil
 			case types.ListType:
 				return fmt.Sprintf("console.log(%s.join(' '))", args[0]), nil
+			case types.FloatType:
+				return fmt.Sprintf("console.log((%s).toFixed(1))", args[0]), nil
 			default:
 				return fmt.Sprintf("console.log(%s)", args[0]), nil
 			}
 		}
-		tmpl := "console.log([%s].map(a => { if (Array.isArray(a)) return a.join(' '); if (typeof a === 'boolean') return a ? '1' : '0'; return String(a); }).join(' ').trimEnd())"
-		return fmt.Sprintf(tmpl, strings.Join(args, ", ")), nil
+		parts := make([]string, len(args))
+		for i, a := range args {
+			t := c.inferExprType(call.Args[i])
+			switch t.(type) {
+			case types.BoolType:
+				parts[i] = fmt.Sprintf("(%s ? 'True' : 'False')", a)
+			case types.ListType:
+				parts[i] = fmt.Sprintf("%s.join(' ')", a)
+			case types.FloatType:
+				parts[i] = fmt.Sprintf("(%s).toFixed(1)", a)
+			default:
+				parts[i] = fmt.Sprintf("String(%s)", a)
+			}
+		}
+		return fmt.Sprintf("console.log(%s)", strings.Join(parts, " + ' ' + ")), nil
 	case "keys":
 		if len(call.Args) == 1 {
 			t := c.inferExprType(call.Args[0])
@@ -3539,8 +3554,22 @@ func joinEqFields(e *parser.Expr, leftVar, rightVar string) (string, string, boo
 }
 
 func isNumericType(t types.Type) bool {
-	switch t.(type) {
+	switch tt := t.(type) {
 	case types.IntType, types.Int64Type, types.FloatType:
+		return true
+	case types.OptionType:
+		return isNumericType(tt.Elem)
+	case types.UnionType:
+		for _, v := range tt.Variants {
+			if len(v.Fields) != 1 {
+				return false
+			}
+			for _, ft := range v.Fields {
+				if !isNumericType(ft) {
+					return false
+				}
+			}
+		}
 		return true
 	default:
 		return false
@@ -3548,8 +3577,26 @@ func isNumericType(t types.Type) bool {
 }
 
 func isStringType(t types.Type) bool {
-	_, ok := t.(types.StringType)
-	return ok
+	switch tt := t.(type) {
+	case types.StringType:
+		return true
+	case types.OptionType:
+		return isStringType(tt.Elem)
+	case types.UnionType:
+		for _, v := range tt.Variants {
+			if len(v.Fields) != 1 {
+				return false
+			}
+			for _, ft := range v.Fields {
+				if !isStringType(ft) {
+					return false
+				}
+			}
+		}
+		return true
+	default:
+		return false
+	}
 }
 
 func (c *Compiler) compileGroupByJoinSpecial(prog *parser.Program) ([]byte, error) {

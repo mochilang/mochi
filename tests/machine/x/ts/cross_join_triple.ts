@@ -31,7 +31,7 @@ function main(): void {
     console.log(
       [c.n, c.l, c.b].map((a) => {
         if (Array.isArray(a)) return a.join(" ");
-        if (typeof a === "boolean") return a ? "1" : "0";
+        if (typeof a === "boolean") return a ? "True" : "False";
         return String(a);
       }).join(" ").trimEnd(),
     );
