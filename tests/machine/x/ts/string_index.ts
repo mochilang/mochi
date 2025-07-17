@@ -5,15 +5,6 @@ let s: string;
 
 function main(): void {
   s = "mochi";
-  _print(s[1]);
+  console.log(s[1]);
 }
-function _print(...args: unknown[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    if (typeof a === "boolean") return a ? "1" : "0";
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

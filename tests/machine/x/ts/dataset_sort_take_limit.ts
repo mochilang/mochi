@@ -63,9 +63,15 @@ function main(): void {
     }
     return _res;
   })();
-  _print("--- Top products (excluding most expensive) ---");
+  console.log("--- Top products (excluding most expensive) ---");
   for (const item of expensive) {
-    _print(item.name, "costs $", item.price);
+    console.log(
+      [item.name, "costs $", item.price].map((a) => {
+        if (Array.isArray(a)) return a.join(" ");
+        if (typeof a === "boolean") return a ? "1" : "0";
+        return String(a);
+      }).join(" ").trimEnd(),
+    );
   }
 }
 function _cmp(a: unknown, b: unknown): number {
@@ -86,15 +92,6 @@ function _cmp(a: unknown, b: unknown): number {
     return a < b ? -1 : (a > b ? 1 : 0);
   }
   return String(a) < String(b) ? -1 : (String(a) > String(b) ? 1 : 0);
-}
-
-function _print(...args: unknown[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    if (typeof a === "boolean") return a ? "1" : "0";
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
 }
 
 main();

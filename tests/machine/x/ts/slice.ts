@@ -2,17 +2,8 @@
 // Source: /workspace/mochi/tests/vm/valid/slice.mochi
 
 function main(): void {
-  _print([1, 2, 3].slice(1, 3));
-  _print([1, 2, 3].slice(0, 2));
-  _print("hello".slice(1, 4));
+  console.log([1, 2, 3].slice(1, 3).join(" "));
+  console.log([1, 2, 3].slice(0, 2).join(" "));
+  console.log("hello".slice(1, 4));
 }
-function _print(...args: unknown[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    if (typeof a === "boolean") return a ? "1" : "0";
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

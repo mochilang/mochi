@@ -47,15 +47,6 @@ function main(): void {
       right: { __name: "Leaf" },
     },
   };
-  _print(sum_tree(t));
+  console.log(sum_tree(t));
 }
-function _print(...args: unknown[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    if (typeof a === "boolean") return a ? "1" : "0";
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

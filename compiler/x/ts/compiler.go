@@ -1895,8 +1895,19 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	}
 	switch call.Func {
 	case "print":
-		c.use("_print")
-		return fmt.Sprintf("_print(%s)", strings.Join(args, ", ")), nil
+		if len(args) == 1 {
+			t := c.inferExprType(call.Args[0])
+			switch t.(type) {
+			case types.BoolType:
+				return fmt.Sprintf("console.log(%s ? 1 : 0)", args[0]), nil
+			case types.ListType:
+				return fmt.Sprintf("console.log(%s.join(' '))", args[0]), nil
+			default:
+				return fmt.Sprintf("console.log(%s)", args[0]), nil
+			}
+		}
+		tmpl := "console.log([%s].map(a => { if (Array.isArray(a)) return a.join(' '); if (typeof a === 'boolean') return a ? '1' : '0'; return String(a); }).join(' ').trimEnd())"
+		return fmt.Sprintf(tmpl, strings.Join(args, ", ")), nil
 	case "keys":
 		if len(call.Args) == 1 {
 			t := c.inferExprType(call.Args[0])

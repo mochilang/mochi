@@ -46,20 +46,17 @@ function main(): void {
       }),
     });
   })();
-  _print("--- Left Join Multi ---");
+  console.log("--- Left Join Multi ---");
   for (const r of result) {
-    _print(r.orderId, r.name, r.item);
+    console.log(
+      [r.orderId, r.name, r.item].map((a) => {
+        if (Array.isArray(a)) return a.join(" ");
+        if (typeof a === "boolean") return a ? "1" : "0";
+        return String(a);
+      }).join(" ").trimEnd(),
+    );
   }
 }
-function _print(...args: unknown[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    if (typeof a === "boolean") return a ? "1" : "0";
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 function _query(src: any[], joins: any[], opts: any): any {
   let items = src.map((v) => [v]);
   for (const j of joins) {

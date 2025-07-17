@@ -7,17 +7,8 @@ let b: any;
 function main(): void {
   a = 10 - 3;
   b = 2 + 2;
-  _print(a);
-  _print(a == 7);
-  _print(b < 5);
+  console.log(a);
+  console.log((a == 7) ? 1 : 0);
+  console.log((b < 5) ? 1 : 0);
 }
-function _print(...args: unknown[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    if (typeof a === "boolean") return a ? "1" : "0";
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

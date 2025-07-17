@@ -20,7 +20,13 @@ function main(): void {
     "email": p.email,
   }));
   for (const a of adults) {
-    _print(a.name, a.email);
+    console.log(
+      [a.name, a.email].map((a) => {
+        if (Array.isArray(a)) return a.join(" ");
+        if (typeof a === "boolean") return a ? "1" : "0";
+        return String(a);
+      }).join(" ").trimEnd(),
+    );
   }
 }
 import { readAllSync } from "https://deno.land/std@0.221.0/io/read_all.ts";
@@ -156,15 +162,6 @@ function _save(rows: any[], path: string | null, opts: any): void {
       }
       _writeOutput(path, lines.join("\n") + "\n");
   }
-}
-
-function _print(...args: unknown[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    if (typeof a === "boolean") return a ? "1" : "0";
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
 }
 
 function _toAnyMap(m: unknown): Record<string, unknown> {

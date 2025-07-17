@@ -101,15 +101,6 @@ const (
 		"  return String(v);\n" +
 		"}\n"
 
-	helperPrint = "function _print(...args: unknown[]): void {\n" +
-		"  const out = args.map(a => {\n" +
-		"    if (Array.isArray(a)) return a.join(' ');\n" +
-		"    if (typeof a === 'boolean') return a ? '1' : '0';\n" +
-		"    return String(a);\n" +
-		"  }).join(' ').trimEnd();\n" +
-		"  console.log(out);\n" +
-		"}\n"
-
 	helperMin = "function _min(v: unknown): unknown {\n" +
 		"  let list: any[] | null = null;\n" +
 		"  if (Array.isArray(v)) list = v;\n" +
@@ -589,7 +580,6 @@ var helperMap = map[string]string{
 	"_dataset":     helperDataset,
 	"_json":        helperJSON,
 	"_fmt":         helperFmt,
-	"_print":       helperPrint,
 }
 
 func (c *Compiler) use(name string) {

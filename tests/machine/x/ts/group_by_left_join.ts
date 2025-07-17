@@ -61,20 +61,17 @@ function main(): void {
     }
     return _res;
   })();
-  _print("--- Group Left Join ---");
+  console.log("--- Group Left Join ---");
   for (const s of stats) {
-    _print(s.name, "orders:", s.count);
+    console.log(
+      [s.name, "orders:", s.count].map((a) => {
+        if (Array.isArray(a)) return a.join(" ");
+        if (typeof a === "boolean") return a ? "1" : "0";
+        return String(a);
+      }).join(" ").trimEnd(),
+    );
   }
 }
-function _print(...args: unknown[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    if (typeof a === "boolean") return a ? "1" : "0";
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 function _query(src: any[], joins: any[], opts: any): any {
   let items = src.map((v) => [v]);
   for (const j of joins) {

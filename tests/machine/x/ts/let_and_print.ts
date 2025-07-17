@@ -7,15 +7,6 @@ let b: number;
 function main(): void {
   a = 10;
   b = 20;
-  _print(a + b);
+  console.log(a + b);
 }
-function _print(...args: unknown[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    if (typeof a === "boolean") return a ? "1" : "0";
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

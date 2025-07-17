@@ -6,15 +6,6 @@ var nums: number[];
 function main(): void {
   nums = [1, 2];
   nums[1] = 3;
-  _print(nums[1]);
+  console.log(nums[1]);
 }
-function _print(...args: unknown[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    if (typeof a === "boolean") return a ? "1" : "0";
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

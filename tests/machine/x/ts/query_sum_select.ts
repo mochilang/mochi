@@ -10,15 +10,6 @@ function main(): void {
     const _items = nums.filter((n) => (n > 1)).map((n) => n);
     return _items.reduce((a, b) => a + Number(b), 0);
   })();
-  _print(result);
+  console.log(result);
 }
-function _print(...args: unknown[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    if (typeof a === "boolean") return a ? "1" : "0";
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();
