@@ -47,6 +47,7 @@ type Compiler struct {
 	needLoop        bool
 	needLoadYaml    bool
 	needSaveJSONL   bool
+	needJSON        bool
 
 	// imported module aliases to OCaml module names and field mappings
 	imports map[string]importInfo
@@ -2142,6 +2143,12 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("substring expects 3 args")
 		}
 		return fmt.Sprintf("String.sub %s %s (%s - %s)", args[0], args[1], args[2], args[1]), nil
+	case "json":
+		if len(args) != 1 {
+			return "", fmt.Errorf("json expects 1 arg")
+		}
+		c.needJSON = true
+		return fmt.Sprintf("_json %s", args[0]), nil
 	case "str":
 		if len(args) != 1 {
 			return "", fmt.Errorf("str expects 1 arg")
@@ -2199,6 +2206,7 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 		path = fmt.Sprintf("%q", *s.Path)
 	}
 	c.needSaveJSONL = true
+	c.needShow = true
 	return fmt.Sprintf("save_jsonl %s %s", src, path), nil
 }
 
@@ -3100,7 +3108,36 @@ func (c *Compiler) emitRuntime() {
 		c.buf.WriteByte('\n')
 	}
 
-	if c.needShow || c.needContains || c.needSlice || c.needStringSlice || c.needListSet || c.needMapSet || c.needMapGet || c.needListOps || c.needSum || c.needSumFloat || c.needGroup || c.needLoop || c.needLoadYaml || c.needSaveJSONL {
+	if c.needJSON {
+		c.writeln("let rec __to_json v =")
+		c.indent++
+		c.writeln("let open Obj in")
+		c.writeln("let rec list_aux o =")
+		c.indent++
+		c.writeln("if is_int o && (magic (obj o) : int) = 0 then \"\" else")
+		c.writeln(" let hd = field o 0 in")
+		c.writeln(" let tl = field o 1 in")
+		c.writeln(" let rest = list_aux tl in")
+		c.writeln(" let cur = __to_json (obj hd) in")
+		c.writeln(" if rest = \"\" then cur else cur ^ \",\" ^ rest")
+		c.indent--
+		c.writeln("in")
+		c.writeln("let r = repr v in")
+		c.writeln("if is_int r then string_of_int (magic v) else")
+		c.writeln("match tag r with")
+		c.indent++
+		c.writeln(`| 0 -> if size r = 0 then "[]" else "[" ^ list_aux r ^ "]"`)
+		c.writeln("| 252 -> Printf.sprintf \"%S\" (magic v : string)")
+		c.writeln("| 253 -> string_of_float (magic v)")
+		c.writeln("| _ -> \"null\"")
+		c.indent--
+		c.indent--
+		c.writeln("")
+		c.writeln("let _json v = print_endline (__to_json v)")
+		c.buf.WriteByte('\n')
+	}
+
+	if c.needShow || c.needContains || c.needSlice || c.needStringSlice || c.needListSet || c.needMapSet || c.needMapGet || c.needListOps || c.needSum || c.needSumFloat || c.needGroup || c.needLoop || c.needLoadYaml || c.needSaveJSONL || c.needJSON {
 		c.buf.WriteByte('\n')
 	}
 }
