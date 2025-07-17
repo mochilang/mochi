@@ -77,7 +77,7 @@ currently compile and run successfully.
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
-- [ ] group_by
+- [x] group_by
 - [ ] group_by_conditional_sum
 - [ ] group_by_join
 - [ ] group_by_left_join

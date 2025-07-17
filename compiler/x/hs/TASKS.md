@@ -1,5 +1,8 @@
 # Haskell Backend Progress
 
+## Recent Updates (2025-07-17 07:18)
+- Group-by queries now cast dynamic keys to strings when necessary so generated Haskell code compiles without missing `Ord` instances.
+
 ## Recent Updates (2025-07-22 05:00)
 - Function compilation now creates a scoped environment for parameters so
   expressions inside the body infer the correct types. This removes spurious

@@ -2079,6 +2079,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.env = orig
 			return "", err
 		}
+		if _, ok := c.inferExprType(q.Group.Exprs[0]).(types.AnyType); ok {
+			c.usesAnyValue = true
+			keyExpr = fmt.Sprintf("_asString (%s)", keyExpr)
+		}
 		genv := types.NewEnv(child)
 		genv.SetVar(q.Group.Name, types.GroupType{Elem: elemType}, true)
 		c.env = genv
