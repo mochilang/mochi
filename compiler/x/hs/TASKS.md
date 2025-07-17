@@ -5,6 +5,11 @@
 
  
 
+## Recent Updates (2025-07-31 05:00)
+- GroupType now records the key expression type so `gKey` lookups no longer
+  default to `AnyValue`. This reduces unnecessary `_asString` casts in grouped
+  queries.
+
 ## Recent Updates (2025-07-25 05:00)
 - Renamed `MGroup` record fields to `gKey` and `gItems` so dataset variables like
   `items` no longer clash with generated selectors.

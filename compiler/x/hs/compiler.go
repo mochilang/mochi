@@ -2084,7 +2084,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			keyExpr = fmt.Sprintf("_asString (%s)", keyExpr)
 		}
 		genv := types.NewEnv(child)
-		genv.SetVar(q.Group.Name, types.GroupType{Elem: elemType}, true)
+		keyT := c.inferExprType(q.Group.Exprs[0])
+		genv.SetVar(q.Group.Name, types.GroupType{Key: keyT, Elem: elemType}, true)
 		c.env = genv
 		valExpr, err := c.compileExpr(q.Select)
 		if err != nil {
@@ -2119,7 +2120,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		groups := fmt.Sprintf("_group_by %s (\\%s -> %s)", rows, tuple, keyExpr)
 		c.usesMaybe = true
 		genv := types.NewEnv(child)
-		genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+		keyT := c.inferExprType(q.Group.Exprs[0])
+		genv.SetVar(q.Group.Name, types.GroupType{Key: keyT, Elem: types.AnyType{}}, true)
 		c.env = genv
 		valExpr, err := c.compileExpr(q.Select)
 		if err != nil {
