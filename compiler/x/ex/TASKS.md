@@ -51,3 +51,8 @@ Flattened joined rows when grouping so fields like `sr_return_amt` are directly
 accessible. `compile_tpcds_ex.go` now records runtime failures in `.error`
 files. The golden test regenerates outputs via this script before running and
 fails if any `.error` file is present.
+
+## VM Test Updates (2025-07-17 08:09)
+- Regenerated machine outputs so all 100 programs under `tests/vm/valid` now have corresponding Elixir sources and output files.
+- Loops now iterate over strings and groups without relying on the `_iter` helper.
+- `len()` on groups is compiled to `length(g.items)` instead of calling `_length`.

@@ -5,12 +5,12 @@ warning: variable "o" is unused (if the variable is not meant to be used, prefix
     │
     └─ tests/machine/x/ex/group_by_join.exs:22:43: Main.main/0
 
-    warning: default values for the optional arguments in _query/3 are never used
-    │
- 97 │   defp _query(src, joins, opts \\ %{}) do
-    │        ~
-    │
-    └─ tests/machine/x/ex/group_by_join.exs:97:8: Main (module)
+     warning: default values for the optional arguments in _query/3 are never used
+     │
+ 106 │   defp _query(src, joins, opts \\ %{}) do
+     │        ~
+     │
+     └─ tests/machine/x/ex/group_by_join.exs:106:8: Main (module)
 
 --- Orders per customer ---
 "Alice" "orders:" 2
