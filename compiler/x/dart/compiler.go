@@ -43,9 +43,13 @@ void _json(dynamic v) {
 }
 
 void _print(List<dynamic> args) {
-    for (var i = 0; i < args.length; i++) {
-        if (i > 0) stdout.write(' ');
-        var v = args[i];
+    var first = true;
+    for (var v in args) {
+        if (v is String && v.isEmpty) {
+            continue;
+        }
+        if (!first) stdout.write(' ');
+        first = false;
         if (v is List) {
             stdout.write(v.join(' '));
         } else if (v is double && v == v.roundToDouble()) {
