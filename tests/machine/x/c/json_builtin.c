@@ -59,6 +59,68 @@ static list_list_int list_list_int_create(int len) {
   }
   return l;
 }
+typedef struct {
+  char *key;
+  int value;
+} pair_string_int;
+static pair_string_int pair_string_int_new(char *key, int value) {
+  pair_string_int p;
+  p.key = key;
+  p.value = value;
+  return p;
+}
+typedef struct {
+  int len;
+  int cap;
+  pair_string_int *data;
+} map_string_int;
+static map_string_int map_string_int_create(int cap) {
+  map_string_int m;
+  m.len = 0;
+  m.cap = cap;
+  m.data = cap ? calloc(cap, sizeof(pair_string_int)) : NULL;
+  if (cap && !m.data) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
+  return m;
+}
+static void map_string_int_put(map_string_int *m, char *k, int v) {
+  for (int i = 0; i < m->len; i++)
+    if (strcmp(m->data[i].key, k) == 0) {
+      m->data[i].value = v;
+      return;
+    }
+  if (m->len >= m->cap) {
+    m->cap = m->cap ? m->cap * 2 : 4;
+    m->data =
+        (pair_string_int *)realloc(m->data, sizeof(pair_string_int) * m->cap);
+  }
+  m->data[m->len++] = pair_string_int_new(k, v);
+}
+static int map_string_int_get(map_string_int m, const char *k) {
+  for (int i = 0; i < m.len; i++)
+    if (strcmp(m.data[i].key, k) == 0)
+      return m.data[i].value;
+  return 0;
+}
+static int map_string_int_contains(map_string_int m, const char *k) {
+  for (int i = 0; i < m.len; i++)
+    if (strcmp(m.data[i].key, k) == 0)
+      return 1;
+  return 0;
+}
+static int cmp_map_string_int(map_string_int a, map_string_int b) {
+  int aa = map_string_int_get(a, "a");
+  int ba = map_string_int_get(b, "a");
+  if (aa != ba)
+    return aa > ba ? 1 : -1;
+  int ab = map_string_int_get(a, "b");
+  int bb = map_string_int_get(b, "b");
+  if (ab != bb)
+    return ab > bb ? 1 : -1;
+  return 0;
+}
 static void _json_int(int v) { printf("%d", v); }
 static void _json_float(double v) { printf("%g", v); }
 static void _json_string(char *s) { printf("\"%s\"", s); }
@@ -109,27 +171,11 @@ static void _json_map_string_int(map_string_int m) {
   }
   printf("}");
 }
-typedef struct {
-  int a;
-  int b;
-} tmp_item_t;
-typedef struct {
-  int len;
-  tmp_item_t *data;
-} tmp_item_list_t;
-tmp_item_list_t create_tmp_item_list(int len) {
-  tmp_item_list_t l;
-  l.len = len;
-  l.data = calloc(len, sizeof(tmp_item_t));
-  if (!l.data && len > 0) {
-    fprintf(stderr, "alloc failed\n");
-    exit(1);
-  }
-  return l;
-}
-
 int _mochi_main() {
-  map_string_int m = (tmp_item_t){.a = 1, .b = 2};
+  map_string_int tmp1 = map_string_int_create(2);
+  map_string_int_put(&tmp1, "a", 1);
+  map_string_int_put(&tmp1, "b", 2);
+  map_string_int m = tmp1;
   _json_map_string_int(m);
   return 0;
 }

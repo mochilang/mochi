@@ -17,15 +17,6 @@ static list_int list_int_create(int len) {
   }
   return l;
 }
-static int contains_list_int(list_int v, int item) {
-  for (int i = 0; i < v.len; i++)
-    if (v.data[i] == item)
-      return 1;
-  return 0;
-}
-static int contains_string(char *s, char *sub) {
-  return strstr(s, sub) != NULL;
-}
 typedef struct {
   char *key;
   int value;
@@ -88,25 +79,16 @@ static int cmp_map_string_int(map_string_int a, map_string_int b) {
     return ab > bb ? 1 : -1;
   return 0;
 }
-static char *s = "hello";
-
-typedef struct {
-  int a;
-} tmp_item_t;
-typedef struct {
-  int len;
-  tmp_item_t *data;
-} tmp_item_list_t;
-tmp_item_list_t create_tmp_item_list(int len) {
-  tmp_item_list_t l;
-  l.len = len;
-  l.data = calloc(len, sizeof(tmp_item_t));
-  if (!l.data && len > 0) {
-    fprintf(stderr, "alloc failed\n");
-    exit(1);
-  }
-  return l;
+static int contains_list_int(list_int v, int item) {
+  for (int i = 0; i < v.len; i++)
+    if (v.data[i] == item)
+      return 1;
+  return 0;
 }
+static int contains_string(char *s, char *sub) {
+  return strstr(s, sub) != NULL;
+}
+static char *s = "hello";
 
 int _mochi_main() {
   list_int xs = list_int_create(3);
@@ -131,7 +113,9 @@ int _mochi_main() {
   list_int ys = tmp2;
   printf("%s\n", (contains_list_int(ys, 1)) ? "true" : "false");
   printf("%s\n", (contains_list_int(ys, 2)) ? "true" : "false");
-  map_string_int m = (tmp_item_t){.a = 1};
+  map_string_int tmp5 = map_string_int_create(1);
+  map_string_int_put(&tmp5, "a", 1);
+  map_string_int m = tmp5;
   printf("%s\n", (map_string_int_contains(m, "a")) ? "true" : "false");
   printf("%s\n", (map_string_int_contains(m, "b")) ? "true" : "false");
   printf("%s\n", (contains_string(s, "ell")) ? "true" : "false");

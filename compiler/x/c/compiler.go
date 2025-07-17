@@ -4998,20 +4998,22 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			}
 			return fmt.Sprintf("(%s){%s}", sanitizeTypeName(st.Name), strings.Join(parts, ", "))
 		}
-		if st, ok := c.inferStructFromMap(p.Map, "tmp"); ok {
-			c.structLits[p.Map] = st
-			if c.env != nil {
-				c.env.SetStruct(st.Name, st)
+		if !(isMapStringIntLiteral(p.Map, c.env) || isMapIntStringLiteral(p.Map, c.env)) {
+			if st, ok := c.inferStructFromMap(p.Map, "tmp"); ok {
+				c.structLits[p.Map] = st
+				if c.env != nil {
+					c.env.SetStruct(st.Name, st)
+				}
+				c.compileStructType(st)
+				c.compileStructListType(st)
+				parts := make([]string, len(p.Map.Items))
+				for i, it := range p.Map.Items {
+					key, _ := types.SimpleStringKey(it.Key)
+					v := c.compileExpr(it.Value)
+					parts[i] = fmt.Sprintf(".%s = %s", fieldName(key), v)
+				}
+				return fmt.Sprintf("(%s){%s}", sanitizeTypeName(st.Name), strings.Join(parts, ", "))
 			}
-			c.compileStructType(st)
-			c.compileStructListType(st)
-			parts := make([]string, len(p.Map.Items))
-			for i, it := range p.Map.Items {
-				key, _ := types.SimpleStringKey(it.Key)
-				v := c.compileExpr(it.Value)
-				parts[i] = fmt.Sprintf(".%s = %s", fieldName(key), v)
-			}
-			return fmt.Sprintf("(%s){%s}", sanitizeTypeName(st.Name), strings.Join(parts, ", "))
 		}
 		name := c.newTemp()
 		if isMapStringIntLiteral(p.Map, c.env) {

@@ -65,26 +65,10 @@ static int cmp_map_string_int(map_string_int a, map_string_int b) {
     return ab > bb ? 1 : -1;
   return 0;
 }
-typedef struct {
-  int alice;
-} tmp_item_t;
-typedef struct {
-  int len;
-  tmp_item_t *data;
-} tmp_item_list_t;
-tmp_item_list_t create_tmp_item_list(int len) {
-  tmp_item_list_t l;
-  l.len = len;
-  l.data = calloc(len, sizeof(tmp_item_t));
-  if (!l.data && len > 0) {
-    fprintf(stderr, "alloc failed\n");
-    exit(1);
-  }
-  return l;
-}
-
 int _mochi_main() {
-  map_string_int scores = (tmp_item_t){.alice = 1};
+  map_string_int tmp1 = map_string_int_create(1);
+  map_string_int_put(&tmp1, "alice", 1);
+  map_string_int scores = tmp1;
   map_string_int_put(&scores, "bob", 2);
   printf("%d\n", map_string_int_get(scores, "bob"));
   return 0;
