@@ -31,6 +31,11 @@ func stripHeaderLocal(b []byte) []byte {
 
 func runRosettaTaskGolden(t *testing.T, name string) {
 	root := repoRoot(t)
+
+	os.Setenv("MOCHI_HEADER_TIME", "2006-01-02T15:04:05Z")
+	os.Setenv("SOURCE_DATE_EPOCH", "0")
+	defer os.Unsetenv("MOCHI_HEADER_TIME")
+	defer os.Unsetenv("SOURCE_DATE_EPOCH")
 	script := exec.Command("go", "run", "-tags=archive,slow", "./scripts/compile_rosetta_cs.go")
 	script.Env = append(os.Environ(), "GOTOOLCHAIN=local", "TASKS="+name)
 	script.Dir = root

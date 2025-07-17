@@ -1,4 +1,8 @@
 # C# Compiler TODO
+## Recent Updates (2025-07-19 09:00)
+- Verified VM golden tests run with dotnet and regenerated outputs.
+- All 100 `tests/vm/valid` programs compile and execute successfully.
+
 ## Recent Updates (2025-07-18 12:00)
 - Simplified VM golden tests to only verify runtime output and always write
   generated C# files for reference.
