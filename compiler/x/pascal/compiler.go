@@ -2086,6 +2086,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				valType = "Variant"
 			}
 		}
+		if keyType == "" || keyType == "_" {
+			keyType = "Variant"
+		}
+		if valType == "" || valType == "_" {
+			valType = "Variant"
+		}
 		tmp := c.newTypedVar(fmt.Sprintf("specialize TFPGMap<%s, %s>", keyType, valType))
 		c.writeln(fmt.Sprintf("%s := specialize TFPGMap<%s, %s>.Create;", tmp, keyType, valType))
 		for _, it := range p.Map.Items {

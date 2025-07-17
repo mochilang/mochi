@@ -16,6 +16,9 @@
   implemented `contains` method lowering for strings.
 - [2025-09-03 15:45] Fixed detection of `contains` when used via selector
   to compile `string_contains` example successfully.
+- [2025-09-04 10:20] Register temporary variables in the type environment and
+  sanitize map literal generics to `Variant` when unknown, allowing
+  `map_nested_assign` to compile.
 
 ## Remaining Work
 - [x] Support advanced dataset queries required for TPC-H Q1.
