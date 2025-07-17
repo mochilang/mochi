@@ -6,20 +6,9 @@ let flag: boolean;
 
 function main(): void {
   data = [1, 2];
-  flag = _exists(data.filter((x) => (x == 1)).map((x) => x));
+  flag = data.filter((x) => (x == 1)).map((x) => x).length > 0;
   _print(flag);
 }
-function _exists(v: unknown): boolean {
-  if (Array.isArray(v)) return v.length > 0;
-  if (v && typeof v === "object") {
-    if (Array.isArray((v as any).items)) return (v as any).items.length > 0;
-    if (Array.isArray((v as any).Items)) return (v as any).Items.length > 0;
-    return Object.keys(v).length > 0;
-  }
-  if (typeof v === "string") return v.length > 0;
-  return false;
-}
-
 function _print(...args: unknown[]): void {
   const out = args.map((a) => {
     if (Array.isArray(a)) return a.join(" ");

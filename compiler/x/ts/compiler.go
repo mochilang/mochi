@@ -1942,6 +1942,15 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if len(args) != 2 {
 			return "", fmt.Errorf("contains expects 2 args")
 		}
+		if len(call.Args) == 2 {
+			t := c.inferExprType(call.Args[0])
+			switch t.(type) {
+			case types.ListType, types.StringType:
+				return fmt.Sprintf("%s.includes(%s)", args[0], args[1]), nil
+			case types.MapType, types.StructType, types.UnionType:
+				return fmt.Sprintf("Object.prototype.hasOwnProperty.call(%s, String(%s))", args[0], args[1]), nil
+			}
+		}
 		c.use("_contains")
 		return fmt.Sprintf("_contains(%s, %s)", args[0], args[1]), nil
 	case "starts_with":
@@ -1954,9 +1963,25 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("values expects 1 arg")
 		}
+		if len(call.Args) == 1 {
+			t := c.inferExprType(call.Args[0])
+			switch t.(type) {
+			case types.MapType, types.StructType, types.UnionType:
+				return fmt.Sprintf("Object.values(%s)", args[0]), nil
+			}
+		}
 		c.use("_values")
 		return fmt.Sprintf("_values(%s)", args[0]), nil
 	case "exists":
+		if len(args) == 1 {
+			t := c.inferExprType(call.Args[0])
+			switch t.(type) {
+			case types.ListType, types.StringType:
+				return fmt.Sprintf("(%s.length > 0)", args[0]), nil
+			case types.MapType, types.StructType, types.UnionType:
+				return fmt.Sprintf("(Object.keys(%s).length > 0)", args[0]), nil
+			}
+		}
 		c.use("_exists")
 		return fmt.Sprintf("_exists(%s)", argStr), nil
 	case "avg":

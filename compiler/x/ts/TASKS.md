@@ -106,3 +106,6 @@
 ### 2025-07-17 00:00 UTC
 - Short list literals are now emitted on a single line for closer parity with
   the hand-written examples.
+### 2025-07-17 08:11 UTC
+- Improved built-in handling for `contains`, `values` and `exists` using native
+  expressions when types are known.

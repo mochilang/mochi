@@ -9,7 +9,7 @@ function main(): void {
     "b": 2,
     "c": 3,
   };
-  _print(_values(m));
+  _print(Object.values(m));
 }
 function _print(...args: unknown[]): void {
   const out = args.map((a) => {
@@ -18,13 +18,6 @@ function _print(...args: unknown[]): void {
     return String(a);
   }).join(" ").trimEnd();
   console.log(out);
-}
-
-function _values<T>(m: { [key: string]: T }): T[] {
-  if (m && typeof m === "object" && !Array.isArray(m)) {
-    return Object.values(m);
-  }
-  throw new Error("values() expects map");
 }
 
 main();
