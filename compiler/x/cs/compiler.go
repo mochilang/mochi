@@ -693,6 +693,21 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			} else {
 				inferredT := c.inferExprType(s.Let.Value)
 				if !isGroupQuery(s.Let.Value) {
+					if lt, ok := inferredT.(types.ListType); ok {
+						if _, ok2 := lt.Elem.(types.MapType); ok2 {
+							if st, ok3 := c.inferStructFromList(s.Let.Value); ok3 {
+								st = c.assignTypeNames(st, singular(name)).(types.StructType)
+								c.registerStructs(st)
+								inferredT = types.ListType{Elem: st}
+							}
+						}
+					} else if _, ok := inferredT.(types.MapType); ok {
+						if st, ok2 := c.inferStructFromMap(s.Let.Value); ok2 {
+							st = c.assignTypeNames(st, singular(name)).(types.StructType)
+							c.registerStructs(st)
+							inferredT = st
+						}
+					}
 					inferredT = c.assignTypeNames(inferredT, singular(name))
 					c.registerStructs(inferredT)
 				}
@@ -783,6 +798,21 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			} else {
 				inferredT := c.inferExprType(s.Var.Value)
 				if !isGroupQuery(s.Var.Value) {
+					if lt, ok := inferredT.(types.ListType); ok {
+						if _, ok2 := lt.Elem.(types.MapType); ok2 {
+							if st, ok3 := c.inferStructFromList(s.Var.Value); ok3 {
+								st = c.assignTypeNames(st, singular(name)).(types.StructType)
+								c.registerStructs(st)
+								inferredT = types.ListType{Elem: st}
+							}
+						}
+					} else if _, ok := inferredT.(types.MapType); ok {
+						if st, ok2 := c.inferStructFromMap(s.Var.Value); ok2 {
+							st = c.assignTypeNames(st, singular(name)).(types.StructType)
+							c.registerStructs(st)
+							inferredT = st
+						}
+					}
 					inferredT = c.assignTypeNames(inferredT, singular(name))
 					c.registerStructs(inferredT)
 				}
@@ -2857,9 +2887,43 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		keyType := "dynamic"
 		valType := "dynamic"
-		if mt, ok := t.(types.MapType); ok {
+		mt, isMap := t.(types.MapType)
+		if isMap {
 			keyType = csTypeOf(mt.Key)
 			valType = csTypeOf(mt.Value)
+		}
+		if !c.DictMode {
+			if st, ok := c.inferStructFromMap(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: p}}}}); ok {
+				base := c.structHint
+				if base == "" {
+					base = "Item"
+				}
+				if def, ok := c.env.GetStruct(pascalCase(base)); ok {
+					st.Name = def.Name
+				} else if n, ok := c.findStructByFields(st); ok {
+					st.Name = n
+				} else {
+					st.Name = c.newStructName(base)
+					c.extraStructs = append(c.extraStructs, st)
+				}
+				items := make([]string, len(p.Map.Items))
+				for i, it := range p.Map.Items {
+					field := ""
+					if n, ok := selectorName(it.Key); ok {
+						field = sanitizeName(n)
+					} else if s, ok := stringLiteral(it.Key); ok {
+						field = sanitizeName(s)
+					} else {
+						field = sanitizeName(fmt.Sprintf("f%d", i))
+					}
+					v, err := c.compileExpr(it.Value)
+					if err != nil {
+						return "", err
+					}
+					items[i] = fmt.Sprintf("%s = %s", field, v)
+				}
+				return fmt.Sprintf("new %s { %s }", st.Name, strings.Join(items, ", ")), nil
+			}
 		}
 		items := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {

@@ -14,7 +14,7 @@ class Program
     from n in nums
     from l in letters
     from b in bools
-    select new Dictionary<string, dynamic> { { "n", n }, { "l", l }, { "b", b } }
+    select new Combo { n = n, l = l, b = b }
 ).ToList();
         Console.WriteLine("--- Cross Join of three lists ---");
         foreach (var c in combos)
@@ -22,4 +22,12 @@ class Program
             Console.WriteLine(string.Join(" ", new[] { Convert.ToString(c["n"]), Convert.ToString(c["l"]), Convert.ToString(c["b"]) }));
         }
     }
+    public class Combo
+    {
+        public int n;
+        public string l;
+        public bool b;
+    }
+
+
 }

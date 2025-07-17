@@ -335,3 +335,53 @@ func (c *Compiler) registerStructs(t types.Type) {
 		c.registerStructs(tt.Value)
 	}
 }
+
+// listLiteral returns the underlying list literal if e is directly a list.
+func listLiteral(e *parser.Expr) *parser.ListLiteral {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 {
+		return nil
+	}
+	p := u.Value
+	if p == nil || len(p.Ops) != 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.List
+}
+
+// mapLiteral returns the underlying map literal if e is directly a map.
+func mapLiteral(e *parser.Expr) *parser.MapLiteral {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 {
+		return nil
+	}
+	p := u.Value
+	if p == nil || len(p.Ops) != 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.Map
+}
+
+// inferStructFromList tries to derive a struct type from a list literal of maps.
+func (c *Compiler) inferStructFromList(e *parser.Expr) (types.StructType, bool) {
+	ll := listLiteral(e)
+	if ll == nil {
+		return types.StructType{}, false
+	}
+	return types.InferStructFromList(ll, c.env)
+}
+
+// inferStructFromMap tries to derive a struct type from a map literal.
+func (c *Compiler) inferStructFromMap(e *parser.Expr) (types.StructType, bool) {
+	ml := mapLiteral(e)
+	if ml == nil {
+		return types.StructType{}, false
+	}
+	return types.InferStructFromMapEnv(ml, c.env)
+}

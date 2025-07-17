@@ -7,8 +7,8 @@ class Program
 {
     static void Main()
     {
-        var people = new List<People> { new Dictionary<string, dynamic> { { "name", "Alice" }, { "age", 30 } }, new Dictionary<string, dynamic> { { "name", "Bob" }, { "age", 15 } }, new Dictionary<string, dynamic> { { "name", "Charlie" }, { "age", 65 } }, new Dictionary<string, dynamic> { { "name", "Diana" }, { "age", 45 } } };
-        var adults = people.Where(person => (person["age"] >= 18)).Select(person => new Dictionary<string, dynamic> { { "name", person["name"] }, { "age", person["age"] }, { "is_senior", (person["age"] >= 60) } }).ToList();
+        var people = new List<People> { new People { name = "Alice", age = 30 }, new People { name = "Bob", age = 15 }, new People { name = "Charlie", age = 65 }, new People { name = "Diana", age = 45 } };
+        var adults = people.Where(person => (person["age"] >= 18)).Select(person => new Adult { name = person["name"], age = person["age"], is_senior = (person["age"] >= 60) }).ToList();
         Console.WriteLine("--- Adults ---");
         foreach (var person in adults)
         {
@@ -19,6 +19,18 @@ class Program
     {
         public string name;
         public int age;
+    }
+
+
+
+
+
+
+    public class Adult
+    {
+        public dynamic name;
+        public dynamic age;
+        public bool is_senior;
     }
 
 

@@ -7,12 +7,12 @@ class Program
 {
     static void Main()
     {
-        var customers = new List<Customer> { new Dictionary<string, dynamic> { { "id", 1 }, { "name", "Alice" } }, new Dictionary<string, dynamic> { { "id", 2 }, { "name", "Bob" } }, new Dictionary<string, dynamic> { { "id", 3 }, { "name", "Charlie" } } };
-        List<Dictionary<string, int>> orders = new List<Order> { new Dictionary<string, int> { { "id", 100 }, { "customerId", 1 }, { "total", 250 } }, new Dictionary<string, int> { { "id", 101 }, { "customerId", 2 }, { "total", 125 } }, new Dictionary<string, int> { { "id", 102 }, { "customerId", 1 }, { "total", 300 } } };
+        var customers = new List<Customer> { new Customer { id = 1, name = "Alice" }, new Customer { id = 2, name = "Bob" }, new Customer { id = 3, name = "Charlie" } };
+        List<Dictionary<string, int>> orders = new List<Order> { new Order { id = 100, customerId = 1, total = 250 }, new Order { id = 101, customerId = 2, total = 125 }, new Order { id = 102, customerId = 1, total = 300 } };
         List<Dictionary<string, int>> result = (
     from o in orders
     from c in customers
-    select new Dictionary<string, int> { { "orderId", o["id"] }, { "orderCustomerId", o["customerId"] }, { "pairedCustomerName", c["name"] }, { "orderTotal", o["total"] } }
+    select new Result { orderId = o["id"], orderCustomerId = o["customerId"], pairedCustomerName = c["name"], orderTotal = o["total"] }
 ).ToList();
         Console.WriteLine("--- Cross Join: All order-customer pairs ---");
         foreach (var entry in result)
@@ -27,11 +27,26 @@ class Program
     }
 
 
+
+
+
     public class Order
     {
         public int id;
         public int customerId;
         public int total;
+    }
+
+
+
+
+
+    public class Result
+    {
+        public int orderId;
+        public int orderCustomerId;
+        public dynamic pairedCustomerName;
+        public int orderTotal;
     }
 
 

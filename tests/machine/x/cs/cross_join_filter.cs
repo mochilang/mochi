@@ -13,7 +13,7 @@ class Program
     from n in nums
     from l in letters
     where ((n % 2) == 0)
-    select new Dictionary<string, dynamic> { { "n", n }, { "l", l } }
+    select new Pair { n = n, l = l }
 ).ToList();
         Console.WriteLine("--- Even pairs ---");
         foreach (var p in pairs)
@@ -21,4 +21,11 @@ class Program
             Console.WriteLine(string.Join(" ", new[] { Convert.ToString(p["n"]), Convert.ToString(p["l"]) }));
         }
     }
+    public class Pair
+    {
+        public int n;
+        public string l;
+    }
+
+
 }
