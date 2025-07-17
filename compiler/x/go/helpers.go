@@ -156,7 +156,17 @@ func goType(t types.Type) string {
 	}
 }
 
-func equalTypes(a, b types.Type) bool { return types.EqualTypes(a, b) }
+func equalTypes(a, b types.Type) bool {
+	if types.EqualTypes(a, b) {
+		return true
+	}
+	sa, okA := a.(types.StructType)
+	sb, okB := b.(types.StructType)
+	if okA && okB {
+		return types.StructTypesMatch(sa, sb)
+	}
+	return false
+}
 
 func isInt64(t types.Type) bool   { return types.IsInt64Type(t) }
 func isInt(t types.Type) bool     { return types.IsIntType(t) }

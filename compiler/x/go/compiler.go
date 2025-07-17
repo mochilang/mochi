@@ -1667,20 +1667,31 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 			}
 			rightType = lt
 		} else if (part.Op == "==" || part.Op == "!=") && len(part.Right.Ops) == 0 {
-			if ll := part.Right.Target.List; ll != nil && len(ll.Elems) == 0 && isList(leftType) {
+			if ll := part.Right.Target.List; ll != nil && isList(leftType) {
 				lt := leftType.(types.ListType)
-				right, err = c.compilePostfixHint(part.Right, leftType)
-				if err != nil {
-					return "", err
+				if _, ok := lt.Elem.(types.StructType); ok || len(ll.Elems) == 0 {
+					right, err = c.compilePostfixHint(part.Right, leftType)
+					if err != nil {
+						return "", err
+					}
+					rightType = lt
 				}
-				rightType = lt
-			} else if ml := part.Right.Target.Map; ml != nil && len(ml.Items) == 0 && isMap(leftType) {
-				mt := leftType.(types.MapType)
-				right, err = c.compilePostfixHint(part.Right, leftType)
-				if err != nil {
-					return "", err
+			} else if ml := part.Right.Target.Map; ml != nil {
+				if isMap(leftType) && len(ml.Items) == 0 {
+					mt := leftType.(types.MapType)
+					right, err = c.compilePostfixHint(part.Right, leftType)
+					if err != nil {
+						return "", err
+					}
+					rightType = mt
+				} else if isStruct(leftType) {
+					st := leftType.(types.StructType)
+					right, err = c.compilePostfixHint(part.Right, st)
+					if err != nil {
+						return "", err
+					}
+					rightType = st
 				}
-				rightType = mt
 			}
 		}
 		if right == "" {
