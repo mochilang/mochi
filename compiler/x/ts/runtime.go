@@ -104,7 +104,6 @@ const (
 	helperPrint = "function _print(...args: any[]): void {\n" +
 		"  const out = args.map(a => {\n" +
 		"    if (Array.isArray(a)) return a.join(' ');\n" +
-		"    if (a && typeof a === 'object') return JSON.stringify(a);\n" +
 		"    return String(a);\n" +
 		"  }).join(' ').trimEnd();\n" +
 		"  console.log(out);\n" +
