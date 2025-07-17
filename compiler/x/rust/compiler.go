@@ -3755,8 +3755,14 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			}
 		}
 		parts := make([]string, len(args))
-		for i := range args {
-			parts[i] = fmt.Sprintf("format!(\"{}\", %s)", args[i])
+		for i, arg := range args {
+			if c.env != nil {
+				if _, ok := types.TypeOfExpr(call.Args[i], c.env).(types.BoolType); ok {
+					parts[i] = fmt.Sprintf("format!(\"{}\", if %s {1} else {0})", arg)
+					continue
+				}
+			}
+			parts[i] = fmt.Sprintf("format!(\"{}\", %s)", arg)
 		}
 		return fmt.Sprintf("println!(\"{}\", vec![%s].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(\" \") )", strings.Join(parts, ", ")), nil
 	case "append":
@@ -3779,10 +3785,18 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		return fmt.Sprintf("append(%s, %s)", args[0], args[1]), nil
 	case "avg":
-		c.helpers["avg"] = true
 		if len(args) != 1 {
 			return "", fmt.Errorf("avg expects 1 arg")
 		}
+		if lt, ok := types.TypeOfExpr(call.Args[0], c.env).(types.ListType); ok {
+			switch lt.Elem.(type) {
+			case types.IntType, types.Int64Type:
+				return fmt.Sprintf("(%s.iter().sum::<i32>() as f64 / %s.len() as f64)", args[0], args[0]), nil
+			case types.FloatType:
+				return fmt.Sprintf("(%s.iter().sum::<f64>() / %s.len() as f64)", args[0], args[0]), nil
+			}
+		}
+		c.helpers["avg"] = true
 		return fmt.Sprintf("avg(&%s)", args[0]), nil
 	case "len", "count":
 		if len(args) != 1 {
@@ -3790,22 +3804,42 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		return fmt.Sprintf("%s.len() as i32", args[0]), nil
 	case "sum":
-		c.helpers["sum"] = true
 		if len(args) != 1 {
 			return "", fmt.Errorf("sum expects 1 arg")
 		}
+		if lt, ok := types.TypeOfExpr(call.Args[0], c.env).(types.ListType); ok {
+			switch lt.Elem.(type) {
+			case types.IntType, types.Int64Type:
+				return fmt.Sprintf("%s.iter().copied().sum::<i32>()", args[0]), nil
+			case types.FloatType:
+				return fmt.Sprintf("%s.iter().copied().sum::<f64>()", args[0]), nil
+			}
+		}
+		c.helpers["sum"] = true
 		return fmt.Sprintf("sum(&%s)", args[0]), nil
 	case "min":
-		c.helpers["min"] = true
 		if len(args) != 1 {
 			return "", fmt.Errorf("min expects 1 arg")
 		}
+		if lt, ok := types.TypeOfExpr(call.Args[0], c.env).(types.ListType); ok {
+			switch lt.Elem.(type) {
+			case types.IntType, types.Int64Type, types.FloatType:
+				return fmt.Sprintf("*%s.iter().min_by(|a,b| a.partial_cmp(b).unwrap()).unwrap()", args[0]), nil
+			}
+		}
+		c.helpers["min"] = true
 		return fmt.Sprintf("min(&%s)", args[0]), nil
 	case "max":
-		c.helpers["max"] = true
 		if len(args) != 1 {
 			return "", fmt.Errorf("max expects 1 arg")
 		}
+		if lt, ok := types.TypeOfExpr(call.Args[0], c.env).(types.ListType); ok {
+			switch lt.Elem.(type) {
+			case types.IntType, types.Int64Type, types.FloatType:
+				return fmt.Sprintf("*%s.iter().max_by(|a,b| a.partial_cmp(b).unwrap()).unwrap()", args[0]), nil
+			}
+		}
+		c.helpers["max"] = true
 		return fmt.Sprintf("max(&%s)", args[0]), nil
 	case "exists":
 		if len(args) != 1 {
