@@ -1271,12 +1271,8 @@ func (c *Compiler) needsNumericBool(e *parser.Expr) bool {
 	if len(e.Binary.Right) == 1 {
 		op := e.Binary.Right[0].Op
 		if op == "in" {
-			return true
-		}
-		if op == "<" || op == "<=" || op == ">" || op == ">=" || op == "==" || op == "!=" {
-			lt := c.inferUnaryType(u)
 			rt := c.inferPostfixType(e.Binary.Right[0].Right)
-			if isString(lt) || isString(rt) {
+			if _, ok := rt.(types.ListType); ok {
 				return true
 			}
 		}
