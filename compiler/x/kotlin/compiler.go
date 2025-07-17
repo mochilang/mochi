@@ -112,7 +112,19 @@ var runtimePieces = map[string]string{
     val lines = if (path == null || path == "-") {
         listOf<String>()
     } else {
-        java.io.File(path).readLines()
+        var f = java.io.File(path)
+        if (!f.isAbsolute) {
+            if (!f.exists()) {
+                System.getenv("MOCHI_ROOT")?.let { root ->
+                    var clean = path
+                    while (clean.startsWith("../")) clean = clean.substring(3)
+                    var cand = java.io.File(root + "/tests/" + clean)
+                    if (!cand.exists()) cand = java.io.File(root + "/" + clean)
+                    f = cand
+                }
+            }
+        }
+        if (f.exists()) f.readLines() else listOf<String>()
     }
     return when (fmt) {
         "yaml" -> loadYamlSimple(lines)
@@ -206,8 +218,9 @@ type Compiler struct {
 	used        map[string]bool
 
 	// inferred struct types from list of maps
-	inferred map[string]types.StructType
-	mapNodes map[*parser.MapLiteral]string
+	inferred   map[string]types.StructType
+	mapNodes   map[*parser.MapLiteral]string
+	queryTypes map[*parser.QueryExpr]types.Type
 
 	srcName string
 }
@@ -221,6 +234,7 @@ func New(env *types.Env, srcName string) *Compiler {
 		used:        make(map[string]bool),
 		inferred:    make(map[string]types.StructType),
 		mapNodes:    make(map[*parser.MapLiteral]string),
+		queryTypes:  make(map[*parser.QueryExpr]types.Type),
 		srcName:     srcName,
 	}
 }
@@ -1167,10 +1181,17 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 		t, _ := c.env.GetVar(p.Selector.Root)
 		for i, part := range p.Selector.Tail {
 			if i == 0 {
-				if gt, ok := t.(types.GroupType); ok && part == "key" {
-					name += ".key"
-					t = gt.Key
-					continue
+				if gt, ok := t.(types.GroupType); ok {
+					if part == "key" {
+						name += ".key"
+						t = gt.Key
+						continue
+					}
+					if part == "items" {
+						name += ".items"
+						t = types.ListType{Elem: gt.Elem}
+						continue
+					}
 				}
 			}
 			if isStructType(t) {
@@ -1675,6 +1696,13 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 			if st, ok := c.env.GetStruct(name); ok {
 				selType = st
 			}
+		} else {
+			if st, ok := c.structFromMapLiteral(ml, child); ok {
+				c.inferred[st.Name] = st
+				c.env.SetStruct(st.Name, st)
+				c.mapNodes[ml] = st.Name
+				selType = st
+			}
 		}
 	}
 
@@ -2017,6 +2045,23 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		res += ".distinct()"
 	}
 	c.env = oldEnv
+
+	var retType types.Type = types.ListType{Elem: selType}
+	if name, arg, ok := aggregateCallName(q.Select); ok && q.Group == nil {
+		switch name {
+		case "sum", "avg":
+			retType = types.FloatType{}
+			c.use(name)
+		case "count":
+			retType = types.IntType{}
+			c.use("count")
+		case "min", "max":
+			retType = types.ExprType(arg, child)
+			c.use(name)
+		}
+		res = fmt.Sprintf("%s(%s)", name, res)
+	}
+	c.queryTypes[q] = retType
 	return res, nil
 }
 
@@ -2106,6 +2151,7 @@ func (c *Compiler) simpleRightOuterJoin(src string, q *parser.QueryExpr, j *pars
 	b.WriteString(indent(lvl))
 	b.WriteString("__res\n")
 	b.WriteString("}")
+	c.queryTypes[q] = types.ListType{Elem: selType}
 	return b.String(), nil
 }
 
@@ -2484,6 +2530,46 @@ func (c *Compiler) structForMap(m *parser.MapLiteral) (string, bool) {
 		}
 	}
 	return "", false
+}
+
+func aggregateCallName(e *parser.Expr) (string, *parser.Expr, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return "", nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return "", nil, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Call == nil {
+		return "", nil, false
+	}
+	call := p.Target.Call
+	if len(call.Args) != 1 {
+		return "", nil, false
+	}
+	switch call.Func {
+	case "sum", "avg", "min", "max", "count":
+		return call.Func, call.Args[0], true
+	}
+	return "", nil, false
+}
+
+func (c *Compiler) structFromMapLiteral(m *parser.MapLiteral, env *types.Env) (types.StructType, bool) {
+	keys := make([]string, len(m.Items))
+	fields := make(map[string]types.Type)
+	for i, it := range m.Items {
+		k, ok := identName(it.Key)
+		if !ok {
+			return types.StructType{}, false
+		}
+		keys[i] = k
+		fields[k] = types.ExprType(it.Value, env)
+	}
+	name := fmt.Sprintf("Row%d", c.structCount)
+	c.structCount++
+	st := types.StructType{Name: name, Fields: fields, Order: keys}
+	return st, true
 }
 
 func kotlinCastType(t types.Type) string {
