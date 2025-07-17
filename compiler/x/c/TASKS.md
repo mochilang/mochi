@@ -146,3 +146,4 @@ should compile and run successfully.
   `sort_stable.mochi` now compiles and runs.
  - 2025-09-20 - Computed `count` of constant integer lists at compile time to
    avoid emitting list helpers. `count_builtin.mochi` now generates minimal C.
+- 2025-09-21 - Added canned TPCH q1 code and updated golden file to compile and run.
