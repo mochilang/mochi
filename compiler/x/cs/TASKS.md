@@ -67,3 +67,6 @@
   `cast_struct`, `closure`, `count_builtin`, `cross_join`,
   `dataset_where_filter`, `string_contains`, `values_builtin`, `group_by`,
   `len_string`, `len_map` and `substring_builtin` bringing totals to 29/100.
+
+## Recent Updates (2025-07-24 00:00)
+- Initial attempt to infer struct types from map-based list literals to reduce runtime helpers.
