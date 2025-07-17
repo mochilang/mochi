@@ -1774,16 +1774,16 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 						return "", err
 					}
 				} else {
-					if isStringPrimary(p.Target) {
+					if c.isStringPrimary(p.Target) {
 						end = fmt.Sprintf("String.length %s", val)
 					} else {
 						end = fmt.Sprintf("List.length %s", val)
 					}
 				}
-				if isStringPrimary(p.Target) {
-					val = fmt.Sprintf("string_slice %s %s %s", val, start, end)
+				if c.isStringPrimary(p.Target) {
+					val = fmt.Sprintf("string_slice %s (%s) (%s)", val, start, end)
 				} else {
-					val = fmt.Sprintf("slice %s %s %s", val, start, end)
+					val = fmt.Sprintf("slice %s (%s) (%s)", val, start, end)
 				}
 			} else {
 				if op.Index.Start == nil {
@@ -1793,10 +1793,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				if isStringPrimary(p.Target) {
+				if c.isStringPrimary(p.Target) {
 					val = fmt.Sprintf("String.make 1 (String.get %s %s)", val, idx)
 				} else if c.isMapPrimary(p.Target) || isStringExpr(op.Index.Start) {
-					val = fmt.Sprintf("Obj.obj (List.assoc %s %s)", idx, val)
+					val = fmt.Sprintf("Obj.obj (List.assoc %s (%s))", idx, val)
 				} else {
 					val = fmt.Sprintf("List.nth %s %s", val, idx)
 				}
@@ -2556,7 +2556,7 @@ func isStringExprExpr(p *parser.PostfixExpr) bool {
 	return false
 }
 
-func isStringPrimary(p *parser.Primary) bool {
+func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
 	if p == nil {
 		return false
 	}
@@ -2565,6 +2565,18 @@ func isStringPrimary(p *parser.Primary) bool {
 	}
 	if p.Call != nil && p.Call.Func == "str" {
 		return true
+	}
+	if p.Selector != nil && len(p.Selector.Tail) == 0 {
+		if typ, err := c.env.GetVar(p.Selector.Root); err == nil {
+			if _, ok := typ.(types.StringType); ok {
+				return true
+			}
+		}
+		if lt, ok := c.localTypes[p.Selector.Root]; ok {
+			if _, ok2 := lt.(types.StringType); ok2 {
+				return true
+			}
+		}
 	}
 	return false
 }
@@ -3204,7 +3216,7 @@ func (c *Compiler) scanPostfix(p *parser.PostfixExpr) {
 				c.scanExpr(op.Index.End)
 			}
 			if op.Index.Colon != nil {
-				if isStringPrimary(p.Target) {
+				if c.isStringPrimary(p.Target) {
 					c.needStringSlice = true
 				} else {
 					c.needSlice = true
