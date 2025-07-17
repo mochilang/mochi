@@ -12,6 +12,9 @@ import (
 	"mochi/types"
 )
 
+// ensure reflect is referenced so the import is not optimized away
+var _ = reflect.TypeOf(0)
+
 func (c *Compiler) writeln(s string) {
 	c.writeIndent()
 	c.buf.WriteString(s)
