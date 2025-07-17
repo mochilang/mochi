@@ -2,6 +2,8 @@
 
 ## Recent Updates
 - 2025-07-27 00:00 UTC - Improved builtin type inference for common functions and fixed module import syntax.
+- 2025-07-27 12:00 UTC - Fixed string `in` operator orientation, corrected group
+  bindings formatting, and inferred numeric map key types.
 
 - 2025-07-17 00:00 UTC - Added golden tests for `tests/vm/valid` verifying
   generated F# code and improved type inference on assignments so more

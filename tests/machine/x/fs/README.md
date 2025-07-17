@@ -2,7 +2,7 @@
 
 Generated F# code for Mochi programs under `tests/vm/valid`.
 
-Compiled programs: 62/100
+Compiled programs: 76/100
 
 Checklist:
 - [x] append_builtin
@@ -28,15 +28,15 @@ Checklist:
 - [x] fun_expr_in_let
 - [x] fun_three_args
 - [x] go_auto
-- [ ] group_by
-- [ ] group_by_conditional_sum
-- [ ] group_by_having
-- [ ] group_by_join
-- [ ] group_by_left_join
-- [ ] group_by_multi_join
-- [ ] group_by_multi_join_sort
-- [ ] group_by_sort
-- [ ] group_items_iteration
+ - [x] group_by
+ - [x] group_by_conditional_sum
+ - [x] group_by_having
+ - [x] group_by_join
+ - [x] group_by_left_join
+ - [x] group_by_multi_join
+ - [x] group_by_multi_join_sort
+ - [x] group_by_sort
+ - [x] group_items_iteration
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
@@ -45,8 +45,8 @@ Checklist:
 - [x] inner_join
 - [x] join_multi
 - [ ] json_builtin
-- [ ] left_join
-- [ ] left_join_multi
+ - [x] left_join
+ - [x] left_join_multi
 - [x] len_builtin
 - [ ] len_map
 - [x] len_string
@@ -57,7 +57,7 @@ Checklist:
 - [x] list_set_ops
 - [ ] load_yaml
 - [x] map_assign
-- [ ] map_in_operator
+ - [x] map_in_operator
 - [x] map_index
 - [ ] map_int_key
 - [x] map_literal_dynamic
@@ -88,7 +88,7 @@ Checklist:
 - [ ] string_compare
 - [ ] string_concat
 - [ ] string_contains
-- [ ] string_in_operator
+ - [x] string_in_operator
 - [ ] string_index
 - [ ] string_prefix_slice
 - [x] substring_builtin
