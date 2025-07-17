@@ -3,9 +3,8 @@ program test_block
   integer :: x
   x = 1 + 2
   if (x == 3) then
-    print *, 'test passed'
+    print '(A)', 'ok'
   else
-    print *, 'test failed'
+    print '(A)', 'fail'
   end if
-  print *, 'ok'
 end program test_block
