@@ -1,0 +1,5 @@
+exit status 1
+/workspace/mochi/tests/machine/x/c/values_builtin.c: In function ‘_mochi_main’:
+/workspace/mochi/tests/machine/x/c/values_builtin.c:130:22: error: invalid initializer
+  130 |   map_string_int m = (tmp_item_t){.a = 1, .b = 2, .c = 3};
+      |                      ^

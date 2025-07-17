@@ -1,0 +1,9 @@
+exit status 1
+/workspace/mochi/tests/machine/x/c/group_by_sort.c: In function ‘_mochi_main’:
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:128:21: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  128 |     tmp2.data[tmp3] = i.cat;
+      |                     ^
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:139:24: warning: implicit declaration of function ‘item_list_t_create’ [-Wimplicit-function-declaration]
+  139 |     item_list_t tmp9 = item_list_t_create(_gp.items.len);
+      |                        ^~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:139:24: error: invalid initializer

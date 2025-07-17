@@ -1,0 +1,5 @@
+exit status 1
+/workspace/mochi/tests/machine/x/c/map_assign.c: In function ‘_mochi_main’:
+/workspace/mochi/tests/machine/x/c/map_assign.c:87:27: error: invalid initializer
+   87 |   map_string_int scores = (tmp_item_t){.alice = 1};
+      |                           ^

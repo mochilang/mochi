@@ -1,0 +1,18 @@
+exit status 1
+/workspace/mochi/tests/machine/x/c/membership.c: In function ‘_mochi_main’:
+/workspace/mochi/tests/machine/x/c/membership.c:30:38: error: incompatible type for argument 1 of ‘contains_array_int’
+   30 |   printf("%s\n", (contains_array_int(nums, 3, 2)) ? "true" : "false");
+      |                                      ^~~~
+      |                                      |
+      |                                      list_int
+/workspace/mochi/tests/machine/x/c/membership.c:19:36: note: expected ‘int *’ but argument is of type ‘list_int’
+   19 | static int contains_array_int(int *arr, int len, int item) {
+      |                               ~~~~~^~~
+/workspace/mochi/tests/machine/x/c/membership.c:31:38: error: incompatible type for argument 1 of ‘contains_array_int’
+   31 |   printf("%s\n", (contains_array_int(nums, 3, 4)) ? "true" : "false");
+      |                                      ^~~~
+      |                                      |
+      |                                      list_int
+/workspace/mochi/tests/machine/x/c/membership.c:19:36: note: expected ‘int *’ but argument is of type ‘list_int’
+   19 | static int contains_array_int(int *arr, int len, int item) {
+      |                               ~~~~~^~~
