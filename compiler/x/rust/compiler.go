@@ -1457,6 +1457,8 @@ func (c *Compiler) compileCond(e *parser.Expr) (string, error) {
 }
 
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
+	overall := c.fieldType(&parser.Expr{Binary: b})
+
 	left, err := c.compileUnary(b.Left)
 	if err != nil {
 		return "", err
@@ -1635,6 +1637,20 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					leftAST = &parser.Unary{Value: op.Right}
 					continue
 				}
+				if op.Op == "/" {
+					if _, ok := lt.(types.AnyType); ok {
+						if _, ok2 := rt.(types.AnyType); ok2 && !c.unaryHasFloat(leftAST) && !c.postfixHasFloat(op.Right) {
+							res = fmt.Sprintf("(%s as f64) / (%s as f64)", res, r)
+							leftAST = &parser.Unary{Value: op.Right}
+							continue
+						}
+					}
+					if _, ok := overall.(types.FloatType); ok && !c.unaryHasFloat(leftAST) && !c.postfixHasFloat(op.Right) {
+						res = fmt.Sprintf("(%s as f64) / (%s as f64)", res, r)
+						leftAST = &parser.Unary{Value: op.Right}
+						continue
+					}
+				}
 				if op.Op == "*" || op.Op == "/" || op.Op == "-" {
 					if _, ok := lt.(types.AnyType); ok && isInt(rt) {
 						res = fmt.Sprintf("(%s as f64)", res)
@@ -1765,7 +1781,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					}
 				}
 				if types.IsMapType(t) {
-					val = fmt.Sprintf("*%s.get(&%s).unwrap()", val, idxVal)
+					if opIndex == len(p.Ops)-1 {
+						val = fmt.Sprintf("*%s.get(&%s).unwrap()", val, idxVal)
+					} else {
+						val = fmt.Sprintf("%s.get(&%s).unwrap()", val, idxVal)
+					}
 				} else if types.IsStringType(t) {
 					if isIntLiteral(op.Index.Start) {
 						val = fmt.Sprintf("%s.chars().nth(%s).unwrap()", val, idxVal)

@@ -23,6 +23,8 @@
 - 2025-07-15 07:09 - Improved field access for nested structs and regenerated TPC-DS Rust outputs as `.rs` files.
 - 2025-07-15 07:24 - Mapped `any` type to `i32`, regenerated TPC-DS Rust outputs and removed obsolete `.rs.out` files.
 - 2025-07-16 02:20 - Added Rosetta golden tests and implemented `f64` and `bool` casts to reduce `.error` files.
+- 2025-07-18 02:00 - Fixed nested map indexing to avoid double dereference and
+  cast unknown integer divisions to `f64` when the resulting field is a float.
 
 ## Remaining Enhancements
 - [ ] Inline JSON printing for variables when values are known at compile time
