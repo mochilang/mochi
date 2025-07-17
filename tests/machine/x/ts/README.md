@@ -1,7 +1,7 @@
 # Mochi to TypeScript compilation status
 
 The TypeScript backend compiles Mochi programs from `tests/vm/valid` and executes them with Deno. The table below marks programs that compile and run successfully. Boolean values are printed as `1` or `0` for consistency with the reference outputs.
-Recent updates further shrink the runtime by inlining native operations whenever the input types are known.
+Recent updates further shrink the runtime by inlining native operations whenever the input types are known. The `starts_with` builtin now emits `String.startsWith` when the argument types are strings.
 
 ## Checklist
 - [x] append_builtin

@@ -1677,8 +1677,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					typ = types.BoolType{}
 				} else if strings.HasSuffix(expr, ".starts_with") && len(args) == 1 {
 					recv := strings.TrimSuffix(expr, ".starts_with")
-					c.use("_starts_with")
-					expr = fmt.Sprintf("_starts_with(%s, %s)", recv, args[0])
+					if _, ok := recvTyp.(types.StringType); ok {
+						expr = fmt.Sprintf("%s.startsWith(%s)", recv, args[0])
+					} else {
+						c.use("_starts_with")
+						expr = fmt.Sprintf("_starts_with(%s, %s)", recv, args[0])
+					}
 					typ = types.BoolType{}
 				} else {
 					expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
@@ -1991,6 +1995,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "starts_with":
 		if len(args) != 2 {
 			return "", fmt.Errorf("starts_with expects 2 args")
+		}
+		if len(call.Args) == 2 {
+			t := underlyingType(c.inferExprType(call.Args[0]))
+			if _, ok := t.(types.StringType); ok {
+				return fmt.Sprintf("%s.startsWith(%s)", args[0], args[1]), nil
+			}
 		}
 		c.use("_starts_with")
 		return fmt.Sprintf("_starts_with(%s, %s)", args[0], args[1]), nil
