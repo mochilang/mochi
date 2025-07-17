@@ -2762,6 +2762,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 					}
 					retList := types.ListType{Elem: retT}
 					listRes := cTypeFromType(retList)
+					listResCreate := listRes + "_create"
+					if st, ok := retT.(types.StructType); ok {
+						listRes = sanitizeListName(st.Name)
+						listResCreate = createListFuncName(st.Name)
+					}
 					if listRes == "list_string" {
 						c.need(needListString)
 					} else if listRes == "list_float" {
@@ -2950,6 +2955,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						}
 						retList := types.ListType{Elem: retT}
 						listRes := cTypeFromType(retList)
+						listResCreate := listRes + "_create"
+						if st, ok := retT.(types.StructType); ok {
+							listRes = sanitizeListName(st.Name)
+							listResCreate = createListFuncName(st.Name)
+						}
 						if listRes == "list_string" {
 							c.need(needListString)
 						} else if listRes == "list_float" {

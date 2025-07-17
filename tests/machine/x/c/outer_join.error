@@ -1,0 +1,6 @@
+exit status 1
+/workspace/mochi/tests/machine/x/c/outer_join.c: In function ‘_mochi_main’:
+/workspace/mochi/tests/machine/x/c/outer_join.c:75:29: warning: implicit declaration of function ‘result_item_list_t_create’ [-Wimplicit-function-declaration]
+   75 |   result_item_list_t tmp1 = result_item_list_t_create(
+      |                             ^~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/machine/x/c/outer_join.c:75:29: error: invalid initializer

@@ -1,0 +1,16 @@
+exit status 1
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c: In function ‘_mochi_main’:
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:170:21: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  170 |     tmp2.data[tmp3] = d.tag;
+      |                     ^
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:180:24: warning: implicit declaration of function ‘data_list_t_create’; did you mean ‘list_list_int_create’? [-Wimplicit-function-declaration]
+  180 |     data_list_t tmp8 = data_list_t_create(_gp.items.len);
+      |                        ^~~~~~~~~~~~~~~~~~
+      |                        list_list_int_create
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:180:24: error: invalid initializer
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:201:21: error: incompatible types when assigning to type ‘int’ from type ‘tmp_item_t’
+  201 |     tmp12.data[0] = (tmp_item_t){.tag = g.key, .total = total};
+      |                     ^
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:211:21: error: request for member ‘tag’ in something not a structure or union
+  211 |     tmp17[tmp15] = r.tag;
+      |                     ^

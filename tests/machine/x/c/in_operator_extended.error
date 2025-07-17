@@ -1,0 +1,5 @@
+exit status 1
+/workspace/mochi/tests/machine/x/c/in_operator_extended.c: In function ‘_mochi_main’:
+/workspace/mochi/tests/machine/x/c/in_operator_extended.c:134:22: error: invalid initializer
+  134 |   map_string_int m = (tmp_item_t){.a = 1};
+      |                      ^

@@ -1,0 +1,5 @@
+exit status 1
+/workspace/mochi/tests/machine/x/c/list_assign.c: In function ‘_mochi_main’:
+/workspace/mochi/tests/machine/x/c/list_assign.c:23:7: error: subscripted value is neither array nor pointer nor vector
+   23 |   nums[1] = 3;
+      |       ^

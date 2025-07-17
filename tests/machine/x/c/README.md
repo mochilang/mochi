@@ -1,0 +1,104 @@
+# Mochi to C compilation status
+
+The C backend compiles Mochi programs in `tests/vm/valid`. The table below lists programs that compile and run successfully (`[x]`) and those that currently fail (`[ ]`).
+
+- [x] append_builtin
+- [x] basic_compare
+- [x] binary_precedence
+- [x] bool_chain
+- [x] break_continue
+- [x] cast_string_to_int
+- [x] closure
+- [x] count_builtin
+- [x] cross_join
+- [x] dataset_where_filter
+- [x] exists_builtin
+- [x] for_list_collection
+- [x] for_loop
+- [x] fun_call
+- [x] fun_expr_in_let
+- [x] fun_three_args
+- [x] go_auto
+- [x] group_by_join
+- [x] group_by_left_join
+- [x] group_by_multi_join_sort
+- [x] if_else
+- [x] if_then_else
+- [x] if_then_else_nested
+- [x] len_builtin
+- [x] len_string
+- [x] let_and_print
+- [x] list_index
+- [x] list_set_ops
+- [x] map_in_operator
+- [x] map_int_key
+- [x] map_nested_assign
+- [x] match_expr
+- [x] match_full
+- [x] math_ops
+- [x] nested_function
+- [x] partial_application
+- [x] print_hello
+- [x] pure_fold
+- [x] pure_global_fold
+- [x] python_auto
+- [x] python_math
+- [x] query_sum_select
+- [x] short_circuit
+- [x] str_builtin
+- [x] string_compare
+- [x] string_concat
+- [x] string_contains
+- [x] string_in_operator
+- [x] string_index
+- [x] string_prefix_slice
+- [x] substring_builtin
+- [x] tail_recursion
+- [x] two-sum
+- [x] typed_let
+- [x] typed_var
+- [x] unary_neg
+- [x] var_assignment
+- [x] while_loop
+- [ ] avg_builtin
+- [ ] cast_struct
+- [ ] cross_join_filter
+- [ ] cross_join_triple
+- [ ] dataset_sort_take_limit
+- [ ] for_map_collection
+- [ ] group_by
+- [ ] group_by_conditional_sum
+- [ ] group_by_having
+- [ ] group_by_multi_join
+- [ ] group_by_sort
+- [ ] group_items_iteration
+- [ ] in_operator
+- [ ] in_operator_extended
+- [ ] inner_join
+- [ ] join_multi
+- [ ] json_builtin
+- [ ] left_join
+- [ ] left_join_multi
+- [ ] len_map
+- [ ] list_assign
+- [ ] list_nested_assign
+- [ ] load_yaml
+- [ ] map_assign
+- [ ] map_index
+- [ ] map_literal_dynamic
+- [ ] map_membership
+- [ ] membership
+- [ ] min_max_builtin
+- [ ] order_by_map
+- [ ] outer_join
+- [ ] record_assign
+- [ ] right_join
+- [ ] save_jsonl_stdout
+- [ ] slice
+- [ ] sort_stable
+- [ ] sum_builtin
+- [ ] test_block
+- [ ] tree_sum
+- [ ] update_stmt
+- [ ] user_type_literal
+- [ ] values_builtin

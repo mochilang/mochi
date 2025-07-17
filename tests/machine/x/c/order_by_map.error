@@ -1,0 +1,30 @@
+exit status 1
+/workspace/mochi/tests/machine/x/c/order_by_map.c: In function ‘_mochi_main’:
+/workspace/mochi/tests/machine/x/c/order_by_map.c:47:22: warning: implicit declaration of function ‘data_list_t_create’ [-Wimplicit-function-declaration]
+   47 |   data_list_t tmp1 = data_list_t_create(data_len);
+      |                      ^~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/machine/x/c/order_by_map.c:47:22: error: invalid initializer
+/workspace/mochi/tests/machine/x/c/order_by_map.c:48:3: error: unknown type name ‘map_string_int’
+   48 |   map_string_int *tmp4 =
+      |   ^~~~~~~~~~~~~~
+/workspace/mochi/tests/machine/x/c/order_by_map.c:49:8: error: ‘map_string_int’ undeclared (first use in this function)
+   49 |       (map_string_int *)malloc(sizeof(map_string_int) * data_len);
+      |        ^~~~~~~~~~~~~~
+/workspace/mochi/tests/machine/x/c/order_by_map.c:49:8: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/machine/x/c/order_by_map.c:49:24: error: expected expression before ‘)’ token
+   49 |       (map_string_int *)malloc(sizeof(map_string_int) * data_len);
+      |                        ^
+/workspace/mochi/tests/machine/x/c/order_by_map.c:54:18: error: incompatible types when assigning to type ‘int’ from type ‘tmp_item_t’
+   54 |     tmp4[tmp2] = (tmp_item_t){.a = x.a, .b = x.b};
+      |                  ^
+/workspace/mochi/tests/machine/x/c/order_by_map.c:60:11: warning: implicit declaration of function ‘cmp_map_string_int’ [-Wimplicit-function-declaration]
+   60 |       if (cmp_map_string_int(tmp4[i7], tmp4[i8]) > 0) {
+      |           ^~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/machine/x/c/order_by_map.c:61:23: error: expected ‘;’ before ‘tmp5’
+   61 |         map_string_int tmp5 = tmp4[i7];
+      |                       ^~~~~
+      |                       ;
+/workspace/mochi/tests/machine/x/c/order_by_map.c:63:20: error: ‘tmp5’ undeclared (first use in this function); did you mean ‘tmp2’?
+   63 |         tmp4[i8] = tmp5;
+      |                    ^~~~
+      |                    tmp2
