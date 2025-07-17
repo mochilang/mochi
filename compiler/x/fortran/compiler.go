@@ -1126,7 +1126,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 					return "acos(-1.0)", nil
 				case "e":
 					return "exp(1.0)", nil
-				case "sqrt", "pow", "sin", "log":
+				case "sqrt", "pow", "sin", "cos", "log":
 					return field, nil
 				}
 			}
@@ -1248,7 +1248,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return tmp, nil
 		}
 		return "", fmt.Errorf("values only supported for map literals")
-	case "sqrt", "pow", "sin", "log":
+	case "sqrt", "pow", "sin", "cos", "log":
 		for i, a := range call.Args {
 			if !types.IsFloatExpr(a, c.env) {
 				args[i] = fmt.Sprintf("real(%s)", args[i])
