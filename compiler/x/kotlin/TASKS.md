@@ -22,6 +22,9 @@
   stale `.error` files when compilation succeeds.
 - 2025-07-16 15:00 UTC: Consolidated VM golden tests using `golden.Run` and
   removed code comparisons; outputs now written to `tests/machine/x/kotlin`.
+- 2025-07-17 00:30 UTC: Switched VM golden tests to `golden.RunWithSummary` and
+  improved pattern matching to handle `_` wildcard and missing else cases.
+  Removed obsolete BuildX Kotlin golden test.
 
 ## Remaining Work
 - [ ] Implement dataset join and group-by operations fully.
