@@ -16,9 +16,9 @@ static list_int list_int_create(int len) {
   }
   return l;
 }
-static int contains_array_int(int *arr, int len, int item) {
-  for (int i = 0; i < len; i++)
-    if (arr[i] == item)
+static int contains_list_int(list_int v, int item) {
+  for (int i = 0; i < v.len; i++)
+    if (v.data[i] == item)
       return 1;
   return 0;
 }
@@ -27,8 +27,8 @@ int _mochi_main() {
   xs.data[0] = 1;
   xs.data[1] = 2;
   xs.data[2] = 3;
-  printf("%s\n", (contains_array_int(xs, 3, 2)) ? "true" : "false");
-  printf("%s\n", ((!(contains_array_int(xs, 3, 5)))) ? "true" : "false");
+  printf("%s\n", (contains_list_int(xs, 2)) ? "true" : "false");
+  printf("%s\n", ((!(contains_list_int(xs, 5)))) ? "true" : "false");
   return 0;
 }
 int main() { return _mochi_main(); }

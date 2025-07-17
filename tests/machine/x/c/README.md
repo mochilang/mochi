@@ -72,7 +72,7 @@ The C backend compiles Mochi programs in `tests/vm/valid`. The table below lists
 - [ ] group_by_multi_join
 - [ ] group_by_sort
 - [ ] group_items_iteration
-- [ ] in_operator
+ - [x] in_operator
 - [x] in_operator_extended
 - [ ] inner_join
 - [ ] join_multi
@@ -87,7 +87,7 @@ The C backend compiles Mochi programs in `tests/vm/valid`. The table below lists
 - [x] map_index
 - [x] map_literal_dynamic
 - [x] map_membership
-- [ ] membership
+ - [x] membership
  - [x] min_max_builtin
 - [ ] order_by_map
 - [ ] outer_join
