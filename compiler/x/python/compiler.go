@@ -438,17 +438,8 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 
 			switch op {
 			case "/":
-				if (isInt(lType) && isInt(rType)) ||
-					(isInt(lType) && isAny(rType)) ||
-					(isAny(lType) && isInt(rType)) {
-					expr = fmt.Sprintf("int(%s / %s)", lExpr, rExpr)
-					t = types.IntType{}
-				} else {
-					expr = fmt.Sprintf("(%s / %s)", lExpr, rExpr)
-					if isFloat(lType) && isFloat(rType) {
-						t = types.FloatType{}
-					}
-				}
+				expr = fmt.Sprintf("(%s / %s)", lExpr, rExpr)
+				t = types.FloatType{}
 			case "union", "union_all", "except", "intersect":
 				var elem types.Type = types.AnyType{}
 				switch lt := lType.(type) {

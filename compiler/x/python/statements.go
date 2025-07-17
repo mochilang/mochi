@@ -254,6 +254,9 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 			}
 		}
 	}
+	if s.Value == nil && typ != nil {
+		value = zeroValue(typ)
+	}
 	if c.env != nil {
 		if s.Value != nil {
 			if q := s.Value.Binary.Left.Value.Target.Query; q != nil {
@@ -344,6 +347,8 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 				return err
 			}
 		}
+	} else if typ != nil {
+		value = zeroValue(typ)
 	}
 	if c.env != nil {
 		if s.Value != nil {

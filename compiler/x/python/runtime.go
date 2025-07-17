@@ -343,10 +343,12 @@ var helperFmt = "def _fmt(v):\n" +
 	"        return 'null'\n" +
 	"    if v is None:\n" +
 	"        return 'null'\n" +
-	"    if isinstance(v, float) and v.is_integer():\n" +
-	"        if v == 2.0:\n" +
-	"            return str(v)\n" +
-	"        return str(int(v))\n" +
+	"    if isinstance(v, float):\n" +
+	"        if v.is_integer():\n" +
+	"            if v == 2.0:\n" +
+	"                return str(v)\n" +
+	"            return str(int(v))\n" +
+	"        return format(v, '.17g')\n" +
 	"    if isinstance(v, dict) or hasattr(v, '__dataclass_fields__'):\n" +
 	"        return '[object Object]'\n" +
 	"    return str(v)\n"

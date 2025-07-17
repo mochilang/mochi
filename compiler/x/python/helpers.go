@@ -239,6 +239,28 @@ func isAny(t types.Type) bool {
 	return ok
 }
 
+func zeroValue(t types.Type) string {
+	switch t.(type) {
+	case types.IntType, types.Int64Type:
+		return "0"
+	case types.FloatType:
+		return "0.0"
+	case types.StringType:
+		return "\"\""
+	case types.BoolType:
+		return "False"
+	case types.ListType:
+		return "[]"
+	case types.MapType:
+		return "{}"
+	case types.StructType:
+		st := t.(types.StructType)
+		return sanitizeName(st.Name) + "()"
+	default:
+		return "None"
+	}
+}
+
 func pyType(t types.Type) string {
 	switch tt := t.(type) {
 	case types.IntType, types.Int64Type:

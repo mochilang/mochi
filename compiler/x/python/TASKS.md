@@ -1,3 +1,7 @@
+## Recent Enhancements (2025-07-19 00:00)
+- Typed variables without initializers now default to zero values.
+- `_fmt` formats non-integer floats with `format(v, '.17g')` for deterministic output.
+
 ## Recent Enhancements (2025-07-16 18:00)
 - Removed generated code comparisons from tests to rely solely on runtime output.
 - Deprecated `.py.out` files in `tests/compiler/py`.
