@@ -21,6 +21,8 @@ The Scheme backend now targets chibi-scheme and can compile the `tpc-h/q1.mochi`
   separators when comparing dates.
 - 2025-07-17 02:00 – `_date_number` now supports 8-digit `YYYYMMDD` strings for
   JOB benchmarks.
+- 2025-07-17 03:00 – Comparator generation now uses type inference to avoid
+  emitting dataset helper functions when operands are numeric or strings.
 
 ### Remaining Work
 - [ ] Better handling of date comparisons and sorting when running JOB benchmarks
