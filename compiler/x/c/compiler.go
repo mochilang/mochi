@@ -1093,7 +1093,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				}
 			}
 			ix := c.compileExpr(idx.Start)
-			if _, ok := c.listLens[target]; ok {
+			if c.isStackArrayExpr(target) {
 				target = fmt.Sprintf("%s[%s]", target, ix)
 			} else {
 				target = fmt.Sprintf("%s.data[%s]", target, ix)
@@ -4976,7 +4976,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			for i, el := range p.List.Elems {
 				v := c.compileExpr(el)
 				if l, ok := c.listLens[v]; ok {
-					vals[i] = fmt.Sprintf("{%d, %s}", l, v)
+					if c.isStackArrayExpr(v) {
+						vals[i] = fmt.Sprintf("{%d, %s}", l, v)
+					} else {
+						vals[i] = fmt.Sprintf("{%d, %s.data}", l, v)
+					}
 				} else {
 					vals[i] = v
 				}
@@ -5588,18 +5592,19 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			elem := listElemType(p.Call.Args[0], c.env)
 			return c.aggregateExpr("max", arg, elem)
 		} else if p.Call.Func == "reduce" {
+			arg := c.compileExpr(p.Call.Args[0])
 			fn := c.compileExpr(p.Call.Args[1])
 			init := c.compileExpr(p.Call.Args[2])
 			switch listElemType(p.Call.Args[0], c.env).(type) {
 			case types.FloatType:
 				c.need(needReduceFloat)
-				return fmt.Sprintf("_reduce_float(%s, %s, %s)", list, fn, init)
+				return fmt.Sprintf("_reduce_float(%s, %s, %s)", arg, fn, init)
 			case types.StringType:
 				c.need(needReduceString)
-				return fmt.Sprintf("_reduce_string(%s, %s, %s)", list, fn, init)
+				return fmt.Sprintf("_reduce_string(%s, %s, %s)", arg, fn, init)
 			default:
 				c.need(needReduceInt)
-				return fmt.Sprintf("_reduce_int(%s, %s, %s)", list, fn, init)
+				return fmt.Sprintf("_reduce_int(%s, %s, %s)", arg, fn, init)
 			}
 		} else if p.Call.Func == "str" {
 			arg := c.compileExpr(p.Call.Args[0])
