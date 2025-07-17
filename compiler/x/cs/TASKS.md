@@ -67,3 +67,8 @@
   `cast_struct`, `closure`, `count_builtin`, `cross_join`,
   `dataset_where_filter`, `string_contains`, `values_builtin`, `group_by`,
   `len_string`, `len_map` and `substring_builtin` bringing totals to 29/100.
+
+## Recent Updates (2025-07-24 00:00)
+- `isListPostfix` and `isStringPostfix` now consult `inferPostfixType` so
+  expressions returned from functions or calls are recognized. This allows
+  direct indexing and slicing of typed values without helper functions.

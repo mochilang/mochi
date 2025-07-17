@@ -3422,6 +3422,9 @@ func (c *Compiler) isListPostfix(p *parser.PostfixExpr) bool {
 			}
 		}
 	}
+	if _, ok := c.inferPostfixType(p).(types.ListType); ok {
+		return true
+	}
 	return false
 }
 
@@ -3449,6 +3452,9 @@ func (c *Compiler) isStringPostfix(p *parser.PostfixExpr) bool {
 				return true
 			}
 		}
+	}
+	if _, ok := c.inferPostfixType(p).(types.StringType); ok {
+		return true
 	}
 	return false
 }
