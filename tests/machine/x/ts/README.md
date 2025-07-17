@@ -105,3 +105,6 @@ Recent updates further shrink the runtime by inlining native operations whenever
 - [x] var_assignment
 - [x] while_loop
 
+
+## TPC-H
+- [x] q1

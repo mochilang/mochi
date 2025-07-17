@@ -1906,34 +1906,14 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	}
 	switch call.Func {
 	case "print":
-		if len(args) == 1 {
-			t := underlyingType(c.inferExprType(call.Args[0]))
-			switch t.(type) {
-			case types.BoolType:
-				return fmt.Sprintf("console.log(%s ? 'True' : 'False')", args[0]), nil
-			case types.ListType:
-				return fmt.Sprintf("console.log(%s.join(' '))", args[0]), nil
-			case types.FloatType:
-				return fmt.Sprintf("console.log((%s).toFixed(1))", args[0]), nil
-			default:
-				return fmt.Sprintf("console.log(%s)", args[0]), nil
-			}
-		}
-		parts := make([]string, len(args))
 		for i, a := range args {
 			t := underlyingType(c.inferExprType(call.Args[i]))
-			switch t.(type) {
-			case types.BoolType:
-				parts[i] = fmt.Sprintf("(%s ? 'True' : 'False')", a)
-			case types.ListType:
-				parts[i] = fmt.Sprintf("%s.join(' ')", a)
-			case types.FloatType:
-				parts[i] = fmt.Sprintf("(%s).toFixed(1)", a)
-			default:
-				parts[i] = fmt.Sprintf("String(%s)", a)
+			if _, ok := t.(types.FloatType); ok {
+				args[i] = fmt.Sprintf("(%s).toFixed(1)", a)
 			}
 		}
-		return fmt.Sprintf("console.log(%s)", strings.Join(parts, " + ' ' + ")), nil
+		c.use("_print")
+		return fmt.Sprintf("_print(%s)", strings.Join(args, ", ")), nil
 	case "keys":
 		if len(call.Args) == 1 {
 			t := underlyingType(c.inferExprType(call.Args[0]))

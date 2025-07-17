@@ -88,7 +88,7 @@ const (
 		"    }\n" +
 		"    return x;\n" +
 		"  }\n" +
-		"  return JSON.stringify(_sort(v));\n" +
+		"  return JSON.stringify(_sort(v), null, 2);\n" +
 		"}\n"
 
 	helperFmt = "function _fmt(v: any): string {\n" +
@@ -99,6 +99,19 @@ const (
 		"    return 'map[' + parts.join(' ') + ']';\n" +
 		"  }\n" +
 		"  return String(v);\n" +
+		"}\n"
+
+	helperPrint = "function _print(...args: any[]): void {\n" +
+		"  const out: string[] = [];\n" +
+		"  for (const a of args) {\n" +
+		"    if (typeof a === 'boolean') { out.push(a ? '1' : '0'); continue }\n" +
+		"    if (Array.isArray(a)) {\n" +
+		"      out.push(a.map(x => typeof x === 'boolean' ? (x ? '1' : '0') : String(x)).join(' '));\n" +
+		"      continue;\n" +
+		"    }\n" +
+		"    out.push(String(a));\n" +
+		"  }\n" +
+		"  console.log(out.join(' '));\n" +
 		"}\n"
 
 	helperMin = "function _min(v: unknown): unknown {\n" +
@@ -578,6 +591,7 @@ var helperMap = map[string]string{
 	"_query":       helperQuery,
 	"_hashJoin":    helperHashJoin,
 	"_dataset":     helperDataset,
+	"_print":       helperPrint,
 	"_json":        helperJSON,
 	"_fmt":         helperFmt,
 }
