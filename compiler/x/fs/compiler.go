@@ -1063,6 +1063,12 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 				}
 				return fmt.Sprintf("printfn \"%%f\" (%s)", args[0]), nil
 			}
+			if t == "string" {
+				if identifierRegexp.MatchString(args[0]) {
+					return fmt.Sprintf("printfn \"%%s\" %s", args[0]), nil
+				}
+				return fmt.Sprintf("printfn \"%%s\" (%s)", args[0]), nil
+			}
 			if identifierRegexp.MatchString(args[0]) {
 				return fmt.Sprintf("printfn \"%%A\" %s", args[0]), nil
 			}
@@ -1126,16 +1132,23 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 	case "len":
 		if len(args) == 1 {
-			if strings.HasPrefix(args[0], "\"") {
-				return fmt.Sprintf("%s.Length", args[0]), nil
+			arg := args[0]
+			if strings.HasPrefix(arg, "\"") {
+				return fmt.Sprintf("%s.Length", arg), nil
 			}
-			if identifierRegexp.MatchString(args[0]) && c.maps[args[0]] {
-				return fmt.Sprintf("%s.Count", args[0]), nil
+			if identifierRegexp.MatchString(arg) && c.maps[arg] {
+				return fmt.Sprintf("%s.Count", arg), nil
 			}
-			if strings.HasPrefix(args[0], "dict [") {
-				return fmt.Sprintf("%s.Count", args[0]), nil
+			if strings.HasPrefix(arg, "dict [") || strings.Contains(arg, "Dictionary") {
+				if !identifierRegexp.MatchString(arg) {
+					arg = fmt.Sprintf("(%s)", arg)
+				}
+				return fmt.Sprintf("%s.Count", arg), nil
 			}
-			return fmt.Sprintf("List.length %s", args[0]), nil
+			if !identifierRegexp.MatchString(arg) {
+				arg = fmt.Sprintf("(%s)", arg)
+			}
+			return fmt.Sprintf("List.length %s", arg), nil
 		}
 	case "max":
 		if len(args) == 1 {
