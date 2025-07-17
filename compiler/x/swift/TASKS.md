@@ -1,6 +1,8 @@
 # Swift Compiler Progress
 
 ## Recent Enhancements
+- 2025-07-19 12:00 – tuple output for query map literals and identifier keys
+  accepted when mapping to structs.
 - 2025-07-18 10:00 – simplified golden tests to only check runtime output and
   added summary reporting. Duplicate compile tests were removed.
 - 2025-07-17 14:30 – added golden tests for `tests/vm/valid` and switched
