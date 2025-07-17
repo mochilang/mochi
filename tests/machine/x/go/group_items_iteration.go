@@ -54,7 +54,7 @@ func main() {
 	tmp := []any{}
 	for _, g := range groups {
 		total := 0
-		for _, x := range g.Items {
+		for _, x := range _convSlice[any, DataVar](g.Items) {
 			total = (total + x.Val)
 		}
 		tmp = append(tmp, map[string]any{"tag": g.Key.(string), "total": total})
@@ -69,6 +69,14 @@ func main() {
 		return out
 	}()
 	fmt.Println(strings.TrimSpace(strings.Join([]string{strings.Trim(strings.Trim(fmt.Sprint(result), "[]"), " ")}, " ")))
+}
+
+func _convSlice[T any, U any](s []T) []U {
+	out := make([]U, len(s))
+	for i, v := range s {
+		out[i] = any(v).(U)
+	}
+	return out
 }
 
 func _convertMapAny(m map[any]any) map[string]any {

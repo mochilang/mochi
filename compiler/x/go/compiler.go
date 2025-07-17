@@ -2327,6 +2327,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 						typ = tt.Key
 					} else if field == "items" {
 						base = fmt.Sprintf("%s.Items", base)
+						elemGo := goType(tt.Elem)
+						if elemGo != "" && elemGo != "any" {
+							c.use("_convSlice")
+							base = fmt.Sprintf("_convSlice[any,%s](%s)", elemGo, base)
+						}
 						typ = types.ListType{Elem: tt.Elem}
 					} else {
 						base = fmt.Sprintf("%s[%q]", base, field)
