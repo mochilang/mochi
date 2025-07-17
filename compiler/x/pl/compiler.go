@@ -34,6 +34,7 @@ type Compiler struct {
 	needsLoad       bool
 	needsSave       bool
 	needsExpect     bool
+	needsPrintVal   bool
 
 	currentFun string
 	nested     map[string]nestedInfo
@@ -94,6 +95,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.needsLoad = false
 	c.needsSave = false
 	c.needsExpect = false
+	c.needsPrintVal = false
 	c.nested = make(map[string]nestedInfo)
 	c.currentFun = ""
 	c.ffiModules = make(map[string]string)
@@ -252,6 +254,10 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	}
 	if c.needsExpect {
 		out.WriteString("expect(Cond) :- (Cond -> true ; throw(error('expect failed'))).\n\n")
+	}
+	if c.needsPrintVal {
+		out.WriteString("print_val(V) :- number(V), !, format('~g', [V]).\n")
+		out.WriteString("print_val(V) :- write(V).\n\n")
 	}
 	out.Write(c.lambdaBuf.Bytes())
 	out.Write(c.funcBuf.Bytes())
@@ -517,10 +523,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 					c.writeln(fmt.Sprintf("(%s -> %s = true ; %s = false),", val, tmp, tmp))
 					val = tmp
 				}
-				c.writeln(fmt.Sprintf("writeln(%s),", val))
+				c.needsPrintVal = true
+				c.writeln(fmt.Sprintf("print_val(%s), nl,", val))
 			} else {
 				for i, a := range call.Args {
 					if i > 0 {
+						c.needsPrintVal = true
 						c.writeln("write(' '),")
 					}
 					val, arith, err := c.compileExpr(a)
@@ -536,7 +544,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 						c.writeln(fmt.Sprintf("(%s -> %s = true ; %s = false),", val, tmp, tmp))
 						val = tmp
 					}
-					c.writeln(fmt.Sprintf("write(%s),", val))
+					c.needsPrintVal = true
+					c.writeln(fmt.Sprintf("print_val(%s),", val))
 				}
 				c.writeln("nl,")
 			}
@@ -1594,6 +1603,13 @@ func getPrintCall(e *parser.Expr) *parser.CallExpr {
 }
 
 func isBoolExpr(s string) bool {
+	if len(s) >= 2 {
+		if (strings.HasPrefix(s, "\"") && strings.HasSuffix(s, "\"")) ||
+			(strings.HasPrefix(s, "'") && strings.HasSuffix(s, "'")) {
+			// quoted strings/atoms are not boolean expressions
+			return s == "true" || s == "false"
+		}
+	}
 	ops := []string{"=:=", "=\\=", "<", "<=", ">", ">=", "==", "\\=="}
 	for _, op := range ops {
 		if strings.Contains(s, op) {

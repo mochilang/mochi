@@ -18,4 +18,9 @@
 - Implemented golden tests for programs under `tests/vm/valid`.
 - Added closure support so captured variables are correctly passed to
   generated predicates.
-- Regenerated Prolog outputs via `go test -run TestPrologCompiler_GoldenOutput -update`.
+  - Regenerated Prolog outputs via `go test -run TestPrologCompiler_GoldenOutput -update`.
+
+## Progress (2025-07-17 01:33 UTC)
+- Added `print_val/1` helper to format numeric output using `format('~g')`.
+- Updated `isBoolExpr` to ignore operators inside quoted strings.
+- Regenerated `python_math` outputs and marked the test as passing.
