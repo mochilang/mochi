@@ -245,6 +245,33 @@ func identName(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
+// extractFunExpr returns the function literal within e if present.
+func extractFunExpr(e *parser.Expr) *parser.FunExpr {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil || len(u.Value.Ops) != 0 {
+		return nil
+	}
+	return u.Value.Target.FunExpr
+}
+
+// intLiteralValue returns the integer value if e is an int literal.
+func intLiteralValue(e *parser.Expr) (int, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return 0, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil || len(u.Value.Ops) != 0 {
+		return 0, false
+	}
+	if u.Value.Target != nil && u.Value.Target.Lit != nil && u.Value.Target.Lit.Int != nil {
+		return *u.Value.Target.Lit.Int, true
+	}
+	return 0, false
+}
+
 // variantPattern checks if e represents a union variant pattern like Node(a,b).
 // It returns the variant name and the identifiers bound to each field.
 func (c *Compiler) variantPattern(e *parser.Expr) (string, []string, bool) {

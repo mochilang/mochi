@@ -547,6 +547,25 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 						continue
 					}
 				}
+				if fe := extractFunExpr(s.Let.Value); fe != nil {
+					params := make([]string, len(fe.Params))
+					for i, p := range fe.Params {
+						params[i] = sanitizeName(p.Name)
+					}
+					if len(freeVars(fe, params)) == 0 {
+						stmt := &parser.FunStmt{Name: s.Let.Name, Params: fe.Params, Return: fe.Return}
+						if fe.ExprBody != nil {
+							stmt.Body = []*parser.Statement{{Return: &parser.ReturnStmt{Value: fe.ExprBody}}}
+						} else {
+							stmt.Body = fe.BlockBody
+						}
+						if err := c.compileFun(stmt); err != nil {
+							return err
+						}
+						c.constGlobals[name] = true
+						continue
+					}
+				}
 				if ml := extractMapLiteral(s.Let.Value); ml != nil {
 					var err error
 					v, err = c.compileMapLiteral(ml, true)
@@ -2652,21 +2671,33 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr, asReturn bool) (string,
 	for _, op := range p.Ops {
 		if op.Index != nil {
 			if op.Index.Colon == nil {
-				idx, err := c.compileExpr(op.Index.Start, false)
-				if err != nil {
-					return "", err
-				}
-				if c.isMapPostfix(p) {
-					expr = fmt.Sprintf("(%s.get(%s) orelse unreachable)", expr, idx)
-				} else if c.isStringPostfix(p) {
-					c.needsIndexString = true
-					expr = fmt.Sprintf("_index_string(%s, %s)", expr, idx)
-				} else if c.isListPostfix(p) {
-					elem := c.listElemTypePostfix(p)
-					c.needsIndex = true
-					expr = fmt.Sprintf("_index_list(%s, %s, %s)", elem, expr, idx)
+				if val, ok := intLiteralValue(op.Index.Start); ok && val >= 0 {
+					if c.isMapPostfix(p) {
+						expr = fmt.Sprintf("(%s.get(%d) orelse unreachable)", expr, val)
+					} else if c.isStringPrimary(p.Target) {
+						expr = fmt.Sprintf("%s[%d..%d]", expr, val, val+1)
+					} else if c.isListPrimary(p.Target) {
+						expr = fmt.Sprintf("%s[%d]", expr, val)
+					} else {
+						expr = fmt.Sprintf("%s[%d]", expr, val)
+					}
 				} else {
-					expr = fmt.Sprintf("%s[%s]", expr, idx)
+					idx, err := c.compileExpr(op.Index.Start, false)
+					if err != nil {
+						return "", err
+					}
+					if c.isMapPostfix(p) {
+						expr = fmt.Sprintf("(%s.get(%s) orelse unreachable)", expr, idx)
+					} else if c.isStringPostfix(p) {
+						c.needsIndexString = true
+						expr = fmt.Sprintf("_index_string(%s, %s)", expr, idx)
+					} else if c.isListPostfix(p) {
+						elem := c.listElemTypePostfix(p)
+						c.needsIndex = true
+						expr = fmt.Sprintf("_index_list(%s, %s, %s)", elem, expr, idx)
+					} else {
+						expr = fmt.Sprintf("%s[%s]", expr, idx)
+					}
 				}
 			} else {
 				start := "0"
