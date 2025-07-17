@@ -21,6 +21,7 @@ type Compiler struct {
 	structs      map[string]bool
 	usesMap      bool
 	usesAnyValue bool
+	usesAnyCast  bool
 	usesList     bool
 	usesTime     bool
 	usesJSON     bool
@@ -79,7 +80,15 @@ func (c *Compiler) hsType(t types.Type) string {
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, structs: make(map[string]bool), tmpCount: 0, usesLoop: false, usesUpdate: false, usesMaybe: false, autoImports: make(map[string]string)}
+	return &Compiler{
+		env:         env,
+		structs:     make(map[string]bool),
+		tmpCount:    0,
+		usesLoop:    false,
+		usesUpdate:  false,
+		usesMaybe:   false,
+		autoImports: make(map[string]string),
+	}
 }
 
 // Compile generates Haskell code for prog.
@@ -98,6 +107,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.usesLoop = false
 	c.usesUpdate = false
 	c.usesMaybe = false
+	c.usesAnyCast = false
 	c.tmpCount = 0
 	c.autoImports = make(map[string]string)
 
@@ -257,9 +267,18 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	if c.usesLoad || c.usesSave || c.usesFetch {
 		header.WriteString(anyValueRuntime)
+		if c.usesAnyCast {
+			header.WriteString(anyCastRuntime)
+		}
 		header.WriteString(loadRuntime)
 	} else if c.usesAnyValue {
 		header.WriteString(anyValueRuntime)
+		if c.usesAnyCast {
+			header.WriteString(anyCastRuntime)
+		}
+	} else if c.usesAnyCast {
+		header.WriteString(anyValueRuntime)
+		header.WriteString(anyCastRuntime)
 	}
 	if c.usesExpect {
 		header.WriteString(expectHelper)
@@ -1055,6 +1074,7 @@ func (c *Compiler) compileBoolExpr(e *parser.Expr) (string, error) {
 	}
 	if _, ok := c.inferExprType(e).(types.AnyType); ok {
 		c.usesAnyValue = true
+		c.usesAnyCast = true
 		return fmt.Sprintf("_asBool (%s)", expr), nil
 	}
 	return expr, nil
@@ -1119,32 +1139,40 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			if opSym == "+" || opSym == "-" || opSym == "*" || opSym == "/" {
 				if isAny(leftType) && isInt(rightType) {
 					expr = fmt.Sprintf("_asInt (%s)", expr)
+					c.usesAnyCast = true
 					leftType = types.IntType{}
 				} else if isAny(leftType) && isFloat(rightType) {
 					expr = fmt.Sprintf("_asDouble (%s)", expr)
+					c.usesAnyCast = true
 					leftType = types.FloatType{}
 				}
 				if isAny(rightType) && isInt(leftType) {
 					r = fmt.Sprintf("_asInt (%s)", r)
+					c.usesAnyCast = true
 					rightType = types.IntType{}
 				} else if isAny(rightType) && isFloat(leftType) {
 					r = fmt.Sprintf("_asDouble (%s)", r)
+					c.usesAnyCast = true
 					rightType = types.FloatType{}
 				}
 			}
 			if opSym == "==" || opSym == "/=" || opSym == "<" || opSym == "<=" || opSym == ">" || opSym == ">=" {
 				if isAny(leftType) && isInt(rightType) {
 					expr = fmt.Sprintf("_asInt (%s)", expr)
+					c.usesAnyCast = true
 					leftType = types.IntType{}
 				} else if isAny(leftType) && isFloat(rightType) {
 					expr = fmt.Sprintf("_asDouble (%s)", expr)
+					c.usesAnyCast = true
 					leftType = types.FloatType{}
 				}
 				if isAny(rightType) && isInt(leftType) {
 					r = fmt.Sprintf("_asInt (%s)", r)
+					c.usesAnyCast = true
 					rightType = types.IntType{}
 				} else if isAny(rightType) && isFloat(leftType) {
 					r = fmt.Sprintf("_asDouble (%s)", r)
+					c.usesAnyCast = true
 					rightType = types.FloatType{}
 				}
 			}
@@ -1178,6 +1206,7 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 			t := c.inferPostfixType(u.Value)
 			if isAny(t) {
 				expr = fmt.Sprintf("(- (_asInt (%s)))", expr)
+				c.usesAnyCast = true
 			} else {
 				expr = fmt.Sprintf("(-%s)", expr)
 			}
@@ -1604,12 +1633,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 						switch ft.(type) {
 						case types.IntType, types.Int64Type:
 							expr = fmt.Sprintf("_asInt (%s)", expr)
+							c.usesAnyCast = true
 						case types.FloatType:
 							expr = fmt.Sprintf("_asDouble (%s)", expr)
+							c.usesAnyCast = true
 						case types.StringType:
 							expr = fmt.Sprintf("_asString (%s)", expr)
+							c.usesAnyCast = true
 						case types.BoolType:
 							expr = fmt.Sprintf("_asBool (%s)", expr)
+							c.usesAnyCast = true
 						}
 						typ = ft
 					}
@@ -2081,6 +2114,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		if _, ok := c.inferExprType(q.Group.Exprs[0]).(types.AnyType); ok {
 			c.usesAnyValue = true
+			c.usesAnyCast = true
 			keyExpr = fmt.Sprintf("_asString (%s)", keyExpr)
 		}
 		genv := types.NewEnv(child)
