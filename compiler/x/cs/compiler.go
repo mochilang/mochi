@@ -1400,12 +1400,16 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			} else {
 				idx := start
 				var preType types.Type
+				var prefixName string
 				if c.env != nil {
 					prefix := &parser.PostfixExpr{Target: p.Target, Ops: p.Ops[:i]}
 					preType = c.inferPostfixType(prefix)
+					if n, ok := identName(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: prefix}}}); ok {
+						prefixName = sanitizeName(n)
+					}
 				}
 				if isStr {
-					if _, ok := preType.(types.StringType); ok {
+					if _, ok := preType.(types.StringType); ok || (isAny(preType) && c.varIsString(prefixName)) {
 						expr = fmt.Sprintf("%s[(int)%s]", expr, idx)
 					} else {
 						c.use("_indexString")
@@ -1418,8 +1422,19 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					case types.ListType:
 						expr = fmt.Sprintf("%s[(int)%s]", expr, idx)
 					default:
-						c.use("_indexList")
-						expr = fmt.Sprintf("_indexList(%s, %s)", expr, idx)
+						if prefixName != "" {
+							if c.varIsList(prefixName) {
+								expr = fmt.Sprintf("%s[(int)%s]", expr, idx)
+							} else if t, ok := c.varTypes[prefixName]; ok && strings.HasPrefix(t, "Dictionary<") {
+								expr = fmt.Sprintf("%s[%s]", expr, idx)
+							} else {
+								c.use("_indexList")
+								expr = fmt.Sprintf("_indexList(%s, %s)", expr, idx)
+							}
+						} else {
+							c.use("_indexList")
+							expr = fmt.Sprintf("_indexList(%s, %s)", expr, idx)
+						}
 					}
 				}
 			}
