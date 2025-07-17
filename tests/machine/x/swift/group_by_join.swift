@@ -25,7 +25,7 @@ var stats = { () -> [Any] in
 	    _tmp.append((key: k, items: v))
 	}
 	return _tmp.map { g in ["name": g.key, "count": g.items.count] }
-}())
+}()
 print("--- Orders per customer ---")
 for s in stats as! [[String:Any]] {
     print(s["name"]!, "orders:", s["count"]!)

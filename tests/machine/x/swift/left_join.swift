@@ -33,11 +33,11 @@ var result = ({
 		for c in _join {
 			if !(o.customerId == c.id) { continue }
 			_m = true
-			_res.append(OJoin(orderId: o.id, customer: c, total: o.total))
+			_res.append(OJoin(customer: c, orderId: o.id, total: o.total))
 		}
 		if !_m {
 			let c: Customer? = nil
-			_res.append(OJoin(orderId: o.id, customer: c, total: o.total))
+			_res.append(OJoin(customer: c, orderId: o.id, total: o.total))
 		}
 	}
 	return _res

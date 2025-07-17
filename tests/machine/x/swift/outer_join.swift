@@ -33,18 +33,18 @@ var result = ({
 			if !(o.customerId == c.id) { continue }
 			_matched[ri] = true
 			_m = true
-			_res.append(OJoin(order: o, customer: c))
+			_res.append(OJoin(customer: c, order: o))
 		}
 		if !_m {
 			let c: Customer? = nil
-			_res.append(OJoin(order: o, customer: c))
+			_res.append(OJoin(customer: c, order: o))
 		}
 	}
 	for (ri, c) in _join.enumerated() {
 		if !_matched[ri] {
 			let o: Order? = nil
 			let c = c
-			_res.append(OJoin(order: o, customer: c))
+			_res.append(OJoin(customer: c, order: o))
 		}
 	}
 	return _res

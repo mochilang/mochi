@@ -1,34 +1,59 @@
-/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_left_join3750152937/001/main.swift:35:4: error: consecutive statements on a line must be separated by ';'
-33 | 	}
-34 | 	return _tmp.map { g in ["name": g.key, "count": g.items.filter { r in (r["o"] as! Order) != nil }.count] }
-35 | }())
-   |    `- error: consecutive statements on a line must be separated by ';'
-36 | print("--- Group Left Join ---")
-37 | for s in stats as! [[String:Any]] {
+Could not cast value of type 'Swift.Optional<Any>' (0x7f7f80683ee8) to 'main.Order' (0x5650d4ba7c60).
 
-/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_left_join3750152937/001/main.swift:35:4: error: expected expression
-33 | 	}
-34 | 	return _tmp.map { g in ["name": g.key, "count": g.items.filter { r in (r["o"] as! Order) != nil }.count] }
-35 | }())
-   |    `- error: expected expression
-36 | print("--- Group Left Join ---")
-37 | for s in stats as! [[String:Any]] {
+*** Signal 6: Backtracing from 0x7f7f7fcfdb2c... done ***
 
-/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_left_join3750152937/001/main.swift:34:91: warning: comparing non-optional value of type 'Order' to 'nil' always returns true
-32 | 	    _tmp.append((key: k, items: v))
-33 | 	}
-34 | 	return _tmp.map { g in ["name": g.key, "count": g.items.filter { r in (r["o"] as! Order) != nil }.count] }
-   |                                                                                           `- warning: comparing non-optional value of type 'Order' to 'nil' always returns true
-35 | }())
-36 | print("--- Group Left Join ---")
+*** Program crashed: Aborted at 0x0000000000005690 ***
 
-/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_left_join3750152937/001/main.swift:27:50: warning: expression implicitly coerced from 'Any?' to 'Any'
-25 | 			let o: Any? = nil
-26 | 			let _k = c.name
-27 | 			_groups[_k, default: []].append(["c": c, "o": o])
-   |                                                  |- warning: expression implicitly coerced from 'Any?' to 'Any'
-   |                                                  |- note: provide a default value to avoid this warning
-   |                                                  |- note: force-unwrap the value to avoid this warning
-   |                                                  `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
-28 | 		}
-29 | 	}
+Thread 0 "main" crashed:
+
+ 0      0x00007f7f7fcfdb2c <unknown> in libc.so.6
+ 1 [ra] 0x00007f7f7fca427e <unknown> in libc.so.6
+ 2 [ra] 0x00007f7f7fc878ff <unknown> in libc.so.6
+ 3 [ra] 0x00007f7f8051c90c swift::fatalErrorv(unsigned int, char const*, __va_list_tag*) + 139 in libswiftCore.so
+ 4 [ra] 0x00007f7f8051c98b swift::fatalError(unsigned int, char const*, ...) + 122 in libswiftCore.so
+ 5 [ra] 0x00007f7f80513cc7 swift::swift_dynamicCastFailure(void const*, char const*, void const*, char const*, char const*) + 70 in libswiftCore.so
+ 6 [ra] 0x00007f7f80513e1b swift::swift_dynamicCastFailure(swift::TargetMetadata<swift::InProcess> const*, swift::TargetMetadata<swift::InProcess> const*, char const*) + 122 in libswiftCore.so
+ 7 [ra] 0x00007f7f80517597 swift_dynamicCast + 166 in libswiftCore.so
+ 8 [ra] 0x00005650d4ba44e7 closure #1 in closure #1 in closure #1 in  + 246 in main
+ 9 [ra] 0x00007f7f803c30cb _ArrayProtocol.filter(_:) + 522 in libswiftCore.so
+10 [ra] 0x00005650d4ba42fc closure #1 in closure #1 in  + 331 in main
+11 [ra] 0x00005650d4ba48b2 Collection.map<A, B>(_:) + 849 in main
+12 [ra] 0x00005650d4ba3fdf closure #1 in  + 3454 in main
+13 [ra] 0x00005650d4ba5ae2 main + 465 in main
+14 [ra] 0x00007f7f7fc891ca <unknown> in libc.so.6
+15 [ra] 0x00007f7f7fc8928b <unknown> in libc.so.6
+
+
+Registers:
+
+rax 0x0000000000000000  0
+rdx 0x0000000000005690  22160
+rcx 0x00007f7f7fcfdb2c  41 89 c6 41 f7 de 3d 00 f0 ff ff b8 00 00 00 00  A·ÆA÷Þ=·ðÿÿ¸····
+rbx 0x0000000000000006  6
+rsi 0x0000000000005690  22160
+rdi 0x0000000000005690  22160
+rbp 0x00007ffe52e504d0  f0 04 e5 52 fe 7f 00 00 7e 42 ca 7f 7f 7f 00 00  ð·åRþ···~BÊ·····
+rsp 0x00007ffe52e50490  00 00 00 00 00 00 00 00 00 3d 7c a8 4e 95 03 fc  ·········=|¨N··ü
+ r8 0x00007f7f7fe62b20  60 f5 bd dc 50 56 00 00 00 00 00 00 00 00 00 00  `õ½ÜPV··········
+ r9 0x0000000000000070  112
+r10 0x0000000000000008  8
+r11 0x0000000000000246  582
+r12 0x0000000000000006  6
+r13 0x0000000000000067  103
+r14 0x0000000000000016  22
+r15 0x00007ffe52e506c0  30 00 00 00 30 00 00 00 00 07 e5 52 fe 7f 00 00  0···0·····åRþ···
+rip 0x00007f7f7fcfdb2c  41 89 c6 41 f7 de 3d 00 f0 ff ff b8 00 00 00 00  A·ÆA÷Þ=·ðÿÿ¸····
+
+rflags 0x0000000000000246  ZF PF
+
+cs 0x0033  fs 0x0000  gs 0x0000
+
+
+Images (11 omitted):
+
+0x00005650d4ba1000–0x00005650d4ba6af0 04f88785435c3f50779cc6792a28b19232d17dd2 main            /tmp/TestSwiftCompiler_VMValid_Goldengroup_by_left_join3386694962/001/main
+0x00007f7f7fc5f000–0x00007f7f7fe0ecb9 42c84c92e6f98126b3e2230ebfdead22c235b667 libc.so.6       /usr/lib/x86_64-linux-gnu/libc.so.6
+0x00007f7f800e8000–0x00007f7f80677e98 232fee014ccd83c728c6425419c9bd65129d237b libswiftCore.so /root/.local/share/swiftly/toolchains/6.1.2/usr/lib/swift/linux/libswiftCore.so
+
+Backtrace took 0.02s
+

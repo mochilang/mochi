@@ -89,5 +89,5 @@ var result = { () -> [Any] in
 	}
 	_tmp.sort { _sum($0.items.map { x in ((x["l"] as! Lineitem)["l_extendedprice"] as! Double) * (1 - ((x["l"] as! Lineitem)["l_discount"] as! Double)) }) > _sum($1.items.map { x in ((x["l"] as! Lineitem)["l_extendedprice"] as! Double) * (1 - ((x["l"] as! Lineitem)["l_discount"] as! Double)) }) }
 	return _tmp.map { g in ["c_custkey": (g.key["c_custkey"] as! Int), "c_name": (g.key["c_name"] as! String), "revenue": _sum(g.items.map { x in ((x["l"] as! Lineitem)["l_extendedprice"] as! Double) * (1 - ((x["l"] as! Lineitem)["l_discount"] as! Double)) }), "c_acctbal": (g.key["c_acctbal"] as! Double), "n_name": (g.key["n_name"] as! String), "c_address": (g.key["c_address"] as! String), "c_phone": (g.key["c_phone"] as! String), "c_comment": (g.key["c_comment"] as! String)] }
-}())
+}()
 print(result)
