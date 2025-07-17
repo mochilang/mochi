@@ -32,7 +32,8 @@ function __str(v)
             return '{'..table.concat(parts, ',')..'}'
         end
     else
-        if t == 'boolean' then return v and "1" or "0" else return tostring(v) end
+        if t == 'boolean' then return (v and 'True' or 'False') end
+        return tostring(v)
     end
 end
 local math = { sqrt = math.sqrt, pow = math.pow, sin = math.sin, log = math.log, pi = math.pi, e = math.exp(1) }

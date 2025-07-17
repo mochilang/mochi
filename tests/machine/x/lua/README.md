@@ -3,8 +3,7 @@
 This directory stores Lua code generated from the Mochi programs in `tests/vm/valid`.
 Each program was compiled and executed using the Lua compiler. Successful runs produce a `.out` file, while failures have a `.error` file.
 
-Updated 2025-07-19: boolean values now print as `1` or `0` and the compiler emits direct Lua code for simple `count` and `exists` calls.
-
+Updated 2025-07-19: boolean values now print as `True`/`False` and indexing for lists and strings omits helper calls.
 Compiled programs: 100/100
 
 Checklist:

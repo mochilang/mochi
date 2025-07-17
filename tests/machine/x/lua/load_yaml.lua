@@ -32,7 +32,8 @@ function __str(v)
             return '{'..table.concat(parts, ',')..'}'
         end
     else
-        if t == 'boolean' then return v and "1" or "0" else return tostring(v) end
+        if t == 'boolean' then return (v and 'True' or 'False') end
+        return tostring(v)
     end
 end
 Person = {}
@@ -43,7 +44,7 @@ function Person.new(o)
     return o
 end
 
-people = {{["name"]="Alice", ["age"]=30, ["email"]="alice@example.com"}, {["name"]="Bob", ["age"]=15, ["email"]="bob@example.com"}, {["name"]="Charlie", ["age"]=20, ["email"]="charlie@example.com"}}
+people = {{["name"]="Alice", ["age"]=30, ["email"]="alice@example.com"}, {["name"]="Bob", ["age"]=15, ["email"]="bob@example.com"}, {["age"]=20, ["email"]="charlie@example.com", ["name"]="Charlie"}}
 adults = (function()
     local _res = {}
     for _, p in ipairs(people) do

@@ -82,7 +82,8 @@ function __str(v)
             return '{'..table.concat(parts, ',')..'}'
         end
     else
-        if t == 'boolean' then return v and "1" or "0" else return tostring(v) end
+        if t == 'boolean' then return (v and 'True' or 'False') end
+        return tostring(v)
     end
 end
 people = {{["name"]="Alice", ["age"]=30, ["city"]="Paris"}, {["name"]="Bob", ["age"]=15, ["city"]="Hanoi"}, {["name"]="Charlie", ["age"]=65, ["city"]="Paris"}, {["name"]="Diana", ["age"]=45, ["city"]="Hanoi"}, {["name"]="Eve", ["age"]=70, ["city"]="Paris"}, {["name"]="Frank", ["age"]=22, ["city"]="Hanoi"}}

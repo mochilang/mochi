@@ -84,3 +84,6 @@
   argument types are known.
 - Updated `__str` to render booleans as `1` or `0` to match interpreter output.
 
+## Progress (2025-07-19 12:00)
+- List and string indexing now compiled directly without helper calls when types are known.
+- Regenerated Lua sources and outputs after updating __str to return 'True'/'False'.

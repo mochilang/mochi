@@ -80,7 +80,8 @@ function __str(v)
             return '{'..table.concat(parts, ',')..'}'
         end
     else
-        if t == 'boolean' then return v and "1" or "0" else return tostring(v) end
+        if t == 'boolean' then return (v and 'True' or 'False') end
+        return tostring(v)
     end
 end
 function twoSum(nums, target)
@@ -96,5 +97,5 @@ function twoSum(nums, target)
 end
 
 result = twoSum({2, 7, 11, 15}, 9)
-__print(__index(result, 0))
-__print(__index(result, 1))
+__print(result[(0)+1])
+__print(result[(1)+1])

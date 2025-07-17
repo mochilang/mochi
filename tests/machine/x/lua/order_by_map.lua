@@ -32,7 +32,8 @@ function __str(v)
             return '{'..table.concat(parts, ',')..'}'
         end
     else
-        if t == 'boolean' then return v and "1" or "0" else return tostring(v) end
+        if t == 'boolean' then return (v and 'True' or 'False') end
+        return tostring(v)
     end
 end
 data = {{["a"]=1, ["b"]=2}, {["a"]=1, ["b"]=1}, {["a"]=0, ["b"]=5}}

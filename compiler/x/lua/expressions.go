@@ -247,11 +247,14 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					return "", err
 				}
 				t := c.inferPrimaryType(p.Target)
-				if isMap(t) {
+				switch {
+				case isMap(t) || isStringLiteral(op.Index.Start):
 					expr = fmt.Sprintf("%s[%s]", expr, idx)
-				} else if isStringLiteral(op.Index.Start) {
-					expr = fmt.Sprintf("%s[%s]", expr, idx)
-				} else {
+				case isString(t):
+					expr = fmt.Sprintf("string.sub(%s, (%s)+1, (%s)+1)", expr, idx, idx)
+				case isList(t):
+					expr = fmt.Sprintf("%s[(%s)+1]", expr, idx)
+				default:
 					c.helpers["index"] = true
 					c.helpers["indexString"] = true
 					expr = fmt.Sprintf("__index(%s, %s)", expr, idx)
