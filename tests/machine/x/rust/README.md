@@ -1,0 +1,108 @@
+# Rust Machine Output
+
+This directory contains Rust source code generated from the Mochi programs in `tests/vm/valid`. Each program was compiled and executed with `rustc`. Successful runs produced an `.out` file while failures produced an `.error` file.
+
+Compiled programs: 70/100
+
+## Checklist
+
+- [ ] append_builtin
+- [x] avg_builtin
+- [x] basic_compare
+- [x] binary_precedence
+- [x] bool_chain
+- [x] break_continue
+- [x] cast_string_to_int
+- [x] cast_struct
+- [x] closure
+- [x] count_builtin
+- [x] cross_join
+- [x] cross_join_filter
+- [x] cross_join_triple
+- [x] dataset_sort_take_limit
+- [ ] dataset_where_filter
+- [ ] exists_builtin
+- [x] for_list_collection
+- [x] for_loop
+- [ ] for_map_collection
+- [x] fun_call
+- [x] fun_expr_in_let
+- [x] fun_three_args
+- [x] go_auto
+- [ ] group_by
+- [ ] group_by_conditional_sum
+- [ ] group_by_having
+- [x] group_by_join
+- [x] group_by_left_join
+- [ ] group_by_multi_join
+- [ ] group_by_multi_join_sort
+- [ ] group_by_sort
+- [ ] group_items_iteration
+- [x] if_else
+- [x] if_then_else
+- [x] if_then_else_nested
+- [ ] in_operator
+- [x] in_operator_extended
+- [x] inner_join
+- [x] join_multi
+- [ ] json_builtin
+- [ ] left_join
+- [ ] left_join_multi
+- [x] len_builtin
+- [x] len_map
+- [x] len_string
+- [x] let_and_print
+- [x] list_assign
+- [x] list_index
+- [x] list_nested_assign
+- [ ] list_set_ops
+- [ ] load_yaml
+- [x] map_assign
+- [x] map_in_operator
+- [x] map_index
+- [x] map_int_key
+- [x] map_literal_dynamic
+- [ ] map_membership
+- [x] map_nested_assign
+- [x] match_expr
+- [x] match_full
+- [x] math_ops
+- [ ] membership
+- [x] min_max_builtin
+- [x] nested_function
+- [ ] order_by_map
+- [x] outer_join
+- [x] partial_application
+- [x] print_hello
+- [x] pure_fold
+- [x] pure_global_fold
+- [ ] python_auto
+- [ ] python_math
+- [x] query_sum_select
+- [x] record_assign
+- [x] right_join
+- [ ] save_jsonl_stdout
+- [x] short_circuit
+- [ ] slice
+- [ ] sort_stable
+- [x] str_builtin
+- [ ] string_compare
+- [x] string_concat
+- [ ] string_contains
+- [ ] string_in_operator
+- [x] string_index
+- [ ] string_prefix_slice
+- [x] substring_builtin
+- [x] sum_builtin
+- [x] tail_recursion
+- [x] test_block
+- [x] tree_sum
+- [x] two-sum
+- [x] typed_let
+- [x] typed_var
+- [x] unary_neg
+- [x] update_stmt
+- [x] user_type_literal
+- [ ] values_builtin
+- [x] var_assignment
+- [x] while_loop

@@ -25,6 +25,8 @@
 - 2025-07-16 02:20 - Added Rosetta golden tests and implemented `f64` and `bool` casts to reduce `.error` files.
 - 2025-07-18 02:00 - Fixed nested map indexing to avoid double dereference and
   cast unknown integer divisions to `f64` when the resulting field is a float.
+- 2025-07-22 - Improved struct inference for query map literals so fields print
+  without debug formatting. Updated VM golden outputs.
 
 ## Remaining Enhancements
 - [ ] Inline JSON printing for variables when values are known at compile time

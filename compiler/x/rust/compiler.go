@@ -885,6 +885,11 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 	}
 	if c.lastListStruct != "" {
 		c.listVars[l.Name] = c.lastListStruct
+		if c.env != nil {
+			if st, ok := c.structs[c.lastListStruct]; ok {
+				c.env.SetVar(l.Name, types.ListType{Elem: st}, false)
+			}
+		}
 		c.lastListStruct = ""
 	}
 	if c.inMain && c.indent == 1 {
@@ -967,6 +972,11 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	}
 	if c.lastListStruct != "" {
 		c.listVars[v.Name] = c.lastListStruct
+		if c.env != nil {
+			if st, ok := c.structs[c.lastListStruct]; ok {
+				c.env.SetVar(v.Name, types.ListType{Elem: st}, true)
+			}
+		}
 		c.lastListStruct = ""
 	}
 	if c.inMain && c.indent == 1 {
@@ -3488,6 +3498,9 @@ func (c *Compiler) compileMapLiteralAsStruct(name string, m *parser.MapLiteral) 
 	}
 	c.structs[name] = st
 	c.genStructs = append(c.genStructs, st)
+	if c.env != nil {
+		c.env.SetStruct(name, st)
+	}
 	c.lastListStruct = name
 	return fmt.Sprintf("%s { %s }", name, strings.Join(fields, ", ")), nil
 }
