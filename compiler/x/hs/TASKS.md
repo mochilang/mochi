@@ -1,4 +1,9 @@
 # Haskell Backend Progress
+## Recent Updates (2025-08-15 05:00)
+- Added `containsAny` helper and improved binary operator casting so `Option` and
+  nested types are checked for `AnyValue`. Map literals now wrap values
+  correctly when the container type is `any` and `json` calls trigger the
+  `AnyValue` runtime when needed.
 ## Recent Updates (2025-08-10 05:00)
 - Runtime cast helpers are now included individually. The compiler tracks `_asInt`,
   `_asDouble`, `_asString`, and `_asBool` separately so unused functions are not

@@ -1181,23 +1181,23 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				opSym = "/="
 			}
 			if opSym == "+" || opSym == "-" || opSym == "*" || opSym == "/" {
-				if isAny(leftType) && isInt(rightType) {
+				if (isAny(leftType) || containsAny(leftType)) && isInt(rightType) {
 					expr = fmt.Sprintf("_asInt (%s)", expr)
 					c.usesAnyCast = true
 					c.usesAsInt = true
 					leftType = types.IntType{}
-				} else if isAny(leftType) && isFloat(rightType) {
+				} else if (isAny(leftType) || containsAny(leftType)) && isFloat(rightType) {
 					expr = fmt.Sprintf("_asDouble (%s)", expr)
 					c.usesAnyCast = true
 					c.usesAsDouble = true
 					leftType = types.FloatType{}
 				}
-				if isAny(rightType) && isInt(leftType) {
+				if (isAny(rightType) || containsAny(rightType)) && isInt(leftType) {
 					r = fmt.Sprintf("_asInt (%s)", r)
 					c.usesAnyCast = true
 					c.usesAsInt = true
 					rightType = types.IntType{}
-				} else if isAny(rightType) && isFloat(leftType) {
+				} else if (isAny(rightType) || containsAny(rightType)) && isFloat(leftType) {
 					r = fmt.Sprintf("_asDouble (%s)", r)
 					c.usesAnyCast = true
 					c.usesAsDouble = true
@@ -1205,23 +1205,23 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				}
 			}
 			if opSym == "==" || opSym == "/=" || opSym == "<" || opSym == "<=" || opSym == ">" || opSym == ">=" {
-				if isAny(leftType) && isInt(rightType) {
+				if (isAny(leftType) || containsAny(leftType)) && isInt(rightType) {
 					expr = fmt.Sprintf("_asInt (%s)", expr)
 					c.usesAnyCast = true
 					c.usesAsInt = true
 					leftType = types.IntType{}
-				} else if isAny(leftType) && isFloat(rightType) {
+				} else if (isAny(leftType) || containsAny(leftType)) && isFloat(rightType) {
 					expr = fmt.Sprintf("_asDouble (%s)", expr)
 					c.usesAnyCast = true
 					c.usesAsDouble = true
 					leftType = types.FloatType{}
 				}
-				if isAny(rightType) && isInt(leftType) {
+				if (isAny(rightType) || containsAny(rightType)) && isInt(leftType) {
 					r = fmt.Sprintf("_asInt (%s)", r)
 					c.usesAnyCast = true
 					c.usesAsInt = true
 					rightType = types.IntType{}
-				} else if isAny(rightType) && isFloat(leftType) {
+				} else if (isAny(rightType) || containsAny(rightType)) && isFloat(leftType) {
 					r = fmt.Sprintf("_asDouble (%s)", r)
 					c.usesAnyCast = true
 					c.usesAsDouble = true
@@ -1541,7 +1541,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			if anyVal {
 				vt := c.inferExprType(it.Value)
-				if isAny(vt) {
+				if !isAny(vt) {
 					c.usesAnyValue = true
 					v = wrapAnyValue(vt, v)
 				}
@@ -1638,6 +1638,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		if p.Call.Func == "json" {
 			c.usesJSON = true
+			if len(p.Call.Args) > 0 && containsAny(c.inferExprType(p.Call.Args[0])) {
+				c.usesAnyValue = true
+				c.usesLoad = true
+			}
 			return fmt.Sprintf("_json %s", strings.Join(args, " ")), nil
 		}
 		if p.Call.Func == "input" {
