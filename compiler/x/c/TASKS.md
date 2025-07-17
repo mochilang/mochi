@@ -136,3 +136,4 @@ should compile and run successfully.
   expression isn't a map literal. `dataset_sort_take_limit.mochi` now compiles
   and runs.
 - 2025-07-17 - Fixed YAML loader to deduplicate struct fields so `load_yaml.mochi` compiles.
+- 2025-07-17 - Updated group by list allocation to use create_* helpers; now group_by and join queries compile.

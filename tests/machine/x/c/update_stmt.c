@@ -3,22 +3,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct Person Person;
+typedef struct person_t person_t;
 
-typedef struct {
-  const char *name;
-  int age;
-  const char *status;
-  const char *name;
-  int age;
-  const char *status;
-} person_t;
-
-typedef struct Person {
+typedef struct person_t {
   char *name;
   int age;
   char *status;
-} Person;
+} person_t;
 typedef struct {
   int len;
   person_t *data;

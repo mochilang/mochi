@@ -2,26 +2,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct Tree Tree;
-typedef struct Leaf Leaf;
-typedef struct Node Node;
+typedef struct tree_t tree_t;
+typedef struct leaf_t leaf_t;
+typedef struct node_t node_t;
 
-typedef struct Leaf {
-} Leaf;
-typedef struct Node {
+typedef struct leaf_t {
+} leaf_t;
+typedef struct node_t {
   Tree *left;
   int value;
   Tree *right;
-} Node;
-typedef struct Tree {
+} node_t;
+typedef struct tree_t {
   int tag;
   union {
-    Leaf Leaf;
-    Node Node;
+    leaf_t leaf_t;
+    node_t node_t;
   } value;
-} Tree;
-#define Tree_Leaf 0
-#define Tree_Node 1
+} tree_t;
+#define tree_t_leaf_t 0
+#define tree_t_node_t 1
 
 int sum_tree(Tree t) {
   tree_t tmp1 = t;

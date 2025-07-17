@@ -185,7 +185,7 @@ int _mochi_main() {
       (partsupp_t){.part = 200, .supplier = 1, .cost = 5.0, .qty = 3}};
   int partsupp_len = sizeof(partsupp) / sizeof(partsupp[0]);
   filtered_item_list_t tmp1 =
-      filtered_item_list_t_create(partsupp_len * suppliers_len * nations_len);
+      create_filtered_item_list(partsupp_len * suppliers_len * nations_len);
   int tmp2 = 0;
   for (int tmp3 = 0; tmp3 < partsupp_len; tmp3++) {
     partsupp_t ps = partsupp[tmp3];
@@ -227,7 +227,7 @@ int _mochi_main() {
   int tmp12 = 0;
   for (int gi = 0; gi < tmp10.len; gi++) {
     _GroupInt _gp = tmp10.data[gi];
-    filtered_item_list_t tmp13 = filtered_item_list_t_create(_gp.items.len);
+    filtered_item_list_t tmp13 = create_filtered_item_list(_gp.items.len);
     for (int i14 = 0; i14 < _gp.items.len; i14++) {
       tmp13.data[i14] = tmp6.data[_gp.items.data[i14]];
     }

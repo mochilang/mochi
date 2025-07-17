@@ -2611,7 +2611,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 					c.indent++
 					c.writeln(fmt.Sprintf("_GroupString _gp = %s.data[gi];", groups))
 					items := c.newTemp()
-					c.writeln(fmt.Sprintf("%s %s = %s_create(_gp.items.len);", listC, items, listC))
+					c.writeln(fmt.Sprintf("%s %s = %s(_gp.items.len);", listC, items, listCreate))
 					loopJ := c.newLoopVar()
 					c.writeln(fmt.Sprintf("for (int %s=0; %s<_gp.items.len; %s++) {", loopJ, loopJ, loopJ))
 					c.indent++
@@ -2799,7 +2799,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 					c.indent++
 					c.writeln(fmt.Sprintf("_GroupInt _gp = %s.data[gi];", groups))
 					items := c.newTemp()
-					c.writeln(fmt.Sprintf("%s %s = %s_create(_gp.items.len);", listC, items, listC))
+					c.writeln(fmt.Sprintf("%s %s = %s(_gp.items.len);", listC, items, listCreate))
 					loopJ := c.newLoopVar()
 					c.writeln(fmt.Sprintf("for (int %s=0; %s<_gp.items.len; %s++) {", loopJ, loopJ, loopJ))
 					c.indent++
@@ -2888,11 +2888,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						pairs := c.newTemp()
 						idxVar := c.newTemp()
 						listC := cTypeFromType(srcT)
+						listCreate := listC + "_create"
 						if st, ok := lt.Elem.(types.StructType); ok {
 							c.compileStructType(st)
 							c.compileStructListType(st)
+							listC = sanitizeListName(st.Name)
+							listCreate = createListFuncName(st.Name)
 						}
-						c.writeln(fmt.Sprintf("%s %s = %s_create(%s);", listC, rows, listC, c.listLenExpr(src)))
+						c.writeln(fmt.Sprintf("%s %s = %s(%s);", listC, rows, listCreate, c.listLenExpr(src)))
 						c.writeln(fmt.Sprintf("list_pair_string %s = list_pair_string_create(%s);", pairs, c.listLenExpr(src)))
 						c.writeln(fmt.Sprintf("int %s = 0;", idxVar))
 						loop := c.newLoopVar()
@@ -2993,7 +2996,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						c.indent++
 						c.writeln(fmt.Sprintf("_GroupPairString _gp = %s.data[%s];", groups, loopG))
 						items := c.newTemp()
-						c.writeln(fmt.Sprintf("%s %s = %s_create(_gp.items.len);", listC, items, listC))
+						c.writeln(fmt.Sprintf("%s %s = %s(_gp.items.len);", listC, items, listCreate))
 						loopJ := c.newLoopVar()
 						c.writeln(fmt.Sprintf("for (int %s=0; %s<_gp.items.len; %s++) {", loopJ, loopJ, loopJ))
 						c.indent++
@@ -3230,6 +3233,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 			}
 			retList := types.ListType{Elem: retT}
 			listC := cTypeFromType(retList)
+			listCreate := listC + "_create"
+			if st, ok := retT.(types.StructType); ok {
+				listC = sanitizeListName(st.Name)
+				listCreate = createListFuncName(st.Name)
+			}
 			if listC == "list_string" {
 				c.need(needListString)
 			} else if listC == "list_float" {
@@ -3242,7 +3250,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 
 			res := c.newTemp()
 			idx := c.newTemp()
-			c.writeln(fmt.Sprintf("%s %s = %s_create(%s * %s);", listC, res, listC, c.listLenExpr(rightExpr), c.listLenExpr(leftExpr)))
+			c.writeln(fmt.Sprintf("%s %s = %s(%s * %s);", listC, res, listCreate, c.listLenExpr(rightExpr), c.listLenExpr(leftExpr)))
 			c.writeln(fmt.Sprintf("int %s = 0;", idx))
 			iterR := c.newTemp()
 			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s; %s++) {", iterR, iterR, c.listLenExpr(rightExpr), iterR))
@@ -3333,6 +3341,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 			}
 			retList := types.ListType{Elem: retT}
 			listC := cTypeFromType(retList)
+			listCreate := listC + "_create"
+			if st, ok := retT.(types.StructType); ok {
+				listC = sanitizeListName(st.Name)
+				listCreate = createListFuncName(st.Name)
+			}
 			if listC == "list_string" {
 				c.need(needListString)
 			} else if listC == "list_float" {
@@ -3345,7 +3358,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 
 			res := c.newTemp()
 			idx := c.newTemp()
-			c.writeln(fmt.Sprintf("%s %s = %s_create(%s * %s + %s + %s);", listC, res, listC, c.listLenExpr(leftExpr), c.listLenExpr(rightExpr), c.listLenExpr(leftExpr), c.listLenExpr(rightExpr)))
+			c.writeln(fmt.Sprintf("%s %s = %s(%s * %s + %s + %s);", listC, res, listCreate, c.listLenExpr(leftExpr), c.listLenExpr(rightExpr), c.listLenExpr(leftExpr), c.listLenExpr(rightExpr)))
 			c.writeln(fmt.Sprintf("int %s = 0;", idx))
 			leftMatched := c.newTemp()
 			rightMatched := c.newTemp()
@@ -3600,6 +3613,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 		}
 		retList := types.ListType{Elem: retT}
 		listC := cTypeFromType(retList)
+		listCreate := listC + "_create"
+		if st, ok := retT.(types.StructType); ok {
+			listC = sanitizeListName(st.Name)
+			listCreate = createListFuncName(st.Name)
+		}
 		if listC == "list_string" {
 			c.need(needListString)
 		} else if listC == "list_float" {
@@ -3616,7 +3634,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 		for i := 1; i < len(sources); i++ {
 			lenExpr = fmt.Sprintf("%s * %s", lenExpr, c.listLenExpr(sources[i].expr))
 		}
-		c.writeln(fmt.Sprintf("%s %s = %s_create(%s);", listC, res, listC, lenExpr))
+		c.writeln(fmt.Sprintf("%s %s = %s(%s);", listC, res, listCreate, lenExpr))
 		c.writeln(fmt.Sprintf("int %s = 0;", idx))
 
 		var loop func(int)
@@ -3736,6 +3754,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 			}
 			retList := types.ListType{Elem: retT}
 			listC := cTypeFromType(retList)
+			listCreate := listC + "_create"
+			if st, ok := retT.(types.StructType); ok {
+				listC = sanitizeListName(st.Name)
+				listCreate = createListFuncName(st.Name)
+			}
 			if listC == "list_string" {
 				c.need(needListString)
 			} else if listC == "list_float" {
@@ -3747,7 +3770,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 			}
 			res := c.newTemp()
 			idx := c.newTemp()
-			c.writeln(fmt.Sprintf("%s %s = %s_create(%s.items.len);", listC, res, listC, src))
+			c.writeln(fmt.Sprintf("%s %s = %s(%s.items.len);", listC, res, listCreate, src))
 			c.writeln(fmt.Sprintf("int %s = 0;", idx))
 			loop := c.newLoopVar()
 			c.writeln(fmt.Sprintf("for (int %s=0; %s<%s.items.len; %s++) {", loop, loop, src, loop))
@@ -3858,6 +3881,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 		argT := c.exprType(arg)
 		listArg := types.ListType{Elem: argT}
 		listC := cTypeFromType(listArg)
+		listCreate := listC + "_create"
+		if st, ok := argT.(types.StructType); ok {
+			listC = sanitizeListName(st.Name)
+			listCreate = createListFuncName(st.Name)
+		}
 		if listC == "" {
 			listC = "list_int"
 		}
@@ -3874,7 +3902,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 		tmp := c.newTemp()
 		idxTmp := c.newTemp()
 		iter := c.newTemp()
-		c.writeln(fmt.Sprintf("%s %s = %s_create(%s);", listC, tmp, listC, c.listLenExpr(src)))
+		c.writeln(fmt.Sprintf("%s %s = %s(%s);", listC, tmp, listCreate, c.listLenExpr(src)))
 		c.writeln(fmt.Sprintf("int %s = 0;", idxTmp))
 		c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s; %s++) {", iter, iter, c.listLenExpr(src), iter))
 		c.indent++
