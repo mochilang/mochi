@@ -1167,6 +1167,9 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(call.Args) != 1 {
 			return "", fmt.Errorf("len expects 1 arg")
 		}
+		if lst := listLiteral(call.Args[0]); lst != nil {
+			return fmt.Sprintf("%d", len(lst.Elems)), nil
+		}
 		if types.IsStringExpr(call.Args[0], c.env) {
 			return fmt.Sprintf("len(%s)", args[0]), nil
 		}
@@ -1195,6 +1198,9 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	case "count":
 		if len(call.Args) != 1 {
 			return "", fmt.Errorf("count expects 1 arg")
+		}
+		if lst := listLiteral(call.Args[0]); lst != nil {
+			return fmt.Sprintf("%d", len(lst.Elems)), nil
 		}
 		return fmt.Sprintf("size(%s)", args[0]), nil
 	case "str":
