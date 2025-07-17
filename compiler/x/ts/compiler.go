@@ -1547,8 +1547,8 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 		if op == "+" && isString(leftType) && isString(rightType) {
 			return fmt.Sprintf("%s + %s", left, right), types.StringType{}, nil
 		}
-		if op == "/" && ((isInt(leftType) || isInt64(leftType)) || (isInt(rightType) || isInt64(rightType))) {
-			return fmt.Sprintf("Math.trunc(%s / %s)", left, right), types.IntType{}, nil
+		if op == "/" {
+			return fmt.Sprintf("(%s / %s)", left, right), types.FloatType{}, nil
 		}
 		return fmt.Sprintf("(%s %s %s)", left, op, right), leftType, nil
 	case "==", "!=":
@@ -1565,15 +1565,17 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 	case "&&", "||":
 		return fmt.Sprintf("(%s %s %s)", left, op, right), types.BoolType{}, nil
 	case "in":
+		var expr string
 		switch rightType.(type) {
 		case types.MapType:
-			return fmt.Sprintf("Object.prototype.hasOwnProperty.call(%s, String(%s))", right, left), types.BoolType{}, nil
+			expr = fmt.Sprintf("Object.prototype.hasOwnProperty.call(%s, String(%s))", right, left)
 		case types.ListType, types.StringType:
-			return fmt.Sprintf("%s.includes(%s)", right, left), types.BoolType{}, nil
+			expr = fmt.Sprintf("%s.includes(%s)", right, left)
 		default:
 			c.use("_contains")
-			return fmt.Sprintf("_contains(%s, %s)", right, left), types.BoolType{}, nil
+			expr = fmt.Sprintf("_contains(%s, %s)", right, left)
 		}
+		return fmt.Sprintf("(%s ? 1 : 0)", expr), types.IntType{}, nil
 	case "union":
 		expr := fmt.Sprintf("Array.from(new Set([...%s, ...%s]))", left, right)
 		return expr, types.ListType{Elem: types.AnyType{}}, nil

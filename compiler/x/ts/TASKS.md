@@ -99,6 +99,8 @@
 - Compiled all VM valid examples to TypeScript and generated outputs under tests/machine/x/ts.
 ### 2025-07-27 12:00 UTC
 - Updated `_print` helper to mimic `console.log` output for objects and booleans.
+### 2025-07-30 00:00 UTC
+- `_print` now prints `1` or `0` for booleans and math division always returns a float.
 ### 2025-07-17 00:00 UTC
 - Short list literals are now emitted on a single line for closer parity with
   the hand-written examples.
