@@ -39,3 +39,4 @@ Remaining work:
 - 99/100 examples pass (only outer_join fails).
 
 2025-07-21: Fixed _query helper for outer joins; all 100 VM examples compile and run successfully.
+2025-07-22: Updated machine README to mark all examples passing. No outstanding tasks.
