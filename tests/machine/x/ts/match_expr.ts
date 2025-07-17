@@ -8,34 +8,11 @@ function main(): void {
   x = 2;
   label = (() => {
     const _t = x;
-    if (_equal(_t, 1)) return "one";
-    if (_equal(_t, 2)) return "two";
-    if (_equal(_t, 3)) return "three";
+    if (_t === 1) return "one";
+    if (_t === 2) return "two";
+    if (_t === 3) return "three";
     return "unknown";
   })();
   console.log(label);
 }
-function _equal(a: unknown, b: unknown): boolean {
-  if (typeof a === "number" && typeof b === "number") {
-    return Math.abs(a - b) < 1e-9;
-  }
-  if (Array.isArray(a) && Array.isArray(b)) {
-    if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
-    return true;
-  }
-  if (a && b && typeof a === "object" && typeof b === "object") {
-    const ak = Object.keys(a);
-    const bk = Object.keys(b);
-    if (ak.length !== bk.length) return false;
-    for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
-        return false;
-      }
-    }
-    return true;
-  }
-  return a === b;
-}
-
 main();
