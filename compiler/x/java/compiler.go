@@ -2239,6 +2239,24 @@ func (c *Compiler) compileExprStmt(e *parser.ExprStmt) error {
 			return nil
 		}
 	}
+	// Optimize print(append(list, item)) patterns for closer human parity
+	if call, ok := callPattern(e.Expr); ok && call.Func == "print" && len(call.Args) == 1 {
+		if sub, ok2 := callPattern(call.Args[0]); ok2 && sub.Func == "append" && len(sub.Args) == 2 {
+			if _, ok := identName(sub.Args[0]); ok {
+				list, err := c.compileExpr(sub.Args[0])
+				if err != nil {
+					return err
+				}
+				item, err := c.compileExpr(sub.Args[1])
+				if err != nil {
+					return err
+				}
+				c.writeln(fmt.Sprintf("%s.add(%s);", list, item))
+				c.writeln(fmt.Sprintf("System.out.println(%s);", list))
+				return nil
+			}
+		}
+	}
 	expr, err := c.compileExpr(e.Expr)
 	if err != nil {
 		return err
