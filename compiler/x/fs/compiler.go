@@ -703,6 +703,10 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				res = fmt.Sprintf("%s.Contains(%s)", r, res)
 				continue
 			}
+			if strings.HasPrefix(res, "\"") {
+				res = fmt.Sprintf("%s.Contains(%s)", r, res)
+				continue
+			}
 			if strings.HasPrefix(r, "[") {
 				res = fmt.Sprintf("List.contains %s %s", res, r)
 				continue
@@ -1189,13 +1193,15 @@ func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
 		if err != nil {
 			return "", err
 		}
+		tVal := c.inferType(it.Value)
 		items[i] = fmt.Sprintf("(%s, %s)", k, v)
 		if ok {
 			names[i] = sanitizeIdent(name)
 			values[i] = v
-			t := c.inferType(it.Value)
-			types[i] = t
-			typeMap[sanitizeIdent(name)] = t
+			types[i] = tVal
+			typeMap[sanitizeIdent(name)] = tVal
+		} else {
+			types[i] = tVal
 		}
 	}
 	if allSimple {
@@ -1229,7 +1235,18 @@ func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
 			}
 		}
 	}
-	return fmt.Sprintf("System.Collections.Generic.Dictionary<string,%s>(dict [%s])", valueType, strings.Join(items, "; ")), nil
+	keyType := "string"
+	allIntKeys := true
+	for _, it := range m.Items {
+		if _, ok := intLiteral(it.Key); !ok {
+			allIntKeys = false
+			break
+		}
+	}
+	if allIntKeys {
+		keyType = "int"
+	}
+	return fmt.Sprintf("System.Collections.Generic.Dictionary<%s,%s>(dict [%s])", keyType, valueType, strings.Join(items, "; ")), nil
 }
 
 func (c *Compiler) mapLiteralType(m *parser.MapLiteral) string {
@@ -1237,6 +1254,7 @@ func (c *Compiler) mapLiteralType(m *parser.MapLiteral) string {
 	types := make([]string, len(m.Items))
 	allSimple := true
 	sameType := true
+	allIntKeys := true
 	var valueType string
 	typeMap := make(map[string]string)
 	for i, it := range m.Items {
@@ -1245,6 +1263,9 @@ func (c *Compiler) mapLiteralType(m *parser.MapLiteral) string {
 			allSimple = false
 		} else {
 			names[i] = sanitizeIdent(name)
+		}
+		if _, ok := intLiteral(it.Key); !ok {
+			allIntKeys = false
 		}
 		t := c.inferType(it.Value)
 		types[i] = t
@@ -1272,7 +1293,13 @@ func (c *Compiler) mapLiteralType(m *parser.MapLiteral) string {
 		return typ
 	}
 	if sameType && valueType != "" {
+		if allIntKeys {
+			return fmt.Sprintf("System.Collections.Generic.Dictionary<int,%s>", valueType)
+		}
 		return fmt.Sprintf("System.Collections.Generic.Dictionary<string,%s>", valueType)
+	}
+	if allIntKeys {
+		return "System.Collections.Generic.Dictionary<int,obj>"
 	}
 	return "System.Collections.Generic.Dictionary<string,obj>"
 }
@@ -1470,6 +1497,21 @@ func stringLiteral(e *parser.Expr) (string, bool) {
 	return *p.Lit.Str, true
 }
 
+func intLiteral(e *parser.Expr) (int64, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return 0, false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 || u.Value == nil || u.Value.Target == nil {
+		return 0, false
+	}
+	p := u.Value.Target
+	if p.Lit == nil || p.Lit.Int == nil {
+		return 0, false
+	}
+	return int64(*p.Lit.Int), true
+}
+
 func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "outer" && len(q.Froms) == 0 {
 		return c.compileOuterJoin(q)
@@ -1573,7 +1615,8 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			inner.WriteByte('\n')
 			inner.WriteString("  ")
 			inner.WriteString(bnd)
-			inner.WriteByte(' ')
+			inner.WriteByte('\n')
+			inner.WriteString("  ")
 		}
 		if cond != "" {
 			inner.WriteString(cond)
@@ -1649,7 +1692,8 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		b.WriteByte('\n')
 		b.WriteString("  ")
 		b.WriteString(bnd)
-		b.WriteByte(' ')
+		b.WriteByte('\n')
+		b.WriteString("  ")
 	}
 	if cond != "" {
 		b.WriteString(cond)
@@ -1899,6 +1943,18 @@ func (c *Compiler) isStringExpr(e *parser.Expr) bool {
 		if p.If != nil {
 			return c.isStringExpr(p.If.Then) && c.isStringExpr(p.If.Else)
 		}
+	}
+	return false
+}
+
+func (c *Compiler) isIntExpr(e *parser.Expr) bool {
+	if name, ok := c.simpleIdentifier(e); ok {
+		if t, ok2 := c.vars[name]; ok2 && t == "int" {
+			return true
+		}
+	}
+	if _, ok := intLiteral(e); ok {
+		return true
 	}
 	return false
 }
