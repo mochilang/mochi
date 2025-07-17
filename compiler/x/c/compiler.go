@@ -3901,14 +3901,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 	retList := types.ListType{Elem: retT}
 	listC := cTypeFromType(retList)
 	var listCreate string
-	if hasStruct {
-		listC = sanitizeListName(selStruct.Name)
-		listCreate = createListFuncName(selStruct.Name)
+	if st, ok := retT.(types.StructType); ok {
+		listC = sanitizeListName(st.Name)
+		listCreate = createListFuncName(st.Name)
 	} else {
+		if listC == "" {
+			listC = "list_int"
+		}
 		listCreate = listC + "_create"
-	}
-	if listC == "" {
-		listC = "list_int"
 	}
 	if listC == "list_string" {
 		c.need(needListString)
@@ -4933,6 +4933,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			for i, v := range vals {
 				c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
 			}
+			c.listLens[name] = len(p.List.Elems)
 		} else if len(p.List.Elems) > 0 {
 			if ml := asMapLiteral(p.List.Elems[0]); ml != nil {
 				if st, ok := c.structLits[ml]; ok {
@@ -5395,6 +5396,21 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					}
 					return sum
 				}
+			} else if isListFloatExpr(p.Call.Args[0], c.env) {
+				if l, ok := c.listLens[arg]; ok {
+					sum := c.newTemp()
+					loop := c.newLoopVar()
+					c.writeln(fmt.Sprintf("double %s = 0.0;", sum))
+					c.writeln(fmt.Sprintf("for (int %s=0; %s<%d; %s++) {", loop, loop, l, loop))
+					c.indent++
+					c.writeln(fmt.Sprintf("%s += %s;", sum, c.listItemExpr(arg, loop)))
+					c.indent--
+					c.writeln("}")
+					if c.env != nil {
+						c.env.SetVar(sum, types.FloatType{}, true)
+					}
+					return sum
+				}
 			}
 			elem := listElemType(p.Call.Args[0], c.env)
 			return c.aggregateExpr("sum", arg, elem)
@@ -5412,6 +5428,23 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					c.writeln("}")
 					res := c.newTemp()
 					c.writeln(fmt.Sprintf("double %s = %s / (double)%d;", res, sum, l))
+					if c.env != nil {
+						c.env.SetVar(res, types.FloatType{}, true)
+					}
+					return res
+				}
+			} else if isListFloatExpr(p.Call.Args[0], c.env) {
+				if l, ok := c.listLens[arg]; ok {
+					sum := c.newTemp()
+					loop := c.newLoopVar()
+					c.writeln(fmt.Sprintf("double %s = 0.0;", sum))
+					c.writeln(fmt.Sprintf("for (int %s=0; %s<%d; %s++) {", loop, loop, l, loop))
+					c.indent++
+					c.writeln(fmt.Sprintf("%s += %s;", sum, c.listItemExpr(arg, loop)))
+					c.indent--
+					c.writeln("}")
+					res := c.newTemp()
+					c.writeln(fmt.Sprintf("double %s = %s / %d.0;", res, sum, l))
 					if c.env != nil {
 						c.env.SetVar(res, types.FloatType{}, true)
 					}
@@ -5441,6 +5474,25 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					}
 					return min
 				}
+			} else if isListFloatExpr(p.Call.Args[0], c.env) {
+				if l, ok := c.listLens[arg]; ok {
+					min := c.newTemp()
+					loop := c.newLoopVar()
+					if l > 0 {
+						c.writeln(fmt.Sprintf("double %s = %s;", min, c.listItemExpr(arg, "0")))
+						c.writeln(fmt.Sprintf("for (int %s=1; %s<%d; %s++) {", loop, loop, l, loop))
+						c.indent++
+						c.writeln(fmt.Sprintf("if (%s < %s) %s = %s;", c.listItemExpr(arg, loop), min, min, c.listItemExpr(arg, loop)))
+						c.indent--
+						c.writeln("}")
+					} else {
+						c.writeln(fmt.Sprintf("double %s = 0.0;", min))
+					}
+					if c.env != nil {
+						c.env.SetVar(min, types.FloatType{}, true)
+					}
+					return min
+				}
 			}
 			elem := listElemType(p.Call.Args[0], c.env)
 			return c.aggregateExpr("min", arg, elem)
@@ -5462,6 +5514,25 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					}
 					if c.env != nil {
 						c.env.SetVar(max, types.IntType{}, true)
+					}
+					return max
+				}
+			} else if isListFloatExpr(p.Call.Args[0], c.env) {
+				if l, ok := c.listLens[arg]; ok {
+					max := c.newTemp()
+					loop := c.newLoopVar()
+					if l > 0 {
+						c.writeln(fmt.Sprintf("double %s = %s;", max, c.listItemExpr(arg, "0")))
+						c.writeln(fmt.Sprintf("for (int %s=1; %s<%d; %s++) {", loop, loop, l, loop))
+						c.indent++
+						c.writeln(fmt.Sprintf("if (%s > %s) %s = %s;", c.listItemExpr(arg, loop), max, max, c.listItemExpr(arg, loop)))
+						c.indent--
+						c.writeln("}")
+					} else {
+						c.writeln(fmt.Sprintf("double %s = 0.0;", max))
+					}
+					if c.env != nil {
+						c.env.SetVar(max, types.FloatType{}, true)
 					}
 					return max
 				}
