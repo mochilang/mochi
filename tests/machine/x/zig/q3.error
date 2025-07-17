@@ -1,2 +1,0 @@
-tests/machine/x/zig/q3.zig:130:126: error: expected type 'i32', found 'f64'
-/tmp/zig-0.12.0/lib/std/array_list.zig:261:42: note: parameter type declared here
