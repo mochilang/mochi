@@ -3518,6 +3518,47 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 		return buf.String(), nil
 	}
 
+	// Special case: simple outer join using a map for fast lookup.
+	if len(q.Joins) == 1 && len(q.Froms) == 0 && q.Group == nil &&
+		joinSides[0] == "outer" && cond == "" && sortExpr == "" &&
+		skipExpr == "" && takeExpr == "" && joinLeftKeys[0] != "" && joinRightKeys[0] != "" {
+		keyGo := goType(joinLeftTypes[0])
+		if keyGo == "" {
+			keyGo = "any"
+		}
+		var buf bytes.Buffer
+		buf.WriteString(fmt.Sprintf("func() []%s {\n", retElem))
+		mapName := "lookup"
+		if id, ok := identName(q.Joins[0].Src); ok {
+			mapName = sanitizeName(singular(id)) + "Map"
+		}
+		buf.WriteString(fmt.Sprintf("\t%s := make(map[%s]%s)\n", mapName, keyGo, joinTypes[0]))
+		buf.WriteString(fmt.Sprintf("\tseen := make(map[%s]bool)\n", keyGo))
+		jv := sanitizeName(q.Joins[0].Var)
+		buf.WriteString(fmt.Sprintf("\tfor _, %s := range %s {\n", jv, joinSrcs[0]))
+		buf.WriteString(fmt.Sprintf("\t\t%s[%s] = &%s\n", mapName, joinRightKeys[0], jv))
+		buf.WriteString("\t}\n")
+		buf.WriteString(fmt.Sprintf("\tvar result []%s\n", retElem))
+		lv := sanitizeName(q.Var)
+		buf.WriteString(fmt.Sprintf("\tfor _, %s := range %s {\n", lv, src))
+		buf.WriteString(fmt.Sprintf("\t\tr := %s{Order: &%s}\n", retElem, lv))
+		buf.WriteString(fmt.Sprintf("\t\tif v, ok := %s[%s]; ok {\n", mapName, joinLeftKeys[0]))
+		buf.WriteString(fmt.Sprintf("\t\t\tseen[%s] = true\n", joinLeftKeys[0]))
+		buf.WriteString("\t\t\tr.Customer = v\n")
+		buf.WriteString("\t\t}\n")
+		buf.WriteString("\t\tresult = append(result, r)\n")
+		buf.WriteString("\t}\n")
+		buf.WriteString(fmt.Sprintf("\tfor _, %s := range %s {\n", jv, joinSrcs[0]))
+		buf.WriteString(fmt.Sprintf("\t\tif !seen[%s] {\n", joinRightKeys[0]))
+		buf.WriteString(fmt.Sprintf("\t\t\tresult = append(result, %s{Customer: &%s})\n", retElem, jv))
+		buf.WriteString("\t\t}\n")
+		buf.WriteString("\t}\n")
+		buf.WriteString("\treturn result\n")
+		buf.WriteString("}()")
+		c.env = original
+		return buf.String(), nil
+	}
+
 	simple := q.Sort == nil && q.Skip == nil && q.Take == nil
 
 	elemGo := goType(elemType)
