@@ -5463,6 +5463,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			}
 			return "0"
 		} else if p.Call.Func == "count" {
+			if vals, ok := c.evalListIntExpr(p.Call.Args[0]); ok {
+				return strconv.Itoa(len(vals))
+			}
 			t := c.exprType(p.Call.Args[0])
 			arg := c.compileExpr(p.Call.Args[0])
 			switch t.(type) {
