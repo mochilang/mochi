@@ -29,9 +29,18 @@ function main(): void {
     }
     return _res;
   })();
-  console.log("--- Even pairs ---");
+  _print("--- Even pairs ---");
   for (const p of pairs) {
-    console.log(`${p.n} ${p.l}`);
+    _print(p.n, p.l);
   }
 }
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
+}
+
 main();

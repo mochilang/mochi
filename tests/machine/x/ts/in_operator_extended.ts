@@ -13,13 +13,22 @@ function main(): void {
     3,
   ];
   ys = xs.filter((x) => ((x % 2) == 1)).map((x) => x);
-  console.log(ys.includes(1));
-  console.log(ys.includes(2));
+  _print(ys.includes(1));
+  _print(ys.includes(2));
   m = { "a": 1 };
-  console.log(Object.prototype.hasOwnProperty.call(m, String("a")));
-  console.log(Object.prototype.hasOwnProperty.call(m, String("b")));
+  _print(Object.prototype.hasOwnProperty.call(m, String("a")));
+  _print(Object.prototype.hasOwnProperty.call(m, String("b")));
   s = "hello";
-  console.log(s.includes("ell"));
-  console.log(s.includes("foo"));
+  _print(s.includes("ell"));
+  _print(s.includes("foo"));
 }
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
+}
+
 main();

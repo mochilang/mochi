@@ -550,6 +550,8 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 			return err
 		}
 		value = v
+	} else if s.Type != nil {
+		value = "null"
 	}
 	var unwrapped []string
 	var retVar string
@@ -651,6 +653,8 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 			}
 			value = v
 		}
+	} else if s.Type != nil {
+		value = "null"
 	}
 	var typ types.Type = types.AnyType{}
 	if c.env != nil {
@@ -1891,40 +1895,8 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	}
 	switch call.Func {
 	case "print":
-		if len(args) > 1 {
-			templatable := true
-			tmpl := make([]string, len(args))
-			for i, a := range args {
-				if s, ok := stringLiteralFromUnary(call.Args[i].Binary.Left); ok {
-					tmpl[i] = strings.ReplaceAll(s, "`", "\x60")
-					continue
-				}
-				t := c.inferExprType(call.Args[i])
-				switch t.(type) {
-				case types.ListType, types.MapType, types.StructType, types.UnionType:
-					templatable = false
-				}
-				tmpl[i] = "${" + a + "}"
-			}
-			if templatable {
-				out := strings.Join(tmpl, " ")
-				return fmt.Sprintf("console.log(`%s`)", out), nil
-			}
-		}
-
-		parts := make([]string, len(args))
-		for i, a := range args {
-			t := c.inferExprType(call.Args[i])
-			switch t.(type) {
-			case types.ListType:
-				parts[i] = fmt.Sprintf("Array.isArray(%[1]s) ? %[1]s.join(' ') : %[1]s", a)
-			case types.MapType, types.StructType, types.UnionType:
-				parts[i] = fmt.Sprintf("JSON.stringify(%s)", a)
-			default:
-				parts[i] = a
-			}
-		}
-		return fmt.Sprintf("console.log(%s)", strings.Join(parts, ", ")), nil
+		c.use("_print")
+		return fmt.Sprintf("_print(%s)", strings.Join(args, ", ")), nil
 	case "keys":
 		if len(call.Args) == 1 {
 			t := c.inferExprType(call.Args[0])

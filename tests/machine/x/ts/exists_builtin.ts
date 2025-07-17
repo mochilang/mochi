@@ -10,7 +10,7 @@ function main(): void {
     2,
   ];
   flag = _exists(data.filter((x) => (x == 1)).map((x) => x));
-  console.log(flag);
+  _print(flag);
 }
 function _exists(v: any): boolean {
   if (Array.isArray(v)) return v.length > 0;
@@ -21,6 +21,15 @@ function _exists(v: any): boolean {
   }
   if (typeof v === "string") return v.length > 0;
   return false;
+}
+
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
 }
 
 main();

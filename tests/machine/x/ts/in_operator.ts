@@ -9,7 +9,16 @@ function main(): void {
     2,
     3,
   ];
-  console.log(xs.includes(2));
-  console.log(!(xs.includes(5)));
+  _print(xs.includes(2));
+  _print(!(xs.includes(5)));
 }
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
+}
+
 main();

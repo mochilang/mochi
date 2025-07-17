@@ -7,6 +7,15 @@ let b: number;
 function main(): void {
   a = 10;
   b = 20;
-  console.log(a + b);
+  _print(a + b);
 }
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
+}
+
 main();

@@ -12,6 +12,15 @@ function main(): void {
     "a": x,
     "b": y,
   };
-  console.log(`${(m as any)["a"]} ${(m as any)["b"]}`);
+  _print((m as any)["a"], (m as any)["b"]);
 }
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
+}
+
 main();

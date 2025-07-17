@@ -6,6 +6,15 @@ function sum3(a: number, b: number, c: number): number {
 }
 
 function main(): void {
-  console.log(6);
+  _print(6);
 }
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
+}
+
 main();

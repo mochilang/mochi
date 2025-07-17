@@ -22,9 +22,18 @@ function main(): void {
   root = math.sqrt(49);
   sin45 = math.sin(math.pi / 4);
   log_e = math.log(math.e);
-  console.log(`Circle area with r = ${r} => ${area}`);
-  console.log(`Square root of 49: ${root}`);
-  console.log(`sin(π/4): ${sin45}`);
-  console.log(`log(e): ${log_e}`);
+  _print("Circle area with r =", r, "=>", area);
+  _print("Square root of 49:", root);
+  _print("sin(π/4):", sin45);
+  _print("log(e):", log_e);
 }
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
+}
+
 main();

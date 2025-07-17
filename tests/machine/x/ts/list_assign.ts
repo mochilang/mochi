@@ -9,6 +9,15 @@ function main(): void {
     2,
   ];
   nums[1] = 3;
-  console.log(nums[1]);
+  _print(nums[1]);
 }
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
+}
+
 main();

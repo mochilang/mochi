@@ -28,7 +28,16 @@ function main(): void {
     11,
     15,
   ], 9);
-  console.log(result[0]);
-  console.log(result[1]);
+  _print(result[0]);
+  _print(result[1]);
 }
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
+}
+
 main();

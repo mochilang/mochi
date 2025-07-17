@@ -6,8 +6,17 @@ var i: number;
 function main(): void {
   i = 0;
   while ((i < 3)) {
-    console.log(i);
+    _print(i);
     i = i + 1;
   }
 }
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
+}
+
 main();

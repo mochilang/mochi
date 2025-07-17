@@ -101,6 +101,15 @@ const (
 		"  return String(v);\n" +
 		"}\n"
 
+	helperPrint = "function _print(...args: any[]): void {\n" +
+		"  const out = args.map(a => {\n" +
+		"    if (Array.isArray(a)) return a.join(' ');\n" +
+		"    if (a && typeof a === 'object') return JSON.stringify(a);\n" +
+		"    return String(a);\n" +
+		"  }).join(' ').trimEnd();\n" +
+		"  console.log(out);\n" +
+		"}\n"
+
 	helperMin = "function _min(v: any): any {\n" +
 		"  let list: any[] | null = null;\n" +
 		"  if (Array.isArray(v)) list = v;\n" +
@@ -580,6 +589,7 @@ var helperMap = map[string]string{
 	"_dataset":     helperDataset,
 	"_json":        helperJSON,
 	"_fmt":         helperFmt,
+	"_print":       helperPrint,
 }
 
 func (c *Compiler) use(name string) {

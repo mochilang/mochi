@@ -9,6 +9,15 @@ let todo: Todo;
 
 function main(): void {
   todo = { "title": "hi" } as Todo;
-  console.log(todo.title);
+  _print(todo.title);
 }
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
+}
+
 main();

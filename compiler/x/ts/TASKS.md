@@ -1,6 +1,9 @@
 # TypeScript Compiler Tasks
 
 ## Recent Enhancements
+### 2025-07-21 00:00 UTC
+- Added `_print` helper to trim trailing spaces and default typed variables to `null`.
+  Regenerated VM golden outputs.
 ### 2025-07-16 16:48 UTC
 - Simplified `vm_golden_test.go` to only verify runtime output. Generated
   TypeScript files are still written for reference but no longer compared to

@@ -46,11 +46,20 @@ function main(): void {
       }),
     });
   })();
-  console.log("--- Left Join Multi ---");
+  _print("--- Left Join Multi ---");
   for (const r of result) {
-    console.log(`${r.orderId} ${r.name} ${r.item}`);
+    _print(r.orderId, r.name, r.item);
   }
 }
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
+}
+
 function _query(src: any[], joins: any[], opts: any): any {
   let items = src.map((v) => [v]);
   for (const j of joins) {

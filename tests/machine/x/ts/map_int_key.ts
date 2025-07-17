@@ -8,6 +8,15 @@ function main(): void {
     [1]: "a",
     [2]: "b",
   };
-  console.log(m[1]);
+  _print(m[1]);
 }
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
+}
+
 main();

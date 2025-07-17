@@ -6,9 +6,18 @@ let x: number;
 function main(): void {
   x = 5;
   if ((x > 3)) {
-    console.log("big");
+    _print("big");
   } else {
-    console.log("small");
+    _print("small");
   }
 }
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
+}
+
 main();

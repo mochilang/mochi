@@ -54,11 +54,25 @@ function main(): void {
     }
     return _res;
   })();
-  console.log("--- Left Join ---");
+  _print("--- Left Join ---");
   for (const entry of result) {
-    console.log(
-      `Order ${entry.orderId} customer ${entry.customer} total ${entry.total}`,
+    _print(
+      "Order",
+      entry.orderId,
+      "customer",
+      entry.customer,
+      "total",
+      entry.total,
     );
   }
 }
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
+}
+
 main();

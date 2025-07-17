@@ -7,8 +7,17 @@ let b: any;
 function main(): void {
   a = 10 - 3;
   b = 2 + 2;
-  console.log(a);
-  console.log(a == 7);
-  console.log(b < 5);
+  _print(a);
+  _print(a == 7);
+  _print(b < 5);
 }
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
+}
+
 main();

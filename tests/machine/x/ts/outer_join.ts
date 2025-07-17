@@ -83,19 +83,33 @@ function main(): void {
     }
     return _res;
   })();
-  console.log("--- Outer Join using syntax ---");
+  _print("--- Outer Join using syntax ---");
   for (const row of result) {
     if (row.order) {
       if (row.customer) {
-        console.log(
-          `Order ${row.order.id} by ${row.customer.name} - $ ${row.order.total}`,
+        _print(
+          "Order",
+          row.order.id,
+          "by",
+          row.customer.name,
+          "- $",
+          row.order.total,
         );
       } else {
-        console.log(`Order ${row.order.id} by Unknown - $ ${row.order.total}`);
+        _print("Order", row.order.id, "by", "Unknown", "- $", row.order.total);
       }
     } else {
-      console.log(`Customer ${row.customer.name} has no orders`);
+      _print("Customer", row.customer.name, "has no orders");
     }
   }
 }
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
+}
+
 main();

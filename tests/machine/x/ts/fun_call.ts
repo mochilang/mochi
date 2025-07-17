@@ -6,6 +6,15 @@ function add(a: number, b: number): number {
 }
 
 function main(): void {
-  console.log(5);
+  _print(5);
 }
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
+}
+
 main();

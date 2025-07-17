@@ -2,6 +2,15 @@
 // Source: /workspace/mochi/tests/vm/valid/string_concat.mochi
 
 function main(): void {
-  console.log(`hello world`);
+  _print(`hello world`);
 }
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
+}
+
 main();

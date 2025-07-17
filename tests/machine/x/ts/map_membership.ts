@@ -8,7 +8,16 @@ function main(): void {
     "a": 1,
     "b": 2,
   };
-  console.log(Object.prototype.hasOwnProperty.call(m, String("a")));
-  console.log(Object.prototype.hasOwnProperty.call(m, String("c")));
+  _print(Object.prototype.hasOwnProperty.call(m, String("a")));
+  _print(Object.prototype.hasOwnProperty.call(m, String("c")));
 }
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
+}
+
 main();
