@@ -1,6 +1,9 @@
 # Swift Compiler Progress
 
 ## Recent Enhancements
+- 2025-07-22 08:10 – improved join query nil handling and added struct list
+  conversion when saving data so `right_join` and `save_jsonl_stdout` now
+  compile.
 - 2025-07-21 07:27 – struct casts no longer track map fields so `cast_struct`
   compiles correctly.
 - 2025-07-20 09:00 – numeric literal inference now distinguishes ints and floats so
