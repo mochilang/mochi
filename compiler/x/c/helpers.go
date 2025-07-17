@@ -528,15 +528,51 @@ func freeVarsStmt(fn *parser.FunStmt, params []string) []string {
 // freeVarsTestBlock returns the variable names referenced within the test block.
 func freeVarsTestBlock(tb *parser.TestBlock) []string {
 	vars := map[string]struct{}{}
+	locals := map[string]struct{}{}
 	for _, st := range tb.Body {
+		collectLocals(st, locals)
 		scanStmt(st, vars)
 	}
 	out := make([]string, 0, len(vars))
 	for k := range vars {
-		out = append(out, k)
+		if _, ok := locals[k]; !ok {
+			out = append(out, k)
+		}
 	}
 	sort.Strings(out)
 	return out
+}
+
+func collectLocals(s *parser.Statement, vars map[string]struct{}) {
+	switch {
+	case s.Let != nil:
+		vars[s.Let.Name] = struct{}{}
+	case s.Var != nil:
+		vars[s.Var.Name] = struct{}{}
+	case s.For != nil:
+		vars[s.For.Name] = struct{}{}
+		for _, st := range s.For.Body {
+			collectLocals(st, vars)
+		}
+	case s.While != nil:
+		for _, st := range s.While.Body {
+			collectLocals(st, vars)
+		}
+	case s.If != nil:
+		for _, st := range s.If.Then {
+			collectLocals(st, vars)
+		}
+		if s.If.ElseIf != nil {
+			collectLocals(&parser.Statement{If: s.If.ElseIf}, vars)
+		}
+		for _, st := range s.If.Else {
+			collectLocals(st, vars)
+		}
+	case s.Test != nil:
+		for _, st := range s.Test.Body {
+			collectLocals(st, vars)
+		}
+	}
 }
 
 func isListPostfix(p *parser.PostfixExpr, env *types.Env) bool {

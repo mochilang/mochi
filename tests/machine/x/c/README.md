@@ -81,7 +81,7 @@ The C backend compiles Mochi programs in `tests/vm/valid`. The table below lists
 - [x] left_join_multi
 - [x] len_map
  - [x] list_assign
-- [ ] list_nested_assign
+ - [x] list_nested_assign
 - [x] load_yaml
 - [x] map_assign
 - [x] map_index
@@ -97,7 +97,7 @@ The C backend compiles Mochi programs in `tests/vm/valid`. The table below lists
  - [x] slice
 - [ ] sort_stable
  - [x] sum_builtin
-- [ ] test_block
+ - [x] test_block
 - [ ] tree_sum
 - [ ] update_stmt
 - [ ] user_type_literal
