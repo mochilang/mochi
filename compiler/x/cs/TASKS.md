@@ -70,3 +70,7 @@
 
 ## Recent Updates (2025-07-24 00:00)
 - Initial attempt to infer struct types from map-based list literals to reduce runtime helpers.
+## Recent Updates (2025-07-25 00:00)
+- Direct list and map indexing now falls back to variable type hints when
+  inference is ambiguous, avoiding `_indexList` and `_indexString` helpers.
+  Machine output regenerated for `two-sum`.

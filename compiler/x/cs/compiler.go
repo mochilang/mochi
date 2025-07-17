@@ -1464,20 +1464,40 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					prefix := &parser.PostfixExpr{Target: p.Target, Ops: p.Ops[:i]}
 					preType = c.inferPostfixType(prefix)
 				}
+				varName := ""
+				if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+					varName = sanitizeName(p.Target.Selector.Root)
+				}
 				if isStr {
-					if _, ok := preType.(types.StringType); ok {
+					_, strOk := preType.(types.StringType)
+					if !strOk && varName != "" {
+						t, ok := c.varTypes[varName]
+						strOk = ok && t == "string"
+					}
+					if strOk {
 						expr = fmt.Sprintf("%s[(int)%s]", expr, idx)
 					} else {
 						c.use("_indexString")
 						expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
 					}
 				} else {
-					switch preType.(type) {
-					case types.MapType:
+					_, mapOk := preType.(types.MapType)
+					_, listOk := preType.(types.ListType)
+					if !mapOk && !listOk && varName != "" {
+						t, ok := c.varTypes[varName]
+						if ok {
+							if strings.HasPrefix(t, "Dictionary<") {
+								mapOk = true
+							} else if strings.HasPrefix(t, "List<") || strings.HasSuffix(t, "[]") {
+								listOk = true
+							}
+						}
+					}
+					if mapOk {
 						expr = fmt.Sprintf("%s[%s]", expr, idx)
-					case types.ListType:
+					} else if listOk {
 						expr = fmt.Sprintf("%s[(int)%s]", expr, idx)
-					default:
+					} else {
 						c.use("_indexList")
 						expr = fmt.Sprintf("_indexList(%s, %s)", expr, idx)
 					}
