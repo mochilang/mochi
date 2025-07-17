@@ -131,3 +131,4 @@ should compile and run successfully.
   compile and run successfully.
 - 2025-09-14 - Fixed slice generation to avoid wrapping `list_int` values in
   temporary structs; `slice.mochi` now compiles and runs.
+- 2025-07-17 - Updated struct forward declarations to use sanitized type names so `cast_struct.mochi` compiles.
