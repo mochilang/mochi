@@ -1490,6 +1490,13 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 		if len(args) != 1 {
 			return "", fmt.Errorf("count expects 1 arg")
 		}
+		root := rootNameExpr(call.Args[0])
+		if c.varType(root) == "string" || c.isStringExpr(call.Args[0]) {
+			return fmt.Sprintf("(string-length %s)", args[0]), nil
+		}
+		if c.isMapExpr(call.Args[0]) || c.isListExpr(call.Args[0]) {
+			return fmt.Sprintf("(length %s)", args[0]), nil
+		}
 		c.needGroup = true
 		c.needDataset = true
 		return fmt.Sprintf("(_count %s)", args[0]), nil
