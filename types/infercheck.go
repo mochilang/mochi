@@ -29,6 +29,24 @@ func ContainsAny(t Type) bool {
 		return ContainsAny(tt.Elem)
 	case MapType:
 		return ContainsAny(tt.Key) || ContainsAny(tt.Value)
+	case OptionType:
+		return ContainsAny(tt.Elem)
+	case GroupType:
+		return ContainsAny(tt.Key) || ContainsAny(tt.Elem)
+	case StructType:
+		for _, ft := range tt.Fields {
+			if ContainsAny(ft) {
+				return true
+			}
+		}
+	case UnionType:
+		for _, v := range tt.Variants {
+			for _, ft := range v.Fields {
+				if ContainsAny(ft) {
+					return true
+				}
+			}
+		}
 	}
 	return false
 }
