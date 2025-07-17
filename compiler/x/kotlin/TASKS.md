@@ -1,3 +1,4 @@
+- 2025-07-17 16:39 UTC: Removed unused `starts_with` helper and reduced numeric casts via improved inference.
 - 2025-07-17 12:03 UTC: Improved selector type inference to avoid helper casts in loops.
 - 2025-07-17 07:10 UTC: Added string selector support and improved union match coverage; 92 VM tests compile.
 # Kotlin Compiler Tasks

@@ -244,8 +244,6 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.indent = 0
 	c.used = make(map[string]bool)
-	// Always include starts_with helper for now
-	c.use("starts_with")
 	c.inferred = make(map[string]types.StructType)
 	c.mapNodes = make(map[*parser.MapLiteral]string)
 
@@ -960,13 +958,16 @@ func (c *Compiler) binaryOp(left string, lType types.Type, op string, right stri
 		c.use("intersect")
 		return fmt.Sprintf("intersect(%s.toMutableList(), %s.toMutableList())", left, right), types.ListType{}, nil
 	case "+", "-", "*", "/", "%":
-		if _, ok := lType.(types.FloatType); ok {
-			c.use("toDouble")
-			left = fmt.Sprintf("toDouble(%s)", left)
-		}
-		if _, ok := rType.(types.FloatType); ok {
-			c.use("toDouble")
-			right = fmt.Sprintf("toDouble(%s)", right)
+		if _, ok := lType.(types.IntType); ok {
+			if _, rok := rType.(types.FloatType); rok {
+				left = fmt.Sprintf("(%s).toDouble()", left)
+				lType = types.FloatType{}
+			}
+		} else if _, ok := rType.(types.IntType); ok {
+			if _, lok := lType.(types.FloatType); lok {
+				right = fmt.Sprintf("(%s).toDouble()", right)
+				rType = types.FloatType{}
+			}
 		}
 		if _, lok := lType.(types.AnyType); lok {
 			if _, rok := rType.(types.AnyType); rok {
