@@ -682,6 +682,28 @@ func collectMutations(sts []*parser.Statement, mutated map[string]bool) {
 }
 
 func (c *Compiler) compileFor(fr *parser.ForStmt) (string, error) {
+	elemType := listElemType(fr.Source)
+	if elemType == "" && fr.Source.Binary != nil {
+		u := fr.Source.Binary.Left
+		if u.Value != nil && u.Value.Target.Selector != nil {
+			t := c.types[u.Value.Target.Selector.Root]
+			if t == "list_map" {
+				elemType = "map"
+			}
+		}
+	}
+	prevType, ok := c.types[fr.Name]
+	if elemType != "" {
+		c.types[fr.Name] = elemType
+	}
+	defer func() {
+		if ok {
+			c.types[fr.Name] = prevType
+		} else {
+			delete(c.types, fr.Name)
+		}
+	}()
+
 	mutated := map[string]bool{}
 	collectMutations(fr.Body, mutated)
 
@@ -2057,6 +2079,41 @@ func (c *Compiler) smartGet(key, expr string) string {
 	return fmt.Sprintf("mochi_get(%s, %s)", key, expr)
 }
 
+func listElemType(e *parser.Expr) string {
+	t := inferExprTypeShallow(e)
+	if t == "list_map" {
+		return "map"
+	}
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || len(u.Value.Ops) > 0 {
+		return ""
+	}
+	if l := u.Value.Target.List; l != nil && len(l.Elems) > 0 {
+		return inferExprTypeShallow(l.Elems[0])
+	}
+	return ""
+}
+
+func inferExprTypeShallow(e *parser.Expr) string {
+	switch {
+	case isStructCastExpr(e):
+		return "map"
+	case isMapLiteralExpr(e):
+		return "map"
+	case isListMapLiteralExpr(e):
+		return "list_map"
+	case isListLiteralExpr(e):
+		return "list"
+	case isStringLiteralExpr(e):
+		return "string"
+	default:
+		return ""
+	}
+}
+
 func isMapLiteralExpr(e *parser.Expr) bool {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return false
@@ -2065,7 +2122,7 @@ func isMapLiteralExpr(e *parser.Expr) bool {
 	if len(u.Ops) > 0 || u.Value == nil || len(u.Value.Ops) > 0 {
 		return false
 	}
-	return u.Value.Target.Map != nil
+	return u.Value.Target.Map != nil || u.Value.Target.Struct != nil
 }
 
 func isListLiteralExpr(e *parser.Expr) bool {
@@ -2089,6 +2146,47 @@ func isStringLiteralExpr(e *parser.Expr) bool {
 	}
 	lit := u.Value.Target.Lit
 	return lit != nil && lit.Str != nil
+}
+
+func isStructCastExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) == 0 {
+		return false
+	}
+	op := p.Ops[len(p.Ops)-1]
+	if op.Cast == nil || op.Cast.Type == nil {
+		return false
+	}
+	t := op.Cast.Type
+	if t.Struct != nil {
+		return true
+	}
+	if t.Simple != nil {
+		name := *t.Simple
+		if name != "" && unicode.IsUpper(rune(name[0])) {
+			return true
+		}
+	}
+	return false
+}
+
+func isListMapLiteralExpr(e *parser.Expr) bool {
+	if !isListLiteralExpr(e) {
+		return false
+	}
+	u := e.Binary.Left
+	l := u.Value.Target.List
+	if len(l.Elems) == 0 {
+		return false
+	}
+	return isMapLiteralExpr(l.Elems[0]) || isStructCastExpr(l.Elems[0])
 }
 
 func isLiteralExpr(e *parser.Expr) bool {
@@ -2161,16 +2259,7 @@ func typeNameFromRef(tr *parser.TypeRef) string {
 }
 
 func (c *Compiler) inferExprType(e *parser.Expr) string {
-	switch {
-	case isMapLiteralExpr(e):
-		return "map"
-	case isListLiteralExpr(e):
-		return "list"
-	case isStringLiteralExpr(e):
-		return "string"
-	default:
-		return ""
-	}
+	return inferExprTypeShallow(e)
 }
 
 func (c *Compiler) typeOfPrimary(p *parser.Primary) string {
