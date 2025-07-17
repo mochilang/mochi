@@ -1,6 +1,7 @@
 # Erlang Compiler Tasks
 
 ## Recent updates
+- [2025-07-17 08:59] Improved type inference for struct casts and list iteration variables, eliminating more `mochi_get` calls. Regenerated machine outputs.
 - [2025-07-17 08:49] Used type inference to emit `maps:get` for known map fields,
   removing unnecessary `mochi_get` calls. Regenerated machine outputs.
 - [2025-07-17 07:14] Changed Erlang comment prefix to `%%` for generated
