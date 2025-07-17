@@ -740,8 +740,6 @@ const (
 		"}\n"
 
 	helperSave = "func _save(src any, path string, opts map[string]any) {\n" +
-		"    rows, ok := _toMapSlice(src)\n" +
-		"    if !ok { panic(\"save source must be list of maps\") }\n" +
 		"    format := \"csv\"\n" +
 		"    header := false\n" +
 		"    delim := ','\n" +
@@ -749,6 +747,20 @@ const (
 		"        if f, ok := opts[\"format\"].(string); ok { format = f }\n" +
 		"        if h, ok := opts[\"header\"].(bool); ok { header = h }\n" +
 		"        if d, ok := opts[\"delimiter\"].(string); ok && len(d) > 0 { delim = rune(d[0]) }\n" +
+		"    }\n" +
+		"    rows, ok := _toMapSlice(src)\n" +
+		"    if !ok {\n" +
+		"        rv := reflect.ValueOf(src)\n" +
+		"        if format == \"jsonl\" && (path == \"\" || path == \"-\") && rv.Kind() == reflect.Slice {\n" +
+		"            for i := 0; i < rv.Len(); i++ {\n" +
+		"                b, err := json.Marshal(rv.Index(i).Interface())\n" +
+		"                if err != nil { panic(err) }\n" +
+		"                _, err = fmt.Fprintln(os.Stdout, string(b))\n" +
+		"                if err != nil { panic(err) }\n" +
+		"            }\n" +
+		"            return\n" +
+		"        }\n" +
+		"        panic(\"save source must be list of maps\")\n" +
 		"    }\n" +
 		"    var err error\n" +
 		"    switch format {\n" +
