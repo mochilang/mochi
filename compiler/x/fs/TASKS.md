@@ -50,3 +50,4 @@
 - 2025-07-15 06:37 - Implemented tuple-based sort key generation in `compileQuery` to allow sorting before dropping query variables. F# code for TPC-DS queries still fails to compile due to other type issues.
 - 2025-09-02 - Fixed dictionary membership, improved `print` handling and recursion support, updated join typing. 75 of 100 programs compile and run.
 - 2025-09-05 - Corrected string expression detection so boolean string comparisons print with `%b`. 76 of 100 programs compile and run.
+- 2025-11-23 - Parenthesized function call arguments and combined return branches so recursive examples like `tail_recursion` compile; 79 of 100 programs now succeed.
