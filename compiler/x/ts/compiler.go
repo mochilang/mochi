@@ -1677,12 +1677,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					typ = types.BoolType{}
 				} else if strings.HasSuffix(expr, ".starts_with") && len(args) == 1 {
 					recv := strings.TrimSuffix(expr, ".starts_with")
-					if _, ok := recvTyp.(types.StringType); ok {
-						expr = fmt.Sprintf("%s.startsWith(%s)", recv, args[0])
-					} else {
-						c.use("_starts_with")
-						expr = fmt.Sprintf("_starts_with(%s, %s)", recv, args[0])
-					}
+					c.use("_starts_with")
+					expr = fmt.Sprintf("_starts_with(%s, %s)", recv, args[0])
 					typ = types.BoolType{}
 				} else {
 					expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
@@ -1995,12 +1991,6 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "starts_with":
 		if len(args) != 2 {
 			return "", fmt.Errorf("starts_with expects 2 args")
-		}
-		if len(call.Args) == 2 {
-			t := underlyingType(c.inferExprType(call.Args[0]))
-			if _, ok := t.(types.StringType); ok {
-				return fmt.Sprintf("%s.startsWith(%s)", args[0], args[1]), nil
-			}
 		}
 		c.use("_starts_with")
 		return fmt.Sprintf("_starts_with(%s, %s)", args[0], args[1]), nil
@@ -2877,6 +2867,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				c.env = orig
 				return "", err
 			}
+			sortType := underlyingType(c.inferExprType(q.Sort))
 			var sv string
 			if group {
 				sv = sanitizeName(q.Group.Name)
@@ -2892,9 +2883,17 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				}
 				b.WriteString("\tlet _pairs = _items.map(it => { const {" + strings.Join(vars, ", ") + "} = it; return {item: it, key: " + sortExpr + "}; });\n")
 			}
-			b.WriteString("\t_pairs.sort((a, b) => _cmp(a.key, b.key));\n")
-			b.WriteString("\t_items = _pairs.map(p => p.item);\n")
-			c.use("_cmp")
+			switch {
+			case isNumericType(sortType):
+				b.WriteString("\t_pairs.sort((a, b) => a.key - b.key);\n")
+			case isStringType(sortType):
+				b.WriteString("\t_pairs.sort((a, b) => (a.key < b.key ? -1 : (a.key > b.key ? 1 : 0)));\n")
+			case isBoolType(sortType):
+				b.WriteString("\t_pairs.sort((a, b) => (Number(a.key) - Number(b.key)));\n")
+			default:
+				b.WriteString("\t_pairs.sort((a, b) => _cmp(a.key, b.key));\n")
+				c.use("_cmp")
+			}
 			b.WriteString("\t_items = _pairs.map(p => p.item);\n")
 		}
 
@@ -3245,9 +3244,19 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString("\tlet _itemsG = Array.from(_map.values());\n")
 		if sortExpr != "" {
 			b.WriteString("\tlet _pairs = _itemsG.map(it => { const " + sanitizeName(q.Group.Name) + " = it; return {item: it, key: " + sortExpr + "}; });\n")
-			b.WriteString("\t_pairs.sort((a, b) => _cmp(a.key, b.key));\n")
+			sortType := underlyingType(c.inferExprType(q.Sort))
+			switch {
+			case isNumericType(sortType):
+				b.WriteString("\t_pairs.sort((a, b) => a.key - b.key);\n")
+			case isStringType(sortType):
+				b.WriteString("\t_pairs.sort((a, b) => (a.key < b.key ? -1 : (a.key > b.key ? 1 : 0)));\n")
+			case isBoolType(sortType):
+				b.WriteString("\t_pairs.sort((a, b) => (Number(a.key) - Number(b.key)));\n")
+			default:
+				b.WriteString("\t_pairs.sort((a, b) => _cmp(a.key, b.key));\n")
+				c.use("_cmp")
+			}
 			b.WriteString("\t_itemsG = _pairs.map(p => p.item);\n")
-			c.use("_cmp")
 		}
 		if skipExpr != "" {
 			b.WriteString("\t{ const _n = " + skipExpr + "; _itemsG = _n < _itemsG.length ? _itemsG.slice(_n) : []; }\n")
@@ -3619,6 +3628,29 @@ func isStringType(t types.Type) bool {
 			}
 			for _, ft := range v.Fields {
 				if !isStringType(ft) {
+					return false
+				}
+			}
+		}
+		return true
+	default:
+		return false
+	}
+}
+
+func isBoolType(t types.Type) bool {
+	switch tt := t.(type) {
+	case types.BoolType:
+		return true
+	case types.OptionType:
+		return isBoolType(tt.Elem)
+	case types.UnionType:
+		for _, v := range tt.Variants {
+			if len(v.Fields) != 1 {
+				return false
+			}
+			for _, ft := range v.Fields {
+				if !isBoolType(ft) {
 					return false
 				}
 			}
