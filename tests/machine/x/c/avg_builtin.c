@@ -23,7 +23,7 @@ int _mochi_main() {
   tmp1.data[2] = 3;
   int tmp2 = 0;
   for (int i3 = 0; i3 < 3; i3++) {
-    tmp2 += tmp1[i3];
+    tmp2 += tmp1.data[i3];
   }
   double tmp4 = tmp2 / (double)3;
   printf("%.17g\n", tmp4);
