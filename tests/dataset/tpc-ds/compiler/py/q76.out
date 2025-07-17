@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/tmp/q76.py", line 436, in <module>
+    result = _q0()
+             ^^^^^
+  File "/tmp/q76.py", line 406, in _q0
+    return [
+           ^
+  File "/tmp/q76.py", line 415, in <listcomp>
+    [
+  File "/tmp/q76.py", line 421, in <listcomp>
+    x.get("r") if isinstance(x, dict) else getattr(x, "r"), dict
+                                           ^^^^^^^^^^^^^^^
+AttributeError: 'Auto2' object has no attribute 'r'

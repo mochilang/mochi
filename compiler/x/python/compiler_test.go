@@ -307,6 +307,7 @@ func TestPyCompiler_TPCDSQueries(t *testing.T) {
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
 			}
+			_ = os.WriteFile(filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "py", q+".py"), code, 0644)
 			dir := t.TempDir()
 			file := filepath.Join(dir, "main.py")
 			if err := os.WriteFile(file, code, 0644); err != nil {

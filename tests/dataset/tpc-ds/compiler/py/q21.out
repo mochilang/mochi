@@ -1,1 +1,1 @@
-[{"w_warehouse_name": "Backup", "i_item_id": "ITEM2", "inv_before": 20.0, "inv_after": 20.0}, {"w_warehouse_name": "Main", "i_item_id": "ITEM1", "inv_before": 30.0, "inv_after": 40.0}]
+[{"w_warehouse_name":"Backup","i_item_id":"ITEM2","inv_before":20,"inv_after":20},{"w_warehouse_name":"Main","i_item_id":"ITEM1","inv_before":30,"inv_after":40}]

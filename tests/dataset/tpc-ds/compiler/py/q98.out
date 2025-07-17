@@ -1,1 +1,14 @@
-[{"i_item_id": "I1", "i_item_desc": "desc1", "i_category": "CatA", "i_class": "Class1", "i_current_price": 100, "itemrevenue": 50.0, "revenueratio": 33.333333333333336}, {"i_item_id": "I2", "i_item_desc": "desc2", "i_category": "CatB", "i_class": "Class1", "i_current_price": 200, "itemrevenue": 100.0, "revenueratio": 66.66666666666667}]
+Traceback (most recent call last):
+  File "/tmp/q98.py", line 367, in <module>
+    totals = _q2()
+             ^^^^^
+  File "/tmp/q98.py", line 362, in _q2
+    return [
+           ^
+  File "/tmp/q98.py", line 363, in <listcomp>
+    Auto4(_class=cg.key, total=sum([x.itemrevenue for x in cg])) for cg in _items1
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/q98.py", line 363, in <listcomp>
+    Auto4(_class=cg.key, total=sum([x.itemrevenue for x in cg])) for cg in _items1
+                                    ^^^^^^^^^^^^^
+AttributeError: '_Group' object has no attribute 'itemrevenue'

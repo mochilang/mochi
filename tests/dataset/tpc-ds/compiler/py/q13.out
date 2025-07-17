@@ -1,1 +1,14 @@
-[{"avg_ss_quantity": 10.0, "avg_ss_ext_sales_price": 100.0, "avg_ss_ext_wholesale_cost": 50.0, "sum_ss_ext_wholesale_cost": 50.0}]
+Traceback (most recent call last):
+  File "/tmp/q13.py", line 394, in <module>
+    result = _q0()
+             ^^^^^
+  File "/tmp/q13.py", line 383, in _q0
+    return [
+           ^
+  File "/tmp/q13.py", line 385, in <listcomp>
+    avg_ss_quantity=_avg([x["ss_quantity"] for x in g]),
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/q13.py", line 385, in <listcomp>
+    avg_ss_quantity=_avg([x["ss_quantity"] for x in g]),
+                          ~^^^^^^^^^^^^^^^
+TypeError: 'StoreSale' object is not subscriptable

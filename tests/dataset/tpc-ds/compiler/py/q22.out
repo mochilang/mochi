@@ -1,1 +1,1 @@
-[{"i_product_name": "Prod1", "i_brand": "Brand1", "i_class": "Class1", "i_category": "Cat1", "qoh": 15.0}, {"i_product_name": "Prod2", "i_brand": "Brand2", "i_class": "Class2", "i_category": "Cat2", "qoh": 50.0}]
+[{"i_product_name":"Prod1","i_brand":"Brand1","i_class":"Class1","i_category":"Cat1","qoh":15.0},{"i_product_name":"Prod2","i_brand":"Brand2","i_class":"Class2","i_category":"Cat2","qoh":50.0}]

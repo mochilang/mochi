@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/tmp/q77.py", line 671, in <module>
+    result = _q12()
+             ^^^^^^
+  File "/tmp/q77.py", line 611, in _q12
+    return [
+           ^
+  File "/tmp/q77.py", line 616, in <listcomp>
+    [
+  File "/tmp/q77.py", line 622, in <listcomp>
+    x.get("p") if isinstance(x, dict) else getattr(x, "p"), dict
+                                           ^^^^^^^^^^^^^^^
+AttributeError: 'Auto1' object has no attribute 'p'

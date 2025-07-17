@@ -1,1 +1,8 @@
-58
+[{"item_id":1,"average":58.0}]
+Traceback (most recent call last):
+  File "/tmp/q58.py", line 79, in <module>
+    test_TPCDS_Q58_simplified()
+  File "/tmp/q58.py", line 68, in test_TPCDS_Q58_simplified
+    assert result == [Auto1(item_id=1, average=58.0)]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

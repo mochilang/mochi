@@ -1,1 +1,8 @@
-{"B1_LP": 100.0, "B1_CNT": 1, "B1_CNTD": 1, "B2_LP": 80.0, "B2_CNT": 1, "B2_CNTD": 1}
+Traceback (most recent call last):
+  File "/tmp/q28.py", line 163, in <module>
+    B1_LP=_avg([x["ss_list_price"] for x in bucket1]),
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/q28.py", line 163, in <listcomp>
+    B1_LP=_avg([x["ss_list_price"] for x in bucket1]),
+                ~^^^^^^^^^^^^^^^^^
+TypeError: 'StoreSale' object is not subscriptable
