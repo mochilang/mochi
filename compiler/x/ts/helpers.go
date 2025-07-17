@@ -211,36 +211,43 @@ func equalTypes(a, b types.Type) bool {
 }
 
 func isInt64(t types.Type) bool {
+	t = underlyingType(t)
 	_, ok := t.(types.Int64Type)
 	return ok
 }
 
 func isInt(t types.Type) bool {
+	t = underlyingType(t)
 	_, ok := t.(types.IntType)
 	return ok
 }
 
 func isFloat(t types.Type) bool {
+	t = underlyingType(t)
 	_, ok := t.(types.FloatType)
 	return ok
 }
 
 func isString(t types.Type) bool {
+	t = underlyingType(t)
 	_, ok := t.(types.StringType)
 	return ok
 }
 
 func isList(t types.Type) bool {
+	t = underlyingType(t)
 	_, ok := t.(types.ListType)
 	return ok
 }
 
 func isMap(t types.Type) bool {
+	t = underlyingType(t)
 	_, ok := t.(types.MapType)
 	return ok
 }
 
 func isStruct(t types.Type) bool {
+	t = underlyingType(t)
 	switch t.(type) {
 	case types.StructType, types.UnionType:
 		return true
@@ -370,6 +377,7 @@ func fieldType(t types.Type, field string) types.Type {
 }
 
 func tsZeroValue(t types.Type) string {
+	t = underlyingType(t)
 	switch tt := t.(type) {
 	case types.IntType, types.Int64Type, types.FloatType:
 		return "0"
@@ -391,24 +399,24 @@ func tsZeroValue(t types.Type) string {
 }
 
 func underlyingType(t types.Type) types.Type {
-        for {
-                switch tt := t.(type) {
-                case types.OptionType:
-                        t = tt.Elem
-                case types.UnionType:
-                        if len(tt.Variants) == 1 {
-                                for _, v := range tt.Variants {
-                                        if len(v.Fields) == 1 {
-                                                for _, ft := range v.Fields {
-                                                        t = ft
-                                                }
-                                                continue
-                                        }
-                                }
-                        }
-                        return t
-                default:
-                        return t
-                }
-        }
+	for {
+		switch tt := t.(type) {
+		case types.OptionType:
+			t = tt.Elem
+		case types.UnionType:
+			if len(tt.Variants) == 1 {
+				for _, v := range tt.Variants {
+					if len(v.Fields) == 1 {
+						for _, ft := range v.Fields {
+							t = ft
+						}
+						continue
+					}
+				}
+			}
+			return t
+		default:
+			return t
+		}
+	}
 }
