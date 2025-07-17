@@ -30,6 +30,7 @@
 - 2025-07-24 - Inlined JSON strings for map variables and updated Rust VM README
   to reflect 100% compilation success.
 
+- 2025-07-30 - Added _print_list helper and improved print builtin to remove trailing spaces. Generated Rust output for append_builtin, dataset_where_filter and values_builtin.
 ## Remaining Enhancements
 - [ ] Inline JSON printing for variables when values are known at compile time
 - [ ] Validate generated code for `tpc-h/q1.mochi`

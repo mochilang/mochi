@@ -774,6 +774,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		out.WriteString("    println!(\"{:?}\", value);\n")
 		out.WriteString("}\n\n")
 	}
+	if c.helpers["_print_list"] {
+		out.WriteString("fn _print_list<T: std::fmt::Debug>(v: &[T]) {\n")
+		out.WriteString("    for (i, it) in v.iter().enumerate() {\n")
+		out.WriteString("        if i > 0 { print!(\" \"); }\n")
+		out.WriteString("        print!(\"{:?}\", it);\n")
+		out.WriteString("    }\n")
+		out.WriteString("    println!();\n")
+		out.WriteString("}\n\n")
+	}
 	out.Write(c.buf.Bytes())
 	return out.Bytes(), nil
 }
@@ -3738,23 +3747,18 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 					return fmt.Sprintf("println!(%q)", *u.Value.Target.Lit.Str), nil
 				}
 			}
-		}
-		fmtParts := make([]string, len(args))
-		for i, a := range call.Args {
 			if c.env != nil {
-				t := types.TypeOfExpr(a, c.env)
-				switch t.(type) {
-				case types.StringType, types.IntType, types.Int64Type, types.FloatType, types.BoolType:
-					fmtParts[i] = "{}"
-				default:
-					fmtParts[i] = "{:?}"
+				if _, ok := types.TypeOfExpr(a, c.env).(types.ListType); ok {
+					c.helpers["_print_list"] = true
+					return fmt.Sprintf("_print_list(&%s)", args[0]), nil
 				}
-			} else {
-				fmtParts[i] = "{:?}"
 			}
 		}
-		fmtStr := strings.TrimSpace(strings.Join(fmtParts, " "))
-		return fmt.Sprintf("println!(\"%s\", %s)", fmtStr, strings.Join(args, ", ")), nil
+		parts := make([]string, len(args))
+		for i := range args {
+			parts[i] = fmt.Sprintf("format!(\"{}\", %s)", args[i])
+		}
+		return fmt.Sprintf("println!(\"{}\", vec![%s].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(\" \") )", strings.Join(parts, ", ")), nil
 	case "append":
 		c.helpers["append"] = true
 		if len(args) != 2 {
