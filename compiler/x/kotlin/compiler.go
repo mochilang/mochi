@@ -1247,6 +1247,9 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
+			if !simpleExpr(v) {
+				v = "(" + v + ")"
+			}
 			items[i] = fmt.Sprintf("%s to %s", k, v)
 		}
 		return "mutableMapOf(" + strings.Join(items, ", ") + ")", nil
@@ -1647,22 +1650,22 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		}
 	}
 
-       oldEnv := c.env
-       // special case: simple join variants without extra clauses
-       if q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct &&
-               len(q.Froms) == 0 && len(q.Joins) == 1 && q.Where == nil {
-               j := q.Joins[0]
-               if j.Side != nil && (*j.Side == "left" || *j.Side == "outer") {
-                       // simple left or outer join
-                       c.env = child
-                       code, err := c.simpleRightOuterJoin(src, q, j, selType, *j.Side == "outer")
-                       c.env = oldEnv
-                       return code, err
-               } else if j.Side != nil && *j.Side == "right" {
-                       // TODO: implement basic right join
-               }
-       }
-       c.env = child
+	oldEnv := c.env
+	// special case: simple join variants without extra clauses
+	if q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct &&
+		len(q.Froms) == 0 && len(q.Joins) == 1 && q.Where == nil {
+		j := q.Joins[0]
+		if j.Side != nil && (*j.Side == "left" || *j.Side == "outer") {
+			// simple left or outer join
+			c.env = child
+			code, err := c.simpleRightOuterJoin(src, q, j, selType, *j.Side == "outer")
+			c.env = oldEnv
+			return code, err
+		} else if j.Side != nil && *j.Side == "right" {
+			// TODO: implement basic right join
+		}
+	}
+	c.env = child
 
 	b.WriteString("run {\n")
 	b.WriteString(indent(lvl))
@@ -2658,6 +2661,24 @@ func isEmptyMapLiteral(e *parser.Expr) bool {
 	}
 	if ml := p.Target.Map; ml != nil {
 		return len(ml.Items) == 0
+	}
+	return false
+}
+
+// simpleExpr reports whether the expression is a single identifier or literal
+// value without operators.
+func simpleExpr(s string) bool {
+	if identRE.MatchString(s) {
+		return true
+	}
+	if strings.HasPrefix(s, "\"") && strings.HasSuffix(s, "\"") {
+		return true
+	}
+	if s == "true" || s == "false" || s == "null" {
+		return true
+	}
+	if regexp.MustCompile(`^-?\d+(\.\d+)?$`).MatchString(s) {
+		return true
 	}
 	return false
 }

@@ -2,7 +2,7 @@
 
 This directory contains Kotlin source code generated from the Mochi programs in `tests/vm/valid`. Each program has a corresponding `.kt` file. When the compiler and the Kotlin runtime successfully run the program a `.out` file is written. If compilation or execution fails a `.error` file will be present instead.
 
-Compiled programs: 47/100
+Compiled programs: 48/100
 
 Checklist:
 - [x] append_builtin
@@ -19,7 +19,7 @@ Checklist:
 - [x] cross_join_filter
 - [x] cross_join_triple
 - [x] dataset_sort_take_limit
-- [ ] dataset_where_filter
+ - [x] dataset_where_filter
 - [x] exists_builtin
 - [x] for_list_collection
 - [x] for_loop
