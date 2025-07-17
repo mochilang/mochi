@@ -1,6 +1,6 @@
-## Recent Enhancements (2025-07-19 00:00)
+## Recent Enhancements (2025-07-22 00:00)
 - Typed variables without initializers now default to zero values.
-- `_fmt` formats non-integer floats with `format(v, '.17g')` for deterministic output.
+- `_fmt` now uses `repr(v)` for floats, ensuring `3.14` and `27.333333333333332` print exactly as in the VM.
 
 ## Recent Enhancements (2025-07-17 01:20)
 - Print calls skip `_fmt` for constant string arguments and attempt to collapse

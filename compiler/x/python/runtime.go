@@ -284,10 +284,10 @@ var helperSave = "def _save(rows, path, opts):\n" +
 	"                w.writerow(rec)\n" +
 	"            return\n" +
 	"        elif fmt == 'json':\n" +
-	"            json.dump(rows, f, separators=(',', ':'), sort_keys=True)\n" +
+	"            json.dump(rows, f, separators=(',', ':'))\n" +
 	"        elif fmt == 'jsonl':\n" +
 	"            for row in rows:\n" +
-	"                f.write(json.dumps(row, separators=(',', ':'), sort_keys=True))\n" +
+	"                f.write(json.dumps(row, separators=(',', ':')))\n" +
 	"                f.write('\\n')\n" +
 	"        elif fmt == 'yaml':\n" +
 	"            import yaml\n" +
@@ -346,7 +346,7 @@ var helperFmt = "def _fmt(v):\n" +
 	"    if isinstance(v, float):\n" +
 	"        if v.is_integer():\n" +
 	"            return str(int(v))\n" +
-	"        return format(v, '.17g')\n" +
+	"        return repr(v)\n" +
 	"    if isinstance(v, dict) or hasattr(v, '__dataclass_fields__'):\n" +
 	"        return '[object Object]'\n" +
 	"    return str(v)\n"
