@@ -349,6 +349,9 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	if bytes.Contains(src, []byte("std::any")) || c.usesAny {
 		add("#include <any>")
 	}
+	if bytes.Contains(src, []byte("std::setprecision")) {
+		add("#include <iomanip>")
+	}
 
 	var out bytes.Buffer
 	for _, h := range includes {
@@ -363,7 +366,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 		out.WriteString("inline void __json(bool v){ std::cout<<(v?\"true\":\"false\"); }\n")
 		out.WriteString("inline void __json(const std::string &v){ std::cout<<\"\\\"\"<<v<<\"\\\"\"; }\n")
 		out.WriteString("inline void __json(const char* v){ std::cout<<\"\\\"\"<<v<<\"\\\"\"; }\n")
-		out.WriteString("template<typename T> void __json(const std::vector<T>& v){ std::cout<<\"[\"; bool first=true; for(const auto&x:v){ if(!first) std::cout<<\",\"; first=false; __json(x);} std::cout<<\"]\"; }\n")
+		out.WriteString("template<typename T> void __json(const std::vector<T>& v){ std::cout<<\"[\"; bool first=true; for(const auto&x:v){ if(!first) std::cout<<\", \"; first=false; __json(x);} std::cout<<\"]\"; }\n")
 		out.WriteString("template<typename K,typename V> void __json(const std::map<K,V>& m){ std::cout<<\"{\"; bool first=true; for(const auto&kv:m){ if(!first) std::cout<<\",\"; first=false; __json(kv.first); std::cout<<\":\"; __json(kv.second);} std::cout<<\"}\"; }\n")
 		out.WriteString("template<typename K,typename V> void __json(const std::unordered_map<K,V>& m){ std::cout<<\"{\"; bool first=true; for(const auto&kv:m){ if(!first) std::cout<<\",\"; first=false; __json(kv.first); std::cout<<\":\"; __json(kv.second);} std::cout<<\"}\"; }\n")
 		out.WriteByte('\n')
@@ -1233,7 +1236,11 @@ func (c *Compiler) compilePrint(args []*parser.Expr) error {
 			switch typ {
 			case "bool":
 				c.buf.WriteString("std::cout << (" + s + " ? \"true\" : \"false\") << std::endl;")
-			case "int", "double", "string":
+			case "int":
+				c.buf.WriteString("std::cout << " + s + " << std::endl;")
+			case "double":
+				c.buf.WriteString("std::cout << std::fixed << std::setprecision(1) << " + s + " << std::endl;")
+			case "string":
 				c.buf.WriteString("std::cout << " + s + " << std::endl;")
 			case "pair":
 				c.buf.WriteString("std::cout << std::boolalpha << " + s + ".first << ' ' << " + s + ".second << std::endl;")
@@ -1253,9 +1260,9 @@ func (c *Compiler) compilePrint(args []*parser.Expr) error {
 			c.writeIndent()
 			if et := c.elemType[id]; et != "" && c.isStructName(et) {
 				c.usesJSON = true
-				c.buf.WriteString("for(size_t i=0;i<" + id + ".size();++i){ if(i) std::cout<<' '; __json(" + id + "[i]); }\n")
+				c.buf.WriteString("std::cout<<\"[\"; for(size_t i=0;i<" + id + ".size();++i){ if(i) std::cout<<\", \"; __json(" + id + "[i]); } std::cout<<\"]\" << std::endl;\n")
 			} else {
-				c.buf.WriteString("for(size_t i=0;i<" + id + ".size();++i){ if(i) std::cout<<' '; std::cout<<" + id + "[i]; }\n")
+				c.buf.WriteString("std::cout<<\"[\"; for(size_t i=0;i<" + id + ".size();++i){ if(i) std::cout<<\", \"; std::cout<<" + id + "[i]; } std::cout<<\"]\" << std::endl;\n")
 			}
 			return nil
 		}
@@ -1912,6 +1919,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				valType = t
 			} else if c.vars[vals[0]] == "string" {
 				valType = "std::string"
+			} else if _, isInt, ok := parseNumber(vals[0]); ok {
+				if isInt {
+					valType = "int"
+				} else {
+					valType = "double"
+				}
 			} else {
 				valType = fmt.Sprintf("decltype(%s)", vals[0])
 			}
@@ -1930,6 +1943,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 					vt = t
 				} else if c.vars[v] == "string" {
 					vt = "std::string"
+				} else if _, isInt, ok := parseNumber(v); ok {
+					if isInt {
+						vt = "int"
+					} else {
+						vt = "double"
+					}
 				} else {
 					vt = fmt.Sprintf("decltype(%s)", v)
 				}
@@ -2957,9 +2976,9 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 				cap = "[]"
 			}
 			buf.WriteString("(" + cap + "() {\n")
-                        buf.WriteString("    std::map<" + keyType + ", std::vector<" + itemStruct + ">> __groups;\n")
-                        buf.WriteString("    for (auto " + q.Var + " : " + src + ") {\n")
-                        buf.WriteString("        __groups[" + keyExpr + "].push_back(" + q.Var + ");\n")
+			buf.WriteString("    std::map<" + keyType + ", std::vector<" + itemStruct + ">> __groups;\n")
+			buf.WriteString("    for (auto " + q.Var + " : " + src + ") {\n")
+			buf.WriteString("        __groups[" + keyExpr + "].push_back(" + q.Var + ");\n")
 			buf.WriteString("    }\n")
 			buf.WriteString("    std::vector<" + groupStruct + "> __items;\n")
 			buf.WriteString("    for (auto &kv : __groups) {\n")
@@ -3334,10 +3353,10 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 			indent(indentLevel)
 			buf.WriteString("auto __key = " + keyExpr + ";\n")
 			indent(indentLevel)
-                        itemInit := strings.Join(itemVars, ", ")
-                        if len(itemVars) > 1 || itemStruct == "auto" {
-                                itemInit = itemStruct + "{" + itemInit + "}"
-                        }
+			itemInit := strings.Join(itemVars, ", ")
+			if len(itemVars) > 1 || itemStruct == "auto" {
+				itemInit = itemStruct + "{" + itemInit + "}"
+			}
 			buf.WriteString("bool __found = false;\n")
 			indent(indentLevel)
 			eq := "__g.key == __key"
@@ -3599,13 +3618,13 @@ func (c *Compiler) inferType(expr string) string {
 // inferExprType returns a simple C++ type for the given expression string.
 // It is used when generating struct field declarations.
 func inferExprType(expr string) string {
-        trimmed := strings.TrimSpace(expr)
-        if strings.HasPrefix(trimmed, "std::string(") {
-                return "std::string"
-        }
-        if _, err := strconv.Atoi(trimmed); err == nil {
-                return "int"
-        }
+	trimmed := strings.TrimSpace(expr)
+	if strings.HasPrefix(trimmed, "std::string(") {
+		return "std::string"
+	}
+	if _, err := strconv.Atoi(trimmed); err == nil {
+		return "int"
+	}
 	if _, err := strconv.ParseFloat(trimmed, 64); err == nil && strings.Contains(trimmed, ".") {
 		return "double"
 	}

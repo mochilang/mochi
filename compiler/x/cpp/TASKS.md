@@ -65,3 +65,9 @@
 - [ ] Improve formatting to better match human examples.
 - [ ] Implement additional TPCH optimizations.
 
+## Recent Enhancements (2025-07-17 12:07 UTC)
+- Vector printing now matches Mochi VM output using brackets and commas.
+- Map literal value type inference recognizes numeric literals to avoid
+  `std::any` fallbacks.
+- Double values are printed with one decimal place using `<iomanip>` helpers.
+
