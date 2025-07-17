@@ -682,7 +682,7 @@ func collectMutations(sts []*parser.Statement, mutated map[string]bool) {
 }
 
 func (c *Compiler) compileFor(fr *parser.ForStmt) (string, error) {
-	elemType := listElemType(fr.Source)
+	elemType := c.listElemType(fr.Source)
 	if elemType == "" && fr.Source.Binary != nil {
 		u := fr.Source.Binary.Left
 		if u.Value != nil && u.Value.Target.Selector != nil {
@@ -2079,8 +2079,8 @@ func (c *Compiler) smartGet(key, expr string) string {
 	return fmt.Sprintf("mochi_get(%s, %s)", key, expr)
 }
 
-func listElemType(e *parser.Expr) string {
-	t := inferExprTypeShallow(e)
+func (c *Compiler) listElemType(e *parser.Expr) string {
+	t := c.inferExprType(e)
 	if t == "list_map" {
 		return "map"
 	}
@@ -2092,13 +2092,23 @@ func listElemType(e *parser.Expr) string {
 		return ""
 	}
 	if l := u.Value.Target.List; l != nil && len(l.Elems) > 0 {
-		return inferExprTypeShallow(l.Elems[0])
+		return c.inferExprType(l.Elems[0])
 	}
 	return ""
 }
 
 func inferExprTypeShallow(e *parser.Expr) string {
 	switch {
+	case extractQuery(e) != nil:
+		q := extractQuery(e)
+		t := inferExprTypeShallow(q.Select)
+		if t == "map" {
+			return "list_map"
+		}
+		if t != "" {
+			return "list"
+		}
+		return ""
 	case isStructCastExpr(e):
 		return "map"
 	case isMapLiteralExpr(e):
@@ -2259,7 +2269,22 @@ func typeNameFromRef(tr *parser.TypeRef) string {
 }
 
 func (c *Compiler) inferExprType(e *parser.Expr) string {
-	return inferExprTypeShallow(e)
+	if t := inferExprTypeShallow(e); t != "" {
+		return t
+	}
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || len(u.Value.Ops) > 0 {
+		return ""
+	}
+	if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 {
+		if typ, ok := c.types[sel.Root]; ok {
+			return typ
+		}
+	}
+	return ""
 }
 
 func (c *Compiler) typeOfPrimary(p *parser.Primary) string {
