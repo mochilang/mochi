@@ -5,15 +5,6 @@ let y: number;
 
 function main(): void {
   y = 0;
-  _print(y);
+  console.log(y);
 }
-function _print(...args: unknown[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    if (typeof a === "boolean") return a ? "1" : "0";
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

@@ -70,7 +70,7 @@ function main(): void {
     }
     people[_i] = _item;
   }
-  _print("ok");
+  console.log("ok");
   test_update_adult_status();
 }
 function _equal(a: unknown, b: unknown): boolean {
@@ -94,15 +94,6 @@ function _equal(a: unknown, b: unknown): boolean {
     return true;
   }
   return a === b;
-}
-
-function _print(...args: unknown[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    if (typeof a === "boolean") return a ? "1" : "0";
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
 }
 
 main();

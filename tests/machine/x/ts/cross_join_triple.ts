@@ -26,18 +26,15 @@ function main(): void {
     }
     return _res;
   })();
-  _print("--- Cross Join of three lists ---");
+  console.log("--- Cross Join of three lists ---");
   for (const c of combos) {
-    _print(c.n, c.l, c.b);
+    console.log(
+      [c.n, c.l, c.b].map((a) => {
+        if (Array.isArray(a)) return a.join(" ");
+        if (typeof a === "boolean") return a ? "1" : "0";
+        return String(a);
+      }).join(" ").trimEnd(),
+    );
   }
 }
-function _print(...args: unknown[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    if (typeof a === "boolean") return a ? "1" : "0";
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

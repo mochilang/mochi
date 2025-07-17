@@ -2,18 +2,9 @@
 // Source: /workspace/mochi/tests/vm/valid/binary_precedence.mochi
 
 function main(): void {
-  _print(1 + (2 * 3));
-  _print((1 + 2) * 3);
-  _print((2 * 3) + 1);
-  _print(2 * (3 + 1));
+  console.log(1 + (2 * 3));
+  console.log((1 + 2) * 3);
+  console.log((2 * 3) + 1);
+  console.log(2 * (3 + 1));
 }
-function _print(...args: unknown[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    if (typeof a === "boolean") return a ? "1" : "0";
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

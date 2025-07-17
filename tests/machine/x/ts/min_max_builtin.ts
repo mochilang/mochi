@@ -5,16 +5,7 @@ let nums: number[];
 
 function main(): void {
   nums = [3, 1, 4];
-  _print(Math.min(...nums));
-  _print(Math.max(...nums));
+  console.log(Math.min(...nums));
+  console.log(Math.max(...nums));
 }
-function _print(...args: unknown[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    if (typeof a === "boolean") return a ? "1" : "0";
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

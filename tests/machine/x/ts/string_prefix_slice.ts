@@ -8,17 +8,8 @@ let s2: string;
 function main(): void {
   prefix = "fore";
   s1 = "forest";
-  _print(s1.slice(0, prefix.length) == prefix);
+  console.log((s1.slice(0, prefix.length) == prefix) ? 1 : 0);
   s2 = "desert";
-  _print(s2.slice(0, prefix.length) == prefix);
+  console.log((s2.slice(0, prefix.length) == prefix) ? 1 : 0);
 }
-function _print(...args: unknown[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    if (typeof a === "boolean") return a ? "1" : "0";
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

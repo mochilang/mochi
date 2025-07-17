@@ -22,18 +22,15 @@ function main(): void {
     }
     return _res;
   })();
-  _print("--- Even pairs ---");
+  console.log("--- Even pairs ---");
   for (const p of pairs) {
-    _print(p.n, p.l);
+    console.log(
+      [p.n, p.l].map((a) => {
+        if (Array.isArray(a)) return a.join(" ");
+        if (typeof a === "boolean") return a ? "1" : "0";
+        return String(a);
+      }).join(" ").trimEnd(),
+    );
   }
 }
-function _print(...args: unknown[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    if (typeof a === "boolean") return a ? "1" : "0";
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

@@ -52,27 +52,24 @@ function main(): void {
     }
     return _res;
   })();
-  _print("--- Cross Join: All order-customer pairs ---");
+  console.log("--- Cross Join: All order-customer pairs ---");
   for (const entry of result) {
-    _print(
-      "Order",
-      entry.orderId,
-      "(customerId:",
-      entry.orderCustomerId,
-      ", total: $",
-      entry.orderTotal,
-      ") paired with",
-      entry.pairedCustomerName,
+    console.log(
+      [
+        "Order",
+        entry.orderId,
+        "(customerId:",
+        entry.orderCustomerId,
+        ", total: $",
+        entry.orderTotal,
+        ") paired with",
+        entry.pairedCustomerName,
+      ].map((a) => {
+        if (Array.isArray(a)) return a.join(" ");
+        if (typeof a === "boolean") return a ? "1" : "0";
+        return String(a);
+      }).join(" ").trimEnd(),
     );
   }
 }
-function _print(...args: unknown[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    if (typeof a === "boolean") return a ? "1" : "0";
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

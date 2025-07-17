@@ -2,22 +2,13 @@
 // Source: /workspace/mochi/tests/vm/valid/bool_chain.mochi
 
 function boom(): boolean {
-  _print("boom");
+  console.log("boom");
   return true;
 }
 
 function main(): void {
-  _print(((1 < 2) && (2 < 3)) && (3 < 4));
-  _print(((1 < 2) && (2 > 3)) && boom());
-  _print((((1 < 2) && (2 < 3)) && (3 > 4)) && boom());
+  console.log((((1 < 2) && (2 < 3)) && (3 < 4)) ? 1 : 0);
+  console.log((((1 < 2) && (2 > 3)) && boom()) ? 1 : 0);
+  console.log(((((1 < 2) && (2 < 3)) && (3 > 4)) && boom()) ? 1 : 0);
 }
-function _print(...args: unknown[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    if (typeof a === "boolean") return a ? "1" : "0";
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

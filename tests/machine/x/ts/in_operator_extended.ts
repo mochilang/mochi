@@ -9,22 +9,17 @@ let ys: number[];
 function main(): void {
   xs = [1, 2, 3];
   ys = xs.filter((x) => ((x % 2) == 1)).map((x) => x);
-  _print(ys.includes(1) ? 1 : 0);
-  _print(ys.includes(2) ? 1 : 0);
+  console.log((ys.includes(1) ? 1 : 0) ? 1 : 0);
+  console.log((ys.includes(2) ? 1 : 0) ? 1 : 0);
   m = { "a": 1 };
-  _print(Object.prototype.hasOwnProperty.call(m, String("a")) ? 1 : 0);
-  _print(Object.prototype.hasOwnProperty.call(m, String("b")) ? 1 : 0);
+  console.log(
+    (Object.prototype.hasOwnProperty.call(m, String("a")) ? 1 : 0) ? 1 : 0,
+  );
+  console.log(
+    (Object.prototype.hasOwnProperty.call(m, String("b")) ? 1 : 0) ? 1 : 0,
+  );
   s = "hello";
-  _print(s.includes("ell") ? 1 : 0);
-  _print(s.includes("foo") ? 1 : 0);
+  console.log((s.includes("ell") ? 1 : 0) ? 1 : 0);
+  console.log((s.includes("foo") ? 1 : 0) ? 1 : 0);
 }
-function _print(...args: unknown[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    if (typeof a === "boolean") return a ? "1" : "0";
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

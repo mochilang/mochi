@@ -66,18 +66,15 @@ function main(): void {
     }
     return _res;
   })();
-  _print("--- People grouped by city ---");
+  console.log("--- People grouped by city ---");
   for (const s of stats) {
-    _print(s.city, ": count =", s.count, ", avg_age =", s.avg_age);
+    console.log(
+      [s.city, ": count =", s.count, ", avg_age =", s.avg_age].map((a) => {
+        if (Array.isArray(a)) return a.join(" ");
+        if (typeof a === "boolean") return a ? "1" : "0";
+        return String(a);
+      }).join(" ").trimEnd(),
+    );
   }
 }
-function _print(...args: unknown[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    if (typeof a === "boolean") return a ? "1" : "0";
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

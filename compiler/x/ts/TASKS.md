@@ -118,3 +118,6 @@
 ### 2025-09-15 00:00 UTC
 - String slicing and indexing now emit native `slice` and `[]` operations instead of helper functions.
 - Regenerated VM golden outputs.
+### 2025-09-16 00:00 UTC
+- Removed `_print` helper. Print calls now inline a `console.log` conversion.
+- Regenerated VM golden outputs.

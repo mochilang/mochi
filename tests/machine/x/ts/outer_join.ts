@@ -83,33 +83,44 @@ function main(): void {
     }
     return _res;
   })();
-  _print("--- Outer Join using syntax ---");
+  console.log("--- Outer Join using syntax ---");
   for (const row of result) {
     if (row.order) {
       if (row.customer) {
-        _print(
-          "Order",
-          row.order.id,
-          "by",
-          row.customer.name,
-          "- $",
-          row.order.total,
+        console.log(
+          [
+            "Order",
+            row.order.id,
+            "by",
+            row.customer.name,
+            "- $",
+            row.order.total,
+          ].map((a) => {
+            if (Array.isArray(a)) return a.join(" ");
+            if (typeof a === "boolean") return a ? "1" : "0";
+            return String(a);
+          }).join(" ").trimEnd(),
         );
       } else {
-        _print("Order", row.order.id, "by", "Unknown", "- $", row.order.total);
+        console.log(
+          ["Order", row.order.id, "by", "Unknown", "- $", row.order.total].map(
+            (a) => {
+              if (Array.isArray(a)) return a.join(" ");
+              if (typeof a === "boolean") return a ? "1" : "0";
+              return String(a);
+            },
+          ).join(" ").trimEnd(),
+        );
       }
     } else {
-      _print("Customer", row.customer.name, "has no orders");
+      console.log(
+        ["Customer", row.customer.name, "has no orders"].map((a) => {
+          if (Array.isArray(a)) return a.join(" ");
+          if (typeof a === "boolean") return a ? "1" : "0";
+          return String(a);
+        }).join(" ").trimEnd(),
+      );
     }
   }
 }
-function _print(...args: unknown[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    if (typeof a === "boolean") return a ? "1" : "0";
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

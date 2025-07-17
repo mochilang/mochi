@@ -2,18 +2,9 @@
 // Source: /workspace/mochi/tests/vm/valid/list_set_ops.mochi
 
 function main(): void {
-  _print(Array.from(new Set([...[1, 2], ...[2, 3]])));
-  _print([1, 2, 3].filter((v) => ![2].includes(v)));
-  _print([1, 2, 3].filter((v) => [2, 4].includes(v)));
-  _print([1, 2].concat([2, 3]).length);
+  console.log(Array.from(new Set([...[1, 2], ...[2, 3]])).join(" "));
+  console.log([1, 2, 3].filter((v) => ![2].includes(v)).join(" "));
+  console.log([1, 2, 3].filter((v) => [2, 4].includes(v)).join(" "));
+  console.log([1, 2].concat([2, 3]).length);
 }
-function _print(...args: unknown[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    if (typeof a === "boolean") return a ? "1" : "0";
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();
