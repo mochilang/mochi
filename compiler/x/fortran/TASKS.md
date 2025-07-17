@@ -44,6 +44,8 @@
   compilation checklist in `tests/machine/x/fortran/README.md`.
 - 2025-07-17 07:00: The compiler runs the type checker before emitting code so
   variables inferred from external functions use the correct Fortran types.
+- 2025-07-17 08:30: `len` and `count` constant-fold list literals to numeric
+  literals during code generation, avoiding runtime size checks.
 
 ## Remaining Work
 - [x] Support query compilation with joins and group-by for TPC-H `q1.mochi`.

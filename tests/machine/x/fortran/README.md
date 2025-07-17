@@ -2,6 +2,9 @@
 
 The Fortran backend compiles each Mochi program under `tests/vm/valid`. This directory stores the generated `.f90` source files and their runtime output. No `.error` files are present because all examples compile successfully.
 
+List literal lengths are now computed at compile time so programs using `len` or
+`count` on constant arrays avoid runtime helper code.
+
 Compiled programs: 100/100
 
 Checklist:
