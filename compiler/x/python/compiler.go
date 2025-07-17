@@ -1841,8 +1841,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.writeln(fmt.Sprintf("%s = [g for g in %s if (%s)]", tmpItems, tmpItems, havingExpr))
 		}
 		if sortExpr != "" {
-			c.use("_sort_key")
-			c.writeln(fmt.Sprintf("%s = sorted(%s, key=lambda %s: _sort_key(%s))", tmpItems, tmpItems, sanitizeName(q.Group.Name), sortExpr))
+			c.env = genv
+			st := c.inferExprType(q.Sort)
+			c.env = orig
+			if isSimpleKeyType(st) {
+				c.writeln(fmt.Sprintf("%s = sorted(%s, key=lambda %s: %s)", tmpItems, tmpItems, sanitizeName(q.Group.Name), sortExpr))
+			} else {
+				c.use("_sort_key")
+				c.writeln(fmt.Sprintf("%s = sorted(%s, key=lambda %s: _sort_key(%s))", tmpItems, tmpItems, sanitizeName(q.Group.Name), sortExpr))
+			}
 		}
 		if skipExpr != "" {
 			c.writeln(fmt.Sprintf("%s = (%s)[max(%s, 0):]", tmpItems, tmpItems, skipExpr))
@@ -1968,13 +1975,18 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		items := fmt.Sprintf("[ %s for %s%s ]", sanitizeName(q.Var), strings.Join(loops, " for "), cond)
 		if q.Sort != nil {
 			c.env = child
+			st := c.inferExprType(q.Sort)
 			s, err := c.compileExpr(q.Sort)
 			c.env = orig
 			if err != nil {
 				return "", err
 			}
-			c.use("_sort_key")
-			items = fmt.Sprintf("sorted(%s, key=lambda %s: _sort_key(%s))", items, strings.Join(paramList, ", "), s)
+			if isSimpleKeyType(st) {
+				items = fmt.Sprintf("sorted(%s, key=lambda %s: %s)", items, strings.Join(paramList, ", "), s)
+			} else {
+				c.use("_sort_key")
+				items = fmt.Sprintf("sorted(%s, key=lambda %s: _sort_key(%s))", items, strings.Join(paramList, ", "), s)
+			}
 		}
 		if q.Skip != nil {
 			c.env = child
