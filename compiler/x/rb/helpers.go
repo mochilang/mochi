@@ -267,6 +267,26 @@ func (c *Compiler) isStringPostfix(p *parser.PostfixExpr) bool {
 	return c.isStringPrimary(p.Target)
 }
 
+func (c *Compiler) isStringExpr(e *parser.Expr) bool {
+	if e == nil {
+		return false
+	}
+	if name, ok := identName(e); ok && c.env != nil {
+		if t, err := c.env.GetVar(name); err == nil {
+			if _, ok := t.(types.StringType); ok {
+				return true
+			}
+		}
+	}
+	if len(e.Binary.Right) == 0 {
+		u := e.Binary.Left
+		if len(u.Ops) == 0 {
+			return c.isStringPostfix(u.Value)
+		}
+	}
+	return false
+}
+
 func (c *Compiler) isListExpr(e *parser.Expr) bool {
 	if e == nil {
 		return false

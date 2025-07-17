@@ -2113,17 +2113,26 @@ func (c *Compiler) compileBuiltinCall(name string, args []string, origArgs []*pa
 		if len(args) != 1 {
 			return "", true, fmt.Errorf("reverse expects 1 arg")
 		}
+		if len(origArgs) == 1 && (c.isListExpr(origArgs[0]) || c.isStringExpr(origArgs[0])) {
+			return fmt.Sprintf("(%s).reverse", args[0]), true, nil
+		}
 		c.use("_reverse")
 		return fmt.Sprintf("_reverse(%s)", args[0]), true, nil
 	case "split":
 		if len(args) != 2 {
 			return "", true, fmt.Errorf("split expects 2 args")
 		}
+		if len(origArgs) == 2 && c.isStringExpr(origArgs[0]) {
+			return fmt.Sprintf("(%s).split(%s)", args[0], args[1]), true, nil
+		}
 		c.use("_splitString")
 		return fmt.Sprintf("_splitString(%s, %s)", args[0], args[1]), true, nil
 	case "join":
 		if len(args) != 2 {
 			return "", true, fmt.Errorf("join expects 2 args")
+		}
+		if len(origArgs) == 2 && c.isListExpr(origArgs[0]) {
+			return fmt.Sprintf("(%s).map(&:to_s).join(%s)", args[0], args[1]), true, nil
 		}
 		c.use("_joinStrings")
 		return fmt.Sprintf("_joinStrings(%s, %s)", args[0], args[1]), true, nil
@@ -2151,11 +2160,17 @@ func (c *Compiler) compileBuiltinCall(name string, args []string, origArgs []*pa
 		if len(args) != 1 {
 			return "", true, fmt.Errorf("avg expects 1 arg")
 		}
+		if len(origArgs) == 1 && c.isListExpr(origArgs[0]) {
+			return fmt.Sprintf("(%s).sum(0.0) / (%s).length", args[0], args[0]), true, nil
+		}
 		c.use("_avg")
 		return fmt.Sprintf("_avg(%s)", args[0]), true, nil
 	case "sum":
 		if len(args) != 1 {
 			return "", true, fmt.Errorf("sum expects 1 arg")
+		}
+		if len(origArgs) == 1 && c.isListExpr(origArgs[0]) {
+			return fmt.Sprintf("(%s).sum(0.0)", args[0]), true, nil
 		}
 		c.use("_sum")
 		return fmt.Sprintf("_sum(%s)", args[0]), true, nil
@@ -2168,17 +2183,26 @@ func (c *Compiler) compileBuiltinCall(name string, args []string, origArgs []*pa
 		if len(args) != 1 {
 			return "", true, fmt.Errorf("min expects 1 arg")
 		}
+		if len(origArgs) == 1 && c.isListExpr(origArgs[0]) {
+			return fmt.Sprintf("((%s).min || 0)", args[0]), true, nil
+		}
 		c.use("_min")
 		return fmt.Sprintf("_min(%s)", args[0]), true, nil
 	case "max":
 		if len(args) != 1 {
 			return "", true, fmt.Errorf("max expects 1 arg")
 		}
+		if len(origArgs) == 1 && c.isListExpr(origArgs[0]) {
+			return fmt.Sprintf("((%s).max || 0)", args[0]), true, nil
+		}
 		c.use("_max")
 		return fmt.Sprintf("_max(%s)", args[0]), true, nil
 	case "first":
 		if len(args) != 1 {
 			return "", true, fmt.Errorf("first expects 1 arg")
+		}
+		if len(origArgs) == 1 && c.isListExpr(origArgs[0]) {
+			return fmt.Sprintf("(%s).first", args[0]), true, nil
 		}
 		c.use("_first")
 		return fmt.Sprintf("_first(%s)", args[0]), true, nil
