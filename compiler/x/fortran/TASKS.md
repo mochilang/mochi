@@ -46,6 +46,9 @@
   variables inferred from external functions use the correct Fortran types.
 - 2025-07-17 08:30: `len` and `count` constant-fold list literals to numeric
   literals during code generation, avoiding runtime size checks.
+- 2025-07-17 10:00: List set operations (`union`, `union_all`, `except`,
+  `intersect`) compute at compile time when both operands are integer list
+  literals, eliminating helper functions at runtime.
 
 ## Remaining Work
 - [x] Support query compilation with joins and group-by for TPC-H `q1.mochi`.
