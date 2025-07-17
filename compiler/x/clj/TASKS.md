@@ -37,3 +37,5 @@ Remaining work:
 - Improved YAML loader to coerce numeric and boolean values.
 - Typed `load` results now cast via `_cast_struct_list`; `load_yaml` passes.
 - 99/100 examples pass (only outer_join fails).
+
+2025-07-21: Fixed _query helper for outer joins; all 100 VM examples compile and run successfully.
