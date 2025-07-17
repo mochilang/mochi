@@ -7378,6 +7378,11 @@ func formatValue(v Value) string {
 		return "null"
 	case ValueStr:
 		return v.Str
+	case ValueBool:
+		if v.Bool {
+			return "true"
+		}
+		return "false"
 	case ValueMap:
 		return "[object Object]"
 	case ValueList:
