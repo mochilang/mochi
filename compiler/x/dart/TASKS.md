@@ -18,5 +18,8 @@
 - [2025-07-18 12:00 UTC] Tweaked compiler to drop unnecessary `as int` casts,
   fixed integer division, and skipped trailing `return null` in match
   expressions. VM golden tests now print a pass/fail summary.
+- [2025-07-17 00:45 UTC] Normalized numeric printing so integers don't appear
+  with trailing `.0` and set `SOURCE_DATE_EPOCH` in VM golden tests to generate
+  stable headers.
 ## Remaining Enhancements
 - [ ] Improve generated code formatting to more closely match `tests/human/x/dart` examples.
