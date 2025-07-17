@@ -2,7 +2,7 @@
 // Source: /workspace/mochi/tests/vm/valid/sum_builtin.mochi
 
 function main(): void {
-  _print(_sum([1, 2, 3]));
+  _print([1, 2, 3].reduce((a, b) => a + Number(b), 0));
 }
 function _print(...args: unknown[]): void {
   const out = args.map((a) => {
@@ -11,19 +11,6 @@ function _print(...args: unknown[]): void {
     return String(a);
   }).join(" ").trimEnd();
   console.log(out);
-}
-
-function _sum(v: unknown): number {
-  let list: any[] | null = null;
-  if (Array.isArray(v)) list = v;
-  else if (v && typeof v === "object") {
-    if (Array.isArray((v as any).items)) list = (v as any).items;
-    else if (Array.isArray((v as any).Items)) list = (v as any).Items;
-  }
-  if (!list || list.length === 0) return 0;
-  let sum = 0;
-  for (const n of list) sum += Number(n);
-  return sum;
 }
 
 main();

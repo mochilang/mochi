@@ -50,27 +50,18 @@ function main(): void {
       _g.items.push({ ...p, p: p });
     }
     let _groups = Array.from(_map.values());
-    _groups = _groups.filter((g) => (_count(g) >= 4));
+    _groups = _groups.filter((g) => (g.items.length >= 4));
     const _res = [];
     for (const g of _groups) {
       _res.push({
         "city": g.key,
-        "num": _count(g),
+        "num": g.items.length,
       });
     }
     return _res;
   })();
   console.log(_json(big));
 }
-function _count(v: unknown): number {
-  if (Array.isArray(v)) return v.length;
-  if (v && typeof v === "object") {
-    if (Array.isArray((v as any).items)) return (v as any).items.length;
-    if (Array.isArray((v as any).Items)) return (v as any).Items.length;
-  }
-  return 0;
-}
-
 function _json(v: any): string {
   function _sort(x: any): any {
     if (Array.isArray(x)) return x.map(_sort);

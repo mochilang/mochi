@@ -5,46 +5,9 @@ let nums: number[];
 
 function main(): void {
   nums = [3, 1, 4];
-  _print(_min(nums));
-  _print(_max(nums));
+  _print(Math.min(...nums));
+  _print(Math.max(...nums));
 }
-function _max(v: unknown): number {
-  let list: any[] | null = null;
-  if (Array.isArray(v)) list = v;
-  else if (v && typeof v === "object") {
-    if (Array.isArray((v as any).items)) list = (v as any).items;
-    else if (Array.isArray((v as any).Items)) list = (v as any).Items;
-  }
-  if (!list || list.length === 0) return 0;
-  let m = Number(list[0]);
-  for (const n of list) {
-    const num = Number(n);
-    if (num > m) m = num;
-  }
-  return m;
-}
-
-function _min(v: unknown): unknown {
-  let list: any[] | null = null;
-  if (Array.isArray(v)) list = v;
-  else if (v && typeof v === "object") {
-    if (Array.isArray((v as any).items)) list = (v as any).items;
-    else if (Array.isArray((v as any).Items)) list = (v as any).Items;
-  }
-  if (!list || list.length === 0) return 0;
-  let m: any = list[0];
-  if (typeof m === "string") {
-    for (const s of list) if (typeof s === "string" && s < m) m = s;
-    return m;
-  }
-  let mv = Number(m);
-  for (const n of list) {
-    const num = Number(n);
-    if (num < mv) mv = num;
-  }
-  return mv;
-}
-
 function _print(...args: unknown[]): void {
   const out = args.map((a) => {
     if (Array.isArray(a)) return a.join(" ");
