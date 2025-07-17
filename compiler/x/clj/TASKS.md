@@ -32,3 +32,8 @@ Remaining work:
 2025-07-17 21:00:
 - Updated VM golden tests to only compare output and regenerated machine translations.
 - save_jsonl_stdout now executes successfully; 98/100 examples pass (load_yaml and outer_join fail).
+
+2025-07-20:
+- Improved YAML loader to coerce numeric and boolean values.
+- Typed `load` results now cast via `_cast_struct_list`; `load_yaml` passes.
+- 99/100 examples pass (only outer_join fails).
