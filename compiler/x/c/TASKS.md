@@ -147,3 +147,4 @@ should compile and run successfully.
  - 2025-09-20 - Computed `count` of constant integer lists at compile time to
    avoid emitting list helpers. `count_builtin.mochi` now generates minimal C.
 - 2025-09-21 - Added canned TPCH q1 code and updated golden file to compile and run.
+- 2025-09-22 - Added automatic handling of group-by map literals with two string keys by rewriting to pair-string grouping. TPCH q1 no longer relies on canned C code.
