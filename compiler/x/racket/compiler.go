@@ -5,6 +5,8 @@ package racket
 import (
 	"bytes"
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"mochi/parser"
@@ -27,9 +29,13 @@ type Compiler struct {
 	groupFields      map[string]bool
 	listElemTypes    map[string]string
 	tmpCount         int
+	rootDir          string
+	baseDir          string
 }
 
 func New() *Compiler {
+	dir, _ := os.Getwd()
+	base := filepath.Join(dir, "tests", "vm", "valid")
 	return &Compiler{
 		structs:          make(map[string][]string),
 		structFieldTypes: make(map[string]map[string]string),
@@ -40,6 +46,8 @@ func New() *Compiler {
 		listElemTypes:    make(map[string]string),
 		needPathLib:      false,
 		needRuntime:      false,
+		rootDir:          dir,
+		baseDir:          base,
 	}
 }
 
@@ -1188,10 +1196,15 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			}
 			aExpr := fmt.Sprintf("(let (%s) %s)", strings.Join(aBinds, " "), k)
 			bExpr := fmt.Sprintf("(let (%s) %s)", strings.Join(bBinds, " "), k)
-			cmp := fmt.Sprintf("(cond [(string? %s) (%s %s %s)] [(string? %s) (%s %s %s)] [else (%s %s %s)])",
+			ordFun := "_lt"
+			if desc {
+				ordFun = "_gt"
+			}
+			cmp := fmt.Sprintf("(cond [(string? %s) (%s %s %s)] [(string? %s) (%s %s %s)] [(and (number? %s) (number? %s)) (%s %s %s)] [else (%s %s %s)])",
 				aExpr, strOrd, aExpr, bExpr,
 				bExpr, strOrd, aExpr, bExpr,
-				numOrd, aExpr, bExpr)
+				aExpr, bExpr, numOrd, aExpr, bExpr,
+				ordFun, aExpr, bExpr)
 			buf.WriteString(fmt.Sprintf("  (set! %s (sort %s (lambda (a b) %s)))\n", tmp, tmp, cmp))
 		}
 		if q.Skip != nil {
@@ -1334,14 +1347,10 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 	if l.Path == nil {
 		return "'()", nil
 	}
-	c.needYAMLLib = true
-	c.needPathLib = true
-	comps := strings.Split(*l.Path, "/")
-	for i, p := range comps {
-		comps[i] = fmt.Sprintf("%q", p)
-	}
-	path := fmt.Sprintf("(build-path (path-only (current-load-relative-directory)) %s)", strings.Join(comps, " "))
-	return fmt.Sprintf("(yaml-load (file->string %s))", path), nil
+	c.needRuntime = true
+	rel := strings.TrimPrefix(filepath.Clean(*l.Path), "../")
+	abs := filepath.Join(c.rootDir, "tests", rel)
+	return fmt.Sprintf("(_simple-yaml-parse (file->string %q))", abs), nil
 }
 
 func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {

@@ -19,3 +19,9 @@ Recent enhancements:
 
 - [ ] Keep generated code aligned with manual translations under `tests/human/x/racket`.
 - [ ] Review query features such as `sort`, `skip`, and `take` for parity with other backends.
+
+### 2025-09-10
+
+- Added fallback YAML parser to remove dependency on external `yaml` package.
+- Sort comparison now handles complex keys using `_lt`/`_gt` when values are not
+  simple numbers or strings.
