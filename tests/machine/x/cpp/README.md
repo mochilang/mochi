@@ -2,7 +2,7 @@
 
 Generated C++ code for the programs under `tests/vm/valid`. Each file here has a `.cpp` source produced by the compiler and an `.out` file with its runtime output. If compilation failed, a `.error` file captures the g++ output.
 
-Compiled programs: 82/100
+Compiled programs: 83/100
 
 ## Checklist
 - [x] append_builtin
@@ -53,7 +53,7 @@ Compiled programs: 82/100
 - [x] let_and_print
 - [x] list_assign
 - [x] list_index
-- [ ] list_nested_assign
+- [x] list_nested_assign
 - [x] list_set_ops
 - [x] load_yaml
 - [x] map_assign

@@ -77,3 +77,9 @@
 - Vector element types now persist after trimming redundant initializers,
   fixing `dataset_sort_take_limit` and similar queries.
 
+## Recent Enhancements (2025-07-17 17:53 UTC)
+- Added nested vector type inference so list literals like
+  `[[1,2],[3,4]]` compile to `std::vector<std::vector<int>>`,
+  reducing `std::any` usage and enabling the `list_nested_assign`
+  example to build.
+
