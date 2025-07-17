@@ -1242,7 +1242,9 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 		return "", err
 	}
 	for i := len(u.Ops) - 1; i >= 0; i-- {
-		val = u.Ops[i] + " " + val
+		// Avoid inserting a space between the unary operator and
+		// operand so negative literals like "-3" are preserved.
+		val = u.Ops[i] + val
 	}
 	return val, nil
 }
