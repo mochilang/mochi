@@ -2,8 +2,8 @@
 // if_then_else.mochi
 public class IfThenElse {
     public static void main(String[] args) {
-    int x = 12;
-    Object msg = (x > 10 ? "yes" : "no");
-    System.out.println(msg);
+        int x = 12;
+        Object msg = (x > 10 ? "yes" : "no");
+        System.out.println(msg);
     }
 }

@@ -2,16 +2,16 @@
 // json_builtin.mochi
 import java.util.*;
 
-class AB {
+class M {
     int a;
     int b;
-    AB(int a, int b) {
+    M(int a, int b) {
         this.a = a;
         this.b = b;
     }
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof AB other)) return false;
+        if (!(o instanceof M other)) return false;
         return Objects.equals(this.a, other.a) && Objects.equals(this.b, other.b);
     }
     @Override public int hashCode() {
@@ -60,7 +60,7 @@ public class JsonBuiltin {
     }
     static void json(Object o) { System.out.println(toJson(o)); }
     public static void main(String[] args) {
-    AB m = new AB(1, 2);
-    json(m);
+        M m = new M(1, 2);
+        json(m);
     }
 }

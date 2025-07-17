@@ -2,16 +2,16 @@
 // dataset_sort_take_limit.mochi
 import java.util.*;
 
-class NamePrice {
+class Product {
     String name;
     int price;
-    NamePrice(String name, int price) {
+    Product(String name, int price) {
         this.name = name;
         this.price = price;
     }
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof NamePrice other)) return false;
+        if (!(o instanceof Product other)) return false;
         return Objects.equals(this.name, other.name) && Objects.equals(this.price, other.price);
     }
     @Override public int hashCode() {
@@ -21,17 +21,17 @@ class NamePrice {
 }
 public class DatasetSortTakeLimit {
     public static void main(String[] args) {
-    List<NamePrice> products = new ArrayList<>(Arrays.asList(new NamePrice("Laptop", 1500), new NamePrice("Smartphone", 900), new NamePrice("Tablet", 600), new NamePrice("Monitor", 300), new NamePrice("Keyboard", 100), new NamePrice("Mouse", 50), new NamePrice("Headphones", 200)));
-    List<NamePrice> expensive = (new java.util.function.Supplier<List<NamePrice>>(){public List<NamePrice> get(){
-    List<NamePrice> res0 = new ArrayList<>();
+        List<Product> products = new ArrayList<>(Arrays.asList(new Product("Laptop", 1500), new Product("Smartphone", 900), new Product("Tablet", 600), new Product("Monitor", 300), new Product("Keyboard", 100), new Product("Mouse", 50), new Product("Headphones", 200)));
+        List<Product> expensive = (new java.util.function.Supplier<List<Product>>(){public List<Product> get(){
+    List<Product> res0 = new ArrayList<>();
     for (var p : products) {
         res0.add(p);
     }
     return res0;
 }}).get();
-    System.out.println("--- Top products (excluding most expensive) ---");
-    for (NamePrice item : expensive) {
-        System.out.println(item.name + " " + "costs $" + " " + item.price);
-    }
+        System.out.println("--- Top products (excluding most expensive) ---");
+        for (Product item : expensive) {
+            System.out.println(item.name + " " + "costs $" + " " + item.price);
+        }
     }
 }

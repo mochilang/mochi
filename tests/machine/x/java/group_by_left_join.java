@@ -2,16 +2,16 @@
 // group_by_left_join.mochi
 import java.util.*;
 
-class IdName {
+class Customer {
     int id;
     String name;
-    IdName(int id, String name) {
+    Customer(int id, String name) {
         this.id = id;
         this.name = name;
     }
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof IdName other)) return false;
+        if (!(o instanceof Customer other)) return false;
         return Objects.equals(this.id, other.id) && Objects.equals(this.name, other.name);
     }
     @Override public int hashCode() {
@@ -19,16 +19,16 @@ class IdName {
     }
     int size() { return 2; }
 }
-class IdCustomerId {
+class Order {
     int id;
     int customerId;
-    IdCustomerId(int id, int customerId) {
+    Order(int id, int customerId) {
         this.id = id;
         this.customerId = customerId;
     }
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof IdCustomerId other)) return false;
+        if (!(o instanceof Order other)) return false;
         return Objects.equals(this.id, other.id) && Objects.equals(this.customerId, other.customerId);
     }
     @Override public int hashCode() {
@@ -36,16 +36,16 @@ class IdCustomerId {
     }
     int size() { return 2; }
 }
-class CO {
-    IdName c;
-    IdCustomerId o;
-    CO(IdName c, IdCustomerId o) {
+class Stat {
+    Customer c;
+    Order o;
+    Stat(Customer c, Order o) {
         this.c = c;
         this.o = o;
     }
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof CO other)) return false;
+        if (!(o instanceof Stat other)) return false;
         return Objects.equals(this.c, other.c) && Objects.equals(this.o, other.o);
     }
     @Override public int hashCode() {
@@ -79,13 +79,13 @@ public class GroupByLeftJoin {
         int size() { return items.size(); }
     }
     public static void main(String[] args) {
-    List<IdName> customers = new ArrayList<>(Arrays.asList(new IdName(1, "Alice"), new IdName(2, "Bob"), new IdName(3, "Charlie")));
-    List<IdCustomerId> orders = new ArrayList<>(Arrays.asList(new IdCustomerId(100, 1), new IdCustomerId(101, 1), new IdCustomerId(102, 2)));
-    List<NameCount> stats = (new java.util.function.Supplier<List<NameCount>>(){public List<NameCount> get(){
+        List<Customer> customers = new ArrayList<>(Arrays.asList(new Customer(1, "Alice"), new Customer(2, "Bob"), new Customer(3, "Charlie")));
+        List<Order> orders = new ArrayList<>(Arrays.asList(new Order(100, 1), new Order(101, 1), new Order(102, 2)));
+        List<NameCount> stats = (new java.util.function.Supplier<List<NameCount>>(){public List<NameCount> get(){
     List<NameCount> res0 = new ArrayList<>();
-    Map<String,List<CO>> groups1 = new LinkedHashMap<>();
+    Map<String,List<Stat>> groups1 = new LinkedHashMap<>();
     for (var c : customers) {
-        List<IdCustomerId> tmp2 = new ArrayList<>();
+        List<Order> tmp2 = new ArrayList<>();
         for (var it3 : orders) {
             var o = it3;
             if (!(o.customerId == c.id)) continue;
@@ -93,18 +93,18 @@ public class GroupByLeftJoin {
         }
         if (tmp2.isEmpty()) tmp2.add(null);
         for (var o : tmp2) {
-            CO row4 = new CO(c, o);
+            Stat row4 = new Stat(c, o);
             String key5 = c.name;
-            List<CO> bucket6 = groups1.get(key5);
+            List<Stat> bucket6 = groups1.get(key5);
             if (bucket6 == null) { bucket6 = new ArrayList<>(); groups1.put(key5, bucket6); }
             bucket6.add(row4);
         }
     }
-    for (Map.Entry<String,List<CO>> __e : groups1.entrySet()) {
+    for (Map.Entry<String,List<Stat>> __e : groups1.entrySet()) {
         String g_key = __e.getKey();
-        Group<String,CO> g = new Group<>(g_key, __e.getValue());
-        res0.add(new NameCount(g.key, (new java.util.function.Supplier<List<CO>>(){public List<CO> get(){
-    List<CO> res7 = new ArrayList<>();
+        Group<String,Stat> g = new Group<>(g_key, __e.getValue());
+        res0.add(new NameCount(g.key, (new java.util.function.Supplier<List<Stat>>(){public List<Stat> get(){
+    List<Stat> res7 = new ArrayList<>();
     for (var r : g) {
         if (!(r.o != null)) continue;
         res7.add(r);
@@ -114,9 +114,9 @@ public class GroupByLeftJoin {
     }
     return res0;
 }}).get();
-    System.out.println("--- Group Left Join ---");
-    for (NameCount s : stats) {
-        System.out.println(s.name + " " + "orders:" + " " + s.count);
-    }
+        System.out.println("--- Group Left Join ---");
+        for (NameCount s : stats) {
+            System.out.println(s.name + " " + "orders:" + " " + s.count);
+        }
     }
 }

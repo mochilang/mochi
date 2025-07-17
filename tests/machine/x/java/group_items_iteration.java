@@ -2,13 +2,41 @@
 // group_items_iteration.mochi
 import java.util.*;
 
-public class GroupItemsIteration {
-    static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
-    static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
-        LinkedHashMap<K,V> m = new LinkedHashMap<>();
-        for (var e : entries) m.put(e.getKey(), e.getValue());
-        return m;
+class Data {
+    String tag;
+    int val;
+    Data(String tag, int val) {
+        this.tag = tag;
+        this.val = val;
     }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Data other)) return false;
+        return Objects.equals(this.tag, other.tag) && Objects.equals(this.val, other.val);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(tag, val);
+    }
+    int size() { return 2; }
+}
+class Tmp {
+    Object tag;
+    int total;
+    Tmp(Object tag, int total) {
+        this.tag = tag;
+        this.total = total;
+    }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Tmp other)) return false;
+        return Objects.equals(this.tag, other.tag) && Objects.equals(this.total, other.total);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(tag, total);
+    }
+    int size() { return 2; }
+}
+public class GroupItemsIteration {
     static class Group<K,V> implements Iterable<V> {
         K key;
         List<V> items;
@@ -17,31 +45,31 @@ public class GroupItemsIteration {
         int size() { return items.size(); }
     }
     public static void main(String[] args) {
-        List<Map<String,Object>> data = new ArrayList<>(Arrays.asList(mapOfEntries(entry("tag", "a"), entry("val", 1)), mapOfEntries(entry("tag", "a"), entry("val", 2)), mapOfEntries(entry("tag", "b"), entry("val", 3))));
-        List<Group<Object,Map<String,Object>>> groups = (new java.util.function.Supplier<List<Group<Object,Map<String,Object>>>>(){public List<Group<Object,Map<String,Object>>> get(){
-    List<Group<Object,Map<String,Object>>> res0 = new ArrayList<>();
-    Map<Object,List<Map<String,Object>>> groups1 = new LinkedHashMap<>();
+        List<Data> data = new ArrayList<>(Arrays.asList(new Data("a", 1), new Data("a", 2), new Data("b", 3)));
+        List<Group<String,Data>> groups = (new java.util.function.Supplier<List<Group<String,Data>>>(){public List<Group<String,Data>> get(){
+    List<Group<String,Data>> res0 = new ArrayList<>();
+    Map<String,List<Data>> groups1 = new LinkedHashMap<>();
     for (var d : data) {
         var row2 = d;
-        Object key3 = ((Map<String,Object>)d).get("tag");
-        List<Map<String,Object>> bucket4 = groups1.get(key3);
+        String key3 = d.tag;
+        List<Data> bucket4 = groups1.get(key3);
         if (bucket4 == null) { bucket4 = new ArrayList<>(); groups1.put(key3, bucket4); }
         bucket4.add(row2);
     }
-    for (Map.Entry<Object,List<Map<String,Object>>> __e : groups1.entrySet()) {
-        Object g_key = __e.getKey();
-        Group<Object,Map<String,Object>> g = new Group<>(g_key, __e.getValue());
+    for (Map.Entry<String,List<Data>> __e : groups1.entrySet()) {
+        String g_key = __e.getKey();
+        Group<String,Data> g = new Group<>(g_key, __e.getValue());
         res0.add(g);
     }
     return res0;
 }}).get();
         List<Object> tmp = new ArrayList<>(Arrays.asList());
-        for (Group<Object,Map<String,Object>> g : groups) {
+        for (Group<String,Data> g : groups) {
             int total = 0;
-            for (Map<String,Object> x : g.items) {
-                total = (int)(total + ((Number)((Map<String,Object>)x).get("val")).doubleValue());
+            for (Data x : g.items) {
+                total = (int)(total + x.val);
             }
-            tmp.add(mapOfEntries(entry("tag", g.key), entry("total", total)));
+            tmp.add(new Tmp(g.key, total));
         }
         List<Object> result = (new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
     List<Object> res5 = new ArrayList<>();

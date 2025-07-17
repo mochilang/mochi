@@ -21,16 +21,16 @@ class Person {
         return Objects.hash(name, age, email);
     }
 }
-class NameEmail {
+class Adult {
     Object name;
     Object email;
-    NameEmail(Object name, Object email) {
+    Adult(Object name, Object email) {
         this.name = name;
         this.email = email;
     }
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof NameEmail other)) return false;
+        if (!(o instanceof Adult other)) return false;
         return Objects.equals(this.name, other.name) && Objects.equals(this.email, other.email);
     }
     @Override public int hashCode() {
@@ -74,17 +74,17 @@ public class LoadYaml {
         return list;
     }
     public static void main(String[] args) {
-    List<Map<String,Object>> people = loadYaml("../interpreter/valid/people.yaml");
-    List<NameEmail> adults = (new java.util.function.Supplier<List<NameEmail>>(){public List<NameEmail> get(){
-    List<NameEmail> res0 = new ArrayList<>();
+        List<Map<String,Object>> people = loadYaml("../interpreter/valid/people.yaml");
+        List<Adult> adults = (new java.util.function.Supplier<List<Adult>>(){public List<Adult> get(){
+    List<Adult> res0 = new ArrayList<>();
     for (var p : people) {
         if (!(((Number)((Map<String,Object>)p).get("age")).doubleValue() >= 18)) continue;
-        res0.add(new NameEmail(((Map<String,Object>)p).get("name"), ((Map<String,Object>)p).get("email")));
+        res0.add(new Adult(((Map<String,Object>)p).get("name"), ((Map<String,Object>)p).get("email")));
     }
     return res0;
 }}).get();
-    for (NameEmail a : adults) {
-        System.out.println(a.name + " " + a.email);
-    }
+        for (Adult a : adults) {
+            System.out.println(a.name + " " + a.email);
+        }
     }
 }

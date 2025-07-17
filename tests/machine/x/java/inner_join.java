@@ -2,16 +2,16 @@
 // inner_join.mochi
 import java.util.*;
 
-class IdName {
+class Customer {
     int id;
     String name;
-    IdName(int id, String name) {
+    Customer(int id, String name) {
         this.id = id;
         this.name = name;
     }
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof IdName other)) return false;
+        if (!(o instanceof Customer other)) return false;
         return Objects.equals(this.id, other.id) && Objects.equals(this.name, other.name);
     }
     @Override public int hashCode() {
@@ -19,18 +19,18 @@ class IdName {
     }
     int size() { return 2; }
 }
-class IdCustomerIdTotal {
+class Order {
     int id;
     int customerId;
     int total;
-    IdCustomerIdTotal(int id, int customerId, int total) {
+    Order(int id, int customerId, int total) {
         this.id = id;
         this.customerId = customerId;
         this.total = total;
     }
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof IdCustomerIdTotal other)) return false;
+        if (!(o instanceof Order other)) return false;
         return Objects.equals(this.id, other.id) && Objects.equals(this.customerId, other.customerId) && Objects.equals(this.total, other.total);
     }
     @Override public int hashCode() {
@@ -38,18 +38,18 @@ class IdCustomerIdTotal {
     }
     int size() { return 3; }
 }
-class OrderIdCustomerNameTotal {
+class Result {
     int orderId;
     String customerName;
     int total;
-    OrderIdCustomerNameTotal(int orderId, String customerName, int total) {
+    Result(int orderId, String customerName, int total) {
         this.orderId = orderId;
         this.customerName = customerName;
         this.total = total;
     }
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof OrderIdCustomerNameTotal other)) return false;
+        if (!(o instanceof Result other)) return false;
         return Objects.equals(this.orderId, other.orderId) && Objects.equals(this.customerName, other.customerName) && Objects.equals(this.total, other.total);
     }
     @Override public int hashCode() {
@@ -59,21 +59,21 @@ class OrderIdCustomerNameTotal {
 }
 public class InnerJoin {
     public static void main(String[] args) {
-    List<IdName> customers = new ArrayList<>(Arrays.asList(new IdName(1, "Alice"), new IdName(2, "Bob"), new IdName(3, "Charlie")));
-    List<IdCustomerIdTotal> orders = new ArrayList<>(Arrays.asList(new IdCustomerIdTotal(100, 1, 250), new IdCustomerIdTotal(101, 2, 125), new IdCustomerIdTotal(102, 1, 300), new IdCustomerIdTotal(103, 4, 80)));
-    List<OrderIdCustomerNameTotal> result = (new java.util.function.Supplier<List<OrderIdCustomerNameTotal>>(){public List<OrderIdCustomerNameTotal> get(){
-    List<OrderIdCustomerNameTotal> res0 = new ArrayList<>();
+        List<Customer> customers = new ArrayList<>(Arrays.asList(new Customer(1, "Alice"), new Customer(2, "Bob"), new Customer(3, "Charlie")));
+        List<Order> orders = new ArrayList<>(Arrays.asList(new Order(100, 1, 250), new Order(101, 2, 125), new Order(102, 1, 300), new Order(103, 4, 80)));
+        List<Result> result = (new java.util.function.Supplier<List<Result>>(){public List<Result> get(){
+    List<Result> res0 = new ArrayList<>();
     for (var o : orders) {
         for (var c : customers) {
             if (!(o.customerId == c.id)) continue;
-            res0.add(new OrderIdCustomerNameTotal(o.id, c.name, o.total));
+            res0.add(new Result(o.id, c.name, o.total));
         }
     }
     return res0;
 }}).get();
-    System.out.println("--- Orders with customer info ---");
-    for (OrderIdCustomerNameTotal entry : result) {
-        System.out.println("Order" + " " + entry.orderId + " " + "by" + " " + entry.customerName + " " + "- $" + " " + entry.total);
-    }
+        System.out.println("--- Orders with customer info ---");
+        for (Result entry : result) {
+            System.out.println("Order" + " " + entry.orderId + " " + "by" + " " + entry.customerName + " " + "- $" + " " + entry.total);
+        }
     }
 }

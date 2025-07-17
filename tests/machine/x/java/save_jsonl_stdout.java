@@ -2,16 +2,16 @@
 // save_jsonl_stdout.mochi
 import java.util.*;
 
-class NameAge {
+class People {
     String name;
     int age;
-    NameAge(String name, int age) {
+    People(String name, int age) {
         this.name = name;
         this.age = age;
     }
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof NameAge other)) return false;
+        if (!(o instanceof People other)) return false;
         return Objects.equals(this.name, other.name) && Objects.equals(this.age, other.age);
     }
     @Override public int hashCode() {
@@ -39,7 +39,7 @@ public class SaveJsonlStdout {
         }
     }
     public static void main(String[] args) {
-    List<NameAge> people = new ArrayList<>(Arrays.asList(new NameAge("Alice", 30), new NameAge("Bob", 25)));
-    saveJsonl((List<?>)people);
+        List<People> people = new ArrayList<>(Arrays.asList(new People("Alice", 30), new People("Bob", 25)));
+        saveJsonl((List<?>)people);
     }
 }

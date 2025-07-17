@@ -10,6 +10,6 @@ public class NestedFunction {
         return inner.applyAsInt(5);
     }
     public static void main(String[] args) {
-    System.out.println(outer(3));
+        System.out.println(outer(3));
     }
 }

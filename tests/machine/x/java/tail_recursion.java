@@ -8,6 +8,6 @@ public class TailRecursion {
         return sum_rec(n - 1, acc + n);
     }
     public static void main(String[] args) {
-    System.out.println(sum_rec(10, 0));
+        System.out.println(sum_rec(10, 0));
     }
 }

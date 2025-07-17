@@ -2,16 +2,16 @@
 // cross_join_filter.mochi
 import java.util.*;
 
-class NL {
+class Pair {
     Integer n;
     String l;
-    NL(Integer n, String l) {
+    Pair(Integer n, String l) {
         this.n = n;
         this.l = l;
     }
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof NL other)) return false;
+        if (!(o instanceof Pair other)) return false;
         return Objects.equals(this.n, other.n) && Objects.equals(this.l, other.l);
     }
     @Override public int hashCode() {
@@ -21,21 +21,21 @@ class NL {
 }
 public class CrossJoinFilter {
     public static void main(String[] args) {
-    List<Integer> nums = new ArrayList<>(Arrays.asList(1, 2, 3));
-    List<String> letters = new ArrayList<>(Arrays.asList("A", "B"));
-    List<NL> pairs = (new java.util.function.Supplier<List<NL>>(){public List<NL> get(){
-    List<NL> res0 = new ArrayList<>();
+        List<Integer> nums = new ArrayList<>(Arrays.asList(1, 2, 3));
+        List<String> letters = new ArrayList<>(Arrays.asList("A", "B"));
+        List<Pair> pairs = (new java.util.function.Supplier<List<Pair>>(){public List<Pair> get(){
+    List<Pair> res0 = new ArrayList<>();
     for (var n : nums) {
         for (var l : letters) {
             if (!(Objects.equals(n % 2, 0))) continue;
-            res0.add(new NL(n, l));
+            res0.add(new Pair(n, l));
         }
     }
     return res0;
 }}).get();
-    System.out.println("--- Even pairs ---");
-    for (NL p : pairs) {
-        System.out.println(p.n + " " + p.l);
-    }
+        System.out.println("--- Even pairs ---");
+        for (Pair p : pairs) {
+            System.out.println(p.n + " " + p.l);
+        }
     }
 }

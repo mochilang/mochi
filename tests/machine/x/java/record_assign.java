@@ -22,7 +22,7 @@ public class RecordAssign {
         c.n = c.n + 1;
     }
     public static void main(String[] args) {
-    inc(c);
-    System.out.println(c.n);
+        inc(c);
+        System.out.println(c.n);
     }
 }

@@ -2,16 +2,16 @@
 // group_by_sort.mochi
 import java.util.*;
 
-class CatVal {
+class Item {
     String cat;
     int val;
-    CatVal(String cat, int val) {
+    Item(String cat, int val) {
         this.cat = cat;
         this.val = val;
     }
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof CatVal other)) return false;
+        if (!(o instanceof Item other)) return false;
         return Objects.equals(this.cat, other.cat) && Objects.equals(this.val, other.val);
     }
     @Override public int hashCode() {
@@ -19,16 +19,16 @@ class CatVal {
     }
     int size() { return 2; }
 }
-class CatTotal {
+class Grouped {
     String cat;
     int total;
-    CatTotal(String cat, int total) {
+    Grouped(String cat, int total) {
         this.cat = cat;
         this.total = total;
     }
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof CatTotal other)) return false;
+        if (!(o instanceof Grouped other)) return false;
         return Objects.equals(this.cat, other.cat) && Objects.equals(this.total, other.total);
     }
     @Override public int hashCode() {
@@ -45,21 +45,21 @@ public class GroupBySort {
         int size() { return items.size(); }
     }
     public static void main(String[] args) {
-    List<CatVal> items = new ArrayList<>(Arrays.asList(new CatVal("a", 3), new CatVal("a", 1), new CatVal("b", 5), new CatVal("b", 2)));
-    List<CatTotal> grouped = (new java.util.function.Supplier<List<CatTotal>>(){public List<CatTotal> get(){
-    List<CatTotal> res0 = new ArrayList<>();
-    Map<String,List<CatVal>> groups1 = new LinkedHashMap<>();
+        List<Item> items = new ArrayList<>(Arrays.asList(new Item("a", 3), new Item("a", 1), new Item("b", 5), new Item("b", 2)));
+        List<Grouped> grouped = (new java.util.function.Supplier<List<Grouped>>(){public List<Grouped> get(){
+    List<Grouped> res0 = new ArrayList<>();
+    Map<String,List<Item>> groups1 = new LinkedHashMap<>();
     for (var i : items) {
         var row2 = i;
         String key3 = i.cat;
-        List<CatVal> bucket4 = groups1.get(key3);
+        List<Item> bucket4 = groups1.get(key3);
         if (bucket4 == null) { bucket4 = new ArrayList<>(); groups1.put(key3, bucket4); }
         bucket4.add(row2);
     }
-    for (Map.Entry<String,List<CatVal>> __e : groups1.entrySet()) {
+    for (Map.Entry<String,List<Item>> __e : groups1.entrySet()) {
         String g_key = __e.getKey();
-        Group<String,CatVal> g = new Group<>(g_key, __e.getValue());
-        res0.add(new CatTotal(g.key, (new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){
+        Group<String,Item> g = new Group<>(g_key, __e.getValue());
+        res0.add(new Grouped(g.key, (new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){
     List<Integer> res5 = new ArrayList<>();
     for (var x : g) {
         res5.add(x.val);
@@ -69,6 +69,6 @@ public class GroupBySort {
     }
     return res0;
 }}).get();
-    System.out.println(grouped);
+        System.out.println(grouped);
     }
 }

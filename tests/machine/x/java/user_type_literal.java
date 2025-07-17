@@ -36,7 +36,7 @@ class Book {
 }
 public class UserTypeLiteral {
     public static void main(String[] args) {
-    Book book = new Book("Go", new Person("Bob", 42));
-    System.out.println(book.author.name);
+        Book book = new Book("Go", new Person("Bob", 42));
+        System.out.println(book.author.name);
     }
 }

@@ -365,16 +365,6 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.indent--
 		c.writeln("}")
 	}
-	if c.helpers["map_of_entries"] {
-		c.writeln("static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }")
-		c.writeln("static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {")
-		c.indent++
-		c.writeln("LinkedHashMap<K,V> m = new LinkedHashMap<>();")
-		c.writeln("for (var e : entries) m.put(e.getKey(), e.getValue());")
-		c.writeln("return m;")
-		c.indent--
-		c.writeln("}")
-	}
 	if c.helpers["in"] {
 		c.writeln("static boolean inOp(Object item, Object collection) {")
 		c.indent++
@@ -1436,10 +1426,7 @@ func (c *Compiler) dataClassFor(m *parser.MapLiteral) string {
 		}
 		keys = append(keys, k)
 	}
-	if len(keys) <= 2 {
-		return ""
-	}
-	if len(keys) == 0 {
+	if len(keys) <= 1 {
 		return ""
 	}
 	shape := "map|" + strings.Join(keys, ";")
@@ -1682,7 +1669,6 @@ func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
 }
 
 func (c *Compiler) compileMapAsMap(m *parser.MapLiteral) (string, error) {
-	c.helpers["map_of_entries"] = true
 	if len(m.Items) == 0 {
 		if t, ok := c.vars[c.curVar]; ok && strings.HasPrefix(t, "Map<") {
 			kt := mapKeyType(t)
@@ -1707,9 +1693,9 @@ func (c *Compiler) compileMapAsMap(m *parser.MapLiteral) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		entries = append(entries, fmt.Sprintf("entry(%s, %s)", k, v))
+		entries = append(entries, fmt.Sprintf("Map.entry(%s, %s)", k, v))
 	}
-	return fmt.Sprintf("mapOfEntries(%s)", strings.Join(entries, ", ")), nil
+	return fmt.Sprintf("new LinkedHashMap<>(Map.ofEntries(%s))", strings.Join(entries, ", ")), nil
 }
 
 func (c *Compiler) mapLiteralTypes(m *parser.MapLiteral) (string, string) {

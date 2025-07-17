@@ -15,8 +15,8 @@ public class TwoSum {
         return Arrays.asList(-1, -1);
     }
     public static void main(String[] args) {
-    List<Integer> result = twoSum(Arrays.asList(2, 7, 11, 15), 9);
-    System.out.println(result.get(0));
-    System.out.println(result.get(1));
+        List<Integer> result = twoSum(Arrays.asList(2, 7, 11, 15), 9);
+        System.out.println(result.get(0));
+        System.out.println(result.get(1));
     }
 }
