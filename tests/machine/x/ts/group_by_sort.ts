@@ -41,7 +41,10 @@ function main(): void {
     var _items = _groups;
     let _pairs = _items.map((it) => {
       const g = it;
-      return { item: it, key: (-_sum(g.items.map((x) => x.val))) };
+      return {
+        item: it,
+        key: (-g.items.map((x) => x.val).reduce((a, b) => a + Number(b), 0)),
+      };
     });
     _pairs.sort((a, b) => _cmp(a.key, b.key));
     _items = _pairs.map((p) => p.item);
@@ -50,7 +53,7 @@ function main(): void {
     for (const g of _items) {
       _res.push({
         "cat": g.key,
-        "total": _sum(g.items.map((x) => x.val)),
+        "total": g.items.map((x) => x.val).reduce((a, b) => a + Number(b), 0),
       });
     }
     return _res;
@@ -84,19 +87,6 @@ function _print(...args: unknown[]): void {
     return String(a);
   }).join(" ").trimEnd();
   console.log(out);
-}
-
-function _sum(v: unknown): number {
-  let list: any[] | null = null;
-  if (Array.isArray(v)) list = v;
-  else if (v && typeof v === "object") {
-    if (Array.isArray((v as any).items)) list = (v as any).items;
-    else if (Array.isArray((v as any).Items)) list = (v as any).Items;
-  }
-  if (!list || list.length === 0) return 0;
-  let sum = 0;
-  for (const n of list) sum += Number(n);
-  return sum;
 }
 
 main();

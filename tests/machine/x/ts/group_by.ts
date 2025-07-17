@@ -56,8 +56,12 @@ function main(): void {
     for (const g of _groups) {
       _res.push({
         "city": g.key,
-        "count": _count(g),
-        "avg_age": _avg(g.items.map((p) => p.age)),
+        "count": g.items.length,
+        "avg_age": (g.items.map((p) =>
+          p.age
+        ).reduce((a, b) => a + Number(b), 0) / g.items.map((p) =>
+          p.age
+        ).length),
       });
     }
     return _res;
@@ -67,20 +71,6 @@ function main(): void {
     _print(s.city, ": count =", s.count, ", avg_age =", s.avg_age);
   }
 }
-function _avg(v: unknown): number {
-  const c = _count(v);
-  return c ? _sum(v) / c : 0;
-}
-
-function _count(v: unknown): number {
-  if (Array.isArray(v)) return v.length;
-  if (v && typeof v === "object") {
-    if (Array.isArray((v as any).items)) return (v as any).items.length;
-    if (Array.isArray((v as any).Items)) return (v as any).Items.length;
-  }
-  return 0;
-}
-
 function _print(...args: unknown[]): void {
   const out = args.map((a) => {
     if (Array.isArray(a)) return a.join(" ");
@@ -88,19 +78,6 @@ function _print(...args: unknown[]): void {
     return String(a);
   }).join(" ").trimEnd();
   console.log(out);
-}
-
-function _sum(v: unknown): number {
-  let list: any[] | null = null;
-  if (Array.isArray(v)) list = v;
-  else if (v && typeof v === "object") {
-    if (Array.isArray((v as any).items)) list = (v as any).items;
-    else if (Array.isArray((v as any).Items)) list = (v as any).Items;
-  }
-  if (!list || list.length === 0) return 0;
-  let sum = 0;
-  for (const n of list) sum += Number(n);
-  return sum;
 }
 
 main();

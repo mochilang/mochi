@@ -56,7 +56,7 @@ function main(): void {
     for (const g of _itemsG) {
       _res.push({
         "name": g.key,
-        "count": _count(g.items.filter((r) => (r.o)).map((r) => r)),
+        "count": g.items.filter((r) => (r.o)).map((r) => r).length,
       });
     }
     return _res;
@@ -66,15 +66,6 @@ function main(): void {
     _print(s.name, "orders:", s.count);
   }
 }
-function _count(v: unknown): number {
-  if (Array.isArray(v)) return v.length;
-  if (v && typeof v === "object") {
-    if (Array.isArray((v as any).items)) return (v as any).items.length;
-    if (Array.isArray((v as any).Items)) return (v as any).Items.length;
-  }
-  return 0;
-}
-
 function _print(...args: unknown[]): void {
   const out = args.map((a) => {
     if (Array.isArray(a)) return a.join(" ");

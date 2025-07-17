@@ -97,9 +97,8 @@ function main(): void {
       return {
         item: it,
         key:
-          (-_sum(
-            g.items.map((x) => (x.l.l_extendedprice * (1 - x.l.l_discount))),
-          )),
+          (-g.items.map((x) => (x.l.l_extendedprice * (1 - x.l.l_discount)))
+            .reduce((a, b) => a + Number(b), 0)),
       };
     });
     _pairs.sort((a, b) => _cmp(a.key, b.key));
@@ -110,9 +109,9 @@ function main(): void {
       _res.push({
         "c_custkey": g.key.c_custkey,
         "c_name": g.key.c_name,
-        "revenue": _sum(
-          g.items.map((x) => (x.l.l_extendedprice * (1 - x.l.l_discount))),
-        ),
+        "revenue": g.items.map(
+          (x) => (x.l.l_extendedprice * (1 - x.l.l_discount))
+        ).reduce((a, b) => a + Number(b), 0),
         "c_acctbal": g.key.c_acctbal,
         "n_name": g.key.n_name,
         "c_address": g.key.c_address,
@@ -151,19 +150,6 @@ function _print(...args: unknown[]): void {
     return String(a);
   }).join(" ").trimEnd();
   console.log(out);
-}
-
-function _sum(v: unknown): number {
-  let list: any[] | null = null;
-  if (Array.isArray(v)) list = v;
-  else if (v && typeof v === "object") {
-    if (Array.isArray((v as any).items)) list = (v as any).items;
-    else if (Array.isArray((v as any).Items)) list = (v as any).Items;
-  }
-  if (!list || list.length === 0) return 0;
-  let sum = 0;
-  for (const n of list) sum += Number(n);
-  return sum;
 }
 
 main();

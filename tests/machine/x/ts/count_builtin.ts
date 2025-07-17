@@ -2,17 +2,8 @@
 // Source: /workspace/mochi/tests/vm/valid/count_builtin.mochi
 
 function main(): void {
-  _print(_count([1, 2, 3]));
+  _print([1, 2, 3].length);
 }
-function _count(v: unknown): number {
-  if (Array.isArray(v)) return v.length;
-  if (v && typeof v === "object") {
-    if (Array.isArray((v as any).items)) return (v as any).items.length;
-    if (Array.isArray((v as any).Items)) return (v as any).Items.length;
-  }
-  return 0;
-}
-
 function _print(...args: unknown[]): void {
   const out = args.map((a) => {
     if (Array.isArray(a)) return a.join(" ");
