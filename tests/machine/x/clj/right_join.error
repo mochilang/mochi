@@ -1,0 +1,5 @@
+Syntax error reading source at (/workspace/mochi/tests/machine/x/clj/right_join.clj:124:1).
+EOF while reading, starting at line 24
+
+Full report at:
+/tmp/clojure-3629435498551495711.edn

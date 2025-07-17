@@ -40,3 +40,5 @@ Remaining work:
 
 2025-07-21: Fixed _query helper for outer joins; all 100 VM examples compile and run successfully.
 2025-07-22: Updated machine README to mark all examples passing. No outstanding tasks.
+2025-07-23: Added `_print` helper to mimic Mochi printing semantics and default
+  initializers for typed variables. Regenerated machine outputs for updated tests.
