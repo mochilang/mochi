@@ -14,6 +14,24 @@ func (c *Compiler) inferExprType(e *parser.Expr) types.Type {
 
 // inferExprTypeHint delegates to types.ExprTypeHint.
 func (c *Compiler) inferExprTypeHint(e *parser.Expr, hint types.Type) types.Type {
+	if e != nil && e.Binary != nil && len(e.Binary.Right) == 0 {
+		if ll := e.Binary.Left.Value.Target.List; ll != nil {
+			if lt, ok := hint.(types.ListType); ok {
+				if st, ok := lt.Elem.(types.StructType); ok {
+					if inf, ok := types.InferStructFromList(ll, c.env); ok && types.StructMatches(st, inf.Fields, inf.Order) {
+						return lt
+					}
+				}
+			}
+		}
+		if ml := e.Binary.Left.Value.Target.Map; ml != nil {
+			if st, ok := hint.(types.StructType); ok {
+				if inf, ok := types.InferStructFromMapEnv(ml, c.env); ok && types.StructMatches(st, inf.Fields, inf.Order) {
+					return st
+				}
+			}
+		}
+	}
 	return types.ExprTypeHint(e, hint, c.env)
 }
 

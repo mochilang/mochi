@@ -567,10 +567,24 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 				return err
 			}
 			exprT := c.inferExprTypeHint(s.Value, typ)
-			if _, ok := typ.(types.ListType); ok {
-				if _, ok := exprT.(types.ListType); ok {
-					v = c.castExpr(v, exprT, typ)
+			if lt, ok := exprT.(types.ListType); ok {
+				if tl, ok2 := typ.(types.ListType); ok2 {
+					if mt, ok3 := lt.Elem.(types.MapType); ok3 {
+						if _, ok4 := tl.Elem.(types.StructType); ok4 && types.IsStringAnyMapLike(mt) {
+							exprT = typ
+						}
+					}
+					if _, ok := exprT.(types.ListType); ok {
+						v = c.castExpr(v, exprT, typ)
+					}
 				}
+			} else if mt, ok := exprT.(types.MapType); ok {
+				if _, ok2 := typ.(types.StructType); ok2 && types.IsStringAnyMapLike(mt) {
+					exprT = typ
+				}
+			}
+			if !equalTypes(exprT, typ) {
+				v = c.castExpr(v, exprT, typ)
 			}
 			value = v
 		}
@@ -664,9 +678,20 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 		}
 		if typ != nil {
 			exprT := c.inferExprTypeHint(s.Value, typ)
-			if _, ok := typ.(types.ListType); ok {
-				if _, ok := exprT.(types.ListType); ok {
-					value = c.castExpr(value, exprT, typ)
+			if lt, ok := exprT.(types.ListType); ok {
+				if tl, ok2 := typ.(types.ListType); ok2 {
+					if mt, ok3 := lt.Elem.(types.MapType); ok3 {
+						if _, ok4 := tl.Elem.(types.StructType); ok4 && types.IsStringAnyMapLike(mt) {
+							exprT = typ
+						}
+					}
+					if _, ok := exprT.(types.ListType); ok {
+						value = c.castExpr(value, exprT, typ)
+					}
+				}
+			} else if mt, ok := exprT.(types.MapType); ok {
+				if _, ok2 := typ.(types.StructType); ok2 && types.IsStringAnyMapLike(mt) {
+					exprT = typ
 				}
 			}
 			exprGo := goType(exprT)
@@ -679,6 +704,19 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 	}
 	finalTyp := targetType
 	exprT := c.inferExprTypeHint(s.Value, finalTyp)
+	if lt, ok := exprT.(types.ListType); ok {
+		if tl, ok2 := finalTyp.(types.ListType); ok2 {
+			if mt, ok3 := lt.Elem.(types.MapType); ok3 {
+				if _, ok4 := tl.Elem.(types.StructType); ok4 && types.IsStringAnyMapLike(mt) {
+					exprT = finalTyp
+				}
+			}
+		}
+	} else if mt, ok := exprT.(types.MapType); ok {
+		if _, ok2 := finalTyp.(types.StructType); ok2 && types.IsStringAnyMapLike(mt) {
+			exprT = finalTyp
+		}
+	}
 	if finalTyp != nil {
 		exprGo := goType(exprT)
 		typGo := goType(finalTyp)
@@ -1667,14 +1705,14 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 			}
 			rightType = lt
 		} else if (part.Op == "==" || part.Op == "!=") && len(part.Right.Ops) == 0 {
-			if ll := part.Right.Target.List; ll != nil && len(ll.Elems) == 0 && isList(leftType) {
+			if ll := part.Right.Target.List; ll != nil && isList(leftType) {
 				lt := leftType.(types.ListType)
 				right, err = c.compilePostfixHint(part.Right, leftType)
 				if err != nil {
 					return "", err
 				}
 				rightType = lt
-			} else if ml := part.Right.Target.Map; ml != nil && len(ml.Items) == 0 && isMap(leftType) {
+			} else if ml := part.Right.Target.Map; ml != nil && isMap(leftType) {
 				mt := leftType.(types.MapType)
 				right, err = c.compilePostfixHint(part.Right, leftType)
 				if err != nil {
