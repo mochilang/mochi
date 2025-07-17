@@ -1,4 +1,0 @@
-exit status 254
-../../../tests/machine/x/dart/tree_sum.dart:27:3: Error: A value of type 'int?' can't be returned from a function with return type 'int' because 'int?' is nullable and 'int' isn't.
-})();
-  ^

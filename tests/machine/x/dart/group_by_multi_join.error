@@ -1,7 +1,0 @@
-exit status 254
-../../../tests/machine/x/dart/group_by_multi_join.dart:19:62: Error: A value of type 'int?' can't be assigned to a variable of type 'num' because 'int?' is nullable and 'num' isn't.
-        _q0.add({'part': ps['part'], 'value': ps['cost'] * ps['qty']});
-                                                             ^
-../../../tests/machine/x/dart/group_by_multi_join.dart:19:58: Error: Operator '*' cannot be called on 'int?' because it is potentially null.
-        _q0.add({'part': ps['part'], 'value': ps['cost'] * ps['qty']});
-                                                         ^
