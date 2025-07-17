@@ -937,13 +937,24 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	}
 	switch call.Func {
 	case "print":
-		c.use("_fmt")
+		if s, ok, err := c.maybeFStringPrint(call.Args); ok {
+			return s, err
+		}
+		useFmt := false
 		for i, a := range call.Args {
 			arg := args[i]
+			if _, ok := stringLit(a); ok {
+				args[i] = arg
+				continue
+			}
 			if _, ok := c.inferExprType(a).(types.BoolType); ok {
 				arg = fmt.Sprintf("str(%s).lower()", arg)
 			}
 			args[i] = fmt.Sprintf("_fmt(%s)", arg)
+			useFmt = true
+		}
+		if useFmt {
+			c.use("_fmt")
 		}
 		if len(args) == 1 {
 			return fmt.Sprintf("print(%s)", args[0]), nil
@@ -1182,6 +1193,35 @@ func buildFString(args []string, exprs []*parser.Expr) string {
 		}
 	}
 	return "f'" + strings.Join(parts, " ") + "'"
+}
+
+func (c *Compiler) maybeFStringPrint(exprs []*parser.Expr) (string, bool, error) {
+	if len(exprs) < 2 || len(exprs)%2 != 0 {
+		return "", false, nil
+	}
+	if _, ok := stringLit(exprs[0]); !ok {
+		return "", false, nil
+	}
+	parts := make([]string, len(exprs))
+	for i, e := range exprs {
+		if i%2 == 0 {
+			if _, ok := stringLit(e); !ok {
+				return "", false, nil
+			}
+			parts[i] = ""
+		} else {
+			if _, ok := stringLit(e); ok {
+				return "", false, nil
+			}
+			v, err := c.compileExpr(e)
+			if err != nil {
+				return "", false, err
+			}
+			parts[i] = v
+		}
+	}
+	fstr := buildFString(parts, exprs)
+	return fmt.Sprintf("print(%s)", fstr), true, nil
 }
 
 // compileExprHint compiles an expression using a type hint when dealing with

@@ -2,6 +2,10 @@
 - Typed variables without initializers now default to zero values.
 - `_fmt` formats non-integer floats with `format(v, '.17g')` for deterministic output.
 
+## Recent Enhancements (2025-07-17 01:20)
+- Print calls skip `_fmt` for constant string arguments and attempt to collapse
+  alternating string/expression pairs into a single f-string.
+
 ## Recent Enhancements (2025-07-16 18:00)
 - Removed generated code comparisons from tests to rely solely on runtime output.
 - Deprecated `.py.out` files in `tests/compiler/py`.
