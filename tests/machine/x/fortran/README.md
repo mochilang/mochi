@@ -4,7 +4,7 @@ The Fortran backend compiles each Mochi program under `tests/vm/valid`. This dir
 
 List literal lengths are now computed at compile time so programs using `len` or
 `count` on constant arrays avoid runtime helper code. List set operations like
-`union` and `except` with constant integer lists are also folded at compile time.
+`union` and `except` with constant integer lists are also folded at compile time. Append operations on constant integer lists stored in variables are resolved during compilation as well.
 
 Compiled programs: 100/100
 

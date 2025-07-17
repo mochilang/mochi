@@ -52,6 +52,9 @@
 - 2025-07-17 11:00: Constant integer lists propagate through variables so
   `append` on known lists is resolved at compile time, removing temporary
   buffers.
+- 2025-07-17 12:00: `len`, `count`, `append`, and list set operations now fold
+  integer lists even when referenced through variables, eliminating more helper
+  calls at runtime.
 
 ## Remaining Work
 - [x] Support query compilation with joins and group-by for TPC-H `q1.mochi`.

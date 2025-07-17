@@ -32,6 +32,7 @@ type Compiler struct {
 	helpers     map[string]bool
 	autoImports map[string]string
 	structNames map[string]string
+	constLists  map[string][]int
 }
 
 func (c *Compiler) structName(name string) string {
@@ -64,7 +65,13 @@ func (c *Compiler) structName(name string) string {
 
 // New creates a new compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, declared: make(map[string]bool), helpers: make(map[string]bool), autoImports: make(map[string]string)}
+	return &Compiler{
+		env:         env,
+		declared:    make(map[string]bool),
+		helpers:     make(map[string]bool),
+		autoImports: make(map[string]string),
+		constLists:  make(map[string][]int),
+	}
 }
 
 // Compile converts a parsed Mochi program into Fortran source code.
@@ -75,6 +82,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.decl.Reset()
 		c.functions = nil
 		c.declared = make(map[string]bool)
+		c.constLists = make(map[string][]int)
 		c.tmpIndex = 0
 		c.writeln("program q1")
 		c.indent++
@@ -119,6 +127,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.decl.Reset()
 		c.functions = nil
 		c.declared = make(map[string]bool)
+		c.constLists = make(map[string][]int)
 		c.tmpIndex = 0
 		c.writeln("program q2")
 		c.indent++
@@ -177,6 +186,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.decl.Reset()
 	c.functions = nil
 	c.declared = make(map[string]bool)
+	c.constLists = make(map[string][]int)
 	c.tmpIndex = 0
 	name := "main"
 	if prog.Package != "" {
@@ -380,6 +390,11 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 		c.declared[l.Name] = true
 	}
 	if l.Value != nil {
+		if ints, ok := c.constIntListExpr(l.Value); ok {
+			c.constLists[l.Name] = append([]int(nil), ints...)
+		} else {
+			delete(c.constLists, l.Name)
+		}
 		if lst := listLiteral(l.Value); lst != nil {
 			if len(lst.Elems) > 0 {
 				if inner := listLiteral(lst.Elems[0]); inner != nil {
@@ -489,6 +504,13 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	val, err := c.compileExpr(a.Value)
 	if err != nil {
 		return err
+	}
+	if len(a.Index) == 0 {
+		if ints, ok := c.constIntListExpr(a.Value); ok {
+			c.constLists[a.Name] = append([]int(nil), ints...)
+		} else {
+			delete(c.constLists, a.Name)
+		}
 	}
 	target := a.Name
 	var indices []string
@@ -834,14 +856,10 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			continue
 		case "union":
 			if len(b.Right) == 1 {
-				llist := listLiteralFromUnary(b.Left)
-				rlist := listLiteralFromPostfix(op.Right)
-				if llist != nil && rlist != nil {
-					if la, ok := intList(llist); ok {
-						if lb, ok2 := intList(rlist); ok2 {
-							res = formatIntList(unionInts(la, lb))
-							continue
-						}
+				if la, ok := c.constIntListFromUnary(b.Left); ok {
+					if lb, ok2 := c.constIntListFromPostfix(op.Right); ok2 {
+						res = formatIntList(unionInts(la, lb))
+						continue
 					}
 				}
 			}
@@ -850,14 +868,10 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			continue
 		case "union_all":
 			if len(b.Right) == 1 {
-				llist := listLiteralFromUnary(b.Left)
-				rlist := listLiteralFromPostfix(op.Right)
-				if llist != nil && rlist != nil {
-					if la, ok := intList(llist); ok {
-						if lb, ok2 := intList(rlist); ok2 {
-							res = formatIntList(append(la, lb...))
-							continue
-						}
+				if la, ok := c.constIntListFromUnary(b.Left); ok {
+					if lb, ok2 := c.constIntListFromPostfix(op.Right); ok2 {
+						res = formatIntList(append(la, lb...))
+						continue
 					}
 				}
 			}
@@ -866,14 +880,10 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			continue
 		case "except":
 			if len(b.Right) == 1 {
-				llist := listLiteralFromUnary(b.Left)
-				rlist := listLiteralFromPostfix(op.Right)
-				if llist != nil && rlist != nil {
-					if la, ok := intList(llist); ok {
-						if lb, ok2 := intList(rlist); ok2 {
-							res = formatIntList(exceptInts(la, lb))
-							continue
-						}
+				if la, ok := c.constIntListFromUnary(b.Left); ok {
+					if lb, ok2 := c.constIntListFromPostfix(op.Right); ok2 {
+						res = formatIntList(exceptInts(la, lb))
+						continue
 					}
 				}
 			}
@@ -882,14 +892,10 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			continue
 		case "intersect":
 			if len(b.Right) == 1 {
-				llist := listLiteralFromUnary(b.Left)
-				rlist := listLiteralFromPostfix(op.Right)
-				if llist != nil && rlist != nil {
-					if la, ok := intList(llist); ok {
-						if lb, ok2 := intList(rlist); ok2 {
-							res = formatIntList(intersectInts(la, lb))
-							continue
-						}
+				if la, ok := c.constIntListFromUnary(b.Left); ok {
+					if lb, ok2 := c.constIntListFromPostfix(op.Right); ok2 {
+						res = formatIntList(intersectInts(la, lb))
+						continue
 					}
 				}
 			}
@@ -1215,8 +1221,8 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(call.Args) != 1 {
 			return "", fmt.Errorf("len expects 1 arg")
 		}
-		if lst := listLiteral(call.Args[0]); lst != nil {
-			return fmt.Sprintf("%d", len(lst.Elems)), nil
+		if ints, ok := c.constIntListExpr(call.Args[0]); ok {
+			return fmt.Sprintf("%d", len(ints)), nil
 		}
 		if types.IsStringExpr(call.Args[0], c.env) {
 			return fmt.Sprintf("len(%s)", args[0]), nil
@@ -1247,8 +1253,8 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(call.Args) != 1 {
 			return "", fmt.Errorf("count expects 1 arg")
 		}
-		if lst := listLiteral(call.Args[0]); lst != nil {
-			return fmt.Sprintf("%d", len(lst.Elems)), nil
+		if ints, ok := c.constIntListExpr(call.Args[0]); ok {
+			return fmt.Sprintf("%d", len(ints)), nil
 		}
 		return fmt.Sprintf("size(%s)", args[0]), nil
 	case "str":
@@ -1269,12 +1275,10 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(call.Args) != 2 {
 			return "", fmt.Errorf("append expects 2 args")
 		}
-		if lst := listLiteral(call.Args[0]); lst != nil {
-			if ints, ok := intList(lst); ok {
-				if iv := literalInt(call.Args[1]); iv != nil {
-					out := append(ints, *iv)
-					return formatIntList(out), nil
-				}
+		if ints, ok := c.constIntListExpr(call.Args[0]); ok {
+			if iv := literalInt(call.Args[1]); iv != nil {
+				out := append(ints, *iv)
+				return formatIntList(out), nil
 			}
 		}
 		arr := args[0]
@@ -1555,6 +1559,38 @@ func intList(l *parser.ListLiteral) ([]int, bool) {
 	return vals, true
 }
 
+func (c *Compiler) constIntListExpr(e *parser.Expr) ([]int, bool) {
+	if l := listLiteral(e); l != nil {
+		return intList(l)
+	}
+	if name := identName(e); name != "" {
+		ints, ok := c.constLists[name]
+		return ints, ok
+	}
+	return nil, false
+}
+
+func (c *Compiler) constIntListFromUnary(u *parser.Unary) ([]int, bool) {
+	if u == nil || len(u.Ops) != 0 || u.Value == nil {
+		return nil, false
+	}
+	return c.constIntListFromPostfix(u.Value)
+}
+
+func (c *Compiler) constIntListFromPostfix(pf *parser.PostfixExpr) ([]int, bool) {
+	if pf == nil || len(pf.Ops) != 0 || pf.Target == nil {
+		return nil, false
+	}
+	if pf.Target.List != nil {
+		return intList(pf.Target.List)
+	}
+	if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 0 {
+		ints, ok := c.constLists[pf.Target.Selector.Root]
+		return ints, ok
+	}
+	return nil, false
+}
+
 func formatIntList(list []int) string {
 	elems := make([]string, len(list))
 	for i, v := range list {
@@ -1635,6 +1671,24 @@ func keyName(e *parser.Expr) string {
 	}
 	if v.Target.Lit != nil && v.Target.Lit.Str != nil {
 		return *v.Target.Lit.Str
+	}
+	if v.Target.Selector != nil && len(v.Target.Selector.Tail) == 0 {
+		return v.Target.Selector.Root
+	}
+	return ""
+}
+
+func identName(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return ""
+	}
+	v := u.Value
+	if len(v.Ops) != 0 || v.Target == nil {
+		return ""
 	}
 	if v.Target.Selector != nil && len(v.Target.Selector.Tail) == 0 {
 		return v.Target.Selector.Root
