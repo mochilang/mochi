@@ -101,6 +101,9 @@
 - Updated `_print` helper to mimic `console.log` output for objects and booleans.
 ### 2025-07-30 00:00 UTC
 - `_print` now prints `1` or `0` for booleans and math division always returns a float.
+### 2025-07-31 00:00 UTC
+- Print statements with simple numeric or string values now compile directly to
+  `console.log` without using the `_print` helper.
 ### 2025-07-17 08:01 UTC
 - Switched boolean output to numeric form in generated programs and removed many `any` types from the runtime helpers.
 ### 2025-07-17 00:00 UTC

@@ -1897,8 +1897,28 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	}
 	switch call.Func {
 	case "print":
+		useHelper := false
+		transformed := make([]string, len(args))
+		for i, a := range call.Args {
+			t := c.inferExprType(a)
+			expr := args[i]
+			switch t.(type) {
+			case types.BoolType:
+				expr = fmt.Sprintf("(%s ? 1 : 0)", expr)
+			case types.ListType:
+				// Lists should be printed space separated like the VM
+				expr = fmt.Sprintf("(%s).join(' ')", expr)
+				useHelper = true
+			case types.MapType, types.StructType, types.AnyType:
+				useHelper = true
+			}
+			transformed[i] = expr
+		}
+		if !useHelper {
+			return fmt.Sprintf("console.log(%s)", strings.Join(transformed, ", ")), nil
+		}
 		c.use("_print")
-		return fmt.Sprintf("_print(%s)", strings.Join(args, ", ")), nil
+		return fmt.Sprintf("_print(%s)", strings.Join(transformed, ", ")), nil
 	case "keys":
 		if len(call.Args) == 1 {
 			t := c.inferExprType(call.Args[0])

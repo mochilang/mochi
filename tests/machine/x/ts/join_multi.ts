@@ -54,7 +54,7 @@ function main(): void {
     }
     return _res;
   })();
-  _print("--- Multi Join ---");
+  console.log("--- Multi Join ---");
   for (const r of result) {
     _print(r.name, "bought item", r.sku);
   }

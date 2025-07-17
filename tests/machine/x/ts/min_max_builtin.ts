@@ -5,8 +5,8 @@ let nums: number[];
 
 function main(): void {
   nums = [3, 1, 4];
-  _print(_min(nums));
-  _print(_max(nums));
+  console.log(_min(nums));
+  console.log(_max(nums));
 }
 function _max(v: unknown): number {
   let list: any[] | null = null;
@@ -43,15 +43,6 @@ function _min(v: unknown): unknown {
     if (num < mv) mv = num;
   }
   return mv;
-}
-
-function _print(...args: unknown[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    if (typeof a === "boolean") return a ? "1" : "0";
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
 }
 
 main();

@@ -2,9 +2,9 @@
 // Source: /workspace/mochi/tests/vm/valid/slice.mochi
 
 function main(): void {
-  _print([1, 2, 3].slice(1, 3));
-  _print([1, 2, 3].slice(0, 2));
-  _print(_sliceString("hello", 1, 4));
+  _print(([1, 2, 3].slice(1, 3)).join(" "));
+  _print(([1, 2, 3].slice(0, 2)).join(" "));
+  console.log(_sliceString("hello", 1, 4));
 }
 function _print(...args: unknown[]): void {
   const out = args.map((a) => {

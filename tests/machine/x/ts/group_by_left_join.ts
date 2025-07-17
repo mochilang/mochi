@@ -61,7 +61,7 @@ function main(): void {
     }
     return _res;
   })();
-  _print("--- Group Left Join ---");
+  console.log("--- Group Left Join ---");
   for (const s of stats) {
     _print(s.name, "orders:", s.count);
   }

@@ -5,7 +5,7 @@ let a: number[];
 
 function main(): void {
   a = [1, 2];
-  _print([...a, 3]);
+  _print([...a, 3].join(" "));
 }
 function _print(...args: unknown[]): void {
   const out = args.map((a) => {

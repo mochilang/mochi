@@ -26,7 +26,7 @@ function main(): void {
     }
     return _res;
   })();
-  _print("--- Cross Join of three lists ---");
+  console.log("--- Cross Join of three lists ---");
   for (const c of combos) {
     _print(c.n, c.l, c.b);
   }

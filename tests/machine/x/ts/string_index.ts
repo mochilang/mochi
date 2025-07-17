@@ -5,22 +5,13 @@ let s: string;
 
 function main(): void {
   s = "mochi";
-  _print(_indexString(s, 1));
+  console.log(_indexString(s, 1));
 }
 function _indexString(s: string, i: number): string {
   const runes = Array.from(s);
   if (i < 0) i += runes.length;
   if (i < 0 || i >= runes.length) throw new Error("index out of range");
   return runes[i];
-}
-
-function _print(...args: unknown[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    if (typeof a === "boolean") return a ? "1" : "0";
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
 }
 
 main();

@@ -58,9 +58,9 @@ function main(): void {
     }
     return _res;
   })();
-  _print("--- Orders with customer info ---");
+  console.log("--- Orders with customer info ---");
   for (const entry of result) {
-    _print(
+    console.log(
       "Order",
       entry.orderId,
       "by",
@@ -90,15 +90,6 @@ function _hashJoin(
     for (const r of arr) out.push([l, r]);
   }
   return out;
-}
-
-function _print(...args: unknown[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    if (typeof a === "boolean") return a ? "1" : "0";
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
 }
 
 main();

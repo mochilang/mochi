@@ -9,15 +9,6 @@ let add5: (p0: number) => number;
 
 function main(): void {
   add5 = (b) => add(5, b);
-  _print(add5(3));
+  console.log(add5(3));
 }
-function _print(...args: unknown[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    if (typeof a === "boolean") return a ? "1" : "0";
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

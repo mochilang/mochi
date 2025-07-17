@@ -3,16 +3,7 @@
 
 function main(): void {
   for (let i: number = 1; i < 4; i++) {
-    _print(i);
+    console.log(i);
   }
 }
-function _print(...args: unknown[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    if (typeof a === "boolean") return a ? "1" : "0";
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

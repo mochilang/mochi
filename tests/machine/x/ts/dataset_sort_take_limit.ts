@@ -63,7 +63,7 @@ function main(): void {
     }
     return _res;
   })();
-  _print("--- Top products (excluding most expensive) ---");
+  console.log("--- Top products (excluding most expensive) ---");
   for (const item of expensive) {
     _print(item.name, "costs $", item.price);
   }

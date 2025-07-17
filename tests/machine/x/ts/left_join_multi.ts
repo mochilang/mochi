@@ -46,7 +46,7 @@ function main(): void {
       }),
     });
   })();
-  _print("--- Left Join Multi ---");
+  console.log("--- Left Join Multi ---");
   for (const r of result) {
     _print(r.orderId, r.name, r.item);
   }

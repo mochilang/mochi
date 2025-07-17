@@ -65,7 +65,7 @@ function main(): void {
     }
     return _res;
   })();
-  _print("--- Right Join using syntax ---");
+  console.log("--- Right Join using syntax ---");
   for (const entry of result) {
     if (entry.order) {
       _print(

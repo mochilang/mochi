@@ -22,7 +22,7 @@ function main(): void {
     }
     return _res;
   })();
-  _print("--- Even pairs ---");
+  console.log("--- Even pairs ---");
   for (const p of pairs) {
     _print(p.n, p.l);
   }

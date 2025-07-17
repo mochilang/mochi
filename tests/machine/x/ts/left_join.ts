@@ -54,7 +54,7 @@ function main(): void {
     }
     return _res;
   })();
-  _print("--- Left Join ---");
+  console.log("--- Left Join ---");
   for (const entry of result) {
     _print(
       "Order",

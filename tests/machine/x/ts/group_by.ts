@@ -62,7 +62,7 @@ function main(): void {
     }
     return _res;
   })();
-  _print("--- People grouped by city ---");
+  console.log("--- People grouped by city ---");
   for (const s of stats) {
     _print(s.city, ": count =", s.count, ", avg_age =", s.avg_age);
   }

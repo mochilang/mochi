@@ -2,17 +2,8 @@
 // Source: /workspace/mochi/tests/vm/valid/sum_builtin.mochi
 
 function main(): void {
-  _print(_sum([1, 2, 3]));
+  console.log(_sum([1, 2, 3]));
 }
-function _print(...args: unknown[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    if (typeof a === "boolean") return a ? "1" : "0";
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 function _sum(v: unknown): number {
   let list: any[] | null = null;
   if (Array.isArray(v)) list = v;

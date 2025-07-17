@@ -90,7 +90,7 @@ function main(): void {
     }
     return _res;
   })();
-  _print(grouped);
+  _print(grouped.join(" "));
 }
 function _print(...args: unknown[]): void {
   const out = args.map((a) => {

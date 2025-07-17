@@ -9,7 +9,7 @@ function main(): void {
     "b": 2,
     "c": 3,
   };
-  _print(_values(m));
+  _print((_values(m)).join(" "));
 }
 function _print(...args: unknown[]): void {
   const out = args.map((a) => {

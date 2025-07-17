@@ -39,7 +39,7 @@ function main(): void {
     }
     return _res;
   })();
-  _print(result);
+  _print(result.join(" "));
 }
 function _cmp(a: unknown, b: unknown): number {
   if (Array.isArray(a) && Array.isArray(b)) {

@@ -55,7 +55,7 @@ function main(): void {
     }
     return _res;
   })();
-  _print(grouped);
+  _print(grouped.join(" "));
 }
 function _cmp(a: unknown, b: unknown): number {
   if (Array.isArray(a) && Array.isArray(b)) {

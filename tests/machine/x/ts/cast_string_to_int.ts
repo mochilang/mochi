@@ -2,15 +2,6 @@
 // Source: /workspace/mochi/tests/vm/valid/cast_string_to_int.mochi
 
 function main(): void {
-  _print("1995" as number);
+  console.log("1995" as number);
 }
-function _print(...args: unknown[]): void {
-  const out = args.map((a) => {
-    if (Array.isArray(a)) return a.join(" ");
-    if (typeof a === "boolean") return a ? "1" : "0";
-    return String(a);
-  }).join(" ").trimEnd();
-  console.log(out);
-}
-
 main();

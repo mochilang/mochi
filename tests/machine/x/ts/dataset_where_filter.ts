@@ -28,7 +28,7 @@ function main(): void {
     "age": person.age,
     "is_senior": (person.age >= 60),
   }));
-  _print("--- Adults ---");
+  console.log("--- Adults ---");
   for (const person of adults) {
     _print(person.name, "is", person.age, person.is_senior ? " (senior)" : "");
   }
