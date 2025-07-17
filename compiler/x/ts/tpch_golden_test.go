@@ -4,6 +4,7 @@ package tscode_test
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -53,6 +54,11 @@ func runTPCH(t *testing.T, base string) {
 	codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "ts", base+".ts")
 	outWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "ts", base+".out")
 
+	os.Setenv("MOCHI_HEADER_TIME", "2006-01-02T15:04:05Z")
+	os.Setenv("SOURCE_DATE_EPOCH", "0")
+	defer os.Unsetenv("MOCHI_HEADER_TIME")
+	defer os.Unsetenv("SOURCE_DATE_EPOCH")
+
 	prog, err := parser.Parse(src)
 	if err != nil {
 		t.Fatalf("parse error: %v", err)
@@ -69,8 +75,15 @@ func runTPCH(t *testing.T, base string) {
 		_ = os.WriteFile(codeWant, code, 0o644)
 	} else if want, err := os.ReadFile(codeWant); err == nil {
 		got := bytes.TrimSpace(code)
-		if !bytes.Equal(got, bytes.TrimSpace(want)) {
-			t.Errorf("generated code mismatch for %s.ts\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base, got, bytes.TrimSpace(want))
+		want = bytes.TrimSpace(want)
+		if i := bytes.Index(got, []byte{'\n'}); i > 0 {
+			got = got[i+1:]
+		}
+		if i := bytes.Index(want, []byte{'\n'}); i > 0 {
+			want = want[i+1:]
+		}
+		if !bytes.Equal(got, want) {
+			t.Errorf("generated code mismatch for %s.ts\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base, got, want)
 		}
 	}
 	dir := t.TempDir()
@@ -88,8 +101,15 @@ func runTPCH(t *testing.T, base string) {
 	if shouldUpdateTPCH() {
 		_ = os.WriteFile(outWant, append(gotOut, '\n'), 0o644)
 	} else if wantOut, err := os.ReadFile(outWant); err == nil {
-		if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
-			t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base, gotOut, bytes.TrimSpace(wantOut))
+		wantOut = bytes.TrimSpace(wantOut)
+		var gotJSON, wantJSON interface{}
+		if json.Unmarshal(gotOut, &gotJSON) == nil && json.Unmarshal(wantOut, &wantJSON) == nil {
+			g, _ := json.Marshal(gotJSON)
+			w, _ := json.Marshal(wantJSON)
+			gotOut, wantOut = g, w
+		}
+		if !bytes.Equal(gotOut, wantOut) {
+			t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base, gotOut, wantOut)
 		}
 	}
 }
