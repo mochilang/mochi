@@ -31,3 +31,4 @@
 - 2025-07-17 compiled for_map_collection.mochi in Zig
 - 2025-07-17 compiled fun_call.mochi in Zig
 - 2025-07-17 compiled fun_expr_in_let.mochi in Zig
+- 2025-07-17 compiled fun_three_args.mochi in Zig
