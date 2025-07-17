@@ -1498,7 +1498,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if p.Call.Func == "count" {
 			if len(args) == 1 {
 				if _, ok := c.inferExprType(p.Call.Args[0]).(types.GroupType); ok {
-					return fmt.Sprintf("length (items %s)", args[0]), nil
+					return fmt.Sprintf("length (gItems %s)", args[0]), nil
 				}
 			}
 			return fmt.Sprintf("length %s", strings.Join(args, " ")), nil
@@ -1581,17 +1581,17 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			switch tt := typ.(type) {
 			case types.GroupType:
 				if field == "key" {
-					expr = fmt.Sprintf("key (%s)", expr)
+					expr = fmt.Sprintf("gKey (%s)", expr)
 					typ = types.AnyType{}
 					continue
 				} else if field == "items" {
-					expr = fmt.Sprintf("items (%s)", expr)
+					expr = fmt.Sprintf("gItems (%s)", expr)
 					typ = types.ListType{Elem: tt.Elem}
 					continue
 				}
 				c.usesMap = true
 				c.usesMaybe = true
-				expr = fmt.Sprintf("fromMaybe (error \"missing\") (Map.lookup %q (key %s))", field, expr)
+				expr = fmt.Sprintf("fromMaybe (error \"missing\") (Map.lookup %q (gKey %s))", field, expr)
 				typ = types.AnyType{}
 			case types.MapType:
 				c.usesMap = true
