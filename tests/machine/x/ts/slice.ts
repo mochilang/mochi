@@ -4,7 +4,7 @@
 function main(): void {
   _print([1, 2, 3].slice(1, 3));
   _print([1, 2, 3].slice(0, 2));
-  _print(_sliceString("hello", 1, 4));
+  _print("hello".slice(1, 4));
 }
 function _print(...args: unknown[]): void {
   const out = args.map((a) => {
@@ -13,19 +13,6 @@ function _print(...args: unknown[]): void {
     return String(a);
   }).join(" ").trimEnd();
   console.log(out);
-}
-
-function _sliceString(s: string, i: number, j: number): string {
-  let start = i;
-  let end = j;
-  const runes = Array.from(s);
-  const n = runes.length;
-  if (start < 0) start += n;
-  if (end < 0) end += n;
-  if (start < 0) start = 0;
-  if (end > n) end = n;
-  if (end < start) end = start;
-  return runes.slice(start, end).join("");
 }
 
 main();
