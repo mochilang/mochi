@@ -1093,11 +1093,22 @@ func (c *compiler) callExpr(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("avg expects 1 argument at line %d", call.Pos.Line)
 		}
-		c.helpers["_avg"] = true
-		c.helpers["_group"] = true
 		if name, ok := c.isGroupVar(call.Args[0]); ok {
+			if et := c.groupElemType[name]; et == "int" {
+				return fmt.Sprintf("Double(%s.items.reduce(0, +)) / Double(%s.items.count)", name, name), nil
+			} else if et == "float" {
+				return fmt.Sprintf("%s.items.reduce(0.0, +) / Double(%s.items.count)", name, name), nil
+			}
+			c.helpers["_avg"] = true
+			c.helpers["_group"] = true
 			return fmt.Sprintf("_avg(%s.items)", name), nil
 		}
+		if et := listElemType(c.exprType(call.Args[0])); et == "int" {
+			return fmt.Sprintf("Double(%s.reduce(0, +)) / Double(%s.count)", args[0], args[0]), nil
+		} else if et == "float" {
+			return fmt.Sprintf("%s.reduce(0.0, +) / Double(%s.count)", args[0], args[0]), nil
+		}
+		c.helpers["_avg"] = true
 		return fmt.Sprintf("_avg(%s)", args[0]), nil
 	case "count", "len":
 		if len(args) != 1 {
@@ -1111,31 +1122,56 @@ func (c *compiler) callExpr(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("min expects 1 argument at line %d", call.Pos.Line)
 		}
-		c.helpers["_min"] = true
-		c.helpers["_group"] = true
 		if name, ok := c.isGroupVar(call.Args[0]); ok {
+			if et := c.groupElemType[name]; et == "int" || et == "float" || et == "string" {
+				return fmt.Sprintf("%s.items.min()!", name), nil
+			}
+			c.helpers["_min"] = true
+			c.helpers["_group"] = true
 			return fmt.Sprintf("_min(%s.items)", name), nil
 		}
+		if et := listElemType(c.exprType(call.Args[0])); et == "int" || et == "float" || et == "string" {
+			return fmt.Sprintf("%s.min()!", args[0]), nil
+		}
+		c.helpers["_min"] = true
 		return fmt.Sprintf("_min(%s)", args[0]), nil
 	case "max":
 		if len(args) != 1 {
 			return "", fmt.Errorf("max expects 1 argument at line %d", call.Pos.Line)
 		}
-		c.helpers["_max"] = true
-		c.helpers["_group"] = true
 		if name, ok := c.isGroupVar(call.Args[0]); ok {
+			if et := c.groupElemType[name]; et == "int" || et == "float" || et == "string" {
+				return fmt.Sprintf("%s.items.max()!", name), nil
+			}
+			c.helpers["_max"] = true
+			c.helpers["_group"] = true
 			return fmt.Sprintf("_max(%s.items)", name), nil
 		}
+		if et := listElemType(c.exprType(call.Args[0])); et == "int" || et == "float" || et == "string" {
+			return fmt.Sprintf("%s.max()!", args[0]), nil
+		}
+		c.helpers["_max"] = true
 		return fmt.Sprintf("_max(%s)", args[0]), nil
 	case "sum":
 		if len(args) != 1 {
 			return "", fmt.Errorf("sum expects 1 argument at line %d", call.Pos.Line)
 		}
-		c.helpers["_sum"] = true
-		c.helpers["_group"] = true
 		if name, ok := c.isGroupVar(call.Args[0]); ok {
+			if et := c.groupElemType[name]; et == "int" {
+				return fmt.Sprintf("%s.items.reduce(0, +)", name), nil
+			} else if et == "float" {
+				return fmt.Sprintf("%s.items.reduce(0.0, +)", name), nil
+			}
+			c.helpers["_sum"] = true
+			c.helpers["_group"] = true
 			return fmt.Sprintf("_sum(%s.items)", name), nil
 		}
+		if et := listElemType(c.exprType(call.Args[0])); et == "int" {
+			return fmt.Sprintf("%s.reduce(0, +)", args[0]), nil
+		} else if et == "float" {
+			return fmt.Sprintf("%s.reduce(0.0, +)", args[0]), nil
+		}
+		c.helpers["_sum"] = true
 		return fmt.Sprintf("_sum(%s)", args[0]), nil
 	case "exists":
 		if len(args) != 1 {
@@ -1149,7 +1185,7 @@ func (c *compiler) callExpr(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("values expects 1 argument at line %d", call.Pos.Line)
 		}
-		return fmt.Sprintf("Array(%s.values)", args[0]), nil
+		return fmt.Sprintf("Array(%s.values).sorted()", args[0]), nil
 	case "json":
 		if len(args) != 1 {
 			return "", fmt.Errorf("json expects 1 argument at line %d", call.Pos.Line)
@@ -1720,6 +1756,13 @@ func swiftTypeOf(t string) string {
 	}
 	if t != "" {
 		return t
+	}
+	return ""
+}
+
+func listElemType(t string) string {
+	if strings.HasPrefix(t, "list_") {
+		return strings.TrimPrefix(t, "list_")
 	}
 	return ""
 }
