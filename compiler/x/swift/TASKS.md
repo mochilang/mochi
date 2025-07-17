@@ -1,6 +1,7 @@
 # Swift Compiler Progress
 
 ## Recent Enhancements
+- 2025-07-24 09:00 – arithmetic expressions now infer numeric types so expectation comparisons use `==` without the `_equal` helper when possible
 - 2025-07-23 10:00 – direct equality for typed values avoids _equal helper when possible
 - 2025-07-22 08:10 – improved join query nil handling and added struct list
   conversion when saving data so `right_join` and `save_jsonl_stdout` now
