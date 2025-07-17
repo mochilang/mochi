@@ -1723,6 +1723,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if len(elems) > 0 {
 			if t := c.structLiteralType(elems[0]); t != "" {
 				elemType = t
+			} else if t := c.extractVectorType(elems[0]); t != "" {
+				elemType = t
 			} else if t := c.varStruct[elems[0]]; t != "" {
 				if idx := strings.Index(t, "{"); idx != -1 {
 					elemType = t[:idx]
@@ -1753,6 +1755,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				if t == "" {
 					if s := c.structLiteralType(e); s != "" {
 						t = s
+					} else if v := c.extractVectorType(e); v != "" {
+						t = v
 					} else if v := c.varStruct[e]; v != "" {
 						if idx := strings.Index(v, "{"); idx != -1 {
 							t = v[:idx]
@@ -3742,7 +3746,7 @@ func (c *Compiler) extractVectorStruct(expr string) string {
 		return ""
 	}
 	start += len("std::vector<")
-	end := strings.Index(expr[start:], ">")
+	end := matchAngle(expr[start:])
 	if end == -1 {
 		return ""
 	}
@@ -3801,7 +3805,7 @@ func (c *Compiler) extractVectorElemType(expr string) string {
 		return ""
 	}
 	inner := expr[len("std::vector<"):]
-	idx := strings.Index(inner, ">")
+	idx := matchAngle(inner)
 	if idx == -1 {
 		return ""
 	}
@@ -3895,6 +3899,38 @@ func (c *Compiler) isAnyExpr(expr string) bool {
 		}
 	}
 	return strings.Contains(expr, "std::any")
+}
+
+func matchAngle(s string) int {
+	depth := 0
+	for i, ch := range s {
+		switch ch {
+		case '<':
+			depth++
+		case '>':
+			if depth == 0 {
+				return i
+			}
+			depth--
+		}
+	}
+	return -1
+}
+
+func (c *Compiler) extractVectorType(expr string) string {
+	if strings.HasPrefix(expr, "std::vector<") {
+		inner := expr[len("std::vector<"):]
+		idx := matchAngle(inner)
+		if idx != -1 {
+			return "std::vector<" + inner[:idx] + ">"
+		}
+	}
+	if c.vars[expr] == "vector" {
+		if et := c.elemType[expr]; et != "" {
+			return fmt.Sprintf("std::vector<%s>", et)
+		}
+	}
+	return ""
 }
 
 func (c *Compiler) structLiteralType(expr string) string {
