@@ -309,6 +309,26 @@ func extractQueryExpr(e *parser.Expr) *parser.QueryExpr {
 	return u.Value.Target.Query
 }
 
+// extractExistsQuery returns the query expression inside an `exists` call if
+// the argument is a simple literal query expression. Returns nil otherwise.
+func extractExistsQuery(e *parser.Expr) *parser.QueryExpr {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil
+	}
+	if u.Value == nil || u.Value.Target == nil || len(u.Value.Ops) != 0 {
+		return nil
+	}
+	call := u.Value.Target.Call
+	if call == nil || call.Func != "exists" || len(call.Args) != 1 {
+		return nil
+	}
+	return extractQueryExpr(call.Args[0])
+}
+
 // extractListLiteral returns the list literal contained in the expression if
 // it is a simple literal expression. Returns nil otherwise.
 func extractListLiteral(e *parser.Expr) *parser.ListLiteral {
