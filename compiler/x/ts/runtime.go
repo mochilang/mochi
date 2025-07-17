@@ -37,7 +37,7 @@ const (
 		"  if (end < start) end = start;\n" +
 		"  return v.slice(start, end);\n" +
 		"}\n"
-	helperCount = "function _count(v: any): number {\n" +
+	helperCount = "function _count(v: unknown): number {\n" +
 		"  if (Array.isArray(v)) return v.length;\n" +
 		"  if (v && typeof v === 'object') {\n" +
 		"    if (Array.isArray((v as any).items)) return (v as any).items.length;\n" +
@@ -52,19 +52,19 @@ const (
 		"  return out;\n" +
 		"}\n"
 
-	helperAvg = "function _avg(v: any): number {\n" +
+	helperAvg = "function _avg(v: unknown): number {\n" +
 		"  const c = _count(v);\n" +
 		"  return c ? _sum(v) / c : 0;\n" +
 		"}\n"
 
-	helperReduce = "function _reduce(src: any[], fn: (a: any, b: any) => any, acc: any): any {\n" +
+	helperReduce = "function _reduce<T, U>(src: T[], fn: (a: U, b: T) => U, acc: U): U {\n" +
 		"  for (const it of src) {\n" +
 		"    acc = fn(acc, it);\n" +
 		"  }\n" +
 		"  return acc;\n" +
 		"}\n"
 
-	helperSum = "function _sum(v: any): number {\n" +
+	helperSum = "function _sum(v: unknown): number {\n" +
 		"  let list: any[] | null = null;\n" +
 		"  if (Array.isArray(v)) list = v;\n" +
 		"  else if (v && typeof v === 'object') {\n" +
@@ -101,15 +101,16 @@ const (
 		"  return String(v);\n" +
 		"}\n"
 
-	helperPrint = "function _print(...args: any[]): void {\n" +
+	helperPrint = "function _print(...args: unknown[]): void {\n" +
 		"  const out = args.map(a => {\n" +
 		"    if (Array.isArray(a)) return a.join(' ');\n" +
+		"    if (typeof a === 'boolean') return a ? '1' : '0';\n" +
 		"    return String(a);\n" +
 		"  }).join(' ').trimEnd();\n" +
 		"  console.log(out);\n" +
 		"}\n"
 
-	helperMin = "function _min(v: any): any {\n" +
+	helperMin = "function _min(v: unknown): unknown {\n" +
 		"  let list: any[] | null = null;\n" +
 		"  if (Array.isArray(v)) list = v;\n" +
 		"  else if (v && typeof v === 'object') {\n" +
@@ -127,7 +128,7 @@ const (
 		"  return mv;\n" +
 		"}\n"
 
-	helperMax = "function _max(v: any): number {\n" +
+	helperMax = "function _max(v: unknown): number {\n" +
 		"  let list: any[] | null = null;\n" +
 		"  if (Array.isArray(v)) list = v;\n" +
 		"  else if (v && typeof v === 'object') {\n" +
@@ -140,7 +141,7 @@ const (
 		"  return m;\n" +
 		"}\n"
 
-	helperExists = "function _exists(v: any): boolean {\n" +
+	helperExists = "function _exists(v: unknown): boolean {\n" +
 		"  if (Array.isArray(v)) return v.length > 0;\n" +
 		"  if (v && typeof v === 'object') {\n" +
 		"    if (Array.isArray((v as any).items)) return (v as any).items.length > 0;\n" +
@@ -151,7 +152,7 @@ const (
 		"  return false;\n" +
 		"}\n"
 
-	helperContains = "function _contains(c: any, v: any): boolean {\n" +
+	helperContains = "function _contains(c: unknown, v: unknown): boolean {\n" +
 		"  if (Array.isArray(c)) return c.includes(v);\n" +
 		"  if (typeof c === 'string') return c.includes(String(v));\n" +
 		"  if (c && typeof c === 'object') {\n" +
@@ -159,7 +160,7 @@ const (
 		"  }\n" +
 		"  return false;\n" +
 		"}\n"
-	helperStartsWith = "function _starts_with(str: any, prefix: any): boolean {\n" +
+	helperStartsWith = "function _starts_with(str: unknown, prefix: unknown): boolean {\n" +
 		"  return String(str).startsWith(String(prefix));\n" +
 		"}\n"
 
@@ -175,29 +176,29 @@ const (
 		"  return v === null ? '' : v;\n" +
 		"}\n"
 
-	helperIter = "function _iter<T>(v: Iterable<T> | { [key: string]: T } | any): Iterable<T | string> {\n" +
+	helperIter = "function _iter<T>(v: Iterable<T> | { [key: string]: T } | unknown): Iterable<T | string> {\n" +
 		"  if (v && typeof v === 'object' && !Array.isArray(v) && !(Symbol.iterator in v)) {\n" +
 		"    return Object.keys(v).sort().reverse();\n" +
 		"  }\n" +
 		"  return v as Iterable<T>;\n" +
 		"}\n"
 
-	helperGenText = "function _gen_text(prompt: string, model: string | null, params: any | null): string {\n" +
+	helperGenText = "function _gen_text(prompt: string, model: string | null, params: unknown | null): string {\n" +
 		"  // TODO: integrate with your preferred LLM\n" +
 		"  return prompt;\n" +
 		"}\n"
 
-	helperGenEmbed = "function _gen_embed(text: string, model: string | null, params: any | null): number[] {\n" +
+	helperGenEmbed = "function _gen_embed(text: string, model: string | null, params: unknown | null): number[] {\n" +
 		"  // TODO: integrate with your preferred embedding model\n" +
 		"  return Array.from(text).map(c => c.charCodeAt(0));\n" +
 		"}\n"
 
-	helperGenStruct = "function _gen_struct<T>(prompt: string, model: string | null, params: any | null): T {\n" +
+	helperGenStruct = "function _gen_struct<T>(prompt: string, model: string | null, params: unknown | null): T {\n" +
 		"  // TODO: integrate with your preferred LLM and parse JSON\n" +
 		"  return JSON.parse(prompt) as T;\n" +
 		"}\n"
 
-	helperEqual = "function _equal(a: any, b: any): boolean {\n" +
+	helperEqual = "function _equal(a: unknown, b: unknown): boolean {\n" +
 		"  if (typeof a === 'number' && typeof b === 'number') {\n" +
 		"    return Math.abs(a - b) < 1e-9;\n" +
 		"  }\n" +
@@ -215,7 +216,7 @@ const (
 		"  return a === b;\n" +
 		"}\n"
 
-	helperCmp = "function _cmp(a: any, b: any): number {\n" +
+	helperCmp = "function _cmp(a: unknown, b: unknown): number {\n" +
 		"  if (Array.isArray(a) && Array.isArray(b)) {\n" +
 		"    const n = Math.min(a.length, b.length);\n" +
 		"    for (let i = 0; i < n; i++) {\n" +
@@ -233,7 +234,7 @@ const (
 		"  return String(a) < String(b) ? -1 : (String(a) > String(b) ? 1 : 0);\n" +
 		"}\n"
 
-	helperFetch = "async function _fetch(url: string, opts: any): Promise<any> {\n" +
+	helperFetch = "async function _fetch(url: string, opts: Record<string, unknown> | undefined): Promise<unknown> {\n" +
 		"  if (url.startsWith('file://')) {\n" +
 		"    let path = url.slice(7);\n" +
 		"    if (!path.startsWith('/')) {\n" +
@@ -247,22 +248,22 @@ const (
 		"    const text = Deno.readTextFileSync(path);\n" +
 		"    try { return JSON.parse(text); } catch { return text; }\n" +
 		"  }\n" +
-		"  const init: RequestInit = { method: opts?.method ?? 'GET' };\n" +
-		"  if (opts?.headers) { init.headers = _toAnyMap(opts.headers); }\n" +
-		"  if (opts && 'body' in opts) { init.body = JSON.stringify(opts.body); }\n" +
-		"  if (opts?.query) {\n" +
+		"  const init: RequestInit = { method: (opts as any)?.method ?? 'GET' };\n" +
+		"  if ((opts as any)?.headers) { init.headers = _toAnyMap((opts as any).headers); }\n" +
+		"  if (opts && 'body' in (opts as any)) { init.body = JSON.stringify((opts as any).body); }\n" +
+		"  if ((opts as any)?.query) {\n" +
 		"    const qs = new URLSearchParams();\n" +
-		"    for (const [k, v] of Object.entries(_toAnyMap(opts.query))) {\n" +
+		"    for (const [k, v] of Object.entries(_toAnyMap((opts as any).query))) {\n" +
 		"      qs.set(k, String(v));\n" +
 		"    }\n" +
 		"    const sep = url.includes('?') ? '&' : '?';\n" +
 		"    url = url + sep + qs.toString();\n" +
 		"  }\n" +
 		"  let ctrl: AbortController | undefined;\n" +
-		"  let id: any;\n" +
-		"  if (opts?.timeout) {\n" +
+		"  let id: number | undefined;\n" +
+		"  if ((opts as any)?.timeout) {\n" +
 		"    ctrl = new AbortController();\n" +
-		"    id = setTimeout(() => ctrl!.abort(), Number(opts.timeout) * 1000);\n" +
+		"    id = setTimeout(() => ctrl!.abort(), Number((opts as any).timeout) * 1000);\n" +
 		"    init.signal = ctrl.signal;\n" +
 		"  }\n" +
 		"  const resp = await fetch(url, init);\n" +
@@ -271,8 +272,8 @@ const (
 		"  try { return JSON.parse(text); } catch { return text; }\n" +
 		"}\n"
 
-	helperToAnyMap = "function _toAnyMap(m: any): { [key: string]: any } {\n" +
-		"  return m as { [key: string]: any };\n" +
+	helperToAnyMap = "function _toAnyMap(m: unknown): Record<string, unknown> {\n" +
+		"  return m as Record<string, unknown>;\n" +
 		"}\n"
 
 	helperUnionAll = "function _union_all<T>(a: T[], b: T[]): T[] {\n" +

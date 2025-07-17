@@ -1,6 +1,6 @@
 # Mochi to TypeScript compilation status
 
-The TypeScript backend compiles Mochi programs from `tests/vm/valid` and executes them with Deno. The table below marks programs that compile and run successfully.
+The TypeScript backend compiles Mochi programs from `tests/vm/valid` and executes them with Deno. The table below marks programs that compile and run successfully. Boolean values are printed as `1` or `0` for consistency with the reference outputs.
 
 ## Checklist
 - [x] append_builtin

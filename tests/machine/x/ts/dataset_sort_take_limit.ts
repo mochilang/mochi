@@ -68,7 +68,7 @@ function main(): void {
     _print(item.name, "costs $", item.price);
   }
 }
-function _cmp(a: any, b: any): number {
+function _cmp(a: unknown, b: unknown): number {
   if (Array.isArray(a) && Array.isArray(b)) {
     const n = Math.min(a.length, b.length);
     for (let i = 0; i < n; i++) {
@@ -88,9 +88,10 @@ function _cmp(a: any, b: any): number {
   return String(a) < String(b) ? -1 : (String(a) > String(b) ? 1 : 0);
 }
 
-function _print(...args: any[]): void {
+function _print(...args: unknown[]): void {
   const out = args.map((a) => {
     if (Array.isArray(a)) return a.join(" ");
+    if (typeof a === "boolean") return a ? "1" : "0";
     return String(a);
   }).join(" ").trimEnd();
   console.log(out);

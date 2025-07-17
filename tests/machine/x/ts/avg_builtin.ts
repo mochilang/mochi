@@ -4,12 +4,12 @@
 function main(): void {
   _print(_avg([1, 2, 3]));
 }
-function _avg(v: any): number {
+function _avg(v: unknown): number {
   const c = _count(v);
   return c ? _sum(v) / c : 0;
 }
 
-function _count(v: any): number {
+function _count(v: unknown): number {
   if (Array.isArray(v)) return v.length;
   if (v && typeof v === "object") {
     if (Array.isArray((v as any).items)) return (v as any).items.length;
@@ -18,15 +18,16 @@ function _count(v: any): number {
   return 0;
 }
 
-function _print(...args: any[]): void {
+function _print(...args: unknown[]): void {
   const out = args.map((a) => {
     if (Array.isArray(a)) return a.join(" ");
+    if (typeof a === "boolean") return a ? "1" : "0";
     return String(a);
   }).join(" ").trimEnd();
   console.log(out);
 }
 
-function _sum(v: any): number {
+function _sum(v: unknown): number {
   let list: any[] | null = null;
   if (Array.isArray(v)) list = v;
   else if (v && typeof v === "object") {

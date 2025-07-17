@@ -92,15 +92,16 @@ function main(): void {
   })();
   _print(grouped);
 }
-function _print(...args: any[]): void {
+function _print(...args: unknown[]): void {
   const out = args.map((a) => {
     if (Array.isArray(a)) return a.join(" ");
+    if (typeof a === "boolean") return a ? "1" : "0";
     return String(a);
   }).join(" ").trimEnd();
   console.log(out);
 }
 
-function _sum(v: any): number {
+function _sum(v: unknown): number {
   let list: any[] | null = null;
   if (Array.isArray(v)) list = v;
   else if (v && typeof v === "object") {

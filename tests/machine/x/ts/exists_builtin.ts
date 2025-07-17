@@ -9,7 +9,7 @@ function main(): void {
   flag = _exists(data.filter((x) => (x == 1)).map((x) => x));
   _print(flag);
 }
-function _exists(v: any): boolean {
+function _exists(v: unknown): boolean {
   if (Array.isArray(v)) return v.length > 0;
   if (v && typeof v === "object") {
     if (Array.isArray((v as any).items)) return (v as any).items.length > 0;
@@ -20,9 +20,10 @@ function _exists(v: any): boolean {
   return false;
 }
 
-function _print(...args: any[]): void {
+function _print(...args: unknown[]): void {
   const out = args.map((a) => {
     if (Array.isArray(a)) return a.join(" ");
+    if (typeof a === "boolean") return a ? "1" : "0";
     return String(a);
   }).join(" ").trimEnd();
   console.log(out);

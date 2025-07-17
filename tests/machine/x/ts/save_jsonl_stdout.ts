@@ -151,8 +151,8 @@ function _save(rows: any[], path: string | null, opts: any): void {
   }
 }
 
-function _toAnyMap(m: any): { [key: string]: any } {
-  return m as { [key: string]: any };
+function _toAnyMap(m: unknown): Record<string, unknown> {
+  return m as Record<string, unknown>;
 }
 
 main();
