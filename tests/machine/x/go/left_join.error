@@ -1,0 +1,7 @@
+exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/left_join.go:52:16: cannot use _getField(c, "id") (value of interface type any) as int value in map index: need type assertion
+../../../tests/machine/x/go/left_join.go:52:38: cannot use c (variable of struct type Customer) as *Customer value in assignment
+../../../tests/machine/x/go/left_join.go:58:18: cannot use &v (value of type **Customer) as Customer value in assignment
+../../../tests/machine/x/go/left_join.go:60:18: cannot use nil as Customer value in assignment
+../../../tests/machine/x/go/left_join.go:68:24: invalid operation: entry.Customer != nil (mismatched types Customer and untyped nil)

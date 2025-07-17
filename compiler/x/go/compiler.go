@@ -4332,6 +4332,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			}
 		}
 		if simple {
+			for i, a := range call.Args {
+				at := c.inferExprType(a)
+				if isBool(at) {
+					args[i] = fmt.Sprintf("func() int { if %s { return 1 }; return 0 }()", args[i])
+				}
+			}
 			c.imports["strings"] = true
 			return fmt.Sprintf("fmt.Println(strings.TrimSpace(fmt.Sprintln(%s)))", strings.Join(args, ", ")), nil
 		}
@@ -4341,6 +4347,8 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			at := c.inferExprType(a)
 			if isList(at) || (isAny(at) && isListOrMapExpr(a)) {
 				parts[i] = fmt.Sprintf("strings.Trim(strings.Trim(fmt.Sprint(%s), \"[]\"), \" \" )", args[i])
+			} else if isBool(at) {
+				parts[i] = fmt.Sprintf("fmt.Sprint(func() int { if %s { return 1 }; return 0 }())", args[i])
 			} else {
 				parts[i] = fmt.Sprintf("fmt.Sprint(%s)", args[i])
 			}

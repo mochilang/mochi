@@ -1,0 +1,3 @@
+exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/left_join_multi.go:141:19: cannot convert i (variable of type *Item) to type Item
