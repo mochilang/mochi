@@ -1428,8 +1428,26 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		}
 		if op.Cast != nil {
 			typ := csType(op.Cast.Type)
-			c.use("_cast")
-			expr = fmt.Sprintf("_cast<%s>(%s)", typ, expr)
+			prefix := &parser.PostfixExpr{Target: p.Target, Ops: p.Ops[:i]}
+			from := c.inferPostfixType(prefix)
+			same := typ == csTypeOf(from)
+			numeric := func(t types.Type) bool {
+				switch t.(type) {
+				case types.IntType, types.Int64Type, types.FloatType:
+					return true
+				}
+				return false
+			}
+			if same {
+				expr = fmt.Sprintf("(%s)%s", typ, expr)
+			} else if _, ok := from.(types.StringType); ok && contains([]string{"int", "long", "double", "float"}, typ) {
+				expr = fmt.Sprintf("%s.Parse(%s)", typ, expr)
+			} else if numeric(from) && contains([]string{"int", "long", "double", "float"}, typ) {
+				expr = fmt.Sprintf("(%s)%s", typ, expr)
+			} else {
+				c.use("_cast")
+				expr = fmt.Sprintf("_cast<%s>(%s)", typ, expr)
+			}
 			continue
 		}
 	}
