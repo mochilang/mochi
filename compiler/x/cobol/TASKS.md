@@ -1,6 +1,8 @@
 # COBOL Compiler Tasks
 
 ## Recent Enhancements
+- 2025-07-23 00:00 - Unary operator formatting fixed so negative
+  literals like `-3` are emitted correctly.
 - 2025-07-20 00:00 - `print` now uses `WITH NO ADVANCING` to emit space
   separated values and a temporary string variable to avoid zero padded
   numbers.
