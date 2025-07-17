@@ -3804,25 +3804,28 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			parts[i] = fmt.Sprintf("format!(\"{}\", %s)", arg)
 		}
 		return fmt.Sprintf("println!(\"{}\", vec![%s].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(\" \") )", strings.Join(parts, ", ")), nil
-	case "append":
-		c.helpers["append"] = true
-		if len(args) != 2 {
-			return "", fmt.Errorf("append expects 2 args")
-		}
-		if ml := tryMapLiteral(call.Args[1]); ml != nil {
-			if name, ok := c.simpleIdent(call.Args[0]); ok {
-				structName := c.newStructName("Item")
-				code, err := c.compileMapLiteralAsStruct(structName, ml)
-				if err == nil {
-					args[1] = code
-					c.listVars[name] = structName
-					if c.env != nil {
-						c.env.SetVar(name, types.ListType{Elem: types.StructType{Name: structName}}, true)
-					}
-				}
-			}
-		}
-		return fmt.Sprintf("append(%s, %s)", args[0], args[1]), nil
+        case "append":
+                if len(args) != 2 {
+                        return "", fmt.Errorf("append expects 2 args")
+                }
+                if ml := tryMapLiteral(call.Args[1]); ml != nil {
+                        if name, ok := c.simpleIdent(call.Args[0]); ok {
+                                structName := c.newStructName("Item")
+                                code, err := c.compileMapLiteralAsStruct(structName, ml)
+                                if err == nil {
+                                        args[1] = code
+                                        c.listVars[name] = structName
+                                        if c.env != nil {
+                                                c.env.SetVar(name, types.ListType{Elem: types.StructType{Name: structName}}, true)
+                                        }
+                                }
+                        }
+                }
+                if _, ok := types.TypeOfExpr(call.Args[0], c.env).(types.ListType); ok {
+                        return fmt.Sprintf("{ let mut tmp = %s.clone(); tmp.push(%s); tmp }", args[0], args[1]), nil
+                }
+                c.helpers["append"] = true
+                return fmt.Sprintf("append(%s, %s)", args[0], args[1]), nil
 	case "avg":
 		if len(args) != 1 {
 			return "", fmt.Errorf("avg expects 1 arg")
@@ -3927,25 +3930,24 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return fmt.Sprintf("&%s[%s..%s]", args[0], args[1], args[2]), nil
 		}
 		return fmt.Sprintf("&%s[%s as usize..%s as usize]", args[0], args[1], args[2]), nil
-	case "json":
-		if len(args) != 1 {
-			return "", fmt.Errorf("json expects 1 arg")
-		}
-		if ml := tryMapLiteral(call.Args[0]); ml != nil {
-			if s, ok := c.mapLiteralJSON(ml); ok {
-				s = strings.ReplaceAll(s, "{", "{{")
-				s = strings.ReplaceAll(s, "}", "}}")
-				return fmt.Sprintf("println!(%q)", s), nil
-			}
-		} else if id, ok := c.simpleIdent(call.Args[0]); ok {
-			if s, ok2 := c.constJSON[id]; ok2 {
-				s = strings.ReplaceAll(s, "{", "{{")
-				s = strings.ReplaceAll(s, "}", "}}")
-				return fmt.Sprintf("println!(%q)", s), nil
-			}
-		}
-		c.helpers["_json"] = true
-		return fmt.Sprintf("_json(&%s)", args[0]), nil
+        case "json":
+                if len(args) != 1 {
+                        return "", fmt.Errorf("json expects 1 arg")
+                }
+                if ml := tryMapLiteral(call.Args[0]); ml != nil {
+                        if s, ok := c.mapLiteralJSON(ml); ok {
+                                s = strings.ReplaceAll(s, "{", "{{")
+                                s = strings.ReplaceAll(s, "}", "}}")
+                                return fmt.Sprintf("println!(%q)", s), nil
+                        }
+                } else if id, ok := c.simpleIdent(call.Args[0]); ok {
+                        if s, ok2 := c.constJSON[id]; ok2 {
+                                s = strings.ReplaceAll(s, "{", "{{")
+                                s = strings.ReplaceAll(s, "}", "}}")
+                                return fmt.Sprintf("println!(%q)", s), nil
+                        }
+                }
+                return fmt.Sprintf("println!(\"{:?}\", %s)", args[0]), nil
 	default:
 		return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ", ")), nil
 	}
