@@ -2,7 +2,7 @@
 
 This directory contains Clojure code generated from the Mochi programs in `tests/vm/valid` using the Clojure compiler. Each program was compiled and executed. Successful runs produced an `.out` file while failures produced an `.error` file.
 
-Compiled programs: 93/100 successful.
+Compiled programs: 100/100 successful.
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -29,10 +29,10 @@ Compiled programs: 93/100 successful.
 - [x] group_by.mochi
 - [x] group_by_conditional_sum.mochi
 - [x] group_by_having.mochi
-- [ ] group_by_join.mochi
-- [ ] group_by_left_join.mochi
+- [x] group_by_join.mochi
+- [x] group_by_left_join.mochi
 - [x] group_by_multi_join.mochi
-- [ ] group_by_multi_join_sort.mochi
+- [x] group_by_multi_join_sort.mochi
 - [x] group_by_sort.mochi
 - [x] group_items_iteration.mochi
 - [x] if_else.mochi
@@ -43,8 +43,8 @@ Compiled programs: 93/100 successful.
 - [x] inner_join.mochi
 - [x] join_multi.mochi
 - [x] json_builtin.mochi
-- [ ] left_join.mochi
-- [ ] left_join_multi.mochi
+- [x] left_join.mochi
+- [x] left_join_multi.mochi
 - [x] len_builtin.mochi
 - [x] len_map.mochi
 - [x] len_string.mochi
@@ -68,7 +68,7 @@ Compiled programs: 93/100 successful.
 - [x] min_max_builtin.mochi
 - [x] nested_function.mochi
 - [x] order_by_map.mochi
-- [ ] outer_join.mochi
+- [x] outer_join.mochi
 - [x] partial_application.mochi
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
@@ -77,7 +77,7 @@ Compiled programs: 93/100 successful.
 - [x] python_math.mochi
 - [x] query_sum_select.mochi
 - [x] record_assign.mochi
-- [ ] right_join.mochi
+- [x] right_join.mochi
 - [x] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
 - [x] slice.mochi
@@ -105,7 +105,7 @@ Compiled programs: 93/100 successful.
 - [x] while_loop.mochi
 
 ## Status
-7 programs failed.
+All 100 programs compiled and ran successfully.
 
 ## Remaining tasks
-- [ ] Fix failing examples
+None

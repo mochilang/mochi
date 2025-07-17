@@ -395,7 +395,7 @@ const (
                it)
           it (if (contains? opts :skip) (vec (drop (:skip opts) it)) it)
           it (if (contains? opts :take) (vec (take (:take opts) it)) it)]
-      (mapv #(apply (:select opts) (take (inc (count joins)) %)) it))))))`
+      (mapv #(apply (:select opts) (take (inc (count joins)) %)) it))))))))))`
 )
 
 var helperMap = map[string]string{
