@@ -31,8 +31,8 @@ var stats = { () -> [Any] in
 	for (k, v) in _groups {
 	    _tmp.append((key: k, items: v))
 	}
-	return _tmp.map { g in ["name": g.key, "count": g.items.filter { r in (r["o"] as! Order) != nil }.count] }
-}())
+	return _tmp.map { g in ["name": g.key, "count": g.items.filter { r in (r["o"] as! Order?) != nil }.count] }
+}()
 print("--- Group Left Join ---")
 for s in stats as! [[String:Any]] {
     print(s["name"]!, "orders:", s["count"]!)

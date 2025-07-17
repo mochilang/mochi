@@ -1,4 +1,4 @@
-/tmp/TestSwiftCompiler_VMValid_Goldenright_join853053255/001/main.swift:38:36: error: 'nil' requires a contextual type
+/tmp/TestSwiftCompiler_VMValid_Goldenright_join2757907729/001/main.swift:38:36: error: 'nil' requires a contextual type
 36 | 		if !_m {
 37 | 			let c: Customer? = nil
 38 | 			_res.append(CJoin(customerName: nil.name, order: o))

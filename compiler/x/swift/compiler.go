@@ -873,7 +873,11 @@ func (c *compiler) postfix(p *parser.PostfixExpr) (string, error) {
 						if sel := p.Target.Selector; sel != nil && len(sel.Tail) == 0 {
 							if m, ok2 := c.mapFields[sel.Root]; ok2 {
 								if t, ok3 := m[key]; ok3 {
-									val = fmt.Sprintf("(%s[%q] as! %s)", val, key, t)
+									if strings.HasSuffix(t, "?") {
+										val = fmt.Sprintf("(%s[%q] as? %s)", val, key, strings.TrimSuffix(t, "?"))
+									} else {
+										val = fmt.Sprintf("(%s[%q] as! %s)", val, key, t)
+									}
 									continue
 								}
 							}
@@ -1331,7 +1335,8 @@ func (c *compiler) matchExpr(m *parser.MatchExpr) (string, error) {
 }
 
 func (c *compiler) mapToStruct(m *parser.MapLiteral, name string) (string, error) {
-	fields := make([]string, len(m.Items))
+	items := make(map[string]string, len(m.Items))
+	order := make([]string, len(m.Items))
 	for i, it := range m.Items {
 		key, ok := keyName(it.Key)
 		if !ok {
@@ -1341,7 +1346,17 @@ func (c *compiler) mapToStruct(m *parser.MapLiteral, name string) (string, error
 		if err != nil {
 			return "", err
 		}
-		fields[i] = fmt.Sprintf("%s: %s", key, v)
+		items[key] = v
+		order[i] = key
+	}
+	if sOrder, ok := c.structs[name]; ok {
+		order = sOrder
+	}
+	fields := make([]string, len(order))
+	for i, k := range order {
+		if v, ok := items[k]; ok {
+			fields[i] = fmt.Sprintf("%s: %s", k, v)
+		}
 	}
 	return fmt.Sprintf("%s(%s)", name, strings.Join(fields, ", ")), nil
 }
@@ -2263,6 +2278,13 @@ func (c *compiler) groupJoinQuery(q *parser.QueryExpr) (string, error) {
 			}
 		}
 	}
+	for i, j := range q.Joins {
+		if joinSides[i] != "" {
+			if t, ok := fields[j.Var]; ok && !strings.HasSuffix(t, "?") {
+				fields[j.Var] = t + "?"
+			}
+		}
+	}
 	if len(fields) > 0 {
 		c.groupElemFields[gname] = fields
 	} else {
@@ -2465,7 +2487,7 @@ func (c *compiler) groupJoinQuery(q *parser.QueryExpr) (string, error) {
 	} else {
 		b.WriteString(fmt.Sprintf("\treturn _tmp.map { %s in %s }\n", gname, sel))
 	}
-	b.WriteString("}())")
+	b.WriteString("}()")
 
 	delete(c.groups, gname)
 	delete(c.groupElemType, gname)

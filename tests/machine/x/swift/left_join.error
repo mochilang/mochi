@@ -1,7 +1,0 @@
-/tmp/TestSwiftCompiler_VMValid_Goldenleft_join955637963/001/main.swift:36:37: error: argument 'customer' must precede argument 'orderId'
-34 | 			if !(o.customerId == c.id) { continue }
-35 | 			_m = true
-36 | 			_res.append(OJoin(orderId: o.id, customer: c, total: o.total))
-   |                                     `- error: argument 'customer' must precede argument 'orderId'
-37 | 		}
-38 | 		if !_m {
