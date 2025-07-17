@@ -27,6 +27,8 @@
   cast unknown integer divisions to `f64` when the resulting field is a float.
 - 2025-07-22 - Improved struct inference for query map literals so fields print
   without debug formatting. Updated VM golden outputs.
+- 2025-07-24 - Inlined JSON strings for map variables and updated Rust VM README
+  to reflect 100% compilation success.
 
 ## Remaining Enhancements
 - [ ] Inline JSON printing for variables when values are known at compile time

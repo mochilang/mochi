@@ -37,6 +37,7 @@ type Compiler struct {
 	enumDecls      []string
 	lastListStruct string
 	modules        map[string]bool
+	constJSON      map[string]string
 }
 
 // exprFieldPath attempts to extract a root identifier and field path from an
@@ -498,6 +499,7 @@ func New(env *types.Env) *Compiler {
 		enumDecls:      []string{},
 		lastListStruct: "",
 		modules:        make(map[string]bool),
+		constJSON:      make(map[string]string),
 	}
 }
 
@@ -883,6 +885,11 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 			}
 		}
 	}
+	if ml := tryMapLiteral(l.Value); ml != nil {
+		if s, ok := c.mapLiteralJSON(ml); ok {
+			c.constJSON[l.Name] = s
+		}
+	}
 	if c.lastListStruct != "" {
 		c.listVars[l.Name] = c.lastListStruct
 		if c.env != nil {
@@ -968,6 +975,11 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 					c.listVars[v.Name] = st.Name
 				}
 			}
+		}
+	}
+	if ml := tryMapLiteral(v.Value); ml != nil {
+		if s, ok := c.mapLiteralJSON(ml); ok {
+			c.constJSON[v.Name] = s
 		}
 	}
 	if c.lastListStruct != "" {
@@ -3820,6 +3832,10 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		if ml := tryMapLiteral(call.Args[0]); ml != nil {
 			if s, ok := c.mapLiteralJSON(ml); ok {
+				return fmt.Sprintf("println!(%q)", s), nil
+			}
+		} else if id, ok := c.simpleIdent(call.Args[0]); ok {
+			if s, ok2 := c.constJSON[id]; ok2 {
 				return fmt.Sprintf("println!(%q)", s), nil
 			}
 		}
