@@ -3,6 +3,6 @@ warning: default values for the optional arguments in _query/3 are never used
  75 │   defp _query(src, joins, opts \\ %{}) do
     │        ~
     │
-    └─ /tmp/TestExCompiler_VMValid_GoldenX/001/main.exs:75:8: Main (module)
+    └─ tests/machine/x/ex/group_by_sort.exs:75:8: Main (module)
 
 [%{total: 7, cat: "b"}, %{total: 4, cat: "a"}]

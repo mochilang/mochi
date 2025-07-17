@@ -1541,6 +1541,11 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 	expr := fmt.Sprintf("_load(%s, %s)", path, opts)
 	if l.Type != nil && l.Type.Simple != nil {
 		name := sanitizeName(*l.Type.Simple)
+		if c.env != nil {
+			if st, ok := c.env.GetStruct(*l.Type.Simple); ok {
+				c.ensureStruct(st)
+			}
+		}
 		c.use("_structify")
 		expr = fmt.Sprintf("Enum.map(%s, &_structify(%s, &1))", expr, name)
 	}

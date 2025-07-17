@@ -3,6 +3,6 @@ warning: variable "c" is unused (there is a variable with the same name in the c
  11 │       c = %{c | n: c.n + 1}
     │       ~
     │
-    └─ /tmp/TestExCompiler_VMValid_GoldenX/001/main.exs:11:7: Main.inc/1
+    └─ tests/machine/x/ex/record_assign.exs:11:7: Main.inc/1
 
 0

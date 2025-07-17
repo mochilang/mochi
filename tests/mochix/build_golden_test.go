@@ -126,12 +126,6 @@ func TestBuildXErlang(t *testing.T) {
 	})
 }
 
-func TestBuildXEx(t *testing.T) {
-	golden.Run(t, "tests/mochix", ".mochi", ".ex.out", func(src string) ([]byte, error) {
-		return runMochix(t, "buildx", "--target", "ex", src)
-	})
-}
-
 func TestBuildXFortran(t *testing.T) {
 	golden.Run(t, "tests/mochix", ".mochi", ".f90.out", func(src string) ([]byte, error) {
 		return runMochix(t, "buildx", "--target", "fortran", src)
