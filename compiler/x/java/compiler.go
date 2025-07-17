@@ -164,6 +164,13 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
+	// mark variables used with the 'in' operator so they remain maps
+	inVars := make(map[string]bool)
+	collectInOpVarsInStmts(prog.Statements, inVars)
+	for v := range inVars {
+		c.forceMap[v] = true
+	}
+
 	// compile main body first so we know which helpers are needed
 	c.srcDir = filepath.Dir(prog.Pos.Filename)
 	base := strings.TrimSuffix(filepath.Base(prog.Pos.Filename), filepath.Ext(prog.Pos.Filename))
@@ -1428,6 +1435,9 @@ func (c *Compiler) dataClassFor(m *parser.MapLiteral) string {
 			return ""
 		}
 		keys = append(keys, k)
+	}
+	if len(keys) <= 2 {
+		return ""
 	}
 	if len(keys) == 0 {
 		return ""
@@ -4255,4 +4265,168 @@ func exprUsesVarInIfExpr(name string, ife *parser.IfExpr) bool {
 		return true
 	}
 	return false
+}
+
+func collectInOpVarsInStmts(stmts []*parser.Statement, vars map[string]bool) {
+	for _, s := range stmts {
+		switch {
+		case s.Var != nil:
+			collectInOpVarsInExpr(s.Var.Value, vars)
+		case s.Let != nil:
+			collectInOpVarsInExpr(s.Let.Value, vars)
+		case s.Assign != nil:
+			collectInOpVarsInExpr(s.Assign.Value, vars)
+			for _, ix := range s.Assign.Index {
+				collectInOpVarsInExpr(ix.Start, vars)
+				collectInOpVarsInExpr(ix.End, vars)
+				collectInOpVarsInExpr(ix.Step, vars)
+			}
+		case s.Return != nil:
+			collectInOpVarsInExpr(s.Return.Value, vars)
+		case s.If != nil:
+			collectInOpVarsInExpr(s.If.Cond, vars)
+			collectInOpVarsInStmts(s.If.Then, vars)
+			if s.If.ElseIf != nil {
+				collectInOpVarsInStmts([]*parser.Statement{{If: s.If.ElseIf}}, vars)
+			}
+			collectInOpVarsInStmts(s.If.Else, vars)
+		case s.For != nil:
+			collectInOpVarsInExpr(s.For.Source, vars)
+			collectInOpVarsInExpr(s.For.RangeEnd, vars)
+			collectInOpVarsInStmts(s.For.Body, vars)
+		case s.While != nil:
+			collectInOpVarsInExpr(s.While.Cond, vars)
+			collectInOpVarsInStmts(s.While.Body, vars)
+		case s.Fun != nil:
+			collectInOpVarsInStmts(s.Fun.Body, vars)
+		case s.Expect != nil:
+			collectInOpVarsInExpr(s.Expect.Value, vars)
+		case s.Expr != nil:
+			collectInOpVarsInExpr(s.Expr.Expr, vars)
+		case s.Test != nil:
+			collectInOpVarsInStmts(s.Test.Body, vars)
+		case s.Fetch != nil:
+			collectInOpVarsInExpr(s.Fetch.URL, vars)
+			collectInOpVarsInExpr(s.Fetch.With, vars)
+		case s.Update != nil:
+			for _, it := range s.Update.Set.Items {
+				collectInOpVarsInExpr(it.Value, vars)
+			}
+			collectInOpVarsInExpr(s.Update.Where, vars)
+		}
+	}
+}
+
+func collectInOpVarsInExpr(e *parser.Expr, vars map[string]bool) {
+	if e == nil || e.Binary == nil {
+		return
+	}
+	var scanUnary func(u *parser.Unary)
+	var scanPostfix func(p *parser.PostfixExpr)
+	var scanPrimary func(p *parser.Primary)
+
+	scanUnary = func(u *parser.Unary) {
+		if u == nil {
+			return
+		}
+		scanPostfix(u.Value)
+	}
+	scanPostfix = func(p *parser.PostfixExpr) {
+		if p == nil {
+			return
+		}
+		scanPrimary(p.Target)
+		for _, op := range p.Ops {
+			if op.Call != nil {
+				for _, a := range op.Call.Args {
+					collectInOpVarsInExpr(a, vars)
+				}
+			}
+			if op.Index != nil {
+				collectInOpVarsInExpr(op.Index.Start, vars)
+				collectInOpVarsInExpr(op.Index.End, vars)
+				collectInOpVarsInExpr(op.Index.Step, vars)
+			}
+		}
+	}
+	scanPrimary = func(p *parser.Primary) {
+		if p == nil {
+			return
+		}
+		switch {
+		case p.List != nil:
+			for _, el := range p.List.Elems {
+				collectInOpVarsInExpr(el, vars)
+			}
+		case p.Map != nil:
+			for _, it := range p.Map.Items {
+				collectInOpVarsInExpr(it.Key, vars)
+				collectInOpVarsInExpr(it.Value, vars)
+			}
+		case p.Struct != nil:
+			for _, f := range p.Struct.Fields {
+				collectInOpVarsInExpr(f.Value, vars)
+			}
+		case p.Generate != nil:
+			for _, f := range p.Generate.Fields {
+				collectInOpVarsInExpr(f.Value, vars)
+			}
+		case p.Match != nil:
+			collectInOpVarsInExpr(p.Match.Target, vars)
+			for _, cs := range p.Match.Cases {
+				collectInOpVarsInExpr(cs.Pattern, vars)
+				collectInOpVarsInExpr(cs.Result, vars)
+			}
+		case p.If != nil:
+			collectInOpVarsInExpr(p.If.Cond, vars)
+			collectInOpVarsInExpr(p.If.Then, vars)
+			if p.If.ElseIf != nil {
+				collectInOpVarsInExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{If: p.If.ElseIf}}}}}, vars)
+			}
+			collectInOpVarsInExpr(p.If.Else, vars)
+		case p.Query != nil:
+			collectInOpVarsInExpr(p.Query.Source, vars)
+			for _, fr := range p.Query.Froms {
+				collectInOpVarsInExpr(fr.Src, vars)
+			}
+			for _, j := range p.Query.Joins {
+				collectInOpVarsInExpr(j.Src, vars)
+				collectInOpVarsInExpr(j.On, vars)
+			}
+			collectInOpVarsInExpr(p.Query.Where, vars)
+			if p.Query.Group != nil {
+				for _, e := range p.Query.Group.Exprs {
+					collectInOpVarsInExpr(e, vars)
+				}
+				collectInOpVarsInExpr(p.Query.Group.Having, vars)
+			}
+			collectInOpVarsInExpr(p.Query.Select, vars)
+			collectInOpVarsInExpr(p.Query.Sort, vars)
+			collectInOpVarsInExpr(p.Query.Skip, vars)
+			collectInOpVarsInExpr(p.Query.Take, vars)
+		case p.FunExpr != nil:
+			collectInOpVarsInStmts(p.FunExpr.BlockBody, vars)
+			collectInOpVarsInExpr(p.FunExpr.ExprBody, vars)
+		case p.Group != nil:
+			collectInOpVarsInExpr(p.Group, vars)
+		}
+	}
+
+	scanUnary(e.Binary.Left)
+	for _, part := range e.Binary.Right {
+		if part.Op == "in" {
+			if name, ok := exprRootVar(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: part.Right}}}); ok {
+				vars[name] = true
+			}
+		}
+		scanPostfix(part.Right)
+	}
+}
+
+func exprRootVar(e *parser.Expr) (string, bool) {
+	p := rootPrimary(e)
+	if p != nil && p.Selector != nil && len(p.Selector.Tail) == 0 {
+		return p.Selector.Root, true
+	}
+	return "", false
 }

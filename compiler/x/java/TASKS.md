@@ -38,3 +38,4 @@
 - 2025-07-17T08:10 - optimized simple left join queries using lookup maps
 
 - 2025-07-17T08:21 - regenerated print_hello output with newline and improved indentation
+- 2025-07-17T08:52 - avoided data class conversion for small maps used with `in` operator
