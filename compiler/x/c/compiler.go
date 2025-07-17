@@ -2122,6 +2122,7 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) string {
 
 	if format == "yaml" && l.Path != nil && l.Type != nil && l.Type.Simple != nil && c.env != nil {
 		if st, ok := c.env.GetStruct(*l.Type.Simple); ok {
+			st = dedupStruct(st)
 			data, err := os.ReadFile(rawPath)
 			if err == nil {
 				var rows []map[string]any

@@ -104,6 +104,25 @@ func fieldName(name string) string {
 	return baseName(name)
 }
 
+// dedupStruct removes duplicate fields from a struct type by name.
+func dedupStruct(st types.StructType) types.StructType {
+	fields := map[string]types.Type{}
+	order := make([]string, 0, len(st.Order))
+	seen := map[string]bool{}
+	for _, f := range st.Order {
+		if !seen[f] {
+			seen[f] = true
+			if t, ok := st.Fields[f]; ok {
+				fields[f] = t
+			}
+			order = append(order, f)
+		}
+	}
+	st.Fields = fields
+	st.Order = order
+	return st
+}
+
 func cTypeFromType(t types.Type) string {
 	switch tt := t.(type) {
 	case types.IntType, types.BoolType:
