@@ -1,5 +1,0 @@
-exit status 1
-/workspace/mochi/tests/machine/x/c/len_map.c: In function ‘_mochi_main’:
-/workspace/mochi/tests/machine/x/c/len_map.c:25:46: error: ‘tmp_item_t’ has no member named ‘len’
-   25 |   printf("%d\n", (tmp_item_t){.a = 1, .b = 2}.len);
-      |                                              ^

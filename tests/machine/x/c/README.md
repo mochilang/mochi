@@ -65,7 +65,7 @@ The C backend compiles Mochi programs in `tests/vm/valid`. The table below lists
 - [x] cross_join_filter
 - [x] cross_join_triple
 - [ ] dataset_sort_take_limit
-- [ ] for_map_collection
+ - [x] for_map_collection
 - [ ] group_by
 - [ ] group_by_conditional_sum
 - [ ] group_by_having
@@ -73,20 +73,20 @@ The C backend compiles Mochi programs in `tests/vm/valid`. The table below lists
 - [ ] group_by_sort
 - [ ] group_items_iteration
 - [ ] in_operator
-- [ ] in_operator_extended
+- [x] in_operator_extended
 - [ ] inner_join
 - [ ] join_multi
-- [ ] json_builtin
+- [x] json_builtin
 - [ ] left_join
 - [ ] left_join_multi
-- [ ] len_map
+- [x] len_map
 - [ ] list_assign
 - [ ] list_nested_assign
 - [ ] load_yaml
-- [ ] map_assign
-- [ ] map_index
-- [ ] map_literal_dynamic
-- [ ] map_membership
+- [x] map_assign
+- [x] map_index
+- [x] map_literal_dynamic
+- [x] map_membership
 - [ ] membership
  - [x] min_max_builtin
 - [ ] order_by_map
@@ -101,4 +101,4 @@ The C backend compiles Mochi programs in `tests/vm/valid`. The table below lists
 - [ ] tree_sum
 - [ ] update_stmt
 - [ ] user_type_literal
-- [ ] values_builtin
+ - [x] values_builtin

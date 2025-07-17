@@ -106,28 +106,12 @@ static void _print_list_int(list_int v) {
     printf("%d", v.data[i]);
   }
 }
-typedef struct {
-  int a;
-  int b;
-  int c;
-} tmp_item_t;
-typedef struct {
-  int len;
-  tmp_item_t *data;
-} tmp_item_list_t;
-tmp_item_list_t create_tmp_item_list(int len) {
-  tmp_item_list_t l;
-  l.len = len;
-  l.data = calloc(len, sizeof(tmp_item_t));
-  if (!l.data && len > 0) {
-    fprintf(stderr, "alloc failed\n");
-    exit(1);
-  }
-  return l;
-}
-
 int _mochi_main() {
-  map_string_int m = (tmp_item_t){.a = 1, .b = 2, .c = 3};
+  map_string_int tmp1 = map_string_int_create(3);
+  map_string_int_put(&tmp1, "a", 1);
+  map_string_int_put(&tmp1, "b", 2);
+  map_string_int_put(&tmp1, "c", 3);
+  map_string_int m = tmp1;
   _print_list_int(_values_map_string_int(m));
   printf("\n");
   return 0;

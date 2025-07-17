@@ -124,4 +124,5 @@ should compile and run successfully.
 - 2025-09-10 - Fixed list allocation name for grouped query results; `group_by_multi_join.mochi` now compiles.
 - 2025-09-11 - Added missing `listResCreate` initialization for pair-string grouping, enabling VM tests to build.
 - 2025-09-12 - Skipped redundant assignments when list literals initialize a variable directly. `cross_join_filter` and `cross_join_triple` now compile.
+- 2025-07-17 - Fixed map literal handling so `for_map_collection` and `values_builtin` compile to valid C.
 - 2025-07-17 - Fixed constant list aggregation loops to use `listItemExpr`; `avg_builtin.mochi` compiles without errors.
