@@ -37,7 +37,7 @@ int _mochi_main() {
   list_int tmp2 = list_int_create(2);
   tmp2.data[0] = 3;
   tmp2.data[1] = 4;
-  list_int matrix_data[] = {{2, tmp1}, {2, tmp2}};
+  list_int matrix_data[] = {tmp1, tmp2};
   list_list_int matrix = {2, matrix_data};
   matrix.data[1].data[0] = 5;
   printf("%d\n", matrix.data[1].data[0]);

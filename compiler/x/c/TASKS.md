@@ -140,3 +140,5 @@ should compile and run successfully.
 - 2025-09-16 - Fixed struct literal generation to use sanitized type names. record_assign.mochi compiles.
 - 2025-09-17 - Precomputed aggregates for constant integer lists to remove runtime helpers.
 - 2025-09-18 - Fixed list index assignments to use `listItemExpr`; `list_assign.mochi` compiles and runs.
+- 2025-07-17 - Corrected nested list initialization and local variable capture in
+  test blocks. `list_nested_assign.mochi` and `test_block.mochi` compile and run.

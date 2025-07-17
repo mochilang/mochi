@@ -4974,12 +4974,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			c.need(needListInt)
 			vals := make([]string, len(p.List.Elems))
 			for i, el := range p.List.Elems {
-				v := c.compileExpr(el)
-				if l, ok := c.listLens[v]; ok {
-					vals[i] = fmt.Sprintf("{%d, %s}", l, v)
-				} else {
-					vals[i] = v
-				}
+				vals[i] = c.compileExpr(el)
 			}
 			data := name + "_data"
 			c.writeln(fmt.Sprintf("list_int %s[] = {%s};", data, strings.Join(vals, ", ")))
