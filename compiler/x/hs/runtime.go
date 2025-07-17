@@ -25,19 +25,6 @@ avg :: (Real a, Fractional b) => [a] -> b
 avg xs | null xs = 0
        | otherwise = realToFrac (sum xs) / fromIntegral (length xs)
 
-data MGroup k a = MGroup { gKey :: k, gItems :: [a] } deriving (Show)
-
-_group_by :: Ord k => [a] -> (a -> k) -> [MGroup k a]
-_group_by src keyfn =
-  let go [] m order = (m, order)
-      go (x:xs) m order =
-        let k = keyfn x
-        in case Map.lookup k m of
-             Just is -> go xs (Map.insert k (is ++ [x]) m) order
-             Nothing -> go xs (Map.insert k [x] m) (order ++ [k])
-      (m, order) = go src Map.empty []
-  in [ MGroup k (fromMaybe [] (Map.lookup k m)) | k <- order ]
-
 _indexString :: String -> Int -> String
 _indexString s i =
   let idx = if i < 0 then i + length s else i
@@ -84,6 +71,21 @@ _parseCSV text header delim =
                              | j <- [0 .. length heads - 1] ]
       in map row (drop start ls)
 
+`
+
+const groupHelpers = `
+data MGroup k a = MGroup { gKey :: k, gItems :: [a] } deriving (Show)
+
+_group_by :: Ord k => [a] -> (a -> k) -> [MGroup k a]
+_group_by src keyfn =
+  let go [] m order = (m, order)
+      go (x:xs) m order =
+        let k = keyfn x
+        in case Map.lookup k m of
+             Just is -> go xs (Map.insert k (is ++ [x]) m) order
+             Nothing -> go xs (Map.insert k [x] m) (order ++ [k])
+      (m, order) = go src Map.empty []
+  in [ MGroup k (fromMaybe [] (Map.lookup k m)) | k <- order ]
 `
 
 const jsonHelper = `

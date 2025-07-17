@@ -38,6 +38,7 @@ type Compiler struct {
 	usesLoop     bool
 	usesUpdate   bool
 	usesMaybe    bool
+	usesGroup    bool
 	tmpCount     int
 	autoImports  map[string]string
 }
@@ -97,6 +98,7 @@ func New(env *types.Env) *Compiler {
 		usesAsDouble: false,
 		usesAsString: false,
 		usesAsBool:   false,
+		usesGroup:    false,
 		autoImports:  make(map[string]string),
 	}
 }
@@ -122,6 +124,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.usesAsDouble = false
 	c.usesAsString = false
 	c.usesAsBool = false
+	c.usesGroup = false
 	c.tmpCount = 0
 	c.autoImports = make(map[string]string)
 
@@ -235,7 +238,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	header.WriteString("module Main where\n\n")
 	needsMaybe := c.usesMaybe || c.usesLoop || c.usesList || c.usesTime ||
 		c.usesJSON || c.usesLoad || c.usesSave || c.usesSlice ||
-		c.usesSliceStr || c.usesExpect || c.usesFetch
+		c.usesSliceStr || c.usesExpect || c.usesFetch || c.usesGroup
 	if needsMaybe {
 		header.WriteString("import Data.Maybe (fromMaybe)\n")
 	}
@@ -272,6 +275,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	header.WriteString("\n")
 	if c.usesLoop || c.usesList || c.usesTime || c.usesJSON || c.usesLoad || c.usesSave || c.usesSlice || c.usesSliceStr || c.usesExpect || c.usesFetch {
 		header.WriteString(runtime)
+	}
+	if c.usesGroup {
+		header.WriteString(groupHelpers)
 	}
 	if c.usesTime {
 		header.WriteString(timeRuntime)
@@ -2192,6 +2198,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.usesMap = true
 		c.usesList = true
 		c.usesMaybe = true
+		c.usesGroup = true
 		expr := fmt.Sprintf("[ %s | g <- _group_by %s (\\%s -> %s), let %s = g ]", valExpr, src, sanitizeName(q.Var), keyExpr, sanitizeName(q.Group.Name))
 		return expr, nil
 	}
@@ -2215,6 +2222,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		rows := fmt.Sprintf("[%s | %s%s]", tuple, strings.Join(loops, ", "), condStr)
 		groups := fmt.Sprintf("_group_by %s (\\%s -> %s)", rows, tuple, keyExpr)
 		c.usesMaybe = true
+		c.usesGroup = true
 		genv := types.NewEnv(child)
 		keyT := c.inferExprType(q.Group.Exprs[0])
 		genv.SetVar(q.Group.Name, types.GroupType{Key: keyT, Elem: types.AnyType{}}, true)

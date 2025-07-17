@@ -1,4 +1,8 @@
 # Haskell Backend Progress
+## Recent Updates (2025-08-20 05:00)
+- Split `_group_by` helper into a separate runtime chunk. Simple loops no longer
+  import unused functions and `Data.Maybe` when grouping isn't used. The
+  compiler now tracks `usesGroup` during query compilation.
 ## Recent Updates (2025-08-15 05:00)
 - Added `containsAny` helper and improved binary operator casting so `Option` and
   nested types are checked for `AnyValue`. Map literals now wrap values
