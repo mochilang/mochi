@@ -94,6 +94,17 @@ bool _runTest(String name, void Function() f) {
         return false;
     }
 }
+
+String findRepoRoot() {
+    var dir = Directory.current;
+    for (var i = 0; i < 10; i++) {
+        if (File('${dir.path}/go.mod').existsSync()) return dir.path;
+        var parent = dir.parent;
+        if (parent.path == dir.path) break;
+        dir = parent;
+    }
+    return '';
+}
 `
 
 // Compiler is a very small proof-of-concept translator that converts a limited
@@ -113,13 +124,14 @@ type Compiler struct {
 	tmp        int
 	mapVars    map[string]bool
 	groupKeys  map[string]string
+	fieldTypes map[string]map[string]types.Type
 	imports    map[string]string
 	mainRename string
 }
 
 // New creates a new Dart compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, mapVars: make(map[string]bool), groupKeys: make(map[string]string), imports: make(map[string]string), mainRename: ""}
+	return &Compiler{env: env, mapVars: make(map[string]bool), groupKeys: make(map[string]string), fieldTypes: make(map[string]map[string]types.Type), imports: make(map[string]string), mainRename: ""}
 }
 
 // Compile translates the given Mochi program into Dart source code.  If there
@@ -148,6 +160,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.useSave = false
 	c.mapVars = make(map[string]bool)
 	c.groupKeys = make(map[string]string)
+	c.fieldTypes = make(map[string]map[string]types.Type)
 	c.imports = make(map[string]string)
 
 	for _, st := range prog.Statements {
@@ -246,27 +259,27 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		out.WriteString("  return false;\n")
 		out.WriteString("}\n\n")
 	}
-        if c.useLoad {
-                out.WriteString("dynamic _load(String path, dynamic opts) {\n")
-                out.WriteString("  var fmt = 'csv';\n")
-                out.WriteString("  if (opts is Map && opts.containsKey('format')) fmt = opts['format'].toString();\n")
-                out.WriteString("  var f = File(path);\n")
-                out.WriteString("  if (!f.existsSync()) {\n")
-                out.WriteString("    var root = findRepoRoot();\n")
-                out.WriteString("    if (root.isNotEmpty) f = File(root + '/' + path);\n")
-                out.WriteString("  }\n")
-                out.WriteString("  if (fmt == 'yaml') {\n")
-                out.WriteString("    var text = f.readAsStringSync();\n")
-                out.WriteString("    var data = _parseYaml(text);\n")
-                out.WriteString("    return data;\n")
-                out.WriteString("  }\n")
-                out.WriteString("  var text = f.readAsStringSync();\n")
-                out.WriteString("  var data = jsonDecode(text);\n")
-                out.WriteString("  if (data is List) return data;\n")
-                out.WriteString("  if (data is Map) return [data];\n")
-                out.WriteString("  return [];\n")
-                out.WriteString("}\n\n")
-        }
+	if c.useLoad {
+		out.WriteString("dynamic _load(String path, dynamic opts) {\n")
+		out.WriteString("  var fmt = 'csv';\n")
+		out.WriteString("  if (opts is Map && opts.containsKey('format')) fmt = opts['format'].toString();\n")
+		out.WriteString("  var f = File(path);\n")
+		out.WriteString("  if (!f.existsSync()) {\n")
+		out.WriteString("    var root = findRepoRoot();\n")
+		out.WriteString("    if (root.isNotEmpty) f = File(root + '/' + path);\n")
+		out.WriteString("  }\n")
+		out.WriteString("  if (fmt == 'yaml') {\n")
+		out.WriteString("    var text = f.readAsStringSync();\n")
+		out.WriteString("    var data = _parseYaml(text);\n")
+		out.WriteString("    return data;\n")
+		out.WriteString("  }\n")
+		out.WriteString("  var text = f.readAsStringSync();\n")
+		out.WriteString("  var data = jsonDecode(text);\n")
+		out.WriteString("  if (data is List) return data;\n")
+		out.WriteString("  if (data is Map) return [data];\n")
+		out.WriteString("  return [];\n")
+		out.WriteString("}\n\n")
+	}
 	if c.useYAML {
 		out.WriteString("List<Map<String,dynamic>> _parseYaml(String text) {\n")
 		out.WriteString("  var rows = <Map<String,dynamic>>[];\n")
@@ -306,7 +319,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		out.WriteString("}\n\n")
 	}
 
-        if len(c.imports) > 0 {
+	if len(c.imports) > 0 {
 		aliases := make([]string, 0, len(c.imports))
 		for a := range c.imports {
 			aliases = append(aliases, a)
@@ -405,7 +418,11 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 	}
 	name := escapeIdent(l.Name)
 	if typ == "" {
-		c.writeln(fmt.Sprintf("var %s = %s;", name, val))
+		if val == "0" || val == "0.0" {
+			c.writeln(fmt.Sprintf("num %s = %s;", name, val))
+		} else {
+			c.writeln(fmt.Sprintf("var %s = %s;", name, val))
+		}
 	} else {
 		c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
 	}
@@ -426,7 +443,11 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	}
 	name := escapeIdent(v.Name)
 	if typ == "" {
-		c.writeln(fmt.Sprintf("var %s = %s;", name, val))
+		if val == "0" || val == "0.0" {
+			c.writeln(fmt.Sprintf("num %s = %s;", name, val))
+		} else {
+			c.writeln(fmt.Sprintf("var %s = %s;", name, val))
+		}
 	} else {
 		c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
 	}
@@ -901,18 +922,22 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 		return fmt.Sprintf("(List.from(%s)..removeWhere((x) => %s.contains(x)))", left, right), leftType, nil
 	case "intersect":
 		return fmt.Sprintf("%s.where((x) => %s.contains(x)).toList()", left, right), leftType, nil
-        default:
-                if op == "<" || op == "<=" || op == ">" || op == ">=" {
-                        l := left
-                        r := right
-                        if !isNumericType(leftType) {
-                                l = fmt.Sprintf("(%s as num)", l)
-                        }
-                        if !isNumericType(rightType) {
-                                r = fmt.Sprintf("(%s as num)", r)
-                        }
-                        return fmt.Sprintf("%s %s %s", l, op, r), types.BoolType{}, nil
-                } else if op == "+" && (isStringType(leftType) || isStringType(rightType)) {
+	default:
+		if op == "<" || op == "<=" || op == ">" || op == ">=" {
+			l := left
+			r := right
+			if isStringType(leftType) || isStringType(rightType) {
+				cmp := map[string]string{"<": "< 0", "<=": "<= 0", ">": "> 0", ">=": ">= 0"}[op]
+				return fmt.Sprintf("%s.compareTo(%s) %s", l, r, cmp), types.BoolType{}, nil
+			}
+			if !isNumericType(leftType) {
+				l = fmt.Sprintf("(%s as num)", l)
+			}
+			if !isNumericType(rightType) {
+				r = fmt.Sprintf("(%s as num)", r)
+			}
+			return fmt.Sprintf("%s %s %s", l, op, r), types.BoolType{}, nil
+		} else if op == "+" && (isStringType(leftType) || isStringType(rightType)) {
 			return fmt.Sprintf("%s + %s", left, right), types.StringType{}, nil
 		}
 
@@ -943,6 +968,11 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	if len(u.Ops) == 1 && u.Ops[0] == "-" {
+		if lit := numericLiteral(u.Value); lit != "" {
+			return "-" + lit, nil
+		}
+	}
 	for i := len(u.Ops) - 1; i >= 0; i-- {
 		op := u.Ops[i]
 		if op == "-" {
@@ -952,6 +982,20 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 		val = op + val
 	}
 	return val, nil
+}
+
+func numericLiteral(p *parser.PostfixExpr) string {
+	if p == nil || len(p.Ops) > 0 || p.Target == nil || p.Target.Lit == nil {
+		return ""
+	}
+	lit := p.Target.Lit
+	if lit.Int != nil {
+		return fmt.Sprintf("%d", *lit.Int)
+	}
+	if lit.Float != nil {
+		return fmt.Sprintf("%g", *lit.Float)
+	}
+	return ""
 }
 
 func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
@@ -1191,11 +1235,21 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 	origEnv := c.env
 	origGroup := c.groupKeys
+	origFields := c.fieldTypes
 	tmpGroup := make(map[string]string, len(c.groupKeys))
 	for k, v := range c.groupKeys {
 		tmpGroup[k] = v
 	}
 	c.groupKeys = tmpGroup
+	tmpFields := make(map[string]map[string]types.Type, len(c.fieldTypes))
+	for k, v := range c.fieldTypes {
+		fv := make(map[string]types.Type, len(v))
+		for kk, vv := range v {
+			fv[kk] = vv
+		}
+		tmpFields[k] = fv
+	}
+	c.fieldTypes = tmpFields
 	child := types.NewEnv(c.env)
 	srcType := types.TypeOfExpr(q.Source, c.env)
 	var elemType types.Type = types.AnyType{}
@@ -1310,17 +1364,26 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			w("(() {\n")
 			w(fmt.Sprintf("  var %s = <dynamic>[];\n", tmp))
 
-        type loopInfo struct {
-                pre        []string
-                head, cond string
-                boolCond   bool
-                typ        types.Type
-        }
+			type loopInfo struct {
+				pre        []string
+				head, cond string
+				boolCond   bool
+				typ        types.Type
+			}
 			loops := []loopInfo{{head: fmt.Sprintf("var %s in %s", q.Var, c.mustExpr(q.Source))}}
 			if t := types.TypeOfExpr(q.Source, c.env); t != nil {
 				if lt, ok := t.(types.ListType); ok {
 					if _, ok := lt.Elem.(types.MapType); ok {
 						c.mapVars[q.Var] = true
+					}
+				}
+			}
+			if name, ok := c.simpleIdentifier(q.Source); ok {
+				if ft, ok := c.fieldTypes[name]; ok {
+					c.mapVars[q.Var] = true
+					c.fieldTypes[q.Var] = ft
+					for f, t := range ft {
+						child.SetVar(q.Var+"."+f, t, true)
 					}
 				}
 			}
@@ -1334,15 +1397,24 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 					}
 				}
 			}
-                        for _, j := range q.Joins {
-                                js := c.mustExpr(j.Src)
-                                on := c.mustExpr(j.On)
-                                jt := types.TypeOfExpr(j.On, c.env)
-                                loops = append(loops, loopInfo{head: fmt.Sprintf("var %s in %s", j.Var, js), cond: on, boolCond: isBoolType(jt), typ: jt})
+			for _, j := range q.Joins {
+				js := c.mustExpr(j.Src)
+				on := c.mustExpr(j.On)
+				jt := types.TypeOfExpr(j.On, c.env)
+				loops = append(loops, loopInfo{head: fmt.Sprintf("var %s in %s", j.Var, js), cond: on, boolCond: isBoolType(jt), typ: jt})
 				if t := types.TypeOfExpr(j.Src, c.env); t != nil {
 					if lt, ok := t.(types.ListType); ok {
 						if _, ok := lt.Elem.(types.MapType); ok {
 							c.mapVars[j.Var] = true
+						}
+					}
+				}
+				if name, ok := c.simpleIdentifier(j.Src); ok {
+					if ft, ok := c.fieldTypes[name]; ok {
+						c.mapVars[j.Var] = true
+						c.fieldTypes[j.Var] = ft
+						for fld, t := range ft {
+							child.SetVar(j.Var+"."+fld, t, true)
 						}
 					}
 				}
@@ -1352,27 +1424,27 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 					w(strings.Repeat("  ", i+1) + pl + "\n")
 				}
 				w(strings.Repeat("  ", i+1) + "for (" + loop.head + ") {\n")
-                                if cond := loop.cond; cond != "" {
-                                        if loop.boolCond {
-                                                w(strings.Repeat("  ", i+2) + fmt.Sprintf("if (!(%s)) continue;\n", cond))
-                                        } else if isOptionType(loop.typ) {
-                                                w(strings.Repeat("  ", i+2) + fmt.Sprintf("if (%s == null) continue;\n", cond))
-                                        } else {
-                                                w(strings.Repeat("  ", i+2) + fmt.Sprintf("if (!((%s) ?? false)) continue;\n", cond))
-                                        }
-                                }
+				if cond := loop.cond; cond != "" {
+					if loop.boolCond {
+						w(strings.Repeat("  ", i+2) + fmt.Sprintf("if (!(%s)) continue;\n", cond))
+					} else if isOptionType(loop.typ) {
+						w(strings.Repeat("  ", i+2) + fmt.Sprintf("if (%s == null) continue;\n", cond))
+					} else {
+						w(strings.Repeat("  ", i+2) + fmt.Sprintf("if (!((%s) ?? false)) continue;\n", cond))
+					}
+				}
 			}
-                        if q.Where != nil {
-                                condStr := c.mustExpr(q.Where)
-                                condT := types.TypeOfExpr(q.Where, c.env)
-                                if isBoolType(condT) {
-                                        w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("if (!(%s)) continue;\n", condStr))
-                                } else if isOptionType(condT) {
-                                        w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("if (%s == null) continue;\n", condStr))
-                                } else {
-                                        w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("if (!((%s) ?? false)) continue;\n", condStr))
-                                }
-                        }
+			if q.Where != nil {
+				condStr := c.mustExpr(q.Where)
+				condT := types.TypeOfExpr(q.Where, c.env)
+				if isBoolType(condT) {
+					w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("if (!(%s)) continue;\n", condStr))
+				} else if isOptionType(condT) {
+					w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("if (%s == null) continue;\n", condStr))
+				} else {
+					w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("if (!((%s) ?? false)) continue;\n", condStr))
+				}
+			}
 			val := c.mustExpr(arg)
 			w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("%s.add(%s);\n", tmp, val))
 			for i := len(loops) - 1; i >= 0; i-- {
@@ -1397,19 +1469,28 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		w(fmt.Sprintf("  var %s = <String, List<dynamic>>{};\n", groups))
 	}
 
-        type loopInfo struct {
-                pre      []string
-                head     string
-                cond     string
-                boolCond bool
-                typ      types.Type
-        }
+	type loopInfo struct {
+		pre      []string
+		head     string
+		cond     string
+		boolCond bool
+		typ      types.Type
+	}
 	loops := []loopInfo{{head: fmt.Sprintf("var %s in %s", q.Var, c.mustExpr(q.Source))}}
 	// mark main variable type
 	if t := types.TypeOfExpr(q.Source, c.env); t != nil {
 		if lt, ok := t.(types.ListType); ok {
 			if _, ok := lt.Elem.(types.MapType); ok {
 				c.mapVars[q.Var] = true
+			}
+		}
+	}
+	if name, ok := c.simpleIdentifier(q.Source); ok {
+		if ft, ok := c.fieldTypes[name]; ok {
+			c.mapVars[q.Var] = true
+			c.fieldTypes[q.Var] = ft
+			for f, t := range ft {
+				child.SetVar(q.Var+"."+f, t, true)
 			}
 		}
 	}
@@ -1422,13 +1503,22 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				}
 			}
 		}
+		if name, ok := c.simpleIdentifier(f.Src); ok {
+			if ft, ok := c.fieldTypes[name]; ok {
+				c.mapVars[f.Var] = true
+				c.fieldTypes[f.Var] = ft
+				for fld, t := range ft {
+					child.SetVar(f.Var+"."+fld, t, true)
+				}
+			}
+		}
 	}
 	for _, j := range q.Joins {
 		js := c.mustExpr(j.Src)
 		on := c.mustExpr(j.On)
-                if j.Side != nil && *j.Side == "left" {
-                        tmpVar := fmt.Sprintf("_jt%d", c.tmp)
-                        c.tmp++
+		if j.Side != nil && *j.Side == "left" {
+			tmpVar := fmt.Sprintf("_jt%d", c.tmp)
+			c.tmp++
 			pre := []string{
 				fmt.Sprintf("var %s = <dynamic>[];", tmpVar),
 				fmt.Sprintf("for (var %s in %s) {", j.Var, js),
@@ -1437,11 +1527,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				"}",
 				fmt.Sprintf("if (%s.isEmpty) %s.add(null);", tmpVar, tmpVar),
 			}
-                        loops = append(loops, loopInfo{pre: pre, head: fmt.Sprintf("var %s in %s", j.Var, tmpVar), boolCond: true, typ: types.BoolType{}})
-                } else {
-                        jt := types.TypeOfExpr(j.On, c.env)
-                        loops = append(loops, loopInfo{head: fmt.Sprintf("var %s in %s", j.Var, js), cond: on, boolCond: isBoolType(jt), typ: jt})
-                }
+			loops = append(loops, loopInfo{pre: pre, head: fmt.Sprintf("var %s in %s", j.Var, tmpVar), boolCond: true, typ: types.BoolType{}})
+		} else {
+			jt := types.TypeOfExpr(j.On, c.env)
+			loops = append(loops, loopInfo{head: fmt.Sprintf("var %s in %s", j.Var, js), cond: on, boolCond: isBoolType(jt), typ: jt})
+		}
 		if t := types.TypeOfExpr(j.Src, c.env); t != nil {
 			if lt, ok := t.(types.ListType); ok {
 				if _, ok := lt.Elem.(types.MapType); ok {
@@ -1456,28 +1546,28 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			w(strings.Repeat("  ", i+1) + pl + "\n")
 		}
 		w(strings.Repeat("  ", i+1) + "for (" + loop.head + ") {\n")
-                if cond := loop.cond; cond != "" {
-                        if loop.boolCond {
-                                w(strings.Repeat("  ", i+2) + fmt.Sprintf("if (!(%s)) continue;\n", cond))
-                        } else if isOptionType(loop.typ) {
-                                w(strings.Repeat("  ", i+2) + fmt.Sprintf("if (%s == null) continue;\n", cond))
-                        } else {
-                                w(strings.Repeat("  ", i+2) + fmt.Sprintf("if (!((%s) ?? false)) continue;\n", cond))
-                        }
-                }
+		if cond := loop.cond; cond != "" {
+			if loop.boolCond {
+				w(strings.Repeat("  ", i+2) + fmt.Sprintf("if (!(%s)) continue;\n", cond))
+			} else if isOptionType(loop.typ) {
+				w(strings.Repeat("  ", i+2) + fmt.Sprintf("if (%s == null) continue;\n", cond))
+			} else {
+				w(strings.Repeat("  ", i+2) + fmt.Sprintf("if (!((%s) ?? false)) continue;\n", cond))
+			}
+		}
 	}
 
-        if q.Where != nil {
-                condStr := c.mustExpr(q.Where)
-                condT := types.TypeOfExpr(q.Where, c.env)
-                if isBoolType(condT) {
-                        w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("if (!(%s)) continue;\n", condStr))
-                } else if isOptionType(condT) {
-                        w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("if (%s == null) continue;\n", condStr))
-                } else {
-                        w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("if (!((%s) ?? false)) continue;\n", condStr))
-                }
-        }
+	if q.Where != nil {
+		condStr := c.mustExpr(q.Where)
+		condT := types.TypeOfExpr(q.Where, c.env)
+		if isBoolType(condT) {
+			w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("if (!(%s)) continue;\n", condStr))
+		} else if isOptionType(condT) {
+			w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("if (%s == null) continue;\n", condStr))
+		} else {
+			w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("if (!((%s) ?? false)) continue;\n", condStr))
+		}
+	}
 
 	sel := c.mustExpr(q.Select)
 	var keyT types.Type
@@ -1517,7 +1607,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("%s.putIfAbsent(%s_s, () => <dynamic>[]).add(%s);\n", groups, keyVar, item))
 		} else {
 			c.mapVars[grpVar] = true
-			elemT = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
+			elemT = types.MapType{Key: types.StringType{}, Value: types.OptionType{Elem: types.AnyType{}}}
+			ft := make(map[string]types.Type)
+			for _, v := range vars {
+				if t, err := c.env.GetVar(v); err == nil {
+					ft[v] = t
+				}
+			}
+			c.fieldTypes[grpVar] = ft
 			child.SetVar(grpVar, types.GroupType{Key: keyT, Elem: elemT}, true)
 			parts := []string{"'" + q.Var + "': " + q.Var}
 			for _, f := range q.Froms {
@@ -1556,17 +1653,17 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		origEnv := c.env
 		c.env = groupEnv
 
-                if q.Group.Having != nil {
-                        condStr := c.mustExpr(q.Group.Having)
-                        condT := types.TypeOfExpr(q.Group.Having, c.env)
-                        if isBoolType(condT) {
-                                w(fmt.Sprintf("    if (!(%s)) continue;\n", condStr))
-                        } else if isOptionType(condT) {
-                                w(fmt.Sprintf("    if (%s == null) continue;\n", condStr))
-                        } else {
-                                w(fmt.Sprintf("    if (!((%s) ?? false)) continue;\n", condStr))
-                        }
-                }
+		if q.Group.Having != nil {
+			condStr := c.mustExpr(q.Group.Having)
+			condT := types.TypeOfExpr(q.Group.Having, c.env)
+			if isBoolType(condT) {
+				w(fmt.Sprintf("    if (!(%s)) continue;\n", condStr))
+			} else if isOptionType(condT) {
+				w(fmt.Sprintf("    if (%s == null) continue;\n", condStr))
+			} else {
+				w(fmt.Sprintf("    if (!((%s) ?? false)) continue;\n", condStr))
+			}
+		}
 		sel := c.mustExpr(q.Select)
 		if name, ok := c.simpleIdentifier(q.Select); ok && name == q.Group.Name {
 			sel = fmt.Sprintf("{'key': %s, 'items': %s}", keyVar, grpVar)
@@ -1613,6 +1710,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	w("})()")
 	c.env = origEnv
 	c.groupKeys = origGroup
+	c.fieldTypes = origFields
 	return b.String(), nil
 }
 
@@ -1758,27 +1856,27 @@ func (c *Compiler) simpleMapQuery(q *parser.QueryExpr) (string, bool) {
 }
 
 func (c *Compiler) compileSelector(sel *parser.SelectorExpr) string {
-        rootOrig := sel.Root
-        root := escapeIdent(sel.Root)
-        if root == "main" && c.mainRename != "" {
-                root = c.mainRename
-        }
-        tail := sel.Tail
-        if kind, ok := c.imports[root]; ok {
-                switch kind {
-                case "dart_math", "go_testpkg":
-                        s := root
-                        for _, part := range tail {
-                                s += "." + escapeIdent(part)
-                        }
-                        return s
-                }
-        }
-        if key, ok := c.groupKeys[root]; ok {
-                if len(tail) > 0 && tail[0] == "key" {
-                        root = key
-                        tail = tail[1:]
-                } else if len(tail) > 0 && tail[0] == "items" {
+	rootOrig := sel.Root
+	root := escapeIdent(sel.Root)
+	if root == "main" && c.mainRename != "" {
+		root = c.mainRename
+	}
+	tail := sel.Tail
+	if kind, ok := c.imports[root]; ok {
+		switch kind {
+		case "dart_math", "go_testpkg":
+			s := root
+			for _, part := range tail {
+				s += "." + escapeIdent(part)
+			}
+			return s
+		}
+	}
+	if key, ok := c.groupKeys[root]; ok {
+		if len(tail) > 0 && tail[0] == "key" {
+			root = key
+			tail = tail[1:]
+		} else if len(tail) > 0 && tail[0] == "items" {
 			tail = tail[1:]
 		}
 		if len(tail) == 0 {
@@ -2140,11 +2238,11 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 			b.WriteString(" else if (_t == " + pat + ") {\n    return " + res + ";\n  }")
 		}
 	}
-        if !hasDefault {
-                b.WriteString("  return null;\n")
-        }
-        b.WriteString("})()")
-        return "(" + b.String() + " as dynamic)", nil
+	if !hasDefault {
+		b.WriteString("  return null;\n")
+	}
+	b.WriteString("})()")
+	return "(" + b.String() + " as dynamic)", nil
 }
 
 func (c *Compiler) constructorPattern(e *parser.Expr) (string, []string, bool) {
@@ -2323,6 +2421,9 @@ func defaultValue(typ string) string {
 }
 
 func isNumericType(t types.Type) bool {
+	if ot, ok := t.(types.OptionType); ok {
+		t = ot.Elem
+	}
 	switch t.(type) {
 	case types.IntType, types.Int64Type, types.FloatType, types.BigIntType, types.BigRatType:
 		return true
@@ -2332,11 +2433,17 @@ func isNumericType(t types.Type) bool {
 }
 
 func isStringType(t types.Type) bool {
+	if ot, ok := t.(types.OptionType); ok {
+		t = ot.Elem
+	}
 	_, ok := t.(types.StringType)
 	return ok
 }
 
 func isIntType(t types.Type) bool {
+	if ot, ok := t.(types.OptionType); ok {
+		t = ot.Elem
+	}
 	switch t.(type) {
 	case types.IntType, types.Int64Type:
 		return true
@@ -2346,16 +2453,22 @@ func isIntType(t types.Type) bool {
 }
 
 func isBoolType(t types.Type) bool {
-        _, ok := t.(types.BoolType)
-        return ok
+	if ot, ok := t.(types.OptionType); ok {
+		t = ot.Elem
+	}
+	_, ok := t.(types.BoolType)
+	return ok
 }
 
 func isOptionType(t types.Type) bool {
-        _, ok := t.(types.OptionType)
-        return ok
+	_, ok := t.(types.OptionType)
+	return ok
 }
 
 func isComparableType(t types.Type) bool {
+	if ot, ok := t.(types.OptionType); ok {
+		t = ot.Elem
+	}
 	switch t.(type) {
 	case types.IntType, types.Int64Type, types.FloatType, types.StringType, types.BoolType:
 		return true

@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs. Successful runs have a .out file, failures a .error file.
 
-Compiled programs: 94/100
+Compiled programs: 100/100
 
 Checklist:
 
@@ -33,11 +33,11 @@ Checklist:
 - [x] group_by_conditional_sum
 - [x] group_by_having
 - [x] group_by_join
-- [ ] group_by_left_join
+- [x] group_by_left_join
 - [x] group_by_multi_join
-- [ ] group_by_multi_join_sort
+- [x] group_by_multi_join_sort
 - [x] group_by_sort
-- [ ] group_items_iteration
+- [x] group_items_iteration
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
@@ -56,7 +56,7 @@ Checklist:
 - [x] list_index
 - [x] list_nested_assign
 - [x] list_set_ops
-- [ ] load_yaml
+- [x] load_yaml
 - [x] map_assign
 - [x] map_in_operator
 - [x] map_index
@@ -86,7 +86,7 @@ Checklist:
 - [x] slice
 - [x] sort_stable
 - [x] str_builtin
-- [ ] string_compare
+- [x] string_compare
 - [x] string_concat
 - [x] string_contains
 - [x] string_in_operator
@@ -97,7 +97,7 @@ Checklist:
 - [x] tail_recursion
 - [x] test_block
 - [x] tree_sum
-- [ ] two-sum
+- [x] two-sum
 - [x] typed_let
 - [x] typed_var
 - [x] unary_neg

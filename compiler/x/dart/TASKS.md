@@ -23,5 +23,6 @@
   with trailing `.0` and set `SOURCE_DATE_EPOCH` in VM golden tests to generate
   stable headers.
 - [2025-07-19 00:00 UTC] Improved builtin import handling and option checks in queries. Added fallback path search in `_load` helper.
+- [2025-07-19 12:00 UTC] Fixed group join option handling, improved string comparisons, added repo helper, and all VM valid programs now pass.
 ## Remaining Enhancements
 - [ ] Improve generated code formatting to more closely match `tests/human/x/dart` examples.
