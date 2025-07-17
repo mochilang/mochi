@@ -33,5 +33,8 @@
   do not trigger the `_equal` helper, keeping generated programs smaller.
 - [2025-07-20 12:00 UTC] Expanded `dartKeywords` to escape additional reserved
   words, preventing invalid identifiers.
+- [2025-07-20 13:00 UTC] Improved type inference to emit builtin `fold` and
+  `reduce` operations for `sum` and `min` when list element types are known.
+  `_sum` and `_min` helpers are now only included when required.
 ## Remaining Enhancements
 - None.
