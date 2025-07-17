@@ -1,3 +1,7 @@
+/workspace/mochi/tests/machine/x/erlang/python_math.erl:15:1: Warning: function mochi_get/2 is unused
+%   15| mochi_get(K, M) ->
+%     | ^
+
 "Circle area with r =" 3 "=>" 28.274333882308138
 "Square root of 49:" 7.0
 [115,105,110,40,960,47,52,41,58] 0.7071067811865475
