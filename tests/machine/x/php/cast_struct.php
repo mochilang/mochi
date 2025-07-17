@@ -6,5 +6,5 @@ class Todo {
     }
 }
 $todo = new Todo(["title" => "hi"]);
-var_dump($todo->title);
+echo $todo->title, PHP_EOL;
 ?>
