@@ -76,20 +76,18 @@ int _mochi_main() {
   tmp1.data[0] = 1;
   tmp1.data[1] = 2;
   tmp1.data[2] = 3;
-  list_int tmp3 = {3, tmp1};
-  list_int tmp2 = slice_list_int(tmp3, 1, 3);
+  list_int tmp2 = slice_list_int(tmp1, 1, 3);
   _print_list_int(tmp2);
   printf("\n");
-  list_int tmp4 = list_int_create(3);
-  tmp4.data[0] = 1;
-  tmp4.data[1] = 2;
-  tmp4.data[2] = 3;
-  list_int tmp6 = {3, tmp4};
-  list_int tmp5 = slice_list_int(tmp6, 0, 2);
-  _print_list_int(tmp5);
+  list_int tmp3 = list_int_create(3);
+  tmp3.data[0] = 1;
+  tmp3.data[1] = 2;
+  tmp3.data[2] = 3;
+  list_int tmp4 = slice_list_int(tmp3, 0, 2);
+  _print_list_int(tmp4);
   printf("\n");
-  char *tmp7 = slice_string("hello", 1, 4);
-  printf("%s\n", tmp7);
+  char *tmp5 = slice_string("hello", 1, 4);
+  printf("%s\n", tmp5);
   return 0;
 }
 int main() { return _mochi_main(); }
