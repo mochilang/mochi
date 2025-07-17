@@ -46,6 +46,8 @@ void _print(List<dynamic> args) {
         var v = args[i];
         if (v is List) {
             stdout.write(v.join(' '));
+        } else if (v is double && v == v.roundToDouble()) {
+            stdout.write(v.toInt());
         } else {
             stdout.write(v);
         }

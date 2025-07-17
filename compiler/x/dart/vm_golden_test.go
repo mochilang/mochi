@@ -30,7 +30,11 @@ func runVMGolden(t *testing.T, src, outDir string) ([]byte, error) {
 		_ = os.WriteFile(errFile, []byte(errs[0].Error()), 0644)
 		return nil, errs[0]
 	}
+	os.Setenv("MOCHI_HEADER_TIME", "2006-01-02T15:04:05Z")
+	os.Setenv("SOURCE_DATE_EPOCH", "0")
 	code, err := dart.New(env).Compile(prog)
+	os.Unsetenv("MOCHI_HEADER_TIME")
+	os.Unsetenv("SOURCE_DATE_EPOCH")
 	if err != nil {
 		_ = os.WriteFile(errFile, []byte(err.Error()), 0644)
 		return nil, err
