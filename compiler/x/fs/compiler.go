@@ -170,7 +170,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 		c.prelude.WriteString("            groups.Add(ks, g)\n")
 		c.prelude.WriteString("            order.Add(ks)\n")
 		c.prelude.WriteString("        g.Items.Add(it)\n")
-		c.prelude.WriteString("    [ for ks in order -> groups[ks] ]\n\n")
+		c.prelude.WriteString("    [ for ks in order -> groups.[ks] ]\n\n")
 	}
 	var final bytes.Buffer
 	final.Write(header.Bytes())
@@ -914,9 +914,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Query != nil:
 		return c.compileQuery(p.Query)
 	case p.Selector != nil:
-		name := p.Selector.Root
-		for _, t := range p.Selector.Tail {
-			name += "." + t
+		name := sanitizeIdent(p.Selector.Root)
+		for i, t := range p.Selector.Tail {
+			if i == 0 && c.groups[p.Selector.Root] && t == "items" {
+				name += ".Items"
+				continue
+			}
+			name += "." + sanitizeIdent(t)
 		}
 		return name, nil
 	case p.Group != nil:
@@ -1059,7 +1063,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) == 1 {
 			if name, ok := c.simpleIdentifier(argAST); ok {
 				if c.groups[name] {
-					return fmt.Sprintf("List.length %s.Items", args[0]), nil
+					return fmt.Sprintf("%s.size", args[0]), nil
 				}
 			}
 			return fmt.Sprintf("List.length %s", args[0]), nil
