@@ -82,4 +82,6 @@
   `[[1,2],[3,4]]` compile to `std::vector<std::vector<int>>`,
   reducing `std::any` usage and enabling the `list_nested_assign`
   example to build.
+- Struct literal fields now infer simple literal types like
+  `std::string` or `int` instead of falling back to `std::any`.
 

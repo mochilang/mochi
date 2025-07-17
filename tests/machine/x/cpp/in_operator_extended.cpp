@@ -8,7 +8,7 @@
 int main() {
   std::vector<int> xs = {1, 2, 3};
   auto ys = ([&]() {
-    std::vector<decltype(x)> __items;
+    std::vector<int> __items;
     for (auto x : xs) {
       if (!(((x % 2) == 1)))
         continue;
@@ -18,7 +18,7 @@ int main() {
   })();
   std::cout << (std::find(ys.begin(), ys.end(), 1) != ys.end()) << std::endl;
   std::cout << (std::find(ys.begin(), ys.end(), 2) != ys.end()) << std::endl;
-  auto m = std::unordered_map<std::string, decltype(1)>{{std::string("a"), 1}};
+  auto m = std::unordered_map<std::string, int>{{std::string("a"), 1}};
   std::cout << (m.count(std::string("a")) > 0) << std::endl;
   std::cout << (m.count(std::string("b")) > 0) << std::endl;
   auto s = std::string("hello");

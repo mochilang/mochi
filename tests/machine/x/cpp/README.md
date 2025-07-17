@@ -2,7 +2,7 @@
 
 Generated C++ code for the programs under `tests/vm/valid`. Each file here has a `.cpp` source produced by the compiler and an `.out` file with its runtime output. If compilation failed, a `.error` file captures the g++ output.
 
-Compiled programs: 83/100
+Compiled programs: 88/100
 
 ## Checklist
 - [x] append_builtin
@@ -28,7 +28,7 @@ Compiled programs: 83/100
 - [x] fun_expr_in_let
 - [x] fun_three_args
 - [x] go_auto
-- [ ] group_by
+- [x] group_by
 - [ ] group_by_conditional_sum
 - [ ] group_by_having
 - [ ] group_by_join
@@ -41,7 +41,7 @@ Compiled programs: 83/100
 - [x] if_then_else
 - [x] if_then_else_nested
 - [x] in_operator
-- [ ] in_operator_extended
+- [x] in_operator_extended
 - [x] inner_join
 - [x] join_multi
 - [x] json_builtin
@@ -69,7 +69,7 @@ Compiled programs: 83/100
 - [x] membership
 - [x] min_max_builtin
 - [x] nested_function
-- [ ] order_by_map
+- [x] order_by_map
 - [ ] outer_join
 - [x] partial_application
 - [x] print_hello
@@ -83,7 +83,7 @@ Compiled programs: 83/100
 - [ ] save_jsonl_stdout
 - [x] short_circuit
 - [x] slice
-- [ ] sort_stable
+- [x] sort_stable
 - [x] str_builtin
 - [x] string_compare
 - [x] string_concat
@@ -102,6 +102,6 @@ Compiled programs: 83/100
 - [x] unary_neg
 - [x] update_stmt
 - [x] user_type_literal
-- [ ] values_builtin
+- [x] values_builtin
 - [x] var_assignment
 - [x] while_loop

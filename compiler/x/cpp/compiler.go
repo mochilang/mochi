@@ -2409,6 +2409,12 @@ func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error
 				ftype = t
 			} else if t := c.predictElemType(val); t != "" {
 				ftype = t
+			} else if t := inferExprType(val); t != "" {
+				if t == "string" {
+					ftype = "std::string"
+				} else {
+					ftype = t
+				}
 			} else {
 				ftype = "std::any"
 				c.usesAny = true
