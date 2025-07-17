@@ -1,4 +1,4 @@
 exit status 1
 # command-line-arguments
-../../../tests/machine/x/go/load_yaml.go:28:67: undefined: Format
+../../../tests/machine/x/go/load_yaml.go:28:65: cannot use map[string]string{…} (value of type map[string]string) as map[string]any value in argument to _load
 ../../../tests/machine/x/go/load_yaml.go:31:13: invalid operation: r (variable of type map[string]any) is not an interface

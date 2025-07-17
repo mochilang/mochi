@@ -25,7 +25,7 @@ type v map[string]any
 
 func main() {
 	people := func() []Person {
-		rows := _load("../../../tests/interpreter/valid/people.yaml", v{Format: "yaml"})
+		rows := _load("../../../tests/interpreter/valid/people.yaml", map[string]string{"format": "yaml"})
 		out := make([]Person, len(rows))
 		for i, r := range rows {
 			out[i] = r.(Person)

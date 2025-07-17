@@ -26,7 +26,7 @@ func main() {
 		Name: "Bob",
 		Age:  25,
 	}}
-	_save(people, "-", v{Format: "jsonl"})
+	_save(people, "-", map[string]string{"format": "jsonl"})
 }
 
 func _save(src any, path string, opts map[string]any) {
