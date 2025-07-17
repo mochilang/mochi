@@ -7,7 +7,7 @@ List literal lengths are now computed at compile time so programs using `len` or
 `union` and `except` with constant integer lists are also folded at compile time.
 Append operations on constant integer lists stored in variables are resolved
 during compilation as well. The compiler now folds `len` and `count` for any
-constant list, removing even more helper calls at runtime.
+constant list, and `len` for literal strings, removing even more helper calls at runtime.
 
 Compiled programs: 100/100
 

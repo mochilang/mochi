@@ -57,6 +57,8 @@
   calls at runtime.
 - 2025-07-17 12:30: Type inference handles any constant list in `len` and
   `count`, folding the length at compile time to remove unnecessary helper code.
+- 2025-07-17 12:45: String literals propagate through variables so `len` on
+  constant strings is folded to a number at compile time.
 
 ## Remaining Work
 - [x] Support query compilation with joins and group-by for TPC-H `q1.mochi`.
