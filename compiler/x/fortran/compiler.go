@@ -864,8 +864,35 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			return "", fmt.Errorf("unsupported cast")
 		case "in":
 			if rightIsStr {
+				if rs, ok := c.constStringFromPostfix(op.Right); ok {
+					if ls, ok2 := c.constStringFromUnary(b.Left); ok2 {
+						if strings.Contains(rs, ls) {
+							res = ".true."
+						} else {
+							res = ".false."
+						}
+						continue
+					}
+				}
 				res = fmt.Sprintf("index(%s,%s) /= 0", r, res)
 			} else {
+				if ints, ok := c.constIntListFromPostfix(op.Right); ok {
+					if iv := literalIntUnary(b.Left); iv != nil {
+						found := false
+						for _, v := range ints {
+							if v == *iv {
+								found = true
+								break
+							}
+						}
+						if found {
+							res = ".true."
+						} else {
+							res = ".false."
+						}
+						continue
+					}
+				}
 				res = fmt.Sprintf("any(%s == %s)", r, res)
 			}
 			continue
@@ -1530,6 +1557,16 @@ func literalIntPrimary(p *parser.Primary) *int {
 	return p.Lit.Int
 }
 
+func literalIntUnary(u *parser.Unary) *int {
+	if u == nil || len(u.Ops) != 0 || u.Value == nil || u.Value.Target == nil {
+		return nil
+	}
+	if u.Value.Target.Lit != nil && u.Value.Target.Lit.Int != nil {
+		return u.Value.Target.Lit.Int
+	}
+	return nil
+}
+
 func literalInt(e *parser.Expr) *int {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
 		return nil
@@ -1635,6 +1672,27 @@ func (c *Compiler) constIntListFromPostfix(pf *parser.PostfixExpr) ([]int, bool)
 		return ints, ok
 	}
 	return nil, false
+}
+
+func (c *Compiler) constStringFromUnary(u *parser.Unary) (string, bool) {
+	if u == nil || len(u.Ops) != 0 || u.Value == nil {
+		return "", false
+	}
+	return c.constStringFromPostfix(u.Value)
+}
+
+func (c *Compiler) constStringFromPostfix(pf *parser.PostfixExpr) (string, bool) {
+	if pf == nil || len(pf.Ops) != 0 || pf.Target == nil {
+		return "", false
+	}
+	if pf.Target.Lit != nil && pf.Target.Lit.Str != nil {
+		return *pf.Target.Lit.Str, true
+	}
+	if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 0 {
+		v, ok := c.constStrings[pf.Target.Selector.Root]
+		return v, ok
+	}
+	return "", false
 }
 
 func formatIntList(list []int) string {
