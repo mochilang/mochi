@@ -983,10 +983,14 @@ func (c *Compiler) buildBinary(left string, leftArith bool, op string, right str
 		left = fmt.Sprintf("(%s %s %s)", left, cmp, right)
 		arith = false
 	case "&&":
-		left = fmt.Sprintf("(%s, %s)", left, right)
+		tmp := c.newTmp()
+		c.writeln(fmt.Sprintf("(%s -> (%s -> %s = true ; %s = false) ; %s = false),", left, right, tmp, tmp, tmp))
+		left = tmp
 		arith = false
 	case "||":
-		left = fmt.Sprintf("(%s ; %s)", left, right)
+		tmp := c.newTmp()
+		c.writeln(fmt.Sprintf("(%s -> %s = true ; %s -> %s = true ; %s = false),", left, tmp, right, tmp, tmp))
+		left = tmp
 		arith = false
 	case "in":
 		tmp := c.newTmp()
@@ -1622,7 +1626,7 @@ func isBoolExpr(s string) bool {
 			return s == "true" || s == "false"
 		}
 	}
-	ops := []string{"=:=", "=\\=", "<", "<=", ">", ">=", "==", "\\=="}
+	ops := []string{"=:=", "=\\=", "<", "<=", ">", ">=", "==", "\\==", "->", ";"}
 	for _, op := range ops {
 		if strings.Contains(s, op) {
 			return true

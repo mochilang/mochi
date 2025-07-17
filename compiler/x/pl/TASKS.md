@@ -28,3 +28,8 @@
 ## Progress (2025-07-17 06:40 UTC)
 - Fixed handling of zero-argument predicates so generated clauses omit the stray comma.
 - Updated dynamic and static call generation to avoid an empty argument list.
+
+## Progress (2025-07-27 00:00 UTC)
+- Added short-circuit handling for `&&` and `||` in `buildBinary`.
+- Extended `isBoolExpr` to recognize expressions containing `->` or `;`.
+- Regenerated code for `bool_chain` using `go run ./cmd/mochix buildx -t pl`.
