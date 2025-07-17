@@ -119,3 +119,4 @@
 - 2025-07-22 - Initial Python machine outputs generated for all VM tests.
 - 2025-07-25 - Sorting now skips `_sort_key` for numeric, string and boolean keys.
 - 2025-07-26 - Generated Python output for tpch_q1.
+- 2025-07-27 - Updated TPCH Python outputs to use compact JSON separators and regenerated golden files.
