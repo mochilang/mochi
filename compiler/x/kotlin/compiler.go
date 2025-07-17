@@ -1492,6 +1492,7 @@ func (c *Compiler) matchExpr(m *parser.MatchExpr) (string, error) {
 	b.WriteString("run {\n")
 	b.WriteString("    val __t = " + target + "\n")
 	b.WriteString("    when (__t) {\n")
+	hasElse := false
 	for _, cse := range m.Cases {
 		// prepare environment for pattern variables if needed
 		oldEnv := c.env
@@ -1499,7 +1500,15 @@ func (c *Compiler) matchExpr(m *parser.MatchExpr) (string, error) {
 
 		var patCode string
 		if name, ok := identName(cse.Pattern); ok && name == "_" {
-			patCode = "else"
+			res, err := c.expr(cse.Result)
+			if err != nil {
+				c.env = oldEnv
+				return "", err
+			}
+			b.WriteString("        else -> " + res + "\n")
+			hasElse = true
+			c.env = oldEnv
+			continue
 		} else if call := cse.Pattern.Binary.Left.Value.Target.Call; call != nil {
 			if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
 				st := ut.Variants[call.Func]
@@ -1541,12 +1550,11 @@ func (c *Compiler) matchExpr(m *parser.MatchExpr) (string, error) {
 			c.env = oldEnv
 			return "", err
 		}
-		if patCode == "else" {
-			b.WriteString("        else -> " + res + "\n")
-		} else {
-			b.WriteString("        " + patCode + " -> " + res + "\n")
-		}
+		b.WriteString("        " + patCode + " -> " + res + "\n")
 		c.env = oldEnv
+	}
+	if !hasElse {
+		b.WriteString("        else -> null\n")
 	}
 	b.WriteString("    }\n")
 	b.WriteString("}")
