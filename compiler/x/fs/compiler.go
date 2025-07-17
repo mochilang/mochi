@@ -531,7 +531,33 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 	header := fmt.Sprintf("let rec %s %s =", f.Name, paramStr)
 	c.writeln(header)
 	c.indent++
-	for i, st := range f.Body {
+	for i := 0; i < len(f.Body); i++ {
+		st := f.Body[i]
+		if i == len(f.Body)-2 && st.If != nil && f.Body[i+1].Return != nil {
+			if st.If.Else == nil && st.If.ElseIf == nil && len(st.If.Then) == 1 && st.If.Then[0].Return != nil {
+				cond, err := c.compileExpr(st.If.Cond)
+				if err != nil {
+					return err
+				}
+				thn, err := c.compileExpr(st.If.Then[0].Return.Value)
+				if err != nil {
+					return err
+				}
+				els, err := c.compileExpr(f.Body[i+1].Return.Value)
+				if err != nil {
+					return err
+				}
+				c.writeln(fmt.Sprintf("if %s then", cond))
+				c.indent++
+				c.writeln(thn)
+				c.indent--
+				c.writeln("else")
+				c.indent++
+				c.writeln(els)
+				c.indent--
+				break
+			}
+		}
 		if i == len(f.Body)-1 {
 			if st.Return != nil {
 				val, err := c.compileExpr(st.Return.Value)
@@ -853,9 +879,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				args[j] = s
+				args[j] = fmt.Sprintf("(%s)", s)
 			}
-			val = fmt.Sprintf("%s(%s)", val, strings.Join(args, ", "))
+			val = fmt.Sprintf("%s %s", val, strings.Join(args, " "))
 			continue
 		}
 		if op.Cast != nil {
@@ -1124,11 +1150,13 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return fmt.Sprintf("Seq.toList (%s.Values)", args[0]), nil
 		}
 	default:
-		argStr := strings.Join(args, " ")
-		if argStr == "" {
+		if len(args) == 0 {
 			return fmt.Sprintf("%s()", call.Func), nil
 		}
-		return fmt.Sprintf("%s %s", call.Func, argStr), nil
+		for i, a := range args {
+			args[i] = fmt.Sprintf("(%s)", a)
+		}
+		return fmt.Sprintf("%s %s", call.Func, strings.Join(args, " ")), nil
 	}
 	return "", fmt.Errorf("unsupported call %s", call.Func)
 }
@@ -1929,23 +1957,23 @@ func isBoolExpr(e *parser.Expr) bool {
 }
 
 func (c *Compiler) isStringExpr(e *parser.Expr) bool {
-	if p := rootPrimary(e); p != nil {
-		if p.Lit != nil && p.Lit.Str != nil {
-			return true
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	if len(e.Binary.Right) > 0 {
+		if e.Binary.Left == nil || len(e.Binary.Left.Ops) > 0 || !c.isStringPostfix(e.Binary.Left.Value) {
+			return false
 		}
-		if p.Selector != nil {
-			if t, ok := c.vars[p.Selector.Root]; ok {
-				if t == "string" {
-					return true
-				}
-				if fields, ok := c.structs[t]; ok {
-					if len(p.Selector.Tail) == 1 {
-						if ft, ok := fields[p.Selector.Tail[0]]; ok && ft == "string" {
-							return true
-						}
-					}
-				}
+		for _, op := range e.Binary.Right {
+			if op.Op != "+" || len(op.Right.Ops) > 0 || !c.isStringPostfix(op.Right) {
+				return false
 			}
+		}
+		return true
+	}
+	if p := rootPrimary(e); p != nil {
+		if c.isStringPrimary(p) {
+			return true
 		}
 		if p.If != nil {
 			return c.isStringExpr(p.If.Then) && c.isStringExpr(p.If.Else)
@@ -1991,6 +2019,13 @@ func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
 		return c.isStringExpr(p.If.Then) && c.isStringExpr(p.If.Else)
 	}
 	return false
+}
+
+func (c *Compiler) isStringPostfix(p *parser.PostfixExpr) bool {
+	if p == nil || len(p.Ops) > 0 {
+		return false
+	}
+	return c.isStringPrimary(p.Target)
 }
 
 func (c *Compiler) inferType(e *parser.Expr) string {
