@@ -1865,7 +1865,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 
 			if ok {
 				for i, ft := range fieldTypes {
-					if info.Types[i] == "" || strings.Contains(info.Types[i], names[i]) {
+					if info.Types[i] == "" || strings.Contains(info.Types[i], names[i]) ||
+						(info.Types[i] == "std::any" && ft != "std::any") {
 						info.Types[i] = ft
 					}
 				}
@@ -2637,6 +2638,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	} else if t := c.elemType[q.Var]; t != "" && strings.HasPrefix(itemType, "decltype(") {
 		itemType = t
 	}
+	if vt := c.varStruct[q.Var]; vt != "" {
+		if itemType == fmt.Sprintf("decltype(%s)", q.Var) {
+			itemType = vt
+		}
+		if strings.Contains(itemType, q.Var+".") {
+			vt = strings.TrimSuffix(vt, "{}")
+			itemType = strings.ReplaceAll(itemType, q.Var+".", fmt.Sprintf("std::declval<%s>().", vt))
+		}
+	}
 	key := ""
 	keyType := ""
 	if q.Sort != nil {
@@ -2682,6 +2692,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				vt = strings.TrimSuffix(vt, "{}")
 				keyType = strings.ReplaceAll(keyType, q.Var+".", fmt.Sprintf("std::declval<%s>().", vt))
 			}
+		}
+		if vt := c.varStruct[q.Var]; vt != "" && keyType == fmt.Sprintf("decltype(%s)", q.Var) {
+			keyType = vt
 		}
 	}
 	skip := ""
