@@ -885,11 +885,13 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 	} else {
 		c.writeln(fmt.Sprintf("let %s = %s;", l.Name, val))
 		if c.env != nil {
-			t := types.TypeOfExpr(l.Value, c.env)
-			c.env.SetVar(l.Name, t, false)
-			if lt, ok := t.(types.ListType); ok {
-				if st, ok2 := lt.Elem.(types.StructType); ok2 {
-					c.listVars[l.Name] = st.Name
+			if _, err := c.env.GetVar(l.Name); err != nil {
+				t := types.TypeOfExpr(l.Value, c.env)
+				c.env.SetVar(l.Name, t, false)
+				if lt, ok := t.(types.ListType); ok {
+					if st, ok2 := lt.Elem.(types.StructType); ok2 {
+						c.listVars[l.Name] = st.Name
+					}
 				}
 			}
 		}
@@ -963,7 +965,9 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 		}
 		c.writeln(fmt.Sprintf("let mut %s: %s = %s;", v.Name, typ, val))
 		if c.env != nil {
-			c.env.SetVar(v.Name, types.ResolveTypeRef(v.Type, c.env), true)
+			if _, err := c.env.GetVar(v.Name); err != nil {
+				c.env.SetVar(v.Name, types.ResolveTypeRef(v.Type, c.env), true)
+			}
 		}
 	} else if s, ok := c.simpleString(v.Value); ok {
 		if s == "" {
@@ -977,11 +981,13 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	} else {
 		c.writeln(fmt.Sprintf("let mut %s = %s;", v.Name, val))
 		if c.env != nil {
-			t := types.TypeOfExpr(v.Value, c.env)
-			c.env.SetVar(v.Name, t, true)
-			if lt, ok := t.(types.ListType); ok {
-				if st, ok2 := lt.Elem.(types.StructType); ok2 {
-					c.listVars[v.Name] = st.Name
+			if _, err := c.env.GetVar(v.Name); err != nil {
+				t := types.TypeOfExpr(v.Value, c.env)
+				c.env.SetVar(v.Name, t, true)
+				if lt, ok := t.(types.ListType); ok {
+					if st, ok2 := lt.Elem.(types.StructType); ok2 {
+						c.listVars[v.Name] = st.Name
+					}
 				}
 			}
 		}
@@ -3757,8 +3763,16 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		parts := make([]string, len(args))
 		for i, arg := range args {
 			if c.env != nil {
-				if _, ok := types.TypeOfExpr(call.Args[i], c.env).(types.BoolType); ok {
+				t := types.TypeOfExpr(call.Args[i], c.env)
+				switch tt := t.(type) {
+				case types.BoolType:
 					parts[i] = fmt.Sprintf("format!(\"{}\", if %s {1} else {0})", arg)
+					continue
+				case types.StructType:
+					parts[i] = fmt.Sprintf("format!(\"{}\", if %s == %s::default() { \"null\" } else { \"[object Object]\" })", arg, tt.Name)
+					continue
+				case types.UnionType, types.MapType, types.ListType:
+					parts[i] = "\"[object Object]\".to_string()"
 					continue
 				}
 			}
@@ -3789,7 +3803,13 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("avg expects 1 arg")
 		}
 		if lt, ok := types.TypeOfExpr(call.Args[0], c.env).(types.ListType); ok {
-			switch lt.Elem.(type) {
+			elem := lt.Elem
+			if _, ok := elem.(types.AnyType); ok {
+				if t2 := c.inferAggElemType(call.Args[0]); t2 != nil {
+					elem = t2
+				}
+			}
+			switch elem.(type) {
 			case types.IntType, types.Int64Type:
 				return fmt.Sprintf("(%s.iter().sum::<i32>() as f64 / %s.len() as f64)", args[0], args[0]), nil
 			case types.FloatType:
@@ -3808,7 +3828,13 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("sum expects 1 arg")
 		}
 		if lt, ok := types.TypeOfExpr(call.Args[0], c.env).(types.ListType); ok {
-			switch lt.Elem.(type) {
+			elem := lt.Elem
+			if _, ok := elem.(types.AnyType); ok {
+				if t2 := c.inferAggElemType(call.Args[0]); t2 != nil {
+					elem = t2
+				}
+			}
+			switch elem.(type) {
 			case types.IntType, types.Int64Type:
 				return fmt.Sprintf("%s.iter().copied().sum::<i32>()", args[0]), nil
 			case types.FloatType:
@@ -3822,7 +3848,13 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("min expects 1 arg")
 		}
 		if lt, ok := types.TypeOfExpr(call.Args[0], c.env).(types.ListType); ok {
-			switch lt.Elem.(type) {
+			elem := lt.Elem
+			if _, ok := elem.(types.AnyType); ok {
+				if t2 := c.inferAggElemType(call.Args[0]); t2 != nil {
+					elem = t2
+				}
+			}
+			switch elem.(type) {
 			case types.IntType, types.Int64Type, types.FloatType:
 				return fmt.Sprintf("*%s.iter().min_by(|a,b| a.partial_cmp(b).unwrap()).unwrap()", args[0]), nil
 			}
@@ -3834,7 +3866,13 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("max expects 1 arg")
 		}
 		if lt, ok := types.TypeOfExpr(call.Args[0], c.env).(types.ListType); ok {
-			switch lt.Elem.(type) {
+			elem := lt.Elem
+			if _, ok := elem.(types.AnyType); ok {
+				if t2 := c.inferAggElemType(call.Args[0]); t2 != nil {
+					elem = t2
+				}
+			}
+			switch elem.(type) {
 			case types.IntType, types.Int64Type, types.FloatType:
 				return fmt.Sprintf("*%s.iter().max_by(|a,b| a.partial_cmp(b).unwrap()).unwrap()", args[0]), nil
 			}
@@ -3870,10 +3908,14 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		if ml := tryMapLiteral(call.Args[0]); ml != nil {
 			if s, ok := c.mapLiteralJSON(ml); ok {
+				s = strings.ReplaceAll(s, "{", "{{")
+				s = strings.ReplaceAll(s, "}", "}}")
 				return fmt.Sprintf("println!(%q)", s), nil
 			}
 		} else if id, ok := c.simpleIdent(call.Args[0]); ok {
 			if s, ok2 := c.constJSON[id]; ok2 {
+				s = strings.ReplaceAll(s, "{", "{{")
+				s = strings.ReplaceAll(s, "}", "}}")
 				return fmt.Sprintf("println!(%q)", s), nil
 			}
 		}

@@ -2,7 +2,7 @@
 
 This directory contains Rust source code generated from the Mochi programs in `tests/vm/valid`. Each program was compiled and executed with `rustc`. Successful runs produced an `.out` file while failures produced an `.error` file.
 
-Compiled programs: 85/100
+Compiled programs: 89/100
 
 ## Checklist
 
@@ -45,9 +45,9 @@ Compiled programs: 85/100
 - [x] in_operator_extended
 - [x] inner_join
 - [x] join_multi
-- [ ] json_builtin
-- [ ] left_join
-- [ ] left_join_multi
+- [x] json_builtin
+- [x] left_join
+- [x] left_join_multi
 - [x] len_builtin
 - [x] len_map
 - [x] len_string
@@ -78,7 +78,7 @@ Compiled programs: 85/100
 - [x] pure_global_fold
 - [x] python_auto
 - [x] python_math
-- [ ] query_sum_select
+- [x] query_sum_select
 - [x] record_assign
 - [x] right_join
 - [ ] save_jsonl_stdout
