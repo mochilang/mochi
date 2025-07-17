@@ -833,18 +833,66 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			}
 			continue
 		case "union":
+			if len(b.Right) == 1 {
+				llist := listLiteralFromUnary(b.Left)
+				rlist := listLiteralFromPostfix(op.Right)
+				if llist != nil && rlist != nil {
+					if la, ok := intList(llist); ok {
+						if lb, ok2 := intList(rlist); ok2 {
+							res = formatIntList(unionInts(la, lb))
+							continue
+						}
+					}
+				}
+			}
 			c.use("_union")
 			res = fmt.Sprintf("_union(%s, %s)", res, r)
 			continue
 		case "union_all":
+			if len(b.Right) == 1 {
+				llist := listLiteralFromUnary(b.Left)
+				rlist := listLiteralFromPostfix(op.Right)
+				if llist != nil && rlist != nil {
+					if la, ok := intList(llist); ok {
+						if lb, ok2 := intList(rlist); ok2 {
+							res = formatIntList(append(la, lb...))
+							continue
+						}
+					}
+				}
+			}
 			c.use("_union_all")
 			res = fmt.Sprintf("_union_all(%s, %s)", res, r)
 			continue
 		case "except":
+			if len(b.Right) == 1 {
+				llist := listLiteralFromUnary(b.Left)
+				rlist := listLiteralFromPostfix(op.Right)
+				if llist != nil && rlist != nil {
+					if la, ok := intList(llist); ok {
+						if lb, ok2 := intList(rlist); ok2 {
+							res = formatIntList(exceptInts(la, lb))
+							continue
+						}
+					}
+				}
+			}
 			c.use("_except")
 			res = fmt.Sprintf("_except(%s, %s)", res, r)
 			continue
 		case "intersect":
+			if len(b.Right) == 1 {
+				llist := listLiteralFromUnary(b.Left)
+				rlist := listLiteralFromPostfix(op.Right)
+				if llist != nil && rlist != nil {
+					if la, ok := intList(llist); ok {
+						if lb, ok2 := intList(rlist); ok2 {
+							res = formatIntList(intersectInts(la, lb))
+							continue
+						}
+					}
+				}
+			}
 			c.use("_intersect")
 			res = fmt.Sprintf("_intersect(%s, %s)", res, r)
 			continue
@@ -1443,6 +1491,102 @@ func literalStringPrimary(p *parser.Primary) *string {
 		return nil
 	}
 	return p.Lit.Str
+}
+
+func literalIntPrimary(p *parser.Primary) *int {
+	if p == nil || p.Lit == nil || p.Lit.Int == nil {
+		return nil
+	}
+	return p.Lit.Int
+}
+
+func listLiteralFromUnary(u *parser.Unary) *parser.ListLiteral {
+	if u == nil || len(u.Ops) != 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.List
+}
+
+func listLiteralFromPostfix(pf *parser.PostfixExpr) *parser.ListLiteral {
+	if pf == nil || len(pf.Ops) != 0 || pf.Target == nil {
+		return nil
+	}
+	return pf.Target.List
+}
+
+func intList(l *parser.ListLiteral) ([]int, bool) {
+	vals := make([]int, len(l.Elems))
+	for i, e := range l.Elems {
+		if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+			return nil, false
+		}
+		u := e.Binary.Left
+		if len(u.Ops) != 0 || u.Value == nil || u.Value.Target == nil || u.Value.Target.Lit == nil || u.Value.Target.Lit.Int == nil {
+			return nil, false
+		}
+		vals[i] = *u.Value.Target.Lit.Int
+	}
+	return vals, true
+}
+
+func formatIntList(list []int) string {
+	elems := make([]string, len(list))
+	for i, v := range list {
+		elems[i] = fmt.Sprintf("%d", v)
+	}
+	return fmt.Sprintf("(/%s/)", strings.Join(elems, ","))
+}
+
+func unionInts(a, b []int) []int {
+	seen := map[int]bool{}
+	res := make([]int, 0, len(a)+len(b))
+	for _, v := range a {
+		if !seen[v] {
+			seen[v] = true
+			res = append(res, v)
+		}
+	}
+	for _, v := range b {
+		if !seen[v] {
+			seen[v] = true
+			res = append(res, v)
+		}
+	}
+	return res
+}
+
+func exceptInts(a, b []int) []int {
+	drop := map[int]bool{}
+	for _, v := range b {
+		drop[v] = true
+	}
+	res := make([]int, 0, len(a))
+	for _, v := range a {
+		if !drop[v] {
+			res = append(res, v)
+		}
+	}
+	return res
+}
+
+func intersectInts(a, b []int) []int {
+	setb := map[int]bool{}
+	for _, v := range b {
+		setb[v] = true
+	}
+	res := []int{}
+	added := map[int]bool{}
+	for _, v := range a {
+		if setb[v] && !added[v] {
+			added[v] = true
+			res = append(res, v)
+		}
+	}
+	return res
 }
 
 func mapLiteralPrimary(p *parser.Primary) *parser.MapLiteral {

@@ -40,7 +40,9 @@ func TestFortranCompiler_VMValid_Golden(t *testing.T) {
 		}
 		env := types.NewEnv(nil)
 		os.Setenv("MOCHI_HEADER_TIME", "2006-01-02T15:04:05Z")
+		os.Setenv("MOCHI_FORTRAN_NODATASET", "1")
 		code, err := ftncode.New(env).Compile(prog)
+		os.Unsetenv("MOCHI_FORTRAN_NODATASET")
 		os.Unsetenv("MOCHI_HEADER_TIME")
 		if err != nil {
 			_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
