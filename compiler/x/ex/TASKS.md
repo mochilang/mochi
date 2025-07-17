@@ -43,3 +43,7 @@ Flattened joined rows when grouping so fields like `sr_return_amt` are directly
 accessible. `compile_tpcds_ex.go` now records runtime failures in `.error`
 files. The golden test regenerates outputs via this script before running and
 fails if any `.error` file is present.
+
+## Print Formatting (2025-07-17)
+- Added `_stringify` and `_print` helpers so `print()` matches the interpreter's output.
+- VM golden test now passes for all programs.

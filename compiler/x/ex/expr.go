@@ -323,15 +323,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			} else {
 				switch res {
 				case "print":
-					if len(args) == 1 {
-						if t := c.inferExprType(op.Call.Args[0]); t == (types.StringType{}) {
-							res = fmt.Sprintf("IO.puts(%s)", argStr)
-						} else {
-							res = fmt.Sprintf("IO.inspect(%s)", argStr)
-						}
-					} else {
-						res = fmt.Sprintf("IO.puts(Enum.join(Enum.map([%s], &inspect(&1)), \" \"))", argStr)
-					}
+					c.use("_print")
+					res = fmt.Sprintf("_print([%s])", argStr)
 				case "len":
 					if len(args) != 1 {
 						return "", fmt.Errorf("len expects 1 arg")
