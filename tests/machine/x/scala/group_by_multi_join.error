@@ -1,0 +1,26 @@
+exit status 1
+/workspace/mochi/tests/machine/x/scala/group_by_multi_join.scala:15: error: value id is not a member of scala.collection.immutable.Map[String,Int]
+    val filtered = for { ps <- partsupp; s <- suppliers; if (s.id).asInstanceOf[Int] == ps.supplier; n <- nations; if (n.id).asInstanceOf[Int] == s.nation; if n.name == "A" } yield Map("part" -> ps.part, "value" -> ps.cost * ps.qty)
+                                                               ^
+/workspace/mochi/tests/machine/x/scala/group_by_multi_join.scala:15: error: value supplier is not a member of scala.collection.immutable.Map[String,Int]
+    val filtered = for { ps <- partsupp; s <- suppliers; if (s.id).asInstanceOf[Int] == ps.supplier; n <- nations; if (n.id).asInstanceOf[Int] == s.nation; if n.name == "A" } yield Map("part" -> ps.part, "value" -> ps.cost * ps.qty)
+                                                                                           ^
+/workspace/mochi/tests/machine/x/scala/group_by_multi_join.scala:15: error: value id is not a member of scala.collection.immutable.Map[String,Any]
+    val filtered = for { ps <- partsupp; s <- suppliers; if (s.id).asInstanceOf[Int] == ps.supplier; n <- nations; if (n.id).asInstanceOf[Int] == s.nation; if n.name == "A" } yield Map("part" -> ps.part, "value" -> ps.cost * ps.qty)
+                                                                                                                         ^
+/workspace/mochi/tests/machine/x/scala/group_by_multi_join.scala:15: error: value part is not a member of scala.collection.immutable.Map[String,Int]
+    val filtered = for { ps <- partsupp; s <- suppliers; if (s.id).asInstanceOf[Int] == ps.supplier; n <- nations; if (n.id).asInstanceOf[Int] == s.nation; if n.name == "A" } yield Map("part" -> ps.part, "value" -> ps.cost * ps.qty)
+                                                                                                                                                                                                      ^
+/workspace/mochi/tests/machine/x/scala/group_by_multi_join.scala:15: error: value cost is not a member of scala.collection.immutable.Map[String,Int]
+    val filtered = for { ps <- partsupp; s <- suppliers; if (s.id).asInstanceOf[Int] == ps.supplier; n <- nations; if (n.id).asInstanceOf[Int] == s.nation; if n.name == "A" } yield Map("part" -> ps.part, "value" -> ps.cost * ps.qty)
+                                                                                                                                                                                                                          ^
+/workspace/mochi/tests/machine/x/scala/group_by_multi_join.scala:15: error: value qty is not a member of scala.collection.immutable.Map[String,Int]
+    val filtered = for { ps <- partsupp; s <- suppliers; if (s.id).asInstanceOf[Int] == ps.supplier; n <- nations; if (n.id).asInstanceOf[Int] == s.nation; if n.name == "A" } yield Map("part" -> ps.part, "value" -> ps.cost * ps.qty)
+                                                                                                                                                                                                                                    ^
+/workspace/mochi/tests/machine/x/scala/group_by_multi_join.scala:16: error: value part is not a member of Nothing
+    val grouped = ((for { x <- filtered } yield (x.part, x)).groupBy(_._1).map{ case(k,list) => _Group(k, list.map(_._2)) }.toList).map{ g => Map("part" -> g.key, "total" -> (for { r <- g } yield r.value).sum) }.toList
+                                                   ^
+/workspace/mochi/tests/machine/x/scala/group_by_multi_join.scala:16: error: value map is not a member of Any
+    val grouped = ((for { x <- filtered } yield (x.part, x)).groupBy(_._1).map{ case(k,list) => _Group(k, list.map(_._2)) }.toList).map{ g => Map("part" -> g.key, "total" -> (for { r <- g } yield r.value).sum) }.toList
+                                                                                                               ^
+8 errors found

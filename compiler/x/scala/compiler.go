@@ -34,6 +34,42 @@ type Compiler struct {
 	preferMutable bool
 }
 
+func (c *Compiler) zeroValue(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType, types.Int64Type:
+		return "0"
+	case types.FloatType:
+		return "0.0"
+	case types.BoolType:
+		return "false"
+	case types.StringType:
+		return "\"\""
+	case types.OptionType:
+		return "None"
+	case types.ListType:
+		if c.preferMutable {
+			return fmt.Sprintf("scala.collection.mutable.ArrayBuffer[%s]()", c.typeOf(tt.Elem))
+		}
+		return fmt.Sprintf("List[%s]()", c.typeOf(tt.Elem))
+	case types.MapType:
+		if c.preferMutable {
+			return fmt.Sprintf("scala.collection.mutable.Map[%s, %s]()", c.typeOf(tt.Key), c.typeOf(tt.Value))
+		}
+		return fmt.Sprintf("Map[%s, %s]()", c.typeOf(tt.Key), c.typeOf(tt.Value))
+	case types.StructType:
+		return fmt.Sprintf("%s()", tt.Name)
+	default:
+		return "null"
+	}
+}
+
+func (c *Compiler) zeroValueRef(t *parser.TypeRef) string {
+	if t == nil {
+		return "null"
+	}
+	return c.zeroValue(types.ResolveTypeRef(t, c.env))
+}
+
 func (c *Compiler) detectStructMap(e *parser.Expr, env *types.Env) (types.StructType, bool) {
 	if env == nil {
 		env = c.env
@@ -592,6 +628,8 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		if err != nil {
 			return err
 		}
+	} else if s.Type != nil {
+		rhs = c.zeroValueRef(s.Type)
 	}
 	var typ types.Type = types.AnyType{}
 	if s.Type != nil {
@@ -685,6 +723,8 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		if err != nil {
 			return err
 		}
+	} else if s.Type != nil {
+		rhs = c.zeroValueRef(s.Type)
 	}
 	var typ types.Type = types.AnyType{}
 	if s.Type != nil {
