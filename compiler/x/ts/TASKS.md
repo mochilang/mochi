@@ -1,3 +1,5 @@
+### 2025-10-15 00:00 UTC
+- Stabilized TPCH golden tests by normalizing JSON output and ignoring timestamp headers.
 # TypeScript Compiler Tasks
 
 ## Recent Enhancements
