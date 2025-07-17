@@ -4,22 +4,6 @@
 
 main(_) ->
     Products = [#{name => "Laptop", price => 1500}, #{name => "Smartphone", price => 900}, #{name => "Tablet", price => 600}, #{name => "Monitor", price => 300}, #{name => "Keyboard", price => 100}, #{name => "Mouse", price => 50}, #{name => "Headphones", price => 200}],
-    Expensive = lists:sublist(lists:nthtail(1, [V || {_, V} <- lists:keysort(1, [{-mochi_get(price, P), P} || P <- Products])]), 3),
+    Expensive = lists:sublist(lists:nthtail(1, [V || {_, V} <- lists:keysort(1, [{-maps:get(price, P, undefined), P} || P <- Products])]), 3),
     io:format("~p~n", ["--- Top products (excluding most expensive) ---"]),
-    lists:foreach(fun(Item) -> io:format("~p ~p ~p~n", [mochi_get(name, Item), "costs $", mochi_get(price, Item)]) end, Expensive).
-
-mochi_get(K, M) ->
-    case maps:find(K, M) of
-        {ok, V} -> V;
-        error ->
-            Name = atom_to_list(K),
-            case string:tokens(Name, "_") of
-                [Pref|_] ->
-                    P = list_to_atom(Pref),
-                    case maps:find(P, M) of
-                        {ok, Sub} when is_map(Sub) -> maps:get(K, Sub, undefined);
-                        _ -> undefined
-                    end;
-                _ -> undefined
-            end
-        end.
+    lists:foreach(fun(Item) -> io:format("~p ~p ~p~n", [maps:get(name, Item, undefined), "costs $", maps:get(price, Item, undefined)]) end, Expensive).

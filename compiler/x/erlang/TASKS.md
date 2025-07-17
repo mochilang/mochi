@@ -1,6 +1,9 @@
 # Erlang Compiler Tasks
 
 ## Recent updates
+- [2025-07-17 13:05] Regenerated `cross_join`, `cross_join_filter`, and
+  `dataset_sort_take_limit` with refined type inference so `maps:get` replaces
+  `mochi_get`.
 - [2025-07-17 12:30] Query and loop variables now inherit element map types,
   allowing `maps:get` to replace `mochi_get` in `dataset_where_filter` and
   similar programs. Regenerated machine output for `dataset_where_filter`.

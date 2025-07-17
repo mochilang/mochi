@@ -7,20 +7,4 @@ main(_) ->
     Letters = ["A", "B"],
     Pairs = [#{n => N, l => L} || N <- Nums, L <- Letters, ((N rem 2) == 0)],
     io:format("~p~n", ["--- Even pairs ---"]),
-    lists:foreach(fun(P) -> io:format("~p ~p~n", [mochi_get(n, P), mochi_get(l, P)]) end, Pairs).
-
-mochi_get(K, M) ->
-    case maps:find(K, M) of
-        {ok, V} -> V;
-        error ->
-            Name = atom_to_list(K),
-            case string:tokens(Name, "_") of
-                [Pref|_] ->
-                    P = list_to_atom(Pref),
-                    case maps:find(P, M) of
-                        {ok, Sub} when is_map(Sub) -> maps:get(K, Sub, undefined);
-                        _ -> undefined
-                    end;
-                _ -> undefined
-            end
-        end.
+    lists:foreach(fun(P) -> io:format("~p ~p~n", [maps:get(n, P, undefined), maps:get(l, P, undefined)]) end, Pairs).
