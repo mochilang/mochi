@@ -18,6 +18,7 @@
 - 2025-07-20 09:15 - Removed obsolete `compiler_test.go` in favor of
   `vm_golden_test.go` and verified VM tests pass.
 - 2025-07-21 13:45 - Added machine README with checklist of compiled programs.
+- 2025-07-25 10:30 - Generated Ruby machine output for all `tests/vm/valid` programs.
 - 2025-07-17 06:42 - Simplified `_sum` helper to use Ruby's native `sum`
   for clearer generated code. Regenerated VM and dataset outputs.
 - 2025-07-17 07:01 - Compiled `bigint_ops.mochi` from `vm_extended/valid` and
