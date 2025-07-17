@@ -672,6 +672,14 @@ func (c *Compiler) compileFor(fr *parser.ForStmt) (string, error) {
 	mutated := map[string]bool{}
 	collectMutations(fr.Body, mutated)
 
+	// Remove variables that are declared inside the loop body since they are
+	// local to each iteration and don't need to be threaded as accumulators.
+	for _, st := range fr.Body {
+		if st.Var != nil {
+			delete(mutated, st.Var.Name)
+		}
+	}
+
 	hasBC := hasBreakOrContinue(fr.Body)
 
 	// If no variables are mutated in the loop body, emit a simple foreach
@@ -1617,7 +1625,8 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		return fmt.Sprintf("(case %s of #{items := It} -> length(It); _ -> length(%s) end)", a0, a0), nil
+		it := c.newVarName("it")
+		return fmt.Sprintf("(case %s of #{items := %s} -> length(%s); _ -> length(%s) end)", a0, it, it, a0), nil
 	case "sum":
 		if len(call.Args) != 1 {
 			return "", fmt.Errorf("sum expects 1 arg")
