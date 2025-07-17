@@ -20,6 +20,9 @@
 - 2025-07-21 00:00 - Added support for map and list element assignments and
   dynamic literal initialization. Temporary variables now use a signed PIC to
   preserve negative values.
+- 2025-07-22 00:00 - Casts of string and int literals are now resolved at
+  compile time and `len` of a string literal is folded to a constant. Nested
+  function declarations are detected but code generation is still in progress.
 
 ## Remaining Work
 - [ ] Support dataset queries (`group by`, joins) needed for TPCH programs such as `q1.mochi`.

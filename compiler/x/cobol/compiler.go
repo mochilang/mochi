@@ -61,16 +61,16 @@ type funDecl struct {
 }
 
 func cobolName(name string) string {
-        s := strings.ToUpper(strings.ReplaceAll(name, "_", "-"))
-        switch s {
-        case "TITLE":
-                return "TITLE-V"
-        case "NUMBER", "NUMBERS":
-                return s + "-V"
-        case "DATA":
-                return "DATA-V"
-        }
-        return s
+	s := strings.ToUpper(strings.ReplaceAll(name, "_", "-"))
+	switch s {
+	case "TITLE":
+		return "TITLE-V"
+	case "NUMBER", "NUMBERS":
+		return s + "-V"
+	case "DATA":
+		return "DATA-V"
+	}
+	return s
 }
 
 func (c *Compiler) hasVar(name string) bool {
@@ -103,82 +103,82 @@ func (c *Compiler) collectForVars(st []*parser.Statement) {
 }
 
 func (c *Compiler) collectAssignVars(st []*parser.Statement) {
-       for _, s := range st {
-               switch {
-               case s.Assign != nil:
-                       c.addAssignField(s.Assign)
-               case s.If != nil:
-                       c.collectAssignVars(s.If.Then)
-                       if s.If.ElseIf != nil {
-                               c.collectAssignVars([]*parser.Statement{{If: s.If.ElseIf}})
-                       }
-                       c.collectAssignVars(s.If.Else)
-               case s.While != nil:
-                       c.collectAssignVars(s.While.Body)
-               case s.For != nil:
-                       c.collectAssignVars(s.For.Body)
-               case s.Fun != nil:
-                       c.collectAssignVars(s.Fun.Body)
-               }
-       }
+	for _, s := range st {
+		switch {
+		case s.Assign != nil:
+			c.addAssignField(s.Assign)
+		case s.If != nil:
+			c.collectAssignVars(s.If.Then)
+			if s.If.ElseIf != nil {
+				c.collectAssignVars([]*parser.Statement{{If: s.If.ElseIf}})
+			}
+			c.collectAssignVars(s.If.Else)
+		case s.While != nil:
+			c.collectAssignVars(s.While.Body)
+		case s.For != nil:
+			c.collectAssignVars(s.For.Body)
+		case s.Fun != nil:
+			c.collectAssignVars(s.Fun.Body)
+		}
+	}
 }
 
 func (c *Compiler) addAssignField(a *parser.AssignStmt) {
-       if len(a.Index) == 0 && len(a.Field) == 0 {
-               return
-       }
-       v := c.getVarDecl(a.Name)
-       if v == nil {
-               return
-       }
-       name := ""
-       for _, idx := range a.Index {
-               if idx.Colon != nil || idx.End != nil || idx.Step != nil || idx.Colon2 != nil {
-                       return
-               }
-               if i, ok := intLiteral(idx.Start); ok {
-                       name += fmt.Sprintf("E%d-", i+1)
-                       continue
-               }
-               if s, ok := stringLiteral(idx.Start); ok {
-                       name += cobolName(s) + "-"
-                       continue
-               }
-               return
-       }
-       for _, f := range a.Field {
-               name += cobolName(f.Name) + "-"
-       }
-       if name == "" {
-               return
-       }
-       name = strings.TrimSuffix(name, "-")
-       for _, f := range v.fields {
-               if f.name == name {
-                       return
-               }
-       }
-       t := types.TypeOfExpr(a.Value, c.env)
-       pic := cobolPic(t, "")
-       val := ""
-       switch t.(type) {
-       case types.StringType:
-               val = "\"\""
-       case types.BoolType:
-               val = "FALSE"
-       default:
-               val = "0"
-       }
-       v.fields = append(v.fields, varField{name: name, pic: pic, val: val})
+	if len(a.Index) == 0 && len(a.Field) == 0 {
+		return
+	}
+	v := c.getVarDecl(a.Name)
+	if v == nil {
+		return
+	}
+	name := ""
+	for _, idx := range a.Index {
+		if idx.Colon != nil || idx.End != nil || idx.Step != nil || idx.Colon2 != nil {
+			return
+		}
+		if i, ok := intLiteral(idx.Start); ok {
+			name += fmt.Sprintf("E%d-", i+1)
+			continue
+		}
+		if s, ok := stringLiteral(idx.Start); ok {
+			name += cobolName(s) + "-"
+			continue
+		}
+		return
+	}
+	for _, f := range a.Field {
+		name += cobolName(f.Name) + "-"
+	}
+	if name == "" {
+		return
+	}
+	name = strings.TrimSuffix(name, "-")
+	for _, f := range v.fields {
+		if f.name == name {
+			return
+		}
+	}
+	t := types.TypeOfExpr(a.Value, c.env)
+	pic := cobolPic(t, "")
+	val := ""
+	switch t.(type) {
+	case types.StringType:
+		val = "\"\""
+	case types.BoolType:
+		val = "FALSE"
+	default:
+		val = "0"
+	}
+	v.fields = append(v.fields, varField{name: name, pic: pic, val: val})
 }
 
 func (c *Compiler) getVarDecl(name string) *varDecl {
-       for i := range c.vars {
-               if c.vars[i].name == name {
-                       return &c.vars[i]
-               }
-       }
-       return nil
+	for i := range c.vars {
+		if c.vars[i].name == name {
+			return &c.vars[i]
+		}
+	}
+	return nil
 }
 
 func New(env *types.Env) *Compiler {
@@ -208,29 +208,29 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	name = strings.ToUpper(name)
 
 	// collect variable and constant declarations
-       for _, st := range prog.Statements {
-               switch {
-               case st.Var != nil:
-                       if err := c.addVar(st.Var.Name, st.Var.Type, st.Var.Value, st.Var.Pos.Line); err != nil {
-                               return nil, err
-                       }
-               case st.Let != nil:
-                       if err := c.addVar(st.Let.Name, st.Let.Type, st.Let.Value, st.Let.Pos.Line); err != nil {
-                               return nil, err
-                       }
-               case st.Fun != nil:
-                       if err := c.addFun(st.Fun); err != nil {
-                               return nil, err
-                       }
-               }
-       }
-       c.collectForVars(prog.Statements)
-       c.collectAssignVars(prog.Statements)
-       if needsTmpVar(prog.Statements) {
+	for _, st := range prog.Statements {
+		switch {
+		case st.Var != nil:
+			if err := c.addVar(st.Var.Name, st.Var.Type, st.Var.Value, st.Var.Pos.Line); err != nil {
+				return nil, err
+			}
+		case st.Let != nil:
+			if err := c.addVar(st.Let.Name, st.Let.Type, st.Let.Value, st.Let.Pos.Line); err != nil {
+				return nil, err
+			}
+		case st.Fun != nil:
+			if err := c.addFun(st.Fun); err != nil {
+				return nil, err
+			}
+		}
+	}
+	c.collectForVars(prog.Statements)
+	c.collectAssignVars(prog.Statements)
+	if needsTmpVar(prog.Statements) {
 		c.tmpVar = "TMP"
-               if !c.hasVar(c.tmpVar) {
-                       c.vars = append(c.vars, varDecl{name: c.tmpVar, pic: "PIC S9(9)", val: "0"})
-               }
+		if !c.hasVar(c.tmpVar) {
+			c.vars = append(c.vars, varDecl{name: c.tmpVar, pic: "PIC S9(9)", val: "0"})
+		}
 		c.tmpStrVar = "TMP-STR"
 		if !c.hasVar(c.tmpStrVar) {
 			c.vars = append(c.vars, varDecl{name: c.tmpStrVar, pic: "PIC Z(18)"})
@@ -424,25 +424,25 @@ func (c *Compiler) addVar(name string, typ *parser.TypeRef, value *parser.Expr, 
 			return nil
 		}
 	}
-       pic := "PIC 9"
-       val := ""
-       if typ != nil && typ.Simple != nil {
-               switch *typ.Simple {
-               case "string":
-                       pic = "PIC X"
-               case "bool":
-                       pic = "PIC X(5)"
-               default:
-                       pic = "PIC 9"
-               }
-       } else if typ == nil && value != nil {
-               switch types.TypeOfExpr(value, c.env).(type) {
-               case types.StringType:
-                       pic = "PIC X"
-               case types.BoolType:
-                       pic = "PIC X(5)"
-               }
-       }
+	pic := "PIC 9"
+	val := ""
+	if typ != nil && typ.Simple != nil {
+		switch *typ.Simple {
+		case "string":
+			pic = "PIC X"
+		case "bool":
+			pic = "PIC X(5)"
+		default:
+			pic = "PIC 9"
+		}
+	} else if typ == nil && value != nil {
+		switch types.TypeOfExpr(value, c.env).(type) {
+		case types.StringType:
+			pic = "PIC X"
+		case types.BoolType:
+			pic = "PIC X(5)"
+		}
+	}
 	if value != nil && isLiteralExpr(value) {
 		v, err := c.compileExpr(value)
 		if err != nil {
@@ -489,19 +489,19 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Fun != nil:
 		// handled in declaration pass
 		return nil
-       case s.Expr != nil:
-               if call, ok := isCallTo(s.Expr.Expr, "print"); ok {
-                       return c.compilePrint(call)
-               }
-               if call, ok := isCallTo(s.Expr.Expr, ""); ok {
-                       _, err := c.compileUserCall(call)
-                       return err
-               }
-               expr, err := c.compileExpr(s.Expr.Expr)
-               if err != nil {
-                       return err
-               }
-               c.writeln(expr)
+	case s.Expr != nil:
+		if call, ok := isCallTo(s.Expr.Expr, "print"); ok {
+			return c.compilePrint(call)
+		}
+		if call, ok := isCallTo(s.Expr.Expr, ""); ok {
+			_, err := c.compileUserCall(call)
+			return err
+		}
+		expr, err := c.compileExpr(s.Expr.Expr)
+		if err != nil {
+			return err
+		}
+		c.writeln(expr)
 	case s.Assign != nil:
 		return c.compileAssign(s.Assign)
 	case s.If != nil:
@@ -512,6 +512,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileFor(s.For)
 	case s.Return != nil:
 		return c.compileReturn(s.Return)
+	case s.Fun != nil:
+		return c.addFun(s.Fun)
 	case s.Type != nil:
 		// type declarations do not emit code
 		return nil
@@ -528,36 +530,36 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 }
 
 func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
-        val, err := c.compileExpr(a.Value)
-        if err != nil {
-                return err
-        }
-       target := ""
-       if len(a.Index) == 0 && len(a.Field) == 0 {
-               target = cobolName(a.Name)
-       } else {
-               parts := make([]string, 0, len(a.Index)+len(a.Field))
-               for _, idx := range a.Index {
-                       if idx.Colon != nil || idx.End != nil || idx.Step != nil || idx.Colon2 != nil {
-                               return fmt.Errorf("slices not supported")
-                       }
-                       if i, ok := intLiteral(idx.Start); ok {
-                               parts = append(parts, fmt.Sprintf("E%d", i+1))
-                               continue
-                       }
-                       if s, ok := stringLiteral(idx.Start); ok {
-                               parts = append(parts, cobolName(s))
-                               continue
-                       }
-                       return fmt.Errorf("indexing not supported")
-               }
-               for _, f := range a.Field {
-                       parts = append(parts, cobolName(f.Name))
-               }
-               target = strings.Join(parts, "-")
-       }
-       c.writeln(fmt.Sprintf("COMPUTE %s = %s", target, val))
-       return nil
+	val, err := c.compileExpr(a.Value)
+	if err != nil {
+		return err
+	}
+	target := ""
+	if len(a.Index) == 0 && len(a.Field) == 0 {
+		target = cobolName(a.Name)
+	} else {
+		parts := make([]string, 0, len(a.Index)+len(a.Field))
+		for _, idx := range a.Index {
+			if idx.Colon != nil || idx.End != nil || idx.Step != nil || idx.Colon2 != nil {
+				return fmt.Errorf("slices not supported")
+			}
+			if i, ok := intLiteral(idx.Start); ok {
+				parts = append(parts, fmt.Sprintf("E%d", i+1))
+				continue
+			}
+			if s, ok := stringLiteral(idx.Start); ok {
+				parts = append(parts, cobolName(s))
+				continue
+			}
+			return fmt.Errorf("indexing not supported")
+		}
+		for _, f := range a.Field {
+			parts = append(parts, cobolName(f.Name))
+		}
+		target = strings.Join(parts, "-")
+	}
+	c.writeln(fmt.Sprintf("COMPUTE %s = %s", target, val))
+	return nil
 }
 
 func (c *Compiler) compileReturn(r *parser.ReturnStmt) error {
@@ -803,6 +805,9 @@ func (c *Compiler) compileUserCall(call *parser.CallExpr) (string, error) {
 			}
 		}
 		if types.IsStringType(types.TypeOfExpr(arg, c.env)) {
+			if s, ok := stringLiteral(arg); ok {
+				return fmt.Sprintf("%d", len([]rune(s))), nil
+			}
 			val, err := c.compileExpr(arg)
 			if err != nil {
 				return "", err
@@ -1311,8 +1316,30 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
 				switch *op.Cast.Type.Simple {
 				case "int":
+					if len(p.Ops) == 1 && p.Target != nil && p.Target.Lit != nil {
+						if p.Target.Lit.Int != nil {
+							val = fmt.Sprintf("%d", *p.Target.Lit.Int)
+							continue
+						}
+						if p.Target.Lit.Str != nil {
+							if n, err := strconv.Atoi(*p.Target.Lit.Str); err == nil {
+								val = fmt.Sprintf("%d", n)
+								continue
+							}
+						}
+					}
 					val = fmt.Sprintf("FUNCTION NUMVAL(%s)", val)
 				case "string":
+					if len(p.Ops) == 1 && p.Target != nil && p.Target.Lit != nil {
+						if p.Target.Lit.Int != nil {
+							val = fmt.Sprintf("\"%d\"", *p.Target.Lit.Int)
+							continue
+						}
+						if p.Target.Lit.Str != nil {
+							val = fmt.Sprintf("\"%s\"", *p.Target.Lit.Str)
+							continue
+						}
+					}
 					val = fmt.Sprintf("FUNCTION NUMVAL-C(%s)", val)
 				default:
 					return "", fmt.Errorf("unsupported cast to %s", *op.Cast.Type.Simple)
@@ -1407,29 +1434,29 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					continue
 				}
 			}
-                       if i, ok := intLiteral(idx.Start); ok {
-                               if types.IsStringType(typ) {
-                                       val = fmt.Sprintf("%s(%d:1)", val, i+1)
-                                       typ = types.StringType{}
-                               } else {
-                                       if name, ok := identPostfix(p); ok && val == cobolName(name) {
-                                               val = fmt.Sprintf("E%d", i+1)
-                                       } else {
-                                               val = fmt.Sprintf("%s-E%d", val, i+1)
-                                       }
-                                       typ = types.AnyType{}
-                               }
-                               continue
-                       }
-                       if s, ok := stringLiteral(idx.Start); ok {
-                               if name, ok := identPostfix(p); ok && val == cobolName(name) {
-                                       val = cobolName(s)
-                               } else {
-                                       val = fmt.Sprintf("%s-%s", val, cobolName(s))
-                               }
-                               typ = types.AnyType{}
-                               continue
-                       }
+			if i, ok := intLiteral(idx.Start); ok {
+				if types.IsStringType(typ) {
+					val = fmt.Sprintf("%s(%d:1)", val, i+1)
+					typ = types.StringType{}
+				} else {
+					if name, ok := identPostfix(p); ok && val == cobolName(name) {
+						val = fmt.Sprintf("E%d", i+1)
+					} else {
+						val = fmt.Sprintf("%s-E%d", val, i+1)
+					}
+					typ = types.AnyType{}
+				}
+				continue
+			}
+			if s, ok := stringLiteral(idx.Start); ok {
+				if name, ok := identPostfix(p); ok && val == cobolName(name) {
+					val = cobolName(s)
+				} else {
+					val = fmt.Sprintf("%s-%s", val, cobolName(s))
+				}
+				typ = types.AnyType{}
+				continue
+			}
 			idxExpr, err := c.compileExpr(idx.Start)
 			if err != nil {
 				return "", err
@@ -1869,43 +1896,43 @@ func (c *Compiler) buildStructFields(prefix string, st types.StructType, sl *par
 }
 
 func (c *Compiler) buildListFields(prefix string, lst *parser.ListLiteral) ([]varField, error) {
-        fields := make([]varField, 0, len(lst.Elems))
-        for i, e := range lst.Elems {
-                if sub := listLiteral(e); sub != nil {
-                        subFields, err := c.buildListFields(prefix+fmt.Sprintf("E%d-", i+1), sub)
-                        if err != nil {
-                                return nil, err
-                        }
-                        fields = append(fields, subFields...)
-                        continue
-                }
-                typ := types.TypeOfExpr(e, c.env)
-                name := prefix + fmt.Sprintf("E%d", i+1)
-                if isLiteralExpr(e) {
-                        valStr, err := c.compileExpr(e)
-                        if err != nil {
-                                return nil, err
-                        }
-                        pic := cobolPic(typ, valStr)
-                        fields = append(fields, varField{name: name, pic: pic, val: valStr})
-                } else {
-                        pic := cobolPic(typ, "")
-                        def := "0"
-                        switch typ.(type) {
-                        case types.StringType:
-                                def = "\"\""
-                        case types.BoolType:
-                                def = "FALSE"
-                        }
-                        fields = append(fields, varField{name: name, pic: pic, val: def})
-                        valStr, err := c.compileExpr(e)
-                        if err != nil {
-                                return nil, err
-                        }
-                        c.init = append(c.init, fmt.Sprintf("COMPUTE %s = %s", cobolName(name), valStr))
-                }
-        }
-        return fields, nil
+	fields := make([]varField, 0, len(lst.Elems))
+	for i, e := range lst.Elems {
+		if sub := listLiteral(e); sub != nil {
+			subFields, err := c.buildListFields(prefix+fmt.Sprintf("E%d-", i+1), sub)
+			if err != nil {
+				return nil, err
+			}
+			fields = append(fields, subFields...)
+			continue
+		}
+		typ := types.TypeOfExpr(e, c.env)
+		name := prefix + fmt.Sprintf("E%d", i+1)
+		if isLiteralExpr(e) {
+			valStr, err := c.compileExpr(e)
+			if err != nil {
+				return nil, err
+			}
+			pic := cobolPic(typ, valStr)
+			fields = append(fields, varField{name: name, pic: pic, val: valStr})
+		} else {
+			pic := cobolPic(typ, "")
+			def := "0"
+			switch typ.(type) {
+			case types.StringType:
+				def = "\"\""
+			case types.BoolType:
+				def = "FALSE"
+			}
+			fields = append(fields, varField{name: name, pic: pic, val: def})
+			valStr, err := c.compileExpr(e)
+			if err != nil {
+				return nil, err
+			}
+			c.init = append(c.init, fmt.Sprintf("COMPUTE %s = %s", cobolName(name), valStr))
+		}
+	}
+	return fields, nil
 }
 
 func (c *Compiler) buildMapFields(prefix string, mp *parser.MapLiteral) ([]varField, error) {
@@ -1915,41 +1942,41 @@ func (c *Compiler) buildMapFields(prefix string, mp *parser.MapLiteral) ([]varFi
 		if !ok {
 			continue
 		}
-               if sub := mapLiteral(it.Value); sub != nil {
-                       subFields, err := c.buildMapFields(prefix+cobolName(key)+"-", sub)
-                       if err != nil {
-                               return nil, err
-                       }
-                       fields = append(fields, subFields...)
-                       continue
-               }
-               typ := types.TypeOfExpr(it.Value, c.env)
-               name := prefix + cobolName(key)
-               if isLiteralExpr(it.Value) {
-                       valStr, err := c.compileExpr(it.Value)
-                       if err != nil {
-                               return nil, err
-                       }
-                       pic := cobolPic(typ, valStr)
-                       fields = append(fields, varField{name: name, pic: pic, val: valStr})
-               } else {
-                       pic := cobolPic(typ, "")
-                       def := "0"
-                       switch typ.(type) {
-                       case types.StringType:
-                               def = "\"\""
-                       case types.BoolType:
-                               def = "FALSE"
-                       }
-                       fields = append(fields, varField{name: name, pic: pic, val: def})
-                       valStr, err := c.compileExpr(it.Value)
-                       if err != nil {
-                               return nil, err
-                       }
-                       c.init = append(c.init, fmt.Sprintf("COMPUTE %s = %s", cobolName(name), valStr))
-               }
-       }
-       return fields, nil
+		if sub := mapLiteral(it.Value); sub != nil {
+			subFields, err := c.buildMapFields(prefix+cobolName(key)+"-", sub)
+			if err != nil {
+				return nil, err
+			}
+			fields = append(fields, subFields...)
+			continue
+		}
+		typ := types.TypeOfExpr(it.Value, c.env)
+		name := prefix + cobolName(key)
+		if isLiteralExpr(it.Value) {
+			valStr, err := c.compileExpr(it.Value)
+			if err != nil {
+				return nil, err
+			}
+			pic := cobolPic(typ, valStr)
+			fields = append(fields, varField{name: name, pic: pic, val: valStr})
+		} else {
+			pic := cobolPic(typ, "")
+			def := "0"
+			switch typ.(type) {
+			case types.StringType:
+				def = "\"\""
+			case types.BoolType:
+				def = "FALSE"
+			}
+			fields = append(fields, varField{name: name, pic: pic, val: def})
+			valStr, err := c.compileExpr(it.Value)
+			if err != nil {
+				return nil, err
+			}
+			c.init = append(c.init, fmt.Sprintf("COMPUTE %s = %s", cobolName(name), valStr))
+		}
+	}
+	return fields, nil
 }
 
 func cobolPic(t types.Type, val string) string {
