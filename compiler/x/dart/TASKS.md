@@ -24,5 +24,8 @@
   stable headers.
 - [2025-07-19 00:00 UTC] Improved builtin import handling and option checks in queries. Added fallback path search in `_load` helper.
 - [2025-07-19 12:00 UTC] Fixed group join option handling, improved string comparisons, added repo helper, and all VM valid programs now pass.
+- [2025-07-17 06:39 UTC] Print statements with a single argument now emit the
+  built-in `print` function instead of `_print`, producing code closer to the
+  hand-written examples. VM outputs regenerated.
 ## Remaining Enhancements
 - [ ] Improve generated code formatting to more closely match `tests/human/x/dart` examples.

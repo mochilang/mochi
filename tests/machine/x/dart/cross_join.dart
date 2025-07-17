@@ -17,7 +17,7 @@ var result = (() {
 })();
 
 void main() {
-  _print(['--- Cross Join: All order-customer pairs ---']);
+  print('--- Cross Join: All order-customer pairs ---');
   for (var entry in result) {
     _print(['Order', entry['orderId'], '(customerId:', entry['orderCustomerId'], ', total: \$', entry['orderTotal'], ') paired with', entry['pairedCustomerName']]);
   }
@@ -100,4 +100,15 @@ bool _runTest(String name, void Function() f) {
         stdout.writeln(' fail $e (${_formatDuration(d)})');
         return false;
     }
+}
+
+String findRepoRoot() {
+    var dir = Directory.current;
+    for (var i = 0; i < 10; i++) {
+        if (File('${dir.path}/go.mod').existsSync()) return dir.path;
+        var parent = dir.parent;
+        if (parent.path == dir.path) break;
+        dir = parent;
+    }
+    return '';
 }

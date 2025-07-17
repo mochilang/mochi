@@ -11,8 +11,8 @@ bool _in(dynamic item, dynamic col) {
 var m = {'a': 1, 'b': 2};
 
 void main() {
-  _print([_in('a', m)]);
-  _print([_in('c', m)]);
+  print(_in('a', m));
+  print(_in('c', m));
 }
 
 bool _equal(dynamic a, dynamic b) {
@@ -92,4 +92,15 @@ bool _runTest(String name, void Function() f) {
         stdout.writeln(' fail $e (${_formatDuration(d)})');
         return false;
     }
+}
+
+String findRepoRoot() {
+    var dir = Directory.current;
+    for (var i = 0; i < 10; i++) {
+        if (File('${dir.path}/go.mod').existsSync()) return dir.path;
+        var parent = dir.parent;
+        if (parent.path == dir.path) break;
+        dir = parent;
+    }
+    return '';
 }

@@ -1,6 +1,0 @@
-exit status 255
-Unhandled exception:
-type 'String' is not a subtype of type 'num' in type cast
-#0      main (file:///workspace/mochi/tests/machine/x/dart/string_compare.dart:6:16)
-#1      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
-#2      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

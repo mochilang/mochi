@@ -18,7 +18,7 @@ var pairs = (() {
 })();
 
 void main() {
-  _print(['--- Even pairs ---']);
+  print('--- Even pairs ---');
   for (var p in pairs) {
     _print([p['n'], p['l']]);
   }
@@ -101,4 +101,15 @@ bool _runTest(String name, void Function() f) {
         stdout.writeln(' fail $e (${_formatDuration(d)})');
         return false;
     }
+}
+
+String findRepoRoot() {
+    var dir = Directory.current;
+    for (var i = 0; i < 10; i++) {
+        if (File('${dir.path}/go.mod').existsSync()) return dir.path;
+        var parent = dir.parent;
+        if (parent.path == dir.path) break;
+        dir = parent;
+    }
+    return '';
 }

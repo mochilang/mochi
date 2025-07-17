@@ -7,7 +7,7 @@ var x = 12;
 var msg = (x > 10 ? 'yes' : 'no');
 
 void main() {
-  _print([msg]);
+  print(msg);
 }
 
 bool _equal(dynamic a, dynamic b) {
@@ -87,4 +87,15 @@ bool _runTest(String name, void Function() f) {
         stdout.writeln(' fail $e (${_formatDuration(d)})');
         return false;
     }
+}
+
+String findRepoRoot() {
+    var dir = Directory.current;
+    for (var i = 0; i < 10; i++) {
+        if (File('${dir.path}/go.mod').existsSync()) return dir.path;
+        var parent = dir.parent;
+        if (parent.path == dir.path) break;
+        dir = parent;
+    }
+    return '';
 }
