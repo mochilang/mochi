@@ -118,3 +118,4 @@
 \n- 2025-07-21 - Adjusted `_fmt` to remove special 2.0 case; updated machine outputs.
 - 2025-07-22 - Initial Python machine outputs generated for all VM tests.
 - 2025-07-25 - Sorting now skips `_sort_key` for numeric, string and boolean keys.
+- 2025-07-26 - Generated Python output for tpch_q1.

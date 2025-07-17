@@ -105,3 +105,6 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+
+## Dataset Queries
+- [x] tpch_q1
