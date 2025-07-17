@@ -1,2 +1,6 @@
+/workspace/mochi/tests/machine/x/erlang/python_auto.erl:9:1: Warning: function mochi_get/2 is unused
+%    9| mochi_get(K, M) ->
+%     | ^
+
 4.0
 3.141592653589793

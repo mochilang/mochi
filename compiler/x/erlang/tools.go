@@ -9,8 +9,11 @@ import (
 
 // FormatErlang adds a generation header and ensures a trailing newline.
 // If the source begins with a shebang (#!), the header is inserted after it.
+//
+// The comment prefix matches the style used in the human translations so that
+// generated code is easier to compare against the reference implementations.
 func FormatErlang(src []byte) []byte {
-	header := meta.Header("%")
+	header := meta.Header("%%")
 	var prefix []byte
 	if bytes.HasPrefix(src, []byte("#!")) {
 		if i := bytes.IndexByte(src, '\n'); i != -1 {

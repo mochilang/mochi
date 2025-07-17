@@ -1,3 +1,7 @@
+/workspace/mochi/tests/machine/x/erlang/go_auto.erl:10:1: Warning: function mochi_get/2 is unused
+%   10| mochi_get(K, M) ->
+%     | ^
+
 5
 3.14
 42

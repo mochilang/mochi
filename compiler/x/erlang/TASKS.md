@@ -1,6 +1,8 @@
 # Erlang Compiler Tasks
 
 ## Recent updates
+- [2025-07-17 07:14] Changed Erlang comment prefix to `%%` for generated
+  headers, matching the manual translations. Regenerated machine outputs.
 - [2025-07-16 12:03] Improved mutation analysis to handle nested statements and
   replaced `rem()` calls with the `rem` operator. Regenerated sample Rosetta
   outputs.
