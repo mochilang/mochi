@@ -69,11 +69,8 @@ function main(): void {
   console.log("--- People grouped by city ---");
   for (const s of stats) {
     console.log(
-      [s.city, ": count =", s.count, ", avg_age =", s.avg_age].map((a) => {
-        if (Array.isArray(a)) return a.join(" ");
-        if (typeof a === "boolean") return a ? "1" : "0";
-        return String(a);
-      }).join(" ").trimEnd(),
+      String(s.city) + " " + String(": count =") + " " + String(s.count) + " " +
+        String(", avg_age =") + " " + String(s.avg_age),
     );
   }
 }

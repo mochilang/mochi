@@ -7,6 +7,6 @@ let flag: boolean;
 function main(): void {
   data = [1, 2];
   flag = data.filter((x) => (x == 1)).map((x) => x).length > 0;
-  console.log(flag ? 1 : 0);
+  console.log(flag ? "True" : "False");
 }
 main();
