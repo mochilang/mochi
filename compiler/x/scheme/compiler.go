@@ -36,7 +36,7 @@ const datasetHelpers = `(import (srfi 1) (srfi 95) (chibi json) (chibi io) (chib
                   (set! ln (substring ln 2 (string-length ln))))
                 (when (string-contains ln ":")
                   (let* ((p (string-split ln #\:))
-                         (k (string-trim (car p)))
+                         (k (string->symbol (string-trim (car p))))
                          (val (string-trim (string-join (cdr p) ":"))))
                     (set! cur (append cur (list (cons k (_yaml_value val))))))))
               (string-split text #\newline))
@@ -329,6 +329,7 @@ type Compiler struct {
 	needGroup      bool
 	needJSON       bool
 	needStringLib  bool
+	needSortLib    bool
 	needTime       bool
 	loops          []loopCtx
 	tmpCount       int
@@ -391,7 +392,7 @@ func hasLoopCtrlIf(ifst *parser.IfStmt) bool {
 
 // New creates a new Scheme compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, vars: map[string]string{}, loops: []loopCtx{}, needDataset: false, needListOps: false, needSlice: false, needGroup: false, needJSON: false, needStringLib: false, needTime: false, tmpCount: 0, mainStmts: nil, tests: []testInfo{}}
+	return &Compiler{env: env, vars: map[string]string{}, loops: []loopCtx{}, needDataset: false, needListOps: false, needSlice: false, needGroup: false, needJSON: false, needStringLib: false, needSortLib: false, needTime: false, tmpCount: 0, mainStmts: nil, tests: []testInfo{}}
 }
 
 func (c *Compiler) writeIndent() {
@@ -417,6 +418,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.needSlice = false
 	c.needJSON = false
 	c.needStringLib = false
+	c.needSortLib = false
 	c.needTime = false
 	c.mainStmts = nil
 	c.tests = nil
@@ -506,6 +508,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 		if c.needStringLib {
 			pre.WriteString("(import (chibi string))\n")
+		}
+		if c.needSortLib && !c.needDataset {
+			pre.WriteString("(import (srfi 95))\n")
 		}
 		if c.needTime {
 			pre.WriteString("(import (chibi time))\n")
@@ -1826,7 +1831,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		child.SetVar(q.Var, types.AnyType{}, true)
 		c.env = child
 		var cond string
-		var sortExpr, skipExpr, takeExpr string
+		var sortExpr, skipExpr, takeExpr, sortCmp string
 		if q.Where != nil {
 			cond, err = c.compileExpr(q.Where)
 			if err != nil {
@@ -1870,7 +1875,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		b.WriteString(fmt.Sprintf("    ) (_group_by _tmp (lambda (%s) %s)))\n", sanitizeName(q.Var), keyExpr))
 		if sortExpr != "" {
-			b.WriteString("    (set! _res (_sort (map (lambda (x) (cons x " + sortExpr + ")) _res)))\n")
+			if sortCmp == "" {
+				b.WriteString("    (set! _res (_sort (map (lambda (x) (cons x " + sortExpr + ")) _res)))\n")
+			} else {
+				b.WriteString("    (set! _res (sort (map (lambda (x) (cons x " + sortExpr + ")) _res)\n")
+				b.WriteString("                      (lambda (a b) (" + sortCmp + " (cdr a) (cdr b)))))\n")
+			}
 			b.WriteString("    (set! _res (map car _res))\n")
 		}
 		if skipExpr != "" {
@@ -1900,7 +1910,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		c.env = child
 		var cond string
-		var sortExpr, skipExpr, takeExpr string
+		var sortExpr, skipExpr, takeExpr, sortCmp string
 		if q.Where != nil {
 			cond, err = c.compileExpr(q.Where)
 			if err != nil {
@@ -1928,11 +1938,20 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if q.Sort != nil {
 			c.env = genv
 			sortExpr, err = c.compileExpr(q.Sort)
+			if c.isStringExpr(q.Sort) {
+				sortCmp = "string<?"
+			} else if c.isIntExpr(q.Sort) || c.isFloatExpr(q.Sort) {
+				sortCmp = "<"
+			}
 			c.env = orig
 			if err != nil {
 				return "", err
 			}
-			c.needDataset = true
+			if sortCmp == "" {
+				c.needDataset = true
+			} else {
+				c.needSortLib = true
+			}
 		}
 		if q.Skip != nil {
 			c.env = genv
@@ -2053,7 +2072,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		b.WriteString(fmt.Sprintf("    ) (_group_by _tmp (lambda (%s) %s)))\n", sanitizeName(q.Var), keyExpr))
 		if sortExpr != "" {
-			b.WriteString("    (set! _res (_sort (map (lambda (x) (cons x " + sortExpr + ")) _res)))\n")
+			if sortCmp == "" {
+				b.WriteString("    (set! _res (_sort (map (lambda (x) (cons x " + sortExpr + ")) _res)))\n")
+			} else {
+				b.WriteString("    (set! _res (sort (map (lambda (x) (cons x " + sortExpr + ")) _res)\n")
+				b.WriteString("                      (lambda (a b) (" + sortCmp + " (cdr a) (cdr b)))))\n")
+			}
 			b.WriteString("    (set! _res (map car _res))\n")
 		}
 		if skipExpr != "" {
@@ -2085,7 +2109,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.env = orig
 		return "", err
 	}
-	var cond, skipExpr, takeExpr, sortExpr string
+	var cond, skipExpr, takeExpr, sortExpr, sortCmp string
 	if q.Where != nil {
 		cond, err = c.compileExpr(q.Where)
 		if err != nil {
@@ -2095,11 +2119,20 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	if q.Sort != nil {
 		sortExpr, err = c.compileExpr(q.Sort)
+		if c.isStringExpr(q.Sort) {
+			sortCmp = "string<?"
+		} else if c.isIntExpr(q.Sort) || c.isFloatExpr(q.Sort) {
+			sortCmp = "<"
+		}
 		if err != nil {
 			c.env = orig
 			return "", err
 		}
-		c.needDataset = true
+		if sortCmp == "" {
+			c.needDataset = true
+		} else {
+			c.needSortLib = true
+		}
 	}
 	if q.Skip != nil {
 		skipExpr, err = c.compileExpr(q.Skip)
@@ -2225,7 +2258,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	writeLoops(0, "    ")
 	b.WriteString(fmt.Sprintf("  ) (if (string? %s) (string->list %s) %s))\n", src, src, src))
 	if sortExpr != "" {
-		b.WriteString("  (set! _res (_sort _tmp))\n")
+		if sortCmp == "" {
+			b.WriteString("  (set! _res (_sort _tmp))\n")
+		} else {
+			b.WriteString("  (set! _res (sort _tmp (lambda (a b) (" + sortCmp + " (cdr a) (cdr b)))))\n")
+		}
 		b.WriteString("  (set! _res (map car _res))\n")
 	}
 	if skipExpr != "" {

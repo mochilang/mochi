@@ -129,6 +129,14 @@ func (c *Compiler) isFloatExpr(e *parser.Expr) bool {
 			}
 		}
 	}
+	if len(e.Binary.Right) == 0 {
+		u := e.Binary.Left
+		if len(u.Ops) == 1 && u.Ops[0] == "-" {
+			if c.isFloatPostfix(u.Value) {
+				return true
+			}
+		}
+	}
 	return false
 }
 
@@ -153,6 +161,11 @@ func (c *Compiler) isIntExpr(e *parser.Expr) bool {
 		if len(u.Ops) == 0 && u.Value != nil {
 			p := u.Value
 			if len(p.Ops) == 0 && p.Target != nil && p.Target.Lit != nil && p.Target.Lit.Int != nil {
+				return true
+			}
+		}
+		if len(u.Ops) == 1 && u.Ops[0] == "-" {
+			if c.isIntPostfix(u.Value) {
 				return true
 			}
 		}

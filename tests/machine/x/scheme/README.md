@@ -108,5 +108,14 @@ This directory contains Scheme code generated from the Mochi programs in `tests/
 - [ ] Better handling of date comparisons and sorting when running JOB benchmarks
 - [ ] More efficient dataset grouping and aggregation
 - [ ] Support for concurrent agents and streaming primitives
+- [ ] Improve macro support for generated Scheme code
+- [ ] Add pattern matching for union types
+- [ ] Implement async/await semantics
+- [ ] Optimize tail-call recursion
+- [ ] Enhance foreign function interface bindings
+- [ ] Provide REPL mode for compiled programs
+- [ ] Add generic type parameter compilation
+- [ ] Extend dataset query language with window functions
+- [ ] Improve error messages for invalid constructs
 
 All programs executed successfully.
