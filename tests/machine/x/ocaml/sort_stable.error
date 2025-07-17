@@ -1,4 +1,4 @@
-File "/tmp/TestOCamlCompiler_VMValid_Goldensort_stable800338273/001/sort_stable.ml", line 27, characters 0-16:
+File "/tmp/TestOCamlCompiler_VMValid_Goldensort_stable1580018547/001/sort_stable.ml", line 27, characters 0-16:
 27 | List.rev !__res0)
      ^^^^^^^^^^^^^^^^
 Error: This expression has type string list

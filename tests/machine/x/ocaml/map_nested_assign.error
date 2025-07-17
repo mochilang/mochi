@@ -1,6 +1,5 @@
-File "/tmp/TestOCamlCompiler_VMValid_Goldenmap_nested_assign2195614423/001/map_nested_assign.ml", line 30, characters 25-76:
-30 | let data : record2 ref = ref [("outer",Obj.repr ([("inner",Obj.repr (1))]))]
-                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Error: This expression has type (string * Obj.t) list ref
-       but an expression was expected of type record2 ref
-       Type (string * Obj.t) list is not compatible with type record2 
+File "/tmp/TestOCamlCompiler_VMValid_Goldenmap_nested_assign3567018736/001/map_nested_assign.ml", line 31, characters 53-60:
+31 |   print_endline (__show (Obj.obj (List.assoc "inner" Obj.obj (List.assoc "outer" (!data)))));
+                                                          ^^^^^^^
+Error: This expression has type Obj.t -> 'a
+       but an expression was expected of type (string * ('b -> 'c)) list

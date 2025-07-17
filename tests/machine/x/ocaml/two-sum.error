@@ -1,6 +1,6 @@
-File "/tmp/TestOCamlCompiler_VMValid_Goldentwo-sum3983003295/001/two-sum.ml", line 1:
+File "/tmp/TestOCamlCompiler_VMValid_Goldentwo-sum3010966495/001/two-sum.ml", line 1:
 Warning 24 [bad-module-name]: bad source file name: "Two-sum" is not a valid module name.
-File "/tmp/TestOCamlCompiler_VMValid_Goldentwo-sum3983003295/001/two-sum.ml", line 32, characters 17-21:
+File "/tmp/TestOCamlCompiler_VMValid_Goldentwo-sum3010966495/001/two-sum.ml", line 32, characters 17-21:
 32 |                 [i;j]
                       ^^^^
 Error: This variant expression is expected to have type unit

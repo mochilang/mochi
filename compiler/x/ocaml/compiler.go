@@ -1644,6 +1644,9 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		case "in":
 			if c.isMapPostfix(op.Right) {
 				res = fmt.Sprintf("(List.mem_assoc %s %s)", res, r)
+			} else if t := types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}, c.env); t == (types.StringType{}) {
+				c.needContains = true
+				res = fmt.Sprintf("(string_contains %s %s)", r, res)
 			} else {
 				res = fmt.Sprintf("(List.mem %s %s)", res, r)
 			}
@@ -2501,6 +2504,9 @@ func (c *Compiler) writeln(s string) {
 
 func isStringLiteralExpr(e *parser.Expr) bool {
 	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return false
+	}
+	if len(e.Binary.Right) != 0 {
 		return false
 	}
 	u := e.Binary.Left

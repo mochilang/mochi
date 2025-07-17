@@ -1,4 +1,4 @@
-File "/tmp/TestOCamlCompiler_VMValid_Goldenright_join1512025870/001/right_join.ml", line 52, characters 13-24:
+File "/tmp/TestOCamlCompiler_VMValid_Goldenright_join2260013153/001/right_join.ml", line 52, characters 13-24:
 52 |           if entry.order then (
                   ^^^^^^^^^^^
 Error: This expression has type record2
