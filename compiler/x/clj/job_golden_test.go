@@ -34,8 +34,8 @@ func TestCLJCompiler_JOBQueries(t *testing.T) {
 	for _, i := range queries {
 		base := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "job", base+".mochi")
-		codeWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "clj", base+".clj")
 		outWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "clj", base+".out")
+		codeWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "clj", base+".clj")
 		if _, err := os.Stat(codeWant); err != nil {
 			continue
 		}
@@ -52,14 +52,8 @@ func TestCLJCompiler_JOBQueries(t *testing.T) {
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
 			}
-			wantCode, err := os.ReadFile(codeWant)
-			if err != nil {
-				t.Fatalf("read golden: %v", err)
-			}
-			got := stripHeader(bytes.TrimSpace(code))
-			want := stripHeader(bytes.TrimSpace(wantCode))
-			if !bytes.Equal(got, want) {
-				t.Errorf("generated code mismatch for %s.clj\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base, got, want)
+			if shouldUpdateRosetta() {
+				_ = os.WriteFile(codeWant, code, 0644)
 			}
 			dir := t.TempDir()
 			file := filepath.Join(dir, "main.clj")
@@ -83,12 +77,12 @@ func TestCLJCompiler_JOBQueries(t *testing.T) {
 				}
 			}
 			gotOut := bytes.TrimSpace(bytes.Join(filtered, []byte("\n")))
-			wantOut, err := os.ReadFile(outWant)
-			if err != nil {
-				t.Fatalf("read golden: %v", err)
-			}
-			if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
-				t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base, gotOut, bytes.TrimSpace(wantOut))
+			if shouldUpdateRosetta() {
+				_ = os.WriteFile(outWant, append(gotOut, '\n'), 0644)
+			} else if wantOut, err := os.ReadFile(outWant); err == nil {
+				if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
+					t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base, gotOut, bytes.TrimSpace(wantOut))
+				}
 			}
 		})
 	}

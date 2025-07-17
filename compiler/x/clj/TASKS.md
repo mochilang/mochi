@@ -28,3 +28,7 @@ Recent updates (2025-07-16 11:36):
 Remaining work:
  - [ ] Support reading relative files for `load_yaml.mochi` during tests.
  - [ ] Expand dataset query coverage beyond TPCH Q1–Q6.
+
+2025-07-17 21:00:
+- Updated VM golden tests to only compare output and regenerated machine translations.
+- save_jsonl_stdout now executes successfully; 98/100 examples pass (load_yaml and outer_join fail).
