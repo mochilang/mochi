@@ -1,3 +1,0 @@
---- Left Join ---
-Order 100 customer Some(Customer(1,Alice)) total 250
-Order 101 customer None total 80
