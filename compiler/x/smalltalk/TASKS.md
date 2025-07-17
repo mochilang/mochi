@@ -7,6 +7,8 @@
   Smalltalk code and runtime output.
 - 2025-07-20 - Test suite now logs a pass/fail summary using `golden.RunWithSummary`.
   Removed obsolete `compiler_test.go` and stopped writing `.st.out` files.
+- 2025-07-21 - Added `fallbackVar` handling so `update` statements can reference
+  record fields without explicit `it` prefixes.
 
 ## Remaining Work
 - Support union type constructors.
