@@ -134,3 +134,5 @@
 ### 2025-10-01 00:00 UTC
 - Added `underlyingType` helper to unwrap option and simple union types during code generation.
 - Builtin functions like `count`, `exists`, `values`, `contains`, `sum`, `avg`, `min`, and `max` now use native operations whenever the underlying type is known, further reducing reliance on runtime helpers.
+### 2025-10-08 00:00 UTC
+- `starts_with` now compiles to `String.startsWith` when both arguments are strings, removing the `_starts_with` helper in those cases.
