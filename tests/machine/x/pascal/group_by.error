@@ -1,12 +1,16 @@
-line: 0
+line: 128
 error: fpc error: exit status 1
 Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
-Compiling /tmp/TestPascalCompiler_VMValid_Goldengroup_by3203798963/001/main.pas
-main.pas(15,22) Error: Identifier not found "_Group"
-main.pas(15,28) Error: Error in type definition
-main.pas(15,28) Fatal: Syntax error, ";" expected but "<" found
+Compiling /tmp/TestPascalCompiler_VMValid_Goldengroup_by2242218058/001/main.pas
+main.pas(116,35) Error: Illegal qualifier
+main.pas(116,17) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of TArray$1$crcE41905E8", expected "{Open} Array Of Pointer"
+main.pas(114,9) Error: Incompatible types: got "TFPGMap<System.ShortString,System.Variant>" expected "LongInt"
+main.pas(128) Fatal: There were 3 errors compiling module, stopping
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode
 
+ 126:   end;
+ 127: end.
+ 128: 

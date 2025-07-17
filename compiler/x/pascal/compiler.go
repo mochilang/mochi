@@ -1197,12 +1197,18 @@ func collectQueryVars(e *parser.Expr, env *types.Env, vars map[string]string) {
 			if lt, ok := qt.(types.ListType); ok {
 				elem = typeString(lt.Elem)
 			}
+			if gt, ok := qt.(types.GroupType); ok {
+				elem = typeString(gt.Elem)
+			}
 			vars[p.Query.Var] = elem
 			for _, f := range p.Query.Froms {
 				ft := types.TypeOfExpr(f.Src, env)
 				fe := "integer"
 				if lt, ok := ft.(types.ListType); ok {
 					fe = typeString(lt.Elem)
+				}
+				if gt, ok := ft.(types.GroupType); ok {
+					fe = typeString(gt.Elem)
 				}
 				vars[f.Var] = fe
 			}
@@ -1211,6 +1217,9 @@ func collectQueryVars(e *parser.Expr, env *types.Env, vars map[string]string) {
 				je := "integer"
 				if lt, ok := jt.(types.ListType); ok {
 					je = typeString(lt.Elem)
+				}
+				if gt, ok := jt.(types.GroupType); ok {
+					je = typeString(gt.Elem)
 				}
 				vars[j.Var] = je
 			}
@@ -2166,6 +2175,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if lt, ok := srcType.(types.ListType); ok {
 			elem = lt.Elem
 		}
+		if gt, ok := srcType.(types.GroupType); ok {
+			src = src + ".Items"
+			elem = gt.Elem
+		}
 		child.SetVar(q.Var, elem, true)
 		c.env = child
 		var condStr string
@@ -2183,7 +2196,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		genv := types.NewEnv(child)
-		genv.SetVar(q.Group.Name, types.AnyType{}, true)
+		keyT := types.TypeOfExpr(q.Group.Exprs[0], child)
+		if keyT == nil {
+			keyT = types.AnyType{}
+		}
+		genv.SetVar(q.Group.Name, types.GroupType{Key: keyT, Elem: elem}, true)
 		elemType := typeString(types.TypeOfExpr(q.Select, genv))
 		if elemType == "" || elemType == "_" {
 			elemType = "integer"
@@ -2245,13 +2262,23 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.writeln("begin")
 		c.indent++
 		c.env = genv
+		prevRepl := c.replacements
+		if prevRepl == nil {
+			prevRepl = map[string]string{}
+		}
+		c.replacements = make(map[string]string)
+		for k, v := range prevRepl {
+			c.replacements[k] = v
+		}
+		c.replacements[sanitizeName(q.Group.Name)] = tmpG
 		valExpr, err := c.compileExpr(q.Select)
 		if err != nil {
 			c.env = orig
+			c.replacements = prevRepl
 			return "", err
 		}
 		c.env = orig
-		valExpr = strings.ReplaceAll(valExpr, sanitizeName(q.Group.Name), tmpG)
+		c.replacements = prevRepl
 		c.writeln(fmt.Sprintf("%s := Concat(%s, [%s]);", tmpRes, tmpRes, valExpr))
 		c.indent--
 		c.writeln("end;")
@@ -2275,6 +2302,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if lt, ok := firstT.(types.ListType); ok {
 		firstElem = lt.Elem
 	}
+	if gt, ok := firstT.(types.GroupType); ok {
+		src = src + ".Items"
+		firstElem = gt.Elem
+	}
 	srcInfoFirst := srcInfo{varName: q.Var, expr: src, elem: firstElem}
 
 	// handle single right join by swapping order
@@ -2289,6 +2320,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			var jElem types.Type = types.AnyType{}
 			if lt, ok := jt.(types.ListType); ok {
 				jElem = lt.Elem
+			}
+			if gt, ok := jt.(types.GroupType); ok {
+				je = je + ".Items"
+				jElem = gt.Elem
 			}
 			sources = append(sources, srcInfo{varName: j.Var, expr: je, elem: jElem})
 			// second source is the original
@@ -2316,6 +2351,10 @@ buildSources:
 		if lt, ok := ft.(types.ListType); ok {
 			fe = lt.Elem
 		}
+		if gt, ok := ft.(types.GroupType); ok {
+			fs = fs + ".Items"
+			fe = gt.Elem
+		}
 		sources = append(sources, srcInfo{varName: f.Var, expr: fs, elem: fe})
 	}
 	for _, j := range q.Joins {
@@ -2327,6 +2366,10 @@ buildSources:
 		var je types.Type = types.AnyType{}
 		if lt, ok := jt.(types.ListType); ok {
 			je = lt.Elem
+		}
+		if gt, ok := jt.(types.GroupType); ok {
+			js = js + ".Items"
+			je = gt.Elem
 		}
 		left := false
 		if j.Side != nil && *j.Side == "left" {
