@@ -23,6 +23,7 @@ type Compiler struct {
 	funs       []funDecl
 	curFun     *funDecl
 	tmpVar     string
+	tmpStrVar  string
 	seqList    map[string]int
 	constLists map[string][]string
 	constMaps  map[string][]mapEntry
@@ -145,6 +146,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.tmpVar = "TMP"
 		if !c.hasVar(c.tmpVar) {
 			c.vars = append(c.vars, varDecl{name: c.tmpVar, pic: "PIC 9(9)", val: "0"})
+		}
+		c.tmpStrVar = "TMP-STR"
+		if !c.hasVar(c.tmpStrVar) {
+			c.vars = append(c.vars, varDecl{name: c.tmpStrVar, pic: "PIC Z(18)"})
 		}
 	}
 
@@ -502,7 +507,7 @@ func (c *Compiler) compilePrint(call *parser.CallExpr) error {
 				}
 				parts[i] = v
 			}
-			c.writeln("DISPLAY " + strings.Join(parts, " "))
+			c.displayParts(parts)
 			return nil
 		}
 		if fc, ok := isCallTo(arg, ""); ok {
@@ -523,7 +528,7 @@ func (c *Compiler) compilePrint(call *parser.CallExpr) error {
 							return err
 						}
 						parts[len(parts)-1] = v
-						c.writeln("DISPLAY " + strings.Join(parts, " "))
+						c.displayParts(parts)
 						return nil
 					}
 					if id, ok := identExpr(fc.Args[0]); ok {
@@ -537,7 +542,7 @@ func (c *Compiler) compilePrint(call *parser.CallExpr) error {
 								return err
 							}
 							parts[n] = v
-							c.writeln("DISPLAY " + strings.Join(parts, " "))
+							c.displayParts(parts)
 							return nil
 						}
 					}
@@ -628,7 +633,8 @@ func (c *Compiler) compilePrint(call *parser.CallExpr) error {
 		}
 		tmp := c.ensureTmpVar()
 		c.writeln(fmt.Sprintf("COMPUTE %s = %s", tmp, expr))
-		c.writeln(fmt.Sprintf("DISPLAY %s", tmp))
+		c.writeln(fmt.Sprintf("MOVE %s TO %s", tmp, c.tmpStrVar))
+		c.writeln(fmt.Sprintf("DISPLAY FUNCTION TRIM(%s)", c.tmpStrVar))
 		return nil
 	}
 
@@ -668,11 +674,12 @@ func (c *Compiler) compilePrint(call *parser.CallExpr) error {
 		if !isSimpleExpr(arg) && !isLiteralValue(expr) {
 			tmp := c.ensureTmpVar()
 			c.writeln(fmt.Sprintf("COMPUTE %s = %s", tmp, expr))
-			expr = tmp
+			c.writeln(fmt.Sprintf("MOVE %s TO %s", tmp, c.tmpStrVar))
+			expr = fmt.Sprintf("FUNCTION TRIM(%s)", c.tmpStrVar)
 		}
 		parts[i] = expr
 	}
-	c.writeln("DISPLAY " + strings.Join(parts, " "))
+	c.displayParts(parts)
 	return nil
 }
 
@@ -1436,6 +1443,24 @@ func (c *Compiler) writeln(s string) {
 	c.buf.WriteByte('\n')
 }
 
+func (c *Compiler) displayParts(parts []string) {
+	if len(parts) == 0 {
+		return
+	}
+	if len(parts) == 1 {
+		c.writeln("DISPLAY " + parts[0])
+		return
+	}
+	for i, p := range parts {
+		if i == len(parts)-1 {
+			c.writeln("DISPLAY " + p)
+		} else {
+			c.writeln("DISPLAY " + p + " WITH NO ADVANCING")
+			c.writeln("DISPLAY \" \" WITH NO ADVANCING")
+		}
+	}
+}
+
 func isComparisonExpr(e *parser.Expr) bool {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) != 1 {
 		return false
@@ -1483,6 +1508,10 @@ func (c *Compiler) ensureTmpVar() string {
 		c.tmpVar = "TMP"
 		if !c.hasVar(c.tmpVar) {
 			c.vars = append(c.vars, varDecl{name: c.tmpVar, pic: "PIC 9(9)", val: "0"})
+		}
+		c.tmpStrVar = "TMP-STR"
+		if !c.hasVar(c.tmpStrVar) {
+			c.vars = append(c.vars, varDecl{name: c.tmpStrVar, pic: "PIC Z(18)"})
 		}
 	}
 	return c.tmpVar

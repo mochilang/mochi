@@ -1,0 +1,6 @@
+/tmp/TestCobolCompiler_VMValid_Golden3313344715/043/prog.cob:11: error: syntax error, unexpected USING
+/tmp/TestCobolCompiler_VMValid_Golden3313344715/043/prog.cob:12: error: invalid conditional expression
+/tmp/TestCobolCompiler_VMValid_Golden3313344715/043/prog.cob:17: error: syntax error, unexpected USING
+/tmp/TestCobolCompiler_VMValid_Golden3313344715/043/prog.cob:18: error: invalid conditional expression
+/tmp/TestCobolCompiler_VMValid_Golden3313344715/043/prog.cob: in paragraph 'FN_BOOM':
+/tmp/TestCobolCompiler_VMValid_Golden3313344715/043/prog.cob:26: error: syntax error, unexpected PROCEDURE

@@ -1,0 +1,2 @@
+/tmp/TestCobolCompiler_VMValid_Golden3313344715/019/prog.cob:13: error: syntax error, unexpected USING
+/tmp/TestCobolCompiler_VMValid_Golden3313344715/019/prog.cob:13: error: 'FN_JSON' is not defined
