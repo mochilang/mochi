@@ -325,71 +325,55 @@ const (
   (let [items (atom (mapv vector src))]
     (doseq [j joins]
       (let [joined (atom [])]
-        (if (and (:leftKey j) (:rightKey j))
-          (let [idx (group-by (fn [it] (apply (:rightKey j) [it])) (:items j))
-                seen (atom #{})]
-            (doseq [left @items]
-              (let [k (apply (:leftKey j) left)
-                    rs (get idx k)]
-                (if rs
-                  (do
-                    (swap! seen conj k)
-                    (doseq [right rs]
-                      (swap! joined conj (conj left right))))
-                  (when (:left j)
-                    (swap! joined conj (conj left nil)))))
-            (when (:right j)
+        (cond
+          (and (:left j) (:right j))
+            (let [matched (boolean-array (count (:items j)))]
+              (doseq [left @items]
+                (let [m (atom false)]
+                  (doseq [[ri right] (map-indexed vector (:items j))]
+                    (let [keep (if-let [f (:on j)]
+                                 (apply f (conj left right))
+                                 true)]
+                      (when keep
+                        (reset! m true)
+                        (aset matched ri true)
+                        (swap! joined conj (conj left right))))
+                  (when-not @m
+                    (swap! joined conj (conj left nil))))
+              (doseq [[ri right] (map-indexed vector (:items j))]
+                (when-not (aget matched ri)
+                  (swap! joined conj
+                    (vec (concat (repeat (count (first (or @items []))) nil) [right])))))
+              (reset! items @joined))
+          (:right j)
+            (do
               (doseq [right (:items j)]
-                (when-not (contains? @seen (apply (:rightKey j) [right]))
-                  (swap! joined conj (vec (concat (repeat (count (first (or @items []))) nil) [right]))))))
-            (reset! items @joined))
-          (cond
-            (and (:right j) (:left j))
-              (let [matched (boolean-array (count (:items j)))]
-                (doseq [left @items]
-                  (let [m (atom false)]
-                    (doseq [[ri right] (map-indexed vector (:items j))]
-                      (let [keep (if-let [f (:on j)]
-                                   (apply f (conj left right))
-                                   true)]
-                        (when keep
-                          (reset! m true)
-                          (aset matched ri true)
-                          (swap! joined conj (conj left right))))
-                    (when-not @m
-                      (swap! joined conj (conj left nil))))
-                (doseq [[ri right] (map-indexed vector (:items j))]
-                  (when-not (aget matched ri)
-                    (swap! joined conj (vec (concat (repeat (count (first (or @items []))) nil) [right])))))
-              (reset! items @joined)
-            (:right j)
-              (do
-                (doseq [right (:items j)]
-                  (let [m (atom false)]
-                    (doseq [left @items]
-                      (let [keep (if-let [f (:on j)]
-                                   (apply f (conj left right))
-                                   true)]
-                        (when keep
-                          (reset! m true)
-                          (swap! joined conj (conj left right))))
-                    (when-not @m
-                      (swap! joined conj (vec (concat (repeat (count (first (or @items []))) nil) [right])))))
-                (reset! items @joined))
-            :else
-              (do
-                (doseq [left @items]
-                  (let [m (atom false)]
-                    (doseq [right (:items j)]
-                      (let [keep (if-let [f (:on j)]
-                                   (apply f (conj left right))
-                                   true)]
-                        (when keep
-                          (reset! m true)
-                          (swap! joined conj (conj left right))))
-                    (when (and (:left j) (not @m))
-                      (swap! joined conj (conj left nil))))
-                (reset! items @joined)))))
+                (let [m (atom false)]
+                  (doseq [left @items]
+                    (let [keep (if-let [f (:on j)]
+                                 (apply f (conj left right))
+                                 true)]
+                      (when keep
+                        (reset! m true)
+                        (swap! joined conj (conj left right))))
+                  (when-not @m
+                    (swap! joined conj
+                      (vec (concat (repeat (count (first (or @items []))) nil) [right])))))
+              (reset! items @joined))
+          :else
+            (do
+              (doseq [left @items]
+                (let [m (atom false)]
+                  (doseq [right (:items j)]
+                    (let [keep (if-let [f (:on j)]
+                                 (apply f (conj left right))
+                                 true)]
+                      (when keep
+                        (reset! m true)
+                        (swap! joined conj (conj left right))))
+                  (when (and (:left j) (not @m))
+                    (swap! joined conj (conj left nil))))
+              (reset! items @joined)))))
     (let [it @items
           it (if-let [w (:where opts)] (vec (filter #(apply w %) it)) it)
           it (if-let [sk (:sortKey opts)]
@@ -397,7 +381,7 @@ const (
                it)
           it (if (contains? opts :skip) (vec (drop (:skip opts) it)) it)
           it (if (contains? opts :take) (vec (take (:take opts) it)) it)]
-      (mapv #(apply (:select opts) (take (inc (count joins)) %)) it)))))))))))))`
+      (mapv #(apply (:select opts) (take (inc (count joins)) %)) it))))))`
 )
 
 var helperMap = map[string]string{
