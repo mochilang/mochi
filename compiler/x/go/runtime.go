@@ -563,6 +563,11 @@ const (
 		"        return res\n" +
 		"    }\n" +
 		"    rv := reflect.ValueOf(v)\n" +
+		"    if rv.Kind() == reflect.Map {\n" +
+		"        res := make([]any, 0, rv.Len())\n" +
+		"        for _, k := range rv.MapKeys() { res = append(res, rv.MapIndex(k).Interface()) }\n" +
+		"        return res\n" +
+		"    }\n" +
 		"    if rv.Kind() == reflect.Struct {\n" +
 		"        n := rv.NumField()\n" +
 		"        res := make([]any, 0, n)\n" +

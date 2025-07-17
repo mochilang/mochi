@@ -37,6 +37,13 @@ func _values(v any) []any {
 		return res
 	}
 	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Map {
+		res := make([]any, 0, rv.Len())
+		for _, k := range rv.MapKeys() {
+			res = append(res, rv.MapIndex(k).Interface())
+		}
+		return res
+	}
 	if rv.Kind() == reflect.Struct {
 		n := rv.NumField()
 		res := make([]any, 0, n)
