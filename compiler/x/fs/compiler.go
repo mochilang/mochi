@@ -528,7 +528,7 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 	if len(params) == 0 {
 		paramStr = "()"
 	}
-	header := fmt.Sprintf("let %s %s =", f.Name, paramStr)
+	header := fmt.Sprintf("let rec %s %s =", f.Name, paramStr)
 	c.writeln(header)
 	c.indent++
 	for i, st := range f.Body {
@@ -699,6 +699,14 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		case "!=":
 			oper = "<>"
 		case "in":
+			if identifierRegexp.MatchString(r) && c.maps[r] {
+				res = fmt.Sprintf("%s.ContainsKey %s", r, res)
+				continue
+			}
+			if strings.HasPrefix(r, "dict [") {
+				res = fmt.Sprintf("%s.ContainsKey %s", r, res)
+				continue
+			}
 			if strings.HasPrefix(r, "\"") {
 				res = fmt.Sprintf("%s.Contains(%s)", r, res)
 				continue
@@ -710,16 +718,6 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			if strings.HasPrefix(r, "[") {
 				res = fmt.Sprintf("List.contains %s %s", res, r)
 				continue
-			}
-			if strings.HasPrefix(r, "dict [") {
-				res = fmt.Sprintf("%s.ContainsKey %s", r, res)
-				continue
-			}
-			if identifierRegexp.MatchString(r) {
-				if c.maps[r] {
-					res = fmt.Sprintf("%s.ContainsKey %s", r, res)
-					continue
-				}
 			}
 			res = fmt.Sprintf("List.contains %s %s", res, r)
 			continue
@@ -981,8 +979,8 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	switch call.Func {
 	case "print":
 		if len(args) == 1 {
-			if strings.HasPrefix(args[0], "\"") && strings.HasSuffix(args[0], "\"") {
-				return fmt.Sprintf("printfn \"%%s\" %s", args[0]), nil
+			if lit, ok := stringLiteral(argAST); ok {
+				return fmt.Sprintf("printfn \"%%s\" %q", lit), nil
 			}
 			if argAST != nil && c.isStringExpr(argAST) {
 				if identifierRegexp.MatchString(args[0]) {
@@ -1088,6 +1086,12 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) == 1 {
 			if strings.HasPrefix(args[0], "\"") {
 				return fmt.Sprintf("%s.Length", args[0]), nil
+			}
+			if identifierRegexp.MatchString(args[0]) && c.maps[args[0]] {
+				return fmt.Sprintf("%s.Count", args[0]), nil
+			}
+			if strings.HasPrefix(args[0], "dict [") {
+				return fmt.Sprintf("%s.Count", args[0]), nil
 			}
 			return fmt.Sprintf("List.length %s", args[0]), nil
 		}
@@ -1537,7 +1541,8 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		c.vars[j.Var] = c.collectionElemType(j.Src)
+		elemT := c.collectionElemType(j.Src)
+		c.vars[j.Var] = elemT
 		on, err := c.compileExpr(j.On)
 		if err != nil {
 			return "", err
@@ -1548,10 +1553,12 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		} else {
 			switch *j.Side {
 			case "left":
+				c.vars[j.Var] = elemT + " option"
 				bindings = append(bindings, fmt.Sprintf("let %s = List.tryFind (fun %s -> %s) %s", j.Var, j.Var, on, js))
 			case "right":
 				if len(q.Froms) == 0 && len(q.Joins) == 1 {
 					loops = []string{fmt.Sprintf("for %s in %s do", j.Var, js)}
+					c.vars[q.Var] = c.collectionElemType(q.Source) + " option"
 					bindings = append(bindings, fmt.Sprintf("let %s = List.tryFind (fun %s -> %s) %s", q.Var, q.Var, on, src))
 				} else {
 					return "", fmt.Errorf("unsupported join type")
@@ -2022,6 +2029,12 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 		}
 
 		if p.Struct != nil {
+			if p.Struct.Name != "" {
+				if _, ok := c.structs[p.Struct.Name]; ok {
+					return p.Struct.Name
+				}
+				return "obj"
+			}
 			names := make([]string, len(p.Struct.Fields))
 			types := make([]string, len(p.Struct.Fields))
 			typeMap := make(map[string]string)

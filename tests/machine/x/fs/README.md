@@ -2,7 +2,7 @@
 
 This directory contains F# source code generated from Mochi programs. Successful runs have a `.out` file, failures produce a `.error` file.
 
-Compiled programs: 68/100
+Compiled programs: 75/100
 
 Checklist:
 - [x] append_builtin
@@ -45,10 +45,10 @@ Checklist:
 - [x] inner_join
 - [x] join_multi
 - [ ] json_builtin
-- [ ] left_join
+  - [x] left_join
 - [ ] left_join_multi
 - [x] len_builtin
-- [ ] len_map
+  - [x] len_map
 - [x] len_string
 - [x] let_and_print
 - [x] list_assign
@@ -61,7 +61,7 @@ Checklist:
 - [x] map_index
 - [x] map_int_key
 - [x] map_literal_dynamic
-- [ ] map_membership
+  - [x] map_membership
 - [x] map_nested_assign
 - [x] match_expr
 - [x] match_full
@@ -85,22 +85,22 @@ Checklist:
 - [x] slice
 - [x] sort_stable
 - [x] str_builtin
-- [ ] string_compare
-- [ ] string_concat
-- [ ] string_contains
+  - [x] string_compare
+  - [x] string_concat
+  - [x] string_contains
 - [ ] string_in_operator
 - [ ] string_index
 - [ ] string_prefix_slice
 - [x] substring_builtin
 - [x] sum_builtin
-- [ ] tail_recursion
+  - [x] tail_recursion
 - [x] test_block
 - [ ] tree_sum
 - [ ] two-sum
 - [x] typed_let
 - [x] typed_var
 - [x] unary_neg
-- [ ] update_stmt
+  - [x] update_stmt
 - [x] user_type_literal
 - [x] values_builtin
 - [x] var_assignment
