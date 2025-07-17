@@ -1749,8 +1749,12 @@ func inferTypeRef(t *parser.TypeRef) string {
 		switch strings.ToLower(name) {
 		case "string":
 			return "string"
-		case "int", "float", "bool":
-			return "number"
+		case "int":
+			return "int"
+		case "float":
+			return "float"
+		case "bool":
+			return "bool"
 		default:
 			return name
 		}
@@ -1782,8 +1786,12 @@ func (c *compiler) inferType(t *parser.TypeRef, val *parser.Expr) string {
 			switch strings.ToLower(name) {
 			case "string":
 				return "string"
-			case "int", "float", "bool":
-				return "number"
+			case "int":
+				return "int"
+			case "float":
+				return "float"
+			case "bool":
+				return "bool"
 			default:
 				return name
 			}
@@ -1838,6 +1846,40 @@ func (c *compiler) inferType(t *parser.TypeRef, val *parser.Expr) string {
 				return "list_" + et
 			}
 			return "list"
+		}
+
+		if len(val.Binary.Right) > 0 {
+			num := true
+			isFloat := false
+			lt := c.unaryType(val.Binary.Left)
+			if lt != "" {
+				if lt == "float" {
+					isFloat = true
+				} else if lt != "int" {
+					num = false
+				}
+			}
+			for _, op := range val.Binary.Right {
+				switch op.Op {
+				case "+", "-", "*", "/", "%":
+					rt := c.postfixType(op.Right)
+					if rt != "" {
+						if rt == "float" {
+							isFloat = true
+						} else if rt != "int" {
+							num = false
+						}
+					}
+				default:
+					num = false
+				}
+			}
+			if num {
+				if isFloat {
+					return "float"
+				}
+				return "int"
+			}
 		}
 	}
 	return ""
