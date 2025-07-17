@@ -306,6 +306,9 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				if err != nil {
 					return err
 				}
+				if _, ok := types.TypeOfExpr(a, c.env).(types.BoolType); ok {
+					v = fmt.Sprintf("merge('true','false', %s)", v)
+				}
 				args[i] = v
 			}
 			c.writeln("print *, " + strings.Join(args, ", "))

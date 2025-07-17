@@ -3,8 +3,8 @@ program two_sum
   integer :: nums(4) = (/2,7,11,15/)
   integer :: result(2)
   result = two_sum_func(nums, 9)
-  print *, result(1)
-  print *, result(2)
+  print '(I0)', result(1)
+  print '(I0)', result(2)
 contains
   function two_sum_func(nums, target) result(res)
     integer, intent(in) :: nums(:)

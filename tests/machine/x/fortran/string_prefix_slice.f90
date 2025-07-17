@@ -4,7 +4,7 @@ program string_prefix_slice
   character(len=6) :: s1, s2
   prefix = 'fore'
   s1 = 'forest'
-  print *, s1(1:len(prefix)) == prefix
+  print '(A)', trim(merge('true ','false', s1(1:len(prefix)) == prefix))
   s2 = 'desert'
-  print *, s2(1:len(prefix)) == prefix
+  print '(A)', trim(merge('true ','false', s2(1:len(prefix)) == prefix))
 end program string_prefix_slice

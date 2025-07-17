@@ -3,7 +3,7 @@ program while_loop
   integer :: i
   i = 0
   do while (i < 3)
-    print *, i
+    print '(I0)', i
     i = i + 1
   end do
 end program while_loop

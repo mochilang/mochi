@@ -36,6 +36,10 @@
   without errors.
 - 2025-07-17 01:15: Golden tests set `MOCHI_HEADER_TIME` for stable headers and
   no longer compare generated code for Rosetta tasks.
+- 2025-07-17 01:45: Replaced VM valid test with `golden.RunWithSummary` and
+  removed the old compile-only test. Running the suite now populates
+  `tests/machine/x/fortran` with `.f90` and `.out` files, reducing duplicate
+  logic.
 
 ## Remaining Work
 - [x] Support query compilation with joins and group-by for TPC-H `q1.mochi`.
