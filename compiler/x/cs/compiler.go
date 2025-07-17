@@ -1399,18 +1399,25 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 			} else {
 				idx := start
+				var preType types.Type
+				if c.env != nil {
+					prefix := &parser.PostfixExpr{Target: p.Target, Ops: p.Ops[:i]}
+					preType = c.inferPostfixType(prefix)
+				}
 				if isStr {
-					c.use("_indexString")
-					expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
-				} else {
-					var preType types.Type
-					if c.env != nil {
-						prefix := &parser.PostfixExpr{Target: p.Target, Ops: p.Ops[:i]}
-						preType = c.inferPostfixType(prefix)
-					}
-					if _, ok := preType.(types.MapType); ok {
-						expr = fmt.Sprintf("%s[%s]", expr, idx)
+					if _, ok := preType.(types.StringType); ok {
+						expr = fmt.Sprintf("%s[(int)%s]", expr, idx)
 					} else {
+						c.use("_indexString")
+						expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
+					}
+				} else {
+					switch preType.(type) {
+					case types.MapType:
+						expr = fmt.Sprintf("%s[%s]", expr, idx)
+					case types.ListType:
+						expr = fmt.Sprintf("%s[(int)%s]", expr, idx)
+					default:
 						c.use("_indexList")
 						expr = fmt.Sprintf("_indexList(%s, %s)", expr, idx)
 					}
