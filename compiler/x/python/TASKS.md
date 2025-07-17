@@ -104,3 +104,4 @@
 - [ ] Improve formatting to match examples in `tests/human/x/python`.
 - [ ] Enable type hints for all generated code paths.
 - [ ] Reduce helper method emission when not required.
+\n- 2025-07-21 - Adjusted `_fmt` to remove special 2.0 case; updated machine outputs.
