@@ -15,6 +15,13 @@ import (
 	"mochi/types"
 )
 
+func shouldUpdateTPCH() bool {
+	if v, ok := os.LookupEnv("UPDATE"); ok && (v == "1" || v == "true") {
+		return true
+	}
+	return false
+}
+
 func repoRoot(t *testing.T) string {
 	dir, err := os.Getwd()
 	if err != nil {
@@ -38,8 +45,8 @@ func repoRoot(t *testing.T) string {
 // runtime output against the golden files under tests/dataset/tpc-h.
 func runTPCH(t *testing.T, base string) {
 	t.Helper()
-	if _, err := exec.LookPath("deno"); err != nil {
-		t.Skip("deno not installed")
+	if err := tscode.EnsureDeno(); err != nil {
+		t.Skipf("deno not installed: %v", err)
 	}
 	root := repoRoot(t)
 	src := filepath.Join(root, "tests", "dataset", "tpc-h", base+".mochi")
@@ -58,7 +65,14 @@ func runTPCH(t *testing.T, base string) {
 	if err != nil {
 		t.Fatalf("compile error: %v", err)
 	}
-	_ = os.WriteFile(codeWant, code, 0o644)
+	if shouldUpdateTPCH() {
+		_ = os.WriteFile(codeWant, code, 0o644)
+	} else if want, err := os.ReadFile(codeWant); err == nil {
+		got := bytes.TrimSpace(code)
+		if !bytes.Equal(got, bytes.TrimSpace(want)) {
+			t.Errorf("generated code mismatch for %s.ts\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base, got, bytes.TrimSpace(want))
+		}
+	}
 	dir := t.TempDir()
 	file := filepath.Join(dir, "main.ts")
 	if err := os.WriteFile(file, code, 0o644); err != nil {
@@ -71,7 +85,9 @@ func runTPCH(t *testing.T, base string) {
 		t.Fatalf("deno run error: %v\n%s", err, out)
 	}
 	gotOut := bytes.TrimSpace(out)
-	if wantOut, err := os.ReadFile(outWant); err == nil {
+	if shouldUpdateTPCH() {
+		_ = os.WriteFile(outWant, append(gotOut, '\n'), 0o644)
+	} else if wantOut, err := os.ReadFile(outWant); err == nil {
 		if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
 			t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base, gotOut, bytes.TrimSpace(wantOut))
 		}
