@@ -1358,7 +1358,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if j.Side != nil && (*j.Side == "right" || *j.Side == "outer") {
 			var out bytes.Buffer
 			out.WriteString("(() {\n")
-			out.WriteString(fmt.Sprintf("  var %s = <dynamic>[];\n", tmp))
+			elemT := types.TypeOfExpr(q.Select, c.env)
+			elemDart := dartTypeFromType(elemT)
+			if elemDart == "" {
+				elemDart = "dynamic"
+			}
+			out.WriteString(fmt.Sprintf("  var %s = <%s>[];\n", tmp, elemDart))
 			left := c.mustExpr(q.Source)
 			right := c.mustExpr(j.Src)
 			cond := c.mustExpr(j.On)
@@ -1368,7 +1373,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				tmpVar := fmt.Sprintf("_jt%d", c.tmp)
 				c.tmp++
 				out.WriteString(fmt.Sprintf("  for (var %s in %s) {\n", j.Var, right))
-				out.WriteString(fmt.Sprintf("    var %s = <dynamic>[];\n", tmpVar))
+				et := dartTypeFromType(elemType)
+				if et == "" {
+					et = "dynamic"
+				}
+				out.WriteString(fmt.Sprintf("    var %s = <%s>[];\n", tmpVar, et))
 				out.WriteString(fmt.Sprintf("    for (var %s in %s) {\n", q.Var, left))
 				out.WriteString(fmt.Sprintf("      if (!(%s)) continue;\n", cond))
 				out.WriteString(fmt.Sprintf("      %s.add(%s);\n", tmpVar, q.Var))
@@ -1388,7 +1397,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				tmpVar := fmt.Sprintf("_jt%d", c.tmp)
 				c.tmp++
 				out.WriteString(fmt.Sprintf("  for (var %s in %s) {\n", q.Var, left))
-				out.WriteString(fmt.Sprintf("    var %s = <dynamic>[];\n", tmpVar))
+				et := dartTypeFromType(elemType)
+				if et == "" {
+					et = "dynamic"
+				}
+				out.WriteString(fmt.Sprintf("    var %s = <%s>[];\n", tmpVar, et))
 				out.WriteString(fmt.Sprintf("    for (var %s in %s) {\n", j.Var, right))
 				out.WriteString(fmt.Sprintf("      if (!(%s)) continue;\n", cond))
 				out.WriteString(fmt.Sprintf("      %s.add(%s);\n", tmpVar, j.Var))
@@ -1421,7 +1434,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if q.Group == nil {
 		if agg, arg, ok := c.aggregateCall(q.Select); ok {
 			w("(() {\n")
-			w(fmt.Sprintf("  var %s = <dynamic>[];\n", tmp))
+			elemT := types.TypeOfExpr(arg, c.env)
+			elemDart := dartTypeFromType(elemT)
+			if elemDart == "" {
+				elemDart = "dynamic"
+			}
+			w(fmt.Sprintf("  var %s = <%s>[];\n", tmp, elemDart))
 
 			type loopInfo struct {
 				pre        []string
@@ -1518,14 +1536,19 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	w("(() {\n")
-	w(fmt.Sprintf("  var %s = <dynamic>[];\n", tmp))
+	resT := types.TypeOfExpr(q.Select, c.env)
+	resDart := dartTypeFromType(resT)
+	if resDart == "" {
+		resDart = "dynamic"
+	}
+	w(fmt.Sprintf("  var %s = <%s>[];\n", tmp, resDart))
 	grpVar := ""
 	groups := ""
 	keyVar := ""
 	if q.Group != nil {
 		groups = fmt.Sprintf("_g%d", c.tmp)
 		c.tmp++
-		w(fmt.Sprintf("  var %s = <String, List<dynamic>>{};\n", groups))
+		w(fmt.Sprintf("  var %s = <String, List<%s>>{};\n", groups, resDart))
 	}
 
 	type loopInfo struct {
@@ -1578,8 +1601,17 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if j.Side != nil && *j.Side == "left" {
 			tmpVar := fmt.Sprintf("_jt%d", c.tmp)
 			c.tmp++
+			jt := types.TypeOfExpr(j.Src, c.env)
+			var jElem types.Type = types.AnyType{}
+			if lt, ok := jt.(types.ListType); ok {
+				jElem = lt.Elem
+			}
+			jd := dartTypeFromType(jElem)
+			if jd == "" {
+				jd = "dynamic"
+			}
 			pre := []string{
-				fmt.Sprintf("var %s = <dynamic>[];", tmpVar),
+				fmt.Sprintf("var %s = <%s>[];", tmpVar, jd),
 				fmt.Sprintf("for (var %s in %s) {", j.Var, js),
 				fmt.Sprintf("  if (!(%s)) continue;", on),
 				fmt.Sprintf("  %s.add(%s);", tmpVar, j.Var),
@@ -1663,7 +1695,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 			child.SetVar(grpVar, types.GroupType{Key: keyT, Elem: elemT}, true)
 			item := vars[0]
-			w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("%s.putIfAbsent(%s_s, () => <dynamic>[]).add(%s);\n", groups, keyVar, item))
+			w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("%s.putIfAbsent(%s_s, () => <"+resDart+">[]).add(%s);\n", groups, keyVar, item))
 		} else {
 			c.mapVars[grpVar] = true
 			elemT = types.MapType{Key: types.StringType{}, Value: types.OptionType{Elem: types.AnyType{}}}
@@ -1683,7 +1715,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				parts = append(parts, "'"+j.Var+"': "+j.Var)
 			}
 			item := "{" + strings.Join(parts, ", ") + "}"
-			w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("%s.putIfAbsent(%s_s, () => <dynamic>[]).add(%s);\n", groups, keyVar, item))
+			w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("%s.putIfAbsent(%s_s, () => <"+resDart+">[]).add(%s);\n", groups, keyVar, item))
 		}
 	} else {
 		if q.Sort != nil {
