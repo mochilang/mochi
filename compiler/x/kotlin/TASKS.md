@@ -25,6 +25,8 @@
 - 2025-07-17 00:30 UTC: Switched VM golden tests to `golden.RunWithSummary` and
   improved pattern matching to handle `_` wildcard and missing else cases.
   Removed obsolete BuildX Kotlin golden test.
+- 2025-07-17 00:56 UTC: Match expressions omit the `else` branch when all union
+  variants are covered; reran VM golden tests (71 passed, 29 failed).
 
 ## Remaining Work
 - [ ] Implement dataset join and group-by operations fully.

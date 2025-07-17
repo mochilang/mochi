@@ -1488,11 +1488,16 @@ func (c *Compiler) matchExpr(m *parser.MatchExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	var ut types.UnionType
+	if t, ok := c.inferExprType(m.Target).(types.UnionType); ok {
+		ut = t
+	}
 	var b strings.Builder
 	b.WriteString("run {\n")
 	b.WriteString("    val __t = " + target + "\n")
 	b.WriteString("    when (__t) {\n")
 	hasElse := false
+	covered := make(map[string]bool)
 	for _, cse := range m.Cases {
 		// prepare environment for pattern variables if needed
 		oldEnv := c.env
@@ -1510,8 +1515,8 @@ func (c *Compiler) matchExpr(m *parser.MatchExpr) (string, error) {
 			c.env = oldEnv
 			continue
 		} else if call := cse.Pattern.Binary.Left.Value.Target.Call; call != nil {
-			if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
-				st := ut.Variants[call.Func]
+			if utv, ok := c.env.FindUnionByVariant(call.Func); ok {
+				st := utv.Variants[call.Func]
 				patCode = "is " + call.Func
 				b.WriteString("        " + patCode + " -> {")
 				b.WriteString("\n")
@@ -1533,6 +1538,9 @@ func (c *Compiler) matchExpr(m *parser.MatchExpr) (string, error) {
 				}
 				b.WriteString("            " + res + "\n")
 				b.WriteString("        }\n")
+				if ut.Name != "" && ut.Name == utv.Name {
+					covered[call.Func] = true
+				}
 				c.env = oldEnv
 				continue
 			}
@@ -1554,7 +1562,9 @@ func (c *Compiler) matchExpr(m *parser.MatchExpr) (string, error) {
 		c.env = oldEnv
 	}
 	if !hasElse {
-		b.WriteString("        else -> null\n")
+		if ut.Name == "" || len(covered) != len(ut.Variants) {
+			b.WriteString("        else -> null\n")
+		}
 	}
 	b.WriteString("    }\n")
 	b.WriteString("}")
