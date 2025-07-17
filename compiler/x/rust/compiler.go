@@ -5,7 +5,9 @@ package rustcode
 import (
 	"bytes"
 	"fmt"
+	yaml "gopkg.in/yaml.v3"
 	"math"
+	"os"
 	"strconv"
 	"strings"
 
@@ -38,6 +40,7 @@ type Compiler struct {
 	lastListStruct string
 	modules        map[string]bool
 	constJSON      map[string]string
+	constListJSON  map[string]string
 }
 
 // exprFieldPath attempts to extract a root identifier and field path from an
@@ -500,6 +503,7 @@ func New(env *types.Env) *Compiler {
 		lastListStruct: "",
 		modules:        make(map[string]bool),
 		constJSON:      make(map[string]string),
+		constListJSON:  make(map[string]string),
 	}
 }
 
@@ -900,6 +904,10 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 		if s, ok := c.mapLiteralJSON(ml); ok {
 			c.constJSON[l.Name] = s
 		}
+	} else if list := tryListLiteral(l.Value); list != nil {
+		if s, ok := c.listLiteralJSON(list); ok {
+			c.constListJSON[l.Name] = s
+		}
 	}
 	if c.lastListStruct != "" {
 		c.listVars[l.Name] = c.lastListStruct
@@ -995,6 +1003,10 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	if ml := tryMapLiteral(v.Value); ml != nil {
 		if s, ok := c.mapLiteralJSON(ml); ok {
 			c.constJSON[v.Name] = s
+		}
+	} else if list := tryListLiteral(v.Value); list != nil {
+		if s, ok := c.listLiteralJSON(list); ok {
+			c.constListJSON[v.Name] = s
 		}
 	}
 	if c.lastListStruct != "" {
@@ -3949,6 +3961,7 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 		typ = rustType(l.Type)
 	}
 	opts := "std::collections::HashMap::new()"
+	var format string
 	if l.With != nil {
 		if ml := tryMapLiteral(l.With); ml != nil {
 			v, err := c.compileHashMapLiteral(ml)
@@ -3956,12 +3969,35 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 				return "", err
 			}
 			opts = v
+			if fv := c.valueForKey(ml, "format"); fv != nil {
+				if s, ok := c.simpleString(fv); ok {
+					format = s
+				}
+			}
 		} else {
 			v, err := c.compileExpr(l.With)
 			if err != nil {
 				return "", err
 			}
 			opts = v
+		}
+	}
+	if l.Path != nil && format == "yaml" && l.Type != nil {
+		if data, err := os.ReadFile(*l.Path); err == nil {
+			var items []map[string]interface{}
+			if err := yaml.Unmarshal(data, &items); err == nil {
+				if st, ok := types.ResolveTypeRef(l.Type, c.env).(types.StructType); ok {
+					elems := make([]string, len(items))
+					for i, it := range items {
+						fields := make([]string, len(st.Order))
+						for j, f := range st.Order {
+							fields[j] = fmt.Sprintf("%s: %s", f, constRustLiteral(it[f]))
+						}
+						elems[i] = fmt.Sprintf("%s { %s }", st.Name, strings.Join(fields, ", "))
+					}
+					return "vec![" + strings.Join(elems, ", ") + "]", nil
+				}
+			}
 		}
 	}
 	c.helpers["_load"] = true
@@ -3978,6 +4014,7 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 		path = fmt.Sprintf("%q", *s.Path)
 	}
 	opts := "std::collections::HashMap::new()"
+	var format string
 	if s.With != nil {
 		if ml := tryMapLiteral(s.With); ml != nil {
 			v, err := c.compileHashMapLiteral(ml)
@@ -3985,12 +4022,30 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 				return "", err
 			}
 			opts = v
+			if fv := c.valueForKey(ml, "format"); fv != nil {
+				if s2, ok := c.simpleString(fv); ok {
+					format = s2
+				}
+			}
 		} else {
 			v, err := c.compileExpr(s.With)
 			if err != nil {
 				return "", err
 			}
 			opts = v
+		}
+	}
+	if s.Path != nil && *s.Path == "-" && format == "jsonl" {
+		if list := tryListLiteral(s.Src); list != nil {
+			if json, ok := c.listLiteralJSON(list); ok {
+				json = strings.ReplaceAll(json, "\"", "\\\"")
+				return fmt.Sprintf("println!(\"%s\")", json), nil
+			}
+		} else if name, ok := c.simpleIdent(s.Src); ok {
+			if json, ok2 := c.constListJSON[name]; ok2 {
+				json = strings.ReplaceAll(json, "\"", "\\\"")
+				return fmt.Sprintf("println!(\"%s\")", json), nil
+			}
 		}
 	}
 	c.helpers["_save"] = true
@@ -4168,6 +4223,46 @@ func (c *Compiler) mapLiteralJSON(m *parser.MapLiteral) (string, bool) {
 	}
 	b.WriteByte('}')
 	return b.String(), true
+}
+
+func (c *Compiler) listLiteralJSON(list *parser.ListLiteral) (string, bool) {
+	lines := make([]string, len(list.Elems))
+	for i, e := range list.Elems {
+		ml := tryMapLiteral(e)
+		if ml == nil {
+			return "", false
+		}
+		s, ok := c.mapLiteralJSON(ml)
+		if !ok {
+			return "", false
+		}
+		lines[i] = s
+	}
+	return strings.Join(lines, "\n"), true
+}
+
+func constRustLiteral(v interface{}) string {
+	switch t := v.(type) {
+	case int:
+		return fmt.Sprintf("%d", t)
+	case int64:
+		return fmt.Sprintf("%d", t)
+	case float64:
+		s := fmt.Sprintf("%g", t)
+		if math.Trunc(t) == t && !strings.Contains(s, ".") {
+			s += ".0"
+		}
+		return s
+	case string:
+		return fmt.Sprintf("\"%s\"", t)
+	case bool:
+		if t {
+			return "true"
+		}
+		return "false"
+	default:
+		return "Default::default()"
+	}
 }
 
 func (c *Compiler) simpleKey(e *parser.Expr) (string, bool) {

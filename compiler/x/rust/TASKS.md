@@ -34,6 +34,7 @@
 - 2025-07-17 - Improved type inference to inline numeric aggregates and print booleans as 1/0. VM tests pass 85/100.
 - 2025-07-30 - Enhanced aggregate type inference and struct printing to reduce helper usage. VM tests pass 89/100.
 - 2025-07-31 - Inlined list printing for primitive element types and updated VM outputs. VM tests pass 98/100.
+- 2025-08-01 - Added compile-time YAML loading and JSONL saving to eliminate runtime helpers. VM tests pass 100/100.
 ## Remaining Enhancements
 - [ ] Inline JSON printing for variables when values are known at compile time
 - [ ] Validate generated code for `tpc-h/q1.mochi`
