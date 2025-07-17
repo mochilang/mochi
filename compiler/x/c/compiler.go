@@ -4098,6 +4098,50 @@ func (c *Compiler) aggregateCall(e *parser.Expr) (string, *parser.Expr, bool) {
 }
 
 func (c *Compiler) aggregateExpr(name, list string, elem types.Type) string {
+	if vals, ok := c.listVals[list]; ok {
+		switch name {
+		case "sum":
+			total := 0
+			for _, v := range vals {
+				total += v
+			}
+			return strconv.Itoa(total)
+		case "avg":
+			if len(vals) == 0 {
+				return "0"
+			}
+			total := 0
+			for _, v := range vals {
+				total += v
+			}
+			avg := float64(total) / float64(len(vals))
+			return strconv.FormatFloat(avg, 'f', -1, 64)
+		case "min":
+			if len(vals) == 0 {
+				return "0"
+			}
+			m := vals[0]
+			for _, v := range vals[1:] {
+				if v < m {
+					m = v
+				}
+			}
+			return strconv.Itoa(m)
+		case "max":
+			if len(vals) == 0 {
+				return "0"
+			}
+			m := vals[0]
+			for _, v := range vals[1:] {
+				if v > m {
+					m = v
+				}
+			}
+			return strconv.Itoa(m)
+		case "count", "len":
+			return strconv.Itoa(len(vals))
+		}
+	}
 	switch name {
 	case "count", "len":
 		return fmt.Sprintf("%s.len", list)
@@ -5411,6 +5455,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 				return fmt.Sprintf("_count(%s)", arg)
 			}
 		} else if p.Call.Func == "sum" {
+			if vals, ok := c.evalListIntExpr(p.Call.Args[0]); ok {
+				total := 0
+				for _, v := range vals {
+					total += v
+				}
+				return strconv.Itoa(total)
+			}
 			arg := c.compileExpr(p.Call.Args[0])
 			if isListIntExpr(p.Call.Args[0], c.env) {
 				if l, ok := c.listLens[arg]; ok {
@@ -5431,6 +5482,17 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			elem := listElemType(p.Call.Args[0], c.env)
 			return c.aggregateExpr("sum", arg, elem)
 		} else if p.Call.Func == "avg" {
+			if vals, ok := c.evalListIntExpr(p.Call.Args[0]); ok {
+				if len(vals) == 0 {
+					return "0"
+				}
+				total := 0
+				for _, v := range vals {
+					total += v
+				}
+				avg := float64(total) / float64(len(vals))
+				return strconv.FormatFloat(avg, 'f', -1, 64)
+			}
 			arg := c.compileExpr(p.Call.Args[0])
 			if isListIntExpr(p.Call.Args[0], c.env) {
 				if l, ok := c.listLens[arg]; ok {
@@ -5443,7 +5505,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					c.indent--
 					c.writeln("}")
 					res := c.newTemp()
-					c.writeln(fmt.Sprintf("double %s = %s / (double)%d;", res, sum, l))
+					c.writeln(fmt.Sprintf("double %s = %s /(double)%d;", res, sum, l))
 					if c.env != nil {
 						c.env.SetVar(res, types.FloatType{}, true)
 					}
@@ -5453,6 +5515,18 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			elem := listElemType(p.Call.Args[0], c.env)
 			return c.aggregateExpr("avg", arg, elem)
 		} else if p.Call.Func == "min" {
+			if vals, ok := c.evalListIntExpr(p.Call.Args[0]); ok {
+				if len(vals) == 0 {
+					return "0"
+				}
+				m := vals[0]
+				for _, v := range vals[1:] {
+					if v < m {
+						m = v
+					}
+				}
+				return strconv.Itoa(m)
+			}
 			arg := c.compileExpr(p.Call.Args[0])
 			if isListIntExpr(p.Call.Args[0], c.env) {
 				if l, ok := c.listLens[arg]; ok {
@@ -5476,7 +5550,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			}
 			elem := listElemType(p.Call.Args[0], c.env)
 			return c.aggregateExpr("min", arg, elem)
+
 		} else if p.Call.Func == "max" {
+			if vals, ok := c.evalListIntExpr(p.Call.Args[0]); ok {
+				if len(vals) == 0 {
+					return "0"
+				}
+				m := vals[0]
+				for _, v := range vals[1:] {
+					if v > m {
+						m = v
+					}
+				}
+				return strconv.Itoa(m)
+			}
 			arg := c.compileExpr(p.Call.Args[0])
 			if isListIntExpr(p.Call.Args[0], c.env) {
 				if l, ok := c.listLens[arg]; ok {
@@ -5501,7 +5588,6 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			elem := listElemType(p.Call.Args[0], c.env)
 			return c.aggregateExpr("max", arg, elem)
 		} else if p.Call.Func == "reduce" {
-			list := c.compileExpr(p.Call.Args[0])
 			fn := c.compileExpr(p.Call.Args[1])
 			init := c.compileExpr(p.Call.Args[2])
 			switch listElemType(p.Call.Args[0], c.env).(type) {
