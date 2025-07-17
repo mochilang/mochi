@@ -1,0 +1,3 @@
+exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/group_items_iteration.go:58:23: x.Val undefined (type any has no field or method Val)

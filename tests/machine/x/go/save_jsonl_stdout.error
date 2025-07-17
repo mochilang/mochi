@@ -1,0 +1,3 @@
+exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/save_jsonl_stdout.go:29:21: cannot use map[string]string{…} (value of type map[string]string) as map[string]any value in argument to _save

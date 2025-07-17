@@ -93,3 +93,5 @@ TPC-H progress:
 - 2025-07-19 18:30 - Simple map literals now infer `map[string]T` before struct
   inference, allowing `for k in m` loops to compile. VM golden tests pass 78/100
   programs.
+
+- 2025-07-20 00:00 - Updated print generation to trim trailing spaces; VM valid tests now pass 71/100 programs.

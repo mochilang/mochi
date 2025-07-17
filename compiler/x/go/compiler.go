@@ -4285,7 +4285,8 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			}
 		}
 		if simple {
-			return fmt.Sprintf("fmt.Println(%s)", strings.Join(args, ", ")), nil
+			c.imports["strings"] = true
+			return fmt.Sprintf("fmt.Println(strings.TrimSpace(fmt.Sprintln(%s)))", strings.Join(args, ", ")), nil
 		}
 		c.imports["strings"] = true
 		parts := make([]string, len(args))
