@@ -551,7 +551,7 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		}
 		value = v
 	} else if s.Type != nil {
-		value = "null"
+		value = tsZeroValue(c.resolveTypeRef(s.Type))
 	}
 	var unwrapped []string
 	var retVar string
@@ -654,7 +654,7 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 			value = v
 		}
 	} else if s.Type != nil {
-		value = "null"
+		value = tsZeroValue(c.resolveTypeRef(s.Type))
 	}
 	var typ types.Type = types.AnyType{}
 	if c.env != nil {
