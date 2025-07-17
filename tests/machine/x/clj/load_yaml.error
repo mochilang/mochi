@@ -1,5 +1,0 @@
-Execution error (ArityException) at main/-main (load_yaml.clj:68).
-Wrong number of args (1) passed to: main/Person
-
-Full report at:
-/tmp/clojure-1636031813314933680.edn

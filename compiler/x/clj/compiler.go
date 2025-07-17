@@ -2233,7 +2233,16 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 	expr := fmt.Sprintf("(_load %s %s)", path, opts)
 	if l.Type != nil && l.Type.Simple != nil {
 		name := sanitizeName(*l.Type.Simple)
-		expr = fmt.Sprintf("(mapv %s %s)", name, expr)
+		if c.env != nil {
+			if _, ok := c.env.GetStruct(*l.Type.Simple); ok {
+				c.use("_cast_struct_list")
+				expr = fmt.Sprintf("(_cast_struct_list #'%s %s)", name, expr)
+			} else {
+				expr = fmt.Sprintf("(mapv %s %s)", name, expr)
+			}
+		} else {
+			expr = fmt.Sprintf("(mapv %s %s)", name, expr)
+		}
 	}
 	return expr, nil
 }
