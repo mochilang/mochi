@@ -1,18 +1,18 @@
-/workspace/mochi/tests/machine/x/cpp/cross_join_triple.cpp:22:12: error: ‘n’ was not declared in this scope
-   22 |   decltype(n) n;
+/workspace/mochi/tests/machine/x/cpp/cross_join_triple.cpp:32:12: error: ‘n’ was not declared in this scope
+   32 |   decltype(n) n;
       |            ^
-/workspace/mochi/tests/machine/x/cpp/cross_join_triple.cpp:22:12: error: ‘n’ was not declared in this scope
-/workspace/mochi/tests/machine/x/cpp/cross_join_triple.cpp:23:12: error: ‘l’ was not declared in this scope
-   23 |   decltype(l) l;
+/workspace/mochi/tests/machine/x/cpp/cross_join_triple.cpp:32:12: error: ‘n’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/cross_join_triple.cpp:33:12: error: ‘l’ was not declared in this scope
+   33 |   decltype(l) l;
       |            ^
-/workspace/mochi/tests/machine/x/cpp/cross_join_triple.cpp:23:12: error: ‘l’ was not declared in this scope
-/workspace/mochi/tests/machine/x/cpp/cross_join_triple.cpp:24:12: error: ‘b’ was not declared in this scope
-   24 |   decltype(b) b;
+/workspace/mochi/tests/machine/x/cpp/cross_join_triple.cpp:33:12: error: ‘l’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/cross_join_triple.cpp:34:12: error: ‘b’ was not declared in this scope
+   34 |   decltype(b) b;
       |            ^
-/workspace/mochi/tests/machine/x/cpp/cross_join_triple.cpp:24:12: error: ‘b’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/cross_join_triple.cpp:34:12: error: ‘b’ was not declared in this scope
 /workspace/mochi/tests/machine/x/cpp/cross_join_triple.cpp: In lambda function:
-/workspace/mochi/tests/machine/x/cpp/cross_join_triple.cpp:35:38: error: cannot convert ‘std::any’ to ‘int’ in initialization
-   35 |           __items.push_back(Combo{n, l, b});
+/workspace/mochi/tests/machine/x/cpp/cross_join_triple.cpp:45:38: error: cannot convert ‘std::any’ to ‘int’ in initialization
+   45 |           __items.push_back(Combo{n, l, b});
       |                                      ^
       |                                      |
       |                                      std::any

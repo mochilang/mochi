@@ -1,23 +1,15 @@
-/workspace/mochi/tests/machine/x/cpp/left_join.cpp:16:12: error: ‘o’ was not declared in this scope
-   16 |   decltype(o.id) orderId;
+/workspace/mochi/tests/machine/x/cpp/left_join.cpp:42:12: error: ‘c’ was not declared in this scope
+   42 |   decltype(c) customer;
       |            ^
-/workspace/mochi/tests/machine/x/cpp/left_join.cpp:16:12: error: ‘o’ was not declared in this scope
-/workspace/mochi/tests/machine/x/cpp/left_join.cpp:17:12: error: ‘c’ was not declared in this scope
-   17 |   decltype(c) customer;
-      |            ^
-/workspace/mochi/tests/machine/x/cpp/left_join.cpp:17:12: error: ‘c’ was not declared in this scope
-/workspace/mochi/tests/machine/x/cpp/left_join.cpp:18:12: error: ‘o’ was not declared in this scope
-   18 |   decltype(o.total) total;
-      |            ^
-/workspace/mochi/tests/machine/x/cpp/left_join.cpp:18:12: error: ‘o’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/left_join.cpp:42:12: error: ‘c’ was not declared in this scope
 /workspace/mochi/tests/machine/x/cpp/left_join.cpp: In lambda function:
-/workspace/mochi/tests/machine/x/cpp/left_join.cpp:33:42: error: cannot convert ‘Customer’ to ‘int’ in initialization
-   33 |           __items.push_back(Result{o.id, c, o.total});
+/workspace/mochi/tests/machine/x/cpp/left_join.cpp:58:42: error: cannot convert ‘Customer’ to ‘int’ in initialization
+   58 |           __items.push_back(Result{o.id, c, o.total});
       |                                          ^
       |                                          |
       |                                          Customer
-/workspace/mochi/tests/machine/x/cpp/left_join.cpp:37:42: error: cannot convert ‘Customer’ to ‘int’ in initialization
-   37 |           __items.push_back(Result{o.id, c, o.total});
+/workspace/mochi/tests/machine/x/cpp/left_join.cpp:62:42: error: cannot convert ‘Customer’ to ‘int’ in initialization
+   62 |           __items.push_back(Result{o.id, c, o.total});
       |                                          ^
       |                                          |
       |                                          Customer

@@ -17,6 +17,16 @@ inline bool __any_eq(const std::any &a, const std::any &b) {
     return std::any_cast<std::string>(a) == std::any_cast<std::string>(b);
   return false;
 }
+inline void __print_any(const std::any &a) {
+  if (a.type() == typeid(int))
+    std::cout << std::any_cast<int>(a);
+  else if (a.type() == typeid(double))
+    std::cout << std::any_cast<double>(a);
+  else if (a.type() == typeid(bool))
+    std::cout << (std::any_cast<bool>(a) ? "true" : "false");
+  else if (a.type() == typeid(std::string))
+    std::cout << std::any_cast<std::string>(a);
+}
 
 struct Customer {
   int id;
@@ -31,11 +41,11 @@ struct Stat {
   std::any o;
 };
 struct __struct4 {
-  decltype(std::declval<Stat>().name) key;
+  std::any key;
   std::vector<Stat> items;
 };
 struct __struct5 {
-  decltype(std::declval<__struct4>().key) name;
+  std::any name;
   int count;
 };
 int main() {

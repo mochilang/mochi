@@ -1,23 +1,15 @@
-/workspace/mochi/tests/machine/x/cpp/left_join_multi.cpp:19:12: error: ‘o’ was not declared in this scope
-   19 |   decltype(o.id) orderId;
+/workspace/mochi/tests/machine/x/cpp/left_join_multi.cpp:46:12: error: ‘i’ was not declared in this scope
+   46 |   decltype(i) item;
       |            ^
-/workspace/mochi/tests/machine/x/cpp/left_join_multi.cpp:19:12: error: ‘o’ was not declared in this scope
-/workspace/mochi/tests/machine/x/cpp/left_join_multi.cpp:20:12: error: ‘c’ was not declared in this scope
-   20 |   decltype(c.name) name;
-      |            ^
-/workspace/mochi/tests/machine/x/cpp/left_join_multi.cpp:20:12: error: ‘c’ was not declared in this scope
-/workspace/mochi/tests/machine/x/cpp/left_join_multi.cpp:21:12: error: ‘i’ was not declared in this scope
-   21 |   decltype(i) item;
-      |            ^
-/workspace/mochi/tests/machine/x/cpp/left_join_multi.cpp:21:12: error: ‘i’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/left_join_multi.cpp:46:12: error: ‘i’ was not declared in this scope
 /workspace/mochi/tests/machine/x/cpp/left_join_multi.cpp: In lambda function:
-/workspace/mochi/tests/machine/x/cpp/left_join_multi.cpp:40:46: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
-   40 |             __items.push_back(Result{o.id, c.name, i});
-      |                                            ~~^~~~
-      |                                              |
-      |                                              std::string {aka std::__cxx11::basic_string<char>}
-/workspace/mochi/tests/machine/x/cpp/left_join_multi.cpp:44:46: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
-   44 |             __items.push_back(Result{o.id, c.name, i});
-      |                                            ~~^~~~
-      |                                              |
-      |                                              std::string {aka std::__cxx11::basic_string<char>}
+/workspace/mochi/tests/machine/x/cpp/left_join_multi.cpp:65:52: error: cannot convert ‘Item’ to ‘int’ in initialization
+   65 |             __items.push_back(Result{o.id, c.name, i});
+      |                                                    ^
+      |                                                    |
+      |                                                    Item
+/workspace/mochi/tests/machine/x/cpp/left_join_multi.cpp:69:52: error: cannot convert ‘Item’ to ‘int’ in initialization
+   69 |             __items.push_back(Result{o.id, c.name, i});
+      |                                                    ^
+      |                                                    |
+      |                                                    Item

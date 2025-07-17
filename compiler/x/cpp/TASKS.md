@@ -48,6 +48,11 @@
 - Fallback to `std::any` in `structFromVars` when field types cannot be
   determined, reducing compile errors.
 
+## Recent Enhancements (2025-07-17 00:52 UTC)
+- `defineStruct` now falls back to `std::any` if unresolved variable
+  references remain after replacement, avoiding g++ errors when struct
+  field types reference undefined variables.
+
 ## Remaining Enhancements
 - [ ] Improve formatting to better match human examples.
 - [ ] Implement additional TPCH optimizations.
