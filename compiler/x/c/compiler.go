@@ -1485,7 +1485,7 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 						}
 					}
 				}
-				if val != name || !c.stackArrays[name] {
+				if val != name {
 					c.writeln(formatFuncPtrDecl(typ, name, val))
 					for i, a := range c.allocs {
 						if a == val {
@@ -1506,7 +1506,7 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 					}
 				}
 			}
-			if val != name || !c.stackArrays[name] {
+			if val != name {
 				c.writeln(formatFuncPtrDecl(typ, name, val))
 				for i, a := range c.allocs {
 					if a == val {
@@ -1691,7 +1691,7 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 				c.assignVar = name
 				val := c.compileExpr(stmt.Value)
 				c.assignVar = ""
-				if val != name || !c.stackArrays[name] {
+				if val != name {
 					c.writeln(formatFuncPtrDecl(typ, name, val))
 					for i, a := range c.allocs {
 						if a == val {
@@ -1704,7 +1704,7 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 			c.assignVar = name
 			val := c.compileExpr(stmt.Value)
 			c.assignVar = ""
-			if val != name || !c.stackArrays[name] {
+			if val != name {
 				c.writeln(formatFuncPtrDecl(typ, name, val))
 				for i, a := range c.allocs {
 					if a == val {
