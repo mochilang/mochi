@@ -3904,6 +3904,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 	if hasStruct {
 		listC = sanitizeListName(selStruct.Name)
 		listCreate = createListFuncName(selStruct.Name)
+	} else if st, ok := retT.(types.StructType); ok {
+		listCreate = createListFuncName(st.Name)
 	} else {
 		listCreate = listC + "_create"
 	}

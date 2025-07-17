@@ -1,6 +1,0 @@
-exit status 1
-/workspace/mochi/tests/machine/x/c/dataset_sort_take_limit.c: In function ‘_mochi_main’:
-/workspace/mochi/tests/machine/x/c/dataset_sort_take_limit.c:33:25: warning: implicit declaration of function ‘product_list_t_create’ [-Wimplicit-function-declaration]
-   33 |   product_list_t tmp1 = product_list_t_create(products_len);
-      |                         ^~~~~~~~~~~~~~~~~~~~~
-/workspace/mochi/tests/machine/x/c/dataset_sort_take_limit.c:33:25: error: invalid initializer

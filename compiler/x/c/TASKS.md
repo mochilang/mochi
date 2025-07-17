@@ -131,3 +131,4 @@ should compile and run successfully.
   compile and run successfully.
 - 2025-09-14 - Fixed slice generation to avoid wrapping `list_int` values in
   temporary structs; `slice.mochi` now compiles and runs.
+- 2025-07-17 - Fixed list creation call for struct lists so `dataset_sort_take_limit.mochi` compiles and runs.
