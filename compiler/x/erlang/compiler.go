@@ -1505,10 +1505,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			} else {
 				if typ == "map" {
 					val = fmt.Sprintf("maps:get(%s, %s, undefined)", name, val)
+					typ = "map"
 				} else {
 					val = c.smartGet(name, val)
+					typ = ""
 				}
-				typ = ""
 			}
 		case op.Call != nil:
 			args := make([]string, len(op.Call.Args))
@@ -1637,22 +1638,24 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if k, ok := c.groupKeys[root]; ok {
 			expr := k
 			tail := p.Selector.Tail
+			typ := c.types[root]
 			if len(tail) == 0 && (strings.HasPrefix(expr, "maps:get(") || strings.HasPrefix(expr, "mochi_get(")) {
 				return expr, nil
 			}
 			if len(tail) > 0 && tail[0] == "key" {
 				tail = tail[1:]
+				typ = "map"
 			} else {
 				expr = c.refVar(root)
 			}
-			typ := c.types[root]
 			for _, f := range tail {
 				if typ == "map" {
 					expr = fmt.Sprintf("maps:get(%s, %s, undefined)", f, expr)
+					typ = "map"
 				} else {
 					expr = c.smartGet(f, expr)
+					typ = ""
 				}
-				typ = ""
 			}
 			return expr, nil
 		}
@@ -1661,10 +1664,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		for _, f := range p.Selector.Tail {
 			if typ == "map" {
 				expr = fmt.Sprintf("maps:get(%s, %s, undefined)", f, expr)
+				typ = "map"
 			} else {
 				expr = c.smartGet(f, expr)
+				typ = ""
 			}
-			typ = ""
 		}
 		return expr, nil
 	case p.Query != nil:
