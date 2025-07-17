@@ -901,11 +901,32 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("avg expects 1 arg")
 		}
-		c.use("_avg")
-		if name, ok := c.isGroupVarExpr(call.Args[0]); ok {
-			return fmt.Sprintf("_avg($%s['items'])", name), nil
+		src := args[0]
+		typ := types.TypeOfExprBasic(call.Args[0], c.env)
+		if isNumericListLiteral(call.Args[0]) {
+			return fmt.Sprintf("count(%s) ? array_sum(%s) / count(%s) : 0", src, src, src), nil
 		}
-		return fmt.Sprintf("_avg(%s)", args[0]), nil
+		if name, ok := c.isGroupVarExpr(call.Args[0]); ok {
+			src = fmt.Sprintf("$%s['items']", name)
+			if gt, err := c.env.GetVar(name); err == nil {
+				if g, ok := gt.(types.GroupType); ok && types.IsNumericType(g.Elem) {
+					return fmt.Sprintf("count(%s) ? array_sum(%s) / count(%s) : 0", src, src, src), nil
+				}
+			}
+		} else {
+			if g, ok := typ.(types.GroupType); ok {
+				src = fmt.Sprintf("%s['items']", src)
+				if types.IsNumericType(g.Elem) {
+					return fmt.Sprintf("count(%s) ? array_sum(%s) / count(%s) : 0", src, src, src), nil
+				}
+			} else if lt, ok := typ.(types.ListType); ok {
+				if types.IsNumericType(lt.Elem) {
+					return fmt.Sprintf("count(%s) ? array_sum(%s) / count(%s) : 0", src, src, src), nil
+				}
+			}
+		}
+		c.use("_avg")
+		return fmt.Sprintf("_avg(%s)", src), nil
 	case "sum":
 		if len(args) != 1 {
 			return "", fmt.Errorf("sum expects 1 arg")
