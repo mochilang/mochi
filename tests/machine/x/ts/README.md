@@ -1,7 +1,7 @@
 # Mochi to TypeScript compilation status
 
 The TypeScript backend compiles Mochi programs from `tests/vm/valid` and executes them with Deno. The table below marks programs that compile and run successfully. Boolean values are printed as `1` or `0` for consistency with the reference outputs.
-Recent compiler updates improve boolean formatting to match `True` and `False` in the original Mochi output and reduce the number of helper functions emitted at runtime.
+Recent updates further shrink the runtime by inlining native operations whenever the input types are known.
 
 ## Checklist
 - [x] append_builtin
