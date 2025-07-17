@@ -940,33 +940,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if s, ok, err := c.maybeFStringPrint(call.Args); ok {
 			return s, err
 		}
-		useFmt := false
-		for i, a := range call.Args {
-			arg := args[i]
-			if _, ok := stringLit(a); ok {
-				args[i] = arg
-				continue
-			}
-			if _, ok := c.inferExprType(a).(types.BoolType); ok {
-				if c.needsNumericBool(a) {
-					arg = fmt.Sprintf("int(%s)", arg)
-					args[i] = fmt.Sprintf("_fmt(%s)", arg)
-					useFmt = true
-				} else {
-					args[i] = fmt.Sprintf("str(%s).lower()", arg)
-				}
-				continue
-			}
-			args[i] = fmt.Sprintf("_fmt(%s)", arg)
-			useFmt = true
-		}
-		if useFmt {
-			c.use("_fmt")
-		}
 		if len(args) == 1 {
 			return fmt.Sprintf("print(%s)", args[0]), nil
 		}
-		return fmt.Sprintf("print(' '.join([%s]).rstrip())", strings.Join(args, ", ")), nil
+		return fmt.Sprintf("print(%s)", strings.Join(args, ", ")), nil
 	case "len":
 		return fmt.Sprintf("len(%s)", argStr), nil
 	case "now":
@@ -1210,7 +1187,6 @@ func (c *Compiler) maybeFStringPrint(exprs []*parser.Expr) (string, bool, error)
 		return "", false, nil
 	}
 	parts := make([]string, len(exprs))
-	useFmt := false
 	for i, e := range exprs {
 		if i%2 == 0 {
 			if _, ok := stringLit(e); !ok {
@@ -1226,73 +1202,10 @@ func (c *Compiler) maybeFStringPrint(exprs []*parser.Expr) (string, bool, error)
 		if err != nil {
 			return "", false, err
 		}
-		if _, ok := c.inferExprType(e).(types.BoolType); ok {
-			if c.needsNumericBool(e) {
-				v = fmt.Sprintf("int(%s)", v)
-				useFmt = true
-			} else {
-				v = fmt.Sprintf("str(%s).lower()", v)
-			}
-		} else {
-			v = fmt.Sprintf("_fmt(%s)", v)
-			useFmt = true
-		}
 		parts[i] = v
-	}
-	if useFmt {
-		c.use("_fmt")
 	}
 	fstr := buildFString(parts, exprs)
 	return fmt.Sprintf("print(%s)", fstr), true, nil
-}
-
-// needsNumericBool reports whether the boolean result of expression e should be
-// rendered as 1 or 0 instead of true/false. This is used for membership and
-// string comparison operations to match VM outputs.
-func (c *Compiler) needsNumericBool(e *parser.Expr) bool {
-	if e == nil || e.Binary == nil {
-		return false
-	}
-	if _, ok := c.inferExprType(e).(types.BoolType); ok {
-		return true
-	}
-	u := e.Binary.Left
-	if len(u.Ops) > 0 && u.Ops[0] == "!" {
-		stripped := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Ops: u.Ops[1:], Value: u.Value}, Right: e.Binary.Right}}
-		if c.needsNumericBool(stripped) {
-			return true
-		}
-		u = &parser.Unary{Ops: u.Ops[1:], Value: u.Value}
-	}
-	if hasFuncCall(u.Value, "contains") || hasFuncCall(u.Value, "exists") {
-		return true
-	}
-	if len(e.Binary.Right) == 1 {
-		op := e.Binary.Right[0].Op
-		if op == "in" {
-			rt := c.inferPostfixType(e.Binary.Right[0].Right)
-			if _, ok := rt.(types.ListType); ok {
-				return true
-			}
-		}
-	}
-	return false
-}
-
-func hasFuncCall(p *parser.PostfixExpr, name string) bool {
-	if p == nil {
-		return false
-	}
-	if p.Target != nil && p.Target.Call != nil && p.Target.Call.Func == name {
-		return true
-	}
-	ops := p.Ops
-	for i := 0; i+1 < len(ops); i++ {
-		if ops[i].Field != nil && ops[i].Field.Name == name && ops[i+1].Call != nil {
-			return true
-		}
-	}
-	return false
 }
 
 // compileExprHint compiles an expression using a type hint when dealing with

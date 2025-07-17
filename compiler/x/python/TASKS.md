@@ -1,6 +1,9 @@
 ## Recent Enhancements (2025-07-22 00:00)
 - Typed variables without initializers now default to zero values.
 - `_fmt` now uses `repr(v)` for floats, ensuring `3.14` and `27.333333333333332` print exactly as in the VM.
+## Recent Enhancements (2025-07-23 00:00)
+- Removed the `_fmt` runtime helper. Generated code relies on Python's native
+  printing semantics and booleans are no longer rendered numerically.
 
 ## Recent Enhancements (2025-07-17 01:20)
 - Print calls skip `_fmt` for constant string arguments and attempt to collapse
