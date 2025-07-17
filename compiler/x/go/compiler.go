@@ -4406,6 +4406,24 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("values expects 1 arg")
 		}
+		if mt, ok := c.inferExprType(call.Args[0]).(types.MapType); ok {
+			valGo := goType(mt.Value)
+			if valGo == "" {
+				valGo = "any"
+			}
+			keyGo := goType(mt.Key)
+			if isString(mt.Key) {
+				c.imports["sort"] = true
+				code := fmt.Sprintf("func() []%s { keys := make([]string, 0, len(%s)); for k := range %s { keys = append(keys, k) }; sort.Strings(keys); vals := make([]%s, 0, len(keys)); for _, k := range keys { vals = append(vals, %s[k]) }; return vals }()", valGo, args[0], args[0], valGo, args[0])
+				return code, nil
+			} else if isInt(mt.Key) || isInt64(mt.Key) {
+				c.imports["sort"] = true
+				code := fmt.Sprintf("func() []%s { keys := make([]%s, 0, len(%s)); for k := range %s { keys = append(keys, k) }; sort.Slice(keys, func(i, j int) bool { return keys[i] < keys[j] }); vals := make([]%s, 0, len(keys)); for _, k := range keys { vals = append(vals, %s[k]) }; return vals }()", valGo, keyGo, args[0], args[0], valGo, args[0])
+				return code, nil
+			}
+			code := fmt.Sprintf("func() []%s { vals := make([]%s, 0, len(%s)); for _, v := range %s { vals = append(vals, v) }; return vals }()", valGo, valGo, args[0], args[0])
+			return code, nil
+		}
 		c.use("_values")
 		return fmt.Sprintf("_values(%s)", args[0]), nil
 	case "count":
