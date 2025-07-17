@@ -520,7 +520,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if len(args) == 0 {
 				return "", fmt.Errorf("print expects at least 1 arg")
 			}
-			if len(args) == 1 && isStringLiteralExpr(p.Call.Args[0]) {
+			if len(args) == 1 && (isStringLiteralExpr(p.Call.Args[0]) || c.isStringExpr(p.Call.Args[0])) {
 				return fmt.Sprintf("(displayln %s)", args[0]), nil
 			}
 			c.needRuntime = true
@@ -827,10 +827,8 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 	}
 	for i, p := range f.Params {
 		params[i] = p.Name
-		if p.Type != nil && p.Type.Simple != nil {
-			if _, ok := c.structs[*p.Type.Simple]; ok {
-				c.varTypes[p.Name] = *p.Type.Simple
-			}
+		if t := c.getDeclType(p.Type); t != "" {
+			c.varTypes[p.Name] = t
 		}
 	}
 	c.funArity[f.Name] = len(f.Params)
@@ -1510,8 +1508,13 @@ func (c *Compiler) getDeclType(tr *parser.TypeRef) string {
 	if tr == nil || tr.Simple == nil {
 		return ""
 	}
-	if _, ok := c.structs[*tr.Simple]; ok {
-		return *tr.Simple
+	name := *tr.Simple
+	if _, ok := c.structs[name]; ok {
+		return name
+	}
+	switch name {
+	case "string", "int", "float", "bool", "bigint", "bigrat":
+		return name
 	}
 	return ""
 }
