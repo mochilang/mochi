@@ -11,6 +11,7 @@ import (
 
 	meta "mochi/compiler/meta"
 	"mochi/parser"
+	"mochi/types"
 )
 
 type Compiler struct {
@@ -40,6 +41,8 @@ type Compiler struct {
 	nested     map[string]nestedInfo
 	ffiModules map[string]string
 	funcArity  map[string]int
+
+	env *types.Env
 }
 
 type nestedInfo struct {
@@ -47,8 +50,11 @@ type nestedInfo struct {
 	captured []string
 }
 
-func New() *Compiler {
-	c := &Compiler{vars: make(map[string]string), mutVars: make(map[string]bool)}
+func New(env *types.Env) *Compiler {
+	if env == nil {
+		env = types.NewEnv(nil)
+	}
+	c := &Compiler{vars: make(map[string]string), mutVars: make(map[string]bool), env: env}
 	c.nested = make(map[string]nestedInfo)
 	c.ffiModules = make(map[string]string)
 	c.funcArity = make(map[string]int)
@@ -270,17 +276,22 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	oldTmp := c.tmp
 	oldNested := c.nested
 	oldCurrent := c.currentFun
+	oldEnv := c.env
 
 	c.vars = make(map[string]string)
 	c.tmp = 0
 	c.nested = make(map[string]nestedInfo)
 	c.currentFun = sanitizeAtom(fn.Name)
+	c.env = types.NewEnv(c.env)
 
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		name := sanitizeVar(p.Name)
 		params[i] = name
 		c.vars[p.Name] = name
+		if c.env != nil {
+			c.env.SetVar(p.Name, types.AnyType{}, true)
+		}
 	}
 	resVar := "_Res"
 	c.retVar = resVar
@@ -327,6 +338,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	c.tmp = oldTmp
 	c.nested = oldNested
 	c.currentFun = oldCurrent
+	c.env = oldEnv
 	c.retVar = ""
 	return nil
 }
@@ -386,12 +398,19 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			c.writeln(fmt.Sprintf("%s = %s,", name, val))
 		}
 		c.vars[s.Let.Name] = name
+		if c.env != nil {
+			typ := types.ExprType(s.Let.Value, c.env)
+			c.env.SetVar(s.Let.Name, typ, false)
+		}
 	case s.Var != nil:
 		name := sanitizeAtom(s.Var.Name)
 		c.mutVars[s.Var.Name] = true
 		c.vars[s.Var.Name] = name
 		if s.Var.Value == nil {
 			c.writeln(fmt.Sprintf("nb_setval(%s, _),", name))
+			if c.env != nil {
+				c.env.SetVar(s.Var.Name, types.AnyType{}, true)
+			}
 			return nil
 		}
 		if call := getSimpleCall(s.Var.Value); call != nil && call.Func == "exists" && len(call.Args) == 1 {
@@ -412,6 +431,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			val = tmp
 		}
 		c.writeln(fmt.Sprintf("nb_setval(%s, %s),", name, val))
+		if c.env != nil {
+			typ := types.ExprType(s.Var.Value, c.env)
+			c.env.SetVar(s.Var.Name, typ, true)
+		}
 	case s.Assign != nil:
 		if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
 			val, arith, err := c.compileExpr(s.Assign.Value)
@@ -432,6 +455,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				} else {
 					c.writeln(fmt.Sprintf("%s = %s,", name, val))
 				}
+			}
+			if c.env != nil {
+				typ := types.ExprType(s.Assign.Value, c.env)
+				c.env.SetVarDeep(s.Assign.Name, typ, c.mutVars[s.Assign.Name])
 			}
 		} else {
 			container := c.lookupVar(s.Assign.Name)
@@ -1423,11 +1450,33 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, bool, error) {
 		if len(call.Args) != 1 {
 			return "", false, fmt.Errorf("len expects 1 arg")
 		}
-		arg, _, err := c.compileExpr(call.Args[0])
+		argExpr := call.Args[0]
+		arg, _, err := c.compileExpr(argExpr)
 		if err != nil {
 			return "", false, err
 		}
 		tmp := c.newTmp()
+		if c.env != nil {
+			t := types.ExprType(argExpr, c.env)
+			switch t.(type) {
+			case types.StringType:
+				c.writeln(fmt.Sprintf("string_length(%s, %s),", arg, tmp))
+				return tmp, true, nil
+			case types.ListType:
+				c.writeln(fmt.Sprintf("length(%s, %s),", arg, tmp))
+				return tmp, true, nil
+			case types.MapType:
+				pairs := c.newTmp()
+				c.writeln(fmt.Sprintf("dict_pairs(%s, _, %s),", arg, pairs))
+				c.writeln(fmt.Sprintf("length(%s, %s),", pairs, tmp))
+				return tmp, true, nil
+			case types.GroupType:
+				items := c.newTmp()
+				c.writeln(fmt.Sprintf("get_dict('Items', %s, %s),", arg, items))
+				c.writeln(fmt.Sprintf("length(%s, %s),", items, tmp))
+				return tmp, true, nil
+			}
+		}
 		c.needsLenAny = true
 		c.writeln(fmt.Sprintf("len_any(%s, %s),", arg, tmp))
 		return tmp, true, nil

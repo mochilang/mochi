@@ -58,7 +58,7 @@ func TestPrologCompiler_TPCDSQueries(t *testing.T) {
 			if errs := types.Check(prog, env); len(errs) > 0 {
 				t.Fatalf("type error: %v", errs[0])
 			}
-			code, err := pl.New().Compile(prog)
+			code, err := pl.New(env).Compile(prog)
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
 			}

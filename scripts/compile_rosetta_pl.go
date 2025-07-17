@@ -70,7 +70,7 @@ func main() {
 			writeError(outDir, name, fmt.Sprintf("type: %v", errs[0]))
 			continue
 		}
-		code, err := pl.New().Compile(prog)
+		code, err := pl.New(env).Compile(prog)
 		if err != nil {
 			writeError(outDir, name, fmt.Sprintf("compile: %v", err))
 			continue
