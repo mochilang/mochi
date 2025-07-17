@@ -17,11 +17,6 @@ struct Item {
     total: i32,
 }
 
-fn append<T: Clone>(mut v: Vec<T>, item: T) -> Vec<T> {
-    v.push(item);
-    v
-}
-
 fn main() {
     let data = vec![Data { tag: "a", val: 1 }, Data { tag: "a", val: 2 }, Data { tag: "b", val: 3 }];
     let groups = { let mut tmp1 = std::collections::HashMap::new();for d in &data { let key = d.tag; tmp1.entry(key).or_insert_with(Vec::new).push(d.clone()); } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(g.clone()); } result };
@@ -31,7 +26,7 @@ fn main() {
         for x in g.items {
             total += x.val;
         }
-        tmp = append(tmp, Item { tag: g.key, total: total });
+        tmp = { let mut tmp = tmp.clone(); tmp.push(Item { tag: g.key, total: total }); tmp };
     }
     let result = { let mut tmp3 = Vec::new();for r in &tmp { let tmp4 = r.clone(); let tmp5 = r.tag; tmp3.push((tmp5, tmp4)); } tmp3.sort_by(|a,b| a.0.partial_cmp(&b.0).unwrap()); let mut tmp6 = Vec::new(); for p in tmp3 { tmp6.push(p.1); } tmp6 };
     { for (i, it) in result.iter().enumerate() { if i > 0 { print!(" "); } print!("{:?}", it); } println!(); };

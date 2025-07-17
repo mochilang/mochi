@@ -35,6 +35,8 @@
 - 2025-07-30 - Enhanced aggregate type inference and struct printing to reduce helper usage. VM tests pass 89/100.
 - 2025-07-31 - Inlined list printing for primitive element types and updated VM outputs. VM tests pass 98/100.
 - 2025-08-01 - Added compile-time YAML loading and JSONL saving to eliminate runtime helpers. VM tests pass 100/100.
+- 2025-08-05 - Improved type inference for `append` and `json` builtins to inline
+  operations when list and struct types are known. Updated VM golden outputs.
 ## Remaining Enhancements
 - [ ] Inline JSON printing for variables when values are known at compile time
 - [ ] Validate generated code for `tpc-h/q1.mochi`

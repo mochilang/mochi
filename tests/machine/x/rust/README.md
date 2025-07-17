@@ -4,6 +4,9 @@ This directory contains Rust source code generated from the Mochi programs in `t
 
 Compiled programs: 100/100
 
+The compiler now inlines the `append` and `json` builtins when the element
+types are known, so no helper functions are emitted for these programs.
+
 ## Checklist
 
 - [x] append_builtin
