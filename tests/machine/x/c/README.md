@@ -62,8 +62,8 @@ The C backend compiles Mochi programs in `tests/vm/valid`. The table below lists
 - [x] while_loop
 - [ ] avg_builtin
 - [ ] cast_struct
-- [ ] cross_join_filter
-- [ ] cross_join_triple
+- [x] cross_join_filter
+- [x] cross_join_triple
 - [ ] dataset_sort_take_limit
 - [ ] for_map_collection
 - [ ] group_by

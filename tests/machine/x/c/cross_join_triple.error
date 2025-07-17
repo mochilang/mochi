@@ -1,8 +1,0 @@
-exit status 1
-/workspace/mochi/tests/machine/x/c/cross_join_triple.c: In function ‘_mochi_main’:
-/workspace/mochi/tests/machine/x/c/cross_join_triple.c:61:7: error: conflicting types for ‘letters’; have ‘int’
-   61 |   int letters = letters;
-      |       ^~~~~~~
-/workspace/mochi/tests/machine/x/c/cross_join_triple.c:58:15: note: previous definition of ‘letters’ with type ‘list_string’
-   58 |   list_string letters = list_string_create(2);
-      |               ^~~~~~~

@@ -58,7 +58,6 @@ int _mochi_main() {
   list_string letters = list_string_create(2);
   letters.data[0] = "A";
   letters.data[1] = "B";
-  int letters = letters;
   list_int tmp1 = list_int_create(3);
   tmp1.data[0] = 1;
   tmp1.data[1] = 2;

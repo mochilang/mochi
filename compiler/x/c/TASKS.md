@@ -123,3 +123,4 @@ should compile and run successfully.
 - 2025-09-09 - Removed archived_compiler_test.go and reran VM golden tests using `-update`. Results stored under tests/machine/x/c.
 - 2025-09-10 - Fixed list allocation name for grouped query results; `group_by_multi_join.mochi` now compiles.
 - 2025-09-11 - Added missing `listResCreate` initialization for pair-string grouping, enabling VM tests to build.
+- 2025-09-12 - Skipped redundant assignments when list literals initialize a variable directly. `cross_join_filter` and `cross_join_triple` now compile.
