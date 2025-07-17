@@ -1,6 +1,8 @@
 # Swift Compiler Progress
 
 ## Recent Enhancements
+- 2025-07-20 09:00 – numeric literal inference now distinguishes ints and floats so
+  join and group queries with decimal fields compile correctly.
 - 2025-07-19 12:00 – tuple output for query map literals and identifier keys
   accepted when mapping to structs.
 - 2025-07-18 10:00 – simplified golden tests to only check runtime output and
