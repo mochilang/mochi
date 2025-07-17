@@ -7,7 +7,6 @@ package main
 import (
 	"fmt"
 	"mochi/runtime/data"
-	"reflect"
 	"strings"
 )
 
@@ -26,6 +25,11 @@ type Order struct {
 type Stat struct {
 	Name  any `json:"name"`
 	Count int `json:"count"`
+}
+
+type GRow struct {
+	C Customer `json:"c"`
+	O *Order   `json:"o"`
 }
 
 func main() {
@@ -55,7 +59,7 @@ func main() {
 		for _, c := range customers {
 			matched := false
 			for _, o := range orders {
-				if !(_equal(_getField(o, "customerId"), c.ID)) {
+				if !(o.CustomerID == c.ID) {
 					continue
 				}
 				matched = true
@@ -67,7 +71,7 @@ func main() {
 					groups[ks] = g
 					order = append(order, ks)
 				}
-				g.Items = append(g.Items, c)
+				g.Items = append(g.Items, GRow{C: c, O: &o})
 			}
 			if !matched {
 				var o *Order
@@ -79,7 +83,7 @@ func main() {
 					groups[ks] = g
 					order = append(order, ks)
 				}
-				g.Items = append(g.Items, c)
+				g.Items = append(g.Items, GRow{C: c, O: o})
 			}
 		}
 		items := []*data.Group{}
@@ -90,12 +94,12 @@ func main() {
 		for _, g := range items {
 			results = append(results, Stat{
 				Name: g.Key.(any),
-				Count: len(func() []Customer {
-					results := []Customer{}
+				Count: len(func() []GRow {
+					results := []GRow{}
 					for _, rRaw := range g.Items {
-						r := rRaw.(Customer)
-						if _exists(r.O) {
-							if _exists(r.O) {
+						r := rRaw.(GRow)
+						if r.O != nil {
+							if r.O != nil {
 								results = append(results, r)
 							}
 						}
@@ -106,131 +110,8 @@ func main() {
 		}
 		return results
 	}()
-	fmt.Println(strings.TrimSpace(fmt.Sprintln("--- Group Left Join ---")))
+	fmt.Println(strings.TrimSpace(fmt.Sprintln(any("--- Group Left Join ---"))))
 	for _, s := range stats {
 		fmt.Println(strings.TrimSpace(fmt.Sprintln(s.Name, "orders:", s.Count)))
 	}
-}
-
-func _convertMapAny(m map[any]any) map[string]any {
-	out := make(map[string]any, len(m))
-	for k, v := range m {
-		key := fmt.Sprint(k)
-		if sub, ok := v.(map[any]any); ok {
-			out[key] = _convertMapAny(sub)
-		} else {
-			out[key] = v
-		}
-	}
-	return out
-}
-
-func _equal(a, b any) bool {
-	av := reflect.ValueOf(a)
-	bv := reflect.ValueOf(b)
-	if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
-		if av.Len() != bv.Len() {
-			return false
-		}
-		for i := 0; i < av.Len(); i++ {
-			if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) {
-				return false
-			}
-		}
-		return true
-	}
-	if av.Kind() == reflect.Map && bv.Kind() == reflect.Map {
-		if av.Len() != bv.Len() {
-			return false
-		}
-		for _, k := range av.MapKeys() {
-			bvVal := bv.MapIndex(k)
-			if !bvVal.IsValid() {
-				return false
-			}
-			if !_equal(av.MapIndex(k).Interface(), bvVal.Interface()) {
-				return false
-			}
-		}
-		return true
-	}
-	if (av.Kind() == reflect.Int || av.Kind() == reflect.Int64 || av.Kind() == reflect.Float64) &&
-		(bv.Kind() == reflect.Int || bv.Kind() == reflect.Int64 || bv.Kind() == reflect.Float64) {
-		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
-	}
-	return reflect.DeepEqual(a, b)
-}
-
-func _exists(v any) bool {
-	if g, ok := v.(*data.Group); ok {
-		return len(g.Items) > 0
-	}
-	switch s := v.(type) {
-	case []any:
-		return len(s) > 0
-	case []int:
-		return len(s) > 0
-	case []float64:
-		return len(s) > 0
-	case []string:
-		return len(s) > 0
-	case []bool:
-		return len(s) > 0
-	case bool:
-		return s
-	case []map[string]any:
-		return len(s) > 0
-	case map[string]any:
-		return len(s) > 0
-	case map[string]int:
-		return len(s) > 0
-	case string:
-		return len([]rune(s)) > 0
-	}
-	rv := reflect.ValueOf(v)
-	switch rv.Kind() {
-	case reflect.Slice, reflect.Array:
-		return rv.Len() > 0
-	case reflect.Map:
-		return !rv.IsNil() && rv.Len() > 0
-	case reflect.Pointer:
-		return !rv.IsNil()
-	case reflect.Struct:
-		return !rv.IsZero()
-	}
-	return false
-}
-
-func _getField(v any, name string) any {
-	switch m := v.(type) {
-	case map[string]any:
-		return m[name]
-	case map[string]string:
-		if s, ok := m[name]; ok {
-			return s
-		}
-	case map[any]any:
-		return _convertMapAny(m)[name]
-	default:
-		rv := reflect.ValueOf(m)
-		if rv.Kind() == reflect.Struct {
-			rt := rv.Type()
-			for i := 0; i < rv.NumField(); i++ {
-				fn := rt.Field(i)
-				field := fn.Name
-				if tag := fn.Tag.Get("json"); tag != "" {
-					if c := strings.Index(tag, ","); c >= 0 {
-						tag = tag[:c]
-					}
-					if tag != "-" {
-						field = tag
-					}
-				}
-				if field == name {
-					return rv.Field(i).Interface()
-				}
-			}
-		}
-	}
-	return nil
 }

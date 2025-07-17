@@ -2861,6 +2861,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 
 	var groupKey string
 	var keyType types.Type
+	structName := ""
 	if q.Group != nil {
 		keyEnv := child
 		if ml := mapLiteral(q.Group.Exprs[0]); ml != nil {
@@ -2881,10 +2882,35 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 		if keyType == nil {
 			keyType = c.inferExprTypeHint(q.Group.Exprs[0], types.StructType{})
 		}
-		// Group element type mirrors the primary source element. Using
-		// the typed element allows aggregate functions to operate on
-		// concrete fields instead of untyped maps.
+		// Group element type mirrors the primary source element. When
+		// joins are present include all variables in a synthesized struct
+		// so group items expose joined fields to nested queries.
 		gElem := elemType
+		if len(q.Froms) > 0 || len(q.Joins) > 0 {
+			fields := map[string]types.Type{q.Var: elemType}
+			order := []string{q.Var}
+			for i, f := range q.Froms {
+				fields[f.Var] = fromElemType[i]
+				order = append(order, f.Var)
+			}
+			for i, j := range q.Joins {
+				jt := joinElemType[i]
+				if j.Side != nil && (*j.Side == "left" || *j.Side == "right" || *j.Side == "outer") {
+					jt = types.OptionType{Elem: jt}
+				}
+				fields[j.Var] = jt
+				order = append(order, j.Var)
+			}
+			st := types.StructType{Name: exportName(sanitizeName(singular(q.Group.Name + "Row"))), Fields: fields, Order: order}
+			if c.env != nil {
+				if _, ok := c.env.GetStruct(st.Name); !ok {
+					c.env.SetStruct(st.Name, st)
+				}
+			}
+			c.compileStructType(st)
+			gElem = st
+			structName = sanitizeName(st.Name)
+		}
 		gtype := types.GroupType{Key: keyType, Elem: gElem}
 		c.env = keyEnv
 		var err error
@@ -3081,6 +3107,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
 		c.env = original
 		c.imports["fmt"] = true
+		c.imports["strings"] = true
 		c.imports["mochi/runtime/data"] = true
 		var buf bytes.Buffer
 		buf.WriteString(fmt.Sprintf("func() []%s {\n", retElem))
@@ -3185,10 +3212,25 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 		buf.WriteString(indent + "\tgroups[ks] = g\n")
 		buf.WriteString(indent + "\torder = append(order, ks)\n")
 		buf.WriteString(indent + "}\n")
-		// For now append only the primary source value. This keeps the
-		// element type consistent and avoids untyped maps when joins
-		// are present.
-		buf.WriteString(fmt.Sprintf(indent+"g.Items = append(g.Items, %s)\n", sanitizeName(q.Var)))
+		item := sanitizeName(q.Var)
+		if structName != "" {
+			parts := []string{fmt.Sprintf("%s: %s", exportName(sanitizeName(q.Var)), sanitizeName(q.Var))}
+			for _, f := range q.Froms {
+				fv := sanitizeName(f.Var)
+				parts = append(parts, fmt.Sprintf("%s: %s", exportName(fv), fv))
+			}
+			useAddr := true
+			for i, j := range q.Joins {
+				jv := sanitizeName(j.Var)
+				expr := jv
+				if strings.HasPrefix(joinTypes[i], "*") && joinDirect[i] && useAddr {
+					expr = "&" + jv
+				}
+				parts = append(parts, fmt.Sprintf("%s: %s", exportName(jv), expr))
+			}
+			item = fmt.Sprintf("%s{%s}", structName, strings.Join(parts, ", "))
+		}
+		buf.WriteString(fmt.Sprintf(indent+"g.Items = append(g.Items, %s)\n", item))
 		if cond != "" {
 			indent = indent[:len(indent)-1]
 			buf.WriteString(indent + "}\n")
@@ -3211,8 +3253,25 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 			buf.WriteString(indent + "\tgroups[ks] = g\n")
 			buf.WriteString(indent + "\torder = append(order, ks)\n")
 			buf.WriteString(indent + "}\n")
-			// Only store the primary source value when no match was found
-			buf.WriteString(fmt.Sprintf(indent+"g.Items = append(g.Items, %s)\n", sanitizeName(q.Var)))
+			item := sanitizeName(q.Var)
+			if structName != "" {
+				parts := []string{fmt.Sprintf("%s: %s", exportName(sanitizeName(q.Var)), sanitizeName(q.Var))}
+				for _, f := range q.Froms {
+					fv := sanitizeName(f.Var)
+					parts = append(parts, fmt.Sprintf("%s: %s", exportName(fv), fv))
+				}
+				useAddr := false
+				for i, j := range q.Joins {
+					jv := sanitizeName(j.Var)
+					expr := jv
+					if strings.HasPrefix(joinTypes[i], "*") && joinDirect[i] && useAddr {
+						expr = "&" + jv
+					}
+					parts = append(parts, fmt.Sprintf("%s: %s", exportName(jv), expr))
+				}
+				item = fmt.Sprintf("%s{%s}", structName, strings.Join(parts, ", "))
+			}
+			buf.WriteString(fmt.Sprintf(indent+"g.Items = append(g.Items, %s)\n", item))
 			if cond != "" {
 				indent = indent[:len(indent)-1]
 				buf.WriteString(indent + "}\n")
