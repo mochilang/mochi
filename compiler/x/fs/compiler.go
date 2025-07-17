@@ -39,6 +39,7 @@ type Compiler struct {
 	usesIntersect bool
 	usesGroupBy   bool
 	hints         map[string]string
+	tuples        map[string][]string
 }
 
 func defaultValue(typ string) string {
@@ -90,6 +91,7 @@ func New() *Compiler {
 		usesIntersect: false,
 		usesGroupBy:   false,
 		hints:         make(map[string]string),
+		tuples:        make(map[string][]string),
 	}
 }
 
@@ -113,6 +115,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.usesIntersect = false
 	c.usesGroupBy = false
 	c.hints = make(map[string]string)
+	c.tuples = make(map[string][]string)
 	c.gatherHints(p.Statements)
 
 	for _, s := range p.Statements {
@@ -687,12 +690,24 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		return "", err
 	}
 	res := left
+	resType := c.basicNumericType(&parser.Expr{Binary: &parser.BinaryExpr{Left: b.Left}})
 	for _, op := range b.Right {
 		r, err := c.compilePostfix(op.Right)
 		if err != nil {
 			return "", err
 		}
 		oper := op.Op
+		rType := c.basicNumericType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}})
+		if oper == "*" || oper == "/" || oper == "+" || oper == "-" {
+			if resType == "float" && rType == "int" {
+				r = fmt.Sprintf("float %s", r)
+				rType = "float"
+			}
+			if resType == "int" && rType == "float" {
+				res = fmt.Sprintf("float %s", res)
+				resType = "float"
+			}
+		}
 		switch op.Op {
 		case "==":
 			oper = "="
@@ -739,6 +754,13 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			continue
 		}
 		res = fmt.Sprintf("%s %s %s", res, oper, r)
+		if oper == "*" || oper == "/" || oper == "+" || oper == "-" {
+			if resType == "float" || rType == "float" {
+				resType = "float"
+			} else {
+				resType = "int"
+			}
+		}
 	}
 	return res, nil
 }
@@ -916,15 +938,31 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Query != nil:
 		return c.compileQuery(p.Query)
 	case p.Selector != nil:
-		name := sanitizeIdent(p.Selector.Root)
+		expr := sanitizeIdent(p.Selector.Root)
 		for i, t := range p.Selector.Tail {
 			if i == 0 && c.groups[p.Selector.Root] && t == "items" {
-				name += ".Items"
+				expr += ".Items"
 				continue
 			}
-			name += "." + sanitizeIdent(t)
+			if i == 0 {
+				if fields, ok := c.tuples[p.Selector.Root]; ok {
+					idx := -1
+					for j, f := range fields {
+						if sanitizeIdent(f) == t {
+							idx = j
+							break
+						}
+					}
+					if idx >= 0 {
+						pat := strings.Join(sanitizeAll(fields), ", ")
+						expr = fmt.Sprintf("(%s |> fun (%s) -> %s)", expr, pat, sanitizeIdent(t))
+						continue
+					}
+				}
+			}
+			expr += "." + sanitizeIdent(t)
 		}
-		return name, nil
+		return expr, nil
 	case p.Group != nil:
 		inner, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -1525,6 +1563,11 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 	c.vars[q.Var] = c.collectionElemType(q.Source)
+	if name, ok := c.simpleIdentifier(q.Source); ok {
+		if fields, ok2 := c.tuples[name]; ok2 {
+			c.tuples[q.Var] = fields
+		}
+	}
 	loops := []string{fmt.Sprintf("for %s in %s do", q.Var, src)}
 	bindings := []string{}
 	for _, fr := range q.Froms {
@@ -1633,6 +1676,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		if len(allVars) > 1 {
 			yieldExpr = "(" + strings.Join(allVars, ", ") + ")"
 			pat = yieldExpr
+			c.tuples[q.Group.Name] = allVars
 		}
 		inner.WriteString("yield ")
 		inner.WriteString(yieldExpr)
@@ -1815,6 +1859,41 @@ func sanitizeIdent(name string) string {
 		return "``" + name + "``"
 	}
 	return name
+}
+
+func sanitizeAll(names []string) []string {
+	out := make([]string, len(names))
+	for i, n := range names {
+		out[i] = sanitizeIdent(n)
+	}
+	return out
+}
+
+func (c *Compiler) basicNumericType(e *parser.Expr) string {
+	if e == nil {
+		return "obj"
+	}
+	if p := rootPrimary(e); p != nil {
+		if p.Lit != nil {
+			if p.Lit.Float != nil {
+				return "float"
+			}
+			if p.Lit.Int != nil {
+				return "int"
+			}
+		}
+		if p.Selector != nil {
+			if t, ok := c.vars[p.Selector.Root]; ok {
+				if fields, ok2 := c.structs[t]; ok2 && len(p.Selector.Tail) == 1 {
+					if ft, ok3 := fields[p.Selector.Tail[0]]; ok3 {
+						return ft
+					}
+				}
+				return t
+			}
+		}
+	}
+	return "obj"
 }
 
 func rootPrimary(e *parser.Expr) *parser.Primary {
