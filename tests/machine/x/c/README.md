@@ -82,7 +82,7 @@ The C backend compiles Mochi programs in `tests/vm/valid`. The table below lists
 - [x] len_map
 - [ ] list_assign
 - [ ] list_nested_assign
-- [ ] load_yaml
+- [x] load_yaml
 - [x] map_assign
 - [x] map_index
 - [x] map_literal_dynamic

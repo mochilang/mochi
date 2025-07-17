@@ -135,3 +135,4 @@ should compile and run successfully.
 - 2025-09-15 - Fixed list allocation for struct query results when the select
   expression isn't a map literal. `dataset_sort_take_limit.mochi` now compiles
   and runs.
+- 2025-07-17 - Fixed YAML loader to deduplicate struct fields so `load_yaml.mochi` compiles.
