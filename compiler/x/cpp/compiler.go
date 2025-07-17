@@ -2635,7 +2635,18 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			if idx := strings.Index(t, "{"); idx != -1 {
 				t = t[:idx]
 			}
-			itemType = fmt.Sprintf("decltype(std::declval<%s>().%s)", t, fld)
+			if info, ok := c.structByName[t]; ok {
+				sf := sanitizeName(fld)
+				for i, fn := range info.Fields {
+					if fn == sf && i < len(info.Types) {
+						itemType = info.Types[i]
+						break
+					}
+				}
+			}
+			if itemType == fmt.Sprintf("decltype(%s.%s)", v, fld) || itemType == "" {
+				itemType = fmt.Sprintf("decltype(std::declval<%s>().%s)", t, fld)
+			}
 		}
 	} else if t := c.elemType[val]; t != "" {
 		itemType = t
@@ -2644,7 +2655,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if idx := strings.Index(t, "{"); idx != -1 {
 			t = t[:idx]
 		}
-		itemType = t
+		if itemType == fmt.Sprintf("decltype(%s)", q.Var) {
+			itemType = t
+		}
 	} else if t := c.elemType[q.Var]; t != "" && strings.HasPrefix(itemType, "decltype(") {
 		itemType = t
 	}
@@ -2973,7 +2986,18 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 					if idx := strings.Index(t, "{"); idx != -1 {
 						t = t[:idx]
 					}
-					keyType = fmt.Sprintf("decltype(std::declval<%s>().%s)", t, fld)
+					if info, ok := c.structByName[t]; ok {
+						sf := sanitizeName(fld)
+						for i, fn := range info.Fields {
+							if fn == sf && i < len(info.Types) {
+								keyType = info.Types[i]
+								break
+							}
+						}
+					}
+					if keyType == fmt.Sprintf("decltype(%s.%s)", v, fld) || keyType == "" {
+						keyType = fmt.Sprintf("decltype(std::declval<%s>().%s)", t, fld)
+					}
 				} else if typ, ok := c.vars[v]; ok {
 					switch typ {
 					case "string":
@@ -3403,7 +3427,8 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 			buf.WriteString("bool __found = false;\n")
 			indent(indentLevel)
 			eq := "__g.key == __key"
-			if strings.Contains(keyType, "std::any") {
+			keyFieldType := info.Types[0]
+			if strings.Contains(keyFieldType, "std::any") || strings.Contains(keyType, "std::any") {
 				eq = "__any_eq(__g.key, __key)"
 				c.usesAny = true
 			}
