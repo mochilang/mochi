@@ -1086,6 +1086,10 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, bool, error) {
 	return val, arith, nil
 }
 
+func exprFromPostfix(p *parser.PostfixExpr) *parser.Expr {
+	return &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: p}}}
+}
+
 func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, bool, error) {
 	if pf.Target.Selector != nil && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
 		tail := pf.Target.Selector.Tail
@@ -1117,12 +1121,24 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, bool, error) 
 	if err != nil {
 		return "", false, err
 	}
+
+	var curType types.Type
+	var curPf parser.PostfixExpr
+	curPf.Target = pf.Target
+	if c.env != nil {
+		curType = types.ExprType(exprFromPostfix(&curPf), c.env)
+	}
+
 	for i := 0; i < len(pf.Ops); i++ {
 		op := pf.Ops[i]
 		if op.Index != nil {
-			val, arith, err = c.compileIndex(val, op.Index)
+			val, arith, err = c.compileIndex(val, op.Index, curType)
 			if err != nil {
 				return "", false, err
+			}
+			curPf.Ops = append(curPf.Ops, op)
+			if c.env != nil {
+				curType = types.ExprType(exprFromPostfix(&curPf), c.env)
 			}
 			continue
 		}
@@ -1133,6 +1149,10 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, bool, error) 
 					return "", false, err
 				}
 				i++
+				curPf.Ops = append(curPf.Ops, op, pf.Ops[i])
+				if c.env != nil {
+					curType = types.ExprType(exprFromPostfix(&curPf), c.env)
+				}
 				continue
 			}
 			if mod, ok := c.ffiModules[val]; ok {
@@ -1168,16 +1188,25 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, bool, error) 
 				}
 			}
 			tmp := c.newTmp()
+			// default fallback to helper
 			c.needsGetItem = true
 			c.writeln(fmt.Sprintf("get_item(%s, '%s', %s),", val, strings.ToLower(op.Field.Name), tmp))
 			val = tmp
 			arith = false
+			curPf.Ops = append(curPf.Ops, op)
+			if c.env != nil {
+				curType = types.ExprType(exprFromPostfix(&curPf), c.env)
+			}
 			continue
 		}
 		if op.Cast != nil {
 			val, arith, err = c.compileCast(val, op.Cast)
 			if err != nil {
 				return "", false, err
+			}
+			curPf.Ops = append(curPf.Ops, op)
+			if c.env != nil {
+				curType = types.ExprType(exprFromPostfix(&curPf), c.env)
 			}
 			continue
 		}
@@ -2067,15 +2096,24 @@ func (c *Compiler) compilePartialCall(call *parser.CallExpr, arity int) (string,
 	return lambda, false, nil
 }
 
-func (c *Compiler) compileIndex(container string, idx *parser.IndexOp) (string, bool, error) {
+func (c *Compiler) compileIndex(container string, idx *parser.IndexOp, t types.Type) (string, bool, error) {
 	if idx.Colon == nil {
 		index, _, err := c.compileExpr(idx.Start)
 		if err != nil {
 			return "", false, err
 		}
 		tmp := c.newTmp()
-		c.needsGetItem = true
-		c.writeln(fmt.Sprintf("get_item(%s, %s, %s),", container, index, tmp))
+		switch tt := t.(type) {
+		case types.ListType:
+			c.writeln(fmt.Sprintf("nth0(%s, %s, %s),", index, container, tmp))
+		case types.StringType:
+			chars := c.newTmp()
+			c.writeln(fmt.Sprintf("string_chars(%s, %s), nth0(%s, %s, %s),", container, chars, index, chars, tmp))
+		default:
+			c.needsGetItem = true
+			_ = tt
+			c.writeln(fmt.Sprintf("get_item(%s, %s, %s),", container, index, tmp))
+		}
 		return tmp, false, nil
 	}
 	start := "0"
@@ -2095,8 +2133,24 @@ func (c *Compiler) compileIndex(container string, idx *parser.IndexOp) (string, 
 		end = e
 	}
 	tmp := c.newTmp()
-	c.needsSlice = true
-	c.writeln(fmt.Sprintf("slice(%s, %s, %s, %s),", container, start, end, tmp))
+	switch t.(type) {
+	case types.StringType:
+		lenTmp := c.newTmp()
+		c.writeln(fmt.Sprintf("%s is %s - %s,", lenTmp, end, start))
+		c.writeln(fmt.Sprintf("sub_string(%s, %s, %s, _, %s),", container, start, lenTmp, tmp))
+	case types.ListType:
+		pre := c.newTmp()
+		rest := c.newTmp()
+		lenTmp := c.newTmp()
+		c.writeln(fmt.Sprintf("length(%s, %s),", pre, start))
+		c.writeln(fmt.Sprintf("append(%s, %s, %s),", pre, rest, container))
+		c.writeln(fmt.Sprintf("%s is %s - %s,", lenTmp, end, start))
+		c.writeln(fmt.Sprintf("length(%s, %s),", tmp, lenTmp))
+		c.writeln(fmt.Sprintf("append(%s, _, %s),", tmp, rest))
+	default:
+		c.needsSlice = true
+		c.writeln(fmt.Sprintf("slice(%s, %s, %s, %s),", container, start, end, tmp))
+	}
 	return tmp, false, nil
 }
 

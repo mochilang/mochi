@@ -1,0 +1,11 @@
+output mismatch
+-- got --
+true
+true
+true
+true
+-- want --
+1
+1
+1
+1

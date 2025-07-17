@@ -1,0 +1,7 @@
+output mismatch
+-- got --
+true
+false
+-- want --
+1
+0

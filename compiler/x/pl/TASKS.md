@@ -33,3 +33,7 @@
 - Added short-circuit handling for `&&` and `||` in `buildBinary`.
 - Extended `isBoolExpr` to recognize expressions containing `->` or `;`.
 - Regenerated code for `bool_chain` using `go run ./cmd/mochix buildx -t pl`.
+
+## Progress (2025-07-28 00:00 UTC)
+- Added type-aware handling for indexing and slicing so lists and strings use native Prolog operations.
+- Helper predicates `get_item` and `slice` are now omitted when not required.
