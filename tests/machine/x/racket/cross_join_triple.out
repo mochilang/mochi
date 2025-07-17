@@ -1,9 +1,0 @@
---- Cross Join of three lists ---
-1 A #t
-1 A #f
-1 B #t
-1 B #f
-2 A #t
-2 A #f
-2 B #t
-2 B #f
