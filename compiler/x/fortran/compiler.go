@@ -1269,6 +1269,14 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(call.Args) != 2 {
 			return "", fmt.Errorf("append expects 2 args")
 		}
+		if lst := listLiteral(call.Args[0]); lst != nil {
+			if ints, ok := intList(lst); ok {
+				if iv := literalInt(call.Args[1]); iv != nil {
+					out := append(ints, *iv)
+					return formatIntList(out), nil
+				}
+			}
+		}
 		arr := args[0]
 		elem := args[1]
 		tmp := fmt.Sprintf("app%d", c.tmpIndex)
@@ -1498,6 +1506,20 @@ func literalIntPrimary(p *parser.Primary) *int {
 		return nil
 	}
 	return p.Lit.Int
+}
+
+func literalInt(e *parser.Expr) *int {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil || u.Value.Target == nil {
+		return nil
+	}
+	if u.Value.Target.Lit != nil && u.Value.Target.Lit.Int != nil {
+		return u.Value.Target.Lit.Int
+	}
+	return nil
 }
 
 func listLiteralFromUnary(u *parser.Unary) *parser.ListLiteral {
