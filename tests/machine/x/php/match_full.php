@@ -1,0 +1,63 @@
+<?php
+$x = 2;
+$label = match($x) {
+    1 => "one",
+    2 => "two",
+    3 => "three",
+    default => "unknown",
+};
+echo $label, PHP_EOL;
+$day = "sun";
+$mood = match($day) {
+    "mon" => "tired",
+    "fri" => "excited",
+    "sun" => "relaxed",
+    default => "normal",
+};
+echo $mood, PHP_EOL;
+$ok = true;
+$status = match($ok) {
+    true => "confirmed",
+    false => "denied",
+    default => null,
+};
+echo $status, PHP_EOL;
+function classify($n) {
+    return match($n) {
+    0 => "zero",
+    1 => "one",
+    default => "many",
+};
+}
+_print(classify(0));
+_print(classify(5));
+function _print(...$args) {
+    $first = true;
+    foreach ($args as $a) {
+        if (!$first) echo ' ';
+        $first = false;
+        if (is_array($a)) {
+            if (array_is_list($a)) {
+                if ($a && is_array($a[0])) {
+                    $parts = [];
+                    foreach ($a as $sub) {
+                        if (is_array($sub)) {
+                            $parts[] = '[' . implode(' ', $sub) . ']';
+                        } else {
+                            $parts[] = strval($sub);
+                        }
+                    }
+                    echo implode(' ', $parts);
+                } else {
+                    echo '[' . implode(' ', array_map('strval', $a)) . ']';
+                }
+            } else {
+                echo json_encode($a);
+            }
+        } else {
+            echo strval($a);
+        }
+    }
+    echo PHP_EOL;
+}
+?>
