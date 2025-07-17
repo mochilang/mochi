@@ -1174,6 +1174,11 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 				}
 				continue
 			}
+			if types.IsStringType(t) {
+				name += "." + escapeIdent(part)
+				t = types.AnyType{}
+				continue
+			}
 			if mt, ok := t.(types.MapType); ok {
 				name = fmt.Sprintf("(%s as MutableMap<%s, %s>)[%q]", name, kotlinTypeOf(mt.Key), kotlinTypeOf(mt.Value), part)
 				t = mt.Value
@@ -1556,6 +1561,13 @@ func (c *Compiler) matchExpr(m *parser.MatchExpr) (string, error) {
 			return "", err
 		}
 		patCode = pat
+		if ut.Name != "" {
+			if name, ok := identName(cse.Pattern); ok {
+				if _, ok := ut.Variants[name]; ok {
+					covered[name] = true
+				}
+			}
+		}
 		res, err := c.expr(cse.Result)
 		if err != nil {
 			c.env = oldEnv
