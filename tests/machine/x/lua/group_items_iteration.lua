@@ -107,7 +107,8 @@ function __str(v)
             return '{'..table.concat(parts, ',')..'}'
         end
     else
-        if t == 'boolean' then return v and "1" or "0" else return tostring(v) end
+        if t == 'boolean' then return (v and 'True' or 'False') end
+        return tostring(v)
     end
 end
 data = {{["tag"]="a", ["val"]=1}, {["tag"]="a", ["val"]=2}, {["tag"]="b", ["val"]=3}}

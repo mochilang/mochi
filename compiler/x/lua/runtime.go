@@ -340,7 +340,8 @@ const (
 		"            return '{'..table.concat(parts, ',')..'}'\n" +
 		"        end\n" +
 		"    else\n" +
-		"        if t == 'boolean' then return v and \"1\" or \"0\" else return tostring(v) end\n" +
+		"        if t == 'boolean' then return (v and 'True' or 'False') end\n" +
+		"        return tostring(v)\n" +
 		"    end\n" +
 		"end\n"
 
