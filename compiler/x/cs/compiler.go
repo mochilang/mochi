@@ -331,14 +331,22 @@ func (c *Compiler) compileFunStmt(fn *parser.FunStmt) error {
 	c.writeln(fmt.Sprintf("%s%s %s(%s) {", prefix, ret, sanitizeName(fn.Name), strings.Join(params, ", ")))
 	c.indent++
 	c.inFun++
+	origEnv := c.env
+	fnEnv := types.NewEnv(c.env)
+	for _, p := range fn.Params {
+		fnEnv.SetVar(p.Name, c.resolveTypeRef(p.Type), true)
+	}
+	c.env = fnEnv
 	for _, stmt := range fn.Body {
 		if err := c.compileStmt(stmt); err != nil {
+			c.env = origEnv
 			return err
 		}
 	}
 	c.inFun--
 	c.indent--
 	c.writeln("}")
+	c.env = origEnv
 	c.varTypes = origVars
 	return nil
 }
@@ -879,14 +887,28 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 			loopVar = c.newVar()
 		}
 		c.writeln(fmt.Sprintf("for (var %s = %s; %s < %s; %s++) {", loopVar, start, loopVar, end, loopVar))
+		origEnv := c.env
+		child := types.NewEnv(c.env)
+		child.SetVar(f.Name, types.IntType{}, true)
+		c.env = child
+		origVars := c.varTypes
+		c.varTypes = make(map[string]string)
+		for k, v := range origVars {
+			c.varTypes[k] = v
+		}
+		c.varTypes[name] = "int"
 		c.indent++
 		for _, s := range f.Body {
 			if err := c.compileStmt(s); err != nil {
+				c.env = origEnv
+				c.varTypes = origVars
 				return err
 			}
 		}
 		c.indent--
 		c.writeln("}")
+		c.env = origEnv
+		c.varTypes = origVars
 		return nil
 	}
 	src, err := c.compileExpr(f.Source)
