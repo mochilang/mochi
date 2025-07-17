@@ -1,0 +1,4 @@
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/machine/x/fs/len_map.fs(4,27): error FS0597: Successive arguments should be separated by spaces or tupled, and arguments involving function or method applications should be parenthesized

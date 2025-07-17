@@ -1,0 +1,28 @@
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/machine/x/fs/outer_join.fs(20,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (19:45). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/outer_join.fs(20,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (19:45). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/outer_join.fs(21,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (19:45). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/outer_join.fs(21,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (19:45). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/outer_join.fs(21,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (19:45). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/outer_join.fs(21,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (19:45). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/outer_join.fs(21,21): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (19:45). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/outer_join.fs(21,21): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (19:45). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/outer_join.fs(22,2): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (19:26). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/outer_join.fs(23,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (22:23). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/outer_join.fs(23,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (22:23). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/outer_join.fs(25,2): error FS0010: Unexpected identifier in expression. Expected 'in' or other token.
+
+/workspace/mochi/tests/machine/x/fs/outer_join.fs(19,27): error FS0587: Error in the return expression for this 'let'. Possible incorrect indentation.

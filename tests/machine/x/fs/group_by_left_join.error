@@ -1,0 +1,16 @@
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/machine/x/fs/group_by_left_join.fs(43,3): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (42:48). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/group_by_left_join.fs(43,3): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (42:48). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/group_by_left_join.fs(44,3): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (42:48). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/group_by_left_join.fs(44,3): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (42:48). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/group_by_left_join.fs(44,18): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (42:25). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/group_by_left_join.fs(44,33): warning FS0064: This construct causes code to be less generic than indicated by the type annotations. The type variable 'K has been constrained to be type 'string'.
+
+/workspace/mochi/tests/machine/x/fs/group_by_left_join.fs(45,68): error FS0039: The field, constructor or member 'o' is not defined

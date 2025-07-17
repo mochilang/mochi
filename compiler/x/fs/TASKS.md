@@ -46,3 +46,4 @@
 
 
 - 2025-07-15 06:37 - Implemented tuple-based sort key generation in `compileQuery` to allow sorting before dropping query variables. F# code for TPC-DS queries still fails to compile due to other type issues.
+- 2025-08-30 - Initial machine-generated F# code for VM examples. 68 of 100 programs compile and run.

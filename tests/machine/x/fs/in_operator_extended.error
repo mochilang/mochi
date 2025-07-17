@@ -1,0 +1,16 @@
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/machine/x/fs/in_operator_extended.fs(12,17): error FS0039: The field, constructor or member 'Contains' is not defined
+
+/workspace/mochi/tests/machine/x/fs/in_operator_extended.fs(13,17): error FS0039: The field, constructor or member 'Contains' is not defined
+
+/workspace/mochi/tests/machine/x/fs/in_operator_extended.fs(15,15): error FS0001: This expression was expected to have type
+    string    
+but here has type
+    bool    
+
+/workspace/mochi/tests/machine/x/fs/in_operator_extended.fs(16,15): error FS0001: This expression was expected to have type
+    string    
+but here has type
+    bool    
