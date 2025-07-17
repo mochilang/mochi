@@ -35,3 +35,4 @@
 - 2025-07-17 12:34 - regenerated VM valid Java outputs and added README checklist.
 - 2025-07-17T07:19 - fixed indentation in main method
 - 2025-07-17T07:55 - singularized data class names from variable context
+- 2025-07-17T08:10 - optimized simple left join queries using lookup maps
