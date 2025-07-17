@@ -130,7 +130,7 @@ func cTypeFromType(t types.Type) string {
 	case types.FloatType:
 		return "double"
 	case types.StringType:
-		return "const char*"
+		return "char*"
 	case types.UnionType:
 		return sanitizeTypeName(tt.Name)
 	case types.StructType:
@@ -146,7 +146,7 @@ func cTypeFromType(t types.Type) string {
 		if elem == "double" {
 			return "list_float"
 		}
-		if elem == "char*" {
+		if elem == "char*" || elem == "const char*" {
 			return "list_string"
 		}
 		if elem == "list_int" {
