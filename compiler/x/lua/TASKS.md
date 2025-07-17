@@ -71,3 +71,6 @@
 ## Progress (2025-07-18 12:45)
 - Added basic `bigint` support via `tonumber` casts.
 - Generated Lua code and output for `bigint_ops.mochi`.
+
+## Progress (2025-07-18 13:15)
+- Added bigint_ops from `vm_extended/valid` to Lua machine README; count now 101/101.
