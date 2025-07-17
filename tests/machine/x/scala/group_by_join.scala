@@ -8,9 +8,9 @@ object group_by_join {
   case class _Group[K,T](key: K, items: List[T]) extends Iterable[T] { def iterator: Iterator[T] = items.iterator }
 
   def main(args: Array[String]): Unit = {
-    val customers = List(Map("id" -> 1, "name" -> "Alice"), Map("id" -> 2, "name" -> "Bob"))
-    val orders = List(Map("id" -> 100, "customerId" -> 1), Map("id" -> 101, "customerId" -> 1), Map("id" -> 102, "customerId" -> 2))
-    val stats = ((for { o <- orders; c <- customers; if o.customerId == (c.id).asInstanceOf[Int] } yield (c.name, Stat(o = o, c = c))).groupBy(_._1).map{ case(k,list) => _Group(k, list.map(_._2)) }.toList).map{ g => Map("name" -> g.key, "count" -> (g).size) }.toList
+    val customers = List(Customer(id = 1, name = "Alice"), Customer(id = 2, name = "Bob"))
+    val orders = List(Order(id = 100, customerId = 1), Order(id = 101, customerId = 1), Order(id = 102, customerId = 2))
+    val stats = ((for { o <- orders; c <- customers; if o.customerId == (c.id).asInstanceOf[Int] } yield (c.name, Stat(o = o, c = c))).groupBy(_._1).map{ case(k,list) => _Group(k, list.map(_._2)) }.toList).map{ g => Stat1(name = g.key, count = (g).size) }.toList
     println("--- Orders per customer ---")
     for(s <- stats) {
       println(s"${s.name} orders: ${s.count}")

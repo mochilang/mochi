@@ -1885,12 +1885,31 @@ func (c *Compiler) compileList(l *parser.ListLiteral, mutable bool) (string, err
 
 	// now compile elements with the inferred type information available
 	elems := make([]string, len(l.Elems))
-	for i, e := range l.Elems {
-		s, err := c.compileExpr(e)
-		if err != nil {
-			return "", err
+	if st, ok := elemType.(types.StructType); ok && !mutable {
+		// directly emit case class instances instead of maps
+		for i, e := range l.Elems {
+			if e.Binary != nil && len(e.Binary.Right) == 0 && e.Binary.Left.Value.Target.Map != nil {
+				s, err := c.mapToStruct(st.Name, st, e.Binary.Left.Value.Target.Map)
+				if err != nil {
+					return "", err
+				}
+				elems[i] = s
+				continue
+			}
+			s, err := c.compileExpr(e)
+			if err != nil {
+				return "", err
+			}
+			elems[i] = s
 		}
-		elems[i] = s
+	} else {
+		for i, e := range l.Elems {
+			s, err := c.compileExpr(e)
+			if err != nil {
+				return "", err
+			}
+			elems[i] = s
+		}
 	}
 
 	return fmt.Sprintf("%s(%s)", prefix, strings.Join(elems, ", ")), nil
@@ -1913,6 +1932,10 @@ func (c *Compiler) compileMap(m *parser.MapLiteral, mutable bool) (string, error
 	t := c.namedType(types.ExprType(expr, c.env))
 	if !c.forceMap {
 		if st, ok := t.(types.StructType); ok && !mutable && !c.mapVars[c.structHint] {
+			return c.mapToStruct(st.Name, st, m)
+		}
+		if st, ok := c.detectStructMap(expr, c.env); ok && !mutable && !c.mapVars[c.structHint] {
+			st = c.ensureStructName(st)
 			return c.mapToStruct(st.Name, st, m)
 		}
 	}

@@ -3,7 +3,7 @@ object dataset_sort_take_limit {
   case class Product(name: String, price: Int)
 
   def main(args: Array[String]): Unit = {
-    val products = List(Map("name" -> "Laptop", "price" -> 1500), Map("name" -> "Smartphone", "price" -> 900), Map("name" -> "Tablet", "price" -> 600), Map("name" -> "Monitor", "price" -> 300), Map("name" -> "Keyboard", "price" -> 100), Map("name" -> "Mouse", "price" -> 50), Map("name" -> "Headphones", "price" -> 200))
+    val products = List(Product(name = "Laptop", price = 1500), Product(name = "Smartphone", price = 900), Product(name = "Tablet", price = 600), Product(name = "Monitor", price = 300), Product(name = "Keyboard", price = 100), Product(name = "Mouse", price = 50), Product(name = "Headphones", price = 200))
     val expensive = (for { p <- products } yield p).sortBy(p => -p.price).map(p => p).drop(1).take(3)
     println("--- Top products (excluding most expensive) ---")
     for(item <- expensive) {

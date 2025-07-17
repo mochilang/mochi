@@ -1,11 +1,5 @@
 exit status 1
-/workspace/mochi/tests/machine/x/scala/group_items_iteration.scala:9: error: value tag is not a member of scala.collection.immutable.Map[String,Any]
-    val groups = ((for { d <- data } yield (d.tag, d)).groupBy(_._1).map{ case(k,list) => _Group(k, list.map(_._2)) }.toList).map{ g => g }.toList
-                                              ^
-/workspace/mochi/tests/machine/x/scala/group_items_iteration.scala:9: error: value map is not a member of Any
-    val groups = ((for { d <- data } yield (d.tag, d)).groupBy(_._1).map{ case(k,list) => _Group(k, list.map(_._2)) }.toList).map{ g => g }.toList
-                                                                                                         ^
-/workspace/mochi/tests/machine/x/scala/group_items_iteration.scala:18: error: Any does not take parameters
+/workspace/mochi/tests/machine/x/scala/group_items_iteration.scala:19: error: Any does not take parameters
     val result = (for { r <- tmp } yield r).sortBy(r => r("tag")).map(r => r)
                                                          ^
-three errors found
+one error found

@@ -6,7 +6,7 @@ object group_by_having {
   case class _Group[K,T](key: K, items: List[T]) extends Iterable[T] { def iterator: Iterator[T] = items.iterator }
 
   def main(args: Array[String]): Unit = {
-    val people = List(Map("name" -> "Alice", "city" -> "Paris"), Map("name" -> "Bob", "city" -> "Hanoi"), Map("name" -> "Charlie", "city" -> "Paris"), Map("name" -> "Diana", "city" -> "Hanoi"), Map("name" -> "Eve", "city" -> "Paris"), Map("name" -> "Frank", "city" -> "Hanoi"), Map("name" -> "George", "city" -> "Paris"))
+    val people = List(People(name = "Alice", city = "Paris"), People(name = "Bob", city = "Hanoi"), People(name = "Charlie", city = "Paris"), People(name = "Diana", city = "Hanoi"), People(name = "Eve", city = "Paris"), People(name = "Frank", city = "Hanoi"), People(name = "George", city = "Paris"))
     val big = (((for { p <- people } yield (p.city, p)).groupBy(_._1).map{ case(k,list) => _Group(k, list.map(_._2)) }.toList).filter{ g => (g).size >= 4 }).map{ g => Map("city" -> g.key, "num" -> (g).size) }.toList
     println(scala.util.parsing.json.JSONArray(big.asInstanceOf[List[Any]]).toString())
   }

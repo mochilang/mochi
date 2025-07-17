@@ -6,8 +6,8 @@ object group_by {
   case class _Group[K,T](key: K, items: List[T]) extends Iterable[T] { def iterator: Iterator[T] = items.iterator }
 
   def main(args: Array[String]): Unit = {
-    val people = List(Map("name" -> "Alice", "age" -> 30, "city" -> "Paris"), Map("name" -> "Bob", "age" -> 15, "city" -> "Hanoi"), Map("name" -> "Charlie", "age" -> 65, "city" -> "Paris"), Map("name" -> "Diana", "age" -> 45, "city" -> "Hanoi"), Map("name" -> "Eve", "age" -> 70, "city" -> "Paris"), Map("name" -> "Frank", "age" -> 22, "city" -> "Hanoi"))
-    val stats = ((for { person <- people } yield (person.city, person)).groupBy(_._1).map{ case(k,list) => _Group(k, list.map(_._2)) }.toList).map{ g => Map("city" -> g.key, "count" -> (g).size, "avg_age" -> (for { p <- g } yield p.age).sum.toDouble / (for { p <- g } yield p.age).size) }.toList
+    val people = List(People(name = "Alice", age = 30, city = "Paris"), People(name = "Bob", age = 15, city = "Hanoi"), People(name = "Charlie", age = 65, city = "Paris"), People(name = "Diana", age = 45, city = "Hanoi"), People(name = "Eve", age = 70, city = "Paris"), People(name = "Frank", age = 22, city = "Hanoi"))
+    val stats = ((for { person <- people } yield (person.city, person)).groupBy(_._1).map{ case(k,list) => _Group(k, list.map(_._2)) }.toList).map{ g => Stat(city = g.key, count = (g).size, avg_age = (for { p <- g } yield p.age).sum.toDouble / (for { p <- g } yield p.age).size) }.toList
     println("--- People grouped by city ---")
     for(s <- stats) {
       println(s"${s.city}: count = ${s.count}, avg_age = ${s.avg_age}")
