@@ -946,7 +946,7 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 			r := right
 			if isStringType(leftType) || isStringType(rightType) {
 				cmp := map[string]string{"<": "< 0", "<=": "<= 0", ">": "> 0", ">=": ">= 0"}[op]
-				return fmt.Sprintf("%s.compareTo(%s) %s", l, r, cmp), types.BoolType{}, nil
+				return fmt.Sprintf("%s.toString().compareTo(%s.toString()) %s", l, r, cmp), types.BoolType{}, nil
 			}
 			if !isNumericType(leftType) {
 				l = fmt.Sprintf("(%s as num)", l)
