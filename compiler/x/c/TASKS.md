@@ -142,3 +142,5 @@ should compile and run successfully.
 - 2025-09-18 - Fixed list index assignments to use `listItemExpr`; `list_assign.mochi` compiles and runs.
 - 2025-07-17 - Corrected nested list initialization and local variable capture in
   test blocks. `list_nested_assign.mochi` and `test_block.mochi` compile and run.
+- 2025-09-19 - Improved string list type inference and constant `in` evaluation;
+  `sort_stable.mochi` now compiles and runs.

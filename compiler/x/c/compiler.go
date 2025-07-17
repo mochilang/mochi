@@ -4421,6 +4421,31 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			continue
 		}
 		if op.Op == "in" && isListIntPostfix(op.Right, c.env) {
+			if len(b.Right) == 1 {
+				if iv, ok := constIntValue(&parser.Expr{Binary: &parser.BinaryExpr{Left: b.Left}}); ok {
+					if vals, ok2 := c.evalListIntPostfix(op.Right); ok2 {
+						found := false
+						for _, v := range vals {
+							if v == iv {
+								found = true
+								break
+							}
+						}
+						if found {
+							left = "1"
+						} else {
+							left = "0"
+						}
+						leftList = false
+						leftListInt = false
+						leftListString = false
+						leftListFloat = false
+						leftString = false
+						leftType = types.IntType{}
+						continue
+					}
+				}
+			}
 			if l, ok := c.listLens[right]; ok && c.isStackArrayExpr(right) {
 				c.need(needInArrayInt)
 				left = fmt.Sprintf("contains_array_int(%s, %d, %s)", right, l, left)
@@ -7208,6 +7233,15 @@ func constFloatValue(e *parser.Expr) (float64, bool) {
 	default:
 		return 0, false
 	}
+}
+
+func constIntValue(e *parser.Expr) (int, bool) {
+	typ, val, ok := constLiteralTypeVal(e)
+	if !ok || typ != "int" {
+		return 0, false
+	}
+	iv, _ := strconv.Atoi(val)
+	return iv, true
 }
 
 func looksLikeFloatConst(expr string) bool {

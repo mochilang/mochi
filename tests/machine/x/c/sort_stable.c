@@ -26,7 +26,7 @@ static void _print_list_string(list_string v) {
 }
 typedef struct {
   int n;
-  const char *v;
+  char *v;
 } item_t;
 typedef struct {
   int len;
@@ -47,7 +47,7 @@ int _mochi_main() {
   item_t items[] = {(item_t){.n = 1, .v = "a"}, (item_t){.n = 1, .v = "b"},
                     (item_t){.n = 2, .v = "c"}};
   int items_len = sizeof(items) / sizeof(items[0]);
-  int tmp1 = int_create(items_len);
+  list_string tmp1 = list_string_create(items_len);
   int *tmp4 = (int *)malloc(sizeof(int) * items_len);
   int tmp2 = 0;
   for (int tmp3 = 0; tmp3 < items_len; tmp3++) {
@@ -63,13 +63,13 @@ int _mochi_main() {
         int tmp5 = tmp4[i7];
         tmp4[i7] = tmp4[i8];
         tmp4[i8] = tmp5;
-        const char *tmp6 = tmp1.data[i7];
+        char *tmp6 = tmp1.data[i7];
         tmp1.data[i7] = tmp1.data[i8];
         tmp1.data[i8] = tmp6;
       }
     }
   }
-  int result = tmp1;
+  list_string result = tmp1;
   _print_list_string(result);
   printf("\n");
   free(result.data);
