@@ -30,7 +30,7 @@ int sum_tree(Tree t) {
 var t = Node(Leaf(), 1, Node(Leaf(), 2, Leaf()));
 
 void main() {
-  _print([sum_tree(t)]);
+  print(sum_tree(t));
 }
 
 bool _equal(dynamic a, dynamic b) {
@@ -110,4 +110,15 @@ bool _runTest(String name, void Function() f) {
         stdout.writeln(' fail $e (${_formatDuration(d)})');
         return false;
     }
+}
+
+String findRepoRoot() {
+    var dir = Directory.current;
+    for (var i = 0; i < 10; i++) {
+        if (File('${dir.path}/go.mod').existsSync()) return dir.path;
+        var parent = dir.parent;
+        if (parent.path == dir.path) break;
+        dir = parent;
+    }
+    return '';
 }

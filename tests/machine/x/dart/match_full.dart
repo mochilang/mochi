@@ -57,11 +57,11 @@ String classify(int n) {
 }
 
 void main() {
-  _print([label]);
-  _print([mood]);
-  _print([status]);
-  _print([classify(0)]);
-  _print([classify(5)]);
+  print(label);
+  print(mood);
+  print(status);
+  print(classify(0));
+  print(classify(5));
 }
 
 bool _equal(dynamic a, dynamic b) {
@@ -141,4 +141,15 @@ bool _runTest(String name, void Function() f) {
         stdout.writeln(' fail $e (${_formatDuration(d)})');
         return false;
     }
+}
+
+String findRepoRoot() {
+    var dir = Directory.current;
+    for (var i = 0; i < 10; i++) {
+        if (File('${dir.path}/go.mod').existsSync()) return dir.path;
+        var parent = dir.parent;
+        if (parent.path == dir.path) break;
+        dir = parent;
+    }
+    return '';
 }

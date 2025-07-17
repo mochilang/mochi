@@ -28,7 +28,7 @@ var stats = (() {
     _q0.add({'name': _k4, 'count': (() {
   var _q5 = <dynamic>[];
   for (var r in g) {
-    if (!((r['o']) ?? false)) continue;
+    if (r['o'] == null) continue;
     _q5.add(r);
   }
   return _q5;
@@ -38,7 +38,7 @@ var stats = (() {
 })();
 
 void main() {
-  _print(['--- Group Left Join ---']);
+  print('--- Group Left Join ---');
   for (var s in stats) {
     _print([s['name'], 'orders:', s['count']]);
   }
@@ -121,4 +121,15 @@ bool _runTest(String name, void Function() f) {
         stdout.writeln(' fail $e (${_formatDuration(d)})');
         return false;
     }
+}
+
+String findRepoRoot() {
+    var dir = Directory.current;
+    for (var i = 0; i < 10; i++) {
+        if (File('${dir.path}/go.mod').existsSync()) return dir.path;
+        var parent = dir.parent;
+        if (parent.path == dir.path) break;
+        dir = parent;
+    }
+    return '';
 }

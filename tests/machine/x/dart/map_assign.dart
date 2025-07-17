@@ -6,7 +6,7 @@ var scores = {'alice': 1};
 
 void main() {
   scores['bob'] = 2;
-  _print([(scores as Map)['bob']]);
+  print((scores as Map)['bob']);
 }
 
 bool _equal(dynamic a, dynamic b) {
@@ -86,4 +86,15 @@ bool _runTest(String name, void Function() f) {
         stdout.writeln(' fail $e (${_formatDuration(d)})');
         return false;
     }
+}
+
+String findRepoRoot() {
+    var dir = Directory.current;
+    for (var i = 0; i < 10; i++) {
+        if (File('${dir.path}/go.mod').existsSync()) return dir.path;
+        var parent = dir.parent;
+        if (parent.path == dir.path) break;
+        dir = parent;
+    }
+    return '';
 }

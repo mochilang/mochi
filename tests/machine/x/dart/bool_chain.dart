@@ -3,14 +3,14 @@ import 'dart:io';
 import 'dart:convert';
 
 bool boom() {
-  _print(['boom']);
+  print('boom');
   return true;
 }
 
 void main() {
-  _print([(1 < 2) && (2 < 3) && (3 < 4)]);
-  _print([(1 < 2) && (2 > 3) && boom()]);
-  _print([(1 < 2) && (2 < 3) && (3 > 4) && boom()]);
+  print((1 < 2) && (2 < 3) && (3 < 4));
+  print((1 < 2) && (2 > 3) && boom());
+  print((1 < 2) && (2 < 3) && (3 > 4) && boom());
 }
 
 bool _equal(dynamic a, dynamic b) {
@@ -90,4 +90,15 @@ bool _runTest(String name, void Function() f) {
         stdout.writeln(' fail $e (${_formatDuration(d)})');
         return false;
     }
+}
+
+String findRepoRoot() {
+    var dir = Directory.current;
+    for (var i = 0; i < 10; i++) {
+        if (File('${dir.path}/go.mod').existsSync()) return dir.path;
+        var parent = dir.parent;
+        if (parent.path == dir.path) break;
+        dir = parent;
+    }
+    return '';
 }

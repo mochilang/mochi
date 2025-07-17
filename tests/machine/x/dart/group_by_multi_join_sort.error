@@ -1,9 +1,0 @@
-exit status 255
-Unhandled exception:
-type 'String' is not a subtype of type 'num' in type cast
-#0      result.<anonymous closure> (file:///workspace/mochi/tests/machine/x/dart/group_by_multi_join_sort.dart:27:35)
-#1      result (file:///workspace/mochi/tests/machine/x/dart/group_by_multi_join_sort.dart:43:3)
-#2      result (file:///workspace/mochi/tests/machine/x/dart/group_by_multi_join_sort.dart)
-#3      main (file:///workspace/mochi/tests/machine/x/dart/group_by_multi_join_sort.dart:46:11)
-#4      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
-#5      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

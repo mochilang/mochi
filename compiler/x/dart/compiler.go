@@ -2013,6 +2013,9 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	// additional support libraries
 	switch call.Func {
 	case "print":
+		if len(args) == 1 {
+			return fmt.Sprintf("print(%s)", args[0]), nil
+		}
 		return fmt.Sprintf("_print([%s])", strings.Join(args, ", ")), nil
 	case "append":
 		if len(args) != 2 {

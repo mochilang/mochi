@@ -24,12 +24,12 @@ var m = {'a': 1};
 var s = 'hello';
 
 void main() {
-  _print([_in(1, ys)]);
-  _print([_in(2, ys)]);
-  _print([_in('a', m)]);
-  _print([_in('b', m)]);
-  _print([_in('ell', s)]);
-  _print([_in('foo', s)]);
+  print(_in(1, ys));
+  print(_in(2, ys));
+  print(_in('a', m));
+  print(_in('b', m));
+  print(_in('ell', s));
+  print(_in('foo', s));
 }
 
 bool _equal(dynamic a, dynamic b) {
@@ -109,4 +109,15 @@ bool _runTest(String name, void Function() f) {
         stdout.writeln(' fail $e (${_formatDuration(d)})');
         return false;
     }
+}
+
+String findRepoRoot() {
+    var dir = Directory.current;
+    for (var i = 0; i < 10; i++) {
+        if (File('${dir.path}/go.mod').existsSync()) return dir.path;
+        var parent = dir.parent;
+        if (parent.path == dir.path) break;
+        dir = parent;
+    }
+    return '';
 }

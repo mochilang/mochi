@@ -3,10 +3,10 @@ import 'dart:io';
 import 'dart:convert';
 
 void main() {
-  _print([{...[1, 2], ...[2, 3]}.toList()]);
-  _print([(List.from([1, 2, 3])..removeWhere((x) => [2].contains(x)))]);
-  _print([[1, 2, 3].where((x) => [2, 4].contains(x)).toList()]);
-  _print([(List.from([1, 2])..addAll([2, 3])).length]);
+  print({...[1, 2], ...[2, 3]}.toList());
+  print((List.from([1, 2, 3])..removeWhere((x) => [2].contains(x))));
+  print([1, 2, 3].where((x) => [2, 4].contains(x)).toList());
+  print((List.from([1, 2])..addAll([2, 3])).length);
 }
 
 bool _equal(dynamic a, dynamic b) {
@@ -86,4 +86,15 @@ bool _runTest(String name, void Function() f) {
         stdout.writeln(' fail $e (${_formatDuration(d)})');
         return false;
     }
+}
+
+String findRepoRoot() {
+    var dir = Directory.current;
+    for (var i = 0; i < 10; i++) {
+        if (File('${dir.path}/go.mod').existsSync()) return dir.path;
+        var parent = dir.parent;
+        if (parent.path == dir.path) break;
+        dir = parent;
+    }
+    return '';
 }

@@ -35,7 +35,7 @@ var result = (() {
 })();
 
 void main() {
-  _print(['--- Outer Join using syntax ---']);
+  print('--- Outer Join using syntax ---');
   for (var row in result) {
     if (row['order'] != null) {
       if (row['customer'] != null) {
@@ -128,4 +128,15 @@ bool _runTest(String name, void Function() f) {
         stdout.writeln(' fail $e (${_formatDuration(d)})');
         return false;
     }
+}
+
+String findRepoRoot() {
+    var dir = Directory.current;
+    for (var i = 0; i < 10; i++) {
+        if (File('${dir.path}/go.mod').existsSync()) return dir.path;
+        var parent = dir.parent;
+        if (parent.path == dir.path) break;
+        dir = parent;
+    }
+    return '';
 }

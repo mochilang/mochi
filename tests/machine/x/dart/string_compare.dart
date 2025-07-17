@@ -3,10 +3,10 @@ import 'dart:io';
 import 'dart:convert';
 
 void main() {
-  _print([('a' as num) < ('b' as num)]);
-  _print([('a' as num) <= ('a' as num)]);
-  _print([('b' as num) > ('a' as num)]);
-  _print([('b' as num) >= ('b' as num)]);
+  print('a'.compareTo('b') < 0);
+  print('a'.compareTo('a') <= 0);
+  print('b'.compareTo('a') > 0);
+  print('b'.compareTo('b') >= 0);
 }
 
 bool _equal(dynamic a, dynamic b) {
@@ -86,4 +86,15 @@ bool _runTest(String name, void Function() f) {
         stdout.writeln(' fail $e (${_formatDuration(d)})');
         return false;
     }
+}
+
+String findRepoRoot() {
+    var dir = Directory.current;
+    for (var i = 0; i < 10; i++) {
+        if (File('${dir.path}/go.mod').existsSync()) return dir.path;
+        var parent = dir.parent;
+        if (parent.path == dir.path) break;
+        dir = parent;
+    }
+    return '';
 }

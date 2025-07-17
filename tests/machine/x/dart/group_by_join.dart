@@ -26,7 +26,7 @@ var stats = (() {
 })();
 
 void main() {
-  _print(['--- Orders per customer ---']);
+  print('--- Orders per customer ---');
   for (var s in stats) {
     _print([s['name'], 'orders:', s['count']]);
   }
@@ -109,4 +109,15 @@ bool _runTest(String name, void Function() f) {
         stdout.writeln(' fail $e (${_formatDuration(d)})');
         return false;
     }
+}
+
+String findRepoRoot() {
+    var dir = Directory.current;
+    for (var i = 0; i < 10; i++) {
+        if (File('${dir.path}/go.mod').existsSync()) return dir.path;
+        var parent = dir.parent;
+        if (parent.path == dir.path) break;
+        dir = parent;
+    }
+    return '';
 }

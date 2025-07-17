@@ -21,7 +21,7 @@ var combos = (() {
 })();
 
 void main() {
-  _print(['--- Cross Join of three lists ---']);
+  print('--- Cross Join of three lists ---');
   for (var c in combos) {
     _print([c['n'], c['l'], c['b']]);
   }
@@ -104,4 +104,15 @@ bool _runTest(String name, void Function() f) {
         stdout.writeln(' fail $e (${_formatDuration(d)})');
         return false;
     }
+}
+
+String findRepoRoot() {
+    var dir = Directory.current;
+    for (var i = 0; i < 10; i++) {
+        if (File('${dir.path}/go.mod').existsSync()) return dir.path;
+        var parent = dir.parent;
+        if (parent.path == dir.path) break;
+        dir = parent;
+    }
+    return '';
 }

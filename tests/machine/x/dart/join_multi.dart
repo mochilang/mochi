@@ -23,7 +23,7 @@ var result = (() {
 })();
 
 void main() {
-  _print(['--- Multi Join ---']);
+  print('--- Multi Join ---');
   for (var r in result) {
     _print([r['name'], 'bought item', r['sku']]);
   }
@@ -106,4 +106,15 @@ bool _runTest(String name, void Function() f) {
         stdout.writeln(' fail $e (${_formatDuration(d)})');
         return false;
     }
+}
+
+String findRepoRoot() {
+    var dir = Directory.current;
+    for (var i = 0; i < 10; i++) {
+        if (File('${dir.path}/go.mod').existsSync()) return dir.path;
+        var parent = dir.parent;
+        if (parent.path == dir.path) break;
+        dir = parent;
+    }
+    return '';
 }

@@ -23,7 +23,7 @@ var result = (() {
 })();
 
 void main() {
-  _print(['--- Right Join using syntax ---']);
+  print('--- Right Join using syntax ---');
   for (var entry in result) {
     if (entry['order'] != null) {
       _print(['Customer', entry['customerName'], 'has order', entry['order']['id'], '- \$', entry['order']['total']]);
@@ -111,4 +111,15 @@ bool _runTest(String name, void Function() f) {
         stdout.writeln(' fail $e (${_formatDuration(d)})');
         return false;
     }
+}
+
+String findRepoRoot() {
+    var dir = Directory.current;
+    for (var i = 0; i < 10; i++) {
+        if (File('${dir.path}/go.mod').existsSync()) return dir.path;
+        var parent = dir.parent;
+        if (parent.path == dir.path) break;
+        dir = parent;
+    }
+    return '';
 }

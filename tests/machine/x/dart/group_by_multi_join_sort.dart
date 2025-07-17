@@ -24,7 +24,7 @@ var result = (() {
         if (!(l['l_orderkey'] == o['o_orderkey'])) continue;
         for (var n in nation) {
           if (!(n['n_nationkey'] == c['c_nationkey'])) continue;
-          if (!((o['o_orderdate'] as num) >= (start_date as num) && (o['o_orderdate'] as num) < (end_date as num) && l['l_returnflag'] == 'R')) continue;
+          if (!(o['o_orderdate'].compareTo(start_date) >= 0 && o['o_orderdate'].compareTo(end_date) < 0 && l['l_returnflag'] == 'R')) continue;
           var _k3 = {'c_custkey': c['c_custkey'], 'c_name': c['c_name'], 'c_acctbal': c['c_acctbal'], 'c_address': c['c_address'], 'c_phone': c['c_phone'], 'c_comment': c['c_comment'], 'n_name': n['n_name']};
           var _k3_s = jsonEncode(_k3);
           _g1.putIfAbsent(_k3_s, () => <dynamic>[]).add({'c': c, 'o': o, 'l': l, 'n': n});
@@ -43,7 +43,7 @@ var result = (() {
 })();
 
 void main() {
-  _print([result]);
+  print(result);
 }
 
 bool _equal(dynamic a, dynamic b) {
@@ -123,4 +123,15 @@ bool _runTest(String name, void Function() f) {
         stdout.writeln(' fail $e (${_formatDuration(d)})');
         return false;
     }
+}
+
+String findRepoRoot() {
+    var dir = Directory.current;
+    for (var i = 0; i < 10; i++) {
+        if (File('${dir.path}/go.mod').existsSync()) return dir.path;
+        var parent = dir.parent;
+        if (parent.path == dir.path) break;
+        dir = parent;
+    }
+    return '';
 }
