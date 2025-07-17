@@ -58,10 +58,15 @@ function main(): void {
     }
     return _res;
   })();
-  console.log("--- Orders with customer info ---");
+  _print("--- Orders with customer info ---");
   for (const entry of result) {
-    console.log(
-      `Order ${entry.orderId} by ${entry.customerName} - $ ${entry.total}`,
+    _print(
+      "Order",
+      entry.orderId,
+      "by",
+      entry.customerName,
+      "- $",
+      entry.total,
     );
   }
 }
@@ -85,6 +90,15 @@ function _hashJoin(
     for (const r of arr) out.push([l, r]);
   }
   return out;
+}
+
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
 }
 
 main();

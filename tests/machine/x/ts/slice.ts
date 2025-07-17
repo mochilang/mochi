@@ -2,42 +2,27 @@
 // Source: /workspace/mochi/tests/vm/valid/slice.mochi
 
 function main(): void {
-  console.log(
-    Array.isArray([
-        1,
-        2,
-        3,
-      ].slice(1, 3))
-      ? [
-        1,
-        2,
-        3,
-      ].slice(1, 3).join(" ")
-      : [
-        1,
-        2,
-        3,
-      ].slice(1, 3),
-  );
-  console.log(
-    Array.isArray([
-        1,
-        2,
-        3,
-      ].slice(0, 2))
-      ? [
-        1,
-        2,
-        3,
-      ].slice(0, 2).join(" ")
-      : [
-        1,
-        2,
-        3,
-      ].slice(0, 2),
-  );
-  console.log(_sliceString("hello", 1, 4));
+  _print([
+    1,
+    2,
+    3,
+  ].slice(1, 3));
+  _print([
+    1,
+    2,
+    3,
+  ].slice(0, 2));
+  _print(_sliceString("hello", 1, 4));
 }
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
+}
+
 function _sliceString(s: string, i: number, j: number): string {
   let start = i;
   let end = j;

@@ -2,7 +2,7 @@
 // Source: /workspace/mochi/tests/vm/valid/count_builtin.mochi
 
 function main(): void {
-  console.log(_count([
+  _print(_count([
     1,
     2,
     3,
@@ -15,6 +15,15 @@ function _count(v: any): number {
     if (Array.isArray((v as any).Items)) return (v as any).Items.length;
   }
   return 0;
+}
+
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
 }
 
 main();

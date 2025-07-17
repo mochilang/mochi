@@ -65,15 +65,29 @@ function main(): void {
     }
     return _res;
   })();
-  console.log("--- Right Join using syntax ---");
+  _print("--- Right Join using syntax ---");
   for (const entry of result) {
     if (entry.order) {
-      console.log(
-        `Customer ${entry.customerName} has order ${entry.order.id} - $ ${entry.order.total}`,
+      _print(
+        "Customer",
+        entry.customerName,
+        "has order",
+        entry.order.id,
+        "- $",
+        entry.order.total,
       );
     } else {
-      console.log(`Customer ${entry.customerName} has no orders`);
+      _print("Customer", entry.customerName, "has no orders");
     }
   }
 }
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
+}
+
 main();

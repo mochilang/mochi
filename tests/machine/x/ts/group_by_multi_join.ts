@@ -90,8 +90,17 @@ function main(): void {
     }
     return _res;
   })();
-  console.log(Array.isArray(grouped) ? grouped.join(" ") : grouped);
+  _print(grouped);
 }
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
+}
+
 function _sum(v: any): number {
   let list: any[] | null = null;
   if (Array.isArray(v)) list = v;

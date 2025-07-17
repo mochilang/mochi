@@ -2,85 +2,31 @@
 // Source: /workspace/mochi/tests/vm/valid/list_set_ops.mochi
 
 function main(): void {
-  console.log(
-    Array.isArray(Array.from(
-        new Set([...[
-          1,
-          2,
-        ], ...[
-          2,
-          3,
-        ]]),
-      ))
-      ? Array.from(
-        new Set([...[
-          1,
-          2,
-        ], ...[
-          2,
-          3,
-        ]]),
-      ).join(" ")
-      : Array.from(
-        new Set([...[
-          1,
-          2,
-        ], ...[
-          2,
-          3,
-        ]]),
-      ),
-  );
-  console.log(
-    Array.isArray([
-        1,
-        2,
-        3,
-      ].filter((v) => ![2].includes(v)))
-      ? [
-        1,
-        2,
-        3,
-      ].filter((v) => ![2].includes(v)).join(" ")
-      : [
-        1,
-        2,
-        3,
-      ].filter((v) => ![2].includes(v)),
-  );
-  console.log(
-    Array.isArray([
-        1,
-        2,
-        3,
-      ].filter((v) =>
-        [
-          2,
-          4,
-        ].includes(v)
-      ))
-      ? [
-        1,
-        2,
-        3,
-      ].filter((v) =>
-        [
-          2,
-          4,
-        ].includes(v)
-      ).join(" ")
-      : [
-        1,
-        2,
-        3,
-      ].filter((v) =>
-        [
-          2,
-          4,
-        ].includes(v)
-      ),
-  );
-  console.log(
+  _print(Array.from(
+    new Set([...[
+      1,
+      2,
+    ], ...[
+      2,
+      3,
+    ]]),
+  ));
+  _print([
+    1,
+    2,
+    3,
+  ].filter((v) => ![2].includes(v)));
+  _print([
+    1,
+    2,
+    3,
+  ].filter((v) =>
+    [
+      2,
+      4,
+    ].includes(v)
+  ));
+  _print(
     [
       1,
       2,
@@ -90,4 +36,13 @@ function main(): void {
     ]).length,
   );
 }
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
+}
+
 main();

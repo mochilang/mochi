@@ -7,6 +7,15 @@ let x: number;
 function main(): void {
   x = 8;
   msg = (x > 10) ? "big" : ((x > 5) ? "medium" : "small");
-  console.log(msg);
+  _print(msg);
 }
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
+}
+
 main();

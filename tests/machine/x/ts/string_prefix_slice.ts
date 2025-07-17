@@ -8,10 +8,19 @@ let s2: string;
 function main(): void {
   prefix = "fore";
   s1 = "forest";
-  console.log(_sliceString(s1, 0, prefix.length) == prefix);
+  _print(_sliceString(s1, 0, prefix.length) == prefix);
   s2 = "desert";
-  console.log(_sliceString(s2, 0, prefix.length) == prefix);
+  _print(_sliceString(s2, 0, prefix.length) == prefix);
 }
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
+}
+
 function _sliceString(s: string, i: number, j: number): string {
   let start = i;
   let end = j;

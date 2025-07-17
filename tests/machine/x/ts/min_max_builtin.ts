@@ -9,8 +9,8 @@ function main(): void {
     1,
     4,
   ];
-  console.log(_min(nums));
-  console.log(_max(nums));
+  _print(_min(nums));
+  _print(_max(nums));
 }
 function _max(v: any): number {
   let list: any[] | null = null;
@@ -47,6 +47,15 @@ function _min(v: any): any {
     if (num < mv) mv = num;
   }
   return mv;
+}
+
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
 }
 
 main();

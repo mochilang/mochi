@@ -9,6 +9,15 @@ let add5: (p0: number) => number;
 
 function main(): void {
   add5 = (b) => add(5, b);
-  console.log(add5(3));
+  _print(add5(3));
 }
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
+}
+
 main();

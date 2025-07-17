@@ -54,9 +54,18 @@ function main(): void {
     }
     return _res;
   })();
-  console.log("--- Multi Join ---");
+  _print("--- Multi Join ---");
   for (const r of result) {
-    console.log(`${r.name} bought item ${r.sku}`);
+    _print(r.name, "bought item", r.sku);
   }
 }
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
+}
+
 main();

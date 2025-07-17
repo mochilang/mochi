@@ -7,6 +7,15 @@ function main(): void {
   square = function (x: number): number {
     return (x * x);
   };
-  console.log(square(6));
+  _print(square(6));
 }
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
+}
+
 main();

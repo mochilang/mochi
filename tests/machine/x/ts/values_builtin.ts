@@ -9,8 +9,17 @@ function main(): void {
     "b": 2,
     "c": 3,
   };
-  console.log(Array.isArray(_values(m)) ? _values(m).join(" ") : _values(m));
+  _print(_values(m));
 }
+function _print(...args: any[]): void {
+  const out = args.map((a) => {
+    if (Array.isArray(a)) return a.join(" ");
+    if (a && typeof a === "object") return JSON.stringify(a);
+    return String(a);
+  }).join(" ").trimEnd();
+  console.log(out);
+}
+
 function _values<T>(m: { [key: string]: T }): T[] {
   if (m && typeof m === "object" && !Array.isArray(m)) {
     return Object.values(m);
