@@ -1,7 +1,0 @@
-/tmp/TestSwiftCompiler_VMValid_Goldenjoin_multi2909564861/001/main.swift:32:17: error: cannot convert value of type '[String : String]' to expected argument type '(name: String, sku: String)'
-30 | 			for i in items {
-31 | 				if !(o.id == i.orderId) { continue }
-32 | 				_res.append(["name": c.name, "sku": i.sku])
-   |                 `- error: cannot convert value of type '[String : String]' to expected argument type '(name: String, sku: String)'
-33 | 			}
-34 | 		}

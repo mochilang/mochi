@@ -1,7 +1,0 @@
-/tmp/TestSwiftCompiler_VMValid_Goldeninner_join4001931437/001/main.swift:26:16: error: cannot convert value of type '[String : Any]' to expected argument type '(customerName: String, orderId: Int, total: Int)'
-24 | 		for c in customers {
-25 | 			if !(o.customerId == c.id) { continue }
-26 | 			_res.append(["orderId": o.id, "customerName": c.name, "total": o.total])
-   |                `- error: cannot convert value of type '[String : Any]' to expected argument type '(customerName: String, orderId: Int, total: Int)'
-27 | 		}
-28 | 	}

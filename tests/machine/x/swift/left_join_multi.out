@@ -1,9 +1,0 @@
-/workspace/mochi/tests/machine/x/swift/left_join_multi.swift:34:17: warning: forced cast of '[[String : Any]]' to same type has no effect
-32 | }())
-33 | print("--- Left Join Multi ---")
-34 | for r in result as! [[String:Any]] {
-   |                 `- warning: forced cast of '[[String : Any]]' to same type has no effect
-35 |     print(r["orderId"]!, r["name"]!, r["item"]!)
-36 | }
---- Left Join Multi ---
-100 Alice Auto3(orderId: 100, sku: "a")
