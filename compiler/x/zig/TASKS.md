@@ -15,3 +15,4 @@
 ## Remaining Work
 - Support struct field type inference for TPCH data sets.
 - Confirm length handling for group expressions.
+- 2025-07-17 compiled dataset_sort_take_limit.mochi in Zig

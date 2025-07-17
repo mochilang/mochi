@@ -481,7 +481,7 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 				c.env.SetVar(s.Let.Name, typ, false)
 			}
 			if s.Let.Value != nil {
-				if isQueryExpr(s.Let.Value) {
+				if isQueryExpr(s.Let.Value) || extractExistsQuery(s.Let.Value) != nil {
 					v, err := c.compileExpr(s.Let.Value, false)
 					if err != nil {
 						return err
@@ -2134,8 +2134,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(" " + tmp + ".append(" + sel + ")" + c.catchHandler() + "; }")
 	}
 	resVar := c.newTmp()
-	b.WriteString(" const " + resVar + " = " + tmp + ".toOwnedSlice()" + c.catchHandler() + ";")
 	if skipExpr != "" || takeExpr != "" {
+		b.WriteString(" var " + resVar + " = " + tmp + ".toOwnedSlice()" + c.catchHandler() + ";")
 		c.needsSlice = true
 		start := "0"
 		if skipExpr != "" {
@@ -2150,6 +2150,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 		}
 		b.WriteString(" " + resVar + " = _slice_list(" + elem + ", " + resVar + ", " + start + ", " + end + ", 1);")
+	} else {
+		b.WriteString(" const " + resVar + " = " + tmp + ".toOwnedSlice()" + c.catchHandler() + ";")
 	}
 	b.WriteString(" break :" + lbl + " " + resVar + "; }")
 	return b.String(), nil
