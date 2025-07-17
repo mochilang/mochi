@@ -2008,12 +2008,24 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 						case "count":
 							return fmt.Sprintf("len(%s)", items), nil
 						case "avg":
+							argType := c.inferExprType(call.Args[0])
+							if isNumeric(argType) {
+								return fmt.Sprintf("(sum(%s)/len(%s) if %s else 0)", items, items, items), nil
+							}
 							c.use("_avg")
 							return fmt.Sprintf("_avg(%s)", items), nil
 						case "min":
+							argType := c.inferExprType(call.Args[0])
+							if isNumeric(argType) {
+								return fmt.Sprintf("(min([it for it in %s if it is not None]) if %s else 0)", items, items), nil
+							}
 							c.use("_min")
 							return fmt.Sprintf("_min(%s)", items), nil
 						case "max":
+							argType := c.inferExprType(call.Args[0])
+							if isNumeric(argType) {
+								return fmt.Sprintf("(max([it for it in %s if it is not None]) if %s else 0)", items, items), nil
+							}
 							c.use("_max")
 							return fmt.Sprintf("_max(%s)", items), nil
 						}
