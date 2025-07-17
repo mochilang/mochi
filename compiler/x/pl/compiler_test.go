@@ -41,7 +41,7 @@ func TestPrologCompiler_GoldenOutput(t *testing.T) {
 		if err != nil {
 			return nil, fmt.Errorf("\u274c parse error: %w", err)
 		}
-		code, err := pl.New().Compile(prog)
+		code, err := pl.New(nil).Compile(prog)
 		if err != nil {
 			return nil, fmt.Errorf("\u274c compile error: %w", err)
 		}
@@ -86,7 +86,7 @@ func compileAndRun(t *testing.T, src, outDir, name string) {
 		writeError(outDir, name, string(data), err)
 		return
 	}
-	code, err := pl.New().Compile(prog)
+	code, err := pl.New(nil).Compile(prog)
 	if err != nil {
 		writeError(outDir, name, string(data), err)
 		return

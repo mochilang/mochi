@@ -45,7 +45,7 @@ func compileAndRun(t *testing.T, src, outDir, name string) {
 		writeError(outDir, name, string(data), err)
 		t.Fatalf("parse error: %v", err)
 	}
-	code, err := pl.New().Compile(prog)
+	code, err := pl.New(nil).Compile(prog)
 	if err != nil {
 		writeError(outDir, name, string(data), err)
 		t.Fatalf("compile error: %v", err)

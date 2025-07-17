@@ -739,7 +739,7 @@ func compileProgram(lang string, env *types.Env, prog *parser.Program, root, src
 	case "php":
 		return phpcode.New(env).Compile(prog)
 	case "pl", "prolog":
-		return plcode.New().Compile(prog)
+		return plcode.New(env).Compile(prog)
 	case "racket", "rkt":
 		return racketcode.New().Compile(prog)
 	case "rb", "ruby":

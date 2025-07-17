@@ -76,7 +76,7 @@ func main() {
 			os.Remove(outPath)
 			continue
 		}
-		code, err := pl.New().Compile(prog)
+		code, err := pl.New(env).Compile(prog)
 		if err != nil {
 			os.WriteFile(errPath, []byte("compile: "+err.Error()), 0o644)
 			os.Remove(codePath)

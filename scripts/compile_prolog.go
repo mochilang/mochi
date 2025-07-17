@@ -28,7 +28,7 @@ func main() {
 			os.Remove(filepath.Join(outDir, name+".pl"))
 			continue
 		}
-		code, err := pl.New().Compile(prog)
+		code, err := pl.New(nil).Compile(prog)
 		if err != nil {
 			ioutil.WriteFile(errPath, []byte(err.Error()), 0644)
 			os.Remove(filepath.Join(outDir, name+".pl"))
