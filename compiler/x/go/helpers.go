@@ -153,101 +153,25 @@ func goType(t types.Type) string {
 	}
 }
 
-func equalTypes(a, b types.Type) bool {
-	if _, ok := a.(types.AnyType); ok {
-		return true
-	}
-	if _, ok := b.(types.AnyType); ok {
-		return true
-	}
-	if la, ok := a.(types.ListType); ok {
-		if lb, ok := b.(types.ListType); ok {
-			return equalTypes(la.Elem, lb.Elem)
-		}
-	}
-	if ma, ok := a.(types.MapType); ok {
-		if mb, ok := b.(types.MapType); ok {
-			return equalTypes(ma.Key, mb.Key) && equalTypes(ma.Value, mb.Value)
-		}
-	}
-	if ua, ok := a.(types.UnionType); ok {
-		if sb, ok := b.(types.StructType); ok {
-			if _, ok := ua.Variants[sb.Name]; ok {
-				return true
-			}
-		}
-	}
-	if ub, ok := b.(types.UnionType); ok {
-		if sa, ok := a.(types.StructType); ok {
-			if _, ok := ub.Variants[sa.Name]; ok {
-				return true
-			}
-		}
-	}
-	if isInt64(a) && (isInt64(b) || isInt(b)) {
-		return true
-	}
-	if isInt64(b) && (isInt64(a) || isInt(a)) {
-		return true
-	}
-	if isInt(a) && isInt(b) {
-		return true
-	}
-	if sa, ok := a.(types.StructType); ok {
-		if sb, ok := b.(types.StructType); ok {
-			if sa.Name == "" || sb.Name == "" {
-				if structTypesMatch(sa, sb) {
-					return true
-				}
-			}
-		}
-	}
-	return reflect.DeepEqual(a, b)
-}
+func equalTypes(a, b types.Type) bool { return types.EqualTypes(a, b) }
 
-func isInt64(t types.Type) bool {
-	_, ok := t.(types.Int64Type)
-	return ok
-}
-
-func isInt(t types.Type) bool {
-	_, ok := t.(types.IntType)
-	return ok
-}
-
-func isFloat(t types.Type) bool {
-	_, ok := t.(types.FloatType)
-	return ok
-}
-
-func isNumeric(t types.Type) bool {
-	return isInt(t) || isInt64(t) || isFloat(t)
-}
-
-func isBool(t types.Type) bool {
-	_, ok := t.(types.BoolType)
-	return ok
-}
-
-func isString(t types.Type) bool {
-	_, ok := t.(types.StringType)
-	return ok
-}
+func isInt64(t types.Type) bool   { return types.IsInt64Type(t) }
+func isInt(t types.Type) bool     { return types.IsIntType(t) }
+func isFloat(t types.Type) bool   { return types.IsFloatType(t) }
+func isNumeric(t types.Type) bool { return types.IsNumericType(t) }
+func isBool(t types.Type) bool    { return types.IsBoolType(t) }
+func isString(t types.Type) bool  { return types.IsStringType(t) }
 
 func isComparableSimple(t types.Type) bool {
 	return isInt(t) || isInt64(t) || isFloat(t) || isBool(t) || isString(t)
 }
 
-func isList(t types.Type) bool {
-	_, ok := t.(types.ListType)
-	return ok
-}
+func isList(t types.Type) bool { return types.IsListType(t) }
 
 func isListOfAny(t types.Type) bool {
 	if lt, ok := t.(types.ListType); ok {
-		if _, ok := lt.Elem.(types.AnyType); ok {
-			return true
-		}
+		_, ok := lt.Elem.(types.AnyType)
+		return ok
 	}
 	return false
 }
@@ -272,125 +196,24 @@ func isStructList(t types.Type) bool {
 	return false
 }
 
-func containsAny(t types.Type) bool {
-	switch tt := t.(type) {
-	case types.AnyType:
-		return true
-	case types.ListType:
-		return containsAny(tt.Elem)
-	case types.MapType:
-		return containsAny(tt.Key) || containsAny(tt.Value)
-	}
-	return false
-}
+func containsAny(t types.Type) bool { return types.ContainsAny(t) }
 
-func isStringAnyMap(t types.Type) bool {
-	if mt, ok := t.(types.MapType); ok {
-		if isString(mt.Key) {
-			if _, ok := mt.Value.(types.AnyType); ok {
-				return true
-			}
-		}
-	}
-	return false
-}
+func isStringAnyMap(t types.Type) bool { return types.IsStringAnyMap(t) }
 
 // isStringMap reports whether t is a map with string keys regardless of value type.
-func isStringMap(t types.Type) bool {
-	if mt, ok := t.(types.MapType); ok {
-		return isString(mt.Key)
-	}
-	return false
-}
+func isStringMap(t types.Type) bool { return types.IsStringMap(t) }
 
 // isStringMapLike reports whether t is or resolves to a map with string keys.
 // It also returns true for union types where all variants are string-keyed maps.
-func isStringMapLike(t types.Type) bool {
-	if isStringMap(t) {
-		return true
-	}
-	if ut, ok := t.(types.UnionType); ok {
-		for _, v := range ut.Variants {
-			if !isStringMap(v) {
-				return false
-			}
-		}
-		return true
-	}
-	return false
-}
+func isStringMapLike(t types.Type) bool { return types.IsStringMapLike(t) }
 
 // isStringAnyMapLike reports whether t is or resolves to a map[string]any.
-func isStringAnyMapLike(t types.Type) bool {
-	if isStringAnyMap(t) {
-		return true
-	}
-	if ut, ok := t.(types.UnionType); ok {
-		for _, v := range ut.Variants {
-			if !isStringAnyMap(v) {
-				return false
-			}
-		}
-		return true
-	}
-	return false
-}
+func isStringAnyMapLike(t types.Type) bool { return types.IsStringAnyMapLike(t) }
 
-func isMap(t types.Type) bool {
-	_, ok := t.(types.MapType)
-	return ok
-}
-
-func isStruct(t types.Type) bool {
-	_, ok := t.(types.StructType)
-	return ok
-}
-
-// structMatches reports whether the provided field maps and order
-// slices describe the same struct layout. It is used when inferring
-// struct types from literals to avoid emitting duplicate definitions.
-func structMatches(existing types.StructType, fields map[string]types.Type, order []string) bool {
-	if len(existing.Fields) != len(fields) || len(existing.Order) != len(order) {
-		return false
-	}
-	for i, name := range existing.Order {
-		if order[i] != name {
-			return false
-		}
-		if !equalTypes(existing.Fields[name], fields[name]) {
-			return false
-		}
-	}
-	return true
-}
-
-// structTypesMatch reports whether two struct types have the same set of fields
-// and ordering, ignoring their names. This is used for comparing inferred
-// anonymous structs with named ones.
-func structTypesMatch(a, b types.StructType) bool {
-	if len(a.Fields) != len(b.Fields) || len(a.Order) != len(b.Order) {
-		return false
-	}
-	for i, name := range a.Order {
-		if b.Order[i] != name {
-			return false
-		}
-		if !equalTypes(a.Fields[name], b.Fields[name]) {
-			return false
-		}
-	}
-	return true
-}
-
-func isUnion(t types.Type) bool {
-	_, ok := t.(types.UnionType)
-	return ok
-}
-
-func isAny(t types.Type) bool {
-	_, ok := t.(types.AnyType)
-	return ok
-}
+func isMap(t types.Type) bool    { return types.IsMapType(t) }
+func isStruct(t types.Type) bool { return types.IsStructType(t) }
+func isUnion(t types.Type) bool  { return types.IsUnionType(t) }
+func isAny(t types.Type) bool    { return types.IsAnyType(t) }
 
 func contains(ops []string, op string) bool {
 	for _, o := range ops {
