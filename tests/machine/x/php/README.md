@@ -1,8 +1,9 @@
 # PHP Machine Outputs
 
 This directory contains PHP source files and expected output for the Mochi VM
-valid programs. Each item below has been compiled and executed successfully using
-the PHP backend.
+valid programs. Each item below has been compiled and executed successfully
+using the PHP backend. As of July 2025 all 100 programs in `tests/vm/valid`
+compile and run correctly.
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -104,3 +105,5 @@ the PHP backend.
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+\nAll 100 programs succeeded.
+
