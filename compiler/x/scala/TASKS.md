@@ -1,6 +1,9 @@
 # Scala Compiler Tasks
 
 ## Recent Enhancements
+- 2025-07-24 00:00 - Fixed `querySelectEnv` to propagate `Option` types for join
+  variables. This removes extraneous helper case classes and allows `outer_join`
+  and `right_join` to compile cleanly.
 - 2025-07-23 12:00 - Improved list element inference for `append` and preserved
   `Option` types on selector expressions to remove unnecessary helpers
 - 2025-07-22 00:00 - Improved detection of `Option` values in `if` expressions to

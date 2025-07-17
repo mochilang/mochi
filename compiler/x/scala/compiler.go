@@ -3044,10 +3044,25 @@ func (c *Compiler) querySelectEnv(q *parser.QueryExpr) *types.Env {
 		}
 	}
 	for _, j := range q.Joins {
+		var elem types.Type = types.AnyType{}
 		if lt, ok := types.ExprType(j.Src, c.env).(types.ListType); ok {
-			env.SetVar(j.Var, lt.Elem, false)
-		} else {
-			env.SetVar(j.Var, types.AnyType{}, false)
+			elem = lt.Elem
+		}
+		if j.Side == nil {
+			env.SetVar(j.Var, elem, false)
+			continue
+		}
+		if *j.Side == "outer" {
+			if cur, err := env.GetVar(q.Var); err == nil {
+				env.SetVar(q.Var, types.OptionType{Elem: cur}, false)
+			} else {
+				env.SetVar(q.Var, types.OptionType{Elem: types.AnyType{}}, false)
+			}
+			env.SetVar(j.Var, types.OptionType{Elem: elem}, false)
+		} else if *j.Side == "right" {
+			env.SetVar(j.Var, types.OptionType{Elem: elem}, false)
+		} else { // left join
+			env.SetVar(j.Var, types.OptionType{Elem: elem}, false)
 		}
 	}
 	if q.Group != nil {
