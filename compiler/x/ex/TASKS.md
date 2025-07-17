@@ -36,6 +36,10 @@ the expected `.out` file. The generated sources live under
 - `print` now joins list elements with spaces so list output matches the VM runtime.
 - Regenerated machine outputs under `tests/machine/x/ex`. 99/100 programs pass; `group_by_left_join.mochi` still fails at runtime.
 
+## VM Test Updates (2025-07-17 07:59)
+- Fixed left join grouping by introducing `_merge_map` helper and using it when merging joined rows.
+- Regenerated machine output for `group_by_left_join.mochi`; now all 100 programs pass.
+
 ## TPC-DS Progress (2025-07-15 04:45)
 Initial golden test `TestExCompiler_TPCDSQueries` verifies the Elixir compiler
 against the available TPC-DS query outputs. A new helper script
