@@ -3257,7 +3257,8 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 					return "", err
 				}
 				args = append(args, v)
-				switch c.inferExprType(a).(type) {
+				t := c.inferExprType(a)
+				switch t.(type) {
 				case types.StringType:
 					format += " {s}"
 				case types.IntType, types.Int64Type:
@@ -3267,7 +3268,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				case types.BoolType:
 					format += " {}"
 				default:
-					format += " {any}"
+					if zigTypeOf(t) == "[]const u8" {
+						format += " {s}"
+					} else {
+						format += " {any}"
+					}
 				}
 			}
 			format += "\n"
@@ -3285,7 +3290,8 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			}
 			args[i] = v
 
-			switch c.inferExprType(a).(type) {
+			t := c.inferExprType(a)
+			switch t.(type) {
 			case types.StringType:
 				fmtParts[i] = "{s}"
 			case types.IntType, types.Int64Type:
@@ -3295,7 +3301,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			case types.BoolType:
 				fmtParts[i] = "{}"
 			default:
-				fmtParts[i] = "{any}"
+				if zigTypeOf(t) == "[]const u8" {
+					fmtParts[i] = "{s}"
+				} else {
+					fmtParts[i] = "{any}"
+				}
 			}
 		}
 		format := strings.Join(fmtParts, " ") + "\\n"
