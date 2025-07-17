@@ -1,1 +1,8 @@
-{"order_count": 1, "total_shipping_cost": 2.0, "total_net_profit": 5.0}
+Traceback (most recent call last):
+  File "/tmp/q95.py", line 311, in <module>
+    order_count=len(distinct([x["ws_order_number"] for x in filtered])),
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/q95.py", line 311, in <listcomp>
+    order_count=len(distinct([x["ws_order_number"] for x in filtered])),
+                              ~^^^^^^^^^^^^^^^^^^^
+TypeError: 'WebSale' object is not subscriptable

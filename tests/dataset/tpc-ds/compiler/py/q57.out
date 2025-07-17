@@ -1,1 +1,14 @@
-57
+Traceback (most recent call last):
+  File "/tmp/q57.py", line 328, in <module>
+    avg_by_year = _q2()
+                  ^^^^^
+  File "/tmp/q57.py", line 314, in _q2
+    return [
+           ^
+  File "/tmp/q57.py", line 320, in <listcomp>
+    if [x.sum_sales for x in gg]
+       ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/q57.py", line 320, in <listcomp>
+    if [x.sum_sales for x in gg]
+        ^^^^^^^^^^^
+AttributeError: '_Group' object has no attribute 'sum_sales'

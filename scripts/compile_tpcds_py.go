@@ -59,7 +59,7 @@ func main() {
 			fmt.Fprintln(os.Stderr, "compile", q, err)
 			continue
 		}
-		codeOut := filepath.Join(outDir, q+".py.out")
+		codeOut := filepath.Join(outDir, q+".py")
 		if err := os.WriteFile(codeOut, code, 0o644); err != nil {
 			fmt.Fprintln(os.Stderr, "write code", q, err)
 			continue
