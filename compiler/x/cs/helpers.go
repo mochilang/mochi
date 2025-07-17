@@ -335,3 +335,112 @@ func (c *Compiler) registerStructs(t types.Type) {
 		c.registerStructs(tt.Value)
 	}
 }
+
+// inferStructFromList attempts to infer a struct definition from a list literal
+// and assigns it a unique name based on name. The struct is not registered in
+// the environment; callers should do so if needed.
+func (c *Compiler) inferStructFromList(ll *parser.ListLiteral, name string) (types.StructType, bool) {
+	st, ok := types.InferStructFromList(ll, c.env)
+	if !ok {
+		return types.StructType{}, false
+	}
+	base := pascalCase(singular(name))
+	if base == "" {
+		base = "Auto"
+	}
+	if existing, ok := c.env.GetStruct(base); ok {
+		if types.StructMatches(existing, st.Fields, st.Order) {
+			return existing, true
+		}
+	}
+	idx := 1
+	nameCandidate := base
+	for {
+		if _, ok := c.env.GetStruct(nameCandidate); !ok && !c.structs[nameCandidate] {
+			break
+		}
+		nameCandidate = fmt.Sprintf("%s%d", base, idx)
+		idx++
+	}
+	st.Name = nameCandidate
+	return st, true
+}
+
+// inferStructFromMapEnv infers a struct from a map literal using the provided
+// environment for expression types.
+func (c *Compiler) inferStructFromMapEnv(ml *parser.MapLiteral, name string, env *types.Env) (types.StructType, bool) {
+	st, ok := types.InferStructFromMapEnv(ml, env)
+	if !ok {
+		return types.StructType{}, false
+	}
+	base := pascalCase(singular(name))
+	if base == "" {
+		base = "AnonStruct"
+	}
+	if existing, ok := env.GetStruct(base); ok {
+		if types.StructMatches(existing, st.Fields, st.Order) {
+			return existing, true
+		}
+	}
+	idx := 1
+	nameCandidate := base
+	for {
+		if _, ok := env.GetStruct(nameCandidate); !ok && !c.structs[nameCandidate] {
+			break
+		}
+		nameCandidate = fmt.Sprintf("%s%d", base, idx)
+		idx++
+	}
+	st.Name = nameCandidate
+	return st, true
+}
+
+func (c *Compiler) inferStructFromMap(ml *parser.MapLiteral, name string) (types.StructType, bool) {
+	return c.inferStructFromMapEnv(ml, name, c.env)
+}
+
+// inferSimpleMap attempts to infer a typed map from the map literal.
+func (c *Compiler) inferSimpleMap(ml *parser.MapLiteral) (types.MapType, bool) {
+	return types.InferSimpleMap(ml, c.env)
+}
+
+// queryEnv builds an environment containing variables introduced by q.
+func (c *Compiler) queryEnv(q *parser.QueryExpr) *types.Env {
+	if q == nil {
+		return c.env
+	}
+	srcType := c.inferExprType(q.Source)
+	var elem types.Type = types.AnyType{}
+	if lt, ok := srcType.(types.ListType); ok {
+		elem = lt.Elem
+	}
+	child := types.NewEnv(c.env)
+	child.SetVar(q.Var, elem, true)
+	for _, f := range q.Froms {
+		ft := c.inferExprType(f.Src)
+		var fe types.Type = types.AnyType{}
+		if lt, ok := ft.(types.ListType); ok {
+			fe = lt.Elem
+		}
+		child.SetVar(f.Var, fe, true)
+	}
+	for _, j := range q.Joins {
+		jt := c.inferExprType(j.Src)
+		var je types.Type = types.AnyType{}
+		if lt, ok := jt.(types.ListType); ok {
+			je = lt.Elem
+		}
+		if j.Side != nil && (*j.Side == "left" || *j.Side == "right" || *j.Side == "outer") {
+			child.SetVar(j.Var, types.OptionType{Elem: je}, true)
+			if *j.Side == "right" || *j.Side == "outer" {
+				child.SetVar(q.Var, types.OptionType{Elem: elem}, true)
+			}
+		} else {
+			child.SetVar(j.Var, je, true)
+		}
+	}
+	if q.Group != nil {
+		child.SetVar(q.Group.Name, types.GroupType{Elem: elem}, true)
+	}
+	return child
+}

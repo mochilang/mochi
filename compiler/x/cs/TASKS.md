@@ -74,3 +74,5 @@
 - Direct list and map indexing now falls back to variable type hints when
   inference is ambiguous, avoiding `_indexList` and `_indexString` helpers.
   Machine output regenerated for `two-sum`.
+## Recent Updates (2025-07-26 00:00)
+- Implemented struct inference for map and list literals using new helper functions. Updated compiler to register inferred structs for dataset queries.
