@@ -119,3 +119,4 @@ should compile and run successfully.
 - 2025-09-07 - Fixed list printing for constant append results to use
   `listItemExpr` which resolves indexing errors. Regenerated VM golden outputs
   for the C backend.
+- 2025-09-08 - Corrected for-loop generation to use `listItemExpr` even when list length is known. Removed obsolete VM tests and regenerated C outputs; break_continue and for_list_collection now compile.

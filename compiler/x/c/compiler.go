@@ -1799,7 +1799,7 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 					if elemC == "" {
 						elemC = "int"
 					}
-					c.writeln(fmt.Sprintf("%s %s = %s[%s];", elemC, name, src, idx))
+					c.writeln(fmt.Sprintf("%s %s = %s;", elemC, name, c.listItemExpr(src, idx)))
 				}
 			} else {
 				c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s; %s++) {", idx, idx, c.listLenExpr(src), idx))
@@ -5152,7 +5152,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 						c.writeln(fmt.Sprintf("for (int %s=0; %s<%d; %s++) {", loop, loop, l, loop))
 						c.indent++
 						c.writeln(fmt.Sprintf("if(%s>0) printf(\" \");", loop))
-                                               c.writeln(fmt.Sprintf("printf(\"%s\", %s);", "%d", c.listItemExpr(argExpr, loop)))
+						c.writeln(fmt.Sprintf("printf(\"%s\", %s);", "%d", c.listItemExpr(argExpr, loop)))
 						c.indent--
 						c.writeln("}")
 						if i == len(p.Call.Args)-1 {
