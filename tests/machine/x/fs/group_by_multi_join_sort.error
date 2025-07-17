@@ -1,0 +1,28 @@
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join_sort.fs(87,3): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (86:49). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join_sort.fs(87,3): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (86:49). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join_sort.fs(90,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (86:28). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join_sort.fs(90,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (86:28). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join_sort.fs(90,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (86:28). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join_sort.fs(90,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (86:28). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join_sort.fs(90,25): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (86:28). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join_sort.fs(90,25): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (86:28). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join_sort.fs(89,245): warning FS0064: This construct causes code to be less generic than indicated by the type annotations. The type variable 'K has been constrained to be type 'Anon7'.
+
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join_sort.fs(89,495): error FS0039: The field, constructor or member 'l' is not defined
+
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join_sort.fs(89,10): error FS0039: The field, constructor or member 'l' is not defined
+
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join_sort.fs(90,108): error FS0039: The field, constructor or member 'l' is not defined
+
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join_sort.fs(90,135): error FS0039: The field, constructor or member 'l' is not defined

@@ -1,0 +1,6 @@
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/machine/x/fs/map_membership.fs(5,17): error FS0039: The field, constructor or member 'Contains' is not defined
+
+/workspace/mochi/tests/machine/x/fs/map_membership.fs(6,17): error FS0039: The field, constructor or member 'Contains' is not defined

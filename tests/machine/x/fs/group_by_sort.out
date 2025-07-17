@@ -1,0 +1,3 @@
+[{cat = "b";
+  total = 7;}; {cat = "a";
+                total = 4;}]

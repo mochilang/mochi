@@ -1,0 +1,35 @@
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/machine/x/fs/right_join.fs(24,3): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (23:28). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/right_join.fs(24,3): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (23:28). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/right_join.fs(25,3): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (23:28). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/right_join.fs(25,3): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (23:28). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/right_join.fs(25,11): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (23:28). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/right_join.fs(25,11): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (23:28). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/right_join.fs(25,26): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (23:28). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/right_join.fs(25,26): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (23:28). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/right_join.fs(24,55): error FS0001: Type mismatch. Expecting a
+    Anon2 list    
+but given a
+    Anon1 list    
+The type 'Anon2' does not match the type 'Anon1'
+
+/workspace/mochi/tests/machine/x/fs/right_join.fs(25,26): error FS0193: Type constraint mismatch. The type 
+    Anon2 option    
+is not compatible with type
+    Anon1    
+The type 'Anon2 option' is not compatible with the type 'Anon1'
+
+/workspace/mochi/tests/machine/x/fs/right_join.fs(28,8): error FS0001: This expression was expected to have type
+    bool    
+but here has type
+    Anon2    

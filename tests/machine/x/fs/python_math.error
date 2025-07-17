@@ -1,0 +1,72 @@
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(5,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (4:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(5,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (4:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(6,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (4:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(6,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (4:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(7,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (4:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(7,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (4:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(8,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (4:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(8,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (4:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(9,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (4:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(9,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (4:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(10,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (4:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(10,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (4:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(12,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (4:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(12,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (4:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(13,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (4:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(13,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (4:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(14,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (4:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(14,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (4:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(15,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (4:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(15,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (4:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(16,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (4:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(16,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (4:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(17,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (4:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(17,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (4:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(18,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (4:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(18,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (4:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(19,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (4:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(19,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (4:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(20,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (4:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(20,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (4:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(13,12): error FS0039: The namespace or module 'math' is not defined
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(13,22): error FS0039: The namespace or module 'math' is not defined
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(14,12): error FS0039: The namespace or module 'math' is not defined
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(15,13): error FS0039: The namespace or module 'math' is not defined
+
+/workspace/mochi/tests/machine/x/fs/python_math.fs(16,13): error FS0039: The namespace or module 'math' is not defined

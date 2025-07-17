@@ -1,0 +1,6 @@
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/machine/x/fs/update_stmt.fs(17,9): error FS0005: This field is not mutable
+
+/workspace/mochi/tests/machine/x/fs/update_stmt.fs(18,9): error FS0005: This field is not mutable
