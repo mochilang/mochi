@@ -144,3 +144,5 @@ should compile and run successfully.
   test blocks. `list_nested_assign.mochi` and `test_block.mochi` compile and run.
 - 2025-09-19 - Improved string list type inference and constant `in` evaluation;
   `sort_stable.mochi` now compiles and runs.
+ - 2025-09-20 - Computed `count` of constant integer lists at compile time to
+   avoid emitting list helpers. `count_builtin.mochi` now generates minimal C.
