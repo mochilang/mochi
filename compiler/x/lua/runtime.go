@@ -100,7 +100,8 @@ const (
 		"            return container[item] ~= nil\n" +
 		"        end\n" +
 		"    elseif type(container) == 'string' then\n" +
-		"        return string.find(container, item, 1, true) ~= nil\n" +
+		"        local i = string.find(container, item, 1, true)\n" +
+		"        if i then return i else return 0 end\n" +
 		"    else\n" +
 		"        return false\n" +
 		"    end\n" +
@@ -343,14 +344,22 @@ const (
 		"    end\n" +
 		"end\n"
 
-	helperPrint = "function __print(v)\n" +
-		"    if type(v) == 'table' and (v[1] ~= nil or #v > 0) then\n" +
-		"        local parts = {}\n" +
-		"        for i=1,#v do parts[#parts+1] = __str(v[i]) end\n" +
-		"        print(table.concat(parts, ' '))\n" +
-		"    else\n" +
-		"        print(__str(v))\n" +
+	helperPrint = "function __print(...)\n" +
+		"    local n = select('#', ...)\n" +
+		"    if n == 1 then\n" +
+		"        local v = ...\n" +
+		"        if type(v) == 'table' and (v[1] ~= nil or #v > 0) then\n" +
+		"            local parts = {}\n" +
+		"            for i=1,#v do parts[#parts+1] = __str(v[i]) end\n" +
+		"            print(table.concat(parts, ' '))\n" +
+		"            return\n" +
+		"        end\n" +
 		"    end\n" +
+		"    local parts = {}\n" +
+		"    for i=1,n do parts[#parts+1] = __str(select(i, ...)) end\n" +
+		"    local out = table.concat(parts, ' ')\n" +
+		"    out = string.gsub(out, ' +$', '')\n" +
+		"    print(out)\n" +
 		"end\n"
 
 	helperEval = "function __eval(code)\n" +
