@@ -59,3 +59,8 @@ fails if any `.error` file is present.
 - `concat` now emits `++` or `<>` when all arguments are lists or strings.
 - `avg` uses integer division when the element type is integer so results match the VM.
 - `min` and `max` call `Enum.min`/`Enum.max` for lists and groups.
+
+## VM Test Updates (2025-07-17 12:10)
+- `union` and related set operations inline list logic when operands are lists.
+- `print` now uses `IO.inspect` for lists so outputs match the VM.
+- Regenerated machine outputs for `append_builtin`, `values_builtin`, and `list_set_ops`.
