@@ -930,6 +930,19 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 
+	elemType := c.listElemType(q.Source)
+	prevType, hadPrev := c.types[q.Var]
+	if elemType != "" {
+		c.types[q.Var] = elemType
+	}
+	defer func() {
+		if hadPrev {
+			c.types[q.Var] = prevType
+		} else {
+			delete(c.types, q.Var)
+		}
+	}()
+
 	gens = append(gens, fmt.Sprintf("%s <- %s", capitalize(q.Var), src))
 
 	for _, fr := range q.Froms {
@@ -937,7 +950,18 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		gens = append(gens, fmt.Sprintf("%s <- %s", capitalize(fr.Var), s))
+		elemType := c.listElemType(fr.Src)
+		v := fr.Var
+		prev, ok := c.types[v]
+		if elemType != "" {
+			c.types[v] = elemType
+		}
+		if ok {
+			defer func(name, typ string) { c.types[name] = typ }(v, prev)
+		} else {
+			defer func(name string) { delete(c.types, name) }(v)
+		}
+		gens = append(gens, fmt.Sprintf("%s <- %s", capitalize(v), s))
 	}
 
 	specialJoin := false
@@ -954,6 +978,17 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		joinSrc[i] = js
+		jt := c.listElemType(j.Src)
+		v := j.Var
+		pv, ok := c.types[v]
+		if jt != "" {
+			c.types[v] = jt
+		}
+		if ok {
+			defer func(name, typ string) { c.types[name] = typ }(v, pv)
+		} else {
+			defer func(name string) { delete(c.types, name) }(v)
+		}
 		on := ""
 		if j.On != nil {
 			oc, err := c.compileBoolExpr(j.On)
