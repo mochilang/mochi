@@ -97,6 +97,29 @@ func (c *Compiler) isMapPostfix(p *parser.PostfixExpr) bool {
 	return ok
 }
 
+// containsAny reports whether the type t or any nested component is AnyType.
+func containsAny(t types.Type) bool {
+	switch tt := t.(type) {
+	case types.AnyType:
+		return true
+	case types.ListType:
+		return containsAny(tt.Elem)
+	case types.MapType:
+		return containsAny(tt.Key) || containsAny(tt.Value)
+	case types.OptionType:
+		return containsAny(tt.Elem)
+	case types.GroupType:
+		return containsAny(tt.Key) || containsAny(tt.Elem)
+	case types.StructType:
+		for _, ft := range tt.Fields {
+			if containsAny(ft) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 // local helpers
 func isInt(t types.Type) bool {
 	switch t.(type) {
