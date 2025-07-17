@@ -2,7 +2,7 @@
 
 This directory contains Kotlin source code generated from the Mochi programs in `tests/vm/valid`. Each program has a corresponding `.kt` file. When the compiler and the Kotlin runtime successfully run the program a `.out` file is written. If compilation or execution fails a `.error` file will be present instead.
 
-Compiled programs: 48/100
+Compiled programs: 92/100
 
 Checklist:
 - [x] append_builtin
@@ -34,7 +34,7 @@ Checklist:
 - [x] group_by_join
 - [x] group_by_left_join
 - [x] group_by_multi_join
-- [x] group_by_multi_join_sort
+- [ ] group_by_multi_join_sort
 - [x] group_by_sort
 - [ ] group_items_iteration
 - [x] if_else
@@ -56,53 +56,53 @@ Checklist:
 - [x] list_nested_assign
 - [x] list_set_ops
 - [ ] load_yaml
-- [ ] map_assign
-- [ ] map_in_operator
-- [ ] map_index
-- [ ] map_int_key
-- [ ] map_literal_dynamic
-- [ ] map_membership
-- [ ] map_nested_assign
-- [ ] match_expr
-- [ ] match_full
-- [ ] math_ops
-- [ ] membership
-- [ ] min_max_builtin
-- [ ] nested_function
+- [x] map_assign
+- [x] map_in_operator
+- [x] map_index
+- [x] map_int_key
+- [x] map_literal_dynamic
+- [x] map_membership
+- [x] map_nested_assign
+- [x] match_expr
+- [x] match_full
+- [x] math_ops
+- [x] membership
+- [x] min_max_builtin
+- [x] nested_function
 - [ ] order_by_map
 - [ ] outer_join
-- [ ] partial_application
-- [ ] print_hello
-- [ ] pure_fold
-- [ ] pure_global_fold
-- [ ] python_auto
-- [ ] python_math
+- [x] partial_application
+- [x] print_hello
+- [x] pure_fold
+- [x] pure_global_fold
+- [x] python_auto
+- [x] python_math
 - [ ] query_sum_select
-- [ ] record_assign
+- [x] record_assign
 - [ ] right_join
-- [ ] save_jsonl_stdout
-- [ ] short_circuit
-- [ ] slice
+- [x] save_jsonl_stdout
+- [x] short_circuit
+- [x] slice
 - [ ] sort_stable
-- [ ] str_builtin
-- [ ] string_compare
-- [ ] string_concat
-- [ ] string_contains
-- [ ] string_in_operator
-- [ ] string_index
-- [ ] string_prefix_slice
-- [ ] substring_builtin
-- [ ] sum_builtin
-- [ ] tail_recursion
-- [ ] test_block
-- [ ] tree_sum
-- [ ] two-sum
-- [ ] typed_let
-- [ ] typed_var
-- [ ] unary_neg
-- [ ] update_stmt
-- [ ] user_type_literal
-- [ ] values_builtin
-- [ ] var_assignment
-- [ ] while_loop
+- [x] str_builtin
+- [x] string_compare
+- [x] string_concat
+- [x] string_contains
+- [x] string_in_operator
+- [x] string_index
+- [x] string_prefix_slice
+- [x] substring_builtin
+- [x] sum_builtin
+- [x] tail_recursion
+- [x] test_block
+- [x] tree_sum
+- [x] two-sum
+- [x] typed_let
+- [x] typed_var
+- [x] unary_neg
+- [x] update_stmt
+- [x] user_type_literal
+- [x] values_builtin
+- [x] var_assignment
+- [x] while_loop
 

@@ -1,0 +1,10 @@
+Exception in thread "main" java.lang.ExceptionInInitializerError
+Caused by: java.io.FileNotFoundException: ../interpreter/valid/people.yaml (No such file or directory)
+	at java.base/java.io.FileInputStream.open0(Native Method)
+	at java.base/java.io.FileInputStream.open(FileInputStream.java:213)
+	at java.base/java.io.FileInputStream.<init>(FileInputStream.java:152)
+	at kotlin.io.FilesKt__FileReadWriteKt.forEachLine(FileReadWrite.kt:166)
+	at kotlin.io.FilesKt__FileReadWriteKt.readLines(FileReadWrite.kt:195)
+	at kotlin.io.FilesKt__FileReadWriteKt.readLines$default(FileReadWrite.kt:193)
+	at Load_yamlKt._load(load_yaml.kt:9)
+	at Load_yamlKt.<clinit>(load_yaml.kt:57)

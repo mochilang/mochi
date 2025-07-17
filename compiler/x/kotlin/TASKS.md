@@ -1,3 +1,4 @@
+- 2025-07-17 07:10 UTC: Added string selector support and improved union match coverage; 92 VM tests compile.
 # Kotlin Compiler Tasks
 
 ## Recent Enhancements
