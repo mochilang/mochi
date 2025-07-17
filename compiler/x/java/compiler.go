@@ -3101,9 +3101,6 @@ func (c *Compiler) compileExistsQuery(q *parser.QueryExpr) (string, error) {
 }
 
 func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
-	if q.Distinct {
-		return "", fmt.Errorf("unsupported query")
-	}
 
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
@@ -3276,6 +3273,9 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 				b.WriteString(fmt.Sprintf("\t\t\t%[1]s.add(%s);\n", resVar, sel))
 				b.WriteString("\t\t}\n")
 				b.WriteString("\t}\n")
+			}
+			if q.Distinct {
+				b.WriteString(fmt.Sprintf("\t%s = new ArrayList<>(new LinkedHashSet<>(%s));\n", resVar, resVar))
 			}
 			b.WriteString(fmt.Sprintf("\treturn %s;\n", resVar))
 			b.WriteString("}}).get()")
