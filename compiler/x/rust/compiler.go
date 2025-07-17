@@ -3754,9 +3754,22 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 				}
 			}
 			if c.env != nil {
-				if _, ok := types.TypeOfExpr(a, c.env).(types.ListType); ok {
-					c.helpers["_print_list"] = true
-					return fmt.Sprintf("_print_list(&%s)", args[0]), nil
+				if lt, ok := types.TypeOfExpr(a, c.env).(types.ListType); ok {
+					var b strings.Builder
+					tmp := args[0]
+					b.WriteString("{ for (i, it) in ")
+					b.WriteString(tmp)
+					b.WriteString(".iter().enumerate() { if i > 0 { print!(\" \"); } ")
+					switch lt.Elem.(type) {
+					case types.IntType, types.Int64Type, types.FloatType, types.StringType:
+						b.WriteString("print!(\"{}\", it);")
+					case types.BoolType:
+						b.WriteString("print!(\"{}\", if *it {1} else {0});")
+					default:
+						b.WriteString("print!(\"{:?}\", it);")
+					}
+					b.WriteString(" } println!(); }")
+					return b.String(), nil
 				}
 			}
 		}

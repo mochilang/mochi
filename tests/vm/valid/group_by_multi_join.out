@@ -1,1 +1,1 @@
-[Auto2(part=100, total=20.0), Auto2(part=200, total=15.0)]
+Result1 { part: 100, total: 20.0 } Result1 { part: 200, total: 15.0 }
