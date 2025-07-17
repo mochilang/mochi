@@ -5,10 +5,12 @@
 int main() {
   std::vector<int> a = {1, 2};
   a.push_back(3);
+  std::cout << "[";
   for (size_t i = 0; i < a.size(); ++i) {
     if (i)
-      std::cout << ' ';
+      std::cout << ", ";
     std::cout << a[i];
   }
+  std::cout << "]" << std::endl;
   return 0;
 }
