@@ -1488,11 +1488,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		genv := types.NewEnv(child)
 		genv.SetVar(q.Group.Name, types.GroupType{Key: keyT, Elem: elemType}, true)
+
+		c.env = genv
+		var selectStruct types.StructType
+		var haveSelectStruct bool
 		if ml := extractMapLiteral(q.Select); ml != nil {
 			structName := c.newStructName()
-			if name, ok := c.matchStructFromMapLiteral(ml); ok {
-				structName = sanitizeName(name)
-			}
 			if name, ok := c.matchStructFromMapLiteral(ml); ok {
 				structName = sanitizeName(name)
 			}
@@ -1507,7 +1508,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 						orig.SetStruct(structName, st)
 					}
 					genv.SetStruct(structName, st)
-					keyT = st
+					selectStruct = st
+					haveSelectStruct = true
 				}
 			}
 		}
@@ -1555,7 +1557,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 		}
 		resTT := c.inferExprType(q.Select)
-		if lt, ok := resTT.(types.ListType); ok {
+		if haveSelectStruct {
+			resTT = types.ListType{Elem: selectStruct}
+		} else if lt, ok := resTT.(types.ListType); ok {
 			if st, ok2 := lt.Elem.(types.StructType); ok2 && st.Name == "" {
 				name := c.newStructName()
 				st.Name = name
@@ -3026,12 +3030,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", err
 		}
 		if c.isMapExpr(call.Args[0]) {
-			return fmt.Sprintf("%s.count()", arg), nil
+			return fmt.Sprintf("@as(i32, @intCast(%s.count()))", arg), nil
 		}
 		if c.isGroupExpr(call.Args[0]) {
-			return fmt.Sprintf("(%s.Items.items.len)", arg), nil
+			return fmt.Sprintf("@as(i32, @intCast(%s.Items.items.len))", arg), nil
 		}
-		return fmt.Sprintf("(%s).len", arg), nil
+		return fmt.Sprintf("@as(i32, @intCast((%s).len))", arg), nil
 	}
 	if name == "count" && len(call.Args) == 1 {
 		arg, err := c.compileExpr(call.Args[0], false)
@@ -3039,12 +3043,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", err
 		}
 		if c.isMapExpr(call.Args[0]) {
-			return fmt.Sprintf("%s.count()", arg), nil
+			return fmt.Sprintf("@as(i32, @intCast(%s.count()))", arg), nil
 		}
 		if c.isGroupExpr(call.Args[0]) {
-			return fmt.Sprintf("(%s.Items.items.len)", arg), nil
+			return fmt.Sprintf("@as(i32, @intCast(%s.Items.items.len))", arg), nil
 		}
-		return fmt.Sprintf("(%s).len", arg), nil
+		return fmt.Sprintf("@as(i32, @intCast((%s).len))", arg), nil
 	}
 	if name == "keys" && len(call.Args) == 1 {
 		arg, err := c.compileExpr(call.Args[0], false)
