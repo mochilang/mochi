@@ -32,7 +32,7 @@ function __str(v)
             return '{'..table.concat(parts, ',')..'}'
         end
     else
-        return tostring(v)
+        if t == 'boolean' then return v and "1" or "0" else return tostring(v) end
     end
 end
 products = {{["name"]="Laptop", ["price"]=1500}, {["name"]="Smartphone", ["price"]=900}, {["name"]="Tablet", ["price"]=600}, {["name"]="Monitor", ["price"]=300}, {["name"]="Keyboard", ["price"]=100}, {["name"]="Mouse", ["price"]=50}, {["name"]="Headphones", ["price"]=200}}

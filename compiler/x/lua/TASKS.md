@@ -79,3 +79,8 @@
 - Generated Lua code and runtime outputs for all `tests/vm/valid` programs using golden tests.
 - Added machine README and committed generated sources under `tests/machine/x/lua`.
 
+## Progress (2025-07-19 10:00)
+- Enhanced type inference for `count` and `exists` to emit direct Lua code when
+  argument types are known.
+- Updated `__str` to render booleans as `1` or `0` to match interpreter output.
+

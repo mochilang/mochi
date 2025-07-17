@@ -471,6 +471,20 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		c.helpers["input"] = true
 		return "__input()", nil
 	case "count":
+		if len(args) == 1 {
+			t := c.inferExprType(call.Args[0])
+			if isList(t) || isString(t) {
+				return fmt.Sprintf("#%s", args[0]), nil
+			}
+			if isMap(t) {
+				tmp := fmt.Sprintf("_n%d", c.tmpCount)
+				c.tmpCount++
+				return fmt.Sprintf("(function() local %s=0 for _ in pairs(%s) do %s=%s+1 end return %s end)()", tmp, args[0], tmp, tmp, tmp), nil
+			}
+			if _, ok := t.(types.GroupType); ok {
+				return fmt.Sprintf("#%s.items", args[0]), nil
+			}
+		}
 		c.helpers["count"] = true
 		return fmt.Sprintf("__count(%s)", argStr), nil
 	case "contains":
@@ -486,6 +500,18 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		return fmt.Sprintf("__starts_with(%s, %s)", args[0], args[1]), nil
 	case "exists":
+		if len(args) == 1 {
+			t := c.inferExprType(call.Args[0])
+			if isList(t) || isString(t) {
+				return fmt.Sprintf("#%s > 0", args[0]), nil
+			}
+			if isMap(t) {
+				return fmt.Sprintf("(next(%s) ~= nil)", args[0]), nil
+			}
+			if _, ok := t.(types.GroupType); ok {
+				return fmt.Sprintf("#%s.items > 0", args[0]), nil
+			}
+		}
 		c.helpers["exists"] = true
 		return fmt.Sprintf("__exists(%s)", argStr), nil
 	case "avg":

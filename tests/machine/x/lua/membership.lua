@@ -49,7 +49,7 @@ function __str(v)
             return '{'..table.concat(parts, ',')..'}'
         end
     else
-        return tostring(v)
+        if t == 'boolean' then return v and "1" or "0" else return tostring(v) end
     end
 end
 nums = {1, 2, 3}

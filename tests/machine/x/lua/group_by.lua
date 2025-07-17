@@ -49,19 +49,6 @@ function __avg(v)
     if res == math.floor(res) then return math.floor(res) end
     return res
 end
-function __count(v)
-    if type(v) == 'table' then
-        if v.items ~= nil then return #v.items end
-        if v[1] ~= nil or #v > 0 then return #v end
-        local n = 0
-        for _ in pairs(v) do n = n + 1 end
-        return n
-    elseif type(v) == 'string' then
-        return #v
-    else
-        error('count() expects list or group')
-    end
-end
 function __print(...)
     local n = select('#', ...)
     if n == 1 then
@@ -95,7 +82,7 @@ function __str(v)
             return '{'..table.concat(parts, ',')..'}'
         end
     else
-        return tostring(v)
+        if t == 'boolean' then return v and "1" or "0" else return tostring(v) end
     end
 end
 people = {{["name"]="Alice", ["age"]=30, ["city"]="Paris"}, {["name"]="Bob", ["age"]=15, ["city"]="Hanoi"}, {["name"]="Charlie", ["age"]=65, ["city"]="Paris"}, {["name"]="Diana", ["age"]=45, ["city"]="Hanoi"}, {["name"]="Eve", ["age"]=70, ["city"]="Paris"}, {["name"]="Frank", ["age"]=22, ["city"]="Hanoi"}}
@@ -103,7 +90,7 @@ stats = (function()
     local _groups = __group_by(people, function(person) return person.city end)
     local _res = {}
     for _, g in ipairs(_groups) do
-        _res[#_res+1] = {["city"]=g.key, ["count"]=__count(g), ["avg_age"]=__avg((function()
+        _res[#_res+1] = {["city"]=g.key, ["count"]=#g.items, ["avg_age"]=__avg((function()
     local _res = {}
     for _, p in ipairs(g.items) do
         _res[#_res+1] = p.age
