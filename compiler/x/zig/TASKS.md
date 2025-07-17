@@ -10,6 +10,7 @@
 - 2025-07-16 02:00 - Added VM valid golden tests and improved float sum detection.
 - 2025-07-16 17:30 - `_append` now returns an owned slice and lists print via `_print_list`.
 - 2025-07-17 01:30 - Removed duplicate VM valid test file and regenerated golden files for `tests/vm/valid`.
+- 2025-07-17 01:17 - Fixed closure compilation in `compileFunExpr` to use a bound function and cleared generated `.error` file.
 
 ## Remaining Work
 - Support struct field type inference for TPCH data sets.

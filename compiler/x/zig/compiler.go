@@ -3658,7 +3658,7 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		sn := sanitizeName(name)
 		fieldDecls[i] = fmt.Sprintf("%s: %s,", sn, typ)
 		fieldInits[i] = fmt.Sprintf(".%s = %s", sn, sn)
-		sub.captures[sn] = "self." + sn
+		sub.captures[sn] = "closure." + sn
 	}
 	sub.indent = 1
 	if fn.ExprBody != nil {
@@ -3699,14 +3699,11 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		return fmt.Sprintf("fn (%s) %s {\n%s}", callParams, ret, body), nil
 	}
 
-	decl = strings.Join(fieldDecls, " ") + " "
+	decl = strings.Join(fieldDecls, " ")
 	init = strings.Join(fieldInits, ", ")
-	if callParams != "" {
-		callParams = "self: @This(), " + callParams
-	} else {
-		callParams = "self: @This()"
-	}
-	return fmt.Sprintf("(struct { %sfn call(%s) %s {\n%s} }{ %s }).call", decl, callParams, ret, body, init), nil
+	captureStruct := fmt.Sprintf("struct { %s }", decl)
+	captureInit := fmt.Sprintf("%s{ %s }", captureStruct, init)
+	return fmt.Sprintf("(blk: { const closure = %s; break :blk struct { fn inner(%s) %s {\n%s} }.inner; })", captureInit, callParams, ret, body), nil
 }
 
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
