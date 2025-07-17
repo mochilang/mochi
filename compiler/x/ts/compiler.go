@@ -3269,6 +3269,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	targetType := c.inferExprType(m.Target)
 	var b strings.Builder
 	b.WriteString("(() => {\n")
 	b.WriteString("\tconst _t = " + target + ";\n")
@@ -3313,8 +3314,13 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			c.use("_equal")
-			cond = fmt.Sprintf("_equal(_t, %s)", p)
+			pType := c.inferExprType(cs.Pattern)
+			if isPrimitive(targetType) && isPrimitive(pType) {
+				cond = fmt.Sprintf("_t === %s", p)
+			} else {
+				c.use("_equal")
+				cond = fmt.Sprintf("_equal(_t, %s)", p)
+			}
 		}
 		b.WriteString(fmt.Sprintf("\tif (%s) { return %s }\n", cond, r))
 	}

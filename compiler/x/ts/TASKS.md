@@ -121,3 +121,7 @@
 ### 2025-09-16 00:00 UTC
 - Removed `_print` helper. Print calls now inline a `console.log` conversion.
 - Regenerated VM golden outputs.
+### 2025-09-20 00:00 UTC
+- Match expressions now emit direct comparisons for primitive patterns,
+  avoiding the `_equal` helper when possible.
+- Regenerated VM golden outputs.
