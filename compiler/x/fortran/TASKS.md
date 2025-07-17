@@ -42,8 +42,10 @@
   logic.
 - 2025-07-17 02:30: Added auto-import support for `cos` and generated
   compilation checklist in `tests/machine/x/fortran/README.md`.
+- 2025-07-17 07:00: The compiler runs the type checker before emitting code so
+  variables inferred from external functions use the correct Fortran types.
 
 ## Remaining Work
 - [x] Support query compilation with joins and group-by for TPC-H `q1.mochi`.
-- [ ] Improve handling of automatic imports for external functions.
+- [x] Improve handling of automatic imports for external functions.
 - [ ] Continue refining generated code formatting.
