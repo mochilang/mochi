@@ -324,8 +324,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				switch res {
 				case "print":
 					if len(args) == 1 {
-						if t := c.inferExprType(op.Call.Args[0]); t == (types.StringType{}) {
+						t := c.inferExprType(op.Call.Args[0])
+						if t == (types.StringType{}) {
 							res = fmt.Sprintf("IO.puts(%s)", argStr)
+						} else if _, ok := t.(types.ListType); ok {
+							c.use("_print_list")
+							res = fmt.Sprintf("_print_list(%s)", argStr)
 						} else {
 							res = fmt.Sprintf("IO.inspect(%s)", argStr)
 						}
@@ -546,8 +550,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		switch p.Call.Func {
 		case "print":
 			if len(args) == 1 {
-				if t := c.inferExprType(p.Call.Args[0]); t == (types.StringType{}) {
+				t := c.inferExprType(p.Call.Args[0])
+				if t == (types.StringType{}) {
 					return fmt.Sprintf("IO.puts(%s)", argStr), nil
+				}
+				if _, ok := t.(types.ListType); ok {
+					c.use("_print_list")
+					return fmt.Sprintf("_print_list(%s)", argStr), nil
 				}
 				return fmt.Sprintf("IO.inspect(%s)", argStr), nil
 			}

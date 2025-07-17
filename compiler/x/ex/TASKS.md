@@ -30,6 +30,7 @@ the expected `.out` file. The generated sources live under
   `Map.has_key?/2`, reducing `.error` files in VM tests.
 - [x] Renamed TPC-DS generated sources from `.ex.out` to `.ex` and dropped code
   comparisons in golden tests.
+- [x] Added `_print_list` helper so lists passed to `print()` match VM output.
 - [ ] Improve formatting of generated code.
 
 ## TPC-DS Progress (2025-07-15 04:45)

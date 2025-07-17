@@ -1,0 +1,57 @@
+warning: variable "c" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 43 │                %{items: lineitem, on: fn c, o, l -> l.l_orderkey == o.o_orderkey end},
+    │                                          ~
+    │
+    └─ tests/machine/x/ex/group_by_multi_join_sort.exs:43:42: Main.main/0
+
+    warning: variable "l" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 44 │                %{items: nation, on: fn c, o, l, n -> n.n_nationkey == c.c_nationkey end}
+    │                                              ~
+    │
+    └─ tests/machine/x/ex/group_by_multi_join_sort.exs:44:46: Main.main/0
+
+    warning: variable "o" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 44 │                %{items: nation, on: fn c, o, l, n -> n.n_nationkey == c.c_nationkey end}
+    │                                           ~
+    │
+    └─ tests/machine/x/ex/group_by_multi_join_sort.exs:44:43: Main.main/0
+
+    warning: variable "c" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 50 │                where: fn [c, o, l, n] ->
+    │                           ~
+    │
+    └─ tests/machine/x/ex/group_by_multi_join_sort.exs:50:27: Main.main/0
+
+    warning: variable "n" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 50 │                where: fn [c, o, l, n] ->
+    │                                    ~
+    │
+    └─ tests/machine/x/ex/group_by_multi_join_sort.exs:50:36: Main.main/0
+
+    warning: variable "l" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 58 │            _group_by(rows, fn %{c: c, o: o, l: l, n: n} ->
+    │                                                ~
+    │
+    └─ tests/machine/x/ex/group_by_multi_join_sort.exs:58:48: Main.main/0
+
+    warning: variable "o" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 58 │            _group_by(rows, fn %{c: c, o: o, l: l, n: n} ->
+    │                                          ~
+    │
+    └─ tests/machine/x/ex/group_by_multi_join_sort.exs:58:42: Main.main/0
+
+     warning: default values for the optional arguments in _query/3 are never used
+     │
+ 159 │   defp _query(src, joins, opts \\ %{}) do
+     │        ~
+     │
+     └─ tests/machine/x/ex/group_by_multi_join_sort.exs:159:8: Main (module)
+
+%{n_name: "BRAZIL", c_custkey: 1, c_name: "Alice", c_acctbal: 100, c_address: "123 St", c_phone: "123-456", c_comment: "Loyal", revenue: 900.0}

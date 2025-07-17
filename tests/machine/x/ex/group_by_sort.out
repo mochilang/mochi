@@ -1,0 +1,8 @@
+warning: default values for the optional arguments in _query/3 are never used
+    │
+ 85 │   defp _query(src, joins, opts \\ %{}) do
+    │        ~
+    │
+    └─ tests/machine/x/ex/group_by_sort.exs:85:8: Main (module)
+
+%{total: 7, cat: "b"} %{total: 4, cat: "a"}
