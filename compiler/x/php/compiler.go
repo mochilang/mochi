@@ -902,25 +902,27 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("avg expects 1 arg")
 		}
 		src := args[0]
-               typ := types.ExprType(call.Args[0], c.env)
+		typ := types.ExprType(call.Args[0], c.env)
 		if isNumericListLiteral(call.Args[0]) {
 			return fmt.Sprintf("count(%s) ? array_sum(%s) / count(%s) : 0", src, src, src), nil
 		}
-               if name, ok := c.isGroupVarExpr(call.Args[0]); ok {
-                       src = fmt.Sprintf("$%s['items']", name)
-                       return fmt.Sprintf("count(%s) ? array_sum(%s) / count(%s) : 0", src, src, src), nil
-               }
-               switch typ.(type) {
-               case types.GroupType:
-                       src = fmt.Sprintf("%s['items']", src)
-                       return fmt.Sprintf("count(%s) ? array_sum(%s) / count(%s) : 0", src, src, src), nil
-               case types.ListType:
-                       return fmt.Sprintf("count(%s) ? array_sum(%s) / count(%s) : 0", src, src, src), nil
-               default:
-                       // fall back to helper when type is not list-like
-               }
-               c.use("_avg")
-               return fmt.Sprintf("_avg(%s)", src), nil
+		if name, ok := c.isGroupVarExpr(call.Args[0]); ok {
+			src = fmt.Sprintf("$%s['items']", name)
+			return fmt.Sprintf("count(%s) ? array_sum(%s) / count(%s) : 0", src, src, src), nil
+		}
+		switch t := typ.(type) {
+		case types.GroupType:
+			if types.IsNumericType(t.Elem) {
+				src = fmt.Sprintf("%s['items']", src)
+				return fmt.Sprintf("count(%s) ? array_sum(%s) / count(%s) : 0", src, src, src), nil
+			}
+		case types.ListType:
+			if types.IsNumericType(t.Elem) {
+				return fmt.Sprintf("count(%s) ? array_sum(%s) / count(%s) : 0", src, src, src), nil
+			}
+		}
+		c.use("_avg")
+		return fmt.Sprintf("_avg(%s)", src), nil
 	case "sum":
 		if len(args) != 1 {
 			return "", fmt.Errorf("sum expects 1 arg")
