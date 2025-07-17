@@ -104,4 +104,5 @@ Recent updates further shrink the runtime by inlining native operations whenever
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+- [x] tpch_q1
 

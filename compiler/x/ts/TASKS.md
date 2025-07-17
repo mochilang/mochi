@@ -139,3 +139,7 @@
 
 ### 2025-10-10 00:00 UTC
 - Sort expressions inline numeric, string, or boolean comparisons instead of calling the `_cmp` helper when the key type is known.
+### 2025-10-11 00:00 UTC
+- Added tpch_q1 compiler test and golden output in tests/compiler/ts.
+- Updated machine README for tpch_q1.
+
