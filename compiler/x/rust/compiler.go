@@ -8,6 +8,7 @@ import (
 	yaml "gopkg.in/yaml.v3"
 	"math"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -466,6 +467,21 @@ func singular(s string) string {
 		return s[:len(s)-1]
 	}
 	return s
+}
+
+func repoRoot() string {
+	dir, _ := os.Getwd()
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return ""
 }
 
 func (c *Compiler) newStructName(base string) string {
@@ -3587,9 +3603,11 @@ func (c *Compiler) tryMapListStruct(varName string, list *parser.ListLiteral) (s
 	c.listVars[varName] = structName
 
 	elems := make([]string, len(list.Elems))
+	jsonLines := make([]string, len(list.Elems))
 	for i, e := range list.Elems {
 		m := e.Binary.Left.Value.Target.Map
 		fields := make([]string, len(firstKeys))
+		jsonFields := make([]string, len(firstKeys))
 		for j, k := range firstKeys {
 			vexpr := c.valueForKey(m, k)
 			val, err := c.compileExpr(vexpr)
@@ -3597,8 +3615,21 @@ func (c *Compiler) tryMapListStruct(varName string, list *parser.ListLiteral) (s
 				return "", false, err
 			}
 			fields[j] = fmt.Sprintf("%s: %s", k, val)
+			if jVal, ok := c.simpleConstJSON(vexpr); ok {
+				jsonFields[j] = fmt.Sprintf("\"%s\":%s", k, jVal)
+			} else {
+				jsonFields = nil
+			}
 		}
 		elems[i] = fmt.Sprintf("%s { %s }", structName, strings.Join(fields, ", "))
+		if jsonFields != nil {
+			jsonLines[i] = "{" + strings.Join(jsonFields, ",") + "}"
+		} else {
+			jsonLines = nil
+		}
+	}
+	if jsonLines != nil {
+		c.constListJSON[varName] = strings.Join(jsonLines, "\n")
 	}
 	return "vec![" + strings.Join(elems, ", ") + "]", true, nil
 }
@@ -3683,6 +3714,17 @@ func tryMapLiteral(e *parser.Expr) *parser.MapLiteral {
 		return nil
 	}
 	return u.Value.Target.Map
+}
+
+func tryStructLiteral(e *parser.Expr) *parser.StructLiteral {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || u.Value.Target == nil || u.Value.Target.Struct == nil || len(u.Value.Ops) > 0 {
+		return nil
+	}
+	return u.Value.Target.Struct
 }
 
 func (c *Compiler) compileSortKey(e *parser.Expr) (string, error) {
@@ -3804,28 +3846,28 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			parts[i] = fmt.Sprintf("format!(\"{}\", %s)", arg)
 		}
 		return fmt.Sprintf("println!(\"{}\", vec![%s].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(\" \") )", strings.Join(parts, ", ")), nil
-        case "append":
-                if len(args) != 2 {
-                        return "", fmt.Errorf("append expects 2 args")
-                }
-                if ml := tryMapLiteral(call.Args[1]); ml != nil {
-                        if name, ok := c.simpleIdent(call.Args[0]); ok {
-                                structName := c.newStructName("Item")
-                                code, err := c.compileMapLiteralAsStruct(structName, ml)
-                                if err == nil {
-                                        args[1] = code
-                                        c.listVars[name] = structName
-                                        if c.env != nil {
-                                                c.env.SetVar(name, types.ListType{Elem: types.StructType{Name: structName}}, true)
-                                        }
-                                }
-                        }
-                }
-                if _, ok := types.TypeOfExpr(call.Args[0], c.env).(types.ListType); ok {
-                        return fmt.Sprintf("{ let mut tmp = %s.clone(); tmp.push(%s); tmp }", args[0], args[1]), nil
-                }
-                c.helpers["append"] = true
-                return fmt.Sprintf("append(%s, %s)", args[0], args[1]), nil
+	case "append":
+		if len(args) != 2 {
+			return "", fmt.Errorf("append expects 2 args")
+		}
+		if ml := tryMapLiteral(call.Args[1]); ml != nil {
+			if name, ok := c.simpleIdent(call.Args[0]); ok {
+				structName := c.newStructName("Item")
+				code, err := c.compileMapLiteralAsStruct(structName, ml)
+				if err == nil {
+					args[1] = code
+					c.listVars[name] = structName
+					if c.env != nil {
+						c.env.SetVar(name, types.ListType{Elem: types.StructType{Name: structName}}, true)
+					}
+				}
+			}
+		}
+		if _, ok := types.TypeOfExpr(call.Args[0], c.env).(types.ListType); ok {
+			return fmt.Sprintf("{ let mut tmp = %s.clone(); tmp.push(%s); tmp }", args[0], args[1]), nil
+		}
+		c.helpers["append"] = true
+		return fmt.Sprintf("append(%s, %s)", args[0], args[1]), nil
 	case "avg":
 		if len(args) != 1 {
 			return "", fmt.Errorf("avg expects 1 arg")
@@ -3930,24 +3972,24 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return fmt.Sprintf("&%s[%s..%s]", args[0], args[1], args[2]), nil
 		}
 		return fmt.Sprintf("&%s[%s as usize..%s as usize]", args[0], args[1], args[2]), nil
-        case "json":
-                if len(args) != 1 {
-                        return "", fmt.Errorf("json expects 1 arg")
-                }
-                if ml := tryMapLiteral(call.Args[0]); ml != nil {
-                        if s, ok := c.mapLiteralJSON(ml); ok {
-                                s = strings.ReplaceAll(s, "{", "{{")
-                                s = strings.ReplaceAll(s, "}", "}}")
-                                return fmt.Sprintf("println!(%q)", s), nil
-                        }
-                } else if id, ok := c.simpleIdent(call.Args[0]); ok {
-                        if s, ok2 := c.constJSON[id]; ok2 {
-                                s = strings.ReplaceAll(s, "{", "{{")
-                                s = strings.ReplaceAll(s, "}", "}}")
-                                return fmt.Sprintf("println!(%q)", s), nil
-                        }
-                }
-                return fmt.Sprintf("println!(\"{:?}\", %s)", args[0]), nil
+	case "json":
+		if len(args) != 1 {
+			return "", fmt.Errorf("json expects 1 arg")
+		}
+		if ml := tryMapLiteral(call.Args[0]); ml != nil {
+			if s, ok := c.mapLiteralJSON(ml); ok {
+				s = strings.ReplaceAll(s, "{", "{{")
+				s = strings.ReplaceAll(s, "}", "}}")
+				return fmt.Sprintf("println!(%q)", s), nil
+			}
+		} else if id, ok := c.simpleIdent(call.Args[0]); ok {
+			if s, ok2 := c.constJSON[id]; ok2 {
+				s = strings.ReplaceAll(s, "{", "{{")
+				s = strings.ReplaceAll(s, "}", "}}")
+				return fmt.Sprintf("println!(%q)", s), nil
+			}
+		}
+		return fmt.Sprintf("println!(\"{:?}\", %s)", args[0]), nil
 	default:
 		return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ", ")), nil
 	}
@@ -3985,7 +4027,12 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 		}
 	}
 	if l.Path != nil && format == "yaml" && l.Type != nil {
-		if data, err := os.ReadFile(*l.Path); err == nil {
+		data, err := os.ReadFile(*l.Path)
+		if err != nil {
+			alt := filepath.Clean(filepath.Join(repoRoot(), "tests", "vm", *l.Path))
+			data, err = os.ReadFile(alt)
+		}
+		if err == nil {
 			var items []map[string]interface{}
 			if err := yaml.Unmarshal(data, &items); err == nil {
 				if st, ok := types.ResolveTypeRef(l.Type, c.env).(types.StructType); ok {
@@ -4041,11 +4088,15 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 		if list := tryListLiteral(s.Src); list != nil {
 			if json, ok := c.listLiteralJSON(list); ok {
 				json = strings.ReplaceAll(json, "\"", "\\\"")
+				json = strings.ReplaceAll(json, "{", "{{")
+				json = strings.ReplaceAll(json, "}", "}}")
 				return fmt.Sprintf("println!(\"%s\")", json), nil
 			}
 		} else if name, ok := c.simpleIdent(s.Src); ok {
 			if json, ok2 := c.constListJSON[name]; ok2 {
 				json = strings.ReplaceAll(json, "\"", "\\\"")
+				json = strings.ReplaceAll(json, "{", "{{")
+				json = strings.ReplaceAll(json, "}", "}}")
 				return fmt.Sprintf("println!(\"%s\")", json), nil
 			}
 		}
@@ -4230,17 +4281,37 @@ func (c *Compiler) mapLiteralJSON(m *parser.MapLiteral) (string, bool) {
 func (c *Compiler) listLiteralJSON(list *parser.ListLiteral) (string, bool) {
 	lines := make([]string, len(list.Elems))
 	for i, e := range list.Elems {
-		ml := tryMapLiteral(e)
-		if ml == nil {
-			return "", false
+		if ml := tryMapLiteral(e); ml != nil {
+			s, ok := c.mapLiteralJSON(ml)
+			if !ok {
+				return "", false
+			}
+			lines[i] = s
+			continue
 		}
-		s, ok := c.mapLiteralJSON(ml)
+		if sl := tryStructLiteral(e); sl != nil {
+			s, ok := c.structLiteralJSON(sl)
+			if !ok {
+				return "", false
+			}
+			lines[i] = s
+			continue
+		}
+		return "", false
+	}
+	return strings.Join(lines, "\n"), true
+}
+
+func (c *Compiler) structLiteralJSON(sl *parser.StructLiteral) (string, bool) {
+	fields := make([]string, len(sl.Fields))
+	for i, f := range sl.Fields {
+		v, ok := c.simpleConstJSON(f.Value)
 		if !ok {
 			return "", false
 		}
-		lines[i] = s
+		fields[i] = fmt.Sprintf("\"%s\":%s", f.Name, v)
 	}
-	return strings.Join(lines, "\n"), true
+	return "{" + strings.Join(fields, ",") + "}", true
 }
 
 func constRustLiteral(v interface{}) string {
