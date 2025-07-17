@@ -4,6 +4,9 @@ This directory contains Racket source code generated from the Mochi programs in 
 
 Compiled programs: 100/100
 
+Recent updates:
+- `avg` and `len` now produce simpler list handling code when possible.
+
 ## Checklist
 
 - [x] append_builtin

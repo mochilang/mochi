@@ -25,3 +25,8 @@ Recent enhancements:
 - Added fallback YAML parser to remove dependency on external `yaml` package.
 - Sort comparison now handles complex keys using `_lt`/`_gt` when values are not
   simple numbers or strings.
+
+### 2025-10-05
+
+- `avg` and `len` now emit simpler forms when operating on lists, matching the
+  manual translations more closely.
