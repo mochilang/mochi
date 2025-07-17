@@ -139,3 +139,5 @@
 
 ### 2025-10-10 00:00 UTC
 - Sort expressions inline numeric, string, or boolean comparisons instead of calling the `_cmp` helper when the key type is known.
+### 2025-10-12 00:00 UTC
+- Further refined `starts_with` compilation to inline `String.startsWith` when the receiver is known to be a string.
