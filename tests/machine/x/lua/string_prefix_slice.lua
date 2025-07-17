@@ -16,32 +16,6 @@ function __print(...)
     out = string.gsub(out, ' +$', '')
     print(out)
 end
-function __slice(obj, i, j)
-    if i == nil then i = 0 end
-    if type(obj) == 'string' then
-        local len = #obj
-        if j == nil then j = len end
-        if i < 0 then i = len + i end
-        if j < 0 then j = len + j end
-        if i < 0 then i = 0 end
-        if j > len then j = len end
-        return string.sub(obj, i+1, j)
-    elseif type(obj) == 'table' then
-        local len = #obj
-        if j == nil then j = len end
-        if i < 0 then i = len + i end
-        if j < 0 then j = len + j end
-        if i < 0 then i = 0 end
-        if j > len then j = len end
-        local out = {}
-        for k = i+1, j do
-            out[#out+1] = obj[k]
-        end
-        return out
-    else
-        return {}
-    end
-end
 function __str(v)
     local t = type(v)
     if t == 'table' then
@@ -64,6 +38,6 @@ function __str(v)
 end
 prefix = "fore"
 s1 = "forest"
-__print(((__slice(s1, 0, #prefix) == prefix) and 1 or 0))
+__print(((string.sub(s1, (0)+1, #prefix) == prefix) and 1 or 0))
 s2 = "desert"
-__print(((__slice(s2, 0, #prefix) == prefix) and 1 or 0))
+__print(((string.sub(s2, (0)+1, #prefix) == prefix) and 1 or 0))
