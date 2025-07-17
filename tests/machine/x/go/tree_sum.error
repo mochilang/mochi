@@ -1,7 +1,0 @@
-exit status 1
-# command-line-arguments
-../../../tests/machine/x/go/tree_sum.go:16:8: undefined: Tree
-../../../tests/machine/x/go/tree_sum.go:18:8: undefined: Tree
-../../../tests/machine/x/go/tree_sum.go:24:17: undefined: Tree
-../../../tests/machine/x/go/tree_sum.go:25:13: cannot convert func() any {…}() (value of interface type any) to type int: need type assertion
-../../../tests/machine/x/go/tree_sum.go:43:17: undefined: Tree
