@@ -1648,6 +1648,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				} else {
 					expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
 				}
+			} else if i == 0 && p.Target.Selector != nil && len(p.Target.Selector.Tail) == 1 && p.Target.Selector.Tail[0] == "contains" && len(args) == 1 {
+				root := sanitizeName(p.Target.Selector.Root)
+				expr = fmt.Sprintf("(Pos(%s, %s) > 0)", args[0], root)
 			} else {
 				expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
 			}
