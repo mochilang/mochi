@@ -5,6 +5,6 @@ class Program
 {
     static void Main()
     {
-        Console.WriteLine("mochi".Substring((int)1, ((int)(4) - (int)(1))));
+        Console.WriteLine("mochi".Length);
     }
 }

@@ -61,3 +61,9 @@
 ## Recent Updates (2025-07-19 10:00)
 - Added parameter scoping in compileFunStmt so list lengths infer correctly.
 - Numeric range loops now type loop variables as ints for better inference.
+## Recent Updates (2025-07-23 00:00)
+- Extended type inference to drop runtime helpers for indexing and slicing when
+  operand types are known. Added machine output for `exists_builtin`,
+  `cast_struct`, `closure`, `count_builtin`, `cross_join`,
+  `dataset_where_filter`, `string_contains`, `values_builtin`, `group_by`,
+  `len_string`, `len_map` and `substring_builtin` bringing totals to 29/100.

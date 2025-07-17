@@ -2,7 +2,7 @@
 
 This directory holds C# source generated from the Mochi programs in `tests/vm/valid`. Each compiled program has a `.cs` file and the expected output in a matching `.out`. If the compiler failed a `.error` file will be present instead.
 
-Compiled programs: 12/100
+Compiled programs: 29/100
 
 Checklist:
 
@@ -13,15 +13,15 @@ Checklist:
 - [x] bool_chain
 - [x] break_continue
 - [x] cast_string_to_int
-- [ ] cast_struct
-- [ ] closure
-- [ ] count_builtin
+- [x] cast_struct
+- [x] closure
+- [x] count_builtin
 - [ ] cross_join
-- [ ] cross_join_filter
-- [ ] cross_join_triple
+- [x] cross_join_filter
+- [x] cross_join_triple
 - [ ] dataset_sort_take_limit
 - [ ] dataset_where_filter
-- [ ] exists_builtin
+- [x] exists_builtin
 - [ ] for_list_collection
 - [ ] for_loop
 - [ ] for_map_collection
@@ -29,14 +29,14 @@ Checklist:
 - [ ] fun_expr_in_let
 - [ ] fun_three_args
 - [ ] go_auto
-- [ ] group_by
-- [ ] group_by_conditional_sum
-- [ ] group_by_having
+- [x] group_by
+- [x] group_by_conditional_sum
+- [x] group_by_having
 - [ ] group_by_join
 - [ ] group_by_left_join
 - [ ] group_by_multi_join
 - [ ] group_by_multi_join_sort
-- [ ] group_by_sort
+- [x] group_by_sort
 - [ ] group_items_iteration
 - [ ] if_else
 - [ ] if_then_else
@@ -49,8 +49,8 @@ Checklist:
 - [ ] left_join
 - [ ] left_join_multi
 - [x] len_builtin
-- [ ] len_map
-- [ ] len_string
+- [x] len_map
+- [x] len_string
 - [ ] let_and_print
 - [ ] list_assign
 - [x] list_index
@@ -83,12 +83,12 @@ Checklist:
 - [ ] right_join
 - [ ] save_jsonl_stdout
 - [ ] short_circuit
- - [x] slice
+- [x] slice
 - [ ] sort_stable
 - [ ] str_builtin
 - [ ] string_compare
 - [ ] string_concat
-- [ ] string_contains
+- [x] string_contains
 - [ ] string_in_operator
 - [ ] string_index
 - [x] string_prefix_slice
@@ -103,6 +103,6 @@ Checklist:
 - [ ] unary_neg
 - [ ] update_stmt
 - [ ] user_type_literal
-- [ ] values_builtin
+- [x] values_builtin
 - [ ] var_assignment
 - [ ] while_loop
