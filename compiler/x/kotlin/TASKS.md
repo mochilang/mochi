@@ -31,6 +31,7 @@
   variants are covered; reran VM golden tests (71 passed, 29 failed).
 - 2025-07-17 06:44 UTC: Fixed map literal parentheses handling and compiled
   `dataset_where_filter`.
+- 2025-07-17 08:00 UTC: Added query row struct inference to reduce casts; `group_by_multi_join_sort` now compiles.
 
 ## Remaining Work
 - [ ] Implement dataset join and group-by operations fully.
