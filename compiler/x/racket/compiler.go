@@ -536,6 +536,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", fmt.Errorf("avg expects 1 arg")
 			}
 			tmp := args[0]
+			if c.isListExpr(p.Call.Args[0]) {
+				return fmt.Sprintf("(let ([xs %s]) (/ (apply + xs) (length xs)))", tmp), nil
+			}
 			return fmt.Sprintf("(let ([xs %s] [n (length %s)]) (if (= n 0) 0 (/ (for/fold ([s 0.0]) ([v xs]) (+ s (real->double-flonum v))) n)))", tmp, tmp), nil
 		case "sum":
 			if len(args) != 1 {
@@ -558,6 +561,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			x := args[0]
 			if c.isStringExpr(p.Call.Args[0]) {
 				return fmt.Sprintf("(string-length %s)", x), nil
+			}
+			if c.isListExpr(p.Call.Args[0]) {
+				return fmt.Sprintf("(length %s)", x), nil
 			}
 			return fmt.Sprintf("(cond [(string? %s) (string-length %s)] [(hash? %s) (hash-count %s)] [else (length %s)])", x, x, x, x, x), nil
 		case "min":
@@ -1548,4 +1554,44 @@ func getListElemType(tr *parser.TypeRef) string {
 		return *tr.Generic.Args[0].Simple
 	}
 	return ""
+}
+
+func (c *Compiler) isListExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 || u.Value == nil || u.Value.Target == nil {
+		return false
+	}
+	if u.Value.Target.List != nil {
+		return true
+	}
+	if u.Value.Target.Selector != nil {
+		sel := u.Value.Target.Selector
+		if len(sel.Tail) == 0 {
+			if _, ok := c.listElemTypes[sel.Root]; ok {
+				return true
+			}
+			if t := c.varTypes[sel.Root]; t != "" {
+				if _, ok := c.listElemTypes[t]; ok {
+					return true
+				}
+			}
+			return false
+		}
+		t := c.varTypes[sel.Root]
+		for _, f := range sel.Tail {
+			if ft, ok := c.structFieldTypes[t][f]; ok {
+				t = ft
+			} else {
+				t = ""
+				break
+			}
+		}
+		if _, ok := c.listElemTypes[t]; ok && t != "" {
+			return true
+		}
+	}
+	return false
 }
