@@ -301,6 +301,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	body := append([]byte(nil), c.buf.Bytes()...)
 	c.buf.Reset()
+	c.pruneHelpers(body)
 
 	needPrelude := len(c.imports) > 0 || len(c.autoStructs) > 0 || len(c.helpers) > 0 || c.models
 	if needPrelude {
