@@ -33,6 +33,7 @@
 - 2025-07-30 - Added _print_list helper and improved print builtin to remove trailing spaces. Generated Rust output for append_builtin, dataset_where_filter and values_builtin.
 - 2025-07-17 - Improved type inference to inline numeric aggregates and print booleans as 1/0. VM tests pass 85/100.
 - 2025-07-30 - Enhanced aggregate type inference and struct printing to reduce helper usage. VM tests pass 89/100.
+- 2025-07-31 - Inlined list printing for primitive element types and updated VM outputs. VM tests pass 98/100.
 ## Remaining Enhancements
 - [ ] Inline JSON printing for variables when values are known at compile time
 - [ ] Validate generated code for `tpc-h/q1.mochi`

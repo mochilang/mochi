@@ -4,15 +4,7 @@ fn append<T: Clone>(mut v: Vec<T>, item: T) -> Vec<T> {
     v
 }
 
-fn _print_list<T: std::fmt::Debug>(v: &[T]) {
-    for (i, it) in v.iter().enumerate() {
-        if i > 0 { print!(" "); }
-        print!("{:?}", it);
-    }
-    println!();
-}
-
 fn main() {
     let a = vec![1, 2];
-    _print_list(&append(a, 3));
+    { for (i, it) in append(a, 3).iter().enumerate() { if i > 0 { print!(" "); } print!("{}", it); } println!(); };
 }

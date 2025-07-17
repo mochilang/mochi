@@ -5,16 +5,8 @@ struct Item {
     v: &'static str,
 }
 
-fn _print_list<T: std::fmt::Debug>(v: &[T]) {
-    for (i, it) in v.iter().enumerate() {
-        if i > 0 { print!(" "); }
-        print!("{:?}", it);
-    }
-    println!();
-}
-
 fn main() {
     let items = vec![Item { n: 1, v: "a" }, Item { n: 1, v: "b" }, Item { n: 2, v: "c" }];
     let result = { let mut tmp1 = Vec::new();for i in &items { let tmp2 = i.v; let tmp3 = i.n; tmp1.push((tmp3, tmp2)); } tmp1.sort_by(|a,b| a.0.partial_cmp(&b.0).unwrap()); let mut tmp4 = Vec::new(); for p in tmp1 { tmp4.push(p.1); } tmp4 };
-    _print_list(&result);
+    { for (i, it) in result.iter().enumerate() { if i > 0 { print!(" "); } print!("{:?}", it); } println!(); };
 }

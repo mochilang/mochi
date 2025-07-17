@@ -19,14 +19,9 @@ struct Result {
     avg_age: f64,
 }
 
-fn avg<T>(v: &[T]) -> f64 where T: Into<f64> + Copy {
-    let sum: f64 = v.iter().map(|&x| x.into()).sum();
-    sum / v.len() as f64
-}
-
 fn main() {
     let people = vec![People { name: "Alice", age: 30, city: "Paris" }, People { name: "Bob", age: 15, city: "Hanoi" }, People { name: "Charlie", age: 65, city: "Paris" }, People { name: "Diana", age: 45, city: "Hanoi" }, People { name: "Eve", age: 70, city: "Paris" }, People { name: "Frank", age: 22, city: "Hanoi" }];
-    let stats = { let mut tmp1 = std::collections::HashMap::new();for person in &people { let key = person.city; tmp1.entry(key).or_insert_with(Vec::new).push(person.clone()); } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { city: g.key, count: g.clone().items.len() as i32, avg_age: avg(&{ let mut tmp3 = Vec::new();for p in &g.clone().items { tmp3.push(p.age); } tmp3 }) }); } result };
+    let stats = { let mut tmp1 = std::collections::HashMap::new();for person in &people { let key = person.city; tmp1.entry(key).or_insert_with(Vec::new).push(person.clone()); } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { city: g.key, count: g.clone().items.len() as i32, avg_age: ({ let mut tmp3 = Vec::new();for p in &g.clone().items { tmp3.push(p.age); } tmp3 }.iter().sum::<i32>() as f64 / { let mut tmp3 = Vec::new();for p in &g.clone().items { tmp3.push(p.age); } tmp3 }.len() as f64) }); } result };
     println!("--- People grouped by city ---");
     for s in stats {
         println!("{}", vec![format!("{}", s.city), format!("{}", ": count ="), format!("{}", s.count), format!("{}", ", avg_age ="), format!("{}", s.avg_age)].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );

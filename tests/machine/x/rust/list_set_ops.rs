@@ -25,17 +25,9 @@ fn _intersect<T: Eq + std::hash::Hash + Clone>(a: Vec<T>, b: Vec<T>) -> Vec<T> {
     a.into_iter().filter(|x| set.contains(x)).collect()
 }
 
-fn _print_list<T: std::fmt::Debug>(v: &[T]) {
-    for (i, it) in v.iter().enumerate() {
-        if i > 0 { print!(" "); }
-        print!("{:?}", it);
-    }
-    println!();
-}
-
 fn main() {
-    _print_list(&_union(vec![1, 2], vec![2, 3]));
-    _print_list(&_except(vec![1, 2, 3], vec![2]));
-    _print_list(&_intersect(vec![1, 2, 3], vec![2, 4]));
+    { for (i, it) in _union(vec![1, 2], vec![2, 3]).iter().enumerate() { if i > 0 { print!(" "); } print!("{}", it); } println!(); };
+    { for (i, it) in _except(vec![1, 2, 3], vec![2]).iter().enumerate() { if i > 0 { print!(" "); } print!("{}", it); } println!(); };
+    { for (i, it) in _intersect(vec![1, 2, 3], vec![2, 4]).iter().enumerate() { if i > 0 { print!(" "); } print!("{}", it); } println!(); };
     println!("{}", vec![format!("{}", _union_all(vec![1, 2], vec![2, 3]).len() as i32)].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
 }

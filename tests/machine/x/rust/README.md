@@ -2,7 +2,7 @@
 
 This directory contains Rust source code generated from the Mochi programs in `tests/vm/valid`. Each program was compiled and executed with `rustc`. Successful runs produced an `.out` file while failures produced an `.error` file.
 
-Compiled programs: 89/100
+Compiled programs: 98/100
 
 ## Checklist
 
@@ -29,15 +29,15 @@ Compiled programs: 89/100
 - [x] fun_expr_in_let
 - [x] fun_three_args
 - [x] go_auto
-- [ ] group_by
-- [ ] group_by_conditional_sum
-- [ ] group_by_having
+- [x] group_by
+- [x] group_by_conditional_sum
+- [x] group_by_having
 - [x] group_by_join
 - [x] group_by_left_join
-- [ ] group_by_multi_join
-- [ ] group_by_multi_join_sort
-- [ ] group_by_sort
-- [ ] group_items_iteration
+- [x] group_by_multi_join
+- [x] group_by_multi_join_sort
+- [x] group_by_sort
+- [x] group_items_iteration
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
@@ -70,7 +70,7 @@ Compiled programs: 89/100
 - [x] membership
 - [x] min_max_builtin
 - [x] nested_function
-- [ ] order_by_map
+- [x] order_by_map
 - [x] outer_join
 - [x] partial_application
 - [x] print_hello
@@ -84,7 +84,7 @@ Compiled programs: 89/100
 - [ ] save_jsonl_stdout
 - [x] short_circuit
 - [x] slice
-- [ ] sort_stable
+- [x] sort_stable
 - [x] str_builtin
 - [x] string_compare
 - [x] string_concat
