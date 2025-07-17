@@ -1437,6 +1437,22 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		} else {
 			c.buf.WriteString(fmt.Sprintf("for range _toAnySlice(%s) {\n", src))
 		}
+	case types.StructType:
+		c.writeIndent()
+		tmp := c.newNamedVar("m")
+		c.buf.WriteString(fmt.Sprintf("%s := map[string]any{}\n", tmp))
+		c.writeIndent()
+		c.use("_copyToMap")
+		c.buf.WriteString(fmt.Sprintf("_copyToMap(%s, %s)\n", tmp, src))
+		c.writeIndent()
+		if useVar {
+			c.buf.WriteString(fmt.Sprintf("for %s := range %s {\n", name, tmp))
+			if c.env != nil {
+				c.env.SetVar(stmt.Name, types.StringType{}, true)
+			}
+		} else {
+			c.buf.WriteString(fmt.Sprintf("for range %s {\n", tmp))
+		}
 	default:
 		return fmt.Errorf("cannot iterate over type %s", t)
 	}
