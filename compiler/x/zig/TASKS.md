@@ -22,3 +22,10 @@
 - 2025-07-17 compiled cast_struct.mochi in Zig
 - 2025-07-17 compiled closure.mochi in Zig
 - 2025-07-17 compiled count_builtin.mochi in Zig
+- 2025-07-17 compiled cross_join.mochi in Zig
+- 2025-07-17 compiled cross_join_filter.mochi in Zig
+- 2025-07-17 compiled cross_join_triple.mochi in Zig
+- 2025-07-17 compiled dataset_where_filter.mochi in Zig
+- 2025-07-17 compiled for_loop.mochi in Zig
+- 2025-07-17 compiled for_list_collection.mochi in Zig
+- 2025-07-17 compiled for_map_collection.mochi in Zig
