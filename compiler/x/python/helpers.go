@@ -231,6 +231,34 @@ func isString(t types.Type) bool {
 	return ok
 }
 
+func unwrapOption(t types.Type) types.Type {
+	for {
+		ot, ok := t.(types.OptionType)
+		if !ok {
+			return t
+		}
+		t = ot.Elem
+	}
+}
+
+func isListLike(t types.Type) bool {
+	t = unwrapOption(t)
+	_, ok := t.(types.ListType)
+	return ok
+}
+
+func isMapLike(t types.Type) bool {
+	t = unwrapOption(t)
+	_, ok := t.(types.MapType)
+	return ok
+}
+
+func isStringLike(t types.Type) bool {
+	t = unwrapOption(t)
+	_, ok := t.(types.StringType)
+	return ok
+}
+
 func isAny(t types.Type) bool {
 	if t == nil {
 		return true
