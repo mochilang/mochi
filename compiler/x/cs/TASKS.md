@@ -43,3 +43,7 @@
 - [ ] Verify dictionary generation for grouped query results across queries.
 - [ ] Ensure property ordering matches golden outputs.
 - [ ] Compile remaining TPC-H queries.
+
+## Recent Updates (2025-07-19 10:00)
+- Added parameter scoping in compileFunStmt so list lengths infer correctly.
+- Numeric range loops now type loop variables as ints for better inference.
