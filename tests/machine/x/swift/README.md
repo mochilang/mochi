@@ -1,14 +1,12 @@
-<<<<<<< HEAD
 # Machine-generated Swift Programs
 
 This directory contains Swift code compiled from Mochi programs in `tests/vm/valid` using the experimental compiler.
 
 ## Progress
 
-Compiled: 96/100 programs
+Compiled: 97/100 programs
 
 ## Checklist
-
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -109,5 +107,3 @@ Compiled: 96/100 programs
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
-=======
->>>>>>> 15d0dc4b5 (Truncate all README.md)

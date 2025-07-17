@@ -1333,7 +1333,7 @@ func (c *compiler) matchExpr(m *parser.MatchExpr) (string, error) {
 func (c *compiler) mapToStruct(m *parser.MapLiteral, name string) (string, error) {
 	fields := make([]string, len(m.Items))
 	for i, it := range m.Items {
-		key, ok := stringLiteral(it.Key)
+		key, ok := keyName(it.Key)
 		if !ok {
 			return "", fmt.Errorf("struct field must be string literal")
 		}
@@ -2541,7 +2541,12 @@ func (c *compiler) joinQuery(q *parser.QueryExpr) (string, error) {
 	}
 	selType := c.exprType(q.Select)
 	fields := c.elementFieldTypes(q.Select)
+	prevTuple := c.tupleMap
+	if selType == "map" && fields != nil {
+		c.tupleMap = true
+	}
 	sel, err := c.expr(q.Select)
+	c.tupleMap = prevTuple
 	if err != nil {
 		c.varTypes = savedVars
 		c.mapFields = savedFields
@@ -2615,7 +2620,12 @@ func (c *compiler) joinSingleSide(q *parser.QueryExpr, src, joinSrc, onExpr, sid
 	}
 	selType := c.exprType(q.Select)
 	fields := c.elementFieldTypes(q.Select)
+	prevTuple := c.tupleMap
+	if selType == "map" && fields != nil {
+		c.tupleMap = true
+	}
 	sel, err := c.expr(q.Select)
+	c.tupleMap = prevTuple
 	c.varTypes = savedVars
 	c.mapFields = savedFields
 	if err != nil {
@@ -2870,7 +2880,13 @@ func (c *compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 			delete(c.mapFields, name)
 		}
 		if i == len(vars)-1 {
+			fields := c.elementFieldTypes(q.Select)
+			prevTup := c.tupleMap
+			if fields != nil {
+				c.tupleMap = true
+			}
 			sel, err := c.expr(q.Select)
+			c.tupleMap = prevTup
 			if err != nil {
 				return "", err
 			}
