@@ -4345,7 +4345,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			continue
 		}
 		if op.Op == "in" && isListIntPostfix(op.Right, c.env) {
-			if l, ok := c.listLens[right]; ok {
+			if l, ok := c.listLens[right]; ok && c.isStackArrayExpr(right) {
 				c.need(needInArrayInt)
 				left = fmt.Sprintf("contains_array_int(%s, %d, %s)", right, l, left)
 			} else {

@@ -126,3 +126,6 @@ should compile and run successfully.
 - 2025-09-12 - Skipped redundant assignments when list literals initialize a variable directly. `cross_join_filter` and `cross_join_triple` now compile.
 - 2025-07-17 - Fixed map literal handling so `for_map_collection` and `values_builtin` compile to valid C.
 - 2025-07-17 - Fixed constant list aggregation loops to use `listItemExpr`; `avg_builtin.mochi` compiles without errors.
+- 2025-09-13 - Corrected `in` operator generation for constant integer lists to
+  call `contains_list_int`. `membership.mochi` and `in_operator.mochi` now
+  compile and run successfully.
