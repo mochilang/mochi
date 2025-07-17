@@ -23,6 +23,8 @@ The Scheme backend now targets chibi-scheme and can compile the `tpc-h/q1.mochi`
   JOB benchmarks.
 - 2025-07-17 03:00 – Comparator generation now uses type inference to avoid
   emitting dataset helper functions when operands are numeric or strings.
+- 2025-07-17 09:12 – Aggregate builtins now use Scheme primitives when operating
+  on numeric lists, removing unnecessary helper functions.
 
 ### Remaining Work
 - [ ] Better handling of date comparisons and sorting when running JOB benchmarks
