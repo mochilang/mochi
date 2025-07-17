@@ -19,7 +19,7 @@ type Compiler struct {
 	needYAMLLib      bool
 	needPathLib      bool
 	needFuncLib      bool
-	needRuntime      bool
+	runtimeFuncs     map[string]bool
 	structs          map[string][]string
 	structFieldTypes map[string]map[string]string
 	varTypes         map[string]string
@@ -45,7 +45,7 @@ func New() *Compiler {
 		groupFields:      nil,
 		listElemTypes:    make(map[string]string),
 		needPathLib:      false,
-		needRuntime:      false,
+		runtimeFuncs:     make(map[string]bool),
 		rootDir:          dir,
 		baseDir:          base,
 	}
@@ -76,9 +76,21 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if c.needFuncLib {
 		out.WriteString("(require racket/function)\n")
 	}
-	if c.needRuntime {
-		out.WriteString(runtimeHelpers)
-		out.WriteByte('\n')
+	if len(c.runtimeFuncs) > 0 {
+		if c.runtimeFuncs["_gt"] || c.runtimeFuncs["_ge"] {
+			c.runtimeFuncs["_lt"] = true
+		}
+		if c.runtimeFuncs["_le"] || c.runtimeFuncs["_lt"] || c.runtimeFuncs["_gt"] || c.runtimeFuncs["_ge"] || c.runtimeFuncs["_min"] || c.runtimeFuncs["_max"] {
+			c.runtimeFuncs["_to_string"] = true
+			c.runtimeFuncs["_date_number"] = true
+		}
+		names := []string{"_date_number", "_to_string", "_lt", "_gt", "_le", "_ge", "_min", "_max", "_json-fix", "_simple-yaml-parse"}
+		for _, n := range names {
+			if c.runtimeFuncs[n] {
+				out.WriteString(runtimeHelperMap[n])
+				out.WriteByte('\n')
+			}
+		}
 	}
 	out.Write(c.buf.Bytes())
 	if out.Len() == 0 || out.Bytes()[out.Len()-1] != '\n' {
@@ -130,6 +142,8 @@ func (c *Compiler) compileStmtFull(s *parser.Statement, breakLbl, contLbl, retLb
 			c.varTypes[name] = t
 		} else if isStringLiteralExpr(s.Let.Value) {
 			c.varTypes[name] = "string"
+		} else if t := c.exprType(s.Let.Value); t != "" {
+			c.varTypes[name] = t
 		}
 		if lt := getListElemType(s.Let.Type); lt != "" {
 			c.listElemTypes[name] = lt
@@ -187,6 +201,8 @@ func (c *Compiler) compileStmtFull(s *parser.Statement, breakLbl, contLbl, retLb
 			c.varTypes[name] = t
 		} else if isStringLiteralExpr(s.Var.Value) {
 			c.varTypes[name] = "string"
+		} else if t := c.exprType(s.Var.Value); t != "" {
+			c.varTypes[name] = t
 		}
 		if lt := getListElemType(s.Var.Type); lt != "" {
 			c.listElemTypes[name] = lt
@@ -345,8 +361,8 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 				expr = fmt.Sprintf("(%s %s %s)", strOp, l, r)
 				outStr = false
 			} else {
-				c.needRuntime = true
 				rtOp := map[string]string{"<": "_lt", "<=": "_le", ">": "_gt", ">=": "_ge"}[op.op]
+				c.runtimeFuncs[rtOp] = true
 				expr = fmt.Sprintf("(%s %s %s)", rtOp, l, r)
 			}
 		case "&&":
@@ -523,7 +539,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if len(args) == 1 && (isStringLiteralExpr(p.Call.Args[0]) || c.isStringExpr(p.Call.Args[0])) {
 				return fmt.Sprintf("(displayln %s)", args[0]), nil
 			}
-			c.needRuntime = true
+			c.runtimeFuncs["_to_string"] = true
 			if len(args) == 1 {
 				return fmt.Sprintf("(displayln (_to_string %s))", args[0]), nil
 			}
@@ -573,13 +589,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if len(args) != 1 {
 				return "", fmt.Errorf("min expects 1 arg")
 			}
-			c.needRuntime = true
+			c.runtimeFuncs["_min"] = true
 			return fmt.Sprintf("(_min %s)", args[0]), nil
 		case "max":
 			if len(args) != 1 {
 				return "", fmt.Errorf("max expects 1 arg")
 			}
-			c.needRuntime = true
+			c.runtimeFuncs["_max"] = true
 			return fmt.Sprintf("(_max %s)", args[0]), nil
 		case "values":
 			if len(args) != 1 {
@@ -601,7 +617,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", fmt.Errorf("json expects 1 arg")
 			}
 			c.needJSONLib = true
-			c.needRuntime = true
+			c.runtimeFuncs["_json-fix"] = true
 			return fmt.Sprintf("(displayln (jsexpr->string (_json-fix %s)))", args[0]), nil
 		default:
 			if ar, ok := c.funArity[p.Call.Func]; ok && len(args) < ar {
@@ -1354,7 +1370,7 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 	if l.Path == nil {
 		return "'()", nil
 	}
-	c.needRuntime = true
+	c.runtimeFuncs["_simple-yaml-parse"] = true
 	rel := strings.TrimPrefix(filepath.Clean(*l.Path), "../")
 	abs := filepath.Join(c.rootDir, "tests", rel)
 	return fmt.Sprintf("(_simple-yaml-parse (file->string %q))", abs), nil
@@ -1436,6 +1452,9 @@ func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
 		}
 		return t == "string"
 	}
+	if p.Call != nil && p.Call.Func == "str" {
+		return true
+	}
 	return false
 }
 
@@ -1450,6 +1469,9 @@ func (c *Compiler) isStringUnary(u *parser.Unary) bool {
 func (c *Compiler) isStringExpr(e *parser.Expr) bool {
 	if e == nil || e.Binary == nil {
 		return false
+	}
+	if t := c.exprType(e); t == "string" {
+		return true
 	}
 	return c.isStringUnary(e.Binary.Left)
 }
@@ -1600,4 +1622,32 @@ func (c *Compiler) isListExpr(e *parser.Expr) bool {
 		}
 	}
 	return false
+}
+
+// exprType attempts to infer the resulting type of an expression.
+func (c *Compiler) exprType(e *parser.Expr) string {
+	if t := getCastType(e); t != "" {
+		return t
+	}
+	if e == nil || e.Binary == nil {
+		return ""
+	}
+	u := e.Binary.Left
+	if u == nil || u.Value == nil || len(u.Ops) != 0 {
+		return ""
+	}
+	if u.Value.Target != nil {
+		switch {
+		case u.Value.Target.Lit != nil && u.Value.Target.Lit.Str != nil:
+			return "string"
+		case u.Value.Target.Call != nil && u.Value.Target.Call.Func == "str" && len(u.Value.Target.Call.Args) == 1:
+			return "string"
+		case u.Value.Target.Selector != nil:
+			name, ok := identName(e)
+			if ok {
+				return c.varTypes[name]
+			}
+		}
+	}
+	return ""
 }
