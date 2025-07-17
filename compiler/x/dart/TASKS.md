@@ -15,5 +15,8 @@
 - [2025-07-18 00:00 UTC] Simplified VM golden tests to check runtime output only and removed outdated `ValidPrograms` test.
 - [2025-07-16 17:28 UTC] Added `_print` helper and updated VM golden test to
   store outputs under `tests/machine/x/dart`, reducing `.error` files.
+- [2025-07-18 12:00 UTC] Tweaked compiler to drop unnecessary `as int` casts,
+  fixed integer division, and skipped trailing `return null` in match
+  expressions. VM golden tests now print a pass/fail summary.
 ## Remaining Enhancements
 - [ ] Improve generated code formatting to more closely match `tests/human/x/dart` examples.

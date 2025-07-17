@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs. Successful runs have a .out file, failures a .error file.
 
-Compiled programs: 89/100
+Compiled programs: 91/100
 
 Checklist:
 
@@ -19,7 +19,7 @@ Checklist:
 - [x] cross_join
 - [x] cross_join_filter
 - [x] cross_join_triple
-- [ ] dataset_sort_take_limit
+- [x] dataset_sort_take_limit
 - [ ] dataset_where_filter
 - [x] exists_builtin
 - [x] for_list_collection
@@ -65,7 +65,7 @@ Checklist:
 - [x] map_membership
 - [x] map_nested_assign
 - [x] match_expr
-- [ ] match_full
+- [x] match_full
 - [x] math_ops
 - [x] membership
 - [x] min_max_builtin

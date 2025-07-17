@@ -493,9 +493,6 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	if err != nil {
 		return err
 	}
-	if _, ok := typ.(types.IntType); ok {
-		val = fmt.Sprintf("(%s as int)", val)
-	}
 	c.writeln(fmt.Sprintf("%s = %s;", target, val))
 	return nil
 }
@@ -936,7 +933,10 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 		expr := fmt.Sprintf("%s %s %s", l, op, r)
 		newType := types.ResultType(op, leftType, rightType)
 		if _, ok := newType.(types.IntType); ok {
-			expr = fmt.Sprintf("(%s) as int", expr)
+			if op == "/" {
+				expr = fmt.Sprintf("%s ~/ %s", l, r)
+			}
+			return expr, newType, nil
 		}
 		return expr, newType, nil
 	}
@@ -947,14 +947,11 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	t := types.TypeOfPostfix(u.Value, c.env)
 	for i := len(u.Ops) - 1; i >= 0; i-- {
 		op := u.Ops[i]
 		if op == "-" {
-			if !isNumericType(t) {
-				val = fmt.Sprintf("-(%s as num)", val)
-				continue
-			}
+			val = fmt.Sprintf("-(%s as num)", val)
+			continue
 		}
 		val = op + val
 	}
@@ -2076,6 +2073,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	var b strings.Builder
 	b.WriteString("(() {\n")
 	b.WriteString("  var _t = " + target + ";\n")
+	hasDefault := false
 	for i, cs := range m.Cases {
 		if isUnderscoreExpr(cs.Pattern) {
 			res, err := c.compileExpr(cs.Result)
@@ -2083,6 +2081,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 				return "", err
 			}
 			b.WriteString("  else {\n    return " + res + ";\n  }\n")
+			hasDefault = true
 			continue
 		}
 		if name, vars, ok := c.constructorPattern(cs.Pattern); ok {
@@ -2118,7 +2117,9 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 			b.WriteString(" else if (_t == " + pat + ") {\n    return " + res + ";\n  }")
 		}
 	}
-	b.WriteString("  return null;\n")
+	if !hasDefault {
+		b.WriteString("  return null;\n")
+	}
 	b.WriteString("})()")
 	return b.String(), nil
 }

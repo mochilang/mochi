@@ -62,7 +62,7 @@ func TestDartCompiler_VMValid_Golden(t *testing.T) {
 	outDir := filepath.Join(root, "tests", "machine", "x", "dart")
 	os.MkdirAll(outDir, 0o755)
 
-	golden.Run(t, "tests/vm/valid", ".mochi", ".out", func(src string) ([]byte, error) {
+	golden.RunWithSummary(t, "tests/vm/valid", ".mochi", ".out", func(src string) ([]byte, error) {
 		return runVMGolden(t, src, outDir)
 	})
 }
