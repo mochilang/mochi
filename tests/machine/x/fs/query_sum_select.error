@@ -1,4 +1,0 @@
-F# Compiler for F# 4.0 (Open Source Edition)
-Freely distributed under the Apache 2.0 Open Source License
-
-/workspace/mochi/tests/machine/x/fs/query_sum_select.fs(5,63): error FS0001: The type 'obj' does not support the operator '+'

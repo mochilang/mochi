@@ -1,8 +1,0 @@
-F# Compiler for F# 4.0 (Open Source Edition)
-Freely distributed under the Apache 2.0 Open Source License
-
-/workspace/mochi/tests/machine/x/fs/string_concat.fs(4,25): error FS0001: The type 'string' does not match the type 'unit'
-
-/workspace/mochi/tests/machine/x/fs/string_concat.fs(4,1): warning FS0020: This expression should have type 'unit', but has type ' ^a'. Use 'ignore' to discard the result of the expression, or 'let' to bind the result to a name.
-
-/workspace/mochi/tests/machine/x/fs/string_concat.fs(4,23): error FS0043: The type 'string' does not match the type 'unit'

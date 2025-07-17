@@ -1,4 +1,0 @@
-F# Compiler for F# 4.0 (Open Source Edition)
-Freely distributed under the Apache 2.0 Open Source License
-
-/workspace/mochi/tests/machine/x/fs/save_jsonl_stdout.fs(10,38): error FS1109: A reference to the type 'System.Object' in assembly 'System.Runtime' was found, but the type could not be found in that assembly
