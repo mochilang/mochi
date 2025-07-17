@@ -165,8 +165,12 @@ const (
                           (map clojure.string/trim)
                           (remove clojure.string/blank?)
                           (map (fn [line]
-                                 (let [[k v] (clojure.string/split line #":\s*" 2)]
-                                   [(keyword k) v])))
+                                 (let [[k v] (clojure.string/split line #":\s*" 2)
+                                       vv (if (re-matches #"^-?\d+$" v)
+                                                (Integer/parseInt v)
+                                                v)]
+                                   [(keyword k) vv]))
+                          )
                           (into {})))))
       :else [])) )
 `

@@ -24,6 +24,8 @@ Recent updates (2025-07-16 11:36):
 - VM golden tests now compare output only and write results under `tests/machine/x/clj`.
 - Fixed `_rel_path` helper with missing parenthesis and removed unused JSON import in `save` handling.
 - Regenerated machine translations after fixes.
+- Updated `compileLoadExpr` to cast YAML rows to structs via `_cast_struct_list` and parse numeric values.
+- Regenerated machine translation for `load_yaml.mochi` and removed `.error` file.
 
 Remaining work:
  - [ ] Support reading relative files for `load_yaml.mochi` during tests.
