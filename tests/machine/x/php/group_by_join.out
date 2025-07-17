@@ -1,3 +1,7 @@
 --- Orders per customer ---
-Alice orders: 2
-Bob orders: 1
+string(5) "Alice"
+string(7) "orders:"
+int(2)
+string(3) "Bob"
+string(7) "orders:"
+int(1)

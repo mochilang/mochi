@@ -872,8 +872,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 				return fmt.Sprintf("echo %s, PHP_EOL", args[0]), nil
 			}
 		}
-		c.use("_print")
-		return fmt.Sprintf("_print(%s)", strings.Join(args, ", ")), nil
+		return fmt.Sprintf("var_dump(%s)", strings.Join(args, ", ")), nil
 	case "append":
 		if len(args) != 2 {
 			return "", fmt.Errorf("append expects 2 args")

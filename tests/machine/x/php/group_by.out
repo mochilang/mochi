@@ -1,3 +1,11 @@
 --- People grouped by city ---
-Paris : count = 3 , avg_age = 55
-Hanoi : count = 3 , avg_age = 27.333333333333
+string(5) "Paris"
+string(9) ": count ="
+int(3)
+string(11) ", avg_age ="
+int(55)
+string(5) "Hanoi"
+string(9) ": count ="
+int(3)
+string(11) ", avg_age ="
+float(27.333333333333332)
