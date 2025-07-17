@@ -47,7 +47,7 @@ List.rev !__res0)
 
 
 let () =
-  print_endline "--- Left Join Multi ---";
+  print_endline ("--- Left Join Multi ---");
   let rec __loop1 lst =
     match lst with
       | [] -> ()

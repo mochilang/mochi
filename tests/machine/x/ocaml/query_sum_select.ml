@@ -17,7 +17,6 @@ let rec __show v =
     | _ -> "<value>"
 
 let sum lst = List.fold_left (+) 0 lst
-let sum_float lst = List.fold_left (+.) 0.0 lst
 
 let nums : int list = [1;2;3]
 let result : float list = (let __res0 = ref [] in

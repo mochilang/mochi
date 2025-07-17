@@ -46,7 +46,7 @@ let stats : record4 list = (let (__groups0 : (string * record2 list) list ref) =
 
 
 let () =
-  print_endline "--- Orders per customer ---";
+  print_endline ("--- Orders per customer ---");
   let rec __loop1 lst =
     match lst with
       | [] -> ()

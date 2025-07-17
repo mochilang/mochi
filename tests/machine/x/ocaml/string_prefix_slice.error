@@ -1,5 +1,5 @@
-File "/tmp/TestOCamlCompiler_VMValid_Goldenstring_prefix_slice3727875904/001/string_prefix_slice.ml", line 27, characters 59-65:
-27 |   print_endline (__show ((string_slice s1 (0) (List.length prefix) = prefix)));
-                                                                ^^^^^^
+File "/tmp/TestOCamlCompiler_VMValid_Goldenstring_prefix_slice763068114/001/string_prefix_slice.ml", line 10, characters 51-57:
+10 |   print_endline ((string_slice s1 (0) (List.length prefix) = prefix));
+                                                        ^^^^^^
 Error: This expression has type string but an expression was expected of type
          'a list

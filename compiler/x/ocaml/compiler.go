@@ -2052,8 +2052,8 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("print expects at least 1 arg")
 		}
 		if len(args) == 1 {
-			if isStringExpr(call.Args[0]) {
-				return fmt.Sprintf("print_endline %s", args[0]), nil
+			if isStringExpr(call.Args[0]) || c.isStringType(call.Args[0]) {
+				return fmt.Sprintf("print_endline (%s)", args[0]), nil
 			}
 			return fmt.Sprintf("print_endline (__show (%s))", args[0]), nil
 		}
@@ -2682,6 +2682,25 @@ func (c *Compiler) isFloatPostfix(p *parser.PostfixExpr) bool {
 	return ok
 }
 
+func (c *Compiler) isStringType(e *parser.Expr) bool {
+	if _, ok := types.ExprType(e, c.env).(types.StringType); ok {
+		return true
+	}
+	if name, ok := identName(e); ok {
+		if lt, ok2 := c.localTypes[name]; ok2 {
+			if _, ok3 := lt.(types.StringType); ok3 {
+				return true
+			}
+		}
+		if gt, err := c.env.GetVar(name); err == nil {
+			if _, ok3 := gt.(types.StringType); ok3 {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func stringConst(e *parser.Expr) (string, bool) {
 	if e == nil || e.Binary == nil || e.Binary.Left == nil {
 		return "", false
@@ -3245,11 +3264,40 @@ func (c *Compiler) scanPrimary(p *parser.Primary) {
 			c.scanExpr(a)
 		}
 		switch p.Call.Func {
-		case "print", "str":
+		case "print":
+			needShow := false
+			for _, arg := range p.Call.Args {
+				if !(isStringExpr(arg) || c.isStringType(arg)) {
+					needShow = true
+					break
+				}
+			}
+			if needShow {
+				c.needShow = true
+			}
+		case "str":
 			c.needShow = true
 		case "sum":
-			c.needSum = true
-			c.needSumFloat = true
+			if len(p.Call.Args) == 1 {
+				t := types.ExprType(p.Call.Args[0], c.env)
+				var elem types.Type
+				switch tt := t.(type) {
+				case types.ListType:
+					elem = tt.Elem
+				case types.GroupType:
+					elem = tt.Elem
+				}
+				if _, ok := elem.(types.FloatType); ok {
+					c.needSumFloat = true
+				} else if _, ok := types.TypeOfPrimary(&parser.Primary{Call: p.Call}, c.env).(types.FloatType); ok {
+					c.needSum = true
+				} else {
+					c.needSum = true
+				}
+			} else {
+				c.needSum = true
+				c.needSumFloat = true
+			}
 		}
 	case p.List != nil:
 		for _, e := range p.List.Elems {
