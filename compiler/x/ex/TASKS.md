@@ -32,6 +32,10 @@ the expected `.out` file. The generated sources live under
   comparisons in golden tests.
 - [ ] Improve formatting of generated code.
 
+## VM Test Updates (2025-07-17 07:46)
+- `print` now joins list elements with spaces so list output matches the VM runtime.
+- Regenerated machine outputs under `tests/machine/x/ex`. 99/100 programs pass; `group_by_left_join.mochi` still fails at runtime.
+
 ## TPC-DS Progress (2025-07-15 04:45)
 Initial golden test `TestExCompiler_TPCDSQueries` verifies the Elixir compiler
 against the available TPC-DS query outputs. A new helper script
