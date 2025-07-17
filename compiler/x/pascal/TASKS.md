@@ -14,6 +14,8 @@
   variable declarations to reduce Pascal `.error` files.
 - [2025-09-02 12:00] Simplified golden tests to only check runtime output and
   implemented `contains` method lowering for strings.
+- [2025-09-03 15:45] Fixed detection of `contains` when used via selector
+  to compile `string_contains` example successfully.
 
 ## Remaining Work
 - [x] Support advanced dataset queries required for TPC-H Q1.
