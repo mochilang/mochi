@@ -3124,6 +3124,52 @@ func containsStr(list []string, s string) bool {
 	return false
 }
 
+// joinKeyExpr attempts to extract join key expressions for a simple equality
+// join between two variables. It returns the expressions for the left and right
+// sides (matching leftVar and rightVar) along with the inferred key type.
+// ok is true if the join condition matches the expected pattern.
+func (c *Compiler) joinKeyExpr(on *parser.Expr, leftVar, rightVar string) (string, string, string, bool, error) {
+	if on == nil || on.Binary == nil || len(on.Binary.Right) != 1 {
+		return "", "", "", false, nil
+	}
+	op := on.Binary.Right[0]
+	if op.Op != "==" {
+		return "", "", "", false, nil
+	}
+	leftExpr := &parser.Expr{Binary: &parser.BinaryExpr{Left: on.Binary.Left}}
+	rightExpr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}
+
+	leftSel, ok1 := c.selectorString(leftExpr)
+	rightSel, ok2 := c.selectorString(rightExpr)
+	if !ok1 || !ok2 {
+		return "", "", "", false, nil
+	}
+	lRoot := strings.Split(leftSel, ".")[0]
+	rRoot := strings.Split(rightSel, ".")[0]
+	if !((lRoot == leftVar && rRoot == rightVar) || (lRoot == rightVar && rRoot == leftVar)) {
+		return "", "", "", false, nil
+	}
+	le, err := c.compileExpr(leftExpr)
+	if err != nil {
+		return "", "", "", false, err
+	}
+	re, err := c.compileExpr(rightExpr)
+	if err != nil {
+		return "", "", "", false, err
+	}
+	keyType := c.inferType(leftExpr)
+	if keyType == "var" {
+		keyType = c.inferType(rightExpr)
+	}
+	if keyType == "var" {
+		keyType = "Object"
+	}
+	if lRoot == leftVar {
+		return le, re, keyType, true, nil
+	}
+	return re, le, keyType, true, nil
+}
+
 func (c *Compiler) compileExistsQuery(q *parser.QueryExpr) (string, error) {
 	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
 		return "", fmt.Errorf("unsupported query")
@@ -3327,6 +3373,56 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			b.WriteString("}}).get()")
 			c.vars = oldVars
 			return b.String(), nil
+		} else if j.Side != nil && *j.Side == "left" {
+			qKey, jKey, keyType, ok, err := c.joinKeyExpr(j.On, q.Var, j.Var)
+			if err != nil {
+				c.vars = oldVars
+				return "", err
+			}
+			if ok {
+				jsExpr, err := c.compileExpr(j.Src)
+				if err != nil {
+					c.vars = oldVars
+					return "", err
+				}
+				sel, err := c.compileExpr(q.Select)
+				if err != nil {
+					c.vars = oldVars
+					return "", err
+				}
+				mapVar := c.tmpName("lookup")
+				bucketVar := c.tmpName("bucket")
+				keyVar := c.tmpName("key")
+				var b strings.Builder
+				b.WriteString(fmt.Sprintf("(new java.util.function.Supplier<%s>(){public %s get(){\n", listType, listType))
+				b.WriteString(fmt.Sprintf("\t%s %s = new ArrayList<>();\n", listType, resVar))
+				b.WriteString(fmt.Sprintf("\tMap<%s,List<%s>> %s = new HashMap<>();\n", wrapperType(keyType), c.vars[j.Var], mapVar))
+				b.WriteString(fmt.Sprintf("\tfor (var %s : %s) {\n", j.Var, jsExpr))
+				b.WriteString(fmt.Sprintf("\t\t%s %s = %s;\n", keyType, keyVar, jKey))
+				b.WriteString(fmt.Sprintf("\t\tList<%s> %s = %s.get(%s);\n", c.vars[j.Var], bucketVar, mapVar, keyVar))
+				b.WriteString(fmt.Sprintf("\t\tif (%s == null) { %s = new ArrayList<>(); %s.put(%s, %s); }\n", bucketVar, bucketVar, mapVar, keyVar, bucketVar))
+				b.WriteString(fmt.Sprintf("\t\t%s.add(%s);\n", bucketVar, j.Var))
+				b.WriteString("\t}\n")
+				b.WriteString(fmt.Sprintf("\tfor (var %s : %s) {\n", q.Var, src))
+				b.WriteString(fmt.Sprintf("\t\t%s %s = %s;\n", keyType, keyVar, qKey))
+				b.WriteString(fmt.Sprintf("\t\tList<%s> %s = %s.get(%s);\n", c.vars[j.Var], bucketVar, mapVar, keyVar))
+				b.WriteString(fmt.Sprintf("\t\tif (%s == null) {\n", bucketVar))
+				b.WriteString(fmt.Sprintf("\t\t\t%s %s = null;\n", c.vars[j.Var], j.Var))
+				b.WriteString(fmt.Sprintf("\t\t\t%[1]s.add(%s);\n", resVar, sel))
+				b.WriteString("\t\t} else {\n")
+				b.WriteString(fmt.Sprintf("\t\t\tfor (var %s : %s) {\n", j.Var, bucketVar))
+				b.WriteString(fmt.Sprintf("\t\t\t\t%[1]s.add(%s);\n", resVar, sel))
+				b.WriteString("\t\t\t}\n")
+				b.WriteString("\t\t}\n")
+				b.WriteString("\t}\n")
+				if q.Distinct {
+					b.WriteString(fmt.Sprintf("\t%s = new ArrayList<>(new LinkedHashSet<>(%s));\n", resVar, resVar))
+				}
+				b.WriteString(fmt.Sprintf("\treturn %s;\n", resVar))
+				b.WriteString("}}).get()")
+				c.vars = oldVars
+				return b.String(), nil
+			}
 		}
 	}
 
