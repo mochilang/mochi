@@ -1221,8 +1221,8 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(call.Args) != 1 {
 			return "", fmt.Errorf("len expects 1 arg")
 		}
-		if ints, ok := c.constIntListExpr(call.Args[0]); ok {
-			return fmt.Sprintf("%d", len(ints)), nil
+		if n, ok := c.constListLenExpr(call.Args[0]); ok {
+			return fmt.Sprintf("%d", n), nil
 		}
 		if types.IsStringExpr(call.Args[0], c.env) {
 			return fmt.Sprintf("len(%s)", args[0]), nil
@@ -1253,8 +1253,8 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(call.Args) != 1 {
 			return "", fmt.Errorf("count expects 1 arg")
 		}
-		if ints, ok := c.constIntListExpr(call.Args[0]); ok {
-			return fmt.Sprintf("%d", len(ints)), nil
+		if n, ok := c.constListLenExpr(call.Args[0]); ok {
+			return fmt.Sprintf("%d", n), nil
 		}
 		return fmt.Sprintf("size(%s)", args[0]), nil
 	case "str":
@@ -1568,6 +1568,16 @@ func (c *Compiler) constIntListExpr(e *parser.Expr) ([]int, bool) {
 		return ints, ok
 	}
 	return nil, false
+}
+
+func (c *Compiler) constListLenExpr(e *parser.Expr) (int, bool) {
+	if ints, ok := c.constIntListExpr(e); ok {
+		return len(ints), true
+	}
+	if l := listLiteral(e); l != nil {
+		return len(l.Elems), true
+	}
+	return 0, false
 }
 
 func (c *Compiler) constIntListFromUnary(u *parser.Unary) ([]int, bool) {
