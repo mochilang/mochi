@@ -4,22 +4,6 @@
 
 main(_) ->
     People = [#{name => "Alice", age => 30}, #{name => "Bob", age => 15}, #{name => "Charlie", age => 65}, #{name => "Diana", age => 45}],
-    Adults = [#{name => mochi_get(name, Person), age => mochi_get(age, Person), is_senior => (mochi_get(age, Person) >= 60)} || Person <- People, (mochi_get(age, Person) >= 18)],
+    Adults = [#{name => maps:get(name, Person, undefined), age => maps:get(age, Person, undefined), is_senior => (maps:get(age, Person, undefined) >= 60)} || Person <- People, (maps:get(age, Person, undefined) >= 18)],
     io:format("~p~n", ["--- Adults ---"]),
-    lists:foreach(fun(Person) -> io:format("~p ~p ~p ~p~n", [mochi_get(name, Person), "is", mochi_get(age, Person), (case mochi_get(is_senior, Person) of undefined -> ""; false -> ""; _ -> " (senior)" end)]) end, Adults).
-
-mochi_get(K, M) ->
-    case maps:find(K, M) of
-        {ok, V} -> V;
-        error ->
-            Name = atom_to_list(K),
-            case string:tokens(Name, "_") of
-                [Pref|_] ->
-                    P = list_to_atom(Pref),
-                    case maps:find(P, M) of
-                        {ok, Sub} when is_map(Sub) -> maps:get(K, Sub, undefined);
-                        _ -> undefined
-                    end;
-                _ -> undefined
-            end
-        end.
+    lists:foreach(fun(Person) -> io:format("~p ~p ~p ~p~n", [maps:get(name, Person, undefined), "is", maps:get(age, Person, undefined), (case maps:get(is_senior, Person, undefined) of undefined -> ""; false -> ""; _ -> " (senior)" end)]) end, Adults).
