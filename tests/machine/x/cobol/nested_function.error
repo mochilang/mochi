@@ -1,0 +1,6 @@
+/tmp/TestCobolCompiler_VMValid_Golden3313344715/037/prog.cob:11: error: syntax error, unexpected USING
+/tmp/TestCobolCompiler_VMValid_Golden3313344715/037/prog.cob: in paragraph 'FN_OUTER':
+/tmp/TestCobolCompiler_VMValid_Golden3313344715/037/prog.cob:16: error: syntax error, unexpected PROCEDURE
+/tmp/TestCobolCompiler_VMValid_Golden3313344715/037/prog.cob:17: error: syntax error, unexpected USING
+/tmp/TestCobolCompiler_VMValid_Golden3313344715/037/prog.cob:18: error: 'FN-INNER-RES' is not defined
+/tmp/TestCobolCompiler_VMValid_Golden3313344715/037/prog.cob:17: error: 'FN_INNER' is not defined
