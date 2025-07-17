@@ -13,6 +13,7 @@
 - 2025-07-15 06:30 - Added TPC-DS golden tests for Smalltalk compiler covering
   available queries.
 - 2025-07-16 11:35 - Added Rosetta golden tests and implemented slice support for lists.
+- 2025-07-17 08:50 - Python math imports are now compiled directly without runtime helper dictionaries.
 
 ## Remaining Work
 - [ ] Verify TPC-H `q1.mochi` output matches reference when compiled.
