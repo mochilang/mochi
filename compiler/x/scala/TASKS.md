@@ -13,8 +13,8 @@
 - 2025-07-18 12:14 - Added `padStart` builtin and Scala code generation support to reduce Rosetta compile errors
 - 2025-07-19 00:30 - Handle `padStart` as string method and keep string type during concatenation to reduce `.error` files
 - 2025-07-20 00:10 - Added golden tests for `tests/vm/valid` and propagated list element types with `SetVarDeep`
-- 2025-07-21 00:00 - Removed duplicate machine tests and typed empty buffers to
-  reduce `.error` files
+- 2025-07-21 00:00 - Removed duplicate machine tests and typed empty buffers to reduce `.error` files
+- 2025-07-21 05:00 - VM valid tests now use `RunWithSummary` and sanitize object names for files like `two-sum`
 - 2025-07-16 00:00 - Added VM valid golden tests and cleaned up dataset tests
 
 ## Remaining Work

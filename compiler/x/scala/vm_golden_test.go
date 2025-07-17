@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"unicode"
 
 	scalacode "mochi/compiler/x/scala"
 	"mochi/golden"
@@ -35,6 +36,24 @@ func repoRootVM(t *testing.T) string {
 	return ""
 }
 
+func sanitizeName(name string) string {
+	if name == "" {
+		return "Main"
+	}
+	var b strings.Builder
+	for i, r := range name {
+		if i == 0 && unicode.IsDigit(r) {
+			b.WriteByte('_')
+		}
+		if unicode.IsLetter(r) || unicode.IsDigit(r) || r == '_' {
+			b.WriteRune(r)
+		} else {
+			b.WriteByte('_')
+		}
+	}
+	return b.String()
+}
+
 func TestScalaCompilerVMValid(t *testing.T) {
 	if _, err := exec.LookPath("scalac"); err != nil {
 		t.Skip("scalac not installed")
@@ -43,11 +62,12 @@ func TestScalaCompilerVMValid(t *testing.T) {
 	outDir := filepath.Join(root, "tests", "machine", "x", "scala")
 	os.MkdirAll(outDir, 0o755)
 
-	golden.Run(t, "tests/vm/valid", ".mochi", ".out", func(src string) ([]byte, error) {
-		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		codePath := filepath.Join(outDir, name+".scala")
-		outPath := filepath.Join(outDir, name+".out")
-		errPath := filepath.Join(outDir, name+".error")
+	golden.RunWithSummary(t, "tests/vm/valid", ".mochi", ".out", func(src string) ([]byte, error) {
+		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
+		runName := sanitizeName(base)
+		codePath := filepath.Join(outDir, base+".scala")
+		outPath := filepath.Join(outDir, base+".out")
+		errPath := filepath.Join(outDir, base+".error")
 
 		prog, err := parser.Parse(src)
 		if err != nil {
@@ -59,7 +79,11 @@ func TestScalaCompilerVMValid(t *testing.T) {
 			os.WriteFile(errPath, []byte(errs[0].Error()), 0o644)
 			return nil, errs[0]
 		}
+		os.Setenv("MOCHI_HEADER_TIME", "2006-01-02T15:04:05Z")
+		os.Setenv("SOURCE_DATE_EPOCH", "0")
 		code, err := scalacode.New(env).Compile(prog)
+		os.Unsetenv("MOCHI_HEADER_TIME")
+		os.Unsetenv("SOURCE_DATE_EPOCH")
 		if err != nil {
 			os.WriteFile(errPath, []byte(err.Error()), 0o644)
 			return nil, err
@@ -72,7 +96,7 @@ func TestScalaCompilerVMValid(t *testing.T) {
 			os.WriteFile(errPath, append([]byte(err.Error()+"\n"), out...), 0o644)
 			return nil, err
 		}
-		cmd := exec.Command("scala", "-cp", tmp, name)
+		cmd := exec.Command("scala", "-cp", tmp, runName)
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			cmd.Stdin = bytes.NewReader(data)
 		}
