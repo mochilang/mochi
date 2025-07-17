@@ -1,5 +1,5 @@
-File "/tmp/TestOCamlCompiler_VMValid_Goldenquery_sum_select3518014829/001/query_sum_select.ml", line 26, characters 33-34:
-26 |     __res0 := (float_of_int (sum n)) :: !__res0;
+File "/tmp/TestOCamlCompiler_VMValid_Goldenquery_sum_select1067140866/001/query_sum_select.ml", line 25, characters 33-34:
+25 |     __res0 := (float_of_int (sum n)) :: !__res0;
                                       ^
 Error: This expression has type int but an expression was expected of type
          int list

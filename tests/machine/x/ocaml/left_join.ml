@@ -43,7 +43,7 @@ let result : record3 list = (let __res0 = ref [] in
 
 
 let () =
-  print_endline "--- Left Join ---";
+  print_endline ("--- Left Join ---");
   let rec __loop1 lst =
     match lst with
       | [] -> ()

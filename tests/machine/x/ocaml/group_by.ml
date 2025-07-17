@@ -51,7 +51,7 @@ List.rev !__res1)
 
 
 let () =
-  print_endline "--- People grouped by city ---";
+  print_endline ("--- People grouped by city ---");
   let rec __loop2 lst =
     match lst with
       | [] -> ()

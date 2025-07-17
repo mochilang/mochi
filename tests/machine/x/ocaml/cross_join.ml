@@ -36,7 +36,7 @@ List.rev !__res0)
 
 
 let () =
-  print_endline "--- Cross Join: All order-customer pairs ---";
+  print_endline ("--- Cross Join: All order-customer pairs ---");
   let rec __loop1 lst =
     match lst with
       | [] -> ()

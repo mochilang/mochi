@@ -1,5 +1,5 @@
-File "/tmp/TestOCamlCompiler_VMValid_Goldengroup_by_multi_join_sort2173869509/001/group_by_multi_join_sort.ml", line 52, characters 28-43:
-52 |     __res0 := { c_custkey = g.key.c_custkey; c_name = g.key.c_name; revenue = (float_of_int (sum (let __res1 = ref [] in
+File "/tmp/TestOCamlCompiler_VMValid_Goldengroup_by_multi_join_sort3670889310/001/group_by_multi_join_sort.ml", line 51, characters 28-43:
+51 |     __res0 := { c_custkey = g.key.c_custkey; c_name = g.key.c_name; revenue = (float_of_int (sum (let __res1 = ref [] in
                                  ^^^^^^^^^^^^^^^
 Error: This expression has type int but an expression was expected of type
          Obj.t

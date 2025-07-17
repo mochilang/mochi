@@ -33,7 +33,7 @@ List.rev !__res0)
 
 
 let () =
-  print_endline "--- Adults ---";
+  print_endline ("--- Adults ---");
   let rec __loop1 lst =
     match lst with
       | [] -> ()

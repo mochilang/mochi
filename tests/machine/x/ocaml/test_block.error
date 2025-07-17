@@ -1,4 +1,4 @@
-File "/tmp/TestOCamlCompiler_VMValid_Goldentest_block1695051154/001/test_block.ml", line 24, characters 2-15:
-24 |   print_endline "ok";
-       ^^^^^^^^^^^^^
+File "/tmp/TestOCamlCompiler_VMValid_Goldentest_block962362728/001/test_block.ml", line 6, characters 2-15:
+6 |   print_endline ("ok");
+      ^^^^^^^^^^^^^
 Error: Syntax error

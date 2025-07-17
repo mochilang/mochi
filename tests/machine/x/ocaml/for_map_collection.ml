@@ -28,7 +28,7 @@ let () =
       | [] -> ()
       | (k, _)::rest ->
         (try
-          print_endline (__show (k));
+          print_endline (k);
         with Continue -> ())
         ; __loop0 rest
     in

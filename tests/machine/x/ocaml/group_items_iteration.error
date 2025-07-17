@@ -1,4 +1,4 @@
-File "/tmp/TestOCamlCompiler_VMValid_Goldengroup_items_iteration2238417728/001/group_items_iteration.ml", line 67, characters 53-61:
+File "/tmp/TestOCamlCompiler_VMValid_Goldengroup_items_iteration1818919325/001/group_items_iteration.ml", line 67, characters 53-61:
 67 |             tmp := ((!tmp) @ [{ tag = g.key; total = (!total) }]);
                                                           ^^^^^^^^
 Error: This expression has type int but an expression was expected of type

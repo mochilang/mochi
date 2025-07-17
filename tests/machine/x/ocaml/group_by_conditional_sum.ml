@@ -17,7 +17,6 @@ let rec __show v =
     | _ -> "<value>"
 
 let sum lst = List.fold_left (+) 0 lst
-let sum_float lst = List.fold_left (+.) 0.0 lst
 type ('k,'v) group = { key : 'k; items : 'v list }
 
 type record1 = { mutable cat : string; mutable val_ : int; mutable flag : bool }

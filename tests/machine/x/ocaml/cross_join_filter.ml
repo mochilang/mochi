@@ -35,7 +35,7 @@ List.rev !__res0)
 
 
 let () =
-  print_endline "--- Even pairs ---";
+  print_endline ("--- Even pairs ---");
   let rec __loop1 lst =
     match lst with
       | [] -> ()
