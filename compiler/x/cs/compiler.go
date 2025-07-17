@@ -649,8 +649,17 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 					}
 				}
 				if isFetchExpr(s.Let.Value) && typ != "" {
-					c.use("_cast")
-					expr = fmt.Sprintf("_cast<%s>(%s)", typ, expr)
+					srcT := c.inferExprType(s.Let.Value)
+					if csTypeOf(srcT) == typ {
+						// no cast needed
+					} else if isNumeric(srcT) && isNumeric(static) {
+						expr = fmt.Sprintf("(%s)%s", typ, expr)
+					} else if _, ok := srcT.(types.StringType); ok && isNumeric(static) {
+						expr = fmt.Sprintf("%s.Parse(%s)", typ, expr)
+					} else {
+						c.use("_cast")
+						expr = fmt.Sprintf("_cast<%s>(%s)", typ, expr)
+					}
 				}
 			} else if t, err := c.env.GetVar(s.Let.Name); err == nil {
 				static = t
@@ -669,8 +678,17 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 					}
 				}
 				if isFetchExpr(s.Let.Value) && typ != "" {
-					c.use("_cast")
-					expr = fmt.Sprintf("_cast<%s>(%s)", typ, expr)
+					srcT := c.inferExprType(s.Let.Value)
+					if csTypeOf(srcT) == typ {
+						// no cast needed
+					} else if isNumeric(srcT) && isNumeric(static) {
+						expr = fmt.Sprintf("(%s)%s", typ, expr)
+					} else if _, ok := srcT.(types.StringType); ok && isNumeric(static) {
+						expr = fmt.Sprintf("%s.Parse(%s)", typ, expr)
+					} else {
+						c.use("_cast")
+						expr = fmt.Sprintf("_cast<%s>(%s)", typ, expr)
+					}
 				}
 			} else {
 				inferredT := c.inferExprType(s.Let.Value)
@@ -750,8 +768,17 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 					}
 				}
 				if isFetchExpr(s.Var.Value) && typ != "" {
-					c.use("_cast")
-					expr = fmt.Sprintf("_cast<%s>(%s)", typ, expr)
+					srcT := c.inferExprType(s.Var.Value)
+					if csTypeOf(srcT) == typ {
+						// no cast needed
+					} else if isNumeric(srcT) && isNumeric(static) {
+						expr = fmt.Sprintf("(%s)%s", typ, expr)
+					} else if _, ok := srcT.(types.StringType); ok && isNumeric(static) {
+						expr = fmt.Sprintf("%s.Parse(%s)", typ, expr)
+					} else {
+						c.use("_cast")
+						expr = fmt.Sprintf("_cast<%s>(%s)", typ, expr)
+					}
 				}
 			} else {
 				inferredT := c.inferExprType(s.Var.Value)
@@ -775,8 +802,17 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 					}
 				}
 				if isFetchExpr(s.Var.Value) && typ != "" {
-					c.use("_cast")
-					expr = fmt.Sprintf("_cast<%s>(%s)", typ, expr)
+					srcT := c.inferExprType(s.Var.Value)
+					if csTypeOf(srcT) == typ {
+						// no cast needed
+					} else if isNumeric(srcT) && isNumeric(static) {
+						expr = fmt.Sprintf("(%s)%s", typ, expr)
+					} else if _, ok := srcT.(types.StringType); ok && isNumeric(static) {
+						expr = fmt.Sprintf("%s.Parse(%s)", typ, expr)
+					} else {
+						c.use("_cast")
+						expr = fmt.Sprintf("_cast<%s>(%s)", typ, expr)
+					}
 				}
 			}
 		} else {
@@ -981,8 +1017,17 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 		c.varTypes[sanitizeName(a.Name)] = inferred
 	}
 	if ok && cur != "" && cur != "dynamic" && isFetchExpr(a.Value) {
-		c.use("_cast")
-		val = fmt.Sprintf("_cast<%s>(%s)", cur, val)
+		srcT := c.inferExprType(a.Value)
+		if csTypeOf(srcT) == cur {
+			// no cast
+		} else if isNumeric(srcT) && (cur == "int" || cur == "long" || cur == "double" || cur == "float") {
+			val = fmt.Sprintf("(%s)%s", cur, val)
+		} else if _, ok := srcT.(types.StringType); ok && (cur == "int" || cur == "long" || cur == "double" || cur == "float") {
+			val = fmt.Sprintf("%s.Parse(%s)", cur, val)
+		} else {
+			c.use("_cast")
+			val = fmt.Sprintf("_cast<%s>(%s)", cur, val)
+		}
 	}
 	c.writeln(fmt.Sprintf("%s = %s;", lhs, val))
 	return nil

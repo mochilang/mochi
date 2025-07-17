@@ -1,4 +1,8 @@
 # C# Compiler TODO
+## Recent Updates (2025-07-21 12:00)
+- Avoid emitting `_cast` when assigning values already typed, using direct
+  numeric casts where possible. Machine output added for `binary_precedence`,
+  `bool_chain` and `break_continue` bringing totals to 12/100.
 ## Recent Updates (2025-07-21 00:00)
 - Improved compile-time casting so numeric conversions no longer rely on the
   `_cast` helper when types are known. Machine output added for
