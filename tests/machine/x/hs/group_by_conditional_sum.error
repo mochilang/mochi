@@ -1,8 +1,41 @@
+runhaskell: exit status 1
 
-/workspace/mochi/tests/machine/x/hs/group_by_conditional_sum.hs:127:1: error:
-    Multiple declarations of ‘items’
-    Declared at: /workspace/mochi/tests/machine/x/hs/group_by_conditional_sum.hs:37:37
-                 /workspace/mochi/tests/machine/x/hs/group_by_conditional_sum.hs:127:1
+tests/machine/x/hs/group_by_conditional_sum.hs:129:222: error:
+    • Couldn't match type ‘AnyValue’ with ‘Double’
+      Expected: Map.Map String Double
+        Actual: Map.Map String AnyValue
+    • In the second argument of ‘Map.lookup’, namely ‘(x)’
+      In the second argument of ‘fromMaybe’, namely
+        ‘(Map.lookup "val" (x))’
+      In the expression:
+        fromMaybe (error "missing") (Map.lookup "val" (x))
     |
-127 | items = [Map.fromList [("cat", VString ("a")), ("val", VInt (10)), ("flag", VBool (True))], Map.fromList [("cat", VString ("a")), ("val", VInt (5)), ("flag", VBool (False))], Map.fromList [("cat", VString ("b")), ("val", VInt (20)), ("flag", VBool (True))]]
-    | ^^^^^
+129 | result = map snd (List.sortOn fst [(gKey (g), Map.fromList [("cat", gKey (g)), ("share", VDouble ((sum [if _asBool (fromMaybe (error "missing") (Map.lookup "flag" (x))) then fromMaybe (error "missing") (Map.lookup "val" (x)) else 0 | x <- g] / sum [fromMaybe (error "missing") (Map.lookup "val" (x)) | x <- g])))]) | g <- _group_by [(i) | i <- items] (\(i) -> fromMaybe (error "missing") (Map.lookup "cat" i))])
+    |                                                                                                                                                                                                                              ^
+
+tests/machine/x/hs/group_by_conditional_sum.hs:129:240: error:
+    • Couldn't match expected type: [Map.Map String AnyValue]
+                  with actual type: MGroup AnyValue (Map.Map String AnyValue)
+    • In the expression: g
+      In a stmt of a list comprehension: x <- g
+      In the first argument of ‘sum’, namely
+        ‘[if _asBool
+               (fromMaybe (error "missing") (Map.lookup "flag" (x))) then
+              fromMaybe (error "missing") (Map.lookup "val" (x))
+          else
+              0 |
+            x <- g]’
+    |
+129 | result = map snd (List.sortOn fst [(gKey (g), Map.fromList [("cat", gKey (g)), ("share", VDouble ((sum [if _asBool (fromMaybe (error "missing") (Map.lookup "flag" (x))) then fromMaybe (error "missing") (Map.lookup "val" (x)) else 0 | x <- g] / sum [fromMaybe (error "missing") (Map.lookup "val" (x)) | x <- g])))]) | g <- _group_by [(i) | i <- items] (\(i) -> fromMaybe (error "missing") (Map.lookup "cat" i))])
+    |                                                                                                                                                                                                                                                ^
+
+tests/machine/x/hs/group_by_conditional_sum.hs:129:308: error:
+    • Couldn't match expected type: [Map.Map String Double]
+                  with actual type: MGroup AnyValue (Map.Map String AnyValue)
+    • In the expression: g
+      In a stmt of a list comprehension: x <- g
+      In the first argument of ‘sum’, namely
+        ‘[fromMaybe (error "missing") (Map.lookup "val" (x)) | x <- g]’
+    |
+129 | result = map snd (List.sortOn fst [(gKey (g), Map.fromList [("cat", gKey (g)), ("share", VDouble ((sum [if _asBool (fromMaybe (error "missing") (Map.lookup "flag" (x))) then fromMaybe (error "missing") (Map.lookup "val" (x)) else 0 | x <- g] / sum [fromMaybe (error "missing") (Map.lookup "val" (x)) | x <- g])))]) | g <- _group_by [(i) | i <- items] (\(i) -> fromMaybe (error "missing") (Map.lookup "cat" i))])
+    |                                                                                                                                                                                                                                                                                                                    ^
