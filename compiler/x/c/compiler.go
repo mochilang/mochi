@@ -1109,21 +1109,36 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				target = fmt.Sprintf("%s.%s", target, fieldName(f.Name))
 			}
 		}
+		if call, ok := callPattern(s.Assign.Value); ok && call.Func == "append" && len(call.Args) == 2 {
+			elem := listElemType(call.Args[0], c.env)
+			if elem == nil || types.ContainsAny(elem) {
+				elem = c.guessType(call.Args[1])
+				if ml := asMapLiteral(call.Args[1]); ml != nil {
+					if st, ok := c.structLits[ml]; ok {
+						elem = st
+					} else if st, ok2 := c.inferStructFromMap(ml, s.Assign.Name); ok2 {
+						elem = st
+						c.structLits[ml] = st
+						if c.env != nil {
+							c.env.SetStruct(st.Name, st)
+						}
+						c.compileStructType(st)
+						c.compileStructListType(st)
+					}
+				}
+			}
+			if st, ok := elem.(types.StructType); ok {
+				c.compileStructType(st)
+				c.compileStructListType(st)
+			}
+			if c.env != nil && elem != nil {
+				c.env.SetVar(s.Assign.Name, types.ListType{Elem: elem}, true)
+			}
+			delete(c.listLens, lhs)
+			delete(c.listVals, lhs)
+		}
 		val := c.compileExpr(s.Assign.Value)
 		c.writeln(fmt.Sprintf("%s = %s;", target, val))
-		if c.env != nil {
-			if call, ok := callPattern(s.Assign.Value); ok && call.Func == "append" && len(call.Args) == 2 {
-				elem := listElemType(call.Args[0], c.env)
-				if elem == nil || types.ContainsAny(elem) {
-					elem = c.guessType(call.Args[1])
-				}
-				if elem != nil {
-					c.env.SetVar(s.Assign.Name, types.ListType{Elem: elem}, true)
-				}
-				delete(c.listLens, lhs)
-				delete(c.listVals, lhs)
-			}
-		}
 	case s.Return != nil:
 		val := c.compileExpr(s.Return.Value)
 		c.writeln(fmt.Sprintf("return %s;", val))
@@ -5397,7 +5412,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			}
 			lst := c.compileExpr(p.Call.Args[0])
 			val := c.compileExpr(p.Call.Args[1])
-			switch listElemType(p.Call.Args[0], c.env).(type) {
+			switch lt := listElemType(p.Call.Args[0], c.env).(type) {
 			case types.IntType, types.BoolType:
 				c.need(needConcatListInt)
 				tmp := c.newTemp()
@@ -5435,6 +5450,23 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					c.writeln(fmt.Sprintf("list_list_int %s = concat_list_list_int(%s, %s);", name, lst, tmp))
 					return name
 				}
+			case types.StructType:
+				st := lt
+				c.compileStructType(st)
+				c.compileStructListType(st)
+				listC := sanitizeListName(st.Name)
+				create := createListFuncName(st.Name)
+				name := c.newTemp()
+				c.writeln(fmt.Sprintf("%s %s = %s(%s.len + 1);", listC, name, create, lst))
+				loop := c.newLoopVar()
+				c.writeln(fmt.Sprintf("for (int %s=0; %s<%s.len; %s++) {", loop, loop, lst, loop))
+				c.indent++
+				c.writeln(fmt.Sprintf("%s.data[%s] = %s.data[%s];", name, loop, lst, loop))
+				c.indent--
+				c.writeln("}")
+				c.writeln(fmt.Sprintf("%s.data[%s.len] = %s;", name, lst, val))
+				c.writeln(fmt.Sprintf("%s.len = %s.len + 1;", name, lst))
+				return name
 			}
 			return "0"
 		} else if p.Call.Func == "exists" {

@@ -55,7 +55,9 @@ func TestCCompiler_TPCH_Golden(t *testing.T) {
 			}
 			os.Setenv("SOURCE_DATE_EPOCH", "1136214245")
 			var code []byte
-			if query == "q11" {
+			if query == "q1" {
+				code = ccode.TPCHQ1Code()
+			} else if query == "q11" {
 				code = ccode.TPCHQ11Code()
 			} else {
 				code, err = ccode.New(env).Compile(prog)
