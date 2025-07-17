@@ -1028,54 +1028,18 @@ func (c *Compiler) compileStructType(st types.StructType) {
 }
 
 func (c *Compiler) inferStructFromList(ll *parser.ListLiteral, name string) (types.StructType, bool) {
-	if ll == nil || len(ll.Elems) == 0 {
+	st, ok := types.InferStructFromList(ll, c.env)
+	if !ok {
 		return types.StructType{}, false
-	}
-	first := ll.Elems[0]
-	if first.Binary == nil || len(first.Binary.Right) != 0 {
-		return types.StructType{}, false
-	}
-	fm := first.Binary.Left.Value.Target.Map
-	if fm == nil {
-		return types.StructType{}, false
-	}
-	fields := map[string]types.Type{}
-	order := make([]string, len(fm.Items))
-	for i, it := range fm.Items {
-		key, ok := simpleStringKey(it.Key)
-		if !ok {
-			return types.StructType{}, false
-		}
-		order[i] = key
-		fields[key] = types.ExprType(it.Value, c.env)
-	}
-	for _, el := range ll.Elems[1:] {
-		if el.Binary == nil || len(el.Binary.Right) != 0 {
-			return types.StructType{}, false
-		}
-		ml := el.Binary.Left.Value.Target.Map
-		if ml == nil || len(ml.Items) != len(order) {
-			return types.StructType{}, false
-		}
-		for i, it := range ml.Items {
-			key, ok := simpleStringKey(it.Key)
-			if !ok || key != order[i] {
-				return types.StructType{}, false
-			}
-			t := types.ExprType(it.Value, c.env)
-			if !equalTypes(fields[key], t) {
-				return types.StructType{}, false
-			}
-		}
 	}
 	stName := exportName(sanitizeName(singular(name)))
 	if existing, ok := c.env.GetStruct(stName); ok {
-		if structMatches(existing, fields, order) {
+		if types.StructMatches(existing, st.Fields, st.Order) {
 			return existing, true
 		}
 	}
-	idx := 1
 	base := stName
+	idx := 1
 	for {
 		if _, ok := c.env.GetStruct(stName); ok || c.structs[stName] {
 			stName = fmt.Sprintf("%s%d", base, idx)
@@ -1084,35 +1048,26 @@ func (c *Compiler) inferStructFromList(ll *parser.ListLiteral, name string) (typ
 			break
 		}
 	}
-	st := types.StructType{Name: stName, Fields: fields, Order: order}
+	st.Name = stName
 	return st, true
 }
 
 func (c *Compiler) inferStructFromMapEnv(ml *parser.MapLiteral, name string, env *types.Env) (types.StructType, bool) {
-	if ml == nil || len(ml.Items) == 0 {
+	st, ok := types.InferStructFromMapEnv(ml, env)
+	if !ok {
 		return types.StructType{}, false
-	}
-	fields := map[string]types.Type{}
-	order := make([]string, len(ml.Items))
-	for i, it := range ml.Items {
-		key, ok := simpleStringKey(it.Key)
-		if !ok {
-			return types.StructType{}, false
-		}
-		order[i] = key
-		fields[key] = types.ExprType(it.Value, env)
 	}
 	stName := exportName(sanitizeName(singular(name)))
 	if stName == "" {
 		stName = "AnonStruct"
 	}
 	if existing, ok := env.GetStruct(stName); ok {
-		if structMatches(existing, fields, order) {
+		if types.StructMatches(existing, st.Fields, st.Order) {
 			return existing, true
 		}
 	}
-	idx := 1
 	base := stName
+	idx := 1
 	for {
 		if _, ok := env.GetStruct(stName); ok || c.structs[stName] {
 			stName = fmt.Sprintf("%s%d", base, idx)
@@ -1121,7 +1076,7 @@ func (c *Compiler) inferStructFromMapEnv(ml *parser.MapLiteral, name string, env
 			break
 		}
 	}
-	st := types.StructType{Name: stName, Fields: fields, Order: order}
+	st.Name = stName
 	return st, true
 }
 
@@ -1133,22 +1088,7 @@ func (c *Compiler) inferStructFromMap(ml *parser.MapLiteral, name string) (types
 // homogeneous string keys and consistent value types. It returns false if the
 // literal is empty or contains mixed key/value types.
 func (c *Compiler) inferSimpleMap(ml *parser.MapLiteral) (types.MapType, bool) {
-	if ml == nil || len(ml.Items) == 0 {
-		return types.MapType{}, false
-	}
-	var valType types.Type
-	for i, it := range ml.Items {
-		if _, ok := simpleStringKey(it.Key); !ok {
-			return types.MapType{}, false
-		}
-		t := types.ExprType(it.Value, c.env)
-		if i == 0 {
-			valType = t
-		} else if !equalTypes(valType, t) {
-			return types.MapType{}, false
-		}
-	}
-	return types.MapType{Key: types.StringType{}, Value: valType}, true
+	return types.InferSimpleMap(ml, c.env)
 }
 
 func (c *Compiler) queryEnv(q *parser.QueryExpr) *types.Env {
@@ -4236,7 +4176,7 @@ func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, err
 				parts := make([]string, len(ml.Items))
 				if st.Name == "" {
 					for name, existing := range c.env.Structs() {
-						if structMatches(existing, st.Fields, st.Order) {
+						if types.StructMatches(existing, st.Fields, st.Order) {
 							st.Name = name
 							break
 						}

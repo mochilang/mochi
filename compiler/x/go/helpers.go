@@ -329,27 +329,7 @@ func isUnderscoreExpr(e *parser.Expr) bool {
 }
 
 func simpleStringKey(e *parser.Expr) (string, bool) {
-	if e == nil {
-		return "", false
-	}
-	if len(e.Binary.Right) != 0 {
-		return "", false
-	}
-	u := e.Binary.Left
-	if len(u.Ops) != 0 {
-		return "", false
-	}
-	p := u.Value
-	if len(p.Ops) != 0 {
-		return "", false
-	}
-	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
-		return p.Target.Selector.Root, true
-	}
-	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
-		return *p.Target.Lit.Str, true
-	}
-	return "", false
+	return types.SimpleStringKey(e)
 }
 
 // eqJoinKeys checks if expression e represents an equality comparison between
