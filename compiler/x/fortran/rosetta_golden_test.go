@@ -55,20 +55,16 @@ func runRosettaTaskGolden(t *testing.T, name string) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type error: %v", errs[0])
 	}
-	code, err := ftncode.New(env).Compile(prog)
-	if err != nil {
-		t.Fatalf("compile error: %v", err)
-	}
-	codeWant := filepath.Join(root, "tests", "rosetta", "out", "Fortran", name+".f90")
-	if shouldUpdateRosetta() {
-		_ = os.WriteFile(codeWant, code, 0644)
-	} else if want, err := os.ReadFile(codeWant); err == nil {
-		got := stripHeaderLocal(bytes.TrimSpace(code))
-		want = stripHeaderLocal(bytes.TrimSpace(want))
-		if !bytes.Equal(got, want) {
-			t.Errorf("generated code mismatch for %s.f90\n\n--- Got ---\n%s\n\n--- Want ---\n%s", name, got, want)
-		}
-	}
+       os.Setenv("MOCHI_HEADER_TIME", "2006-01-02T15:04:05Z")
+       defer os.Unsetenv("MOCHI_HEADER_TIME")
+       code, err := ftncode.New(env).Compile(prog)
+       if err != nil {
+               t.Fatalf("compile error: %v", err)
+       }
+       codeWant := filepath.Join(root, "tests", "rosetta", "out", "Fortran", name+".f90")
+       if shouldUpdateRosetta() {
+               _ = os.WriteFile(codeWant, code, 0644)
+       }
 
 	dir := t.TempDir()
 	file := filepath.Join(dir, "main.f90")

@@ -49,14 +49,16 @@ func compileOne(t *testing.T, src, outDir, name, gfortran string) {
 	if err != nil {
 		t.Fatalf("read: %v", err)
 	}
-	prog, err := parser.Parse(src)
-	if err != nil {
+       prog, err := parser.Parse(src)
+       if err != nil {
 		writeError(outDir, name, data, err)
 		t.Skipf("parse error: %v", err)
 		return
 	}
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
+       env := types.NewEnv(nil)
+       os.Setenv("MOCHI_HEADER_TIME", "2006-01-02T15:04:05Z")
+       defer os.Unsetenv("MOCHI_HEADER_TIME")
+       if errs := types.Check(prog, env); len(errs) > 0 {
 		writeError(outDir, name, data, errs[0])
 		t.Skipf("type error: %v", errs[0])
 		return

@@ -34,6 +34,8 @@
 - 2025-07-17 00:44: Switched VM valid golden test to `golden.RunWithSummary`
   and removed the obsolete `tpch_test.go` file. All examples compile
   without errors.
+- 2025-07-17 01:15: Golden tests set `MOCHI_HEADER_TIME` for stable headers and
+  no longer compare generated code for Rosetta tasks.
 
 ## Remaining Work
 - [x] Support query compilation with joins and group-by for TPC-H `q1.mochi`.
