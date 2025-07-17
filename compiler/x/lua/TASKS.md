@@ -74,3 +74,8 @@
 
 ## Progress (2025-07-18 13:15)
 - Added bigint_ops from `vm_extended/valid` to Lua machine README; count now 101/101.
+
+## Progress (2025-07-18 14:30)
+- Generated Lua code and runtime outputs for all `tests/vm/valid` programs using golden tests.
+- Added machine README and committed generated sources under `tests/machine/x/lua`.
+
