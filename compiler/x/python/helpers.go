@@ -231,6 +231,15 @@ func isString(t types.Type) bool {
 	return ok
 }
 
+func isSimpleKeyType(t types.Type) bool {
+	t = unwrapOption(t)
+	switch t.(type) {
+	case types.IntType, types.Int64Type, types.FloatType, types.StringType, types.BoolType:
+		return true
+	}
+	return false
+}
+
 func unwrapOption(t types.Type) types.Type {
 	for {
 		ot, ok := t.(types.OptionType)
