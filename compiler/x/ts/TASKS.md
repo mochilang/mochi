@@ -112,3 +112,6 @@
 ### 2025-07-31 00:00 UTC
 - Enhanced inference for `count`, `sum`, `avg`, `min` and `max` to emit native
   operations when list or group types are detected.
+### 2025-08-22 00:00 UTC
+- Aggregator queries now inline native operations instead of helper functions
+  when the argument is a list of primitives.

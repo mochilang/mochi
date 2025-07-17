@@ -1929,20 +1929,20 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "input":
 		c.use("_input")
 		return "_input()", nil
-       case "count":
-               if len(call.Args) == 1 {
-                       t := c.inferExprType(call.Args[0])
-                       switch t.(type) {
-                       case types.ListType, types.StringType:
-                               return fmt.Sprintf("%s.length", args[0]), nil
-                       case types.MapType, types.StructType, types.UnionType:
-                               return fmt.Sprintf("Object.keys(%s).length", args[0]), nil
-                       case types.GroupType:
-                               return fmt.Sprintf("%s.items.length", args[0]), nil
-                       }
-               }
-               c.use("_count")
-               return fmt.Sprintf("_count(%s)", argStr), nil
+	case "count":
+		if len(call.Args) == 1 {
+			t := c.inferExprType(call.Args[0])
+			switch t.(type) {
+			case types.ListType, types.StringType:
+				return fmt.Sprintf("%s.length", args[0]), nil
+			case types.MapType, types.StructType, types.UnionType:
+				return fmt.Sprintf("Object.keys(%s).length", args[0]), nil
+			case types.GroupType:
+				return fmt.Sprintf("%s.items.length", args[0]), nil
+			}
+		}
+		c.use("_count")
+		return fmt.Sprintf("_count(%s)", argStr), nil
 	case "append":
 		if len(args) == 2 {
 			return fmt.Sprintf("[...%s, %s]", args[0], args[1]), nil
@@ -1995,62 +1995,62 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.use("_exists")
 		return fmt.Sprintf("_exists(%s)", argStr), nil
-       case "avg":
-               if len(call.Args) == 1 {
-                       t := c.inferExprType(call.Args[0])
-                       switch t.(type) {
-                       case types.ListType:
-                               return fmt.Sprintf("(%s.reduce((a,b)=>a+Number(b),0) / %s.length)", args[0], args[0]), nil
-                       case types.GroupType:
-                               return fmt.Sprintf("(%s.items.reduce((a,b)=>a+Number(b),0) / %s.items.length)", args[0], args[0]), nil
-                       }
-               }
-               c.use("_avg")
-               c.use("_count")
-               c.use("_sum")
-               return fmt.Sprintf("_avg(%s)", argStr), nil
+	case "avg":
+		if len(call.Args) == 1 {
+			t := c.inferExprType(call.Args[0])
+			switch t.(type) {
+			case types.ListType:
+				return fmt.Sprintf("(%s.reduce((a,b)=>a+Number(b),0) / %s.length)", args[0], args[0]), nil
+			case types.GroupType:
+				return fmt.Sprintf("(%s.items.reduce((a,b)=>a+Number(b),0) / %s.items.length)", args[0], args[0]), nil
+			}
+		}
+		c.use("_avg")
+		c.use("_count")
+		c.use("_sum")
+		return fmt.Sprintf("_avg(%s)", argStr), nil
 	case "reduce":
 		if len(args) != 3 {
 			return "", fmt.Errorf("reduce expects 3 args")
 		}
 		c.use("_reduce")
 		return fmt.Sprintf("_reduce(%s, %s, %s)", args[0], args[1], args[2]), nil
-       case "sum":
-               if len(call.Args) == 1 {
-                       t := c.inferExprType(call.Args[0])
-                       switch t.(type) {
-                       case types.ListType:
-                               return fmt.Sprintf("%s.reduce((a,b)=>a+Number(b),0)", args[0]), nil
-                       case types.GroupType:
-                               return fmt.Sprintf("%s.items.reduce((a,b)=>a+Number(b),0)", args[0]), nil
-                       }
-               }
-               c.use("_sum")
-               return fmt.Sprintf("_sum(%s)", argStr), nil
-       case "min":
-               if len(call.Args) == 1 {
-                       t := c.inferExprType(call.Args[0])
-                       switch t.(type) {
-                       case types.ListType:
-                               return fmt.Sprintf("Math.min(...%s)", args[0]), nil
-                       case types.GroupType:
-                               return fmt.Sprintf("Math.min(...%s.items)", args[0]), nil
-                       }
-               }
-               c.use("_min")
-               return fmt.Sprintf("_min(%s)", argStr), nil
-       case "max":
-               if len(call.Args) == 1 {
-                       t := c.inferExprType(call.Args[0])
-                       switch t.(type) {
-                       case types.ListType:
-                               return fmt.Sprintf("Math.max(...%s)", args[0]), nil
-                       case types.GroupType:
-                               return fmt.Sprintf("Math.max(...%s.items)", args[0]), nil
-                       }
-               }
-               c.use("_max")
-               return fmt.Sprintf("_max(%s)", argStr), nil
+	case "sum":
+		if len(call.Args) == 1 {
+			t := c.inferExprType(call.Args[0])
+			switch t.(type) {
+			case types.ListType:
+				return fmt.Sprintf("%s.reduce((a,b)=>a+Number(b),0)", args[0]), nil
+			case types.GroupType:
+				return fmt.Sprintf("%s.items.reduce((a,b)=>a+Number(b),0)", args[0]), nil
+			}
+		}
+		c.use("_sum")
+		return fmt.Sprintf("_sum(%s)", argStr), nil
+	case "min":
+		if len(call.Args) == 1 {
+			t := c.inferExprType(call.Args[0])
+			switch t.(type) {
+			case types.ListType:
+				return fmt.Sprintf("Math.min(...%s)", args[0]), nil
+			case types.GroupType:
+				return fmt.Sprintf("Math.min(...%s.items)", args[0]), nil
+			}
+		}
+		c.use("_min")
+		return fmt.Sprintf("_min(%s)", argStr), nil
+	case "max":
+		if len(call.Args) == 1 {
+			t := c.inferExprType(call.Args[0])
+			switch t.(type) {
+			case types.ListType:
+				return fmt.Sprintf("Math.max(...%s)", args[0]), nil
+			case types.GroupType:
+				return fmt.Sprintf("Math.max(...%s.items)", args[0]), nil
+			}
+		}
+		c.use("_max")
+		return fmt.Sprintf("_max(%s)", argStr), nil
 	case "floor":
 		if len(args) == 1 {
 			return fmt.Sprintf("Math.floor(%s)", args[0]), nil
@@ -2504,18 +2504,64 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			child.SetVar(q.Var, elemType, true)
 			orig := c.env
 			c.env = child
-			val, err := c.compileExpr(q.Select)
-			if err != nil {
-				c.env = orig
-				return "", err
-			}
 			var cond string
 			if q.Where != nil {
+				var err error
 				cond, err = c.compileExpr(q.Where)
 				if err != nil {
 					c.env = orig
 					return "", err
 				}
+			}
+			if name, arg, ok := detectAggCall(q.Select); ok {
+				argStr, err := c.compileExpr(arg)
+				if err != nil {
+					c.env = orig
+					return "", err
+				}
+				argType := c.inferExprType(arg)
+				c.env = orig
+				var agg strings.Builder
+				agg.WriteString("(() => {\n")
+				agg.WriteString("\tconst _items = ")
+				agg.WriteString(src)
+				if cond != "" {
+					agg.WriteString(fmt.Sprintf(".filter(%s => (%s))", sanitizeName(q.Var), cond))
+				}
+				agg.WriteString(fmt.Sprintf(".map(%s => %s);\n", sanitizeName(q.Var), argStr))
+				switch name {
+				case "count":
+					agg.WriteString("\treturn _items.length;\n")
+				case "sum":
+					agg.WriteString("\treturn _items.reduce((a,b)=>a+Number(b),0);\n")
+				case "avg":
+					agg.WriteString("\tconst _c = _items.length;\n")
+					agg.WriteString("\treturn _c ? _items.reduce((a,b)=>a+Number(b),0) / _c : 0;\n")
+				case "min":
+					if isNumericType(argType) || isStringType(argType) {
+						agg.WriteString("\treturn _items.length ? Math.min(..._items) : 0;\n")
+					} else {
+						agg.WriteString(fmt.Sprintf("\treturn _%s(_items);\n", name))
+						c.use("_" + name)
+					}
+				case "max":
+					if isNumericType(argType) || isStringType(argType) {
+						agg.WriteString("\treturn _items.length ? Math.max(..._items) : 0;\n")
+					} else {
+						agg.WriteString(fmt.Sprintf("\treturn _%s(_items);\n", name))
+						c.use("_" + name)
+					}
+				default:
+					agg.WriteString(fmt.Sprintf("\treturn _%s(_items);\n", name))
+					c.use("_" + name)
+				}
+				agg.WriteString("})()")
+				return agg.String(), nil
+			}
+			val, err := c.compileExpr(q.Select)
+			if err != nil {
+				c.env = orig
+				return "", err
 			}
 			c.env = orig
 			var b strings.Builder
@@ -2528,27 +2574,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			if strings.HasPrefix(trimmed, "{") || strings.HasPrefix(trimmed, "[") || strings.Contains(trimmed, "\n") {
 				mapped = "(" + val + ")"
 			}
-			if name, arg, ok := detectAggCall(q.Select); ok {
-				argStr, err := c.compileExpr(arg)
-				if err != nil {
-					c.env = orig
-					return "", err
-				}
-				var agg strings.Builder
-				agg.WriteString("(() => {\n")
-				agg.WriteString("\tconst _items = ")
-				agg.WriteString(src)
-				if cond != "" {
-					agg.WriteString(fmt.Sprintf(".filter(%s => (%s))", sanitizeName(q.Var), cond))
-				}
-				agg.WriteString(fmt.Sprintf(".map(%s => %s);\n", sanitizeName(q.Var), argStr))
-				agg.WriteString(fmt.Sprintf("\treturn _%s(_items);\n", name))
-				agg.WriteString("})()")
-				c.use("_" + name)
-				c.env = orig
-				return agg.String(), nil
-			}
-
 			b.WriteString(fmt.Sprintf(".map(%s => %s)", sanitizeName(q.Var), mapped))
 			c.env = orig
 			return b.String(), nil
@@ -3496,6 +3521,20 @@ func joinEqFields(e *parser.Expr, leftVar, rightVar string) (string, string, boo
 		}
 	}
 	return "", "", false
+}
+
+func isNumericType(t types.Type) bool {
+	switch t.(type) {
+	case types.IntType, types.Int64Type, types.FloatType:
+		return true
+	default:
+		return false
+	}
+}
+
+func isStringType(t types.Type) bool {
+	_, ok := t.(types.StringType)
+	return ok
 }
 
 func (c *Compiler) compileGroupByJoinSpecial(prog *parser.Program) ([]byte, error) {
