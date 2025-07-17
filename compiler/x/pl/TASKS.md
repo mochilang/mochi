@@ -24,3 +24,7 @@
 - Added `print_val/1` helper to format numeric output using `format('~g')`.
 - Updated `isBoolExpr` to ignore operators inside quoted strings.
 - Regenerated `python_math` outputs and marked the test as passing.
+
+## Progress (2025-07-17 06:40 UTC)
+- Fixed handling of zero-argument predicates so generated clauses omit the stray comma.
+- Updated dynamic and static call generation to avoid an empty argument list.

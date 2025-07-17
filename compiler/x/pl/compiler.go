@@ -292,7 +292,11 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 			}
 		}
 	}
-	c.writeln(fmt.Sprintf("%s(%s, %s) :-", sanitizeAtom(fn.Name), strings.Join(params, ", "), resVar))
+	if len(params) > 0 {
+		c.writeln(fmt.Sprintf("%s(%s, %s) :-", sanitizeAtom(fn.Name), strings.Join(params, ", "), resVar))
+	} else {
+		c.writeln(fmt.Sprintf("%s(%s) :-", sanitizeAtom(fn.Name), resVar))
+	}
 	c.indent++
 	for i, st := range fn.Body {
 		if st.Fun != nil {
@@ -1342,7 +1346,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, bool, error) {
 			args[i] = s
 		}
 		tmp := c.newTmp()
-		c.writeln(fmt.Sprintf("call(%s, %s, %s),", fn, strings.Join(args, ", "), tmp))
+		if len(args) > 0 {
+			c.writeln(fmt.Sprintf("call(%s, %s, %s),", fn, strings.Join(args, ", "), tmp))
+		} else {
+			c.writeln(fmt.Sprintf("call(%s, %s),", fn, tmp))
+		}
 		return tmp, false, nil
 	}
 	switch call.Func {
@@ -1476,7 +1484,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, bool, error) {
 			args[i] = s
 		}
 		tmp := c.newTmp()
-		c.writeln(fmt.Sprintf("%s(%s, %s),", sanitizeAtom(call.Func), strings.Join(args, ", "), tmp))
+		if len(args) > 0 {
+			c.writeln(fmt.Sprintf("%s(%s, %s),", sanitizeAtom(call.Func), strings.Join(args, ", "), tmp))
+		} else {
+			c.writeln(fmt.Sprintf("%s(%s),", sanitizeAtom(call.Func), tmp))
+		}
 		return tmp, false, nil
 	}
 }
