@@ -24,3 +24,6 @@ Checklist:
 - [x] for_list_collection
 - [x] for_loop
 - [x] for_map_collection
+- [ ] fun_call
+- [ ] fun_expr_in_let
+- [ ] fun_three_args

@@ -3170,9 +3170,14 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		elem := c.listElemTypeUnary(call.Args[0].Binary.Left)
-		c.needsReduce = true
-		return fmt.Sprintf("_reduce(%s, %s, %s, %s)", elem, listArg, initArg, fnArg), nil
+		accType := zigTypeOf(c.inferExprType(call.Args[2]))
+		lbl := c.newLabel()
+		tmp := c.newTmp()
+		var b strings.Builder
+		b.WriteString(lbl + ": { var " + tmp + ": " + accType + " = " + initArg + "; ")
+		b.WriteString("for (" + listArg + ") |it| { " + tmp + " = " + fnArg + "(" + tmp + ", it); }")
+		b.WriteString(" break :" + lbl + " " + tmp + "; }")
+		return b.String(), nil
 	}
 	if name == "str" && len(call.Args) == 1 {
 		// constant folding for literals

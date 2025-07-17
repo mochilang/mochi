@@ -29,3 +29,6 @@
 - 2025-07-17 compiled for_loop.mochi in Zig
 - 2025-07-17 compiled for_list_collection.mochi in Zig
 - 2025-07-17 compiled for_map_collection.mochi in Zig
+- 2025-07-17 attempted fun_call.mochi in Zig (zig unavailable)
+- 2025-07-17 attempted fun_expr_in_let.mochi in Zig (zig unavailable)
+- 2025-07-17 attempted fun_three_args.mochi in Zig (zig unavailable)
