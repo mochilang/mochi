@@ -58,3 +58,7 @@
 - Reworked `vm_golden_test.go` to regenerate Lua code and outputs using `golden.Run`.
 - Running the golden tests confirmed all 100 programs compile and run successfully with no `.error` files.
 
+## Progress (2025-07-18 08:45)
+- Converted VM valid suite to use `golden.RunWithSummary`.
+- Removed generated code comparisons from dataset tests and deleted the redundant JOB dataset suite.
+- All Lua golden tests now focus on runtime output and store sources under `tests/machine/x/lua`.
