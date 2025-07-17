@@ -643,12 +643,27 @@ func (c *compiler) expectStmt(e *parser.ExpectStmt) error {
 			if err != nil {
 				return err
 			}
-			c.helpers["_equal"] = true
+			lt := swiftTypeOf(c.unaryType(b.Left))
+			rt := swiftTypeOf(c.postfixType(op.Right))
 			c.helpers["_expect"] = true
-			if op.Op == "==" {
-				c.writeln(fmt.Sprintf("expect(_equal(%s, %s))", left, right))
+			if canCompareDirectly(lt, rt) {
+				if lt == "Double" && rt == "Int" {
+					right = fmt.Sprintf("Double(%s)", right)
+				} else if lt == "Int" && rt == "Double" {
+					left = fmt.Sprintf("Double(%s)", left)
+				}
+				if op.Op == "==" {
+					c.writeln(fmt.Sprintf("expect(%s == %s)", left, right))
+				} else {
+					c.writeln(fmt.Sprintf("expect(%s != %s)", left, right))
+				}
 			} else {
-				c.writeln(fmt.Sprintf("expect(!_equal(%s, %s))", left, right))
+				c.helpers["_equal"] = true
+				if op.Op == "==" {
+					c.writeln(fmt.Sprintf("expect(_equal(%s, %s))", left, right))
+				} else {
+					c.writeln(fmt.Sprintf("expect(!_equal(%s, %s))", left, right))
+				}
 			}
 			return nil
 		}
@@ -1659,6 +1674,22 @@ func (c *compiler) isBuiltinType(typ string) bool {
 		}
 	}
 	if strings.HasPrefix(typ, "[") && strings.HasSuffix(typ, "]") {
+		return true
+	}
+	return false
+}
+
+func canCompareDirectly(a, b string) bool {
+	if a == "" || b == "" {
+		return false
+	}
+	if a == b {
+		if a == "[Any]" || a == "[String:Any]" {
+			return false
+		}
+		return true
+	}
+	if (a == "Int" && b == "Double") || (a == "Double" && b == "Int") {
 		return true
 	}
 	return false
