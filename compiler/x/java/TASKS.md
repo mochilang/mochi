@@ -31,3 +31,4 @@
 - 2025-07-16 17:00 - simplified golden tests to check only runtime output and removed duplicate compile test.
 - 2025-07-17 05:30 - improved string concatenation inference and defaulted untyped vars to Object to reduce Rosetta errors.
 - 2025-07-17 06:10 - added support for DISTINCT queries and added Java machine checklist.
+- 2025-07-17 08:00 - generated machine outputs for all VM valid programs.
