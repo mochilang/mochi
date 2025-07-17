@@ -864,6 +864,14 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) == 0 {
 			return "", nil
 		}
+		if len(args) == 1 {
+			t := types.TypeOfExprBasic(call.Args[0], c.env)
+			switch t.(type) {
+			case types.IntType, types.Int64Type, types.FloatType,
+				types.BoolType, types.StringType:
+				return fmt.Sprintf("echo %s, PHP_EOL", args[0]), nil
+			}
+		}
 		c.use("_print")
 		return fmt.Sprintf("_print(%s)", strings.Join(args, ", ")), nil
 	case "append":

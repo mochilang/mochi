@@ -30,7 +30,7 @@ $stats = (function() use ($customers, $orders) {
     }
     return $result;
 })();
-_print("--- Group Left Join ---");
+echo "--- Group Left Join ---", PHP_EOL;
 foreach ($stats as $s) {
     _print($s['name'], "orders:", $s['count']);
 }

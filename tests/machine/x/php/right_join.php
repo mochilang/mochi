@@ -26,7 +26,7 @@ $result = _query($customers, [['items'=>$orders, 'on'=>function($c, $o) use ($cu
     "customerName" => $c['name'],
     "order" => $o
 ];} ]);
-_print("--- Right Join using syntax ---");
+echo "--- Right Join using syntax ---", PHP_EOL;
 foreach ($result as $entry) {
     if ($entry['order']) {
         _print("Customer", $entry['customerName'], "has order", $entry['order']['id'], "- $", $entry['order']['total']);

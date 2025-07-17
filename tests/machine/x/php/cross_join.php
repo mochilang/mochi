@@ -35,7 +35,7 @@ $result = (function() use ($customers, $orders) {
     }
     return $result;
 })();
-_print("--- Cross Join: All order-customer pairs ---");
+echo "--- Cross Join: All order-customer pairs ---", PHP_EOL;
 foreach ($result as $entry) {
     _print("Order", $entry['orderId'], "(customerId:", $entry['orderCustomerId'], ", total: $", $entry['orderTotal'], ") paired with", $entry['pairedCustomerName']);
 }

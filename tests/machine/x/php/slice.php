@@ -1,7 +1,7 @@
 <?php
 _print(array_slice([1, 2, 3], 1, 3 - 1));
 _print(array_slice([1, 2, 3], 0, 2 - 0));
-_print(substr("hello", 1, 4 - 1));
+echo substr("hello", 1, 4 - 1), PHP_EOL;
 function _print(...$args) {
     $first = true;
     foreach ($args as $a) {

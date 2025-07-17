@@ -12,7 +12,7 @@ $pairs = (function() use ($letters, $nums) {
     }
     return $result;
 })();
-_print("--- Even pairs ---");
+echo "--- Even pairs ---", PHP_EOL;
 foreach ($pairs as $p) {
     _print($p['n'], $p['l']);
 }

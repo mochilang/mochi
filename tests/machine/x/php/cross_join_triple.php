@@ -13,7 +13,7 @@ $combos = (function() use ($bools, $letters, $nums) {
     }
     return $result;
 })();
-_print("--- Cross Join of three lists ---");
+echo "--- Cross Join of three lists ---", PHP_EOL;
 foreach ($combos as $c) {
     _print($c['n'], $c['l'], $c['b']);
 }

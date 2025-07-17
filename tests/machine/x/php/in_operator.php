@@ -1,6 +1,6 @@
 <?php
 $xs = [1, 2, 3];
-_print(in_array(2, $xs));
+echo in_array(2, $xs), PHP_EOL;
 _print(!(in_array(5, $xs)));
 function _print(...$args) {
     $first = true;

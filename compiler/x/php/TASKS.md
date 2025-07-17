@@ -21,6 +21,9 @@
 - 2025-07-17 12:00 - VM valid golden tests now use `tests/machine/x/php` for outputs and duplicate compiler test removed.
 - 2025-07-17 12:30 - Golden tests verify runtime output only, dropping code comparisons.
 
+- 2025-07-17 23:00 - Simple scalars now use `echo` instead of `_print` in generated PHP code.
+- 2025-07-17 23:00 - Added README checklist for VM valid program outputs.
+
 ## Remaining Work
 - [ ] Improve runtime helpers for grouping and aggregation
 - [ ] Keep machine output close to human reference implementations

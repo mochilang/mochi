@@ -13,7 +13,7 @@ $result = _query($orders, [['items'=>$customers, 'on'=>function($o, $c) use ($cu
     "name" => $c['name'],
     "item" => $i
 ];} ]);
-_print("--- Left Join Multi ---");
+echo "--- Left Join Multi ---", PHP_EOL;
 foreach ($result as $r) {
     _print($r['orderId'], $r['name'], $r['item']);
 }

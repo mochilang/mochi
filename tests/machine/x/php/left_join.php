@@ -20,7 +20,7 @@ $result = _query($orders, [['items'=>$customers, 'on'=>function($o, $c) use ($cu
     "customer" => $c,
     "total" => $o['total']
 ];} ]);
-_print("--- Left Join ---");
+echo "--- Left Join ---", PHP_EOL;
 foreach ($result as $entry) {
     _print("Order", $entry['orderId'], "customer", $entry['customer'], "total", $entry['total']);
 }
