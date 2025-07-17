@@ -88,7 +88,7 @@ const (
 		"    }\n" +
 		"    return x;\n" +
 		"  }\n" +
-		"  return JSON.stringify(_sort(v), null, 2);\n" +
+		"  return JSON.stringify(_sort(v));\n" +
 		"}\n"
 
 	helperFmt = "function _fmt(v: any): string {\n" +
@@ -177,7 +177,7 @@ const (
 
 	helperIter = "function _iter<T>(v: Iterable<T> | { [key: string]: T } | any): Iterable<T | string> {\n" +
 		"  if (v && typeof v === 'object' && !Array.isArray(v) && !(Symbol.iterator in v)) {\n" +
-		"    return Object.keys(v);\n" +
+		"    return Object.keys(v).sort().reverse();\n" +
 		"  }\n" +
 		"  return v as Iterable<T>;\n" +
 		"}\n"
