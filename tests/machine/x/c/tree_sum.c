@@ -9,9 +9,9 @@ typedef struct node_t node_t;
 typedef struct leaf_t {
 } leaf_t;
 typedef struct node_t {
-  Tree *left;
+  tree_t *left;
   int value;
-  Tree *right;
+  tree_t *right;
 } node_t;
 typedef struct tree_t {
   int tag;
@@ -23,7 +23,7 @@ typedef struct tree_t {
 #define tree_t_leaf_t 0
 #define tree_t_node_t 1
 
-int sum_tree(Tree t) {
+int sum_tree(tree_t t) {
   tree_t tmp1 = t;
   int tmp2;
   switch (tmp1.tag) {
@@ -44,16 +44,16 @@ int sum_tree(Tree t) {
 }
 
 int _mochi_main() {
-  tree_t t =
-      (Tree){.tag = Tree_Node,
-             .value.Node = (Node){
-                 .left = &(Tree){.tag = Tree_Leaf},
-                 .value = 1,
-                 .right = &(Tree){.tag = Tree_Node,
-                                  .value.Node = (Node){
-                                      .left = &(Tree){.tag = Tree_Leaf},
-                                      .value = 2,
-                                      .right = &(Tree){.tag = Tree_Leaf}}}}};
+  tree_t t = (tree_t){
+      .tag = tree_t_node_t,
+      .value.node_t = (node_t){
+          .left = &(Tree){.tag = Tree_Leaf},
+          .value = 1,
+          .right = &(tree_t){
+              .tag = tree_t_node_t,
+              .value.node_t = (node_t){.left = &(Tree){.tag = Tree_Leaf},
+                                       .value = 2,
+                                       .right = &(Tree){.tag = Tree_Leaf}}}}};
   printf("%d\n", sum_tree(t));
   return 0;
 }

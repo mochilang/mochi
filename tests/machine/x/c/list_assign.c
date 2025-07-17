@@ -20,7 +20,7 @@ int _mochi_main() {
   list_int nums = list_int_create(2);
   nums.data[0] = 1;
   nums.data[1] = 2;
-  nums[1] = 3;
+  nums.data[1] = 3;
   printf("%d\n", nums.data[1]);
   return 0;
 }

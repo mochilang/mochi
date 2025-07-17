@@ -21,44 +21,8 @@ int _mochi_main() {
   nums.data[0] = 3;
   nums.data[1] = 1;
   nums.data[2] = 4;
-  list_int tmp1 = list_int_create(3);
-  tmp1.data[0] = 3;
-  tmp1.data[1] = 1;
-  tmp1.data[2] = 4;
-  int tmp2 = tmp1.data[0];
-  for (int i3 = 1; i3 < 3; i3++) {
-    if (tmp1.data[i3] < tmp2)
-      tmp2 = tmp1.data[i3];
-  }
-  list_int tmp4 = list_int_create(3);
-  tmp4.data[0] = 3;
-  tmp4.data[1] = 1;
-  tmp4.data[2] = 4;
-  int tmp5 = tmp4.data[0];
-  for (int i6 = 1; i6 < 3; i6++) {
-    if (tmp4.data[i6] < tmp5)
-      tmp5 = tmp4.data[i6];
-  }
-  printf("%d\n", tmp5);
-  list_int tmp7 = list_int_create(3);
-  tmp7.data[0] = 3;
-  tmp7.data[1] = 1;
-  tmp7.data[2] = 4;
-  int tmp8 = tmp7.data[0];
-  for (int i9 = 1; i9 < 3; i9++) {
-    if (tmp7.data[i9] > tmp8)
-      tmp8 = tmp7.data[i9];
-  }
-  list_int tmp10 = list_int_create(3);
-  tmp10.data[0] = 3;
-  tmp10.data[1] = 1;
-  tmp10.data[2] = 4;
-  int tmp11 = tmp10.data[0];
-  for (int i12 = 1; i12 < 3; i12++) {
-    if (tmp10.data[i12] > tmp11)
-      tmp11 = tmp10.data[i12];
-  }
-  printf("%d\n", tmp11);
+  printf("%d\n", 1);
+  printf("%d\n", 4);
   return 0;
 }
 int main() { return _mochi_main(); }

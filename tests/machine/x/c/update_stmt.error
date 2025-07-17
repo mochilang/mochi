@@ -1,36 +1,17 @@
 exit status 1
-/workspace/mochi/tests/machine/x/c/update_stmt.c: In function ‘test_update_adult_status’:
-/workspace/mochi/tests/machine/x/c/update_stmt.c:30:23: error: ‘Person’ undeclared (first use in this function); did you mean ‘person_t’?
-   30 |   person_t tmp1[] = {(Person){.name = "Alice", .age = 17, .status = "minor"},
-      |                       ^~~~~~
-      |                       person_t
-/workspace/mochi/tests/machine/x/c/update_stmt.c:30:23: note: each undeclared identifier is reported only once for each function it appears in
-/workspace/mochi/tests/machine/x/c/update_stmt.c:30:30: error: expected ‘}’ before ‘{’ token
-   30 |   person_t tmp1[] = {(Person){.name = "Alice", .age = 17, .status = "minor"},
-      |                     ~        ^
 /workspace/mochi/tests/machine/x/c/update_stmt.c: In function ‘_mochi_main’:
-/workspace/mochi/tests/machine/x/c/update_stmt.c:58:8: error: ‘Person’ undeclared (first use in this function); did you mean ‘person_t’?
-   58 |       (Person){.name = "Alice", .age = 17, .status = "minor"},
-      |        ^~~~~~
-      |        person_t
-/workspace/mochi/tests/machine/x/c/update_stmt.c:58:15: error: expected ‘}’ before ‘{’ token
-   58 |       (Person){.name = "Alice", .age = 17, .status = "minor"},
-      |               ^
-/workspace/mochi/tests/machine/x/c/update_stmt.c:57:23: note: to match this ‘{’
-   57 |   person_t people[] = {
-      |                       ^
-/workspace/mochi/tests/machine/x/c/update_stmt.c:63:35: error: ‘(person_t *)&people’ is a pointer; did you mean to use ‘->’?
-   63 |   for (int tmp4 = 0; tmp4 < people.len; tmp4++) {
+/workspace/mochi/tests/machine/x/c/update_stmt.c:64:35: error: ‘(person_t *)&people’ is a pointer; did you mean to use ‘->’?
+   64 |   for (int tmp4 = 0; tmp4 < people.len; tmp4++) {
       |                                   ^
       |                                   ->
-/workspace/mochi/tests/machine/x/c/update_stmt.c:64:27: error: ‘(person_t *)&people’ is a pointer; did you mean to use ‘->’?
-   64 |     person_t tmp5 = people.data[tmp4];
+/workspace/mochi/tests/machine/x/c/update_stmt.c:65:27: error: ‘(person_t *)&people’ is a pointer; did you mean to use ‘->’?
+   65 |     person_t tmp5 = people.data[tmp4];
       |                           ^
       |                           ->
-/workspace/mochi/tests/machine/x/c/update_stmt.c:69:11: error: ‘(person_t *)&people’ is a pointer; did you mean to use ‘->’?
-   69 |     people.data[tmp4] = tmp5;
+/workspace/mochi/tests/machine/x/c/update_stmt.c:70:11: error: ‘(person_t *)&people’ is a pointer; did you mean to use ‘->’?
+   70 |     people.data[tmp4] = tmp5;
       |           ^
       |           ->
-/workspace/mochi/tests/machine/x/c/update_stmt.c:72:37: error: incompatible types when assigning to type ‘person_list_t’ from type ‘person_t *’ {aka ‘struct person_t *’}
-   72 |   test_update_adult_status_people = people;
+/workspace/mochi/tests/machine/x/c/update_stmt.c:73:37: error: incompatible types when assigning to type ‘person_list_t’ from type ‘person_t *’ {aka ‘struct person_t *’}
+   73 |   test_update_adult_status_people = people;
       |                                     ^~~~~~
