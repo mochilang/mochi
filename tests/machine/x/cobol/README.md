@@ -2,7 +2,7 @@
 
 The COBOL backend compiles each Mochi program under `tests/vm/valid`. This directory stores the generated `.cob` source files and their runtime output. Any compilation or runtime failures produce a corresponding `.error` file.
 
-Compiled programs: 41/100
+Compiled programs: 46/100
 
 Checklist:
 - [x] append_builtin
@@ -51,18 +51,18 @@ Checklist:
 - [x] len_map
 - [x] len_string
 - [x] let_and_print
-- [ ] list_assign
+- [x] list_assign
 - [x] list_index
-- [ ] list_nested_assign
+- [x] list_nested_assign
 - [ ] list_set_ops
 - [ ] load_yaml
-- [ ] map_assign
+- [x] map_assign
 - [x] map_in_operator
 - [x] map_index
 - [x] map_int_key
-- [ ] map_literal_dynamic
+- [x] map_literal_dynamic
 - [x] map_membership
-- [ ] map_nested_assign
+- [x] map_nested_assign
 - [ ] match_expr
 - [ ] match_full
 - [x] math_ops

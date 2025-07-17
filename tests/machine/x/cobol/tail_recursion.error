@@ -1,7 +1,7 @@
-/tmp/TestCobolCompiler_VMValid_Golden3313344715/054/prog.cob:11: error: syntax error, unexpected USING
-/tmp/TestCobolCompiler_VMValid_Golden3313344715/054/prog.cob: in paragraph 'FN_SUM-REC':
-/tmp/TestCobolCompiler_VMValid_Golden3313344715/054/prog.cob:16: error: syntax error, unexpected PROCEDURE
-/tmp/TestCobolCompiler_VMValid_Golden3313344715/054/prog.cob:17: error: 'N' is not defined
-/tmp/TestCobolCompiler_VMValid_Golden3313344715/054/prog.cob:18: error: 'ACC' is not defined
-/tmp/TestCobolCompiler_VMValid_Golden3313344715/054/prog.cob:20: error: syntax error, unexpected END-IF
-/tmp/TestCobolCompiler_VMValid_Golden3313344715/054/prog.cob:23: error: syntax error, unexpected USING
+/tmp/TestCobolCompiler_VMValid_Golden2638179460/054/prog.cob:11: error: syntax error, unexpected USING
+/tmp/TestCobolCompiler_VMValid_Golden2638179460/054/prog.cob: in paragraph 'FN_SUM-REC':
+/tmp/TestCobolCompiler_VMValid_Golden2638179460/054/prog.cob:16: error: syntax error, unexpected PROCEDURE
+/tmp/TestCobolCompiler_VMValid_Golden2638179460/054/prog.cob:17: error: 'N' is not defined
+/tmp/TestCobolCompiler_VMValid_Golden2638179460/054/prog.cob:18: error: 'ACC' is not defined
+/tmp/TestCobolCompiler_VMValid_Golden2638179460/054/prog.cob:20: error: syntax error, unexpected END-IF
+/tmp/TestCobolCompiler_VMValid_Golden2638179460/054/prog.cob:23: error: syntax error, unexpected USING

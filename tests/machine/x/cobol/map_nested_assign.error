@@ -1,3 +1,0 @@
-/tmp/TestCobolCompiler_VMValid_Golden3313344715/033/prog.cob:7: error: syntax error, unexpected DATA
-/tmp/TestCobolCompiler_VMValid_Golden3313344715/033/prog.cob:8: error: level number must begin with 01 or 77
-/tmp/TestCobolCompiler_VMValid_Golden3313344715/033/prog.cob:12: error: 'DATA-OUTER-INNER' is not defined

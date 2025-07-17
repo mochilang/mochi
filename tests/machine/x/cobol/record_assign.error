@@ -1,4 +1,3 @@
-/tmp/TestCobolCompiler_VMValid_Golden3313344715/042/prog.cob:13: error: syntax error, unexpected USING
-/tmp/TestCobolCompiler_VMValid_Golden3313344715/042/prog.cob: in paragraph 'FN_INC':
-/tmp/TestCobolCompiler_VMValid_Golden3313344715/042/prog.cob:19: error: syntax error, unexpected PROCEDURE
-/tmp/TestCobolCompiler_VMValid_Golden3313344715/042/prog.cob:20: error: 'C-N' is not defined
+/tmp/TestCobolCompiler_VMValid_Golden2638179460/042/prog.cob:13: error: syntax error, unexpected USING
+/tmp/TestCobolCompiler_VMValid_Golden2638179460/042/prog.cob: in paragraph 'FN_INC':
+/tmp/TestCobolCompiler_VMValid_Golden2638179460/042/prog.cob:18: error: syntax error, unexpected PROCEDURE

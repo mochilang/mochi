@@ -1,3 +1,4 @@
-/tmp/TestCobolCompiler_VMValid_Golden3313344715/017/prog.cob:13: warning: 'literal "big"' is not a numeric value [-Wignored-error]
-/tmp/TestCobolCompiler_VMValid_Golden3313344715/017/prog.cob:16: error: 'literal "medium"' is not a numeric value
-/tmp/TestCobolCompiler_VMValid_Golden3313344715/017/prog.cob:18: error: 'literal "small"' is not a numeric value
+/tmp/TestCobolCompiler_VMValid_Golden2638179460/017/prog.cob:13: warning: 'literal "big"' is not a numeric value [-Wignored-error]
+/tmp/TestCobolCompiler_VMValid_Golden2638179460/017/prog.cob:16: error: 'literal "medium"' is not a numeric value
+/tmp/TestCobolCompiler_VMValid_Golden2638179460/017/prog.cob:18: error: 'literal "small"' is not a numeric value
+/tmp/TestCobolCompiler_VMValid_Golden2638179460/017/prog.cob:21: error: 'MSG' is not a numeric or numeric-edited name
