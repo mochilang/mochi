@@ -1762,7 +1762,18 @@ func swiftTypeOf(t string) string {
 
 func listElemType(t string) string {
 	if strings.HasPrefix(t, "list_") {
-		return strings.TrimPrefix(t, "list_")
+		elem := strings.TrimPrefix(t, "list_")
+		switch elem {
+		case "Int":
+			return "int"
+		case "Double", "Float":
+			return "float"
+		case "String":
+			return "string"
+		case "Bool":
+			return "bool"
+		}
+		return elem
 	}
 	return ""
 }
