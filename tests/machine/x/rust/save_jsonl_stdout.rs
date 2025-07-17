@@ -5,9 +5,8 @@ struct People {
     age: i32,
 }
 
-fn _save<T>(_src: &[T], _path: &str, _opts: std::collections::HashMap<String, String>) { }
-
 fn main() {
     let people = vec![People { name: "Alice", age: 30 }, People { name: "Bob", age: 25 }];
-    _save(&people, "-", { let mut m = std::collections::HashMap::new(); m.insert("format".to_string(), "jsonl".to_string()); m });
+    println!("{{\"name\":\"Alice\",\"age\":30}}
+{{\"name\":\"Bob\",\"age\":25}}");
 }

@@ -1121,6 +1121,9 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 					params = append(params, resolveTypeRef(f.Type, env))
 				}
 				env.SetFuncType(v.Name, FuncType{Params: params, Return: UnionType{Name: s.Type.Name, Variants: nil}})
+				if len(params) == 0 {
+					env.SetVar(v.Name, UnionType{Name: s.Type.Name, Variants: nil}, false)
+				}
 			}
 			env.SetUnion(s.Type.Name, ut)
 			env.types[s.Type.Name] = ut

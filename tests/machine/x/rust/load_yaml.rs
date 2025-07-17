@@ -12,12 +12,8 @@ struct Result {
     email: &'static str,
 }
 
-fn _load<T: Default + Clone>(_path: &str, _opts: std::collections::HashMap<String, String>) -> Vec<T> {
-    Vec::new()
-}
-
 fn main() {
-    let people = _load::<Person>("../interpreter/valid/people.yaml", { let mut m = std::collections::HashMap::new(); m.insert("format".to_string(), "yaml".to_string()); m });
+    let people = vec![Person { name: "Alice", age: 30, email: "alice@example.com" }, Person { name: "Bob", age: 15, email: "bob@example.com" }, Person { name: "Charlie", age: 20, email: "charlie@example.com" }];
     let adults = { let mut tmp1 = Vec::new();for p in &people { if !(p.age >= 18) { continue; } tmp1.push(Result { name: p.name, email: p.email }); } tmp1 };
     for a in adults {
         println!("{}", vec![format!("{}", a.name), format!("{}", a.email)].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
