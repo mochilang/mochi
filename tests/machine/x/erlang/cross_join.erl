@@ -5,22 +5,6 @@
 main(_) ->
     Customers = [#{id => 1, name => "Alice"}, #{id => 2, name => "Bob"}, #{id => 3, name => "Charlie"}],
     Orders = [#{id => 100, customerId => 1, total => 250}, #{id => 101, customerId => 2, total => 125}, #{id => 102, customerId => 1, total => 300}],
-    Result = [#{orderId => mochi_get(id, O), orderCustomerId => mochi_get(customerId, O), pairedCustomerName => mochi_get(name, C), orderTotal => mochi_get(total, O)} || O <- Orders, C <- Customers],
+    Result = [#{orderId => maps:get(id, O, undefined), orderCustomerId => maps:get(customerId, O, undefined), pairedCustomerName => maps:get(name, C, undefined), orderTotal => maps:get(total, O, undefined)} || O <- Orders, C <- Customers],
     io:format("~p~n", ["--- Cross Join: All order-customer pairs ---"]),
-    lists:foreach(fun(Entry) -> io:format("~p ~p ~p ~p ~p ~p ~p ~p~n", ["Order", mochi_get(orderId, Entry), "(customerId:", mochi_get(orderCustomerId, Entry), ", total: $", mochi_get(orderTotal, Entry), ") paired with", mochi_get(pairedCustomerName, Entry)]) end, Result).
-
-mochi_get(K, M) ->
-    case maps:find(K, M) of
-        {ok, V} -> V;
-        error ->
-            Name = atom_to_list(K),
-            case string:tokens(Name, "_") of
-                [Pref|_] ->
-                    P = list_to_atom(Pref),
-                    case maps:find(P, M) of
-                        {ok, Sub} when is_map(Sub) -> maps:get(K, Sub, undefined);
-                        _ -> undefined
-                    end;
-                _ -> undefined
-            end
-        end.
+    lists:foreach(fun(Entry) -> io:format("~p ~p ~p ~p ~p ~p ~p ~p~n", ["Order", maps:get(orderId, Entry, undefined), "(customerId:", maps:get(orderCustomerId, Entry, undefined), ", total: $", maps:get(orderTotal, Entry, undefined), ") paired with", maps:get(pairedCustomerName, Entry, undefined)]) end, Result).
