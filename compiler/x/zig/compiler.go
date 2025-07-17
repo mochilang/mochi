@@ -560,7 +560,15 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 					}
 					v = vv
 				}
-				if isFunExpr(s.Let.Value) || s.Let.Type == nil || canInferType(s.Let.Value, typ) {
+				if isFunExpr(s.Let.Value) {
+					trimmed := strings.TrimSpace(v)
+					if strings.HasPrefix(trimmed, "fn ") || strings.HasPrefix(trimmed, "fn(") {
+						body := strings.TrimPrefix(trimmed, "fn")
+						c.writelnType(fmt.Sprintf("fn %s%s", name, body), typ)
+					} else {
+						c.writelnType(fmt.Sprintf("const %s = %s;", name, v), typ)
+					}
+				} else if s.Let.Type == nil || canInferType(s.Let.Value, typ) {
 					c.writelnType(fmt.Sprintf("const %s = %s;", name, v), typ)
 				} else {
 					c.writelnType(fmt.Sprintf("const %s: %s = %s;", name, zigTypeOf(typ), v), typ)
@@ -864,7 +872,13 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 			}
 		}
 		if isFunExpr(s.Let.Value) {
-			c.writelnType(fmt.Sprintf("const %s = %s;", name, val), typ)
+			trimmed := strings.TrimSpace(val)
+			if strings.HasPrefix(trimmed, "fn ") || strings.HasPrefix(trimmed, "fn(") {
+				body := strings.TrimPrefix(trimmed, "fn")
+				c.writelnType(fmt.Sprintf("fn %s%s", name, body), typ)
+			} else {
+				c.writelnType(fmt.Sprintf("const %s = %s;", name, val), typ)
+			}
 			return nil
 		}
 		if s.Let.Type == nil && canInferType(s.Let.Value, typ) {
