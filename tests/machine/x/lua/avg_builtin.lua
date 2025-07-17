@@ -19,7 +19,10 @@ function __print(...)
     local n = select('#', ...)
     if n == 1 then
         local v = ...
-        if type(v) == 'table' and (v[1] ~= nil or #v > 0) then
+        if type(v) == 'string' then
+            print(v)
+            return
+        elseif type(v) == 'table' and (v[1] ~= nil or #v > 0) then
             local parts = {}
             for i=1,#v do parts[#parts+1] = __str(v[i]) end
             print(table.concat(parts, ' '))
@@ -38,17 +41,30 @@ function __str(v)
         if v[1] ~= nil or #v > 0 then
             local parts = {}
             for i=1,#v do parts[#parts+1] = __str(v[i]) end
-            return '['..table.concat(parts, ' ')..']'
+            local body = '['..table.concat(parts, ' ')..']'
+            if v.__name then return v.__name..' '..body end
+            return body
         else
             local keys = {}
-            for k in pairs(v) do keys[#keys+1] = k end
+            for k in pairs(v) do if k ~= '__name' then keys[#keys+1] = k end end
             table.sort(keys, function(a,b) return tostring(a)<tostring(b) end)
             local parts = {}
-            for _,k in ipairs(keys) do parts[#parts+1] = __str(k)..':'..__str(v[k]) end
-            return '{'..table.concat(parts, ',')..'}'
+            for _,k in ipairs(keys) do
+                local val = v[k]
+                local vs
+                if type(val) == 'string' then
+                    vs = string.format('%q', val)
+                else
+                    vs = __str(val)
+                end
+                parts[#parts+1] = k..': '..vs
+            end
+            local body = '{'..table.concat(parts, ', ')..'}'
+            if v.__name then return v.__name..' '..body end
+            return body
         end
     else
-        if t == 'boolean' then return (v and 'True' or 'False') end
+        if t == 'boolean' then return (v and '1' or '0') end
         return tostring(v)
     end
 end
