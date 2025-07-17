@@ -70,4 +70,6 @@
 - Map literal value type inference recognizes numeric literals to avoid
   `std::any` fallbacks.
 - Double values are printed with one decimal place using `<iomanip>` helpers.
+- Struct field types now update from `std::any` when later elements provide
+  concrete types, reducing helper usage at runtime.
 
