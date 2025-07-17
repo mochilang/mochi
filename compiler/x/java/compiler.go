@@ -1947,6 +1947,20 @@ func (c *Compiler) compileLet(v *parser.LetStmt) error {
 }
 
 func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
+	if len(a.Index) == 0 && len(a.Field) == 0 {
+		if arg, ok := appendCallArg(a.Value, a.Name); ok {
+			orig := c.curVar
+			c.curVar = a.Name
+			val, err := c.compileExpr(arg)
+			c.curVar = orig
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("%s.add(%s);", a.Name, val))
+			return nil
+		}
+	}
+
 	orig := c.curVar
 	c.curVar = a.Name
 	expr, err := c.compileExpr(a.Value)
@@ -1955,14 +1969,6 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 		return err
 	}
 	if len(a.Index) == 0 && len(a.Field) == 0 {
-		if arg, ok := appendCallArg(a.Value, a.Name); ok {
-			val, err := c.compileExpr(arg)
-			if err != nil {
-				return err
-			}
-			c.writeln(fmt.Sprintf("%s.add(%s);", a.Name, val))
-			return nil
-		}
 		if c.vars[a.Name] == "int" {
 			if strings.Contains(expr, ".doubleValue()") {
 				expr = fmt.Sprintf("(int)(%s)", expr)
