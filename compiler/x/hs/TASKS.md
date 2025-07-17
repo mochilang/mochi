@@ -1,4 +1,8 @@
 # Haskell Backend Progress
+## Recent Updates (2025-08-10 05:00)
+- Runtime cast helpers are now included individually. The compiler tracks `_asInt`,
+  `_asDouble`, `_asString`, and `_asBool` separately so unused functions are not
+  emitted.
 ## Recent Updates (2025-07-30 05:00)
 - Added fine-grained tracking for AnyValue cast helpers. The runtime now omits
   `_asInt` and related functions when they are not referenced in generated code.
