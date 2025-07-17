@@ -1897,6 +1897,39 @@ func (c *compiler) exprType(e *parser.Expr) string {
 	if p == nil || p.Target == nil {
 		return ""
 	}
+	if len(e.Binary.Right) > 0 {
+		num := true
+		isFloat := false
+		lt := c.unaryType(e.Binary.Left)
+		if lt != "" {
+			if lt == "float" {
+				isFloat = true
+			} else if lt != "int" {
+				num = false
+			}
+		}
+		for _, op := range e.Binary.Right {
+			switch op.Op {
+			case "+", "-", "*", "/", "%":
+				rt := c.postfixType(op.Right)
+				if rt != "" {
+					if rt == "float" {
+						isFloat = true
+					} else if rt != "int" {
+						num = false
+					}
+				}
+			default:
+				num = false
+			}
+		}
+		if num {
+			if isFloat {
+				return "float"
+			}
+			return "int"
+		}
+	}
 	if p.Target.Selector != nil {
 		if len(p.Target.Selector.Tail) == 0 {
 			if typ, ok := c.varTypes[p.Target.Selector.Root]; ok {
