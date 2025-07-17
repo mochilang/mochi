@@ -129,3 +129,5 @@
 - Enhanced boolean printing to match `True`/`False` output and improved type
   inference for floats and strings to eliminate helper functions when possible.
 - Regenerated VM golden outputs for updated examples.
+### 2025-09-30 00:00 UTC
+- Improved numeric aggregator code to avoid Number() conversions when element types are numeric.
