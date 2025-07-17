@@ -1,0 +1,7 @@
+exit status 254
+../../../tests/machine/x/dart/two-sum.dart:14:11: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+  return [-(1 as num), -(1 as num)];
+          ^
+../../../tests/machine/x/dart/two-sum.dart:14:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+  return [-(1 as num), -(1 as num)];
+                       ^

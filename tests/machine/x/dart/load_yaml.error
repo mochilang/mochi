@@ -1,0 +1,4 @@
+exit status 254
+../../../tests/machine/x/dart/load_yaml.dart:10:16: Error: Method not found: 'findRepoRoot'.
+    var root = findRepoRoot();
+               ^^^^^^^^^^^^
