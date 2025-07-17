@@ -9,6 +9,16 @@ import (
 
 // inferExprType delegates to types.ExprType.
 func (c *Compiler) inferExprType(e *parser.Expr) types.Type {
+	if e != nil && e.Binary != nil {
+		u := e.Binary.Left
+		if len(e.Binary.Right) == 0 && len(u.Ops) == 0 && u.Value != nil && len(u.Value.Ops) == 0 {
+			if q := u.Value.Target.Query; q != nil {
+				if t, ok := c.queryTypes[q]; ok {
+					return t
+				}
+			}
+		}
+	}
 	return types.ExprType(e, c.env)
 }
 

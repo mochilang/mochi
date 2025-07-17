@@ -57,6 +57,7 @@ func TestKotlinCompiler_VMValid_Golden(t *testing.T) {
 			return nil, fmt.Errorf("kotlinc error: %w", err)
 		}
 		cmd := exec.Command("java", "-jar", jar)
+		cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root)
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			cmd.Stdin = bytes.NewReader(data)
 		}
