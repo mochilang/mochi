@@ -2760,13 +2760,18 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 							}
 						}
 					}
-					retList := types.ListType{Elem: retT}
-					listRes := cTypeFromType(retList)
-					if listRes == "list_string" {
-						c.need(needListString)
-					} else if listRes == "list_float" {
-						c.need(needListFloat)
-					} else if listRes == "list_list_int" {
+                                        retList := types.ListType{Elem: retT}
+                                        listRes := cTypeFromType(retList)
+                                        listResCreate := listRes + "_create"
+                                        if st, ok := retT.(types.StructType); ok {
+                                                listRes = sanitizeListName(st.Name)
+                                                listResCreate = createListFuncName(st.Name)
+                                        }
+                                        if listRes == "list_string" {
+                                                c.need(needListString)
+                                        } else if listRes == "list_float" {
+                                                c.need(needListFloat)
+                                        } else if listRes == "list_list_int" {
 						c.need(needListListInt)
 					}
 					var sortT types.Type
@@ -2948,13 +2953,18 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 								}
 							}
 						}
-						retList := types.ListType{Elem: retT}
-						listRes := cTypeFromType(retList)
-						if listRes == "list_string" {
-							c.need(needListString)
-						} else if listRes == "list_float" {
-							c.need(needListFloat)
-						} else if listRes == "list_list_int" {
+                                                retList := types.ListType{Elem: retT}
+                                                listRes := cTypeFromType(retList)
+                                                listResCreate := listRes + "_create"
+                                                if st, ok := retT.(types.StructType); ok {
+                                                        listRes = sanitizeListName(st.Name)
+                                                        listResCreate = createListFuncName(st.Name)
+                                                }
+                                                if listRes == "list_string" {
+                                                        c.need(needListString)
+                                                } else if listRes == "list_float" {
+                                                        c.need(needListFloat)
+                                                } else if listRes == "list_list_int" {
 							c.need(needListListInt)
 						}
 						var sortT types.Type

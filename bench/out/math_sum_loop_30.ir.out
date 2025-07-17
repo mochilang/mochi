@@ -1,70 +1,74 @@
-func main (regs=21)
+func main (regs=25)
   // let n = 30
   Const        r0, 30
+  Move         r1, r0
   // let repeat = 1000
-  Const        r1, 1000
-  // var last = 0
-  Const        r2, 0
+  Const        r2, 1000
   Move         r3, r2
+  // var last = 0
+  Const        r4, 0
+  Move         r5, r4
   // let start = now()
-  Now          r4
+  Now          r6
+  Move         r7, r6
   // for i in 0..repeat {
-  Const        r2, 0
-  Const        r1, 1000
-  Move         r5, r2
+  Const        r4, 0
+  Const        r2, 1000
+  Move         r8, r4
 L1:
-  LessInt      r6, r5, r1
-  JumpIfFalse  r6, L0
+  LessInt      r9, r8, r2
+  JumpIfFalse  r9, L0
   // last = sum_loop(n)
   Const        r0, 30
-  Move         r7, r0
-  Call         r8, sum_loop, r7
-  Move         r3, r8
+  Move         r10, r0
+  Call         r11, sum_loop, r10
+  Move         r5, r11
   // for i in 0..repeat {
-  Const        r9, 1
-  AddInt       r10, r5, r9
-  Move         r5, r10
+  Const        r12, 1
+  AddInt       r13, r8, r12
+  Move         r8, r13
   Jump         L1
 L0:
   // let duration = (now() - start) / 1000
-  Now          r11
-  SubInt       r12, r11, r4
-  Const        r1, 1000
-  DivInt       r13, r12, r1
+  Now          r14
+  SubInt       r15, r14, r7
+  Const        r2, 1000
+  DivInt       r16, r15, r2
+  Move         r17, r16
   // "duration_us": duration,
-  Const        r14, "duration_us"
+  Const        r18, "duration_us"
   // "output": last,
-  Const        r15, "output"
+  Const        r19, "output"
   // "duration_us": duration,
-  Move         r16, r14
-  Move         r17, r13
+  Move         r20, r18
+  Move         r21, r17
   // "output": last,
-  Move         r18, r15
-  Move         r19, r3
+  Move         r22, r19
+  Move         r23, r5
   // json({
-  MakeMap      r20, 2, r16
-  JSON         r20
+  MakeMap      r24, 2, r20
+  JSON         r24
   Return       r0
 
   // fun sum_loop(n: int): int {
-func sum_loop (regs=9)
+func sum_loop (regs=14)
   // var total = 0
-  Const        r1, 0
-  Move         r2, r1
+  Const        r6, 0
+  Move         r7, r6
   // for i in 1..n {
-  Const        r3, 1
-  Move         r4, r3
+  Const        r8, 1
+  Move         r9, r8
 L1:
-  LessInt      r5, r4, r0
-  JumpIfFalse  r5, L0
+  LessInt      r10, r9, r0
+  JumpIfFalse  r10, L0
   // total = total + i
-  AddInt       r6, r2, r4
-  Move         r2, r6
+  AddInt       r11, r7, r9
+  Move         r7, r11
   // for i in 1..n {
-  Const        r7, 1
-  AddInt       r8, r4, r7
-  Move         r4, r8
+  Const        r12, 1
+  AddInt       r13, r9, r12
+  Move         r9, r13
   Jump         L1
 L0:
   // return total
-  Return       r2
+  Return       r7
