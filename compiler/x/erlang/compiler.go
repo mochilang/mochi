@@ -297,7 +297,11 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) (string, error) {
 		typ := c.types[a.Name]
 		if typ == "map" || (!isIntLiteral(a0.Start)) {
 			c.types[a.Name] = "map"
-			return fmt.Sprintf("%s = %s, %s = maps:put(%s, %s, %s), %s = %s#{%s => %s}", inner, c.smartGet(idx0, prev), updated, idx1, val, inner, name, prev, idx0, updated), nil
+			first := c.smartGet(idx0, prev)
+			if typ == "map" {
+				first = fmt.Sprintf("maps:get(%s, %s, undefined)", idx0, prev)
+			}
+			return fmt.Sprintf("%s = %s, %s = maps:put(%s, %s, %s), %s = %s#{%s => %s}", inner, first, updated, idx1, val, inner, name, prev, idx0, updated), nil
 		}
 		// list of lists
 		return fmt.Sprintf("%s = lists:nth((%s)+1, %s), %s = lists:sublist(%s, %s) ++ [%s] ++ lists:nthtail((%s)+1, %s), %s = lists:sublist(%s, %s) ++ [%s] ++ lists:nthtail((%s)+1, %s)", inner, idx0, prev, updated, inner, idx1, val, idx1, inner, name, prev, idx0, updated, idx0, prev), nil
@@ -1082,7 +1086,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		if len(q.Group.Exprs) > 0 {
 			fields := groupKeyFields(q.Group.Exprs[0])
 			for _, f := range fields {
-				c.groupKeys[f] = c.smartGet(f, kvar)
+				c.groupKeys[f] = fmt.Sprintf("maps:get(%s, %s, undefined)", f, kvar)
 			}
 		}
 		c.groupKeys[q.Group.Name] = kvar
@@ -1396,7 +1400,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				if typ == "map" || (typ == "" && !isIntLiteral(idxOp.Start)) {
+				if typ == "map" {
+					val = fmt.Sprintf("maps:get(%s, %s, undefined)", idx, val)
+				} else if typ == "" && !isIntLiteral(idxOp.Start) {
 					val = c.smartGet(idx, val)
 				} else {
 					val = fmt.Sprintf("lists:nth((%s)+1, %s)", idx, val)
@@ -1433,7 +1439,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 				typ = "bool"
 			} else {
-				val = c.smartGet(name, val)
+				if typ == "map" {
+					val = fmt.Sprintf("maps:get(%s, %s, undefined)", name, val)
+				} else {
+					val = c.smartGet(name, val)
+				}
+				typ = ""
 			}
 		case op.Call != nil:
 			args := make([]string, len(op.Call.Args))
@@ -1489,8 +1500,14 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if v, ok := c.globals[p.Target.Selector.Root]; ok {
 					base = v
 				}
+				typ2 := c.types[p.Target.Selector.Root]
 				for _, f := range p.Target.Selector.Tail[:len(p.Target.Selector.Tail)-1] {
-					base = c.smartGet(f, base)
+					if typ2 == "map" {
+						base = fmt.Sprintf("maps:get(%s, %s, undefined)", f, base)
+					} else {
+						base = c.smartGet(f, base)
+					}
+					typ2 = ""
 				}
 				method := p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1]
 				if method == "contains" {
@@ -1564,14 +1581,26 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			} else {
 				expr = c.refVar(root)
 			}
+			typ := c.types[root]
 			for _, f := range tail {
-				expr = c.smartGet(f, expr)
+				if typ == "map" {
+					expr = fmt.Sprintf("maps:get(%s, %s, undefined)", f, expr)
+				} else {
+					expr = c.smartGet(f, expr)
+				}
+				typ = ""
 			}
 			return expr, nil
 		}
 		expr := c.refVar(root)
+		typ := c.types[root]
 		for _, f := range p.Selector.Tail {
-			expr = c.smartGet(f, expr)
+			if typ == "map" {
+				expr = fmt.Sprintf("maps:get(%s, %s, undefined)", f, expr)
+			} else {
+				expr = c.smartGet(f, expr)
+			}
+			typ = ""
 		}
 		return expr, nil
 	case p.Query != nil:
