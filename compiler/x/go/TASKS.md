@@ -96,3 +96,4 @@ TPC-H progress:
 
 - 2025-07-20 00:00 - Updated print generation to trim trailing spaces; VM valid tests now pass 71/100 programs.
 - 2025-07-20 12:34 - Added union type emission; tree_sum program compiles
+- 2025-07-20 13:10 - Improved OptionType handling in selectors and query environments; left_join program compiles
