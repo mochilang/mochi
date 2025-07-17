@@ -231,6 +231,20 @@ const (
   (println (_to_json v)))
 `
 
+	helperPrint = `(defn _print [& args]
+  (letfn [(pv [v]
+            (cond
+              (true? v) (print 1)
+              (false? v) (print 0)
+              (sequential? v) (doseq [[i x] (map-indexed vector v)]
+                                (when (> i 0) (print " "))
+                                (pv x))
+              :else (print v)))]
+    (doseq [[i a] (map-indexed vector args)]
+      (when (> i 0) (print " "))
+      (pv a))
+    (println)))`
+
 	helperSortKey = `(defn _sort_key [k]
   (cond
     (map? k) (pr-str (into (sorted-map) k))
@@ -403,6 +417,7 @@ var helperMap = map[string]string{
 	"_escape_json":      helperEscapeJSON,
 	"_to_json":          helperToJSON,
 	"_json":             helperJSON,
+	"_print":            helperPrint,
 	"_sort_key":         helperSortKey,
 	"_in":               helperIn,
 	"_union_all":        helperUnionAll,
@@ -437,6 +452,7 @@ var helperOrder = []string{
 	"_to_json",
 	"_save",
 	"_json",
+	"_print",
 	"_sort_key",
 	"_in",
 	"_union_all",

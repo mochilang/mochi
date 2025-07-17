@@ -381,9 +381,27 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 }
 
 func (c *Compiler) compileLet(st *parser.LetStmt) error {
-	expr, err := c.compileExpr(st.Value)
-	if err != nil {
-		return err
+	expr := "nil"
+	if st.Value != nil {
+		var err error
+		expr, err = c.compileExpr(st.Value)
+		if err != nil {
+			return err
+		}
+	} else if st.Type != nil {
+		t := c.resolveTypeRef(st.Type)
+		switch t.(type) {
+		case types.IntType, types.Int64Type, types.BigIntType:
+			expr = "0"
+		case types.FloatType, types.BigRatType:
+			expr = "0.0"
+		case types.BoolType:
+			expr = "false"
+		case types.StringType:
+			expr = "\"\""
+		case types.ListType:
+			expr = "[]"
+		}
 	}
 	if st.Type != nil {
 		t := c.resolveTypeRef(st.Type)
@@ -423,6 +441,20 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 			return err
 		}
 		expr = v
+	} else if st.Type != nil {
+		t := c.resolveTypeRef(st.Type)
+		switch t.(type) {
+		case types.IntType, types.Int64Type, types.BigIntType:
+			expr = "0"
+		case types.FloatType, types.BigRatType:
+			expr = "0.0"
+		case types.BoolType:
+			expr = "false"
+		case types.StringType:
+			expr = "\"\""
+		case types.ListType:
+			expr = "[]"
+		}
 	}
 	if st.Type != nil && expr != "nil" {
 		t := c.resolveTypeRef(st.Type)
@@ -1263,7 +1295,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 			switch name {
 			case "print":
-				expr = fmt.Sprintf("(println %s)", strings.Join(args, " "))
+				c.use("_print")
+				expr = fmt.Sprintf("(_print %s)", strings.Join(args, " "))
 			case "len":
 				expr = fmt.Sprintf("(count %s)", args[0])
 			case "count":
@@ -1552,7 +1585,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		switch name {
 		case "print":
-			return "(println " + strings.Join(args, " ") + ")", nil
+			c.use("_print")
+			return "(_print " + strings.Join(args, " ") + ")", nil
 		case "len":
 			if len(args) == 1 {
 				return "(count " + args[0] + ")", nil
