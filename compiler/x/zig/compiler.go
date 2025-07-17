@@ -3077,42 +3077,92 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		return fmt.Sprintf("(%s).len != 0", arg), nil
 	}
-	if name == "avg" && len(call.Args) == 1 {
-		arg, err := c.compileExpr(call.Args[0], false)
-		if err != nil {
-			return "", err
-		}
-		if at, ok := c.inferExprType(call.Args[0]).(types.ListType); ok {
-			if _, ok := at.Elem.(types.FloatType); ok {
-				c.needsAvgFloat = true
-				return fmt.Sprintf("_avg_float(%s)", arg), nil
-			}
-		}
-		if c.isFloatListExpr(call.Args[0]) {
-			c.needsAvgFloat = true
-			return fmt.Sprintf("_avg_float(%s)", arg), nil
-		}
-		c.needsAvgInt = true
-		return fmt.Sprintf("_avg_int(%s)", arg), nil
-	}
-	if name == "sum" && len(call.Args) == 1 {
-		arg, err := c.compileExpr(call.Args[0], false)
-		if err != nil {
-			return "", err
-		}
-		if at, ok := c.inferExprType(call.Args[0]).(types.ListType); ok {
-			if _, ok := at.Elem.(types.FloatType); ok {
-				c.needsSumFloat = true
-				return fmt.Sprintf("_sum_float(%s)", arg), nil
-			}
-		}
-		if c.isFloatListExpr(call.Args[0]) || c.isFloatQuerySelect(call.Args[0]) {
-			c.needsSumFloat = true
-			return fmt.Sprintf("_sum_float(%s)", arg), nil
-		}
-		c.needsSumInt = true
-		return fmt.Sprintf("_sum_int(%s)", arg), nil
-	}
+        if name == "avg" && len(call.Args) == 1 {
+                if ll := extractListLiteral(call.Args[0]); ll != nil {
+                        if len(ll.Elems) == 0 {
+                                return "0", nil
+                        }
+                        intSum := 0
+                        floatSum := 0.0
+                        isFloat := false
+                        for _, e := range ll.Elems {
+                                if e.Binary != nil && len(e.Binary.Right) == 0 {
+                                        lit := e.Binary.Left.Value.Target.Lit
+                                        switch {
+                                        case lit.Int != nil:
+                                                intSum += *lit.Int
+                                        case lit.Float != nil:
+                                                floatSum += *lit.Float
+                                                isFloat = true
+                                        }
+                                }
+                        }
+                        if isFloat {
+                                avg := (floatSum + float64(intSum)) / float64(len(ll.Elems))
+                                return strconv.FormatFloat(avg, 'f', -1, 64), nil
+                        }
+                        avg := float64(intSum) / float64(len(ll.Elems))
+                        return strconv.FormatFloat(avg, 'f', -1, 64), nil
+                }
+
+                arg, err := c.compileExpr(call.Args[0], false)
+                if err != nil {
+                        return "", err
+                }
+                if at, ok := c.inferExprType(call.Args[0]).(types.ListType); ok {
+                        if _, ok := at.Elem.(types.FloatType); ok {
+                                c.needsAvgFloat = true
+                                return fmt.Sprintf("_avg_float(%s)", arg), nil
+                        }
+                }
+                if c.isFloatListExpr(call.Args[0]) {
+                        c.needsAvgFloat = true
+                        return fmt.Sprintf("_avg_float(%s)", arg), nil
+                }
+                c.needsAvgInt = true
+                return fmt.Sprintf("_avg_int(%s)", arg), nil
+        }
+        if name == "sum" && len(call.Args) == 1 {
+                if ll := extractListLiteral(call.Args[0]); ll != nil {
+                        intSum := 0
+                        floatSum := 0.0
+                        isFloat := false
+                        for _, e := range ll.Elems {
+                                if e.Binary != nil && len(e.Binary.Right) == 0 {
+                                        lit := e.Binary.Left.Value.Target.Lit
+                                        switch {
+                                        case lit.Int != nil:
+                                                intSum += *lit.Int
+                                        case lit.Float != nil:
+                                                floatSum += *lit.Float
+                                                isFloat = true
+                                        }
+                                }
+                        }
+                        if isFloat {
+                                sum := floatSum + float64(intSum)
+                                return strconv.FormatFloat(sum, 'f', -1, 64), nil
+                        }
+                        return strconv.Itoa(intSum), nil
+                }
+
+                arg, err := c.compileExpr(call.Args[0], false)
+                if err != nil {
+                        return "", err
+                }
+                if at, ok := c.inferExprType(call.Args[0]).(types.ListType); ok {
+                        if _, ok := at.Elem.(types.FloatType); ok {
+                                c.needsSumFloat = true
+                                return fmt.Sprintf("_sum_float(%s)", arg), nil
+                        }
+                }
+                if c.isFloatListExpr(call.Args[0]) || c.isFloatQuerySelect(call.Args[0]) {
+                        c.needsSumFloat = true
+                        return fmt.Sprintf("_sum_float(%s)", arg), nil
+                }
+                c.needsSumInt = true
+                return fmt.Sprintf("_sum_int(%s)", arg), nil
+        }
 	if name == "append" && len(call.Args) == 2 {
 		listArg, err := c.compileExpr(call.Args[0], false)
 		if err != nil {

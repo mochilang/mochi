@@ -11,6 +11,7 @@
 - 2025-07-16 17:30 - `_append` now returns an owned slice and lists print via `_print_list`.
 - 2025-07-17 01:30 - Removed duplicate VM valid test file and regenerated golden files for `tests/vm/valid`.
 - 2025-07-17 01:17 - Fixed closure compilation in `compileFunExpr` to use a bound function and cleared generated `.error` file.
+- 2025-07-17 17:40 - Added constant folding for `sum` and `avg` when called on list literals.
 
 ## Remaining Work
 - Support struct field type inference for TPCH data sets.
@@ -31,3 +32,5 @@
 - 2025-07-17 compiled for_map_collection.mochi in Zig
 - 2025-07-17 compiled fun_call.mochi in Zig
 - 2025-07-17 compiled fun_expr_in_let.mochi in Zig
+- 2025-07-17 compiled fun_three_args.mochi in Zig
+- 2025-07-17 compiled sum_builtin.mochi in Zig
