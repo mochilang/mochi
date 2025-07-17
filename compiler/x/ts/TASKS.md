@@ -102,3 +102,6 @@
 ### 2025-07-17 00:00 UTC
 - Short list literals are now emitted on a single line for closer parity with
   the hand-written examples.
+### 2025-07-28 00:00 UTC
+- Removed unused `_fmt` helper.
+- `_print` now formats booleans as `1`/`0` and rounds numbers to six significant digits.

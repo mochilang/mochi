@@ -91,22 +91,20 @@ const (
 		"  return JSON.stringify(_sort(v));\n" +
 		"}\n"
 
-	helperFmt = "function _fmt(v: any): string {\n" +
-		"  if (Array.isArray(v)) return v.map(_fmt).join(' ');\n" +
-		"  if (v && typeof v === 'object') {\n" +
-		"    const keys = Object.keys(v).sort();\n" +
-		"    const parts = keys.map(k => k + ':' + _fmt(v[k]));\n" +
-		"    return 'map[' + parts.join(' ') + ']';\n" +
-		"  }\n" +
-		"  return String(v);\n" +
-		"}\n"
-
 	helperPrint = "function _print(...args: any[]): void {\n" +
 		"  const out = args.map(a => {\n" +
-		"    if (Array.isArray(a)) return a.join(' ');\n" +
-		"    return String(a);\n" +
+		"    if (Array.isArray(a)) return a.map(_p).join(' ');\n" +
+		"    return _p(a);\n" +
 		"  }).join(' ').trimEnd();\n" +
 		"  console.log(out);\n" +
+		"}\n" +
+		"function _p(a: any): string {\n" +
+		"  if (typeof a === 'boolean') return a ? '1' : '0';\n" +
+		"  if (typeof a === 'number') {\n" +
+		"    if (Number.isInteger(a)) return String(a);\n" +
+		"    return Number(a).toPrecision(6);\n" +
+		"  }\n" +
+		"  return String(a);\n" +
 		"}\n"
 
 	helperMin = "function _min(v: any): any {\n" +
@@ -587,7 +585,6 @@ var helperMap = map[string]string{
 	"_hashJoin":    helperHashJoin,
 	"_dataset":     helperDataset,
 	"_json":        helperJSON,
-	"_fmt":         helperFmt,
 	"_print":       helperPrint,
 }
 
