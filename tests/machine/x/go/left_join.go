@@ -24,9 +24,9 @@ type Order struct {
 }
 
 type Result struct {
-	OrderID  int      `json:"orderId"`
-	Customer Customer `json:"customer"`
-	Total    int      `json:"total"`
+	OrderID  int       `json:"orderId"`
+	Customer *Customer `json:"customer"`
+	Total    int       `json:"total"`
 }
 
 func main() {
@@ -49,13 +49,13 @@ func main() {
 	result := func() []Result {
 		customerMap := make(map[int]*Customer)
 		for _, c := range customers {
-			customerMap[_getField(c, "id")] = c
+			customerMap[c.ID] = &c
 		}
 		var result []Result
 		for _, o := range orders {
 			r := Result{OrderID: o.ID, Total: o.Total}
 			if v, ok := customerMap[o.CustomerID]; ok {
-				r.Customer = &v
+				r.Customer = v
 			} else {
 				r.Customer = nil
 			}
@@ -71,19 +71,6 @@ func main() {
 			fmt.Printf("Order %d customer <nil> total %d\n", entry.OrderID, entry.Total)
 		}
 	}
-}
-
-func _convertMapAny(m map[any]any) map[string]any {
-	out := make(map[string]any, len(m))
-	for k, v := range m {
-		key := fmt.Sprint(k)
-		if sub, ok := v.(map[any]any); ok {
-			out[key] = _convertMapAny(sub)
-		} else {
-			out[key] = v
-		}
-	}
-	return out
 }
 
 func _equal(a, b any) bool {
@@ -120,38 +107,4 @@ func _equal(a, b any) bool {
 		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
 	}
 	return reflect.DeepEqual(a, b)
-}
-
-func _getField(v any, name string) any {
-	switch m := v.(type) {
-	case map[string]any:
-		return m[name]
-	case map[string]string:
-		if s, ok := m[name]; ok {
-			return s
-		}
-	case map[any]any:
-		return _convertMapAny(m)[name]
-	default:
-		rv := reflect.ValueOf(m)
-		if rv.Kind() == reflect.Struct {
-			rt := rv.Type()
-			for i := 0; i < rv.NumField(); i++ {
-				fn := rt.Field(i)
-				field := fn.Name
-				if tag := fn.Tag.Get("json"); tag != "" {
-					if c := strings.Index(tag, ","); c >= 0 {
-						tag = tag[:c]
-					}
-					if tag != "-" {
-						field = tag
-					}
-				}
-				if field == name {
-					return rv.Field(i).Interface()
-				}
-			}
-		}
-	}
-	return nil
 }

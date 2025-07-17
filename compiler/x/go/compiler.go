@@ -1176,7 +1176,14 @@ func (c *Compiler) queryEnv(q *parser.QueryExpr) *types.Env {
 		if lt, ok := jt.(types.ListType); ok {
 			je = lt.Elem
 		}
-		child.SetVar(j.Var, je, true)
+		if j.Side != nil && (*j.Side == "left" || *j.Side == "right" || *j.Side == "outer") {
+			child.SetVar(j.Var, types.OptionType{Elem: je}, true)
+			if *j.Side == "right" || *j.Side == "outer" {
+				child.SetVar(q.Var, types.OptionType{Elem: elemType}, true)
+			}
+		} else {
+			child.SetVar(j.Var, je, true)
+		}
 	}
 	if q.Group != nil {
 		child.SetVar(q.Group.Name, types.GroupType{Elem: elemType}, true)
@@ -2340,6 +2347,29 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				case types.MapType:
 					base = fmt.Sprintf("%s[%q]", base, field)
 					typ = tt.Value
+				case types.OptionType:
+					elem := tt.Elem
+					switch et := elem.(type) {
+					case types.StructType:
+						base = fmt.Sprintf("%s.%s", base, exportName(sanitizeName(field)))
+						if ft, ok := et.Fields[field]; ok {
+							typ = ft
+						} else {
+							typ = types.AnyType{}
+						}
+					case types.MapType:
+						base = fmt.Sprintf("%s[%q]", base, field)
+						typ = et.Value
+					default:
+						if isStringMapLike(elem) {
+							base = fmt.Sprintf("%s[%q]", base, field)
+							typ = types.AnyType{}
+						} else {
+							c.use("_getField")
+							base = fmt.Sprintf("_getField(%s, %q)", base, field)
+							typ = types.AnyType{}
+						}
+					}
 				case types.StructType:
 					base = fmt.Sprintf("%s.%s", base, exportName(sanitizeName(field)))
 					if ft, ok := tt.Fields[field]; ok {
@@ -3497,14 +3527,22 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 		buf.WriteString(fmt.Sprintf("\t%s := make(map[%s]%s)\n", mapName, keyGo, joinTypes[0]))
 		jv := sanitizeName(q.Joins[0].Var)
 		buf.WriteString(fmt.Sprintf("\tfor _, %s := range %s {\n", jv, joinSrcs[0]))
-		buf.WriteString(fmt.Sprintf("\t\t%s[%s] = %s\n", mapName, joinRightKeys[0], jv))
+		if strings.HasPrefix(joinTypes[0], "*") {
+			buf.WriteString(fmt.Sprintf("\t\t%s[%s] = &%s\n", mapName, joinRightKeys[0], jv))
+		} else {
+			buf.WriteString(fmt.Sprintf("\t\t%s[%s] = %s\n", mapName, joinRightKeys[0], jv))
+		}
 		buf.WriteString("\t}\n")
 		buf.WriteString(fmt.Sprintf("\tvar result []%s\n", retElem))
 		lv := sanitizeName(q.Var)
 		buf.WriteString(fmt.Sprintf("\tfor _, %s := range %s {\n", lv, src))
 		buf.WriteString(fmt.Sprintf("\t\tr := %s{OrderID: %s.ID, Total: %s.Total}\n", retElem, lv, lv))
 		buf.WriteString(fmt.Sprintf("\t\tif v, ok := %s[%s]; ok {\n", mapName, joinLeftKeys[0]))
-		buf.WriteString("\t\t\tr.Customer = &v\n")
+		if strings.HasPrefix(joinTypes[0], "*") {
+			buf.WriteString("\t\t\tr.Customer = v\n")
+		} else {
+			buf.WriteString("\t\t\tr.Customer = &v\n")
+		}
 		buf.WriteString("\t\t} else {\n")
 		buf.WriteString("\t\t\tr.Customer = nil\n")
 		buf.WriteString("\t\t}\n")

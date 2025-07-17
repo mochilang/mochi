@@ -587,10 +587,21 @@ func (c *Compiler) eqJoinKeysTyped(e *parser.Expr, leftVar, rightVar string) (st
 	}
 	lExpr := &parser.Expr{Binary: &parser.BinaryExpr{Left: lhs}}
 	rExpr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: rhs}}}
+	origEnv := c.env
+	tmpEnv := types.NewEnv(c.env)
+	for _, name := range []string{leftVar, rightVar} {
+		if t, err := tmpEnv.GetVar(name); err == nil {
+			if ot, ok := t.(types.OptionType); ok {
+				tmpEnv.SetVar(name, ot.Elem, true)
+			}
+		}
+	}
+	c.env = tmpEnv
 	lStr, err1 := c.compileExpr(lExpr)
 	rStr, err2 := c.compileExpr(rExpr)
 	lType := c.inferExprType(lExpr)
 	rType := c.inferExprType(rExpr)
+	c.env = origEnv
 	if err1 != nil || err2 != nil {
 		return "", "", nil, nil, false
 	}
