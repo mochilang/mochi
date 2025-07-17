@@ -4,6 +4,8 @@
 ## Recent Enhancements (2025-07-23 00:00)
 - Removed the `_fmt` runtime helper. Generated code relies on Python's native
   printing semantics and booleans are no longer rendered numerically.
+## Recent Enhancements (2025-07-23 12:00)
+- Unused runtime helpers are pruned by scanning generated code.
 
 ## Recent Enhancements (2025-07-17 01:20)
 - Print calls skip `_fmt` for constant string arguments and attempt to collapse
@@ -106,6 +108,6 @@
 - [x] Extend dataset query support for `tpc-h` queries beyond `q1`.
 - [ ] Improve formatting to match examples in `tests/human/x/python`.
 - [ ] Enable type hints for all generated code paths.
-- [ ] Reduce helper method emission when not required.
+- [x] Reduce helper method emission when not required.
 \n- 2025-07-21 - Adjusted `_fmt` to remove special 2.0 case; updated machine outputs.
 - 2025-07-22 - Initial Python machine outputs generated for all VM tests.

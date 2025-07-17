@@ -2,7 +2,10 @@
 
 package pycode
 
-import "sort"
+import (
+	"bytes"
+	"sort"
+)
 
 var helperPrelude = "from typing import Any, TypeVar, Generic, Callable\n" +
 	"T = TypeVar('T')\n" +
@@ -540,6 +543,17 @@ var helperMap = map[string]string{
 }
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }
+
+func (c *Compiler) pruneHelpers(body []byte) {
+	for name := range c.helpers {
+		if !bytes.Contains(body, []byte(name)) {
+			delete(c.helpers, name)
+		}
+	}
+	if c.helpers["_group_by"] {
+		c.helpers["_group"] = true
+	}
+}
 
 func (c *Compiler) emitRuntime() {
 	names := make([]string, 0, len(c.helpers))
