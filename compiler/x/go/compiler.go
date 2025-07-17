@@ -1277,6 +1277,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 			}
 		}
 	}
+	c.decls = c.buf
 	c.buf = oldBuf
 	c.indent = oldIndent
 	return nil
@@ -2643,7 +2644,7 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 	if l.Path != nil {
 		p := *l.Path
 		if strings.HasPrefix(p, "../") {
-			p = filepath.Join("..", "..", "..", "tests", p[3:])
+			p = filepath.Join("tests", p[3:])
 		}
 		path = fmt.Sprintf("%q", p)
 	}
@@ -2653,8 +2654,12 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		if isStringAnyMapLike(c.inferExprType(l.With)) {
+		t := c.inferExprType(l.With)
+		if isStringAnyMapLike(t) {
 			opts = v
+		} else if isStringMapLike(t) {
+			c.use("_copyToMap")
+			opts = fmt.Sprintf("func() map[string]any { m := map[string]any{}; _copyToMap(m, %s); return m }()", v)
 		} else {
 			opts = v
 		}
@@ -2679,7 +2684,9 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 		if goT == "any" {
 			buf.WriteString("\t\tout[i] = r\n")
 		} else {
-			buf.WriteString(fmt.Sprintf("\t\tout[i] = r.(%s)\n", goT))
+			c.imports["encoding/json"] = true
+			buf.WriteString("\t\tb, _ := json.Marshal(r)\n")
+			buf.WriteString("\t\t_ = json.Unmarshal(b, &out[i])\n")
 		}
 		buf.WriteString("\t}\n")
 		buf.WriteString("\treturn out\n")
@@ -2698,14 +2705,39 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	if s.Path != nil {
 		path = fmt.Sprintf("%q", *s.Path)
 	}
+	// Special case: printing JSONL to stdout when source is a slice of structs
+	if s.Path != nil && *s.Path == "-" {
+		if ml := mapLiteral(s.With); ml != nil && len(ml.Items) == 1 {
+			if key, ok := simpleStringKey(ml.Items[0].Key); ok && key == "format" {
+				if ml.Items[0].Value != nil && ml.Items[0].Value.Binary != nil && len(ml.Items[0].Value.Binary.Right) == 0 {
+					vlit := ml.Items[0].Value.Binary.Left.Value.Target.Lit
+					if vlit != nil && vlit.Str != nil && *vlit.Str == "jsonl" {
+						if lt, ok := c.inferExprType(s.Src).(types.ListType); ok {
+							if _, ok := lt.Elem.(types.StructType); ok {
+								c.imports["encoding/json"] = true
+								c.imports["fmt"] = true
+								delete(c.helpers, "_save")
+								delete(c.helpers, "_toMapSlice")
+								return fmt.Sprintf("func(){ for _, r := range %s { b,_ := json.Marshal(r); fmt.Println(string(b)) } }()", src), nil
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 	opts := "nil"
 	if s.With != nil {
 		v, err := c.compileExpr(s.With)
 		if err != nil {
 			return "", err
 		}
-		if isStringAnyMapLike(c.inferExprType(s.With)) {
+		t := c.inferExprType(s.With)
+		if isStringAnyMapLike(t) {
 			opts = v
+		} else if isStringMapLike(t) {
+			c.use("_copyToMap")
+			opts = fmt.Sprintf("func() map[string]any { m := map[string]any{}; _copyToMap(m, %s); return m }()", v)
 		} else {
 			opts = v
 		}
