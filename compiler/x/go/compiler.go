@@ -2928,13 +2928,27 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 			retElem = "any"
 		}
 	} else {
-		sel, err = c.compileExpr(q.Select)
-		if err != nil {
-			c.env = original
-			return "", err
+		// Attempt to infer a struct type for map literal selections
+		if ml := mapLiteral(q.Select); ml != nil {
+			if st, ok := c.inferStructFromMapEnv(ml, "Result", c.env); ok {
+				sel, err = c.compileExprHint(q.Select, st)
+				if err != nil {
+					c.env = original
+					return "", err
+				}
+				retType = st
+				retElem = goType(st)
+			}
 		}
-		retType = c.inferExprType(q.Select)
-		retElem = goType(retType)
+		if retType == nil {
+			sel, err = c.compileExpr(q.Select)
+			if err != nil {
+				c.env = original
+				return "", err
+			}
+			retType = c.inferExprType(q.Select)
+			retElem = goType(retType)
+		}
 		if retElem == "" {
 			retElem = "any"
 		}
