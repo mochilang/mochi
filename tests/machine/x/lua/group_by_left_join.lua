@@ -33,19 +33,6 @@ function __group_by_rows(rows, keyfn, valfn)
     end
     return res
 end
-function __count(v)
-    if type(v) == 'table' then
-        if v.items ~= nil then return #v.items end
-        if v[1] ~= nil or #v > 0 then return #v end
-        local n = 0
-        for _ in pairs(v) do n = n + 1 end
-        return n
-    elseif type(v) == 'string' then
-        return #v
-    else
-        error('count() expects list or group')
-    end
-end
 function __eq(a, b)
     if type(a) ~= type(b) then return false end
     if type(a) == 'number' then return math.abs(a-b) < 1e-9 end
@@ -257,7 +244,7 @@ function __str(v)
             return '{'..table.concat(parts, ',')..'}'
         end
     else
-        return tostring(v)
+        if t == 'boolean' then return v and "1" or "0" else return tostring(v) end
     end
 end
 customers = {{["id"]=1, ["name"]="Alice"}, {["id"]=2, ["name"]="Bob"}, {["id"]=3, ["name"]="Charlie"}}
@@ -270,7 +257,7 @@ stats = (function()
     local _groups = __group_by_rows(_rows, function(c, o) return c.name end, function(c, o) local _row = __merge(c, o); _row.c = c; _row.o = o; return _row end)
     local _res = {}
     for _, g in ipairs(_groups) do
-        _res[#_res+1] = {["name"]=g.key, ["count"]=__count((function()
+        _res[#_res+1] = {["name"]=g.key, ["count"]=#(function()
     local _res = {}
     for _, r in ipairs(g.items) do
         if r.o then
@@ -278,7 +265,7 @@ stats = (function()
         end
     end
     return _res
-end)())}
+end)()}
     end
     return _res
 end)()
