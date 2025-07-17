@@ -2,7 +2,7 @@
 
 Generated F# code for Mochi programs under `tests/vm/valid`.
 
-Compiled programs: 61/100
+Compiled programs: 62/100
 
 Checklist:
 - [x] append_builtin
@@ -56,7 +56,7 @@ Checklist:
 - [ ] list_nested_assign
 - [x] list_set_ops
 - [ ] load_yaml
-- [ ] map_assign
+- [x] map_assign
 - [ ] map_in_operator
 - [x] map_index
 - [ ] map_int_key

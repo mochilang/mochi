@@ -17,6 +17,8 @@
   directory versions installed.
 - 2025-07-16 15:31 UTC - Compiler tests now remove stale `.error` files and
   autodetect runtime assemblies, reducing spurious failures.
+- 2025-07-17 - Map literals now emit `Dictionary` instances for mutation and
+  `load` expressions use `let ... in` form; added inference for loaded types.
 
 - 2025-07-16 12:07 UTC - Improved type hints for arrays by analyzing assignments
   and fixed range loop bounds so Rosetta tasks compile and run without errors.

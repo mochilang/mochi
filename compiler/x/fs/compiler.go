@@ -1214,7 +1214,18 @@ func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
 		}
 		return fmt.Sprintf("{ %s }", strings.Join(fields, "; ")), nil
 	}
-	return "dict [" + strings.Join(items, "; ") + "]", nil
+
+	valueType := "obj"
+	if len(types) > 0 {
+		valueType = types[0]
+		for i := 1; i < len(types); i++ {
+			if types[i] != valueType {
+				valueType = "obj"
+				break
+			}
+		}
+	}
+	return fmt.Sprintf("System.Collections.Generic.Dictionary<string,%s>(dict [%s])", valueType, strings.Join(items, "; ")), nil
 }
 
 func (c *Compiler) mapLiteralType(m *parser.MapLiteral) string {
@@ -1257,9 +1268,9 @@ func (c *Compiler) mapLiteralType(m *parser.MapLiteral) string {
 		return typ
 	}
 	if sameType && valueType != "" {
-		return fmt.Sprintf("System.Collections.Generic.IDictionary<string, %s>", valueType)
+		return fmt.Sprintf("System.Collections.Generic.Dictionary<string,%s>", valueType)
 	}
-	return ""
+	return "System.Collections.Generic.Dictionary<string,obj>"
 }
 
 func (c *Compiler) compileStruct(s *parser.StructLiteral) (string, error) {
@@ -1327,7 +1338,7 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 		return "", err
 	}
 	c.usesYaml = true
-	return fmt.Sprintf("(let deserializer = DeserializerBuilder().Build()\n    let yamlText = File.ReadAllText(%q)\n    deserializer.Deserialize<%s list>(yamlText))", *l.Path, typ), nil
+	return fmt.Sprintf("(let deserializer = DeserializerBuilder().Build() in let yamlText = File.ReadAllText(%q) in deserializer.Deserialize<%s list>(yamlText))", *l.Path, typ), nil
 }
 
 func (c *Compiler) compileSaveExpr(sv *parser.SaveExpr) (string, error) {
@@ -2004,6 +2015,13 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 
 		if p.Query != nil {
 			return c.inferQueryElemType(p.Query) + " list"
+		}
+
+		if p.Load != nil && p.Load.Type != nil && p.Load.Type.Simple != nil {
+			t, err := c.compileType(p.Load.Type)
+			if err == nil {
+				return t + " list"
+			}
 		}
 	}
 
