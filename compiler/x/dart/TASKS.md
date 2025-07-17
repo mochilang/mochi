@@ -21,5 +21,6 @@
 - [2025-07-17 00:45 UTC] Normalized numeric printing so integers don't appear
   with trailing `.0` and set `SOURCE_DATE_EPOCH` in VM golden tests to generate
   stable headers.
+- [2025-07-19 00:00 UTC] Improved builtin import handling and option checks in queries. Added fallback path search in `_load` helper.
 ## Remaining Enhancements
 - [ ] Improve generated code formatting to more closely match `tests/human/x/dart` examples.
