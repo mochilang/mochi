@@ -118,8 +118,10 @@ func (c *Compiler) collectVars(st *parser.Statement) {
 			}
 		}
 		if name != "" && !c.vars[name] {
-			c.order = append(c.order, name)
-			c.vars[name] = true
+			if !(st.Import.Lang != nil && *st.Import.Lang == "python" && st.Import.Path == "math") {
+				c.order = append(c.order, name)
+				c.vars[name] = true
+			}
 		}
 	}
 }
@@ -546,6 +548,34 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 				args[i] = s
 			}
+			if p.Target != nil && p.Target.Selector != nil && p.Target.Selector.Root == "math" && len(p.Target.Selector.Tail) == 1 {
+				switch p.Target.Selector.Tail[0] {
+				case "sqrt":
+					if len(args) != 1 {
+						return "", fmt.Errorf("sqrt expects 1 arg")
+					}
+					val = fmt.Sprintf("%s sqrt", args[0])
+					continue
+				case "pow":
+					if len(args) != 2 {
+						return "", fmt.Errorf("pow expects 2 args")
+					}
+					val = fmt.Sprintf("%s raisedTo: %s", args[0], args[1])
+					continue
+				case "sin":
+					if len(args) != 1 {
+						return "", fmt.Errorf("sin expects 1 arg")
+					}
+					val = fmt.Sprintf("%s sin", args[0])
+					continue
+				case "log":
+					if len(args) != 1 {
+						return "", fmt.Errorf("log expects 1 arg")
+					}
+					val = fmt.Sprintf("%s ln", args[0])
+					continue
+				}
+			}
 			if val == "print" {
 				if len(args) == 0 {
 					return "", fmt.Errorf("print expects at least 1 arg")
@@ -633,6 +663,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	switch {
 	case p.Selector != nil:
 		name := p.Selector.Root
+		if name == "math" && len(p.Selector.Tail) == 1 {
+			switch p.Selector.Tail[0] {
+			case "pi":
+				return "3.141592653589793e0", nil
+			case "e":
+				return "2.718281828459045e0", nil
+			}
+		}
 		if c.vars[name] {
 			expr := name
 			for _, s := range p.Selector.Tail {
@@ -1532,7 +1570,8 @@ func (c *Compiler) compileImport(im *parser.ImportStmt) error {
 	}
 	switch {
 	case im.Lang != nil && *im.Lang == "python" && im.Path == "math":
-		c.writeln(name + " := Dictionary from:{'sqrt'->[:x | x sqrt]. 'pow'->[:x :y | x raisedTo: y]. 'sin'->[:x | x sin]. 'log'->[:x | x ln]. 'pi'->3.141592653589793e0. 'e'->2.718281828459045e0}")
+		// built-in math module handled inline
+		return nil
 	case im.Lang != nil && *im.Lang == "go" && im.Path == "mochi/runtime/ffi/go/testpkg":
 		c.writeln(name + " := Dictionary from:{'Add'->[:a :b | a + b]. 'Pi'->3.14e0. 'Answer'->42}")
 	default:
