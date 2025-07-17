@@ -30,3 +30,5 @@ Recent enhancements:
 
 - `avg` and `len` now emit simpler forms when operating on lists, matching the
   manual translations more closely.
+
+- 2025-10-12 07:07 - `print` now omits runtime helpers for single string literals and outputs direct `displayln`.
