@@ -67,6 +67,16 @@ inline bool __any_eq(const std::any &a, const std::any &b) {
     return std::any_cast<std::string>(a) == std::any_cast<std::string>(b);
   return false;
 }
+inline void __print_any(const std::any &a) {
+  if (a.type() == typeid(int))
+    std::cout << std::any_cast<int>(a);
+  else if (a.type() == typeid(double))
+    std::cout << std::any_cast<double>(a);
+  else if (a.type() == typeid(bool))
+    std::cout << (std::any_cast<bool>(a) ? "true" : "false");
+  else if (a.type() == typeid(std::string))
+    std::cout << std::any_cast<std::string>(a);
+}
 
 struct Nation {
   int n_nationkey;
@@ -90,16 +100,16 @@ struct Lineitem {
   int l_orderkey;
   decltype(std::string("R")) l_returnflag;
   int l_extendedprice;
-  decltype(0.1) l_discount;
+  std::any l_discount;
 };
 struct Result {
-  decltype(c.c_custkey) c_custkey;
-  decltype(c.c_name) c_name;
-  decltype(c.c_acctbal) c_acctbal;
-  decltype(c.c_address) c_address;
-  decltype(c.c_phone) c_phone;
-  decltype(c.c_comment) c_comment;
-  decltype(n.n_name) n_name;
+  std::any c_custkey;
+  std::any c_name;
+  std::any c_acctbal;
+  std::any c_address;
+  std::any c_phone;
+  std::any c_comment;
+  std::any n_name;
 };
 struct __struct6 {
   std::any c;
@@ -112,14 +122,14 @@ struct __struct7 {
   std::vector<__struct6> items;
 };
 struct __struct8 {
-  decltype(std::declval<__struct7>().key.c_custkey) c_custkey;
-  decltype(std::declval<__struct7>().key.c_name) c_name;
+  std::any c_custkey;
+  std::any c_name;
   double revenue;
-  decltype(std::declval<__struct7>().key.c_acctbal) c_acctbal;
-  decltype(std::declval<__struct7>().key.n_name) n_name;
-  decltype(std::declval<__struct7>().key.c_address) c_address;
-  decltype(std::declval<__struct7>().key.c_phone) c_phone;
-  decltype(std::declval<__struct7>().key.c_comment) c_comment;
+  std::any c_acctbal;
+  std::any n_name;
+  std::any c_address;
+  std::any c_phone;
+  std::any c_comment;
 };
 inline void __json(const Result &v) {
   bool first = true;

@@ -1,39 +1,35 @@
-/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:60:12: error: ‘d’ was not declared in this scope
-   60 |   decltype(d.tag) key;
-      |            ^
-/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:60:12: error: ‘d’ was not declared in this scope
-/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:61:19: error: template argument 1 is invalid
-   61 |   std::vector<auto> items;
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:86:19: error: template argument 1 is invalid
+   86 |   std::vector<auto> items;
       |                   ^
-/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:61:19: error: template argument 2 is invalid
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:86:19: error: template argument 2 is invalid
 /workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp: In lambda function:
-/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:102:23: error: ‘d’ was not declared in this scope
-  102 |     std::map<decltype(d.tag), std::vector<auto>> __groups;
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:127:23: error: ‘d’ was not declared in this scope
+  127 |     std::map<decltype(d.tag), std::vector<auto>> __groups;
       |                       ^
-/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:102:47: error: template argument 1 is invalid
-  102 |     std::map<decltype(d.tag), std::vector<auto>> __groups;
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:127:47: error: template argument 1 is invalid
+  127 |     std::map<decltype(d.tag), std::vector<auto>> __groups;
       |                                               ^~
-/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:102:47: error: template argument 2 is invalid
-/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:102:50: error: template argument 1 is invalid
-  102 |     std::map<decltype(d.tag), std::vector<auto>> __groups;
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:127:47: error: template argument 2 is invalid
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:127:50: error: template argument 1 is invalid
+  127 |     std::map<decltype(d.tag), std::vector<auto>> __groups;
       |                                                  ^~~~~~~~
-/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:102:50: error: template argument 2 is invalid
-/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:102:50: error: template argument 3 is invalid
-/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:102:50: error: template argument 4 is invalid
-/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:104:7: error: ‘__groups’ was not declared in this scope; did you mean ‘groups’?
-  104 |       __groups[d.tag].push_back(auto{d});
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:127:50: error: template argument 2 is invalid
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:127:50: error: template argument 3 is invalid
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:127:50: error: template argument 4 is invalid
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:129:7: error: ‘__groups’ was not declared in this scope; did you mean ‘groups’?
+  129 |       __groups[d.tag].push_back(auto{d});
       |       ^~~~~~~~
       |       groups
-/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:104:39: warning: ‘auto{x}’ only available with ‘-std=c++2b’ or ‘-std=gnu++2b’ [-Wc++23-extensions]
-  104 |       __groups[d.tag].push_back(auto{d});
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:129:39: warning: ‘auto{x}’ only available with ‘-std=c++2b’ or ‘-std=gnu++2b’ [-Wc++23-extensions]
+  129 |       __groups[d.tag].push_back(auto{d});
       |                                       ^
-/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:107:21: error: ‘__groups’ was not declared in this scope; did you mean ‘groups’?
-  107 |     for (auto &kv : __groups) {
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:132:21: error: ‘__groups’ was not declared in this scope; did you mean ‘groups’?
+  132 |     for (auto &kv : __groups) {
       |                     ^~~~~~~~
       |                     groups
 /workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp: In function ‘int main()’:
-/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:115:21: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
-  115 |     for (auto x : g.items) {
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:140:21: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+  140 |     for (auto x : g.items) {
       |                     ^~~~~
       |                     std::begin
 In file included from /usr/include/c++/13/string:53,
@@ -42,22 +38,22 @@ In file included from /usr/include/c++/13/string:53,
                  from /usr/include/c++/13/ios:44,
                  from /usr/include/c++/13/ostream:40,
                  from /usr/include/c++/13/iostream:41,
-                 from /workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:3:
+                 from /workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:4:
 /usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
   114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
       |                                     ^~~~~
-/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:115:21: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
-  115 |     for (auto x : g.items) {
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:140:21: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+  140 |     for (auto x : g.items) {
       |                     ^~~~~
       |                     std::end
 /usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
   116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
       |                                     ^~~
-/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:118:18: error: no matching function for call to ‘std::vector<int>::push_back(__struct3)’
-  118 |     tmp.push_back(__struct3{g.key, total});
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:143:18: error: no matching function for call to ‘std::vector<int>::push_back(__struct3)’
+  143 |     tmp.push_back(__struct3{g.key, total});
       |     ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~
 In file included from /usr/include/c++/13/vector:66,
-                 from /workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:8:
+                 from /workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:9:
 /usr/include/c++/13/bits/stl_vector.h:1281:7: note: candidate: ‘void std::vector<_Tp, _Alloc>::push_back(const value_type&) [with _Tp = int; _Alloc = std::allocator<int>; value_type = int]’
  1281 |       push_back(const value_type& __x)
       |       ^~~~~~~~~
@@ -71,21 +67,160 @@ In file included from /usr/include/c++/13/vector:66,
  1298 |       push_back(value_type&& __x)
       |                 ~~~~~~~~~~~~~^~~
 /workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp: In lambda function:
-/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:124:28: error: request for member ‘tag’ in ‘r’, which is of non-class type ‘int’
-  124 |       __items.push_back({r.tag, r});
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:149:28: error: request for member ‘tag’ in ‘r’, which is of non-class type ‘int’
+  149 |       __items.push_back({r.tag, r});
       |                            ^~~
-/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:124:24: error: no matching function for call to ‘std::vector<std::pair<int, __struct3> >::push_back(<brace-enclosed initializer list>)’
-  124 |       __items.push_back({r.tag, r});
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:149:24: error: no matching function for call to ‘std::vector<std::pair<std::any, __struct3> >::push_back(<brace-enclosed initializer list>)’
+  149 |       __items.push_back({r.tag, r});
       |       ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
-/usr/include/c++/13/bits/stl_vector.h:1281:7: note: candidate: ‘void std::vector<_Tp, _Alloc>::push_back(const value_type&) [with _Tp = std::pair<int, __struct3>; _Alloc = std::allocator<std::pair<int, __struct3> >; value_type = std::pair<int, __struct3>]’
+/usr/include/c++/13/bits/stl_vector.h:1281:7: note: candidate: ‘void std::vector<_Tp, _Alloc>::push_back(const value_type&) [with _Tp = std::pair<std::any, __struct3>; _Alloc = std::allocator<std::pair<std::any, __struct3> >; value_type = std::pair<std::any, __struct3>]’
  1281 |       push_back(const value_type& __x)
       |       ^~~~~~~~~
-/usr/include/c++/13/bits/stl_vector.h:1281:35: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘const std::vector<std::pair<int, __struct3> >::value_type&’ {aka ‘const std::pair<int, __struct3>&’}
+/usr/include/c++/13/bits/stl_vector.h:1281:35: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘const std::vector<std::pair<std::any, __struct3> >::value_type&’ {aka ‘const std::pair<std::any, __struct3>&’}
  1281 |       push_back(const value_type& __x)
       |                 ~~~~~~~~~~~~~~~~~~^~~
-/usr/include/c++/13/bits/stl_vector.h:1298:7: note: candidate: ‘void std::vector<_Tp, _Alloc>::push_back(value_type&&) [with _Tp = std::pair<int, __struct3>; _Alloc = std::allocator<std::pair<int, __struct3> >; value_type = std::pair<int, __struct3>]’
+/usr/include/c++/13/bits/stl_vector.h:1298:7: note: candidate: ‘void std::vector<_Tp, _Alloc>::push_back(value_type&&) [with _Tp = std::pair<std::any, __struct3>; _Alloc = std::allocator<std::pair<std::any, __struct3> >; value_type = std::pair<std::any, __struct3>]’
  1298 |       push_back(value_type&& __x)
       |       ^~~~~~~~~
-/usr/include/c++/13/bits/stl_vector.h:1298:30: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘std::vector<std::pair<int, __struct3> >::value_type&&’ {aka ‘std::pair<int, __struct3>&&’}
+/usr/include/c++/13/bits/stl_vector.h:1298:30: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘std::vector<std::pair<std::any, __struct3> >::value_type&&’ {aka ‘std::pair<std::any, __struct3>&&’}
  1298 |       push_back(value_type&& __x)
       |                 ~~~~~~~~~~~~~^~~
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:1&, auto:2&)> [with auto:1 = std::pair<std::any, __struct3>; auto:2 = std::pair<std::any, __struct3>]’:
+/usr/include/c++/13/bits/predefined_ops.h:158:30:   required from ‘constexpr bool __gnu_cxx::__ops::_Iter_comp_iter<_Compare>::operator()(_Iterator1, _Iterator2) [with _Iterator1 = __gnu_cxx::__normal_iterator<std::pair<std::any, __struct3>*, std::vector<std::pair<std::any, __struct3> > >; _Iterator2 = __gnu_cxx::__normal_iterator<std::pair<std::any, __struct3>*, std::vector<std::pair<std::any, __struct3> > >; _Compare = main()::<lambda()>::<lambda(auto:1&, auto:2&)>]’
+/usr/include/c++/13/bits/stl_algo.h:1819:14:   required from ‘void std::__insertion_sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<pair<any, __struct3>*, vector<pair<any, __struct3> > >; _Compare = __gnu_cxx::__ops::_Iter_comp_iter<main()::<lambda()>::<lambda(auto:1&, auto:2&)> >]’
+/usr/include/c++/13/bits/stl_algo.h:1859:25:   required from ‘void std::__final_insertion_sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<pair<any, __struct3>*, vector<pair<any, __struct3> > >; _Compare = __gnu_cxx::__ops::_Iter_comp_iter<main()::<lambda()>::<lambda(auto:1&, auto:2&)> >]’
+/usr/include/c++/13/bits/stl_algo.h:1950:31:   required from ‘void std::__sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<pair<any, __struct3>*, vector<pair<any, __struct3> > >; _Compare = __gnu_cxx::__ops::_Iter_comp_iter<main()::<lambda()>::<lambda(auto:1&, auto:2&)> >]’
+/usr/include/c++/13/bits/stl_algo.h:4894:18:   required from ‘void std::sort(_RAIter, _RAIter, _Compare) [with _RAIter = __gnu_cxx::__normal_iterator<pair<any, __struct3>*, vector<pair<any, __struct3> > >; _Compare = main()::<lambda()>::<lambda(auto:1&, auto:2&)>]’
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:151:14:   required from here
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:152:53: error: no match for ‘operator<’ (operand types are ‘std::any’ and ‘std::any’)
+  152 |               [](auto &a, auto &b) { return a.first < b.first; });
+      |                                             ~~~~~~~~^~~~~~~~~
+In file included from /usr/include/c++/13/bits/stl_algobase.h:64,
+                 from /usr/include/c++/13/algorithm:60,
+                 from /workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:2:
+/usr/include/c++/13/bits/stl_pair.h:835:5: note: candidate: ‘template<class _T1, class _T2> constexpr bool std::operator<(const pair<_T1, _T2>&, const pair<_T1, _T2>&)’
+  835 |     operator<(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_pair.h:835:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:152:53: note:   ‘std::any’ is not derived from ‘const std::pair<_T1, _T2>’
+  152 |               [](auto &a, auto &b) { return a.first < b.first; });
+      |                                             ~~~~~~~~^~~~~~~~~
+In file included from /usr/include/c++/13/bits/stl_algobase.h:67:
+/usr/include/c++/13/bits/stl_iterator.h:455:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator<(const reverse_iterator<_Iterator>&, const reverse_iterator<_Iterator>&)’
+  455 |     operator<(const reverse_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:455:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:152:53: note:   ‘std::any’ is not derived from ‘const std::reverse_iterator<_Iterator>’
+  152 |               [](auto &a, auto &b) { return a.first < b.first; });
+      |                                             ~~~~~~~~^~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:500:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator<(const reverse_iterator<_Iterator>&, const reverse_iterator<_IteratorR>&)’
+  500 |     operator<(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:500:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:152:53: note:   ‘std::any’ is not derived from ‘const std::reverse_iterator<_Iterator>’
+  152 |               [](auto &a, auto &b) { return a.first < b.first; });
+      |                                             ~~~~~~~~^~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1705:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator<(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&)’
+ 1705 |     operator<(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1705:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:152:53: note:   ‘std::any’ is not derived from ‘const std::move_iterator<_IteratorL>’
+  152 |               [](auto &a, auto &b) { return a.first < b.first; });
+      |                                             ~~~~~~~~^~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1770:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator<(const move_iterator<_IteratorL>&, const move_iterator<_IteratorL>&)’
+ 1770 |     operator<(const move_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1770:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:152:53: note:   ‘std::any’ is not derived from ‘const std::move_iterator<_IteratorL>’
+  152 |               [](auto &a, auto &b) { return a.first < b.first; });
+      |                                             ~~~~~~~~^~~~~~~~~
+In file included from /usr/include/c++/13/bits/basic_string.h:47,
+                 from /usr/include/c++/13/string:54:
+/usr/include/c++/13/string_view:671:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator<(basic_string_view<_CharT, _Traits>, basic_string_view<_CharT, _Traits>)’
+  671 |     operator< (basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:671:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:152:53: note:   ‘std::any’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
+  152 |               [](auto &a, auto &b) { return a.first < b.first; });
+      |                                             ~~~~~~~~^~~~~~~~~
+/usr/include/c++/13/string_view:678:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator<(basic_string_view<_CharT, _Traits>, __type_identity_t<basic_string_view<_CharT, _Traits> >)’
+  678 |     operator< (basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:678:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:152:53: note:   ‘std::any’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
+  152 |               [](auto &a, auto &b) { return a.first < b.first; });
+      |                                             ~~~~~~~~^~~~~~~~~
+/usr/include/c++/13/string_view:686:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator<(__type_identity_t<basic_string_view<_CharT, _Traits> >, basic_string_view<_CharT, _Traits>)’
+  686 |     operator< (__type_identity_t<basic_string_view<_CharT, _Traits>> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:686:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:152:53: note:   ‘std::any’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
+  152 |               [](auto &a, auto &b) { return a.first < b.first; });
+      |                                             ~~~~~~~~^~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3829:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator<(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3829 |     operator<(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3829:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:152:53: note:   ‘std::any’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  152 |               [](auto &a, auto &b) { return a.first < b.first; });
+      |                                             ~~~~~~~~^~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3843:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator<(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const _CharT*)’
+ 3843 |     operator<(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3843:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:152:53: note:   ‘std::any’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  152 |               [](auto &a, auto &b) { return a.first < b.first; });
+      |                                             ~~~~~~~~^~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3856:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator<(const _CharT*, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3856 |     operator<(const _CharT* __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3856:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:152:53: note:   mismatched types ‘const _CharT*’ and ‘std::any’
+  152 |               [](auto &a, auto &b) { return a.first < b.first; });
+      |                                             ~~~~~~~~^~~~~~~~~
+In file included from /usr/include/c++/13/bits/memory_resource.h:47,
+                 from /usr/include/c++/13/string:58:
+/usr/include/c++/13/tuple:1961:5: note: candidate: ‘template<class ... _TElements, class ... _UElements> constexpr bool std::operator<(const tuple<_UTypes ...>&, const tuple<_UTypes ...>&)’
+ 1961 |     operator<(const tuple<_TElements...>& __t,
+      |     ^~~~~~~~
+/usr/include/c++/13/tuple:1961:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:152:53: note:   ‘std::any’ is not derived from ‘const std::tuple<_UTypes ...>’
+  152 |               [](auto &a, auto &b) { return a.first < b.first; });
+      |                                             ~~~~~~~~^~~~~~~~~
+In file included from /usr/include/c++/13/map:63,
+                 from /workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:5:
+/usr/include/c++/13/bits/stl_map.h:1551:5: note: candidate: ‘template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator<(const map<_Key, _Tp, _Compare, _Allocator>&, const map<_Key, _Tp, _Compare, _Allocator>&)’
+ 1551 |     operator<(const map<_Key, _Tp, _Compare, _Alloc>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_map.h:1551:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:152:53: note:   ‘std::any’ is not derived from ‘const std::map<_Key, _Tp, _Compare, _Allocator>’
+  152 |               [](auto &a, auto &b) { return a.first < b.first; });
+      |                                             ~~~~~~~~^~~~~~~~~
+In file included from /usr/include/c++/13/map:64:
+/usr/include/c++/13/bits/stl_multimap.h:1172:5: note: candidate: ‘template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator<(const multimap<_Key, _Tp, _Compare, _Allocator>&, const multimap<_Key, _Tp, _Compare, _Allocator>&)’
+ 1172 |     operator<(const multimap<_Key, _Tp, _Compare, _Alloc>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_multimap.h:1172:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:152:53: note:   ‘std::any’ is not derived from ‘const std::multimap<_Key, _Tp, _Compare, _Allocator>’
+  152 |               [](auto &a, auto &b) { return a.first < b.first; });
+      |                                             ~~~~~~~~^~~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:2079:5: note: candidate: ‘template<class _Tp, class _Alloc> bool std::operator<(const vector<_Tp, _Alloc>&, const vector<_Tp, _Alloc>&)’
+ 2079 |     operator<(const vector<_Tp, _Alloc>& __x, const vector<_Tp, _Alloc>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:2079:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/machine/x/cpp/group_items_iteration.cpp:152:53: note:   ‘std::any’ is not derived from ‘const std::vector<_Tp, _Alloc>’
+  152 |               [](auto &a, auto &b) { return a.first < b.first; });
+      |                                             ~~~~~~~~^~~~~~~~~
+In file included from /usr/include/c++/13/bits/ios_base.h:46:
+/usr/include/c++/13/system_error:324:3: note: candidate: ‘bool std::operator<(const error_code&, const error_code&)’
+  324 |   operator<(const error_code& __lhs, const error_code& __rhs) noexcept
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:324:31: note:   no known conversion for argument 1 from ‘std::any’ to ‘const std::error_code&’
+  324 |   operator<(const error_code& __lhs, const error_code& __rhs) noexcept
+      |             ~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/system_error:507:3: note: candidate: ‘bool std::operator<(const error_condition&, const error_condition&)’
+  507 |   operator<(const error_condition& __lhs,
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:507:36: note:   no known conversion for argument 1 from ‘std::any’ to ‘const std::error_condition&’
+  507 |   operator<(const error_condition& __lhs,
+      |             ~~~~~~~~~~~~~~~~~~~~~~~^~~~~
