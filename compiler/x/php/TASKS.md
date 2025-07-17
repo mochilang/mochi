@@ -28,3 +28,6 @@
 - [ ] Improve runtime helpers for grouping and aggregation
 - [ ] Keep machine output close to human reference implementations
 - 2025-07-17 01:10 - Marked VM golden tests with the "slow" build tag to avoid running during default test passes.
+
+## July 2025 Progress
+- 2025-07-19 13:20 - Verified that all 100 VM valid programs compile and run successfully with the PHP backend. Updated README checklist accordingly.
