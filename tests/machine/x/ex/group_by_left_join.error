@@ -1,21 +1,22 @@
+exit status 1
     warning: variable "o" is unused (if the variable is not meant to be used, prefix it with an underscore)
     │
  22 │          groups = _group_by(rows, fn %{c: c, o: o} -> c.name end)
     │                                                 ~
     │
-    └─ /tmp/TestExCompiler_VMValid_Goldengroup_by_left_join2850642412/001/main.exs:22:49: Main.main/0
+    └─ tests/machine/x/ex/group_by_left_join.exs:22:49: Main.main/0
 
     warning: default values for the optional arguments in _query/3 are never used
     │
  97 │   defp _query(src, joins, opts \\ %{}) do
     │        ~
     │
-    └─ /tmp/TestExCompiler_VMValid_Goldengroup_by_left_join2850642412/001/main.exs:97:8: Main (module)
+    └─ tests/machine/x/ex/group_by_left_join.exs:97:8: Main (module)
 
 ** (BadMapError) expected a map, got: nil
     (stdlib 6.1.2) :maps.merge(%{id: 3, name: "Charlie"}, nil)
-    /tmp/TestExCompiler_VMValid_Goldengroup_by_left_join2850642412/001/main.exs:19: anonymous fn/2 in Main.main/0
+    tests/machine/x/ex/group_by_left_join.exs:19: anonymous fn/2 in Main.main/0
     (elixir 1.18.3) lib/enum.ex:1714: Enum."-map/2-lists^map/1-1-"/2
     (elixir 1.18.3) lib/enum.ex:1714: Enum."-map/2-lists^map/1-1-"/2
-    /tmp/TestExCompiler_VMValid_Goldengroup_by_left_join2850642412/001/main.exs:14: Main.main/0
-    /tmp/TestExCompiler_VMValid_Goldengroup_by_left_join2850642412/001/main.exs:213: (file)
+    tests/machine/x/ex/group_by_left_join.exs:14: Main.main/0
+    tests/machine/x/ex/group_by_left_join.exs:213: (file)
