@@ -71,3 +71,8 @@ fails if any `.error` file is present.
 - Function parameters are now typed within their bodies so built-ins like `len()`
   and `exists()` emit direct Elixir code. Regenerated machine outputs for
   `two-sum` and `exists_builtin`.
+
+## Type Inference Enhancements (2025-07-18 08:13)
+- `len` and `exists` now handle `option` values without relying on `_length`
+  or `_exists`. When the underlying type is known the compiler emits direct
+  Elixir code with a `nil` check.

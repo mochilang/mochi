@@ -823,6 +823,23 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 			return err
 		}
 		value = v
+	} else if c.env != nil {
+		if t, err := c.env.GetVar(stmt.Name); err == nil {
+			switch t.(type) {
+			case types.IntType, types.Int64Type:
+				value = "0"
+			case types.FloatType:
+				value = "0.0"
+			case types.BoolType:
+				value = "false"
+			case types.StringType:
+				value = "\"\""
+			case types.ListType:
+				value = "[]"
+			case types.MapType:
+				value = "%{}"
+			}
+		}
 	}
 	if c.env != nil {
 		if t, err := c.env.GetVar(stmt.Name); err == nil {
