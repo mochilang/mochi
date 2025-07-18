@@ -1,4 +1,4 @@
-# Rosetta Erlang Output (3/239 compiled and run)
+# Rosetta Erlang Output (4/239 compiled and run)
 
 This directory holds Erlang source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -16,7 +16,7 @@ This directory holds Erlang source code generated from the real Mochi programs i
 - [ ] 4-rings-or-4-squares-puzzle
 - [ ] 9-billion-names-of-god-the-integer
 - [ ] 99-bottles-of-beer-2
-- [ ] 99-bottles-of-beer
+- [x] 99-bottles-of-beer
 - [ ] a+b
 - [ ] abbreviations-automatic
 - [ ] abbreviations-easy
