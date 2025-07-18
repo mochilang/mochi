@@ -1,1 +1,2 @@
-/workspace/mochi/tests/rosetta/out/Smalltalk/anagrams-deranged-anagrams.st:49: parse error, expected '|' or identifier
+/tmp/anagrams-deranged-anagrams.st:4: expected expression
+/tmp/anagrams-deranged-anagrams.st:5: expected expression

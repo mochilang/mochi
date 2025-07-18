@@ -1,0 +1,5 @@
+Object: nil error: did not understand #value
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+UndefinedObject(Object)>>doesNotUnderstand: #value (SysExcept.st:1448)
+optimized [] in UndefinedObject>>executeStatements (/tmp/date-format.st:10)
+UndefinedObject>>executeStatements (/tmp/date-format.st:30)

@@ -1,0 +1,13 @@
+Object: '0' error: did not understand #+
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #+ (SysExcept.st:1448)
+UndefinedObject>>executeStatements (/tmp/character-codes-3.st:27)
+Object: 'string cast to []rune: [' error: did not understand #+
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #+ (SysExcept.st:1448)
+UndefinedObject>>executeStatements (/tmp/character-codes-3.st:28)
+Object: '    string range loop: ' error: did not understand #+
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #+ (SysExcept.st:1448)
+UndefinedObject>>executeStatements (/tmp/character-codes-3.st:29)
+         string bytes: 0x61 0xcf 0x80

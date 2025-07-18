@@ -1,0 +1,14 @@
+Object: 'obj: {' error: did not understand #+
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #+ (SysExcept.st:1448)
+UndefinedObject>>executeStatements (/tmp/break-oo-privacy.st:14)
+Object: ' v: {' error: did not understand #+
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #+ (SysExcept.st:1448)
+optimized [] in UndefinedObject>>executeStatements (/tmp/break-oo-privacy.st:4)
+UndefinedObject>>executeStatements (/tmp/break-oo-privacy.st:15)
+Object: 'obj: {' error: did not understand #+
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #+ (SysExcept.st:1448)
+UndefinedObject>>executeStatements (/tmp/break-oo-privacy.st:16)
+bufio.ReadByte returned error: unsafely injected error value into bufio inner workings

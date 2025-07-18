@@ -1,0 +1,8 @@
+parse: error[P001]: /workspace/mochi/tests/rosetta/x/Mochi/create-a-file-on-magnetic-tape.mochi:34:14: unexpected token "o660" (expected "}")
+  --> /workspace/mochi/tests/rosetta/x/Mochi/create-a-file-on-magnetic-tape.mochi:34:14
+
+ 34 |     "Mode": 0o660,
+    |              ^
+
+help:
+  Check for a missing `{` or `}` to close the block.

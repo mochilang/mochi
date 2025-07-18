@@ -1,1 +1,8 @@
-/workspace/mochi/tests/rosetta/out/Smalltalk/accumulator-factory.st:8: parse error, expected '|' or identifier
+Object: Array new: 1 "<0x7f668082d570>" error: Invalid index 0: index out of range
+SystemExceptions.IndexOutOfRange(Exception)>>signal (ExcHandling.st:254)
+SystemExceptions.IndexOutOfRange class>>signalOn:withIndex: (SysExcept.st:660)
+Array(Object)>>checkIndexableBounds: (Object.st:796)
+Array(Object)>>at: (Object.st:858)
+optimized [] in UndefinedObject>>executeStatements (/tmp/accumulator-factory.st:5)
+optimized [] in UndefinedObject>>executeStatements (/tmp/accumulator-factory.st:9)
+UndefinedObject>>executeStatements (/tmp/accumulator-factory.st:12)

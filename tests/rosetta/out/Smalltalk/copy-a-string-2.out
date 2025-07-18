@@ -1,0 +1,34 @@
+Object: 'creature = ' error: did not understand #+
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #+ (SysExcept.st:1448)
+UndefinedObject>>executeStatements (/tmp/copy-a-string-2.st:6)
+pointer = 0
+Object: Array new: 1 "<0x7f6680817af0>" error: Invalid index 0: index out of range
+SystemExceptions.IndexOutOfRange(Exception)>>signal (ExcHandling.st:254)
+SystemExceptions.IndexOutOfRange class>>signalOn:withIndex: (SysExcept.st:660)
+Array(Object)>>checkIndexableBounds: (Object.st:796)
+Array(Object)>>at: (Object.st:858)
+UndefinedObject>>executeStatements (/tmp/copy-a-string-2.st:8)
+Object: Array new: 1 "<0x7f6680817af0>" error: Invalid index 0: index out of range
+SystemExceptions.IndexOutOfRange(Exception)>>signal (ExcHandling.st:254)
+SystemExceptions.IndexOutOfRange class>>signalOn:withIndex: (SysExcept.st:660)
+Array(Object)>>checkIndexableBounds:put: (Object.st:812)
+Array(Object)>>at:put: (Object.st:875)
+UndefinedObject>>executeStatements (/tmp/copy-a-string-2.st:"Global garbage collection... done"
+9)
+Object: Array new: 1 "<0x7f6680817af0>" error: Invalid index 0: index out of range
+SystemExceptions.IndexOutOfRange(Exception)>>signal (ExcHandling.st:254)
+SystemExceptions.IndexOutOfRange class>>signalOn:withIndex: (SysExcept.st:660)
+Array(Object)>>checkIndexableBounds: (Object.st:796)
+Array(Object)>>at: (Object.st:858)
+UndefinedObject>>executeStatements (/tmp/copy-a-string-2.st:10)
+Object: Array new: 1 "<0x7f6680817af0>" error: Invalid index 0: index out of range
+SystemExceptions.IndexOutOfRange(Exception)>>signal (ExcHandling.st:254)
+SystemExceptions.IndexOutOfRange class>>signalOn:withIndex: (SysExcept.st:660)
+Array(Object)>>checkIndexableBounds: (Object.st:796)
+Array(Object)>>at: (Object.st:858)
+UndefinedObject>>executeStatements (/tmp/copy-a-string-2.st:11)
+Object: 'creature = ' error: did not understand #+
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #+ (SysExcept.st:1448)
+UndefinedObject>>executeStatements (/tmp/copy-a-string-2.st:12)

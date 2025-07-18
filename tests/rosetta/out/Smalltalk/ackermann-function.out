@@ -1,1 +1,6 @@
-/workspace/mochi/tests/rosetta/out/Smalltalk/ackermann-function.st:11: parse error, expected '|' or identifier
+Object: '0' error: did not understand #+
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #+ (SysExcept.st:1448)
+optimized [] in UndefinedObject>>executeStatements (/tmp/ackermann-function.st:5)
+optimized [] in UndefinedObject>>executeStatements (/tmp/ackermann-function.st:11)
+UndefinedObject>>executeStatements (/tmp/ackermann-function.st:15)

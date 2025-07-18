@@ -1,2 +1,1 @@
-/workspace/mochi/tests/rosetta/out/Smalltalk/babylonian-spiral.st:4: invalid assignment to argument h
-/workspace/mochi/tests/rosetta/out/Smalltalk/babylonian-spiral.st:45: parse error, expected integer literal or floating-point literal or decimal literal
+/tmp/babylonian-spiral.st:6: parse error, expected ']'

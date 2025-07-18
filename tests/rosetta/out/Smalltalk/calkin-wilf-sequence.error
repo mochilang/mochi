@@ -1,8 +1,8 @@
-parse error: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/calkin-wilf-sequence.mochi:57:32: lexer: invalid input text "; s = s[1:] }\n  ..."
-  --> /workspace/mochi/tests/rosetta/x/Mochi/calkin-wilf-sequence.mochi:57:32
+parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/calkin-wilf-sequence.mochi:65:22: unexpected token "+" (expected PostfixExpr)
+  --> /workspace/mochi/tests/rosetta/x/Mochi/calkin-wilf-sequence.mochi:65:22
 
- 57 |   if s[0:1] == "-" { neg = true; s = s[1:] }
-    |                                ^
+ 65 |   if neg { out = "-" + out }
+    |                      ^
 
 help:
-  String literals must be properly closed with a `"`.
+  Parse error occurred. Check syntax near this location.

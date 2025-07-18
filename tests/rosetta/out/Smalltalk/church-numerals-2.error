@@ -1,8 +1,8 @@
-parse error: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/church-numerals-2.mochi:30:58: lexer: invalid input text "; return f }\n  x..."
-  --> /workspace/mochi/tests/rosetta/x/Mochi/church-numerals-2.mochi:30:58
+parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/church-numerals-2.mochi:4:15: unexpected token "fun" (expected TypeVariant ("|" TypeVariant)*)
+  --> /workspace/mochi/tests/rosetta/x/Mochi/church-numerals-2.mochi:4:15
 
- 30 |   fun fCounter(f: Church): Church { counter = counter + 1; return f }
-    |                                                          ^
+  4 | type Church = fun(Church): Church
+    |               ^
 
 help:
-  String literals must be properly closed with a `"`.
+  Parse error occurred. Check syntax near this location.

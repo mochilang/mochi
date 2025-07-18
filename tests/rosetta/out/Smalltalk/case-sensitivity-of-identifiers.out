@@ -1,0 +1,6 @@
+Object: 'Package sees: ' error: did not understand #+
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #+ (SysExcept.st:1448)
+optimized [] in UndefinedObject>>executeStatements (/tmp/case-sensitivity-of-identifiers.st:7)
+optimized [] in UndefinedObject>>executeStatements (/tmp/case-sensitivity-of-identifiers.st:9)
+UndefinedObject>>executeStatements (/tmp/case-sensitivity-of-identifiers.st:36)

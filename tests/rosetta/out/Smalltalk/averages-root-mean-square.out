@@ -1,12 +1,1 @@
-Object: 1 error: The program attempted to divide a number by zero
-ZeroDivide(Exception)>>signal (ExcHandling.st:254)
-SmallInteger(Number)>>zeroDivide (SysExcept.st:1426)
-Fraction>>setNumerator:setDenominator: (Fraction.st:485)
-Fraction class>>numerator:denominator: (Fraction.st:66)
-Fraction>>- (Fraction.st:151)
-FloatD(Float)>>printOn:special: (Float.st:533)
-FloatD(Float)>>printOn: (Float.st:436)
-FloatD(Object)>>displayOn: (Object.st:505)
-FloatD(Object)>>displayString (Object.st:495)
-FloatD(Number)>>asString (Number.st:156)
-UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/averages-root-mean-square.st:21)
+/tmp/averages-root-mean-square.st:6: parse error, expected ']'

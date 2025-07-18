@@ -1,0 +1,13 @@
+/tmp/convert-seconds-to-compound-duration.st:5: invalid assignment to argument sec
+Object: nil error: did not understand #value:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+UndefinedObject(Object)>>doesNotUnderstand: #value: (SysExcept.st:1448)
+UndefinedObject>>executeStatements (/tmp/convert-seconds-to-compound-duration.st:46)
+Object: nil error: did not understand #value:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+UndefinedObject(Object)>>doesNotUnderstand: #value: (SysExcept.st:1448)
+UndefinedObject>>executeStatements (/tmp/convert-seconds-to-compound-duration.st:47)
+Object: nil error: did not understand #value:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+UndefinedObject(Object)>>doesNotUnderstand: #value: (SysExcept.st:1448)
+UndefinedObject>>executeStatements (/tmp/convert-seconds-to-compound-duration.st:48)

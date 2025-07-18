@@ -1,0 +1,8 @@
+Object: '?' error: did not understand #+
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #+ (SysExcept.st:1448)
+UndefinedObject>>executeStatements (/tmp/character-codes-4.st:16)
+Object: '?' error: did not understand #+
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #+ (SysExcept.st:1448)
+UndefinedObject>>executeStatements (/tmp/character-codes-4.st:17)

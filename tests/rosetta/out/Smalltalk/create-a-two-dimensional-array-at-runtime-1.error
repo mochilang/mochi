@@ -1,0 +1,8 @@
+type: error[T015]: index must be an integer
+  --> /workspace/mochi/tests/rosetta/x/Mochi/create-a-two-dimensional-array-at-runtime-1.mochi:23:4
+
+ 23 |   a[row-1][col-1] = 7
+    |    ^
+
+help:
+  Use an `int` value for indexing (e.g., `list[0]`).

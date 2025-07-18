@@ -1,0 +1,5 @@
+Object: 'initial: ' error: did not understand #+
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #+ (SysExcept.st:1448)
+optimized [] in UndefinedObject>>executeStatements (/tmp/call-a-function-11.st:9)
+UndefinedObject>>executeStatements (/tmp/call-a-function-11.st:17)

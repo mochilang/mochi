@@ -1,0 +1,7 @@
+Object: '5' error: did not understand #generality
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #generality (SysExcept.st:1448)
+SmallInteger>>+ (SmallInt.st:179)
+optimized [] in UndefinedObject>>executeStatements (/tmp/call-a-function-12.st:4)
+optimized [] in UndefinedObject>>executeStatements (/tmp/call-a-function-12.st:9)
+UndefinedObject>>executeStatements (/tmp/call-a-function-12.st:12)
