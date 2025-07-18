@@ -999,7 +999,7 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	}
 	if v.Type != nil {
 		typ := rustType(v.Type)
-		if typ == "&'static str" {
+		if typ == "String" {
 			if s, ok := c.simpleString(v.Value); ok {
 				if s == "" {
 					val = "String::new()"
@@ -1098,6 +1098,13 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 							}
 						}
 						if match {
+							if op == "+" && c.env != nil {
+								if vt, err := c.env.GetVar(a.Name); err == nil {
+									if _, ok := vt.(types.StringType); ok {
+										break
+									}
+								}
+							}
 							r, err := c.compilePostfix(b.Right[0].Right)
 							if err != nil {
 								return err
@@ -1108,6 +1115,13 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 					}
 				} else if len(a.Field) == 0 {
 					if id, ok := simpleIdentUnary(b.Left); ok && id == a.Name {
+						if op == "+" && c.env != nil {
+							if vt, err := c.env.GetVar(a.Name); err == nil {
+								if _, ok := vt.(types.StringType); ok {
+									break
+								}
+							}
+						}
 						r, err := c.compilePostfix(b.Right[0].Right)
 						if err != nil {
 							return err
@@ -4221,7 +4235,7 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 	case l.Int != nil:
 		return fmt.Sprintf("%d", *l.Int)
 	case l.Str != nil:
-		return fmt.Sprintf("\"%s\"", *l.Str)
+		return fmt.Sprintf("String::from(\"%s\")", *l.Str)
 	case l.Float != nil:
 		f := *l.Float
 		s := fmt.Sprintf("%g", f)
@@ -4255,7 +4269,7 @@ func rustType(t *parser.TypeRef) string {
 		case "float":
 			return "f64"
 		case "string":
-			return "&'static str"
+			return "String"
 		case "any":
 			return "i32"
 		default:
@@ -4294,7 +4308,7 @@ func rustTypeFromType(t types.Type) string {
 	case types.FloatType:
 		return "f64"
 	case types.StringType:
-		return "&'static str"
+		return "String"
 	case types.ListType:
 		return fmt.Sprintf("Vec<%s>", rustTypeFromType(tt.Elem))
 	case types.MapType:
@@ -4314,8 +4328,8 @@ func rustDefault(typ string) string {
 		return "false"
 	case "f64":
 		return "0.0"
-	case "&'static str":
-		return "\"\""
+	case "String":
+		return "String::new()"
 	default:
 		return fmt.Sprintf("%s::default()", typ)
 	}
