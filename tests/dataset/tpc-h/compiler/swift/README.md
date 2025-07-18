@@ -10,3 +10,8 @@ This directory contains Swift translations of the first six TPC-H benchmark quer
 - [ ] q4
 - [ ] q5
 - [ ] q6
+
+## Test Results (2025-07-18)
+
+- **Passed:** *(none)*
+- **Failed:** q1, q2, q3, q4, q5, q6

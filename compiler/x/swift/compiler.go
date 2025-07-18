@@ -109,7 +109,7 @@ func (c *compiler) aggElemType(e *parser.Expr) string {
 		return et
 	}
 	if q := queryArg(e); q != nil {
-		if name, ok := c.isGroupVar(q.Source); ok && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
+		if _, ok := c.isGroupVar(q.Source); ok && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
 			t := c.exprType(q.Select)
 			if t == "" {
 				t = c.fieldType(q.Select)
