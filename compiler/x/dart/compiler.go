@@ -388,6 +388,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		c.writeln("")
 		return nil
 	case s.Expr != nil:
+		// Ignore blank expression statements which may arise from
+		// trailing newlines in source files.
+		if s.Expr.Expr == nil || s.Expr.Expr.Binary == nil {
+			return nil
+		}
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
 			return err
@@ -831,7 +836,9 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 	if e == nil || e.Binary == nil {
-		return "", fmt.Errorf("empty expression")
+		// Gracefully handle missing expressions which may occur due to
+		// trailing semicolons by emitting Dart `null`.
+		return "null", nil
 	}
 	return c.compileBinary(e.Binary)
 }
