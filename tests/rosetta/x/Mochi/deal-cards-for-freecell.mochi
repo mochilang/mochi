@@ -1,32 +1,24 @@
 // Mochi translation of Rosetta "Deal cards for FreeCell" task
 // Generated from Go version.
 
-fun pow(base: int, exp: int): int {
-  var r = 1
-  var i = 0
-  while i < exp { r = r * base; i = i + 1 }
-  return r
+var seed = 1
+
+fun rnd(): int {
+  seed = (seed * 214013 + 2531011) % 2147483648
+  return seed / 65536
 }
 
-fun rnd(seed: int): list<int> {
-  // use float arithmetic to emulate 32-bit LCG
-  var x = (seed * 214013 + 2531011) as float
-  x = x % 2147483648.0
-  var next = x as int
-  return [next, next / 65536]
-}
-
-fun deal(seed: int): list<int> {
+fun deal(game: int): list<int> {
+  seed = game
   var deck: list<int> = []
   var i = 0
-  while i < 52 { deck = append(deck, 51 - i); i = i + 1 }
+  while i < 52 {
+    deck = append(deck, 51 - i)
+    i = i + 1
+  }
   i = 0
-  var s = seed
   while i < 51 {
-    var r = rnd(s)
-    s = r[0]
-    let v = r[1]
-    let j = 51 - (v % (52 - i))
+    let j = 51 - (rnd() % (52 - i))
     let tmp = deck[i]
     deck[i] = deck[j]
     deck[j] = tmp
