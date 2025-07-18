@@ -2,20 +2,20 @@
 
 This directory holds Dart code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
-Compiled programs: 28/239
+Compiled programs: 10/261
 
 Checklist:
 - [x] 100-doors-2
 - [x] 100-doors-3
 - [x] 100-doors
-- [ ] 100-prisoners
+- [x] 100-prisoners
 - [ ] 15-puzzle-game
 - [ ] 15-puzzle-solver
 - [ ] 2048
 - [ ] 21-game
 - [ ] 24-game-solve
 - [ ] 24-game
-- [ ] 4-rings-or-4-squares-puzzle
+- [x] 4-rings-or-4-squares-puzzle
 - [ ] 9-billion-names-of-god-the-integer
 - [ ] 99-bottles-of-beer-2
 - [ ] 99-bottles-of-beer
@@ -38,7 +38,7 @@ Checklist:
 - [ ] active-directory-search-for-a-user
 - [ ] active-object
 - [ ] add-a-variable-to-a-class-instance-at-runtime
-- [ ] additive-primes
+- [x] additive-primes
 - [x] address-of-a-variable
 - [ ] adfgvx-cipher
 - [ ] aks-test-for-primes
@@ -78,11 +78,11 @@ Checklist:
 - [ ] arithmetic-numbers
 - [ ] arithmetic-rational
 - [ ] array-concatenation
-- [x] array-length
+- [ ] array-length
 - [ ] arrays
 - [ ] ascending-primes
-- [x] ascii-art-diagram-converter
-- [x] assertions
+- [ ] ascii-art-diagram-converter
+- [ ] assertions
 - [ ] associative-array-creation
 - [ ] associative-array-iteration
 - [ ] associative-array-merging
@@ -100,7 +100,7 @@ Checklist:
 - [ ] averages-simple-moving-average
 - [ ] avl-tree
 - [ ] b-zier-curves-intersections
-- [x] babbage-problem
+- [ ] babbage-problem
 - [ ] babylonian-spiral
 - [ ] balanced-brackets
 - [ ] balanced-ternary
@@ -139,7 +139,7 @@ Checklist:
 - [ ] box-the-compass
 - [ ] boyer-moore-string-search
 - [ ] brazilian-numbers
-- [x] break-oo-privacy
+- [ ] break-oo-privacy
 - [ ] brilliant-numbers
 - [ ] brownian-tree
 - [ ] bulls-and-cows-player
@@ -152,11 +152,11 @@ Checklist:
 - [ ] calendar---for-real-programmers-2
 - [ ] calendar
 - [ ] calkin-wilf-sequence
-- [x] call-a-foreign-language-function
+- [ ] call-a-foreign-language-function
 - [ ] call-a-function-1
 - [ ] call-a-function-10
-- [x] call-a-function-11
-- [x] call-a-function-12
+- [ ] call-a-function-11
+- [ ] call-a-function-12
 - [ ] call-a-function-2
 - [ ] call-a-function-3
 - [ ] call-a-function-4
@@ -178,7 +178,7 @@ Checklist:
 - [ ] cartesian-product-of-two-or-more-lists-2
 - [ ] cartesian-product-of-two-or-more-lists-3
 - [ ] cartesian-product-of-two-or-more-lists-4
-- [x] case-sensitivity-of-identifiers
+- [ ] case-sensitivity-of-identifiers
 - [ ] casting-out-nines
 - [ ] catalan-numbers-1
 - [ ] catalan-numbers-2
@@ -187,25 +187,25 @@ Checklist:
 - [ ] catmull-clark-subdivision-surface
 - [ ] chaocipher
 - [ ] chaos-game
-- [x] character-codes-1
-- [x] character-codes-2
-- [x] character-codes-3
-- [x] character-codes-4
-- [x] character-codes-5
-- [x] chat-server
+- [ ] character-codes-1
+- [ ] character-codes-2
+- [ ] character-codes-3
+- [ ] character-codes-4
+- [ ] character-codes-5
+- [ ] chat-server
 - [ ] check-machin-like-formulas
-- [x] check-that-file-exists
-- [x] checkpoint-synchronization-1
+- [ ] check-that-file-exists
+- [ ] checkpoint-synchronization-1
 - [ ] checkpoint-synchronization-2
 - [ ] checkpoint-synchronization-3
-- [x] checkpoint-synchronization-4
+- [ ] checkpoint-synchronization-4
 - [ ] chernicks-carmichael-numbers
-- [x] cheryls-birthday
+- [ ] cheryls-birthday
 - [ ] chinese-remainder-theorem
 - [ ] chinese-zodiac
 - [ ] cholesky-decomposition-1
 - [ ] cholesky-decomposition
-- [x] chowla-numbers
+- [ ] chowla-numbers
 - [ ] church-numerals-1
 - [ ] church-numerals-2
 - [ ] circles-of-given-radius-through-two-points
@@ -213,6 +213,7 @@ Checklist:
 - [ ] cistercian-numerals
 - [ ] compiler-virtual-machine-interpreter
 - [ ] composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k
+- [ ] compound-data-type
 - [ ] concurrent-computing-1
 - [ ] concurrent-computing-2
 - [ ] concurrent-computing-3
@@ -229,18 +230,39 @@ Checklist:
 - [ ] consecutive-primes-with-ascending-or-descending-differences
 - [ ] constrained-genericity-1
 - [ ] constrained-genericity-2
-- [x] constrained-genericity-3
+- [ ] constrained-genericity-3
 - [ ] constrained-genericity-4
 - [ ] constrained-random-points-on-a-circle-1
 - [ ] constrained-random-points-on-a-circle-2
 - [ ] continued-fraction
+- [ ] convert-decimal-number-to-rational
+- [ ] convert-seconds-to-compound-duration
+- [ ] convex-hull
+- [ ] conways-game-of-life
+- [ ] copy-a-string-1
+- [ ] copy-a-string-2
+- [ ] copy-stdin-to-stdout-1
+- [ ] copy-stdin-to-stdout-2
+- [ ] count-in-factors
+- [ ] count-in-octal-1
+- [ ] count-in-octal-2
+- [ ] count-in-octal-3
+- [ ] count-in-octal-4
+- [ ] count-occurrences-of-a-substring
+- [ ] count-the-coins-1
+- [ ] count-the-coins-2
+- [ ] cramers-rule
 - [ ] crc-32-1
 - [ ] crc-32-2
+- [ ] create-a-file
+- [ ] create-a-two-dimensional-array-at-runtime-1
+- [ ] create-an-html-table
+- [ ] create-an-object-at-a-given-address
 - [ ] csv-data-manipulation
 - [ ] csv-to-html-translation-1
 - [ ] csv-to-html-translation-2
-- [x] csv-to-html-translation-3
-- [x] csv-to-html-translation-4
+- [ ] csv-to-html-translation-3
+- [ ] csv-to-html-translation-4
 - [ ] csv-to-html-translation-5
 - [ ] cusip
 - [ ] md5
