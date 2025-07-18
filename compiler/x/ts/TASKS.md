@@ -143,3 +143,6 @@
 - Sort expressions inline numeric, string, or boolean comparisons instead of calling the `_cmp` helper when the key type is known.
 ### 2025-10-12 00:00 UTC
 - Further refined `starts_with` compilation to inline `String.startsWith` when the receiver is known to be a string.
+### 2025-10-18 00:00 UTC
+- `min` and `max` now check the element type before using `Math.min`/`Math.max`.
+  Non-primitive lists fall back to the runtime helpers to avoid numeric coercion.
