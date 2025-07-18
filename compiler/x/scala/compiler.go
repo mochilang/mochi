@@ -32,6 +32,7 @@ type Compiler struct {
 	pyModules     map[string]string
 	forceMap      bool
 	preferMutable bool
+	contextType   types.Type
 }
 
 func (c *Compiler) zeroValue(t types.Type) string {
@@ -116,6 +117,7 @@ func New(env *types.Env) *Compiler {
 		mapVars:       make(map[string]bool),
 		pyModules:     make(map[string]string),
 		preferMutable: false,
+		contextType:   nil,
 	}
 }
 
@@ -610,6 +612,13 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	oldHint := c.structHint
 	c.structHint = s.Name
 	defer func() { c.structHint = oldHint }()
+	oldCtx := c.contextType
+	if s.Type != nil {
+		c.contextType = types.ResolveTypeRef(s.Type, c.env)
+	} else {
+		c.contextType = nil
+	}
+	defer func() { c.contextType = oldCtx }()
 	mutable := c.updates[s.Name]
 	rhs := "0"
 	if s.Value != nil {
@@ -709,6 +718,13 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 	oldHint := c.structHint
 	c.structHint = s.Name
 	defer func() { c.structHint = oldHint }()
+	oldCtx := c.contextType
+	if s.Type != nil {
+		c.contextType = types.ResolveTypeRef(s.Type, c.env)
+	} else {
+		c.contextType = nil
+	}
+	defer func() { c.contextType = oldCtx }()
 	rhs := "0"
 	if s.Value != nil {
 		var err error
@@ -824,11 +840,17 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	c.writeln(fmt.Sprintf("def %s(%s)%s = {", fn.Name, strings.Join(params, ", "), ret))
 	c.indent += indentStep
 	for _, st := range fn.Body {
+		if st.Return != nil && fn.Return != nil {
+			c.contextType = types.ResolveTypeRef(fn.Return, c.env)
+		} else {
+			c.contextType = nil
+		}
 		if err := c.compileStmt(st); err != nil {
 			c.env = oldEnv
 			return err
 		}
 	}
+	c.contextType = nil
 	c.indent -= indentStep
 	c.writeln("}")
 	c.env = oldEnv
@@ -1819,6 +1841,13 @@ func (c *Compiler) compileList(l *parser.ListLiteral, mutable bool) (string, err
 	}
 
 	if len(l.Elems) == 0 {
+		if lt, ok := c.contextType.(types.ListType); ok {
+			t := c.typeOf(lt.Elem)
+			if prefix == "scala.collection.mutable.ArrayBuffer" {
+				return fmt.Sprintf("%s[%s]()", prefix, t), nil
+			}
+			return fmt.Sprintf("%s[%s]()", prefix, t), nil
+		}
 		if prefix == "scala.collection.mutable.ArrayBuffer" {
 			return fmt.Sprintf("%s[Any]()", prefix), nil
 		}
@@ -1967,6 +1996,18 @@ func (c *Compiler) compileMap(m *parser.MapLiteral, mutable bool) (string, error
 			}
 		}
 	}
+	if len(m.Items) == 0 {
+		if mt, ok := c.contextType.(types.MapType); ok {
+			k := c.typeOf(mt.Key)
+			v := c.typeOf(mt.Value)
+			prefix := "Map"
+			if mutable {
+				prefix = "scala.collection.mutable.Map"
+			}
+			return fmt.Sprintf("%s[%s, %s]()", prefix, k, v), nil
+		}
+	}
+
 	items := make([]string, len(m.Items))
 	vals := make([]string, len(m.Items))
 	for i, it := range m.Items {
