@@ -42,3 +42,4 @@
   handling without runtime helpers
 
 - 2025-07-21 improved substring builtin to emit direct slice when bounds are constant
+- 2025-07-21 infer range loop indices to avoid index helpers

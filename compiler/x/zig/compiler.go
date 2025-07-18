@@ -62,6 +62,7 @@ type Compiler struct {
 	funcRet           types.Type
 	captures          map[string]string
 	pointerVars       map[string]bool
+	rangeVars         map[string]bool
 	variantInfo       map[string]struct {
 		Union  string
 		Fields map[string]types.Type
@@ -81,6 +82,16 @@ func (c *Compiler) popPointerVars(old map[string]bool) {
 	c.pointerVars = old
 }
 
+func (c *Compiler) pushRangeVars() map[string]bool {
+	old := c.rangeVars
+	c.rangeVars = map[string]bool{}
+	return old
+}
+
+func (c *Compiler) popRangeVars(old map[string]bool) {
+	c.rangeVars = old
+}
+
 func New(env *types.Env) *Compiler {
 	return &Compiler{
 		env:            env,
@@ -92,6 +103,7 @@ func New(env *types.Env) *Compiler {
 		locals:         map[string]types.Type{},
 		captures:       map[string]string{},
 		pointerVars:    map[string]bool{},
+		rangeVars:      map[string]bool{},
 		builtinAliases: map[string]string{},
 		funcRenames:    map[string]string{},
 		variantInfo: map[string]struct {
@@ -235,6 +247,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	}
 
 	oldPtr := c.pushPointerVars()
+	oldRange := c.pushRangeVars()
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		typ := c.zigType(p.Type)
@@ -292,6 +305,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	c.locals = oldLocals
 	c.funcRet = oldRet
 	c.popPointerVars(oldPtr)
+	c.popRangeVars(oldRange)
 	c.writeln("}")
 	return nil
 }
@@ -931,13 +945,21 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 				if inFun {
 					c.locals[s.For.Name] = types.IntType{}
 				}
+				oldRange := c.pushRangeVars()
+				c.rangeVars[name] = true
 				c.indent++
 				for _, st := range s.For.Body {
 					if err := c.compileStmt(st, inFun); err != nil {
+						if s.For.RangeEnd != nil {
+							c.popRangeVars(oldRange)
+						}
 						return err
 					}
 				}
 				c.indent--
+				if s.For.RangeEnd != nil {
+					c.popRangeVars(oldRange)
+				}
 				c.writeln("}")
 			} else {
 				step, err := c.compileExpr(stepExpr, false)
@@ -953,15 +975,19 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 				if inFun {
 					c.locals[s.For.Name] = types.IntType{}
 				}
+				oldRange := c.pushRangeVars()
+				c.rangeVars[name] = true
 				c.indent++
 				c.writeln(fmt.Sprintf("const %s = %s;", name, iter))
 				for _, st := range s.For.Body {
 					if err := c.compileStmt(st, inFun); err != nil {
+						c.popRangeVars(oldRange)
 						return err
 					}
 				}
 				c.writeln(fmt.Sprintf("%s += %s;", iter, step))
 				c.indent--
+				c.popRangeVars(oldRange)
 				c.writeln("}")
 			}
 			return nil
@@ -976,6 +1002,7 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 		if err != nil {
 			return err
 		}
+		var oldRange map[string]bool
 		if s.For.RangeEnd != nil {
 			end, err := c.compileExpr(s.For.RangeEnd, false)
 			if err != nil {
@@ -988,6 +1015,8 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 			if inFun {
 				c.locals[s.For.Name] = types.IntType{}
 			}
+			oldRange = c.pushRangeVars()
+			c.rangeVars[name] = true
 			c.indent++
 		} else if c.isMapExpr(s.For.Source) {
 			iter := c.newTmp()
@@ -1042,10 +1071,12 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 		}
 		for _, st := range s.For.Body {
 			if err := c.compileStmt(st, inFun); err != nil {
+				c.popRangeVars(oldRange)
 				return err
 			}
 		}
 		c.indent--
+		c.popRangeVars(oldRange)
 		c.writeln("}")
 	case s.While != nil:
 		return c.compileWhile(s.While)
@@ -2696,6 +2727,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr, asReturn bool) (string,
 							startExpr := toUSize(fmt.Sprintf("%s.len - %d", expr, -v))
 							expr = fmt.Sprintf("%s[%s..%s+1]", expr, startExpr, startExpr)
 						}
+					} else if id, ok := identName(op.Index.Start); ok && c.rangeVars[id] {
+						idxU := toUSize(id)
+						expr = fmt.Sprintf("%s[%s..%s+1]", expr, idxU, idxU)
 					} else {
 						c.needsIndexString = true
 						expr = fmt.Sprintf("_index_string(%s, %s)", expr, idx)
@@ -2709,9 +2743,14 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr, asReturn bool) (string,
 							expr = fmt.Sprintf("%s[%s]", expr, idxExpr)
 						}
 					} else {
-						elem := c.listElemTypePostfix(p)
-						c.needsIndex = true
-						expr = fmt.Sprintf("_index_list(%s, %s, %s)", elem, expr, idx)
+						if id, ok := identName(op.Index.Start); ok && c.rangeVars[id] {
+							idxU := toUSize(id)
+							expr = fmt.Sprintf("%s[%s]", expr, idxU)
+						} else {
+							elem := c.listElemTypePostfix(p)
+							c.needsIndex = true
+							expr = fmt.Sprintf("_index_list(%s, %s, %s)", elem, expr, idx)
+						}
 					}
 				} else {
 					expr = fmt.Sprintf("%s[%s]", expr, idx)
