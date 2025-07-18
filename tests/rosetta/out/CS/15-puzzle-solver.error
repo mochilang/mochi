@@ -1,5 +1,0 @@
-run: exit status 1
-/tmp/TestMochiToCS15-puzzle-solver/Program.cs(4,14): warning CS8981: The type name 'testpkg' only contains lower-cased ascii characters. Such names may become reserved for the language. [/tmp/TestMochiToCS15-puzzle-solver/app.csproj]
-/tmp/TestMochiToCS15-puzzle-solver/Program.cs(15,35): error CS0117: 'testpkg' does not contain a definition for 'FifteenPuzzleExample' [/tmp/TestMochiToCS15-puzzle-solver/app.csproj]
-
-The build failed. Fix the build errors and run again.

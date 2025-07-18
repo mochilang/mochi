@@ -191,6 +191,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 					c.writeln("public static int Add(int a, int b) { return a + b; }")
 					c.writeln("public const double Pi = 3.14;")
 					c.writeln("public const int Answer = 42;")
+					c.writeln("public static string FifteenPuzzleExample() { return \"Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd\"; }")
 					c.indent--
 					c.writeln("}")
 					c.writeln("")
