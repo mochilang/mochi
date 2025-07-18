@@ -1,4 +1,4 @@
-# Rosetta Smalltalk Output (102/216 compiled and run)
+# Rosetta Smalltalk Output (109/216 compiled and run)
 
 This directory holds Smalltalk source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -6,13 +6,13 @@ This directory holds Smalltalk source code generated from the real Mochi program
 - [x] 100-doors
 - [x] 100-doors-2
 - [x] 100-doors-3
-- [ ] 100-prisoners
+ - [x] 100-prisoners
 - [ ] 15-puzzle-game
 - [x] 15-puzzle-solver
-- [ ] 2048
-- [ ] 21-game
+ - [x] 2048
+ - [x] 21-game
 - [ ] 24-game
-- [ ] 24-game-solve
+ - [x] 24-game-solve
 - [x] 4-rings-or-4-squares-puzzle
 - [x] 9-billion-names-of-god-the-integer
 - [x] 99-bottles-of-beer
@@ -32,7 +32,7 @@ This directory holds Smalltalk source code generated from the real Mochi program
 - [x] ackermann-function
 - [x] ackermann-function-2
 - [ ] ackermann-function-3
-- [ ] active-directory-connect
+ - [x] active-directory-connect
 - [x] active-directory-search-for-a-user
 - [x] active-object
 - [ ] add-a-variable-to-a-class-instance-at-runtime
@@ -41,7 +41,7 @@ This directory holds Smalltalk source code generated from the real Mochi program
 - [ ] adfgvx-cipher
 - [x] aks-test-for-primes
 - [x] algebraic-data-types
-- [ ] align-columns
+ - [x] align-columns
 - [x] aliquot-sequence-classifications
 - [ ] almkvist-giullera-formula-for-pi
 - [x] almost-prime
