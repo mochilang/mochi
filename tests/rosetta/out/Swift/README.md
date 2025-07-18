@@ -1,0 +1,222 @@
+# Rosetta Swift Output (55/216 programs run)
+
+This directory holds Swift source code generated from the Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
+
+## Program checklist
+- [x] 100-doors-2.mochi
+- [x] 100-doors-3.mochi
+- [x] 100-doors.mochi
+- [ ] 100-prisoners.mochi
+- [ ] 15-puzzle-game.mochi
+- [ ] 15-puzzle-solver.mochi
+- [ ] 2048.mochi
+- [ ] 21-game.mochi
+- [ ] 24-game-solve.mochi
+- [ ] 24-game.mochi
+- [ ] 4-rings-or-4-squares-puzzle.mochi
+- [ ] 9-billion-names-of-god-the-integer.mochi
+- [ ] 99-bottles-of-beer-2.mochi
+- [x] 99-bottles-of-beer.mochi
+- [ ] a+b.mochi
+- [ ] abbreviations-automatic.mochi
+- [ ] abbreviations-easy.mochi
+- [ ] abbreviations-simple.mochi
+- [ ] abc-problem.mochi
+- [ ] abelian-sandpile-model-identity.mochi
+- [ ] abelian-sandpile-model.mochi
+- [x] abstract-type.mochi
+- [x] abundant-deficient-and-perfect-number-classifications.mochi
+- [ ] abundant-odd-numbers.mochi
+- [ ] accumulator-factory.mochi
+- [ ] achilles-numbers.mochi
+- [x] ackermann-function-2.mochi
+- [ ] ackermann-function-3.mochi
+- [x] ackermann-function.mochi
+- [ ] active-directory-connect.mochi
+- [ ] active-directory-search-for-a-user.mochi
+- [x] active-object.mochi
+- [ ] add-a-variable-to-a-class-instance-at-runtime.mochi
+- [x] additive-primes.mochi
+- [x] address-of-a-variable.mochi
+- [ ] adfgvx-cipher.mochi
+- [x] aks-test-for-primes.mochi
+- [ ] algebraic-data-types.mochi
+- [ ] align-columns.mochi
+- [ ] aliquot-sequence-classifications.mochi
+- [ ] almkvist-giullera-formula-for-pi.mochi
+- [ ] almost-prime.mochi
+- [ ] amb.mochi
+- [x] amicable-pairs.mochi
+- [ ] anagrams-deranged-anagrams.mochi
+- [ ] anagrams.mochi
+- [ ] angle-difference-between-two-bearings-1.mochi
+- [ ] angle-difference-between-two-bearings-2.mochi
+- [ ] angles-geometric-normalization-and-conversion.mochi
+- [x] animate-a-pendulum.mochi
+- [x] animation.mochi
+- [x] anonymous-recursion-1.mochi
+- [x] anonymous-recursion-2.mochi
+- [x] anonymous-recursion.mochi
+- [x] anti-primes.mochi
+- [x] append-a-record-to-the-end-of-a-text-file.mochi
+- [x] apply-a-callback-to-an-array-1.mochi
+- [ ] apply-a-callback-to-an-array-2.mochi
+- [x] apply-a-digital-filter-direct-form-ii-transposed-.mochi
+- [x] approximate-equality.mochi
+- [ ] arbitrary-precision-integers-included-.mochi
+- [x] archimedean-spiral.mochi
+- [ ] arena-storage-pool.mochi
+- [ ] arithmetic-complex.mochi
+- [ ] arithmetic-derivative.mochi
+- [ ] arithmetic-evaluation.mochi
+- [x] arithmetic-geometric-mean-calculate-pi.mochi
+- [ ] arithmetic-geometric-mean.mochi
+- [x] arithmetic-integer-1.mochi
+- [x] arithmetic-integer-2.mochi
+- [ ] arithmetic-numbers.mochi
+- [ ] arithmetic-rational.mochi
+- [ ] array-concatenation.mochi
+- [ ] array-length.mochi
+- [ ] arrays.mochi
+- [ ] ascending-primes.mochi
+- [x] ascii-art-diagram-converter.mochi
+- [x] assertions.mochi
+- [ ] associative-array-creation.mochi
+- [ ] associative-array-iteration.mochi
+- [ ] associative-array-merging.mochi
+- [ ] atomic-updates.mochi
+- [ ] attractive-numbers.mochi
+- [ ] average-loop-length.mochi
+- [ ] averages-arithmetic-mean.mochi
+- [ ] averages-mean-time-of-day.mochi
+- [ ] averages-median-1.mochi
+- [ ] averages-median-2.mochi
+- [ ] averages-median-3.mochi
+- [ ] averages-mode.mochi
+- [x] averages-pythagorean-means.mochi
+- [x] averages-root-mean-square.mochi
+- [ ] averages-simple-moving-average.mochi
+- [ ] avl-tree.mochi
+- [ ] b-zier-curves-intersections.mochi
+- [x] babbage-problem.mochi
+- [ ] babylonian-spiral.mochi
+- [ ] balanced-brackets.mochi
+- [ ] balanced-ternary.mochi
+- [ ] barnsley-fern.mochi
+- [ ] base64-decode-data.mochi
+- [ ] bell-numbers.mochi
+- [ ] benfords-law.mochi
+- [ ] bernoulli-numbers.mochi
+- [ ] best-shuffle.mochi
+- [ ] bifid-cipher.mochi
+- [ ] bin-given-limits.mochi
+- [x] binary-digits.mochi
+- [ ] binary-search.mochi
+- [ ] binary-strings.mochi
+- [ ] bioinformatics-base-count.mochi
+- [ ] bioinformatics-global-alignment.mochi
+- [ ] bioinformatics-sequence-mutation.mochi
+- [ ] biorhythms.mochi
+- [ ] bitcoin-address-validation.mochi
+- [ ] bitmap-b-zier-curves-cubic.mochi
+- [ ] bitmap-b-zier-curves-quadratic.mochi
+- [ ] bitmap-bresenhams-line-algorithm.mochi
+- [ ] bitmap-flood-fill.mochi
+- [ ] bitmap-histogram.mochi
+- [ ] bitmap-midpoint-circle-algorithm.mochi
+- [ ] bitmap-ppm-conversion-through-a-pipe.mochi
+- [ ] bitmap-read-a-ppm-file.mochi
+- [ ] bitmap-read-an-image-through-a-pipe.mochi
+- [ ] bitmap-write-a-ppm-file.mochi
+- [ ] bitmap.mochi
+- [ ] bitwise-io-1.mochi
+- [ ] bitwise-io-2.mochi
+- [ ] bitwise-operations.mochi
+- [ ] blum-integer.mochi
+- [ ] boolean-values.mochi
+- [ ] box-the-compass.mochi
+- [ ] boyer-moore-string-search.mochi
+- [ ] brazilian-numbers.mochi
+- [x] break-oo-privacy.mochi
+- [ ] brilliant-numbers.mochi
+- [ ] brownian-tree.mochi
+- [ ] bulls-and-cows-player.mochi
+- [ ] bulls-and-cows.mochi
+- [ ] burrows-wheeler-transform.mochi
+- [ ] caesar-cipher-1.mochi
+- [ ] caesar-cipher-2.mochi
+- [x] calculating-the-value-of-e.mochi
+- [ ] calendar---for-real-programmers-1.mochi
+- [ ] calendar---for-real-programmers-2.mochi
+- [ ] calendar.mochi
+- [ ] calkin-wilf-sequence.mochi
+- [x] call-a-foreign-language-function.mochi
+- [ ] call-a-function-1.mochi
+- [ ] call-a-function-10.mochi
+- [ ] call-a-function-11.mochi
+- [x] call-a-function-12.mochi
+- [ ] call-a-function-2.mochi
+- [ ] call-a-function-3.mochi
+- [ ] call-a-function-4.mochi
+- [ ] call-a-function-5.mochi
+- [ ] call-a-function-6.mochi
+- [ ] call-a-function-7.mochi
+- [ ] call-a-function-8.mochi
+- [ ] call-a-function-9.mochi
+- [ ] call-an-object-method-1.mochi
+- [ ] call-an-object-method-2.mochi
+- [ ] call-an-object-method-3.mochi
+- [ ] call-an-object-method.mochi
+- [ ] camel-case-and-snake-case.mochi
+- [ ] canny-edge-detector.mochi
+- [ ] canonicalize-cidr.mochi
+- [ ] cantor-set.mochi
+- [x] carmichael-3-strong-pseudoprimes.mochi
+- [ ] cartesian-product-of-two-or-more-lists-1.mochi
+- [ ] cartesian-product-of-two-or-more-lists-2.mochi
+- [ ] cartesian-product-of-two-or-more-lists-3.mochi
+- [ ] cartesian-product-of-two-or-more-lists-4.mochi
+- [x] case-sensitivity-of-identifiers.mochi
+- [ ] casting-out-nines.mochi
+- [x] catalan-numbers-1.mochi
+- [x] catalan-numbers-2.mochi
+- [ ] catalan-numbers-pascals-triangle.mochi
+- [ ] catamorphism.mochi
+- [ ] catmull-clark-subdivision-surface.mochi
+- [ ] chaocipher.mochi
+- [ ] chaos-game.mochi
+- [x] character-codes-1.mochi
+- [x] character-codes-2.mochi
+- [x] character-codes-3.mochi
+- [x] character-codes-4.mochi
+- [x] character-codes-5.mochi
+- [ ] chat-server.mochi
+- [ ] check-machin-like-formulas.mochi
+- [ ] check-that-file-exists.mochi
+- [x] checkpoint-synchronization-1.mochi
+- [x] checkpoint-synchronization-2.mochi
+- [x] checkpoint-synchronization-3.mochi
+- [x] checkpoint-synchronization-4.mochi
+- [ ] chernicks-carmichael-numbers.mochi
+- [ ] cheryls-birthday.mochi
+- [x] chinese-remainder-theorem.mochi
+- [x] chinese-zodiac.mochi
+- [ ] cholesky-decomposition-1.mochi
+- [ ] cholesky-decomposition.mochi
+- [x] chowla-numbers.mochi
+- [ ] church-numerals-1.mochi
+- [ ] church-numerals-2.mochi
+- [ ] circles-of-given-radius-through-two-points.mochi
+- [ ] circular-primes.mochi
+- [ ] cistercian-numerals.mochi
+- [ ] crc-32-1.mochi
+- [ ] crc-32-2.mochi
+- [ ] csv-data-manipulation.mochi
+- [ ] csv-to-html-translation-1.mochi
+- [ ] csv-to-html-translation-2.mochi
+- [x] csv-to-html-translation-3.mochi
+- [x] csv-to-html-translation-4.mochi
+- [ ] csv-to-html-translation-5.mochi
+- [ ] cusip.mochi
+- [ ] md5.mochi
+
