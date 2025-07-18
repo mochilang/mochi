@@ -174,6 +174,19 @@ const (
 		"  return v as Iterable<T>;\n" +
 		"}\n"
 
+	helperNow = "let _nowSeed = 0;\n" +
+		"let _nowSeeded = false;\n" +
+		"{ const s = Deno.env.get('MOCHI_NOW_SEED');\n" +
+		"  if (s) { const v = parseInt(s, 10);\n" +
+		"    if (!isNaN(v)) { _nowSeed = v; _nowSeeded = true; } } }\n" +
+		"function _now(): number {\n" +
+		"  if (_nowSeeded) {\n" +
+		"    _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647;\n" +
+		"    return _nowSeed;\n" +
+		"  }\n" +
+		"  return performance.now() * 1000000;\n" +
+		"}\n"
+
 	helperGenText = "function _gen_text(prompt: string, model: string | null, params: unknown | null): string {\n" +
 		"  // TODO: integrate with your preferred LLM\n" +
 		"  return prompt;\n" +
@@ -561,6 +574,7 @@ var helperMap = map[string]string{
 	"_values":      helperValues,
 	"_input":       helperInput,
 	"_iter":        helperIter,
+	"_now":         helperNow,
 	"_gen_text":    helperGenText,
 	"_gen_embed":   helperGenEmbed,
 	"_gen_struct":  helperGenStruct,

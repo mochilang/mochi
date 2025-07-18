@@ -1,4 +1,4 @@
-# Rosetta TypeScript Output (8/239 compiled and run)
+# Rosetta TypeScript Output (11/239 compiled and run)
 
 This directory holds TypeScript source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -11,9 +11,9 @@ This directory holds TypeScript source code generated from the real Mochi progra
 - [x] 15-puzzle-solver
 - [x] 2048
 - [ ] 21-game
-- [ ] 24-game-solve
-- [ ] 24-game
-- [ ] 4-rings-or-4-squares-puzzle
+- [x] 24-game-solve
+- [x] 24-game
+- [x] 4-rings-or-4-squares-puzzle
 - [x] 9-billion-names-of-god-the-integer
 - [ ] 99-bottles-of-beer-2
 - [ ] 99-bottles-of-beer
