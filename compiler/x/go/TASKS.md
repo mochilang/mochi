@@ -102,3 +102,5 @@ TPC-H progress:
 - 2025-07-21 18:00 - Expanded exists() and castExpr to avoid runtime helpers for common types
 - 2025-07-21 20:00 - Improved OptionType field inference for join keys; outer_join compiles without helpers
 - 2025-07-22 12:00 - Preserved OptionType fields when inferring structs and converted join sources to pointer slices so `left_join_multi` and `right_join` compile
+
+- 2025-07-23 00:00 - Skip slice cast helpers when converting nil values
