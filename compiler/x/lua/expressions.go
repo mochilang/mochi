@@ -34,7 +34,12 @@ func repoRoot() string {
 
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 	if e == nil {
-		return "", fmt.Errorf("nil expr")
+		// Some older Rosetta programs contain empty expressions in
+		// control flow statements. Rather than failing the entire
+		// compilation, treat a missing expression as Lua's `nil` so
+		// the generated code can still run. This mirrors the VM's
+		// behaviour for optional expressions.
+		return "nil", nil
 	}
 	return c.compileBinary(e.Binary)
 }
