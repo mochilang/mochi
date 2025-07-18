@@ -1,0 +1,44 @@
+// Mochi translation of Rosetta "Cumulative-standard-deviation" task
+// Based on Go version in tests/rosetta/x/Go/cumulative-standard-deviation.go
+
+fun sqrtApprox(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var g = x
+  var i = 0
+  while i < 20 {
+    g = (g + x / g) / 2.0
+    i = i + 1
+  }
+  return g
+}
+
+type Rsdv {
+  n: float
+  a: float
+  q: float
+}
+
+fun newRsdv(): Rsdv {
+  return Rsdv{ n: 0.0, a: 0.0, q: 0.0 }
+}
+
+fun add(r: Rsdv, x: float): Rsdv {
+  let n1 = r.n + 1.0
+  let a1 = r.a + (x - r.a) / n1
+  let q1 = r.q + (x - r.a) * (x - a1)
+  return Rsdv{ n: n1, a: a1, q: q1 }
+}
+
+fun sd(r: Rsdv): float {
+  return sqrtApprox(r.q / r.n)
+}
+
+fun main() {
+  var r = newRsdv()
+  for x in [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0] {
+    r = add(r, x)
+    print(str(sd(r)))
+  }
+}
+
+main()
