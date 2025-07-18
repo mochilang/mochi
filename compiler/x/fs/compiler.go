@@ -1204,6 +1204,13 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 				}
 				return fmt.Sprintf("printfn \"%%c\" (%s)", args[0]), nil
 			}
+			if isBoolExpr(argAST) || c.inferType(argAST) == "bool" {
+				expr := args[0]
+				if !identifierRegexp.MatchString(expr) {
+					expr = fmt.Sprintf("(%s)", expr)
+				}
+				return fmt.Sprintf("printfn \"%%d\" (if %s then 1 else 0)", expr), nil
+			}
 			if argAST != nil && c.isStringExpr(argAST) {
 				if identifierRegexp.MatchString(args[0]) {
 					return fmt.Sprintf("printfn \"%%s\" %s", args[0]), nil
@@ -1225,12 +1232,6 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 					}
 					return fmt.Sprintf("printfn \"%%s\" (String.concat \" \" (List.map string %s))", arg), nil
 				}
-			}
-			if isBoolExpr(argAST) || c.inferType(argAST) == "bool" {
-				if identifierRegexp.MatchString(args[0]) {
-					return fmt.Sprintf("printfn \"%%b\" %s", args[0]), nil
-				}
-				return fmt.Sprintf("printfn \"%%b\" (%s)", args[0]), nil
 			}
 			t := c.inferType(argAST)
 			if t == "int" {
