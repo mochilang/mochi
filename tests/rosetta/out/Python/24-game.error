@@ -1,8 +1,8 @@
-parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/24-game.mochi:23:3: unexpected token "}" (expected PostfixExpr)
-  --> /workspace/mochi/tests/rosetta/x/Mochi/24-game.mochi:23:3
+parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/24-game.mochi:51:31: unexpected token "-1" (expected "]")
+  --> /workspace/mochi/tests/rosetta/x/Mochi/24-game.mochi:51:31
 
- 23 |   }
-    |   ^
+ 51 |       var b = stack[len(stack)-1]
+    |                               ^
 
 help:
   Parse error occurred. Check syntax near this location.

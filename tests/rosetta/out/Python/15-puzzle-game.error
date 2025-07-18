@@ -1,8 +1,19 @@
-parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/15-puzzle-game.mochi:108:18: unexpected token "!" (expected PostfixExpr)
-  --> /workspace/mochi/tests/rosetta/x/Mochi/15-puzzle-game.mochi:108:18
+run: exit status 1
+Starting board:
 
-108 |   while !quit && !isSolved() {
-    |                  ^
-
-help:
-  Parse error occurred. Check syntax near this location.
+  1  2  3  4
+  5 11 10  6
+  9 14  .  7
+ 13 15  8 12
+Enter move #51 (U, D, L, R, or Q): 
+Traceback (most recent call last):
+  File "/tmp/15-puzzle-game.py", line 129, in <module>
+    main()
+  File "/tmp/15-puzzle-game.py", line 121, in main
+    play()
+  File "/tmp/15-puzzle-game.py", line 114, in play
+    playOneMove()
+  File "/tmp/15-puzzle-game.py", line 78, in playOneMove
+    s = input()
+        ^^^^^^^
+EOFError: EOF when reading a line

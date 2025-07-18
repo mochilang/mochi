@@ -1,4 +1,4 @@
-# Rosetta Python Output (15/239 compiled and run)
+# Rosetta Python Output (17/264 compiled and run)
 
 This directory holds Python source code generated from the Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected runtime output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -19,8 +19,8 @@ This directory holds Python source code generated from the Mochi programs in `te
 - [x] 99-bottles-of-beer
 - [ ] a+b
 - [x] abbreviations-automatic
-- [ ] abbreviations-easy
-- [ ] abbreviations-simple
+- [x] abbreviations-easy
+- [x] abbreviations-simple
 - [x] abc-problem
 - [x] abelian-sandpile-model-identity
 - [x] abelian-sandpile-model
@@ -211,6 +211,7 @@ This directory holds Python source code generated from the Mochi programs in `te
 - [ ] cistercian-numerals
 - [ ] compiler-virtual-machine-interpreter
 - [ ] composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k
+- [ ] compound-data-type
 - [ ] concurrent-computing-1
 - [ ] concurrent-computing-2
 - [ ] concurrent-computing-3
@@ -232,13 +233,37 @@ This directory holds Python source code generated from the Mochi programs in `te
 - [ ] constrained-random-points-on-a-circle-1
 - [ ] constrained-random-points-on-a-circle-2
 - [ ] continued-fraction
+- [ ] convert-decimal-number-to-rational
+- [ ] convert-seconds-to-compound-duration
+- [ ] convex-hull
+- [ ] conways-game-of-life
+- [ ] copy-a-string-1
+- [ ] copy-a-string-2
+- [ ] copy-stdin-to-stdout-1
+- [ ] copy-stdin-to-stdout-2
+- [ ] count-in-factors
+- [ ] count-in-octal-1
+- [ ] count-in-octal-2
+- [ ] count-in-octal-3
+- [ ] count-in-octal-4
+- [ ] count-occurrences-of-a-substring
+- [ ] count-the-coins-1
+- [ ] count-the-coins-2
+- [ ] cramers-rule
 - [ ] crc-32-1
 - [ ] crc-32-2
+- [ ] create-a-file-on-magnetic-tape
+- [ ] create-a-file
+- [ ] create-a-two-dimensional-array-at-runtime-1
+- [ ] create-an-html-table
+- [ ] create-an-object-at-a-given-address
 - [ ] csv-data-manipulation
 - [ ] csv-to-html-translation-1
 - [ ] csv-to-html-translation-2
 - [ ] csv-to-html-translation-3
 - [ ] csv-to-html-translation-4
 - [ ] csv-to-html-translation-5
+- [ ] cuban-primes
+- [ ] cullen-and-woodall-numbers
 - [ ] cusip
 - [ ] md5

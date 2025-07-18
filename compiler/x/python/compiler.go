@@ -1166,11 +1166,21 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("strings.ToUpper expects 1 arg")
 		}
 		return fmt.Sprintf("%s.upper()", args[0]), nil
+	case "strings.ToLower":
+		if len(args) != 1 {
+			return "", fmt.Errorf("strings.ToLower expects 1 arg")
+		}
+		return fmt.Sprintf("%s.lower()", args[0]), nil
 	case "lower":
 		if len(args) != 1 {
 			return "", fmt.Errorf("lower expects 1 arg")
 		}
 		return fmt.Sprintf("str(%s).lower()", args[0]), nil
+	case "upper":
+		if len(args) != 1 {
+			return "", fmt.Errorf("upper expects 1 arg")
+		}
+		return fmt.Sprintf("str(%s).upper()", args[0]), nil
 	case "contains":
 		if len(args) != 2 {
 			return "", fmt.Errorf("contains expects 2 args")
@@ -1291,7 +1301,7 @@ func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, err
 					return "", err
 				}
 				if s, ok := simpleStringKey(it.Key); ok {
-					k = fmt.Sprintf("%q", sanitizeName(s))
+					k = fmt.Sprintf("%q", s)
 				} else if name, ok := identName(it.Key); ok {
 					k = fmt.Sprintf("%q", sanitizeName(name))
 				}
@@ -1475,7 +1485,7 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 			return "", err
 		}
 		if s, ok := simpleStringKey(it.Key); ok {
-			k = fmt.Sprintf("%q", sanitizeName(s))
+			k = fmt.Sprintf("%q", s)
 		} else if name, ok := identName(it.Key); ok {
 			k = fmt.Sprintf("%q", sanitizeName(name))
 		}
