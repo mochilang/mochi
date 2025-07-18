@@ -1,14 +1,1 @@
-run: exit status 1
-# command-line-arguments
-/tmp/X/001/main.go:19:14: invalid argument: any(s) (value of interface type any) for built-in len
-/tmp/X/001/main.go:23:12: invalid argument: any(arr) (value of interface type any) for built-in len
-/tmp/X/001/main.go:33:14: invalid argument: any(arr) (value of interface type any) for built-in len
-/tmp/X/001/main.go:72:52: invalid argument: any(pool) (value of interface type any) for built-in len
-/tmp/X/001/main.go:74:86: invalid argument: any(pool) (value of interface type any) for built-in len
-/tmp/X/001/main.go:85:14: invalid argument: any(key) (value of interface type any) for built-in len
-/tmp/X/001/main.go:89:11: invalid argument: any(pairs) (value of interface type any) for built-in len
-/tmp/X/001/main.go:94:51: cannot convert (pairs[(j + 1)]).([]any)[0] (variable of interface type any) to type float64: need type assertion
-/tmp/X/001/main.go:116:14: invalid argument: any(plainText) (value of interface type any) for built-in len
-/tmp/X/001/main.go:295:6: main redeclared in this block
-	/tmp/X/001/main.go:281:6: other declaration of main
-/tmp/X/001/main.go:116:14: too many errors
+compile: operator "+" cannot be used on types %!s(<nil>) and string
