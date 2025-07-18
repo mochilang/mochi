@@ -1,0 +1,25 @@
+fsharpc: exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+error FS0078: Unable to find the file '/usr/lib/dotnet/shared/Microsoft.NETCore.App/8.0.17/System.Text.Json.dll' in any of
+ /usr/lib/mono/4.5
+ /workspace/mochi
+ /usr/lib/cli/fsharp
+
+error FS0078: Unable to find the file '/usr/lib/dotnet/shared/Microsoft.NETCore.App/8.0.17/System.Runtime.dll' in any of
+ /usr/lib/mono/4.5
+ /workspace/mochi
+ /usr/lib/cli/fsharp
+
+/tmp/q1.fs(72,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (71:28). Try indenting this token further or using standard formatting conventions.
+
+/tmp/q1.fs(72,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (71:28). Try indenting this token further or using standard formatting conventions.
+
+/tmp/q1.fs(72,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (71:28). Try indenting this token further or using standard formatting conventions.
+
+/tmp/q1.fs(72,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (71:28). Try indenting this token further or using standard formatting conventions.
+
+/tmp/q1.fs(72,26): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (71:28). Try indenting this token further or using standard formatting conventions.
+
+/tmp/q1.fs(72,26): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (71:28). Try indenting this token further or using standard formatting conventions.
