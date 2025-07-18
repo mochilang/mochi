@@ -58,3 +58,4 @@
 - 2025-12-20 - Removed '=' from module headers in import generation so Python math modules compile; 85 of 100 programs compile and run.
 - 2025-12-30 - Where clauses referencing optional join results now emit `Option.isSome`, allowing `group_by_left_join` to compile; 86 of 100 programs compile and run.
 - 2025-12-31 - Added char expression detection so string indexing prints with `%c`; 87 of 100 programs compile and run.
+- 2026-01-10 - Union constructor typing allows `tree_sum` to compile; 88 of 100 programs compile and run.
