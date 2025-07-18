@@ -718,10 +718,17 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 						}
 					}
 				}
-				if !isGroupQuery(s.Let.Value) {
-					inferredT = c.assignTypeNames(inferredT, singular(name))
-					c.registerStructs(inferredT)
-				}
+                                if !isGroupQuery(s.Let.Value) {
+                                        inferredT = c.assignTypeNames(inferredT, singular(name))
+                                        c.registerStructs(inferredT)
+                                        if listStruct != nil {
+                                                if lt, ok := inferredT.(types.ListType); ok {
+                                                        if st, ok2 := lt.Elem.(types.StructType); ok2 {
+                                                                *listStruct = st
+                                                        }
+                                                }
+                                        }
+                                }
 				typ = csTypeOf(inferredT)
 				static = inferredT
 				c.structHint = singular(name)
@@ -1623,40 +1630,47 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.extraStructs = append(c.extraStructs, st)
 		}
 	}
-	orig := c.env
-	child := types.NewEnv(c.env)
+        orig := c.env
+        child := types.NewEnv(c.env)
+        origVars := c.varTypes
+        c.varTypes = make(map[string]string)
+        for k, v := range origVars {
+                c.varTypes[k] = v
+        }
 	var elemT types.Type = types.AnyType{}
 	if lt, ok := stype.(types.ListType); ok {
 		elemT = lt.Elem
 	}
-	elemType := csTypeOf(elemT)
-	child.SetVar(q.Var, elemT, true)
+        elemType := csTypeOf(elemT)
+        child.SetVar(q.Var, elemT, true)
+        c.varTypes[sanitizeName(q.Var)] = elemType
 	// pre-register variables from additional FROM clauses and joins so
 	// selector expressions can infer their field types during select
 	fromSrcs := make([]string, len(q.Froms))
-	for i, f := range q.Froms {
-		fs, err := c.compileExpr(f.Src)
-		if err != nil {
-			c.env = orig
-			return "", err
-		}
-		fromSrcs[i] = fs
-		var ft types.Type = types.AnyType{}
-		if lt, ok := c.inferExprType(f.Src).(types.ListType); ok {
-			ft = lt.Elem
-		}
-		child.SetVar(f.Var, ft, true)
-	}
+        for i, f := range q.Froms {
+                fs, err := c.compileExpr(f.Src)
+                if err != nil {
+                        c.env = orig
+                        return "", err
+                }
+                fromSrcs[i] = fs
+                var ft types.Type = types.AnyType{}
+                if lt, ok := c.inferExprType(f.Src).(types.ListType); ok {
+                        ft = lt.Elem
+                }
+                child.SetVar(f.Var, ft, true)
+                c.varTypes[sanitizeName(f.Var)] = csTypeOf(ft)
+        }
 	joinSrcs := make([]string, len(q.Joins))
 	joinSides := make([]string, len(q.Joins))
 	joinTypes := make([]string, len(q.Joins))
-	for i, j := range q.Joins {
-		js, err := c.compileExpr(j.Src)
-		if err != nil {
-			c.env = orig
-			return "", err
-		}
-		joinSrcs[i] = js
+        for i, j := range q.Joins {
+                js, err := c.compileExpr(j.Src)
+                if err != nil {
+                        c.env = orig
+                        return "", err
+                }
+                joinSrcs[i] = js
 		if j.Side != nil {
 			joinSides[i] = *j.Side
 		}
@@ -1664,9 +1678,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if lt, ok := c.inferExprType(j.Src).(types.ListType); ok {
 			jt = lt.Elem
 		}
-		joinTypes[i] = csTypeOf(jt)
-		child.SetVar(j.Var, jt, true)
-	}
+                joinTypes[i] = csTypeOf(jt)
+                child.SetVar(j.Var, jt, true)
+                c.varTypes[sanitizeName(j.Var)] = csTypeOf(jt)
+        }
 	c.env = child
 	sel, err := c.compileExpr(q.Select)
 	if err != nil {
