@@ -1,3 +1,0 @@
-zig build: exit status 1
-/tmp/99-bottles-of-beer.zig:23:9: error: variable of type 'comptime_int' must be const or comptime
-/tmp/99-bottles-of-beer.zig:23:9: note: to modify this variable at runtime, it must be given an explicit fixed-size number type
