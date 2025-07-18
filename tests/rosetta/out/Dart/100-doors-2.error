@@ -1,4 +1,0 @@
-run: exit status 254
-/tmp/100-doors-2.dart:12:37: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      door = door + 2 * incrementer + 1;
-                                    ^

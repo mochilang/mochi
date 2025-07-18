@@ -418,13 +418,21 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 	}
 	name := escapeIdent(l.Name)
 	if typ == "" {
-		if val == "0" || val == "0.0" {
-			c.writeln(fmt.Sprintf("num %s = %s;", name, val))
-		} else {
-			c.writeln(fmt.Sprintf("var %s = %s;", name, val))
-		}
+		c.writeln(fmt.Sprintf("var %s = %s;", name, val))
 	} else {
 		c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+	}
+	if c.env != nil {
+		var t types.Type
+		if l.Type != nil {
+			t = types.ResolveTypeRef(l.Type, c.env)
+		} else if l.Value != nil {
+			t = types.TypeOfExpr(l.Value, c.env)
+		}
+		if t == nil {
+			t = types.AnyType{}
+		}
+		c.env.SetVar(l.Name, t, false)
 	}
 	return nil
 }
@@ -443,13 +451,21 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	}
 	name := escapeIdent(v.Name)
 	if typ == "" {
-		if val == "0" || val == "0.0" {
-			c.writeln(fmt.Sprintf("num %s = %s;", name, val))
-		} else {
-			c.writeln(fmt.Sprintf("var %s = %s;", name, val))
-		}
+		c.writeln(fmt.Sprintf("var %s = %s;", name, val))
 	} else {
 		c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+	}
+	if c.env != nil {
+		var t types.Type
+		if v.Type != nil {
+			t = types.ResolveTypeRef(v.Type, c.env)
+		} else if v.Value != nil {
+			t = types.TypeOfExpr(v.Value, c.env)
+		}
+		if t == nil {
+			t = types.AnyType{}
+		}
+		c.env.SetVar(v.Name, t, true)
 	}
 	return nil
 }
