@@ -23,10 +23,7 @@ function spawnTile(b: number[][]): Record<string, any> {
     var x = 0;
     while ((x < SIZE)) {
       if ((b[y][x] == 0)) {
-        empty = [...empty, [
-          x,
-          y,
-        ]];
+        empty = [...empty, [x, y]];
       }
       x = x + 1;
     }
@@ -290,15 +287,15 @@ var r: Record<string, any>;
 var score: number;
 
 function main(): void {
-  SIZE = 4;
-  board = newBoard();
+  let SIZE: number = 4;
+  var board: number[][] = newBoard();
+  var r: Record<string, any> = spawnTile(board);
+  board = r["board"];
+  var full: any = r["full"];
   r = spawnTile(board);
   board = r["board"];
   full = r["full"];
-  r = spawnTile(board);
-  board = r["board"];
-  full = r["full"];
-  score = 0;
+  var score: number = 0;
   draw(board, score);
   while (true) {
     console.log("Move: ");

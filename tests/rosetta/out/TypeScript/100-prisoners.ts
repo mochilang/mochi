@@ -82,22 +82,12 @@ function doTrials(trials: number, np: number, strategy: string): void {
 
 function main(): void {
   let trials = 1000;
-  for (
-    const np of [
-      10,
-      100,
-    ]
-  ) {
+  for (const np of [10, 100]) {
     console.log(
       `Results from ${String(trials)} trials with ${String(np)} prisoners:
 `,
     );
-    for (
-      const strat of [
-        "random",
-        "optimal",
-      ]
-    ) {
+    for (const strat of ["random", "optimal"]) {
       doTrials(trials, np, strat);
     }
   }

@@ -1,7 +1,0 @@
-run error: exit status 1
-[0m[1m[31merror[0m: Uncaught (in promise) TypeError: Cannot read properties of undefined (reading '1')
-  b[cell[1]][cell[0]] = val;
-[0m[31m        ^[0m
-    at [0m[1m[3mspawnTile[0m ([0m[36mfile:///tmp/TestMochiTypeScriptRunGolden20483151205517/001/2048.ts[0m:[0m[33m48[0m:[0m[33m9[0m)
-    at [0m[1m[3mmain[0m ([0m[36mfile:///tmp/TestMochiTypeScriptRunGolden20483151205517/001/2048.ts[0m:[0m[33m296[0m:[0m[33m7[0m)
-    at [0m[36mfile:///tmp/TestMochiTypeScriptRunGolden20483151205517/001/2048.ts[0m:[0m[33m361[0m:[0m[33m1[0m

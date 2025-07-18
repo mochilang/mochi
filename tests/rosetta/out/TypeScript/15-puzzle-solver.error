@@ -1,6 +1,0 @@
-run error: exit status 1
-[0m[1m[31merror[0m: Uncaught (in promise) TypeError: testpkg.FifteenPuzzleExample is not a function
-  console.log(testpkg.FifteenPuzzleExample());
-[0m[31m                      ^[0m
-    at [0m[1m[3mmain[0m ([0m[36mfile:///tmp/TestMochiTypeScriptRunGolden15-puzzle-solver3675637570/001/15-puzzle-solver.ts[0m:[0m[33m7[0m:[0m[33m23[0m)
-    at [0m[36mfile:///tmp/TestMochiTypeScriptRunGolden15-puzzle-solver3675637570/001/15-puzzle-solver.ts[0m:[0m[33m9[0m:[0m[33m1[0m
