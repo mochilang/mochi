@@ -2096,11 +2096,32 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			if isStringExpr(call.Args[0]) || c.isStringType(call.Args[0]) {
 				return fmt.Sprintf("print_endline (%s)", args[0]), nil
 			}
+			if c.isIntType(call.Args[0]) {
+				return fmt.Sprintf("print_endline (string_of_int %s)", args[0]), nil
+			}
+			if c.isFloatTypeExpr(call.Args[0]) {
+				return fmt.Sprintf("print_endline (string_of_float %s)", args[0]), nil
+			}
+			if c.isBoolType(call.Args[0]) {
+				return fmt.Sprintf("print_endline (string_of_bool %s)", args[0]), nil
+			}
+			c.needShow = true
 			return fmt.Sprintf("print_endline (__show (%s))", args[0]), nil
 		}
 		parts := make([]string, len(args))
 		for i, a := range args {
-			parts[i] = fmt.Sprintf("__show (%s)", a)
+			if isStringExpr(call.Args[i]) || c.isStringType(call.Args[i]) {
+				parts[i] = a
+			} else if c.isIntType(call.Args[i]) {
+				parts[i] = fmt.Sprintf("string_of_int %s", a)
+			} else if c.isFloatTypeExpr(call.Args[i]) {
+				parts[i] = fmt.Sprintf("string_of_float %s", a)
+			} else if c.isBoolType(call.Args[i]) {
+				parts[i] = fmt.Sprintf("string_of_bool %s", a)
+			} else {
+				c.needShow = true
+				parts[i] = fmt.Sprintf("__show (%s)", a)
+			}
 		}
 		expr := strings.Join(parts, " ^ \" \" ^ ")
 		return fmt.Sprintf("print_endline (%s)", expr), nil
@@ -2114,6 +2135,9 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("len expects 1 arg")
 		}
 		if isStringLiteralExpr(call.Args[0]) {
+			return fmt.Sprintf("String.length %s", args[0]), nil
+		}
+		if c.isStringType(call.Args[0]) {
 			return fmt.Sprintf("String.length %s", args[0]), nil
 		}
 		t := types.ExprType(call.Args[0], c.env)
@@ -2744,6 +2768,72 @@ func (c *Compiler) isStringType(e *parser.Expr) bool {
 		}
 		if gt, err := c.env.GetVar(name); err == nil {
 			if _, ok3 := gt.(types.StringType); ok3 {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (c *Compiler) isIntType(e *parser.Expr) bool {
+	if _, ok := types.ExprType(e, c.env).(types.IntType); ok {
+		return true
+	}
+	if _, ok := types.ExprType(e, c.env).(types.Int64Type); ok {
+		return true
+	}
+	if name, ok := identName(e); ok {
+		if lt, ok2 := c.localTypes[name]; ok2 {
+			if _, ok3 := lt.(types.IntType); ok3 {
+				return true
+			}
+			if _, ok3 := lt.(types.Int64Type); ok3 {
+				return true
+			}
+		}
+		if gt, err := c.env.GetVar(name); err == nil {
+			if _, ok3 := gt.(types.IntType); ok3 {
+				return true
+			}
+			if _, ok3 := gt.(types.Int64Type); ok3 {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (c *Compiler) isFloatTypeExpr(e *parser.Expr) bool {
+	if _, ok := types.ExprType(e, c.env).(types.FloatType); ok {
+		return true
+	}
+	if name, ok := identName(e); ok {
+		if lt, ok2 := c.localTypes[name]; ok2 {
+			if _, ok3 := lt.(types.FloatType); ok3 {
+				return true
+			}
+		}
+		if gt, err := c.env.GetVar(name); err == nil {
+			if _, ok3 := gt.(types.FloatType); ok3 {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (c *Compiler) isBoolType(e *parser.Expr) bool {
+	if _, ok := types.ExprType(e, c.env).(types.BoolType); ok {
+		return true
+	}
+	if name, ok := identName(e); ok {
+		if lt, ok2 := c.localTypes[name]; ok2 {
+			if _, ok3 := lt.(types.BoolType); ok3 {
+				return true
+			}
+		}
+		if gt, err := c.env.GetVar(name); err == nil {
+			if _, ok3 := gt.(types.BoolType); ok3 {
 				return true
 			}
 		}
