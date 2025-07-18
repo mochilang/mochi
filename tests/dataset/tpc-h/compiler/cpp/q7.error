@@ -1,64 +1,64 @@
-/tmp/TestCPPCompiler_TPCHQueriesq71662060311/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_TPCHQueriesq71662060311/001/prog.cpp:364:31: error: no match for ‘operator==’ (operand types are ‘Result’ and ‘Result’)
+/tmp/TestCPPCompiler_TPCHQueriesq7228917718/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCHQueriesq7228917718/001/prog.cpp:364:31: error: no match for ‘operator==’ (operand types are ‘Result’ and ‘Result’)
   364 |                   if (__g.key == __key) {
       |                       ~~~~~~~ ^~ ~~~~~
       |                           |      |
       |                           Result Result
-/tmp/TestCPPCompiler_TPCHQueriesq71662060311/001/prog.cpp:384:23: error: ‘supp_nation’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCHQueriesq7228917718/001/prog.cpp:384:23: error: ‘supp_nation’ was not declared in this scope
   384 |           {__struct10{supp_nation, cust_nation, l_year},
       |                       ^~~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq71662060311/001/prog.cpp:384:36: error: ‘cust_nation’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCHQueriesq7228917718/001/prog.cpp:384:36: error: ‘cust_nation’ was not declared in this scope
   384 |           {__struct10{supp_nation, cust_nation, l_year},
       |                                    ^~~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq71662060311/001/prog.cpp:384:49: error: ‘l_year’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCHQueriesq7228917718/001/prog.cpp:384:49: error: ‘l_year’ was not declared in this scope
   384 |           {__struct10{supp_nation, cust_nation, l_year},
       |                                                 ^~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq71662060311/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_TPCHQueriesq71662060311/001/prog.cpp:391:32: error: no match for ‘operator-’ (operand types are ‘int’ and ‘std::any’)
+/tmp/TestCPPCompiler_TPCHQueriesq7228917718/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCHQueriesq7228917718/001/prog.cpp:391:32: error: no match for ‘operator-’ (operand types are ‘int’ and ‘std::any’)
   391 |                            ((1 - std::declval<__struct7>().l.l_discount))))>
       |                              ~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 In file included from /usr/include/c++/13/bits/stl_algobase.h:67,
                  from /usr/include/c++/13/algorithm:60,
-                 from /tmp/TestCPPCompiler_TPCHQueriesq71662060311/001/prog.cpp:2:
+                 from /tmp/TestCPPCompiler_TPCHQueriesq7228917718/001/prog.cpp:2:
 /usr/include/c++/13/bits/stl_iterator.h:625:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__y.base() - __x.base())) std::operator-(const reverse_iterator<_Iterator>&, const reverse_iterator<_IteratorR>&)’
   625 |     operator-(const reverse_iterator<_IteratorL>& __x,
       |     ^~~~~~~~
 /usr/include/c++/13/bits/stl_iterator.h:625:5: note:   template argument deduction/substitution failed:
-/tmp/TestCPPCompiler_TPCHQueriesq71662060311/001/prog.cpp:391:62: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+/tmp/TestCPPCompiler_TPCHQueriesq7228917718/001/prog.cpp:391:62: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
   391 |                            ((1 - std::declval<__struct7>().l.l_discount))))>
       |                                                              ^~~~~~~~~~
 /usr/include/c++/13/bits/stl_iterator.h:1800:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__x.base() - __y.base())) std::operator-(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&)’
  1800 |     operator-(const move_iterator<_IteratorL>& __x,
       |     ^~~~~~~~
 /usr/include/c++/13/bits/stl_iterator.h:1800:5: note:   template argument deduction/substitution failed:
-/tmp/TestCPPCompiler_TPCHQueriesq71662060311/001/prog.cpp:391:62: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+/tmp/TestCPPCompiler_TPCHQueriesq7228917718/001/prog.cpp:391:62: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
   391 |                            ((1 - std::declval<__struct7>().l.l_discount))))>
       |                                                              ^~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq71662060311/001/prog.cpp:391:32: error: no match for ‘operator-’ (operand types are ‘int’ and ‘std::any’)
+/tmp/TestCPPCompiler_TPCHQueriesq7228917718/001/prog.cpp:391:32: error: no match for ‘operator-’ (operand types are ‘int’ and ‘std::any’)
   391 |                            ((1 - std::declval<__struct7>().l.l_discount))))>
       |                              ~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /usr/include/c++/13/bits/stl_iterator.h:625:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__y.base() - __x.base())) std::operator-(const reverse_iterator<_Iterator>&, const reverse_iterator<_IteratorR>&)’
   625 |     operator-(const reverse_iterator<_IteratorL>& __x,
       |     ^~~~~~~~
 /usr/include/c++/13/bits/stl_iterator.h:625:5: note:   template argument deduction/substitution failed:
-/tmp/TestCPPCompiler_TPCHQueriesq71662060311/001/prog.cpp:391:62: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+/tmp/TestCPPCompiler_TPCHQueriesq7228917718/001/prog.cpp:391:62: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
   391 |                            ((1 - std::declval<__struct7>().l.l_discount))))>
       |                                                              ^~~~~~~~~~
 /usr/include/c++/13/bits/stl_iterator.h:1800:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__x.base() - __y.base())) std::operator-(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&)’
  1800 |     operator-(const move_iterator<_IteratorL>& __x,
       |     ^~~~~~~~
 /usr/include/c++/13/bits/stl_iterator.h:1800:5: note:   template argument deduction/substitution failed:
-/tmp/TestCPPCompiler_TPCHQueriesq71662060311/001/prog.cpp:391:62: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+/tmp/TestCPPCompiler_TPCHQueriesq7228917718/001/prog.cpp:391:62: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
   391 |                            ((1 - std::declval<__struct7>().l.l_discount))))>
       |                                                              ^~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq71662060311/001/prog.cpp:391:76: error: template argument 1 is invalid
+/tmp/TestCPPCompiler_TPCHQueriesq7228917718/001/prog.cpp:391:76: error: template argument 1 is invalid
   391 |                            ((1 - std::declval<__struct7>().l.l_discount))))>
       |                                                                            ^
-/tmp/TestCPPCompiler_TPCHQueriesq71662060311/001/prog.cpp:391:76: error: template argument 2 is invalid
-/tmp/TestCPPCompiler_TPCHQueriesq71662060311/001/prog.cpp:394:34: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+/tmp/TestCPPCompiler_TPCHQueriesq7228917718/001/prog.cpp:391:76: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCHQueriesq7228917718/001/prog.cpp:394:34: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
   394 |                          __items.push_back(
       |                                  ^~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq71662060311/001/prog.cpp:395:57: error: no match for ‘operator-’ (operand types are ‘int’ and ‘std::any’)
+/tmp/TestCPPCompiler_TPCHQueriesq7228917718/001/prog.cpp:395:57: error: no match for ‘operator-’ (operand types are ‘int’ and ‘std::any’)
   395 |                              (x.l.l_extendedprice * ((1 - x.l.l_discount))));
       |                                                       ~ ^ ~~~~~~~~~~~~~~
       |                                                       |       |
@@ -67,26 +67,26 @@ In file included from /usr/include/c++/13/bits/stl_algobase.h:67,
   625 |     operator-(const reverse_iterator<_IteratorL>& __x,
       |     ^~~~~~~~
 /usr/include/c++/13/bits/stl_iterator.h:625:5: note:   template argument deduction/substitution failed:
-/tmp/TestCPPCompiler_TPCHQueriesq71662060311/001/prog.cpp:395:63: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+/tmp/TestCPPCompiler_TPCHQueriesq7228917718/001/prog.cpp:395:63: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
   395 |                              (x.l.l_extendedprice * ((1 - x.l.l_discount))));
       |                                                               ^~~~~~~~~~
 /usr/include/c++/13/bits/stl_iterator.h:1800:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__x.base() - __y.base())) std::operator-(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&)’
  1800 |     operator-(const move_iterator<_IteratorL>& __x,
       |     ^~~~~~~~
 /usr/include/c++/13/bits/stl_iterator.h:1800:5: note:   template argument deduction/substitution failed:
-/tmp/TestCPPCompiler_TPCHQueriesq71662060311/001/prog.cpp:395:63: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+/tmp/TestCPPCompiler_TPCHQueriesq7228917718/001/prog.cpp:395:63: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
   395 |                              (x.l.l_extendedprice * ((1 - x.l.l_discount))));
       |                                                               ^~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq71662060311/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:1)> [with auto:1 = int]’:
-/tmp/TestCPPCompiler_TPCHQueriesq71662060311/001/prog.cpp:388:24:   required from here
-/tmp/TestCPPCompiler_TPCHQueriesq71662060311/001/prog.cpp:387:49: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+/tmp/TestCPPCompiler_TPCHQueriesq7228917718/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:1)> [with auto:1 = int]’:
+/tmp/TestCPPCompiler_TPCHQueriesq7228917718/001/prog.cpp:388:24:   required from here
+/tmp/TestCPPCompiler_TPCHQueriesq7228917718/001/prog.cpp:387:49: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
   387 |                        return std::accumulate(v.begin(), v.end(), 0.0);
       |                                               ~~^~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq71662060311/001/prog.cpp:387:60: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+/tmp/TestCPPCompiler_TPCHQueriesq7228917718/001/prog.cpp:387:60: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
   387 |                        return std::accumulate(v.begin(), v.end(), 0.0);
       |                                                          ~~^~~
-/tmp/TestCPPCompiler_TPCHQueriesq71662060311/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_TPCHQueriesq71662060311/001/prog.cpp:383:24: error: no matching function for call to ‘std::vector<std::pair<__struct10, __struct9> >::push_back(<brace-enclosed initializer list>)’
+/tmp/TestCPPCompiler_TPCHQueriesq7228917718/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCHQueriesq7228917718/001/prog.cpp:383:24: error: no matching function for call to ‘std::vector<std::pair<__struct10, __struct9> >::push_back(<brace-enclosed initializer list>)’
   383 |       __items.push_back(
       |       ~~~~~~~~~~~~~~~~~^
   384 |           {__struct10{supp_nation, cust_nation, l_year},
@@ -120,7 +120,7 @@ In file included from /usr/include/c++/13/bits/stl_algobase.h:67,
   398 |                      })())}});
       |                      ~~~~~~~~
 In file included from /usr/include/c++/13/vector:66,
-                 from /tmp/TestCPPCompiler_TPCHQueriesq71662060311/001/prog.cpp:10:
+                 from /tmp/TestCPPCompiler_TPCHQueriesq7228917718/001/prog.cpp:10:
 /usr/include/c++/13/bits/stl_vector.h:1281:7: note: candidate: ‘void std::vector<_Tp, _Alloc>::push_back(const value_type&) [with _Tp = std::pair<__struct10, __struct9>; _Alloc = std::allocator<std::pair<__struct10, __struct9> >; value_type = std::pair<__struct10, __struct9>]’
  1281 |       push_back(const value_type& __x)
       |       ^~~~~~~~~
@@ -133,8 +133,8 @@ In file included from /usr/include/c++/13/vector:66,
 /usr/include/c++/13/bits/stl_vector.h:1298:30: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘std::vector<std::pair<__struct10, __struct9> >::value_type&&’ {aka ‘std::pair<__struct10, __struct9>&&’}
  1298 |       push_back(value_type&& __x)
       |                 ~~~~~~~~~~~~~^~~
-/tmp/TestCPPCompiler_TPCHQueriesq71662060311/001/prog.cpp: In function ‘int main()’:
-/tmp/TestCPPCompiler_TPCHQueriesq71662060311/001/prog.cpp:408:5: error: conversion from ‘vector<__struct9>’ to non-scalar type ‘vector<__struct7>’ requested
+/tmp/TestCPPCompiler_TPCHQueriesq7228917718/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCHQueriesq7228917718/001/prog.cpp:408:5: error: conversion from ‘vector<__struct9>’ to non-scalar type ‘vector<__struct7>’ requested
   335 |   std::vector<__struct7> result = ([&]() {
       |                                   ~~~~~~~~
   336 |     std::vector<__struct8> __groups;
@@ -290,16 +290,16 @@ In file included from /usr/include/c++/13/bits/memory_resource.h:47,
                  from /usr/include/c++/13/ios:44,
                  from /usr/include/c++/13/ostream:40,
                  from /usr/include/c++/13/iostream:41,
-                 from /tmp/TestCPPCompiler_TPCHQueriesq71662060311/001/prog.cpp:4:
+                 from /tmp/TestCPPCompiler_TPCHQueriesq7228917718/001/prog.cpp:4:
 /usr/include/c++/13/tuple: In instantiation of ‘static constexpr bool std::__tuple_compare<_Tp, _Up, __i, __size>::__less(const _Tp&, const _Up&) [with _Tp = std::tuple<std::any&, std::any&, std::any&>; _Up = std::tuple<std::any&, std::any&, std::any&>; long unsigned int __i = 0; long unsigned int __size = 3]’:
 /usr/include/c++/13/tuple:1969:31:   required from ‘constexpr bool std::operator<(const tuple<_UTypes ...>&, const tuple<_UTypes ...>&) [with _TElements = {any&, any&, any&}; _UElements = {any&, any&, any&}]’
-/tmp/TestCPPCompiler_TPCHQueriesq71662060311/001/prog.cpp:401:59:   required from ‘main()::<lambda()>::<lambda(auto:2&, auto:3&)> [with auto:2 = std::pair<__struct10, __struct9>; auto:3 = std::pair<__struct10, __struct9>]’
+/tmp/TestCPPCompiler_TPCHQueriesq7228917718/001/prog.cpp:401:59:   required from ‘main()::<lambda()>::<lambda(auto:2&, auto:3&)> [with auto:2 = std::pair<__struct10, __struct9>; auto:3 = std::pair<__struct10, __struct9>]’
 /usr/include/c++/13/bits/predefined_ops.h:158:30:   required from ‘constexpr bool __gnu_cxx::__ops::_Iter_comp_iter<_Compare>::operator()(_Iterator1, _Iterator2) [with _Iterator1 = __gnu_cxx::__normal_iterator<std::pair<__struct10, __struct9>*, std::vector<std::pair<__struct10, __struct9> > >; _Iterator2 = __gnu_cxx::__normal_iterator<std::pair<__struct10, __struct9>*, std::vector<std::pair<__struct10, __struct9> > >; _Compare = main()::<lambda()>::<lambda(auto:2&, auto:3&)>]’
 /usr/include/c++/13/bits/stl_algo.h:1819:14:   required from ‘void std::__insertion_sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<pair<__struct10, __struct9>*, vector<pair<__struct10, __struct9> > >; _Compare = __gnu_cxx::__ops::_Iter_comp_iter<main()::<lambda()>::<lambda(auto:2&, auto:3&)> >]’
 /usr/include/c++/13/bits/stl_algo.h:1859:25:   required from ‘void std::__final_insertion_sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<pair<__struct10, __struct9>*, vector<pair<__struct10, __struct9> > >; _Compare = __gnu_cxx::__ops::_Iter_comp_iter<main()::<lambda()>::<lambda(auto:2&, auto:3&)> >]’
 /usr/include/c++/13/bits/stl_algo.h:1950:31:   required from ‘void std::__sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<pair<__struct10, __struct9>*, vector<pair<__struct10, __struct9> > >; _Compare = __gnu_cxx::__ops::_Iter_comp_iter<main()::<lambda()>::<lambda(auto:2&, auto:3&)> >]’
 /usr/include/c++/13/bits/stl_algo.h:4894:18:   required from ‘void std::sort(_RAIter, _RAIter, _Compare) [with _RAIter = __gnu_cxx::__normal_iterator<pair<__struct10, __struct9>*, vector<pair<__struct10, __struct9> > >; _Compare = main()::<lambda()>::<lambda(auto:2&, auto:3&)>]’
-/tmp/TestCPPCompiler_TPCHQueriesq71662060311/001/prog.cpp:400:14:   required from here
+/tmp/TestCPPCompiler_TPCHQueriesq7228917718/001/prog.cpp:400:14:   required from here
 /usr/include/c++/13/tuple:1901:40: error: no match for ‘operator<’ (operand types are ‘std::any’ and ‘std::any’)
  1901 |         return bool(std::get<__i>(__t) < std::get<__i>(__u))
       |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
@@ -391,7 +391,7 @@ In file included from /usr/include/c++/13/bits/basic_string.h:47,
  1901 |         return bool(std::get<__i>(__t) < std::get<__i>(__u))
       |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
 In file included from /usr/include/c++/13/map:64,
-                 from /tmp/TestCPPCompiler_TPCHQueriesq71662060311/001/prog.cpp:5:
+                 from /tmp/TestCPPCompiler_TPCHQueriesq7228917718/001/prog.cpp:5:
 /usr/include/c++/13/bits/stl_multimap.h:1172:5: note: candidate: ‘template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator<(const multimap<_Key, _Tp, _Compare, _Allocator>&, const multimap<_Key, _Tp, _Compare, _Allocator>&)’
  1172 |     operator<(const multimap<_Key, _Tp, _Compare, _Alloc>& __x,
       |     ^~~~~~~~

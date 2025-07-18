@@ -1,5 +1,5 @@
-/tmp/TestCPPCompiler_TPCHQueriesq211136220196/001/prog.cpp: In function ‘int main()’:
-/tmp/TestCPPCompiler_TPCHQueriesq211136220196/001/prog.cpp:311:5: error: conversion from ‘vector<__struct7>’ to non-scalar type ‘vector<Result>’ requested
+/tmp/TestCPPCompiler_TPCHQueriesq21840941033/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCHQueriesq21840941033/001/prog.cpp:311:5: error: conversion from ‘vector<__struct7>’ to non-scalar type ‘vector<Result>’ requested
   259 |   std::vector<Result> result = ([&]() {
       |                                ~~~~~~~~
   260 |     std::vector<__struct6> __groups;
@@ -113,22 +113,22 @@ In file included from /usr/include/c++/13/bits/memory_resource.h:47,
                  from /usr/include/c++/13/ios:44,
                  from /usr/include/c++/13/ostream:40,
                  from /usr/include/c++/13/iostream:41,
-                 from /tmp/TestCPPCompiler_TPCHQueriesq211136220196/001/prog.cpp:4:
+                 from /tmp/TestCPPCompiler_TPCHQueriesq21840941033/001/prog.cpp:4:
 /usr/include/c++/13/tuple: In instantiation of ‘static constexpr bool std::__tuple_compare<_Tp, _Up, __i, __size>::__less(const _Tp&, const _Up&) [with _Tp = std::tuple<std::any&, std::any&>; _Up = std::tuple<std::any&, std::any&>; long unsigned int __i = 0; long unsigned int __size = 2]’:
 /usr/include/c++/13/tuple:1969:31:   required from ‘constexpr bool std::operator<(const tuple<_UTypes ...>&, const tuple<_UTypes ...>&) [with _TElements = {any&, any&}; _UElements = {any&, any&}]’
-/tmp/TestCPPCompiler_TPCHQueriesq211136220196/001/prog.cpp:304:47:   required from ‘main()::<lambda()>::<lambda(auto:2&, auto:3&)> [with auto:2 = std::pair<__struct8, __struct7>; auto:3 = std::pair<__struct8, __struct7>]’
+/tmp/TestCPPCompiler_TPCHQueriesq21840941033/001/prog.cpp:304:47:   required from ‘main()::<lambda()>::<lambda(auto:2&, auto:3&)> [with auto:2 = std::pair<__struct8, __struct7>; auto:3 = std::pair<__struct8, __struct7>]’
 /usr/include/c++/13/bits/predefined_ops.h:158:30:   required from ‘constexpr bool __gnu_cxx::__ops::_Iter_comp_iter<_Compare>::operator()(_Iterator1, _Iterator2) [with _Iterator1 = __gnu_cxx::__normal_iterator<std::pair<__struct8, __struct7>*, std::vector<std::pair<__struct8, __struct7> > >; _Iterator2 = __gnu_cxx::__normal_iterator<std::pair<__struct8, __struct7>*, std::vector<std::pair<__struct8, __struct7> > >; _Compare = main()::<lambda()>::<lambda(auto:2&, auto:3&)>]’
 /usr/include/c++/13/bits/stl_algo.h:1819:14:   required from ‘void std::__insertion_sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<pair<__struct8, __struct7>*, vector<pair<__struct8, __struct7> > >; _Compare = __gnu_cxx::__ops::_Iter_comp_iter<main()::<lambda()>::<lambda(auto:2&, auto:3&)> >]’
 /usr/include/c++/13/bits/stl_algo.h:1859:25:   required from ‘void std::__final_insertion_sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<pair<__struct8, __struct7>*, vector<pair<__struct8, __struct7> > >; _Compare = __gnu_cxx::__ops::_Iter_comp_iter<main()::<lambda()>::<lambda(auto:2&, auto:3&)> >]’
 /usr/include/c++/13/bits/stl_algo.h:1950:31:   required from ‘void std::__sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<pair<__struct8, __struct7>*, vector<pair<__struct8, __struct7> > >; _Compare = __gnu_cxx::__ops::_Iter_comp_iter<main()::<lambda()>::<lambda(auto:2&, auto:3&)> >]’
 /usr/include/c++/13/bits/stl_algo.h:4894:18:   required from ‘void std::sort(_RAIter, _RAIter, _Compare) [with _RAIter = __gnu_cxx::__normal_iterator<pair<__struct8, __struct7>*, vector<pair<__struct8, __struct7> > >; _Compare = main()::<lambda()>::<lambda(auto:2&, auto:3&)>]’
-/tmp/TestCPPCompiler_TPCHQueriesq211136220196/001/prog.cpp:303:14:   required from here
+/tmp/TestCPPCompiler_TPCHQueriesq21840941033/001/prog.cpp:303:14:   required from here
 /usr/include/c++/13/tuple:1901:40: error: no match for ‘operator<’ (operand types are ‘std::any’ and ‘std::any’)
  1901 |         return bool(std::get<__i>(__t) < std::get<__i>(__u))
       |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
 In file included from /usr/include/c++/13/bits/stl_algobase.h:64,
                  from /usr/include/c++/13/algorithm:60,
-                 from /tmp/TestCPPCompiler_TPCHQueriesq211136220196/001/prog.cpp:2:
+                 from /tmp/TestCPPCompiler_TPCHQueriesq21840941033/001/prog.cpp:2:
 /usr/include/c++/13/bits/stl_pair.h:835:5: note: candidate: ‘template<class _T1, class _T2> constexpr bool std::operator<(const pair<_T1, _T2>&, const pair<_T1, _T2>&)’
   835 |     operator<(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
       |     ^~~~~~~~
@@ -210,7 +210,7 @@ In file included from /usr/include/c++/13/bits/basic_string.h:47,
  1901 |         return bool(std::get<__i>(__t) < std::get<__i>(__u))
       |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
 In file included from /usr/include/c++/13/vector:66,
-                 from /tmp/TestCPPCompiler_TPCHQueriesq211136220196/001/prog.cpp:9:
+                 from /tmp/TestCPPCompiler_TPCHQueriesq21840941033/001/prog.cpp:9:
 /usr/include/c++/13/bits/stl_vector.h:2079:5: note: candidate: ‘template<class _Tp, class _Alloc> bool std::operator<(const vector<_Tp, _Alloc>&, const vector<_Tp, _Alloc>&)’
  2079 |     operator<(const vector<_Tp, _Alloc>& __x, const vector<_Tp, _Alloc>& __y)
       |     ^~~~~~~~
@@ -219,7 +219,7 @@ In file included from /usr/include/c++/13/vector:66,
  1901 |         return bool(std::get<__i>(__t) < std::get<__i>(__u))
       |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
 In file included from /usr/include/c++/13/map:64,
-                 from /tmp/TestCPPCompiler_TPCHQueriesq211136220196/001/prog.cpp:5:
+                 from /tmp/TestCPPCompiler_TPCHQueriesq21840941033/001/prog.cpp:5:
 /usr/include/c++/13/bits/stl_multimap.h:1172:5: note: candidate: ‘template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator<(const multimap<_Key, _Tp, _Compare, _Allocator>&, const multimap<_Key, _Tp, _Compare, _Allocator>&)’
  1172 |     operator<(const multimap<_Key, _Tp, _Compare, _Alloc>& __x,
       |     ^~~~~~~~
