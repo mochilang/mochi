@@ -208,7 +208,20 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("printfn \"%%A\" (%s)", expr))
+		typ := c.inferType(s.Expr.Expr)
+		format := "%A"
+		if typ == "string" {
+			format = "%s"
+		} else if typ == "int" {
+			format = "%d"
+		} else if typ == "float" {
+			format = "%f"
+		} else if typ == "bool" {
+			format = "%b"
+		} else if typ == "char" {
+			format = "%c"
+		}
+		c.writeln(fmt.Sprintf("printfn \"%s\" (%s)", format, expr))
 		return nil
 	case s.While != nil:
 		return c.compileWhile(s.While)
@@ -1075,6 +1088,12 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			if lit, ok := stringLiteral(argAST); ok {
 				return fmt.Sprintf("printfn \"%%s\" %q", lit), nil
 			}
+			if argAST != nil && c.isCharExpr(argAST) {
+				if identifierRegexp.MatchString(args[0]) {
+					return fmt.Sprintf("printfn \"%%c\" %s", args[0]), nil
+				}
+				return fmt.Sprintf("printfn \"%%c\" (%s)", args[0]), nil
+			}
 			if argAST != nil && c.isStringExpr(argAST) {
 				if identifierRegexp.MatchString(args[0]) {
 					return fmt.Sprintf("printfn \"%%s\" %s", args[0]), nil
@@ -1115,6 +1134,12 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 					return fmt.Sprintf("printfn \"%%f\" %s", args[0]), nil
 				}
 				return fmt.Sprintf("printfn \"%%f\" (%s)", args[0]), nil
+			}
+			if t == "char" {
+				if identifierRegexp.MatchString(args[0]) {
+					return fmt.Sprintf("printfn \"%%c\" %s", args[0]), nil
+				}
+				return fmt.Sprintf("printfn \"%%c\" (%s)", args[0]), nil
 			}
 			if t == "string" {
 				if identifierRegexp.MatchString(args[0]) {
@@ -2215,6 +2240,30 @@ func (c *Compiler) isIntExpr(e *parser.Expr) bool {
 	return false
 }
 
+func (c *Compiler) isCharExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	if p := rootPostfix(e); p != nil {
+		if len(p.Ops) > 0 && p.Ops[0].Index != nil && p.Ops[0].Index.Start != nil && p.Ops[0].Index.Colon == nil {
+			if c.isStringPrimary(p.Target) {
+				return true
+			}
+		}
+	}
+	if p := rootPrimary(e); p != nil && p.Lit != nil && p.Lit.Str != nil {
+		if len([]rune(*p.Lit.Str)) == 1 {
+			return true
+		}
+	}
+	if name, ok := c.simpleIdentifier(e); ok {
+		if t, ok2 := c.vars[name]; ok2 && t == "char" {
+			return true
+		}
+	}
+	return false
+}
+
 func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
 	if p == nil {
 		return false
@@ -2273,6 +2322,10 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 
 	if isBoolExpr(e) {
 		return "bool"
+	}
+
+	if c.isCharExpr(e) {
+		return "char"
 	}
 
 	if c.isStringExpr(e) {
