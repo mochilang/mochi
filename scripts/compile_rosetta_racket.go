@@ -67,7 +67,19 @@ func main() {
 
 	for _, name := range tasks {
 		src := filepath.Join(root, "tests", "rosetta", "x", "Mochi", name+".mochi")
-		prog, err := parser.Parse(src)
+		data, err := os.ReadFile(src)
+		if err != nil {
+			writeError(outDir, name, fmt.Sprintf("read: %v", err))
+			continue
+		}
+		// replace semicolons with newlines for simple statement separation
+		clean := bytes.ReplaceAll(data, []byte(";"), []byte("\n"))
+		tmpSrc := filepath.Join(os.TempDir(), name+".mochi")
+		if err := os.WriteFile(tmpSrc, clean, 0o644); err != nil {
+			writeError(outDir, name, fmt.Sprintf("tmp write: %v", err))
+			continue
+		}
+		prog, err := parser.Parse(tmpSrc)
 		if err != nil {
 			writeError(outDir, name, fmt.Sprintf("parse: %v", err))
 			continue
