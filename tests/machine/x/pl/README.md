@@ -53,13 +53,13 @@ The checklist indicates programs that compile and run successfully.
 - [ ] list_nested_assign.mochi
 - [x] list_set_ops.mochi
 - [ ] load_yaml.mochi
-- [ ] map_assign.mochi
+ - [x] map_assign.mochi
 - [x] map_in_operator.mochi
 - [x] map_index.mochi
 - [x] map_int_key.mochi
 - [x] map_literal_dynamic.mochi
 - [x] map_membership.mochi
-- [ ] map_nested_assign.mochi
+ - [x] map_nested_assign.mochi
 - [x] match_expr.mochi
 - [x] match_full.mochi
 - [x] math_ops.mochi

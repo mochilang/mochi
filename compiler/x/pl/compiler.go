@@ -482,10 +482,42 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			}
 			containers := []string{container}
 			cur := container
+			var curType types.Type = types.AnyType{}
+			if c.env != nil {
+				if t, err := c.env.GetVar(s.Assign.Name); err == nil {
+					curType = t
+				}
+			}
 			for i := 0; i < len(idxVals)-1; i++ {
 				tmp := c.newTmp()
-				c.needsGetItem = true
-				c.writeln(fmt.Sprintf("get_item(%s, %s, %s),", cur, idxVals[i], tmp))
+				handled := false
+				if c.env != nil {
+					t := curType
+					if ot, ok := t.(types.OptionType); ok {
+						t = ot.Elem
+					}
+					switch tt := t.(type) {
+					case types.ListType:
+						c.writeln(fmt.Sprintf("nth0(%s, %s, %s),", idxVals[i], cur, tmp))
+						curType = tt.Elem
+						handled = true
+					case types.StringType:
+						chars := c.newTmp()
+						c.writeln(fmt.Sprintf("string_chars(%s, %s), nth0(%s, %s, %s),", cur, chars, idxVals[i], chars, tmp))
+						curType = types.StringType{}
+						handled = true
+					case types.MapType:
+						a := c.newTmp()
+						c.writeln(fmt.Sprintf("(string(%s) -> atom_string(%s, %s) ; %s = %s), get_dict(%s, %s, %s),", idxVals[i], a, idxVals[i], a, idxVals[i], a, cur, tmp))
+						curType = tt.Value
+						handled = true
+					}
+				}
+				if !handled {
+					c.needsGetItem = true
+					c.writeln(fmt.Sprintf("get_item(%s, %s, %s),", cur, idxVals[i], tmp))
+					curType = types.AnyType{}
+				}
 				containers = append(containers, tmp)
 				cur = tmp
 			}
@@ -1270,10 +1302,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, bool, error) {
 		return sanitizeVar(p.Selector.Root), true, nil
 	case p.Selector != nil:
 		var val string
+		var curType types.Type
 		if v, ok := c.vars[p.Selector.Root]; ok {
 			val = v
 		} else {
 			val = sanitizeVar(p.Selector.Root)
+		}
+		if c.env != nil {
+			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+				curType = t
+			}
 		}
 		for _, f := range p.Selector.Tail {
 			if mod, ok := c.ffiModules[val]; ok {
@@ -1301,12 +1339,37 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, bool, error) {
 				}
 				if handled {
 					val = tmp
+					if c.env != nil {
+						curType = types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Selector: &parser.SelectorExpr{Root: p.Selector.Root, Tail: append([]string{}, f)}}}}}}, c.env)
+					}
 					continue
 				}
 			}
 			tmp := c.newTmp()
-			c.needsGetItem = true
-			c.writeln(fmt.Sprintf("get_item(%s, '%s', %s),", val, strings.ToLower(f), tmp))
+			handled := false
+			if c.env != nil {
+				t := curType
+				if ot, ok := t.(types.OptionType); ok {
+					t = ot.Elem
+				}
+				switch tt := t.(type) {
+				case types.StructType:
+					if ft, ok := tt.Fields[strings.ToLower(f)]; ok {
+						c.writeln(fmt.Sprintf("get_dict('%s', %s, %s),", strings.ToLower(f), val, tmp))
+						curType = ft
+						handled = true
+					}
+				case types.MapType:
+					c.writeln(fmt.Sprintf("get_dict('%s', %s, %s),", strings.ToLower(f), val, tmp))
+					curType = tt.Value
+					handled = true
+				}
+			}
+			if !handled {
+				c.needsGetItem = true
+				c.writeln(fmt.Sprintf("get_item(%s, '%s', %s),", val, strings.ToLower(f), tmp))
+				curType = types.AnyType{}
+			}
 			val = tmp
 		}
 		return val, false, nil
@@ -1632,13 +1695,13 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, bool, error) {
 }
 
 func (c *Compiler) lookupVar(name string) string {
-	if v, ok := c.vars[name]; ok {
-		return v
-	}
 	if c.mutVars[name] {
 		tmp := c.newTmp()
 		c.writeln(fmt.Sprintf("nb_getval(%s, %s),", sanitizeAtom(name), tmp))
 		return tmp
+	}
+	if v, ok := c.vars[name]; ok {
+		return v
 	}
 	return sanitizeVar(name)
 }
@@ -2145,6 +2208,9 @@ func (c *Compiler) compileIndex(container string, idx *parser.IndexOp, t types.T
 		case types.StringType:
 			chars := c.newTmp()
 			c.writeln(fmt.Sprintf("string_chars(%s, %s), nth0(%s, %s, %s),", container, chars, index, chars, tmp))
+		case types.MapType:
+			a := c.newTmp()
+			c.writeln(fmt.Sprintf("(string(%s) -> atom_string(%s, %s) ; %s = %s), get_dict(%s, %s, %s),", index, a, index, a, index, a, container, tmp))
 		default:
 			c.needsGetItem = true
 			_ = tt
