@@ -28,6 +28,33 @@ var helperGenStruct = "def _gen_struct(cls, prompt, model=None, params=None):\n"
 	"    data = json.loads(prompt)\n" +
 	"    return cls(**data)\n"
 
+var helperInput = "def _input():\n" +
+	"    try:\n" +
+	"        return input()\n" +
+	"    except EOFError:\n" +
+	"        return ''\n"
+
+var helperInt = "def _int(v):\n" +
+	"    try:\n" +
+	"        return int(v)\n" +
+	"    except Exception:\n" +
+	"        return 0\n"
+
+var helperNow = "import os, time\n" +
+	"_now_seeded = False\n" +
+	"_now_seed = 0\n" +
+	"def _now():\n" +
+	"    global _now_seeded, _now_seed\n" +
+	"    if not _now_seeded:\n" +
+	"        s = os.getenv('MOCHI_NOW_SEED')\n" +
+	"        if s and s.isdigit():\n" +
+	"            _now_seed = int(s)\n" +
+	"            _now_seeded = True\n" +
+	"    if _now_seeded:\n" +
+	"        _now_seed = (_now_seed * 1664525 + 1013904223) % 2147483647\n" +
+	"        return _now_seed\n" +
+	"    return int(time.time_ns())\n"
+
 var helperCount = "def _count(v):\n" +
 	"    if isinstance(v, list):\n" +
 	"        return len(v)\n" +
@@ -514,6 +541,9 @@ var helperMap = map[string]string{
 	"_gen_text":   helperGenText,
 	"_gen_embed":  helperGenEmbed,
 	"_gen_struct": helperGenStruct,
+	"_input":      helperInput,
+	"_int":        helperInt,
+	"_now":        helperNow,
 	"_group":      helperGroupClass,
 	"_group_by":   helperGroupBy,
 	"_count":      helperCount,

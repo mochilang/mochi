@@ -968,16 +968,19 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		return fmt.Sprintf("len(%s)", argStr), nil
 	case "now":
 		c.imports["time"] = "time"
-		return "time.time_ns()", nil
+		c.use("_now")
+		return "_now()", nil
 	case "json":
 		c.imports["json"] = "json"
 		return fmt.Sprintf("print(json.dumps(%s, separators=(',', ':'), default=lambda o: vars(o)))", argStr), nil
 	case "str":
 		return fmt.Sprintf("str(%s)", argStr), nil
 	case "int":
-		return fmt.Sprintf("int(%s)", argStr), nil
+		c.use("_int")
+		return fmt.Sprintf("_int(%s)", argStr), nil
 	case "input":
-		return "input()", nil
+		c.use("_input")
+		return "_input()", nil
 	case "count":
 		if len(args) == 1 {
 			t := c.inferExprType(call.Args[0])

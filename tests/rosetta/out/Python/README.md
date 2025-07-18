@@ -1,4 +1,4 @@
-# Rosetta Python Output (19/264 compiled and run)
+# Rosetta Python Output (24/271 compiled and run)
 
 This directory holds Python source code generated from the Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected runtime output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -7,17 +7,18 @@ This directory holds Python source code generated from the Mochi programs in `te
 - [x] 100-doors-3
 - [x] 100-doors
 - [x] 100-prisoners
-- [ ] 15-puzzle-game
+- [x] 15-puzzle-game
 - [x] 15-puzzle-solver
-- [ ] 2048
-- [ ] 21-game
+- [x] 2048
+- [x] 21-game
 - [x] 24-game-solve
-- [ ] 24-game
+- [x] 24-game
 - [x] 4-rings-or-4-squares-puzzle
 - [x] 9-billion-names-of-god-the-integer
 - [x] 99-bottles-of-beer-2
 - [x] 99-bottles-of-beer
-- [ ] a+b
+- [ ] DNS-query
+- [x] a+b
 - [x] abbreviations-automatic
 - [x] abbreviations-easy
 - [x] abbreviations-simple
@@ -265,5 +266,11 @@ This directory holds Python source code generated from the Mochi programs in `te
 - [ ] csv-to-html-translation-5
 - [ ] cuban-primes
 - [ ] cullen-and-woodall-numbers
+- [ ] cumulative-standard-deviation
+- [ ] currency
+- [ ] currying
+- [ ] curzon-numbers
 - [ ] cusip
+- [ ] cyclops-numbers
+- [ ] damm-algorithm
 - [ ] md5
