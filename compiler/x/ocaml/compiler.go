@@ -142,7 +142,7 @@ func (c *Compiler) Compile(prog *parser.Program, path string) ([]byte, error) {
 	bodyBytes := c.buf.Bytes()
 	c.buf = oldBuf
 	c.emitRuntime()
-	c.emitAnonStructs()
+	c.emitAnonStructs(bodyBytes)
 	c.buf.Write(bodyBytes)
 	return c.buf.Bytes(), nil
 }
@@ -3274,13 +3274,17 @@ func (c *Compiler) emitRuntime() {
 	}
 }
 
-func (c *Compiler) emitAnonStructs() {
+func (c *Compiler) emitAnonStructs(body []byte) {
 	for _, st := range c.anonStructs {
+		name := strings.ToLower(st.Name)
+		if !bytes.Contains(body, []byte(name)) {
+			continue
+		}
 		fields := make([]string, len(st.Order))
 		for i, f := range st.Order {
 			fields[i] = fmt.Sprintf("mutable %s : %s", sanitizeField(f), c.ocamlType(st.Fields[f]))
 		}
-		c.writeln(fmt.Sprintf("type %s = { %s }", strings.ToLower(st.Name), strings.Join(fields, "; ")))
+		c.writeln(fmt.Sprintf("type %s = { %s }", name, strings.Join(fields, "; ")))
 	}
 	if len(c.anonStructs) > 0 {
 		c.buf.WriteByte('\n')
@@ -3378,6 +3382,13 @@ func (c *Compiler) scanExpr(e *parser.Expr) {
 		}
 		c.scanPostfix(op.Right)
 	}
+}
+
+func (c *Compiler) scanExprWithEnv(e *parser.Expr, env *types.Env) {
+	old := c.env
+	c.env = env
+	c.scanExpr(e)
+	c.env = old
 }
 
 func (c *Compiler) scanUnary(u *parser.Unary) {
@@ -3503,38 +3514,43 @@ func (c *Compiler) scanQuery(q *parser.QueryExpr) {
 	if q == nil {
 		return
 	}
+	outerEnv := c.env
 	c.scanExpr(q.Source)
 	for _, fr := range q.Froms {
 		c.scanExpr(fr.Src)
 	}
 	for _, jo := range q.Joins {
 		c.scanExpr(jo.Src)
+	}
+	qenv := c.queryEnv(q)
+	for _, jo := range q.Joins {
 		if jo.On != nil {
-			c.scanExpr(jo.On)
+			c.scanExprWithEnv(jo.On, qenv)
 		}
 	}
 	if q.Where != nil {
-		c.scanExpr(q.Where)
+		c.scanExprWithEnv(q.Where, qenv)
 	}
 	if q.Group != nil {
 		c.needGroup = true
 		for _, e := range q.Group.Exprs {
-			c.scanExpr(e)
+			c.scanExprWithEnv(e, qenv)
 		}
 		if q.Group.Having != nil {
-			c.scanExpr(q.Group.Having)
+			c.scanExprWithEnv(q.Group.Having, qenv)
 		}
 	}
 	if q.Sort != nil {
-		c.scanExpr(q.Sort)
+		c.scanExprWithEnv(q.Sort, qenv)
 	}
 	if q.Skip != nil {
-		c.scanExpr(q.Skip)
+		c.scanExprWithEnv(q.Skip, qenv)
 	}
 	if q.Take != nil {
-		c.scanExpr(q.Take)
+		c.scanExprWithEnv(q.Take, qenv)
 	}
 	if q.Select != nil {
-		c.scanExpr(q.Select)
+		c.scanExprWithEnv(q.Select, qenv)
 	}
+	c.env = outerEnv
 }

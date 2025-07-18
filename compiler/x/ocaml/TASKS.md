@@ -29,6 +29,8 @@
 - [2025-07-15 06:32] Added basic cast support for floats and list types and generated code for TPC-DS q51, q65, q90.
 - [2025-07-17 07:10] Added type annotations in inner joins and skipped emitting
   global `let` type hints when they contained `Obj.t` to improve inference.
+- [2025-07-18 08:15] Eliminated unused anonymous record definitions and improved
+  query scanning with local type environments.
 
 ## Remaining Enhancements
 - [ ] Verify floating point aggregates for full TPC-H q1

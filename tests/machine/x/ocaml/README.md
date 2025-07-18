@@ -110,3 +110,4 @@ Compiled programs: 82/100 successful.
 - [ ] Integrate an OCaml runtime to execute compiled programs in CI
 - [x] Expand anonymous record typing for clearer generated code
 - [x] Emit native `for` loops when iterating over numeric ranges
+- [x] Drop unused anonymous record types and infer group field types correctly
