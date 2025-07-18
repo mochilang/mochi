@@ -1,0 +1,14 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:33:10: cannot use append(_toAnySlice(row), any(c)) (value of type []any) as []Colour value in assignment
+/tmp/X/001/main.go:36:10: cannot use append(_toAnySlice(rows), any(row)) (value of type []any) as [][]Colour value in assignment
+/tmp/X/001/main.go:57:25: cannot use &c (value of type *Colour) as Colour value in argument to setPixel
+/tmp/X/001/main.go:67:10: invalid argument: any(s) (value of interface type any) for built-in len
+/tmp/X/001/main.go:96:17: invalid argument: any(fmt.Sprint(any(maxv))) (value of interface type any) for built-in len
+/tmp/X/001/main.go:122:24: cannot use &black (value of type *Colour) as Colour value in argument to newBitmap
+/tmp/X/001/main.go:123:11: cannot use &bm (value of type *Bitmap) as Bitmap value in argument to fillRect
+/tmp/X/001/main.go:123:28: cannot use &white (value of type *Colour) as Colour value in argument to fillRect
+/tmp/X/001/main.go:124:22: cannot use &Colour{…} (value of type *Colour) as Colour value in argument to setPixel
+/tmp/X/001/main.go:129:6: main redeclared in this block
+	/tmp/X/001/main.go:119:6: other declaration of main
+/tmp/X/001/main.go:124:22: too many errors

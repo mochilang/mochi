@@ -1,0 +1,14 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:19:11: cannot use append(_toAnySlice(sieve), any(true)) (value of type []any) as []bool value in assignment
+/tmp/X/001/main.go:37:10: cannot use append(_toAnySlice(res), any(x)) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:50:14: invalid argument: any(primes) (value of interface type any) for built-in len
+/tmp/X/001/main.go:53:11: invalid argument: any(currSeq) (value of interface type any) for built-in len
+/tmp/X/001/main.go:53:31: invalid argument: any(longSeqs[0]) (value of interface type any) for built-in len
+/tmp/X/001/main.go:55:18: invalid argument: any(currSeq) (value of interface type any) for built-in len
+/tmp/X/001/main.go:55:39: invalid argument: any(longSeqs[0]) (value of interface type any) for built-in len
+/tmp/X/001/main.go:56:16: cannot use append(_toAnySlice(longSeqs), any(currSeq)) (value of type []any) as [][]int value in assignment
+/tmp/X/001/main.go:60:14: cannot use append(_toAnySlice(currSeq), any(primes[i])) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:103:6: main redeclared in this block
+	/tmp/X/001/main.go:94:6: other declaration of main
+/tmp/X/001/main.go:60:14: too many errors

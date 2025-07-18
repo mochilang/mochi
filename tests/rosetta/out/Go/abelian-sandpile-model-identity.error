@@ -1,0 +1,13 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:38:14: invalid argument: any(a) (value of interface type any) for built-in len
+/tmp/X/001/main.go:39:9: cannot use append(_toAnySlice(res), any((a[i] + b[i]))) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:59:14: invalid argument: any(p) (value of interface type any) for built-in len
+/tmp/X/001/main.go:60:7: invalid operation: cannot index p (variable of type *[]int)
+/tmp/X/001/main.go:61:5: invalid operation: cannot index p (variable of type *[]int)
+/tmp/X/001/main.go:64:6: invalid operation: cannot index p (variable of type *[]int)
+/tmp/X/001/main.go:104:10: cannot use s4 (variable of type []int) as *[]int value in argument to topple
+/tmp/X/001/main.go:132:10: cannot use s3_a (variable of type []int) as *[]int value in argument to topple
+/tmp/X/001/main.go:136:10: cannot use s3_b (variable of type []int) as *[]int value in argument to topple
+/tmp/X/001/main.go:165:10: cannot use s4b (variable of type []int) as *[]int value in argument to topple
+/tmp/X/001/main.go:165:10: too many errors

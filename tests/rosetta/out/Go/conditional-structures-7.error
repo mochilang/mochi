@@ -1,0 +1,8 @@
+parse: error[P999]: tests/rosetta/x/Mochi/conditional-structures-7.mochi:3:5: unexpected token "fetch" (expected <ident> "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+  --> tests/rosetta/x/Mochi/conditional-structures-7.mochi:3:5
+
+  3 | fun fetch(): string { return "" }
+    |     ^
+
+help:
+  Parse error occurred. Check syntax near this location.

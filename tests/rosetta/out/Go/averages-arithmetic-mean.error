@@ -1,0 +1,9 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:18:9: invalid argument: any(v) (value of interface type any) for built-in len
+/tmp/X/001/main.go:19:25: cannot convert map[string]bool{…} (value of type map[string]bool) to type map[string]any
+/tmp/X/001/main.go:23:14: invalid argument: any(v) (value of interface type any) for built-in len
+/tmp/X/001/main.go:27:64: invalid argument: any(v) (value of interface type any) for built-in len
+/tmp/X/001/main.go:84:82: invalid argument: v (variable of interface type any) for built-in len
+/tmp/X/001/main.go:92:6: main redeclared in this block
+	/tmp/X/001/main.go:31:6: other declaration of main

@@ -1,0 +1,6 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:19:10: cannot use append(_toAnySlice(out), any(n)) (value of type []any) as []string value in assignment
+/tmp/X/001/main.go:34:13: cannot use append(_toAnySlice(clients), any(name)) (value of type []any) as []string value in assignment
+/tmp/X/001/main.go:55:6: main redeclared in this block
+	/tmp/X/001/main.go:26:6: other declaration of main

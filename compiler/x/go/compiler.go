@@ -4507,7 +4507,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				}
 			}
 			c.imports["strings"] = true
-			return fmt.Sprintf("fmt.Println(strings.TrimSpace(fmt.Sprintln(%s)))", strings.Join(args, ", ")), nil
+			return fmt.Sprintf("fmt.Println(strings.TrimSuffix(fmt.Sprintln(%s), \"\\n\"))", strings.Join(args, ", ")), nil
 		}
 		c.imports["strings"] = true
 		parts := make([]string, len(args))
@@ -4521,7 +4521,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				parts[i] = fmt.Sprintf("fmt.Sprint(%s)", args[i])
 			}
 		}
-		return fmt.Sprintf("fmt.Println(strings.TrimSpace(strings.Join([]string{%s}, \" \")))", strings.Join(parts, ", ")), nil
+		return fmt.Sprintf("fmt.Println(strings.Join([]string{%s}, \" \"))", strings.Join(parts, ", ")), nil
 	case "str":
 		c.imports["fmt"] = true
 		return fmt.Sprintf("fmt.Sprint(%s)", argStr), nil

@@ -1,1 +1,14 @@
-compile error: cannot index into type Digit
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:58:10: invalid argument: any(str) (value of interface type any) for built-in len
+/tmp/X/001/main.go:75:14: invalid argument: any(str) (value of interface type any) for built-in len
+/tmp/X/001/main.go:231:23: invalid argument: index quadrant (variable of type float64) must be integer
+/tmp/X/001/main.go:232:22: invalid argument: index quadrant (variable of type float64) must be integer
+/tmp/X/001/main.go:253:16: invalid argument: any(pairs) (value of interface type any) for built-in len
+/tmp/X/001/main.go:262:6: main redeclared in this block
+	/tmp/X/001/main.go:250:6: other declaration of main
+/tmp/X/001/main.go:294:3: undefined: _copyToMap
+/tmp/X/001/main.go:296:3: undefined: _copyToMap
+/tmp/X/001/main.go:301:3: undefined: _copyToMap
+/tmp/X/001/main.go:303:3: undefined: _copyToMap
+/tmp/X/001/main.go:303:3: too many errors

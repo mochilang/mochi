@@ -1,0 +1,14 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:23:16: invalid argument: any(s) (value of interface type any) for built-in len
+/tmp/X/001/main.go:49:12: invalid argument: any(dna) (value of interface type any) for built-in len
+/tmp/X/001/main.go:59:9: cannot use append(_toAnySlice(arr), any(string([]rune(dna)[i:(i + 1)]))) (value of type []any) as []string value in assignment
+/tmp/X/001/main.go:72:16: invalid argument: any(arr) (value of interface type any) for built-in len
+/tmp/X/001/main.go:76:20: invalid argument: any(arr) (value of interface type any) for built-in len
+/tmp/X/001/main.go:82:9: cannot use append(_toAnySlice(arr), any("")) (value of type []any) as []string value in assignment
+/tmp/X/001/main.go:83:13: invalid argument: any(arr) (value of interface type any) for built-in len
+/tmp/X/001/main.go:93:14: invalid argument: any(arr) (value of interface type any) for built-in len
+/tmp/X/001/main.go:103:12: invalid argument: any(dna) (value of interface type any) for built-in len
+/tmp/X/001/main.go:176:6: main redeclared in this block
+	/tmp/X/001/main.go:154:6: other declaration of main
+/tmp/X/001/main.go:103:12: too many errors

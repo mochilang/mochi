@@ -1,0 +1,8 @@
+parse: error[P001]: tests/rosetta/x/Mochi/conditional-structures-2.mochi:6:5: unexpected token "else" (expected "{" Statement* "}" (("else" IfStmt) | ("else" "{" Statement* "}"))?)
+  --> tests/rosetta/x/Mochi/conditional-structures-2.mochi:6:5
+
+  6 |   } else {
+    |     ^
+
+help:
+  Check for a missing `{` or `}` to close the block.

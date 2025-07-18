@@ -1,0 +1,13 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:17:12: invalid operation: operator % not defined on (float64(rgb) / float64(65536)) (value of type float64)
+/tmp/X/001/main.go:18:12: invalid operation: operator % not defined on (float64(rgb) / float64(256)) (value of type float64)
+/tmp/X/001/main.go:31:10: cannot use append(_toAnySlice(row), any(Pixel{…})) (value of type []any) as []Pixel value in assignment
+/tmp/X/001/main.go:34:7: cannot use append(_toAnySlice(d), any(row)) (value of type []any) as [][]Pixel value in assignment
+/tmp/X/001/main.go:46:12: invalid operation: cannot index b (variable of type *map[string]any)
+/tmp/X/001/main.go:47:12: invalid operation: cannot index b (variable of type *map[string]any)
+/tmp/X/001/main.go:49:4: invalid operation: cannot index b (variable of type *map[string]any)
+/tmp/X/001/main.go:55:12: invalid operation: cannot index b (variable of type *map[string]any)
+/tmp/X/001/main.go:56:12: invalid operation: cannot index b (variable of type *map[string]any)
+/tmp/X/001/main.go:61:5: invalid operation: cannot index b (variable of type *map[string]any)
+/tmp/X/001/main.go:61:5: too many errors

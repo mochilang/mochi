@@ -1,0 +1,5 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:44:14: invalid argument: any(n) (value of interface type any) for built-in len
+/tmp/X/001/main.go:50:14: invalid argument: any(n) (value of interface type any) for built-in len
+/tmp/X/001/main.go:54:22: invalid operation: operator % not defined on p (variable of type float64)

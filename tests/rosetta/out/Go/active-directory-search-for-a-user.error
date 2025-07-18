@@ -1,0 +1,7 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:37:9: invalid argument: any(groups) (value of interface type any) for built-in len
+/tmp/X/001/main.go:40:15: invalid argument: any(groups) (value of interface type any) for built-in len
+/tmp/X/001/main.go:42:16: invalid argument: any(groups) (value of interface type any) for built-in len
+/tmp/X/001/main.go:54:6: main redeclared in this block
+	/tmp/X/001/main.go:27:6: other declaration of main

@@ -1,0 +1,12 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:45:8: cannot use append(_toAnySlice(r), any(Pixel{…})) (value of type []any) as []Pixel value in assignment
+/tmp/X/001/main.go:48:13: cannot use append(_toAnySlice(dataVar), any(r)) (value of type []any) as [][]Pixel value in assignment
+/tmp/X/001/main.go:97:10: cannot use nextRand(seed) (value of type int) as int64 value in assignment
+/tmp/X/001/main.go:97:19: cannot use seed (variable of type int64) as int value in argument to nextRand
+/tmp/X/001/main.go:99:10: cannot use nextRand(seed) (value of type int) as int64 value in assignment
+/tmp/X/001/main.go:99:19: cannot use seed (variable of type int64) as int value in argument to nextRand
+/tmp/X/001/main.go:101:17: cannot use x (variable of type int64) as int value in argument to SetPxRgb
+/tmp/X/001/main.go:101:20: cannot use y (variable of type int64) as int value in argument to SetPxRgb
+/tmp/X/001/main.go:134:6: main redeclared in this block
+	/tmp/X/001/main.go:91:6: other declaration of main

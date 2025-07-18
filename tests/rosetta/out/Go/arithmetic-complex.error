@@ -1,8 +1,13 @@
-parse error: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/arithmetic-complex.mochi:1:1: lexer: invalid input text "# Mochi implemen..."
-  --> /workspace/mochi/tests/rosetta/x/Mochi/arithmetic-complex.mochi:1:1
-
-  1 | # Mochi implementation of Rosetta "Arithmetic/Complex" task
-    | ^
-
-help:
-  String literals must be properly closed with a `"`.
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:59:67: cannot use &a (value of type *Complex) as Complex value in argument to cstr
+/tmp/X/001/main.go:60:67: cannot use &b (value of type *Complex) as Complex value in argument to cstr
+/tmp/X/001/main.go:61:68: invalid operation: cannot take address of add(&a, &b) (value of struct type Complex)
+/tmp/X/001/main.go:61:72: cannot use &a (value of type *Complex) as Complex value in argument to add
+/tmp/X/001/main.go:61:76: cannot use &b (value of type *Complex) as Complex value in argument to add
+/tmp/X/001/main.go:62:68: invalid operation: cannot take address of mul(&a, &b) (value of struct type Complex)
+/tmp/X/001/main.go:62:72: cannot use &a (value of type *Complex) as Complex value in argument to mul
+/tmp/X/001/main.go:62:76: cannot use &b (value of type *Complex) as Complex value in argument to mul
+/tmp/X/001/main.go:63:68: invalid operation: cannot take address of neg(&a) (value of struct type Complex)
+/tmp/X/001/main.go:63:72: cannot use &a (value of type *Complex) as Complex value in argument to neg
+/tmp/X/001/main.go:63:68: too many errors

@@ -1,8 +1,1 @@
-parse error: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/bitmap-flood-fill.mochi:14:30: unexpected token "}" (expected PostfixExpr)
-  --> /workspace/mochi/tests/rosetta/x/Mochi/bitmap-flood-fill.mochi:14:30
-
- 14 |   if target == repl { return }
-    |                              ^
-
-help:
-  Parse error occurred. Check syntax near this location.
+panic: runtime error: invalid memory address or nil pointer dereference

@@ -1,1 +1,4 @@
-compile error: cannot index into type any
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:31:9: invalid operation: ("T(" + fmt.Sprint(m["cl"]) + ", " + treeString(m["le"]) + ", " + fmt.Sprint(m["aa"]) + ", " + treeString(m["ri"]) + ")") (value of type string) is not an interface
+/tmp/X/001/main.go:104:10: invalid operation: nil is not an interface

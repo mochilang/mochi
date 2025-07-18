@@ -1,0 +1,14 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:34:14: invalid argument: any(s) (value of interface type any) for built-in len
+/tmp/X/001/main.go:57:17: invalid argument: any(s) (value of interface type any) for built-in len
+/tmp/X/001/main.go:76:9: invalid argument: any(s) (value of interface type any) for built-in len
+/tmp/X/001/main.go:94:18: cannot use &p (value of type *Point) as Point value in argument to mulPoint
+/tmp/X/001/main.go:99:19: invalid operation: cannot take address of sumPoint(&p1, &p2) (value of struct type Point)
+/tmp/X/001/main.go:99:28: cannot use &p1 (value of type *Point) as Point value in argument to sumPoint
+/tmp/X/001/main.go:99:33: cannot use &p2 (value of type *Point) as Point value in argument to sumPoint
+/tmp/X/001/main.go:106:14: invalid argument: any(faces) (value of interface type any) for built-in len
+/tmp/X/001/main.go:110:18: cannot use &fp (value of type *Point) as Point value in argument to sumPoint
+/tmp/X/001/main.go:493:6: main redeclared in this block
+	/tmp/X/001/main.go:426:6: other declaration of main
+/tmp/X/001/main.go:110:18: too many errors

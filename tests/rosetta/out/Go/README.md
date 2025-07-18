@@ -1,4 +1,4 @@
-# Rosetta Go Output (42/216 compiled and run)
+# Rosetta Go Output (25/238 compiled and run)
 
 This directory holds Go source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -14,7 +14,7 @@ This directory holds Go source code generated from the real Mochi programs in `t
 - [ ] 24-game-solve
 - [ ] 24-game
 - [ ] 4-rings-or-4-squares-puzzle
-- [x] 9-billion-names-of-god-the-integer
+- [ ] 9-billion-names-of-god-the-integer
 - [ ] 99-bottles-of-beer-2
 - [ ] 99-bottles-of-beer
 - [ ] a+b
@@ -41,7 +41,7 @@ This directory holds Go source code generated from the real Mochi programs in `t
 - [ ] adfgvx-cipher
 - [ ] aks-test-for-primes
 - [ ] algebraic-data-types
-- [x] align-columns
+- [ ] align-columns
 - [ ] aliquot-sequence-classifications
 - [ ] almkvist-giullera-formula-for-pi
 - [ ] almost-prime
@@ -61,7 +61,7 @@ This directory holds Go source code generated from the real Mochi programs in `t
 - [ ] append-a-record-to-the-end-of-a-text-file
 - [x] apply-a-callback-to-an-array-1
 - [ ] apply-a-callback-to-an-array-2
-- [x] apply-a-digital-filter-direct-form-ii-transposed-
+- [ ] apply-a-digital-filter-direct-form-ii-transposed-
 - [ ] approximate-equality
 - [ ] arbitrary-precision-integers-included-
 - [x] archimedean-spiral
@@ -75,7 +75,7 @@ This directory holds Go source code generated from the real Mochi programs in `t
 - [ ] arithmetic-integer-2
 - [ ] arithmetic-numbers
 - [ ] arithmetic-rational
-- [x] array-concatenation
+- [ ] array-concatenation
 - [ ] array-length
 - [ ] arrays
 - [ ] ascending-primes
@@ -89,10 +89,10 @@ This directory holds Go source code generated from the real Mochi programs in `t
 - [ ] average-loop-length
 - [ ] averages-arithmetic-mean
 - [ ] averages-mean-time-of-day
-- [x] averages-median-1
+- [ ] averages-median-1
 - [ ] averages-median-2
 - [ ] averages-median-3
-- [x] averages-mode
+- [ ] averages-mode
 - [ ] averages-pythagorean-means
 - [x] averages-root-mean-square
 - [ ] averages-simple-moving-average
@@ -112,8 +112,8 @@ This directory holds Go source code generated from the real Mochi programs in `t
 - [ ] bin-given-limits
 - [x] binary-digits
 - [ ] binary-search
-- [x] binary-strings
-- [x] bioinformatics-base-count
+- [ ] binary-strings
+- [ ] bioinformatics-base-count
 - [ ] bioinformatics-global-alignment
 - [ ] bioinformatics-sequence-mutation
 - [ ] biorhythms
@@ -137,7 +137,7 @@ This directory holds Go source code generated from the real Mochi programs in `t
 - [ ] box-the-compass
 - [ ] boyer-moore-string-search
 - [ ] brazilian-numbers
-- [x] break-oo-privacy
+- [ ] break-oo-privacy
 - [ ] brilliant-numbers
 - [ ] brownian-tree
 - [ ] bulls-and-cows-player
@@ -145,7 +145,7 @@ This directory holds Go source code generated from the real Mochi programs in `t
 - [ ] burrows-wheeler-transform
 - [ ] caesar-cipher-1
 - [ ] caesar-cipher-2
-- [x] calculating-the-value-of-e
+- [ ] calculating-the-value-of-e
 - [ ] calendar---for-real-programmers-1
 - [ ] calendar---for-real-programmers-2
 - [ ] calendar
@@ -170,7 +170,7 @@ This directory holds Go source code generated from the real Mochi programs in `t
 - [ ] camel-case-and-snake-case
 - [ ] canny-edge-detector
 - [ ] canonicalize-cidr
-- [x] cantor-set
+- [ ] cantor-set
 - [ ] carmichael-3-strong-pseudoprimes
 - [ ] cartesian-product-of-two-or-more-lists-1
 - [ ] cartesian-product-of-two-or-more-lists-2
@@ -180,11 +180,11 @@ This directory holds Go source code generated from the real Mochi programs in `t
 - [ ] casting-out-nines
 - [ ] catalan-numbers-1
 - [ ] catalan-numbers-2
-- [x] catalan-numbers-pascals-triangle
-- [x] catamorphism
-- [x] catmull-clark-subdivision-surface
+- [ ] catalan-numbers-pascals-triangle
+- [ ] catamorphism
+- [ ] catmull-clark-subdivision-surface
 - [ ] chaocipher
-- [x] chaos-game
+- [ ] chaos-game
 - [x] character-codes-1
 - [x] character-codes-2
 - [x] character-codes-3
@@ -197,18 +197,40 @@ This directory holds Go source code generated from the real Mochi programs in `t
 - [x] checkpoint-synchronization-2
 - [x] checkpoint-synchronization-3
 - [x] checkpoint-synchronization-4
-- [x] chernicks-carmichael-numbers
+- [ ] chernicks-carmichael-numbers
 - [ ] cheryls-birthday
 - [ ] chinese-remainder-theorem
 - [x] chinese-zodiac
 - [ ] cholesky-decomposition-1
-- [x] cholesky-decomposition
+- [ ] cholesky-decomposition
 - [x] chowla-numbers
 - [ ] church-numerals-1
 - [ ] church-numerals-2
 - [ ] circles-of-given-radius-through-two-points
 - [ ] circular-primes
 - [ ] cistercian-numerals
+- [ ] compiler-virtual-machine-interpreter
+- [ ] concurrent-computing-1
+- [ ] concurrent-computing-2
+- [ ] concurrent-computing-3
+- [ ] conditional-structures-1
+- [ ] conditional-structures-10
+- [ ] conditional-structures-2
+- [ ] conditional-structures-3
+- [ ] conditional-structures-4
+- [ ] conditional-structures-5
+- [ ] conditional-structures-6
+- [ ] conditional-structures-7
+- [ ] conditional-structures-8
+- [ ] conditional-structures-9
+- [ ] consecutive-primes-with-ascending-or-descending-differences
+- [ ] constrained-genericity-1
+- [ ] constrained-genericity-2
+- [ ] constrained-genericity-3
+- [ ] constrained-genericity-4
+- [ ] constrained-random-points-on-a-circle-1
+- [ ] constrained-random-points-on-a-circle-2
+- [ ] continued-fraction
 - [ ] crc-32-1
 - [ ] crc-32-2
 - [ ] csv-data-manipulation

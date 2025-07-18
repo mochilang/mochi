@@ -1,1 +1,1 @@
-compile error: operator "*" cannot be used on types bigint and bigint
+compile: operator "*" cannot be used on types bigint and bigint

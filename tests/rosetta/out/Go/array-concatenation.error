@@ -1,0 +1,4 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:18:9: cannot use append(_toAnySlice(out), any(v)) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:21:9: cannot use append(_toAnySlice(out), any(v)) (value of type []any) as []int value in assignment

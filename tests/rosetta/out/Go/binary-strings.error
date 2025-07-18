@@ -1,0 +1,13 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:29:14: invalid argument: any(bs) (value of interface type any) for built-in len
+/tmp/X/001/main.go:53:14: invalid argument: any(b) (value of interface type any) for built-in len
+/tmp/X/001/main.go:54:7: cannot use append(_toAnySlice(d), any(b[i])) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:61:70: invalid argument: any(b) (value of interface type any) for built-in len
+/tmp/X/001/main.go:63:60: cannot use z (variable of type []any) as []int value in argument to fromBytes
+/tmp/X/001/main.go:68:14: invalid argument: any(d) (value of interface type any) for built-in len
+/tmp/X/001/main.go:71:8: cannot use append(_toAnySlice(f), any(109)) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:73:8: cannot use append(_toAnySlice(f), any(val)) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:79:8: cannot use append(_toAnySlice(rem), any(b[0])) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:81:14: invalid argument: any(b) (value of interface type any) for built-in len
+/tmp/X/001/main.go:81:14: too many errors

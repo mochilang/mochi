@@ -1,0 +1,12 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:19:9: cannot use append(_toAnySlice(spf), any(0)) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:47:13: cannot use append(_toAnySlice(primes), any(i)) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:57:10: invalid argument: any(s) (value of interface type any) for built-in len
+/tmp/X/001/main.go:67:12: invalid argument: any(s) (value of interface type any) for built-in len
+/tmp/X/001/main.go:83:12: invalid argument: any(primes) (value of interface type any) for built-in len
+/tmp/X/001/main.go:103:10: invalid argument: any(arr) (value of interface type any) for built-in len
+/tmp/X/001/main.go:105:10: cannot use append(_toAnySlice(arr), any(n)) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:128:11: cannot use append(_toAnySlice(arr), any(n)) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:172:6: main redeclared in this block
+	/tmp/X/001/main.go:137:6: other declaration of main

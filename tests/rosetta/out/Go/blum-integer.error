@@ -1,0 +1,10 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:67:22: invalid argument: any(inc) (value of interface type any) for built-in len
+/tmp/X/001/main.go:75:14: invalid argument: any(s) (value of interface type any) for built-in len
+/tmp/X/001/main.go:87:10: invalid argument: any(s) (value of interface type any) for built-in len
+/tmp/X/001/main.go:101:9: invalid argument: any(s) (value of interface type any) for built-in len
+/tmp/X/001/main.go:131:13: cannot use append(_toAnySlice(blum), any(i)) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:155:82: invalid argument: any(line) (value of interface type any) for built-in len
+/tmp/X/001/main.go:169:6: main redeclared in this block
+	/tmp/X/001/main.go:108:6: other declaration of main

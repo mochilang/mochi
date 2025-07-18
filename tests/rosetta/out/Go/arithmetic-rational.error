@@ -1,0 +1,6 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:25:12: invalid operation: sq == x (mismatched types float64 and int)
+/tmp/X/001/main.go:47:13: invalid operation: f2 != f (mismatched types float64 and int)
+/tmp/X/001/main.go:82:6: main redeclared in this block
+	/tmp/X/001/main.go:57:6: other declaration of main

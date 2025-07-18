@@ -1,0 +1,8 @@
+parse: error[P999]: tests/rosetta/x/Mochi/constrained-genericity-2.mochi:4:20: unexpected token "<"
+  --> tests/rosetta/x/Mochi/constrained-genericity-2.mochi:4:20
+
+  4 | type Foodbox = list<Eatable>
+    |                    ^
+
+help:
+  Parse error occurred. Check syntax near this location.

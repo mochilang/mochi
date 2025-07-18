@@ -1,0 +1,14 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:16:16: invalid argument: any(wordsets) (value of interface type any) for built-in len
+/tmp/X/001/main.go:21:13: invalid operation: cannot index res (variable of type *[]string)
+/tmp/X/001/main.go:24:14: invalid argument: any(wordsets[idx]) (value of interface type any) for built-in len
+/tmp/X/001/main.go:26:46: invalid argument: any(prev) (value of interface type any) for built-in len
+/tmp/X/001/main.go:27:7: invalid operation: cannot index res (variable of type *[]string)
+/tmp/X/001/main.go:47:14: invalid argument: any(wordset) (value of interface type any) for built-in len
+/tmp/X/001/main.go:48:9: cannot use append(_toAnySlice(res), any("")) (value of type []any) as []string value in assignment
+/tmp/X/001/main.go:51:18: cannot use res (variable of type []string) as *[]string value in argument to amb
+/tmp/X/001/main.go:54:15: invalid argument: any(res) (value of interface type any) for built-in len
+/tmp/X/001/main.go:65:6: main redeclared in this block
+	/tmp/X/001/main.go:38:6: other declaration of main
+/tmp/X/001/main.go:54:15: too many errors

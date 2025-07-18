@@ -1,0 +1,6 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:21:9: cannot use append(_toAnySlice(lines), any("xyz:x:1003:1000:X Yz,Room 1003,(234)555-8913,(234)555-0033,xyz@rosettacode.org:/home/xyz:/bin/bash")) (value of type []any) as []string value in return statement
+/tmp/X/001/main.go:28:10: invalid argument: any(lines) (value of interface type any) for built-in len
+/tmp/X/001/main.go:35:6: main redeclared in this block
+	/tmp/X/001/main.go:25:6: other declaration of main

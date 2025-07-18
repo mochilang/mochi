@@ -1,0 +1,14 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:16:11: invalid argument: any(img) (value of interface type any) for built-in len
+/tmp/X/001/main.go:17:11: invalid argument: any(img[0]) (value of interface type any) for built-in len
+/tmp/X/001/main.go:18:11: invalid argument: any(k) (value of interface type any) for built-in len
+/tmp/X/001/main.go:50:10: cannot use append(_toAnySlice(row), any(sum)) (value of type []any) as []float64 value in assignment
+/tmp/X/001/main.go:53:9: cannot use append(_toAnySlice(out), any(row)) (value of type []any) as [][]float64 value in assignment
+/tmp/X/001/main.go:65:11: invalid argument: any(img) (value of interface type any) for built-in len
+/tmp/X/001/main.go:66:11: invalid argument: any(img[0]) (value of interface type any) for built-in len
+/tmp/X/001/main.go:74:10: cannot use append(_toAnySlice(row), any(g)) (value of type []any) as []float64 value in assignment
+/tmp/X/001/main.go:77:9: cannot use append(_toAnySlice(out), any(row)) (value of type []any) as [][]float64 value in assignment
+/tmp/X/001/main.go:168:6: main redeclared in this block
+	/tmp/X/001/main.go:125:6: other declaration of main
+/tmp/X/001/main.go:77:9: too many errors

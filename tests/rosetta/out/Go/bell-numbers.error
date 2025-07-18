@@ -1,5 +1,5 @@
-type error: error[T004]: `` is not callable
-  --> /workspace/mochi/tests/rosetta/x/Mochi/bell-numbers.mochi:34:31
+type: error[T004]: `` is not callable
+  --> tests/rosetta/x/Mochi/bell-numbers.mochi:34:31
 
  34 |     print("" + str(i).padStart(2, " ") + ": " + str(bt[i][0]))
     |                               ^

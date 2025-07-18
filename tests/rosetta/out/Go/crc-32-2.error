@@ -1,5 +1,5 @@
-parse error: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/crc-32-2.mochi:20:26: lexer: invalid input text "; i = i + 1 }\n  ..."
-  --> /workspace/mochi/tests/rosetta/x/Mochi/crc-32-2.mochi:20:26
+parse: error[P040]: tests/rosetta/x/Mochi/crc-32-2.mochi:20:26: lexer: invalid input text "; i = i + 1 }\n  ..."
+  --> tests/rosetta/x/Mochi/crc-32-2.mochi:20:26
 
  20 |   while i < n { v = v / 2; i = i + 1 }
     |                          ^

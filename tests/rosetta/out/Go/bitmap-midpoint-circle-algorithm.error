@@ -1,0 +1,13 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:22:10: cannot use append(_toAnySlice(row), any(" ")) (value of type []any) as []string value in assignment
+/tmp/X/001/main.go:25:7: cannot use append(_toAnySlice(g), any(row)) (value of type []any) as [][]string value in assignment
+/tmp/X/001/main.go:33:33: invalid operation: cannot index g (variable of type *[][]string)
+/tmp/X/001/main.go:33:66: invalid argument: any(g) (value of interface type any) for built-in len
+/tmp/X/001/main.go:34:4: invalid operation: cannot index g (variable of type *[][]string)
+/tmp/X/001/main.go:46:7: cannot use g (variable of type [][]string) as *[][]string value in argument to set
+/tmp/X/001/main.go:47:7: cannot use g (variable of type [][]string) as *[][]string value in argument to set
+/tmp/X/001/main.go:48:7: cannot use g (variable of type [][]string) as *[][]string value in argument to set
+/tmp/X/001/main.go:49:7: cannot use g (variable of type [][]string) as *[][]string value in argument to set
+/tmp/X/001/main.go:50:7: cannot use g (variable of type [][]string) as *[][]string value in argument to set
+/tmp/X/001/main.go:50:7: too many errors

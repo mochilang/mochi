@@ -1,1 +1,13 @@
-compile error: cannot index into type Digit
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:17:14: invalid argument: any(s) (value of interface type any) for built-in len
+/tmp/X/001/main.go:30:10: invalid argument: any(str) (value of interface type any) for built-in len
+/tmp/X/001/main.go:47:14: invalid argument: any(str) (value of interface type any) for built-in len
+/tmp/X/001/main.go:133:14: invalid argument: any(bits) (value of interface type any) for built-in len
+/tmp/X/001/main.go:148:11: invalid argument: any(bin) (value of interface type any) for built-in len
+/tmp/X/001/main.go:153:14: invalid argument: any(bin) (value of interface type any) for built-in len
+/tmp/X/001/main.go:159:20: invalid argument: any(text) (value of interface type any) for built-in len
+/tmp/X/001/main.go:161:35: invalid argument: any(out) (value of interface type any) for built-in len
+/tmp/X/001/main.go:164:35: invalid argument: any(out) (value of interface type any) for built-in len
+/tmp/X/001/main.go:174:14: invalid argument: any(enc) (value of interface type any) for built-in len
+/tmp/X/001/main.go:174:14: too many errors

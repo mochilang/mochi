@@ -1,0 +1,8 @@
+parse: error[P999]: tests/rosetta/x/Mochi/balanced-brackets.mochi:4:5: unexpected token "generate" (expected <ident> "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+  --> tests/rosetta/x/Mochi/balanced-brackets.mochi:4:5
+
+  4 | fun generate(n: int): string {
+    |     ^
+
+help:
+  Parse error occurred. Check syntax near this location.

@@ -1,1 +1,13 @@
-compile error: cannot index into type any
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:46:10: cannot use append(_toAnySlice(row), any(0.0)) (value of type []any) as []float64 value in assignment
+/tmp/X/001/main.go:49:9: cannot use append(_toAnySlice(mat), any(row)) (value of type []any) as [][]float64 value in assignment
+/tmp/X/001/main.go:67:14: invalid argument: any(m) (value of interface type any) for built-in len
+/tmp/X/001/main.go:70:15: invalid argument: any(m[i]) (value of interface type any) for built-in len
+/tmp/X/001/main.go:72:16: invalid argument: any(m[i]) (value of interface type any) for built-in len
+/tmp/X/001/main.go:103:10: cannot use append(_toAnySlice(row), any(0.0)) (value of type []any) as []float64 value in assignment
+/tmp/X/001/main.go:106:9: cannot use append(_toAnySlice(mat), any(row)) (value of type []any) as [][]float64 value in assignment
+/tmp/X/001/main.go:118:16: invalid argument: ae (variable of interface type any) for built-in len
+/tmp/X/001/main.go:119:8: cannot use append(_toAnySlice(le), any(0.0)) (value of type []any) as []float64 value in assignment
+/tmp/X/001/main.go:127:14: invalid argument: ae (variable of interface type any) for built-in len
+/tmp/X/001/main.go:127:14: too many errors

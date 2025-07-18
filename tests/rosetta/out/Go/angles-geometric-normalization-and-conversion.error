@@ -1,0 +1,8 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:16:10: invalid operation: operator % not defined on d (variable of type float64)
+/tmp/X/001/main.go:21:10: invalid operation: operator % not defined on g (variable of type float64)
+/tmp/X/001/main.go:26:10: invalid operation: operator % not defined on m (variable of type float64)
+/tmp/X/001/main.go:31:10: invalid operation: operator % not defined on r (variable of type float64)
+/tmp/X/001/main.go:128:6: main redeclared in this block
+	/tmp/X/001/main.go:95:6: other declaration of main

@@ -1,0 +1,11 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:16:11: invalid argument: any(limits) (value of interface type any) for built-in len
+/tmp/X/001/main.go:20:10: cannot use append(_toAnySlice(bins), any(0)) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:24:14: invalid argument: any(dataVar) (value of interface type any) for built-in len
+/tmp/X/001/main.go:27:19: invalid argument: any(limits) (value of interface type any) for built-in len
+/tmp/X/001/main.go:46:22: invalid argument: any(s) (value of interface type any) for built-in len
+/tmp/X/001/main.go:58:11: invalid argument: any(limits) (value of interface type any) for built-in len
+/tmp/X/001/main.go:344:14: invalid argument: any(limitsList) (value of interface type any) for built-in len
+/tmp/X/001/main.go:352:6: main redeclared in this block
+	/tmp/X/001/main.go:70:6: other declaration of main

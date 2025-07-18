@@ -1,0 +1,14 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:48:8: cannot use append(_toAnySlice(r), any(Pixel{…})) (value of type []any) as []Pixel value in assignment
+/tmp/X/001/main.go:51:13: cannot use append(_toAnySlice(dataVar), any(r)) (value of type []any) as [][]Pixel value in assignment
+/tmp/X/001/main.go:81:12: invalid operation: cannot take address of pixelFromRgb(c) (value of struct type Pixel)
+/tmp/X/001/main.go:99:26: invalid operation: cannot take address of pixelFromRgb(c) (value of struct type Pixel)
+/tmp/X/001/main.go:105:25: cannot convert map[string]bool{…} (value of type map[string]bool) to type map[string]any
+/tmp/X/001/main.go:113:13: cannot use &b (value of type *Bitmap) as Bitmap value in argument to GetPx
+/tmp/X/001/main.go:116:25: cannot convert map[string]bool{…} (value of type map[string]bool) to type map[string]any
+/tmp/X/001/main.go:118:57: invalid operation: cannot take address of (r["pixel"]).(Pixel) (comma, ok expression of struct type Pixel)
+/tmp/X/001/main.go:124:14: invalid argument: any(header) (value of interface type any) for built-in len
+/tmp/X/001/main.go:163:6: main redeclared in this block
+	/tmp/X/001/main.go:133:6: other declaration of main
+/tmp/X/001/main.go:124:14: too many errors

@@ -1,0 +1,6 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:16:11: cannot convert any(_input()) (value of interface type any) to type int: need type assertion
+/tmp/X/001/main.go:17:11: cannot convert any(_input()) (value of interface type any) to type int: need type assertion
+/tmp/X/001/main.go:21:6: main redeclared in this block
+	/tmp/X/001/main.go:15:6: other declaration of main

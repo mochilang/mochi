@@ -1,0 +1,14 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:16:6: cannot use append(_toAnySlice(h), any(it)) (value of type []any) as *[]map[string]int value in assignment
+/tmp/X/001/main.go:16:25: in call to _toAnySlice, type *[]map[string]int of h does not match []T (cannot infer T)
+/tmp/X/001/main.go:17:12: invalid argument: any(h) (value of interface type any) for built-in len
+/tmp/X/001/main.go:18:19: invalid operation: cannot index h (variable of type *[]map[string]int)
+/tmp/X/001/main.go:19:11: invalid operation: cannot index h (variable of type *[]map[string]int)
+/tmp/X/001/main.go:20:4: invalid operation: cannot index h (variable of type *[]map[string]int)
+/tmp/X/001/main.go:21:4: invalid operation: cannot index h (variable of type *[]map[string]int)
+/tmp/X/001/main.go:24:9: cannot use h (variable of type *[]map[string]int) as []map[string]int value in return statement
+/tmp/X/001/main.go:29:11: invalid argument: any(h) (value of interface type any) for built-in len
+/tmp/X/001/main.go:141:6: main redeclared in this block
+	/tmp/X/001/main.go:124:6: other declaration of main
+/tmp/X/001/main.go:29:11: too many errors

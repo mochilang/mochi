@@ -1,0 +1,14 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:19:13: cannot use append(_toAnySlice(factors), any(2)) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:25:14: cannot use append(_toAnySlice(factors), any(p)) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:31:13: cannot use append(_toAnySlice(factors), any(x)) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:61:13: cannot use append(_toAnySlice(factors), any(2)) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:62:13: cannot use append(_toAnySlice(factors), any(2)) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:63:13: cannot use append(_toAnySlice(factors), any(5)) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:64:13: cannot use append(_toAnySlice(factors), any(5)) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:66:11: invalid argument: any(factors) (value of interface type any) for built-in len
+/tmp/X/001/main.go:80:10: invalid argument: any(s) (value of interface type any) for built-in len
+/tmp/X/001/main.go:122:6: main redeclared in this block
+	/tmp/X/001/main.go:87:6: other declaration of main
+/tmp/X/001/main.go:80:10: too many errors

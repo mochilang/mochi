@@ -1,0 +1,6 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:50:33: cannot convert base (variable of struct type Base) to type map[string]any
+/tmp/X/001/main.go:50:55: cannot convert update (variable of struct type Update) to type map[string]any
+/tmp/X/001/main.go:54:6: main redeclared in this block
+	/tmp/X/001/main.go:39:6: other declaration of main

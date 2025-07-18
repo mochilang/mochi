@@ -1,0 +1,5 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:32:13: cannot use append(_toAnySlice(buckets), any(0)) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:101:6: main redeclared in this block
+	/tmp/X/001/main.go:27:6: other declaration of main

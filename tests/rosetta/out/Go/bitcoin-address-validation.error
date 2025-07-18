@@ -1,8 +1,8 @@
-type error: error[T003]: unknown function: sha256
-  --> /workspace/mochi/tests/rosetta/x/Mochi/bitcoin-address-validation.mochi:43:15
-
- 43 |   let first = sha256(bs)
-    |               ^
-
-help:
-  Ensure the function is defined before it's called.
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:17:14: invalid argument: any(s) (value of interface type any) for built-in len
+/tmp/X/001/main.go:32:7: cannot use append(_toAnySlice(a), any(0)) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:36:16: invalid argument: any(addr) (value of interface type any) for built-in len
+/tmp/X/001/main.go:59:11: undefined: sha256
+/tmp/X/001/main.go:60:9: undefined: sha256
+/tmp/X/001/main.go:72:9: invalid argument: any(a) (value of interface type any) for built-in len
