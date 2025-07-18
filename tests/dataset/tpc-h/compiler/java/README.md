@@ -26,3 +26,8 @@ This directory contains Java translations of the TPC-H benchmark queries generat
 - [x] q20
 - [x] q21
 - [x] q22
+
+## Test Results (2025-07-18)
+
+- **Passed:** q2, q3, q4, q5, q6, q7, q8, q10, q11, q12, q13, q14, q15, q16, q17, q18, q19, q20, q21, q22
+- **Failed:** q1, q9
