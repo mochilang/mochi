@@ -97,9 +97,29 @@ function doTrials(trials: number, np: number, strategy: string): void {
   }
   let rf = ((pardoned as number) / (trials as number)) * 100;
   return console.log(
-    `  strategy = ${strategy}  pardoned = ${
-      String(pardoned)
-    } relative frequency = ${String(rf)}%`,
+    Array.isArray(
+        `  strategy = ${strategy}  pardoned = ${
+          String(pardoned)
+        } relative frequency = ${String(rf)}%`,
+      )
+      ? _fmtList(
+        `  strategy = ${strategy}  pardoned = ${
+          String(pardoned)
+        } relative frequency = ${String(rf)}%`,
+      )
+      : (typeof `  strategy = ${strategy}  pardoned = ${
+          String(pardoned)
+        } relative frequency = ${String(rf)}%` === "object"
+        ? _fmt(
+          `  strategy = ${strategy}  pardoned = ${
+            String(pardoned)
+          } relative frequency = ${String(rf)}%`,
+        )
+        : String(
+          `  strategy = ${strategy}  pardoned = ${
+            String(pardoned)
+          } relative frequency = ${String(rf)}%`,
+        )),
   );
 }
 
@@ -107,8 +127,26 @@ function main(): void {
   let trials = 1000;
   for (const np of [10, 100]) {
     console.log(
-      `Results from ${String(trials)} trials with ${String(np)} prisoners:
+      Array.isArray(
+          `Results from ${String(trials)} trials with ${String(np)} prisoners:
 `,
+        )
+        ? _fmtList(
+          `Results from ${String(trials)} trials with ${String(np)} prisoners:
+`,
+        )
+        : (typeof `Results from ${String(trials)} trials with ${
+            String(np)
+          } prisoners:
+` === "object"
+          ? _fmt(
+            `Results from ${String(trials)} trials with ${String(np)} prisoners:
+`,
+          )
+          : String(
+            `Results from ${String(trials)} trials with ${String(np)} prisoners:
+`,
+          )),
     );
     for (const strat of ["random", "optimal"]) {
       doTrials(trials, np, strat);
@@ -117,3 +155,21 @@ function main(): void {
 }
 
 main();
+function _fmt(v: any): string {
+  if (Array.isArray(v)) return v.map(_fmt).join(" ");
+  if (v && typeof v === "object") {
+    const keys = Object.keys(v).sort();
+    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
+    return "map[" + parts.join(" ") + "]";
+  }
+  return String(v);
+}
+
+function _fmtList(v: any[]): string {
+  if (v.some((it) => Array.isArray(it) || (it && typeof it === "object"))) {
+    return v.map((it) =>
+      Array.isArray(it) ? "[" + _fmtList(it) + "]" : _fmt(it)
+    ).join(" ");
+  }
+  return v.join(" ");
+}

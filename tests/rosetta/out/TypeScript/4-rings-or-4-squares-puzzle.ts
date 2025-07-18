@@ -114,4 +114,23 @@ function main(): void {
   let r3: Record<string, any> = getCombs(0, 9, false);
   console.log(`${String(r3["count"])} non-unique solutions in 0 to 9`);
 }
+function _fmt(v: any): string {
+  if (Array.isArray(v)) return v.map(_fmt).join(" ");
+  if (v && typeof v === "object") {
+    const keys = Object.keys(v).sort();
+    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
+    return "map[" + parts.join(" ") + "]";
+  }
+  return String(v);
+}
+
+function _fmtList(v: any[]): string {
+  if (v.some((it) => Array.isArray(it) || (it && typeof it === "object"))) {
+    return v.map((it) =>
+      Array.isArray(it) ? "[" + _fmtList(it) + "]" : _fmt(it)
+    ).join(" ");
+  }
+  return v.join(" ");
+}
+
 main();
