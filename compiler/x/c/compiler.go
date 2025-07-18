@@ -2015,10 +2015,10 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 		elemC = "int"
 	}
 	idx := c.newTemp()
-	c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", idx, idx, list, idx))
+	c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s; %s++) {", idx, idx, c.listLenExpr(list), idx))
 	c.indent++
 	item := c.newTemp()
-	c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", elemC, item, list, idx))
+	c.writeln(fmt.Sprintf("%s %s = %s;", elemC, item, c.listItemExpr(list, idx)))
 	oldStruct := c.currentStruct
 	origEnv := c.env
 	if st, ok := elemType.(types.StructType); ok {
@@ -2053,7 +2053,7 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 		c.indent--
 		c.writeln("}")
 	}
-	c.writeln(fmt.Sprintf("%s.data[%s] = %s;", list, idx, item))
+	c.writeln(fmt.Sprintf("%s = %s;", c.listItemExpr(list, idx), item))
 	if origEnv != nil {
 		c.env = origEnv
 	}
@@ -6130,6 +6130,11 @@ func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 				}
 			}
 			typ = t
+			if ut, ok := t.(types.UnionType); ok {
+				if _, ok2 := c.env.FindUnionByVariant(s.Root); ok2 {
+					return fmt.Sprintf("(%s){.tag=%s_%s}", sanitizeTypeName(ut.Name), sanitizeTypeName(ut.Name), sanitizeTypeName(s.Root))
+				}
+			}
 		}
 		if typ == nil {
 			if ut, ok := c.env.FindUnionByVariant(s.Root); ok {
