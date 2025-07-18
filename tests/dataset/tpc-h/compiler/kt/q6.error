@@ -1,0 +1,8 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q6.kt:42:23: error: type mismatch: inferred type is Number but Double was expected
+            __res.add(sum(l.l_extendedprice * l.l_discount))
+                      ^
+/tmp/q6.kt:42:27: error: type mismatch: inferred type is Double but List<Any?> was expected
+            __res.add(sum(l.l_extendedprice * l.l_discount))
+                          ^

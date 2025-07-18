@@ -1,0 +1,6 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q18.kt:100:4: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+public fun String.compareTo(other: String, ignoreCase: Boolean = ...): Int defined in kotlin.text
+}) > threshold) {
+   ^
