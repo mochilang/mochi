@@ -1,6 +1,6 @@
 run: exit status 1
-Syntax error compiling at (/tmp/15-puzzle-solver.clj:5:13).
+Syntax error compiling at (/tmp/15-puzzle-solver.clj:18:12).
 Unable to resolve symbol: testpkg in this context
 
 Full report at:
-/tmp/clojure-5067077119523664953.edn
+/tmp/clojure-7151284692100235341.edn
