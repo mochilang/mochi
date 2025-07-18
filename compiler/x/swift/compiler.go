@@ -262,10 +262,10 @@ func (c *compiler) letStmt(l *parser.LetStmt) error {
 			}
 		}
 		if typ != "" {
-			c.writeln(fmt.Sprintf("%s %s: %s = %s", kw, l.Name, typ, val))
+			c.writeln(fmt.Sprintf("%s %s: %s = %s", kw, sanitizeName(l.Name), typ, val))
 			c.swiftTypes[l.Name] = typ
 		} else {
-			c.writeln(fmt.Sprintf("%s %s = %s", kw, l.Name, val))
+			c.writeln(fmt.Sprintf("%s %s = %s", kw, sanitizeName(l.Name), val))
 		}
 		c.varTypes[l.Name] = inferred
 		c.recordMapFields(l.Name, l.Value)
@@ -274,7 +274,7 @@ func (c *compiler) letStmt(l *parser.LetStmt) error {
 	if typ == "" {
 		return fmt.Errorf("let without value or type at line %d", l.Pos.Line)
 	}
-	c.writeln(fmt.Sprintf("%s %s: %s = %s", kw, l.Name, typ, defaultValue(typ)))
+	c.writeln(fmt.Sprintf("%s %s: %s = %s", kw, sanitizeName(l.Name), typ, defaultValue(typ)))
 	c.varTypes[l.Name] = inferred
 	c.recordMapFields(l.Name, l.Value)
 	c.swiftTypes[l.Name] = typ
@@ -308,10 +308,10 @@ func (c *compiler) varStmt(v *parser.VarStmt) error {
 			}
 		}
 		if typ != "" {
-			c.writeln(fmt.Sprintf("var %s: %s = %s", v.Name, typ, val))
+			c.writeln(fmt.Sprintf("var %s: %s = %s", sanitizeName(v.Name), typ, val))
 			c.swiftTypes[v.Name] = typ
 		} else {
-			c.writeln(fmt.Sprintf("var %s = %s", v.Name, val))
+			c.writeln(fmt.Sprintf("var %s = %s", sanitizeName(v.Name), val))
 		}
 		c.varTypes[v.Name] = c.inferType(v.Type, v.Value)
 		c.recordMapFields(v.Name, v.Value)
@@ -320,7 +320,7 @@ func (c *compiler) varStmt(v *parser.VarStmt) error {
 	if typ == "" {
 		return fmt.Errorf("var without value or type at line %d", v.Pos.Line)
 	}
-	c.writeln(fmt.Sprintf("var %s: %s = %s", v.Name, typ, defaultValue(typ)))
+	c.writeln(fmt.Sprintf("var %s: %s = %s", sanitizeName(v.Name), typ, defaultValue(typ)))
 	c.varTypes[v.Name] = c.inferType(v.Type, nil)
 	c.recordMapFields(v.Name, v.Value)
 	c.swiftTypes[v.Name] = typ
@@ -328,7 +328,7 @@ func (c *compiler) varStmt(v *parser.VarStmt) error {
 }
 
 func (c *compiler) assignStmt(a *parser.AssignStmt) error {
-	lhs := a.Name
+	lhs := sanitizeName(a.Name)
 	baseType := c.varTypes[a.Name]
 	for i, idx := range a.Index {
 		if idx.Colon != nil || idx.Colon2 != nil || idx.End != nil || idx.Step != nil || idx.Start == nil {
@@ -421,7 +421,7 @@ func (c *compiler) typeDecl(t *parser.TypeDecl) error {
 func (c *compiler) funStmt(f *parser.FunStmt) error {
 	c.writeIndent()
 	c.buf.WriteString("func ")
-	c.buf.WriteString(f.Name)
+	c.buf.WriteString(sanitizeName(f.Name))
 	c.buf.WriteString("(")
 	c.inout[f.Name] = make([]bool, len(f.Params))
 	c.funcArgs[f.Name] = make([]string, len(f.Params))
@@ -437,7 +437,7 @@ func (c *compiler) funStmt(f *parser.FunStmt) error {
 			return fmt.Errorf("parameter %s missing type", p.Name)
 		}
 		c.buf.WriteString("_ ")
-		c.buf.WriteString(p.Name)
+		c.buf.WriteString(sanitizeName(p.Name))
 		c.buf.WriteString(": ")
 		if !c.isBuiltinType(typ) {
 			c.buf.WriteString("inout ")
@@ -1549,7 +1549,7 @@ func (c *compiler) selector(s *parser.SelectorExpr) string {
 		if enum, ok := c.variants[s.Root]; ok {
 			return enum + "." + strings.ToLower(s.Root)
 		}
-		return s.Root
+		return sanitizeName(s.Root)
 	}
 	if len(s.Tail) == 1 {
 		if mod, ok := c.builtinAliases[s.Root]; ok {
@@ -1571,7 +1571,8 @@ func (c *compiler) selector(s *parser.SelectorExpr) string {
 			}
 		}
 	}
-	expr := s.Root
+	root := sanitizeName(s.Root)
+	expr := root
 	typ := c.varTypes[s.Root]
 	fields := c.mapFields[s.Root]
 	for i, f := range s.Tail {
@@ -1721,6 +1722,8 @@ func (c *compiler) typeRef(t *parser.TypeRef) (string, error) {
 		return "Double", nil
 	case "bool":
 		return "Bool", nil
+	case "any":
+		return "Any", nil
 	default:
 		return *t.Simple, nil
 	}
@@ -3375,6 +3378,36 @@ func isFloatExpr(s string) bool {
 		return true
 	}
 	return false
+}
+
+var swiftReserved = map[string]struct{}{
+	"as": {}, "is": {}, "for": {}, "func": {}, "let": {}, "var": {}, "class": {},
+	"struct": {}, "enum": {}, "protocol": {}, "return": {}, "if": {}, "else": {},
+	"switch": {}, "case": {}, "default": {}, "break": {}, "continue": {}, "while": {},
+	"import": {}, "in": {}, "where": {}, "do": {}, "catch": {}, "try": {}, "throw": {},
+	"defer": {}, "guard": {}, "public": {}, "private": {}, "internal": {}, "open": {},
+}
+
+func sanitizeName(name string) string {
+	if name == "" {
+		return ""
+	}
+	var b strings.Builder
+	for i, r := range name {
+		if r == '_' || ('0' <= r && r <= '9' && i > 0) || ('A' <= r && r <= 'Z') || ('a' <= r && r <= 'z') {
+			b.WriteRune(r)
+		} else {
+			b.WriteRune('_')
+		}
+	}
+	s := b.String()
+	if s == "" || !((s[0] >= 'A' && s[0] <= 'Z') || (s[0] >= 'a' && s[0] <= 'z') || s[0] == '_') {
+		s = "_" + s
+	}
+	if _, ok := swiftReserved[s]; ok {
+		s = "_" + s
+	}
+	return s
 }
 
 func castCond(cond string) string {
