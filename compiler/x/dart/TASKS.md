@@ -38,5 +38,8 @@
   `_sum` and `_min` helpers are now only included when required.
 - [2025-07-20 14:00 UTC] Helpers like `_print` and repo lookup are now emitted
   only when referenced, so simple programs produce cleaner output.
+- [2025-07-21 00:00 UTC] Improved aggregate inference so `sum` and `min` on
+  simple queries use built-in `fold`/`reduce` when element types are known,
+  reducing reliance on helper functions.
 ## Remaining Enhancements
 - None.

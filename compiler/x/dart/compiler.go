@@ -2120,6 +2120,14 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		if arg := call.Args[0]; arg != nil && arg.Binary != nil && len(arg.Binary.Right) == 0 && arg.Binary.Left != nil && arg.Binary.Left.Value != nil && arg.Binary.Left.Value.Target != nil && arg.Binary.Left.Value.Target.Query != nil {
 			if expr, ok := c.simpleMapQuery(arg.Binary.Left.Value.Target.Query); ok {
+				typ := types.TypeOfExpr(arg, c.env)
+				if lt, ok := typ.(types.ListType); ok && isNumericType(lt.Elem) {
+					res := fmt.Sprintf("%s.fold<num>(0, (a, b) => a + b)", expr)
+					if isIntType(lt.Elem) {
+						res += " as int"
+					}
+					return res, nil
+				}
 				c.useSum = true
 				return fmt.Sprintf("_sum(%s)", expr), nil
 			}
@@ -2147,6 +2155,15 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		a := args[0]
 		typ := types.TypeOfExpr(call.Args[0], c.env)
+		if arg := call.Args[0]; arg != nil && arg.Binary != nil && len(arg.Binary.Right) == 0 && arg.Binary.Left != nil && arg.Binary.Left.Value != nil && arg.Binary.Left.Value.Target != nil && arg.Binary.Left.Value.Target.Query != nil {
+			if expr, ok := c.simpleMapQuery(arg.Binary.Left.Value.Target.Query); ok {
+				if lt, ok := typ.(types.ListType); ok && isComparableType(lt.Elem) {
+					return fmt.Sprintf("(%s.isEmpty ? 0 : %s.reduce((a, b) => a < b ? a : b))", expr, expr), nil
+				}
+				c.useMin = true
+				return fmt.Sprintf("_min(%s)", expr), nil
+			}
+		}
 		if isComparableListType(typ) {
 			if _, ok := c.simpleIdentifier(call.Args[0]); ok {
 				return fmt.Sprintf("(%s.isEmpty ? 0 : %s.reduce((a, b) => a < b ? a : b))", a, a), nil

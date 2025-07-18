@@ -7,7 +7,7 @@ This directory contains Dart translations of the TPC-H benchmark queries generat
 - [x] q1
 - [x] q2
 - [x] q3
-- [ ] q4
+- [x] q4
 - [x] q5
 - [x] q6
 - [x] q7
@@ -15,7 +15,7 @@ This directory contains Dart translations of the TPC-H benchmark queries generat
 - [x] q9
 - [x] q10
 - [x] q11
-- [ ] q12
+- [x] q12
 - [x] q13
 - [x] q14
 - [x] q15
@@ -23,6 +23,6 @@ This directory contains Dart translations of the TPC-H benchmark queries generat
 - [x] q17
 - [x] q18
 - [x] q19
-- [ ] q20
-- [ ] q21
+- [x] q20
+- [x] q21
 - [x] q22
