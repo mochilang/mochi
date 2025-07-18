@@ -306,6 +306,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	// Determine async functions
 	c.collectAsyncFuncs(prog.Statements)
 
+	var body bytes.Buffer
+	origBuf := c.buf
+	c.buf = body
+
 	c.writeln(strings.TrimSuffix(string(meta.Header("//")), "\n"))
 	if prog.Pos.Filename != "" {
 		c.writeln("// Source: " + prog.Pos.Filename)
@@ -451,7 +455,13 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			}
 		}
 	}
+	// Capture generated body before emitting runtime
+	bodyBytes := c.buf.Bytes()
+	c.buf = origBuf
+
 	c.emitRuntime()
+	c.buf.Write(bodyBytes)
+
 	if !hasMain {
 		if needsAsync {
 			c.writeln("await main()")
