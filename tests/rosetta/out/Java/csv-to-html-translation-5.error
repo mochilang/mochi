@@ -1,6 +1,0 @@
-run: exit status 1
-Exception in thread "main" java.lang.UnsupportedOperationException
-	at java.base/java.util.AbstractList.add(AbstractList.java:155)
-	at java.base/java.util.AbstractList.add(AbstractList.java:113)
-	at CsvToHtmlTranslation5.split(CsvToHtmlTranslation5.java:13)
-	at CsvToHtmlTranslation5.main(CsvToHtmlTranslation5.java:39)

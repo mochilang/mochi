@@ -1,6 +1,0 @@
-run: exit status 1
-Exception in thread "main" java.lang.UnsupportedOperationException
-	at java.base/java.util.AbstractList.add(AbstractList.java:155)
-	at java.base/java.util.AbstractList.add(AbstractList.java:113)
-	at ArrayConcatenation.concatInts(ArrayConcatenation.java:11)
-	at ArrayConcatenation.main(ArrayConcatenation.java:29)

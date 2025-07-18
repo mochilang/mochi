@@ -1,6 +1,0 @@
-run: exit status 1
-Exception in thread "main" java.lang.UnsupportedOperationException
-	at java.base/java.util.AbstractList.add(AbstractList.java:155)
-	at java.base/java.util.AbstractList.add(AbstractList.java:113)
-	at CallAFunction10.main(CallAFunction10.java:12)
-	at CallAFunction10.main(CallAFunction10.java:19)
