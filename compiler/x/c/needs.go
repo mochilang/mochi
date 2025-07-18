@@ -70,6 +70,7 @@ const (
 	needValuesMapIntBool     = "values_map_int_bool"
 	needValuesMapStringInt   = "values_map_string_int"
 	needValuesMapIntString   = "values_map_int_string"
+	needLower                = "lower"
 	needPrintListInt         = "print_list_int"
 	needPrintListFloat       = "print_list_float"
 	needPrintListString      = "print_list_string"

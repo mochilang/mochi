@@ -1,4 +1,4 @@
-# Rosetta C Output (78/239 compiled and run)
+# Rosetta C Output (79/239 compiled and run)
 
 This directory holds C source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -133,7 +133,7 @@ This directory holds C source code generated from the real Mochi programs in `te
 - [ ] bitwise-io-2
 - [x] bitwise-operations
 - [x] blum-integer
-- [ ] boolean-values
+ - [x] boolean-values
 - [ ] box-the-compass
 - [ ] boyer-moore-string-search
 - [ ] brazilian-numbers

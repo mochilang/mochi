@@ -549,6 +549,13 @@ static list_int _sha256_list(list_int v) {
     return buf;
 }
 `
+	helperLower = `static char* _lower(char* s) {
+    int len = strlen(s);
+    char* buf = (char*)malloc(len + 1);
+    for (int i = 0; i < len; i++) buf[i] = tolower((unsigned char)s[i]);
+    buf[len] = '\0';
+    return buf;
+}`
 	helperNow = `static long long _now() {
     struct timespec ts;
     clock_gettime(CLOCK_REALTIME, &ts);
@@ -803,6 +810,7 @@ var helperCode = map[string]string{
 	needInMapIntString:       helperMapIntString,
 	needInput:                helperInput,
 	needStr:                  helperStr,
+	needLower:                helperLower,
 	needNow:                  helperNow,
 	needSHA256:               helperSha256,
 	needJSON:                 helperJSON,
@@ -890,6 +898,7 @@ var helperOrder = []string{
 	needInMapIntString,
 	needInput,
 	needStr,
+	needLower,
 	needNow,
 	needSHA256,
 	needJSON,

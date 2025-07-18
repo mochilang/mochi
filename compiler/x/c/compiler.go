@@ -548,8 +548,11 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	if c.needMath {
 		c.writeln("#include <math.h>")
 	}
-	if c.has(needStringHeader) || c.has(needConcatString) || c.has(needConcatListString) || c.has(needListString) || c.has(needUnionListString) || c.has(needExceptListString) || c.has(needIntersectListString) || c.has(needInListString) || c.has(needInString) || c.has(needMapStringInt) || c.has(needGroupByPairString) {
+	if c.has(needStringHeader) || c.has(needConcatString) || c.has(needConcatListString) || c.has(needListString) || c.has(needUnionListString) || c.has(needExceptListString) || c.has(needIntersectListString) || c.has(needInListString) || c.has(needInString) || c.has(needMapStringInt) || c.has(needGroupByPairString) || c.has(needLower) {
 		c.writeln("#include <string.h>")
+	}
+	if c.has(needLower) {
+		c.writeln("#include <ctype.h>")
 	}
 	if c.has(needNow) {
 		c.writeln("#include <time.h>")
@@ -5577,6 +5580,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			s := c.compileExpr(p.Call.Args[0])
 			sub := c.compileExpr(p.Call.Args[1])
 			return fmt.Sprintf("index_of_string(%s, %s)", s, sub)
+		} else if p.Call.Func == "lower" {
+			arg := c.compileExpr(p.Call.Args[0])
+			c.need(needLower)
+			c.need(needStringHeader)
+			return fmt.Sprintf("_lower(%s)", arg)
 		} else if p.Call.Func == "sha256" {
 			arg := c.compileExpr(p.Call.Args[0])
 			if isStringArg(p.Call.Args[0], c.env) {
@@ -5603,6 +5611,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 							fmtParts = append(fmtParts, " ")
 						}
 						unq := strings.Trim(val, "\"")
+						if uq, err := strconv.Unquote("\"" + unq + "\""); err == nil {
+							unq = uq
+						}
 						fmtParts = append(fmtParts, escapeCString(unq))
 						continue
 					}
