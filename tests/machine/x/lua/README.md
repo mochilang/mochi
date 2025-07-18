@@ -5,16 +5,12 @@ Each program was compiled and executed using the Lua compiler. Successful runs p
 
 Compiled programs: 101/101
 
-### 2025-07-19
-The compiler no longer emits the `__str` helper. Outputs were regenerated and all
-programs continue to run successfully.
-
 Checklist:
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
-- [x] bigint_ops
 - [x] binary_precedence
+- [x] bigint_ops
 - [x] bool_chain
 - [x] break_continue
 - [x] cast_string_to_int

@@ -63,7 +63,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(expr)
+		c.writeln(expr + ";")
 		return nil
 	case s.ExternVar != nil, s.ExternFun != nil, s.ExternObject != nil, s.ExternType != nil:
 		return nil
@@ -111,7 +111,7 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	if c.indent == 0 {
 		prefix = ""
 	}
-	c.writeln(fmt.Sprintf("%s%s = %s", prefix, name, val))
+	c.writeln(fmt.Sprintf("%s%s = %s;", prefix, name, val))
 	return nil
 }
 
@@ -334,7 +334,7 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 	if err != nil {
 		return err
 	}
-	c.writeln(fmt.Sprintf("%s = %s", lhs, val))
+	c.writeln(fmt.Sprintf("%s = %s;", lhs, val))
 	return nil
 }
 

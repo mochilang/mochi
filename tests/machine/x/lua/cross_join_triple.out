@@ -1,9 +1,9 @@
 --- Cross Join of three lists ---
-1 A 1	0
-1 A 0	0
-1 B 1	0
-1 B 0	0
-2 A 1	0
-2 A 0	0
-2 B 1	0
-2 B 0	0
+1 A true
+1 A false
+1 B true
+1 B false
+2 A true
+2 A false
+2 B true
+2 B false

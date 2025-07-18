@@ -74,40 +74,7 @@ function __iter(obj)
         return function() return nil end
     end
 end
-function __str(v)
-    local t = type(v)
-    if t == 'table' then
-        if v[1] ~= nil or #v > 0 then
-            local parts = {}
-            for i=1,#v do parts[#parts+1] = __str(v[i]) end
-            local body = '['..table.concat(parts, ' ')..']'
-            if v.__name then return v.__name..' '..body end
-            return body
-        else
-            local keys = {}
-            for k in pairs(v) do if k ~= '__name' then keys[#keys+1] = k end end
-            table.sort(keys, function(a,b) return tostring(a)<tostring(b) end)
-            local parts = {}
-            for _,k in ipairs(keys) do
-                local val = v[k]
-                local vs
-                if type(val) == 'string' then
-                    vs = string.format('%q', val)
-                else
-                    vs = __str(val)
-                end
-                parts[#parts+1] = k..': '..vs
-            end
-            local body = '{'..table.concat(parts, ', ')..'}'
-            if v.__name then return v.__name..' '..body end
-            return body
-        end
-    else
-        if t == 'boolean' then return (v and '1' or '0') end
-        return tostring(v)
-    end
-end
-data = {{["tag"]="a", ["val"]=1}, {["tag"]="a", ["val"]=2}, {["tag"]="b", ["val"]=3}}
+data = {{["tag"]="a", ["val"]=1}, {["tag"]="a", ["val"]=2}, {["tag"]="b", ["val"]=3}};
 groups = (function()
     local _groups = __group_by(data, function(d) return d.tag end)
     local _res = {}
@@ -115,14 +82,14 @@ groups = (function()
         _res[#_res+1] = g
     end
     return _res
-end)()
-tmp = {}
+end)();
+tmp = {};
 for _, g in ipairs(groups) do
-    local total = 0
+    local total = 0;
     for _, x in __iter(g.items) do
-        total = __add(total, x.val)
+        total = __add(total, x.val);
     end
-    tmp = __append(tmp, {["tag"]=g.key, ["total"]=total})
+    tmp = __append(tmp, {["tag"]=g.key, ["total"]=total});
 end
 result = (function()
     local _res = {}
@@ -141,5 +108,5 @@ result = (function()
     items = tmp
     _res = items
     return _res
-end)()
-(function(_l0) local p={} for i=1,#_l0 do p[#p+1]=__str(_l0[i]) end print(table.concat(p, ' ')) end)(result)
+end)();
+(function(_l0) local p={} for i=1,#_l0 do p[#p+1]=tostring(_l0[i]) end print(table.concat(p, ' ')) end)(result);;

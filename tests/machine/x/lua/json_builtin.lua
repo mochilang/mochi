@@ -42,5 +42,5 @@ function __json(v)
     end
     print(enc(sort(v)))
 end
-m = {["a"]=1, ["b"]=2}
-__json(m)
+m = {["a"]=1, ["b"]=2};
+__json(m);
