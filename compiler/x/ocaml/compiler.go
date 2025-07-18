@@ -2220,7 +2220,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return fmt.Sprintf("%s (%s)", call.Func, strings.Join(args, ", ")), nil
 		}
 		if len(args) == 0 {
-			return call.Func, nil
+			return fmt.Sprintf("%s ()", call.Func), nil
 		}
 		return fmt.Sprintf("%s %s", call.Func, strings.Join(args, " ")), nil
 	}
@@ -2311,10 +2311,14 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	if fn.Return != nil {
 		ret = c.typeRef(fn.Return)
 	}
+	nameParams := strings.Join(params, " ")
+	if len(params) == 0 {
+		nameParams = "()"
+	}
 	if ret != "" {
-		c.writeln(fmt.Sprintf("let rec %s %s : %s =", fn.Name, strings.Join(params, " "), ret))
+		c.writeln(fmt.Sprintf("let rec %s %s : %s =", fn.Name, nameParams, ret))
 	} else {
-		c.writeln(fmt.Sprintf("let rec %s %s =", fn.Name, strings.Join(params, " ")))
+		c.writeln(fmt.Sprintf("let rec %s %s =", fn.Name, nameParams))
 	}
 	c.indent++
 
