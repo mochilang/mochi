@@ -1,0 +1,99 @@
+// Mochi translation of Rosetta Code task "Composite numbers k with no single digit factors whose factors are all substrings of k"
+// Based on Go implementation at tests/rosetta/x/Go/composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k.go
+
+fun primeFactors(n: int): list<int> {
+  var factors: list<int> = []
+  var x = n
+  while x % 2 == 0 {
+    factors = append(factors, 2)
+    x = (x / 2) as int
+  }
+  var p = 3
+  while p * p <= x {
+    while x % p == 0 {
+      factors = append(factors, p)
+      x = (x / p) as int
+    }
+    p = p + 2
+  }
+  if x > 1 {
+    factors = append(factors, x)
+  }
+  return factors
+}
+
+fun commatize(n: int): string {
+  var s = str(n)
+  var out = ""
+  var i = len(s) - 1
+  var c = 0
+  while i >= 0 {
+    out = substring(s, i, i+1) + out
+    c = c + 1
+    if c % 3 == 0 && i > 0 { out = "," + out }
+    i = i - 1
+  }
+  return out
+}
+
+fun indexOf(s: string, sub: string): int {
+  var i = 0
+  while i + len(sub) <= len(s) {
+    if substring(s, i, i+len(sub)) == sub { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun pad10(s: string): string {
+  var str = s
+  while len(str) < 10 { str = " " + str }
+  return str
+}
+
+fun trimRightStr(s: string): string {
+  var end = len(s)
+  while end > 0 && substring(s, end-1, end) == " " { end = end - 1 }
+  return substring(s, 0, end)
+}
+
+fun main() {
+  var res: list<int> = []
+  var count = 0
+  var k = 11 * 11
+  while count < 20 {
+    if k % 3 == 0 || k % 5 == 0 || k % 7 == 0 {
+      k = k + 2
+      continue
+    }
+    let factors = primeFactors(k)
+    if len(factors) > 1 {
+      let s = str(k)
+      var includesAll = true
+      var prev = -1
+      for f in factors {
+        if f == prev { continue }
+        let fs = str(f)
+        if indexOf(s, fs) == (-1) {
+          includesAll = false
+          break
+        }
+        prev = f
+      }
+      if includesAll {
+        res = append(res, k)
+        count = count + 1
+      }
+    }
+    k = k + 2
+  }
+
+  var line = ""
+  for e in res[0:10] { line = line + pad10(commatize(e)) + " " }
+  print(trimRightStr(line))
+  line = ""
+  for e in res[10:20] { line = line + pad10(commatize(e)) + " " }
+  print(trimRightStr(line))
+}
+
+main()
