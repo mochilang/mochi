@@ -1,8 +1,0 @@
-type: error[T002]: undefined variable: include
-  --> /workspace/mochi/tests/rosetta/x/Mochi/call-a-function-7.mochi:1:1
-
-  1 | include "./call-a-function-1.mochi"
-    | ^
-
-help:
-  Check if the variable was declared in this scope.

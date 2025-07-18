@@ -1,0 +1,8 @@
+javac: exit status 1
+/tmp/CopyAString2.java:11: error: incompatible types: String cannot be converted to Number
+        System.out.println("*pointer = " + ((Number)pointer.get(0)).doubleValue());
+                                                               ^
+/tmp/CopyAString2.java:14: error: incompatible types: String cannot be converted to Number
+        System.out.println("*pointer = " + ((Number)pointer.get(0)).doubleValue());
+                                                               ^
+2 errors

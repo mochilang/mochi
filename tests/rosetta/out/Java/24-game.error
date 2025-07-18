@@ -1,32 +1,8 @@
-javac: exit status 1
-/tmp/M24Game.java:36: error: '.class' expected
-                while (!Objects.equals(digits.get(j), int(ch) - int("0"))) {
-                                                         ^
-/tmp/M24Game.java:36: error: '.class' expected
-                while (!Objects.equals(digits.get(j), int(ch) - int("0"))) {
-                                                                   ^
-/tmp/M24Game.java:36: error: not a statement
-                while (!Objects.equals(digits.get(j), int(ch) - int("0"))) {
-                                                              ^
-/tmp/M24Game.java:44: error: '.class' expected
-                stack.add(float(int(ch) - int("0")));
-                               ^
-/tmp/M24Game.java:44: error: not a statement
-                stack.add(float(int(ch) - int("0")));
-                                ^
-/tmp/M24Game.java:44: error: ';' expected
-                stack.add(float(int(ch) - int("0")));
-                                   ^
-/tmp/M24Game.java:44: error: not a statement
-                stack.add(float(int(ch) - int("0")));
-                                    ^
-/tmp/M24Game.java:44: error: ';' expected
-                stack.add(float(int(ch) - int("0")));
-                                      ^
-/tmp/M24Game.java:44: error: not a statement
-                stack.add(float(int(ch) - int("0")));
-                                          ^
-/tmp/M24Game.java:44: error: ';' expected
-                stack.add(float(int(ch) - int("0")));
-                                             ^
-10 errors
+parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/24-game.mochi:51:31: unexpected token "-1" (expected "]")
+  --> /workspace/mochi/tests/rosetta/x/Mochi/24-game.mochi:51:31
+
+ 51 |       var b = stack[len(stack)-1]
+    |                               ^
+
+help:
+  Parse error occurred. Check syntax near this location.

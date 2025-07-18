@@ -1,19 +1,8 @@
-javac: exit status 1
-/tmp/ArbitraryPrecisionIntegersIncluded.java:16: error: incompatible types: int cannot be converted to String
-            e = (int)(Integer.parseInt((e / 2)));
-                                          ^
-/tmp/ArbitraryPrecisionIntegersIncluded.java:26: error: bad operand types for binary operator '*'
-                result = result * b;
-                                ^
-  first type:  Object
-  second type: Object
-/tmp/ArbitraryPrecisionIntegersIncluded.java:28: error: bad operand types for binary operator '*'
-            b = b * b;
-                  ^
-  first type:  Object
-  second type: Object
-/tmp/ArbitraryPrecisionIntegersIncluded.java:29: error: incompatible types: int cannot be converted to String
-            e = (int)(Integer.parseInt((e / 2)));
-                                          ^
-Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
-4 errors
+parse: error[P052]: /workspace/mochi/tests/rosetta/x/Mochi/arbitrary-precision-integers-included-.mochi:32:92: unexpected token "-20" (expected ")")
+  --> /workspace/mochi/tests/rosetta/x/Mochi/arbitrary-precision-integers-included-.mochi:32:92
+
+ 32 | print("5^(4^(3^2)) has", len(s), "digits:", substring(s, 0, 20), "...", substring(s, len(s)-20, len(s)))
+    |                                                                                            ^
+
+help:
+  Unbalanced parentheses. Check for missing `(` or `)`.

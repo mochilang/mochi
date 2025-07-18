@@ -1,8 +1,20 @@
-parse: error[P001]: /workspace/mochi/tests/rosetta/x/Mochi/add-a-variable-to-a-class-instance-at-runtime.mochi:20:28: unexpected token "=" (expected "}")
-  --> /workspace/mochi/tests/rosetta/x/Mochi/add-a-variable-to-a-class-instance-at-runtime.mochi:20:28
-
- 20 |     ss.runtimeFields[name] = value
-    |                            ^
-
-help:
-  Check for a missing `{` or `}` to close the block.
+javac: exit status 1
+/tmp/AddAVariableToAClassInstanceAtRuntime.java:27: error: cannot find symbol
+            String name = scanner.nextLine();
+                          ^
+  symbol:   variable scanner
+  location: class AddAVariableToAClassInstanceAtRuntime
+/tmp/AddAVariableToAClassInstanceAtRuntime.java:29: error: cannot find symbol
+            String value = scanner.nextLine();
+                           ^
+  symbol:   variable scanner
+  location: class AddAVariableToAClassInstanceAtRuntime
+/tmp/AddAVariableToAClassInstanceAtRuntime.java:38: error: cannot find symbol
+            String name = scanner.nextLine();
+                          ^
+  symbol:   variable scanner
+  location: class AddAVariableToAClassInstanceAtRuntime
+/tmp/AddAVariableToAClassInstanceAtRuntime.java:40: error: incompatible types: String cannot be converted to Map<String,String>
+                Map<String,String> value = ss.runtimeFields.get(name);
+                                                               ^
+4 errors

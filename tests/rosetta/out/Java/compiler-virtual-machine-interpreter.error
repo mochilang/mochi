@@ -1,0 +1,8 @@
+parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/compiler-virtual-machine-interpreter.mochi:76:58: unexpected token "-1" (expected "]")
+  --> /workspace/mochi/tests/rosetta/x/Mochi/compiler-virtual-machine-interpreter.mochi:76:58
+
+ 76 |       stringPool = append(stringPool, unescape(s[1:len(s)-1]))
+    |                                                          ^
+
+help:
+  Parse error occurred. Check syntax near this location.
