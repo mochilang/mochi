@@ -1347,9 +1347,9 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				if r.part != nil {
 					typ = c.typeOfPostfix(r.part.Right)
 				}
-				if typ == "map" {
+				if typ == "map" && !(l.isStr || r.isStr) {
 					expr = fmt.Sprintf("maps:is_key(%s, %s)", l.expr, r.expr)
-				} else if typ == "string" || (typ == "" && (l.isStr || r.isStr)) {
+				} else if typ == "string" || l.isStr || r.isStr {
 					expr = fmt.Sprintf("string:str(%s, %s) > 0", r.expr, l.expr)
 				} else {
 					expr = fmt.Sprintf("lists:member(%s, %s)", l.expr, r.expr)
