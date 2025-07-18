@@ -799,6 +799,51 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if len(p.Ops) == 0 {
 		return val, nil
 	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) > 0 && p.Ops[0].Call != nil {
+		tail := p.Target.Selector.Tail
+		base := sanitizeIdent(p.Target.Selector.Root)
+		for i, t := range tail[:len(tail)-1] {
+			if i == 0 && c.groups[p.Target.Selector.Root] && t == "items" {
+				base += ".Items"
+			} else {
+				base += "." + sanitizeIdent(t)
+			}
+		}
+		name := tail[len(tail)-1]
+		call := p.Ops[0].Call
+		args := make([]string, len(call.Args))
+		for j, a := range call.Args {
+			s, err := c.compileExpr(a)
+			if err != nil {
+				return "", err
+			}
+			args[j] = s
+		}
+		if c.isStringSelector(&parser.SelectorExpr{Root: p.Target.Selector.Root, Tail: tail[:len(tail)-1]}) {
+			if name == "contains" {
+				name = "Contains"
+			} else if name == "padStart" && len(args) == 2 {
+				ch := args[1]
+				if strings.HasPrefix(ch, "\"") && strings.HasSuffix(ch, "\"") && len([]rune(ch[1:len(ch)-1])) == 1 {
+					ch = fmt.Sprintf("'%s'", ch[1:len(ch)-1])
+				} else {
+					ch = fmt.Sprintf("char (%s.[0])", ch)
+				}
+				val = fmt.Sprintf("%s.PadLeft(%s, %s)", base, args[0], ch)
+				if len(p.Ops) > 1 {
+					rest := &parser.PostfixExpr{Target: &parser.Primary{Selector: &parser.SelectorExpr{Root: val}}, Ops: p.Ops[1:]}
+					return c.compilePostfix(rest)
+				}
+				return val, nil
+			}
+		}
+		val = fmt.Sprintf("%s.%s(%s)", base, sanitizeIdent(name), strings.Join(args, ", "))
+		if len(p.Ops) == 1 {
+			return val, nil
+		}
+		rest := &parser.PostfixExpr{Target: &parser.Primary{Selector: &parser.SelectorExpr{Root: val}}, Ops: p.Ops[1:]}
+		return c.compilePostfix(rest)
+	}
 	// handle sequence of ops including index, slice, field and call
 	for i := 0; i < len(p.Ops); i++ {
 		op := p.Ops[i]
@@ -2064,6 +2109,14 @@ func isBoolExpr(e *parser.Expr) bool {
 			}
 		}
 	}
+	if p := rootPostfix(e); p != nil {
+		if p.Target != nil && p.Target.Selector != nil && len(p.Target.Selector.Tail) > 0 && len(p.Ops) > 0 && p.Ops[0].Call != nil {
+			switch p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1] {
+			case "contains":
+				return true
+			}
+		}
+	}
 	for _, r := range e.Binary.Right {
 		switch r.Op {
 		case "==", "!=", "<", "<=", ">", ">=", "&&", "||", "in":
@@ -2090,7 +2143,7 @@ func (c *Compiler) isStringExpr(e *parser.Expr) bool {
 	}
 	if p.Selector != nil {
 		if t, ok := c.vars[p.Selector.Root]; ok {
-			if t == "string" {
+			if t == "string" && len(p.Selector.Tail) == 0 {
 				return true
 			}
 			if fields, ok := c.structs[t]; ok && len(p.Selector.Tail) == 1 {
@@ -2127,14 +2180,12 @@ func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
 	}
 	if p.Selector != nil {
 		if t, ok := c.vars[p.Selector.Root]; ok {
-			if t == "string" {
+			if t == "string" && len(p.Selector.Tail) == 0 {
 				return true
 			}
-			if fields, ok := c.structs[t]; ok {
-				if len(p.Selector.Tail) == 1 {
-					if ft, ok := fields[p.Selector.Tail[0]]; ok && ft == "string" {
-						return true
-					}
+			if fields, ok := c.structs[t]; ok && len(p.Selector.Tail) == 1 {
+				if ft, ok := fields[p.Selector.Tail[0]]; ok && ft == "string" {
+					return true
 				}
 			}
 		}
@@ -2143,6 +2194,28 @@ func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
 		return c.isStringExpr(p.If.Then) && c.isStringExpr(p.If.Else)
 	}
 	return false
+}
+
+func (c *Compiler) isStringSelector(sel *parser.SelectorExpr) bool {
+	if sel == nil {
+		return false
+	}
+	t, ok := c.vars[sel.Root]
+	if !ok {
+		return false
+	}
+	for _, f := range sel.Tail {
+		fields, ok := c.structs[t]
+		if !ok {
+			return false
+		}
+		ft, ok := fields[f]
+		if !ok {
+			return false
+		}
+		t = ft
+	}
+	return t == "string"
 }
 
 func (c *Compiler) isStringListExpr(e *parser.Expr) bool {
@@ -2227,6 +2300,16 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 					}
 				}
 				return "obj list"
+			}
+		} else if p.Selector != nil && len(p.Selector.Tail) > 0 {
+			if post := rootPostfix(e); post != nil && len(post.Ops) > 0 && post.Ops[0].Call != nil {
+				name := p.Selector.Tail[len(p.Selector.Tail)-1]
+				switch name {
+				case "contains":
+					return "bool"
+				case "padStart":
+					return "string"
+				}
 			}
 		}
 
