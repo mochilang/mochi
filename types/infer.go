@@ -291,8 +291,15 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 					return t
 				}
 				cur := t
-				for i, field := range p.Selector.Tail {
-					last := i == len(p.Selector.Tail)-1
+				tail := p.Selector.Tail
+				for i := 0; i < len(tail); i++ {
+					field := tail[i]
+					last := i == len(tail)-1
+					if ot, ok := cur.(OptionType); ok {
+						cur = ot.Elem
+						i--
+						continue
+					}
 					switch tt := cur.(type) {
 					case StructType:
 						ft, ok := tt.Fields[field]
@@ -302,12 +309,6 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 						cur = ft
 					case MapType:
 						cur = tt.Value
-					case OptionType:
-						if last {
-							cur = tt
-						} else {
-							cur = tt.Elem
-						}
 					case ListType:
 						if field == "contains" {
 							cur = FuncType{Params: []Type{tt.Elem}, Return: BoolType{}}

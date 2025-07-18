@@ -1095,6 +1095,11 @@ func (c *Compiler) inferStructFromMapEnv(ml *parser.MapLiteral, name string, env
 	if !ok {
 		return types.StructType{}, false
 	}
+	for k, ft := range st.Fields {
+		if ot, ok := ft.(types.OptionType); ok {
+			st.Fields[k] = ot.Elem
+		}
+	}
 	stName := exportName(sanitizeName(singular(name)))
 	if stName == "" {
 		stName = "AnonStruct"

@@ -23,8 +23,8 @@ type Order struct {
 }
 
 type Result struct {
-	CustomerName *Customer `json:"customerName"`
-	Order        *Order    `json:"order"`
+	CustomerName string `json:"customerName"`
+	Order        Order  `json:"order"`
 }
 
 func main() {
@@ -70,14 +70,14 @@ func main() {
 				matched = true
 				results = append(results, Result{
 					CustomerName: c.Name,
-					Order:        o,
+					Order:        Order(o),
 				})
 			}
 			if !matched {
 				var o *Order
 				results = append(results, Result{
 					CustomerName: c.Name,
-					Order:        o,
+					Order:        Order(o),
 				})
 			}
 		}
@@ -85,7 +85,7 @@ func main() {
 	}()
 	fmt.Println(strings.TrimSpace(fmt.Sprintln(any("--- Right Join using syntax ---"))))
 	for _, entry := range result {
-		if entry.Order != nil {
+		if bool(entry.Order) {
 			fmt.Println(strings.TrimSpace(fmt.Sprintln(any("Customer"), entry.CustomerName, "has order", entry.Order.ID, "- $", entry.Order.Total)))
 		} else {
 			fmt.Println(strings.TrimSpace(fmt.Sprintln(any("Customer"), entry.CustomerName, "has no orders")))

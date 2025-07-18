@@ -407,8 +407,8 @@ func (c *Compiler) eqJoinKeysTyped(e *parser.Expr, leftVar, rightVar string) (st
 	rExpr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: rhs}}}
 	lStr, err1 := c.compileExpr(lExpr)
 	rStr, err2 := c.compileExpr(rExpr)
-	lType := c.inferExprType(lExpr)
-	rType := c.inferExprType(rExpr)
+	lType := c.fieldPathType(ls.Root, ls.Tail)
+	rType := c.fieldPathType(rs.Root, rs.Tail)
 	if err1 != nil || err2 != nil {
 		return "", "", nil, nil, false
 	}
@@ -419,6 +419,31 @@ func (c *Compiler) eqJoinKeysTyped(e *parser.Expr, leftVar, rightVar string) (st
 		return rStr, lStr, rType, lType, true
 	}
 	return "", "", nil, nil, false
+}
+
+func (c *Compiler) fieldPathType(root string, tail []string) types.Type {
+	t, err := c.env.GetVar(root)
+	if err != nil {
+		return types.AnyType{}
+	}
+	for _, f := range tail {
+		if ot, ok := t.(types.OptionType); ok {
+			t = ot.Elem
+		}
+		switch tt := t.(type) {
+		case types.StructType:
+			if ft, ok := tt.Fields[f]; ok {
+				t = ft
+			} else {
+				return types.AnyType{}
+			}
+		case types.MapType:
+			t = tt.Value
+		default:
+			return types.AnyType{}
+		}
+	}
+	return t
 }
 
 func (c *Compiler) newVar() string {
