@@ -185,18 +185,28 @@ func isListUnary(u *parser.Unary, env *types.Env) bool {
 }
 
 func isStringPostfix(p *parser.PostfixExpr, env *types.Env) bool {
-	if p == nil || len(p.Ops) > 0 {
+	if p == nil {
 		return false
 	}
-	if p.Target != nil {
-		if p.Target.Lit != nil && p.Target.Lit.Str != nil {
-			return true
-		}
-		if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 && env != nil {
-			if t, err := env.GetVar(p.Target.Selector.Root); err == nil {
-				if _, ok := t.(types.StringType); ok {
-					return true
+	if len(p.Ops) == 0 {
+		if p.Target != nil {
+			if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+				return true
+			}
+			if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 && env != nil {
+				if t, err := env.GetVar(p.Target.Selector.Root); err == nil {
+					if _, ok := t.(types.StringType); ok {
+						return true
+					}
 				}
+			}
+		}
+		return false
+	}
+	if env != nil {
+		if t := types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: p}}}, env); t != nil {
+			if _, ok := t.(types.StringType); ok {
+				return true
 			}
 		}
 	}

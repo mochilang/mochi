@@ -886,19 +886,15 @@ func (c *Compiler) compileAssign(stmt *parser.AssignStmt) error {
 		}
 	}
 	if len(stmt.Index) > 0 {
-		if t, err2 := c.env.GetVar(stmt.Name); err2 == nil {
-			expr, err := c.compileIndexAssign(name, stmt.Index, value, t)
-			if err != nil {
-				return err
-			}
-			c.writeln(fmt.Sprintf("%s = %s", name, expr))
-			return nil
+		t, err2 := c.env.GetVar(stmt.Name)
+		if err2 != nil {
+			t = types.AnyType{}
 		}
-		idx, err := c.compileExpr(stmt.Index[0].Start)
+		expr, err := c.compileIndexAssign(name, stmt.Index, value, t)
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("%s = Map.put(%s, %s, %s)", name, name, idx, value))
+		c.writeln(fmt.Sprintf("%s = %s", name, expr))
 		return nil
 	}
 	c.writeln(fmt.Sprintf("%s = %s", name, value))
@@ -917,34 +913,22 @@ func (c *Compiler) compileIndexAssign(base string, idxs []*parser.IndexOp, value
 	switch tt := t.(type) {
 	case types.ListType:
 		inner = tt.Elem
-		rest, err := c.compileIndexAssign("it", idxs[1:], value, inner)
-		if err != nil {
-			return "", err
-		}
-		if len(idxs) == 1 {
-			return fmt.Sprintf("List.replace_at(%s, %s, %s)", base, idx, rest), nil
-		}
-		return fmt.Sprintf("List.update_at(%s, %s, fn it -> %s end)", base, idx, rest), nil
 	case types.MapType:
 		inner = tt.Value
-		rest, err := c.compileIndexAssign("it", idxs[1:], value, inner)
-		if err != nil {
-			return "", err
-		}
-		if len(idxs) == 1 {
-			return fmt.Sprintf("Map.put(%s, %s, %s)", base, idx, rest), nil
-		}
-		return fmt.Sprintf("Map.update!(%s, %s, fn it -> %s end)", base, idx, rest), nil
 	default:
-		rest, err := c.compileIndexAssign("it", idxs[1:], value, types.AnyType{})
-		if err != nil {
-			return "", err
-		}
-		if len(idxs) == 1 {
-			return fmt.Sprintf("Map.put(%s, %s, %s)", base, idx, rest), nil
-		}
-		return fmt.Sprintf("Map.update!(%s, %s, fn it -> %s end)", base, idx, rest), nil
+		inner = types.AnyType{}
 	}
+
+	rest, err := c.compileIndexAssign("it", idxs[1:], value, inner)
+	if err != nil {
+		return "", err
+	}
+	if len(idxs) == 1 {
+		c.use("_set_index")
+		return fmt.Sprintf("_set_index(%s, %s, %s)", base, idx, rest), nil
+	}
+	// fall back to Map.update! for nested index assignments
+	return fmt.Sprintf("Map.update!(%s, %s, fn it -> %s end)", base, idx, rest), nil
 }
 
 // aggregatorInfo checks if the expression is a simple aggregator call like

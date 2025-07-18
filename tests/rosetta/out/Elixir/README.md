@@ -142,8 +142,8 @@ Checklist:
 - [ ] break-oo-privacy
 - [ ] brilliant-numbers
 - [ ] brownian-tree
-- [ ] bulls-and-cows
-- [ ] bulls-and-cows-player
+- [x] bulls-and-cows
+- [x] bulls-and-cows-player
 - [ ] burrows-wheeler-transform
 - [ ] caesar-cipher-1
 - [ ] caesar-cipher-2

@@ -30,7 +30,7 @@ var mochiLexer = lexer.MustSimple([]lexer.SimpleRule{
 	{Name: "Float", Pattern: `\d+\.\d+`},
 	{Name: "Int", Pattern: `\d+`},
 	{Name: "String", Pattern: `"(?:\\.|[^"])*"`},
-	{Name: "Punct", Pattern: `==|!=|<=|>=|&&|\|\||=>|:-|\.\.|[-+*/%=<>!|{}\[\](),.:]`},
+	{Name: "Punct", Pattern: `==|!=|<=|>=|&&|\|\||=>|:-|\.\.|[-+*/%=<>!|{}\[\](),.;:]`},
 	{Name: "Whitespace", Pattern: `[ \t\n\r]+`},
 })
 
@@ -73,6 +73,7 @@ type Statement struct {
 	Fetch        *FetchStmt        `parser:"| @@"`
 	Update       *UpdateStmt       `parser:"| @@"`
 	Expr         *ExprStmt         `parser:"| @@"`
+	Semi         string            `parser:"[ ';' ]"`
 }
 
 // --- Test and Expect ---

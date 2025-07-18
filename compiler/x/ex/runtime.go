@@ -46,6 +46,8 @@ defp _json(v), do: IO.puts(_to_json(v))
 
 	helperLength = "defp _length(v) do\n  cond do\n    is_binary(v) -> String.length(v)\n    is_list(v) -> length(v)\n    is_map(v) and Map.has_key?(v, :items) -> length(Map.get(v, :items))\n    is_map(v) -> map_size(v)\n    true -> raise \"len expects list, map or string\"\n  end\nend\n"
 
+	helperSetIndex = "defp _set_index(seq, i, v) do\n  cond do\n    is_list(seq) -> List.replace_at(seq, i, v)\n    is_map(seq) -> Map.put(seq, i, v)\n    true -> raise \"set_index expects list or map\"\n  end\nend\n"
+
 	helperGroup = "defmodule Group do\n  defstruct key: nil, items: []\n" +
 		"  def fetch(g, k) do\n" +
 		"    case k do\n" +
@@ -224,6 +226,7 @@ var helperMap = map[string]string{
 	"_concat":       helperConcat,
 	"_merge_map":    helperMergeMap,
 	"_length":       helperLength,
+	"_set_index":    helperSetIndex,
 	"_json":         helperJson,
 	"_group":        helperGroup,
 	"_group_by":     helperGroupBy,
