@@ -1,0 +1,25 @@
+// Mochi translation of Rosetta Code task "Count occurrences of a substring"
+// Based on Go version at tests/rosetta/x/Go/count-occurrences-of-a-substring.go
+
+fun countOccurrences(s: string, sub: string): int {
+  if len(sub) == 0 { return len(s) + 1 }
+  var cnt = 0
+  var i = 0
+  var step = len(sub)
+  while i + step <= len(s) {
+    if substring(s, i, i + step) == sub {
+      cnt = cnt + 1
+      i = i + step
+    } else {
+      i = i + 1
+    }
+  }
+  return cnt
+}
+
+fun main() {
+  print(str(countOccurrences("the three truths", "th")))
+  print(str(countOccurrences("ababababab", "abab")))
+}
+
+main()
