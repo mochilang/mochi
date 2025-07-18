@@ -173,8 +173,7 @@ file. One program (`21-game`) requires interactive input and is skipped.
 
 ### Failing programs
 
-- 15-puzzle-game
-- add-a-variable-to-a-class-instance-at-runtime
+ - add-a-variable-to-a-class-instance-at-runtime
 - adfgvx-cipher
 - balanced-brackets
 - bulls-and-cows
