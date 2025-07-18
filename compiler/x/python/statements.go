@@ -127,6 +127,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		c.writeln(expr)
 		return nil
 	case s.Return != nil:
+		if s.Return.Value == nil {
+			c.writeln("return")
+			return nil
+		}
 		if fn := simpleFunExpr(s.Return.Value); fn != nil && fn.ExprBody != nil {
 			name, err := c.compileFunExprDef(fn)
 			if err != nil {
@@ -1039,12 +1043,12 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 	}
 	assigns := map[string]bool{}
 	collectScopeInfo(fun.Body, locals, assigns)
-	var nonlocals []string
+	var globals []string
 	if c.env != nil {
 		for name := range assigns {
 			if !locals[name] {
 				if _, err := c.env.GetVar(name); err == nil {
-					nonlocals = append(nonlocals, sanitizeName(name))
+					globals = append(globals, sanitizeName(name))
 				}
 			}
 		}
@@ -1068,8 +1072,8 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 		}
 		c.writeln(fmt.Sprintf("\"\"\"%s\"\"\"", sigDoc))
 	}
-	for _, n := range nonlocals {
-		c.writeln("nonlocal " + n)
+	for _, n := range globals {
+		c.writeln("global " + n)
 	}
 	for _, s := range fun.Body {
 		if err := c.compileStmt(s); err != nil {
