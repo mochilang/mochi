@@ -61,6 +61,7 @@
 - 2025-07-18 00:30: Membership checks with literal strings or integers fold to constants at compile time.
 - 2025-07-18 01:00: Boolean and float lists propagate through variables so `len`, `count`, `append`, and set operations fold to constants when possible.
 - 2025-07-18 02:00: Chained set operations over constant lists fold entirely at compile time.
+- 2025-07-18 03:00: Added TPCH `q6` Fortran translation and inserted a blank line before `contains` blocks for cleaner formatting.
 
 ## Remaining Work
 - [x] Support query compilation with joins and group-by for TPC-H `q1.mochi`.

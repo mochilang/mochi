@@ -106,6 +106,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("out = tpch_q1()")
 		c.writeln("print '(A)', trim(out)")
 		if len(c.helpers) > 0 {
+			c.writeln("")
 			c.writeln("contains")
 			c.emitHelpers()
 		}
@@ -153,6 +154,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("out = tpch_q2()")
 		c.writeln("print '(A)', trim(out)")
 		if len(c.helpers) > 0 {
+			c.writeln("")
 			c.writeln("contains")
 			c.emitHelpers()
 		}
@@ -257,6 +259,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 
 	if len(c.functions) > 0 || len(c.helpers) > 0 || len(c.autoImports) > 0 {
+		c.writeln("")
 		c.writeln("contains")
 		if len(c.helpers) > 0 {
 			c.emitHelpers()
