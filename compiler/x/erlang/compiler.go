@@ -47,6 +47,8 @@ type Compiler struct {
 	pinned map[string]string
 
 	builtinAliases map[string]string
+
+	fields map[string]map[string]bool
 }
 
 func New(srcPath string) *Compiler {
@@ -67,6 +69,7 @@ func New(srcPath string) *Compiler {
 		globals:        make(map[string]string),
 		pinned:         make(map[string]string),
 		builtinAliases: make(map[string]string),
+		fields:         make(map[string]map[string]bool),
 	}
 }
 
@@ -157,6 +160,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.aliases = make(map[string]string)
 	c.groupKeys = make(map[string]string)
 	c.globals = make(map[string]string)
+	c.fields = make(map[string]map[string]bool)
 	c.builtinAliases = make(map[string]string)
 
 	for _, st := range prog.Statements {
@@ -230,6 +234,7 @@ func (c *Compiler) compileLet(l *parser.LetStmt) (string, error) {
 		if t := c.inferExprType(l.Value); t != "" {
 			c.types[l.Name] = t
 		}
+		c.addMapFields(l.Name, l.Value)
 	}
 	return fmt.Sprintf("%s = %s", capitalize(l.Name), val), nil
 }
@@ -246,6 +251,7 @@ func (c *Compiler) compileVar(v *parser.VarStmt) (string, error) {
 		if t := c.inferExprType(v.Value); t != "" {
 			c.types[v.Name] = t
 		}
+		c.addMapFields(v.Name, v.Value)
 	}
 	return fmt.Sprintf("%s = %s", name, val), nil
 }
@@ -344,6 +350,7 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) (string, error) {
 	if t := c.inferExprType(a.Value); t != "" {
 		c.types[a.Name] = t
 	}
+	c.addMapFields(a.Name, a.Value)
 	name := c.newVarName(a.Name)
 	c.aliases[a.Name] = name
 	c.lets[a.Name] = true
@@ -683,6 +690,7 @@ func collectMutations(sts []*parser.Statement, mutated map[string]bool) {
 
 func (c *Compiler) compileFor(fr *parser.ForStmt) (string, error) {
 	elemType := c.listElemType(fr.Source)
+	elemFields := c.listElemFields(fr.Source)
 	if elemType == "" && fr.Source.Binary != nil {
 		u := fr.Source.Binary.Left
 		if u.Value != nil && u.Value.Target.Selector != nil {
@@ -696,11 +704,20 @@ func (c *Compiler) compileFor(fr *parser.ForStmt) (string, error) {
 	if elemType != "" {
 		c.types[fr.Name] = elemType
 	}
+	prevFields, okFld := c.fields[fr.Name]
+	if elemFields != nil {
+		c.fields[fr.Name] = elemFields
+	}
 	defer func() {
 		if ok {
 			c.types[fr.Name] = prevType
 		} else {
 			delete(c.types, fr.Name)
+		}
+		if okFld {
+			c.fields[fr.Name] = prevFields
+		} else {
+			delete(c.fields, fr.Name)
 		}
 	}()
 
@@ -931,15 +948,25 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	}
 
 	elemType := c.listElemType(q.Source)
+	elemFields := c.listElemFields(q.Source)
 	prevType, hadPrev := c.types[q.Var]
 	if elemType != "" {
 		c.types[q.Var] = elemType
+	}
+	prevFields, hadFld := c.fields[q.Var]
+	if elemFields != nil {
+		c.fields[q.Var] = elemFields
 	}
 	defer func() {
 		if hadPrev {
 			c.types[q.Var] = prevType
 		} else {
 			delete(c.types, q.Var)
+		}
+		if hadFld {
+			c.fields[q.Var] = prevFields
+		} else {
+			delete(c.fields, q.Var)
 		}
 	}()
 
@@ -951,15 +978,25 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		elemType := c.listElemType(fr.Src)
+		elemFields := c.listElemFields(fr.Src)
 		v := fr.Var
 		prev, ok := c.types[v]
 		if elemType != "" {
 			c.types[v] = elemType
 		}
+		prevFld, okFld := c.fields[v]
+		if elemFields != nil {
+			c.fields[v] = elemFields
+		}
 		if ok {
 			defer func(name, typ string) { c.types[name] = typ }(v, prev)
 		} else {
 			defer func(name string) { delete(c.types, name) }(v)
+		}
+		if okFld {
+			defer func(name string, f map[string]bool) { c.fields[name] = f }(v, prevFld)
+		} else if elemFields != nil {
+			defer func(name string) { delete(c.fields, name) }(v)
 		}
 		gens = append(gens, fmt.Sprintf("%s <- %s", capitalize(v), s))
 	}
@@ -979,15 +1016,25 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		}
 		joinSrc[i] = js
 		jt := c.listElemType(j.Src)
+		jf := c.listElemFields(j.Src)
 		v := j.Var
 		pv, ok := c.types[v]
 		if jt != "" {
 			c.types[v] = jt
 		}
+		pf, okf := c.fields[v]
+		if jf != nil {
+			c.fields[v] = jf
+		}
 		if ok {
 			defer func(name, typ string) { c.types[name] = typ }(v, pv)
 		} else {
 			defer func(name string) { delete(c.types, name) }(v)
+		}
+		if okf {
+			defer func(name string, f map[string]bool) { c.fields[name] = f }(v, pf)
+		} else if jf != nil {
+			defer func(name string) { delete(c.fields, name) }(v)
 		}
 		on := ""
 		if j.On != nil {
@@ -1143,7 +1190,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		if len(q.Group.Exprs) > 0 {
 			fields := groupKeyFields(q.Group.Exprs[0])
 			for _, f := range fields {
-				c.groupKeys[f] = fmt.Sprintf("maps:get(%s, %s, undefined)", f, kvar)
+				c.groupKeys[f] = fmt.Sprintf("maps:get(%s, %s)", f, kvar)
 			}
 		}
 		c.groupKeys[q.Group.Name] = kvar
@@ -1151,7 +1198,9 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		c.aliases[q.Group.Name] = vvar
 		c.lets[q.Group.Name] = true
 		prevGrpTyp, hadGrpTyp := c.types[q.Group.Name]
+		prevGrpFlds, hadGrpFlds := c.fields[q.Group.Name]
 		c.types[q.Group.Name] = "list_map"
+		c.fields[q.Group.Name] = map[string]bool{"key": true, "items": true}
 		defer func(n string) {
 			delete(c.aliases, n)
 			delete(c.lets, n)
@@ -1159,6 +1208,11 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 				c.types[n] = prevGrpTyp
 			} else {
 				delete(c.types, n)
+			}
+			if hadGrpFlds {
+				c.fields[n] = prevGrpFlds
+			} else {
+				delete(c.fields, n)
 			}
 			c.groupKeys = prevKeys
 		}(q.Group.Name)
@@ -1568,11 +1622,16 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				typ2 := c.types[p.Target.Selector.Root]
 				for _, f := range p.Target.Selector.Tail[:len(p.Target.Selector.Tail)-1] {
 					if typ2 == "map" {
-						base = fmt.Sprintf("maps:get(%s, %s, undefined)", f, base)
+						if fields, ok := c.fields[p.Target.Selector.Root]; ok && fields[f] {
+							base = fmt.Sprintf("maps:get(%s, %s)", f, base)
+						} else {
+							base = fmt.Sprintf("maps:get(%s, %s, undefined)", f, base)
+						}
+						typ2 = "map"
 					} else {
 						base = c.smartGet(f, base)
+						typ2 = ""
 					}
-					typ2 = ""
 				}
 				method := p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1]
 				if method == "contains" {
@@ -1650,7 +1709,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			for _, f := range tail {
 				if typ == "map" {
-					expr = fmt.Sprintf("maps:get(%s, %s, undefined)", f, expr)
+					if fields, ok := c.fields[root]; ok && fields[f] {
+						expr = fmt.Sprintf("maps:get(%s, %s)", f, expr)
+					} else {
+						expr = fmt.Sprintf("maps:get(%s, %s, undefined)", f, expr)
+					}
 					typ = "map"
 				} else {
 					expr = c.smartGet(f, expr)
@@ -1663,7 +1726,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		typ := c.types[root]
 		for _, f := range p.Selector.Tail {
 			if typ == "map" {
-				expr = fmt.Sprintf("maps:get(%s, %s, undefined)", f, expr)
+				if fields, ok := c.fields[root]; ok && fields[f] {
+					expr = fmt.Sprintf("maps:get(%s, %s)", f, expr)
+				} else {
+					expr = fmt.Sprintf("maps:get(%s, %s, undefined)", f, expr)
+				}
 				typ = "map"
 			} else {
 				expr = c.smartGet(f, expr)
@@ -2125,6 +2192,23 @@ func (c *Compiler) smartGet(key, expr string) string {
 	return fmt.Sprintf("mochi_get(%s, %s)", key, expr)
 }
 
+func (c *Compiler) addMapFields(name string, e *parser.Expr) {
+	fs := mapLiteralFields(e)
+	if fs == nil {
+		if q := extractQuery(e); q != nil {
+			fs = queryResultFields(q)
+		}
+	}
+	if fs != nil {
+		if c.fields[name] == nil {
+			c.fields[name] = make(map[string]bool)
+		}
+		for _, f := range fs {
+			c.fields[name][f] = true
+		}
+	}
+}
+
 func (c *Compiler) listElemType(e *parser.Expr) string {
 	t := c.inferExprType(e)
 	if t == "list_map" {
@@ -2141,6 +2225,21 @@ func (c *Compiler) listElemType(e *parser.Expr) string {
 		return c.inferExprType(l.Elems[0])
 	}
 	return ""
+}
+
+func (c *Compiler) listElemFields(e *parser.Expr) map[string]bool {
+	if q := extractQuery(e); q != nil {
+		return fieldSet(queryResultFields(q))
+	}
+	if fs := listMapLiteralFields(e); fs != nil {
+		return fieldSet(fs)
+	}
+	if name, ok := identName(e); ok {
+		if m, ok2 := c.fields[name]; ok2 {
+			return m
+		}
+	}
+	return nil
 }
 
 func inferExprTypeShallow(e *parser.Expr) string {
