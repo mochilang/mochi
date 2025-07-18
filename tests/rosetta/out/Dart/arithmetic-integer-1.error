@@ -1,26 +1,26 @@
 run: exit status 254
-/tmp/arithmetic-integer-1.dart:8:55: Error: A value of type 'int' can't be assigned to a variable of type 'String'.
-  print(a.toString() + ' + ' + b.toString() + ' = ' + a + b.toString());
-                                                      ^
-/tmp/arithmetic-integer-1.dart:9:55: Error: A value of type 'int' can't be assigned to a variable of type 'String'.
-  print(a.toString() + ' - ' + b.toString() + ' = ' + a - b.toString());
-                                                      ^
-/tmp/arithmetic-integer-1.dart:9:57: Error: The operator '-' isn't defined for the class 'String'.
+/tmp/arithmetic-integer-1.dart:5:58: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+  print(a.toString() + ' + ' + b.toString() + ' = ' + (a as num) + (b as num).toString());
+                                                         ^
+/tmp/arithmetic-integer-1.dart:6:58: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+  print(a.toString() + ' - ' + b.toString() + ' = ' + (a as num) - (b as num).toString());
+                                                         ^
+/tmp/arithmetic-integer-1.dart:6:66: Error: The operator '-' isn't defined for the class 'String'.
 Try correcting the operator to an existing operator, or defining a '-' operator.
-  print(a.toString() + ' - ' + b.toString() + ' = ' + a - b.toString());
-                                                        ^
-/tmp/arithmetic-integer-1.dart:10:61: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-  print(a.toString() + ' * ' + b.toString() + ' = ' + a * b.toString());
-                                                            ^
-/tmp/arithmetic-integer-1.dart:10:57: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
-  print(a.toString() + ' * ' + b.toString() + ' = ' + a * b.toString());
-                                                        ^
-/tmp/arithmetic-integer-1.dart:11:68: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-  print(a.toString() + ' / ' + b.toString() + ' = ' + int.parse((a / b)).toString());
-                                                                   ^
-/tmp/arithmetic-integer-1.dart:12:61: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-  print(a.toString() + ' % ' + b.toString() + ' = ' + a % b.toString());
-                                                            ^
-/tmp/arithmetic-integer-1.dart:12:57: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
-  print(a.toString() + ' % ' + b.toString() + ' = ' + a % b.toString());
-                                                        ^
+  print(a.toString() + ' - ' + b.toString() + ' = ' + (a as num) - (b as num).toString());
+                                                                 ^
+/tmp/arithmetic-integer-1.dart:7:79: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+  print(a.toString() + ' * ' + b.toString() + ' = ' + (a as num) * (b as num).toString());
+                                                                              ^
+/tmp/arithmetic-integer-1.dart:7:66: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+  print(a.toString() + ' * ' + b.toString() + ' = ' + (a as num) * (b as num).toString());
+                                                                 ^
+/tmp/arithmetic-integer-1.dart:8:77: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+  print(a.toString() + ' / ' + b.toString() + ' = ' + int.parse(((a as num) / (b as num))).toString());
+                                                                            ^
+/tmp/arithmetic-integer-1.dart:9:79: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+  print(a.toString() + ' % ' + b.toString() + ' = ' + (a as num) % (b as num).toString());
+                                                                              ^
+/tmp/arithmetic-integer-1.dart:9:66: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+  print(a.toString() + ' % ' + b.toString() + ' = ' + (a as num) % (b as num).toString());
+                                                                 ^

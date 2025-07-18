@@ -1,13 +1,10 @@
 run: exit status 254
-/tmp/averages-root-mean-square.dart:21:42: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/averages-root-mean-square.dart:18:42: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
 var rms = sqrtApprox(sum / (double.parse(n)));
                                          ^
-/tmp/averages-root-mean-square.dart:25:31: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/averages-root-mean-square.dart:22:31: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
     sum = sum + (double.parse(x)) * (double.parse(x));
                               ^
-/tmp/averages-root-mean-square.dart:25:51: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/averages-root-mean-square.dart:22:51: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
     sum = sum + (double.parse(x)) * (double.parse(x));
                                                   ^
-/tmp/averages-root-mean-square.dart:25:15: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-    sum = sum + (double.parse(x)) * (double.parse(x));
-              ^

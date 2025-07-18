@@ -1,7 +1,16 @@
 run: exit status 254
-/tmp/arithmetic-geometric-mean-calculate-pi.dart:30:9: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+/tmp/arithmetic-geometric-mean-calculate-pi.dart:4:12: Error: A value of type 'num' can't be returned from a function with return type 'double'.
+    return -(x as num);
+           ^
+/tmp/arithmetic-geometric-mean-calculate-pi.dart:24:25: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
+  while (abs((a as num) - (g as num)) > 1e-15) {
+                        ^
+/tmp/arithmetic-geometric-mean-calculate-pi.dart:26:35: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
+    var u = sqrtApprox((a as num) * (g as num));
+                                  ^
+/tmp/arithmetic-geometric-mean-calculate-pi.dart:27:9: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
     a = t;
         ^
-/tmp/arithmetic-geometric-mean-calculate-pi.dart:34:24: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-    sum = (sum as num) + diff * pow;
+/tmp/arithmetic-geometric-mean-calculate-pi.dart:29:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    pow = (pow as num) * 2;
                        ^

@@ -1,11 +1,25 @@
 run: exit status 254
-/tmp/bitmap-read-an-image-through-a-pipe.dart:47:13: Error: Type 'any' not found.
- - 'List' is from 'dart:core'.
-List<String> splitWs(String s) {
-             ^
-/tmp/bitmap-read-an-image-through-a-pipe.dart:42:7: Error: 'cur.length' can't be used as a type because 'cur' isn't defined.
-  if (cur.length > 0) {
-      ^^^^^^^^^^
-/tmp/bitmap-read-an-image-through-a-pipe.dart:43:35: Error: Undefined name 'cur'.
-    parts = List.from(parts)..add(cur);
-                                  ^^^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:55:13: Error: Type 'any' not found.
+Map<String, any> parsePpm(String data) {
+            ^^^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:23:58: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    n = ((n as num) * 10 as num) + (digits[str.substring(i, (i as num) + 1)] as num);
+                                                         ^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:23:72: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    n = ((n as num) * 10 as num) + (digits[str.substring(i, (i as num) + 1)] as num);
+                                                                       ^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:29:10: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+  return n;
+         ^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:37:37: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var ch = s.toString().substring(i, (i as num) + 1);
+                                    ^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:37:51: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var ch = s.toString().substring(i, (i as num) + 1);
+                                                  ^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:45:26: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+      cur = (cur as num) + (ch as num);
+                         ^
+/tmp/bitmap-read-an-image-through-a-pipe.dart:68:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^

@@ -1,13 +1,40 @@
 run: exit status 254
-/tmp/cartesian-product-of-two-or-more-lists-2.dart:33:23: Error: Type 'any' not found.
+/tmp/cartesian-product-of-two-or-more-lists-2.dart:30:23: Error: Type 'any' not found.
 List<List<int>> cartN(any lists) {
                       ^^^
-/tmp/cartesian-product-of-two-or-more-lists-2.dart:33:23: Error: 'any' isn't a type.
+/tmp/cartesian-product-of-two-or-more-lists-2.dart:6:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    s = s + xs[i].toString();
+               ^
+/tmp/cartesian-product-of-two-or-more-lists-2.dart:20:25: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    s = s + listStr(lst[i]);
+                        ^
+/tmp/cartesian-product-of-two-or-more-lists-2.dart:30:23: Error: 'any' isn't a type.
 List<List<int>> cartN(any lists) {
                       ^^^
-/tmp/cartesian-product-of-two-or-more-lists-2.dart:44:11: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    c = c * xs.length;
+/tmp/cartesian-product-of-two-or-more-lists-2.dart:43:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    c = (c as num) * xs.length;
+                   ^
+/tmp/cartesian-product-of-two-or-more-lists-2.dart:60:35: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      row = List.from(row)..add(a[j][idx[j]]);
+                                  ^
+/tmp/cartesian-product-of-two-or-more-lists-2.dart:60:42: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      row = List.from(row)..add(a[j][idx[j]]);
+                                         ^
+/tmp/cartesian-product-of-two-or-more-lists-2.dart:66:11: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      idx[k] = (idx[k] as num) + 1;
           ^
-/tmp/cartesian-product-of-two-or-more-lists-2.dart:74:28: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    count = (count as num) + 1;
-                           ^
+/tmp/cartesian-product-of-two-or-more-lists-2.dart:66:21: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      idx[k] = (idx[k] as num) + 1;
+                    ^
+/tmp/cartesian-product-of-two-or-more-lists-2.dart:66:32: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      idx[k] = (idx[k] as num) + 1;
+                               ^
+/tmp/cartesian-product-of-two-or-more-lists-2.dart:67:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      if ((idx[k] as num) < a[k].length) {
+               ^
+/tmp/cartesian-product-of-two-or-more-lists-2.dart:67:31: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      if ((idx[k] as num) < a[k].length) {
+                              ^
+/tmp/cartesian-product-of-two-or-more-lists-2.dart:70:11: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      idx[k] = 0;
+          ^

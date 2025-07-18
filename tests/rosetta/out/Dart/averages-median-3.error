@@ -1,14 +1,35 @@
 run: exit status 254
-/tmp/averages-median-3.dart:30:36: Error: The method 'substring' isn't defined for the class 'List<double>'.
+/tmp/averages-median-3.dart:14:19: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var v = arr[i];
+                  ^
+/tmp/averages-median-3.dart:17:23: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        arr[px] = arr[i];
+                      ^
+/tmp/averages-median-3.dart:18:13: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        arr[i] = tmp2;
+            ^
+/tmp/averages-median-3.dart:19:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        px = (px as num) + 1;
+                         ^
+/tmp/averages-median-3.dart:27:36: Error: The method 'substring' isn't defined for the class 'List<double>'.
  - 'List' is from 'dart:core'.
 Try correcting the name to the name of an existing method, or defining a method named 'substring'.
       arr = ((arr is String) ? arr.substring(0, px) : (arr as List).sublist(0, px));
                                    ^^^^^^^^^
-/tmp/averages-median-3.dart:36:36: Error: The method 'substring' isn't defined for the class 'List<double>'.
+/tmp/averages-median-3.dart:33:36: Error: The method 'substring' isn't defined for the class 'List<double>'.
  - 'List' is from 'dart:core'.
 Try correcting the name to the name of an existing method, or defining a method named 'substring'.
-      arr = ((arr is String) ? arr.substring((px + 1), arr.length) : (arr as List).sublist((px + 1), arr.length));
+      arr = ((arr is String) ? arr.substring(((px as num) + 1), arr.length) : (arr as List).sublist(((px as num) + 1), arr.length));
                                    ^^^^^^^^^
-/tmp/averages-median-3.dart:45:36: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-  var half = int.parse((arr.length / 2));
+/tmp/averages-median-3.dart:33:114: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+      arr = ((arr is String) ? arr.substring(((px as num) + 1), arr.length) : (arr as List).sublist(((px as num) + 1), arr.length));
+                                                                                                                 ^
+/tmp/averages-median-3.dart:34:13: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      k = k - (((px as num) + 1) as num);
+            ^
+/tmp/averages-median-3.dart:42:36: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+  var half = int.parse((arr.length ~/ 2));
                                    ^
+/tmp/averages-median-3.dart:45:53: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    return (((med as num) + qsel(arr, (half as num) - 1)) as num) / 2;
+                                                    ^

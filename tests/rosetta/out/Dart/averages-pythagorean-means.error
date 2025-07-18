@@ -1,38 +1,32 @@
 run: exit status 254
-/tmp/averages-pythagorean-means.dart:9:21: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-    result = result * base;
-                    ^
-/tmp/averages-pythagorean-means.dart:12:10: Error: A value of type 'int' can't be returned from a function with return type 'double'.
+/tmp/averages-pythagorean-means.dart:6:30: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    result = (result as num) * base;
+                             ^
+/tmp/averages-pythagorean-means.dart:9:10: Error: A value of type 'int' can't be returned from a function with return type 'double'.
   return result;
          ^
-/tmp/averages-pythagorean-means.dart:25:13: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-      low = mid;
-            ^
-/tmp/averages-pythagorean-means.dart:29:10: Error: A value of type 'int' can't be returned from a function with return type 'double'.
+/tmp/averages-pythagorean-means.dart:26:10: Error: A value of type 'num' can't be returned from a function with return type 'double'.
   return low;
          ^
-/tmp/averages-pythagorean-means.dart:38:26: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/averages-pythagorean-means.dart:35:26: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
     var f = double.parse(n);
                          ^
-/tmp/averages-pythagorean-means.dart:39:24: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-    sum = (sum as num) + f;
-                       ^
-/tmp/averages-pythagorean-means.dart:40:25: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-    sumRecip = sumRecip + 1 / f;
-                        ^
-/tmp/averages-pythagorean-means.dart:41:17: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-    prod = prod * f;
-                ^
-/tmp/averages-pythagorean-means.dart:46:19: Error: The argument type 'int' can't be assigned to the parameter type 'double'.
+/tmp/averages-pythagorean-means.dart:38:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    prod = (prod as num) * (f as num);
+                         ^
+/tmp/averages-pythagorean-means.dart:39:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = (n as num) + 1;
+                   ^
+/tmp/averages-pythagorean-means.dart:43:19: Error: The argument type 'int' can't be assigned to the parameter type 'double'.
   var g = nthRoot(prod, 10);
                   ^
-/tmp/averages-pythagorean-means.dart:49:27: Error: A value of type 'double' can't be assigned to a variable of type 'String'.
-  print('A >= G >= H: ' + a >= g && g >= h.toString());
-                          ^
-/tmp/averages-pythagorean-means.dart:49:29: Error: The operator '>=' isn't defined for the class 'String'.
+/tmp/averages-pythagorean-means.dart:46:30: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+  print('A >= G >= H: ' + (a as num) >= (g as num) && (g as num) >= (h as num).toString());
+                             ^
+/tmp/averages-pythagorean-means.dart:46:38: Error: The operator '>=' isn't defined for the class 'String'.
 Try correcting the operator to an existing operator, or defining a '>=' operator.
-  print('A >= G >= H: ' + a >= g && g >= h.toString());
-                            ^^
-/tmp/averages-pythagorean-means.dart:49:44: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-  print('A >= G >= H: ' + a >= g && g >= h.toString());
-                                           ^
+  print('A >= G >= H: ' + (a as num) >= (g as num) && (g as num) >= (h as num).toString());
+                                     ^^
+/tmp/averages-pythagorean-means.dart:46:80: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+  print('A >= G >= H: ' + (a as num) >= (g as num) && (g as num) >= (h as num).toString());
+                                                                               ^

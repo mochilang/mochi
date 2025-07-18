@@ -1,28 +1,43 @@
 run: exit status 254
-/tmp/chinese-zodiac.dart:29:96: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-  return Info(animal[branch].toString(), yinYang[stem % 2].toString(), element[int.parse((stem / 2))].toString(), sb, y % 60 + 1);
-                                                                                               ^
-/tmp/chinese-zodiac.dart:35:35: Error: The operator '[]' isn't defined for the class 'Info'.
+/tmp/chinese-zodiac.dart:68:15: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+  var sb = sc[stem] + bc[branch];
+              ^
+/tmp/chinese-zodiac.dart:68:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+  var sb = sc[stem] + bc[branch];
+                         ^
+/tmp/chinese-zodiac.dart:69:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+  return Info(animal[branch].toString(), yinYang[(stem as num) % 2].toString(), element[int.parse(((stem as num) / 2))].toString(), sb, ((y as num) % 60 as num) + 1);
+                     ^
+/tmp/chinese-zodiac.dart:69:64: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+  return Info(animal[branch].toString(), yinYang[(stem as num) % 2].toString(), element[int.parse(((stem as num) / 2))].toString(), sb, ((y as num) % 60 as num) + 1);
+                                                               ^
+/tmp/chinese-zodiac.dart:69:114: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+  return Info(animal[branch].toString(), yinYang[(stem as num) % 2].toString(), element[int.parse(((stem as num) / 2))].toString(), sb, ((y as num) % 60 as num) + 1);
+                                                                                                                 ^
+/tmp/chinese-zodiac.dart:69:162: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+  return Info(animal[branch].toString(), yinYang[(stem as num) % 2].toString(), element[int.parse(((stem as num) / 2))].toString(), sb, ((y as num) % 60 as num) + 1);
+                                                                                                                                                                 ^
+/tmp/chinese-zodiac.dart:81:35: Error: The operator '[]' isn't defined for the class 'Info'.
  - 'Info' is from '/tmp/chinese-zodiac.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
     print(yr.toString() + ': ' + r['element'] + ' ' + r['animal'] + ', ' + r['yinYang'] + ', Cycle year ' + r['cycle'].toString() + ' ' + r['stemBranch']);
                                   ^
-/tmp/chinese-zodiac.dart:35:56: Error: The operator '[]' isn't defined for the class 'Info'.
+/tmp/chinese-zodiac.dart:81:56: Error: The operator '[]' isn't defined for the class 'Info'.
  - 'Info' is from '/tmp/chinese-zodiac.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
     print(yr.toString() + ': ' + r['element'] + ' ' + r['animal'] + ', ' + r['yinYang'] + ', Cycle year ' + r['cycle'].toString() + ' ' + r['stemBranch']);
                                                        ^
-/tmp/chinese-zodiac.dart:35:77: Error: The operator '[]' isn't defined for the class 'Info'.
+/tmp/chinese-zodiac.dart:81:77: Error: The operator '[]' isn't defined for the class 'Info'.
  - 'Info' is from '/tmp/chinese-zodiac.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
     print(yr.toString() + ': ' + r['element'] + ' ' + r['animal'] + ', ' + r['yinYang'] + ', Cycle year ' + r['cycle'].toString() + ' ' + r['stemBranch']);
                                                                             ^
-/tmp/chinese-zodiac.dart:35:110: Error: The operator '[]' isn't defined for the class 'Info'.
+/tmp/chinese-zodiac.dart:81:110: Error: The operator '[]' isn't defined for the class 'Info'.
  - 'Info' is from '/tmp/chinese-zodiac.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
     print(yr.toString() + ': ' + r['element'] + ' ' + r['animal'] + ', ' + r['yinYang'] + ', Cycle year ' + r['cycle'].toString() + ' ' + r['stemBranch']);
                                                                                                              ^
-/tmp/chinese-zodiac.dart:35:140: Error: The operator '[]' isn't defined for the class 'Info'.
+/tmp/chinese-zodiac.dart:81:140: Error: The operator '[]' isn't defined for the class 'Info'.
  - 'Info' is from '/tmp/chinese-zodiac.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
     print(yr.toString() + ': ' + r['element'] + ' ' + r['animal'] + ', ' + r['yinYang'] + ', Cycle year ' + r['cycle'].toString() + ' ' + r['stemBranch']);

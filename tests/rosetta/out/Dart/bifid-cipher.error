@@ -1,11 +1,64 @@
 run: exit status 254
-/tmp/bifid-cipher.dart:11:13: Error: Type 'any' not found.
+/tmp/bifid-cipher.dart:2:13: Error: Type 'any' not found.
 Map<String, any> square_to_maps(List<List<String>> square) {
             ^^^
-/tmp/bifid-cipher.dart:30:11: Error: Method not found: 'upper'.
+/tmp/bifid-cipher.dart:7:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var row = square[x];
+                     ^
+/tmp/bifid-cipher.dart:10:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var ch = row[y];
+                   ^
+/tmp/bifid-cipher.dart:11:19: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      emap[ch] = [x, y];
+                  ^
+/tmp/bifid-cipher.dart:11:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      emap[ch] = [x, y];
+                     ^
+/tmp/bifid-cipher.dart:21:11: Error: Method not found: 'upper'.
   var s = upper(text);
           ^^^^^
-/tmp/bifid-cipher.dart:36:19: Error: A value of type 'Object' can't be assigned to a variable of type 'String'.
- - 'Object' is from 'dart:core'.
-      out = out + ch;
-                  ^
+/tmp/bifid-cipher.dart:25:43: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var ch = ((s is String) ? s.substring(i, (i as num) + 1) : (s as List).sublist(i, (i as num) + 1));
+                                          ^
+/tmp/bifid-cipher.dart:25:57: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var ch = ((s is String) ? s.substring(i, (i as num) + 1) : (s as List).sublist(i, (i as num) + 1));
+                                                        ^
+/tmp/bifid-cipher.dart:25:84: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var ch = ((s is String) ? s.substring(i, (i as num) + 1) : (s as List).sublist(i, (i as num) + 1));
+                                                                                   ^
+/tmp/bifid-cipher.dart:25:98: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var ch = ((s is String) ? s.substring(i, (i as num) + 1) : (s as List).sublist(i, (i as num) + 1));
+                                                                                                 ^
+/tmp/bifid-cipher.dart:27:26: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+      out = (out as num) + (ch as num);
+                         ^
+/tmp/bifid-cipher.dart:40:29: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var ch = text.substring(i, (i as num) + 1);
+                            ^
+/tmp/bifid-cipher.dart:40:43: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var ch = text.substring(i, (i as num) + 1);
+                                          ^
+/tmp/bifid-cipher.dart:53:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var key = row0[j].toString() + ',' + row0[(j as num) + 1].toString();
+                   ^
+/tmp/bifid-cipher.dart:53:58: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var key = row0[j].toString() + ',' + row0[(j as num) + 1].toString();
+                                                         ^
+/tmp/bifid-cipher.dart:65:29: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var ch = text.substring(i, (i as num) + 1);
+                            ^
+/tmp/bifid-cipher.dart:65:43: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var ch = text.substring(i, (i as num) + 1);
+                                          ^
+/tmp/bifid-cipher.dart:76:36: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    k1 = List.from(k1)..add(coords[idx]);
+                                   ^
+/tmp/bifid-cipher.dart:80:36: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    k2 = List.from(k2)..add(coords[idx]);
+                                   ^
+/tmp/bifid-cipher.dart:86:18: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var key = k1[j].toString() + ',' + k2[j].toString();
+                 ^
+/tmp/bifid-cipher.dart:86:43: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var key = k1[j].toString() + ',' + k2[j].toString();
+                                          ^

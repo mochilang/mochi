@@ -1,13 +1,58 @@
 run: exit status 254
-/tmp/align-columns.dart:55:13: Error: Type 'any' not found.
+/tmp/align-columns.dart:52:13: Error: Type 'any' not found.
 Map<String, any> newFormatter(String text) {
             ^^^
-/tmp/align-columns.dart:84:27: Error: Type 'any' not found.
+/tmp/align-columns.dart:81:27: Error: Type 'any' not found.
 void printFmt(Map<String, any> f, int align) {
                           ^^^
-/tmp/align-columns.dart:50:30: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-  var left = int.parse((diff / 2));
-                             ^
-/tmp/align-columns.dart:84:27: Error: 'any' isn't a type.
+/tmp/align-columns.dart:7:98: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    if (sep.length > 0 && ((i as num) + sep.length as num) <= s.length && s.toString().substring(i, (i as num) + sep.length) == sep) {
+                                                                                                 ^
+/tmp/align-columns.dart:7:112: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    if (sep.length > 0 && ((i as num) + sep.length as num) <= s.length && s.toString().substring(i, (i as num) + sep.length) == sep) {
+                                                                                                               ^
+/tmp/align-columns.dart:13:42: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+      cur = cur + s.toString().substring(i, (i as num) + 1);
+                                         ^
+/tmp/align-columns.dart:13:56: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+      cur = cur + s.toString().substring(i, (i as num) + 1);
+                                                       ^
+/tmp/align-columns.dart:23:45: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+  while ((n as num) > 0 && words[(n as num) - 1] == '') {
+                                            ^
+/tmp/align-columns.dart:24:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = (n as num) - 1;
+                   ^
+/tmp/align-columns.dart:47:39: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+  var left = int.parse(((diff as num) / 2));
+                                      ^
+/tmp/align-columns.dart:49:39: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+  return spaces(left) + word + spaces(right);
+                                      ^
+/tmp/align-columns.dart:58:15: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    if (lines[i].length == 0) {
+              ^
+/tmp/align-columns.dart:62:41: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var words = rstripEmpty(split(lines[i], '\$'));
+                                        ^
+/tmp/align-columns.dart:66:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var wlen = words[j].length;
+                       ^
+/tmp/align-columns.dart:71:34: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      if ((wlen as num) > (width[j] as num)) {
+                                 ^
+/tmp/align-columns.dart:72:15: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        width[j] = wlen;
+              ^
+/tmp/align-columns.dart:81:27: Error: 'any' isn't a type.
 void printFmt(Map<String, any> f, int align) {
                           ^^^
+/tmp/align-columns.dart:86:23: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var words = lines[i];
+                      ^
+/tmp/align-columns.dart:90:31: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      line = line + pad(words[j], width[j], align) + ' ';
+                              ^
+/tmp/align-columns.dart:90:41: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      line = line + pad(words[j], width[j], align) + ' ';
+                                        ^

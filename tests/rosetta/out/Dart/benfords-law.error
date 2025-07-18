@@ -1,22 +1,55 @@
 run: exit status 254
-/tmp/benfords-law.dart:6:34: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+/tmp/benfords-law.dart:3:34: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
   return double.parse((int.parse(x)));
                                  ^
-/tmp/benfords-law.dart:6:28: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/benfords-law.dart:3:28: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
   return double.parse((int.parse(x)));
                            ^
-/tmp/benfords-law.dart:56:31: Error: The argument type 'int' can't be assigned to the parameter type 'double'.
+/tmp/benfords-law.dart:9:32: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    if (s.toString().substring(i, (i as num) + 1) == ch) {
+                               ^
+/tmp/benfords-law.dart:9:46: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    if (s.toString().substring(i, (i as num) + 1) == ch) {
+                                             ^
+/tmp/benfords-law.dart:10:14: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+      return i;
+             ^
+/tmp/benfords-law.dart:27:50: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+      s = s.toString().substring(0, (dot as num) + 4);
+                                                 ^
+/tmp/benfords-law.dart:53:31: Error: The argument type 'int' can't be assigned to the parameter type 'double'.
     res = List.from(res)..add(b);
                               ^
-/tmp/benfords-law.dart:75:20: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+/tmp/benfords-law.dart:55:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    b = (b as num) + (a as num);
+                   ^
+/tmp/benfords-law.dart:64:9: Error: A value of type 'num' can't be assigned to a variable of type 'double'.
+    x = -(x as num);
+        ^
+/tmp/benfords-law.dart:72:20: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
   return int.parse(x);
                    ^
-/tmp/benfords-law.dart:92:35: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/benfords-law.dart:90:25: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      counts[(d as num) - 1] = (counts[(d as num) - 1] as num) + 1;
+                        ^
+/tmp/benfords-law.dart:90:51: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      counts[(d as num) - 1] = (counts[(d as num) - 1] as num) + 1;
+                                                  ^
+/tmp/benfords-law.dart:90:64: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      counts[(d as num) - 1] = (counts[(d as num) - 1] as num) + 1;
+                                                               ^
+/tmp/benfords-law.dart:109:36: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var obs = (double.parse(counts[i])) / (double.parse(total));
+                                   ^
+/tmp/benfords-law.dart:109:35: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
     var obs = (double.parse(counts[i])) / (double.parse(total));
                                   ^
-/tmp/benfords-law.dart:92:57: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/benfords-law.dart:109:57: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
     var obs = (double.parse(counts[i])) / (double.parse(total));
                                                         ^
-/tmp/benfords-law.dart:93:23: Error: A value of type 'int' can't be assigned to a variable of type 'String'.
-    var line = '  ' + i + 1.toString() + '  ' + padFloat3(obs, 9) + '  ' + padFloat3(preds[i], 8);
-                      ^
+/tmp/benfords-law.dart:110:26: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+    var line = '  ' + (i as num) + 1.toString() + '  ' + padFloat3(obs, 9) + '  ' + padFloat3(preds[i], 8);
+                         ^
+/tmp/benfords-law.dart:110:101: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var line = '  ' + (i as num) + 1.toString() + '  ' + padFloat3(obs, 9) + '  ' + padFloat3(preds[i], 8);
+                                                                                                    ^

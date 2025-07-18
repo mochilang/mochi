@@ -1,0 +1,4 @@
+run: exit status 254
+/tmp/active-directory-search-for-a-user.dart:22:31: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      out = out + '' + groups[i] + '';
+                              ^

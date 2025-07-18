@@ -1,13 +1,22 @@
 run: exit status 254
-/tmp/arithmetic-rational.dart:16:14: Error: A value of type 'double' can't be returned from a function with return type 'int'.
+/tmp/arithmetic-rational.dart:13:14: Error: A value of type 'num' can't be returned from a function with return type 'int'.
       return mid;
              ^
-/tmp/arithmetic-rational.dart:19:18: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-      left = mid + 1;
-                 ^
-/tmp/arithmetic-rational.dart:20:13: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-      ans = mid;
-            ^
-/tmp/arithmetic-rational.dart:35:13: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-      s = s + n / f;
-            ^
+/tmp/arithmetic-rational.dart:16:27: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      left = (mid as num) + 1;
+                          ^
+/tmp/arithmetic-rational.dart:20:28: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      right = (mid as num) - 1;
+                           ^
+/tmp/arithmetic-rational.dart:23:10: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+  return ans;
+         ^
+/tmp/arithmetic-rational.dart:32:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      s = (s as num) + (n / (f as num) as num);
+                     ^
+/tmp/arithmetic-rational.dart:35:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        s = (s as num) + (f as num);
+                       ^
+/tmp/arithmetic-rational.dart:38:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    f = (f as num) + 1;
+                   ^

@@ -1,0 +1,7 @@
+run: exit status 254
+/tmp/cartesian-product-of-two-or-more-lists-1.dart:16:19: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var row = lst[i];
+                  ^
+/tmp/cartesian-product-of-two-or-more-lists-1.dart:20:19: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      s = s + row[j].toString();
+                  ^

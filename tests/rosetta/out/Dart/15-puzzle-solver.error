@@ -1,6 +1,4 @@
 run: exit status 254
-/tmp/15-puzzle-solver.dart:13:16: Error: The operator '[]' isn't defined for the class 'Type'.
- - 'Type' is from 'dart:core'.
-Try correcting the operator to an existing operator, or defining a '[]' operator.
-  print(testpkg['FifteenPuzzleExample']());
-               ^
+/tmp/15-puzzle-solver.dart:10:17: Error: Member not found: 'testpkg.FifteenPuzzleExample'.
+  print(testpkg.FifteenPuzzleExample());
+                ^^^^^^^^^^^^^^^^^^^^

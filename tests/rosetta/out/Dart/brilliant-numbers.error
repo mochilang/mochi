@@ -1,45 +1,87 @@
 run: exit status 254
-/tmp/brilliant-numbers.dart:74:13: Error: Type 'any' not found.
+/tmp/brilliant-numbers.dart:73:13: Error: Type 'any' not found.
 Map<String, any> getBrilliant(int digits, int limit, bool countOnly) {
             ^^^
-/tmp/brilliant-numbers.dart:66:73: Error: The operator '+' isn't defined for the class 'Object'.
+/tmp/brilliant-numbers.dart:16:15: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        sieve[m] = false;
+              ^
+/tmp/brilliant-numbers.dart:20:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    p = (p as num) + 1;
+                   ^
+/tmp/brilliant-numbers.dart:28:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    x = (x as num) + 1;
+                   ^
+/tmp/brilliant-numbers.dart:45:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      i = (i as num) + 1;
+                     ^
+/tmp/brilliant-numbers.dart:52:39: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        out = List.from(out)..add(tmp[j]);
+                                      ^
+/tmp/brilliant-numbers.dart:65:73: Error: The operator '+' isn't defined for the class 'Object'.
  - 'Object' is from 'dart:core'.
 Try correcting the operator to an existing operator, or defining a '+' operator.
     s = ((s is String) ? s.substring(0, i) : (s as List).sublist(0, i)) + ',' + ((s is String) ? s.substring(i, s.length) : (s as List).sublist(i, s.length));
                                                                         ^
-/tmp/brilliant-numbers.dart:97:36: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-            count = (count as num) + 1;
-                                   ^
-/tmp/brilliant-numbers.dart:138:17: Error: Method not found: 'pow'.
+/tmp/brilliant-numbers.dart:66:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) - 3;
+                   ^
+/tmp/brilliant-numbers.dart:93:23: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        var prod = (s[i] as num) * (s[j] as num);
+                      ^
+/tmp/brilliant-numbers.dart:93:39: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        var prod = (s[i] as num) * (s[j] as num);
+                                      ^
+/tmp/brilliant-numbers.dart:99:51: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+            brilliant = List.from(brilliant)..add(prod);
+                                                  ^
+/tmp/brilliant-numbers.dart:104:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+            next = prod;
+                   ^
+/tmp/brilliant-numbers.dart:112:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    pow = (pow as num) * 10;
+                       ^
+/tmp/brilliant-numbers.dart:113:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    k = (k as num) + 1;
+                   ^
+/tmp/brilliant-numbers.dart:137:17: Error: Method not found: 'pow'.
     var limit = pow(10, k);
                 ^^^
-/tmp/brilliant-numbers.dart:126:29: Error: The method 'substring' isn't defined for the class 'List<int>'.
+/tmp/brilliant-numbers.dart:125:29: Error: The method 'substring' isn't defined for the class 'List<int>'.
  - 'List' is from 'dart:core'.
 Try correcting the name to the name of an existing method, or defining a method named 'substring'.
   br = ((br is String) ? br.substring(0, 100) : (br as List).sublist(0, 100));
                             ^^^^^^^^^
-/tmp/brilliant-numbers.dart:129:29: Error: The method 'padStart' isn't defined for the class 'String'.
+/tmp/brilliant-numbers.dart:128:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    _print([br[i].toString().padStart(4, ' ') + ' ', false]);
+               ^
+/tmp/brilliant-numbers.dart:128:30: Error: The method 'padStart' isn't defined for the class 'String'.
 Try correcting the name to the name of an existing method, or defining a method named 'padStart'.
-    print([br[i].toString().padStart(4, ' ') + ' ', false].join(' '));
-                            ^^^^^^^^
-/tmp/brilliant-numbers.dart:145:32: Error: A value of type 'String' can't be assigned to a variable of type 'int'.
+    _print([br[i].toString().padStart(4, ' ') + ' ', false]);
+                             ^^^^^^^^
+/tmp/brilliant-numbers.dart:142:43: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var ctotal = commatize((total as num) + 1);
+                                          ^
+/tmp/brilliant-numbers.dart:144:32: Error: A value of type 'String' can't be assigned to a variable of type 'int'.
     print('First >= ' + climit['padStart'](18, ' ') + ' is ' + ctotal['padStart'](14, ' ') + ' in the series: ' + cnext['padStart'](18, ' '));
                                ^
-/tmp/brilliant-numbers.dart:145:43: Error: The method 'call' isn't defined for the class 'String'.
+/tmp/brilliant-numbers.dart:144:43: Error: The method 'call' isn't defined for the class 'String'.
 Try correcting the name to the name of an existing method, or defining a method named 'call'.
     print('First >= ' + climit['padStart'](18, ' ') + ' is ' + ctotal['padStart'](14, ' ') + ' in the series: ' + cnext['padStart'](18, ' '));
                                           ^
-/tmp/brilliant-numbers.dart:145:71: Error: A value of type 'String' can't be assigned to a variable of type 'int'.
+/tmp/brilliant-numbers.dart:144:71: Error: A value of type 'String' can't be assigned to a variable of type 'int'.
     print('First >= ' + climit['padStart'](18, ' ') + ' is ' + ctotal['padStart'](14, ' ') + ' in the series: ' + cnext['padStart'](18, ' '));
                                                                       ^
-/tmp/brilliant-numbers.dart:145:82: Error: The method 'call' isn't defined for the class 'String'.
+/tmp/brilliant-numbers.dart:144:82: Error: The method 'call' isn't defined for the class 'String'.
 Try correcting the name to the name of an existing method, or defining a method named 'call'.
     print('First >= ' + climit['padStart'](18, ' ') + ' is ' + ctotal['padStart'](14, ' ') + ' in the series: ' + cnext['padStart'](18, ' '));
                                                                                  ^
-/tmp/brilliant-numbers.dart:145:121: Error: A value of type 'String' can't be assigned to a variable of type 'int'.
+/tmp/brilliant-numbers.dart:144:121: Error: A value of type 'String' can't be assigned to a variable of type 'int'.
     print('First >= ' + climit['padStart'](18, ' ') + ' is ' + ctotal['padStart'](14, ' ') + ' in the series: ' + cnext['padStart'](18, ' '));
                                                                                                                         ^
-/tmp/brilliant-numbers.dart:145:132: Error: The method 'call' isn't defined for the class 'String'.
+/tmp/brilliant-numbers.dart:144:132: Error: The method 'call' isn't defined for the class 'String'.
 Try correcting the name to the name of an existing method, or defining a method named 'call'.
     print('First >= ' + climit['padStart'](18, ' ') + ' is ' + ctotal['padStart'](14, ' ') + ' in the series: ' + cnext['padStart'](18, ' '));
                                                                                                                                    ^
+/tmp/brilliant-numbers.dart:145:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    k = (k as num) + 1;
+                   ^

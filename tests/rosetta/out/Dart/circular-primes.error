@@ -1,7 +1,25 @@
 run: exit status 254
-/tmp/circular-primes.dart:36:13: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-    nn = nn / 10;
-            ^
-/tmp/circular-primes.dart:42:13: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-    nn = nn + f * (1 - pow);
-            ^
+/tmp/circular-primes.dart:17:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    d = (d as num) + 2;
+                   ^
+/tmp/circular-primes.dart:21:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    d = (d as num) + 4;
+                   ^
+/tmp/circular-primes.dart:32:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    pow = (pow as num) * 10;
+                       ^
+/tmp/circular-primes.dart:33:22: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    nn = (nn as num) / 10;
+                     ^
+/tmp/circular-primes.dart:37:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    nn = (nn as num) * 10;
+                     ^
+/tmp/circular-primes.dart:39:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    nn = (nn as num) + ((f as num) * ((1 - (pow as num)) as num) as num);
+                     ^
+/tmp/circular-primes.dart:81:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    out = out + xs[i].toString();
+                   ^
+/tmp/circular-primes.dart:106:56: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+        q = List.from(q)..add(((f as num) * 10 as num) + d);
+                                                       ^

@@ -1,27 +1,78 @@
 run: exit status 254
-/tmp/bioinformatics-sequence-mutation.dart:20:6: Error: Type 'any' not found.
+/tmp/bioinformatics-sequence-mutation.dart:17:6: Error: Type 'any' not found.
 List<any> makeSeq(int s, int le) {
      ^^^
-/tmp/bioinformatics-sequence-mutation.dart:34:6: Error: Type 'any' not found.
+/tmp/bioinformatics-sequence-mutation.dart:31:6: Error: Type 'any' not found.
 List<any> mutate(int s, String dna, List<int> w) {
      ^^^
-/tmp/bioinformatics-sequence-mutation.dart:27:26: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/bioinformatics-sequence-mutation.dart:4:31: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+  return [next, (next as num) % n];
+                              ^
+/tmp/bioinformatics-sequence-mutation.dart:12:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = (n as num) - 1;
+                   ^
+/tmp/bioinformatics-sequence-mutation.dart:24:26: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
     var idx = int.parse(r[1]);
                          ^
-/tmp/bioinformatics-sequence-mutation.dart:39:22: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/bioinformatics-sequence-mutation.dart:25:62: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    out = out + bases.toString().substring(idx, (idx as num) + 1);
+                                                             ^
+/tmp/bioinformatics-sequence-mutation.dart:36:22: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
   var p = int.parse(r[1]);
                      ^
-/tmp/bioinformatics-sequence-mutation.dart:42:22: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/bioinformatics-sequence-mutation.dart:39:22: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
   var x = int.parse(r[1]);
                      ^
-/tmp/bioinformatics-sequence-mutation.dart:52:26: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/bioinformatics-sequence-mutation.dart:43:56: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    arr = List.from(arr)..add(dna.toString().substring(i, (i as num) + 1));
+                                                       ^
+/tmp/bioinformatics-sequence-mutation.dart:43:70: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    arr = List.from(arr)..add(dna.toString().substring(i, (i as num) + 1));
+                                                                     ^
+/tmp/bioinformatics-sequence-mutation.dart:49:26: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
     var idx = int.parse(r[1]);
                          ^
-/tmp/bioinformatics-sequence-mutation.dart:65:34: Error: The method 'substring' isn't defined for the class 'List<String>'.
+/tmp/bioinformatics-sequence-mutation.dart:50:58: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var b = bases.toString().substring(idx, (idx as num) + 1);
+                                                         ^
+/tmp/bioinformatics-sequence-mutation.dart:59:31: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      arr[j] = arr[(j as num) + 1];
+                              ^
+/tmp/bioinformatics-sequence-mutation.dart:60:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      j = (j as num) + 1;
+                     ^
+/tmp/bioinformatics-sequence-mutation.dart:62:34: Error: The method 'substring' isn't defined for the class 'List<String>'.
  - 'List' is from 'dart:core'.
 Try correcting the name to the name of an existing method, or defining a method named 'substring'.
     arr = ((arr is String) ? arr.substring(0, arr.length - 1) : (arr as List).sublist(0, arr.length - 1));
                                  ^^^^^^^^^
-/tmp/bioinformatics-sequence-mutation.dart:70:27: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/bioinformatics-sequence-mutation.dart:67:27: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
     var idx2 = int.parse(r[1]);
                           ^
+/tmp/bioinformatics-sequence-mutation.dart:68:60: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var b = bases.toString().substring(idx2, (idx2 as num) + 1);
+                                                           ^
+/tmp/bioinformatics-sequence-mutation.dart:72:31: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      arr[j] = arr[(j as num) - 1];
+                              ^
+/tmp/bioinformatics-sequence-mutation.dart:73:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      j = (j as num) - 1;
+                     ^
+/tmp/bioinformatics-sequence-mutation.dart:81:31: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    out = (out as num) + (arr[i] as num);
+                              ^
+/tmp/bioinformatics-sequence-mutation.dart:81:24: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+    out = (out as num) + (arr[i] as num);
+                       ^
+/tmp/bioinformatics-sequence-mutation.dart:96:59: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    print(padLeft(i.toString(), 5) + ': ' + dna.substring(i, k));
+                                                          ^
+/tmp/bioinformatics-sequence-mutation.dart:96:62: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    print(padLeft(i.toString(), 5) + ': ' + dna.substring(i, k));
+                                                             ^
+/tmp/bioinformatics-sequence-mutation.dart:105:39: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var ch = dna.toString().substring(idx, (idx as num) + 1);
+                                      ^
+/tmp/bioinformatics-sequence-mutation.dart:105:57: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var ch = dna.toString().substring(idx, (idx as num) + 1);
+                                                        ^

@@ -1,0 +1,19 @@
+run: exit status 254
+/tmp/averages-mode.dart:39:18: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var v = arr1[i];
+                 ^
+/tmp/averages-mode.dart:51:19: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var k = keys1[i];
+                  ^
+/tmp/averages-mode.dart:60:19: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var k = keys1[i];
+                  ^
+/tmp/averages-mode.dart:69:18: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var v = arr2[i];
+                 ^
+/tmp/averages-mode.dart:81:19: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var k = keys2[i];
+                  ^
+/tmp/averages-mode.dart:90:19: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var k = keys2[i];
+                  ^

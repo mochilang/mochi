@@ -1,29 +1,29 @@
 run: exit status 254
-/tmp/associative-array-merging.dart:5:13: Error: Type 'any' not found.
+/tmp/associative-array-merging.dart:2:13: Error: Type 'any' not found.
 Map<String, any> merge(Map<String, any> base, Map<String, any> update) {
             ^^^
-/tmp/associative-array-merging.dart:5:36: Error: Type 'any' not found.
+/tmp/associative-array-merging.dart:2:36: Error: Type 'any' not found.
 Map<String, any> merge(Map<String, any> base, Map<String, any> update) {
                                    ^^^
-/tmp/associative-array-merging.dart:5:59: Error: Type 'any' not found.
+/tmp/associative-array-merging.dart:2:59: Error: Type 'any' not found.
 Map<String, any> merge(Map<String, any> base, Map<String, any> update) {
                                                           ^^^
-/tmp/associative-array-merging.dart:5:36: Error: 'any' isn't a type.
+/tmp/associative-array-merging.dart:2:36: Error: 'any' isn't a type.
 Map<String, any> merge(Map<String, any> base, Map<String, any> update) {
                                    ^^^
-/tmp/associative-array-merging.dart:5:59: Error: 'any' isn't a type.
+/tmp/associative-array-merging.dart:2:59: Error: 'any' isn't a type.
 Map<String, any> merge(Map<String, any> base, Map<String, any> update) {
                                                           ^^^
-/tmp/associative-array-merging.dart:6:15: Error: 'any' isn't a type.
+/tmp/associative-array-merging.dart:3:15: Error: 'any' isn't a type.
   Map<String, any> result = {};
               ^^^
-/tmp/associative-array-merging.dart:6:29: Error: A value of type 'Map<dynamic, dynamic>' can't be assigned to a variable of type 'Map<String, invalid-type>'.
+/tmp/associative-array-merging.dart:3:29: Error: A value of type 'Map<dynamic, dynamic>' can't be assigned to a variable of type 'Map<String, invalid-type>'.
  - 'Map' is from 'dart:core'.
   Map<String, any> result = {};
                             ^
-/tmp/associative-array-merging.dart:17:15: Error: 'any' isn't a type.
-  Map<String, any> base = {'name': 'Rocket Skates', 'price': 12.75, 'color': 'yellow'};
+/tmp/associative-array-merging.dart:14:15: Error: 'any' isn't a type.
+  Map<String, any> base = {
               ^^^
-/tmp/associative-array-merging.dart:18:15: Error: 'any' isn't a type.
+/tmp/associative-array-merging.dart:19:15: Error: 'any' isn't a type.
   Map<String, any> update = {'price': 15.25, 'color': 'red', 'year': 1974};
               ^^^

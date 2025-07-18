@@ -1,4 +1,16 @@
 run: exit status 254
-/tmp/amicable-pairs.dart:10:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      sum = (sum as num) + p;
-                         ^
+/tmp/amicable-pairs.dart:9:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    p = (p as num) + 1;
+                   ^
+/tmp/amicable-pairs.dart:11:10: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+  return sum;
+         ^
+/tmp/amicable-pairs.dart:31:10: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    sums[i] = pfacSum(i);
+         ^
+/tmp/amicable-pairs.dart:31:23: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    sums[i] = pfacSum(i);
+                      ^
+/tmp/amicable-pairs.dart:41:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = (n as num) + 1;
+                   ^

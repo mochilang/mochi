@@ -1,10 +1,10 @@
 run: exit status 254
-/tmp/call-a-function-6.dart:14:11: Error: The argument type 'int?' can't be assigned to the parameter type 'int' because 'int?' is nullable and 'int' isn't.
+/tmp/call-a-function-6.dart:11:11: Error: The argument type 'int?' can't be assigned to the parameter type 'int' because 'int?' is nullable and 'int' isn't.
   bar(args['a'], args['b'], args['c']);
           ^
-/tmp/call-a-function-6.dart:14:22: Error: The argument type 'int?' can't be assigned to the parameter type 'int' because 'int?' is nullable and 'int' isn't.
+/tmp/call-a-function-6.dart:11:22: Error: The argument type 'int?' can't be assigned to the parameter type 'int' because 'int?' is nullable and 'int' isn't.
   bar(args['a'], args['b'], args['c']);
                      ^
-/tmp/call-a-function-6.dart:14:33: Error: The argument type 'int?' can't be assigned to the parameter type 'int' because 'int?' is nullable and 'int' isn't.
+/tmp/call-a-function-6.dart:11:33: Error: The argument type 'int?' can't be assigned to the parameter type 'int' because 'int?' is nullable and 'int' isn't.
   bar(args['a'], args['b'], args['c']);
                                 ^

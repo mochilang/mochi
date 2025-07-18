@@ -1,25 +1,19 @@
 run: exit status 254
-/tmp/active-object.dart:12:39: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
-    var denom = double.parse(((2 * n) * (2 * n + 1)));
-                                      ^
-/tmp/active-object.dart:34:28: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/active-object.dart:9:57: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
+    var denom = double.parse((((2 * (n as num)) as num) * (((2 * (n as num) as num) + 1) as num)));
+                                                        ^
+/tmp/active-object.dart:11:24: Error: A value of type 'num' can't be assigned to a variable of type 'double'.
+    sum = (sum as num) + (term as num);
+                       ^
+/tmp/active-object.dart:12:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = (n as num) + 1;
+                   ^
+/tmp/active-object.dart:31:28: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
     var t2 = (double.parse(i)) * dt;
                            ^
-/tmp/active-object.dart:36:11: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-    s = s + (k1 + k2) * 0.5 * (t2 - t1);
-          ^
-/tmp/active-object.dart:37:10: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-    t1 = t2;
-         ^
-/tmp/active-object.dart:42:32: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/active-object.dart:39:32: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
     var t2 = 2 + (double.parse(i2)) * dt;
                                ^
-/tmp/active-object.dart:44:11: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-    s = s + (k1 + k2) * 0.5 * (t2 - t1);
-          ^
-/tmp/active-object.dart:45:10: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-    t1 = t2;
-         ^
-/tmp/active-object.dart:46:10: Error: A value of type 'int' can't be assigned to a variable of type 'double'.
+/tmp/active-object.dart:43:10: Error: A value of type 'num' can't be assigned to a variable of type 'double'.
     k1 = k2;
          ^

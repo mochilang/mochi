@@ -1,4 +1,4 @@
 run: exit status 254
-/tmp/boolean-values.dart:6:11: Error: Method not found: 'lower'.
+/tmp/boolean-values.dart:5:11: Error: Method not found: 'lower'.
   var l = lower(s);
           ^^^^^

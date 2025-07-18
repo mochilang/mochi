@@ -1,7 +1,10 @@
 run: exit status 254
-/tmp/csv-to-html-translation-2.dart:12:20: Error: Method not found: 'split'.
+/tmp/csv-to-html-translation-2.dart:9:20: Error: Method not found: 'split'.
   for (var line in split(c, '\n')) {
                    ^^^^^
-/tmp/csv-to-html-translation-2.dart:13:33: Error: Method not found: 'split'.
+/tmp/csv-to-html-translation-2.dart:10:33: Error: Method not found: 'split'.
     rows = List.from(rows)..add(split(line, ','));
                                 ^^^^^
+/tmp/csv-to-html-translation-2.dart:30:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        i = (i as num) + 1;
+                       ^

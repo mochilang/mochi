@@ -1,10 +1,85 @@
 run: exit status 254
-/tmp/best-shuffle.dart:9:6: Error: Type 'any' not found.
+/tmp/best-shuffle.dart:6:6: Error: Type 'any' not found.
 List<any> shuffleChars(String s, int seed) {
      ^^^
-/tmp/best-shuffle.dart:35:6: Error: Type 'any' not found.
+/tmp/best-shuffle.dart:32:6: Error: Type 'any' not found.
 List<any> bestShuffle(String s, int seed) {
      ^^^
-/tmp/best-shuffle.dart:63:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      count = (count as num) + 1;
-                             ^
+/tmp/best-shuffle.dart:10:58: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    chars = List.from(chars)..add(s.toString().substring(i, (i as num) + 1));
+                                                         ^
+/tmp/best-shuffle.dart:10:72: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    chars = List.from(chars)..add(s.toString().substring(i, (i as num) + 1));
+                                                                       ^
+/tmp/best-shuffle.dart:19:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    chars[idx] = chars[j];
+                       ^
+/tmp/best-shuffle.dart:20:11: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    chars[j] = tmp;
+          ^
+/tmp/best-shuffle.dart:21:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    idx = (idx as num) - 1;
+                       ^
+/tmp/best-shuffle.dart:26:33: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    res = (res as num) + (chars[i] as num);
+                                ^
+/tmp/best-shuffle.dart:26:24: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+    res = (res as num) + (chars[i] as num);
+                       ^
+/tmp/best-shuffle.dart:39:54: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    arr = List.from(arr)..add(t.toString().substring(i, (i as num) + 1));
+                                                     ^
+/tmp/best-shuffle.dart:39:68: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    arr = List.from(arr)..add(t.toString().substring(i, (i as num) + 1));
+                                                                   ^
+/tmp/best-shuffle.dart:46:25: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      if (i != j && arr[i] != s.toString().substring(j, (j as num) + 1) && arr[j] != s.toString().substring(i, (i as num) + 1)) {
+                        ^
+/tmp/best-shuffle.dart:46:54: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+      if (i != j && arr[i] != s.toString().substring(j, (j as num) + 1) && arr[j] != s.toString().substring(i, (i as num) + 1)) {
+                                                     ^
+/tmp/best-shuffle.dart:46:68: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+      if (i != j && arr[i] != s.toString().substring(j, (j as num) + 1) && arr[j] != s.toString().substring(i, (i as num) + 1)) {
+                                                                   ^
+/tmp/best-shuffle.dart:46:80: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      if (i != j && arr[i] != s.toString().substring(j, (j as num) + 1) && arr[j] != s.toString().substring(i, (i as num) + 1)) {
+                                                                               ^
+/tmp/best-shuffle.dart:46:109: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+      if (i != j && arr[i] != s.toString().substring(j, (j as num) + 1) && arr[j] != s.toString().substring(i, (i as num) + 1)) {
+                                                                                                            ^
+/tmp/best-shuffle.dart:46:123: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+      if (i != j && arr[i] != s.toString().substring(j, (j as num) + 1) && arr[j] != s.toString().substring(i, (i as num) + 1)) {
+                                                                                                                          ^
+/tmp/best-shuffle.dart:47:23: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        var tmp = arr[i];
+                      ^
+/tmp/best-shuffle.dart:48:13: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        arr[i] = arr[j];
+            ^
+/tmp/best-shuffle.dart:48:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        arr[i] = arr[j];
+                     ^
+/tmp/best-shuffle.dart:49:13: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        arr[j] = tmp;
+            ^
+/tmp/best-shuffle.dart:59:13: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    if (arr[i] == s.toString().substring(i, (i as num) + 1)) {
+            ^
+/tmp/best-shuffle.dart:59:42: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    if (arr[i] == s.toString().substring(i, (i as num) + 1)) {
+                                         ^
+/tmp/best-shuffle.dart:59:56: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    if (arr[i] == s.toString().substring(i, (i as num) + 1)) {
+                                                       ^
+/tmp/best-shuffle.dart:67:31: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    out = (out as num) + (arr[i] as num);
+                              ^
+/tmp/best-shuffle.dart:67:24: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+    out = (out as num) + (arr[i] as num);
+                       ^
+/tmp/best-shuffle.dart:85:28: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var r = bestShuffle(ts[i], seed);
+                           ^
+/tmp/best-shuffle.dart:89:14: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    print(ts[i] + ' -> ' + shuf + ' (' + cnt.toString() + ')');
+             ^

@@ -1,7 +1,19 @@
 run: exit status 254
-/tmp/additive-primes.dart:34:22: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-    x = int.parse((x / 10));
+/tmp/additive-primes.dart:17:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    d = (d as num) + 2;
+                   ^
+/tmp/additive-primes.dart:21:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    d = (d as num) + 4;
+                   ^
+/tmp/additive-primes.dart:31:31: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    x = int.parse(((x as num) / 10));
+                              ^
+/tmp/additive-primes.dart:33:10: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+  return s;
+         ^
+/tmp/additive-primes.dart:64:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      i = (i as num) + 2;
                      ^
-/tmp/additive-primes.dart:57:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      count = (count as num) + 1;
-                             ^
+/tmp/additive-primes.dart:67:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      i = (i as num) + 1;
+                     ^

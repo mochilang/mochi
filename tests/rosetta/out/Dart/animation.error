@@ -1,0 +1,7 @@
+run: exit status 254
+/tmp/animation.dart:18:35: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+      line = line + msg.substring(idx, (idx as num) + 1);
+                                  ^
+/tmp/animation.dart:18:53: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+      line = line + msg.substring(idx, (idx as num) + 1);
+                                                    ^

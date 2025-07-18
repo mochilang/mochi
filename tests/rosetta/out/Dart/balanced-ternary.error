@@ -1,10 +1,52 @@
 run: exit status 254
-/tmp/balanced-ternary.dart:13:13: Error: Type 'any' not found.
+/tmp/balanced-ternary.dart:10:13: Error: Type 'any' not found.
 Map<String, any> btString(String s) {
             ^^^
-/tmp/balanced-ternary.dart:72:22: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-    n = int.parse((n / 3));
+/tmp/balanced-ternary.dart:4:58: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+  while ((i as num) < s.length && s.toString().substring(i, (i as num) + 1) == '0') {
+                                                         ^
+/tmp/balanced-ternary.dart:4:72: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+  while ((i as num) < s.length && s.toString().substring(i, (i as num) + 1) == '0') {
+                                                                       ^
+/tmp/balanced-ternary.dart:7:33: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+  return s.toString().substring(i, s.length);
+                                ^
+/tmp/balanced-ternary.dart:15:51: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var ch = s.toString().substring(i, (i as num) + 1);
+                                                  ^
+/tmp/balanced-ternary.dart:35:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) - 1;
+                   ^
+/tmp/balanced-ternary.dart:59:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) - 1;
+                   ^
+/tmp/balanced-ternary.dart:72:31: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    n = int.parse(((n as num) / 3));
+                              ^
+/tmp/balanced-ternary.dart:75:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      n = (n as num) + 1;
                      ^
+/tmp/balanced-ternary.dart:80:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        n = (n as num) - 1;
+                       ^
+/tmp/balanced-ternary.dart:83:27: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    b = List.from(b)..add(m);
+                          ^
+/tmp/balanced-ternary.dart:93:25: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    r = (r as num) + (b[i] * (pt as num) as num);
+                        ^
+/tmp/balanced-ternary.dart:94:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    pt = (pt as num) * 3;
+                     ^
+/tmp/balanced-ternary.dart:97:10: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+  return r;
+         ^
+/tmp/balanced-ternary.dart:104:31: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    r = List.from(r)..add(-(b[i] as num));
+                              ^
+/tmp/balanced-ternary.dart:104:27: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    r = List.from(r)..add(-(b[i] as num));
+                          ^
 /tmp/balanced-ternary.dart:129:7: Error: 'is' can't be used as an identifier because it's a keyword.
 Try renaming this to be an identifier that isn't a keyword.
   var is = padLeft(btToInt(b).toString(), 7);

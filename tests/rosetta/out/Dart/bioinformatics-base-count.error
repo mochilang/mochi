@@ -1,0 +1,16 @@
+run: exit status 254
+/tmp/bioinformatics-base-count.dart:7:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = (n as num) - 1;
+                   ^
+/tmp/bioinformatics-base-count.dart:35:59: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    print(padLeft(i.toString(), 5) + ': ' + dna.substring(i, k));
+                                                          ^
+/tmp/bioinformatics-base-count.dart:35:62: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    print(padLeft(i.toString(), 5) + ': ' + dna.substring(i, k));
+                                                             ^
+/tmp/bioinformatics-base-count.dart:39:39: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var ch = dna.toString().substring(idx, idx + 1);
+                                      ^
+/tmp/bioinformatics-base-count.dart:39:48: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var ch = dna.toString().substring(idx, idx + 1);
+                                               ^

@@ -1,33 +1,75 @@
 run: exit status 254
-/tmp/achilles-numbers.dart:28:17: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-        nn = nn / i;
-                ^
-/tmp/achilles-numbers.dart:30:17: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-      tot = tot - tot / i;
-                ^
-/tmp/achilles-numbers.dart:38:15: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-    tot = tot - tot / nn;
-              ^
-/tmp/achilles-numbers.dart:100:24: Error: A value of type 'num' can't be assigned to a variable of type 'List<int>'.
- - 'List' is from 'dart:core'.
-    res = res + ([min] as num);
+/tmp/achilles-numbers.dart:12:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = (n as num) * 10;
+                   ^
+/tmp/achilles-numbers.dart:25:26: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+        nn = (nn as num) / (i as num);
+                         ^
+/tmp/achilles-numbers.dart:27:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      tot = (tot as num) - ((tot as num) / (i as num) as num);
+                         ^
+/tmp/achilles-numbers.dart:32:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 2;
+                   ^
+/tmp/achilles-numbers.dart:35:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    tot = (tot as num) - ((tot as num) / (nn as num) as num);
                        ^
-/tmp/achilles-numbers.dart:105:31: Error: A value of type 'num' can't be assigned to a variable of type 'List<int>'.
+/tmp/achilles-numbers.dart:52:11: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      pps[p] = true;
+          ^
+/tmp/achilles-numbers.dart:54:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+/tmp/achilles-numbers.dart:73:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+          achilles[p] = true;
+                   ^
+/tmp/achilles-numbers.dart:76:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      a = (a as num) + 1;
+                     ^
+/tmp/achilles-numbers.dart:78:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    b = (b as num) + 1;
+                   ^
+/tmp/achilles-numbers.dart:95:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      i = (i as num) + 1;
+                     ^
+/tmp/achilles-numbers.dart:97:24: Error: A value of type 'num' can't be assigned to a variable of type 'List<int>'.
  - 'List' is from 'dart:core'.
-        out = out + ([tmp[j]] as num);
-                              ^
-/tmp/achilles-numbers.dart:127:31: Error: The method 'call' isn't defined for the class 'bool?'.
+    res = (res as num) + ([min] as num);
+                       ^
+/tmp/achilles-numbers.dart:103:15: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+          tmp[j],
+              ^
+/tmp/achilles-numbers.dart:102:28: Error: A value of type 'num' can't be assigned to a variable of type 'List<int>'.
+ - 'List' is from 'dart:core'.
+        out = (out as num) + ([
+                           ^
+/tmp/achilles-numbers.dart:126:31: Error: The method 'call' isn't defined for the class 'bool?'.
 Try correcting the name to the name of an existing method, or defining a method named 'call'.
   for (var k in achSet['keys']()) {
                               ^
-/tmp/achilles-numbers.dart:128:22: Error: A value of type 'num' can't be assigned to a variable of type 'List<int>'.
+/tmp/achilles-numbers.dart:127:24: Error: A value of type 'num' can't be assigned to a variable of type 'List<int>'.
  - 'List' is from 'dart:core'.
-    ach = ach + ([k] as num);
-                     ^
-/tmp/achilles-numbers.dart:153:37: Error: A value of type 'num' can't be assigned to a variable of type 'List<int>'.
+    ach = (ach as num) + ([k] as num);
+                       ^
+/tmp/achilles-numbers.dart:136:29: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      line = line + pad(ach[i], 4);
+                            ^
+/tmp/achilles-numbers.dart:150:27: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var tot = totient(ach[idx]);
+                          ^
+/tmp/achilles-numbers.dart:153:13: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        ach[idx],
+            ^
+/tmp/achilles-numbers.dart:152:32: Error: A value of type 'num' can't be assigned to a variable of type 'List<int>'.
  - 'List' is from 'dart:core'.
-      strong = strong + ([ach[idx]] as num);
-                                    ^
-/tmp/achilles-numbers.dart:154:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      count = (count as num) + 1;
-                             ^
+      strong = (strong as num) + ([
+                               ^
+/tmp/achilles-numbers.dart:164:32: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      line = line + pad(strong[i], 5);
+                               ^
+/tmp/achilles-numbers.dart:192:31: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var c = counts[(d as num) - 2];
+                              ^
+/tmp/achilles-numbers.dart:194:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    d = (d as num) + 1;
+                   ^

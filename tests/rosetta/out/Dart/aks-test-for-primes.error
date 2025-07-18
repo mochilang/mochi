@@ -1,11 +1,26 @@
 run: exit status 254
-/tmp/aks-test-for-primes.dart:17:32: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-    coef = int.parse((coef * i / (p - i + 1)));
-                               ^
-/tmp/aks-test-for-primes.dart:23:23: Error: The operator 'unary-' isn't defined for the class 'String'.
+/tmp/aks-test-for-primes.dart:14:59: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    coef = int.parse((((coef as num) * (i as num) as num) / (((p - (i as num) as num) + 1) as num)));
+                                                          ^
+/tmp/aks-test-for-primes.dart:17:11: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      d = -(d as num);
+          ^
+/tmp/aks-test-for-primes.dart:20:23: Error: The operator 'unary-' isn't defined for the class 'String'.
 Try correcting the operator to an existing operator, or defining a 'unary-' operator.
-      s = s + ' - ' + -d.toString();
+      s = s + ' - ' + -(d as num).toString();
                       ^
-/tmp/aks-test-for-primes.dart:46:32: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-    c = int.parse((c * (n - i) / (i + 1)));
-                               ^
+/tmp/aks-test-for-primes.dart:25:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) - 1;
+                   ^
+/tmp/aks-test-for-primes.dart:43:68: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    c = int.parse((((c as num) * ((n - (i as num)) as num) as num) / (((i as num) + 1) as num)));
+                                                                   ^
+/tmp/aks-test-for-primes.dart:44:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+/tmp/aks-test-for-primes.dart:52:39: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    print(p.toString() + ':  ' + poly(p));
+                                      ^
+/tmp/aks-test-for-primes.dart:59:13: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    if (aks(p)) {
+            ^

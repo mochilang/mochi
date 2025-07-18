@@ -1,0 +1,22 @@
+run: exit status 254
+/tmp/abelian-sandpile-model-identity.dart:25:33: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    res = List.from(res)..add(a[i] + b[i]);
+                                ^
+/tmp/abelian-sandpile-model-identity.dart:25:40: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    res = List.from(res)..add(a[i] + b[i]);
+                                       ^
+/tmp/abelian-sandpile-model-identity.dart:44:11: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    if (p[i] > 3) {
+          ^
+/tmp/abelian-sandpile-model-identity.dart:45:9: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      p[i] = p[i] - 4;
+        ^
+/tmp/abelian-sandpile-model-identity.dart:45:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      p[i] = p[i] - 4;
+               ^
+/tmp/abelian-sandpile-model-identity.dart:46:27: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var nbs = neighbors[i];
+                          ^
+/tmp/abelian-sandpile-model-identity.dart:64:41: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      s = s + p[(3 * (r as num) as num) + (c as num)].toString() + ' ';
+                                        ^

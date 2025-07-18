@@ -1,7 +1,25 @@
 run: exit status 254
-/tmp/abundant-odd-numbers.dart:11:28: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-      var j = int.parse((n / i));
+/tmp/abundant-odd-numbers.dart:8:28: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+      var j = int.parse((n / (i as num)));
                            ^
-/tmp/abundant-odd-numbers.dart:68:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+/tmp/abundant-odd-numbers.dart:14:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+/tmp/abundant-odd-numbers.dart:19:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    j = (j as num) - 1;
+                   ^
+/tmp/abundant-odd-numbers.dart:29:10: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+  return tot;
+         ^
+/tmp/abundant-odd-numbers.dart:36:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    s = s + xs[i].toString() + ' + ';
+               ^
+/tmp/abundant-odd-numbers.dart:65:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
       count = (count as num) + 1;
                              ^
+/tmp/abundant-odd-numbers.dart:67:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        n = (n as num) + 2;
+                       ^
+/tmp/abundant-odd-numbers.dart:78:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = (n as num) + 2;
+                   ^

@@ -1,7 +1,22 @@
 run: exit status 254
-/tmp/100-prisoners.dart:78:26: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/100-prisoners.dart:8:18: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    arr[i] = arr[j];
+                 ^
+/tmp/100-prisoners.dart:9:9: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    arr[j] = tmp;
+        ^
+/tmp/100-prisoners.dart:10:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) - 1;
+                   ^
+/tmp/100-prisoners.dart:22:41: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+      drawers = List.from(drawers)..add(i);
+                                        ^
+/tmp/100-prisoners.dart:34:31: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+          var _this = drawers[prev];
+                              ^
+/tmp/100-prisoners.dart:75:26: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
   var rf = (double.parse(pardoned)) / (double.parse(trials)) * 100;
                          ^
-/tmp/100-prisoners.dart:78:53: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/100-prisoners.dart:75:53: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
   var rf = (double.parse(pardoned)) / (double.parse(trials)) * 100;
                                                     ^

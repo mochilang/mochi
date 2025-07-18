@@ -1,25 +1,34 @@
 run: exit status 254
-/tmp/chaos-game.dart:7:38: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/chaos-game.dart:4:38: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
 var height = int.parse((double.parse(width) * 0.86602540378));
                                      ^
-/tmp/chaos-game.dart:7:45: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+/tmp/chaos-game.dart:4:45: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
 var height = int.parse((double.parse(width) * 0.86602540378));
                                             ^
-/tmp/chaos-game.dart:24:27: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-var px = int.parse((width / 2));
+/tmp/chaos-game.dart:28:27: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+var px = int.parse((width ~/ 2));
                           ^
-/tmp/chaos-game.dart:26:28: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-var py = int.parse((height / 2));
+/tmp/chaos-game.dart:30:28: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+var py = int.parse((height ~/ 2));
                            ^
-/tmp/chaos-game.dart:22:89: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-List<List<int>> vertices = [[0, height - 1], [width - 1, height - 1], [int.parse((width / 2)), 0]];
-                                                                                        ^
-/tmp/chaos-game.dart:44:26: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/chaos-game.dart:14:31: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+  return [next, (next as num) % n];
+                              ^
+/tmp/chaos-game.dart:23:20: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+  int.parse((width ~/ 2)),
+                   ^
+/tmp/chaos-game.dart:48:26: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
     var idx = int.parse(r[1]);
                          ^
-/tmp/chaos-game.dart:46:34: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-    px = (int.parse(((px + v[0]) / 2)) as int);
-                                 ^
-/tmp/chaos-game.dart:47:34: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-    py = (int.parse(((py + v[1]) / 2)) as int);
-                                 ^
+/tmp/chaos-game.dart:50:51: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    px = int.parse((((px + (v[0] as num)) as num) / 2));
+                                                  ^
+/tmp/chaos-game.dart:51:51: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    py = int.parse((((py + (v[1] as num)) as num) / 2));
+                                                  ^
+/tmp/chaos-game.dart:62:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      line = line + grid[y][x];
+                         ^
+/tmp/chaos-game.dart:62:29: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      line = line + grid[y][x];
+                            ^

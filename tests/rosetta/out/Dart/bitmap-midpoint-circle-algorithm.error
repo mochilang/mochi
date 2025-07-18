@@ -1,0 +1,67 @@
+run: exit status 254
+/tmp/bitmap-midpoint-circle-algorithm.dart:31:15: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    _set(g, r + (x as num), r + (y as num));
+              ^
+/tmp/bitmap-midpoint-circle-algorithm.dart:31:31: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    _set(g, r + (x as num), r + (y as num));
+                              ^
+/tmp/bitmap-midpoint-circle-algorithm.dart:32:15: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    _set(g, r + (y as num), r + (x as num));
+              ^
+/tmp/bitmap-midpoint-circle-algorithm.dart:32:31: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    _set(g, r + (y as num), r + (x as num));
+                              ^
+/tmp/bitmap-midpoint-circle-algorithm.dart:33:15: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    _set(g, r - (x as num), r + (y as num));
+              ^
+/tmp/bitmap-midpoint-circle-algorithm.dart:33:31: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    _set(g, r - (x as num), r + (y as num));
+                              ^
+/tmp/bitmap-midpoint-circle-algorithm.dart:34:15: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    _set(g, r - (y as num), r + (x as num));
+              ^
+/tmp/bitmap-midpoint-circle-algorithm.dart:34:31: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    _set(g, r - (y as num), r + (x as num));
+                              ^
+/tmp/bitmap-midpoint-circle-algorithm.dart:35:15: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    _set(g, r - (x as num), r - (y as num));
+              ^
+/tmp/bitmap-midpoint-circle-algorithm.dart:35:31: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    _set(g, r - (x as num), r - (y as num));
+                              ^
+/tmp/bitmap-midpoint-circle-algorithm.dart:36:15: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    _set(g, r - (y as num), r - (x as num));
+              ^
+/tmp/bitmap-midpoint-circle-algorithm.dart:36:31: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    _set(g, r - (y as num), r - (x as num));
+                              ^
+/tmp/bitmap-midpoint-circle-algorithm.dart:37:15: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    _set(g, r + (x as num), r - (y as num));
+              ^
+/tmp/bitmap-midpoint-circle-algorithm.dart:37:31: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    _set(g, r + (x as num), r - (y as num));
+                              ^
+/tmp/bitmap-midpoint-circle-algorithm.dart:38:15: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    _set(g, r + (y as num), r - (x as num));
+              ^
+/tmp/bitmap-midpoint-circle-algorithm.dart:38:31: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    _set(g, r + (y as num), r - (x as num));
+                              ^
+/tmp/bitmap-midpoint-circle-algorithm.dart:41:61: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      err = ((err as num) + (2 * (y as num) as num) as num) + 1;
+                                                            ^
+/tmp/bitmap-midpoint-circle-algorithm.dart:44:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      x = (x as num) - 1;
+                     ^
+/tmp/bitmap-midpoint-circle-algorithm.dart:45:85: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      err = ((err as num) + (2 * (((y as num) - (x as num)) as num) as num) as num) + 1;
+                                                                                    ^
+/tmp/bitmap-midpoint-circle-algorithm.dart:53:47: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+  while ((end as num) > 0 && row[(end as num) - 1] == ' ') {
+                                              ^
+/tmp/bitmap-midpoint-circle-algorithm.dart:54:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    end = (end as num) - 1;
+                       ^
+/tmp/bitmap-midpoint-circle-algorithm.dart:59:17: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    s = s + row[i];
+                ^

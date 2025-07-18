@@ -1,0 +1,4 @@
+run: exit status 254
+/tmp/arrays.dart:6:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    s = s + xs[i].toString();
+               ^

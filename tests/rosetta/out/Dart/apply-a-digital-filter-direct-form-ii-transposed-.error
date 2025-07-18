@@ -1,11 +1,23 @@
 run: exit status 254
-/tmp/apply-a-digital-filter-direct-form-ii-transposed-.dart:33:28: Error: The argument type 'List<num>' can't be assigned to the parameter type 'List<double>'.
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.dart:61:28: Error: The argument type 'List<num>' can't be assigned to the parameter type 'List<double>'.
  - 'List' is from 'dart:core'.
 var res = applyFilter(sig, a, b);
                            ^
-/tmp/apply-a-digital-filter-direct-form-ii-transposed-.dart:13:17: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-      tmp = tmp + b[j] * input[i - j];
-                ^
-/tmp/apply-a-digital-filter-direct-form-ii-transposed-.dart:18:17: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-      tmp = tmp - a[j + 1] * out[i - j - 1];
-                ^
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.dart:10:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      tmp = (tmp as num) + b[j] * input[(i as num) - (j as num)];
+                             ^
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.dart:10:52: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      tmp = (tmp as num) + b[j] * input[(i as num) - (j as num)];
+                                                   ^
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.dart:15:42: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      tmp = (tmp as num) - (a[(j as num) + 1] * (out[((i as num) - (j as num) as num) - 1] as num) as num);
+                                         ^
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.dart:15:87: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      tmp = (tmp as num) - (a[(j as num) + 1] * (out[((i as num) - (j as num) as num) - 1] as num) as num);
+                                                                                      ^
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.dart:18:44: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
+    out = List.from(out)..add((tmp as num) * (scale as num));
+                                           ^
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.dart:67:15: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    print(res[k]);
+              ^

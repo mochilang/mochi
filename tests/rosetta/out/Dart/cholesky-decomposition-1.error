@@ -1,37 +1,100 @@
 run: exit status 254
-/tmp/cholesky-decomposition-1.dart:15:13: Error: Type 'any' not found.
+/tmp/cholesky-decomposition-1.dart:12:13: Error: Type 'any' not found.
 Map<String, any> makeSym(int order, List<double> elements) {
             ^^^
-/tmp/cholesky-decomposition-1.dart:19:42: Error: Type 'any' not found.
+/tmp/cholesky-decomposition-1.dart:16:42: Error: Type 'any' not found.
 List<List<double>> unpackSym(Map<String, any> m) {
                                          ^^^
-/tmp/cholesky-decomposition-1.dart:69:27: Error: Type 'any' not found.
+/tmp/cholesky-decomposition-1.dart:66:27: Error: Type 'any' not found.
 void printSym(Map<String, any> m) {
                           ^^^
-/tmp/cholesky-decomposition-1.dart:73:29: Error: Type 'any' not found.
+/tmp/cholesky-decomposition-1.dart:70:29: Error: Type 'any' not found.
 void printLower(Map<String, any> m) {
                             ^^^
-/tmp/cholesky-decomposition-1.dart:97:13: Error: Type 'any' not found.
+/tmp/cholesky-decomposition-1.dart:94:13: Error: Type 'any' not found.
 Map<String, any> choleskyLower(Map<String, any> a) {
             ^^^
-/tmp/cholesky-decomposition-1.dart:97:44: Error: Type 'any' not found.
+/tmp/cholesky-decomposition-1.dart:94:44: Error: Type 'any' not found.
 Map<String, any> choleskyLower(Map<String, any> a) {
                                            ^^^
-/tmp/cholesky-decomposition-1.dart:140:23: Error: Type 'any' not found.
+/tmp/cholesky-decomposition-1.dart:137:23: Error: Type 'any' not found.
 void demo(Map<String, any> a) {
                       ^^^
-/tmp/cholesky-decomposition-1.dart:19:42: Error: 'any' isn't a type.
+/tmp/cholesky-decomposition-1.dart:16:42: Error: 'any' isn't a type.
 List<List<double>> unpackSym(Map<String, any> m) {
                                          ^^^
-/tmp/cholesky-decomposition-1.dart:69:27: Error: 'any' isn't a type.
+/tmp/cholesky-decomposition-1.dart:41:11: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      mat[r][c] = mat[c][r];
+          ^
+/tmp/cholesky-decomposition-1.dart:41:14: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      mat[r][c] = mat[c][r];
+             ^
+/tmp/cholesky-decomposition-1.dart:41:23: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      mat[r][c] = mat[c][r];
+                      ^
+/tmp/cholesky-decomposition-1.dart:41:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      mat[r][c] = mat[c][r];
+                         ^
+/tmp/cholesky-decomposition-1.dart:54:27: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    while ((j as num) < m[i].length) {
+                          ^
+/tmp/cholesky-decomposition-1.dart:55:23: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      line = line + m[i][j].toString();
+                      ^
+/tmp/cholesky-decomposition-1.dart:55:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      line = line + m[i][j].toString();
+                         ^
+/tmp/cholesky-decomposition-1.dart:56:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      if ((j as num) < m[i].length - 1) {
+                         ^
+/tmp/cholesky-decomposition-1.dart:66:27: Error: 'any' isn't a type.
 void printSym(Map<String, any> m) {
                           ^^^
-/tmp/cholesky-decomposition-1.dart:73:29: Error: 'any' isn't a type.
+/tmp/cholesky-decomposition-1.dart:70:29: Error: 'any' isn't a type.
 void printLower(Map<String, any> m) {
                             ^^^
-/tmp/cholesky-decomposition-1.dart:97:44: Error: 'any' isn't a type.
+/tmp/cholesky-decomposition-1.dart:94:44: Error: 'any' isn't a type.
 Map<String, any> choleskyLower(Map<String, any> a) {
                                            ^^^
-/tmp/cholesky-decomposition-1.dart:140:23: Error: 'any' isn't a type.
+/tmp/cholesky-decomposition-1.dart:111:34: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var d = (((e as num) - (le[i] as num)) as num) / (le[dc] as num);
+                                 ^
+/tmp/cholesky-decomposition-1.dart:111:60: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var d = (((e as num) - (le[i] as num)) as num) / (le[dc] as num);
+                                                           ^
+/tmp/cholesky-decomposition-1.dart:112:10: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      le[i] = d;
+         ^
+/tmp/cholesky-decomposition-1.dart:118:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        ci = (ci as num) + 1;
+                         ^
+/tmp/cholesky-decomposition-1.dart:119:12: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        le[j] = (le[j] as num) + ((d as num) * (le[cx] as num) as num);
+           ^
+/tmp/cholesky-decomposition-1.dart:119:21: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        le[j] = (le[j] as num) + ((d as num) * (le[cx] as num) as num);
+                    ^
+/tmp/cholesky-decomposition-1.dart:119:52: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        le[j] = (le[j] as num) + ((d as num) * (le[cx] as num) as num);
+                                                   ^
+/tmp/cholesky-decomposition-1.dart:119:32: Error: A value of type 'num' can't be assigned to a variable of type 'double'.
+        le[j] = (le[j] as num) + ((d as num) * (le[cx] as num) as num);
+                               ^
+/tmp/cholesky-decomposition-1.dart:122:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      col = (col as num) + 1;
+                         ^
+/tmp/cholesky-decomposition-1.dart:126:10: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      le[i] = sqrtApprox((e as num) - (le[i] as num));
+         ^
+/tmp/cholesky-decomposition-1.dart:126:43: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      le[i] = sqrtApprox((e as num) - (le[i] as num));
+                                          ^
+/tmp/cholesky-decomposition-1.dart:126:37: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
+      le[i] = sqrtApprox((e as num) - (le[i] as num));
+                                    ^
+/tmp/cholesky-decomposition-1.dart:127:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      row = (row as num) + 1;
+                         ^
+/tmp/cholesky-decomposition-1.dart:137:23: Error: 'any' isn't a type.
 void demo(Map<String, any> a) {
                       ^^^

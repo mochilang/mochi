@@ -1,4 +1,25 @@
 run: exit status 254
-/tmp/averages-median-2.dart:26:36: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-  var half = int.parse((arr.length / 2));
+/tmp/averages-median-2.dart:8:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      if (list[j] < list[minIndex]) {
+               ^
+/tmp/averages-median-2.dart:8:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      if (list[j] < list[minIndex]) {
+                         ^
+/tmp/averages-median-2.dart:13:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var tmp = list[i];
+                   ^
+/tmp/averages-median-2.dart:14:10: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    list[i] = list[minIndex];
+         ^
+/tmp/averages-median-2.dart:14:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    list[i] = list[minIndex];
+                   ^
+/tmp/averages-median-2.dart:15:10: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    list[minIndex] = tmp;
+         ^
+/tmp/averages-median-2.dart:23:36: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+  var half = int.parse((arr.length ~/ 2));
                                    ^
+/tmp/averages-median-2.dart:26:48: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    return (((med as num) + (arr[(half as num) - 1] as num)) as num) / 2;
+                                               ^

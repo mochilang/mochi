@@ -1,53 +1,106 @@
 run: exit status 254
-/tmp/base64-decode-data.dart:26:24: Error: A value of type 'int?' can't be assigned to a variable of type 'num' because 'int?' is nullable and 'num' isn't.
-    n = n * 10 + digits[str[i]];
-                       ^
-/tmp/base64-decode-data.dart:26:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    n = n * 10 + digits[str[i]];
-               ^
-/tmp/base64-decode-data.dart:68:31: Error: A value of type 'Object' can't be returned from a function with return type 'String'.
+/tmp/base64-decode-data.dart:5:11: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    if (s[i] == ch) {
+          ^
+/tmp/base64-decode-data.dart:6:14: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+      return i;
+             ^
+/tmp/base64-decode-data.dart:34:48: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = ((n as num) * 10 as num) + (digits[str[i]] as num);
+                                               ^
+/tmp/base64-decode-data.dart:40:10: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+  return n;
+         ^
+/tmp/base64-decode-data.dart:48:15: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+    return 65 + (idx as num);
+              ^
+/tmp/base64-decode-data.dart:52:15: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+    return 97 + (idx as num);
+              ^
+/tmp/base64-decode-data.dart:76:31: Error: A value of type 'Object' can't be returned from a function with return type 'String'.
  - 'Object' is from 'dart:core'.
     return ((upper is String) ? upper.substring(n - 65, n - 64) : (upper as List).sublist(n - 65, n - 64));
                               ^
-/tmp/base64-decode-data.dart:71:31: Error: A value of type 'Object' can't be returned from a function with return type 'String'.
+/tmp/base64-decode-data.dart:79:31: Error: A value of type 'Object' can't be returned from a function with return type 'String'.
  - 'Object' is from 'dart:core'.
     return ((lower is String) ? lower.substring(n - 97, n - 96) : (lower as List).sublist(n - 97, n - 96));
                               ^
-/tmp/base64-decode-data.dart:75:32: Error: A value of type 'Object' can't be returned from a function with return type 'String'.
+/tmp/base64-decode-data.dart:83:32: Error: A value of type 'Object' can't be returned from a function with return type 'String'.
  - 'Object' is from 'dart:core'.
     return ((digits is String) ? digits.substring(n - 48, n - 47) : (digits as List).sublist(n - 48, n - 47));
                                ^
-/tmp/base64-decode-data.dart:97:17: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-    b = val % 2.toString() + b;
-                ^
-/tmp/base64-decode-data.dart:97:30: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-    b = val % 2.toString() + b;
-                             ^
-/tmp/base64-decode-data.dart:97:28: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
-    b = val % 2.toString() + b;
-                           ^
-/tmp/base64-decode-data.dart:98:26: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-    val = int.parse((val / 2));
+/tmp/base64-decode-data.dart:105:26: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+    b = (val as num) % 2.toString() + b;
                          ^
-/tmp/base64-decode-data.dart:128:24: Error: The argument type 'Object' can't be assigned to the parameter type 'String'.
+/tmp/base64-decode-data.dart:105:39: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+    b = (val as num) % 2.toString() + b;
+                                      ^
+/tmp/base64-decode-data.dart:105:37: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+    b = (val as num) % 2.toString() + b;
+                                    ^
+/tmp/base64-decode-data.dart:106:35: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    val = int.parse(((val as num) / 2));
+                                  ^
+/tmp/base64-decode-data.dart:116:62: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    n = ((n as num) * 2 as num) + parseIntStr(bits.substring(i, (i as num) + 1));
+                                                             ^
+/tmp/base64-decode-data.dart:116:76: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    n = ((n as num) * 2 as num) + parseIntStr(bits.substring(i, (i as num) + 1));
+                                                                           ^
+/tmp/base64-decode-data.dart:119:10: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+  return n;
+         ^
+/tmp/base64-decode-data.dart:135:50: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var chunk = ((bin is String) ? bin.substring(i, (i as num) + 6) : (bin as List).sublist(i, (i as num) + 6));
+                                                 ^
+/tmp/base64-decode-data.dart:135:64: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var chunk = ((bin is String) ? bin.substring(i, (i as num) + 6) : (bin as List).sublist(i, (i as num) + 6));
+                                                               ^
+/tmp/base64-decode-data.dart:135:93: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var chunk = ((bin is String) ? bin.substring(i, (i as num) + 6) : (bin as List).sublist(i, (i as num) + 6));
+                                                                                            ^
+/tmp/base64-decode-data.dart:135:107: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var chunk = ((bin is String) ? bin.substring(i, (i as num) + 6) : (bin as List).sublist(i, (i as num) + 6));
+                                                                                                          ^
+/tmp/base64-decode-data.dart:136:24: Error: The argument type 'Object' can't be assigned to the parameter type 'String'.
  - 'Object' is from 'dart:core'.
     var val = binToInt(chunk);
                        ^
-/tmp/base64-decode-data.dart:129:39: Error: A value of type 'Object' can't be assigned to a variable of type 'String'.
- - 'Object' is from 'dart:core'.
-    out = out + ((alphabet is String) ? alphabet.substring(val, val + 1) : (alphabet as List).sublist(val, val + 1));
-                                      ^
-/tmp/base64-decode-data.dart:134:107: Error: The operator '+' isn't defined for the class 'Object'.
+/tmp/base64-decode-data.dart:137:88: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    out = (out as num) + (((alphabet is String) ? alphabet.substring(val, (val as num) + 1) : (alphabet as List).sublist(val, (val as num) + 1)) as num);
+                                                                                       ^
+/tmp/base64-decode-data.dart:137:140: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    out = (out as num) + (((alphabet is String) ? alphabet.substring(val, (val as num) + 1) : (alphabet as List).sublist(val, (val as num) + 1)) as num);
+                                                                                                                                           ^
+/tmp/base64-decode-data.dart:137:24: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+    out = (out as num) + (((alphabet is String) ? alphabet.substring(val, (val as num) + 1) : (alphabet as List).sublist(val, (val as num) + 1)) as num);
+                       ^
+/tmp/base64-decode-data.dart:142:107: Error: The operator '+' isn't defined for the class 'Object'.
  - 'Object' is from 'dart:core'.
 Try correcting the operator to an existing operator, or defining a '+' operator.
     out = ((out is String) ? out.substring(0, out.length - 1) : (out as List).sublist(0, out.length - 1)) + '=';
                                                                                                           ^
-/tmp/base64-decode-data.dart:137:107: Error: The operator '+' isn't defined for the class 'Object'.
+/tmp/base64-decode-data.dart:145:107: Error: The operator '+' isn't defined for the class 'Object'.
  - 'Object' is from 'dart:core'.
 Try correcting the operator to an existing operator, or defining a '+' operator.
     out = ((out is String) ? out.substring(0, out.length - 2) : (out as List).sublist(0, out.length - 2)) + '==';
                                                                                                           ^
-/tmp/base64-decode-data.dart:159:24: Error: The argument type 'Object' can't be assigned to the parameter type 'String'.
+/tmp/base64-decode-data.dart:155:18: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var ch = enc[i];
+                 ^
+/tmp/base64-decode-data.dart:166:50: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var chunk = ((bin is String) ? bin.substring(i, (i as num) + 8) : (bin as List).sublist(i, (i as num) + 8));
+                                                 ^
+/tmp/base64-decode-data.dart:166:64: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var chunk = ((bin is String) ? bin.substring(i, (i as num) + 8) : (bin as List).sublist(i, (i as num) + 8));
+                                                               ^
+/tmp/base64-decode-data.dart:166:93: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var chunk = ((bin is String) ? bin.substring(i, (i as num) + 8) : (bin as List).sublist(i, (i as num) + 8));
+                                                                                            ^
+/tmp/base64-decode-data.dart:166:107: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var chunk = ((bin is String) ? bin.substring(i, (i as num) + 8) : (bin as List).sublist(i, (i as num) + 8));
+                                                                                                          ^
+/tmp/base64-decode-data.dart:167:24: Error: The argument type 'Object' can't be assigned to the parameter type 'String'.
  - 'Object' is from 'dart:core'.
     var val = binToInt(chunk);
                        ^

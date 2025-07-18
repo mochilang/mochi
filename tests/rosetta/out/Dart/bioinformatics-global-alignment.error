@@ -1,7 +1,67 @@
 run: exit status 254
-/tmp/bioinformatics-global-alignment.dart:190:64: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-  print(padLeft('Other', 10) + padLeft(total - (a + c + g + t).toString(), 12));
-                                                               ^
-/tmp/bioinformatics-global-alignment.dart:190:46: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
-  print(padLeft('Other', 10) + padLeft(total - (a + c + g + t).toString(), 12));
+/tmp/bioinformatics-global-alignment.dart:7:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = (n as num) - 1;
+                   ^
+/tmp/bioinformatics-global-alignment.dart:15:46: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    if (s.toString().substring(i, (i as num) + 1) == ch) {
                                              ^
+/tmp/bioinformatics-global-alignment.dart:18:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+/tmp/bioinformatics-global-alignment.dart:28:32: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    if (s.toString().substring(i, (i as num) + (subl as num)) == sub) {
+                               ^
+/tmp/bioinformatics-global-alignment.dart:28:46: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    if (s.toString().substring(i, (i as num) + (subl as num)) == sub) {
+                                             ^
+/tmp/bioinformatics-global-alignment.dart:65:40: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        rest = List.from(rest)..add(xs[j]);
+                                       ^
+/tmp/bioinformatics-global-alignment.dart:73:12: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        xs[i],
+           ^
+/tmp/bioinformatics-global-alignment.dart:90:50: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var ix = indexOfFrom(s1, s2.substring(0, 1), start);
+                                                 ^
+/tmp/bioinformatics-global-alignment.dart:95:46: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    if (s2.toString().substring(0, s1.length - (start as num)) == s1.toString().substring(start, s1.length)) {
+                                             ^
+/tmp/bioinformatics-global-alignment.dart:95:91: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    if (s2.toString().substring(0, s1.length - (start as num)) == s1.toString().substring(start, s1.length)) {
+                                                                                          ^
+/tmp/bioinformatics-global-alignment.dart:96:24: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+      return s1.length - (start as num);
+                       ^
+/tmp/bioinformatics-global-alignment.dart:107:18: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var s1 = arr[i];
+                 ^
+/tmp/bioinformatics-global-alignment.dart:111:37: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      if (j != i && containsStr(arr[j], s1)) {
+                                    ^
+/tmp/bioinformatics-global-alignment.dart:139:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var perm = perms[idx];
+                     ^
+/tmp/bioinformatics-global-alignment.dart:143:37: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var ov = headTailOverlap(perm[i], perm[(i as num) + 1]);
+                                    ^
+/tmp/bioinformatics-global-alignment.dart:143:57: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var ov = headTailOverlap(perm[i], perm[(i as num) + 1]);
+                                                        ^
+/tmp/bioinformatics-global-alignment.dart:144:35: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      sup = sup + perm[(i as num) + 1].toString().substring(ov, perm[(i as num) + 1].length);
+                                  ^
+/tmp/bioinformatics-global-alignment.dart:144:81: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      sup = sup + perm[(i as num) + 1].toString().substring(ov, perm[(i as num) + 1].length);
+                                                                                ^
+/tmp/bioinformatics-global-alignment.dart:162:39: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var ch = seq.toString().substring(i, (i as num) + 1);
+                                      ^
+/tmp/bioinformatics-global-alignment.dart:162:53: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var ch = seq.toString().substring(i, (i as num) + 1);
+                                                    ^
+/tmp/bioinformatics-global-alignment.dart:189:136: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+  print(padLeft('Other', 10) + padLeft((total as num) - (((((a as num) + (c as num) as num) + (g as num) as num) + (t as num)) as num).toString(), 12));
+                                                                                                                                       ^
+/tmp/bioinformatics-global-alignment.dart:189:55: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
+  print(padLeft('Other', 10) + padLeft((total as num) - (((((a as num) + (c as num) as num) + (g as num) as num) + (t as num)) as num).toString(), 12));
+                                                      ^

@@ -1,10 +1,25 @@
 run: exit status 254
-/tmp/chinese-remainder-theorem.dart:13:17: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-  return [g, y1 - (b / a) * x1, x1];
+/tmp/chinese-remainder-theorem.dart:12:17: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    (y1 as num) - ((b ~/ a) * (x1 as num) as num),
                 ^
-/tmp/chinese-remainder-theorem.dart:41:24: Error: The argument type 'double' can't be assigned to the parameter type 'int'.
-    var inv = modInv(p % ni, ni);
-                       ^
-/tmp/chinese-remainder-theorem.dart:42:11: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-    x = x + ai * inv * p;
-          ^
+/tmp/chinese-remainder-theorem.dart:24:23: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+    return (x as num) + m;
+                      ^
+/tmp/chinese-remainder-theorem.dart:33:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    prod = (prod as num) * n[i];
+                             ^
+/tmp/chinese-remainder-theorem.dart:33:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    prod = (prod as num) * n[i];
+                         ^
+/tmp/chinese-remainder-theorem.dart:39:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var ni = n[i];
+               ^
+/tmp/chinese-remainder-theorem.dart:40:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var ai = a[i];
+               ^
+/tmp/chinese-remainder-theorem.dart:42:33: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var inv = modInv((p as num) % (ni as num), ni);
+                                ^
+/tmp/chinese-remainder-theorem.dart:46:21: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+  return (x as num) % (prod as num);
+                    ^

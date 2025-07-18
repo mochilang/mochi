@@ -2,10 +2,9 @@
 
 This directory holds Dart code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
-Compiled programs: 26/216
+Compiled programs: 27/220
 
 Checklist:
-
 - [ ] 100-doors-2
 - [ ] 100-doors-3
 - [ ] 100-doors
@@ -212,6 +211,10 @@ Checklist:
 - [ ] circles-of-given-radius-through-two-points
 - [ ] circular-primes
 - [ ] cistercian-numerals
+- [ ] constrained-genericity-1
+- [ ] constrained-genericity-2
+- [x] constrained-genericity-3
+- [ ] constrained-genericity-4
 - [ ] crc-32-1
 - [ ] crc-32-2
 - [ ] csv-data-manipulation

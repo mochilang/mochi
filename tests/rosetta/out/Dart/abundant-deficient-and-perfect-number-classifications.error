@@ -1,4 +1,10 @@
 run: exit status 254
-/tmp/abundant-deficient-and-perfect-number-classifications.dart:10:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      sum = (sum as num) + p;
-                         ^
+/tmp/abundant-deficient-and-perfect-number-classifications.dart:9:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    p = (p as num) + 1;
+                   ^
+/tmp/abundant-deficient-and-perfect-number-classifications.dart:11:10: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+  return sum;
+         ^
+/tmp/abundant-deficient-and-perfect-number-classifications.dart:30:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^

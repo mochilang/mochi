@@ -1,0 +1,7 @@
+run: exit status 254
+/tmp/amb.dart:12:27: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var w = wordsets[idx][i];
+                          ^
+/tmp/amb.dart:42:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      j = (j as num) + 1;
+                     ^

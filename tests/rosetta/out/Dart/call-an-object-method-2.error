@@ -1,0 +1,7 @@
+run: exit status 254
+/tmp/call-an-object-method-2.dart:6:21: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var b = Box('', sn);
+                    ^
+/tmp/call-an-object-method-2.dart:18:12: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+    return sn;
+           ^

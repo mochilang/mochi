@@ -1,7 +1,46 @@
 run: exit status 254
-/tmp/bitmap-ppm-conversion-through-a-pipe.dart:13:25: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-  var r = (int.parse((c / 65536))) % 256;
+/tmp/bitmap-ppm-conversion-through-a-pipe.dart:10:25: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+  var r = (int.parse((c ~/ 65536))) % 256;
                         ^
-/tmp/bitmap-ppm-conversion-through-a-pipe.dart:14:25: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-  var g = (int.parse((c / 256))) % 256;
+/tmp/bitmap-ppm-conversion-through-a-pipe.dart:11:25: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+  var g = (int.parse((c ~/ 256))) % 256;
                         ^
+/tmp/bitmap-ppm-conversion-through-a-pipe.dart:50:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var row = px[y];
+                   ^
+/tmp/bitmap-ppm-conversion-through-a-pipe.dart:51:11: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      row[x] = p;
+          ^
+/tmp/bitmap-ppm-conversion-through-a-pipe.dart:52:10: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      px[y] = row;
+         ^
+/tmp/bitmap-ppm-conversion-through-a-pipe.dart:86:18: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    SetPxRgb(bm, x, y, 8405024);
+                 ^
+/tmp/bitmap-ppm-conversion-through-a-pipe.dart:86:21: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    SetPxRgb(bm, x, y, 8405024);
+                    ^
+/tmp/bitmap-ppm-conversion-through-a-pipe.dart:93:20: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+      SetPxRgb(bm, x, y, 8405024);
+                   ^
+/tmp/bitmap-ppm-conversion-through-a-pipe.dart:94:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      y = (y as num) + 1;
+                     ^
+/tmp/bitmap-ppm-conversion-through-a-pipe.dart:98:20: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+      SetPxRgb(bm, x, y, 8405024);
+                   ^
+/tmp/bitmap-ppm-conversion-through-a-pipe.dart:99:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      y = (y as num) + 1;
+                     ^
+/tmp/bitmap-ppm-conversion-through-a-pipe.dart:107:23: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+      SetPxRgb(bm, x, y, 8405024);
+                      ^
+/tmp/bitmap-ppm-conversion-through-a-pipe.dart:108:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      x = (x as num) + 1;
+                     ^
+/tmp/bitmap-ppm-conversion-through-a-pipe.dart:112:23: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+      SetPxRgb(bm, x, y, 8405024);
+                      ^
+/tmp/bitmap-ppm-conversion-through-a-pipe.dart:113:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      x = (x as num) + 1;
+                     ^

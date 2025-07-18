@@ -1,22 +1,46 @@
 run: exit status 254
-/tmp/21-game.dart:15:24: Error: A value of type 'int?' can't be assigned to a variable of type 'num' because 'int?' is nullable and 'num' isn't.
-    n = n * 10 + digits[str.substring(i, i + 1)];
-                       ^
-/tmp/21-game.dart:15:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    n = n * 10 + digits[str.substring(i, i + 1)];
-               ^
-/tmp/21-game.dart:60:22: Error: Method not found: 'input'.
+/tmp/21-game.dart:23:58: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    n = ((n as num) * 10 as num) + (digits[str.substring(i, (i as num) + 1)] as num);
+                                                         ^
+/tmp/21-game.dart:23:72: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    n = ((n as num) * 10 as num) + (digits[str.substring(i, (i as num) + 1)] as num);
+                                                                       ^
+/tmp/21-game.dart:29:10: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+  return n;
+         ^
+/tmp/21-game.dart:68:22: Error: Method not found: 'input'.
           var line = input();
                      ^^^^^
-/tmp/21-game.dart:68:33: Error: 'num' isn't a type.
-            if (total + (num as num) > 21) {
-                                ^^^
-/tmp/21-game.dart:76:31: Error: 'num' isn't a type.
-          if (total + (num as num) > 21) {
-                              ^^^
-/tmp/21-game.dart:80:35: Error: 'num' isn't a type.
-          total = total + (num as num);
-                                  ^^^
-/tmp/21-game.dart:80:25: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-          total = total + (num as num);
-                        ^
+/tmp/21-game.dart:75:23: Error: 'num' isn't a type.
+          if ((num as num) < 1 || (num as num) > 3) {
+                      ^^^
+/tmp/21-game.dart:75:43: Error: 'num' isn't a type.
+          if ((num as num) < 1 || (num as num) > 3) {
+                                          ^^^
+/tmp/21-game.dart:76:28: Error: 'num' isn't a type.
+            if (((total as num) + (num as num) as num) > 21) {
+                           ^^^
+/tmp/21-game.dart:76:43: Error: 'num' isn't a type.
+            if (((total as num) + (num as num) as num) > 21) {
+                                          ^^^
+/tmp/21-game.dart:76:51: Error: 'num' isn't a type.
+            if (((total as num) + (num as num) as num) > 21) {
+                                                  ^^^
+/tmp/21-game.dart:84:26: Error: 'num' isn't a type.
+          if (((total as num) + (num as num) as num) > 21) {
+                         ^^^
+/tmp/21-game.dart:84:41: Error: 'num' isn't a type.
+          if (((total as num) + (num as num) as num) > 21) {
+                                        ^^^
+/tmp/21-game.dart:84:49: Error: 'num' isn't a type.
+          if (((total as num) + (num as num) as num) > 21) {
+                                                ^^^
+/tmp/21-game.dart:88:29: Error: 'num' isn't a type.
+          total = (total as num) + (num as num);
+                            ^^^
+/tmp/21-game.dart:88:44: Error: 'num' isn't a type.
+          total = (total as num) + (num as num);
+                                           ^^^
+/tmp/21-game.dart:101:28: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    round = (round as num) + 1;
+                           ^

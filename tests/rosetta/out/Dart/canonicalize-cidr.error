@@ -1,28 +1,70 @@
 run: exit status 254
-/tmp/canonicalize-cidr.dart:57:24: Error: A value of type 'int?' can't be assigned to a variable of type 'num' because 'int?' is nullable and 'num' isn't.
-    n = n * 10 + digits[str.substring(i, i + 1)];
-                       ^
-/tmp/canonicalize-cidr.dart:57:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    n = n * 10 + digits[str.substring(i, i + 1)];
-               ^
-/tmp/canonicalize-cidr.dart:71:17: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-    b = val % 2.toString() + b;
-                ^
-/tmp/canonicalize-cidr.dart:71:30: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-    b = val % 2.toString() + b;
-                             ^
-/tmp/canonicalize-cidr.dart:71:28: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
-    b = val % 2.toString() + b;
-                           ^
-/tmp/canonicalize-cidr.dart:72:26: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-    val = int.parse((val / 2));
+/tmp/canonicalize-cidr.dart:7:98: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    if (sep.length > 0 && ((i as num) + sep.length as num) <= s.length && s.toString().substring(i, (i as num) + sep.length) == sep) {
+                                                                                                 ^
+/tmp/canonicalize-cidr.dart:7:112: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    if (sep.length > 0 && ((i as num) + sep.length as num) <= s.length && s.toString().substring(i, (i as num) + sep.length) == sep) {
+                                                                                                               ^
+/tmp/canonicalize-cidr.dart:13:31: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+      cur = cur + s.substring(i, (i as num) + 1);
+                              ^
+/tmp/canonicalize-cidr.dart:13:45: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+      cur = cur + s.substring(i, (i as num) + 1);
+                                            ^
+/tmp/canonicalize-cidr.dart:28:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    res = res + xs[i];
+                   ^
+/tmp/canonicalize-cidr.dart:65:58: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    n = ((n as num) * 10 as num) + (digits[str.substring(i, (i as num) + 1)] as num);
+                                                         ^
+/tmp/canonicalize-cidr.dart:65:72: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    n = ((n as num) * 10 as num) + (digits[str.substring(i, (i as num) + 1)] as num);
+                                                                       ^
+/tmp/canonicalize-cidr.dart:71:10: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+  return n;
+         ^
+/tmp/canonicalize-cidr.dart:79:26: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+    b = (val as num) % 2.toString() + b;
                          ^
-/tmp/canonicalize-cidr.dart:105:97: Error: The operator '+' isn't defined for the class 'Object'.
+/tmp/canonicalize-cidr.dart:79:39: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+    b = (val as num) % 2.toString() + b;
+                                      ^
+/tmp/canonicalize-cidr.dart:79:37: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+    b = (val as num) % 2.toString() + b;
+                                    ^
+/tmp/canonicalize-cidr.dart:80:35: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    val = int.parse(((val as num) / 2));
+                                  ^
+/tmp/canonicalize-cidr.dart:90:62: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    n = ((n as num) * 2 as num) + parseIntStr(bits.substring(i, (i as num) + 1));
+                                                             ^
+/tmp/canonicalize-cidr.dart:90:76: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    n = ((n as num) * 2 as num) + parseIntStr(bits.substring(i, (i as num) + 1));
+                                                                           ^
+/tmp/canonicalize-cidr.dart:93:10: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+  return n;
+         ^
+/tmp/canonicalize-cidr.dart:113:114: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+  binary = ((binary is String) ? binary.substring(0, size) : (binary as List).sublist(0, size)) + repeat('0', 32 - (size as num));
+                                                                                                                 ^
+/tmp/canonicalize-cidr.dart:113:97: Error: The operator '+' isn't defined for the class 'Object'.
  - 'Object' is from 'dart:core'.
 Try correcting the operator to an existing operator, or defining a '+' operator.
-  binary = ((binary is String) ? binary.substring(0, size) : (binary as List).sublist(0, size)) + repeat('0', 32 - size);
+  binary = ((binary is String) ? binary.substring(0, size) : (binary as List).sublist(0, size)) + repeat('0', 32 - (size as num));
                                                                                                 ^
-/tmp/canonicalize-cidr.dart:109:74: Error: The argument type 'Object' can't be assigned to the parameter type 'String'.
+/tmp/canonicalize-cidr.dart:117:93: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    canonParts = List.from(canonParts)..add(binToInt(((binary is String) ? binary.substring(i, (i as num) + 8) : (binary as List).sublist(i, (i as num) + 8))).toString());
+                                                                                            ^
+/tmp/canonicalize-cidr.dart:117:107: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    canonParts = List.from(canonParts)..add(binToInt(((binary is String) ? binary.substring(i, (i as num) + 8) : (binary as List).sublist(i, (i as num) + 8))).toString());
+                                                                                                          ^
+/tmp/canonicalize-cidr.dart:117:139: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    canonParts = List.from(canonParts)..add(binToInt(((binary is String) ? binary.substring(i, (i as num) + 8) : (binary as List).sublist(i, (i as num) + 8))).toString());
+                                                                                                                                          ^
+/tmp/canonicalize-cidr.dart:117:153: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    canonParts = List.from(canonParts)..add(binToInt(((binary is String) ? binary.substring(i, (i as num) + 8) : (binary as List).sublist(i, (i as num) + 8))).toString());
+                                                                                                                                                        ^
+/tmp/canonicalize-cidr.dart:117:74: Error: The argument type 'Object' can't be assigned to the parameter type 'String'.
  - 'Object' is from 'dart:core'.
-    canonParts = List.from(canonParts)..add(binToInt(((binary is String) ? binary.substring(i, i + 8) : (binary as List).sublist(i, i + 8))).toString());
+    canonParts = List.from(canonParts)..add(binToInt(((binary is String) ? binary.substring(i, (i as num) + 8) : (binary as List).sublist(i, (i as num) + 8))).toString());
                                                                          ^

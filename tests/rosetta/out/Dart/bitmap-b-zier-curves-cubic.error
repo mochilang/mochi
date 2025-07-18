@@ -1,79 +1,103 @@
 run: exit status 254
-/tmp/bitmap-b-zier-curves-cubic.dart:21:13: Error: Type 'any' not found.
+/tmp/bitmap-b-zier-curves-cubic.dart:18:13: Error: Type 'any' not found.
 Map<String, any> newBitmap(int cols, int rows) {
             ^^^
-/tmp/bitmap-b-zier-curves-cubic.dart:37:24: Error: Type 'any' not found.
+/tmp/bitmap-b-zier-curves-cubic.dart:34:24: Error: Type 'any' not found.
 void setPx(Map<String, any> b, int x, int y, Pixel p) {
                        ^^^
-/tmp/bitmap-b-zier-curves-cubic.dart:45:23: Error: Type 'any' not found.
+/tmp/bitmap-b-zier-curves-cubic.dart:42:23: Error: Type 'any' not found.
 void fill(Map<String, any> b, Pixel p) {
                       ^^^
-/tmp/bitmap-b-zier-curves-cubic.dart:59:26: Error: Type 'any' not found.
+/tmp/bitmap-b-zier-curves-cubic.dart:56:26: Error: Type 'any' not found.
 void fillRgb(Map<String, any> b, int rgb) {
                          ^^^
-/tmp/bitmap-b-zier-curves-cubic.dart:63:23: Error: Type 'any' not found.
+/tmp/bitmap-b-zier-curves-cubic.dart:60:23: Error: Type 'any' not found.
 void line(Map<String, any> b, int x0, int y0, int x1, int y1, Pixel p) {
                       ^^^
-/tmp/bitmap-b-zier-curves-cubic.dart:98:26: Error: Type 'any' not found.
+/tmp/bitmap-b-zier-curves-cubic.dart:95:26: Error: Type 'any' not found.
 void bezier3(Map<String, any> b, int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, Pixel p) {
                          ^^^
-/tmp/bitmap-b-zier-curves-cubic.dart:15:36: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-  var r = int.parse(((rgb / 65536) % 256));
-                                   ^
-/tmp/bitmap-b-zier-curves-cubic.dart:16:34: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-  var g = int.parse(((rgb / 256) % 256));
-                                 ^
-/tmp/bitmap-b-zier-curves-cubic.dart:17:26: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/bitmap-b-zier-curves-cubic.dart:12:37: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+  var r = int.parse(((rgb ~/ 65536) % 256));
+                                    ^
+/tmp/bitmap-b-zier-curves-cubic.dart:13:35: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+  var g = int.parse(((rgb ~/ 256) % 256));
+                                  ^
+/tmp/bitmap-b-zier-curves-cubic.dart:14:26: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
   var b = int.parse((rgb % 256));
                          ^
-/tmp/bitmap-b-zier-curves-cubic.dart:37:24: Error: 'any' isn't a type.
+/tmp/bitmap-b-zier-curves-cubic.dart:34:24: Error: 'any' isn't a type.
 void setPx(Map<String, any> b, int x, int y, Pixel p) {
                        ^^^
-/tmp/bitmap-b-zier-curves-cubic.dart:45:23: Error: 'any' isn't a type.
+/tmp/bitmap-b-zier-curves-cubic.dart:42:23: Error: 'any' isn't a type.
 void fill(Map<String, any> b, Pixel p) {
                       ^^^
-/tmp/bitmap-b-zier-curves-cubic.dart:59:26: Error: 'any' isn't a type.
+/tmp/bitmap-b-zier-curves-cubic.dart:56:26: Error: 'any' isn't a type.
 void fillRgb(Map<String, any> b, int rgb) {
                          ^^^
-/tmp/bitmap-b-zier-curves-cubic.dart:63:23: Error: 'any' isn't a type.
+/tmp/bitmap-b-zier-curves-cubic.dart:60:23: Error: 'any' isn't a type.
 void line(Map<String, any> b, int x0, int y0, int x1, int y1, Pixel p) {
                       ^^^
-/tmp/bitmap-b-zier-curves-cubic.dart:98:26: Error: 'any' isn't a type.
+/tmp/bitmap-b-zier-curves-cubic.dart:63:10: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    dx = -(dx as num);
+         ^
+/tmp/bitmap-b-zier-curves-cubic.dart:67:10: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    dy = -(dy as num);
+         ^
+/tmp/bitmap-b-zier-curves-cubic.dart:86:15: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      x0 = x0 + (sx as num);
+              ^
+/tmp/bitmap-b-zier-curves-cubic.dart:90:15: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      y0 = y0 + (sy as num);
+              ^
+/tmp/bitmap-b-zier-curves-cubic.dart:95:26: Error: 'any' isn't a type.
 void bezier3(Map<String, any> b, int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, Pixel p) {
                          ^^^
-/tmp/bitmap-b-zier-curves-cubic.dart:107:26: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/bitmap-b-zier-curves-cubic.dart:104:26: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
   var fx1 = double.parse(x1);
                          ^
-/tmp/bitmap-b-zier-curves-cubic.dart:108:26: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/bitmap-b-zier-curves-cubic.dart:105:26: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
   var fy1 = double.parse(y1);
                          ^
-/tmp/bitmap-b-zier-curves-cubic.dart:109:26: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/bitmap-b-zier-curves-cubic.dart:106:26: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
   var fx2 = double.parse(x2);
                          ^
-/tmp/bitmap-b-zier-curves-cubic.dart:110:26: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/bitmap-b-zier-curves-cubic.dart:107:26: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
   var fy2 = double.parse(y2);
                          ^
-/tmp/bitmap-b-zier-curves-cubic.dart:111:26: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/bitmap-b-zier-curves-cubic.dart:108:26: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
   var fx3 = double.parse(x3);
                          ^
-/tmp/bitmap-b-zier-curves-cubic.dart:112:26: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/bitmap-b-zier-curves-cubic.dart:109:26: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
   var fy3 = double.parse(y3);
                          ^
-/tmp/bitmap-b-zier-curves-cubic.dart:113:26: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/bitmap-b-zier-curves-cubic.dart:110:26: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
   var fx4 = double.parse(x4);
                          ^
-/tmp/bitmap-b-zier-curves-cubic.dart:114:26: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/bitmap-b-zier-curves-cubic.dart:111:26: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
   var fy4 = double.parse(y4);
                          ^
-/tmp/bitmap-b-zier-curves-cubic.dart:117:27: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/bitmap-b-zier-curves-cubic.dart:114:27: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
     var d = (double.parse(i)) / (double.parse(b3Seg));
                           ^
-/tmp/bitmap-b-zier-curves-cubic.dart:117:47: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/bitmap-b-zier-curves-cubic.dart:114:47: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
     var d = (double.parse(i)) / (double.parse(b3Seg));
                                               ^
-/tmp/bitmap-b-zier-curves-cubic.dart:125:55: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-    px[i] = int.parse((a2 * fx1 + b2 * fx2 + c2 * fx3 + d2 * fx4));
-                                                      ^
-/tmp/bitmap-b-zier-curves-cubic.dart:126:55: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-    py[i] = int.parse((a2 * fy1 + b2 * fy2 + c2 * fy3 + d2 * fy4));
-                                                      ^
+/tmp/bitmap-b-zier-curves-cubic.dart:122:8: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    px[i] = int.parse((((((a2 as num) * (fx1 as num) as num) + ((b2 as num) * (fx2 as num) as num) as num) + ((c2 as num) * (fx3 as num) as num) as num) + ((d2 as num) * (fx4 as num) as num)));
+       ^
+/tmp/bitmap-b-zier-curves-cubic.dart:122:154: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
+    px[i] = int.parse((((((a2 as num) * (fx1 as num) as num) + ((b2 as num) * (fx2 as num) as num) as num) + ((c2 as num) * (fx3 as num) as num) as num) + ((d2 as num) * (fx4 as num) as num)));
+                                                                                                                                                         ^
+/tmp/bitmap-b-zier-curves-cubic.dart:123:8: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    py[i] = int.parse((((((a2 as num) * (fy1 as num) as num) + ((b2 as num) * (fy2 as num) as num) as num) + ((c2 as num) * (fy3 as num) as num) as num) + ((d2 as num) * (fy4 as num) as num)));
+       ^
+/tmp/bitmap-b-zier-curves-cubic.dart:123:154: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
+    py[i] = int.parse((((((a2 as num) * (fy1 as num) as num) + ((b2 as num) * (fy2 as num) as num) as num) + ((c2 as num) * (fy3 as num) as num) as num) + ((d2 as num) * (fy4 as num) as num)));
+                                                                                                                                                         ^
+/tmp/bitmap-b-zier-curves-cubic.dart:130:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var x = px[i];
+               ^
+/tmp/bitmap-b-zier-curves-cubic.dart:131:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var y = py[i];
+               ^

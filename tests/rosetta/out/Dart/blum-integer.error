@@ -1,4 +1,49 @@
 run: exit status 254
-/tmp/blum-integer.dart:93:28: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-      var q = int.parse((i / p));
-                           ^
+/tmp/blum-integer.dart:17:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    d = (d as num) + 2;
+                   ^
+/tmp/blum-integer.dart:21:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    d = (d as num) + 4;
+                   ^
+/tmp/blum-integer.dart:52:27: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    k = (k as num) + (inc[i] as num);
+                          ^
+/tmp/blum-integer.dart:52:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    k = (k as num) + (inc[i] as num);
+                   ^
+/tmp/blum-integer.dart:61:32: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    if (s.toString().substring(i, (i as num) + 1) == ch) {
+                               ^
+/tmp/blum-integer.dart:61:46: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    if (s.toString().substring(i, (i as num) + 1) == ch) {
+                                             ^
+/tmp/blum-integer.dart:62:14: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+      return i;
+             ^
+/tmp/blum-integer.dart:85:38: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    return s.toString().substring(0, need);
+                                     ^
+/tmp/blum-integer.dart:109:37: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+      var q = int.parse(((i as num) / (p as num)));
+                                    ^
+/tmp/blum-integer.dart:116:42: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+          counts[0] = (counts[0] as num) + 1;
+                                         ^
+/tmp/blum-integer.dart:120:42: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+          counts[1] = (counts[1] as num) + 1;
+                                         ^
+/tmp/blum-integer.dart:124:42: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+          counts[2] = (counts[2] as num) + 1;
+                                         ^
+/tmp/blum-integer.dart:128:42: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+          counts[3] = (counts[3] as num) + 1;
+                                         ^
+/tmp/blum-integer.dart:138:42: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+              line = line + padLeft(blum[idx], 3) + ' ';
+                                         ^
+/tmp/blum-integer.dart:149:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      i = (i as num) + 4;
+                     ^
+/tmp/blum-integer.dart:152:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      i = (i as num) + 2;
+                     ^

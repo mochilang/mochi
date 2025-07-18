@@ -1,16 +1,82 @@
 run: exit status 254
-/tmp/abbreviations-simple.dart:85:13: Error: Type 'any' not found.
+/tmp/abbreviations-simple.dart:93:13: Error: Type 'any' not found.
 Map<String, any> readTable(String table) {
             ^^^
-/tmp/abbreviations-simple.dart:61:24: Error: A value of type 'int?' can't be assigned to a variable of type 'num' because 'int?' is nullable and 'num' isn't.
-    n = n * 10 + digits[str.substring(i, i + 1)];
-                       ^
-/tmp/abbreviations-simple.dart:61:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    n = n * 10 + digits[str.substring(i, i + 1)];
-               ^
-/tmp/abbreviations-simple.dart:118:17: Error: Method not found: 'upper'.
+/tmp/abbreviations-simple.dart:7:37: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var ch = s.toString().substring(i, (i as num) + 1);
+                                    ^
+/tmp/abbreviations-simple.dart:7:51: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var ch = s.toString().substring(i, (i as num) + 1);
+                                                  ^
+/tmp/abbreviations-simple.dart:15:26: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+      cur = (cur as num) + (ch as num);
+                         ^
+/tmp/abbreviations-simple.dart:30:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+/tmp/abbreviations-simple.dart:42:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    res = res + xs[i];
+                   ^
+/tmp/abbreviations-simple.dart:69:58: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    n = ((n as num) * 10 as num) + (digits[str.substring(i, (i as num) + 1)] as num);
+                                                         ^
+/tmp/abbreviations-simple.dart:69:72: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    n = ((n as num) * 10 as num) + (digits[str.substring(i, (i as num) + 1)] as num);
+                                                                       ^
+/tmp/abbreviations-simple.dart:75:10: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+  return n;
+         ^
+/tmp/abbreviations-simple.dart:84:37: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var ch = s.toString().substring(i, (i as num) + 1);
+                                    ^
+/tmp/abbreviations-simple.dart:84:51: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var ch = s.toString().substring(i, (i as num) + 1);
+                                                  ^
+/tmp/abbreviations-simple.dart:104:19: Error: 'num' isn't a type.
+      if ((num as num) >= 1 && (num as num) < cmd.length) {
+                  ^^^
+/tmp/abbreviations-simple.dart:104:40: Error: 'num' isn't a type.
+      if ((num as num) >= 1 && (num as num) < cmd.length) {
+                                       ^^^
+/tmp/abbreviations-simple.dart:106:19: Error: 'num' isn't a type.
+        i = (i as num) + 1;
+                  ^^^
+/tmp/abbreviations-simple.dart:99:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var cmd = toks[i];
+                   ^
+/tmp/abbreviations-simple.dart:102:51: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    if ((i as num) < toks.length && isDigits(toks[i])) {
+                                                  ^
+/tmp/abbreviations-simple.dart:103:34: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var num = parseIntStr(toks[i]);
+                                 ^
+/tmp/abbreviations-simple.dart:126:17: Error: Method not found: 'upper'.
         var c = upper(cmd);
                 ^^^^^
-/tmp/abbreviations-simple.dart:119:18: Error: Method not found: 'upper'.
+/tmp/abbreviations-simple.dart:127:18: Error: Method not found: 'upper'.
         var ww = upper(w);
                  ^^^^^
+/tmp/abbreviations-simple.dart:119:19: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var w = words[wi];
+                  ^
+/tmp/abbreviations-simple.dart:124:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var cmd = commands[ci];
+                         ^
+/tmp/abbreviations-simple.dart:125:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      if (mins[ci] != 0 && (wlen as num) >= mins[ci] && (wlen as num) <= cmd.length) {
+               ^
+/tmp/abbreviations-simple.dart:125:50: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      if (mins[ci] != 0 && (wlen as num) >= mins[ci] && (wlen as num) <= cmd.length) {
+                                                 ^
+/tmp/abbreviations-simple.dart:157:36: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      out1 = out1 + padRight(words[k], results[k].length);
+                                   ^
+/tmp/abbreviations-simple.dart:157:48: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      out1 = out1 + padRight(words[k], results[k].length);
+                                               ^
+/tmp/abbreviations-simple.dart:160:37: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      out1 = (out1 as num) + (words[k] as num);
+                                    ^
+/tmp/abbreviations-simple.dart:160:28: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+      out1 = (out1 as num) + (words[k] as num);
+                           ^

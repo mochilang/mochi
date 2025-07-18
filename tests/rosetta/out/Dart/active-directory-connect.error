@@ -1,5 +1,5 @@
 run: exit status 254
-/tmp/active-directory-connect.dart:25:35: Error: The operator '[]' isn't defined for the class 'LDAPClient'.
+/tmp/active-directory-connect.dart:27:35: Error: The operator '[]' isn't defined for the class 'LDAPClient'.
  - 'LDAPClient' is from '/tmp/active-directory-connect.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
     print('Connected to ' + client['Host']);

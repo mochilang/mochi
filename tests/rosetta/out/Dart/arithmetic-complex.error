@@ -1,0 +1,10 @@
+run: exit status 254
+/tmp/arithmetic-complex.dart:17:18: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
+  return Complex(-(a.re as num), -(a.im as num));
+                 ^
+/tmp/arithmetic-complex.dart:17:34: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
+  return Complex(-(a.re as num), -(a.im as num));
+                                 ^
+/tmp/arithmetic-complex.dart:26:24: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
+  return Complex(a.re, -(a.im as num));
+                       ^

@@ -1,9 +1,30 @@
 run: exit status 254
-/tmp/caesar-cipher-2.dart:34:31: Error: A value of type 'Object' can't be returned from a function with return type 'String'.
+/tmp/caesar-cipher-2.dart:5:32: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    if (s.toString().substring(i, (i as num) + 1) == ch) {
+                               ^
+/tmp/caesar-cipher-2.dart:5:46: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    if (s.toString().substring(i, (i as num) + 1) == ch) {
+                                             ^
+/tmp/caesar-cipher-2.dart:6:14: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+      return i;
+             ^
+/tmp/caesar-cipher-2.dart:18:15: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+    return 65 + (idx as num);
+              ^
+/tmp/caesar-cipher-2.dart:22:15: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+    return 97 + (idx as num);
+              ^
+/tmp/caesar-cipher-2.dart:31:31: Error: A value of type 'Object' can't be returned from a function with return type 'String'.
  - 'Object' is from 'dart:core'.
     return ((upper is String) ? upper.substring(n - 65, n - 64) : (upper as List).sublist(n - 65, n - 64));
                               ^
-/tmp/caesar-cipher-2.dart:37:31: Error: A value of type 'Object' can't be returned from a function with return type 'String'.
+/tmp/caesar-cipher-2.dart:34:31: Error: A value of type 'Object' can't be returned from a function with return type 'String'.
  - 'Object' is from 'dart:core'.
     return ((lower is String) ? lower.substring(n - 97, n - 96) : (lower as List).sublist(n - 97, n - 96));
                               ^
+/tmp/caesar-cipher-2.dart:53:39: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    out = out + shiftRune(s.substring(i, (i as num) + 1), k);
+                                      ^
+/tmp/caesar-cipher-2.dart:53:53: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    out = out + shiftRune(s.substring(i, (i as num) + 1), k);
+                                                    ^

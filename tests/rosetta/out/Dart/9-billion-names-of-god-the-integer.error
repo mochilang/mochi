@@ -1,7 +1,55 @@
 run: exit status 254
-/tmp/9-billion-names-of-god-the-integer.dart:22:11: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-    n = n / 10;
-          ^
-/tmp/9-billion-names-of-god-the-integer.dart:42:15: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-    carry = s / 10;
-              ^
+/tmp/9-billion-names-of-god-the-integer.dart:4:41: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+  while ((n as num) > 1 && a[(n as num) - 1] == 0) {
+                                        ^
+/tmp/9-billion-names-of-god-the-integer.dart:5:33: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    a = a.sublist(0, (n as num) - 1);
+                                ^
+/tmp/9-billion-names-of-god-the-integer.dart:6:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = (n as num) - 1;
+                   ^
+/tmp/9-billion-names-of-god-the-integer.dart:18:48: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    digits = List.from(digits)..add((n as num) % 10);
+                                               ^
+/tmp/9-billion-names-of-god-the-integer.dart:19:20: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    n = (n as num) / 10;
+                   ^
+/tmp/9-billion-names-of-god-the-integer.dart:31:14: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      av = a[i];
+             ^
+/tmp/9-billion-names-of-god-the-integer.dart:35:14: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      bv = b[i];
+             ^
+/tmp/9-billion-names-of-god-the-integer.dart:38:42: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    res = List.from(res)..add((s as num) % 10);
+                                         ^
+/tmp/9-billion-names-of-god-the-integer.dart:50:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var av = a[i];
+               ^
+/tmp/9-billion-names-of-god-the-integer.dart:53:14: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      bv = b[i];
+             ^
+/tmp/9-billion-names-of-god-the-integer.dart:63:31: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    res = List.from(res)..add(diff);
+                              ^
+/tmp/9-billion-names-of-god-the-integer.dart:74:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) - 1;
+                   ^
+/tmp/9-billion-names-of-god-the-integer.dart:97:34: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var val = cache[(y as num) - x][minInt(x, (y as num) - x)];
+                                 ^
+/tmp/9-billion-names-of-god-the-integer.dart:97:60: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+      var val = cache[(y as num) - x][minInt(x, (y as num) - x)];
+                                                           ^
+/tmp/9-billion-names-of-god-the-integer.dart:102:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    y = (y as num) + 1;
+                   ^
+/tmp/9-billion-names-of-god-the-integer.dart:112:36: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var diff = bigSub(e[(i as num) + 1], e[i]);
+                                   ^
+/tmp/9-billion-names-of-god-the-integer.dart:112:44: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var diff = bigSub(e[(i as num) + 1], e[i]);
+                                           ^
+/tmp/9-billion-names-of-god-the-integer.dart:128:29: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      line = line + ' ' + r[i] + ' ';
+                            ^
