@@ -14,16 +14,32 @@ fn _sum_int(v: []const i32) i32 {
     return sum;
 }
 
-fn _contains_list_int(v: []const i32, item: i32) bool {
-    for (v) |it| { if (it == item) return true; }
-    return false;
-}
-
 fn _json(v: anytype) void {
     var buf = std.ArrayList(u8).init(std.heap.page_allocator);
     defer buf.deinit();
     std.json.stringify(v, .{}, buf.writer()) catch |err| handleError(err);
     std.debug.print("{s}\n", .{buf.items});
+}
+
+fn _slice_string(s: []const u8, start: i32, end: i32, step: i32) []const u8 {
+    var sidx = start;
+    var eidx = end;
+    var stp = step;
+    const n: i32 = @as(i32, @intCast(s.len));
+    if (sidx < 0) sidx += n;
+    if (eidx < 0) eidx += n;
+    if (stp == 0) stp = 1;
+    if (sidx < 0) sidx = 0;
+    if (eidx > n) eidx = n;
+    if (stp > 0 and eidx < sidx) eidx = sidx;
+    if (stp < 0 and eidx > sidx) eidx = sidx;
+    var res = std.ArrayList(u8).init(std.heap.page_allocator);
+    defer res.deinit();
+    var i: i32 = sidx;
+    while ((stp > 0 and i < eidx) or (stp < 0 and i > eidx)) : (i += stp) {
+        res.append(s[@as(usize, @intCast(i))]) catch |err| handleError(err);
+    }
+    return res.toOwnedSlice() catch |err| handleError(err);
 }
 
 fn _equal(a: anytype, b: anytype) bool {
@@ -151,8 +167,8 @@ pub fn main() void {
     .suppkey = g.key.suppkey,
     .qty = _sum_int(blk1: { var _tmp4 = std.ArrayList(i32).init(std.heap.page_allocator); for (g.Items.items) |x| { _tmp4.append(x.l_quantity) catch |err| handleError(err); } const _tmp5 = _tmp4.toOwnedSlice() catch |err| handleError(err); break :blk1 _tmp5; }),
 }) catch |err| handleError(err); } const _tmp10Slice = _tmp10.toOwnedSlice() catch |err| handleError(err); break :blk2 _tmp10Slice; };
-    target_partkeys = blk3: { var _tmp11 = std.ArrayList(i32).init(std.heap.page_allocator); for (partsupp) |ps| { for (part) |p| { if (!((ps.ps_partkey == p.p_partkey))) continue; for (shipped_94) |s| { if (!(((ps.ps_partkey == s.partkey) and (ps.ps_suppkey == s.suppkey)))) continue; if (!((std.mem.eql(u8, substring(p.p_name, 0, @as(i32, @intCast((prefix).len))), prefix) and (ps.ps_availqty > ((0.5 * s.qty)))))) continue; _tmp11.append(ps.ps_suppkey) catch |err| handleError(err); } } } const _tmp12 = _tmp11.toOwnedSlice() catch |err| handleError(err); break :blk3 _tmp12; };
-    result = blk4: { var _tmp14 = std.ArrayList(ResultItem).init(std.heap.page_allocator); for (supplier) |s| { for (nation) |n| { if (!((n.n_nationkey == s.s_nationkey))) continue; if (!((_contains_list_int(target_partkeys, s.s_suppkey) and std.mem.eql(u8, n.n_name, "CANADA")))) continue; _tmp14.append(ResultItem{
+    target_partkeys = blk3: { var _tmp11 = std.ArrayList(i32).init(std.heap.page_allocator); for (partsupp) |ps| { for (part) |p| { if (!((ps.ps_partkey == p.p_partkey))) continue; for (shipped_94) |s| { if (!(((ps.ps_partkey == s.partkey) and (ps.ps_suppkey == s.suppkey)))) continue; if (!((std.mem.eql(u8, _slice_string(p.p_name, 0, @as(i32, @intCast((prefix).len)), 1), prefix) and (ps.ps_availqty > ((0.5 * s.qty)))))) continue; _tmp11.append(ps.ps_suppkey) catch |err| handleError(err); } } } const _tmp12 = _tmp11.toOwnedSlice() catch |err| handleError(err); break :blk3 _tmp12; };
+    result = blk4: { var _tmp14 = std.ArrayList(ResultItem).init(std.heap.page_allocator); for (supplier) |s| { for (nation) |n| { if (!((n.n_nationkey == s.s_nationkey))) continue; if (!((std.mem.indexOfScalar(i32, target_partkeys, s.s_suppkey) != null and std.mem.eql(u8, n.n_name, "CANADA")))) continue; _tmp14.append(ResultItem{
     .s_name = s.s_name,
     .s_address = s.s_address,
 }) catch |err| handleError(err); } } const _tmp15 = _tmp14.toOwnedSlice() catch |err| handleError(err); break :blk4 _tmp15; };

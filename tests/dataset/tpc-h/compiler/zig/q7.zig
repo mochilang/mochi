@@ -21,6 +21,27 @@ fn _json(v: anytype) void {
     std.debug.print("{s}\n", .{buf.items});
 }
 
+fn _slice_string(s: []const u8, start: i32, end: i32, step: i32) []const u8 {
+    var sidx = start;
+    var eidx = end;
+    var stp = step;
+    const n: i32 = @as(i32, @intCast(s.len));
+    if (sidx < 0) sidx += n;
+    if (eidx < 0) eidx += n;
+    if (stp == 0) stp = 1;
+    if (sidx < 0) sidx = 0;
+    if (eidx > n) eidx = n;
+    if (stp > 0 and eidx < sidx) eidx = sidx;
+    if (stp < 0 and eidx > sidx) eidx = sidx;
+    var res = std.ArrayList(u8).init(std.heap.page_allocator);
+    defer res.deinit();
+    var i: i32 = sidx;
+    while ((stp > 0 and i < eidx) or (stp < 0 and i > eidx)) : (i += stp) {
+        res.append(s[@as(usize, @intCast(i))]) catch |err| handleError(err);
+    }
+    return res.toOwnedSlice() catch |err| handleError(err);
+}
+
 fn _equal(a: anytype, b: anytype) bool {
     if (@TypeOf(a) != @TypeOf(b)) return false;
     return std.meta.eql(a, b);
@@ -126,7 +147,7 @@ pub fn main() void {
     result = blk2: { var _tmp8 = std.ArrayList(ResultStruct7).init(std.heap.page_allocator); for (lineitem) |l| { for (orders) |o| { if (!((o.o_orderkey == l.l_orderkey))) continue; for (customer) |c| { if (!((c.c_custkey == o.o_custkey))) continue; for (supplier) |s| { if (!((s.s_suppkey == l.l_suppkey))) continue; for (nation) |n1| { if (!((n1.n_nationkey == s.s_nationkey))) continue; for (nation) |n2| { if (!((n2.n_nationkey == c.c_nationkey))) continue; if (!(((((std.mem.order(u8, l.l_shipdate, start_date) != .lt and std.mem.order(u8, l.l_shipdate, end_date) != .gt) and ((std.mem.eql(u8, n1.n_name, nation1) and std.mem.eql(u8, n2.n_name, nation2)))) or ((std.mem.eql(u8, n1.n_name, nation2) and std.mem.eql(u8, n2.n_name, nation1))))))) continue; const _tmp9 = ResultStruct0{
     .supp_nation = n1.n_name,
     .cust_nation = n2.n_name,
-    .l_year = substring(l.l_shipdate, 0, 4),
+    .l_year = _slice_string(l.l_shipdate, 0, 4, 1),
 }; var _found = false; var _idx: usize = 0; for (_tmp8.items, 0..) |it, i| { if (_equal(it.key, _tmp9)) { _found = true; _idx = i; break; } } if (_found) { _tmp8.items[_idx].Items.append(ResultStruct6{ .l = l, .o = o, .c = c, .s = s, .n1 = n1, .n2 = n2 }) catch |err| handleError(err); } else { var g = ResultStruct7{ .key = _tmp9, .Items = std.ArrayList(ResultStruct6).init(std.heap.page_allocator) }; g.Items.append(ResultStruct6{ .l = l, .o = o, .c = c, .s = s, .n1 = n1, .n2 = n2 }) catch |err| handleError(err); _tmp8.append(g) catch |err| handleError(err); } } } } } } } var _tmp10 = std.ArrayList(ResultStruct7).init(std.heap.page_allocator);for (_tmp8.items) |g| { _tmp10.append(g) catch |err| handleError(err); } var _tmp11 = std.ArrayList(struct { item: ResultStruct7, key: []const i32 }).init(std.heap.page_allocator);for (_tmp10.items) |g| { _tmp11.append(.{ .item = g, .key = &[_]i32{
     "supp_nation",
     "cust_nation",

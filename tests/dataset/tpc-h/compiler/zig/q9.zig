@@ -21,6 +21,27 @@ fn _json(v: anytype) void {
     std.debug.print("{s}\n", .{buf.items});
 }
 
+fn _slice_string(s: []const u8, start: i32, end: i32, step: i32) []const u8 {
+    var sidx = start;
+    var eidx = end;
+    var stp = step;
+    const n: i32 = @as(i32, @intCast(s.len));
+    if (sidx < 0) sidx += n;
+    if (eidx < 0) eidx += n;
+    if (stp == 0) stp = 1;
+    if (sidx < 0) sidx = 0;
+    if (eidx > n) eidx = n;
+    if (stp > 0 and eidx < sidx) eidx = sidx;
+    if (stp < 0 and eidx > sidx) eidx = sidx;
+    var res = std.ArrayList(u8).init(std.heap.page_allocator);
+    defer res.deinit();
+    var i: i32 = sidx;
+    while ((stp > 0 and i < eidx) or (stp < 0 and i > eidx)) : (i += stp) {
+        res.append(s[@as(usize, @intCast(i))]) catch |err| handleError(err);
+    }
+    return res.toOwnedSlice() catch |err| handleError(err);
+}
+
 fn _equal(a: anytype, b: anytype) bool {
     if (@TypeOf(a) != @TypeOf(b)) return false;
     return std.meta.eql(a, b);
@@ -159,9 +180,9 @@ fn test_Q9_computes_profit_for_green_parts_by_nation_and_year() void {
 }
 
 pub fn main() void {
-    result = blk2: { var _tmp8 = std.ArrayList(ResultStruct7).init(std.heap.page_allocator); for (lineitem) |l| { for (part) |p| { if (!((p.p_partkey == l.l_partkey))) continue; for (supplier) |s| { if (!((s.s_suppkey == l.l_suppkey))) continue; for (partsupp) |ps| { if (!(((ps.ps_partkey == l.l_partkey) and (ps.ps_suppkey == l.l_suppkey)))) continue; for (orders) |o| { if (!((o.o_orderkey == l.l_orderkey))) continue; for (nation) |n| { if (!((n.n_nationkey == s.s_nationkey))) continue; if (!(((std.mem.eql(u8, substring(p.p_name, 0, @as(i32, @intCast((prefix).len))), prefix) and std.mem.order(u8, o.o_orderdate, start_date) != .lt) and std.mem.order(u8, o.o_orderdate, end_date) != .gt))) continue; const _tmp9 = ResultStruct0{
+    result = blk2: { var _tmp8 = std.ArrayList(ResultStruct7).init(std.heap.page_allocator); for (lineitem) |l| { for (part) |p| { if (!((p.p_partkey == l.l_partkey))) continue; for (supplier) |s| { if (!((s.s_suppkey == l.l_suppkey))) continue; for (partsupp) |ps| { if (!(((ps.ps_partkey == l.l_partkey) and (ps.ps_suppkey == l.l_suppkey)))) continue; for (orders) |o| { if (!((o.o_orderkey == l.l_orderkey))) continue; for (nation) |n| { if (!((n.n_nationkey == s.s_nationkey))) continue; if (!(((std.mem.eql(u8, _slice_string(p.p_name, 0, @as(i32, @intCast((prefix).len)), 1), prefix) and std.mem.order(u8, o.o_orderdate, start_date) != .lt) and std.mem.order(u8, o.o_orderdate, end_date) != .gt))) continue; const _tmp9 = ResultStruct0{
     .nation = n.n_name,
-    .o_year = @as(i32, substring(o.o_orderdate, 0, 4)),
+    .o_year = @as(i32, _slice_string(o.o_orderdate, 0, 4, 1)),
 }; var _found = false; var _idx: usize = 0; for (_tmp8.items, 0..) |it, i| { if (_equal(it.key, _tmp9)) { _found = true; _idx = i; break; } } if (_found) { _tmp8.items[_idx].Items.append(ResultStruct6{ .l = l, .p = p, .s = s, .ps = ps, .o = o, .n = n }) catch |err| handleError(err); } else { var g = ResultStruct7{ .key = _tmp9, .Items = std.ArrayList(ResultStruct6).init(std.heap.page_allocator) }; g.Items.append(ResultStruct6{ .l = l, .p = p, .s = s, .ps = ps, .o = o, .n = n }) catch |err| handleError(err); _tmp8.append(g) catch |err| handleError(err); } } } } } } } var _tmp10 = std.ArrayList(ResultStruct7).init(std.heap.page_allocator);for (_tmp8.items) |g| { _tmp10.append(g) catch |err| handleError(err); } var _tmp11 = std.ArrayList(struct { item: ResultStruct7, key: []const i32 }).init(std.heap.page_allocator);for (_tmp10.items) |g| { _tmp11.append(.{ .item = g, .key = &[_][]const u8{
     g.key.nation,
     -g.key.o_year,

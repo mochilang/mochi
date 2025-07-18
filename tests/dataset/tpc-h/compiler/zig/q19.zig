@@ -14,11 +14,6 @@ fn _sum_float(v: []const f64) f64 {
     return sum;
 }
 
-fn _contains_list_string(v: []const []const u8, item: []const u8) bool {
-    for (v) |it| { if (std.mem.eql(u8, it, item)) return true; }
-    return false;
-}
-
 fn _json(v: anytype) void {
     var buf = std.ArrayList(u8).init(std.heap.page_allocator);
     defer buf.deinit();
@@ -94,25 +89,25 @@ fn test_Q19_returns_total_revenue_from_qualifying_branded_parts() void {
 }
 
 pub fn main() void {
-    revenues = blk0: { var _tmp0 = std.ArrayList(f64).init(std.heap.page_allocator); for (lineitem) |l| { for (part) |p| { if (!((p.p_partkey == l.l_partkey))) continue; if (!(((((((((((std.mem.eql(u8, p.p_brand, "Brand#12")) and (_contains_list_string(&[_][]const u8{
+    revenues = blk4: { var _tmp4 = std.ArrayList(f64).init(std.heap.page_allocator); for (lineitem) |l| { for (part) |p| { if (!((p.p_partkey == l.l_partkey))) continue; if (!(((((((((((std.mem.eql(u8, p.p_brand, "Brand#12")) and (blk0: { var found: bool = false; for (&[_][]const u8{
     "SM CASE",
     "SM BOX",
     "SM PACK",
     "SM PKG",
-}, p.p_container))) and (((l.l_quantity >= 1) and (l.l_quantity <= 11)))) and (((p.p_size >= 1) and (p.p_size <= 5))))) or (((((std.mem.eql(u8, p.p_brand, "Brand#23")) and (_contains_list_string(&[_][]const u8{
+}) |_tmp0| { if (std.mem.eql(u8, _tmp0, p.p_container)) { found = true; break; } } break :blk0 found; })) and (((l.l_quantity >= 1) and (l.l_quantity <= 11)))) and (((p.p_size >= 1) and (p.p_size <= 5))))) or (((((std.mem.eql(u8, p.p_brand, "Brand#23")) and (blk1: { var found: bool = false; for (&[_][]const u8{
     "MED BAG",
     "MED BOX",
     "MED PKG",
     "MED PACK",
-}, p.p_container))) and (((l.l_quantity >= 10) and (l.l_quantity <= 20)))) and (((p.p_size >= 1) and (p.p_size <= 10)))))) or (((((std.mem.eql(u8, p.p_brand, "Brand#34")) and (_contains_list_string(&[_][]const u8{
+}) |_tmp1| { if (std.mem.eql(u8, _tmp1, p.p_container)) { found = true; break; } } break :blk1 found; })) and (((l.l_quantity >= 10) and (l.l_quantity <= 20)))) and (((p.p_size >= 1) and (p.p_size <= 10)))))) or (((((std.mem.eql(u8, p.p_brand, "Brand#34")) and (blk2: { var found: bool = false; for (&[_][]const u8{
     "LG CASE",
     "LG BOX",
     "LG PACK",
     "LG PKG",
-}, p.p_container))) and (((l.l_quantity >= 20) and (l.l_quantity <= 30)))) and (((p.p_size >= 1) and (p.p_size <= 15))))))) and _contains_list_string(&[_][]const u8{
+}) |_tmp2| { if (std.mem.eql(u8, _tmp2, p.p_container)) { found = true; break; } } break :blk2 found; })) and (((l.l_quantity >= 20) and (l.l_quantity <= 30)))) and (((p.p_size >= 1) and (p.p_size <= 15))))))) and blk3: { var found: bool = false; for (&[_][]const u8{
     "AIR",
     "AIR REG",
-}, l.l_shipmode)) and std.mem.eql(u8, l.l_shipinstruct, "DELIVER IN PERSON")))) continue; _tmp0.append((l.l_extendedprice * ((1 - l.l_discount)))) catch |err| handleError(err); } } const _tmp1 = _tmp0.toOwnedSlice() catch |err| handleError(err); break :blk0 _tmp1; };
+}) |_tmp3| { if (std.mem.eql(u8, _tmp3, l.l_shipmode)) { found = true; break; } } break :blk3 found; }) and std.mem.eql(u8, l.l_shipinstruct, "DELIVER IN PERSON")))) continue; _tmp4.append((l.l_extendedprice * ((1 - l.l_discount)))) catch |err| handleError(err); } } const _tmp5 = _tmp4.toOwnedSlice() catch |err| handleError(err); break :blk4 _tmp5; };
     _json(result);
     test_Q19_returns_total_revenue_from_qualifying_branded_parts();
 }

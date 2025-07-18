@@ -21,6 +21,27 @@ fn _json(v: anytype) void {
     std.debug.print("{s}\n", .{buf.items});
 }
 
+fn _slice_string(s: []const u8, start: i32, end: i32, step: i32) []const u8 {
+    var sidx = start;
+    var eidx = end;
+    var stp = step;
+    const n: i32 = @as(i32, @intCast(s.len));
+    if (sidx < 0) sidx += n;
+    if (eidx < 0) eidx += n;
+    if (stp == 0) stp = 1;
+    if (sidx < 0) sidx = 0;
+    if (eidx > n) eidx = n;
+    if (stp > 0 and eidx < sidx) eidx = sidx;
+    if (stp < 0 and eidx > sidx) eidx = sidx;
+    var res = std.ArrayList(u8).init(std.heap.page_allocator);
+    defer res.deinit();
+    var i: i32 = sidx;
+    while ((stp > 0 and i < eidx) or (stp < 0 and i > eidx)) : (i += stp) {
+        res.append(s[@as(usize, @intCast(i))]) catch |err| handleError(err);
+    }
+    return res.toOwnedSlice() catch |err| handleError(err);
+}
+
 fn _equal(a: anytype, b: anytype) bool {
     if (@TypeOf(a) != @TypeOf(b)) return false;
     return std.meta.eql(a, b);
@@ -155,7 +176,7 @@ fn test_Q8_returns_correct_market_share_for_BRAZIL_in_1995() void {
 }
 
 pub fn main() void {
-    result = blk4: { var _tmp11 = std.ArrayList(ResultStruct10).init(std.heap.page_allocator); for (lineitem) |l| { for (part) |p| { if (!((p.p_partkey == l.l_partkey))) continue; for (supplier) |s| { if (!((s.s_suppkey == l.l_suppkey))) continue; for (orders) |o| { if (!((o.o_orderkey == l.l_orderkey))) continue; for (customer) |c| { if (!((c.c_custkey == o.o_custkey))) continue; for (nation) |n| { if (!((n.n_nationkey == c.c_nationkey))) continue; for (region) |r| { if (!((r.r_regionkey == n.n_regionkey))) continue; if (!(((((std.mem.eql(u8, p.p_type, target_type) and std.mem.order(u8, o.o_orderdate, start_date) != .lt) and std.mem.order(u8, o.o_orderdate, end_date) != .gt) and std.mem.eql(u8, r.r_name, "AMERICA"))))) continue; const _tmp12 = substring(o.o_orderdate, 0, 4); var _found = false; var _idx: usize = 0; for (_tmp11.items, 0..) |it, i| { if (_equal(it.key, _tmp12)) { _found = true; _idx = i; break; } } if (_found) { _tmp11.items[_idx].Items.append(ResultStruct9{ .l = l, .p = p, .s = s, .o = o, .c = c, .n = n, .r = r }) catch |err| handleError(err); } else { var g = ResultStruct10{ .key = _tmp12, .Items = std.ArrayList(ResultStruct9).init(std.heap.page_allocator) }; g.Items.append(ResultStruct9{ .l = l, .p = p, .s = s, .o = o, .c = c, .n = n, .r = r }) catch |err| handleError(err); _tmp11.append(g) catch |err| handleError(err); } } } } } } } } var _tmp13 = std.ArrayList(ResultStruct10).init(std.heap.page_allocator);for (_tmp11.items) |year| { _tmp13.append(year) catch |err| handleError(err); } var _tmp14 = std.ArrayList(struct { item: ResultStruct10, key: i32 }).init(std.heap.page_allocator);for (_tmp13.items) |year| { _tmp14.append(.{ .item = year, .key = year.key }) catch |err| handleError(err); } for (0.._tmp14.items.len) |i| { for (i+1.._tmp14.items.len) |j| { if (_tmp14.items[j].key < _tmp14.items[i].key) { const t = _tmp14.items[i]; _tmp14.items[i] = _tmp14.items[j]; _tmp14.items[j] = t; } } } var _tmp15 = std.ArrayList(ResultStruct10).init(std.heap.page_allocator);for (_tmp14.items) |p| { _tmp15.append(p.item) catch |err| handleError(err); } var _tmp16 = std.ArrayList(ResultItem).init(std.heap.page_allocator);for (_tmp15.items) |year| { _tmp16.append(ResultItem{
+    result = blk4: { var _tmp11 = std.ArrayList(ResultStruct10).init(std.heap.page_allocator); for (lineitem) |l| { for (part) |p| { if (!((p.p_partkey == l.l_partkey))) continue; for (supplier) |s| { if (!((s.s_suppkey == l.l_suppkey))) continue; for (orders) |o| { if (!((o.o_orderkey == l.l_orderkey))) continue; for (customer) |c| { if (!((c.c_custkey == o.o_custkey))) continue; for (nation) |n| { if (!((n.n_nationkey == c.c_nationkey))) continue; for (region) |r| { if (!((r.r_regionkey == n.n_regionkey))) continue; if (!(((((std.mem.eql(u8, p.p_type, target_type) and std.mem.order(u8, o.o_orderdate, start_date) != .lt) and std.mem.order(u8, o.o_orderdate, end_date) != .gt) and std.mem.eql(u8, r.r_name, "AMERICA"))))) continue; const _tmp12 = _slice_string(o.o_orderdate, 0, 4, 1); var _found = false; var _idx: usize = 0; for (_tmp11.items, 0..) |it, i| { if (_equal(it.key, _tmp12)) { _found = true; _idx = i; break; } } if (_found) { _tmp11.items[_idx].Items.append(ResultStruct9{ .l = l, .p = p, .s = s, .o = o, .c = c, .n = n, .r = r }) catch |err| handleError(err); } else { var g = ResultStruct10{ .key = _tmp12, .Items = std.ArrayList(ResultStruct9).init(std.heap.page_allocator) }; g.Items.append(ResultStruct9{ .l = l, .p = p, .s = s, .o = o, .c = c, .n = n, .r = r }) catch |err| handleError(err); _tmp11.append(g) catch |err| handleError(err); } } } } } } } } var _tmp13 = std.ArrayList(ResultStruct10).init(std.heap.page_allocator);for (_tmp11.items) |year| { _tmp13.append(year) catch |err| handleError(err); } var _tmp14 = std.ArrayList(struct { item: ResultStruct10, key: i32 }).init(std.heap.page_allocator);for (_tmp13.items) |year| { _tmp14.append(.{ .item = year, .key = year.key }) catch |err| handleError(err); } for (0.._tmp14.items.len) |i| { for (i+1.._tmp14.items.len) |j| { if (_tmp14.items[j].key < _tmp14.items[i].key) { const t = _tmp14.items[i]; _tmp14.items[i] = _tmp14.items[j]; _tmp14.items[j] = t; } } } var _tmp15 = std.ArrayList(ResultStruct10).init(std.heap.page_allocator);for (_tmp14.items) |p| { _tmp15.append(p.item) catch |err| handleError(err); } var _tmp16 = std.ArrayList(ResultItem).init(std.heap.page_allocator);for (_tmp15.items) |year| { _tmp16.append(ResultItem{
     .o_year = year.key,
     .mkt_share = (_sum_int(blk2: { var _tmp5 = std.ArrayList(i32).init(std.heap.page_allocator); for (year.Items.items) |x| { _tmp5.append(switch (std.mem.eql(u8, x.n.n_name, target_nation)) {true => (x.l.l_extendedprice * ((1 - x.l.l_discount))), else => 0.0, }) catch |err| handleError(err); } const _tmp6 = _tmp5.toOwnedSlice() catch |err| handleError(err); break :blk2 _tmp6; }) / _sum_int(blk3: { var _tmp7 = std.ArrayList(i32).init(std.heap.page_allocator); for (year.Items.items) |x| { _tmp7.append((x.l.l_extendedprice * ((1 - x.l.l_discount)))) catch |err| handleError(err); } const _tmp8 = _tmp7.toOwnedSlice() catch |err| handleError(err); break :blk3 _tmp8; })),
 }) catch |err| handleError(err); } const _tmp16Slice = _tmp16.toOwnedSlice() catch |err| handleError(err); break :blk4 _tmp16Slice; };

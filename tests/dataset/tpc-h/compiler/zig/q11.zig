@@ -108,7 +108,7 @@ var result: []const GroupedItem = undefined; // []const GroupedItem
 
 fn test_Q11_returns_high_value_partkeys_from_GERMANY() void {
     expect((result == &[_]FilteredItem{
-    GroupedItem{
+    FilteredItem{
     .ps_partkey = 1000,
     .value = 2000.0,
 },
