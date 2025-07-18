@@ -173,7 +173,7 @@ tasks located under `tests/rosetta/x/Mochi`. These can be executed with:
 go test ./runtime/vm -run Rosetta -tags slow
 ```
 
-Out of 237 programs, 230 currently run successfully. Five programs fail to
+Out of 237 programs, 231 currently run successfully. Four programs fail to
 compile or execute and produce a corresponding `.error` file. Two programs
 (`21-game` and `15-puzzle-game`) require interactive input and are skipped.
 
@@ -186,7 +186,6 @@ runtime and have corresponding `.error` files.
 
 ### Failing programs
 
- - adfgvx-cipher
  - balanced-brackets
  - bulls-and-cows
  - bulls-and-cows-player

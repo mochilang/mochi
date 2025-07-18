@@ -7556,11 +7556,14 @@ func clampSlice(n, start, end int) (int, int) {
 	if start < 0 {
 		start = 0
 	}
+	if start > n {
+		start = n
+	}
 	if end > n {
 		end = n
 	}
 	if start > end {
-		start, end = end, start
+		start = end
 	}
 	return start, end
 }
