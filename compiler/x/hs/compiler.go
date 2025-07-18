@@ -614,7 +614,7 @@ func (c *Compiler) simpleBodyExpr(stmts []*parser.Statement) (string, error) {
 		return "", err
 	}
 	c.usesMaybe = true
-	return fmt.Sprintf("fromMaybe () (%s)", expr), nil
+	return fmt.Sprintf("fromMaybe (return ()) (%s)", expr), nil
 }
 
 func (c *Compiler) compileFun(fun *parser.FunStmt) error {
@@ -1017,21 +1017,28 @@ func (c *Compiler) compileStmtExpr(stmts []*parser.Statement, top bool) (string,
 			}
 		case s.Var != nil:
 			val := "()"
+			var t types.Type = types.AnyType{}
 			if s.Var.Value != nil {
 				if s.Var.Type != nil {
-					v, err := c.compileExprHint(s.Var.Value, c.resolveTypeRef(s.Var.Type))
+					vt := c.resolveTypeRef(s.Var.Type)
+					v, err := c.compileExprHint(s.Var.Value, vt)
 					if err != nil {
 						return "", err
 					}
 					val = v
+					t = vt
 				} else {
 					v, err := c.compileExpr(s.Var.Value)
 					if err != nil {
 						return "", err
 					}
 					val = v
+					t = c.inferExprType(s.Var.Value)
 				}
+			} else if s.Var.Type != nil {
+				t = c.resolveTypeRef(s.Var.Type)
 			}
+			c.env.SetVar(s.Var.Name, t, true)
 			expr = fmt.Sprintf("(let %s = %s in %s)", sanitizeName(s.Var.Name), val, expr)
 		case s.Break != nil:
 			expr = "Just ()"
@@ -1041,21 +1048,28 @@ func (c *Compiler) compileStmtExpr(stmts []*parser.Statement, top bool) (string,
 			continue
 		case s.Let != nil:
 			val := "()"
+			var t types.Type = types.AnyType{}
 			if s.Let.Value != nil {
 				if s.Let.Type != nil {
-					v, err := c.compileExprHint(s.Let.Value, c.resolveTypeRef(s.Let.Type))
+					vt := c.resolveTypeRef(s.Let.Type)
+					v, err := c.compileExprHint(s.Let.Value, vt)
 					if err != nil {
 						return "", err
 					}
 					val = v
+					t = vt
 				} else {
 					v, err := c.compileExpr(s.Let.Value)
 					if err != nil {
 						return "", err
 					}
 					val = v
+					t = c.inferExprType(s.Let.Value)
 				}
+			} else if s.Let.Type != nil {
+				t = c.resolveTypeRef(s.Let.Type)
 			}
+			c.env.SetVar(s.Let.Name, t, false)
 			expr = fmt.Sprintf("(let %s = %s in %s)", sanitizeName(s.Let.Name), val, expr)
 		case s.Fun != nil:
 			val, err := c.compileFunExpr(&parser.FunExpr{Params: s.Fun.Params, Return: s.Fun.Return, BlockBody: s.Fun.Body})
@@ -1087,7 +1101,7 @@ func (c *Compiler) compileStmtExpr(stmts []*parser.Statement, top bool) (string,
 			if err != nil {
 				return "", err
 			}
-			expr = chainMaybe(fmt.Sprintf("(let _ = %s in Nothing)", val), expr)
+			expr = chainMaybe(fmt.Sprintf("(Nothing <$ %s)", val), expr)
 		}
 	}
 	return expr, nil
@@ -1291,7 +1305,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			c.usesList = true
 			expr = fmt.Sprintf("List.intersect %s %s", expr, r)
 			leftType = types.ListType{Elem: types.AnyType{}}
-		} else if op.Op == "+" && isString(leftType) && isString(rightType) {
+		} else if op.Op == "+" && (isString(leftType) || isString(rightType)) {
 			expr = fmt.Sprintf("(%s ++ %s)", expr, r)
 			leftType = types.StringType{}
 		} else {
@@ -1900,19 +1914,12 @@ func (c *Compiler) compilePrint(ca callArgs) (string, error) {
 		if strings.HasPrefix(arg, "\"") || strings.HasPrefix(arg, "show(") || strings.HasPrefix(arg, "show ") || strings.HasPrefix(arg, "show") || c.isStringExpr(ca.exprs[0]) {
 			return fmt.Sprintf("putStrLn (%s)", arg), nil
 		}
-		if _, ok := c.inferExprType(ca.exprs[0]).(types.AnyType); ok {
-			c.usesAnyValue = true
-			return fmt.Sprintf("putStrLn (_showAny (%s))", arg), nil
-		}
 		return fmt.Sprintf("print (%s)", arg), nil
 	}
 	parts := make([]string, len(ca.args))
 	for i, a := range ca.args {
 		if strings.HasPrefix(a, "\"") || c.isStringExpr(ca.exprs[i]) {
 			parts[i] = a
-		} else if _, ok := c.inferExprType(ca.exprs[i]).(types.AnyType); ok {
-			c.usesAnyValue = true
-			parts[i] = fmt.Sprintf("_showAny (%s)", a)
 		} else {
 			parts[i] = fmt.Sprintf("show (%s)", a)
 		}
