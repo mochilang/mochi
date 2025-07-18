@@ -58,12 +58,12 @@ func runRosettaTaskGolden(t *testing.T, name string) {
 	if err != nil {
 		t.Fatalf("compile error: %v", err)
 	}
-        codeWant := filepath.Join(root, "tests", "rosetta", "out", "Python", name+".py")
-        if shouldUpdateRosetta() {
-                _ = os.WriteFile(codeWant, code, 0644)
-        } else if _, err := os.Stat(codeWant); err == nil {
-                // Generated code is written for reference but not compared in the test.
-        }
+	codeWant := filepath.Join(root, "tests", "rosetta", "out", "Python", name+".py")
+	if shouldUpdateRosetta() {
+		_ = os.WriteFile(codeWant, code, 0644)
+	} else if _, err := os.Stat(codeWant); err == nil {
+		// Generated code is written for reference but not compared in the test.
+	}
 
 	dir := t.TempDir()
 	file := filepath.Join(dir, "main.py")

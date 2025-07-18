@@ -443,13 +443,15 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 				t = types.FloatType{}
 			case "union", "union_all", "except", "intersect":
 				var elem types.Type = types.AnyType{}
-				switch lt := lType.(type) {
+				lBase := unwrapOption(lType)
+				rBase := unwrapOption(rType)
+				switch lt := lBase.(type) {
 				case types.ListType:
 					elem = lt.Elem
 				case types.GroupType:
 					elem = lt.Elem
 				}
-				switch rt := rType.(type) {
+				switch rt := rBase.(type) {
 				case types.ListType:
 					if isAny(elem) {
 						elem = rt.Elem
@@ -465,32 +467,32 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 				}
 				switch op {
 				case "union_all":
-					if _, ok := lType.(types.ListType); ok {
-						if _, ok := rType.(types.ListType); ok {
+					if _, ok := lBase.(types.ListType); ok {
+						if _, ok := rBase.(types.ListType); ok {
 							expr = fmt.Sprintf("%s + %s", lExpr, rExpr)
 							t = types.ListType{Elem: elem}
 							break
 						}
 					}
 				case "except":
-					if _, ok := lType.(types.ListType); ok {
-						if _, ok := rType.(types.ListType); ok {
+					if _, ok := lBase.(types.ListType); ok {
+						if _, ok := rBase.(types.ListType); ok {
 							expr = fmt.Sprintf("[it for it in %s if it not in %s]", lExpr, rExpr)
 							t = types.ListType{Elem: elem}
 							break
 						}
 					}
 				case "union":
-					if _, ok := lType.(types.ListType); ok {
-						if _, ok := rType.(types.ListType); ok {
+					if _, ok := lBase.(types.ListType); ok {
+						if _, ok := rBase.(types.ListType); ok {
 							expr = fmt.Sprintf("list(dict.fromkeys(%s + %s))", lExpr, rExpr)
 							t = types.ListType{Elem: elem}
 							break
 						}
 					}
 				case "intersect":
-					if _, ok := lType.(types.ListType); ok {
-						if _, ok := rType.(types.ListType); ok {
+					if _, ok := lBase.(types.ListType); ok {
+						if _, ok := rBase.(types.ListType); ok {
 							expr = fmt.Sprintf("list(dict.fromkeys([it for it in %s if it in %s]))", lExpr, rExpr)
 							t = types.ListType{Elem: elem}
 							break
