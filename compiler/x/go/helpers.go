@@ -136,6 +136,12 @@ func goType(t types.Type) string {
 		return "*data.Group"
 	case types.OptionType:
 		elem := goType(tt.Elem)
+		if isList(tt.Elem) || isMap(tt.Elem) || isStruct(tt.Elem) || isUnion(tt.Elem) || isString(tt.Elem) || isBoolLike(tt.Elem) || isNumeric(tt.Elem) {
+			if elem == "" {
+				elem = "any"
+			}
+			return elem
+		}
 		if elem == "" {
 			elem = "any"
 		}

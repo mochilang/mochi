@@ -4909,6 +4909,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				return fmt.Sprintf("len([]rune(%s))", arg), nil
 			case types.GroupType:
 				return fmt.Sprintf("len(%s.Items)", arg), nil
+			case types.AnyType:
+				c.imports["mochi/runtime/data"] = true
+				c.imports["reflect"] = true
+				c.use("_count")
+				return fmt.Sprintf("_count(%s)", arg), nil
 			}
 			c.imports["mochi/runtime/data"] = true
 			c.imports["reflect"] = true
