@@ -1,6 +1,221 @@
-# Rosetta Smalltalk Output
+# Rosetta Smalltalk Output (99/216 compiled and run)
 
-This directory holds Smalltalk source code generated from the real Mochi
-programs in `tests/rosetta/x/Mochi`. Each file has the expected
-output in a matching `.out` file. Compilation or runtime failures
-are stored in a corresponding `.error` file.
+This directory holds Smalltalk source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
+
+## Program checklist
+- [x] 100-doors
+- [x] 100-doors-2
+- [x] 100-doors-3
+- [ ] 100-prisoners
+- [ ] 15-puzzle-game
+- [ ] 15-puzzle-solver
+- [ ] 2048
+- [ ] 21-game
+- [ ] 24-game
+- [ ] 24-game-solve
+- [x] 4-rings-or-4-squares-puzzle
+- [x] 9-billion-names-of-god-the-integer
+- [x] 99-bottles-of-beer
+- [x] 99-bottles-of-beer-2
+- [ ] a+b
+- [x] abbreviations-automatic
+- [x] abbreviations-easy
+- [x] abbreviations-simple
+- [x] abc-problem
+- [x] abelian-sandpile-model
+- [x] abelian-sandpile-model-identity
+- [x] abstract-type
+- [x] abundant-deficient-and-perfect-number-classifications
+- [x] abundant-odd-numbers
+- [x] accumulator-factory
+- [x] achilles-numbers
+- [x] ackermann-function
+- [x] ackermann-function-2
+- [ ] ackermann-function-3
+- [ ] active-directory-connect
+- [x] active-directory-search-for-a-user
+- [x] active-object
+- [ ] add-a-variable-to-a-class-instance-at-runtime
+- [x] additive-primes
+- [x] address-of-a-variable
+- [ ] adfgvx-cipher
+- [x] aks-test-for-primes
+- [x] algebraic-data-types
+- [ ] align-columns
+- [x] aliquot-sequence-classifications
+- [ ] almkvist-giullera-formula-for-pi
+- [x] almost-prime
+- [x] amb
+- [x] amicable-pairs
+- [x] anagrams
+- [x] anagrams-deranged-anagrams
+- [x] angle-difference-between-two-bearings-1
+- [x] angle-difference-between-two-bearings-2
+- [x] angles-geometric-normalization-and-conversion
+- [x] animate-a-pendulum
+- [x] animation
+- [x] anonymous-recursion
+- [x] anonymous-recursion-1
+- [x] anonymous-recursion-2
+- [x] anti-primes
+- [x] append-a-record-to-the-end-of-a-text-file
+- [x] apply-a-callback-to-an-array-1
+- [x] apply-a-callback-to-an-array-2
+- [x] apply-a-digital-filter-direct-form-ii-transposed-
+- [x] approximate-equality
+- [x] arbitrary-precision-integers-included-
+- [x] archimedean-spiral
+- [x] arena-storage-pool
+- [ ] arithmetic-complex
+- [x] arithmetic-derivative
+- [ ] arithmetic-evaluation
+- [x] arithmetic-geometric-mean
+- [x] arithmetic-geometric-mean-calculate-pi
+- [x] arithmetic-integer-1
+- [x] arithmetic-integer-2
+- [x] arithmetic-numbers
+- [x] arithmetic-rational
+- [x] array-concatenation
+- [x] array-length
+- [x] arrays
+- [ ] ascending-primes
+- [x] ascii-art-diagram-converter
+- [x] assertions
+- [x] associative-array-creation
+- [ ] associative-array-iteration
+- [x] associative-array-merging
+- [x] atomic-updates
+- [x] attractive-numbers
+- [x] average-loop-length
+- [x] averages-arithmetic-mean
+- [x] averages-mean-time-of-day
+- [x] averages-median-1
+- [x] averages-median-2
+- [x] averages-median-3
+- [x] averages-mode
+- [x] averages-pythagorean-means
+- [x] averages-root-mean-square
+- [x] averages-simple-moving-average
+- [x] avl-tree
+- [ ] b-zier-curves-intersections
+- [x] babbage-problem
+- [x] babylonian-spiral
+- [ ] balanced-brackets
+- [x] balanced-ternary
+- [ ] barnsley-fern
+- [x] base64-decode-data
+- [ ] bell-numbers
+- [x] benfords-law
+- [x] bernoulli-numbers
+- [x] best-shuffle
+- [x] bifid-cipher
+- [x] bin-given-limits
+- [x] binary-digits
+- [ ] binary-search
+- [x] binary-strings
+- [x] bioinformatics-base-count
+- [x] bioinformatics-global-alignment
+- [x] bioinformatics-sequence-mutation
+- [x] biorhythms
+- [ ] bitcoin-address-validation
+- [ ] bitmap
+- [ ] bitmap-b-zier-curves-cubic
+- [ ] bitmap-b-zier-curves-quadratic
+- [ ] bitmap-bresenhams-line-algorithm
+- [ ] bitmap-flood-fill
+- [x] bitmap-histogram
+- [x] bitmap-midpoint-circle-algorithm
+- [ ] bitmap-ppm-conversion-through-a-pipe
+- [ ] bitmap-read-a-ppm-file
+- [ ] bitmap-read-an-image-through-a-pipe
+- [ ] bitmap-write-a-ppm-file
+- [ ] bitwise-io-1
+- [ ] bitwise-io-2
+- [x] bitwise-operations
+- [x] blum-integer
+- [x] boolean-values
+- [x] box-the-compass
+- [x] boyer-moore-string-search
+- [x] brazilian-numbers
+- [ ] break-oo-privacy
+- [ ] brilliant-numbers
+- [ ] brownian-tree
+- [ ] bulls-and-cows
+- [ ] bulls-and-cows-player
+- [ ] burrows-wheeler-transform
+- [ ] caesar-cipher-1
+- [ ] caesar-cipher-2
+- [ ] calculating-the-value-of-e
+- [ ] calendar
+- [ ] calendar---for-real-programmers-1
+- [ ] calendar---for-real-programmers-2
+- [ ] calkin-wilf-sequence
+- [ ] call-a-foreign-language-function
+- [ ] call-a-function-1
+- [ ] call-a-function-10
+- [ ] call-a-function-11
+- [ ] call-a-function-12
+- [ ] call-a-function-2
+- [ ] call-a-function-3
+- [ ] call-a-function-4
+- [ ] call-a-function-5
+- [ ] call-a-function-6
+- [ ] call-a-function-7
+- [ ] call-a-function-8
+- [ ] call-a-function-9
+- [ ] call-an-object-method
+- [ ] call-an-object-method-1
+- [ ] call-an-object-method-2
+- [ ] call-an-object-method-3
+- [ ] camel-case-and-snake-case
+- [ ] canny-edge-detector
+- [ ] canonicalize-cidr
+- [ ] cantor-set
+- [ ] carmichael-3-strong-pseudoprimes
+- [ ] cartesian-product-of-two-or-more-lists-1
+- [ ] cartesian-product-of-two-or-more-lists-2
+- [ ] cartesian-product-of-two-or-more-lists-3
+- [ ] cartesian-product-of-two-or-more-lists-4
+- [ ] case-sensitivity-of-identifiers
+- [ ] casting-out-nines
+- [ ] catalan-numbers-1
+- [ ] catalan-numbers-2
+- [ ] catalan-numbers-pascals-triangle
+- [ ] catamorphism
+- [ ] catmull-clark-subdivision-surface
+- [ ] chaocipher
+- [ ] chaos-game
+- [ ] character-codes-1
+- [ ] character-codes-2
+- [ ] character-codes-3
+- [ ] character-codes-4
+- [ ] character-codes-5
+- [ ] chat-server
+- [ ] check-machin-like-formulas
+- [ ] check-that-file-exists
+- [ ] checkpoint-synchronization-1
+- [ ] checkpoint-synchronization-2
+- [ ] checkpoint-synchronization-3
+- [ ] checkpoint-synchronization-4
+- [ ] chernicks-carmichael-numbers
+- [ ] cheryls-birthday
+- [ ] chinese-remainder-theorem
+- [ ] chinese-zodiac
+- [ ] cholesky-decomposition
+- [ ] cholesky-decomposition-1
+- [ ] chowla-numbers
+- [ ] church-numerals-1
+- [ ] church-numerals-2
+- [ ] circles-of-given-radius-through-two-points
+- [ ] circular-primes
+- [ ] cistercian-numerals
+- [ ] crc-32-1
+- [ ] crc-32-2
+- [ ] csv-data-manipulation
+- [ ] csv-to-html-translation-1
+- [ ] csv-to-html-translation-2
+- [ ] csv-to-html-translation-3
+- [ ] csv-to-html-translation-4
+- [ ] csv-to-html-translation-5
+- [ ] cusip
+- [ ] md5
