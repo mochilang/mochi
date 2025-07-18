@@ -85,3 +85,4 @@
 - Struct literal fields now infer simple literal types like
   `std::string` or `int` instead of falling back to `std::any`.
 
+- Improved boolean literal detection in `inferType` and `inferExprType` and avoided discarding `decltype(std::declval<T>().field)` types in `defineStruct`, enabling `group_by_conditional_sum`, `group_by_having`, and `group_by_sort` to compile.

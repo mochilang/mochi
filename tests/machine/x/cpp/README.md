@@ -2,7 +2,7 @@
 
 Generated C++ code for the programs under `tests/vm/valid`. Each file here has a `.cpp` source produced by the compiler and an `.out` file with its runtime output. If compilation failed, a `.error` file captures the g++ output.
 
-Compiled programs: 89/100
+Compiled programs: 92/100
 
 ## Checklist
 - [x] append_builtin
@@ -29,13 +29,13 @@ Compiled programs: 89/100
 - [x] fun_three_args
 - [x] go_auto
 - [x] group_by
-- [ ] group_by_conditional_sum
-- [ ] group_by_having
+- [x] group_by_conditional_sum
+- [x] group_by_having
 - [ ] group_by_join
 - [ ] group_by_left_join
 - [ ] group_by_multi_join
 - [ ] group_by_multi_join_sort
-- [ ] group_by_sort
+- [x] group_by_sort
 - [ ] group_items_iteration
 - [x] if_else
 - [x] if_then_else
