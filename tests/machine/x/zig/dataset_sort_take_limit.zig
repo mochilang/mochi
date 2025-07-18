@@ -5,26 +5,6 @@ fn handleError(err: anyerror) noreturn {
     std.debug.panic("{any}", .{err});
 }
 
-fn _slice_list(comptime T: type, v: []const T, start: i32, end: i32, step: i32) []T {
-    var s = start;
-    var e = end;
-    var st = step;
-    const n: i32 = @as(i32, @intCast(v.len));
-    if (s < 0) s += n;
-    if (e < 0) e += n;
-    if (st == 0) st = 1;
-    if (s < 0) s = 0;
-    if (e > n) e = n;
-    if (st > 0 and e < s) e = s;
-    if (st < 0 and e > s) e = s;
-    var res = std.ArrayList(T).init(std.heap.page_allocator);
-    defer res.deinit();
-    var i: i32 = s;
-    while ((st > 0 and i < e) or (st < 0 and i > e)) : (i += st) {
-        res.append(v[@as(usize, @intCast(i))]) catch |err| handleError(err);
-    }
-    return res.toOwnedSlice() catch |err| handleError(err);
-}
 
 const ProductsItem = struct {
     name: []const u8,
@@ -82,7 +62,7 @@ pub fn main() void {
             _tmp1.append(p.item) catch |err| handleError(err);
         }
         var _tmp2 = _tmp1.toOwnedSlice() catch |err| handleError(err);
-        _tmp2 = _slice_list(ProductsItem, _tmp2, 1, (1 + 3), 1);
+        _tmp2 = _tmp2[1..(1 + 3)];
         break :blk0 _tmp2;
     };
     std.debug.print("--- Top products (excluding most expensive) ---\n", .{});
