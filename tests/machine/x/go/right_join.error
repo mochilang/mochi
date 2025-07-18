@@ -1,5 +1,0 @@
-exit status 1
-# command-line-arguments
-../../../tests/machine/x/go/right_join.go:72:20: cannot use c.Name (variable of type string) as *Customer value in struct literal
-../../../tests/machine/x/go/right_join.go:73:20: cannot use o (variable of struct type Order) as *Order value in struct literal
-../../../tests/machine/x/go/right_join.go:79:20: cannot use c.Name (variable of type string) as *Customer value in struct literal

@@ -1095,11 +1095,10 @@ func (c *Compiler) inferStructFromMapEnv(ml *parser.MapLiteral, name string, env
 	if !ok {
 		return types.StructType{}, false
 	}
-	for k, ft := range st.Fields {
-		if ot, ok := ft.(types.OptionType); ok {
-			st.Fields[k] = ot.Elem
-		}
-	}
+	// Preserve optional fields so queries that perform outer joins
+	// maintain pointer types in the resulting struct. These option
+	// types are represented as pointers in the generated Go code via
+	// goType().
 	stName := exportName(sanitizeName(singular(name)))
 	if stName == "" {
 		stName = "AnonStruct"
@@ -3122,6 +3121,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 		} else {
 			joinTypes[i] = t
 		}
+		// When the join produces an optional element, convert the source slice to
+		// a slice of pointers so `_query` receives the expected values.
+		if joinDirect[i] && strings.HasPrefix(joinTypes[i], "*") {
+			elemGo := goType(je)
+			if elemGo != "" && !strings.HasPrefix(elemGo, "*") {
+				c.use("_addrSlice")
+				joinSrcs[i] = fmt.Sprintf("_addrSlice[%s](%s)", elemGo, joinSrcs[i])
+			}
+		}
 	}
 	varNames := []string{q.Var}
 	for _, f := range q.Froms {
@@ -3444,12 +3452,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 				}
 				if typ != "any" {
 					tmp := fmt.Sprintf("tmp%d", i)
-					if strings.HasPrefix(typ, "*") {
-						base := strings.TrimPrefix(typ, "*")
-						parts[i] = fmt.Sprintf("%s := _a[%d]; var %s %s; if %s != nil { v := %s.(%s); %s = &v }; _ = %s", tmp, i, n, typ, tmp, tmp, base, n, n)
-					} else {
-						parts[i] = fmt.Sprintf("%s := _a[%d]; var %s %s; if %s != nil { %s = %s.(%s) }; _ = %s", tmp, i, n, typ, tmp, n, tmp, typ, n)
-					}
+					parts[i] = fmt.Sprintf("%s := _a[%d]; var %s %s; if %s != nil { %s = %s.(%s) }; _ = %s", tmp, i, n, typ, tmp, n, tmp, typ, n)
 				} else {
 					parts[i] = fmt.Sprintf("%s := _a[%d]; _ = %s", n, i, n)
 				}
