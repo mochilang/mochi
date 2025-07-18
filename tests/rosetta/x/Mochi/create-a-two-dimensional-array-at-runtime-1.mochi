@@ -1,0 +1,29 @@
+// Mochi implementation of Rosetta "Create a two dimensional array at runtime" task
+// Translated from Go version in tests/rosetta/x/Go/create-a-two-dimensional-array-at-runtime-1.go
+
+fun main() {
+  print("enter rows cols: ")
+  let row = int(input())
+  let col = int(input())
+
+  var a: list<list<int>> = []
+  var i = 0
+  while i < row {
+    var rowArr: list<int> = []
+    var j = 0
+    while j < col {
+      rowArr = append(rowArr, 0)
+      j = j + 1
+    }
+    a = append(a, rowArr)
+    i = i + 1
+  }
+
+  print("a[0][0] = " + str(a[0][0]))
+  a[row-1][col-1] = 7
+  print("a[" + str(row-1) + "][" + str(col-1) + "] = " + str(a[row-1][col-1]))
+
+  a = nil
+}
+
+main()
