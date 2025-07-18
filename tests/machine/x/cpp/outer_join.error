@@ -1,29 +1,11 @@
 /workspace/mochi/tests/machine/x/cpp/outer_join.cpp: In function ‘int main()’:
-/workspace/mochi/tests/machine/x/cpp/outer_join.cpp:71:13: error: could not convert ‘row.Result::order’ from ‘std::any’ to ‘bool’
-   71 |     if (row.order) {
-      |         ~~~~^~~~~
-      |             |
-      |             std::any
-/workspace/mochi/tests/machine/x/cpp/outer_join.cpp:72:15: error: could not convert ‘row.Result::customer’ from ‘std::any’ to ‘bool’
-   72 |       if (row.customer) {
-      |           ~~~~^~~~~~~~
-      |               |
-      |               std::any
-/workspace/mochi/tests/machine/x/cpp/outer_join.cpp:76:34: error: ‘class std::any’ has no member named ‘id’
-   76 |           std::cout << row.order.id;
-      |                                  ^~
-/workspace/mochi/tests/machine/x/cpp/outer_join.cpp:80:37: error: ‘class std::any’ has no member named ‘name’
-   80 |           std::cout << row.customer.name;
-      |                                     ^~~~
-/workspace/mochi/tests/machine/x/cpp/outer_join.cpp:84:34: error: ‘class std::any’ has no member named ‘total’
-   84 |           std::cout << row.order.total;
-      |                                  ^~~~~
-/workspace/mochi/tests/machine/x/cpp/outer_join.cpp:91:34: error: ‘class std::any’ has no member named ‘id’
-   91 |           std::cout << row.order.id;
-      |                                  ^~
-/workspace/mochi/tests/machine/x/cpp/outer_join.cpp:99:34: error: ‘class std::any’ has no member named ‘total’
-   99 |           std::cout << row.order.total;
-      |                                  ^~~~~
-/workspace/mochi/tests/machine/x/cpp/outer_join.cpp:107:35: error: ‘class std::any’ has no member named ‘name’
-  107 |         std::cout << row.customer.name;
-      |                                   ^~~~
+/workspace/mochi/tests/machine/x/cpp/outer_join.cpp:46:20: error: no match for ‘operator!=’ (operand types are ‘Order’ and ‘Order’)
+   46 |     if ((row.order != Order{})) {
+      |          ~~~~~~~~~ ^~ ~~~~~~~
+      |              |        |
+      |              Order    Order
+/workspace/mochi/tests/machine/x/cpp/outer_join.cpp:47:25: error: no match for ‘operator!=’ (operand types are ‘Customer’ and ‘Customer’)
+   47 |       if ((row.customer != Customer{})) {
+      |            ~~~~~~~~~~~~ ^~ ~~~~~~~~~~
+      |                |           |
+      |                Customer    Customer

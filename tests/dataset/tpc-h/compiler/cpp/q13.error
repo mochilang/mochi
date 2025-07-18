@@ -1,75 +1,35 @@
-/tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp:61:12: error: ‘x’ was not declared in this scope
-   61 |   decltype(x) x;
-      |            ^
-/tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp:61:12: error: ‘x’ was not declared in this scope
-/tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp:64:36: error: ‘struct Grouped’ has no member named ‘c_count’
-   64 |   decltype(std::declval<Grouped>().c_count) key;
-      |                                    ^~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp:64:36: error: ‘struct Grouped’ has no member named ‘c_count’
-/tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp: In function ‘int main()’:
-/tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp:118:12: error: conversion from ‘vector<std::unordered_map<std::__cxx11::basic_string<char>, int>>’ to non-scalar type ‘vector<std::__cxx11::basic_string<char>>’ requested
-  118 |       std::vector<decltype(std::unordered_map<std::string, decltype(1)>{
-      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  119 |           {std::string("c_custkey"), 1}})>{
-      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  120 |           std::unordered_map<std::string, decltype(1)>{
-      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  121 |               {std::string("c_custkey"), 1}},
-      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  122 |           std::unordered_map<std::string, decltype(2)>{
-      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  123 |               {std::string("c_custkey"), 2}},
-      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  124 |           std::unordered_map<std::string, decltype(3)>{
-      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  125 |               {std::string("c_custkey"), 3}}};
-      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp:133:42: error: lambda-expression in unevaluated context only available with ‘-std=c++20’ or ‘-std=gnu++20’
-  133 |                          decltype(((int)([&]() {
-      |                                          ^
-/tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp:154:49: error: template argument 2 is invalid
-  154 |                                        .size()))>{
-      |                                                 ^
-/tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp:154:49: error: template argument 5 is invalid
-/tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp:156:17: error: lambda-expression in unevaluated context only available with ‘-std=c++20’ or ‘-std=gnu++20’
-  156 |          ((int)([&]() {
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:154:36: error: lambda-expression in unevaluated context only available with ‘-std=c++20’ or ‘-std=gnu++20’
+  154 |                              (int)([&]() {
+      |                                    ^
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:180:43: error: template argument 2 is invalid
+  180 |                                  .size()))>{
+      |                                           ^
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:180:43: error: template argument 5 is invalid
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:182:17: error: lambda-expression in unevaluated context only available with ‘-std=c++20’ or ‘-std=gnu++20’
+  182 |          ((int)([&]() {
       |                 ^
-/tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp:171:26: error: template argument 1 is invalid
-  171 |               .size())}})>
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:199:26: error: template argument 1 is invalid
+  199 |               .size())}})>
       |                          ^
-/tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp:171:26: error: template argument 2 is invalid
-/tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp:174:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
-  174 |       __items.push_back(
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:199:26: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:202:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  202 |       __items.push_back(
       |               ^~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp:177:31: error: lambda-expression in unevaluated context only available with ‘-std=c++20’ or ‘-std=gnu++20’
-  177 |               decltype(((int)([&]() {
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:205:31: error: lambda-expression in unevaluated context only available with ‘-std=c++20’ or ‘-std=gnu++20’
+  205 |               decltype(((int)([&]() {
       |                               ^
-/tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp:194:38: error: template argument 2 is invalid
-  194 |                             .size()))>{
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:222:38: error: template argument 2 is invalid
+  222 |                             .size()))>{
       |                                      ^
-/tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp:194:38: error: template argument 5 is invalid
-/tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp:197:40: error: ‘o’ was not declared in this scope
-  197 |                   std::vector<decltype(o)> __items;
-      |                                        ^
-/tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp:197:42: error: template argument 1 is invalid
-  197 |                   std::vector<decltype(o)> __items;
-      |                                          ^
-/tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp:197:42: error: template argument 2 is invalid
-/tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp:199:48: error: ‘class std::__cxx11::basic_string<char>’ has no member named ‘c_custkey’
-  199 |                     if (!(((((o.o_custkey == c.c_custkey) &&
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:222:38: error: template argument 5 is invalid
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:227:48: error: ‘class std::any’ has no member named ‘c_custkey’
+  227 |                     if (!(((((o.o_custkey == c.c_custkey) &&
       |                                                ^~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp:209:29: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
-  209 |                     __items.push_back(o);
-      |                             ^~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp:213:22: error: request for member ‘size’ in ‘<lambda closure object>main()::<lambda()>::<lambda()>{(* & orders), c}.main()::<lambda()>::<lambda()>()’, which is of non-class type ‘int’
-  213 |                     .size())}});
-      |                      ^~~~
-/tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp:219:19: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
-  219 |     for (auto x : per_customer) {
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:247:19: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+  247 |     for (auto x : per_customer) {
       |                   ^~~~~~~~~~~~
       |                   std::begin
 In file included from /usr/include/c++/13/string:53,
@@ -78,22 +38,22 @@ In file included from /usr/include/c++/13/string:53,
                  from /usr/include/c++/13/ios:44,
                  from /usr/include/c++/13/ostream:40,
                  from /usr/include/c++/13/iostream:41,
-                 from /tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp:3:
+                 from /tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:4:
 /usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
   114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
       |                                     ^~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp:219:19: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
-  219 |     for (auto x : per_customer) {
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:247:19: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+  247 |     for (auto x : per_customer) {
       |                   ^~~~~~~~~~~~
       |                   std::end
 /usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
   116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
       |                                     ^~~
-/tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp:230:76: error: no matching function for call to ‘std::vector<Grouped>::vector(<brace-enclosed initializer list>)’
-  230 |         __groups.push_back(__struct3{__key, std::vector<Grouped>{Grouped{x}}});
-      |                                                                            ^
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:258:67: error: no matching function for call to ‘std::vector<Grouped>::vector(<brace-enclosed initializer list>)’
+  258 |         __groups.push_back(__struct3{__key, std::vector<Grouped>{x}});
+      |                                                                   ^
 In file included from /usr/include/c++/13/vector:66,
-                 from /tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp:8:
+                 from /tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:9:
 /usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = Grouped; _Alloc = std::allocator<Grouped>]’
   707 |         vector(_InputIterator __first, _InputIterator __last,
       |         ^~~~~~
@@ -142,78 +102,99 @@ In file included from /usr/include/c++/13/vector:66,
   531 |       vector() = default;
       |       ^~~~~~
 /usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
-/tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp: In function ‘int main()’:
-/tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp:245:5: error: conversion from ‘vector<__struct4>’ to non-scalar type ‘vector<Grouped>’ requested
-  217 |   std::vector<Grouped> grouped = ([&]() {
-      |                                  ~~~~~~~~
-  218 |     std::vector<__struct3> __groups;
-      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  219 |     for (auto x : per_customer) {
-      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  220 |       auto __key = x.c_count;
-      |       ~~~~~~~~~~~~~~~~~~~~~~~
-  221 |       bool __found = false;
-      |       ~~~~~~~~~~~~~~~~~~~~~
-  222 |       for (auto &__g : __groups) {
-      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  223 |         if (__g.key == __key) {
-      |         ~~~~~~~~~~~~~~~~~~~~~~~
-  224 |           __g.items.push_back(Grouped{x});
-      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  225 |           __found = true;
-      |           ~~~~~~~~~~~~~~~
-  226 |           break;
-      |           ~~~~~~
-  227 |         }
-      |         ~
-  228 |       }
-      |       ~
-  229 |       if (!__found) {
-      |       ~~~~~~~~~~~~~~~
-  230 |         __groups.push_back(__struct3{__key, std::vector<Grouped>{Grouped{x}}});
-      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  231 |       }
-      |       ~
-  232 |     }
-      |     ~
-  233 |     std::vector<
-      |     ~~~~~~~~~~~~
-  234 |         std::pair<decltype((-std::declval<__struct3>().key)), __struct4>>
-      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  235 |         __items;
-      |         ~~~~~~~~
-  236 |     for (auto &g : __groups) {
-      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
-  237 |       __items.push_back({(-g.key), __struct4{g.key, ((int)g.items.size())}});
-      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  238 |     }
-      |     ~
-  239 |     std::sort(__items.begin(), __items.end(),
-      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  240 |               [](auto &a, auto &b) { return a.first < b.first; });
-      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  241 |     std::vector<__struct4> __res;
-      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  242 |     for (auto &p : __items)
-      |     ~~~~~~~~~~~~~~~~~~~~~~~
-  243 |       __res.push_back(p.second);
-      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~
-  244 |     return __res;
-      |     ~~~~~~~~~~~~~
-  245 |   })();
-      |   ~~^~
-In file included from /usr/include/c++/13/bits/stl_algobase.h:71,
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:262:29: error: no match for ‘operator-’ (operand type is ‘std::any’)
+  262 |         std::pair<decltype((-std::declval<__struct3>().key)), __struct4>>
+      |                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/bits/stl_algobase.h:67,
                  from /usr/include/c++/13/algorithm:60,
-                 from /tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp:2:
+                 from /tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:2:
+/usr/include/c++/13/bits/stl_iterator.h:625:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__y.base() - __x.base())) std::operator-(const reverse_iterator<_Iterator>&, const reverse_iterator<_IteratorR>&)’
+  625 |     operator-(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:625:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:262:56: note:   ‘std::any’ is not derived from ‘const std::reverse_iterator<_Iterator>’
+  262 |         std::pair<decltype((-std::declval<__struct3>().key)), __struct4>>
+      |                                                        ^~~
+/usr/include/c++/13/bits/stl_iterator.h:1800:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__x.base() - __y.base())) std::operator-(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&)’
+ 1800 |     operator-(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1800:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:262:56: note:   ‘std::any’ is not derived from ‘const std::move_iterator<_IteratorL>’
+  262 |         std::pair<decltype((-std::declval<__struct3>().key)), __struct4>>
+      |                                                        ^~~
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:262:29: error: no match for ‘operator-’ (operand type is ‘std::any’)
+  262 |         std::pair<decltype((-std::declval<__struct3>().key)), __struct4>>
+      |                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:625:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__y.base() - __x.base())) std::operator-(const reverse_iterator<_Iterator>&, const reverse_iterator<_IteratorR>&)’
+  625 |     operator-(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:625:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:262:56: note:   ‘std::any’ is not derived from ‘const std::reverse_iterator<_Iterator>’
+  262 |         std::pair<decltype((-std::declval<__struct3>().key)), __struct4>>
+      |                                                        ^~~
+/usr/include/c++/13/bits/stl_iterator.h:1800:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__x.base() - __y.base())) std::operator-(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&)’
+ 1800 |     operator-(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1800:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:262:56: note:   ‘std::any’ is not derived from ‘const std::move_iterator<_IteratorL>’
+  262 |         std::pair<decltype((-std::declval<__struct3>().key)), __struct4>>
+      |                                                        ^~~
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:262:63: error: template argument 1 is invalid
+  262 |         std::pair<decltype((-std::declval<__struct3>().key)), __struct4>>
+      |                                                               ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:262:72: error: template argument 1 is invalid
+  262 |         std::pair<decltype((-std::declval<__struct3>().key)), __struct4>>
+      |                                                                        ^~
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:262:72: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:265:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  265 |       __items.push_back({(-g.key), __struct4{g.key, ((int)g.items.size())}});
+      |               ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:265:27: error: no match for ‘operator-’ (operand type is ‘std::any’)
+  265 |       __items.push_back({(-g.key), __struct4{g.key, ((int)g.items.size())}});
+      |                           ^~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:625:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__y.base() - __x.base())) std::operator-(const reverse_iterator<_Iterator>&, const reverse_iterator<_IteratorR>&)’
+  625 |     operator-(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:625:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:265:30: note:   ‘std::any’ is not derived from ‘const std::reverse_iterator<_Iterator>’
+  265 |       __items.push_back({(-g.key), __struct4{g.key, ((int)g.items.size())}});
+      |                              ^~~
+/usr/include/c++/13/bits/stl_iterator.h:1800:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__x.base() - __y.base())) std::operator-(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&)’
+ 1800 |     operator-(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1800:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:265:30: note:   ‘std::any’ is not derived from ‘const std::move_iterator<_IteratorL>’
+  265 |       __items.push_back({(-g.key), __struct4{g.key, ((int)g.items.size())}});
+      |                              ^~~
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:267:23: error: request for member ‘begin’ in ‘__items’, which is of non-class type ‘int’
+  267 |     std::sort(__items.begin(), __items.end(),
+      |                       ^~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:267:40: error: request for member ‘end’ in ‘__items’, which is of non-class type ‘int’
+  267 |     std::sort(__items.begin(), __items.end(),
+      |                                        ^~~
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:270:20: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+  270 |     for (auto &p : __items)
+      |                    ^~~~~~~
+      |                    std::begin
+/usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
+  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
+      |                                     ^~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:270:20: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+  270 |     for (auto &p : __items)
+      |                    ^~~~~~~
+      |                    std::end
+/usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
+  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
+      |                                     ^~~
+In file included from /usr/include/c++/13/bits/stl_algobase.h:71:
 /usr/include/c++/13/bits/predefined_ops.h: In instantiation of ‘bool __gnu_cxx::__ops::_Iter_equals_val<_Value>::operator()(_Iterator) [with _Iterator = __gnu_cxx::__normal_iterator<char*, std::__cxx11::basic_string<char> >; _Value = const std::__cxx11::basic_string<char>]’:
 /usr/include/c++/13/bits/stl_algobase.h:2072:14:   required from ‘_RandomAccessIterator std::__find_if(_RandomAccessIterator, _RandomAccessIterator, _Predicate, random_access_iterator_tag) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<char*, __cxx11::basic_string<char> >; _Predicate = __gnu_cxx::__ops::_Iter_equals_val<const __cxx11::basic_string<char> >]’
 /usr/include/c++/13/bits/stl_algobase.h:2117:23:   required from ‘_Iterator std::__find_if(_Iterator, _Iterator, _Predicate) [with _Iterator = __gnu_cxx::__normal_iterator<char*, __cxx11::basic_string<char> >; _Predicate = __gnu_cxx::__ops::_Iter_equals_val<const __cxx11::basic_string<char> >]’
 /usr/include/c++/13/bits/stl_algo.h:3897:28:   required from ‘_IIter std::find(_IIter, _IIter, const _Tp&) [with _IIter = __gnu_cxx::__normal_iterator<char*, __cxx11::basic_string<char> >; _Tp = __cxx11::basic_string<char>]’
-/tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp:200:44:   required from here
+/tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:228:44:   required from here
 /usr/include/c++/13/bits/predefined_ops.h:270:24: error: no match for ‘operator==’ (operand types are ‘char’ and ‘const std::__cxx11::basic_string<char>’)
   270 |         { return *__it == _M_value; }
       |                  ~~~~~~^~~~~~~~~~~
-In file included from /usr/include/c++/13/bits/stl_algobase.h:67:
 /usr/include/c++/13/bits/stl_iterator.h:1217:5: note: candidate: ‘template<class _IteratorL, class _IteratorR, class _Container> bool __gnu_cxx::operator==(const __normal_iterator<_IteratorL, _Container>&, const __normal_iterator<_IteratorR, _Container>&)’
  1217 |     operator==(const __normal_iterator<_IteratorL, _Container>& __lhs,
       |     ^~~~~~~~
@@ -354,7 +335,7 @@ In file included from /usr/include/c++/13/bits/locale_facets.h:48,
   270 |         { return *__it == _M_value; }
       |                  ~~~~~~^~~~~~~~~~~
 In file included from /usr/include/c++/13/map:63,
-                 from /tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp:4:
+                 from /tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:5:
 /usr/include/c++/13/bits/stl_map.h:1513:5: note: candidate: ‘template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator==(const map<_Key, _Tp, _Compare, _Allocator>&, const map<_Key, _Tp, _Compare, _Allocator>&)’
  1513 |     operator==(const map<_Key, _Tp, _Compare, _Alloc>& __x,
       |     ^~~~~~~~
@@ -371,7 +352,7 @@ In file included from /usr/include/c++/13/map:64:
   270 |         { return *__it == _M_value; }
       |                  ~~~~~~^~~~~~~~~~~
 In file included from /usr/include/c++/13/unordered_map:41,
-                 from /tmp/TestCPPCompiler_TPCHQueriesq13904404616/001/prog.cpp:6:
+                 from /tmp/TestCPPCompiler_TPCHQueriesq13520642159/001/prog.cpp:7:
 /usr/include/c++/13/bits/unordered_map.h:2143:5: note: candidate: ‘template<class _Key1, class _Tp1, class _Hash1, class _Pred1, class _Alloc1> bool std::operator==(const unordered_map<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>&, const unordered_map<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>&)’
  2143 |     operator==(const unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>& __x,
       |     ^~~~~~~~

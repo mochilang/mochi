@@ -2,6 +2,87 @@
 /workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:149:22: error: ‘class std::any’ has no member named ‘cat’
   149 |       auto __key = i.cat;
       |                      ^~~
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:153:30: error: no matching function for call to ‘std::vector<Result>::push_back(std::any&)’
+  153 |           __g.items.push_back(i);
+      |           ~~~~~~~~~~~~~~~~~~~^~~
+In file included from /usr/include/c++/13/vector:66,
+                 from /workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:10:
+/usr/include/c++/13/bits/stl_vector.h:1281:7: note: candidate: ‘void std::vector<_Tp, _Alloc>::push_back(const value_type&) [with _Tp = Result; _Alloc = std::allocator<Result>; value_type = Result]’
+ 1281 |       push_back(const value_type& __x)
+      |       ^~~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:1281:35: note:   no known conversion for argument 1 from ‘std::any’ to ‘const std::vector<Result>::value_type&’ {aka ‘const Result&’}
+ 1281 |       push_back(const value_type& __x)
+      |                 ~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:1298:7: note: candidate: ‘void std::vector<_Tp, _Alloc>::push_back(value_type&&) [with _Tp = Result; _Alloc = std::allocator<Result>; value_type = Result]’
+ 1298 |       push_back(value_type&& __x)
+      |       ^~~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:1298:30: note:   no known conversion for argument 1 from ‘std::any’ to ‘std::vector<Result>::value_type&&’ {aka ‘Result&&’}
+ 1298 |       push_back(value_type&& __x)
+      |                 ~~~~~~~~~~~~~^~~
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:159:66: error: no matching function for call to ‘std::vector<Result>::vector(<brace-enclosed initializer list>)’
+  159 |         __groups.push_back(__struct3{__key, std::vector<Result>{i}});
+      |                                                                  ^
+/usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = Result; _Alloc = std::allocator<Result>]’
+  707 |         vector(_InputIterator __first, _InputIterator __last,
+      |         ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:707:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:159:66: note:   candidate expects 3 arguments, 1 provided
+  159 |         __groups.push_back(__struct3{__key, std::vector<Result>{i}});
+      |                                                                  ^
+/usr/include/c++/13/bits/stl_vector.h:678:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::initializer_list<_Tp>, const allocator_type&) [with _Tp = Result; _Alloc = std::allocator<Result>; allocator_type = std::allocator<Result>]’
+  678 |       vector(initializer_list<value_type> __l,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:678:43: note:   no known conversion for argument 1 from ‘std::any’ to ‘std::initializer_list<Result>’
+  678 |       vector(initializer_list<value_type> __l,
+      |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Tp = Result; _Alloc = std::allocator<Result>; std::__type_identity_t<_Alloc> = std::allocator<Result>]’
+  659 |       vector(vector&& __rv, const __type_identity_t<allocator_type>& __m)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:640:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::false_type) [with _Tp = Result; _Alloc = std::allocator<Result>; allocator_type = std::allocator<Result>; std::false_type = std::integral_constant<bool, false>]’
+  640 |       vector(vector&& __rv, const allocator_type& __m, false_type)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:640:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:635:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::true_type) [with _Tp = Result; _Alloc = std::allocator<Result>; allocator_type = std::allocator<Result>; std::true_type = std::integral_constant<bool, true>]’
+  635 |       vector(vector&& __rv, const allocator_type& __m, true_type) noexcept
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:635:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:624:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Tp = Result; _Alloc = std::allocator<Result>; std::__type_identity_t<_Alloc> = std::allocator<Result>]’
+  624 |       vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:624:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:620:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&) [with _Tp = Result; _Alloc = std::allocator<Result>]’
+  620 |       vector(vector&&) noexcept = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:620:14: note:   no known conversion for argument 1 from ‘std::any’ to ‘std::vector<Result>&&’
+  620 |       vector(vector&&) noexcept = default;
+      |              ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = Result; _Alloc = std::allocator<Result>]’
+  601 |       vector(const vector& __x)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:28: note:   no known conversion for argument 1 from ‘std::any’ to ‘const std::vector<Result>&’
+  601 |       vector(const vector& __x)
+      |              ~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = Result; _Alloc = std::allocator<Result>; size_type = long unsigned int; value_type = Result; allocator_type = std::allocator<Result>]’
+  569 |       vector(size_type __n, const value_type& __value,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:556:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const allocator_type&) [with _Tp = Result; _Alloc = std::allocator<Result>; size_type = long unsigned int; allocator_type = std::allocator<Result>]’
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:556:24: note:   no known conversion for argument 1 from ‘std::any’ to ‘std::vector<Result>::size_type’ {aka ‘long unsigned int’}
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |              ~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:542:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const allocator_type&) [with _Tp = Result; _Alloc = std::allocator<Result>; allocator_type = std::allocator<Result>]’
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:542:36: note:   no known conversion for argument 1 from ‘std::any’ to ‘const std::vector<Result>::allocator_type&’ {aka ‘const std::allocator<Result>&’}
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |              ~~~~~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector() [with _Tp = Result; _Alloc = std::allocator<Result>]’
+  531 |       vector() = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
 /workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp: In lambda function:
 /workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:172:64: error: ‘struct Result’ has no member named ‘flag’
   172 |                   std::vector<decltype((std::declval<Result>().flag
@@ -111,8 +192,6 @@
       |                   ~~~~~~~~~~~~~~~
   189 |                 })()))}});
       |                 ~~~~~~~~~
-In file included from /usr/include/c++/13/vector:66,
-                 from /workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:10:
 /usr/include/c++/13/bits/stl_vector.h:1281:7: note: candidate: ‘void std::vector<_Tp, _Alloc>::push_back(const value_type&) [with _Tp = std::pair<std::any, __struct4>; _Alloc = std::allocator<std::pair<std::any, __struct4> >; value_type = std::pair<std::any, __struct4>]’
  1281 |       push_back(const value_type& __x)
       |       ^~~~~~~~~
@@ -125,112 +204,6 @@ In file included from /usr/include/c++/13/vector:66,
 /usr/include/c++/13/bits/stl_vector.h:1298:30: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘std::vector<std::pair<std::any, __struct4> >::value_type&&’ {aka ‘std::pair<std::any, __struct4>&&’}
  1298 |       push_back(value_type&& __x)
       |                 ~~~~~~~~~~~~~^~~
-/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp: In function ‘int main()’:
-/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:197:5: error: conversion from ‘vector<__struct4>’ to non-scalar type ‘vector<Result>’ requested
-  146 |   std::vector<Result> result = ([&]() {
-      |                                ~~~~~~~~
-  147 |     std::vector<__struct3> __groups;
-      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  148 |     for (auto i : items) {
-      |     ~~~~~~~~~~~~~~~~~~~~~~
-  149 |       auto __key = i.cat;
-      |       ~~~~~~~~~~~~~~~~~~~
-  150 |       bool __found = false;
-      |       ~~~~~~~~~~~~~~~~~~~~~
-  151 |       for (auto &__g : __groups) {
-      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  152 |         if (__g.key == __key) {
-      |         ~~~~~~~~~~~~~~~~~~~~~~~
-  153 |           __g.items.push_back(Result{i});
-      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  154 |           __found = true;
-      |           ~~~~~~~~~~~~~~~
-  155 |           break;
-      |           ~~~~~~
-  156 |         }
-      |         ~
-  157 |       }
-      |       ~
-  158 |       if (!__found) {
-      |       ~~~~~~~~~~~~~~~
-  159 |         __groups.push_back(__struct3{__key, std::vector<Result>{Result{i}}});
-      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  160 |       }
-      |       ~
-  161 |     }
-      |     ~
-  162 |     std::vector<std::pair<decltype(std::declval<__struct3>().key), __struct4>>
-      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  163 |         __items;
-      |         ~~~~~~~~
-  164 |     for (auto &g : __groups) {
-      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
-  165 |       __items.push_back(
-      |       ~~~~~~~~~~~~~~~~~~
-  166 |           {g.key,
-      |           ~~~~~~~
-  167 |            __struct4{
-      |            ~~~~~~~~~~
-  168 |                g.key,
-      |                ~~~~~~
-  169 |                (([&](auto v) {
-      |                ~~~~~~~~~~~~~~~
-  170 |                   return std::accumulate(v.begin(), v.end(), 0.0);
-      |                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  171 |                 })(([&]() {
-      |                 ~~~~~~~~~~~
-  172 |                   std::vector<decltype((std::declval<Result>().flag
-      |                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  173 |                                             ? std::declval<Result>().val
-      |                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  174 |                                             : 0))>
-      |                                             ~~~~~~
-  175 |                       __items;
-      |                       ~~~~~~~~
-  176 |                   for (auto x : g.items) {
-      |                   ~~~~~~~~~~~~~~~~~~~~~~~~
-  177 |                     __items.push_back((x.flag ? x.val : 0));
-      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  178 |                   }
-      |                   ~
-  179 |                   return __items;
-      |                   ~~~~~~~~~~~~~~~
-  180 |                 })()) /
-      |                 ~~~~~~~
-  181 |                 ([&](auto v) {
-      |                 ~~~~~~~~~~~~~~
-  182 |                   return std::accumulate(v.begin(), v.end(), 0.0);
-      |                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  183 |                 })(([&]() {
-      |                 ~~~~~~~~~~~
-  184 |                   std::vector<decltype(std::declval<Result>().val)> __items;
-      |                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  185 |                   for (auto x : g.items) {
-      |                   ~~~~~~~~~~~~~~~~~~~~~~~~
-  186 |                     __items.push_back(x.val);
-      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~
-  187 |                   }
-      |                   ~
-  188 |                   return __items;
-      |                   ~~~~~~~~~~~~~~~
-  189 |                 })()))}});
-      |                 ~~~~~~~~~~
-  190 |     }
-      |     ~
-  191 |     std::sort(__items.begin(), __items.end(),
-      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  192 |               [](auto &a, auto &b) { return a.first < b.first; });
-      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  193 |     std::vector<__struct4> __res;
-      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  194 |     for (auto &p : __items)
-      |     ~~~~~~~~~~~~~~~~~~~~~~~
-  195 |       __res.push_back(p.second);
-      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~
-  196 |     return __res;
-      |     ~~~~~~~~~~~~~
-  197 |   })();
-      |   ~~^~
 /workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:3&, auto:4&)> [with auto:3 = std::pair<std::any, __struct4>; auto:4 = std::pair<std::any, __struct4>]’:
 /usr/include/c++/13/bits/predefined_ops.h:158:30:   required from ‘constexpr bool __gnu_cxx::__ops::_Iter_comp_iter<_Compare>::operator()(_Iterator1, _Iterator2) [with _Iterator1 = __gnu_cxx::__normal_iterator<std::pair<std::any, __struct4>*, std::vector<std::pair<std::any, __struct4> > >; _Iterator2 = __gnu_cxx::__normal_iterator<std::pair<std::any, __struct4>*, std::vector<std::pair<std::any, __struct4> > >; _Compare = main()::<lambda()>::<lambda(auto:3&, auto:4&)>]’
 /usr/include/c++/13/bits/stl_algo.h:1819:14:   required from ‘void std::__insertion_sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<pair<any, __struct4>*, vector<pair<any, __struct4> > >; _Compare = __gnu_cxx::__ops::_Iter_comp_iter<main()::<lambda()>::<lambda(auto:3&, auto:4&)> >]’
