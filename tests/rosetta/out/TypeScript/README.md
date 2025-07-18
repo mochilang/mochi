@@ -1,4 +1,4 @@
-# Rosetta TypeScript Output (11/264 compiled and run)
+# Rosetta TypeScript Output (13/271 compiled and run)
 
 This directory holds TypeScript source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -12,12 +12,13 @@ This directory holds TypeScript source code generated from the real Mochi progra
 - [x] 2048
 - [ ] 21-game
 - [x] 24-game-solve
-- [x] 24-game
+- [ ] 24-game
 - [x] 4-rings-or-4-squares-puzzle
 - [x] 9-billion-names-of-god-the-integer
 - [ ] 99-bottles-of-beer-2
 - [ ] 99-bottles-of-beer
-- [ ] a+b
+- [ ] DNS-query
+- [x] a+b
 - [ ] abbreviations-automatic
 - [ ] abbreviations-easy
 - [ ] abbreviations-simple
@@ -29,9 +30,9 @@ This directory holds TypeScript source code generated from the real Mochi progra
 - [ ] abundant-odd-numbers
 - [ ] accumulator-factory
 - [ ] achilles-numbers
-- [ ] ackermann-function-2
+- [x] ackermann-function-2
 - [x] ackermann-function-3
-- [ ] ackermann-function
+- [x] ackermann-function
 - [ ] active-directory-connect
 - [ ] active-directory-search-for-a-user
 - [ ] active-object
@@ -265,5 +266,11 @@ This directory holds TypeScript source code generated from the real Mochi progra
 - [ ] csv-to-html-translation-5
 - [ ] cuban-primes
 - [ ] cullen-and-woodall-numbers
+- [ ] cumulative-standard-deviation
+- [ ] currency
+- [ ] currying
+- [ ] curzon-numbers
 - [ ] cusip
+- [ ] cyclops-numbers
+- [ ] damm-algorithm
 - [ ] md5
