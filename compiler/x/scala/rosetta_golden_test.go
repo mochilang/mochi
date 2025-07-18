@@ -4,9 +4,11 @@ package scalacode_test
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
 
@@ -95,12 +97,42 @@ func TestScalaCompiler_Rosetta_Golden(t *testing.T) {
 	if err != nil {
 		t.Fatalf("glob: %v", err)
 	}
-	max := 3
-	if len(files) < max {
-		max = len(files)
-	}
-	for _, f := range files[:max] {
+	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		t.Run(name, func(t *testing.T) { runRosettaTaskGolden(t, name) })
 	}
+}
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	updateRosettaReadme()
+	os.Exit(code)
+}
+
+func updateRosettaReadme() {
+	root := repoRoot(&testing.T{})
+	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
+	outDir := filepath.Join(root, "tests", "rosetta", "out", "Scala")
+	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	total := len(files)
+	compiled := 0
+	var lines []string
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		mark := "[ ]"
+		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
+			compiled++
+			mark = "[x]"
+		}
+		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+	}
+	sort.Strings(lines)
+	var buf bytes.Buffer
+	buf.WriteString("# Rosetta Scala Output\n\n")
+	buf.WriteString("This directory holds Scala source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.\n\n")
+	fmt.Fprintf(&buf, "Compiled programs: %d/%d\n\n", compiled, total)
+	buf.WriteString("Checklist:\n")
+	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteString("\n")
+	_ = os.WriteFile(filepath.Join(outDir, "README.md"), buf.Bytes(), 0o644)
 }
