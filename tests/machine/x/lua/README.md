@@ -3,13 +3,14 @@
 This directory stores Lua code generated from the Mochi programs in `tests/vm/valid`.
 Each program was compiled and executed using the Lua compiler. Successful runs produce a `.out` file, while failures have a `.error` file.
 
-Compiled programs: 100/100
+Compiled programs: 101/101
 
 Checklist:
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
 - [x] binary_precedence
+- [x] bigint_ops
 - [x] bool_chain
 - [x] break_continue
 - [x] cast_string_to_int

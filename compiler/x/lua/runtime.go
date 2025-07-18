@@ -75,20 +75,6 @@ const (
 		"    end\n" +
 		"end\n"
 
-	helperEq = "function __eq(a, b)\n" +
-		"    if type(a) ~= type(b) then return false end\n" +
-		"    if type(a) == 'number' then return math.abs(a-b) < 1e-9 end\n" +
-		"    if type(a) ~= 'table' then return a == b end\n" +
-		"    if (a[1] ~= nil or #a > 0) and (b[1] ~= nil or #b > 0) then\n" +
-		"        if #a ~= #b then return false end\n" +
-		"        for i = 1, #a do if not __eq(a[i], b[i]) then return false end end\n" +
-		"        return true\n" +
-		"    end\n" +
-		"    for k, v in pairs(a) do if not __eq(v, b[k]) then return false end end\n" +
-		"    for k, _ in pairs(b) do if a[k] == nil then return false end end\n" +
-		"    return true\n" +
-		"end\n"
-
 	helperContains = "function __contains(container, item)\n" +
 		"    if type(container) == 'table' then\n" +
 		"        if container[1] ~= nil or #container > 0 then\n" +
@@ -356,27 +342,6 @@ const (
 		"        if t == 'boolean' then return (v and '1' or '0') end\n" +
 		"        return tostring(v)\n" +
 		"    end\n" +
-		"end\n"
-
-	helperPrint = "function __print(...)\n" +
-		"    local n = select('#', ...)\n" +
-		"    if n == 1 then\n" +
-		"        local v = ...\n" +
-		"        if type(v) == 'string' then\n" +
-		"            print(v)\n" +
-		"            return\n" +
-		"        elseif type(v) == 'table' and (v[1] ~= nil or #v > 0) then\n" +
-		"            local parts = {}\n" +
-		"            for i=1,#v do parts[#parts+1] = __str(v[i]) end\n" +
-		"            print(table.concat(parts, ' '))\n" +
-		"            return\n" +
-		"        end\n" +
-		"    end\n" +
-		"    local parts = {}\n" +
-		"    for i=1,n do parts[#parts+1] = __str(select(i, ...)) end\n" +
-		"    local out = table.concat(parts, ' ')\n" +
-		"    out = string.gsub(out, ' +$', '')\n" +
-		"    print(out)\n" +
 		"end\n"
 
 	helperEval = "function __eval(code)\n" +
@@ -914,7 +879,6 @@ var helperMap = map[string]string{
 	"iter":           helperIter,
 	"div":            helperDiv,
 	"add":            helperAdd,
-	"eq":             helperEq,
 	"contains":       helperContains,
 	"starts_with":    helperStartsWith,
 	"input":          helperInput,
@@ -930,7 +894,6 @@ var helperMap = map[string]string{
 	"values":         helperValues,
 	"reduce":         helperReduce,
 	"json":           helperJson,
-	"print":          helperPrint,
 	"str":            helperStr,
 	"eval":           helperEval,
 	"index":          helperIndex,
