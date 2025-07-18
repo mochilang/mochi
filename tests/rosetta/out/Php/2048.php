@@ -28,24 +28,24 @@ function spawnTile($b) {
         }
         $y = $y + 1;
     }
-    if (count($empty) == 0) {
+    if (_len($empty) == 0) {
         return ["board" => $b, "full" => true];
     }
-    $idx = $now() % count($empty);
+    $idx = time() % _len($empty);
     $cell = $empty[$idx];
     $val = 4;
-    if ($now() % 10 < 9) {
+    if (time() % 10 < 9) {
         $val = 2;
     }
     $b[$cell[1]][$cell[0]] = $val;
     return [
     "board" => $b,
-    "full" => count($empty) == 1
+    "full" => _len($empty) == 1
 ];
 }
 function pad($n) {
     $s = strval($n);
-    $pad = 4 - count($s);
+    $pad = 4 - _len($s);
     $i = 0;
     $out = "";
     while ($i < $pad) {
@@ -55,10 +55,10 @@ function pad($n) {
     return $out + $s;
 }
 function draw($b, $score) {
-    _print("Score: " . strval($score));
+    echo "Score: " . strval($score), PHP_EOL;
     $y = 0;
     while ($y < $SIZE) {
-        _print("+----+----+----+----+");
+        echo "+----+----+----+----+", PHP_EOL;
         $line = "|";
         $x = 0;
         while ($x < $SIZE) {
@@ -70,11 +70,11 @@ function draw($b, $score) {
             }
             $x = $x + 1;
         }
-        _print($line);
+        var_dump($line);
         $y = $y + 1;
     }
-    _print("+----+----+----+----+");
-    _print("W=Up S=Down A=Left D=Right Q=Quit");
+    echo "+----+----+----+----+", PHP_EOL;
+    echo "W=Up S=Down A=Left D=Right Q=Quit", PHP_EOL;
 }
 function reverseRow($r) {
     $out = [];
@@ -97,8 +97,8 @@ function slideLeft($row) {
     $res = [];
     $gain = 0;
     $i = 0;
-    while ($i < count($xs)) {
-        if ($i + 1 < count($xs) && $xs[$i] == $xs[$i + 1]) {
+    while ($i < _len($xs)) {
+        if ($i + 1 < _len($xs) && $xs[$i] == $xs[$i + 1]) {
             $v = $xs[$i] * 2;
             $gain = $gain + $v;
             $res = array_merge($res, [$v]);
@@ -108,7 +108,7 @@ function slideLeft($row) {
             $i = $i + 1;
         }
     }
-    while (count($res) < $SIZE) {
+    while (_len($res) < $SIZE) {
         $res = array_merge($res, [0]);
     }
     return ["row" => $res, "gain" => $gain];
@@ -270,8 +270,8 @@ $full = $r["full"];
 $score = 0;
 draw($board, $score);
 while (true) {
-    _print("Move: ");
-    $cmd = $input();
+    echo "Move: ", PHP_EOL;
+    $cmd = trim(fgets(STDIN));
     $moved = false;
     if ($cmd == "a" || $cmd == "A") {
         $m = moveLeft($board, $score);
@@ -306,47 +306,33 @@ while (true) {
         $full = $r2["full"];
         if ($full && (!hasMoves($board))) {
             draw($board, $score);
-            _print("Game Over");
+            echo "Game Over", PHP_EOL;
             break;
         }
     }
     draw($board, $score);
     if (has2048($board)) {
-        _print("You win!");
+        echo "You win!", PHP_EOL;
         break;
     }
     if (!hasMoves($board)) {
-        _print("Game Over");
+        echo "Game Over", PHP_EOL;
         break;
     }
 }
-function _print(...$args) {
-    $first = true;
-    foreach ($args as $a) {
-        if (!$first) echo ' ';
-        $first = false;
-        if (is_array($a)) {
-            if (array_is_list($a)) {
-                if ($a && is_array($a[0])) {
-                    $parts = [];
-                    foreach ($a as $sub) {
-                        if (is_array($sub)) {
-                            $parts[] = '[' . implode(' ', $sub) . ']';
-                        } else {
-                            $parts[] = strval($sub);
-                        }
-                    }
-                    echo implode(' ', $parts);
-                } else {
-                    echo '[' . implode(' ', array_map('strval', $a)) . ']';
-                }
-            } else {
-                echo json_encode($a);
-            }
-        } else {
-            echo strval($a);
-        }
+function _len($v) {
+    if (is_array($v) && array_key_exists('items', $v)) {
+        return count($v['items']);
     }
-    echo PHP_EOL;
+    if (is_object($v) && property_exists($v, 'items')) {
+        return count($v->items);
+    }
+    if (is_array($v)) {
+        return count($v);
+    }
+    if (is_string($v)) {
+        return strlen($v);
+    }
+    return 0;
 }
 ?>

@@ -169,10 +169,27 @@ var helperAvg = `function _avg($v) {
     return $sum / count($v);
 }`
 
+var helperLen = `function _len($v) {
+    if (is_array($v) && array_key_exists('items', $v)) {
+        return count($v['items']);
+    }
+    if (is_object($v) && property_exists($v, 'items')) {
+        return count($v->items);
+    }
+    if (is_array($v)) {
+        return count($v);
+    }
+    if (is_string($v)) {
+        return strlen($v);
+    }
+    return 0;
+}`
+
 var helperMap = map[string]string{
 	"_load":     helperLoad,
 	"_save":     helperSave,
 	"_query":    helperQuery,
 	"_group_by": helperGroupBy,
 	"_avg":      helperAvg,
+	"_len":      helperLen,
 }

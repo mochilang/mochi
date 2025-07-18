@@ -899,11 +899,16 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("len expects 1 arg")
 		}
-		if types.IsStringType(types.TypeOfExprBasic(call.Args[0], c.env)) {
+		typ := types.TypeOfExprBasic(call.Args[0], c.env)
+		if types.IsStringType(typ) {
 			return fmt.Sprintf("strlen(%s)", args[0]), nil
 		}
 		if name, ok := c.isGroupVarExpr(call.Args[0]); ok {
 			return fmt.Sprintf("count($%s['items'])", name), nil
+		}
+		if _, ok := typ.(types.AnyType); ok {
+			c.use("_len")
+			return fmt.Sprintf("_len(%s)", args[0]), nil
 		}
 		return fmt.Sprintf("count(%s)", args[0]), nil
 	case "count":
