@@ -222,6 +222,17 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("")
 	}
 
+	// Global variable declarations
+	for _, s := range prog.Statements {
+		if s.Let != nil || s.Var != nil {
+			if s.Fun == nil && s.Test == nil && s.Type == nil {
+				if err := c.compileGlobalVar(s); err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+
 	// Function declarations
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
@@ -246,7 +257,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("static void Main() {")
 	c.indent++
 	for _, s := range prog.Statements {
-		if s.Fun != nil || s.Test != nil || s.Type != nil {
+		if s.Fun != nil || s.Test != nil || s.Type != nil || s.Let != nil || s.Var != nil {
 			continue
 		}
 		if err := c.compileStmt(s); err != nil {
@@ -1162,25 +1173,39 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 		}
 		cond = stripParens(cond)
 		c.writeln(prefix + "if (" + cond + ") {")
+		origVars := c.varTypes
+		c.varTypes = make(map[string]string)
+		for k, v := range origVars {
+			c.varTypes[k] = v
+		}
 		c.indent++
 		for _, st := range s.Then {
 			if err := c.compileStmt(st); err != nil {
+				c.varTypes = origVars
 				return err
 			}
 		}
 		c.indent--
+		c.varTypes = origVars
 		if s.ElseIf != nil {
 			return rec(s.ElseIf, "} else ")
 		}
 		if len(s.Else) > 0 {
 			c.writeln("} else {")
+			origVars := c.varTypes
+			c.varTypes = make(map[string]string)
+			for k, v := range origVars {
+				c.varTypes[k] = v
+			}
 			c.indent++
 			for _, st := range s.Else {
 				if err := c.compileStmt(st); err != nil {
+					c.varTypes = origVars
 					return err
 				}
 			}
 			c.indent--
+			c.varTypes = origVars
 			c.writeln("}")
 		} else {
 			c.writeln("}")
@@ -1197,14 +1222,101 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 	}
 	cond = stripParens(cond)
 	c.writeln("while (" + cond + ") {")
+	origVars := c.varTypes
+	c.varTypes = make(map[string]string)
+	for k, v := range origVars {
+		c.varTypes[k] = v
+	}
 	c.indent++
 	for _, s := range w.Body {
 		if err := c.compileStmt(s); err != nil {
+			c.varTypes = origVars
 			return err
 		}
 	}
 	c.indent--
+	c.varTypes = origVars
 	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileGlobalVar(s *parser.Statement) error {
+	switch {
+	case s.Let != nil:
+		name := sanitizeName(s.Let.Name)
+		var typ string
+		var expr string
+		var static types.Type = types.AnyType{}
+		if s.Let.Value != nil {
+			var err error
+			if s.Let.Type != nil {
+				c.structHint = singular(name)
+				expr, err = c.compileExpr(s.Let.Value)
+				c.structHint = ""
+				if err != nil {
+					return err
+				}
+				typ = csType(s.Let.Type)
+				static = c.resolveTypeRef(s.Let.Type)
+			} else {
+				expr, err = c.compileExpr(s.Let.Value)
+				if err != nil {
+					return err
+				}
+				static = c.inferExprType(s.Let.Value)
+				typ = csTypeOf(static)
+			}
+		} else if s.Let.Type != nil {
+			typ = csType(s.Let.Type)
+			static = c.resolveTypeRef(s.Let.Type)
+			expr = "default"
+		} else {
+			typ = "dynamic"
+			expr = "null"
+		}
+		c.env.SetVar(s.Let.Name, static, false)
+		if typ == "" {
+			typ = "dynamic"
+		}
+		c.writeln(fmt.Sprintf("static %s %s = %s;", typ, name, expr))
+	case s.Var != nil:
+		name := sanitizeName(s.Var.Name)
+		var typ string
+		var expr string
+		var static types.Type = types.AnyType{}
+		if s.Var.Value != nil {
+			var err error
+			if s.Var.Type != nil {
+				c.structHint = singular(name)
+				expr, err = c.compileExpr(s.Var.Value)
+				c.structHint = ""
+				if err != nil {
+					return err
+				}
+				typ = csType(s.Var.Type)
+				static = c.resolveTypeRef(s.Var.Type)
+			} else {
+				expr, err = c.compileExpr(s.Var.Value)
+				if err != nil {
+					return err
+				}
+				static = c.inferExprType(s.Var.Value)
+				typ = csTypeOf(static)
+			}
+		} else if s.Var.Type != nil {
+			typ = csType(s.Var.Type)
+			static = c.resolveTypeRef(s.Var.Type)
+			expr = "default"
+		} else {
+			typ = "dynamic"
+			expr = "null"
+		}
+		c.env.SetVar(s.Var.Name, static, true)
+		if typ == "" {
+			typ = "dynamic"
+		}
+		c.writeln(fmt.Sprintf("static %s %s = %s;", typ, name, expr))
+	}
 	return nil
 }
 

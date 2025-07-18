@@ -184,6 +184,12 @@ located under `tests/rosetta/out/Clojure`. Six programs compile, four of which
 run successfully. Two programs (`15-puzzle-game` and `15-puzzle-solver`) fail at
 runtime and have corresponding `.error` files.
 
+### C# compiler status
+
+The C# backend now supports global variable declarations and proper scoping of
+variables within conditional and loop blocks. The first set of Rosetta
+programs compile and run successfully with no remaining `.error` files.
+
 ### Failing programs
 
  - bulls-and-cows
