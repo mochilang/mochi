@@ -1,6 +1,8 @@
 # OCaml Compiler Tasks
 
 ## Recent Enhancements
+- [2025-07-18 00:00] Added partial application type inference and corrected
+  nested list indexing to avoid unnecessary runtime helpers.
 - [2025-07-17 01:36] Fixed detection of string literals in expressions and
   added string containment handling for the `in` operator on strings.
 - [2025-07-20 00:00] Added Rosetta golden tests and compile script.

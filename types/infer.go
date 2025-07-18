@@ -474,6 +474,10 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 			if env != nil {
 				if t, err := env.GetVar(p.Call.Func); err == nil {
 					if ft, ok := t.(FuncType); ok {
+						if len(p.Call.Args) < len(ft.Params) {
+							remain := append([]Type(nil), ft.Params[len(p.Call.Args):]...)
+							return FuncType{Params: remain, Return: ft.Return}
+						}
 						return ft.Return
 					}
 				}

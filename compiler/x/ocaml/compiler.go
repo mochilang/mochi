@@ -1807,7 +1807,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				} else if c.isMapPrimary(p.Target) || isStringExpr(op.Index.Start) {
 					val = fmt.Sprintf("Obj.obj (List.assoc %s (%s))", idx, val)
 				} else {
-					val = fmt.Sprintf("List.nth %s %s", val, idx)
+					val = fmt.Sprintf("List.nth (%s) %s", val, idx)
 				}
 			}
 		case op.Cast != nil:
