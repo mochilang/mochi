@@ -924,6 +924,11 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 		}
 	case s.For != nil:
 		name := sanitizeName(s.For.Name)
+		used := usesVarInStmts(s.For.Name, s.For.Body)
+		iterName := name
+		if !used {
+			iterName = "_"
+		}
 		if startExpr, endExpr, stepExpr, ok := c.rangeArgs(s.For.Source); ok {
 			start := "0"
 			if startExpr != nil {
@@ -938,7 +943,7 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 				return err
 			}
 			if stepExpr == nil {
-				c.writeln(fmt.Sprintf("for (%s .. %s) |%s| {", start, end, name))
+				c.writeln(fmt.Sprintf("for (%s .. %s) |%s| {", start, end, iterName))
 				if c.env != nil {
 					c.env.SetVar(s.For.Name, types.IntType{}, true)
 				}
@@ -978,7 +983,9 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 				oldRange := c.pushRangeVars()
 				c.rangeVars[name] = true
 				c.indent++
-				c.writeln(fmt.Sprintf("const %s = %s;", name, iter))
+				if used {
+					c.writeln(fmt.Sprintf("const %s = %s;", name, iter))
+				}
 				for _, st := range s.For.Body {
 					if err := c.compileStmt(st, inFun); err != nil {
 						c.popRangeVars(oldRange)
@@ -1008,7 +1015,7 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 			if err != nil {
 				return err
 			}
-			c.writeln(fmt.Sprintf("for (%s .. %s) |%s| {", start, end, name))
+			c.writeln(fmt.Sprintf("for (%s .. %s) |%s| {", start, end, iterName))
 			if c.env != nil {
 				c.env.SetVar(s.For.Name, types.IntType{}, true)
 			}
@@ -1042,9 +1049,11 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 				}
 			}
 			c.indent++
-			c.writeln(fmt.Sprintf("const %s = k_ptr.*;", name))
+			if used {
+				c.writeln(fmt.Sprintf("const %s = k_ptr.*;", name))
+			}
 		} else {
-			c.writeln(fmt.Sprintf("for (%s) |%s| {", start, name))
+			c.writeln(fmt.Sprintf("for (%s) |%s| {", start, iterName))
 			if lt, ok := c.inferExprType(s.For.Source).(types.ListType); ok {
 				if c.env != nil {
 					c.env.SetVar(s.For.Name, lt.Elem, true)

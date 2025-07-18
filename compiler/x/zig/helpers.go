@@ -814,3 +814,24 @@ func scanPrimary(p *parser.Primary, vars map[string]struct{}) {
 		}
 	}
 }
+
+// stmtUsesVar reports whether the given variable name is referenced within the
+// statement. This is used to avoid creating unused loop variables when
+// generating Zig code.
+func stmtUsesVar(name string, s *parser.Statement) bool {
+	vars := map[string]struct{}{}
+	scanStmt(s, vars)
+	_, ok := vars[name]
+	return ok
+}
+
+// usesVarInStmts reports whether any statement in the slice references the
+// provided variable name.
+func usesVarInStmts(name string, stmts []*parser.Statement) bool {
+	for _, st := range stmts {
+		if stmtUsesVar(name, st) {
+			return true
+		}
+	}
+	return false
+}

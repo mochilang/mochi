@@ -1,4 +1,4 @@
-# Rosetta Zig Output (10/238 compiled and run)
+# Rosetta Zig Output (10/239 compiled and run)
 
 This directory holds Zig source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. A checkbox indicates the program compiled and executed successfully. Failing programs have a `.error` file.
 
@@ -210,6 +210,7 @@ This directory holds Zig source code generated from the real Mochi programs in `
 - [ ] circular-primes
 - [ ] cistercian-numerals
 - [ ] compiler-virtual-machine-interpreter
+- [ ] composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k
 - [ ] concurrent-computing-1
 - [ ] concurrent-computing-2
 - [ ] concurrent-computing-3
