@@ -1,4 +1,0 @@
-run: exit status 254
-/tmp/ackermann-function-2.dart:6:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    result = (result as num) * base;
-                             ^
