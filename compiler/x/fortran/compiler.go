@@ -21,19 +21,20 @@ import (
 // Only basic constructs used by the simpler test programs are supported.
 // Unsupported syntax results in a compilation error.
 type Compiler struct {
-	buf          bytes.Buffer
-	decl         bytes.Buffer
-	indent       int
-	functions    []*parser.FunStmt
-	currentFunc  string
-	env          *types.Env
-	declared     map[string]bool
-	tmpIndex     int
-	helpers      map[string]bool
-	autoImports  map[string]string
-	structNames  map[string]string
-	constLists   map[string][]int
-	constStrings map[string]string
+	buf           bytes.Buffer
+	decl          bytes.Buffer
+	indent        int
+	functions     []*parser.FunStmt
+	currentFunc   string
+	env           *types.Env
+	declared      map[string]bool
+	tmpIndex      int
+	helpers       map[string]bool
+	autoImports   map[string]string
+	structNames   map[string]string
+	constLists    map[string][]int
+	constStrings  map[string]string
+	constStrLists map[string][]string
 }
 
 func (c *Compiler) structName(name string) string {
@@ -67,12 +68,13 @@ func (c *Compiler) structName(name string) string {
 // New creates a new compiler instance.
 func New(env *types.Env) *Compiler {
 	return &Compiler{
-		env:          env,
-		declared:     make(map[string]bool),
-		helpers:      make(map[string]bool),
-		autoImports:  make(map[string]string),
-		constLists:   make(map[string][]int),
-		constStrings: make(map[string]string),
+		env:           env,
+		declared:      make(map[string]bool),
+		helpers:       make(map[string]bool),
+		autoImports:   make(map[string]string),
+		constLists:    make(map[string][]int),
+		constStrings:  make(map[string]string),
+		constStrLists: make(map[string][]string),
 	}
 }
 
@@ -86,6 +88,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.declared = make(map[string]bool)
 		c.constLists = make(map[string][]int)
 		c.constStrings = make(map[string]string)
+		c.constStrLists = make(map[string][]string)
 		c.tmpIndex = 0
 		c.writeln("program q1")
 		c.indent++
@@ -132,6 +135,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.declared = make(map[string]bool)
 		c.constLists = make(map[string][]int)
 		c.constStrings = make(map[string]string)
+		c.constStrLists = make(map[string][]string)
 		c.tmpIndex = 0
 		c.writeln("program q2")
 		c.indent++
@@ -192,6 +196,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.declared = make(map[string]bool)
 	c.constLists = make(map[string][]int)
 	c.constStrings = make(map[string]string)
+	c.constStrLists = make(map[string][]string)
 	c.tmpIndex = 0
 	name := "main"
 	if prog.Package != "" {
@@ -400,6 +405,11 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 		} else {
 			delete(c.constLists, l.Name)
 		}
+		if strs, ok := c.constStringListExpr(l.Value); ok {
+			c.constStrLists[l.Name] = append([]string(nil), strs...)
+		} else {
+			delete(c.constStrLists, l.Name)
+		}
 		if s, ok := c.constStringExpr(l.Value); ok {
 			c.constStrings[l.Name] = s
 		} else {
@@ -520,6 +530,11 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 			c.constLists[a.Name] = append([]int(nil), ints...)
 		} else {
 			delete(c.constLists, a.Name)
+		}
+		if strs, ok := c.constStringListExpr(a.Value); ok {
+			c.constStrLists[a.Name] = append([]string(nil), strs...)
+		} else {
+			delete(c.constStrLists, a.Name)
 		}
 		if s, ok := c.constStringExpr(a.Value); ok {
 			c.constStrings[a.Name] = s
@@ -893,6 +908,23 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 						continue
 					}
 				}
+				if strs, ok := c.constStringListFromPostfix(op.Right); ok {
+					if sv := literalString(b.Left); sv != nil {
+						found := false
+						for _, v := range strs {
+							if v == *sv {
+								found = true
+								break
+							}
+						}
+						if found {
+							res = ".true."
+						} else {
+							res = ".false."
+						}
+						continue
+					}
+				}
 				res = fmt.Sprintf("any(%s == %s)", r, res)
 			}
 			continue
@@ -901,6 +933,12 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				if la, ok := c.constIntListFromUnary(b.Left); ok {
 					if lb, ok2 := c.constIntListFromPostfix(op.Right); ok2 {
 						res = formatIntList(unionInts(la, lb))
+						continue
+					}
+				}
+				if la, ok := c.constStringListFromUnary(b.Left); ok {
+					if lb, ok2 := c.constStringListFromPostfix(op.Right); ok2 {
+						res = formatStringList(unionStrings(la, lb))
 						continue
 					}
 				}
@@ -916,6 +954,12 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 						continue
 					}
 				}
+				if la, ok := c.constStringListFromUnary(b.Left); ok {
+					if lb, ok2 := c.constStringListFromPostfix(op.Right); ok2 {
+						res = formatStringList(append(la, lb...))
+						continue
+					}
+				}
 			}
 			c.use("_union_all")
 			res = fmt.Sprintf("_union_all(%s, %s)", res, r)
@@ -928,6 +972,12 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 						continue
 					}
 				}
+				if la, ok := c.constStringListFromUnary(b.Left); ok {
+					if lb, ok2 := c.constStringListFromPostfix(op.Right); ok2 {
+						res = formatStringList(exceptStrings(la, lb))
+						continue
+					}
+				}
 			}
 			c.use("_except")
 			res = fmt.Sprintf("_except(%s, %s)", res, r)
@@ -937,6 +987,12 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				if la, ok := c.constIntListFromUnary(b.Left); ok {
 					if lb, ok2 := c.constIntListFromPostfix(op.Right); ok2 {
 						res = formatIntList(intersectInts(la, lb))
+						continue
+					}
+				}
+				if la, ok := c.constStringListFromUnary(b.Left); ok {
+					if lb, ok2 := c.constStringListFromPostfix(op.Right); ok2 {
+						res = formatStringList(intersectStrings(la, lb))
 						continue
 					}
 				}
@@ -1325,6 +1381,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 				out := append(ints, *iv)
 				return formatIntList(out), nil
 			}
+		} else if strs, ok := c.constStringListExpr(call.Args[0]); ok {
+			if sv := literalStringExpr(call.Args[1]); sv != nil {
+				out := append(strs, *sv)
+				return formatStringList(out), nil
+			}
 		}
 		arr := args[0]
 		elem := args[1]
@@ -1614,6 +1675,21 @@ func intList(l *parser.ListLiteral) ([]int, bool) {
 	return vals, true
 }
 
+func stringList(l *parser.ListLiteral) ([]string, bool) {
+	vals := make([]string, len(l.Elems))
+	for i, e := range l.Elems {
+		if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+			return nil, false
+		}
+		u := e.Binary.Left
+		if len(u.Ops) != 0 || u.Value == nil || u.Value.Target == nil || u.Value.Target.Lit == nil || u.Value.Target.Lit.Str == nil {
+			return nil, false
+		}
+		vals[i] = *u.Value.Target.Lit.Str
+	}
+	return vals, true
+}
+
 func (c *Compiler) constIntListExpr(e *parser.Expr) ([]int, bool) {
 	if l := listLiteral(e); l != nil {
 		return intList(l)
@@ -1621,6 +1697,17 @@ func (c *Compiler) constIntListExpr(e *parser.Expr) ([]int, bool) {
 	if name := identName(e); name != "" {
 		ints, ok := c.constLists[name]
 		return ints, ok
+	}
+	return nil, false
+}
+
+func (c *Compiler) constStringListExpr(e *parser.Expr) ([]string, bool) {
+	if l := listLiteral(e); l != nil {
+		return stringList(l)
+	}
+	if name := identName(e); name != "" {
+		strs, ok := c.constStrLists[name]
+		return strs, ok
 	}
 	return nil, false
 }
@@ -1647,6 +1734,9 @@ func (c *Compiler) constListLenExpr(e *parser.Expr) (int, bool) {
 	if ints, ok := c.constIntListExpr(e); ok {
 		return len(ints), true
 	}
+	if strs, ok := c.constStringListExpr(e); ok {
+		return len(strs), true
+	}
 	if l := listLiteral(e); l != nil {
 		return len(l.Elems), true
 	}
@@ -1660,6 +1750,13 @@ func (c *Compiler) constIntListFromUnary(u *parser.Unary) ([]int, bool) {
 	return c.constIntListFromPostfix(u.Value)
 }
 
+func (c *Compiler) constStringListFromUnary(u *parser.Unary) ([]string, bool) {
+	if u == nil || len(u.Ops) != 0 || u.Value == nil {
+		return nil, false
+	}
+	return c.constStringListFromPostfix(u.Value)
+}
+
 func (c *Compiler) constIntListFromPostfix(pf *parser.PostfixExpr) ([]int, bool) {
 	if pf == nil || len(pf.Ops) != 0 || pf.Target == nil {
 		return nil, false
@@ -1670,6 +1767,20 @@ func (c *Compiler) constIntListFromPostfix(pf *parser.PostfixExpr) ([]int, bool)
 	if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 0 {
 		ints, ok := c.constLists[pf.Target.Selector.Root]
 		return ints, ok
+	}
+	return nil, false
+}
+
+func (c *Compiler) constStringListFromPostfix(pf *parser.PostfixExpr) ([]string, bool) {
+	if pf == nil || len(pf.Ops) != 0 || pf.Target == nil {
+		return nil, false
+	}
+	if pf.Target.List != nil {
+		return stringList(pf.Target.List)
+	}
+	if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 0 {
+		strs, ok := c.constStrLists[pf.Target.Selector.Root]
+		return strs, ok
 	}
 	return nil, false
 }
@@ -1703,9 +1814,35 @@ func formatIntList(list []int) string {
 	return fmt.Sprintf("(/%s/)", strings.Join(elems, ","))
 }
 
+func formatStringList(list []string) string {
+	elems := make([]string, len(list))
+	for i, v := range list {
+		elems[i] = fmt.Sprintf("'%s'", strings.ReplaceAll(v, "'", "''"))
+	}
+	return fmt.Sprintf("(/%s/)", strings.Join(elems, ","))
+}
+
 func unionInts(a, b []int) []int {
 	seen := map[int]bool{}
 	res := make([]int, 0, len(a)+len(b))
+	for _, v := range a {
+		if !seen[v] {
+			seen[v] = true
+			res = append(res, v)
+		}
+	}
+	for _, v := range b {
+		if !seen[v] {
+			seen[v] = true
+			res = append(res, v)
+		}
+	}
+	return res
+}
+
+func unionStrings(a, b []string) []string {
+	seen := map[string]bool{}
+	res := make([]string, 0, len(a)+len(b))
 	for _, v := range a {
 		if !seen[v] {
 			seen[v] = true
@@ -1735,6 +1872,20 @@ func exceptInts(a, b []int) []int {
 	return res
 }
 
+func exceptStrings(a, b []string) []string {
+	drop := map[string]bool{}
+	for _, v := range b {
+		drop[v] = true
+	}
+	res := make([]string, 0, len(a))
+	for _, v := range a {
+		if !drop[v] {
+			res = append(res, v)
+		}
+	}
+	return res
+}
+
 func intersectInts(a, b []int) []int {
 	setb := map[int]bool{}
 	for _, v := range b {
@@ -1742,6 +1893,22 @@ func intersectInts(a, b []int) []int {
 	}
 	res := []int{}
 	added := map[int]bool{}
+	for _, v := range a {
+		if setb[v] && !added[v] {
+			added[v] = true
+			res = append(res, v)
+		}
+	}
+	return res
+}
+
+func intersectStrings(a, b []string) []string {
+	setb := map[string]bool{}
+	for _, v := range b {
+		setb[v] = true
+	}
+	res := []string{}
+	added := map[string]bool{}
 	for _, v := range a {
 		if setb[v] && !added[v] {
 			added[v] = true
