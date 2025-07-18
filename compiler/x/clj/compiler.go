@@ -1418,6 +1418,14 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			case "input":
 				c.use("_input")
 				expr = "(_input)"
+			case "int":
+				if len(args) == 1 {
+					if c.isStringExpr(args[0]) {
+						expr = fmt.Sprintf("(Integer/parseInt %s)", args[0])
+					} else {
+						expr = fmt.Sprintf("(int %s)", args[0])
+					}
+				}
 			case "json":
 				if len(args) == 1 {
 					c.use("_json")
@@ -1697,6 +1705,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if len(args) == 0 {
 				c.use("_input")
 				return "(_input)", nil
+			}
+		case "int":
+			if len(args) == 1 {
+				if c.isStringExpr(args[0]) {
+					return "(Integer/parseInt " + args[0] + ")", nil
+				}
+				return "(int " + args[0] + ")", nil
 			}
 		case "now":
 			if len(args) == 0 {
@@ -2829,6 +2844,9 @@ func (c *Compiler) isStringExpr(expr string) bool {
 		}
 	}
 	if strings.HasPrefix(expr, "(:") {
+		return true
+	}
+	if strings.HasPrefix(expr, "(_input") {
 		return true
 	}
 	if strings.HasPrefix(expr, "(subs ") {
