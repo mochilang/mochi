@@ -1,0 +1,36 @@
+// Mochi translation of Go "Date-format" example
+
+fun pad2(n: int): string {
+  if n < 10 { return "0" + str(n) }
+  return str(n)
+}
+
+fun weekdayName(z: int): string {
+  let names = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+  return names[(z + 4) % 7]
+}
+
+fun main() {
+  let ts = (now() / 1000000000) as int
+  var days = (ts / 86400) as int
+  var z = days + 719468
+  var era = (z / 146097) as int
+  var doe = z - era * 146097
+  var yoe = (doe - doe/1460 + doe/36524 - doe/146096) / 365 as int
+  var y = yoe + era * 400
+  var doy = doe - (365 * yoe + yoe/4 - yoe/100)
+  var mp = (5 * doy + 2) / 153 as int
+  var d = (doy - ((153 * mp + 2) / 5 as int) + 1) as int
+  var m = (mp + 3) as int
+  if m > 12 {
+    y = y + 1
+    m = m - 12
+  }
+  let iso = str(y) + "-" + pad2(m) + "-" + pad2(d)
+  print(iso)
+  let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+  let line = weekdayName(days) + ", " + months[m-1] + " " + str(d) + ", " + str(y)
+  print(line)
+}
+
+main()
