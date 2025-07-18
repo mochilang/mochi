@@ -198,16 +198,19 @@ func equalTypes(a, b types.Type) bool {
 	if _, ok := b.(types.AnyType); ok {
 		return true
 	}
-	if isInt64(a) && (isInt64(b) || isInt(b)) {
-		return true
-	}
-	if isInt64(b) && (isInt64(a) || isInt(a)) {
-		return true
-	}
-	if isInt(a) && isInt(b) {
-		return true
-	}
-	return reflect.DeepEqual(a, b)
+       if isInt64(a) && (isInt64(b) || isInt(b)) {
+               return true
+       }
+       if isInt64(b) && (isInt64(a) || isInt(a)) {
+               return true
+       }
+       if isInt(a) && isInt(b) {
+               return true
+       }
+       if isBigInt(a) && isBigInt(b) {
+               return true
+       }
+       return reflect.DeepEqual(a, b)
 }
 
 func isInt64(t types.Type) bool {
@@ -223,9 +226,15 @@ func isInt(t types.Type) bool {
 }
 
 func isFloat(t types.Type) bool {
-	t = underlyingType(t)
-	_, ok := t.(types.FloatType)
-	return ok
+        t = underlyingType(t)
+        _, ok := t.(types.FloatType)
+        return ok
+}
+
+func isBigInt(t types.Type) bool {
+       t = underlyingType(t)
+       _, ok := t.(types.BigIntType)
+       return ok
 }
 
 func isString(t types.Type) bool {
@@ -258,9 +267,10 @@ func isStruct(t types.Type) bool {
 
 func isPrimitive(t types.Type) bool {
 	switch tt := t.(type) {
-	case types.IntType, types.Int64Type, types.FloatType,
-		types.StringType, types.BoolType:
-		return true
+       case types.IntType, types.Int64Type, types.FloatType,
+               types.BigIntType,
+               types.StringType, types.BoolType:
+               return true
 	case types.OptionType:
 		return isPrimitive(tt.Elem)
 	default:
@@ -270,8 +280,10 @@ func isPrimitive(t types.Type) bool {
 
 func tsType(t types.Type) string {
 	switch tt := t.(type) {
-	case types.IntType, types.Int64Type, types.FloatType:
-		return "number"
+       case types.IntType, types.Int64Type, types.FloatType:
+               return "number"
+       case types.BigIntType:
+               return "bigint"
 	case types.StringType:
 		return "string"
 	case types.BoolType:
@@ -379,8 +391,10 @@ func fieldType(t types.Type, field string) types.Type {
 func tsZeroValue(t types.Type) string {
 	t = underlyingType(t)
 	switch tt := t.(type) {
-	case types.IntType, types.Int64Type, types.FloatType:
-		return "0"
+       case types.IntType, types.Int64Type, types.FloatType:
+               return "0"
+       case types.BigIntType:
+               return "0n"
 	case types.StringType:
 		return "\"\""
 	case types.BoolType:

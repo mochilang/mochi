@@ -2125,15 +2125,25 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return fmt.Sprintf("Math.floor(%s)", args[0]), nil
 		}
 		return "", fmt.Errorf("floor expects 1 arg")
-	case "ceil":
-		if len(args) == 1 {
-			return fmt.Sprintf("Math.ceil(%s)", args[0]), nil
-		}
-		return "", fmt.Errorf("ceil expects 1 arg")
-	case "concat":
-		if len(args) == 0 {
-			return "[]", nil
-		}
+       case "ceil":
+               if len(args) == 1 {
+                       return fmt.Sprintf("Math.ceil(%s)", args[0]), nil
+               }
+               return "", fmt.Errorf("ceil expects 1 arg")
+       case "int":
+               if len(args) == 1 {
+                       return fmt.Sprintf("Number(%s)", args[0]), nil
+               }
+               return "", fmt.Errorf("int expects 1 arg")
+       case "bigint":
+               if len(args) == 1 {
+                       return fmt.Sprintf("BigInt(%s)", args[0]), nil
+               }
+               return "", fmt.Errorf("bigint expects 1 arg")
+       case "concat":
+               if len(args) == 0 {
+                       return "[]", nil
+               }
 		return fmt.Sprintf("[].concat(%s)", strings.Join(args, ", ")), nil
 	case "substr", "substring":
 		if len(args) == 3 {
@@ -3627,8 +3637,8 @@ func joinEqFields(e *parser.Expr, leftVar, rightVar string) (string, string, boo
 
 func isNumericType(t types.Type) bool {
 	switch tt := t.(type) {
-	case types.IntType, types.Int64Type, types.FloatType:
-		return true
+       case types.IntType, types.Int64Type, types.FloatType, types.BigIntType:
+               return true
 	case types.OptionType:
 		return isNumericType(tt.Elem)
 	case types.UnionType:

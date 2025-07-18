@@ -1,4 +1,4 @@
-# Rosetta TypeScript Output (4/238 compiled and run)
+# Rosetta TypeScript Output (5/239 compiled and run)
 
 This directory holds TypeScript source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -30,7 +30,7 @@ This directory holds TypeScript source code generated from the real Mochi progra
 - [ ] accumulator-factory
 - [ ] achilles-numbers
 - [ ] ackermann-function-2
-- [ ] ackermann-function-3
+- [x] ackermann-function-3
 - [ ] ackermann-function
 - [ ] active-directory-connect
 - [ ] active-directory-search-for-a-user
@@ -210,6 +210,7 @@ This directory holds TypeScript source code generated from the real Mochi progra
 - [ ] circular-primes
 - [ ] cistercian-numerals
 - [ ] compiler-virtual-machine-interpreter
+- [ ] composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k
 - [ ] concurrent-computing-1
 - [ ] concurrent-computing-2
 - [ ] concurrent-computing-3
