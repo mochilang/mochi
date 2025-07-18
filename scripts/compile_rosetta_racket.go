@@ -1,4 +1,4 @@
-//go:build archive
+//go:build archive && slow
 
 package main
 

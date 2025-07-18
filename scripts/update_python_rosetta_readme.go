@@ -13,13 +13,11 @@ import (
 func main() {
 	root := "."
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
-	outDir := filepath.Join(root, "tests", "rosetta", "out", "Go")
-
+	outDir := filepath.Join(root, "tests", "rosetta", "out", "Python")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	total := len(files)
 	compiled := 0
 	var lines []string
-
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		mark := "[ ]"
@@ -31,13 +29,11 @@ func main() {
 		}
 		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
 	}
-
 	var buf bytes.Buffer
-	fmt.Fprintf(&buf, "# Rosetta Go Output (%d/%d compiled and run)\n\n", compiled, total)
-	buf.WriteString("This directory holds Go source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.\n\n")
+	fmt.Fprintf(&buf, "# Rosetta Python Output (%d/%d compiled and run)\n\n", compiled, total)
+	buf.WriteString("This directory holds Python source code generated from the Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected runtime output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.\n\n")
 	buf.WriteString("## Program checklist\n")
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
-
-	os.WriteFile(filepath.Join(outDir, "README.md"), buf.Bytes(), 0644)
+	os.WriteFile(filepath.Join(outDir, "README.md"), buf.Bytes(), 0o644)
 }
