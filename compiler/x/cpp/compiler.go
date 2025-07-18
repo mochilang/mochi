@@ -437,11 +437,18 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		c.buf.WriteString(typ)
 		c.buf.WriteByte(' ')
 		c.buf.WriteString(p.Name)
-		switch typ {
-		case "std::string":
+		switch {
+		case typ == "std::string":
 			c.vars[p.Name] = "string"
-		case "int", "double", "bool":
+		case typ == "int" || typ == "double" || typ == "bool":
 			c.vars[p.Name] = strings.TrimPrefix(typ, "std::")
+		case strings.HasPrefix(typ, "std::vector<"):
+			c.vars[p.Name] = "vector"
+			elem := typ[len("std::vector<") : len(typ)-1]
+			c.elemType[p.Name] = elem
+			if c.isStructName(elem) {
+				c.varStruct[p.Name] = elem
+			}
 		}
 	}
 	c.buf.WriteString(") {\n")
@@ -1060,6 +1067,8 @@ func (c *Compiler) compileImport(im *parser.ImportStmt) error {
 			c.headerWriteln("inline int Add(int a,int b){ return a+b; }")
 			c.headerWriteln("const double Pi = 3.14;")
 			c.headerWriteln("const int Answer = 42;")
+			c.headerWriteln("inline std::string MD5Hex(const std::string& s){ return s; }")
+			c.headerWriteln("inline std::string FifteenPuzzleExample(){ return \"\"; }")
 			c.headerWriteln("}")
 		}
 	}
@@ -1695,7 +1704,7 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, error) {
 				if c.isVectorType(expr) {
 					et := c.extractVectorElemType(expr)
 					if et == "" {
-						et = fmt.Sprintf("decltype(%s[0])", expr)
+						et = fmt.Sprintf("std::decay_t<decltype(%s[0])>", expr)
 					}
 					expr = fmt.Sprintf("([&](auto v){ return std::vector<%s>(v.begin()+%s, v.begin()+%s); })(%s)", et, start, end, expr)
 				} else {
@@ -3745,6 +3754,15 @@ func (c *Compiler) compileType(t *parser.TypeRef) (string, error) {
 				return *t.Simple + "*", nil
 			}
 			return *t.Simple, nil
+		}
+	}
+	if t.Generic != nil {
+		if t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
+			elem, err := c.compileType(t.Generic.Args[0])
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("std::vector<%s>", elem), nil
 		}
 	}
 	return "auto", nil

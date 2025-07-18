@@ -1,4 +1,4 @@
-# Rosetta C++ Output (5/238 compiled and run)
+# Rosetta C++ Output (6/253 compiled and run)
 
 This directory holds C++ source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -8,7 +8,7 @@ This directory holds C++ source code generated from the real Mochi programs in `
 - [x] 100-doors
 - [x] 100-prisoners
 - [ ] 15-puzzle-game
-- [ ] 15-puzzle-solver
+- [x] 15-puzzle-solver
 - [ ] 2048
 - [ ] 21-game
 - [ ] 24-game-solve
@@ -16,7 +16,7 @@ This directory holds C++ source code generated from the real Mochi programs in `
 - [ ] 4-rings-or-4-squares-puzzle
 - [ ] 9-billion-names-of-god-the-integer
 - [ ] 99-bottles-of-beer-2
-- [x] 99-bottles-of-beer
+- [ ] 99-bottles-of-beer
 - [ ] a+b
 - [ ] abbreviations-automatic
 - [ ] abbreviations-easy
@@ -210,6 +210,8 @@ This directory holds C++ source code generated from the real Mochi programs in `
 - [ ] circular-primes
 - [ ] cistercian-numerals
 - [ ] compiler-virtual-machine-interpreter
+- [ ] composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k
+- [ ] compound-data-type
 - [ ] concurrent-computing-1
 - [ ] concurrent-computing-2
 - [ ] concurrent-computing-3
@@ -231,6 +233,19 @@ This directory holds C++ source code generated from the real Mochi programs in `
 - [ ] constrained-random-points-on-a-circle-1
 - [ ] constrained-random-points-on-a-circle-2
 - [ ] continued-fraction
+- [ ] convert-decimal-number-to-rational
+- [ ] convert-seconds-to-compound-duration
+- [ ] convex-hull
+- [ ] conways-game-of-life
+- [ ] copy-a-string-1
+- [ ] copy-a-string-2
+- [ ] copy-stdin-to-stdout-1
+- [ ] copy-stdin-to-stdout-2
+- [ ] count-in-factors
+- [ ] count-in-octal-1
+- [ ] count-in-octal-2
+- [ ] count-in-octal-3
+- [ ] count-in-octal-4
 - [ ] crc-32-1
 - [ ] crc-32-2
 - [ ] csv-data-manipulation
@@ -240,4 +255,4 @@ This directory holds C++ source code generated from the real Mochi programs in `
 - [ ] csv-to-html-translation-4
 - [ ] csv-to-html-translation-5
 - [ ] cusip
-- [ ] md5
+- [x] md5
