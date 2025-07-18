@@ -52,6 +52,15 @@ func sanitizeName(name string) string {
 	return s
 }
 
+// sn wraps sanitizeName and renames the user's main function so
+// the generated Haskell code has a single entry point.
+func (c *Compiler) sn(name string) string {
+	if name == "main" && c.hasUserMain {
+		return "user_main"
+	}
+	return sanitizeName(name)
+}
+
 func simpleStringKey(e *parser.Expr) (string, bool) {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
 		return "", false
