@@ -98,9 +98,31 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	}
 }
 
-func (c *Compiler) compileLet(l *parser.LetStmt) error { return c.compileVarStmt(l.Name, l.Value) }
+func (c *Compiler) compileLet(l *parser.LetStmt) error {
+	if c.env != nil {
+		var typ types.Type = types.AnyType{}
+		if l.Type != nil {
+			typ = resolveTypeRef(l.Type, c.env)
+		} else if l.Value != nil {
+			typ = types.TypeOfExpr(l.Value, c.env)
+		}
+		c.env.SetVar(l.Name, typ, true)
+	}
+	return c.compileVarStmt(l.Name, l.Value)
+}
 
-func (c *Compiler) compileVar(v *parser.VarStmt) error { return c.compileVarStmt(v.Name, v.Value) }
+func (c *Compiler) compileVar(v *parser.VarStmt) error {
+	if c.env != nil {
+		var typ types.Type = types.AnyType{}
+		if v.Type != nil {
+			typ = resolveTypeRef(v.Type, c.env)
+		} else if v.Value != nil {
+			typ = types.TypeOfExpr(v.Value, c.env)
+		}
+		c.env.SetVar(v.Name, typ, true)
+	}
+	return c.compileVarStmt(v.Name, v.Value)
+}
 
 func (c *Compiler) compileVarStmt(name string, val *parser.Expr) error {
 	var value string

@@ -79,7 +79,7 @@ function toBinary($n, $bits) {
     $i = 0;
     while ($i < $bits) {
         $b = strval($val % 2) . $b;
-        $val = $val / 2;
+        $val = intdiv($val, 2);
         $i = $i + 1;
     }
     return $b;
@@ -103,7 +103,7 @@ function ExampleWriter_WriteBits() {
     $bw = WriteBits($bw, 0, 1);
     $bw = WriteBits($bw, 19, 5);
     $bw = CloseWriter($bw);
-    var_dump(bytesToBits($bw['data']));
+    var_dump(bytesToBits($bw->data));
 }
 ExampleWriter_WriteBits();
 ?>

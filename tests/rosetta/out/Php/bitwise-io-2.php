@@ -139,7 +139,7 @@ function toBinary($n, $bits) {
     $i = 0;
     while ($i < $bits) {
         $b = strval($val % 2) . $b;
-        $val = $val / 2;
+        $val = intdiv($val, 2);
         $i = $i + 1;
     }
     return $b;
@@ -163,9 +163,9 @@ function bytesToHex($bs) {
     $i = 0;
     while ($i < count($bs)) {
         $b = $bs[$i];
-        $hi = $b / 16;
+        $hi = intdiv($b, 16);
         $lo = $b % 16;
-        $out = $out + array_slice($digits, $hi, $hi + 1 - $hi) + array_slice($digits, $lo, $lo + 1 - $lo);
+        $out = $out . substr($digits, $hi, $hi + 1 - $hi) . substr($digits, $lo, $lo + 1 - $lo);
         if ($i + 1 < count($bs)) {
             $out = $out . " ";
         }
@@ -185,7 +185,7 @@ function _ord($ch) {
         return 97 + $idx;
     }
     if ($ch >= "0" && $ch <= "9") {
-        return 48 + parseIntStr($ch);
+        return 48 + $parseIntStr($ch);
     }
     if ($ch == " ") {
         return 32;
@@ -199,14 +199,14 @@ function _chr($n) {
     $upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     $lower = "abcdefghijklmnopqrstuvwxyz";
     if ($n >= 65 && $n < 91) {
-        return array_slice($upper, $n - 65, $n - 64 - $n - 65);
+        return substr($upper, $n - 65, $n - 64 - $n - 65);
     }
     if ($n >= 97 && $n < 123) {
-        return array_slice($lower, $n - 97, $n - 96 - $n - 97);
+        return substr($lower, $n - 97, $n - 96 - $n - 97);
     }
     if ($n >= 48 && $n < 58) {
         $digits = "0123456789";
-        return array_slice($digits, $n - 48, $n - 47 - $n - 48);
+        return substr($digits, $n - 48, $n - 47 - $n - 48);
     }
     if ($n == 32) {
         return " ";
@@ -244,14 +244,14 @@ function Example() {
     echo "    original bits: " . bytesToBits($msgBytes), PHP_EOL;
     $bw = NewWriter("MSB");
     $i = 0;
-    while ($i < _len($msgBytes)) {
+    while ($i < count($msgBytes)) {
         $bw = WriteBits($bw, $msgBytes[$i], 7);
         $i = $i + 1;
     }
     $bw = CloseWriter($bw);
-    echo "Written bitstream: " . bytesToBits($bw['data']), PHP_EOL;
-    echo "Written bytes: " . bytesToHex($bw['data']), PHP_EOL;
-    $br = NewReader($bw['data'], "MSB");
+    echo "Written bitstream: " . bytesToBits($bw->data), PHP_EOL;
+    echo "Written bytes: " . bytesToHex($bw->data), PHP_EOL;
+    $br = NewReader($bw->data, "MSB");
     $result = "";
     while (true) {
         $r = ReadBits($br, 7);
@@ -266,19 +266,4 @@ function Example() {
     echo "Read back as \"" . $result . "\"", PHP_EOL;
 }
 Example();
-function _len($v) {
-    if (is_array($v) && array_key_exists('items', $v)) {
-        return count($v['items']);
-    }
-    if (is_object($v) && property_exists($v, 'items')) {
-        return count($v->items);
-    }
-    if (is_array($v)) {
-        return count($v);
-    }
-    if (is_string($v)) {
-        return strlen($v);
-    }
-    return 0;
-}
 ?>
