@@ -1046,10 +1046,13 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 	var globals []string
 	var nonlocals []string
 	if c.env != nil {
+		root := c.env == c.rootEnv
 		for name := range assigns {
 			if !locals[name] {
 				if _, err := c.env.GetVar(name); err == nil {
-					if _, ok := c.env.Types()[name]; ok {
+					if root {
+						globals = append(globals, sanitizeName(name))
+					} else if _, ok := c.env.Types()[name]; ok {
 						nonlocals = append(nonlocals, sanitizeName(name))
 					} else {
 						globals = append(globals, sanitizeName(name))
