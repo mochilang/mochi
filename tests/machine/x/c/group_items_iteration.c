@@ -109,7 +109,7 @@ groupdata_t_t_list_t create_groupdata_t_t_list(int len) {
 }
 
 typedef struct {
-  int tag;
+  char *tag;
   int total;
 } tmp_item_t;
 typedef struct {
@@ -176,7 +176,7 @@ int _mochi_main() {
     tmp = tmp12;
   }
   tmp_item_list_t tmp14 = create_tmp_item_list(tmp.len);
-  int *tmp17 = (int *)malloc(sizeof(int) * tmp.len);
+  char **tmp17 = (char **)malloc(sizeof(char *) * tmp.len);
   int tmp15 = 0;
   for (int tmp16 = 0; tmp16 < tmp.len; tmp16++) {
     tmp_item_t r = tmp.data[tmp16];
@@ -187,8 +187,8 @@ int _mochi_main() {
   tmp14.len = tmp15;
   for (int i20 = 0; i20 < tmp15 - 1; i20++) {
     for (int i21 = i20 + 1; i21 < tmp15; i21++) {
-      if (tmp17[i20] > tmp17[i21]) {
-        int tmp18 = tmp17[i20];
+      if (strcmp(tmp17[i20], tmp17[i21]) > 0) {
+        char *tmp18 = tmp17[i20];
         tmp17[i20] = tmp17[i21];
         tmp17[i21] = tmp18;
         tmp_item_t tmp19 = tmp14.data[i20];
@@ -204,7 +204,7 @@ int _mochi_main() {
       printf(" ");
     printf("map[");
     printf("tag:");
-    printf("%d", it.tag);
+    printf("%s", it.tag);
     printf(" ");
     printf("total:");
     printf("%d", it.total);
