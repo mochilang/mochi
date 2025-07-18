@@ -111,3 +111,7 @@
 
 ## Progress (2025-07-19 14:10)
 - Regenerated Lua machine outputs after removing __print helper. README now lists 101/101 programs.
+
+## Progress (2025-07-19 15:00)
+- Removed `__str` helper entirely by emitting `tostring` calls and list joins.
+- Regenerated VM valid Lua sources and outputs.

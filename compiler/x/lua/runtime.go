@@ -310,39 +310,6 @@ const (
 		"    end\n" +
 		"    print(enc(sort(v)))\n" +
 		"end\n"
-	helperStr = "function __str(v)\n" +
-		"    local t = type(v)\n" +
-		"    if t == 'table' then\n" +
-		"        if v[1] ~= nil or #v > 0 then\n" +
-		"            local parts = {}\n" +
-		"            for i=1,#v do parts[#parts+1] = __str(v[i]) end\n" +
-		"            local body = '['..table.concat(parts, ' ')..']'\n" +
-		"            if v.__name then return v.__name..' '..body end\n" +
-		"            return body\n" +
-		"        else\n" +
-		"            local keys = {}\n" +
-		"            for k in pairs(v) do if k ~= '__name' then keys[#keys+1] = k end end\n" +
-		"            table.sort(keys, function(a,b) return tostring(a)<tostring(b) end)\n" +
-		"            local parts = {}\n" +
-		"            for _,k in ipairs(keys) do\n" +
-		"                local val = v[k]\n" +
-		"                local vs\n" +
-		"                if type(val) == 'string' then\n" +
-		"                    vs = string.format('%q', val)\n" +
-		"                else\n" +
-		"                    vs = __str(val)\n" +
-		"                end\n" +
-		"                parts[#parts+1] = k..': '..vs\n" +
-		"            end\n" +
-		"            local body = '{'..table.concat(parts, ', ')..'}'\n" +
-		"            if v.__name then return v.__name..' '..body end\n" +
-		"            return body\n" +
-		"        end\n" +
-		"    else\n" +
-		"        if t == 'boolean' then return (v and '1' or '0') end\n" +
-		"        return tostring(v)\n" +
-		"    end\n" +
-		"end\n"
 
 	helperEval = "function __eval(code)\n" +
 		"    local f, err = load(code)\n" +
@@ -894,7 +861,6 @@ var helperMap = map[string]string{
 	"values":         helperValues,
 	"reduce":         helperReduce,
 	"json":           helperJson,
-	"str":            helperStr,
 	"eval":           helperEval,
 	"index":          helperIndex,
 	"indexString":    helperIndexString,
