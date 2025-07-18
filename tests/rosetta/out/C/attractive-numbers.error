@@ -1,7 +1,0 @@
-cc: exit status 1
-/tmp/attractive-numbers.c: In function ‘mochi_main’:
-/tmp/attractive-numbers.c:97:19: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-   97 |       line = line + pad4(i);
-      |                   ^ ~~~~~~~
-      |                     |
-      |                     char *

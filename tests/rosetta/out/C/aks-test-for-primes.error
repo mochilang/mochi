@@ -1,7 +1,0 @@
-cc: exit status 1
-/tmp/aks-test-for-primes.c: In function ‘mochi_main’:
-/tmp/aks-test-for-primes.c:84:26: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-   84 |     printf("%s\n", tmp14 + poly(p));
-      |                          ^ ~~~~~~~
-      |                            |
-      |                            char *

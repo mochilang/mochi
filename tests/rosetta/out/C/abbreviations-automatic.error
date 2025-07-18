@@ -22,8 +22,8 @@ cc: exit status 1
 /tmp/abbreviations-automatic.c:183:27: note: expected ‘list_string’ but argument is of type ‘int’
   183 | int abbrevLen(list_string words) {
       |               ~~~~~~~~~~~~^~~~~
-/tmp/abbreviations-automatic.c:373:28: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  373 |     printf("%d\n", pad2(l) + "  " + lines.data[i]);
-      |                    ~~~~~~~ ^
-      |                    |       |
-      |                    char *  char *
+/tmp/abbreviations-automatic.c:375:26: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  375 |     printf("%d\n", tmp14 + lines.data[i]);
+      |                          ^ ~~~~~~~~~~~~~
+      |                                      |
+      |                                      char *

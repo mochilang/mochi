@@ -1,4 +1,4 @@
-# Rosetta C Output (60/238 compiled and run)
+# Rosetta C Output (77/239 compiled and run)
 
 This directory holds C source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -16,7 +16,7 @@ This directory holds C source code generated from the real Mochi programs in `te
 - [ ] 4-rings-or-4-squares-puzzle
 - [ ] 9-billion-names-of-god-the-integer
 - [ ] 99-bottles-of-beer-2
-- [ ] 99-bottles-of-beer
+- [x] 99-bottles-of-beer
 - [ ] a+b
 - [ ] abbreviations-automatic
 - [ ] abbreviations-easy
@@ -26,7 +26,7 @@ This directory holds C source code generated from the real Mochi programs in `te
 - [ ] abelian-sandpile-model
 - [ ] abstract-type
 - [x] abundant-deficient-and-perfect-number-classifications
-- [ ] abundant-odd-numbers
+- [x] abundant-odd-numbers
 - [ ] accumulator-factory
 - [ ] achilles-numbers
 - [x] ackermann-function-2
@@ -36,17 +36,17 @@ This directory holds C source code generated from the real Mochi programs in `te
 - [ ] active-directory-search-for-a-user
 - [ ] active-object
 - [ ] add-a-variable-to-a-class-instance-at-runtime
-- [ ] additive-primes
+- [x] additive-primes
 - [ ] address-of-a-variable
 - [ ] adfgvx-cipher
-- [ ] aks-test-for-primes
+- [x] aks-test-for-primes
 - [ ] algebraic-data-types
 - [ ] align-columns
 - [ ] aliquot-sequence-classifications
 - [ ] almkvist-giullera-formula-for-pi
 - [ ] almost-prime
 - [ ] amb
-- [ ] amicable-pairs
+- [x] amicable-pairs
 - [ ] anagrams-deranged-anagrams
 - [ ] anagrams
 - [ ] angle-difference-between-two-bearings-1
@@ -67,7 +67,7 @@ This directory holds C source code generated from the real Mochi programs in `te
 - [x] archimedean-spiral
 - [ ] arena-storage-pool
 - [ ] arithmetic-complex
-- [ ] arithmetic-derivative
+- [x] arithmetic-derivative
 - [ ] arithmetic-evaluation
 - [ ] arithmetic-geometric-mean-calculate-pi
 - [ ] arithmetic-geometric-mean
@@ -77,7 +77,7 @@ This directory holds C source code generated from the real Mochi programs in `te
 - [x] arithmetic-rational
 - [ ] array-concatenation
 - [ ] array-length
-- [ ] arrays
+- [x] arrays
 - [ ] ascending-primes
 - [x] ascii-art-diagram-converter
 - [x] assertions
@@ -85,10 +85,10 @@ This directory holds C source code generated from the real Mochi programs in `te
 - [ ] associative-array-iteration
 - [ ] associative-array-merging
 - [ ] atomic-updates
-- [ ] attractive-numbers
-- [ ] average-loop-length
+- [x] attractive-numbers
+- [x] average-loop-length
 - [ ] averages-arithmetic-mean
-- [ ] averages-mean-time-of-day
+- [x] averages-mean-time-of-day
 - [x] averages-median-1
 - [x] averages-median-2
 - [ ] averages-median-3
@@ -105,15 +105,15 @@ This directory holds C source code generated from the real Mochi programs in `te
 - [ ] barnsley-fern
 - [ ] base64-decode-data
 - [ ] bell-numbers
-- [ ] benfords-law
+- [x] benfords-law
 - [ ] bernoulli-numbers
 - [ ] best-shuffle
 - [ ] bifid-cipher
-- [ ] bin-given-limits
+- [x] bin-given-limits
 - [x] binary-digits
 - [ ] binary-search
 - [ ] binary-strings
-- [ ] bioinformatics-base-count
+- [x] bioinformatics-base-count
 - [ ] bioinformatics-global-alignment
 - [ ] bioinformatics-sequence-mutation
 - [ ] biorhythms
@@ -131,8 +131,8 @@ This directory holds C source code generated from the real Mochi programs in `te
 - [ ] bitmap
 - [ ] bitwise-io-1
 - [ ] bitwise-io-2
-- [ ] bitwise-operations
-- [ ] blum-integer
+- [x] bitwise-operations
+- [x] blum-integer
 - [ ] boolean-values
 - [ ] box-the-compass
 - [ ] boyer-moore-string-search
@@ -143,8 +143,8 @@ This directory holds C source code generated from the real Mochi programs in `te
 - [ ] bulls-and-cows-player
 - [ ] bulls-and-cows
 - [ ] burrows-wheeler-transform
-- [ ] caesar-cipher-1
-- [ ] caesar-cipher-2
+- [x] caesar-cipher-1
+- [x] caesar-cipher-2
 - [ ] calculating-the-value-of-e
 - [ ] calendar---for-real-programmers-1
 - [ ] calendar---for-real-programmers-2
@@ -210,6 +210,7 @@ This directory holds C source code generated from the real Mochi programs in `te
 - [ ] circular-primes
 - [ ] cistercian-numerals
 - [ ] compiler-virtual-machine-interpreter
+- [ ] composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k
 - [x] concurrent-computing-1
 - [x] concurrent-computing-2
 - [x] concurrent-computing-3

@@ -1,37 +1,15 @@
 cc: exit status 1
-/tmp/align-columns.c: In function ‘split’:
-/tmp/align-columns.c:126:17: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  126 |       cur = cur + slice_string(s, i, i + 1);
-      |                 ^ ~~~~~~~~~~~~~~~~~~~~~~~~~
-      |                   |
-      |                   char *
-/tmp/align-columns.c: In function ‘pad’:
-/tmp/align-columns.c:160:17: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  160 |     return word + spaces(diff);
-      |                 ^ ~~~~~~~~~~~~
-      |                   |
-      |                   char *
-/tmp/align-columns.c:163:25: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  163 |     return spaces(diff) + word;
-      |            ~~~~~~~~~~~~ ^
-      |            |
-      |            char *
-/tmp/align-columns.c:167:23: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  167 |   return spaces(left) + word + spaces(right);
-      |          ~~~~~~~~~~~~ ^
-      |          |
-      |          char *
 /tmp/align-columns.c: In function ‘newFormatter’:
-/tmp/align-columns.c:180:5: error: ‘fmtLines’ undeclared (first use in this function)
-  180 |     fmtLines = 0;
+/tmp/align-columns.c:185:5: error: ‘fmtLines’ undeclared (first use in this function)
+  185 |     fmtLines = 0;
       |     ^~~~~~~~
-/tmp/align-columns.c:180:5: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/align-columns.c:185:5: note: each undeclared identifier is reported only once for each function it appears in
 /tmp/align-columns.c: At top level:
-/tmp/align-columns.c:200:14: error: unknown type name ‘map_string_int’
-  200 | int printFmt(map_string_int f, int align) {
+/tmp/align-columns.c:205:14: error: unknown type name ‘map_string_int’
+  205 | int printFmt(map_string_int f, int align) {
       |              ^~~~~~~~~~~~~~
 /tmp/align-columns.c: In function ‘_mochi_main’:
-/tmp/align-columns.c:234:3: warning: implicit declaration of function ‘printFmt’; did you mean ‘printf’? [-Wimplicit-function-declaration]
-  234 |   printFmt(f, 0);
+/tmp/align-columns.c:242:3: warning: implicit declaration of function ‘printFmt’; did you mean ‘printf’? [-Wimplicit-function-declaration]
+  242 |   printFmt(f, 0);
       |   ^~~~~~~~
       |   printf

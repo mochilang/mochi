@@ -31,25 +31,10 @@ cc: exit status 1
 /tmp/achilles-numbers.c:273:15: error: invalid operands to binary + (have ‘list_int’ and ‘list_int’)
   273 |     ach = ach + tmp9;
       |               ^
-/tmp/achilles-numbers.c:283:19: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  283 |       line = line + pad(ach.data[i], 4);
-      |                   ^ ~~~~~~~~~~~~~~~~~~~
-      |                     |
-      |                     char *
-/tmp/achilles-numbers.c:302:23: error: invalid operands to binary + (have ‘list_int’ and ‘list_int’)
-  302 |       strong = strong + tmp12;
+/tmp/achilles-numbers.c:303:23: error: invalid operands to binary + (have ‘list_int’ and ‘list_int’)
+  303 |       strong = strong + tmp13;
       |                       ^
-/tmp/achilles-numbers.c:312:19: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  312 |       line = line + pad(strong.data[i], 5);
-      |                   ^ ~~~~~~~~~~~~~~~~~~~~~~
-      |                     |
-      |                     char *
-/tmp/achilles-numbers.c:342:30: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  342 |     printf("%s\n", pad(d, 2) + " digits: " + tmp14);
-      |                    ~~~~~~~~~ ^
-      |                    |         |
-      |                    char *    char *
 /tmp/achilles-numbers.c: In function ‘_mochi_main’:
-/tmp/achilles-numbers.c:349:22: error: invalid initializer
-  349 |   map_int_bool pps = tmp15;
+/tmp/achilles-numbers.c:353:22: error: invalid initializer
+  353 |   map_int_bool pps = tmp19;
       |                      ^~~~~

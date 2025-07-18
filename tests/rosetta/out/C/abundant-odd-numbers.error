@@ -1,7 +1,0 @@
-cc: exit status 1
-/tmp/abundant-odd-numbers.c: In function ‘abundantOdd’:
-/tmp/abundant-odd-numbers.c:160:28: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  160 |                pad2(count) + ". " + pad5(n) + " < " + s + " = " + tmp16);
-      |                ~~~~~~~~~~~ ^
-      |                |           |
-      |                char *      char *

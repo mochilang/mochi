@@ -6,52 +6,46 @@ cc: exit status 1
 /tmp/biorhythms.c:201:18: error: request for member ‘len’ in something not a structure or union
   201 |   while ((i < str.len)) {
       |                  ^
-/tmp/biorhythms.c: In function ‘dateString’:
-/tmp/biorhythms.c:307:16: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  307 |   return tmp13 + pad2(m) + "-" + pad2(d);
-      |                ^ ~~~~~~~
-      |                  |
-      |                  char *
 /tmp/biorhythms.c: In function ‘biorhythms’:
-/tmp/biorhythms.c:354:32: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  354 |   list_int quadrants_data[] = {tmp19, tmp20, tmp21, tmp22};
+/tmp/biorhythms.c:357:32: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  357 |   list_int quadrants_data[] = {tmp22, tmp23, tmp24, tmp25};
       |                                ^~~~~
-/tmp/biorhythms.c:354:39: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
-  354 |   list_int quadrants_data[] = {tmp19, tmp20, tmp21, tmp22};
+/tmp/biorhythms.c:357:39: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
+  357 |   list_int quadrants_data[] = {tmp22, tmp23, tmp24, tmp25};
       |                                       ^~~~~
-/tmp/biorhythms.c:354:46: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  354 |   list_int quadrants_data[] = {tmp19, tmp20, tmp21, tmp22};
+/tmp/biorhythms.c:357:46: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  357 |   list_int quadrants_data[] = {tmp22, tmp23, tmp24, tmp25};
       |                                              ^~~~~
-/tmp/biorhythms.c:354:53: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
-  354 |   list_int quadrants_data[] = {tmp19, tmp20, tmp21, tmp22};
+/tmp/biorhythms.c:357:53: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
+  357 |   list_int quadrants_data[] = {tmp22, tmp23, tmp24, tmp25};
       |                                                     ^~~~~
-/tmp/biorhythms.c:359:17: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
-  359 |     int cycle = cycles.data[i];
+/tmp/biorhythms.c:362:17: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+  362 |     int cycle = cycles.data[i];
       |                 ^~~~~~
-/tmp/biorhythms.c:379:21: warning: initialization of ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
-  379 |       char *trend = quadrants.data[quadrant].data[0];
+/tmp/biorhythms.c:382:21: warning: initialization of ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+  382 |       char *trend = quadrants.data[quadrant].data[0];
       |                     ^~~~~~~~~
-/tmp/biorhythms.c:380:20: warning: initialization of ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
-  380 |       char *next = quadrants.data[quadrant].data[1];
+/tmp/biorhythms.c:383:20: warning: initialization of ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+  383 |       char *next = quadrants.data[quadrant].data[1];
       |                    ^~~~~~~~~
-/tmp/biorhythms.c:383:13: warning: implicit declaration of function ‘contains’ [-Wimplicit-function-declaration]
-  383 |       if ((!contains(pct, "."))) {
+/tmp/biorhythms.c:386:13: warning: implicit declaration of function ‘contains’ [-Wimplicit-function-declaration]
+  386 |       if ((!contains(pct, "."))) {
       |             ^~~~~~~~
-/tmp/biorhythms.c:403:35: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  403 |     printf("%d\n", cycle + posStr + " : " + description);
+/tmp/biorhythms.c:406:35: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  406 |     printf("%d\n", cycle + posStr + " : " + description);
       |                    ~~~~~~~~~~~~~~ ^
       |                          |        |
       |                          char *   char *
 /tmp/biorhythms.c: In function ‘mochi_main’:
-/tmp/biorhythms.c:419:28: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  419 |   list_int pairs_data[] = {tmp35, tmp36, tmp37};
+/tmp/biorhythms.c:422:28: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  422 |   list_int pairs_data[] = {tmp38, tmp39, tmp40};
       |                            ^~~~~
-/tmp/biorhythms.c:419:35: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
-  419 |   list_int pairs_data[] = {tmp35, tmp36, tmp37};
+/tmp/biorhythms.c:422:35: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
+  422 |   list_int pairs_data[] = {tmp38, tmp39, tmp40};
       |                                   ^~~~~
-/tmp/biorhythms.c:419:42: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  419 |   list_int pairs_data[] = {tmp35, tmp36, tmp37};
+/tmp/biorhythms.c:422:42: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  422 |   list_int pairs_data[] = {tmp38, tmp39, tmp40};
       |                                          ^~~~~
-/tmp/biorhythms.c:423:21: error: invalid initializer
-  423 |     list_string p = pairs.data[idx];
+/tmp/biorhythms.c:426:21: error: invalid initializer
+  426 |     list_string p = pairs.data[idx];
       |                     ^~~~~

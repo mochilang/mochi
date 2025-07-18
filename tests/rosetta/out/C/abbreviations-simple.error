@@ -25,13 +25,3 @@ cc: exit status 1
 /tmp/abbreviations-simple.c:353:33: error: request for member ‘data’ in something not a structure or union
   353 |   list_int mins = (list_int)(tbl.data["mins"]);
       |                                 ^
-/tmp/abbreviations-simple.c:362:19: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  362 |       out1 = out1 + padRight(words.data[k], strlen(results.data[k]));
-      |                   ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      |                     |
-      |                     char *
-/tmp/abbreviations-simple.c:370:33: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  370 |   printf("%s\n", "full words: " + join(results, " "));
-      |                  ~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~
-      |                  |                |
-      |                  char *           char *

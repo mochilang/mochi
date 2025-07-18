@@ -114,12 +114,12 @@ cc: exit status 1
 /tmp/bitmap-read-a-ppm-file.c:195:25: note: expected ‘bitmap_t *’ {aka ‘struct bitmap_t *’} but argument is of type ‘bitmap_t **’ {aka ‘struct bitmap_t **’}
   195 | pixel_t getPx(bitmap_t *b, int x, int y) { return b->data.data[y].data[x]; }
       |               ~~~~~~~~~~^
-/tmp/bitmap-read-a-ppm-file.c:394:27: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘r’
-  394 |       line = tmp30 + pad(p.r, digits) + " " + pad(p.g, digits) + " " +
-      |                           ^
-/tmp/bitmap-read-a-ppm-file.c:394:52: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘g’
-  394 |       line = tmp30 + pad(p.r, digits) + " " + pad(p.g, digits) + " " +
-      |                                                    ^
-/tmp/bitmap-read-a-ppm-file.c:395:19: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘b’
-  395 |              pad(p.b, digits);
-      |                   ^
+/tmp/bitmap-read-a-ppm-file.c:394:47: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘r’
+  394 |       char *tmp31 = concat_string(tmp30, pad(p.r, digits));
+      |                                               ^
+/tmp/bitmap-read-a-ppm-file.c:396:47: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘g’
+  396 |       char *tmp33 = concat_string(tmp32, pad(p.g, digits));
+      |                                               ^
+/tmp/bitmap-read-a-ppm-file.c:398:47: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘b’
+  398 |       char *tmp35 = concat_string(tmp34, pad(p.b, digits));
+      |                                               ^

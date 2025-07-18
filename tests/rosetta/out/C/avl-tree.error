@@ -162,42 +162,34 @@ cc: exit status 1
   301 |   return r.data["node"];
       |           ^
 /tmp/avl-tree.c: In function ‘dumpNode’:
-/tmp/avl-tree.c:328:27: error: request for member ‘data’ in something not a structure or union
-  328 |     char *tmp6 = _str(node.data["Data"]);
-      |                           ^
 /tmp/avl-tree.c:329:27: error: request for member ‘data’ in something not a structure or union
   329 |     char *tmp7 = _str(node.data["Data"]);
       |                           ^
-/tmp/avl-tree.c:330:42: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  330 |     printf("%d\n", indentStr(indent + 3) + "\"Data\": " + tmp7 + ",");
-      |                    ~~~~~~~~~~~~~~~~~~~~~ ^
-      |                    |                     |
-      |                    char *                char *
-/tmp/avl-tree.c:331:27: error: request for member ‘data’ in something not a structure or union
-  331 |     char *tmp8 = _str(node.data["Balance"]);
-      |                           ^
-/tmp/avl-tree.c:332:27: error: request for member ‘data’ in something not a structure or union
-  332 |     char *tmp9 = _str(node.data["Balance"]);
-      |                           ^
-/tmp/avl-tree.c:333:42: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  333 |     printf("%d\n", indentStr(indent + 3) + "\"Balance\": " + tmp9 + ",");
-      |                    ~~~~~~~~~~~~~~~~~~~~~ ^
-      |                    |                     |
-      |                    char *                char *
-/tmp/avl-tree.c:334:42: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  334 |     printf("%s\n", indentStr(indent + 3) + "\"Link\": [");
-      |                    ~~~~~~~~~~~~~~~~~~~~~ ^
-      |                    |                     |
-      |                    char *                char *
-/tmp/avl-tree.c:337:42: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  337 |     printf("%s\n", indentStr(indent + 3) + "]");
-      |                    ~~~~~~~~~~~~~~~~~~~~~ ^
-      |                    |                     |
-      |                    char *                char *
+/tmp/avl-tree.c:333:28: error: request for member ‘data’ in something not a structure or union
+  333 |     char *tmp11 = _str(node.data["Data"]);
+      |                            ^
+/tmp/avl-tree.c:336:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
+  336 |     printf("%d\n", tmp13);
+      |             ~^     ~~~~~
+      |              |     |
+      |              int   char *
+      |             %s
+/tmp/avl-tree.c:338:28: error: request for member ‘data’ in something not a structure or union
+  338 |     char *tmp15 = _str(node.data["Balance"]);
+      |                            ^
+/tmp/avl-tree.c:342:28: error: request for member ‘data’ in something not a structure or union
+  342 |     char *tmp19 = _str(node.data["Balance"]);
+      |                            ^
+/tmp/avl-tree.c:345:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
+  345 |     printf("%d\n", tmp21);
+      |             ~^     ~~~~~
+      |              |     |
+      |              int   char *
+      |             %s
 /tmp/avl-tree.c: In function ‘mochi_main’:
-/tmp/avl-tree.c:366:12: error: ‘map_string_int’ undeclared (first use in this function)
-  366 |   int t = (map_string_int)(tree);
+/tmp/avl-tree.c:380:12: error: ‘map_string_int’ undeclared (first use in this function)
+  380 |   int t = (map_string_int)(tree);
       |            ^~~~~~~~~~~~~~
-/tmp/avl-tree.c:367:4: error: request for member ‘data’ in something not a structure or union
-  367 |   t.data["Balance"] = 0;
+/tmp/avl-tree.c:381:4: error: request for member ‘data’ in something not a structure or union
+  381 |   t.data["Balance"] = 0;
       |    ^
