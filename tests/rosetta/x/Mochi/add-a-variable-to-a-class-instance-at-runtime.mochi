@@ -17,7 +17,9 @@ fun main() {
     let name = input()
     print("       Enter value : ")
     let value = input()
-    ss.runtimeFields[name] = value
+    var fields = ss.runtimeFields
+    fields[name] = value
+    ss.runtimeFields = fields
     print("\n")
     i = i + 1
   }
