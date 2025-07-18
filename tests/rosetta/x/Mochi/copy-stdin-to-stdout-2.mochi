@@ -1,0 +1,8 @@
+// Alternative Mochi solution using a simple loop.
+// Continually echoes input lines until EOF.
+
+for {
+  let line = input()
+  if line == "" { break }
+  print(line)
+}

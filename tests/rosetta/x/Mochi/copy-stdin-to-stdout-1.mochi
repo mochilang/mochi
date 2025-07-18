@@ -1,0 +1,10 @@
+// Mochi version of Rosetta "Copy stdin to stdout" task
+// Reads lines from standard input and writes them back to standard output.
+
+while true {
+  let line = input()
+  if line == "" {
+    break
+  }
+  print(line)
+}
