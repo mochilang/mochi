@@ -1,7 +1,8 @@
-javac: exit status 1
-/tmp/BitmapMidpointCircleAlgorithm.java:61: error: incompatible types: String cannot be converted to Number
-            s = s + ((Number)row.get(i)).doubleValue();
-                                    ^
-Note: /tmp/BitmapMidpointCircleAlgorithm.java uses unchecked or unsafe operations.
-Note: Recompile with -Xlint:unchecked for details.
-1 error
+parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/bitmap-midpoint-circle-algorithm.mochi:51:27: unexpected token "-1" (expected "]")
+  --> /workspace/mochi/tests/rosetta/x/Mochi/bitmap-midpoint-circle-algorithm.mochi:51:27
+
+ 51 |   while end > 0 && row[end-1] == " " { end = end - 1 }
+    |                           ^
+
+help:
+  Parse error occurred. Check syntax near this location.

@@ -1,8 +1,8 @@
-javac: exit status 1
-/tmp/AliquotSequenceClassifications.java:6: error: integer number too large
-    static int THRESHOLD = 140737488355328;
-                           ^
-/tmp/AliquotSequenceClassifications.java:120: error: integer number too large
-        int big = 15355717786080;
-                  ^
-2 errors
+parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/aliquot-sequence-classifications.mochi:63:28: unexpected token "-2" (expected "]")
+  --> /workspace/mochi/tests/rosetta/x/Mochi/aliquot-sequence-classifications.mochi:63:28
+
+ 63 |     } else if last == seq[n-2] {
+    |                            ^
+
+help:
+  Parse error occurred. Check syntax near this location.

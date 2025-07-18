@@ -1,8 +1,14 @@
-parse: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/bulls-and-cows-player.mochi:22:51: lexer: invalid input text "; cur = \"\" }\n   ..."
-  --> /workspace/mochi/tests/rosetta/x/Mochi/bulls-and-cows-player.mochi:22:51
-
- 22 |       if len(cur) > 0 { words = append(words, cur); cur = "" }
-    |                                                   ^
-
-help:
-  String literals must be properly closed with a `"`.
+javac: exit status 1
+/tmp/BullsAndCowsPlayer.java:83: error: '.class' expected
+                    Object c = int(toks.get(0));
+                                  ^
+/tmp/BullsAndCowsPlayer.java:83: error: ';' expected
+                    Object c = int(toks.get(0));
+                                              ^
+/tmp/BullsAndCowsPlayer.java:84: error: '.class' expected
+                    Object b = int(toks.get(1));
+                                  ^
+/tmp/BullsAndCowsPlayer.java:84: error: ';' expected
+                    Object b = int(toks.get(1));
+                                              ^
+4 errors

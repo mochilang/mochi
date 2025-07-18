@@ -1,0 +1,4 @@
+run: exit status 1
+Exception in thread "main" java.util.NoSuchElementException: No line found
+	at java.base/java.util.Scanner.nextLine(Scanner.java:1660)
+	at CopyStdinToStdout1.main(CopyStdinToStdout1.java:9)

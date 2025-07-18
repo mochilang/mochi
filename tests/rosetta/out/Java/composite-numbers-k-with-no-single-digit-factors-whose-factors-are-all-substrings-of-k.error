@@ -1,0 +1,8 @@
+parse: error[P052]: /workspace/mochi/tests/rosetta/x/Mochi/composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k.mochi:56:36: unexpected token "-1" (expected ")")
+  --> /workspace/mochi/tests/rosetta/x/Mochi/composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k.mochi:56:36
+
+ 56 |   while end > 0 && substring(s, end-1, end) == " " { end = end - 1 }
+    |                                    ^
+
+help:
+  Unbalanced parentheses. Check for missing `(` or `)`.

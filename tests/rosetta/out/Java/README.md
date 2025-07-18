@@ -1,4 +1,4 @@
-# Rosetta Java Output (54/216 compiled and run)
+# Rosetta Java Output (61/264 compiled and run)
 
 This directory holds Java source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -56,7 +56,7 @@ This directory holds Java source code generated from the real Mochi programs in 
 - [x] animation
 - [x] anonymous-recursion-1
 - [x] anonymous-recursion-2
-- [x] anonymous-recursion
+- [ ] anonymous-recursion
 - [x] anti-primes
 - [x] append-a-record-to-the-end-of-a-text-file
 - [x] apply-a-callback-to-an-array-1
@@ -64,7 +64,7 @@ This directory holds Java source code generated from the real Mochi programs in 
 - [ ] apply-a-digital-filter-direct-form-ii-transposed-
 - [ ] approximate-equality
 - [ ] arbitrary-precision-integers-included-
-- [x] archimedean-spiral
+- [ ] archimedean-spiral
 - [ ] arena-storage-pool
 - [x] arithmetic-complex
 - [ ] arithmetic-derivative
@@ -143,8 +143,8 @@ This directory holds Java source code generated from the real Mochi programs in 
 - [ ] bulls-and-cows-player
 - [ ] bulls-and-cows
 - [ ] burrows-wheeler-transform
-- [x] caesar-cipher-1
-- [x] caesar-cipher-2
+- [ ] caesar-cipher-1
+- [ ] caesar-cipher-2
 - [ ] calculating-the-value-of-e
 - [ ] calendar---for-real-programmers-1
 - [ ] calendar---for-real-programmers-2
@@ -156,11 +156,11 @@ This directory holds Java source code generated from the real Mochi programs in 
 - [x] call-a-function-11
 - [x] call-a-function-12
 - [ ] call-a-function-2
-- [ ] call-a-function-3
+- [x] call-a-function-3
 - [x] call-a-function-4
 - [ ] call-a-function-5
 - [x] call-a-function-6
-- [ ] call-a-function-7
+- [x] call-a-function-7
 - [ ] call-a-function-8
 - [ ] call-a-function-9
 - [ ] call-an-object-method-1
@@ -209,13 +209,61 @@ This directory holds Java source code generated from the real Mochi programs in 
 - [ ] circles-of-given-radius-through-two-points
 - [ ] circular-primes
 - [ ] cistercian-numerals
+- [ ] compiler-virtual-machine-interpreter
+- [ ] composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k
+- [x] compound-data-type
+- [ ] concurrent-computing-1
+- [ ] concurrent-computing-2
+- [ ] concurrent-computing-3
+- [ ] conditional-structures-1
+- [x] conditional-structures-10
+- [ ] conditional-structures-2
+- [ ] conditional-structures-3
+- [x] conditional-structures-4
+- [ ] conditional-structures-5
+- [ ] conditional-structures-6
+- [ ] conditional-structures-7
+- [ ] conditional-structures-8
+- [x] conditional-structures-9
+- [ ] consecutive-primes-with-ascending-or-descending-differences
+- [ ] constrained-genericity-1
+- [ ] constrained-genericity-2
+- [x] constrained-genericity-3
+- [ ] constrained-genericity-4
+- [ ] constrained-random-points-on-a-circle-1
+- [ ] constrained-random-points-on-a-circle-2
+- [ ] continued-fraction
+- [ ] convert-decimal-number-to-rational
+- [x] convert-seconds-to-compound-duration
+- [ ] convex-hull
+- [ ] conways-game-of-life
+- [x] copy-a-string-1
+- [ ] copy-a-string-2
+- [ ] copy-stdin-to-stdout-1
+- [ ] copy-stdin-to-stdout-2
+- [ ] count-in-factors
+- [x] count-in-octal-1
+- [x] count-in-octal-2
+- [ ] count-in-octal-3
+- [ ] count-in-octal-4
+- [ ] count-occurrences-of-a-substring
+- [ ] count-the-coins-1
+- [ ] count-the-coins-2
+- [ ] cramers-rule
 - [ ] crc-32-1
 - [ ] crc-32-2
+- [ ] create-a-file-on-magnetic-tape
+- [ ] create-a-file
+- [ ] create-a-two-dimensional-array-at-runtime-1
+- [ ] create-an-html-table
+- [ ] create-an-object-at-a-given-address
 - [ ] csv-data-manipulation
 - [ ] csv-to-html-translation-1
 - [ ] csv-to-html-translation-2
 - [x] csv-to-html-translation-3
 - [x] csv-to-html-translation-4
 - [ ] csv-to-html-translation-5
+- [ ] cuban-primes
+- [ ] cullen-and-woodall-numbers
 - [ ] cusip
 - [ ] md5

@@ -1,0 +1,8 @@
+parse: error[P052]: /workspace/mochi/tests/rosetta/x/Mochi/archimedean-spiral.mochi:19:22: unexpected token "-1" (expected "(" (Expr ("," Expr)*)? ")")
+  --> /workspace/mochi/tests/rosetta/x/Mochi/archimedean-spiral.mochi:19:22
+
+ 19 |     let denom = ((2*n-1)*(2*n)) as float
+    |                      ^
+
+help:
+  Unbalanced parentheses. Check for missing `(` or `)`.

@@ -1,0 +1,37 @@
+javac: exit status 1
+/tmp/ContinuedFraction.java:7: error: cannot find symbol
+        return new AB(a, b);
+                   ^
+  symbol:   class AB
+  location: class ContinuedFraction
+/tmp/ContinuedFraction.java:17: error: cannot find symbol
+            ((List)f.get(0)).put("a", 1);
+                            ^
+  symbol:   method put(String,int)
+  location: interface List
+/tmp/ContinuedFraction.java:29: error: cannot find symbol
+            ((List)f.get(0)).put("a", 2);
+                            ^
+  symbol:   method put(String,int)
+  location: interface List
+/tmp/ContinuedFraction.java:32: error: cannot find symbol
+            ((List)f.get(1)).put("b", 1);
+                            ^
+  symbol:   method put(String,int)
+  location: interface List
+/tmp/ContinuedFraction.java:45: error: cannot find symbol
+            ((List)f.get(0)).put("a", 3);
+                            ^
+  symbol:   method put(String,int)
+  location: interface List
+/tmp/ContinuedFraction.java:53: error: incompatible types: String cannot be converted to int
+            r = ((Number)(Double.parseDouble(String.valueOf(((Integer)((List)f.get(i)).get("b")))))).doubleValue() / ((Number)(((Number)(Double.parseDouble(String.valueOf(((Integer)((List)f.get(i)).get("a")))))).doubleValue() + r)).doubleValue();
+                                                                                           ^
+/tmp/ContinuedFraction.java:53: error: incompatible types: String cannot be converted to int
+            r = ((Number)(Double.parseDouble(String.valueOf(((Integer)((List)f.get(i)).get("b")))))).doubleValue() / ((Number)(((Number)(Double.parseDouble(String.valueOf(((Integer)((List)f.get(i)).get("a")))))).doubleValue() + r)).doubleValue();
+                                                                                                                                                                                                          ^
+/tmp/ContinuedFraction.java:57: error: incompatible types: String cannot be converted to int
+            r = r + ((Number)(Double.parseDouble(String.valueOf(((Integer)((List)f.get(0)).get("a")))))).doubleValue();
+                                                                                               ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+8 errors

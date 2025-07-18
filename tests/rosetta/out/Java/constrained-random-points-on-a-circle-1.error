@@ -1,0 +1,10 @@
+javac: exit status 1
+/tmp/ConstrainedRandomPointsOnACircle1.java:29: error: incompatible types: possible lossy conversion from long to int
+            int x = System.currentTimeMillis() % span - rMax;
+                                                      ^
+/tmp/ConstrainedRandomPointsOnACircle1.java:30: error: incompatible types: possible lossy conversion from long to int
+            int y = System.currentTimeMillis() % span - rMax;
+                                                      ^
+Note: /tmp/ConstrainedRandomPointsOnACircle1.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+2 errors

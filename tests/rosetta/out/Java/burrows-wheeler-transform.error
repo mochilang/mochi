@@ -1,14 +1,8 @@
-javac: exit status 1
-/tmp/BurrowsWheelerTransform.java:6: error: illegal escape character
-    static String stx = "\x02";
-                          ^
-/tmp/BurrowsWheelerTransform.java:7: error: illegal escape character
-    static String etx = "\x03";
-                          ^
-/tmp/BurrowsWheelerTransform.java:98: error: illegal escape character
-        List<String> examples = new ArrayList<>(Arrays.asList("banana", "appellee", "dogwood", "TO BE OR NOT TO BE OR WANT TO BE OR NOT?", "SIX.MIXED.PIXIES.SIFT.SIXTY.PIXIE.DUST.BOXES", "\x02ABC\x03"));
-                                                                                                                                                                                             ^
-/tmp/BurrowsWheelerTransform.java:98: error: illegal escape character
-        List<String> examples = new ArrayList<>(Arrays.asList("banana", "appellee", "dogwood", "TO BE OR NOT TO BE OR WANT TO BE OR NOT?", "SIX.MIXED.PIXIES.SIFT.SIXTY.PIXIE.DUST.BOXES", "\x02ABC\x03"));
-                                                                                                                                                                                                    ^
-4 errors
+parse: error[P052]: /workspace/mochi/tests/rosetta/x/Mochi/burrows-wheeler-transform.mochi:51:41: unexpected token "-1" (expected ")")
+  --> /workspace/mochi/tests/rosetta/x/Mochi/burrows-wheeler-transform.mochi:51:41
+
+ 51 |     last = last + substring(table[i], le-1, le)
+    |                                         ^
+
+help:
+  Unbalanced parentheses. Check for missing `(` or `)`.

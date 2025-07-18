@@ -1,8 +1,9 @@
-parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/balanced-brackets.mochi:4:5: unexpected token "generate" (expected <ident> "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
-  --> /workspace/mochi/tests/rosetta/x/Mochi/balanced-brackets.mochi:4:5
-
-  4 | fun generate(n: int): string {
-    |     ^
-
-help:
-  Parse error occurred. Check syntax near this location.
+javac: exit status 1
+/tmp/BalancedBrackets.java:22: error: incompatible types: String cannot be converted to List<String>
+            List<String> tmp = arr.get(j);
+                                      ^
+/tmp/BalancedBrackets.java:24: error: incompatible types: List<String> cannot be converted to String
+            arr.set(k, tmp);
+                       ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+2 errors

@@ -9,23 +9,9 @@ javac: exit status 1
                            ^
   symbol:   class Digit
   location: class M21Game
-/tmp/M21Game.java:26: error: cannot find symbol
-        boolean computer = Objects.equals(now() % 2, 0);
-                                          ^
-  symbol:   method now()
-  location: class M21Game
-/tmp/M21Game.java:44: error: cannot find symbol
-                        choice = (int)(now() % 3 + 1);
-                                       ^
-  symbol:   method now()
-  location: class M21Game
 /tmp/M21Game.java:60: error: cannot find symbol
-                        Object line = input();
+                        String line = scanner.nextLine();
                                       ^
-  symbol:   method input()
+  symbol:   variable scanner
   location: class M21Game
-/tmp/M21Game.java:66: error: incompatible types: Object cannot be converted to String
-                        int num = parseIntStr(line);
-                                              ^
-Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
-6 errors
+3 errors

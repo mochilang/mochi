@@ -1,70 +1,8 @@
-javac: exit status 1
-/tmp/CantorSet.java:41: error: incompatible types: inference variable T has incompatible bounds
-        List<Map<String,Integer>> stack = Arrays.asList(new Stack(0, width, 1));
-                                                       ^
-    equality constraints: Map<String,Integer>
-    lower bounds: Stack
-  where T is a type-variable:
-    T extends Object declared in method <T>asList(T...)
-/tmp/CantorSet.java:43: error: incompatible types: Map<String,Integer> cannot be converted to List<Map<String,Integer>>
-            List<Map<String,Integer>> frame = stack.get(stack.size() - 1);
-                                                       ^
-/tmp/CantorSet.java:45: error: incompatible types: String cannot be converted to int
-            List<Map<String,Integer>> start = frame.get("start");
-                                                        ^
-/tmp/CantorSet.java:46: error: incompatible types: String cannot be converted to int
-            List<Map<String,Integer>> lenSeg = frame.get("len");
-                                                         ^
-/tmp/CantorSet.java:47: error: incompatible types: String cannot be converted to int
-            List<Map<String,Integer>> index = frame.get("index");
-                                                        ^
-/tmp/CantorSet.java:48: error: bad operand types for binary operator '/'
-            int seg = Integer.parseInt((lenSeg / 3));
-                                               ^
-  first type:  List<Map<String,Integer>>
-  second type: int
-/tmp/CantorSet.java:53: error: bad operand types for binary operator '<'
-            while (i < height) {
-                     ^
-  first type:  List<Map<String,Integer>>
-  second type: int
-/tmp/CantorSet.java:54: error: bad operand types for binary operator '+'
-                int j = start + seg;
-                              ^
-  first type:  List<Map<String,Integer>>
-  second type: int
-/tmp/CantorSet.java:55: error: bad operand types for binary operator '+'
-                while (j < start + 2 * seg) {
-                                 ^
-  first type:  List<Map<String,Integer>>
-  second type: int
-/tmp/CantorSet.java:56: error: incompatible types: List<Map<String,Integer>> cannot be converted to int
-                    lines.set(i, setChar(lines.get(i), j, " "));
-                                                   ^
-/tmp/CantorSet.java:59: error: bad operand types for binary operator '+'
-                i = i + 1;
-                      ^
-  first type:  List<Map<String,Integer>>
-  second type: int
-/tmp/CantorSet.java:61: error: bad operand types for binary operator '+'
-            stack.add(new Stack(start, seg, index + 1));
-                                                  ^
-  first type:  List<Map<String,Integer>>
-  second type: int
-/tmp/CantorSet.java:62: error: bad operand types for binary operator '+'
-            stack.add(new Stack(start + seg * 2, seg, index + 1));
-                                      ^
-  first type:  List<Map<String,Integer>>
-  second type: int
-/tmp/CantorSet.java:62: error: bad operand types for binary operator '+'
-            stack.add(new Stack(start + seg * 2, seg, index + 1));
-                                                            ^
-  first type:  List<Map<String,Integer>>
-  second type: int
-/tmp/CantorSet.java:62: error: incompatible types: Stack cannot be converted to Map<String,Integer>
-            stack.add(new Stack(start + seg * 2, seg, index + 1));
-                      ^
-Note: /tmp/CantorSet.java uses unchecked or unsafe operations.
-Note: Recompile with -Xlint:unchecked for details.
-Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
-15 errors
+parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/cantor-set.mochi:24:31: unexpected token "-1" (expected "]")
+  --> /workspace/mochi/tests/rosetta/x/Mochi/cantor-set.mochi:24:31
+
+ 24 |   var frame = stack[len(stack)-1]
+    |                               ^
+
+help:
+  Parse error occurred. Check syntax near this location.

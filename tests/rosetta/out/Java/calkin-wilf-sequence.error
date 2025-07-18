@@ -1,8 +1,8 @@
-parse: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/calkin-wilf-sequence.mochi:57:32: lexer: invalid input text "; s = s[1:] }\n  ..."
-  --> /workspace/mochi/tests/rosetta/x/Mochi/calkin-wilf-sequence.mochi:57:32
+parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/calkin-wilf-sequence.mochi:8:21: unexpected token "-1" (expected "]")
+  --> /workspace/mochi/tests/rosetta/x/Mochi/calkin-wilf-sequence.mochi:8:21
 
- 57 |   if s[0:1] == "-" { neg = true; s = s[1:] }
-    |                                ^
+  8 |     var prev = seq[i-1]
+    |                     ^
 
 help:
-  String literals must be properly closed with a `"`.
+  Parse error occurred. Check syntax near this location.
