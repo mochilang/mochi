@@ -1,4 +1,4 @@
-# Rosetta PHP Output (8/264 compiled and run)
+# Rosetta PHP Output (10/264 compiled and run)
 
 This directory holds PHP source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -129,8 +129,8 @@ This directory holds PHP source code generated from the real Mochi programs in `
 - [ ] bitmap-read-an-image-through-a-pipe
 - [ ] bitmap-write-a-ppm-file
 - [ ] bitmap
-- [ ] bitwise-io-1
-- [ ] bitwise-io-2
+- [x] bitwise-io-1
+- [x] bitwise-io-2
 - [ ] bitwise-operations
 - [ ] blum-integer
 - [ ] boolean-values

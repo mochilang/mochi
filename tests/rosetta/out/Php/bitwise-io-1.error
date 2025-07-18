@@ -1,7 +1,0 @@
-run: exit status 255
-
-Fatal error: Uncaught Error: Cannot use object of type Writer as array in /tmp/bitwise-io-1.php:106
-Stack trace:
-#0 /tmp/bitwise-io-1.php(108): ExampleWriter_WriteBits()
-#1 {main}
-  thrown in /tmp/bitwise-io-1.php on line 106
