@@ -80,22 +80,27 @@ func main() {
 			fmt.Fprintln(os.Stderr, "write code", name, err)
 			continue
 		}
-		tmp := filepath.Join(os.TempDir(), name+".php")
-		if err := os.WriteFile(tmp, code, 0o644); err != nil {
-			writeError(outDir, name, fmt.Sprintf("tmp write: %v", err))
-			os.Remove(filepath.Join(outDir, name+".out"))
-			continue
-		}
-		out, err := exec.Command("php", tmp).CombinedOutput()
-		if err != nil {
-			writeError(outDir, name, fmt.Sprintf("run: %v\n%s", err, out))
-			os.Remove(filepath.Join(outDir, name+".out"))
-			continue
-		}
-		os.Remove(filepath.Join(outDir, name+".error"))
-		cleaned := append(bytes.TrimSpace(out), '\n')
-		if err := os.WriteFile(filepath.Join(outDir, name+".out"), cleaned, 0o644); err != nil {
-			fmt.Fprintln(os.Stderr, "write out", name, err)
+		expOut := filepath.Join(root, "tests", "rosetta", "x", "Mochi", name+".out")
+		if _, err := os.Stat(expOut); err == nil {
+			tmp := filepath.Join(os.TempDir(), name+".php")
+			if err := os.WriteFile(tmp, code, 0o644); err != nil {
+				writeError(outDir, name, fmt.Sprintf("tmp write: %v", err))
+				os.Remove(filepath.Join(outDir, name+".out"))
+				continue
+			}
+			out, err := exec.Command("php", tmp).CombinedOutput()
+			if err != nil {
+				writeError(outDir, name, fmt.Sprintf("run: %v\n%s", err, out))
+				os.Remove(filepath.Join(outDir, name+".out"))
+				continue
+			}
+			os.Remove(filepath.Join(outDir, name+".error"))
+			cleaned := append(bytes.TrimSpace(out), '\n')
+			if err := os.WriteFile(filepath.Join(outDir, name+".out"), cleaned, 0o644); err != nil {
+				fmt.Fprintln(os.Stderr, "write out", name, err)
+			}
+		} else {
+			os.Remove(filepath.Join(outDir, name+".error"))
 		}
 	}
 }

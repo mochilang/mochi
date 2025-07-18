@@ -30,66 +30,66 @@ function parseIntStr($str) {
 }
 function main() {
     $total = 0;
-    $computer = $now() % 2 == 0;
-    _print("Enter q to quit at any time\n");
+    $computer = time() % 2 == 0;
+    echo "Enter q to quit at any time\n", PHP_EOL;
     if ($computer) {
-        _print("The computer will choose first");
+        echo "The computer will choose first", PHP_EOL;
     } else {
-        _print("You will choose first");
+        echo "You will choose first", PHP_EOL;
     }
-    _print("\n\nRunning total is now 0\n\n");
+    echo "\n\nRunning total is now 0\n\n", PHP_EOL;
     $round = 1;
     $done = false;
     while (!$done) {
-        _print("ROUND " . strval($round) . ":\n\n");
+        echo "ROUND " . strval($round) . ":\n\n", PHP_EOL;
         $i = 0;
         while ($i < 2 && (!$done)) {
             if ($computer) {
                 $choice = 0;
                 if ($total < 18) {
-                    $choice = $now() % 3 + 1;
+                    $choice = time() % 3 + 1;
                 } else {
                     $choice = 21 - $total;
                 }
                 $total = $total + $choice;
-                _print("The computer chooses " . strval($choice));
-                _print("Running total is now " . strval($total));
+                echo "The computer chooses " . strval($choice), PHP_EOL;
+                echo "Running total is now " . strval($total), PHP_EOL;
                 if ($total == 21) {
-                    _print("\nSo, commiserations, the computer has won!");
+                    echo "\nSo, commiserations, the computer has won!", PHP_EOL;
                     $done = true;
                 }
             } else {
                 while (true) {
-                    _print("Your choice 1 to 3 : ");
-                    $line = $input();
+                    echo "Your choice 1 to 3 : ", PHP_EOL;
+                    $line = trim(fgets(STDIN));
                     if ($line == "q" || $line == "Q") {
-                        _print("OK, quitting the game");
+                        echo "OK, quitting the game", PHP_EOL;
                         $done = true;
                         break;
                     }
                     $num = parseIntStr($line);
                     if ($num < 1 || $num > 3) {
                         if ($total + $num > 21) {
-                            _print("Too big, try again");
+                            echo "Too big, try again", PHP_EOL;
                         } else {
-                            _print("Out of range, try again");
+                            echo "Out of range, try again", PHP_EOL;
                         }
                         continue;
                     }
                     if ($total + $num > 21) {
-                        _print("Too big, try again");
+                        echo "Too big, try again", PHP_EOL;
                         continue;
                     }
                     $total = $total + $num;
-                    _print("Running total is now " . strval($total));
+                    echo "Running total is now " . strval($total), PHP_EOL;
                     break;
                 }
                 if ($total == 21) {
-                    _print("\nSo, congratulations, you've won!");
+                    echo "\nSo, congratulations, you've won!", PHP_EOL;
                     $done = true;
                 }
             }
-            _print("\n");
+            echo "\n", PHP_EOL;
             $computer = !$computer;
             $i = $i + 1;
         }
@@ -97,33 +97,4 @@ function main() {
     }
 }
 main();
-function _print(...$args) {
-    $first = true;
-    foreach ($args as $a) {
-        if (!$first) echo ' ';
-        $first = false;
-        if (is_array($a)) {
-            if (array_is_list($a)) {
-                if ($a && is_array($a[0])) {
-                    $parts = [];
-                    foreach ($a as $sub) {
-                        if (is_array($sub)) {
-                            $parts[] = '[' . implode(' ', $sub) . ']';
-                        } else {
-                            $parts[] = strval($sub);
-                        }
-                    }
-                    echo implode(' ', $parts);
-                } else {
-                    echo '[' . implode(' ', array_map('strval', $a)) . ']';
-                }
-            } else {
-                echo json_encode($a);
-            }
-        } else {
-            echo strval($a);
-        }
-    }
-    echo PHP_EOL;
-}
 ?>

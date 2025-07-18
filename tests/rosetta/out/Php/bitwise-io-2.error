@@ -1,0 +1,8 @@
+type: error[T008]: type mismatch: expected int, got float
+  --> /workspace/mochi/tests/rosetta/x/Mochi/bitwise-io-2.mochi:10:42
+
+ 10 | fun rshift(x: int, n: int): int { return x / pow2(n) }
+    |                                          ^
+
+help:
+  Change the value to match the expected type.
