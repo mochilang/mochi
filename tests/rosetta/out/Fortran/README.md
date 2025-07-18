@@ -1,4 +1,4 @@
-# Rosetta Fortran Output (35/253 compiled and run)
+# Rosetta Fortran Output (36/253 compiled and run)
 
 This directory holds Fortran source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -29,7 +29,7 @@ This directory holds Fortran source code generated from the real Mochi programs 
 - [ ] abundant-odd-numbers
 - [ ] accumulator-factory
 - [ ] achilles-numbers
-- [ ] ackermann-function-2
+- [x] ackermann-function-2
 - [ ] ackermann-function-3
 - [x] ackermann-function
 - [ ] active-directory-connect

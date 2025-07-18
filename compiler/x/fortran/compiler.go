@@ -1383,9 +1383,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					return "", err
 				}
 				if types.IsStringPrimary(p.Target, c.env) {
-					idxList = append(idxList, fmt.Sprintf("(%s)+1:(%s)+1", v, v))
+					idxList = append(idxList, fmt.Sprintf("%s+1:%s+1", v, v))
 				} else {
-					idxList = append(idxList, fmt.Sprintf("((%s)+1)", v))
+					idxList = append(idxList, fmt.Sprintf("%s+1", v))
 				}
 			}
 		case op.Field != nil:
@@ -1662,12 +1662,15 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		return "", fmt.Errorf("values only supported for map literals")
 	case "sqrt", "pow", "sin", "cos", "log":
-		for i, a := range call.Args {
-			if !types.IsFloatExpr(a, c.env) {
-				args[i] = fmt.Sprintf("real(%s)", args[i])
+		if _, ok := c.env.GetFunc(call.Func); !ok {
+			for i, a := range call.Args {
+				if !types.IsFloatExpr(a, c.env) {
+					args[i] = fmt.Sprintf("real(%s)", args[i])
+				}
 			}
+			return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ",")), nil
 		}
-		return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ",")), nil
+		fallthrough
 	default:
 		return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ",")), nil
 	}
