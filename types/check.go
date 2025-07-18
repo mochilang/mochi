@@ -464,6 +464,11 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: StringType{},
 		Pure:   true,
 	}, false)
+	env.SetVar("parseIntStr", FuncType{
+		Params: []Type{StringType{}},
+		Return: IntType{},
+		Pure:   true,
+	}, false)
 	env.SetVar("int", FuncType{
 		Params: []Type{AnyType{}},
 		Return: IntType{},
@@ -2420,43 +2425,44 @@ func isNumeric(t Type) bool {
 }
 
 var builtinArity = map[string]int{
-	"now":       0,
-	"input":     0,
-	"json":      1,
-	"to_json":   1,
-	"str":       1,
-	"int":       1,
-	"upper":     1,
-	"lower":     1,
-	"reverse":   1,
-	"distinct":  1,
-	"trim":      1,
-	"contains":  2,
-	"split":     2,
-	"join":      2,
-	"eval":      1,
-	"len":       1,
-	"count":     1,
-	"exists":    1,
-	"avg":       1,
-	"abs":       1,
-	"ceil":      1,
-	"floor":     1,
-	"sum":       1,
-	"min":       1,
-	"max":       1,
-	"keys":      1,
-	"values":    1,
-	"reduce":    3,
-	"append":    2,
-	"push":      2,
-	"first":     1,
-	"substring": 3,
-	"padStart":  3,
-	"indexOf":   2,
-	"sha256":    1,
-	"num":       1,
-	"denom":     1,
+	"now":         0,
+	"input":       0,
+	"json":        1,
+	"to_json":     1,
+	"str":         1,
+	"parseIntStr": 1,
+	"int":         1,
+	"upper":       1,
+	"lower":       1,
+	"reverse":     1,
+	"distinct":    1,
+	"trim":        1,
+	"contains":    2,
+	"split":       2,
+	"join":        2,
+	"eval":        1,
+	"len":         1,
+	"count":       1,
+	"exists":      1,
+	"avg":         1,
+	"abs":         1,
+	"ceil":        1,
+	"floor":       1,
+	"sum":         1,
+	"min":         1,
+	"max":         1,
+	"keys":        1,
+	"values":      1,
+	"reduce":      3,
+	"append":      2,
+	"push":        2,
+	"first":       1,
+	"substring":   3,
+	"padStart":    3,
+	"indexOf":     2,
+	"sha256":      1,
+	"num":         1,
+	"denom":       1,
 }
 
 func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
@@ -2466,7 +2472,7 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 			return errArgCount(pos, name, 0, len(args))
 		}
 		return nil
-	case "json", "to_json", "str", "upper", "lower", "int", "eval":
+	case "json", "to_json", "str", "upper", "lower", "int", "eval", "parseIntStr":
 		if len(args) != 1 {
 			return errArgCount(pos, name, 1, len(args))
 		}
@@ -2481,6 +2487,12 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 				// ok
 			default:
 				return fmt.Errorf("int() expects numeric or string")
+			}
+		case "parseIntStr":
+			if _, ok := args[0].(StringType); !ok {
+				if _, ok := args[0].(AnyType); !ok {
+					return errArgTypeMismatch(pos, 0, StringType{}, args[0])
+				}
 			}
 		}
 		return nil

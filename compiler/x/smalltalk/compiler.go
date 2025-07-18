@@ -195,7 +195,7 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 		if err != nil {
 			return err
 		}
-		target = fmt.Sprintf("%s at: %s", target, ex)
+		target = fmt.Sprintf("%s at: (%s + 1)", target, ex)
 	}
 	for _, f := range a.Field {
 		target = fmt.Sprintf("%s at: %q", target, f.Name)
@@ -432,6 +432,8 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			return fmt.Sprintf("(%s = %s)", left, right)
 		case "!=":
 			return fmt.Sprintf("(%s ~= %s)", left, right)
+		case "%":
+			return fmt.Sprintf("(%s \\\\ %s)", left, right)
 		default:
 			return fmt.Sprintf("(%s %s %s)", left, op, right)
 		}
@@ -529,7 +531,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			val = fmt.Sprintf("%s at: %s", val, idx)
+			val = fmt.Sprintf("(%s at: (%s + 1)) asString", val, idx)
 		case op.Field != nil:
 			// treat field access like dictionary lookup
 			val = fmt.Sprintf("%s at: %q", val, op.Field.Name)
@@ -714,11 +716,21 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", fmt.Errorf("str expects 1 arg")
 			}
 			return fmt.Sprintf("(%s asString)", args[0]), nil
+		case "parseIntStr":
+			if len(args) != 1 {
+				return "", fmt.Errorf("parseIntStr expects 1 arg")
+			}
+			return fmt.Sprintf("(%s asInteger)", args[0]), nil
 		case "substring", "substr":
 			if len(args) != 3 {
 				return "", fmt.Errorf("substring expects 3 args")
 			}
 			return fmt.Sprintf("(%s copyFrom: %s to: %s)", args[0], args[1], args[2]), nil
+		case "indexOf":
+			if len(args) != 2 {
+				return "", fmt.Errorf("indexOf expects 2 args")
+			}
+			return fmt.Sprintf("((%s indexOfSubCollection: %s startingAt: 1) - 1)", args[0], args[1]), nil
 		default:
 			call := p.Call.Func
 			if len(args) == 0 {

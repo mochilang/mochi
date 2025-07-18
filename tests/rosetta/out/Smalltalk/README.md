@@ -1,4 +1,4 @@
-# Rosetta Smalltalk Output (99/216 compiled and run)
+# Rosetta Smalltalk Output (100/216 compiled and run)
 
 This directory holds Smalltalk source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -217,5 +217,5 @@ This directory holds Smalltalk source code generated from the real Mochi program
 - [ ] csv-to-html-translation-3
 - [ ] csv-to-html-translation-4
 - [ ] csv-to-html-translation-5
-- [ ] cusip
+- [x] cusip
 - [ ] md5
