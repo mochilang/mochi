@@ -1,0 +1,8 @@
+Object: Dictionary new: 8 "<0x7f6680817e00>" error: Invalid argument TellSecret: key not found
+SystemExceptions.NotFound(Exception)>>signal (ExcHandling.st:254)
+SystemExceptions.NotFound(Exception)>>signal: (ExcHandling.st:264)
+SystemExceptions.NotFound class>>signalOn:what: (SysExcept.st:731)
+[] in Dictionary>>at: (Dictionary.st:139)
+Dictionary>>at:ifAbsent: (Dictionary.st:149)
+Dictionary>>at: (Dictionary.st:138)
+UndefinedObject>>executeStatements (/tmp/call-an-object-method.st:7)

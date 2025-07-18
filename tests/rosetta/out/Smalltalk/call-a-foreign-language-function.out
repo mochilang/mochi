@@ -1,0 +1,6 @@
+Object: 'hello C' error: did not understand #+
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #+ (SysExcept.st:1448)
+optimized [] in UndefinedObject>>executeStatements (/tmp/call-a-foreign-language-function.st:4)
+optimized [] in UndefinedObject>>executeStatements (/tmp/call-a-foreign-language-function.st:6)
+UndefinedObject>>executeStatements (/tmp/call-a-foreign-language-function.st:8)

@@ -1,0 +1,5 @@
+Object: BlockClosure new "<0x7f6680817720>" error: did not understand #value:at:value:at:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+BlockClosure(Object)>>doesNotUnderstand: #value:at:value:at: (SysExcept.st:1448)
+optimized [] in UndefinedObject>>executeStatements (/tmp/call-a-function-2.st:10)
+UndefinedObject>>executeStatements (/tmp/call-a-function-2.st:12)

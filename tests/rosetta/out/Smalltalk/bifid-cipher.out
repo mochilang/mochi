@@ -1,3 +1,1 @@
-/workspace/mochi/tests/rosetta/out/Smalltalk/bifid-cipher.st:33: invalid assignment to argument text
-/workspace/mochi/tests/rosetta/out/Smalltalk/bifid-cipher.st:58: invalid assignment to argument text
-/workspace/mochi/tests/rosetta/out/Smalltalk/bifid-cipher.st:92: parse error, expected '|' or identifier
+/tmp/bifid-cipher.st:7: parse error, expected ']'

@@ -1,0 +1,25 @@
+Object: Dictionary new: 32 "<0x7f66808123a0>" error: Invalid argument LookupHost: key not found
+SystemExceptions.NotFound(Exception)>>signal (ExcHandling.st:254)
+SystemExceptions.NotFound(Exception)>>signal: (ExcHandling.st:264)
+SystemExceptions.NotFound class>>signalOn:what: (SysExcept.st:731)
+[] in Dictionary>>at: (Dictionary.st:139)
+Dictionary>>at:ifAbsent: (Dictionary.st:149)
+Dictionary>>at: (Dictionary.st:138)
+UndefinedObject>>executeStatements (/tmp/DNS-query.st:5)
+Object: nil error: Invalid value nil: object not indexable
+SystemExceptions.NotIndexable(Exception)>>signal (ExcHandling.st:254)
+SystemExceptions.NotIndexable class(SystemExceptions.InvalidValue class)>>signalOn: (SysExcept.st:411)
+UndefinedObject(Object)>>checkIndexableBounds: (Object.st:792)
+UndefinedObject(Object)>>at: (Object.st:858)
+UndefinedObject>>executeStatements (/tmp/DNS-query.st:6)
+Object: nil error: Invalid value nil: object not indexable
+SystemExceptions.NotIndexable(Exception)>>signal (ExcHandling.st:254)
+"Global garbage collection... done"
+SystemExceptions.NotIndexable class(SystemExceptions.InvalidValue class)>>signalOn: (SysExcept.st:411)
+UndefinedObject(Object)>>checkIndexableBounds: (Object.st:792)
+UndefinedObject(Object)>>at: (Object.st:858)
+UndefinedObject>>executeStatements (/tmp/DNS-query.st:7)
+Object: nil error: did not understand #asString
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+UndefinedObject(Object)>>doesNotUnderstand: #asString (SysExcept.st:1448)
+UndefinedObject>>executeStatements (/tmp/DNS-query.st:9)

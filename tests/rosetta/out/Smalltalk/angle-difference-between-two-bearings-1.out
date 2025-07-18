@@ -1,6 +1,1 @@
-Object: BlockClosure new "<0x7f6680812110>" error: did not understand #value:at:value:at:
-MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
-BlockClosure(Object)>>doesNotUnderstand: #value:at:value:at: (SysExcept.st:1448)
-optimized [] in UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/angle-difference-between-two-bearings-1.st:14)
-Array(SequenceableCollection)>>do: (SeqCollect.st:827)
-UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/angle-difference-between-two-bearings-1.st:13)
+/tmp/angle-difference-between-two-bearings-1.st:13: parse error, expected ']'

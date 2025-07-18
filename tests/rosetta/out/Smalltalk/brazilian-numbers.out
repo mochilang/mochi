@@ -1,2 +1,1 @@
-/workspace/mochi/tests/rosetta/out/Smalltalk/brazilian-numbers.st:6: invalid assignment to argument n
-/workspace/mochi/tests/rosetta/out/Smalltalk/brazilian-numbers.st:52: parse error, expected '|' or identifier
+/tmp/brazilian-numbers.st:4: expected expression

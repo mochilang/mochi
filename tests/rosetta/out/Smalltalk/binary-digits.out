@@ -1,6 +1,1 @@
-''
-Object: 1 error: did not understand #%
-MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
-SmallInteger(Object)>>doesNotUnderstand: #% (SysExcept.st:1448)
-optimized [] in UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/binary-digits.st:10)
-UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/binary-digits.st:16)
+/tmp/binary-digits.st:9: parse error, expected ']'

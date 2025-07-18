@@ -1,0 +1,6 @@
+Object: 'Character,Speech
+' error: did not understand #+
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #+ (SysExcept.st:1448)
+UndefinedObject>>executeStatements (/tmp/csv-to-html-translation-1.st:5)
+/tmp/csv-to-html-translation-1.st:12: parse error, expected ']'

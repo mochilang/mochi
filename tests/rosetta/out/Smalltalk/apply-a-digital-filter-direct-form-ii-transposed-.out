@@ -1,7 +1,1 @@
-Object: Array new: 4 "<0x7f668081eec0>" error: did not understand #generality
-MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
-Array(Object)>>doesNotUnderstand: #generality (SysExcept.st:1448)
-SmallInteger(Number)>>retryDivisionCoercing: (Number.st:385)
-SmallInteger>>/ (SmallInt.st:280)
-optimized [] in UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/apply-a-digital-filter-direct-form-ii-transposed-.st:5)
-UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/apply-a-digital-filter-direct-form-ii-transposed-.st:29)
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.st:7: parse error, expected ']'

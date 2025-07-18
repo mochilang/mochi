@@ -1,2 +1,7 @@
-/workspace/mochi/tests/rosetta/out/Smalltalk/arena-storage-pool.st:11: invalid assignment to argument p
-/workspace/mochi/tests/rosetta/out/Smalltalk/arena-storage-pool.st:14: parse error, expected '|' or identifier
+/tmp/arena-storage-pool.st:11: invalid assignment to argument p
+'3'
+Object: nil error: did not understand #value:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+UndefinedObject(Object)>>doesNotUnderstand: #value: (SysExcept.st:1448)
+optimized [] in UndefinedObject>>executeStatements (/tmp/arena-storage-pool.st:22)
+UndefinedObject>>executeStatements (/tmp/arena-storage-pool.st:45)

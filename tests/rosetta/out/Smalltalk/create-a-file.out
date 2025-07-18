@@ -1,0 +1,6 @@
+Object: 'file ' error: did not understand #+
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #+ (SysExcept.st:1448)
+optimized [] in UndefinedObject>>executeStatements (/tmp/create-a-file.st:8)
+optimized [] in UndefinedObject>>executeStatements (/tmp/create-a-file.st:18)
+UndefinedObject>>executeStatements (/tmp/create-a-file.st:22)

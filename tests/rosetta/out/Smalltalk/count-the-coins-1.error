@@ -1,0 +1,8 @@
+type: error[T003]: unknown function: cc
+  --> /workspace/mochi/tests/rosetta/x/Mochi/count-the-coins-1.mochi:5:10
+
+  5 |   return cc(amount, 4)
+    |          ^
+
+help:
+  Ensure the function is defined before it's called.

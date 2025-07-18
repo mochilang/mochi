@@ -7,5 +7,5 @@ Fraction>>- (Fraction.st:151)
 FloatD(Float)>>printOn:special: (Float.st:533)
 FloatD(Float)>>printOn: (Float.st:436)
 FloatD(Object)>>printString (Object.st:534)
-UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/address-of-a-variable.st:5)
+UndefinedObject>>executeStatements (/tmp/address-of-a-variable.st:5)
 address: <not available>

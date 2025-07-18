@@ -1,0 +1,8 @@
+type: error[T015]: index must be an integer
+  --> /workspace/mochi/tests/rosetta/x/Mochi/catalan-numbers-pascals-triangle.mochi:19:4
+
+ 19 |   t[i+1] = t[i]
+    |    ^
+
+help:
+  Use an `int` value for indexing (e.g., `list[0]`).

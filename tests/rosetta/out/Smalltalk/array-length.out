@@ -1,1 +1,12 @@
-/workspace/mochi/tests/rosetta/out/Smalltalk/array-length.st:4: parse error, expected '|' or identifier
+Object: '' error: Invalid argument pear: must be a Character
+SystemExceptions.WrongClass(Exception)>>signal (ExcHandling.st:254)
+SystemExceptions.WrongClass class>>signalOn:mustBe: (SysExcept.st:778)
+SystemExceptions.WrongClass class>>signalOn:mustBe: (SysExcept.st:774)
+String(Object)>>checkIndexableBounds:put: (Object.st:825)
+String>>at:put: (String.st:329)
+String(SequenceableCollection)>>replaceFrom:to:with:startingAt: (SeqCollect.st:558)
+String>>replaceFrom:to:with:startingAt: (String.st:296)
+String(SequenceableCollection)>>replaceFrom:to:with: (SeqCollect.st:572)
+Array(Collection)>>asString (Collection.st:438)
+optimized [] in UndefinedObject>>executeStatements (/tmp/array-length.st:5)
+UndefinedObject>>executeStatements (/tmp/array-length.st:6)

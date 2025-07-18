@@ -1,8 +1,8 @@
-parse error: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/crc-32-2.mochi:20:26: lexer: invalid input text "; i = i + 1 }\n  ..."
-  --> /workspace/mochi/tests/rosetta/x/Mochi/crc-32-2.mochi:20:26
+type: error[T004]: `` is not callable
+  --> /workspace/mochi/tests/rosetta/x/Mochi/crc-32-2.mochi:85:32
 
- 20 |   while i < n { v = v / 2; i = i + 1 }
-    |                          ^
+ 85 |   let hex = toHex(result).lower()
+    |                                ^
 
 help:
-  String literals must be properly closed with a `"`.
+  Use a function or closure in this position.

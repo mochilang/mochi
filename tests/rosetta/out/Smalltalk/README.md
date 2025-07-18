@@ -1,62 +1,63 @@
-# Rosetta Smalltalk Output (109/216 compiled and run)
+# Rosetta Smalltalk Output (236/278 compiled and run)
 
 This directory holds Smalltalk source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
 ## Program checklist
-- [x] 100-doors
 - [x] 100-doors-2
 - [x] 100-doors-3
- - [x] 100-prisoners
+- [x] 100-doors
+- [x] 100-prisoners
 - [ ] 15-puzzle-game
 - [x] 15-puzzle-solver
- - [x] 2048
- - [x] 21-game
+- [x] 2048
+- [x] 21-game
+- [x] 24-game-solve
 - [ ] 24-game
- - [x] 24-game-solve
 - [x] 4-rings-or-4-squares-puzzle
 - [x] 9-billion-names-of-god-the-integer
-- [x] 99-bottles-of-beer
 - [x] 99-bottles-of-beer-2
-- [ ] a+b
+- [x] 99-bottles-of-beer
+- [x] DNS-query
+- [x] a+b
 - [x] abbreviations-automatic
 - [x] abbreviations-easy
 - [x] abbreviations-simple
 - [x] abc-problem
-- [x] abelian-sandpile-model
 - [x] abelian-sandpile-model-identity
+- [x] abelian-sandpile-model
 - [x] abstract-type
 - [x] abundant-deficient-and-perfect-number-classifications
 - [x] abundant-odd-numbers
 - [x] accumulator-factory
 - [x] achilles-numbers
-- [x] ackermann-function
 - [x] ackermann-function-2
 - [ ] ackermann-function-3
- - [x] active-directory-connect
+- [x] ackermann-function
+- [x] active-directory-connect
 - [x] active-directory-search-for-a-user
 - [x] active-object
 - [ ] add-a-variable-to-a-class-instance-at-runtime
 - [x] additive-primes
 - [x] address-of-a-variable
-- [ ] adfgvx-cipher
+- [x] adfgvx-cipher
 - [x] aks-test-for-primes
 - [x] algebraic-data-types
- - [x] align-columns
+- [x] align-columns
 - [x] aliquot-sequence-classifications
 - [ ] almkvist-giullera-formula-for-pi
 - [x] almost-prime
 - [x] amb
 - [x] amicable-pairs
-- [x] anagrams
 - [x] anagrams-deranged-anagrams
+- [x] anagrams
 - [x] angle-difference-between-two-bearings-1
 - [x] angle-difference-between-two-bearings-2
 - [x] angles-geometric-normalization-and-conversion
 - [x] animate-a-pendulum
 - [x] animation
-- [x] anonymous-recursion
 - [x] anonymous-recursion-1
 - [x] anonymous-recursion-2
+- [x] anonymous-recursion
 - [x] anti-primes
 - [x] append-a-record-to-the-end-of-a-text-file
 - [x] apply-a-callback-to-an-array-1
@@ -66,11 +67,11 @@ This directory holds Smalltalk source code generated from the real Mochi program
 - [x] arbitrary-precision-integers-included-
 - [x] archimedean-spiral
 - [x] arena-storage-pool
-- [ ] arithmetic-complex
+- [x] arithmetic-complex
 - [x] arithmetic-derivative
 - [ ] arithmetic-evaluation
-- [x] arithmetic-geometric-mean
 - [x] arithmetic-geometric-mean-calculate-pi
+- [x] arithmetic-geometric-mean
 - [x] arithmetic-integer-1
 - [x] arithmetic-integer-2
 - [x] arithmetic-numbers
@@ -97,12 +98,12 @@ This directory holds Smalltalk source code generated from the real Mochi program
 - [x] averages-root-mean-square
 - [x] averages-simple-moving-average
 - [x] avl-tree
-- [ ] b-zier-curves-intersections
+- [x] b-zier-curves-intersections
 - [x] babbage-problem
 - [x] babylonian-spiral
 - [ ] balanced-brackets
 - [x] balanced-ternary
-- [ ] barnsley-fern
+- [x] barnsley-fern
 - [x] base64-decode-data
 - [ ] bell-numbers
 - [x] benfords-law
@@ -111,111 +112,172 @@ This directory holds Smalltalk source code generated from the real Mochi program
 - [x] bifid-cipher
 - [x] bin-given-limits
 - [x] binary-digits
-- [ ] binary-search
+- [x] binary-search
 - [x] binary-strings
 - [x] bioinformatics-base-count
 - [x] bioinformatics-global-alignment
 - [x] bioinformatics-sequence-mutation
 - [x] biorhythms
-- [ ] bitcoin-address-validation
-- [ ] bitmap
-- [ ] bitmap-b-zier-curves-cubic
-- [ ] bitmap-b-zier-curves-quadratic
+- [x] bitcoin-address-validation
+- [x] bitmap-b-zier-curves-cubic
+- [x] bitmap-b-zier-curves-quadratic
 - [ ] bitmap-bresenhams-line-algorithm
 - [ ] bitmap-flood-fill
 - [x] bitmap-histogram
 - [x] bitmap-midpoint-circle-algorithm
-- [ ] bitmap-ppm-conversion-through-a-pipe
-- [ ] bitmap-read-a-ppm-file
-- [ ] bitmap-read-an-image-through-a-pipe
-- [ ] bitmap-write-a-ppm-file
-- [ ] bitwise-io-1
-- [ ] bitwise-io-2
+- [x] bitmap-ppm-conversion-through-a-pipe
+- [x] bitmap-read-a-ppm-file
+- [x] bitmap-read-an-image-through-a-pipe
+- [x] bitmap-write-a-ppm-file
+- [x] bitmap
+- [x] bitwise-io-1
+- [x] bitwise-io-2
 - [x] bitwise-operations
 - [x] blum-integer
 - [x] boolean-values
 - [x] box-the-compass
 - [x] boyer-moore-string-search
 - [x] brazilian-numbers
-- [ ] break-oo-privacy
-- [ ] brilliant-numbers
+- [x] break-oo-privacy
+- [x] brilliant-numbers
 - [ ] brownian-tree
-- [ ] bulls-and-cows
 - [ ] bulls-and-cows-player
-- [ ] burrows-wheeler-transform
-- [ ] caesar-cipher-1
-- [ ] caesar-cipher-2
-- [ ] calculating-the-value-of-e
-- [ ] calendar
+- [x] bulls-and-cows
+- [x] burrows-wheeler-transform
+- [x] caesar-cipher-1
+- [x] caesar-cipher-2
+- [x] calculating-the-value-of-e
 - [ ] calendar---for-real-programmers-1
 - [ ] calendar---for-real-programmers-2
+- [ ] calendar
 - [ ] calkin-wilf-sequence
-- [ ] call-a-foreign-language-function
-- [ ] call-a-function-1
-- [ ] call-a-function-10
-- [ ] call-a-function-11
-- [ ] call-a-function-12
-- [ ] call-a-function-2
-- [ ] call-a-function-3
-- [ ] call-a-function-4
-- [ ] call-a-function-5
-- [ ] call-a-function-6
-- [ ] call-a-function-7
-- [ ] call-a-function-8
-- [ ] call-a-function-9
-- [ ] call-an-object-method
-- [ ] call-an-object-method-1
-- [ ] call-an-object-method-2
-- [ ] call-an-object-method-3
-- [ ] camel-case-and-snake-case
-- [ ] canny-edge-detector
-- [ ] canonicalize-cidr
-- [ ] cantor-set
-- [ ] carmichael-3-strong-pseudoprimes
-- [ ] cartesian-product-of-two-or-more-lists-1
-- [ ] cartesian-product-of-two-or-more-lists-2
-- [ ] cartesian-product-of-two-or-more-lists-3
-- [ ] cartesian-product-of-two-or-more-lists-4
-- [ ] case-sensitivity-of-identifiers
-- [ ] casting-out-nines
-- [ ] catalan-numbers-1
-- [ ] catalan-numbers-2
+- [x] call-a-foreign-language-function
+- [x] call-a-function-1
+- [x] call-a-function-10
+- [x] call-a-function-11
+- [x] call-a-function-12
+- [x] call-a-function-2
+- [x] call-a-function-3
+- [x] call-a-function-4
+- [x] call-a-function-5
+- [x] call-a-function-6
+- [x] call-a-function-7
+- [x] call-a-function-8
+- [x] call-a-function-9
+- [x] call-an-object-method-1
+- [x] call-an-object-method-2
+- [x] call-an-object-method-3
+- [x] call-an-object-method
+- [x] camel-case-and-snake-case
+- [x] canny-edge-detector
+- [x] canonicalize-cidr
+- [x] cantor-set
+- [x] carmichael-3-strong-pseudoprimes
+- [x] cartesian-product-of-two-or-more-lists-1
+- [x] cartesian-product-of-two-or-more-lists-2
+- [x] cartesian-product-of-two-or-more-lists-3
+- [x] cartesian-product-of-two-or-more-lists-4
+- [x] case-sensitivity-of-identifiers
+- [x] casting-out-nines
+- [x] catalan-numbers-1
+- [x] catalan-numbers-2
 - [ ] catalan-numbers-pascals-triangle
-- [ ] catamorphism
-- [ ] catmull-clark-subdivision-surface
-- [ ] chaocipher
-- [ ] chaos-game
-- [ ] character-codes-1
-- [ ] character-codes-2
-- [ ] character-codes-3
-- [ ] character-codes-4
-- [ ] character-codes-5
-- [ ] chat-server
+- [x] catamorphism
+- [x] catmull-clark-subdivision-surface
+- [x] chaocipher
+- [x] chaos-game
+- [x] character-codes-1
+- [x] character-codes-2
+- [x] character-codes-3
+- [x] character-codes-4
+- [x] character-codes-5
+- [x] chat-server
 - [ ] check-machin-like-formulas
-- [ ] check-that-file-exists
-- [ ] checkpoint-synchronization-1
-- [ ] checkpoint-synchronization-2
-- [ ] checkpoint-synchronization-3
-- [ ] checkpoint-synchronization-4
-- [ ] chernicks-carmichael-numbers
-- [ ] cheryls-birthday
-- [ ] chinese-remainder-theorem
-- [ ] chinese-zodiac
-- [ ] cholesky-decomposition
-- [ ] cholesky-decomposition-1
-- [ ] chowla-numbers
+- [x] check-that-file-exists
+- [x] checkpoint-synchronization-1
+- [x] checkpoint-synchronization-2
+- [x] checkpoint-synchronization-3
+- [x] checkpoint-synchronization-4
+- [x] chernicks-carmichael-numbers
+- [x] cheryls-birthday
+- [x] chinese-remainder-theorem
+- [x] chinese-zodiac
+- [x] cholesky-decomposition-1
+- [x] cholesky-decomposition
+- [x] chowla-numbers
 - [ ] church-numerals-1
 - [ ] church-numerals-2
-- [ ] circles-of-given-radius-through-two-points
-- [ ] circular-primes
+- [x] circles-of-given-radius-through-two-points
+- [x] circular-primes
 - [ ] cistercian-numerals
-- [ ] crc-32-1
+- [ ] compiler-virtual-machine-interpreter
+- [x] composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k
+- [x] compound-data-type
+- [x] concurrent-computing-1
+- [x] concurrent-computing-2
+- [x] concurrent-computing-3
+- [ ] conditional-structures-1
+- [x] conditional-structures-10
+- [ ] conditional-structures-2
+- [ ] conditional-structures-3
+- [x] conditional-structures-4
+- [ ] conditional-structures-5
+- [ ] conditional-structures-6
+- [ ] conditional-structures-7
+- [ ] conditional-structures-8
+- [x] conditional-structures-9
+- [x] consecutive-primes-with-ascending-or-descending-differences
+- [ ] constrained-genericity-1
+- [ ] constrained-genericity-2
+- [x] constrained-genericity-3
+- [ ] constrained-genericity-4
+- [x] constrained-random-points-on-a-circle-1
+- [x] constrained-random-points-on-a-circle-2
+- [x] continued-fraction
+- [x] convert-decimal-number-to-rational
+- [x] convert-seconds-to-compound-duration
+- [x] convex-hull
+- [x] conways-game-of-life
+- [x] copy-a-string-1
+- [x] copy-a-string-2
+- [x] copy-stdin-to-stdout-1
+- [ ] copy-stdin-to-stdout-2
+- [ ] count-in-factors
+- [x] count-in-octal-1
+- [x] count-in-octal-2
+- [x] count-in-octal-3
+- [x] count-in-octal-4
+- [x] count-occurrences-of-a-substring
+- [ ] count-the-coins-1
+- [x] count-the-coins-2
+- [x] cramers-rule
+- [x] crc-32-1
 - [ ] crc-32-2
-- [ ] csv-data-manipulation
-- [ ] csv-to-html-translation-1
-- [ ] csv-to-html-translation-2
-- [ ] csv-to-html-translation-3
-- [ ] csv-to-html-translation-4
-- [ ] csv-to-html-translation-5
+- [ ] create-a-file-on-magnetic-tape
+- [x] create-a-file
+- [ ] create-a-two-dimensional-array-at-runtime-1
+- [x] create-an-html-table
+- [x] create-an-object-at-a-given-address
+- [x] csv-data-manipulation
+- [x] csv-to-html-translation-1
+- [x] csv-to-html-translation-2
+- [x] csv-to-html-translation-3
+- [x] csv-to-html-translation-4
+- [x] csv-to-html-translation-5
+- [x] cuban-primes
+- [x] cullen-and-woodall-numbers
+- [x] cumulative-standard-deviation
+- [x] currency
+- [x] currying
+- [x] curzon-numbers
 - [x] cusip
+- [x] cyclops-numbers
+- [x] damm-algorithm
+- [x] date-format
+- [ ] date-manipulation
+- [x] day-of-the-week
+- [x] de-bruijn-sequences
+- [x] deal-cards-for-freecell
+- [ ] death-star
+- [x] deceptive-numbers
 - [x] md5

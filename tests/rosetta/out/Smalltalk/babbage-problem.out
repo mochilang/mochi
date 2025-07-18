@@ -1,12 +1,1 @@
-Object: BreakSignal error: did not understand #goodness:
-MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
-BreakSignal class(Object)>>doesNotUnderstand: #goodness: (SysExcept.st:1448)
-optimized [] in BlockClosure class>>exceptionHandlerSearchBlock (BlkClosure.st:16)
-[] in MessageNotUnderstood(Exception)>>instantiateNextHandlerFrom: (ExcHandling.st:339)
-MethodContext(ContextPart)>>scanBacktraceForAttribute:do: (ContextPart.st:449)
-MessageNotUnderstood(Exception)>>instantiateNextHandlerFrom: (ExcHandling.st:335)
-MessageNotUnderstood(Exception)>>signal (ExcHandling.st:253)
-SmallInteger(Object)>>doesNotUnderstand: #% (SysExcept.st:1448)
-optimized [] in UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/babbage-problem.st:11)
-BlockClosure>>on:do: (BlkClosure.st:193)
-UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/babbage-problem.st:18)
+/tmp/babbage-problem.st:4: expected expression

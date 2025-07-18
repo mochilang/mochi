@@ -1,7 +1,1 @@
-Index  Compass point         Degree
-Object: Array new: 33 "<0x7f6680837a60>" error: Invalid index 0: index out of range
-SystemExceptions.IndexOutOfRange(Exception)>>signal (ExcHandling.st:254)
-SystemExceptions.IndexOutOfRange class>>signalOn:withIndex: (SysExcept.st:660)
-Array(Object)>>checkIndexableBounds: (Object.st:796)
-Array(Object)>>at: (Object.st:858)
-UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/box-the-compass.st:57)
+/tmp/box-the-compass.st:6: parse error, expected ']'

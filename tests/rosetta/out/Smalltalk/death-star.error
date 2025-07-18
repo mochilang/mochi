@@ -1,0 +1,8 @@
+parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/death-star.mochi:56:30: unexpected token ":-" (expected ":" Expr)
+  --> /workspace/mochi/tests/rosetta/x/Mochi/death-star.mochi:56:30
+
+ 56 |   var light = normalize(V3{ x:-50.0, y:30.0, z:50.0 })
+    |                              ^
+
+help:
+  Parse error occurred. Check syntax near this location.

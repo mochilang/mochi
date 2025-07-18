@@ -1,4 +1,4 @@
-parse error: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/ascending-primes.mochi:17:5: unexpected token "generate" (expected <ident> "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/ascending-primes.mochi:17:5: unexpected token "generate" (expected <ident> "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
   --> /workspace/mochi/tests/rosetta/x/Mochi/ascending-primes.mochi:17:5
 
  17 | fun generate(first: int, cand: int, digits: int) {
