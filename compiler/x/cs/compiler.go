@@ -15,6 +15,29 @@ import (
 	"mochi/types"
 )
 
+// A minimal list of C# reserved keywords. Identifiers that match any of these
+// will be prefixed with an underscore by sanitizeName so the generated source
+// is valid. This list does not need to be exhaustive for the tests but should
+// cover common cases encountered in the Rosetta examples.
+var csReserved = map[string]struct{}{
+	"abstract": {}, "as": {}, "base": {}, "bool": {}, "break": {},
+	"byte": {}, "case": {}, "catch": {}, "char": {}, "checked": {},
+	"class": {}, "const": {}, "continue": {}, "decimal": {}, "default": {},
+	"delegate": {}, "do": {}, "double": {}, "else": {}, "enum": {},
+	"event": {}, "explicit": {}, "extern": {}, "false": {}, "finally": {},
+	"fixed": {}, "float": {}, "for": {}, "foreach": {}, "goto": {},
+	"if": {}, "implicit": {}, "in": {}, "int": {}, "interface": {},
+	"internal": {}, "is": {}, "lock": {}, "long": {}, "namespace": {},
+	"new": {}, "null": {}, "object": {}, "operator": {}, "out": {},
+	"override": {}, "params": {}, "private": {}, "protected": {}, "public": {},
+	"readonly": {}, "ref": {}, "return": {}, "sbyte": {}, "sealed": {},
+	"short": {}, "sizeof": {}, "stackalloc": {}, "static": {}, "string": {},
+	"struct": {}, "switch": {}, "this": {}, "throw": {}, "true": {},
+	"try": {}, "typeof": {}, "uint": {}, "ulong": {}, "unchecked": {},
+	"unsafe": {}, "ushort": {}, "using": {}, "virtual": {}, "void": {},
+	"volatile": {}, "while": {}, "var": {}, "dynamic": {},
+}
+
 // Compiler translates a Mochi AST into C# source code.
 type Compiler struct {
 	buf          bytes.Buffer
@@ -1070,10 +1093,20 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 
 func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	lhs := sanitizeName(a.Name)
+	var curType types.Type
+	if t, err := c.env.GetVar(a.Name); err == nil {
+		curType = t
+	}
 	for _, idx := range a.Index {
 		iexpr, err := c.compileExpr(idx.Start)
 		if err != nil {
 			return err
+		}
+		if lt, ok := curType.(types.ListType); ok {
+			iexpr = fmt.Sprintf("(int)%s", iexpr)
+			curType = lt.Elem
+		} else if mt, ok := curType.(types.MapType); ok {
+			curType = mt.Value
 		}
 		lhs = fmt.Sprintf("%s[%s]", lhs, iexpr)
 	}
@@ -3377,6 +3410,21 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("lower() expects 1 arg")
 		}
 		return fmt.Sprintf("Convert.ToString(%s).ToLower()", args[0]), nil
+	case "int":
+		if len(args) != 1 {
+			return "", fmt.Errorf("int() expects 1 arg")
+		}
+		return fmt.Sprintf("int.Parse(%s)", args[0]), nil
+	case "long":
+		if len(args) != 1 {
+			return "", fmt.Errorf("long() expects 1 arg")
+		}
+		return fmt.Sprintf("long.Parse(%s)", args[0]), nil
+	case "float":
+		if len(args) != 1 {
+			return "", fmt.Errorf("float() expects 1 arg")
+		}
+		return fmt.Sprintf("double.Parse(%s)", args[0]), nil
 	case "input":
 		if len(args) != 0 {
 			return "", fmt.Errorf("input() expects no args")
@@ -3514,6 +3562,9 @@ func sanitizeName(name string) string {
 	}
 	s := b.String()
 	if s == "" || !((s[0] >= 'A' && s[0] <= 'Z') || (s[0] >= 'a' && s[0] <= 'z') || s[0] == '_') {
+		s = "_" + s
+	}
+	if _, ok := csReserved[s]; ok {
 		s = "_" + s
 	}
 	return s
