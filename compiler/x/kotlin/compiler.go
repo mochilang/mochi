@@ -1707,16 +1707,16 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	sortedSrc := src
+	preSortLine := ""
 	if q.Sort != nil && q.Group == nil && len(q.Froms) == 0 && len(q.Joins) == 0 {
 		sortEnv := types.NewEnv(c.env)
 		sortEnv.SetVar(q.Var, elem, true)
-		if ml, ok := mapLiteral(q.Sort); ok {
-			cmp, err := c.mapSortComparator(elem, ml, sortEnv, q.Var)
+		if fields, ok := sortExprFields(q.Sort); ok {
+			cmp, err := c.mapSortComparator(elem, fields, sortEnv, q.Var)
 			if err != nil {
 				return "", err
 			}
-			b.WriteString(indent(lvl))
-			b.WriteString(fmt.Sprintf("val __sorted = %s.%s\n", src, cmp))
+			preSortLine = indent(lvl) + fmt.Sprintf("val __sorted = %s.%s\n", src, cmp)
 			sortedSrc = "__sorted"
 			preSorted = true
 		} else {
@@ -1744,8 +1744,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 				sortExpr = strings.TrimPrefix(sortExpr, "-")
 				method = ".sortedByDescending"
 			}
-			b.WriteString(indent(lvl))
-			b.WriteString(fmt.Sprintf("val __sorted = %s%s { %s%s }\n", src, method, sortExpr, cast))
+			preSortLine = indent(lvl) + fmt.Sprintf("val __sorted = %s%s { %s%s }\n", src, method, sortExpr, cast)
 			sortedSrc = "__sorted"
 			preSorted = true
 		}
@@ -1787,6 +1786,9 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	c.env = child
 
 	b.WriteString("run {\n")
+	if preSortLine != "" {
+		b.WriteString(preSortLine)
+	}
 	b.WriteString(indent(lvl))
 	if q.Group != nil {
 		c.use("Group")
@@ -2061,8 +2063,8 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		for _, v := range vars {
 			sortExpr = replaceIdent(sortExpr, v, "it")
 		}
-		if ml, ok := mapLiteral(q.Sort); ok {
-			cmp, err := c.mapSortComparator(elem, ml, sortEnv, q.Var)
+		if fields, ok := sortExprFields(q.Sort); ok {
+			cmp, err := c.mapSortComparator(elem, fields, sortEnv, q.Var)
 			if err != nil {
 				return "", err
 			}
@@ -2415,6 +2417,32 @@ func mapLiteral(e *parser.Expr) (*parser.MapLiteral, bool) {
 	return nil, false
 }
 
+func sortExprFields(e *parser.Expr) ([]*parser.Expr, bool) {
+	if ml, ok := mapLiteral(e); ok {
+		exprs := make([]*parser.Expr, len(ml.Items))
+		for i, it := range ml.Items {
+			exprs[i] = it.Value
+		}
+		return exprs, true
+	}
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil, false
+	}
+	pf := u.Value
+	if len(pf.Ops) != 0 || pf.Target == nil || pf.Target.Struct == nil {
+		return nil, false
+	}
+	exprs := make([]*parser.Expr, len(pf.Target.Struct.Fields))
+	for i, f := range pf.Target.Struct.Fields {
+		exprs[i] = f.Value
+	}
+	return exprs, true
+}
+
 func listLiteral(e *parser.Expr) (*parser.ListLiteral, bool) {
 	if e == nil || len(e.Binary.Right) != 0 {
 		return nil, false
@@ -2704,12 +2732,12 @@ func (c *Compiler) structForMap(m *parser.MapLiteral) (string, bool) {
 	return "", false
 }
 
-func (c *Compiler) mapSortComparator(elem types.Type, ml *parser.MapLiteral, env *types.Env, varName string) (string, error) {
+func (c *Compiler) mapSortComparator(elem types.Type, exprs []*parser.Expr, env *types.Env, varName string) (string, error) {
 	old := c.env
 	c.env = env
-	parts := make([]string, len(ml.Items))
-	for i, it := range ml.Items {
-		expr, err := c.expr(it.Value)
+	parts := make([]string, len(exprs))
+	for i, e := range exprs {
+		expr, err := c.expr(e)
 		if err != nil {
 			c.env = old
 			return "", err
