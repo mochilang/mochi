@@ -441,6 +441,47 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		}
 	}
 
+	// special case: multiple if-return statements followed by return
+	if len(fn.Body) >= 2 {
+		var conds []string
+		var rets []string
+		idx := 0
+		for idx < len(fn.Body)-1 {
+			st := fn.Body[idx]
+			ifst := st.If
+			if ifst == nil || ifst.ElseIf != nil || len(ifst.Then) != 1 || ifst.Then[0].Return == nil || len(ifst.Else) > 0 {
+				break
+			}
+			cond, err := c.compileExpr(ifst.Cond)
+			if err != nil {
+				return err
+			}
+			retExpr, err := c.compileReturn(ifst.Then[0].Return)
+			if err != nil {
+				return err
+			}
+			conds = append(conds, cond)
+			rets = append(rets, retExpr)
+			idx++
+		}
+		if idx == len(fn.Body)-1 && fn.Body[idx].Return != nil && len(conds) > 0 {
+			elseExpr, err := c.compileReturn(fn.Body[idx].Return)
+			if err != nil {
+				return err
+			}
+			c.writeln("case true of")
+			c.indent++
+			for i := range conds {
+				c.writeln(fmt.Sprintf("_ when %s -> %s;", conds[i], rets[i]))
+			}
+			c.writeln(fmt.Sprintf("_ -> %s", elseExpr))
+			c.indent--
+			c.writeln("end.")
+			c.indent--
+			return nil
+		}
+	}
+
 	var lines []string
 	for _, st := range fn.Body {
 		l, err := c.compileStmtLine(st)

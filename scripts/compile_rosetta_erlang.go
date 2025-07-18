@@ -97,6 +97,9 @@ func main() {
 			if bytes.HasPrefix(line, []byte("/tmp/")) {
 				continue
 			}
+			if bytes.Contains(line, []byte(".erl:")) && bytes.Contains(line, []byte("Warning:")) {
+				continue
+			}
 			if len(line) > 0 {
 				buf.Write(line)
 				buf.WriteByte('\n')
