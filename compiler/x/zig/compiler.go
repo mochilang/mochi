@@ -631,7 +631,13 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 				c.env.SetVar(s.Var.Name, typ, true)
 			}
 			if s.Var.Value != nil {
-				if isMapLiteralExpr(s.Var.Value) || isEmptyMapExpr(s.Var.Value) {
+				if isEmptyListExpr(s.Var.Value) {
+					elem := "i32"
+					if lt, ok := typ.(types.ListType); ok {
+						elem = strings.TrimPrefix(zigTypeOf(lt.Elem), "[]const ")
+					}
+					c.writeln(fmt.Sprintf("var %s = std.ArrayList(%s).init(std.heap.page_allocator);", name, elem))
+				} else if isMapLiteralExpr(s.Var.Value) || isEmptyMapExpr(s.Var.Value) {
 					c.writelnType(fmt.Sprintf("var %s: %s = undefined;", name, zigTypeOf(typ)), typ)
 					var v string
 					if ml := extractMapLiteral(s.Var.Value); ml != nil {
@@ -3575,7 +3581,7 @@ func (c *Compiler) compileListLiteral(list *parser.ListLiteral, asRef bool) (str
 	elems := make([]string, len(list.Elems))
 	if len(list.Elems) == 0 {
 		if asRef {
-			return "&[]i32{}", nil
+			return "&[_]i32{}", nil
 		}
 		return "[]i32{}", nil
 	}
@@ -3684,7 +3690,7 @@ func (c *Compiler) compileListLiteral(list *parser.ListLiteral, asRef bool) (str
 func (c *Compiler) compileNamedListLiteral(list *parser.ListLiteral, asRef bool, structName string) (decl, expr string, err error) {
 	if len(list.Elems) == 0 {
 		if asRef {
-			expr = "&[]" + structName + "{}"
+			expr = "&[_]" + structName + "{}"
 		} else {
 			expr = "[]" + structName + "{}"
 		}
