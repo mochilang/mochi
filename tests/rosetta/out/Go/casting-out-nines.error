@@ -1,1 +1,1 @@
-compile error: cannot index into type TestCase
+compile: cannot index into type TestCase

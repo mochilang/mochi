@@ -1,5 +1,5 @@
-parse error: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/church-numerals-1.mochi:4:11: unexpected token "fun" (expected TypeVariant ("|" TypeVariant)*)
-  --> /workspace/mochi/tests/rosetta/x/Mochi/church-numerals-1.mochi:4:11
+parse: error[P999]: tests/rosetta/x/Mochi/church-numerals-1.mochi:4:11: unexpected token "fun" (expected TypeVariant ("|" TypeVariant)*)
+  --> tests/rosetta/x/Mochi/church-numerals-1.mochi:4:11
 
   4 | type Fn = fun(any): any
     |           ^

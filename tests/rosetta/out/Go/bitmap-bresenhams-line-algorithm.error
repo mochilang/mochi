@@ -1,8 +1,8 @@
-parse error: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/bitmap-bresenhams-line-algorithm.mochi:1:1: lexer: invalid input text "# Mochi implemen..."
-  --> /workspace/mochi/tests/rosetta/x/Mochi/bitmap-bresenhams-line-algorithm.mochi:1:1
+parse: error[P999]: tests/rosetta/x/Mochi/bitmap-bresenhams-line-algorithm.mochi:28:13: unexpected token "-" (expected PostfixExpr)
+  --> tests/rosetta/x/Mochi/bitmap-bresenhams-line-algorithm.mochi:28:13
 
-  1 | # Mochi implementation of Bresenham's line algorithm
-    | ^
+ 28 |     if e2 > -dy {
+    |             ^
 
 help:
-  String literals must be properly closed with a `"`.
+  Parse error occurred. Check syntax near this location.

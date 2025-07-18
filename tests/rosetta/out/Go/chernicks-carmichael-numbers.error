@@ -1,0 +1,5 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:57:12: cannot use append(_toAnySlice(digits), any((n % 10))) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:73:9: cannot use append(_toAnySlice(res), any((prod % 10))) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:78:9: cannot use append(_toAnySlice(res), any((carry % 10))) (value of type []any) as []int value in assignment

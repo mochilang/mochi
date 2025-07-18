@@ -1,0 +1,4 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:17:23: undefined: split
+/tmp/X/001/main.go:18:40: undefined: split

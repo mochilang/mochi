@@ -1,0 +1,14 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:17:16: invalid argument: any(s) (value of interface type any) for built-in len
+/tmp/X/001/main.go:28:14: invalid argument: any(s) (value of interface type any) for built-in len
+/tmp/X/001/main.go:40:12: invalid argument: any(s) (value of interface type any) for built-in len
+/tmp/X/001/main.go:41:14: invalid argument: any(sub) (value of interface type any) for built-in len
+/tmp/X/001/main.go:63:10: cannot use append(_toAnySlice(res), any(s)) (value of type []any) as []string value in assignment
+/tmp/X/001/main.go:71:9: invalid argument: any(xs) (value of interface type any) for built-in len
+/tmp/X/001/main.go:76:14: invalid argument: any(xs) (value of interface type any) for built-in len
+/tmp/X/001/main.go:79:15: invalid argument: any(xs) (value of interface type any) for built-in len
+/tmp/X/001/main.go:81:12: cannot use append(_toAnySlice(rest), any(xs[j])) (value of type []any) as []string value in assignment
+/tmp/X/001/main.go:248:6: main redeclared in this block
+	/tmp/X/001/main.go:210:6: other declaration of main
+/tmp/X/001/main.go:81:12: too many errors

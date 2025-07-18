@@ -1,1 +1,8 @@
-compile error: cannot index into type Digit
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:18:14: invalid argument: any(xs) (value of interface type any) for built-in len
+/tmp/X/001/main.go:32:10: invalid argument: any(str) (value of interface type any) for built-in len
+/tmp/X/001/main.go:49:14: invalid argument: any(str) (value of interface type any) for built-in len
+/tmp/X/001/main.go:69:12: cannot use append(_toAnySlice(rows[0]), any("SUM")) (value of type []any) as []string value in assignment
+/tmp/X/001/main.go:70:14: invalid argument: any(rows) (value of interface type any) for built-in len
+/tmp/X/001/main.go:75:13: cannot use append(_toAnySlice(rows[i]), any(fmt.Sprint(any(sum)))) (value of type []any) as []string value in assignment

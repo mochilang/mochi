@@ -1,5 +1,5 @@
-parse error: error[P052]: /workspace/mochi/tests/rosetta/x/Mochi/calendar---for-real-programmers-1.mochi:15:59: unexpected token "=" (expected ")")
-  --> /workspace/mochi/tests/rosetta/x/Mochi/calendar---for-real-programmers-1.mochi:15:59
+parse: error[P052]: tests/rosetta/x/Mochi/calendar---for-real-programmers-1.mochi:15:59: unexpected token "=" (expected ")")
+  --> tests/rosetta/x/Mochi/calendar---for-real-programmers-1.mochi:15:59
 
  15 |     print("      " + months[qtr*3+mi] + "           ", end="")
     |                                                           ^

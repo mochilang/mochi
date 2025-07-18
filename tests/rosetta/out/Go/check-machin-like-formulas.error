@@ -1,5 +1,5 @@
-parse error: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/check-machin-like-formulas.mochi:9:31: unexpected token ":-" (expected ":" Expr)
-  --> /workspace/mochi/tests/rosetta/x/Mochi/check-machin-like-formulas.mochi:9:31
+parse: error[P999]: tests/rosetta/x/Mochi/check-machin-like-formulas.mochi:9:31: unexpected token ":-" (expected ":" Expr)
+  --> tests/rosetta/x/Mochi/check-machin-like-formulas.mochi:9:31
 
   9 |   [{"a":4, "n":1, "d":5}, {"a":-1, "n":1, "d":239}],
     |                               ^

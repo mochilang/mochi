@@ -1,0 +1,9 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:16:70: invalid argument: any(s) (value of interface type any) for built-in len
+/tmp/X/001/main.go:30:11: cannot use append(_toAnySlice(lines), any(row)) (value of type []any) as []string value in assignment
+/tmp/X/001/main.go:37:10: invalid argument: any(stack) (value of interface type any) for built-in len
+/tmp/X/001/main.go:38:23: invalid argument: any(stack) (value of interface type any) for built-in len
+/tmp/X/001/main.go:39:24: invalid argument: any(stack) (value of interface type any) for built-in len
+/tmp/X/001/main.go:56:11: cannot use append(_toAnySlice(stack), any(map[string]int{…})) (value of type []any) as []map[string]int value in assignment
+/tmp/X/001/main.go:61:11: cannot use append(_toAnySlice(stack), any(map[string]int{…})) (value of type []any) as []map[string]int value in assignment

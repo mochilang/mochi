@@ -23,6 +23,6 @@ func main() {
 		} else {
 			line = line + "Closed"
 		}
-		fmt.Println(strings.TrimSpace(fmt.Sprintln(any(line))))
+		fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(line)), "\n"))
 	}
 }

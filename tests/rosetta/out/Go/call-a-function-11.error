@@ -1,0 +1,6 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:23:5: invalid operation: cannot index ref (variable of type *[]int)
+/tmp/X/001/main.go:34:10: cannot use box (variable of type []int) as *[]int value in argument to zeroptr
+/tmp/X/001/main.go:40:6: main redeclared in this block
+	/tmp/X/001/main.go:27:6: other declaration of main

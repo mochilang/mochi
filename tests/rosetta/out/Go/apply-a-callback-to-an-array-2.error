@@ -1,0 +1,8 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:39:36: syntax error: unexpected { in parameter list; possibly missing comma or )
+/tmp/X/001/main.go:40:3: syntax error: unexpected keyword return in argument list; possibly missing comma or )
+/tmp/X/001/main.go:41:2: syntax error: unexpected ) after top level declaration
+/tmp/X/001/main.go:42:88: syntax error: unexpected {, expected (
+/tmp/X/001/main.go:43:3: syntax error: unexpected keyword return, expected )
+/tmp/X/001/main.go:44:1: syntax error: non-declaration statement outside function body

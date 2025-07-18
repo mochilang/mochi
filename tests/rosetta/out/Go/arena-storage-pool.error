@@ -1,0 +1,7 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:16:9: cannot use append(_toAnySlice(p), any(x)) (value of type []any) as []int value in return statement
+/tmp/X/001/main.go:21:9: invalid argument: any(p) (value of interface type any) for built-in len
+/tmp/X/001/main.go:25:14: invalid argument: any(p) (value of interface type any) for built-in len
+/tmp/X/001/main.go:71:6: main redeclared in this block
+	/tmp/X/001/main.go:37:6: other declaration of main

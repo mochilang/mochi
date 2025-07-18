@@ -1,8 +1,14 @@
-parse error: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/b-zier-curves-intersections.mochi:1:1: lexer: invalid input text "# Mochi implemen..."
-  --> /workspace/mochi/tests/rosetta/x/Mochi/b-zier-curves-intersections.mochi:1:1
-
-  1 | # Mochi implementation of Rosetta "B'zier curves/Intersections" task
-    | ^
-
-help:
-  String literals must be properly closed with a `"`.
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:92:28: cannot use &q.X (value of type *QuadSpline) as QuadSpline value in argument to subdivideQuadSpline
+/tmp/X/001/main.go:93:28: cannot use &q.Y (value of type *QuadSpline) as QuadSpline value in argument to subdivideQuadSpline
+/tmp/X/001/main.go:141:14: invalid argument: any(pts) (value of interface type any) for built-in len
+/tmp/X/001/main.go:156:10: invalid argument: any(workload) (value of interface type any) for built-in len
+/tmp/X/001/main.go:157:15: invalid argument: any(workload) (value of interface type any) for built-in len
+/tmp/X/001/main.go:160:25: invalid operation: cannot take address of work["p"] (map index expression of struct type QuadCurve)
+/tmp/X/001/main.go:160:37: invalid operation: cannot take address of work["q"] (map index expression of struct type QuadCurve)
+/tmp/X/001/main.go:165:36: cannot use &inter (value of type *Point) as Point value in argument to seemsToBeDuplicate
+/tmp/X/001/main.go:166:14: cannot use append(_toAnySlice(inters), any(inter)) (value of type []any) as []Point value in assignment
+/tmp/X/001/main.go:200:6: main redeclared in this block
+	/tmp/X/001/main.go:185:6: other declaration of main
+/tmp/X/001/main.go:166:14: too many errors

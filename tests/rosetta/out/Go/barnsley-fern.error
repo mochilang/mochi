@@ -1,0 +1,4 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:36:11: cannot use append(_toAnySlice(line), any(" ")) (value of type []any) as []string value in assignment
+/tmp/X/001/main.go:39:10: cannot use append(_toAnySlice(grid), any(line)) (value of type []any) as [][]string value in assignment

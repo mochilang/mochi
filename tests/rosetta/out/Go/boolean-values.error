@@ -1,0 +1,8 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:16:23: cannot use any(s) (value of interface type any) as string value in argument to strings.ToLower: need type assertion
+/tmp/X/001/main.go:17:43: invalid operation: l == true (mismatched types string and untyped bool)
+/tmp/X/001/main.go:27:6: non-boolean condition in if statement
+/tmp/X/001/main.go:35:6: non-boolean condition in if statement
+/tmp/X/001/main.go:62:6: main redeclared in this block
+	/tmp/X/001/main.go:24:6: other declaration of main

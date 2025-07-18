@@ -1,0 +1,13 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:25:14: invalid argument: any(arr1) (value of interface type any) for built-in len
+/tmp/X/001/main.go:34:12: cannot use append(_toAnySlice(keys1), any(v)) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:40:14: invalid argument: any(keys1) (value of interface type any) for built-in len
+/tmp/X/001/main.go:50:14: invalid argument: any(keys1) (value of interface type any) for built-in len
+/tmp/X/001/main.go:53:13: cannot use append(_toAnySlice(modes1), any(k)) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:69:14: invalid argument: any(arr2) (value of interface type any) for built-in len
+/tmp/X/001/main.go:78:12: cannot use append(_toAnySlice(keys2), any(v)) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:84:14: invalid argument: any(keys2) (value of interface type any) for built-in len
+/tmp/X/001/main.go:94:14: invalid argument: any(keys2) (value of interface type any) for built-in len
+/tmp/X/001/main.go:97:13: cannot use append(_toAnySlice(modes2), any(k)) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:97:13: too many errors

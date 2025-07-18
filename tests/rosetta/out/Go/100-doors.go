@@ -38,7 +38,7 @@ func main() {
 				line = line + " "
 			}
 		}
-		fmt.Println(strings.TrimSpace(fmt.Sprintln(any(line))))
+		fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(line)), "\n"))
 	}
 }
 

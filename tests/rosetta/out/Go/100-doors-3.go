@@ -24,5 +24,5 @@ func main() {
 			result = result + "-"
 		}
 	}
-	fmt.Println(strings.TrimSpace(fmt.Sprintln(any(result))))
+	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(result)), "\n"))
 }

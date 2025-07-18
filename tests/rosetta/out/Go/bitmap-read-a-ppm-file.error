@@ -1,1 +1,13 @@
-compile error: cannot index into type Digit
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:34:10: cannot use append(_toAnySlice(row), any(Pixel{…})) (value of type []any) as []Pixel value in assignment
+/tmp/X/001/main.go:37:10: cannot use append(_toAnySlice(rows), any(row)) (value of type []any) as [][]Pixel value in assignment
+/tmp/X/001/main.go:62:14: invalid argument: any(s) (value of interface type any) for built-in len
+/tmp/X/001/main.go:65:10: cannot use append(_toAnySlice(out), any(cur)) (value of type []any) as []string value in assignment
+/tmp/X/001/main.go:72:8: cannot use append(_toAnySlice(out), any(cur)) (value of type []any) as []string value in assignment
+/tmp/X/001/main.go:81:14: invalid argument: any(s) (value of interface type any) for built-in len
+/tmp/X/001/main.go:84:11: invalid argument: any(cur) (value of interface type any) for built-in len
+/tmp/X/001/main.go:85:11: cannot use append(_toAnySlice(out), any(cur)) (value of type []any) as []string value in assignment
+/tmp/X/001/main.go:93:9: invalid argument: any(cur) (value of interface type any) for built-in len
+/tmp/X/001/main.go:94:9: cannot use append(_toAnySlice(out), any(cur)) (value of type []any) as []string value in assignment
+/tmp/X/001/main.go:94:9: too many errors

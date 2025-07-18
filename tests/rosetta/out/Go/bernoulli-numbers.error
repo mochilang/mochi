@@ -1,1 +1,9 @@
-compile error: operator "/" cannot be used on types bigrat and bigrat
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:20:22: invalid operation: operator / not defined on any(1) (value of interface type any)
+/tmp/X/001/main.go:23:42: invalid operation: operator - not defined on a[(j - 1)] (variable of interface type any)
+/tmp/X/001/main.go:34:6: undefined: num
+/tmp/X/001/main.go:35:25: undefined: num
+/tmp/X/001/main.go:37:25: undefined: denom
+/tmp/X/001/main.go:38:64: invalid operation: cannot call non-function fmt.Sprint(any(i)) (value of type string)
+/tmp/X/001/main.go:38:109: invalid operation: cannot call non-function _getField(numStr, "padStart") (value of interface type any)

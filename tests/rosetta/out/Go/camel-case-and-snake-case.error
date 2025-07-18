@@ -1,0 +1,14 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:17:19: invalid argument: any(s) (value of interface type any) for built-in len
+/tmp/X/001/main.go:20:13: invalid argument: any(s) (value of interface type any) for built-in len
+/tmp/X/001/main.go:35:16: invalid argument: any(s) (value of interface type any) for built-in len
+/tmp/X/001/main.go:49:14: invalid argument: any(s) (value of interface type any) for built-in len
+/tmp/X/001/main.go:57:32: cannot use any(ch) (value of interface type any) as string value in argument to strings.ToLower: need type assertion
+/tmp/X/001/main.go:79:14: invalid argument: any(s) (value of interface type any) for built-in len
+/tmp/X/001/main.go:82:26: invalid argument: any(out) (value of interface type any) for built-in len
+/tmp/X/001/main.go:90:26: invalid argument: any(out) (value of interface type any) for built-in len
+/tmp/X/001/main.go:101:32: cannot use any(ch) (value of interface type any) as string value in argument to strings.ToLower: need type assertion
+/tmp/X/001/main.go:164:6: main redeclared in this block
+	/tmp/X/001/main.go:138:6: other declaration of main
+/tmp/X/001/main.go:101:32: too many errors

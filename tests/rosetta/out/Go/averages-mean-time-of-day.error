@@ -1,0 +1,5 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:112:14: invalid argument: any(times) (value of interface type any) for built-in len
+/tmp/X/001/main.go:145:6: main redeclared in this block
+	/tmp/X/001/main.go:133:6: other declaration of main

@@ -1,0 +1,13 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:19:14: invalid argument: any(s) (value of interface type any) for built-in len
+/tmp/X/001/main.go:20:12: invalid argument: any(sep) (value of interface type any) for built-in len
+/tmp/X/001/main.go:20:58: invalid argument: any(s) (value of interface type any) for built-in len
+/tmp/X/001/main.go:20:98: invalid argument: any(sep) (value of interface type any) for built-in len
+/tmp/X/001/main.go:21:12: cannot use append(_toAnySlice(parts), any(cur)) (value of type []any) as []string value in assignment
+/tmp/X/001/main.go:23:17: invalid argument: any(sep) (value of interface type any) for built-in len
+/tmp/X/001/main.go:29:10: cannot use append(_toAnySlice(parts), any(cur)) (value of type []any) as []string value in assignment
+/tmp/X/001/main.go:35:11: invalid argument: any(words) (value of interface type any) for built-in len
+/tmp/X/001/main.go:55:23: invalid argument: any(word) (value of interface type any) for built-in len
+/tmp/X/001/main.go:73:14: invalid argument: any(lines) (value of interface type any) for built-in len
+/tmp/X/001/main.go:73:14: too many errors

@@ -1,0 +1,8 @@
+parse: error[P001]: tests/rosetta/x/Mochi/constrained-genericity-4.mochi:7:2: unexpected token "}" (expected "{" Statement* "}")
+  --> tests/rosetta/x/Mochi/constrained-genericity-4.mochi:7:2
+
+  7 |  }
+    |  ^
+
+help:
+  Check for a missing `{` or `}` to close the block.

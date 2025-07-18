@@ -1,0 +1,14 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:22:14: invalid argument: any(g[0]) (value of interface type any) for built-in len
+/tmp/X/001/main.go:27:7: cannot use append(_toAnySlice(h), any(0)) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:31:14: invalid argument: any(g) (value of interface type any) for built-in len
+/tmp/X/001/main.go:34:15: invalid argument: any(row) (value of interface type any) for built-in len
+/tmp/X/001/main.go:48:13: invalid argument: any(h) (value of interface type any) for built-in len
+/tmp/X/001/main.go:60:50: invalid argument: any(h) (value of interface type any) for built-in len
+/tmp/X/001/main.go:67:14: invalid argument: any(g) (value of interface type any) for built-in len
+/tmp/X/001/main.go:71:15: invalid argument: any(row) (value of interface type any) for built-in len
+/tmp/X/001/main.go:73:14: cannot use append(_toAnySlice(newRow), any(0)) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:116:6: main redeclared in this block
+	/tmp/X/001/main.go:106:6: other declaration of main
+/tmp/X/001/main.go:73:14: too many errors

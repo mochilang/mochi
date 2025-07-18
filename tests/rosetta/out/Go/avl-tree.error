@@ -1,1 +1,14 @@
-compile error: cannot index into type any
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:32:13: invalid operation: cannot index n (variable of type *map[string]any)
+/tmp/X/001/main.go:34:3: invalid operation: cannot index n (variable of type *map[string]any)
+/tmp/X/001/main.go:45:10: cannot use root (variable of type map[string]any) as *map[string]any value in argument to setLink
+/tmp/X/001/main.go:46:10: cannot use (tmp).(map[string]any) (comma, ok expression of type map[string]any) as *map[string]any value in argument to setLink
+/tmp/X/001/main.go:53:10: cannot use (getLink(root, opp(dir))).(map[string]any) (comma, ok expression of type map[string]any) as *map[string]any value in argument to setLink
+/tmp/X/001/main.go:54:10: cannot use (tmp).(map[string]any) (comma, ok expression of type map[string]any) as *map[string]any value in argument to setLink
+/tmp/X/001/main.go:55:10: cannot use root (variable of type map[string]any) as *map[string]any value in argument to setLink
+/tmp/X/001/main.go:57:10: cannot use root (variable of type map[string]any) as *map[string]any value in argument to setLink
+/tmp/X/001/main.go:58:10: cannot use (tmp).(map[string]any) (comma, ok expression of type map[string]any) as *map[string]any value in argument to setLink
+/tmp/X/001/main.go:250:6: main redeclared in this block
+	/tmp/X/001/main.go:228:6: other declaration of main
+/tmp/X/001/main.go:58:10: too many errors

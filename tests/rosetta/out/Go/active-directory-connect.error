@@ -1,0 +1,5 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:39:13: cannot use &client (value of type *LDAPClient) as LDAPClient value in argument to connect
+/tmp/X/001/main.go:46:6: main redeclared in this block
+	/tmp/X/001/main.go:32:6: other declaration of main

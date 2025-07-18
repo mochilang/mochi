@@ -1,0 +1,6 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:27:26: invalid operation: nil is not an interface
+/tmp/X/001/main.go:37:6: non-boolean condition in if statement
+/tmp/X/001/main.go:51:6: main redeclared in this block
+	/tmp/X/001/main.go:26:6: other declaration of main

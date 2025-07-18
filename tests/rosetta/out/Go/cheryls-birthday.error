@@ -1,0 +1,13 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:44:40: cannot use &x (value of type *Birthday) as Birthday value in argument to dayUnique
+/tmp/X/001/main.go:86:20: cannot use &bd (value of type *Birthday) as Birthday value in argument to monthUnique
+/tmp/X/001/main.go:87:15: cannot use append(_toAnySlice(filtered), any(bd)) (value of type []any) as []Birthday value in assignment
+/tmp/X/001/main.go:92:27: cannot use &bd (value of type *Birthday) as Birthday value in argument to monthWithUniqueDay
+/tmp/X/001/main.go:93:16: cannot use append(_toAnySlice(filtered2), any(bd)) (value of type []any) as []Birthday value in assignment
+/tmp/X/001/main.go:98:16: cannot use &bd (value of type *Birthday) as Birthday value in argument to dayUnique
+/tmp/X/001/main.go:99:16: cannot use append(_toAnySlice(filtered3), any(bd)) (value of type []any) as []Birthday value in assignment
+/tmp/X/001/main.go:104:18: cannot use &bd (value of type *Birthday) as Birthday value in argument to monthUnique
+/tmp/X/001/main.go:105:16: cannot use append(_toAnySlice(filtered4), any(bd)) (value of type []any) as []Birthday value in assignment
+/tmp/X/001/main.go:108:9: invalid argument: any(filtered4) (value of interface type any) for built-in len
+/tmp/X/001/main.go:108:9: too many errors

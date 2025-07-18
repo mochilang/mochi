@@ -1,0 +1,7 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:66:14: invalid argument: any(xs) (value of interface type any) for built-in len
+/tmp/X/001/main.go:68:15: invalid argument: any(xs) (value of interface type any) for built-in len
+/tmp/X/001/main.go:106:12: cannot use append(_toAnySlice(circs), any(f)) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:116:9: cannot use append(_toAnySlice(q), any(((f * 10) + d))) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:117:10: cannot use append(_toAnySlice(fq), any(fd)) (value of type []any) as []int value in assignment
