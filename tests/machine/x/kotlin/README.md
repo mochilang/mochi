@@ -2,7 +2,7 @@
 
 This directory contains Kotlin source code generated from the Mochi programs in `tests/vm/valid`. Each program has a corresponding `.kt` file. When the compiler and the Kotlin runtime successfully run the program a `.out` file is written. If compilation or execution fails a `.error` file will be present instead.
 
-Compiled programs: 95/100
+Compiled programs: 96/100
 
 Checklist:
 - [x] append_builtin
@@ -83,7 +83,7 @@ Checklist:
 - [x] save_jsonl_stdout
 - [x] short_circuit
 - [x] slice
-- [ ] sort_stable
+ - [x] sort_stable
 - [x] str_builtin
 - [x] string_compare
 - [x] string_concat
