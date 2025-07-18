@@ -852,18 +852,18 @@ func (c *Compiler) maybeNumber(expr string) string {
 }
 
 func maybeBool(c *Compiler, expr string) string {
+	if strings.Contains(expr, ".get(") {
+		if strings.ContainsAny(expr, "<>=!+-*/%") || strings.Contains(expr, "==") || strings.Contains(expr, "!=") || strings.Contains(expr, "Objects.equals") {
+			return expr
+		}
+		return fmt.Sprintf("Boolean.TRUE.equals(%s)", expr)
+	}
 	if strings.Contains(expr, "(") && strings.Contains(expr, ")") &&
 		!strings.ContainsAny(expr, "<>=!") {
 		return expr
 	}
 	if strings.Contains(expr, "Objects.equals") {
 		return expr
-	}
-	if strings.Contains(expr, ".get(") {
-		if strings.ContainsAny(expr, "<>=!+-*/%") || strings.Contains(expr, "==") || strings.Contains(expr, "!=") || strings.Contains(expr, "Objects.equals") {
-			return expr
-		}
-		return fmt.Sprintf("Boolean.TRUE.equals(%s)", expr)
 	}
 	if t, ok := c.vars[expr]; ok {
 		if t != "boolean" && t != "int" && t != "double" {
