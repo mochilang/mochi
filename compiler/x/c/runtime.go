@@ -556,6 +556,24 @@ static list_int _sha256_list(list_int v) {
     buf[len] = '\0';
     return buf;
 }`
+	helperUpper = `static char* _upper(char* s) {
+    int len = strlen(s);
+    char* buf = (char*)malloc(len + 1);
+    for (int i = 0; i < len; i++) buf[i] = toupper((unsigned char)s[i]);
+    buf[len] = '\0';
+    return buf;
+}`
+	helperFloat = `static double _float(char* s) { return strtod(s, NULL); }`
+	helperSplit = `static list_string _split(char* s, char* sep) {
+    int cap = 4; list_string res = list_string_create(0);
+    char* copy = strdup(s); char* saveptr; char* tok = strtok_r(copy, sep, &saveptr);
+    while (tok) {
+        if (res.len >= cap) { cap = cap ? cap*2 : 4; res.data = realloc(res.data, sizeof(char*)*cap); }
+        res.data[res.len++] = strdup(tok);
+        tok = strtok_r(NULL, sep, &saveptr);
+    }
+    free(copy); return res;
+}`
 	helperNow = `static long long _now() {
     struct timespec ts;
     clock_gettime(CLOCK_REALTIME, &ts);
@@ -811,6 +829,9 @@ var helperCode = map[string]string{
 	needInput:                helperInput,
 	needStr:                  helperStr,
 	needLower:                helperLower,
+	needUpper:                helperUpper,
+	needFloat:                helperFloat,
+	needSplit:                helperSplit,
 	needNow:                  helperNow,
 	needSHA256:               helperSha256,
 	needJSON:                 helperJSON,
@@ -899,6 +920,9 @@ var helperOrder = []string{
 	needInput,
 	needStr,
 	needLower,
+	needUpper,
+	needFloat,
+	needSplit,
 	needNow,
 	needSHA256,
 	needJSON,
