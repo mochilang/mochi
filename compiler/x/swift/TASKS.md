@@ -1,6 +1,8 @@
 # Swift Compiler Progress
 
 ## Recent Enhancements
+- 2025-07-28 08:00 – query expressions selecting numeric fields from groups now
+  infer element types so `_avg`, `_sum`, `_min` and `_max` helpers are avoided.
 - 2025-07-27 09:00 – list element types inferred from struct fields so numeric aggregates drop the `_avg` helper.
 - 2025-07-26 12:00 – struct literals now infer their concrete type so `_equal` helper is skipped when comparing typed lists.
 - 2025-07-25 09:30 – improved expression type detection for arithmetic chains so direct comparisons avoid `_equal` when possible
