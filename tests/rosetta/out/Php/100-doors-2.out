@@ -1,100 +1,100 @@
-Door 1 Open
-Door 2 Closed
-Door 3 Closed
-Door 4 Open
-Door 5 Closed
-Door 6 Closed
-Door 7 Closed
-Door 8 Closed
-Door 9 Open
-Door 10 Closed
-Door 11 Closed
-Door 12 Closed
-Door 13 Closed
-Door 14 Closed
-Door 15 Closed
-Door 16 Open
-Door 17 Closed
-Door 18 Closed
-Door 19 Closed
-Door 20 Closed
-Door 21 Closed
-Door 22 Closed
-Door 23 Closed
-Door 24 Closed
-Door 25 Open
-Door 26 Closed
-Door 27 Closed
-Door 28 Closed
-Door 29 Closed
-Door 30 Closed
-Door 31 Closed
-Door 32 Closed
-Door 33 Closed
-Door 34 Closed
-Door 35 Closed
-Door 36 Open
-Door 37 Closed
-Door 38 Closed
-Door 39 Closed
-Door 40 Closed
-Door 41 Closed
-Door 42 Closed
-Door 43 Closed
-Door 44 Closed
-Door 45 Closed
-Door 46 Closed
-Door 47 Closed
-Door 48 Closed
-Door 49 Open
-Door 50 Closed
-Door 51 Closed
-Door 52 Closed
-Door 53 Closed
-Door 54 Closed
-Door 55 Closed
-Door 56 Closed
-Door 57 Closed
-Door 58 Closed
-Door 59 Closed
-Door 60 Closed
-Door 61 Closed
-Door 62 Closed
-Door 63 Closed
-Door 64 Open
-Door 65 Closed
-Door 66 Closed
-Door 67 Closed
-Door 68 Closed
-Door 69 Closed
-Door 70 Closed
-Door 71 Closed
-Door 72 Closed
-Door 73 Closed
-Door 74 Closed
-Door 75 Closed
-Door 76 Closed
-Door 77 Closed
-Door 78 Closed
-Door 79 Closed
-Door 80 Closed
-Door 81 Open
-Door 82 Closed
-Door 83 Closed
-Door 84 Closed
-Door 85 Closed
-Door 86 Closed
-Door 87 Closed
-Door 88 Closed
-Door 89 Closed
-Door 90 Closed
-Door 91 Closed
-Door 92 Closed
-Door 93 Closed
-Door 94 Closed
-Door 95 Closed
-Door 96 Closed
-Door 97 Closed
-Door 98 Closed
-Door 99 Closed
-Door 100 Open
+string(11) "Door 1 Open"
+string(13) "Door 2 Closed"
+string(13) "Door 3 Closed"
+string(11) "Door 4 Open"
+string(13) "Door 5 Closed"
+string(13) "Door 6 Closed"
+string(13) "Door 7 Closed"
+string(13) "Door 8 Closed"
+string(11) "Door 9 Open"
+string(14) "Door 10 Closed"
+string(14) "Door 11 Closed"
+string(14) "Door 12 Closed"
+string(14) "Door 13 Closed"
+string(14) "Door 14 Closed"
+string(14) "Door 15 Closed"
+string(12) "Door 16 Open"
+string(14) "Door 17 Closed"
+string(14) "Door 18 Closed"
+string(14) "Door 19 Closed"
+string(14) "Door 20 Closed"
+string(14) "Door 21 Closed"
+string(14) "Door 22 Closed"
+string(14) "Door 23 Closed"
+string(14) "Door 24 Closed"
+string(12) "Door 25 Open"
+string(14) "Door 26 Closed"
+string(14) "Door 27 Closed"
+string(14) "Door 28 Closed"
+string(14) "Door 29 Closed"
+string(14) "Door 30 Closed"
+string(14) "Door 31 Closed"
+string(14) "Door 32 Closed"
+string(14) "Door 33 Closed"
+string(14) "Door 34 Closed"
+string(14) "Door 35 Closed"
+string(12) "Door 36 Open"
+string(14) "Door 37 Closed"
+string(14) "Door 38 Closed"
+string(14) "Door 39 Closed"
+string(14) "Door 40 Closed"
+string(14) "Door 41 Closed"
+string(14) "Door 42 Closed"
+string(14) "Door 43 Closed"
+string(14) "Door 44 Closed"
+string(14) "Door 45 Closed"
+string(14) "Door 46 Closed"
+string(14) "Door 47 Closed"
+string(14) "Door 48 Closed"
+string(12) "Door 49 Open"
+string(14) "Door 50 Closed"
+string(14) "Door 51 Closed"
+string(14) "Door 52 Closed"
+string(14) "Door 53 Closed"
+string(14) "Door 54 Closed"
+string(14) "Door 55 Closed"
+string(14) "Door 56 Closed"
+string(14) "Door 57 Closed"
+string(14) "Door 58 Closed"
+string(14) "Door 59 Closed"
+string(14) "Door 60 Closed"
+string(14) "Door 61 Closed"
+string(14) "Door 62 Closed"
+string(14) "Door 63 Closed"
+string(12) "Door 64 Open"
+string(14) "Door 65 Closed"
+string(14) "Door 66 Closed"
+string(14) "Door 67 Closed"
+string(14) "Door 68 Closed"
+string(14) "Door 69 Closed"
+string(14) "Door 70 Closed"
+string(14) "Door 71 Closed"
+string(14) "Door 72 Closed"
+string(14) "Door 73 Closed"
+string(14) "Door 74 Closed"
+string(14) "Door 75 Closed"
+string(14) "Door 76 Closed"
+string(14) "Door 77 Closed"
+string(14) "Door 78 Closed"
+string(14) "Door 79 Closed"
+string(14) "Door 80 Closed"
+string(12) "Door 81 Open"
+string(14) "Door 82 Closed"
+string(14) "Door 83 Closed"
+string(14) "Door 84 Closed"
+string(14) "Door 85 Closed"
+string(14) "Door 86 Closed"
+string(14) "Door 87 Closed"
+string(14) "Door 88 Closed"
+string(14) "Door 89 Closed"
+string(14) "Door 90 Closed"
+string(14) "Door 91 Closed"
+string(14) "Door 92 Closed"
+string(14) "Door 93 Closed"
+string(14) "Door 94 Closed"
+string(14) "Door 95 Closed"
+string(14) "Door 96 Closed"
+string(14) "Door 97 Closed"
+string(14) "Door 98 Closed"
+string(14) "Door 99 Closed"
+string(13) "Door 100 Open"
