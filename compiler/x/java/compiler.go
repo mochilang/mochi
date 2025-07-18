@@ -649,6 +649,12 @@ func (c *Compiler) typeName(t *parser.TypeRef) string {
 				return fmt.Sprintf("List<%s>", et)
 			}
 			return "List<?>"
+		case "set":
+			if len(t.Generic.Args) > 0 {
+				et := wrapperType(c.typeName(t.Generic.Args[0]))
+				return fmt.Sprintf("Set<%s>", et)
+			}
+			return "Set<?>"
 		case "map":
 			if len(t.Generic.Args) >= 2 {
 				kt := wrapperType(c.typeName(t.Generic.Args[0]))
@@ -2361,6 +2367,8 @@ func (c *Compiler) compileBinaryOp(left string, op *parser.BinaryOp, right strin
 		if typ == "String" {
 			return fmt.Sprintf("%s.contains(String.valueOf(%s))", right, left), nil
 		} else if strings.HasPrefix(typ, "List<") {
+			return fmt.Sprintf("%s.contains(%s)", right, left), nil
+		} else if strings.HasPrefix(typ, "Set<") {
 			return fmt.Sprintf("%s.contains(%s)", right, left), nil
 		} else if strings.HasPrefix(typ, "Map<") {
 			return fmt.Sprintf("%s.containsKey(%s)", right, left), nil
