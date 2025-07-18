@@ -15,7 +15,7 @@ cc: exit status 1
 /tmp/associative-array-merging.c:118:11: error: request for member ‘data’ in something not a structure or union
   118 |     result.data[k] = update.data[k];
       |           ^
-/tmp/associative-array-merging.c: In function ‘main’:
+/tmp/associative-array-merging.c: In function ‘mochi_main’:
 /tmp/associative-array-merging.c:128:22: error: incompatible type for argument 1 of ‘merge’
   128 |   int result = merge(&base, &update);
       |                      ^~~~~
@@ -32,10 +32,3 @@ cc: exit status 1
 /tmp/associative-array-merging.c:109:47: note: expected ‘map_string_int’ but argument is of type ‘update_item_t *’
   109 | int merge(map_string_int base, map_string_int update) {
       |                                ~~~~~~~~~~~~~~~^~~~~~
-/tmp/associative-array-merging.c: At top level:
-/tmp/associative-array-merging.c:132:5: error: redefinition of ‘main’
-  132 | int main() {
-      |     ^~~~
-/tmp/associative-array-merging.c:123:5: note: previous definition of ‘main’ with type ‘int()’
-  123 | int main() {
-      |     ^~~~

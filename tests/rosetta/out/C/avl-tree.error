@@ -161,87 +161,43 @@ cc: exit status 1
 /tmp/avl-tree.c:301:11: error: request for member ‘data’ in something not a structure or union
   301 |   return r.data["node"];
       |           ^
-/tmp/avl-tree.c: In function ‘indentStr’:
-/tmp/avl-tree.c:308:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  308 |     char *tmp2 = concat_string(s, " ");
-      |                                ^
-/tmp/avl-tree.c:21:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   21 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
 /tmp/avl-tree.c: In function ‘dumpNode’:
-/tmp/avl-tree.c:318:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  318 |     char *tmp3 = concat_string(sp, "null");
-      |                                ^~
-/tmp/avl-tree.c:21:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   21 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/avl-tree.c:321:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  321 |       char *tmp4 = concat_string(line, ",");
-      |                                  ^~~~
-/tmp/avl-tree.c:21:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   21 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/avl-tree.c:326:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  326 |     char *tmp5 = concat_string(sp, "{");
-      |                                ^~
-/tmp/avl-tree.c:21:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   21 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
 /tmp/avl-tree.c:328:27: error: request for member ‘data’ in something not a structure or union
   328 |     char *tmp6 = _str(node.data["Data"]);
       |                           ^
 /tmp/avl-tree.c:329:27: error: request for member ‘data’ in something not a structure or union
   329 |     char *tmp7 = _str(node.data["Data"]);
       |                           ^
-/tmp/avl-tree.c:330:42: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
+/tmp/avl-tree.c:330:42: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
   330 |     printf("%d\n", indentStr(indent + 3) + "\"Data\": " + tmp7 + ",");
       |                    ~~~~~~~~~~~~~~~~~~~~~ ^
       |                    |                     |
-      |                    const char *          char *
+      |                    char *                char *
 /tmp/avl-tree.c:331:27: error: request for member ‘data’ in something not a structure or union
   331 |     char *tmp8 = _str(node.data["Balance"]);
       |                           ^
 /tmp/avl-tree.c:332:27: error: request for member ‘data’ in something not a structure or union
   332 |     char *tmp9 = _str(node.data["Balance"]);
       |                           ^
-/tmp/avl-tree.c:333:42: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
+/tmp/avl-tree.c:333:42: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
   333 |     printf("%d\n", indentStr(indent + 3) + "\"Balance\": " + tmp9 + ",");
       |                    ~~~~~~~~~~~~~~~~~~~~~ ^
       |                    |                     |
-      |                    const char *          char *
-/tmp/avl-tree.c:334:42: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
+      |                    char *                char *
+/tmp/avl-tree.c:334:42: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
   334 |     printf("%s\n", indentStr(indent + 3) + "\"Link\": [");
       |                    ~~~~~~~~~~~~~~~~~~~~~ ^
       |                    |                     |
-      |                    const char *          char *
-/tmp/avl-tree.c:337:42: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
+      |                    char *                char *
+/tmp/avl-tree.c:337:42: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
   337 |     printf("%s\n", indentStr(indent + 3) + "]");
       |                    ~~~~~~~~~~~~~~~~~~~~~ ^
       |                    |                     |
-      |                    const char *          char *
-/tmp/avl-tree.c:338:33: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  338 |     char *tmp10 = concat_string(sp, "}");
-      |                                 ^~
-/tmp/avl-tree.c:21:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   21 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/avl-tree.c:341:35: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  341 |       char *tmp11 = concat_string(end, ",");
-      |                                   ^~~
-/tmp/avl-tree.c:21:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   21 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/avl-tree.c: In function ‘main’:
+      |                    char *                char *
+/tmp/avl-tree.c: In function ‘mochi_main’:
 /tmp/avl-tree.c:366:12: error: ‘map_string_int’ undeclared (first use in this function)
   366 |   int t = (map_string_int)(tree);
       |            ^~~~~~~~~~~~~~
 /tmp/avl-tree.c:367:4: error: request for member ‘data’ in something not a structure or union
   367 |   t.data["Balance"] = 0;
       |    ^
-/tmp/avl-tree.c: At top level:
-/tmp/avl-tree.c:372:5: error: redefinition of ‘main’
-  372 | int main() {
-      |     ^~~~
-/tmp/avl-tree.c:350:5: note: previous definition of ‘main’ with type ‘int()’
-  350 | int main() {
-      |     ^~~~

@@ -1,5 +1,5 @@
 cc: exit status 1
-/tmp/averages-mode.c: In function ‘main’:
+/tmp/averages-mode.c: In function ‘_mochi_main’:
 /tmp/averages-mode.c:108:17: error: incompatible types when initializing type ‘int’ using type ‘map_string_int’
   108 |   int counts1 = tmp1;
       |                 ^~~~

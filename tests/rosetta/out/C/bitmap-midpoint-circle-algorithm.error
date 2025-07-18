@@ -1,110 +1,23 @@
 cc: exit status 1
 /tmp/bitmap-midpoint-circle-algorithm.c: In function ‘initGrid’:
-/tmp/bitmap-midpoint-circle-algorithm.c:58:15: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-   58 |     int row = tmp2;
-      |               ^~~~
-/tmp/bitmap-midpoint-circle-algorithm.c:63:45: error: incompatible type for argument 1 of ‘concat_list_string’
-   63 |       list_string tmp4 = concat_list_string(row, tmp3);
-      |                                             ^~~
-      |                                             |
-      |                                             int
-/tmp/bitmap-midpoint-circle-algorithm.c:35:51: note: expected ‘list_string’ but argument is of type ‘int’
-   35 | static list_string concat_list_string(list_string a, list_string b) {
-      |                                       ~~~~~~~~~~~~^
-/tmp/bitmap-midpoint-circle-algorithm.c:64:13: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-   64 |       row = tmp4;
-      |             ^~~~
-/tmp/bitmap-midpoint-circle-algorithm.c:67:9: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
-   67 |     g = 0;
-      |         ^
+/tmp/bitmap-midpoint-circle-algorithm.c:50:5: error: ‘g’ undeclared (first use in this function)
+   50 |     g = 0;
+      |     ^
+/tmp/bitmap-midpoint-circle-algorithm.c:50:5: note: each undeclared identifier is reported only once for each function it appears in
 /tmp/bitmap-midpoint-circle-algorithm.c: In function ‘set’:
-/tmp/bitmap-midpoint-circle-algorithm.c:74:22: error: request for member ‘data’ in something not a structure or union
-   74 |   if (x >= 0 && x < g.data[0].len && y >= 0 && y < g.len) {
+/tmp/bitmap-midpoint-circle-algorithm.c:57:22: error: request for member ‘data’ in something not a structure or union
+   57 |   if (x >= 0 && x < g.data[0].len && y >= 0 && y < g.len) {
       |                      ^
-/tmp/bitmap-midpoint-circle-algorithm.c:74:53: error: request for member ‘len’ in something not a structure or union
-   74 |   if (x >= 0 && x < g.data[0].len && y >= 0 && y < g.len) {
+/tmp/bitmap-midpoint-circle-algorithm.c:57:53: error: request for member ‘len’ in something not a structure or union
+   57 |   if (x >= 0 && x < g.data[0].len && y >= 0 && y < g.len) {
       |                                                     ^
-/tmp/bitmap-midpoint-circle-algorithm.c:75:6: error: request for member ‘data’ in something not a structure or union
-   75 |     g.data[y].data[x] = "#";
+/tmp/bitmap-midpoint-circle-algorithm.c:58:6: error: request for member ‘data’ in something not a structure or union
+   58 |     g.data[y].data[x] = "#";
       |      ^
-/tmp/bitmap-midpoint-circle-algorithm.c: In function ‘circle’:
-/tmp/bitmap-midpoint-circle-algorithm.c:86:9: error: incompatible type for argument 1 of ‘set’
-   86 |     set(g, r + x, r + y);
-      |         ^
-      |         |
-      |         list_int
-/tmp/bitmap-midpoint-circle-algorithm.c:73:13: note: expected ‘int’ but argument is of type ‘list_int’
-   73 | int set(int g, int x, int y) {
-      |         ~~~~^
-/tmp/bitmap-midpoint-circle-algorithm.c:87:9: error: incompatible type for argument 1 of ‘set’
-   87 |     set(g, r + y, r + x);
-      |         ^
-      |         |
-      |         list_int
-/tmp/bitmap-midpoint-circle-algorithm.c:73:13: note: expected ‘int’ but argument is of type ‘list_int’
-   73 | int set(int g, int x, int y) {
-      |         ~~~~^
-/tmp/bitmap-midpoint-circle-algorithm.c:88:9: error: incompatible type for argument 1 of ‘set’
-   88 |     set(g, r - x, r + y);
-      |         ^
-      |         |
-      |         list_int
-/tmp/bitmap-midpoint-circle-algorithm.c:73:13: note: expected ‘int’ but argument is of type ‘list_int’
-   73 | int set(int g, int x, int y) {
-      |         ~~~~^
-/tmp/bitmap-midpoint-circle-algorithm.c:89:9: error: incompatible type for argument 1 of ‘set’
-   89 |     set(g, r - y, r + x);
-      |         ^
-      |         |
-      |         list_int
-/tmp/bitmap-midpoint-circle-algorithm.c:73:13: note: expected ‘int’ but argument is of type ‘list_int’
-   73 | int set(int g, int x, int y) {
-      |         ~~~~^
-/tmp/bitmap-midpoint-circle-algorithm.c:90:9: error: incompatible type for argument 1 of ‘set’
-   90 |     set(g, r - x, r - y);
-      |         ^
-      |         |
-      |         list_int
-/tmp/bitmap-midpoint-circle-algorithm.c:73:13: note: expected ‘int’ but argument is of type ‘list_int’
-   73 | int set(int g, int x, int y) {
-      |         ~~~~^
-/tmp/bitmap-midpoint-circle-algorithm.c:91:9: error: incompatible type for argument 1 of ‘set’
-   91 |     set(g, r - y, r - x);
-      |         ^
-      |         |
-      |         list_int
-/tmp/bitmap-midpoint-circle-algorithm.c:73:13: note: expected ‘int’ but argument is of type ‘list_int’
-   73 | int set(int g, int x, int y) {
-      |         ~~~~^
-/tmp/bitmap-midpoint-circle-algorithm.c:92:9: error: incompatible type for argument 1 of ‘set’
-   92 |     set(g, r + x, r - y);
-      |         ^
-      |         |
-      |         list_int
-/tmp/bitmap-midpoint-circle-algorithm.c:73:13: note: expected ‘int’ but argument is of type ‘list_int’
-   73 | int set(int g, int x, int y) {
-      |         ~~~~^
-/tmp/bitmap-midpoint-circle-algorithm.c:93:9: error: incompatible type for argument 1 of ‘set’
-   93 |     set(g, r + y, r - x);
-      |         ^
-      |         |
-      |         list_int
-/tmp/bitmap-midpoint-circle-algorithm.c:73:13: note: expected ‘int’ but argument is of type ‘list_int’
-   73 | int set(int g, int x, int y) {
-      |         ~~~~^
-/tmp/bitmap-midpoint-circle-algorithm.c: In function ‘trimRight’:
-/tmp/bitmap-midpoint-circle-algorithm.c:113:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  113 |     char *tmp5 = concat_string(s, row.data[i]);
-      |                                ^
-/tmp/bitmap-midpoint-circle-algorithm.c:43:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   43 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/bitmap-midpoint-circle-algorithm.c: In function ‘main’:
-/tmp/bitmap-midpoint-circle-algorithm.c:124:30: error: incompatible type for argument 1 of ‘trimRight’
-  124 |     printf("%s\n", trimRight(row));
-      |                              ^~~
-      |                              |
-      |                              int
-/tmp/bitmap-midpoint-circle-algorithm.c:105:35: note: expected ‘list_string’ but argument is of type ‘int’
-  105 | const char *trimRight(list_string row) {
-      |                       ~~~~~~~~~~~~^~~
+/tmp/bitmap-midpoint-circle-algorithm.c: In function ‘_mochi_main’:
+/tmp/bitmap-midpoint-circle-algorithm.c:105:30: error: request for member ‘len’ in something not a structure or union
+  105 |   for (int tmp4 = 0; tmp4 < g.len; tmp4++) {
+      |                              ^
+/tmp/bitmap-midpoint-circle-algorithm.c:106:24: error: request for member ‘data’ in something not a structure or union
+  106 |     list_string row = g.data[tmp4];
+      |                        ^

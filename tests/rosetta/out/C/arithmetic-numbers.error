@@ -1,76 +1,23 @@
 cc: exit status 1
-/tmp/arithmetic-numbers.c: In function ‘sieve’:
-/tmp/arithmetic-numbers.c:64:11: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
-   64 |     spf = 0;
-      |           ^
-/tmp/arithmetic-numbers.c: In function ‘primesFrom’:
-/tmp/arithmetic-numbers.c:91:16: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
-   91 |       primes = 0;
-      |                ^
-/tmp/arithmetic-numbers.c: In function ‘pad3’:
-/tmp/arithmetic-numbers.c:102:37: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  102 |     char *tmp2 = concat_string(" ", s);
-      |                                     ^
-/tmp/arithmetic-numbers.c:29:43: note: expected ‘char *’ but argument is of type ‘const char *’
-   29 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
 /tmp/arithmetic-numbers.c: In function ‘commatize’:
-/tmp/arithmetic-numbers.c:115:24: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  115 |     out = slice_string(s, i, i + 1) + out;
-      |                        ^
-/tmp/arithmetic-numbers.c:43:33: note: expected ‘char *’ but argument is of type ‘const char *’
-   43 | static char *slice_string(char *s, int start, int end) {
-      |                           ~~~~~~^
-/tmp/arithmetic-numbers.c:115:37: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
-  115 |     out = slice_string(s, i, i + 1) + out;
+/tmp/arithmetic-numbers.c:123:37: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  123 |     out = slice_string(s, i, i + 1) + out;
       |           ~~~~~~~~~~~~~~~~~~~~~~~~~ ^
       |           |
       |           char *
-/tmp/arithmetic-numbers.c:118:39: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  118 |       char *tmp4 = concat_string(",", out);
-      |                                       ^~~
-/tmp/arithmetic-numbers.c:29:43: note: expected ‘char *’ but argument is of type ‘const char *’
-   29 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/arithmetic-numbers.c: In function ‘arithmeticNumbers’:
-/tmp/arithmetic-numbers.c:150:13: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
-  150 |       arr = 0;
-      |             ^
-/tmp/arithmetic-numbers.c: In function ‘main’:
-/tmp/arithmetic-numbers.c:196:19: error: invalid operands to binary + (have ‘const char *’ and ‘const char *’)
-  196 |       line = line + pad3(arr.data[i + j]);
+/tmp/arithmetic-numbers.c: In function ‘mochi_main’:
+/tmp/arithmetic-numbers.c:208:19: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  208 |       line = line + pad3(arr.data[i + j]);
       |                   ^ ~~~~~~~~~~~~~~~~~~~~~
       |                     |
-      |                     const char *
-/tmp/arithmetic-numbers.c:198:36: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  198 |         char *tmp7 = concat_string(line, " ");
-      |                                    ^~~~
-/tmp/arithmetic-numbers.c:29:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   29 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/arithmetic-numbers.c:212:17: error: subscripted value is neither array nor pointer nor vector
-  212 |     int x = tmp8[tmp9];
-      |                 ^
-/tmp/arithmetic-numbers.c:216:21: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
-  216 |            "\nThe " + commatize(x) + "th arithmetic number is: " + lastc);
+      |                     char *
+/tmp/arithmetic-numbers.c:228:21: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  228 |            "\nThe " + commatize(x) + "th arithmetic number is: " + lastc);
       |            ~~~~~~~~ ^ ~~~~~~~~~~~~
       |            |          |
-      |            char *     const char *
-/tmp/arithmetic-numbers.c:219:66: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  219 |     char *tmp10 = concat_string("The count of such numbers <= ", lastc);
-      |                                                                  ^~~~~
-/tmp/arithmetic-numbers.c:29:43: note: expected ‘char *’ but argument is of type ‘const char *’
-   29 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/arithmetic-numbers.c:221:26: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
-  221 |     printf("%s\n", tmp11 + commatize(comp) + ".");
+      |            char *     char *
+/tmp/arithmetic-numbers.c:233:26: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  233 |     printf("%s\n", tmp17 + commatize(comp) + ".");
       |                          ^ ~~~~~~~~~~~~~~~
       |                            |
-      |                            const char *
-/tmp/arithmetic-numbers.c: At top level:
-/tmp/arithmetic-numbers.c:225:5: error: redefinition of ‘main’
-  225 | int main() {
-      |     ^~~~
-/tmp/arithmetic-numbers.c:185:5: note: previous definition of ‘main’ with type ‘int()’
-  185 | int main() {
-      |     ^~~~
+      |                            char *

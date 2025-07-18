@@ -1,250 +1,116 @@
 cc: exit status 1
-/tmp/bioinformatics-global-alignment.c: In function ‘padLeft’:
-/tmp/bioinformatics-global-alignment.c:92:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   92 |     char *tmp1 = concat_string(res, " ");
-      |                                ^~~
-/tmp/bioinformatics-global-alignment.c:57:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   57 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/bioinformatics-global-alignment.c:96:30: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   96 |   char *tmp2 = concat_string(res, s);
-      |                              ^~~
-/tmp/bioinformatics-global-alignment.c:57:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   57 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
 /tmp/bioinformatics-global-alignment.c: In function ‘distinct’:
-/tmp/bioinformatics-global-alignment.c:126:13: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  126 |   int res = tmp3;
-      |             ^~~~
-/tmp/bioinformatics-global-alignment.c:130:34: error: request for member ‘len’ in something not a structure or union
-  130 |     for (int tmp5 = 0; tmp5 < res.len; tmp5++) {
-      |                                  ^
-/tmp/bioinformatics-global-alignment.c:131:20: error: request for member ‘data’ in something not a structure or union
-  131 |       char *r = res.data[tmp5];
-      |                    ^
-/tmp/bioinformatics-global-alignment.c:140:45: error: incompatible type for argument 1 of ‘concat_list_string’
-  140 |       list_string tmp7 = concat_list_string(res, tmp6);
-      |                                             ^~~
-      |                                             |
-      |                                             int
-/tmp/bioinformatics-global-alignment.c:49:51: note: expected ‘list_string’ but argument is of type ‘int’
-   49 | static list_string concat_list_string(list_string a, list_string b) {
-      |                                       ~~~~~~~~~~~~^
-/tmp/bioinformatics-global-alignment.c:141:13: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-  141 |       res = tmp7;
-      |             ^~~~
+/tmp/bioinformatics-global-alignment.c:138:15: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+  138 |       int r = res.data[tmp4];
+      |               ^~~
+/tmp/bioinformatics-global-alignment.c:139:14: warning: comparison between pointer and integer
+  139 |       if ((r == s)) {
+      |              ^~
 /tmp/bioinformatics-global-alignment.c: In function ‘permutations’:
-/tmp/bioinformatics-global-alignment.c:150:20: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-  150 |     tmp8.data[0] = xs;
+/tmp/bioinformatics-global-alignment.c:157:20: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+  157 |     tmp7.data[0] = xs;
       |                    ^~
-/tmp/bioinformatics-global-alignment.c:158:16: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  158 |     int rest = tmp10;
-      |                ^~~~~
-/tmp/bioinformatics-global-alignment.c:164:48: error: incompatible type for argument 1 of ‘concat_list_string’
-  164 |         list_string tmp12 = concat_list_string(rest, tmp11);
-      |                                                ^~~~
-      |                                                |
-      |                                                int
-/tmp/bioinformatics-global-alignment.c:49:51: note: expected ‘list_string’ but argument is of type ‘int’
-   49 | static list_string concat_list_string(list_string a, list_string b) {
-      |                                       ~~~~~~~~~~~~^
-/tmp/bioinformatics-global-alignment.c:165:16: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-  165 |         rest = tmp12;
-      |                ^~~~~
-/tmp/bioinformatics-global-alignment.c:169:34: error: incompatible type for argument 1 of ‘permutations’
-  169 |     list_int subs = permutations(rest);
-      |                                  ^~~~
-      |                                  |
-      |                                  int
-/tmp/bioinformatics-global-alignment.c:147:35: note: expected ‘list_string’ but argument is of type ‘int’
-  147 | list_int permutations(list_string xs) {
-      |                       ~~~~~~~~~~~~^~
-/tmp/bioinformatics-global-alignment.c:174:11: error: conflicting types for ‘perm’; have ‘int’
-  174 |       int perm = perm;
-      |           ^~~~
-/tmp/bioinformatics-global-alignment.c:172:19: note: previous definition of ‘perm’ with type ‘list_string’
-  172 |       list_string perm = list_string_create(1);
-      |                   ^~~~
-/tmp/bioinformatics-global-alignment.c:176:19: error: request for member ‘len’ in something not a structure or union
-  176 |       while (k < p.len) {
-      |                   ^
-/tmp/bioinformatics-global-alignment.c:178:26: error: request for member ‘data’ in something not a structure or union
-  178 |         tmp14.data[0] = p.data[k];
-      |                          ^
-/tmp/bioinformatics-global-alignment.c:183:13: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
-  183 |       res = 0;
-      |             ^
+/tmp/bioinformatics-global-alignment.c:158:12: error: incompatible types when returning type ‘list_int’ but ‘int’ was expected
+  158 |     return tmp7;
+      |            ^~~~
+/tmp/bioinformatics-global-alignment.c:174:37: error: request for member ‘len’ in something not a structure or union
+  174 |     for (int tmp10 = 0; tmp10 < subs.len; tmp10++) {
+      |                                     ^
+/tmp/bioinformatics-global-alignment.c:175:27: error: request for member ‘data’ in something not a structure or union
+  175 |       list_string p = subs.data[tmp10];
+      |                           ^
+/tmp/bioinformatics-global-alignment.c:186:7: error: ‘res’ undeclared (first use in this function); did you mean ‘rest’?
+  186 |       res = 0;
+      |       ^~~
+      |       rest
+/tmp/bioinformatics-global-alignment.c:186:7: note: each undeclared identifier is reported only once for each function it appears in
 /tmp/bioinformatics-global-alignment.c: In function ‘deduplicate’:
-/tmp/bioinformatics-global-alignment.c:208:18: error: invalid initializer
-  208 |   list_int arr = distinct(slist);
+/tmp/bioinformatics-global-alignment.c:211:18: error: invalid initializer
+  211 |   list_int arr = distinct(slist);
       |                  ^~~~~~~~
-/tmp/bioinformatics-global-alignment.c:210:18: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  210 |   int filtered = tmp17;
-      |                  ^~~~~
-/tmp/bioinformatics-global-alignment.c:217:41: warning: passing argument 1 of ‘containsStr’ makes pointer from integer without a cast [-Wint-conversion]
-  217 |       if (j != i && containsStr(arr.data[j], s1)) {
+/tmp/bioinformatics-global-alignment.c:219:41: warning: passing argument 1 of ‘containsStr’ makes pointer from integer without a cast [-Wint-conversion]
+  219 |       if (j != i && containsStr(arr.data[j], s1)) {
       |                                 ~~~~~~~~^~~
       |                                         |
       |                                         int
-/tmp/bioinformatics-global-alignment.c:111:23: note: expected ‘char *’ but argument is of type ‘int’
-  111 | int containsStr(char *s, char *sub) {
+/tmp/bioinformatics-global-alignment.c:119:23: note: expected ‘char *’ but argument is of type ‘int’
+  119 | int containsStr(char *s, char *sub) {
       |                 ~~~~~~^
-/tmp/bioinformatics-global-alignment.c:217:46: warning: passing argument 2 of ‘containsStr’ makes pointer from integer without a cast [-Wint-conversion]
-  217 |       if (j != i && containsStr(arr.data[j], s1)) {
+/tmp/bioinformatics-global-alignment.c:219:46: warning: passing argument 2 of ‘containsStr’ makes pointer from integer without a cast [-Wint-conversion]
+  219 |       if (j != i && containsStr(arr.data[j], s1)) {
       |                                              ^~
       |                                              |
       |                                              int
-/tmp/bioinformatics-global-alignment.c:111:32: note: expected ‘char *’ but argument is of type ‘int’
-  111 | int containsStr(char *s, char *sub) {
+/tmp/bioinformatics-global-alignment.c:119:32: note: expected ‘char *’ but argument is of type ‘int’
+  119 | int containsStr(char *s, char *sub) {
       |                          ~~~~~~^~~
-/tmp/bioinformatics-global-alignment.c:225:21: warning: assignment to ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
-  225 |       tmp18.data[0] = s1;
-      |                     ^
-/tmp/bioinformatics-global-alignment.c:226:46: error: incompatible type for argument 1 of ‘concat_list_string’
-  226 |       list_string tmp19 = concat_list_string(filtered, tmp18);
-      |                                              ^~~~~~~~
-      |                                              |
-      |                                              int
-/tmp/bioinformatics-global-alignment.c:49:51: note: expected ‘list_string’ but argument is of type ‘int’
-   49 | static list_string concat_list_string(list_string a, list_string b) {
-      |                                       ~~~~~~~~~~~~^
-/tmp/bioinformatics-global-alignment.c:227:18: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-  227 |       filtered = tmp19;
+/tmp/bioinformatics-global-alignment.c:229:40: error: incompatible type for argument 1 of ‘concat_list_int’
+  229 |       list_int tmp15 = concat_list_int(filtered, tmp14);
+      |                                        ^~~~~~~~
+      |                                        |
+      |                                        list_string
+/tmp/bioinformatics-global-alignment.c:49:42: note: expected ‘list_int’ but argument is of type ‘list_string’
+   49 | static list_int concat_list_int(list_int a, list_int b) {
+      |                                 ~~~~~~~~~^
+/tmp/bioinformatics-global-alignment.c:230:18: error: incompatible types when assigning to type ‘list_string’ from type ‘list_int’
+  230 |       filtered = tmp15;
       |                  ^~~~~
-/tmp/bioinformatics-global-alignment.c: In function ‘joinAll’:
-/tmp/bioinformatics-global-alignment.c:238:33: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  238 |     char *tmp21 = concat_string(out, s);
-      |                                 ^~~
-/tmp/bioinformatics-global-alignment.c:57:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   57 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
 /tmp/bioinformatics-global-alignment.c: In function ‘shortestCommonSuperstring’:
-/tmp/bioinformatics-global-alignment.c:246:34: error: incompatible type for argument 1 of ‘joinAll’
-  246 |   const char *shortest = joinAll(ss);
-      |                                  ^~
-      |                                  |
-      |                                  int
-/tmp/bioinformatics-global-alignment.c:234:33: note: expected ‘list_string’ but argument is of type ‘int’
-  234 | const char *joinAll(list_string ss) {
-      |                     ~~~~~~~~~~~~^~
-/tmp/bioinformatics-global-alignment.c:247:33: error: incompatible type for argument 1 of ‘permutations’
-  247 |   list_int perms = permutations(ss);
-      |                                 ^~
-      |                                 |
-      |                                 int
-/tmp/bioinformatics-global-alignment.c:147:35: note: expected ‘list_string’ but argument is of type ‘int’
-  147 | list_int permutations(list_string xs) {
-      |                       ~~~~~~~~~~~~^~
-/tmp/bioinformatics-global-alignment.c:251:27: error: request for member ‘data’ in something not a structure or union
-  251 |     const char *sup = perm.data[0];
-      |                           ^
-/tmp/bioinformatics-global-alignment.c:253:18: error: request for member ‘len’ in something not a structure or union
-  253 |     while (i < ss.len - 1) {
-      |                  ^
-/tmp/bioinformatics-global-alignment.c:254:36: error: request for member ‘data’ in something not a structure or union
-  254 |       int ov = headTailOverlap(perm.data[i], perm.data[i + 1]);
-      |                                    ^
-/tmp/bioinformatics-global-alignment.c:254:50: error: request for member ‘data’ in something not a structure or union
-  254 |       int ov = headTailOverlap(perm.data[i], perm.data[i + 1]);
-      |                                                  ^
-/tmp/bioinformatics-global-alignment.c:255:36: error: request for member ‘data’ in something not a structure or union
-  255 |       sup = sup + slice_string(perm.data[i + 1], ov, strlen(perm.data[i + 1]));
-      |                                    ^
-/tmp/bioinformatics-global-alignment.c:255:65: error: request for member ‘data’ in something not a structure or union
-  255 |       sup = sup + slice_string(perm.data[i + 1], ov, strlen(perm.data[i + 1]));
-      |                                                                 ^
+/tmp/bioinformatics-global-alignment.c:252:21: error: request for member ‘len’ in something not a structure or union
+  252 |   while (idx < perms.len) {
+      |                     ^
+/tmp/bioinformatics-global-alignment.c:253:29: error: request for member ‘data’ in something not a structure or union
+  253 |     list_string perm = perms.data[idx];
+      |                             ^
+/tmp/bioinformatics-global-alignment.c:258:17: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  258 |       sup = sup + slice_string(perm.data[i + 1], ov, strlen(perm.data[i + 1]));
+      |                 ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                   |
+      |                   char *
 /tmp/bioinformatics-global-alignment.c: In function ‘printCounts’:
-/tmp/bioinformatics-global-alignment.c:296:35: error: invalid operands to binary + (have ‘const char *’ and ‘const char *’)
-  296 |   printf("%s\n", padLeft("A", 10) + padLeft(tmp24, 12));
+/tmp/bioinformatics-global-alignment.c:299:35: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  299 |   printf("%s\n", padLeft("A", 10) + padLeft(tmp20, 12));
       |                  ~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~
       |                  |                  |
-      |                  const char *       const char *
-/tmp/bioinformatics-global-alignment.c:298:35: error: invalid operands to binary + (have ‘const char *’ and ‘const char *’)
-  298 |   printf("%s\n", padLeft("C", 10) + padLeft(tmp25, 12));
+      |                  char *             char *
+/tmp/bioinformatics-global-alignment.c:301:35: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  301 |   printf("%s\n", padLeft("C", 10) + padLeft(tmp21, 12));
       |                  ~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~
       |                  |                  |
-      |                  const char *       const char *
-/tmp/bioinformatics-global-alignment.c:300:35: error: invalid operands to binary + (have ‘const char *’ and ‘const char *’)
-  300 |   printf("%s\n", padLeft("G", 10) + padLeft(tmp26, 12));
+      |                  char *             char *
+/tmp/bioinformatics-global-alignment.c:303:35: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  303 |   printf("%s\n", padLeft("G", 10) + padLeft(tmp22, 12));
       |                  ~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~
       |                  |                  |
-      |                  const char *       const char *
-/tmp/bioinformatics-global-alignment.c:302:35: error: invalid operands to binary + (have ‘const char *’ and ‘const char *’)
-  302 |   printf("%s\n", padLeft("T", 10) + padLeft(tmp27, 12));
+      |                  char *             char *
+/tmp/bioinformatics-global-alignment.c:305:35: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  305 |   printf("%s\n", padLeft("T", 10) + padLeft(tmp23, 12));
       |                  ~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~
       |                  |                  |
-      |                  const char *       const char *
-/tmp/bioinformatics-global-alignment.c:304:39: error: invalid operands to binary + (have ‘const char *’ and ‘const char *’)
-  304 |   printf("%s\n", padLeft("Other", 10) + padLeft(tmp28, 12));
+      |                  char *             char *
+/tmp/bioinformatics-global-alignment.c:307:39: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  307 |   printf("%s\n", padLeft("Other", 10) + padLeft(tmp24, 12));
       |                  ~~~~~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~
       |                  |                      |
-      |                  const char *           const char *
-/tmp/bioinformatics-global-alignment.c:307:46: error: invalid operands to binary + (have ‘const char *’ and ‘const char *’)
-  307 |   printf("%s\n", padLeft("Total length", 14) + padLeft(tmp29, 8));
+      |                  char *                 char *
+/tmp/bioinformatics-global-alignment.c:310:46: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  310 |   printf("%s\n", padLeft("Total length", 14) + padLeft(tmp25, 8));
       |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~
       |                  |                             |
-      |                  const char *                  const char *
-/tmp/bioinformatics-global-alignment.c: In function ‘main’:
-/tmp/bioinformatics-global-alignment.c:317:15: error: redefinition of ‘tests’
-  317 |   list_string tests = list_string_create(4);
-      |               ^~~~~
-/tmp/bioinformatics-global-alignment.c:311:15: note: previous definition of ‘tests’ with type ‘list_string’
-  311 |   list_string tests = list_string_create(5);
-      |               ^~~~~
-/tmp/bioinformatics-global-alignment.c:322:15: error: redefinition of ‘tests’
-  322 |   list_string tests = list_string_create(3);
-      |               ^~~~~
-/tmp/bioinformatics-global-alignment.c:317:15: note: previous definition of ‘tests’ with type ‘list_string’
-  317 |   list_string tests = list_string_create(4);
-      |               ^~~~~
-/tmp/bioinformatics-global-alignment.c:326:15: error: redefinition of ‘tests’
-  326 |   list_string tests = list_string_create(13);
-      |               ^~~~~
-/tmp/bioinformatics-global-alignment.c:322:15: note: previous definition of ‘tests’ with type ‘list_string’
-  322 |   list_string tests = list_string_create(3);
-      |               ^~~~~
-/tmp/bioinformatics-global-alignment.c:352:28: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  352 |   list_int tests_data[] = {tests, tests, tests, tests};
+      |                  char *                        char *
+/tmp/bioinformatics-global-alignment.c: In function ‘mochi_main’:
+/tmp/bioinformatics-global-alignment.c:355:28: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  355 |   list_int tests_data[] = {tmp26, tmp27, tmp28, tmp29};
       |                            ^~~~~
-/tmp/bioinformatics-global-alignment.c:352:35: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
-  352 |   list_int tests_data[] = {tests, tests, tests, tests};
+/tmp/bioinformatics-global-alignment.c:355:35: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
+  355 |   list_int tests_data[] = {tmp26, tmp27, tmp28, tmp29};
       |                                   ^~~~~
-/tmp/bioinformatics-global-alignment.c:352:42: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  352 |   list_int tests_data[] = {tests, tests, tests, tests};
+/tmp/bioinformatics-global-alignment.c:355:42: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  355 |   list_int tests_data[] = {tmp26, tmp27, tmp28, tmp29};
       |                                          ^~~~~
-/tmp/bioinformatics-global-alignment.c:352:49: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
-  352 |   list_int tests_data[] = {tests, tests, tests, tests};
+/tmp/bioinformatics-global-alignment.c:355:49: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
+  355 |   list_int tests_data[] = {tmp26, tmp27, tmp28, tmp29};
       |                                                 ^~~~~
-/tmp/bioinformatics-global-alignment.c:353:17: error: conflicting types for ‘tests’; have ‘list_list_int’
-  353 |   list_list_int tests = {4, tests_data};
-      |                 ^~~~~
-/tmp/bioinformatics-global-alignment.c:326:15: note: previous definition of ‘tests’ with type ‘list_string’
-  326 |   list_string tests = list_string_create(13);
-      |               ^~~~~
-/tmp/bioinformatics-global-alignment.c:354:12: error: conflicting types for ‘tests’; have ‘list_int’
-  354 |   list_int tests = tests;
-      |            ^~~~~
-/tmp/bioinformatics-global-alignment.c:353:17: note: previous definition of ‘tests’ with type ‘list_list_int’
-  353 |   list_list_int tests = {4, tests_data};
-      |                 ^~~~~
-/tmp/bioinformatics-global-alignment.c:357:49: error: incompatible type for argument 1 of ‘shortestCommonSuperstring’
-  357 |     const char *scs = shortestCommonSuperstring(seqs);
-      |                                                 ^~~~
-      |                                                 |
-      |                                                 int
-/tmp/bioinformatics-global-alignment.c:244:51: note: expected ‘list_string’ but argument is of type ‘int’
-  244 | const char *shortestCommonSuperstring(list_string slist) {
-      |                                       ~~~~~~~~~~~~^~~~~
-/tmp/bioinformatics-global-alignment.c:358:17: warning: passing argument 1 of ‘printCounts’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  358 |     printCounts(scs);
-      |                 ^~~
-/tmp/bioinformatics-global-alignment.c:266:23: note: expected ‘char *’ but argument is of type ‘const char *’
-  266 | int printCounts(char *seq) {
-      |                 ~~~~~~^~~
-/tmp/bioinformatics-global-alignment.c: At top level:
-/tmp/bioinformatics-global-alignment.c:362:5: error: redefinition of ‘main’
-  362 | int main() {
-      |     ^~~~
-/tmp/bioinformatics-global-alignment.c:310:5: note: previous definition of ‘main’ with type ‘int()’
-  310 | int main() {
-      |     ^~~~
+/tmp/bioinformatics-global-alignment.c:358:24: error: invalid initializer
+  358 |     list_string seqs = tests.data[tmp30];
+      |                        ^~~~~

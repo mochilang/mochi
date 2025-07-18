@@ -1,8 +1,0 @@
-cc: exit status 1
-/tmp/checkpoint-synchronization-1.c: In function ‘main’:
-/tmp/checkpoint-synchronization-1.c:43:7: error: conflicting types for ‘partList’; have ‘int’
-   43 |   int partList = partList;
-      |       ^~~~~~~~
-/tmp/checkpoint-synchronization-1.c:38:15: note: previous definition of ‘partList’ with type ‘list_string’
-   38 |   list_string partList = list_string_create(4);
-      |               ^~~~~~~~

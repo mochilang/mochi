@@ -1,5 +1,5 @@
 cc: exit status 1
-/tmp/md5.c: In function ‘main’:
+/tmp/md5.c: In function ‘_mochi_main’:
 /tmp/md5.c:87:27: error: incompatible types when initializing type ‘int’ using type ‘list_string’
    87 |   list_int tmp1_data[] = {tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8, tmp10};
       |                           ^~~~
@@ -24,22 +24,13 @@ cc: exit status 1
 /tmp/md5.c:87:69: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
    87 |   list_int tmp1_data[] = {tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8, tmp10};
       |                                                                     ^~~~~
-/tmp/md5.c:90:16: error: incompatible types when initializing type ‘int’ using type ‘list_int’
-   90 |     int pair = tmp1.data[tmp11];
-      |                ^~~~
+/tmp/md5.c:90:24: error: invalid initializer
+   90 |     list_string pair = tmp1.data[tmp11];
+      |                        ^~~~
 /tmp/md5.c:91:15: error: ‘testpkg’ undeclared (first use in this function)
    91 |     int sum = testpkg.m_d5_hex(pair.data[1]);
       |               ^~~~~~~
 /tmp/md5.c:91:15: note: each undeclared identifier is reported only once for each function it appears in
-/tmp/md5.c:91:36: error: request for member ‘data’ in something not a structure or union
-   91 |     int sum = testpkg.m_d5_hex(pair.data[1]);
-      |                                    ^
-/tmp/md5.c:92:21: error: request for member ‘data’ in something not a structure or union
+/tmp/md5.c:92:14: warning: comparison between pointer and integer
    92 |     if ((sum != pair.data[0])) {
-      |                     ^
-/tmp/md5.c:94:40: error: request for member ‘data’ in something not a structure or union
-   94 |       printf("  for string, %s\n", pair.data[1]);
-      |                                        ^
-/tmp/md5.c:95:40: error: request for member ‘data’ in something not a structure or union
-   95 |       printf("  expected:   %s\n", pair.data[0]);
-      |                                        ^
+      |              ^~

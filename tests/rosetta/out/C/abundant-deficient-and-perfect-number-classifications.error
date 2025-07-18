@@ -1,7 +1,0 @@
-cc: exit status 1
-/tmp/abundant-deficient-and-perfect-number-classifications.c:65:5: error: redefinition of ‘main’
-   65 | int main() {
-      |     ^~~~
-/tmp/abundant-deficient-and-perfect-number-classifications.c:33:5: note: previous definition of ‘main’ with type ‘int()’
-   33 | int main() {
-      |     ^~~~

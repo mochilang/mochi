@@ -1,15 +1,5 @@
 cc: exit status 1
-/tmp/associative-array-creation.c: In function ‘main’:
-/tmp/associative-array-creation.c:102:22: error: invalid initializer
-  102 |   map_string_int x = 0;
+/tmp/associative-array-creation.c: In function ‘mochi_main’:
+/tmp/associative-array-creation.c:82:22: error: invalid initializer
+   82 |   map_string_int x = 0;
       |                      ^
-/tmp/associative-array-creation.c:111:7: error: incompatible types when assigning to type ‘map_string_int’ from type ‘tmp_item_t’
-  111 |   x = (tmp_item_t){.foo = 2, .bar = 42, .baz = (-1)};
-      |       ^
-/tmp/associative-array-creation.c: At top level:
-/tmp/associative-array-creation.c:116:5: error: redefinition of ‘main’
-  116 | int main() {
-      |     ^~~~
-/tmp/associative-array-creation.c:101:5: note: previous definition of ‘main’ with type ‘int()’
-  101 | int main() {
-      |     ^~~~

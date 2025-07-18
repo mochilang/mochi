@@ -1,55 +1,7 @@
 cc: exit status 1
-/tmp/abundant-odd-numbers.c: In function ‘divisors’:
-/tmp/abundant-odd-numbers.c:74:14: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
-   74 |       divs = 0;
-      |              ^
-/tmp/abundant-odd-numbers.c:76:17: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
-   76 |         divs2 = 0;
-      |                 ^
-/tmp/abundant-odd-numbers.c: In function ‘sumStr’:
-/tmp/abundant-odd-numbers.c:107:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  107 |     char *tmp5 = concat_string(s, tmp4);
-      |                                ^
-/tmp/abundant-odd-numbers.c:29:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   29 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/abundant-odd-numbers.c:112:23: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  112 |   return slice_string(s, 0, strlen(s) - 3);
-      |                       ^
-/tmp/abundant-odd-numbers.c:49:33: note: expected ‘char *’ but argument is of type ‘const char *’
-   49 | static char *slice_string(char *s, int start, int end) {
-      |                           ~~~~~~^
-/tmp/abundant-odd-numbers.c: In function ‘pad2’:
-/tmp/abundant-odd-numbers.c:119:37: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  119 |     char *tmp8 = concat_string(" ", s);
-      |                                     ^
-/tmp/abundant-odd-numbers.c:29:43: note: expected ‘char *’ but argument is of type ‘const char *’
-   29 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/abundant-odd-numbers.c: In function ‘pad5’:
-/tmp/abundant-odd-numbers.c:129:38: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  129 |     char *tmp10 = concat_string(" ", s);
-      |                                      ^
-/tmp/abundant-odd-numbers.c:29:43: note: expected ‘char *’ but argument is of type ‘const char *’
-   29 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
 /tmp/abundant-odd-numbers.c: In function ‘abundantOdd’:
-/tmp/abundant-odd-numbers.c:152:28: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
-  152 |                pad2(count) + ". " + pad5(n) + " < " + s + " = " + tmp12);
+/tmp/abundant-odd-numbers.c:160:28: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  160 |                pad2(count) + ". " + pad5(n) + " < " + s + " = " + tmp16);
       |                ~~~~~~~~~~~ ^
       |                |           |
-      |                |           char *
-      |                const char *
-/tmp/abundant-odd-numbers.c:156:44: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  156 |         char *tmp15 = concat_string(tmp14, s);
-      |                                            ^
-/tmp/abundant-odd-numbers.c:29:43: note: expected ‘char *’ but argument is of type ‘const char *’
-   29 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/abundant-odd-numbers.c: At top level:
-/tmp/abundant-odd-numbers.c:181:5: error: redefinition of ‘main’
-  181 | int main() {
-      |     ^~~~
-/tmp/abundant-odd-numbers.c:168:5: note: previous definition of ‘main’ with type ‘int()’
-  168 | int main() {
-      |     ^~~~
+      |                char *      char *

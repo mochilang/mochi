@@ -1,178 +1,75 @@
 cc: exit status 1
-/tmp/anagrams.c: In function ‘sortRunes’:
-/tmp/anagrams.c:119:13: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  119 |   int arr = tmp1;
-      |             ^~~~
-/tmp/anagrams.c:125:43: error: incompatible type for argument 1 of ‘concat_list_string’
-  125 |     list_string tmp4 = concat_list_string(arr, tmp3);
-      |                                           ^~~
-      |                                           |
-      |                                           int
-/tmp/anagrams.c:83:51: note: expected ‘list_string’ but argument is of type ‘int’
-   83 | static list_string concat_list_string(list_string a, list_string b) {
-      |                                       ~~~~~~~~~~~~^
-/tmp/anagrams.c:126:11: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-  126 |     arr = tmp4;
-      |           ^~~~
-/tmp/anagrams.c:129:14: error: request for member ‘len’ in something not a structure or union
-  129 |   int n = arr.len;
-      |              ^
-/tmp/anagrams.c:134:22: error: request for member ‘data’ in something not a structure or union
-  134 |       if ((strcmp(arr.data[j], arr.data[j + 1]) > 0)) {
-      |                      ^
-/tmp/anagrams.c:134:35: error: request for member ‘data’ in something not a structure or union
-  134 |       if ((strcmp(arr.data[j], arr.data[j + 1]) > 0)) {
-      |                                   ^
-/tmp/anagrams.c:135:30: error: request for member ‘data’ in something not a structure or union
-  135 |         const char *tmp = arr.data[j];
-      |                              ^
-/tmp/anagrams.c:136:12: error: request for member ‘data’ in something not a structure or union
-  136 |         arr.data[j] = arr.data[j + 1];
-      |            ^
-/tmp/anagrams.c:136:26: error: request for member ‘data’ in something not a structure or union
-  136 |         arr.data[j] = arr.data[j + 1];
-      |                          ^
-/tmp/anagrams.c:137:12: error: request for member ‘data’ in something not a structure or union
-  137 |         arr.data[j + 1] = tmp;
-      |            ^
-/tmp/anagrams.c:146:40: error: request for member ‘data’ in something not a structure or union
-  146 |     char *tmp5 = concat_string(out, arr.data[i]);
-      |                                        ^
-/tmp/anagrams.c:146:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  146 |     char *tmp5 = concat_string(out, arr.data[i]);
-      |                                ^~~
-/tmp/anagrams.c:91:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   91 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
 /tmp/anagrams.c: In function ‘sortStrings’:
-/tmp/anagrams.c:155:13: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  155 |   int res = tmp6;
-      |             ^~~~
-/tmp/anagrams.c:156:13: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  156 |   int tmp = xs;
-      |             ^~
-/tmp/anagrams.c:157:13: error: request for member ‘len’ in something not a structure or union
-  157 |   while (tmp.len > 0) {
-      |             ^
-/tmp/anagrams.c:158:26: error: request for member ‘data’ in something not a structure or union
-  158 |     const char *min = tmp.data[0];
-      |                          ^
-/tmp/anagrams.c:161:19: error: request for member ‘len’ in something not a structure or union
-  161 |     while (i < tmp.len) {
-      |                   ^
-/tmp/anagrams.c:162:23: error: request for member ‘data’ in something not a structure or union
-  162 |       if (((strcmp(tmp.data[i], min) < 0))) {
+/tmp/anagrams.c:180:11: error: incompatible types when assigning to type ‘list_string’ from type ‘int’
+  180 |     res = 0;
+      |           ^
+/tmp/anagrams.c: In function ‘mochi_main’:
+/tmp/anagrams.c:230:16: error: incompatible types when initializing type ‘int’ using type ‘map_string_int’
+  230 |   int groups = tmp7;
+      |                ^~~~
+/tmp/anagrams.c:233:13: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+  233 |     int w = words.data[tmp8];
+      |             ^~~~~
+/tmp/anagrams.c:234:23: warning: passing argument 1 of ‘sortRunes’ makes pointer from integer without a cast [-Wint-conversion]
+  234 |     int k = sortRunes(w);
       |                       ^
-/tmp/anagrams.c:163:18: error: request for member ‘data’ in something not a structure or union
-  163 |         min = tmp.data[i];
-      |                  ^
-/tmp/anagrams.c:169:18: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  169 |     tmp7.data[0] = min;
-      |                  ^
-/tmp/anagrams.c:170:43: error: incompatible type for argument 1 of ‘concat_list_string’
-  170 |     list_string tmp8 = concat_list_string(res, tmp7);
-      |                                           ^~~
-      |                                           |
-      |                                           int
-/tmp/anagrams.c:83:51: note: expected ‘list_string’ but argument is of type ‘int’
-   83 | static list_string concat_list_string(list_string a, list_string b) {
-      |                                       ~~~~~~~~~~~~^
-/tmp/anagrams.c:171:11: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-  171 |     res = tmp8;
-      |           ^~~~
-/tmp/anagrams.c:173:15: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  173 |     int out = tmp9;
-      |               ^~~~
-/tmp/anagrams.c:175:19: error: request for member ‘len’ in something not a structure or union
-  175 |     while (j < tmp.len) {
-      |                   ^
-/tmp/anagrams.c:178:28: error: request for member ‘data’ in something not a structure or union
-  178 |         tmp10.data[0] = tmp.data[j];
-      |                            ^
-/tmp/anagrams.c:179:48: error: incompatible type for argument 1 of ‘concat_list_string’
-  179 |         list_string tmp11 = concat_list_string(out, tmp10);
-      |                                                ^~~
-      |                                                |
-      |                                                int
-/tmp/anagrams.c:83:51: note: expected ‘list_string’ but argument is of type ‘int’
-   83 | static list_string concat_list_string(list_string a, list_string b) {
-      |                                       ~~~~~~~~~~~~^
-/tmp/anagrams.c:180:15: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-  180 |         out = tmp11;
-      |               ^~~~~
-/tmp/anagrams.c: In function ‘main’:
-/tmp/anagrams.c:221:7: error: conflicting types for ‘words’; have ‘int’
-  221 |   int words = words;
-      |       ^~~~~
-/tmp/anagrams.c:190:15: note: previous definition of ‘words’ with type ‘list_string’
-  190 |   list_string words = list_string_create(30);
-      |               ^~~~~
-/tmp/anagrams.c:223:16: error: incompatible types when initializing type ‘int’ using type ‘map_string_int’
-  223 |   int groups = tmp12;
-      |                ^~~~~
-/tmp/anagrams.c:228:13: error: expected ‘)’ before ‘in’
-  228 |     if ((!(k in groups))) {
-      |           ~ ^~~
-      |             )
-/tmp/anagrams.c:233:13: error: request for member ‘data’ in something not a structure or union
-  233 |       groups.data[k] = tmp15;
+      |                       |
+      |                       int
+/tmp/anagrams.c:131:23: note: expected ‘char *’ but argument is of type ‘int’
+  131 | char *sortRunes(char *s) {
+      |                 ~~~~~~^
+/tmp/anagrams.c:234:13: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+  234 |     int k = sortRunes(w);
+      |             ^~~~~~~~~
+/tmp/anagrams.c:235:14: error: expected ‘)’ before ‘in’
+  235 |     if (((!(k in groups)))) {
+      |            ~ ^~~
+      |              )
+/tmp/anagrams.c:240:13: error: request for member ‘data’ in something not a structure or union
+  240 |       groups.data[k] = tmp10;
       |             ^
-/tmp/anagrams.c:237:52: error: request for member ‘data’ in something not a structure or union
-  237 |       list_string tmp17 = concat_list_string(groups.data[k], tmp16);
-      |                                                    ^
-/tmp/anagrams.c:240:52: error: request for member ‘data’ in something not a structure or union
-  240 |       list_string tmp19 = concat_list_string(groups.data[k], tmp18);
-      |                                                    ^
-/tmp/anagrams.c:241:13: error: request for member ‘data’ in something not a structure or union
-  241 |       groups.data[k] = tmp19;
-      |             ^
-/tmp/anagrams.c:243:16: error: request for member ‘data’ in something not a structure or union
-  243 |     if ((groups.data[k].len > maxLen)) {
-      |                ^
-/tmp/anagrams.c:244:22: error: request for member ‘data’ in something not a structure or union
-  244 |       maxLen = groups.data[k].len;
-      |                      ^
-/tmp/anagrams.c:248:17: error: incompatible types when initializing type ‘int’ using type ‘map_string_int’
-  248 |   int printed = tmp20;
-      |                 ^~~~~
-/tmp/anagrams.c:252:15: error: request for member ‘data’ in something not a structure or union
-  252 |     if (groups.data[k].len == maxLen) {
-      |               ^
-/tmp/anagrams.c:253:15: error: expected ‘)’ before ‘in’
-  253 |       if ((!(k in printed))) {
-      |             ~ ^~~
-      |               )
-/tmp/anagrams.c:254:35: error: request for member ‘data’ in something not a structure or union
-  254 |         int g = sortStrings(groups.data[k]);
-      |                                   ^
-/tmp/anagrams.c:255:43: error: request for member ‘data’ in something not a structure or union
-  255 |         char *tmp22 = concat_string("[", g.data[0]);
-      |                                           ^
-/tmp/anagrams.c:258:21: error: request for member ‘len’ in something not a structure or union
-  258 |         while (i < g.len) {
+/tmp/anagrams.c:243:21: warning: assignment to ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+  243 |       tmp11.data[0] = w;
       |                     ^
-/tmp/anagrams.c:259:39: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  259 |           char *tmp23 = concat_string(line, " ");
-      |                                       ^~~~
-/tmp/anagrams.c:91:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   91 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/anagrams.c:260:47: error: request for member ‘data’ in something not a structure or union
-  260 |           char *tmp24 = concat_string(tmp23, g.data[i]);
-      |                                               ^
-/tmp/anagrams.c:264:37: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  264 |         char *tmp25 = concat_string(line, "]");
-      |                                     ^~~~
-/tmp/anagrams.c:91:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   91 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/anagrams.c:267:16: error: request for member ‘data’ in something not a structure or union
-  267 |         printed.data[k] = 1;
+/tmp/anagrams.c:244:52: error: request for member ‘data’ in something not a structure or union
+  244 |       list_string tmp12 = concat_list_string(groups.data[k], tmp11);
+      |                                                    ^
+/tmp/anagrams.c:245:13: error: request for member ‘data’ in something not a structure or union
+  245 |       groups.data[k] = 0;
+      |             ^
+/tmp/anagrams.c:247:22: error: request for member ‘data’ in something not a structure or union
+  247 |     if (strlen(groups.data[k]) > maxLen) {
+      |                      ^
+/tmp/anagrams.c:248:29: error: request for member ‘data’ in something not a structure or union
+  248 |       maxLen = strlen(groups.data[k]);
+      |                             ^
+/tmp/anagrams.c:252:17: error: incompatible types when initializing type ‘int’ using type ‘map_string_int’
+  252 |   int printed = tmp13;
+      |                 ^~~~~
+/tmp/anagrams.c:254:13: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+  254 |     int w = words.data[tmp14];
+      |             ^~~~~
+/tmp/anagrams.c:255:23: warning: passing argument 1 of ‘sortRunes’ makes pointer from integer without a cast [-Wint-conversion]
+  255 |     int k = sortRunes(w);
+      |                       ^
+      |                       |
+      |                       int
+/tmp/anagrams.c:131:23: note: expected ‘char *’ but argument is of type ‘int’
+  131 | char *sortRunes(char *s) {
+      |                 ~~~~~~^
+/tmp/anagrams.c:255:13: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+  255 |     int k = sortRunes(w);
+      |             ^~~~~~~~~
+/tmp/anagrams.c:256:15: error: request for member ‘data’ in something not a structure or union
+  256 |     if (groups.data[k].len == maxLen) {
+      |               ^
+/tmp/anagrams.c:257:16: error: expected ‘)’ before ‘in’
+  257 |       if (((!(k in printed)))) {
+      |              ~ ^~~
+      |                )
+/tmp/anagrams.c:258:43: error: request for member ‘data’ in something not a structure or union
+  258 |         list_string g = sortStrings(groups.data[k]);
+      |                                           ^
+/tmp/anagrams.c:271:16: error: request for member ‘data’ in something not a structure or union
+  271 |         printed.data[k] = 1;
       |                ^
-/tmp/anagrams.c: At top level:
-/tmp/anagrams.c:273:5: error: redefinition of ‘main’
-  273 | int main() {
-      |     ^~~~
-/tmp/anagrams.c:189:5: note: previous definition of ‘main’ with type ‘int()’
-  189 | int main() {
-      |     ^~~~

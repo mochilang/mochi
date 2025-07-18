@@ -3,64 +3,10 @@ cc: exit status 1
 /tmp/case-sensitivity-of-identifiers.c:48:10: error: incompatible types when returning type ‘tmp_item_t’ but ‘int’ was expected
    48 |   return (tmp_item_t){.pkg_dog = 1, .dog = 1, .pkg__d_o_g = 1};
       |          ^
-/tmp/case-sensitivity-of-identifiers.c: In function ‘main’:
-/tmp/case-sensitivity-of-identifiers.c:55:23: warning: passing argument 1 of ‘packageSees’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   55 |   int d = packageSees(pkg_dog, Dog, pkg_DOG);
-      |                       ^~~~~~~
-/tmp/case-sensitivity-of-identifiers.c:41:23: note: expected ‘char *’ but argument is of type ‘const char *’
-   41 | int packageSees(char *d1, char *d2, char *d3) {
-      |                 ~~~~~~^~
-/tmp/case-sensitivity-of-identifiers.c:55:32: warning: passing argument 2 of ‘packageSees’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   55 |   int d = packageSees(pkg_dog, Dog, pkg_DOG);
-      |                                ^~~
-/tmp/case-sensitivity-of-identifiers.c:41:33: note: expected ‘char *’ but argument is of type ‘const char *’
-   41 | int packageSees(char *d1, char *d2, char *d3) {
-      |                           ~~~~~~^~
-/tmp/case-sensitivity-of-identifiers.c:55:37: warning: passing argument 3 of ‘packageSees’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   55 |   int d = packageSees(pkg_dog, Dog, pkg_DOG);
-      |                                     ^~~~~~~
-/tmp/case-sensitivity-of-identifiers.c:41:43: note: expected ‘char *’ but argument is of type ‘const char *’
-   41 | int packageSees(char *d1, char *d2, char *d3) {
-      |                                     ~~~~~~^~
+/tmp/case-sensitivity-of-identifiers.c: In function ‘mochi_main’:
 /tmp/case-sensitivity-of-identifiers.c:56:22: error: request for member ‘len’ in something not a structure or union
    56 |   char *tmp6 = _str(d.len);
       |                      ^
-/tmp/case-sensitivity-of-identifiers.c:61:19: warning: passing argument 1 of ‘packageSees’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   61 |   d = packageSees(pkg_dog, Dog, pkg_DOG);
-      |                   ^~~~~~~
-/tmp/case-sensitivity-of-identifiers.c:41:23: note: expected ‘char *’ but argument is of type ‘const char *’
-   41 | int packageSees(char *d1, char *d2, char *d3) {
-      |                 ~~~~~~^~
-/tmp/case-sensitivity-of-identifiers.c:61:28: warning: passing argument 2 of ‘packageSees’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   61 |   d = packageSees(pkg_dog, Dog, pkg_DOG);
-      |                            ^~~
-/tmp/case-sensitivity-of-identifiers.c:41:33: note: expected ‘char *’ but argument is of type ‘const char *’
-   41 | int packageSees(char *d1, char *d2, char *d3) {
-      |                           ~~~~~~^~
-/tmp/case-sensitivity-of-identifiers.c:61:33: warning: passing argument 3 of ‘packageSees’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   61 |   d = packageSees(pkg_dog, Dog, pkg_DOG);
-      |                                 ^~~~~~~
-/tmp/case-sensitivity-of-identifiers.c:41:43: note: expected ‘char *’ but argument is of type ‘const char *’
-   41 | int packageSees(char *d1, char *d2, char *d3) {
-      |                                     ~~~~~~^~
-/tmp/case-sensitivity-of-identifiers.c:62:47: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   62 |   char *tmp9 = concat_string("Main sees:   ", dog);
-      |                                               ^~~
-/tmp/case-sensitivity-of-identifiers.c:7:43: note: expected ‘char *’ but argument is of type ‘const char *’
-    7 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/case-sensitivity-of-identifiers.c:64:38: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   64 |   char *tmp11 = concat_string(tmp10, Dog);
-      |                                      ^~~
-/tmp/case-sensitivity-of-identifiers.c:7:43: note: expected ‘char *’ but argument is of type ‘const char *’
-    7 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/case-sensitivity-of-identifiers.c:66:38: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   66 |   char *tmp13 = concat_string(tmp12, pkg_DOG);
-      |                                      ^~~~~~~
-/tmp/case-sensitivity-of-identifiers.c:7:43: note: expected ‘char *’ but argument is of type ‘const char *’
-    7 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
 /tmp/case-sensitivity-of-identifiers.c:68:4: error: request for member ‘data’ in something not a structure or union
    68 |   d.data["dog"] = 1;
       |    ^
@@ -73,42 +19,6 @@ cc: exit status 1
 /tmp/case-sensitivity-of-identifiers.c:71:23: error: request for member ‘len’ in something not a structure or union
    71 |   char *tmp14 = _str(d.len);
       |                       ^
-/tmp/case-sensitivity-of-identifiers.c:76:19: warning: passing argument 1 of ‘packageSees’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   76 |   d = packageSees(pkg_dog, Dog, pkg_DOG);
-      |                   ^~~~~~~
-/tmp/case-sensitivity-of-identifiers.c:41:23: note: expected ‘char *’ but argument is of type ‘const char *’
-   41 | int packageSees(char *d1, char *d2, char *d3) {
-      |                 ~~~~~~^~
-/tmp/case-sensitivity-of-identifiers.c:76:28: warning: passing argument 2 of ‘packageSees’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   76 |   d = packageSees(pkg_dog, Dog, pkg_DOG);
-      |                            ^~~
-/tmp/case-sensitivity-of-identifiers.c:41:33: note: expected ‘char *’ but argument is of type ‘const char *’
-   41 | int packageSees(char *d1, char *d2, char *d3) {
-      |                           ~~~~~~^~
-/tmp/case-sensitivity-of-identifiers.c:76:33: warning: passing argument 3 of ‘packageSees’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   76 |   d = packageSees(pkg_dog, Dog, pkg_DOG);
-      |                                 ^~~~~~~
-/tmp/case-sensitivity-of-identifiers.c:41:43: note: expected ‘char *’ but argument is of type ‘const char *’
-   41 | int packageSees(char *d1, char *d2, char *d3) {
-      |                                     ~~~~~~^~
-/tmp/case-sensitivity-of-identifiers.c:77:48: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   77 |   char *tmp17 = concat_string("Main sees:   ", dog);
-      |                                                ^~~
-/tmp/case-sensitivity-of-identifiers.c:7:43: note: expected ‘char *’ but argument is of type ‘const char *’
-    7 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/case-sensitivity-of-identifiers.c:79:38: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   79 |   char *tmp19 = concat_string(tmp18, Dog);
-      |                                      ^~~
-/tmp/case-sensitivity-of-identifiers.c:7:43: note: expected ‘char *’ but argument is of type ‘const char *’
-    7 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/case-sensitivity-of-identifiers.c:81:38: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   81 |   char *tmp21 = concat_string(tmp20, pkg_DOG);
-      |                                      ^~~~~~~
-/tmp/case-sensitivity-of-identifiers.c:7:43: note: expected ‘char *’ but argument is of type ‘const char *’
-    7 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
 /tmp/case-sensitivity-of-identifiers.c:83:4: error: request for member ‘data’ in something not a structure or union
    83 |   d.data["dog"] = 1;
       |    ^
@@ -121,42 +31,6 @@ cc: exit status 1
 /tmp/case-sensitivity-of-identifiers.c:86:23: error: request for member ‘len’ in something not a structure or union
    86 |   char *tmp22 = _str(d.len);
       |                       ^
-/tmp/case-sensitivity-of-identifiers.c:91:19: warning: passing argument 1 of ‘packageSees’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   91 |   d = packageSees(pkg_dog, Dog, pkg_DOG);
-      |                   ^~~~~~~
-/tmp/case-sensitivity-of-identifiers.c:41:23: note: expected ‘char *’ but argument is of type ‘const char *’
-   41 | int packageSees(char *d1, char *d2, char *d3) {
-      |                 ~~~~~~^~
-/tmp/case-sensitivity-of-identifiers.c:91:28: warning: passing argument 2 of ‘packageSees’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   91 |   d = packageSees(pkg_dog, Dog, pkg_DOG);
-      |                            ^~~
-/tmp/case-sensitivity-of-identifiers.c:41:33: note: expected ‘char *’ but argument is of type ‘const char *’
-   41 | int packageSees(char *d1, char *d2, char *d3) {
-      |                           ~~~~~~^~
-/tmp/case-sensitivity-of-identifiers.c:91:33: warning: passing argument 3 of ‘packageSees’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   91 |   d = packageSees(pkg_dog, Dog, pkg_DOG);
-      |                                 ^~~~~~~
-/tmp/case-sensitivity-of-identifiers.c:41:43: note: expected ‘char *’ but argument is of type ‘const char *’
-   41 | int packageSees(char *d1, char *d2, char *d3) {
-      |                                     ~~~~~~^~
-/tmp/case-sensitivity-of-identifiers.c:92:48: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   92 |   char *tmp25 = concat_string("Main sees:   ", dog);
-      |                                                ^~~
-/tmp/case-sensitivity-of-identifiers.c:7:43: note: expected ‘char *’ but argument is of type ‘const char *’
-    7 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/case-sensitivity-of-identifiers.c:94:38: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   94 |   char *tmp27 = concat_string(tmp26, Dog);
-      |                                      ^~~
-/tmp/case-sensitivity-of-identifiers.c:7:43: note: expected ‘char *’ but argument is of type ‘const char *’
-    7 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/case-sensitivity-of-identifiers.c:96:38: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   96 |   char *tmp29 = concat_string(tmp28, DOG);
-      |                                      ^~~
-/tmp/case-sensitivity-of-identifiers.c:7:43: note: expected ‘char *’ but argument is of type ‘const char *’
-    7 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
 /tmp/case-sensitivity-of-identifiers.c:98:4: error: request for member ‘data’ in something not a structure or union
    98 |   d.data["dog"] = 1;
       |    ^
@@ -172,10 +46,3 @@ cc: exit status 1
 /tmp/case-sensitivity-of-identifiers.c:102:23: error: request for member ‘len’ in something not a structure or union
   102 |   char *tmp30 = _str(d.len);
       |                       ^
-/tmp/case-sensitivity-of-identifiers.c: At top level:
-/tmp/case-sensitivity-of-identifiers.c:108:5: error: redefinition of ‘main’
-  108 | int main() {
-      |     ^~~~
-/tmp/case-sensitivity-of-identifiers.c:51:5: note: previous definition of ‘main’ with type ‘int()’
-   51 | int main() {
-      |     ^~~~

@@ -6,55 +6,9 @@ cc: exit status 1
     5 | #include <string.h>
   +++ |+#include <math.h>
     6 | 
-/tmp/average-loop-length.c: In function ‘fmtF’:
-/tmp/average-loop-length.c:90:29: warning: passing argument 1 of ‘index_of_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   90 |   int dot = index_of_string(s, ".");
-      |                             ^
-/tmp/average-loop-length.c:43:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   43 | static int index_of_string(char *s, char *sub) {
-      |                            ~~~~~~^
-/tmp/average-loop-length.c:92:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   92 |     char *tmp2 = concat_string(s, ".0000");
-      |                                ^
-/tmp/average-loop-length.c:29:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   29 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/average-loop-length.c:97:24: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   97 |       s = slice_string(s, 0, dot + 5);
-      |                        ^
-/tmp/average-loop-length.c:49:33: note: expected ‘char *’ but argument is of type ‘const char *’
-   49 | static char *slice_string(char *s, int start, int end) {
-      |                           ~~~~~~^
-/tmp/average-loop-length.c:100:36: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  100 |         char *tmp3 = concat_string(s, "0");
-      |                                    ^
-/tmp/average-loop-length.c:29:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   29 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/average-loop-length.c: In function ‘padInt’:
-/tmp/average-loop-length.c:113:37: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  113 |     char *tmp5 = concat_string(" ", s);
-      |                                     ^
-/tmp/average-loop-length.c:29:43: note: expected ‘char *’ but argument is of type ‘const char *’
-   29 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/average-loop-length.c: In function ‘padFloat’:
-/tmp/average-loop-length.c:122:37: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  122 |     char *tmp6 = concat_string(" ", s);
-      |                                     ^
-/tmp/average-loop-length.c:29:43: note: expected ‘char *’ but argument is of type ‘const char *’
-   29 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/average-loop-length.c: In function ‘main’:
-/tmp/average-loop-length.c:179:37: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
-  179 |     const char *line = padInt(n, 3) + "  " + padFloat(a, 9) + "  " +
-      |                        ~~~~~~~~~~~~ ^
-      |                        |            |
-      |                        const char * char *
-/tmp/average-loop-length.c: At top level:
-/tmp/average-loop-length.c:186:5: error: redefinition of ‘main’
-  186 | int main() {
-      |     ^~~~
-/tmp/average-loop-length.c:170:5: note: previous definition of ‘main’ with type ‘int()’
-  170 | int main() {
-      |     ^~~~
+/tmp/average-loop-length.c: In function ‘mochi_main’:
+/tmp/average-loop-length.c:178:31: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  178 |     char *line = padInt(n, 3) + "  " + padFloat(a, 9) + "  " + padFloat(b, 12) +
+      |                  ~~~~~~~~~~~~ ^
+      |                  |            |
+      |                  char *       char *

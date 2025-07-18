@@ -1,5 +1,5 @@
 cc: exit status 1
-/tmp/bernoulli-numbers.c: In function ‘main’:
+/tmp/bernoulli-numbers.c: In function ‘_mochi_main’:
 /tmp/bernoulli-numbers.c:55:9: warning: implicit declaration of function ‘num’ [-Wimplicit-function-declaration]
    55 |     if (num(b) != 0) {
       |         ^~~

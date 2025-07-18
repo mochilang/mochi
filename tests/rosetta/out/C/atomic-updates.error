@@ -1,34 +1,24 @@
 cc: exit status 1
-/tmp/atomic-updates.c: In function ‘main’:
-/tmp/atomic-updates.c:56:15: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
-   56 |     buckets = 0;
-      |               ^
-/tmp/atomic-updates.c:129:24: error: incompatible type for argument 1 of ‘_str’
-  129 |     char *tmp14 = _str(buckets);
+/tmp/atomic-updates.c: In function ‘mochi_main’:
+/tmp/atomic-updates.c:141:24: error: incompatible type for argument 1 of ‘_str’
+  141 |     char *tmp16 = _str(buckets);
       |                        ^~~~~~~
       |                        |
       |                        list_int
-/tmp/atomic-updates.c:30:23: note: expected ‘int’ but argument is of type ‘list_int’
-   30 | static char *_str(int v) {
+/tmp/atomic-updates.c:38:23: note: expected ‘int’ but argument is of type ‘list_int’
+   38 | static char *_str(int v) {
       |                   ~~~~^
-/tmp/atomic-updates.c:142:24: error: incompatible type for argument 1 of ‘_str’
-  142 |     char *tmp27 = _str(buckets);
+/tmp/atomic-updates.c:154:24: error: incompatible type for argument 1 of ‘_str’
+  154 |     char *tmp29 = _str(buckets);
       |                        ^~~~~~~
       |                        |
       |                        list_int
-/tmp/atomic-updates.c:30:23: note: expected ‘int’ but argument is of type ‘list_int’
-   30 | static char *_str(int v) {
+/tmp/atomic-updates.c:38:23: note: expected ‘int’ but argument is of type ‘list_int’
+   38 | static char *_str(int v) {
       |                   ~~~~^
-/tmp/atomic-updates.c:144:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
-  144 |     printf("%d\n", tmp28);
+/tmp/atomic-updates.c:156:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
+  156 |     printf("%d\n", tmp30);
       |             ~^     ~~~~~
       |              |     |
       |              int   char *
       |             %s
-/tmp/atomic-updates.c: At top level:
-/tmp/atomic-updates.c:151:5: error: redefinition of ‘main’
-  151 | int main() {
-      |     ^~~~
-/tmp/atomic-updates.c:51:5: note: previous definition of ‘main’ with type ‘int()’
-   51 | int main() {
-      |     ^~~~

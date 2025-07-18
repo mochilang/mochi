@@ -15,7 +15,7 @@ cc: exit status 1
 /tmp/catamorphism.c:38:28: error: expected ‘;’, ‘,’ or ‘)’ before ‘f’
    38 | int fold(int (*)(int, int) f, list_int xs) {
       |                            ^
-/tmp/catamorphism.c: In function ‘main’:
+/tmp/catamorphism.c: In function ‘_mochi_main’:
 /tmp/catamorphism.c:67:18: warning: implicit declaration of function ‘fold’ [-Wimplicit-function-declaration]
    67 |   printf("%d\n", fold(_lambda1, tmp2));
       |                  ^~~~

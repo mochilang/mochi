@@ -2,40 +2,9 @@ cc: exit status 1
 /tmp/calculating-the-value-of-e.c:51:8: warning: conflicting types for built-in function ‘pow10’; expected ‘double(double)’ [-Wbuiltin-declaration-mismatch]
    51 | double pow10(int n) {
       |        ^~~~~
-/tmp/calculating-the-value-of-e.c: In function ‘formatFloat’:
-/tmp/calculating-the-value-of-e.c:68:37: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   68 |     char *tmp2 = concat_string("0", digits);
-      |                                     ^~~~~~
-/tmp/calculating-the-value-of-e.c:7:43: note: expected ‘char *’ but argument is of type ‘const char *’
-    7 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/calculating-the-value-of-e.c:71:38: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   71 |   const char *intPart = slice_string(digits, 0, strlen(digits) - prec);
-      |                                      ^~~~~~
-/tmp/calculating-the-value-of-e.c:21:33: note: expected ‘char *’ but argument is of type ‘const char *’
-   21 | static char *slice_string(char *s, int start, int end) {
-      |                           ~~~~~~^
-/tmp/calculating-the-value-of-e.c:73:20: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   73 |       slice_string(digits, strlen(digits) - prec, strlen(digits));
-      |                    ^~~~~~
-/tmp/calculating-the-value-of-e.c:21:33: note: expected ‘char *’ but argument is of type ‘const char *’
-   21 | static char *slice_string(char *s, int start, int end) {
-      |                           ~~~~~~^
-/tmp/calculating-the-value-of-e.c:74:30: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   74 |   char *tmp3 = concat_string(intPart, ".");
-      |                              ^~~~~~~
-/tmp/calculating-the-value-of-e.c:7:34: note: expected ‘char *’ but argument is of type ‘const char *’
-    7 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/calculating-the-value-of-e.c:75:36: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   75 |   char *tmp4 = concat_string(tmp3, fracPart);
-      |                                    ^~~~~~~~
-/tmp/calculating-the-value-of-e.c:7:43: note: expected ‘char *’ but argument is of type ‘const char *’
-    7 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/calculating-the-value-of-e.c: In function ‘main’:
-/tmp/calculating-the-value-of-e.c:89:25: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
-   89 |   printf("%s\n", "e = " + formatFloat(e, 15));
+/tmp/calculating-the-value-of-e.c: In function ‘_mochi_main’:
+/tmp/calculating-the-value-of-e.c:88:25: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+   88 |   printf("%s\n", "e = " + formatFloat(e, 15));
       |                  ~~~~~~ ^ ~~~~~~~~~~~~~~~~~~
       |                  |        |
-      |                  char *   const char *
+      |                  char *   char *

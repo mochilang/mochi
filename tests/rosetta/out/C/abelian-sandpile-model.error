@@ -1,25 +1,7 @@
 cc: exit status 1
-/tmp/abelian-sandpile-model.c: In function ‘newPile’:
-/tmp/abelian-sandpile-model.c:76:13: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
-   76 |       row = 0;
-      |             ^
 /tmp/abelian-sandpile-model.c: In function ‘drawPile’:
-/tmp/abelian-sandpile-model.c:126:7: error: conflicting types for ‘chars’; have ‘int’
-  126 |   int chars = chars;
-      |       ^~~~~
-/tmp/abelian-sandpile-model.c:121:15: note: previous definition of ‘chars’ with type ‘list_string’
-  121 |   list_string chars = list_string_create(4);
-      |               ^~~~~
-/tmp/abelian-sandpile-model.c:136:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  136 |       char *tmp4 = concat_string(line, chars.data[v]);
-      |                                  ^~~~
-/tmp/abelian-sandpile-model.c:57:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   57 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/abelian-sandpile-model.c: At top level:
-/tmp/abelian-sandpile-model.c:153:5: error: redefinition of ‘main’
-  153 | int main() {
-      |     ^~~~
-/tmp/abelian-sandpile-model.c:145:5: note: previous definition of ‘main’ with type ‘int()’
-  145 | int main() {
-      |     ^~~~
+/tmp/abelian-sandpile-model.c:137:19: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  137 |       line = line + chars.data[v];
+      |                   ^ ~~~~~~~~~~~~~
+      |                               |
+      |                               char *

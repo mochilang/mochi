@@ -1,103 +1,11 @@
 cc: exit status 1
-/tmp/csv-to-html-translation-5.c: In function ‘split’:
-/tmp/csv-to-html-translation-5.c:71:13: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-   71 |   int out = tmp1;
-      |             ^~~~
-/tmp/csv-to-html-translation-5.c:79:45: error: incompatible type for argument 1 of ‘concat_list_string’
-   79 |       list_string tmp3 = concat_list_string(out, tmp2);
-      |                                             ^~~
-      |                                             |
-      |                                             int
-/tmp/csv-to-html-translation-5.c:35:51: note: expected ‘list_string’ but argument is of type ‘int’
-   35 | static list_string concat_list_string(list_string a, list_string b) {
-      |                                       ~~~~~~~~~~~~^
-/tmp/csv-to-html-translation-5.c:80:13: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-   80 |       out = tmp3;
-      |             ^~~~
-/tmp/csv-to-html-translation-5.c:89:41: error: incompatible type for argument 1 of ‘concat_list_string’
-   89 |   list_string tmp5 = concat_list_string(out, tmp4);
-      |                                         ^~~
-      |                                         |
-      |                                         int
-/tmp/csv-to-html-translation-5.c:35:51: note: expected ‘list_string’ but argument is of type ‘int’
-   35 | static list_string concat_list_string(list_string a, list_string b) {
-      |                                       ~~~~~~~~~~~~^
-/tmp/csv-to-html-translation-5.c:90:9: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-   90 |   out = tmp5;
-      |         ^~~~
-/tmp/csv-to-html-translation-5.c: In function ‘htmlEscape’:
-/tmp/csv-to-html-translation-5.c:100:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  100 |       char *tmp6 = concat_string(out, "&amp;");
-      |                                  ^~~
-/tmp/csv-to-html-translation-5.c:43:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   43 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/csv-to-html-translation-5.c:103:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  103 |       char *tmp7 = concat_string(out, "&lt;");
-      |                                  ^~~
-/tmp/csv-to-html-translation-5.c:43:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   43 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/csv-to-html-translation-5.c:106:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  106 |       char *tmp8 = concat_string(out, "&gt;");
-      |                                  ^~~
-/tmp/csv-to-html-translation-5.c:43:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   43 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/csv-to-html-translation-5.c:109:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  109 |       char *tmp9 = concat_string(out, ch);
-      |                                  ^~~
-/tmp/csv-to-html-translation-5.c:43:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   43 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/csv-to-html-translation-5.c:109:39: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  109 |       char *tmp9 = concat_string(out, ch);
-      |                                       ^~
-/tmp/csv-to-html-translation-5.c:43:43: note: expected ‘char *’ but argument is of type ‘const char *’
-   43 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/csv-to-html-translation-5.c: In function ‘main’:
-/tmp/csv-to-html-translation-5.c:132:37: warning: passing argument 1 of ‘split’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  132 |   for (int tmp16 = 0; tmp16 < split(c, "\n").len; tmp16++) {
-      |                                     ^
-/tmp/csv-to-html-translation-5.c:69:17: note: expected ‘char *’ but argument is of type ‘const char *’
-   69 | int split(char *s, char *sep) {
-      |           ~~~~~~^
-/tmp/csv-to-html-translation-5.c:132:45: error: request for member ‘len’ in something not a structure or union
-  132 |   for (int tmp16 = 0; tmp16 < split(c, "\n").len; tmp16++) {
-      |                                             ^
-/tmp/csv-to-html-translation-5.c:133:24: warning: passing argument 1 of ‘split’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  133 |     char *line = split(c, "\n").data[tmp16];
-      |                        ^
-/tmp/csv-to-html-translation-5.c:69:17: note: expected ‘char *’ but argument is of type ‘const char *’
-   69 | int split(char *s, char *sep) {
-      |           ~~~~~~^
-/tmp/csv-to-html-translation-5.c:133:32: error: request for member ‘data’ in something not a structure or union
-  133 |     char *line = split(c, "\n").data[tmp16];
-      |                                ^
-/tmp/csv-to-html-translation-5.c:134:12: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
-  134 |     rows = 0;
-      |            ^
-/tmp/csv-to-html-translation-5.c:140:36: error: request for member ‘len’ in something not a structure or union
-  140 |     for (int tmp18 = 0; tmp18 < row.len; tmp18++) {
-      |                                    ^
-/tmp/csv-to-html-translation-5.c:141:23: error: request for member ‘data’ in something not a structure or union
-  141 |       char *cell = row.data[tmp18];
-      |                       ^
-/tmp/csv-to-html-translation-5.c:142:35: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  142 |       char *tmp19 = concat_string(cells, "<td>");
-      |                                   ^~~~~
-/tmp/csv-to-html-translation-5.c:43:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   43 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/csv-to-html-translation-5.c:143:21: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
-  143 |       cells = tmp19 + htmlEscape(cell) + "</td>";
+/tmp/csv-to-html-translation-5.c: In function ‘_mochi_main’:
+/tmp/csv-to-html-translation-5.c:117:5: error: ‘rows’ undeclared (first use in this function)
+  117 |     rows = 0;
+      |     ^~~~
+/tmp/csv-to-html-translation-5.c:117:5: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/csv-to-html-translation-5.c:126:21: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  126 |       cells = tmp17 + htmlEscape(cell) + "</td>";
       |                     ^ ~~~~~~~~~~~~~~~~
       |                       |
-      |                       const char *
-/tmp/csv-to-html-translation-5.c:145:45: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  145 |     char *tmp20 = concat_string("    <tr>", cells);
-      |                                             ^~~~~
-/tmp/csv-to-html-translation-5.c:43:43: note: expected ‘char *’ but argument is of type ‘const char *’
-   43 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
+      |                       char *

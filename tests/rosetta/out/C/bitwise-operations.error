@@ -1,75 +1,62 @@
 cc: exit status 1
-/tmp/bitwise-operations.c: In function ‘bin16’:
-/tmp/bitwise-operations.c:30:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   30 |       char *tmp1 = concat_string(bits, "1");
-      |                                  ^~~~
-/tmp/bitwise-operations.c:7:34: note: expected ‘char *’ but argument is of type ‘const char *’
-    7 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/bitwise-operations.c:34:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   34 |       char *tmp2 = concat_string(bits, "0");
-      |                                  ^~~~
-/tmp/bitwise-operations.c:7:34: note: expected ‘char *’ but argument is of type ‘const char *’
-    7 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
 /tmp/bitwise-operations.c: In function ‘bitwise’:
-/tmp/bitwise-operations.c:148:26: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
+/tmp/bitwise-operations.c:148:26: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
   148 |   printf("%s\n", "a:   " + bin16(a));
       |                  ~~~~~~~ ^ ~~~~~~~~
       |                  |         |
-      |                  char *    const char *
-/tmp/bitwise-operations.c:149:26: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
+      |                  char *    char *
+/tmp/bitwise-operations.c:149:26: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
   149 |   printf("%s\n", "b:   " + bin16(b));
       |                  ~~~~~~~ ^ ~~~~~~~~
       |                  |         |
-      |                  char *    const char *
-/tmp/bitwise-operations.c:150:26: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
+      |                  char *    char *
+/tmp/bitwise-operations.c:150:26: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
   150 |   printf("%s\n", "and: " + bin16(bit_and(a, b)));
       |                  ~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~
       |                  |         |
-      |                  char *    const char *
-/tmp/bitwise-operations.c:151:26: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
+      |                  char *    char *
+/tmp/bitwise-operations.c:151:26: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
   151 |   printf("%s\n", "or:  " + bin16(bit_or(a, b)));
       |                  ~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~
       |                  |         |
-      |                  char *    const char *
-/tmp/bitwise-operations.c:152:26: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
+      |                  char *    char *
+/tmp/bitwise-operations.c:152:26: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
   152 |   printf("%s\n", "xor: " + bin16(bit_xor(a, b)));
       |                  ~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~
       |                  |         |
-      |                  char *    const char *
-/tmp/bitwise-operations.c:153:26: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
+      |                  char *    char *
+/tmp/bitwise-operations.c:153:26: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
   153 |   printf("%s\n", "not: " + bin16(bit_not(a)));
       |                  ~~~~~~~ ^ ~~~~~~~~~~~~~~~~~
       |                  |         |
-      |                  char *    const char *
-/tmp/bitwise-operations.c:159:26: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
+      |                  char *    char *
+/tmp/bitwise-operations.c:159:26: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
   159 |   printf("%s\n", "shl: " + bin16(shl(a, b)));
       |                  ~~~~~~~ ^ ~~~~~~~~~~~~~~~~
       |                  |         |
-      |                  char *    const char *
-/tmp/bitwise-operations.c:160:26: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
+      |                  char *    char *
+/tmp/bitwise-operations.c:160:26: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
   160 |   printf("%s\n", "shr: " + bin16(shr(a, b)));
       |                  ~~~~~~~ ^ ~~~~~~~~~~~~~~~~
       |                  |         |
-      |                  char *    const char *
-/tmp/bitwise-operations.c:161:26: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
+      |                  char *    char *
+/tmp/bitwise-operations.c:161:26: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
   161 |   printf("%s\n", "las: " + bin16(las(a, b)));
       |                  ~~~~~~~ ^ ~~~~~~~~~~~~~~~~
       |                  |         |
-      |                  char *    const char *
-/tmp/bitwise-operations.c:162:26: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
+      |                  char *    char *
+/tmp/bitwise-operations.c:162:26: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
   162 |   printf("%s\n", "ras: " + bin16(ras(a, b)));
       |                  ~~~~~~~ ^ ~~~~~~~~~~~~~~~~
       |                  |         |
-      |                  char *    const char *
-/tmp/bitwise-operations.c:163:26: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
+      |                  char *    char *
+/tmp/bitwise-operations.c:163:26: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
   163 |   printf("%s\n", "rol: " + bin16(rol(a, b)));
       |                  ~~~~~~~ ^ ~~~~~~~~~~~~~~~~
       |                  |         |
-      |                  char *    const char *
-/tmp/bitwise-operations.c:164:26: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
+      |                  char *    char *
+/tmp/bitwise-operations.c:164:26: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
   164 |   printf("%s\n", "ror: " + bin16(ror(a, b)));
       |                  ~~~~~~~ ^ ~~~~~~~~~~~~~~~~
       |                  |         |
-      |                  char *    const char *
+      |                  char *    char *

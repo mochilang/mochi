@@ -1,7 +1,0 @@
-cc: exit status 1
-/tmp/arithmetic-integer-1.c:66:5: error: redefinition of ‘main’
-   66 | int main() {
-      |     ^~~~
-/tmp/arithmetic-integer-1.c:21:5: note: previous definition of ‘main’ with type ‘int()’
-   21 | int main() {
-      |     ^~~~

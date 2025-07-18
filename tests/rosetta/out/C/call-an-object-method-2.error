@@ -1,41 +1,36 @@
 cc: exit status 1
-/tmp/call-an-object-method-2.c:23:1: error: unknown type name ‘box_t’
+/tmp/call-an-object-method-2.c:23:7: error: return type is an incomplete type
    23 | box_t New() {
-      | ^~~~~
+      |       ^~~
 /tmp/call-an-object-method-2.c: In function ‘New’:
 /tmp/call-an-object-method-2.c:24:3: error: ‘sn’ undeclared (first use in this function)
    24 |   sn = New_sn + 1;
       |   ^~
 /tmp/call-an-object-method-2.c:24:3: note: each undeclared identifier is reported only once for each function it appears in
-/tmp/call-an-object-method-2.c:25:3: error: unknown type name ‘box_t’
-   25 |   box_t b = (Box){.secret = New_sn};
+/tmp/call-an-object-method-2.c:25:3: error: variable ‘b’ has initializer but incomplete type
+   25 |   box_t b = (box_t){.secret = New_sn};
       |   ^~~~~
-/tmp/call-an-object-method-2.c:25:20: error: ‘Box’ has no member named ‘secret’
-   25 |   box_t b = (Box){.secret = New_sn};
-      |                    ^~~~~~
-/tmp/call-an-object-method-2.c:25:29: warning: excess elements in struct initializer
-   25 |   box_t b = (Box){.secret = New_sn};
-      |                             ^~~~~~
-/tmp/call-an-object-method-2.c:25:29: note: (near initialization for ‘(anonymous)’)
-/tmp/call-an-object-method-2.c:25:18: error: invalid use of incomplete typedef ‘Box’
-   25 |   box_t b = (Box){.secret = New_sn};
-      |                  ^
-/tmp/call-an-object-method-2.c:27:6: error: request for member ‘contents’ in something not a structure or union
-   27 |     b.contents = "rabbit";
-      |      ^
-/tmp/call-an-object-method-2.c:29:6: error: request for member ‘contents’ in something not a structure or union
-   29 |     b.contents = "rock";
-      |      ^
-/tmp/call-an-object-method-2.c: At top level:
-/tmp/call-an-object-method-2.c:43:3: error: unknown type name ‘box_t’
-   43 |   box_t *data;
-      |   ^~~~~
-/tmp/call-an-object-method-2.c: In function ‘create_box_list’:
-/tmp/call-an-object-method-2.c:48:31: error: ‘box_t’ undeclared (first use in this function)
-   48 |   l.data = calloc(len, sizeof(box_t));
-      |                               ^~~~~
+/tmp/call-an-object-method-2.c:25:22: error: ‘box_t’ has no member named ‘secret’
+   25 |   box_t b = (box_t){.secret = New_sn};
+      |                      ^~~~~~
+/tmp/call-an-object-method-2.c:25:31: warning: excess elements in struct initializer
+   25 |   box_t b = (box_t){.secret = New_sn};
+      |                               ^~~~~~
+/tmp/call-an-object-method-2.c:25:31: note: (near initialization for ‘(anonymous)’)
+/tmp/call-an-object-method-2.c:25:20: error: invalid use of incomplete typedef ‘box_t’
+   25 |   box_t b = (box_t){.secret = New_sn};
+      |                    ^
+/tmp/call-an-object-method-2.c:25:9: error: storage size of ‘b’ isn’t known
+   25 |   box_t b = (box_t){.secret = New_sn};
+      |         ^
+/tmp/call-an-object-method-2.c:31:10: warning: ‘return’ with a value, in function returning void
+   31 |   return b;
+      |          ^
+/tmp/call-an-object-method-2.c:23:7: note: declared here
+   23 | box_t New() {
+      |       ^~~
 /tmp/call-an-object-method-2.c: In function ‘newFactory’:
-/tmp/call-an-object-method-2.c:60:16: warning: assignment to ‘int’ from ‘int (*)()’ makes integer from pointer without a cast [-Wint-conversion]
+/tmp/call-an-object-method-2.c:60:16: warning: assignment to ‘int’ from ‘void (*)()’ makes integer from pointer without a cast [-Wint-conversion]
    60 |   tmp1.data[0] = New;
       |                ^
 /tmp/call-an-object-method-2.c:61:16: warning: assignment to ‘int’ from ‘int (*)()’ makes integer from pointer without a cast [-Wint-conversion]
@@ -44,7 +39,7 @@ cc: exit status 1
 /tmp/call-an-object-method-2.c:62:10: error: incompatible types when returning type ‘list_int’ but ‘int’ was expected
    62 |   return tmp1;
       |          ^~~~
-/tmp/call-an-object-method-2.c: In function ‘main’:
+/tmp/call-an-object-method-2.c: In function ‘_mochi_main’:
 /tmp/call-an-object-method-2.c:67:23: error: request for member ‘data’ in something not a structure or union
    67 |   int (*New)() = funcs.data[0];
       |                       ^

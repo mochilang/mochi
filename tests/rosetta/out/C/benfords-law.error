@@ -6,57 +6,9 @@ cc: exit status 1
     5 | #include <string.h>
   +++ |+#include <math.h>
     6 | 
-/tmp/benfords-law.c: In function ‘fmtF3’:
-/tmp/benfords-law.c:97:29: warning: passing argument 1 of ‘index_of_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   97 |   int dot = index_of_string(s, ".");
-      |                             ^
-/tmp/benfords-law.c:57:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   57 | static int index_of_string(char *s, char *sub) {
-      |                            ~~~~~~^
-/tmp/benfords-law.c:99:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   99 |     char *tmp2 = concat_string(s, ".000");
-      |                                ^
-/tmp/benfords-law.c:43:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   43 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/benfords-law.c:104:24: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  104 |       s = slice_string(s, 0, dot + 4);
-      |                        ^
-/tmp/benfords-law.c:63:33: note: expected ‘char *’ but argument is of type ‘const char *’
-   63 | static char *slice_string(char *s, int start, int end) {
-      |                           ~~~~~~^
-/tmp/benfords-law.c:107:36: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  107 |         char *tmp3 = concat_string(s, "0");
-      |                                    ^
-/tmp/benfords-law.c:43:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   43 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/benfords-law.c: In function ‘padFloat3’:
-/tmp/benfords-law.c:119:37: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  119 |     char *tmp4 = concat_string(" ", s);
-      |                                     ^
-/tmp/benfords-law.c:43:43: note: expected ‘char *’ but argument is of type ‘const char *’
-   43 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
 /tmp/benfords-law.c: In function ‘show’:
-/tmp/benfords-law.c:172:13: error: subscripted value is neither array nor pointer nor vector
-  172 |       counts[d - 1] = counts.data[d - 1] + 1;
-      |             ^
-/tmp/benfords-law.c:185:14: error: redefinition of ‘preds’
-  185 |   list_float preds = preds;
-      |              ^~~~~
-/tmp/benfords-law.c:175:14: note: previous definition of ‘preds’ with type ‘list_float’
-  175 |   list_float preds = list_float_create(9);
-      |              ^~~~~
-/tmp/benfords-law.c:196:15: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
-  196 |         tmp11 + padFloat3(obs, 9) + "  " + padFloat3(preds.data[i], 8);
-      |               ^ ~~~~~~~~~~~~~~~~~
-      |                 |
-      |                 const char *
-/tmp/benfords-law.c: At top level:
-/tmp/benfords-law.c:204:5: error: redefinition of ‘main’
-  204 | int main() {
-      |     ^~~~
-/tmp/benfords-law.c:202:5: note: previous definition of ‘main’ with type ‘int()’
-  202 | int main() { show(fib1000(), "First 1000 Fibonacci numbers"); }
-      |     ^~~~
+/tmp/benfords-law.c:193:22: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  193 |     int line = tmp10 + padFloat3(obs, 9) + "  " + padFloat3(preds.data[i], 8);
+      |                      ^ ~~~~~~~~~~~~~~~~~
+      |                        |
+      |                        char *

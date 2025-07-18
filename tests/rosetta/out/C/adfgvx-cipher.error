@@ -1,409 +1,111 @@
 cc: exit status 1
 /tmp/adfgvx-cipher.c: In function ‘shuffleStr’:
-/tmp/adfgvx-cipher.c:121:13: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  121 |   int arr = tmp1;
-      |             ^~~~
-/tmp/adfgvx-cipher.c:127:43: error: incompatible type for argument 1 of ‘concat_list_string’
-  127 |     list_string tmp4 = concat_list_string(arr, tmp2);
-      |                                           ^~~
-      |                                           |
-      |                                           int
-/tmp/adfgvx-cipher.c:58:51: note: expected ‘list_string’ but argument is of type ‘int’
-   58 | static list_string concat_list_string(list_string a, list_string b) {
-      |                                       ~~~~~~~~~~~~^
-/tmp/adfgvx-cipher.c:128:11: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-  128 |     arr = tmp4;
-      |           ^~~~
-/tmp/adfgvx-cipher.c:131:14: error: request for member ‘len’ in something not a structure or union
-  131 |   int j = arr.len - 1;
-      |              ^
-/tmp/adfgvx-cipher.c:134:26: error: request for member ‘data’ in something not a structure or union
-  134 |     const char *tmp = arr.data[j];
-      |                          ^
-/tmp/adfgvx-cipher.c:135:8: error: request for member ‘data’ in something not a structure or union
-  135 |     arr.data[j] = arr.data[k];
-      |        ^
-/tmp/adfgvx-cipher.c:135:22: error: request for member ‘data’ in something not a structure or union
-  135 |     arr.data[j] = arr.data[k];
-      |                      ^
-/tmp/adfgvx-cipher.c:136:8: error: request for member ‘data’ in something not a structure or union
-  136 |     arr.data[k] = tmp;
-      |        ^
-/tmp/adfgvx-cipher.c:141:17: error: request for member ‘len’ in something not a structure or union
-  141 |   while (i < arr.len) {
+/tmp/adfgvx-cipher.c:118:15: error: invalid operands to binary + (have ‘list_string’ and ‘list_string’)
+  118 |     arr = arr + tmp1;
+      |               ^
+/tmp/adfgvx-cipher.c:124:15: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+  124 |     int tmp = arr.data[j];
+      |               ^~~
+/tmp/adfgvx-cipher.c:126:17: warning: assignment to ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+  126 |     arr.data[k] = tmp;
       |                 ^
-/tmp/adfgvx-cipher.c:142:40: error: request for member ‘data’ in something not a structure or union
-  142 |     char *tmp5 = concat_string(out, arr.data[i]);
-      |                                        ^
-/tmp/adfgvx-cipher.c:142:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  142 |     char *tmp5 = concat_string(out, arr.data[i]);
-      |                                ^~~
-/tmp/adfgvx-cipher.c:66:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   66 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
+/tmp/adfgvx-cipher.c:132:15: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  132 |     out = out + arr.data[i];
+      |               ^ ~~~~~~~~~~~
+      |                         |
+      |                         char *
 /tmp/adfgvx-cipher.c: In function ‘createPolybius’:
-/tmp/adfgvx-cipher.c:155:11: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  155 |   int p = tmp6;
-      |           ^~~~
-/tmp/adfgvx-cipher.c:158:31: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  158 |     char *tmp7 = slice_string(shuffled, i * 6, (i + 1) * 6);
-      |                               ^~~~~~~~
-/tmp/adfgvx-cipher.c:99:33: note: expected ‘char *’ but argument is of type ‘const char *’
-   99 | static char *slice_string(char *s, int start, int end) {
-      |                           ~~~~~~^
-/tmp/adfgvx-cipher.c:161:18: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  161 |     tmp8.data[0] = row;
-      |                  ^
-/tmp/adfgvx-cipher.c:162:43: error: incompatible type for argument 1 of ‘concat_list_string’
-  162 |     list_string tmp9 = concat_list_string(p, tmp8);
-      |                                           ^
-      |                                           |
-      |                                           int
-/tmp/adfgvx-cipher.c:58:51: note: expected ‘list_string’ but argument is of type ‘int’
-   58 | static list_string concat_list_string(list_string a, list_string b) {
-      |                                       ~~~~~~~~~~~~^
-/tmp/adfgvx-cipher.c:163:9: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-  163 |     p = tmp9;
-      |         ^~~~
-/tmp/adfgvx-cipher.c:169:35: warning: passing argument 1 of ‘_index_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  169 |       char *tmp12 = _index_string(row, j);
-      |                                   ^~~
-/tmp/adfgvx-cipher.c:80:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   80 | static char *_index_string(char *s, int i) {
-      |                            ~~~~~~^
-/tmp/adfgvx-cipher.c:170:35: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  170 |       char *tmp13 = concat_string(line, tmp12);
-      |                                   ^~~~
-/tmp/adfgvx-cipher.c:66:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   66 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/adfgvx-cipher.c: In function ‘createKey’:
-/tmp/adfgvx-cipher.c:190:33: warning: passing argument 1 of ‘_index_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  190 |     char *tmp15 = _index_string(pool, idx);
-      |                                 ^~~~
-/tmp/adfgvx-cipher.c:80:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   80 | static char *_index_string(char *s, int i) {
-      |                            ~~~~~~^
-/tmp/adfgvx-cipher.c:191:33: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  191 |     char *tmp16 = concat_string(key, tmp15);
-      |                                 ^~~
-/tmp/adfgvx-cipher.c:66:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   66 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/adfgvx-cipher.c:193:32: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  193 |     char *tmp17 = slice_string(pool, 0, idx);
-      |                                ^~~~
-/tmp/adfgvx-cipher.c:99:33: note: expected ‘char *’ but argument is of type ‘const char *’
-   99 | static char *slice_string(char *s, int start, int end) {
-      |                           ~~~~~~^
-/tmp/adfgvx-cipher.c:194:32: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  194 |     char *tmp18 = slice_string(pool, idx + 1, strlen(pool));
-      |                                ^~~~
-/tmp/adfgvx-cipher.c:99:33: note: expected ‘char *’ but argument is of type ‘const char *’
-   99 | static char *slice_string(char *s, int start, int end) {
-      |                           ~~~~~~^
-/tmp/adfgvx-cipher.c:199:48: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  199 |   char *tmp20 = concat_string("\nThe key is ", key);
-      |                                                ^~~
-/tmp/adfgvx-cipher.c:66:43: note: expected ‘char *’ but argument is of type ‘const char *’
-   66 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
+/tmp/adfgvx-cipher.c:150:11: error: invalid operands to binary + (have ‘list_string’ and ‘list_string’)
+  150 |     p = p + tmp4;
+      |           ^
 /tmp/adfgvx-cipher.c: In function ‘orderKey’:
-/tmp/adfgvx-cipher.c:211:19: warning: assignment to ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
-  211 |     tmp22.data[1] = i;
+/tmp/adfgvx-cipher.c:198:19: warning: assignment to ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+  198 |     tmp17.data[1] = i;
       |                   ^
-/tmp/adfgvx-cipher.c:212:30: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  212 |     list_int tmp21_data[] = {tmp22};
+/tmp/adfgvx-cipher.c:199:30: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  199 |     list_int tmp16_data[] = {tmp17};
       |                              ^~~~~
-/tmp/adfgvx-cipher.c:214:19: error: invalid operands to binary + (have ‘list_int’ and ‘list_list_int’)
-  214 |     pairs = pairs + tmp21;
+/tmp/adfgvx-cipher.c:201:19: error: invalid operands to binary + (have ‘list_int’ and ‘list_list_int’)
+  201 |     pairs = pairs + tmp16;
       |                   ^
-/tmp/adfgvx-cipher.c:222:25: error: request for member ‘data’ in something not a structure or union
-  222 |       if ((pairs.data[j].data[0] > pairs.data[j + 1].data[0])) {
+/tmp/adfgvx-cipher.c:209:25: error: request for member ‘data’ in something not a structure or union
+  209 |       if ((pairs.data[j].data[0] > pairs.data[j + 1].data[0])) {
       |                         ^
-/tmp/adfgvx-cipher.c:222:53: error: request for member ‘data’ in something not a structure or union
-  222 |       if ((pairs.data[j].data[0] > pairs.data[j + 1].data[0])) {
+/tmp/adfgvx-cipher.c:209:53: error: request for member ‘data’ in something not a structure or union
+  209 |       if ((pairs.data[j].data[0] > pairs.data[j + 1].data[0])) {
       |                                                     ^
-/tmp/adfgvx-cipher.c:224:14: error: subscripted value is neither array nor pointer nor vector
-  224 |         pairs[j] = pairs.data[j + 1];
-      |              ^
-/tmp/adfgvx-cipher.c:225:14: error: subscripted value is neither array nor pointer nor vector
-  225 |         pairs[j + 1] = tmp;
-      |              ^
-/tmp/adfgvx-cipher.c:235:40: error: request for member ‘data’ in something not a structure or union
-  235 |     tmp24.data[0] = (int)(pairs.data[i].data[1]);
+/tmp/adfgvx-cipher.c:222:40: error: request for member ‘data’ in something not a structure or union
+  222 |     tmp19.data[0] = (int)(pairs.data[i].data[1]);
       |                                        ^
 /tmp/adfgvx-cipher.c: In function ‘encrypt’:
-/tmp/adfgvx-cipher.c:256:39: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  256 |           char *tmp30 = concat_string(temp, tmp29);
-      |                                       ^~~~
-/tmp/adfgvx-cipher.c:66:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   66 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/adfgvx-cipher.c:276:15: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  276 |     int row = tmp34;
-      |               ^~~~~
-/tmp/adfgvx-cipher.c:281:46: error: incompatible type for argument 1 of ‘concat_list_string’
-  281 |       list_string tmp36 = concat_list_string(row, tmp35);
-      |                                              ^~~
-      |                                              |
-      |                                              int
-/tmp/adfgvx-cipher.c:58:51: note: expected ‘list_string’ but argument is of type ‘int’
-   58 | static list_string concat_list_string(list_string a, list_string b) {
-      |                                       ~~~~~~~~~~~~^
-/tmp/adfgvx-cipher.c:282:13: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-  282 |       row = tmp36;
-      |             ^~~~~
-/tmp/adfgvx-cipher.c:287:19: error: invalid operands to binary + (have ‘list_int’ and ‘list_int’)
-  287 |     table = table + tmp37;
-      |                   ^
-/tmp/adfgvx-cipher.c:294:32: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  294 |     char *tmp38 = slice_string(temp, idx, idx + 1);
-      |                                ^~~~
-/tmp/adfgvx-cipher.c:99:33: note: expected ‘char *’ but argument is of type ‘const char *’
-   99 | static char *slice_string(char *s, int start, int end) {
-      |                           ~~~~~~^
-/tmp/adfgvx-cipher.c:295:15: error: array subscript is not an integer
-  295 |     table.data[row].data[col] = tmp38;
-      |               ^
-/tmp/adfgvx-cipher.c:300:14: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  300 |   int cols = tmp39;
-      |              ^~~~~
-/tmp/adfgvx-cipher.c:306:39: error: request for member ‘data’ in something not a structure or union
-  306 |       colStr = colStr + table.data[ri].data[order.data[ci]];
-      |                                       ^
-/tmp/adfgvx-cipher.c:310:19: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  310 |     tmp40.data[0] = colStr;
-      |                   ^
-/tmp/adfgvx-cipher.c:311:44: error: incompatible type for argument 1 of ‘concat_list_string’
-  311 |     list_string tmp41 = concat_list_string(cols, tmp40);
-      |                                            ^~~~
-      |                                            |
-      |                                            int
-/tmp/adfgvx-cipher.c:58:51: note: expected ‘list_string’ but argument is of type ‘int’
-   58 | static list_string concat_list_string(list_string a, list_string b) {
-      |                                       ~~~~~~~~~~~~^
-/tmp/adfgvx-cipher.c:312:12: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-  312 |     cols = tmp41;
-      |            ^~~~~
-/tmp/adfgvx-cipher.c:317:19: error: request for member ‘len’ in something not a structure or union
-  317 |   while (ci < cols.len) {
-      |                   ^
-/tmp/adfgvx-cipher.c:318:45: error: request for member ‘data’ in something not a structure or union
-  318 |     char *tmp42 = concat_string(result, cols.data[ci]);
-      |                                             ^
-/tmp/adfgvx-cipher.c:318:33: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  318 |     char *tmp42 = concat_string(result, cols.data[ci]);
-      |                                 ^~~~~~
-/tmp/adfgvx-cipher.c:66:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   66 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/adfgvx-cipher.c:320:18: error: request for member ‘len’ in something not a structure or union
-  320 |     if (ci < cols.len - 1) {
-      |                  ^
-/tmp/adfgvx-cipher.c:321:35: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  321 |       char *tmp43 = concat_string(result, " ");
-      |                                   ^~~~~~
-/tmp/adfgvx-cipher.c:66:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   66 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
+/tmp/adfgvx-cipher.c:265:17: error: invalid operands to binary + (have ‘list_string’ and ‘list_string’)
+  265 |       row = row + tmp28;
+      |                 ^
+/tmp/adfgvx-cipher.c:269:21: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+  269 |     tmp29.data[0] = row;
+      |                     ^~~
+/tmp/adfgvx-cipher.c:270:5: error: ‘table’ undeclared (first use in this function)
+  270 |     table = table + tmp29;
+      |     ^~~~~
+/tmp/adfgvx-cipher.c:270:5: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/adfgvx-cipher.c:293:17: error: invalid operands to binary + (have ‘list_string’ and ‘list_string’)
+  293 |     cols = cols + tmp31;
+      |                 ^
+/tmp/adfgvx-cipher.c:299:21: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  299 |     result = result + cols.data[ci];
+      |                     ^ ~~~~~~~~~~~~~
+      |                                |
+      |                                char *
 /tmp/adfgvx-cipher.c: In function ‘decrypt’:
-/tmp/adfgvx-cipher.c:343:17: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  343 |   int colStrs = tmp45;
-      |                 ^~~~~
-/tmp/adfgvx-cipher.c:352:46: error: incompatible type for argument 1 of ‘concat_list_string’
-  352 |       list_string tmp49 = concat_list_string(colStrs, tmp47);
-      |                                              ^~~~~~~
-      |                                              |
-      |                                              int
-/tmp/adfgvx-cipher.c:58:51: note: expected ‘list_string’ but argument is of type ‘int’
-   58 | static list_string concat_list_string(list_string a, list_string b) {
-      |                                       ~~~~~~~~~~~~^
-/tmp/adfgvx-cipher.c:353:17: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-  353 |       colStrs = tmp49;
-      |                 ^~~~~
-/tmp/adfgvx-cipher.c:360:21: error: request for member ‘len’ in something not a structure or union
-  360 |   while (i < colStrs.len) {
-      |                     ^
-/tmp/adfgvx-cipher.c:361:23: error: request for member ‘data’ in something not a structure or union
-  361 |     if (strlen(colStrs.data[i]) > maxColLen) {
-      |                       ^
-/tmp/adfgvx-cipher.c:362:33: error: request for member ‘data’ in something not a structure or union
-  362 |       maxColLen = strlen(colStrs.data[i]);
-      |                                 ^
-/tmp/adfgvx-cipher.c:369:21: error: request for member ‘len’ in something not a structure or union
-  369 |   while (i < colStrs.len) {
-      |                     ^
-/tmp/adfgvx-cipher.c:370:28: error: request for member ‘data’ in something not a structure or union
-  370 |     const char *s = colStrs.data[i];
-      |                            ^
-/tmp/adfgvx-cipher.c:372:14: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  372 |     int ls = tmp51;
-      |              ^~~~~
-/tmp/adfgvx-cipher.c:375:35: warning: passing argument 1 of ‘_index_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  375 |       char *tmp53 = _index_string(s, j);
-      |                                   ^
-/tmp/adfgvx-cipher.c:80:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   80 | static char *_index_string(char *s, int i) {
-      |                            ~~~~~~^
-/tmp/adfgvx-cipher.c:378:46: error: incompatible type for argument 1 of ‘concat_list_string’
-  378 |       list_string tmp54 = concat_list_string(ls, tmp52);
-      |                                              ^~
-      |                                              |
-      |                                              int
-/tmp/adfgvx-cipher.c:58:51: note: expected ‘list_string’ but argument is of type ‘int’
-   58 | static list_string concat_list_string(list_string a, list_string b) {
-      |                                       ~~~~~~~~~~~~^
-/tmp/adfgvx-cipher.c:379:12: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-  379 |       ls = tmp54;
-      |            ^~~~~
-/tmp/adfgvx-cipher.c:384:17: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  384 |       int pad = tmp55;
-      |                 ^~~~~
-/tmp/adfgvx-cipher.c:387:19: error: request for member ‘len’ in something not a structure or union
-  387 |         if (k < ls.len) {
-      |                   ^
-/tmp/adfgvx-cipher.c:389:29: error: request for member ‘data’ in something not a structure or union
-  389 |           tmp56.data[0] = ls.data[k];
-      |                             ^
-/tmp/adfgvx-cipher.c:390:50: error: incompatible type for argument 1 of ‘concat_list_string’
-  390 |           list_string tmp57 = concat_list_string(pad, tmp56);
-      |                                                  ^~~
-      |                                                  |
-      |                                                  int
-/tmp/adfgvx-cipher.c:58:51: note: expected ‘list_string’ but argument is of type ‘int’
-   58 | static list_string concat_list_string(list_string a, list_string b) {
-      |                                       ~~~~~~~~~~~~^
-/tmp/adfgvx-cipher.c:391:17: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-  391 |           pad = tmp57;
-      |                 ^~~~~
-/tmp/adfgvx-cipher.c:395:50: error: incompatible type for argument 1 of ‘concat_list_string’
-  395 |           list_string tmp59 = concat_list_string(pad, tmp58);
-      |                                                  ^~~
-      |                                                  |
-      |                                                  int
-/tmp/adfgvx-cipher.c:58:51: note: expected ‘list_string’ but argument is of type ‘int’
-   58 | static list_string concat_list_string(list_string a, list_string b) {
-      |                                       ~~~~~~~~~~~~^
-/tmp/adfgvx-cipher.c:396:17: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-  396 |           pad = tmp59;
-      |                 ^~~~~
-/tmp/adfgvx-cipher.c:402:19: error: invalid operands to binary + (have ‘list_int’ and ‘list_int’)
-  402 |       cols = cols + tmp60;
-      |                   ^
-/tmp/adfgvx-cipher.c:406:19: error: invalid operands to binary + (have ‘list_int’ and ‘list_int’)
-  406 |       cols = cols + tmp61;
-      |                   ^
-/tmp/adfgvx-cipher.c:415:15: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  415 |     int row = tmp63;
-      |               ^~~~~
-/tmp/adfgvx-cipher.c:420:46: error: incompatible type for argument 1 of ‘concat_list_string’
-  420 |       list_string tmp65 = concat_list_string(row, tmp64);
-      |                                              ^~~
-      |                                              |
-      |                                              int
-/tmp/adfgvx-cipher.c:58:51: note: expected ‘list_string’ but argument is of type ‘int’
-   58 | static list_string concat_list_string(list_string a, list_string b) {
-      |                                       ~~~~~~~~~~~~^
-/tmp/adfgvx-cipher.c:421:13: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-  421 |       row = tmp65;
-      |             ^~~~~
-/tmp/adfgvx-cipher.c:426:19: error: invalid operands to binary + (have ‘list_int’ and ‘list_int’)
-  426 |     table = table + tmp66;
-      |                   ^
-/tmp/adfgvx-cipher.c:434:20: error: request for member ‘data’ in something not a structure or union
-  434 |       table.data[r].data[order.data[c]] = cols.data[c].data[r];
-      |                    ^
-/tmp/adfgvx-cipher.c:434:55: error: request for member ‘data’ in something not a structure or union
-  434 |       table.data[r].data[order.data[c]] = cols.data[c].data[r];
-      |                                                       ^
-/tmp/adfgvx-cipher.c:443:29: error: request for member ‘len’ in something not a structure or union
-  443 |     while (j < table.data[r].len) {
-      |                             ^
-/tmp/adfgvx-cipher.c:444:34: error: request for member ‘data’ in something not a structure or union
-  444 |       temp = temp + table.data[r].data[j];
+/tmp/adfgvx-cipher.c:331:25: error: invalid operands to binary + (have ‘list_string’ and ‘list_string’)
+  331 |       colStrs = colStrs + tmp35;
+      |                         ^
+/tmp/adfgvx-cipher.c:339:25: error: request for member ‘len’ in something not a structure or union
+  339 |     if ((colStrs.data[i].len > maxColLen)) {
+      |                         ^
+/tmp/adfgvx-cipher.c:340:34: error: request for member ‘len’ in something not a structure or union
+  340 |       maxColLen = colStrs.data[i].len;
       |                                  ^
-/tmp/adfgvx-cipher.c:452:32: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  452 |     char *tmp67 = slice_string(temp, idx, idx + 1);
-      |                                ^~~~
-/tmp/adfgvx-cipher.c:99:33: note: expected ‘char *’ but argument is of type ‘const char *’
-   99 | static char *slice_string(char *s, int start, int end) {
-      |                           ~~~~~~^
-/tmp/adfgvx-cipher.c:454:32: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  454 |     char *tmp68 = slice_string(temp, idx + 1, idx + 2);
-      |                                ^~~~
-/tmp/adfgvx-cipher.c:99:33: note: expected ‘char *’ but argument is of type ‘const char *’
-   99 | static char *slice_string(char *s, int start, int end) {
-      |                           ~~~~~~^
-/tmp/adfgvx-cipher.c:457:33: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  457 |     char *tmp70 = concat_string(plainText, tmp69);
-      |                                 ^~~~~~~~~
-/tmp/adfgvx-cipher.c:66:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   66 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/adfgvx-cipher.c: In function ‘main’:
-/tmp/adfgvx-cipher.c:468:49: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  468 |   char *tmp71 = concat_string("\nPlaintext : ", plainText);
-      |                                                 ^~~~~~~~~
-/tmp/adfgvx-cipher.c:66:43: note: expected ‘char *’ but argument is of type ‘const char *’
-   66 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/adfgvx-cipher.c:470:36: error: incompatible type for argument 1 of ‘encrypt’
-  470 |   const char *cipherText = encrypt(polybius, key, plainText);
-      |                                    ^~~~~~~~
-      |                                    |
-      |                                    int
-/tmp/adfgvx-cipher.c:244:33: note: expected ‘list_string’ but argument is of type ‘int’
-  244 | const char *encrypt(list_string polybius, char *key, char *plainText) {
-      |                     ~~~~~~~~~~~~^~~~~~~~
-/tmp/adfgvx-cipher.c:470:46: warning: passing argument 2 of ‘encrypt’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  470 |   const char *cipherText = encrypt(polybius, key, plainText);
-      |                                              ^~~
-/tmp/adfgvx-cipher.c:244:49: note: expected ‘char *’ but argument is of type ‘const char *’
-  244 | const char *encrypt(list_string polybius, char *key, char *plainText) {
-      |                                           ~~~~~~^~~
-/tmp/adfgvx-cipher.c:470:51: warning: passing argument 3 of ‘encrypt’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  470 |   const char *cipherText = encrypt(polybius, key, plainText);
-      |                                                   ^~~~~~~~~
-/tmp/adfgvx-cipher.c:244:60: note: expected ‘char *’ but argument is of type ‘const char *’
-  244 | const char *encrypt(list_string polybius, char *key, char *plainText) {
-      |                                                      ~~~~~~^~~~~~~~~
-/tmp/adfgvx-cipher.c:471:49: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  471 |   char *tmp72 = concat_string("\nEncrypted : ", cipherText);
-      |                                                 ^~~~~~~~~~
-/tmp/adfgvx-cipher.c:66:43: note: expected ‘char *’ but argument is of type ‘const char *’
-   66 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/adfgvx-cipher.c:473:36: error: incompatible type for argument 1 of ‘decrypt’
-  473 |   const char *plainText2 = decrypt(polybius, key, cipherText);
-      |                                    ^~~~~~~~
-      |                                    |
-      |                                    int
-/tmp/adfgvx-cipher.c:341:33: note: expected ‘list_string’ but argument is of type ‘int’
-  341 | const char *decrypt(list_string polybius, char *key, char *cipherText) {
-      |                     ~~~~~~~~~~~~^~~~~~~~
-/tmp/adfgvx-cipher.c:473:46: warning: passing argument 2 of ‘decrypt’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  473 |   const char *plainText2 = decrypt(polybius, key, cipherText);
-      |                                              ^~~
-/tmp/adfgvx-cipher.c:341:49: note: expected ‘char *’ but argument is of type ‘const char *’
-  341 | const char *decrypt(list_string polybius, char *key, char *cipherText) {
-      |                                           ~~~~~~^~~
-/tmp/adfgvx-cipher.c:473:51: warning: passing argument 3 of ‘decrypt’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  473 |   const char *plainText2 = decrypt(polybius, key, cipherText);
-      |                                                   ^~~~~~~~~~
-/tmp/adfgvx-cipher.c:341:60: note: expected ‘char *’ but argument is of type ‘const char *’
-  341 | const char *decrypt(list_string polybius, char *key, char *cipherText) {
-      |                                                      ~~~~~~^~~~~~~~~~
-/tmp/adfgvx-cipher.c:474:49: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  474 |   char *tmp73 = concat_string("\nDecrypted : ", plainText2);
-      |                                                 ^~~~~~~~~~
-/tmp/adfgvx-cipher.c:66:43: note: expected ‘char *’ but argument is of type ‘const char *’
-   66 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/adfgvx-cipher.c: At top level:
-/tmp/adfgvx-cipher.c:478:5: error: redefinition of ‘main’
-  478 | int main() {
-      |     ^~~~
-/tmp/adfgvx-cipher.c:464:5: note: previous definition of ‘main’ with type ‘int()’
-  464 | int main() {
-      |     ^~~~
+/tmp/adfgvx-cipher.c:346:13: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+  346 |     int s = colStrs.data[i];
+      |             ^~~~~~~
+/tmp/adfgvx-cipher.c:349:17: error: request for member ‘len’ in something not a structure or union
+  349 |     while (j < s.len) {
+      |                 ^
+/tmp/adfgvx-cipher.c:351:24: error: request for member ‘data’ in something not a structure or union
+  351 |       tmp37.data[0] = s.data[j];
+      |                        ^
+/tmp/adfgvx-cipher.c:352:15: error: invalid operands to binary + (have ‘list_string’ and ‘list_int’)
+  352 |       ls = ls + tmp37;
+      |               ^
+/tmp/adfgvx-cipher.c:355:10: error: request for member ‘len’ in something not a structure or union
+  355 |     if (s.len < maxColLen) {
+      |          ^
+/tmp/adfgvx-cipher.c:361:25: warning: assignment to ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+  361 |           tmp38.data[0] = ls.data[k];
+      |                         ^
+/tmp/adfgvx-cipher.c:362:21: error: invalid operands to binary + (have ‘list_string’ and ‘list_int’)
+  362 |           pad = pad + tmp38;
+      |                     ^
+/tmp/adfgvx-cipher.c:366:21: error: invalid operands to binary + (have ‘list_string’ and ‘list_string’)
+  366 |           pad = pad + tmp39;
+      |                     ^
+/tmp/adfgvx-cipher.c:371:23: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+  371 |       tmp40.data[0] = pad;
+      |                       ^~~
+/tmp/adfgvx-cipher.c:372:7: error: ‘cols’ undeclared (first use in this function); did you mean ‘ls’?
+  372 |       cols = cols + tmp40;
+      |       ^~~~
+      |       ls
+/tmp/adfgvx-cipher.c:375:23: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+  375 |       tmp41.data[0] = ls;
+      |                       ^~
+/tmp/adfgvx-cipher.c:387:17: error: invalid operands to binary + (have ‘list_string’ and ‘list_string’)
+  387 |       row = row + tmp42;
+      |                 ^
+/tmp/adfgvx-cipher.c:391:21: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+  391 |     tmp43.data[0] = row;
+      |                     ^~~
+/tmp/adfgvx-cipher.c:392:5: error: ‘table’ undeclared (first use in this function)
+  392 |     table = table + tmp43;
+      |     ^~~~~

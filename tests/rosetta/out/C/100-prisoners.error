@@ -1,9 +1,0 @@
-cc error: exit status 1
-/workspace/mochi/tests/rosetta/out/C/100-prisoners.c: In function ‘doTrials’:
-/workspace/mochi/tests/rosetta/out/C/100-prisoners.c:82:17: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
-   82 |       drawers = 0;
-      |                 ^
-/workspace/mochi/tests/rosetta/out/C/100-prisoners.c: In function ‘mochi_main’:
-/workspace/mochi/tests/rosetta/out/C/100-prisoners.c:157:19: error: subscripted value is neither array nor pointer nor vector
-  157 |     int np = tmp12[tmp13];
-      |                   ^

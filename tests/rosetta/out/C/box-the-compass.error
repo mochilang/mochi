@@ -1,75 +1,12 @@
 cc: exit status 1
-/tmp/box-the-compass.c: In function ‘padLeft’:
-/tmp/box-the-compass.c:78:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   78 |     char *tmp1 = concat_string(res, " ");
-      |                                ^~~
-/tmp/box-the-compass.c:35:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   35 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/box-the-compass.c:82:30: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   82 |   char *tmp2 = concat_string(res, s);
-      |                              ^~~
-/tmp/box-the-compass.c:35:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   35 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/box-the-compass.c: In function ‘padRight’:
-/tmp/box-the-compass.c:90:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   90 |     char *tmp3 = concat_string(out, " ");
-      |                                ^~~
-/tmp/box-the-compass.c:35:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   35 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/box-the-compass.c: In function ‘format2’:
-/tmp/box-the-compass.c:111:29: warning: passing argument 1 of ‘index_of_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  111 |   int idx = index_of_string(s, ".");
-      |                             ^
-/tmp/box-the-compass.c:49:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   49 | static int index_of_string(char *s, char *sub) {
-      |                            ~~~~~~^
-/tmp/box-the-compass.c:113:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  113 |     char *tmp5 = concat_string(s, ".00");
-      |                                ^
-/tmp/box-the-compass.c:35:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   35 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/box-the-compass.c:118:24: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  118 |       s = slice_string(s, 0, need);
-      |                        ^
-/tmp/box-the-compass.c:55:33: note: expected ‘char *’ but argument is of type ‘const char *’
-   55 | static char *slice_string(char *s, int start, int end) {
-      |                           ~~~~~~^
-/tmp/box-the-compass.c:121:36: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  121 |         char *tmp6 = concat_string(s, "0");
-      |                                    ^
-/tmp/box-the-compass.c:35:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   35 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
 /tmp/box-the-compass.c: In function ‘degrees2compasspoint’:
-/tmp/box-the-compass.c:138:53: error: ‘compassPoint’ undeclared (first use in this function)
-  138 | const char *degrees2compasspoint(double h) { return compassPoint.data[cpx(h)]; }
-      |                                                     ^~~~~~~~~~~~
-/tmp/box-the-compass.c:138:53: note: each undeclared identifier is reported only once for each function it appears in
-/tmp/box-the-compass.c: In function ‘main’:
-/tmp/box-the-compass.c:174:7: error: conflicting types for ‘compassPoint’; have ‘int’
-  174 |   int compassPoint = compassPoint;
-      |       ^~~~~~~~~~~~
-/tmp/box-the-compass.c:141:15: note: previous definition of ‘compassPoint’ with type ‘list_string’
-  141 |   list_string compassPoint = list_string_create(32);
-      |               ^~~~~~~~~~~~
-/tmp/box-the-compass.c:209:14: error: redefinition of ‘headings’
-  209 |   list_float headings = headings;
-      |              ^~~~~~~~
-/tmp/box-the-compass.c:175:14: note: previous definition of ‘headings’ with type ‘list_float’
-  175 |   list_float headings = list_float_create(33);
-      |              ^~~~~~~~
-/tmp/box-the-compass.c:216:37: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
-  216 |     printf("%s\n", padLeft(tmp7, 4) + "   " + padRight(cp, 19) + " " +
+/tmp/box-the-compass.c:138:47: error: ‘compassPoint’ undeclared (first use in this function)
+  138 | char *degrees2compasspoint(double h) { return compassPoint.data[cpx(h)]; }
+      |                                               ^~~~~~~~~~~~
+/tmp/box-the-compass.c:138:47: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/box-the-compass.c: In function ‘_mochi_main’:
+/tmp/box-the-compass.c:214:37: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  214 |     printf("%s\n", padLeft(tmp7, 4) + "   " + padRight(cp, 19) + " " +
       |                    ~~~~~~~~~~~~~~~~ ^
       |                    |                |
-      |                    const char *     char *
-/tmp/box-the-compass.c:216:56: warning: passing argument 1 of ‘padRight’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  216 |     printf("%s\n", padLeft(tmp7, 4) + "   " + padRight(cp, 19) + " " +
-      |                                                        ^~
-/tmp/box-the-compass.c:86:28: note: expected ‘char *’ but argument is of type ‘const char *’
-   86 | const char *padRight(char *s, int w) {
-      |                      ~~~~~~^
+      |                    char *           char *

@@ -1,223 +1,40 @@
 cc: exit status 1
-/tmp/99-bottles-of-beer-2.c: In function ‘fields’:
-/tmp/99-bottles-of-beer-2.c:57:15: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-   57 |   int words = tmp1;
-      |               ^~~~
-/tmp/99-bottles-of-beer-2.c:65:22: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   65 |         tmp2.data[0] = cur;
-      |                      ^
-/tmp/99-bottles-of-beer-2.c:66:47: error: incompatible type for argument 1 of ‘concat_list_string’
-   66 |         list_string tmp3 = concat_list_string(words, tmp2);
-      |                                               ^~~~~
-      |                                               |
-      |                                               int
-/tmp/99-bottles-of-beer-2.c:21:51: note: expected ‘list_string’ but argument is of type ‘int’
-   21 | static list_string concat_list_string(list_string a, list_string b) {
-      |                                       ~~~~~~~~~~~~^
-/tmp/99-bottles-of-beer-2.c:67:17: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-   67 |         words = tmp3;
-      |                 ^~~~
-/tmp/99-bottles-of-beer-2.c:71:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   71 |       char *tmp4 = concat_string(cur, ch);
-      |                                  ^~~
-/tmp/99-bottles-of-beer-2.c:29:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   29 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/99-bottles-of-beer-2.c:71:39: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   71 |       char *tmp4 = concat_string(cur, ch);
-      |                                       ^~
-/tmp/99-bottles-of-beer-2.c:29:43: note: expected ‘char *’ but argument is of type ‘const char *’
-   29 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/99-bottles-of-beer-2.c:78:18: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   78 |     tmp5.data[0] = cur;
-      |                  ^
-/tmp/99-bottles-of-beer-2.c:79:43: error: incompatible type for argument 1 of ‘concat_list_string’
-   79 |     list_string tmp6 = concat_list_string(words, tmp5);
-      |                                           ^~~~~
-      |                                           |
-      |                                           int
-/tmp/99-bottles-of-beer-2.c:21:51: note: expected ‘list_string’ but argument is of type ‘int’
-   21 | static list_string concat_list_string(list_string a, list_string b) {
-      |                                       ~~~~~~~~~~~~^
-/tmp/99-bottles-of-beer-2.c:80:13: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-   80 |     words = tmp6;
-      |             ^~~~
-/tmp/99-bottles-of-beer-2.c: In function ‘join’:
-/tmp/99-bottles-of-beer-2.c:90:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   90 |       char *tmp7 = concat_string(res, sep);
-      |                                  ^~~
-/tmp/99-bottles-of-beer-2.c:29:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   29 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/99-bottles-of-beer-2.c:93:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   93 |     char *tmp8 = concat_string(res, xs.data[i]);
-      |                                ^~~
-/tmp/99-bottles-of-beer-2.c:29:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   29 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
 /tmp/99-bottles-of-beer-2.c: In function ‘numberName’:
-/tmp/99-bottles-of-beer-2.c:122:7: error: conflicting types for ‘small’; have ‘int’
-  122 |   int small = small;
-      |       ^~~~~
-/tmp/99-bottles-of-beer-2.c:101:15: note: previous definition of ‘small’ with type ‘list_string’
-  101 |   list_string small = list_string_create(20);
-      |               ^~~~~
-/tmp/99-bottles-of-beer-2.c:134:7: error: conflicting types for ‘tens’; have ‘int’
-  134 |   int tens = tens;
-      |       ^~~~
-/tmp/99-bottles-of-beer-2.c:123:15: note: previous definition of ‘tens’ with type ‘list_string’
-  123 |   list_string tens = list_string_create(10);
-      |               ^~~~
-/tmp/99-bottles-of-beer-2.c:145:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  145 |       char *tmp9 = concat_string(t, " ");
-      |                                  ^
-/tmp/99-bottles-of-beer-2.c:29:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   29 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/99-bottles-of-beer-2.c: In function ‘pluralizeFirst’:
-/tmp/99-bottles-of-beer-2.c:159:8: error: request for member ‘len’ in something not a structure or union
-  159 |   if (w.len > 0) {
-      |        ^
-/tmp/99-bottles-of-beer-2.c:160:34: error: request for member ‘data’ in something not a structure or union
-  160 |     char *tmp11 = concat_string(w.data[0], "s");
-      |                                  ^
-/tmp/99-bottles-of-beer-2.c:161:34: error: request for member ‘data’ in something not a structure or union
-  161 |     char *tmp12 = concat_string(w.data[0], "s");
-      |                                  ^
-/tmp/99-bottles-of-beer-2.c:162:6: error: request for member ‘data’ in something not a structure or union
-  162 |     w.data[0] = tmp12;
-      |      ^
-/tmp/99-bottles-of-beer-2.c:164:15: error: incompatible type for argument 1 of ‘join’
-  164 |   return join(w, " ");
-      |               ^
-      |               |
-      |               int
-/tmp/99-bottles-of-beer-2.c:85:30: note: expected ‘list_string’ but argument is of type ‘int’
-   85 | const char *join(list_string xs, char *sep) {
-      |                  ~~~~~~~~~~~~^~
+/tmp/99-bottles-of-beer-2.c:139:13: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+  139 |     int t = tens.data[(int)((((double)n) / ((double)10)))];
+      |             ^~~~
+/tmp/99-bottles-of-beer-2.c:142:19: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  142 |       t = t + " " + small.data[s];
+      |           ~~~~~~~ ^ ~~~~~~~~~~~~~
+      |             |                 |
+      |             char *            char *
+/tmp/99-bottles-of-beer-2.c:144:12: warning: returning ‘int’ from a function with return type ‘char *’ makes pointer from integer without a cast [-Wint-conversion]
+  144 |     return t;
+      |            ^
 /tmp/99-bottles-of-beer-2.c: In function ‘slur’:
-/tmp/99-bottles-of-beer-2.c:177:11: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  177 |   int a = tmp13;
-      |           ^~~~~
-/tmp/99-bottles-of-beer-2.c:182:44: error: incompatible type for argument 1 of ‘concat_list_string’
-  182 |     list_string tmp15 = concat_list_string(a, tmp14);
-      |                                            ^
-      |                                            |
-      |                                            int
-/tmp/99-bottles-of-beer-2.c:21:51: note: expected ‘list_string’ but argument is of type ‘int’
-   21 | static list_string concat_list_string(list_string a, list_string b) {
-      |                                       ~~~~~~~~~~~~^
-/tmp/99-bottles-of-beer-2.c:183:9: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-  183 |     a = tmp15;
-      |         ^~~~~
-/tmp/99-bottles-of-beer-2.c:186:14: error: request for member ‘len’ in something not a structure or union
-  186 |   int idx = a.len - 1;
-      |              ^
-/tmp/99-bottles-of-beer-2.c:192:26: error: request for member ‘data’ in something not a structure or union
-  192 |       const char *tmp = a.data[idx];
-      |                          ^
-/tmp/99-bottles-of-beer-2.c:193:8: error: request for member ‘data’ in something not a structure or union
-  193 |       a.data[idx] = a.data[j];
-      |        ^
-/tmp/99-bottles-of-beer-2.c:193:22: error: request for member ‘data’ in something not a structure or union
-  193 |       a.data[idx] = a.data[j];
-      |                      ^
-/tmp/99-bottles-of-beer-2.c:194:8: error: request for member ‘data’ in something not a structure or union
-  194 |       a.data[j] = tmp;
-      |        ^
-/tmp/99-bottles-of-beer-2.c:200:15: error: request for member ‘len’ in something not a structure or union
-  200 |   while (k < a.len) {
-      |               ^
-/tmp/99-bottles-of-beer-2.c:201:37: error: request for member ‘data’ in something not a structure or union
-  201 |     char *tmp16 = concat_string(s, a.data[k]);
-      |                                     ^
-/tmp/99-bottles-of-beer-2.c:201:33: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  201 |     char *tmp16 = concat_string(s, a.data[k]);
-      |                                 ^
-/tmp/99-bottles-of-beer-2.c:29:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   29 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/99-bottles-of-beer-2.c:205:9: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
-  205 |   s = s + slice_string(p, strlen(p) - 1, strlen(p));
+/tmp/99-bottles-of-beer-2.c:199:9: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  199 |   s = s + slice_string(p, strlen(p) - 1, strlen(p));
       |         ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       |           |
       |           char *
-/tmp/99-bottles-of-beer-2.c:206:18: warning: passing argument 1 of ‘fields’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  206 |   int w = fields(s);
-      |                  ^
-/tmp/99-bottles-of-beer-2.c:55:18: note: expected ‘char *’ but argument is of type ‘const char *’
-   55 | int fields(char *s) {
-      |            ~~~~~~^
-/tmp/99-bottles-of-beer-2.c:207:15: error: incompatible type for argument 1 of ‘join’
-  207 |   return join(w, " ");
-      |               ^
-      |               |
-      |               int
-/tmp/99-bottles-of-beer-2.c:85:30: note: expected ‘list_string’ but argument is of type ‘int’
-   85 | const char *join(list_string xs, char *sep) {
-      |                  ~~~~~~~~~~~~^~
-/tmp/99-bottles-of-beer-2.c: In function ‘main’:
-/tmp/99-bottles-of-beer-2.c:213:25: warning: passing argument 1 of ‘slur’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  213 |     printf("%s\n", slur(numberName(i), i) + " " +
-      |                         ^~~~~~~~~~~~~
-/tmp/99-bottles-of-beer-2.c:172:24: note: expected ‘char *’ but argument is of type ‘const char *’
-  172 | const char *slur(char *p, int d) {
-      |                  ~~~~~~^
-/tmp/99-bottles-of-beer-2.c:213:43: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
-  213 |     printf("%s\n", slur(numberName(i), i) + " " +
+/tmp/99-bottles-of-beer-2.c: In function ‘mochi_main’:
+/tmp/99-bottles-of-beer-2.c:207:43: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  207 |     printf("%s\n", slur(numberName(i), i) + " " +
       |                    ~~~~~~~~~~~~~~~~~~~~~~ ^
       |                    |                      |
-      |                    const char *           char *
-/tmp/99-bottles-of-beer-2.c:214:39: warning: passing argument 1 of ‘pluralizeFirst’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  214 |                        pluralizeFirst(slur("bottle of", i), i) + " " +
-      |                                       ^~~~~~~~~~~~~~~~~~~~
-/tmp/99-bottles-of-beer-2.c:154:34: note: expected ‘char *’ but argument is of type ‘const char *’
-  154 | const char *pluralizeFirst(char *s, int n) {
-      |                            ~~~~~~^
-/tmp/99-bottles-of-beer-2.c:216:25: warning: passing argument 1 of ‘slur’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  216 |     printf("%s\n", slur(numberName(i), i) + " " +
-      |                         ^~~~~~~~~~~~~
-/tmp/99-bottles-of-beer-2.c:172:24: note: expected ‘char *’ but argument is of type ‘const char *’
-  172 | const char *slur(char *p, int d) {
-      |                  ~~~~~~^
-/tmp/99-bottles-of-beer-2.c:216:43: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
-  216 |     printf("%s\n", slur(numberName(i), i) + " " +
+      |                    char *                 char *
+/tmp/99-bottles-of-beer-2.c:210:43: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  210 |     printf("%s\n", slur(numberName(i), i) + " " +
       |                    ~~~~~~~~~~~~~~~~~~~~~~ ^
       |                    |                      |
-      |                    const char *           char *
-/tmp/99-bottles-of-beer-2.c:217:39: warning: passing argument 1 of ‘pluralizeFirst’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  217 |                        pluralizeFirst(slur("bottle of", i), i) + " " +
-      |                                       ^~~~~~~~~~~~~~~~~~~~
-/tmp/99-bottles-of-beer-2.c:154:34: note: expected ‘char *’ but argument is of type ‘const char *’
-  154 | const char *pluralizeFirst(char *s, int n) {
-      |                            ~~~~~~^
-/tmp/99-bottles-of-beer-2.c:219:40: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
-  219 |     printf("%s\n", slur("take one", i) + " " + slur("down", i) + " " +
+      |                    char *                 char *
+/tmp/99-bottles-of-beer-2.c:213:40: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  213 |     printf("%s\n", slur("take one", i) + " " + slur("down", i) + " " +
       |                    ~~~~~~~~~~~~~~~~~~~ ^
       |                    |                   |
-      |                    const char *        char *
-/tmp/99-bottles-of-beer-2.c:221:25: warning: passing argument 1 of ‘slur’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  221 |     printf("%s\n", slur(numberName(i - 1), i) + " " +
-      |                         ^~~~~~~~~~~~~~~~~
-/tmp/99-bottles-of-beer-2.c:172:24: note: expected ‘char *’ but argument is of type ‘const char *’
-  172 | const char *slur(char *p, int d) {
-      |                  ~~~~~~^
-/tmp/99-bottles-of-beer-2.c:221:47: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
-  221 |     printf("%s\n", slur(numberName(i - 1), i) + " " +
+      |                    char *              char *
+/tmp/99-bottles-of-beer-2.c:215:47: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  215 |     printf("%s\n", slur(numberName(i - 1), i) + " " +
       |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~ ^
       |                    |                          |
-      |                    const char *               char *
-/tmp/99-bottles-of-beer-2.c:222:39: warning: passing argument 1 of ‘pluralizeFirst’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  222 |                        pluralizeFirst(slur("bottle of", i), i - 1) + " " +
-      |                                       ^~~~~~~~~~~~~~~~~~~~
-/tmp/99-bottles-of-beer-2.c:154:34: note: expected ‘char *’ but argument is of type ‘const char *’
-  154 | const char *pluralizeFirst(char *s, int n) {
-      |                            ~~~~~~^
-/tmp/99-bottles-of-beer-2.c: At top level:
-/tmp/99-bottles-of-beer-2.c:228:5: error: redefinition of ‘main’
-  228 | int main() {
-      |     ^~~~
-/tmp/99-bottles-of-beer-2.c:210:5: note: previous definition of ‘main’ with type ‘int()’
-  210 | int main() {
-      |     ^~~~
+      |                    char *                     char *

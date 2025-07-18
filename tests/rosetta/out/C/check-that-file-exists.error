@@ -7,7 +7,7 @@ cc: exit status 1
 /tmp/check-that-file-exists.c:94:16: error: array subscript is not an integer
    94 |     if (fs.data[path]) {
       |                ^
-/tmp/check-that-file-exists.c: In function ‘main’:
+/tmp/check-that-file-exists.c: In function ‘mochi_main’:
 /tmp/check-that-file-exists.c:110:12: error: incompatible types when initializing type ‘int’ using type ‘map_string_int’
   110 |   int fs = tmp5;
       |            ^~~~
@@ -22,10 +22,3 @@ cc: exit status 1
 /tmp/check-that-file-exists.c:92:30: note: expected ‘map_string_int’ but argument is of type ‘int’
    92 | int printStat(map_string_int fs, char *path) {
       |               ~~~~~~~~~~~~~~~^~
-/tmp/check-that-file-exists.c: At top level:
-/tmp/check-that-file-exists.c:123:5: error: redefinition of ‘main’
-  123 | int main() {
-      |     ^~~~
-/tmp/check-that-file-exists.c:108:5: note: previous definition of ‘main’ with type ‘int()’
-  108 | int main() {
-      |     ^~~~

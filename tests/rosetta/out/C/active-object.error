@@ -1,0 +1,6 @@
+cc: exit status 1
+/tmp/active-object.c: In function ‘_mochi_main’:
+/tmp/active-object.c:44:22: error: expected ‘)’ before numeric constant
+   44 |   printf("%.17g\n", s.0);
+      |         ~            ^~
+      |                      )

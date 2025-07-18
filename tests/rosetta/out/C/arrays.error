@@ -1,86 +1,52 @@
 cc: exit status 1
-/tmp/arrays.c: In function ‘listStr’:
-/tmp/arrays.c:66:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   66 |     char *tmp2 = concat_string(s, tmp1);
-      |                                ^
-/tmp/arrays.c:29:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   29 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/arrays.c:69:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   69 |       char *tmp3 = concat_string(s, " ");
-      |                                  ^
-/tmp/arrays.c:29:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   29 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/arrays.c:74:30: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   74 |   char *tmp4 = concat_string(s, "]");
-      |                              ^
-/tmp/arrays.c:29:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   29 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/arrays.c: In function ‘main’:
-/tmp/arrays.c:95:25: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
+/tmp/arrays.c: In function ‘_mochi_main’:
+/tmp/arrays.c:95:25: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
    95 |   printf("%s\n", "a = " + listStr(tmp7));
       |                  ~~~~~~ ^ ~~~~~~~~~~~~~
       |                  |        |
-      |                  char *   const char *
-/tmp/arrays.c:96:4: error: subscripted value is neither array nor pointer nor vector
-   96 |   a[0] = 3;
-      |    ^
-/tmp/arrays.c:103:25: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
+      |                  char *   char *
+/tmp/arrays.c:103:25: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
   103 |   printf("%s\n", "a = " + listStr(tmp8));
       |                  ~~~~~~ ^ ~~~~~~~~~~~~~
       |                  |        |
-      |                  char *   const char *
-/tmp/arrays.c:107:24: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-  107 |   list_int tmp12 = {5, a};
-      |                        ^
-/tmp/arrays.c:110:25: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
-  110 |   printf("%s\n", "s = " + listStr(s));
+      |                  char *   char *
+/tmp/arrays.c:109:25: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  109 |   printf("%s\n", "s = " + listStr(s));
       |                  ~~~~~~ ^ ~~~~~~~~~~
       |                  |        |
-      |                  char *   const char *
-/tmp/arrays.c:117:24: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-  117 |   list_int tmp19 = {5, a};
-      |                        ^
-/tmp/arrays.c:120:25: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
-  120 |   printf("%s\n", "s = " + listStr(s));
+      |                  char *   char *
+/tmp/arrays.c:118:25: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  118 |   printf("%s\n", "s = " + listStr(s));
       |                  ~~~~~~ ^ ~~~~~~~~~~
       |                  |        |
-      |                  char *   const char *
-/tmp/arrays.c:121:4: error: subscripted value is neither array nor pointer nor vector
-  121 |   a[0] = 22;
-      |    ^
-/tmp/arrays.c:129:25: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
-  129 |   printf("%s\n", "a = " + listStr(tmp20));
+      |                  char *   char *
+/tmp/arrays.c:127:25: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  127 |   printf("%s\n", "a = " + listStr(tmp18));
       |                  ~~~~~~ ^ ~~~~~~~~~~~~~~
       |                  |        |
-      |                  char *   const char *
-/tmp/arrays.c:130:25: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
-  130 |   printf("%s\n", "s = " + listStr(s));
+      |                  char *   char *
+/tmp/arrays.c:128:25: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  128 |   printf("%s\n", "s = " + listStr(s));
       |                  ~~~~~~ ^ ~~~~~~~~~~
       |                  |        |
-      |                  char *   const char *
-/tmp/arrays.c:147:25: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
-  147 |   printf("%s\n", "s = " + listStr(s));
+      |                  char *   char *
+/tmp/arrays.c:145:25: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  145 |   printf("%s\n", "s = " + listStr(s));
       |                  ~~~~~~ ^ ~~~~~~~~~~
       |                  |        |
-      |                  char *   const char *
-/tmp/arrays.c:154:4: error: subscripted value is neither array nor pointer nor vector
-  154 |   a[4] = (-1);
-      |    ^
-/tmp/arrays.c:161:25: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
-  161 |   printf("%s\n", "a = " + listStr(tmp32));
+      |                  char *   char *
+/tmp/arrays.c:159:25: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  159 |   printf("%s\n", "a = " + listStr(tmp30));
       |                  ~~~~~~ ^ ~~~~~~~~~~~~~~
       |                  |        |
-      |                  char *   const char *
-/tmp/arrays.c:162:25: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
-  162 |   printf("%s\n", "s = " + listStr(s));
+      |                  char *   char *
+/tmp/arrays.c:160:25: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  160 |   printf("%s\n", "s = " + listStr(s));
       |                  ~~~~~~ ^ ~~~~~~~~~~
       |                  |        |
-      |                  char *   const char *
-/tmp/arrays.c:173:25: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
-  173 |   printf("%s\n", "s = " + listStr(s));
+      |                  char *   char *
+/tmp/arrays.c:171:25: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  171 |   printf("%s\n", "s = " + listStr(s));
       |                  ~~~~~~ ^ ~~~~~~~~~~
       |                  |        |
-      |                  char *   const char *
+      |                  char *   char *

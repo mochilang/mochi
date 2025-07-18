@@ -1,14 +1,12 @@
 cc: exit status 1
-/tmp/character-codes-4.c: In function ‘main’:
-/tmp/character-codes-4.c:23:26: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
+/tmp/character-codes-4.c: In function ‘_mochi_main’:
+/tmp/character-codes-4.c:23:26: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
    23 |   printf("%s\n", chr(97) + " " + chr(960));
       |                  ~~~~~~~ ^
       |                  |       |
-      |                  |       char *
-      |                  const char *
-/tmp/character-codes-4.c:24:25: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
+      |                  char *  char *
+/tmp/character-codes-4.c:24:25: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
    24 |   printf("%s\n", chr(b) + " " + chr(r));
       |                  ~~~~~~ ^
       |                  |      |
-      |                  |      char *
-      |                  const char *
+      |                  char * char *
