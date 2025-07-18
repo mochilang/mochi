@@ -1,9 +1,6 @@
-# Rosetta Ruby Output (46/216 compiled and run)
+# Rosetta Ruby Output (33/264 compiled and run)
 
-This directory holds Ruby source code generated from the real Mochi
-programs in `tests/rosetta/x/Mochi`. Each file has the expected
-output in a matching `.out` file. Compilation or runtime failures
-are stored in a corresponding `.error` file.
+This directory holds Ruby source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
 ## Program checklist
 - [x] 100-doors-2
@@ -11,12 +8,12 @@ are stored in a corresponding `.error` file.
 - [x] 100-doors
 - [ ] 100-prisoners
 - [ ] 15-puzzle-game
- - [x] 15-puzzle-solver
+- [x] 15-puzzle-solver
 - [ ] 2048
 - [ ] 21-game
 - [ ] 24-game-solve
 - [ ] 24-game
-- [x] 4-rings-or-4-squares-puzzle
+- [ ] 4-rings-or-4-squares-puzzle
 - [ ] 9-billion-names-of-god-the-integer
 - [ ] 99-bottles-of-beer-2
 - [x] 99-bottles-of-beer
@@ -25,15 +22,15 @@ are stored in a corresponding `.error` file.
 - [ ] abbreviations-easy
 - [ ] abbreviations-simple
 - [x] abc-problem
-- [x] abelian-sandpile-model-identity
+- [ ] abelian-sandpile-model-identity
 - [ ] abelian-sandpile-model
 - [x] abstract-type
 - [x] abundant-deficient-and-perfect-number-classifications
-- [x] abundant-odd-numbers
+- [ ] abundant-odd-numbers
 - [x] accumulator-factory
 - [x] achilles-numbers
 - [x] ackermann-function-2
-- [ ] ackermann-function-3
+- [x] ackermann-function-3
 - [x] ackermann-function
 - [x] active-directory-connect
 - [ ] active-directory-search-for-a-user
@@ -47,30 +44,30 @@ are stored in a corresponding `.error` file.
 - [ ] align-columns
 - [ ] aliquot-sequence-classifications
 - [ ] almkvist-giullera-formula-for-pi
-- [x] almost-prime
+- [ ] almost-prime
 - [ ] amb
 - [x] amicable-pairs
 - [ ] anagrams-deranged-anagrams
 - [ ] anagrams
-- [x] angle-difference-between-two-bearings-1
-- [x] angle-difference-between-two-bearings-2
-- [x] angles-geometric-normalization-and-conversion
-- [x] animate-a-pendulum
+- [ ] angle-difference-between-two-bearings-1
+- [ ] angle-difference-between-two-bearings-2
+- [ ] angles-geometric-normalization-and-conversion
+- [ ] animate-a-pendulum
 - [x] animation
 - [x] anonymous-recursion-1
 - [x] anonymous-recursion-2
 - [x] anonymous-recursion
-- [x] anti-primes
+- [ ] anti-primes
 - [ ] append-a-record-to-the-end-of-a-text-file
 - [x] apply-a-callback-to-an-array-1
 - [x] apply-a-callback-to-an-array-2
 - [x] apply-a-digital-filter-direct-form-ii-transposed-
-- [x] approximate-equality
-- [x] arbitrary-precision-integers-included-
-- [x] archimedean-spiral
+- [ ] approximate-equality
+- [ ] arbitrary-precision-integers-included-
+- [ ] archimedean-spiral
 - [x] arena-storage-pool
-- [x] arithmetic-complex
-- [x] arithmetic-derivative
+- [ ] arithmetic-complex
+- [ ] arithmetic-derivative
 - [ ] arithmetic-evaluation
 - [x] arithmetic-geometric-mean-calculate-pi
 - [x] arithmetic-geometric-mean
@@ -212,13 +209,61 @@ are stored in a corresponding `.error` file.
 - [ ] circles-of-given-radius-through-two-points
 - [ ] circular-primes
 - [ ] cistercian-numerals
+- [ ] compiler-virtual-machine-interpreter
+- [ ] composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k
+- [ ] compound-data-type
+- [ ] concurrent-computing-1
+- [ ] concurrent-computing-2
+- [ ] concurrent-computing-3
+- [ ] conditional-structures-1
+- [ ] conditional-structures-10
+- [ ] conditional-structures-2
+- [ ] conditional-structures-3
+- [ ] conditional-structures-4
+- [ ] conditional-structures-5
+- [ ] conditional-structures-6
+- [ ] conditional-structures-7
+- [ ] conditional-structures-8
+- [ ] conditional-structures-9
+- [ ] consecutive-primes-with-ascending-or-descending-differences
+- [ ] constrained-genericity-1
+- [ ] constrained-genericity-2
+- [ ] constrained-genericity-3
+- [ ] constrained-genericity-4
+- [ ] constrained-random-points-on-a-circle-1
+- [ ] constrained-random-points-on-a-circle-2
+- [ ] continued-fraction
+- [ ] convert-decimal-number-to-rational
+- [ ] convert-seconds-to-compound-duration
+- [ ] convex-hull
+- [ ] conways-game-of-life
+- [ ] copy-a-string-1
+- [ ] copy-a-string-2
+- [ ] copy-stdin-to-stdout-1
+- [ ] copy-stdin-to-stdout-2
+- [ ] count-in-factors
+- [ ] count-in-octal-1
+- [ ] count-in-octal-2
+- [ ] count-in-octal-3
+- [ ] count-in-octal-4
+- [ ] count-occurrences-of-a-substring
+- [ ] count-the-coins-1
+- [ ] count-the-coins-2
+- [ ] cramers-rule
 - [ ] crc-32-1
 - [ ] crc-32-2
+- [ ] create-a-file-on-magnetic-tape
+- [ ] create-a-file
+- [ ] create-a-two-dimensional-array-at-runtime-1
+- [ ] create-an-html-table
+- [ ] create-an-object-at-a-given-address
 - [ ] csv-data-manipulation
 - [ ] csv-to-html-translation-1
 - [ ] csv-to-html-translation-2
 - [ ] csv-to-html-translation-3
 - [ ] csv-to-html-translation-4
 - [ ] csv-to-html-translation-5
+- [ ] cuban-primes
+- [ ] cullen-and-woodall-numbers
 - [ ] cusip
- - [x] md5
+- [x] md5

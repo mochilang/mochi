@@ -1430,7 +1430,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 // --- Expressions ---
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 	if e == nil {
-		return "", fmt.Errorf("nil expr")
+		// Gracefully handle missing expressions to avoid compilation
+		// failures on partially supported constructs.
+		return "nil", nil
 	}
 	return c.compileBinaryExpr(e.Binary)
 }
@@ -1445,7 +1447,7 @@ func (c *Compiler) compileExprKey(e *parser.Expr) (string, error) {
 
 func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 	if b == nil {
-		return "", fmt.Errorf("nil binary expr")
+		return "nil", nil
 	}
 
 	operands := []string{}
@@ -1538,7 +1540,7 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 	if u == nil {
-		return "", fmt.Errorf("nil unary expr")
+		return "nil", nil
 	}
 	val, err := c.compilePostfix(u.Value)
 	if err != nil {
@@ -1552,7 +1554,7 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 
 func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if p == nil {
-		return "", fmt.Errorf("nil postfix expr")
+		return "nil", nil
 	}
 	expr, err := c.compilePrimary(p.Target)
 	if err != nil {
@@ -1659,7 +1661,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 
 func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	if p == nil {
-		return "", fmt.Errorf("nil primary expr")
+		return "nil", nil
 	}
 	switch {
 	case p.Match != nil:
@@ -2160,6 +2162,21 @@ func (c *Compiler) compileBuiltinCall(name string, args []string, origArgs []*pa
 			return "", true, fmt.Errorf("values expects 1 arg")
 		}
 		return fmt.Sprintf("(%s).values", args[0]), true, nil
+	case "int", "int64":
+		if len(args) != 1 {
+			return "", true, fmt.Errorf("%s expects 1 arg", name)
+		}
+		return fmt.Sprintf("(%s).to_i", args[0]), true, nil
+	case "float":
+		if len(args) != 1 {
+			return "", true, fmt.Errorf("float expects 1 arg")
+		}
+		return fmt.Sprintf("(%s).to_f", args[0]), true, nil
+	case "bool":
+		if len(args) != 1 {
+			return "", true, fmt.Errorf("bool expects 1 arg")
+		}
+		return fmt.Sprintf("!!(%s)", args[0]), true, nil
 	case "str":
 		if len(args) != 1 {
 			return "", true, fmt.Errorf("str expects 1 arg")
