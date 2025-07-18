@@ -393,6 +393,12 @@ const (
 		"    return out\n" +
 		"}\n"
 
+	helperAddrSlice = "func _addrSlice[T any](s []T) []*T {\n" +
+		"    out := make([]*T, len(s))\n" +
+		"    for i := range s { out[i] = &s[i] }\n" +
+		"    return out\n" +
+		"}\n"
+
 	helperCopyToMap = "func _copyToMap(dst map[string]any, src any) {\n" +
 		"    switch m := src.(type) {\n" +
 		"    case map[string]any:\n" +
@@ -956,6 +962,7 @@ var helperMap = map[string]string{
 	"_fetch":         helperFetch,
 	"_toAnySlice":    helperToAnySlice,
 	"_convSlice":     helperConvSlice,
+	"_addrSlice":     helperAddrSlice,
 	"_contains":      helperContains,
 	"_union_all":     helperUnionAll,
 	"_union":         helperUnion,
