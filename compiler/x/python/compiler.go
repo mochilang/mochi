@@ -1160,6 +1160,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("strings.ToUpper expects 1 arg")
 		}
 		return fmt.Sprintf("%s.upper()", args[0]), nil
+	case "upper":
+		if len(args) != 1 {
+			return "", fmt.Errorf("upper expects 1 arg")
+		}
+		return fmt.Sprintf("str(%s).upper()", args[0]), nil
 	case "lower":
 		if len(args) != 1 {
 			return "", fmt.Errorf("lower expects 1 arg")
@@ -1284,7 +1289,9 @@ func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, err
 				if err != nil {
 					return "", err
 				}
-				if s, ok := simpleStringKey(it.Key); ok {
+				if s, ok := stringLit(it.Key); ok {
+					k = fmt.Sprintf("%q", s)
+				} else if s, ok := simpleStringKey(it.Key); ok {
 					k = fmt.Sprintf("%q", sanitizeName(s))
 				} else if name, ok := identName(it.Key); ok {
 					k = fmt.Sprintf("%q", sanitizeName(name))
