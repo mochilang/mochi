@@ -269,12 +269,12 @@ const (
 		"        }\n" +
 		"    }\n" +
 		"}\n" +
-		"func _now() int64 {\n" +
+		"func _now() int {\n" +
 		"    if seededNow {\n" +
 		"        nowSeed = (nowSeed*1664525 + 1013904223) % 2147483647\n" +
-		"        return nowSeed\n" +
+		"        return int(nowSeed)\n" +
 		"    }\n" +
-		"    return time.Now().UnixNano()\n" +
+		"    return int(time.Now().UnixNano())\n" +
 		"}\n"
 
 	helperGenText = "func _genText(prompt string, model string, params map[string]any) string {\n" +
