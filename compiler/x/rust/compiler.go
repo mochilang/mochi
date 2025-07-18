@@ -42,6 +42,7 @@ type Compiler struct {
 	modules        map[string]bool
 	constJSON      map[string]string
 	constListJSON  map[string]string
+	constList      map[string]*parser.ListLiteral
 }
 
 // exprFieldPath attempts to extract a root identifier and field path from an
@@ -520,6 +521,7 @@ func New(env *types.Env) *Compiler {
 		modules:        make(map[string]bool),
 		constJSON:      make(map[string]string),
 		constListJSON:  make(map[string]string),
+		constList:      make(map[string]*parser.ListLiteral),
 	}
 }
 
@@ -924,6 +926,7 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 		if s, ok := c.listLiteralJSON(list); ok {
 			c.constListJSON[l.Name] = s
 		}
+		c.constList[l.Name] = list
 	} else if sl := tryStructLiteral(l.Value); sl != nil {
 		if s, ok := c.structLiteralJSON(sl); ok {
 			c.constJSON[l.Name] = s
@@ -933,6 +936,9 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 			c.constJSON[l.Name] = s
 		} else if s, ok2 := c.constListJSON[id]; ok2 {
 			c.constListJSON[l.Name] = s
+		}
+		if lst, ok2 := c.constList[id]; ok2 {
+			c.constList[l.Name] = lst
 		}
 	}
 	if c.lastListStruct != "" {
@@ -3915,6 +3921,29 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 				}
 			}
 		}
+		if list := tryListLiteral(call.Args[0]); list != nil {
+			code, err := c.compileListLiteral(list)
+			if err == nil {
+				if strings.HasSuffix(code, "[]") {
+					code = "vec![" + args[1] + "]"
+				} else {
+					code = strings.TrimSuffix(code, "]") + ", " + args[1] + "]"
+				}
+				return code, nil
+			}
+		} else if id, ok := c.simpleIdent(call.Args[0]); ok {
+			if lst, ok2 := c.constList[id]; ok2 {
+				code, err := c.compileListLiteral(lst)
+				if err == nil {
+					if strings.HasSuffix(code, "[]") {
+						code = "vec![" + args[1] + "]"
+					} else {
+						code = strings.TrimSuffix(code, "]") + ", " + args[1] + "]"
+					}
+					return code, nil
+				}
+			}
+		}
 		haveList := false
 		if _, ok := types.TypeOfExpr(call.Args[0], c.env).(types.ListType); ok {
 			haveList = true
@@ -4402,6 +4431,18 @@ func constRustLiteral(v interface{}) string {
 	default:
 		return "Default::default()"
 	}
+}
+
+func (c *Compiler) compileListLiteral(list *parser.ListLiteral) (string, error) {
+	elems := make([]string, len(list.Elems))
+	for i, e := range list.Elems {
+		v, err := c.compileExpr(e)
+		if err != nil {
+			return "", err
+		}
+		elems[i] = v
+	}
+	return "vec![" + strings.Join(elems, ", ") + "]", nil
 }
 
 func (c *Compiler) simpleKey(e *parser.Expr) (string, bool) {

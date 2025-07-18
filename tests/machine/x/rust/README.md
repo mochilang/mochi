@@ -4,7 +4,7 @@ This directory contains Rust source code generated from the Mochi programs in `t
 
 Compiled programs: 100/100
 
-The compiler now inlines the `append`, `json`, and list set operations (`union`, `except`, `intersect`) when the element types are known. Lists inferred from prior `append` calls also avoid the helper. Constant list values are printed directly without calling runtime helpers. Struct literals assigned to variables are also tracked, allowing `json` to print them without using the runtime helper. Variables that reference constant values now keep that information so `json` can inline them as well.
+The compiler now inlines the `append`, `json`, and list set operations (`union`, `except`, `intersect`) when the element types are known. Lists inferred from prior `append` calls also avoid the helper. Constant list values are printed directly without calling runtime helpers. Struct literals assigned to variables are also tracked, allowing `json` to print them without using the runtime helper. Variables that reference constant values now keep that information so `json` can inline them as well. Append calls where the first argument is a constant list are folded into a single vector expression.
 
 ## Checklist
 

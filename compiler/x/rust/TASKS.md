@@ -43,6 +43,8 @@
   values in `let` and `var` declarations.
 - 2025-08-08 - Propagated constant JSON values through variable assignments so
   `json` can print them without runtime helpers.
+- 2025-08-09 - Folded `append` calls with constant list arguments into a single
+  vector expression to avoid cloning and pushing at runtime.
 ## Remaining Enhancements
 - [ ] Validate generated code for `tpc-h/q1.mochi`
 - [ ] Extend helper functions to support file I/O and dataset joins
