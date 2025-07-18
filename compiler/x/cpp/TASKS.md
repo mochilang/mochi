@@ -86,3 +86,8 @@
   `std::string` or `int` instead of falling back to `std::any`.
 
 - Improved boolean literal detection in `inferType` and `inferExprType` and avoided discarding `decltype(std::declval<T>().field)` types in `defineStruct`, enabling `group_by_conditional_sum`, `group_by_having`, and `group_by_sort` to compile.
+
+## Recent Enhancements (2025-07-18 10:53 UTC)
+- Map literal value type inference now uses variable types when all values
+  reference variables of the same basic type, reducing `std::any` usage and
+  allowing `map_literal_dynamic` to compile.

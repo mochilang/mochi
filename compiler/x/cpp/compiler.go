@@ -2010,6 +2010,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				valType = t
 			} else if c.vars[vals[0]] == "string" {
 				valType = "std::string"
+			} else if typ := c.vars[vals[0]]; typ == "int" || typ == "double" || typ == "bool" {
+				valType = typ
+			} else if t := c.varStruct[vals[0]]; t != "" {
+				if idx := strings.Index(t, "{"); idx != -1 {
+					t = t[:idx]
+				}
+				valType = t
 			} else if _, isInt, ok := parseNumber(vals[0]); ok {
 				if isInt {
 					valType = "int"
@@ -2034,6 +2041,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 					vt = t
 				} else if c.vars[v] == "string" {
 					vt = "std::string"
+				} else if typ := c.vars[v]; typ == "int" || typ == "double" || typ == "bool" {
+					vt = typ
+				} else if t := c.varStruct[v]; t != "" {
+					if idx := strings.Index(t, "{"); idx != -1 {
+						t = t[:idx]
+					}
+					vt = t
 				} else if _, isInt, ok := parseNumber(v); ok {
 					if isInt {
 						vt = "int"
