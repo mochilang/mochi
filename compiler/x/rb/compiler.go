@@ -2151,11 +2151,15 @@ func (c *Compiler) compileBuiltinCall(name string, args []string, origArgs []*pa
 			return "", true, fmt.Errorf("values expects 1 arg")
 		}
 		return fmt.Sprintf("(%s).values", args[0]), true, nil
-	case "str":
-		if len(args) != 1 {
-			return "", true, fmt.Errorf("str expects 1 arg")
-		}
-		return fmt.Sprintf("(%s).to_s", args[0]), true, nil
+       case "str":
+               if len(args) != 1 {
+                       return "", true, fmt.Errorf("str expects 1 arg")
+               }
+               if len(origArgs) == 1 && c.isListExpr(origArgs[0]) {
+                       c.use("_format_list")
+                       return fmt.Sprintf("_format_list(%s)", args[0]), true, nil
+               }
+               return fmt.Sprintf("(%s).to_s", args[0]), true, nil
 	case "upper":
 		if len(args) != 1 {
 			return "", true, fmt.Errorf("upper expects 1 arg")
