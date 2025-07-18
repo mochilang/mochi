@@ -1,4 +1,30 @@
 # 📦 CHANGELOG.md
+## [0.10.29] – 2025-07-20T09:45:10+07:00
+
+### Added
+
+* Python bigint operations with new machine tests
+* Zig range index inference and direct substring slices
+* C# query map struct inference
+* Fortran TPC-H query 6 example
+* Dataset golden outputs refreshed across languages
+
+### Changed
+
+* Kotlin improves sort inference and map comparators
+* Go option field inference enhanced
+* F# compiler handles import modules and selector methods
+* OCaml inlines sum operations and refines union types
+* Lua runtime simplified with helper removal
+* C backend infers group keys and constant strings
+* Erlang tracks nested map fields
+
+### Fixed
+
+* Variant constant loops corrected in the C backend
+* Clojure outer join generation without query helper
+* Documentation updates for Fortran and Elixir
+
 ## [0.10.28] – 2025-07-18T08:39:31+07:00
 
 ### Added
