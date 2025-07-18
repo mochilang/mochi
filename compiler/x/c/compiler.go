@@ -4668,6 +4668,31 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			continue
 		}
 		if op.Op == "in" && isListStringPostfix(op.Right, c.env) {
+			if len(b.Right) == 1 {
+				if sv, ok := constStringValue(&parser.Expr{Binary: &parser.BinaryExpr{Left: b.Left}}); ok {
+					if vals, ok2 := c.evalListStringPostfix(op.Right); ok2 {
+						found := false
+						for _, v := range vals {
+							if v == sv {
+								found = true
+								break
+							}
+						}
+						if found {
+							left = "1"
+						} else {
+							left = "0"
+						}
+						leftList = false
+						leftListInt = false
+						leftListString = false
+						leftListFloat = false
+						leftString = false
+						leftType = types.IntType{}
+						continue
+					}
+				}
+			}
 			c.need(needInListString)
 			c.need(needListString)
 			left = fmt.Sprintf("contains_list_string(%s, %s)", right, left)
@@ -4678,6 +4703,31 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			continue
 		}
 		if op.Op == "in" && isListFloatPostfix(op.Right, c.env) {
+			if len(b.Right) == 1 {
+				if fv, ok := constFloatValue(&parser.Expr{Binary: &parser.BinaryExpr{Left: b.Left}}); ok {
+					if vals, ok2 := c.evalListFloatPostfix(op.Right); ok2 {
+						found := false
+						for _, v := range vals {
+							if v == fv {
+								found = true
+								break
+							}
+						}
+						if found {
+							left = "1"
+						} else {
+							left = "0"
+						}
+						leftList = false
+						leftListInt = false
+						leftListString = false
+						leftListFloat = false
+						leftString = false
+						leftType = types.IntType{}
+						continue
+					}
+				}
+			}
 			c.need(needInListFloat)
 			left = fmt.Sprintf("contains_list_float(%s, %s)", right, left)
 			leftList = false
@@ -7567,6 +7617,14 @@ func constFloatValue(e *parser.Expr) (float64, bool) {
 	}
 }
 
+func constStringValue(e *parser.Expr) (string, bool) {
+	typ, val, ok := constLiteralTypeVal(e)
+	if !ok || typ != "char*" {
+		return "", false
+	}
+	return val, true
+}
+
 func constIntValue(e *parser.Expr) (int, bool) {
 	typ, val, ok := constLiteralTypeVal(e)
 	if !ok || typ != "int" {
@@ -7673,6 +7731,57 @@ func (c *Compiler) evalListStringExpr(e *parser.Expr) ([]string, bool) {
 		vals[i] = val
 	}
 	return vals, true
+}
+
+func (c *Compiler) evalListFloatPostfix(p *parser.PostfixExpr) ([]float64, bool) {
+	if p == nil || len(p.Ops) > 0 {
+		return nil, false
+	}
+	if p.Target != nil {
+		if p.Target.List != nil {
+			vals := make([]float64, len(p.Target.List.Elems))
+			for i, el := range p.Target.List.Elems {
+				typ, val, ok := constLiteralTypeVal(el)
+				if !ok || typ != "double" {
+					return nil, false
+				}
+				fv, _ := strconv.ParseFloat(val, 64)
+				vals[i] = fv
+			}
+			return vals, true
+		}
+		if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+			if vals, ok := c.listValsFloat[p.Target.Selector.Root]; ok {
+				return vals, true
+			}
+		}
+	}
+	return nil, false
+}
+
+func (c *Compiler) evalListStringPostfix(p *parser.PostfixExpr) ([]string, bool) {
+	if p == nil || len(p.Ops) > 0 {
+		return nil, false
+	}
+	if p.Target != nil {
+		if p.Target.List != nil {
+			vals := make([]string, len(p.Target.List.Elems))
+			for i, el := range p.Target.List.Elems {
+				typ, val, ok := constLiteralTypeVal(el)
+				if !ok || typ != "char*" {
+					return nil, false
+				}
+				vals[i] = val
+			}
+			return vals, true
+		}
+		if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+			if vals, ok := c.listValsString[p.Target.Selector.Root]; ok {
+				return vals, true
+			}
+		}
+	}
+	return nil, false
 }
 
 func (c *Compiler) evalAppendInt(listExpr, valExpr *parser.Expr) ([]int, bool) {
