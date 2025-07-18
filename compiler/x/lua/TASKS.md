@@ -108,4 +108,6 @@
 ## Progress (2025-07-19 14:00)
 - Removed the leftover `__eq` and `__print` helper definitions from the runtime
   and helper map.
-- Updated machine README to track `bigint_ops` bringing the total to 101/101.
+
+## Progress (2025-07-19 14:10)
+- Regenerated Lua machine outputs after removing __print helper. README now lists 101/101 programs.
