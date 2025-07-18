@@ -249,8 +249,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					res = fmt.Sprintf("Map.get(%s, %s)", res, idx)
 					typ = tt.Value
 				case types.StringType:
-					c.use("_index_string")
-					res = fmt.Sprintf("_index_string(%s, %s)", res, idx)
+					res = fmt.Sprintf("String.at(%s, %s)", res, idx)
+					typ = types.StringType{}
 				default:
 					res = fmt.Sprintf("Enum.at((%s), %s)", res, idx)
 					if lt, ok := tt.(types.ListType); ok {
@@ -278,6 +278,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				case types.ListType, types.GroupType:
 					length := fmt.Sprintf("(%s) - %s", end, start)
 					res = fmt.Sprintf("Enum.slice((%s), %s, %s)", res, start, length)
+				case types.StringType:
+					length := fmt.Sprintf("(%s) - %s", end, start)
+					res = fmt.Sprintf("String.slice(%s, %s, %s)", res, start, length)
 				default:
 					c.use("_slice_string")
 					res = fmt.Sprintf("_slice_string(%s, %s, %s)", res, start, end)
@@ -346,15 +349,13 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					if len(args) == 1 {
 						t := c.inferExprType(op.Call.Args[0])
 						switch t.(type) {
-						case types.StringType:
-							res = fmt.Sprintf("IO.puts(%s)", args[0])
-						case types.ListType, types.GroupType:
+						case types.ListType, types.GroupType, types.MapType, types.StructType:
 							res = fmt.Sprintf("IO.inspect(%s)", args[0])
 						default:
-							res = fmt.Sprintf("IO.inspect(%s)", args[0])
+							res = fmt.Sprintf("IO.puts(%s)", args[0])
 						}
 					} else {
-						res = fmt.Sprintf("IO.puts(Enum.join(Enum.map([%s], &inspect(&1)), \" \"))", argStr)
+						res = fmt.Sprintf("IO.puts(Enum.join(Enum.map([%s], &to_string(&1)), \" \"))", argStr)
 					}
 				case "len":
 					if len(args) != 1 {
@@ -842,8 +843,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if len(args) != 3 {
 				return "", fmt.Errorf("substr expects 3 args")
 			}
-			c.use("_slice_string")
-			return fmt.Sprintf("_slice_string(%s, %s, %s)", args[0], args[1], args[2]), nil
+			length := fmt.Sprintf("(%s) - %s", args[2], args[1])
+			return fmt.Sprintf("String.slice(%s, %s, %s)", args[0], args[1], length), nil
 		case "lower":
 			if len(args) != 1 {
 				return "", fmt.Errorf("lower expects 1 arg")

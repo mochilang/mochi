@@ -66,3 +66,5 @@ fails if any `.error` file is present.
 - Regenerated machine outputs for `append_builtin`, `values_builtin`, and `list_set_ops`.
 - `len()` on lists now compiles to `length(list)` instead of calling `_length`.
   Regenerated machine outputs for `len_builtin`, `count_builtin`, and `list_set_ops`.
+- String indexing and slicing now use `String.at/2` and `String.slice/3` when the
+  operand is a string, so `_index_string` and `_slice_string` are rarely emitted.
