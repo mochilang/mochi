@@ -1,0 +1,24 @@
+// Mochi translation of Rosetta "Count the coins" task variant 1
+// Based on Go version in tests/rosetta/x/Go/count-the-coins-1.go
+
+fun countChange(amount: int): int {
+  return cc(amount, 4)
+}
+
+fun cc(amount: int, kindsOfCoins: int): int {
+  if amount == 0 { return 1 }
+  if amount < 0 || kindsOfCoins == 0 { return 0 }
+  return cc(amount, kindsOfCoins - 1) +
+         cc(amount - firstDenomination(kindsOfCoins), kindsOfCoins)
+}
+
+fun firstDenomination(kindsOfCoins: int): int {
+  if kindsOfCoins == 1 { return 1 }
+  if kindsOfCoins == 2 { return 5 }
+  if kindsOfCoins == 3 { return 10 }
+  if kindsOfCoins == 4 { return 25 }
+  return 0
+}
+
+let amount = 100
+print("amount, ways to make change: " + str(amount) + " " + str(countChange(amount)))
