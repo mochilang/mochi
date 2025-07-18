@@ -1682,7 +1682,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString("for (" + itemsVar + ".items) |" + sanitizeName(q.Group.Name) + "| { " + resVar + ".append(" + sel + ")" + c.catchHandler() + "; }")
 		b.WriteString(" const " + resVar + "Slice = " + resVar + ".toOwnedSlice()" + c.catchHandler() + ";")
 		if skipExpr != "" || takeExpr != "" {
-			c.needsSlice = true
 			start := "0"
 			if skipExpr != "" {
 				start = skipExpr
@@ -1695,7 +1694,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 					end = takeExpr
 				}
 			}
-			b.WriteString(" var " + resVar + "Sliced = _slice_list(" + resElem + ", " + resVar + "Slice, " + start + ", " + end + ", 1);")
+			startU := toUSize(start)
+			endU := toUSize(end)
+			b.WriteString(" var " + resVar + "Sliced = " + resVar + "Slice[" + startU + ".." + endU + "];")
 			b.WriteString(" break :" + lbl + " " + resVar + "Sliced; }")
 		} else {
 			b.WriteString(" break :" + lbl + " " + resVar + "Slice; }")
@@ -2154,7 +2155,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	resVar := c.newTmp()
 	if skipExpr != "" || takeExpr != "" {
 		b.WriteString(" var " + resVar + " = " + tmp + ".toOwnedSlice()" + c.catchHandler() + ";")
-		c.needsSlice = true
 		start := "0"
 		if skipExpr != "" {
 			start = skipExpr
@@ -2167,7 +2167,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				end = takeExpr
 			}
 		}
-		b.WriteString(" " + resVar + " = _slice_list(" + elem + ", " + resVar + ", " + start + ", " + end + ", 1);")
+		startU := toUSize(start)
+		endU := toUSize(end)
+		b.WriteString(" " + resVar + " = " + resVar + "[" + startU + ".." + endU + "];")
 	} else {
 		b.WriteString(" const " + resVar + " = " + tmp + ".toOwnedSlice()" + c.catchHandler() + ";")
 	}
