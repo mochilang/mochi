@@ -962,18 +962,18 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 		return fmt.Sprintf("(%s %s %s)", opName, left, right), leftType
 	case "%":
 		return fmt.Sprintf("(%s %s %s)", opName, left, right), leftType
-       case "==":
-               if !isAny(leftType) && !isAny(rightType) {
-                       return fmt.Sprintf("(= %s %s)", left, right), types.BoolType{}
-               }
-               c.use("_equal")
-               return fmt.Sprintf("(_equal %s %s)", left, right), types.BoolType{}
-       case "!=":
-               if !isAny(leftType) && !isAny(rightType) {
-                       return fmt.Sprintf("(not (= %s %s))", left, right), types.BoolType{}
-               }
-               c.use("_equal")
-               return fmt.Sprintf("(not (_equal %s %s))", left, right), types.BoolType{}
+	case "==":
+		if !isAny(leftType) && !isAny(rightType) {
+			return fmt.Sprintf("(= %s %s)", left, right), types.BoolType{}
+		}
+		c.use("_equal")
+		return fmt.Sprintf("(_equal %s %s)", left, right), types.BoolType{}
+	case "!=":
+		if !isAny(leftType) && !isAny(rightType) {
+			return fmt.Sprintf("(not (= %s %s))", left, right), types.BoolType{}
+		}
+		c.use("_equal")
+		return fmt.Sprintf("(not (_equal %s %s))", left, right), types.BoolType{}
 	case "<", "<=", ">", ">=":
 		// Compare strings using (compare) if either static types or
 		// heuristics indicate string values. Map fields are typed as
@@ -1748,6 +1748,17 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 }
 
 func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
+	// Handle single joins with explicit side using simple comprehension
+	if len(q.Joins) == 1 && len(q.Froms) == 0 && q.Group == nil && q.Where == nil &&
+		q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
+		if q.Joins[0].Side != nil {
+			if expr, ok, err := c.compileSimpleJoinSide(q); ok {
+				return expr, err
+			} else if err != nil {
+				return "", err
+			}
+		}
+	}
 	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 &&
 		q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
 		src, err := c.compileExpr(q.Source)
@@ -2440,6 +2451,81 @@ func (c *Compiler) compileSimpleGroup(q *parser.QueryExpr) (string, error) {
 	}
 	b.WriteString(" (map (fn [" + sanitizeName(q.Group.Name) + "] " + valExpr + ")) vec))")
 	return b.String(), nil
+}
+
+// compileSimpleJoinSide handles a single join with an explicit side (left,
+// right, or outer) when no other query clauses are present. It translates the
+// join into plain Clojure comprehensions, avoiding the heavy _query helper.
+func (c *Compiler) compileSimpleJoinSide(q *parser.QueryExpr) (string, bool, error) {
+	if len(q.Joins) != 1 {
+		return "", false, nil
+	}
+	j := q.Joins[0]
+	if j.Side == nil {
+		return "", false, nil
+	}
+
+	side := *j.Side
+	if side != "left" && side != "right" && side != "outer" {
+		return "", false, nil
+	}
+
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", true, err
+	}
+	joinSrc, err := c.compileExpr(j.Src)
+	if err != nil {
+		return "", true, err
+	}
+
+	origEnv := c.env
+	child := types.NewEnv(origEnv)
+	var leftElem, rightElem types.Type = types.AnyType{}, types.AnyType{}
+	if st := c.exprType(q.Source); st != nil {
+		if lt, ok := st.(types.ListType); ok {
+			leftElem = lt.Elem
+		}
+	}
+	if st := c.exprType(j.Src); st != nil {
+		if lt, ok := st.(types.ListType); ok {
+			rightElem = lt.Elem
+		}
+	}
+	child.SetVar(q.Var, leftElem, true)
+	child.SetVar(j.Var, rightElem, true)
+	c.env = child
+
+	condExpr, err := c.compileExpr(j.On)
+	if err != nil {
+		c.env = origEnv
+		return "", true, err
+	}
+	selExpr, err := c.compileExpr(q.Select)
+	c.env = origEnv
+	if err != nil {
+		return "", true, err
+	}
+
+	lv := sanitizeName(q.Var)
+	rv := sanitizeName(j.Var)
+
+	var b strings.Builder
+	switch side {
+	case "left":
+		fmt.Fprintf(&b, "(vec (for [%s %s] (let [%s (some (fn [%s] (when %s %s)) %s)] %s)))",
+			lv, src, rv, rv, condExpr, rv, joinSrc, selExpr)
+	case "right":
+		fmt.Fprintf(&b, "(vec (for [%s %s] (let [%s (some (fn [%s] (when %s %s)) %s)] %s)))",
+			rv, joinSrc, lv, lv, condExpr, lv, src, selExpr)
+	case "outer":
+		fmt.Fprintf(&b, "(vec (concat (for [%s %s] (let [%s (some (fn [%s] (when %s %s)) %s)] %s)) ",
+			lv, src, rv, rv, condExpr, rv, joinSrc, selExpr)
+		fmt.Fprintf(&b, "(for [%s %s :when (not-any? (fn [%s] %s) %s)] (let [%s nil] %s))))",
+			rv, joinSrc, lv, condExpr, src, lv, selExpr)
+	}
+
+	return b.String(), true, nil
 }
 
 func (c *Compiler) compileQueryHelper(q *parser.QueryExpr) (string, error) {
