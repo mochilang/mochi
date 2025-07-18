@@ -3515,6 +3515,19 @@ func (c *compiler) queryFieldTypes(q *parser.QueryExpr) map[string]string {
 				}
 				c.mapFields[j.Var] = f
 			}
+			if *j.Side == "outer" {
+				if t := c.varTypes[q.Var]; t != "" && !strings.HasSuffix(t, "?") {
+					c.varTypes[q.Var] = t + "?"
+				}
+				if f, ok := c.mapFields[q.Var]; ok {
+					for k, vt := range f {
+						if !strings.HasSuffix(vt, "?") {
+							f[k] = vt + "?"
+						}
+					}
+					c.mapFields[q.Var] = f
+				}
+			}
 		}
 	}
 	if q.Group != nil {
