@@ -23,6 +23,8 @@
   helper ordering; compiled `min_max_builtin` successfully.
 - [2025-09-05 10:00] Enhanced group query inference and variable replacement
   so more VM valid examples compile (71/100 passing).
+- [2025-09-06 09:40] Added field assignment support and procedure generation
+  for functions without return values; compiled `record_assign` (72/100 passing).
 
 ## Remaining Work
 - [x] Support advanced dataset queries required for TPC-H Q1.
