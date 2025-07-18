@@ -1,9 +1,9 @@
 WARNING: shuffle already refers to: #'clojure.core/shuffle in namespace: main, being replaced by: #'main/shuffle
 Results from 1000 trials with 10 prisoners:
 
-  strategy = random  pardoned = 3 relative frequency = 0.3%
-  strategy = optimal  pardoned = 322 relative frequency = 32.2%
+  strategy = random  pardoned = 0 relative frequency = 0.0%
+  strategy = optimal  pardoned = 297 relative frequency = 29.7%
 Results from 1000 trials with 100 prisoners:
 
   strategy = random  pardoned = 0 relative frequency = 0.0%
-  strategy = optimal  pardoned = 311 relative frequency = 31.1%
+  strategy = optimal  pardoned = 321 relative frequency = 32.1%

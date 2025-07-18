@@ -1,6 +1,6 @@
 run: exit status 1
-Syntax error compiling at (/tmp/15-puzzle-solver.clj:18:12).
-Unable to resolve symbol: testpkg in this context
+Execution error (FileNotFoundException) at main/eval138$loading (15-puzzle-solver.clj:2).
+Could not locate mochi/runtime/ffi/go/testpkg__init.class, mochi/runtime/ffi/go/testpkg.clj or mochi/runtime/ffi/go/testpkg.cljc on classpath.
 
 Full report at:
-/tmp/clojure-7151284692100235341.edn
+/tmp/clojure-15650184408794201307.edn

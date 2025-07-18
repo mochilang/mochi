@@ -1,4 +1,4 @@
-# Rosetta Clojure Output (5/264 compiled and run)
+# Rosetta Clojure Output (7/264 compiled and run)
 
 This directory holds Clojure source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected runtime output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -21,7 +21,7 @@ This directory holds Clojure source code generated from the real Mochi programs 
 - [ ] abbreviations-automatic
 - [ ] abbreviations-easy
 - [ ] abbreviations-simple
-- [ ] abc-problem
+- [x] abc-problem
 - [ ] abelian-sandpile-model-identity
 - [ ] abelian-sandpile-model
 - [ ] abstract-type
@@ -64,7 +64,7 @@ This directory holds Clojure source code generated from the real Mochi programs 
 - [ ] apply-a-digital-filter-direct-form-ii-transposed-
 - [ ] approximate-equality
 - [ ] arbitrary-precision-integers-included-
-- [ ] archimedean-spiral
+- [x] archimedean-spiral
 - [ ] arena-storage-pool
 - [ ] arithmetic-complex
 - [ ] arithmetic-derivative
