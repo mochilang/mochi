@@ -125,6 +125,7 @@ func (c *Compiler) Compile(prog *parser.Program, path string) ([]byte, error) {
 	}
 
 	c.buf.WriteByte('\n')
+	c.writeln(";;")
 	c.writeln("let () =")
 	c.indent++
 	for _, s := range prog.Statements {
@@ -242,10 +243,11 @@ func (c *Compiler) compileGlobalLet(l *parser.LetStmt) error {
 			}
 		}
 	}
+	name := sanitizeName(l.Name)
 	if typ != "" {
-		c.writeln(fmt.Sprintf("let %s : %s = %s", l.Name, typ, val))
+		c.writeln(fmt.Sprintf("let %s : %s = %s", name, typ, val))
 	} else {
-		c.writeln(fmt.Sprintf("let %s = %s", l.Name, val))
+		c.writeln(fmt.Sprintf("let %s = %s", name, val))
 	}
 	if l.Type != nil {
 		if st, ok := c.typeRefStruct(l.Type); ok {
@@ -278,6 +280,7 @@ func (c *Compiler) compileGlobalVar(v *parser.VarStmt) error {
 			return err
 		}
 	}
+	name := sanitizeName(v.Name)
 	c.vars[v.Name] = true
 	typ, _ := c.env.GetVar(v.Name)
 	typStr := c.ocamlType(typ)
@@ -306,9 +309,9 @@ func (c *Compiler) compileGlobalVar(v *parser.VarStmt) error {
 		typStr = ""
 	}
 	if typStr != "" {
-		c.writeln(fmt.Sprintf("let %s : %s ref = ref %s", v.Name, typStr, val))
+		c.writeln(fmt.Sprintf("let %s : %s ref = ref %s", name, typStr, val))
 	} else {
-		c.writeln(fmt.Sprintf("let %s = ref %s", v.Name, val))
+		c.writeln(fmt.Sprintf("let %s = ref %s", name, val))
 	}
 	return nil
 }
@@ -345,10 +348,11 @@ func (c *Compiler) compileLocalLet(l *parser.LetStmt) error {
 	if strings.Contains(typ, "Obj.t") {
 		typ = ""
 	}
+	name := sanitizeName(l.Name)
 	if typ != "" {
-		c.writeln(fmt.Sprintf("let %s : %s = %s in", l.Name, typ, val))
+		c.writeln(fmt.Sprintf("let %s : %s = %s in", name, typ, val))
 	} else {
-		c.writeln(fmt.Sprintf("let %s = %s in", l.Name, val))
+		c.writeln(fmt.Sprintf("let %s = %s in", name, val))
 	}
 	if l.Type != nil {
 		if st, ok := c.typeRefStruct(l.Type); ok {
@@ -411,10 +415,11 @@ func (c *Compiler) compileLocalVar(v *parser.VarStmt) error {
 	if strings.Contains(typStr, "Obj.t") {
 		typStr = ""
 	}
+	name := sanitizeName(v.Name)
 	if typStr != "" {
-		c.writeln(fmt.Sprintf("let %s : %s ref = ref %s in", v.Name, typStr, val))
+		c.writeln(fmt.Sprintf("let %s : %s ref = ref %s in", name, typStr, val))
 	} else {
-		c.writeln(fmt.Sprintf("let %s = ref %s in", v.Name, val))
+		c.writeln(fmt.Sprintf("let %s = ref %s in", name, val))
 	}
 	if v.Type != nil {
 		c.localTypes[v.Name] = types.ResolveTypeRef(v.Type, c.env)
@@ -464,6 +469,7 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	if err != nil {
 		return err
 	}
+	name := sanitizeName(a.Name)
 	if len(a.Index) > 0 && c.vars[a.Name] {
 		typ, _ := c.env.GetVar(a.Name)
 		if len(a.Index) == 1 {
@@ -473,9 +479,9 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 			}
 			switch typ.(type) {
 			case types.MapType:
-				c.writeln(fmt.Sprintf("%s := map_set !%s %s (%s);", a.Name, a.Name, idx, val))
+				c.writeln(fmt.Sprintf("%s := map_set !%s %s (%s);", name, name, idx, val))
 			default:
-				c.writeln(fmt.Sprintf("%s := list_set !%s %s (%s);", a.Name, a.Name, idx, val))
+				c.writeln(fmt.Sprintf("%s := list_set !%s %s (%s);", name, name, idx, val))
 			}
 			return nil
 		}
@@ -490,9 +496,9 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 			}
 			switch typ.(type) {
 			case types.MapType:
-				c.writeln(fmt.Sprintf("%s := map_set !%s %s (map_set (map_get !%s %s) %s (%s));", a.Name, a.Name, idx1, a.Name, idx1, idx2, val))
+				c.writeln(fmt.Sprintf("%s := map_set !%s %s (map_set (map_get !%s %s) %s (%s));", name, name, idx1, name, idx1, idx2, val))
 			default:
-				c.writeln(fmt.Sprintf("%s := list_set !%s %s (list_set (List.nth !%s %s) %s (%s));", a.Name, a.Name, idx1, a.Name, idx1, idx2, val))
+				c.writeln(fmt.Sprintf("%s := list_set !%s %s (list_set (List.nth !%s %s) %s (%s));", name, name, idx1, name, idx1, idx2, val))
 			}
 			return nil
 		}
@@ -500,16 +506,16 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	if len(a.Field) > 0 {
 		field := sanitizeField(a.Field[0].Name)
 		if c.vars[a.Name] {
-			c.writeln(fmt.Sprintf("%s := { !%s with %s = %s };", a.Name, a.Name, field, val))
+			c.writeln(fmt.Sprintf("%s := { !%s with %s = %s };", name, name, field, val))
 		} else {
-			c.writeln(fmt.Sprintf("%s.%s <- %s;", a.Name, field, val))
+			c.writeln(fmt.Sprintf("%s.%s <- %s;", name, field, val))
 		}
 		return nil
 	}
 	if c.vars[a.Name] {
-		c.writeln(fmt.Sprintf("%s := %s;", a.Name, val))
+		c.writeln(fmt.Sprintf("%s := %s;", name, val))
 	} else {
-		c.writeln(fmt.Sprintf("(* assignment to %s unsupported *)", a.Name))
+		c.writeln(fmt.Sprintf("(* assignment to %s unsupported *)", name))
 	}
 	return nil
 }
@@ -1910,7 +1916,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileLiteral(p.Lit), nil
 	case p.Selector != nil:
 		base := p.Selector.Root
-		expr := base
+		baseSan := sanitizeName(base)
+		expr := baseSan
 		if info, ok := c.imports[base]; ok {
 			expr = info.module
 			for _, field := range p.Selector.Tail {
@@ -1927,7 +1934,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return expr, nil
 		}
 		if c.vars[base] {
-			expr = "(!" + base + ")"
+			expr = "(!" + baseSan + ")"
 		}
 		typ, _ := c.env.GetVar(base)
 		for _, field := range p.Selector.Tail {
@@ -2299,12 +2306,15 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	prevLocals := c.localTypes
 	c.localTypes = make(map[string]types.Type)
 	defer func() { c.localTypes = prevLocals }()
+	name := sanitizeName(fn.Name)
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		if p.Type != nil {
-			params[i] = fmt.Sprintf("(%s : %s)", p.Name, c.typeRef(p.Type))
+			params[i] = fmt.Sprintf("(%s : %s)", sanitizeName(p.Name), c.typeRef(p.Type))
+			c.localTypes[p.Name] = types.ResolveTypeRef(p.Type, c.env)
 		} else {
-			params[i] = p.Name
+			params[i] = sanitizeName(p.Name)
+			c.localTypes[p.Name] = types.AnyType{}
 		}
 	}
 	ret := ""
@@ -2316,9 +2326,9 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		nameParams = "()"
 	}
 	if ret != "" {
-		c.writeln(fmt.Sprintf("let rec %s %s : %s =", fn.Name, nameParams, ret))
+		c.writeln(fmt.Sprintf("let rec %s %s : %s =", name, nameParams, ret))
 	} else {
-		c.writeln(fmt.Sprintf("let rec %s %s =", fn.Name, nameParams))
+		c.writeln(fmt.Sprintf("let rec %s %s =", name, nameParams))
 	}
 	c.indent++
 
@@ -2365,12 +2375,15 @@ func (c *Compiler) compileLocalFun(fn *parser.FunStmt) error {
 	prevLocals := c.localTypes
 	c.localTypes = make(map[string]types.Type)
 	defer func() { c.localTypes = prevLocals }()
+	name := sanitizeName(fn.Name)
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		if p.Type != nil {
-			params[i] = fmt.Sprintf("(%s : %s)", p.Name, c.typeRef(p.Type))
+			params[i] = fmt.Sprintf("(%s : %s)", sanitizeName(p.Name), c.typeRef(p.Type))
+			c.localTypes[p.Name] = types.ResolveTypeRef(p.Type, c.env)
 		} else {
-			params[i] = p.Name
+			params[i] = sanitizeName(p.Name)
+			c.localTypes[p.Name] = types.AnyType{}
 		}
 	}
 	ret := ""
@@ -2378,9 +2391,9 @@ func (c *Compiler) compileLocalFun(fn *parser.FunStmt) error {
 		ret = c.typeRef(fn.Return)
 	}
 	if ret != "" {
-		c.writeln(fmt.Sprintf("let rec %s %s : %s =", fn.Name, strings.Join(params, " "), ret))
+		c.writeln(fmt.Sprintf("let rec %s %s : %s =", name, strings.Join(params, " "), ret))
 	} else {
-		c.writeln(fmt.Sprintf("let rec %s %s =", fn.Name, strings.Join(params, " ")))
+		c.writeln(fmt.Sprintf("let rec %s %s =", name, strings.Join(params, " ")))
 	}
 	c.indent++
 
@@ -2687,6 +2700,26 @@ func (c *Compiler) isMapPrimary(p *parser.Primary) bool {
 func sanitizeField(name string) string {
 	switch name {
 	case "val", "type", "module", "open", "end":
+		return name + "_"
+	}
+	return name
+}
+
+var ocamlReserved = map[string]struct{}{
+	"and": {}, "as": {}, "assert": {}, "asr": {}, "begin": {}, "class": {},
+	"constraint": {}, "do": {}, "done": {}, "downto": {}, "else": {}, "end": {},
+	"exception": {}, "external": {}, "false": {}, "for": {}, "fun": {},
+	"function": {}, "if": {}, "in": {}, "include": {}, "inherit": {},
+	"initializer": {}, "land": {}, "lazy": {}, "let": {}, "lor": {}, "lsl": {},
+	"lsr": {}, "lxor": {}, "match": {}, "method": {}, "mod": {}, "module": {},
+	"mutable": {}, "new": {}, "object": {}, "of": {}, "open": {}, "or": {},
+	"private": {}, "rec": {}, "sig": {}, "struct": {}, "then": {}, "to": {},
+	"true": {}, "try": {}, "type": {}, "val": {}, "virtual": {}, "when": {},
+	"while": {}, "with": {},
+}
+
+func sanitizeName(name string) string {
+	if _, ok := ocamlReserved[name]; ok {
 		return name + "_"
 	}
 	return name
@@ -3361,9 +3394,18 @@ func (c *Compiler) scanStmt(s *parser.Statement) {
 			c.scanExpr(s.Return.Value)
 		}
 	case s.Fun != nil:
+		oldEnv := c.env
+		funEnv := types.NewEnv(oldEnv)
+		for _, p := range s.Fun.Params {
+			if p.Type != nil {
+				funEnv.SetVar(p.Name, types.ResolveTypeRef(p.Type, c.env), true)
+			}
+		}
+		c.env = funEnv
 		for _, st := range s.Fun.Body {
 			c.scanStmt(st)
 		}
+		c.env = oldEnv
 	case s.Let != nil:
 		if s.Let.Value != nil {
 			c.scanExpr(s.Let.Value)
