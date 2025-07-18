@@ -1279,6 +1279,10 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			c.usesJson = true
 			return fmt.Sprintf("toJson %s", args[0]), nil
 		}
+	case "now":
+		if len(args) == 0 {
+			return "int (System.DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())", nil
+		}
 	case "len":
 		if len(args) == 1 {
 			arg := args[0]
