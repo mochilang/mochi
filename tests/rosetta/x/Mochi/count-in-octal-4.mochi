@@ -1,0 +1,26 @@
+// Mochi translation of Rosetta "Count in octal" task variant 4
+// Based on Go version in tests/rosetta/x/Go/count-in-octal-4.go
+
+fun toOct(n: int): string {
+  if n == 0 { return "0" }
+  let digits = "01234567"
+  var out = ""
+  var v = n
+  while v > 0 {
+    let d = v % 8
+    out = digits[d:d+1] + out
+    v = v / 8
+  }
+  return out
+}
+
+fun main() {
+  // infinite loop counting with big integers until interrupted
+  var i = 0
+  while true {
+    print(toOct(i))
+    i = i + 1
+  }
+}
+
+main()
