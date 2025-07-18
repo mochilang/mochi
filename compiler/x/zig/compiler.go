@@ -675,7 +675,9 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 					if err != nil {
 						return err
 					}
-					if s.Var.Type == nil || canInferType(s.Var.Value, typ) {
+					if needsExplicitVarType(typ) {
+						c.writelnType(fmt.Sprintf("var %s: %s = %s;", name, zigTypeOf(typ), v), typ)
+					} else if s.Var.Type == nil || canInferType(s.Var.Value, typ) {
 						c.writelnType(fmt.Sprintf("var %s = %s;", name, v), typ)
 					} else {
 						c.writeln(fmt.Sprintf("var %s: %s = %s;", name, zigTypeOf(typ), v))
@@ -2375,7 +2377,9 @@ func (c *Compiler) compileVar(st *parser.VarStmt, inFun bool) error {
 			val = v
 		}
 	}
-	if st.Type == nil && st.Value != nil && canInferType(st.Value, typ) {
+	if needsExplicitVarType(typ) {
+		c.writelnType(fmt.Sprintf("var %s: %s = %s;", name, zigTypeOf(typ), val), typ)
+	} else if st.Type == nil && st.Value != nil && canInferType(st.Value, typ) {
 		c.writelnType(fmt.Sprintf("var %s = %s;", name, val), typ)
 	} else {
 		c.writelnType(fmt.Sprintf("var %s: %s = %s;", name, zigTypeOf(typ), val), typ)

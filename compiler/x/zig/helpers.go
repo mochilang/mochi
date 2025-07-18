@@ -188,6 +188,15 @@ func zeroValue(t types.Type) string {
 	}
 }
 
+func needsExplicitVarType(t types.Type) bool {
+	switch t.(type) {
+	case types.IntType, types.Int64Type, types.FloatType, types.BoolType, types.StringType:
+		return true
+	default:
+		return false
+	}
+}
+
 func simpleStringKey(e *parser.Expr) (string, bool) {
 	if e == nil || len(e.Binary.Right) != 0 {
 		return "", false
