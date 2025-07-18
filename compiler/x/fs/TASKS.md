@@ -51,3 +51,4 @@
 - 2025-09-02 - Fixed dictionary membership, improved `print` handling and recursion support, updated join typing. 75 of 100 programs compile and run.
 - 2025-09-05 - Corrected string expression detection so boolean string comparisons print with `%b`. 76 of 100 programs compile and run.
 - 2025-11-23 - Parenthesized function call arguments and combined return branches so recursive examples like `tail_recursion` compile; 79 of 100 programs now succeed.
+- 2025-11-24 - Improved list print handling and map value type inference, removing extra `List.map string` calls when element types are known. 80 of 100 programs compile and run.

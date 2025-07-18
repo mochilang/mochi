@@ -1059,20 +1059,22 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 				}
 				return fmt.Sprintf("printfn \"%%s\" (%s)", args[0]), nil
 			}
-			if argAST != nil && argAST.Binary != nil && argAST.Binary.Left != nil && argAST.Binary.Left.Value != nil && argAST.Binary.Left.Value.Target != nil {
-				t := argAST.Binary.Left.Value.Target
-				if t.Call != nil {
-					if t.Call.Func == "append" {
-						return fmt.Sprintf("printfn \"%%s\" (String.concat \" \" (List.map string (%s)))", args[0]), nil
-					}
-					if t.Call.Func == "values" {
-						return fmt.Sprintf("printfn \"%%s\" (String.concat \" \" (List.map string (%s)))", args[0]), nil
-					}
-				}
-				if t.List != nil && len(argAST.Binary.Right) == 0 {
-					return fmt.Sprintf("printfn \"%%s\" (String.concat \" \" (List.map string %s))", args[0]), nil
-				}
-			}
+                        if argAST != nil {
+                                elemT := c.collectionElemType(argAST)
+                                if elemT != "obj" {
+                                        arg := args[0]
+                                        if elemT == "string" {
+                                                if !identifierRegexp.MatchString(arg) {
+                                                        arg = fmt.Sprintf("(%s)", arg)
+                                                }
+                                                return fmt.Sprintf("printfn \"%%s\" (String.concat \" \" %s)", arg), nil
+                                        }
+                                        if !identifierRegexp.MatchString(arg) {
+                                                arg = fmt.Sprintf("(%s)", arg)
+                                        }
+                                        return fmt.Sprintf("printfn \"%%s\" (String.concat \" \" (List.map string %s))", arg), nil
+                                }
+                        }
 			if isBoolExpr(argAST) || c.inferType(argAST) == "bool" {
 				if identifierRegexp.MatchString(args[0]) {
 					return fmt.Sprintf("printfn \"%%b\" %s", args[0]), nil
@@ -1918,11 +1920,42 @@ func sanitizeIdent(name string) string {
 }
 
 func sanitizeAll(names []string) []string {
-	out := make([]string, len(names))
-	for i, n := range names {
-		out[i] = sanitizeIdent(n)
-	}
-	return out
+        out := make([]string, len(names))
+        for i, n := range names {
+                out[i] = sanitizeIdent(n)
+        }
+        return out
+}
+
+func dictValueType(typ string) (string, bool) {
+        if strings.HasPrefix(typ, "System.Collections.Generic.Dictionary<") && strings.HasSuffix(typ, ">") {
+                inner := strings.TrimSuffix(strings.TrimPrefix(typ, "System.Collections.Generic.Dictionary<"), ">")
+                parts := strings.Split(inner, ",")
+                if len(parts) == 2 {
+                        return strings.TrimSpace(parts[1]), true
+                }
+        }
+        return "", false
+}
+
+func (c *Compiler) mapValueType(e *parser.Expr) string {
+        if name, ok := c.simpleIdentifier(e); ok {
+                if t, ok2 := c.vars[name]; ok2 {
+                        if v, ok3 := dictValueType(t); ok3 {
+                                return v
+                        }
+                }
+        }
+        if p := rootPrimary(e); p != nil {
+                if p.Map != nil {
+                        if t := c.mapLiteralType(p.Map); t != "" {
+                                if v, ok := dictValueType(t); ok {
+                                        return v
+                                }
+                        }
+                }
+        }
+        return ""
 }
 
 func (c *Compiler) basicNumericType(e *parser.Expr) string {
@@ -2129,10 +2162,14 @@ func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
 			}
 		}
 	}
-	if p.If != nil {
-		return c.isStringExpr(p.If.Then) && c.isStringExpr(p.If.Else)
-	}
-	return false
+        if p.If != nil {
+                return c.isStringExpr(p.If.Then) && c.isStringExpr(p.If.Else)
+        }
+        return false
+}
+
+func (c *Compiler) isStringListExpr(e *parser.Expr) bool {
+        return c.collectionElemType(e) == "string"
 }
 
 func (c *Compiler) inferType(e *parser.Expr) string {
@@ -2198,10 +2235,23 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 				return "int"
 			case "avg":
 				return "float"
-			case "json", "str", "substring":
-				return "string"
-			}
-		}
+                        case "json", "str", "substring":
+                                return "string"
+                        case "append":
+                                if len(p.Call.Args) > 0 {
+                                        t := c.collectionElemType(p.Call.Args[0])
+                                        return t + " list"
+                                }
+                                return "obj list"
+                        case "values":
+                                if len(p.Call.Args) == 1 {
+                                        if v := c.mapValueType(p.Call.Args[0]); v != "" {
+                                                return v + " list"
+                                        }
+                                }
+                                return "obj list"
+                        }
+                }
 
 		if p.Map != nil {
 			if t := c.mapLiteralType(p.Map); t != "" {
@@ -2252,19 +2302,43 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 }
 
 func (c *Compiler) collectionElemType(e *parser.Expr) string {
-	if name, ok := c.simpleIdentifier(e); ok {
-		if t, ok2 := c.vars[name]; ok2 {
-			if strings.HasSuffix(t, " list") {
-				return strings.TrimSuffix(t, " list")
-			}
-		}
-	}
-	if p := rootPrimary(e); p != nil {
-		if p.List != nil && len(p.List.Elems) > 0 {
-			return c.inferType(p.List.Elems[0])
-		}
-	}
-	return "obj"
+        if name, ok := c.simpleIdentifier(e); ok {
+                if t, ok2 := c.vars[name]; ok2 {
+                        if strings.HasSuffix(t, " list") {
+                                return strings.TrimSuffix(t, " list")
+                        }
+                        if v, ok3 := dictValueType(t); ok3 {
+                                return v
+                        }
+                }
+        }
+        if p := rootPrimary(e); p != nil {
+                if p.List != nil && len(p.List.Elems) > 0 {
+                        return c.inferType(p.List.Elems[0])
+                }
+                if p.Call != nil {
+                        switch p.Call.Func {
+                        case "append":
+                                if len(p.Call.Args) > 0 {
+                                        return c.collectionElemType(p.Call.Args[0])
+                                }
+                        case "values":
+                                if len(p.Call.Args) == 1 {
+                                        if v := c.mapValueType(p.Call.Args[0]); v != "" {
+                                                return v
+                                        }
+                                }
+                        }
+                }
+                if p.Map != nil {
+                        if t := c.mapLiteralType(p.Map); t != "" {
+                                if v, ok := dictValueType(t); ok {
+                                        return v
+                                }
+                        }
+                }
+        }
+        return "obj"
 }
 
 func (c *Compiler) inferQueryElemType(q *parser.QueryExpr) string {
