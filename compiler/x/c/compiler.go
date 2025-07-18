@@ -6138,8 +6138,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			return name
 		} else if p.Call.Func == "int" {
 			arg := c.compileExpr(p.Call.Args[0])
-			c.need(needStringHeader)
-			return fmt.Sprintf("atoi(%s)", arg)
+			if _, ok := c.exprType(p.Call.Args[0]).(types.StringType); ok {
+				c.need(needStringHeader)
+				return fmt.Sprintf("atoi(%s)", arg)
+			}
+			c.need(needIntFunc)
+			return fmt.Sprintf("_int(%s)", arg)
+		} else if p.Call.Func == "float" {
+			arg := c.compileExpr(p.Call.Args[0])
+			if _, ok := c.exprType(p.Call.Args[0]).(types.StringType); ok {
+				c.need(needStringHeader)
+				return fmt.Sprintf("atof(%s)", arg)
+			}
+			c.need(needFloatFunc)
+			return fmt.Sprintf("_float(%s)", arg)
 		} else if p.Call.Func == "input" {
 			c.need(needInput)
 			c.need(needStringHeader)

@@ -549,6 +549,8 @@ static list_int _sha256_list(list_int v) {
     return buf;
 }
 `
+	helperInt   = `static int _int(char* s) { return atoi(s); }`
+	helperFloat = `static double _float(double v) { return v; }`
 	helperLower = `static char* _lower(char* s) {
     int len = strlen(s);
     char* buf = (char*)malloc(len + 1);
@@ -809,6 +811,8 @@ var helperCode = map[string]string{
 	needInMapStringInt:       helperMapStringInt,
 	needInMapIntString:       helperMapIntString,
 	needInput:                helperInput,
+	needIntFunc:              helperInt,
+	needFloatFunc:            helperFloat,
 	needStr:                  helperStr,
 	needLower:                helperLower,
 	needNow:                  helperNow,
@@ -897,6 +901,8 @@ var helperOrder = []string{
 	needInMapStringInt,
 	needInMapIntString,
 	needInput,
+	needIntFunc,
+	needFloatFunc,
 	needStr,
 	needLower,
 	needNow,

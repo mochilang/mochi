@@ -5,6 +5,8 @@ package ccode
 // Helper requirement keys used by the compiler.
 const (
 	needStr                  = "str"
+	needIntFunc              = "int_func"
+	needFloatFunc            = "float_func"
 	needInput                = "input"
 	needIndexString          = "index_string"
 	needIndexOfString        = "index_of_string"
