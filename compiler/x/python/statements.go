@@ -1044,11 +1044,16 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 	assigns := map[string]bool{}
 	collectScopeInfo(fun.Body, locals, assigns)
 	var globals []string
+	var nonlocals []string
 	if c.env != nil {
 		for name := range assigns {
 			if !locals[name] {
 				if _, err := c.env.GetVar(name); err == nil {
-					globals = append(globals, sanitizeName(name))
+					if _, ok := c.env.Types()[name]; ok {
+						nonlocals = append(nonlocals, sanitizeName(name))
+					} else {
+						globals = append(globals, sanitizeName(name))
+					}
 				}
 			}
 		}
@@ -1074,6 +1079,9 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 	}
 	for _, n := range globals {
 		c.writeln("global " + n)
+	}
+	for _, n := range nonlocals {
+		c.writeln("nonlocal " + n)
 	}
 	for _, s := range fun.Body {
 		if err := c.compileStmt(s); err != nil {

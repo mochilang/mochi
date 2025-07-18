@@ -32,6 +32,9 @@ type Env struct {
 	input  io.Reader // default: os.Stdin
 }
 
+// Types exposes the map of locally declared variable types.
+func (e *Env) Types() map[string]Type { return e.types }
+
 // NewEnv creates a new lexical scope environment.
 func NewEnv(parent *Env) *Env {
 	var out io.Writer = os.Stdout
