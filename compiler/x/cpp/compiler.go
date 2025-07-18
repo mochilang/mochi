@@ -613,10 +613,10 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 	}
 	var elemHint string
 	if st.Type == nil {
-		if et := c.extractVectorElemType(exprStr); et != "" && !strings.HasPrefix(exprStr, "std::unordered_map<") && !strings.HasPrefix(exprStr, "std::map<") {
+		if et := c.elemType[exprStr]; et != "" && !strings.HasPrefix(exprStr, "std::unordered_map<") && !strings.HasPrefix(exprStr, "std::map<") {
 			typ = fmt.Sprintf("std::vector<%s>", et)
 			elemHint = et
-		} else if et := c.elemType[exprStr]; et != "" && !strings.HasPrefix(exprStr, "std::unordered_map<") && !strings.HasPrefix(exprStr, "std::map<") {
+		} else if et := c.extractVectorElemType(exprStr); et != "" && !strings.HasPrefix(exprStr, "std::unordered_map<") && !strings.HasPrefix(exprStr, "std::map<") {
 			typ = fmt.Sprintf("std::vector<%s>", et)
 			elemHint = et
 		}
@@ -696,10 +696,10 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 	}
 	var elemHint string
 	if st.Type == nil {
-		if et := c.extractVectorElemType(exprStr); et != "" && !strings.HasPrefix(exprStr, "std::unordered_map<") && !strings.HasPrefix(exprStr, "std::map<") {
+		if et := c.elemType[exprStr]; et != "" && !strings.HasPrefix(exprStr, "std::unordered_map<") && !strings.HasPrefix(exprStr, "std::map<") {
 			typ = fmt.Sprintf("std::vector<%s>", et)
 			elemHint = et
-		} else if et := c.elemType[exprStr]; et != "" && !strings.HasPrefix(exprStr, "std::unordered_map<") && !strings.HasPrefix(exprStr, "std::map<") {
+		} else if et := c.extractVectorElemType(exprStr); et != "" && !strings.HasPrefix(exprStr, "std::unordered_map<") && !strings.HasPrefix(exprStr, "std::map<") {
 			typ = fmt.Sprintf("std::vector<%s>", et)
 			elemHint = et
 		} else if isEmptyListExpr(st.Value) {
