@@ -45,7 +45,7 @@ func TestTSCompiler_SubsetPrograms(t *testing.T) {
 		if err := os.WriteFile(file, code, 0644); err != nil {
 			return nil, fmt.Errorf("write error: %w", err)
 		}
-		cmd := exec.Command("deno", "run", "--quiet", "--allow-net", "--allow-read", file)
+               cmd := exec.Command("deno", "run", "--quiet", "--allow-net", "--allow-read", "--allow-env", file)
 		cmd.Env = append(os.Environ(), "DENO_TLS_CA_STORE=system")
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			cmd.Stdin = bytes.NewReader(data)
@@ -79,7 +79,7 @@ func TestTSCompiler_SubsetPrograms(t *testing.T) {
 		if err := os.WriteFile(file, code, 0644); err != nil {
 			return nil, fmt.Errorf("write error: %w", err)
 		}
-		cmd := exec.Command("deno", "run", "--quiet", "--allow-net", "--allow-read", file)
+               cmd := exec.Command("deno", "run", "--quiet", "--allow-net", "--allow-read", "--allow-env", file)
 		cmd.Env = append(os.Environ(), "DENO_TLS_CA_STORE=system")
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			cmd.Stdin = bytes.NewReader(data)
@@ -135,7 +135,7 @@ func runExample(t *testing.T, i int) {
 			if err := os.WriteFile(file, code, 0644); err != nil {
 				t.Fatalf("write error: %v", err)
 			}
-			cmd := exec.Command("deno", "run", "--quiet", "--allow-net", "--allow-read", file)
+               cmd := exec.Command("deno", "run", "--quiet", "--allow-net", "--allow-read", "--allow-env", file)
 			cmd.Env = append(os.Environ(), "DENO_TLS_CA_STORE=system")
 			if data, err := os.ReadFile(strings.TrimSuffix(f, ".mochi") + ".in"); err == nil {
 				cmd.Stdin = bytes.NewReader(data)
