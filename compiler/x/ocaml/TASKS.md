@@ -10,6 +10,8 @@
   improved float list detection to reduce `.error` files.
 - [2025-07-24 00:00] Stabilized golden output timestamps and refined
   numeric `sum` handling for float expressions.
+- [2025-07-30 00:00] Inlined numeric `sum` computations and inferred union
+  types to avoid runtime helpers.
 - [2025-07-22 00:00] Fixed `update` statement generation and reworked VM tests
   to use outputs under `tests/machine/x/ocaml`.
 - [2025-07-23 00:00] Handled casts inside `print` and sanitized OCaml field names

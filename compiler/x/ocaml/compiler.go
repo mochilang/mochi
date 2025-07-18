@@ -225,7 +225,15 @@ func (c *Compiler) compileGlobalLet(l *parser.LetStmt) error {
 		typ = c.typeRef(l.Type)
 	} else if l.Value != nil {
 		if st, ok := c.structTypeFromExpr(l.Value); ok {
-			typ = c.ocamlType(st)
+			if s, ok2 := st.(types.StructType); ok2 {
+				if ut, ok3 := c.env.FindUnionByVariant(s.Name); ok3 {
+					typ = strings.ToLower(ut.Name)
+				} else {
+					typ = c.ocamlType(s)
+				}
+			} else {
+				typ = c.ocamlType(st)
+			}
 		} else {
 			t := types.ExprType(l.Value, c.env)
 			typGuess := c.ocamlType(t)
@@ -247,10 +255,14 @@ func (c *Compiler) compileGlobalLet(l *parser.LetStmt) error {
 		if st, ok := c.structTypeFromExpr(l.Value); ok {
 			if s, ok2 := st.(types.ListType); ok2 {
 				if elem, ok3 := s.Elem.(types.StructType); ok3 {
-					c.varStructs[l.Name] = elem
+					if _, ok4 := c.env.FindUnionByVariant(elem.Name); !ok4 {
+						c.varStructs[l.Name] = elem
+					}
 				}
 			} else if elem, ok2 := st.(types.StructType); ok2 {
-				c.varStructs[l.Name] = elem
+				if _, ok3 := c.env.FindUnionByVariant(elem.Name); !ok3 {
+					c.varStructs[l.Name] = elem
+				}
 			}
 		}
 	}
@@ -276,7 +288,15 @@ func (c *Compiler) compileGlobalVar(v *parser.VarStmt) error {
 			if guess != "" && !strings.Contains(guess, "Obj.t") {
 				typStr = guess
 			} else if st, ok := c.structTypeFromExpr(v.Value); ok {
-				typStr = c.ocamlType(st)
+				if s, ok2 := st.(types.StructType); ok2 {
+					if ut, ok3 := c.env.FindUnionByVariant(s.Name); ok3 {
+						typStr = strings.ToLower(ut.Name)
+					} else {
+						typStr = c.ocamlType(s)
+					}
+				} else {
+					typStr = c.ocamlType(st)
+				}
 			} else {
 				typStr = ""
 			}
@@ -311,7 +331,15 @@ func (c *Compiler) compileLocalLet(l *parser.LetStmt) error {
 		if guess != "" && !strings.Contains(guess, "Obj.t") {
 			typ = guess
 		} else if st, ok := c.structTypeFromExpr(l.Value); ok {
-			typ = c.ocamlType(st)
+			if s, ok2 := st.(types.StructType); ok2 {
+				if ut, ok3 := c.env.FindUnionByVariant(s.Name); ok3 {
+					typ = strings.ToLower(ut.Name)
+				} else {
+					typ = c.ocamlType(s)
+				}
+			} else {
+				typ = c.ocamlType(st)
+			}
 		}
 	}
 	if strings.Contains(typ, "Obj.t") {
@@ -331,10 +359,14 @@ func (c *Compiler) compileLocalLet(l *parser.LetStmt) error {
 		if st, ok := c.structTypeFromExpr(l.Value); ok {
 			if s, ok2 := st.(types.ListType); ok2 {
 				if elem, ok3 := s.Elem.(types.StructType); ok3 {
-					c.varStructs[l.Name] = elem
+					if _, ok4 := c.env.FindUnionByVariant(elem.Name); !ok4 {
+						c.varStructs[l.Name] = elem
+					}
 				}
 			} else if elem, ok2 := st.(types.StructType); ok2 {
-				c.varStructs[l.Name] = elem
+				if _, ok3 := c.env.FindUnionByVariant(elem.Name); !ok3 {
+					c.varStructs[l.Name] = elem
+				}
 			}
 		}
 		c.localTypes[l.Name] = types.ExprType(l.Value, c.env)
@@ -362,7 +394,15 @@ func (c *Compiler) compileLocalVar(v *parser.VarStmt) error {
 			if guess != "" && !strings.Contains(guess, "Obj.t") {
 				typStr = guess
 			} else if st, ok := c.structTypeFromExpr(v.Value); ok {
-				typStr = c.ocamlType(st)
+				if s, ok2 := st.(types.StructType); ok2 {
+					if ut, ok3 := c.env.FindUnionByVariant(s.Name); ok3 {
+						typStr = strings.ToLower(ut.Name)
+					} else {
+						typStr = c.ocamlType(s)
+					}
+				} else {
+					typStr = c.ocamlType(st)
+				}
 			} else {
 				typStr = ""
 			}
@@ -2119,15 +2159,12 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			elem = tt.Elem
 		}
 		if _, ok := elem.(types.FloatType); ok {
-			c.needSumFloat = true
-			return fmt.Sprintf("(sum_float %s)", args[0]), nil
+			return fmt.Sprintf("(List.fold_left (+.) 0.0 %s)", args[0]), nil
 		}
 		if _, ok := types.TypeOfPrimary(&parser.Primary{Call: call}, c.env).(types.FloatType); ok {
-			c.needSum = true
-			return fmt.Sprintf("(float_of_int (sum %s))", args[0]), nil
+			return fmt.Sprintf("(float_of_int (List.fold_left (+) 0 %s))", args[0]), nil
 		}
-		c.needSum = true
-		return fmt.Sprintf("(sum %s)", args[0]), nil
+		return fmt.Sprintf("(List.fold_left (+) 0 %s)", args[0]), nil
 	case "values":
 		if len(args) != 1 {
 			return "", fmt.Errorf("values expects 1 arg")
@@ -2464,7 +2501,12 @@ func (c *Compiler) ocamlType(t types.Type) string {
 			key = "Obj.t"
 		}
 		return fmt.Sprintf("(%s,%s) group", key, c.ocamlType(tt.Elem))
+	case types.UnionType:
+		return strings.ToLower(tt.Name)
 	case types.StructType:
+		if ut, ok := c.env.FindUnionByVariant(tt.Name); ok {
+			return strings.ToLower(ut.Name)
+		}
 		name := tt.Name
 		if name == "" {
 			name = c.ensureStructName(tt)
@@ -3315,26 +3357,7 @@ func (c *Compiler) scanPrimary(p *parser.Primary) {
 		case "str":
 			c.needShow = true
 		case "sum":
-			if len(p.Call.Args) == 1 {
-				t := types.ExprType(p.Call.Args[0], c.env)
-				var elem types.Type
-				switch tt := t.(type) {
-				case types.ListType:
-					elem = tt.Elem
-				case types.GroupType:
-					elem = tt.Elem
-				}
-				if _, ok := elem.(types.FloatType); ok {
-					c.needSumFloat = true
-				} else if _, ok := types.TypeOfPrimary(&parser.Primary{Call: p.Call}, c.env).(types.FloatType); ok {
-					c.needSum = true
-				} else {
-					c.needSum = true
-				}
-			} else {
-				c.needSum = true
-				c.needSumFloat = true
-			}
+			// handled inline; no runtime helpers required
 		}
 	case p.List != nil:
 		for _, e := range p.List.Elems {
