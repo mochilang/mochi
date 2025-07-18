@@ -97,7 +97,7 @@ func TestDartCompiler_Rosetta_Golden(t *testing.T) {
 	if err != nil {
 		t.Fatalf("glob: %v", err)
 	}
-	max := 3
+	max := 5
 	if len(files) < max {
 		max = len(files)
 	}
