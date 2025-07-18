@@ -1,0 +1,50 @@
+// Mochi translation of Rosetta Code task "Create an object at a given address"
+// Translated from Go version in tests/rosetta/x/Go/create-an-object-at-a-given-address.go
+
+fun listStr(xs: list<int>): string {
+  var s = "["
+  var i = 0
+  while i < len(xs) {
+    s = s + str(xs[i])
+    if i < len(xs) - 1 { s = s + " " }
+    i = i + 1
+  }
+  s = s + "]"
+  return s
+}
+
+fun pointerDemo() {
+  print("Pointer:")
+  var i = 0
+  print("Before:")
+  print("\t<address>: " + str(i) + ", " + str(i))
+  i = 3
+  print("After:")
+  print("\t<address>: " + str(i) + ", " + str(i))
+}
+
+fun sliceDemo() {
+  print("Slice:")
+  var a = []
+  for _ in 0..10 {
+    a = append(a, 0)
+  }
+  var s = a
+  print("Before:")
+  print("\ts: " + listStr(s))
+  print("\ta: " + listStr(a))
+  var data = [65, 32, 115, 116, 114, 105, 110, 103, 46]
+  var idx = 0
+  while idx < len(data) {
+    s[idx] = data[idx]
+    idx = idx + 1
+  }
+  print("After:")
+  print("\ts: " + listStr(s))
+  print("\ta: " + listStr(a))
+}
+
+pointerDemo()
+print("")
+sliceDemo()
+
