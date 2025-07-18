@@ -40,3 +40,5 @@
   using `std.mem.indexOfScalar` instead
 - 2025-07-20 added substring builtin support and negative index/slice
   handling without runtime helpers
+
+- 2025-07-21 improved substring builtin to emit direct slice when bounds are constant
