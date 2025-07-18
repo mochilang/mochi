@@ -864,12 +864,29 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) == 0 {
 			return "", nil
 		}
-		if len(args) == 1 {
-			t := types.TypeOfExprBasic(call.Args[0], c.env)
-			switch t.(type) {
+		scalar := func(e *parser.Expr) bool {
+			switch types.TypeOfExprBasic(e, c.env).(type) {
 			case types.IntType, types.Int64Type, types.FloatType,
 				types.BoolType, types.StringType:
+				return true
+			default:
+				return false
+			}
+		}
+		if len(args) == 1 {
+			if scalar(call.Args[0]) {
 				return fmt.Sprintf("echo %s, PHP_EOL", args[0]), nil
+			}
+		} else {
+			allScalar := true
+			for i := range call.Args {
+				if !scalar(call.Args[i]) {
+					allScalar = false
+					break
+				}
+			}
+			if allScalar {
+				return fmt.Sprintf("echo %s, PHP_EOL", strings.Join(args, ", ")), nil
 			}
 		}
 		return fmt.Sprintf("var_dump(%s)", strings.Join(args, ", ")), nil

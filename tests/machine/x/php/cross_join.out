@@ -1,73 +1,10 @@
 --- Cross Join: All order-customer pairs ---
-string(5) "Order"
-int(100)
-string(12) "(customerId:"
-int(1)
-string(10) ", total: $"
-int(250)
-string(13) ") paired with"
-string(5) "Alice"
-string(5) "Order"
-int(100)
-string(12) "(customerId:"
-int(1)
-string(10) ", total: $"
-int(250)
-string(13) ") paired with"
-string(3) "Bob"
-string(5) "Order"
-int(100)
-string(12) "(customerId:"
-int(1)
-string(10) ", total: $"
-int(250)
-string(13) ") paired with"
-string(7) "Charlie"
-string(5) "Order"
-int(101)
-string(12) "(customerId:"
-int(2)
-string(10) ", total: $"
-int(125)
-string(13) ") paired with"
-string(5) "Alice"
-string(5) "Order"
-int(101)
-string(12) "(customerId:"
-int(2)
-string(10) ", total: $"
-int(125)
-string(13) ") paired with"
-string(3) "Bob"
-string(5) "Order"
-int(101)
-string(12) "(customerId:"
-int(2)
-string(10) ", total: $"
-int(125)
-string(13) ") paired with"
-string(7) "Charlie"
-string(5) "Order"
-int(102)
-string(12) "(customerId:"
-int(1)
-string(10) ", total: $"
-int(300)
-string(13) ") paired with"
-string(5) "Alice"
-string(5) "Order"
-int(102)
-string(12) "(customerId:"
-int(1)
-string(10) ", total: $"
-int(300)
-string(13) ") paired with"
-string(3) "Bob"
-string(5) "Order"
-int(102)
-string(12) "(customerId:"
-int(1)
-string(10) ", total: $"
-int(300)
-string(13) ") paired with"
-string(7) "Charlie"
+Order100(customerId:1, total: $250) paired withAlice
+Order100(customerId:1, total: $250) paired withBob
+Order100(customerId:1, total: $250) paired withCharlie
+Order101(customerId:2, total: $125) paired withAlice
+Order101(customerId:2, total: $125) paired withBob
+Order101(customerId:2, total: $125) paired withCharlie
+Order102(customerId:1, total: $300) paired withAlice
+Order102(customerId:1, total: $300) paired withBob
+Order102(customerId:1, total: $300) paired withCharlie

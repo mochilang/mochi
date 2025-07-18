@@ -12,8 +12,8 @@ $area = $math['pi'] * $math['pow']($r, 2);
 $root = $math['sqrt'](49);
 $sin45 = $math['sin']($math['pi'] / 4);
 $log_e = $math['log']($math['e']);
-var_dump("Circle area with r =", $r, "=>", $area);
-var_dump("Square root of 49:", $root);
-var_dump("sin(π/4):", $sin45);
-var_dump("log(e):", $log_e);
+echo "Circle area with r =", $r, "=>", $area, PHP_EOL;
+echo "Square root of 49:", $root, PHP_EOL;
+echo "sin(π/4):", $sin45, PHP_EOL;
+echo "log(e):", $log_e, PHP_EOL;
 ?>

@@ -17,6 +17,6 @@ foreach ($numbers as $n) {
     if ($n > 7) {
         break;
     }
-    var_dump("odd number:", $n);
+    echo "odd number:", $n, PHP_EOL;
 }
 ?>

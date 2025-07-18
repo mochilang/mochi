@@ -5,6 +5,7 @@ Printing now relies on PHP's built‑in `var_dump` so no `_print` helper is emit
 Average calculations inline PHP's numeric operations when types allow.
 Left join queries no longer emit the `_query` and `_group_by` helpers.
 Right and outer joins also compile using plain loops without the `_query` helper.
+When all print arguments are simple scalars, `echo` is used instead of `var_dump`.
 
 Compiled programs: 100/100
 

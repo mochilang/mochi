@@ -1,19 +1,4 @@
 --- Orders with customer info ---
-string(5) "Order"
-int(100)
-string(2) "by"
-string(5) "Alice"
-string(3) "- $"
-int(250)
-string(5) "Order"
-int(101)
-string(2) "by"
-string(3) "Bob"
-string(3) "- $"
-int(125)
-string(5) "Order"
-int(102)
-string(2) "by"
-string(5) "Alice"
-string(3) "- $"
-int(300)
+Order100byAlice- $250
+Order101byBob- $125
+Order102byAlice- $300
