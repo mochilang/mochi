@@ -1,0 +1,2 @@
+/tmp/TestMochiToCS15-puzzle-solver/Program.cs(4,14): warning CS8981: The type name 'testpkg' only contains lower-cased ascii characters. Such names may become reserved for the language. [/tmp/TestMochiToCS15-puzzle-solver/app.csproj]
+Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd
