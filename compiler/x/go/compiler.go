@@ -4528,6 +4528,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 					args[i] = fmt.Sprintf("func() int { if %s { return 1 }; return 0 }()", args[i])
 				}
 			}
+			if len(args) == 1 {
+				return fmt.Sprintf("fmt.Println(%s)", args[0]), nil
+			}
 			c.imports["strings"] = true
 			return fmt.Sprintf("fmt.Println(strings.TrimSuffix(fmt.Sprintln(%s), \"\\n\"))", strings.Join(args, ", ")), nil
 		}
