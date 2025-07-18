@@ -235,6 +235,10 @@ func (c *Compiler) castExpr(expr string, from, to types.Type) string {
 	fromGo := goType(from)
 	toGo := goType(to)
 
+	if strings.TrimSpace(expr) == "nil" {
+		return "nil"
+	}
+
 	if toGo == "" {
 		return expr
 	}
