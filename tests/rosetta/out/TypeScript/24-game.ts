@@ -1,7 +1,7 @@
 // Source: /workspace/mochi/tests/rosetta/x/Mochi/24-game.mochi
 
 function randDigit(): number {
-  return ((performance.now() * 1000000 % 9) + 1);
+  return ((_now() % 9) + 1);
 }
 
 function main(): void {
@@ -78,6 +78,25 @@ function main(): void {
 }
 
 main();
+var _nowSeed = 0;
+var _nowSeeded = false;
+{
+  const s = Deno.env.get("MOCHI_NOW_SEED");
+  if (s) {
+    const v = parseInt(s, 10);
+    if (!isNaN(v)) {
+      _nowSeed = v;
+      _nowSeeded = true;
+    }
+  }
+}
+function _now(): number {
+  if (_nowSeeded) {
+    _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647;
+    return _nowSeed;
+  }
+  return performance.now() * 1000000;
+}
 function _input(): string {
   const v = prompt("");
   return v === null ? "" : v;

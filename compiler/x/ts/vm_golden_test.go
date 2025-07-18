@@ -72,7 +72,7 @@ func TestTSCompiler_VMValid_Golden(t *testing.T) {
 		if err := os.WriteFile(tsFile, code, 0o644); err != nil {
 			return nil, err
 		}
-		cmd := exec.Command("deno", "run", "--quiet", "--allow-net", "--allow-read", tsFile)
+       cmd := exec.Command("deno", "run", "--quiet", "--allow-net", "--allow-read", "--allow-env", tsFile)
 		cmd.Env = append(os.Environ(), "DENO_TLS_CA_STORE=system")
 		cmd.Dir = filepath.Join(filepath.Dir(src), "..")
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
