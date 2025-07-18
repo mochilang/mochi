@@ -1601,6 +1601,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	resultT := c.inferExprType(q.Select)
 	resultType := csTypeOf(resultT)
+	if _, ok := resultT.(types.MapType); ok && q.Group == nil {
+		if ml := mapLiteral(q.Select); ml != nil {
+			qenv := c.queryEnv(q)
+			if st, ok2 := c.inferStructFromMapEnv(ml, "", qenv); ok2 {
+				resultT = st
+				resultType = csTypeOf(st)
+				c.extraStructs = append(c.extraStructs, st)
+			}
+		}
+	}
 	if st, ok := resultT.(types.StructType); ok && st.Name == "" && q.Group == nil {
 		base := c.structHint
 		if base == "" {
