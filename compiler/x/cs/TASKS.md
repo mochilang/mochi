@@ -1,4 +1,7 @@
 # C# Compiler TODO
+## Recent Updates (2025-07-28 00:00)
+- Improved type inference for datasets so `where` filters preserve struct field access.
+- Generated machine output for `dataset_sort_take_limit` and `dataset_where_filter` bringing totals to 34/100.
 ## Recent Updates (2025-07-27 12:00)
 - Query select map literals now infer struct types, reducing runtime helpers.
 - Generated machine output for `fun_call` bringing totals to 32/100.
