@@ -3384,8 +3384,8 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		case types.IntType, types.Int64Type:
 			fmtStr = "{d}"
 		case types.BoolType:
-			fmtStr = "{d}"
-			arg = fmt.Sprintf("@intFromBool(%s)", arg)
+			fmtStr = "{s}"
+			arg = fmt.Sprintf("if (%s) \"true\" else \"false\"", arg)
 		case types.FloatType:
 			fmtStr = "{d:.1}"
 		}
