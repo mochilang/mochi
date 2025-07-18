@@ -514,6 +514,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 		if c.needTime {
 			pre.WriteString("(import (chibi time))\n")
+			pre.WriteString("(define (now) (* (current-seconds) 1000000000))\n")
 		}
 		if c.needListOps {
 			pre.WriteString(listOpHelpers)
@@ -1066,10 +1067,10 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				case "-", "*":
 					expr = fmt.Sprintf("(%s %s %s)", op, l, r)
 				case "/":
-					if floatFlags[i] || floatFlags[i+1] {
-						expr = fmt.Sprintf("(/ %s %s)", l, r)
-					} else {
+					if intFlags[i] && intFlags[i+1] {
 						expr = fmt.Sprintf("(quotient %s %s)", l, r)
+					} else {
+						expr = fmt.Sprintf("(/ %s %s)", l, r)
 					}
 				case "%":
 					expr = fmt.Sprintf("(modulo %s %s)", l, r)
@@ -1645,7 +1646,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 			return "", fmt.Errorf("now expects no args")
 		}
 		c.needTime = true
-		return "(* (current-seconds) 1000000000)", nil
+		return "(now)", nil
 	case "json":
 		if len(args) != 1 {
 			return "", fmt.Errorf("json expects 1 arg")
