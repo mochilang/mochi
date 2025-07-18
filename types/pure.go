@@ -25,7 +25,8 @@ func IsLiteralExpr(e *parser.Expr) bool {
 func AnyToLiteral(v any) *parser.Literal {
 	switch t := v.(type) {
 	case int:
-		return &parser.Literal{Int: &t}
+		il := parser.IntLit(t)
+		return &parser.Literal{Int: &il}
 	case float64:
 		return &parser.Literal{Float: &t}
 	case string:

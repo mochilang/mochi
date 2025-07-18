@@ -974,6 +974,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("substring expects 3 args")
 		}
 		return fmt.Sprintf("substr(%s, %s, %s)", args[0], args[1], args[2]), nil
+	case "indexOf":
+		if len(args) != 2 {
+			return "", fmt.Errorf("indexOf expects 2 args")
+		}
+		return fmt.Sprintf("strpos(%s, %s)", args[0], args[1]), nil
 	case "str":
 		if len(args) != 1 {
 			return "", fmt.Errorf("str expects 1 arg")

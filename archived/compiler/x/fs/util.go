@@ -295,7 +295,7 @@ func intLiteral(e *parser.Expr) (int, bool) {
 	if len(p.Ops) != 0 || p.Target.Lit == nil || p.Target.Lit.Int == nil {
 		return 0, false
 	}
-	v := *p.Target.Lit.Int
+	v := int(*p.Target.Lit.Int)
 	if negate {
 		v = -v
 	}

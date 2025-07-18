@@ -14,6 +14,8 @@ import (
 var reservedNames = map[string]struct{}{
 	"shuffle": {},
 	"this":    {},
+	"ord":     {},
+	"chr":     {},
 }
 
 func sanitizeName(name string) string {
