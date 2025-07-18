@@ -1,0 +1,12 @@
+// Mochi translation of Rosetta "Conditional structures" variant 6
+
+fun example6(value: int) {
+  match value {
+    1 => {
+      // statements
+    }
+    2 | 3 | 4 => {
+      // other statements
+    }
+  }
+}

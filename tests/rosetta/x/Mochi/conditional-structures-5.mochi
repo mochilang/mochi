@@ -1,0 +1,11 @@
+// Mochi translation of Rosetta "Conditional structures" variant 5
+
+fun example5(b1: bool, b2: bool) {
+  if b1 {
+    // statements
+  } else if b2 {
+    // other statements
+  } else {
+    // last resort statements
+  }
+}

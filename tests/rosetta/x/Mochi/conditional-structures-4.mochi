@@ -1,0 +1,14 @@
+// Mochi translation of Rosetta "Conditional structures" variant 4
+
+fun fetchSomething(): int { return 0 }
+fun doPos(x: int) {}
+fun doNeg(x: int) {}
+
+fun example4() {
+  let x = fetchSomething()
+  if x > 0 {
+    doPos(x)
+  } else {
+    doNeg(x)
+  }
+}
