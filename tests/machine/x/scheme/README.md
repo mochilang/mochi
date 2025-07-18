@@ -4,6 +4,7 @@ This directory contains Scheme code generated from the Mochi programs in `tests/
 
 ## Recent updates
 - 2025-07-18 – Improved numeric type inference removes unnecessary helper functions.
+- 2025-07-21 – Field type inference for struct selectors avoids dataset helpers in comparisons.
 
 ## Program checklist
 - [x] append_builtin

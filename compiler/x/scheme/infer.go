@@ -30,6 +30,45 @@ func (c *Compiler) varType(name string) string {
 	return ""
 }
 
+// fieldType attempts to resolve the static type of a field access rooted at
+// the given variable. It returns one of "string", "int", "float", "map" or
+// the empty string when the type cannot be determined.
+func (c *Compiler) fieldType(root string, fields []string) string {
+	if c.env == nil || root == "" || len(fields) == 0 {
+		return ""
+	}
+	t, err := c.env.GetVar(root)
+	if err != nil {
+		return ""
+	}
+	for i, f := range fields {
+		st, ok := t.(types.StructType)
+		if !ok {
+			return ""
+		}
+		ft, ok := st.Fields[f]
+		if !ok {
+			return ""
+		}
+		if i == len(fields)-1 {
+			switch ft.(type) {
+			case types.StringType:
+				return "string"
+			case types.IntType, types.Int64Type:
+				return "int"
+			case types.FloatType:
+				return "float"
+			case types.MapType, types.StructType:
+				return "map"
+			default:
+				return ""
+			}
+		}
+		t = ft
+	}
+	return ""
+}
+
 func (c *Compiler) isStringExpr(e *parser.Expr) bool {
 	if types.IsStringExpr(e, c.env) {
 		return true
@@ -59,7 +98,13 @@ func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
 		return true
 	}
 	if p != nil && p.Selector != nil {
-		return c.varType(p.Selector.Root) == "string"
+		if c.varType(p.Selector.Root) == "string" {
+			return true
+		}
+		if t := c.fieldType(p.Selector.Root, p.Selector.Tail); t == "string" {
+			return true
+		}
+		return false
 	}
 	return false
 }
@@ -93,7 +138,13 @@ func (c *Compiler) isMapPrimary(p *parser.Primary) bool {
 		return true
 	}
 	if p != nil && p.Selector != nil {
-		return c.varType(p.Selector.Root) == "map"
+		if c.varType(p.Selector.Root) == "map" {
+			return true
+		}
+		if t := c.fieldType(p.Selector.Root, p.Selector.Tail); t == "map" {
+			return true
+		}
+		return false
 	}
 	return false
 }
@@ -289,6 +340,9 @@ func (c *Compiler) isIntPrimary(p *parser.Primary) bool {
 				}
 			}
 		}
+		if ft := c.fieldType(p.Selector.Root, p.Selector.Tail); ft == "int" {
+			return true
+		}
 	case p.Call != nil && c.env != nil:
 		if t, err := c.env.GetVar(p.Call.Func); err == nil {
 			if ft, ok := t.(types.FuncType); ok {
@@ -358,6 +412,9 @@ func (c *Compiler) isFloatPrimary(p *parser.Primary) bool {
 			if _, ok := t.(types.FloatType); ok {
 				return true
 			}
+		}
+		if ft := c.fieldType(p.Selector.Root, p.Selector.Tail); ft == "float" {
+			return true
 		}
 	case p.Call != nil && c.env != nil:
 		if t, err := c.env.GetVar(p.Call.Func); err == nil {
