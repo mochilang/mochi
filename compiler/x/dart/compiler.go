@@ -1503,11 +1503,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				}
 			}
 			val := c.mustExpr(arg)
+			valT := types.TypeOfExpr(arg, c.env)
 			w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("%s.add(%s);\n", tmp, val))
 			for i := len(loops) - 1; i >= 0; i-- {
 				w(strings.Repeat("  ", i+1) + "}\n")
 			}
-			w(fmt.Sprintf("  return %s;\n", c.aggregateExpr(agg, tmp)))
+			w(fmt.Sprintf("  return %s;\n", c.aggregateExpr(agg, tmp, valT)))
 			w("})()")
 			c.env = origEnv
 			c.groupKeys = origGroup
@@ -1868,16 +1869,30 @@ func (c *Compiler) aggregateCall(e *parser.Expr) (string, *parser.Expr, bool) {
 	return "", nil, false
 }
 
-func (c *Compiler) aggregateExpr(name, list string) string {
+func (c *Compiler) aggregateExpr(name, list string, elem types.Type) string {
 	switch name {
 	case "count", "len":
 		return fmt.Sprintf("%s.length", list)
 	case "sum":
+		if isNumericType(elem) {
+			expr := fmt.Sprintf("%s.fold<num>(0, (a, b) => a + b)", list)
+			if isIntType(elem) {
+				expr += " as int"
+			}
+			return expr
+		}
 		c.useSum = true
 		return fmt.Sprintf("_sum(%s)", list)
 	case "avg":
-		return fmt.Sprintf("(%s.isEmpty ? 0 : %s.reduce((a, b) => a + b) / %s.length)", list, list, list)
+		if isNumericType(elem) {
+			return fmt.Sprintf("(%s.isEmpty ? 0 : %s.reduce((a, b) => a + b) / %s.length)", list, list, list)
+		}
+		c.useSum = true
+		return fmt.Sprintf("(%s.isEmpty ? 0 : _sum(%s) / %s.length)", list, list, list)
 	case "min":
+		if isComparableType(elem) {
+			return fmt.Sprintf("(%s.isEmpty ? 0 : %s.reduce((a, b) => a < b ? a : b))", list, list)
+		}
 		c.useMin = true
 		return fmt.Sprintf("_min(%s)", list)
 	case "max":
