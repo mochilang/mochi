@@ -104,6 +104,27 @@ type compiler struct {
 	builtinAliases  map[string]string
 }
 
+func (c *compiler) aggElemType(e *parser.Expr) string {
+	if et := listElemType(c.exprType(e)); et != "" {
+		return et
+	}
+	if q := queryArg(e); q != nil {
+		if name, ok := c.isGroupVar(q.Source); ok && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
+			t := c.exprType(q.Select)
+			if t == "" {
+				t = c.fieldType(q.Select)
+			}
+			switch strings.ToLower(t) {
+			case "int", "integer", "int32", "int64":
+				return "int"
+			case "float", "double":
+				return "float"
+			}
+		}
+	}
+	return ""
+}
+
 // analyze walks the program once to infer variable types before code generation.
 func (c *compiler) analyze(p *parser.Program) {
 	for _, s := range p.Statements {
@@ -1103,7 +1124,7 @@ func (c *compiler) callExpr(call *parser.CallExpr) (string, error) {
 			c.helpers["_group"] = true
 			return fmt.Sprintf("_avg(%s.items)", name), nil
 		}
-		if et := listElemType(c.exprType(call.Args[0])); et == "int" {
+		if et := c.aggElemType(call.Args[0]); et == "int" {
 			return fmt.Sprintf("Double(%s.reduce(0, +)) / Double(%s.count)", args[0], args[0]), nil
 		} else if et == "float" {
 			return fmt.Sprintf("%s.reduce(0.0, +) / Double(%s.count)", args[0], args[0]), nil
@@ -1130,7 +1151,7 @@ func (c *compiler) callExpr(call *parser.CallExpr) (string, error) {
 			c.helpers["_group"] = true
 			return fmt.Sprintf("_min(%s.items)", name), nil
 		}
-		if et := listElemType(c.exprType(call.Args[0])); et == "int" || et == "float" || et == "string" {
+		if et := c.aggElemType(call.Args[0]); et == "int" || et == "float" || et == "string" {
 			return fmt.Sprintf("%s.min()!", args[0]), nil
 		}
 		c.helpers["_min"] = true
@@ -1147,7 +1168,7 @@ func (c *compiler) callExpr(call *parser.CallExpr) (string, error) {
 			c.helpers["_group"] = true
 			return fmt.Sprintf("_max(%s.items)", name), nil
 		}
-		if et := listElemType(c.exprType(call.Args[0])); et == "int" || et == "float" || et == "string" {
+		if et := c.aggElemType(call.Args[0]); et == "int" || et == "float" || et == "string" {
 			return fmt.Sprintf("%s.max()!", args[0]), nil
 		}
 		c.helpers["_max"] = true
@@ -1166,7 +1187,7 @@ func (c *compiler) callExpr(call *parser.CallExpr) (string, error) {
 			c.helpers["_group"] = true
 			return fmt.Sprintf("_sum(%s.items)", name), nil
 		}
-		if et := listElemType(c.exprType(call.Args[0])); et == "int" {
+		if et := c.aggElemType(call.Args[0]); et == "int" {
 			return fmt.Sprintf("%s.reduce(0, +)", args[0]), nil
 		} else if et == "float" {
 			return fmt.Sprintf("%s.reduce(0.0, +)", args[0]), nil

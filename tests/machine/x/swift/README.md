@@ -4,7 +4,7 @@ This directory contains Swift code compiled from Mochi programs in `tests/vm/val
 
 ## Progress
 
-Compiled: 98/100 programs
+Compiled: 100/100 programs
 
 ## Checklist
 
