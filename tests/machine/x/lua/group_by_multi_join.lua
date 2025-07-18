@@ -33,39 +33,6 @@ function __group_by(src, keyfn)
     end
     return res
 end
-function __eq(a, b)
-    if type(a) ~= type(b) then return false end
-    if type(a) == 'number' then return math.abs(a-b) < 1e-9 end
-    if type(a) ~= 'table' then return a == b end
-    if (a[1] ~= nil or #a > 0) and (b[1] ~= nil or #b > 0) then
-        if #a ~= #b then return false end
-        for i = 1, #a do if not __eq(a[i], b[i]) then return false end end
-        return true
-    end
-    for k, v in pairs(a) do if not __eq(v, b[k]) then return false end end
-    for k, _ in pairs(b) do if a[k] == nil then return false end end
-    return true
-end
-function __print(...)
-    local n = select('#', ...)
-    if n == 1 then
-        local v = ...
-        if type(v) == 'string' then
-            print(v)
-            return
-        elseif type(v) == 'table' and (v[1] ~= nil or #v > 0) then
-            local parts = {}
-            for i=1,#v do parts[#parts+1] = __str(v[i]) end
-            print(table.concat(parts, ' '))
-            return
-        end
-    end
-    local parts = {}
-    for i=1,n do parts[#parts+1] = __str(select(i, ...)) end
-    local out = table.concat(parts, ' ')
-    out = string.gsub(out, ' +$', '')
-    print(out)
-end
 function __query(src, joins, opts)
     local whereFn = opts.where
     local items = {}
@@ -273,9 +240,9 @@ partsupp = {{["part"]=100, ["supplier"]=1, ["cost"]=10.0, ["qty"]=2}, {["part"]=
 filtered = (function()
     local _src = partsupp
     return __query(_src, {
-        { items = suppliers, on = function(ps, s) return __eq(s.id, ps.supplier) end },
-        { items = nations, on = function(ps, s, n) return __eq(n.id, s.nation) end }
-    }, { selectFn = function(ps, s, n) return {["part"]=ps.part, ["value"]=(ps.cost * ps.qty)} end, where = function(ps, s, n) return (__eq(n.name, "A")) end })
+        { items = suppliers, on = function(ps, s) return (s.id == ps.supplier) end },
+        { items = nations, on = function(ps, s, n) return (n.id == s.nation) end }
+    }, { selectFn = function(ps, s, n) return {["part"]=ps.part, ["value"]=(ps.cost * ps.qty)} end, where = function(ps, s, n) return ((n.name == "A")) end })
 end)()
 grouped = (function()
     local _groups = __group_by(filtered, function(x) return x.part end)
@@ -291,4 +258,4 @@ end)())}
     end
     return _res
 end)()
-__print(grouped)
+(function(_l0) local p={} for i=1,#_l0 do p[#p+1]=__str(_l0[i]) end print(table.concat(p, ' ')) end)(grouped)

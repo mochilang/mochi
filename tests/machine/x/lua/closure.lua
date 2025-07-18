@@ -11,26 +11,6 @@ function __add(a, b)
         return a + b
     end
 end
-function __print(...)
-    local n = select('#', ...)
-    if n == 1 then
-        local v = ...
-        if type(v) == 'string' then
-            print(v)
-            return
-        elseif type(v) == 'table' and (v[1] ~= nil or #v > 0) then
-            local parts = {}
-            for i=1,#v do parts[#parts+1] = __str(v[i]) end
-            print(table.concat(parts, ' '))
-            return
-        end
-    end
-    local parts = {}
-    for i=1,n do parts[#parts+1] = __str(select(i, ...)) end
-    local out = table.concat(parts, ' ')
-    out = string.gsub(out, ' +$', '')
-    print(out)
-end
 function __str(v)
     local t = type(v)
     if t == 'table' then
@@ -71,4 +51,4 @@ end
 end
 
 add10 = makeAdder(10)
-__print(add10(7))
+print(__str(add10(7)))

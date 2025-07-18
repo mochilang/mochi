@@ -9,8 +9,8 @@ Checklist:
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
-- [x] binary_precedence
 - [x] bigint_ops
+- [x] binary_precedence
 - [x] bool_chain
 - [x] break_continue
 - [x] cast_string_to_int

@@ -33,19 +33,6 @@ function __group_by_rows(rows, keyfn, valfn)
     end
     return res
 end
-function __eq(a, b)
-    if type(a) ~= type(b) then return false end
-    if type(a) == 'number' then return math.abs(a-b) < 1e-9 end
-    if type(a) ~= 'table' then return a == b end
-    if (a[1] ~= nil or #a > 0) and (b[1] ~= nil or #b > 0) then
-        if #a ~= #b then return false end
-        for i = 1, #a do if not __eq(a[i], b[i]) then return false end end
-        return true
-    end
-    for k, v in pairs(a) do if not __eq(v, b[k]) then return false end end
-    for k, _ in pairs(b) do if a[k] == nil then return false end end
-    return true
-end
 function __merge(...)
     local res = {}
     for i=1,select('#', ...) do
@@ -55,26 +42,6 @@ function __merge(...)
         end
     end
     return res
-end
-function __print(...)
-    local n = select('#', ...)
-    if n == 1 then
-        local v = ...
-        if type(v) == 'string' then
-            print(v)
-            return
-        elseif type(v) == 'table' and (v[1] ~= nil or #v > 0) then
-            local parts = {}
-            for i=1,#v do parts[#parts+1] = __str(v[i]) end
-            print(table.concat(parts, ' '))
-            return
-        end
-    end
-    local parts = {}
-    for i=1,n do parts[#parts+1] = __str(select(i, ...)) end
-    local out = table.concat(parts, ' ')
-    out = string.gsub(out, ' +$', '')
-    print(out)
 end
 function __query(src, joins, opts)
     local whereFn = opts.where
@@ -269,7 +236,7 @@ orders = {{["id"]=100, ["customerId"]=1}, {["id"]=101, ["customerId"]=1}, {["id"
 stats = (function()
     local _src = orders
     local _rows = __query(_src, {
-        { items = customers, on = function(o, c) return __eq(o.customerId, c.id) end }
+        { items = customers, on = function(o, c) return (o.customerId == c.id) end }
     }, { selectFn = function(o, c) return {o, c} end })
     local _groups = __group_by_rows(_rows, function(o, c) return c.name end, function(o, c) local _row = __merge(o, c); _row.o = o; _row.c = c; return _row end)
     local _res = {}
@@ -278,7 +245,7 @@ stats = (function()
     end
     return _res
 end)()
-__print("--- Orders per customer ---")
+print("--- Orders per customer ---")
 for _, s in ipairs(stats) do
-    __print(__str(s.name), __str("orders:"), __str(s.count))
+    print((table.concat({__str(s.name), __str("orders:"), __str(s.count)}, ' ')):gsub(' +$',''))
 end

@@ -49,26 +49,6 @@ function __avg(v)
     if res == math.floor(res) then return math.floor(res) end
     return res
 end
-function __print(...)
-    local n = select('#', ...)
-    if n == 1 then
-        local v = ...
-        if type(v) == 'string' then
-            print(v)
-            return
-        elseif type(v) == 'table' and (v[1] ~= nil or #v > 0) then
-            local parts = {}
-            for i=1,#v do parts[#parts+1] = __str(v[i]) end
-            print(table.concat(parts, ' '))
-            return
-        end
-    end
-    local parts = {}
-    for i=1,n do parts[#parts+1] = __str(select(i, ...)) end
-    local out = table.concat(parts, ' ')
-    out = string.gsub(out, ' +$', '')
-    print(out)
-end
 function __str(v)
     local t = type(v)
     if t == 'table' then
@@ -117,7 +97,7 @@ end)())}
     end
     return _res
 end)()
-__print("--- People grouped by city ---")
+print("--- People grouped by city ---")
 for _, s in ipairs(stats) do
-    __print(__str(s.city), __str(": count ="), __str(s.count), __str(", avg_age ="), __str(s.avg_age))
+    print((table.concat({__str(s.city), __str(": count ="), __str(s.count), __str(", avg_age ="), __str(s.avg_age)}, ' ')):gsub(' +$',''))
 end
