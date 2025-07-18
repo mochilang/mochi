@@ -86,3 +86,7 @@
   `std::string` or `int` instead of falling back to `std::any`.
 
 - Improved boolean literal detection in `inferType` and `inferExprType` and avoided discarding `decltype(std::declval<T>().field)` types in `defineStruct`, enabling `group_by_conditional_sum`, `group_by_having`, and `group_by_sort` to compile.
+
+## Recent Enhancements (2025-07-18)
+- Prioritize stored struct information over heuristic extraction when inferring vector and struct types, fixing `group_by_join` and `group_by_left_join`.
+- `ensureBool` now compares struct fields individually, enabling `outer_join`, `right_join`, and `save_jsonl_stdout` to compile.

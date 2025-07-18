@@ -2,7 +2,7 @@
 
 Generated C++ code for the programs under `tests/vm/valid`. Each file here has a `.cpp` source produced by the compiler and an `.out` file with its runtime output. If compilation failed, a `.error` file captures the g++ output.
 
-Compiled programs: 92/100
+Compiled programs: 96/100
 
 ## Checklist
 - [x] append_builtin
@@ -31,8 +31,8 @@ Compiled programs: 92/100
 - [x] group_by
 - [x] group_by_conditional_sum
 - [x] group_by_having
-- [ ] group_by_join
-- [ ] group_by_left_join
+- [x] group_by_join
+- [x] group_by_left_join
 - [ ] group_by_multi_join
 - [ ] group_by_multi_join_sort
 - [x] group_by_sort
@@ -70,7 +70,7 @@ Compiled programs: 92/100
 - [x] min_max_builtin
 - [x] nested_function
 - [x] order_by_map
-- [ ] outer_join
+- [x] outer_join
 - [x] partial_application
 - [x] print_hello
 - [x] pure_fold
@@ -79,8 +79,8 @@ Compiled programs: 92/100
 - [x] python_math
 - [x] query_sum_select
 - [x] record_assign
-- [ ] right_join
-- [ ] save_jsonl_stdout
+- [x] right_join
+- [x] save_jsonl_stdout
 - [x] short_circuit
 - [x] slice
 - [x] sort_stable

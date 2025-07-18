@@ -43,8 +43,9 @@ int main() {
   })();
   std::cout << std::string("--- Outer Join using syntax ---") << std::endl;
   for (auto row : result) {
-    if ((row.order != Order{})) {
-      if ((row.customer != Customer{})) {
+    if ((row.order.id != 0 || row.order.customerId != 0 ||
+         row.order.total != 0)) {
+      if ((row.customer.id != 0 || row.customer.name != std::string())) {
         {
           std::cout << std::string("Order");
           std::cout << ' ';

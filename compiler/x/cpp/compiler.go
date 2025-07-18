@@ -613,10 +613,10 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 	}
 	var elemHint string
 	if st.Type == nil {
-		if et := c.extractVectorElemType(exprStr); et != "" {
+		if et := c.elemType[exprStr]; et != "" {
 			typ = fmt.Sprintf("std::vector<%s>", et)
 			elemHint = et
-		} else if et := c.elemType[exprStr]; et != "" {
+		} else if et := c.extractVectorElemType(exprStr); et != "" {
 			typ = fmt.Sprintf("std::vector<%s>", et)
 			elemHint = et
 		}
@@ -658,10 +658,10 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 		}
 		c.vars[st.Name] = inferred
 	}
-	if s := c.extractVectorStruct(exprStr); s != "" {
-		c.varStruct[st.Name] = s
-	} else if t := c.varStruct[exprStr]; t != "" {
+	if t := c.varStruct[exprStr]; t != "" {
 		c.varStruct[st.Name] = t
+	} else if s := c.extractVectorStruct(exprStr); s != "" {
+		c.varStruct[st.Name] = s
 	}
 	if elemHint != "" {
 		c.elemType[st.Name] = elemHint
@@ -692,10 +692,10 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 	}
 	var elemHint string
 	if st.Type == nil {
-		if et := c.extractVectorElemType(exprStr); et != "" {
+		if et := c.elemType[exprStr]; et != "" {
 			typ = fmt.Sprintf("std::vector<%s>", et)
 			elemHint = et
-		} else if et := c.elemType[exprStr]; et != "" {
+		} else if et := c.extractVectorElemType(exprStr); et != "" {
 			typ = fmt.Sprintf("std::vector<%s>", et)
 			elemHint = et
 		} else if isEmptyListExpr(st.Value) {
@@ -753,10 +753,10 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 		}
 		c.vars[st.Name] = inferred
 	}
-	if s := c.extractVectorStruct(exprStr); s != "" {
-		c.varStruct[st.Name] = s
-	} else if t := c.varStruct[exprStr]; t != "" {
+	if t := c.varStruct[exprStr]; t != "" {
 		c.varStruct[st.Name] = t
+	} else if s := c.extractVectorStruct(exprStr); s != "" {
+		c.varStruct[st.Name] = s
 	}
 	if elemHint != "" {
 		c.elemType[st.Name] = elemHint
@@ -829,15 +829,15 @@ func (c *Compiler) compileAssign(st *parser.AssignStmt) error {
 	}
 	c.buf.WriteString(name + " = " + expr + ";\n")
 	if len(st.Index) == 0 && len(st.Field) == 0 {
-		if s := c.extractVectorStruct(expr); s != "" {
-			c.varStruct[st.Name] = s
-		} else if t := c.varStruct[expr]; t != "" {
+		if t := c.varStruct[expr]; t != "" {
 			c.varStruct[st.Name] = t
+		} else if s := c.extractVectorStruct(expr); s != "" {
+			c.varStruct[st.Name] = s
 		}
-		if et := c.extractVectorElemType(expr); et != "" {
-			c.elemType[st.Name] = et
-		} else if t := c.elemType[expr]; t != "" {
+		if t := c.elemType[expr]; t != "" {
 			c.elemType[st.Name] = t
+		} else if et := c.extractVectorElemType(expr); et != "" {
+			c.elemType[st.Name] = et
 		}
 		if typ := c.inferType(expr); typ != "" {
 			c.vars[st.Name] = typ
@@ -4273,6 +4273,20 @@ func (c *Compiler) ensureBool(expr string) string {
 							ft = ft[:idx]
 						}
 						if c.isStructName(ft) {
+							if info2, ok := c.structByName[ft]; ok {
+								parts := []string{}
+								for j, f2 := range info2.Fields {
+									zero := "0"
+									t2 := info2.Types[j]
+									if strings.HasPrefix(t2, "std::string") {
+										zero = "std::string()"
+									} else if t2 == "bool" {
+										zero = "false"
+									}
+									parts = append(parts, fmt.Sprintf("%s.%s != %s", expr, f2, zero))
+								}
+								return "(" + strings.Join(parts, " || ") + ")"
+							}
 							return fmt.Sprintf("(%s != %s{})", expr, ft)
 						}
 						break
