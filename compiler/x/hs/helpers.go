@@ -16,6 +16,7 @@ var hsReserved = map[string]bool{
 	"infixl": true, "infixr": true, "instance": true, "let": true,
 	"module": true, "newtype": true, "of": true, "then": true,
 	"type": true, "where": true,
+	"map": true, "Map": true,
 }
 
 func (c *Compiler) writeln(s string) {
@@ -58,7 +59,11 @@ func (c *Compiler) sn(name string) string {
 	if name == "main" && c.hasUserMain {
 		return "user_main"
 	}
-	return sanitizeName(name)
+	s := sanitizeName(name)
+	if len(s) > 0 && s[0] >= 'A' && s[0] <= 'Z' {
+		s = strings.ToLower(s[:1]) + s[1:]
+	}
+	return s
 }
 
 func simpleStringKey(e *parser.Expr) (string, bool) {

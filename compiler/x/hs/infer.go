@@ -120,6 +120,16 @@ func (c *Compiler) isMapPostfix(p *parser.PostfixExpr) bool {
 	return ok
 }
 
+func (c *Compiler) isStringUnary(u *parser.Unary) bool {
+	_, ok := c.inferUnaryType(u).(types.StringType)
+	return ok
+}
+
+func (c *Compiler) isStringPostfix(p *parser.PostfixExpr) bool {
+	_, ok := c.inferPostfixType(p).(types.StringType)
+	return ok
+}
+
 // containsAny reports whether the type t or any nested component is AnyType.
 func containsAny(t types.Type) bool {
 	return types.ContainsAny(t)
