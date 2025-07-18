@@ -385,7 +385,8 @@ func (c *Compiler) writeBuiltins() {
 	if c.needsConcatString {
 		c.writeln("fn _concat_string(a: []const u8, b: []const u8) []const u8 {")
 		c.indent++
-		c.writeln("return std.mem.concat(u8, &[_][]const u8{ a, b })" + c.catchHandler() + ";")
+		c.writeln("const alloc = std.heap.page_allocator;")
+		c.writeln("return std.mem.concat(u8, &[_][]const u8{ a, b }, alloc)" + c.catchHandler() + ";")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
