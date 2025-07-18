@@ -42,3 +42,4 @@ Remaining work:
 2025-07-22: Updated machine README to mark all examples passing. No outstanding tasks.
 2025-07-23: Added `_print` helper to mimic Mochi printing semantics and default
   initializers for typed variables. Regenerated machine outputs for updated tests.
+2025-07-24: Avoid unnecessary struct casts when expression type already matches.
