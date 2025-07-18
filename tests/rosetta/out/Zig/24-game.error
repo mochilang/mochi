@@ -1,3 +1,2 @@
 zig build: exit status 1
-/tmp/24-game.zig:60:17: error: unused capture
 /tmp/24-game.zig:76:16: error: use of undeclared identifier 'input'
