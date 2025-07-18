@@ -1165,7 +1165,7 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 			if isIntLiteral(idx.Start) {
 				target = fmt.Sprintf("%s[%s]", target, idxStr)
 			} else {
-				target = fmt.Sprintf("%s[%s as usize]", target, idxStr)
+				target = fmt.Sprintf("%s[(%s) as usize]", target, idxStr)
 			}
 		}
 		prefix.Value.Ops = append(prefix.Value.Ops, &parser.PostfixOp{Index: idx})
@@ -1887,13 +1887,13 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					if isIntLiteral(op.Index.Start) && op.Index.End != nil && isIntLiteral(op.Index.End) {
 						val = fmt.Sprintf("&%s[%s..%s]", val, start, end)
 					} else {
-						val = fmt.Sprintf("&%s[%s as usize..%s as usize]", val, start, end)
+						val = fmt.Sprintf("&%s[(%s) as usize..(%s) as usize]", val, start, end)
 					}
 				} else {
 					if isIntLiteral(op.Index.Start) && op.Index.End != nil && isIntLiteral(op.Index.End) {
 						val = fmt.Sprintf("%s[%s..%s].to_vec()", val, start, end)
 					} else {
-						val = fmt.Sprintf("%s[%s as usize..%s as usize].to_vec()", val, start, end)
+						val = fmt.Sprintf("%s[(%s) as usize..(%s) as usize].to_vec()", val, start, end)
 					}
 				}
 			} else {
@@ -1921,13 +1921,13 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					if isIntLiteral(op.Index.Start) {
 						val = fmt.Sprintf("%s.chars().nth(%s).unwrap()", val, idxVal)
 					} else {
-						val = fmt.Sprintf("%s.chars().nth(%s as usize).unwrap()", val, idxVal)
+						val = fmt.Sprintf("%s.chars().nth((%s) as usize).unwrap()", val, idxVal)
 					}
 				} else {
 					if isIntLiteral(op.Index.Start) {
 						val = fmt.Sprintf("%s[%s]", val, idxVal)
 					} else {
-						val = fmt.Sprintf("%s[%s as usize]", val, idxVal)
+						val = fmt.Sprintf("%s[(%s) as usize]", val, idxVal)
 					}
 				}
 			}
@@ -2385,14 +2385,14 @@ func (c *Compiler) compileGroupBySimple(q *parser.QueryExpr, src string, child *
 	if skipExpr != "" || takeExpr != "" {
 		start := "0usize"
 		if skipExpr != "" {
-			start = skipExpr + " as usize"
+			start = "(" + skipExpr + ") as usize"
 		}
 		end := ""
 		if takeExpr != "" {
 			if skipExpr != "" {
 				end = "(" + skipExpr + " + " + takeExpr + ") as usize"
 			} else {
-				end = takeExpr + " as usize"
+				end = "(" + takeExpr + ") as usize"
 			}
 		} else {
 			end = "result.len()"
@@ -2684,14 +2684,14 @@ func (c *Compiler) compileGroupByJoin(q *parser.QueryExpr, src string, child *ty
 	if skipExpr != "" || takeExpr != "" {
 		start := "0usize"
 		if skipExpr != "" {
-			start = skipExpr + " as usize"
+			start = "(" + skipExpr + ") as usize"
 		}
 		end := ""
 		if takeExpr != "" {
 			if skipExpr != "" {
 				end = "(" + skipExpr + " + " + takeExpr + ") as usize"
 			} else {
-				end = takeExpr + " as usize"
+				end = "(" + takeExpr + ") as usize"
 			}
 		} else {
 			end = "result.len()"
@@ -3989,7 +3989,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("%s expects 1 arg", call.Func)
 		}
-		return fmt.Sprintf("%s.len() as i32", args[0]), nil
+		return fmt.Sprintf("(%s.len() as i32)", args[0]), nil
 	case "sum":
 		if len(args) != 1 {
 			return "", fmt.Errorf("sum expects 1 arg")
@@ -4068,7 +4068,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if isIntLiteral(call.Args[1]) && isIntLiteral(call.Args[2]) {
 			return fmt.Sprintf("&%s[%s..%s]", args[0], args[1], args[2]), nil
 		}
-		return fmt.Sprintf("&%s[%s as usize..%s as usize]", args[0], args[1], args[2]), nil
+		return fmt.Sprintf("&%s[(%s) as usize..(%s) as usize]", args[0], args[1], args[2]), nil
 	case "now":
 		if len(args) != 0 {
 			return "", fmt.Errorf("now expects no args")
