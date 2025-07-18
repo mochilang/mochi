@@ -1,244 +1,244 @@
-rustc error: exit status 1
+rustc: exit status 1
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:36:54
+  --> /tmp/arithmetic-complex.rs:36:73
    |
-36 |     println!("{}", format!("{}{}", "a:       ", cstr(&a.clone())));
-   |                                                 ---- ^^^^^^^^^^ expected `Complex`, found `&Complex`
-   |                                                 |
-   |                                                 arguments to this function are incorrect
+36 |     println!("{}", vec![format!("{}", format!("{}{}", "a:       ", cstr(&a.clone())))].into_iter().filter(|s| !s.is_empty()).collect::<Ve...
+   |                                                                    ---- ^^^^^^^^^^ expected `Complex`, found `&Complex`
+   |                                                                    |
+   |                                                                    arguments to this function are incorrect
    |
 note: function defined here
-  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:25:8
+  --> /tmp/arithmetic-complex.rs:25:8
    |
 25 |     fn cstr(a: Complex) -> &'static str {
    |        ^^^^ ----------
 help: consider removing the borrow
    |
-36 -     println!("{}", format!("{}{}", "a:       ", cstr(&a.clone())));
-36 +     println!("{}", format!("{}{}", "a:       ", cstr(a.clone())));
+36 -     println!("{}", vec![format!("{}", format!("{}{}", "a:       ", cstr(&a.clone())))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+36 +     println!("{}", vec![format!("{}", format!("{}{}", "a:       ", cstr(a.clone())))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
    |
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:37:54
+  --> /tmp/arithmetic-complex.rs:37:73
    |
-37 |     println!("{}", format!("{}{}", "b:       ", cstr(&b.clone())));
-   |                                                 ---- ^^^^^^^^^^ expected `Complex`, found `&Complex`
-   |                                                 |
-   |                                                 arguments to this function are incorrect
+37 |     println!("{}", vec![format!("{}", format!("{}{}", "b:       ", cstr(&b.clone())))].into_iter().filter(|s| !s.is_empty()).collect::<Ve...
+   |                                                                    ---- ^^^^^^^^^^ expected `Complex`, found `&Complex`
+   |                                                                    |
+   |                                                                    arguments to this function are incorrect
    |
 note: function defined here
-  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:25:8
+  --> /tmp/arithmetic-complex.rs:25:8
    |
 25 |     fn cstr(a: Complex) -> &'static str {
    |        ^^^^ ----------
 help: consider removing the borrow
    |
-37 -     println!("{}", format!("{}{}", "b:       ", cstr(&b.clone())));
-37 +     println!("{}", format!("{}{}", "b:       ", cstr(b.clone())));
+37 -     println!("{}", vec![format!("{}", format!("{}{}", "b:       ", cstr(&b.clone())))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+37 +     println!("{}", vec![format!("{}", format!("{}{}", "b:       ", cstr(b.clone())))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
    |
 
 error[E0308]: arguments to this function are incorrect
-  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:38:55
+  --> /tmp/arithmetic-complex.rs:38:74
    |
-38 |     println!("{}", format!("{}{}", "a + b:   ", cstr(&add(&a.clone(), &b.clone()))));
-   |                                                       ^^^ ----------  ---------- expected `Complex`, found `&Complex`
-   |                                                           |
-   |                                                           expected `Complex`, found `&Complex`
+38 | ...format!("{}{}", "a + b:   ", cstr(&add(&a.clone(), &b.clone()))))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+   |                                       ^^^ ----------  ---------- expected `Complex`, found `&Complex`
+   |                                           |
+   |                                           expected `Complex`, found `&Complex`
    |
 note: function defined here
-  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:9:8
+  --> /tmp/arithmetic-complex.rs:9:8
    |
 9  |     fn add(a: Complex, b: Complex) -> Complex {
    |        ^^^ ----------  ----------
 help: consider removing the borrow
    |
-38 -     println!("{}", format!("{}{}", "a + b:   ", cstr(&add(&a.clone(), &b.clone()))));
-38 +     println!("{}", format!("{}{}", "a + b:   ", cstr(&add(a.clone(), &b.clone()))));
+38 -     println!("{}", vec![format!("{}", format!("{}{}", "a + b:   ", cstr(&add(&a.clone(), &b.clone()))))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+38 +     println!("{}", vec![format!("{}", format!("{}{}", "a + b:   ", cstr(&add(a.clone(), &b.clone()))))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
    |
 help: consider removing the borrow
    |
-38 -     println!("{}", format!("{}{}", "a + b:   ", cstr(&add(&a.clone(), &b.clone()))));
-38 +     println!("{}", format!("{}{}", "a + b:   ", cstr(&add(&a.clone(), b.clone()))));
+38 -     println!("{}", vec![format!("{}", format!("{}{}", "a + b:   ", cstr(&add(&a.clone(), &b.clone()))))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+38 +     println!("{}", vec![format!("{}", format!("{}{}", "a + b:   ", cstr(&add(&a.clone(), b.clone()))))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
    |
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:38:54
+  --> /tmp/arithmetic-complex.rs:38:73
    |
-38 |     println!("{}", format!("{}{}", "a + b:   ", cstr(&add(&a.clone(), &b.clone()))));
-   |                                                 ---- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Complex`, found `&Complex`
-   |                                                 |
-   |                                                 arguments to this function are incorrect
+38 | ...", format!("{}{}", "a + b:   ", cstr(&add(&a.clone(), &b.clone()))))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join("...
+   |                                    ---- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Complex`, found `&Complex`
+   |                                    |
+   |                                    arguments to this function are incorrect
    |
 note: function defined here
-  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:25:8
+  --> /tmp/arithmetic-complex.rs:25:8
    |
 25 |     fn cstr(a: Complex) -> &'static str {
    |        ^^^^ ----------
 help: consider removing the borrow
    |
-38 -     println!("{}", format!("{}{}", "a + b:   ", cstr(&add(&a.clone(), &b.clone()))));
-38 +     println!("{}", format!("{}{}", "a + b:   ", cstr(add(&a.clone(), &b.clone()))));
+38 -     println!("{}", vec![format!("{}", format!("{}{}", "a + b:   ", cstr(&add(&a.clone(), &b.clone()))))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+38 +     println!("{}", vec![format!("{}", format!("{}{}", "a + b:   ", cstr(add(&a.clone(), &b.clone()))))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
    |
 
 error[E0308]: arguments to this function are incorrect
-  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:39:55
+  --> /tmp/arithmetic-complex.rs:39:74
    |
-39 |     println!("{}", format!("{}{}", "a * b:   ", cstr(&mul(&a.clone(), &b.clone()))));
-   |                                                       ^^^ ----------  ---------- expected `Complex`, found `&Complex`
-   |                                                           |
-   |                                                           expected `Complex`, found `&Complex`
+39 | ...format!("{}{}", "a * b:   ", cstr(&mul(&a.clone(), &b.clone()))))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+   |                                       ^^^ ----------  ---------- expected `Complex`, found `&Complex`
+   |                                           |
+   |                                           expected `Complex`, found `&Complex`
    |
 note: function defined here
-  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:12:8
+  --> /tmp/arithmetic-complex.rs:12:8
    |
 12 |     fn mul(a: Complex, b: Complex) -> Complex {
    |        ^^^ ----------  ----------
 help: consider removing the borrow
    |
-39 -     println!("{}", format!("{}{}", "a * b:   ", cstr(&mul(&a.clone(), &b.clone()))));
-39 +     println!("{}", format!("{}{}", "a * b:   ", cstr(&mul(a.clone(), &b.clone()))));
+39 -     println!("{}", vec![format!("{}", format!("{}{}", "a * b:   ", cstr(&mul(&a.clone(), &b.clone()))))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+39 +     println!("{}", vec![format!("{}", format!("{}{}", "a * b:   ", cstr(&mul(a.clone(), &b.clone()))))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
    |
 help: consider removing the borrow
    |
-39 -     println!("{}", format!("{}{}", "a * b:   ", cstr(&mul(&a.clone(), &b.clone()))));
-39 +     println!("{}", format!("{}{}", "a * b:   ", cstr(&mul(&a.clone(), b.clone()))));
+39 -     println!("{}", vec![format!("{}", format!("{}{}", "a * b:   ", cstr(&mul(&a.clone(), &b.clone()))))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+39 +     println!("{}", vec![format!("{}", format!("{}{}", "a * b:   ", cstr(&mul(&a.clone(), b.clone()))))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
    |
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:39:54
+  --> /tmp/arithmetic-complex.rs:39:73
    |
-39 |     println!("{}", format!("{}{}", "a * b:   ", cstr(&mul(&a.clone(), &b.clone()))));
-   |                                                 ---- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Complex`, found `&Complex`
-   |                                                 |
-   |                                                 arguments to this function are incorrect
+39 | ...", format!("{}{}", "a * b:   ", cstr(&mul(&a.clone(), &b.clone()))))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join("...
+   |                                    ---- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Complex`, found `&Complex`
+   |                                    |
+   |                                    arguments to this function are incorrect
    |
 note: function defined here
-  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:25:8
+  --> /tmp/arithmetic-complex.rs:25:8
    |
 25 |     fn cstr(a: Complex) -> &'static str {
    |        ^^^^ ----------
 help: consider removing the borrow
    |
-39 -     println!("{}", format!("{}{}", "a * b:   ", cstr(&mul(&a.clone(), &b.clone()))));
-39 +     println!("{}", format!("{}{}", "a * b:   ", cstr(mul(&a.clone(), &b.clone()))));
+39 -     println!("{}", vec![format!("{}", format!("{}{}", "a * b:   ", cstr(&mul(&a.clone(), &b.clone()))))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+39 +     println!("{}", vec![format!("{}", format!("{}{}", "a * b:   ", cstr(mul(&a.clone(), &b.clone()))))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
    |
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:40:59
+  --> /tmp/arithmetic-complex.rs:40:78
    |
-40 |     println!("{}", format!("{}{}", "-a:      ", cstr(&neg(&a.clone()))));
-   |                                                       --- ^^^^^^^^^^ expected `Complex`, found `&Complex`
-   |                                                       |
-   |                                                       arguments to this function are incorrect
+40 |     println!("{}", vec![format!("{}", format!("{}{}", "-a:      ", cstr(&neg(&a.clone()))))].into_iter().filter(|s| !s.is_empty()).collec...
+   |                                                                          --- ^^^^^^^^^^ expected `Complex`, found `&Complex`
+   |                                                                          |
+   |                                                                          arguments to this function are incorrect
    |
 note: function defined here
-  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:15:8
+  --> /tmp/arithmetic-complex.rs:15:8
    |
 15 |     fn neg(a: Complex) -> Complex {
    |        ^^^ ----------
 help: consider removing the borrow
    |
-40 -     println!("{}", format!("{}{}", "-a:      ", cstr(&neg(&a.clone()))));
-40 +     println!("{}", format!("{}{}", "-a:      ", cstr(&neg(a.clone()))));
+40 -     println!("{}", vec![format!("{}", format!("{}{}", "-a:      ", cstr(&neg(&a.clone()))))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+40 +     println!("{}", vec![format!("{}", format!("{}{}", "-a:      ", cstr(&neg(a.clone()))))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
    |
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:40:54
+  --> /tmp/arithmetic-complex.rs:40:73
    |
-40 |     println!("{}", format!("{}{}", "-a:      ", cstr(&neg(&a.clone()))));
-   |                                                 ---- ^^^^^^^^^^^^^^^^ expected `Complex`, found `&Complex`
-   |                                                 |
-   |                                                 arguments to this function are incorrect
+40 |     println!("{}", vec![format!("{}", format!("{}{}", "-a:      ", cstr(&neg(&a.clone()))))].into_iter().filter(|s| !s.is_empty()).collec...
+   |                                                                    ---- ^^^^^^^^^^^^^^^^ expected `Complex`, found `&Complex`
+   |                                                                    |
+   |                                                                    arguments to this function are incorrect
    |
 note: function defined here
-  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:25:8
+  --> /tmp/arithmetic-complex.rs:25:8
    |
 25 |     fn cstr(a: Complex) -> &'static str {
    |        ^^^^ ----------
 help: consider removing the borrow
    |
-40 -     println!("{}", format!("{}{}", "-a:      ", cstr(&neg(&a.clone()))));
-40 +     println!("{}", format!("{}{}", "-a:      ", cstr(neg(&a.clone()))));
+40 -     println!("{}", vec![format!("{}", format!("{}{}", "-a:      ", cstr(&neg(&a.clone()))))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+40 +     println!("{}", vec![format!("{}", format!("{}{}", "-a:      ", cstr(neg(&a.clone()))))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
    |
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:41:59
+  --> /tmp/arithmetic-complex.rs:41:78
    |
-41 |     println!("{}", format!("{}{}", "1 / a:   ", cstr(&inv(&a.clone()))));
-   |                                                       --- ^^^^^^^^^^ expected `Complex`, found `&Complex`
-   |                                                       |
-   |                                                       arguments to this function are incorrect
+41 |     println!("{}", vec![format!("{}", format!("{}{}", "1 / a:   ", cstr(&inv(&a.clone()))))].into_iter().filter(|s| !s.is_empty()).collec...
+   |                                                                          --- ^^^^^^^^^^ expected `Complex`, found `&Complex`
+   |                                                                          |
+   |                                                                          arguments to this function are incorrect
    |
 note: function defined here
-  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:18:8
+  --> /tmp/arithmetic-complex.rs:18:8
    |
 18 |     fn inv(a: Complex) -> Complex {
    |        ^^^ ----------
 help: consider removing the borrow
    |
-41 -     println!("{}", format!("{}{}", "1 / a:   ", cstr(&inv(&a.clone()))));
-41 +     println!("{}", format!("{}{}", "1 / a:   ", cstr(&inv(a.clone()))));
+41 -     println!("{}", vec![format!("{}", format!("{}{}", "1 / a:   ", cstr(&inv(&a.clone()))))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+41 +     println!("{}", vec![format!("{}", format!("{}{}", "1 / a:   ", cstr(&inv(a.clone()))))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
    |
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:41:54
+  --> /tmp/arithmetic-complex.rs:41:73
    |
-41 |     println!("{}", format!("{}{}", "1 / a:   ", cstr(&inv(&a.clone()))));
-   |                                                 ---- ^^^^^^^^^^^^^^^^ expected `Complex`, found `&Complex`
-   |                                                 |
-   |                                                 arguments to this function are incorrect
+41 |     println!("{}", vec![format!("{}", format!("{}{}", "1 / a:   ", cstr(&inv(&a.clone()))))].into_iter().filter(|s| !s.is_empty()).collec...
+   |                                                                    ---- ^^^^^^^^^^^^^^^^ expected `Complex`, found `&Complex`
+   |                                                                    |
+   |                                                                    arguments to this function are incorrect
    |
 note: function defined here
-  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:25:8
+  --> /tmp/arithmetic-complex.rs:25:8
    |
 25 |     fn cstr(a: Complex) -> &'static str {
    |        ^^^^ ----------
 help: consider removing the borrow
    |
-41 -     println!("{}", format!("{}{}", "1 / a:   ", cstr(&inv(&a.clone()))));
-41 +     println!("{}", format!("{}{}", "1 / a:   ", cstr(inv(&a.clone()))));
+41 -     println!("{}", vec![format!("{}", format!("{}{}", "1 / a:   ", cstr(&inv(&a.clone()))))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+41 +     println!("{}", vec![format!("{}", format!("{}{}", "1 / a:   ", cstr(inv(&a.clone()))))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
    |
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:42:61
+  --> /tmp/arithmetic-complex.rs:42:80
    |
-42 |     println!("{}", format!("{}{}", "a̅:       ", cstr(&conj(&a.clone()))));
-   |                                                       ---- ^^^^^^^^^^ expected `Complex`, found `&Complex`
-   |                                                       |
-   |                                                       arguments to this function are incorrect
+42 |     println!("{}", vec![format!("{}", format!("{}{}", "a̅:       ", cstr(&conj(&a.clone()))))].into_iter().filter(|s| !s.is_empty()).col...t
+   |                                                                          ---- ^^^^^^^^^^ expected `Complex`, found `&Complex`
+   |                                                                          |
+   |                                                                          arguments to this function are incorrect
    |
 note: function defined here
-  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:22:8
+  --> /tmp/arithmetic-complex.rs:22:8
    |
 22 |     fn conj(a: Complex) -> Complex {
    |        ^^^^ ----------
 help: consider removing the borrow
    |
-42 -     println!("{}", format!("{}{}", "a̅:       ", cstr(&conj(&a.clone()))));
-42 +     println!("{}", format!("{}{}", "a̅:       ", cstr(&conj(a.clone()))));
+42 -     println!("{}", vec![format!("{}", format!("{}{}", "a̅:       ", cstr(&conj(&a.clone()))))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+42 +     println!("{}", vec![format!("{}", format!("{}{}", "a̅:       ", cstr(&conj(a.clone()))))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
    |
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:42:55
+  --> /tmp/arithmetic-complex.rs:42:74
    |
-42 |     println!("{}", format!("{}{}", "a̅:       ", cstr(&conj(&a.clone()))));
-   |                                                 ---- ^^^^^^^^^^^^^^^^^ expected `Complex`, found `&Complex`
-   |                                                 |
-   |                                                 arguments to this function are incorrect
+42 |     println!("{}", vec![format!("{}", format!("{}{}", "a̅:       ", cstr(&conj(&a.clone()))))].into_iter().filter(|s| !s.is_empty()).col...t
+   |                                                                    ---- ^^^^^^^^^^^^^^^^^ expected `Complex`, found `&Complex`
+   |                                                                    |
+   |                                                                    arguments to this function are incorrect
    |
 note: function defined here
-  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:25:8
+  --> /tmp/arithmetic-complex.rs:25:8
    |
 25 |     fn cstr(a: Complex) -> &'static str {
    |        ^^^^ ----------
 help: consider removing the borrow
    |
-42 -     println!("{}", format!("{}{}", "a̅:       ", cstr(&conj(&a.clone()))));
-42 +     println!("{}", format!("{}{}", "a̅:       ", cstr(conj(&a.clone()))));
+42 -     println!("{}", vec![format!("{}", format!("{}{}", "a̅:       ", cstr(&conj(&a.clone()))))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+42 +     println!("{}", vec![format!("{}", format!("{}{}", "a̅:       ", cstr(conj(&a.clone()))))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
    |
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:32:16
+  --> /tmp/arithmetic-complex.rs:32:16
    |
 25 |     fn cstr(a: Complex) -> &'static str {
    |                            ------------ expected `&'static str` because of return type

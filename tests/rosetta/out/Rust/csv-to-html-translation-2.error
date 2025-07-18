@@ -1,47 +1,22 @@
-rustc error: exit status 1
+rustc: exit status 1
 error[E0425]: cannot find function `split` in this scope
-  --> /tmp/TestMochiRustGoldencsv-to-html-translation-21780338973/001/prog.rs:15:17
+  --> /tmp/csv-to-html-translation-2.rs:10:17
    |
-15 |     for line in split(c, "
+10 |     for line in split(c, "
    |                 ^^^^^ not found in this scope
    |
 help: use the `.` operator to call the method `split` on `&str`
    |
-15 ~     for line in c.split("
-16 ~ ") {
+10 ~     for line in c.split("
+11 ~ ") {
    |
 
 error[E0425]: cannot find function `split` in this scope
-  --> /tmp/TestMochiRustGoldencsv-to-html-translation-21780338973/001/prog.rs:17:29
+  --> /tmp/csv-to-html-translation-2.rs:12:55
    |
-17 |         rows = append(rows, split(line, ","));
-   |                             ^^^^^ not found in this scope
+12 |         rows = { let mut tmp = rows.clone(); tmp.push(split(line, ",")); tmp };
+   |                                                       ^^^^^ not found in this scope
 
-error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencsv-to-html-translation-21780338973/001/prog.rs:25:22
-   |
-25 |                 th = format!("{}{}", format!("{}{}", format!("{}{}", th, "<th>"), h), "</th>");
-   |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
-   |
-   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+error: aborting due to 2 previous errors
 
-error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencsv-to-html-translation-21780338973/001/prog.rs:35:29
-   |
-35 |                     cells = format!("{}{}", format!("{}{}", format!("{}{}", cells, "<td>"), cell), "</td>");
-   |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
-   |
-   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencsv-to-html-translation-21780338973/001/prog.rs:46:25
-   |
-46 |                 cells = format!("{}{}", format!("{}{}", format!("{}{}", cells, "<td>"), cell), "</td>");
-   |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
-   |
-   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error: aborting due to 5 previous errors
-
-Some errors have detailed explanations: E0308, E0425.
-For more information about an error, try `rustc --explain E0308`.
+For more information about this error, try `rustc --explain E0425`.

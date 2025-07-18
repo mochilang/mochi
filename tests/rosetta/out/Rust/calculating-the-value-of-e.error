@@ -1,8 +1,54 @@
-type error: error[T007]: argument 3: expected int, got bigint
-  --> /workspace/mochi/tests/rosetta/x/Mochi/calculating-the-value-of-e.mochi:26:17
+rustc: exit status 1
+warning: unnecessary parentheses around assigned value
+  --> /tmp/calculating-the-value-of-e.rs:22:21
+   |
+22 |         let mut n = (scaled.parse::<i32>().unwrap());
+   |                     ^                              ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+22 -         let mut n = (scaled.parse::<i32>().unwrap());
+22 +         let mut n = scaled.parse::<i32>().unwrap();
+   |
 
- 26 |   let intPart = substring(digits, 0, len(digits)-prec)
-    |                 ^
+warning: denote infinite loops with `loop { ... }`
+  --> /tmp/calculating-the-value-of-e.rs:35:5
+   |
+35 |     while true {
+   |     ^^^^^^^^^^ help: use `loop`
+   |
+   = note: `#[warn(while_true)]` on by default
 
-help:
-  Ensure the argument type matches the function’s signature.
+error[E0689]: can't call method `parse` on ambiguous numeric type `{integer}`
+  --> /tmp/calculating-the-value-of-e.rs:38:31
+   |
+38 |         term = 1.0 / (factval.parse::<f64>().unwrap());
+   |                               ^^^^^
+   |
+help: you must specify a type for this binding, like `i32`
+   |
+31 |     let mut factval: i32 = 1;
+   |                    +++++
+
+error[E0599]: no method named `parse` found for type `f64` in the current scope
+  --> /tmp/calculating-the-value-of-e.rs:22:29
+   |
+22 |         let mut n = (scaled.parse::<i32>().unwrap());
+   |                             ^^^^^ method not found in `f64`
+
+error[E0308]: mismatched types
+  --> /tmp/calculating-the-value-of-e.rs:29:16
+   |
+19 |     fn formatFloat(f: f64, prec: i32) -> &'static str {
+   |                                          ------------ expected `&str` because of return type
+...
+29 |         return format!("{}{}", format!("{}{}", intPart, "."), fracPart);
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+   |
+   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: aborting due to 3 previous errors; 2 warnings emitted
+
+Some errors have detailed explanations: E0308, E0599, E0689.
+For more information about an error, try `rustc --explain E0308`.

@@ -1,6 +1,6 @@
-rustc error: exit status 1
+rustc: exit status 1
 error[E0689]: can't call method `parse` on ambiguous numeric type `{integer}`
-  --> /tmp/TestMochiRustGoldenactive-object1415959976/001/prog.rs:22:21
+  --> /tmp/active-object.rs:22:21
    |
 22 |         let t2 = (i.parse::<f64>().unwrap()) * dt;
    |                     ^^^^^
@@ -11,7 +11,7 @@ help: you must specify a type for this binding, like `i32`
    |              +++++
 
 error[E0689]: can't call method `parse` on ambiguous numeric type `{integer}`
-  --> /tmp/TestMochiRustGoldenactive-object1415959976/001/prog.rs:31:28
+  --> /tmp/active-object.rs:31:28
    |
 31 |         let t2 = 2.0 + (i2.parse::<f64>().unwrap()) * dt;
    |                            ^^^^^
@@ -22,7 +22,7 @@ help: you must specify a type for this binding, like `i32`
    |               +++++
 
 error[E0689]: can't call method `parse` on ambiguous numeric type `{integer}`
- --> /tmp/TestMochiRustGoldenactive-object1415959976/001/prog.rs:9:49
+ --> /tmp/active-object.rs:9:49
   |
 9 |             let denom = ((2 * n) * (2 * n + 1)).parse::<f64>().unwrap();
   |                                                 ^^^^^

@@ -1,73 +1,73 @@
-rustc error: exit status 1
+rustc: exit status 1
 error: `<` is interpreted as a start of generic arguments for `i32`, not a comparison
-  --> /tmp/TestMochiRustGoldenarithmetic-numbers1243164040/001/prog.rs:46:30
+  --> /tmp/arithmetic-numbers.rs:41:30
    |
-46 |         while s.len() as i32 < 3 {
+41 |         while s.len() as i32 < 3 {
    |                              ^ --- interpreted as generic arguments
    |                              |
    |                              not interpreted as comparison
    |
 help: try comparing the cast value
    |
-46 |         while (s.len() as i32) < 3 {
+41 |         while (s.len() as i32) < 3 {
    |               +              +
 
 error: `<` is interpreted as a start of generic arguments for `i32`, not a comparison
-  --> /tmp/TestMochiRustGoldenarithmetic-numbers1243164040/001/prog.rs:86:32
+  --> /tmp/arithmetic-numbers.rs:81:32
    |
-86 |         while arr.len() as i32 < limit {
+81 |         while arr.len() as i32 < limit {
    |                                ^ ------- interpreted as generic arguments
    |                                |
    |                                not interpreted as comparison
    |
 help: try comparing the cast value
    |
-86 |         while (arr.len() as i32) < limit {
+81 |         while (arr.len() as i32) < limit {
    |               +                +
 
 warning: unnecessary parentheses around assigned value
-   --> /tmp/TestMochiRustGoldenarithmetic-numbers1243164040/001/prog.rs:108:28
+   --> /tmp/arithmetic-numbers.rs:103:28
     |
-108 |                     tau *= (cnt + 1);
+103 |                     tau *= (cnt + 1);
     |                            ^       ^
     |
     = note: `#[warn(unused_parens)]` on by default
 help: remove these parentheses
     |
-108 -                     tau *= (cnt + 1);
-108 +                     tau *= cnt + 1;
+103 -                     tau *= (cnt + 1);
+103 +                     tau *= cnt + 1;
     |
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenarithmetic-numbers1243164040/001/prog.rs:49:16
+  --> /tmp/arithmetic-numbers.rs:44:16
    |
-44 |     fn pad3(n: i32) -> &'static str {
+39 |     fn pad3(n: i32) -> &'static str {
    |                        ------------ expected `&'static str` because of return type
 ...
-49 |         return s;
+44 |         return s;
    |                ^ expected `&str`, found `String`
    |
 help: consider borrowing here
    |
-49 |         return &s;
+44 |         return &s;
    |                +
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenarithmetic-numbers1243164040/001/prog.rs:57:54
+  --> /tmp/arithmetic-numbers.rs:52:54
    |
-57 |             out = format!("{}{}", &s[i as usize..i + 1 as usize], out);
+52 |             out = format!("{}{}", &s[i as usize..i + 1 as usize], out);
    |                                                      ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenarithmetic-numbers1243164040/001/prog.rs:57:50
+  --> /tmp/arithmetic-numbers.rs:52:50
    |
-57 |             out = format!("{}{}", &s[i as usize..i + 1 as usize], out);
+52 |             out = format!("{}{}", &s[i as usize..i + 1 as usize], out);
    |                                                  ^^^^^^^^^^^^^^ expected `usize`, found `i32`
 
 error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/TestMochiRustGoldenarithmetic-numbers1243164040/001/prog.rs:57:52
+  --> /tmp/arithmetic-numbers.rs:52:52
    |
-57 |             out = format!("{}{}", &s[i as usize..i + 1 as usize], out);
+52 |             out = format!("{}{}", &s[i as usize..i + 1 as usize], out);
    |                                                    ^ no implementation for `i32 + usize`
    |
    = help: the trait `Add<usize>` is not implemented for `i32`
@@ -78,47 +78,29 @@ error[E0277]: cannot add `usize` to `i32`
              `i32` implements `Add`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenarithmetic-numbers1243164040/001/prog.rs:57:19
+  --> /tmp/arithmetic-numbers.rs:59:16
    |
-57 |             out = format!("{}{}", &s[i as usize..i + 1 as usize], out);
-   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+46 |     fn commatize(n: i32) -> &'static str {
+   |                             ------------ expected `&'static str` because of return type
+...
+59 |         return out;
+   |                ^^^ expected `&str`, found `String`
    |
-   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenarithmetic-numbers1243164040/001/prog.rs:60:23
+help: consider borrowing here
    |
-60 |                 out = format!("{}{}", ",", out);
-   |                       ^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
-   |
-   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+59 |         return &out;
+   |                +
 
 error[E0599]: no method named `parse` found for type `f64` in the current scope
-  --> /tmp/TestMochiRustGoldenarithmetic-numbers1243164040/001/prog.rs:70:61
+  --> /tmp/arithmetic-numbers.rs:65:61
    |
-70 |             let mut mid = (((lo + hi) as f64) / (2 as f64)).parse::<i32>().unwrap();
+65 |             let mut mid = (((lo + hi) as f64) / (2 as f64)).parse::<i32>().unwrap();
    |                                                             ^^^^^ method not found in `f64`
 
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-   --> /tmp/TestMochiRustGoldenarithmetic-numbers1243164040/001/prog.rs:129:17
-    |
-129 |                 line += pad3(arr[i + j as usize]);
-    |                 ----^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    |                 |
-    |                 cannot use `+=` on type `&str`
-
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-   --> /tmp/TestMochiRustGoldenarithmetic-numbers1243164040/001/prog.rs:131:21
-    |
-131 |                     line += " ";
-    |                     ----^^^^^^^
-    |                     |
-    |                     cannot use `+=` on type `&str`
-
 error[E0277]: cannot subtract `usize` from `f64`
-   --> /tmp/TestMochiRustGoldenarithmetic-numbers1243164040/001/prog.rs:139:39
+   --> /tmp/arithmetic-numbers.rs:134:39
     |
-139 |             let last = arr[(x as f64) - 1 as f64 as usize];
+134 |             let last = arr[(x as f64) - 1 as f64 as usize];
     |                                       ^ no implementation for `f64 - usize`
     |
     = help: the trait `Sub<usize>` is not implemented for `f64`
@@ -129,9 +111,9 @@ error[E0277]: cannot subtract `usize` from `f64`
               `f64` implements `Sub`
 
 error[E0277]: cannot subtract `{integer}` from `f64`
-   --> /tmp/TestMochiRustGoldenarithmetic-numbers1243164040/001/prog.rs:144:47
+   --> /tmp/arithmetic-numbers.rs:139:47
     |
-144 |             let comp = (x as f64) - pc as f64 - 1;
+139 |             let comp = (x as f64) - pc as f64 - 1;
     |                                               ^ no implementation for `f64 - {integer}`
     |
     = help: the trait `Sub<{integer}>` is not implemented for `f64`
@@ -142,10 +124,10 @@ error[E0277]: cannot subtract `{integer}` from `f64`
               `f64` implements `Sub`
 help: consider using a floating-point literal by writing it with `.0`
     |
-144 |             let comp = (x as f64) - pc as f64 - 1.0;
+139 |             let comp = (x as f64) - pc as f64 - 1.0;
     |                                                  ++
 
-error: aborting due to 13 previous errors; 1 warning emitted
+error: aborting due to 10 previous errors; 1 warning emitted
 
-Some errors have detailed explanations: E0277, E0308, E0368, E0599.
+Some errors have detailed explanations: E0277, E0308, E0599.
 For more information about an error, try `rustc --explain E0277`.

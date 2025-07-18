@@ -1,58 +1,84 @@
-rustc error: exit status 1
+rustc: exit status 1
 error: `<` is interpreted as a start of generic arguments for `i32`, not a comparison
-  --> /tmp/TestMochiRustGoldencanonicalize-cidr1652982094/001/prog.rs:86:32
+  --> /tmp/canonicalize-cidr.rs:81:32
    |
-86 |         while out.len() as i32 < width {
+81 |         while out.len() as i32 < width {
    |                                ^ ------- interpreted as generic arguments
    |                                |
    |                                not interpreted as comparison
    |
 help: try comparing the cast value
    |
-86 |         while (out.len() as i32) < width {
+81 |         while (out.len() as i32) < width {
    |               +                +
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencanonicalize-cidr1652982094/001/prog.rs:13:101
-   |
-13 |             if sep.len() as i32 > 0 && i + sep.len() as i32 <= s.len() as i32 && &s[i as usize..i + sep.len() as i32 as usize] == sep {
-   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^ expected `i32`, found `usize`
+ --> /tmp/canonicalize-cidr.rs:8:101
+  |
+8 |             if sep.len() as i32 > 0 && i + sep.len() as i32 <= s.len() as i32 && &s[i as usize..i + sep.len() as i32 as usize] == sep {
+  |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencanonicalize-cidr1652982094/001/prog.rs:13:97
-   |
-13 |             if sep.len() as i32 > 0 && i + sep.len() as i32 <= s.len() as i32 && &s[i as usize..i + sep.len() as i32 as usize] == sep {
-   |                                                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `usize`, found `i32`
+ --> /tmp/canonicalize-cidr.rs:8:97
+  |
+8 |             if sep.len() as i32 > 0 && i + sep.len() as i32 <= s.len() as i32 && &s[i as usize..i + sep.len() as i32 as usize] == sep {
+  |                                                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `usize`, found `i32`
 
 error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/TestMochiRustGoldencanonicalize-cidr1652982094/001/prog.rs:13:99
-   |
-13 |             if sep.len() as i32 > 0 && i + sep.len() as i32 <= s.len() as i32 && &s[i as usize..i + sep.len() as i32 as usize] == sep {
-   |                                                                                                   ^ no implementation for `i32 + usize`
-   |
-   = help: the trait `Add<usize>` is not implemented for `i32`
-   = help: the following other types implement trait `Add<Rhs>`:
-             `&i32` implements `Add<i32>`
-             `&i32` implements `Add`
-             `i32` implements `Add<&i32>`
-             `i32` implements `Add`
+ --> /tmp/canonicalize-cidr.rs:8:99
+  |
+8 |             if sep.len() as i32 > 0 && i + sep.len() as i32 <= s.len() as i32 && &s[i as usize..i + sep.len() as i32 as usize] == sep {
+  |                                                                                                   ^ no implementation for `i32 + usize`
+  |
+  = help: the trait `Add<usize>` is not implemented for `i32`
+  = help: the following other types implement trait `Add<Rhs>`:
+            `&i32` implements `Add<i32>`
+            `&i32` implements `Add`
+            `i32` implements `Add<&i32>`
+            `i32` implements `Add`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencanonicalize-cidr1652982094/001/prog.rs:18:43
+ --> /tmp/canonicalize-cidr.rs:9:65
+  |
+9 |                 parts = { let mut tmp = parts.clone(); tmp.push(cur); tmp };
+  |                                                            ---- ^^^ expected `&str`, found `String`
+  |                                                            |
+  |                                                            arguments to this method are incorrect
+  |
+note: method defined here
+ --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:2442:12
+help: consider borrowing here
+  |
+9 |                 parts = { let mut tmp = parts.clone(); tmp.push(&cur); tmp };
+  |                                                                 +
+
+error[E0308]: mismatched types
+  --> /tmp/canonicalize-cidr.rs:10:23
    |
-18 |                 cur += &s[i as usize..i + 1 as usize];
+5  |         let mut cur = String::new();
+   |                       ------------- expected due to this value
+...
+10 |                 cur = "";
+   |                       ^^- help: try using a conversion method: `.to_string()`
+   |                       |
+   |                       expected `String`, found `&str`
+
+error[E0308]: mismatched types
+  --> /tmp/canonicalize-cidr.rs:13:43
+   |
+13 |                 cur += &s[i as usize..i + 1 as usize];
    |                                           ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencanonicalize-cidr1652982094/001/prog.rs:18:39
+  --> /tmp/canonicalize-cidr.rs:13:39
    |
-18 |                 cur += &s[i as usize..i + 1 as usize];
+13 |                 cur += &s[i as usize..i + 1 as usize];
    |                                       ^^^^^^^^^^^^^^ expected `usize`, found `i32`
 
 error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/TestMochiRustGoldencanonicalize-cidr1652982094/001/prog.rs:18:41
+  --> /tmp/canonicalize-cidr.rs:13:41
    |
-18 |                 cur += &s[i as usize..i + 1 as usize];
+13 |                 cur += &s[i as usize..i + 1 as usize];
    |                                         ^ no implementation for `i32 + usize`
    |
    = help: the trait `Add<usize>` is not implemented for `i32`
@@ -62,55 +88,66 @@ error[E0277]: cannot add `usize` to `i32`
              `i32` implements `Add<&i32>`
              `i32` implements `Add`
 
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldencanonicalize-cidr1652982094/001/prog.rs:18:17
+error[E0308]: mismatched types
+  --> /tmp/canonicalize-cidr.rs:17:57
    |
-18 |                 cur += &s[i as usize..i + 1 as usize];
-   |                 ---^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-   |                 |
-   |                 cannot use `+=` on type `&str`
-
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldencanonicalize-cidr1652982094/001/prog.rs:30:17
+17 |         parts = { let mut tmp = parts.clone(); tmp.push(cur); tmp };
+   |                                                    ---- ^^^ expected `&str`, found `String`
+   |                                                    |
+   |                                                    arguments to this method are incorrect
    |
-30 |                 res += sep;
-   |                 ---^^^^^^^
-   |                 |
-   |                 cannot use `+=` on type `&str`
-
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldencanonicalize-cidr1652982094/001/prog.rs:32:13
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:2442:12
+help: consider borrowing here
    |
-32 |             res += xs[i as usize];
-   |             ---^^^^^^^^^^^^^^^^^^
-   |             |
-   |             cannot use `+=` on type `&str`
-
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldencanonicalize-cidr1652982094/001/prog.rs:41:13
-   |
-41 |             out += ch;
-   |             ---^^^^^^
-   |             |
-   |             cannot use `+=` on type `&str`
+17 |         parts = { let mut tmp = parts.clone(); tmp.push(&cur); tmp };
+   |                                                         +
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencanonicalize-cidr1652982094/001/prog.rs:56:55
+  --> /tmp/canonicalize-cidr.rs:30:16
    |
-56 |             n = n * 10 + digits[&&str[i as usize..i + 1 as usize]];
-   |                                                       ^^^^^^^^^^ expected `i32`, found `usize`
+20 |     fn join(xs: Vec<&'static str>, sep: &'static str) -> &'static str {
+   |                                                          ------------ expected `&'static str` because of return type
+...
+30 |         return res;
+   |                ^^^ expected `&str`, found `String`
+   |
+help: consider borrowing here
+   |
+30 |         return &res;
+   |                +
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencanonicalize-cidr1652982094/001/prog.rs:56:51
+  --> /tmp/canonicalize-cidr.rs:39:16
    |
-56 |             n = n * 10 + digits[&&str[i as usize..i + 1 as usize]];
-   |                                                   ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+32 |     fn repeat(ch: &'static str, n: i32) -> &'static str {
+   |                                            ------------ expected `&'static str` because of return type
+...
+39 |         return out;
+   |                ^^^ expected `&str`, found `String`
+   |
+help: consider borrowing here
+   |
+39 |         return &out;
+   |                +
+
+error[E0308]: mismatched types
+  --> /tmp/canonicalize-cidr.rs:51:60
+   |
+51 |             n = n * 10 + *digits.get(&&str[i as usize..i + 1 as usize]).unwrap();
+   |                                                            ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+  --> /tmp/canonicalize-cidr.rs:51:56
+   |
+51 |             n = n * 10 + *digits.get(&&str[i as usize..i + 1 as usize]).unwrap();
+   |                                                        ^^^^^^^^^^^^^^ expected `usize`, found `i32`
 
 error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/TestMochiRustGoldencanonicalize-cidr1652982094/001/prog.rs:56:53
+  --> /tmp/canonicalize-cidr.rs:51:58
    |
-56 |             n = n * 10 + digits[&&str[i as usize..i + 1 as usize]];
-   |                                                     ^ no implementation for `i32 + usize`
+51 |             n = n * 10 + *digits.get(&&str[i as usize..i + 1 as usize]).unwrap();
+   |                                                          ^ no implementation for `i32 + usize`
    |
    = help: the trait `Add<usize>` is not implemented for `i32`
    = help: the following other types implement trait `Add<Rhs>`:
@@ -120,9 +157,9 @@ error[E0277]: cannot add `usize` to `i32`
              `i32` implements `Add`
 
 error[E0277]: cannot calculate the remainder of `i32` divided by `String`
-  --> /tmp/TestMochiRustGoldencanonicalize-cidr1652982094/001/prog.rs:69:37
+  --> /tmp/canonicalize-cidr.rs:64:37
    |
-69 |             b = format!("{}{}", val % 2.to_string(), b);
+64 |             b = format!("{}{}", val % 2.to_string(), b);
    |                                     ^ no implementation for `i32 % String`
    |
    = help: the trait `Rem<String>` is not implemented for `i32`
@@ -132,36 +169,42 @@ error[E0277]: cannot calculate the remainder of `i32` divided by `String`
              `i32` implements `Rem<&i32>`
              `i32` implements `Rem`
 
-error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencanonicalize-cidr1652982094/001/prog.rs:69:17
-   |
-69 |             b = format!("{}{}", val % 2.to_string(), b);
-   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
-   |
-   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
-
 error[E0599]: no method named `parse` found for type `f64` in the current scope
-  --> /tmp/TestMochiRustGoldencanonicalize-cidr1652982094/001/prog.rs:70:47
+  --> /tmp/canonicalize-cidr.rs:65:47
    |
-70 |             val = ((val as f64) / (2 as f64)).parse::<i32>().unwrap();
+65 |             val = ((val as f64) / (2 as f64)).parse::<i32>().unwrap();
    |                                               ^^^^^ method not found in `f64`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencanonicalize-cidr1652982094/001/prog.rs:79:59
+  --> /tmp/canonicalize-cidr.rs:68:16
    |
-79 |             n = n * 2 + parseIntStr(&bits[i as usize..i + 1 as usize]);
+59 |     fn toBinary(n: i32, bits: i32) -> &'static str {
+   |                                       ------------ expected `&'static str` because of return type
+...
+68 |         return b;
+   |                ^ expected `&str`, found `String`
+   |
+help: consider borrowing here
+   |
+68 |         return &b;
+   |                +
+
+error[E0308]: mismatched types
+  --> /tmp/canonicalize-cidr.rs:74:59
+   |
+74 |             n = n * 2 + parseIntStr(&bits[i as usize..i + 1 as usize]);
    |                                                           ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencanonicalize-cidr1652982094/001/prog.rs:79:55
+  --> /tmp/canonicalize-cidr.rs:74:55
    |
-79 |             n = n * 2 + parseIntStr(&bits[i as usize..i + 1 as usize]);
+74 |             n = n * 2 + parseIntStr(&bits[i as usize..i + 1 as usize]);
    |                                                       ^^^^^^^^^^^^^^ expected `usize`, found `i32`
 
 error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/TestMochiRustGoldencanonicalize-cidr1652982094/001/prog.rs:79:57
+  --> /tmp/canonicalize-cidr.rs:74:57
    |
-79 |             n = n * 2 + parseIntStr(&bits[i as usize..i + 1 as usize]);
+74 |             n = n * 2 + parseIntStr(&bits[i as usize..i + 1 as usize]);
    |                                                         ^ no implementation for `i32 + usize`
    |
    = help: the trait `Add<usize>` is not implemented for `i32`
@@ -172,83 +215,73 @@ error[E0277]: cannot add `usize` to `i32`
              `i32` implements `Add`
 
 error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldencanonicalize-cidr1652982094/001/prog.rs:87:13
+  --> /tmp/canonicalize-cidr.rs:82:13
    |
-87 |             out += " ";
+82 |             out += " ";
    |             ---^^^^^^^
    |             |
    |             cannot use `+=` on type `&str`
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldencanonicalize-cidr1652982094/001/prog.rs:100:18
-    |
-100 |         binary = format!("{}{}", &binary[0 as usize..size as usize], repeat("0", 32 - size));
-    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
-    |
-    = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+  --> /tmp/canonicalize-cidr.rs:95:18
+   |
+95 |         binary = format!("{}{}", &binary[0 as usize..size as usize], repeat("0", 32 - size));
+   |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+   |
+   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldencanonicalize-cidr1652982094/001/prog.rs:104:78
-    |
-104 |             canonParts = append(canonParts, binToInt(&binary[i as usize..i + 8 as usize]).to_string());
-    |                                                                              ^^^^^^^^^^ expected `i32`, found `usize`
+  --> /tmp/canonicalize-cidr.rs:99:104
+   |
+99 |             canonParts = { let mut tmp = canonParts.clone(); tmp.push(binToInt(&binary[i as usize..i + 8 as usize]).to_string()); tmp };
+   |                                                                                                        ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldencanonicalize-cidr1652982094/001/prog.rs:104:74
-    |
-104 |             canonParts = append(canonParts, binToInt(&binary[i as usize..i + 8 as usize]).to_string());
-    |                                                                          ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+  --> /tmp/canonicalize-cidr.rs:99:100
+   |
+99 |             canonParts = { let mut tmp = canonParts.clone(); tmp.push(binToInt(&binary[i as usize..i + 8 as usize]).to_string()); tmp };
+   |                                                                                                    ^^^^^^^^^^^^^^ expected `usize`, found `i32`
 
 error[E0277]: cannot add `usize` to `i32`
-   --> /tmp/TestMochiRustGoldencanonicalize-cidr1652982094/001/prog.rs:104:76
-    |
-104 |             canonParts = append(canonParts, binToInt(&binary[i as usize..i + 8 as usize]).to_string());
-    |                                                                            ^ no implementation for `i32 + usize`
-    |
-    = help: the trait `Add<usize>` is not implemented for `i32`
-    = help: the following other types implement trait `Add<Rhs>`:
-              `&i32` implements `Add<i32>`
-              `&i32` implements `Add`
-              `i32` implements `Add<&i32>`
-              `i32` implements `Add`
+  --> /tmp/canonicalize-cidr.rs:99:102
+   |
+99 |             canonParts = { let mut tmp = canonParts.clone(); tmp.push(binToInt(&binary[i as usize..i + 8 as usize]).to_string()); tmp };
+   |                                                                                                      ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldencanonicalize-cidr1652982094/001/prog.rs:104:45
-    |
-104 |             canonParts = append(canonParts, binToInt(&binary[i as usize..i + 8 as usize]).to_string());
-    |                          ------             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
-    |                          |
-    |                          arguments to this function are incorrect
-    |
-help: the return type of this call is `String` due to the type of the argument passed
-   --> /tmp/TestMochiRustGoldencanonicalize-cidr1652982094/001/prog.rs:104:26
-    |
-104 |             canonParts = append(canonParts, binToInt(&binary[i as usize..i + 8 as usize]).to_string());
-    |                          ^^^^^^^^^^^^^^^^^^^---------------------------------------------------------^
-    |                                             |
-    |                                             this argument influences the return type of `append`
-note: function defined here
-   --> /tmp/TestMochiRustGoldencanonicalize-cidr1652982094/001/prog.rs:2:4
-    |
-2   | fn append<T: Clone>(mut v: Vec<T>, item: T) -> Vec<T> {
-    |    ^^^^^^                          -------
+  --> /tmp/canonicalize-cidr.rs:99:71
+   |
+99 |             canonParts = { let mut tmp = canonParts.clone(); tmp.push(binToInt(&binary[i as usize..i + 8 as usize]).to_string()); tmp };
+   |                                                                  ---- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+   |                                                                  |
+   |                                                                  arguments to this method are incorrect
+   |
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:2442:12
 help: consider borrowing here
-    |
-104 |             canonParts = append(canonParts, &binToInt(&binary[i as usize..i + 8 as usize]).to_string());
-    |                                             +
+   |
+99 |             canonParts = { let mut tmp = canonParts.clone(); tmp.push(&binToInt(&binary[i as usize..i + 8 as usize]).to_string()); tmp };
+   |                                                                       +
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldencanonicalize-cidr1652982094/001/prog.rs:107:16
+   --> /tmp/canonicalize-cidr.rs:102:16
     |
-91  |     fn canonicalize(cidr: &'static str) -> &'static str {
+86  |     fn canonicalize(cidr: &'static str) -> &'static str {
     |                                            ------------ expected `&str` because of return type
 ...
-107 |         return format!("{}{}", format!("{}{}", join(canonParts, "."), "/"), parts[1]);
+102 |         return format!("{}{}", format!("{}{}", join(canonParts, "."), "/"), parts[1]);
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
     |
     = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
 
-error: aborting due to 27 previous errors
+error: aborting due to 28 previous errors
 
 Some errors have detailed explanations: E0277, E0308, E0368, E0599.
 For more information about an error, try `rustc --explain E0277`.

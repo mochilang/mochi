@@ -1,1 +1,1 @@
-compile error: unsupported cast to Vec<Vec<&'static str>>
+compile: unsupported cast to Vec<Vec<&'static str>>

@@ -1,19 +1,19 @@
-rustc error: exit status 1
+rustc: exit status 1
 error: cast cannot be followed by a method call
- --> /tmp/TestMochiRustGoldenarray-length708272232/001/prog.rs:5:129
+ --> /tmp/array-length.rs:5:148
   |
-5 | ..., format!("{}{}", "Length of ", arr.to_string()), " is "), arr.len() as i32.to_string()), "."));
+5 | ..., format!("{}{}", "Length of ", arr.to_string()), " is "), arr.len() as i32.to_string()), "."))].into_iter().filter(|s| !s.is_empty())...
   |                                                               ^^^^^^^^^^^^^^^^
   |
 help: try surrounding the expression in parentheses
   |
-5 |         println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", "Length of ", arr.to_string()), " is "), (arr.len() as i32).to_string()), "."));
-  |                                                                                                                                 +                +
+5 |         println!("{}", vec![format!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", "Length of ", arr.to_string()), " is "), (arr.len() as i32).to_string()), "."))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+  |                                                                                                                                                    +                +
 
 error[E0599]: the method `to_string` exists for struct `Vec<&str>`, but its trait bounds were not satisfied
- --> /tmp/TestMochiRustGoldenarray-length708272232/001/prog.rs:5:106
+ --> /tmp/array-length.rs:5:125
   |
-5 | ...("{}{}", "Length of ", arr.to_string()), " is "), arr.len() as i32.to_string()), "."));
+5 | ...("{}{}", "Length of ", arr.to_string()), " is "), arr.len() as i32.to_string()), "."))].into_iter().filter(|s| !s.is_empty()).collect:...
   |                               ^^^^^^^^^ method cannot be called on `Vec<&str>` due to unsatisfied trait bounds
   |
   = note: the following trait bounds were not satisfied:

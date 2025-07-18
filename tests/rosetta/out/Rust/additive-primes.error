@@ -1,12 +1,12 @@
-rustc error: exit status 1
+rustc: exit status 1
 error[E0599]: no method named `parse` found for type `f64` in the current scope
-  --> /tmp/TestMochiRustGoldenadditive-primes3959841356/001/prog.rs:31:44
+  --> /tmp/additive-primes.rs:31:44
    |
 31 |             x = ((x as f64) / (10 as f64)).parse::<i32>().unwrap();
    |                                            ^^^^^ method not found in `f64`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenadditive-primes3959841356/001/prog.rs:37:20
+  --> /tmp/additive-primes.rs:37:20
    |
 35 |     fn pad(n: i32) -> &'static str {
    |                       ------------ expected `&str` because of return type
@@ -17,7 +17,7 @@ error[E0308]: mismatched types
    = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenadditive-primes3959841356/001/prog.rs:40:20
+  --> /tmp/additive-primes.rs:40:20
    |
 35 |     fn pad(n: i32) -> &'static str {
    |                       ------------ expected `&str` because of return type
@@ -28,7 +28,7 @@ error[E0308]: mismatched types
    = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenadditive-primes3959841356/001/prog.rs:42:16
+  --> /tmp/additive-primes.rs:42:16
    |
 35 |     fn pad(n: i32) -> &'static str {
    |                       ------------ expected `&str` because of return type
@@ -42,30 +42,22 @@ help: consider borrowing here
    |                +
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenadditive-primes3959841356/001/prog.rs:53:24
+  --> /tmp/additive-primes.rs:56:93
    |
-53 |                 line = format!("{}{}", format!("{}{}", line, pad(i)), "  ");
-   |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
-   |
-   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+56 | ...   println!("{}", vec![format!("{}", &line[0 as usize..line.len() as i32 - 2 as usize])].into_iter().filter(|s| !s.is_empty()).collect...
+   |                                                                               ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenadditive-primes3959841356/001/prog.rs:56:74
+  --> /tmp/additive-primes.rs:56:73
    |
-56 |                     println!("{}", &line[0 as usize..line.len() as i32 - 2 as usize]);
-   |                                                                          ^^^^^^^^^^ expected `i32`, found `usize`
-
-error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenadditive-primes3959841356/001/prog.rs:56:54
-   |
-56 |                     println!("{}", &line[0 as usize..line.len() as i32 - 2 as usize]);
-   |                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `usize`, found `i32`
+56 | ...   println!("{}", vec![format!("{}", &line[0 as usize..line.len() as i32 - 2 as usize])].into_iter().filter(|s| !s.is_empty()).collect...
+   |                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `usize`, found `i32`
 
 error[E0277]: cannot subtract `usize` from `i32`
-  --> /tmp/TestMochiRustGoldenadditive-primes3959841356/001/prog.rs:56:72
+  --> /tmp/additive-primes.rs:56:91
    |
-56 |                     println!("{}", &line[0 as usize..line.len() as i32 - 2 as usize]);
-   |                                                                        ^ no implementation for `i32 - usize`
+56 | ...   println!("{}", vec![format!("{}", &line[0 as usize..line.len() as i32 - 2 as usize])].into_iter().filter(|s| !s.is_empty()).collect...
+   |                                                                             ^ no implementation for `i32 - usize`
    |
    = help: the trait `Sub<usize>` is not implemented for `i32`
    = help: the following other types implement trait `Sub<Rhs>`:
@@ -75,22 +67,33 @@ error[E0277]: cannot subtract `usize` from `i32`
              `i32` implements `Sub`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenadditive-primes3959841356/001/prog.rs:68:66
+  --> /tmp/additive-primes.rs:57:28
    |
-68 |             println!("{}", &line[0 as usize..line.len() as i32 - 2 as usize]);
-   |                                                                  ^^^^^^^^^^ expected `i32`, found `usize`
+47 |         let mut line = String::new();
+   |                        ------------- expected due to this value
+...
+57 |                     line = "";
+   |                            ^^- help: try using a conversion method: `.to_string()`
+   |                            |
+   |                            expected `String`, found `&str`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenadditive-primes3959841356/001/prog.rs:68:46
+  --> /tmp/additive-primes.rs:68:85
    |
-68 |             println!("{}", &line[0 as usize..line.len() as i32 - 2 as usize]);
-   |                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `usize`, found `i32`
+68 | ...   println!("{}", vec![format!("{}", &line[0 as usize..line.len() as i32 - 2 as usize])].into_iter().filter(|s| !s.is_empty()).collect...
+   |                                                                               ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+  --> /tmp/additive-primes.rs:68:65
+   |
+68 | ...   println!("{}", vec![format!("{}", &line[0 as usize..line.len() as i32 - 2 as usize])].into_iter().filter(|s| !s.is_empty()).collect...
+   |                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `usize`, found `i32`
 
 error[E0277]: cannot subtract `usize` from `i32`
-  --> /tmp/TestMochiRustGoldenadditive-primes3959841356/001/prog.rs:68:64
+  --> /tmp/additive-primes.rs:68:83
    |
-68 |             println!("{}", &line[0 as usize..line.len() as i32 - 2 as usize]);
-   |                                                                ^ no implementation for `i32 - usize`
+68 | ...   println!("{}", vec![format!("{}", &line[0 as usize..line.len() as i32 - 2 as usize])].into_iter().filter(|s| !s.is_empty()).collect...
+   |                                                                             ^ no implementation for `i32 - usize`
    |
    = help: the trait `Sub<usize>` is not implemented for `i32`
    = help: the following other types implement trait `Sub<Rhs>`:

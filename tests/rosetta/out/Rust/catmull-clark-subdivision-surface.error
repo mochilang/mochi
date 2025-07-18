@@ -1,6 +1,6 @@
-rustc error: exit status 1
+rustc: exit status 1
 error: `<` is interpreted as a start of generic arguments for `i32`, not a comparison
-  --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:70:27
+  --> /tmp/catmull-clark-subdivision-surface.rs:70:27
    |
 70 |         if s.len() as i32 < 2 {
    |                           ^ --- interpreted as generic arguments
@@ -13,7 +13,7 @@ help: try comparing the cast value
    |            +              +
 
 error: cast cannot be followed by a method call
-  --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:96:41
+  --> /tmp/catmull-clark-subdivision-surface.rs:96:41
    |
 96 |             fp = divPoint(&fp.clone(), (face.len() as i32.parse::<f64>().unwrap()));
    |                                         ^^^^^^^^^^^^^^^^^
@@ -24,7 +24,7 @@ help: try surrounding the expression in parentheses
    |                                         +                 +
 
 warning: unnecessary parentheses around function argument
-  --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:96:40
+  --> /tmp/catmull-clark-subdivision-surface.rs:96:40
    |
 96 |             fp = divPoint(&fp.clone(), (face.len() as i32.parse::<f64>().unwrap()));
    |                                        ^                                         ^
@@ -37,19 +37,19 @@ help: remove these parentheses
    |
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:33:35
+  --> /tmp/catmull-clark-subdivision-surface.rs:33:35
    |
 33 |             if &s[i as usize..i + 1 as usize] == ch {
    |                                   ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:33:31
+  --> /tmp/catmull-clark-subdivision-surface.rs:33:31
    |
 33 |             if &s[i as usize..i + 1 as usize] == ch {
    |                               ^^^^^^^^^^^^^^ expected `usize`, found `i32`
 
 error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:33:33
+  --> /tmp/catmull-clark-subdivision-surface.rs:33:33
    |
 33 |             if &s[i as usize..i + 1 as usize] == ch {
    |                                 ^ no implementation for `i32 + usize`
@@ -62,13 +62,13 @@ error[E0277]: cannot add `usize` to `i32`
              `i32` implements `Add`
 
 error[E0599]: no method named `parse` found for type `f64` in the current scope
-  --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:47:16
+  --> /tmp/catmull-clark-subdivision-surface.rs:47:16
    |
 47 |         y = (y.parse::<i32>().unwrap()).parse::<f64>().unwrap() / 10000.0;
    |                ^^^^^ method not found in `f64`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:49:31
+  --> /tmp/catmull-clark-subdivision-surface.rs:49:31
    |
 49 |         let mut dot = indexOf(s, ".");
    |                       ------- ^ expected `&str`, found `String`
@@ -76,7 +76,7 @@ error[E0308]: mismatched types
    |                       arguments to this function are incorrect
    |
 note: function defined here
-  --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:30:8
+  --> /tmp/catmull-clark-subdivision-surface.rs:30:8
    |
 30 |     fn indexOf(s: &'static str, ch: &'static str) -> i32 {
    |        ^^^^^^^ ---------------
@@ -86,19 +86,19 @@ help: consider borrowing here
    |                               +
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:55:42
+  --> /tmp/catmull-clark-subdivision-surface.rs:55:42
    |
 55 |                 s = &s[0 as usize..dot + 5 as usize];
    |                                          ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:55:36
+  --> /tmp/catmull-clark-subdivision-surface.rs:55:36
    |
 55 |                 s = &s[0 as usize..dot + 5 as usize];
    |                                    ^^^^^^^^^^^^^^^^ expected `usize`, found `i32`
 
 error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:55:40
+  --> /tmp/catmull-clark-subdivision-surface.rs:55:40
    |
 55 |                 s = &s[0 as usize..dot + 5 as usize];
    |                                        ^ no implementation for `i32 + usize`
@@ -111,7 +111,7 @@ error[E0277]: cannot add `usize` to `i32`
              `i32` implements `Add`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:55:21
+  --> /tmp/catmull-clark-subdivision-surface.rs:55:21
    |
 48 |         let mut s = y.to_string();
    |                     ------------- expected due to this value
@@ -125,7 +125,7 @@ help: try using a conversion method
    |                     +                                +++++++++++++
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:66:16
+  --> /tmp/catmull-clark-subdivision-surface.rs:66:16
    |
 40 |     fn fmt4(x: f64) -> &'static str {
    |                        ------------ expected `&'static str` because of return type
@@ -139,7 +139,7 @@ help: consider borrowing here
    |                +
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:71:20
+  --> /tmp/catmull-clark-subdivision-surface.rs:71:20
    |
 68 |     fn fmt2(n: i32) -> &'static str {
    |                        ------------ expected `&str` because of return type
@@ -150,7 +150,7 @@ error[E0308]: mismatched types
    = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:73:16
+  --> /tmp/catmull-clark-subdivision-surface.rs:73:16
    |
 68 |     fn fmt2(n: i32) -> &'static str {
    |                        ------------ expected `&'static str` because of return type
@@ -164,7 +164,7 @@ help: consider borrowing here
    |                +
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:82:25
+  --> /tmp/catmull-clark-subdivision-surface.rs:82:25
    |
 82 |         return mulPoint(&p.clone(), 1.0 / d);
    |                -------- ^^^^^^^^^^ expected `Point`, found `&Point`
@@ -172,7 +172,7 @@ error[E0308]: mismatched types
    |                arguments to this function are incorrect
    |
 note: function defined here
-  --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:78:8
+  --> /tmp/catmull-clark-subdivision-surface.rs:78:8
    |
 78 |     fn mulPoint(p: Point, m: f64) -> Point {
    |        ^^^^^^^^ --------
@@ -183,7 +183,7 @@ help: consider removing the borrow
    |
 
 error[E0308]: arguments to this function are incorrect
-  --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:85:26
+  --> /tmp/catmull-clark-subdivision-surface.rs:85:26
    |
 85 |         return divPoint(&sumPoint(&p1.clone(), &p2.clone()), 2.0);
    |                          ^^^^^^^^ -----------  ----------- expected `Point`, found `&Point`
@@ -191,7 +191,7 @@ error[E0308]: arguments to this function are incorrect
    |                                   expected `Point`, found `&Point`
    |
 note: function defined here
-  --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:75:8
+  --> /tmp/catmull-clark-subdivision-surface.rs:75:8
    |
 75 |     fn sumPoint(p1: Point, p2: Point) -> Point {
    |        ^^^^^^^^ ---------  ---------
@@ -207,7 +207,7 @@ help: consider removing the borrow
    |
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:85:25
+  --> /tmp/catmull-clark-subdivision-surface.rs:85:25
    |
 85 |         return divPoint(&sumPoint(&p1.clone(), &p2.clone()), 2.0);
    |                -------- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Point`, found `&Point`
@@ -215,7 +215,7 @@ error[E0308]: mismatched types
    |                arguments to this function are incorrect
    |
 note: function defined here
-  --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:81:8
+  --> /tmp/catmull-clark-subdivision-surface.rs:81:8
    |
 81 |     fn divPoint(p: Point, d: f64) -> Point {
    |        ^^^^^^^^ --------
@@ -226,7 +226,7 @@ help: consider removing the borrow
    |
 
 error[E0308]: arguments to this function are incorrect
-  --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:94:22
+  --> /tmp/catmull-clark-subdivision-surface.rs:94:22
    |
 94 |                 fp = sumPoint(&fp.clone(), &points[idx as usize]);
    |                      ^^^^^^^^ -----------  --------------------- expected `Point`, found `&Point`
@@ -234,7 +234,7 @@ error[E0308]: arguments to this function are incorrect
    |                               expected `Point`, found `&Point`
    |
 note: function defined here
-  --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:75:8
+  --> /tmp/catmull-clark-subdivision-surface.rs:75:8
    |
 75 |     fn sumPoint(p1: Point, p2: Point) -> Point {
    |        ^^^^^^^^ ---------  ---------
@@ -250,13 +250,13 @@ help: consider removing the borrow
    |
 
 error[E0599]: no method named `parse` found for type `i32` in the current scope
-  --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:96:59
+  --> /tmp/catmull-clark-subdivision-surface.rs:96:59
    |
 96 |             fp = divPoint(&fp.clone(), (face.len() as i32.parse::<f64>().unwrap()));
    |                                                           ^^^^^ method not found in `i32`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:96:27
+  --> /tmp/catmull-clark-subdivision-surface.rs:96:27
    |
 96 |             fp = divPoint(&fp.clone(), (face.len() as i32.parse::<f64>().unwrap()));
    |                  -------- ^^^^^^^^^^^ expected `Point`, found `&Point`
@@ -264,7 +264,7 @@ error[E0308]: mismatched types
    |                  arguments to this function are incorrect
    |
 note: function defined here
-  --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:81:8
+  --> /tmp/catmull-clark-subdivision-surface.rs:81:8
    |
 81 |     fn divPoint(p: Point, d: f64) -> Point {
    |        ^^^^^^^^ --------
@@ -275,13 +275,13 @@ help: consider removing the borrow
    |
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:141:37
+   --> /tmp/catmull-clark-subdivision-surface.rs:141:37
     |
 141 |                     pn2 = face[pi + 1 as usize];
     |                                     ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0277]: cannot add `usize` to `i32`
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:141:35
+   --> /tmp/catmull-clark-subdivision-surface.rs:141:35
     |
 141 |                     pn2 = face[pi + 1 as usize];
     |                                   ^ no implementation for `i32 + usize`
@@ -294,7 +294,7 @@ error[E0277]: cannot add `usize` to `i32`
               `i32` implements `Add`
 
 error[E0277]: the type `[i32]` cannot be indexed by `i32`
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:141:32
+   --> /tmp/catmull-clark-subdivision-surface.rs:141:32
     |
 141 |                     pn2 = face[pi + 1 as usize];
     |                                ^^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
@@ -305,13 +305,13 @@ error[E0277]: the type `[i32]` cannot be indexed by `i32`
     = note: required for `Vec<i32>` to implement `Index<i32>`
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:161:38
+   --> /tmp/catmull-clark-subdivision-surface.rs:161:38
     |
 161 |                 let e2 = edges[idx + 1 as usize];
     |                                      ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0277]: cannot add `usize` to `i32`
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:161:36
+   --> /tmp/catmull-clark-subdivision-surface.rs:161:36
     |
 161 |                 let e2 = edges[idx + 1 as usize];
     |                                    ^ no implementation for `i32 + usize`
@@ -324,7 +324,7 @@ error[E0277]: cannot add `usize` to `i32`
               `i32` implements `Add`
 
 error[E0277]: the type `[Vec<i32>]` cannot be indexed by `i32`
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:161:32
+   --> /tmp/catmull-clark-subdivision-surface.rs:161:32
     |
 161 |                 let e2 = edges[idx + 1 as usize];
     |                                ^^^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
@@ -335,7 +335,7 @@ error[E0277]: the type `[Vec<i32>]` cannot be indexed by `i32`
     = note: required for `Vec<Vec<i32>>` to implement `Index<i32>`
 
 error[E0308]: arguments to this function are incorrect
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:175:22
+   --> /tmp/catmull-clark-subdivision-surface.rs:175:22
     |
 175 |             let cp = centerPoint(&p1.clone(), &p2.clone());
     |                      ^^^^^^^^^^^ -----------  ----------- expected `Point`, found `&Point`
@@ -343,7 +343,7 @@ error[E0308]: arguments to this function are incorrect
     |                                  expected `Point`, found `&Point`
     |
 note: function defined here
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:84:8
+   --> /tmp/catmull-clark-subdivision-surface.rs:84:8
     |
 84  |     fn centerPoint(p1: Point, p2: Point) -> Point {
     |        ^^^^^^^^^^^ ---------  ---------
@@ -359,7 +359,7 @@ help: consider removing the borrow
     |
 
 error[E0308]: arguments to this function are incorrect
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:191:23
+   --> /tmp/catmull-clark-subdivision-surface.rs:191:23
     |
 191 |             let cfp = centerPoint(&fp1.clone(), &fp2.clone());
     |                       ^^^^^^^^^^^ ------------  ------------ expected `Point`, found `&Point`
@@ -367,7 +367,7 @@ error[E0308]: arguments to this function are incorrect
     |                                   expected `Point`, found `&Point`
     |
 note: function defined here
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:84:8
+   --> /tmp/catmull-clark-subdivision-surface.rs:84:8
     |
 84  |     fn centerPoint(p1: Point, p2: Point) -> Point {
     |        ^^^^^^^^^^^ ---------  ---------
@@ -383,31 +383,31 @@ help: consider removing the borrow
     |
 
 error[E0308]: arguments to this function are incorrect
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:192:45
+   --> /tmp/catmull-clark-subdivision-surface.rs:192:71
     |
-192 |             edgePoints = append(edgePoints, centerPoint(&cp.clone(), &cfp.clone()));
-    |                                             ^^^^^^^^^^^ -----------  ------------ expected `Point`, found `&Point`
-    |                                                         |
-    |                                                         expected `Point`, found `&Point`
+192 |             edgePoints = { let mut tmp = edgePoints.clone(); tmp.push(centerPoint(&cp.clone(), &cfp.clone())); tmp };
+    |                                                                       ^^^^^^^^^^^ -----------  ------------ expected `Point`, found `&Point`
+    |                                                                                   |
+    |                                                                                   expected `Point`, found `&Point`
     |
 note: function defined here
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:84:8
+   --> /tmp/catmull-clark-subdivision-surface.rs:84:8
     |
 84  |     fn centerPoint(p1: Point, p2: Point) -> Point {
     |        ^^^^^^^^^^^ ---------  ---------
 help: consider removing the borrow
     |
-192 -             edgePoints = append(edgePoints, centerPoint(&cp.clone(), &cfp.clone()));
-192 +             edgePoints = append(edgePoints, centerPoint(cp.clone(), &cfp.clone()));
+192 -             edgePoints = { let mut tmp = edgePoints.clone(); tmp.push(centerPoint(&cp.clone(), &cfp.clone())); tmp };
+192 +             edgePoints = { let mut tmp = edgePoints.clone(); tmp.push(centerPoint(cp.clone(), &cfp.clone())); tmp };
     |
 help: consider removing the borrow
     |
-192 -             edgePoints = append(edgePoints, centerPoint(&cp.clone(), &cfp.clone()));
-192 +             edgePoints = append(edgePoints, centerPoint(&cp.clone(), cfp.clone()));
+192 -             edgePoints = { let mut tmp = edgePoints.clone(); tmp.push(centerPoint(&cp.clone(), &cfp.clone())); tmp };
+192 +             edgePoints = { let mut tmp = edgePoints.clone(); tmp.push(centerPoint(&cp.clone(), cfp.clone())); tmp };
     |
 
 error[E0308]: arguments to this function are incorrect
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:210:50
+   --> /tmp/catmull-clark-subdivision-surface.rs:210:50
     |
 210 |                 temp[pn as usize] = PointEx { p: sumPoint(&tp.p, &fp.clone()), n: tp.n + 1 };
     |                                                  ^^^^^^^^ -----  ----------- expected `Point`, found `&Point`
@@ -415,7 +415,7 @@ error[E0308]: arguments to this function are incorrect
     |                                                           expected `Point`, found `&Point`
     |
 note: function defined here
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:75:8
+   --> /tmp/catmull-clark-subdivision-surface.rs:75:8
     |
 75  |     fn sumPoint(p1: Point, p2: Point) -> Point {
     |        ^^^^^^^^ ---------  ---------
@@ -431,13 +431,13 @@ help: consider removing the borrow
     |
 
 error[E0599]: no method named `parse` found for type `i32` in the current scope
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:218:52
+   --> /tmp/catmull-clark-subdivision-surface.rs:218:52
     |
 218 |             avg = append(avg, divPoint(&tp.p, tp.n.parse::<f64>().unwrap()));
     |                                                    ^^^^^ method not found in `i32`
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:218:40
+   --> /tmp/catmull-clark-subdivision-surface.rs:218:40
     |
 218 |             avg = append(avg, divPoint(&tp.p, tp.n.parse::<f64>().unwrap()));
     |                               -------- ^^^^^ expected `Point`, found `&Point`
@@ -445,7 +445,7 @@ error[E0308]: mismatched types
     |                               arguments to this function are incorrect
     |
 note: function defined here
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:81:8
+   --> /tmp/catmull-clark-subdivision-surface.rs:81:8
     |
 81  |     fn divPoint(p: Point, d: f64) -> Point {
     |        ^^^^^^^^ --------
@@ -456,7 +456,7 @@ help: consider removing the borrow
     |
 
 error[E0308]: arguments to this function are incorrect
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:236:50
+   --> /tmp/catmull-clark-subdivision-surface.rs:236:50
     |
 236 |                 temp[pn as usize] = PointEx { p: sumPoint(&tp.p, &cp.clone()), n: tp.n + 1 };
     |                                                  ^^^^^^^^ -----  ----------- expected `Point`, found `&Point`
@@ -464,7 +464,7 @@ error[E0308]: arguments to this function are incorrect
     |                                                           expected `Point`, found `&Point`
     |
 note: function defined here
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:75:8
+   --> /tmp/catmull-clark-subdivision-surface.rs:75:8
     |
 75  |     fn sumPoint(p1: Point, p2: Point) -> Point {
     |        ^^^^^^^^ ---------  ---------
@@ -480,13 +480,13 @@ help: consider removing the borrow
     |
 
 error[E0599]: no method named `parse` found for type `i32` in the current scope
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:243:52
+   --> /tmp/catmull-clark-subdivision-surface.rs:243:52
     |
 243 |             avg = append(avg, divPoint(&tp.p, tp.n.parse::<f64>().unwrap()));
     |                                                    ^^^^^ method not found in `i32`
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:243:40
+   --> /tmp/catmull-clark-subdivision-surface.rs:243:40
     |
 243 |             avg = append(avg, divPoint(&tp.p, tp.n.parse::<f64>().unwrap()));
     |                               -------- ^^^^^ expected `Point`, found `&Point`
@@ -494,7 +494,7 @@ error[E0308]: mismatched types
     |                               arguments to this function are incorrect
     |
 note: function defined here
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:81:8
+   --> /tmp/catmull-clark-subdivision-surface.rs:81:8
     |
 81  |     fn divPoint(p: Point, d: f64) -> Point {
     |        ^^^^^^^^ --------
@@ -505,13 +505,13 @@ help: consider removing the borrow
     |
 
 error[E0599]: no method named `parse` found for type `i32` in the current scope
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:268:40
+   --> /tmp/catmull-clark-subdivision-surface.rs:268:40
     |
 268 |             let mut n = pf[i as usize].parse::<f64>().unwrap();
     |                                        ^^^^^ method not found in `i32`
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:273:31
+   --> /tmp/catmull-clark-subdivision-surface.rs:273:31
     |
 273 |             let p1 = mulPoint(&old.clone(), m1);
     |                      -------- ^^^^^^^^^^^^ expected `Point`, found `&Point`
@@ -519,7 +519,7 @@ error[E0308]: mismatched types
     |                      arguments to this function are incorrect
     |
 note: function defined here
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:78:8
+   --> /tmp/catmull-clark-subdivision-surface.rs:78:8
     |
 78  |     fn mulPoint(p: Point, m: f64) -> Point {
     |        ^^^^^^^^ --------
@@ -530,7 +530,7 @@ help: consider removing the borrow
     |
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:274:31
+   --> /tmp/catmull-clark-subdivision-surface.rs:274:31
     |
 274 |             let p2 = mulPoint(&afp[i as usize], m2);
     |                      -------- ^^^^^^^^^^^^^^^^ expected `Point`, found `&Point`
@@ -538,7 +538,7 @@ error[E0308]: mismatched types
     |                      arguments to this function are incorrect
     |
 note: function defined here
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:78:8
+   --> /tmp/catmull-clark-subdivision-surface.rs:78:8
     |
 78  |     fn mulPoint(p: Point, m: f64) -> Point {
     |        ^^^^^^^^ --------
@@ -549,7 +549,7 @@ help: consider removing the borrow
     |
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:275:31
+   --> /tmp/catmull-clark-subdivision-surface.rs:275:31
     |
 275 |             let p3 = mulPoint(&ame[i as usize], m3);
     |                      -------- ^^^^^^^^^^^^^^^^ expected `Point`, found `&Point`
@@ -557,7 +557,7 @@ error[E0308]: mismatched types
     |                      arguments to this function are incorrect
     |
 note: function defined here
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:78:8
+   --> /tmp/catmull-clark-subdivision-surface.rs:78:8
     |
 78  |     fn mulPoint(p: Point, m: f64) -> Point {
     |        ^^^^^^^^ --------
@@ -568,55 +568,55 @@ help: consider removing the borrow
     |
 
 error[E0308]: arguments to this function are incorrect
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:276:47
+   --> /tmp/catmull-clark-subdivision-surface.rs:276:73
     |
-276 |             newPts = append(newPts, sumPoint(&sumPoint(&p1.clone(), &p2.clone()), &p3.clone()));
-    |                                               ^^^^^^^^ -----------  ----------- expected `Point`, found `&Point`
-    |                                                        |
-    |                                                        expected `Point`, found `&Point`
+276 |             newPts = { let mut tmp = newPts.clone(); tmp.push(sumPoint(&sumPoint(&p1.clone(), &p2.clone()), &p3.clone())); tmp };
+    |                                                                         ^^^^^^^^ -----------  ----------- expected `Point`, found `&Point`
+    |                                                                                  |
+    |                                                                                  expected `Point`, found `&Point`
     |
 note: function defined here
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:75:8
+   --> /tmp/catmull-clark-subdivision-surface.rs:75:8
     |
 75  |     fn sumPoint(p1: Point, p2: Point) -> Point {
     |        ^^^^^^^^ ---------  ---------
 help: consider removing the borrow
     |
-276 -             newPts = append(newPts, sumPoint(&sumPoint(&p1.clone(), &p2.clone()), &p3.clone()));
-276 +             newPts = append(newPts, sumPoint(&sumPoint(p1.clone(), &p2.clone()), &p3.clone()));
+276 -             newPts = { let mut tmp = newPts.clone(); tmp.push(sumPoint(&sumPoint(&p1.clone(), &p2.clone()), &p3.clone())); tmp };
+276 +             newPts = { let mut tmp = newPts.clone(); tmp.push(sumPoint(&sumPoint(p1.clone(), &p2.clone()), &p3.clone())); tmp };
     |
 help: consider removing the borrow
     |
-276 -             newPts = append(newPts, sumPoint(&sumPoint(&p1.clone(), &p2.clone()), &p3.clone()));
-276 +             newPts = append(newPts, sumPoint(&sumPoint(&p1.clone(), p2.clone()), &p3.clone()));
+276 -             newPts = { let mut tmp = newPts.clone(); tmp.push(sumPoint(&sumPoint(&p1.clone(), &p2.clone()), &p3.clone())); tmp };
+276 +             newPts = { let mut tmp = newPts.clone(); tmp.push(sumPoint(&sumPoint(&p1.clone(), p2.clone()), &p3.clone())); tmp };
     |
 
 error[E0308]: arguments to this function are incorrect
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:276:37
+   --> /tmp/catmull-clark-subdivision-surface.rs:276:63
     |
-276 |             newPts = append(newPts, sumPoint(&sumPoint(&p1.clone(), &p2.clone()), &p3.clone()));
-    |                                     ^^^^^^^^ -----------------------------------  ----------- expected `Point`, found `&Point`
-    |                                              |
-    |                                              expected `Point`, found `&Point`
+276 |             newPts = { let mut tmp = newPts.clone(); tmp.push(sumPoint(&sumPoint(&p1.clone(), &p2.clone()), &p3.clone())); tmp };
+    |                                                               ^^^^^^^^ -----------------------------------  ----------- expected `Point`, found `&Point`
+    |                                                                        |
+    |                                                                        expected `Point`, found `&Point`
     |
 note: function defined here
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:75:8
+   --> /tmp/catmull-clark-subdivision-surface.rs:75:8
     |
 75  |     fn sumPoint(p1: Point, p2: Point) -> Point {
     |        ^^^^^^^^ ---------  ---------
 help: consider removing the borrow
     |
-276 -             newPts = append(newPts, sumPoint(&sumPoint(&p1.clone(), &p2.clone()), &p3.clone()));
-276 +             newPts = append(newPts, sumPoint(sumPoint(&p1.clone(), &p2.clone()), &p3.clone()));
+276 -             newPts = { let mut tmp = newPts.clone(); tmp.push(sumPoint(&sumPoint(&p1.clone(), &p2.clone()), &p3.clone())); tmp };
+276 +             newPts = { let mut tmp = newPts.clone(); tmp.push(sumPoint(sumPoint(&p1.clone(), &p2.clone()), &p3.clone())); tmp };
     |
 help: consider removing the borrow
     |
-276 -             newPts = append(newPts, sumPoint(&sumPoint(&p1.clone(), &p2.clone()), &p3.clone()));
-276 +             newPts = append(newPts, sumPoint(&sumPoint(&p1.clone(), &p2.clone()), p3.clone()));
+276 -             newPts = { let mut tmp = newPts.clone(); tmp.push(sumPoint(&sumPoint(&p1.clone(), &p2.clone()), &p3.clone())); tmp };
+276 +             newPts = { let mut tmp = newPts.clone(); tmp.push(sumPoint(&sumPoint(&p1.clone(), &p2.clone()), p3.clone())); tmp };
     |
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:283:20
+   --> /tmp/catmull-clark-subdivision-surface.rs:283:20
     |
 281 |     fn key(a: i32, b: i32) -> &'static str {
     |                               ------------ expected `&str` because of return type
@@ -627,7 +627,7 @@ error[E0308]: mismatched types
     = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:285:16
+   --> /tmp/catmull-clark-subdivision-surface.rs:285:16
     |
 281 |     fn key(a: i32, b: i32) -> &'static str {
     |                               ------------ expected `&str` because of return type
@@ -638,7 +638,7 @@ error[E0308]: mismatched types
     = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:302:128
+   --> /tmp/catmull-clark-subdivision-surface.rs:302:128
     |
 302 |         let mut edgePointNums: std::collections::HashMap<&'static str, i32> = { let mut m = std::collections::BTreeMap::new(); m };
     |                                                                                                                                ^ expected `HashMap<&str, i32>`, found `BTreeMap<_, _>`
@@ -647,7 +647,7 @@ error[E0308]: mismatched types
                found struct `BTreeMap<_, _>`
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:332:21
+   --> /tmp/catmull-clark-subdivision-surface.rs:332:21
     |
 332 |         return vec![newPoints, newFaces];
     |                     ^^^^^^^^^ expected `i32`, found `Vec<Point>`
@@ -656,7 +656,7 @@ error[E0308]: mismatched types
              found struct `Vec<Point>`
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:335:16
+   --> /tmp/catmull-clark-subdivision-surface.rs:335:16
     |
 334 | ...tPoint(p: Point) -> &'static str {
     |                        ------------ expected `&str` because of return type
@@ -666,7 +666,7 @@ error[E0308]: mismatched types
     = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:348:16
+   --> /tmp/catmull-clark-subdivision-surface.rs:348:16
     |
 337 |     fn formatFace(f: Vec<i32>) -> &'static str {
     |                                   ------------ expected `&'static str` because of return type
@@ -680,7 +680,7 @@ help: consider borrowing here
     |                +
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:358:28
+   --> /tmp/catmull-clark-subdivision-surface.rs:358:28
     |
 353 |         let mut outputPoints = inputPoints;
     |                                ----------- expected due to this value
@@ -692,7 +692,7 @@ error[E0308]: mismatched types
                  found type `i32`
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:359:27
+   --> /tmp/catmull-clark-subdivision-surface.rs:359:27
     |
 354 |         let mut outputFaces = inputFaces;
     |                               ---------- expected due to this value
@@ -704,26 +704,26 @@ error[E0308]: mismatched types
                  found type `i32`
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:363:40
+   --> /tmp/catmull-clark-subdivision-surface.rs:363:59
     |
-363 |             println!("{}", formatPoint(&p.clone()));
-    |                            ----------- ^^^^^^^^^^ expected `Point`, found `&Point`
-    |                            |
-    |                            arguments to this function are incorrect
+363 | ...   println!("{}", vec![format!("{}", formatPoint(&p.clone()))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+    |                                         ----------- ^^^^^^^^^^ expected `Point`, found `&Point`
+    |                                         |
+    |                                         arguments to this function are incorrect
     |
 note: function defined here
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:334:8
+   --> /tmp/catmull-clark-subdivision-surface.rs:334:8
     |
 334 |     fn formatPoint(p: Point) -> &'static str {
     |        ^^^^^^^^^^^ --------
 help: consider removing the borrow
     |
-363 -             println!("{}", formatPoint(&p.clone()));
-363 +             println!("{}", formatPoint(p.clone()));
+363 -             println!("{}", vec![format!("{}", formatPoint(&p.clone()))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+363 +             println!("{}", vec![format!("{}", formatPoint(p.clone()))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
     |
 
 error[E0507]: cannot move out of index of `Vec<Vec<i32>>`
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:106:27
+   --> /tmp/catmull-clark-subdivision-surface.rs:106:27
     |
 106 |             let mut min = tmp[0];
     |                           ^^^^^^ move occurs because value has type `Vec<i32>`, which does not implement the `Copy` trait
@@ -738,7 +738,7 @@ help: consider cloning the value if the performance cost is acceptable
     |                                 ++++++++
 
 error[E0507]: cannot move out of index of `Vec<Vec<i32>>`
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:110:25
+   --> /tmp/catmull-clark-subdivision-surface.rs:110:25
     |
 110 |                 let e = tmp[j as usize];
     |                         ^^^^^^^^^^^^^^^ move occurs because value has type `Vec<i32>`, which does not implement the `Copy` trait
@@ -753,18 +753,18 @@ help: consider cloning the value if the performance cost is acceptable
     |                                        ++++++++
 
 error[E0507]: cannot move out of index of `Vec<Vec<i32>>`
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:122:39
+   --> /tmp/catmull-clark-subdivision-surface.rs:122:65
     |
-122 |                     out = append(out, tmp[k as usize]);
-    |                                       ^^^^^^^^^^^^^^^ move occurs because value has type `Vec<i32>`, which does not implement the `Copy` trait
+122 |                     out = { let mut tmp = out.clone(); tmp.push(tmp[k as usize]); tmp };
+    |                                                                 ^^^^^^^^^^^^^^^ move occurs because value has type `Vec<i32>`, which does not implement the `Copy` trait
     |
 help: consider cloning the value if the performance cost is acceptable
     |
-122 |                     out = append(out, tmp[k as usize].clone());
-    |                                                      ++++++++
+122 |                     out = { let mut tmp = out.clone(); tmp.push(tmp[k as usize].clone()); tmp };
+    |                                                                                ++++++++
 
 error[E0507]: cannot move out of index of `Vec<Vec<i32>>`
-   --> /tmp/TestMochiRustGoldencatmull-clark-subdivision-surface3863861284/001/prog.rs:257:23
+   --> /tmp/catmull-clark-subdivision-surface.rs:257:23
     |
 257 |             for pn in faces[fnum as usize] {
     |                       ^^^^^^^^^^^^^^^^^^^^

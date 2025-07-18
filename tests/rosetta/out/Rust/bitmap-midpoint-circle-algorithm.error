@@ -1,14 +1,14 @@
-rustc error: exit status 1
+rustc: exit status 1
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbitmap-midpoint-circle-algorithm976650699/001/prog.rs:55:36
+  --> /tmp/bitmap-midpoint-circle-algorithm.rs:50:36
    |
-55 |         while end > 0 && row[end - 1 as usize] == " " {
+50 |         while end > 0 && row[end - 1 as usize] == " " {
    |                                    ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0277]: cannot subtract `usize` from `i32`
-  --> /tmp/TestMochiRustGoldenbitmap-midpoint-circle-algorithm976650699/001/prog.rs:55:34
+  --> /tmp/bitmap-midpoint-circle-algorithm.rs:50:34
    |
-55 |         while end > 0 && row[end - 1 as usize] == " " {
+50 |         while end > 0 && row[end - 1 as usize] == " " {
    |                                  ^ no implementation for `i32 - usize`
    |
    = help: the trait `Sub<usize>` is not implemented for `i32`
@@ -19,9 +19,9 @@ error[E0277]: cannot subtract `usize` from `i32`
              `i32` implements `Sub`
 
 error[E0277]: the type `[&'static str]` cannot be indexed by `i32`
-  --> /tmp/TestMochiRustGoldenbitmap-midpoint-circle-algorithm976650699/001/prog.rs:55:30
+  --> /tmp/bitmap-midpoint-circle-algorithm.rs:50:30
    |
-55 |         while end > 0 && row[end - 1 as usize] == " " {
+50 |         while end > 0 && row[end - 1 as usize] == " " {
    |                              ^^^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
    |
    = help: the trait `SliceIndex<[&'static str]>` is not implemented for `i32`
@@ -29,18 +29,24 @@ error[E0277]: the type `[&'static str]` cannot be indexed by `i32`
    = help: for that trait implementation, expected `usize`, found `i32`
    = note: required for `Vec<&'static str>` to implement `Index<i32>`
 
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldenbitmap-midpoint-circle-algorithm976650699/001/prog.rs:61:13
+error[E0308]: mismatched types
+  --> /tmp/bitmap-midpoint-circle-algorithm.rs:59:16
    |
-61 |             s += row[i as usize];
-   |             -^^^^^^^^^^^^^^^^^^^
-   |             |
-   |             cannot use `+=` on type `&str`
+48 |     fn trimRight(row: Vec<&'static str>) -> &'static str {
+   |                                             ------------ expected `&'static str` because of return type
+...
+59 |         return s;
+   |                ^ expected `&str`, found `String`
+   |
+help: consider borrowing here
+   |
+59 |         return &s;
+   |                +
 
 warning: variable does not need to be mutable
-  --> /tmp/TestMochiRustGoldenbitmap-midpoint-circle-algorithm976650699/001/prog.rs:66:9
+  --> /tmp/bitmap-midpoint-circle-algorithm.rs:61:9
    |
-66 |     let mut g = circle(10);
+61 |     let mut g = circle(10);
    |         ----^
    |         |
    |         help: remove this `mut`
@@ -49,5 +55,5 @@ warning: variable does not need to be mutable
 
 error: aborting due to 4 previous errors; 1 warning emitted
 
-Some errors have detailed explanations: E0277, E0308, E0368.
+Some errors have detailed explanations: E0277, E0308.
 For more information about an error, try `rustc --explain E0277`.

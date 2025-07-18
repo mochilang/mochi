@@ -1,15 +1,11 @@
-rustc error: exit status 1
-error: mismatched closing delimiter: `}`
-  --> /tmp/TestMochiRustGoldenboyer-moore-string-search1954598611/001/prog.rs:67:21
+rustc: exit status 1
+error: mismatched closing delimiter: `]`
+  --> /tmp/boyer-moore-string-search.rs:62:40
    |
-65 | ...   while j < texts.len() as i32 {
-   |                                    - closing delimiter possibly meant for this
-66 | ...       let idxs = stringSearch(texts[j as usize], patterns[j as usize]);
-67 | ...       println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", "Found "", patterns[j as usize])...
-   |                   ^ unclosed delimiter
-68 | ...       j += 1;
-69 | ...   }
-   |       ^ mismatched closing delimiter
+62 | ...ec![format!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", "Found "", patterns[j as usize]), "" in 'text"), j + 1.to_string()), "' at indexes "), display(idxs)))].in...
+   |       -       ^ unclosed delimiter                                                                                                                                                                         ^ mismatched closing delimiter
+   |       |
+   |       closing delimiter possibly meant for this
 
 error: aborting due to 1 previous error
 

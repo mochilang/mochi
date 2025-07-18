@@ -1,22 +1,22 @@
-rustc error: exit status 1
+rustc: exit status 1
 warning: denote infinite loops with `loop { ... }`
-   --> /tmp/TestMochiRustGoldenchernicks-carmichael-numbers3906435909/001/prog.rs:117:13
+   --> /tmp/chernicks-carmichael-numbers.rs:112:13
     |
-117 |             while true {
+112 |             while true {
     |             ^^^^^^^^^^ help: use `loop`
     |
     = note: `#[warn(while_true)]` on by default
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenchernicks-carmichael-numbers3906435909/001/prog.rs:33:30
+  --> /tmp/chernicks-carmichael-numbers.rs:28:30
    |
-33 |         while n > 1 && a[n - 1 as usize] == 0 {
+28 |         while n > 1 && a[n - 1 as usize] == 0 {
    |                              ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0277]: cannot subtract `usize` from `i32`
-  --> /tmp/TestMochiRustGoldenchernicks-carmichael-numbers3906435909/001/prog.rs:33:28
+  --> /tmp/chernicks-carmichael-numbers.rs:28:28
    |
-33 |         while n > 1 && a[n - 1 as usize] == 0 {
+28 |         while n > 1 && a[n - 1 as usize] == 0 {
    |                            ^ no implementation for `i32 - usize`
    |
    = help: the trait `Sub<usize>` is not implemented for `i32`
@@ -27,9 +27,9 @@ error[E0277]: cannot subtract `usize` from `i32`
              `i32` implements `Sub`
 
 error[E0277]: the type `[i32]` cannot be indexed by `i32`
-  --> /tmp/TestMochiRustGoldenchernicks-carmichael-numbers3906435909/001/prog.rs:33:26
+  --> /tmp/chernicks-carmichael-numbers.rs:28:26
    |
-33 |         while n > 1 && a[n - 1 as usize] == 0 {
+28 |         while n > 1 && a[n - 1 as usize] == 0 {
    |                          ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
    |
    = help: the trait `SliceIndex<[i32]>` is not implemented for `i32`
@@ -38,21 +38,21 @@ error[E0277]: the type `[i32]` cannot be indexed by `i32`
    = note: required for `Vec<i32>` to implement `Index<i32>`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenchernicks-carmichael-numbers3906435909/001/prog.rs:34:35
+  --> /tmp/chernicks-carmichael-numbers.rs:29:35
    |
-34 |             a = a[0 as usize..n - 1 as usize].to_vec();
+29 |             a = a[0 as usize..n - 1 as usize].to_vec();
    |                                   ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenchernicks-carmichael-numbers3906435909/001/prog.rs:34:31
+  --> /tmp/chernicks-carmichael-numbers.rs:29:31
    |
-34 |             a = a[0 as usize..n - 1 as usize].to_vec();
+29 |             a = a[0 as usize..n - 1 as usize].to_vec();
    |                               ^^^^^^^^^^^^^^ expected `usize`, found `i32`
 
 error[E0277]: cannot subtract `usize` from `i32`
-  --> /tmp/TestMochiRustGoldenchernicks-carmichael-numbers3906435909/001/prog.rs:34:33
+  --> /tmp/chernicks-carmichael-numbers.rs:29:33
    |
-34 |             a = a[0 as usize..n - 1 as usize].to_vec();
+29 |             a = a[0 as usize..n - 1 as usize].to_vec();
    |                                 ^ no implementation for `i32 - usize`
    |
    = help: the trait `Sub<usize>` is not implemented for `i32`
@@ -63,28 +63,28 @@ error[E0277]: cannot subtract `usize` from `i32`
              `i32` implements `Sub`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenchernicks-carmichael-numbers3906435909/001/prog.rs:34:17
+  --> /tmp/chernicks-carmichael-numbers.rs:29:17
    |
-31 |     fn bigTrim(a: &mut Vec<i32>) -> Vec<i32> {
+26 |     fn bigTrim(a: &mut Vec<i32>) -> Vec<i32> {
    |                   ------------- expected due to this parameter type
 ...
-34 |             a = a[0 as usize..n - 1 as usize].to_vec();
+29 |             a = a[0 as usize..n - 1 as usize].to_vec();
    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&mut Vec<i32>`, found `Vec<i32>`
    |
    = note: expected mutable reference `&mut Vec<_>`
                          found struct `Vec<_>`
 help: consider dereferencing here to assign to the mutably borrowed value
    |
-34 |             *a = a[0 as usize..n - 1 as usize].to_vec();
+29 |             *a = a[0 as usize..n - 1 as usize].to_vec();
    |             +
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenchernicks-carmichael-numbers3906435909/001/prog.rs:37:16
+  --> /tmp/chernicks-carmichael-numbers.rs:32:16
    |
-31 |     fn bigTrim(a: &mut Vec<i32>) -> Vec<i32> {
+26 |     fn bigTrim(a: &mut Vec<i32>) -> Vec<i32> {
    |                                     -------- expected `Vec<i32>` because of return type
 ...
-37 |         return a;
+32 |         return a;
    |                ^- help: try using a conversion method: `.to_vec()`
    |                |
    |                expected `Vec<i32>`, found `&mut Vec<i32>`
@@ -93,26 +93,40 @@ error[E0308]: mismatched types
            found mutable reference `&mut Vec<_>`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenchernicks-carmichael-numbers3906435909/001/prog.rs:61:21
+  --> /tmp/chernicks-carmichael-numbers.rs:56:21
    |
-56 |         let mut carry = 0;
+51 |         let mut carry = 0;
    |                         - expected due to this value
 ...
-61 |             carry = (prod as f64) / (10 as f64);
+56 |             carry = (prod as f64) / (10 as f64);
    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `i32`, found `f64`
 
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldenchernicks-carmichael-numbers3906435909/001/prog.rs:74:13
+error[E0308]: mismatched types
+  --> /tmp/chernicks-carmichael-numbers.rs:69:18
    |
-74 |             s += a[i as usize].to_string();
-   |             -^--^^^^^^^^^^^^^^^^^^^^^^^^^^
-   |             | |
-   |             | `+` cannot be used to concatenate a `&str` with a `String`
-   |             cannot use `+=` on type `&str`
+69 |             s += a[i as usize].to_string();
+   |                  ^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
    |
-   = note: string concatenation requires an owned `String` on the left
+help: consider borrowing here
+   |
+69 |             s += &a[i as usize].to_string();
+   |                  +
 
-error: aborting due to 10 previous errors; 1 warning emitted
+error[E0308]: mismatched types
+  --> /tmp/chernicks-carmichael-numbers.rs:72:16
+   |
+65 |     fn bigToString(a: Vec<i32>) -> &'static str {
+   |                                    ------------ expected `&'static str` because of return type
+...
+72 |         return s;
+   |                ^ expected `&str`, found `String`
+   |
+help: consider borrowing here
+   |
+72 |         return &s;
+   |                +
 
-Some errors have detailed explanations: E0277, E0308, E0368.
+error: aborting due to 11 previous errors; 1 warning emitted
+
+Some errors have detailed explanations: E0277, E0308.
 For more information about an error, try `rustc --explain E0277`.

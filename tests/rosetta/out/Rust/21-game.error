@@ -1,0 +1,56 @@
+rustc: exit status 1
+warning: denote infinite loops with `loop { ... }`
+  --> /tmp/21-game.rs:54:21
+   |
+54 |                     while true {
+   |                     ^^^^^^^^^^ help: use `loop`
+   |
+   = note: `#[warn(while_true)]` on by default
+
+error[E0308]: mismatched types
+  --> /tmp/21-game.rs:13:60
+   |
+13 |             n = n * 10 + *digits.get(&&str[i as usize..i + 1 as usize]).unwrap();
+   |                                                            ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+  --> /tmp/21-game.rs:13:56
+   |
+13 |             n = n * 10 + *digits.get(&&str[i as usize..i + 1 as usize]).unwrap();
+   |                                                        ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/21-game.rs:13:58
+   |
+13 |             n = n * 10 + *digits.get(&&str[i as usize..i + 1 as usize]).unwrap();
+   |                                                          ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0425]: cannot find function `now` in this scope
+  --> /tmp/21-game.rs:23:28
+   |
+23 |         let mut computer = now() % 2 == 0;
+   |                            ^^^ not found in this scope
+
+error[E0425]: cannot find function `now` in this scope
+  --> /tmp/21-game.rs:42:34
+   |
+42 |                         choice = now() % 3 + 1;
+   |                                  ^^^ not found in this scope
+
+error[E0425]: cannot find function `input` in this scope
+  --> /tmp/21-game.rs:56:36
+   |
+56 |                         let line = input();
+   |                                    ^^^^^ not found in this scope
+
+error: aborting due to 6 previous errors; 1 warning emitted
+
+Some errors have detailed explanations: E0277, E0308, E0425.
+For more information about an error, try `rustc --explain E0277`.

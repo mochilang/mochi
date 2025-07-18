@@ -1,6 +1,6 @@
-rustc error: exit status 1
+rustc: exit status 1
 error: `<` is interpreted as a start of generic arguments for `i32`, not a comparison
-   --> /tmp/TestMochiRustGoldenachilles-numbers606399384/001/prog.rs:102:30
+   --> /tmp/achilles-numbers.rs:102:30
     |
 102 |         while s.len() as i32 < width {
     |                              ^ ------- interpreted as generic arguments
@@ -13,7 +13,7 @@ help: try comparing the cast value
     |               +              +
 
 error[E0434]: can't capture dynamic environment in a fn item
-  --> /tmp/TestMochiRustGoldenachilles-numbers606399384/001/prog.rs:44:17
+  --> /tmp/achilles-numbers.rs:44:17
    |
 44 |                 pps.insert(p, true);
    |                 ^^^
@@ -21,7 +21,7 @@ error[E0434]: can't capture dynamic environment in a fn item
    = help: use the `|| { ... }` closure form instead
 
 error[E0434]: can't capture dynamic environment in a fn item
-   --> /tmp/TestMochiRustGoldenachilles-numbers606399384/001/prog.rs:110:22
+   --> /tmp/achilles-numbers.rs:110:22
     |
 110 |         let achSet = getAchilles(1, 5);
     |                      ^^^^^^^^^^^
@@ -29,7 +29,7 @@ error[E0434]: can't capture dynamic environment in a fn item
     = help: use the `|| { ... }` closure form instead
 
 warning: denote infinite loops with `loop { ... }`
-  --> /tmp/TestMochiRustGoldenachilles-numbers606399384/001/prog.rs:39:13
+  --> /tmp/achilles-numbers.rs:39:13
    |
 39 |             while true {
    |             ^^^^^^^^^^ help: use `loop`
@@ -37,13 +37,13 @@ warning: denote infinite loops with `loop { ... }`
    = note: `#[warn(while_true)]` on by default
 
 warning: denote infinite loops with `loop { ... }`
-  --> /tmp/TestMochiRustGoldenachilles-numbers606399384/001/prog.rs:57:13
+  --> /tmp/achilles-numbers.rs:57:13
    |
 57 |             while true {
    |             ^^^^^^^^^^ help: use `loop`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenachilles-numbers606399384/001/prog.rs:33:106
+  --> /tmp/achilles-numbers.rs:33:106
    |
 33 |     let mut pps: std::collections::HashMap<i32, bool> = { let mut m = std::collections::BTreeMap::new(); m };
    |                                                                                                          ^ expected `HashMap<i32, bool>`, found `BTreeMap<_, _>`
@@ -52,7 +52,7 @@ error[E0308]: mismatched types
               found struct `BTreeMap<_, _>`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenachilles-numbers606399384/001/prog.rs:52:115
+  --> /tmp/achilles-numbers.rs:52:115
    |
 52 |         let mut achilles: std::collections::HashMap<i32, bool> = { let mut m = std::collections::BTreeMap::new(); m };
    |                                                                                                                   ^ expected `HashMap<i32, bool>`, found `BTreeMap<_, _>`
@@ -61,7 +61,7 @@ error[E0308]: mismatched types
               found struct `BTreeMap<_, _>`
 
 error[E0277]: cannot subtract `f64` from `i32`
-  --> /tmp/TestMochiRustGoldenachilles-numbers606399384/001/prog.rs:21:28
+  --> /tmp/achilles-numbers.rs:21:28
    |
 21 |                 tot = (tot - tot as f64) / (i as f64);
    |                            ^ no implementation for `i32 - f64`
@@ -74,7 +74,7 @@ error[E0277]: cannot subtract `f64` from `i32`
              `i32` implements `Sub`
 
 error[E0277]: cannot subtract `f64` from `i32`
-  --> /tmp/TestMochiRustGoldenachilles-numbers606399384/001/prog.rs:29:24
+  --> /tmp/achilles-numbers.rs:29:24
    |
 29 |             tot = (tot - tot as f64) / (nn as f64);
    |                        ^ no implementation for `i32 - f64`
@@ -87,7 +87,7 @@ error[E0277]: cannot subtract `f64` from `i32`
              `i32` implements `Sub`
 
 error[E0368]: binary assignment operation `+=` cannot be applied to type `Vec<i32>`
-  --> /tmp/TestMochiRustGoldenachilles-numbers606399384/001/prog.rs:87:13
+  --> /tmp/achilles-numbers.rs:87:13
    |
 87 |             res += vec![min];
    |             ---^^^^^^^^^^^^^
@@ -100,7 +100,7 @@ note: the foreign item type `Vec<i32>` doesn't implement `AddAssign`
    = note: not implement `AddAssign`
 
 error[E0368]: binary assignment operation `+=` cannot be applied to type `Vec<i32>`
-  --> /tmp/TestMochiRustGoldenachilles-numbers606399384/001/prog.rs:92:21
+  --> /tmp/achilles-numbers.rs:92:21
    |
 92 |                     out += vec![tmp[j as usize]];
    |                     ---^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -113,7 +113,7 @@ note: the foreign item type `Vec<i32>` doesn't implement `AddAssign`
    = note: not implement `AddAssign`
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldenachilles-numbers606399384/001/prog.rs:105:16
+   --> /tmp/achilles-numbers.rs:105:16
     |
 100 |     fn pad(n: i32, width: i32) -> &'static str {
     |                                   ------------ expected `&'static str` because of return type
@@ -127,7 +127,7 @@ help: consider borrowing here
     |                +
 
 error[E0368]: binary assignment operation `+=` cannot be applied to type `Vec<i32>`
-   --> /tmp/TestMochiRustGoldenachilles-numbers606399384/001/prog.rs:113:13
+   --> /tmp/achilles-numbers.rs:113:13
     |
 113 |             ach += vec![k];
     |             ---^^^^^^^^^^^
@@ -139,24 +139,8 @@ note: the foreign item type `Vec<i32>` doesn't implement `AddAssign<Vec<_>>`
     |
     = note: not implement `AddAssign<Vec<_>>`
 
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-   --> /tmp/TestMochiRustGoldenachilles-numbers606399384/001/prog.rs:122:17
-    |
-122 |                 line += pad(ach[i as usize], 4);
-    |                 ----^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    |                 |
-    |                 cannot use `+=` on type `&str`
-
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-   --> /tmp/TestMochiRustGoldenachilles-numbers606399384/001/prog.rs:124:21
-    |
-124 |                     line += " ";
-    |                     ----^^^^^^^
-    |                     |
-    |                     cannot use `+=` on type `&str`
-
 error[E0368]: binary assignment operation `+=` cannot be applied to type `Vec<i32>`
-   --> /tmp/TestMochiRustGoldenachilles-numbers606399384/001/prog.rs:138:17
+   --> /tmp/achilles-numbers.rs:138:17
     |
 138 |                 strong += vec![ach[idx as usize]];
     |                 ------^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -168,30 +152,14 @@ note: the foreign item type `Vec<i32>` doesn't implement `AddAssign`
     |
     = note: not implement `AddAssign`
 
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-   --> /tmp/TestMochiRustGoldenachilles-numbers606399384/001/prog.rs:148:17
-    |
-148 |                 line += pad(strong[i as usize], 5);
-    |                 ----^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    |                 |
-    |                 cannot use `+=` on type `&str`
-
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-   --> /tmp/TestMochiRustGoldenachilles-numbers606399384/001/prog.rs:150:21
-    |
-150 |                     line += " ";
-    |                     ----^^^^^^^
-    |                     |
-    |                     cannot use `+=` on type `&str`
-
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldenachilles-numbers606399384/001/prog.rs:161:32
+   --> /tmp/achilles-numbers.rs:161:32
     |
 161 |             let c = counts[d - 2 as usize];
     |                                ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0277]: cannot subtract `usize` from `i32`
-   --> /tmp/TestMochiRustGoldenachilles-numbers606399384/001/prog.rs:161:30
+   --> /tmp/achilles-numbers.rs:161:30
     |
 161 |             let c = counts[d - 2 as usize];
     |                              ^ no implementation for `i32 - usize`
@@ -204,7 +172,7 @@ error[E0277]: cannot subtract `usize` from `i32`
               `i32` implements `Sub`
 
 error[E0277]: the type `[{integer}]` cannot be indexed by `i32`
-   --> /tmp/TestMochiRustGoldenachilles-numbers606399384/001/prog.rs:161:28
+   --> /tmp/achilles-numbers.rs:161:28
     |
 161 |             let c = counts[d - 2 as usize];
     |                            ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
@@ -214,7 +182,7 @@ error[E0277]: the type `[{integer}]` cannot be indexed by `i32`
     = help: for that trait implementation, expected `usize`, found `i32`
     = note: required for `Vec<{integer}>` to implement `Index<i32>`
 
-error: aborting due to 19 previous errors; 2 warnings emitted
+error: aborting due to 15 previous errors; 2 warnings emitted
 
 Some errors have detailed explanations: E0277, E0308, E0368, E0434.
 For more information about an error, try `rustc --explain E0277`.

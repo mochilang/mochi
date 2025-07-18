@@ -1,24 +1,24 @@
-rustc error: exit status 1
+rustc: exit status 1
 error: expected identifier, found `:`
- --> /tmp/TestMochiRustGoldencall-a-function-112329186000/001/prog.rs:8:19
+ --> /tmp/call-a-function-11.rs:8:19
   |
 8 |     fn zeroptr(ref: &mut Vec<i32>) -> () {
   |                   ^ expected identifier
 
 error: expected expression, found keyword `ref`
- --> /tmp/TestMochiRustGoldencall-a-function-112329186000/001/prog.rs:9:9
+ --> /tmp/call-a-function-11.rs:9:9
   |
 9 |         ref[0] = 0;
   |         ^^^ expected expression
 
 error: expected pattern, found `=`
-  --> /tmp/TestMochiRustGoldencall-a-function-112329186000/001/prog.rs:16:21
+  --> /tmp/call-a-function-11.rs:16:21
    |
 16 |         let mut box = vec![i];
    |                     ^
    |
 note: `box` is a reserved keyword
-  --> /tmp/TestMochiRustGoldencall-a-function-112329186000/001/prog.rs:16:17
+  --> /tmp/call-a-function-11.rs:16:17
    |
 16 |         let mut box = vec![i];
    |                 ^^^
@@ -28,13 +28,13 @@ help: escape `box` to use it as an identifier
    |                 ++
 
 error: expected expression, found `)`
-  --> /tmp/TestMochiRustGoldencall-a-function-112329186000/001/prog.rs:17:25
+  --> /tmp/call-a-function-11.rs:17:25
    |
 17 |         zeroptr(&mut box);
    |                         ^ expected expression
 
 error: `box_syntax` has been removed
-  --> /tmp/TestMochiRustGoldencall-a-function-112329186000/001/prog.rs:18:13
+  --> /tmp/call-a-function-11.rs:18:13
    |
 18 |         i = box[0];
    |             ^^^^^^
@@ -46,7 +46,7 @@ help: use `Box::new()` instead
    |
 
 warning: value assigned to `x` is never read
- --> /tmp/TestMochiRustGoldencall-a-function-112329186000/001/prog.rs:4:17
+ --> /tmp/call-a-function-11.rs:4:17
   |
 4 |         let mut x = ival;
   |                 ^

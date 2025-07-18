@@ -1,8 +1,53 @@
-type error: error[T007]: argument 2: expected int, got bigint
-  --> /workspace/mochi/tests/rosetta/x/Mochi/arbitrary-precision-integers-included-.mochi:32:73
+rustc: exit status 1
+error[E0412]: cannot find type `bigint` in this scope
+  --> /tmp/arbitrary-precision-integers-included-.rs:16:22
+   |
+16 |     fn pow_big(base: bigint, exp: i32) -> bigint {
+   |                      ^^^^^^ not found in this scope
 
- 32 | print("5^(4^(3^2)) has", len(s), "digits:", substring(s, 0, 20), "...", substring(s, len(s)-20, len(s)))
-    |                                                                         ^
+error[E0412]: cannot find type `bigint` in this scope
+  --> /tmp/arbitrary-precision-integers-included-.rs:16:43
+   |
+16 |     fn pow_big(base: bigint, exp: i32) -> bigint {
+   |                                           ^^^^^^ not found in this scope
 
-help:
-  Ensure the argument type matches the function’s signature.
+error[E0412]: cannot find type `bigint` in this scope
+  --> /tmp/arbitrary-precision-integers-included-.rs:17:25
+   |
+17 |         let mut result: bigint = 1;
+   |                         ^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `bigint` in this scope
+  --> /tmp/arbitrary-precision-integers-included-.rs:18:20
+   |
+18 |         let mut b: bigint = base;
+   |                    ^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `bigint` in this scope
+  --> /tmp/arbitrary-precision-integers-included-.rs:31:19
+   |
+31 |     let mut base: bigint = 5;
+   |                   ^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `bigint` in this scope
+  --> /tmp/arbitrary-precision-integers-included-.rs:32:16
+   |
+32 |     let mut x: bigint = pow_big(base, e2);
+   |                ^^^^^^ not found in this scope
+
+error[E0599]: no method named `parse` found for type `f64` in the current scope
+  --> /tmp/arbitrary-precision-integers-included-.rs:12:43
+   |
+12 |             e = ((e as f64) / (2 as f64)).parse::<i32>().unwrap();
+   |                                           ^^^^^ method not found in `f64`
+
+error[E0599]: no method named `parse` found for type `f64` in the current scope
+  --> /tmp/arbitrary-precision-integers-included-.rs:25:43
+   |
+25 |             e = ((e as f64) / (2 as f64)).parse::<i32>().unwrap();
+   |                                           ^^^^^ method not found in `f64`
+
+error: aborting due to 8 previous errors
+
+Some errors have detailed explanations: E0412, E0599.
+For more information about an error, try `rustc --explain E0412`.

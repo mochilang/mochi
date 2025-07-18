@@ -1,1 +1,1 @@
-compile error: unsupported cast to &'static str
+compile: unsupported cast to &'static str

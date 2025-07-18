@@ -1,6 +1,6 @@
-rustc error: exit status 1
+rustc: exit status 1
 warning: unnecessary parentheses around assigned value
-  --> /tmp/TestMochiRustGoldenaverages-median-31637213390/001/prog.rs:34:22
+  --> /tmp/averages-median-3.rs:34:22
    |
 34 |                 k -= (px + 1);
    |                      ^      ^
@@ -13,13 +13,13 @@ help: remove these parentheses
    |
 
 error[E0425]: cannot find function `now` in this scope
- --> /tmp/TestMochiRustGoldenaverages-median-31637213390/001/prog.rs:6:26
+ --> /tmp/averages-median-3.rs:6:26
   |
 6 |             let mut px = now() % arr.len() as i32;
   |                          ^^^ not found in this scope
 
 error[E0599]: no method named `parse` found for type `f64` in the current scope
-  --> /tmp/TestMochiRustGoldenaverages-median-31637213390/001/prog.rs:41:61
+  --> /tmp/averages-median-3.rs:41:61
    |
 41 |         let half = ((arr.len() as i32 as f64) / (2 as f64)).parse::<i32>().unwrap();
    |                                                             ^^^^^ method not found in `f64`

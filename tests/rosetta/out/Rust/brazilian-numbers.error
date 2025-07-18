@@ -1,6 +1,6 @@
-rustc error: exit status 1
+rustc: exit status 1
 warning: denote infinite loops with `loop { ... }`
-  --> /tmp/TestMochiRustGoldenbrazilian-numbers666392012/001/prog.rs:59:13
+  --> /tmp/brazilian-numbers.rs:59:13
    |
 59 |             while true {
    |             ^^^^^^^^^^ help: use `loop`
@@ -8,7 +8,7 @@ warning: denote infinite loops with `loop { ... }`
    = note: `#[warn(while_true)]` on by default
 
 error[E0369]: cannot calculate the remainder of `&mut i32` divided by `i32`
- --> /tmp/TestMochiRustGoldenbrazilian-numbers666392012/001/prog.rs:4:23
+ --> /tmp/brazilian-numbers.rs:4:23
   |
 4 |         let mut f = n % b;
   |                     - ^ - i32
@@ -21,13 +21,13 @@ help: `%` can be used on `i32` if you dereference the left-hand side
   |                     +
 
 error[E0599]: no method named `parse` found for type `f64` in the current scope
- --> /tmp/TestMochiRustGoldenbrazilian-numbers666392012/001/prog.rs:5:39
+ --> /tmp/brazilian-numbers.rs:5:39
   |
 5 |         n = ((n as f64) / (b as f64)).parse::<i32>().unwrap();
   |                                       ^^^^^ method not found in `f64`
 
 error[E0308]: mismatched types
- --> /tmp/TestMochiRustGoldenbrazilian-numbers666392012/001/prog.rs:6:19
+ --> /tmp/brazilian-numbers.rs:6:19
   |
 6 |         while n > 0 {
   |                   ^ expected `&mut i32`, found integer
@@ -38,7 +38,7 @@ help: consider dereferencing the borrow
   |               +
 
 error[E0369]: cannot calculate the remainder of `&mut i32` divided by `i32`
- --> /tmp/TestMochiRustGoldenbrazilian-numbers666392012/001/prog.rs:7:18
+ --> /tmp/brazilian-numbers.rs:7:18
   |
 7 |             if n % b != f {
   |                - ^ - i32
@@ -51,13 +51,13 @@ help: `%` can be used on `i32` if you dereference the left-hand side
   |                +
 
 error[E0599]: no method named `parse` found for type `f64` in the current scope
-  --> /tmp/TestMochiRustGoldenbrazilian-numbers666392012/001/prog.rs:10:43
+  --> /tmp/brazilian-numbers.rs:10:43
    |
 10 |             n = ((n as f64) / (b as f64)).parse::<i32>().unwrap();
    |                                           ^^^^^ method not found in `f64`
 
 error[E0606]: casting `&mut i32` as `f64` is invalid
- --> /tmp/TestMochiRustGoldenbrazilian-numbers666392012/001/prog.rs:5:14
+ --> /tmp/brazilian-numbers.rs:5:14
   |
 5 |         n = ((n as f64) / (b as f64)).parse::<i32>().unwrap();
   |              ^^^^^^^^^^
@@ -68,7 +68,7 @@ help: dereference the expression
   |               +
 
 error[E0606]: casting `&mut i32` as `f64` is invalid
-  --> /tmp/TestMochiRustGoldenbrazilian-numbers666392012/001/prog.rs:10:18
+  --> /tmp/brazilian-numbers.rs:10:18
    |
 10 |             n = ((n as f64) / (b as f64)).parse::<i32>().unwrap();
    |                  ^^^^^^^^^^
@@ -79,10 +79,10 @@ help: dereference the expression
    |                   +
 
 error[E0277]: cannot subtract `String` from `i32`
-  --> /tmp/TestMochiRustGoldenbrazilian-numbers666392012/001/prog.rs:81:78
+  --> /tmp/brazilian-numbers.rs:81:97
    |
-81 |         println!("{}", format!("{}{}", "The 100,000th Brazilian number: ", n - 1.to_string()));
-   |                                                                              ^ no implementation for `i32 - String`
+81 | ...   println!("{}", vec![format!("{}", format!("{}{}", "The 100,000th Brazilian number: ", n - 1.to_string()))].into_iter().filter(|s| !...
+   |                                                                                               ^ no implementation for `i32 - String`
    |
    = help: the trait `Sub<String>` is not implemented for `i32`
    = help: the following other types implement trait `Sub<Rhs>`:
@@ -92,7 +92,7 @@ error[E0277]: cannot subtract `String` from `i32`
              `i32` implements `Sub`
 
 error[E0596]: cannot borrow `n` as mutable, as it is not declared as mutable
-  --> /tmp/TestMochiRustGoldenbrazilian-numbers666392012/001/prog.rs:23:27
+  --> /tmp/brazilian-numbers.rs:23:27
    |
 23 |             if sameDigits(&mut n, b) {
    |                           ^^^^^^ cannot borrow as mutable

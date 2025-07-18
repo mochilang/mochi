@@ -1,8 +1,97 @@
-type error: error[T003]: unknown function: sha256
-  --> /workspace/mochi/tests/rosetta/x/Mochi/bitcoin-address-validation.mochi:43:15
+rustc: exit status 1
+error[E0308]: mismatched types
+ --> /tmp/bitcoin-address-validation.rs:6:35
+  |
+6 |             if &s[i as usize..i + 1 as usize] == ch {
+  |                                   ^^^^^^^^^^ expected `i32`, found `usize`
 
- 43 |   let first = sha256(bs)
-    |               ^
+error[E0308]: mismatched types
+ --> /tmp/bitcoin-address-validation.rs:6:31
+  |
+6 |             if &s[i as usize..i + 1 as usize] == ch {
+  |                               ^^^^^^^^^^^^^^ expected `usize`, found `i32`
 
-help:
-  Ensure the function is defined before it's called.
+error[E0277]: cannot add `usize` to `i32`
+ --> /tmp/bitcoin-address-validation.rs:6:33
+  |
+6 |             if &s[i as usize..i + 1 as usize] == ch {
+  |                                 ^ no implementation for `i32 + usize`
+  |
+  = help: the trait `Add<usize>` is not implemented for `i32`
+  = help: the following other types implement trait `Add<Rhs>`:
+            `&i32` implements `Add<i32>`
+            `&i32` implements `Add`
+            `i32` implements `Add<&i32>`
+            `i32` implements `Add`
+
+error[E0308]: mismatched types
+  --> /tmp/bitcoin-address-validation.rs:23:48
+   |
+23 |             let ch = &addr[idx as usize..idx + 1 as usize];
+   |                                                ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+  --> /tmp/bitcoin-address-validation.rs:23:42
+   |
+23 |             let ch = &addr[idx as usize..idx + 1 as usize];
+   |                                          ^^^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/bitcoin-address-validation.rs:23:46
+   |
+23 |             let ch = &addr[idx as usize..idx + 1 as usize];
+   |                                              ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0599]: no method named `parse` found for type `f64` in the current scope
+  --> /tmp/bitcoin-address-validation.rs:32:49
+   |
+32 |                 c = ((c as f64) / (256 as f64)).parse::<i32>().unwrap();
+   |                                                 ^^^^^ method not found in `f64`
+
+error[E0425]: cannot find function `sha256` in this scope
+  --> /tmp/bitcoin-address-validation.rs:43:21
+   |
+43 |         let first = sha256(bs);
+   |                     ^^^^^^ not found in this scope
+
+error[E0425]: cannot find function `sha256` in this scope
+  --> /tmp/bitcoin-address-validation.rs:44:16
+   |
+44 |         return sha256(first);
+   |                ^^^^^^ not found in this scope
+
+error[E0382]: borrow of moved value: `a`
+  --> /tmp/bitcoin-address-validation.rs:61:16
+   |
+51 |         let a = set58(addr);
+   |             - move occurs because `a` has type `Vec<i32>`, which does not implement the `Copy` trait
+...
+58 |         let sum = computeChecksum(a);
+   |                                   - value moved here
+...
+61 |             if a[21 + i as usize] != sum[i as usize] {
+   |                ^ value borrowed here after move
+   |
+note: consider changing this parameter type in function `computeChecksum` to borrow instead if owning the value isn't necessary
+  --> /tmp/bitcoin-address-validation.rs:46:27
+   |
+46 |     fn computeChecksum(a: Vec<i32>) -> Vec<i32> {
+   |        ---------------    ^^^^^^^^ this parameter takes ownership of the value
+   |        |
+   |        in this function
+help: consider cloning the value if the performance cost is acceptable
+   |
+58 |         let sum = computeChecksum(a.clone());
+   |                                    ++++++++
+
+error: aborting due to 10 previous errors
+
+Some errors have detailed explanations: E0277, E0308, E0382, E0425, E0599.
+For more information about an error, try `rustc --explain E0277`.

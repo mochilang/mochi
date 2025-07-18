@@ -1,18 +1,18 @@
-rustc error: exit status 1
+rustc: exit status 1
 error[E0599]: no method named `parse` found for type `f64` in the current scope
-  --> /tmp/TestMochiRustGoldenanimate-a-pendulum1439915147/001/prog.rs:45:49
+  --> /tmp/animate-a-pendulum.rs:45:49
    |
 45 |         let pos = (10.0 * sinApprox(phi) + 0.5).parse::<i32>().unwrap();
    |                                                 ^^^^^ method not found in `f64`
 
 error[E0689]: can't call method `parse` on ambiguous numeric type `{integer}`
- --> /tmp/TestMochiRustGoldenanimate-a-pendulum1439915147/001/prog.rs:9:49
+ --> /tmp/animate-a-pendulum.rs:9:49
   |
 9 |             let denom = ((2 * n) * (2 * n + 1)).parse::<f64>().unwrap();
   |                                                 ^^^^^
 
 error[E0689]: can't call method `parse` on ambiguous numeric type `{integer}`
-  --> /tmp/TestMochiRustGoldenanimate-a-pendulum1439915147/001/prog.rs:21:49
+  --> /tmp/animate-a-pendulum.rs:21:49
    |
 21 |             let denom = ((2 * n - 1) * (2 * n)).parse::<f64>().unwrap();
    |                                                 ^^^^^

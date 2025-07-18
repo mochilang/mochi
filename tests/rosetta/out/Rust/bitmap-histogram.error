@@ -1,87 +1,71 @@
-rustc error: exit status 1
+rustc: exit status 1
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbitmap-histogram3163021632/001/prog.rs:12:20
-   |
-12 |         if bins <= 0 {
-   |                    ^ expected `&mut i32`, found integer
-   |
+ --> /tmp/bitmap-histogram.rs:7:20
+  |
+7 |         if bins <= 0 {
+  |                    ^ expected `&mut i32`, found integer
+  |
 help: consider dereferencing the borrow
-   |
-12 |         if *bins <= 0 {
-   |            +
+  |
+7 |         if *bins <= 0 {
+  |            +
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbitmap-histogram3163021632/001/prog.rs:13:20
-   |
-11 |     fn histogram(g: Vec<Vec<i32>>, bins: &mut i32) -> Vec<i32> {
-   |                                          -------- expected due to this parameter type
-12 |         if bins <= 0 {
-13 |             bins = g[0].len() as i32;
-   |                    ^^^^^^^^^^^^^^^^^ expected `&mut i32`, found `i32`
-   |
+ --> /tmp/bitmap-histogram.rs:8:20
+  |
+6 |     fn histogram(g: Vec<Vec<i32>>, bins: &mut i32) -> Vec<i32> {
+  |                                          -------- expected due to this parameter type
+7 |         if bins <= 0 {
+8 |             bins = g[0].len() as i32;
+  |                    ^^^^^^^^^^^^^^^^^ expected `&mut i32`, found `i32`
+  |
 help: consider dereferencing here to assign to the mutably borrowed value
-   |
-13 |             *bins = g[0].len() as i32;
-   |             +
+  |
+8 |             *bins = g[0].len() as i32;
+  |             +
 
 error[E0277]: can't compare `{integer}` with `&mut i32`
-  --> /tmp/TestMochiRustGoldenbitmap-histogram3163021632/001/prog.rs:17:17
+  --> /tmp/bitmap-histogram.rs:12:17
    |
-17 |         while i < bins {
+12 |         while i < bins {
    |                 ^ no implementation for `{integer} < &mut i32` and `{integer} > &mut i32`
    |
    = help: the trait `PartialOrd<&mut i32>` is not implemented for `{integer}`
 help: consider dereferencing here
    |
-17 |         while i < *bins {
+12 |         while i < *bins {
    |                   +
 
 error[E0369]: cannot subtract `{integer}` from `&mut i32`
-  --> /tmp/TestMochiRustGoldenbitmap-histogram3163021632/001/prog.rs:27:44
+  --> /tmp/bitmap-histogram.rs:22:44
    |
-27 |                 let mut idx = (((p * (bins - 1)) as f64) / (65535 as f64)).parse::<i32>().unwrap();
+22 |                 let mut idx = (((p * (bins - 1)) as f64) / (65535 as f64)).parse::<i32>().unwrap();
    |                                       ---- ^ - {integer}
    |                                       |
    |                                       &mut i32
    |
 help: `-` can be used on `i32` if you dereference the left-hand side
    |
-27 |                 let mut idx = (((p * (*bins - 1)) as f64) / (65535 as f64)).parse::<i32>().unwrap();
+22 |                 let mut idx = (((p * (*bins - 1)) as f64) / (65535 as f64)).parse::<i32>().unwrap();
    |                                       +
 
 error[E0599]: no method named `parse` found for type `f64` in the current scope
-  --> /tmp/TestMochiRustGoldenbitmap-histogram3163021632/001/prog.rs:27:76
+  --> /tmp/bitmap-histogram.rs:22:76
    |
-27 |                 let mut idx = (((p * (bins - 1)) as f64) / (65535 as f64)).parse::<i32>().unwrap();
+22 |                 let mut idx = (((p * (bins - 1)) as f64) / (65535 as f64)).parse::<i32>().unwrap();
    |                                                                            ^^^^^ method not found in `f64`
 
 error[E0599]: no method named `parse` found for type `f64` in the current scope
-  --> /tmp/TestMochiRustGoldenbitmap-histogram3163021632/001/prog.rs:49:66
+  --> /tmp/bitmap-histogram.rs:44:66
    |
-49 |         return (((ub * 65535) as f64) / (h.len() as i32 as f64)).parse::<i32>().unwrap();
+44 |         return (((ub * 65535) as f64) / (h.len() as i32 as f64)).parse::<i32>().unwrap();
    |                                                                  ^^^^^ method not found in `f64`
 
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldenbitmap-histogram3163021632/001/prog.rs:79:21
-   |
-79 |                     line += "0";
-   |                     ----^^^^^^^
-   |                     |
-   |                     cannot use `+=` on type `&str`
-
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldenbitmap-histogram3163021632/001/prog.rs:81:21
-   |
-81 |                     line += "1";
-   |                     ----^^^^^^^
-   |                     |
-   |                     cannot use `+=` on type `&str`
-
 error[E0599]: `Vec<i32>` doesn't implement `std::fmt::Display`
-  --> /tmp/TestMochiRustGoldenbitmap-histogram3163021632/001/prog.rs:92:57
+  --> /tmp/bitmap-histogram.rs:87:76
    |
-92 |         println!("{}", format!("{}{}", "Histogram: ", h.to_string()));
-   |                                                         ^^^^^^^^^ `Vec<i32>` cannot be formatted with the default formatter
+87 | ...format!("{}{}", "Histogram: ", h.to_string()))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+   |                                     ^^^^^^^^^ `Vec<i32>` cannot be formatted with the default formatter
    |
    = note: the following trait bounds were not satisfied:
            `Vec<i32>: std::fmt::Display`
@@ -91,9 +75,9 @@ error[E0599]: `Vec<i32>` doesn't implement `std::fmt::Display`
    = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
 
 warning: variable does not need to be mutable
-  --> /tmp/TestMochiRustGoldenbitmap-histogram3163021632/001/prog.rs:55:17
+  --> /tmp/bitmap-histogram.rs:50:17
    |
-55 |             let mut row = g[y as usize];
+50 |             let mut row = g[y as usize];
    |                 ----^^^
    |                 |
    |                 help: remove this `mut`
@@ -101,21 +85,44 @@ warning: variable does not need to be mutable
    = note: `#[warn(unused_mut)]` on by default
 
 error[E0507]: cannot move out of index of `Vec<Vec<i32>>`
-  --> /tmp/TestMochiRustGoldenbitmap-histogram3163021632/001/prog.rs:55:27
+  --> /tmp/bitmap-histogram.rs:50:27
    |
-55 |             let mut row = g[y as usize];
+50 |             let mut row = g[y as usize];
    |                           ^^^^^^^^^^^^^ move occurs because value has type `Vec<i32>`, which does not implement the `Copy` trait
    |
 help: consider borrowing here
    |
-55 |             let mut row = &g[y as usize];
+50 |             let mut row = &g[y as usize];
    |                           +
 help: consider cloning the value if the performance cost is acceptable
    |
-55 |             let mut row = g[y as usize].clone();
+50 |             let mut row = g[y as usize].clone();
    |                                        ++++++++
 
-error: aborting due to 10 previous errors; 1 warning emitted
+warning: variable does not need to be mutable
+  --> /tmp/bitmap-histogram.rs:69:17
+   |
+69 |             let mut row = g[y as usize];
+   |                 ----^^^
+   |                 |
+   |                 help: remove this `mut`
 
-Some errors have detailed explanations: E0277, E0308, E0368, E0369, E0507, E0599.
+error[E0507]: cannot move out of index of `Vec<Vec<i32>>`
+  --> /tmp/bitmap-histogram.rs:69:27
+   |
+69 |             let mut row = g[y as usize];
+   |                           ^^^^^^^^^^^^^ move occurs because value has type `Vec<i32>`, which does not implement the `Copy` trait
+   |
+help: consider borrowing here
+   |
+69 |             let mut row = &g[y as usize];
+   |                           +
+help: consider cloning the value if the performance cost is acceptable
+   |
+69 |             let mut row = g[y as usize].clone();
+   |                                        ++++++++
+
+error: aborting due to 9 previous errors; 2 warnings emitted
+
+Some errors have detailed explanations: E0277, E0308, E0369, E0507, E0599.
 For more information about an error, try `rustc --explain E0277`.

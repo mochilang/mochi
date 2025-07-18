@@ -1,6 +1,6 @@
-rustc error: exit status 1
+rustc: exit status 1
 error: mismatched closing delimiter: `}`
-  --> /tmp/TestMochiRustGoldenactive-directory-search-for-a-user3625208373/001/prog.rs:14:46
+  --> /tmp/active-directory-search-for-a-user.rs:14:46
    |
 13 |             while i < groups.len() as i32 {
    |                                           - closing delimiter possibly meant for this

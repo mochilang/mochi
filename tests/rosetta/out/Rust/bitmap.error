@@ -1,81 +1,81 @@
-rustc error: exit status 1
+rustc: exit status 1
 error[E0599]: no method named `parse` found for type `f64` in the current scope
-  --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:23:48
+  --> /tmp/bitmap.rs:18:48
    |
-23 |         let r = (((c as f64) / (65536 as f64)).parse::<i32>().unwrap()) % 256;
+18 |         let r = (((c as f64) / (65536 as f64)).parse::<i32>().unwrap()) % 256;
    |                                                ^^^^^ method not found in `f64`
 
 error[E0599]: no method named `parse` found for type `f64` in the current scope
-  --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:24:46
+  --> /tmp/bitmap.rs:19:46
    |
-24 |         let g = (((c as f64) / (256 as f64)).parse::<i32>().unwrap()) % 256;
+19 |         let g = (((c as f64) / (256 as f64)).parse::<i32>().unwrap()) % 256;
    |                                              ^^^^^ method not found in `f64`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:47:117
+  --> /tmp/bitmap.rs:42:117
    |
-46 |     fn Extent(b: Bitmap) -> std::collections::HashMap<&'static str, i32> {
+41 |     fn Extent(b: Bitmap) -> std::collections::HashMap<&'static str, i32> {
    |                             -------------------------------------------- expected `HashMap<&'static str, i32>` because of return type
-47 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("cols", b.cols); m.insert("rows", b.rows); m };
+42 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("cols", b.cols); m.insert("rows", b.rows); m };
    |                                                                                                                     ^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, i32>`
    |
    = note: expected struct `HashMap<&'static str, i32>`
               found struct `BTreeMap<&str, i32>`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:65:30
+  --> /tmp/bitmap.rs:60:30
    |
-65 |         Fill(&mut b.clone(), &pixelFromRgb(c));
+60 |         Fill(&mut b.clone(), &pixelFromRgb(c));
    |         ----                 ^^^^^^^^^^^^^^^^ expected `Pixel`, found `&Pixel`
    |         |
    |         arguments to this function are incorrect
    |
 note: function defined here
-  --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:49:8
+  --> /tmp/bitmap.rs:44:8
    |
-49 |     fn Fill(b: &mut Bitmap, p: Pixel) -> () {
+44 |     fn Fill(b: &mut Bitmap, p: Pixel) -> () {
    |        ^^^^                 --------
 help: consider removing the borrow
    |
-65 -         Fill(&mut b.clone(), &pixelFromRgb(c));
-65 +         Fill(&mut b.clone(), pixelFromRgb(c));
+60 -         Fill(&mut b.clone(), &pixelFromRgb(c));
+60 +         Fill(&mut b.clone(), pixelFromRgb(c));
    |
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:79:44
+  --> /tmp/bitmap.rs:74:44
    |
-79 |         return SetPx(&mut b.clone(), x, y, &pixelFromRgb(c));
+74 |         return SetPx(&mut b.clone(), x, y, &pixelFromRgb(c));
    |                -----                       ^^^^^^^^^^^^^^^^ expected `Pixel`, found `&Pixel`
    |                |
    |                arguments to this function are incorrect
    |
 note: function defined here
-  --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:67:8
+  --> /tmp/bitmap.rs:62:8
    |
-67 |     fn SetPx(b: &mut Bitmap, x: i32, y: i32, p: Pixel) -> bool {
+62 |     fn SetPx(b: &mut Bitmap, x: i32, y: i32, p: Pixel) -> bool {
    |        ^^^^^                                 --------
 help: consider removing the borrow
    |
-79 -         return SetPx(&mut b.clone(), x, y, &pixelFromRgb(c));
-79 +         return SetPx(&mut b.clone(), x, y, pixelFromRgb(c));
+74 -         return SetPx(&mut b.clone(), x, y, &pixelFromRgb(c));
+74 +         return SetPx(&mut b.clone(), x, y, pixelFromRgb(c));
    |
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:83:92
+  --> /tmp/bitmap.rs:78:92
    |
-81 |     fn GetPx(b: Bitmap, x: i32, y: i32) -> std::collections::HashMap<&'static str, i32> {
+76 |     fn GetPx(b: Bitmap, x: i32, y: i32) -> std::collections::HashMap<&'static str, i32> {
    |                                            -------------------------------------------- expected `HashMap<&'static str, i32>` because of return type
-82 |         if x < 0 || x >= b.cols || y < 0 || y >= b.rows {
-83 |             return { let mut m = std::collections::BTreeMap::new(); m.insert("ok", false); m };
+77 |         if x < 0 || x >= b.cols || y < 0 || y >= b.rows {
+78 |             return { let mut m = std::collections::BTreeMap::new(); m.insert("ok", false); m };
    |                                                                                            ^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, bool>`
    |
    = note: expected struct `HashMap<&'static str, i32>`
               found struct `BTreeMap<&str, bool>`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:86:105
+  --> /tmp/bitmap.rs:81:105
    |
-86 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("ok", true); m.insert("pixel", row[x as usize]); m };
+81 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("ok", true); m.insert("pixel", row[x as usize]); m };
    |                                                                 -              ----     ------          ^^^^^^^^^^^^^^^ expected `bool`, found `Pixel`
    |                                                                 |              |        |
    |                                                                 |              |        arguments to this method are incorrect
@@ -83,9 +83,9 @@ error[E0308]: mismatched types
    |                                                                 ... which causes `m` to have type `BTreeMap<&str, bool>`
    |
 help: the return type of this call is `Pixel` due to the type of the argument passed
-  --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:86:87
+  --> /tmp/bitmap.rs:81:87
    |
-86 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("ok", true); m.insert("pixel", row[x as usize]); m };
+81 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("ok", true); m.insert("pixel", row[x as usize]); m };
    |                                                                                       ^^^^^^^^^^^^^^^^^^---------------^
    |                                                                                                         |
    |                                                                                                         this argument influences the return type of `insert`
@@ -93,64 +93,64 @@ note: method defined here
   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:86:123
+  --> /tmp/bitmap.rs:81:123
    |
-81 |     fn GetPx(b: Bitmap, x: i32, y: i32) -> std::collections::HashMap<&'static str, i32> {
+76 |     fn GetPx(b: Bitmap, x: i32, y: i32) -> std::collections::HashMap<&'static str, i32> {
    |                                            -------------------------------------------- expected `HashMap<&'static str, i32>` because of return type
 ...
-86 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("ok", true); m.insert("pixel", row[x as usize]); m };
+81 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("ok", true); m.insert("pixel", row[x as usize]); m };
    |                                                                                                                           ^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, bool>`
    |
    = note: expected struct `HashMap<&'static str, i32>`
               found struct `BTreeMap<&str, bool>`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:89:23
+  --> /tmp/bitmap.rs:84:23
    |
-89 |         let r = GetPx(&b.clone(), x, y);
+84 |         let r = GetPx(&b.clone(), x, y);
    |                 ----- ^^^^^^^^^^ expected `Bitmap`, found `&Bitmap`
    |                 |
    |                 arguments to this function are incorrect
    |
 note: function defined here
-  --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:81:8
+  --> /tmp/bitmap.rs:76:8
    |
-81 |     fn GetPx(b: Bitmap, x: i32, y: i32) -> std::collections::HashMap<&'static str, i32> {
+76 |     fn GetPx(b: Bitmap, x: i32, y: i32) -> std::collections::HashMap<&'static str, i32> {
    |        ^^^^^ ---------
 help: consider removing the borrow
    |
-89 -         let r = GetPx(&b.clone(), x, y);
-89 +         let r = GetPx(b.clone(), x, y);
+84 -         let r = GetPx(&b.clone(), x, y);
+84 +         let r = GetPx(b.clone(), x, y);
    |
 
 error[E0609]: no field `ok` on type `HashMap<&str, i32>`
-  --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:90:15
+  --> /tmp/bitmap.rs:85:15
    |
-90 |         if !r.ok != Default::default() {
+85 |         if !r.ok != Default::default() {
    |               ^^ unknown field
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:91:92
+  --> /tmp/bitmap.rs:86:92
    |
-88 |     fn GetPxRgb(b: Bitmap, x: i32, y: i32) -> std::collections::HashMap<&'static str, i32> {
+83 |     fn GetPxRgb(b: Bitmap, x: i32, y: i32) -> std::collections::HashMap<&'static str, i32> {
    |                                               -------------------------------------------- expected `HashMap<&'static str, i32>` because of return type
 ...
-91 |             return { let mut m = std::collections::BTreeMap::new(); m.insert("ok", false); m };
+86 |             return { let mut m = std::collections::BTreeMap::new(); m.insert("ok", false); m };
    |                                                                                            ^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, bool>`
    |
    = note: expected struct `HashMap<&'static str, i32>`
               found struct `BTreeMap<&str, bool>`
 
 error[E0609]: no field `pixel` on type `HashMap<&str, i32>`
-  --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:93:119
+  --> /tmp/bitmap.rs:88:119
    |
-93 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("ok", true); m.insert("rgb", rgbFromPixel(&r.pixel)); m };
+88 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("ok", true); m.insert("rgb", rgbFromPixel(&r.pixel)); m };
    |                                                                                                                       ^^^^^ unknown field
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:93:103
+  --> /tmp/bitmap.rs:88:103
    |
-93 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("ok", true); m.insert("rgb", rgbFromPixel(&r.pixel)); m };
+88 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("ok", true); m.insert("rgb", rgbFromPixel(&r.pixel)); m };
    |                                                                 -              ----     ------        ^^^^^^^^^^^^^^^^^^^^^^ expected `bool`, found `i32`
    |                                                                 |              |        |
    |                                                                 |              |        arguments to this method are incorrect
@@ -158,9 +158,9 @@ error[E0308]: mismatched types
    |                                                                 ... which causes `m` to have type `BTreeMap<&str, bool>`
    |
 help: the return type of this call is `i32` due to the type of the argument passed
-  --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:93:87
+  --> /tmp/bitmap.rs:88:87
    |
-93 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("ok", true); m.insert("rgb", rgbFromPixel(&r.pixel)); m };
+88 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("ok", true); m.insert("rgb", rgbFromPixel(&r.pixel)); m };
    |                                                                                       ^^^^^^^^^^^^^^^^----------------------^
    |                                                                                                       |
    |                                                                                                       this argument influences the return type of `insert`
@@ -168,273 +168,273 @@ note: method defined here
   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:93:128
+  --> /tmp/bitmap.rs:88:128
    |
-88 |     fn GetPxRgb(b: Bitmap, x: i32, y: i32) -> std::collections::HashMap<&'static str, i32> {
+83 |     fn GetPxRgb(b: Bitmap, x: i32, y: i32) -> std::collections::HashMap<&'static str, i32> {
    |                                               -------------------------------------------- expected `HashMap<&'static str, i32>` because of return type
 ...
-93 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("ok", true); m.insert("rgb", rgbFromPixel(&r.pixel)); m };
+88 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("ok", true); m.insert("rgb", rgbFromPixel(&r.pixel)); m };
    |                                                                                                                                ^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, bool>`
    |
    = note: expected struct `HashMap<&'static str, i32>`
               found struct `BTreeMap<&str, bool>`
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:104:16
-    |
-103 | ...Str(p: Pixel) -> &'static str {
-    |                     ------------ expected `&str` because of return type
-104 | ...rn format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", "{", p.R.to_string()), " "), p.G.to_string()), " "), p.B.to_string()), "}");
-    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
-    |
-    = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+  --> /tmp/bitmap.rs:99:16
+   |
+98 | ...Str(p: Pixel) -> &'static str {
+   |                     ------------ expected `&str` because of return type
+99 | ...rn format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", "{", p.R.to_string()), " "), p.G.to_string()), " "), p.B.to_string()), "}");
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+   |
+   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:108:17
+   --> /tmp/bitmap.rs:103:17
     |
-108 |         FillRgb(&bm.clone(), 16711680);
+103 |         FillRgb(&bm.clone(), 16711680);
     |         ------- ^^^^^^^^^^^ expected `Bitmap`, found `&Bitmap`
     |         |
     |         arguments to this function are incorrect
     |
 note: function defined here
-   --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:64:8
+   --> /tmp/bitmap.rs:59:8
     |
-64  |     fn FillRgb(b: Bitmap, c: i32) -> () {
+59  |     fn FillRgb(b: Bitmap, c: i32) -> () {
     |        ^^^^^^^ ---------
 help: consider removing the borrow
     |
-108 -         FillRgb(&bm.clone(), 16711680);
-108 +         FillRgb(bm.clone(), 16711680);
+103 -         FillRgb(&bm.clone(), 16711680);
+103 +         FillRgb(bm.clone(), 16711680);
     |
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:109:18
+   --> /tmp/bitmap.rs:104:18
     |
-109 |         SetPxRgb(&bm.clone(), 10, 20, 255);
+104 |         SetPxRgb(&bm.clone(), 10, 20, 255);
     |         -------- ^^^^^^^^^^^ expected `Bitmap`, found `&Bitmap`
     |         |
     |         arguments to this function are incorrect
     |
 note: function defined here
-   --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:78:8
+   --> /tmp/bitmap.rs:73:8
     |
-78  |     fn SetPxRgb(b: Bitmap, x: i32, y: i32, c: i32) -> bool {
+73  |     fn SetPxRgb(b: Bitmap, x: i32, y: i32, c: i32) -> bool {
     |        ^^^^^^^^ ---------
 help: consider removing the borrow
     |
-109 -         SetPxRgb(&bm.clone(), 10, 20, 255);
-109 +         SetPxRgb(bm.clone(), 10, 20, 255);
+104 -         SetPxRgb(&bm.clone(), 10, 20, 255);
+104 +         SetPxRgb(bm.clone(), 10, 20, 255);
     |
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:110:18
+   --> /tmp/bitmap.rs:105:18
     |
-110 |         SetPxRgb(&bm.clone(), 20, 30, 0);
+105 |         SetPxRgb(&bm.clone(), 20, 30, 0);
     |         -------- ^^^^^^^^^^^ expected `Bitmap`, found `&Bitmap`
     |         |
     |         arguments to this function are incorrect
     |
 note: function defined here
-   --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:78:8
+   --> /tmp/bitmap.rs:73:8
     |
-78  |     fn SetPxRgb(b: Bitmap, x: i32, y: i32, c: i32) -> bool {
+73  |     fn SetPxRgb(b: Bitmap, x: i32, y: i32, c: i32) -> bool {
     |        ^^^^^^^^ ---------
 help: consider removing the borrow
     |
-110 -         SetPxRgb(&bm.clone(), 20, 30, 0);
-110 +         SetPxRgb(bm.clone(), 20, 30, 0);
+105 -         SetPxRgb(&bm.clone(), 20, 30, 0);
+105 +         SetPxRgb(bm.clone(), 20, 30, 0);
     |
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:111:18
+   --> /tmp/bitmap.rs:106:18
     |
-111 |         SetPxRgb(&bm.clone(), 30, 40, 1056816);
+106 |         SetPxRgb(&bm.clone(), 30, 40, 1056816);
     |         -------- ^^^^^^^^^^^ expected `Bitmap`, found `&Bitmap`
     |         |
     |         arguments to this function are incorrect
     |
 note: function defined here
-   --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:78:8
+   --> /tmp/bitmap.rs:73:8
     |
-78  |     fn SetPxRgb(b: Bitmap, x: i32, y: i32, c: i32) -> bool {
+73  |     fn SetPxRgb(b: Bitmap, x: i32, y: i32, c: i32) -> bool {
     |        ^^^^^^^^ ---------
 help: consider removing the borrow
     |
-111 -         SetPxRgb(&bm.clone(), 30, 40, 1056816);
-111 +         SetPxRgb(bm.clone(), 30, 40, 1056816);
+106 -         SetPxRgb(&bm.clone(), 30, 40, 1056816);
+106 +         SetPxRgb(bm.clone(), 30, 40, 1056816);
     |
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:112:24
+   --> /tmp/bitmap.rs:107:24
     |
-112 |         let c1 = GetPx(&bm.clone(), 0, 0);
+107 |         let c1 = GetPx(&bm.clone(), 0, 0);
     |                  ----- ^^^^^^^^^^^ expected `Bitmap`, found `&Bitmap`
     |                  |
     |                  arguments to this function are incorrect
     |
 note: function defined here
-   --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:81:8
+   --> /tmp/bitmap.rs:76:8
     |
-81  |     fn GetPx(b: Bitmap, x: i32, y: i32) -> std::collections::HashMap<&'static str, i32> {
+76  |     fn GetPx(b: Bitmap, x: i32, y: i32) -> std::collections::HashMap<&'static str, i32> {
     |        ^^^^^ ---------
 help: consider removing the borrow
     |
-112 -         let c1 = GetPx(&bm.clone(), 0, 0);
-112 +         let c1 = GetPx(bm.clone(), 0, 0);
+107 -         let c1 = GetPx(&bm.clone(), 0, 0);
+107 +         let c1 = GetPx(bm.clone(), 0, 0);
     |
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:113:24
+   --> /tmp/bitmap.rs:108:24
     |
-113 |         let c2 = GetPx(&bm.clone(), 10, 20);
+108 |         let c2 = GetPx(&bm.clone(), 10, 20);
     |                  ----- ^^^^^^^^^^^ expected `Bitmap`, found `&Bitmap`
     |                  |
     |                  arguments to this function are incorrect
     |
 note: function defined here
-   --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:81:8
+   --> /tmp/bitmap.rs:76:8
     |
-81  |     fn GetPx(b: Bitmap, x: i32, y: i32) -> std::collections::HashMap<&'static str, i32> {
+76  |     fn GetPx(b: Bitmap, x: i32, y: i32) -> std::collections::HashMap<&'static str, i32> {
     |        ^^^^^ ---------
 help: consider removing the borrow
     |
-113 -         let c2 = GetPx(&bm.clone(), 10, 20);
-113 +         let c2 = GetPx(bm.clone(), 10, 20);
+108 -         let c2 = GetPx(&bm.clone(), 10, 20);
+108 +         let c2 = GetPx(bm.clone(), 10, 20);
     |
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:114:24
+   --> /tmp/bitmap.rs:109:24
     |
-114 |         let c3 = GetPx(&bm.clone(), 30, 40);
+109 |         let c3 = GetPx(&bm.clone(), 30, 40);
     |                  ----- ^^^^^^^^^^^ expected `Bitmap`, found `&Bitmap`
     |                  |
     |                  arguments to this function are incorrect
     |
 note: function defined here
-   --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:81:8
+   --> /tmp/bitmap.rs:76:8
     |
-81  |     fn GetPx(b: Bitmap, x: i32, y: i32) -> std::collections::HashMap<&'static str, i32> {
+76  |     fn GetPx(b: Bitmap, x: i32, y: i32) -> std::collections::HashMap<&'static str, i32> {
     |        ^^^^^ ---------
 help: consider removing the borrow
     |
-114 -         let c3 = GetPx(&bm.clone(), 30, 40);
-114 +         let c3 = GetPx(bm.clone(), 30, 40);
+109 -         let c3 = GetPx(&bm.clone(), 30, 40);
+109 +         let c3 = GetPx(bm.clone(), 30, 40);
     |
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:116:48
+   --> /tmp/bitmap.rs:111:67
     |
-116 |         println!("{}", format!("{}{}", ppmSize(&bm.clone()).to_string(), " bytes when encoded as PPM."));
-    |                                        ------- ^^^^^^^^^^^ expected `Bitmap`, found `&Bitmap`
-    |                                        |
-    |                                        arguments to this function are incorrect
+111 | ...   println!("{}", vec![format!("{}", format!("{}{}", ppmSize(&bm.clone()).to_string(), " bytes when encoded as PPM."))].into_iter().fi...
+    |                                                         ------- ^^^^^^^^^^^ expected `Bitmap`, found `&Bitmap`
+    |                                                         |
+    |                                                         arguments to this function are incorrect
     |
 note: function defined here
-   --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:95:8
+   --> /tmp/bitmap.rs:90:8
     |
-95  |     fn ppmSize(b: Bitmap) -> i32 {
+90  |     fn ppmSize(b: Bitmap) -> i32 {
     |        ^^^^^^^ ---------
 help: consider removing the borrow
     |
-116 -         println!("{}", format!("{}{}", ppmSize(&bm.clone()).to_string(), " bytes when encoded as PPM."));
-116 +         println!("{}", format!("{}{}", ppmSize(bm.clone()).to_string(), " bytes when encoded as PPM."));
+111 -         println!("{}", vec![format!("{}", format!("{}{}", ppmSize(&bm.clone()).to_string(), " bytes when encoded as PPM."))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+111 +         println!("{}", vec![format!("{}", format!("{}{}", ppmSize(bm.clone()).to_string(), " bytes when encoded as PPM."))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
     |
 
 error[E0609]: no field `ok` on type `HashMap<&str, i32>`
-   --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:117:15
+   --> /tmp/bitmap.rs:112:15
     |
-117 |         if c1.ok != Default::default() {
+112 |         if c1.ok != Default::default() {
     |               ^^ unknown field
 
 error[E0609]: no field `pixel` on type `HashMap<&str, i32>`
-   --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:118:79
+   --> /tmp/bitmap.rs:113:98
     |
-118 |             println!("{}", format!("{}{}", "Pixel at (0,0) is ", pixelStr(&c1.pixel)));
-    |                                                                               ^^^^^ unknown field
+113 | ...   println!("{}", vec![format!("{}", format!("{}{}", "Pixel at (0,0) is ", pixelStr(&c1.pixel)))].into_iter().filter(|s| !s.is_empty()...
+    |                                                                                            ^^^^^ unknown field
 
 error[E0609]: no field `ok` on type `HashMap<&str, i32>`
-   --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:120:15
+   --> /tmp/bitmap.rs:115:15
     |
-120 |         if c2.ok != Default::default() {
+115 |         if c2.ok != Default::default() {
     |               ^^ unknown field
 
 error[E0609]: no field `pixel` on type `HashMap<&str, i32>`
-   --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:121:81
+   --> /tmp/bitmap.rs:116:100
     |
-121 |             println!("{}", format!("{}{}", "Pixel at (10,20) is ", pixelStr(&c2.pixel)));
-    |                                                                                 ^^^^^ unknown field
+116 | ...   println!("{}", vec![format!("{}", format!("{}{}", "Pixel at (10,20) is ", pixelStr(&c2.pixel)))].into_iter().filter(|s| !s.is_empty...
+    |                                                                                              ^^^^^ unknown field
 
 error[E0609]: no field `ok` on type `HashMap<&str, i32>`
-   --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:123:15
+   --> /tmp/bitmap.rs:118:15
     |
-123 |         if c3.ok != Default::default() {
+118 |         if c3.ok != Default::default() {
     |               ^^ unknown field
 
 error[E0609]: no field `pixel` on type `HashMap<&str, i32>`
-   --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:124:24
+   --> /tmp/bitmap.rs:119:24
     |
-124 |             let p = c3.pixel;
+119 |             let p = c3.pixel;
     |                        ^^^^^ unknown field
 
 error[E0507]: cannot move out of `b.px` which is behind a mutable reference
-  --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:54:30
+  --> /tmp/bitmap.rs:49:30
    |
-54 |                 let mut px = b.px;
+49 |                 let mut px = b.px;
    |                              ^^^^ move occurs because `b.px` has type `Vec<Vec<Pixel>>`, which does not implement the `Copy` trait
    |
 help: consider borrowing here
    |
-54 |                 let mut px = &b.px;
+49 |                 let mut px = &b.px;
    |                              +
 help: consider cloning the value if the performance cost is acceptable
    |
-54 |                 let mut px = b.px.clone();
+49 |                 let mut px = b.px.clone();
    |                                  ++++++++
 
 error[E0507]: cannot move out of index of `Vec<Vec<Pixel>>`
-  --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:55:31
+  --> /tmp/bitmap.rs:50:31
    |
-55 |                 let mut row = px[y as usize];
+50 |                 let mut row = px[y as usize];
    |                               ^^^^^^^^^^^^^^ move occurs because value has type `Vec<Pixel>`, which does not implement the `Copy` trait
    |
 help: consider borrowing here
    |
-55 |                 let mut row = &px[y as usize];
+50 |                 let mut row = &px[y as usize];
    |                               +
 help: consider cloning the value if the performance cost is acceptable
    |
-55 |                 let mut row = px[y as usize].clone();
+50 |                 let mut row = px[y as usize].clone();
    |                                             ++++++++
 
 error[E0507]: cannot move out of `b.px` which is behind a mutable reference
-  --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:71:22
+  --> /tmp/bitmap.rs:66:22
    |
-71 |         let mut px = b.px;
+66 |         let mut px = b.px;
    |                      ^^^^ move occurs because `b.px` has type `Vec<Vec<Pixel>>`, which does not implement the `Copy` trait
    |
 help: consider borrowing here
    |
-71 |         let mut px = &b.px;
+66 |         let mut px = &b.px;
    |                      +
 help: consider cloning the value if the performance cost is acceptable
    |
-71 |         let mut px = b.px.clone();
+66 |         let mut px = b.px.clone();
    |                          ++++++++
 
 error[E0507]: cannot move out of index of `Vec<Vec<Pixel>>`
-  --> /tmp/TestMochiRustGoldenbitmap2034230232/001/prog.rs:72:23
+  --> /tmp/bitmap.rs:67:23
    |
-72 |         let mut row = px[y as usize];
+67 |         let mut row = px[y as usize];
    |                       ^^^^^^^^^^^^^^ move occurs because value has type `Vec<Pixel>`, which does not implement the `Copy` trait
    |
 help: consider borrowing here
    |
-72 |         let mut row = &px[y as usize];
+67 |         let mut row = &px[y as usize];
    |                       +
 help: consider cloning the value if the performance cost is acceptable
    |
-72 |         let mut row = px[y as usize].clone();
+67 |         let mut row = px[y as usize].clone();
    |                                     ++++++++
 
 error: aborting due to 33 previous errors

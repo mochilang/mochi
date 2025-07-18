@@ -1,8 +1,97 @@
-type error: error[T007]: argument 2: expected int, got bigint
-  --> /workspace/mochi/tests/rosetta/x/Mochi/binary-strings.mochi:7:10
+rustc: exit status 1
+error[E0599]: `Vec<i32>` doesn't implement `std::fmt::Display`
+  --> /tmp/binary-strings.rs:21:41
+   |
+21 |     println!("{}", vec![format!("{}", b.to_string())].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+   |                                         ^^^^^^^^^ `Vec<i32>` cannot be formatted with the default formatter
+   |
+   = note: the following trait bounds were not satisfied:
+           `Vec<i32>: std::fmt::Display`
+           which is required by `Vec<i32>: ToString`
+           `[i32]: std::fmt::Display`
+           which is required by `[i32]: ToString`
+   = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
 
-  7 |   return substring(letters, idx, idx + 1)
-    |          ^
+error[E0599]: `Vec<i32>` doesn't implement `std::fmt::Display`
+  --> /tmp/binary-strings.rs:23:41
+   |
+23 |     println!("{}", vec![format!("{}", c.to_string())].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+   |                                         ^^^^^^^^^ `Vec<i32>` cannot be formatted with the default formatter
+   |
+   = note: the following trait bounds were not satisfied:
+           `Vec<i32>: std::fmt::Display`
+           which is required by `Vec<i32>: ToString`
+           `[i32]: std::fmt::Display`
+           which is required by `[i32]: ToString`
+   = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
 
-help:
-  Ensure the argument type matches the function’s signature.
+error[E0599]: `Vec<i32>` doesn't implement `std::fmt::Display`
+  --> /tmp/binary-strings.rs:24:46
+   |
+24 |     println!("{}", vec![format!("{}", b == c.to_string())].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+   |                                              ^^^^^^^^^ `Vec<i32>` cannot be formatted with the default formatter
+   |
+   = note: the following trait bounds were not satisfied:
+           `Vec<i32>: std::fmt::Display`
+           which is required by `Vec<i32>: ToString`
+           `[i32]: std::fmt::Display`
+           which is required by `[i32]: ToString`
+   = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
+
+error[E0308]: mismatched types
+  --> /tmp/binary-strings.rs:35:57
+   |
+35 |     println!("{}", vec![format!("{}", b.len() as i32 == 0.to_string())].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ...
+   |                                       --------------    ^^^^^^^^^^^^^ expected `i32`, found `String`
+   |                                       |
+   |                                       expected because this is `i32`
+   |
+help: try removing the method call
+   |
+35 -     println!("{}", vec![format!("{}", b.len() as i32 == 0.to_string())].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+35 +     println!("{}", vec![format!("{}", b.len() as i32 == 0)].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+   |
+
+error[E0308]: mismatched types
+ --> /tmp/binary-strings.rs:9:45
+  |
+9 |         return &letters[idx as usize..idx + 1 as usize];
+  |                                             ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+ --> /tmp/binary-strings.rs:9:39
+  |
+9 |         return &letters[idx as usize..idx + 1 as usize];
+  |                                       ^^^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+ --> /tmp/binary-strings.rs:9:43
+  |
+9 |         return &letters[idx as usize..idx + 1 as usize];
+  |                                           ^ no implementation for `i32 + usize`
+  |
+  = help: the trait `Add<usize>` is not implemented for `i32`
+  = help: the following other types implement trait `Add<Rhs>`:
+            `&i32` implements `Add<i32>`
+            `&i32` implements `Add`
+            `i32` implements `Add<&i32>`
+            `i32` implements `Add`
+
+error[E0308]: mismatched types
+  --> /tmp/binary-strings.rs:18:16
+   |
+11 |     fn fromBytes(bs: Vec<i32>) -> &'static str {
+   |                                   ------------ expected `&'static str` because of return type
+...
+18 |         return s;
+   |                ^ expected `&str`, found `String`
+   |
+help: consider borrowing here
+   |
+18 |         return &s;
+   |                +
+
+error: aborting due to 8 previous errors
+
+Some errors have detailed explanations: E0277, E0308, E0599.
+For more information about an error, try `rustc --explain E0277`.

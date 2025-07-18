@@ -1,18 +1,18 @@
-rustc error: exit status 1
+rustc: exit status 1
 error[E0308]: mismatched types
- --> /tmp/TestMochiRustGoldenchaocipher1717186947/001/prog.rs:6:35
+ --> /tmp/chaocipher.rs:6:35
   |
 6 |             if &s[i as usize..i + 1 as usize] == ch {
   |                                   ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0308]: mismatched types
- --> /tmp/TestMochiRustGoldenchaocipher1717186947/001/prog.rs:6:31
+ --> /tmp/chaocipher.rs:6:31
   |
 6 |             if &s[i as usize..i + 1 as usize] == ch {
   |                               ^^^^^^^^^^^^^^ expected `usize`, found `i32`
 
 error[E0277]: cannot add `usize` to `i32`
- --> /tmp/TestMochiRustGoldenchaocipher1717186947/001/prog.rs:6:33
+ --> /tmp/chaocipher.rs:6:33
   |
 6 |             if &s[i as usize..i + 1 as usize] == ch {
   |                                 ^ no implementation for `i32 + usize`
@@ -25,7 +25,7 @@ error[E0277]: cannot add `usize` to `i32`
             `i32` implements `Add`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenchaocipher1717186947/001/prog.rs:14:16
+  --> /tmp/chaocipher.rs:14:16
    |
 13 |     fn rotate(s: &'static str, n: i32) -> &'static str {
    |                                           ------------ expected `&str` because of return type
@@ -35,7 +35,7 @@ error[E0308]: mismatched types
    = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenchaocipher1717186947/001/prog.rs:17:16
+  --> /tmp/chaocipher.rs:17:16
    |
 16 |     fn scrambleLeft(s: &'static str) -> &'static str {
    |                                         ------------ expected `&str` because of return type
@@ -45,7 +45,7 @@ error[E0308]: mismatched types
    = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenchaocipher1717186947/001/prog.rs:20:16
+  --> /tmp/chaocipher.rs:20:16
    |
 19 | ...bleRight(s: &'static str) -> &'static str {
    |                                 ------------ expected `&str` because of return type
@@ -55,19 +55,19 @@ error[E0308]: mismatched types
    = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenchaocipher1717186947/001/prog.rs:28:44
+  --> /tmp/chaocipher.rs:28:44
    |
 28 |             let ch = &text[i as usize..i + 1 as usize];
    |                                            ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenchaocipher1717186947/001/prog.rs:28:40
+  --> /tmp/chaocipher.rs:28:40
    |
 28 |             let ch = &text[i as usize..i + 1 as usize];
    |                                        ^^^^^^^^^^^^^^ expected `usize`, found `i32`
 
 error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/TestMochiRustGoldenchaocipher1717186947/001/prog.rs:28:42
+  --> /tmp/chaocipher.rs:28:42
    |
 28 |             let ch = &text[i as usize..i + 1 as usize];
    |                                          ^ no implementation for `i32 + usize`
@@ -80,19 +80,37 @@ error[E0277]: cannot add `usize` to `i32`
              `i32` implements `Add`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenchaocipher1717186947/001/prog.rs:32:50
+  --> /tmp/chaocipher.rs:31:31
+   |
+31 |                 idx = indexOf(right, ch);
+   |                       ------- ^^^^^ expected `&str`, found `String`
+   |                       |
+   |                       arguments to this function are incorrect
+   |
+note: function defined here
+  --> /tmp/chaocipher.rs:3:8
+   |
+3  |     fn indexOf(s: &'static str, ch: &'static str) -> i32 {
+   |        ^^^^^^^ ---------------
+help: consider borrowing here
+   |
+31 |                 idx = indexOf(&right, ch);
+   |                               +
+
+error[E0308]: mismatched types
+  --> /tmp/chaocipher.rs:32:50
    |
 32 |                 out += &left[idx as usize..idx + 1 as usize];
    |                                                  ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenchaocipher1717186947/001/prog.rs:32:44
+  --> /tmp/chaocipher.rs:32:44
    |
 32 |                 out += &left[idx as usize..idx + 1 as usize];
    |                                            ^^^^^^^^^^^^^^^^ expected `usize`, found `i32`
 
 error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/TestMochiRustGoldenchaocipher1717186947/001/prog.rs:32:48
+  --> /tmp/chaocipher.rs:32:48
    |
 32 |                 out += &left[idx as usize..idx + 1 as usize];
    |                                                ^ no implementation for `i32 + usize`
@@ -104,28 +122,38 @@ error[E0277]: cannot add `usize` to `i32`
              `i32` implements `Add<&i32>`
              `i32` implements `Add`
 
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldenchaocipher1717186947/001/prog.rs:32:17
+error[E0308]: mismatched types
+  --> /tmp/chaocipher.rs:34:31
    |
-32 |                 out += &left[idx as usize..idx + 1 as usize];
-   |                 ---^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-   |                 |
-   |                 cannot use `+=` on type `&str`
+34 |                 idx = indexOf(left, ch);
+   |                       ------- ^^^^ expected `&str`, found `String`
+   |                       |
+   |                       arguments to this function are incorrect
+   |
+note: function defined here
+  --> /tmp/chaocipher.rs:3:8
+   |
+3  |     fn indexOf(s: &'static str, ch: &'static str) -> i32 {
+   |        ^^^^^^^ ---------------
+help: consider borrowing here
+   |
+34 |                 idx = indexOf(&left, ch);
+   |                               +
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenchaocipher1717186947/001/prog.rs:35:51
+  --> /tmp/chaocipher.rs:35:51
    |
 35 |                 out += &right[idx as usize..idx + 1 as usize];
    |                                                   ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenchaocipher1717186947/001/prog.rs:35:45
+  --> /tmp/chaocipher.rs:35:45
    |
 35 |                 out += &right[idx as usize..idx + 1 as usize];
    |                                             ^^^^^^^^^^^^^^^^ expected `usize`, found `i32`
 
 error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/TestMochiRustGoldenchaocipher1717186947/001/prog.rs:35:49
+  --> /tmp/chaocipher.rs:35:49
    |
 35 |                 out += &right[idx as usize..idx + 1 as usize];
    |                                                 ^ no implementation for `i32 + usize`
@@ -137,15 +165,137 @@ error[E0277]: cannot add `usize` to `i32`
              `i32` implements `Add<&i32>`
              `i32` implements `Add`
 
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldenchaocipher1717186947/001/prog.rs:35:17
+error[E0308]: mismatched types
+  --> /tmp/chaocipher.rs:37:27
    |
-35 |                 out += &right[idx as usize..idx + 1 as usize];
-   |                 ---^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-   |                 |
-   |                 cannot use `+=` on type `&str`
+37 |             left = rotate(left, idx);
+   |                    ------ ^^^^ expected `&str`, found `String`
+   |                    |
+   |                    arguments to this function are incorrect
+   |
+note: function defined here
+  --> /tmp/chaocipher.rs:13:8
+   |
+13 |     fn rotate(s: &'static str, n: i32) -> &'static str {
+   |        ^^^^^^ ---------------
+help: consider borrowing here
+   |
+37 |             left = rotate(&left, idx);
+   |                           +
 
-error: aborting due to 17 previous errors
+error[E0308]: mismatched types
+  --> /tmp/chaocipher.rs:37:20
+   |
+23 |         let mut left = String::from("HXUCZVAMDSLKPEFJRIGTWOBNYQ");
+   |                        ------------------------------------------ expected due to this value
+...
+37 |             left = rotate(left, idx);
+   |                    ^^^^^^^^^^^^^^^^^- help: try using a conversion method: `.to_string()`
+   |                    |
+   |                    expected `String`, found `&str`
 
-Some errors have detailed explanations: E0277, E0308, E0368.
+error[E0308]: mismatched types
+  --> /tmp/chaocipher.rs:38:28
+   |
+38 |             right = rotate(right, idx);
+   |                     ------ ^^^^^ expected `&str`, found `String`
+   |                     |
+   |                     arguments to this function are incorrect
+   |
+note: function defined here
+  --> /tmp/chaocipher.rs:13:8
+   |
+13 |     fn rotate(s: &'static str, n: i32) -> &'static str {
+   |        ^^^^^^ ---------------
+help: consider borrowing here
+   |
+38 |             right = rotate(&right, idx);
+   |                            +
+
+error[E0308]: mismatched types
+  --> /tmp/chaocipher.rs:38:21
+   |
+24 |         let mut right = String::from("PTLNBQDEOYSFAVZKGJRIHWXUMC");
+   |                         ------------------------------------------ expected due to this value
+...
+38 |             right = rotate(right, idx);
+   |                     ^^^^^^^^^^^^^^^^^^- help: try using a conversion method: `.to_string()`
+   |                     |
+   |                     expected `String`, found `&str`
+
+error[E0308]: mismatched types
+  --> /tmp/chaocipher.rs:39:33
+   |
+39 |             left = scrambleLeft(left);
+   |                    ------------ ^^^^ expected `&str`, found `String`
+   |                    |
+   |                    arguments to this function are incorrect
+   |
+note: function defined here
+  --> /tmp/chaocipher.rs:16:8
+   |
+16 |     fn scrambleLeft(s: &'static str) -> &'static str {
+   |        ^^^^^^^^^^^^ ---------------
+help: consider borrowing here
+   |
+39 |             left = scrambleLeft(&left);
+   |                                 +
+
+error[E0308]: mismatched types
+  --> /tmp/chaocipher.rs:39:20
+   |
+23 |         let mut left = String::from("HXUCZVAMDSLKPEFJRIGTWOBNYQ");
+   |                        ------------------------------------------ expected due to this value
+...
+39 |             left = scrambleLeft(left);
+   |                    ^^^^^^^^^^^^^^^^^^- help: try using a conversion method: `.to_string()`
+   |                    |
+   |                    expected `String`, found `&str`
+
+error[E0308]: mismatched types
+  --> /tmp/chaocipher.rs:40:35
+   |
+40 |             right = scrambleRight(right);
+   |                     ------------- ^^^^^ expected `&str`, found `String`
+   |                     |
+   |                     arguments to this function are incorrect
+   |
+note: function defined here
+  --> /tmp/chaocipher.rs:19:8
+   |
+19 |     fn scrambleRight(s: &'static str) -> &'static str {
+   |        ^^^^^^^^^^^^^ ---------------
+help: consider borrowing here
+   |
+40 |             right = scrambleRight(&right);
+   |                                   +
+
+error[E0308]: mismatched types
+  --> /tmp/chaocipher.rs:40:21
+   |
+24 |         let mut right = String::from("PTLNBQDEOYSFAVZKGJRIHWXUMC");
+   |                         ------------------------------------------ expected due to this value
+...
+40 |             right = scrambleRight(right);
+   |                     ^^^^^^^^^^^^^^^^^^^^- help: try using a conversion method: `.to_string()`
+   |                     |
+   |                     expected `String`, found `&str`
+
+error[E0308]: mismatched types
+  --> /tmp/chaocipher.rs:43:16
+   |
+22 |     fn chao(text: &'static str, encode: bool) -> &'static str {
+   |                                                  ------------ expected `&'static str` because of return type
+...
+43 |         return out;
+   |                ^^^ expected `&str`, found `String`
+   |
+help: consider borrowing here
+   |
+43 |         return &out;
+   |                +
+
+error: aborting due to 26 previous errors
+
+Some errors have detailed explanations: E0277, E0308.
 For more information about an error, try `rustc --explain E0277`.

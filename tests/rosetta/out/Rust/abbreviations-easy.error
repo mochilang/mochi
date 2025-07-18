@@ -1,107 +1,138 @@
-rustc error: exit status 1
+rustc: exit status 1
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenabbreviations-easy4026837106/001/prog.rs:13:41
-   |
-13 |             let ch = &s[i as usize..i + 1 as usize];
-   |                                         ^^^^^^^^^^ expected `i32`, found `usize`
+ --> /tmp/abbreviations-easy.rs:8:41
+  |
+8 |             let ch = &s[i as usize..i + 1 as usize];
+  |                                         ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenabbreviations-easy4026837106/001/prog.rs:13:37
-   |
-13 |             let ch = &s[i as usize..i + 1 as usize];
-   |                                     ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+ --> /tmp/abbreviations-easy.rs:8:37
+  |
+8 |             let ch = &s[i as usize..i + 1 as usize];
+  |                                     ^^^^^^^^^^^^^^ expected `usize`, found `i32`
 
 error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/TestMochiRustGoldenabbreviations-easy4026837106/001/prog.rs:13:39
+ --> /tmp/abbreviations-easy.rs:8:39
+  |
+8 |             let ch = &s[i as usize..i + 1 as usize];
+  |                                       ^ no implementation for `i32 + usize`
+  |
+  = help: the trait `Add<usize>` is not implemented for `i32`
+  = help: the following other types implement trait `Add<Rhs>`:
+            `&i32` implements `Add<i32>`
+            `&i32` implements `Add`
+            `i32` implements `Add<&i32>`
+            `i32` implements `Add`
+
+error[E0308]: mismatched types
+  --> /tmp/abbreviations-easy.rs:12:69
    |
-13 |             let ch = &s[i as usize..i + 1 as usize];
-   |                                       ^ no implementation for `i32 + usize`
+12 |                     words = { let mut tmp = words.clone(); tmp.push(cur); tmp };
+   |                                                                ---- ^^^ expected `&str`, found `String`
+   |                                                                |
+   |                                                                arguments to this method are incorrect
    |
-   = help: the trait `Add<usize>` is not implemented for `i32`
-   = help: the following other types implement trait `Add<Rhs>`:
-             `&i32` implements `Add<i32>`
-             `&i32` implements `Add`
-             `i32` implements `Add<&i32>`
-             `i32` implements `Add`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:2442:12
+help: consider borrowing here
+   |
+12 |                     words = { let mut tmp = words.clone(); tmp.push(&cur); tmp };
+   |                                                                     +
+
+error[E0308]: mismatched types
+  --> /tmp/abbreviations-easy.rs:13:27
+   |
+5  |         let mut cur = String::new();
+   |                       ------------- expected due to this value
+...
+13 |                     cur = "";
+   |                           ^^- help: try using a conversion method: `.to_string()`
+   |                           |
+   |                           expected `String`, found `&str`
+
+error[E0308]: mismatched types
+  --> /tmp/abbreviations-easy.rs:21:61
+   |
+21 |             words = { let mut tmp = words.clone(); tmp.push(cur); tmp };
+   |                                                        ---- ^^^ expected `&str`, found `String`
+   |                                                        |
+   |                                                        arguments to this method are incorrect
+   |
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:2442:12
+help: consider borrowing here
+   |
+21 |             words = { let mut tmp = words.clone(); tmp.push(&cur); tmp };
+   |                                                             +
 
 error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldenabbreviations-easy4026837106/001/prog.rs:21:17
+  --> /tmp/abbreviations-easy.rs:29:13
    |
-21 |                 cur += ch;
-   |                 ---^^^^^^
-   |                 |
-   |                 cannot use `+=` on type `&str`
-
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldenabbreviations-easy4026837106/001/prog.rs:34:13
-   |
-34 |             out += " ";
+29 |             out += " ";
    |             ---^^^^^^^
    |             |
    |             cannot use `+=` on type `&str`
 
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldenabbreviations-easy4026837106/001/prog.rs:44:17
+error[E0308]: mismatched types
+  --> /tmp/abbreviations-easy.rs:44:16
    |
-44 |                 res += sep;
-   |                 ---^^^^^^^
-   |                 |
-   |                 cannot use `+=` on type `&str`
-
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldenabbreviations-easy4026837106/001/prog.rs:46:13
+34 |     fn join(xs: Vec<&'static str>, sep: &'static str) -> &'static str {
+   |                                                          ------------ expected `&'static str` because of return type
+...
+44 |         return res;
+   |                ^^^ expected `&str`, found `String`
    |
-46 |             res += xs[i as usize];
-   |             ---^^^^^^^^^^^^^^^^^^
-   |             |
-   |             cannot use `+=` on type `&str`
+help: consider borrowing here
+   |
+44 |         return &res;
+   |                +
 
 error[E0425]: cannot find function `upper` in this scope
-  --> /tmp/TestMochiRustGoldenabbreviations-easy4026837106/001/prog.rs:65:29
+  --> /tmp/abbreviations-easy.rs:60:29
    |
-65 |                     let c = upper(cmd);
+60 |                     let c = upper(cmd);
    |                             ^^^^^ not found in this scope
 
 error[E0425]: cannot find function `upper` in this scope
-  --> /tmp/TestMochiRustGoldenabbreviations-easy4026837106/001/prog.rs:66:30
+  --> /tmp/abbreviations-easy.rs:61:30
    |
-66 |                     let ww = upper(w);
+61 |                     let ww = upper(w);
    |                              ^^^^^ not found in this scope
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenabbreviations-easy4026837106/001/prog.rs:84:31
+  --> /tmp/abbreviations-easy.rs:79:31
    |
-84 |         let commands = fields(table);
+79 |         let commands = fields(table);
    |                        ------ ^^^^^ expected `&str`, found `String`
    |                        |
    |                        arguments to this function are incorrect
    |
 note: function defined here
-  --> /tmp/TestMochiRustGoldenabbreviations-easy4026837106/001/prog.rs:8:8
+  --> /tmp/abbreviations-easy.rs:3:8
    |
-8  |     fn fields(s: &'static str) -> Vec<&'static str> {
+3  |     fn fields(s: &'static str) -> Vec<&'static str> {
    |        ^^^^^^ ---------------
 help: consider borrowing here
    |
-84 |         let commands = fields(&table);
+79 |         let commands = fields(&table);
    |                               +
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenabbreviations-easy4026837106/001/prog.rs:92:47
+  --> /tmp/abbreviations-easy.rs:87:47
    |
-92 |                 let ch = &cmd[j as usize..j + 1 as usize];
+87 |                 let ch = &cmd[j as usize..j + 1 as usize];
    |                                               ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenabbreviations-easy4026837106/001/prog.rs:92:43
+  --> /tmp/abbreviations-easy.rs:87:43
    |
-92 |                 let ch = &cmd[j as usize..j + 1 as usize];
+87 |                 let ch = &cmd[j as usize..j + 1 as usize];
    |                                           ^^^^^^^^^^^^^^ expected `usize`, found `i32`
 
 error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/TestMochiRustGoldenabbreviations-easy4026837106/001/prog.rs:92:45
+  --> /tmp/abbreviations-easy.rs:87:45
    |
-92 |                 let ch = &cmd[j as usize..j + 1 as usize];
+87 |                 let ch = &cmd[j as usize..j + 1 as usize];
    |                                             ^ no implementation for `i32 + usize`
    |
    = help: the trait `Add<usize>` is not implemented for `i32`
@@ -110,14 +141,6 @@ error[E0277]: cannot add `usize` to `i32`
              `&i32` implements `Add`
              `i32` implements `Add<&i32>`
              `i32` implements `Add`
-
-error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldenabbreviations-easy4026837106/001/prog.rs:107:20
-    |
-107 |             out1 = format!("{}{}", format!("{}{}", out1, padRight(words[k as usize], results[k as usize].len() as i32)), " ");
-    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
-    |
-    = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error: aborting due to 14 previous errors
 

@@ -1,26 +1,26 @@
-rustc error: exit status 1
+rustc: exit status 1
 error: mismatched closing delimiter: `}`
-  --> /tmp/TestMochiRustGoldenchat-server227783774/001/prog.rs:24:22
+  --> /tmp/chat-server.rs:19:22
    |
-22 |         let add = move |name: &'static str| -> () {
+17 |         let add = move |name: &'static str| -> () {
    |                                                   - closing delimiter possibly meant for this
-23 |             clients = append(clients, name);
-24 |             broadcast(format!("{}{}", format!("{}{}", "+++ "", name), "" connected +++
+18 |             clients = { let mut tmp = clients.clone(); tmp.push(name); tmp };
+19 |             broadcast(format!("{}{}", format!("{}{}", "+++ "", name), "" connected +++
    |                      ^ unclosed delimiter
-25 | "));
-26 |         };
+20 | "));
+21 |         };
    |         ^ mismatched closing delimiter
 
 error: mismatched closing delimiter: `}`
-  --> /tmp/TestMochiRustGoldenchat-server227783774/001/prog.rs:33:22
+  --> /tmp/chat-server.rs:28:22
    |
-31 |         let remove = move |name: &'static str| -> () {
+26 |         let remove = move |name: &'static str| -> () {
    |                                                      - closing delimiter possibly meant for this
-32 |             clients = removeName(clients, name);
-33 |             broadcast(format!("{}{}", format!("{}{}", "--- "", name), "" disconnected ---
+27 |             clients = removeName(clients, name);
+28 |             broadcast(format!("{}{}", format!("{}{}", "--- "", name), "" disconnected ---
    |                      ^ unclosed delimiter
-34 | "));
-35 |         };
+29 | "));
+30 |         };
    |         ^ mismatched closing delimiter
 
 error: aborting due to 2 previous errors

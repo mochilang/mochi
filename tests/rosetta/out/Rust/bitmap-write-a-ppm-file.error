@@ -1,181 +1,184 @@
-rustc error: exit status 1
+rustc: exit status 1
 error: `<` is interpreted as a start of generic arguments for `i32`, not a comparison
-  --> /tmp/TestMochiRustGoldenbitmap-write-a-ppm-file1935525371/001/prog.rs:57:30
+  --> /tmp/bitmap-write-a-ppm-file.rs:52:30
    |
-57 |         while s.len() as i32 < width {
+52 |         while s.len() as i32 < width {
    |                              ^ ------- interpreted as generic arguments
    |                              |
    |                              not interpreted as comparison
    |
 help: try comparing the cast value
    |
-57 |         while (s.len() as i32) < width {
+52 |         while (s.len() as i32) < width {
    |               +              +
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbitmap-write-a-ppm-file1935525371/001/prog.rs:49:50
+  --> /tmp/bitmap-write-a-ppm-file.rs:44:50
    |
-49 |                 setPixel(&mut b.clone(), xx, yy, &c.clone());
+44 |                 setPixel(&mut b.clone(), xx, yy, &c.clone());
    |                 --------                         ^^^^^^^^^^ expected `Colour`, found `&Colour`
    |                 |
    |                 arguments to this function are incorrect
    |
 note: function defined here
-  --> /tmp/TestMochiRustGoldenbitmap-write-a-ppm-file1935525371/001/prog.rs:37:8
+  --> /tmp/bitmap-write-a-ppm-file.rs:32:8
    |
-37 |     fn setPixel(b: &mut Bitmap, x: i32, y: i32, c: Colour) -> () {
+32 |     fn setPixel(b: &mut Bitmap, x: i32, y: i32, c: Colour) -> () {
    |        ^^^^^^^^                                 ---------
 help: consider removing the borrow
    |
-49 -                 setPixel(&mut b.clone(), xx, yy, &c.clone());
-49 +                 setPixel(&mut b.clone(), xx, yy, c.clone());
+44 -                 setPixel(&mut b.clone(), xx, yy, &c.clone());
+44 +                 setPixel(&mut b.clone(), xx, yy, c.clone());
    |
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbitmap-write-a-ppm-file1935525371/001/prog.rs:60:16
+  --> /tmp/bitmap-write-a-ppm-file.rs:55:16
    |
-55 |     fn pad(n: i32, width: i32) -> &'static str {
+50 |     fn pad(n: i32, width: i32) -> &'static str {
    |                                   ------------ expected `&'static str` because of return type
 ...
-60 |         return s;
+55 |         return s;
    |                ^ expected `&str`, found `String`
    |
 help: consider borrowing here
    |
-60 |         return &s;
+55 |         return &s;
    |                +
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbitmap-write-a-ppm-file1935525371/001/prog.rs:94:24
+  --> /tmp/bitmap-write-a-ppm-file.rs:92:20
    |
-94 | ... = format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", line, "   "), pad(p.R, numsize)), " "), pad(p.G, numsize)), " "), pad(p.B, numsize));
-   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+92 |             out += line;
+   |                    ^^^^ expected `&str`, found `String`
    |
-   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+help: consider borrowing here
+   |
+92 |             out += &line;
+   |                    +
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldenbitmap-write-a-ppm-file1935525371/001/prog.rs:107:16
+   --> /tmp/bitmap-write-a-ppm-file.rs:102:16
     |
-62  |     fn writePPMP3(b: Bitmap) -> &'static str {
+57  |     fn writePPMP3(b: Bitmap) -> &'static str {
     |                                 ------------ expected `&'static str` because of return type
 ...
-107 |         return out;
+102 |         return out;
     |                ^^^ expected `&str`, found `String`
     |
 help: consider borrowing here
     |
-107 |         return &out;
+102 |         return &out;
     |                +
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldenbitmap-write-a-ppm-file1935525371/001/prog.rs:112:38
+   --> /tmp/bitmap-write-a-ppm-file.rs:107:38
     |
-112 |         let mut bm = newBitmap(4, 4, &black.clone());
+107 |         let mut bm = newBitmap(4, 4, &black.clone());
     |                      ---------       ^^^^^^^^^^^^^^ expected `Colour`, found `&Colour`
     |                      |
     |                      arguments to this function are incorrect
     |
 note: function defined here
-   --> /tmp/TestMochiRustGoldenbitmap-write-a-ppm-file1935525371/001/prog.rs:22:8
+   --> /tmp/bitmap-write-a-ppm-file.rs:17:8
     |
-22  |     fn newBitmap(w: i32, h: i32, c: Colour) -> Bitmap {
+17  |     fn newBitmap(w: i32, h: i32, c: Colour) -> Bitmap {
     |        ^^^^^^^^^                 ---------
 help: consider removing the borrow
     |
-112 -         let mut bm = newBitmap(4, 4, &black.clone());
-112 +         let mut bm = newBitmap(4, 4, black.clone());
+107 -         let mut bm = newBitmap(4, 4, &black.clone());
+107 +         let mut bm = newBitmap(4, 4, black.clone());
     |
 
 error[E0308]: arguments to this function are incorrect
-   --> /tmp/TestMochiRustGoldenbitmap-write-a-ppm-file1935525371/001/prog.rs:113:9
+   --> /tmp/bitmap-write-a-ppm-file.rs:108:9
     |
-113 |         fillRect(&bm.clone(), 1, 0, 1, 2, &white.clone());
+108 |         fillRect(&bm.clone(), 1, 0, 1, 2, &white.clone());
     |         ^^^^^^^^ -----------              -------------- expected `Colour`, found `&Colour`
     |                  |
     |                  expected `Bitmap`, found `&Bitmap`
     |
 note: function defined here
-   --> /tmp/TestMochiRustGoldenbitmap-write-a-ppm-file1935525371/001/prog.rs:44:8
+   --> /tmp/bitmap-write-a-ppm-file.rs:39:8
     |
-44  |     fn fillRect(b: Bitmap, x: i32, y: i32, w: i32, h: i32, c: Colour) -> () {
+39  |     fn fillRect(b: Bitmap, x: i32, y: i32, w: i32, h: i32, c: Colour) -> () {
     |        ^^^^^^^^ ---------                                  ---------
 help: consider removing the borrow
     |
-113 -         fillRect(&bm.clone(), 1, 0, 1, 2, &white.clone());
-113 +         fillRect(bm.clone(), 1, 0, 1, 2, &white.clone());
+108 -         fillRect(&bm.clone(), 1, 0, 1, 2, &white.clone());
+108 +         fillRect(bm.clone(), 1, 0, 1, 2, &white.clone());
     |
 help: consider removing the borrow
     |
-113 -         fillRect(&bm.clone(), 1, 0, 1, 2, &white.clone());
-113 +         fillRect(&bm.clone(), 1, 0, 1, 2, white.clone());
+108 -         fillRect(&bm.clone(), 1, 0, 1, 2, &white.clone());
+108 +         fillRect(&bm.clone(), 1, 0, 1, 2, white.clone());
     |
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldenbitmap-write-a-ppm-file1935525371/001/prog.rs:114:41
+   --> /tmp/bitmap-write-a-ppm-file.rs:109:41
     |
-114 |         setPixel(&mut bm.clone(), 3, 3, &Colour { R: 127, G: 0, B: 63 });
+109 |         setPixel(&mut bm.clone(), 3, 3, &Colour { R: 127, G: 0, B: 63 });
     |         --------                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Colour`, found `&Colour`
     |         |
     |         arguments to this function are incorrect
     |
 note: function defined here
-   --> /tmp/TestMochiRustGoldenbitmap-write-a-ppm-file1935525371/001/prog.rs:37:8
+   --> /tmp/bitmap-write-a-ppm-file.rs:32:8
     |
-37  |     fn setPixel(b: &mut Bitmap, x: i32, y: i32, c: Colour) -> () {
+32  |     fn setPixel(b: &mut Bitmap, x: i32, y: i32, c: Colour) -> () {
     |        ^^^^^^^^                                 ---------
 help: consider removing the borrow
     |
-114 -         setPixel(&mut bm.clone(), 3, 3, &Colour { R: 127, G: 0, B: 63 });
-114 +         setPixel(&mut bm.clone(), 3, 3, Colour { R: 127, G: 0, B: 63 });
+109 -         setPixel(&mut bm.clone(), 3, 3, &Colour { R: 127, G: 0, B: 63 });
+109 +         setPixel(&mut bm.clone(), 3, 3, Colour { R: 127, G: 0, B: 63 });
     |
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldenbitmap-write-a-ppm-file1935525371/001/prog.rs:115:30
+   --> /tmp/bitmap-write-a-ppm-file.rs:110:30
     |
-115 |         let ppm = writePPMP3(&bm.clone());
+110 |         let ppm = writePPMP3(&bm.clone());
     |                   ---------- ^^^^^^^^^^^ expected `Bitmap`, found `&Bitmap`
     |                   |
     |                   arguments to this function are incorrect
     |
 note: function defined here
-   --> /tmp/TestMochiRustGoldenbitmap-write-a-ppm-file1935525371/001/prog.rs:62:8
+   --> /tmp/bitmap-write-a-ppm-file.rs:57:8
     |
-62  |     fn writePPMP3(b: Bitmap) -> &'static str {
+57  |     fn writePPMP3(b: Bitmap) -> &'static str {
     |        ^^^^^^^^^^ ---------
 help: consider removing the borrow
     |
-115 -         let ppm = writePPMP3(&bm.clone());
-115 +         let ppm = writePPMP3(bm.clone());
+110 -         let ppm = writePPMP3(&bm.clone());
+110 +         let ppm = writePPMP3(bm.clone());
     |
 
 error[E0507]: cannot move out of `b.pixels` which is behind a mutable reference
-  --> /tmp/TestMochiRustGoldenbitmap-write-a-ppm-file1935525371/001/prog.rs:38:24
+  --> /tmp/bitmap-write-a-ppm-file.rs:33:24
    |
-38 |         let mut rows = b.pixels;
+33 |         let mut rows = b.pixels;
    |                        ^^^^^^^^ move occurs because `b.pixels` has type `Vec<Vec<Colour>>`, which does not implement the `Copy` trait
    |
 help: consider borrowing here
    |
-38 |         let mut rows = &b.pixels;
+33 |         let mut rows = &b.pixels;
    |                        +
 help: consider cloning the value if the performance cost is acceptable
    |
-38 |         let mut rows = b.pixels.clone();
+33 |         let mut rows = b.pixels.clone();
    |                                ++++++++
 
 error[E0507]: cannot move out of index of `Vec<Vec<Colour>>`
-  --> /tmp/TestMochiRustGoldenbitmap-write-a-ppm-file1935525371/001/prog.rs:39:23
+  --> /tmp/bitmap-write-a-ppm-file.rs:34:23
    |
-39 |         let mut row = rows[y as usize];
+34 |         let mut row = rows[y as usize];
    |                       ^^^^^^^^^^^^^^^^ move occurs because value has type `Vec<Colour>`, which does not implement the `Copy` trait
    |
 help: consider borrowing here
    |
-39 |         let mut row = &rows[y as usize];
+34 |         let mut row = &rows[y as usize];
    |                       +
 help: consider cloning the value if the performance cost is acceptable
    |
-39 |         let mut row = rows[y as usize].clone();
+34 |         let mut row = rows[y as usize].clone();
    |                                       ++++++++
 
 error: aborting due to 11 previous errors

@@ -1,9 +1,9 @@
-rustc error: exit status 1
+rustc: exit status 1
 error[E0277]: cannot multiply `{integer}` by `String`
- --> /tmp/TestMochiRustGoldenapply-a-callback-to-an-array-13738655898/001/prog.rs:4:26
+ --> /tmp/apply-a-callback-to-an-array-1.rs:4:45
   |
-4 |         println!("{}", i * i.to_string());
-  |                          ^ no implementation for `{integer} * String`
+4 |         println!("{}", vec![format!("{}", i * i.to_string())].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+  |                                             ^ no implementation for `{integer} * String`
   |
   = help: the trait `Mul<String>` is not implemented for `{integer}`
   = help: the following other types implement trait `Mul<Rhs>`:

@@ -1,80 +1,80 @@
-rustc error: exit status 1
+rustc: exit status 1
 error[E0599]: no method named `parse` found for type `f64` in the current scope
-  --> /tmp/TestMochiRustGoldenbitmap-ppm-conversion-through-a-pipe2767079766/001/prog.rs:23:48
+  --> /tmp/bitmap-ppm-conversion-through-a-pipe.rs:18:48
    |
-23 |         let r = (((c as f64) / (65536 as f64)).parse::<i32>().unwrap()) % 256;
+18 |         let r = (((c as f64) / (65536 as f64)).parse::<i32>().unwrap()) % 256;
    |                                                ^^^^^ method not found in `f64`
 
 error[E0599]: no method named `parse` found for type `f64` in the current scope
-  --> /tmp/TestMochiRustGoldenbitmap-ppm-conversion-through-a-pipe2767079766/001/prog.rs:24:46
+  --> /tmp/bitmap-ppm-conversion-through-a-pipe.rs:19:46
    |
-24 |         let g = (((c as f64) / (256 as f64)).parse::<i32>().unwrap()) % 256;
+19 |         let g = (((c as f64) / (256 as f64)).parse::<i32>().unwrap()) % 256;
    |                                              ^^^^^ method not found in `f64`
 
 error[E0425]: cannot find function `now` in this scope
-  --> /tmp/TestMochiRustGoldenbitmap-ppm-conversion-through-a-pipe2767079766/001/prog.rs:79:24
+  --> /tmp/bitmap-ppm-conversion-through-a-pipe.rs:74:24
    |
-79 |         let mut seed = now();
+74 |         let mut seed = now();
    |                        ^^^ not found in this scope
 
 error[E0507]: cannot move out of `b.px` which is behind a mutable reference
-  --> /tmp/TestMochiRustGoldenbitmap-ppm-conversion-through-a-pipe2767079766/001/prog.rs:52:30
+  --> /tmp/bitmap-ppm-conversion-through-a-pipe.rs:47:30
    |
-52 |                 let mut px = b.px;
+47 |                 let mut px = b.px;
    |                              ^^^^ move occurs because `b.px` has type `Vec<Vec<Pixel>>`, which does not implement the `Copy` trait
    |
 help: consider borrowing here
    |
-52 |                 let mut px = &b.px;
+47 |                 let mut px = &b.px;
    |                              +
 help: consider cloning the value if the performance cost is acceptable
    |
-52 |                 let mut px = b.px.clone();
+47 |                 let mut px = b.px.clone();
    |                                  ++++++++
 
 error[E0507]: cannot move out of index of `Vec<Vec<Pixel>>`
-  --> /tmp/TestMochiRustGoldenbitmap-ppm-conversion-through-a-pipe2767079766/001/prog.rs:53:31
+  --> /tmp/bitmap-ppm-conversion-through-a-pipe.rs:48:31
    |
-53 |                 let mut row = px[y as usize];
+48 |                 let mut row = px[y as usize];
    |                               ^^^^^^^^^^^^^^ move occurs because value has type `Vec<Pixel>`, which does not implement the `Copy` trait
    |
 help: consider borrowing here
    |
-53 |                 let mut row = &px[y as usize];
+48 |                 let mut row = &px[y as usize];
    |                               +
 help: consider cloning the value if the performance cost is acceptable
    |
-53 |                 let mut row = px[y as usize].clone();
+48 |                 let mut row = px[y as usize].clone();
    |                                             ++++++++
 
 error[E0507]: cannot move out of `b.px` which is behind a mutable reference
-  --> /tmp/TestMochiRustGoldenbitmap-ppm-conversion-through-a-pipe2767079766/001/prog.rs:66:22
+  --> /tmp/bitmap-ppm-conversion-through-a-pipe.rs:61:22
    |
-66 |         let mut px = b.px;
+61 |         let mut px = b.px;
    |                      ^^^^ move occurs because `b.px` has type `Vec<Vec<Pixel>>`, which does not implement the `Copy` trait
    |
 help: consider borrowing here
    |
-66 |         let mut px = &b.px;
+61 |         let mut px = &b.px;
    |                      +
 help: consider cloning the value if the performance cost is acceptable
    |
-66 |         let mut px = b.px.clone();
+61 |         let mut px = b.px.clone();
    |                          ++++++++
 
 error[E0507]: cannot move out of index of `Vec<Vec<Pixel>>`
-  --> /tmp/TestMochiRustGoldenbitmap-ppm-conversion-through-a-pipe2767079766/001/prog.rs:67:23
+  --> /tmp/bitmap-ppm-conversion-through-a-pipe.rs:62:23
    |
-67 |         let mut row = px[y as usize];
+62 |         let mut row = px[y as usize];
    |                       ^^^^^^^^^^^^^^ move occurs because value has type `Vec<Pixel>`, which does not implement the `Copy` trait
    |
 help: consider borrowing here
    |
-67 |         let mut row = &px[y as usize];
+62 |         let mut row = &px[y as usize];
    |                       +
 help: consider cloning the value if the performance cost is acceptable
    |
-67 |         let mut row = px[y as usize].clone();
+62 |         let mut row = px[y as usize].clone();
    |                                     ++++++++
 
 error: aborting due to 7 previous errors

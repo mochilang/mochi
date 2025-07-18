@@ -1,41 +1,33 @@
-rustc error: exit status 1
+rustc: exit status 1
 error[E0599]: no method named `parse` found for type `f64` in the current scope
-  --> /tmp/TestMochiRustGoldenbarnsley-fern1263296050/001/prog.rs:16:45
+  --> /tmp/barnsley-fern.rs:11:45
    |
-16 |     let height = ((width as f64) * dy / dx).parse::<i32>().unwrap();
+11 |     let height = ((width as f64) * dy / dx).parse::<i32>().unwrap();
    |                                             ^^^^^ method not found in `f64`
 
 error[E0689]: can't call method `parse` on ambiguous numeric type `{integer}`
-  --> /tmp/TestMochiRustGoldenbarnsley-fern1263296050/001/prog.rs:36:26
+  --> /tmp/barnsley-fern.rs:31:26
    |
-36 |     let mut ix = ((width.parse::<f64>().unwrap()) * (x - xMin) / dx).parse::<i32>().unwrap();
+31 |     let mut ix = ((width.parse::<f64>().unwrap()) * (x - xMin) / dx).parse::<i32>().unwrap();
    |                          ^^^^^
    |
 help: you must specify a type for this binding, like `i32`
    |
-12 |     let width: i32 = 60;
+7  |     let width: i32 = 60;
    |              +++++
 
 error[E0689]: can't call method `parse` on ambiguous numeric type `{integer}`
-  --> /tmp/TestMochiRustGoldenbarnsley-fern1263296050/001/prog.rs:52:22
+  --> /tmp/barnsley-fern.rs:47:22
    |
-52 |         ix = ((width.parse::<f64>().unwrap()) * (x - xMin) / dx).parse::<i32>().unwrap();
+47 |         ix = ((width.parse::<f64>().unwrap()) * (x - xMin) / dx).parse::<i32>().unwrap();
    |                      ^^^^^
    |
 help: you must specify a type for this binding, like `i32`
    |
-12 |     let width: i32 = 60;
+7  |     let width: i32 = 60;
    |              +++++
 
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldenbarnsley-fern1263296050/001/prog.rs:64:13
-   |
-64 |             line += grid[row as usize][col as usize];
-   |             ----^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-   |             |
-   |             cannot use `+=` on type `&str`
+error: aborting due to 3 previous errors
 
-error: aborting due to 4 previous errors
-
-Some errors have detailed explanations: E0368, E0599, E0689.
-For more information about an error, try `rustc --explain E0368`.
+Some errors have detailed explanations: E0599, E0689.
+For more information about an error, try `rustc --explain E0599`.

@@ -1,0 +1,545 @@
+rustc: exit status 1
+error: `<` is interpreted as a start of generic arguments for `i32`, not a comparison
+   --> /tmp/adfgvx-cipher.rs:198:31
+    |
+198 |             if s.len() as i32 < maxColLen {
+    |                               ^ ----------- interpreted as generic arguments
+    |                               |
+    |                               not interpreted as comparison
+    |
+help: try comparing the cast value
+    |
+198 |             if (s.len() as i32) < maxColLen {
+    |                +              +
+
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /tmp/adfgvx-cipher.rs:259:24
+    |
+259 |         let polybius = createPolybius();
+    |                        ^^^^^^^^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /tmp/adfgvx-cipher.rs:263:26
+    |
+263 |         let cipherText = encrypt(polybius, key, plainText);
+    |                          ^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /tmp/adfgvx-cipher.rs:266:26
+    |
+266 |         let plainText2 = decrypt(polybius, key, cipherText);
+    |                          ^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+error[E0308]: mismatched types
+  --> /tmp/adfgvx-cipher.rs:29:35
+   |
+29 |         let shuffled = shuffleStr(alphabet);
+   |                        ---------- ^^^^^^^^ expected `&str`, found `String`
+   |                        |
+   |                        arguments to this function are incorrect
+   |
+note: function defined here
+  --> /tmp/adfgvx-cipher.rs:5:8
+   |
+5  |     fn shuffleStr(s: &'static str) -> &'static str {
+   |        ^^^^^^^^^^ ---------------
+help: consider borrowing here
+   |
+29 |         let shuffled = shuffleStr(&alphabet);
+   |                                   +
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `Vec<&'static str>`
+  --> /tmp/adfgvx-cipher.rs:37:13
+   |
+37 |             p += vec![row];
+   |             -^^^^^^^^^^^^^
+   |             |
+   |             cannot use `+=` on type `Vec<&'static str>`
+   |
+note: the foreign item type `Vec<&'static str>` doesn't implement `AddAssign<Vec<&str>>`
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:409:1
+   |
+   = note: not implement `AddAssign<Vec<&str>>`
+
+error[E0277]: cannot add-assign `{integer}` to `f64`
+   --> /tmp/adfgvx-cipher.rs:114:20
+    |
+114 |             colLen += 1;
+    |                    ^^ no implementation for `f64 += {integer}`
+    |
+    = help: the trait `AddAssign<{integer}>` is not implemented for `f64`
+    = help: the following other types implement trait `AddAssign<Rhs>`:
+              `f64` implements `AddAssign<&f64>`
+              `f64` implements `AddAssign`
+help: consider using a floating-point literal by writing it with `.0`
+    |
+114 |             colLen += 1.0;
+    |                        ++
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `Vec<&'static str>`
+   --> /tmp/adfgvx-cipher.rs:122:17
+    |
+122 |                 row += vec![""];
+    |                 ---^^^^^^^^^^^^
+    |                 |
+    |                 cannot use `+=` on type `Vec<&'static str>`
+    |
+note: the foreign item type `Vec<&'static str>` doesn't implement `AddAssign<Vec<&str>>`
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:409:1
+    |
+    = note: not implement `AddAssign<Vec<&str>>`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `Vec<Vec<&'static str>>`
+   --> /tmp/adfgvx-cipher.rs:125:13
+    |
+125 |             table += vec![row];
+    |             -----^^^^^^^^^^^^^
+    |             |
+    |             cannot use `+=` on type `Vec<Vec<&'static str>>`
+    |
+note: the foreign item type `Vec<Vec<&'static str>>` doesn't implement `AddAssign<Vec<Vec<&str>>>`
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:409:1
+    |
+    = note: not implement `AddAssign<Vec<Vec<&str>>>`
+
+error[E0308]: mismatched types
+   --> /tmp/adfgvx-cipher.rs:132:75
+    |
+132 |             table[row as usize][col as usize] = &temp[idx as usize..idx + 1 as usize];
+    |                                                                           ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+   --> /tmp/adfgvx-cipher.rs:132:69
+    |
+132 |             table[row as usize][col as usize] = &temp[idx as usize..idx + 1 as usize];
+    |                                                                     ^^^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+   --> /tmp/adfgvx-cipher.rs:132:73
+    |
+132 |             table[row as usize][col as usize] = &temp[idx as usize..idx + 1 as usize];
+    |                                                                         ^ no implementation for `i32 + usize`
+    |
+    = help: the trait `Add<usize>` is not implemented for `i32`
+    = help: the following other types implement trait `Add<Rhs>`:
+              `&i32` implements `Add<i32>`
+              `&i32` implements `Add`
+              `i32` implements `Add<&i32>`
+              `i32` implements `Add`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `Vec<&'static str>`
+   --> /tmp/adfgvx-cipher.rs:145:13
+    |
+145 |             cols += vec![colStr];
+    |             ----^^^^^^^^^^^^^^^^
+    |             |
+    |             cannot use `+=` on type `Vec<&'static str>`
+    |
+note: the foreign item type `Vec<&'static str>` doesn't implement `AddAssign<Vec<String>>`
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:409:1
+    |
+    = note: not implement `AddAssign<Vec<String>>`
+
+error[E0308]: mismatched types
+   --> /tmp/adfgvx-cipher.rs:157:16
+    |
+95  |     let encrypt = move |polybius: Vec<&'static str>, key: &'static str, plainText: &'static str| -> &'static str {
+    |                                                                                                     ------------ expected `&'static str` because of return type
+...
+157 |         return result;
+    |                ^^^^^^ expected `&str`, found `String`
+    |
+help: consider borrowing here
+    |
+157 |         return &result;
+    |                +
+
+error[E0308]: mismatched types
+   --> /tmp/adfgvx-cipher.rs:174:95
+    |
+174 |             if i == cipherText.len() as i32 || cipherText.chars().nth(i as usize).unwrap() == " " {
+    |                                                -------------------------------------------    ^^^ expected `char`, found `&str`
+    |                                                |
+    |                                                expected because this is `char`
+    |
+help: if you meant to write a `char` literal, use single quotes
+    |
+174 -             if i == cipherText.len() as i32 || cipherText.chars().nth(i as usize).unwrap() == " " {
+174 +             if i == cipherText.len() as i32 || cipherText.chars().nth(i as usize).unwrap() == ' ' {
+    |
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `Vec<&'static str>`
+   --> /tmp/adfgvx-cipher.rs:175:17
+    |
+175 |                 colStrs += vec![&cipherText[start as usize..i as usize]];
+    |                 -------^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |                 |
+    |                 cannot use `+=` on type `Vec<&'static str>`
+    |
+note: the foreign item type `Vec<&'static str>` doesn't implement `AddAssign<Vec<&str>>`
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:409:1
+    |
+    = note: not implement `AddAssign<Vec<&str>>`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `Vec<&'static str>`
+   --> /tmp/adfgvx-cipher.rs:195:17
+    |
+195 |                 ls += vec![s.chars().nth(j as usize).unwrap()];
+    |                 --^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |                 |
+    |                 cannot use `+=` on type `Vec<&'static str>`
+    |
+note: the foreign item type `Vec<&'static str>` doesn't implement `AddAssign<Vec<char>>`
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:409:1
+    |
+    = note: not implement `AddAssign<Vec<char>>`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `Vec<&'static str>`
+   --> /tmp/adfgvx-cipher.rs:203:25
+    |
+203 |                         pad += vec![ls[k as usize]];
+    |                         ---^^^^^^^^^^^^^^^^^^^^^^^^
+    |                         |
+    |                         cannot use `+=` on type `Vec<&'static str>`
+    |
+note: the foreign item type `Vec<&'static str>` doesn't implement `AddAssign<Vec<&str>>`
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:409:1
+    |
+    = note: not implement `AddAssign<Vec<&str>>`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `Vec<&'static str>`
+   --> /tmp/adfgvx-cipher.rs:205:25
+    |
+205 |                         pad += vec![""];
+    |                         ---^^^^^^^^^^^^
+    |                         |
+    |                         cannot use `+=` on type `Vec<&'static str>`
+    |
+note: the foreign item type `Vec<&'static str>` doesn't implement `AddAssign<Vec<&str>>`
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:409:1
+    |
+    = note: not implement `AddAssign<Vec<&str>>`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `Vec<Vec<&'static str>>`
+   --> /tmp/adfgvx-cipher.rs:209:17
+    |
+209 |                 cols += vec![pad];
+    |                 ----^^^^^^^^^^^^^
+    |                 |
+    |                 cannot use `+=` on type `Vec<Vec<&'static str>>`
+    |
+note: the foreign item type `Vec<Vec<&'static str>>` doesn't implement `AddAssign<Vec<Vec<&str>>>`
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:409:1
+    |
+    = note: not implement `AddAssign<Vec<Vec<&str>>>`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `Vec<Vec<&'static str>>`
+   --> /tmp/adfgvx-cipher.rs:211:17
+    |
+211 |                 cols += vec![ls];
+    |                 ----^^^^^^^^^^^^
+    |                 |
+    |                 cannot use `+=` on type `Vec<Vec<&'static str>>`
+    |
+note: the foreign item type `Vec<Vec<&'static str>>` doesn't implement `AddAssign<Vec<Vec<&str>>>`
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:409:1
+    |
+    = note: not implement `AddAssign<Vec<Vec<&str>>>`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `Vec<&'static str>`
+   --> /tmp/adfgvx-cipher.rs:221:17
+    |
+221 |                 row += vec![""];
+    |                 ---^^^^^^^^^^^^
+    |                 |
+    |                 cannot use `+=` on type `Vec<&'static str>`
+    |
+note: the foreign item type `Vec<&'static str>` doesn't implement `AddAssign<Vec<&str>>`
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:409:1
+    |
+    = note: not implement `AddAssign<Vec<&str>>`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `Vec<Vec<&'static str>>`
+   --> /tmp/adfgvx-cipher.rs:224:13
+    |
+224 |             table += vec![row];
+    |             -----^^^^^^^^^^^^^
+    |             |
+    |             cannot use `+=` on type `Vec<Vec<&'static str>>`
+    |
+note: the foreign item type `Vec<Vec<&'static str>>` doesn't implement `AddAssign<Vec<Vec<&str>>>`
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:409:1
+    |
+    = note: not implement `AddAssign<Vec<Vec<&str>>>`
+
+error[E0308]: mismatched types
+   --> /tmp/adfgvx-cipher.rs:250:66
+    |
+250 |             let rIdx = indexOf(adfgvx, &temp[idx as usize..idx + 1 as usize]);
+    |                                                                  ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+   --> /tmp/adfgvx-cipher.rs:250:60
+    |
+250 |             let rIdx = indexOf(adfgvx, &temp[idx as usize..idx + 1 as usize]);
+    |                                                            ^^^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+   --> /tmp/adfgvx-cipher.rs:250:64
+    |
+250 |             let rIdx = indexOf(adfgvx, &temp[idx as usize..idx + 1 as usize]);
+    |                                                                ^ no implementation for `i32 + usize`
+    |
+    = help: the trait `Add<usize>` is not implemented for `i32`
+    = help: the following other types implement trait `Add<Rhs>`:
+              `&i32` implements `Add<i32>`
+              `&i32` implements `Add`
+              `i32` implements `Add<&i32>`
+              `i32` implements `Add`
+
+error[E0308]: mismatched types
+   --> /tmp/adfgvx-cipher.rs:250:32
+    |
+250 |             let rIdx = indexOf(adfgvx, &temp[idx as usize..idx + 1 as usize]);
+    |                        ------- ^^^^^^ expected `&str`, found `String`
+    |                        |
+    |                        arguments to this function are incorrect
+    |
+note: function defined here
+   --> /tmp/adfgvx-cipher.rs:159:8
+    |
+159 |     fn indexOf(s: &'static str, ch: &'static str) -> i32 {
+    |        ^^^^^^^ ---------------
+help: consider borrowing here
+    |
+250 |             let rIdx = indexOf(&adfgvx, &temp[idx as usize..idx + 1 as usize]);
+    |                                +
+
+error[E0308]: mismatched types
+   --> /tmp/adfgvx-cipher.rs:251:52
+    |
+251 |             let cIdx = indexOf(adfgvx, &temp[idx + 1 as usize..idx + 2 as usize]);
+    |                                                    ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot add `usize` to `i32`
+   --> /tmp/adfgvx-cipher.rs:251:50
+    |
+251 |             let cIdx = indexOf(adfgvx, &temp[idx + 1 as usize..idx + 2 as usize]);
+    |                                                  ^ no implementation for `i32 + usize`
+    |
+    = help: the trait `Add<usize>` is not implemented for `i32`
+    = help: the following other types implement trait `Add<Rhs>`:
+              `&i32` implements `Add<i32>`
+              `&i32` implements `Add`
+              `i32` implements `Add<&i32>`
+              `i32` implements `Add`
+
+error[E0308]: mismatched types
+   --> /tmp/adfgvx-cipher.rs:251:70
+    |
+251 |             let cIdx = indexOf(adfgvx, &temp[idx + 1 as usize..idx + 2 as usize]);
+    |                                                                      ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot add `usize` to `i32`
+   --> /tmp/adfgvx-cipher.rs:251:68
+    |
+251 |             let cIdx = indexOf(adfgvx, &temp[idx + 1 as usize..idx + 2 as usize]);
+    |                                                                    ^ no implementation for `i32 + usize`
+    |
+    = help: the trait `Add<usize>` is not implemented for `i32`
+    = help: the following other types implement trait `Add<Rhs>`:
+              `&i32` implements `Add<i32>`
+              `&i32` implements `Add`
+              `i32` implements `Add<&i32>`
+              `i32` implements `Add`
+
+error[E0277]: the type `str` cannot be indexed by `std::ops::Range<i32>`
+   --> /tmp/adfgvx-cipher.rs:251:46
+    |
+251 |             let cIdx = indexOf(adfgvx, &temp[idx + 1 as usize..idx + 2 as usize]);
+    |                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ string indices are ranges of `usize`
+    |
+    = help: the trait `SliceIndex<str>` is not implemented for `std::ops::Range<i32>`
+    = help: the following other types implement trait `SliceIndex<T>`:
+              `std::ops::Range<usize>` implements `SliceIndex<[T]>`
+              `std::ops::Range<usize>` implements `SliceIndex<str>`
+    = note: required for `String` to implement `Index<std::ops::Range<i32>>`
+
+error[E0308]: mismatched types
+   --> /tmp/adfgvx-cipher.rs:251:32
+    |
+251 |             let cIdx = indexOf(adfgvx, &temp[idx + 1 as usize..idx + 2 as usize]);
+    |                        ------- ^^^^^^ expected `&str`, found `String`
+    |                        |
+    |                        arguments to this function are incorrect
+    |
+note: function defined here
+   --> /tmp/adfgvx-cipher.rs:159:8
+    |
+159 |     fn indexOf(s: &'static str, ch: &'static str) -> i32 {
+    |        ^^^^^^^ ---------------
+help: consider borrowing here
+    |
+251 |             let cIdx = indexOf(&adfgvx, &temp[idx + 1 as usize..idx + 2 as usize]);
+    |                                +
+
+error[E0308]: mismatched types
+   --> /tmp/adfgvx-cipher.rs:252:26
+    |
+252 |             plainText += polybius[rIdx as usize].chars().nth(cIdx as usize).unwrap();
+    |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `char`
+
+error[E0308]: mismatched types
+   --> /tmp/adfgvx-cipher.rs:255:16
+    |
+169 |     let decrypt = move |polybius: Vec<&'static str>, key: &'static str, cipherText: &'static str| -> &'static str {
+    |                                                                                                      ------------ expected `&'static str` because of return type
+...
+255 |         return plainText;
+    |                ^^^^^^^^^ expected `&str`, found `String`
+    |
+help: consider borrowing here
+    |
+255 |         return &plainText;
+    |                +
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `Vec<&'static str>`
+ --> /tmp/adfgvx-cipher.rs:9:13
+  |
+9 |             arr += vec![s.chars().nth(i as usize).unwrap()];
+  |             ---^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |             |
+  |             cannot use `+=` on type `Vec<&'static str>`
+  |
+note: the foreign item type `Vec<&'static str>` doesn't implement `AddAssign<Vec<char>>`
+ --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:409:1
+  |
+  = note: not implement `AddAssign<Vec<char>>`
+
+error[E0425]: cannot find function `now` in this scope
+  --> /tmp/adfgvx-cipher.rs:14:21
+   |
+14 |             let k = now() % (j + 1);
+   |                     ^^^ not found in this scope
+
+error[E0308]: mismatched types
+  --> /tmp/adfgvx-cipher.rs:26:16
+   |
+5  |     fn shuffleStr(s: &'static str) -> &'static str {
+   |                                       ------------ expected `&'static str` because of return type
+...
+26 |         return out;
+   |                ^^^ expected `&str`, found `String`
+   |
+help: consider borrowing here
+   |
+26 |         return &out;
+   |                +
+
+error[E0425]: cannot find function `now` in this scope
+  --> /tmp/adfgvx-cipher.rs:57:23
+   |
+57 |             let idx = now() % pool.len() as i32;
+   |                       ^^^ not found in this scope
+
+error[E0308]: mismatched types
+  --> /tmp/adfgvx-cipher.rs:58:20
+   |
+58 |             key += pool.chars().nth(idx as usize).unwrap();
+   |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `char`
+
+error[E0308]: mismatched types
+  --> /tmp/adfgvx-cipher.rs:64:16
+   |
+49 |     fn createKey(n: i32) -> &'static str {
+   |                             ------------ expected `&'static str` because of return type
+...
+64 |         return key;
+   |                ^^^ expected `&str`, found `String`
+   |
+help: consider borrowing here
+   |
+64 |         return &key;
+   |                +
+
+error[E0308]: mismatched types
+  --> /tmp/adfgvx-cipher.rs:70:70
+   |
+70 |             pairs += vec![vec![key.chars().nth(i as usize).unwrap(), i]];
+   |                                                                      ^ expected `char`, found `i32`
+
+error[E0308]: mismatched types
+  --> /tmp/adfgvx-cipher.rs:78:53
+   |
+78 |                 if pairs[j as usize][0] > pairs[j + 1 as usize][0] {
+   |                                                     ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/adfgvx-cipher.rs:78:51
+   |
+78 |                 if pairs[j as usize][0] > pairs[j + 1 as usize][0] {
+   |                                                   ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0308]: mismatched types
+  --> /tmp/adfgvx-cipher.rs:80:51
+   |
+80 |                     pairs[j as usize] = pairs[j + 1 as usize];
+   |                                                   ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/adfgvx-cipher.rs:80:49
+   |
+80 |                     pairs[j as usize] = pairs[j + 1 as usize];
+   |                                                 ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0308]: mismatched types
+  --> /tmp/adfgvx-cipher.rs:81:31
+   |
+81 |                     pairs[j + 1 as usize] = tmp;
+   |                               ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/adfgvx-cipher.rs:81:29
+   |
+81 |                     pairs[j + 1 as usize] = tmp;
+   |                             ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0308]: mismatched types
+   --> /tmp/adfgvx-cipher.rs:162:54
+    |
+162 |             if s.chars().nth(i as usize).unwrap() == ch {
+    |                ----------------------------------    ^^ expected `char`, found `&str`
+    |                |
+    |                expected because this is `char`
+
+error: aborting due to 49 previous errors
+
+Some errors have detailed explanations: E0277, E0308, E0368, E0425, E0434.
+For more information about an error, try `rustc --explain E0277`.

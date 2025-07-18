@@ -1,64 +1,64 @@
-rustc error: exit status 1
+rustc: exit status 1
 error: `<` is interpreted as a start of generic arguments for `i32`, not a comparison
-  --> /tmp/TestMochiRustGoldenaverages-simple-moving-average2679388908/001/prog.rs:39:32
+  --> /tmp/averages-simple-moving-average.rs:34:32
    |
-39 |         while out.len() as i32 < width {
+34 |         while out.len() as i32 < width {
    |                                ^ ------- interpreted as generic arguments
    |                                |
    |                                not interpreted as comparison
    |
 help: try comparing the cast value
    |
-39 |         while (out.len() as i32) < width {
+34 |         while (out.len() as i32) < width {
    |               +                +
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenaverages-simple-moving-average2679388908/001/prog.rs:11:35
-   |
-11 |             if &s[i as usize..i + 1 as usize] == ch {
-   |                                   ^^^^^^^^^^ expected `i32`, found `usize`
+ --> /tmp/averages-simple-moving-average.rs:6:35
+  |
+6 |             if &s[i as usize..i + 1 as usize] == ch {
+  |                                   ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenaverages-simple-moving-average2679388908/001/prog.rs:11:31
-   |
-11 |             if &s[i as usize..i + 1 as usize] == ch {
-   |                               ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+ --> /tmp/averages-simple-moving-average.rs:6:31
+  |
+6 |             if &s[i as usize..i + 1 as usize] == ch {
+  |                               ^^^^^^^^^^^^^^ expected `usize`, found `i32`
 
 error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/TestMochiRustGoldenaverages-simple-moving-average2679388908/001/prog.rs:11:33
-   |
-11 |             if &s[i as usize..i + 1 as usize] == ch {
-   |                                 ^ no implementation for `i32 + usize`
-   |
-   = help: the trait `Add<usize>` is not implemented for `i32`
-   = help: the following other types implement trait `Add<Rhs>`:
-             `&i32` implements `Add<i32>`
-             `&i32` implements `Add`
-             `i32` implements `Add<&i32>`
-             `i32` implements `Add`
+ --> /tmp/averages-simple-moving-average.rs:6:33
+  |
+6 |             if &s[i as usize..i + 1 as usize] == ch {
+  |                                 ^ no implementation for `i32 + usize`
+  |
+  = help: the trait `Add<usize>` is not implemented for `i32`
+  = help: the following other types implement trait `Add<Rhs>`:
+            `&i32` implements `Add<i32>`
+            `&i32` implements `Add`
+            `i32` implements `Add<&i32>`
+            `i32` implements `Add`
 
 error[E0599]: no method named `parse` found for type `f64` in the current scope
-  --> /tmp/TestMochiRustGoldenaverages-simple-moving-average2679388908/001/prog.rs:19:42
+  --> /tmp/averages-simple-moving-average.rs:14:42
    |
-19 |         let mut y = ((x * 1000.0) + 0.5).parse::<i32>().unwrap().parse::<f64>().unwrap() / 1000.0;
+14 |         let mut y = ((x * 1000.0) + 0.5).parse::<i32>().unwrap().parse::<f64>().unwrap() / 1000.0;
    |                                          ^^^^^ method not found in `f64`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenaverages-simple-moving-average2679388908/001/prog.rs:27:42
+  --> /tmp/averages-simple-moving-average.rs:22:42
    |
-27 |                 s = &s[0 as usize..dot + 4 as usize];
+22 |                 s = &s[0 as usize..dot + 4 as usize];
    |                                          ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenaverages-simple-moving-average2679388908/001/prog.rs:27:36
+  --> /tmp/averages-simple-moving-average.rs:22:36
    |
-27 |                 s = &s[0 as usize..dot + 4 as usize];
+22 |                 s = &s[0 as usize..dot + 4 as usize];
    |                                    ^^^^^^^^^^^^^^^^ expected `usize`, found `i32`
 
 error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/TestMochiRustGoldenaverages-simple-moving-average2679388908/001/prog.rs:27:40
+  --> /tmp/averages-simple-moving-average.rs:22:40
    |
-27 |                 s = &s[0 as usize..dot + 4 as usize];
+22 |                 s = &s[0 as usize..dot + 4 as usize];
    |                                        ^ no implementation for `i32 + usize`
    |
    = help: the trait `Add<usize>` is not implemented for `i32`
@@ -69,23 +69,23 @@ error[E0277]: cannot add `usize` to `i32`
              `i32` implements `Add`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenaverages-simple-moving-average2679388908/001/prog.rs:40:19
+  --> /tmp/averages-simple-moving-average.rs:35:19
    |
-40 |             out = format!("{}{}", " ", out);
+35 |             out = format!("{}{}", " ", out);
    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
    |
    = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenaverages-simple-moving-average2679388908/001/prog.rs:51:31
+  --> /tmp/averages-simple-moving-average.rs:46:31
    |
-51 |                 sum -= xs[i - period as usize];
+46 |                 sum -= xs[i - period as usize];
    |                               ^^^^^^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0277]: cannot subtract `usize` from `i32`
-  --> /tmp/TestMochiRustGoldenaverages-simple-moving-average2679388908/001/prog.rs:51:29
+  --> /tmp/averages-simple-moving-average.rs:46:29
    |
-51 |                 sum -= xs[i - period as usize];
+46 |                 sum -= xs[i - period as usize];
    |                             ^ no implementation for `i32 - usize`
    |
    = help: the trait `Sub<usize>` is not implemented for `i32`
@@ -96,9 +96,9 @@ error[E0277]: cannot subtract `usize` from `i32`
              `i32` implements `Sub`
 
 error[E0277]: the type `[f64]` cannot be indexed by `i32`
-  --> /tmp/TestMochiRustGoldenaverages-simple-moving-average2679388908/001/prog.rs:51:27
+  --> /tmp/averages-simple-moving-average.rs:46:27
    |
-51 |                 sum -= xs[i - period as usize];
+46 |                 sum -= xs[i - period as usize];
    |                           ^^^^^^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
    |
    = help: the trait `SliceIndex<[f64]>` is not implemented for `i32`
@@ -107,15 +107,15 @@ error[E0277]: the type `[f64]` cannot be indexed by `i32`
    = note: required for `Vec<f64>` to implement `Index<i32>`
 
 error[E0599]: no method named `parse` found for type `i32` in the current scope
-  --> /tmp/TestMochiRustGoldenaverages-simple-moving-average2679388908/001/prog.rs:57:44
+  --> /tmp/averages-simple-moving-average.rs:52:70
    |
-57 |             res = append(res, sum / (denom.parse::<f64>().unwrap()));
-   |                                            ^^^^^ method not found in `i32`
+52 |             res = { let mut tmp = res.clone(); tmp.push(sum / (denom.parse::<f64>().unwrap())); tmp };
+   |                                                                      ^^^^^ method not found in `i32`
 
 warning: variable does not need to be mutable
-  --> /tmp/TestMochiRustGoldenaverages-simple-moving-average2679388908/001/prog.rs:63:13
+  --> /tmp/averages-simple-moving-average.rs:58:13
    |
-63 |         let mut xs = vec![1.0, 2.0, 3.0, 4.0, 5.0, 5.0, 4.0, 3.0, 2.0, 1.0];
+58 |         let mut xs = vec![1.0, 2.0, 3.0, 4.0, 5.0, 5.0, 4.0, 3.0, 2.0, 1.0];
    |             ----^^
    |             |
    |             help: remove this `mut`
@@ -123,65 +123,65 @@ warning: variable does not need to be mutable
    = note: `#[warn(unused_mut)]` on by default
 
 warning: variable does not need to be mutable
-  --> /tmp/TestMochiRustGoldenaverages-simple-moving-average2679388908/001/prog.rs:64:13
+  --> /tmp/averages-simple-moving-average.rs:59:13
    |
-64 |         let mut sma3 = smaSeries(xs, 3);
+59 |         let mut sma3 = smaSeries(xs, 3);
    |             ----^^^^
    |             |
    |             help: remove this `mut`
 
 warning: variable does not need to be mutable
-  --> /tmp/TestMochiRustGoldenaverages-simple-moving-average2679388908/001/prog.rs:65:13
+  --> /tmp/averages-simple-moving-average.rs:60:13
    |
-65 |         let mut sma5 = smaSeries(xs, 5);
+60 |         let mut sma5 = smaSeries(xs, 5);
    |             ----^^^^
    |             |
    |             help: remove this `mut`
 
 error[E0382]: use of moved value: `xs`
-  --> /tmp/TestMochiRustGoldenaverages-simple-moving-average2679388908/001/prog.rs:65:34
+  --> /tmp/averages-simple-moving-average.rs:60:34
    |
-63 |         let mut xs = vec![1.0, 2.0, 3.0, 4.0, 5.0, 5.0, 4.0, 3.0, 2.0, 1.0];
+58 |         let mut xs = vec![1.0, 2.0, 3.0, 4.0, 5.0, 5.0, 4.0, 3.0, 2.0, 1.0];
    |             ------ move occurs because `xs` has type `Vec<f64>`, which does not implement the `Copy` trait
-64 |         let mut sma3 = smaSeries(xs, 3);
+59 |         let mut sma3 = smaSeries(xs, 3);
    |                                  -- value moved here
-65 |         let mut sma5 = smaSeries(xs, 5);
+60 |         let mut sma5 = smaSeries(xs, 5);
    |                                  ^^ value used here after move
    |
 note: consider changing this parameter type in function `smaSeries` to borrow instead if owning the value isn't necessary
-  --> /tmp/TestMochiRustGoldenaverages-simple-moving-average2679388908/001/prog.rs:44:22
+  --> /tmp/averages-simple-moving-average.rs:39:22
    |
-44 |     fn smaSeries(xs: Vec<f64>, period: i32) -> Vec<f64> {
+39 |     fn smaSeries(xs: Vec<f64>, period: i32) -> Vec<f64> {
    |        ---------     ^^^^^^^^ this parameter takes ownership of the value
    |        |
    |        in this function
 help: consider cloning the value if the performance cost is acceptable
    |
-64 |         let mut sma3 = smaSeries(xs.clone(), 3);
+59 |         let mut sma3 = smaSeries(xs.clone(), 3);
    |                                    ++++++++
 
 error[E0382]: borrow of moved value: `xs`
-  --> /tmp/TestMochiRustGoldenaverages-simple-moving-average2679388908/001/prog.rs:68:19
+  --> /tmp/averages-simple-moving-average.rs:63:19
    |
-63 |         let mut xs = vec![1.0, 2.0, 3.0, 4.0, 5.0, 5.0, 4.0, 3.0, 2.0, 1.0];
+58 |         let mut xs = vec![1.0, 2.0, 3.0, 4.0, 5.0, 5.0, 4.0, 3.0, 2.0, 1.0];
    |             ------ move occurs because `xs` has type `Vec<f64>`, which does not implement the `Copy` trait
-64 |         let mut sma3 = smaSeries(xs, 3);
-65 |         let mut sma5 = smaSeries(xs, 5);
+59 |         let mut sma3 = smaSeries(xs, 3);
+60 |         let mut sma5 = smaSeries(xs, 5);
    |                                  -- value moved here
 ...
-68 |         while i < xs.len() as i32 {
+63 |         while i < xs.len() as i32 {
    |                   ^^ value borrowed here after move
    |
 note: consider changing this parameter type in function `smaSeries` to borrow instead if owning the value isn't necessary
-  --> /tmp/TestMochiRustGoldenaverages-simple-moving-average2679388908/001/prog.rs:44:22
+  --> /tmp/averages-simple-moving-average.rs:39:22
    |
-44 |     fn smaSeries(xs: Vec<f64>, period: i32) -> Vec<f64> {
+39 |     fn smaSeries(xs: Vec<f64>, period: i32) -> Vec<f64> {
    |        ---------     ^^^^^^^^ this parameter takes ownership of the value
    |        |
    |        in this function
 help: consider cloning the value if the performance cost is acceptable
    |
-65 |         let mut sma5 = smaSeries(xs.clone(), 5);
+60 |         let mut sma5 = smaSeries(xs.clone(), 5);
    |                                    ++++++++
 
 error: aborting due to 15 previous errors; 3 warnings emitted

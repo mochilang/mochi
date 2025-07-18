@@ -1,26 +1,22 @@
-rustc error: exit status 1
+rustc: exit status 1
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:50:21
+  --> /tmp/abelian-sandpile-model-identity.rs:52:16
    |
-50 |                 s = format!("{}{}", format!("{}{}", s, p[3 * r + c as usize].to_string()), " ");
-   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+39 |     fn pileString(p: Vec<i32>) -> &'static str {
+   |                                   ------------ expected `&'static str` because of return type
+...
+52 |         return s;
+   |                ^ expected `&str`, found `String`
    |
-   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:53:13
+help: consider borrowing here
    |
-53 |               s += "
-   |               ^ cannot use `+=` on type `&str`
-   |  _____________|
-   | |
-54 | | ";
-   | |_^
+52 |         return &s;
+   |                +
 
 warning: variable does not need to be mutable
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:67:9
+  --> /tmp/abelian-sandpile-model-identity.rs:62:9
    |
-67 |     let mut s1 = vec![1, 2, 0, 2, 1, 1, 0, 1, 3];
+62 |     let mut s1 = vec![1, 2, 0, 2, 1, 1, 0, 1, 3];
    |         ----^^
    |         |
    |         help: remove this `mut`
@@ -28,495 +24,495 @@ warning: variable does not need to be mutable
    = note: `#[warn(unused_mut)]` on by default
 
 warning: variable does not need to be mutable
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:68:9
+  --> /tmp/abelian-sandpile-model-identity.rs:63:9
    |
-68 |     let mut s2 = vec![2, 1, 3, 1, 0, 1, 0, 1, 0];
+63 |     let mut s2 = vec![2, 1, 3, 1, 0, 1, 0, 1, 0];
    |         ----^^
    |         |
    |         help: remove this `mut`
 
 warning: variable does not need to be mutable
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:94:9
+  --> /tmp/abelian-sandpile-model-identity.rs:89:9
    |
-94 |     let mut s3 = vec![3, 3, 3, 3, 3, 3, 3, 3, 3];
+89 |     let mut s3 = vec![3, 3, 3, 3, 3, 3, 3, 3, 3];
    |         ----^^
    |         |
    |         help: remove this `mut`
 
 warning: variable does not need to be mutable
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:95:9
+  --> /tmp/abelian-sandpile-model-identity.rs:90:9
    |
-95 |     let mut s3_id = vec![2, 1, 2, 1, 0, 1, 2, 1, 2];
+90 |     let mut s3_id = vec![2, 1, 2, 1, 0, 1, 2, 1, 2];
    |         ----^^^^^
    |         |
    |         help: remove this `mut`
 
 error[E0382]: use of moved value: `s4`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:62:21
+  --> /tmp/abelian-sandpile-model-identity.rs:57:21
    |
-60 |     let mut s4 = vec![4, 3, 3, 3, 1, 2, 0, 2, 3];
+55 |     let mut s4 = vec![4, 3, 3, 3, 1, 2, 0, 2, 3];
    |         ------ move occurs because `s4` has type `Vec<i32>`, which does not implement the `Copy` trait
-61 |     println!("{}", pileString(s4));
-   |                               -- value moved here
-62 |     while !isStable(s4) {
+56 |     println!("{}", vec![format!("{}", pileString(s4))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+   |                                                  -- value moved here
+57 |     while !isStable(s4) {
    |                     ^^ value used here after move
    |
 note: consider changing this parameter type in function `pileString` to borrow instead if owning the value isn't necessary
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:44:22
+  --> /tmp/abelian-sandpile-model-identity.rs:39:22
    |
-44 |     fn pileString(p: Vec<i32>) -> &'static str {
+39 |     fn pileString(p: Vec<i32>) -> &'static str {
    |        ----------    ^^^^^^^^ this parameter takes ownership of the value
    |        |
    |        in this function
 help: consider cloning the value if the performance cost is acceptable
    |
-61 |     println!("{}", pileString(s4.clone()));
-   |                                 ++++++++
+56 |     println!("{}", vec![format!("{}", pileString(s4.clone()))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+   |                                                    ++++++++
 
 error[E0382]: borrow of moved value: `s4`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:63:16
+  --> /tmp/abelian-sandpile-model-identity.rs:58:16
    |
-60 |     let mut s4 = vec![4, 3, 3, 3, 1, 2, 0, 2, 3];
+55 |     let mut s4 = vec![4, 3, 3, 3, 1, 2, 0, 2, 3];
    |         ------ move occurs because `s4` has type `Vec<i32>`, which does not implement the `Copy` trait
-61 |     println!("{}", pileString(s4));
-62 |     while !isStable(s4) {
+56 |     println!("{}", vec![format!("{}", pileString(s4))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+57 |     while !isStable(s4) {
    |     -------------------
    |     |               |
    |     |               value moved here
    |     inside of this loop
-63 |         topple(&mut s4);
+58 |         topple(&mut s4);
    |                ^^^^^^^ value borrowed here after move
    |
 note: consider changing this parameter type in function `isStable` to borrow instead if owning the value isn't necessary
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:20:20
+  --> /tmp/abelian-sandpile-model-identity.rs:15:20
    |
-20 |     fn isStable(p: Vec<i32>) -> bool {
+15 |     fn isStable(p: Vec<i32>) -> bool {
    |        --------    ^^^^^^^^ this parameter takes ownership of the value
    |        |
    |        in this function
 help: consider moving the expression out of the loop so it is only moved once
    |
-62 ~     let mut value = isStable(s4);
-63 ~     while !value {
+57 ~     let mut value = isStable(s4);
+58 ~     while !value {
    |
 help: consider cloning the value if the performance cost is acceptable
    |
-62 |     while !isStable(s4.clone()) {
+57 |     while !isStable(s4.clone()) {
    |                       ++++++++
 
 error[E0382]: use of moved value: `s3_a`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:70:21
+  --> /tmp/abelian-sandpile-model-identity.rs:65:21
    |
-69 |     let mut s3_a = plus(s1, s2);
+64 |     let mut s3_a = plus(s1, s2);
    |         -------- move occurs because `s3_a` has type `Vec<i32>`, which does not implement the `Copy` trait
-70 |     while !isStable(s3_a) {
+65 |     while !isStable(s3_a) {
    |     ----------------^^^^-
    |     |               |
    |     |               value moved here, in previous iteration of loop
    |     inside of this loop
    |
 note: consider changing this parameter type in function `isStable` to borrow instead if owning the value isn't necessary
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:20:20
+  --> /tmp/abelian-sandpile-model-identity.rs:15:20
    |
-20 |     fn isStable(p: Vec<i32>) -> bool {
+15 |     fn isStable(p: Vec<i32>) -> bool {
    |        --------    ^^^^^^^^ this parameter takes ownership of the value
    |        |
    |        in this function
 help: consider moving the expression out of the loop so it is only moved once
    |
-70 ~     let mut value = isStable(s3_a);
-71 ~     while !value {
+65 ~     let mut value = isStable(s3_a);
+66 ~     while !value {
    |
 help: consider cloning the value if the performance cost is acceptable
    |
-70 |     while !isStable(s3_a.clone()) {
+65 |     while !isStable(s3_a.clone()) {
    |                         ++++++++
 
 error[E0382]: use of moved value: `s2`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:73:25
+  --> /tmp/abelian-sandpile-model-identity.rs:68:25
    |
-68 |     let mut s2 = vec![2, 1, 3, 1, 0, 1, 0, 1, 0];
+63 |     let mut s2 = vec![2, 1, 3, 1, 0, 1, 0, 1, 0];
    |         ------ move occurs because `s2` has type `Vec<i32>`, which does not implement the `Copy` trait
-69 |     let mut s3_a = plus(s1, s2);
+64 |     let mut s3_a = plus(s1, s2);
    |                             -- value moved here
 ...
-73 |     let mut s3_b = plus(s2, s1);
+68 |     let mut s3_b = plus(s2, s1);
    |                         ^^ value used here after move
    |
 note: consider changing this parameter type in function `plus` to borrow instead if owning the value isn't necessary
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:11:29
+  --> /tmp/abelian-sandpile-model-identity.rs:6:29
    |
-11 |     fn plus(a: Vec<i32>, b: Vec<i32>) -> Vec<i32> {
+6  |     fn plus(a: Vec<i32>, b: Vec<i32>) -> Vec<i32> {
    |        ----                 ^^^^^^^^ this parameter takes ownership of the value
    |        |
    |        in this function
 help: consider cloning the value if the performance cost is acceptable
    |
-69 |     let mut s3_a = plus(s1, s2.clone());
+64 |     let mut s3_a = plus(s1, s2.clone());
    |                               ++++++++
 
 error[E0382]: use of moved value: `s1`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:73:29
+  --> /tmp/abelian-sandpile-model-identity.rs:68:29
    |
-67 |     let mut s1 = vec![1, 2, 0, 2, 1, 1, 0, 1, 3];
+62 |     let mut s1 = vec![1, 2, 0, 2, 1, 1, 0, 1, 3];
    |         ------ move occurs because `s1` has type `Vec<i32>`, which does not implement the `Copy` trait
-68 |     let mut s2 = vec![2, 1, 3, 1, 0, 1, 0, 1, 0];
-69 |     let mut s3_a = plus(s1, s2);
+63 |     let mut s2 = vec![2, 1, 3, 1, 0, 1, 0, 1, 0];
+64 |     let mut s3_a = plus(s1, s2);
    |                         -- value moved here
 ...
-73 |     let mut s3_b = plus(s2, s1);
+68 |     let mut s3_b = plus(s2, s1);
    |                             ^^ value used here after move
    |
 note: consider changing this parameter type in function `plus` to borrow instead if owning the value isn't necessary
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:11:16
+  --> /tmp/abelian-sandpile-model-identity.rs:6:16
    |
-11 |     fn plus(a: Vec<i32>, b: Vec<i32>) -> Vec<i32> {
+6  |     fn plus(a: Vec<i32>, b: Vec<i32>) -> Vec<i32> {
    |        ----    ^^^^^^^^ this parameter takes ownership of the value
    |        |
    |        in this function
 help: consider cloning the value if the performance cost is acceptable
    |
-69 |     let mut s3_a = plus(s1.clone(), s2);
+64 |     let mut s3_a = plus(s1.clone(), s2);
    |                           ++++++++
 
 error[E0382]: use of moved value: `s3_b`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:74:21
+  --> /tmp/abelian-sandpile-model-identity.rs:69:21
    |
-73 |     let mut s3_b = plus(s2, s1);
+68 |     let mut s3_b = plus(s2, s1);
    |         -------- move occurs because `s3_b` has type `Vec<i32>`, which does not implement the `Copy` trait
-74 |     while !isStable(s3_b) {
+69 |     while !isStable(s3_b) {
    |     ----------------^^^^-
    |     |               |
    |     |               value moved here, in previous iteration of loop
    |     inside of this loop
    |
 note: consider changing this parameter type in function `isStable` to borrow instead if owning the value isn't necessary
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:20:20
+  --> /tmp/abelian-sandpile-model-identity.rs:15:20
    |
-20 |     fn isStable(p: Vec<i32>) -> bool {
+15 |     fn isStable(p: Vec<i32>) -> bool {
    |        --------    ^^^^^^^^ this parameter takes ownership of the value
    |        |
    |        in this function
 help: consider moving the expression out of the loop so it is only moved once
    |
-74 ~     let mut value = isStable(s3_b);
-75 ~     while !value {
+69 ~     let mut value = isStable(s3_b);
+70 ~     while !value {
    |
 help: consider cloning the value if the performance cost is acceptable
    |
-74 |     while !isStable(s3_b.clone()) {
+69 |     while !isStable(s3_b.clone()) {
    |                         ++++++++
 
 error[E0382]: use of moved value: `s1`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:77:95
+  --> /tmp/abelian-sandpile-model-identity.rs:72:114
    |
-67 |     let mut s1 = vec![1, 2, 0, 2, 1, 1, 0, 1, 3];
+62 |     let mut s1 = vec![1, 2, 0, 2, 1, 1, 0, 1, 3];
    |         ------ move occurs because `s1` has type `Vec<i32>`, which does not implement the `Copy` trait
 ...
-73 |     let mut s3_b = plus(s2, s1);
+68 |     let mut s3_b = plus(s2, s1);
    |                             -- value moved here
 ...
-77 |     println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", pileString(s1), "
-   |                                                                                               ^^ value used here after move
+72 |     println!("{}", vec![format!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", pileString(s1), "
+   |                                                                                                                  ^^ value used here after move
    |
 note: consider changing this parameter type in function `plus` to borrow instead if owning the value isn't necessary
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:11:29
+  --> /tmp/abelian-sandpile-model-identity.rs:6:29
    |
-11 |     fn plus(a: Vec<i32>, b: Vec<i32>) -> Vec<i32> {
+6  |     fn plus(a: Vec<i32>, b: Vec<i32>) -> Vec<i32> {
    |        ----                 ^^^^^^^^ this parameter takes ownership of the value
    |        |
    |        in this function
 help: consider cloning the value if the performance cost is acceptable
    |
-73 |     let mut s3_b = plus(s2, s1.clone());
+68 |     let mut s3_b = plus(s2, s1.clone());
    |                               ++++++++
 
 error[E0382]: use of moved value: `s2`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:80:16
+  --> /tmp/abelian-sandpile-model-identity.rs:75:16
    |
-68 |     let mut s2 = vec![2, 1, 3, 1, 0, 1, 0, 1, 0];
+63 |     let mut s2 = vec![2, 1, 3, 1, 0, 1, 0, 1, 0];
    |         ------ move occurs because `s2` has type `Vec<i32>`, which does not implement the `Copy` trait
 ...
-73 |     let mut s3_b = plus(s2, s1);
+68 |     let mut s3_b = plus(s2, s1);
    |                         -- value moved here
 ...
-80 | "), pileString(s2)), "
+75 | "), pileString(s2)), "
    |                ^^ value used here after move
    |
 note: consider changing this parameter type in function `plus` to borrow instead if owning the value isn't necessary
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:11:16
+  --> /tmp/abelian-sandpile-model-identity.rs:6:16
    |
-11 |     fn plus(a: Vec<i32>, b: Vec<i32>) -> Vec<i32> {
+6  |     fn plus(a: Vec<i32>, b: Vec<i32>) -> Vec<i32> {
    |        ----    ^^^^^^^^ this parameter takes ownership of the value
    |        |
    |        in this function
 help: consider cloning the value if the performance cost is acceptable
    |
-73 |     let mut s3_b = plus(s2.clone(), s1);
+68 |     let mut s3_b = plus(s2.clone(), s1);
    |                           ++++++++
 
 error[E0382]: use of moved value: `s2`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:86:15
+  --> /tmp/abelian-sandpile-model-identity.rs:81:15
    |
-68 |     let mut s2 = vec![2, 1, 3, 1, 0, 1, 0, 1, 0];
+63 |     let mut s2 = vec![2, 1, 3, 1, 0, 1, 0, 1, 0];
    |         ------ move occurs because `s2` has type `Vec<i32>`, which does not implement the `Copy` trait
 ...
-80 | "), pileString(s2)), "
+75 | "), pileString(s2)), "
    |                -- value moved here
 ...
-86 | ", pileString(s2)), "
+81 | ", pileString(s2)), "
    |               ^^ value used here after move
    |
 note: consider changing this parameter type in function `pileString` to borrow instead if owning the value isn't necessary
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:44:22
+  --> /tmp/abelian-sandpile-model-identity.rs:39:22
    |
-44 |     fn pileString(p: Vec<i32>) -> &'static str {
+39 |     fn pileString(p: Vec<i32>) -> &'static str {
    |        ----------    ^^^^^^^^ this parameter takes ownership of the value
    |        |
    |        in this function
 help: consider cloning the value if the performance cost is acceptable
    |
-80 | "), pileString(s2.clone())), "
+75 | "), pileString(s2.clone())), "
    |                  ++++++++
 
 error[E0382]: use of moved value: `s1`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:89:16
+  --> /tmp/abelian-sandpile-model-identity.rs:84:16
    |
-67 |     let mut s1 = vec![1, 2, 0, 2, 1, 1, 0, 1, 3];
+62 |     let mut s1 = vec![1, 2, 0, 2, 1, 1, 0, 1, 3];
    |         ------ move occurs because `s1` has type `Vec<i32>`, which does not implement the `Copy` trait
 ...
-77 |     println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", pileString(s1), "
-   |                                                                                               -- value moved here
+72 |     println!("{}", vec![format!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", pileString(s1), "
+   |                                                                                                                  -- value moved here
 ...
-89 | "), pileString(s1)), "
+84 | "), pileString(s1)), "
    |                ^^ value used here after move
    |
 note: consider changing this parameter type in function `pileString` to borrow instead if owning the value isn't necessary
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:44:22
+  --> /tmp/abelian-sandpile-model-identity.rs:39:22
    |
-44 |     fn pileString(p: Vec<i32>) -> &'static str {
+39 |     fn pileString(p: Vec<i32>) -> &'static str {
    |        ----------    ^^^^^^^^ this parameter takes ownership of the value
    |        |
    |        in this function
 help: consider cloning the value if the performance cost is acceptable
    |
-77 |     println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", pileString(s1.clone()), "
-   |                                                                                                 ++++++++
+72 |     println!("{}", vec![format!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", pileString(s1.clone()), "
+   |                                                                                                                    ++++++++
 
 error[E0382]: use of moved value: `s4b`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:97:21
+  --> /tmp/abelian-sandpile-model-identity.rs:92:21
    |
-96 |     let mut s4b = plus(s3, s3_id);
+91 |     let mut s4b = plus(s3, s3_id);
    |         ------- move occurs because `s4b` has type `Vec<i32>`, which does not implement the `Copy` trait
-97 |     while !isStable(s4b) {
+92 |     while !isStable(s4b) {
    |     ----------------^^^-
    |     |               |
    |     |               value moved here, in previous iteration of loop
    |     inside of this loop
    |
 note: consider changing this parameter type in function `isStable` to borrow instead if owning the value isn't necessary
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:20:20
+  --> /tmp/abelian-sandpile-model-identity.rs:15:20
    |
-20 |     fn isStable(p: Vec<i32>) -> bool {
+15 |     fn isStable(p: Vec<i32>) -> bool {
    |        --------    ^^^^^^^^ this parameter takes ownership of the value
    |        |
    |        in this function
 help: consider moving the expression out of the loop so it is only moved once
    |
-97 ~     let mut value = isStable(s4b);
-98 ~     while !value {
+92 ~     let mut value = isStable(s4b);
+93 ~     while !value {
    |
 help: consider cloning the value if the performance cost is acceptable
    |
-97 |     while !isStable(s4b.clone()) {
+92 |     while !isStable(s4b.clone()) {
    |                        ++++++++
 
 error[E0382]: use of moved value: `s3`
-   --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:100:95
-    |
-94  |     let mut s3 = vec![3, 3, 3, 3, 3, 3, 3, 3, 3];
-    |         ------ move occurs because `s3` has type `Vec<i32>`, which does not implement the `Copy` trait
-95  |     let mut s3_id = vec![2, 1, 2, 1, 0, 1, 2, 1, 2];
-96  |     let mut s4b = plus(s3, s3_id);
-    |                        -- value moved here
+  --> /tmp/abelian-sandpile-model-identity.rs:95:114
+   |
+89 |     let mut s3 = vec![3, 3, 3, 3, 3, 3, 3, 3, 3];
+   |         ------ move occurs because `s3` has type `Vec<i32>`, which does not implement the `Copy` trait
+90 |     let mut s3_id = vec![2, 1, 2, 1, 0, 1, 2, 1, 2];
+91 |     let mut s4b = plus(s3, s3_id);
+   |                        -- value moved here
 ...
-100 |     println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", pileString(s3), "
-    |                                                                                               ^^ value used here after move
-    |
+95 |     println!("{}", vec![format!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", pileString(s3), "
+   |                                                                                                                  ^^ value used here after move
+   |
 note: consider changing this parameter type in function `plus` to borrow instead if owning the value isn't necessary
-   --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:11:16
-    |
-11  |     fn plus(a: Vec<i32>, b: Vec<i32>) -> Vec<i32> {
-    |        ----    ^^^^^^^^ this parameter takes ownership of the value
-    |        |
-    |        in this function
+  --> /tmp/abelian-sandpile-model-identity.rs:6:16
+   |
+6  |     fn plus(a: Vec<i32>, b: Vec<i32>) -> Vec<i32> {
+   |        ----    ^^^^^^^^ this parameter takes ownership of the value
+   |        |
+   |        in this function
 help: consider cloning the value if the performance cost is acceptable
-    |
-96  |     let mut s4b = plus(s3.clone(), s3_id);
-    |                          ++++++++
+   |
+91 |     let mut s4b = plus(s3.clone(), s3_id);
+   |                          ++++++++
 
 error[E0382]: use of moved value: `s3_id`
-   --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:103:16
-    |
-95  |     let mut s3_id = vec![2, 1, 2, 1, 0, 1, 2, 1, 2];
-    |         --------- move occurs because `s3_id` has type `Vec<i32>`, which does not implement the `Copy` trait
-96  |     let mut s4b = plus(s3, s3_id);
-    |                            ----- value moved here
+  --> /tmp/abelian-sandpile-model-identity.rs:98:16
+   |
+90 |     let mut s3_id = vec![2, 1, 2, 1, 0, 1, 2, 1, 2];
+   |         --------- move occurs because `s3_id` has type `Vec<i32>`, which does not implement the `Copy` trait
+91 |     let mut s4b = plus(s3, s3_id);
+   |                            ----- value moved here
 ...
-103 | "), pileString(s3_id)), "
-    |                ^^^^^ value used here after move
-    |
+98 | "), pileString(s3_id)), "
+   |                ^^^^^ value used here after move
+   |
 note: consider changing this parameter type in function `plus` to borrow instead if owning the value isn't necessary
-   --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:11:29
-    |
-11  |     fn plus(a: Vec<i32>, b: Vec<i32>) -> Vec<i32> {
-    |        ----                 ^^^^^^^^ this parameter takes ownership of the value
-    |        |
-    |        in this function
+  --> /tmp/abelian-sandpile-model-identity.rs:6:29
+   |
+6  |     fn plus(a: Vec<i32>, b: Vec<i32>) -> Vec<i32> {
+   |        ----                 ^^^^^^^^ this parameter takes ownership of the value
+   |        |
+   |        in this function
 help: consider cloning the value if the performance cost is acceptable
-    |
-96  |     let mut s4b = plus(s3, s3_id.clone());
-    |                                 ++++++++
+   |
+91 |     let mut s4b = plus(s3, s3_id.clone());
+   |                                 ++++++++
 
 error[E0382]: use of moved value: `s3_id`
-   --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:108:23
+   --> /tmp/abelian-sandpile-model-identity.rs:103:23
     |
-95  |     let mut s3_id = vec![2, 1, 2, 1, 0, 1, 2, 1, 2];
+90  |     let mut s3_id = vec![2, 1, 2, 1, 0, 1, 2, 1, 2];
     |         --------- move occurs because `s3_id` has type `Vec<i32>`, which does not implement the `Copy` trait
 ...
-103 | "), pileString(s3_id)), "
+98  | "), pileString(s3_id)), "
     |                ----- value moved here
 ...
-108 |     let mut s5 = plus(s3_id, s3_id);
+103 |     let mut s5 = plus(s3_id, s3_id);
     |                       ^^^^^ value used here after move
     |
 note: consider changing this parameter type in function `pileString` to borrow instead if owning the value isn't necessary
-   --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:44:22
+   --> /tmp/abelian-sandpile-model-identity.rs:39:22
     |
-44  |     fn pileString(p: Vec<i32>) -> &'static str {
+39  |     fn pileString(p: Vec<i32>) -> &'static str {
     |        ----------    ^^^^^^^^ this parameter takes ownership of the value
     |        |
     |        in this function
 help: consider cloning the value if the performance cost is acceptable
     |
-103 | "), pileString(s3_id.clone())), "
+98  | "), pileString(s3_id.clone())), "
     |                     ++++++++
 
 error[E0382]: use of moved value: `s3_id`
-   --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:108:30
+   --> /tmp/abelian-sandpile-model-identity.rs:103:30
     |
-95  |     let mut s3_id = vec![2, 1, 2, 1, 0, 1, 2, 1, 2];
+90  |     let mut s3_id = vec![2, 1, 2, 1, 0, 1, 2, 1, 2];
     |         --------- move occurs because `s3_id` has type `Vec<i32>`, which does not implement the `Copy` trait
 ...
-108 |     let mut s5 = plus(s3_id, s3_id);
+103 |     let mut s5 = plus(s3_id, s3_id);
     |                       -----  ^^^^^ value used here after move
     |                       |
     |                       value moved here
     |
 note: consider changing this parameter type in function `plus` to borrow instead if owning the value isn't necessary
-   --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:11:16
+   --> /tmp/abelian-sandpile-model-identity.rs:6:16
     |
-11  |     fn plus(a: Vec<i32>, b: Vec<i32>) -> Vec<i32> {
+6   |     fn plus(a: Vec<i32>, b: Vec<i32>) -> Vec<i32> {
     |        ----    ^^^^^^^^ this parameter takes ownership of the value
     |        |
     |        in this function
 help: consider cloning the value if the performance cost is acceptable
     |
-108 |     let mut s5 = plus(s3_id.clone(), s3_id);
+103 |     let mut s5 = plus(s3_id.clone(), s3_id);
     |                            ++++++++
 
 error[E0382]: use of moved value: `s5`
-   --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:109:21
+   --> /tmp/abelian-sandpile-model-identity.rs:104:21
     |
-108 |     let mut s5 = plus(s3_id, s3_id);
+103 |     let mut s5 = plus(s3_id, s3_id);
     |         ------ move occurs because `s5` has type `Vec<i32>`, which does not implement the `Copy` trait
-109 |     while !isStable(s5) {
+104 |     while !isStable(s5) {
     |     ----------------^^-
     |     |               |
     |     |               value moved here, in previous iteration of loop
     |     inside of this loop
     |
 note: consider changing this parameter type in function `isStable` to borrow instead if owning the value isn't necessary
-   --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:20:20
+   --> /tmp/abelian-sandpile-model-identity.rs:15:20
     |
-20  |     fn isStable(p: Vec<i32>) -> bool {
+15  |     fn isStable(p: Vec<i32>) -> bool {
     |        --------    ^^^^^^^^ this parameter takes ownership of the value
     |        |
     |        in this function
 help: consider moving the expression out of the loop so it is only moved once
     |
-109 ~     let mut value = isStable(s5);
-110 ~     while !value {
+104 ~     let mut value = isStable(s5);
+105 ~     while !value {
     |
 help: consider cloning the value if the performance cost is acceptable
     |
-109 |     while !isStable(s5.clone()) {
+104 |     while !isStable(s5.clone()) {
     |                       ++++++++
 
 error[E0382]: use of moved value: `s3_id`
-   --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:112:95
+   --> /tmp/abelian-sandpile-model-identity.rs:107:114
     |
-95  |     let mut s3_id = vec![2, 1, 2, 1, 0, 1, 2, 1, 2];
+90  |     let mut s3_id = vec![2, 1, 2, 1, 0, 1, 2, 1, 2];
     |         --------- move occurs because `s3_id` has type `Vec<i32>`, which does not implement the `Copy` trait
 ...
-108 |     let mut s5 = plus(s3_id, s3_id);
+103 |     let mut s5 = plus(s3_id, s3_id);
     |                              ----- value moved here
 ...
-112 |     println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", pileString(s3_id), "
-    |                                                                                               ^^^^^ value used here after move
+107 |     println!("{}", vec![format!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", pileString(s3_id), "
+    |                                                                                                                  ^^^^^ value used here after move
     |
 note: consider changing this parameter type in function `plus` to borrow instead if owning the value isn't necessary
-   --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:11:29
+   --> /tmp/abelian-sandpile-model-identity.rs:6:29
     |
-11  |     fn plus(a: Vec<i32>, b: Vec<i32>) -> Vec<i32> {
+6   |     fn plus(a: Vec<i32>, b: Vec<i32>) -> Vec<i32> {
     |        ----                 ^^^^^^^^ this parameter takes ownership of the value
     |        |
     |        in this function
 help: consider cloning the value if the performance cost is acceptable
     |
-108 |     let mut s5 = plus(s3_id, s3_id.clone());
+103 |     let mut s5 = plus(s3_id, s3_id.clone());
     |                                   ++++++++
 
 error[E0382]: use of moved value: `s3_id`
-   --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:115:16
+   --> /tmp/abelian-sandpile-model-identity.rs:110:16
     |
-95  |     let mut s3_id = vec![2, 1, 2, 1, 0, 1, 2, 1, 2];
+90  |     let mut s3_id = vec![2, 1, 2, 1, 0, 1, 2, 1, 2];
     |         --------- move occurs because `s3_id` has type `Vec<i32>`, which does not implement the `Copy` trait
 ...
-112 |     println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", pileString(s3_id), "
-    |                                                                                               ----- value moved here
+107 |     println!("{}", vec![format!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", pileString(s3_id), "
+    |                                                                                                                  ----- value moved here
 ...
-115 | "), pileString(s3_id)), "
+110 | "), pileString(s3_id)), "
     |                ^^^^^ value used here after move
     |
 note: consider changing this parameter type in function `pileString` to borrow instead if owning the value isn't necessary
-   --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:44:22
+   --> /tmp/abelian-sandpile-model-identity.rs:39:22
     |
-44  |     fn pileString(p: Vec<i32>) -> &'static str {
+39  |     fn pileString(p: Vec<i32>) -> &'static str {
     |        ----------    ^^^^^^^^ this parameter takes ownership of the value
     |        |
     |        in this function
 help: consider cloning the value if the performance cost is acceptable
     |
-112 |     println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", pileString(s3_id.clone()), "
-    |                                                                                                    ++++++++
+107 |     println!("{}", vec![format!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", pileString(s3_id.clone()), "
+    |                                                                                                                       ++++++++
 
 error[E0507]: cannot move out of index of `Vec<Vec<i32>>`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model-identity3636205668/001/prog.rs:34:27
+  --> /tmp/abelian-sandpile-model-identity.rs:29:27
    |
-34 |                 let nbs = neighbors[i as usize];
+29 |                 let nbs = neighbors[i as usize];
    |                           ^^^^^^^^^^^^^^^^^^^^^ move occurs because value has type `Vec<i32>`, which does not implement the `Copy` trait
    |
 help: consider borrowing here
    |
-34 |                 let nbs = &neighbors[i as usize];
+29 |                 let nbs = &neighbors[i as usize];
    |                           +
 help: consider cloning the value if the performance cost is acceptable
    |
-34 |                 let nbs = neighbors[i as usize].clone();
+29 |                 let nbs = neighbors[i as usize].clone();
    |                                                ++++++++
 
-error: aborting due to 21 previous errors; 4 warnings emitted
+error: aborting due to 20 previous errors; 4 warnings emitted
 
-Some errors have detailed explanations: E0308, E0368, E0382, E0507.
+Some errors have detailed explanations: E0308, E0382, E0507.
 For more information about an error, try `rustc --explain E0308`.

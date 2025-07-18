@@ -1,9 +1,9 @@
-rustc error: exit status 1
+rustc: exit status 1
 error[E0277]: cannot multiply `i32` by `String`
-  --> /tmp/TestMochiRustGoldenapply-a-callback-to-an-array-2528658820/001/prog.rs:22:57
+  --> /tmp/apply-a-callback-to-an-array-2.rs:17:76
    |
-22 |         each(s, Box::new(move |i: i32| println!("{}", i * i.to_string())));
-   |                                                         ^ no implementation for `i32 * String`
+17 | ...   each(s, Box::new(move |i: i32| println!("{}", vec![format!("{}", i * i.to_string())].into_iter().filter(|s| !s.is_empty()).collect:...
+   |                                                                          ^ no implementation for `i32 * String`
    |
    = help: the trait `Mul<String>` is not implemented for `i32`
    = help: the following other types implement trait `Mul<Rhs>`:
@@ -13,18 +13,18 @@ error[E0277]: cannot multiply `i32` by `String`
              `i32` implements `Mul`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenapply-a-callback-to-an-array-2528658820/001/prog.rs:22:40
+  --> /tmp/apply-a-callback-to-an-array-2.rs:17:40
    |
-22 |         each(s, Box::new(move |i: i32| println!("{}", i * i.to_string())));
-   |                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `i32`, found `()`
+17 | ...i32| println!("{}", vec![format!("{}", i * i.to_string())].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") )));
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `i32`, found `()`
    |
    = note: this error originates in the macro `println` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0599]: `Vec<i32>` doesn't implement `std::fmt::Display`
-  --> /tmp/TestMochiRustGoldenapply-a-callback-to-an-array-2528658820/001/prog.rs:23:62
+  --> /tmp/apply-a-callback-to-an-array-2.rs:18:81
    |
-23 |         println!("{}", Map(s, Box::new(move |i: i32| i * i)).to_string());
-   |                                                              ^^^^^^^^^ `Vec<i32>` cannot be formatted with the default formatter
+18 | ..., Box::new(move |i: i32| i * i)).to_string())].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+   |                                     ^^^^^^^^^ `Vec<i32>` cannot be formatted with the default formatter
    |
    = note: the following trait bounds were not satisfied:
            `Vec<i32>: std::fmt::Display`
