@@ -1,4 +1,4 @@
-parse error: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/associative-array-iteration.mochi:2:59: unexpected token ":" (expected PostfixExpr)
+parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/associative-array-iteration.mochi:2:59: unexpected token ":" (expected PostfixExpr)
   --> /workspace/mochi/tests/rosetta/x/Mochi/associative-array-iteration.mochi:2:59
 
   2 |   let m: map<string, int> = {"hello": 13, "world": 31, "!": 71}

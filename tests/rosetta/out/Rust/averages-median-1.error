@@ -1,12 +1,12 @@
-rustc error: exit status 1
+rustc: exit status 1
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenaverages-median-13478243549/001/prog.rs:10:46
+  --> /tmp/averages-median-1.rs:10:46
    |
 10 |                 if arr[j as usize] > arr[j + 1 as usize] {
    |                                              ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/TestMochiRustGoldenaverages-median-13478243549/001/prog.rs:10:44
+  --> /tmp/averages-median-1.rs:10:44
    |
 10 |                 if arr[j as usize] > arr[j + 1 as usize] {
    |                                            ^ no implementation for `i32 + usize`
@@ -19,7 +19,7 @@ error[E0277]: cannot add `usize` to `i32`
              `i32` implements `Add`
 
 error[E0277]: the type `[f64]` cannot be indexed by `i32`
-  --> /tmp/TestMochiRustGoldenaverages-median-13478243549/001/prog.rs:10:42
+  --> /tmp/averages-median-1.rs:10:42
    |
 10 |                 if arr[j as usize] > arr[j + 1 as usize] {
    |                                          ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
@@ -30,13 +30,13 @@ error[E0277]: the type `[f64]` cannot be indexed by `i32`
    = note: required for `Vec<f64>` to implement `Index<i32>`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenaverages-median-13478243549/001/prog.rs:12:47
+  --> /tmp/averages-median-1.rs:12:47
    |
 12 |                     arr[j as usize] = arr[j + 1 as usize];
    |                                               ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/TestMochiRustGoldenaverages-median-13478243549/001/prog.rs:12:45
+  --> /tmp/averages-median-1.rs:12:45
    |
 12 |                     arr[j as usize] = arr[j + 1 as usize];
    |                                             ^ no implementation for `i32 + usize`
@@ -49,7 +49,7 @@ error[E0277]: cannot add `usize` to `i32`
              `i32` implements `Add`
 
 error[E0277]: the type `[f64]` cannot be indexed by `i32`
-  --> /tmp/TestMochiRustGoldenaverages-median-13478243549/001/prog.rs:12:43
+  --> /tmp/averages-median-1.rs:12:43
    |
 12 |                     arr[j as usize] = arr[j + 1 as usize];
    |                                           ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
@@ -60,13 +60,13 @@ error[E0277]: the type `[f64]` cannot be indexed by `i32`
    = note: required for `Vec<f64>` to implement `Index<i32>`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenaverages-median-13478243549/001/prog.rs:13:29
+  --> /tmp/averages-median-1.rs:13:29
    |
 13 |                     arr[j + 1 as usize] = tmp;
    |                             ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/TestMochiRustGoldenaverages-median-13478243549/001/prog.rs:13:27
+  --> /tmp/averages-median-1.rs:13:27
    |
 13 |                     arr[j + 1 as usize] = tmp;
    |                           ^ no implementation for `i32 + usize`
@@ -79,7 +79,7 @@ error[E0277]: cannot add `usize` to `i32`
              `i32` implements `Add`
 
 error[E0277]: the type `[f64]` cannot be indexed by `i32`
-  --> /tmp/TestMochiRustGoldenaverages-median-13478243549/001/prog.rs:13:25
+  --> /tmp/averages-median-1.rs:13:25
    |
 13 |                     arr[j + 1 as usize] = tmp;
    |                         ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
@@ -90,7 +90,7 @@ error[E0277]: the type `[f64]` cannot be indexed by `i32`
    = note: required for `Vec<f64>` to implement `Index<i32>`
 
 error[E0599]: no method named `parse` found for type `f64` in the current scope
-  --> /tmp/TestMochiRustGoldenaverages-median-13478243549/001/prog.rs:23:61
+  --> /tmp/averages-median-1.rs:23:61
    |
 23 |         let half = ((arr.len() as i32 as f64) / (2 as f64)).parse::<i32>().unwrap();
    |                                                             ^^^^^ method not found in `f64`

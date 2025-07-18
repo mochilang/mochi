@@ -1,0 +1,123 @@
+rustc: exit status 1
+warning: unnecessary parentheses around assigned value
+  --> /tmp/continued-fraction.rs:54:18
+   |
+54 |             r += (f[0].get(&"a").unwrap().parse::<f64>().unwrap());
+   |                  ^                                               ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+54 -             r += (f[0].get(&"a").unwrap().parse::<f64>().unwrap());
+54 +             r += f[0].get(&"a").unwrap().parse::<f64>().unwrap();
+   |
+
+error[E0308]: mismatched types
+ --> /tmp/continued-fraction.rs:4:101
+  |
+3 |     fn newTerm(a: i32, b: i32) -> std::collections::HashMap<&'static str, i32> {
+  |                                   -------------------------------------------- expected `HashMap<&'static str, i32>` because of return type
+4 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("a", a); m.insert("b", b); m };
+  |                                                                                                     ^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, i32>`
+  |
+  = note: expected struct `HashMap<&'static str, i32>`
+             found struct `BTreeMap<&str, i32>`
+
+error[E0599]: no method named `parse` found for reference `&i32` in the current scope
+  --> /tmp/continued-fraction.rs:50:51
+   |
+50 | ...   r = (f[i as usize].get(&"b").unwrap().parse::<f64>().unwrap()) / ((f[i as usize].get(&"a").unwrap().parse::<f64>().unwrap()) + r);
+   |                                             ^^^^^ method not found in `&i32`
+
+error[E0599]: no method named `parse` found for reference `&i32` in the current scope
+  --> /tmp/continued-fraction.rs:50:113
+   |
+50 | ...>().unwrap()) / ((f[i as usize].get(&"a").unwrap().parse::<f64>().unwrap()) + r);
+   |                                                       ^^^^^ method not found in `&i32`
+
+error[E0599]: no method named `parse` found for reference `&i32` in the current scope
+  --> /tmp/continued-fraction.rs:54:43
+   |
+54 |             r += (f[0].get(&"a").unwrap().parse::<f64>().unwrap());
+   |                                           ^^^^^ method not found in `&i32`
+
+error[E0594]: cannot assign to data in an index of `HashMap<&str, i32>`
+  --> /tmp/continued-fraction.rs:14:13
+   |
+14 |             f[0][&"a"] = 1;
+   |             ^^^^^^^^^^^^^^ cannot assign
+   |
+   = help: trait `IndexMut` is required to modify indexed content, but it is not implemented for `HashMap<&str, i32>`
+help: use `.insert()` to insert a value into a `HashMap<&str, i32>`, `.get_mut()` to modify it, or the entry API for more flexibility
+   |
+14 -             f[0][&"a"] = 1;
+14 +             f[0].insert(&"a", 1);
+   |
+14 -             f[0][&"a"] = 1;
+14 +             if let Some(val) = f[0].get_mut(&"a") { *val = 1; };
+   |
+14 -             f[0][&"a"] = 1;
+14 +             let val = f[0].entry(&"a").or_insert(1);
+   |
+
+error[E0594]: cannot assign to data in an index of `HashMap<&str, i32>`
+  --> /tmp/continued-fraction.rs:26:13
+   |
+26 |             f[0][&"a"] = 2;
+   |             ^^^^^^^^^^^^^^ cannot assign
+   |
+   = help: trait `IndexMut` is required to modify indexed content, but it is not implemented for `HashMap<&str, i32>`
+help: use `.insert()` to insert a value into a `HashMap<&str, i32>`, `.get_mut()` to modify it, or the entry API for more flexibility
+   |
+26 -             f[0][&"a"] = 2;
+26 +             f[0].insert(&"a", 2);
+   |
+26 -             f[0][&"a"] = 2;
+26 +             if let Some(val) = f[0].get_mut(&"a") { *val = 2; };
+   |
+26 -             f[0][&"a"] = 2;
+26 +             let val = f[0].entry(&"a").or_insert(2);
+   |
+
+error[E0594]: cannot assign to data in an index of `HashMap<&str, i32>`
+  --> /tmp/continued-fraction.rs:29:13
+   |
+29 |             f[1][&"b"] = 1;
+   |             ^^^^^^^^^^^^^^ cannot assign
+   |
+   = help: trait `IndexMut` is required to modify indexed content, but it is not implemented for `HashMap<&str, i32>`
+help: use `.insert()` to insert a value into a `HashMap<&str, i32>`, `.get_mut()` to modify it, or the entry API for more flexibility
+   |
+29 -             f[1][&"b"] = 1;
+29 +             f[1].insert(&"b", 1);
+   |
+29 -             f[1][&"b"] = 1;
+29 +             if let Some(val) = f[1].get_mut(&"b") { *val = 1; };
+   |
+29 -             f[1][&"b"] = 1;
+29 +             let val = f[1].entry(&"b").or_insert(1);
+   |
+
+error[E0594]: cannot assign to data in an index of `HashMap<&str, i32>`
+  --> /tmp/continued-fraction.rs:42:13
+   |
+42 |             f[0][&"a"] = 3;
+   |             ^^^^^^^^^^^^^^ cannot assign
+   |
+   = help: trait `IndexMut` is required to modify indexed content, but it is not implemented for `HashMap<&str, i32>`
+help: use `.insert()` to insert a value into a `HashMap<&str, i32>`, `.get_mut()` to modify it, or the entry API for more flexibility
+   |
+42 -             f[0][&"a"] = 3;
+42 +             f[0].insert(&"a", 3);
+   |
+42 -             f[0][&"a"] = 3;
+42 +             if let Some(val) = f[0].get_mut(&"a") { *val = 3; };
+   |
+42 -             f[0][&"a"] = 3;
+42 +             let val = f[0].entry(&"a").or_insert(3);
+   |
+
+error: aborting due to 8 previous errors; 1 warning emitted
+
+Some errors have detailed explanations: E0308, E0594, E0599.
+For more information about an error, try `rustc --explain E0308`.

@@ -1,26 +1,18 @@
-rustc error: exit status 1
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldencheckpoint-synchronization-31490512950/001/prog.rs:26:13
-   |
-26 |             a += lower(p);
-   |             -^^^^^^^^^^^^
-   |             |
-   |             cannot use `+=` on type `&str`
-
+rustc: exit status 1
 error[E0308]: mismatched types
- --> /tmp/TestMochiRustGoldencheckpoint-synchronization-31490512950/001/prog.rs:8:42
+ --> /tmp/checkpoint-synchronization-3.rs:8:42
   |
 8 |             if ch == &up[i as usize..i + 1 as usize] {
   |                                          ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0308]: mismatched types
- --> /tmp/TestMochiRustGoldencheckpoint-synchronization-31490512950/001/prog.rs:8:38
+ --> /tmp/checkpoint-synchronization-3.rs:8:38
   |
 8 |             if ch == &up[i as usize..i + 1 as usize] {
   |                                      ^^^^^^^^^^^^^^ expected `usize`, found `i32`
 
 error[E0277]: cannot add `usize` to `i32`
- --> /tmp/TestMochiRustGoldencheckpoint-synchronization-31490512950/001/prog.rs:8:40
+ --> /tmp/checkpoint-synchronization-3.rs:8:40
   |
 8 |             if ch == &up[i as usize..i + 1 as usize] {
   |                                        ^ no implementation for `i32 + usize`
@@ -33,19 +25,19 @@ error[E0277]: cannot add `usize` to `i32`
             `i32` implements `Add`
 
 error[E0308]: mismatched types
- --> /tmp/TestMochiRustGoldencheckpoint-synchronization-31490512950/001/prog.rs:9:45
+ --> /tmp/checkpoint-synchronization-3.rs:9:45
   |
 9 |                 return &low[i as usize..i + 1 as usize];
   |                                             ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0308]: mismatched types
- --> /tmp/TestMochiRustGoldencheckpoint-synchronization-31490512950/001/prog.rs:9:41
+ --> /tmp/checkpoint-synchronization-3.rs:9:41
   |
 9 |                 return &low[i as usize..i + 1 as usize];
   |                                         ^^^^^^^^^^^^^^ expected `usize`, found `i32`
 
 error[E0277]: cannot add `usize` to `i32`
- --> /tmp/TestMochiRustGoldencheckpoint-synchronization-31490512950/001/prog.rs:9:43
+ --> /tmp/checkpoint-synchronization-3.rs:9:43
   |
 9 |                 return &low[i as usize..i + 1 as usize];
   |                                           ^ no implementation for `i32 + usize`
@@ -57,7 +49,44 @@ error[E0277]: cannot add `usize` to `i32`
             `i32` implements `Add<&i32>`
             `i32` implements `Add`
 
-error: aborting due to 7 previous errors
+warning: variable does not need to be mutable
+  --> /tmp/checkpoint-synchronization-3.rs:15:9
+   |
+15 |     let mut partList = vec!["A", "B", "C", "D"];
+   |         ----^^^^^^^^
+   |         |
+   |         help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
 
-Some errors have detailed explanations: E0277, E0308, E0368.
+warning: variable does not need to be mutable
+  --> /tmp/checkpoint-synchronization-3.rs:16:9
+   |
+16 |     let mut nAssemblies = 3;
+   |         ----^^^^^^^^^^^
+   |         |
+   |         help: remove this `mut`
+
+error[E0382]: use of moved value: `partList`
+  --> /tmp/checkpoint-synchronization-3.rs:30:14
+   |
+15 |     let mut partList = vec!["A", "B", "C", "D"];
+   |         ------------ move occurs because `partList` has type `Vec<&str>`, which does not implement the `Copy` trait
+16 |     let mut nAssemblies = 3;
+17 |     for p in partList {
+   |              -------- `partList` moved due to this implicit call to `.into_iter()`
+...
+30 |     for p in partList {
+   |              ^^^^^^^^ value used here after move
+   |
+note: `into_iter` takes ownership of the receiver `self`, which moves `partList`
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/iter/traits/collect.rs:313:18
+help: consider iterating over a slice of the `Vec<&str>`'s content to avoid moving into the `for` loop
+   |
+17 |     for p in &partList {
+   |              +
+
+error: aborting due to 7 previous errors; 2 warnings emitted
+
+Some errors have detailed explanations: E0277, E0308, E0382.
 For more information about an error, try `rustc --explain E0277`.

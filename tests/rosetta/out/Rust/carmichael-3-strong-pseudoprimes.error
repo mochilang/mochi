@@ -1,6 +1,6 @@
-rustc error: exit status 1
+rustc: exit status 1
 error: expected identifier, found keyword `mod`
- --> /tmp/TestMochiRustGoldencarmichael-3-strong-pseudoprimes2867097968/001/prog.rs:3:8
+ --> /tmp/carmichael-3-strong-pseudoprimes.rs:3:8
   |
 3 |     fn mod(n: i32, m: i32) -> i32 {
   |        ^^^ expected identifier, found keyword
@@ -11,7 +11,7 @@ help: escape `mod` to use it as an identifier
   |        ++
 
 error: `<` is interpreted as a start of generic arguments for `i32`, not a comparison
-  --> /tmp/TestMochiRustGoldencarmichael-3-strong-pseudoprimes2867097968/001/prog.rs:31:30
+  --> /tmp/carmichael-3-strong-pseudoprimes.rs:31:30
    |
 31 |         while s.len() as i32 < width {
    |                              ^ ------- interpreted as generic arguments
@@ -24,13 +24,13 @@ help: try comparing the cast value
    |               +              +
 
 error: expected expression, found keyword `mod`
-  --> /tmp/TestMochiRustGoldencarmichael-3-strong-pseudoprimes2867097968/001/prog.rs:39:55
+  --> /tmp/carmichael-3-strong-pseudoprimes.rs:39:55
    |
 39 |                 if ((h3 + p1) * (p1 - 1)) % d == 0 && mod(-p1 * p1, h3) == d % h3 {
    |                                                       ^^^ expected expression
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencarmichael-3-strong-pseudoprimes2867097968/001/prog.rs:34:16
+  --> /tmp/carmichael-3-strong-pseudoprimes.rs:34:16
    |
 29 |     fn pad(n: i32, width: i32) -> &'static str {
    |                                   ------------ expected `&'static str` because of return type

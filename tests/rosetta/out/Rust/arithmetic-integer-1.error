@@ -1,8 +1,8 @@
-rustc error: exit status 1
+rustc: exit status 1
 error[E0277]: cannot add `String` to `{integer}`
- --> /tmp/TestMochiRustGoldenarithmetic-integer-14097006215/001/prog.rs:6:137
+ --> /tmp/arithmetic-integer-1.rs:6:156
   |
-6 | ..._string(), " + "), b.to_string()), " = "), a + b.to_string()));
+6 | ..._string(), " + "), b.to_string()), " = "), a + b.to_string()))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
   |                                                 ^ no implementation for `{integer} + String`
   |
   = help: the trait `Add<String>` is not implemented for `{integer}`
@@ -18,9 +18,9 @@ error[E0277]: cannot add `String` to `{integer}`
           and 56 others
 
 error[E0277]: cannot subtract `String` from `{integer}`
- --> /tmp/TestMochiRustGoldenarithmetic-integer-14097006215/001/prog.rs:7:137
+ --> /tmp/arithmetic-integer-1.rs:7:156
   |
-7 | ..._string(), " - "), b.to_string()), " = "), a - b.to_string()));
+7 | ..._string(), " - "), b.to_string()), " = "), a - b.to_string()))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
   |                                                 ^ no implementation for `{integer} - String`
   |
   = help: the trait `Sub<String>` is not implemented for `{integer}`
@@ -36,9 +36,9 @@ error[E0277]: cannot subtract `String` from `{integer}`
           and 56 others
 
 error[E0277]: cannot multiply `{integer}` by `String`
- --> /tmp/TestMochiRustGoldenarithmetic-integer-14097006215/001/prog.rs:8:137
+ --> /tmp/arithmetic-integer-1.rs:8:156
   |
-8 | ..._string(), " * "), b.to_string()), " = "), a * b.to_string()));
+8 | ..._string(), " * "), b.to_string()), " = "), a * b.to_string()))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
   |                                                 ^ no implementation for `{integer} * String`
   |
   = help: the trait `Mul<String>` is not implemented for `{integer}`
@@ -54,15 +54,15 @@ error[E0277]: cannot multiply `{integer}` by `String`
           and 57 others
 
 error[E0599]: no method named `parse` found for type `f64` in the current scope
- --> /tmp/TestMochiRustGoldenarithmetic-integer-14097006215/001/prog.rs:9:161
+ --> /tmp/arithmetic-integer-1.rs:9:180
   |
-9 | ... b.to_string()), " = "), ((a as f64) / (b as f64)).parse::<i32>().unwrap().to_string()));
+9 | ... b.to_string()), " = "), ((a as f64) / (b as f64)).parse::<i32>().unwrap().to_string()))].into_iter().filter(|s| !s.is_empty()).collec...
   |                                                       ^^^^^ method not found in `f64`
 
 error[E0277]: cannot calculate the remainder of `{integer}` divided by `String`
-  --> /tmp/TestMochiRustGoldenarithmetic-integer-14097006215/001/prog.rs:10:137
+  --> /tmp/arithmetic-integer-1.rs:10:156
    |
-10 | ..._string(), " % "), b.to_string()), " = "), a % b.to_string()));
+10 | ..._string(), " % "), b.to_string()), " = "), a % b.to_string()))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
    |                                                 ^ no implementation for `{integer} % String`
    |
    = help: the trait `Rem<String>` is not implemented for `{integer}`

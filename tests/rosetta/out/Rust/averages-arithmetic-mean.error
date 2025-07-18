@@ -1,6 +1,6 @@
-rustc error: exit status 1
+rustc: exit status 1
 error: cast cannot be followed by a method call
-  --> /tmp/TestMochiRustGoldenaverages-arithmetic-mean2486251869/001/prog.rs:13:111
+  --> /tmp/averages-arithmetic-mean.rs:13:111
    |
 13 | ...   return { let mut m = std::collections::BTreeMap::new(); m.insert("ok", true); m.insert("mean", sum / (v.len() as i32.parse::<f64>()...
    |                                                                                                             ^^^^^^^^^^^^^^
@@ -11,18 +11,18 @@ help: try surrounding the expression in parentheses
    |                                                                                                               +              +
 
 error: cast cannot be followed by a method call
-  --> /tmp/TestMochiRustGoldenaverages-arithmetic-mean2486251869/001/prog.rs:21:92
+  --> /tmp/averages-arithmetic-mean.rs:21:111
    |
-21 | ...   println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", "Mean of ", v.len() as i32.to_string()), " numbers is "), r[&"mean"]...
-   |                                                                                  ^^^^^^^^^^^^^^
+21 | ...   println!("{}", vec![format!("{}", format!("{}{}", format!("{}{}", format!("{}{}", "Mean of ", v.len() as i32.to_string()), " number...
+   |                                                                                                     ^^^^^^^^^^^^^^
    |
 help: try surrounding the expression in parentheses
    |
-21 |                 println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", "Mean of ", (v.len() as i32).to_string()), " numbers is "), r[&"mean"].to_string()));
-   |                                                                                            +              +
+21 |                 println!("{}", vec![format!("{}", format!("{}{}", format!("{}{}", format!("{}{}", "Mean of ", (v.len() as i32).to_string()), " numbers is "), *r.get(&"mean").unwrap().to_string()))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+   |                                                                                                               +              +
 
 error[E0308]: mismatched types
- --> /tmp/TestMochiRustGoldenaverages-arithmetic-mean2486251869/001/prog.rs:5:92
+ --> /tmp/averages-arithmetic-mean.rs:5:92
   |
 3 |     fn mean(v: Vec<f64>) -> std::collections::HashMap<&'static str, i32> {
   |                             -------------------------------------------- expected `HashMap<&'static str, i32>` because of return type
@@ -34,13 +34,13 @@ error[E0308]: mismatched types
              found struct `BTreeMap<&str, bool>`
 
 error[E0599]: no method named `parse` found for type `i32` in the current scope
-  --> /tmp/TestMochiRustGoldenaverages-arithmetic-mean2486251869/001/prog.rs:13:126
+  --> /tmp/averages-arithmetic-mean.rs:13:126
    |
 13 | ...ok", true); m.insert("mean", sum / (v.len() as i32.parse::<f64>().unwrap())); m };
    |                                                       ^^^^^ method not found in `i32`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenaverages-arithmetic-mean2486251869/001/prog.rs:13:104
+  --> /tmp/averages-arithmetic-mean.rs:13:104
    |
 13 | ...p::new(); m.insert("ok", true); m.insert("mean", sum / (v.len() as i32.parse::<f64>().unwrap())); m };
    |              -              ----     ------         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `bool`, found `f64`
@@ -50,7 +50,7 @@ error[E0308]: mismatched types
    |              ... which causes `m` to have type `BTreeMap<&str, bool>`
    |
 help: the return type of this call is `f64` due to the type of the argument passed
-  --> /tmp/TestMochiRustGoldenaverages-arithmetic-mean2486251869/001/prog.rs:13:87
+  --> /tmp/averages-arithmetic-mean.rs:13:87
    |
 13 | ..., true); m.insert("mean", sum / (v.len() as i32.parse::<f64>().unwrap())); m };
    |             ^^^^^^^^^^^^^^^^^----------------------------------------------^
@@ -60,7 +60,7 @@ note: method defined here
   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenaverages-arithmetic-mean2486251869/001/prog.rs:13:153
+  --> /tmp/averages-arithmetic-mean.rs:13:153
    |
 3  | ...-> std::collections::HashMap<&'static str, i32> {
    |       -------------------------------------------- expected `HashMap<&'static str, i32>` because of return type
@@ -72,22 +72,22 @@ error[E0308]: mismatched types
               found struct `BTreeMap<&str, bool>`
 
 error[E0610]: `{float}` is a primitive type and therefore doesn't have fields
-  --> /tmp/TestMochiRustGoldenaverages-arithmetic-mean2486251869/001/prog.rs:16:80
+  --> /tmp/averages-arithmetic-mean.rs:16:80
    |
 16 | ...   let sets = vec![vec![], vec![3.0, 1.0, 4.0, 1.0, 5.0, 9.0], vec![1e+20.0, 3.0, 1.0, 4.0, 1.0, 5.0, 9.0, -1e+20.0], vec![10.0, 9.0, ...
    |                                                                              ^
 
 error[E0610]: `{float}` is a primitive type and therefore doesn't have fields
-  --> /tmp/TestMochiRustGoldenaverages-arithmetic-mean2486251869/001/prog.rs:16:120
+  --> /tmp/averages-arithmetic-mean.rs:16:120
    |
 16 | ...   let sets = vec![vec![], vec![3.0, 1.0, 4.0, 1.0, 5.0, 9.0], vec![1e+20.0, 3.0, 1.0, 4.0, 1.0, 5.0, 9.0, -1e+20.0], vec![10.0, 9.0, ...
    |                                                                                                                      ^
 
 error[E0599]: the method `to_string` exists for struct `Vec<{float}>`, but its trait bounds were not satisfied
-  --> /tmp/TestMochiRustGoldenaverages-arithmetic-mean2486251869/001/prog.rs:18:58
+  --> /tmp/averages-arithmetic-mean.rs:18:77
    |
-18 |             println!("{}", format!("{}{}", "Vector: ", v.to_string()));
-   |                                                          ^^^^^^^^^ method cannot be called on `Vec<{float}>` due to unsatisfied trait bounds
+18 | ...t!("{}{}", "Vector: ", v.to_string()))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+   |                             ^^^^^^^^^ method cannot be called on `Vec<{float}>` due to unsatisfied trait bounds
    |
    = note: the following trait bounds were not satisfied:
            `Vec<{float}>: std::fmt::Display`
@@ -95,7 +95,18 @@ error[E0599]: the method `to_string` exists for struct `Vec<{float}>`, but its t
            `[{float}]: std::fmt::Display`
            which is required by `[{float}]: ToString`
 
-error: aborting due to 9 previous errors
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+  --> /tmp/averages-arithmetic-mean.rs:21:157
+   |
+21 | ..."{}{}", format!("{}{}", format!("{}{}", "Mean of ", v.len() as i32.to_string()), " numbers is "), *r.get(&"mean").unwrap().to_string()))]...
+   |       -- required by a bound introduced by this call                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ doesn't have a size known at compile-time
+   |
+   = help: the trait `Sized` is not implemented for `str`
+note: required by an implicit `Sized` bound in `core::fmt::rt::Argument::<'_>::new_display`
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/fmt/rt.rs:116:5
+   = note: this error originates in the macro `$crate::__export::format_args` which comes from the expansion of the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
 
-Some errors have detailed explanations: E0308, E0599, E0610.
-For more information about an error, try `rustc --explain E0308`.
+error: aborting due to 10 previous errors
+
+Some errors have detailed explanations: E0277, E0308, E0599, E0610.
+For more information about an error, try `rustc --explain E0277`.

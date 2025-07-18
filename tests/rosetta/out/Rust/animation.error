@@ -1,18 +1,18 @@
-rustc error: exit status 1
+rustc: exit status 1
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenanimation298406207/001/prog.rs:13:46
+  --> /tmp/animation.rs:13:46
    |
 13 |             line += &msg[idx as usize..idx + 1 as usize];
    |                                              ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenanimation298406207/001/prog.rs:13:40
+  --> /tmp/animation.rs:13:40
    |
 13 |             line += &msg[idx as usize..idx + 1 as usize];
    |                                        ^^^^^^^^^^^^^^^^ expected `usize`, found `i32`
 
 error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/TestMochiRustGoldenanimation298406207/001/prog.rs:13:44
+  --> /tmp/animation.rs:13:44
    |
 13 |             line += &msg[idx as usize..idx + 1 as usize];
    |                                            ^ no implementation for `i32 + usize`
@@ -24,15 +24,7 @@ error[E0277]: cannot add `usize` to `i32`
              `i32` implements `Add<&i32>`
              `i32` implements `Add`
 
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldenanimation298406207/001/prog.rs:13:13
-   |
-13 |             line += &msg[idx as usize..idx + 1 as usize];
-   |             ----^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-   |             |
-   |             cannot use `+=` on type `&str`
+error: aborting due to 3 previous errors
 
-error: aborting due to 4 previous errors
-
-Some errors have detailed explanations: E0277, E0308, E0368.
+Some errors have detailed explanations: E0277, E0308.
 For more information about an error, try `rustc --explain E0277`.

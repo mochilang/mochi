@@ -1,47 +1,39 @@
-rustc error: exit status 1
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldencholesky-decomposition909855363/001/prog.rs:58:17
+rustc: exit status 1
+error[E0308]: mismatched types
+  --> /tmp/cholesky-decomposition.rs:53:25
    |
-58 |                 line += m[i as usize][j as usize].to_string();
-   |                 ----^--^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-   |                 |    |
-   |                 |    `+` cannot be used to concatenate a `&str` with a `String`
-   |                 cannot use `+=` on type `&str`
+53 |                 line += m[i as usize][j as usize].to_string();
+   |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
    |
-   = note: string concatenation requires an owned `String` on the left
-
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldencholesky-decomposition909855363/001/prog.rs:60:21
+help: consider borrowing here
    |
-60 |                     line += " ";
-   |                     ----^^^^^^^
-   |                     |
-   |                     cannot use `+=` on type `&str`
+53 |                 line += &m[i as usize][j as usize].to_string();
+   |                         +
 
 error[E0382]: use of moved value: `a`
-  --> /tmp/TestMochiRustGoldencholesky-decomposition909855363/001/prog.rs:71:26
+  --> /tmp/cholesky-decomposition.rs:66:26
    |
-68 |     fn demo(a: Vec<Vec<f64>>) -> () {
+63 |     fn demo(a: Vec<Vec<f64>>) -> () {
    |             - move occurs because `a` has type `Vec<Vec<f64>>`, which does not implement the `Copy` trait
-69 |         println!("A:");
-70 |         printMat(a);
+64 |         println!("A:");
+65 |         printMat(a);
    |                  - value moved here
-71 |         let l = cholesky(a);
+66 |         let l = cholesky(a);
    |                          ^ value used here after move
    |
 note: consider changing this parameter type in function `printMat` to borrow instead if owning the value isn't necessary
-  --> /tmp/TestMochiRustGoldencholesky-decomposition909855363/001/prog.rs:52:20
+  --> /tmp/cholesky-decomposition.rs:47:20
    |
-52 |     fn printMat(m: Vec<Vec<f64>>) -> () {
+47 |     fn printMat(m: Vec<Vec<f64>>) -> () {
    |        --------    ^^^^^^^^^^^^^ this parameter takes ownership of the value
    |        |
    |        in this function
 help: consider cloning the value if the performance cost is acceptable
    |
-70 |         printMat(a.clone());
+65 |         printMat(a.clone());
    |                   ++++++++
 
-error: aborting due to 3 previous errors
+error: aborting due to 2 previous errors
 
-Some errors have detailed explanations: E0368, E0382.
-For more information about an error, try `rustc --explain E0368`.
+Some errors have detailed explanations: E0308, E0382.
+For more information about an error, try `rustc --explain E0308`.

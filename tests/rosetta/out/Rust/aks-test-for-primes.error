@@ -1,33 +1,17 @@
-rustc error: exit status 1
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&'static str`
- --> /tmp/TestMochiRustGoldenaks-test-for-primes921595730/001/prog.rs:8:13
+rustc: exit status 1
+error[E0308]: mismatched types
+ --> /tmp/aks-test-for-primes.rs:8:18
   |
 8 |             s += coef.to_string();
-  |             -^--^^^^^^^^^^^^^^^^^
-  |             | |
-  |             | `+` cannot be used to concatenate a `&str` with a `String`
-  |             cannot use `+=` on type `&'static str`
+  |                  ^^^^^^^^^^^^^^^^ expected `&str`, found `String`
   |
-  = note: string concatenation requires an owned `String` on the left
-
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&'static str`
-  --> /tmp/TestMochiRustGoldenaks-test-for-primes921595730/001/prog.rs:11:13
-   |
-11 |             s += "x";
-   |             -^^^^^^^
-   |             |
-   |             cannot use `+=` on type `&'static str`
-
-error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenaks-test-for-primes921595730/001/prog.rs:13:21
-   |
-13 |                 s = format!("{}{}", format!("{}{}", s, "^"), i.to_string());
-   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
-   |
-   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+help: consider borrowing here
+  |
+8 |             s += &coef.to_string();
+  |                  +
 
 error[E0277]: cannot multiply `i32` by `f64`
-  --> /tmp/TestMochiRustGoldenaks-test-for-primes921595730/001/prog.rs:15:27
+  --> /tmp/aks-test-for-primes.rs:15:27
    |
 15 |             coef = ((coef * i as f64) / ((p - i + 1) as f64)).parse::<i32>().unwrap();
    |                           ^ no implementation for `i32 * f64`
@@ -40,7 +24,7 @@ error[E0277]: cannot multiply `i32` by `f64`
              `i32` implements `Mul`
 
 error[E0600]: cannot apply unary operator `-` to type `String`
-  --> /tmp/TestMochiRustGoldenaks-test-for-primes921595730/001/prog.rs:21:64
+  --> /tmp/aks-test-for-primes.rs:21:64
    |
 21 |                 s = format!("{}{}", format!("{}{}", s, " - "), -d.to_string());
    |                                                                ^^^^^^^^^^^^^^ cannot apply unary operator `-`
@@ -51,23 +35,32 @@ note: the foreign item type `String` doesn't implement `Neg`
    = note: not implement `Neg`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenaks-test-for-primes921595730/001/prog.rs:21:21
+  --> /tmp/aks-test-for-primes.rs:28:17
    |
-21 |                 s = format!("{}{}", format!("{}{}", s, " - "), -d.to_string());
-   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
-   |
-   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+4  |         let mut s: String = String::new();
+   |                    ------ expected due to this type
+...
+28 |             s = "1";
+   |                 ^^^- help: try using a conversion method: `.to_string()`
+   |                 |
+   |                 expected `String`, found `&str`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenaks-test-for-primes921595730/001/prog.rs:23:21
+  --> /tmp/aks-test-for-primes.rs:30:16
    |
-23 |                 s = format!("{}{}", format!("{}{}", s, " + "), d.to_string());
-   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+3  |     fn poly(p: i32) -> &'static str {
+   |                        ------------ expected `&'static str` because of return type
+...
+30 |         return s;
+   |                ^ expected `&str`, found `String`
    |
-   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+help: consider borrowing here
+   |
+30 |         return &s;
+   |                +
 
 error[E0277]: cannot multiply `i32` by `f64`
-  --> /tmp/TestMochiRustGoldenaks-test-for-primes921595730/001/prog.rs:42:21
+  --> /tmp/aks-test-for-primes.rs:42:21
    |
 42 |             c = ((c * (n - i) as f64) / ((i + 1) as f64)).parse::<i32>().unwrap();
    |                     ^ no implementation for `i32 * f64`
@@ -79,26 +72,18 @@ error[E0277]: cannot multiply `i32` by `f64`
              `i32` implements `Mul<&i32>`
              `i32` implements `Mul`
 
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&'static str`
-  --> /tmp/TestMochiRustGoldenaks-test-for-primes921595730/001/prog.rs:59:21
+error[E0308]: mismatched types
+  --> /tmp/aks-test-for-primes.rs:59:29
    |
 59 |                     line += p.to_string();
-   |                     ----^--^^^^^^^^^^^^^^
-   |                     |    |
-   |                     |    `+` cannot be used to concatenate a `&str` with a `String`
-   |                     cannot use `+=` on type `&'static str`
+   |                             ^^^^^^^^^^^^^ expected `&str`, found `String`
    |
-   = note: string concatenation requires an owned `String` on the left
-
-error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenaks-test-for-primes921595730/001/prog.rs:62:28
+help: consider borrowing here
    |
-62 |                     line = format!("{}{}", format!("{}{}", line, " "), p.to_string());
-   |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
-   |
-   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+59 |                     line += &p.to_string();
+   |                             +
 
-error: aborting due to 10 previous errors
+error: aborting due to 7 previous errors
 
-Some errors have detailed explanations: E0277, E0308, E0368, E0600.
+Some errors have detailed explanations: E0277, E0308, E0600.
 For more information about an error, try `rustc --explain E0277`.

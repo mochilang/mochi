@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -110,6 +111,11 @@ func TestRustCompiler_Rosetta_Golden(t *testing.T) {
 		t.Fatalf("glob: %v", err)
 	}
 	max := 3
+	if v := os.Getenv("ROSETTA_MAX"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil {
+			max = n
+		}
+	}
 	if len(files) < max {
 		max = len(files)
 	}

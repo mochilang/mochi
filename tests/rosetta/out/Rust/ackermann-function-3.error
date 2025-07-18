@@ -1,1 +1,1 @@
-compile error: unsupported cast to bigint
+compile: unsupported cast to bigint

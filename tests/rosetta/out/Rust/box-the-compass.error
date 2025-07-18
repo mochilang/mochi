@@ -1,6 +1,6 @@
-rustc error: exit status 1
+rustc: exit status 1
 error: `<` is interpreted as a start of generic arguments for `i32`, not a comparison
-  --> /tmp/TestMochiRustGoldenbox-the-compass452250133/001/prog.rs:41:38
+  --> /tmp/box-the-compass.rs:41:38
    |
 41 |                 while s.len() as i32 < need {
    |                                      ^ ------ interpreted as generic arguments
@@ -13,33 +13,25 @@ help: try comparing the cast value
    |                       +              +
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbox-the-compass452250133/001/prog.rs:67:112
+  --> /tmp/box-the-compass.rs:67:131
    |
-67 | ...{}{}", format!("{}{}", format!("{}{}", padLeft(idx.to_string(), 4), "   "), padRight(cp, 19)), " "), format2(h)), "°"));
+67 | ...{}{}", format!("{}{}", format!("{}{}", padLeft(idx.to_string(), 4), "   "), padRight(cp, 19)), " "), format2(h)), "°"))].into_iter().f...
    |                                           ------- ^^^^^^^^^^^^^^^ expected `&str`, found `String`
    |                                           |
    |                                           arguments to this function are incorrect
    |
 note: function defined here
-  --> /tmp/TestMochiRustGoldenbox-the-compass452250133/001/prog.rs:3:8
+  --> /tmp/box-the-compass.rs:3:8
    |
 3  |     fn padLeft(s: &'static str, w: i32) -> &'static str {
    |        ^^^^^^^ ---------------
 help: consider borrowing here
    |
-67 |         println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", padLeft(&idx.to_string(), 4), "   "), padRight(cp, 19)), " "), format2(h)), "°"));
-   |                                                                                                                +
-
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
- --> /tmp/TestMochiRustGoldenbox-the-compass452250133/001/prog.rs:7:13
-  |
-7 |             res += " ";
-  |             ---^^^^^^^
-  |             |
-  |             cannot use `+=` on type `&str`
+67 |         println!("{}", vec![format!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", padLeft(&idx.to_string(), 4), "   "), padRight(cp, 19)), " "), format2(h)), "°"))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+   |                                                                                                                                   +
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbox-the-compass452250133/001/prog.rs:10:16
+  --> /tmp/box-the-compass.rs:10:16
    |
 3  |     fn padLeft(s: &'static str, w: i32) -> &'static str {
    |                                            ------------ expected `&str` because of return type
@@ -50,7 +42,7 @@ error[E0308]: mismatched types
    = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldenbox-the-compass452250133/001/prog.rs:16:13
+  --> /tmp/box-the-compass.rs:16:13
    |
 16 |             out += " ";
    |             ---^^^^^^^
@@ -58,19 +50,19 @@ error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
    |             cannot use `+=` on type `&str`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbox-the-compass452250133/001/prog.rs:24:35
+  --> /tmp/box-the-compass.rs:24:35
    |
 24 |             if &s[i as usize..i + 1 as usize] == ch {
    |                                   ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbox-the-compass452250133/001/prog.rs:24:31
+  --> /tmp/box-the-compass.rs:24:31
    |
 24 |             if &s[i as usize..i + 1 as usize] == ch {
    |                               ^^^^^^^^^^^^^^ expected `usize`, found `i32`
 
 error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/TestMochiRustGoldenbox-the-compass452250133/001/prog.rs:24:33
+  --> /tmp/box-the-compass.rs:24:33
    |
 24 |             if &s[i as usize..i + 1 as usize] == ch {
    |                                 ^ no implementation for `i32 + usize`
@@ -83,7 +75,7 @@ error[E0277]: cannot add `usize` to `i32`
              `i32` implements `Add`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbox-the-compass452250133/001/prog.rs:33:27
+  --> /tmp/box-the-compass.rs:33:27
    |
 33 |         let idx = indexOf(s, ".");
    |                   ------- ^ expected `&str`, found `String`
@@ -91,7 +83,7 @@ error[E0308]: mismatched types
    |                   arguments to this function are incorrect
    |
 note: function defined here
-  --> /tmp/TestMochiRustGoldenbox-the-compass452250133/001/prog.rs:21:8
+  --> /tmp/box-the-compass.rs:21:8
    |
 21 |     fn indexOf(s: &'static str, ch: &'static str) -> i32 {
    |        ^^^^^^^ ---------------
@@ -101,7 +93,7 @@ help: consider borrowing here
    |                           +
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbox-the-compass452250133/001/prog.rs:39:21
+  --> /tmp/box-the-compass.rs:39:21
    |
 32 |         let mut s = f.to_string();
    |                     ------------- expected due to this value
@@ -115,7 +107,7 @@ help: try using a conversion method
    |                     +                             +++++++++++++
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbox-the-compass452250133/001/prog.rs:46:16
+  --> /tmp/box-the-compass.rs:46:16
    |
 31 |     fn format2(f: f64) -> &'static str {
    |                           ------------ expected `&'static str` because of return type
@@ -129,12 +121,12 @@ help: consider borrowing here
    |                +
 
 error[E0599]: no method named `parse` found for type `f64` in the current scope
-  --> /tmp/TestMochiRustGoldenbox-the-compass452250133/001/prog.rs:49:41
+  --> /tmp/box-the-compass.rs:49:41
    |
 49 |         let mut x = ((h / 11.25) + 0.5).parse::<i32>().unwrap();
    |                                         ^^^^^ method not found in `f64`
 
-error: aborting due to 12 previous errors
+error: aborting due to 11 previous errors
 
 Some errors have detailed explanations: E0277, E0308, E0368, E0599.
 For more information about an error, try `rustc --explain E0277`.

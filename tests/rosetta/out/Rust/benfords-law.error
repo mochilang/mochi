@@ -1,82 +1,82 @@
-rustc error: exit status 1
+rustc: exit status 1
 error: `<` is interpreted as a start of generic arguments for `i32`, not a comparison
-  --> /tmp/TestMochiRustGoldenbenfords-law3197566984/001/prog.rs:42:30
+  --> /tmp/benfords-law.rs:37:30
    |
-42 |         while s.len() as i32 < width {
+37 |         while s.len() as i32 < width {
    |                              ^ ------- interpreted as generic arguments
    |                              |
    |                              not interpreted as comparison
    |
 help: try comparing the cast value
    |
-42 |         while (s.len() as i32) < width {
+37 |         while (s.len() as i32) < width {
    |               +              +
 
 error[E0599]: no method named `parse` found for type `f64` in the current scope
- --> /tmp/TestMochiRustGoldenbenfords-law3197566984/001/prog.rs:9:19
+ --> /tmp/benfords-law.rs:4:19
   |
-9 |         return (x.parse::<i32>().unwrap()).parse::<f64>().unwrap();
+4 |         return (x.parse::<i32>().unwrap()).parse::<f64>().unwrap();
   |                   ^^^^^ method not found in `f64`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbenfords-law3197566984/001/prog.rs:14:35
-   |
-14 |             if &s[i as usize..i + 1 as usize] == ch {
-   |                                   ^^^^^^^^^^ expected `i32`, found `usize`
+ --> /tmp/benfords-law.rs:9:35
+  |
+9 |             if &s[i as usize..i + 1 as usize] == ch {
+  |                                   ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbenfords-law3197566984/001/prog.rs:14:31
-   |
-14 |             if &s[i as usize..i + 1 as usize] == ch {
-   |                               ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+ --> /tmp/benfords-law.rs:9:31
+  |
+9 |             if &s[i as usize..i + 1 as usize] == ch {
+  |                               ^^^^^^^^^^^^^^ expected `usize`, found `i32`
 
 error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/TestMochiRustGoldenbenfords-law3197566984/001/prog.rs:14:33
-   |
-14 |             if &s[i as usize..i + 1 as usize] == ch {
-   |                                 ^ no implementation for `i32 + usize`
-   |
-   = help: the trait `Add<usize>` is not implemented for `i32`
-   = help: the following other types implement trait `Add<Rhs>`:
-             `&i32` implements `Add<i32>`
-             `&i32` implements `Add`
-             `i32` implements `Add<&i32>`
-             `i32` implements `Add`
+ --> /tmp/benfords-law.rs:9:33
+  |
+9 |             if &s[i as usize..i + 1 as usize] == ch {
+  |                                 ^ no implementation for `i32 + usize`
+  |
+  = help: the trait `Add<usize>` is not implemented for `i32`
+  = help: the following other types implement trait `Add<Rhs>`:
+            `&i32` implements `Add<i32>`
+            `&i32` implements `Add`
+            `i32` implements `Add<&i32>`
+            `i32` implements `Add`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbenfords-law3197566984/001/prog.rs:24:31
+  --> /tmp/benfords-law.rs:19:31
    |
-24 |         let mut dot = indexOf(s, ".");
+19 |         let mut dot = indexOf(s, ".");
    |                       ------- ^ expected `&str`, found `String`
    |                       |
    |                       arguments to this function are incorrect
    |
 note: function defined here
-  --> /tmp/TestMochiRustGoldenbenfords-law3197566984/001/prog.rs:11:8
+  --> /tmp/benfords-law.rs:6:8
    |
-11 |     fn indexOf(s: &'static str, ch: &'static str) -> i32 {
+6  |     fn indexOf(s: &'static str, ch: &'static str) -> i32 {
    |        ^^^^^^^ ---------------
 help: consider borrowing here
    |
-24 |         let mut dot = indexOf(&s, ".");
+19 |         let mut dot = indexOf(&s, ".");
    |                               +
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbenfords-law3197566984/001/prog.rs:30:42
+  --> /tmp/benfords-law.rs:25:42
    |
-30 |                 s = &s[0 as usize..dot + 4 as usize];
+25 |                 s = &s[0 as usize..dot + 4 as usize];
    |                                          ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbenfords-law3197566984/001/prog.rs:30:36
+  --> /tmp/benfords-law.rs:25:36
    |
-30 |                 s = &s[0 as usize..dot + 4 as usize];
+25 |                 s = &s[0 as usize..dot + 4 as usize];
    |                                    ^^^^^^^^^^^^^^^^ expected `usize`, found `i32`
 
 error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/TestMochiRustGoldenbenfords-law3197566984/001/prog.rs:30:40
+  --> /tmp/benfords-law.rs:25:40
    |
-30 |                 s = &s[0 as usize..dot + 4 as usize];
+25 |                 s = &s[0 as usize..dot + 4 as usize];
    |                                        ^ no implementation for `i32 + usize`
    |
    = help: the trait `Add<usize>` is not implemented for `i32`
@@ -87,133 +87,133 @@ error[E0277]: cannot add `usize` to `i32`
              `i32` implements `Add`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbenfords-law3197566984/001/prog.rs:30:21
+  --> /tmp/benfords-law.rs:25:21
    |
-23 |         let mut s = y.to_string();
+18 |         let mut s = y.to_string();
    |                     ------------- expected due to this value
 ...
-30 |                 s = &s[0 as usize..dot + 4 as usize];
+25 |                 s = &s[0 as usize..dot + 4 as usize];
    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `String`, found `&str`
    |
 help: try using a conversion method
    |
-30 |                 s = (&s[0 as usize..dot + 4 as usize]).to_string();
+25 |                 s = (&s[0 as usize..dot + 4 as usize]).to_string();
    |                     +                                +++++++++++++
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbenfords-law3197566984/001/prog.rs:38:16
+  --> /tmp/benfords-law.rs:33:16
    |
-21 |     fn fmtF3(x: f64) -> &'static str {
+16 |     fn fmtF3(x: f64) -> &'static str {
    |                         ------------ expected `&'static str` because of return type
 ...
-38 |         return s;
+33 |         return s;
    |                ^ expected `&str`, found `String`
    |
 help: consider borrowing here
    |
-38 |         return &s;
+33 |         return &s;
    |                +
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbenfords-law3197566984/001/prog.rs:43:17
+  --> /tmp/benfords-law.rs:38:17
    |
-43 |             s = format!("{}{}", " ", s);
+38 |             s = format!("{}{}", " ", s);
    |                 ^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
    |
    = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbenfords-law3197566984/001/prog.rs:62:16
+  --> /tmp/benfords-law.rs:57:16
    |
-62 |         if x < 0.0 {
+57 |         if x < 0.0 {
    |                ^^^ expected `&mut f64`, found floating-point number
    |
 help: consider dereferencing the borrow
    |
-62 |         if *x < 0.0 {
+57 |         if *x < 0.0 {
    |            +
 
 error[E0600]: cannot apply unary operator `-` to type `&mut f64`
-  --> /tmp/TestMochiRustGoldenbenfords-law3197566984/001/prog.rs:63:17
+  --> /tmp/benfords-law.rs:58:17
    |
-63 |             x = -x;
+58 |             x = -x;
    |                 ^^ cannot apply unary operator `-`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbenfords-law3197566984/001/prog.rs:65:20
+  --> /tmp/benfords-law.rs:60:20
    |
-65 |         while x >= 10.0 {
+60 |         while x >= 10.0 {
    |                    ^^^^ expected `&mut f64`, found floating-point number
    |
 help: consider dereferencing the borrow
    |
-65 |         while *x >= 10.0 {
+60 |         while *x >= 10.0 {
    |               +
 
 error[E0368]: binary assignment operation `/=` cannot be applied to type `&mut f64`
-  --> /tmp/TestMochiRustGoldenbenfords-law3197566984/001/prog.rs:66:13
+  --> /tmp/benfords-law.rs:61:13
    |
-66 |             x /= 10.0;
+61 |             x /= 10.0;
    |             -^^^^^^^^
    |             |
    |             cannot use `/=` on type `&mut f64`
    |
 help: `/=` can be used on `f64` if you dereference the left-hand side
    |
-66 |             *x /= 10.0;
+61 |             *x /= 10.0;
    |             +
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbenfords-law3197566984/001/prog.rs:68:19
+  --> /tmp/benfords-law.rs:63:19
    |
-68 |         while x > 0.0 && x < 1.0 {
+63 |         while x > 0.0 && x < 1.0 {
    |                   ^^^ expected `&mut f64`, found floating-point number
    |
 help: consider dereferencing the borrow
    |
-68 |         while *x > 0.0 && x < 1.0 {
+63 |         while *x > 0.0 && x < 1.0 {
    |               +
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbenfords-law3197566984/001/prog.rs:68:30
+  --> /tmp/benfords-law.rs:63:30
    |
-68 |         while x > 0.0 && x < 1.0 {
+63 |         while x > 0.0 && x < 1.0 {
    |                              ^^^ expected `&mut f64`, found floating-point number
    |
 help: consider dereferencing the borrow
    |
-68 |         while x > 0.0 && *x < 1.0 {
+63 |         while x > 0.0 && *x < 1.0 {
    |                          +
 
 error[E0368]: binary assignment operation `*=` cannot be applied to type `&mut f64`
-  --> /tmp/TestMochiRustGoldenbenfords-law3197566984/001/prog.rs:69:13
+  --> /tmp/benfords-law.rs:64:13
    |
-69 |             x *= 10.0;
+64 |             x *= 10.0;
    |             -^^^^^^^^
    |             |
    |             cannot use `*=` on type `&mut f64`
    |
 help: `*=` can be used on `f64` if you dereference the left-hand side
    |
-69 |             *x *= 10.0;
+64 |             *x *= 10.0;
    |             +
 
 error[E0599]: no method named `parse` found for mutable reference `&mut f64` in the current scope
-  --> /tmp/TestMochiRustGoldenbenfords-law3197566984/001/prog.rs:71:18
+  --> /tmp/benfords-law.rs:66:18
    |
-71 |         return x.parse::<i32>().unwrap();
+66 |         return x.parse::<i32>().unwrap();
    |                  ^^^^^ method not found in `&mut f64`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbenfords-law3197566984/001/prog.rs:78:28
+  --> /tmp/benfords-law.rs:73:28
    |
-78 |                 counts[d - 1 as usize] = counts[d - 1 as usize] + 1;
+73 |                 counts[d - 1 as usize] = counts[d - 1 as usize] + 1;
    |                            ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0277]: cannot subtract `usize` from `i32`
-  --> /tmp/TestMochiRustGoldenbenfords-law3197566984/001/prog.rs:78:26
+  --> /tmp/benfords-law.rs:73:26
    |
-78 |                 counts[d - 1 as usize] = counts[d - 1 as usize] + 1;
+73 |                 counts[d - 1 as usize] = counts[d - 1 as usize] + 1;
    |                          ^ no implementation for `i32 - usize`
    |
    = help: the trait `Sub<usize>` is not implemented for `i32`
@@ -224,9 +224,9 @@ error[E0277]: cannot subtract `usize` from `i32`
              `i32` implements `Sub`
 
 error[E0277]: the type `[{integer}]` cannot be indexed by `i32`
-  --> /tmp/TestMochiRustGoldenbenfords-law3197566984/001/prog.rs:78:24
+  --> /tmp/benfords-law.rs:73:24
    |
-78 |                 counts[d - 1 as usize] = counts[d - 1 as usize] + 1;
+73 |                 counts[d - 1 as usize] = counts[d - 1 as usize] + 1;
    |                        ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
    |
    = help: the trait `SliceIndex<[{integer}]>` is not implemented for `i32`
@@ -235,15 +235,15 @@ error[E0277]: the type `[{integer}]` cannot be indexed by `i32`
    = note: required for `Vec<{integer}>` to implement `Index<i32>`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbenfords-law3197566984/001/prog.rs:78:53
+  --> /tmp/benfords-law.rs:73:53
    |
-78 |                 counts[d - 1 as usize] = counts[d - 1 as usize] + 1;
+73 |                 counts[d - 1 as usize] = counts[d - 1 as usize] + 1;
    |                                                     ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0277]: cannot subtract `usize` from `i32`
-  --> /tmp/TestMochiRustGoldenbenfords-law3197566984/001/prog.rs:78:51
+  --> /tmp/benfords-law.rs:73:51
    |
-78 |                 counts[d - 1 as usize] = counts[d - 1 as usize] + 1;
+73 |                 counts[d - 1 as usize] = counts[d - 1 as usize] + 1;
    |                                                   ^ no implementation for `i32 - usize`
    |
    = help: the trait `Sub<usize>` is not implemented for `i32`
@@ -254,9 +254,9 @@ error[E0277]: cannot subtract `usize` from `i32`
              `i32` implements `Sub`
 
 error[E0277]: the type `[{integer}]` cannot be indexed by `i32`
-  --> /tmp/TestMochiRustGoldenbenfords-law3197566984/001/prog.rs:78:49
+  --> /tmp/benfords-law.rs:73:49
    |
-78 |                 counts[d - 1 as usize] = counts[d - 1 as usize] + 1;
+73 |                 counts[d - 1 as usize] = counts[d - 1 as usize] + 1;
    |                                                 ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
    |
    = help: the trait `SliceIndex<[{integer}]>` is not implemented for `i32`
@@ -265,21 +265,21 @@ error[E0277]: the type `[{integer}]` cannot be indexed by `i32`
    = note: required for `Vec<{integer}>` to implement `Index<i32>`
 
 error[E0689]: can't call method `parse` on ambiguous numeric type `{integer}`
-  --> /tmp/TestMochiRustGoldenbenfords-law3197566984/001/prog.rs:87:43
+  --> /tmp/benfords-law.rs:82:43
    |
-87 |             let obs = (counts[i as usize].parse::<f64>().unwrap()) / (total.parse::<f64>().unwrap());
+82 |             let obs = (counts[i as usize].parse::<f64>().unwrap()) / (total.parse::<f64>().unwrap());
    |                                           ^^^^^
 
 error[E0599]: no method named `parse` found for type `i32` in the current scope
-  --> /tmp/TestMochiRustGoldenbenfords-law3197566984/001/prog.rs:87:77
+  --> /tmp/benfords-law.rs:82:77
    |
-87 |             let obs = (counts[i as usize].parse::<f64>().unwrap()) / (total.parse::<f64>().unwrap());
+82 |             let obs = (counts[i as usize].parse::<f64>().unwrap()) / (total.parse::<f64>().unwrap());
    |                                                                             ^^^^^ method not found in `i32`
 
 error[E0277]: cannot add `String` to `{integer}`
-  --> /tmp/TestMochiRustGoldenbenfords-law3197566984/001/prog.rs:88:116
+  --> /tmp/benfords-law.rs:83:116
    |
-88 | ...{}", format!("{}{}", format!("{}{}", "  ", i + 1.to_string()), "  "), padFloat3(obs, 9)), "  "), padFloat3(preds[i as usize], 8));
+83 | ...{}", format!("{}{}", format!("{}{}", "  ", i + 1.to_string()), "  "), padFloat3(obs, 9)), "  "), padFloat3(preds[i as usize], 8));
    |                                                 ^ no implementation for `{integer} + String`
    |
    = help: the trait `Add<String>` is not implemented for `{integer}`
@@ -295,9 +295,9 @@ error[E0277]: cannot add `String` to `{integer}`
            and 56 others
 
 warning: variable does not need to be mutable
-  --> /tmp/TestMochiRustGoldenbenfords-law3197566984/001/prog.rs:54:17
+  --> /tmp/benfords-law.rs:49:17
    |
-54 |             let mut t = b;
+49 |             let mut t = b;
    |                 ----^
    |                 |
    |                 help: remove this `mut`

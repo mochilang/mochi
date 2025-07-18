@@ -1,4 +1,4 @@
-# Rosetta Rust Output (17/216 compiled and run)
+# Rosetta Rust Output (30/238 compiled and run)
 
 This directory holds Rust source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -152,7 +152,7 @@ This directory holds Rust source code generated from the real Mochi programs in 
 - [ ] calkin-wilf-sequence
 - [ ] call-a-foreign-language-function
 - [ ] call-a-function-1
-- [ ] call-a-function-10
+- [x] call-a-function-10
 - [ ] call-a-function-11
 - [x] call-a-function-12
 - [ ] call-a-function-2
@@ -185,37 +185,59 @@ This directory holds Rust source code generated from the real Mochi programs in 
 - [ ] catmull-clark-subdivision-surface
 - [ ] chaocipher
 - [ ] chaos-game
-- [ ] character-codes-1
-- [ ] character-codes-2
-- [ ] character-codes-3
-- [ ] character-codes-4
-- [ ] character-codes-5
+- [x] character-codes-1
+- [x] character-codes-2
+- [x] character-codes-3
+- [x] character-codes-4
+- [x] character-codes-5
 - [ ] chat-server
 - [ ] check-machin-like-formulas
 - [ ] check-that-file-exists
 - [ ] checkpoint-synchronization-1
 - [ ] checkpoint-synchronization-2
 - [ ] checkpoint-synchronization-3
-- [ ] checkpoint-synchronization-4
+- [x] checkpoint-synchronization-4
 - [ ] chernicks-carmichael-numbers
 - [ ] cheryls-birthday
 - [ ] chinese-remainder-theorem
 - [ ] chinese-zodiac
 - [ ] cholesky-decomposition-1
 - [ ] cholesky-decomposition
-- [ ] chowla-numbers
+- [x] chowla-numbers
 - [ ] church-numerals-1
 - [ ] church-numerals-2
 - [ ] circles-of-given-radius-through-two-points
 - [ ] circular-primes
 - [ ] cistercian-numerals
+- [ ] compiler-virtual-machine-interpreter
+- [ ] concurrent-computing-1
+- [ ] concurrent-computing-2
+- [ ] concurrent-computing-3
+- [ ] conditional-structures-1
+- [x] conditional-structures-10
+- [ ] conditional-structures-2
+- [ ] conditional-structures-3
+- [x] conditional-structures-4
+- [ ] conditional-structures-5
+- [ ] conditional-structures-6
+- [ ] conditional-structures-7
+- [ ] conditional-structures-8
+- [x] conditional-structures-9
+- [ ] consecutive-primes-with-ascending-or-descending-differences
+- [ ] constrained-genericity-1
+- [ ] constrained-genericity-2
+- [ ] constrained-genericity-3
+- [ ] constrained-genericity-4
+- [ ] constrained-random-points-on-a-circle-1
+- [ ] constrained-random-points-on-a-circle-2
+- [ ] continued-fraction
 - [ ] crc-32-1
 - [ ] crc-32-2
 - [ ] csv-data-manipulation
 - [ ] csv-to-html-translation-1
 - [ ] csv-to-html-translation-2
-- [ ] csv-to-html-translation-3
-- [ ] csv-to-html-translation-4
+- [x] csv-to-html-translation-3
+- [x] csv-to-html-translation-4
 - [ ] csv-to-html-translation-5
 - [ ] cusip
 - [ ] md5

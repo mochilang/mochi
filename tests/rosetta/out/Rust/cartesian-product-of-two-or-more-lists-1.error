@@ -1,74 +1,48 @@
-rustc error: exit status 1
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldencartesian-product-of-two-or-more-lists-13233261032/001/prog.rs:22:13
+rustc: exit status 1
+error[E0308]: mismatched types
+  --> /tmp/cartesian-product-of-two-or-more-lists-1.rs:20:22
    |
-22 |             s += "[";
-   |             -^^^^^^^
-   |             |
-   |             cannot use `+=` on type `&str`
-
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldencartesian-product-of-two-or-more-lists-13233261032/001/prog.rs:25:17
+20 |                 s += row[j as usize].to_string();
+   |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
    |
-25 |                 s += row[j as usize].to_string();
-   |                 -^--^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-   |                 | |
-   |                 | `+` cannot be used to concatenate a `&str` with a `String`
-   |                 cannot use `+=` on type `&str`
+help: consider borrowing here
    |
-   = note: string concatenation requires an owned `String` on the left
-
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldencartesian-product-of-two-or-more-lists-13233261032/001/prog.rs:27:21
-   |
-27 |                     s += " ";
-   |                     -^^^^^^^
-   |                     |
-   |                     cannot use `+=` on type `&str`
-
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldencartesian-product-of-two-or-more-lists-13233261032/001/prog.rs:31:13
-   |
-31 |             s += "]";
-   |             -^^^^^^^
-   |             |
-   |             cannot use `+=` on type `&str`
-
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldencartesian-product-of-two-or-more-lists-13233261032/001/prog.rs:33:17
-   |
-33 |                 s += " ";
-   |                 -^^^^^^^
-   |                 |
-   |                 cannot use `+=` on type `&str`
-
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldencartesian-product-of-two-or-more-lists-13233261032/001/prog.rs:37:9
-   |
-37 |         s += "]";
-   |         -^^^^^^^
-   |         |
-   |         cannot use `+=` on type `&str`
-
-error[E0382]: use of moved value: `b`
-  --> /tmp/TestMochiRustGoldencartesian-product-of-two-or-more-lists-13233261032/001/prog.rs:11:22
-   |
-8  |     fn cart2(a: Vec<i32>, b: Vec<i32>) -> Vec<Vec<i32>> {
-   |                           - move occurs because `b` has type `Vec<i32>`, which does not implement the `Copy` trait
-9  |         let mut p: Vec<Vec<i32>> = vec![];
-10 |         for x in a {
-   |         ---------- inside of this loop
-11 |             for y in b {
-   |                      ^ `b` moved due to this implicit call to `.into_iter()`, in previous iteration of loop
-   |
-note: `into_iter` takes ownership of the receiver `self`, which moves `b`
-  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/iter/traits/collect.rs:313:18
-help: consider iterating over a slice of the `Vec<i32>`'s content to avoid moving into the `for` loop
-   |
-11 |             for y in &b {
+20 |                 s += &row[j as usize].to_string();
    |                      +
 
-error: aborting due to 7 previous errors
+error[E0308]: mismatched types
+  --> /tmp/cartesian-product-of-two-or-more-lists-1.rs:33:16
+   |
+12 |     fn llStr(lst: Vec<Vec<i32>>) -> &'static str {
+   |                                     ------------ expected `&'static str` because of return type
+...
+33 |         return s;
+   |                ^ expected `&str`, found `String`
+   |
+help: consider borrowing here
+   |
+33 |         return &s;
+   |                +
 
-Some errors have detailed explanations: E0368, E0382.
-For more information about an error, try `rustc --explain E0368`.
+error[E0382]: use of moved value: `b`
+ --> /tmp/cartesian-product-of-two-or-more-lists-1.rs:6:22
+  |
+3 |     fn cart2(a: Vec<i32>, b: Vec<i32>) -> Vec<Vec<i32>> {
+  |                           - move occurs because `b` has type `Vec<i32>`, which does not implement the `Copy` trait
+4 |         let mut p: Vec<Vec<i32>> = vec![];
+5 |         for x in a {
+  |         ---------- inside of this loop
+6 |             for y in b {
+  |                      ^ `b` moved due to this implicit call to `.into_iter()`, in previous iteration of loop
+  |
+note: `into_iter` takes ownership of the receiver `self`, which moves `b`
+ --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/iter/traits/collect.rs:313:18
+help: consider iterating over a slice of the `Vec<i32>`'s content to avoid moving into the `for` loop
+  |
+6 |             for y in &b {
+  |                      +
+
+error: aborting due to 3 previous errors
+
+Some errors have detailed explanations: E0308, E0382.
+For more information about an error, try `rustc --explain E0308`.

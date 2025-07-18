@@ -1,8 +1,109 @@
-type error: error[T007]: argument 3: expected int, got bigint
-  --> /workspace/mochi/tests/rosetta/x/Mochi/abundant-odd-numbers.mochi:41:10
+rustc: exit status 1
+error: `<` is interpreted as a start of generic arguments for `i32`, not a comparison
+  --> /tmp/abundant-odd-numbers.rs:42:27
+   |
+42 |         if s.len() as i32 < 2 {
+   |                           ^ --- interpreted as generic arguments
+   |                           |
+   |                           not interpreted as comparison
+   |
+help: try comparing the cast value
+   |
+42 |         if (s.len() as i32) < 2 {
+   |            +              +
 
- 41 |   return substring(s, 0, len(s) - 3)
-    |          ^
+error: `<` is interpreted as a start of generic arguments for `i32`, not a comparison
+  --> /tmp/abundant-odd-numbers.rs:49:30
+   |
+49 |         while s.len() as i32 < 5 {
+   |                              ^ --- interpreted as generic arguments
+   |                              |
+   |                              not interpreted as comparison
+   |
+help: try comparing the cast value
+   |
+49 |         while (s.len() as i32) < 5 {
+   |               +              +
 
-help:
-  Ensure the argument type matches the function’s signature.
+error[E0599]: no method named `parse` found for type `f64` in the current scope
+ --> /tmp/abundant-odd-numbers.rs:9:51
+  |
+9 |                 let j = ((n as f64) / (i as f64)).parse::<i32>().unwrap();
+  |                                                   ^^^^^ method not found in `f64`
+
+error[E0308]: mismatched types
+  --> /tmp/abundant-odd-numbers.rs:38:48
+   |
+38 |         return &s[0 as usize..s.len() as i32 - 3 as usize];
+   |                                                ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+  --> /tmp/abundant-odd-numbers.rs:38:31
+   |
+38 |         return &s[0 as usize..s.len() as i32 - 3 as usize];
+   |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot subtract `usize` from `i32`
+  --> /tmp/abundant-odd-numbers.rs:38:46
+   |
+38 |         return &s[0 as usize..s.len() as i32 - 3 as usize];
+   |                                              ^ no implementation for `i32 - usize`
+   |
+   = help: the trait `Sub<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Sub<Rhs>`:
+             `&i32` implements `Sub<i32>`
+             `&i32` implements `Sub`
+             `i32` implements `Sub<&i32>`
+             `i32` implements `Sub`
+
+error[E0308]: mismatched types
+  --> /tmp/abundant-odd-numbers.rs:43:20
+   |
+40 |     fn pad2(n: i32) -> &'static str {
+   |                        ------------ expected `&str` because of return type
+...
+43 |             return format!("{}{}", " ", s);
+   |                    ^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+   |
+   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0308]: mismatched types
+  --> /tmp/abundant-odd-numbers.rs:45:16
+   |
+40 |     fn pad2(n: i32) -> &'static str {
+   |                        ------------ expected `&'static str` because of return type
+...
+45 |         return s;
+   |                ^ expected `&str`, found `String`
+   |
+help: consider borrowing here
+   |
+45 |         return &s;
+   |                +
+
+error[E0308]: mismatched types
+  --> /tmp/abundant-odd-numbers.rs:52:16
+   |
+47 |     fn pad5(n: i32) -> &'static str {
+   |                        ------------ expected `&'static str` because of return type
+...
+52 |         return s;
+   |                ^ expected `&str`, found `String`
+   |
+help: consider borrowing here
+   |
+52 |         return &s;
+   |                +
+
+error[E0308]: mismatched types
+  --> /tmp/abundant-odd-numbers.rs:60:22
+   |
+60 |             if tot > n as f64 {
+   |                ---   ^^^^^^^^ expected `i32`, found `f64`
+   |                |
+   |                expected because this is `i32`
+
+error: aborting due to 10 previous errors
+
+Some errors have detailed explanations: E0277, E0308, E0599.
+For more information about an error, try `rustc --explain E0277`.

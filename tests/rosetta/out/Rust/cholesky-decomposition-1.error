@@ -1,8 +1,8 @@
-rustc error: exit status 1
+rustc: exit status 1
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencholesky-decomposition-1630180571/001/prog.rs:18:107
+  --> /tmp/cholesky-decomposition-1.rs:13:107
    |
-18 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("order", order); m.insert("ele", elements); m };
+13 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("order", order); m.insert("ele", elements); m };
    |                                                                 -                 -----     ------        ^^^^^^^^ expected `i32`, found `Vec<f64>`
    |                                                                 |                 |         |
    |                                                                 |                 |         arguments to this method are incorrect
@@ -12,9 +12,9 @@ error[E0308]: mismatched types
    = note: expected type `i32`
             found struct `Vec<f64>`
 help: the return type of this call is `Vec<f64>` due to the type of the argument passed
-  --> /tmp/TestMochiRustGoldencholesky-decomposition-1630180571/001/prog.rs:18:91
+  --> /tmp/cholesky-decomposition-1.rs:13:91
    |
-18 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("order", order); m.insert("ele", elements); m };
+13 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("order", order); m.insert("ele", elements); m };
    |                                                                                           ^^^^^^^^^^^^^^^^--------^
    |                                                                                                           |
    |                                                                                                           this argument influences the return type of `insert`
@@ -22,75 +22,67 @@ note: method defined here
   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencholesky-decomposition-1630180571/001/prog.rs:18:118
+  --> /tmp/cholesky-decomposition-1.rs:13:118
    |
-17 |     fn makeSym(order: i32, elements: Vec<f64>) -> std::collections::HashMap<&'static str, i32> {
+12 |     fn makeSym(order: i32, elements: Vec<f64>) -> std::collections::HashMap<&'static str, i32> {
    |                                                   -------------------------------------------- expected `HashMap<&'static str, i32>` because of return type
-18 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("order", order); m.insert("ele", elements); m };
+13 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("order", order); m.insert("ele", elements); m };
    |                                                                                                                      ^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, i32>`
    |
    = note: expected struct `HashMap<&'static str, i32>`
               found struct `BTreeMap<&str, i32>`
 
 error[E0608]: cannot index into a value of type `i32`
-  --> /tmp/TestMochiRustGoldencholesky-decomposition-1630180571/001/prog.rs:30:38
+  --> /tmp/cholesky-decomposition-1.rs:25:64
    |
-30 |                 row = append(row, ele[idx as usize]);
-   |                                      ^^^^^^^^^^^^^^
+25 |                 row = { let mut tmp = row.clone(); tmp.push(ele[idx as usize]); tmp };
+   |                                                                ^^^^^^^^^^^^^^
 
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldencholesky-decomposition-1630180571/001/prog.rs:58:17
+error[E0308]: mismatched types
+  --> /tmp/cholesky-decomposition-1.rs:53:25
    |
-58 |                 line += m[i as usize][j as usize].to_string();
-   |                 ----^--^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-   |                 |    |
-   |                 |    `+` cannot be used to concatenate a `&str` with a `String`
-   |                 cannot use `+=` on type `&str`
+53 |                 line += m[i as usize][j as usize].to_string();
+   |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
    |
-   = note: string concatenation requires an owned `String` on the left
-
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldencholesky-decomposition-1630180571/001/prog.rs:60:21
+help: consider borrowing here
    |
-60 |                     line += " ";
-   |                     ----^^^^^^^
-   |                     |
-   |                     cannot use `+=` on type `&str`
+53 |                 line += &m[i as usize][j as usize].to_string();
+   |                         +
 
 error[E0608]: cannot index into a value of type `i32`
-  --> /tmp/TestMochiRustGoldencholesky-decomposition-1630180571/001/prog.rs:81:38
+  --> /tmp/cholesky-decomposition-1.rs:76:64
    |
-81 |                 row = append(row, ele[idx as usize]);
-   |                                      ^^^^^^^^^^^^^^
+76 |                 row = { let mut tmp = row.clone(); tmp.push(ele[idx as usize]); tmp };
+   |                                                                ^^^^^^^^^^^^^^
 
 error[E0599]: no method named `len` found for type `i32` in the current scope
-  --> /tmp/TestMochiRustGoldencholesky-decomposition-1630180571/001/prog.rs:99:24
+  --> /tmp/cholesky-decomposition-1.rs:94:24
    |
-99 |         while idx < ae.len() as i32 {
+94 |         while idx < ae.len() as i32 {
    |                        ^^^
    |
 help: there is a method `le` with a similar name, but with different arguments
   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/cmp.rs:1400:5
 
 error[E0599]: no method named `len` found for type `i32` in the current scope
-   --> /tmp/TestMochiRustGoldencholesky-decomposition-1630180571/001/prog.rs:108:22
+   --> /tmp/cholesky-decomposition-1.rs:103:22
     |
-108 |         while i < ae.len() as i32 {
+103 |         while i < ae.len() as i32 {
     |                      ^^^
     |
 help: there is a method `le` with a similar name, but with different arguments
    --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/cmp.rs:1400:5
 
 error[E0608]: cannot index into a value of type `i32`
-   --> /tmp/TestMochiRustGoldencholesky-decomposition-1630180571/001/prog.rs:109:23
+   --> /tmp/cholesky-decomposition-1.rs:104:23
     |
-109 |             let e = ae[i as usize];
+104 |             let e = ae[i as usize];
     |                       ^^^^^^^^^^^^
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldencholesky-decomposition-1630180571/001/prog.rs:133:103
+   --> /tmp/cholesky-decomposition-1.rs:128:103
     |
-133 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("order", n); m.insert("ele", le); m };
+128 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("order", n); m.insert("ele", le); m };
     |                                                                 -                 -     ------        ^^ expected `i32`, found `Vec<f64>`
     |                                                                 |                 |     |
     |                                                                 |                 |     arguments to this method are incorrect
@@ -100,9 +92,9 @@ error[E0308]: mismatched types
     = note: expected type `i32`
              found struct `Vec<f64>`
 help: the return type of this call is `Vec<f64>` due to the type of the argument passed
-   --> /tmp/TestMochiRustGoldencholesky-decomposition-1630180571/001/prog.rs:133:87
+   --> /tmp/cholesky-decomposition-1.rs:128:87
     |
-133 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("order", n); m.insert("ele", le); m };
+128 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("order", n); m.insert("ele", le); m };
     |                                                                                       ^^^^^^^^^^^^^^^^--^
     |                                                                                                       |
     |                                                                                                       this argument influences the return type of `insert`
@@ -110,42 +102,42 @@ note: method defined here
    --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldencholesky-decomposition-1630180571/001/prog.rs:133:108
+   --> /tmp/cholesky-decomposition-1.rs:128:108
     |
-94  |     fn choleskyLower(a: std::collections::HashMap<&'static str, i32>) -> std::collections::HashMap<&'static str, i32> {
+89  |     fn choleskyLower(a: std::collections::HashMap<&'static str, i32>) -> std::collections::HashMap<&'static str, i32> {
     |                                                                          -------------------------------------------- expected `HashMap<&'static str, i32>` because of return type
 ...
-133 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("order", n); m.insert("ele", le); m };
+128 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("order", n); m.insert("ele", le); m };
     |                                                                                                            ^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, i32>`
     |
     = note: expected struct `HashMap<&'static str, i32>`
                found struct `BTreeMap<&str, i32>`
 
 error[E0382]: use of moved value: `a`
-   --> /tmp/TestMochiRustGoldencholesky-decomposition-1630180571/001/prog.rs:139:31
+   --> /tmp/cholesky-decomposition-1.rs:134:31
     |
-135 |     fn demo(a: std::collections::HashMap<&'static str, i32>) -> () {
+130 |     fn demo(a: std::collections::HashMap<&'static str, i32>) -> () {
     |             - move occurs because `a` has type `HashMap<&str, i32>`, which does not implement the `Copy` trait
-136 |         println!("A:");
-137 |         printSym(a);
+131 |         println!("A:");
+132 |         printSym(a);
     |                  - value moved here
-138 |         println!("L:");
-139 |         let l = choleskyLower(a);
+133 |         println!("L:");
+134 |         let l = choleskyLower(a);
     |                               ^ value used here after move
     |
 note: consider changing this parameter type in function `printSym` to borrow instead if owning the value isn't necessary
-   --> /tmp/TestMochiRustGoldencholesky-decomposition-1630180571/001/prog.rs:68:20
+   --> /tmp/cholesky-decomposition-1.rs:63:20
     |
-68  |     fn printSym(m: std::collections::HashMap<&'static str, i32>) -> () {
+63  |     fn printSym(m: std::collections::HashMap<&'static str, i32>) -> () {
     |        --------    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ this parameter takes ownership of the value
     |        |
     |        in this function
 help: consider cloning the value if the performance cost is acceptable
     |
-137 |         printSym(a.clone());
+132 |         printSym(a.clone());
     |                   ++++++++
 
-error: aborting due to 12 previous errors
+error: aborting due to 11 previous errors
 
-Some errors have detailed explanations: E0308, E0368, E0382, E0599, E0608.
+Some errors have detailed explanations: E0308, E0382, E0599, E0608.
 For more information about an error, try `rustc --explain E0308`.

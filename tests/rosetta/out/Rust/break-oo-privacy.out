@@ -1,0 +1,8 @@
+obj: {12 42}
+ v: {12 42} = {12 42}
+    Idx Name       Type CanSet
+     0: Exported   int  true
+     1: unexported int  false
+  modified unexported field via unsafe
+obj: {16 44}
+bufio.ReadByte returned error: unsafely injected error value into bufio inner workings

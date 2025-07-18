@@ -1,6 +1,6 @@
-rustc error: exit status 1
+rustc: exit status 1
 error: `<` is interpreted as a start of generic arguments for `i32`, not a comparison
-  --> /tmp/TestMochiRustGoldenattractive-numbers329201533/001/prog.rs:51:30
+  --> /tmp/attractive-numbers.rs:51:30
    |
 51 |         while s.len() as i32 < 4 {
    |                              ^ --- interpreted as generic arguments
@@ -13,7 +13,7 @@ help: try comparing the cast value
    |               +              +
 
 warning: denote infinite loops with `loop { ... }`
-  --> /tmp/TestMochiRustGoldenattractive-numbers329201533/001/prog.rs:35:9
+  --> /tmp/attractive-numbers.rs:35:9
    |
 35 |         while true {
    |         ^^^^^^^^^^ help: use `loop`
@@ -21,7 +21,7 @@ warning: denote infinite loops with `loop { ... }`
    = note: `#[warn(while_true)]` on by default
 
 error[E0277]: can't compare `&mut i32` with `{integer}`
-  --> /tmp/TestMochiRustGoldenattractive-numbers329201533/001/prog.rs:27:14
+  --> /tmp/attractive-numbers.rs:27:14
    |
 27 |         if n == 1 {
    |              ^^ no implementation for `&mut i32 == {integer}`
@@ -33,7 +33,7 @@ help: consider dereferencing here
    |            +
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenattractive-numbers329201533/001/prog.rs:30:20
+  --> /tmp/attractive-numbers.rs:30:20
    |
 30 |         if isPrime(n) {
    |            ------- ^ expected `i32`, found `&mut i32`
@@ -41,7 +41,7 @@ error[E0308]: mismatched types
    |            arguments to this function are incorrect
    |
 note: function defined here
-  --> /tmp/TestMochiRustGoldenattractive-numbers329201533/001/prog.rs:3:8
+  --> /tmp/attractive-numbers.rs:3:8
    |
 3  |     fn isPrime(n: i32) -> bool {
    |        ^^^^^^^ ------
@@ -51,7 +51,7 @@ help: consider dereferencing the borrow
    |                    +
 
 error[E0369]: cannot calculate the remainder of `&mut i32` divided by `{integer}`
-  --> /tmp/TestMochiRustGoldenattractive-numbers329201533/001/prog.rs:36:18
+  --> /tmp/attractive-numbers.rs:36:18
    |
 36 |             if n % f == 0 {
    |                - ^ - {integer}
@@ -64,7 +64,7 @@ help: `%` can be used on `i32` if you dereference the left-hand side
    |                +
 
 error[E0368]: binary assignment operation `/=` cannot be applied to type `&mut i32`
-  --> /tmp/TestMochiRustGoldenattractive-numbers329201533/001/prog.rs:38:17
+  --> /tmp/attractive-numbers.rs:38:17
    |
 38 |                 n /= f;
    |                 -^^^^^
@@ -77,7 +77,7 @@ help: `/=` can be used on `i32` if you dereference the left-hand side
    |                 +
 
 error[E0277]: can't compare `&mut i32` with `{integer}`
-  --> /tmp/TestMochiRustGoldenattractive-numbers329201533/001/prog.rs:39:22
+  --> /tmp/attractive-numbers.rs:39:22
    |
 39 |                 if n == 1 {
    |                      ^^ no implementation for `&mut i32 == {integer}`
@@ -89,7 +89,7 @@ help: consider dereferencing here
    |                    +
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenattractive-numbers329201533/001/prog.rs:42:28
+  --> /tmp/attractive-numbers.rs:42:28
    |
 42 |                 if isPrime(n) {
    |                    ------- ^ expected `i32`, found `&mut i32`
@@ -97,7 +97,7 @@ error[E0308]: mismatched types
    |                    arguments to this function are incorrect
    |
 note: function defined here
-  --> /tmp/TestMochiRustGoldenattractive-numbers329201533/001/prog.rs:3:8
+  --> /tmp/attractive-numbers.rs:3:8
    |
 3  |     fn isPrime(n: i32) -> bool {
    |        ^^^^^^^ ------
@@ -107,7 +107,7 @@ help: consider dereferencing the borrow
    |                            +
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenattractive-numbers329201533/001/prog.rs:43:25
+  --> /tmp/attractive-numbers.rs:43:25
    |
 34 |         let mut f = 2;
    |                     - expected due to this value
@@ -121,7 +121,7 @@ help: consider dereferencing the borrow
    |                         +
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenattractive-numbers329201533/001/prog.rs:54:16
+  --> /tmp/attractive-numbers.rs:54:16
    |
 49 |     fn pad4(n: i32) -> &'static str {
    |                        ------------ expected `&'static str` because of return type
@@ -134,13 +134,16 @@ help: consider borrowing here
 54 |         return &s;
    |                +
 
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldenattractive-numbers329201533/001/prog.rs:66:17
+error[E0308]: mismatched types
+  --> /tmp/attractive-numbers.rs:71:28
    |
-66 |                 line += pad4(i);
-   |                 ----^^^^^^^^^^^
-   |                 |
-   |                 cannot use `+=` on type `&str`
+60 |         let mut line = String::new();
+   |                        ------------- expected due to this value
+...
+71 |                     line = "";
+   |                            ^^- help: try using a conversion method: `.to_string()`
+   |                            |
+   |                            expected `String`, found `&str`
 
 error: aborting due to 10 previous errors; 1 warning emitted
 

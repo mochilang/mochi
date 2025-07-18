@@ -1,22 +1,22 @@
-rustc error: exit status 1
+rustc: exit status 1
 error[E0434]: can't capture dynamic environment in a fn item
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:77:16
+  --> /tmp/abelian-sandpile-model.rs:72:16
    |
-77 |         pile = handlePile(&mut pile, hdim, hdim);
+72 |         pile = handlePile(&mut pile, hdim, hdim);
    |                ^^^^^^^^^^
    |
    = help: use the `|| { ... }` closure form instead
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:28:26
+  --> /tmp/abelian-sandpile-model.rs:23:26
    |
-28 |                 pile[y - 1 as usize][x as usize] = pile[y - 1 as usize][x as usize] + 1;
+23 |                 pile[y - 1 as usize][x as usize] = pile[y - 1 as usize][x as usize] + 1;
    |                          ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0277]: cannot subtract `usize` from `i32`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:28:24
+  --> /tmp/abelian-sandpile-model.rs:23:24
    |
-28 |                 pile[y - 1 as usize][x as usize] = pile[y - 1 as usize][x as usize] + 1;
+23 |                 pile[y - 1 as usize][x as usize] = pile[y - 1 as usize][x as usize] + 1;
    |                        ^ no implementation for `i32 - usize`
    |
    = help: the trait `Sub<usize>` is not implemented for `i32`
@@ -27,9 +27,9 @@ error[E0277]: cannot subtract `usize` from `i32`
              `i32` implements `Sub`
 
 error[E0277]: the type `[Vec<i32>]` cannot be indexed by `i32`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:28:22
+  --> /tmp/abelian-sandpile-model.rs:23:22
    |
-28 |                 pile[y - 1 as usize][x as usize] = pile[y - 1 as usize][x as usize] + 1;
+23 |                 pile[y - 1 as usize][x as usize] = pile[y - 1 as usize][x as usize] + 1;
    |                      ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
    |
    = help: the trait `SliceIndex<[Vec<i32>]>` is not implemented for `i32`
@@ -38,15 +38,15 @@ error[E0277]: the type `[Vec<i32>]` cannot be indexed by `i32`
    = note: required for `Vec<Vec<i32>>` to implement `Index<i32>`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:28:61
+  --> /tmp/abelian-sandpile-model.rs:23:61
    |
-28 |                 pile[y - 1 as usize][x as usize] = pile[y - 1 as usize][x as usize] + 1;
+23 |                 pile[y - 1 as usize][x as usize] = pile[y - 1 as usize][x as usize] + 1;
    |                                                             ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0277]: cannot subtract `usize` from `i32`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:28:59
+  --> /tmp/abelian-sandpile-model.rs:23:59
    |
-28 |                 pile[y - 1 as usize][x as usize] = pile[y - 1 as usize][x as usize] + 1;
+23 |                 pile[y - 1 as usize][x as usize] = pile[y - 1 as usize][x as usize] + 1;
    |                                                           ^ no implementation for `i32 - usize`
    |
    = help: the trait `Sub<usize>` is not implemented for `i32`
@@ -57,9 +57,9 @@ error[E0277]: cannot subtract `usize` from `i32`
              `i32` implements `Sub`
 
 error[E0277]: the type `[Vec<i32>]` cannot be indexed by `i32`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:28:57
+  --> /tmp/abelian-sandpile-model.rs:23:57
    |
-28 |                 pile[y - 1 as usize][x as usize] = pile[y - 1 as usize][x as usize] + 1;
+23 |                 pile[y - 1 as usize][x as usize] = pile[y - 1 as usize][x as usize] + 1;
    |                                                         ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
    |
    = help: the trait `SliceIndex<[Vec<i32>]>` is not implemented for `i32`
@@ -68,15 +68,15 @@ error[E0277]: the type `[Vec<i32>]` cannot be indexed by `i32`
    = note: required for `Vec<Vec<i32>>` to implement `Index<i32>`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:29:29
+  --> /tmp/abelian-sandpile-model.rs:24:29
    |
-29 |                 if pile[y - 1 as usize][x as usize] >= 4 {
+24 |                 if pile[y - 1 as usize][x as usize] >= 4 {
    |                             ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0277]: cannot subtract `usize` from `i32`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:29:27
+  --> /tmp/abelian-sandpile-model.rs:24:27
    |
-29 |                 if pile[y - 1 as usize][x as usize] >= 4 {
+24 |                 if pile[y - 1 as usize][x as usize] >= 4 {
    |                           ^ no implementation for `i32 - usize`
    |
    = help: the trait `Sub<usize>` is not implemented for `i32`
@@ -87,9 +87,9 @@ error[E0277]: cannot subtract `usize` from `i32`
              `i32` implements `Sub`
 
 error[E0277]: the type `[Vec<i32>]` cannot be indexed by `i32`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:29:25
+  --> /tmp/abelian-sandpile-model.rs:24:25
    |
-29 |                 if pile[y - 1 as usize][x as usize] >= 4 {
+24 |                 if pile[y - 1 as usize][x as usize] >= 4 {
    |                         ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
    |
    = help: the trait `SliceIndex<[Vec<i32>]>` is not implemented for `i32`
@@ -98,21 +98,21 @@ error[E0277]: the type `[Vec<i32>]` cannot be indexed by `i32`
    = note: required for `Vec<Vec<i32>>` to implement `Index<i32>`
 
 error[E0425]: cannot find function `handlePile` in this scope
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:30:28
+  --> /tmp/abelian-sandpile-model.rs:25:28
    |
-30 |                     pile = handlePile(&mut pile, x, y - 1);
+25 |                     pile = handlePile(&mut pile, x, y - 1);
    |                            ^^^^^^^^^^ not found in this scope
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:34:38
+  --> /tmp/abelian-sandpile-model.rs:29:38
    |
-34 |                 pile[y as usize][x - 1 as usize] = pile[y as usize][x - 1 as usize] + 1;
+29 |                 pile[y as usize][x - 1 as usize] = pile[y as usize][x - 1 as usize] + 1;
    |                                      ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0277]: cannot subtract `usize` from `i32`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:34:36
+  --> /tmp/abelian-sandpile-model.rs:29:36
    |
-34 |                 pile[y as usize][x - 1 as usize] = pile[y as usize][x - 1 as usize] + 1;
+29 |                 pile[y as usize][x - 1 as usize] = pile[y as usize][x - 1 as usize] + 1;
    |                                    ^ no implementation for `i32 - usize`
    |
    = help: the trait `Sub<usize>` is not implemented for `i32`
@@ -123,9 +123,9 @@ error[E0277]: cannot subtract `usize` from `i32`
              `i32` implements `Sub`
 
 error[E0277]: the type `[i32]` cannot be indexed by `i32`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:34:34
+  --> /tmp/abelian-sandpile-model.rs:29:34
    |
-34 |                 pile[y as usize][x - 1 as usize] = pile[y as usize][x - 1 as usize] + 1;
+29 |                 pile[y as usize][x - 1 as usize] = pile[y as usize][x - 1 as usize] + 1;
    |                                  ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
    |
    = help: the trait `SliceIndex<[i32]>` is not implemented for `i32`
@@ -134,15 +134,15 @@ error[E0277]: the type `[i32]` cannot be indexed by `i32`
    = note: required for `Vec<i32>` to implement `Index<i32>`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:34:73
+  --> /tmp/abelian-sandpile-model.rs:29:73
    |
-34 |                 pile[y as usize][x - 1 as usize] = pile[y as usize][x - 1 as usize] + 1;
+29 |                 pile[y as usize][x - 1 as usize] = pile[y as usize][x - 1 as usize] + 1;
    |                                                                         ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0277]: cannot subtract `usize` from `i32`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:34:71
+  --> /tmp/abelian-sandpile-model.rs:29:71
    |
-34 |                 pile[y as usize][x - 1 as usize] = pile[y as usize][x - 1 as usize] + 1;
+29 |                 pile[y as usize][x - 1 as usize] = pile[y as usize][x - 1 as usize] + 1;
    |                                                                       ^ no implementation for `i32 - usize`
    |
    = help: the trait `Sub<usize>` is not implemented for `i32`
@@ -153,9 +153,9 @@ error[E0277]: cannot subtract `usize` from `i32`
              `i32` implements `Sub`
 
 error[E0277]: the type `[i32]` cannot be indexed by `i32`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:34:69
+  --> /tmp/abelian-sandpile-model.rs:29:69
    |
-34 |                 pile[y as usize][x - 1 as usize] = pile[y as usize][x - 1 as usize] + 1;
+29 |                 pile[y as usize][x - 1 as usize] = pile[y as usize][x - 1 as usize] + 1;
    |                                                                     ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
    |
    = help: the trait `SliceIndex<[i32]>` is not implemented for `i32`
@@ -164,15 +164,15 @@ error[E0277]: the type `[i32]` cannot be indexed by `i32`
    = note: required for `Vec<i32>` to implement `Index<i32>`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:35:41
+  --> /tmp/abelian-sandpile-model.rs:30:41
    |
-35 |                 if pile[y as usize][x - 1 as usize] >= 4 {
+30 |                 if pile[y as usize][x - 1 as usize] >= 4 {
    |                                         ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0277]: cannot subtract `usize` from `i32`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:35:39
+  --> /tmp/abelian-sandpile-model.rs:30:39
    |
-35 |                 if pile[y as usize][x - 1 as usize] >= 4 {
+30 |                 if pile[y as usize][x - 1 as usize] >= 4 {
    |                                       ^ no implementation for `i32 - usize`
    |
    = help: the trait `Sub<usize>` is not implemented for `i32`
@@ -183,9 +183,9 @@ error[E0277]: cannot subtract `usize` from `i32`
              `i32` implements `Sub`
 
 error[E0277]: the type `[i32]` cannot be indexed by `i32`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:35:37
+  --> /tmp/abelian-sandpile-model.rs:30:37
    |
-35 |                 if pile[y as usize][x - 1 as usize] >= 4 {
+30 |                 if pile[y as usize][x - 1 as usize] >= 4 {
    |                                     ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
    |
    = help: the trait `SliceIndex<[i32]>` is not implemented for `i32`
@@ -194,21 +194,21 @@ error[E0277]: the type `[i32]` cannot be indexed by `i32`
    = note: required for `Vec<i32>` to implement `Index<i32>`
 
 error[E0425]: cannot find function `handlePile` in this scope
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:36:28
+  --> /tmp/abelian-sandpile-model.rs:31:28
    |
-36 |                     pile = handlePile(&mut pile, x - 1, y);
+31 |                     pile = handlePile(&mut pile, x - 1, y);
    |                            ^^^^^^^^^^ not found in this scope
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:40:26
+  --> /tmp/abelian-sandpile-model.rs:35:26
    |
-40 |                 pile[y + 1 as usize][x as usize] = pile[y + 1 as usize][x as usize] + 1;
+35 |                 pile[y + 1 as usize][x as usize] = pile[y + 1 as usize][x as usize] + 1;
    |                          ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:40:24
+  --> /tmp/abelian-sandpile-model.rs:35:24
    |
-40 |                 pile[y + 1 as usize][x as usize] = pile[y + 1 as usize][x as usize] + 1;
+35 |                 pile[y + 1 as usize][x as usize] = pile[y + 1 as usize][x as usize] + 1;
    |                        ^ no implementation for `i32 + usize`
    |
    = help: the trait `Add<usize>` is not implemented for `i32`
@@ -219,9 +219,9 @@ error[E0277]: cannot add `usize` to `i32`
              `i32` implements `Add`
 
 error[E0277]: the type `[Vec<i32>]` cannot be indexed by `i32`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:40:22
+  --> /tmp/abelian-sandpile-model.rs:35:22
    |
-40 |                 pile[y + 1 as usize][x as usize] = pile[y + 1 as usize][x as usize] + 1;
+35 |                 pile[y + 1 as usize][x as usize] = pile[y + 1 as usize][x as usize] + 1;
    |                      ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
    |
    = help: the trait `SliceIndex<[Vec<i32>]>` is not implemented for `i32`
@@ -230,15 +230,15 @@ error[E0277]: the type `[Vec<i32>]` cannot be indexed by `i32`
    = note: required for `Vec<Vec<i32>>` to implement `Index<i32>`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:40:61
+  --> /tmp/abelian-sandpile-model.rs:35:61
    |
-40 |                 pile[y + 1 as usize][x as usize] = pile[y + 1 as usize][x as usize] + 1;
+35 |                 pile[y + 1 as usize][x as usize] = pile[y + 1 as usize][x as usize] + 1;
    |                                                             ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:40:59
+  --> /tmp/abelian-sandpile-model.rs:35:59
    |
-40 |                 pile[y + 1 as usize][x as usize] = pile[y + 1 as usize][x as usize] + 1;
+35 |                 pile[y + 1 as usize][x as usize] = pile[y + 1 as usize][x as usize] + 1;
    |                                                           ^ no implementation for `i32 + usize`
    |
    = help: the trait `Add<usize>` is not implemented for `i32`
@@ -249,9 +249,9 @@ error[E0277]: cannot add `usize` to `i32`
              `i32` implements `Add`
 
 error[E0277]: the type `[Vec<i32>]` cannot be indexed by `i32`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:40:57
+  --> /tmp/abelian-sandpile-model.rs:35:57
    |
-40 |                 pile[y + 1 as usize][x as usize] = pile[y + 1 as usize][x as usize] + 1;
+35 |                 pile[y + 1 as usize][x as usize] = pile[y + 1 as usize][x as usize] + 1;
    |                                                         ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
    |
    = help: the trait `SliceIndex<[Vec<i32>]>` is not implemented for `i32`
@@ -260,15 +260,15 @@ error[E0277]: the type `[Vec<i32>]` cannot be indexed by `i32`
    = note: required for `Vec<Vec<i32>>` to implement `Index<i32>`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:41:29
+  --> /tmp/abelian-sandpile-model.rs:36:29
    |
-41 |                 if pile[y + 1 as usize][x as usize] >= 4 {
+36 |                 if pile[y + 1 as usize][x as usize] >= 4 {
    |                             ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:41:27
+  --> /tmp/abelian-sandpile-model.rs:36:27
    |
-41 |                 if pile[y + 1 as usize][x as usize] >= 4 {
+36 |                 if pile[y + 1 as usize][x as usize] >= 4 {
    |                           ^ no implementation for `i32 + usize`
    |
    = help: the trait `Add<usize>` is not implemented for `i32`
@@ -279,9 +279,9 @@ error[E0277]: cannot add `usize` to `i32`
              `i32` implements `Add`
 
 error[E0277]: the type `[Vec<i32>]` cannot be indexed by `i32`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:41:25
+  --> /tmp/abelian-sandpile-model.rs:36:25
    |
-41 |                 if pile[y + 1 as usize][x as usize] >= 4 {
+36 |                 if pile[y + 1 as usize][x as usize] >= 4 {
    |                         ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
    |
    = help: the trait `SliceIndex<[Vec<i32>]>` is not implemented for `i32`
@@ -290,21 +290,21 @@ error[E0277]: the type `[Vec<i32>]` cannot be indexed by `i32`
    = note: required for `Vec<Vec<i32>>` to implement `Index<i32>`
 
 error[E0425]: cannot find function `handlePile` in this scope
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:42:28
+  --> /tmp/abelian-sandpile-model.rs:37:28
    |
-42 |                     pile = handlePile(&mut pile, x, y + 1);
+37 |                     pile = handlePile(&mut pile, x, y + 1);
    |                            ^^^^^^^^^^ not found in this scope
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:46:38
+  --> /tmp/abelian-sandpile-model.rs:41:38
    |
-46 |                 pile[y as usize][x + 1 as usize] = pile[y as usize][x + 1 as usize] + 1;
+41 |                 pile[y as usize][x + 1 as usize] = pile[y as usize][x + 1 as usize] + 1;
    |                                      ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:46:36
+  --> /tmp/abelian-sandpile-model.rs:41:36
    |
-46 |                 pile[y as usize][x + 1 as usize] = pile[y as usize][x + 1 as usize] + 1;
+41 |                 pile[y as usize][x + 1 as usize] = pile[y as usize][x + 1 as usize] + 1;
    |                                    ^ no implementation for `i32 + usize`
    |
    = help: the trait `Add<usize>` is not implemented for `i32`
@@ -315,9 +315,9 @@ error[E0277]: cannot add `usize` to `i32`
              `i32` implements `Add`
 
 error[E0277]: the type `[i32]` cannot be indexed by `i32`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:46:34
+  --> /tmp/abelian-sandpile-model.rs:41:34
    |
-46 |                 pile[y as usize][x + 1 as usize] = pile[y as usize][x + 1 as usize] + 1;
+41 |                 pile[y as usize][x + 1 as usize] = pile[y as usize][x + 1 as usize] + 1;
    |                                  ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
    |
    = help: the trait `SliceIndex<[i32]>` is not implemented for `i32`
@@ -326,15 +326,15 @@ error[E0277]: the type `[i32]` cannot be indexed by `i32`
    = note: required for `Vec<i32>` to implement `Index<i32>`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:46:73
+  --> /tmp/abelian-sandpile-model.rs:41:73
    |
-46 |                 pile[y as usize][x + 1 as usize] = pile[y as usize][x + 1 as usize] + 1;
+41 |                 pile[y as usize][x + 1 as usize] = pile[y as usize][x + 1 as usize] + 1;
    |                                                                         ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:46:71
+  --> /tmp/abelian-sandpile-model.rs:41:71
    |
-46 |                 pile[y as usize][x + 1 as usize] = pile[y as usize][x + 1 as usize] + 1;
+41 |                 pile[y as usize][x + 1 as usize] = pile[y as usize][x + 1 as usize] + 1;
    |                                                                       ^ no implementation for `i32 + usize`
    |
    = help: the trait `Add<usize>` is not implemented for `i32`
@@ -345,9 +345,9 @@ error[E0277]: cannot add `usize` to `i32`
              `i32` implements `Add`
 
 error[E0277]: the type `[i32]` cannot be indexed by `i32`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:46:69
+  --> /tmp/abelian-sandpile-model.rs:41:69
    |
-46 |                 pile[y as usize][x + 1 as usize] = pile[y as usize][x + 1 as usize] + 1;
+41 |                 pile[y as usize][x + 1 as usize] = pile[y as usize][x + 1 as usize] + 1;
    |                                                                     ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
    |
    = help: the trait `SliceIndex<[i32]>` is not implemented for `i32`
@@ -356,15 +356,15 @@ error[E0277]: the type `[i32]` cannot be indexed by `i32`
    = note: required for `Vec<i32>` to implement `Index<i32>`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:47:41
+  --> /tmp/abelian-sandpile-model.rs:42:41
    |
-47 |                 if pile[y as usize][x + 1 as usize] >= 4 {
+42 |                 if pile[y as usize][x + 1 as usize] >= 4 {
    |                                         ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:47:39
+  --> /tmp/abelian-sandpile-model.rs:42:39
    |
-47 |                 if pile[y as usize][x + 1 as usize] >= 4 {
+42 |                 if pile[y as usize][x + 1 as usize] >= 4 {
    |                                       ^ no implementation for `i32 + usize`
    |
    = help: the trait `Add<usize>` is not implemented for `i32`
@@ -375,9 +375,9 @@ error[E0277]: cannot add `usize` to `i32`
              `i32` implements `Add`
 
 error[E0277]: the type `[i32]` cannot be indexed by `i32`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:47:37
+  --> /tmp/abelian-sandpile-model.rs:42:37
    |
-47 |                 if pile[y as usize][x + 1 as usize] >= 4 {
+42 |                 if pile[y as usize][x + 1 as usize] >= 4 {
    |                                     ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
    |
    = help: the trait `SliceIndex<[i32]>` is not implemented for `i32`
@@ -386,24 +386,24 @@ error[E0277]: the type `[i32]` cannot be indexed by `i32`
    = note: required for `Vec<i32>` to implement `Index<i32>`
 
 error[E0425]: cannot find function `handlePile` in this scope
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:48:28
+  --> /tmp/abelian-sandpile-model.rs:43:28
    |
-48 |                     pile = handlePile(&mut pile, x + 1, y);
+43 |                     pile = handlePile(&mut pile, x + 1, y);
    |                            ^^^^^^^^^^ not found in this scope
 
 error[E0425]: cannot find function `handlePile` in this scope
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:51:20
+  --> /tmp/abelian-sandpile-model.rs:46:20
    |
-51 |             pile = handlePile(&mut pile, x, y);
+46 |             pile = handlePile(&mut pile, x, y);
    |                    ^^^^^^^^^^ not found in this scope
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:53:16
+  --> /tmp/abelian-sandpile-model.rs:48:16
    |
-24 |     let handlePile = move |pile: &mut Vec<Vec<i32>>, x: i32, y: i32| -> Vec<Vec<i32>> {
+19 |     let handlePile = move |pile: &mut Vec<Vec<i32>>, x: i32, y: i32| -> Vec<Vec<i32>> {
    |                                                                         ------------- expected `Vec<Vec<i32>>` because of return type
 ...
-53 |         return pile;
+48 |         return pile;
    |                ^^^^- help: try using a conversion method: `.to_vec()`
    |                |
    |                expected `Vec<Vec<i32>>`, found `&mut Vec<Vec<i32>>`
@@ -411,15 +411,7 @@ error[E0308]: mismatched types
    = note:         expected struct `Vec<_>`
            found mutable reference `&mut Vec<_>`
 
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldenabelian-sandpile-model153339648/001/prog.rs:66:17
-   |
-66 |                 line += chars[v as usize];
-   |                 ----^^^^^^^^^^^^^^^^^^^^^
-   |                 |
-   |                 cannot use `+=` on type `&str`
+error: aborting due to 43 previous errors
 
-error: aborting due to 44 previous errors
-
-Some errors have detailed explanations: E0277, E0308, E0368, E0425, E0434.
+Some errors have detailed explanations: E0277, E0308, E0425, E0434.
 For more information about an error, try `rustc --explain E0277`.

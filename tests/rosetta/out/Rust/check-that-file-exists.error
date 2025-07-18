@@ -1,6 +1,6 @@
-rustc error: exit status 1
+rustc: exit status 1
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencheck-that-file-exists1702248347/001/prog.rs:15:118
+  --> /tmp/check-that-file-exists.rs:15:118
    |
 15 |         let mut fs: std::collections::HashMap<&'static str, bool> = { let mut m = std::collections::BTreeMap::new(); m };
    |                                                                                                                      ^ expected `HashMap<&str, bool>`, found `BTreeMap<_, _>`

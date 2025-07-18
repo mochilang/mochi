@@ -1,6 +1,6 @@
-rustc error: exit status 1
+rustc: exit status 1
 error[E0610]: `{float}` is a primitive type and therefore doesn't have fields
-  --> /tmp/TestMochiRustGoldenangles-geometric-normalization-and-conversion2889902285/001/prog.rs:52:111
+  --> /tmp/angles-geometric-normalization-and-conversion.rs:52:111
    |
 52 |         let angles = vec![-2.0, -1.0, 0.0, 1.0, 2.0, 6.2831853, 16.0, 57.2957795, 359.0, 399.0, 6399.0, 1e+06.0];
    |                                                                                                               ^

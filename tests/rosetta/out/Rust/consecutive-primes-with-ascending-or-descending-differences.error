@@ -1,0 +1,144 @@
+rustc: exit status 1
+error: cast cannot be followed by a method call
+  --> /tmp/consecutive-primes-with-ascending-or-descending-differences.rs:54:168
+   |
+54 | ...st run(s) of primes with ", dir), " differences is "), longSeqs[0].len() as i32.to_string()), " :"))].into_iter().filter(|s| !s.is_emp...
+   |                                                           ^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+help: try surrounding the expression in parentheses
+   |
+54 |         println!("{}", vec![format!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", "Longest run(s) of primes with ", dir), " differences is "), (longSeqs[0].len() as i32).to_string()), " :"))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+   |                                                                                                                                                                        +                        +
+
+error[E0434]: can't capture dynamic environment in a fn item
+  --> /tmp/consecutive-primes-with-ascending-or-descending-differences.rs:74:13
+   |
+74 |             longestSeq(dir);
+   |             ^^^^^^^^^^
+   |
+   = help: use the `|| { ... }` closure form instead
+
+error[E0308]: mismatched types
+  --> /tmp/consecutive-primes-with-ascending-or-descending-differences.rs:39:53
+   |
+39 |             let d = primes[i as usize] - primes[i - 1 as usize];
+   |                                                     ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot subtract `usize` from `i32`
+  --> /tmp/consecutive-primes-with-ascending-or-descending-differences.rs:39:51
+   |
+39 |             let d = primes[i as usize] - primes[i - 1 as usize];
+   |                                                   ^ no implementation for `i32 - usize`
+   |
+   = help: the trait `Sub<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Sub<Rhs>`:
+             `&i32` implements `Sub<i32>`
+             `&i32` implements `Sub`
+             `i32` implements `Sub<&i32>`
+             `i32` implements `Sub`
+
+error[E0277]: the type `[i32]` cannot be indexed by `i32`
+  --> /tmp/consecutive-primes-with-ascending-or-descending-differences.rs:39:49
+   |
+39 |             let d = primes[i as usize] - primes[i - 1 as usize];
+   |                                                 ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
+   |
+   = help: the trait `SliceIndex<[i32]>` is not implemented for `i32`
+           but it is implemented for `usize`
+   = help: for that trait implementation, expected `usize`, found `i32`
+   = note: required for `Vec<i32>` to implement `Index<i32>`
+
+error[E0308]: mismatched types
+  --> /tmp/consecutive-primes-with-ascending-or-descending-differences.rs:44:43
+   |
+44 |                 currSeq = vec![primes[i - 1 as usize], primes[i as usize]];
+   |                                           ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot subtract `usize` from `i32`
+  --> /tmp/consecutive-primes-with-ascending-or-descending-differences.rs:44:41
+   |
+44 |                 currSeq = vec![primes[i - 1 as usize], primes[i as usize]];
+   |                                         ^ no implementation for `i32 - usize`
+   |
+   = help: the trait `Sub<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Sub<Rhs>`:
+             `&i32` implements `Sub<i32>`
+             `&i32` implements `Sub`
+             `i32` implements `Sub<&i32>`
+             `i32` implements `Sub`
+
+error[E0277]: the type `[i32]` cannot be indexed by `i32`
+  --> /tmp/consecutive-primes-with-ascending-or-descending-differences.rs:44:39
+   |
+44 |                 currSeq = vec![primes[i - 1 as usize], primes[i as usize]];
+   |                                       ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
+   |
+   = help: the trait `SliceIndex<[i32]>` is not implemented for `i32`
+           but it is implemented for `usize`
+   = help: for that trait implementation, expected `usize`, found `i32`
+   = note: required for `Vec<i32>` to implement `Index<i32>`
+
+error[E0308]: mismatched types
+  --> /tmp/consecutive-primes-with-ascending-or-descending-differences.rs:59:89
+   |
+59 |                 diffs = { let mut tmp = diffs.clone(); tmp.push(ls[j as usize] - ls[j - 1 as usize]); tmp };
+   |                                                                                         ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot subtract `usize` from `i32`
+  --> /tmp/consecutive-primes-with-ascending-or-descending-differences.rs:59:87
+   |
+59 |                 diffs = { let mut tmp = diffs.clone(); tmp.push(ls[j as usize] - ls[j - 1 as usize]); tmp };
+   |                                                                                       ^ no implementation for `i32 - usize`
+   |
+   = help: the trait `Sub<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Sub<Rhs>`:
+             `&i32` implements `Sub<i32>`
+             `&i32` implements `Sub`
+             `i32` implements `Sub<&i32>`
+             `i32` implements `Sub`
+
+error[E0277]: the type `[i32]` cannot be indexed by `i32`
+  --> /tmp/consecutive-primes-with-ascending-or-descending-differences.rs:59:85
+   |
+59 |                 diffs = { let mut tmp = diffs.clone(); tmp.push(ls[j as usize] - ls[j - 1 as usize]); tmp };
+   |                                                                                     ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
+   |
+   = help: the trait `SliceIndex<[i32]>` is not implemented for `i32`
+           but it is implemented for `usize`
+   = help: for that trait implementation, expected `usize`, found `i32`
+   = note: required for `Vec<i32>` to implement `Index<i32>`
+
+error[E0308]: mismatched types
+  --> /tmp/consecutive-primes-with-ascending-or-descending-differences.rs:67:68
+   |
+67 | ...   println!("{}", vec![format!("{}", ls[ls.len() as i32 - 1 as usize].to_string())].into_iter().filter(|s| !s.is_empty()).collect::<Ve...
+   |                                                              ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot subtract `usize` from `i32`
+  --> /tmp/consecutive-primes-with-ascending-or-descending-differences.rs:67:66
+   |
+67 | ...   println!("{}", vec![format!("{}", ls[ls.len() as i32 - 1 as usize].to_string())].into_iter().filter(|s| !s.is_empty()).collect::<Ve...
+   |                                                            ^ no implementation for `i32 - usize`
+   |
+   = help: the trait `Sub<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Sub<Rhs>`:
+             `&i32` implements `Sub<i32>`
+             `&i32` implements `Sub`
+             `i32` implements `Sub<&i32>`
+             `i32` implements `Sub`
+
+error[E0277]: the type `[i32]` cannot be indexed by `i32`
+  --> /tmp/consecutive-primes-with-ascending-or-descending-differences.rs:67:50
+   |
+67 | ...   println!("{}", vec![format!("{}", ls[ls.len() as i32 - 1 as usize].to_string())].into_iter().filter(|s| !s.is_empty()).collect::<Ve...
+   |                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
+   |
+   = help: the trait `SliceIndex<[i32]>` is not implemented for `i32`
+           but it is implemented for `usize`
+   = help: for that trait implementation, expected `usize`, found `i32`
+   = note: required for `Vec<i32>` to implement `Index<i32>`
+
+error: aborting due to 14 previous errors
+
+Some errors have detailed explanations: E0277, E0308, E0434.
+For more information about an error, try `rustc --explain E0277`.

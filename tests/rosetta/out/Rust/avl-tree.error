@@ -1,1 +1,1 @@
-compile error: unsupported cast to Vec<i32>
+compile: unsupported cast to Vec<i32>

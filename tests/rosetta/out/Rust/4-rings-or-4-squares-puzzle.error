@@ -1,8 +1,47 @@
-rustc error: exit status 1
-error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGolden4-rings-or-4-squares-puzzle4095767959/001/prog.rs:62:108
+rustc: exit status 1
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+  --> /tmp/4-rings-or-4-squares-puzzle.rs:60:55
    |
-62 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("count", count); m.insert("list", valid); m };
+60 |     println!("{}", vec![format!("{}", format!("{}{}", *r1.get(&"count").unwrap().to_string(), " unique solutions in 1 to 7"))].into_iter(...
+   |                                                --     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ doesn't have a size known at compile-time
+   |                                                |
+   |                                                required by a bound introduced by this call
+   |
+   = help: the trait `Sized` is not implemented for `str`
+note: required by an implicit `Sized` bound in `core::fmt::rt::Argument::<'_>::new_display`
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/fmt/rt.rs:116:5
+   = note: this error originates in the macro `$crate::__export::format_args` which comes from the expansion of the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+  --> /tmp/4-rings-or-4-squares-puzzle.rs:63:55
+   |
+63 |     println!("{}", vec![format!("{}", format!("{}{}", *r2.get(&"count").unwrap().to_string(), " unique solutions in 3 to 9"))].into_iter(...
+   |                                                --     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ doesn't have a size known at compile-time
+   |                                                |
+   |                                                required by a bound introduced by this call
+   |
+   = help: the trait `Sized` is not implemented for `str`
+note: required by an implicit `Sized` bound in `core::fmt::rt::Argument::<'_>::new_display`
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/fmt/rt.rs:116:5
+   = note: this error originates in the macro `$crate::__export::format_args` which comes from the expansion of the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+  --> /tmp/4-rings-or-4-squares-puzzle.rs:66:55
+   |
+66 |     println!("{}", vec![format!("{}", format!("{}{}", *r3.get(&"count").unwrap().to_string(), " non-unique solutions in 0 to 9"))].into_i...
+   |                                                --     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ doesn't have a size known at compile-time
+   |                                                |
+   |                                                required by a bound introduced by this call
+   |
+   = help: the trait `Sized` is not implemented for `str`
+note: required by an implicit `Sized` bound in `core::fmt::rt::Argument::<'_>::new_display`
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/fmt/rt.rs:116:5
+   = note: this error originates in the macro `$crate::__export::format_args` which comes from the expansion of the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0308]: mismatched types
+  --> /tmp/4-rings-or-4-squares-puzzle.rs:57:108
+   |
+57 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("count", count); m.insert("list", valid); m };
    |                                                                 -                 -----     ------         ^^^^^ expected integer, found `Vec<Vec<i32>>`
    |                                                                 |                 |         |
    |                                                                 |                 |         arguments to this method are incorrect
@@ -12,9 +51,9 @@ error[E0308]: mismatched types
    = note: expected type `{integer}`
             found struct `Vec<Vec<i32>>`
 help: the return type of this call is `Vec<Vec<i32>>` due to the type of the argument passed
-  --> /tmp/TestMochiRustGolden4-rings-or-4-squares-puzzle4095767959/001/prog.rs:62:91
+  --> /tmp/4-rings-or-4-squares-puzzle.rs:57:91
    |
-62 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("count", count); m.insert("list", valid); m };
+57 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("count", count); m.insert("list", valid); m };
    |                                                                                           ^^^^^^^^^^^^^^^^^-----^
    |                                                                                                            |
    |                                                                                                            this argument influences the return type of `insert`
@@ -22,27 +61,28 @@ note: method defined here
   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGolden4-rings-or-4-squares-puzzle4095767959/001/prog.rs:62:116
+  --> /tmp/4-rings-or-4-squares-puzzle.rs:57:116
    |
-30 |     fn getCombs(low: i32, high: i32, unique: bool) -> std::collections::HashMap<&'static str, i32> {
+25 |     fn getCombs(low: i32, high: i32, unique: bool) -> std::collections::HashMap<&'static str, i32> {
    |                                                       -------------------------------------------- expected `HashMap<&'static str, i32>` because of return type
 ...
-62 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("count", count); m.insert("list", valid); m };
+57 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("count", count); m.insert("list", valid); m };
    |                                                                                                                    ^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, {integer}>`
    |
    = note: expected struct `HashMap<&'static str, i32>`
               found struct `BTreeMap<&str, {integer}>`
 
 warning: variable does not need to be mutable
-  --> /tmp/TestMochiRustGolden4-rings-or-4-squares-puzzle4095767959/001/prog.rs:16:13
+  --> /tmp/4-rings-or-4-squares-puzzle.rs:11:13
    |
-16 |         let mut nums = vec![a, b, c, d, e, f, g];
+11 |         let mut nums = vec![a, b, c, d, e, f, g];
    |             ----^^^^
    |             |
    |             help: remove this `mut`
    |
    = note: `#[warn(unused_mut)]` on by default
 
-error: aborting due to 2 previous errors; 1 warning emitted
+error: aborting due to 5 previous errors; 1 warning emitted
 
-For more information about this error, try `rustc --explain E0308`.
+Some errors have detailed explanations: E0277, E0308.
+For more information about an error, try `rustc --explain E0277`.

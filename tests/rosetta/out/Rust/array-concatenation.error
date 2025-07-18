@@ -1,9 +1,9 @@
-rustc error: exit status 1
+rustc: exit status 1
 error[E0599]: `Vec<i32>` doesn't implement `std::fmt::Display`
-  --> /tmp/TestMochiRustGoldenarray-concatenation4042405804/001/prog.rs:30:37
+  --> /tmp/array-concatenation.rs:25:56
    |
-30 |     println!("{}", concatInts(a, b).to_string());
-   |                                     ^^^^^^^^^ `Vec<i32>` cannot be formatted with the default formatter
+25 |     println!("{}", vec![format!("{}", concatInts(a, b).to_string())].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+   |                                                        ^^^^^^^^^ `Vec<i32>` cannot be formatted with the default formatter
    |
    = note: the following trait bounds were not satisfied:
            `Vec<i32>: std::fmt::Display`
@@ -13,16 +13,16 @@ error[E0599]: `Vec<i32>` doesn't implement `std::fmt::Display`
    = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenarray-concatenation4042405804/001/prog.rs:32:32
+  --> /tmp/array-concatenation.rs:27:32
    |
-32 |     let mut j: Vec<i32> = vec!["Crosby", "Stills", "Nash", "Young"];
+27 |     let mut j: Vec<i32> = vec!["Crosby", "Stills", "Nash", "Young"];
    |                                ^^^^^^^^ expected `i32`, found `&str`
 
 error[E0599]: `Vec<i32>` doesn't implement `std::fmt::Display`
-  --> /tmp/TestMochiRustGoldenarray-concatenation4042405804/001/prog.rs:33:36
+  --> /tmp/array-concatenation.rs:28:55
    |
-33 |     println!("{}", concatAny(i, j).to_string());
-   |                                    ^^^^^^^^^ `Vec<i32>` cannot be formatted with the default formatter
+28 |     println!("{}", vec![format!("{}", concatAny(i, j).to_string())].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+   |                                                       ^^^^^^^^^ `Vec<i32>` cannot be formatted with the default formatter
    |
    = note: the following trait bounds were not satisfied:
            `Vec<i32>: std::fmt::Display`
@@ -32,10 +32,10 @@ error[E0599]: `Vec<i32>` doesn't implement `std::fmt::Display`
    = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
 
 error[E0599]: `Vec<i32>` doesn't implement `std::fmt::Display`
-  --> /tmp/TestMochiRustGoldenarray-concatenation4042405804/001/prog.rs:36:37
+  --> /tmp/array-concatenation.rs:31:56
    |
-36 |     println!("{}", concatInts(l, m).to_string());
-   |                                     ^^^^^^^^^ `Vec<i32>` cannot be formatted with the default formatter
+31 |     println!("{}", vec![format!("{}", concatInts(l, m).to_string())].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+   |                                                        ^^^^^^^^^ `Vec<i32>` cannot be formatted with the default formatter
    |
    = note: the following trait bounds were not satisfied:
            `Vec<i32>: std::fmt::Display`

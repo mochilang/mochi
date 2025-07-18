@@ -1,18 +1,18 @@
-rustc error: exit status 1
+rustc: exit status 1
 error[E0308]: mismatched types
- --> /tmp/TestMochiRustGoldencaesar-cipher-12271860884/001/prog.rs:6:35
+ --> /tmp/caesar-cipher-1.rs:6:35
   |
 6 |             if &s[i as usize..i + 1 as usize] == ch {
   |                                   ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0308]: mismatched types
- --> /tmp/TestMochiRustGoldencaesar-cipher-12271860884/001/prog.rs:6:31
+ --> /tmp/caesar-cipher-1.rs:6:31
   |
 6 |             if &s[i as usize..i + 1 as usize] == ch {
   |                               ^^^^^^^^^^^^^^ expected `usize`, found `i32`
 
 error[E0277]: cannot add `usize` to `i32`
- --> /tmp/TestMochiRustGoldencaesar-cipher-12271860884/001/prog.rs:6:33
+ --> /tmp/caesar-cipher-1.rs:6:33
   |
 6 |             if &s[i as usize..i + 1 as usize] == ch {
   |                                 ^ no implementation for `i32 + usize`
@@ -25,16 +25,16 @@ error[E0277]: cannot add `usize` to `i32`
             `i32` implements `Add`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencaesar-cipher-12271860884/001/prog.rs:30:31
+  --> /tmp/caesar-cipher-1.rs:30:30
    |
-30 |             return &upper[n - 65 as usize..n - 64 as usize];
-   |                               ^^^^^^^^^^^ expected `i32`, found `usize`
+30 |             return upper[n - 65 as usize..n - 64 as usize].to_vec();
+   |                              ^^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0277]: cannot subtract `usize` from `i32`
-  --> /tmp/TestMochiRustGoldencaesar-cipher-12271860884/001/prog.rs:30:29
+  --> /tmp/caesar-cipher-1.rs:30:28
    |
-30 |             return &upper[n - 65 as usize..n - 64 as usize];
-   |                             ^ no implementation for `i32 - usize`
+30 |             return upper[n - 65 as usize..n - 64 as usize].to_vec();
+   |                            ^ no implementation for `i32 - usize`
    |
    = help: the trait `Sub<usize>` is not implemented for `i32`
    = help: the following other types implement trait `Sub<Rhs>`:
@@ -44,66 +44,16 @@ error[E0277]: cannot subtract `usize` from `i32`
              `i32` implements `Sub`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencaesar-cipher-12271860884/001/prog.rs:30:48
+  --> /tmp/caesar-cipher-1.rs:30:47
    |
-30 |             return &upper[n - 65 as usize..n - 64 as usize];
-   |                                                ^^^^^^^^^^^ expected `i32`, found `usize`
+30 |             return upper[n - 65 as usize..n - 64 as usize].to_vec();
+   |                                               ^^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0277]: cannot subtract `usize` from `i32`
-  --> /tmp/TestMochiRustGoldencaesar-cipher-12271860884/001/prog.rs:30:46
+  --> /tmp/caesar-cipher-1.rs:30:45
    |
-30 |             return &upper[n - 65 as usize..n - 64 as usize];
-   |                                              ^ no implementation for `i32 - usize`
-   |
-   = help: the trait `Sub<usize>` is not implemented for `i32`
-   = help: the following other types implement trait `Sub<Rhs>`:
-             `&i32` implements `Sub<i32>`
-             `&i32` implements `Sub`
-             `i32` implements `Sub<&i32>`
-             `i32` implements `Sub`
-
-error[E0277]: the type `str` cannot be indexed by `std::ops::Range<i32>`
-  --> /tmp/TestMochiRustGoldencaesar-cipher-12271860884/001/prog.rs:30:27
-   |
-30 |             return &upper[n - 65 as usize..n - 64 as usize];
-   |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ string indices are ranges of `usize`
-   |
-   = help: the trait `SliceIndex<str>` is not implemented for `std::ops::Range<i32>`
-   = help: the following other types implement trait `SliceIndex<T>`:
-             `std::ops::Range<usize>` implements `SliceIndex<[T]>`
-             `std::ops::Range<usize>` implements `SliceIndex<str>`
-   = note: required for `str` to implement `Index<std::ops::Range<i32>>`
-
-error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencaesar-cipher-12271860884/001/prog.rs:33:31
-   |
-33 |             return &lower[n - 97 as usize..n - 96 as usize];
-   |                               ^^^^^^^^^^^ expected `i32`, found `usize`
-
-error[E0277]: cannot subtract `usize` from `i32`
-  --> /tmp/TestMochiRustGoldencaesar-cipher-12271860884/001/prog.rs:33:29
-   |
-33 |             return &lower[n - 97 as usize..n - 96 as usize];
-   |                             ^ no implementation for `i32 - usize`
-   |
-   = help: the trait `Sub<usize>` is not implemented for `i32`
-   = help: the following other types implement trait `Sub<Rhs>`:
-             `&i32` implements `Sub<i32>`
-             `&i32` implements `Sub`
-             `i32` implements `Sub<&i32>`
-             `i32` implements `Sub`
-
-error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencaesar-cipher-12271860884/001/prog.rs:33:48
-   |
-33 |             return &lower[n - 97 as usize..n - 96 as usize];
-   |                                                ^^^^^^^^^^^ expected `i32`, found `usize`
-
-error[E0277]: cannot subtract `usize` from `i32`
-  --> /tmp/TestMochiRustGoldencaesar-cipher-12271860884/001/prog.rs:33:46
-   |
-33 |             return &lower[n - 97 as usize..n - 96 as usize];
-   |                                              ^ no implementation for `i32 - usize`
+30 |             return upper[n - 65 as usize..n - 64 as usize].to_vec();
+   |                                             ^ no implementation for `i32 - usize`
    |
    = help: the trait `Sub<usize>` is not implemented for `i32`
    = help: the following other types implement trait `Sub<Rhs>`:
@@ -113,10 +63,10 @@ error[E0277]: cannot subtract `usize` from `i32`
              `i32` implements `Sub`
 
 error[E0277]: the type `str` cannot be indexed by `std::ops::Range<i32>`
-  --> /tmp/TestMochiRustGoldencaesar-cipher-12271860884/001/prog.rs:33:27
+  --> /tmp/caesar-cipher-1.rs:30:26
    |
-33 |             return &lower[n - 97 as usize..n - 96 as usize];
-   |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ string indices are ranges of `usize`
+30 |             return upper[n - 65 as usize..n - 64 as usize].to_vec();
+   |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ string indices are ranges of `usize`
    |
    = help: the trait `SliceIndex<str>` is not implemented for `std::ops::Range<i32>`
    = help: the following other types implement trait `SliceIndex<T>`:
@@ -125,19 +75,69 @@ error[E0277]: the type `str` cannot be indexed by `std::ops::Range<i32>`
    = note: required for `str` to implement `Index<std::ops::Range<i32>>`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencaesar-cipher-12271860884/001/prog.rs:50:49
+  --> /tmp/caesar-cipher-1.rs:33:30
+   |
+33 |             return lower[n - 97 as usize..n - 96 as usize].to_vec();
+   |                              ^^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot subtract `usize` from `i32`
+  --> /tmp/caesar-cipher-1.rs:33:28
+   |
+33 |             return lower[n - 97 as usize..n - 96 as usize].to_vec();
+   |                            ^ no implementation for `i32 - usize`
+   |
+   = help: the trait `Sub<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Sub<Rhs>`:
+             `&i32` implements `Sub<i32>`
+             `&i32` implements `Sub`
+             `i32` implements `Sub<&i32>`
+             `i32` implements `Sub`
+
+error[E0308]: mismatched types
+  --> /tmp/caesar-cipher-1.rs:33:47
+   |
+33 |             return lower[n - 97 as usize..n - 96 as usize].to_vec();
+   |                                               ^^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot subtract `usize` from `i32`
+  --> /tmp/caesar-cipher-1.rs:33:45
+   |
+33 |             return lower[n - 97 as usize..n - 96 as usize].to_vec();
+   |                                             ^ no implementation for `i32 - usize`
+   |
+   = help: the trait `Sub<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Sub<Rhs>`:
+             `&i32` implements `Sub<i32>`
+             `&i32` implements `Sub`
+             `i32` implements `Sub<&i32>`
+             `i32` implements `Sub`
+
+error[E0277]: the type `str` cannot be indexed by `std::ops::Range<i32>`
+  --> /tmp/caesar-cipher-1.rs:33:26
+   |
+33 |             return lower[n - 97 as usize..n - 96 as usize].to_vec();
+   |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ string indices are ranges of `usize`
+   |
+   = help: the trait `SliceIndex<str>` is not implemented for `std::ops::Range<i32>`
+   = help: the following other types implement trait `SliceIndex<T>`:
+             `std::ops::Range<usize>` implements `SliceIndex<[T]>`
+             `std::ops::Range<usize>` implements `SliceIndex<str>`
+   = note: required for `str` to implement `Index<std::ops::Range<i32>>`
+
+error[E0308]: mismatched types
+  --> /tmp/caesar-cipher-1.rs:50:49
    |
 50 |             out += shiftRune(&s[i as usize..i + 1 as usize], k);
    |                                                 ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencaesar-cipher-12271860884/001/prog.rs:50:45
+  --> /tmp/caesar-cipher-1.rs:50:45
    |
 50 |             out += shiftRune(&s[i as usize..i + 1 as usize], k);
    |                                             ^^^^^^^^^^^^^^ expected `usize`, found `i32`
 
 error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/TestMochiRustGoldencaesar-cipher-12271860884/001/prog.rs:50:47
+  --> /tmp/caesar-cipher-1.rs:50:47
    |
 50 |             out += shiftRune(&s[i as usize..i + 1 as usize], k);
    |                                               ^ no implementation for `i32 + usize`
@@ -149,15 +149,21 @@ error[E0277]: cannot add `usize` to `i32`
              `i32` implements `Add<&i32>`
              `i32` implements `Add`
 
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldencaesar-cipher-12271860884/001/prog.rs:50:13
+error[E0308]: mismatched types
+  --> /tmp/caesar-cipher-1.rs:53:16
    |
-50 |             out += shiftRune(&s[i as usize..i + 1 as usize], k);
-   |             ---^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-   |             |
-   |             cannot use `+=` on type `&str`
+46 |     fn encipher(s: &'static str, k: i32) -> &'static str {
+   |                                             ------------ expected `&'static str` because of return type
+...
+53 |         return out;
+   |                ^^^ expected `&str`, found `String`
+   |
+help: consider borrowing here
+   |
+53 |         return &out;
+   |                +
 
 error: aborting due to 17 previous errors
 
-Some errors have detailed explanations: E0277, E0308, E0368.
+Some errors have detailed explanations: E0277, E0308.
 For more information about an error, try `rustc --explain E0277`.

@@ -1,0 +1,40 @@
+rustc: exit status 1
+error[E0425]: cannot find function `now` in this scope
+ --> /tmp/100-prisoners.rs:7:21
+  |
+7 |             let j = now() % (i + 1);
+  |                     ^^^ not found in this scope
+
+error[E0425]: cannot find function `now` in this scope
+  --> /tmp/100-prisoners.rs:51:37
+   |
+51 |                         let mut n = now() % 100;
+   |                                     ^^^ not found in this scope
+
+error[E0425]: cannot find function `now` in this scope
+  --> /tmp/100-prisoners.rs:53:33
+   |
+53 | ...                   n = now() % 100;
+   |                           ^^^ not found in this scope
+
+error[E0689]: can't call method `parse` on ambiguous numeric type `{integer}`
+  --> /tmp/100-prisoners.rs:74:28
+   |
+74 |         let rf = (pardoned.parse::<f64>().unwrap()) / (trials.parse::<f64>().unwrap()) * 100.0;
+   |                            ^^^^^
+   |
+help: you must specify a type for this binding, like `i32`
+   |
+16 |         let mut pardoned: i32 = 0;
+   |                         +++++
+
+error[E0599]: no method named `parse` found for type `i32` in the current scope
+  --> /tmp/100-prisoners.rs:74:63
+   |
+74 |         let rf = (pardoned.parse::<f64>().unwrap()) / (trials.parse::<f64>().unwrap()) * 100.0;
+   |                                                               ^^^^^ method not found in `i32`
+
+error: aborting due to 5 previous errors
+
+Some errors have detailed explanations: E0425, E0599, E0689.
+For more information about an error, try `rustc --explain E0425`.

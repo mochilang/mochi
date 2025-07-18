@@ -1,62 +1,50 @@
-rustc error: exit status 1
+rustc: exit status 1
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencsv-data-manipulation4143485762/001/prog.rs:46:53
+  --> /tmp/csv-data-manipulation.rs:41:79
    |
-46 |         rows[i as usize] = append(rows[i as usize], sum.to_string());
-   |                            ------                   ^^^^^^^^^^^^^^^ expected `&str`, found `String`
-   |                            |
-   |                            arguments to this function are incorrect
+41 |         rows[i as usize] = { let mut tmp = rows[i as usize].clone(); tmp.push(sum.to_string()); tmp };
+   |                                                                          ---- ^^^^^^^^^^^^^^^ expected `&str`, found `String`
+   |                                                                          |
+   |                                                                          arguments to this method are incorrect
    |
-help: the return type of this call is `String` due to the type of the argument passed
-  --> /tmp/TestMochiRustGoldencsv-data-manipulation4143485762/001/prog.rs:46:28
-   |
-46 |         rows[i as usize] = append(rows[i as usize], sum.to_string());
-   |                            ^^^^^^^^^^^^^^^^^^^^^^^^^---------------^
-   |                                                     |
-   |                                                     this argument influences the return type of `append`
-note: function defined here
-  --> /tmp/TestMochiRustGoldencsv-data-manipulation4143485762/001/prog.rs:2:4
-   |
-2  | fn append<T: Clone>(mut v: Vec<T>, item: T) -> Vec<T> {
-   |    ^^^^^^                          -------
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:2442:12
 help: consider borrowing here
    |
-46 |         rows[i as usize] = append(rows[i as usize], &sum.to_string());
-   |                                                     +
-
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldencsv-data-manipulation4143485762/001/prog.rs:13:17
-   |
-13 |                 res += sep;
-   |                 ---^^^^^^^
-   |                 |
-   |                 cannot use `+=` on type `&str`
-
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/TestMochiRustGoldencsv-data-manipulation4143485762/001/prog.rs:15:13
-   |
-15 |             res += xs[i as usize];
-   |             ---^^^^^^^^^^^^^^^^^^
-   |             |
-   |             cannot use `+=` on type `&str`
+41 |         rows[i as usize] = { let mut tmp = rows[i as usize].clone(); tmp.push(&sum.to_string()); tmp };
+   |                                                                               +
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencsv-data-manipulation4143485762/001/prog.rs:30:55
+  --> /tmp/csv-data-manipulation.rs:13:16
    |
-30 |             n = n * 10 + digits[&&str[i as usize..i + 1 as usize]];
-   |                                                       ^^^^^^^^^^ expected `i32`, found `usize`
+3  |     fn join(xs: Vec<&'static str>, sep: &'static str) -> &'static str {
+   |                                                          ------------ expected `&'static str` because of return type
+...
+13 |         return res;
+   |                ^^^ expected `&str`, found `String`
+   |
+help: consider borrowing here
+   |
+13 |         return &res;
+   |                +
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencsv-data-manipulation4143485762/001/prog.rs:30:51
+  --> /tmp/csv-data-manipulation.rs:25:60
    |
-30 |             n = n * 10 + digits[&&str[i as usize..i + 1 as usize]];
-   |                                                   ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+25 |             n = n * 10 + *digits.get(&&str[i as usize..i + 1 as usize]).unwrap();
+   |                                                            ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+  --> /tmp/csv-data-manipulation.rs:25:56
+   |
+25 |             n = n * 10 + *digits.get(&&str[i as usize..i + 1 as usize]).unwrap();
+   |                                                        ^^^^^^^^^^^^^^ expected `usize`, found `i32`
 
 error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/TestMochiRustGoldencsv-data-manipulation4143485762/001/prog.rs:30:53
+  --> /tmp/csv-data-manipulation.rs:25:58
    |
-30 |             n = n * 10 + digits[&&str[i as usize..i + 1 as usize]];
-   |                                                     ^ no implementation for `i32 + usize`
+25 |             n = n * 10 + *digits.get(&&str[i as usize..i + 1 as usize]).unwrap();
+   |                                                          ^ no implementation for `i32 + usize`
    |
    = help: the trait `Add<usize>` is not implemented for `i32`
    = help: the following other types implement trait `Add<Rhs>`:
@@ -65,7 +53,7 @@ error[E0277]: cannot add `usize` to `i32`
              `i32` implements `Add<&i32>`
              `i32` implements `Add`
 
-error: aborting due to 6 previous errors
+error: aborting due to 5 previous errors
 
-Some errors have detailed explanations: E0277, E0308, E0368.
+Some errors have detailed explanations: E0277, E0308.
 For more information about an error, try `rustc --explain E0277`.

@@ -1,12 +1,12 @@
-rustc error: exit status 1
+rustc: exit status 1
 error[E0425]: cannot find function `lower` in this scope
- --> /tmp/TestMochiRustGoldenboolean-values4209695252/001/prog.rs:4:17
+ --> /tmp/boolean-values.rs:4:17
   |
 4 |         let l = lower(s);
   |                 ^^^^^ not found in this scope
 
 warning: unused variable: `bolStr`
-  --> /tmp/TestMochiRustGoldenboolean-values4209695252/001/prog.rs:23:13
+  --> /tmp/boolean-values.rs:23:13
    |
 23 |         let bolStr = parseBool(str1);
    |             ^^^^^^ help: if this is intentional, prefix it with an underscore: `_bolStr`

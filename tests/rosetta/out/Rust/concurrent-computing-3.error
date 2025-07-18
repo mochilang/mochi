@@ -1,0 +1,10 @@
+rustc: exit status 1
+error[E0425]: cannot find function `now` in this scope
+ --> /tmp/concurrent-computing-3.rs:7:21
+  |
+7 |             let j = now() % (i + 1);
+  |                     ^^^ not found in this scope
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0425`.

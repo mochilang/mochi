@@ -1,12 +1,19 @@
-rustc error: exit status 1
-error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenchinese-remainder-theorem2170629998/001/prog.rs:11:24
+rustc: exit status 1
+error[E0277]: cannot multiply `f64` by `i32`
+  --> /tmp/chinese-remainder-theorem.rs:11:55
    |
-11 |         return vec![g, (y1 as f64) - ((b as f64) / (a as f64)) * x1 as f64, x1];
-   |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `i32`, found `f64`
+11 |         return vec![g, y1 - ((b as f64) / (a as f64)) * x1, x1];
+   |                                                       ^ no implementation for `f64 * i32`
+   |
+   = help: the trait `Mul<i32>` is not implemented for `f64`
+   = help: the following other types implement trait `Mul<Rhs>`:
+             `&f64` implements `Mul<f64>`
+             `&f64` implements `Mul`
+             `f64` implements `Mul<&f64>`
+             `f64` implements `Mul`
 
 error[E0277]: cannot calculate the remainder of `f64` divided by `i32`
-  --> /tmp/TestMochiRustGoldenchinese-remainder-theorem2170629998/001/prog.rs:37:32
+  --> /tmp/chinese-remainder-theorem.rs:37:32
    |
 37 |             let inv = modInv(p % ni, ni);
    |                                ^ no implementation for `f64 % i32`
@@ -19,7 +26,7 @@ error[E0277]: cannot calculate the remainder of `f64` divided by `i32`
              `f64` implements `Rem`
 
 error[E0277]: cannot multiply `i32` by `f64`
-  --> /tmp/TestMochiRustGoldenchinese-remainder-theorem2170629998/001/prog.rs:38:25
+  --> /tmp/chinese-remainder-theorem.rs:38:25
    |
 38 |             x = (x + ai * inv as f64) * p;
    |                         ^ no implementation for `i32 * f64`
@@ -33,5 +40,4 @@ error[E0277]: cannot multiply `i32` by `f64`
 
 error: aborting due to 3 previous errors
 
-Some errors have detailed explanations: E0277, E0308.
-For more information about an error, try `rustc --explain E0277`.
+For more information about this error, try `rustc --explain E0277`.

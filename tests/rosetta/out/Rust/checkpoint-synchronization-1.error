@@ -1,6 +1,6 @@
-rustc error: exit status 1
+rustc: exit status 1
 warning: variable does not need to be mutable
- --> /tmp/TestMochiRustGoldencheckpoint-synchronization-1950336444/001/prog.rs:3:9
+ --> /tmp/checkpoint-synchronization-1.rs:3:9
   |
 3 |     let mut partList = vec!["A", "B", "C", "D"];
   |         ----^^^^^^^^
@@ -10,7 +10,7 @@ warning: variable does not need to be mutable
   = note: `#[warn(unused_mut)]` on by default
 
 warning: variable does not need to be mutable
- --> /tmp/TestMochiRustGoldencheckpoint-synchronization-1950336444/001/prog.rs:4:9
+ --> /tmp/checkpoint-synchronization-1.rs:4:9
   |
 4 |     let mut nAssemblies = 3;
   |         ----^^^^^^^^^^^
@@ -18,14 +18,14 @@ warning: variable does not need to be mutable
   |         help: remove this `mut`
 
 error[E0382]: use of moved value: `partList`
-  --> /tmp/TestMochiRustGoldencheckpoint-synchronization-1950336444/001/prog.rs:7:18
+  --> /tmp/checkpoint-synchronization-1.rs:7:18
    |
 3  |     let mut partList = vec!["A", "B", "C", "D"];
    |         ------------ move occurs because `partList` has type `Vec<&str>`, which does not implement the `Copy` trait
 4  |     let mut nAssemblies = 3;
 5  |     for cycle in 1..(nAssemblies + 1) {
    |     --------------------------------- inside of this loop
-6  |         println!("{}", format!("{}{}", "begin assembly cycle ", cycle.to_string()));
+6  |         println!("{}", vec![format!("{}", for...
 7  |         for p in partList {
    |                  ^^^^^^^^ value used here after move
 ...
@@ -40,14 +40,14 @@ help: consider iterating over a slice of the `Vec<&str>`'s content to avoid movi
    |                  +
 
 error[E0382]: use of moved value: `partList`
-  --> /tmp/TestMochiRustGoldencheckpoint-synchronization-1950336444/001/prog.rs:10:18
+  --> /tmp/checkpoint-synchronization-1.rs:10:18
    |
 3  |     let mut partList = vec!["A", "B", "C", "D"];
    |         ------------ move occurs because `partList` has type `Vec<&str>`, which does not implement the `Copy` trait
 4  |     let mut nAssemblies = 3;
 5  |     for cycle in 1..(nAssemblies + 1) {
    |     --------------------------------- inside of this loop
-6  |         println!("{}", format!("{}{}", "begin assembly cycle ", cycle.to_string()));
+6  |         println!("{}", vec![format!("{}", for...
 7  |         for p in partList {
    |                  -------- `partList` moved due to this implicit call to `.into_iter()`
 ...

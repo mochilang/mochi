@@ -1,36 +1,36 @@
-rustc error: exit status 1
+rustc: exit status 1
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencircles-of-given-radius-through-two-points1564038428/001/prog.rs:52:92
+  --> /tmp/circles-of-given-radius-through-two-points.rs:52:92
    |
 52 | ...0.9876 }, Point { x: 0.8765, y: 0.2345 }, 2.0], vec![Point { x: 0.0, y: 2.0 }, Point { x: 0.0, y: 0.0 }, 1.0], vec![Point { x: 0.1234,...
    |                                              ^^^ expected `Point`, found floating-point number
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencircles-of-given-radius-through-two-points1564038428/001/prog.rs:52:155
+  --> /tmp/circles-of-given-radius-through-two-points.rs:52:155
    |
 52 | ... 0.0, y: 2.0 }, Point { x: 0.0, y: 0.0 }, 1.0], vec![Point { x: 0.1234, y: 0.9876 }, Point { x: 0.1234, y: 0.9876 }, 2.0], vec![Point ...
    |                                              ^^^ expected `Point`, found floating-point number
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencircles-of-given-radius-through-two-points1564038428/001/prog.rs:52:230
+  --> /tmp/circles-of-given-radius-through-two-points.rs:52:230
    |
 52 | ...0.9876 }, Point { x: 0.1234, y: 0.9876 }, 2.0], vec![Point { x: 0.1234, y: 0.9876 }, Point { x: 0.8765, y: 0.2345 }, 0.5], vec![Point ...
    |                                              ^^^ expected `Point`, found floating-point number
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencircles-of-given-radius-through-two-points1564038428/001/prog.rs:52:305
+  --> /tmp/circles-of-given-radius-through-two-points.rs:52:305
    |
 52 | ...0.9876 }, Point { x: 0.8765, y: 0.2345 }, 0.5], vec![Point { x: 0.1234, y: 0.9876 }, Point { x: 0.1234, y: 0.9876 }, 0.0]];
    |                                              ^^^ expected `Point`, found floating-point number
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencircles-of-given-radius-through-two-points1564038428/001/prog.rs:52:380
+  --> /tmp/circles-of-given-radius-through-two-points.rs:52:380
    |
 52 | ...0.9876 }, Point { x: 0.1234, y: 0.9876 }, 0.0]];
    |                                              ^^^ expected `Point`, found floating-point number
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencircles-of-given-radius-through-two-points1564038428/001/prog.rs:65:23
+  --> /tmp/circles-of-given-radius-through-two-points.rs:65:23
    |
 65 | ...   if caseStr == "Points form a diameter and describe only a single circle." || caseStr == "Coincident points with r==0.0 describe a d...
    |          -------    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `i32`, found `&str`
@@ -38,7 +38,7 @@ error[E0308]: mismatched types
    |          expected because this is `i32`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencircles-of-given-radius-through-two-points1564038428/001/prog.rs:65:97
+  --> /tmp/circles-of-given-radius-through-two-points.rs:65:97
    |
 65 | ...gle circle." || caseStr == "Coincident points with r==0.0 describe a degenerate circle." {
    |                    -------    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `i32`, found `&str`
@@ -46,19 +46,19 @@ error[E0308]: mismatched types
    |                    expected because this is `i32`
 
 error[E0610]: `i32` is a primitive type and therefore doesn't have fields
-  --> /tmp/TestMochiRustGoldencircles-of-given-radius-through-two-points1564038428/001/prog.rs:66:112
+  --> /tmp/circles-of-given-radius-through-two-points.rs:66:131
    |
-66 | ...   println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", "   Center:  {", c1.x.to_string()), " "), c1.y.to_st...
-   |                                                                                                          ^
+66 | ...   println!("{}", vec![format!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", "   Center:  {", c1.x.to_string()...
+   |                                                                                                                             ^
 
 error[E0610]: `i32` is a primitive type and therefore doesn't have fields
-  --> /tmp/TestMochiRustGoldencircles-of-given-radius-through-two-points1564038428/001/prog.rs:66:137
+  --> /tmp/circles-of-given-radius-through-two-points.rs:66:156
    |
-66 | ...   println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", "   Center:  {", c1.x.to_string()), " "), c1.y.to_st...
-   |                                                                                                                                   ^
+66 | ...{}", format!("{}{}", "   Center:  {", c1.x.to_string()), " "), c1.y.to_string()), "}"))].into_iter().filter(|s| !s.is_empty()).collect...
+   |                                                                      ^
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencircles-of-given-radius-through-two-points1564038428/001/prog.rs:68:27
+  --> /tmp/circles-of-given-radius-through-two-points.rs:68:27
    |
 68 |             if caseStr == "Two circles." {
    |                -------    ^^^^^^^^^^^^^^ expected `i32`, found `&str`
@@ -66,61 +66,61 @@ error[E0308]: mismatched types
    |                expected because this is `i32`
 
 error[E0610]: `i32` is a primitive type and therefore doesn't have fields
-  --> /tmp/TestMochiRustGoldencircles-of-given-radius-through-two-points1564038428/001/prog.rs:69:118
+  --> /tmp/circles-of-given-radius-through-two-points.rs:69:137
    |
-69 | ...   println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", "   Center 1:  {", c1.x.to_string()), " "), c1.y.to_...
-   |                                                                                                            ^
+69 | ...   println!("{}", vec![format!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", "   Center 1:  {", c1.x.to_string...
+   |                                                                                                                               ^
 
 error[E0610]: `i32` is a primitive type and therefore doesn't have fields
-  --> /tmp/TestMochiRustGoldencircles-of-given-radius-through-two-points1564038428/001/prog.rs:69:143
+  --> /tmp/circles-of-given-radius-through-two-points.rs:69:162
    |
-69 | ...   println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", "   Center 1:  {", c1.x.to_string()), " "), c1.y.to_...
-   |                                                                                                                                     ^
+69 | ...", format!("{}{}", "   Center 1:  {", c1.x.to_string()), " "), c1.y.to_string()), "}"))].into_iter().filter(|s| !s.is_empty()).collect...
+   |                                                                      ^
 
 error[E0610]: `i32` is a primitive type and therefore doesn't have fields
-  --> /tmp/TestMochiRustGoldencircles-of-given-radius-through-two-points1564038428/001/prog.rs:70:118
+  --> /tmp/circles-of-given-radius-through-two-points.rs:70:137
    |
-70 | ...   println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", "   Center 2:  {", c2.x.to_string()), " "), c2.y.to_...
-   |                                                                                                            ^
+70 | ...   println!("{}", vec![format!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", "   Center 2:  {", c2.x.to_string...
+   |                                                                                                                               ^
 
 error[E0610]: `i32` is a primitive type and therefore doesn't have fields
-  --> /tmp/TestMochiRustGoldencircles-of-given-radius-through-two-points1564038428/001/prog.rs:70:143
+  --> /tmp/circles-of-given-radius-through-two-points.rs:70:162
    |
-70 | ...   println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", "   Center 2:  {", c2.x.to_string()), " "), c2.y.to_...
-   |                                                                                                                                     ^
+70 | ...", format!("{}{}", "   Center 2:  {", c2.x.to_string()), " "), c2.y.to_string()), "}"))].into_iter().filter(|s| !s.is_empty()).collect...
+   |                                                                      ^
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencircles-of-given-radius-through-two-points1564038428/001/prog.rs:30:29
+  --> /tmp/circles-of-given-radius-through-two-points.rs:30:29
    |
 30 |                 return vec![p1.clone(), p1.clone(), "Coincident points with r==0.0 describe a degenerate circle."];
    |                             ^^^^^^^^^^ expected `i32`, found `Point`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencircles-of-given-radius-through-two-points1564038428/001/prog.rs:32:25
+  --> /tmp/circles-of-given-radius-through-two-points.rs:32:25
    |
 32 |             return vec![p1.clone(), p2.clone(), "Coincident points describe an infinite number of circles."];
    |                         ^^^^^^^^^^ expected `i32`, found `Point`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencircles-of-given-radius-through-two-points1564038428/001/prog.rs:35:25
+  --> /tmp/circles-of-given-radius-through-two-points.rs:35:25
    |
 35 |             return vec![p1.clone(), p2.clone(), "R==0.0 does not describe circles."];
    |                         ^^^^^^^^^^ expected `i32`, found `Point`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencircles-of-given-radius-through-two-points1564038428/001/prog.rs:41:25
+  --> /tmp/circles-of-given-radius-through-two-points.rs:41:25
    |
 41 |             return vec![p1.clone(), p2.clone(), "Points too far apart to form circles."];
    |                         ^^^^^^^^^^ expected `i32`, found `Point`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencircles-of-given-radius-through-two-points1564038428/001/prog.rs:45:25
+  --> /tmp/circles-of-given-radius-through-two-points.rs:45:25
    |
 45 |             return vec![m.clone(), m.clone(), "Points form a diameter and describe only a single circle."];
    |                         ^^^^^^^^^ expected `i32`, found `Point`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldencircles-of-given-radius-through-two-points1564038428/001/prog.rs:50:21
+  --> /tmp/circles-of-given-radius-through-two-points.rs:50:21
    |
 50 |         return vec![Point { x: m.x - oy, y: m.y + ox }, Point { x: m.x + oy, y: m.y - ox }, "Two circles."];
    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `i32`, found `Point`

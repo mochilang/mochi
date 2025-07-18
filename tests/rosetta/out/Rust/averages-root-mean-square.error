@@ -1,6 +1,6 @@
-rustc error: exit status 1
+rustc: exit status 1
 error[E0689]: can't call method `parse` on ambiguous numeric type `{integer}`
-  --> /tmp/TestMochiRustGoldenaverages-root-mean-square3241391974/001/prog.rs:16:24
+  --> /tmp/averages-root-mean-square.rs:16:24
    |
 16 |         sum = sum + (x.parse::<f64>().unwrap()) * (x.parse::<f64>().unwrap());
    |                        ^^^^^
@@ -11,7 +11,7 @@ help: you must specify a type for this binding, like `i32`
    |              +++++
 
 error[E0689]: can't call method `parse` on ambiguous numeric type `{integer}`
-  --> /tmp/TestMochiRustGoldenaverages-root-mean-square3241391974/001/prog.rs:16:54
+  --> /tmp/averages-root-mean-square.rs:16:54
    |
 16 |         sum = sum + (x.parse::<f64>().unwrap()) * (x.parse::<f64>().unwrap());
    |                                                      ^^^^^
@@ -22,7 +22,7 @@ help: you must specify a type for this binding, like `i32`
    |              +++++
 
 error[E0689]: can't call method `parse` on ambiguous numeric type `{integer}`
-  --> /tmp/TestMochiRustGoldenaverages-root-mean-square3241391974/001/prog.rs:19:35
+  --> /tmp/averages-root-mean-square.rs:19:35
    |
 19 |     let rms = sqrtApprox(sum / (n.parse::<f64>().unwrap()));
    |                                   ^^^^^

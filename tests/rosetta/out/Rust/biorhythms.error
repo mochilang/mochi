@@ -1,6 +1,6 @@
-rustc error: exit status 1
+rustc: exit status 1
 error[E0434]: can't capture dynamic environment in a fn item
-   --> /tmp/TestMochiRustGoldenbiorhythms2859263036/001/prog.rs:165:13
+   --> /tmp/biorhythms.rs:165:13
     |
 165 |             biorhythms(p[0], p[1]);
     |             ^^^^^^^^^^
@@ -8,46 +8,57 @@ error[E0434]: can't capture dynamic environment in a fn item
     = help: use the `|| { ... }` closure form instead
 
 error[E0599]: no method named `parse` found for type `i32` in the current scope
-   --> /tmp/TestMochiRustGoldenbiorhythms2859263036/001/prog.rs:145:62
+   --> /tmp/biorhythms.rs:145:62
     |
 145 |             let mut percent = sinApprox(2.0 * PI * (position.parse::<f64>().unwrap()) / (length.parse::<f64>().unwrap()));
     |                                                              ^^^^^ method not found in `i32`
 
 error[E0599]: no method named `parse` found for type `i32` in the current scope
-   --> /tmp/TestMochiRustGoldenbiorhythms2859263036/001/prog.rs:145:97
+   --> /tmp/biorhythms.rs:145:97
     |
 145 |             let mut percent = sinApprox(2.0 * PI * (position.parse::<f64>().unwrap()) / (length.parse::<f64>().unwrap()));
     |                                                                                                 ^^^^^ method not found in `i32`
 
+error[E0308]: mismatched types
+   --> /tmp/biorhythms.rs:149:31
+    |
+147 |             let mut description = String::new();
+    |                                   ------------- expected due to this value
+148 |             if percent > 95.0 {
+149 |                 description = " peak";
+    |                               ^^^^^^^- help: try using a conversion method: `.to_string()`
+    |                               |
+    |                               expected `String`, found `&str`
+
 error[E0689]: can't call method `parse` on ambiguous numeric type `{integer}`
-  --> /tmp/TestMochiRustGoldenbiorhythms2859263036/001/prog.rs:10:49
+  --> /tmp/biorhythms.rs:10:49
    |
 10 |             let denom = ((2 * n) * (2 * n + 1)).parse::<f64>().unwrap();
    |                                                 ^^^^^
 
 error[E0599]: no method named `parse` found for type `f64` in the current scope
-  --> /tmp/TestMochiRustGoldenbiorhythms2859263036/001/prog.rs:18:23
+  --> /tmp/biorhythms.rs:18:23
    |
 18 |         let mut i = x.parse::<i32>().unwrap();
    |                       ^^^^^ method not found in `f64`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbiorhythms2859263036/001/prog.rs:46:55
+  --> /tmp/biorhythms.rs:46:60
    |
-46 |             n = n * 10 + digits[&&str[i as usize..i + 1 as usize]];
-   |                                                       ^^^^^^^^^^ expected `i32`, found `usize`
+46 |             n = n * 10 + *digits.get(&&str[i as usize..i + 1 as usize]).unwrap();
+   |                                                            ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbiorhythms2859263036/001/prog.rs:46:51
+  --> /tmp/biorhythms.rs:46:56
    |
-46 |             n = n * 10 + digits[&&str[i as usize..i + 1 as usize]];
-   |                                                   ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+46 |             n = n * 10 + *digits.get(&&str[i as usize..i + 1 as usize]).unwrap();
+   |                                                        ^^^^^^^^^^^^^^ expected `usize`, found `i32`
 
 error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/TestMochiRustGoldenbiorhythms2859263036/001/prog.rs:46:53
+  --> /tmp/biorhythms.rs:46:58
    |
-46 |             n = n * 10 + digits[&&str[i as usize..i + 1 as usize]];
-   |                                                     ^ no implementation for `i32 + usize`
+46 |             n = n * 10 + *digits.get(&&str[i as usize..i + 1 as usize]).unwrap();
+   |                                                          ^ no implementation for `i32 + usize`
    |
    = help: the trait `Add<usize>` is not implemented for `i32`
    = help: the following other types implement trait `Add<Rhs>`:
@@ -57,13 +68,13 @@ error[E0277]: cannot add `usize` to `i32`
              `i32` implements `Add`
 
 error[E0308]: mismatched types
-  --> /tmp/TestMochiRustGoldenbiorhythms2859263036/001/prog.rs:72:28
+  --> /tmp/biorhythms.rs:72:28
    |
 72 |         return lengths[m - 1 as usize];
    |                            ^^^^^^^^^^ expected `i32`, found `usize`
 
 error[E0277]: cannot subtract `usize` from `i32`
-  --> /tmp/TestMochiRustGoldenbiorhythms2859263036/001/prog.rs:72:26
+  --> /tmp/biorhythms.rs:72:26
    |
 72 |         return lengths[m - 1 as usize];
    |                          ^ no implementation for `i32 - usize`
@@ -76,7 +87,7 @@ error[E0277]: cannot subtract `usize` from `i32`
              `i32` implements `Sub`
 
 error[E0277]: the type `[{integer}]` cannot be indexed by `i32`
-  --> /tmp/TestMochiRustGoldenbiorhythms2859263036/001/prog.rs:72:24
+  --> /tmp/biorhythms.rs:72:24
    |
 72 |         return lengths[m - 1 as usize];
    |                        ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
@@ -87,7 +98,7 @@ error[E0277]: the type `[{integer}]` cannot be indexed by `i32`
    = note: required for `Vec<{integer}>` to implement `Index<i32>`
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldenbiorhythms2859263036/001/prog.rs:111:20
+   --> /tmp/biorhythms.rs:111:20
     |
 109 |     fn pad2(n: i32) -> &'static str {
     |                        ------------ expected `&str` because of return type
@@ -98,7 +109,7 @@ error[E0308]: mismatched types
     = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldenbiorhythms2859263036/001/prog.rs:113:16
+   --> /tmp/biorhythms.rs:113:16
     |
 109 |     fn pad2(n: i32) -> &'static str {
     |                        ------------ expected `&'static str` because of return type
@@ -112,7 +123,7 @@ help: consider borrowing here
     |                +
 
 error[E0308]: mismatched types
-   --> /tmp/TestMochiRustGoldenbiorhythms2859263036/001/prog.rs:116:16
+   --> /tmp/biorhythms.rs:116:16
     |
 115 |     fn dateString(y: i32, m: i32, d: i32) -> &'static str {
     |                                              ------------ expected `&str` because of return type
@@ -122,24 +133,24 @@ error[E0308]: mismatched types
     = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0599]: no method named `parse` found for type `f64` in the current scope
-   --> /tmp/TestMochiRustGoldenbiorhythms2859263036/001/prog.rs:120:86
+   --> /tmp/biorhythms.rs:120:86
     |
 120 | ...   let part2 = (((7 * ((((y as f64) as f64) + (((m + 9) as f64) / (12 as f64))).parse::<i32>().unwrap())) as f64) / (4 as f64)).parse:...
     |                                                                                    ^^^^^ method not found in `f64`
 
 error[E0599]: no method named `parse` found for type `f64` in the current scope
-   --> /tmp/TestMochiRustGoldenbiorhythms2859263036/001/prog.rs:120:134
+   --> /tmp/biorhythms.rs:120:134
     |
 120 | ...)).parse::<i32>().unwrap())) as f64) / (4 as f64)).parse::<i32>().unwrap();
     |                                                       ^^^^^ method not found in `f64`
 
 error[E0599]: no method named `parse` found for type `f64` in the current scope
-   --> /tmp/TestMochiRustGoldenbiorhythms2859263036/001/prog.rs:121:55
+   --> /tmp/biorhythms.rs:121:55
     |
 121 |         let part3 = (((275 * m) as f64) / (9 as f64)).parse::<i32>().unwrap();
     |                                                       ^^^^^ method not found in `f64`
 
-error: aborting due to 17 previous errors
+error: aborting due to 18 previous errors
 
 Some errors have detailed explanations: E0277, E0308, E0434, E0599, E0689.
 For more information about an error, try `rustc --explain E0277`.
