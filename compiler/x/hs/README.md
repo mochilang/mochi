@@ -8,3 +8,10 @@ Files:
 - `runtime.go` – runtime support inserted into generated code
 - `infer.go` – helper functions for type inference
 - `tools.go` – ensures the Haskell toolchain is available and formats code
+
+## Rosetta tasks
+
+Golden tests under `compiler/x/hs` compile the programs from
+`tests/rosetta/x/Mochi` to Haskell and execute them with `runhaskell`.
+The current results are summarised in
+[`tests/rosetta/out/Haskell/README.md`](../../tests/rosetta/out/Haskell/README.md).
