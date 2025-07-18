@@ -152,3 +152,4 @@ should compile and run successfully.
 - 2025-09-24 - Improved variable type inference by scanning for append usage and
   added constant evaluation of float list aggregates. `group_items_iteration.mochi`
   now compiles.
+- 2025-09-25 - Evaluated count on constant float lists and fixed union tag naming; tree_sum.mochi now compiles.

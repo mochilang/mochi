@@ -84,6 +84,7 @@ type Compiler struct {
 	needMath         bool
 	listLens         map[string]int
 	listVals         map[string][]int
+	listValsFloat    map[string][]float64
 	stackArrays      map[string]bool
 	arrayLens        map[string]string
 	assignVar        string
@@ -122,6 +123,7 @@ func New(env *types.Env) *Compiler {
 		builtinAliases:   map[string]string{},
 		listLens:         map[string]int{},
 		listVals:         map[string][]int{},
+		listValsFloat:    map[string][]float64{},
 		stackArrays:      map[string]bool{},
 		arrayLens:        map[string]string{},
 		baseDir:          "",
@@ -1064,6 +1066,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if call, ok := callPattern(s.Assign.Value); ok && call.Func == "append" && len(call.Args) == 2 {
 			delete(c.listLens, lhs)
 			delete(c.listVals, lhs)
+			delete(c.listValsFloat, lhs)
+			delete(c.listValsFloat, lhs)
 		}
 		if len(s.Assign.Index) == 1 {
 			if c.env != nil {
@@ -1673,6 +1677,7 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 				c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, s))
 			}
 			c.listLens[name] = len(vals)
+			c.listValsFloat[name] = vals
 			return nil
 		}
 		if f := asFetchExpr(stmt.Value); f != nil {
@@ -2064,13 +2069,13 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) string {
 			}
 			if call, ok := callPattern(cs.Pattern); ok {
 				if st, ok2 := ut.Variants[call.Func]; ok2 {
-					c.writeln(fmt.Sprintf("case %s_%s:", sanitizeName(ut.Name), sanitizeName(call.Func)))
+					c.writeln(fmt.Sprintf("case %s_%s:", sanitizeTypeName(ut.Name), sanitizeTypeName(call.Func)))
 					c.indent++
 					for i, arg := range call.Args {
 						if name, ok := identName(arg); ok {
 							field := st.Order[i]
 							ft := st.Fields[field]
-							expr := fmt.Sprintf("%s.value.%s.%s", tmp, sanitizeName(call.Func), fieldName(field))
+							expr := fmt.Sprintf("%s.value.%s.%s", tmp, sanitizeTypeName(call.Func), fieldName(field))
 							if _, ok := ft.(types.UnionType); ok {
 								expr = "*" + expr
 							}
@@ -2086,7 +2091,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) string {
 			}
 			if ident, ok := identName(cs.Pattern); ok {
 				if _, ok2 := ut.Variants[ident]; ok2 {
-					c.writeln(fmt.Sprintf("case %s_%s:", sanitizeName(ut.Name), sanitizeName(ident)))
+					c.writeln(fmt.Sprintf("case %s_%s:", sanitizeTypeName(ut.Name), sanitizeTypeName(ident)))
 					c.indent++
 					val := c.compileExpr(cs.Result)
 					c.writeln(fmt.Sprintf("%s = %s;", resVar, val))
@@ -4147,6 +4152,66 @@ func (c *Compiler) aggregateCall(e *parser.Expr) (string, *parser.Expr, bool) {
 }
 
 func (c *Compiler) aggregateExpr(name, list string, elem types.Type) string {
+	if fvals, ok := c.listValsFloat[list]; ok {
+		switch name {
+		case "sum":
+			total := 0.0
+			for _, v := range fvals {
+				total += v
+			}
+			s := strconv.FormatFloat(total, 'f', -1, 64)
+			if !strings.ContainsAny(s, ".eE") {
+				s += ".0"
+			}
+			return s
+		case "avg":
+			if len(fvals) == 0 {
+				return "0.0"
+			}
+			total := 0.0
+			for _, v := range fvals {
+				total += v
+			}
+			avg := total / float64(len(fvals))
+			s := strconv.FormatFloat(avg, 'f', -1, 64)
+			if !strings.ContainsAny(s, ".eE") {
+				s += ".0"
+			}
+			return s
+		case "min":
+			if len(fvals) == 0 {
+				return "0.0"
+			}
+			m := fvals[0]
+			for _, v := range fvals[1:] {
+				if v < m {
+					m = v
+				}
+			}
+			s := strconv.FormatFloat(m, 'f', -1, 64)
+			if !strings.ContainsAny(s, ".eE") {
+				s += ".0"
+			}
+			return s
+		case "max":
+			if len(fvals) == 0 {
+				return "0.0"
+			}
+			m := fvals[0]
+			for _, v := range fvals[1:] {
+				if v > m {
+					m = v
+				}
+			}
+			s := strconv.FormatFloat(m, 'f', -1, 64)
+			if !strings.ContainsAny(s, ".eE") {
+				s += ".0"
+			}
+			return s
+		case "count", "len":
+			return strconv.Itoa(len(fvals))
+		}
+	}
 	if vals, ok := c.listVals[list]; ok {
 		switch name {
 		case "sum":
@@ -4255,6 +4320,9 @@ func (c *Compiler) compileExpr(e *parser.Expr) string {
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 	if vals, ok := c.evalListIntBinary(b); ok {
 		return c.emitConstListInt(vals)
+	}
+	if fvals, ok := c.evalListFloatExpr(&parser.Expr{Binary: b}); ok && len(b.Right) == 0 {
+		return c.emitConstListFloat(fvals)
 	}
 	left := c.compileUnary(b.Left)
 	leftType := c.unaryType(b.Left)
@@ -5537,6 +5605,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		} else if p.Call.Func == "count" {
 			if vals, ok := c.evalListIntExpr(p.Call.Args[0]); ok {
 				return strconv.Itoa(len(vals))
+			} else if fvals, ok := c.evalListFloatExpr(p.Call.Args[0]); ok {
+				return strconv.Itoa(len(fvals))
 			}
 			t := c.exprType(p.Call.Args[0])
 			arg := c.compileExpr(p.Call.Args[0])
@@ -5921,14 +5991,14 @@ func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 		if t, err := c.env.GetVar(s.Root); err == nil {
 			if ft, ok := t.(types.FuncType); ok {
 				if ut, ok2 := c.env.FindUnionByVariant(s.Root); ok2 && len(ft.Params) == 0 {
-					return fmt.Sprintf("(%s){.tag=%s_%s}", sanitizeName(ut.Name), sanitizeName(ut.Name), sanitizeName(s.Root))
+					return fmt.Sprintf("(%s){.tag=%s_%s}", sanitizeTypeName(ut.Name), sanitizeTypeName(ut.Name), sanitizeTypeName(s.Root))
 				}
 			}
 			typ = t
 		}
 		if typ == nil {
 			if ut, ok := c.env.FindUnionByVariant(s.Root); ok {
-				return fmt.Sprintf("(%s){.tag=%s_%s}", sanitizeName(ut.Name), sanitizeName(ut.Name), sanitizeName(s.Root))
+				return fmt.Sprintf("(%s){.tag=%s_%s}", sanitizeTypeName(ut.Name), sanitizeTypeName(ut.Name), sanitizeTypeName(s.Root))
 			}
 		}
 	}
@@ -5959,7 +6029,7 @@ func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 				}
 			}
 			if variant != "" {
-				expr += fmt.Sprintf(".value.%s.%s", sanitizeName(variant), fieldName(f))
+				expr += fmt.Sprintf(".value.%s.%s", sanitizeTypeName(variant), fieldName(f))
 				typ = ft
 				continue
 			}
@@ -7524,6 +7594,22 @@ func (c *Compiler) emitConstListInt(vals []int) string {
 	}
 	c.listLens[name] = len(vals)
 	c.listVals[name] = vals
+	return name
+}
+
+func (c *Compiler) emitConstListFloat(vals []float64) string {
+	name := c.newTemp()
+	c.need(needListFloat)
+	c.writeln(fmt.Sprintf("list_float %s = list_float_create(%d);", name, len(vals)))
+	for i, fv := range vals {
+		s := strconv.FormatFloat(fv, 'f', -1, 64)
+		if !strings.ContainsAny(s, ".eE") {
+			s += ".0"
+		}
+		c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, s))
+	}
+	c.listLens[name] = len(vals)
+	c.listValsFloat[name] = vals
 	return name
 }
 
