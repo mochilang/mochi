@@ -4,10 +4,13 @@ package fscode
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"gopkg.in/yaml.v3"
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -38,6 +41,7 @@ type Compiler struct {
 	hints           map[string]string
 	tuples          map[string][]string
 	collectingHints bool
+	basePath        string
 }
 
 func defaultValue(typ string) string {
@@ -89,6 +93,7 @@ func New() *Compiler {
 		hints:           make(map[string]string),
 		tuples:          make(map[string][]string),
 		collectingHints: false,
+		basePath:        "",
 	}
 }
 
@@ -123,7 +128,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	header.Write(meta.Header("//"))
 	header.WriteString("open System\n")
 	if c.usesJson {
-		header.WriteString("open System.Text.Json\n")
+		header.WriteString("open Microsoft.FSharp.Reflection\n")
 	}
 	if c.usesYaml {
 		header.WriteString("open System.IO\n")
@@ -158,6 +163,20 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 		c.prelude.WriteString("            order.Add(ks)\n")
 		c.prelude.WriteString("        g.Items.Add(it)\n")
 		c.prelude.WriteString("    [ for ks in order -> groups.[ks] ]\n\n")
+	}
+	if c.usesJson {
+		c.prelude.WriteString("let rec toJson (v: obj) : string =\n")
+		c.prelude.WriteString("    match v with\n")
+		c.prelude.WriteString(`    | :? string as s -> "\"" + s.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\""\n`)
+		c.prelude.WriteString("    | :? bool as b -> if b then \"true\" else \"false\"\n")
+		c.prelude.WriteString("    | :? int | :? float as n -> string n\n")
+		c.prelude.WriteString("    | :? System.Collections.IDictionary as m ->\n")
+		c.prelude.WriteString("        let parts = [ for k in m.Keys -> sprintf \"\"%s\":%s\" (string k) (toJson (m.[k])) ]\n")
+		c.prelude.WriteString("        \"{\" + String.Join(\",\", parts) + \"}\"\n")
+		c.prelude.WriteString("    | :? System.Collections.IEnumerable as e ->\n")
+		c.prelude.WriteString("        let parts = [ for x in e -> toJson x ]\n")
+		c.prelude.WriteString("        \"[\" + String.Join(\",\", parts) + \"]\"\n")
+		c.prelude.WriteString("    | _ -> \"null\"\n\n")
 	}
 	var final bytes.Buffer
 	final.Write(header.Bytes())
@@ -457,6 +476,9 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 			} else {
 				c.vars[f.Name] = t
 			}
+		}
+		if fields, ok2 := c.tuples[name]; ok2 {
+			c.tuples[f.Name] = fields
 		}
 	} else if f.RangeEnd != nil {
 		c.vars[f.Name] = "int"
@@ -1221,7 +1243,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	case "json":
 		if len(args) == 1 {
 			c.usesJson = true
-			return fmt.Sprintf("JsonSerializer.Serialize(%s)", args[0]), nil
+			return fmt.Sprintf("toJson %s", args[0]), nil
 		}
 	case "len":
 		if len(args) == 1 {
@@ -1526,12 +1548,29 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 	if l.Path == nil || l.Type == nil {
 		return "", fmt.Errorf("unsupported expression at line %d", l.Pos.Line)
 	}
-	typ, err := c.compileType(l.Type)
+	p := *l.Path
+	if strings.HasPrefix(p, "../") {
+		p = filepath.Join("tests", p[3:])
+	}
+	abs := filepath.Join(filepath.Dir(c.basePath), p)
+	data, err := os.ReadFile(abs)
 	if err != nil {
 		return "", err
 	}
-	c.usesYaml = true
-	return fmt.Sprintf("(let deserializer = DeserializerBuilder().Build() in let yamlText = File.ReadAllText(%q) in deserializer.Deserialize<%s list>(yamlText))", *l.Path, typ), nil
+	var rows []map[string]interface{}
+	if err := yaml.Unmarshal(data, &rows); err != nil {
+		return "", err
+	}
+	elems := make([]string, len(rows))
+	for i, r := range rows {
+		fields := make([]string, 0, len(r))
+		for k, v := range r {
+			fields = append(fields, fmt.Sprintf("%s = %s", sanitizeIdent(k), literalFromAny(v)))
+		}
+		sort.Strings(fields)
+		elems[i] = fmt.Sprintf("{ %s }", strings.Join(fields, "; "))
+	}
+	return "[" + strings.Join(elems, "; ") + "]", nil
 }
 
 func (c *Compiler) compileSaveExpr(sv *parser.SaveExpr) (string, error) {
@@ -1540,7 +1579,7 @@ func (c *Compiler) compileSaveExpr(sv *parser.SaveExpr) (string, error) {
 		return "", err
 	}
 	c.usesJson = true
-	return fmt.Sprintf("(List.iter (fun row -> printfn \"%%s\" (JsonSerializer.Serialize(row))) %s)", src), nil
+	return fmt.Sprintf("(List.iter (fun row -> printfn \"%%s\" (toJson row)) %s)", src), nil
 }
 
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
@@ -1939,6 +1978,23 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 		return "false"
 	default:
 		return "()"
+	}
+}
+
+func literalFromAny(v interface{}) string {
+	switch t := v.(type) {
+	case int, int64, float64:
+		return fmt.Sprintf("%v", t)
+	case bool:
+		if t {
+			return "true"
+		}
+		return "false"
+	case string:
+		b, _ := json.Marshal(t)
+		return string(b)
+	default:
+		return "null"
 	}
 }
 
@@ -2557,5 +2613,7 @@ func CompileFile(src string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return New().Compile(prog)
+	c := New()
+	c.basePath = src
+	return c.Compile(prog)
 }
