@@ -21,7 +21,7 @@ The C backend compiles Mochi programs in `tests/vm/valid`. The table below lists
 - [x] go_auto
 - [x] group_by_join
 - [x] group_by_left_join
-- [ ] group_by_multi_join_sort
+ - [x] group_by_multi_join_sort
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested

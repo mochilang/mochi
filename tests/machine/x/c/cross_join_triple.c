@@ -67,11 +67,11 @@ int _mochi_main() {
   list_int tmp2 = list_int_create(2);
   tmp2.data[0] = 1;
   tmp2.data[1] = 0;
-  combos_item_list_t tmp3 = create_combos_item_list(2 * letters.len * 2);
+  combos_item_list_t tmp3 = create_combos_item_list(2 * 2 * 2);
   int tmp4 = 0;
   for (int n_idx = 0; n_idx < 2; n_idx++) {
     int n = tmp1.data[n_idx];
-    for (int l_idx = 0; l_idx < letters.len; l_idx++) {
+    for (int l_idx = 0; l_idx < 2; l_idx++) {
       char *l = letters.data[l_idx];
       for (int b_idx = 0; b_idx < 2; b_idx++) {
         int b = tmp2.data[b_idx];
