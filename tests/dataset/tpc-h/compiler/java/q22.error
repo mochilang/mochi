@@ -1,9 +1,0 @@
-javac error: exit status 1
-/tmp/TestJavaCompiler_TPCHQueriesq22484831677/001/Q22.java:186: error: incompatible types: possible lossy conversion from double to int
-    if (!(Objects.equals(result, Arrays.asList(new CntrycodeNumcustTotacctbal("13", 1, 600.000000), new CntrycodeNumcustTotacctbal("30", 1, 700.000000))))) throw new AssertionError("expect failed");
-                                                                                       ^
-/tmp/TestJavaCompiler_TPCHQueriesq22484831677/001/Q22.java:186: error: incompatible types: possible lossy conversion from double to int
-    if (!(Objects.equals(result, Arrays.asList(new CntrycodeNumcustTotacctbal("13", 1, 600.000000), new CntrycodeNumcustTotacctbal("30", 1, 700.000000))))) throw new AssertionError("expect failed");
-                                                                                                                                            ^
-Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
-2 errors

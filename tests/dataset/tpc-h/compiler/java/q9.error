@@ -1,9 +1,9 @@
 javac error: exit status 1
-/tmp/TestJavaCompiler_TPCHQueriesq93682099097/001/Q9.java:267: error: incompatible types: double cannot be converted to Integer
+/tmp/TestJavaCompiler_TPCHQueriesq94211479361/001/Q9.java:267: error: incompatible types: double cannot be converted to Integer
         res5.add((x.l.l_extendedprice * (1 - x.l.l_discount)) - (x.ps.ps_supplycost * x.l.l_quantity));
                                                               ^
-/tmp/TestJavaCompiler_TPCHQueriesq93682099097/001/Q9.java:277: error: incompatible types: possible lossy conversion from double to int
-    if (!(Objects.equals(result, Arrays.asList(new NationOYearProfit("BRAZIL", "1995", revenue - cost))))) throw new AssertionError("expect failed");
-                                                                                               ^
+/tmp/TestJavaCompiler_TPCHQueriesq94211479361/001/Q9.java:277: error: incompatible types: possible lossy conversion from double to int
+        if (!(Objects.equals(result, Arrays.asList(new NationOYearProfit("BRAZIL", "1995", revenue - cost))))) throw new AssertionError("expect failed");
+                                                                                                   ^
 Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
 2 errors
