@@ -259,6 +259,8 @@ func (c *Compiler) compileVar(v *parser.VarStmt) (string, error) {
 			c.copySubFields(id, v.Name)
 		}
 	}
+	c.aliases[v.Name] = name
+	c.lets[v.Name] = true
 	return fmt.Sprintf("%s = %s", name, val), nil
 }
 
@@ -542,8 +544,9 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) (string, error) {
 		body = "ok"
 	}
 	loopName := c.newVarName("loop")
-	fun := fmt.Sprintf("fun %s(%s) -> case %s of true -> %s, %s(%s); _ -> ok end end", loopName, strings.Join(params, ", "), cond, body, loopName, strings.Join(nextArgs, ", "))
-	return fmt.Sprintf("(%s)(%s)", fun, strings.Join(initArgs, ", ")), nil
+	fun := fmt.Sprintf("fun %s(%s) -> case %s of true -> %s, %s(%s); _ -> {%s} end end", loopName, strings.Join(params, ", "), cond, body, loopName, strings.Join(nextArgs, ", "), strings.Join(params, ", "))
+	call := fmt.Sprintf("{%s} = (%s)(%s)", strings.Join(nextArgs, ", "), fun, strings.Join(initArgs, ", "))
+	return call, nil
 }
 
 func (c *Compiler) compileUpdate(st *parser.UpdateStmt) (string, error) {
@@ -593,12 +596,20 @@ func (c *Compiler) compileUpdate(st *parser.UpdateStmt) (string, error) {
 }
 
 func (c *Compiler) compileIfStmt(ifst *parser.IfStmt) (string, error) {
-	mutated := map[string]bool{}
-	collectMutations(ifst.Then, mutated)
-	collectMutations(ifst.Else, mutated)
+	mutatedThen := map[string]bool{}
+	collectMutations(ifst.Then, mutatedThen)
+	mutatedElse := map[string]bool{}
+	collectMutations(ifst.Else, mutatedElse)
 	if ifst.ElseIf != nil {
-		collectMutations(ifst.ElseIf.Then, mutated)
-		collectMutations(ifst.ElseIf.Else, mutated)
+		collectMutations(ifst.ElseIf.Then, mutatedElse)
+		collectMutations(ifst.ElseIf.Else, mutatedElse)
+	}
+	mutated := map[string]bool{}
+	for v := range mutatedThen {
+		mutated[v] = true
+	}
+	for v := range mutatedElse {
+		mutated[v] = true
 	}
 
 	pinned := map[string]string{}
@@ -635,6 +646,7 @@ func (c *Compiler) compileIfStmt(ifst *parser.IfStmt) (string, error) {
 	if thenCode == "" {
 		thenCode = "ok"
 	}
+	elseLines := []string{}
 	elseCode := "ok"
 	if ifst.ElseIf != nil {
 		c.aliases = cloneStringMap(savedAliases)
@@ -650,7 +662,7 @@ func (c *Compiler) compileIfStmt(ifst *parser.IfStmt) (string, error) {
 	} else if len(ifst.Else) > 0 {
 		c.aliases = cloneStringMap(savedAliases)
 		c.lets = cloneBoolMap(savedLets)
-		parts := make([]string, len(ifst.Else))
+		elseLines = make([]string, len(ifst.Else))
 		for i, s := range ifst.Else {
 			l, err := c.compileStmtLine(s)
 			if err != nil {
@@ -659,11 +671,27 @@ func (c *Compiler) compileIfStmt(ifst *parser.IfStmt) (string, error) {
 				}
 				return "", err
 			}
-			parts[i] = l
+			elseLines[i] = l
 		}
-		elseCode = strings.Join(parts, ", ")
+		elseCode = strings.Join(elseLines, ", ")
 		if elseCode == "" {
 			elseCode = "ok"
+		}
+	}
+	// Default assignments for variables mutated in only one branch
+	for v, name := range pinned {
+		prev := savedAliases[v]
+		if prev == "" {
+			prev = capitalize(v)
+		}
+		if !mutatedThen[v] {
+			thenLines = append([]string{fmt.Sprintf("%s = %s", name, prev)}, thenLines...)
+		}
+		if ifst.ElseIf == nil {
+			if !mutatedElse[v] {
+				elseLines = append([]string{fmt.Sprintf("%s = %s", name, prev)}, elseLines...)
+				elseCode = strings.Join(elseLines, ", ")
+			}
 		}
 	}
 	c.aliases = savedAliases
@@ -1842,7 +1870,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			parts[i] = "~p"
+			if c.inferExprType(a) == "string" {
+				parts[i] = "~s"
+			} else {
+				parts[i] = "~p"
+			}
 			args[i] = s
 		}
 		fmtStr := strings.Join(parts, " ") + "~n"

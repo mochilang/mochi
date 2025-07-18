@@ -94,10 +94,13 @@ func main() {
 		cleaned := bytes.Split(outBytes, []byte("\n"))
 		var buf bytes.Buffer
 		for _, line := range cleaned {
-			if bytes.HasPrefix(line, []byte("/tmp/")) {
+			if bytes.HasPrefix(line, []byte("/tmp/")) || bytes.HasPrefix(line, []byte("%")) {
 				continue
 			}
 			if len(line) > 0 {
+				if bytes.HasPrefix(line, []byte("\"")) && bytes.HasSuffix(line, []byte("\"")) {
+					line = line[1 : len(line)-1]
+				}
 				buf.Write(line)
 				buf.WriteByte('\n')
 			}
