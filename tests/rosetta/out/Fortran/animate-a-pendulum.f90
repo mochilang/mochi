@@ -15,7 +15,7 @@ program animate_a_pendulum
     integer :: term
     integer :: sum
     integer :: n
-      integer :: denom
+    integer :: denom
     integer :: guess
     integer :: i
   PI = 3.141592653589793

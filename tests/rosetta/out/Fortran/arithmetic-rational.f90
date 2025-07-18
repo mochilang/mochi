@@ -4,16 +4,16 @@ program arithmetic_rational
     integer :: left
     integer :: right
     integer :: ans
-      integer :: mid
-      integer :: sq
+    integer :: mid
+    integer :: sq
     integer :: s
     integer :: limit
     integer :: f
-        integer :: f2
+    integer :: f2
     integer, dimension(9) :: nums
+    integer :: val
+    character(len=100) :: perfect
     integer :: i0
-        integer :: val
-        character(len=100) :: perfect
         character(len=100) :: s1
         character(len=100) :: s2
   call main()

@@ -4,13 +4,13 @@ program averages_median_3
   character(len=100) :: s0
   character(len=100) :: s1
     integer :: arr
-      integer :: px
-      integer :: pv
-      integer :: last
-      integer :: tmp
-      integer :: i
-        integer :: v
-          integer :: tmp2
+    integer :: px
+    integer :: pv
+    integer :: last
+    integer :: tmp
+    integer :: i
+    integer :: v
+    integer :: tmp2
     integer :: half
     integer :: med
   write(s0,'(G0)') median((/3.0,1.0,4.0,1.0/))

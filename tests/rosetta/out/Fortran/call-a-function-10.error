@@ -1,8 +1,0 @@
-type: error[T039]: function append expects 2 arguments, got 5
-  --> /workspace/mochi/tests/rosetta/x/Mochi/call-a-function-10.mochi:8:10
-
-  8 |   list = append(list, a, d, e, i)
-    |          ^
-
-help:
-  Pass exactly 2 arguments to `append`.

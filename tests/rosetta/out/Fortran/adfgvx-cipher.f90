@@ -6,38 +6,57 @@ program adfgvx_cipher
     integer, allocatable, dimension(:) :: arr
     integer :: i
     integer :: j
+    integer :: k
+    integer :: tmp
     character(len=100) :: out
-      integer :: k
-      integer :: tmp
+      integer, allocatable, dimension(:) :: app0
     integer :: shuffled
+    integer, allocatable, dimension(:) :: labels
+    integer :: li
     integer, allocatable, dimension(:) :: p
-      integer :: row
-      character(len=100) :: line
+    integer :: row
+    integer :: line
+      character(len=100), allocatable, dimension(:) :: app1
+      integer, allocatable, dimension(:) :: app2
     character(len=100) :: pool
     character(len=100) :: key
-      integer :: idx
+    integer :: idx
     logical, allocatable, dimension(:) :: pairs
     integer :: m
     logical, allocatable, dimension(:) :: res
+      integer, allocatable, dimension(:) :: app3
+      integer, allocatable, dimension(:) :: app4
     character(len=100) :: temp
+    integer :: r
+    integer :: c
     integer :: colLen
     integer, allocatable, dimension(:) :: table
     integer :: rIdx
+    integer :: col
     integer :: order
     integer, allocatable, dimension(:) :: cols
     integer :: ci
+    character(len=100) :: colStr
+    integer :: ri
     character(len=100) :: result
-      integer :: r
-        integer :: c
-      integer :: col
-      character(len=100) :: colStr
-      integer :: ri
+      character(len=100), allocatable, dimension(:) :: app5
+        character(len=100), allocatable, dimension(:) :: app6
+      integer, allocatable, dimension(:) :: app7
+      integer, allocatable, dimension(:) :: app8
     integer, allocatable, dimension(:) :: colStrs
     integer :: start
     integer :: maxColLen
-      integer, allocatable, dimension(:) :: ls
-        integer, allocatable, dimension(:) :: pad
-      integer :: cIdx
+    integer, allocatable, dimension(:) :: ls
+    integer, allocatable, dimension(:) :: pad
+    integer :: cIdx
+        integer, allocatable, dimension(:) :: app9
+        integer, allocatable, dimension(:) :: app10
+            integer, allocatable, dimension(:) :: app11
+            character(len=100), allocatable, dimension(:) :: app12
+        integer, allocatable, dimension(:) :: app13
+        integer, allocatable, dimension(:) :: app14
+        character(len=100), allocatable, dimension(:) :: app15
+      integer, allocatable, dimension(:) :: app16
     integer :: plainText2
   adfgvx = 'ADFGVX'
   alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
@@ -49,7 +68,11 @@ program adfgvx_cipher
     allocate(arr(0))
     i = 0
     do while ((i < size(s)))
-      arr = (arr + (/s(((i)+1))/))
+      if (allocated(app0)) deallocate(app0)
+      allocate(app0(size(arr)+1))
+      app0(1:size(arr)) = arr
+      app0(size(arr)+1) = s((i)+1:(i + 1))
+      arr = app0
       i = (i + 1)
     end do
     j = (size(arr) - 1)
@@ -71,6 +94,16 @@ program adfgvx_cipher
   end function shuffleStr
   recursive integer function createPolybius() result(res)
     shuffled = shuffleStr(alphabet)
+    allocate(labels(0))
+    li = 0
+    do while ((li < 6))
+      if (allocated(app1)) deallocate(app1)
+      allocate(app1(size(labels)+1))
+      app1(1:size(labels)) = labels
+      app1(size(labels)+1) = adfgvx((li)+1:(li + 1))
+      labels = app1
+      li = (li + 1)
+    end do
     print *, '6 x 6 Polybius square:'//char(10)//''
     print *, '  | A D F G V X'
     print *, '---------------'
@@ -78,11 +111,15 @@ program adfgvx_cipher
     i = 0
     do while ((i < 6))
       row = shuffled(((i * 6))+1:(((i + 1)) * 6))
-      p = (p + (/row/))
-      line = trim(adfgvx((i)+1:(i)+1)) // ' | '
+      if (allocated(app2)) deallocate(app2)
+      allocate(app2(size(p)+1))
+      app2(1:size(p)) = p
+      app2(size(p)+1) = row
+      p = app2
+      line = labels((i)+1:(i + 1)) // ' | '
       j = 0
       do while ((j < 6))
-        line = (line + row(((j)+1))) // ' '
+        line = (line + row((j)+1:(j + 1))) // ' '
         j = (j + 1)
       end do
       print *, line
@@ -114,7 +151,11 @@ program adfgvx_cipher
     allocate(pairs(0))
     i = 0
     do while ((i < size(key)))
-      pairs = (pairs + (/(/key(((i)+1)),i/)/))
+      if (allocated(app3)) deallocate(app3)
+      allocate(app3(size(pairs)+1))
+      app3(1:size(pairs)) = pairs
+      app3(size(pairs)+1) = (/key((i)+1:(i + 1)),i/)
+      pairs = app3
       i = (i + 1)
     end do
     n = size(pairs)
@@ -134,7 +175,11 @@ program adfgvx_cipher
     allocate(res(0))
     i = 0
     do while ((i < n))
-      res = (res + (/int(pairs(((i)+1),((1)+1)))/))
+      if (allocated(app4)) deallocate(app4)
+      allocate(app4(size(res)+1))
+      app4(1:size(res)) = res
+      app4(size(res)+1) = int(pairs(((i)+1),((1)+1)))
+      res = app4
       i = (i + 1)
     end do
     res = res
@@ -144,6 +189,16 @@ program adfgvx_cipher
     integer, intent(in) :: polybius
     character(len=100), intent(in) :: key
     character(len=100), intent(in) :: plainText
+    allocate(labels(0))
+    li = 0
+    do while ((li < 6))
+      if (allocated(app5)) deallocate(app5)
+      allocate(app5(size(labels)+1))
+      app5(1:size(labels)) = labels
+      app5(size(labels)+1) = adfgvx((li)+1:(li + 1))
+      labels = app5
+      li = (li + 1)
+    end do
     temp = ''
     i = 0
     do while ((i < size(plainText)))
@@ -151,8 +206,8 @@ program adfgvx_cipher
       do while ((r < 6))
         c = 0
         do while ((c < 6))
-          if ((polybius(((r)+1),((c)+1)) == plainText(((i)+1)))) then
-            temp = trim(temp // trim(adfgvx((r)+1:(r)+1))) // trim(adfgvx((c)+1:(c)+1))
+          if ((polybius(((r)+1),(c)+1:(c + 1)) == plainText((i)+1:(i + 1)))) then
+            temp = ((temp + labels((r)+1:(r + 1))) + labels((c)+1:(c + 1)))
           end if
           c = (c + 1)
         end do
@@ -170,10 +225,18 @@ program adfgvx_cipher
       allocate(row(0))
       j = 0
       do while ((j < size(key)))
-        row = (row + (/''/))
+        if (allocated(app6)) deallocate(app6)
+        allocate(app6(size(row)+1))
+        app6(1:size(row)) = row
+        app6(size(row)+1) = ''
+        row = app6
         j = (j + 1)
       end do
-      table = (table + (/row/))
+      if (allocated(app7)) deallocate(app7)
+      allocate(app7(size(table)+1))
+      app7(1:size(table)) = table
+      app7(size(table)+1) = row
+      table = app7
       rIdx = (rIdx + 1)
     end do
     idx = 0
@@ -193,7 +256,11 @@ program adfgvx_cipher
         colStr = (colStr + table(((ri)+1),((order(((ci)+1)))+1)))
         ri = (ri + 1)
       end do
-      cols = (cols + (/colStr/))
+      if (allocated(app8)) deallocate(app8)
+      allocate(app8(size(cols)+1))
+      app8(1:size(cols)) = cols
+      app8(size(cols)+1) = colStr
+      cols = app8
       ci = (ci + 1)
     end do
     result = ''
@@ -213,7 +280,7 @@ program adfgvx_cipher
     character(len=100), intent(in) :: ch
     i = 0
     do while ((i < size(s)))
-      if ((s(((i)+1)) == ch)) then
+      if ((s((i)+1:(i + 1)) == ch)) then
         res = i
         return
       end if
@@ -231,7 +298,11 @@ program adfgvx_cipher
     i = 0
     do while ((i <= size(cipherText)))
       if ((((i == size(cipherText)) .or. cipherText(((i)+1))) == ' ')) then
-        colStrs = (colStrs + (/cipherText((start)+1:i)/))
+        if (allocated(app9)) deallocate(app9)
+        allocate(app9(size(colStrs)+1))
+        app9(1:size(colStrs)) = colStrs
+        app9(size(colStrs)+1) = cipherText((start)+1:i)
+        colStrs = app9
         start = (i + 1)
       end if
       i = (i + 1)
@@ -251,7 +322,11 @@ program adfgvx_cipher
       allocate(ls(0))
       j = 0
       do while ((j < size(s)))
-        ls = (ls + (/s(((j)+1))/))
+        if (allocated(app10)) deallocate(app10)
+        allocate(app10(size(ls)+1))
+        app10(1:size(ls)) = ls
+        app10(size(ls)+1) = s((j)+1:(j + 1))
+        ls = app10
         j = (j + 1)
       end do
       if ((size(s) < maxColLen)) then
@@ -259,15 +334,31 @@ program adfgvx_cipher
         k = 0
         do while ((k < maxColLen))
           if ((k < size(ls))) then
-            pad = (pad + (/ls(((k)+1))/))
+            if (allocated(app11)) deallocate(app11)
+            allocate(app11(size(pad)+1))
+            app11(1:size(pad)) = pad
+            app11(size(pad)+1) = ls(((k)+1))
+            pad = app11
           else
-            pad = (pad + (/''/))
+            if (allocated(app12)) deallocate(app12)
+            allocate(app12(size(pad)+1))
+            app12(1:size(pad)) = pad
+            app12(size(pad)+1) = ''
+            pad = app12
           end if
           k = (k + 1)
         end do
-        cols = (cols + (/pad/))
+        if (allocated(app13)) deallocate(app13)
+        allocate(app13(size(cols)+1))
+        app13(1:size(cols)) = cols
+        app13(size(cols)+1) = pad
+        cols = app13
       else
-        cols = (cols + (/ls/))
+        if (allocated(app14)) deallocate(app14)
+        allocate(app14(size(cols)+1))
+        app14(1:size(cols)) = cols
+        app14(size(cols)+1) = ls
+        cols = app14
       end if
       i = (i + 1)
     end do
@@ -277,10 +368,18 @@ program adfgvx_cipher
       allocate(row(0))
       c = 0
       do while ((c < size(key)))
-        row = (row + (/''/))
+        if (allocated(app15)) deallocate(app15)
+        allocate(app15(size(row)+1))
+        app15(1:size(row)) = row
+        app15(size(row)+1) = ''
+        row = app15
         c = (c + 1)
       end do
-      table = (table + (/row/))
+      if (allocated(app16)) deallocate(app16)
+      allocate(app16(size(table)+1))
+      app16(1:size(table)) = table
+      app16(size(table)+1) = row
+      table = app16
       r = (r + 1)
     end do
     order = orderKey(key)

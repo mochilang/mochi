@@ -1,0 +1,181 @@
+gfortran: exit status 1
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:61:13:
+
+   61 |     allocate(res(0))
+      |             1
+Error: Allocate-object at (1) is neither a data pointer nor an allocatable variable
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:83:18:
+
+   83 |       d = (primes(((i)+1)) - primes((((i - 1))+1)))
+      |                  1
+Error: Expected a right parenthesis in expression at (1)
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:94:27:
+
+   94 |         currSeq = (/primes((((i - 1))+1)),primes(((i)+1))/)
+      |                           1
+Error: Syntax error in array constructor at (1)
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:124:34:
+
+  124 |         app7(size(diffs)+1) = (ls(((j)+1)) - ls((((j - 1))+1)))
+      |                                  1
+Error: Expected a right parenthesis in expression at (1)
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:130:28:
+
+  130 |         write(s8,'(G0)') ls(((k)+1))
+      |                            1
+Error: Syntax error in WRITE statement at (1)
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:135:27:
+
+  135 |       write(s10,'(G0)') ls((((size(ls) - 1))+1))
+      |                           1
+Error: Syntax error in WRITE statement at (1)
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:143:9:
+
+  143 |       dir = arr11(i11)
+      |         1
+Error: Symbol ‘dir’ at (1) has no IMPLICIT type
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:84:87:
+
+   84 |       if ((((((dir == 'ascending') .and. d) <= pd)) .or. ((((dir == 'descending') .and. d) >= pd)))) then
+      |                                                                                       1
+Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/INTEGER(4)
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:84:40:
+
+   84 |       if ((((((dir == 'ascending') .and. d) <= pd)) .or. ((((dir == 'descending') .and. d) >= pd)))) then
+      |                                        1
+Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/INTEGER(4)
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:85:30:
+
+   85 |         if ((1 > size(longSeqs(((0)+1))))) then
+      |                              1
+Error: Rank mismatch in array reference at (1) (1/2)
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:86:10:
+
+   86 |           longSeqs = (/currSeq/)
+      |          1
+Error: Incompatible ranks 2 and 1 in assignment at (1)
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:87:36:
+
+   87 |         else if ((1 == size(longSeqs(((0)+1))))) then
+      |                                    1
+Error: Rank mismatch in array reference at (1) (1/2)
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:90:10:
+
+   90 |           app2(1:size(longSeqs)) = longSeqs
+      |          1
+Error: Incompatible ranks 1 and 2 in assignment at (1)
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:91:10:
+
+   91 |           app2(size(longSeqs)+1) = currSeq
+      |          1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:92:10:
+
+   92 |           longSeqs = app2
+      |          1
+Error: Incompatible ranks 2 and 1 in assignment at (1)
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:82:24:
+
+   82 |     do while ((i < size(primes)))
+      |                        1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:105:38:
+
+  105 |     if ((size(currSeq) > size(longSeqs(((0)+1))))) then
+      |                                      1
+Error: Rank mismatch in array reference at (1) (1/2)
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:106:6:
+
+  106 |       longSeqs = (/currSeq/)
+      |      1
+Error: Incompatible ranks 2 and 1 in assignment at (1)
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:107:44:
+
+  107 |     else if ((size(currSeq) == size(longSeqs(((0)+1))))) then
+      |                                            1
+Error: Rank mismatch in array reference at (1) (1/2)
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:110:6:
+
+  110 |       app4(1:size(longSeqs)) = longSeqs
+      |      1
+Error: Incompatible ranks 1 and 2 in assignment at (1)
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:111:6:
+
+  111 |       app4(size(longSeqs)+1) = currSeq
+      |      1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:112:6:
+
+  112 |       longSeqs = app4
+      |      1
+Error: Incompatible ranks 2 and 1 in assignment at (1)
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:114:34:
+
+  114 |     write(s5,'(G0)') size(longSeqs(((0)+1)))
+      |                                  1
+Error: Rank mismatch in array reference at (1) (1/2)
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:117:19:
+
+  117 |       ls = longSeqs(i6)
+      |                   1
+Error: Rank mismatch in array reference at (1) (1/2)
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:120:26:
+
+  120 |       do while ((j < size(ls)))
+      |                          1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:132:61:
+
+  132 |         print *, trim(trim(s8 // ' (') // s9) // ') ', merge('true','false', .false.)
+      |                                                             1
+Error: Unequal character lengths (4/5) in MERGE intrinsic at (1)
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:129:27:
+
+  129 |       do while (((k < size(ls)) - 1))
+      |                           1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:45:28:
+
+   45 |       app0(1:size(sieve)) = sieve
+      |                            1
+Warning: Extension: Conversion from INTEGER(4) to LOGICAL(4) at (1)
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:47:14:
+
+   47 |       sieve = app0
+      |              1
+Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:52:10:
+
+   52 |       if (sieve(((p)+1))) then
+      |          1
+Error: IF clause at (1) requires a scalar LOGICAL expression
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:55:27:
+
+   55 |           sieve(((m)+1)) = .false.
+      |                           1
+Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:64:10:
+
+   64 |       if (sieve(((x)+1))) then
+      |          1
+Error: IF clause at (1) requires a scalar LOGICAL expression
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:66:27:
+
+   66 |         allocate(app1(size(res)+1))
+      |                           1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:67:20:
+
+   67 |         app1(1:size(res)) = res
+      |                    1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:68:18:
+
+   68 |         app1(size(res)+1) = x
+      |                  1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/consecutive-primes-with-ascending-or-descending-differences.f90:69:8:
+
+   69 |         res = app1
+      |        1
+Error: Incompatible ranks 0 and 1 in assignment at (1)

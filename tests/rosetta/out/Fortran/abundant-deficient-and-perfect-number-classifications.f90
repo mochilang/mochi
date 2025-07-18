@@ -6,7 +6,7 @@ program abundant_deficient_and_perfect_number_classifications
     integer :: d
     integer :: a
     integer :: pnum
-      integer :: j
+    integer :: j
     character(len=100) :: s0
     character(len=100) :: s1
     character(len=100) :: s2

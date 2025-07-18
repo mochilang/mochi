@@ -6,15 +6,15 @@ program boyer_moore_string_search
     integer :: i
     integer, allocatable, dimension(:) :: result
     integer :: start
-      integer :: idx
+    integer :: idx
         integer, allocatable, dimension(:) :: app0
     character(len=100) :: s
       character(len=100) :: s1
     integer, dimension(6) :: texts
     integer, dimension(6) :: patterns
     integer :: j
+    integer :: idxs
       character(len=100) :: s2
-      integer :: idxs
       character(len=100) :: s3
   call main()
   

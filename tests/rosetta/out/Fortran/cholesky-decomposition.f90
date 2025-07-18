@@ -5,13 +5,13 @@ program cholesky_decomposition
     integer :: i
     integer :: n
     integer, allocatable, dimension(:) :: l
-      integer, allocatable, dimension(:) :: row
-      integer :: j
+    integer, allocatable, dimension(:) :: row
+    integer :: j
+    integer :: sum
+    integer :: k
         real, allocatable, dimension(:) :: app0
       integer, allocatable, dimension(:) :: app1
-        integer :: sum
-        integer :: k
-      character(len=100) :: line
+    character(len=100) :: line
         character(len=100) :: s2
   call demo((/(/25.0,15.0,-5.0/),(/15.0,18.0,0.0/),(/-5.0,0.0,11.0/)/))
   call demo((/(/18.0,22.0,54.0,42.0/),(/22.0,70.0,86.0,62.0/),(/54.0,86.0,174.0,134.0/),(/42.0,62.0,134.0,106.0/)/))

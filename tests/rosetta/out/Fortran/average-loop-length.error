@@ -4,16 +4,6 @@ gfortran: exit status 1
    65 |         s = s(0+1:(dot + 5))
       |         1
 Error: Unclassifiable statement at (1)
-/tmp/average-loop-length.f90:149:132:
-
-  149 |       line = trim(trim(trim(trim(trim(trim(padInt(n,3) // '  ') // padFloat(a,9)) // '  ') // padFloat(b,12)) // '  (') // padFloat(err,6)) // '%)'
-      |                                                                                                                                    1
-Error: Line truncated at (1) [-Werror=line-truncation]
-/tmp/average-loop-length.f90:149:132:
-
-  149 |       line = trim(trim(trim(trim(trim(trim(padInt(n,3) // '  ') // padFloat(a,9)) // '  ') // padFloat(b,12)) // '  (') // padFloat(err,6)) // '%)'
-      |                                                                                                                                    1
-Error: Syntax error in argument list at (1)
 /tmp/average-loop-length.f90:144:5:
 
   144 |     n = 1
@@ -44,6 +34,26 @@ Error: Symbol ‘s’ at (1) has no IMPLICIT type
   148 |       err = ((absf((a - b)) / b) * 100.0)
       |                  1
 Error: Type mismatch in argument ‘x’ at (1); passed INTEGER(4) to REAL(4)
+/tmp/average-loop-length.f90:149:122:
+
+  149 |       line = trim(trim(trim(trim(trim(trim(padInt(n,3) // '  ') // padFloat(a,9)) // '  ') // padFloat(b,12)) // '  (') // padFloat(err,6)) // '%)'
+      |                                                                                                                          1
+Error: Type mismatch in argument ‘x’ at (1); passed INTEGER(4) to REAL(4)
+/tmp/average-loop-length.f90:60:9:
+
+   60 |     if (((dot == 0) - 1)) then
+      |         1
+Error: Operands of binary numeric operator ‘-’ at (1) are LOGICAL(4)/INTEGER(4)
+/tmp/average-loop-length.f90:149:93:
+
+  149 |       line = trim(trim(trim(trim(trim(trim(padInt(n,3) // '  ') // padFloat(a,9)) // '  ') // padFloat(b,12)) // '  (') // padFloat(err,6)) // '%)'
+      |                                                                                             1
+Error: Type mismatch in argument ‘x’ at (1); passed INTEGER(4) to REAL(4)
+/tmp/average-loop-length.f90:149:66:
+
+  149 |       line = trim(trim(trim(trim(trim(trim(padInt(n,3) // '  ') // padFloat(a,9)) // '  ') // padFloat(b,12)) // '  (') // padFloat(err,6)) // '%)'
+      |                                                                  1
+Error: Type mismatch in argument ‘x’ at (1); passed INTEGER(4) to REAL(4)
 /tmp/average-loop-length.f90:109:32:
 
   109 |         app2(1:size(visited)) = visited
@@ -54,14 +64,8 @@ Warning: Extension: Conversion from INTEGER(4) to LOGICAL(4) at (1)
   111 |         visited = app2
       |                  1
 Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
-/tmp/average-loop-length.f90:60:9:
-
-   60 |     if (((dot == 0) - 1)) then
-      |         1
-Error: Operands of binary numeric operator ‘-’ at (1) are LOGICAL(4)/INTEGER(4)
 /tmp/average-loop-length.f90:44:24:
 
    44 |     do while ((i < size(s)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-f951: some warnings being treated as errors

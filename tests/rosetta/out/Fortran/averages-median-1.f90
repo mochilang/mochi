@@ -6,8 +6,8 @@ program averages_median_1
     integer :: arr
     integer :: n
     integer :: i
-      integer :: j
-          integer :: tmp
+    integer :: j
+    integer :: tmp
     integer :: half
     integer :: m
   write(s0,'(G0)') median((/3.0,1.0,4.0,1.0/))

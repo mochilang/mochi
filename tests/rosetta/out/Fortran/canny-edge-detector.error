@@ -4,20 +4,10 @@ gfortran: exit status 1
   104 |         g = (((gx(((y)+1),((x)+1)) * gx(((y)+1),((x)+1))) + gy(((y)+1),((x)+1))) * gy(((y)+1),((x)+1)))
       |                  1
 Error: Expected a right parenthesis in expression at (1)
-/tmp/canny-edge-detector.f90:173:132:
+/tmp/canny-edge-detector.f90:173:7:
 
   173 |     img = reshape((/0.0,0.0,0.0,0.0,0.0,0.0,255.0,255.0,255.0,0.0,0.0,255.0,255.0,255.0,0.0,0.0,255.0,255.0,255.0,0.0,0.0,0.0,0.0,0.0,0.0/),(/5,5/))
-      |                                                                                                                                    1
-Error: Line truncated at (1) [-Werror=line-truncation]
-/tmp/canny-edge-detector.f90:173:132:
-
-  173 |     img = reshape((/0.0,0.0,0.0,0.0,0.0,0.0,255.0,255.0,255.0,0.0,0.0,255.0,255.0,255.0,0.0,0.0,255.0,255.0,255.0,0.0,0.0,0.0,0.0,0.0,0.0/),(/5,5/))
-      |                                                                                                                                    1
-Error: Syntax error in array constructor at (1)
-/tmp/canny-edge-detector.f90:174:20:
-
-  174 |     g = gradient(img)
-      |                    1
+      |       1
 Error: Symbol ‘img’ at (1) has no IMPLICIT type
 /tmp/canny-edge-detector.f90:154:36:
 
@@ -149,4 +139,3 @@ Error: Incompatible ranks 0 and 1 in assignment at (1)
   119 |     res = out
       |    1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-f951: some warnings being treated as errors

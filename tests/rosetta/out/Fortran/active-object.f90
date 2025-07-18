@@ -13,7 +13,7 @@ program active_object
     integer :: term
     integer :: sum
     integer :: n
-      integer :: denom
+    integer :: denom
   PI = 3.141592653589793
   dt = 0.01
   s = 0.0

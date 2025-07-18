@@ -8,23 +8,23 @@ program arithmetic_derivative
       integer, allocatable, dimension(:) :: app1
     character(len=100) :: s
     integer :: i
+    integer :: g
     integer :: c
     integer :: d
-      integer :: g
       integer, allocatable, dimension(:) :: app2
       integer, allocatable, dimension(:) :: app3
       integer, allocatable, dimension(:) :: app4
       integer, allocatable, dimension(:) :: app5
     character(len=100) :: s6
     integer, allocatable, dimension(:) :: vals
+    character(len=100) :: line
+    integer :: j
     real :: pow
     integer :: m
+    integer :: exp
+    integer :: res
       integer, allocatable, dimension(:) :: app7
-      character(len=100) :: line
-      integer :: j
-      integer :: exp
       character(len=100) :: s8
-      integer :: res
       character(len=100) :: s9
   call main()
   

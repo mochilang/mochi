@@ -1,14 +1,4 @@
 gfortran: exit status 1
-/tmp/csv-to-html-translation-1.f90:14:132:
-
-   14 |   c = trim(trim(trim(trim('Character,Speech'//char(10)//'' // 'The multitude,The messiah! Show us the messiah!'//char(10)//'') // 'Brians mother,<angry>Now you listen here! He''s not the messiah; he''s a very naughty boy! Now go away!</angry>'//char(10)//'') // 'The multitude,Who are you?'//char(10)//'') // 'Brians mother,I''m his mother; that''s who!'//char(10)//'') // 'The multitude,Behold his mother! Behold his mother!'
-      |                                                                                                                                    1
-Error: Line truncated at (1) [-Werror=line-truncation]
-/tmp/csv-to-html-translation-1.f90:14:132:
-
-   14 |   c = trim(trim(trim(trim('Character,Speech'//char(10)//'' // 'The multitude,The messiah! Show us the messiah!'//char(10)//'') // 'Brians mother,<angry>Now you listen here! He''s not the messiah; he''s a very naughty boy! Now go away!</angry>'//char(10)//'') // 'The multitude,Who are you?'//char(10)//'') // 'Brians mother,I''m his mother; that''s who!'//char(10)//'') // 'The multitude,Behold his mother! Behold his mother!'
-      |                                                                                                                                    1
-Error: Unterminated character constant beginning at (1)
 /tmp/csv-to-html-translation-1.f90:17:21:
 
    17 |     line = split(c,''//char(10)//'')(i0)
@@ -42,4 +32,3 @@ Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
    21 |     app1(size(rows)+1) = split(line,',')
       |                               1
 Error: Type mismatch between actual argument at (1) and actual argument at (2) (INTEGER(4)/CHARACTER(*)).
-f951: some warnings being treated as errors

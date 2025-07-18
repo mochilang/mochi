@@ -1,14 +1,4 @@
 gfortran: exit status 1
-/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:17:132:
-
-   17 |   sig = (/-0.917843918645,0.141984778794,1.20536903482,0.190286794412,-0.662370894973,-1.00700480494,-0.404707073677,0.800482325044,0.743500089861,1.01090520172,0.741527555207,0.277841675195,0.400833448236,-0.2085993586,-0.172842103641,-0.134316096293,0.0259303398477,0.490105989562,0.549391221511,0.9047198589/)
-      |                                                                                                                                    1
-Error: Line truncated at (1) [-Werror=line-truncation]
-/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:17:132:
-
-   17 |   sig = (/-0.917843918645,0.141984778794,1.20536903482,0.190286794412,-0.662370894973,-1.00700480494,-0.404707073677,0.800482325044,0.743500089861,1.01090520172,0.741527555207,0.277841675195,0.400833448236,-0.2085993586,-0.172842103641,-0.134316096293,0.0259303398477,0.490105989562,0.549391221511,0.9047198589/)
-      |                                                                                                                                    1
-Error: Syntax error in array constructor at (1)
 /tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:21:17:
 
    21 |     print *, res(((k)+1))
@@ -74,4 +64,3 @@ Error: Rank mismatch in argument ‘b’ at (1) (scalar and rank-1)
    20 |   do while ((k < size(res)))
       |                      1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-f951: some warnings being treated as errors

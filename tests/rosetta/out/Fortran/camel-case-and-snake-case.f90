@@ -11,7 +11,7 @@ program camel_case_and_snake_case
     logical :: prevUnd
     integer :: j
     logical :: lastUnd
-      integer :: c
+    integer :: c
     integer, dimension(12) :: samples
     integer :: i0
     integer :: i1

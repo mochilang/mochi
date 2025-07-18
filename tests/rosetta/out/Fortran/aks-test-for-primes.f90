@@ -4,9 +4,9 @@ program aks_test_for_primes
     character(len=100) :: s
     integer :: coef
     integer :: i
+    integer :: d
       character(len=100) :: s0
         character(len=100) :: s1
-      integer :: d
         character(len=100) :: s2
         character(len=100) :: s3
     integer :: c

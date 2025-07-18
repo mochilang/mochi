@@ -9,8 +9,8 @@ program bitwise_operations
     integer :: ub
     integer :: res
     integer :: bit
-      integer :: abit
-      integer :: bbit
+    integer :: abit
+    integer :: bbit
     integer :: val
     integer :: left
     integer :: right

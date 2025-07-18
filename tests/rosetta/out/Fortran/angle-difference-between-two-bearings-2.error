@@ -1,14 +1,4 @@
 gfortran: exit status 1
-/tmp/angle-difference-between-two-bearings-2.f90:8:132:
-
-    8 |   testCases = reshape((/20.0,45.0,(0 - 45.0),45.0,(0 - 85.0),90.0,(0 - 95.0),90.0,(0 - 45.0),125.0,(0 - 45.0),145.0,29.4803,(0 - 88.6381),(0 - 78.3251),(0 - 159.036),(0 - 70099.74233810938),29840.67437876723,(0 - 165313.6666297357),33693.9894517456,1174.8380510598456,(0 - 154146.66490124757),60175.77306795546,42213.07192354373/),(/12,2/))
-      |                                                                                                                                    1
-Error: Line truncated at (1) [-Werror=line-truncation]
-/tmp/angle-difference-between-two-bearings-2.f90:8:132:
-
-    8 |   testCases = reshape((/20.0,45.0,(0 - 45.0),45.0,(0 - 85.0),90.0,(0 - 95.0),90.0,(0 - 45.0),125.0,(0 - 45.0),145.0,29.4803,(0 - 88.6381),(0 - 78.3251),(0 - 159.036),(0 - 70099.74233810938),29840.67437876723,(0 - 165313.6666297357),33693.9894517456,1174.8380510598456,(0 - 154146.66490124757),60175.77306795546,42213.07192354373/),(/12,2/))
-      |                                                                                                                                    1
-Error: Expected a right parenthesis in expression at (1)
 /tmp/angle-difference-between-two-bearings-2.f90:11:26:
 
    11 |     print *, angleDiff(tc(((0)+1)),tc(((1)+1)))
@@ -31,4 +21,3 @@ Error: Rank mismatch in array reference at (1) (1/2)
    10 |     tc = testCases(i0)
       |                   1
 Warning: Array reference at (1) out of bounds (24 > 12) in loop beginning at (2)
-f951: some warnings being treated as errors

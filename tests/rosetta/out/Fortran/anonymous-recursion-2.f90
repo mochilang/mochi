@@ -4,7 +4,7 @@ program anonymous_recursion_2
     integer :: a
     integer :: b
     integer :: i
-      integer :: t
+    integer :: t
     integer, dimension(12) :: arr0 = (/-1,0,1,2,3,4,5,6,7,8,9,10/)
     integer :: i0
         character(len=100) :: s1

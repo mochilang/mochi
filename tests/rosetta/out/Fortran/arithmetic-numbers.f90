@@ -3,7 +3,7 @@ program arithmetic_numbers
   implicit none
     integer, allocatable, dimension(:) :: spf
     integer :: i
-          integer :: j
+    integer :: j
     integer, allocatable, dimension(:) :: primes
         integer, allocatable, dimension(:) :: app0
     integer :: s
@@ -13,24 +13,24 @@ program arithmetic_numbers
     character(len=100) :: s2
     integer :: lo
     integer :: hi
+    integer :: mid
     integer :: count
-      integer :: mid
     integer, dimension(1) :: arr
+    integer :: x
+    integer :: sigma
+    integer :: tau
+    integer :: p
+    integer :: cnt
+    integer :: power
+    integer :: sum
         integer, allocatable, dimension(:) :: app3
-        integer :: x
-        integer :: sigma
-        integer :: tau
-          integer :: p
-          integer :: cnt
-          integer :: power
-          integer :: sum
           integer, allocatable, dimension(:) :: app4
-      character(len=100) :: line
+    character(len=100) :: line
+    integer :: lastc
+    integer :: pc
+    integer :: comp
     integer, dimension(4) :: arr5 = (/1000,10000,100000,1000000/)
     integer :: i5
-      integer :: lastc
-      integer :: pc
-      integer :: comp
   call main()
   
   contains

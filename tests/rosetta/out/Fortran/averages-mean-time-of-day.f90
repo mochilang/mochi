@@ -5,7 +5,7 @@ program averages_mean_time_of_day
     integer :: term
     integer :: sum
     integer :: n
-      integer :: denom
+    integer :: denom
     character(len=100) :: digits
     integer :: i
     integer :: h
@@ -15,11 +15,11 @@ program averages_mean_time_of_day
     character(len=100) :: s1
     real :: ssum
     real :: csum
+    integer :: ang
     integer :: theta
     integer :: frac
     integer :: total
     integer :: si
-      integer :: ang
     integer, dimension(4) :: inputs
   PI = 3.141592653589793
   call main()

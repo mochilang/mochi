@@ -5,10 +5,10 @@ program best_shuffle
     integer :: i
     integer :: sd
     integer :: idx
+    integer :: j
+    integer :: tmp
     character(len=100) :: res
       integer, allocatable, dimension(:) :: app0
-      integer :: j
-      integer :: tmp
     integer :: r
     integer :: t
     integer, allocatable, dimension(:) :: arr
@@ -16,8 +16,8 @@ program best_shuffle
     character(len=100) :: out
       integer, allocatable, dimension(:) :: app1
     integer, dimension(6) :: ts
-      integer :: shuf
-      integer :: cnt
+    integer :: shuf
+    integer :: cnt
       character(len=100) :: s2
   call main()
   

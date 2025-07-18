@@ -7,8 +7,8 @@ program bitcoin_address_validation
     character(len=100) :: tmpl
     integer, allocatable, dimension(:) :: a
     integer :: idx
-      integer :: c
-      integer :: j
+    integer :: c
+    integer :: j
     integer :: first
     integer :: hash
     integer :: sum

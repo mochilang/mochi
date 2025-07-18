@@ -4,16 +4,16 @@ program averages_simple_moving_average
     integer :: i
     integer :: y
     integer :: dot
+    integer :: decs
     character(len=100) :: s0
-      integer :: decs
     integer :: out
     integer, allocatable, dimension(:) :: res
     integer :: sum
-      integer :: denom
+    integer :: denom
       integer, allocatable, dimension(:) :: app1
     integer :: sma3
     integer :: sma5
-      integer :: line
+    integer :: line
   call main()
   
   contains

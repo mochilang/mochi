@@ -9,8 +9,8 @@ program approximate_equality
     integer :: root2
     integer, dimension(9,2) :: pairs
     integer :: pair
+    integer :: s
     integer :: i0
-      integer :: s
       character(len=100) :: tmp1
       character(len=100) :: s2
       character(len=100) :: s3

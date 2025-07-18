@@ -1,19 +1,4 @@
 gfortran: exit status 1
-/tmp/append-a-record-to-the-end-of-a-text-file.f90:9:132:
-
-    9 |     res = (/'jsmith:x:1001:1000:Joe Smith,Room 1007,(234)555-8917,(234)555-0077,jsmith@rosettacode.org:/home/jsmith:/bin/bash','jdoe:x:1002:1000:Jane Doe,Room 1004,(234)555-8914,(234)555-0044,jdoe@rosettacode.org:/home/jsmith:/bin/bash'/)
-      |                                                                                                                                    1
-Error: Line truncated at (1) [-Werror=line-truncation]
-/tmp/append-a-record-to-the-end-of-a-text-file.f90:9:129:
-
-    9 |     res = (/'jsmith:x:1001:1000:Joe Smith,Room 1007,(234)555-8917,(234)555-0077,jsmith@rosettacode.org:/home/jsmith:/bin/bash','jdoe:x:1002:1000:Jane Doe,Room 1004,(234)555-8914,(234)555-0044,jdoe@rosettacode.org:/home/jsmith:/bin/bash'/)
-      |                                                                                                                                 1
-Error: Unterminated character constant beginning at (1)
-/tmp/append-a-record-to-the-end-of-a-text-file.f90:24:132:
-
-   24 |     if ((((size(lines) >= 3) .and. lines(((2)+1))) == 'xyz:x:1003:1000:X Yz,Room 1003,(234)555-8913,(234)555-0033,xyz@rosettacode.org:/home/xyz:/bin/bash')) then
-      |                                                                                                                                    1
-Error: Line truncated at (1) [-Werror=line-truncation]
 /tmp/append-a-record-to-the-end-of-a-text-file.f90:24:41:
 
    24 |     if ((((size(lines) >= 3) .and. lines(((2)+1))) == 'xyz:x:1003:1000:X Yz,Room 1003,(234)555-8913,(234)555-0033,xyz@rosettacode.org:/home/xyz:/bin/bash')) then
@@ -34,6 +19,11 @@ Error: Expecting END SUBROUTINE statement at (1)
    22 |     lines = writeTwo()
       |         1
 Error: Symbol ‘lines’ at (1) has no IMPLICIT type
+/tmp/append-a-record-to-the-end-of-a-text-file.f90:9:127:
+
+    9 |     res = (/'jsmith:x:1001:1000:Joe Smith,Room 1007,(234)555-8917,(234)555-0077,jsmith@rosettacode.org:/home/jsmith:/bin/bash','jdoe:x:1002:1000:Jane Doe,Room 1004,(234)555-8914,(234)555-0044,jdoe@rosettacode.org:/home/jsmith:/bin/bash'/)
+      |                                                                                                                               1
+Error: Different CHARACTER lengths (112/107) in array constructor at (1)
 /tmp/append-a-record-to-the-end-of-a-text-file.f90:15:23:
 
    15 |     allocate(app0(size(lines)+1))
@@ -54,4 +44,3 @@ Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
    18 |     res = app0
       |          1
 Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
-f951: some warnings being treated as errors

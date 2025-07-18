@@ -1,14 +1,4 @@
 gfortran: exit status 1
-/tmp/camel-case-and-snake-case.f90:146:132:
-
-  146 |     samples = (/'snakeCase','snake_case','snake-case','snake case','snake CASE','snake.case','variable_10_case','variable10Case','ɛrgo rE tHis','hurry-up-joe!','c://my-docs/happy_Flag-Day/12.doc',' spaces '/)
-      |                                                                                                                                     
-Error: Line truncated at (1) [-Werror=line-truncation]
-/tmp/camel-case-and-snake-case.f90:146:131:
-
-  146 |     samples = (/'snakeCase','snake_case','snake-case','snake case','snake CASE','snake.case','variable_10_case','variable10Case','ɛrgo rE tHis','hurry-up-joe!','c://my-docs/happy_Flag-Day/12.doc',' spaces '/)
-      |                                                                                                                                   1
-Error: Unterminated character constant beginning at (1)
 /tmp/camel-case-and-snake-case.f90:149:7:
 
   149 |       s = samples(i0)
@@ -24,6 +14,11 @@ Error: Symbol ‘ch’ at (1) has no IMPLICIT type
    58 |       ch = s((i)+1:(i + 1))
       |        1
 Error: Symbol ‘ch’ at (1) has no IMPLICIT type
+/tmp/camel-case-and-snake-case.f90:146:28:
+
+  146 |     samples = (/'snakeCase','snake_case','snake-case','snake case','snake CASE','snake.case','variable_10_case','variable10Case','ɛrgo rE tHis','hurry-up-joe!','c://my-docs/happy_Flag-Day/12.doc',' spaces '/)
+      |                            1
+Error: Different CHARACTER lengths (9/10) in array constructor at (1)
 /tmp/camel-case-and-snake-case.f90:24:30:
 
    24 |     do while ((((start < size(s)) .and. s((start)+1:(start + 1))) == ' '))
@@ -124,4 +119,3 @@ Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHA
    36 |     res = (((ch >= 'A') .and. ch) <= 'Z')
       |                             1
 Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/CHARACTER(100)
-f951: some warnings being treated as errors

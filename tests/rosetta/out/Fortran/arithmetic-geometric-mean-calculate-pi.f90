@@ -7,10 +7,10 @@ program arithmetic_geometric_mean_calculate_pi
     real :: g
     integer :: sum
     real :: pow
+    integer :: t
+    integer :: u
+    integer :: diff
     real :: pi
-      integer :: t
-      integer :: u
-      integer :: diff
     character(len=100) :: s0
   call main()
   

@@ -1,361 +1,416 @@
 gfortran: exit status 1
-/tmp/adfgvx-cipher.f90:80:7:
+/tmp/adfgvx-cipher.f90:113:7:
 
-   80 |       row = shuffled(((i * 6))+1:(((i + 1)) * 6))
+  113 |       row = shuffled(((i * 6))+1:(((i + 1)) * 6))
       |       1
 Error: Unclassifiable statement at (1)
-/tmp/adfgvx-cipher.f90:85:27:
+/tmp/adfgvx-cipher.f90:122:27:
 
-   85 |         line = (line + row(((j)+1))) // ' '
+  122 |         line = (line + row((j)+1:(j + 1))) // ' '
       |                           1
 Error: Expected a right parenthesis in expression at (1)
-/tmp/adfgvx-cipher.f90:104:24:
+/tmp/adfgvx-cipher.f90:141:24:
 
-  104 |       key = (key + pool(((idx)+1)))
+  141 |       key = (key + pool(((idx)+1)))
       |                        1
 Error: Expected a right parenthesis in expression at (1)
-/tmp/adfgvx-cipher.f90:134:13:
+/tmp/adfgvx-cipher.f90:175:13:
 
-  134 |     allocate(res(0))
+  175 |     allocate(res(0))
       |             1
 Error: Allocate-object at (1) is neither a data pointer nor an allocatable variable
-/tmp/adfgvx-cipher.f90:170:15:
+/tmp/adfgvx-cipher.f90:209:38:
 
-  170 |       allocate(row(0))
+  209 |           if ((polybius(((r)+1),(c)+1:(c + 1)) == plainText((i)+1:(i + 1)))) then
+      |                                      1
+Error: Syntax error in argument list at (1)
+/tmp/adfgvx-cipher.f90:211:13:
+
+  211 |           end if
+      |             1
+Error: Expecting END DO statement at (1)
+/tmp/adfgvx-cipher.f90:225:15:
+
+  225 |       allocate(row(0))
       |               1
 Error: Allocate-object at (1) is neither a data pointer nor an allocatable variable
-/tmp/adfgvx-cipher.f90:193:50:
+/tmp/adfgvx-cipher.f90:256:50:
 
-  193 |         colStr = (colStr + table(((ri)+1),((order(((ci)+1)))+1)))
+  256 |         colStr = (colStr + table(((ri)+1),((order(((ci)+1)))+1)))
       |                                                  1
 Error: Expected a right parenthesis in expression at (1)
-/tmp/adfgvx-cipher.f90:234:52:
+/tmp/adfgvx-cipher.f90:304:53:
 
-  234 |         colStrs = (colStrs + (/cipherText((start)+1:i)/))
-      |                                                    1
+  304 |         app9(size(colStrs)+1) = cipherText((start)+1:i)
+      |                                                     1
 Error: Syntax error in argument list at (1)
-/tmp/adfgvx-cipher.f90:254:23:
+/tmp/adfgvx-cipher.f90:368:15:
 
-  254 |         ls = (ls + (/s(((j)+1))/))
-      |                       1
-Error: Syntax error in array constructor at (1)
-/tmp/adfgvx-cipher.f90:277:15:
-
-  277 |       allocate(row(0))
+  368 |       allocate(row(0))
       |               1
 Error: Allocate-object at (1) is neither a data pointer nor an allocatable variable
-/tmp/adfgvx-cipher.f90:291:30:
+/tmp/adfgvx-cipher.f90:390:30:
 
-  291 |         table(((r)+1),((order(((c)+1)))+1)) = cols(((c)+1),((r)+1))
+  390 |         table(((r)+1),((order(((c)+1)))+1)) = cols(((c)+1),((r)+1))
       |                              1
 Error: Expected a right parenthesis in expression at (1)
-/tmp/adfgvx-cipher.f90:322:14:
+/tmp/adfgvx-cipher.f90:421:14:
 
-  322 |     cipherText = encrypt(polybius,key,plainText)
+  421 |     cipherText = encrypt(polybius,key,plainText)
       |              1
 Error: Symbol ‘ciphertext’ at (1) has no IMPLICIT type
-/tmp/adfgvx-cipher.f90:318:13:
+/tmp/adfgvx-cipher.f90:417:13:
 
-  318 |     plainText = 'ATTACKAT1200AM'
+  417 |     plainText = 'ATTACKAT1200AM'
       |             1
 Error: Symbol ‘plaintext’ at (1) has no IMPLICIT type
-/tmp/adfgvx-cipher.f90:319:12:
+/tmp/adfgvx-cipher.f90:418:12:
 
-  319 |     polybius = createPolybius()
+  418 |     polybius = createPolybius()
       |            1
 Error: Symbol ‘polybius’ at (1) has no IMPLICIT type
-/tmp/adfgvx-cipher.f90:225:71:
+/tmp/adfgvx-cipher.f90:292:71:
 
-  225 |   recursive character(len=100) function decrypt(polybius,key,cipherText) result(res)
+  292 |   recursive character(len=100) function decrypt(polybius,key,cipherText) result(res)
       |                                                                       1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘ciphertext’ at (1)
-/tmp/adfgvx-cipher.f90:306:13:
+/tmp/adfgvx-cipher.f90:405:13:
 
-  306 |     plainText = ''
+  405 |     plainText = ''
       |             1
 Error: Symbol ‘plaintext’ at (1) has no IMPLICIT type
-/tmp/adfgvx-cipher.f90:225:56:
+/tmp/adfgvx-cipher.f90:292:56:
 
-  225 |   recursive character(len=100) function decrypt(polybius,key,cipherText) result(res)
+  292 |   recursive character(len=100) function decrypt(polybius,key,cipherText) result(res)
       |                                                        1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘polybius’ at (1)
-/tmp/adfgvx-cipher.f90:250:7:
+/tmp/adfgvx-cipher.f90:321:7:
 
-  250 |       s = colStrs(((i)+1))
+  321 |       s = colStrs(((i)+1))
       |       1
 Error: Symbol ‘s’ at (1) has no IMPLICIT type
-/tmp/adfgvx-cipher.f90:211:38:
+/tmp/adfgvx-cipher.f90:161:5:
 
-  211 |   recursive integer function indexOf(s,ch) result(res)
-      |                                      1
-Error: PROCEDURE attribute conflicts with INTENT attribute in ‘s’ at (1)
-/tmp/adfgvx-cipher.f90:143:70:
-
-  143 |   recursive character(len=100) function encrypt(polybius,key,plainText) result(res)
-      |                                                                      1
-Error: PROCEDURE attribute conflicts with INTENT attribute in ‘plaintext’ at (1)
-/tmp/adfgvx-cipher.f90:143:56:
-
-  143 |   recursive character(len=100) function encrypt(polybius,key,plainText) result(res)
-      |                                                        1
-Error: PROCEDURE attribute conflicts with INTENT attribute in ‘polybius’ at (1)
-/tmp/adfgvx-cipher.f90:112:41:
-
-  112 |   recursive integer function orderKey(key) result(res)
-      |                                         1
-Error: PROCEDURE attribute conflicts with INTENT attribute in ‘key’ at (1)
-/tmp/adfgvx-cipher.f90:120:5:
-
-  120 |     n = size(pairs)
+  161 |     n = size(pairs)
       |     1
 Error: Symbol ‘n’ at (1) has no IMPLICIT type
-/tmp/adfgvx-cipher.f90:47:52:
+/tmp/adfgvx-cipher.f90:74:26:
 
-   47 |   recursive character(len=100) function shuffleStr(s) result(res)
-      |                                                    1
-Error: PROCEDURE attribute conflicts with INTENT attribute in ‘s’ at (1)
-/tmp/adfgvx-cipher.f90:73:26:
-
-   73 |     shuffled = shuffleStr(alphabet)
+   74 |       app0(size(arr)+1) = s((i)+1:(i + 1))
       |                          1
-Error: Expected a procedure for argument ‘s’ at (1)
-/tmp/adfgvx-cipher.f90:52:13:
+Error: Cannot convert CHARACTER(*) to INTEGER(4) at (1)
+/tmp/adfgvx-cipher.f90:70:24:
 
-   52 |       arr = (arr + (/s(((i)+1))/))
-      |             1
-Error: Operands of binary numeric operator ‘+’ at (1) are INTEGER(4)/CHARACTER(100)
-/tmp/adfgvx-cipher.f90:51:24:
-
-   51 |     do while ((i < size(s)))
+   70 |     do while ((i < size(s)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/adfgvx-cipher.f90:57:14:
+/tmp/adfgvx-cipher.f90:80:14:
 
-   57 |       k = mod(now(),((j + 1)))
+   80 |       k = mod(now(),((j + 1)))
       |              1
 Error: Function ‘now’ at (1) has no IMPLICIT type
-/tmp/adfgvx-cipher.f90:66:13:
+/tmp/adfgvx-cipher.f90:89:13:
 
-   66 |       out = (out + arr(((i)+1)))
+   89 |       out = (out + arr(((i)+1)))
       |             1
 Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/INTEGER(4)
-/tmp/adfgvx-cipher.f90:73:15:
+/tmp/adfgvx-cipher.f90:96:15:
 
-   73 |     shuffled = shuffleStr(alphabet)
+   96 |     shuffled = shuffleStr(alphabet)
       |               1
 Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
-/tmp/adfgvx-cipher.f90:91:4:
+/tmp/adfgvx-cipher.f90:102:29:
 
-   91 |     res = p
+  102 |       app1(1:size(labels)) = labels
+      |                             1
+Error: Cannot convert INTEGER(4) to CHARACTER(100) at (1)
+/tmp/adfgvx-cipher.f90:104:15:
+
+  104 |       labels = app1
+      |               1
+Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
+/tmp/adfgvx-cipher.f90:119:13:
+
+  119 |       line = labels((i)+1:(i + 1)) // ' | '
+      |             1
+Error: Operands of string concatenation operator at (1) are INTEGER(4)/CHARACTER(3)
+/tmp/adfgvx-cipher.f90:128:4:
+
+  128 |     res = p
       |    1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/adfgvx-cipher.f90:96:22:
+/tmp/adfgvx-cipher.f90:133:22:
 
-   96 |     if ((((n < 7) .or. n) > 12)) then
+  133 |     if ((((n < 7) .or. n) > 12)) then
       |                      1
 Error: Operands of logical operator ‘.or.’ at (1) are LOGICAL(4)/INTEGER(4)
-/tmp/adfgvx-cipher.f90:103:16:
+/tmp/adfgvx-cipher.f90:140:16:
 
-  103 |       idx = mod(now(),36)
+  140 |       idx = mod(now(),36)
       |                1
 Error: Function ‘now’ at (1) has no IMPLICIT type
-/tmp/adfgvx-cipher.f90:105:14:
+/tmp/adfgvx-cipher.f90:142:14:
 
-  105 |       pool = (pool(1:idx) + pool(((idx + 1))+1:36))
+  142 |       pool = (pool(1:idx) + pool(((idx + 1))+1:36))
       |              1
 Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(*)/CHARACTER(*)
-/tmp/adfgvx-cipher.f90:325:12:
+/tmp/adfgvx-cipher.f90:424:12:
 
-  325 |     print *, ''//char(10)//'Decrypted : ' // plainText2
+  424 |     print *, ''//char(10)//'Decrypted : ' // plainText2
       |            1
 Error: Operands of string concatenation operator at (1) are CHARACTER(13)/INTEGER(4)
-/tmp/adfgvx-cipher.f90:233:23:
+/tmp/adfgvx-cipher.f90:300:23:
 
-  233 |       if ((((i == size(cipherText)) .or. cipherText(((i)+1))) == ' ')) then
+  300 |       if ((((i == size(cipherText)) .or. cipherText(((i)+1))) == ' ')) then
       |                       1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/adfgvx-cipher.f90:232:25:
+/tmp/adfgvx-cipher.f90:299:25:
 
-  232 |     do while ((i <= size(cipherText)))
+  299 |     do while ((i <= size(cipherText)))
       |                         1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/adfgvx-cipher.f90:242:16:
+/tmp/adfgvx-cipher.f90:313:16:
 
-  242 |       if ((size(colStrs(((i)+1))) > maxColLen)) then
+  313 |       if ((size(colStrs(((i)+1))) > maxColLen)) then
       |                1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/adfgvx-cipher.f90:243:25:
+/tmp/adfgvx-cipher.f90:314:25:
 
-  243 |         maxColLen = size(colStrs(((i)+1)))
+  314 |         maxColLen = size(colStrs(((i)+1)))
       |                         1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/adfgvx-cipher.f90:264:19:
+/tmp/adfgvx-cipher.f90:345:33:
 
-  264 |             pad = (pad + (/''/))
+  345 |             app12(1:size(pad)) = pad
+      |                                 1
+Error: Cannot convert INTEGER(4) to CHARACTER(100) at (1)
+/tmp/adfgvx-cipher.f90:347:18:
+
+  347 |             pad = app12
+      |                  1
+Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
+/tmp/adfgvx-cipher.f90:354:8:
+
+  354 |         app13(size(cols)+1) = pad
+      |        1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/adfgvx-cipher.f90:360:8:
+
+  360 |         app14(size(cols)+1) = ls
+      |        1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/adfgvx-cipher.f90:372:28:
+
+  372 |         allocate(app15(size(row)+1))
+      |                            1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/adfgvx-cipher.f90:373:21:
+
+  373 |         app15(1:size(row)) = row
+      |                     1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/adfgvx-cipher.f90:374:19:
+
+  374 |         app15(size(row)+1) = ''
       |                   1
-Error: Operands of binary numeric operator ‘+’ at (1) are INTEGER(4)/CHARACTER(0)
-/tmp/adfgvx-cipher.f90:280:15:
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/adfgvx-cipher.f90:375:14:
 
-  280 |         row = (row + (/''/))
-      |               1
-Error: Operands of binary numeric operator ‘+’ at (1) are INTEGER(4)/CHARACTER(0)
-/tmp/adfgvx-cipher.f90:279:26:
+  375 |         row = app15
+      |              1
+Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
+/tmp/adfgvx-cipher.f90:370:26:
 
-  279 |       do while ((c < size(key)))
+  370 |       do while ((c < size(key)))
       |                          1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/adfgvx-cipher.f90:286:21:
+/tmp/adfgvx-cipher.f90:156:28:
 
-  286 |     order = orderKey(key)
-      |                     1
-Error: Expected a procedure for argument ‘key’ at (1)
-/tmp/adfgvx-cipher.f90:117:40:
+  156 |       app3(1:size(pairs)) = pairs
+      |                            1
+Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
+/tmp/adfgvx-cipher.f90:157:49:
 
-  117 |       pairs = (pairs + (/(/key(((i)+1)),i/)/))
-      |                                        1
-Error: Element in CHARACTER(100) array constructor at (1) is INTEGER(4)
-/tmp/adfgvx-cipher.f90:116:24:
+  157 |       app3(size(pairs)+1) = (/key((i)+1:(i + 1)),i/)
+      |                                                 1
+Error: Element in CHARACTER(0) array constructor at (1) is INTEGER(4)
+/tmp/adfgvx-cipher.f90:158:14:
 
-  116 |     do while ((i < size(key)))
+  158 |       pairs = app3
+      |              1
+Warning: Extension: Conversion from INTEGER(4) to LOGICAL(4) at (1)
+/tmp/adfgvx-cipher.f90:153:24:
+
+  153 |     do while ((i < size(key)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/adfgvx-cipher.f90:125:43:
+/tmp/adfgvx-cipher.f90:166:43:
 
-  125 |         if ((pairs(((j)+1),((0)+1)) > pairs((((j + 1))+1),((0)+1)))) then
+  166 |         if ((pairs(((j)+1),((0)+1)) > pairs((((j + 1))+1),((0)+1)))) then
       |                                           1
 Error: Rank mismatch in array reference at (1) (2/1)
-/tmp/adfgvx-cipher.f90:125:18:
+/tmp/adfgvx-cipher.f90:166:18:
 
-  125 |         if ((pairs(((j)+1),((0)+1)) > pairs((((j + 1))+1),((0)+1)))) then
+  166 |         if ((pairs(((j)+1),((0)+1)) > pairs((((j + 1))+1),((0)+1)))) then
       |                  1
 Error: Rank mismatch in array reference at (1) (2/1)
-/tmp/adfgvx-cipher.f90:126:16:
+/tmp/adfgvx-cipher.f90:167:16:
 
-  126 |           tmp = pairs(((j)+1))
+  167 |           tmp = pairs(((j)+1))
       |                1
 Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
-/tmp/adfgvx-cipher.f90:128:33:
+/tmp/adfgvx-cipher.f90:169:33:
 
-  128 |           pairs((((j + 1))+1)) = tmp
+  169 |           pairs((((j + 1))+1)) = tmp
       |                                 1
 Warning: Extension: Conversion from INTEGER(4) to LOGICAL(4) at (1)
-/tmp/adfgvx-cipher.f90:137:30:
+/tmp/adfgvx-cipher.f90:179:25:
 
-  137 |       res = (res + (/int(pairs(((i)+1),((1)+1)))/))
-      |                              1
-Error: Rank mismatch in array reference at (1) (2/1)
-/tmp/adfgvx-cipher.f90:290:26:
-
-  290 |       do while ((c < size(key)))
-      |                          1
+  179 |       allocate(app4(size(res)+1))
+      |                         1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/adfgvx-cipher.f90:301:28:
+/tmp/adfgvx-cipher.f90:180:18:
 
-  301 |         temp = (temp + table(((r)+1),((j)+1)))
-      |                            1
-Error: Rank mismatch in array reference at (1) (2/1)
-/tmp/adfgvx-cipher.f90:300:26:
-
-  300 |       do while ((j < size(table(((r)+1)))))
-      |                          1
-Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/adfgvx-cipher.f90:309:21:
-
-  309 |       rIdx = indexOf(adfgvx,temp((idx)+1:(idx + 1)))
-      |                     1
-Error: Expected a procedure for argument ‘s’ at (1)
-/tmp/adfgvx-cipher.f90:215:24:
-
-  215 |     do while ((i < size(s)))
-      |                        1
-Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/adfgvx-cipher.f90:310:21:
-
-  310 |       cIdx = indexOf(adfgvx,temp(((idx + 1))+1:(idx + 2)))
-      |                     1
-Error: Expected a procedure for argument ‘s’ at (1)
-/tmp/adfgvx-cipher.f90:308:26:
-
-  308 |     do while ((idx < size(temp)))
-      |                          1
-Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/adfgvx-cipher.f90:154:15:
-
-  154 |           if ((polybius(((r)+1),((c)+1)) == plainText(((i)+1)))) then
-      |               1
-Error: Operands of comparison operator ‘==’ at (1) are INTEGER(4)/CHARACTER(100)
-/tmp/adfgvx-cipher.f90:149:24:
-
-  149 |     do while ((i < size(plainText)))
-      |                        1
-Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/adfgvx-cipher.f90:163:32:
-
-  163 |     colLen = (size(temp) / size(key))
-      |                                1
-Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/adfgvx-cipher.f90:163:19:
-
-  163 |     colLen = (size(temp) / size(key))
-      |                   1
-Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/adfgvx-cipher.f90:164:18:
-
-  164 |     if ((mod(size(temp),size(key)) > 0)) then
+  180 |       app4(1:size(res)) = res
       |                  1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/adfgvx-cipher.f90:173:15:
+/tmp/adfgvx-cipher.f90:181:16:
 
-  173 |         row = (row + (/''/))
-      |               1
-Error: Operands of binary numeric operator ‘+’ at (1) are INTEGER(4)/CHARACTER(0)
-/tmp/adfgvx-cipher.f90:172:26:
+  181 |       app4(size(res)+1) = int(pairs(((i)+1),((1)+1)))
+      |                1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/adfgvx-cipher.f90:181:35:
 
-  172 |       do while ((j < size(key)))
+  181 |       app4(size(res)+1) = int(pairs(((i)+1),((1)+1)))
+      |                                   1
+Error: Rank mismatch in array reference at (1) (2/1)
+/tmp/adfgvx-cipher.f90:182:6:
+
+  182 |       res = app4
+      |      1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/adfgvx-cipher.f90:389:26:
+
+  389 |       do while ((c < size(key)))
       |                          1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/adfgvx-cipher.f90:181:24:
+/tmp/adfgvx-cipher.f90:400:28:
 
-  181 |       row = (idx / size(key))
+  400 |         temp = (temp + table(((r)+1),((j)+1)))
+      |                            1
+Error: Rank mismatch in array reference at (1) (2/1)
+/tmp/adfgvx-cipher.f90:399:26:
+
+  399 |       do while ((j < size(table(((r)+1)))))
+      |                          1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/adfgvx-cipher.f90:282:24:
+
+  282 |     do while ((i < size(s)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/adfgvx-cipher.f90:182:25:
+/tmp/adfgvx-cipher.f90:407:26:
 
-  182 |       col = mod(idx,size(key))
-      |                         1
-Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/adfgvx-cipher.f90:183:11:
-
-  183 |       table(((row)+1),((col)+1)) = temp((idx)+1:(idx + 1))
-      |           1
-Error: Rank mismatch in array reference at (1) (2/1)
-/tmp/adfgvx-cipher.f90:180:26:
-
-  180 |     do while ((idx < size(temp)))
+  407 |     do while ((idx < size(temp)))
       |                          1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/adfgvx-cipher.f90:186:21:
+/tmp/adfgvx-cipher.f90:197:29:
 
-  186 |     order = orderKey(key)
+  197 |       app5(1:size(labels)) = labels
+      |                             1
+Error: Cannot convert INTEGER(4) to CHARACTER(100) at (1)
+/tmp/adfgvx-cipher.f90:199:15:
+
+  199 |       labels = app5
+      |               1
+Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
+/tmp/adfgvx-cipher.f90:210:21:
+
+  210 |             temp = ((temp + labels((r)+1:(r + 1))) + labels((c)+1:(c + 1)))
       |                     1
-Error: Expected a procedure for argument ‘key’ at (1)
-/tmp/adfgvx-cipher.f90:196:14:
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/INTEGER(4)
+/tmp/adfgvx-cipher.f90:204:24:
 
-  196 |       cols = (cols + (/colStr/))
+  204 |     do while ((i < size(plainText)))
+      |                        1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/adfgvx-cipher.f90:218:32:
+
+  218 |     colLen = (size(temp) / size(key))
+      |                                1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/adfgvx-cipher.f90:218:19:
+
+  218 |     colLen = (size(temp) / size(key))
+      |                   1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/adfgvx-cipher.f90:219:18:
+
+  219 |     if ((mod(size(temp),size(key)) > 0)) then
+      |                  1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/adfgvx-cipher.f90:229:27:
+
+  229 |         allocate(app6(size(row)+1))
+      |                           1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/adfgvx-cipher.f90:230:20:
+
+  230 |         app6(1:size(row)) = row
+      |                    1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/adfgvx-cipher.f90:231:18:
+
+  231 |         app6(size(row)+1) = ''
+      |                  1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/adfgvx-cipher.f90:232:14:
+
+  232 |         row = app6
       |              1
-Error: Operands of binary numeric operator ‘+’ at (1) are INTEGER(4)/CHARACTER(100)
-/tmp/adfgvx-cipher.f90:189:25:
+Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
+/tmp/adfgvx-cipher.f90:227:26:
 
-  189 |     do while ((ci < size(key)))
+  227 |       do while ((j < size(key)))
+      |                          1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/adfgvx-cipher.f90:244:24:
+
+  244 |       row = (idx / size(key))
+      |                        1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/adfgvx-cipher.f90:245:25:
+
+  245 |       col = mod(idx,size(key))
       |                         1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/adfgvx-cipher.f90:202:16:
+/tmp/adfgvx-cipher.f90:246:11:
 
-  202 |       result = (result + cols(((ci)+1)))
+  246 |       table(((row)+1),((col)+1)) = temp((idx)+1:(idx + 1))
+      |           1
+Error: Rank mismatch in array reference at (1) (2/1)
+/tmp/adfgvx-cipher.f90:243:26:
+
+  243 |     do while ((idx < size(temp)))
+      |                          1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/adfgvx-cipher.f90:262:27:
+
+  262 |       app8(size(cols)+1) = colStr
+      |                           1
+Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
+/tmp/adfgvx-cipher.f90:252:25:
+
+  252 |     do while ((ci < size(key)))
+      |                         1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/adfgvx-cipher.f90:269:16:
+
+  269 |       result = (result + cols(((ci)+1)))
       |                1
 Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/INTEGER(4)
-/tmp/adfgvx-cipher.f90:203:11:
+/tmp/adfgvx-cipher.f90:270:11:
 
-  203 |       if (((ci < size(cols)) - 1)) then
+  270 |       if (((ci < size(cols)) - 1)) then
       |           1
 Error: Operands of binary numeric operator ‘-’ at (1) are LOGICAL(4)/INTEGER(4)

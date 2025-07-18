@@ -1,0 +1,17 @@
+gfortran: exit status 1
+/tmp/composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k.f90:2:73:
+
+    2 | program composite_numbers_k_with_no_single_digit_factors_whose_factors_are_all_substrings_of_k
+      |                                                                         1
+Error: Name at (1) is too long
+/tmp/composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k.f90:72:15:
+
+   72 |       out = (s(i+1:(i + 1)) + out)
+      |               1
+Error: Expected a right parenthesis in expression at (1)
+/tmp/composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k.f90:166:77:
+
+  166 | end program composite_numbers_k_with_no_single_digit_factors_whose_factors_are_all_substrings_of_k
+      |                                                                             1
+Error: Name at (1) is too long
+f951: Error: Unexpected end of file in ‘/tmp/composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k.f90’

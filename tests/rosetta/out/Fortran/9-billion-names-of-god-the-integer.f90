@@ -14,18 +14,18 @@ program p_9_billion_names_of_god_the_integer
       integer, allocatable, dimension(:) :: app2
     integer, allocatable, dimension(:) :: res
     integer :: carry
-      integer :: av
-      integer :: bv
-      integer :: s
+    integer :: av
+    integer :: bv
+    integer :: s
       integer, allocatable, dimension(:) :: app3
     integer :: borrow
-      integer :: diff
+    integer :: diff
       integer, allocatable, dimension(:) :: app4
       character(len=100) :: s5
     integer, dimension(1,1) :: cache
     integer :: y
-      integer, dimension(1) :: row
-        integer :: val
+    integer, dimension(1) :: row
+    integer :: val
         integer, allocatable, dimension(:) :: app6
       integer, allocatable, dimension(:) :: app7
     integer :: e

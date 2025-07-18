@@ -1,8 +1,41 @@
-type: error[T002]: undefined variable: include
-  --> /workspace/mochi/tests/rosetta/x/Mochi/call-a-function-3.mochi:1:1
+gfortran: exit status 1
+/tmp/call-a-function-3.f90:23:22:
 
-  1 | include "./call-a-function-1.mochi"
-    | ^
+   23 |     call h('ex1',(//))
+      |                      1
+Error: Empty array constructor at (1) is not allowed
+/tmp/call-a-function-3.f90:24:11:
 
-help:
-  Check if the variable was declared in this scope.
+   24 |     call h('ex2',(/1,2/))
+      |           1
+Warning: Character length of actual argument shorter than of dummy argument ‘s’ (3/100) at (1)
+/tmp/call-a-function-3.f90:24:17:
+
+   24 |     call h('ex2',(/1,2/))
+      |                 1
+Error: Rank mismatch in argument ‘nums’ at (1) (scalar and rank-1)
+/tmp/call-a-function-3.f90:25:11:
+
+   25 |     call h('ex3',(/1,2,3,4/))
+      |           1
+Warning: Character length of actual argument shorter than of dummy argument ‘s’ (3/100) at (1)
+/tmp/call-a-function-3.f90:25:17:
+
+   25 |     call h('ex3',(/1,2,3,4/))
+      |                 1
+Error: Rank mismatch in argument ‘nums’ at (1) (scalar and rank-1)
+/tmp/call-a-function-3.f90:27:11:
+
+   27 |     call h('ex4',list)
+      |           1
+Warning: Character length of actual argument shorter than of dummy argument ‘s’ (3/100) at (1)
+/tmp/call-a-function-3.f90:27:17:
+
+   27 |     call h('ex4',list)
+      |                 1
+Error: Rank mismatch in argument ‘nums’ at (1) (scalar and rank-1)
+/tmp/call-a-function-3.f90:9:14:
+
+    9 |     res = (/0,0.0/)
+      |              1
+Error: Element in INTEGER(4) array constructor at (1) is REAL(4)

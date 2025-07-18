@@ -8,10 +8,10 @@ program caesar_cipher_1
     character(len=100) :: out
     character(len=100) :: pt
     integer :: key
+    integer :: ct
     integer, dimension(5) :: arr0 = (/0,1,7,25,26/)
     integer :: i0
         character(len=100) :: s1
-      integer :: ct
       character(len=100) :: s2
   call main()
   

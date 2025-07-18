@@ -1,217 +1,231 @@
 gfortran: exit status 1
-/tmp/abelian-sandpile-model-identity.f90:25:32:
+/tmp/abelian-sandpile-model-identity.f90:34:5:
 
-   25 |         character(len=100) :: s3
-      |                                1
-Error: Symbol ‘s3’ at (1) already has basic type of INTEGER
-/tmp/abelian-sandpile-model-identity.f90:44:132:
+   34 |     topple(s4)
+      |     1
+Error: Unclassifiable statement at (1)
+/tmp/abelian-sandpile-model-identity.f90:77:13:
 
-   44 |   print *, trim(trim(trim(pileString(s1) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s2)) // ''//char(10)//'equals'//char(10)//''//char(10)//'') // pileString(s3_a)
-      |                                                                                                                                    1
-Error: Line truncated at (1) [-Werror=line-truncation]
-/tmp/abelian-sandpile-model-identity.f90:44:132:
-
-   44 |   print *, trim(trim(trim(pileString(s1) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s2)) // ''//char(10)//'equals'//char(10)//''//char(10)//'') // pileString(s3_a)
-      |                                                                                                                                    1
-Error: Unterminated character constant beginning at (1)
-/tmp/abelian-sandpile-model-identity.f90:45:132:
-
-   45 |   print *, trim(trim(trim(trim('and'//char(10)//''//char(10)//'' // pileString(s2)) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s1)) // ''//char(10)//'also equals'//char(10)//''//char(10)//'') // pileString(s3_b)
-      |                                                                                                                                    1
-Error: Line truncated at (1) [-Werror=line-truncation]
-/tmp/abelian-sandpile-model-identity.f90:45:132:
-
-   45 |   print *, trim(trim(trim(trim('and'//char(10)//''//char(10)//'' // pileString(s2)) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s1)) // ''//char(10)//'also equals'//char(10)//''//char(10)//'') // pileString(s3_b)
-      |                                                                                                                                    1
-Error: Syntax error in argument list at (1)
-/tmp/abelian-sandpile-model-identity.f90:53:132:
-
-   53 |   print *, trim(trim(trim(pileString(s3) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s3_id)) // ''//char(10)//'equals'//char(10)//''//char(10)//'') // pileString(s4b)
-      |                                                                                                                                    1
-Error: Line truncated at (1) [-Werror=line-truncation]
-/tmp/abelian-sandpile-model-identity.f90:53:132:
-
-   53 |   print *, trim(trim(trim(pileString(s3) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s3_id)) // ''//char(10)//'equals'//char(10)//''//char(10)//'') // pileString(s4b)
-      |                                                                                                                                    1
-Error: Syntax error in argument list at (1)
-/tmp/abelian-sandpile-model-identity.f90:59:132:
-
-   59 |   print *, trim(trim(trim(pileString(s3_id) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s3_id)) // ''//char(10)//'equals'//char(10)//''//char(10)//'') // pileString(s5)
-      |                                                                                                                                    1
-Error: Line truncated at (1) [-Werror=line-truncation]
-/tmp/abelian-sandpile-model-identity.f90:59:132:
-
-   59 |   print *, trim(trim(trim(pileString(s3_id) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s3_id)) // ''//char(10)//'equals'//char(10)//''//char(10)//'') // pileString(s5)
-      |                                                                                                                                    1
-Error: Syntax error in argument list at (1)
-/tmp/abelian-sandpile-model-identity.f90:69:13:
-
-   69 |     allocate(res(0))
+   77 |     allocate(res(0))
       |             1
 Error: Allocate-object at (1) is neither a data pointer nor an allocatable variable
-/tmp/abelian-sandpile-model-identity.f90:114:52:
+/tmp/abelian-sandpile-model-identity.f90:122:52:
 
-  114 |   recursive character(len=100) function pileString(p) result(res)
+  122 |   recursive character(len=100) function pileString(p) result(res)
       |                                                    1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘p’ at (1)
-/tmp/abelian-sandpile-model-identity.f90:94:37:
+/tmp/abelian-sandpile-model-identity.f90:102:37:
 
-   94 |   recursive integer function topple(p) result(res)
+  102 |   recursive integer function topple(p) result(res)
       |                                     1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘p’ at (1)
-/tmp/abelian-sandpile-model-identity.f90:82:39:
+/tmp/abelian-sandpile-model-identity.f90:90:39:
 
-   82 |   recursive logical function isStable(p) result(res)
+   90 |   recursive logical function isStable(p) result(res)
       |                                       1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘p’ at (1)
-/tmp/abelian-sandpile-model-identity.f90:66:35:
+/tmp/abelian-sandpile-model-identity.f90:74:35:
 
-   66 |   recursive integer function plus(a,b) result(res)
+   74 |   recursive integer function plus(a,b) result(res)
       |                                   1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘a’ at (1)
-/tmp/abelian-sandpile-model-identity.f90:66:37:
+/tmp/abelian-sandpile-model-identity.f90:74:37:
 
-   66 |   recursive integer function plus(a,b) result(res)
+   74 |   recursive integer function plus(a,b) result(res)
       |                                     1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘b’ at (1)
-/tmp/abelian-sandpile-model-identity.f90:121:14:
+/tmp/abelian-sandpile-model-identity.f90:130:13:
 
-  121 |         write(s3,'(G0)') p(((((3 * r) + c))+1))
-      |              1
-Error: External IO UNIT cannot be an array at (1)
-/tmp/abelian-sandpile-model-identity.f90:122:13:
-
-  122 |         s = (s + s3) // ' '
+  130 |         s = (s + s7) // ' '
       |             1
-Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/INTEGER(4)
-/tmp/abelian-sandpile-model-identity.f90:63:4:
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
+/tmp/abelian-sandpile-model-identity.f90:71:4:
 
-   63 |     res = (/(/1,3/),(/0,2,4/),(/1,5/),(/0,4,6/),(/1,3,5,7/),(/2,4,8/),(/3,7/),(/4,6,8/),(/5,7/)/)
+   71 |     res = (/(/1,3/),(/0,2,4/),(/1,5/),(/0,4,6/),(/1,3,5,7/),(/2,4,8/),(/3,7/),(/4,6,8/),(/5,7/)/)
       |    1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/abelian-sandpile-model-identity.f90:100:8:
+/tmp/abelian-sandpile-model-identity.f90:108:8:
 
-  100 |         p(((i)+1)) = (p(((i)+1)) - 4)
+  108 |         p(((i)+1)) = (p(((i)+1)) - 4)
       |        1
 Error: The function result on the lhs of the assignment at (1) must have the pointer attribute.
-/tmp/abelian-sandpile-model-identity.f90:104:10:
+/tmp/abelian-sandpile-model-identity.f90:112:10:
 
-  104 |           p(((j)+1)) = (p(((j)+1)) + 1)
+  112 |           p(((j)+1)) = (p(((j)+1)) + 1)
       |          1
 Error: The function result on the lhs of the assignment at (1) must have the pointer attribute.
-/tmp/abelian-sandpile-model-identity.f90:102:24:
+/tmp/abelian-sandpile-model-identity.f90:110:24:
 
-  102 |         do i2 = 1, size(nbs)
+  110 |         do i6 = 1, size(nbs)
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/abelian-sandpile-model-identity.f90:98:24:
+/tmp/abelian-sandpile-model-identity.f90:106:24:
 
-   98 |     do while ((i < size(p)))
+  106 |     do while ((i < size(p)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/abelian-sandpile-model-identity.f90:84:20:
+/tmp/abelian-sandpile-model-identity.f90:92:20:
 
-   84 |     do i1 = 1, size(p)
+   92 |     do i5 = 1, size(p)
       |                    1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/abelian-sandpile-model-identity.f90:73:25:
+/tmp/abelian-sandpile-model-identity.f90:81:25:
 
-   73 |       allocate(app0(size(res)+1))
+   81 |       allocate(app4(size(res)+1))
       |                         1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/abelian-sandpile-model-identity.f90:74:18:
+/tmp/abelian-sandpile-model-identity.f90:82:18:
 
-   74 |       app0(1:size(res)) = res
+   82 |       app4(1:size(res)) = res
       |                  1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/abelian-sandpile-model-identity.f90:75:16:
+/tmp/abelian-sandpile-model-identity.f90:83:16:
 
-   75 |       app0(size(res)+1) = (a(((i)+1)) + b(((i)+1)))
+   83 |       app4(size(res)+1) = (a(((i)+1)) + b(((i)+1)))
       |                1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/abelian-sandpile-model-identity.f90:76:6:
+/tmp/abelian-sandpile-model-identity.f90:84:6:
 
-   76 |       res = app0
+   84 |       res = app4
       |      1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/abelian-sandpile-model-identity.f90:71:24:
+/tmp/abelian-sandpile-model-identity.f90:79:24:
 
-   71 |     do while ((i < size(a)))
+   79 |     do while ((i < size(a)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/abelian-sandpile-model-identity.f90:28:22:
+/tmp/abelian-sandpile-model-identity.f90:32:22:
 
-   28 |   print *, pileString(s4)
+   32 |   print *, pileString(s4)
       |                      1
 Error: Rank mismatch in argument ‘p’ at (1) (scalar and rank-1)
-/tmp/abelian-sandpile-model-identity.f90:31:24:
+/tmp/abelian-sandpile-model-identity.f90:35:24:
 
-   31 |     print *, pileString(s4)
+   35 |     print *, pileString(s4)
       |                        1
 Error: Rank mismatch in argument ‘p’ at (1) (scalar and rank-1)
-/tmp/abelian-sandpile-model-identity.f90:29:27:
+/tmp/abelian-sandpile-model-identity.f90:33:27:
 
-   29 |   do while (.not. isStable(s4))
+   33 |   do while (.not. isStable(s4))
       |                           1
 Error: Rank mismatch in argument ‘p’ at (1) (scalar and rank-1)
-/tmp/abelian-sandpile-model-identity.f90:36:14:
-
-   36 |   s3_a = plus(s1,s2)
-      |              1
-Error: Rank mismatch in argument ‘a’ at (1) (scalar and rank-1)
-/tmp/abelian-sandpile-model-identity.f90:36:17:
-
-   36 |   s3_a = plus(s1,s2)
-      |                 1
-Error: Rank mismatch in argument ‘b’ at (1) (scalar and rank-1)
-/tmp/abelian-sandpile-model-identity.f90:37:27:
-
-   37 |   do while (.not. isStable(s3_a))
-      |                           1
-Error: Expected a procedure for argument ‘p’ at (1)
 /tmp/abelian-sandpile-model-identity.f90:40:14:
 
-   40 |   s3_b = plus(s2,s1)
+   40 |   s3_a = plus(s1,s2)
       |              1
 Error: Rank mismatch in argument ‘a’ at (1) (scalar and rank-1)
 /tmp/abelian-sandpile-model-identity.f90:40:17:
 
-   40 |   s3_b = plus(s2,s1)
+   40 |   s3_a = plus(s1,s2)
       |                 1
 Error: Rank mismatch in argument ‘b’ at (1) (scalar and rank-1)
 /tmp/abelian-sandpile-model-identity.f90:41:27:
 
-   41 |   do while (.not. isStable(s3_b))
+   41 |   do while (.not. isStable(s3_a))
       |                           1
 Error: Expected a procedure for argument ‘p’ at (1)
-/tmp/abelian-sandpile-model-identity.f90:49:13:
+/tmp/abelian-sandpile-model-identity.f90:44:14:
 
-   49 |   s4b = plus(s3,s3_id)
+   44 |   s3_b = plus(s2,s1)
+      |              1
+Error: Rank mismatch in argument ‘a’ at (1) (scalar and rank-1)
+/tmp/abelian-sandpile-model-identity.f90:44:17:
+
+   44 |   s3_b = plus(s2,s1)
+      |                 1
+Error: Rank mismatch in argument ‘b’ at (1) (scalar and rank-1)
+/tmp/abelian-sandpile-model-identity.f90:45:27:
+
+   45 |   do while (.not. isStable(s3_b))
+      |                           1
+Error: Expected a procedure for argument ‘p’ at (1)
+/tmp/abelian-sandpile-model-identity.f90:48:181:
+
+   48 |   pbuf0 = trim(trim(trim(pileString(s1) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s2)) // ''//char(10)//'equals'//char(10)//''//char(10)//'') // pileString(s3_a)
+      |                                                                                                                                                                                     1
+Error: Expected a procedure for argument ‘p’ at (1)
+/tmp/abelian-sandpile-model-identity.f90:48:107:
+
+   48 |   pbuf0 = trim(trim(trim(pileString(s1) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s2)) // ''//char(10)//'equals'//char(10)//''//char(10)//'') // pileString(s3_a)
+      |                                                                                                           1
+Error: Rank mismatch in argument ‘p’ at (1) (scalar and rank-1)
+/tmp/abelian-sandpile-model-identity.f90:48:36:
+
+   48 |   pbuf0 = trim(trim(trim(pileString(s1) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s2)) // ''//char(10)//'equals'//char(10)//''//char(10)//'') // pileString(s3_a)
+      |                                    1
+Error: Rank mismatch in argument ‘p’ at (1) (scalar and rank-1)
+/tmp/abelian-sandpile-model-identity.f90:50:229:
+
+   50 |   pbuf1 = trim(trim(trim(trim('and'//char(10)//''//char(10)//'' // pileString(s2)) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s1)) // ''//char(10)//'also equals'//char(10)//''//char(10)//'') // pileString(s3_b)
+      |                                                                                                                                                                                                                                     1
+Error: Expected a procedure for argument ‘p’ at (1)
+/tmp/abelian-sandpile-model-identity.f90:50:150:
+
+   50 |   pbuf1 = trim(trim(trim(trim('and'//char(10)//''//char(10)//'' // pileString(s2)) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s1)) // ''//char(10)//'also equals'//char(10)//''//char(10)//'') // pileString(s3_b)
+      |                                                                                                                                                      1
+Error: Rank mismatch in argument ‘p’ at (1) (scalar and rank-1)
+/tmp/abelian-sandpile-model-identity.f90:50:78:
+
+   50 |   pbuf1 = trim(trim(trim(trim('and'//char(10)//''//char(10)//'' // pileString(s2)) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s1)) // ''//char(10)//'also equals'//char(10)//''//char(10)//'') // pileString(s3_b)
+      |                                                                              1
+Error: Rank mismatch in argument ‘p’ at (1) (scalar and rank-1)
+/tmp/abelian-sandpile-model-identity.f90:55:13:
+
+   55 |   s4b = plus(s3,s3_id)
       |             1
 Error: Rank mismatch in argument ‘a’ at (1) (scalar and rank-1)
-/tmp/abelian-sandpile-model-identity.f90:49:16:
+/tmp/abelian-sandpile-model-identity.f90:55:16:
 
-   49 |   s4b = plus(s3,s3_id)
+   55 |   s4b = plus(s3,s3_id)
       |                1
-Error: Rank mismatch in argument ‘b’ at (1) (scalar and rank-1)
-/tmp/abelian-sandpile-model-identity.f90:50:27:
-
-   50 |   do while (.not. isStable(s4b))
-      |                           1
-Error: Expected a procedure for argument ‘p’ at (1)
-/tmp/abelian-sandpile-model-identity.f90:55:12:
-
-   55 |   s5 = plus(s3_id,s3_id)
-      |            1
-Error: Rank mismatch in argument ‘a’ at (1) (scalar and rank-1)
-/tmp/abelian-sandpile-model-identity.f90:55:18:
-
-   55 |   s5 = plus(s3_id,s3_id)
-      |                  1
 Error: Rank mismatch in argument ‘b’ at (1) (scalar and rank-1)
 /tmp/abelian-sandpile-model-identity.f90:56:27:
 
-   56 |   do while (.not. isStable(s5))
+   56 |   do while (.not. isStable(s4b))
       |                           1
 Error: Expected a procedure for argument ‘p’ at (1)
-f951: some warnings being treated as errors
+/tmp/abelian-sandpile-model-identity.f90:59:184:
+
+   59 |   pbuf2 = trim(trim(trim(pileString(s3) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s3_id)) // ''//char(10)//'equals'//char(10)//''//char(10)//'') // pileString(s4b)
+      |                                                                                                                                                                                        1
+Error: Expected a procedure for argument ‘p’ at (1)
+/tmp/abelian-sandpile-model-identity.f90:59:107:
+
+   59 |   pbuf2 = trim(trim(trim(pileString(s3) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s3_id)) // ''//char(10)//'equals'//char(10)//''//char(10)//'') // pileString(s4b)
+      |                                                                                                           1
+Error: Rank mismatch in argument ‘p’ at (1) (scalar and rank-1)
+/tmp/abelian-sandpile-model-identity.f90:59:36:
+
+   59 |   pbuf2 = trim(trim(trim(pileString(s3) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s3_id)) // ''//char(10)//'equals'//char(10)//''//char(10)//'') // pileString(s4b)
+      |                                    1
+Error: Rank mismatch in argument ‘p’ at (1) (scalar and rank-1)
+/tmp/abelian-sandpile-model-identity.f90:62:12:
+
+   62 |   s5 = plus(s3_id,s3_id)
+      |            1
+Error: Rank mismatch in argument ‘a’ at (1) (scalar and rank-1)
+/tmp/abelian-sandpile-model-identity.f90:62:18:
+
+   62 |   s5 = plus(s3_id,s3_id)
+      |                  1
+Error: Rank mismatch in argument ‘b’ at (1) (scalar and rank-1)
+/tmp/abelian-sandpile-model-identity.f90:63:27:
+
+   63 |   do while (.not. isStable(s5))
+      |                           1
+Error: Expected a procedure for argument ‘p’ at (1)
+/tmp/abelian-sandpile-model-identity.f90:66:187:
+
+   66 |   pbuf3 = trim(trim(trim(pileString(s3_id) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s3_id)) // ''//char(10)//'equals'//char(10)//''//char(10)//'') // pileString(s5)
+      |                                                                                                                                                                                           1
+Error: Expected a procedure for argument ‘p’ at (1)
+/tmp/abelian-sandpile-model-identity.f90:66:110:
+
+   66 |   pbuf3 = trim(trim(trim(pileString(s3_id) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s3_id)) // ''//char(10)//'equals'//char(10)//''//char(10)//'') // pileString(s5)
+      |                                                                                                              1
+Error: Rank mismatch in argument ‘p’ at (1) (scalar and rank-1)
+/tmp/abelian-sandpile-model-identity.f90:66:36:
+
+   66 |   pbuf3 = trim(trim(trim(pileString(s3_id) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s3_id)) // ''//char(10)//'equals'//char(10)//''//char(10)//'') // pileString(s5)
+      |                                    1
+Error: Rank mismatch in argument ‘p’ at (1) (scalar and rank-1)
