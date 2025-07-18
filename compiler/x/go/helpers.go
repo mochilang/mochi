@@ -109,6 +109,13 @@ func singular(name string) string {
 	return name
 }
 
+func (c *Compiler) funcName(name string) string {
+	if n, ok := c.funcRenames[name]; ok {
+		return n
+	}
+	return sanitizeName(name)
+}
+
 func goType(t types.Type) string {
 	switch tt := t.(type) {
 	case types.IntType:

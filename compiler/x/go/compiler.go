@@ -49,6 +49,8 @@ type Compiler struct {
 	receiver string
 
 	anonStructCount int
+
+	funcRenames map[string]string
 }
 
 // New creates a new Go compiler instance.
@@ -71,6 +73,7 @@ func New(env *types.Env) *Compiler {
 		externObjects:   map[string]bool{},
 		tempVarCount:    0,
 		anonStructCount: 0,
+		funcRenames:     map[string]string{},
 	}
 }
 
@@ -1564,6 +1567,10 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 	}
 	c.writeln(fmt.Sprintf("// line %d", fun.Pos.Line))
 	name := sanitizeName(fun.Name)
+	if name == "main" {
+		name = "mainFn"
+	}
+	c.funcRenames[fun.Name] = name
 	if c.env != nil {
 		c.env.SetFunc(fun.Name, fun)
 	}
@@ -4032,7 +4039,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 			if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
 				st := ut.Variants[call.Func]
 				varName := c.newNamedVar("tmp")
-				cond := fmt.Sprintf("%s, ok := _t.(%s); ok", varName, sanitizeName(call.Func))
+				cond := fmt.Sprintf("%s, ok := _t.(%s); ok", varName, c.funcName(call.Func))
 				buf.WriteString("\tif " + cond + " {\n")
 				for idx, arg := range call.Args {
 					if id, ok := identName(arg); ok && id != "_" {
@@ -4433,6 +4440,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if call.Func == "values" {
 			paramTypes = nil
 		}
+		if call.Func == "append" {
+			paramTypes = nil
+		}
 	}
 	for i, a := range call.Args {
 		if len(paramTypes) > i {
@@ -4488,7 +4498,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		for i, pt := range missing {
 			params[i] = fmt.Sprintf("%s %s", names[i], goType(pt))
 		}
-		body := fmt.Sprintf("%s(%s)", sanitizeName(call.Func), strings.Join(args, ", "))
+		body := fmt.Sprintf("%s(%s)", c.funcName(call.Func), strings.Join(args, ", "))
 		if ret != "" {
 			return fmt.Sprintf("func(%s) %s { return %s }", strings.Join(params, ", "), ret, body), nil
 		}
@@ -4496,6 +4506,15 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	}
 
 	switch call.Func {
+	case "append":
+		if len(args) == 2 {
+			lt, ok1 := c.inferExprType(call.Args[0]).(types.ListType)
+			rt := c.inferExprType(call.Args[1])
+			if ok1 && equalTypes(lt.Elem, rt) && !isAny(lt.Elem) {
+				return fmt.Sprintf("append(%s, %s)", args[0], args[1]), nil
+			}
+		}
+		return fmt.Sprintf("append(%s)", argStr), nil
 	case "print":
 		c.imports["fmt"] = true
 		if len(call.Args) == 6 {
@@ -4837,7 +4856,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		c.imports["fmt"] = true
 		return fmt.Sprintf("func(){b,_:=json.Marshal(%s);fmt.Println(string(b))}()", argStr), nil
 	default:
-		return fmt.Sprintf("%s(%s)", sanitizeName(call.Func), argStr), nil
+		return fmt.Sprintf("%s(%s)", c.funcName(call.Func), argStr), nil
 	}
 }
 
