@@ -37,3 +37,7 @@
 ## Progress (2025-07-28 00:00 UTC)
 - Added type-aware handling for indexing and slicing so lists and strings use native Prolog operations.
 - Helper predicates `get_item` and `slice` are now omitted when not required.
+
+## Progress (2025-07-18 03:02 UTC)
+- Improved `in` operator compilation to use native Prolog operations for lists, strings, and maps.
+- `contains/3` helper is now omitted when static types allow specialized code.

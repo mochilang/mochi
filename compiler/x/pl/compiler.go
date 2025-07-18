@@ -920,11 +920,16 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, bool, error) {
 	if err != nil {
 		return "", false, err
 	}
+	var leftType types.Type
+	if c.env != nil {
+		leftType = types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: e.Binary.Left}}, c.env)
+	}
 
 	operands := []string{left}
 	ariths := []bool{lArith}
 	ops := []string{}
 	allFlags := []bool{}
+	typesList := []types.Type{leftType}
 	for _, part := range e.Binary.Right {
 		rhs, rArith, err := c.compilePostfix(part.Right)
 		if err != nil {
@@ -938,6 +943,9 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, bool, error) {
 		ariths = append(ariths, rArith)
 		ops = append(ops, op)
 		allFlags = append(allFlags, part.All)
+		if c.env != nil {
+			typesList = append(typesList, types.ExprType(exprFromPostfix(part.Right), c.env))
+		}
 	}
 
 	precLevels := [][]string{
@@ -953,7 +961,12 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, bool, error) {
 	for _, level := range precLevels {
 		for i := 0; i < len(ops); {
 			if contains(level, ops[i]) {
-				expr, ar, err := c.buildBinary(operands[i], ariths[i], ops[i], operands[i+1], ariths[i+1], allFlags[i])
+				var lt, rt types.Type
+				if c.env != nil {
+					lt = typesList[i]
+					rt = typesList[i+1]
+				}
+				expr, ar, err := c.buildBinary(operands[i], ariths[i], ops[i], operands[i+1], ariths[i+1], allFlags[i], lt, rt)
 				if err != nil {
 					return "", false, err
 				}
@@ -975,7 +988,7 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, bool, error) {
 	return operands[0], ariths[0], nil
 }
 
-func (c *Compiler) buildBinary(left string, leftArith bool, op string, right string, rightArith bool, all bool) (string, bool, error) {
+func (c *Compiler) buildBinary(left string, leftArith bool, op string, right string, rightArith bool, all bool, leftType, rightType types.Type) (string, bool, error) {
 	arith := true
 	concat := false
 	switch op {
@@ -1021,8 +1034,25 @@ func (c *Compiler) buildBinary(left string, leftArith bool, op string, right str
 		arith = false
 	case "in":
 		tmp := c.newTmp()
-		c.needsContains = true
-		c.writeln(fmt.Sprintf("contains(%s, %s, %s),", right, left, tmp))
+		handled := false
+		if c.env != nil {
+			switch rightType.(type) {
+			case types.ListType:
+				c.writeln(fmt.Sprintf("(member(%s, %s) -> %s = true ; %s = false),", left, right, tmp, tmp))
+				handled = true
+			case types.StringType:
+				c.writeln(fmt.Sprintf("(sub_string(%s, _, _, _, %s) -> %s = true ; %s = false),", right, left, tmp, tmp))
+				handled = true
+			case types.MapType:
+				a := c.newTmp()
+				c.writeln(fmt.Sprintf("(is_dict(%s), (string(%s) -> atom_string(%s, %s) ; %s = %s), (get_dict(%s, %s, _) -> %s = true ; %s = false)),", right, left, a, left, a, left, a, right, tmp, tmp))
+				handled = true
+			}
+		}
+		if !handled {
+			c.needsContains = true
+			c.writeln(fmt.Sprintf("contains(%s, %s, %s),", right, left, tmp))
+		}
 		left = tmp
 		arith = false
 	case "union", "union_all":
@@ -1100,6 +1130,12 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, bool, error) 
 			// the parser represents as a selector with two tail
 			// entries and a call operation.
 			container := c.lookupVar(pf.Target.Selector.Root)
+			var containerType types.Type
+			if c.env != nil {
+				sel := &parser.SelectorExpr{Root: pf.Target.Selector.Root, Tail: tail[:len(tail)-1]}
+				pfTmp := &parser.PostfixExpr{Target: &parser.Primary{Selector: sel}}
+				containerType = types.ExprType(exprFromPostfix(pfTmp), c.env)
+			}
 			for _, f := range tail[:len(tail)-1] {
 				tmp := c.newTmp()
 				c.needsGetItem = true
@@ -1107,7 +1143,7 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, bool, error) 
 				container = tmp
 			}
 			method := tail[len(tail)-1]
-			val, arith, err := c.compileMethodCall(container, method, pf.Ops[0].Call)
+			val, arith, err := c.compileMethodCall(container, method, pf.Ops[0].Call, containerType)
 			if err != nil {
 				return "", false, err
 			}
@@ -1144,7 +1180,7 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, bool, error) 
 		}
 		if op.Field != nil {
 			if i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil {
-				val, arith, err = c.compileMethodCall(val, op.Field.Name, pf.Ops[i+1].Call)
+				val, arith, err = c.compileMethodCall(val, op.Field.Name, pf.Ops[i+1].Call, curType)
 				if err != nil {
 					return "", false, err
 				}
@@ -2154,15 +2190,32 @@ func (c *Compiler) compileIndex(container string, idx *parser.IndexOp, t types.T
 	return tmp, false, nil
 }
 
-func (c *Compiler) compileMethodCall(container, method string, call *parser.CallOp) (string, bool, error) {
+func (c *Compiler) compileMethodCall(container, method string, call *parser.CallOp, t types.Type) (string, bool, error) {
 	if method == "contains" && len(call.Args) == 1 {
 		arg, _, err := c.compileExpr(call.Args[0])
 		if err != nil {
 			return "", false, err
 		}
 		tmp := c.newTmp()
-		c.needsContains = true
-		c.writeln(fmt.Sprintf("contains(%s, %s, %s),", container, arg, tmp))
+		handled := false
+		if c.env != nil {
+			switch t.(type) {
+			case types.ListType:
+				c.writeln(fmt.Sprintf("(member(%s, %s) -> %s = true ; %s = false),", arg, container, tmp, tmp))
+				handled = true
+			case types.StringType:
+				c.writeln(fmt.Sprintf("(sub_string(%s, _, _, _, %s) -> %s = true ; %s = false),", container, arg, tmp, tmp))
+				handled = true
+			case types.MapType:
+				a := c.newTmp()
+				c.writeln(fmt.Sprintf("(is_dict(%s), (string(%s) -> atom_string(%s, %s) ; %s = %s), (get_dict(%s, %s, _) -> %s = true ; %s = false)),", container, arg, a, arg, a, arg, a, container, tmp, tmp))
+				handled = true
+			}
+		}
+		if !handled {
+			c.needsContains = true
+			c.writeln(fmt.Sprintf("contains(%s, %s, %s),", container, arg, tmp))
+		}
 		return tmp, false, nil
 	}
 	if method == "starts_with" && len(call.Args) == 1 {
