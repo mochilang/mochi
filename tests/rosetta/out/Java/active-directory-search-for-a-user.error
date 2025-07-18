@@ -1,0 +1,28 @@
+javac: exit status 1
+/tmp/ActiveDirectorySearchForAUser.java:10: error: cannot find symbol
+        Client client = new Client("dc=example,dc=com", "ldap.example.com", 389, "(memberUid=%s)");
+        ^
+  symbol:   class Client
+  location: class ActiveDirectorySearchForAUser
+/tmp/ActiveDirectorySearchForAUser.java:10: error: cannot find symbol
+        Client client = new Client("dc=example,dc=com", "ldap.example.com", 389, "(memberUid=%s)");
+                            ^
+  symbol:   class Client
+  location: class ActiveDirectorySearchForAUser
+/tmp/ActiveDirectorySearchForAUser.java:11: error: cannot find symbol
+        Directory directory = new Directory(Arrays.asList("admins", "users"), Arrays.asList("users"));
+        ^
+  symbol:   class Directory
+  location: class ActiveDirectorySearchForAUser
+/tmp/ActiveDirectorySearchForAUser.java:11: error: cannot find symbol
+        Directory directory = new Directory(Arrays.asList("admins", "users"), Arrays.asList("users"));
+                                  ^
+  symbol:   class Directory
+  location: class ActiveDirectorySearchForAUser
+/tmp/ActiveDirectorySearchForAUser.java:17: error: incompatible types: String cannot be converted to Number
+                out = ((Number)out + "\"" + ((Number)groups.get(i)).doubleValue()).doubleValue() + "\"";
+                               ^
+/tmp/ActiveDirectorySearchForAUser.java:17: error: incompatible types: String cannot be converted to Number
+                out = ((Number)out + "\"" + ((Number)groups.get(i)).doubleValue()).doubleValue() + "\"";
+                                                               ^
+6 errors

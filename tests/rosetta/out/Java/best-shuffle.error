@@ -1,0 +1,61 @@
+javac: exit status 1
+/tmp/BestShuffle.java:21: error: incompatible types: String cannot be converted to List<String>
+            List<String> tmp = chars.get(idx);
+                                        ^
+/tmp/BestShuffle.java:23: error: incompatible types: List<String> cannot be converted to String
+            chars.set(j, tmp);
+                         ^
+/tmp/BestShuffle.java:29: error: incompatible types: String cannot be converted to Number
+            res = res + ((Number)chars.get(i)).doubleValue();
+                                          ^
+/tmp/BestShuffle.java:36: error: incompatible types: Object cannot be converted to List<Object>
+        List<Object> t = r.get(0);
+                              ^
+/tmp/BestShuffle.java:37: error: incompatible types: Object cannot be converted to List<Object>
+        List<Object> sd = r.get(1);
+                               ^
+/tmp/BestShuffle.java:41: error: cannot find symbol
+            arr.add(t.substring(i, i + 1));
+                     ^
+  symbol:   method substring(int,int)
+  location: variable t of type List<Object>
+/tmp/BestShuffle.java:49: error: incompatible types: String cannot be converted to List<String>
+                    List<String> tmp = arr.get(i);
+                                              ^
+/tmp/BestShuffle.java:51: error: incompatible types: List<String> cannot be converted to String
+                    arr.set(j, tmp);
+                               ^
+/tmp/BestShuffle.java:69: error: incompatible types: String cannot be converted to Number
+            out = out + ((Number)arr.get(i)).doubleValue();
+                                        ^
+/tmp/BestShuffle.java:80: error: incompatible types: Object cannot be converted to List<Object>
+            List<Object> shuf = r.get(0);
+                                     ^
+/tmp/BestShuffle.java:82: error: incompatible types: Object cannot be converted to List<Object>
+            List<Object> cnt = r.get(2);
+                                    ^
+/tmp/BestShuffle.java:83: error: incompatible types: String cannot be converted to Number
+            System.out.println(((Number)((Number)((Number)((Number)((Number)ts.get(i)).doubleValue() + " -> ").doubleValue() + shuf).doubleValue() + " (").doubleValue() + String.valueOf(cnt)).doubleValue() + ")");
+                                                                                  ^
+/tmp/BestShuffle.java:83: error: cannot find symbol
+            System.out.println(((Number)((Number)((Number)((Number)((Number)ts.get(i)).doubleValue() + " -> ").doubleValue() + shuf).doubleValue() + " (").doubleValue() + String.valueOf(cnt)).doubleValue() + ")");
+                                                                                                              ^
+  symbol:   method doubleValue()
+  location: class String
+/tmp/BestShuffle.java:83: error: bad operand types for binary operator '+'
+            System.out.println(((Number)((Number)((Number)((Number)((Number)ts.get(i)).doubleValue() + " -> ").doubleValue() + shuf).doubleValue() + " (").doubleValue() + String.valueOf(cnt)).doubleValue() + ")");
+                                                                                                                             ^
+  first type:  Number
+  second type: List<Object>
+/tmp/BestShuffle.java:83: error: cannot find symbol
+            System.out.println(((Number)((Number)((Number)((Number)((Number)ts.get(i)).doubleValue() + " -> ").doubleValue() + shuf).doubleValue() + " (").doubleValue() + String.valueOf(cnt)).doubleValue() + ")");
+                                                                                                                                                          ^
+  symbol:   method doubleValue()
+  location: class String
+/tmp/BestShuffle.java:83: error: cannot find symbol
+            System.out.println(((Number)((Number)((Number)((Number)((Number)ts.get(i)).doubleValue() + " -> ").doubleValue() + shuf).doubleValue() + " (").doubleValue() + String.valueOf(cnt)).doubleValue() + ")");
+                                                                                                                                                                                               ^
+  symbol:   method doubleValue()
+  location: class String
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+16 errors

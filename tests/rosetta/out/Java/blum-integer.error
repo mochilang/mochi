@@ -1,0 +1,15 @@
+javac: exit status 1
+/tmp/BlumInteger.java:89: error: incompatible types: int cannot be converted to String
+                int q = Integer.parseInt((i / p));
+                                            ^
+/tmp/BlumInteger.java:96: error: incompatible types: double cannot be converted to Integer
+                        counts.set(0, ((Number)counts.get(0)).doubleValue() + 1);
+                                                                            ^
+/tmp/BlumInteger.java:106: error: incompatible types: String cannot be converted to Number
+                                line = ((Number)line + ((Number)padLeft(blum.get(idx), 3)).doubleValue()).doubleValue() + " ";
+                                                ^
+/tmp/BlumInteger.java:106: error: incompatible types: String cannot be converted to Number
+                                line = ((Number)line + ((Number)padLeft(blum.get(idx), 3)).doubleValue()).doubleValue() + " ";
+                                                                       ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+4 errors

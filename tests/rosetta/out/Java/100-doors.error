@@ -1,5 +1,5 @@
 javac: exit status 1
-/tmp/M100Doors.java:27: error: incompatible types: Object cannot be converted to boolean
-            if (doors.get(idx)) {
-                         ^
+/tmp/M100Doors.java:22: error: incompatible types: Object cannot be converted to boolean
+                if (doors.get(idx)) {
+                             ^
 1 error

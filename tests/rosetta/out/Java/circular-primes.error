@@ -1,0 +1,31 @@
+javac: exit status 1
+/tmp/CircularPrimes.java:54: error: incompatible types: String cannot be converted to Number
+            out = out + ((Number)String.valueOf(xs.get(i))).doubleValue();
+                                               ^
+/tmp/CircularPrimes.java:70: error: incompatible types: Integer cannot be converted to List<Integer>
+            List<Integer> f = q.get(0);
+                                   ^
+/tmp/CircularPrimes.java:71: error: incompatible types: Integer cannot be converted to List<Integer>
+            List<Integer> fd = fq.get(0);
+                                     ^
+/tmp/CircularPrimes.java:72: error: incompatible types: List<Integer> cannot be converted to int
+            if (isPrime(f) && isCircular(f)) {
+                        ^
+/tmp/CircularPrimes.java:72: error: incompatible types: List<Integer> cannot be converted to int
+            if (isPrime(f) && isCircular(f)) {
+                                         ^
+/tmp/CircularPrimes.java:73: error: incompatible types: List<Integer> cannot be converted to Integer
+                circs.add(f);
+                          ^
+/tmp/CircularPrimes.java:83: error: bad operand types for binary operator '*'
+                    q.add(f * 10 + d);
+                            ^
+  first type:  List<Integer>
+  second type: int
+/tmp/CircularPrimes.java:84: error: incompatible types: List<Integer> cannot be converted to Integer
+                    fq.add(fd);
+                           ^
+Note: /tmp/CircularPrimes.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+8 errors

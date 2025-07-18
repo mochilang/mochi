@@ -1,0 +1,17 @@
+javac: exit status 1
+/tmp/CartesianProductOfTwoOrMoreLists2.java:10: error: incompatible types: String cannot be converted to Number
+            s = s + ((Number)String.valueOf(xs.get(i))).doubleValue();
+                                           ^
+/tmp/CartesianProductOfTwoOrMoreLists2.java:23: error: incompatible types: String cannot be converted to Number
+            s = s + ((Number)listStr(lst.get(i))).doubleValue();
+                                    ^
+/tmp/CartesianProductOfTwoOrMoreLists2.java:58: error: incompatible types: Object cannot be converted to Integer
+                row.add(((List)a.get(j)).get(idx.get(j)));
+                                            ^
+/tmp/CartesianProductOfTwoOrMoreLists2.java:64: error: incompatible types: double cannot be converted to Integer
+                idx.set(k, ((Number)idx.get(k)).doubleValue() + 1);
+                                                              ^
+Note: /tmp/CartesianProductOfTwoOrMoreLists2.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+4 errors

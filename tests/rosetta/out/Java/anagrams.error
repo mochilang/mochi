@@ -1,0 +1,27 @@
+javac: exit status 1
+/tmp/Anagrams.java:19: error: incompatible types: String cannot be converted to List<String>
+                    List<String> tmp = arr.get(j);
+                                              ^
+/tmp/Anagrams.java:21: error: incompatible types: List<String> cannot be converted to String
+                    arr.set(j + 1, tmp);
+                                   ^
+/tmp/Anagrams.java:30: error: incompatible types: String cannot be converted to Number
+            out = out + ((Number)arr.get(i)).doubleValue();
+                                        ^
+/tmp/Anagrams.java:39: error: incompatible types: String cannot be converted to List<String>
+            List<String> min = tmp.get(0);
+                                      ^
+/tmp/Anagrams.java:44: error: incompatible types: String cannot be converted to List<String>
+                    min = tmp.get(i);
+                                 ^
+/tmp/Anagrams.java:49: error: incompatible types: List<String> cannot be converted to String
+            res.add(min);
+                    ^
+/tmp/Anagrams.java:84: error: incompatible types: String cannot be converted to Number
+                    String line = "[" + ((Number)g.get(0)).doubleValue();
+                                                      ^
+/tmp/Anagrams.java:87: error: incompatible types: String cannot be converted to Number
+                        line = line + " " + ((Number)g.get(i)).doubleValue();
+                                                          ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+8 errors

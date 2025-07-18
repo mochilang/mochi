@@ -1,0 +1,15 @@
+javac: exit status 1
+/tmp/AccumulatorFactory.java:8: error: incompatible types: Object is not a functional interface
+        Object add = nv -> {
+                     ^
+/tmp/AccumulatorFactory.java:16: error: cannot find symbol
+        x(5);
+        ^
+  symbol:   method x(int)
+  location: class AccumulatorFactory
+/tmp/AccumulatorFactory.java:18: error: cannot find symbol
+        System.out.println(String.valueOf(x(2.300000)));
+                                          ^
+  symbol:   method x(double)
+  location: class AccumulatorFactory
+3 errors

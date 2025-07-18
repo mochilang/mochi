@@ -1,0 +1,32 @@
+javac: exit status 1
+/tmp/M24Game.java:36: error: '.class' expected
+                while (!Objects.equals(digits.get(j), int(ch) - int("0"))) {
+                                                         ^
+/tmp/M24Game.java:36: error: '.class' expected
+                while (!Objects.equals(digits.get(j), int(ch) - int("0"))) {
+                                                                   ^
+/tmp/M24Game.java:36: error: not a statement
+                while (!Objects.equals(digits.get(j), int(ch) - int("0"))) {
+                                                              ^
+/tmp/M24Game.java:44: error: '.class' expected
+                stack.add(float(int(ch) - int("0")));
+                               ^
+/tmp/M24Game.java:44: error: not a statement
+                stack.add(float(int(ch) - int("0")));
+                                ^
+/tmp/M24Game.java:44: error: ';' expected
+                stack.add(float(int(ch) - int("0")));
+                                   ^
+/tmp/M24Game.java:44: error: not a statement
+                stack.add(float(int(ch) - int("0")));
+                                    ^
+/tmp/M24Game.java:44: error: ';' expected
+                stack.add(float(int(ch) - int("0")));
+                                      ^
+/tmp/M24Game.java:44: error: not a statement
+                stack.add(float(int(ch) - int("0")));
+                                          ^
+/tmp/M24Game.java:44: error: ';' expected
+                stack.add(float(int(ch) - int("0")));
+                                             ^
+10 errors

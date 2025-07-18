@@ -1,0 +1,38 @@
+javac: exit status 1
+/tmp/M2048.java:126: error: not a statement
+            Map<String,Object> new = r.get("row");
+               ^
+/tmp/M2048.java:126: error: ';' expected
+            Map<String,Object> new = r.get("row");
+                              ^
+/tmp/M2048.java:126: error: <identifier> expected
+            Map<String,Object> new = r.get("row");
+                                  ^
+/tmp/M2048.java:126: error: '(' or '[' expected
+            Map<String,Object> new = r.get("row");
+                                   ^
+/tmp/M2048.java:130: error: <identifier> expected
+                if (!Objects.equals(((List)b.get(y)).get(x), new.get(x))) {
+                                                                ^
+/tmp/M2048.java:133: error: <identifier> expected
+                ((List)b.get(y)).set(x, new.get(x));
+                                           ^
+/tmp/M2048.java:183: error: not a statement
+            Map<String,Object> new = r.get("row");
+               ^
+/tmp/M2048.java:183: error: ';' expected
+            Map<String,Object> new = r.get("row");
+                              ^
+/tmp/M2048.java:183: error: <identifier> expected
+            Map<String,Object> new = r.get("row");
+                                  ^
+/tmp/M2048.java:183: error: '(' or '[' expected
+            Map<String,Object> new = r.get("row");
+                                   ^
+/tmp/M2048.java:187: error: <identifier> expected
+                if (!Objects.equals(((List)b.get(y)).get(x), new.get(y))) {
+                                                                ^
+/tmp/M2048.java:190: error: <identifier> expected
+                ((List)b.get(y)).set(x, new.get(y));
+                                           ^
+12 errors

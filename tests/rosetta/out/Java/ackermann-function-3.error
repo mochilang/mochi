@@ -1,0 +1,20 @@
+javac: exit status 1
+/tmp/AckermannFunction3.java:34: error: '.class' expected
+            Object mi = int(m);
+                           ^
+/tmp/AckermannFunction3.java:34: error: not a statement
+            Object mi = int(m);
+                            ^
+/tmp/AckermannFunction3.java:34: error: ';' expected
+            Object mi = int(m);
+                             ^
+/tmp/AckermannFunction3.java:50: error: '.class' expected
+                Object r = pow_big((Object)2, int(n));
+                                                 ^
+/tmp/AckermannFunction3.java:50: error: not a statement
+                Object r = pow_big((Object)2, int(n));
+                                                  ^
+/tmp/AckermannFunction3.java:50: error: ';' expected
+                Object r = pow_big((Object)2, int(n));
+                                                   ^
+6 errors

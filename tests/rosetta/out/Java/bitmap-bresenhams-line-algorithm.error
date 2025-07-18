@@ -1,4 +1,4 @@
-parse error: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/bitmap-bresenhams-line-algorithm.mochi:28:13: unexpected token "-" (expected PostfixExpr)
+parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/bitmap-bresenhams-line-algorithm.mochi:28:13: unexpected token "-" (expected PostfixExpr)
   --> /workspace/mochi/tests/rosetta/x/Mochi/bitmap-bresenhams-line-algorithm.mochi:28:13
 
  28 |     if e2 > -dy {

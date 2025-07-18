@@ -1,0 +1,9 @@
+javac: exit status 1
+/tmp/BrazilianNumbers.java:8: error: incompatible types: int cannot be converted to String
+        n = (int)(Integer.parseInt((n / b)));
+                                      ^
+/tmp/BrazilianNumbers.java:13: error: incompatible types: int cannot be converted to String
+            n = (int)(Integer.parseInt((n / b)));
+                                          ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+2 errors

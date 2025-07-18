@@ -1,0 +1,26 @@
+javac: exit status 1
+/tmp/BitmapHistogram.java:21: error: incompatible types: List<Integer> cannot be converted to List<List<Integer>>
+            List<List<Integer>> row = g.get(y);
+                                           ^
+/tmp/BitmapHistogram.java:24: error: incompatible types: List<Integer> cannot be converted to List<List<Integer>>
+                List<List<Integer>> p = row.get(x);
+                                               ^
+/tmp/BitmapHistogram.java:25: error: bad operand types for binary operator '*'
+                int idx = Integer.parseInt(((p * (bins - 1)) / 65535));
+                                               ^
+  first type:  List<List<Integer>>
+  second type: int
+/tmp/BitmapHistogram.java:26: error: incompatible types: double cannot be converted to Integer
+                h.set(idx, ((Number)h.get(idx)).doubleValue() + 1);
+                                                              ^
+/tmp/BitmapHistogram.java:48: error: incompatible types: int cannot be converted to String
+        return Integer.parseInt(((ub * 65535) / h.size()));
+                                              ^
+/tmp/BitmapHistogram.java:54: error: incompatible types: List<Integer> cannot be converted to List<List<Integer>>
+            List<List<Integer>> row = g.get(y);
+                                           ^
+/tmp/BitmapHistogram.java:74: error: incompatible types: List<Integer> cannot be converted to List<List<Integer>>
+            List<List<Integer>> row = g.get(y);
+                                           ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+7 errors

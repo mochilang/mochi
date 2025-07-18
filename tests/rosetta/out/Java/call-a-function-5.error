@@ -1,0 +1,7 @@
+javac: exit status 1
+/tmp/CallAFunction5.java:11: error: bad operand types for binary operator '+'
+        return ((Number)((Number)p.get("a")).doubleValue() + b).doubleValue() + ((Number)p.get("c")).doubleValue();
+                                                           ^
+  first type:  Number
+  second type: int
+1 error

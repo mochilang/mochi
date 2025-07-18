@@ -1,0 +1,24 @@
+javac: exit status 1
+/tmp/AbelianSandpileModelIdentity.java:13: error: incompatible types: double cannot be converted to Integer
+            res.add(((Number)a.get(i)).doubleValue() + ((Number)b.get(i)).doubleValue());
+                                                     ^
+/tmp/AbelianSandpileModelIdentity.java:31: error: incompatible types: double cannot be converted to Integer
+                p.set(i, ((Number)p.get(i)).doubleValue() - 4);
+                                                          ^
+/tmp/AbelianSandpileModelIdentity.java:32: error: incompatible types: List<Integer> cannot be converted to List<List<Integer>>
+                List<List<Integer>> nbs = neighbors.get(i);
+                                                       ^
+/tmp/AbelianSandpileModelIdentity.java:34: error: incompatible types: List<Integer> cannot be converted to int
+                    p.set(j, ((Number)p.get(j)).doubleValue() + 1);
+                                            ^
+/tmp/AbelianSandpileModelIdentity.java:34: error: incompatible types: List<Integer> cannot be converted to int
+                    p.set(j, ((Number)p.get(j)).doubleValue() + 1);
+                          ^
+/tmp/AbelianSandpileModelIdentity.java:48: error: incompatible types: String cannot be converted to Number
+                s = ((Number)s + ((Number)String.valueOf(p.get(3 * r + c))).doubleValue()).doubleValue() + " ";
+                             ^
+/tmp/AbelianSandpileModelIdentity.java:48: error: incompatible types: String cannot be converted to Number
+                s = ((Number)s + ((Number)String.valueOf(p.get(3 * r + c))).doubleValue()).doubleValue() + " ";
+                                                        ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+7 errors

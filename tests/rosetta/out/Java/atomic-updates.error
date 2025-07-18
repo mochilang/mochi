@@ -1,0 +1,90 @@
+javac: exit status 1
+/tmp/AtomicUpdates.java:26: error: incompatible types: double cannot be converted to Integer
+            buckets.set(i, v);
+                           ^
+/tmp/AtomicUpdates.java:40: error: incompatible types: Integer cannot be converted to List<Integer>
+            List<Integer> b1 = r.get(1);
+                                    ^
+/tmp/AtomicUpdates.java:41: error: bad operand types for binary operator '+'
+            int b2 = (b1 + 1) % nBuckets;
+                         ^
+  first type:  List<Integer>
+  second type: int
+/tmp/AtomicUpdates.java:42: error: incompatible types: List<Integer> cannot be converted to int
+            List<Integer> v1 = buckets.get(b1);
+                                           ^
+/tmp/AtomicUpdates.java:43: error: incompatible types: Integer cannot be converted to List<Integer>
+            List<Integer> v2 = buckets.get(b2);
+                                          ^
+/tmp/AtomicUpdates.java:45: error: bad operand types for binary operator '-'
+                int a = Integer.parseInt(((v1 - v2) / 2));
+                                              ^
+  first type:  List<Integer>
+  second type: List<Integer>
+/tmp/AtomicUpdates.java:46: error: incompatible types: List<Integer> cannot be converted to int
+                if (a > ((Number)buckets.get(b1)).doubleValue()) {
+                                             ^
+/tmp/AtomicUpdates.java:47: error: incompatible types: List<Integer> cannot be converted to int
+                    a = (int)(buckets.get(b1));
+                                          ^
+/tmp/AtomicUpdates.java:49: error: incompatible types: List<Integer> cannot be converted to int
+                buckets.set(b1, ((Number)buckets.get(b1)).doubleValue() - a);
+                                                     ^
+/tmp/AtomicUpdates.java:49: error: incompatible types: List<Integer> cannot be converted to int
+                buckets.set(b1, ((Number)buckets.get(b1)).doubleValue() - a);
+                            ^
+/tmp/AtomicUpdates.java:50: error: incompatible types: double cannot be converted to Integer
+                buckets.set(b2, ((Number)buckets.get(b2)).doubleValue() + a);
+                                                                        ^
+/tmp/AtomicUpdates.java:53: error: bad operand types for binary operator '-'
+                int a = Integer.parseInt(((v2 - v1) / 2));
+                                              ^
+  first type:  List<Integer>
+  second type: List<Integer>
+/tmp/AtomicUpdates.java:57: error: incompatible types: double cannot be converted to Integer
+                buckets.set(b2, ((Number)buckets.get(b2)).doubleValue() - a);
+                                                                        ^
+/tmp/AtomicUpdates.java:58: error: incompatible types: List<Integer> cannot be converted to int
+                buckets.set(b1, ((Number)buckets.get(b1)).doubleValue() + a);
+                                                     ^
+/tmp/AtomicUpdates.java:58: error: incompatible types: List<Integer> cannot be converted to int
+                buckets.set(b1, ((Number)buckets.get(b1)).doubleValue() + a);
+                            ^
+/tmp/AtomicUpdates.java:63: error: incompatible types: Integer cannot be converted to List<Integer>
+            b1 = r.get(1);
+                      ^
+/tmp/AtomicUpdates.java:64: error: bad operand types for binary operator '+'
+            b2 = (int)((b1 + 1) % nBuckets);
+                           ^
+  first type:  List<Integer>
+  second type: int
+/tmp/AtomicUpdates.java:65: error: incompatible types: List<Integer> cannot be converted to int
+            r = randChaos(seedChaos, ((Number)buckets.get(b1)).doubleValue() + 1);
+                                                          ^
+/tmp/AtomicUpdates.java:65: error: incompatible types: possible lossy conversion from double to int
+            r = randChaos(seedChaos, ((Number)buckets.get(b1)).doubleValue() + 1);
+                                                                             ^
+/tmp/AtomicUpdates.java:67: error: incompatible types: Integer cannot be converted to List<Integer>
+            List<Integer> amt = r.get(1);
+                                     ^
+/tmp/AtomicUpdates.java:68: error: incompatible types: List<Integer> cannot be converted to int
+            if (String.valueOf(amt).compareTo(String.valueOf(buckets.get(b1))) > 0) {
+                                                                         ^
+/tmp/AtomicUpdates.java:69: error: incompatible types: List<Integer> cannot be converted to int
+                amt = buckets.get(b1);
+                                  ^
+/tmp/AtomicUpdates.java:71: error: incompatible types: List<Integer> cannot be converted to int
+            buckets.set(b1, ((Number)buckets.get(b1)).doubleValue() - amt);
+                                                 ^
+/tmp/AtomicUpdates.java:71: error: bad operand types for binary operator '-'
+            buckets.set(b1, ((Number)buckets.get(b1)).doubleValue() - amt);
+                                                                    ^
+  first type:  double
+  second type: List<Integer>
+/tmp/AtomicUpdates.java:72: error: bad operand types for binary operator '+'
+            buckets.set(b2, ((Number)buckets.get(b2)).doubleValue() + amt);
+                                                                    ^
+  first type:  double
+  second type: List<Integer>
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+25 errors

@@ -1,0 +1,17 @@
+javac: exit status 1
+/tmp/A+b.java:3: error: '{' expected
+public class A+b {
+              ^
+/tmp/A+b.java:5: error: '.class' expected
+        Object a = int(input());
+                      ^
+/tmp/A+b.java:5: error: ';' expected
+        Object a = int(input());
+                              ^
+/tmp/A+b.java:6: error: '.class' expected
+        Object b = int(input());
+                      ^
+/tmp/A+b.java:6: error: ';' expected
+        Object b = int(input());
+                              ^
+5 errors

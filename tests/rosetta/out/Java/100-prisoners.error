@@ -1,0 +1,8 @@
+javac: exit status 1
+/tmp/M100Prisoners.java:37: error: not a statement
+                        List<Integer> this = drawers.get(prev);
+                            ^
+/tmp/M100Prisoners.java:37: error: ';' expected
+                        List<Integer> this = drawers.get(prev);
+                                     ^
+2 errors

@@ -1,0 +1,12 @@
+javac: exit status 1
+/tmp/ChernicksCarmichaelNumbers.java:57: error: bad operand types for binary operator '*'
+            int prod = ((Number)((Number)a.get(i)).doubleValue() * m).doubleValue() + carry;
+                                                                 ^
+  first type:  Number
+  second type: int
+/tmp/ChernicksCarmichaelNumbers.java:72: error: incompatible types: String cannot be converted to Number
+            s = s + ((Number)String.valueOf(a.get(i))).doubleValue();
+                                           ^
+Note: /tmp/ChernicksCarmichaelNumbers.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+2 errors

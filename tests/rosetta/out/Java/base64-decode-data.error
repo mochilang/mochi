@@ -1,0 +1,32 @@
+javac: exit status 1
+/tmp/Base64DecodeData.java:6: error: cannot find symbol
+    static String enc = base64Encode(msg);
+                                     ^
+  symbol:   variable msg
+  location: class Base64DecodeData
+/tmp/Base64DecodeData.java:25: error: cannot find symbol
+        Digit digits = new Digit(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+        ^
+  symbol:   class Digit
+  location: class Base64DecodeData
+/tmp/Base64DecodeData.java:25: error: cannot find symbol
+        Digit digits = new Digit(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+                           ^
+  symbol:   class Digit
+  location: class Base64DecodeData
+/tmp/Base64DecodeData.java:96: error: incompatible types: int cannot be converted to String
+            val = (int)(Integer.parseInt((val / 2)));
+                                              ^
+/tmp/Base64DecodeData.java:113: error: for-each not applicable to expression type
+        for (Object ch : text) {
+                         ^
+  required: array or java.lang.Iterable
+  found:    String
+/tmp/Base64DecodeData.java:114: error: incompatible types: Object cannot be converted to String
+            bin = bin + toBinary(ord(ch), 8);
+                                     ^
+/tmp/Base64DecodeData.java:141: error: incompatible types: char cannot be converted to String
+            String ch = enc.charAt(i);
+                                  ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+7 errors

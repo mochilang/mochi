@@ -1,8 +1,27 @@
-type error: error[T007]: argument 2: expected int, got bigint
-  --> /workspace/mochi/tests/rosetta/x/Mochi/99-bottles-of-beer-2.mochi:98:11
-
- 98 |   s = s + substring(p, len(p) - 1, len(p))
-    |           ^
-
-help:
-  Ensure the argument type matches the function’s signature.
+javac: exit status 1
+/tmp/M99BottlesOfBeer2.java:35: error: incompatible types: String cannot be converted to Number
+            res = res + ((Number)xs.get(i)).doubleValue();
+                                       ^
+/tmp/M99BottlesOfBeer2.java:50: error: incompatible types: int cannot be converted to String
+            List<String> t = tens.get(Integer.parseInt((n / 10)));
+                                                          ^
+/tmp/M99BottlesOfBeer2.java:53: error: incompatible types: String cannot be converted to Number
+                t = t + " " + ((Number)small.get(s)).doubleValue();
+                                                ^
+/tmp/M99BottlesOfBeer2.java:55: error: incompatible types: List<String> cannot be converted to String
+            return t;
+                   ^
+/tmp/M99BottlesOfBeer2.java:65: error: incompatible types: String cannot be converted to Number
+            w.set(0, ((Number)w.get(0)).doubleValue() + "s");
+                                   ^
+/tmp/M99BottlesOfBeer2.java:89: error: incompatible types: String cannot be converted to List<String>
+                List<String> tmp = a.get(idx);
+                                        ^
+/tmp/M99BottlesOfBeer2.java:91: error: incompatible types: List<String> cannot be converted to String
+                a.set(j, tmp);
+                         ^
+/tmp/M99BottlesOfBeer2.java:98: error: incompatible types: String cannot be converted to Number
+            s = s + ((Number)a.get(k)).doubleValue();
+                                  ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+8 errors

@@ -1,8 +1,0 @@
-type error: error[T007]: argument 3: expected int, got bigint
-  --> /workspace/mochi/tests/rosetta/x/Mochi/anti-primes.mochi:27:10
-
- 27 |   line = substring(line, 0, len(line) - 1)
-    |          ^
-
-help:
-  Ensure the argument type matches the function’s signature.

@@ -1,8 +1,15 @@
-type error: error[T007]: argument 3: expected int, got bigint
-  --> /workspace/mochi/tests/rosetta/x/Mochi/abundant-odd-numbers.mochi:41:10
-
- 41 |   return substring(s, 0, len(s) - 3)
-    |          ^
-
-help:
-  Ensure the argument type matches the function’s signature.
+javac: exit status 1
+/tmp/AbundantOddNumbers.java:12: error: incompatible types: int cannot be converted to String
+                int j = Integer.parseInt((n / i));
+                                            ^
+/tmp/AbundantOddNumbers.java:38: error: incompatible types: String cannot be converted to Number
+            s = ((Number)s + ((Number)String.valueOf(xs.get(i))).doubleValue()).doubleValue() + " + ";
+                         ^
+/tmp/AbundantOddNumbers.java:38: error: incompatible types: String cannot be converted to Number
+            s = ((Number)s + ((Number)String.valueOf(xs.get(i))).doubleValue()).doubleValue() + " + ";
+                                                    ^
+/tmp/AbundantOddNumbers.java:62: error: variable n is already defined in method abundantOdd(int,int,int,boolean)
+            int tot = divs.stream().mapToInt(n -> ((Number)n).intValue()).sum();
+                                             ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+4 errors

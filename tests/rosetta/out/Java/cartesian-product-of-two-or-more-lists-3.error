@@ -1,0 +1,21 @@
+javac: exit status 1
+/tmp/CartesianProductOfTwoOrMoreLists3.java:10: error: incompatible types: String cannot be converted to Number
+            s = s + ((Number)String.valueOf(xs.get(i))).doubleValue();
+                                           ^
+/tmp/CartesianProductOfTwoOrMoreLists3.java:23: error: incompatible types: String cannot be converted to Number
+            s = s + ((Number)listStr(lst.get(i))).doubleValue();
+                                    ^
+/tmp/CartesianProductOfTwoOrMoreLists3.java:52: error: incompatible types: List<Integer> cannot be converted to List<List<Integer>>
+        for (List<Integer> x : (List<List<Integer>>)a.get(0)) {
+                                                         ^
+/tmp/CartesianProductOfTwoOrMoreLists3.java:54: error: incompatible types: inference variable T has incompatible bounds
+                out.add(java.util.stream.Stream.concat(Arrays.asList(x).stream(), p.stream()).collect(java.util.stream.Collectors.toList()));
+                   ^
+    equality constraints: Integer
+    lower bounds: Object
+  where T is a type-variable:
+    T extends Object declared in method <T>toList()
+Note: /tmp/CartesianProductOfTwoOrMoreLists3.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+4 errors

@@ -1,8 +1,6 @@
-type error: error[T007]: argument 3: expected int, got bigint
-  --> /workspace/mochi/tests/rosetta/x/Mochi/calculating-the-value-of-e.mochi:26:17
-
- 26 |   let intPart = substring(digits, 0, len(digits)-prec)
-    |                 ^
-
-help:
-  Ensure the argument type matches the function’s signature.
+javac: exit status 1
+/tmp/CalculatingTheValueOfE.java:23: error: incompatible types: double cannot be converted to String
+        Object n = (Integer.parseInt(scaled));
+                                     ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+1 error

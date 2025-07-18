@@ -1,0 +1,32 @@
+javac: exit status 1
+/tmp/AlignColumns.java:50: error: incompatible types: int cannot be converted to String
+        int left = Integer.parseInt((diff / 2));
+                                          ^
+/tmp/AlignColumns.java:60: error: cannot find symbol
+            if (Objects.equals(lines.get(i).size(), 0)) {
+                                           ^
+  symbol:   method size()
+  location: class String
+/tmp/AlignColumns.java:68: error: cannot find symbol
+                int wlen = words.get(j).size();
+                                       ^
+  symbol:   method size()
+  location: class String
+/tmp/AlignColumns.java:76: error: cannot find symbol
+        return new TextWidth(fmtLines, width);
+                   ^
+  symbol:   class TextWidth
+  location: class AlignColumns
+/tmp/AlignColumns.java:83: error: incompatible types: List<String> cannot be converted to List<List<String>>
+            List<List<String>> words = lines.get(i);
+                                                ^
+/tmp/AlignColumns.java:87: error: incompatible types: String cannot be converted to Number
+                line = ((Number)line + ((Number)pad(words.get(j), width.get(j), align)).doubleValue()).doubleValue() + " ";
+                                ^
+/tmp/AlignColumns.java:87: error: incompatible types: List<String> cannot be converted to String
+                line = ((Number)line + ((Number)pad(words.get(j), width.get(j), align)).doubleValue()).doubleValue() + " ";
+                                                             ^
+Note: /tmp/AlignColumns.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+7 errors

@@ -1,0 +1,16 @@
+javac: exit status 1
+/tmp/M4RingsOr4SquaresPuzzle.java:60: error: cannot find symbol
+        return new CountList(count, valid);
+                   ^
+  symbol:   class CountList
+  location: class M4RingsOr4SquaresPuzzle
+/tmp/M4RingsOr4SquaresPuzzle.java:64: error: incompatible types: String cannot be converted to Number
+        System.out.println(((Number)String.valueOf(r1.get("count"))).doubleValue() + " unique solutions in 1 to 7");
+                                                  ^
+/tmp/M4RingsOr4SquaresPuzzle.java:67: error: incompatible types: String cannot be converted to Number
+        System.out.println(((Number)String.valueOf(r2.get("count"))).doubleValue() + " unique solutions in 3 to 9");
+                                                  ^
+/tmp/M4RingsOr4SquaresPuzzle.java:70: error: incompatible types: String cannot be converted to Number
+        System.out.println(((Number)String.valueOf(r3.get("count"))).doubleValue() + " non-unique solutions in 0 to 9");
+                                                  ^
+4 errors

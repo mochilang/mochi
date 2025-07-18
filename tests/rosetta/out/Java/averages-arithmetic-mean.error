@@ -1,0 +1,17 @@
+javac: exit status 1
+/tmp/AveragesArithmeticMean.java:16: error: cannot find symbol
+        return new OkMean(true, sum / (Double.parseDouble(String.valueOf(v.size()))));
+                   ^
+  symbol:   class OkMean
+  location: class AveragesArithmeticMean
+/tmp/AveragesArithmeticMean.java:22: error: incompatible types: List<Object> cannot be converted to List<? extends Number>
+            Map<String,Object> r = mean(v);
+                                        ^
+/tmp/AveragesArithmeticMean.java:23: error: incompatible types: Object cannot be converted to boolean
+            if (r.get("ok")) {
+                     ^
+/tmp/AveragesArithmeticMean.java:24: error: incompatible types: String cannot be converted to Number
+                System.out.println("Mean of " + String.valueOf(v.size()) + " numbers is " + ((Number)String.valueOf(r.get("mean"))).doubleValue());
+                                                                                                                   ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+4 errors

@@ -1,0 +1,15 @@
+javac: exit status 1
+/tmp/AbbreviationsAutomatic.java:45: error: incompatible types: String cannot be converted to List<String>
+            List<String> x = xs.get(i);
+                                   ^
+/tmp/AbbreviationsAutomatic.java:47: error: incompatible types: List<String> cannot be converted to String
+                m.put(x, true);
+                      ^
+/tmp/AbbreviationsAutomatic.java:48: error: incompatible types: List<String> cannot be converted to String
+                out.add(x);
+                        ^
+/tmp/AbbreviationsAutomatic.java:84: error: incompatible types: String cannot be converted to Number
+            System.out.println(pad2(l) + "  " + ((Number)lines.get(i)).doubleValue());
+                                                                  ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+4 errors
