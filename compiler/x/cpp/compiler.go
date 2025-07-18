@@ -31,6 +31,29 @@ type unionInfo struct {
 	Variants []*variantInfo
 }
 
+var cppReserved = map[string]bool{
+	"alignas": true, "alignof": true, "and": true, "and_eq": true, "asm": true,
+	"auto": true, "bitand": true, "bitor": true, "bool": true, "break": true,
+	"case": true, "catch": true, "char": true, "class": true, "compl": true,
+	"const": true, "constexpr": true, "const_cast": true, "continue": true,
+	"decltype": true, "default": true, "delete": true, "do": true,
+	"double": true, "dynamic_cast": true, "else": true, "enum": true,
+	"explicit": true, "export": true, "extern": true, "false": true,
+	"float": true, "for": true, "friend": true, "goto": true, "if": true,
+	"inline": true, "int": true, "long": true, "mutable": true,
+	"namespace": true, "new": true, "noexcept": true, "not": true,
+	"not_eq": true, "nullptr": true, "operator": true, "or": true,
+	"or_eq": true, "private": true, "protected": true, "public": true,
+	"register": true, "reinterpret_cast": true, "return": true,
+	"short": true, "signed": true, "sizeof": true, "static": true,
+	"static_assert": true, "static_cast": true, "struct": true,
+	"switch": true, "template": true, "this": true, "thread_local": true,
+	"throw": true, "true": true, "try": true, "typedef": true, "typeid": true,
+	"typename": true, "union": true, "unsigned": true, "using": true,
+	"virtual": true, "void": true, "volatile": true, "wchar_t": true,
+	"while": true, "xor": true, "xor_eq": true,
+}
+
 // Compiler translates a subset of Mochi to simple C++17 code.
 type Compiler struct {
 	header bytes.Buffer
@@ -58,6 +81,7 @@ type Compiler struct {
 	usesAppend   bool
 	usesAvg      bool
 	usesAny      bool
+	usesNow      bool
 
 	unions   map[string]*unionInfo
 	variants map[string]*variantInfo
@@ -98,6 +122,7 @@ func New() *Compiler {
 		usesAppend:     false,
 		usesAvg:        false,
 		usesAny:        false,
+		usesNow:        false,
 		nextStructName: "",
 	}
 }
@@ -195,6 +220,9 @@ func sanitizeName(name string) string {
 	}
 	s := b.String()
 	if s == "" || !((s[0] >= 'A' && s[0] <= 'Z') || (s[0] >= 'a' && s[0] <= 'z') || s[0] == '_') {
+		s = "_" + s
+	}
+	if cppReserved[s] {
 		s = "_" + s
 	}
 	return s
@@ -350,6 +378,9 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	}
 	if bytes.Contains(src, []byte("std::setprecision")) {
 		add("#include <iomanip>")
+	}
+	if c.usesNow {
+		add("#include <chrono>")
 	}
 
 	var out bytes.Buffer
@@ -591,10 +622,15 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 		}
 	}
 
+	san := sanitizeName(st.Name)
+	if san != st.Name {
+		c.aliases[st.Name] = san
+	}
+
 	c.writeIndent()
 	c.buf.WriteString(typ)
 	c.buf.WriteByte(' ')
-	c.buf.WriteString(st.Name)
+	c.buf.WriteString(san)
 	if st.Value != nil {
 		exprStr = removeRedundantInit(exprStr, typ)
 		c.buf.WriteString(" = ")
@@ -681,10 +717,15 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 		}
 	}
 
+	san := sanitizeName(st.Name)
+	if san != st.Name {
+		c.aliases[st.Name] = san
+	}
+
 	c.writeIndent()
 	c.buf.WriteString(typ)
 	c.buf.WriteByte(' ')
-	c.buf.WriteString(st.Name)
+	c.buf.WriteString(san)
 	if st.Value != nil {
 		exprStr = removeRedundantInit(exprStr, typ)
 		c.buf.WriteString(" = ")
@@ -2078,6 +2119,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		case "values":
 			if len(args) == 1 {
 				return fmt.Sprintf("([&](){ std::vector<int> v; for(auto &p : %s) v.push_back(p.second); return v; })()", args[0]), nil
+			}
+		case "now":
+			if len(args) == 0 {
+				if !c.usesNow {
+					c.headerWriteln("inline long long _now(){ auto n=std::chrono::system_clock::now().time_since_epoch(); return std::chrono::duration_cast<std::chrono::nanoseconds>(n).count(); }")
+					c.usesNow = true
+				}
+				return "_now()", nil
 			}
 		case "json":
 			if len(args) == 1 {
