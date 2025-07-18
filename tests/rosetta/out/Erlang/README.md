@@ -1,4 +1,4 @@
-# Rosetta Erlang Output (4/239 compiled and run)
+# Rosetta Erlang Output (5/271 compiled and run)
 
 This directory holds Erlang source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -17,6 +17,7 @@ This directory holds Erlang source code generated from the real Mochi programs i
 - [ ] 9-billion-names-of-god-the-integer
 - [ ] 99-bottles-of-beer-2
 - [x] 99-bottles-of-beer
+- [ ] DNS-query
 - [ ] a+b
 - [ ] abbreviations-automatic
 - [ ] abbreviations-easy
@@ -29,7 +30,7 @@ This directory holds Erlang source code generated from the real Mochi programs i
 - [ ] abundant-odd-numbers
 - [ ] accumulator-factory
 - [ ] achilles-numbers
-- [ ] ackermann-function-2
+- [x] ackermann-function-2
 - [ ] ackermann-function-3
 - [ ] ackermann-function
 - [ ] active-directory-connect
@@ -211,6 +212,7 @@ This directory holds Erlang source code generated from the real Mochi programs i
 - [ ] cistercian-numerals
 - [ ] compiler-virtual-machine-interpreter
 - [ ] composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k
+- [ ] compound-data-type
 - [ ] concurrent-computing-1
 - [ ] concurrent-computing-2
 - [ ] concurrent-computing-3
@@ -232,13 +234,43 @@ This directory holds Erlang source code generated from the real Mochi programs i
 - [ ] constrained-random-points-on-a-circle-1
 - [ ] constrained-random-points-on-a-circle-2
 - [ ] continued-fraction
+- [ ] convert-decimal-number-to-rational
+- [ ] convert-seconds-to-compound-duration
+- [ ] convex-hull
+- [ ] conways-game-of-life
+- [ ] copy-a-string-1
+- [ ] copy-a-string-2
+- [ ] copy-stdin-to-stdout-1
+- [ ] copy-stdin-to-stdout-2
+- [ ] count-in-factors
+- [ ] count-in-octal-1
+- [ ] count-in-octal-2
+- [ ] count-in-octal-3
+- [ ] count-in-octal-4
+- [ ] count-occurrences-of-a-substring
+- [ ] count-the-coins-1
+- [ ] count-the-coins-2
+- [ ] cramers-rule
 - [ ] crc-32-1
 - [ ] crc-32-2
+- [ ] create-a-file-on-magnetic-tape
+- [ ] create-a-file
+- [ ] create-a-two-dimensional-array-at-runtime-1
+- [ ] create-an-html-table
+- [ ] create-an-object-at-a-given-address
 - [ ] csv-data-manipulation
 - [ ] csv-to-html-translation-1
 - [ ] csv-to-html-translation-2
 - [ ] csv-to-html-translation-3
 - [ ] csv-to-html-translation-4
 - [ ] csv-to-html-translation-5
+- [ ] cuban-primes
+- [ ] cullen-and-woodall-numbers
+- [ ] cumulative-standard-deviation
+- [ ] currency
+- [ ] currying
+- [ ] curzon-numbers
 - [ ] cusip
+- [ ] cyclops-numbers
+- [ ] damm-algorithm
 - [ ] md5

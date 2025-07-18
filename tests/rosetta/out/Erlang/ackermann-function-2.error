@@ -1,6 +1,0 @@
-run error: exit status 127
-/workspace/mochi/tests/rosetta/out/Erlang/ackermann-function-2.erl:9:5: variable 'Result1' is unbound
-%    9|     Result1.
-%     |     ^
-
-escript: There were compilation errors.
