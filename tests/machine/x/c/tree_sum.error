@@ -20,13 +20,6 @@ exit status 1
       |                                ^~~~
       |                                node_t
 /workspace/mochi/tests/machine/x/c/tree_sum.c: In function ‘_mochi_main’:
-/workspace/mochi/tests/machine/x/c/tree_sum.c:50:21: error: ‘Tree’ undeclared (first use in this function); did you mean ‘free’?
-   50 |           .left = &(Tree){.tag = Tree_Leaf},
-      |                     ^~~~
-      |                     free
-/workspace/mochi/tests/machine/x/c/tree_sum.c:50:26: error: expected ‘}’ before ‘{’ token
-   50 |           .left = &(Tree){.tag = Tree_Leaf},
-      |                          ^
-/workspace/mochi/tests/machine/x/c/tree_sum.c:49:31: note: to match this ‘{’
-   49 |       .value.node_t = (node_t){
-      |                               ^
+/workspace/mochi/tests/machine/x/c/tree_sum.c:50:20: error: ‘Leaf’ undeclared (first use in this function)
+   50 |           .left = &Leaf,
+      |                    ^~~~
