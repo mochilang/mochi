@@ -2579,6 +2579,9 @@ func isNumericType(t types.Type) bool {
 	switch t.(type) {
 	case types.IntType, types.Int64Type, types.FloatType, types.BigIntType, types.BigRatType:
 		return true
+	case types.AnyType:
+		// Treat dynamic values as numeric to avoid unnecessary casts
+		return true
 	default:
 		return false
 	}

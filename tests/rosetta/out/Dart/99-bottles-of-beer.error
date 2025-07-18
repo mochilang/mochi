@@ -1,7 +1,0 @@
-run: exit status 254
-/tmp/99-bottles-of-beer.dart:18:30: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
-    print(bottles((i as num) - 1) + ' of beer on the wall');
-                             ^
-/tmp/99-bottles-of-beer.dart:19:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) - 1;
-                   ^
