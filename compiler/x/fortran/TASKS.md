@@ -67,3 +67,4 @@
 - [x] Support query compilation with joins and group-by for TPC-H `q1.mochi`.
 - [x] Improve handling of automatic imports for external functions.
 - [ ] Continue refining generated code formatting.
+- [ ] Support list parameters without explicit declarations.
