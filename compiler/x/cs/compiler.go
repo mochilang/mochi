@@ -720,12 +720,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 						listStruct = &st
 					}
 				} else if ml := mapLiteral(s.Let.Value); ml != nil {
-					if mt, ok := c.inferSimpleMap(ml); ok {
-						inferredT = mt
-					} else if st, ok := c.inferStructFromMap(ml, s.Let.Name); ok {
+					if st, ok := c.inferStructFromMap(ml, s.Let.Name); ok {
 						inferredT = st
 						c.env.SetStruct(st.Name, st)
 						c.compileStructType(st)
+					} else if mt, ok := c.inferSimpleMap(ml); ok {
+						inferredT = mt
 					}
 				} else if qe := s.Let.Value.Binary.Left.Value.Target.Query; qe != nil {
 					if ml := mapLiteral(qe.Select); ml != nil {
@@ -838,12 +838,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 						c.compileStructType(st)
 					}
 				} else if ml := mapLiteral(s.Var.Value); ml != nil {
-					if mt, ok := c.inferSimpleMap(ml); ok {
-						inferredT = mt
-					} else if st, ok := c.inferStructFromMap(ml, s.Var.Name); ok {
+					if st, ok := c.inferStructFromMap(ml, s.Var.Name); ok {
 						inferredT = st
 						c.env.SetStruct(st.Name, st)
 						c.compileStructType(st)
+					} else if mt, ok := c.inferSimpleMap(ml); ok {
+						inferredT = mt
 					}
 				} else if qe := s.Var.Value.Binary.Left.Value.Target.Query; qe != nil {
 					if ml := mapLiteral(qe.Select); ml != nil {

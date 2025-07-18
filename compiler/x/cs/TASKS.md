@@ -1,4 +1,7 @@
 # C# Compiler TODO
+## Recent Updates (2025-07-28 12:00)
+- Prefer struct inference over map typing when both are possible. This
+  improves query results like `cross_join` by using typed records.
 ## Recent Updates (2025-07-28 00:00)
 - Improved type inference for datasets so `where` filters preserve struct field access.
 - Generated machine output for `dataset_sort_take_limit` and `dataset_where_filter` bringing totals to 34/100.
