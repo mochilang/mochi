@@ -1,3 +1,13 @@
 exit status 1
-# command-line-arguments
-../../../tests/machine/x/go/left_join_multi.go:141:19: cannot convert i (variable of type *Item) to type Item
+panic: interface conversion: interface {} is main.Item, not *main.Item
+
+goroutine 1 [running]:
+main.main.main.func1.func7({0x4ac5c0?, 0xc00000e048?})
+	/workspace/mochi/tests/machine/x/go/left_join_multi.go:116 +0x4c
+main._query({0xc00006c020, 0x2, 0x30?}, {0xc000104e60, 0x2, 0xc000104d90?}, {0x4c5568, 0x0, 0x0, 0xffffffffffffffff, ...})
+	/workspace/mochi/tests/machine/x/go/left_join_multi.go:210 +0x1e10
+main.main.func1(...)
+	/workspace/mochi/tests/machine/x/go/left_join_multi.go:57
+main.main()
+	/workspace/mochi/tests/machine/x/go/left_join_multi.go:148 +0x46e
+exit status 2
