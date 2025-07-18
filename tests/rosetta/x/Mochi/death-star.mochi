@@ -1,0 +1,112 @@
+// Mochi translation of Rosetta "Death Star" task
+// Produces an ASCII rendering similar to the Python and Go versions.
+
+// 3D vector
+type V3 { x: float, y: float, z: float }
+
+// Sphere description
+type Sphere { cx: float, cy: float, cz: float, r: float }
+
+// Approximate square root using Newton's method
+fun sqrtApprox(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess = x
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+// integer exponent for floats
+fun powf(base: float, exp: int): float {
+  var result = 1.0
+  var i = 0
+  while i < exp {
+    result = result * base
+    i = i + 1
+  }
+  return result
+}
+
+fun normalize(v: V3): V3 {
+  let len = sqrtApprox(v.x*v.x + v.y*v.y + v.z*v.z)
+  return V3{ x: v.x/len, y: v.y/len, z: v.z/len }
+}
+
+fun dot(a: V3, b: V3): float {
+  let d = a.x*b.x + a.y*b.y + a.z*b.z
+  if d < 0.0 { return -d }
+  return 0.0
+}
+
+fun hitSphere(s: Sphere, x: float, y: float): map<string, any> {
+  let dx = x - s.cx
+  let dy = y - s.cy
+  let zsq = s.r*s.r - (dx*dx + dy*dy)
+  if zsq < 0.0 { return {"hit": false} }
+  let z = sqrtApprox(zsq)
+  return {"hit": true, "z1": s.cz - z, "z2": s.cz + z}
+}
+
+fun main() {
+  let shades = ".:!*oe&#%@"
+
+  var light = normalize(V3{ x:-50.0, y:30.0, z:50.0 })
+  let pos = Sphere{ cx:20.0, cy:20.0, cz:0.0, r:20.0 }
+  let neg = Sphere{ cx:1.0, cy:1.0, cz:-6.0, r:20.0 }
+
+  var yi = 0
+  while yi <= 40 {
+    let y = (yi as float) + 0.5
+    var line = ""
+    var xi = -20
+    while xi <= 60 {
+      let x = ((xi as float) - pos.cx) / 2.0 + 0.5 + pos.cx
+      let hb = hitSphere(pos, x, y)
+      if !hb.hit {
+        line = line + " "
+        xi = xi + 1
+        continue
+      }
+      let zb1 = hb.z1
+      let zb2 = hb.z2
+      let hs = hitSphere(neg, x, y)
+      var hitRes = 1
+      if !hs.hit {
+        hitRes = 1
+      } else if hs.z1 > zb1 {
+        hitRes = 1
+      } else if hs.z2 > zb2 {
+        hitRes = 0
+      } else if hs.z2 > zb1 {
+        hitRes = 2
+      } else {
+        hitRes = 1
+      }
+      if hitRes == 0 {
+        line = line + " "
+        xi = xi + 1
+        continue
+      }
+      var vec: V3
+      if hitRes == 1 {
+        vec = V3{ x: x - pos.cx, y: y - pos.cy, z: zb1 - pos.cz }
+      } else {
+        vec = V3{ x: neg.cx - x, y: neg.cy - y, z: neg.cz - hs.z2 }
+      }
+      vec = normalize(vec)
+      var b = powf(dot(light, vec), 2) + 0.5
+      var intensity = ((1.0 - b) * (len(shades) as float)) as int
+      if intensity < 0 { intensity = 0 }
+      if intensity >= len(shades) { intensity = len(shades) - 1 }
+      line = line + substring(shades, intensity, intensity + 1)
+      xi = xi + 1
+    }
+    print(line)
+    yi = yi + 1
+  }
+}
+
+main()
