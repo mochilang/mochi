@@ -405,14 +405,20 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 	}
 	if st.Type != nil {
 		t := c.resolveTypeRef(st.Type)
-		switch tt := t.(type) {
-		case types.StructType:
-			c.use("_cast_struct")
-			expr = fmt.Sprintf("(_cast_struct #'%s %s)", sanitizeName(tt.Name), expr)
-		case types.ListType:
-			if stt, ok := tt.Elem.(types.StructType); ok {
-				c.use("_cast_struct_list")
-				expr = fmt.Sprintf("(_cast_struct_list #'%s %s)", sanitizeName(stt.Name), expr)
+		needCast := true
+		if st.Value != nil && equalTypes(t, c.exprType(st.Value)) {
+			needCast = false
+		}
+		if needCast {
+			switch tt := t.(type) {
+			case types.StructType:
+				c.use("_cast_struct")
+				expr = fmt.Sprintf("(_cast_struct #'%s %s)", sanitizeName(tt.Name), expr)
+			case types.ListType:
+				if stt, ok := tt.Elem.(types.StructType); ok {
+					c.use("_cast_struct_list")
+					expr = fmt.Sprintf("(_cast_struct_list #'%s %s)", sanitizeName(stt.Name), expr)
+				}
 			}
 		}
 	}
@@ -458,14 +464,20 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 	}
 	if st.Type != nil && expr != "nil" {
 		t := c.resolveTypeRef(st.Type)
-		switch tt := t.(type) {
-		case types.StructType:
-			c.use("_cast_struct")
-			expr = fmt.Sprintf("(_cast_struct #'%s %s)", sanitizeName(tt.Name), expr)
-		case types.ListType:
-			if stt, ok := tt.Elem.(types.StructType); ok {
-				c.use("_cast_struct_list")
-				expr = fmt.Sprintf("(_cast_struct_list #'%s %s)", sanitizeName(stt.Name), expr)
+		needCast := true
+		if st.Value != nil && equalTypes(t, c.exprType(st.Value)) {
+			needCast = false
+		}
+		if needCast {
+			switch tt := t.(type) {
+			case types.StructType:
+				c.use("_cast_struct")
+				expr = fmt.Sprintf("(_cast_struct #'%s %s)", sanitizeName(tt.Name), expr)
+			case types.ListType:
+				if stt, ok := tt.Elem.(types.StructType); ok {
+					c.use("_cast_struct_list")
+					expr = fmt.Sprintf("(_cast_struct_list #'%s %s)", sanitizeName(stt.Name), expr)
+				}
 			}
 		}
 	}
