@@ -1,0 +1,193 @@
+// Mochi implementation of Rosetta "Date manipulation" task
+// Translated from Go version in tests/rosetta/x/Go/date-manipulation.go
+
+let months = {
+  "January": 1,
+  "February": 2,
+  "March": 3,
+  "April": 4,
+  "May": 5,
+  "June": 6,
+  "July": 7,
+  "August": 8,
+  "September": 9,
+  "October": 10,
+  "November": 11,
+  "December": 12,
+}
+
+fun isLeap(y: int): bool {
+  if y % 400 == 0 { return true }
+  if y % 100 == 0 { return false }
+  return y % 4 == 0
+}
+
+fun daysInMonth(y: int, m: int): int {
+  let feb = if isLeap(y) { 29 } else { 28 }
+  let lengths = [31, feb, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+  return lengths[m-1]
+}
+
+fun daysBeforeYear(y: int): int {
+  var days = 0
+  var yy = 1970
+  while yy < y {
+    days = days + 365
+    if isLeap(yy) { days = days + 1 }
+    yy = yy + 1
+  }
+  return days
+}
+
+fun daysBeforeMonth(y: int, m: int): int {
+  var days = 0
+  var mm = 1
+  while mm < m {
+    days = days + daysInMonth(y, mm)
+    mm = mm + 1
+  }
+  return days
+}
+
+fun epochSeconds(y: int, m: int, d: int, h: int, mi: int): int {
+  let days = daysBeforeYear(y) + daysBeforeMonth(y, m) + (d - 1)
+  return days * 86400 + h * 3600 + mi * 60
+}
+
+fun fromEpoch(sec: int): list<int> {
+  var days = sec / 86400
+  var rem = sec % 86400
+  var y = 1970
+  while true {
+    let dy = if isLeap(y) { 366 } else { 365 }
+    if days >= dy {
+      days = days - dy
+      y = y + 1
+    } else {
+      break
+    }
+  }
+  var m = 1
+  while true {
+    let dim = daysInMonth(y, m)
+    if days >= dim {
+      days = days - dim
+      m = m + 1
+    } else {
+      break
+    }
+  }
+  let d = days + 1
+  let h = rem / 3600
+  let mi = (rem % 3600) / 60
+  return [y, m, d, h, mi]
+}
+
+fun pad2(n: int): string {
+  if n < 10 { return "0" + str(n) }
+  return str(n)
+}
+
+fun absInt(n: int): int { if n < 0 { return -n } return n }
+
+fun formatDate(parts: list<int>, offset: int, abbr: string): string {
+  let y = parts[0]
+  let m = parts[1]
+  let d = parts[2]
+  let h = parts[3]
+  let mi = parts[4]
+  var sign = "+"
+  if offset < 0 {
+    sign = "-"
+  }
+  let off = absInt(offset) / 60
+  let offh = pad2(off / 60)
+  let offm = pad2(off % 60)
+  return str(y) + "-" + pad2(m) + "-" + pad2(d) + " " + pad2(h) + ":" + pad2(mi) + ":00 " + sign + offh + offm + " " + abbr
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && substring(str,0,1) == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,"5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  while i < len(str) {
+    n = n*10 + digits[substring(str,i,i+1)]
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun indexOf(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if substring(s, i, i+1) == ch { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun parseTime(s: string): list<int> {
+  let c = indexOf(s, ":")
+  let h = parseIntStr(substring(s, 0, c))
+  let mi = parseIntStr(substring(s, c+1, c+3))
+  let ampm = substring(s, len(s)-2, len(s))
+  var hh = h
+  if ampm == "pm" && h != 12 { hh = h + 12 }
+  if ampm == "am" && h == 12 { hh = 0 }
+  return [hh, mi]
+}
+
+fun main() {
+  let input = "March 7 2009 7:30pm EST"
+  print("Input:              " + input)
+  let parts = []
+  var cur = ""
+  var i = 0
+  while i < len(input) {
+    let ch = substring(input, i, i+1)
+    if ch == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  let month = months[parts[0]]
+  let day = parseIntStr(parts[1])
+  let year = parseIntStr(parts[2])
+  let tm = parseTime(parts[3])
+  let hour = tm[0]
+  let minute = tm[1]
+  let tz = parts[4]
+
+  let zoneOffsets = { "EST": -18000, "EDT": -14400, "MST": -25200 }
+  let local = epochSeconds(year, month, day, hour, minute)
+  let utc = local - zoneOffsets[tz]
+  let utc12 = utc + 43200
+  let startDST = epochSeconds(2009,3,8,7,0)
+  var offEast = -18000
+  if utc12 >= startDST {
+    offEast = -14400
+  }
+  let eastParts = fromEpoch(utc12 + offEast)
+  var eastAbbr = "EST"
+  if offEast == -14400 {
+    eastAbbr = "EDT"
+  }
+  print("+12 hrs:            " + formatDate(eastParts, offEast, eastAbbr))
+
+  let offAZ = -25200
+  let azParts = fromEpoch(utc12 + offAZ)
+  print("+12 hrs in Arizona: " + formatDate(azParts, offAZ, "MST"))
+}
+
+main()
