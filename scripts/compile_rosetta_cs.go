@@ -60,58 +60,66 @@ func main() {
 
 	csproj := `<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework></PropertyGroup><ItemGroup><PackageReference Include="YamlDotNet" Version="13.3.1" /></ItemGroup></Project>`
 
-	for _, name := range tasks {
-		src := filepath.Join(root, "tests", "rosetta", "x", "Mochi", name+".mochi")
-		prog, err := parser.Parse(src)
-		if err != nil {
-			writeError(outDir, name, fmt.Sprintf("parse: %v", err))
-			continue
-		}
-		env := types.NewEnv(nil)
-		if errs := types.Check(prog, env); len(errs) > 0 {
-			writeError(outDir, name, fmt.Sprintf("type: %v", errs[0]))
-			continue
-		}
-		code, err := cscode.New(env).Compile(prog)
-		if err != nil {
-			writeError(outDir, name, fmt.Sprintf("compile: %v", err))
-			continue
-		}
-		codeFile := filepath.Join(outDir, name+".cs")
-		if err := os.WriteFile(codeFile, code, 0o644); err != nil {
-			fmt.Fprintln(os.Stderr, "write code", name, err)
-			continue
-		}
-		tmpDir := filepath.Join(os.TempDir(), "TestMochiToCS"+name)
-		_ = os.RemoveAll(tmpDir)
-		if err := os.MkdirAll(tmpDir, 0o755); err != nil {
-			writeError(outDir, name, fmt.Sprintf("tmp dir: %v", err))
-			os.Remove(filepath.Join(outDir, name+".out"))
-			continue
-		}
-		proj := filepath.Join(tmpDir, "app.csproj")
-		if err := os.WriteFile(proj, []byte(csproj), 0644); err != nil {
-			writeError(outDir, name, fmt.Sprintf("csproj: %v", err))
-			os.Remove(filepath.Join(outDir, name+".out"))
-			continue
-		}
-		file := filepath.Join(tmpDir, "Program.cs")
-		if err := os.WriteFile(file, code, 0644); err != nil {
-			writeError(outDir, name, fmt.Sprintf("tmp write: %v", err))
-			os.Remove(filepath.Join(outDir, name+".out"))
-			continue
-		}
-		cmd := exec.Command("dotnet", "run", "--project", proj)
-		out, err := cmd.CombinedOutput()
-		if err != nil {
-			writeError(outDir, name, fmt.Sprintf("run: %v\n%s", err, out))
-			os.Remove(filepath.Join(outDir, name+".out"))
-			continue
-		}
-		os.Remove(filepath.Join(outDir, name+".error"))
-		cleaned := append(bytes.TrimSpace(out), '\n')
-		if err := os.WriteFile(filepath.Join(outDir, name+".out"), cleaned, 0o644); err != nil {
-			fmt.Fprintln(os.Stderr, "write out", name, err)
-		}
-	}
+        for _, name := range tasks {
+                func(name string) {
+                        defer func() {
+                                if r := recover(); r != nil {
+                                        writeError(outDir, name, fmt.Sprintf("panic: %v", r))
+                                }
+                        }()
+
+                        src := filepath.Join(root, "tests", "rosetta", "x", "Mochi", name+".mochi")
+                        prog, err := parser.Parse(src)
+                        if err != nil {
+                                writeError(outDir, name, fmt.Sprintf("parse: %v", err))
+                                return
+                        }
+                        env := types.NewEnv(nil)
+                        if errs := types.Check(prog, env); len(errs) > 0 {
+                                writeError(outDir, name, fmt.Sprintf("type: %v", errs[0]))
+                                return
+                        }
+                        code, err := cscode.New(env).Compile(prog)
+                        if err != nil {
+                                writeError(outDir, name, fmt.Sprintf("compile: %v", err))
+                                return
+                        }
+                        codeFile := filepath.Join(outDir, name+".cs")
+                        if err := os.WriteFile(codeFile, code, 0o644); err != nil {
+                                fmt.Fprintln(os.Stderr, "write code", name, err)
+                                return
+                        }
+                        tmpDir := filepath.Join(os.TempDir(), "TestMochiToCS"+name)
+                        _ = os.RemoveAll(tmpDir)
+                        if err := os.MkdirAll(tmpDir, 0o755); err != nil {
+                                writeError(outDir, name, fmt.Sprintf("tmp dir: %v", err))
+                                os.Remove(filepath.Join(outDir, name+".out"))
+                                return
+                        }
+                        proj := filepath.Join(tmpDir, "app.csproj")
+                        if err := os.WriteFile(proj, []byte(csproj), 0644); err != nil {
+                                writeError(outDir, name, fmt.Sprintf("csproj: %v", err))
+                                os.Remove(filepath.Join(outDir, name+".out"))
+                                return
+                        }
+                        file := filepath.Join(tmpDir, "Program.cs")
+                        if err := os.WriteFile(file, code, 0644); err != nil {
+                                writeError(outDir, name, fmt.Sprintf("tmp write: %v", err))
+                                os.Remove(filepath.Join(outDir, name+".out"))
+                                return
+                        }
+                        cmd := exec.Command("dotnet", "run", "--project", proj)
+                        out, err := cmd.CombinedOutput()
+                        if err != nil {
+                                writeError(outDir, name, fmt.Sprintf("run: %v\n%s", err, out))
+                                os.Remove(filepath.Join(outDir, name+".out"))
+                                return
+                        }
+                        os.Remove(filepath.Join(outDir, name+".error"))
+                        cleaned := append(bytes.TrimSpace(out), '\n')
+                        if err := os.WriteFile(filepath.Join(outDir, name+".out"), cleaned, 0o644); err != nil {
+                                fmt.Fprintln(os.Stderr, "write out", name, err)
+                        }
+                }(name)
+        }
 }
