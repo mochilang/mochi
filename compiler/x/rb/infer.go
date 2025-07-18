@@ -7,17 +7,38 @@ import (
 	"mochi/types"
 )
 
-// inferExprType delegates to types.TypeOfExprBasic.
+// inferExprType delegates to types.ExprType for improved accuracy.
 func (c *Compiler) inferExprType(e *parser.Expr) types.Type {
-	return types.TypeOfExprBasic(e, c.env)
+	return types.ExprType(e, c.env)
 }
 
-// inferPostfixType delegates to types.TypeOfPostfixBasic.
+// inferExprTypeHint delegates to types.ExprTypeHint.
+func (c *Compiler) inferExprTypeHint(e *parser.Expr, hint types.Type) types.Type {
+	return types.ExprTypeHint(e, hint, c.env)
+}
+
+func (c *Compiler) inferUnaryType(u *parser.Unary) types.Type {
+	if u == nil {
+		return types.AnyType{}
+	}
+	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: u}}
+	return types.ExprType(expr, c.env)
+}
+
 func (c *Compiler) inferPostfixType(u *parser.Unary) types.Type {
-	return types.TypeOfPostfixBasic(u, c.env)
+	if u == nil {
+		return types.AnyType{}
+	}
+	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: u}}
+	return types.ExprType(expr, c.env)
 }
 
-// inferPrimaryType delegates to types.TypeOfPrimaryBasic.
 func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
-	return types.TypeOfPrimaryBasic(p, c.env)
+	if p == nil {
+		return types.AnyType{}
+	}
+	postfix := &parser.PostfixExpr{Target: p}
+	unary := &parser.Unary{Value: postfix}
+	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: unary}}
+	return types.ExprType(expr, c.env)
 }

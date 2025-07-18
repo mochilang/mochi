@@ -1,6 +1,7 @@
 # Ruby Compiler Tasks
 
 ## Recent Enhancements (2025-07-13 05:26)
+- 2025-08-10 - Switched type inference to use `types.ExprType` for better accuracy and fewer runtime helpers.
 - 2025-08-03 - Query aggregations now use Ruby list methods instead of helper
   functions when possible. Updated VM outputs.
 - 2025-07-30 14:20 - Extended basic type inference in helper checks so built-in
