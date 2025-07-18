@@ -1,7 +1,9 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenbenfords-law2242113859/001/prog.zig:19:29: error: use of undeclared identifier 'substring'
-/tmp/TestMochiZigGoldenbenfords-law2242113859/001/prog.zig:36:17: error: use of undeclared identifier 'substring'
-/tmp/TestMochiZigGoldenbenfords-law2242113859/001/prog.zig:62:13: error: local variable is never mutated
-/tmp/TestMochiZigGoldenbenfords-law2242113859/001/prog.zig:62:13: note: consider using 'const'
-/tmp/TestMochiZigGoldenbenfords-law2242113859/001/prog.zig:118:13: error: local variable is never mutated
-/tmp/TestMochiZigGoldenbenfords-law2242113859/001/prog.zig:118:13: note: consider using 'const'
+zig build: exit status 1
+/tmp/benfords-law.zig:51:9: error: local variable is never mutated
+/tmp/benfords-law.zig:51:9: note: consider using 'const'
+/tmp/benfords-law.zig:49:9: error: local variable is never mutated
+/tmp/benfords-law.zig:49:9: note: consider using 'const'
+/tmp/benfords-law.zig:82:212: error: local constant 'res' shadows local variable from outer scope
+/tmp/benfords-law.zig:79:9: note: previous declaration here
+/tmp/benfords-law.zig:139:13: error: local variable is never mutated
+/tmp/benfords-law.zig:139:13: note: consider using 'const'

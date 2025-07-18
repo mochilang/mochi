@@ -1,4 +1,4 @@
-parse error: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/calkin-wilf-sequence.mochi:57:32: lexer: invalid input text "; s = s[1:] }\n  ..."
+parse: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/calkin-wilf-sequence.mochi:57:32: lexer: invalid input text "; s = s[1:] }\n  ..."
   --> /workspace/mochi/tests/rosetta/x/Mochi/calkin-wilf-sequence.mochi:57:32
 
  57 |   if s[0:1] == "-" { neg = true; s = s[1:] }

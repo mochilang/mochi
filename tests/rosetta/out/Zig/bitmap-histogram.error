@@ -1,11 +1,11 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenbitmap-histogram7259417/001/prog.zig:48:17: error: local variable is never mutated
-/tmp/TestMochiZigGoldenbitmap-histogram7259417/001/prog.zig:48:17: note: consider using 'const'
-/tmp/TestMochiZigGoldenbitmap-histogram7259417/001/prog.zig:47:17: error: local variable is never mutated
-/tmp/TestMochiZigGoldenbitmap-histogram7259417/001/prog.zig:47:17: note: consider using 'const'
-/tmp/TestMochiZigGoldenbitmap-histogram7259417/001/prog.zig:44:13: error: local variable is never mutated
-/tmp/TestMochiZigGoldenbitmap-histogram7259417/001/prog.zig:44:13: note: consider using 'const'
-/tmp/TestMochiZigGoldenbitmap-histogram7259417/001/prog.zig:78:13: error: local variable is never mutated
-/tmp/TestMochiZigGoldenbitmap-histogram7259417/001/prog.zig:78:13: note: consider using 'const'
-/tmp/TestMochiZigGoldenbitmap-histogram7259417/001/prog.zig:98:13: error: local variable is never mutated
-/tmp/TestMochiZigGoldenbitmap-histogram7259417/001/prog.zig:98:13: note: consider using 'const'
+zig build: exit status 1
+/tmp/bitmap-histogram.zig:48:17: error: local variable is never mutated
+/tmp/bitmap-histogram.zig:48:17: note: consider using 'const'
+/tmp/bitmap-histogram.zig:47:17: error: local variable is never mutated
+/tmp/bitmap-histogram.zig:47:17: note: consider using 'const'
+/tmp/bitmap-histogram.zig:44:13: error: local variable is never mutated
+/tmp/bitmap-histogram.zig:44:13: note: consider using 'const'
+/tmp/bitmap-histogram.zig:78:13: error: local variable is never mutated
+/tmp/bitmap-histogram.zig:78:13: note: consider using 'const'
+/tmp/bitmap-histogram.zig:98:13: error: local variable is never mutated
+/tmp/bitmap-histogram.zig:98:13: note: consider using 'const'

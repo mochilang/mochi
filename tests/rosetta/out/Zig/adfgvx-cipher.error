@@ -1,0 +1,9 @@
+zig build: exit status 1
+/tmp/adfgvx-cipher.zig:20:60: error: use of undeclared identifier 'handleError'
+/tmp/adfgvx-cipher.zig:26:67: error: use of undeclared identifier 'handleError'
+/tmp/adfgvx-cipher.zig:64:13: error: local variable is never mutated
+/tmp/adfgvx-cipher.zig:64:13: note: consider using 'const'
+/tmp/adfgvx-cipher.zig:105:9: error: local variable is never mutated
+/tmp/adfgvx-cipher.zig:105:9: note: consider using 'const'
+/tmp/adfgvx-cipher.zig:226:13: error: local variable is never mutated
+/tmp/adfgvx-cipher.zig:226:13: note: consider using 'const'

@@ -1,8 +1,7 @@
-type error: error[T007]: argument 2: expected int, got bigint
-  --> /workspace/mochi/tests/rosetta/x/Mochi/binary-strings.mochi:7:10
-
-  7 |   return substring(letters, idx, idx + 1)
-    |          ^
-
-help:
-  Ensure the argument type matches the function’s signature.
+zig build: exit status 1
+/tmp/binary-strings.zig:22:9: error: local variable shadows declaration of 'i'
+/tmp/binary-strings.zig:43:1: note: declared here
+/tmp/binary-strings.zig:29:34: error: function parameter shadows declaration of 'b'
+/tmp/binary-strings.zig:33:1: note: declared here
+/tmp/binary-strings.zig:60:9: error: local variable shadows declaration of 'i'
+/tmp/binary-strings.zig:43:1: note: declared here

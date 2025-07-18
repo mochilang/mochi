@@ -1,6 +1,5 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenbioinformatics-global-alignment207981463/001/prog.zig:46:29: error: use of undeclared identifier 'substring'
-/tmp/TestMochiZigGoldenbioinformatics-global-alignment207981463/001/prog.zig:59:29: error: use of undeclared identifier 'substring'
-/tmp/TestMochiZigGoldenbioinformatics-global-alignment207981463/001/prog.zig:122:13: error: use of undeclared identifier 'substring'
-/tmp/TestMochiZigGoldenbioinformatics-global-alignment207981463/001/prog.zig:171:39: error: use of undeclared identifier 'substring'
-/tmp/TestMochiZigGoldenbioinformatics-global-alignment207981463/001/prog.zig:189:25: error: use of undeclared identifier 'substring'
+zig build: exit status 1
+/tmp/bioinformatics-global-alignment.zig:78:223: error: local constant 'res' shadows local variable from outer scope
+/tmp/bioinformatics-global-alignment.zig:68:9: note: previous declaration here
+/tmp/bioinformatics-global-alignment.zig:95:233: error: local constant 'res' shadows local variable from outer scope
+/tmp/bioinformatics-global-alignment.zig:88:9: note: previous declaration here

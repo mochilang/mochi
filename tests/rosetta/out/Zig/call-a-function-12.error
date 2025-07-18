@@ -1,4 +1,2 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldencall-a-function-12663837651/001/prog.zig:15:16: error: no field named 'call' in struct 'prog.mkAdd__struct_3841'
-/tmp/TestMochiZigGoldencall-a-function-12663837651/001/prog.zig:13:13: note: struct declared here
-/tmp/TestMochiZigGoldencall-a-function-12663837651/001/prog.zig:29:28: note: called from here
+zig build: exit status 1
+/tmp/call-a-function-12.zig:29:28: error: expected type 'i32', found 'fn (i32) i32'

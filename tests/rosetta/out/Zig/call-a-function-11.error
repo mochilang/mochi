@@ -1,4 +1,4 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldencall-a-function-11600184456/001/prog.zig:27:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldencall-a-function-11600184456/001/prog.zig:27:9: note: consider using 'const'
-/tmp/TestMochiZigGoldencall-a-function-11600184456/001/prog.zig:25:11: error: unused local constant
+zig build: exit status 1
+/tmp/call-a-function-11.zig:27:9: error: local variable is never mutated
+/tmp/call-a-function-11.zig:27:9: note: consider using 'const'
+/tmp/call-a-function-11.zig:25:11: error: unused local constant

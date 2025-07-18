@@ -1,2 +1,2 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenarena-storage-pool3177546597/001/prog.zig:56:14: error: unused function parameter
+zig build: exit status 1
+/tmp/arena-storage-pool.zig:35:14: error: unused function parameter

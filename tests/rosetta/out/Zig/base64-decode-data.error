@@ -1,2 +1,2 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenbase64-decode-data1706622184/001/prog.zig:80:8: error: expected 'while', 'for', 'inline', or '{', found 'an identifier'
+zig build: exit status 1
+/tmp/base64-decode-data.zig:80:8: error: expected 'while', 'for', 'inline', or '{', found 'an identifier'

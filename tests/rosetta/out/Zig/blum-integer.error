@@ -1,6 +1,4 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenblum-integer1227876775/001/prog.zig:46:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldenblum-integer1227876775/001/prog.zig:46:9: note: consider using 'const'
-/tmp/TestMochiZigGoldenblum-integer1227876775/001/prog.zig:71:29: error: use of undeclared identifier 'substring'
-/tmp/TestMochiZigGoldenblum-integer1227876775/001/prog.zig:95:16: error: use of undeclared identifier 'substring'
-/tmp/TestMochiZigGoldenblum-integer1227876775/001/prog.zig:146:54: error: use of undeclared identifier 'substring'
+zig build: exit status 1
+/tmp/blum-integer.zig:67:9: error: local variable is never mutated
+/tmp/blum-integer.zig:67:9: note: consider using 'const'
+/tmp/blum-integer.zig:129:9: error: unused local variable

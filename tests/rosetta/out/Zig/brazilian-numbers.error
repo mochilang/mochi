@@ -1,5 +1,5 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenbrazilian-numbers943538367/001/prog.zig:13:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldenbrazilian-numbers943538367/001/prog.zig:13:9: note: consider using 'const'
-/tmp/TestMochiZigGoldenbrazilian-numbers943538367/001/prog.zig:66:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldenbrazilian-numbers943538367/001/prog.zig:66:9: note: consider using 'const'
+zig build: exit status 1
+/tmp/brazilian-numbers.zig:13:9: error: local variable is never mutated
+/tmp/brazilian-numbers.zig:13:9: note: consider using 'const'
+/tmp/brazilian-numbers.zig:66:9: error: local variable is never mutated
+/tmp/brazilian-numbers.zig:66:9: note: consider using 'const'

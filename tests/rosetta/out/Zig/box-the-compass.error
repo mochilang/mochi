@@ -1,6 +1,9 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenbox-the-compass1737431572/001/prog.zig:95:9: error: local variable shadows declaration of 'i'
-/tmp/TestMochiZigGoldenbox-the-compass1737431572/001/prog.zig:81:1: note: declared here
-/tmp/TestMochiZigGoldenbox-the-compass1737431572/001/prog.zig:104:9: error: local variable shadows declaration of 'i'
-/tmp/TestMochiZigGoldenbox-the-compass1737431572/001/prog.zig:81:1: note: declared here
-/tmp/TestMochiZigGoldenbox-the-compass1737431572/001/prog.zig:122:17: error: use of undeclared identifier 'substring'
+zig build: exit status 1
+/tmp/box-the-compass.zig:22:9: error: local variable shadows declaration of 'i'
+/tmp/box-the-compass.zig:102:1: note: declared here
+/tmp/box-the-compass.zig:116:9: error: local variable shadows declaration of 'i'
+/tmp/box-the-compass.zig:102:1: note: declared here
+/tmp/box-the-compass.zig:125:9: error: local variable shadows declaration of 'i'
+/tmp/box-the-compass.zig:102:1: note: declared here
+/tmp/box-the-compass.zig:141:13: error: local variable is never mutated
+/tmp/box-the-compass.zig:141:13: note: consider using 'const'

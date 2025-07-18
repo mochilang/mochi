@@ -1,5 +1,7 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenanagrams1155722193/001/prog.zig:40:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldenanagrams1155722193/001/prog.zig:40:9: note: consider using 'const'
-/tmp/TestMochiZigGoldenanagrams1155722193/001/prog.zig:142:21: error: local variable is never mutated
-/tmp/TestMochiZigGoldenanagrams1155722193/001/prog.zig:142:21: note: consider using 'const'
+zig build: exit status 1
+/tmp/anagrams.zig:40:9: error: local variable is never mutated
+/tmp/anagrams.zig:40:9: note: consider using 'const'
+/tmp/anagrams.zig:77:221: error: local constant 'res' shadows local variable from outer scope
+/tmp/anagrams.zig:64:9: note: previous declaration here
+/tmp/anagrams.zig:142:21: error: local variable is never mutated
+/tmp/anagrams.zig:142:21: note: consider using 'const'

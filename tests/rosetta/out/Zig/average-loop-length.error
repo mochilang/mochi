@@ -1,7 +1,9 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenaverage-loop-length3387094325/001/prog.zig:26:29: error: use of undeclared identifier 'substring'
-/tmp/TestMochiZigGoldenaverage-loop-length3387094325/001/prog.zig:43:17: error: use of undeclared identifier 'substring'
-/tmp/TestMochiZigGoldenaverage-loop-length3387094325/001/prog.zig:95:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldenaverage-loop-length3387094325/001/prog.zig:95:9: note: consider using 'const'
-/tmp/TestMochiZigGoldenaverage-loop-length3387094325/001/prog.zig:116:13: error: local variable is never mutated
-/tmp/TestMochiZigGoldenaverage-loop-length3387094325/001/prog.zig:116:13: note: consider using 'const'
+zig build: exit status 1
+/tmp/average-loop-length.zig:58:9: error: local variable is never mutated
+/tmp/average-loop-length.zig:58:9: note: consider using 'const'
+/tmp/average-loop-length.zig:56:9: error: local variable is never mutated
+/tmp/average-loop-length.zig:56:9: note: consider using 'const'
+/tmp/average-loop-length.zig:116:9: error: local variable is never mutated
+/tmp/average-loop-length.zig:116:9: note: consider using 'const'
+/tmp/average-loop-length.zig:137:13: error: local variable is never mutated
+/tmp/average-loop-length.zig:137:13: note: consider using 'const'

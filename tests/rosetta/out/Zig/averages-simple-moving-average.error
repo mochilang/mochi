@@ -1,9 +1,13 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenaverages-simple-moving-average4025872389/001/prog.zig:15:29: error: use of undeclared identifier 'substring'
-/tmp/TestMochiZigGoldenaverages-simple-moving-average4025872389/001/prog.zig:32:17: error: use of undeclared identifier 'substring'
-/tmp/TestMochiZigGoldenaverages-simple-moving-average4025872389/001/prog.zig:84:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldenaverages-simple-moving-average4025872389/001/prog.zig:84:9: note: consider using 'const'
-/tmp/TestMochiZigGoldenaverages-simple-moving-average4025872389/001/prog.zig:83:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldenaverages-simple-moving-average4025872389/001/prog.zig:83:9: note: consider using 'const'
-/tmp/TestMochiZigGoldenaverages-simple-moving-average4025872389/001/prog.zig:71:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldenaverages-simple-moving-average4025872389/001/prog.zig:71:9: note: consider using 'const'
+zig build: exit status 1
+/tmp/averages-simple-moving-average.zig:47:9: error: local variable is never mutated
+/tmp/averages-simple-moving-average.zig:47:9: note: consider using 'const'
+/tmp/averages-simple-moving-average.zig:45:9: error: local variable is never mutated
+/tmp/averages-simple-moving-average.zig:45:9: note: consider using 'const'
+/tmp/averages-simple-moving-average.zig:85:236: error: local constant 'res' shadows local variable from outer scope
+/tmp/averages-simple-moving-average.zig:73:9: note: previous declaration here
+/tmp/averages-simple-moving-average.zig:105:9: error: local variable is never mutated
+/tmp/averages-simple-moving-average.zig:105:9: note: consider using 'const'
+/tmp/averages-simple-moving-average.zig:104:9: error: local variable is never mutated
+/tmp/averages-simple-moving-average.zig:104:9: note: consider using 'const'
+/tmp/averages-simple-moving-average.zig:92:9: error: local variable is never mutated
+/tmp/averages-simple-moving-average.zig:92:9: note: consider using 'const'

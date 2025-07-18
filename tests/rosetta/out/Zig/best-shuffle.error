@@ -1,3 +1,7 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenbest-shuffle2324035917/001/prog.zig:20:184: error: use of undeclared identifier 'substring'
-/tmp/TestMochiZigGoldenbest-shuffle2324035917/001/prog.zig:52:180: error: use of undeclared identifier 'substring'
+zig build: exit status 1
+/tmp/best-shuffle.zig:48:13: error: local variable is never mutated
+/tmp/best-shuffle.zig:48:13: note: consider using 'const'
+/tmp/best-shuffle.zig:69:9: error: local variable is never mutated
+/tmp/best-shuffle.zig:69:9: note: consider using 'const'
+/tmp/best-shuffle.zig:68:9: error: local variable is never mutated
+/tmp/best-shuffle.zig:68:9: note: consider using 'const'

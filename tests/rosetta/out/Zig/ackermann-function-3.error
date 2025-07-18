@@ -1,8 +1,10 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenackermann-function-3227405273/001/prog.zig:4:16: error: function parameter shadows declaration of 'err'
-/tmp/TestMochiZigGoldenackermann-function-3227405273/001/prog.zig:12:1: note: declared here
-/tmp/TestMochiZigGoldenackermann-function-3227405273/001/prog.zig:9:62: error: capture shadows declaration of 'err'
-/tmp/TestMochiZigGoldenackermann-function-3227405273/001/prog.zig:12:1: note: declared here
-/tmp/TestMochiZigGoldenackermann-function-3227405273/001/prog.zig:43:20: error: use of undeclared identifier 'int'
-/tmp/TestMochiZigGoldenackermann-function-3227405273/001/prog.zig:73:181: error: capture shadows declaration of 'err'
-/tmp/TestMochiZigGoldenackermann-function-3227405273/001/prog.zig:12:1: note: declared here
+zig build: exit status 1
+/tmp/ackermann-function-3.zig:4:16: error: function parameter shadows declaration of 'err'
+/tmp/ackermann-function-3.zig:33:1: note: declared here
+/tmp/ackermann-function-3.zig:24:55: error: capture shadows declaration of 'err'
+/tmp/ackermann-function-3.zig:33:1: note: declared here
+/tmp/ackermann-function-3.zig:30:62: error: capture shadows declaration of 'err'
+/tmp/ackermann-function-3.zig:33:1: note: declared here
+/tmp/ackermann-function-3.zig:64:20: error: use of undeclared identifier 'int'
+/tmp/ackermann-function-3.zig:94:181: error: capture shadows declaration of 'err'
+/tmp/ackermann-function-3.zig:33:1: note: declared here

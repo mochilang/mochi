@@ -1,0 +1,7 @@
+zig build: exit status 1
+/tmp/call-a-function-10.zig:12:9: error: local variable is never mutated
+/tmp/call-a-function-10.zig:12:9: note: consider using 'const'
+/tmp/call-a-function-10.zig:11:9: error: local variable is never mutated
+/tmp/call-a-function-10.zig:11:9: note: consider using 'const'
+/tmp/call-a-function-10.zig:10:9: error: local variable is never mutated
+/tmp/call-a-function-10.zig:10:9: note: consider using 'const'

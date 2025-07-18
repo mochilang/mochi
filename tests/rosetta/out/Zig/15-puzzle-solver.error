@@ -1,2 +1,2 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGolden15-puzzle-solver2575423492/001/prog.zig:5:34: error: use of undeclared identifier 'testpkg'
+zig build: exit status 1
+/tmp/15-puzzle-solver.zig:5:34: error: use of undeclared identifier 'testpkg'

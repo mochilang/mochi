@@ -1,8 +1,6 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenarrays3359815702/001/prog.zig:9:9: error: local variable shadows declaration of 's'
-/tmp/TestMochiZigGoldenarrays3359815702/001/prog.zig:40:1: note: declared here
-/tmp/TestMochiZigGoldenarrays3359815702/001/prog.zig:29:19: error: function parameter shadows declaration of 'a'
-/tmp/TestMochiZigGoldenarrays3359815702/001/prog.zig:33:1: note: declared here
-/tmp/TestMochiZigGoldenarrays3359815702/001/prog.zig:44:9: error: local variable shadows declaration of 's'
-/tmp/TestMochiZigGoldenarrays3359815702/001/prog.zig:40:1: note: declared here
-/tmp/TestMochiZigGoldenarrays3359815702/001/prog.zig:81:19: error: unused capture
+zig build: exit status 1
+/tmp/arrays.zig:8:19: error: function parameter shadows declaration of 'a'
+/tmp/arrays.zig:12:1: note: declared here
+/tmp/arrays.zig:23:9: error: local variable shadows declaration of 's'
+/tmp/arrays.zig:19:1: note: declared here
+/tmp/arrays.zig:60:19: error: unused capture

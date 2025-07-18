@@ -1,5 +1,7 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenb-zier-curves-intersections92694514/001/prog.zig:121:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldenb-zier-curves-intersections92694514/001/prog.zig:121:9: note: consider using 'const'
-/tmp/TestMochiZigGoldenb-zier-curves-intersections92694514/001/prog.zig:117:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldenb-zier-curves-intersections92694514/001/prog.zig:117:9: note: consider using 'const'
+zig build: exit status 1
+/tmp/b-zier-curves-intersections.zig:121:9: error: local variable is never mutated
+/tmp/b-zier-curves-intersections.zig:121:9: note: consider using 'const'
+/tmp/b-zier-curves-intersections.zig:117:9: error: local variable is never mutated
+/tmp/b-zier-curves-intersections.zig:117:9: note: consider using 'const'
+/tmp/b-zier-curves-intersections.zig:206:232: error: local constant 'res' shadows local constant from outer scope
+/tmp/b-zier-curves-intersections.zig:200:15: note: previous declaration here
