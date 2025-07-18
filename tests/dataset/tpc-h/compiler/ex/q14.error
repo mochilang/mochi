@@ -1,0 +1,13 @@
+** (Protocol.UndefinedError) protocol Enumerable not implemented for type BitString
+
+Got value:
+
+    "PROMO LUXURY"
+
+    (elixir 1.18.3) lib/enum.ex:1: Enumerable.impl_for!/1
+    (elixir 1.18.3) lib/enum.ex:194: Enumerable.member?/2
+    (elixir 1.18.3) lib/enum.ex:2020: Enum.member?/2
+    /tmp/q14.exs:24: anonymous fn/3 in Main.main/0
+    (elixir 1.18.3) lib/enum.ex:2546: Enum."-reduce/3-lists^foldl/2-0-"/3
+    /tmp/q14.exs:17: Main.main/0
+    /tmp/q14.exs:62: (file)

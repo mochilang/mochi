@@ -43,10 +43,20 @@ func TestExCompiler_TPCHQueries(t *testing.T) {
 		base := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "tpc-h", base+".mochi")
 		outWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "ex", base+".out")
+		errFile := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "ex", base+".error")
 		if _, err := os.Stat(outWant); err != nil {
 			continue
 		}
 		t.Run(base, func(t *testing.T) {
+			scriptCmd := exec.Command("go", "run", "-tags=slow,archive", "./scripts/compile_tpch_ex.go")
+			scriptCmd.Env = append(os.Environ(), "QUERIES="+fmt.Sprint(i))
+			scriptCmd.Dir = root
+			if out, err := scriptCmd.CombinedOutput(); err != nil {
+				t.Fatalf("compile script error: %v\n%s", err, out)
+			}
+			if b, err := os.ReadFile(errFile); err == nil {
+				t.Fatalf("elixir run failed:\n%s", b)
+			}
 			prog, err := parser.Parse(src)
 			if err != nil {
 				t.Fatalf("parse error: %v", err)
