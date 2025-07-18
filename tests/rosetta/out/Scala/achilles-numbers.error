@@ -1,0 +1,86 @@
+scalac: exit status 1
+/tmp/achilles-numbers.scala:43: error: method getPerfectPowers has return statement; needs result type
+          return
+          ^
+/tmp/achilles-numbers.scala:45: error: not found: value pps
+        pps(p) = true
+        ^
+/tmp/achilles-numbers.scala:54: error: type mismatch;
+ found   : scala.collection.mutable.Map[Int,Boolean]
+ required: scala.collection.immutable.Map[Int,Boolean]
+    var achilles: Map[Int, Boolean] = scala.collection.mutable.Map[Int, Boolean]()
+                                                                                ^
+/tmp/achilles-numbers.scala:62: error: type mismatch;
+ found   : Unit
+ required: Map[Int,Boolean]
+          return
+          ^
+/tmp/achilles-numbers.scala:65: error: not found: value pps
+          if (!(pps.contains(p))) {
+                ^
+/tmp/achilles-numbers.scala:66: error: value update is not a member of Map[Int,Boolean]
+            achilles(p) = true
+            ^
+/tmp/achilles-numbers.scala:77: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    var res: List[Int] = scala.collection.mutable.ArrayBuffer[Int]()
+                                                                  ^
+/tmp/achilles-numbers.scala:90: error: value += is not a member of List[Int]
+  Expression does not convert to assignment because:
+    type mismatch;
+     found   : List[Int]
+     required: String
+    expansion: res = res.$plus(List(min))
+      res += List(min)
+          ^
+/tmp/achilles-numbers.scala:91: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+      var out: List[Int] = scala.collection.mutable.ArrayBuffer[Int]()
+                                                                    ^
+/tmp/achilles-numbers.scala:95: error: value += is not a member of List[Int]
+  Expression does not convert to assignment because:
+    type mismatch;
+     found   : List[Int]
+     required: String
+    expansion: out = out.$plus(List(tmp.apply(j)))
+          out += List((tmp).apply(j))
+              ^
+/tmp/achilles-numbers.scala:116: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    var ach: List[Int] = scala.collection.mutable.ArrayBuffer[Int]()
+                                                                  ^
+/tmp/achilles-numbers.scala:117: error: type mismatch;
+ found   : String("keys")
+ required: Int
+    for(k <- achSet("keys")()) {
+                    ^
+/tmp/achilles-numbers.scala:118: error: value += is not a member of List[Int]
+  Expression does not convert to assignment because:
+    type mismatch;
+     found   : String
+     required: List[Int]
+    expansion: ach = ach.$plus(List(<k: error>))
+      ach += List(k)
+          ^
+/tmp/achilles-numbers.scala:137: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    var strong: List[Int] = scala.collection.mutable.ArrayBuffer[Int]()
+                                                                     ^
+/tmp/achilles-numbers.scala:143: error: value += is not a member of List[Int]
+  Expression does not convert to assignment because:
+    type mismatch;
+     found   : List[Int]
+     required: String
+    expansion: strong = strong.$plus(List(ach.apply(idx)))
+        strong += List((ach).apply(idx))
+               ^
+/tmp/achilles-numbers.scala:173: error: type mismatch;
+ found   : scala.collection.mutable.Map[Int,Boolean]
+ required: scala.collection.immutable.Map[Int,Boolean]
+    var pps: Map[Int, Boolean] = scala.collection.mutable.Map[Int, Boolean]()
+                                                                           ^
+16 errors found

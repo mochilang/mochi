@@ -1,0 +1,26 @@
+scalac: exit status 1
+/tmp/aliquot-sequence-classifications.scala:5: error: integer number too large
+  val THRESHOLD = 140737488355328
+                  ^
+/tmp/aliquot-sequence-classifications.scala:150: error: integer number too large
+    val big = 15355717786080
+              ^
+/tmp/aliquot-sequence-classifications.scala:6: error: ';' expected but 'def' found.
+  def indexOf(xs: List[Int], value: Int): Int = {
+  ^
+/tmp/aliquot-sequence-classifications.scala:144: error: illegal start of simple pattern
+      val val = (s).apply(i)
+          ^
+/tmp/aliquot-sequence-classifications.scala:145: error: '=' expected but ';' found.
+      val res = classifySequence(val)
+^
+/tmp/aliquot-sequence-classifications.scala:145: error: illegal start of simple expression
+      val res = classifySequence(val)
+                                 ^
+/tmp/aliquot-sequence-classifications.scala:148: error: ')' expected but '}' found.
+    }
+    ^
+/tmp/aliquot-sequence-classifications.scala:151: error: ';' expected but 'val' found.
+    val r = classifySequence(big)
+    ^
+8 errors found

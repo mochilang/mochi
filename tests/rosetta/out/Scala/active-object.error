@@ -1,0 +1,46 @@
+scalac: exit status 1
+/tmp/active-object.scala:26: error: type mismatch;
+ found   : Int
+ required: ?{def +(x$1: ? >: Double): ?}
+Note that implicit conversions are not applicable because they are ambiguous:
+ both method int2long in object Int of type (x: Int)Long
+ and method int2float in object Int of type (x: Int)Float
+ are possible conversion functions from Int to ?{def +(x$1: ? >: Double): ?}
+      s = s + (k1 + k2) * 0.5 * (t2 - t1)
+          ^
+/tmp/active-object.scala:26: error: overloaded method value + with alternatives:
+  (x: Int)Int <and>
+  (x: Char)Int <and>
+  (x: Short)Int <and>
+  (x: Byte)Int
+ cannot be applied to (Double)
+      s = s + (k1 + k2) * 0.5 * (t2 - t1)
+            ^
+/tmp/active-object.scala:27: error: type mismatch;
+ found   : Double
+ required: Int
+      t1 = t2
+           ^
+/tmp/active-object.scala:35: error: type mismatch;
+ found   : Int
+ required: ?{def +(x$1: ? >: Double): ?}
+Note that implicit conversions are not applicable because they are ambiguous:
+ both method int2long in object Int of type (x: Int)Long
+ and method int2float in object Int of type (x: Int)Float
+ are possible conversion functions from Int to ?{def +(x$1: ? >: Double): ?}
+      s = s + (k1 + k2) * 0.5 * (t2 - t1)
+          ^
+/tmp/active-object.scala:35: error: overloaded method value + with alternatives:
+  (x: Int)Int <and>
+  (x: Char)Int <and>
+  (x: Short)Int <and>
+  (x: Byte)Int
+ cannot be applied to (Double)
+      s = s + (k1 + k2) * 0.5 * (t2 - t1)
+            ^
+/tmp/active-object.scala:36: error: type mismatch;
+ found   : Double
+ required: Int
+      t1 = t2
+           ^
+6 errors found

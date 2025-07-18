@@ -1,0 +1,17 @@
+scalac: exit status 1
+/tmp/accumulator-factory.scala:3: error: not found: type any
+  def accumulator(sum: any): (any) => Any = {
+                              ^
+/tmp/accumulator-factory.scala:3: error: not found: type any
+  def accumulator(sum: any): (any) => Any = {
+                       ^
+/tmp/accumulator-factory.scala:4: error: not found: type any
+    var store: List[any] = scala.collection.mutable.ArrayBuffer(sum)
+                    ^
+/tmp/accumulator-factory.scala:5: error: not found: type any
+    def add(nv: any): any = {
+                      ^
+/tmp/accumulator-factory.scala:5: error: not found: type any
+    def add(nv: any): any = {
+                ^
+5 errors found

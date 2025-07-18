@@ -1,0 +1,21 @@
+scalac: exit status 1
+/tmp/99-bottles-of-beer-2.scala:4: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[String]
+ required: List[String]
+    var words: List[String] = scala.collection.mutable.ArrayBuffer[String]()
+                                                                          ^
+/tmp/99-bottles-of-beer-2.scala:64: error: value update is not a member of List[String]
+      w(0) = (w).apply(0) + "s"
+      ^
+/tmp/99-bottles-of-beer-2.scala:78: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[String]
+ required: List[String]
+    var a: List[String] = scala.collection.mutable.ArrayBuffer[String]()
+                                                                      ^
+/tmp/99-bottles-of-beer-2.scala:91: error: value update is not a member of List[String]
+        a(idx) = (a).apply(j)
+        ^
+/tmp/99-bottles-of-beer-2.scala:92: error: value update is not a member of List[String]
+        a(j) = tmp
+        ^
+5 errors found

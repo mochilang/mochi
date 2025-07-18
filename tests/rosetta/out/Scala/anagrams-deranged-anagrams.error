@@ -1,0 +1,27 @@
+scalac: exit status 1
+/tmp/anagrams-deranged-anagrams.scala:4: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[String]
+ required: List[String]
+    var arr: List[String] = scala.collection.mutable.ArrayBuffer[String]()
+                                                                        ^
+/tmp/anagrams-deranged-anagrams.scala:17: error: value update is not a member of List[String]
+          arr(j) = (arr).apply(j + 1)
+          ^
+/tmp/anagrams-deranged-anagrams.scala:18: error: value update is not a member of List[String]
+          arr(j + 1) = tmp
+          ^
+/tmp/anagrams-deranged-anagrams.scala:49: error: type mismatch;
+ found   : scala.collection.mutable.Map[String,List[String]]
+ required: scala.collection.immutable.Map[String,List[String]]
+    var m: Map[String, List[String]] = scala.collection.mutable.Map[String, List[String]]()
+                                                                                         ^
+/tmp/anagrams-deranged-anagrams.scala:59: error: value update is not a member of Map[String,List[String]]
+        m(k) = List(w)
+        ^
+/tmp/anagrams-deranged-anagrams.scala:67: error: method main has return statement; needs result type
+          return
+          ^
+/tmp/anagrams-deranged-anagrams.scala:70: error: value update is not a member of Map[String,List[String]]
+      m(k) = (m).apply(k) :+ w
+      ^
+7 errors found

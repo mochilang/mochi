@@ -1,0 +1,8 @@
+scalac: exit status 1
+/tmp/100-prisoners.scala:35: error: '.' expected but '=' found.
+            val this = (drawers).apply(prev)
+                     ^
+/tmp/100-prisoners.scala:36: error: identifier expected but ';' found.
+            if (this == p) {
+^
+two errors found

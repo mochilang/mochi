@@ -1,0 +1,14 @@
+scalac: exit status 1
+/tmp/a+b.scala:4: error: not found: value int
+    val a = int(input())
+            ^
+/tmp/a+b.scala:4: error: not found: value input
+    val a = int(input())
+                ^
+/tmp/a+b.scala:5: error: not found: value int
+    val b = int(input())
+            ^
+/tmp/a+b.scala:5: error: not found: value input
+    val b = int(input())
+                ^
+four errors found

@@ -1,0 +1,18 @@
+scalac: exit status 1
+/tmp/apply-a-callback-to-an-array-2.scala:10: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    var r: List[Int] = scala.collection.mutable.ArrayBuffer[Int]()
+                                                                ^
+/tmp/apply-a-callback-to-an-array-2.scala:19: error: overloaded method value * with alternatives:
+  (x: Double)Double <and>
+  (x: Float)Float <and>
+  (x: Long)Long <and>
+  (x: Int)Int <and>
+  (x: Char)Int <and>
+  (x: Short)Int <and>
+  (x: Byte)Int
+ cannot be applied to (String)
+    each(s, (i: Int) => print(i * i.toString))
+                                ^
+two errors found

@@ -1,0 +1,12 @@
+scalac: exit status 1
+/tmp/angle-difference-between-two-bearings-1.scala:17: error: type mismatch;
+ found   : AnyVal
+ required: Double
+      println(angleDiff((tc).apply(0), (tc).apply(1)))
+                                  ^
+/tmp/angle-difference-between-two-bearings-1.scala:17: error: type mismatch;
+ found   : AnyVal
+ required: Double
+      println(angleDiff((tc).apply(0), (tc).apply(1)))
+                                                 ^
+two errors found

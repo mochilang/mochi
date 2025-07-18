@@ -1,0 +1,44 @@
+scalac: exit status 1
+/tmp/2048.scala:42: error: illegal start of simple pattern
+    var val = 4
+        ^
+/tmp/2048.scala:43: error: '=' expected but ';' found.
+    if ((now() % 10).asInstanceOf[Int] < 9) {
+^
+/tmp/2048.scala:44: error: illegal start of simple pattern
+      val = 2
+          ^
+/tmp/2048.scala:45: error: '=' expected but '}' found.
+    }
+    ^
+/tmp/2048.scala:46: error: illegal start of simple expression
+    val _tmp0 = b((cell).apply(1)).updated((cell).apply(0), val)
+                                                            ^
+/tmp/2048.scala:49: error: ')' expected but '}' found.
+  }
+  ^
+/tmp/2048.scala:130: error: illegal start of simple pattern
+      val new = (r).apply("row")
+          ^
+/tmp/2048.scala:131: error: '=' expected but ';' found.
+      score += (r).apply("gain")
+^
+/tmp/2048.scala:134: error: identifier expected but ')' found.
+        if (((b).apply(y)).apply(x) != ((new).apply(x)).asInstanceOf[Int]) {
+                                            ^
+/tmp/2048.scala:140: error: ')' expected but '}' found.
+      }
+      ^
+/tmp/2048.scala:194: error: illegal start of simple pattern
+      val new = (r).apply("row")
+          ^
+/tmp/2048.scala:195: error: '=' expected but ';' found.
+      score += (r).apply("gain")
+^
+/tmp/2048.scala:198: error: identifier expected but ')' found.
+        if (((b).apply(y)).apply(x) != ((new).apply(y)).asInstanceOf[Int]) {
+                                            ^
+/tmp/2048.scala:204: error: ')' expected but '}' found.
+      }
+      ^
+14 errors found

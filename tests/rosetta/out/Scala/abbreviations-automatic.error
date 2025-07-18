@@ -1,0 +1,25 @@
+scalac: exit status 1
+/tmp/abbreviations-automatic.scala:4: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[String]
+ required: List[String]
+    var words: List[String] = scala.collection.mutable.ArrayBuffer[String]()
+                                                                          ^
+/tmp/abbreviations-automatic.scala:39: error: type mismatch;
+ found   : scala.collection.mutable.Map[String,Boolean]
+ required: scala.collection.immutable.Map[String,Boolean]
+    var m: Map[String, Boolean] = scala.collection.mutable.Map[String, Boolean]()
+                                                                               ^
+/tmp/abbreviations-automatic.scala:40: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[String]
+ required: List[String]
+    var out: List[String] = scala.collection.mutable.ArrayBuffer[String]()
+                                                                        ^
+/tmp/abbreviations-automatic.scala:45: error: value update is not a member of Map[String,Boolean]
+        m(x) = true
+        ^
+/tmp/abbreviations-automatic.scala:57: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[String]
+ required: List[String]
+      var abbrs: List[String] = scala.collection.mutable.ArrayBuffer[String]()
+                                                                            ^
+5 errors found

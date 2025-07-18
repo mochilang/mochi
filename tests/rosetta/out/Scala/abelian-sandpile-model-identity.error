@@ -1,0 +1,113 @@
+scalac: exit status 1
+/tmp/abelian-sandpile-model-identity.scala:6: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    var res: List[Int] = scala.collection.mutable.ArrayBuffer[Int]()
+                                                                  ^
+/tmp/abelian-sandpile-model-identity.scala:29: error: value update is not a member of List[Int]
+        p(i) = (p).apply(i) - 4
+        ^
+/tmp/abelian-sandpile-model-identity.scala:32: error: value update is not a member of List[Int]
+          p(j) = (p).apply(j) + 1
+          ^
+/tmp/abelian-sandpile-model-identity.scala:59: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    println(pileString(s4))
+                       ^
+/tmp/abelian-sandpile-model-identity.scala:60: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    while (!isStable(s4)) {
+                     ^
+/tmp/abelian-sandpile-model-identity.scala:61: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+      topple(s4)
+             ^
+/tmp/abelian-sandpile-model-identity.scala:62: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+      println(pileString(s4))
+                         ^
+/tmp/abelian-sandpile-model-identity.scala:67: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    var s3_a = plus(s1, s2)
+                    ^
+/tmp/abelian-sandpile-model-identity.scala:67: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    var s3_a = plus(s1, s2)
+                        ^
+/tmp/abelian-sandpile-model-identity.scala:71: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    var s3_b = plus(s2, s1)
+                    ^
+/tmp/abelian-sandpile-model-identity.scala:71: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    var s3_b = plus(s2, s1)
+                        ^
+/tmp/abelian-sandpile-model-identity.scala:75: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    println(pileString(s1) + "\nplus\n\n" + pileString(s2) + "\nequals\n\n" + pileString(s3_a))
+                       ^
+/tmp/abelian-sandpile-model-identity.scala:75: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    println(pileString(s1) + "\nplus\n\n" + pileString(s2) + "\nequals\n\n" + pileString(s3_a))
+                                                       ^
+/tmp/abelian-sandpile-model-identity.scala:76: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    println("and\n\n" + pileString(s2) + "\nplus\n\n" + pileString(s1) + "\nalso equals\n\n" + pileString(s3_b))
+                                   ^
+/tmp/abelian-sandpile-model-identity.scala:76: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    println("and\n\n" + pileString(s2) + "\nplus\n\n" + pileString(s1) + "\nalso equals\n\n" + pileString(s3_b))
+                                                                   ^
+/tmp/abelian-sandpile-model-identity.scala:80: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    var s4b = plus(s3, s3_id)
+                   ^
+/tmp/abelian-sandpile-model-identity.scala:80: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    var s4b = plus(s3, s3_id)
+                       ^
+/tmp/abelian-sandpile-model-identity.scala:84: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    println(pileString(s3) + "\nplus\n\n" + pileString(s3_id) + "\nequals\n\n" + pileString(s4b))
+                       ^
+/tmp/abelian-sandpile-model-identity.scala:84: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    println(pileString(s3) + "\nplus\n\n" + pileString(s3_id) + "\nequals\n\n" + pileString(s4b))
+                                                       ^
+/tmp/abelian-sandpile-model-identity.scala:86: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    var s5 = plus(s3_id, s3_id)
+                  ^
+/tmp/abelian-sandpile-model-identity.scala:86: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    var s5 = plus(s3_id, s3_id)
+                         ^
+/tmp/abelian-sandpile-model-identity.scala:90: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    println(pileString(s3_id) + "\nplus\n\n" + pileString(s3_id) + "\nequals\n\n" + pileString(s5))
+                       ^
+/tmp/abelian-sandpile-model-identity.scala:90: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    println(pileString(s3_id) + "\nplus\n\n" + pileString(s3_id) + "\nequals\n\n" + pileString(s5))
+                                                          ^
+23 errors found

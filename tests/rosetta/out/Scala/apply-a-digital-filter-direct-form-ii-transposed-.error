@@ -1,0 +1,46 @@
+scalac: exit status 1
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.scala:4: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Double]
+ required: List[Double]
+    var out: List[Double] = scala.collection.mutable.ArrayBuffer[Double]()
+                                                                        ^
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.scala:11: error: type mismatch;
+ found   : Int
+ required: ?{def +(x$1: ? >: Double): ?}
+Note that implicit conversions are not applicable because they are ambiguous:
+ both method int2long in object Int of type (x: Int)Long
+ and method int2float in object Int of type (x: Int)Float
+ are possible conversion functions from Int to ?{def +(x$1: ? >: Double): ?}
+        tmp = tmp + (b).apply(j) * (input).apply(i - j)
+              ^
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.scala:11: error: overloaded method value + with alternatives:
+  (x: Int)Int <and>
+  (x: Char)Int <and>
+  (x: Short)Int <and>
+  (x: Byte)Int
+ cannot be applied to (Double)
+        tmp = tmp + (b).apply(j) * (input).apply(i - j)
+                  ^
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.scala:15: error: type mismatch;
+ found   : Int
+ required: Boolean
+      while ((j < i && j + 1).asInstanceOf[Int] < a.length) {
+                         ^
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.scala:16: error: type mismatch;
+ found   : Int
+ required: ?{def -(x$1: ? >: Double): ?}
+Note that implicit conversions are not applicable because they are ambiguous:
+ both method int2long in object Int of type (x: Int)Long
+ and method int2float in object Int of type (x: Int)Float
+ are possible conversion functions from Int to ?{def -(x$1: ? >: Double): ?}
+        tmp = tmp - (a).apply(j + 1) * (out).apply(i - j - 1)
+              ^
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.scala:16: error: overloaded method value - with alternatives:
+  (x: Int)Int <and>
+  (x: Char)Int <and>
+  (x: Short)Int <and>
+  (x: Byte)Int
+ cannot be applied to (Double)
+        tmp = tmp - (a).apply(j + 1) * (out).apply(i - j - 1)
+                  ^
+6 errors found

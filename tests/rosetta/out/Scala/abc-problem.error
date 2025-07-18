@@ -1,0 +1,15 @@
+scalac: exit status 1
+/tmp/abc-problem.scala:4: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[String]
+ required: List[String]
+    var res: List[String] = scala.collection.mutable.ArrayBuffer[String]()
+                                                                        ^
+/tmp/abc-problem.scala:29: error: not found: value lower
+    val c = lower(word.substring(0, 1))
+            ^
+/tmp/abc-problem.scala:34: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[String]
+ required: List[String]
+        var rest: List[String] = scala.collection.mutable.ArrayBuffer[String]()
+                                                                             ^
+three errors found
