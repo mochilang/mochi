@@ -12,7 +12,7 @@ val result = run {
         __res.add(i.v)
     }
     __res
-}.sortedBy { it.n as Comparable<Any> }
+}.sortedBy { it.n }
 
 fun main() {
     println(result)

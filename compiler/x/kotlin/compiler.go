@@ -1730,14 +1730,10 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 			sortExpr = replaceIdent(sortExpr, q.Var, "it")
 			cast := ""
 			switch types.TypeOfExprBasic(q.Sort, sortEnv).(type) {
-			case types.IntType:
-				cast = " as Int"
-			case types.FloatType:
-				cast = " as Double"
-			case types.StringType:
-				cast = " as String"
+			case types.IntType, types.FloatType, types.StringType:
+				cast = ""
 			default:
-				cast = " as Comparable<Any>"
+				cast = " as Comparable<*>"
 			}
 			method := ".sortedBy"
 			if strings.HasPrefix(sortExpr, "-") {
@@ -1970,14 +1966,10 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 			}
 			cast := ""
 			switch types.TypeOfExprBasic(q.Sort, sortEnv).(type) {
-			case types.IntType:
-				cast = " as Int"
-			case types.FloatType:
-				cast = " as Double"
-			case types.StringType:
-				cast = " as String"
+			case types.IntType, types.FloatType, types.StringType:
+				cast = ""
 			default:
-				cast = " as Comparable<Any>"
+				cast = " as Comparable<*>"
 			}
 			if strings.HasPrefix(sortExpr, "-") {
 				sortExpr = strings.TrimPrefix(sortExpr, "-")
@@ -2071,14 +2063,10 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 			res += fmt.Sprintf(".%s", cmp)
 		} else {
 			switch types.TypeOfExprBasic(q.Sort, sortEnv).(type) {
-			case types.IntType:
-				sortExpr += " as Int"
-			case types.FloatType:
-				sortExpr += " as Double"
-			case types.StringType:
-				sortExpr += " as String"
+			case types.IntType, types.FloatType, types.StringType:
+				// element type already Comparable
 			default:
-				sortExpr += " as Comparable<Any>"
+				sortExpr += " as Comparable<*>"
 			}
 			if strings.HasPrefix(sortExpr, "-") {
 				sortExpr = strings.TrimPrefix(sortExpr, "-")
