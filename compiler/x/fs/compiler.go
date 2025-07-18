@@ -1127,6 +1127,46 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			}
 			return fmt.Sprintf("printfn \"%%A\" (%s)", args[0]), nil
 		}
+		// Attempt to build a formatted string when arguments alternate
+		// between string literals and values.
+		if len(args)%2 == 0 {
+			format := strings.Builder{}
+			vals := []string{}
+			ok := true
+			for i := 0; i < len(call.Args); i += 2 {
+				lit, okLit := stringLiteral(call.Args[i])
+				if !okLit {
+					ok = false
+					break
+				}
+				if i > 0 {
+					format.WriteString(" ")
+				}
+				lit = strings.ReplaceAll(lit, "%", "%%")
+				format.WriteString(lit)
+				if !(strings.HasSuffix(lit, " ") || strings.HasSuffix(lit, "$")) {
+					format.WriteString(" ")
+				}
+				typ := c.inferType(call.Args[i+1])
+				switch typ {
+				case "int":
+					format.WriteString("%d")
+				case "float":
+					format.WriteString("%f")
+				case "bool":
+					format.WriteString("%b")
+				case "string":
+					format.WriteString("%s")
+				default:
+					format.WriteString("%A")
+				}
+				vals = append(vals, args[i+1])
+			}
+			if ok {
+				fmtStr := strings.TrimSpace(format.String())
+				return fmt.Sprintf("printfn \"%s\" %s", fmtStr, strings.Join(vals, " ")), nil
+			}
+		}
 		conv := make([]string, len(args))
 		for i, a := range args {
 			boolArg := false
@@ -2325,10 +2365,17 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 
 		if p.Selector != nil {
 			if t, ok := c.vars[p.Selector.Root]; ok {
-				if fields, ok := c.structs[t]; ok && len(p.Selector.Tail) == 1 {
-					if ft, ok := fields[p.Selector.Tail[0]]; ok {
-						return ft
+				for _, f := range p.Selector.Tail {
+					base := strings.TrimSuffix(t, " option")
+					fields, ok := c.structs[base]
+					if !ok {
+						return t
 					}
+					ft, ok := fields[f]
+					if !ok {
+						return t
+					}
+					t = ft
 				}
 				return t
 			}
