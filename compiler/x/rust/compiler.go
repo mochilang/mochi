@@ -3895,7 +3895,15 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 				}
 			}
 		}
+		haveList := false
 		if _, ok := types.TypeOfExpr(call.Args[0], c.env).(types.ListType); ok {
+			haveList = true
+		} else if name, ok := c.simpleIdent(call.Args[0]); ok {
+			if _, ok2 := c.listVars[name]; ok2 {
+				haveList = true
+			}
+		}
+		if haveList {
 			return fmt.Sprintf("{ let mut tmp = %s.clone(); tmp.push(%s); tmp }", args[0], args[1]), nil
 		}
 		c.helpers["append"] = true
