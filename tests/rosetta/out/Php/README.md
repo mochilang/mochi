@@ -1,4 +1,4 @@
-# Rosetta PHP Output (10/264 compiled and run)
+# Rosetta PHP Output (15/278 compiled and run)
 
 This directory holds PHP source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -15,18 +15,19 @@ This directory holds PHP source code generated from the real Mochi programs in `
 - [x] 24-game
 - [x] 4-rings-or-4-squares-puzzle
 - [ ] 9-billion-names-of-god-the-integer
-- [ ] 99-bottles-of-beer-2
-- [ ] 99-bottles-of-beer
+- [x] 99-bottles-of-beer-2
+- [x] 99-bottles-of-beer
+- [ ] DNS-query
 - [ ] a+b
 - [ ] abbreviations-automatic
 - [ ] abbreviations-easy
 - [ ] abbreviations-simple
-- [ ] abc-problem
+- [x] abc-problem
 - [ ] abelian-sandpile-model-identity
 - [ ] abelian-sandpile-model
 - [ ] abstract-type
-- [ ] abundant-deficient-and-perfect-number-classifications
-- [ ] abundant-odd-numbers
+- [x] abundant-deficient-and-perfect-number-classifications
+- [x] abundant-odd-numbers
 - [ ] accumulator-factory
 - [ ] achilles-numbers
 - [ ] ackermann-function-2
@@ -265,5 +266,18 @@ This directory holds PHP source code generated from the real Mochi programs in `
 - [ ] csv-to-html-translation-5
 - [ ] cuban-primes
 - [ ] cullen-and-woodall-numbers
+- [ ] cumulative-standard-deviation
+- [ ] currency
+- [ ] currying
+- [ ] curzon-numbers
 - [ ] cusip
+- [ ] cyclops-numbers
+- [ ] damm-algorithm
+- [ ] date-format
+- [ ] date-manipulation
+- [ ] day-of-the-week
+- [ ] de-bruijn-sequences
+- [ ] deal-cards-for-freecell
+- [ ] death-star
+- [ ] deceptive-numbers
 - [ ] md5

@@ -16,6 +16,7 @@ var reservedNames = map[string]struct{}{
 	"this":    {},
 	"ord":     {},
 	"chr":     {},
+	"join":    {},
 }
 
 func sanitizeName(name string) string {
