@@ -1,0 +1,120 @@
+fun modPow(base: int, exp: int, m: int): int {
+  var result = 1 % m
+  var b = base % m
+  var e = exp
+  while e > 0 {
+    if e % 2 == 1 { result = (result * b) % m }
+    b = (b * b) % m
+    e = (e / 2) as int
+  }
+  return result
+}
+
+fun isPrime(n: int): bool {
+  if n < 2 { return false }
+  for p in [2,3,5,7,11,13,17,19,23,29] {
+    if n % p == 0 { return n == p }
+  }
+  var d = n - 1
+  var s = 0
+  while d % 2 == 0 {
+    d = d / 2
+    s = s + 1
+  }
+  for a in [2,325,9375,28178,450775,9780504,1795265022] {
+    if a % n == 0 { return true }
+    var x = modPow(a, d, n)
+    if x == 1 || x == n - 1 { continue }
+    var r = 1
+    var passed = false
+    while r < s {
+      x = (x * x) % n
+      if x == n - 1 {
+        passed = true
+        break
+      }
+      r = r + 1
+    }
+    if !passed { return false }
+  }
+  return true
+}
+
+fun commatize(n: int): string {
+  var s = str(n)
+  var i = len(s) - 3
+  while i > 0 {
+    s = substring(s, 0, i) + "," + substring(s, i, len(s))
+    i = i - 3
+  }
+  return s
+}
+
+fun pad(s: string, width: int): string {
+  var out = s
+  while len(out) < width {
+    out = " " + out
+  }
+  return out
+}
+
+fun join(xs: list<string>, sep: string): string {
+  var res = ""
+  var i = 0
+  while i < len(xs) {
+    if i > 0 { res = res + sep }
+    res = res + xs[i]
+    i = i + 1
+  }
+  return res
+}
+
+fun formatRow(row: list<string>): string {
+  var padded: list<string> = []
+  var i = 0
+  while i < len(row) {
+    padded = append(padded, pad(row[i], 9))
+    i = i + 1
+  }
+  return "[" + join(padded, " ") + "]"
+}
+
+fun main() {
+  var cubans: list<string> = []
+  var cube1 = 1
+  var count = 0
+  var cube100k = 0
+  var i = 1
+  while true {
+    var j = i + 1
+    var cube2 = j * j * j
+    var diff = cube2 - cube1
+    if isPrime(diff) {
+      if count < 200 {
+        cubans = append(cubans, commatize(diff))
+      }
+      count = count + 1
+      if count == 100000 {
+        cube100k = diff
+        break
+      }
+    }
+    cube1 = cube2
+    i = i + 1
+  }
+  print("The first 200 cuban primes are:-")
+  var row = 0
+  while row < 20 {
+    var slice: list<string> = []
+    var k = 0
+    while k < 10 {
+      slice = append(slice, cubans[row * 10 + k])
+      k = k + 1
+    }
+    print(formatRow(slice))
+    row = row + 1
+  }
+  print("\nThe 100,000th cuban prime is " + commatize(cube100k))
+}
+
+main()
