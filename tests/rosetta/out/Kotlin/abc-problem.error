@@ -1,0 +1,11 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/abc-problem.kt:47:13: error: unresolved reference: lower
+    val c = lower(word.substring(0, 1))
+            ^
+/tmp/abc-problem.kt:51:18: error: unresolved reference: lower
+        if (c == lower(b.substring(0, 1)) || c == lower(b.substring(1, 2))) {
+                 ^
+/tmp/abc-problem.kt:51:51: error: unresolved reference: lower
+        if (c == lower(b.substring(0, 1)) || c == lower(b.substring(1, 2))) {
+                                                  ^

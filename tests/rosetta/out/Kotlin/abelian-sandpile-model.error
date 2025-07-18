@@ -1,0 +1,5 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/abelian-sandpile-model.kt:45:17: error: val cannot be reassigned
+                pile = handlePile(pile, x, y - 1)
+                ^

@@ -1,0 +1,29 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/achilles-numbers.kt:33:22: error: type mismatch: inferred type is Double but Int was expected
+                nn = (nn).toDouble() / (i).toDouble()
+                     ^
+/tmp/achilles-numbers.kt:35:19: error: type mismatch: inferred type is Double but Int was expected
+            tot = (tot).toDouble() - (tot).toDouble() / (i).toDouble()
+                  ^
+/tmp/achilles-numbers.kt:43:15: error: type mismatch: inferred type is Double but Int was expected
+        tot = (tot).toDouble() - (tot).toDouble() / (nn).toDouble()
+              ^
+/tmp/achilles-numbers.kt:118:15: error: type inference failed. Expected type mismatch: inferred type is List<Int> but MutableList<Int> was expected
+        res = res + mutableListOf(min)
+              ^
+/tmp/achilles-numbers.kt:123:23: error: type inference failed. Expected type mismatch: inferred type is List<Int> but MutableList<Int> was expected
+                out = out + mutableListOf(tmp[j])
+                      ^
+/tmp/achilles-numbers.kt:154:15: error: expression '(achSet as MutableMap<Int, Boolean>)["keys"]' of type 'Boolean?' cannot be invoked as a function. The function 'invoke()' is not found
+    for (k in (achSet as MutableMap<Int, Boolean>)["keys"]()) {
+              ^
+/tmp/achilles-numbers.kt:154:15: error: type inference failed. The value of the type parameter K should be mentioned in input types (argument types, receiver type or expected type). Try to specify it explicitly.
+    for (k in (achSet as MutableMap<Int, Boolean>)["keys"]()) {
+              ^
+/tmp/achilles-numbers.kt:155:15: error: type inference failed. Expected type mismatch: inferred type is List<Int> but MutableList<Int> was expected
+        ach = ach + mutableListOf(k)
+              ^
+/tmp/achilles-numbers.kt:180:22: error: type inference failed. Expected type mismatch: inferred type is List<Int> but MutableList<Int> was expected
+            strong = strong + mutableListOf(ach[idx])
+                     ^

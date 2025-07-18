@@ -3,6 +3,6 @@ Exception in thread "main" java.lang.NumberFormatException: For input string: ""
 	at java.base/java.lang.NumberFormatException.forInputString(NumberFormatException.java:67)
 	at java.base/java.lang.Integer.parseInt(Integer.java:672)
 	at java.base/java.lang.Integer.parseInt(Integer.java:778)
-	at A_bKt.toInt(a+b.kt:7)
-	at A_bKt.main(a+b.kt:19)
+	at A_bKt.toInt(a+b.kt:5)
+	at A_bKt.main(a+b.kt:17)
 	at A_bKt.main(a+b.kt)

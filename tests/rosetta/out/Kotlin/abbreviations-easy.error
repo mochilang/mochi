@@ -1,11 +1,11 @@
 kotlinc: exit status 1
 OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-/tmp/abbreviations-easy.kt:95:25: error: unresolved reference: upper
+/tmp/abbreviations-easy.kt:93:25: error: unresolved reference: upper
                 val c = upper(cmd)
                         ^
-/tmp/abbreviations-easy.kt:96:26: error: unresolved reference: upper
+/tmp/abbreviations-easy.kt:94:26: error: unresolved reference: upper
                 val ww = upper(w)
                          ^
-/tmp/abbreviations-easy.kt:141:53: error: unresolved reference: size
+/tmp/abbreviations-easy.kt:139:53: error: unresolved reference: size
         out1 = out1 + padRight(words[k], results[k].size) + " "
                                                     ^

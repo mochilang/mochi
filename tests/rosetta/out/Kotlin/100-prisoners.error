@@ -1,13 +1,7 @@
 run: exit status 1
 Results from 1000 trials with 10 prisoners:
 
-Exception in thread "main" java.lang.IndexOutOfBoundsException: Index -80 out of bounds for length 100
-	at java.base/jdk.internal.util.Preconditions.outOfBounds(Preconditions.java:100)
-	at java.base/jdk.internal.util.Preconditions.outOfBoundsCheckIndex(Preconditions.java:106)
-	at java.base/jdk.internal.util.Preconditions.checkIndex(Preconditions.java:302)
-	at java.base/java.util.Objects.checkIndex(Objects.java:385)
-	at java.base/java.util.ArrayList.get(ArrayList.java:427)
-	at _100_prisonersKt.shuffle(100-prisoners.kt:29)
-	at _100_prisonersKt.doTrials(100-prisoners.kt:52)
-	at _100_prisonersKt.main(100-prisoners.kt:114)
+Exception in thread "main" java.lang.ClassCastException: class java.lang.Integer cannot be cast to class java.lang.Double (java.lang.Integer and java.lang.Double are in module java.base of loader 'bootstrap')
+	at _100_prisonersKt.doTrials(100-prisoners.kt:93)
+	at _100_prisonersKt.main(100-prisoners.kt:105)
 	at _100_prisonersKt.main(100-prisoners.kt)

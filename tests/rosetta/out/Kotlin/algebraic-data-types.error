@@ -1,0 +1,204 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/algebraic-data-types.kt:10:15: error: null can not be a value of a non-null type Any
+var tr: Any = null
+              ^
+/tmp/algebraic-data-types.kt:36:57: error: type mismatch: inferred type is Any? but Any was expected
+    return "T(" + toDouble(m["cl"]) + ", " + treeString(m["le"]) + ", " + m["aa"].toString() + ", " + treeString(m["ri"]) + ")"
+                                                        ^
+/tmp/algebraic-data-types.kt:36:114: error: type mismatch: inferred type is Any? but Any was expected
+    return "T(" + toDouble(m["cl"]) + ", " + treeString(m["le"]) + ", " + m["aa"].toString() + ", " + treeString(m["ri"]) + ")"
+                                                                                                                 ^
+/tmp/algebraic-data-types.kt:49:9: error: operator '!=' cannot be applied to 'Double' and 'String'
+    if (toDouble(m["cl"]) != "B") {
+        ^
+/tmp/algebraic-data-types.kt:56:13: error: operator '==' cannot be applied to 'Double' and 'String'
+        if (toDouble(leMap["cl"]) == "R") {
+            ^
+/tmp/algebraic-data-types.kt:60:21: error: operator '==' cannot be applied to 'Double' and 'String'
+                if (toDouble(leleMap["cl"]) == "R") {
+                    ^
+/tmp/algebraic-data-types.kt:61:48: error: type mismatch: inferred type is Any? but Any was expected
+                    return node("R", node("B", leleMap["le"], leleMap["aa"], leleMap["ri"]), leMap["aa"], node("B", leMap["ri"], m["aa"], ri))
+                                               ^
+/tmp/algebraic-data-types.kt:61:63: error: type mismatch: inferred type is Any? but Int was expected
+                    return node("R", node("B", leleMap["le"], leleMap["aa"], leleMap["ri"]), leMap["aa"], node("B", leMap["ri"], m["aa"], ri))
+                                                              ^
+/tmp/algebraic-data-types.kt:61:78: error: type mismatch: inferred type is Any? but Any was expected
+                    return node("R", node("B", leleMap["le"], leleMap["aa"], leleMap["ri"]), leMap["aa"], node("B", leMap["ri"], m["aa"], ri))
+                                                                             ^
+/tmp/algebraic-data-types.kt:61:94: error: type mismatch: inferred type is Any? but Int was expected
+                    return node("R", node("B", leleMap["le"], leleMap["aa"], leleMap["ri"]), leMap["aa"], node("B", leMap["ri"], m["aa"], ri))
+                                                                                             ^
+/tmp/algebraic-data-types.kt:61:117: error: type mismatch: inferred type is Any? but Any was expected
+                    return node("R", node("B", leleMap["le"], leleMap["aa"], leleMap["ri"]), leMap["aa"], node("B", leMap["ri"], m["aa"], ri))
+                                                                                                                    ^
+/tmp/algebraic-data-types.kt:61:130: error: type mismatch: inferred type is Any? but Int was expected
+                    return node("R", node("B", leleMap["le"], leleMap["aa"], leleMap["ri"]), leMap["aa"], node("B", leMap["ri"], m["aa"], ri))
+                                                                                                                                 ^
+/tmp/algebraic-data-types.kt:61:139: error: type mismatch: inferred type is Any? but Any was expected
+                    return node("R", node("B", leleMap["le"], leleMap["aa"], leleMap["ri"]), leMap["aa"], node("B", leMap["ri"], m["aa"], ri))
+                                                                                                                                          ^
+/tmp/algebraic-data-types.kt:67:21: error: operator '==' cannot be applied to 'Double' and 'String'
+                if (toDouble(leriMap["cl"]) == "R") {
+                    ^
+/tmp/algebraic-data-types.kt:68:48: error: type mismatch: inferred type is Any? but Any was expected
+                    return node("R", node("B", leMap["le"], leMap["aa"], leriMap["le"]), leriMap["aa"], node("B", leriMap["ri"], m["aa"], ri))
+                                               ^
+/tmp/algebraic-data-types.kt:68:61: error: type mismatch: inferred type is Any? but Int was expected
+                    return node("R", node("B", leMap["le"], leMap["aa"], leriMap["le"]), leriMap["aa"], node("B", leriMap["ri"], m["aa"], ri))
+                                                            ^
+/tmp/algebraic-data-types.kt:68:74: error: type mismatch: inferred type is Any? but Any was expected
+                    return node("R", node("B", leMap["le"], leMap["aa"], leriMap["le"]), leriMap["aa"], node("B", leriMap["ri"], m["aa"], ri))
+                                                                         ^
+/tmp/algebraic-data-types.kt:68:90: error: type mismatch: inferred type is Any? but Int was expected
+                    return node("R", node("B", leMap["le"], leMap["aa"], leriMap["le"]), leriMap["aa"], node("B", leriMap["ri"], m["aa"], ri))
+                                                                                         ^
+/tmp/algebraic-data-types.kt:68:115: error: type mismatch: inferred type is Any? but Any was expected
+                    return node("R", node("B", leMap["le"], leMap["aa"], leriMap["le"]), leriMap["aa"], node("B", leriMap["ri"], m["aa"], ri))
+                                                                                                                  ^
+/tmp/algebraic-data-types.kt:68:130: error: type mismatch: inferred type is Any? but Int was expected
+                    return node("R", node("B", leMap["le"], leMap["aa"], leriMap["le"]), leriMap["aa"], node("B", leriMap["ri"], m["aa"], ri))
+                                                                                                                                 ^
+/tmp/algebraic-data-types.kt:68:139: error: type mismatch: inferred type is Any? but Any was expected
+                    return node("R", node("B", leMap["le"], leMap["aa"], leriMap["le"]), leriMap["aa"], node("B", leriMap["ri"], m["aa"], ri))
+                                                                                                                                          ^
+/tmp/algebraic-data-types.kt:75:13: error: operator '==' cannot be applied to 'Double' and 'String'
+        if (toDouble(riMap["cl"]) == "R") {
+            ^
+/tmp/algebraic-data-types.kt:79:21: error: operator '==' cannot be applied to 'Double' and 'String'
+                if (toDouble(rileMap["cl"]) == "R") {
+                    ^
+/tmp/algebraic-data-types.kt:80:48: error: type mismatch: inferred type is Any? but Any was expected
+                    return node("R", node("B", m["le"], m["aa"], rileMap["le"]), rileMap["aa"], node("B", rileMap["ri"], riMap["aa"], riMap["ri"]))
+                                               ^
+/tmp/algebraic-data-types.kt:80:57: error: type mismatch: inferred type is Any? but Int was expected
+                    return node("R", node("B", m["le"], m["aa"], rileMap["le"]), rileMap["aa"], node("B", rileMap["ri"], riMap["aa"], riMap["ri"]))
+                                                        ^
+/tmp/algebraic-data-types.kt:80:66: error: type mismatch: inferred type is Any? but Any was expected
+                    return node("R", node("B", m["le"], m["aa"], rileMap["le"]), rileMap["aa"], node("B", rileMap["ri"], riMap["aa"], riMap["ri"]))
+                                                                 ^
+/tmp/algebraic-data-types.kt:80:82: error: type mismatch: inferred type is Any? but Int was expected
+                    return node("R", node("B", m["le"], m["aa"], rileMap["le"]), rileMap["aa"], node("B", rileMap["ri"], riMap["aa"], riMap["ri"]))
+                                                                                 ^
+/tmp/algebraic-data-types.kt:80:107: error: type mismatch: inferred type is Any? but Any was expected
+                    return node("R", node("B", m["le"], m["aa"], rileMap["le"]), rileMap["aa"], node("B", rileMap["ri"], riMap["aa"], riMap["ri"]))
+                                                                                                          ^
+/tmp/algebraic-data-types.kt:80:122: error: type mismatch: inferred type is Any? but Int was expected
+                    return node("R", node("B", m["le"], m["aa"], rileMap["le"]), rileMap["aa"], node("B", rileMap["ri"], riMap["aa"], riMap["ri"]))
+                                                                                                                         ^
+/tmp/algebraic-data-types.kt:80:135: error: type mismatch: inferred type is Any? but Any was expected
+                    return node("R", node("B", m["le"], m["aa"], rileMap["le"]), rileMap["aa"], node("B", rileMap["ri"], riMap["aa"], riMap["ri"]))
+                                                                                                                                      ^
+/tmp/algebraic-data-types.kt:86:21: error: operator '==' cannot be applied to 'Double' and 'String'
+                if (toDouble(ririMap["cl"]) == "R") {
+                    ^
+/tmp/algebraic-data-types.kt:87:48: error: type mismatch: inferred type is Any? but Any was expected
+                    return node("R", node("B", m["le"], m["aa"], riMap["le"]), riMap["aa"], node("B", ririMap["le"], ririMap["aa"], ririMap["ri"]))
+                                               ^
+/tmp/algebraic-data-types.kt:87:57: error: type mismatch: inferred type is Any? but Int was expected
+                    return node("R", node("B", m["le"], m["aa"], riMap["le"]), riMap["aa"], node("B", ririMap["le"], ririMap["aa"], ririMap["ri"]))
+                                                        ^
+/tmp/algebraic-data-types.kt:87:66: error: type mismatch: inferred type is Any? but Any was expected
+                    return node("R", node("B", m["le"], m["aa"], riMap["le"]), riMap["aa"], node("B", ririMap["le"], ririMap["aa"], ririMap["ri"]))
+                                                                 ^
+/tmp/algebraic-data-types.kt:87:80: error: type mismatch: inferred type is Any? but Int was expected
+                    return node("R", node("B", m["le"], m["aa"], riMap["le"]), riMap["aa"], node("B", ririMap["le"], ririMap["aa"], ririMap["ri"]))
+                                                                               ^
+/tmp/algebraic-data-types.kt:87:103: error: type mismatch: inferred type is Any? but Any was expected
+                    return node("R", node("B", m["le"], m["aa"], riMap["le"]), riMap["aa"], node("B", ririMap["le"], ririMap["aa"], ririMap["ri"]))
+                                                                                                      ^
+/tmp/algebraic-data-types.kt:87:118: error: type mismatch: inferred type is Any? but Int was expected
+                    return node("R", node("B", m["le"], m["aa"], riMap["le"]), riMap["aa"], node("B", ririMap["le"], ririMap["aa"], ririMap["ri"]))
+                                                                                                                     ^
+/tmp/algebraic-data-types.kt:87:133: error: type mismatch: inferred type is Any? but Any was expected
+                    return node("R", node("B", m["le"], m["aa"], riMap["le"]), riMap["aa"], node("B", ririMap["le"], ririMap["aa"], ririMap["ri"]))
+                                                                                                                                    ^
+/tmp/algebraic-data-types.kt:103:26: error: null can not be a value of a non-null type Any
+        return node("R", null, x, null)
+                         ^
+/tmp/algebraic-data-types.kt:103:35: error: null can not be a value of a non-null type Any
+        return node("R", null, x, null)
+                                  ^
+/tmp/algebraic-data-types.kt:105:22: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out String, Any?>.get(key: String): Any? defined in kotlin.collections
+    if (x < toDouble(tr["aa"])) {
+                     ^
+/tmp/algebraic-data-types.kt:105:24: error: no get method providing array access
+    if (x < toDouble(tr["aa"])) {
+                       ^
+/tmp/algebraic-data-types.kt:106:29: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out String, String>.get(key: String): String? defined in kotlin.collections
+        return balance(node(tr["cl"], ins(tr["le"], x), tr["aa"], tr["ri"]))
+                            ^
+/tmp/algebraic-data-types.kt:106:31: error: no get method providing array access
+        return balance(node(tr["cl"], ins(tr["le"], x), tr["aa"], tr["ri"]))
+                              ^
+/tmp/algebraic-data-types.kt:106:43: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out String, Any>.get(key: String): Any? defined in kotlin.collections
+        return balance(node(tr["cl"], ins(tr["le"], x), tr["aa"], tr["ri"]))
+                                          ^
+/tmp/algebraic-data-types.kt:106:45: error: no get method providing array access
+        return balance(node(tr["cl"], ins(tr["le"], x), tr["aa"], tr["ri"]))
+                                            ^
+/tmp/algebraic-data-types.kt:106:57: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out String, Int>.get(key: String): Int? defined in kotlin.collections
+        return balance(node(tr["cl"], ins(tr["le"], x), tr["aa"], tr["ri"]))
+                                                        ^
+/tmp/algebraic-data-types.kt:106:59: error: no get method providing array access
+        return balance(node(tr["cl"], ins(tr["le"], x), tr["aa"], tr["ri"]))
+                                                          ^
+/tmp/algebraic-data-types.kt:106:67: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out String, Any>.get(key: String): Any? defined in kotlin.collections
+        return balance(node(tr["cl"], ins(tr["le"], x), tr["aa"], tr["ri"]))
+                                                                  ^
+/tmp/algebraic-data-types.kt:106:69: error: no get method providing array access
+        return balance(node(tr["cl"], ins(tr["le"], x), tr["aa"], tr["ri"]))
+                                                                    ^
+/tmp/algebraic-data-types.kt:108:22: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out String, Any?>.get(key: String): Any? defined in kotlin.collections
+    if (x > toDouble(tr["aa"])) {
+                     ^
+/tmp/algebraic-data-types.kt:108:24: error: no get method providing array access
+    if (x > toDouble(tr["aa"])) {
+                       ^
+/tmp/algebraic-data-types.kt:109:29: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out String, String>.get(key: String): String? defined in kotlin.collections
+        return balance(node(tr["cl"], tr["le"], tr["aa"], ins(tr["ri"], x)))
+                            ^
+/tmp/algebraic-data-types.kt:109:31: error: no get method providing array access
+        return balance(node(tr["cl"], tr["le"], tr["aa"], ins(tr["ri"], x)))
+                              ^
+/tmp/algebraic-data-types.kt:109:39: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out String, Any>.get(key: String): Any? defined in kotlin.collections
+        return balance(node(tr["cl"], tr["le"], tr["aa"], ins(tr["ri"], x)))
+                                      ^
+/tmp/algebraic-data-types.kt:109:41: error: no get method providing array access
+        return balance(node(tr["cl"], tr["le"], tr["aa"], ins(tr["ri"], x)))
+                                        ^
+/tmp/algebraic-data-types.kt:109:49: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out String, Int>.get(key: String): Int? defined in kotlin.collections
+        return balance(node(tr["cl"], tr["le"], tr["aa"], ins(tr["ri"], x)))
+                                                ^
+/tmp/algebraic-data-types.kt:109:51: error: no get method providing array access
+        return balance(node(tr["cl"], tr["le"], tr["aa"], ins(tr["ri"], x)))
+                                                  ^
+/tmp/algebraic-data-types.kt:109:63: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out String, Any>.get(key: String): Any? defined in kotlin.collections
+        return balance(node(tr["cl"], tr["le"], tr["aa"], ins(tr["ri"], x)))
+                                                              ^
+/tmp/algebraic-data-types.kt:109:65: error: no get method providing array access
+        return balance(node(tr["cl"], tr["le"], tr["aa"], ins(tr["ri"], x)))
+                                                                ^
+/tmp/algebraic-data-types.kt:123:16: error: null can not be a value of a non-null type Any
+        return null
+               ^
+/tmp/algebraic-data-types.kt:126:22: error: type mismatch: inferred type is Any? but Any was expected
+    return node("B", m["le"], m["aa"], m["ri"])
+                     ^
+/tmp/algebraic-data-types.kt:126:31: error: type mismatch: inferred type is Any? but Int was expected
+    return node("B", m["le"], m["aa"], m["ri"])
+                              ^
+/tmp/algebraic-data-types.kt:126:40: error: type mismatch: inferred type is Any? but Any was expected
+    return node("B", m["le"], m["aa"], m["ri"])
+                                       ^

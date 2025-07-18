@@ -1,0 +1,53 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/aliquot-sequence-classifications.kt:65:13: error: type mismatch: inferred type is Double but Int was expected
+        x = y
+            ^
+/tmp/aliquot-sequence-classifications.kt:85:19: error: type mismatch: inferred type is Double but Int was expected
+            sum = (sum + i).toDouble() + (n).toDouble() / (i).toDouble()
+                  ^
+/tmp/aliquot-sequence-classifications.kt:121:39: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun BigDecimal.minus(other: BigDecimal): BigDecimal defined in kotlin
+@InlineOnly public inline operator fun BigInteger.minus(other: BigInteger): BigInteger defined in kotlin
+public operator fun <T> Iterable<???>.minus(elements: Array<out ???>): List<???> defined in kotlin.collections
+public operator fun <T> Iterable<???>.minus(elements: Iterable<???>): List<???> defined in kotlin.collections
+public operator fun <T> Iterable<???>.minus(elements: Sequence<???>): List<???> defined in kotlin.collections
+public operator fun <T> Iterable<String>.minus(element: String): List<String> defined in kotlin.collections
+@SinceKotlin public operator fun <K, V> Map<out ???, ???>.minus(keys: Array<out ???>): Map<???, ???> defined in kotlin.collections
+@SinceKotlin public operator fun <K, V> Map<out ???, ???>.minus(keys: Iterable<???>): Map<???, ???> defined in kotlin.collections
+@SinceKotlin public operator fun <K, V> Map<out ???, ???>.minus(keys: Sequence<???>): Map<???, ???> defined in kotlin.collections
+@SinceKotlin public operator fun <K, V> Map<out String, ???>.minus(key: String): Map<String, ???> defined in kotlin.collections
+public operator fun <T> Set<???>.minus(elements: Array<out ???>): Set<???> defined in kotlin.collections
+public operator fun <T> Set<???>.minus(elements: Iterable<???>): Set<???> defined in kotlin.collections
+public operator fun <T> Set<???>.minus(elements: Sequence<???>): Set<???> defined in kotlin.collections
+public operator fun <T> Set<String>.minus(element: String): Set<String> defined in kotlin.collections
+public operator fun <T> Sequence<???>.minus(elements: Array<out ???>): Sequence<???> defined in kotlin.sequences
+public operator fun <T> Sequence<???>.minus(elements: Iterable<???>): Sequence<???> defined in kotlin.sequences
+public operator fun <T> Sequence<???>.minus(elements: Sequence<???>): Sequence<???> defined in kotlin.sequences
+public operator fun <T> Sequence<String>.minus(element: String): Sequence<String> defined in kotlin.sequences
+            aliquot = "Sociable[" + n - 1.toString() + "]"
+                                      ^
+/tmp/aliquot-sequence-classifications.kt:130:37: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun BigDecimal.minus(other: BigDecimal): BigDecimal defined in kotlin
+@InlineOnly public inline operator fun BigInteger.minus(other: BigInteger): BigInteger defined in kotlin
+public operator fun <T> Iterable<???>.minus(elements: Array<out ???>): List<???> defined in kotlin.collections
+public operator fun <T> Iterable<???>.minus(elements: Iterable<???>): List<???> defined in kotlin.collections
+public operator fun <T> Iterable<???>.minus(elements: Sequence<???>): List<???> defined in kotlin.collections
+public operator fun <T> Iterable<Int>.minus(element: Int): List<Int> defined in kotlin.collections
+@SinceKotlin public operator fun <K, V> Map<out ???, ???>.minus(keys: Array<out ???>): Map<???, ???> defined in kotlin.collections
+@SinceKotlin public operator fun <K, V> Map<out ???, ???>.minus(keys: Iterable<???>): Map<???, ???> defined in kotlin.collections
+@SinceKotlin public operator fun <K, V> Map<out ???, ???>.minus(keys: Sequence<???>): Map<???, ???> defined in kotlin.collections
+@SinceKotlin public operator fun <K, V> Map<out Int, ???>.minus(key: Int): Map<Int, ???> defined in kotlin.collections
+public operator fun <T> Set<???>.minus(elements: Array<out ???>): Set<???> defined in kotlin.collections
+public operator fun <T> Set<???>.minus(elements: Iterable<???>): Set<???> defined in kotlin.collections
+public operator fun <T> Set<???>.minus(elements: Sequence<???>): Set<???> defined in kotlin.collections
+public operator fun <T> Set<Int>.minus(element: Int): Set<Int> defined in kotlin.collections
+public operator fun <T> Sequence<???>.minus(elements: Array<out ???>): Sequence<???> defined in kotlin.sequences
+public operator fun <T> Sequence<???>.minus(elements: Iterable<???>): Sequence<???> defined in kotlin.sequences
+public operator fun <T> Sequence<???>.minus(elements: Sequence<???>): Sequence<???> defined in kotlin.sequences
+public operator fun <T> Sequence<Int>.minus(element: Int): Sequence<Int> defined in kotlin.sequences
+            aliquot = "Cyclic[" + n - 1 - idx.toString() + "]"
+                                    ^
+/tmp/aliquot-sequence-classifications.kt:212:30: error: type mismatch: inferred type is Long but Int was expected
+    val r = classifySequence(big)
+                             ^

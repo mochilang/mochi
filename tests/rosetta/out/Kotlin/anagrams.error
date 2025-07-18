@@ -1,0 +1,20 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/anagrams.kt:90:25: error: type inference failed. Please try to specify type arguments explicitly.
+            groups[k] = append(groups[k], w)
+                        ^
+/tmp/anagrams.kt:90:32: error: type mismatch: inferred type is MutableList<String>? but MutableList<String> was expected
+            groups[k] = append(groups[k], w)
+                               ^
+/tmp/anagrams.kt:92:22: error: only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type MutableList<String>?
+        if (groups[k].size > maxLen) {
+                     ^
+/tmp/anagrams.kt:93:31: error: only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type MutableList<String>?
+            maxLen = groups[k].size
+                              ^
+/tmp/anagrams.kt:99:22: error: only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type MutableList<String>?
+        if (groups[k].size == maxLen) {
+                     ^
+/tmp/anagrams.kt:101:37: error: type mismatch: inferred type is MutableList<String>? but MutableList<String> was expected
+                var g = sortStrings(groups[k])
+                                    ^
