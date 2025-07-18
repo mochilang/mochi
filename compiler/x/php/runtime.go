@@ -185,6 +185,13 @@ var helperLen = `function _len($v) {
     return 0;
 }`
 
+var helperSlice = `function _slice($v, $start, $len = null) {
+    if (is_string($v)) {
+        return $len === null ? substr($v, $start) : substr($v, $start, $len);
+    }
+    return $len === null ? array_slice($v, $start) : array_slice($v, $start, $len);
+}`
+
 var helperMap = map[string]string{
 	"_load":     helperLoad,
 	"_save":     helperSave,
@@ -192,4 +199,5 @@ var helperMap = map[string]string{
 	"_group_by": helperGroupBy,
 	"_avg":      helperAvg,
 	"_len":      helperLen,
+	"_slice":    helperSlice,
 }
