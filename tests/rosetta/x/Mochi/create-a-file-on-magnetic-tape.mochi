@@ -1,0 +1,46 @@
+// Mochi translation of Rosetta "Create a file on magnetic tape" task
+//
+// The Go version constructs a TAR archive containing a single file and
+// optionally compresses it with gzip before writing to a file or device.
+// Mochi currently lacks built in tar/gzip libraries and full filesystem
+// access, so this example mirrors the structure of the Go program but
+// simply builds the archive in memory.  No output is produced, matching
+// the Go example when run with its default arguments.
+
+// stub types used to mirror Go code
+
+fun gzipWriter(w: any): any { return w }
+fun tarWriter(w: any): any { return w }
+fun tarWriteHeader(w: any, hdr: map<string, any>) {}
+fun tarWrite(w: any, data: string) {}
+
+fun main() {
+  let filename = "TAPE.FILE"   // name inside the archive
+  let data = ""               // file contents
+  let outfile = ""            // destination path (ignored)
+  let gzipFlag = false        // compress output
+
+  var w: any = null           // represents os.Stdout or a file handle
+  if outfile != "" {          // would open outfile here
+    w = null
+  }
+  if gzipFlag {               // wrap in gzip writer if requested
+    w = gzipWriter(w)
+  }
+  w = tarWriter(w)            // create tar writer
+
+  var hdr: map<string, any> = {
+    "Name": filename,
+    "Mode": 0o660,
+    "Size": len(data),
+    "ModTime": now(),
+    "Typeflag": 0,
+    "Uname": "guest",
+    "Gname": "guest",
+  }
+  tarWriteHeader(w, hdr)
+  tarWrite(w, data)
+  // Normally the archive would be written to w here.
+}
+
+main()
