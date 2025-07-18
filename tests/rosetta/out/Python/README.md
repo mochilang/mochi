@@ -1,4 +1,4 @@
-# Rosetta Python Output (24/271 compiled and run)
+# Rosetta Python Output (31/278 compiled and run)
 
 This directory holds Python source code generated from the Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected runtime output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -27,18 +27,18 @@ This directory holds Python source code generated from the Mochi programs in `te
 - [x] abelian-sandpile-model
 - [x] abstract-type
 - [x] abundant-deficient-and-perfect-number-classifications
-- [ ] abundant-odd-numbers
+- [x] abundant-odd-numbers
 - [x] accumulator-factory
-- [ ] achilles-numbers
-- [ ] ackermann-function-2
-- [ ] ackermann-function-3
-- [ ] ackermann-function
+- [x] achilles-numbers
+- [x] ackermann-function-2
+- [x] ackermann-function-3
+- [x] ackermann-function
 - [ ] active-directory-connect
 - [ ] active-directory-search-for-a-user
 - [ ] active-object
 - [ ] add-a-variable-to-a-class-instance-at-runtime
-- [ ] additive-primes
-- [ ] address-of-a-variable
+- [x] additive-primes
+- [x] address-of-a-variable
 - [ ] adfgvx-cipher
 - [ ] aks-test-for-primes
 - [ ] algebraic-data-types
@@ -273,4 +273,11 @@ This directory holds Python source code generated from the Mochi programs in `te
 - [ ] cusip
 - [ ] cyclops-numbers
 - [ ] damm-algorithm
+- [ ] date-format
+- [ ] date-manipulation
+- [ ] day-of-the-week
+- [ ] de-bruijn-sequences
+- [ ] deal-cards-for-freecell
+- [ ] death-star
+- [ ] deceptive-numbers
 - [ ] md5
