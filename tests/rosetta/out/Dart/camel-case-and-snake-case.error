@@ -1,25 +1,95 @@
 run: exit status 254
-/tmp/camel-case-and-snake-case.dart:44:19: Error: Method not found: 'lower'.
+/tmp/camel-case-and-snake-case.dart:4:51: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+  while ((start as num) < s.length && s.substring(start, (start as num) + 1) == ' ') {
+                                                  ^
+/tmp/camel-case-and-snake-case.dart:4:73: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+  while ((start as num) < s.length && s.substring(start, (start as num) + 1) == ' ') {
+                                                                        ^
+/tmp/camel-case-and-snake-case.dart:8:68: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+  while ((end as num) > (start as num) && s.substring((end as num) - 1, end) == ' ') {
+                                                                   ^
+/tmp/camel-case-and-snake-case.dart:9:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    end = (end as num) - 1;
+                       ^
+/tmp/camel-case-and-snake-case.dart:11:22: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+  return s.substring(start, end);
+                     ^
+/tmp/camel-case-and-snake-case.dart:23:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = (n as num) - 1;
+                   ^
+/tmp/camel-case-and-snake-case.dart:41:19: Error: Method not found: 'lower'.
       out = out + lower(ch);
                   ^^^^^
-/tmp/camel-case-and-snake-case.dart:50:19: Error: Method not found: 'upper'.
+/tmp/camel-case-and-snake-case.dart:47:19: Error: Method not found: 'upper'.
       out = out + upper(ch);
                   ^^^^^
-/tmp/camel-case-and-snake-case.dart:88:19: Error: Method not found: 'lower'.
+/tmp/camel-case-and-snake-case.dart:34:26: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var ch = s.substring(i, (i as num) + 1);
+                         ^
+/tmp/camel-case-and-snake-case.dart:34:40: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var ch = s.substring(i, (i as num) + 1);
+                                       ^
+/tmp/camel-case-and-snake-case.dart:51:26: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+      out = (out as num) + (ch as num);
+                         ^
+/tmp/camel-case-and-snake-case.dart:85:19: Error: Method not found: 'lower'.
       out = out + lower(ch);
                   ^^^^^
-/tmp/camel-case-and-snake-case.dart:92:19: Error: Method not found: 'lower'.
+/tmp/camel-case-and-snake-case.dart:89:19: Error: Method not found: 'lower'.
       out = out + lower(ch);
                   ^^^^^
-/tmp/camel-case-and-snake-case.dart:105:26: Error: A value of type 'Object' can't be assigned to a variable of type 'String'.
+/tmp/camel-case-and-snake-case.dart:64:26: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var ch = s.substring(i, (i as num) + 1);
+                         ^
+/tmp/camel-case-and-snake-case.dart:64:40: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var ch = s.substring(i, (i as num) + 1);
+                                       ^
+/tmp/camel-case-and-snake-case.dart:95:74: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+  while ((start as num) < out.length && ((out is String) ? out.substring(start, (start as num) + 1) : (out as List).sublist(start, (start as num) + 1)) == '_') {
+                                                                         ^
+/tmp/camel-case-and-snake-case.dart:95:96: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+  while ((start as num) < out.length && ((out is String) ? out.substring(start, (start as num) + 1) : (out as List).sublist(start, (start as num) + 1)) == '_') {
+                                                                                               ^
+/tmp/camel-case-and-snake-case.dart:95:125: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+  while ((start as num) < out.length && ((out is String) ? out.substring(start, (start as num) + 1) : (out as List).sublist(start, (start as num) + 1)) == '_') {
+                                                                                                                            ^
+/tmp/camel-case-and-snake-case.dart:95:147: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+  while ((start as num) < out.length && ((out is String) ? out.substring(start, (start as num) + 1) : (out as List).sublist(start, (start as num) + 1)) == '_') {
+                                                                                                                                                  ^
+/tmp/camel-case-and-snake-case.dart:99:89: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+  while ((end as num) > (start as num) && ((out is String) ? out.substring((end as num) - 1, end) : (out as List).sublist((end as num) - 1, end)) == '_') {
+                                                                                        ^
+/tmp/camel-case-and-snake-case.dart:99:136: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+  while ((end as num) > (start as num) && ((out is String) ? out.substring((end as num) - 1, end) : (out as List).sublist((end as num) - 1, end)) == '_') {
+                                                                                                                                       ^
+/tmp/camel-case-and-snake-case.dart:100:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    end = (end as num) - 1;
+                       ^
+/tmp/camel-case-and-snake-case.dart:102:42: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+  out = ((out is String) ? out.substring(start, end) : (out as List).sublist(start, end));
+                                         ^
+/tmp/camel-case-and-snake-case.dart:102:78: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+  out = ((out is String) ? out.substring(start, end) : (out as List).sublist(start, end));
+                                                                             ^
+/tmp/camel-case-and-snake-case.dart:102:26: Error: A value of type 'Object' can't be assigned to a variable of type 'String'.
  - 'Object' is from 'dart:core'.
   out = ((out is String) ? out.substring(start, end) : (out as List).sublist(start, end));
                          ^
-/tmp/camel-case-and-snake-case.dart:113:21: Error: A value of type 'Object' can't be assigned to a variable of type 'String'.
- - 'Object' is from 'dart:core'.
-        res = res + c;
-                    ^
-/tmp/camel-case-and-snake-case.dart:118:19: Error: A value of type 'Object' can't be assigned to a variable of type 'String'.
- - 'Object' is from 'dart:core'.
-      res = res + c;
-                  ^
+/tmp/camel-case-and-snake-case.dart:107:46: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var c = ((out is String) ? out.substring(j, (j as num) + 1) : (out as List).sublist(j, (j as num) + 1));
+                                             ^
+/tmp/camel-case-and-snake-case.dart:107:60: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var c = ((out is String) ? out.substring(j, (j as num) + 1) : (out as List).sublist(j, (j as num) + 1));
+                                                           ^
+/tmp/camel-case-and-snake-case.dart:107:89: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var c = ((out is String) ? out.substring(j, (j as num) + 1) : (out as List).sublist(j, (j as num) + 1));
+                                                                                        ^
+/tmp/camel-case-and-snake-case.dart:107:103: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var c = ((out is String) ? out.substring(j, (j as num) + 1) : (out as List).sublist(j, (j as num) + 1));
+                                                                                                      ^
+/tmp/camel-case-and-snake-case.dart:110:28: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+        res = (res as num) + (c as num);
+                           ^
+/tmp/camel-case-and-snake-case.dart:115:26: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+      res = (res as num) + (c as num);
+                         ^

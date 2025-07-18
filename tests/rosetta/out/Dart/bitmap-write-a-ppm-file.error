@@ -1,46 +1,67 @@
 run: exit status 254
-/tmp/bitmap-write-a-ppm-file.dart:70:12: Error: The operator '[]' isn't defined for the class 'Colour'.
+/tmp/bitmap-write-a-ppm-file.dart:46:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      xx = (xx as num) + 1;
+                       ^
+/tmp/bitmap-write-a-ppm-file.dart:48:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    yy = (yy as num) + 1;
+                     ^
+/tmp/bitmap-write-a-ppm-file.dart:66:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var p = b.pixels[y][x];
+                       ^
+/tmp/bitmap-write-a-ppm-file.dart:66:27: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var p = b.pixels[y][x];
+                          ^
+/tmp/bitmap-write-a-ppm-file.dart:67:13: Error: The operator '[]' isn't defined for the class 'Colour'.
  - 'Colour' is from '/tmp/bitmap-write-a-ppm-file.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
-      if (p['R'] > maxv) {
-           ^
-/tmp/bitmap-write-a-ppm-file.dart:71:17: Error: The operator '[]' isn't defined for the class 'Colour'.
+      if ((p['R'] as num) > (maxv as num)) {
+            ^
+/tmp/bitmap-write-a-ppm-file.dart:68:17: Error: The operator '[]' isn't defined for the class 'Colour'.
  - 'Colour' is from '/tmp/bitmap-write-a-ppm-file.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
         maxv = p['R'];
                 ^
-/tmp/bitmap-write-a-ppm-file.dart:73:12: Error: The operator '[]' isn't defined for the class 'Colour'.
+/tmp/bitmap-write-a-ppm-file.dart:70:13: Error: The operator '[]' isn't defined for the class 'Colour'.
  - 'Colour' is from '/tmp/bitmap-write-a-ppm-file.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
-      if (p['G'] > maxv) {
-           ^
-/tmp/bitmap-write-a-ppm-file.dart:74:17: Error: The operator '[]' isn't defined for the class 'Colour'.
+      if ((p['G'] as num) > (maxv as num)) {
+            ^
+/tmp/bitmap-write-a-ppm-file.dart:71:17: Error: The operator '[]' isn't defined for the class 'Colour'.
  - 'Colour' is from '/tmp/bitmap-write-a-ppm-file.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
         maxv = p['G'];
                 ^
-/tmp/bitmap-write-a-ppm-file.dart:76:12: Error: The operator '[]' isn't defined for the class 'Colour'.
+/tmp/bitmap-write-a-ppm-file.dart:73:13: Error: The operator '[]' isn't defined for the class 'Colour'.
  - 'Colour' is from '/tmp/bitmap-write-a-ppm-file.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
-      if (p['B'] > maxv) {
-           ^
-/tmp/bitmap-write-a-ppm-file.dart:77:17: Error: The operator '[]' isn't defined for the class 'Colour'.
+      if ((p['B'] as num) > (maxv as num)) {
+            ^
+/tmp/bitmap-write-a-ppm-file.dart:74:17: Error: The operator '[]' isn't defined for the class 'Colour'.
  - 'Colour' is from '/tmp/bitmap-write-a-ppm-file.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
         maxv = p['B'];
                 ^
-/tmp/bitmap-write-a-ppm-file.dart:91:34: Error: The operator '[]' isn't defined for the class 'Colour'.
+/tmp/bitmap-write-a-ppm-file.dart:87:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var p = b.pixels[y][x];
+                       ^
+/tmp/bitmap-write-a-ppm-file.dart:87:27: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var p = b.pixels[y][x];
+                          ^
+/tmp/bitmap-write-a-ppm-file.dart:88:34: Error: The operator '[]' isn't defined for the class 'Colour'.
  - 'Colour' is from '/tmp/bitmap-write-a-ppm-file.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
       line = line + '   ' + pad(p['R'], numsize) + ' ' + pad(p['G'], numsize) + ' ' + pad(p['B'], numsize);
                                  ^
-/tmp/bitmap-write-a-ppm-file.dart:91:63: Error: The operator '[]' isn't defined for the class 'Colour'.
+/tmp/bitmap-write-a-ppm-file.dart:88:63: Error: The operator '[]' isn't defined for the class 'Colour'.
  - 'Colour' is from '/tmp/bitmap-write-a-ppm-file.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
       line = line + '   ' + pad(p['R'], numsize) + ' ' + pad(p['G'], numsize) + ' ' + pad(p['B'], numsize);
                                                               ^
-/tmp/bitmap-write-a-ppm-file.dart:91:92: Error: The operator '[]' isn't defined for the class 'Colour'.
+/tmp/bitmap-write-a-ppm-file.dart:88:92: Error: The operator '[]' isn't defined for the class 'Colour'.
  - 'Colour' is from '/tmp/bitmap-write-a-ppm-file.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
       line = line + '   ' + pad(p['R'], numsize) + ' ' + pad(p['G'], numsize) + ' ' + pad(p['B'], numsize);
                                                                                            ^
+/tmp/bitmap-write-a-ppm-file.dart:91:24: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+    out = (out as num) + (line as num);
+                       ^

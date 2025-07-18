@@ -1,11 +1,17 @@
 run: exit status 254
-/tmp/cartesian-product-of-two-or-more-lists-3.dart:44:23: Error: Type 'any' not found.
+/tmp/cartesian-product-of-two-or-more-lists-3.dart:41:23: Error: Type 'any' not found.
 List<List<int>> cartN(any lists) {
                       ^^^
-/tmp/cartesian-product-of-two-or-more-lists-3.dart:44:23: Error: 'any' isn't a type.
+/tmp/cartesian-product-of-two-or-more-lists-3.dart:6:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    s = s + xs[i].toString();
+               ^
+/tmp/cartesian-product-of-two-or-more-lists-3.dart:20:25: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    s = s + listStr(lst[i]);
+                        ^
+/tmp/cartesian-product-of-two-or-more-lists-3.dart:41:23: Error: 'any' isn't a type.
 List<List<int>> cartN(any lists) {
                       ^^^
-/tmp/cartesian-product-of-two-or-more-lists-3.dart:53:39: Error: The method 'substring' isn't defined for the class 'List<List<int>>'.
+/tmp/cartesian-product-of-two-or-more-lists-3.dart:52:39: Error: The method 'substring' isn't defined for the class 'List<List<int>>'.
  - 'List' is from 'dart:core'.
 Try correcting the name to the name of an existing method, or defining a method named 'substring'.
   var rest = cartN(((a is String) ? a.substring(1, a.length) : (a as List).sublist(1, a.length)));

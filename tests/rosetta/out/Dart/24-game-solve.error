@@ -1,115 +1,61 @@
 run: exit status 254
-/tmp/24-game-solve.dart:15:13: Error: Type 'any' not found.
+/tmp/24-game-solve.dart:12:13: Error: Type 'any' not found.
 Map<String, any> newNum(int n) {
             ^^^
 /tmp/24-game-solve.dart:19:39: Error: Type 'any' not found.
 Map<String, int> exprEval(Map<String, any> x) {
                                       ^^^
-/tmp/24-game-solve.dart:37:31: Error: Type 'any' not found.
+/tmp/24-game-solve.dart:49:31: Error: Type 'any' not found.
 String exprString(Map<String, any> x) {
                               ^^^
-/tmp/24-game-solve.dart:67:29: Error: Type 'any' not found.
+/tmp/24-game-solve.dart:79:29: Error: Type 'any' not found.
 bool solve(List<Map<String, any>> xs) {
                             ^^^
 /tmp/24-game-solve.dart:19:39: Error: 'any' isn't a type.
 Map<String, int> exprEval(Map<String, any> x) {
                                       ^^^
-/tmp/24-game-solve.dart:26:32: Error: A value of type 'int?' can't be assigned to a variable of type 'num' because 'int?' is nullable and 'num' isn't.
-    return {'num': l['num'] * r['denom'] + l['denom'] * r['num'], 'denom': l['denom'] * r['denom']};
+/tmp/24-game-solve.dart:27:63: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      'num': ((l['num'] as num) * (r['denom'] as num) as num) + ((l['denom'] as num) * (r['num'] as num) as num),
+                                                              ^
+/tmp/24-game-solve.dart:28:36: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      'denom': (l['denom'] as num) * (r['denom'] as num),
+                                   ^
+/tmp/24-game-solve.dart:33:63: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      'num': ((l['num'] as num) * (r['denom'] as num) as num) - ((l['denom'] as num) * (r['num'] as num) as num),
+                                                              ^
+/tmp/24-game-solve.dart:34:36: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      'denom': (l['denom'] as num) * (r['denom'] as num),
+                                   ^
+/tmp/24-game-solve.dart:39:32: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      'num': (l['num'] as num) * (r['num'] as num),
                                ^
-/tmp/24-game-solve.dart:26:29: Error: Operator '*' cannot be called on 'int?' because it is potentially null.
-    return {'num': l['num'] * r['denom'] + l['denom'] * r['num'], 'denom': l['denom'] * r['denom']};
-                            ^
-/tmp/24-game-solve.dart:26:58: Error: A value of type 'int?' can't be assigned to a variable of type 'num' because 'int?' is nullable and 'num' isn't.
-    return {'num': l['num'] * r['denom'] + l['denom'] * r['num'], 'denom': l['denom'] * r['denom']};
-                                                         ^
-/tmp/24-game-solve.dart:26:55: Error: Operator '*' cannot be called on 'int?' because it is potentially null.
-    return {'num': l['num'] * r['denom'] + l['denom'] * r['num'], 'denom': l['denom'] * r['denom']};
-                                                      ^
-/tmp/24-game-solve.dart:26:42: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    return {'num': l['num'] * r['denom'] + l['denom'] * r['num'], 'denom': l['denom'] * r['denom']};
-                                         ^
-/tmp/24-game-solve.dart:26:90: Error: A value of type 'int?' can't be assigned to a variable of type 'num' because 'int?' is nullable and 'num' isn't.
-    return {'num': l['num'] * r['denom'] + l['denom'] * r['num'], 'denom': l['denom'] * r['denom']};
-                                                                                         ^
-/tmp/24-game-solve.dart:26:87: Error: Operator '*' cannot be called on 'int?' because it is potentially null.
-    return {'num': l['num'] * r['denom'] + l['denom'] * r['num'], 'denom': l['denom'] * r['denom']};
-                                                                                      ^
-/tmp/24-game-solve.dart:26:87: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    return {'num': l['num'] * r['denom'] + l['denom'] * r['num'], 'denom': l['denom'] * r['denom']};
-                                                                                      ^
-/tmp/24-game-solve.dart:29:32: Error: A value of type 'int?' can't be assigned to a variable of type 'num' because 'int?' is nullable and 'num' isn't.
-    return {'num': l['num'] * r['denom'] - l['denom'] * r['num'], 'denom': l['denom'] * r['denom']};
-                               ^
-/tmp/24-game-solve.dart:29:29: Error: Operator '*' cannot be called on 'int?' because it is potentially null.
-    return {'num': l['num'] * r['denom'] - l['denom'] * r['num'], 'denom': l['denom'] * r['denom']};
-                            ^
-/tmp/24-game-solve.dart:29:58: Error: A value of type 'int?' can't be assigned to a variable of type 'num' because 'int?' is nullable and 'num' isn't.
-    return {'num': l['num'] * r['denom'] - l['denom'] * r['num'], 'denom': l['denom'] * r['denom']};
-                                                         ^
-/tmp/24-game-solve.dart:29:55: Error: Operator '*' cannot be called on 'int?' because it is potentially null.
-    return {'num': l['num'] * r['denom'] - l['denom'] * r['num'], 'denom': l['denom'] * r['denom']};
-                                                      ^
-/tmp/24-game-solve.dart:29:42: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    return {'num': l['num'] * r['denom'] - l['denom'] * r['num'], 'denom': l['denom'] * r['denom']};
-                                         ^
-/tmp/24-game-solve.dart:29:90: Error: A value of type 'int?' can't be assigned to a variable of type 'num' because 'int?' is nullable and 'num' isn't.
-    return {'num': l['num'] * r['denom'] - l['denom'] * r['num'], 'denom': l['denom'] * r['denom']};
-                                                                                         ^
-/tmp/24-game-solve.dart:29:87: Error: Operator '*' cannot be called on 'int?' because it is potentially null.
-    return {'num': l['num'] * r['denom'] - l['denom'] * r['num'], 'denom': l['denom'] * r['denom']};
-                                                                                      ^
-/tmp/24-game-solve.dart:29:87: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    return {'num': l['num'] * r['denom'] - l['denom'] * r['num'], 'denom': l['denom'] * r['denom']};
-                                                                                      ^
-/tmp/24-game-solve.dart:32:32: Error: A value of type 'int?' can't be assigned to a variable of type 'num' because 'int?' is nullable and 'num' isn't.
-    return {'num': l['num'] * r['num'], 'denom': l['denom'] * r['denom']};
-                               ^
-/tmp/24-game-solve.dart:32:29: Error: Operator '*' cannot be called on 'int?' because it is potentially null.
-    return {'num': l['num'] * r['num'], 'denom': l['denom'] * r['denom']};
-                            ^
-/tmp/24-game-solve.dart:32:29: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    return {'num': l['num'] * r['num'], 'denom': l['denom'] * r['denom']};
-                            ^
-/tmp/24-game-solve.dart:32:64: Error: A value of type 'int?' can't be assigned to a variable of type 'num' because 'int?' is nullable and 'num' isn't.
-    return {'num': l['num'] * r['num'], 'denom': l['denom'] * r['denom']};
-                                                               ^
-/tmp/24-game-solve.dart:32:61: Error: Operator '*' cannot be called on 'int?' because it is potentially null.
-    return {'num': l['num'] * r['num'], 'denom': l['denom'] * r['denom']};
-                                                            ^
-/tmp/24-game-solve.dart:32:61: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    return {'num': l['num'] * r['num'], 'denom': l['denom'] * r['denom']};
-                                                            ^
-/tmp/24-game-solve.dart:34:30: Error: A value of type 'int?' can't be assigned to a variable of type 'num' because 'int?' is nullable and 'num' isn't.
-  return {'num': l['num'] * r['denom'], 'denom': l['denom'] * r['num']};
+/tmp/24-game-solve.dart:40:36: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      'denom': (l['denom'] as num) * (r['denom'] as num),
+                                   ^
+/tmp/24-game-solve.dart:44:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    'num': (l['num'] as num) * (r['denom'] as num),
                              ^
-/tmp/24-game-solve.dart:34:27: Error: Operator '*' cannot be called on 'int?' because it is potentially null.
-  return {'num': l['num'] * r['denom'], 'denom': l['denom'] * r['num']};
-                          ^
-/tmp/24-game-solve.dart:34:27: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-  return {'num': l['num'] * r['denom'], 'denom': l['denom'] * r['num']};
-                          ^
-/tmp/24-game-solve.dart:34:64: Error: A value of type 'int?' can't be assigned to a variable of type 'num' because 'int?' is nullable and 'num' isn't.
-  return {'num': l['num'] * r['denom'], 'denom': l['denom'] * r['num']};
-                                                               ^
-/tmp/24-game-solve.dart:34:61: Error: Operator '*' cannot be called on 'int?' because it is potentially null.
-  return {'num': l['num'] * r['denom'], 'denom': l['denom'] * r['num']};
-                                                            ^
-/tmp/24-game-solve.dart:34:61: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-  return {'num': l['num'] * r['denom'], 'denom': l['denom'] * r['num']};
-                                                            ^
-/tmp/24-game-solve.dart:37:31: Error: 'any' isn't a type.
+/tmp/24-game-solve.dart:45:34: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    'denom': (l['denom'] as num) * (r['num'] as num),
+                                 ^
+/tmp/24-game-solve.dart:49:31: Error: 'any' isn't a type.
 String exprString(Map<String, any> x) {
                               ^^^
-/tmp/24-game-solve.dart:67:29: Error: 'any' isn't a type.
+/tmp/24-game-solve.dart:79:29: Error: 'any' isn't a type.
 bool solve(List<Map<String, any>> xs) {
                             ^^^
-/tmp/24-game-solve.dart:80:24: Error: 'any' isn't a type.
+/tmp/24-game-solve.dart:92:24: Error: 'any' isn't a type.
       List<Map<String, any>> rest = [];
                        ^^^
-/tmp/24-game-solve.dart:70:51: Error: Operator '*' cannot be called on 'int?' because it is potentially null.
-    if (f['denom'] != 0 && f['num'] == f['denom'] * goal) {
-                                                  ^
-/tmp/24-game-solve.dart:114:22: Error: 'any' isn't a type.
+/tmp/24-game-solve.dart:96:42: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+          rest = List.from(rest)..add(xs[k]);
+                                         ^
+/tmp/24-game-solve.dart:100:18: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var a = xs[i];
+                 ^
+/tmp/24-game-solve.dart:101:18: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var b = xs[j];
+                 ^
+/tmp/24-game-solve.dart:131:22: Error: 'any' isn't a type.
     List<Map<String, any>> cards = [];
                      ^^^

@@ -1,7 +1,22 @@
 run: exit status 254
-/tmp/attractive-numbers.dart:40:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      count = (count as num) + 1;
-                             ^
-/tmp/attractive-numbers.dart:79:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      count = (count as num) + 1;
-                             ^
+/tmp/attractive-numbers.dart:17:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    d = (d as num) + 2;
+                   ^
+/tmp/attractive-numbers.dart:21:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    d = (d as num) + 4;
+                   ^
+/tmp/attractive-numbers.dart:38:13: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+      n = n / (f as num);
+            ^
+/tmp/attractive-numbers.dart:40:16: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+        return count;
+               ^
+/tmp/attractive-numbers.dart:48:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      f = (f as num) + 2;
+                     ^
+/tmp/attractive-numbers.dart:54:10: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+  return count;
+         ^
+/tmp/attractive-numbers.dart:84:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^

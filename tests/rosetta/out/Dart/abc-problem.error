@@ -1,10 +1,25 @@
 run: exit status 254
-/tmp/abc-problem.dart:32:11: Error: Method not found: 'lower'.
+/tmp/abc-problem.dart:7:25: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var c = s.substring(i, (i as num) + 1);
+                        ^
+/tmp/abc-problem.dart:7:39: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var c = s.substring(i, (i as num) + 1);
+                                      ^
+/tmp/abc-problem.dart:15:26: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+      cur = (cur as num) + (c as num);
+                         ^
+/tmp/abc-problem.dart:29:11: Error: Method not found: 'lower'.
   var c = lower(word.substring(0, 1));
           ^^^^^
-/tmp/abc-problem.dart:36:14: Error: Method not found: 'lower'.
+/tmp/abc-problem.dart:33:14: Error: Method not found: 'lower'.
     if (c == lower(((b is String) ? b.substring(0, 1) : (b as List).sublist(0, 1))) || c == lower(((b is String) ? b.substring(1, 2) : (b as List).sublist(1, 2)))) {
              ^^^^^
-/tmp/abc-problem.dart:36:93: Error: Method not found: 'lower'.
+/tmp/abc-problem.dart:33:93: Error: Method not found: 'lower'.
     if (c == lower(((b is String) ? b.substring(0, 1) : (b as List).sublist(0, 1))) || c == lower(((b is String) ? b.substring(1, 2) : (b as List).sublist(1, 2)))) {
                                                                                             ^^^^^
+/tmp/abc-problem.dart:32:18: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var b = blks[i];
+                 ^
+/tmp/abc-problem.dart:38:44: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+          rest = List.from(rest)..add(blks[j]);
+                                           ^

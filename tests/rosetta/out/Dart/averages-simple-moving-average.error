@@ -1,27 +1,48 @@
 run: exit status 254
-/tmp/averages-simple-moving-average.dart:17:46: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+/tmp/averages-simple-moving-average.dart:5:32: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    if (s.toString().substring(i, (i as num) + 1) == ch) {
+                               ^
+/tmp/averages-simple-moving-average.dart:5:46: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    if (s.toString().substring(i, (i as num) + 1) == ch) {
+                                             ^
+/tmp/averages-simple-moving-average.dart:6:14: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+      return i;
+             ^
+/tmp/averages-simple-moving-average.dart:14:46: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
   var y = double.parse(int.parse(((x * 1000) + 0.5))) / 1000;
                                              ^
-/tmp/averages-simple-moving-average.dart:17:28: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/averages-simple-moving-average.dart:14:28: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
   var y = double.parse(int.parse(((x * 1000) + 0.5))) / 1000;
                            ^
-/tmp/averages-simple-moving-average.dart:51:24: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+/tmp/averages-simple-moving-average.dart:23:50: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+      s = s.toString().substring(0, (dot as num) + 4);
+                                                 ^
+/tmp/averages-simple-moving-average.dart:48:29: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
     sum = (sum as num) + xs[i];
-                       ^
-/tmp/averages-simple-moving-average.dart:53:26: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-      sum = (sum as num) - xs[i - period];
-                         ^
-/tmp/averages-simple-moving-average.dart:59:60: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+                            ^
+/tmp/averages-simple-moving-average.dart:50:42: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      sum = (sum as num) - xs[(i as num) - period];
+                                         ^
+/tmp/averages-simple-moving-average.dart:56:60: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
     res = List.from(res)..add((sum as num) / (double.parse(denom)));
                                                            ^
-/tmp/averages-simple-moving-average.dart:67:24: Error: The argument type 'List<int>' can't be assigned to the parameter type 'List<double>'.
+/tmp/averages-simple-moving-average.dart:75:24: Error: The argument type 'List<int>' can't be assigned to the parameter type 'List<double>'.
  - 'List' is from 'dart:core'.
   var sma3 = smaSeries(xs, 3);
                        ^
-/tmp/averages-simple-moving-average.dart:68:24: Error: The argument type 'List<int>' can't be assigned to the parameter type 'List<double>'.
+/tmp/averages-simple-moving-average.dart:76:24: Error: The argument type 'List<int>' can't be assigned to the parameter type 'List<double>'.
  - 'List' is from 'dart:core'.
   var sma5 = smaSeries(xs, 5);
                        ^
-/tmp/averages-simple-moving-average.dart:72:27: Error: The argument type 'int' can't be assigned to the parameter type 'double'.
+/tmp/averages-simple-moving-average.dart:80:28: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var line = pad(fmt3(xs[i]), 5) + '  ' + pad(fmt3(sma3[i]), 5) + '  ' + pad(fmt3(sma5[i]), 5);
+                           ^
+/tmp/averages-simple-moving-average.dart:80:27: Error: The argument type 'int' can't be assigned to the parameter type 'double'.
     var line = pad(fmt3(xs[i]), 5) + '  ' + pad(fmt3(sma3[i]), 5) + '  ' + pad(fmt3(sma5[i]), 5);
                           ^
+/tmp/averages-simple-moving-average.dart:80:59: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var line = pad(fmt3(xs[i]), 5) + '  ' + pad(fmt3(sma3[i]), 5) + '  ' + pad(fmt3(sma5[i]), 5);
+                                                          ^
+/tmp/averages-simple-moving-average.dart:80:90: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var line = pad(fmt3(xs[i]), 5) + '  ' + pad(fmt3(sma3[i]), 5) + '  ' + pad(fmt3(sma5[i]), 5);
+                                                                                         ^

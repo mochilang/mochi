@@ -1,15 +1,45 @@
 run: exit status 254
-/tmp/bitcoin-address-validation.dart:35:24: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-      c = int.parse((c / 256));
-                       ^
-/tmp/bitcoin-address-validation.dart:47:15: Error: Method not found: 'sha256'.
+/tmp/bitcoin-address-validation.dart:5:21: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    if (s.substring(i, (i as num) + 1) == ch) {
+                    ^
+/tmp/bitcoin-address-validation.dart:5:35: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    if (s.substring(i, (i as num) + 1) == ch) {
+                                  ^
+/tmp/bitcoin-address-validation.dart:6:14: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+      return i;
+             ^
+/tmp/bitcoin-address-validation.dart:23:29: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var ch = addr.substring(idx, (idx as num) + 1);
+                            ^
+/tmp/bitcoin-address-validation.dart:23:47: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var ch = addr.substring(idx, (idx as num) + 1);
+                                              ^
+/tmp/bitcoin-address-validation.dart:30:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      c = (c as num) + (58 * (a[j] as num) as num);
+                     ^
+/tmp/bitcoin-address-validation.dart:31:25: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      a[j] = (c as num) % 256;
+                        ^
+/tmp/bitcoin-address-validation.dart:32:33: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+      c = int.parse(((c as num) / 256));
+                                ^
+/tmp/bitcoin-address-validation.dart:33:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      j = (j as num) - 1;
+                     ^
+/tmp/bitcoin-address-validation.dart:44:15: Error: Method not found: 'sha256'.
   var first = sha256(bs);
               ^^^^^^
-/tmp/bitcoin-address-validation.dart:48:10: Error: Method not found: 'sha256'.
+/tmp/bitcoin-address-validation.dart:45:10: Error: Method not found: 'sha256'.
   return sha256(first);
          ^^^^^^
-/tmp/bitcoin-address-validation.dart:53:35: Error: The method 'substring' isn't defined for the class 'List<int>'.
+/tmp/bitcoin-address-validation.dart:50:35: Error: The method 'substring' isn't defined for the class 'List<int>'.
  - 'List' is from 'dart:core'.
 Try correcting the name to the name of an existing method, or defining a method named 'substring'.
   return ((hash is String) ? hash.substring(0, 4) : (hash as List).sublist(0, 4));
                                   ^^^^^^^^^
+/tmp/bitcoin-address-validation.dart:64:14: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    if (a[21 + (i as num)] != sum[i]) {
+             ^
+/tmp/bitcoin-address-validation.dart:64:35: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    if (a[21 + (i as num)] != sum[i]) {
+                                  ^

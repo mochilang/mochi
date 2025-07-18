@@ -1,7 +1,10 @@
 run: exit status 254
-/tmp/calculating-the-value-of-e.dart:27:22: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+/tmp/calculating-the-value-of-e.dart:6:12: Error: A value of type 'num' can't be returned from a function with return type 'double'.
+    return -(x as num);
+           ^
+/tmp/calculating-the-value-of-e.dart:24:22: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
   var n = (int.parse(scaled));
                      ^
-/tmp/calculating-the-value-of-e.dart:49:30: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/calculating-the-value-of-e.dart:46:30: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
     term = 1 / (double.parse(factval));
                              ^

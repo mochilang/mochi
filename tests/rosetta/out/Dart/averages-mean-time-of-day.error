@@ -1,43 +1,58 @@
 run: exit status 254
-/tmp/averages-mean-time-of-day.dart:12:39: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
-    var denom = double.parse(((2 * n) * (2 * n + 1)));
-                                      ^
-/tmp/averages-mean-time-of-day.dart:25:43: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
-    var denom = double.parse(((2 * n - 1) * (2 * n)));
-                                          ^
-/tmp/averages-mean-time-of-day.dart:26:26: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-    term = -term * x * x / (denom as num);
-                         ^
-/tmp/averages-mean-time-of-day.dart:27:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    sum = (sum as num) + term;
+/tmp/averages-mean-time-of-day.dart:9:57: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
+    var denom = double.parse((((2 * (n as num)) as num) * (((2 * (n as num) as num) + 1) as num)));
+                                                        ^
+/tmp/averages-mean-time-of-day.dart:11:24: Error: A value of type 'num' can't be assigned to a variable of type 'double'.
+    sum = (sum as num) + (term as num);
                        ^
-/tmp/averages-mean-time-of-day.dart:30:10: Error: A value of type 'int' can't be returned from a function with return type 'double'.
+/tmp/averages-mean-time-of-day.dart:12:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = (n as num) + 1;
+                   ^
+/tmp/averages-mean-time-of-day.dart:22:70: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
+    var denom = double.parse(((((2 * (n as num) as num) - 1) as num) * ((2 * (n as num)) as num)));
+                                                                     ^
+/tmp/averages-mean-time-of-day.dart:23:62: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    term = (((-(term as num) as num) * x as num) * x as num) / (denom as num);
+                                                             ^
+/tmp/averages-mean-time-of-day.dart:24:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    sum = (sum as num) + (term as num);
+                       ^
+/tmp/averages-mean-time-of-day.dart:25:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = (n as num) + 1;
+                   ^
+/tmp/averages-mean-time-of-day.dart:27:10: Error: A value of type 'int' can't be returned from a function with return type 'double'.
   return sum;
          ^
-/tmp/averages-mean-time-of-day.dart:82:42: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
-  return double.parse(((h * 60 + m) * 60 + sec));
-                                         ^
-/tmp/averages-mean-time-of-day.dart:99:17: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-    ssum = ssum + sinApprox(ang);
-                ^
-/tmp/averages-mean-time-of-day.dart:100:17: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-    csum = csum + cosApprox(ang);
-                ^
-/tmp/averages-mean-time-of-day.dart:103:27: Error: The argument type 'int' can't be assigned to the parameter type 'double'.
+/tmp/averages-mean-time-of-day.dart:63:37: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    if (digits.toString().substring(i, (i as num) + 1) == ch) {
+                                    ^
+/tmp/averages-mean-time-of-day.dart:63:51: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    if (digits.toString().substring(i, (i as num) + 1) == ch) {
+                                                  ^
+/tmp/averages-mean-time-of-day.dart:64:14: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+      return i;
+             ^
+/tmp/averages-mean-time-of-day.dart:79:87: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
+  return double.parse(((((((h as num) * 60 as num) + (m as num)) as num) * 60 as num) + (sec as num)));
+                                                                                      ^
+/tmp/averages-mean-time-of-day.dart:94:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var sec = parseSec(times[i]);
+                             ^
+/tmp/averages-mean-time-of-day.dart:100:27: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
   var theta = atan2Approx(ssum, csum);
                           ^
-/tmp/averages-mean-time-of-day.dart:103:33: Error: The argument type 'int' can't be assigned to the parameter type 'double'.
+/tmp/averages-mean-time-of-day.dart:100:33: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
   var theta = atan2Approx(ssum, csum);
                                 ^
-/tmp/averages-mean-time-of-day.dart:109:22: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+/tmp/averages-mean-time-of-day.dart:106:22: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
   var si = int.parse(total);
                      ^
-/tmp/averages-mean-time-of-day.dart:110:25: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-  var h = int.parse((si / 3600));
-                        ^
-/tmp/averages-mean-time-of-day.dart:111:34: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-  var m = int.parse(((si % 3600) / 60));
+/tmp/averages-mean-time-of-day.dart:107:34: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+  var h = int.parse(((si as num) / 3600));
                                  ^
-/tmp/averages-mean-time-of-day.dart:112:25: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
-  var s = int.parse((si % 60));
-                        ^
+/tmp/averages-mean-time-of-day.dart:108:52: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+  var m = int.parse(((((si as num) % 3600) as num) / 60));
+                                                   ^
+/tmp/averages-mean-time-of-day.dart:109:34: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
+  var s = int.parse(((si as num) % 60));
+                                 ^

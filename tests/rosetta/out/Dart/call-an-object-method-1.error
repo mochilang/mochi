@@ -1,30 +1,30 @@
 run: exit status 254
-/tmp/call-an-object-method-1.dart:14:11: Error: The method 'ValueMethod' isn't defined for the class 'Foo'.
+/tmp/call-an-object-method-1.dart:11:11: Error: The method 'ValueMethod' isn't defined for the class 'Foo'.
  - 'Foo' is from '/tmp/call-an-object-method-1.dart'.
 Try correcting the name to the name of an existing method, or defining a method named 'ValueMethod'.
   myValue.ValueMethod(0);
           ^^^^^^^^^^^
-/tmp/call-an-object-method-1.dart:15:13: Error: The method 'PointerMethod' isn't defined for the class 'Foo'.
+/tmp/call-an-object-method-1.dart:12:13: Error: The method 'PointerMethod' isn't defined for the class 'Foo'.
  - 'Foo' is from '/tmp/call-an-object-method-1.dart'.
 Try correcting the name to the name of an existing method, or defining a method named 'PointerMethod'.
   myPointer.PointerMethod(0);
             ^^^^^^^^^^^^^
-/tmp/call-an-object-method-1.dart:16:13: Error: The method 'ValueMethod' isn't defined for the class 'Foo'.
+/tmp/call-an-object-method-1.dart:13:13: Error: The method 'ValueMethod' isn't defined for the class 'Foo'.
  - 'Foo' is from '/tmp/call-an-object-method-1.dart'.
 Try correcting the name to the name of an existing method, or defining a method named 'ValueMethod'.
   myPointer.ValueMethod(0);
             ^^^^^^^^^^^
-/tmp/call-an-object-method-1.dart:17:11: Error: The method 'PointerMethod' isn't defined for the class 'Foo'.
+/tmp/call-an-object-method-1.dart:14:11: Error: The method 'PointerMethod' isn't defined for the class 'Foo'.
  - 'Foo' is from '/tmp/call-an-object-method-1.dart'.
 Try correcting the name to the name of an existing method, or defining a method named 'PointerMethod'.
   myValue.PointerMethod(0);
           ^^^^^^^^^^^^^
-/tmp/call-an-object-method-1.dart:18:11: Error: The method 'ValueMethod' isn't defined for the class 'Foo'.
+/tmp/call-an-object-method-1.dart:15:11: Error: The method 'ValueMethod' isn't defined for the class 'Foo'.
  - 'Foo' is from '/tmp/call-an-object-method-1.dart'.
 Try correcting the name to the name of an existing method, or defining a method named 'ValueMethod'.
   myValue.ValueMethod(0);
           ^^^^^^^^^^^
-/tmp/call-an-object-method-1.dart:19:13: Error: The method 'PointerMethod' isn't defined for the class 'Foo'.
+/tmp/call-an-object-method-1.dart:16:13: Error: The method 'PointerMethod' isn't defined for the class 'Foo'.
  - 'Foo' is from '/tmp/call-an-object-method-1.dart'.
 Try correcting the name to the name of an existing method, or defining a method named 'PointerMethod'.
   myPointer.PointerMethod(0);

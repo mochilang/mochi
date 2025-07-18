@@ -1,0 +1,25 @@
+run: exit status 254
+/tmp/csv-to-html-translation-5.dart:8:32: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    if (s.toString().substring(i, (i as num) + (n as num)) == sep) {
+                               ^
+/tmp/csv-to-html-translation-5.dart:8:46: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    if (s.toString().substring(i, (i as num) + (n as num)) == sep) {
+                                             ^
+/tmp/csv-to-html-translation-5.dart:9:56: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+      out = List.from(out)..add(s.toString().substring(start, i));
+                                                       ^
+/tmp/csv-to-html-translation-5.dart:9:63: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+      out = List.from(out)..add(s.toString().substring(start, i));
+                                                              ^
+/tmp/csv-to-html-translation-5.dart:17:52: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+  out = List.from(out)..add(s.toString().substring(start, s.length));
+                                                   ^
+/tmp/csv-to-html-translation-5.dart:25:37: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var ch = s.toString().substring(i, (i as num) + 1);
+                                    ^
+/tmp/csv-to-html-translation-5.dart:25:51: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var ch = s.toString().substring(i, (i as num) + 1);
+                                                  ^
+/tmp/csv-to-html-translation-5.dart:38:26: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+      out = (out as num) + (ch as num);
+                         ^

@@ -1,10 +1,13 @@
 run: exit status 254
-/tmp/csv-data-manipulation.dart:28:24: Error: A value of type 'int?' can't be assigned to a variable of type 'num' because 'int?' is nullable and 'num' isn't.
-    n = n * 10 + digits[str.substring(i, i + 1)];
-                       ^
-/tmp/csv-data-manipulation.dart:28:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    n = n * 10 + digits[str.substring(i, i + 1)];
-               ^
-/tmp/csv-data-manipulation.dart:46:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      sum = (sum as num) + parseIntStr(s);
-                         ^
+/tmp/csv-data-manipulation.dart:9:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    res = res + xs[i];
+                   ^
+/tmp/csv-data-manipulation.dart:36:58: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    n = ((n as num) * 10 as num) + (digits[str.substring(i, i + 1)] as num);
+                                                         ^
+/tmp/csv-data-manipulation.dart:36:63: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    n = ((n as num) * 10 as num) + (digits[str.substring(i, i + 1)] as num);
+                                                              ^
+/tmp/csv-data-manipulation.dart:42:10: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+  return n;
+         ^

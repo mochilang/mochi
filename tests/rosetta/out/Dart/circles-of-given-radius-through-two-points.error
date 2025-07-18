@@ -1,58 +1,70 @@
 run: exit status 254
-/tmp/circles-of-given-radius-through-two-points.dart:37:6: Error: Type 'any' not found.
+/tmp/circles-of-given-radius-through-two-points.dart:34:6: Error: Type 'any' not found.
 List<any> circles(Point p1, Point p2, double r) {
      ^^^
-/tmp/circles-of-given-radius-through-two-points.dart:60:18: Error: The operator '[]' isn't defined for the class 'Point'.
+/tmp/circles-of-given-radius-through-two-points.dart:78:13: Error: The operator '[]' isn't defined for the class 'Point'.
  - 'Point' is from '/tmp/circles-of-given-radius-through-two-points.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
-  return [Point(m['x'] - oy, m['y'] + ox), Point(m['x'] + oy, m['y'] - ox), 'Two circles.'];
-                 ^
-/tmp/circles-of-given-radius-through-two-points.dart:60:31: Error: The operator '[]' isn't defined for the class 'Point'.
+    Point((m['x'] as num) - (oy as num), (m['y'] as num) + (ox as num)),
+            ^
+/tmp/circles-of-given-radius-through-two-points.dart:78:44: Error: The operator '[]' isn't defined for the class 'Point'.
  - 'Point' is from '/tmp/circles-of-given-radius-through-two-points.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
-  return [Point(m['x'] - oy, m['y'] + ox), Point(m['x'] + oy, m['y'] - ox), 'Two circles.'];
-                              ^
-/tmp/circles-of-given-radius-through-two-points.dart:60:51: Error: The operator '[]' isn't defined for the class 'Point'.
+    Point((m['x'] as num) - (oy as num), (m['y'] as num) + (ox as num)),
+                                           ^
+/tmp/circles-of-given-radius-through-two-points.dart:78:27: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
+    Point((m['x'] as num) - (oy as num), (m['y'] as num) + (ox as num)),
+                          ^
+/tmp/circles-of-given-radius-through-two-points.dart:78:58: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
+    Point((m['x'] as num) - (oy as num), (m['y'] as num) + (ox as num)),
+                                                         ^
+/tmp/circles-of-given-radius-through-two-points.dart:79:13: Error: The operator '[]' isn't defined for the class 'Point'.
  - 'Point' is from '/tmp/circles-of-given-radius-through-two-points.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
-  return [Point(m['x'] - oy, m['y'] + ox), Point(m['x'] + oy, m['y'] - ox), 'Two circles.'];
-                                                  ^
-/tmp/circles-of-given-radius-through-two-points.dart:60:64: Error: The operator '[]' isn't defined for the class 'Point'.
+    Point((m['x'] as num) + (oy as num), (m['y'] as num) - (ox as num)),
+            ^
+/tmp/circles-of-given-radius-through-two-points.dart:79:44: Error: The operator '[]' isn't defined for the class 'Point'.
  - 'Point' is from '/tmp/circles-of-given-radius-through-two-points.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
-  return [Point(m['x'] - oy, m['y'] + ox), Point(m['x'] + oy, m['y'] - ox), 'Two circles.'];
-                                                               ^
-/tmp/circles-of-given-radius-through-two-points.dart:70:24: Error: The operator '[]' isn't defined for the class 'Object'.
+    Point((m['x'] as num) + (oy as num), (m['y'] as num) - (ox as num)),
+                                           ^
+/tmp/circles-of-given-radius-through-two-points.dart:79:27: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
+    Point((m['x'] as num) + (oy as num), (m['y'] as num) - (ox as num)),
+                          ^
+/tmp/circles-of-given-radius-through-two-points.dart:79:58: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
+    Point((m['x'] as num) + (oy as num), (m['y'] as num) - (ox as num)),
+                                                         ^
+/tmp/circles-of-given-radius-through-two-points.dart:113:24: Error: The operator '[]' isn't defined for the class 'Object'.
  - 'Object' is from 'dart:core'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
     print('p1:  {' + p1['x'].toString() + ' ' + p1['y'].toString() + '}');
                        ^
-/tmp/circles-of-given-radius-through-two-points.dart:70:51: Error: The operator '[]' isn't defined for the class 'Object'.
+/tmp/circles-of-given-radius-through-two-points.dart:113:51: Error: The operator '[]' isn't defined for the class 'Object'.
  - 'Object' is from 'dart:core'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
     print('p1:  {' + p1['x'].toString() + ' ' + p1['y'].toString() + '}');
                                                   ^
-/tmp/circles-of-given-radius-through-two-points.dart:71:24: Error: The operator '[]' isn't defined for the class 'Object'.
+/tmp/circles-of-given-radius-through-two-points.dart:114:24: Error: The operator '[]' isn't defined for the class 'Object'.
  - 'Object' is from 'dart:core'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
     print('p2:  {' + p2['x'].toString() + ' ' + p2['y'].toString() + '}');
                        ^
-/tmp/circles-of-given-radius-through-two-points.dart:71:51: Error: The operator '[]' isn't defined for the class 'Object'.
+/tmp/circles-of-given-radius-through-two-points.dart:114:51: Error: The operator '[]' isn't defined for the class 'Object'.
  - 'Object' is from 'dart:core'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
     print('p2:  {' + p2['x'].toString() + ' ' + p2['y'].toString() + '}');
                                                   ^
-/tmp/circles-of-given-radius-through-two-points.dart:73:23: Error: The argument type 'Object' can't be assigned to the parameter type 'Point'.
+/tmp/circles-of-given-radius-through-two-points.dart:116:23: Error: The argument type 'Object' can't be assigned to the parameter type 'Point'.
  - 'Object' is from 'dart:core'.
  - 'Point' is from '/tmp/circles-of-given-radius-through-two-points.dart'.
     var res = circles(p1, p2, r);
                       ^
-/tmp/circles-of-given-radius-through-two-points.dart:73:27: Error: The argument type 'Object' can't be assigned to the parameter type 'Point'.
+/tmp/circles-of-given-radius-through-two-points.dart:116:27: Error: The argument type 'Object' can't be assigned to the parameter type 'Point'.
  - 'Object' is from 'dart:core'.
  - 'Point' is from '/tmp/circles-of-given-radius-through-two-points.dart'.
     var res = circles(p1, p2, r);
                           ^
-/tmp/circles-of-given-radius-through-two-points.dart:73:31: Error: The argument type 'Object' can't be assigned to the parameter type 'double'.
+/tmp/circles-of-given-radius-through-two-points.dart:116:31: Error: The argument type 'Object' can't be assigned to the parameter type 'double'.
  - 'Object' is from 'dart:core'.
     var res = circles(p1, p2, r);
                               ^

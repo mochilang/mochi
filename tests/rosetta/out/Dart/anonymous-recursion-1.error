@@ -1,0 +1,7 @@
+run: exit status 254
+/tmp/anonymous-recursion-1.dart:12:9: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    b = t;
+        ^
+/tmp/anonymous-recursion-1.dart:13:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^

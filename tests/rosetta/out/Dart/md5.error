@@ -1,6 +1,4 @@
 run: exit status 254
-/tmp/md5.dart:14:22: Error: The operator '[]' isn't defined for the class 'Type'.
- - 'Type' is from 'dart:core'.
-Try correcting the operator to an existing operator, or defining a '[]' operator.
-    var sum = testpkg['MD5Hex'](pair[1]);
-                     ^
+/tmp/md5.dart:46:23: Error: Member not found: 'testpkg.MD5Hex'.
+    var sum = testpkg.MD5Hex(pair[1]);
+                      ^^^^^^

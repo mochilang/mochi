@@ -1,9 +1,47 @@
 run: exit status 254
-/tmp/anagrams-deranged-anagrams.dart:23:18: Error: The operator '>' isn't defined for the class 'String'.
-Try correcting the operator to an existing operator, or defining a '>' operator.
-      if (arr[j] > arr[j + 1]) {
-                 ^
-/tmp/anagrams-deranged-anagrams.dart:80:23: Error: The argument type 'List<String>?' can't be assigned to the parameter type 'Iterable<dynamic>' because 'List<String>?' is nullable and 'Iterable<dynamic>' isn't.
+/tmp/anagrams-deranged-anagrams.dart:12:43: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    arr = List.from(arr)..add(s.substring(i, (i as num) + 1));
+                                          ^
+/tmp/anagrams-deranged-anagrams.dart:12:57: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    arr = List.from(arr)..add(s.substring(i, (i as num) + 1));
+                                                        ^
+/tmp/anagrams-deranged-anagrams.dart:20:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      if ((arr[j] as num) > (arr[(j as num) + 1] as num)) {
+               ^
+/tmp/anagrams-deranged-anagrams.dart:20:45: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      if ((arr[j] as num) > (arr[(j as num) + 1] as num)) {
+                                            ^
+/tmp/anagrams-deranged-anagrams.dart:21:23: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        var tmp = arr[j];
+                      ^
+/tmp/anagrams-deranged-anagrams.dart:22:13: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        arr[j] = arr[(j as num) + 1];
+            ^
+/tmp/anagrams-deranged-anagrams.dart:22:33: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        arr[j] = arr[(j as num) + 1];
+                                ^
+/tmp/anagrams-deranged-anagrams.dart:23:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        arr[(j as num) + 1] = tmp;
+                       ^
+/tmp/anagrams-deranged-anagrams.dart:32:31: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    out = (out as num) + (arr[i] as num);
+                              ^
+/tmp/anagrams-deranged-anagrams.dart:32:24: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+    out = (out as num) + (arr[i] as num);
+                       ^
+/tmp/anagrams-deranged-anagrams.dart:44:21: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    if (a.substring(i, (i as num) + 1) == b.substring(i, (i as num) + 1)) {
+                    ^
+/tmp/anagrams-deranged-anagrams.dart:44:35: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    if (a.substring(i, (i as num) + 1) == b.substring(i, (i as num) + 1)) {
+                                  ^
+/tmp/anagrams-deranged-anagrams.dart:44:55: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    if (a.substring(i, (i as num) + 1) == b.substring(i, (i as num) + 1)) {
+                                                      ^
+/tmp/anagrams-deranged-anagrams.dart:44:69: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    if (a.substring(i, (i as num) + 1) == b.substring(i, (i as num) + 1)) {
+                                                                    ^
+/tmp/anagrams-deranged-anagrams.dart:77:23: Error: The argument type 'List<String>?' can't be assigned to the parameter type 'Iterable<dynamic>' because 'List<String>?' is nullable and 'Iterable<dynamic>' isn't.
  - 'List' is from 'dart:core'.
  - 'Iterable' is from 'dart:core'.
     m[k] = List.from(m[k])..add(w);

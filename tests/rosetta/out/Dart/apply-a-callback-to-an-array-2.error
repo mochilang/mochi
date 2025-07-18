@@ -1,19 +1,4 @@
 run: exit status 254
-/tmp/apply-a-callback-to-an-array-2.dart:35:14: Error: 'Map' isn't a type.
-    if (a is Map && b is Map) {
-             ^^^
-/tmp/apply-a-callback-to-an-array-2.dart:35:26: Error: 'Map' isn't a type.
-    if (a is Map && b is Map) {
-                         ^^^
-/tmp/apply-a-callback-to-an-array-2.dart:57:19: Error: 'Map' isn't a type.
-    else if (v is Map && v['items'] is List) list = (v['items'] as List);
-                  ^^^
-/tmp/apply-a-callback-to-an-array-2.dart:58:19: Error: 'Map' isn't a type.
-    else if (v is Map && v['Items'] is List) list = (v['Items'] as List);
-                  ^^^
-/tmp/apply-a-callback-to-an-array-2.dart:69:19: Error: 'Map' isn't a type.
-    else if (v is Map && v['items'] is Iterable) list = (v['items'] as Iterable);
-                  ^^^
-/tmp/apply-a-callback-to-an-array-2.dart:70:19: Error: 'Map' isn't a type.
-    else if (v is Map && v['Items'] is Iterable) list = (v['Items'] as Iterable);
-                  ^^^
+/tmp/apply-a-callback-to-an-array-2.dart:24:48: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+  each(s, (i) => print((i as num) * (i as num).toString()));
+                                               ^

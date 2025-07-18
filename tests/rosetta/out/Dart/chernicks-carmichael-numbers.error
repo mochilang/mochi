@@ -1,10 +1,58 @@
 run: exit status 254
-/tmp/chernicks-carmichael-numbers.dart:46:11: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-    n = n / 10;
-          ^
-/tmp/chernicks-carmichael-numbers.dart:61:18: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-    carry = prod / 10;
+/tmp/chernicks-carmichael-numbers.dart:17:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    d = (d as num) + 2;
+                   ^
+/tmp/chernicks-carmichael-numbers.dart:21:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    d = (d as num) + 4;
+                   ^
+/tmp/chernicks-carmichael-numbers.dart:28:41: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+  while ((n as num) > 1 && a[(n as num) - 1] == 0) {
+                                        ^
+/tmp/chernicks-carmichael-numbers.dart:29:33: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    a = a.sublist(0, (n as num) - 1);
+                                ^
+/tmp/chernicks-carmichael-numbers.dart:30:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = (n as num) - 1;
+                   ^
+/tmp/chernicks-carmichael-numbers.dart:42:48: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    digits = List.from(digits)..add((n as num) % 10);
+                                               ^
+/tmp/chernicks-carmichael-numbers.dart:43:20: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    n = (n as num) / 10;
+                   ^
+/tmp/chernicks-carmichael-numbers.dart:56:18: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var prod = a[i] * m + (carry as num);
                  ^
-/tmp/chernicks-carmichael-numbers.dart:66:19: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-    carry = carry / 10;
-                  ^
+/tmp/chernicks-carmichael-numbers.dart:57:45: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    res = List.from(res)..add((prod as num) % 10);
+                                            ^
+/tmp/chernicks-carmichael-numbers.dart:62:46: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    res = List.from(res)..add((carry as num) % 10);
+                                             ^
+/tmp/chernicks-carmichael-numbers.dart:73:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) - 1;
+                   ^
+/tmp/chernicks-carmichael-numbers.dart:82:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    r = (r as num) * 2;
+                   ^
+/tmp/chernicks-carmichael-numbers.dart:106:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+/tmp/chernicks-carmichael-numbers.dart:124:17: Error: 'num' isn't a type.
+      if ((n as num) <= 4) {
+                ^^^
+/tmp/chernicks-carmichael-numbers.dart:125:19: Error: 'num' isn't a type.
+        m = (m as num) + 1;
+                  ^^^
+/tmp/chernicks-carmichael-numbers.dart:128:19: Error: 'num' isn't a type.
+        m = (m as num) + pow2((n as num) - 4);
+                  ^^^
+/tmp/chernicks-carmichael-numbers.dart:128:37: Error: 'num' isn't a type.
+        m = (m as num) + pow2((n as num) - 4);
+                                    ^^^
+/tmp/chernicks-carmichael-numbers.dart:116:27: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+      m = pow2((n as num) - 4);
+                          ^
+/tmp/chernicks-carmichael-numbers.dart:131:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = (n as num) + 1;
+                   ^

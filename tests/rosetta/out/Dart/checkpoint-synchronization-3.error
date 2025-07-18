@@ -1,0 +1,13 @@
+run: exit status 254
+/tmp/checkpoint-synchronization-3.dart:7:39: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    if (ch == up.toString().substring(i, (i as num) + 1)) {
+                                      ^
+/tmp/checkpoint-synchronization-3.dart:7:53: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    if (ch == up.toString().substring(i, (i as num) + 1)) {
+                                                    ^
+/tmp/checkpoint-synchronization-3.dart:8:39: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+      return low.toString().substring(i, (i as num) + 1);
+                                      ^
+/tmp/checkpoint-synchronization-3.dart:8:53: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+      return low.toString().substring(i, (i as num) + 1);
+                                                    ^

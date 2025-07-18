@@ -1,29 +1,64 @@
 run: exit status 254
-/tmp/anagrams.dart:23:18: Error: The operator '>' isn't defined for the class 'String'.
-Try correcting the operator to an existing operator, or defining a '>' operator.
-      if (arr[j] > arr[j + 1]) {
-                 ^
-/tmp/anagrams.dart:80:35: Error: The argument type 'List<String>?' can't be assigned to the parameter type 'Iterable<dynamic>' because 'List<String>?' is nullable and 'Iterable<dynamic>' isn't.
+/tmp/anagrams.dart:12:43: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    arr = List.from(arr)..add(s.substring(i, (i as num) + 1));
+                                          ^
+/tmp/anagrams.dart:12:57: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    arr = List.from(arr)..add(s.substring(i, (i as num) + 1));
+                                                        ^
+/tmp/anagrams.dart:20:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      if ((arr[j] as num) > (arr[(j as num) + 1] as num)) {
+               ^
+/tmp/anagrams.dart:20:45: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      if ((arr[j] as num) > (arr[(j as num) + 1] as num)) {
+                                            ^
+/tmp/anagrams.dart:21:23: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        var tmp = arr[j];
+                      ^
+/tmp/anagrams.dart:22:13: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        arr[j] = arr[(j as num) + 1];
+            ^
+/tmp/anagrams.dart:22:33: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        arr[j] = arr[(j as num) + 1];
+                                ^
+/tmp/anagrams.dart:23:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        arr[(j as num) + 1] = tmp;
+                       ^
+/tmp/anagrams.dart:32:31: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    out = (out as num) + (arr[i] as num);
+                              ^
+/tmp/anagrams.dart:32:24: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+    out = (out as num) + (arr[i] as num);
+                       ^
+/tmp/anagrams.dart:50:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      i = (i as num) + 1;
+                     ^
+/tmp/anagrams.dart:57:39: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        out = List.from(out)..add(tmp[j]);
+                                      ^
+/tmp/anagrams.dart:108:35: Error: The argument type 'List<String>?' can't be assigned to the parameter type 'Iterable<dynamic>' because 'List<String>?' is nullable and 'Iterable<dynamic>' isn't.
  - 'List' is from 'dart:core'.
  - 'Iterable' is from 'dart:core'.
       groups[k] = List.from(groups[k])..add(w);
                                   ^
-/tmp/anagrams.dart:82:19: Error: Property 'length' cannot be accessed on 'List<String>?' because it is potentially null.
+/tmp/anagrams.dart:110:19: Error: Property 'length' cannot be accessed on 'List<String>?' because it is potentially null.
  - 'List' is from 'dart:core'.
 Try accessing using ?. instead.
-    if (groups[k].length > maxLen) {
+    if (groups[k].length > (maxLen as num)) {
                   ^^^^^^
-/tmp/anagrams.dart:83:26: Error: Property 'length' cannot be accessed on 'List<String>?' because it is potentially null.
+/tmp/anagrams.dart:111:26: Error: Property 'length' cannot be accessed on 'List<String>?' because it is potentially null.
  - 'List' is from 'dart:core'.
 Try accessing using ?. instead.
       maxLen = groups[k].length;
                          ^^^^^^
-/tmp/anagrams.dart:90:19: Error: Property 'length' cannot be accessed on 'List<String>?' because it is potentially null.
+/tmp/anagrams.dart:118:19: Error: Property 'length' cannot be accessed on 'List<String>?' because it is potentially null.
  - 'List' is from 'dart:core'.
 Try accessing using ?. instead.
     if (groups[k].length == maxLen) {
                   ^^^^^^
-/tmp/anagrams.dart:92:35: Error: The argument type 'List<String>?' can't be assigned to the parameter type 'List<String>' because 'List<String>?' is nullable and 'List<String>' isn't.
+/tmp/anagrams.dart:120:35: Error: The argument type 'List<String>?' can't be assigned to the parameter type 'List<String>' because 'List<String>?' is nullable and 'List<String>' isn't.
  - 'List' is from 'dart:core'.
         var g = sortStrings(groups[k]);
                                   ^
+/tmp/anagrams.dart:125:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+          i = (i as num) + 1;
+                         ^

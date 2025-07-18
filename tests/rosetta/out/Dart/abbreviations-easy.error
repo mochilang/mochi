@@ -1,10 +1,52 @@
 run: exit status 254
-/tmp/abbreviations-easy.dart:65:17: Error: Method not found: 'upper'.
+/tmp/abbreviations-easy.dart:7:37: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var ch = s.toString().substring(i, (i as num) + 1);
+                                    ^
+/tmp/abbreviations-easy.dart:7:51: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var ch = s.toString().substring(i, (i as num) + 1);
+                                                  ^
+/tmp/abbreviations-easy.dart:15:26: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+      cur = (cur as num) + (ch as num);
+                         ^
+/tmp/abbreviations-easy.dart:30:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+/tmp/abbreviations-easy.dart:42:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    res = res + xs[i];
+                   ^
+/tmp/abbreviations-easy.dart:62:17: Error: Method not found: 'upper'.
         var c = upper(cmd);
                 ^^^^^
-/tmp/abbreviations-easy.dart:66:18: Error: Method not found: 'upper'.
+/tmp/abbreviations-easy.dart:63:18: Error: Method not found: 'upper'.
         var ww = upper(w);
                  ^^^^^
-/tmp/abbreviations-easy.dart:95:32: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-        count = (count as num) + 1;
-                               ^
+/tmp/abbreviations-easy.dart:55:19: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var w = words[wi];
+                  ^
+/tmp/abbreviations-easy.dart:60:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var cmd = commands[ci];
+                         ^
+/tmp/abbreviations-easy.dart:61:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      if (mins[ci] != 0 && (wlen as num) >= mins[ci] && (wlen as num) <= cmd.length) {
+               ^
+/tmp/abbreviations-easy.dart:61:50: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      if (mins[ci] != 0 && (wlen as num) >= mins[ci] && (wlen as num) <= cmd.length) {
+                                                 ^
+/tmp/abbreviations-easy.dart:88:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var cmd = commands[i];
+                       ^
+/tmp/abbreviations-easy.dart:90:41: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+      var ch = cmd.toString().substring(j, (j as num) + 1);
+                                        ^
+/tmp/abbreviations-easy.dart:90:55: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+      var ch = cmd.toString().substring(j, (j as num) + 1);
+                                                      ^
+/tmp/abbreviations-easy.dart:96:33: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    mins = List.from(mins)..add(count);
+                                ^
+/tmp/abbreviations-easy.dart:105:34: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    out1 = out1 + padRight(words[k], results[k].length) + ' ';
+                                 ^
+/tmp/abbreviations-easy.dart:105:46: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    out1 = out1 + padRight(words[k], results[k].length) + ' ';
+                                             ^

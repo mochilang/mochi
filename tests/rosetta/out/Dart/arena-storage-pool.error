@@ -1,13 +1,13 @@
 run: exit status 254
-/tmp/arena-storage-pool.dart:9:13: Error: Type 'any' not found.
+/tmp/arena-storage-pool.dart:6:13: Error: Type 'any' not found.
 Map<String, any> poolGet(List<int> p) {
             ^^^
-/tmp/arena-storage-pool.dart:28:15: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-  print(i + j.toString());
-              ^
-/tmp/arena-storage-pool.dart:41:15: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-  print(i + j.toString());
-              ^
-/tmp/arena-storage-pool.dart:55:15: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-  print(i + j.toString());
-              ^
+/tmp/arena-storage-pool.dart:25:33: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+  print((i as num) + (j as num).toString());
+                                ^
+/tmp/arena-storage-pool.dart:38:33: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+  print((i as num) + (j as num).toString());
+                                ^
+/tmp/arena-storage-pool.dart:52:33: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+  print((i as num) + (j as num).toString());
+                                ^

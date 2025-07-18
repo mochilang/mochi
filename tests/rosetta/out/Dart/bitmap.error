@@ -1,22 +1,31 @@
 run: exit status 254
-/tmp/bitmap.dart:86:13: Error: Type 'any' not found.
+/tmp/bitmap.dart:83:13: Error: Type 'any' not found.
 Map<String, any> GetPx(Bitmap b, int x, int y) {
             ^^^
 /tmp/bitmap.dart:94:13: Error: Type 'any' not found.
 Map<String, any> GetPxRgb(Bitmap b, int x, int y) {
             ^^^
-/tmp/bitmap.dart:13:25: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-  var r = (int.parse((c / 65536))) % 256;
+/tmp/bitmap.dart:10:25: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+  var r = (int.parse((c ~/ 65536))) % 256;
                         ^
-/tmp/bitmap.dart:14:25: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-  var g = (int.parse((c / 256))) % 256;
+/tmp/bitmap.dart:11:25: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+  var g = (int.parse((c ~/ 256))) % 256;
                         ^
-/tmp/bitmap.dart:120:28: Error: The operator '[]' isn't defined for the class 'Bitmap'.
+/tmp/bitmap.dart:53:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var row = px[y];
+                   ^
+/tmp/bitmap.dart:54:11: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      row[x] = p;
+          ^
+/tmp/bitmap.dart:55:10: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      px[y] = row;
+         ^
+/tmp/bitmap.dart:123:28: Error: The operator '[]' isn't defined for the class 'Bitmap'.
  - 'Bitmap' is from '/tmp/bitmap.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
   print('Image size: ' + bm['cols'].toString() + ' × ' + bm['rows'].toString());
                            ^
-/tmp/bitmap.dart:120:60: Error: The operator '[]' isn't defined for the class 'Bitmap'.
+/tmp/bitmap.dart:123:60: Error: The operator '[]' isn't defined for the class 'Bitmap'.
  - 'Bitmap' is from '/tmp/bitmap.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
   print('Image size: ' + bm['cols'].toString() + ' × ' + bm['rows'].toString());

@@ -1,25 +1,55 @@
 run: exit status 254
-/tmp/average-loop-length.dart:13:34: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+/tmp/average-loop-length.dart:4:12: Error: A value of type 'num' can't be returned from a function with return type 'double'.
+    return -(x as num);
+           ^
+/tmp/average-loop-length.dart:10:34: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
   return double.parse((int.parse(x)));
                                  ^
-/tmp/average-loop-length.dart:13:28: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/average-loop-length.dart:10:28: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
   return double.parse((int.parse(x)));
                            ^
-/tmp/average-loop-length.dart:80:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      sum = (sum as num) + 1;
-                         ^
-/tmp/average-loop-length.dart:86:24: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
-  return (double.parse(sum)) / tests;
+/tmp/average-loop-length.dart:16:32: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    if (s.toString().substring(i, (i as num) + 1) == ch) {
+                               ^
+/tmp/average-loop-length.dart:16:46: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    if (s.toString().substring(i, (i as num) + 1) == ch) {
+                                             ^
+/tmp/average-loop-length.dart:17:14: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+      return i;
+             ^
+/tmp/average-loop-length.dart:34:50: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+      s = s.toString().substring(0, (dot as num) + 5);
+                                                 ^
+/tmp/average-loop-length.dart:75:21: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    while (!visited[x] != null) {
+                    ^
+/tmp/average-loop-length.dart:76:15: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      visited[x] = true;
+              ^
+/tmp/average-loop-length.dart:78:71: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      seed = ((((seed as num) * 1664525 as num) + 1013904223) as num) % 2147483647;
+                                                                      ^
+/tmp/average-loop-length.dart:83:24: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
+  return (double.parse(sum)) / (tests as num);
                        ^
-/tmp/average-loop-length.dart:90:25: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/average-loop-length.dart:87:25: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
   var nn = double.parse(n);
                         ^
-/tmp/average-loop-length.dart:95:17: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-    term = term * (i / nn);
-                ^
-/tmp/average-loop-length.dart:96:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    sum = (sum as num) + term;
+/tmp/average-loop-length.dart:92:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    term = (term as num) * (((i as num) / (nn as num)) as num);
+                         ^
+/tmp/average-loop-length.dart:93:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    sum = (sum as num) + (term as num);
                        ^
-/tmp/average-loop-length.dart:99:10: Error: A value of type 'int' can't be returned from a function with return type 'double'.
+/tmp/average-loop-length.dart:96:10: Error: A value of type 'int' can't be returned from a function with return type 'double'.
   return sum;
          ^
+/tmp/average-loop-length.dart:107:32: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
+    var err = (absf((a as num) - (b as num)) / (b as num) as num) * 100;
+                               ^
+/tmp/average-loop-length.dart:108:97: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
+    var line = padInt(n, 3) + '  ' + padFloat(a, 9) + '  ' + padFloat(b, 12) + '  (' + padFloat(err, 6) + '%)';
+                                                                                                ^
+/tmp/average-loop-length.dart:110:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = (n as num) + 1;
+                   ^

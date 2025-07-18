@@ -1,0 +1,10 @@
+run: exit status 254
+/tmp/abelian-sandpile-model.dart:64:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var v = pile[row][col];
+                   ^
+/tmp/abelian-sandpile-model.dart:64:25: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var v = pile[row][col];
+                        ^
+/tmp/abelian-sandpile-model.dart:68:28: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+      line = (line as num) + (chars[v] as num);
+                           ^

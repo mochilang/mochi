@@ -1,7 +1,10 @@
 run: exit status 254
-/tmp/anti-primes.dart:13:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+/tmp/anti-primes.dart:10:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
       count = (count as num) + 1;
                              ^
-/tmp/anti-primes.dart:31:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      count = (count as num) + 1;
-                             ^
+/tmp/anti-primes.dart:12:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+/tmp/anti-primes.dart:30:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = (n as num) + 1;
+                   ^

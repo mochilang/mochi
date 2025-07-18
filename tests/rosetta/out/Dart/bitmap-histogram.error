@@ -1,7 +1,37 @@
 run: exit status 254
-/tmp/bitmap-histogram.dart:25:45: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-      var idx = int.parse(((p * (bins - 1)) / 65535));
-                                            ^
-/tmp/bitmap-histogram.dart:49:34: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-  return int.parse(((ub * 65535) / h.length));
-                                 ^
+/tmp/bitmap-histogram.dart:22:17: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var row = g[y];
+                ^
+/tmp/bitmap-histogram.dart:25:19: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var p = row[x];
+                  ^
+/tmp/bitmap-histogram.dart:26:63: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+      var idx = int.parse(((((p as num) * (bins - 1)) as num) / 65535));
+                                                              ^
+/tmp/bitmap-histogram.dart:27:32: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      h[idx] = (h[idx] as num) + 1;
+                               ^
+/tmp/bitmap-histogram.dart:41:28: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    if (((lSum as num) + h[lb] as num) < ((uSum as num) + h[ub] as num)) {
+                           ^
+/tmp/bitmap-histogram.dart:42:32: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      lSum = (lSum as num) + h[lb];
+                               ^
+/tmp/bitmap-histogram.dart:47:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      ub = (ub as num) - 1;
+                       ^
+/tmp/bitmap-histogram.dart:50:52: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+  return int.parse(((((ub as num) * 65535) as num) / h.length));
+                                                   ^
+/tmp/bitmap-histogram.dart:57:17: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var row = g[y];
+                ^
+/tmp/bitmap-histogram.dart:61:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      if ((row[x] as num) < t) {
+               ^
+/tmp/bitmap-histogram.dart:78:17: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var row = g[y];
+                ^
+/tmp/bitmap-histogram.dart:82:15: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      if (row[x] == 0) {
+              ^

@@ -1,4 +1,43 @@
 run: exit status 254
-/tmp/bin-given-limits.dart:62:24: Error: A value of type 'int' can't be assigned to a variable of type 'String'.
-    print('Example ' + i + 1.toString() + '\n');
-                       ^
+/tmp/bin-given-limits.dart:12:18: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var d = data[j];
+                 ^
+/tmp/bin-given-limits.dart:15:31: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      if ((d as num) < limits[index]) {
+                              ^
+/tmp/bin-given-limits.dart:18:23: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      if (d == limits[index]) {
+                      ^
+/tmp/bin-given-limits.dart:24:10: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    bins[index] = (bins[index] as num) + 1;
+         ^
+/tmp/bin-given-limits.dart:24:25: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    bins[index] = (bins[index] as num) + 1;
+                        ^
+/tmp/bin-given-limits.dart:24:40: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    bins[index] = (bins[index] as num) + 1;
+                                       ^
+/tmp/bin-given-limits.dart:39:23: Error: A value of type 'num' can't be returned from a function with return type 'String'.
+  return (out as num) + (s as num);
+                      ^
+/tmp/bin-given-limits.dart:47:45: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    print('>= ' + padLeft(limits[(i as num) - 1], 3) + ' and < ' + padLeft(limits[i], 3) + ' = ' + padLeft(bins[i], 2));
+                                            ^
+/tmp/bin-given-limits.dart:48:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+/tmp/bin-given-limits.dart:50:43: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+  print('>= ' + padLeft(limits[(n as num) - 1], 3) + '           = ' + padLeft(bins[n], 2));
+                                          ^
+/tmp/bin-given-limits.dart:335:27: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+    print('Example ' + (i as num) + 1.toString() + '\n');
+                          ^
+/tmp/bin-given-limits.dart:336:35: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var bins = getBins(limitsList[i], dataList[i]);
+                                  ^
+/tmp/bin-given-limits.dart:336:48: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var bins = getBins(limitsList[i], dataList[i]);
+                                               ^
+/tmp/bin-given-limits.dart:337:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    printBins(limitsList[i], bins);
+                         ^

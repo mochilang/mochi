@@ -1,5 +1,20 @@
 run: exit status 254
-/tmp/binary-strings.dart:53:19: Error: The argument type 'List<dynamic>' can't be assigned to the parameter type 'List<int>'.
+/tmp/binary-strings.dart:8:57: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+  return letters.toString().substring(idx, (idx as num) + 1);
+                                                        ^
+/tmp/binary-strings.dart:15:21: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    s = s + char(bs[i]);
+                    ^
+/tmp/binary-strings.dart:49:29: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    d = List.from(d)..add(b[i]);
+                            ^
+/tmp/binary-strings.dart:57:19: Error: The argument type 'List<dynamic>' can't be assigned to the parameter type 'List<int>'.
  - 'List' is from 'dart:core'.
   print(fromBytes(z));
                   ^
+/tmp/binary-strings.dart:61:17: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var val = d[i];
+                ^
+/tmp/binary-strings.dart:74:33: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    rem = List.from(rem)..add(b[i]);
+                                ^

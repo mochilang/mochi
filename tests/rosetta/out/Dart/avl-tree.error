@@ -1,142 +1,163 @@
 run: exit status 254
-/tmp/avl-tree.dart:5:13: Error: Type 'any' not found.
+/tmp/avl-tree.dart:2:13: Error: Type 'any' not found.
 Map<String, any> Node(int data) {
             ^^^
-/tmp/avl-tree.dart:9:1: Error: Type 'any' not found.
+/tmp/avl-tree.dart:10:1: Error: Type 'any' not found.
 any getLink(Map<String, any> n, int dir) {
 ^^^
-/tmp/avl-tree.dart:9:25: Error: Type 'any' not found.
+/tmp/avl-tree.dart:10:25: Error: Type 'any' not found.
 any getLink(Map<String, any> n, int dir) {
                         ^^^
-/tmp/avl-tree.dart:13:26: Error: Type 'any' not found.
+/tmp/avl-tree.dart:14:26: Error: Type 'any' not found.
 void setLink(Map<String, any> n, int dir, any v) {
                          ^^^
-/tmp/avl-tree.dart:13:43: Error: Type 'any' not found.
+/tmp/avl-tree.dart:14:43: Error: Type 'any' not found.
 void setLink(Map<String, any> n, int dir, any v) {
                                           ^^^
-/tmp/avl-tree.dart:23:13: Error: Type 'any' not found.
+/tmp/avl-tree.dart:24:13: Error: Type 'any' not found.
 Map<String, any> single(Map<String, any> root, int dir) {
             ^^^
-/tmp/avl-tree.dart:23:37: Error: Type 'any' not found.
+/tmp/avl-tree.dart:24:37: Error: Type 'any' not found.
 Map<String, any> single(Map<String, any> root, int dir) {
                                     ^^^
-/tmp/avl-tree.dart:30:13: Error: Type 'any' not found.
+/tmp/avl-tree.dart:31:13: Error: Type 'any' not found.
 Map<String, any> double(Map<String, any> root, int dir) {
             ^^^
-/tmp/avl-tree.dart:30:37: Error: Type 'any' not found.
+/tmp/avl-tree.dart:31:37: Error: Type 'any' not found.
 Map<String, any> double(Map<String, any> root, int dir) {
                                     ^^^
-/tmp/avl-tree.dart:41:32: Error: Type 'any' not found.
+/tmp/avl-tree.dart:42:32: Error: Type 'any' not found.
 void adjustBalance(Map<String, any> root, int dir, int bal) {
                                ^^^
-/tmp/avl-tree.dart:60:13: Error: Type 'any' not found.
+/tmp/avl-tree.dart:61:13: Error: Type 'any' not found.
 Map<String, any> insertBalance(Map<String, any> root, int dir) {
             ^^^
-/tmp/avl-tree.dart:60:44: Error: Type 'any' not found.
+/tmp/avl-tree.dart:61:44: Error: Type 'any' not found.
 Map<String, any> insertBalance(Map<String, any> root, int dir) {
                                            ^^^
-/tmp/avl-tree.dart:72:13: Error: Type 'any' not found.
+/tmp/avl-tree.dart:73:13: Error: Type 'any' not found.
 Map<String, any> insertR(any root, int data) {
             ^^^
-/tmp/avl-tree.dart:72:26: Error: Type 'any' not found.
+/tmp/avl-tree.dart:73:26: Error: Type 'any' not found.
 Map<String, any> insertR(any root, int data) {
                          ^^^
-/tmp/avl-tree.dart:96:1: Error: Type 'any' not found.
+/tmp/avl-tree.dart:100:1: Error: Type 'any' not found.
 any Insert(any tree, int data) {
 ^^^
-/tmp/avl-tree.dart:96:12: Error: Type 'any' not found.
+/tmp/avl-tree.dart:100:12: Error: Type 'any' not found.
 any Insert(any tree, int data) {
            ^^^
-/tmp/avl-tree.dart:101:13: Error: Type 'any' not found.
+/tmp/avl-tree.dart:105:13: Error: Type 'any' not found.
 Map<String, any> removeBalance(Map<String, any> root, int dir) {
             ^^^
-/tmp/avl-tree.dart:101:44: Error: Type 'any' not found.
+/tmp/avl-tree.dart:105:44: Error: Type 'any' not found.
 Map<String, any> removeBalance(Map<String, any> root, int dir) {
                                            ^^^
-/tmp/avl-tree.dart:118:13: Error: Type 'any' not found.
+/tmp/avl-tree.dart:131:13: Error: Type 'any' not found.
 Map<String, any> removeR(any root, int data) {
             ^^^
-/tmp/avl-tree.dart:118:26: Error: Type 'any' not found.
+/tmp/avl-tree.dart:131:26: Error: Type 'any' not found.
 Map<String, any> removeR(any root, int data) {
                          ^^^
-/tmp/avl-tree.dart:156:1: Error: Type 'any' not found.
+/tmp/avl-tree.dart:175:1: Error: Type 'any' not found.
 any Remove(any tree, int data) {
 ^^^
-/tmp/avl-tree.dart:156:12: Error: Type 'any' not found.
+/tmp/avl-tree.dart:175:12: Error: Type 'any' not found.
 any Remove(any tree, int data) {
            ^^^
-/tmp/avl-tree.dart:171:15: Error: Type 'any' not found.
+/tmp/avl-tree.dart:190:15: Error: Type 'any' not found.
 void dumpNode(any node, int indent, bool comma) {
               ^^^
-/tmp/avl-tree.dart:196:11: Error: Type 'any' not found.
+/tmp/avl-tree.dart:215:11: Error: Type 'any' not found.
 void dump(any node, int indent) {
           ^^^
-/tmp/avl-tree.dart:9:25: Error: 'any' isn't a type.
+/tmp/avl-tree.dart:10:25: Error: 'any' isn't a type.
 any getLink(Map<String, any> n, int dir) {
                         ^^^
-/tmp/avl-tree.dart:10:39: Error: 'any' isn't a type.
+/tmp/avl-tree.dart:11:39: Error: 'any' isn't a type.
   return (((n as Map)['Link'] as List<any>))[dir];
                                       ^^^
-/tmp/avl-tree.dart:13:26: Error: 'any' isn't a type.
+/tmp/avl-tree.dart:14:26: Error: 'any' isn't a type.
 void setLink(Map<String, any> n, int dir, any v) {
                          ^^^
-/tmp/avl-tree.dart:13:43: Error: 'any' isn't a type.
+/tmp/avl-tree.dart:14:43: Error: 'any' isn't a type.
 void setLink(Map<String, any> n, int dir, any v) {
                                           ^^^
-/tmp/avl-tree.dart:14:43: Error: 'any' isn't a type.
+/tmp/avl-tree.dart:15:43: Error: 'any' isn't a type.
   var links = ((n as Map)['Link'] as List<any>);
                                           ^^^
-/tmp/avl-tree.dart:23:37: Error: 'any' isn't a type.
+/tmp/avl-tree.dart:24:37: Error: 'any' isn't a type.
 Map<String, any> single(Map<String, any> root, int dir) {
                                     ^^^
-/tmp/avl-tree.dart:30:37: Error: 'any' isn't a type.
+/tmp/avl-tree.dart:31:37: Error: 'any' isn't a type.
 Map<String, any> double(Map<String, any> root, int dir) {
                                     ^^^
-/tmp/avl-tree.dart:41:32: Error: 'any' isn't a type.
+/tmp/avl-tree.dart:42:32: Error: 'any' isn't a type.
 void adjustBalance(Map<String, any> root, int dir, int bal) {
                                ^^^
-/tmp/avl-tree.dart:42:46: Error: 'any' isn't a type.
+/tmp/avl-tree.dart:43:46: Error: 'any' isn't a type.
   var n = (getLink(root, dir) as Map<String, any>);
                                              ^^^
-/tmp/avl-tree.dart:43:49: Error: 'any' isn't a type.
+/tmp/avl-tree.dart:44:49: Error: 'any' isn't a type.
   var nn = (getLink(n, opp(dir)) as Map<String, any>);
                                                 ^^^
-/tmp/avl-tree.dart:60:44: Error: 'any' isn't a type.
+/tmp/avl-tree.dart:61:44: Error: 'any' isn't a type.
 Map<String, any> insertBalance(Map<String, any> root, int dir) {
                                            ^^^
-/tmp/avl-tree.dart:61:46: Error: 'any' isn't a type.
+/tmp/avl-tree.dart:62:46: Error: 'any' isn't a type.
   var n = (getLink(root, dir) as Map<String, any>);
                                              ^^^
-/tmp/avl-tree.dart:72:26: Error: 'any' isn't a type.
+/tmp/avl-tree.dart:73:26: Error: 'any' isn't a type.
 Map<String, any> insertR(any root, int data) {
                          ^^^
-/tmp/avl-tree.dart:76:35: Error: 'any' isn't a type.
+/tmp/avl-tree.dart:77:35: Error: 'any' isn't a type.
   var node = (root as Map<String, any>);
                                   ^^^
-/tmp/avl-tree.dart:96:12: Error: 'any' isn't a type.
+/tmp/avl-tree.dart:82:33: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+  var r = insertR(getLink(node, dir), data);
+                                ^
+/tmp/avl-tree.dart:83:17: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+  setLink(node, dir, r['node']);
+                ^
+/tmp/avl-tree.dart:95:33: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    'node': insertBalance(node, dir),
+                                ^
+/tmp/avl-tree.dart:100:12: Error: 'any' isn't a type.
 any Insert(any tree, int data) {
            ^^^
-/tmp/avl-tree.dart:101:44: Error: 'any' isn't a type.
+/tmp/avl-tree.dart:105:44: Error: 'any' isn't a type.
 Map<String, any> removeBalance(Map<String, any> root, int dir) {
                                            ^^^
-/tmp/avl-tree.dart:102:51: Error: 'any' isn't a type.
+/tmp/avl-tree.dart:106:51: Error: 'any' isn't a type.
   var n = (getLink(root, opp(dir)) as Map<String, any>);
                                                   ^^^
-/tmp/avl-tree.dart:118:26: Error: 'any' isn't a type.
+/tmp/avl-tree.dart:117:36: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    adjustBalance(root, opp(dir), (-(bal as num)));
+                                   ^
+/tmp/avl-tree.dart:131:26: Error: 'any' isn't a type.
 Map<String, any> removeR(any root, int data) {
                          ^^^
-/tmp/avl-tree.dart:122:35: Error: 'any' isn't a type.
+/tmp/avl-tree.dart:135:35: Error: 'any' isn't a type.
   var node = (root as Map<String, any>);
                                   ^^^
-/tmp/avl-tree.dart:156:12: Error: 'any' isn't a type.
+/tmp/avl-tree.dart:160:33: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+  var r = removeR(getLink(node, dir), data);
+                                ^
+/tmp/avl-tree.dart:161:17: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+  setLink(node, dir, r['node']);
+                ^
+/tmp/avl-tree.dart:172:30: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+  return removeBalance(node, dir);
+                             ^
+/tmp/avl-tree.dart:175:12: Error: 'any' isn't a type.
 any Remove(any tree, int data) {
            ^^^
-/tmp/avl-tree.dart:171:15: Error: 'any' isn't a type.
+/tmp/avl-tree.dart:190:15: Error: 'any' isn't a type.
 void dumpNode(any node, int indent, bool comma) {
               ^^^
-/tmp/avl-tree.dart:196:11: Error: 'any' isn't a type.
+/tmp/avl-tree.dart:215:11: Error: 'any' isn't a type.
 void dump(any node, int indent) {
           ^^^
-/tmp/avl-tree.dart:216:32: Error: 'any' isn't a type.
+/tmp/avl-tree.dart:235:32: Error: 'any' isn't a type.
   var t = (tree as Map<String, any>);
                                ^^^

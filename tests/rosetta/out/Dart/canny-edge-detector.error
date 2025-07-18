@@ -1,25 +1,67 @@
 run: exit status 254
-/tmp/canny-edge-detector.dart:37:36: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+/tmp/canny-edge-detector.dart:34:36: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
           sum = (sum as num) + img[yy][xx] * k[j][i];
                                    ^
-/tmp/canny-edge-detector.dart:37:40: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+/tmp/canny-edge-detector.dart:34:40: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
           sum = (sum as num) + img[yy][xx] * k[j][i];
                                        ^
-/tmp/canny-edge-detector.dart:37:30: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+/tmp/canny-edge-detector.dart:34:48: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
           sum = (sum as num) + img[yy][xx] * k[j][i];
-                             ^
-/tmp/canny-edge-detector.dart:42:33: Error: The argument type 'int' can't be assigned to the parameter type 'double'.
+                                               ^
+/tmp/canny-edge-detector.dart:34:51: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+          sum = (sum as num) + img[yy][xx] * k[j][i];
+                                                  ^
+/tmp/canny-edge-detector.dart:39:33: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
       row = List.from(row)..add(sum);
                                 ^
-/tmp/canny-edge-detector.dart:54:24: Error: The argument type 'List<List<int>>' can't be assigned to the parameter type 'List<List<double>>'.
+/tmp/canny-edge-detector.dart:59:24: Error: The argument type 'List<List<int>>' can't be assigned to the parameter type 'List<List<double>>'.
  - 'List' is from 'dart:core'.
   var gx = conv2d(img, hx);
                        ^
-/tmp/canny-edge-detector.dart:55:24: Error: The argument type 'List<List<int>>' can't be assigned to the parameter type 'List<List<double>>'.
+/tmp/canny-edge-detector.dart:60:24: Error: The argument type 'List<List<int>>' can't be assigned to the parameter type 'List<List<double>>'.
  - 'List' is from 'dart:core'.
   var gy = conv2d(img, hy);
                        ^
-/tmp/canny-edge-detector.dart:116:20: Error: The argument type 'List<List<int>>' can't be assigned to the parameter type 'List<List<double>>'.
+/tmp/canny-edge-detector.dart:69:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var g = ((gx[y][x] as num) * (gx[y][x] as num) as num) + ((gy[y][x] as num) * (gy[y][x] as num) as num);
+                   ^
+/tmp/canny-edge-detector.dart:69:23: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var g = ((gx[y][x] as num) * (gx[y][x] as num) as num) + ((gy[y][x] as num) * (gy[y][x] as num) as num);
+                      ^
+/tmp/canny-edge-detector.dart:69:40: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var g = ((gx[y][x] as num) * (gx[y][x] as num) as num) + ((gy[y][x] as num) * (gy[y][x] as num) as num);
+                                       ^
+/tmp/canny-edge-detector.dart:69:43: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var g = ((gx[y][x] as num) * (gx[y][x] as num) as num) + ((gy[y][x] as num) * (gy[y][x] as num) as num);
+                                          ^
+/tmp/canny-edge-detector.dart:69:69: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var g = ((gx[y][x] as num) * (gx[y][x] as num) as num) + ((gy[y][x] as num) * (gy[y][x] as num) as num);
+                                                                    ^
+/tmp/canny-edge-detector.dart:69:72: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var g = ((gx[y][x] as num) * (gx[y][x] as num) as num) + ((gy[y][x] as num) * (gy[y][x] as num) as num);
+                                                                       ^
+/tmp/canny-edge-detector.dart:69:89: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var g = ((gx[y][x] as num) * (gx[y][x] as num) as num) + ((gy[y][x] as num) * (gy[y][x] as num) as num);
+                                                                                        ^
+/tmp/canny-edge-detector.dart:69:92: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var g = ((gx[y][x] as num) * (gx[y][x] as num) as num) + ((gy[y][x] as num) * (gy[y][x] as num) as num);
+                                                                                           ^
+/tmp/canny-edge-detector.dart:70:33: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
+      row = List.from(row)..add(g);
+                                ^
+/tmp/canny-edge-detector.dart:88:13: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      if (g[y][x] >= t) {
+            ^
+/tmp/canny-edge-detector.dart:88:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      if (g[y][x] >= t) {
+               ^
+/tmp/canny-edge-detector.dart:108:23: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      line = line + m[y][x].toString();
+                      ^
+/tmp/canny-edge-detector.dart:108:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      line = line + m[y][x].toString();
+                         ^
+/tmp/canny-edge-detector.dart:157:20: Error: The argument type 'List<List<int>>' can't be assigned to the parameter type 'List<List<double>>'.
  - 'List' is from 'dart:core'.
   var g = gradient(img);
                    ^

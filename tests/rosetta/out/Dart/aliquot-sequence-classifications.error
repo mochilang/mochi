@@ -1,32 +1,59 @@
 run: exit status 254
-/tmp/aliquot-sequence-classifications.dart:63:13: Error: Type 'any' not found.
+/tmp/aliquot-sequence-classifications.dart:60:13: Error: Type 'any' not found.
 Map<String, any> classifySequence(int k) {
             ^^^
-/tmp/aliquot-sequence-classifications.dart:38:9: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+/tmp/aliquot-sequence-classifications.dart:7:12: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    if (xs[i] == value) {
+           ^
+/tmp/aliquot-sequence-classifications.dart:8:14: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+      return i;
+             ^
+/tmp/aliquot-sequence-classifications.dart:35:9: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
     x = y;
         ^
-/tmp/aliquot-sequence-classifications.dart:53:30: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-      sum = (sum as num) + i + n / i;
-                             ^
-/tmp/aliquot-sequence-classifications.dart:58:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    sum = (sum as num) - sqrt;
+/tmp/aliquot-sequence-classifications.dart:50:48: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      sum = ((sum as num) + (i as num) as num) + (n / (i as num) as num);
+                                               ^
+/tmp/aliquot-sequence-classifications.dart:52:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+/tmp/aliquot-sequence-classifications.dart:55:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    sum = (sum as num) - (sqrt as num);
                        ^
-/tmp/aliquot-sequence-classifications.dart:84:31: Error: A value of type 'int' can't be assigned to a variable of type 'String'.
-      aliquot = 'Sociable[' + n - 1.toString() + ']';
-                              ^
-/tmp/aliquot-sequence-classifications.dart:84:33: Error: The operator '-' isn't defined for the class 'String'.
+/tmp/aliquot-sequence-classifications.dart:81:34: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+      aliquot = 'Sociable[' + (n as num) - 1.toString() + ']';
+                                 ^
+/tmp/aliquot-sequence-classifications.dart:81:42: Error: The operator '-' isn't defined for the class 'String'.
 Try correcting the operator to an existing operator, or defining a '-' operator.
-      aliquot = 'Sociable[' + n - 1.toString() + ']';
-                                ^
-/tmp/aliquot-sequence-classifications.dart:91:41: Error: The method 'substring' isn't defined for the class 'List<int>'.
+      aliquot = 'Sociable[' + (n as num) - 1.toString() + ']';
+                                         ^
+/tmp/aliquot-sequence-classifications.dart:84:32: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    if (last == seq[(n as num) - 2]) {
+                               ^
+/tmp/aliquot-sequence-classifications.dart:88:41: Error: The method 'substring' isn't defined for the class 'List<int>'.
  - 'List' is from 'dart:core'.
 Try correcting the name to the name of an existing method, or defining a method named 'substring'.
-    if (contains(((seq is String) ? seq.substring(1, maxOf(1, n - 2)) : (seq as List).sublist(1, maxOf(1, n - 2))), last)) {
+    if (contains(((seq is String) ? seq.substring(1, maxOf(1, (n as num) - 2)) : (seq as List).sublist(1, maxOf(1, (n as num) - 2))), last)) {
                                         ^^^^^^^^^
-/tmp/aliquot-sequence-classifications.dart:93:29: Error: A value of type 'int' can't be assigned to a variable of type 'String'.
-      aliquot = 'Cyclic[' + n - 1 - idx.toString() + ']';
-                            ^
-/tmp/aliquot-sequence-classifications.dart:93:31: Error: The operator '-' isn't defined for the class 'String'.
+/tmp/aliquot-sequence-classifications.dart:88:74: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    if (contains(((seq is String) ? seq.substring(1, maxOf(1, (n as num) - 2)) : (seq as List).sublist(1, maxOf(1, (n as num) - 2))), last)) {
+                                                                         ^
+/tmp/aliquot-sequence-classifications.dart:88:127: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    if (contains(((seq is String) ? seq.substring(1, maxOf(1, (n as num) - 2)) : (seq as List).sublist(1, maxOf(1, (n as num) - 2))), last)) {
+                                                                                                                              ^
+/tmp/aliquot-sequence-classifications.dart:90:45: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+      aliquot = 'Cyclic[' + ((n as num) - 1 as num) - (idx as num).toString() + ']';
+                                            ^
+/tmp/aliquot-sequence-classifications.dart:90:53: Error: The operator '-' isn't defined for the class 'String'.
 Try correcting the operator to an existing operator, or defining a '-' operator.
-      aliquot = 'Cyclic[' + n - 1 - idx.toString() + ']';
-                              ^
+      aliquot = 'Cyclic[' + ((n as num) - 1 as num) - (idx as num).toString() + ']';
+                                                    ^
+/tmp/aliquot-sequence-classifications.dart:123:17: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    s = s + seq[i].toString();
+                ^
+/tmp/aliquot-sequence-classifications.dart:139:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    k = (k as num) + 1;
+                   ^
+/tmp/aliquot-sequence-classifications.dart:159:17: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var val = s[i];
+                ^

@@ -1,4 +1,4 @@
 run: exit status 254
-/tmp/apply-a-callback-to-an-array-1.dart:7:17: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+/tmp/apply-a-callback-to-an-array-1.dart:10:17: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
     print(i * i.toString());
                 ^

@@ -1,7 +1,37 @@
 run: exit status 254
-/tmp/boyer-moore-string-search.dart:62:20: Error: A value of type 'int' can't be assigned to a variable of type 'String'.
-    print('text' + i + 1.toString() + ' = ' + texts[i]);
-                   ^
-/tmp/boyer-moore-string-search.dart:69:51: Error: A value of type 'int' can't be assigned to a variable of type 'String'.
-    print('Found ' + patterns[j] + ' in \'text' + j + 1.toString() + '\' at indexes ' + display(idxs));
-                                                  ^
+/tmp/boyer-moore-string-search.dart:10:32: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    if (h.toString().substring(i, (i as num) + (nlen as num)) == n) {
+                               ^
+/tmp/boyer-moore-string-search.dart:10:46: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    if (h.toString().substring(i, (i as num) + (nlen as num)) == n) {
+                                             ^
+/tmp/boyer-moore-string-search.dart:11:14: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+      return i;
+             ^
+/tmp/boyer-moore-string-search.dart:28:49: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var idx = indexOfStr(h.toString().substring(start, hlen), n);
+                                                ^
+/tmp/boyer-moore-string-search.dart:30:54: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+      result = List.from(result)..add((start as num) + (idx as num));
+                                                     ^
+/tmp/boyer-moore-string-search.dart:47:18: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    s = s + nums[i].toString();
+                 ^
+/tmp/boyer-moore-string-search.dart:73:23: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+    print('text' + (i as num) + 1.toString() + ' = ' + texts[i]);
+                      ^
+/tmp/boyer-moore-string-search.dart:73:62: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    print('text' + (i as num) + 1.toString() + ' = ' + texts[i]);
+                                                             ^
+/tmp/boyer-moore-string-search.dart:79:35: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var idxs = stringSearch(texts[j], patterns[j]);
+                                  ^
+/tmp/boyer-moore-string-search.dart:79:48: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var idxs = stringSearch(texts[j], patterns[j]);
+                                               ^
+/tmp/boyer-moore-string-search.dart:80:31: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    print('Found ' + patterns[j] + ' in \'text' + (j as num) + 1.toString() + '\' at indexes ' + display(idxs));
+                              ^
+/tmp/boyer-moore-string-search.dart:80:54: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+    print('Found ' + patterns[j] + ' in \'text' + (j as num) + 1.toString() + '\' at indexes ' + display(idxs));
+                                                     ^

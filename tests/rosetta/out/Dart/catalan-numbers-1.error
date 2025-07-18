@@ -1,7 +1,13 @@
 run: exit status 254
-/tmp/catalan-numbers-1.dart:18:26: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-    res = int.parse((res / i));
-                         ^
-/tmp/catalan-numbers-1.dart:24:37: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-  return int.parse((binom(2 * n, n) / (n + 1)));
+/tmp/catalan-numbers-1.dart:8:12: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    kk = n - (kk as num);
+           ^
+/tmp/catalan-numbers-1.dart:13:25: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    res = ((res as num) * ((n - (i as num)) as num));
+                        ^
+/tmp/catalan-numbers-1.dart:15:35: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    res = int.parse(((res as num) / (i as num)));
+                                  ^
+/tmp/catalan-numbers-1.dart:21:37: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+  return int.parse((binom(2 * n, n) ~/ (n + 1)));
                                     ^

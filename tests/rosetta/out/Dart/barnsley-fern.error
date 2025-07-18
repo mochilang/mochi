@@ -1,49 +1,37 @@
 run: exit status 254
-/tmp/barnsley-fern.dart:21:36: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+/tmp/barnsley-fern.dart:18:36: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
 var height = int.parse((width * dy / dx));
                                    ^
-/tmp/barnsley-fern.dart:38:35: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/barnsley-fern.dart:35:35: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
 var ix = int.parse(((double.parse(width)) * (x - xMin) / dx));
                                   ^
-/tmp/barnsley-fern.dart:38:56: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+/tmp/barnsley-fern.dart:35:56: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
 var ix = int.parse(((double.parse(width)) * (x - xMin) / dx));
                                                        ^
-/tmp/barnsley-fern.dart:40:35: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/barnsley-fern.dart:37:35: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
 var iy = int.parse(((double.parse(height)) * (yMax - y) / dy));
                                   ^
-/tmp/barnsley-fern.dart:40:57: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+/tmp/barnsley-fern.dart:37:57: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
 var iy = int.parse(((double.parse(height)) * (yMax - y) / dy));
                                                         ^
-/tmp/barnsley-fern.dart:65:11: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-      x = nx;
-          ^
-/tmp/barnsley-fern.dart:66:11: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-      y = ny;
-          ^
-/tmp/barnsley-fern.dart:72:11: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-      x = nx;
-          ^
-/tmp/barnsley-fern.dart:73:11: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-      y = ny;
-          ^
-/tmp/barnsley-fern.dart:79:11: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-      x = nx;
-          ^
-/tmp/barnsley-fern.dart:80:11: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-      y = ny;
-          ^
-/tmp/barnsley-fern.dart:84:16: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-      y = 0.16 * y;
-               ^
-/tmp/barnsley-fern.dart:86:36: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
-    ix = (int.parse(((double.parse(width)) * (x - xMin) / dx)) as int);
-                                   ^
-/tmp/barnsley-fern.dart:86:57: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-    ix = (int.parse(((double.parse(width)) * (x - xMin) / dx)) as int);
+/tmp/barnsley-fern.dart:28:31: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+  return [next, (next as num) % n];
+                              ^
+/tmp/barnsley-fern.dart:83:35: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+    ix = int.parse(((double.parse(width)) * (x - xMin) / dx));
+                                  ^
+/tmp/barnsley-fern.dart:83:56: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    ix = int.parse(((double.parse(width)) * (x - xMin) / dx));
+                                                       ^
+/tmp/barnsley-fern.dart:84:35: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+    iy = int.parse(((double.parse(height)) * (yMax - y) / dy));
+                                  ^
+/tmp/barnsley-fern.dart:84:57: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    iy = int.parse(((double.parse(height)) * (yMax - y) / dy));
                                                         ^
-/tmp/barnsley-fern.dart:87:36: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
-    iy = (int.parse(((double.parse(height)) * (yMax - y) / dy)) as int);
-                                   ^
-/tmp/barnsley-fern.dart:87:58: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-    iy = (int.parse(((double.parse(height)) * (yMax - y) / dy)) as int);
-                                                         ^
+/tmp/barnsley-fern.dart:95:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      line = line + grid[row][col];
+                         ^
+/tmp/barnsley-fern.dart:95:31: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      line = line + grid[row][col];
+                              ^

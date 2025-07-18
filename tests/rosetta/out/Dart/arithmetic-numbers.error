@@ -1,16 +1,58 @@
 run: exit status 254
-/tmp/arithmetic-numbers.dart:71:36: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-    var mid = int.parse(((lo + hi) / 2));
-                                   ^
-/tmp/arithmetic-numbers.dart:81:28: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    count = (count as num) - 1;
-                           ^
-/tmp/arithmetic-numbers.dart:106:17: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-          x = x / p;
+/tmp/arithmetic-numbers.dart:11:13: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    if (spf[i] == 0) {
+            ^
+/tmp/arithmetic-numbers.dart:12:11: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      spf[i] = i;
+          ^
+/tmp/arithmetic-numbers.dart:12:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      spf[i] = i;
+               ^
+/tmp/arithmetic-numbers.dart:16:19: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+          if (spf[j] == 0) {
+                  ^
+/tmp/arithmetic-numbers.dart:17:17: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+            spf[j] = i;
                 ^
-/tmp/arithmetic-numbers.dart:108:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-          sum = (sum as num) + power;
+/tmp/arithmetic-numbers.dart:17:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+            spf[j] = i;
+                     ^
+/tmp/arithmetic-numbers.dart:35:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+/tmp/arithmetic-numbers.dart:54:48: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    out = s.toString().substring(i, (i as num) + 1) + out;
+                                               ^
+/tmp/arithmetic-numbers.dart:59:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) - 1;
+                   ^
+/tmp/arithmetic-numbers.dart:68:63: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    var mid = int.parse(((((lo as num) + (hi as num)) as num) / 2));
+                                                              ^
+/tmp/arithmetic-numbers.dart:80:10: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+  return count;
+         ^
+/tmp/arithmetic-numbers.dart:103:26: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+          x = (x as num) / (p as num);
+                         ^
+/tmp/arithmetic-numbers.dart:105:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+          sum = (sum as num) + (power as num);
                              ^
-/tmp/arithmetic-numbers.dart:111:23: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-        sigma = sigma * (sum as num);
-                      ^
+/tmp/arithmetic-numbers.dart:106:34: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+          power = (power as num) * (p as num);
+                                 ^
+/tmp/arithmetic-numbers.dart:108:32: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        sigma = (sigma as num) * (sum as num);
+                               ^
+/tmp/arithmetic-numbers.dart:109:28: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        tau = (tau as num) * (((cnt as num) + 1) as num);
+                           ^
+/tmp/arithmetic-numbers.dart:115:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = (n as num) + 1;
+                   ^
+/tmp/arithmetic-numbers.dart:131:41: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      line = line + pad3(arr[(i as num) + (j as num)]);
+                                        ^
+/tmp/arithmetic-numbers.dart:151:92: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    print('The count of such numbers <= ' + lastc + ' which are composite is ' + commatize(comp) + '.');
+                                                                                           ^

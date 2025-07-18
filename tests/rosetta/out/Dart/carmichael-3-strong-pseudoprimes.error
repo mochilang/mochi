@@ -1,13 +1,16 @@
 run: exit status 254
-/tmp/carmichael-3-strong-pseudoprimes.dart:46:22: Error: The argument type 'double' can't be assigned to the parameter type 'int'.
-        if (!isPrime(p2)) {
-                     ^
-/tmp/carmichael-3-strong-pseudoprimes.dart:50:22: Error: The argument type 'double' can't be assigned to the parameter type 'int'.
+/tmp/carmichael-3-strong-pseudoprimes.dart:21:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    d = (d as num) + 2;
+                   ^
+/tmp/carmichael-3-strong-pseudoprimes.dart:25:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    d = (d as num) + 4;
+                   ^
+/tmp/carmichael-3-strong-pseudoprimes.dart:41:63: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+      if (((h3 + p1) * (p1 - 1)) % d == 0 && mod(-(p1 as num) * p1, h3) == d % h3) {
+                                                              ^
+/tmp/carmichael-3-strong-pseudoprimes.dart:47:22: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
         if (!isPrime(p3)) {
                      ^
-/tmp/carmichael-3-strong-pseudoprimes.dart:57:40: Error: The argument type 'double' can't be assigned to the parameter type 'int'.
-        print(pad(p1, 2) + '   ' + pad(p2, 4) + '   ' + pad(p3, 5) + '     ' + c.toString());
-                                       ^
-/tmp/carmichael-3-strong-pseudoprimes.dart:57:61: Error: The argument type 'double' can't be assigned to the parameter type 'int'.
+/tmp/carmichael-3-strong-pseudoprimes.dart:54:61: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
         print(pad(p1, 2) + '   ' + pad(p2, 4) + '   ' + pad(p3, 5) + '     ' + c.toString());
                                                             ^

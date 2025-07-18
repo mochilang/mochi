@@ -1,7 +1,7 @@
 run: exit status 254
-/tmp/angle-difference-between-two-bearings-1.dart:20:23: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
+/tmp/angle-difference-between-two-bearings-1.dart:26:23: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
     print(angleDiff(tc[0], tc[1]));
                       ^
-/tmp/angle-difference-between-two-bearings-1.dart:20:30: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
+/tmp/angle-difference-between-two-bearings-1.dart:26:30: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
     print(angleDiff(tc[0], tc[1]));
                              ^

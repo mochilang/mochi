@@ -1,13 +1,13 @@
 run: exit status 254
-/tmp/call-a-function-4.dart:5:16: Error: Type 'any' not found.
+/tmp/call-a-function-4.dart:2:16: Error: Type 'any' not found.
 void gifEncode(any out, any img, Map<String, int> opts) {
                ^^^
-/tmp/call-a-function-4.dart:5:25: Error: Type 'any' not found.
+/tmp/call-a-function-4.dart:2:25: Error: Type 'any' not found.
 void gifEncode(any out, any img, Map<String, int> opts) {
                         ^^^
-/tmp/call-a-function-4.dart:5:16: Error: 'any' isn't a type.
+/tmp/call-a-function-4.dart:2:16: Error: 'any' isn't a type.
 void gifEncode(any out, any img, Map<String, int> opts) {
                ^^^
-/tmp/call-a-function-4.dart:5:25: Error: 'any' isn't a type.
+/tmp/call-a-function-4.dart:2:25: Error: 'any' isn't a type.
 void gifEncode(any out, any img, Map<String, int> opts) {
                         ^^^

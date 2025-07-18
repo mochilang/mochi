@@ -1,90 +1,286 @@
 run: exit status 254
-/tmp/adfgvx-cipher.dart:13:25: Error: A value of type 'num' can't be assigned to a variable of type 'List<String>'.
+/tmp/adfgvx-cipher.dart:11:9: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      s[i],
+        ^
+/tmp/adfgvx-cipher.dart:10:24: Error: A value of type 'num' can't be assigned to a variable of type 'List<String>'.
  - 'List' is from 'dart:core'.
-    arr = arr + ([s[i]] as num);
-                        ^
-/tmp/adfgvx-cipher.dart:42:20: Error: A value of type 'num' can't be assigned to a variable of type 'List<String>'.
- - 'List' is from 'dart:core'.
-    p = p + ([row] as num);
+    arr = (arr as num) + ([
+                       ^
+/tmp/adfgvx-cipher.dart:19:18: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    arr[j] = arr[k];
+                 ^
+/tmp/adfgvx-cipher.dart:20:9: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    arr[k] = tmp;
+        ^
+/tmp/adfgvx-cipher.dart:21:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    j = (j as num) - 1;
                    ^
-/tmp/adfgvx-cipher.dart:46:24: Error: The operator '[]' isn't defined for the class 'Object'.
+/tmp/adfgvx-cipher.dart:26:31: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    out = (out as num) + (arr[i] as num);
+                              ^
+/tmp/adfgvx-cipher.dart:26:24: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+    out = (out as num) + (arr[i] as num);
+                       ^
+/tmp/adfgvx-cipher.dart:40:69: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var row = ((shuffled is String) ? shuffled.substring((i as num) * 6, (((i as num) + 1) as num) * 6) : (shuffled as List).sublist((i as num) * 6, (((i as num) + 1) as num) * 6));
+                                                                    ^
+/tmp/adfgvx-cipher.dart:40:100: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var row = ((shuffled is String) ? shuffled.substring((i as num) * 6, (((i as num) + 1) as num) * 6) : (shuffled as List).sublist((i as num) * 6, (((i as num) + 1) as num) * 6));
+                                                                                                   ^
+/tmp/adfgvx-cipher.dart:40:145: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var row = ((shuffled is String) ? shuffled.substring((i as num) * 6, (((i as num) + 1) as num) * 6) : (shuffled as List).sublist((i as num) * 6, (((i as num) + 1) as num) * 6));
+                                                                                                                                                ^
+/tmp/adfgvx-cipher.dart:40:176: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var row = ((shuffled is String) ? shuffled.substring((i as num) * 6, (((i as num) + 1) as num) * 6) : (shuffled as List).sublist((i as num) * 6, (((i as num) + 1) as num) * 6));
+                                                                                                                                                                               ^
+/tmp/adfgvx-cipher.dart:41:20: Error: A value of type 'num' can't be assigned to a variable of type 'List<String>'.
+ - 'List' is from 'dart:core'.
+    p = (p as num) + ([row] as num);
+                   ^
+/tmp/adfgvx-cipher.dart:42:23: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var line = adfgvx[i] + ' | ';
+                      ^
+/tmp/adfgvx-cipher.dart:45:34: Error: The operator '[]' isn't defined for the class 'Object'.
  - 'Object' is from 'dart:core'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
-      line = line + row[j] + ' ';
+      line = (line as num) + (row[j] as num) + ' ';
+                                 ^
+/tmp/adfgvx-cipher.dart:45:48: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+      line = (line as num) + (row[j] as num) + ' ';
+                                               ^
+/tmp/adfgvx-cipher.dart:45:46: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+      line = (line as num) + (row[j] as num) + ' ';
+                                             ^
+/tmp/adfgvx-cipher.dart:63:24: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+    key = (key as num) + (pool[idx] as num);
                        ^
-/tmp/adfgvx-cipher.dart:65:89: Error: The operator '+' isn't defined for the class 'Object'.
- - 'Object' is from 'dart:core'.
-Try correcting the operator to an existing operator, or defining a '+' operator.
-    pool = ((pool is String) ? pool.substring(0, idx) : (pool as List).sublist(0, idx)) + ((pool is String) ? pool.substring(idx + 1, pool.length) : (pool as List).sublist(idx + 1, pool.length));
-                                                                                        ^
-/tmp/adfgvx-cipher.dart:76:36: Error: A value of type 'num' can't be assigned to a variable of type 'List<dynamic>'.
+/tmp/adfgvx-cipher.dart:64:149: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    pool = (((pool is String) ? pool.substring(0, idx) : (pool as List).sublist(0, idx)) as num) + (((pool is String) ? pool.substring((idx as num) + 1, pool.length) : (pool as List).sublist((idx as num) + 1, pool.length)) as num);
+                                                                                                                                                    ^
+/tmp/adfgvx-cipher.dart:64:205: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    pool = (((pool is String) ? pool.substring(0, idx) : (pool as List).sublist(0, idx)) as num) + (((pool is String) ? pool.substring((idx as num) + 1, pool.length) : (pool as List).sublist((idx as num) + 1, pool.length)) as num);
+                                                                                                                                                                                                            ^
+/tmp/adfgvx-cipher.dart:64:98: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+    pool = (((pool is String) ? pool.substring(0, idx) : (pool as List).sublist(0, idx)) as num) + (((pool is String) ? pool.substring((idx as num) + 1, pool.length) : (pool as List).sublist((idx as num) + 1, pool.length)) as num);
+                                                                                                 ^
+/tmp/adfgvx-cipher.dart:77:11: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      key[i],
+          ^
+/tmp/adfgvx-cipher.dart:75:28: Error: A value of type 'num' can't be assigned to a variable of type 'List<dynamic>'.
  - 'List' is from 'dart:core'.
-    pairs = pairs + ([[key[i], i]] as num);
-                                   ^
-/tmp/adfgvx-cipher.dart:96:43: Error: A value of type 'num' can't be assigned to a variable of type 'List<dynamic>'.
+    pairs = (pairs as num) + ([
+                           ^
+/tmp/adfgvx-cipher.dart:88:18: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      if ((pairs[j][0] as num) > (pairs[(j as num) + 1][0] as num)) {
+                 ^
+/tmp/adfgvx-cipher.dart:88:52: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      if ((pairs[j][0] as num) > (pairs[(j as num) + 1][0] as num)) {
+                                                   ^
+/tmp/adfgvx-cipher.dart:89:25: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        var tmp = pairs[j];
+                        ^
+/tmp/adfgvx-cipher.dart:90:15: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        pairs[j] = pairs[(j as num) + 1];
+              ^
+/tmp/adfgvx-cipher.dart:90:37: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        pairs[j] = pairs[(j as num) + 1];
+                                    ^
+/tmp/adfgvx-cipher.dart:91:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        pairs[(j as num) + 1] = tmp;
+                         ^
+/tmp/adfgvx-cipher.dart:101:23: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      int.parse(pairs[i][1]),
+                      ^
+/tmp/adfgvx-cipher.dart:100:24: Error: A value of type 'num' can't be assigned to a variable of type 'List<dynamic>'.
  - 'List' is from 'dart:core'.
-    res = res + ([int.parse(pairs[i][1])] as num);
-                                          ^
-/tmp/adfgvx-cipher.dart:99:10: Error: A value of type 'List<dynamic>' can't be returned from a function with return type 'List<int>'.
+    res = (res as num) + ([
+                       ^
+/tmp/adfgvx-cipher.dart:105:10: Error: A value of type 'List<dynamic>' can't be returned from a function with return type 'List<int>'.
  - 'List' is from 'dart:core'.
   return res;
          ^
-/tmp/adfgvx-cipher.dart:129:25: Error: A value of type 'num' can't be assigned to a variable of type 'List<String>'.
- - 'List' is from 'dart:core'.
-      row = row + ([''] as num);
+/tmp/adfgvx-cipher.dart:116:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        if (polybius[r][c] == plainText[i]) {
+                     ^
+/tmp/adfgvx-cipher.dart:116:25: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        if (polybius[r][c] == plainText[i]) {
                         ^
-/tmp/adfgvx-cipher.dart:132:28: Error: A value of type 'num' can't be assigned to a variable of type 'List<List<String>>'.
- - 'List' is from 'dart:core'.
-    table = table + ([row] as num);
-                           ^
-/tmp/adfgvx-cipher.dart:139:11: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-    table[row][col] = ((temp is String) ? temp.substring(idx, idx + 1) : (temp as List).sublist(idx, idx + 1));
-          ^
-/tmp/adfgvx-cipher.dart:139:41: Error: A value of type 'Object' can't be assigned to a variable of type 'String'.
- - 'Object' is from 'dart:core'.
-    table[row][col] = ((temp is String) ? temp.substring(idx, idx + 1) : (temp as List).sublist(idx, idx + 1));
+/tmp/adfgvx-cipher.dart:116:41: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        if (polybius[r][c] == plainText[i]) {
                                         ^
-/tmp/adfgvx-cipher.dart:152:29: Error: A value of type 'num' can't be assigned to a variable of type 'List<String>'.
- - 'List' is from 'dart:core'.
-    cols = cols + ([colStr] as num);
-                            ^
-/tmp/adfgvx-cipher.dart:184:61: Error: A value of type 'num' can't be assigned to a variable of type 'List<String>'.
- - 'List' is from 'dart:core'.
-      colStrs = colStrs + ([cipherText.substring(start, i)] as num);
-                                                            ^
-/tmp/adfgvx-cipher.dart:204:25: Error: A value of type 'num' can't be assigned to a variable of type 'List<String>'.
- - 'List' is from 'dart:core'.
-      ls = ls + ([s[j]] as num);
-                        ^
-/tmp/adfgvx-cipher.dart:212:32: Error: A value of type 'num' can't be assigned to a variable of type 'List<String>'.
- - 'List' is from 'dart:core'.
-          pad = pad + ([ls[k]] as num);
+/tmp/adfgvx-cipher.dart:117:32: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+          temp = temp + adfgvx[r] + adfgvx[c];
                                ^
-/tmp/adfgvx-cipher.dart:215:29: Error: A value of type 'num' can't be assigned to a variable of type 'List<String>'.
+/tmp/adfgvx-cipher.dart:117:44: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+          temp = temp + adfgvx[r] + adfgvx[c];
+                                           ^
+/tmp/adfgvx-cipher.dart:127:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    colLen = (colLen as num) + 1;
+                             ^
+/tmp/adfgvx-cipher.dart:135:26: Error: A value of type 'num' can't be assigned to a variable of type 'List<String>'.
  - 'List' is from 'dart:core'.
-          pad = pad + ([''] as num);
-                            ^
-/tmp/adfgvx-cipher.dart:219:28: Error: A value of type 'num' can't be assigned to a variable of type 'List<List<String>>'.
+      row = (row as num) + ([''] as num);
+                         ^
+/tmp/adfgvx-cipher.dart:138:28: Error: A value of type 'num' can't be assigned to a variable of type 'List<List<String>>'.
  - 'List' is from 'dart:core'.
-      cols = cols + ([pad] as num);
+    table = (table as num) + ([row] as num);
                            ^
-/tmp/adfgvx-cipher.dart:222:27: Error: A value of type 'num' can't be assigned to a variable of type 'List<List<String>>'.
+/tmp/adfgvx-cipher.dart:145:11: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    table[row][col] = ((temp is String) ? temp.substring(idx, (idx as num) + 1) : (temp as List).sublist(idx, (idx as num) + 1));
+          ^
+/tmp/adfgvx-cipher.dart:145:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    table[row][col] = ((temp is String) ? temp.substring(idx, (idx as num) + 1) : (temp as List).sublist(idx, (idx as num) + 1));
+               ^
+/tmp/adfgvx-cipher.dart:145:58: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    table[row][col] = ((temp is String) ? temp.substring(idx, (idx as num) + 1) : (temp as List).sublist(idx, (idx as num) + 1));
+                                                         ^
+/tmp/adfgvx-cipher.dart:145:76: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    table[row][col] = ((temp is String) ? temp.substring(idx, (idx as num) + 1) : (temp as List).sublist(idx, (idx as num) + 1));
+                                                                           ^
+/tmp/adfgvx-cipher.dart:145:106: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    table[row][col] = ((temp is String) ? temp.substring(idx, (idx as num) + 1) : (temp as List).sublist(idx, (idx as num) + 1));
+                                                                                                         ^
+/tmp/adfgvx-cipher.dart:145:124: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    table[row][col] = ((temp is String) ? temp.substring(idx, (idx as num) + 1) : (temp as List).sublist(idx, (idx as num) + 1));
+                                                                                                                           ^
+/tmp/adfgvx-cipher.dart:145:41: Error: A value of type 'Object' can't be assigned to a variable of type 'String'.
+ - 'Object' is from 'dart:core'.
+    table[row][col] = ((temp is String) ? temp.substring(idx, (idx as num) + 1) : (temp as List).sublist(idx, (idx as num) + 1));
+                                        ^
+/tmp/adfgvx-cipher.dart:155:41: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      colStr = (colStr as num) + (table[ri][order[ci]] as num);
+                                        ^
+/tmp/adfgvx-cipher.dart:155:51: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      colStr = (colStr as num) + (table[ri][order[ci]] as num);
+                                                  ^
+/tmp/adfgvx-cipher.dart:155:32: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+      colStr = (colStr as num) + (table[ri][order[ci]] as num);
+                               ^
+/tmp/adfgvx-cipher.dart:158:26: Error: A value of type 'num' can't be assigned to a variable of type 'List<String>'.
  - 'List' is from 'dart:core'.
-      cols = cols + ([ls] as num);
+    cols = (cols as num) + ([colStr] as num);
+                         ^
+/tmp/adfgvx-cipher.dart:164:38: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    result = (result as num) + (cols[ci] as num);
+                                     ^
+/tmp/adfgvx-cipher.dart:164:30: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+    result = (result as num) + (cols[ci] as num);
+                             ^
+/tmp/adfgvx-cipher.dart:176:11: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    if (s[i] == ch) {
+          ^
+/tmp/adfgvx-cipher.dart:177:14: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+      return i;
+             ^
+/tmp/adfgvx-cipher.dart:189:46: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    if (i == cipherText.length || cipherText[i] == ' ') {
+                                             ^
+/tmp/adfgvx-cipher.dart:191:30: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+        cipherText.substring(start, i),
+                             ^
+/tmp/adfgvx-cipher.dart:191:37: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+        cipherText.substring(start, i),
+                                    ^
+/tmp/adfgvx-cipher.dart:190:34: Error: A value of type 'num' can't be assigned to a variable of type 'List<String>'.
+ - 'List' is from 'dart:core'.
+      colStrs = (colStrs as num) + ([
+                                 ^
+/tmp/adfgvx-cipher.dart:200:17: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    if (colStrs[i].length > (maxColLen as num)) {
+                ^
+/tmp/adfgvx-cipher.dart:201:27: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      maxColLen = colStrs[i].length;
                           ^
-/tmp/adfgvx-cipher.dart:232:25: Error: A value of type 'num' can't be assigned to a variable of type 'List<String>'.
+/tmp/adfgvx-cipher.dart:208:21: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var s = colStrs[i];
+                    ^
+/tmp/adfgvx-cipher.dart:213:11: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        s[j],
+          ^
+/tmp/adfgvx-cipher.dart:212:24: Error: A value of type 'num' can't be assigned to a variable of type 'List<String>'.
  - 'List' is from 'dart:core'.
-      row = row + ([''] as num);
-                        ^
-/tmp/adfgvx-cipher.dart:235:28: Error: A value of type 'num' can't be assigned to a variable of type 'List<List<String>>'.
+      ls = (ls as num) + ([
+                       ^
+/tmp/adfgvx-cipher.dart:223:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+            ls[k],
+               ^
+/tmp/adfgvx-cipher.dart:222:30: Error: A value of type 'num' can't be assigned to a variable of type 'List<String>'.
  - 'List' is from 'dart:core'.
-    table = table + ([row] as num);
+          pad = (pad as num) + ([
+                             ^
+/tmp/adfgvx-cipher.dart:227:30: Error: A value of type 'num' can't be assigned to a variable of type 'List<String>'.
+ - 'List' is from 'dart:core'.
+          pad = (pad as num) + ([''] as num);
+                             ^
+/tmp/adfgvx-cipher.dart:231:28: Error: A value of type 'num' can't be assigned to a variable of type 'List<List<String>>'.
+ - 'List' is from 'dart:core'.
+      cols = (cols as num) + ([pad] as num);
                            ^
-/tmp/adfgvx-cipher.dart:261:50: Error: The argument type 'Object' can't be assigned to the parameter type 'String'.
+/tmp/adfgvx-cipher.dart:234:28: Error: A value of type 'num' can't be assigned to a variable of type 'List<List<String>>'.
+ - 'List' is from 'dart:core'.
+      cols = (cols as num) + ([ls] as num);
+                           ^
+/tmp/adfgvx-cipher.dart:244:26: Error: A value of type 'num' can't be assigned to a variable of type 'List<String>'.
+ - 'List' is from 'dart:core'.
+      row = (row as num) + ([''] as num);
+                         ^
+/tmp/adfgvx-cipher.dart:247:28: Error: A value of type 'num' can't be assigned to a variable of type 'List<List<String>>'.
+ - 'List' is from 'dart:core'.
+    table = (table as num) + ([row] as num);
+                           ^
+/tmp/adfgvx-cipher.dart:255:13: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      table[r][order[c]] = cols[c][r];
+            ^
+/tmp/adfgvx-cipher.dart:255:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      table[r][order[c]] = cols[c][r];
+                     ^
+/tmp/adfgvx-cipher.dart:255:33: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      table[r][order[c]] = cols[c][r];
+                                ^
+/tmp/adfgvx-cipher.dart:255:36: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      table[r][order[c]] = cols[c][r];
+                                   ^
+/tmp/adfgvx-cipher.dart:264:31: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    while ((j as num) < table[r].length) {
+                              ^
+/tmp/adfgvx-cipher.dart:265:37: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      temp = (temp as num) + (table[r][j] as num);
+                                    ^
+/tmp/adfgvx-cipher.dart:265:40: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      temp = (temp as num) + (table[r][j] as num);
+                                       ^
+/tmp/adfgvx-cipher.dart:265:28: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+      temp = (temp as num) + (table[r][j] as num);
+                           ^
+/tmp/adfgvx-cipher.dart:273:67: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var rIdx = indexOf(adfgvx, ((temp is String) ? temp.substring(idx, (idx as num) + 1) : (temp as List).sublist(idx, (idx as num) + 1)));
+                                                                  ^
+/tmp/adfgvx-cipher.dart:273:85: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var rIdx = indexOf(adfgvx, ((temp is String) ? temp.substring(idx, (idx as num) + 1) : (temp as List).sublist(idx, (idx as num) + 1)));
+                                                                                    ^
+/tmp/adfgvx-cipher.dart:273:115: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var rIdx = indexOf(adfgvx, ((temp is String) ? temp.substring(idx, (idx as num) + 1) : (temp as List).sublist(idx, (idx as num) + 1)));
+                                                                                                                  ^
+/tmp/adfgvx-cipher.dart:273:133: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var rIdx = indexOf(adfgvx, ((temp is String) ? temp.substring(idx, (idx as num) + 1) : (temp as List).sublist(idx, (idx as num) + 1)));
+                                                                                                                                    ^
+/tmp/adfgvx-cipher.dart:273:50: Error: The argument type 'Object' can't be assigned to the parameter type 'String'.
  - 'Object' is from 'dart:core'.
-    var rIdx = indexOf(adfgvx, ((temp is String) ? temp.substring(idx, idx + 1) : (temp as List).sublist(idx, idx + 1)));
+    var rIdx = indexOf(adfgvx, ((temp is String) ? temp.substring(idx, (idx as num) + 1) : (temp as List).sublist(idx, (idx as num) + 1)));
                                                  ^
-/tmp/adfgvx-cipher.dart:262:50: Error: The argument type 'Object' can't be assigned to the parameter type 'String'.
+/tmp/adfgvx-cipher.dart:274:80: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var cIdx = indexOf(adfgvx, ((temp is String) ? temp.substring((idx as num) + 1, (idx as num) + 2) : (temp as List).sublist((idx as num) + 1, (idx as num) + 2)));
+                                                                               ^
+/tmp/adfgvx-cipher.dart:274:98: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var cIdx = indexOf(adfgvx, ((temp is String) ? temp.substring((idx as num) + 1, (idx as num) + 2) : (temp as List).sublist((idx as num) + 1, (idx as num) + 2)));
+                                                                                                 ^
+/tmp/adfgvx-cipher.dart:274:141: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var cIdx = indexOf(adfgvx, ((temp is String) ? temp.substring((idx as num) + 1, (idx as num) + 2) : (temp as List).sublist((idx as num) + 1, (idx as num) + 2)));
+                                                                                                                                            ^
+/tmp/adfgvx-cipher.dart:274:159: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var cIdx = indexOf(adfgvx, ((temp is String) ? temp.substring((idx as num) + 1, (idx as num) + 2) : (temp as List).sublist((idx as num) + 1, (idx as num) + 2)));
+                                                                                                                                                              ^
+/tmp/adfgvx-cipher.dart:274:50: Error: The argument type 'Object' can't be assigned to the parameter type 'String'.
  - 'Object' is from 'dart:core'.
-    var cIdx = indexOf(adfgvx, ((temp is String) ? temp.substring(idx + 1, idx + 2) : (temp as List).sublist(idx + 1, idx + 2)));
+    var cIdx = indexOf(adfgvx, ((temp is String) ? temp.substring((idx as num) + 1, (idx as num) + 2) : (temp as List).sublist((idx as num) + 1, (idx as num) + 2)));
                                                  ^

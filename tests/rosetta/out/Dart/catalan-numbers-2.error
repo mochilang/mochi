@@ -1,4 +1,4 @@
 run: exit status 254
-/tmp/catalan-numbers-2.dart:13:24: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-  return int.parse((t5 / (n + 1)));
-                       ^
+/tmp/catalan-numbers-2.dart:10:33: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+  return int.parse(((t5 as num) / (n + 1)));
+                                ^

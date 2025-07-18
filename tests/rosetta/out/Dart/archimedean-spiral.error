@@ -1,34 +1,40 @@
 run: exit status 254
-/tmp/archimedean-spiral.dart:12:39: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
-    var denom = double.parse(((2 * n) * (2 * n + 1)));
-                                      ^
-/tmp/archimedean-spiral.dart:25:43: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
-    var denom = double.parse(((2 * n - 1) * (2 * n)));
-                                          ^
-/tmp/archimedean-spiral.dart:26:26: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-    term = -term * x * x / (denom as num);
-                         ^
-/tmp/archimedean-spiral.dart:27:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    sum = (sum as num) + term;
+/tmp/archimedean-spiral.dart:9:57: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
+    var denom = double.parse((((2 * (n as num)) as num) * (((2 * (n as num) as num) + 1) as num)));
+                                                        ^
+/tmp/archimedean-spiral.dart:11:24: Error: A value of type 'num' can't be assigned to a variable of type 'double'.
+    sum = (sum as num) + (term as num);
                        ^
-/tmp/archimedean-spiral.dart:30:10: Error: A value of type 'int' can't be returned from a function with return type 'double'.
+/tmp/archimedean-spiral.dart:12:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = (n as num) + 1;
+                   ^
+/tmp/archimedean-spiral.dart:22:70: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
+    var denom = double.parse(((((2 * (n as num) as num) - 1) as num) * ((2 * (n as num)) as num)));
+                                                                     ^
+/tmp/archimedean-spiral.dart:23:62: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    term = (((-(term as num) as num) * x as num) * x as num) / (denom as num);
+                                                             ^
+/tmp/archimedean-spiral.dart:24:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    sum = (sum as num) + (term as num);
+                       ^
+/tmp/archimedean-spiral.dart:25:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = (n as num) + 1;
+                   ^
+/tmp/archimedean-spiral.dart:27:10: Error: A value of type 'int' can't be returned from a function with return type 'double'.
   return sum;
          ^
-/tmp/archimedean-spiral.dart:54:27: Error: The argument type 'int' can't be assigned to the parameter type 'double'.
-    var x = r * cosApprox(theta);
-                          ^
-/tmp/archimedean-spiral.dart:55:27: Error: The argument type 'int' can't be assigned to the parameter type 'double'.
-    var y = r * sinApprox(theta);
-                          ^
-/tmp/archimedean-spiral.dart:57:24: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-      print(centre + x.toString() + ',' + centre - y.toString());
-                       ^
-/tmp/archimedean-spiral.dart:57:37: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-      print(centre + x.toString() + ',' + centre - y.toString());
-                                    ^
-/tmp/archimedean-spiral.dart:57:54: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-      print(centre + x.toString() + ',' + centre - y.toString());
-                                                     ^
-/tmp/archimedean-spiral.dart:59:19: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-    theta = theta + degreesIncr;
-                  ^
+/tmp/archimedean-spiral.dart:51:36: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
+    var x = (r as num) * cosApprox(theta);
+                                   ^
+/tmp/archimedean-spiral.dart:52:36: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
+    var y = (r as num) * sinApprox(theta);
+                                   ^
+/tmp/archimedean-spiral.dart:54:33: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+      print(centre + (x as num).toString() + ',' + centre - (y as num).toString());
+                                ^
+/tmp/archimedean-spiral.dart:54:46: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+      print(centre + (x as num).toString() + ',' + centre - (y as num).toString());
+                                             ^
+/tmp/archimedean-spiral.dart:54:72: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+      print(centre + (x as num).toString() + ',' + centre - (y as num).toString());
+                                                                       ^

@@ -1,10 +1,10 @@
 run: exit status 254
-/tmp/averages-arithmetic-mean.dart:5:13: Error: Type 'any' not found.
+/tmp/averages-arithmetic-mean.dart:2:13: Error: Type 'any' not found.
 Map<String, any> mean(List<double> v) {
             ^^^
-/tmp/averages-arithmetic-mean.dart:12:24: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+/tmp/averages-arithmetic-mean.dart:9:28: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
     sum = (sum as num) + v[i];
-                       ^
-/tmp/averages-arithmetic-mean.dart:15:62: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
-  return {'ok': true, 'mean': (sum as num) / (double.parse(v.length))};
-                                                             ^
+                           ^
+/tmp/averages-arithmetic-mean.dart:14:44: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+    'mean': (sum as num) / (double.parse(v.length)),
+                                           ^

@@ -1,0 +1,4 @@
+run: exit status 254
+/tmp/call-a-function-5.dart:7:48: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+  return ((p as Map)['a'] + (b as num) as num) + (p as Map)['c'];
+                                               ^

@@ -1,39 +1,73 @@
 run: exit status 254
-/tmp/casting-out-nines.dart:34:98: Error: The operator '+' isn't defined for the class 'Object'.
- - 'Object' is from 'dart:core'.
-Try correcting the operator to an existing operator, or defining a '+' operator.
-    out = ((digits is String) ? digits.substring(d, d + 1) : (digits as List).sublist(d, d + 1)) + out;
-                                                                                                 ^
-/tmp/casting-out-nines.dart:35:11: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-    v = v / base;
-          ^
-/tmp/casting-out-nines.dart:65:76: Error: A value of type 'Object?' can't be assigned to a variable of type 'String'.
+/tmp/casting-out-nines.dart:10:39: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+      if (digits.toString().substring(j, (j as num) + 1) == s.substring(i, (i as num) + 1)) {
+                                      ^
+/tmp/casting-out-nines.dart:10:53: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+      if (digits.toString().substring(j, (j as num) + 1) == s.substring(i, (i as num) + 1)) {
+                                                    ^
+/tmp/casting-out-nines.dart:10:73: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+      if (digits.toString().substring(j, (j as num) + 1) == s.substring(i, (i as num) + 1)) {
+                                                                        ^
+/tmp/casting-out-nines.dart:10:87: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+      if (digits.toString().substring(j, (j as num) + 1) == s.substring(i, (i as num) + 1)) {
+                                                                                      ^
+/tmp/casting-out-nines.dart:19:10: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+  return n;
+         ^
+/tmp/casting-out-nines.dart:31:51: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    out = (((digits is String) ? digits.substring(d, (d as num) + 1) : (digits as List).sublist(d, (d as num) + 1)) as num) + (out as num);
+                                                  ^
+/tmp/casting-out-nines.dart:31:65: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    out = (((digits is String) ? digits.substring(d, (d as num) + 1) : (digits as List).sublist(d, (d as num) + 1)) as num) + (out as num);
+                                                                ^
+/tmp/casting-out-nines.dart:31:97: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    out = (((digits is String) ? digits.substring(d, (d as num) + 1) : (digits as List).sublist(d, (d as num) + 1)) as num) + (out as num);
+                                                                                                ^
+/tmp/casting-out-nines.dart:31:111: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    out = (((digits is String) ? digits.substring(d, (d as num) + 1) : (digits as List).sublist(d, (d as num) + 1)) as num) + (out as num);
+                                                                                                              ^
+/tmp/casting-out-nines.dart:31:125: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+    out = (((digits is String) ? digits.substring(d, (d as num) + 1) : (digits as List).sublist(d, (d as num) + 1)) as num) + (out as num);
+                                                                                                                            ^
+/tmp/casting-out-nines.dart:32:20: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    v = (v as num) / base;
+                   ^
+/tmp/casting-out-nines.dart:50:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    k = (k as num) + 1;
+                   ^
+/tmp/casting-out-nines.dart:80:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var tc = testCases[idx];
+                       ^
+/tmp/casting-out-nines.dart:81:76: Error: A value of type 'Object?' can't be assigned to a variable of type 'String'.
  - 'Object' is from 'dart:core'.
     print('\nTest case base = ' + tc['base'].toString() + ', begin = ' + tc['begin'] + ', end = ' + tc['end'] + ':');
                                                                            ^
-/tmp/casting-out-nines.dart:65:103: Error: A value of type 'Object?' can't be assigned to a variable of type 'String'.
+/tmp/casting-out-nines.dart:81:103: Error: A value of type 'Object?' can't be assigned to a variable of type 'String'.
  - 'Object' is from 'dart:core'.
     print('\nTest case base = ' + tc['base'].toString() + ', begin = ' + tc['begin'] + ', end = ' + tc['end'] + ':');
                                                                                                       ^
-/tmp/casting-out-nines.dart:66:22: Error: The argument type 'Object?' can't be assigned to the parameter type 'int'.
+/tmp/casting-out-nines.dart:82:22: Error: The argument type 'Object?' can't be assigned to the parameter type 'int'.
  - 'Object' is from 'dart:core'.
     var s = subset(tc['base'], tc['begin'], tc['end']);
                      ^
-/tmp/casting-out-nines.dart:66:34: Error: The argument type 'Object?' can't be assigned to the parameter type 'String'.
+/tmp/casting-out-nines.dart:82:34: Error: The argument type 'Object?' can't be assigned to the parameter type 'String'.
  - 'Object' is from 'dart:core'.
     var s = subset(tc['base'], tc['begin'], tc['end']);
                                  ^
-/tmp/casting-out-nines.dart:66:47: Error: The argument type 'Object?' can't be assigned to the parameter type 'String'.
+/tmp/casting-out-nines.dart:82:47: Error: The argument type 'Object?' can't be assigned to the parameter type 'String'.
  - 'Object' is from 'dart:core'.
     var s = subset(tc['base'], tc['begin'], tc['end']);
                                               ^
-/tmp/casting-out-nines.dart:72:31: Error: The getter 'length' isn't defined for the class 'Object?'.
+/tmp/casting-out-nines.dart:88:40: Error: The getter 'length' isn't defined for the class 'Object?'.
  - 'Object' is from 'dart:core'.
 Try correcting the name to the name of an existing getter, or defining a getter or field named 'length'.
-    while (i < tc['kaprekar'].length) {
-                              ^^^^^^
-/tmp/casting-out-nines.dart:73:29: Error: The operator '[]' isn't defined for the class 'Object?'.
+    while ((i as num) < tc['kaprekar'].length) {
+                                       ^^^^^^
+/tmp/casting-out-nines.dart:89:29: Error: The operator '[]' isn't defined for the class 'Object?'.
  - 'Object' is from 'dart:core'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
       var k = tc['kaprekar'][i];
                             ^
+/tmp/casting-out-nines.dart:92:15: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        if (s[sx] == k) {
+              ^

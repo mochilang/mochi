@@ -1,16 +1,16 @@
 run: exit status 254
-/tmp/accumulator-factory.dart:5:22: Error: Type 'any' not found.
+/tmp/accumulator-factory.dart:2:22: Error: Type 'any' not found.
 Function accumulator(any sum) {
                      ^^^
-/tmp/accumulator-factory.dart:5:22: Error: 'any' isn't a type.
+/tmp/accumulator-factory.dart:2:22: Error: 'any' isn't a type.
 Function accumulator(any sum) {
                      ^^^
-/tmp/accumulator-factory.dart:6:8: Error: 'any' isn't a type.
+/tmp/accumulator-factory.dart:3:8: Error: 'any' isn't a type.
   List<any> store = [sum];
        ^^^
-/tmp/accumulator-factory.dart:7:3: Error: 'any' isn't a type.
+/tmp/accumulator-factory.dart:4:3: Error: 'any' isn't a type.
   any add(any nv) {
   ^^^
-/tmp/accumulator-factory.dart:7:11: Error: 'any' isn't a type.
+/tmp/accumulator-factory.dart:4:11: Error: 'any' isn't a type.
   any add(any nv) {
           ^^^

@@ -1,14 +1,35 @@
 run: exit status 254
-/tmp/brazilian-numbers.dart:7:21: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-  n = (int.parse((n / b)) as int);
-                    ^
-/tmp/brazilian-numbers.dart:12:23: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-    n = (int.parse((n / b)) as int);
-                      ^
-/tmp/brazilian-numbers.dart:99:46: Error: A value of type 'int' can't be assigned to a variable of type 'String'.
-  print('The 100,000th Brazilian number: ' + n - 1.toString());
-                                             ^
-/tmp/brazilian-numbers.dart:99:48: Error: The operator '-' isn't defined for the class 'String'.
+/tmp/brazilian-numbers.dart:4:20: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+  n = int.parse((n ~/ b));
+                   ^
+/tmp/brazilian-numbers.dart:9:22: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+    n = int.parse((n ~/ b));
+                     ^
+/tmp/brazilian-numbers.dart:26:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    b = (b as num) + 1;
+                   ^
+/tmp/brazilian-numbers.dart:46:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    d = (d as num) + 2;
+                   ^
+/tmp/brazilian-numbers.dart:50:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    d = (d as num) + 4;
+                   ^
+/tmp/brazilian-numbers.dart:72:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        n = (n as num) + 1;
+                       ^
+/tmp/brazilian-numbers.dart:76:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        n = (n as num) + 2;
+                       ^
+/tmp/brazilian-numbers.dart:80:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+          n = (n as num) + 2;
+                         ^
+/tmp/brazilian-numbers.dart:94:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = (n as num) + 1;
+                   ^
+/tmp/brazilian-numbers.dart:96:49: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+  print('The 100,000th Brazilian number: ' + (n as num) - 1.toString());
+                                                ^
+/tmp/brazilian-numbers.dart:96:57: Error: The operator '-' isn't defined for the class 'String'.
 Try correcting the operator to an existing operator, or defining a '-' operator.
-  print('The 100,000th Brazilian number: ' + n - 1.toString());
-                                               ^
+  print('The 100,000th Brazilian number: ' + (n as num) - 1.toString());
+                                                        ^

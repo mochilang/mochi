@@ -1,8 +1,73 @@
 run: exit status 254
-/tmp/burrows-wheeler-transform.dart:39:13: Error: Type 'any' not found.
+/tmp/burrows-wheeler-transform.dart:36:13: Error: Type 'any' not found.
 Map<String, any> bwt(String s) {
             ^^^
-/tmp/burrows-wheeler-transform.dart:27:18: Error: The operator '>' isn't defined for the class 'String'.
-Try correcting the operator to an existing operator, or defining a '>' operator.
-      if (arr[j] > arr[j + 1]) {
-                 ^
+/tmp/burrows-wheeler-transform.dart:9:32: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    if (s.toString().substring(i, (i as num) + 1) == ch) {
+                               ^
+/tmp/burrows-wheeler-transform.dart:9:46: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    if (s.toString().substring(i, (i as num) + 1) == ch) {
+                                             ^
+/tmp/burrows-wheeler-transform.dart:24:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      if ((arr[j] as num) > (arr[(j as num) + 1] as num)) {
+               ^
+/tmp/burrows-wheeler-transform.dart:24:45: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      if ((arr[j] as num) > (arr[(j as num) + 1] as num)) {
+                                            ^
+/tmp/burrows-wheeler-transform.dart:25:23: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        var tmp = arr[j];
+                      ^
+/tmp/burrows-wheeler-transform.dart:26:13: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        arr[j] = arr[(j as num) + 1];
+            ^
+/tmp/burrows-wheeler-transform.dart:26:33: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        arr[j] = arr[(j as num) + 1];
+                                ^
+/tmp/burrows-wheeler-transform.dart:27:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        arr[(j as num) + 1] = tmp;
+                       ^
+/tmp/burrows-wheeler-transform.dart:45:38: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var rot = s.toString().substring(i, le) + s.toString().substring(0, i);
+                                     ^
+/tmp/burrows-wheeler-transform.dart:45:73: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var rot = s.toString().substring(i, le) + s.toString().substring(0, i);
+                                                                        ^
+/tmp/burrows-wheeler-transform.dart:53:25: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    last = last + table[i].toString().substring((le as num) - 1, le);
+                        ^
+/tmp/burrows-wheeler-transform.dart:53:61: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    last = last + table[i].toString().substring((le as num) - 1, le);
+                                                            ^
+/tmp/burrows-wheeler-transform.dart:71:13: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      table[i] = r.toString().substring(i, (i as num) + 1) + table[i];
+            ^
+/tmp/burrows-wheeler-transform.dart:71:41: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+      table[i] = r.toString().substring(i, (i as num) + 1) + table[i];
+                                        ^
+/tmp/burrows-wheeler-transform.dart:71:55: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+      table[i] = r.toString().substring(i, (i as num) + 1) + table[i];
+                                                      ^
+/tmp/burrows-wheeler-transform.dart:71:68: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      table[i] = r.toString().substring(i, (i as num) + 1) + table[i];
+                                                                   ^
+/tmp/burrows-wheeler-transform.dart:79:15: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    if (table[i].toString().substring((le as num) - 1, le) == etx) {
+              ^
+/tmp/burrows-wheeler-transform.dart:79:51: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    if (table[i].toString().substring((le as num) - 1, le) == etx) {
+                                                  ^
+/tmp/burrows-wheeler-transform.dart:80:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      return table[i].toString().substring(1, (le as num) - 1);
+                   ^
+/tmp/burrows-wheeler-transform.dart:80:59: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+      return table[i].toString().substring(1, (le as num) - 1);
+                                                          ^
+/tmp/burrows-wheeler-transform.dart:91:37: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var ch = s.toString().substring(i, (i as num) + 1);
+                                    ^
+/tmp/burrows-wheeler-transform.dart:91:51: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var ch = s.toString().substring(i, (i as num) + 1);
+                                                  ^
+/tmp/burrows-wheeler-transform.dart:100:26: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+      out = (out as num) + (ch as num);
+                         ^

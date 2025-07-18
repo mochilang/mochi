@@ -1,0 +1,52 @@
+run: exit status 254
+/tmp/cholesky-decomposition.dart:30:19: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var sum = a[i][j];
+                  ^
+/tmp/cholesky-decomposition.dart:30:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var sum = a[i][j];
+                     ^
+/tmp/cholesky-decomposition.dart:33:34: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        sum = (sum as num) - ((l[i][k] as num) * (l[j][k] as num) as num);
+                                 ^
+/tmp/cholesky-decomposition.dart:33:37: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        sum = (sum as num) - ((l[i][k] as num) * (l[j][k] as num) as num);
+                                    ^
+/tmp/cholesky-decomposition.dart:33:53: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        sum = (sum as num) - ((l[i][k] as num) * (l[j][k] as num) as num);
+                                                    ^
+/tmp/cholesky-decomposition.dart:33:56: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        sum = (sum as num) - ((l[i][k] as num) * (l[j][k] as num) as num);
+                                                       ^
+/tmp/cholesky-decomposition.dart:33:28: Error: A value of type 'num' can't be assigned to a variable of type 'double'.
+        sum = (sum as num) - ((l[i][k] as num) * (l[j][k] as num) as num);
+                           ^
+/tmp/cholesky-decomposition.dart:37:11: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        l[i][j] = sqrtApprox(sum);
+          ^
+/tmp/cholesky-decomposition.dart:37:14: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        l[i][j] = sqrtApprox(sum);
+             ^
+/tmp/cholesky-decomposition.dart:40:11: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        l[i][j] = (sum as num) / (l[j][j] as num);
+          ^
+/tmp/cholesky-decomposition.dart:40:14: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        l[i][j] = (sum as num) / (l[j][j] as num);
+             ^
+/tmp/cholesky-decomposition.dart:40:37: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        l[i][j] = (sum as num) / (l[j][j] as num);
+                                    ^
+/tmp/cholesky-decomposition.dart:40:40: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        l[i][j] = (sum as num) / (l[j][j] as num);
+                                       ^
+/tmp/cholesky-decomposition.dart:54:27: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    while ((j as num) < m[i].length) {
+                          ^
+/tmp/cholesky-decomposition.dart:55:23: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      line = line + m[i][j].toString();
+                      ^
+/tmp/cholesky-decomposition.dart:55:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      line = line + m[i][j].toString();
+                         ^
+/tmp/cholesky-decomposition.dart:56:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      if ((j as num) < m[i].length - 1) {
+                         ^

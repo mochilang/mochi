@@ -1,4 +1,28 @@
 run: exit status 254
-/tmp/abbreviations-automatic.dart:42:28: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    count = (count as num) + 1;
-                           ^
+/tmp/abbreviations-automatic.dart:13:37: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var ch = s.toString().substring(i, (i as num) + 1);
+                                    ^
+/tmp/abbreviations-automatic.dart:13:51: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var ch = s.toString().substring(i, (i as num) + 1);
+                                                  ^
+/tmp/abbreviations-automatic.dart:21:26: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+      cur = (cur as num) + (ch as num);
+                         ^
+/tmp/abbreviations-automatic.dart:36:40: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+      return s.toString().substring(0, idx);
+                                       ^
+/tmp/abbreviations-automatic.dart:49:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var x = xs[i];
+               ^
+/tmp/abbreviations-automatic.dart:66:53: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      abbrs = List.from(abbrs)..add(takeRunes(words[i], l));
+                                                    ^
+/tmp/abbreviations-automatic.dart:72:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    l = (l as num) + 1;
+                   ^
+/tmp/abbreviations-automatic.dart:188:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var words = fields(lines[i]);
+                             ^
+/tmp/abbreviations-automatic.dart:190:34: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    print(pad2(l) + '  ' + lines[i]);
+                                 ^
