@@ -1936,11 +1936,16 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			case types.BoolType:
 				return fmt.Sprintf("console.log(%s ? 'True' : 'False')", args[0]), nil
 			case types.ListType:
-				return fmt.Sprintf("console.log(%s.join(' '))", args[0]), nil
+				c.use("_fmt")
+				c.use("_fmtList")
+				return fmt.Sprintf("console.log(_fmtList(%s))", args[0]), nil
 			case types.FloatType:
 				return fmt.Sprintf("console.log((%s).toFixed(1))", args[0]), nil
 			default:
-				return fmt.Sprintf("console.log(%s)", args[0]), nil
+				c.use("_fmt")
+				c.use("_fmtList")
+				tmpl := "Array.isArray(%[1]s) ? _fmtList(%[1]s) : (typeof %[1]s === 'object' ? _fmt(%[1]s) : String(%[1]s))"
+				return fmt.Sprintf("console.log(%s)", fmt.Sprintf(tmpl, args[0])), nil
 			}
 		}
 		parts := make([]string, len(args))
@@ -1950,11 +1955,15 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			case types.BoolType:
 				parts[i] = fmt.Sprintf("(%s ? 'True' : 'False')", a)
 			case types.ListType:
-				parts[i] = fmt.Sprintf("%s.join(' ')", a)
+				c.use("_fmt")
+				c.use("_fmtList")
+				parts[i] = fmt.Sprintf("_fmtList(%s)", a)
 			case types.FloatType:
 				parts[i] = fmt.Sprintf("(%s).toFixed(1)", a)
 			default:
-				parts[i] = fmt.Sprintf("String(%s)", a)
+				c.use("_fmt")
+				c.use("_fmtList")
+				parts[i] = fmt.Sprintf("(Array.isArray(%[1]s) ? _fmtList(%[1]s) : (typeof %[1]s === 'object' ? _fmt(%[1]s) : String(%[1]s)))", a)
 			}
 		}
 		return fmt.Sprintf("console.log(%s)", strings.Join(parts, " + ' ' + ")), nil

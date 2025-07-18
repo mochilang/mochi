@@ -101,6 +101,13 @@ const (
 		"  return String(v);\n" +
 		"}\n"
 
+	helperFmtList = "function _fmtList(v: any[]): string {\n" +
+		"  if (v.some(it => Array.isArray(it) || (it && typeof it === 'object'))) {\n" +
+		"    return v.map(it => Array.isArray(it) ? '[' + _fmtList(it) + ']' : _fmt(it)).join(' ');\n" +
+		"  }\n" +
+		"  return v.join(' ');\n" +
+		"}\n"
+
 	helperMin = "function _min(v: unknown): unknown {\n" +
 		"  let list: any[] | null = null;\n" +
 		"  if (Array.isArray(v)) list = v;\n" +
@@ -580,6 +587,7 @@ var helperMap = map[string]string{
 	"_dataset":     helperDataset,
 	"_json":        helperJSON,
 	"_fmt":         helperFmt,
+	"_fmtList":     helperFmtList,
 }
 
 func (c *Compiler) use(name string) {

@@ -256,6 +256,10 @@ func isStruct(t types.Type) bool {
 	}
 }
 
+func isAggregate(t types.Type) bool {
+	return isList(t) || isMap(t) || isStruct(t)
+}
+
 func isPrimitive(t types.Type) bool {
 	switch tt := t.(type) {
 	case types.IntType, types.Int64Type, types.FloatType,
