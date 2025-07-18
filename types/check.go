@@ -1377,7 +1377,9 @@ func applyBinaryType(pos lexer.Position, op string, left, right Type) (Type, err
 		switch {
 		case isNumeric(left) && isNumeric(right):
 			if op == "/" && unify(left, IntType{}, nil) && unify(right, IntType{}, nil) {
-				return FloatType{}, nil
+				// Integer division results in an int when both
+				// operands are integers.
+				return IntType{}, nil
 			}
 			if unify(left, FloatType{}, nil) || unify(right, FloatType{}, nil) {
 				return FloatType{}, nil

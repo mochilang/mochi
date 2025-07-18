@@ -14,6 +14,9 @@ import (
 var reservedNames = map[string]struct{}{
 	"shuffle": {},
 	"this":    {},
+	// Built-in PHP functions that would cause conflicts
+	"ord": {},
+	"chr": {},
 }
 
 func sanitizeName(name string) string {
