@@ -294,7 +294,19 @@ func (c *Compiler) isListExpr(e *parser.Expr) bool {
 	}
 	if c.env != nil {
 		if _, ok := c.inferExprType(e).(types.ListType); ok {
-			return true
+			if len(e.Binary.Right) == 0 {
+				u := e.Binary.Left
+				hasIndex := false
+				for _, op := range u.Value.Ops {
+					if op.Index != nil && op.Index.Colon == nil {
+						hasIndex = true
+						break
+					}
+				}
+				if !hasIndex {
+					return true
+				}
+			}
 		}
 	}
 	if len(e.Binary.Right) == 0 {
