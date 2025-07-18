@@ -162,9 +162,15 @@ const (
 		"  throw new Error('values() expects map');\n" +
 		"}\n"
 
-	helperInput = "function _input(): string {\n" +
-		"  const v = prompt('');\n" +
-		"  return v === null ? '' : v;\n" +
+	helperInput = "let _inputData: string[] | null = null;\n" +
+		"function _input(): string {\n" +
+		"  if (_inputData === null) {\n" +
+		"    const fs = require('fs');\n" +
+		"    const d = fs.readFileSync(0, 'utf8');\n" +
+		"    _inputData = d.split(/\\r?\\n/);\n" +
+		"  }\n" +
+		"  const v = _inputData.shift();\n" +
+		"  return v === undefined ? '' : v;\n" +
 		"}\n"
 
 	helperIter = "function _iter<T>(v: Iterable<T> | { [key: string]: T } | unknown): Iterable<T | string> {\n" +
@@ -174,9 +180,9 @@ const (
 		"  return v as Iterable<T>;\n" +
 		"}\n"
 
-       helperNow = "var _nowSeed = 0;\n" +
-               "var _nowSeeded = false;\n" +
-		"{ const s = Deno.env.get('MOCHI_NOW_SEED');\n" +
+	helperNow = "var _nowSeed = 0;\n" +
+		"var _nowSeeded = false;\n" +
+		"{ const s = typeof Deno !== 'undefined' ? Deno.env.get('MOCHI_NOW_SEED') : (process.env.MOCHI_NOW_SEED || '');\n" +
 		"  if (s) { const v = parseInt(s, 10);\n" +
 		"    if (!isNaN(v)) { _nowSeed = v; _nowSeeded = true; } } }\n" +
 		"function _now(): number {\n" +
@@ -184,7 +190,7 @@ const (
 		"    _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647;\n" +
 		"    return _nowSeed;\n" +
 		"  }\n" +
-		"  return performance.now() * 1000000;\n" +
+		"  return Date.now() * 1000;\n" +
 		"}\n"
 
 	helperGenText = "function _gen_text(prompt: string, model: string | null, params: unknown | null): string {\n" +
