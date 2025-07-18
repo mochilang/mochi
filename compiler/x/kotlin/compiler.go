@@ -1710,34 +1710,45 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	if q.Sort != nil && q.Group == nil && len(q.Froms) == 0 && len(q.Joins) == 0 {
 		sortEnv := types.NewEnv(c.env)
 		sortEnv.SetVar(q.Var, elem, true)
-		oldSort := c.env
-		c.env = sortEnv
-		sortExpr, err := c.expr(q.Sort)
-		c.env = oldSort
-		if err != nil {
-			return "", err
+		if ml, ok := mapLiteral(q.Sort); ok {
+			cmp, err := c.mapSortComparator(elem, ml, sortEnv, q.Var)
+			if err != nil {
+				return "", err
+			}
+			b.WriteString(indent(lvl))
+			b.WriteString(fmt.Sprintf("val __sorted = %s.%s\n", src, cmp))
+			sortedSrc = "__sorted"
+			preSorted = true
+		} else {
+			oldSort := c.env
+			c.env = sortEnv
+			sortExpr, err := c.expr(q.Sort)
+			c.env = oldSort
+			if err != nil {
+				return "", err
+			}
+			sortExpr = replaceIdent(sortExpr, q.Var, "it")
+			cast := ""
+			switch types.TypeOfExprBasic(q.Sort, sortEnv).(type) {
+			case types.IntType:
+				cast = " as Int"
+			case types.FloatType:
+				cast = " as Double"
+			case types.StringType:
+				cast = " as String"
+			default:
+				cast = " as Comparable<Any>"
+			}
+			method := ".sortedBy"
+			if strings.HasPrefix(sortExpr, "-") {
+				sortExpr = strings.TrimPrefix(sortExpr, "-")
+				method = ".sortedByDescending"
+			}
+			b.WriteString(indent(lvl))
+			b.WriteString(fmt.Sprintf("val __sorted = %s%s { %s%s }\n", src, method, sortExpr, cast))
+			sortedSrc = "__sorted"
+			preSorted = true
 		}
-		sortExpr = replaceIdent(sortExpr, q.Var, "it")
-		cast := ""
-		switch types.TypeOfExprBasic(q.Sort, sortEnv).(type) {
-		case types.IntType:
-			cast = " as Int"
-		case types.FloatType:
-			cast = " as Double"
-		case types.StringType:
-			cast = " as String"
-		default:
-			cast = " as Comparable<Any>"
-		}
-		method := ".sortedBy"
-		if strings.HasPrefix(sortExpr, "-") {
-			sortExpr = strings.TrimPrefix(sortExpr, "-")
-			method = ".sortedByDescending"
-		}
-		b.WriteString(indent(lvl))
-		b.WriteString(fmt.Sprintf("val __sorted = %s%s { %s%s }\n", src, method, sortExpr, cast))
-		sortedSrc = "__sorted"
-		preSorted = true
 	}
 
 	if ml, ok := mapLiteral(q.Select); ok && q.Group == nil {
@@ -2050,21 +2061,29 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		for _, v := range vars {
 			sortExpr = replaceIdent(sortExpr, v, "it")
 		}
-		switch types.TypeOfExprBasic(q.Sort, sortEnv).(type) {
-		case types.IntType:
-			sortExpr += " as Int"
-		case types.FloatType:
-			sortExpr += " as Double"
-		case types.StringType:
-			sortExpr += " as String"
-		default:
-			sortExpr += " as Comparable<Any>"
-		}
-		if strings.HasPrefix(sortExpr, "-") {
-			sortExpr = strings.TrimPrefix(sortExpr, "-")
-			res += fmt.Sprintf(".sortedByDescending { %s }", sortExpr)
+		if ml, ok := mapLiteral(q.Sort); ok {
+			cmp, err := c.mapSortComparator(elem, ml, sortEnv, q.Var)
+			if err != nil {
+				return "", err
+			}
+			res += fmt.Sprintf(".%s", cmp)
 		} else {
-			res += fmt.Sprintf(".sortedBy { %s }", sortExpr)
+			switch types.TypeOfExprBasic(q.Sort, sortEnv).(type) {
+			case types.IntType:
+				sortExpr += " as Int"
+			case types.FloatType:
+				sortExpr += " as Double"
+			case types.StringType:
+				sortExpr += " as String"
+			default:
+				sortExpr += " as Comparable<Any>"
+			}
+			if strings.HasPrefix(sortExpr, "-") {
+				sortExpr = strings.TrimPrefix(sortExpr, "-")
+				res += fmt.Sprintf(".sortedByDescending { %s }", sortExpr)
+			} else {
+				res += fmt.Sprintf(".sortedBy { %s }", sortExpr)
+			}
 		}
 	}
 	if q.Skip != nil {
@@ -2683,6 +2702,27 @@ func (c *Compiler) structForMap(m *parser.MapLiteral) (string, bool) {
 		}
 	}
 	return "", false
+}
+
+func (c *Compiler) mapSortComparator(elem types.Type, ml *parser.MapLiteral, env *types.Env, varName string) (string, error) {
+	old := c.env
+	c.env = env
+	parts := make([]string, len(ml.Items))
+	for i, it := range ml.Items {
+		expr, err := c.expr(it.Value)
+		if err != nil {
+			c.env = old
+			return "", err
+		}
+		expr = replaceIdent(expr, varName, "it")
+		if i == 0 {
+			parts[i] = fmt.Sprintf("compareBy<%s> { %s }", kotlinTypeOf(elem), expr)
+		} else {
+			parts[i] = fmt.Sprintf(".thenBy { %s }", expr)
+		}
+	}
+	c.env = old
+	return fmt.Sprintf("sortedWith(%s)", strings.Join(parts, "")), nil
 }
 
 func aggregateCallName(e *parser.Expr) (string, *parser.Expr, bool) {
