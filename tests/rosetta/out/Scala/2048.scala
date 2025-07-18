@@ -27,7 +27,7 @@ object _2048 {
     while (y < SIZE) {
       var x = 0
       while (x < SIZE) {
-        if (((b).apply(y)).apply(x) == 0) {
+        if (((b).apply(y).asInstanceOf[List[Int]]).apply(x).asInstanceOf[Int] == 0) {
           empty = empty :+ List(x, y)
         }
         x += 1
@@ -38,13 +38,13 @@ object _2048 {
       return Auto1(board = b, full = true)
     }
     var idx = now() % empty.length
-    val cell = (empty).apply(idx)
-    var val = 4
+    val cell = (empty).apply(idx).asInstanceOf[List[Int]]
+    var `val` = 4
     if ((now() % 10).asInstanceOf[Int] < 9) {
-      val = 2
+      `val` = 2
     }
-    val _tmp0 = b((cell).apply(1)).updated((cell).apply(0), val)
-    b = b.updated((cell).apply(1), _tmp0)
+    val _tmp0 = b((cell).apply(1).asInstanceOf[Int]).updated((cell).apply(0).asInstanceOf[Int], `val`)
+    b = b.updated((cell).apply(1).asInstanceOf[Int], _tmp0)
     return Auto1(board = b, full = empty.length == 1)
   }
   
@@ -68,7 +68,7 @@ object _2048 {
       var line = "|"
       var x = 0
       while (x < SIZE) {
-        var v = ((b).apply(y)).apply(x)
+        var v = ((b).apply(y).asInstanceOf[List[Int]]).apply(x).asInstanceOf[Int]
         if (v == 0) {
           line += "    |"
         } else {
@@ -87,7 +87,7 @@ object _2048 {
     var out: List[Int] = scala.collection.mutable.ArrayBuffer[Int]()
     var i = r.length - 1
     while (i >= 0) {
-      out = out :+ (r).apply(i)
+      out = out :+ (r).apply(i).asInstanceOf[Int]
       i -= 1
     }
     return out
@@ -97,8 +97,8 @@ object _2048 {
     var xs: List[Int] = scala.collection.mutable.ArrayBuffer[Int]()
     var i = 0
     while (i < row.length) {
-      if ((row).apply(i) != 0) {
-        xs = xs :+ (row).apply(i)
+      if ((row).apply(i).asInstanceOf[Int] != 0) {
+        xs = xs :+ (row).apply(i).asInstanceOf[Int]
       }
       i += 1
     }
@@ -106,13 +106,13 @@ object _2048 {
     var gain = 0
     i = 0
     while (i < xs.length) {
-      if (i + 1 < xs.length && (xs).apply(i) == (xs).apply(i + 1)) {
-        val v = (xs).apply(i) * 2
+      if (i + 1 < xs.length && (xs).apply(i).asInstanceOf[Int] == (xs).apply(i + 1).asInstanceOf[Int]) {
+        val v = (xs).apply(i).asInstanceOf[Int] * 2
         gain += v
         res = res :+ v
         i += 2
       } else {
-        res = res :+ (xs).apply(i)
+        res = res :+ (xs).apply(i).asInstanceOf[Int]
         i += 1
       }
     }
@@ -126,15 +126,15 @@ object _2048 {
     var moved = false
     var y = 0
     while (y < SIZE) {
-      val r = slideLeft((b).apply(y))
-      val new = (r).apply("row")
+      val r = slideLeft((b).apply(y).asInstanceOf[List[Int]])
+      val `new` = (r).apply("row")
       score += (r).apply("gain")
       var x = 0
       while (x < SIZE) {
-        if (((b).apply(y)).apply(x) != ((new).apply(x)).asInstanceOf[Int]) {
+        if (((b).apply(y).asInstanceOf[List[Int]]).apply(x).asInstanceOf[Int] != ((`new`).apply(x)).asInstanceOf[Int]) {
           moved = true
         }
-        val _tmp1 = b(y).updated(x, (new).apply(x))
+        val _tmp1 = b(y).updated(x, (`new`).apply(x))
         b = b.updated(y, _tmp1)
         x += 1
       }
@@ -147,17 +147,17 @@ object _2048 {
     var moved = false
     var y = 0
     while (y < SIZE) {
-      var rev = reverseRow((b).apply(y))
+      var rev = reverseRow((b).apply(y).asInstanceOf[List[Int]])
       val r = slideLeft(rev)
       rev = (r).apply("row")
       score += (r).apply("gain")
       rev = reverseRow(rev)
       var x = 0
       while (x < SIZE) {
-        if (((b).apply(y)).apply(x) != (rev).apply(x)) {
+        if (((b).apply(y).asInstanceOf[List[Int]]).apply(x).asInstanceOf[Int] != (rev).apply(x).asInstanceOf[Int]) {
           moved = true
         }
-        val _tmp2 = b(y).updated(x, (rev).apply(x))
+        val _tmp2 = b(y).updated(x, (rev).apply(x).asInstanceOf[Int])
         b = b.updated(y, _tmp2)
         x += 1
       }
@@ -170,7 +170,7 @@ object _2048 {
     var col: List[Int] = scala.collection.mutable.ArrayBuffer[Int]()
     var y = 0
     while (y < SIZE) {
-      col = col :+ ((b).apply(y)).apply(x)
+      col = col :+ ((b).apply(y).asInstanceOf[List[Int]]).apply(x).asInstanceOf[Int]
       y += 1
     }
     return col
@@ -179,7 +179,7 @@ object _2048 {
   def setCol(b: List[List[Int]], x: Int, col: List[Int]) = {
     var y = 0
     while (y < SIZE) {
-      val _tmp3 = b(y).updated(x, (col).apply(y))
+      val _tmp3 = b(y).updated(x, (col).apply(y).asInstanceOf[Int])
       b = b.updated(y, _tmp3)
       y += 1
     }
@@ -191,14 +191,14 @@ object _2048 {
     while (x < SIZE) {
       var col = getCol(b, x)
       val r = slideLeft(col)
-      val new = (r).apply("row")
+      val `new` = (r).apply("row")
       score += (r).apply("gain")
       var y = 0
       while (y < SIZE) {
-        if (((b).apply(y)).apply(x) != ((new).apply(y)).asInstanceOf[Int]) {
+        if (((b).apply(y).asInstanceOf[List[Int]]).apply(x).asInstanceOf[Int] != ((`new`).apply(y)).asInstanceOf[Int]) {
           moved = true
         }
-        val _tmp4 = b(y).updated(x, (new).apply(y))
+        val _tmp4 = b(y).updated(x, (`new`).apply(y))
         b = b.updated(y, _tmp4)
         y += 1
       }
@@ -218,10 +218,10 @@ object _2048 {
       col = reverseRow(col)
       var y = 0
       while (y < SIZE) {
-        if (((b).apply(y)).apply(x) != (col).apply(y)) {
+        if (((b).apply(y).asInstanceOf[List[Int]]).apply(x).asInstanceOf[Int] != (col).apply(y).asInstanceOf[Int]) {
           moved = true
         }
-        val _tmp5 = b(y).updated(x, (col).apply(y))
+        val _tmp5 = b(y).updated(x, (col).apply(y).asInstanceOf[Int])
         b = b.updated(y, _tmp5)
         y += 1
       }
@@ -235,13 +235,13 @@ object _2048 {
     while (y < SIZE) {
       var x = 0
       while (x < SIZE) {
-        if (((b).apply(y)).apply(x) == 0) {
+        if (((b).apply(y).asInstanceOf[List[Int]]).apply(x).asInstanceOf[Int] == 0) {
           return true
         }
-        if (x + 1 < SIZE && ((b).apply(y)).apply(x) == ((b).apply(y)).apply(x + 1)) {
+        if (x + 1 < SIZE && ((b).apply(y).asInstanceOf[List[Int]]).apply(x).asInstanceOf[Int] == ((b).apply(y).asInstanceOf[List[Int]]).apply(x + 1).asInstanceOf[Int]) {
           return true
         }
-        if (y + 1 < SIZE && ((b).apply(y)).apply(x) == ((b).apply(y + 1)).apply(x)) {
+        if (y + 1 < SIZE && ((b).apply(y).asInstanceOf[List[Int]]).apply(x).asInstanceOf[Int] == ((b).apply(y + 1).asInstanceOf[List[Int]]).apply(x).asInstanceOf[Int]) {
           return true
         }
         x += 1
@@ -256,7 +256,7 @@ object _2048 {
     while (y < SIZE) {
       var x = 0
       while (x < SIZE) {
-        if (((b).apply(y)).apply(x) >= 2048) {
+        if (((b).apply(y).asInstanceOf[List[Int]]).apply(x).asInstanceOf[Int] >= 2048) {
           return true
         }
         x += 1

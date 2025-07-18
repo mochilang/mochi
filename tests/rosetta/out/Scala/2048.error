@@ -1,44 +1,98 @@
 scalac: exit status 1
-/tmp/2048.scala:42: error: illegal start of simple pattern
-    var val = 4
-        ^
-/tmp/2048.scala:43: error: '=' expected but ';' found.
+/tmp/2048.scala:9: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[List[Int]]
+ required: List[List[Int]]
+    var b: List[List[Int]] = scala.collection.mutable.ArrayBuffer[List[Int]]()
+                                                                            ^
+/tmp/2048.scala:12: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+      var row: List[Int] = scala.collection.mutable.ArrayBuffer[Int]()
+                                                                    ^
+/tmp/2048.scala:24: error: not found: type any
+  def spawnTile(b: List[List[Int]]): Map[String, any] = {
+                                                 ^
+/tmp/2048.scala:25: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[List[Int]]
+ required: List[List[Int]]
+    var empty: List[List[Int]] = scala.collection.mutable.ArrayBuffer[List[Int]]()
+                                                                                ^
+/tmp/2048.scala:40: error: not found: value now
+    var idx = now() % empty.length
+              ^
+/tmp/2048.scala:43: error: not found: value now
     if ((now() % 10).asInstanceOf[Int] < 9) {
-^
-/tmp/2048.scala:44: error: illegal start of simple pattern
-      val = 2
-          ^
-/tmp/2048.scala:45: error: '=' expected but '}' found.
-    }
-    ^
-/tmp/2048.scala:46: error: illegal start of simple expression
-    val _tmp0 = b((cell).apply(1)).updated((cell).apply(0), val)
+         ^
+/tmp/2048.scala:47: error: reassignment to val
+    b = b.updated((cell).apply(1).asInstanceOf[Int], _tmp0)
+      ^
+/tmp/2048.scala:87: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    var out: List[Int] = scala.collection.mutable.ArrayBuffer[Int]()
+                                                                  ^
+/tmp/2048.scala:96: error: not found: type any
+  def slideLeft(row: List[Int]): Map[String, any] = {
+                                             ^
+/tmp/2048.scala:97: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    var xs: List[Int] = scala.collection.mutable.ArrayBuffer[Int]()
+                                                                 ^
+/tmp/2048.scala:105: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    var res: List[Int] = scala.collection.mutable.ArrayBuffer[Int]()
+                                                                  ^
+/tmp/2048.scala:125: error: not found: type any
+  def moveLeft(b: List[List[Int]], score: Int): Map[String, any] = {
                                                             ^
-/tmp/2048.scala:49: error: ')' expected but '}' found.
-  }
-  ^
-/tmp/2048.scala:130: error: illegal start of simple pattern
-      val new = (r).apply("row")
-          ^
-/tmp/2048.scala:131: error: '=' expected but ';' found.
+/tmp/2048.scala:131: error: value += is not a member of Int
+  Expression does not convert to assignment because receiver is not assignable.
       score += (r).apply("gain")
-^
-/tmp/2048.scala:134: error: identifier expected but ')' found.
-        if (((b).apply(y)).apply(x) != ((new).apply(x)).asInstanceOf[Int]) {
-                                            ^
-/tmp/2048.scala:140: error: ')' expected but '}' found.
-      }
-      ^
-/tmp/2048.scala:194: error: illegal start of simple pattern
-      val new = (r).apply("row")
+            ^
+/tmp/2048.scala:138: error: reassignment to val
+        b = b.updated(y, _tmp1)
           ^
-/tmp/2048.scala:195: error: '=' expected but ';' found.
+/tmp/2048.scala:146: error: not found: type any
+  def moveRight(b: List[List[Int]], score: Int): Map[String, any] = {
+                                                             ^
+/tmp/2048.scala:153: error: value += is not a member of Int
+  Expression does not convert to assignment because receiver is not assignable.
       score += (r).apply("gain")
-^
-/tmp/2048.scala:198: error: identifier expected but ')' found.
-        if (((b).apply(y)).apply(x) != ((new).apply(y)).asInstanceOf[Int]) {
-                                            ^
-/tmp/2048.scala:204: error: ')' expected but '}' found.
-      }
-      ^
-14 errors found
+            ^
+/tmp/2048.scala:161: error: reassignment to val
+        b = b.updated(y, _tmp2)
+          ^
+/tmp/2048.scala:170: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    var col: List[Int] = scala.collection.mutable.ArrayBuffer[Int]()
+                                                                  ^
+/tmp/2048.scala:183: error: reassignment to val
+      b = b.updated(y, _tmp3)
+        ^
+/tmp/2048.scala:188: error: not found: type any
+  def moveUp(b: List[List[Int]], score: Int): Map[String, any] = {
+                                                          ^
+/tmp/2048.scala:195: error: value += is not a member of Int
+  Expression does not convert to assignment because receiver is not assignable.
+      score += (r).apply("gain")
+            ^
+/tmp/2048.scala:202: error: reassignment to val
+        b = b.updated(y, _tmp4)
+          ^
+/tmp/2048.scala:210: error: not found: type any
+  def moveDown(b: List[List[Int]], score: Int): Map[String, any] = {
+                                                            ^
+/tmp/2048.scala:217: error: value += is not a member of Int
+  Expression does not convert to assignment because receiver is not assignable.
+      score += (r).apply("gain")
+            ^
+/tmp/2048.scala:225: error: reassignment to val
+        b = b.updated(y, _tmp5)
+          ^
+/tmp/2048.scala:281: error: not found: value input
+      val cmd = input()
+                ^
+26 errors found
