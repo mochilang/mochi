@@ -2920,25 +2920,33 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				}
 			}
 			if st, ok := types.InferStructFromMapEnv(p.Map, c.env); ok {
-				if name, ok := c.findStructByFields(st); ok {
-					items := make([]string, len(p.Map.Items))
-					for i, it := range p.Map.Items {
-						field := ""
-						if n, ok := selectorName(it.Key); ok {
-							field = sanitizeName(n)
-						} else if s, ok := stringLiteral(it.Key); ok {
-							field = sanitizeName(s)
-						} else {
-							field = sanitizeName(fmt.Sprintf("f%d", i))
-						}
-						v, err := c.compileExpr(it.Value)
-						if err != nil {
-							return "", err
-						}
-						items[i] = fmt.Sprintf("%s = %s", field, v)
+				name, ok := c.findStructByFields(st)
+				if !ok {
+					base := c.structHint
+					if base == "" {
+						base = "Item"
 					}
-					return fmt.Sprintf("new %s { %s }", name, strings.Join(items, ", ")), nil
+					name = c.newStructName(base)
+					st.Name = name
+					c.extraStructs = append(c.extraStructs, st)
 				}
+				items := make([]string, len(p.Map.Items))
+				for i, it := range p.Map.Items {
+					field := ""
+					if n, ok := selectorName(it.Key); ok {
+						field = sanitizeName(n)
+					} else if s, ok := stringLiteral(it.Key); ok {
+						field = sanitizeName(s)
+					} else {
+						field = sanitizeName(fmt.Sprintf("f%d", i))
+					}
+					v, err := c.compileExpr(it.Value)
+					if err != nil {
+						return "", err
+					}
+					items[i] = fmt.Sprintf("%s = %s", field, v)
+				}
+				return fmt.Sprintf("new %s { %s }", name, strings.Join(items, ", ")), nil
 			}
 		}
 		t := c.inferPrimaryType(p)
