@@ -26,3 +26,5 @@ This directory holds Lua translations of the TPC-H benchmark queries generated b
 - [x] q20
 - [ ] q21
 - [ ] q22
+
+The golden tests were run with Lua 5.4. Queries `q1` through `q20` execute successfully and match the expected JSON output. Queries `q21` and `q22` still fail at runtime due to boolean comparison bugs and are tracked via `.error` files.
