@@ -338,7 +338,7 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 					}
 					skip[s] = true
 				} else {
-					vt := types.IntType{}
+					var vt types.Type = types.IntType{}
 					if s.Var.Type != nil {
 						vt = resolveTypeRef(s.Var.Type, c.env)
 					} else if c.env != nil {
@@ -352,7 +352,7 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 					skip[s] = true
 				}
 			} else {
-				vt := types.IntType{}
+				var vt types.Type = types.IntType{}
 				if s.Var.Type != nil {
 					vt = resolveTypeRef(s.Var.Type, c.env)
 				}
@@ -391,7 +391,7 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 					}
 					skip[s] = true
 				} else {
-					vt := types.IntType{}
+					var vt types.Type = types.IntType{}
 					if s.Let.Type != nil {
 						vt = resolveTypeRef(s.Let.Type, c.env)
 					} else if c.env != nil {
@@ -405,7 +405,7 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 					skip[s] = true
 				}
 			} else {
-				vt := types.IntType{}
+				var vt types.Type = types.IntType{}
 				if s.Let.Type != nil {
 					vt = resolveTypeRef(s.Let.Type, c.env)
 				}
@@ -5340,10 +5340,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					jsons := make([]string, len(p.List.Elems))
 					okJSON := true
 					for i, el := range p.List.Elems {
-						vals[i] = c.compileExpr(el)
-						if j, ok2 := jsonObjectLiteral(el.Binary.Left.Value.Target.Map); ok2 {
-							jsons[i] = j
+						m2 := asMapLiteral(el)
+						if m2 != nil {
+							vals[i] = c.structInitFromMap(st, m2)
+							if j, ok2 := jsonObjectLiteral(m2); ok2 {
+								jsons[i] = j
+							} else {
+								okJSON = false
+							}
 						} else {
+							vals[i] = c.compileExpr(el)
 							okJSON = false
 						}
 					}
@@ -5404,7 +5410,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					c.compileStructType(st)
 					vals := make([]string, len(p.List.Elems))
 					for i, el := range p.List.Elems {
-						vals[i] = c.compileExpr(el)
+						if m2 := asMapLiteral(el); m2 != nil {
+							vals[i] = c.structInitFromMap(st, m2)
+						} else {
+							vals[i] = c.compileExpr(el)
+						}
 					}
 					c.writeln(fmt.Sprintf("%s %s[] = {%s};", sanitizeTypeName(st.Name), name, strings.Join(vals, ", ")))
 					lenVar := name + "_len"
@@ -5423,7 +5433,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					c.compileStructType(st)
 					vals := make([]string, len(p.List.Elems))
 					for i, el := range p.List.Elems {
-						vals[i] = c.compileExpr(el)
+						if s2 := asStructLiteral(el); s2 != nil {
+							vals[i] = c.structInitFromStruct(st, s2)
+						} else {
+							vals[i] = c.compileExpr(el)
+						}
 					}
 					c.writeln(fmt.Sprintf("%s %s[] = {%s};", sanitizeTypeName(st.Name), name, strings.Join(vals, ", ")))
 					lenVar := name + "_len"
@@ -8095,4 +8109,37 @@ func jsonObjectLiteral(ml *parser.MapLiteral) (string, bool) {
 		}
 	}
 	return "{" + strings.Join(parts, ",") + "}", true
+}
+
+func (c *Compiler) structInitFromMap(st types.StructType, ml *parser.MapLiteral) string {
+	if ml == nil {
+		return "{}"
+	}
+	parts := make([]string, len(st.Order))
+	for i, fn := range st.Order {
+		for _, it := range ml.Items {
+			key, _ := types.SimpleStringKey(it.Key)
+			if key == fn {
+				parts[i] = c.compileExpr(it.Value)
+				break
+			}
+		}
+	}
+	return "{" + strings.Join(parts, ", ") + "}"
+}
+
+func (c *Compiler) structInitFromStruct(st types.StructType, sl *parser.StructLiteral) string {
+	if sl == nil {
+		return "{}"
+	}
+	parts := make([]string, len(st.Order))
+	for i, fn := range st.Order {
+		for _, f := range sl.Fields {
+			if f.Name == fn {
+				parts[i] = c.compileExpr(f.Value)
+				break
+			}
+		}
+	}
+	return "{" + strings.Join(parts, ", ") + "}"
 }
