@@ -1,0 +1,12 @@
+scalac: exit status 1
+/tmp/abundant-odd-numbers.scala:4: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    var divs: List[Int] = scala.collection.mutable.ArrayBuffer(1)
+                                                              ^
+/tmp/abundant-odd-numbers.scala:5: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    var divs2: List[Int] = scala.collection.mutable.ArrayBuffer[Int]()
+                                                                    ^
+two errors found

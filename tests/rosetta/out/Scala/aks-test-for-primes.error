@@ -1,0 +1,5 @@
+scalac: exit status 1
+/tmp/aks-test-for-primes.scala:21: error: value unary_- is not a member of String
+        s = s + " - " + -d.toString
+                        ^
+one error found

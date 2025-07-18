@@ -1,0 +1,27 @@
+scalac: exit status 1
+/tmp/animate-a-pendulum.scala:23: error: type mismatch;
+ found   : Double
+ required: Int
+      term = -term * x * x / denom
+                           ^
+/tmp/animate-a-pendulum.scala:51: error: type mismatch;
+ found   : Int
+ required: ?{def +(x$1: ? >: Double): ?}
+Note that implicit conversions are not applicable because they are ambiguous:
+ both method int2long in object Int of type (x: Int)Long
+ and method int2float in object Int of type (x: Int)Float
+ are possible conversion functions from Int to ?{def +(x$1: ? >: Double): ?}
+      t += dt
+      ^
+/tmp/animate-a-pendulum.scala:51: error: value += is not a member of Int
+  Expression does not convert to assignment because:
+    overloaded method value + with alternatives:
+      (x: Int)Int <and>
+      (x: Char)Int <and>
+      (x: Short)Int <and>
+      (x: Byte)Int
+     cannot be applied to (Double)
+    expansion: t = t.<$plus: error>(dt)
+      t += dt
+        ^
+three errors found

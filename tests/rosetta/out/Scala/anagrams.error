@@ -1,0 +1,42 @@
+scalac: exit status 1
+/tmp/anagrams.scala:4: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[String]
+ required: List[String]
+    var arr: List[String] = scala.collection.mutable.ArrayBuffer[String]()
+                                                                        ^
+/tmp/anagrams.scala:17: error: value update is not a member of List[String]
+          arr(j) = (arr).apply(j + 1)
+          ^
+/tmp/anagrams.scala:18: error: value update is not a member of List[String]
+          arr(j + 1) = tmp
+          ^
+/tmp/anagrams.scala:34: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[String]
+ required: List[String]
+    var res: List[String] = scala.collection.mutable.ArrayBuffer[String]()
+                                                                        ^
+/tmp/anagrams.scala:48: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[String]
+ required: List[String]
+      var out: List[String] = scala.collection.mutable.ArrayBuffer[String]()
+                                                                          ^
+/tmp/anagrams.scala:63: error: type mismatch;
+ found   : scala.collection.mutable.Map[String,List[String]]
+ required: scala.collection.immutable.Map[String,List[String]]
+    var groups: Map[String, List[String]] = scala.collection.mutable.Map[String, List[String]]()
+                                                                                              ^
+/tmp/anagrams.scala:68: error: value update is not a member of Map[String,List[String]]
+        groups(k) = List(w)
+        ^
+/tmp/anagrams.scala:70: error: value update is not a member of Map[String,List[String]]
+        groups(k) = (groups).apply(k) :+ w
+        ^
+/tmp/anagrams.scala:76: error: type mismatch;
+ found   : scala.collection.mutable.Map[String,Boolean]
+ required: scala.collection.immutable.Map[String,Boolean]
+    var printed: Map[String, Boolean] = scala.collection.mutable.Map[String, Boolean]()
+                                                                                     ^
+/tmp/anagrams.scala:90: error: value update is not a member of Map[String,Boolean]
+          printed(k) = true
+          ^
+10 errors found

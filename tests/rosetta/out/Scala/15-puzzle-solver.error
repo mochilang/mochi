@@ -1,0 +1,5 @@
+scalac: exit status 1
+/tmp/15-puzzle-solver.scala:10: error: value FifteenPuzzleExample is not a member of object testpkg
+    println(testpkg.FifteenPuzzleExample())
+                    ^
+one error found

@@ -1,0 +1,11 @@
+scalac: exit status 1
+/tmp/almost-prime.scala:12: error: value /= is not a member of Int
+  Expression does not convert to assignment because receiver is not assignable.
+        n /= i
+          ^
+/tmp/almost-prime.scala:20: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    var r: List[Int] = scala.collection.mutable.ArrayBuffer[Int]()
+                                                                ^
+two errors found

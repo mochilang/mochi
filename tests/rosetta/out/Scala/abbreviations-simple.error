@@ -1,0 +1,36 @@
+scalac: exit status 1
+/tmp/abbreviations-simple.scala:6: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[String]
+ required: List[String]
+    var words: List[String] = scala.collection.mutable.ArrayBuffer[String]()
+                                                                          ^
+/tmp/abbreviations-simple.scala:84: error: not found: type any
+  def readTable(table: String): Map[String, any] = {
+                                            ^
+/tmp/abbreviations-simple.scala:86: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[String]
+ required: List[String]
+    var cmds: List[String] = scala.collection.mutable.ArrayBuffer[String]()
+                                                                         ^
+/tmp/abbreviations-simple.scala:87: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    var mins: List[Int] = scala.collection.mutable.ArrayBuffer[Int]()
+                                                                   ^
+/tmp/abbreviations-simple.scala:107: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[String]
+ required: List[String]
+    var results: List[String] = scala.collection.mutable.ArrayBuffer[String]()
+                                                                            ^
+/tmp/abbreviations-simple.scala:117: error: not found: value upper
+          val c = upper(cmd)
+                  ^
+/tmp/abbreviations-simple.scala:118: error: not found: value upper
+          val ww = upper(w)
+                   ^
+/tmp/abbreviations-simple.scala:122: error: type mismatch;
+ found   : Unit
+ required: List[String]
+            return
+            ^
+8 errors found

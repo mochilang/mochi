@@ -1,0 +1,42 @@
+scalac: exit status 1
+/tmp/abelian-sandpile-model.scala:5: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[List[Int]]
+ required: List[List[Int]]
+    var b: List[List[Int]] = scala.collection.mutable.ArrayBuffer[List[Int]]()
+                                                                            ^
+/tmp/abelian-sandpile-model.scala:8: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+      var row: List[Int] = scala.collection.mutable.ArrayBuffer[Int]()
+                                                                    ^
+/tmp/abelian-sandpile-model.scala:23: error: reassignment to val
+      pile = pile.updated(y, _tmp0)
+           ^
+/tmp/abelian-sandpile-model.scala:26: error: reassignment to val
+        pile = pile.updated(y - 1, _tmp1)
+             ^
+/tmp/abelian-sandpile-model.scala:28: error: reassignment to val
+          pile = handlePile(pile, x, y - 1)
+               ^
+/tmp/abelian-sandpile-model.scala:33: error: reassignment to val
+        pile = pile.updated(y, _tmp2)
+             ^
+/tmp/abelian-sandpile-model.scala:35: error: reassignment to val
+          pile = handlePile(pile, x - 1, y)
+               ^
+/tmp/abelian-sandpile-model.scala:40: error: reassignment to val
+        pile = pile.updated(y + 1, _tmp3)
+             ^
+/tmp/abelian-sandpile-model.scala:42: error: reassignment to val
+          pile = handlePile(pile, x, y + 1)
+               ^
+/tmp/abelian-sandpile-model.scala:47: error: reassignment to val
+        pile = pile.updated(y, _tmp4)
+             ^
+/tmp/abelian-sandpile-model.scala:49: error: reassignment to val
+          pile = handlePile(pile, x + 1, y)
+               ^
+/tmp/abelian-sandpile-model.scala:52: error: reassignment to val
+      pile = handlePile(pile, x, y)
+           ^
+12 errors found

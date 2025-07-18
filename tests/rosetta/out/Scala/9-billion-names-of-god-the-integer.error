@@ -1,0 +1,14 @@
+scalac: exit status 1
+/tmp/9-billion-names-of-god-the-integer.scala:94: error: illegal start of simple pattern
+        val val = ((cache).apply(y - x)).apply(minInt(x, y - x))
+            ^
+/tmp/9-billion-names-of-god-the-integer.scala:95: error: '=' expected but ';' found.
+        row = row :+ bigAdd((row).apply(row.size - 1), val)
+^
+/tmp/9-billion-names-of-god-the-integer.scala:95: error: illegal start of simple expression
+        row = row :+ bigAdd((row).apply(row.size - 1), val)
+                                                       ^
+/tmp/9-billion-names-of-god-the-integer.scala:97: error: ')' expected but '}' found.
+      }
+      ^
+four errors found

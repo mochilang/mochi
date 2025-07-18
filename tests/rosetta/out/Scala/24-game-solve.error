@@ -1,0 +1,62 @@
+scalac: exit status 1
+/tmp/24-game-solve.scala:12: error: not found: type any
+  def newNum(n: Int): Map[String, any] = Auto1(op = OP_NUM, value = Auto2(num = n, denom = 1))
+                                  ^
+/tmp/24-game-solve.scala:12: error: type mismatch;
+ found   : _24_game_solve.Auto2
+ required: Map[String,Int]
+  def newNum(n: Int): Map[String, any] = Auto1(op = OP_NUM, value = Auto2(num = n, denom = 1))
+                                                                         ^
+/tmp/24-game-solve.scala:14: error: not found: type any
+  def exprEval(x: Map[String, any]): Map[String, Int] = {
+                              ^
+/tmp/24-game-solve.scala:21: error: type mismatch;
+ found   : _24_game_solve.Auto2
+ required: Map[String,Int]
+      return Auto2(num = (l).apply("num") * (r).apply("denom") + (l).apply("denom") * (r).apply("num"), denom = (l).apply("denom") * (r).apply("denom"))
+                  ^
+/tmp/24-game-solve.scala:24: error: type mismatch;
+ found   : _24_game_solve.Auto2
+ required: Map[String,Int]
+      return Auto2(num = (l).apply("num") * (r).apply("denom") - (l).apply("denom") * (r).apply("num"), denom = (l).apply("denom") * (r).apply("denom"))
+                  ^
+/tmp/24-game-solve.scala:27: error: type mismatch;
+ found   : _24_game_solve.Auto2
+ required: Map[String,Int]
+      return Auto2(num = (l).apply("num") * (r).apply("num"), denom = (l).apply("denom") * (r).apply("denom"))
+                  ^
+/tmp/24-game-solve.scala:29: error: type mismatch;
+ found   : _24_game_solve.Auto2
+ required: Map[String,Int]
+    return Auto2(num = (l).apply("num") * (r).apply("denom"), denom = (l).apply("denom") * (r).apply("num"))
+                ^
+/tmp/24-game-solve.scala:32: error: not found: type any
+  def exprString(x: Map[String, any]): String = {
+                                ^
+/tmp/24-game-solve.scala:55: error: not found: type any
+  def solve(xs: List[Map[String, any]]): Boolean = {
+                                 ^
+/tmp/24-game-solve.scala:58: error: not found: value goal
+      if ((f).apply("denom") != 0 && (f).apply("num") == (f).apply("denom") * goal) {
+                                                                              ^
+/tmp/24-game-solve.scala:68: error: not found: type any
+        var rest: List[Map[String, any]] = scala.collection.mutable.ArrayBuffer[Map[String, Any]]()
+                                   ^
+/tmp/24-game-solve.scala:88: error: type mismatch;
+ found   : _24_game_solve.Auto3
+ required: scala.collection.mutable.Map[String,Any]
+        node = Auto3(op = OP_DIV, left = b, right = a)
+                    ^
+/tmp/24-game-solve.scala:102: error: not found: type any
+      var cards: List[Map[String, any]] = scala.collection.mutable.ArrayBuffer[Map[String, Any]]()
+                                  ^
+/tmp/24-game-solve.scala:104: error: not found: value n_cards
+      while (i < n_cards) {
+                 ^
+/tmp/24-game-solve.scala:105: error: not found: value now
+        val n = (now() % (digit_range - 1)) + 1
+                 ^
+/tmp/24-game-solve.scala:105: error: not found: value digit_range
+        val n = (now() % (digit_range - 1)) + 1
+                          ^
+16 errors found

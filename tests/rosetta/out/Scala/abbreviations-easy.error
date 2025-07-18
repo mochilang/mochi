@@ -1,0 +1,28 @@
+scalac: exit status 1
+/tmp/abbreviations-easy.scala:4: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[String]
+ required: List[String]
+    var words: List[String] = scala.collection.mutable.ArrayBuffer[String]()
+                                                                          ^
+/tmp/abbreviations-easy.scala:49: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[String]
+ required: List[String]
+    var results: List[String] = scala.collection.mutable.ArrayBuffer[String]()
+                                                                            ^
+/tmp/abbreviations-easy.scala:62: error: not found: value upper
+          val c = upper(cmd)
+                  ^
+/tmp/abbreviations-easy.scala:63: error: not found: value upper
+          val ww = upper(w)
+                   ^
+/tmp/abbreviations-easy.scala:67: error: type mismatch;
+ found   : Unit
+ required: List[String]
+            return
+            ^
+/tmp/abbreviations-easy.scala:83: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    var mins: List[Int] = scala.collection.mutable.ArrayBuffer[Int]()
+                                                                   ^
+6 errors found

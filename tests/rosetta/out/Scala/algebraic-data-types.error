@@ -1,0 +1,62 @@
+scalac: exit status 1
+/tmp/algebraic-data-types.scala:5: error: not found: type any
+  def node(cl: String, le: any, aa: Int, ri: any): Map[String, any] = Auto1(cl = cl, le = le, aa = aa, ri = ri)
+                                                               ^
+/tmp/algebraic-data-types.scala:5: error: not found: type any
+  def node(cl: String, le: any, aa: Int, ri: any): Map[String, any] = Auto1(cl = cl, le = le, aa = aa, ri = ri)
+                           ^
+/tmp/algebraic-data-types.scala:5: error: not found: type any
+  def node(cl: String, le: any, aa: Int, ri: any): Map[String, any] = Auto1(cl = cl, le = le, aa = aa, ri = ri)
+                                             ^
+/tmp/algebraic-data-types.scala:7: error: not found: type any
+  def treeString(t: any): String = {
+                    ^
+/tmp/algebraic-data-types.scala:11: error: not found: type any
+    val m = t.asInstanceOf[Map[String, any]]
+                                       ^
+/tmp/algebraic-data-types.scala:15: error: not found: type any
+  def balance(t: any): any = {
+                       ^
+/tmp/algebraic-data-types.scala:15: error: not found: type any
+  def balance(t: any): any = {
+                 ^
+/tmp/algebraic-data-types.scala:19: error: not found: type any
+    val m = t.asInstanceOf[Map[String, any]]
+                                       ^
+/tmp/algebraic-data-types.scala:26: error: not found: type any
+      val leMap = le.asInstanceOf[Map[String, any]]
+                                              ^
+/tmp/algebraic-data-types.scala:30: error: not found: type any
+          val leleMap = lele.asInstanceOf[Map[String, any]]
+                                                      ^
+/tmp/algebraic-data-types.scala:37: error: not found: type any
+          val leriMap = leri.asInstanceOf[Map[String, any]]
+                                                      ^
+/tmp/algebraic-data-types.scala:45: error: not found: type any
+      val riMap = ri.asInstanceOf[Map[String, any]]
+                                              ^
+/tmp/algebraic-data-types.scala:49: error: not found: type any
+          val rileMap = rile.asInstanceOf[Map[String, any]]
+                                                      ^
+/tmp/algebraic-data-types.scala:56: error: not found: type any
+          val ririMap = riri.asInstanceOf[Map[String, any]]
+                                                      ^
+/tmp/algebraic-data-types.scala:66: error: not found: type any
+  def ins(tr: any, x: Int): any = {
+                            ^
+/tmp/algebraic-data-types.scala:66: error: not found: type any
+  def ins(tr: any, x: Int): any = {
+              ^
+/tmp/algebraic-data-types.scala:79: error: not found: type any
+  def insert(tr: any, x: Int): any = {
+                               ^
+/tmp/algebraic-data-types.scala:79: error: not found: type any
+  def insert(tr: any, x: Int): any = {
+                 ^
+/tmp/algebraic-data-types.scala:84: error: not found: type any
+    val m = t.asInstanceOf[Map[String, any]]
+                                       ^
+/tmp/algebraic-data-types.scala:89: error: not found: type any
+    var tr: any = null
+            ^
+20 errors found

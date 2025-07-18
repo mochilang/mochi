@@ -1,0 +1,205 @@
+scalac: exit status 1
+/tmp/adfgvx-cipher.scala:4: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[String]
+ required: List[String]
+    var arr: List[String] = scala.collection.mutable.ArrayBuffer[String]()
+                                                                        ^
+/tmp/adfgvx-cipher.scala:7: error: value += is not a member of List[String]
+  Expression does not convert to assignment because:
+    type mismatch;
+     found   : List[Char]
+     required: String
+    expansion: arr = arr.$plus(List(s.charAt(i)))
+      arr += List(s.charAt(i))
+          ^
+/tmp/adfgvx-cipher.scala:12: error: not found: value now
+      val k = now() % (j + 1)
+              ^
+/tmp/adfgvx-cipher.scala:14: error: value update is not a member of List[String]
+      arr(j) = (arr).apply(k)
+      ^
+/tmp/adfgvx-cipher.scala:15: error: value update is not a member of List[String]
+      arr(k) = tmp
+      ^
+/tmp/adfgvx-cipher.scala:28: error: not found: value alphabet
+    val shuffled = shuffleStr(alphabet)
+                              ^
+/tmp/adfgvx-cipher.scala:32: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[String]
+ required: List[String]
+    var p: List[String] = scala.collection.mutable.ArrayBuffer[String]()
+                                                                      ^
+/tmp/adfgvx-cipher.scala:36: error: value += is not a member of List[String]
+  Expression does not convert to assignment because:
+    type mismatch;
+     found   : String
+     required: List[String]
+    expansion: p = p.$plus(List(<row: error>))
+      p += List(row)
+        ^
+/tmp/adfgvx-cipher.scala:37: error: not found: value adfgvx
+      var line = adfgvx.charAt(i) + " | "
+                 ^
+/tmp/adfgvx-cipher.scala:57: error: not found: value now
+      val idx = now() % pool.length
+                ^
+/tmp/adfgvx-cipher.scala:78: error: value apply is not a member of Any
+        if ((((pairs).apply(j)).apply(0)).asInstanceOf[Int] > (((pairs).apply(j + 1)).apply(0)).asInstanceOf[Int]) {
+                                ^
+/tmp/adfgvx-cipher.scala:78: error: value apply is not a member of Any
+        if ((((pairs).apply(j)).apply(0)).asInstanceOf[Int] > (((pairs).apply(j + 1)).apply(0)).asInstanceOf[Int]) {
+                                                                                      ^
+/tmp/adfgvx-cipher.scala:90: error: value apply is not a member of Any
+      res += List(((pairs).apply(i)).apply(1).toInt)
+                                     ^
+/tmp/adfgvx-cipher.scala:93: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Any]
+ required: List[Int]
+    return res
+           ^
+/tmp/adfgvx-cipher.scala:105: error: not found: value adfgvx
+            temp = temp + adfgvx.charAt(r) + adfgvx.charAt(c)
+                          ^
+/tmp/adfgvx-cipher.scala:105: error: not found: value adfgvx
+            temp = temp + adfgvx.charAt(r) + adfgvx.charAt(c)
+                                             ^
+/tmp/adfgvx-cipher.scala:117: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[List[String]]
+ required: List[List[String]]
+    var table: List[List[String]] = scala.collection.mutable.ArrayBuffer[List[String]]()
+                                                                                      ^
+/tmp/adfgvx-cipher.scala:120: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[String]
+ required: List[String]
+      var row: List[String] = scala.collection.mutable.ArrayBuffer[String]()
+                                                                          ^
+/tmp/adfgvx-cipher.scala:123: error: value += is not a member of List[String]
+  Expression does not convert to assignment because:
+    type mismatch;
+     found   : List[String]
+     required: String
+    expansion: row = row.$plus(List(""))
+        row += List("")
+            ^
+/tmp/adfgvx-cipher.scala:126: error: value += is not a member of List[List[String]]
+  Expression does not convert to assignment because:
+    type mismatch;
+     found   : List[List[String]]
+     required: String
+    expansion: table = table.$plus(List(row))
+      table += List(row)
+            ^
+/tmp/adfgvx-cipher.scala:138: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[String]
+ required: List[String]
+    var cols: List[String] = scala.collection.mutable.ArrayBuffer[String]()
+                                                                         ^
+/tmp/adfgvx-cipher.scala:147: error: value += is not a member of List[String]
+  Expression does not convert to assignment because:
+    type mismatch;
+     found   : List[String]
+     required: String
+    expansion: cols = cols.$plus(List(colStr))
+      cols += List(colStr)
+           ^
+/tmp/adfgvx-cipher.scala:174: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[String]
+ required: List[String]
+    var colStrs: List[String] = scala.collection.mutable.ArrayBuffer[String]()
+                                                                            ^
+/tmp/adfgvx-cipher.scala:179: error: value += is not a member of List[String]
+  Expression does not convert to assignment because:
+    type mismatch;
+     found   : List[String]
+     required: String
+    expansion: colStrs = colStrs.$plus(List(cipherText.substring(start, i)))
+        colStrs += List(cipherText.substring(start, i))
+                ^
+/tmp/adfgvx-cipher.scala:192: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[List[String]]
+ required: List[List[String]]
+    var cols: List[List[String]] = scala.collection.mutable.ArrayBuffer[List[String]]()
+                                                                                     ^
+/tmp/adfgvx-cipher.scala:196: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[String]
+ required: List[String]
+      var ls: List[String] = scala.collection.mutable.ArrayBuffer[String]()
+                                                                         ^
+/tmp/adfgvx-cipher.scala:199: error: value += is not a member of List[String]
+  Expression does not convert to assignment because:
+    type mismatch;
+     found   : List[Char]
+     required: String
+    expansion: ls = ls.$plus(List(s.charAt(j)))
+        ls += List(s.charAt(j))
+           ^
+/tmp/adfgvx-cipher.scala:203: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[String]
+ required: List[String]
+        var pad: List[String] = scala.collection.mutable.ArrayBuffer[String]()
+                                                                            ^
+/tmp/adfgvx-cipher.scala:207: error: value += is not a member of List[String]
+  Expression does not convert to assignment because:
+    type mismatch;
+     found   : List[String]
+     required: String
+    expansion: pad = pad.$plus(List(ls.apply(k)))
+            pad += List((ls).apply(k))
+                ^
+/tmp/adfgvx-cipher.scala:209: error: value += is not a member of List[String]
+  Expression does not convert to assignment because:
+    type mismatch;
+     found   : List[String]
+     required: String
+    expansion: pad = pad.$plus(List(""))
+            pad += List("")
+                ^
+/tmp/adfgvx-cipher.scala:213: error: value += is not a member of List[List[String]]
+  Expression does not convert to assignment because:
+    type mismatch;
+     found   : List[List[String]]
+     required: String
+    expansion: cols = cols.$plus(List(pad))
+        cols += List(pad)
+             ^
+/tmp/adfgvx-cipher.scala:215: error: value += is not a member of List[List[String]]
+  Expression does not convert to assignment because:
+    type mismatch;
+     found   : List[List[String]]
+     required: String
+    expansion: cols = cols.$plus(List(ls))
+        cols += List(ls)
+             ^
+/tmp/adfgvx-cipher.scala:219: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[List[String]]
+ required: List[List[String]]
+    var table: List[List[String]] = scala.collection.mutable.ArrayBuffer[List[String]]()
+                                                                                      ^
+/tmp/adfgvx-cipher.scala:222: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[String]
+ required: List[String]
+      var row: List[String] = scala.collection.mutable.ArrayBuffer[String]()
+                                                                          ^
+/tmp/adfgvx-cipher.scala:225: error: value += is not a member of List[String]
+  Expression does not convert to assignment because:
+    type mismatch;
+     found   : List[String]
+     required: String
+    expansion: row = row.$plus(List(""))
+        row += List("")
+            ^
+/tmp/adfgvx-cipher.scala:228: error: value += is not a member of List[List[String]]
+  Expression does not convert to assignment because:
+    type mismatch;
+     found   : List[List[String]]
+     required: String
+    expansion: table = table.$plus(List(row))
+      table += List(row)
+            ^
+/tmp/adfgvx-cipher.scala:255: error: not found: value adfgvx
+      val rIdx = indexOf(adfgvx, temp.substring(idx, idx + 1))
+                         ^
+/tmp/adfgvx-cipher.scala:256: error: not found: value adfgvx
+      val cIdx = indexOf(adfgvx, temp.substring(idx + 1, idx + 2))
+                         ^
+38 errors found

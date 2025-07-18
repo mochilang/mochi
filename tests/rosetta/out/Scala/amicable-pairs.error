@@ -1,0 +1,10 @@
+scalac: exit status 1
+/tmp/amicable-pairs.scala:24: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    var sums: List[Int] = scala.collection.mutable.ArrayBuffer[Int]()
+                                                                   ^
+/tmp/amicable-pairs.scala:32: error: value update is not a member of List[Int]
+      sums(i) = pfacSum(i)
+      ^
+two errors found

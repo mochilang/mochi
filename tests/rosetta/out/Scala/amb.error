@@ -1,0 +1,10 @@
+scalac: exit status 1
+/tmp/amb.scala:15: error: value update is not a member of List[String]
+        res(idx) = w
+        ^
+/tmp/amb.scala:27: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[String]
+ required: List[String]
+    var res: List[String] = scala.collection.mutable.ArrayBuffer[String]()
+                                                                        ^
+two errors found

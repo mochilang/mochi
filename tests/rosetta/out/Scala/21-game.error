@@ -1,0 +1,17 @@
+scalac: exit status 1
+/tmp/21-game.scala:24: error: not found: value now
+    var computer = (now() % 2).asInstanceOf[Int] == 0
+                    ^
+/tmp/21-game.scala:41: error: not found: value now
+            choice = (now() % 3).asInstanceOf[Int] + 1
+                      ^
+/tmp/21-game.scala:55: error: not found: value input
+            val line = input()
+                       ^
+/tmp/21-game.scala:59: error: method main has return statement; needs result type
+              return
+              ^
+/tmp/21-game.scala:76: error: method main has return statement; needs result type
+            return
+            ^
+5 errors found

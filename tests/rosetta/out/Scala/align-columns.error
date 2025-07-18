@@ -1,0 +1,31 @@
+scalac: exit status 1
+/tmp/align-columns.scala:6: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[String]
+ required: List[String]
+    var parts: List[String] = scala.collection.mutable.ArrayBuffer[String]()
+                                                                          ^
+/tmp/align-columns.scala:10: error: type mismatch;
+ found   : Int
+ required: Boolean
+      if ((sep.length > 0 && i + sep.length).asInstanceOf[Int] <= s.length && s.substring(i, i + sep.length) == sep) {
+                               ^
+/tmp/align-columns.scala:54: error: not found: type any
+  def newFormatter(text: String): Map[String, any] = {
+                                              ^
+/tmp/align-columns.scala:56: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[List[String]]
+ required: List[List[String]]
+    var fmtLines: List[List[String]] = scala.collection.mutable.ArrayBuffer[List[String]]()
+                                                                                         ^
+/tmp/align-columns.scala:57: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+    var width: List[Int] = scala.collection.mutable.ArrayBuffer[Int]()
+                                                                    ^
+/tmp/align-columns.scala:73: error: value update is not a member of List[Int]
+            width(j) = wlen
+            ^
+/tmp/align-columns.scala:83: error: not found: type any
+  def printFmt(f: Map[String, any], align: Int) = {
+                              ^
+7 errors found
