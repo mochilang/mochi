@@ -226,12 +226,23 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			}
 		}
 		if t == nil {
+			if s.Let.Value != nil {
+				t = types.TypeOfExprBasic(s.Let.Value, c.env)
+			}
+		}
+		if t == nil {
 			t = resolveSimpleTypeRef(s.Let.Type)
 		}
 		name := sanitizeName(s.Let.Name)
 		if st, ok := t.(types.StructType); ok && strings.EqualFold(name, sanitizeName(st.Name)) {
 			name = name + "_"
 			c.replacements[s.Let.Name] = name
+		}
+		if c.env != nil {
+			c.env.SetVar(s.Let.Name, t, true)
+		}
+		if c.varTypes != nil {
+			c.varTypes[s.Let.Name] = typeString(t)
 		}
 		if s.Let.Value == nil {
 			c.writeln(fmt.Sprintf("%s := %s;", name, defaultValue(t)))
@@ -257,12 +268,23 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			}
 		}
 		if t == nil {
+			if s.Var.Value != nil {
+				t = types.TypeOfExprBasic(s.Var.Value, c.env)
+			}
+		}
+		if t == nil {
 			t = resolveSimpleTypeRef(s.Var.Type)
 		}
 		name := sanitizeName(s.Var.Name)
 		if st, ok := t.(types.StructType); ok && strings.EqualFold(name, sanitizeName(st.Name)) {
 			name = name + "_"
 			c.replacements[s.Var.Name] = name
+		}
+		if c.env != nil {
+			c.env.SetVar(s.Var.Name, t, true)
+		}
+		if c.varTypes != nil {
+			c.varTypes[s.Var.Name] = typeString(t)
 		}
 		if s.Var.Value == nil {
 			c.writeln(fmt.Sprintf("%s := %s;", name, defaultValue(t)))
@@ -788,11 +810,13 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 
 	name := sanitizeName(fun.Name)
 	params := make([]string, len(fun.Params))
+	paramSet := map[string]struct{}{}
 	c.varTypes = map[string]string{}
 	for i, p := range fun.Params {
 		pt := c.typeRef(p.Type)
 		params[i] = fmt.Sprintf("%s: %s", sanitizeName(p.Name), pt)
 		c.varTypes[p.Name] = pt
+		paramSet[p.Name] = struct{}{}
 	}
 	retType := c.typeRef(fun.Return)
 	isProc := fun.Return == nil && !hasReturn(fun.Body)
@@ -841,7 +865,7 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	}
 	collectVars(fun.Body, c.env, paramMap)
 	for k, v := range paramMap {
-		if _, ok := c.varTypes[k]; !ok { // exclude parameters
+		if _, isParam := paramSet[k]; !isParam {
 			vars[k] = v
 		}
 		c.varTypes[k] = v
