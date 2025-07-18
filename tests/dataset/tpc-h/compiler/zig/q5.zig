@@ -146,22 +146,25 @@ const LocalCustomerSupplierOrdersItem = struct {
 var local_customer_supplier_orders: []const LocalCustomerSupplierOrdersItem = undefined; // []const LocalCustomerSupplierOrdersItem
 const ResultItem = struct {
     n_name: i32,
-    revenue: i32,
+    revenue: f64,
 };
 const ResultStruct12 = struct { key: i32, Items: std.ArrayList(LocalCustomerSupplierOrdersItem) };
 var result: []const ResultItem = undefined; // []const ResultItem
 
 fn test_Q5_returns_revenue_per_nation_in_ASIA_with_local_suppliers() void {
-    expect((result == &[_]ResultItem{
-    ResultItem{
+    expect((result == (blk6: { const _tmp19 = struct {
+    n_name: []const u8,
+    revenue: i32,
+}; const _arr = &[_]_tmp19{
+    _tmp19{
     .n_name = "JAPAN",
     .revenue = 950,
 },
-    ResultItem{
+    _tmp19{
     .n_name = "INDIA",
     .revenue = 720,
 },
-}));
+}; break :blk6 _arr; })));
 }
 
 pub fn main() void {
@@ -170,10 +173,7 @@ pub fn main() void {
     .nation = n.n_name,
     .revenue = (l.l_extendedprice * ((1 - l.l_discount))),
 }) catch |err| handleError(err); } } } } } const _tmp4 = _tmp3.toOwnedSlice() catch |err| handleError(err); break :blk1 _tmp4; };
-    result = blk5: { var _tmp13 = std.ArrayList(ResultStruct12).init(std.heap.page_allocator); for (local_customer_supplier_orders) |r| { const _tmp14 = r.nation; var _found = false; var _idx: usize = 0; for (_tmp13.items, 0..) |it, i| { if (_equal(it.key, _tmp14)) { _found = true; _idx = i; break; } } if (_found) { _tmp13.items[_idx].Items.append(r) catch |err| handleError(err); } else { var g = ResultStruct12{ .key = _tmp14, .Items = std.ArrayList(LocalCustomerSupplierOrdersItem).init(std.heap.page_allocator) }; g.Items.append(r) catch |err| handleError(err); _tmp13.append(g) catch |err| handleError(err); } } var _tmp15 = std.ArrayList(ResultStruct12).init(std.heap.page_allocator);for (_tmp13.items) |g| { _tmp15.append(g) catch |err| handleError(err); } var _tmp16 = std.ArrayList(struct { item: ResultStruct12, key: i32 }).init(std.heap.page_allocator);for (_tmp15.items) |g| { _tmp16.append(.{ .item = g, .key = -_sum_int(blk4: { var _tmp10 = std.ArrayList(i32).init(std.heap.page_allocator); for (g.Items.items) |x| { _tmp10.append(x.revenue) catch |err| handleError(err); } const _tmp11 = _tmp10.toOwnedSlice() catch |err| handleError(err); break :blk4 _tmp11; }) }) catch |err| handleError(err); } for (0.._tmp16.items.len) |i| { for (i+1.._tmp16.items.len) |j| { if (_tmp16.items[j].key < _tmp16.items[i].key) { const t = _tmp16.items[i]; _tmp16.items[i] = _tmp16.items[j]; _tmp16.items[j] = t; } } } var _tmp17 = std.ArrayList(ResultStruct12).init(std.heap.page_allocator);for (_tmp16.items) |p| { _tmp17.append(p.item) catch |err| handleError(err); } var _tmp18 = std.ArrayList(struct {
-    n_name: i32,
-    revenue: f64,
-}).init(std.heap.page_allocator);for (_tmp17.items) |g| { _tmp18.append(ResultItem{
+    result = blk5: { var _tmp13 = std.ArrayList(ResultStruct12).init(std.heap.page_allocator); for (local_customer_supplier_orders) |r| { const _tmp14 = r.nation; var _found = false; var _idx: usize = 0; for (_tmp13.items, 0..) |it, i| { if (_equal(it.key, _tmp14)) { _found = true; _idx = i; break; } } if (_found) { _tmp13.items[_idx].Items.append(r) catch |err| handleError(err); } else { var g = ResultStruct12{ .key = _tmp14, .Items = std.ArrayList(LocalCustomerSupplierOrdersItem).init(std.heap.page_allocator) }; g.Items.append(r) catch |err| handleError(err); _tmp13.append(g) catch |err| handleError(err); } } var _tmp15 = std.ArrayList(ResultStruct12).init(std.heap.page_allocator);for (_tmp13.items) |g| { _tmp15.append(g) catch |err| handleError(err); } var _tmp16 = std.ArrayList(struct { item: ResultStruct12, key: i32 }).init(std.heap.page_allocator);for (_tmp15.items) |g| { _tmp16.append(.{ .item = g, .key = -_sum_int(blk4: { var _tmp10 = std.ArrayList(i32).init(std.heap.page_allocator); for (g.Items.items) |x| { _tmp10.append(x.revenue) catch |err| handleError(err); } const _tmp11 = _tmp10.toOwnedSlice() catch |err| handleError(err); break :blk4 _tmp11; }) }) catch |err| handleError(err); } for (0.._tmp16.items.len) |i| { for (i+1.._tmp16.items.len) |j| { if (_tmp16.items[j].key < _tmp16.items[i].key) { const t = _tmp16.items[i]; _tmp16.items[i] = _tmp16.items[j]; _tmp16.items[j] = t; } } } var _tmp17 = std.ArrayList(ResultStruct12).init(std.heap.page_allocator);for (_tmp16.items) |p| { _tmp17.append(p.item) catch |err| handleError(err); } var _tmp18 = std.ArrayList(ResultItem).init(std.heap.page_allocator);for (_tmp17.items) |g| { _tmp18.append(ResultItem{
     .n_name = g.key,
     .revenue = _sum_int(blk3: { var _tmp8 = std.ArrayList(i32).init(std.heap.page_allocator); for (g.Items.items) |x| { _tmp8.append(x.revenue) catch |err| handleError(err); } const _tmp9 = _tmp8.toOwnedSlice() catch |err| handleError(err); break :blk3 _tmp9; }),
 }) catch |err| handleError(err); } const _tmp18Slice = _tmp18.toOwnedSlice() catch |err| handleError(err); break :blk5 _tmp18Slice; };

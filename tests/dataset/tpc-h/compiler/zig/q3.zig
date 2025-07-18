@@ -99,7 +99,7 @@ const ResultStruct6 = struct {
 const OrderLineJoinItem = struct {
     l_orderkey: i32,
     revenue: i32,
-    o_orderdate: i32,
+    o_orderdate: []const u8,
     o_shippriority: i32,
 };
 const ResultStruct14 = struct {
@@ -129,12 +129,7 @@ pub fn main() void {
 }; var _found = false; var _idx: usize = 0; for (_tmp16.items, 0..) |it, i| { if (_equal(it.key, _tmp17)) { _found = true; _idx = i; break; } } if (_found) { _tmp16.items[_idx].Items.append(ResultStruct14{ .o = o, .l = l }) catch |err| handleError(err); } else { var g = ResultStruct15{ .key = _tmp17, .Items = std.ArrayList(ResultStruct14).init(std.heap.page_allocator) }; g.Items.append(ResultStruct14{ .o = o, .l = l }) catch |err| handleError(err); _tmp16.append(g) catch |err| handleError(err); } } } var _tmp18 = std.ArrayList(ResultStruct15).init(std.heap.page_allocator);for (_tmp16.items) |g| { _tmp18.append(g) catch |err| handleError(err); } var _tmp19 = std.ArrayList(struct { item: ResultStruct15, key: []const i32 }).init(std.heap.page_allocator);for (_tmp18.items) |g| { _tmp19.append(.{ .item = g, .key = &[_]i32{
     -_sum_int(blk5: { var _tmp12 = std.ArrayList(i32).init(std.heap.page_allocator); for (g.Items.items) |r| { _tmp12.append((r.l.l_extendedprice * ((1 - r.l.l_discount)))) catch |err| handleError(err); } const _tmp13 = _tmp12.toOwnedSlice() catch |err| handleError(err); break :blk5 _tmp13; }),
     g.key.o_orderdate,
-} }) catch |err| handleError(err); } for (0.._tmp19.items.len) |i| { for (i+1.._tmp19.items.len) |j| { if (_tmp19.items[j].key < _tmp19.items[i].key) { const t = _tmp19.items[i]; _tmp19.items[i] = _tmp19.items[j]; _tmp19.items[j] = t; } } } var _tmp20 = std.ArrayList(ResultStruct15).init(std.heap.page_allocator);for (_tmp19.items) |p| { _tmp20.append(p.item) catch |err| handleError(err); } var _tmp21 = std.ArrayList(struct {
-    l_orderkey: i32,
-    revenue: i32,
-    o_orderdate: []const u8,
-    o_shippriority: i32,
-}).init(std.heap.page_allocator);for (_tmp20.items) |g| { _tmp21.append(OrderLineJoinItem{
+} }) catch |err| handleError(err); } for (0.._tmp19.items.len) |i| { for (i+1.._tmp19.items.len) |j| { if (_tmp19.items[j].key < _tmp19.items[i].key) { const t = _tmp19.items[i]; _tmp19.items[i] = _tmp19.items[j]; _tmp19.items[j] = t; } } } var _tmp20 = std.ArrayList(ResultStruct15).init(std.heap.page_allocator);for (_tmp19.items) |p| { _tmp20.append(p.item) catch |err| handleError(err); } var _tmp21 = std.ArrayList(OrderLineJoinItem).init(std.heap.page_allocator);for (_tmp20.items) |g| { _tmp21.append(OrderLineJoinItem{
     .l_orderkey = g.key.o_orderkey,
     .revenue = _sum_int(blk4: { var _tmp10 = std.ArrayList(i32).init(std.heap.page_allocator); for (g.Items.items) |r| { _tmp10.append((r.l.l_extendedprice * ((1 - r.l.l_discount)))) catch |err| handleError(err); } const _tmp11 = _tmp10.toOwnedSlice() catch |err| handleError(err); break :blk4 _tmp11; }),
     .o_orderdate = g.key.o_orderdate,

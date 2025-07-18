@@ -98,7 +98,7 @@ const FilteredItem = struct {
 var filtered: []const FilteredItem = undefined; // []const FilteredItem
 const GroupedItem = struct {
     ps_partkey: i32,
-    value: i32,
+    value: f64,
 };
 const ResultStruct8 = struct { key: i32, Items: std.ArrayList(FilteredItem) };
 var grouped: []const GroupedItem = undefined; // []const GroupedItem
@@ -107,8 +107,8 @@ const threshold = (total * 0.0001); // f64
 var result: []const GroupedItem = undefined; // []const GroupedItem
 
 fn test_Q11_returns_high_value_partkeys_from_GERMANY() void {
-    expect((result == &[_]GroupedItem{
-    FilteredItem{
+    expect((result == &[_]FilteredItem{
+    GroupedItem{
     .ps_partkey = 1000,
     .value = 2000.0,
 },
@@ -124,10 +124,7 @@ pub fn main() void {
     .ps_partkey = ps.ps_partkey,
     .value = (ps.ps_supplycost * ps.ps_availqty),
 }) catch |err| handleError(err); } } } const _tmp2 = _tmp1.toOwnedSlice() catch |err| handleError(err); break :blk0 _tmp2; };
-    grouped = blk3: { var _tmp9 = std.ArrayList(ResultStruct8).init(std.heap.page_allocator); for (filtered) |x| { const _tmp10 = x.ps_partkey; var _found = false; var _idx: usize = 0; for (_tmp9.items, 0..) |it, i| { if (_equal(it.key, _tmp10)) { _found = true; _idx = i; break; } } if (_found) { _tmp9.items[_idx].Items.append(x) catch |err| handleError(err); } else { var g = ResultStruct8{ .key = _tmp10, .Items = std.ArrayList(FilteredItem).init(std.heap.page_allocator) }; g.Items.append(x) catch |err| handleError(err); _tmp9.append(g) catch |err| handleError(err); } } var _tmp11 = std.ArrayList(ResultStruct8).init(std.heap.page_allocator);for (_tmp9.items) |g| { _tmp11.append(g) catch |err| handleError(err); } var _tmp12 = std.ArrayList(struct {
-    ps_partkey: i32,
-    value: f64,
-}).init(std.heap.page_allocator);for (_tmp11.items) |g| { _tmp12.append(FilteredItem{
+    grouped = blk3: { var _tmp9 = std.ArrayList(ResultStruct8).init(std.heap.page_allocator); for (filtered) |x| { const _tmp10 = x.ps_partkey; var _found = false; var _idx: usize = 0; for (_tmp9.items, 0..) |it, i| { if (_equal(it.key, _tmp10)) { _found = true; _idx = i; break; } } if (_found) { _tmp9.items[_idx].Items.append(x) catch |err| handleError(err); } else { var g = ResultStruct8{ .key = _tmp10, .Items = std.ArrayList(FilteredItem).init(std.heap.page_allocator) }; g.Items.append(x) catch |err| handleError(err); _tmp9.append(g) catch |err| handleError(err); } } var _tmp11 = std.ArrayList(ResultStruct8).init(std.heap.page_allocator);for (_tmp9.items) |g| { _tmp11.append(g) catch |err| handleError(err); } var _tmp12 = std.ArrayList(GroupedItem).init(std.heap.page_allocator);for (_tmp11.items) |g| { _tmp12.append(FilteredItem{
     .ps_partkey = g.key,
     .value = _sum_int(blk2: { var _tmp6 = std.ArrayList(i32).init(std.heap.page_allocator); for (g.Items.items) |r| { _tmp6.append(r.value) catch |err| handleError(err); } const _tmp7 = _tmp6.toOwnedSlice() catch |err| handleError(err); break :blk2 _tmp7; }),
 }) catch |err| handleError(err); } const _tmp12Slice = _tmp12.toOwnedSlice() catch |err| handleError(err); break :blk3 _tmp12Slice; };

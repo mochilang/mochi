@@ -97,9 +97,9 @@ const ResultStruct0 = struct {
     l_year: []const u8,
 };
 const ResultItem = struct {
-    supp_nation: i32,
-    cust_nation: i32,
-    l_year: i32,
+    supp_nation: []const u8,
+    cust_nation: []const u8,
+    l_year: []const u8,
     revenue: i32,
 };
 const ResultStruct6 = struct {
@@ -131,12 +131,7 @@ pub fn main() void {
     "supp_nation",
     "cust_nation",
     "l_year",
-} }) catch |err| handleError(err); } for (0.._tmp11.items.len) |i| { for (i+1.._tmp11.items.len) |j| { if (_tmp11.items[j].key < _tmp11.items[i].key) { const t = _tmp11.items[i]; _tmp11.items[i] = _tmp11.items[j]; _tmp11.items[j] = t; } } } var _tmp12 = std.ArrayList(ResultStruct7).init(std.heap.page_allocator);for (_tmp11.items) |p| { _tmp12.append(p.item) catch |err| handleError(err); } var _tmp13 = std.ArrayList(struct {
-    supp_nation: []const u8,
-    cust_nation: []const u8,
-    l_year: []const u8,
-    revenue: i32,
-}).init(std.heap.page_allocator);for (_tmp12.items) |g| { _tmp13.append(ResultItem{
+} }) catch |err| handleError(err); } for (0.._tmp11.items.len) |i| { for (i+1.._tmp11.items.len) |j| { if (_tmp11.items[j].key < _tmp11.items[i].key) { const t = _tmp11.items[i]; _tmp11.items[i] = _tmp11.items[j]; _tmp11.items[j] = t; } } } var _tmp12 = std.ArrayList(ResultStruct7).init(std.heap.page_allocator);for (_tmp11.items) |p| { _tmp12.append(p.item) catch |err| handleError(err); } var _tmp13 = std.ArrayList(ResultItem).init(std.heap.page_allocator);for (_tmp12.items) |g| { _tmp13.append(ResultItem{
     .supp_nation = g.key.supp_nation,
     .cust_nation = g.key.cust_nation,
     .l_year = g.key.l_year,
