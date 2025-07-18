@@ -267,6 +267,8 @@ func (c *Compiler) emitHelpers(out *bytes.Buffer, indent int) {
 				pad + "  if(cur.nonEmpty) buf += cur\n" +
 				pad + "  buf.toList\n" +
 				pad + "}\n")
+		case "_now":
+			out.WriteString(pad + "def _now(): Long = System.nanoTime()\n")
 		case "_save_jsonl":
 			out.WriteString(pad + "def _save_jsonl(rows: Iterable[Any], path: String): Unit = {\n" +
 				pad + "  def toMap(v: Any): Map[String,Any] = v match {\n" +
@@ -1746,6 +1748,12 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		default:
 			return fmt.Sprintf("%s.length", argStr), nil
 		}
+	case "now":
+		if len(args) != 0 {
+			return "", fmt.Errorf("now expects no args")
+		}
+		c.use("_now")
+		return "_now()", nil
 	case "min":
 		if len(args) != 1 {
 			return "", fmt.Errorf("min expects 1 arg")
@@ -2799,6 +2807,8 @@ func collectUpdates(stmts []*parser.Statement, out map[string]bool) {
 		switch {
 		case s.Update != nil:
 			out[s.Update.Target] = true
+		case s.Assign != nil:
+			out[s.Assign.Name] = true
 		case s.If != nil:
 			collectUpdates(s.If.Then, out)
 			if s.If.ElseIf != nil {
