@@ -985,269 +985,129 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 	return c.compileBinary(e.Binary)
 }
 
+func prec(op string) int {
+	switch op {
+	case "*", "/", "%":
+		return 1
+	case "+", "-":
+		return 2
+	case "<", "<=", ">", ">=", "==", "!=", "in":
+		return 3
+	case "union", "union_all", "except", "intersect":
+		return 4
+	case "&&":
+		return 5
+	case "||":
+		return 6
+	default:
+		return 7
+	}
+}
+
+type valInfo struct {
+	expr  string
+	isStr bool
+	isLit bool
+}
+
+func (c *Compiler) binaryOp(left valInfo, op string, right valInfo) (valInfo, error) {
+	opStr := op
+	switch opStr {
+	case "&&":
+		opStr = ".and."
+	case "||":
+		opStr = ".or."
+	case "!=":
+		opStr = "/="
+	}
+
+	switch op {
+	case "%":
+		return valInfo{expr: fmt.Sprintf("mod(%s,%s)", left.expr, right.expr)}, nil
+	case "as":
+		return valInfo{}, fmt.Errorf("unsupported cast")
+	case "in":
+		if right.isStr {
+			return valInfo{expr: fmt.Sprintf("index(%s,%s) /= 0", right.expr, left.expr)}, nil
+		}
+		return valInfo{expr: fmt.Sprintf("any(%s == %s)", right.expr, left.expr)}, nil
+	case "union":
+		c.use("_union")
+		return valInfo{expr: fmt.Sprintf("_union(%s, %s)", left.expr, right.expr)}, nil
+	case "union_all":
+		c.use("_union_all")
+		return valInfo{expr: fmt.Sprintf("_union_all(%s, %s)", left.expr, right.expr)}, nil
+	case "except":
+		c.use("_except")
+		return valInfo{expr: fmt.Sprintf("_except(%s, %s)", left.expr, right.expr)}, nil
+	case "intersect":
+		c.use("_intersect")
+		return valInfo{expr: fmt.Sprintf("_intersect(%s, %s)", left.expr, right.expr)}, nil
+	case "+":
+		if left.isStr || right.isStr {
+			l := left.expr
+			if left.isStr && !left.isLit {
+				l = fmt.Sprintf("trim(%s)", l)
+			}
+			rr := right.expr
+			if right.isStr && !right.isLit {
+				rr = fmt.Sprintf("trim(%s)", rr)
+			}
+			return valInfo{expr: fmt.Sprintf("%s // %s", l, rr), isStr: true}, nil
+		}
+	}
+	return valInfo{expr: fmt.Sprintf("(%s %s %s)", left.expr, opStr, right.expr)}, nil
+}
+
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	if folded, ok := c.foldSetOps(b); ok {
 		return folded, nil
 	}
-	left, err := c.compileUnary(b.Left)
+	first, err := c.compileUnary(b.Left)
 	if err != nil {
 		return "", err
 	}
-	leftIsStr := types.IsStringUnary(b.Left, c.env)
-	leftIsLit := literalString(b.Left) != nil
-	res := left
+	vals := []valInfo{{expr: first, isStr: types.IsStringUnary(b.Left, c.env), isLit: literalString(b.Left) != nil}}
+	ops := []string{}
 	for _, op := range b.Right {
-		r, err := c.compilePostfix(op.Right)
+		rExpr, err := c.compilePostfix(op.Right)
 		if err != nil {
 			return "", err
 		}
-		rightIsStr := types.IsStringPostfix(op.Right, c.env)
-		rightIsLit := literalStringPrimary(op.Right.Target) != nil
-		opStr := op.Op
-		switch opStr {
-		case "&&":
-			opStr = ".and."
-		case "||":
-			opStr = ".or."
-		case "!=":
-			opStr = "/="
-		case "%":
-			res = fmt.Sprintf("mod(%s,%s)", res, r)
-			continue
-		case "as":
-			if lit := literalString(b.Left); lit != nil && r == "int" {
-				if iv, err := strconv.Atoi(*lit); err == nil {
-					res = fmt.Sprintf("%d", iv)
-					continue
-				}
+		vinfo := valInfo{expr: rExpr, isStr: types.IsStringPostfix(op.Right, c.env), isLit: literalStringPrimary(op.Right.Target) != nil}
+		for len(ops) > 0 && prec(ops[len(ops)-1]) <= prec(op.Op) {
+			right := vals[len(vals)-1]
+			vals = vals[:len(vals)-1]
+			left := vals[len(vals)-1]
+			vals = vals[:len(vals)-1]
+			p := ops[len(ops)-1]
+			ops = ops[:len(ops)-1]
+			res, err := c.binaryOp(left, p, right)
+			if err != nil {
+				return "", err
 			}
-			return "", fmt.Errorf("unsupported cast")
-		case "in":
-			if rightIsStr {
-				if rs, ok := c.constStringFromPostfix(op.Right); ok {
-					if ls, ok2 := c.constStringFromUnary(b.Left); ok2 {
-						if strings.Contains(rs, ls) {
-							res = ".true."
-						} else {
-							res = ".false."
-						}
-						continue
-					}
-				}
-				res = fmt.Sprintf("index(%s,%s) /= 0", r, res)
-			} else {
-				if ints, ok := c.constIntListFromPostfix(op.Right); ok {
-					if iv, ok2 := c.constIntFromUnary(b.Left); ok2 {
-						found := false
-						for _, v := range ints {
-							if v == iv {
-								found = true
-								break
-							}
-						}
-						if found {
-							res = ".true."
-						} else {
-							res = ".false."
-						}
-						continue
-					}
-				}
-				if bools, ok := c.constBoolListFromPostfix(op.Right); ok {
-					if bv, ok2 := c.constBoolFromUnary(b.Left); ok2 {
-						found := false
-						for _, v := range bools {
-							if v == bv {
-								found = true
-								break
-							}
-						}
-						if found {
-							res = ".true."
-						} else {
-							res = ".false."
-						}
-						continue
-					}
-				}
-				if floats, ok := c.constFloatListFromPostfix(op.Right); ok {
-					if fv, ok2 := c.constFloatFromUnary(b.Left); ok2 {
-						found := false
-						for _, v := range floats {
-							if v == fv {
-								found = true
-								break
-							}
-						}
-						if found {
-							res = ".true."
-						} else {
-							res = ".false."
-						}
-						continue
-					}
-				}
-				if strs, ok := c.constStringListFromPostfix(op.Right); ok {
-					if sv, ok2 := c.constStringFromUnary(b.Left); ok2 {
-						found := false
-						for _, v := range strs {
-							if v == sv {
-								found = true
-								break
-							}
-						}
-						if found {
-							res = ".true."
-						} else {
-							res = ".false."
-						}
-						continue
-					}
-				}
-				res = fmt.Sprintf("any(%s == %s)", r, res)
-			}
-			continue
-		case "union":
-			if len(b.Right) == 1 {
-				if la, ok := c.constIntListFromUnary(b.Left); ok {
-					if lb, ok2 := c.constIntListFromPostfix(op.Right); ok2 {
-						res = formatIntList(unionInts(la, lb))
-						continue
-					}
-				}
-				if la, ok := c.constStringListFromUnary(b.Left); ok {
-					if lb, ok2 := c.constStringListFromPostfix(op.Right); ok2 {
-						res = formatStringList(unionStrings(la, lb))
-						continue
-					}
-				}
-				if la, ok := c.constBoolListFromUnary(b.Left); ok {
-					if lb, ok2 := c.constBoolListFromPostfix(op.Right); ok2 {
-						res = formatBoolList(unionBools(la, lb))
-						continue
-					}
-				}
-				if la, ok := c.constFloatListFromUnary(b.Left); ok {
-					if lb, ok2 := c.constFloatListFromPostfix(op.Right); ok2 {
-						res = formatFloatList(unionFloats(la, lb))
-						continue
-					}
-				}
-			}
-			c.use("_union")
-			res = fmt.Sprintf("_union(%s, %s)", res, r)
-			continue
-		case "union_all":
-			if len(b.Right) == 1 {
-				if la, ok := c.constIntListFromUnary(b.Left); ok {
-					if lb, ok2 := c.constIntListFromPostfix(op.Right); ok2 {
-						res = formatIntList(append(la, lb...))
-						continue
-					}
-				}
-				if la, ok := c.constStringListFromUnary(b.Left); ok {
-					if lb, ok2 := c.constStringListFromPostfix(op.Right); ok2 {
-						res = formatStringList(append(la, lb...))
-						continue
-					}
-				}
-				if la, ok := c.constBoolListFromUnary(b.Left); ok {
-					if lb, ok2 := c.constBoolListFromPostfix(op.Right); ok2 {
-						res = formatBoolList(append(la, lb...))
-						continue
-					}
-				}
-				if la, ok := c.constFloatListFromUnary(b.Left); ok {
-					if lb, ok2 := c.constFloatListFromPostfix(op.Right); ok2 {
-						res = formatFloatList(append(la, lb...))
-						continue
-					}
-				}
-			}
-			c.use("_union_all")
-			res = fmt.Sprintf("_union_all(%s, %s)", res, r)
-			continue
-		case "except":
-			if len(b.Right) == 1 {
-				if la, ok := c.constIntListFromUnary(b.Left); ok {
-					if lb, ok2 := c.constIntListFromPostfix(op.Right); ok2 {
-						res = formatIntList(exceptInts(la, lb))
-						continue
-					}
-				}
-				if la, ok := c.constStringListFromUnary(b.Left); ok {
-					if lb, ok2 := c.constStringListFromPostfix(op.Right); ok2 {
-						res = formatStringList(exceptStrings(la, lb))
-						continue
-					}
-				}
-				if la, ok := c.constBoolListFromUnary(b.Left); ok {
-					if lb, ok2 := c.constBoolListFromPostfix(op.Right); ok2 {
-						res = formatBoolList(exceptBools(la, lb))
-						continue
-					}
-				}
-				if la, ok := c.constFloatListFromUnary(b.Left); ok {
-					if lb, ok2 := c.constFloatListFromPostfix(op.Right); ok2 {
-						res = formatFloatList(exceptFloats(la, lb))
-						continue
-					}
-				}
-			}
-			c.use("_except")
-			res = fmt.Sprintf("_except(%s, %s)", res, r)
-			continue
-		case "intersect":
-			if len(b.Right) == 1 {
-				if la, ok := c.constIntListFromUnary(b.Left); ok {
-					if lb, ok2 := c.constIntListFromPostfix(op.Right); ok2 {
-						res = formatIntList(intersectInts(la, lb))
-						continue
-					}
-				}
-				if la, ok := c.constStringListFromUnary(b.Left); ok {
-					if lb, ok2 := c.constStringListFromPostfix(op.Right); ok2 {
-						res = formatStringList(intersectStrings(la, lb))
-						continue
-					}
-				}
-				if la, ok := c.constBoolListFromUnary(b.Left); ok {
-					if lb, ok2 := c.constBoolListFromPostfix(op.Right); ok2 {
-						res = formatBoolList(intersectBools(la, lb))
-						continue
-					}
-				}
-				if la, ok := c.constFloatListFromUnary(b.Left); ok {
-					if lb, ok2 := c.constFloatListFromPostfix(op.Right); ok2 {
-						res = formatFloatList(intersectFloats(la, lb))
-						continue
-					}
-				}
-			}
-			c.use("_intersect")
-			res = fmt.Sprintf("_intersect(%s, %s)", res, r)
-			continue
-		case "+":
-			if leftIsStr || rightIsStr {
-				l := res
-				if leftIsStr && !leftIsLit {
-					l = fmt.Sprintf("trim(%s)", l)
-				}
-				rr := r
-				if rightIsStr && !rightIsLit {
-					rr = fmt.Sprintf("trim(%s)", rr)
-				}
-				res = fmt.Sprintf("%s // %s", l, rr)
-				leftIsStr = true
-				leftIsLit = false
-				continue
-			}
+			vals = append(vals, res)
 		}
-		res = fmt.Sprintf("(%s %s %s)", res, opStr, r)
-		leftIsStr = false
-		leftIsLit = false
+		ops = append(ops, op.Op)
+		vals = append(vals, vinfo)
 	}
-	return res, nil
+	for len(ops) > 0 {
+		right := vals[len(vals)-1]
+		vals = vals[:len(vals)-1]
+		left := vals[len(vals)-1]
+		vals = vals[:len(vals)-1]
+		p := ops[len(ops)-1]
+		ops = ops[:len(ops)-1]
+		res, err := c.binaryOp(left, p, right)
+		if err != nil {
+			return "", err
+		}
+		vals = append(vals, res)
+	}
+	if len(vals) != 1 {
+		return "", fmt.Errorf("binary compile error")
+	}
+	return vals[0].expr, nil
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
