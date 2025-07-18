@@ -5,7 +5,7 @@ programs in `tests/rosetta/x/Mochi`. Each file has the expected
 runtime output in a matching `.out` file. Compilation or runtime
 failures are stored in a corresponding `.error` file.
 
-Compiled programs: 18/216
+Compiled programs: 19/216
 
 ## Program checklist
 - [x] 100-doors-2
@@ -49,7 +49,7 @@ Compiled programs: 18/216
 - [ ] align-columns
 - [ ] aliquot-sequence-classifications
 - [ ] almkvist-giullera-formula-for-pi
-- [ ] almost-prime
+- [x] almost-prime
 - [x] amb
 - [x] amicable-pairs
 - [ ] anagrams-deranged-anagrams
