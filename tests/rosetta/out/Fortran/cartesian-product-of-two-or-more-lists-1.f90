@@ -3,14 +3,14 @@ program cartesian_product_of_two_or_more_lists_1
   implicit none
     integer, allocatable, dimension(:) :: p
     integer :: x
+    integer :: y
     integer :: i0
-      integer :: y
       integer :: i1
         integer, allocatable, dimension(:) :: app2
     character(len=100) :: s
     integer :: i
-      integer :: row
-      integer :: j
+    integer :: row
+    integer :: j
         character(len=100) :: s3
   call main()
   

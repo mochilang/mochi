@@ -13,11 +13,11 @@ program blum_integer
     integer, dimension(4) :: counts
     integer, dimension(4) :: digits
     integer :: bc
-      integer :: p
-        integer :: q
+    integer :: p
+    integer :: q
+    character(len=100) :: line
+    integer :: j
             integer, allocatable, dimension(:) :: app2
-              character(len=100) :: line
-              integer :: j
   call main()
   
   contains

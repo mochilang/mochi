@@ -1,72 +1,61 @@
 gfortran: exit status 1
-/tmp/100-prisoners.f90:41:7:
+/tmp/100-prisoners.f90:42:7:
 
-   41 |       tmp = arr(((i)+1))
+   42 |       tmp = arr(((i)+1))
       |       1
 Error: Unclassifiable statement at (1)
-/tmp/100-prisoners.f90:122:132:
+/tmp/100-prisoners.f90:129:8:
 
-  122 |     print *, trim(trim(trim(trim(trim('  strategy = ' // strategy) // '  pardoned = ') // s2) // ' relative frequency = ') // s3) // '%'
-      |                                                                                                                                    1
-Error: Line truncated at (1) [-Werror=line-truncation]
-/tmp/100-prisoners.f90:122:132:
-
-  122 |     print *, trim(trim(trim(trim(trim('  strategy = ' // strategy) // '  pardoned = ') // s2) // ' relative frequency = ') // s3) // '%'
-      |                                                                                                                                    1
-Error: Syntax error in expression at (1)
-/tmp/100-prisoners.f90:127:8:
-
-  127 |       np = arr4(i4)
+  129 |       np = arr5(i5)
       |        1
 Error: Symbol ‘np’ at (1) has no IMPLICIT type
-/tmp/100-prisoners.f90:125:10:
+/tmp/100-prisoners.f90:127:10:
 
-  125 |     trials = 1000
+  127 |     trials = 1000
       |          1
 Error: Symbol ‘trials’ at (1) has no IMPLICIT type
-/tmp/100-prisoners.f90:132:16:
+/tmp/100-prisoners.f90:134:16:
 
-  132 |         strat = arr7(i7)
+  134 |         strat = arr8(i8)
       |                1
 Error: Cannot convert CHARACTER(7) to INTEGER(4) at (1)
-/tmp/100-prisoners.f90:66:24:
+/tmp/100-prisoners.f90:67:24:
 
-   66 |       drawers = shuffle(drawers)
+   67 |       drawers = shuffle(drawers)
       |                        1
 Error: Rank mismatch in argument ‘xs’ at (1) (scalar and rank-1)
-/tmp/100-prisoners.f90:40:14:
+/tmp/100-prisoners.f90:41:14:
 
-   40 |       j = mod(now(),((i + 1)))
+   41 |       j = mod(now(),((i + 1)))
       |              1
 Error: Function ‘now’ at (1) has no IMPLICIT type
-/tmp/100-prisoners.f90:89:35:
+/tmp/100-prisoners.f90:90:35:
 
-   89 |             app1(1:size(opened)) = opened
+   90 |             app1(1:size(opened)) = opened
       |                                   1
 Warning: Extension: Conversion from INTEGER(4) to LOGICAL(4) at (1)
-/tmp/100-prisoners.f90:91:21:
+/tmp/100-prisoners.f90:92:21:
 
-   91 |             opened = app1
+   92 |             opened = app1
       |                     1
 Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
-/tmp/100-prisoners.f90:96:20:
+/tmp/100-prisoners.f90:97:20:
 
-   96 |             n = mod(now(),100)
+   97 |             n = mod(now(),100)
       |                    1
+Error: Function ‘now’ at (1) has no IMPLICIT type
+/tmp/100-prisoners.f90:99:22:
+
+   99 |               n = mod(now(),100)
+      |                      1
 Error: Function ‘now’ at (1) has no IMPLICIT type
 /tmp/100-prisoners.f90:98:22:
 
-   98 |               n = mod(now(),100)
-      |                      1
-Error: Function ‘now’ at (1) has no IMPLICIT type
-/tmp/100-prisoners.f90:97:22:
-
-   97 |             do while (opened(((n)+1)))
+   98 |             do while (opened(((n)+1)))
       |                      1
 Error: Exit condition of DO WHILE loop at (1) must be a scalar LOGICAL expression
-/tmp/100-prisoners.f90:100:30:
+/tmp/100-prisoners.f90:101:30:
 
-  100 |             opened(((n)+1)) = .true.
+  101 |             opened(((n)+1)) = .true.
       |                              1
 Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
-f951: some warnings being treated as errors

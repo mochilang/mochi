@@ -1,0 +1,21 @@
+gfortran: exit status 1
+/tmp/concurrent-computing-1.f90:11:19:
+
+   11 |     w = shuffle((/'Enjoy','Rosetta','Code'/))(i0)
+      |                   1
+Error: Invalid character in name at (1)
+/tmp/concurrent-computing-1.f90:19:14:
+
+   19 |     i = (size(arr) - 1)
+      |              1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/concurrent-computing-1.f90:21:14:
+
+   21 |       j = mod(now(),((i + 1)))
+      |              1
+Error: Function ‘now’ at (1) has no IMPLICIT type
+/tmp/concurrent-computing-1.f90:10:36:
+
+   10 |   do i0 = 1, size(shuffle((/'Enjoy','Rosetta','Code'/)))
+      |                                    1
+Error: Different CHARACTER lengths (5/7) in array constructor at (1)

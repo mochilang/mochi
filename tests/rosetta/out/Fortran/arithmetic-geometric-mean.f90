@@ -4,8 +4,8 @@ program arithmetic_geometric_mean
     integer :: guess
     integer :: i
     real :: eps
-      integer :: newA
-      integer :: newG
+    integer :: newA
+    integer :: newG
     character(len=100) :: s0
   call main()
   

@@ -4,19 +4,19 @@ program bitmap_histogram
     integer, allocatable, dimension(:) :: h
     integer :: i
     integer :: y
-      integer :: row
-      integer :: x
-        integer :: p
-        integer :: idx
+    integer :: row
+    integer :: x
+    integer :: p
+    integer :: idx
     integer :: lb
     integer :: ub
     integer :: lSum
     integer :: uSum
     integer, allocatable, dimension(:) :: out
-      integer, allocatable, dimension(:) :: newRow
+    integer, allocatable, dimension(:) :: newRow
           integer, allocatable, dimension(:) :: app0
       integer, allocatable, dimension(:) :: app1
-      character(len=100) :: line
+    character(len=100) :: line
     integer :: img
     integer :: bw
     character(len=100) :: s2

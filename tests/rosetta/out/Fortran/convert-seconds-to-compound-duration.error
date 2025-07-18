@@ -1,0 +1,46 @@
+gfortran: exit status 1
+/tmp/convert-seconds-to-compound-duration.f90:23:4:
+
+   23 |     sec = mod(sec,604800)
+      |    1
+Error: Dummy argument ‘sec’ with INTENT(IN) in variable definition context (assignment) at (1)
+/tmp/convert-seconds-to-compound-duration.f90:25:4:
+
+   25 |     sec = mod(sec,86400)
+      |    1
+Error: Dummy argument ‘sec’ with INTENT(IN) in variable definition context (assignment) at (1)
+/tmp/convert-seconds-to-compound-duration.f90:27:4:
+
+   27 |     sec = mod(sec,3600)
+      |    1
+Error: Dummy argument ‘sec’ with INTENT(IN) in variable definition context (assignment) at (1)
+/tmp/convert-seconds-to-compound-duration.f90:29:4:
+
+   29 |     sec = mod(sec,60)
+      |    1
+Error: Dummy argument ‘sec’ with INTENT(IN) in variable definition context (assignment) at (1)
+/tmp/convert-seconds-to-compound-duration.f90:34:13:
+
+   34 |       res = (res + s0) // ' wk'
+      |             1
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
+/tmp/convert-seconds-to-compound-duration.f90:42:13:
+
+   42 |       res = (res + s1) // ' d'
+      |             1
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
+/tmp/convert-seconds-to-compound-duration.f90:50:13:
+
+   50 |       res = (res + s2) // ' hr'
+      |             1
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
+/tmp/convert-seconds-to-compound-duration.f90:58:13:
+
+   58 |       res = (res + s3) // ' min'
+      |             1
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
+/tmp/convert-seconds-to-compound-duration.f90:66:13:
+
+   66 |       res = (res + s4) // ' sec'
+      |             1
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)

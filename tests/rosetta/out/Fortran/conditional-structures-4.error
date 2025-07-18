@@ -1,0 +1,6 @@
+gfortran: exit status 1
+/tmp/conditional-structures-4.f90:17:5:
+
+   17 |     x = fetchSomething()
+      |     1
+Error: Symbol ‘x’ at (1) has no IMPLICIT type

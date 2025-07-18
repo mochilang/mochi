@@ -6,9 +6,9 @@ program carmichael_3_strong_pseudoprimes
     integer :: s
     character(len=100) :: s0
     integer :: h3
-          integer :: p2
-          integer :: p3
-          integer :: c
+    integer :: p2
+    integer :: p3
+    integer :: c
           character(len=100) :: s1
   print *, 'The following are Carmichael munbers for p1 <= 61:'//char(10)//''
   print *, 'p1     p2      p3     product'

@@ -5,15 +5,15 @@ program averages_pythagorean_means
     integer :: i
     real :: low
     integer :: high
-      integer :: mid
+    integer :: mid
     integer :: sum
     real :: sumRecip
     real :: prod
+    integer :: f
     integer :: count
     integer :: a
     integer :: g
     integer :: h
-      integer :: f
     character(len=100) :: s0
     character(len=100) :: s1
     character(len=100) :: s2

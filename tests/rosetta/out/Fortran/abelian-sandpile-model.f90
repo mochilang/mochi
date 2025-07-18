@@ -4,13 +4,13 @@ program abelian_sandpile_model
   integer :: dim
     integer, allocatable, dimension(:) :: b
     integer :: y
-      integer, allocatable, dimension(:) :: row
-      integer :: x
+    integer, allocatable, dimension(:) :: row
+    integer :: x
       integer, allocatable, dimension(:) :: app0
     integer, dimension(4) :: chars
-      character(len=100) :: line
-      integer :: col
-        integer :: v
+    character(len=100) :: line
+    integer :: col
+    integer :: v
     integer :: hdim
   dim = 16
   call main()

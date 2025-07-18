@@ -4,21 +4,23 @@ program p_99_bottles_of_beer_2
     integer, allocatable, dimension(:) :: words
     character(len=100) :: cur
     integer :: i
-      integer :: ch
+    integer :: ch
           integer, allocatable, dimension(:) :: app0
       integer, allocatable, dimension(:) :: app1
     character(len=100) :: res
     integer, dimension(20) :: small
     integer, dimension(10) :: tens
-      integer :: t
+    integer :: t
     integer :: w
     integer :: next
     integer, allocatable, dimension(:) :: a
     integer :: idx
+    integer :: j
+    integer :: tmp
     integer :: k
       integer, allocatable, dimension(:) :: app2
-        integer :: j
-        integer :: tmp
+      character(len=256) :: pbuf3
+      character(len=256) :: pbuf4
   call main()
   
   contains
@@ -156,10 +158,12 @@ program p_99_bottles_of_beer_2
   recursive subroutine main()
     i = 99
     do while ((i > 0))
-      print *, trim(trim(trim(slur(numberName(i),i) // ' ') // pluralizeFirst(slur('bottle of',i),i)) // ' ') // slur('beer on the wall',i)
+      pbuf3 = trim(trim(trim(slur(numberName(i),i) // ' ') // pluralizeFirst(slur('bottle of',i),i)) // ' ') // slur('beer on the wall',i)
+      print *, pbuf3
       print *, trim(trim(trim(slur(numberName(i),i) // ' ') // pluralizeFirst(slur('bottle of',i),i)) // ' ') // slur('beer',i)
       print *, trim(trim(trim(slur('take one',i) // ' ') // slur('down',i)) // ' ') // slur('pass it around',i)
-      print *, trim(trim(trim(slur(numberName((i - 1)),i) // ' ') // pluralizeFirst(slur('bottle of',i),(i - 1))) // ' ') // slur('beer on the wall',i)
+      pbuf4 = trim(trim(trim(slur(numberName((i - 1)),i) // ' ') // pluralizeFirst(slur('bottle of',i),(i - 1))) // ' ') // slur('beer on the wall',i)
+      print *, pbuf4
       i = (i - 1)
     end do
   end subroutine main

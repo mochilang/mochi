@@ -1,0 +1,11 @@
+gfortran: exit status 1
+/tmp/copy-stdin-to-stdout-1.f90:6:11:
+
+    6 |     line = input()
+      |           1
+Error: Function ‘input’ at (1) has no IMPLICIT type
+/tmp/copy-stdin-to-stdout-1.f90:7:9:
+
+    7 |     if ((line == '')) then
+      |         1
+Error: Operands of comparison operator ‘==’ at (1) are INTEGER(4)/CHARACTER(0)

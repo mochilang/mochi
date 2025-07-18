@@ -4,8 +4,8 @@ program brazilian_numbers
     integer :: f
     integer :: d
     integer, dimension(3) :: kinds
-    integer :: c
     integer :: kind
+    integer :: c
     integer :: i0
           character(len=100) :: s1
     character(len=100) :: s2

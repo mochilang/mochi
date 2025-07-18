@@ -4,22 +4,22 @@ program average_loop_length
     integer :: i
     integer :: y
     integer :: dot
+    integer :: decs
     character(len=100) :: s0
-      integer :: decs
     character(len=100) :: s1
     integer :: tests
     integer :: sum
     integer :: seed
     integer :: t
-      integer, allocatable, dimension(:) :: visited
+    integer, allocatable, dimension(:) :: visited
         logical, allocatable, dimension(:) :: app2
     integer :: nn
     real :: term
     integer :: nmax
-      integer :: a
-      integer :: b
-      integer :: err
-      integer :: line
+    integer :: a
+    integer :: b
+    integer :: err
+    integer :: line
   call main()
   
   contains

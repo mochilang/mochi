@@ -10,8 +10,8 @@ program attractive_numbers
     character(len=100) :: line
     integer :: lineCount
     integer :: i
+    integer :: c
     character(len=100) :: s1
-      integer :: c
   call main()
   
   contains

@@ -1,0 +1,8 @@
+parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/copy-stdin-to-stdout-2.mochi:4:5: unexpected token "{" (expected <ident> "in" Expr (".." Expr)? "{" Statement* "}")
+  --> /workspace/mochi/tests/rosetta/x/Mochi/copy-stdin-to-stdout-2.mochi:4:5
+
+  4 | for {
+    |     ^
+
+help:
+  Parse error occurred. Check syntax near this location.

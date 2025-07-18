@@ -95,10 +95,10 @@ func main() {
 			continue
 		}
 		exe := filepath.Join(os.TempDir(), name)
-		if out, err := exec.Command(gfortran, tmp, "-static", "-o", exe).CombinedOutput(); err != nil {
-			writeError(outDir, name, fmt.Sprintf("gfortran: %v\n%s", err, out))
-			os.Remove(filepath.Join(outDir, name+".out"))
-			continue
+               if out, err := exec.Command(gfortran, "-ffree-line-length-none", tmp, "-static", "-o", exe).CombinedOutput(); err != nil {
+                       writeError(outDir, name, fmt.Sprintf("gfortran: %v\n%s", err, out))
+                       os.Remove(filepath.Join(outDir, name+".out"))
+                       continue
 		}
 		out, err := exec.Command(exe).CombinedOutput()
 		if err != nil {

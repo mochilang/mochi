@@ -5,7 +5,7 @@ program chaocipher
     character(len=100) :: left
     character(len=100) :: right
     character(len=100) :: out
-      integer :: idx
+    integer :: idx
     character(len=100) :: plain
     integer :: cipher
   call main()

@@ -3,32 +3,33 @@ program p_100_prisoners
   implicit none
     integer :: arr
     integer :: i
-      integer :: j
-      integer :: tmp
+    integer :: j
+    integer :: tmp
     integer :: pardoned
     integer :: t
+    integer, allocatable, dimension(:) :: drawers
+    integer :: p
+    logical :: success
+    logical :: found
+    integer :: prev
+    integer :: d
+    integer :: this
+    integer, allocatable, dimension(:) :: opened
+    integer :: k
+    integer :: n
     integer :: rf
-      integer, allocatable, dimension(:) :: drawers
         integer, allocatable, dimension(:) :: app0
-      integer :: p
-      logical :: success
-        logical :: found
-          integer :: prev
-          integer :: d
-            integer :: this
-          integer, allocatable, dimension(:) :: opened
-          integer :: k
             logical, allocatable, dimension(:) :: app1
-            integer :: n
     character(len=100) :: s2
     character(len=100) :: s3
-    integer, dimension(2) :: arr4 = (/10,100/)
-    integer :: i4
-      character(len=100) :: s5
+    character(len=256) :: pbuf4
+    integer :: strat
+    integer, dimension(2) :: arr5 = (/10,100/)
+    integer :: i5
       character(len=100) :: s6
-      integer :: strat
-      character(len=7), dimension(2) :: arr7 = (/'random ','optimal'/)
-      integer :: i7
+      character(len=100) :: s7
+      character(len=7), dimension(2) :: arr8 = (/'random ','optimal'/)
+      integer :: i8
   call main()
   
   contains
@@ -119,17 +120,18 @@ program p_100_prisoners
     rf = (((real(pardoned)) / (real(trials))) * 100.0)
     write(s2,'(G0)') pardoned
     write(s3,'(G0)') rf
-    print *, trim(trim(trim(trim(trim('  strategy = ' // strategy) // '  pardoned = ') // s2) // ' relative frequency = ') // s3) // '%'
+    pbuf4 = trim(trim(trim(trim(trim('  strategy = ' // strategy) // '  pardoned = ') // s2) // ' relative frequency = ') // s3) // '%'
+    print *, pbuf4
   end subroutine doTrials
   recursive subroutine main()
     trials = 1000
-    do i4 = 1, 2
-      np = arr4(i4)
-      write(s5,'(G0)') trials
-      write(s6,'(G0)') np
-      print *, trim(trim(trim('Results from ' // s5) // ' trials with ') // s6) // ' prisoners:'//char(10)//''
-      do i7 = 1, 2
-        strat = arr7(i7)
+    do i5 = 1, 2
+      np = arr5(i5)
+      write(s6,'(G0)') trials
+      write(s7,'(G0)') np
+      print *, trim(trim(trim('Results from ' // s6) // ' trials with ') // s7) // ' prisoners:'//char(10)//''
+      do i8 = 1, 2
+        strat = arr8(i8)
         call doTrials(trials,np,strat)
       end do
     end do

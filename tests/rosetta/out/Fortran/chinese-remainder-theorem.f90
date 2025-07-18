@@ -12,10 +12,10 @@ program chinese_remainder_theorem
     integer :: x
     integer :: prod
     integer :: i
-      integer :: ni
-      integer :: ai
-      integer :: p
-      integer :: inv
+    integer :: ni
+    integer :: ai
+    integer :: p
+    integer :: inv
   n = (/3,5,7/)
   a = (/2,3,2/)
   res = crt(a,n)

@@ -4,9 +4,9 @@ program averages_median_2
   character(len=100) :: s0
   character(len=100) :: s1
     integer :: i
-      integer :: minIndex
-      integer :: j
-      integer :: tmp
+    integer :: minIndex
+    integer :: j
+    integer :: tmp
     integer :: arr
     integer :: half
     integer :: med

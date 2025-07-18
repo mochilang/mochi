@@ -8,25 +8,25 @@ program canny_edge_detector
     integer :: half
     integer, allocatable, dimension(:) :: out
     integer :: y
-      integer, allocatable, dimension(:) :: row
-      integer :: x
-        integer :: sum
-        integer :: j
-          integer :: i
-            integer :: yy
-            integer :: xx
+    integer, allocatable, dimension(:) :: row
+    integer :: x
+    integer :: sum
+    integer :: j
+    integer :: i
+    integer :: yy
+    integer :: xx
         integer, allocatable, dimension(:) :: app0
       integer, allocatable, dimension(:) :: app1
     integer, dimension(3,3) :: hx
     integer, dimension(3,3) :: hy
     integer :: gx
     integer :: gy
-        integer :: g
+    integer :: g
         integer, allocatable, dimension(:) :: app2
       integer, allocatable, dimension(:) :: app3
           integer, allocatable, dimension(:) :: app4
       integer, allocatable, dimension(:) :: app5
-      character(len=100) :: line
+    character(len=100) :: line
         character(len=100) :: s6
     integer :: edges
   PI = 3.141592653589793

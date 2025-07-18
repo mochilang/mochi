@@ -1,0 +1,6 @@
+gfortran: exit status 1
+/tmp/count-in-octal-3.f90:24:13:
+
+   24 |       out = (digits((d)+1:(d + 1)) + out)
+      |             1
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(*)/CHARACTER(100)

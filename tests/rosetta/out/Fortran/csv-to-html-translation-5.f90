@@ -17,7 +17,7 @@ program csv_to_html_translation_5
     integer :: n
         integer, allocatable, dimension(:) :: app4
     integer, allocatable, dimension(:) :: app5
-      integer :: ch
+    integer :: ch
   c = trim(trim(trim(trim('Character,Speech'//char(10)//'' // 'The multitude,The messiah! Show us the messiah!'//char(10)//'') // 'Brians mother,<angry>Now you listen here! He''s not the messiah; he''s a very naughty boy! Now go away!</angry>'//char(10)//'') // 'The multitude,Who are you?'//char(10)//'') // 'Brians mother,I''m his mother; that''s who!'//char(10)//'') // 'The multitude,Behold his mother! Behold his mother!'
   allocate(rows(0))
   do i0 = 1, size(split(c,''//char(10)//''))

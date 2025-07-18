@@ -9,8 +9,8 @@ program apply_a_digital_filter_direct_form_ii_transposed_
     integer, allocatable, dimension(:) :: out
     real :: scale
     integer :: i
-      real :: tmp
-      integer :: j
+    real :: tmp
+    integer :: j
       integer, allocatable, dimension(:) :: app0
   a = (/1.0,-2.7756e-16,0.33333333,-1.85e-17/)
   b = (/0.16666667,0.5,0.5,0.16666667/)

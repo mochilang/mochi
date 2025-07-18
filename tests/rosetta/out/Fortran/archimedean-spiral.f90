@@ -19,7 +19,7 @@ program archimedean_spiral
     integer :: term
     integer :: sum
     integer :: n
-      integer :: denom
+    integer :: denom
   PI = 3.141592653589793
   degreesIncr = ((0.1 * PI) / 180.0)
   turns = 2.0

@@ -6,7 +6,7 @@ program amicable_pairs
     integer :: s
     character(len=100) :: s0
     integer, allocatable, dimension(:) :: sums
-      integer :: m
+    integer :: m
   call main()
   
   contains

@@ -10,19 +10,23 @@ program abelian_sandpile_model_identity
   integer, dimension(9) :: s3_id
   integer :: s4b
   integer :: s5
+  character(len=256) :: pbuf0
+  character(len=256) :: pbuf1
+  character(len=256) :: pbuf2
+  character(len=256) :: pbuf3
     integer, allocatable, dimension(:) :: res
     integer :: i
-      integer, allocatable, dimension(:) :: app0
+      integer, allocatable, dimension(:) :: app4
     integer :: v
-    integer :: i1
+    integer :: i5
     integer :: neighbors
-        integer :: nbs
-        integer :: j
-        integer :: i2
+    integer :: nbs
+    integer :: j
+        integer :: i6
     character(len=100) :: s
     integer :: r
-      integer :: c
-        character(len=100) :: s3
+    integer :: c
+        character(len=100) :: s7
   print *, 'Avalanche of topplings:'//char(10)//''
   s4 = (/4,3,3,3,1,2,0,2,3/)
   print *, pileString(s4)
@@ -41,8 +45,10 @@ program abelian_sandpile_model_identity
   do while (.not. isStable(s3_b))
     topple(s3_b)
   end do
-  print *, trim(trim(trim(pileString(s1) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s2)) // ''//char(10)//'equals'//char(10)//''//char(10)//'') // pileString(s3_a)
-  print *, trim(trim(trim(trim('and'//char(10)//''//char(10)//'' // pileString(s2)) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s1)) // ''//char(10)//'also equals'//char(10)//''//char(10)//'') // pileString(s3_b)
+  pbuf0 = trim(trim(trim(pileString(s1) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s2)) // ''//char(10)//'equals'//char(10)//''//char(10)//'') // pileString(s3_a)
+  print *, pbuf0
+  pbuf1 = trim(trim(trim(trim('and'//char(10)//''//char(10)//'' // pileString(s2)) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s1)) // ''//char(10)//'also equals'//char(10)//''//char(10)//'') // pileString(s3_b)
+  print *, pbuf1
   print *, 'Addition of identity sandpile:'//char(10)//''
   s3 = (/3,3,3,3,3,3,3,3,3/)
   s3_id = (/2,1,2,1,0,1,2,1,2/)
@@ -50,13 +56,15 @@ program abelian_sandpile_model_identity
   do while (.not. isStable(s4b))
     topple(s4b)
   end do
-  print *, trim(trim(trim(pileString(s3) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s3_id)) // ''//char(10)//'equals'//char(10)//''//char(10)//'') // pileString(s4b)
+  pbuf2 = trim(trim(trim(pileString(s3) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s3_id)) // ''//char(10)//'equals'//char(10)//''//char(10)//'') // pileString(s4b)
+  print *, pbuf2
   print *, 'Addition of identities:'//char(10)//''
   s5 = plus(s3_id,s3_id)
   do while (.not. isStable(s5))
     topple(s5)
   end do
-  print *, trim(trim(trim(pileString(s3_id) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s3_id)) // ''//char(10)//'equals'//char(10)//''//char(10)//'') // pileString(s5)
+  pbuf3 = trim(trim(trim(pileString(s3_id) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s3_id)) // ''//char(10)//'equals'//char(10)//''//char(10)//'') // pileString(s5)
+  print *, pbuf3
   
   contains
   recursive integer function neighborsList() result(res)
@@ -69,11 +77,11 @@ program abelian_sandpile_model_identity
     allocate(res(0))
     i = 0
     do while ((i < size(a)))
-      if (allocated(app0)) deallocate(app0)
-      allocate(app0(size(res)+1))
-      app0(1:size(res)) = res
-      app0(size(res)+1) = (a(((i)+1)) + b(((i)+1)))
-      res = app0
+      if (allocated(app4)) deallocate(app4)
+      allocate(app4(size(res)+1))
+      app4(1:size(res)) = res
+      app4(size(res)+1) = (a(((i)+1)) + b(((i)+1)))
+      res = app4
       i = (i + 1)
     end do
     res = res
@@ -81,8 +89,8 @@ program abelian_sandpile_model_identity
   end function plus
   recursive logical function isStable(p) result(res)
     integer, intent(in) :: p
-    do i1 = 1, size(p)
-      v = p(i1)
+    do i5 = 1, size(p)
+      v = p(i5)
       if ((v > 3)) then
         res = .false.
         return
@@ -99,8 +107,8 @@ program abelian_sandpile_model_identity
       if ((p(((i)+1)) > 3)) then
         p(((i)+1)) = (p(((i)+1)) - 4)
         nbs = neighbors(((i)+1))
-        do i2 = 1, size(nbs)
-          j = nbs(i2)
+        do i6 = 1, size(nbs)
+          j = nbs(i6)
           p(((j)+1)) = (p(((j)+1)) + 1)
         end do
         res = 0
@@ -118,8 +126,8 @@ program abelian_sandpile_model_identity
     do while ((r < 3))
       c = 0
       do while ((c < 3))
-        write(s3,'(G0)') p(((((3 * r) + c))+1))
-        s = (s + s3) // ' '
+        write(s7,'(G0)') p(((((3 * r) + c))+1))
+        s = (s + s7) // ' '
         c = (c + 1)
       end do
       s = s // ''//char(10)//''

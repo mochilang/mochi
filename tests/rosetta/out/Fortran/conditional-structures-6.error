@@ -1,0 +1,8 @@
+parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/conditional-structures-6.mochi:8:7: unexpected token "|" (expected "=>" Expr)
+  --> /workspace/mochi/tests/rosetta/x/Mochi/conditional-structures-6.mochi:8:7
+
+  8 |     2 | 3 | 4 => {
+    |       ^
+
+help:
+  Parse error occurred. Check syntax near this location.

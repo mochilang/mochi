@@ -5,7 +5,7 @@ program bitmap_midpoint_circle_algorithm
   integer :: row
   integer :: i0
     integer :: y
-      integer :: x
+    integer :: x
         character(len=100), allocatable, dimension(:) :: app1
       integer, allocatable, dimension(:) :: app2
     integer :: err

@@ -4,28 +4,28 @@ program abbreviations_easy
     integer, allocatable, dimension(:) :: words
     character(len=100) :: cur
     integer :: i
-      integer :: ch
+    integer :: ch
           integer, allocatable, dimension(:) :: app0
       integer, allocatable, dimension(:) :: app1
     integer :: out
     character(len=100) :: res
     integer, allocatable, dimension(:) :: results
     integer :: wi
-      integer :: w
-      logical :: found
-      integer :: wlen
-      integer :: ci
-        integer :: cmd
-          integer :: c
-          integer :: ww
+    integer :: w
+    logical :: found
+    integer :: wlen
+    integer :: ci
+    integer :: cmd
+    integer :: c
+    integer :: ww
             integer, allocatable, dimension(:) :: app2
         character(len=100), allocatable, dimension(:) :: app3
     character(len=100) :: table
+    integer :: count
+    integer :: j
     character(len=100) :: sentence
     character(len=100) :: out1
     integer :: k
-      integer :: count
-      integer :: j
       integer, allocatable, dimension(:) :: app4
   call main()
   

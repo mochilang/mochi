@@ -72,10 +72,10 @@ func runRosettaTaskGolden(t *testing.T, name string) {
 		t.Fatalf("write error: %v", err)
 	}
 	exe := filepath.Join(dir, "main")
-	if out, err := exec.Command(gfortran, file, "-static", "-o", exe).CombinedOutput(); err != nil {
-		t.Skipf("gfortran error: %v\n%s", err, out)
-		return
-	}
+       if out, err := exec.Command(gfortran, "-ffree-line-length-none", file, "-static", "-o", exe).CombinedOutput(); err != nil {
+               t.Skipf("gfortran error: %v\n%s", err, out)
+               return
+       }
 	out, err := exec.Command(exe).CombinedOutput()
 	if err != nil {
 		t.Skipf("run error: %v\n%s", err, out)

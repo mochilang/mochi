@@ -7,6 +7,7 @@ program atomic_updates
     integer, allocatable, dimension(:) :: buckets
     integer :: i
     integer :: dist
+    integer :: v
     integer :: tc0
     integer :: tc1
     integer :: total
@@ -14,16 +15,15 @@ program atomic_updates
     integer :: seedOrder
     integer :: seedChaos
     integer :: t
-      integer :: v
-      integer :: r
-      integer :: b1
-      integer :: b2
-      integer :: v1
-      integer :: v2
-        integer :: a
-      integer :: amt
-      integer :: sum
-      integer :: idx
+    integer :: r
+    integer :: b1
+    integer :: b2
+    integer :: v1
+    integer :: v2
+    integer :: a
+    integer :: amt
+    integer :: sum
+    integer :: idx
       character(len=100) :: s0
       character(len=100) :: s1
       character(len=100) :: s2

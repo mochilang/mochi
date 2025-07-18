@@ -1,19 +1,14 @@
 gfortran: exit status 1
-/tmp/boyer-moore-string-search.f90:88:132:
-
-   88 |     texts = (/'GCTAGCTCTACGAGTCTA','GGCTATAATGCGTA','there would have been a time for such a word','needle need noodle needle','DKnuthusesandprogramsanimaginarycomputertheMIXanditsassociatedmachinecodeandassemblylanguages','Nearby farms grew an acre of alfalfa on the dairy''s behalf, with bales of that alfalfa exchanged for milk.'/)
-      |                                                                                                                                    1
-Error: Line truncated at (1) [-Werror=line-truncation]
-/tmp/boyer-moore-string-search.f90:88:129:
-
-   88 |     texts = (/'GCTAGCTCTACGAGTCTA','GGCTATAATGCGTA','there would have been a time for such a word','needle need noodle needle','DKnuthusesandprogramsanimaginarycomputertheMIXanditsassociatedmachinecodeandassemblylanguages','Nearby farms grew an acre of alfalfa on the dairy''s behalf, with bales of that alfalfa exchanged for milk.'/)
-      |                                                                                                                                 1
-Error: Unterminated character constant beginning at (1)
 /tmp/boyer-moore-string-search.f90:71:52:
 
    71 |   recursive character(len=100) function display(nums) result(res)
       |                                                    1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘nums’ at (1)
+/tmp/boyer-moore-string-search.f90:88:35:
+
+   88 |     texts = (/'GCTAGCTCTACGAGTCTA','GGCTATAATGCGTA','there would have been a time for such a word','needle need noodle needle','DKnuthusesandprogramsanimaginarycomputertheMIXanditsassociatedmachinecodeandassemblylanguages','Nearby farms grew an acre of alfalfa on the dairy''s behalf, with bales of that alfalfa exchanged for milk.'/)
+      |                                   1
+Error: Different CHARACTER lengths (18/14) in array constructor at (1)
 /tmp/boyer-moore-string-search.f90:89:24:
 
    89 |     patterns = (/'TCTA','TAATAAA','word','needle','and','alfalfa'/)
@@ -84,4 +79,3 @@ Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
   101 |       print *, trim(trim(trim(trim('Found "' // patterns(((j)+1))) // '" in ''text') // s3) // ''' at indexes ') // display(idxs)
       |                                   1
 Error: Operands of string concatenation operator at (1) are CHARACTER(7)/INTEGER(4)
-f951: some warnings being treated as errors

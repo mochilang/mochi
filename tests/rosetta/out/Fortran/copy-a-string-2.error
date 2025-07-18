@@ -1,0 +1,26 @@
+gfortran: exit status 1
+/tmp/copy-a-string-2.f90:7:12:
+
+    7 |   pointer = (/creature/)
+      |            1
+Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
+/tmp/copy-a-string-2.f90:10:10:
+
+   10 |   print *, '*pointer = ' // pointer(((0)+1))
+      |          1
+Error: Operands of string concatenation operator at (1) are CHARACTER(11)/INTEGER(4)
+/tmp/copy-a-string-2.f90:11:21:
+
+   11 |   pointer(((0)+1)) = 'jellyfish'
+      |                     1
+Error: Cannot convert CHARACTER(9) to INTEGER(4) at (1)
+/tmp/copy-a-string-2.f90:12:13:
+
+   12 |   creature = pointer(((0)+1))
+      |             1
+Error: Cannot convert INTEGER(4) to CHARACTER(100) at (1)
+/tmp/copy-a-string-2.f90:13:10:
+
+   13 |   print *, '*pointer = ' // pointer(((0)+1))
+      |          1
+Error: Operands of string concatenation operator at (1) are CHARACTER(11)/INTEGER(4)

@@ -7,14 +7,14 @@ program chernicks_carmichael_numbers
     integer, allocatable, dimension(:) :: res
     integer :: carry
     integer :: i
-      integer :: prod
+    integer :: prod
       integer, allocatable, dimension(:) :: app1
       integer, allocatable, dimension(:) :: app2
     character(len=100) :: s
       character(len=100) :: s3
     integer :: r
     integer :: p
-        integer :: num
+    integer :: num
           character(len=100) :: s4
   call ccNumbers(3,9)
   

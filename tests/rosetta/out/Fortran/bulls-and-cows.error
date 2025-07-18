@@ -1,8 +1,76 @@
-parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/bulls-and-cows.mochi:48:31: unexpected token "-" (expected PostfixExpr)
-  --> /workspace/mochi/tests/rosetta/x/Mochi/bulls-and-cows.mochi:48:31
+gfortran: exit status 1
+/tmp/bulls-and-cows.f90:43:7:
 
- 48 |       if indexOf(seen, cg) != -1 {
-    |                               ^
+   43 |       tmp = arr(((i)+1))
+      |       1
+Error: Unclassifiable statement at (1)
+/tmp/bulls-and-cows.f90:56:13:
 
-help:
-  Parse error occurred. Check syntax near this location.
+   56 |     digits = (/'1','2','3','4','5','6','7','8','9'/)
+      |             1
+Error: Cannot convert CHARACTER(1) to INTEGER(4) at (1)
+/tmp/bulls-and-cows.f90:57:21:
+
+   57 |     digits = shuffle(digits)
+      |                     1
+Error: Rank mismatch in argument ‘xs’ at (1) (scalar and rank-1)
+/tmp/bulls-and-cows.f90:40:14:
+
+   40 |     i = (size(arr) - 1)
+      |              1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/bulls-and-cows.f90:42:14:
+
+   42 |       j = mod(now(),((i + 1)))
+      |              1
+Error: Function ‘now’ at (1) has no IMPLICIT type
+/tmp/bulls-and-cows.f90:62:14:
+
+   62 |       guess = input()
+      |              1
+Error: Function ‘input’ at (1) has no IMPLICIT type
+/tmp/bulls-and-cows.f90:63:16:
+
+   63 |       if ((size(guess) /= 4)) then
+      |                1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/bulls-and-cows.f90:74:13:
+
+   74 |         if ((indexOf(seen,cg) /= (-1))) then
+      |             1
+Error: Type mismatch in argument ‘ch’ at (1); passed INTEGER(4) to CHARACTER(100)
+/tmp/bulls-and-cows.f90:27:24:
+
+   27 |     do while ((i < size(s)))
+      |                        1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/bulls-and-cows.f90:75:18:
+
+   75 |           print *, 'Repeated digit: ' // cg
+      |                  1
+Error: Operands of string concatenation operator at (1) are CHARACTER(16)/INTEGER(4)
+/tmp/bulls-and-cows.f90:79:16:
+
+   79 |         seen = (seen + cg)
+      |                1
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/INTEGER(4)
+/tmp/bulls-and-cows.f90:80:14:
+
+   80 |         pos = indexOf(pat,cg)
+      |              1
+Error: Type mismatch in argument ‘s’ at (1); passed INTEGER(4) to CHARACTER(100)
+/tmp/bulls-and-cows.f90:80:14:
+
+   80 |         pos = indexOf(pat,cg)
+      |              1
+Error: Type mismatch in argument ‘ch’ at (1); passed INTEGER(4) to CHARACTER(100)
+/tmp/bulls-and-cows.f90:82:15:
+
+   82 |           if ((indexOf(valid,cg) == (-1))) then
+      |               1
+Error: Type mismatch in argument ‘ch’ at (1); passed INTEGER(4) to CHARACTER(100)
+/tmp/bulls-and-cows.f90:83:20:
+
+   83 |             print *, 'Invalid digit: ' // cg
+      |                    1
+Error: Operands of string concatenation operator at (1) are CHARACTER(15)/INTEGER(4)

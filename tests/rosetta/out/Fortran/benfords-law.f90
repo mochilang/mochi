@@ -4,21 +4,21 @@ program benfords_law
     integer :: i
     integer :: y
     integer :: dot
+    integer :: decs
     character(len=100) :: s0
-      integer :: decs
     real :: a
     real :: b
     integer, allocatable, dimension(:) :: res
+    integer :: t
       integer, allocatable, dimension(:) :: app1
-      integer :: t
     integer, dimension(9) :: counts
+    integer :: n
+    integer :: d
     integer, dimension(9) :: preds
     integer :: total
-    integer :: n
+    integer :: obs
+    character(len=100) :: line
     integer :: i2
-      integer :: d
-      integer :: obs
-      character(len=100) :: line
       character(len=100) :: s3
   call main()
   

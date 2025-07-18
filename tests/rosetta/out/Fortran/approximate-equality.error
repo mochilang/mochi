@@ -1,14 +1,9 @@
 gfortran: exit status 1
-/tmp/approximate-equality.f90:61:132:
+/tmp/approximate-equality.f90:64:7:
 
-   61 |     pairs = reshape((/1.0000000000000002e+14,1.0000000000000002e+14,100.01,100.011,(1.0000000000000002e+13 / 10000.0),1.0000000000000001e+09,0.001,0.0010000001,1.01e-22,0.0,(root2 * root2),2.0,((-root2) * root2),-2.0,100000000000000000.0,100000000000000000.0,3.141592653589793,3.141592653589793/),(/9,2/))
-      |                                                                                                                                    1
-Error: Line truncated at (1) [-Werror=line-truncation]
-/tmp/approximate-equality.f90:61:132:
-
-   61 |     pairs = reshape((/1.0000000000000002e+14,1.0000000000000002e+14,100.01,100.011,(1.0000000000000002e+13 / 10000.0),1.0000000000000001e+09,0.001,0.0010000001,1.01e-22,0.0,(root2 * root2),2.0,((-root2) * root2),-2.0,100000000000000000.0,100000000000000000.0,3.141592653589793,3.141592653589793/),(/9,2/))
-      |                                                                                                                                    1
-Error: Syntax error in array constructor at (1)
+   64 |       a = pair(((0)+1))
+      |       1
+Error: Unclassifiable statement at (1)
 /tmp/approximate-equality.f90:66:19:
 
    66 |       if (isClose(a,b)) then
@@ -19,6 +14,11 @@ Error: Symbol ‘a’ at (1) has no IMPLICIT type
    66 |       if (isClose(a,b)) then
       |                     1
 Error: Symbol ‘b’ at (1) has no IMPLICIT type
+/tmp/approximate-equality.f90:61:173:
+
+   61 |     pairs = reshape((/1.0000000000000002e+14,1.0000000000000002e+14,100.01,100.011,(1.0000000000000002e+13 / 10000.0),1.0000000000000001e+09,0.001,0.0010000001,1.01e-22,0.0,(root2 * root2),2.0,((-root2) * root2),-2.0,100000000000000000.0,100000000000000000.0,3.141592653589793,3.141592653589793/),(/9,2/))
+      |                                                                                                                                                                             1
+Error: Element in REAL(4) array constructor at (1) is INTEGER(4)
 /tmp/approximate-equality.f90:63:18:
 
    63 |       pair = pairs(i0)
@@ -41,4 +41,3 @@ Error: Operands of string concatenation operator at (1) are CHARACTER(*)/INTEGER
    63 |       pair = pairs(i0)
       |                   1
 Warning: Array reference at (1) out of bounds (18 > 9) in loop beginning at (2)
-f951: some warnings being treated as errors

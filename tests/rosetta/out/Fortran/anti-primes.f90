@@ -5,7 +5,7 @@ program anti_primes
     integer :: i
     integer :: maxDiv
     character(len=100) :: line
-      integer :: d
+    integer :: d
         character(len=100) :: s0
   call main()
   
