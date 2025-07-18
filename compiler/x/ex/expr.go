@@ -433,6 +433,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 						c.use("_avg")
 						res = fmt.Sprintf("_avg(%s)", argStr)
 					}
+				case "abs":
+					if len(args) != 1 {
+						return "", fmt.Errorf("abs expects 1 arg")
+					}
+					res = fmt.Sprintf("abs(%s)", args[0])
 				case "min":
 					if len(args) == 1 {
 						t := c.inferExprType(op.Call.Args[0])
