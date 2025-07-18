@@ -1,23 +1,18 @@
 cc: exit status 1
-/tmp/bitmap-midpoint-circle-algorithm.c: In function ‘initGrid’:
-/tmp/bitmap-midpoint-circle-algorithm.c:50:5: error: ‘g’ undeclared (first use in this function)
-   50 |     g = 0;
-      |     ^
-/tmp/bitmap-midpoint-circle-algorithm.c:50:5: note: each undeclared identifier is reported only once for each function it appears in
 /tmp/bitmap-midpoint-circle-algorithm.c: In function ‘set’:
-/tmp/bitmap-midpoint-circle-algorithm.c:57:22: error: request for member ‘data’ in something not a structure or union
-   57 |   if (x >= 0 && x < g.data[0].len && y >= 0 && y < g.len) {
+/tmp/bitmap-midpoint-circle-algorithm.c:59:22: error: request for member ‘data’ in something not a structure or union
+   59 |   if (x >= 0 && x < g.data[0].len && y >= 0 && y < g.len) {
       |                      ^
-/tmp/bitmap-midpoint-circle-algorithm.c:57:53: error: request for member ‘len’ in something not a structure or union
-   57 |   if (x >= 0 && x < g.data[0].len && y >= 0 && y < g.len) {
+/tmp/bitmap-midpoint-circle-algorithm.c:59:53: error: request for member ‘len’ in something not a structure or union
+   59 |   if (x >= 0 && x < g.data[0].len && y >= 0 && y < g.len) {
       |                                                     ^
-/tmp/bitmap-midpoint-circle-algorithm.c:58:6: error: request for member ‘data’ in something not a structure or union
-   58 |     g.data[y].data[x] = "#";
+/tmp/bitmap-midpoint-circle-algorithm.c:60:6: error: request for member ‘data’ in something not a structure or union
+   60 |     g.data[y].data[x] = "#";
       |      ^
 /tmp/bitmap-midpoint-circle-algorithm.c: In function ‘_mochi_main’:
-/tmp/bitmap-midpoint-circle-algorithm.c:105:30: error: request for member ‘len’ in something not a structure or union
-  105 |   for (int tmp4 = 0; tmp4 < g.len; tmp4++) {
+/tmp/bitmap-midpoint-circle-algorithm.c:107:30: error: request for member ‘len’ in something not a structure or union
+  107 |   for (int tmp4 = 0; tmp4 < g.len; tmp4++) {
       |                              ^
-/tmp/bitmap-midpoint-circle-algorithm.c:106:24: error: request for member ‘data’ in something not a structure or union
-  106 |     list_string row = g.data[tmp4];
+/tmp/bitmap-midpoint-circle-algorithm.c:108:24: error: request for member ‘data’ in something not a structure or union
+  108 |     list_string row = g.data[tmp4];
       |                        ^

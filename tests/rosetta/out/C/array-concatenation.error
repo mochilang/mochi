@@ -1,24 +1,27 @@
 cc: exit status 1
 /tmp/array-concatenation.c: In function ‘_mochi_main’:
-/tmp/array-concatenation.c:107:22: error: incompatible type for argument 1 of ‘_str’
-  107 |   char *tmp15 = _str(concatInts(tmp13, tmp14));
-      |                      ^~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/array-concatenation.c:118:7: error: incompatible types when assigning to type ‘list_int’ from type ‘list_string’
+  118 |   j = tmp16;
+      |       ^~~~~
+/tmp/array-concatenation.c:129:22: error: incompatible type for argument 1 of ‘_str’
+  129 |   char *tmp19 = _str(concatInts(a, b));
+      |                      ^~~~~~~~~~~~~~~~
       |                      |
       |                      list_int
 /tmp/array-concatenation.c:43:23: note: expected ‘int’ but argument is of type ‘list_int’
    43 | static char *_str(int v) {
       |                   ~~~~^
-/tmp/array-concatenation.c:122:39: error: incompatible type for argument 2 of ‘concatAny’
-  122 |   char *tmp17 = _str(concatAny(tmp16, j));
-      |                                       ^
-      |                                       |
-      |                                       list_string
-/tmp/array-concatenation.c:69:41: note: expected ‘list_int’ but argument is of type ‘list_string’
-   69 | list_int concatAny(list_int a, list_int b) {
-      |                                ~~~~~~~~~^
-/tmp/array-concatenation.c:140:22: error: incompatible type for argument 1 of ‘_str’
-  140 |   char *tmp20 = _str(concatInts(tmp18, tmp19));
-      |                      ^~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/array-concatenation.c:131:22: error: incompatible type for argument 1 of ‘_str’
+  131 |   char *tmp20 = _str(concatAny(i, j));
+      |                      ^~~~~~~~~~~~~~~
+      |                      |
+      |                      list_int
+/tmp/array-concatenation.c:43:23: note: expected ‘int’ but argument is of type ‘list_int’
+   43 | static char *_str(int v) {
+      |                   ~~~~^
+/tmp/array-concatenation.c:133:22: error: incompatible type for argument 1 of ‘_str’
+  133 |   char *tmp21 = _str(concatInts(l, m));
+      |                      ^~~~~~~~~~~~~~~~
       |                      |
       |                      list_int
 /tmp/array-concatenation.c:43:23: note: expected ‘int’ but argument is of type ‘list_int’

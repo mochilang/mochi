@@ -17,11 +17,18 @@ cc: exit status 1
   175 |   while (x < square.len) {
       |                    ^
 /tmp/bifid-cipher.c:176:29: error: request for member ‘data’ in something not a structure or union
-  176 |     list_string row = square.data[x];
+  176 |     __auto_type row = square.data[x];
       |                             ^
+/tmp/bifid-cipher.c:178:16: error: ‘row’ undeclared (first use in this function)
+  178 |     while (y < row.len) {
+      |                ^~~
+/tmp/bifid-cipher.c:178:16: note: each undeclared identifier is reported only once for each function it appears in
 /tmp/bifid-cipher.c:186:11: error: request for member ‘data’ in something not a structure or union
   186 |       emap.data[ch] = tmp4;
       |           ^
+/tmp/bifid-cipher.c:186:17: error: ‘ch’ undeclared (first use in this function)
+  186 |       emap.data[ch] = tmp4;
+      |                 ^~
 /tmp/bifid-cipher.c:195:11: error: request for member ‘data’ in something not a structure or union
   195 |       dmap.data[tmp12] = ch;
       |           ^
@@ -29,104 +36,120 @@ cc: exit status 1
   200 |   return (tmp_item_t){.e = emap, .d = dmap};
       |          ^
 /tmp/bifid-cipher.c: In function ‘remove_space’:
-/tmp/bifid-cipher.c:204:13: warning: implicit declaration of function ‘upper’ [-Wimplicit-function-declaration]
-  204 |   char *s = upper(text);
-      |             ^~~~~
-/tmp/bifid-cipher.c:204:13: warning: initialization of ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+/tmp/bifid-cipher.c:204:19: warning: implicit declaration of function ‘upper’ [-Wimplicit-function-declaration]
+  204 |   __auto_type s = upper(text);
+      |                   ^~~~~
+/tmp/bifid-cipher.c:207:21: warning: passing argument 1 of ‘strlen’ makes pointer from integer without a cast [-Wint-conversion]
+  207 |   while (i < strlen(s)) {
+      |                     ^
+      |                     |
+      |                     int
+In file included from /tmp/bifid-cipher.c:5:
+/usr/include/string.h:407:35: note: expected ‘const char *’ but argument is of type ‘int’
+  407 | extern size_t strlen (const char *__s)
+      |                       ~~~~~~~~~~~~^~~
+/tmp/bifid-cipher.c:208:32: warning: passing argument 1 of ‘slice_string’ makes pointer from integer without a cast [-Wint-conversion]
+  208 |     char *tmp13 = slice_string(s, i, i + 1);
+      |                                ^
+      |                                |
+      |                                int
+/tmp/bifid-cipher.c:133:33: note: expected ‘char *’ but argument is of type ‘int’
+  133 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
 /tmp/bifid-cipher.c:210:37: error: expected ‘)’ before ‘in’
   210 |     if ((strcmp(ch, " ") != 0) && ch in emap) {
       |        ~                            ^~~
       |                                     )
 /tmp/bifid-cipher.c: In function ‘encrypt’:
-/tmp/bifid-cipher.c:227:23: error: request for member ‘data’ in something not a structure or union
-  227 |     list_int xy = emap.data[ch];
-      |                       ^
-/tmp/bifid-cipher.c:256:21: error: request for member ‘data’ in something not a structure or union
-  256 |     res = res + dmap.data[key];
-      |                     ^
+/tmp/bifid-cipher.c:227:26: error: request for member ‘data’ in something not a structure or union
+  227 |     __auto_type xy = emap.data[ch];
+      |                          ^
+/tmp/bifid-cipher.c:230:21: error: ‘xy’ undeclared (first use in this function)
+  230 |     tmp16.data[0] = xy.data[0];
+      |                     ^~
+/tmp/bifid-cipher.c:256:42: error: request for member ‘data’ in something not a structure or union
+  256 |     char *tmp27 = concat_string(res, dmap.data[key]);
+      |                                          ^
 /tmp/bifid-cipher.c: In function ‘decrypt’:
-/tmp/bifid-cipher.c:269:23: error: request for member ‘data’ in something not a structure or union
-  269 |     list_int xy = emap.data[ch];
-      |                       ^
-/tmp/bifid-cipher.c:310:21: error: request for member ‘data’ in something not a structure or union
-  310 |     res = res + dmap.data[key];
-      |                     ^
+/tmp/bifid-cipher.c:270:26: error: request for member ‘data’ in something not a structure or union
+  270 |     __auto_type xy = emap.data[ch];
+      |                          ^
+/tmp/bifid-cipher.c:273:21: error: ‘xy’ undeclared (first use in this function)
+  273 |     tmp29.data[0] = xy.data[0];
+      |                     ^~
+/tmp/bifid-cipher.c:311:42: error: request for member ‘data’ in something not a structure or union
+  311 |     char *tmp41 = concat_string(res, dmap.data[key]);
+      |                                          ^
 /tmp/bifid-cipher.c: In function ‘mochi_main’:
-/tmp/bifid-cipher.c:353:36: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  353 |   list_int squareRosetta_data[] = {tmp40, tmp41, tmp42, tmp43, tmp44, tmp45};
+/tmp/bifid-cipher.c:355:36: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  355 |   list_int squareRosetta_data[] = {tmp42, tmp43, tmp44, tmp45, tmp46, tmp47};
       |                                    ^~~~~
-/tmp/bifid-cipher.c:353:43: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
-  353 |   list_int squareRosetta_data[] = {tmp40, tmp41, tmp42, tmp43, tmp44, tmp45};
+/tmp/bifid-cipher.c:355:43: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
+  355 |   list_int squareRosetta_data[] = {tmp42, tmp43, tmp44, tmp45, tmp46, tmp47};
       |                                           ^~~~~
-/tmp/bifid-cipher.c:353:50: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  353 |   list_int squareRosetta_data[] = {tmp40, tmp41, tmp42, tmp43, tmp44, tmp45};
+/tmp/bifid-cipher.c:355:50: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  355 |   list_int squareRosetta_data[] = {tmp42, tmp43, tmp44, tmp45, tmp46, tmp47};
       |                                                  ^~~~~
-/tmp/bifid-cipher.c:353:57: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
-  353 |   list_int squareRosetta_data[] = {tmp40, tmp41, tmp42, tmp43, tmp44, tmp45};
+/tmp/bifid-cipher.c:355:57: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
+  355 |   list_int squareRosetta_data[] = {tmp42, tmp43, tmp44, tmp45, tmp46, tmp47};
       |                                                         ^~~~~
-/tmp/bifid-cipher.c:353:64: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  353 |   list_int squareRosetta_data[] = {tmp40, tmp41, tmp42, tmp43, tmp44, tmp45};
+/tmp/bifid-cipher.c:355:64: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  355 |   list_int squareRosetta_data[] = {tmp42, tmp43, tmp44, tmp45, tmp46, tmp47};
       |                                                                ^~~~~
-/tmp/bifid-cipher.c:353:71: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
-  353 |   list_int squareRosetta_data[] = {tmp40, tmp41, tmp42, tmp43, tmp44, tmp45};
+/tmp/bifid-cipher.c:355:71: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
+  355 |   list_int squareRosetta_data[] = {tmp42, tmp43, tmp44, tmp45, tmp46, tmp47};
       |                                                                       ^~~~~
-/tmp/bifid-cipher.c:391:38: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  391 |   list_int squareWikipedia_data[] = {tmp46, tmp47, tmp48, tmp49, tmp50, tmp51};
+/tmp/bifid-cipher.c:393:38: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  393 |   list_int squareWikipedia_data[] = {tmp48, tmp49, tmp50, tmp51, tmp52, tmp53};
       |                                      ^~~~~
-/tmp/bifid-cipher.c:391:45: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
-  391 |   list_int squareWikipedia_data[] = {tmp46, tmp47, tmp48, tmp49, tmp50, tmp51};
+/tmp/bifid-cipher.c:393:45: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
+  393 |   list_int squareWikipedia_data[] = {tmp48, tmp49, tmp50, tmp51, tmp52, tmp53};
       |                                             ^~~~~
-/tmp/bifid-cipher.c:391:52: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  391 |   list_int squareWikipedia_data[] = {tmp46, tmp47, tmp48, tmp49, tmp50, tmp51};
+/tmp/bifid-cipher.c:393:52: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  393 |   list_int squareWikipedia_data[] = {tmp48, tmp49, tmp50, tmp51, tmp52, tmp53};
       |                                                    ^~~~~
-/tmp/bifid-cipher.c:391:59: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
-  391 |   list_int squareWikipedia_data[] = {tmp46, tmp47, tmp48, tmp49, tmp50, tmp51};
+/tmp/bifid-cipher.c:393:59: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
+  393 |   list_int squareWikipedia_data[] = {tmp48, tmp49, tmp50, tmp51, tmp52, tmp53};
       |                                                           ^~~~~
-/tmp/bifid-cipher.c:391:66: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  391 |   list_int squareWikipedia_data[] = {tmp46, tmp47, tmp48, tmp49, tmp50, tmp51};
+/tmp/bifid-cipher.c:393:66: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  393 |   list_int squareWikipedia_data[] = {tmp48, tmp49, tmp50, tmp51, tmp52, tmp53};
       |                                                                  ^~~~~
-/tmp/bifid-cipher.c:391:73: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
-  391 |   list_int squareWikipedia_data[] = {tmp46, tmp47, tmp48, tmp49, tmp50, tmp51};
+/tmp/bifid-cipher.c:393:73: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
+  393 |   list_int squareWikipedia_data[] = {tmp48, tmp49, tmp50, tmp51, tmp52, tmp53};
       |                                                                         ^~~~~
-/tmp/bifid-cipher.c:396:29: error: incompatible type for argument 1 of ‘square_to_maps’
-  396 |   int maps = square_to_maps(squareRosetta);
-      |                             ^~~~~~~~~~~~~
-      |                             |
-      |                             list_list_int
+/tmp/bifid-cipher.c:398:37: error: incompatible type for argument 1 of ‘square_to_maps’
+  398 |   __auto_type maps = square_to_maps(squareRosetta);
+      |                                     ^~~~~~~~~~~~~
+      |                                     |
+      |                                     list_list_int
 /tmp/bifid-cipher.c:169:24: note: expected ‘int’ but argument is of type ‘list_list_int’
   169 | int square_to_maps(int square) {
       |                    ~~~~^~~~~~
-/tmp/bifid-cipher.c:397:18: error: request for member ‘data’ in something not a structure or union
-  397 |   int emap = maps.data["e"];
-      |                  ^
-/tmp/bifid-cipher.c:398:18: error: request for member ‘data’ in something not a structure or union
-  398 |   int dmap = maps.data["d"];
-      |                  ^
-/tmp/bifid-cipher.c:408:25: error: incompatible type for argument 1 of ‘square_to_maps’
-  408 |   maps = square_to_maps(squareWikipedia);
+/tmp/bifid-cipher.c:399:22: error: ‘maps’ undeclared (first use in this function)
+  399 |   __auto_type emap = maps.data["e"];
+      |                      ^~~~
+/tmp/bifid-cipher.c:404:40: error: ‘emap’ undeclared (first use in this function)
+  404 |   __auto_type s = encrypt(textRosetta, emap, dmap);
+      |                                        ^~~~
+/tmp/bifid-cipher.c:404:46: error: ‘dmap’ undeclared (first use in this function)
+  404 |   __auto_type s = encrypt(textRosetta, emap, dmap);
+      |                                              ^~~~
+/tmp/bifid-cipher.c:405:46: error: ‘s’ undeclared (first use in this function)
+  405 |   char *tmp55 = concat_string("codiert:\t ", s);
+      |                                              ^
+/tmp/bifid-cipher.c:410:25: error: incompatible type for argument 1 of ‘square_to_maps’
+  410 |   maps = square_to_maps(squareWikipedia);
       |                         ^~~~~~~~~~~~~~~
       |                         |
       |                         list_list_int
 /tmp/bifid-cipher.c:169:24: note: expected ‘int’ but argument is of type ‘list_list_int’
   169 | int square_to_maps(int square) {
       |                    ~~~~^~~~~~
-/tmp/bifid-cipher.c:409:14: error: request for member ‘data’ in something not a structure or union
-  409 |   emap = maps.data["e"];
-      |              ^
-/tmp/bifid-cipher.c:410:14: error: request for member ‘data’ in something not a structure or union
-  410 |   dmap = maps.data["d"];
-      |              ^
-/tmp/bifid-cipher.c:420:25: error: incompatible type for argument 1 of ‘square_to_maps’
-  420 |   maps = square_to_maps(squareWikipedia);
+/tmp/bifid-cipher.c:422:25: error: incompatible type for argument 1 of ‘square_to_maps’
+  422 |   maps = square_to_maps(squareWikipedia);
       |                         ^~~~~~~~~~~~~~~
       |                         |
       |                         list_list_int
 /tmp/bifid-cipher.c:169:24: note: expected ‘int’ but argument is of type ‘list_list_int’
   169 | int square_to_maps(int square) {
       |                    ~~~~^~~~~~
-/tmp/bifid-cipher.c:421:14: error: request for member ‘data’ in something not a structure or union
-  421 |   emap = maps.data["e"];
-      |              ^
-/tmp/bifid-cipher.c:422:14: error: request for member ‘data’ in something not a structure or union
-  422 |   dmap = maps.data["d"];
-      |              ^

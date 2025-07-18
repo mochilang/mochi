@@ -4,26 +4,11 @@ cc: exit status 1
    71 |   return directory.data[username];
       |                   ^
 /tmp/active-directory-search-for-a-user.c: In function ‘mochi_main’:
-/tmp/active-directory-search-for-a-user.c:86:28: warning: passing argument 1 of ‘search_user’ makes integer from pointer without a cast [-Wint-conversion]
-   86 |   int groups = search_user(&directory, "username");
-      |                            ^~~~~~~~~~
-      |                            |
-      |                            directory_item_t *
+/tmp/active-directory-search-for-a-user.c:85:36: warning: passing argument 1 of ‘search_user’ makes integer from pointer without a cast [-Wint-conversion]
+   85 |   __auto_type groups = search_user(&directory, "username");
+      |                                    ^~~~~~~~~~
+      |                                    |
+      |                                    directory_item_t *
 /tmp/active-directory-search-for-a-user.c:70:29: note: expected ‘int’ but argument is of type ‘directory_item_t *’
    70 | list_string search_user(int directory, char *username) {
       |                         ~~~~^~~~~~~~~
-/tmp/active-directory-search-for-a-user.c:86:16: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-   86 |   int groups = search_user(&directory, "username");
-      |                ^~~~~~~~~~~
-/tmp/active-directory-search-for-a-user.c:87:13: error: request for member ‘len’ in something not a structure or union
-   87 |   if (groups.len > 0) {
-      |             ^
-/tmp/active-directory-search-for-a-user.c:90:22: error: request for member ‘len’ in something not a structure or union
-   90 |     while (i < groups.len) {
-      |                      ^
-/tmp/active-directory-search-for-a-user.c:92:26: error: request for member ‘data’ in something not a structure or union
-   92 |       out = tmp3 + groups.data[i] + "\"";
-      |                          ^
-/tmp/active-directory-search-for-a-user.c:93:21: error: request for member ‘len’ in something not a structure or union
-   93 |       if (i < groups.len - 1) {
-      |                     ^

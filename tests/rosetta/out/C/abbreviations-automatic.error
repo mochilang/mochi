@@ -11,19 +11,9 @@ cc: exit status 1
   172 |       m.data[x] = 1;
       |        ^
 /tmp/abbreviations-automatic.c: In function ‘mochi_main’:
-/tmp/abbreviations-automatic.c:371:17: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  371 |     int words = fields(lines.data[i]);
-      |                 ^~~~~~
-/tmp/abbreviations-automatic.c:372:23: error: incompatible type for argument 1 of ‘abbrevLen’
-  372 |     int l = abbrevLen(words);
-      |                       ^~~~~
-      |                       |
-      |                       int
-/tmp/abbreviations-automatic.c:183:27: note: expected ‘list_string’ but argument is of type ‘int’
-  183 | int abbrevLen(list_string words) {
-      |               ~~~~~~~~~~~~^~~~~
-/tmp/abbreviations-automatic.c:375:26: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  375 |     printf("%d\n", tmp14 + lines.data[i]);
-      |                          ^ ~~~~~~~~~~~~~
-      |                                      |
-      |                                      char *
+/tmp/abbreviations-automatic.c:377:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
+  377 |     printf("%d\n", tmp16);
+      |             ~^     ~~~~~
+      |              |     |
+      |              int   char *
+      |             %s

@@ -1,0 +1,18 @@
+cc: exit status 1
+/tmp/DNS-query.c:11:8: error: unknown type name ‘list_int’
+   11 | static list_int res;
+      |        ^~~~~~~~
+/tmp/DNS-query.c: In function ‘_mochi_main’:
+/tmp/DNS-query.c:16:9: error: ‘net’ undeclared (first use in this function)
+   16 |   res = net.lookup_host("www.kame.net");
+      |         ^~~
+/tmp/DNS-query.c:16:9: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/DNS-query.c:17:14: error: request for member ‘data’ in something not a structure or union
+   17 |   addrs = res.data[0];
+      |              ^
+/tmp/DNS-query.c:18:12: error: request for member ‘data’ in something not a structure or union
+   18 |   err = res.data[1];
+      |            ^
+/tmp/DNS-query.c:19:15: error: ‘nil’ undeclared (first use in this function)
+   19 |   if ((err == nil)) {
+      |               ^~~

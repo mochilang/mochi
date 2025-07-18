@@ -1,43 +1,49 @@
 cc: exit status 1
 /tmp/bitmap-b-zier-curves-cubic.c: In function ‘pixelFromRgb’:
-/tmp/bitmap-b-zier-curves-cubic.c:73:52: error: invalid operands to binary % (have ‘double’ and ‘int’)
-   73 |   int r = (int)(((((double)rgb) / ((double)65536)) % 256));
-      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^
-      |                                 |
-      |                                 double
-/tmp/bitmap-b-zier-curves-cubic.c:74:50: error: invalid operands to binary % (have ‘double’ and ‘int’)
-   74 |   int g = (int)(((((double)rgb) / ((double)256)) % 256));
-      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^
-      |                                 |
-      |                                 double
+/tmp/bitmap-b-zier-curves-cubic.c:74:60: error: invalid operands to binary % (have ‘double’ and ‘int’)
+   74 |   __auto_type r = (int)(((((double)rgb) / ((double)65536)) % 256));
+      |                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^
+      |                                         |
+      |                                         double
+/tmp/bitmap-b-zier-curves-cubic.c:75:58: error: invalid operands to binary % (have ‘double’ and ‘int’)
+   75 |   __auto_type g = (int)(((((double)rgb) / ((double)256)) % 256));
+      |                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^
+      |                                         |
+      |                                         double
+/tmp/bitmap-b-zier-curves-cubic.c:77:25: error: ‘r’ undeclared (first use in this function)
+   77 |   return (pixel_t){.r = r, .g = g, .b = b};
+      |                         ^
+/tmp/bitmap-b-zier-curves-cubic.c:77:25: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/bitmap-b-zier-curves-cubic.c:77:33: error: ‘g’ undeclared (first use in this function)
+   77 |   return (pixel_t){.r = r, .g = g, .b = b};
+      |                                 ^
 /tmp/bitmap-b-zier-curves-cubic.c: In function ‘newBitmap’:
-/tmp/bitmap-b-zier-curves-cubic.c:94:5: error: ‘d’ undeclared (first use in this function)
-   94 |     d = 0;
+/tmp/bitmap-b-zier-curves-cubic.c:95:5: error: ‘d’ undeclared (first use in this function)
+   95 |     d = 0;
       |     ^
-/tmp/bitmap-b-zier-curves-cubic.c:94:5: note: each undeclared identifier is reported only once for each function it appears in
 /tmp/bitmap-b-zier-curves-cubic.c: At top level:
-/tmp/bitmap-b-zier-curves-cubic.c:100:11: error: unknown type name ‘map_string_int’
-  100 | int setPx(map_string_int b, int x, int y, pixel_t *p) {
+/tmp/bitmap-b-zier-curves-cubic.c:101:11: error: unknown type name ‘map_string_int’
+  101 | int setPx(map_string_int b, int x, int y, pixel_t *p) {
       |           ^~~~~~~~~~~~~~
-/tmp/bitmap-b-zier-curves-cubic.c:108:10: error: unknown type name ‘map_string_int’
-  108 | int fill(map_string_int b, pixel_t *p) {
+/tmp/bitmap-b-zier-curves-cubic.c:109:10: error: unknown type name ‘map_string_int’
+  109 | int fill(map_string_int b, pixel_t *p) {
       |          ^~~~~~~~~~~~~~
-/tmp/bitmap-b-zier-curves-cubic.c:122:13: error: unknown type name ‘map_string_int’
-  122 | int fillRgb(map_string_int b, int rgb) { fill(b, &pixelFromRgb(rgb)); }
+/tmp/bitmap-b-zier-curves-cubic.c:123:13: error: unknown type name ‘map_string_int’
+  123 | int fillRgb(map_string_int b, int rgb) { fill(b, &pixelFromRgb(rgb)); }
       |             ^~~~~~~~~~~~~~
-/tmp/bitmap-b-zier-curves-cubic.c:124:10: error: unknown type name ‘map_string_int’
-  124 | int line(map_string_int b, int x0, int y0, int x1, int y1, pixel_t *p) {
+/tmp/bitmap-b-zier-curves-cubic.c:125:10: error: unknown type name ‘map_string_int’
+  125 | int line(map_string_int b, int x0, int y0, int x1, int y1, pixel_t *p) {
       |          ^~~~~~~~~~~~~~
-/tmp/bitmap-b-zier-curves-cubic.c:159:13: error: unknown type name ‘map_string_int’
-  159 | int bezier3(map_string_int b, int x1, int y1, int x2, int y2, int x3, int y3,
+/tmp/bitmap-b-zier-curves-cubic.c:160:13: error: unknown type name ‘map_string_int’
+  160 | int bezier3(map_string_int b, int x1, int y1, int x2, int y2, int x3, int y3,
       |             ^~~~~~~~~~~~~~
 /tmp/bitmap-b-zier-curves-cubic.c: In function ‘_mochi_main’:
-/tmp/bitmap-b-zier-curves-cubic.c:214:3: warning: implicit declaration of function ‘fillRgb’ [-Wimplicit-function-declaration]
-  214 |   fillRgb(b, 16773055);
+/tmp/bitmap-b-zier-curves-cubic.c:215:3: warning: implicit declaration of function ‘fillRgb’ [-Wimplicit-function-declaration]
+  215 |   fillRgb(b, 16773055);
       |   ^~~~~~~
-/tmp/bitmap-b-zier-curves-cubic.c:215:3: warning: implicit declaration of function ‘bezier3’ [-Wimplicit-function-declaration]
-  215 |   bezier3(b, 20, 200, 700, 50, (-300), 50, 380, 150, &pixelFromRgb(4165615));
+/tmp/bitmap-b-zier-curves-cubic.c:216:3: warning: implicit declaration of function ‘bezier3’ [-Wimplicit-function-declaration]
+  216 |   bezier3(b, 20, 200, 700, 50, (-300), 50, 380, 150, &pixelFromRgb(4165615));
       |   ^~~~~~~
-/tmp/bitmap-b-zier-curves-cubic.c:215:54: error: lvalue required as unary ‘&’ operand
-  215 |   bezier3(b, 20, 200, 700, 50, (-300), 50, 380, 150, &pixelFromRgb(4165615));
+/tmp/bitmap-b-zier-curves-cubic.c:216:54: error: lvalue required as unary ‘&’ operand
+  216 |   bezier3(b, 20, 200, 700, 50, (-300), 50, 380, 150, &pixelFromRgb(4165615));
       |                                                      ^

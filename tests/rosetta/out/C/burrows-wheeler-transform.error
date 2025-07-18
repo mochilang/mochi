@@ -27,33 +27,24 @@ cc: exit status 1
       |              |     |
       |              int   char *
       |             %s
-/tmp/burrows-wheeler-transform.c:220:19: warning: passing argument 1 of ‘bwt’ makes pointer from integer without a cast [-Wint-conversion]
-  220 |     int res = bwt(t);
-      |                   ^
-      |                   |
-      |                   int
+/tmp/burrows-wheeler-transform.c:220:27: warning: passing argument 1 of ‘bwt’ makes pointer from integer without a cast [-Wint-conversion]
+  220 |     __auto_type res = bwt(t);
+      |                           ^
+      |                           |
+      |                           int
 /tmp/burrows-wheeler-transform.c:126:15: note: expected ‘char *’ but argument is of type ‘int’
   126 | int bwt(char *s) {
       |         ~~~~~~^
 /tmp/burrows-wheeler-transform.c:221:13: error: request for member ‘data’ in something not a structure or union
   221 |     if ((res.data["err"])) {
       |             ^
-/tmp/burrows-wheeler-transform.c:225:29: error: request for member ‘data’ in something not a structure or union
-  225 |       int enc = (char *)(res.data["res"]);
-      |                             ^
-/tmp/burrows-wheeler-transform.c:226:58: warning: passing argument 1 of ‘makePrintable’ makes pointer from integer without a cast [-Wint-conversion]
+/tmp/burrows-wheeler-transform.c:225:37: error: request for member ‘data’ in something not a structure or union
+  225 |       __auto_type enc = (char *)(res.data["res"]);
+      |                                     ^
+/tmp/burrows-wheeler-transform.c:226:58: error: ‘enc’ undeclared (first use in this function)
   226 |       char *tmp15 = concat_string(" --> ", makePrintable(enc));
       |                                                          ^~~
-      |                                                          |
-      |                                                          int
-/tmp/burrows-wheeler-transform.c:189:27: note: expected ‘char *’ but argument is of type ‘int’
-  189 | char *makePrintable(char *s) {
-      |                     ~~~~~~^
-/tmp/burrows-wheeler-transform.c:228:22: warning: passing argument 1 of ‘ibwt’ makes pointer from integer without a cast [-Wint-conversion]
-  228 |       char *r = ibwt(enc);
-      |                      ^~~
-      |                      |
-      |                      int
-/tmp/burrows-wheeler-transform.c:156:18: note: expected ‘char *’ but argument is of type ‘int’
-  156 | char *ibwt(char *r) {
-      |            ~~~~~~^
+/tmp/burrows-wheeler-transform.c:226:58: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/burrows-wheeler-transform.c:229:44: error: ‘r’ undeclared (first use in this function)
+  229 |       char *tmp16 = concat_string(" --> ", r);
+      |                                            ^

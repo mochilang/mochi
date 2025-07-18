@@ -1,8 +1,31 @@
-parse: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/bulls-and-cows-player.mochi:22:51: lexer: invalid input text "; cur = \"\" }\n   ..."
-  --> /workspace/mochi/tests/rosetta/x/Mochi/bulls-and-cows-player.mochi:22:51
-
- 22 |       if len(cur) > 0 { words = append(words, cur); cur = "" }
-    |                                                   ^
-
-help:
-  String literals must be properly closed with a `"`.
+cc: exit status 1
+/tmp/bulls-and-cows-player.c: In function ‘makePatterns’:
+/tmp/bulls-and-cows-player.c:173:47: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  173 |                 tmp6.data[0] = digits.data[i] + digits.data[j] +
+      |                                ~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~
+      |                                           |                |
+      |                                           char *           char *
+/tmp/bulls-and-cows-player.c:175:49: error: incompatible type for argument 1 of ‘concat_list_int’
+  175 |                 list_int tmp7 = concat_list_int(pats, tmp6);
+      |                                                 ^~~~
+      |                                                 |
+      |                                                 list_string
+/tmp/bulls-and-cows-player.c:35:42: note: expected ‘list_int’ but argument is of type ‘list_string’
+   35 | static list_int concat_list_int(list_int a, list_int b) {
+      |                                 ~~~~~~~~~^
+/tmp/bulls-and-cows-player.c:176:24: error: incompatible types when assigning to type ‘list_string’ from type ‘list_int’
+  176 |                 pats = tmp7;
+      |                        ^~~~
+/tmp/bulls-and-cows-player.c: In function ‘mochi_main’:
+/tmp/bulls-and-cows-player.c:207:7: warning: ‘return’ with no value, in function returning non-void
+  207 |       return;
+      |       ^~~~~~
+/tmp/bulls-and-cows-player.c:191:5: note: declared here
+  191 | int mochi_main() {
+      |     ^~~~~~~~~~
+/tmp/bulls-and-cows-player.c:233:7: warning: ‘return’ with no value, in function returning non-void
+  233 |       return;
+      |       ^~~~~~
+/tmp/bulls-and-cows-player.c:191:5: note: declared here
+  191 | int mochi_main() {
+      |     ^~~~~~~~~~

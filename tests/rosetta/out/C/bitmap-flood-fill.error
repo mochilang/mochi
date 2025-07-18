@@ -1,56 +1,66 @@
 cc: exit status 1
 /tmp/bitmap-flood-fill.c: In function ‘ff’:
-/tmp/bitmap-flood-fill.c:62:40: error: request for member ‘len’ in something not a structure or union
-   62 |   if (px < 0 || py < 0 || py >= ff_grid.len || px >= ff_grid.data[0].len) {
+/tmp/bitmap-flood-fill.c:64:40: error: request for member ‘len’ in something not a structure or union
+   64 |   if (px < 0 || py < 0 || py >= ff_grid.len || px >= ff_grid.data[0].len) {
       |                                        ^
-/tmp/bitmap-flood-fill.c:62:61: error: request for member ‘data’ in something not a structure or union
-   62 |   if (px < 0 || py < 0 || py >= ff_grid.len || px >= ff_grid.data[0].len) {
+/tmp/bitmap-flood-fill.c:64:61: error: request for member ‘data’ in something not a structure or union
+   64 |   if (px < 0 || py < 0 || py >= ff_grid.len || px >= ff_grid.data[0].len) {
       |                                                             ^
-/tmp/bitmap-flood-fill.c:63:5: warning: ‘return’ with no value, in function returning non-void
-   63 |     return;
+/tmp/bitmap-flood-fill.c:65:5: warning: ‘return’ with no value, in function returning non-void
+   65 |     return;
       |     ^~~~~~
-/tmp/bitmap-flood-fill.c:61:5: note: declared here
-   61 | int ff(int px, int py) {
+/tmp/bitmap-flood-fill.c:63:5: note: declared here
+   63 | int ff(int px, int py) {
       |     ^~
-/tmp/bitmap-flood-fill.c:65:14: error: request for member ‘data’ in something not a structure or union
-   65 |   if (ff_grid.data[py].data[px] != ff_target) {
+/tmp/bitmap-flood-fill.c:67:14: error: request for member ‘data’ in something not a structure or union
+   67 |   if (ff_grid.data[py].data[px] != ff_target) {
       |              ^
-/tmp/bitmap-flood-fill.c:66:5: warning: ‘return’ with no value, in function returning non-void
-   66 |     return;
+/tmp/bitmap-flood-fill.c:68:5: warning: ‘return’ with no value, in function returning non-void
+   68 |     return;
       |     ^~~~~~
-/tmp/bitmap-flood-fill.c:61:5: note: declared here
-   61 | int ff(int px, int py) {
+/tmp/bitmap-flood-fill.c:63:5: note: declared here
+   63 | int ff(int px, int py) {
       |     ^~
-/tmp/bitmap-flood-fill.c:68:3: error: ‘grid’ undeclared (first use in this function)
-   68 |   grid.data[py].data[px] = ff_repl;
-      |   ^~~~
-/tmp/bitmap-flood-fill.c:68:3: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/bitmap-flood-fill.c:70:7: error: request for member ‘data’ in something not a structure or union
+   70 |   grid.data[py].data[px] = ff_repl;
+      |       ^
 /tmp/bitmap-flood-fill.c: In function ‘flood’:
-/tmp/bitmap-flood-fill.c:76:18: error: ‘grid’ undeclared (first use in this function)
-   76 |   char *target = grid.data[y].data[x];
-      |                  ^~~~
-/tmp/bitmap-flood-fill.c:78:5: warning: ‘return’ with no value, in function returning non-void
-   78 |     return;
+/tmp/bitmap-flood-fill.c:78:28: error: request for member ‘data’ in something not a structure or union
+   78 |   __auto_type target = grid.data[y].data[x];
+      |                            ^
+/tmp/bitmap-flood-fill.c:79:15: error: ‘target’ undeclared (first use in this function); did you mean ‘ff_target’?
+   79 |   if ((strcmp(target, repl) == 0)) {
+      |               ^~~~~~
+      |               ff_target
+/tmp/bitmap-flood-fill.c:79:15: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/bitmap-flood-fill.c:80:5: warning: ‘return’ with no value, in function returning non-void
+   80 |     return;
       |     ^~~~~~
-/tmp/bitmap-flood-fill.c:75:5: note: declared here
-   75 | int flood(int x, int y, char *repl) {
+/tmp/bitmap-flood-fill.c:77:5: note: declared here
+   77 | int flood(int x, int y, char *repl) {
       |     ^~~~~
 /tmp/bitmap-flood-fill.c: In function ‘_mochi_main’:
-/tmp/bitmap-flood-fill.c:114:27: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  114 |   list_int grid_data[] = {tmp1, tmp2, tmp3, tmp4, tmp5};
+/tmp/bitmap-flood-fill.c:116:27: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  116 |   list_int tmp1_data[] = {tmp2, tmp3, tmp4, tmp5, tmp6};
       |                           ^~~~
-/tmp/bitmap-flood-fill.c:114:33: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
-  114 |   list_int grid_data[] = {tmp1, tmp2, tmp3, tmp4, tmp5};
+/tmp/bitmap-flood-fill.c:116:33: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
+  116 |   list_int tmp1_data[] = {tmp2, tmp3, tmp4, tmp5, tmp6};
       |                                 ^~~~
-/tmp/bitmap-flood-fill.c:114:39: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  114 |   list_int grid_data[] = {tmp1, tmp2, tmp3, tmp4, tmp5};
+/tmp/bitmap-flood-fill.c:116:39: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  116 |   list_int tmp1_data[] = {tmp2, tmp3, tmp4, tmp5, tmp6};
       |                                       ^~~~
-/tmp/bitmap-flood-fill.c:114:45: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
-  114 |   list_int grid_data[] = {tmp1, tmp2, tmp3, tmp4, tmp5};
+/tmp/bitmap-flood-fill.c:116:45: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
+  116 |   list_int tmp1_data[] = {tmp2, tmp3, tmp4, tmp5, tmp6};
       |                                             ^~~~
-/tmp/bitmap-flood-fill.c:114:51: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  114 |   list_int grid_data[] = {tmp1, tmp2, tmp3, tmp4, tmp5};
+/tmp/bitmap-flood-fill.c:116:51: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  116 |   list_int tmp1_data[] = {tmp2, tmp3, tmp4, tmp5, tmp6};
       |                                                   ^~~~
-/tmp/bitmap-flood-fill.c:118:23: error: invalid initializer
-  118 |     list_string row = grid.data[tmp6];
-      |                       ^~~~
+/tmp/bitmap-flood-fill.c:118:10: error: incompatible types when assigning to type ‘int’ from type ‘list_list_int’
+  118 |   grid = tmp1;
+      |          ^~~~
+/tmp/bitmap-flood-fill.c:120:33: error: request for member ‘len’ in something not a structure or union
+  120 |   for (int tmp7 = 0; tmp7 < grid.len; tmp7++) {
+      |                                 ^
+/tmp/bitmap-flood-fill.c:121:27: error: request for member ‘data’ in something not a structure or union
+  121 |     list_string row = grid.data[tmp7];
+      |                           ^

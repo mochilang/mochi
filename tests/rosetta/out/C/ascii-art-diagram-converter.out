@@ -1,4 +1,5 @@
-Diagram after trimming whitespace and removal of blank lines:\n
+Diagram after trimming whitespace and removal of blank lines:
+
 +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 |                      ID                       |
 +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
@@ -12,7 +13,9 @@ Diagram after trimming whitespace and removal of blank lines:\n
 +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 |                    ARCOUNT                    |
 +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-\nDecoded:\n
+
+Decoded:
+
 Name     Bits  Start  End
 =======  ====  =====  ===
 ID        16      0    15
@@ -28,11 +31,15 @@ QDCOUNT   16     32    47
 ANCOUNT   16     48    63
 NSCOUNT   16     64    79
 ARCOUNT   16     80    95
-\nTest string in hex:
+
+Test string in hex:
 78477bbf5496e12e1bf169a4
-\nTest string in binary:
+
+Test string in binary:
 011110000100011101111011101111110101010010010110111000010010111000011011111100010110100110100100
-\nUnpacked:\n
+
+Unpacked:
+
 Name     Size  Bit pattern
 =======  ====  ================
 ID        16   0111100001000111

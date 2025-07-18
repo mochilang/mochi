@@ -1,22 +1,22 @@
 cc: exit status 1
 /tmp/bitmap-read-an-image-through-a-pipe.c: In function ‘parseIntStr’:
-/tmp/bitmap-read-an-image-through-a-pipe.c:190:11: error: request for member ‘len’ in something not a structure or union
-  190 |   if ((str.len > 0 && tmp1 == "-")) {
+/tmp/bitmap-read-an-image-through-a-pipe.c:191:11: error: request for member ‘len’ in something not a structure or union
+  191 |   if ((str.len > 0 && tmp1 == "-")) {
       |           ^
-/tmp/bitmap-read-an-image-through-a-pipe.c:207:18: error: request for member ‘len’ in something not a structure or union
-  207 |   while ((i < str.len)) {
+/tmp/bitmap-read-an-image-through-a-pipe.c:208:18: error: request for member ‘len’ in something not a structure or union
+  208 |   while ((i < str.len)) {
       |                  ^
 /tmp/bitmap-read-an-image-through-a-pipe.c: In function ‘parsePpm’:
-/tmp/bitmap-read-an-image-through-a-pipe.c:250:12: error: incompatible types when returning type ‘tmp_item_t’ but ‘int’ was expected
-  250 |     return (tmp_item_t){.err = 1};
+/tmp/bitmap-read-an-image-through-a-pipe.c:251:12: error: incompatible types when returning type ‘tmp_item_t’ but ‘int’ was expected
+  251 |     return (tmp_item_t){.err = 1};
       |            ^
-/tmp/bitmap-read-an-image-through-a-pipe.c:266:10: error: incompatible types when returning type ‘tmp_item1_t’ but ‘int’ was expected
-  266 |   return (tmp_item1_t){.magic = magic, .w = w, .h = h, .max = maxv, .px = px};
+/tmp/bitmap-read-an-image-through-a-pipe.c:267:10: error: incompatible types when returning type ‘tmp_item1_t’ but ‘int’ was expected
+  267 |   return (tmp_item1_t){.magic = magic, .w = w, .h = h, .max = maxv, .px = px};
       |          ^
 /tmp/bitmap-read-an-image-through-a-pipe.c: In function ‘_mochi_main’:
-/tmp/bitmap-read-an-image-through-a-pipe.c:271:25: error: request for member ‘w’ in something not a structure or union
-  271 |   char *tmp11 = _str(img.w);
+/tmp/bitmap-read-an-image-through-a-pipe.c:272:25: error: request for member ‘w’ in something not a structure or union
+  272 |   char *tmp11 = _str(img.w);
       |                         ^
-/tmp/bitmap-read-an-image-through-a-pipe.c:274:25: error: request for member ‘h’ in something not a structure or union
-  274 |   char *tmp14 = _str(img.h);
+/tmp/bitmap-read-an-image-through-a-pipe.c:275:25: error: request for member ‘h’ in something not a structure or union
+  275 |   char *tmp14 = _str(img.h);
       |                         ^

@@ -19,33 +19,54 @@ cc: exit status 1
 /tmp/biorhythms.c:357:53: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
   357 |   list_int quadrants_data[] = {tmp22, tmp23, tmp24, tmp25};
       |                                                     ^~~~~
-/tmp/biorhythms.c:362:17: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
-  362 |     int cycle = cycles.data[i];
-      |                 ^~~~~~
-/tmp/biorhythms.c:382:21: warning: initialization of ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
-  382 |       char *trend = quadrants.data[quadrant].data[0];
-      |                     ^~~~~~~~~
-/tmp/biorhythms.c:383:20: warning: initialization of ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
-  383 |       char *next = quadrants.data[quadrant].data[1];
-      |                    ^~~~~~~~~
 /tmp/biorhythms.c:386:13: warning: implicit declaration of function ‘contains’ [-Wimplicit-function-declaration]
   386 |       if ((!contains(pct, "."))) {
       |             ^~~~~~~~
-/tmp/biorhythms.c:406:35: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  406 |     printf("%d\n", cycle + posStr + " : " + description);
-      |                    ~~~~~~~~~~~~~~ ^
-      |                          |        |
-      |                          char *   char *
-/tmp/biorhythms.c: In function ‘mochi_main’:
-/tmp/biorhythms.c:422:28: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  422 |   list_int pairs_data[] = {tmp38, tmp39, tmp40};
-      |                            ^~~~~
-/tmp/biorhythms.c:422:35: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
-  422 |   list_int pairs_data[] = {tmp38, tmp39, tmp40};
-      |                                   ^~~~~
-/tmp/biorhythms.c:422:42: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  422 |   list_int pairs_data[] = {tmp38, tmp39, tmp40};
+/tmp/biorhythms.c:392:42: warning: passing argument 2 of ‘concat_string’ makes pointer from integer without a cast [-Wint-conversion]
+  392 |       char *tmp30 = concat_string(tmp29, trend);
       |                                          ^~~~~
-/tmp/biorhythms.c:426:21: error: invalid initializer
-  426 |     list_string p = pairs.data[idx];
-      |                     ^~~~~
+      |                                          |
+      |                                          int
+/tmp/biorhythms.c:111:43: note: expected ‘char *’ but argument is of type ‘int’
+  111 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
+/tmp/biorhythms.c:394:42: warning: passing argument 2 of ‘concat_string’ makes pointer from integer without a cast [-Wint-conversion]
+  394 |       char *tmp32 = concat_string(tmp31, next);
+      |                                          ^~~~
+      |                                          |
+      |                                          int
+/tmp/biorhythms.c:111:43: note: expected ‘char *’ but argument is of type ‘int’
+  111 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
+/tmp/biorhythms.c:412:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
+  412 |     printf("%d\n", tmp43);
+      |             ~^     ~~~~~
+      |              |     |
+      |              int   char *
+      |             %s
+/tmp/biorhythms.c: In function ‘mochi_main’:
+/tmp/biorhythms.c:428:28: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  428 |   list_int pairs_data[] = {tmp44, tmp45, tmp46};
+      |                            ^~~~~
+/tmp/biorhythms.c:428:35: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
+  428 |   list_int pairs_data[] = {tmp44, tmp45, tmp46};
+      |                                   ^~~~~
+/tmp/biorhythms.c:428:42: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  428 |   list_int pairs_data[] = {tmp44, tmp45, tmp46};
+      |                                          ^~~~~
+/tmp/biorhythms.c:433:22: warning: passing argument 1 of ‘biorhythms’ makes pointer from integer without a cast [-Wint-conversion]
+  433 |     biorhythms(p.data[0], p.data[1]);
+      |                ~~~~~~^~~
+      |                      |
+      |                      int
+/tmp/biorhythms.c:320:22: note: expected ‘char *’ but argument is of type ‘int’
+  320 | int biorhythms(char *birth, char *target) {
+      |                ~~~~~~^~~~~
+/tmp/biorhythms.c:433:33: warning: passing argument 2 of ‘biorhythms’ makes pointer from integer without a cast [-Wint-conversion]
+  433 |     biorhythms(p.data[0], p.data[1]);
+      |                           ~~~~~~^~~
+      |                                 |
+      |                                 int
+/tmp/biorhythms.c:320:35: note: expected ‘char *’ but argument is of type ‘int’
+  320 | int biorhythms(char *birth, char *target) {
+      |                             ~~~~~~^~~~~~

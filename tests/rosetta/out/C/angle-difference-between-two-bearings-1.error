@@ -1,53 +1,23 @@
 cc: exit status 1
 /tmp/angle-difference-between-two-bearings-1.c: In function ‘_mochi_main’:
-/tmp/angle-difference-between-two-bearings-1.c:66:12: error: redefinition of ‘testCases’
-   66 |   list_int testCases = list_int_create(2);
-      |            ^~~~~~~~~
-/tmp/angle-difference-between-two-bearings-1.c:63:12: note: previous definition of ‘testCases’ with type ‘list_int’
-   63 |   list_int testCases = list_int_create(2);
-      |            ^~~~~~~~~
-/tmp/angle-difference-between-two-bearings-1.c:69:12: error: redefinition of ‘testCases’
-   69 |   list_int testCases = list_int_create(2);
-      |            ^~~~~~~~~
-/tmp/angle-difference-between-two-bearings-1.c:66:12: note: previous definition of ‘testCases’ with type ‘list_int’
-   66 |   list_int testCases = list_int_create(2);
-      |            ^~~~~~~~~
-/tmp/angle-difference-between-two-bearings-1.c:72:12: error: redefinition of ‘testCases’
-   72 |   list_int testCases = list_int_create(2);
-      |            ^~~~~~~~~
-/tmp/angle-difference-between-two-bearings-1.c:69:12: note: previous definition of ‘testCases’ with type ‘list_int’
-   69 |   list_int testCases = list_int_create(2);
-      |            ^~~~~~~~~
-/tmp/angle-difference-between-two-bearings-1.c:75:12: error: redefinition of ‘testCases’
-   75 |   list_int testCases = list_int_create(2);
-      |            ^~~~~~~~~
-/tmp/angle-difference-between-two-bearings-1.c:72:12: note: previous definition of ‘testCases’ with type ‘list_int’
-   72 |   list_int testCases = list_int_create(2);
-      |            ^~~~~~~~~
-/tmp/angle-difference-between-two-bearings-1.c:78:14: error: conflicting types for ‘testCases’; have ‘list_float’
-   78 |   list_float testCases = list_float_create(2);
-      |              ^~~~~~~~~
-/tmp/angle-difference-between-two-bearings-1.c:75:12: note: previous definition of ‘testCases’ with type ‘list_int’
-   75 |   list_int testCases = list_int_create(2);
-      |            ^~~~~~~~~
-/tmp/angle-difference-between-two-bearings-1.c:81:12: error: conflicting types for ‘testCases’; have ‘list_int’
-   81 |   list_int testCases = list_int_create(2);
-      |            ^~~~~~~~~
-/tmp/angle-difference-between-two-bearings-1.c:78:14: note: previous definition of ‘testCases’ with type ‘list_float’
-   78 |   list_float testCases = list_float_create(2);
-      |              ^~~~~~~~~
-/tmp/angle-difference-between-two-bearings-1.c:84:32: error: incompatible types when initializing type ‘int’ using type ‘list_float’
-   84 |   list_int testCases_data[] = {tmp1,      testCases, testCases, testCases,
-      |                                ^~~~
-/tmp/angle-difference-between-two-bearings-1.c:84:43: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-   84 |   list_int testCases_data[] = {tmp1,      testCases, testCases, testCases,
-      |                                           ^~~~~~~~~
-/tmp/angle-difference-between-two-bearings-1.c:86:17: error: conflicting types for ‘testCases’; have ‘list_list_int’
-   86 |   list_list_int testCases = {8, testCases_data};
-      |                 ^~~~~~~~~
-/tmp/angle-difference-between-two-bearings-1.c:81:12: note: previous definition of ‘testCases’ with type ‘list_int’
-   81 |   list_int testCases = list_int_create(2);
-      |            ^~~~~~~~~
-/tmp/angle-difference-between-two-bearings-1.c:88:21: error: invalid initializer
-   88 |     list_float tc = testCases.data[tmp2];
-      |                     ^~~~~~~~~
+/tmp/angle-difference-between-two-bearings-1.c:86:27: error: incompatible types when initializing type ‘int’ using type ‘list_float’
+   86 |   list_int tmp1_data[] = {tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8, tmp9};
+      |                           ^~~~
+/tmp/angle-difference-between-two-bearings-1.c:86:33: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
+   86 |   list_int tmp1_data[] = {tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8, tmp9};
+      |                                 ^~~~
+/tmp/angle-difference-between-two-bearings-1.c:86:63: error: incompatible types when initializing type ‘int’ using type ‘list_float’
+   86 |   list_int tmp1_data[] = {tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8, tmp9};
+      |                                                               ^~~~
+/tmp/angle-difference-between-two-bearings-1.c:86:69: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
+   86 |   list_int tmp1_data[] = {tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8, tmp9};
+      |                                                                     ^~~~
+/tmp/angle-difference-between-two-bearings-1.c:88:15: error: incompatible types when assigning to type ‘int’ from type ‘list_list_int’
+   88 |   testCases = tmp1;
+      |               ^~~~
+/tmp/angle-difference-between-two-bearings-1.c:89:40: error: request for member ‘len’ in something not a structure or union
+   89 |   for (int tmp10 = 0; tmp10 < testCases.len; tmp10++) {
+      |                                        ^
+/tmp/angle-difference-between-two-bearings-1.c:90:30: error: request for member ‘data’ in something not a structure or union
+   90 |     list_float tc = testCases.data[tmp10];
+      |                              ^

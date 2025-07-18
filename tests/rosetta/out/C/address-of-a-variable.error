@@ -1,6 +1,0 @@
-cc: exit status 1
-/tmp/address-of-a-variable.c: In function ‘_mochi_main’:
-/tmp/address-of-a-variable.c:9:42: error: expected ‘)’ before numeric constant
-    9 |   printf("value as float: %.17g\n", myVar.0);
-      |         ~                                ^~
-      |                                          )

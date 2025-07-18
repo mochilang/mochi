@@ -6,9 +6,13 @@ cc: exit status 1
 /tmp/amb.c:92:22: error: request for member ‘data’ in something not a structure or union
    92 |   while (i < wordsets.data[idx].len) {
       |                      ^
-/tmp/amb.c:93:23: error: request for member ‘data’ in something not a structure or union
-   93 |     char *w = wordsets.data[idx].data[i];
-      |                       ^
+/tmp/amb.c:93:29: error: request for member ‘data’ in something not a structure or union
+   93 |     __auto_type w = wordsets.data[idx].data[i];
+      |                             ^
+/tmp/amb.c:95:38: error: ‘w’ undeclared (first use in this function)
+   95 |                         slice_string(w, 0, 1)) {
+      |                                      ^
+/tmp/amb.c:95:38: note: each undeclared identifier is reported only once for each function it appears in
 /tmp/amb.c: In function ‘mochi_main’:
 /tmp/amb.c:122:30: error: incompatible types when initializing type ‘int’ using type ‘list_string’
   122 |   list_int wordset_data[] = {tmp1, tmp2, tmp3, tmp4};

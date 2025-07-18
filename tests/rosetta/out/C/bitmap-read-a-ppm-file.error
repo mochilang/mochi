@@ -1,125 +1,159 @@
 cc: exit status 1
-/tmp/bitmap-read-a-ppm-file.c:149:3: error: unknown type name ‘list_int’
-  149 |   list_int data;
+/tmp/bitmap-read-a-ppm-file.c:153:3: error: unknown type name ‘list_int’
+  153 |   list_int data;
       |   ^~~~~~~~
 /tmp/bitmap-read-a-ppm-file.c: In function ‘newBitmap’:
-/tmp/bitmap-read-a-ppm-file.c:176:39: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘r’
-  176 |       tmp1.data[row.len] = (pixel_t){.r = 0, .g = 0, .b = 0};
+/tmp/bitmap-read-a-ppm-file.c:180:39: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘r’
+  180 |       tmp1.data[row.len] = (pixel_t){.r = 0, .g = 0, .b = 0};
       |                                       ^
-/tmp/bitmap-read-a-ppm-file.c:176:47: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘g’
-  176 |       tmp1.data[row.len] = (pixel_t){.r = 0, .g = 0, .b = 0};
+/tmp/bitmap-read-a-ppm-file.c:180:47: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘g’
+  180 |       tmp1.data[row.len] = (pixel_t){.r = 0, .g = 0, .b = 0};
       |                                               ^
-/tmp/bitmap-read-a-ppm-file.c:176:55: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘b’
-  176 |       tmp1.data[row.len] = (pixel_t){.r = 0, .g = 0, .b = 0};
+/tmp/bitmap-read-a-ppm-file.c:180:55: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘b’
+  180 |       tmp1.data[row.len] = (pixel_t){.r = 0, .g = 0, .b = 0};
       |                                                       ^
-/tmp/bitmap-read-a-ppm-file.c:181:5: error: ‘rows’ undeclared (first use in this function); did you mean ‘row’?
-  181 |     rows = 0;
+/tmp/bitmap-read-a-ppm-file.c:185:5: error: ‘rows’ undeclared (first use in this function); did you mean ‘row’?
+  185 |     rows = 0;
       |     ^~~~
       |     row
-/tmp/bitmap-read-a-ppm-file.c:181:5: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/bitmap-read-a-ppm-file.c:185:5: note: each undeclared identifier is reported only once for each function it appears in
 /tmp/bitmap-read-a-ppm-file.c: In function ‘setPx’:
-/tmp/bitmap-read-a-ppm-file.c:189:26: error: request for member ‘data’ in something not a structure or union
-  189 |   pixel_list_t row = rows.data[y];
-      |                          ^
-/tmp/bitmap-read-a-ppm-file.c:190:17: error: incompatible types when assigning to type ‘pixel_t’ {aka ‘struct pixel_t’} from type ‘pixel_t *’ {aka ‘struct pixel_t *’}
-  190 |   row.data[x] = p;
-      |                 ^
-/tmp/bitmap-read-a-ppm-file.c:191:7: error: request for member ‘data’ in something not a structure or union
-  191 |   rows.data[y] = row;
+/tmp/bitmap-read-a-ppm-file.c:193:25: error: request for member ‘data’ in something not a structure or union
+  193 |   __auto_type row = rows.data[y];
+      |                         ^
+/tmp/bitmap-read-a-ppm-file.c:194:3: error: ‘row’ undeclared (first use in this function); did you mean ‘rows’?
+  194 |   row.data[x] = p;
+      |   ^~~
+      |   rows
+/tmp/bitmap-read-a-ppm-file.c:195:7: error: request for member ‘data’ in something not a structure or union
+  195 |   rows.data[y] = row;
       |       ^
 /tmp/bitmap-read-a-ppm-file.c: In function ‘getPx’:
-/tmp/bitmap-read-a-ppm-file.c:195:58: error: request for member ‘data’ in something not a structure or union
-  195 | pixel_t getPx(bitmap_t *b, int x, int y) { return b->data.data[y].data[x]; }
+/tmp/bitmap-read-a-ppm-file.c:199:58: error: request for member ‘data’ in something not a structure or union
+  199 | pixel_t getPx(bitmap_t *b, int x, int y) { return b->data.data[y].data[x]; }
       |                                                          ^
 /tmp/bitmap-read-a-ppm-file.c: In function ‘splitLines’:
-/tmp/bitmap-read-a-ppm-file.c:202:16: warning: implicit declaration of function ‘substr’; did you mean ‘strstr’? [-Wimplicit-function-declaration]
-  202 |     char *ch = substr(s, i, i + 1);
-      |                ^~~~~~
-      |                strstr
-/tmp/bitmap-read-a-ppm-file.c:202:16: warning: initialization of ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+/tmp/bitmap-read-a-ppm-file.c:206:22: warning: implicit declaration of function ‘substr’; did you mean ‘strstr’? [-Wimplicit-function-declaration]
+  206 |     __auto_type ch = substr(s, i, i + 1);
+      |                      ^~~~~~
+      |                      strstr
+/tmp/bitmap-read-a-ppm-file.c:207:17: warning: passing argument 1 of ‘strcmp’ makes pointer from integer without a cast [-Wint-conversion]
+  207 |     if ((strcmp(ch, "\n") == 0)) {
+      |                 ^~
+      |                 |
+      |                 int
+In file included from /tmp/bitmap-read-a-ppm-file.c:5:
+/usr/include/string.h:156:32: note: expected ‘const char *’ but argument is of type ‘int’
+  156 | extern int strcmp (const char *__s1, const char *__s2)
+      |                    ~~~~~~~~~~~~^~~~
+/tmp/bitmap-read-a-ppm-file.c:214:39: warning: passing argument 2 of ‘concat_string’ makes pointer from integer without a cast [-Wint-conversion]
+  214 |       char *tmp5 = concat_string(cur, ch);
+      |                                       ^~
+      |                                       |
+      |                                       int
+/tmp/bitmap-read-a-ppm-file.c:91:43: note: expected ‘char *’ but argument is of type ‘int’
+   91 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
 /tmp/bitmap-read-a-ppm-file.c: In function ‘splitWS’:
-/tmp/bitmap-read-a-ppm-file.c:227:16: warning: initialization of ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
-  227 |     char *ch = substr(s, i, i + 1);
-      |                ^~~~~~
+/tmp/bitmap-read-a-ppm-file.c:232:17: warning: passing argument 1 of ‘strcmp’ makes pointer from integer without a cast [-Wint-conversion]
+  232 |     if ((strcmp(ch, " ") == 0) || ch == "\t" || ch == "\r" || ch == "\n") {
+      |                 ^~
+      |                 |
+      |                 int
+/usr/include/string.h:156:32: note: expected ‘const char *’ but argument is of type ‘int’
+  156 | extern int strcmp (const char *__s1, const char *__s2)
+      |                    ~~~~~~~~~~~~^~~~
+/tmp/bitmap-read-a-ppm-file.c:232:38: warning: comparison between pointer and integer
+  232 |     if ((strcmp(ch, " ") == 0) || ch == "\t" || ch == "\r" || ch == "\n") {
+      |                                      ^~
+/tmp/bitmap-read-a-ppm-file.c:232:52: warning: comparison between pointer and integer
+  232 |     if ((strcmp(ch, " ") == 0) || ch == "\t" || ch == "\r" || ch == "\n") {
+      |                                                    ^~
+/tmp/bitmap-read-a-ppm-file.c:232:66: warning: comparison between pointer and integer
+  232 |     if ((strcmp(ch, " ") == 0) || ch == "\t" || ch == "\r" || ch == "\n") {
+      |                                                                  ^~
+/tmp/bitmap-read-a-ppm-file.c:241:40: warning: passing argument 2 of ‘concat_string’ makes pointer from integer without a cast [-Wint-conversion]
+  241 |       char *tmp10 = concat_string(cur, ch);
+      |                                        ^~
+      |                                        |
+      |                                        int
+/tmp/bitmap-read-a-ppm-file.c:91:43: note: expected ‘char *’ but argument is of type ‘int’
+   91 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
 /tmp/bitmap-read-a-ppm-file.c: In function ‘parseIntStr’:
-/tmp/bitmap-read-a-ppm-file.c:255:11: error: request for member ‘len’ in something not a structure or union
-  255 |   if ((str.len > 0 && tmp13 == "-")) {
+/tmp/bitmap-read-a-ppm-file.c:259:11: error: request for member ‘len’ in something not a structure or union
+  259 |   if ((str.len > 0 && tmp13 == "-")) {
       |           ^
-/tmp/bitmap-read-a-ppm-file.c:272:18: error: request for member ‘len’ in something not a structure or union
-  272 |   while ((i < str.len)) {
+/tmp/bitmap-read-a-ppm-file.c:276:18: error: request for member ‘len’ in something not a structure or union
+  276 |   while ((i < str.len)) {
       |                  ^
 /tmp/bitmap-read-a-ppm-file.c: In function ‘tokenize’:
-/tmp/bitmap-read-a-ppm-file.c:289:48: warning: comparison between pointer and integer
-  289 |     if (strlen(line) > 0 && substr(line, 0, 1) == "#") {
+/tmp/bitmap-read-a-ppm-file.c:293:48: warning: comparison between pointer and integer
+  293 |     if (strlen(line) > 0 && substr(line, 0, 1) == "#") {
       |                                                ^~
 /tmp/bitmap-read-a-ppm-file.c: In function ‘readP3’:
-/tmp/bitmap-read-a-ppm-file.c:327:36: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘r’
-  327 |       setPx(&bm, x, y, &(pixel_t){.r = r, .g = g, .b = b});
+/tmp/bitmap-read-a-ppm-file.c:331:36: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘r’
+  331 |       setPx(&bm, x, y, &(pixel_t){.r = r, .g = g, .b = b});
       |                                    ^
-/tmp/bitmap-read-a-ppm-file.c:327:44: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘g’
-  327 |       setPx(&bm, x, y, &(pixel_t){.r = r, .g = g, .b = b});
+/tmp/bitmap-read-a-ppm-file.c:331:44: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘g’
+  331 |       setPx(&bm, x, y, &(pixel_t){.r = r, .g = g, .b = b});
       |                                            ^
-/tmp/bitmap-read-a-ppm-file.c:327:52: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘b’
-  327 |       setPx(&bm, x, y, &(pixel_t){.r = r, .g = g, .b = b});
+/tmp/bitmap-read-a-ppm-file.c:331:52: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘b’
+  331 |       setPx(&bm, x, y, &(pixel_t){.r = r, .g = g, .b = b});
       |                                                    ^
 /tmp/bitmap-read-a-ppm-file.c: In function ‘toGrey’:
-/tmp/bitmap-read-a-ppm-file.c:344:25: warning: passing argument 1 of ‘getPx’ from incompatible pointer type [-Wincompatible-pointer-types]
-  344 |       pixel_t p = getPx(&b, x, y);
-      |                         ^~
-      |                         |
-      |                         bitmap_t ** {aka struct bitmap_t **}
-/tmp/bitmap-read-a-ppm-file.c:195:25: note: expected ‘bitmap_t *’ {aka ‘struct bitmap_t *’} but argument is of type ‘bitmap_t **’ {aka ‘struct bitmap_t **’}
-  195 | pixel_t getPx(bitmap_t *b, int x, int y) { return b->data.data[y].data[x]; }
+/tmp/bitmap-read-a-ppm-file.c:348:29: warning: passing argument 1 of ‘getPx’ from incompatible pointer type [-Wincompatible-pointer-types]
+  348 |       __auto_type p = getPx(&b, x, y);
+      |                             ^~
+      |                             |
+      |                             bitmap_t ** {aka struct bitmap_t **}
+/tmp/bitmap-read-a-ppm-file.c:199:25: note: expected ‘bitmap_t *’ {aka ‘struct bitmap_t *’} but argument is of type ‘bitmap_t **’ {aka ‘struct bitmap_t **’}
+  199 | pixel_t getPx(bitmap_t *b, int x, int y) { return b->data.data[y].data[x]; }
       |               ~~~~~~~~~~^
-/tmp/bitmap-read-a-ppm-file.c:345:20: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘r’
-  345 |       double l = (p.r * 2126 + p.g * 7152 + p.b * 722) / 10000;
-      |                    ^
-/tmp/bitmap-read-a-ppm-file.c:345:33: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘g’
-  345 |       double l = (p.r * 2126 + p.g * 7152 + p.b * 722) / 10000;
-      |                                 ^
-/tmp/bitmap-read-a-ppm-file.c:345:46: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘b’
-  345 |       double l = (p.r * 2126 + p.g * 7152 + p.b * 722) / 10000;
-      |                                              ^
-/tmp/bitmap-read-a-ppm-file.c:349:34: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘r’
-  349 |       setPx(&b, x, y, (pixel_t){.r = l, .g = l, .b = l});
+/tmp/bitmap-read-a-ppm-file.c:349:25: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘r’
+  349 |       __auto_type l = (p.r * 2126 + p.g * 7152 + p.b * 722) / 10000;
+      |                         ^
+/tmp/bitmap-read-a-ppm-file.c:349:38: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘g’
+  349 |       __auto_type l = (p.r * 2126 + p.g * 7152 + p.b * 722) / 10000;
+      |                                      ^
+/tmp/bitmap-read-a-ppm-file.c:349:51: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘b’
+  349 |       __auto_type l = (p.r * 2126 + p.g * 7152 + p.b * 722) / 10000;
+      |                                                   ^
+/tmp/bitmap-read-a-ppm-file.c:350:11: error: ‘l’ undeclared (first use in this function)
+  350 |       if (l > b->max) {
+      |           ^
+/tmp/bitmap-read-a-ppm-file.c:353:34: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘r’
+  353 |       setPx(&b, x, y, (pixel_t){.r = l, .g = l, .b = l});
       |                                  ^
-/tmp/bitmap-read-a-ppm-file.c:349:42: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘g’
-  349 |       setPx(&b, x, y, (pixel_t){.r = l, .g = l, .b = l});
+/tmp/bitmap-read-a-ppm-file.c:353:42: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘g’
+  353 |       setPx(&b, x, y, (pixel_t){.r = l, .g = l, .b = l});
       |                                          ^
-/tmp/bitmap-read-a-ppm-file.c:349:50: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘b’
-  349 |       setPx(&b, x, y, (pixel_t){.r = l, .g = l, .b = l});
+/tmp/bitmap-read-a-ppm-file.c:353:50: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘b’
+  353 |       setPx(&b, x, y, (pixel_t){.r = l, .g = l, .b = l});
       |                                                  ^
-/tmp/bitmap-read-a-ppm-file.c:349:13: warning: passing argument 1 of ‘setPx’ from incompatible pointer type [-Wincompatible-pointer-types]
-  349 |       setPx(&b, x, y, (pixel_t){.r = l, .g = l, .b = l});
+/tmp/bitmap-read-a-ppm-file.c:353:13: warning: passing argument 1 of ‘setPx’ from incompatible pointer type [-Wincompatible-pointer-types]
+  353 |       setPx(&b, x, y, (pixel_t){.r = l, .g = l, .b = l});
       |             ^~
       |             |
       |             bitmap_t ** {aka struct bitmap_t **}
-/tmp/bitmap-read-a-ppm-file.c:187:21: note: expected ‘bitmap_t *’ {aka ‘struct bitmap_t *’} but argument is of type ‘bitmap_t **’ {aka ‘struct bitmap_t **’}
-  187 | int setPx(bitmap_t *b, int x, int y, pixel_t *p) {
+/tmp/bitmap-read-a-ppm-file.c:191:21: note: expected ‘bitmap_t *’ {aka ‘struct bitmap_t *’} but argument is of type ‘bitmap_t **’ {aka ‘struct bitmap_t **’}
+  191 | int setPx(bitmap_t *b, int x, int y, pixel_t *p) {
       |           ~~~~~~~~~~^
-/tmp/bitmap-read-a-ppm-file.c:349:32: error: incompatible type for argument 4 of ‘setPx’
-  349 |       setPx(&b, x, y, (pixel_t){.r = l, .g = l, .b = l});
-      |                                ^~~~~~~~~~~~~~~~~~~~~~~~
-      |                                |
-      |                                pixel_t {aka struct pixel_t}
-/tmp/bitmap-read-a-ppm-file.c:187:47: note: expected ‘pixel_t *’ {aka ‘struct pixel_t *’} but argument is of type ‘pixel_t’ {aka ‘struct pixel_t’}
-  187 | int setPx(bitmap_t *b, int x, int y, pixel_t *p) {
-      |                                      ~~~~~~~~~^
 /tmp/bitmap-read-a-ppm-file.c: In function ‘writeP3’:
-/tmp/bitmap-read-a-ppm-file.c:392:25: warning: passing argument 1 of ‘getPx’ from incompatible pointer type [-Wincompatible-pointer-types]
-  392 |       pixel_t p = getPx(&b, x, y);
-      |                         ^~
-      |                         |
-      |                         bitmap_t ** {aka struct bitmap_t **}
-/tmp/bitmap-read-a-ppm-file.c:195:25: note: expected ‘bitmap_t *’ {aka ‘struct bitmap_t *’} but argument is of type ‘bitmap_t **’ {aka ‘struct bitmap_t **’}
-  195 | pixel_t getPx(bitmap_t *b, int x, int y) { return b->data.data[y].data[x]; }
+/tmp/bitmap-read-a-ppm-file.c:396:29: warning: passing argument 1 of ‘getPx’ from incompatible pointer type [-Wincompatible-pointer-types]
+  396 |       __auto_type p = getPx(&b, x, y);
+      |                             ^~
+      |                             |
+      |                             bitmap_t ** {aka struct bitmap_t **}
+/tmp/bitmap-read-a-ppm-file.c:199:25: note: expected ‘bitmap_t *’ {aka ‘struct bitmap_t *’} but argument is of type ‘bitmap_t **’ {aka ‘struct bitmap_t **’}
+  199 | pixel_t getPx(bitmap_t *b, int x, int y) { return b->data.data[y].data[x]; }
       |               ~~~~~~~~~~^
-/tmp/bitmap-read-a-ppm-file.c:394:47: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘r’
-  394 |       char *tmp31 = concat_string(tmp30, pad(p.r, digits));
+/tmp/bitmap-read-a-ppm-file.c:398:47: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘r’
+  398 |       char *tmp31 = concat_string(tmp30, pad(p.r, digits));
       |                                               ^
-/tmp/bitmap-read-a-ppm-file.c:396:47: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘g’
-  396 |       char *tmp33 = concat_string(tmp32, pad(p.g, digits));
+/tmp/bitmap-read-a-ppm-file.c:400:47: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘g’
+  400 |       char *tmp33 = concat_string(tmp32, pad(p.g, digits));
       |                                               ^
-/tmp/bitmap-read-a-ppm-file.c:398:47: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘b’
-  398 |       char *tmp35 = concat_string(tmp34, pad(p.b, digits));
+/tmp/bitmap-read-a-ppm-file.c:402:47: error: ‘pixel_t’ {aka ‘struct pixel_t’} has no member named ‘b’
+  402 |       char *tmp35 = concat_string(tmp34, pad(p.b, digits));
       |                                               ^

@@ -1,17 +1,32 @@
 cc: exit status 1
 /tmp/bernoulli-numbers.c: In function ‘_mochi_main’:
-/tmp/bernoulli-numbers.c:55:9: warning: implicit declaration of function ‘num’ [-Wimplicit-function-declaration]
-   55 |     if (num(b) != 0) {
+/tmp/bernoulli-numbers.c:65:9: warning: implicit declaration of function ‘num’ [-Wimplicit-function-declaration]
+   65 |     if (num(b) != 0) {
       |         ^~~
-/tmp/bernoulli-numbers.c:58:25: warning: implicit declaration of function ‘denom’ [-Wimplicit-function-declaration]
-   58 |       char *tmp4 = _str(denom(b));
+/tmp/bernoulli-numbers.c:68:25: warning: implicit declaration of function ‘denom’ [-Wimplicit-function-declaration]
+   68 |       char *tmp4 = _str(denom(b));
       |                         ^~~~~
-/tmp/bernoulli-numbers.c:62:29: error: called object ‘tmp6’ is not a function or function pointer
-   62 |       printf("%d\n", "B(" + tmp6(2, " ") + ") =" + numStr.pad_start(45, " ") +
-      |                             ^~~~
-/tmp/bernoulli-numbers.c:61:13: note: declared here
-   61 |       char *tmp6 = _str(i);
+/tmp/bernoulli-numbers.c:71:40: error: called object ‘tmp5’ is not a function or function pointer
+   71 |       char *tmp6 = concat_string("B(", tmp5(2, " "));
+      |                                        ^~~~
+/tmp/bernoulli-numbers.c:70:13: note: declared here
+   70 |       char *tmp5 = _str(i);
       |             ^~~~
-/tmp/bernoulli-numbers.c:62:58: error: request for member ‘pad_start’ in something not a structure or union
-   62 |       printf("%d\n", "B(" + tmp6(2, " ") + ") =" + numStr.pad_start(45, " ") +
-      |                                                          ^
+/tmp/bernoulli-numbers.c:73:46: error: request for member ‘pad_start’ in something not a structure or union
+   73 |       char *tmp8 = concat_string(tmp7, numStr.pad_start(45, " "));
+      |                                              ^
+/tmp/bernoulli-numbers.c:77:41: error: called object ‘tmp11’ is not a function or function pointer
+   77 |       char *tmp12 = concat_string("B(", tmp11(2, " "));
+      |                                         ^~~~~
+/tmp/bernoulli-numbers.c:76:13: note: declared here
+   76 |       char *tmp11 = _str(i);
+      |             ^~~~~
+/tmp/bernoulli-numbers.c:79:48: error: request for member ‘pad_start’ in something not a structure or union
+   79 |       char *tmp14 = concat_string(tmp13, numStr.pad_start(45, " "));
+      |                                                ^
+/tmp/bernoulli-numbers.c:82:16: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
+   82 |       printf("%d\n", tmp16);
+      |               ~^     ~~~~~
+      |                |     |
+      |                int   char *
+      |               %s

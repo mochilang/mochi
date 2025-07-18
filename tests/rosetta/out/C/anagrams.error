@@ -10,17 +10,14 @@ cc: exit status 1
 /tmp/anagrams.c:233:13: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
   233 |     int w = words.data[tmp8];
       |             ^~~~~
-/tmp/anagrams.c:234:23: warning: passing argument 1 of ‘sortRunes’ makes pointer from integer without a cast [-Wint-conversion]
-  234 |     int k = sortRunes(w);
-      |                       ^
-      |                       |
-      |                       int
+/tmp/anagrams.c:234:31: warning: passing argument 1 of ‘sortRunes’ makes pointer from integer without a cast [-Wint-conversion]
+  234 |     __auto_type k = sortRunes(w);
+      |                               ^
+      |                               |
+      |                               int
 /tmp/anagrams.c:131:23: note: expected ‘char *’ but argument is of type ‘int’
   131 | char *sortRunes(char *s) {
       |                 ~~~~~~^
-/tmp/anagrams.c:234:13: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
-  234 |     int k = sortRunes(w);
-      |             ^~~~~~~~~
 /tmp/anagrams.c:235:14: error: expected ‘)’ before ‘in’
   235 |     if (((!(k in groups)))) {
       |            ~ ^~~
@@ -49,17 +46,14 @@ cc: exit status 1
 /tmp/anagrams.c:254:13: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
   254 |     int w = words.data[tmp14];
       |             ^~~~~
-/tmp/anagrams.c:255:23: warning: passing argument 1 of ‘sortRunes’ makes pointer from integer without a cast [-Wint-conversion]
-  255 |     int k = sortRunes(w);
-      |                       ^
-      |                       |
-      |                       int
+/tmp/anagrams.c:255:31: warning: passing argument 1 of ‘sortRunes’ makes pointer from integer without a cast [-Wint-conversion]
+  255 |     __auto_type k = sortRunes(w);
+      |                               ^
+      |                               |
+      |                               int
 /tmp/anagrams.c:131:23: note: expected ‘char *’ but argument is of type ‘int’
   131 | char *sortRunes(char *s) {
       |                 ~~~~~~^
-/tmp/anagrams.c:255:13: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
-  255 |     int k = sortRunes(w);
-      |             ^~~~~~~~~
 /tmp/anagrams.c:256:15: error: request for member ‘data’ in something not a structure or union
   256 |     if (groups.data[k].len == maxLen) {
       |               ^
@@ -68,8 +62,12 @@ cc: exit status 1
       |              ~ ^~~
       |                )
 /tmp/anagrams.c:258:43: error: request for member ‘data’ in something not a structure or union
-  258 |         list_string g = sortStrings(groups.data[k]);
+  258 |         __auto_type g = sortStrings(groups.data[k]);
       |                                           ^
+/tmp/anagrams.c:259:42: error: ‘g’ undeclared (first use in this function)
+  259 |         char *tmp15 = concat_string("[", g.data[0]);
+      |                                          ^
+/tmp/anagrams.c:259:42: note: each undeclared identifier is reported only once for each function it appears in
 /tmp/anagrams.c:271:16: error: request for member ‘data’ in something not a structure or union
   271 |         printed.data[k] = 1;
       |                ^

@@ -5637,8 +5637,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 						}
 					}
 					argCode := c.compileExpr(a)
-					if fmtStr == "%.17g" && !strings.ContainsAny(argCode, ".eE") {
-						argCode += ".0"
+					if fmtStr == "%.17g" {
+						if _, ok := constIntValue(a); ok {
+							argCode += ".0"
+						}
 					}
 					if isBoolArg(a, c.env) {
 						fmtStr = "%s"

@@ -1,30 +1,30 @@
 cc: exit status 1
-/tmp/4-rings-or-4-squares-puzzle.c:36:9: error: expected identifier or ‘(’ before ‘)’ token
-   36 |   int (*)(int) count;
+/tmp/4-rings-or-4-squares-puzzle.c:40:9: error: expected identifier or ‘(’ before ‘)’ token
+   40 |   int (*)(int) count;
       |         ^
 /tmp/4-rings-or-4-squares-puzzle.c: In function ‘getCombs’:
-/tmp/4-rings-or-4-squares-puzzle.c:117:23: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
-  117 |               valid = 0;
+/tmp/4-rings-or-4-squares-puzzle.c:121:23: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  121 |               valid = 0;
       |                       ^
-/tmp/4-rings-or-4-squares-puzzle.c:125:24: error: ‘tmp_item_t’ has no member named ‘count’
-  125 |   return (tmp_item_t){.count = count, .list = valid};
+/tmp/4-rings-or-4-squares-puzzle.c:129:24: error: ‘tmp_item_t’ has no member named ‘count’
+  129 |   return (tmp_item_t){.count = count, .list = valid};
       |                        ^~~~~
-/tmp/4-rings-or-4-squares-puzzle.c:125:47: error: incompatible types when initializing type ‘int’ using type ‘list_int’
-  125 |   return (tmp_item_t){.count = count, .list = valid};
+/tmp/4-rings-or-4-squares-puzzle.c:129:47: error: incompatible types when initializing type ‘int’ using type ‘list_int’
+  129 |   return (tmp_item_t){.count = count, .list = valid};
       |                                               ^~~~~
 /tmp/4-rings-or-4-squares-puzzle.c: In function ‘_mochi_main’:
-/tmp/4-rings-or-4-squares-puzzle.c:130:23: error: request for member ‘data’ in something not a structure or union
-  130 |   char *tmp2 = _str(r1.data["count"]);
+/tmp/4-rings-or-4-squares-puzzle.c:136:23: error: request for member ‘data’ in something not a structure or union
+  136 |   char *tmp2 = _str(r1.data["count"]);
       |                       ^
-/tmp/4-rings-or-4-squares-puzzle.c:133:20: error: request for member ‘data’ in something not a structure or union
-  133 |   printf("%d\n", r1.data["list"]);
-      |                    ^
-/tmp/4-rings-or-4-squares-puzzle.c:135:23: error: request for member ‘data’ in something not a structure or union
-  135 |   char *tmp4 = _str(r2.data["count"]);
-      |                       ^
-/tmp/4-rings-or-4-squares-puzzle.c:138:20: error: request for member ‘data’ in something not a structure or union
-  138 |   printf("%d\n", r2.data["list"]);
+/tmp/4-rings-or-4-squares-puzzle.c:139:20: error: request for member ‘data’ in something not a structure or union
+  139 |   printf("%d\n", r1.data["list"]);
       |                    ^
 /tmp/4-rings-or-4-squares-puzzle.c:140:23: error: request for member ‘data’ in something not a structure or union
-  140 |   char *tmp6 = _str(r3.data["count"]);
+  140 |   char *tmp4 = _str(r2.data["count"]);
+      |                       ^
+/tmp/4-rings-or-4-squares-puzzle.c:143:20: error: request for member ‘data’ in something not a structure or union
+  143 |   printf("%d\n", r2.data["list"]);
+      |                    ^
+/tmp/4-rings-or-4-squares-puzzle.c:144:23: error: request for member ‘data’ in something not a structure or union
+  144 |   char *tmp6 = _str(r3.data["count"]);
       |                       ^

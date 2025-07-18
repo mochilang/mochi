@@ -1,18 +1,18 @@
 cc: exit status 1
 /tmp/binary-strings.c: In function ‘_mochi_main’:
-/tmp/binary-strings.c:113:21: error: incompatible type for argument 1 of ‘_str’
-  113 |   char *tmp3 = _str(tmp2);
-      |                     ^~~~
+/tmp/binary-strings.c:128:21: error: incompatible type for argument 1 of ‘_str’
+  128 |   char *tmp9 = _str(b);
+      |                     ^
       |                     |
       |                     list_int
 /tmp/binary-strings.c:38:23: note: expected ‘int’ but argument is of type ‘list_int’
    38 | static char *_str(int v) {
       |                   ~~~~^
-/tmp/binary-strings.c:129:21: error: incompatible type for argument 1 of ‘_str’
-  129 |   char *tmp5 = _str(tmp4);
-      |                     ^~~~
-      |                     |
-      |                     list_int
+/tmp/binary-strings.c:130:22: error: incompatible type for argument 1 of ‘_str’
+  130 |   char *tmp10 = _str(c);
+      |                      ^
+      |                      |
+      |                      list_int
 /tmp/binary-strings.c:38:23: note: expected ‘int’ but argument is of type ‘list_int’
    38 | static char *_str(int v) {
       |                   ~~~~^

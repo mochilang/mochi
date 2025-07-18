@@ -1,55 +1,71 @@
 cc: exit status 1
 /tmp/brilliant-numbers.c: In function ‘sortInts’:
-/tmp/brilliant-numbers.c:208:11: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
-  208 |     res = 0;
+/tmp/brilliant-numbers.c:210:11: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  210 |     res = 0;
       |           ^
 /tmp/brilliant-numbers.c: In function ‘getBrilliant’:
-/tmp/brilliant-numbers.c:245:14: warning: overflow in conversion from ‘long int’ to ‘int’ changes value from ‘999999999999999’ to ‘-1530494977’ [-Woverflow]
-  245 |   int next = 999999999999999;
-      |              ^~~~~~~~~~~~~~~
-/tmp/brilliant-numbers.c:249:33: error: ‘primes’ undeclared (first use in this function)
-  249 |     for (int tmp12 = 0; tmp12 < primes.len; tmp12++) {
-      |                                 ^~~~~~
-/tmp/brilliant-numbers.c:249:33: note: each undeclared identifier is reported only once for each function it appears in
-/tmp/brilliant-numbers.c:294:12: error: incompatible types when returning type ‘map_string_int’ but ‘int’ was expected
-  294 |     return tmp17;
+/tmp/brilliant-numbers.c:296:12: error: incompatible types when returning type ‘map_string_int’ but ‘int’ was expected
+  296 |     return tmp17;
       |            ^~~~~
-/tmp/brilliant-numbers.c:296:10: error: incompatible types when returning type ‘tmp_item_t’ but ‘int’ was expected
-  296 |   return (tmp_item_t){.bc = brilliant, .next = next};
+/tmp/brilliant-numbers.c:298:10: error: incompatible types when returning type ‘tmp_item_t’ but ‘int’ was expected
+  298 |   return (tmp_item_t){.bc = brilliant, .next = next};
       |          ^
 /tmp/brilliant-numbers.c: In function ‘mochi_main’:
-/tmp/brilliant-numbers.c:302:27: error: request for member ‘data’ in something not a structure or union
-  302 |   list_int br = sortInts(r.data["bc"]);
-      |                           ^
-/tmp/brilliant-numbers.c:309:23: error: called object ‘tmp20’ is not a function or function pointer
-  309 |     printf("%d %s\n", tmp20(4, " ") + " ", (0) ? "true" : "false");
-      |                       ^~~~~
-/tmp/brilliant-numbers.c:308:11: note: declared here
-  308 |     char *tmp20 = _str(br.data[i]);
+/tmp/brilliant-numbers.c:304:30: error: request for member ‘data’ in something not a structure or union
+  304 |   __auto_type br = sortInts(r.data["bc"]);
+      |                              ^
+/tmp/brilliant-numbers.c:305:35: error: ‘br’ undeclared (first use in this function); did you mean ‘r’?
+  305 |   list_int tmp18 = slice_list_int(br, 0, 100);
+      |                                   ^~
+      |                                   r
+/tmp/brilliant-numbers.c:305:35: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/brilliant-numbers.c:310:33: error: called object ‘tmp19’ is not a function or function pointer
+  310 |     char *tmp20 = concat_string(tmp19(4, " "), " ");
+      |                                 ^~~~~
+/tmp/brilliant-numbers.c:309:11: note: declared here
+  309 |     char *tmp19 = _str(br.data[i]);
       |           ^~~~~
-/tmp/brilliant-numbers.c:318:17: warning: implicit declaration of function ‘pow’ [-Wimplicit-function-declaration]
-  318 |     int limit = pow(10, k);
-      |                 ^~~
+/tmp/brilliant-numbers.c:312:33: error: called object ‘tmp21’ is not a function or function pointer
+  312 |     char *tmp22 = concat_string(tmp21(4, " "), " ");
+      |                                 ^~~~~
+/tmp/brilliant-numbers.c:311:11: note: declared here
+  311 |     char *tmp21 = _str(br.data[i]);
+      |           ^~~~~
+/tmp/brilliant-numbers.c:313:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
+  313 |     printf("%d %s\n", tmp22, (0) ? "true" : "false");
+      |             ~^        ~~~~~
+      |              |        |
+      |              int      char *
+      |             %s
+/tmp/brilliant-numbers.c:322:25: warning: implicit declaration of function ‘pow’ [-Wimplicit-function-declaration]
+  322 |     __auto_type limit = pow(10, k);
+      |                         ^~~
 /tmp/brilliant-numbers.c:6:1: note: include ‘<math.h>’ or provide a declaration of ‘pow’
     5 | #include <string.h>
   +++ |+#include <math.h>
     6 | 
-/tmp/brilliant-numbers.c:318:17: warning: incompatible implicit declaration of built-in function ‘pow’ [-Wbuiltin-declaration-mismatch]
-  318 |     int limit = pow(10, k);
-      |                 ^~~
-/tmp/brilliant-numbers.c:318:17: note: include ‘<math.h>’ or provide a declaration of ‘pow’
-/tmp/brilliant-numbers.c:320:19: error: request for member ‘data’ in something not a structure or union
-  320 |     int total = r2.data["bc"];
-      |                   ^
-/tmp/brilliant-numbers.c:321:18: error: request for member ‘data’ in something not a structure or union
-  321 |     int next = r2.data["next"];
-      |                  ^
-/tmp/brilliant-numbers.c:325:40: error: request for member ‘pad_start’ in something not a structure or union
-  325 |     printf("%s\n", "First >= " + climit.pad_start(18, " ") + " is " +
-      |                                        ^
-/tmp/brilliant-numbers.c:326:30: error: request for member ‘pad_start’ in something not a structure or union
-  326 |                        ctotal.pad_start(14, " ") +
-      |                              ^
-/tmp/brilliant-numbers.c:327:50: error: request for member ‘pad_start’ in something not a structure or union
-  327 |                        " in the series: " + cnext.pad_start(18, " "));
-      |                                                  ^
+/tmp/brilliant-numbers.c:322:25: warning: incompatible implicit declaration of built-in function ‘pow’ [-Wbuiltin-declaration-mismatch]
+  322 |     __auto_type limit = pow(10, k);
+      |                         ^~~
+/tmp/brilliant-numbers.c:322:25: note: include ‘<math.h>’ or provide a declaration of ‘pow’
+/tmp/brilliant-numbers.c:324:27: error: request for member ‘data’ in something not a structure or union
+  324 |     __auto_type total = r2.data["bc"];
+      |                           ^
+/tmp/brilliant-numbers.c:325:26: error: request for member ‘data’ in something not a structure or union
+  325 |     __auto_type next = r2.data["next"];
+      |                          ^
+/tmp/brilliant-numbers.c:327:36: error: ‘total’ undeclared (first use in this function)
+  327 |     __auto_type ctotal = commatize(total + 1);
+      |                                    ^~~~~
+/tmp/brilliant-numbers.c:328:35: error: ‘next’ undeclared (first use in this function)
+  328 |     __auto_type cnext = commatize(next);
+      |                                   ^~~~
+/tmp/brilliant-numbers.c:329:52: error: request for member ‘pad_start’ in something not a structure or union
+  329 |     char *tmp23 = concat_string("First >= ", climit.pad_start(18, " "));
+      |                                                    ^
+/tmp/brilliant-numbers.c:331:40: error: ‘ctotal’ undeclared (first use in this function)
+  331 |     char *tmp25 = concat_string(tmp24, ctotal.pad_start(14, " "));
+      |                                        ^~~~~~
+/tmp/brilliant-numbers.c:333:40: error: ‘cnext’ undeclared (first use in this function)
+  333 |     char *tmp27 = concat_string(tmp26, cnext.pad_start(18, " "));
+      |                                        ^~~~~

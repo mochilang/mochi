@@ -16,19 +16,23 @@ cc: exit status 1
   118 |     result.data[k] = update.data[k];
       |           ^
 /tmp/associative-array-merging.c: In function ‘mochi_main’:
-/tmp/associative-array-merging.c:128:22: error: incompatible type for argument 1 of ‘merge’
-  128 |   int result = merge(&base, &update);
-      |                      ^~~~~
-      |                      |
-      |                      base_item_t *
+/tmp/associative-array-merging.c:128:30: error: incompatible type for argument 1 of ‘merge’
+  128 |   __auto_type result = merge(&base, &update);
+      |                              ^~~~~
+      |                              |
+      |                              base_item_t *
 /tmp/associative-array-merging.c:109:26: note: expected ‘map_string_int’ but argument is of type ‘base_item_t *’
   109 | int merge(map_string_int base, map_string_int update) {
       |           ~~~~~~~~~~~~~~~^~~~
-/tmp/associative-array-merging.c:128:29: error: incompatible type for argument 2 of ‘merge’
-  128 |   int result = merge(&base, &update);
-      |                             ^~~~~~~
-      |                             |
-      |                             update_item_t *
+/tmp/associative-array-merging.c:128:37: error: incompatible type for argument 2 of ‘merge’
+  128 |   __auto_type result = merge(&base, &update);
+      |                                     ^~~~~~~
+      |                                     |
+      |                                     update_item_t *
 /tmp/associative-array-merging.c:109:47: note: expected ‘map_string_int’ but argument is of type ‘update_item_t *’
   109 | int merge(map_string_int base, map_string_int update) {
       |                                ~~~~~~~~~~~~~~~^~~~~~
+/tmp/associative-array-merging.c:129:18: error: ‘result’ undeclared (first use in this function)
+  129 |   printf("%d\n", result);
+      |                  ^~~~~~
+/tmp/associative-array-merging.c:129:18: note: each undeclared identifier is reported only once for each function it appears in

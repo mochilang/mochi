@@ -1,5 +1,5 @@
 cc: exit status 1
 /tmp/abelian-sandpile-model-identity.c: In function ‘plus’:
-/tmp/abelian-sandpile-model-identity.c:93:11: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
-   93 |     res = 0;
+/tmp/abelian-sandpile-model-identity.c:103:11: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  103 |     res = 0;
       |           ^

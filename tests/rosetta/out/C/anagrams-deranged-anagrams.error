@@ -9,17 +9,14 @@ cc: exit status 1
 /tmp/anagrams-deranged-anagrams.c:198:11: error: request for member ‘len’ in something not a structure or union
   198 |     if ((w.len <= bestLen)) {
       |           ^
-/tmp/anagrams-deranged-anagrams.c:201:23: warning: passing argument 1 of ‘sortRunes’ makes pointer from integer without a cast [-Wint-conversion]
-  201 |     int k = sortRunes(w);
-      |                       ^
-      |                       |
-      |                       int
+/tmp/anagrams-deranged-anagrams.c:201:31: warning: passing argument 1 of ‘sortRunes’ makes pointer from integer without a cast [-Wint-conversion]
+  201 |     __auto_type k = sortRunes(w);
+      |                               ^
+      |                               |
+      |                               int
 /tmp/anagrams-deranged-anagrams.c:136:23: note: expected ‘char *’ but argument is of type ‘int’
   136 | char *sortRunes(char *s) {
       |                 ~~~~~~^
-/tmp/anagrams-deranged-anagrams.c:201:13: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
-  201 |     int k = sortRunes(w);
-      |             ^~~~~~~~~
 /tmp/anagrams-deranged-anagrams.c:202:14: error: expected ‘)’ before ‘in’
   202 |     if (((!(k in m)))) {
       |            ~ ^~~

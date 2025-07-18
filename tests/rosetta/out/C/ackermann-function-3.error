@@ -1,16 +1,1 @@
-cc: exit status 1
-/tmp/ackermann-function-3.c: In function ‘ackermann2’:
-/tmp/ackermann-function-3.c:69:14: warning: implicit declaration of function ‘_int’ [-Wimplicit-function-declaration]
-   69 |     int mi = _int(m);
-      |              ^~~~
-/tmp/ackermann-function-3.c: In function ‘show’:
-/tmp/ackermann-function-3.c:110:5: warning: ‘return’ with no value, in function returning non-void
-  110 |     return;
-      |     ^~~~~~
-/tmp/ackermann-function-3.c:98:5: note: declared here
-   98 | int show(int m, int n) {
-      |     ^~~~
-/usr/bin/ld: /tmp/ccghlSF8.o: in function `ackermann2':
-ackermann-function-3.c:(.text+0x28c): undefined reference to `_int'
-/usr/bin/ld: ackermann-function-3.c:(.text+0x344): undefined reference to `_int'
-collect2: error: ld returned 1 exit status
+run: signal: segmentation fault

@@ -1,0 +1,34 @@
+Index  Compass point         Degree
+   1   North               0.00°
+   2   North by east       16.00°
+   3   North-northeast     16.00°
+   4   Northeast by north  33.00°
+   5   Northeast           50.00°
+   6   Northeast by east   50.00°
+   7   East-northeast      67.00°
+   8   East by north       84.00°
+   9   East                84.00°
+  10   East by south       101.00°
+  11   East-southeast      118.00°
+  12   Southeast by east   118.00°
+  13   Southeast           135.00°
+  14   Southeast by south  151.00°
+  15   South-southeast     151.00°
+  16   South by east       168.00°
+  17   South               185.00°
+  18   South by west       185.00°
+  19   South-southwest     202.00°
+  20   Southwest by south  219.00°
+  21   Southwest           219.00°
+  22   Southwest by west   236.00°
+  23   West-southwest      253.00°
+  24   West by south       253.00°
+  25   West                270.00°
+  26   West by north       286.00°
+  27   West-northwest      286.00°
+  28   Northwest by west   303.00°
+  29   Northwest           320.00°
+  30   Northwest by north  320.00°
+  31   North-northwest     337.00°
+  32   North by west       354.00°
+   1   North               354.00°

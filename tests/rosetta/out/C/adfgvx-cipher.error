@@ -46,10 +46,10 @@ cc: exit status 1
       |     ^~~~~
 /tmp/adfgvx-cipher.c:304:5: note: each undeclared identifier is reported only once for each function it appears in
 /tmp/adfgvx-cipher.c: In function ‘decrypt’:
-/tmp/adfgvx-cipher.c:411:7: error: ‘cols’ undeclared (first use in this function); did you mean ‘ls’?
-  411 |       cols = 0;
+/tmp/adfgvx-cipher.c:412:7: error: ‘cols’ undeclared (first use in this function); did you mean ‘ls’?
+  412 |       cols = 0;
       |       ^~~~
       |       ls
-/tmp/adfgvx-cipher.c:428:5: error: ‘table’ undeclared (first use in this function)
-  428 |     table = 0;
+/tmp/adfgvx-cipher.c:429:5: error: ‘table’ undeclared (first use in this function)
+  429 |     table = 0;
       |     ^~~~~

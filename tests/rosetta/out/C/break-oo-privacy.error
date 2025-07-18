@@ -1,30 +1,30 @@
 cc: exit status 1
 /tmp/break-oo-privacy.c: In function ‘examineAndModify’:
-/tmp/break-oo-privacy.c:43:24: error: ‘foobar_t’ {aka ‘struct foobar_t’} has no member named ‘exported’; did you mean ‘Exported’?
-   43 |   char *tmp1 = _str(f->exported);
+/tmp/break-oo-privacy.c:45:24: error: ‘foobar_t’ {aka ‘struct foobar_t’} has no member named ‘exported’; did you mean ‘Exported’?
+   45 |   char *tmp1 = _str(f->exported);
       |                        ^~~~~~~~
       |                        Exported
-/tmp/break-oo-privacy.c:49:24: error: ‘foobar_t’ {aka ‘struct foobar_t’} has no member named ‘exported’; did you mean ‘Exported’?
-   49 |   char *tmp7 = _str(f->exported);
+/tmp/break-oo-privacy.c:51:24: error: ‘foobar_t’ {aka ‘struct foobar_t’} has no member named ‘exported’; did you mean ‘Exported’?
+   51 |   char *tmp7 = _str(f->exported);
       |                        ^~~~~~~~
       |                        Exported
-/tmp/break-oo-privacy.c:59:6: error: ‘foobar_t’ {aka ‘struct foobar_t’} has no member named ‘exported’; did you mean ‘Exported’?
-   59 |   f->exported = 16;
+/tmp/break-oo-privacy.c:61:6: error: ‘foobar_t’ {aka ‘struct foobar_t’} has no member named ‘exported’; did you mean ‘Exported’?
+   61 |   f->exported = 16;
       |      ^~~~~~~~
       |      Exported
-/tmp/break-oo-privacy.c:62:10: error: incompatible types when returning type ‘foobar_t *’ {aka ‘struct foobar_t *’} but ‘foobar_t’ {aka ‘struct foobar_t’} was expected
-   62 |   return f;
+/tmp/break-oo-privacy.c:64:10: error: incompatible types when returning type ‘foobar_t *’ {aka ‘struct foobar_t *’} but ‘foobar_t’ {aka ‘struct foobar_t’} was expected
+   64 |   return f;
       |          ^
 /tmp/break-oo-privacy.c: In function ‘_mochi_main’:
-/tmp/break-oo-privacy.c:71:30: error: ‘foobar_t’ {aka ‘struct foobar_t’} has no member named ‘exported’; did you mean ‘Exported’?
-   71 |   foobar_t obj = (foobar_t){.exported = 12, .unexported = 42};
-      |                              ^~~~~~~~
-      |                              Exported
-/tmp/break-oo-privacy.c:72:26: error: ‘foobar_t’ {aka ‘struct foobar_t’} has no member named ‘exported’; did you mean ‘Exported’?
-   72 |   char *tmp13 = _str(obj.exported);
+/tmp/break-oo-privacy.c:73:21: error: ‘foobar_t’ {aka ‘struct foobar_t’} has no member named ‘exported’; did you mean ‘Exported’?
+   73 |   obj = (foobar_t){.exported = 12, .unexported = 42};
+      |                     ^~~~~~~~
+      |                     Exported
+/tmp/break-oo-privacy.c:74:26: error: ‘foobar_t’ {aka ‘struct foobar_t’} has no member named ‘exported’; did you mean ‘Exported’?
+   74 |   char *tmp13 = _str(obj.exported);
       |                          ^~~~~~~~
       |                          Exported
-/tmp/break-oo-privacy.c:80:26: error: ‘foobar_t’ {aka ‘struct foobar_t’} has no member named ‘exported’; did you mean ‘Exported’?
-   80 |   char *tmp19 = _str(obj.exported);
+/tmp/break-oo-privacy.c:82:26: error: ‘foobar_t’ {aka ‘struct foobar_t’} has no member named ‘exported’; did you mean ‘Exported’?
+   82 |   char *tmp19 = _str(obj.exported);
       |                          ^~~~~~~~
       |                          Exported
