@@ -419,27 +419,41 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	c.writeln(fmt.Sprintf("%s(%s) ->", fn.Name, strings.Join(params, ", ")))
 	c.indent++
 
-	// special case: if-return followed by return
-	if len(fn.Body) == 2 {
-		ifst := fn.Body[0].If
-		if ifst != nil && ifst.ElseIf == nil && len(ifst.Then) == 1 && ifst.Then[0].Return != nil && len(ifst.Else) == 0 {
-			if ret := fn.Body[1].Return; ret != nil {
-				cond, err := c.compileExpr(ifst.Cond)
-				if err != nil {
-					return err
-				}
-				thenExpr, err := c.compileReturn(ifst.Then[0].Return)
-				if err != nil {
-					return err
-				}
-				elseExpr, err := c.compileReturn(ret)
-				if err != nil {
-					return err
-				}
-				c.writeln(fmt.Sprintf("case %s of true -> %s; _ -> %s end.", cond, thenExpr, elseExpr))
-				c.indent--
-				return nil
+	// special cases for sequences of if-return statements
+	if len(fn.Body) >= 2 {
+		// check for one or more `if cond { return X }` followed by `return Y`
+		conds := []string{}
+		thens := []string{}
+		idx := 0
+		for idx < len(fn.Body)-1 {
+			ifst := fn.Body[idx].If
+			if ifst == nil || ifst.ElseIf != nil || len(ifst.Then) != 1 || ifst.Then[0].Return == nil || len(ifst.Else) != 0 {
+				break
 			}
+			cond, err := c.compileExpr(ifst.Cond)
+			if err != nil {
+				return err
+			}
+			thenExpr, err := c.compileReturn(ifst.Then[0].Return)
+			if err != nil {
+				return err
+			}
+			conds = append(conds, cond)
+			thens = append(thens, thenExpr)
+			idx++
+		}
+		if idx == len(fn.Body)-1 && fn.Body[idx].Return != nil && len(conds) > 0 {
+			elseExpr, err := c.compileReturn(fn.Body[idx].Return)
+			if err != nil {
+				return err
+			}
+			code := elseExpr
+			for i := len(conds) - 1; i >= 0; i-- {
+				code = fmt.Sprintf("case %s of true -> %s; _ -> %s end", conds[i], thens[i], code)
+			}
+			c.writeln(code + ".")
+			c.indent--
+			return nil
 		}
 	}
 
