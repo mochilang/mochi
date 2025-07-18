@@ -107,7 +107,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		switch lang {
 		case "go":
 			if s.Import.Auto && path == "mochi/runtime/ffi/go/testpkg" {
-				c.writeln(fmt.Sprintf("%s = Struct.new(:Add, :Pi, :Answer).new(->(a,b){ a + b }, 3.14, 42)", alias))
+				c.writeln(fmt.Sprintf("%s = Object.new", alias))
+				c.writeln(fmt.Sprintf("def %s.Add(a,b); a + b; end", alias))
+				c.writeln(fmt.Sprintf("def %s.Pi; 3.14; end", alias))
+				c.writeln(fmt.Sprintf("def %s.Answer; 42; end", alias))
+				c.writeln(fmt.Sprintf("def %s.MD5Hex(s); require 'digest/md5'; Digest::MD5.hexdigest(s); end", alias))
+				c.writeln(fmt.Sprintf("def %s.FifteenPuzzleExample; 'Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd'; end", alias))
 				c.writeln("")
 			}
 		case "python":
@@ -2088,6 +2093,10 @@ func (c *Compiler) compileBuiltinCall(name string, args []string, origArgs []*pa
 				c.use("_format_list")
 				return fmt.Sprintf("puts(_format_list(%s))", args[0]), true, nil
 			}
+			if _, ok := c.inferExprType(origArgs[0]).(types.ListType); ok {
+				c.use("_format_list")
+				return fmt.Sprintf("puts(_format_list(%s))", args[0]), true, nil
+			}
 			if c.isMapExpr(origArgs[0]) {
 				return fmt.Sprintf("puts(%s.inspect)", args[0]), true, nil
 			}
@@ -2151,15 +2160,15 @@ func (c *Compiler) compileBuiltinCall(name string, args []string, origArgs []*pa
 			return "", true, fmt.Errorf("values expects 1 arg")
 		}
 		return fmt.Sprintf("(%s).values", args[0]), true, nil
-       case "str":
-               if len(args) != 1 {
-                       return "", true, fmt.Errorf("str expects 1 arg")
-               }
-               if len(origArgs) == 1 && c.isListExpr(origArgs[0]) {
-                       c.use("_format_list")
-                       return fmt.Sprintf("_format_list(%s)", args[0]), true, nil
-               }
-               return fmt.Sprintf("(%s).to_s", args[0]), true, nil
+	case "str":
+		if len(args) != 1 {
+			return "", true, fmt.Errorf("str expects 1 arg")
+		}
+		if len(origArgs) == 1 && c.isListExpr(origArgs[0]) {
+			c.use("_format_list")
+			return fmt.Sprintf("_format_list(%s)", args[0]), true, nil
+		}
+		return fmt.Sprintf("(%s).to_s", args[0]), true, nil
 	case "upper":
 		if len(args) != 1 {
 			return "", true, fmt.Errorf("upper expects 1 arg")
