@@ -2274,6 +2274,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 		groupEnv := types.NewEnv(c.env)
 		keyT := c.namedType(types.ExprType(q.Group.Exprs[0], child))
+		if st, ok := c.detectStructMap(q.Group.Exprs[0], child); ok {
+			st = c.ensureStructName(st)
+			keyT = st
+		}
 		groupEnv.SetVar(q.Group.Name, types.GroupType{Key: keyT, Elem: elem}, false)
 
 		if q.Sort != nil {
@@ -3135,7 +3139,11 @@ func (c *Compiler) querySelectEnv(q *parser.QueryExpr) *types.Env {
 		}
 	}
 	if q.Group != nil {
-		keyT := types.ExprType(q.Group.Exprs[0], env)
+		keyT := c.namedType(types.ExprType(q.Group.Exprs[0], env))
+		if st, ok := c.detectStructMap(q.Group.Exprs[0], env); ok {
+			st = c.ensureStructName(st)
+			keyT = st
+		}
 		g := types.NewEnv(env)
 		g.SetVar(q.Group.Name, types.GroupType{Key: keyT, Elem: types.AnyType{}}, false)
 		env = g
