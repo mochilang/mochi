@@ -3,7 +3,7 @@
 package excode
 
 const (
-	helperInput = "defp _input() do\n  String.trim(IO.gets(\"\"))\nend\n"
+	helperInput = "defp _input() do\n  case IO.gets(\"\") do\n    :eof -> \"\"\n    other -> String.trim(other)\n  end\nend\n"
 
 	helperCount = "defp _count(v) do\n  cond do\n    is_list(v) -> length(v)\n    is_map(v) and Map.has_key?(v, :items) -> length(Map.get(v, :items))\n    true -> raise \"count() expects list or group\"\n  end\nend\n"
 

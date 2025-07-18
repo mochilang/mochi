@@ -14,7 +14,10 @@ import (
 // Expression compilation helpers extracted from compiler.go for readability.
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 	if e == nil {
-		return "", fmt.Errorf("nil expr")
+		// Some Rosetta programs contain optional expressions that
+		// parse as nil. Treat them as the Elixir `nil` literal so the
+		// compiler can continue instead of failing with an error.
+		return "nil", nil
 	}
 	return c.compileBinary(e.Binary)
 }
@@ -877,6 +880,21 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			length := fmt.Sprintf("(%s) - %s", args[2], args[1])
 			return fmt.Sprintf("String.slice(%s, %s, %s)", args[0], args[1], length), nil
+		case "int":
+			if len(args) != 1 {
+				return "", fmt.Errorf("int expects 1 arg")
+			}
+			return fmt.Sprintf("trunc(%s)", args[0]), nil
+		case "float":
+			if len(args) != 1 {
+				return "", fmt.Errorf("float expects 1 arg")
+			}
+			return fmt.Sprintf(":erlang.float(%s)", args[0]), nil
+		case "abs":
+			if len(args) != 1 {
+				return "", fmt.Errorf("abs expects 1 arg")
+			}
+			return fmt.Sprintf("abs(%s)", args[0]), nil
 		case "lower":
 			if len(args) != 1 {
 				return "", fmt.Errorf("lower expects 1 arg")
