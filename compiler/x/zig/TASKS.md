@@ -1,6 +1,7 @@
 # Zig Backend Progress
 
 ## Recent Enhancements
+- 2025-07-24 - Improved list append inference and typed variables for bool lists.
 - 2025-07-15 07:14 - Added `compile_tpcds_zig.go` script and fixed empty struct handling in `zigTypeOf`.
 - 2025-07-15 05:45 - Golden test captures build errors and verifies TPCDS outputs.
 - 2025-07-15 05:00 - Added TPCDS golden test running q1-q99 for zig backend.

@@ -582,7 +582,7 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 					} else {
 						c.writelnType(fmt.Sprintf("const %s = %s;", name, v), typ)
 					}
-				} else if s.Let.Type == nil || canInferType(s.Let.Value, typ) {
+				} else if s.Let.Type == nil && canInferType(s.Let.Value, typ) {
 					c.writelnType(fmt.Sprintf("const %s = %s;", name, v), typ)
 				} else {
 					c.writelnType(fmt.Sprintf("const %s: %s = %s;", name, zigTypeOf(typ), v), typ)
@@ -636,7 +636,7 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 					if lt, ok := typ.(types.ListType); ok {
 						elem = strings.TrimPrefix(zigTypeOf(lt.Elem), "[]const ")
 					}
-					c.writeln(fmt.Sprintf("var %s = std.ArrayList(%s).init(std.heap.page_allocator);", name, elem))
+					c.writeln(fmt.Sprintf("var %s: []%s = &[_]%s{};", name, elem, elem))
 				} else if isMapLiteralExpr(s.Var.Value) || isEmptyMapExpr(s.Var.Value) {
 					c.writelnType(fmt.Sprintf("var %s: %s = undefined;", name, zigTypeOf(typ)), typ)
 					var v string
@@ -677,7 +677,7 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 					}
 					if needsExplicitVarType(typ) {
 						c.writelnType(fmt.Sprintf("var %s: %s = %s;", name, zigTypeOf(typ), v), typ)
-					} else if s.Var.Type == nil || canInferType(s.Var.Value, typ) {
+					} else if s.Var.Type == nil && canInferType(s.Var.Value, typ) {
 						c.writelnType(fmt.Sprintf("var %s = %s;", name, v), typ)
 					} else {
 						c.writeln(fmt.Sprintf("var %s: %s = %s;", name, zigTypeOf(typ), v))
@@ -2461,7 +2461,19 @@ func (c *Compiler) compileAssign(st *parser.AssignStmt) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("try %s.append(@as(i32,@intCast(%s)));", name, v))
+		elemType := "i32"
+		if c.env != nil {
+			if t, err := c.env.GetVar(st.Name); err == nil {
+				if lt, ok := t.(types.ListType); ok {
+					if _, ok2 := lt.Elem.(types.AnyType); ok2 {
+						lt.Elem = c.inferExprType(elem)
+						c.env.SetVar(st.Name, lt, true)
+					}
+					elemType = strings.TrimPrefix(zigTypeOf(lt.Elem), "[]const ")
+				}
+			}
+		}
+		c.writeln(fmt.Sprintf("try %s.append(@as(%s,%s));", name, elemType, v))
 		return nil
 	}
 	lhs := name
@@ -3331,6 +3343,18 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		elemArg, err := c.compileExpr(call.Args[1], false)
 		if err != nil {
 			return "", err
+		}
+		if c.env != nil {
+			if sel := call.Args[0].Binary.Left.Value.Target.Selector; sel != nil {
+				if t, err := c.env.GetVar(sel.Root); err == nil {
+					if lt, ok := t.(types.ListType); ok {
+						if _, ok2 := lt.Elem.(types.AnyType); ok2 {
+							lt.Elem = c.inferExprType(call.Args[1])
+							c.env.SetVar(sel.Root, lt, true)
+						}
+					}
+				}
+			}
 		}
 		elem := c.listElemTypeUnary(call.Args[0].Binary.Left)
 		tmp := c.newTmp()
