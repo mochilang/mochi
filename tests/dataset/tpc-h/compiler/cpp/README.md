@@ -4,12 +4,12 @@ This directory contains C++ translations of the TPC-H benchmark queries generate
 
 ## Checklist
 
-- [x] q1
-- [x] q2
-- [x] q3
-- [x] q4
-- [x] q5
-- [x] q6
+- [ ] q1
+- [ ] q2
+- [ ] q3
+- [ ] q4
+- [ ] q5
+- [ ] q6
 - [ ] q7
 - [ ] q8
 - [ ] q9
@@ -29,5 +29,5 @@ This directory contains C++ translations of the TPC-H benchmark queries generate
 
 ## Test Results (2025-07-18)
 
- - **Passed:** q1, q2, q3, q4, q5, q6, q17
- - **Failed:** q7, q8, q9, q10, q11, q12, q13, q14, q15, q16, q18, q19, q20, q21, q22
+ - **Passed:** q17
+ - **Failed:** q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, q11, q12, q13, q14, q15, q16, q18, q19, q20, q21, q22
