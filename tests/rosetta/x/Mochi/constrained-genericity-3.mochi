@@ -1,0 +1,11 @@
+// Mochi translation of Rosetta "Constrained genericity" example 3
+// Implements a concrete type that satisfies Eatable.
+
+type PeelFirst {
+  value: string
+
+  fun eat() {
+    // peel code goes here
+    print("mm, that " + value + " was good!")
+  }
+}

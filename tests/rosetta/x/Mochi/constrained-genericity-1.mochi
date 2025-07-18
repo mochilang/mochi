@@ -1,0 +1,6 @@
+// Mochi translation of Rosetta "Constrained genericity" example 1
+// Defines an interface type with a single method.
+
+type Eatable {
+  fun eat()
+}

@@ -1,0 +1,4 @@
+// Mochi translation of Rosetta "Constrained genericity" example 2
+// Defines a container type of Eatable items.
+
+type Foodbox = list<Eatable>
