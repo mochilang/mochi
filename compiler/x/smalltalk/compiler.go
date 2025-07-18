@@ -111,6 +111,12 @@ func collectVars(st []*parser.Statement) []string {
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
+	case s.Import != nil:
+		// Ignore foreign import statements as the Smalltalk backend
+		// does not implement FFI yet. Programs that merely declare
+		// imports can still compile and run if the imported values are
+		// unused.
+		return nil
 	case s.Let != nil:
 		return c.compileLet(s.Let)
 	case s.Var != nil:
