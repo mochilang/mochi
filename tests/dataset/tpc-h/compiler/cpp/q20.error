@@ -1,5 +1,5 @@
-/tmp/TestCPPCompiler_TPCHQueriesq202826501072/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_TPCHQueriesq202826501072/001/prog.cpp:297:21: error: no match for ‘operator==’ (operand types are ‘Shipped94’ and ‘Shipped94’)
+/tmp/TestCPPCompiler_TPCHQueriesq203394723294/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCHQueriesq203394723294/001/prog.cpp:297:21: error: no match for ‘operator==’ (operand types are ‘Shipped94’ and ‘Shipped94’)
   297 |         if (__g.key == __key) {
       |             ~~~~~~~ ^~ ~~~~~
       |                 |      |
