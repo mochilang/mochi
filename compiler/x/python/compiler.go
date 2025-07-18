@@ -439,8 +439,13 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 
 			switch op {
 			case "/":
-				expr = fmt.Sprintf("(%s / %s)", lExpr, rExpr)
-				t = types.FloatType{}
+				if isNumeric(lType) && isNumeric(rType) && !isFloat(lType) && !isFloat(rType) {
+					expr = fmt.Sprintf("(%s // %s)", lExpr, rExpr)
+					t = resultType(op, lType, rType)
+				} else {
+					expr = fmt.Sprintf("(%s / %s)", lExpr, rExpr)
+					t = types.FloatType{}
+				}
 			case "union", "union_all", "except", "intersect":
 				var elem types.Type = types.AnyType{}
 				lBase := unwrapOption(lType)
@@ -706,7 +711,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		if op.Cast != nil {
 			typ = c.resolveTypeRef(op.Cast.Type)
 			switch t := typ.(type) {
-			case types.IntType, types.Int64Type:
+			case types.IntType, types.Int64Type, types.BigIntType:
 				expr = fmt.Sprintf("int(%s)", expr)
 			case types.FloatType:
 				expr = fmt.Sprintf("float(%s)", expr)

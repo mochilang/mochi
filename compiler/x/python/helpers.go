@@ -195,6 +195,15 @@ func equalTypes(a, b types.Type) bool {
 	if isInt(a) && isInt(b) {
 		return true
 	}
+	if isBigInt(a) && isBigInt(b) {
+		return true
+	}
+	if isBigInt(a) && isInt(b) {
+		return true
+	}
+	if isBigInt(b) && isInt(a) {
+		return true
+	}
 	return reflect.DeepEqual(a, b)
 }
 
@@ -203,9 +212,14 @@ func isInt64(t types.Type) bool {
 	return ok
 }
 
+func isBigInt(t types.Type) bool {
+	_, ok := t.(types.BigIntType)
+	return ok
+}
+
 func isInt(t types.Type) bool {
 	switch t.(type) {
-	case types.IntType, types.Int64Type:
+	case types.IntType, types.Int64Type, types.BigIntType:
 		return true
 	default:
 		return false
@@ -278,7 +292,7 @@ func isAny(t types.Type) bool {
 
 func zeroValue(t types.Type) string {
 	switch t.(type) {
-	case types.IntType, types.Int64Type:
+	case types.IntType, types.Int64Type, types.BigIntType:
 		return "0"
 	case types.FloatType:
 		return "0.0"
@@ -300,7 +314,7 @@ func zeroValue(t types.Type) string {
 
 func pyType(t types.Type) string {
 	switch tt := t.(type) {
-	case types.IntType, types.Int64Type:
+	case types.IntType, types.Int64Type, types.BigIntType:
 		return "int"
 	case types.FloatType:
 		return "float"
