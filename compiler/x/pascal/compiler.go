@@ -1564,7 +1564,11 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 						res = fmt.Sprintf("%s div %s", l, r)
 					}
 				case "%":
-					res = fmt.Sprintf("%s mod %s", l, r)
+					if strings.Contains(l, ".") || strings.Contains(r, ".") || strings.Contains(l, "Double(") || strings.Contains(r, "Double(") {
+						res = fmt.Sprintf("Trunc(%s) mod Trunc(%s)", l, r)
+					} else {
+						res = fmt.Sprintf("%s mod %s", l, r)
+					}
 				case "<", "<=", ">", ">=":
 					res = fmt.Sprintf("(%s %s %s)", l, op, r)
 				case "==":
@@ -1987,6 +1991,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				withSpaces = append(withSpaces, "' '", a)
 			}
 			return fmt.Sprintf("writeln(%s)", strings.Join(withSpaces, ", ")), nil
+		case "now":
+			if len(args) != 0 {
+				return "", fmt.Errorf("now expects no arguments")
+			}
+			c.use("_now")
+			return "_now()", nil
 		case "abs":
 			if len(args) != 1 {
 				return "", fmt.Errorf("abs expects 1 argument")
@@ -3372,6 +3382,14 @@ func (c *Compiler) emitHelpers() {
 			c.writeln("SetLength(Result, m.Count);")
 			c.writeln("for i := 0 to m.Count - 1 do")
 			c.writeln("  Result[i] := m.Data[i];")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_now":
+			c.writeln("function _now(): int64;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("Result := Trunc(Now * 86400000000000.0);")
 			c.indent--
 			c.writeln("end;")
 			c.writeln("")
