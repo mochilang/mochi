@@ -10,7 +10,9 @@ import (
 var helperPrelude = "from typing import Any, TypeVar, Generic, Callable\n" +
 	"T = TypeVar('T')\n" +
 	"K = TypeVar('K')\n" +
-	"UNDEFINED = object()\n"
+	"UNDEFINED = object()\n" +
+	"import sys\n" +
+	"sys.set_int_max_str_digits(0)\n"
 
 // Runtime helpers emitted by the Python compiler.
 
@@ -591,9 +593,7 @@ func (c *Compiler) emitRuntime() {
 		names = append(names, n)
 	}
 	sort.Strings(names)
-	if len(names) > 0 {
-		c.buf.WriteString(helperPrelude)
-	}
+	c.buf.WriteString(helperPrelude)
 	for _, n := range names {
 		c.buf.WriteString(helperMap[n])
 	}

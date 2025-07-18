@@ -354,9 +354,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("_models = {}")
 		c.writeln("")
 	}
-	if len(c.helpers) > 0 {
-		c.emitRuntime()
-	}
+	c.emitRuntime()
 	c.buf.Write(body)
 
 	code := c.buf.Bytes()
@@ -605,6 +603,19 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				continue
 			}
 
+			if p.Target.Selector != nil && p.Target.Selector.Root == "net" &&
+				len(p.Target.Selector.Tail) == 1 && p.Target.Selector.Tail[0] == "LookupHost" &&
+				len(op.Call.Args) == 1 {
+				argExpr, err := c.compileExpr(op.Call.Args[0])
+				if err != nil {
+					return "", err
+				}
+				c.imports["socket"] = "socket"
+				expr = fmt.Sprintf("[socket.gethostbyname_ex(%s)[2], None]", argExpr)
+				typ = types.ListType{Elem: types.AnyType{}}
+				continue
+			}
+
 			if p.Target.Selector != nil && len(p.Target.Selector.Tail) > 0 &&
 				p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1] == "starts_with" &&
 				len(op.Call.Args) == 1 {
@@ -687,9 +698,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				case types.MapType:
 					key := idxExpr
 					if s, ok := stringLit(idx.Start); ok {
-						key = fmt.Sprintf("%q", sanitizeName(strings.Trim(s, "\"")))
-					} else if name, ok := identName(idx.Start); ok {
-						key = fmt.Sprintf("%q", sanitizeName(name))
+						key = fmt.Sprintf("%q", strings.Trim(s, "\""))
 					}
 					expr = fmt.Sprintf("%s[%s]", expr, key)
 					typ = tt.Value
@@ -776,6 +785,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "(" + expr + ")", nil
 	case p.Selector != nil:
+		if p.Selector.Root == "nil" && len(p.Selector.Tail) == 0 {
+			return "None", nil
+		}
 		expr := sanitizeName(p.Selector.Root)
 		rootName := expr
 		var typ types.Type = types.AnyType{}
@@ -840,8 +852,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			rest := tail[i:]
 			switch t := typ.(type) {
 			case types.MapType:
-				expr = fmt.Sprintf("%s[%q]", expr, sanitizeName(s))
-				typ = t.Value
+				name := sanitizeName(s)
+				switch name {
+				case "keys", "values", "items", "get", "pop", "popitem", "clear", "update":
+					expr = fmt.Sprintf("%s.%s", expr, name)
+					typ = types.AnyType{}
+				default:
+					expr = fmt.Sprintf("%s[%q]", expr, name)
+					typ = t.Value
+				}
 			case types.StructType:
 				if ft, ok := t.Fields[s]; ok {
 					expr = fmt.Sprintf("%s.%s", expr, sanitizeName(s))
@@ -981,6 +1000,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "input":
 		c.use("_input")
 		return "_input()", nil
+	case "net.LookupHost":
+		if len(args) == 1 {
+			c.imports["socket"] = "socket"
+			return fmt.Sprintf("[socket.gethostbyname_ex(%s)[2], None]", args[0]), nil
+		}
+		return "", fmt.Errorf("net.LookupHost expects 1 arg")
 	case "count":
 		if len(args) == 1 {
 			t := c.inferExprType(call.Args[0])
@@ -1308,7 +1333,7 @@ func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, err
 				if s, ok := simpleStringKey(it.Key); ok {
 					k = fmt.Sprintf("%q", s)
 				} else if name, ok := identName(it.Key); ok {
-					k = fmt.Sprintf("%q", sanitizeName(name))
+					k = fmt.Sprintf("%q", name)
 				}
 				v, err := c.compileExprHint(it.Value, mt.Value)
 				if err != nil {
@@ -1434,7 +1459,7 @@ func (c *Compiler) compileListLiteral(l *parser.ListLiteral) (string, error) {
 func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	// check if this literal represents a struct type
 	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Map: m}}}}}
-	if st, ok := c.inferExprType(expr).(types.StructType); ok {
+	if st, ok := c.inferExprType(expr).(types.StructType); ok && len(m.Items) > 0 {
 		allIdent := true
 		for _, it := range m.Items {
 			if _, ok := identName(it.Key); !ok {
@@ -1458,7 +1483,7 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	}
 	// treat as struct when all keys are identifiers even if type inference produced a map
 	keys := make([]string, len(m.Items))
-	okStruct := true
+	okStruct := len(m.Items) > 0
 	fields := make(map[string]types.Type, len(m.Items))
 	for i, it := range m.Items {
 		name, ok := identName(it.Key)
@@ -1631,7 +1656,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if ml := q.Select.Binary.Left.Value.Target.Map; ml != nil && len(q.Select.Binary.Right) == 0 {
 		keys := make([]string, len(ml.Items))
 		fields := make(map[string]types.Type, len(ml.Items))
-		okStruct := true
+		okStruct := len(ml.Items) > 0
 		for i, it := range ml.Items {
 			name, ok := identName(it.Key)
 			if !ok {

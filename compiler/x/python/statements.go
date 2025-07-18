@@ -189,6 +189,16 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				// simple built-in Go package used by tests
 				return nil
 			}
+			if p == "net" {
+				c.imports["socket"] = "socket"
+				if s.Import.As != "" {
+					alias := sanitizeName(s.Import.As)
+					c.writeln(fmt.Sprintf("%s = socket", alias))
+				} else {
+					c.writeln("net = socket")
+				}
+				return nil
+			}
 			return fmt.Errorf("unsupported import language: %v", s.Import.Lang)
 		}
 		if *s.Import.Lang != "python" {
