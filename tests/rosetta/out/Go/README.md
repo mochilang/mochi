@@ -1,4 +1,4 @@
-# Rosetta Go Output (26/239 compiled and run)
+# Rosetta Go Output (26/253 compiled and run)
 
 This directory holds Go source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -211,6 +211,7 @@ This directory holds Go source code generated from the real Mochi programs in `t
 - [ ] cistercian-numerals
 - [ ] compiler-virtual-machine-interpreter
 - [ ] composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k
+- [ ] compound-data-type
 - [ ] concurrent-computing-1
 - [ ] concurrent-computing-2
 - [ ] concurrent-computing-3
@@ -232,6 +233,19 @@ This directory holds Go source code generated from the real Mochi programs in `t
 - [ ] constrained-random-points-on-a-circle-1
 - [ ] constrained-random-points-on-a-circle-2
 - [ ] continued-fraction
+- [ ] convert-decimal-number-to-rational
+- [ ] convert-seconds-to-compound-duration
+- [ ] convex-hull
+- [ ] conways-game-of-life
+- [ ] copy-a-string-1
+- [ ] copy-a-string-2
+- [ ] copy-stdin-to-stdout-1
+- [ ] copy-stdin-to-stdout-2
+- [ ] count-in-factors
+- [ ] count-in-octal-1
+- [ ] count-in-octal-2
+- [ ] count-in-octal-3
+- [ ] count-in-octal-4
 - [ ] crc-32-1
 - [ ] crc-32-2
 - [ ] csv-data-manipulation

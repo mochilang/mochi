@@ -1,11 +1,10 @@
 run: exit status 1
 # command-line-arguments
-/tmp/X/001/main.go:68:9: invalid argument: any(xs) (value of interface type any) for built-in len
-/tmp/X/001/main.go:77:14: invalid argument: any(xs) (value of interface type any) for built-in len
-/tmp/X/001/main.go:79:15: invalid argument: any(xs) (value of interface type any) for built-in len
-/tmp/X/001/main.go:82:16: invalid argument: any(xs) (value of interface type any) for built-in len
-/tmp/X/001/main.go:84:13: cannot use append(_toAnySlice(rest), any(xs[k])) (value of type []any) as []map[string]any value in assignment
-/tmp/X/001/main.go:136:12: cannot use append(_toAnySlice(cards), any(newNum(n))) (value of type []any) as []map[string]any value in assignment
-/tmp/X/001/main.go:136:50: cannot use n (variable of type int64) as int value in argument to newNum
-/tmp/X/001/main.go:157:6: main redeclared in this block
-	/tmp/X/001/main.go:129:6: other declaration of main
+/tmp/X/001/main.go:70:9: invalid argument: any(xs) (value of interface type any) for built-in len
+/tmp/X/001/main.go:79:14: invalid argument: any(xs) (value of interface type any) for built-in len
+/tmp/X/001/main.go:81:15: invalid argument: any(xs) (value of interface type any) for built-in len
+/tmp/X/001/main.go:84:16: invalid argument: any(xs) (value of interface type any) for built-in len
+/tmp/X/001/main.go:103:74: cannot convert node (variable of struct type Node) to type map[string]any
+/tmp/X/001/main.go:112:73: cannot convert node (variable of struct type Node) to type map[string]any
+/tmp/X/001/main.go:120:73: cannot convert node (variable of struct type Node) to type map[string]any
+/tmp/X/001/main.go:138:33: cannot use n (variable of type int64) as int value in argument to newNum

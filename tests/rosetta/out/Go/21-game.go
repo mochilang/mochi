@@ -6,7 +6,8 @@ package main
 
 import (
 	"fmt"
-	"strings"
+	"os"
+	"strconv"
 	"time"
 )
 
@@ -44,68 +45,68 @@ func parseIntStr(str string) int {
 }
 
 // line 31
-func main() {
+func mainFn() {
 	total := 0
-	computer := ((int64(time.Now().UnixNano()) % int64(2)) == 0)
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("Enter q to quit at any time\n")), "\n"))
+	computer := ((int64(_now()) % int64(2)) == 0)
+	fmt.Println(any("Enter q to quit at any time\n"))
 	if computer {
-		fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("The computer will choose first")), "\n"))
+		fmt.Println(any("The computer will choose first"))
 	} else {
-		fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("You will choose first")), "\n"))
+		fmt.Println(any("You will choose first"))
 	}
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("\n\nRunning total is now 0\n\n")), "\n"))
+	fmt.Println(any("\n\nRunning total is now 0\n\n"))
 	round := 1
 	done := false
 	for !(done) {
-		fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("ROUND "+fmt.Sprint(any(round))+":\n\n")), "\n"))
+		fmt.Println(any("ROUND " + fmt.Sprint(any(round)) + ":\n\n"))
 		i := 0
 		for (i < 2) && (!(done)) {
 			if computer {
 				choice := 0
 				if total < 18 {
-					choice = (int64((int64(time.Now().UnixNano()) % int64(3))) + int64(1))
+					choice = (int64((int64(_now()) % int64(3))) + int64(1))
 				} else {
 					choice = (21 - total)
 				}
 				total = (total + choice)
-				fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("The computer chooses "+fmt.Sprint(any(choice)))), "\n"))
-				fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("Running total is now "+fmt.Sprint(any(total)))), "\n"))
+				fmt.Println(any("The computer chooses " + fmt.Sprint(any(choice))))
+				fmt.Println(any("Running total is now " + fmt.Sprint(any(total))))
 				if total == 21 {
-					fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("\nSo, commiserations, the computer has won!")), "\n"))
+					fmt.Println(any("\nSo, commiserations, the computer has won!"))
 					done = true
 				}
 			} else {
 				for {
-					fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("Your choice 1 to 3 : ")), "\n"))
+					fmt.Println(any("Your choice 1 to 3 : "))
 					line := _input()
 					if (line == "q") || (line == "Q") {
-						fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("OK, quitting the game")), "\n"))
+						fmt.Println(any("OK, quitting the game"))
 						done = true
 						break
 					}
 					num := parseIntStr(line)
 					if (num < 1) || (num > 3) {
 						if (total + num) > 21 {
-							fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("Too big, try again")), "\n"))
+							fmt.Println(any("Too big, try again"))
 						} else {
-							fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("Out of range, try again")), "\n"))
+							fmt.Println(any("Out of range, try again"))
 						}
 						continue
 					}
 					if (total + num) > 21 {
-						fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("Too big, try again")), "\n"))
+						fmt.Println(any("Too big, try again"))
 						continue
 					}
 					total = (total + num)
-					fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("Running total is now "+fmt.Sprint(any(total)))), "\n"))
+					fmt.Println(any("Running total is now " + fmt.Sprint(any(total))))
 					break
 				}
 				if total == 21 {
-					fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("\nSo, congratulations, you've won!")), "\n"))
+					fmt.Println(any("\nSo, congratulations, you've won!"))
 					done = true
 				}
 			}
-			fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("\n")), "\n"))
+			fmt.Println(any("\n"))
 			computer = !(computer)
 			i = (i + 1)
 		}
@@ -114,11 +115,30 @@ func main() {
 }
 
 func main() {
-	main()
+	mainFn()
 }
 
 func _input() string {
 	var s string
 	fmt.Scanln(&s)
 	return s
+}
+
+var seededNow bool
+var nowSeed int64
+
+func init() {
+	if s := os.Getenv("MOCHI_NOW_SEED"); s != "" {
+		if v, err := strconv.ParseInt(s, 10, 64); err == nil {
+			nowSeed = v
+			seededNow = true
+		}
+	}
+}
+func _now() int64 {
+	if seededNow {
+		nowSeed = (nowSeed*1664525 + 1013904223) % 2147483647
+		return nowSeed
+	}
+	return time.Now().UnixNano()
 }

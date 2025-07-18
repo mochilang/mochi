@@ -6,7 +6,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 )
 
 type v map[string]any
@@ -23,6 +22,6 @@ func main() {
 		} else {
 			line = line + "Closed"
 		}
-		fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(line)), "\n"))
+		fmt.Println(any(line))
 	}
 }
