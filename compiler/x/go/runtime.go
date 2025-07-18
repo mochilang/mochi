@@ -259,6 +259,24 @@ const (
 		"    return s\n" +
 		"}\n"
 
+	helperNow = "var seededNow bool\n" +
+		"var nowSeed int64\n" +
+		"func init() {\n" +
+		"    if s := os.Getenv(\"MOCHI_NOW_SEED\"); s != \"\" {\n" +
+		"        if v, err := strconv.ParseInt(s, 10, 64); err == nil {\n" +
+		"            nowSeed = v\n" +
+		"            seededNow = true\n" +
+		"        }\n" +
+		"    }\n" +
+		"}\n" +
+		"func _now() int64 {\n" +
+		"    if seededNow {\n" +
+		"        nowSeed = (nowSeed*1664525 + 1013904223) % 2147483647\n" +
+		"        return nowSeed\n" +
+		"    }\n" +
+		"    return time.Now().UnixNano()\n" +
+		"}\n"
+
 	helperGenText = "func _genText(prompt string, model string, params map[string]any) string {\n" +
 		"    opts := []llm.Option{}\n" +
 		"    if model != \"\" { opts = append(opts, llm.WithModel(model)) }\n" +
@@ -956,6 +974,7 @@ var helperMap = map[string]string{
 	"_firstSlice":    helperFirstSlice,
 	"_first":         helperFirst,
 	"_input":         helperInput,
+	"_now":           helperNow,
 	"_genText":       helperGenText,
 	"_genEmbed":      helperGenEmbed,
 	"_genStruct":     helperGenStruct,
@@ -1018,6 +1037,10 @@ func (c *Compiler) use(name string) {
 	if name == "_sprint" {
 		c.imports["fmt"] = true
 		c.imports["reflect"] = true
+	}
+	if name == "_now" {
+		c.imports["time"] = true
+		c.imports["strconv"] = true
 	}
 	if name == "_print" {
 		c.imports["fmt"] = true

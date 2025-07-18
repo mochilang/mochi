@@ -7,11 +7,10 @@ package main
 import (
 	"fmt"
 	goffi "mochi/runtime/ffi/go"
-	"strings"
 )
 
 type v map[string]any
 
 func main() {
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(func() any { v, _ := goffi.AttrAuto("mochi/runtime/ffi/go/testpkg", "FifteenPuzzleExample"); return v }()), "\n"))
+	fmt.Println(func() any { v, _ := goffi.AttrAuto("mochi/runtime/ffi/go/testpkg", "FifteenPuzzleExample"); return v }())
 }

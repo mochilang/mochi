@@ -7,7 +7,9 @@ package main
 import (
 	"fmt"
 	"mochi/runtime/data"
+	"os"
 	"reflect"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -22,10 +24,10 @@ func newBoard() [][]int {
 		var row []int = []int{}
 		x := 0
 		for x < SIZE {
-			row = append(_toAnySlice(row), any(0))
+			row = append(row, 0)
 			x = (x + 1)
 		}
-		b = append(_toAnySlice(b), any(row))
+		b = append(b, row)
 		y = (y + 1)
 	}
 	return b
@@ -39,7 +41,7 @@ func spawnTile(b *[][]int) map[string]any {
 		x := 0
 		for x < SIZE {
 			if b[y][x] == 0 {
-				empty = append(_toAnySlice(empty), any([]int{x, y}))
+				empty = append(empty, []int{x, y})
 			}
 			x = (x + 1)
 		}
@@ -48,10 +50,10 @@ func spawnTile(b *[][]int) map[string]any {
 	if len(any(empty)) == 0 {
 		return map[string]any{"board": b, "full": true}
 	}
-	idx := (int64(time.Now().UnixNano()) % int64(len(any(empty))))
+	idx := (int64(_now()) % int64(len(any(empty))))
 	cell := empty[idx]
 	val := 4
-	if (int64(time.Now().UnixNano()) % int64(10)) < 9 {
+	if (int64(_now()) % int64(10)) < 9 {
 		val = 2
 	}
 	b[cell[1]][cell[0]] = val
@@ -73,10 +75,10 @@ func pad(n int) string {
 
 // line 54
 func draw(b [][]int, score int) {
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("Score: "+fmt.Sprint(any(score)))), "\n"))
+	fmt.Println(any("Score: " + fmt.Sprint(any(score))))
 	y := 0
 	for y < SIZE {
-		fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("+----+----+----+----+")), "\n"))
+		fmt.Println(any("+----+----+----+----+"))
 		line := "|"
 		x := 0
 		for x < SIZE {
@@ -88,11 +90,11 @@ func draw(b [][]int, score int) {
 			}
 			x = (x + 1)
 		}
-		fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(line)), "\n"))
+		fmt.Println(any(line))
 		y = (y + 1)
 	}
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("+----+----+----+----+")), "\n"))
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("W=Up S=Down A=Left D=Right Q=Quit")), "\n"))
+	fmt.Println(any("+----+----+----+----+"))
+	fmt.Println(any("W=Up S=Down A=Left D=Right Q=Quit"))
 }
 
 // line 77
@@ -100,7 +102,7 @@ func reverseRow(r []int) []int {
 	var out []int = []int{}
 	i := (len(any(r)) - 1)
 	for i >= 0 {
-		out = append(_toAnySlice(out), any(r[i]))
+		out = append(out, r[i])
 		i = (i - 1)
 	}
 	return out
@@ -112,7 +114,7 @@ func slideLeft(row []int) map[string]any {
 	i := 0
 	for i < len(any(row)) {
 		if row[i] != 0 {
-			xs = append(_toAnySlice(xs), any(row[i]))
+			xs = append(xs, row[i])
 		}
 		i = (i + 1)
 	}
@@ -123,15 +125,15 @@ func slideLeft(row []int) map[string]any {
 		if ((i + 1) < len(any(xs))) && (xs[i] == xs[(i+1)]) {
 			v := (xs[i] * 2)
 			gain = (gain + v)
-			res = append(_toAnySlice(res), any(v))
+			res = append(res, v)
 			i = (i + 2)
 		} else {
-			res = append(_toAnySlice(res), any(xs[i]))
+			res = append(res, xs[i])
 			i = (i + 1)
 		}
 	}
 	for len(any(res)) < SIZE {
-		res = append(_toAnySlice(res), any(0))
+		res = append(res, 0)
 	}
 	return map[string]any{"row": res, "gain": gain}
 }
@@ -193,7 +195,7 @@ func getCol(b [][]int, x int) []int {
 	var col []int = []int{}
 	y := 0
 	for y < SIZE {
-		col = append(_toAnySlice(col), any(b[y][x]))
+		col = append(col, b[y][x])
 		y = (y + 1)
 	}
 	return col
@@ -315,7 +317,7 @@ func main() {
 	full = r["full"]
 	draw(board, score)
 	for {
-		fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("Move: ")), "\n"))
+		fmt.Println(any("Move: "))
 		cmd := _input()
 		moved := false
 		if (cmd == "a") || (cmd == "A") {
@@ -351,17 +353,17 @@ func main() {
 			full = r2["full"]
 			if _exists((_exists(full) && (!(hasMoves(board))))) {
 				draw(board, score)
-				fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("Game Over")), "\n"))
+				fmt.Println(any("Game Over"))
 				break
 			}
 		}
 		draw(board, score)
 		if has2048(board) {
-			fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("You win!")), "\n"))
+			fmt.Println(any("You win!"))
 			break
 		}
 		if !(hasMoves(board)) {
-			fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("Game Over")), "\n"))
+			fmt.Println(any("Game Over"))
 			break
 		}
 	}
@@ -510,10 +512,21 @@ func _input() string {
 	return s
 }
 
-func _toAnySlice[T any](s []T) []any {
-	out := make([]any, len(s))
-	for i, v := range s {
-		out[i] = v
+var seededNow bool
+var nowSeed int64
+
+func init() {
+	if s := os.Getenv("MOCHI_NOW_SEED"); s != "" {
+		if v, err := strconv.ParseInt(s, 10, 64); err == nil {
+			nowSeed = v
+			seededNow = true
+		}
 	}
-	return out
+}
+func _now() int64 {
+	if seededNow {
+		nowSeed = (nowSeed*1664525 + 1013904223) % 2147483647
+		return nowSeed
+	}
+	return time.Now().UnixNano()
 }

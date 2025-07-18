@@ -6,7 +6,9 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"reflect"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -68,7 +70,7 @@ func solve(xs []map[string]any) bool {
 	if len(any(xs)) == 1 {
 		f := exprEval(xs[0])
 		if (f["denom"] != 0) && (f["num"] == (f["denom"] * goal)) {
-			fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(exprString(xs[0]))), "\n"))
+			fmt.Println(any(exprString(xs[0])))
 			return true
 		}
 		return false
@@ -81,7 +83,7 @@ func solve(xs []map[string]any) bool {
 			k := 0
 			for k < len(any(xs)) {
 				if (k != i) && (k != j) {
-					rest = append(_toAnySlice(rest), any(xs[k]))
+					rest = append(rest, xs[k])
 				}
 				k = (k + 1)
 			}
@@ -98,7 +100,7 @@ func solve(xs []map[string]any) bool {
 					Left:  a,
 					Right: b,
 				}
-				if solve(_convSlice[any, map[string]any](append(_toAnySlice(rest), any(node)))) {
+				if solve(_convSlice[any, map[string]any](append(rest, map[string]any(node)))) {
 					return true
 				}
 			}
@@ -107,7 +109,7 @@ func solve(xs []map[string]any) bool {
 				Left:  b,
 				Right: a,
 			}
-			if solve(_convSlice[any, map[string]any](append(_toAnySlice(rest), any(node)))) {
+			if solve(_convSlice[any, map[string]any](append(rest, map[string]any(node)))) {
 				return true
 			}
 			node = Node{
@@ -115,7 +117,7 @@ func solve(xs []map[string]any) bool {
 				Left:  b,
 				Right: a,
 			}
-			if solve(_convSlice[any, map[string]any](append(_toAnySlice(rest), any(node)))) {
+			if solve(_convSlice[any, map[string]any](append(rest, map[string]any(node)))) {
 				return true
 			}
 			j = (j + 1)
@@ -126,20 +128,20 @@ func solve(xs []map[string]any) bool {
 }
 
 // line 83
-func main() {
+func mainFn() {
 	iter := 0
 	for iter < 10 {
 		var cards []map[string]any = []map[string]any{}
 		i := 0
 		for i < n_cards {
-			n := (int64((int64(time.Now().UnixNano()) % int64((digit_range - 1)))) + int64(1))
-			cards = append(_toAnySlice(cards), any(newNum(n)))
-			fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(" "+fmt.Sprint(any(n)))), "\n"))
+			n := (int64((int64(_now()) % int64((digit_range - 1)))) + int64(1))
+			cards = append(cards, newNum(n))
+			fmt.Println(any(" " + fmt.Sprint(any(n))))
 			i = (i + 1)
 		}
-		fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(":  ")), "\n"))
+		fmt.Println(any(":  "))
 		if !(solve(cards)) {
-			fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("No solution")), "\n"))
+			fmt.Println(any("No solution"))
 		}
 		iter = (iter + 1)
 	}
@@ -163,7 +165,7 @@ func main() {
 	n_cards = 4
 	goal = 24
 	digit_range = 9
-	main()
+	mainFn()
 }
 
 func _convSlice[T any, U any](s []T) []U {
@@ -271,10 +273,21 @@ func _equal(a, b any) bool {
 	return reflect.DeepEqual(a, b)
 }
 
-func _toAnySlice[T any](s []T) []any {
-	out := make([]any, len(s))
-	for i, v := range s {
-		out[i] = v
+var seededNow bool
+var nowSeed int64
+
+func init() {
+	if s := os.Getenv("MOCHI_NOW_SEED"); s != "" {
+		if v, err := strconv.ParseInt(s, 10, 64); err == nil {
+			nowSeed = v
+			seededNow = true
+		}
 	}
-	return out
+}
+func _now() int64 {
+	if seededNow {
+		nowSeed = (nowSeed*1664525 + 1013904223) % 2147483647
+		return nowSeed
+	}
+	return time.Now().UnixNano()
 }

@@ -4506,15 +4506,6 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	}
 
 	switch call.Func {
-	case "append":
-		if len(args) == 2 {
-			lt, ok1 := c.inferExprType(call.Args[0]).(types.ListType)
-			rt := c.inferExprType(call.Args[1])
-			if ok1 && equalTypes(lt.Elem, rt) && !isAny(lt.Elem) {
-				return fmt.Sprintf("append(%s, %s)", args[0], args[1]), nil
-			}
-		}
-		return fmt.Sprintf("append(%s)", argStr), nil
 	case "print":
 		c.imports["fmt"] = true
 		if len(call.Args) == 6 {
@@ -4846,11 +4837,8 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "len":
 		return fmt.Sprintf("len(%s)", argStr), nil
 	case "now":
-		c.imports["time"] = true
-		// time.Now().UnixNano() already returns an int64. Use it directly
-		// so `now()` provides nanosecond precision consistent with the
-		// interpreter.
-		return "time.Now().UnixNano()", nil
+		c.use("_now")
+		return "_now()", nil
 	case "json":
 		c.imports["encoding/json"] = true
 		c.imports["fmt"] = true

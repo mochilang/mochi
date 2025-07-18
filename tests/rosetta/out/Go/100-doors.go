@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"mochi/runtime/data"
 	"reflect"
-	"strings"
 )
 
 type v map[string]any
@@ -16,7 +15,7 @@ type v map[string]any
 func main() {
 	doors := []any{}
 	for i := 0; i < 100; i++ {
-		doors = append(doors, false)
+		doors = append(_toAnySlice(doors), any(false))
 	}
 	for pass := 1; pass < 101; pass++ {
 		idx := (pass - 1)
@@ -38,7 +37,7 @@ func main() {
 				line = line + " "
 			}
 		}
-		fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(line)), "\n"))
+		fmt.Println(any(line))
 	}
 }
 
@@ -80,4 +79,12 @@ func _exists(v any) bool {
 		return !rv.IsZero()
 	}
 	return false
+}
+
+func _toAnySlice[T any](s []T) []any {
+	out := make([]any, len(s))
+	for i, v := range s {
+		out[i] = v
+	}
+	return out
 }
