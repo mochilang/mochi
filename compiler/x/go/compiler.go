@@ -4849,6 +4849,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		args[1] = fmt.Sprintf("any(%s)", args[1])
 		return fmt.Sprintf("append(%s, %s)", args[0], args[1]), nil
 	case "len":
+		if strings.HasPrefix(argStr, "any(") && strings.HasSuffix(argStr, ")") {
+			argStr = strings.TrimSuffix(strings.TrimPrefix(argStr, "any("), ")")
+		}
 		return fmt.Sprintf("len(%s)", argStr), nil
 	case "now":
 		c.use("_now")
