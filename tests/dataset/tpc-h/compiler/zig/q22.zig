@@ -122,14 +122,14 @@ pub fn main() void {
 };
         const row = Row{
     .cntrycode = g.key,
-    .numcust = (g.Items.items.len),
+    .numcust = @as(i32, @intCast(g.Items.items.len)),
     .totacctbal = total,
 }; // struct {
     cntrycode: i32,
     numcust: i32,
     totacctbal: f64,
 }
-        tmp = blk7: { var _tmp18 = std.ArrayList(i32).init(std.heap.page_allocator); defer _tmp18.deinit(); _tmp18.appendSlice(tmp) catch |err| handleError(err); _tmp18.append(row) catch |err| handleError(err); break :blk7 _tmp18.items; };
+        tmp = blk7: { var _tmp18 = std.ArrayList(i32).init(std.heap.page_allocator); defer _tmp18.deinit(); _tmp18.appendSlice(tmp) catch |err| handleError(err); _tmp18.append(row) catch |err| handleError(err); const res = _tmp18.toOwnedSlice() catch |err| handleError(err); break :blk7 res; };
     }
     result = blk4: { var _tmp12 = std.ArrayList(struct { item: i32, key: i32 }).init(std.heap.page_allocator); for (tmp) |r| { _tmp12.append(.{ .item = r, .key = r.cntrycode }) catch |err| handleError(err); } for (0.._tmp12.items.len) |i| { for (i+1.._tmp12.items.len) |j| { if (_tmp12.items[j].key < _tmp12.items[i].key) { const t = _tmp12.items[i]; _tmp12.items[i] = _tmp12.items[j]; _tmp12.items[j] = t; } } } var _tmp13 = std.ArrayList(i32).init(std.heap.page_allocator);for (_tmp12.items) |p| { _tmp13.append(p.item) catch |err| handleError(err); } const _tmp14 = _tmp13.toOwnedSlice() catch |err| handleError(err); break :blk4 _tmp14; };
     _json(result);

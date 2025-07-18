@@ -92,7 +92,7 @@ const lineitem = &[_]LineitemItem{
 },
 }; // []const LineitemItem
 const ResultItem = struct {
-    s_name: i32,
+    s_name: []const u8,
     numwait: i32,
 };
 const ResultStruct3 = struct {
@@ -113,14 +113,11 @@ fn test_Q21_returns_Saudi_suppliers_who_caused_unique_delivery_delays() void {
 
 pub fn main() void {
     result = blk1: { var _tmp5 = std.ArrayList(ResultStruct4).init(std.heap.page_allocator); for (supplier) |s| { for (lineitem) |l1| { if (!((s.s_suppkey == l1.l_suppkey))) continue; for (orders) |o| { if (!((o.o_orderkey == l1.l_orderkey))) continue; for (nation) |n| { if (!((n.n_nationkey == s.s_nationkey))) continue; if (!((((std.mem.eql(u8, o.o_orderstatus, "F") and std.mem.order(u8, l1.l_receiptdate, l1.l_commitdate) == .gt) and std.mem.eql(u8, n.n_name, "SAUDI ARABIA")) and (!(blk0: { var _tmp1 = std.ArrayList(LineitemItem).init(std.heap.page_allocator); for (lineitem) |x| { if (!((((x.l_orderkey == l1.l_orderkey) and (x.l_suppkey != l1.l_suppkey)) and std.mem.order(u8, x.l_receiptdate, x.l_commitdate) == .gt))) continue; _tmp1.append(x) catch |err| handleError(err); } const _tmp2 = _tmp1.toOwnedSlice() catch |err| handleError(err); break :blk0 _tmp2; }).len != 0)))) continue; const _tmp6 = s.s_name; var _found = false; var _idx: usize = 0; for (_tmp5.items, 0..) |it, i| { if (_equal(it.key, _tmp6)) { _found = true; _idx = i; break; } } if (_found) { _tmp5.items[_idx].Items.append(ResultStruct3{ .s = s, .l1 = l1, .o = o, .n = n }) catch |err| handleError(err); } else { var g = ResultStruct4{ .key = _tmp6, .Items = std.ArrayList(ResultStruct3).init(std.heap.page_allocator) }; g.Items.append(ResultStruct3{ .s = s, .l1 = l1, .o = o, .n = n }) catch |err| handleError(err); _tmp5.append(g) catch |err| handleError(err); } } } } } var _tmp7 = std.ArrayList(ResultStruct4).init(std.heap.page_allocator);for (_tmp5.items) |g| { _tmp7.append(g) catch |err| handleError(err); } var _tmp8 = std.ArrayList(struct { item: ResultStruct4, key: []const i32 }).init(std.heap.page_allocator);for (_tmp7.items) |g| { _tmp8.append(.{ .item = g, .key = &[_]i32{
-    -(g.Items.items.len),
+    -@as(i32, @intCast(g.Items.items.len)),
     g.key,
-} }) catch |err| handleError(err); } for (0.._tmp8.items.len) |i| { for (i+1.._tmp8.items.len) |j| { if (_tmp8.items[j].key < _tmp8.items[i].key) { const t = _tmp8.items[i]; _tmp8.items[i] = _tmp8.items[j]; _tmp8.items[j] = t; } } } var _tmp9 = std.ArrayList(ResultStruct4).init(std.heap.page_allocator);for (_tmp8.items) |p| { _tmp9.append(p.item) catch |err| handleError(err); } var _tmp10 = std.ArrayList(struct {
-    s_name: []const u8,
-    numwait: i32,
-}).init(std.heap.page_allocator);for (_tmp9.items) |g| { _tmp10.append(ResultItem{
+} }) catch |err| handleError(err); } for (0.._tmp8.items.len) |i| { for (i+1.._tmp8.items.len) |j| { if (_tmp8.items[j].key < _tmp8.items[i].key) { const t = _tmp8.items[i]; _tmp8.items[i] = _tmp8.items[j]; _tmp8.items[j] = t; } } } var _tmp9 = std.ArrayList(ResultStruct4).init(std.heap.page_allocator);for (_tmp8.items) |p| { _tmp9.append(p.item) catch |err| handleError(err); } var _tmp10 = std.ArrayList(ResultItem).init(std.heap.page_allocator);for (_tmp9.items) |g| { _tmp10.append(ResultItem{
     .s_name = g.key,
-    .numwait = (g.Items.items.len),
+    .numwait = @as(i32, @intCast(g.Items.items.len)),
 }) catch |err| handleError(err); } const _tmp10Slice = _tmp10.toOwnedSlice() catch |err| handleError(err); break :blk1 _tmp10Slice; };
     _json(result);
     test_Q21_returns_Saudi_suppliers_who_caused_unique_delivery_delays();

@@ -89,40 +89,6 @@ const ResultStruct0 = struct {
     linestatus: []const u8,
 };
 const ResultItem = struct {
-    returnflag: i32,
-    linestatus: i32,
-    sum_qty: i32,
-    sum_base_price: i32,
-    sum_disc_price: i32,
-    sum_charge: i32,
-    avg_qty: i32,
-    avg_price: i32,
-    avg_disc: i32,
-    count_order: i32,
-};
-const ResultStruct30 = struct { key: ResultStruct0, Items: std.ArrayList(LineitemItem) };
-var result: []const ResultItem = undefined; // []const ResultItem
-
-fn test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus() void {
-    expect((result == &[_]ResultItem{ResultItem{
-    .returnflag = "N",
-    .linestatus = "O",
-    .sum_qty = 53,
-    .sum_base_price = 3000,
-    .sum_disc_price = (950.0 + 1800.0),
-    .sum_charge = (((950.0 * 1.07)) + ((1800.0 * 1.05))),
-    .avg_qty = 26.5,
-    .avg_price = 1500,
-    .avg_disc = 0.07500000000000001,
-    .count_order = 2,
-}}));
-}
-
-pub fn main() void {
-    result = blk14: { var _tmp31 = std.ArrayList(ResultStruct30).init(std.heap.page_allocator); for (lineitem) |row| { if (!(std.mem.order(u8, row.l_shipdate, "1998-09-02") != .gt)) continue; const _tmp32 = ResultStruct0{
-    .returnflag = row.l_returnflag,
-    .linestatus = row.l_linestatus,
-}; var _found = false; var _idx: usize = 0; for (_tmp31.items, 0..) |it, i| { if (_equal(it.key, _tmp32)) { _found = true; _idx = i; break; } } if (_found) { _tmp31.items[_idx].Items.append(row) catch |err| handleError(err); } else { var g = ResultStruct30{ .key = _tmp32, .Items = std.ArrayList(LineitemItem).init(std.heap.page_allocator) }; g.Items.append(row) catch |err| handleError(err); _tmp31.append(g) catch |err| handleError(err); } } var _tmp33 = std.ArrayList(ResultStruct30).init(std.heap.page_allocator);for (_tmp31.items) |g| { _tmp33.append(g) catch |err| handleError(err); } var _tmp34 = std.ArrayList(struct {
     returnflag: []const u8,
     linestatus: []const u8,
     sum_qty: f64,
@@ -133,7 +99,41 @@ pub fn main() void {
     avg_price: f64,
     avg_disc: f64,
     count_order: i32,
-}).init(std.heap.page_allocator);for (_tmp33.items) |g| { _tmp34.append(ResultItem{
+};
+const ResultStruct30 = struct { key: ResultStruct0, Items: std.ArrayList(LineitemItem) };
+var result: []const ResultItem = undefined; // []const ResultItem
+
+fn test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus() void {
+    expect((result == (blk15: { const _tmp35 = struct {
+    returnflag: []const u8,
+    linestatus: []const u8,
+    sum_qty: i32,
+    sum_base_price: i32,
+    sum_disc_price: f64,
+    sum_charge: f64,
+    avg_qty: f64,
+    avg_price: i32,
+    avg_disc: f64,
+    count_order: i32,
+}; const _arr = &[_]_tmp35{_tmp35{
+    .returnflag = "N",
+    .linestatus = "O",
+    .sum_qty = 53,
+    .sum_base_price = 3000,
+    .sum_disc_price = (950.0 + 1800.0),
+    .sum_charge = (((950.0 * 1.07)) + ((1800.0 * 1.05))),
+    .avg_qty = 26.5,
+    .avg_price = 1500,
+    .avg_disc = 0.07500000000000001,
+    .count_order = 2,
+}}; break :blk15 _arr; })));
+}
+
+pub fn main() void {
+    result = blk14: { var _tmp31 = std.ArrayList(ResultStruct30).init(std.heap.page_allocator); for (lineitem) |row| { if (!(std.mem.order(u8, row.l_shipdate, "1998-09-02") != .gt)) continue; const _tmp32 = ResultStruct0{
+    .returnflag = row.l_returnflag,
+    .linestatus = row.l_linestatus,
+}; var _found = false; var _idx: usize = 0; for (_tmp31.items, 0..) |it, i| { if (_equal(it.key, _tmp32)) { _found = true; _idx = i; break; } } if (_found) { _tmp31.items[_idx].Items.append(row) catch |err| handleError(err); } else { var g = ResultStruct30{ .key = _tmp32, .Items = std.ArrayList(LineitemItem).init(std.heap.page_allocator) }; g.Items.append(row) catch |err| handleError(err); _tmp31.append(g) catch |err| handleError(err); } } var _tmp33 = std.ArrayList(ResultStruct30).init(std.heap.page_allocator);for (_tmp31.items) |g| { _tmp33.append(g) catch |err| handleError(err); } var _tmp34 = std.ArrayList(ResultItem).init(std.heap.page_allocator);for (_tmp33.items) |g| { _tmp34.append(ResultItem{
     .returnflag = g.key.returnflag,
     .linestatus = g.key.linestatus,
     .sum_qty = _sum_int(blk7: { var _tmp16 = std.ArrayList(i32).init(std.heap.page_allocator); for (g.Items.items) |x| { _tmp16.append(x.l_quantity) catch |err| handleError(err); } const _tmp17 = _tmp16.toOwnedSlice() catch |err| handleError(err); break :blk7 _tmp17; }),
@@ -143,7 +143,7 @@ pub fn main() void {
     .avg_qty = _avg_int(blk11: { var _tmp24 = std.ArrayList(i32).init(std.heap.page_allocator); for (g.Items.items) |x| { _tmp24.append(x.l_quantity) catch |err| handleError(err); } const _tmp25 = _tmp24.toOwnedSlice() catch |err| handleError(err); break :blk11 _tmp25; }),
     .avg_price = _avg_float(blk12: { var _tmp26 = std.ArrayList(f64).init(std.heap.page_allocator); for (g.Items.items) |x| { _tmp26.append(x.l_extendedprice) catch |err| handleError(err); } const _tmp27 = _tmp26.toOwnedSlice() catch |err| handleError(err); break :blk12 _tmp27; }),
     .avg_disc = _avg_float(blk13: { var _tmp28 = std.ArrayList(f64).init(std.heap.page_allocator); for (g.Items.items) |x| { _tmp28.append(x.l_discount) catch |err| handleError(err); } const _tmp29 = _tmp28.toOwnedSlice() catch |err| handleError(err); break :blk13 _tmp29; }),
-    .count_order = (g.Items.items.len),
+    .count_order = @as(i32, @intCast(g.Items.items.len)),
 }) catch |err| handleError(err); } const _tmp34Slice = _tmp34.toOwnedSlice() catch |err| handleError(err); break :blk14 _tmp34Slice; };
     _json(result);
     test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus();

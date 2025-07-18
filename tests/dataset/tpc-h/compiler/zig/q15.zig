@@ -8,12 +8,6 @@ fn handleError(err: anyerror) noreturn {
     std.debug.panic("{any}", .{err});
 }
 
-fn _sum_int(v: []const i32) i32 {
-    var sum: i32 = 0;
-    for (v) |it| { sum += it; }
-    return sum;
-}
-
 fn _sum_float(v: []const f64) f64 {
     var sum: f64 = 0;
     for (v) |it| { sum += it; }
@@ -89,7 +83,7 @@ const start_date = "1996-01-01"; // []const u8
 const end_date = "1996-04-01"; // []const u8
 const Revenue0Item = struct {
     supplier_no: i32,
-    total_revenue: i32,
+    total_revenue: f64,
 };
 const ResultStruct5 = struct { key: i32, Items: std.ArrayList(LineitemItem) };
 var revenue0: []const Revenue0Item = undefined; // []const Revenue0Item
@@ -116,10 +110,7 @@ fn test_Q15_returns_top_revenue_supplier_s__for_Q1_1996() void {
 }
 
 pub fn main() void {
-    revenue0 = blk2: { var _tmp6 = std.ArrayList(ResultStruct5).init(std.heap.page_allocator); for (lineitem) |l| { if (!((std.mem.order(u8, l.l_shipdate, start_date) != .lt and std.mem.order(u8, l.l_shipdate, end_date) == .lt))) continue; const _tmp7 = l.l_suppkey; var _found = false; var _idx: usize = 0; for (_tmp6.items, 0..) |it, i| { if (_equal(it.key, _tmp7)) { _found = true; _idx = i; break; } } if (_found) { _tmp6.items[_idx].Items.append(l) catch |err| handleError(err); } else { var g = ResultStruct5{ .key = _tmp7, .Items = std.ArrayList(LineitemItem).init(std.heap.page_allocator) }; g.Items.append(l) catch |err| handleError(err); _tmp6.append(g) catch |err| handleError(err); } } var _tmp8 = std.ArrayList(ResultStruct5).init(std.heap.page_allocator);for (_tmp6.items) |g| { _tmp8.append(g) catch |err| handleError(err); } var _tmp9 = std.ArrayList(struct {
-    supplier_no: i32,
-    total_revenue: f64,
-}).init(std.heap.page_allocator);for (_tmp8.items) |g| { _tmp9.append(Revenue0Item{
+    revenue0 = blk2: { var _tmp6 = std.ArrayList(ResultStruct5).init(std.heap.page_allocator); for (lineitem) |l| { if (!((std.mem.order(u8, l.l_shipdate, start_date) != .lt and std.mem.order(u8, l.l_shipdate, end_date) == .lt))) continue; const _tmp7 = l.l_suppkey; var _found = false; var _idx: usize = 0; for (_tmp6.items, 0..) |it, i| { if (_equal(it.key, _tmp7)) { _found = true; _idx = i; break; } } if (_found) { _tmp6.items[_idx].Items.append(l) catch |err| handleError(err); } else { var g = ResultStruct5{ .key = _tmp7, .Items = std.ArrayList(LineitemItem).init(std.heap.page_allocator) }; g.Items.append(l) catch |err| handleError(err); _tmp6.append(g) catch |err| handleError(err); } } var _tmp8 = std.ArrayList(ResultStruct5).init(std.heap.page_allocator);for (_tmp6.items) |g| { _tmp8.append(g) catch |err| handleError(err); } var _tmp9 = std.ArrayList(Revenue0Item).init(std.heap.page_allocator);for (_tmp8.items) |g| { _tmp9.append(Revenue0Item{
     .supplier_no = g.key,
     .total_revenue = _sum_float(blk1: { var _tmp3 = std.ArrayList(f64).init(std.heap.page_allocator); for (g.Items.items) |x| { _tmp3.append((x.l_extendedprice * ((1 - x.l_discount)))) catch |err| handleError(err); } const _tmp4 = _tmp3.toOwnedSlice() catch |err| handleError(err); break :blk1 _tmp4; }),
 }) catch |err| handleError(err); } const _tmp9Slice = _tmp9.toOwnedSlice() catch |err| handleError(err); break :blk2 _tmp9Slice; };

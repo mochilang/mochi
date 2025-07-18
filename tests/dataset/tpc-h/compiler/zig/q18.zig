@@ -118,14 +118,14 @@ const ResultStruct0 = struct {
     n_name: []const u8,
 };
 const ResultItem = struct {
-    c_name: i32,
+    c_name: []const u8,
     c_custkey: i32,
     revenue: i32,
-    c_acctbal: i32,
-    n_name: i32,
-    c_address: i32,
-    c_phone: i32,
-    c_comment: i32,
+    c_acctbal: f64,
+    n_name: []const u8,
+    c_address: []const u8,
+    c_phone: []const u8,
+    c_comment: []const u8,
 };
 const ResultStruct10 = struct {
     c: CustomerItem,
@@ -158,16 +158,7 @@ pub fn main() void {
     .c_phone = c.c_phone,
     .c_comment = c.c_comment,
     .n_name = n.n_name,
-}; var _found = false; var _idx: usize = 0; for (_tmp12.items, 0..) |it, i| { if (_equal(it.key, _tmp13)) { _found = true; _idx = i; break; } } if (_found) { _tmp12.items[_idx].Items.append(ResultStruct10{ .c = c, .o = o, .l = l, .n = n }) catch |err| handleError(err); } else { var g = ResultStruct11{ .key = _tmp13, .Items = std.ArrayList(ResultStruct10).init(std.heap.page_allocator) }; g.Items.append(ResultStruct10{ .c = c, .o = o, .l = l, .n = n }) catch |err| handleError(err); _tmp12.append(g) catch |err| handleError(err); } } } } } var _tmp14 = std.ArrayList(ResultStruct11).init(std.heap.page_allocator);for (_tmp12.items) |g| { if (!((_sum_int(blk3: { var _tmp8 = std.ArrayList(i32).init(std.heap.page_allocator); for (g.Items.items) |x| { _tmp8.append(x.l.l_quantity) catch |err| handleError(err); } const _tmp9 = _tmp8.toOwnedSlice() catch |err| handleError(err); break :blk3 _tmp9; }) > threshold))) continue; _tmp14.append(g) catch |err| handleError(err); } var _tmp15 = std.ArrayList(struct { item: ResultStruct11, key: i32 }).init(std.heap.page_allocator);for (_tmp14.items) |g| { _tmp15.append(.{ .item = g, .key = -_sum_int(blk2: { var _tmp6 = std.ArrayList(i32).init(std.heap.page_allocator); for (g.Items.items) |x| { _tmp6.append((x.l.l_extendedprice * ((1 - x.l.l_discount)))) catch |err| handleError(err); } const _tmp7 = _tmp6.toOwnedSlice() catch |err| handleError(err); break :blk2 _tmp7; }) }) catch |err| handleError(err); } for (0.._tmp15.items.len) |i| { for (i+1.._tmp15.items.len) |j| { if (_tmp15.items[j].key < _tmp15.items[i].key) { const t = _tmp15.items[i]; _tmp15.items[i] = _tmp15.items[j]; _tmp15.items[j] = t; } } } var _tmp16 = std.ArrayList(ResultStruct11).init(std.heap.page_allocator);for (_tmp15.items) |p| { _tmp16.append(p.item) catch |err| handleError(err); } var _tmp17 = std.ArrayList(struct {
-    c_name: []const u8,
-    c_custkey: i32,
-    revenue: i32,
-    c_acctbal: f64,
-    n_name: []const u8,
-    c_address: []const u8,
-    c_phone: []const u8,
-    c_comment: []const u8,
-}).init(std.heap.page_allocator);for (_tmp16.items) |g| { _tmp17.append(ResultItem{
+}; var _found = false; var _idx: usize = 0; for (_tmp12.items, 0..) |it, i| { if (_equal(it.key, _tmp13)) { _found = true; _idx = i; break; } } if (_found) { _tmp12.items[_idx].Items.append(ResultStruct10{ .c = c, .o = o, .l = l, .n = n }) catch |err| handleError(err); } else { var g = ResultStruct11{ .key = _tmp13, .Items = std.ArrayList(ResultStruct10).init(std.heap.page_allocator) }; g.Items.append(ResultStruct10{ .c = c, .o = o, .l = l, .n = n }) catch |err| handleError(err); _tmp12.append(g) catch |err| handleError(err); } } } } } var _tmp14 = std.ArrayList(ResultStruct11).init(std.heap.page_allocator);for (_tmp12.items) |g| { if (!((_sum_int(blk3: { var _tmp8 = std.ArrayList(i32).init(std.heap.page_allocator); for (g.Items.items) |x| { _tmp8.append(x.l.l_quantity) catch |err| handleError(err); } const _tmp9 = _tmp8.toOwnedSlice() catch |err| handleError(err); break :blk3 _tmp9; }) > threshold))) continue; _tmp14.append(g) catch |err| handleError(err); } var _tmp15 = std.ArrayList(struct { item: ResultStruct11, key: i32 }).init(std.heap.page_allocator);for (_tmp14.items) |g| { _tmp15.append(.{ .item = g, .key = -_sum_int(blk2: { var _tmp6 = std.ArrayList(i32).init(std.heap.page_allocator); for (g.Items.items) |x| { _tmp6.append((x.l.l_extendedprice * ((1 - x.l.l_discount)))) catch |err| handleError(err); } const _tmp7 = _tmp6.toOwnedSlice() catch |err| handleError(err); break :blk2 _tmp7; }) }) catch |err| handleError(err); } for (0.._tmp15.items.len) |i| { for (i+1.._tmp15.items.len) |j| { if (_tmp15.items[j].key < _tmp15.items[i].key) { const t = _tmp15.items[i]; _tmp15.items[i] = _tmp15.items[j]; _tmp15.items[j] = t; } } } var _tmp16 = std.ArrayList(ResultStruct11).init(std.heap.page_allocator);for (_tmp15.items) |p| { _tmp16.append(p.item) catch |err| handleError(err); } var _tmp17 = std.ArrayList(ResultItem).init(std.heap.page_allocator);for (_tmp16.items) |g| { _tmp17.append(ResultItem{
     .c_name = g.key.c_name,
     .c_custkey = g.key.c_custkey,
     .revenue = _sum_int(blk1: { var _tmp4 = std.ArrayList(i32).init(std.heap.page_allocator); for (g.Items.items) |x| { _tmp4.append((x.l.l_extendedprice * ((1 - x.l.l_discount)))) catch |err| handleError(err); } const _tmp5 = _tmp4.toOwnedSlice() catch |err| handleError(err); break :blk1 _tmp5; }),

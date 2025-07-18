@@ -69,7 +69,7 @@ const lineitem = &[_]LineitemItem{
 },
 }; // []const LineitemItem
 const ResultItem = struct {
-    l_shipmode: i32,
+    l_shipmode: []const u8,
     high_line_count: i32,
     low_line_count: i32,
 };
@@ -92,11 +92,7 @@ pub fn main() void {
     result = blk4: { var _tmp11 = std.ArrayList(ResultStruct10).init(std.heap.page_allocator); for (lineitem) |l| { for (orders) |o| { if (!((o.o_orderkey == l.l_orderkey))) continue; if (!((((((_contains_list_string(&[_][]const u8{
     "MAIL",
     "SHIP",
-}, l.l_shipmode)) and (std.mem.order(u8, l.l_commitdate, l.l_receiptdate) == .lt)) and (std.mem.order(u8, l.l_shipdate, l.l_commitdate) == .lt)) and (std.mem.order(u8, l.l_receiptdate, "1994-01-01") != .lt)) and (std.mem.order(u8, l.l_receiptdate, "1995-01-01") == .lt)))) continue; const _tmp12 = l.l_shipmode; var _found = false; var _idx: usize = 0; for (_tmp11.items, 0..) |it, i| { if (_equal(it.key, _tmp12)) { _found = true; _idx = i; break; } } if (_found) { _tmp11.items[_idx].Items.append(ResultStruct9{ .l = l, .o = o }) catch |err| handleError(err); } else { var g = ResultStruct10{ .key = _tmp12, .Items = std.ArrayList(ResultStruct9).init(std.heap.page_allocator) }; g.Items.append(ResultStruct9{ .l = l, .o = o }) catch |err| handleError(err); _tmp11.append(g) catch |err| handleError(err); } } } var _tmp13 = std.ArrayList(ResultStruct10).init(std.heap.page_allocator);for (_tmp11.items) |g| { _tmp13.append(g) catch |err| handleError(err); } var _tmp14 = std.ArrayList(struct { item: ResultStruct10, key: i32 }).init(std.heap.page_allocator);for (_tmp13.items) |g| { _tmp14.append(.{ .item = g, .key = g.key }) catch |err| handleError(err); } for (0.._tmp14.items.len) |i| { for (i+1.._tmp14.items.len) |j| { if (_tmp14.items[j].key < _tmp14.items[i].key) { const t = _tmp14.items[i]; _tmp14.items[i] = _tmp14.items[j]; _tmp14.items[j] = t; } } } var _tmp15 = std.ArrayList(ResultStruct10).init(std.heap.page_allocator);for (_tmp14.items) |p| { _tmp15.append(p.item) catch |err| handleError(err); } var _tmp16 = std.ArrayList(struct {
-    l_shipmode: []const u8,
-    high_line_count: i32,
-    low_line_count: i32,
-}).init(std.heap.page_allocator);for (_tmp15.items) |g| { _tmp16.append(ResultItem{
+}, l.l_shipmode)) and (std.mem.order(u8, l.l_commitdate, l.l_receiptdate) == .lt)) and (std.mem.order(u8, l.l_shipdate, l.l_commitdate) == .lt)) and (std.mem.order(u8, l.l_receiptdate, "1994-01-01") != .lt)) and (std.mem.order(u8, l.l_receiptdate, "1995-01-01") == .lt)))) continue; const _tmp12 = l.l_shipmode; var _found = false; var _idx: usize = 0; for (_tmp11.items, 0..) |it, i| { if (_equal(it.key, _tmp12)) { _found = true; _idx = i; break; } } if (_found) { _tmp11.items[_idx].Items.append(ResultStruct9{ .l = l, .o = o }) catch |err| handleError(err); } else { var g = ResultStruct10{ .key = _tmp12, .Items = std.ArrayList(ResultStruct9).init(std.heap.page_allocator) }; g.Items.append(ResultStruct9{ .l = l, .o = o }) catch |err| handleError(err); _tmp11.append(g) catch |err| handleError(err); } } } var _tmp13 = std.ArrayList(ResultStruct10).init(std.heap.page_allocator);for (_tmp11.items) |g| { _tmp13.append(g) catch |err| handleError(err); } var _tmp14 = std.ArrayList(struct { item: ResultStruct10, key: i32 }).init(std.heap.page_allocator);for (_tmp13.items) |g| { _tmp14.append(.{ .item = g, .key = g.key }) catch |err| handleError(err); } for (0.._tmp14.items.len) |i| { for (i+1.._tmp14.items.len) |j| { if (_tmp14.items[j].key < _tmp14.items[i].key) { const t = _tmp14.items[i]; _tmp14.items[i] = _tmp14.items[j]; _tmp14.items[j] = t; } } } var _tmp15 = std.ArrayList(ResultStruct10).init(std.heap.page_allocator);for (_tmp14.items) |p| { _tmp15.append(p.item) catch |err| handleError(err); } var _tmp16 = std.ArrayList(ResultItem).init(std.heap.page_allocator);for (_tmp15.items) |g| { _tmp16.append(ResultItem{
     .l_shipmode = g.key,
     .high_line_count = _sum_int(blk2: { var _tmp5 = std.ArrayList(i32).init(std.heap.page_allocator); for (g.Items.items) |x| { _tmp5.append(if (_contains_list_string(&[_][]const u8{
     "1-URGENT",

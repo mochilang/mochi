@@ -124,7 +124,7 @@ const ResultStruct0 = struct {
 const Shipped94Item = struct {
     partkey: i32,
     suppkey: i32,
-    qty: i32,
+    qty: f64,
 };
 const ResultStruct6 = struct { key: ResultStruct0, Items: std.ArrayList(LineitemItem) };
 var shipped_94: []const Shipped94Item = undefined; // []const Shipped94Item
@@ -146,16 +146,12 @@ pub fn main() void {
     shipped_94 = blk2: { var _tmp7 = std.ArrayList(ResultStruct6).init(std.heap.page_allocator); for (lineitem) |l| { if (!((std.mem.order(u8, l.l_shipdate, "1994-01-01") != .lt and std.mem.order(u8, l.l_shipdate, "1995-01-01") == .lt))) continue; const _tmp8 = ResultStruct0{
     .partkey = l.l_partkey,
     .suppkey = l.l_suppkey,
-}; var _found = false; var _idx: usize = 0; for (_tmp7.items, 0..) |it, i| { if (_equal(it.key, _tmp8)) { _found = true; _idx = i; break; } } if (_found) { _tmp7.items[_idx].Items.append(l) catch |err| handleError(err); } else { var g = ResultStruct6{ .key = _tmp8, .Items = std.ArrayList(LineitemItem).init(std.heap.page_allocator) }; g.Items.append(l) catch |err| handleError(err); _tmp7.append(g) catch |err| handleError(err); } } var _tmp9 = std.ArrayList(ResultStruct6).init(std.heap.page_allocator);for (_tmp7.items) |g| { _tmp9.append(g) catch |err| handleError(err); } var _tmp10 = std.ArrayList(struct {
-    partkey: i32,
-    suppkey: i32,
-    qty: f64,
-}).init(std.heap.page_allocator);for (_tmp9.items) |g| { _tmp10.append(Shipped94Item{
+}; var _found = false; var _idx: usize = 0; for (_tmp7.items, 0..) |it, i| { if (_equal(it.key, _tmp8)) { _found = true; _idx = i; break; } } if (_found) { _tmp7.items[_idx].Items.append(l) catch |err| handleError(err); } else { var g = ResultStruct6{ .key = _tmp8, .Items = std.ArrayList(LineitemItem).init(std.heap.page_allocator) }; g.Items.append(l) catch |err| handleError(err); _tmp7.append(g) catch |err| handleError(err); } } var _tmp9 = std.ArrayList(ResultStruct6).init(std.heap.page_allocator);for (_tmp7.items) |g| { _tmp9.append(g) catch |err| handleError(err); } var _tmp10 = std.ArrayList(Shipped94Item).init(std.heap.page_allocator);for (_tmp9.items) |g| { _tmp10.append(Shipped94Item{
     .partkey = g.key.partkey,
     .suppkey = g.key.suppkey,
     .qty = _sum_int(blk1: { var _tmp4 = std.ArrayList(i32).init(std.heap.page_allocator); for (g.Items.items) |x| { _tmp4.append(x.l_quantity) catch |err| handleError(err); } const _tmp5 = _tmp4.toOwnedSlice() catch |err| handleError(err); break :blk1 _tmp5; }),
 }) catch |err| handleError(err); } const _tmp10Slice = _tmp10.toOwnedSlice() catch |err| handleError(err); break :blk2 _tmp10Slice; };
-    target_partkeys = blk3: { var _tmp11 = std.ArrayList(i32).init(std.heap.page_allocator); for (partsupp) |ps| { for (part) |p| { if (!((ps.ps_partkey == p.p_partkey))) continue; for (shipped_94) |s| { if (!(((ps.ps_partkey == s.partkey) and (ps.ps_suppkey == s.suppkey)))) continue; if (!((std.mem.eql(u8, substring(p.p_name, 0, (prefix).len), prefix) and (ps.ps_availqty > ((0.5 * s.qty)))))) continue; _tmp11.append(ps.ps_suppkey) catch |err| handleError(err); } } } const _tmp12 = _tmp11.toOwnedSlice() catch |err| handleError(err); break :blk3 _tmp12; };
+    target_partkeys = blk3: { var _tmp11 = std.ArrayList(i32).init(std.heap.page_allocator); for (partsupp) |ps| { for (part) |p| { if (!((ps.ps_partkey == p.p_partkey))) continue; for (shipped_94) |s| { if (!(((ps.ps_partkey == s.partkey) and (ps.ps_suppkey == s.suppkey)))) continue; if (!((std.mem.eql(u8, substring(p.p_name, 0, @as(i32, @intCast((prefix).len))), prefix) and (ps.ps_availqty > ((0.5 * s.qty)))))) continue; _tmp11.append(ps.ps_suppkey) catch |err| handleError(err); } } } const _tmp12 = _tmp11.toOwnedSlice() catch |err| handleError(err); break :blk3 _tmp12; };
     result = blk4: { var _tmp14 = std.ArrayList(ResultItem).init(std.heap.page_allocator); for (supplier) |s| { for (nation) |n| { if (!((n.n_nationkey == s.s_nationkey))) continue; if (!((_contains_list_int(target_partkeys, s.s_suppkey) and std.mem.eql(u8, n.n_name, "CANADA")))) continue; _tmp14.append(ResultItem{
     .s_name = s.s_name,
     .s_address = s.s_address,
