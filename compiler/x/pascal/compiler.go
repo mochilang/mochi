@@ -309,6 +309,9 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				name = fmt.Sprintf("%s[%s]", name, iv)
 			}
 		}
+		for _, f := range s.Assign.Field {
+			name = fmt.Sprintf("%s.%s", name, sanitizeName(f.Name))
+		}
 		var t types.Type
 		if c.env != nil {
 			if tt, err := c.env.GetVar(s.Assign.Name); err == nil {
@@ -324,6 +327,19 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		if t == nil {
 			t = resolveSimpleTypeRef(nil)
+		}
+		// traverse struct fields to determine final type
+		if len(s.Assign.Field) > 0 {
+			for _, f := range s.Assign.Field {
+				if st, ok := t.(types.StructType); ok {
+					if ft, ok := st.Fields[f.Name]; ok {
+						t = ft
+					} else {
+						t = nil
+						break
+					}
+				}
+			}
 		}
 		val, err := c.compileExprWith(t, s.Assign.Value)
 		if err != nil {
@@ -762,7 +778,13 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	prevRepl := c.replacements
 	c.replacements = make(map[string]string)
 	prevReturn := c.returnType
-	c.returnType = resolveSimpleTypeRef(fun.Return)
+	if fun.Return != nil {
+		c.returnType = resolveSimpleTypeRef(fun.Return)
+	} else if hasReturn(fun.Body) {
+		c.returnType = resolveSimpleTypeRef(nil)
+	} else {
+		c.returnType = nil
+	}
 
 	name := sanitizeName(fun.Name)
 	params := make([]string, len(fun.Params))
@@ -773,6 +795,7 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 		c.varTypes[p.Name] = pt
 	}
 	retType := c.typeRef(fun.Return)
+	isProc := fun.Return == nil && !hasReturn(fun.Body)
 
 	// Compile body first so that temporaries are collected
 	var body, nested bytes.Buffer
@@ -832,7 +855,11 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 		c.varTypes[n] = t
 	}
 
-	c.writeln(fmt.Sprintf("function %s(%s): %s;", name, strings.Join(params, "; "), retType))
+	if isProc {
+		c.writeln(fmt.Sprintf("procedure %s(%s);", name, strings.Join(params, "; ")))
+	} else {
+		c.writeln(fmt.Sprintf("function %s(%s): %s;", name, strings.Join(params, "; "), retType))
+	}
 	if len(vars) > 0 {
 		c.writeln("var")
 		c.indent++
@@ -863,6 +890,36 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	c.replacements = prevRepl
 	c.returnType = prevReturn
 	return nil
+}
+
+func hasReturn(stmts []*parser.Statement) bool {
+	for _, st := range stmts {
+		if st.Return != nil {
+			return true
+		}
+		if st.If != nil {
+			if hasReturn(st.If.Then) {
+				return true
+			}
+			cur := st.If
+			for cur.ElseIf != nil {
+				if hasReturn(cur.ElseIf.Then) {
+					return true
+				}
+				cur = cur.ElseIf
+			}
+			if len(cur.Else) > 0 && hasReturn(cur.Else) {
+				return true
+			}
+		}
+		if st.For != nil && hasReturn(st.For.Body) {
+			return true
+		}
+		if st.While != nil && hasReturn(st.While.Body) {
+			return true
+		}
+	}
+	return false
 }
 
 func (c *Compiler) compilePackageImport(im *parser.ImportStmt) error {
