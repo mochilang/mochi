@@ -1,7 +1,5 @@
 run: exit status 1
 # command-line-arguments
-/tmp/X/001/main.go:22:13: func(any) add (type) is not an expression
-/tmp/X/001/main.go:22:19: add is not a type
-/tmp/X/001/main.go:30:65: x(any(2.3)) (no value) used as value
-/tmp/X/001/main.go:33:6: main redeclared in this block
-	/tmp/X/001/main.go:26:6: other declaration of main
+/tmp/X/001/main.go:21:13: func(any) add (type) is not an expression
+/tmp/X/001/main.go:21:19: add is not a type
+/tmp/X/001/main.go:29:33: x(any(2.3)) (no value) used as value

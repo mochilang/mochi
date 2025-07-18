@@ -6,7 +6,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 )
 
 type v map[string]any
@@ -43,13 +42,13 @@ func ackermann2(m int, n int) int {
 }
 
 // line 33
-func main() {
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("A(0, 0) = "+fmt.Sprint(any(ackermann2(0, 0))))), "\n"))
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("A(1, 2) = "+fmt.Sprint(any(ackermann2(1, 2))))), "\n"))
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("A(2, 4) = "+fmt.Sprint(any(ackermann2(2, 4))))), "\n"))
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("A(3, 4) = "+fmt.Sprint(any(ackermann2(3, 4))))), "\n"))
+func mainFn() {
+	fmt.Println(any("A(0, 0) = " + fmt.Sprint(any(ackermann2(0, 0)))))
+	fmt.Println(any("A(1, 2) = " + fmt.Sprint(any(ackermann2(1, 2)))))
+	fmt.Println(any("A(2, 4) = " + fmt.Sprint(any(ackermann2(2, 4)))))
+	fmt.Println(any("A(3, 4) = " + fmt.Sprint(any(ackermann2(3, 4)))))
 }
 
 func main() {
-	main()
+	mainFn()
 }

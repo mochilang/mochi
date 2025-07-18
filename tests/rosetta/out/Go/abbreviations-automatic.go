@@ -6,7 +6,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 )
 
 type v map[string]any
@@ -20,7 +19,7 @@ func fields(s string) []string {
 		ch := string([]rune(s)[i:(i + 1)])
 		if ((ch == " ") || (ch == "\n")) || (ch == "\t") {
 			if len(any(cur)) > 0 {
-				words = append(_toAnySlice(words), any(cur))
+				words = append(words, cur)
 				cur = ""
 			}
 		} else {
@@ -29,7 +28,7 @@ func fields(s string) []string {
 		i = (i + 1)
 	}
 	if len(any(cur)) > 0 {
-		words = append(_toAnySlice(words), any(cur))
+		words = append(words, cur)
 	}
 	return words
 }
@@ -60,7 +59,7 @@ func distinct(xs []string) []string {
 		_, ok2 := m1[key0]
 		if !(ok2) {
 			m[x] = true
-			out = append(_toAnySlice(out), any(x))
+			out = append(out, x)
 		}
 		i = (i + 1)
 	}
@@ -75,7 +74,7 @@ func abbrevLen(words []string) int {
 		var abbrs []string = []string{}
 		i := 0
 		for i < size {
-			abbrs = append(_toAnySlice(abbrs), any(takeRunes(words[i], l)))
+			abbrs = append(abbrs, takeRunes(words[i], l))
 			i = (i + 1)
 		}
 		if len(any(distinct(abbrs))) == size {
@@ -96,7 +95,7 @@ func pad2(n int) string {
 }
 
 // line 71
-func main() {
+func mainFn() {
 	lines := []string{
 		"Sunday Monday Tuesday Wednesday Thursday Friday Saturday",
 		"Sondag Maandag Dinsdag Woensdag Donderdag Vrydag Saterdag",
@@ -201,19 +200,11 @@ func main() {
 	for i < len(any(lines)) {
 		words := fields(lines[i])
 		l := abbrevLen(words)
-		fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(pad2(l)+"  "+lines[i])), "\n"))
+		fmt.Println(any(pad2(l) + "  " + lines[i]))
 		i = (i + 1)
 	}
 }
 
 func main() {
-	main()
-}
-
-func _toAnySlice[T any](s []T) []any {
-	out := make([]any, len(s))
-	for i, v := range s {
-		out[i] = v
-	}
-	return out
+	mainFn()
 }

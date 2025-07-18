@@ -6,7 +6,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 )
 
 type v map[string]any
@@ -36,7 +35,7 @@ func plus(a []int, b []int) []int {
 	var res []int = []int{}
 	i := 0
 	for i < len(any(a)) {
-		res = append(_toAnySlice(res), any((a[i] + b[i])))
+		res = append(res, (a[i] + b[i]))
 		i = (i + 1)
 	}
 	return res
@@ -87,7 +86,7 @@ func pileString(p []int) string {
 }
 
 func main() {
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("Avalanche of topplings:\n")), "\n"))
+	fmt.Println(any("Avalanche of topplings:\n"))
 	s4 := []int{
 		4,
 		3,
@@ -99,12 +98,12 @@ func main() {
 		2,
 		3,
 	}
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(pileString(s4))), "\n"))
+	fmt.Println(any(pileString(s4)))
 	for !(isStable(s4)) {
 		topple(s4)
-		fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(pileString(s4))), "\n"))
+		fmt.Println(any(pileString(s4)))
 	}
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("Commutative additions:\n")), "\n"))
+	fmt.Println(any("Commutative additions:\n"))
 	s1 := []int{
 		1,
 		2,
@@ -135,9 +134,9 @@ func main() {
 	for !(isStable(s3_b)) {
 		topple(s3_b)
 	}
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(pileString(s1)+"\nplus\n\n"+pileString(s2)+"\nequals\n\n"+pileString(s3_a))), "\n"))
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("and\n\n"+pileString(s2)+"\nplus\n\n"+pileString(s1)+"\nalso equals\n\n"+pileString(s3_b))), "\n"))
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("Addition of identity sandpile:\n")), "\n"))
+	fmt.Println(any(pileString(s1) + "\nplus\n\n" + pileString(s2) + "\nequals\n\n" + pileString(s3_a)))
+	fmt.Println(any("and\n\n" + pileString(s2) + "\nplus\n\n" + pileString(s1) + "\nalso equals\n\n" + pileString(s3_b)))
+	fmt.Println(any("Addition of identity sandpile:\n"))
 	s3 := []int{
 		3,
 		3,
@@ -164,19 +163,11 @@ func main() {
 	for !(isStable(s4b)) {
 		topple(s4b)
 	}
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(pileString(s3)+"\nplus\n\n"+pileString(s3_id)+"\nequals\n\n"+pileString(s4b))), "\n"))
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("Addition of identities:\n")), "\n"))
+	fmt.Println(any(pileString(s3) + "\nplus\n\n" + pileString(s3_id) + "\nequals\n\n" + pileString(s4b)))
+	fmt.Println(any("Addition of identities:\n"))
 	s5 := plus(s3_id, s3_id)
 	for !(isStable(s5)) {
 		topple(s5)
 	}
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(pileString(s3_id)+"\nplus\n\n"+pileString(s3_id)+"\nequals\n\n"+pileString(s5))), "\n"))
-}
-
-func _toAnySlice[T any](s []T) []any {
-	out := make([]any, len(s))
-	for i, v := range s {
-		out[i] = v
-	}
-	return out
+	fmt.Println(any(pileString(s3_id) + "\nplus\n\n" + pileString(s3_id) + "\nequals\n\n" + pileString(s5)))
 }

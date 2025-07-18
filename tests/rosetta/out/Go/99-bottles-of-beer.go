@@ -6,7 +6,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 )
 
 type v map[string]any
@@ -23,17 +22,17 @@ func bottles(n int) string {
 }
 
 // line 11
-func main() {
+func mainFn() {
 	i := 99
 	for i > 0 {
-		fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(bottles(i)+" of beer on the wall")), "\n"))
-		fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(bottles(i)+" of beer")), "\n"))
-		fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("Take one down, pass it around")), "\n"))
-		fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(bottles((i-1))+" of beer on the wall")), "\n"))
+		fmt.Println(any(bottles(i) + " of beer on the wall"))
+		fmt.Println(any(bottles(i) + " of beer"))
+		fmt.Println(any("Take one down, pass it around"))
+		fmt.Println(any(bottles((i - 1)) + " of beer on the wall"))
 		i = (i - 1)
 	}
 }
 
 func main() {
-	main()
+	mainFn()
 }

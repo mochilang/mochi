@@ -6,7 +6,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 )
 
 type v map[string]any
@@ -75,11 +74,11 @@ func beastCry(b Beast) string {
 
 // line 29
 func bprint(b Beast) {
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(beastName(b)+", who's a "+beastKind(b)+", cries: \""+beastCry(b)+"\".")), "\n"))
+	fmt.Println(any(beastName(b) + ", who's a " + beastKind(b) + ", cries: \"" + beastCry(b) + "\"."))
 }
 
 // line 33
-func main() {
+func mainFn() {
 	var d Beast = Dog{Kind: "labrador", Name: "Max"}
 	var c Beast = Cat{Kind: "siamese", Name: "Sammy"}
 	bprint(d)
@@ -87,5 +86,5 @@ func main() {
 }
 
 func main() {
-	main()
+	mainFn()
 }
