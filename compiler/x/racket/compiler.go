@@ -79,6 +79,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		out.WriteString("(require racket/function)\n")
 	}
 	if len(c.runtimeFuncs) > 0 {
+		if c.runtimeFuncs["_ge"] || c.runtimeFuncs["_max"] {
+			c.runtimeFuncs["_gt"] = true
+		}
+		if c.runtimeFuncs["_le"] || c.runtimeFuncs["_min"] {
+			c.runtimeFuncs["_lt"] = true
+		}
 		if c.runtimeFuncs["_gt"] || c.runtimeFuncs["_ge"] {
 			c.runtimeFuncs["_lt"] = true
 		}
