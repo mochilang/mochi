@@ -53,7 +53,7 @@ func TestSmalltalkCompiler_VMValid_Golden(t *testing.T) {
 			os.WriteFile(errPath, []byte(errs[0].Error()), 0644)
 			return nil, errs[0]
 		}
-		code, err := st.New().Compile(prog)
+		code, err := st.New(env).Compile(prog)
 		if err != nil {
 			os.WriteFile(errPath, []byte(err.Error()), 0644)
 			return nil, err

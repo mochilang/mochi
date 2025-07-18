@@ -9,6 +9,7 @@ import (
 
 	meta "mochi/compiler/meta"
 	"mochi/parser"
+	"mochi/types"
 )
 
 // Compiler translates a subset of Mochi to Smalltalk source code.
@@ -20,11 +21,20 @@ type Compiler struct {
 	needBreak    bool
 	needContinue bool
 	fallbackVar  string
+
+	env       *types.Env
+	constLens map[string]int
+	constStrs map[string]string
 }
 
 // New returns a new compiler instance.
-func New() *Compiler {
-	return &Compiler{vars: make(map[string]bool)}
+func New(env *types.Env) *Compiler {
+	return &Compiler{
+		vars:      make(map[string]bool),
+		env:       env,
+		constLens: make(map[string]int),
+		constStrs: make(map[string]string),
+	}
 }
 
 // Compile converts a parsed Mochi program to Smalltalk code.
@@ -37,6 +47,9 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.indent = 0
 	c.needBreak = false
 	c.needContinue = false
+	c.order = nil
+	c.constLens = make(map[string]int)
+	c.constStrs = make(map[string]string)
 
 	var body bytes.Buffer
 	saved := c.buf
@@ -163,6 +176,16 @@ func (c *Compiler) compileStmt(st *parser.Statement) error {
 		return nil
 	case st.Let != nil:
 		if st.Let.Value != nil {
+			if l := listLiteral(st.Let.Value); l != nil {
+				c.constLens[st.Let.Name] = len(l.Elems)
+			} else {
+				delete(c.constLens, st.Let.Name)
+			}
+			if s := stringLiteralExpr(st.Let.Value); s != nil {
+				c.constStrs[st.Let.Name] = *s
+			} else {
+				delete(c.constStrs, st.Let.Name)
+			}
 			expr, err := c.compileExpr(st.Let.Value)
 			if err != nil {
 				return err
@@ -172,6 +195,16 @@ func (c *Compiler) compileStmt(st *parser.Statement) error {
 		return nil
 	case st.Var != nil:
 		if st.Var.Value != nil {
+			if l := listLiteral(st.Var.Value); l != nil {
+				c.constLens[st.Var.Name] = len(l.Elems)
+			} else {
+				delete(c.constLens, st.Var.Name)
+			}
+			if s := stringLiteralExpr(st.Var.Value); s != nil {
+				c.constStrs[st.Var.Name] = *s
+			} else {
+				delete(c.constStrs, st.Var.Name)
+			}
 			expr, err := c.compileExpr(st.Var.Value)
 			if err != nil {
 				return err
@@ -185,6 +218,16 @@ func (c *Compiler) compileStmt(st *parser.Statement) error {
 		st.ExternObject != nil:
 		return nil
 	case st.Assign != nil:
+		if l := listLiteral(st.Assign.Value); l != nil {
+			c.constLens[st.Assign.Name] = len(l.Elems)
+		} else {
+			delete(c.constLens, st.Assign.Name)
+		}
+		if s := stringLiteralExpr(st.Assign.Value); s != nil {
+			c.constStrs[st.Assign.Name] = *s
+		} else {
+			delete(c.constStrs, st.Assign.Name)
+		}
 		val, err := c.compileExpr(st.Assign.Value)
 		if err != nil {
 			return err
@@ -432,6 +475,24 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		return "", fmt.Errorf("nil binary expression")
 	}
 
+	if len(b.Right) == 1 && b.Right[0].Op == "in" {
+		leftStr, err := c.compileUnary(b.Left)
+		if err != nil {
+			return "", err
+		}
+		rightStr, err := c.compilePostfix(b.Right[0].Right)
+		if err != nil {
+			return "", err
+		}
+		if types.IsMapPostfix(b.Right[0].Right, c.env) {
+			return fmt.Sprintf("(%s includesKey: %s)", rightStr, leftStr), nil
+		}
+		if types.IsStringPostfix(b.Right[0].Right, c.env) {
+			return fmt.Sprintf("(%s includesSubstring: %s)", rightStr, leftStr), nil
+		}
+		return fmt.Sprintf("(%s includes: %s)", rightStr, leftStr), nil
+	}
+
 	operands := []string{}
 	ops := []string{}
 
@@ -547,6 +608,17 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					return "", err
 				}
 				args[i] = s
+			}
+			if p.Target != nil && p.Target.Selector != nil && len(p.Target.Selector.Tail) == 1 && p.Target.Selector.Tail[0] == "contains" {
+				if len(args) != 1 {
+					return "", fmt.Errorf("contains expects 1 arg")
+				}
+				if types.IsStringPrimary(&parser.Primary{Selector: p.Target.Selector}, c.env) {
+					val = fmt.Sprintf("%s includesSubstring: %s", p.Target.Selector.Root, args[0])
+				} else {
+					val = fmt.Sprintf("%s includes: %s", p.Target.Selector.Root, args[0])
+				}
+				continue
 			}
 			if p.Target != nil && p.Target.Selector != nil && p.Target.Selector.Root == "math" && len(p.Target.Selector.Tail) == 1 {
 				switch p.Target.Selector.Tail[0] {
@@ -790,6 +862,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		case "count", "len":
 			if len(args) != 1 {
 				return "", fmt.Errorf("%s expects 1 arg", p.Call.Func)
+			}
+			if n, ok := c.constListLenExpr(p.Call.Args[0]); ok {
+				return fmt.Sprintf("%d", n), nil
+			}
+			if s, ok := c.constStringExpr(p.Call.Args[0]); ok {
+				return fmt.Sprintf("%d", len(s)), nil
 			}
 			return fmt.Sprintf("(%s size)", args[0]), nil
 		case "values":
@@ -1597,6 +1675,59 @@ func identName(e *parser.Expr) (string, bool) {
 	}
 	if len(p.Target.Selector.Tail) == 0 {
 		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func listLiteral(e *parser.Expr) *parser.ListLiteral {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return nil
+	}
+	v := u.Value
+	if len(v.Ops) != 0 || v.Target == nil {
+		return nil
+	}
+	return v.Target.List
+}
+
+func stringLiteralExpr(e *parser.Expr) *string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil || u.Value.Target == nil {
+		return nil
+	}
+	if lit := u.Value.Target.Lit; lit != nil && lit.Str != nil {
+		return lit.Str
+	}
+	return nil
+}
+
+func (c *Compiler) constListLenExpr(e *parser.Expr) (int, bool) {
+	if l := listLiteral(e); l != nil {
+		return len(l.Elems), true
+	}
+	if name, ok := identName(e); ok {
+		if n, ok2 := c.constLens[name]; ok2 {
+			return n, true
+		}
+	}
+	return 0, false
+}
+
+func (c *Compiler) constStringExpr(e *parser.Expr) (string, bool) {
+	if s := stringLiteralExpr(e); s != nil {
+		return *s, true
+	}
+	if name, ok := identName(e); ok {
+		if v, ok2 := c.constStrs[name]; ok2 {
+			return v, true
+		}
 	}
 	return "", false
 }
