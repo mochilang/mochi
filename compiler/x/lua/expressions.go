@@ -447,6 +447,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		for i, a := range args {
 			if n, ok := identName(call.Args[i]); ok && c.uninitVars[n] {
 				parts[i] = "\"<nil>\""
+			} else if _, ok := c.inferExprType(call.Args[i]).(types.BoolType); ok {
+				parts[i] = fmt.Sprintf("((%s) and \"1\" or \"0\")", a)
+			} else if c.isNumberExpr(call.Args[i]) {
+				parts[i] = fmt.Sprintf("string.format('%%.15g', %s)", a)
 			} else if c.isStringExpr(call.Args[i]) {
 				parts[i] = a
 			} else {
@@ -457,7 +461,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			if c.isListExpr(call.Args[0]) {
 				tmp := fmt.Sprintf("_l%d", c.tmpCount)
 				c.tmpCount++
-				return fmt.Sprintf("(function(%s) local p={} for i=1,#%s do p[#p+1]=tostring(%s[i]) end print(table.concat(p, ' ')) end)(%s);", tmp, tmp, tmp, args[0]), nil
+				return fmt.Sprintf("(function(%s) local p={} for i=1,#%s do local v=%s[i]; if type(v)=='boolean' then p[#p+1]=(v and '1' or '0') elseif type(v)=='number' then p[#p+1]=string.format('%%.15g', v) else p[#p+1]=tostring(v) end end print(table.concat(p, ' ')) end)(%s);", tmp, tmp, tmp, args[0]), nil
 			}
 			return fmt.Sprintf("print(%s)", parts[0]), nil
 		}
@@ -466,6 +470,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if len(args) == 1 {
 			if v, ok := literalValue(call.Args[0]); ok {
 				return strconv.Quote(fmt.Sprint(v)), nil
+			}
+			if _, ok := c.inferExprType(call.Args[0]).(types.BoolType); ok {
+				return fmt.Sprintf("((%s) and \"1\" or \"0\")", args[0]), nil
+			}
+			if c.isNumberExpr(call.Args[0]) {
+				return fmt.Sprintf("string.format('%%.15g', %s)", args[0]), nil
 			}
 			if c.isStringExpr(call.Args[0]) {
 				return args[0], nil
