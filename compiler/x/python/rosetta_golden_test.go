@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -32,7 +33,8 @@ func stripHeaderLocal(b []byte) []byte {
 func runRosettaTaskGolden(t *testing.T, name string) {
 	root := findRepoRoot(t)
 	script := exec.Command("go", "run", "-tags=archive,slow", "./scripts/compile_rosetta_python.go")
-	script.Env = append(os.Environ(), "GOTOOLCHAIN=local", "TASKS="+name)
+	script.Env = append(os.Environ(), "GOTOOLCHAIN=local", "TASKS="+name,
+		"MOCHI_HEADER_TIME=2006-01-02T15:04:05Z", "SOURCE_DATE_EPOCH=0")
 	script.Dir = root
 	if out, err := script.CombinedOutput(); err != nil {
 		t.Fatalf("compile script error: %v\n%s", err, out)
@@ -99,9 +101,11 @@ func TestPythonCompiler_Rosetta_Golden(t *testing.T) {
 	if err != nil {
 		t.Fatalf("glob: %v", err)
 	}
-	max := 3
-	if len(files) < max {
-		max = len(files)
+	max := len(files)
+	if v := os.Getenv("ROSETTA_MAX"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n < max {
+			max = n
+		}
 	}
 	for _, f := range files[:max] {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")

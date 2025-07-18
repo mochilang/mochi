@@ -36,7 +36,9 @@ func writeError(dir, name, msg string) {
 
 func main() {
 	os.Setenv("MOCHI_HEADER_TIME", "2006-01-02T15:04:05Z")
+	os.Setenv("SOURCE_DATE_EPOCH", "0")
 	defer os.Unsetenv("MOCHI_HEADER_TIME")
+	defer os.Unsetenv("SOURCE_DATE_EPOCH")
 
 	root := repoRoot()
 	outDir := filepath.Join(root, "tests", "rosetta", "out", "Python")
