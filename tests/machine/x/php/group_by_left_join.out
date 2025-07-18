@@ -1,17 +1,10 @@
-Warning: Undefined array key "o" in /tmp/TestPHPCompiler_VMValid_GoldenX/001/group_by_left_join.php on line 23
-
-Warning: Undefined array key "o" in /tmp/TestPHPCompiler_VMValid_GoldenX/001/group_by_left_join.php on line 23
-
-Warning: Undefined array key "o" in /tmp/TestPHPCompiler_VMValid_GoldenX/001/group_by_left_join.php on line 23
-
-Warning: Undefined array key "o" in /tmp/TestPHPCompiler_VMValid_GoldenX/001/group_by_left_join.php on line 23
 --- Group Left Join ---
 string(5) "Alice"
 string(7) "orders:"
-int(0)
+int(2)
 string(3) "Bob"
 string(7) "orders:"
-int(0)
+int(1)
 string(7) "Charlie"
 string(7) "orders:"
 int(0)
