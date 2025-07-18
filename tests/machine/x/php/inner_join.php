@@ -43,6 +43,6 @@ $result = (function() use ($customers, $orders) {
 })();
 echo "--- Orders with customer info ---", PHP_EOL;
 foreach ($result as $entry) {
-    var_dump("Order", $entry['orderId'], "by", $entry['customerName'], "- $", $entry['total']);
+    echo "Order", $entry['orderId'], "by", $entry['customerName'], "- $", $entry['total'], PHP_EOL;
 }
 ?>

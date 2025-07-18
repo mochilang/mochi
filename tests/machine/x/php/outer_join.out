@@ -1,31 +1,7 @@
 --- Outer Join using syntax ---
-string(5) "Order"
-int(100)
-string(2) "by"
-string(5) "Alice"
-string(3) "- $"
-int(250)
-string(5) "Order"
-int(101)
-string(2) "by"
-string(3) "Bob"
-string(3) "- $"
-int(125)
-string(5) "Order"
-int(102)
-string(2) "by"
-string(5) "Alice"
-string(3) "- $"
-int(300)
-string(5) "Order"
-int(103)
-string(2) "by"
-string(7) "Unknown"
-string(3) "- $"
-int(80)
-string(8) "Customer"
-string(7) "Charlie"
-string(13) "has no orders"
-string(8) "Customer"
-string(5) "Diana"
-string(13) "has no orders"
+Order100byAlice- $250
+Order101byBob- $125
+Order102byAlice- $300
+Order103byUnknown- $80
+CustomerCharliehas no orders
+CustomerDianahas no orders

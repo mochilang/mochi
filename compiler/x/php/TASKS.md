@@ -30,6 +30,7 @@
 - 2025-07-17 01:10 - Marked VM golden tests with the "slow" build tag to avoid running during default test passes.
 
 ## July 2025 Progress
+- 2025-07-22 09:00 - Print with multiple scalar arguments now uses `echo` instead of `var_dump`.
 - 2025-07-19 13:20 - Verified that all 100 VM valid programs compile and run successfully with the PHP backend. Updated README checklist accordingly.
 - 2025-07-20 10:00 - Generated PHP machine outputs for all VM valid programs and added README checklist.
 - 2025-07-21 08:00 - Printing now uses `var_dump`; `_print` helper removed.
