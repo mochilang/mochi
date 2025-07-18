@@ -44,3 +44,4 @@
 - 2025-07-21 improved substring builtin to emit direct slice when bounds are constant
 - 2025-07-21 infer range loop indices to avoid index helpers
 - 2025-07-22 compiled go_auto, python_auto, and python_math.mochi in Zig and updated machine README to 100/100.
+- 2025-07-23 improved substring inference when only one bound is constant, avoiding `_slice_string` helper.
