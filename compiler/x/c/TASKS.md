@@ -156,4 +156,5 @@ should compile and run successfully.
 - 2025-09-26 - Added constant evaluation for string list literals so len/count/min/max avoid runtime helpers.
 - 2025-09-27 - Evaluated `in` operations on constant string and float lists at compile time to eliminate contains helpers.
 - 2025-09-28 - Fixed print formatting for constant integers and implemented `_save_jsonl` helper.
+- 2025-09-29 - Emitted constant JSONL output for save expressions with literal data; `save_jsonl_stdout.mochi` now compiles.
 - 2025-07-18 - Added fallback group key inference in guessType when groupKeys are unset.
