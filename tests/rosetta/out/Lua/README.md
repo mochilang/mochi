@@ -3,16 +3,16 @@
 This directory holds Lua source code generated from the Mochi programs in `tests/rosetta/x/Mochi`.
 Each program was compiled with the Lua backend and executed with `lua`. Successful runs have a matching `.out` file; failures have a `.error` file.
 
-Compiled programs: 14/216
+Compiled programs: 16/216
 
 Checklist:
 - [x] 100-doors-2
 - [x] 100-doors-3
 - [x] 100-doors
 - [x] 100-prisoners
-- [ ] 15-puzzle-game
+- [x] 15-puzzle-game
 - [x] 15-puzzle-solver
-- [ ] 2048
+- [x] 2048
 - [ ] 21-game
 - [ ] 24-game-solve
 - [ ] 24-game

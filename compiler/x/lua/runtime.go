@@ -74,6 +74,9 @@ const (
 		"        return a + b\n" +
 		"    end\n" +
 		"end\n"
+	helperInt = "function int(v)\n" +
+		"    return math.floor(v)\n" +
+		"end\n"
 
 	helperContains = "function __contains(container, item)\n" +
 		"    if type(container) == 'table' then\n" +
@@ -846,6 +849,7 @@ var helperMap = map[string]string{
 	"div":            helperDiv,
 	"add":            helperAdd,
 	"contains":       helperContains,
+	"int":            helperInt,
 	"starts_with":    helperStartsWith,
 	"input":          helperInput,
 	"count":          helperCount,
