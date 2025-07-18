@@ -2184,10 +2184,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		return fmt.Sprintf("(%s)[0]", argStr), nil
 	case "now":
-		// performance.now() returns milliseconds as a float. Multiply
-		// by 1e6 so that `now()` is consistent with Go's UnixNano()
-		// and the interpreter which return nanoseconds.
-		return "performance.now() * 1000000", nil
+		// Use helper so tests can seed deterministic timestamps via
+		// the MOCHI_NOW_SEED environment variable, matching the
+		// behaviour of the Go runtime.
+		c.use("_now")
+		return "_now()", nil
 	case "json":
 		c.use("_json")
 		return fmt.Sprintf("console.log(_json(%s))", argStr), nil
