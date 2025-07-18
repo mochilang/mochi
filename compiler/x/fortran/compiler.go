@@ -37,6 +37,10 @@ type Compiler struct {
 	constFloatLists map[string][]float64
 	constStrings    map[string]string
 	constStrLists   map[string][]string
+	constInts       map[string]int
+	constBools      map[string]bool
+	constFloats     map[string]float64
+	constMaps       map[string]*parser.MapLiteral
 }
 
 func (c *Compiler) structName(name string) string {
@@ -79,6 +83,10 @@ func New(env *types.Env) *Compiler {
 		constFloatLists: make(map[string][]float64),
 		constStrings:    make(map[string]string),
 		constStrLists:   make(map[string][]string),
+		constInts:       make(map[string]int),
+		constBools:      make(map[string]bool),
+		constFloats:     make(map[string]float64),
+		constMaps:       make(map[string]*parser.MapLiteral),
 	}
 }
 
@@ -95,6 +103,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.constFloatLists = make(map[string][]float64)
 		c.constStrings = make(map[string]string)
 		c.constStrLists = make(map[string][]string)
+		c.constInts = make(map[string]int)
+		c.constBools = make(map[string]bool)
+		c.constFloats = make(map[string]float64)
+		c.constMaps = make(map[string]*parser.MapLiteral)
 		c.tmpIndex = 0
 		c.writeln("program q1")
 		c.indent++
@@ -145,6 +157,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.constFloatLists = make(map[string][]float64)
 		c.constStrings = make(map[string]string)
 		c.constStrLists = make(map[string][]string)
+		c.constInts = make(map[string]int)
+		c.constBools = make(map[string]bool)
+		c.constFloats = make(map[string]float64)
+		c.constMaps = make(map[string]*parser.MapLiteral)
 		c.tmpIndex = 0
 		c.writeln("program q2")
 		c.indent++
@@ -209,6 +225,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.constFloatLists = make(map[string][]float64)
 	c.constStrings = make(map[string]string)
 	c.constStrLists = make(map[string][]string)
+	c.constInts = make(map[string]int)
+	c.constBools = make(map[string]bool)
+	c.constFloats = make(map[string]float64)
+	c.constMaps = make(map[string]*parser.MapLiteral)
 	c.tmpIndex = 0
 	name := "main"
 	if prog.Package != "" {
@@ -438,6 +458,26 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 		} else {
 			delete(c.constStrings, l.Name)
 		}
+		if iv, ok := c.constIntExpr(l.Value); ok {
+			c.constInts[l.Name] = iv
+		} else {
+			delete(c.constInts, l.Name)
+		}
+		if bv, ok := c.constBoolExpr(l.Value); ok {
+			c.constBools[l.Name] = bv
+		} else {
+			delete(c.constBools, l.Name)
+		}
+		if fv, ok := c.constFloatExpr(l.Value); ok {
+			c.constFloats[l.Name] = fv
+		} else {
+			delete(c.constFloats, l.Name)
+		}
+		if ml, ok := c.constMapExpr(l.Value); ok {
+			c.constMaps[l.Name] = ml
+		} else {
+			delete(c.constMaps, l.Name)
+		}
 		if lst := listLiteral(l.Value); lst != nil {
 			if len(lst.Elems) > 0 {
 				if inner := listLiteral(lst.Elems[0]); inner != nil {
@@ -573,6 +613,26 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 			c.constStrings[a.Name] = s
 		} else {
 			delete(c.constStrings, a.Name)
+		}
+		if iv, ok := c.constIntExpr(a.Value); ok {
+			c.constInts[a.Name] = iv
+		} else {
+			delete(c.constInts, a.Name)
+		}
+		if bv, ok := c.constBoolExpr(a.Value); ok {
+			c.constBools[a.Name] = bv
+		} else {
+			delete(c.constBools, a.Name)
+		}
+		if fv, ok := c.constFloatExpr(a.Value); ok {
+			c.constFloats[a.Name] = fv
+		} else {
+			delete(c.constFloats, a.Name)
+		}
+		if ml, ok := c.constMapExpr(a.Value); ok {
+			c.constMaps[a.Name] = ml
+		} else {
+			delete(c.constMaps, a.Name)
 		}
 	}
 	target := a.Name
@@ -928,10 +988,10 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				res = fmt.Sprintf("index(%s,%s) /= 0", r, res)
 			} else {
 				if ints, ok := c.constIntListFromPostfix(op.Right); ok {
-					if iv := literalIntUnary(b.Left); iv != nil {
+					if iv, ok2 := c.constIntFromUnary(b.Left); ok2 {
 						found := false
 						for _, v := range ints {
-							if v == *iv {
+							if v == iv {
 								found = true
 								break
 							}
@@ -945,10 +1005,10 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					}
 				}
 				if bools, ok := c.constBoolListFromPostfix(op.Right); ok {
-					if bv := literalBoolUnary(b.Left); bv != nil {
+					if bv, ok2 := c.constBoolFromUnary(b.Left); ok2 {
 						found := false
 						for _, v := range bools {
-							if v == *bv {
+							if v == bv {
 								found = true
 								break
 							}
@@ -962,10 +1022,10 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					}
 				}
 				if floats, ok := c.constFloatListFromPostfix(op.Right); ok {
-					if fv := literalFloatUnary(b.Left); fv != nil {
+					if fv, ok2 := c.constFloatFromUnary(b.Left); ok2 {
 						found := false
 						for _, v := range floats {
-							if v == *fv {
+							if v == fv {
 								found = true
 								break
 							}
@@ -979,10 +1039,10 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					}
 				}
 				if strs, ok := c.constStringListFromPostfix(op.Right); ok {
-					if sv := literalString(b.Left); sv != nil {
+					if sv, ok2 := c.constStringFromUnary(b.Left); ok2 {
 						found := false
 						for _, v := range strs {
-							if v == *sv {
+							if v == sv {
 								found = true
 								break
 							}
@@ -1537,7 +1597,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(call.Args) != 1 {
 			return "", fmt.Errorf("values expects 1 arg")
 		}
-		if ml := mapLiteral(call.Args[0]); ml != nil {
+		if ml, ok := c.constMapExpr(call.Args[0]); ok {
 			vals := make([]string, len(ml.Items))
 			for i, it := range ml.Items {
 				v, err := c.compileExpr(it.Value)
@@ -1962,6 +2022,50 @@ func (c *Compiler) constStringExpr(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
+func (c *Compiler) constIntExpr(e *parser.Expr) (int, bool) {
+	if iv := literalInt(e); iv != nil {
+		return *iv, true
+	}
+	if name := identName(e); name != "" {
+		v, ok := c.constInts[name]
+		return v, ok
+	}
+	return 0, false
+}
+
+func (c *Compiler) constBoolExpr(e *parser.Expr) (bool, bool) {
+	if bv := literalBool(e); bv != nil {
+		return *bv, true
+	}
+	if name := identName(e); name != "" {
+		v, ok := c.constBools[name]
+		return v, ok
+	}
+	return false, false
+}
+
+func (c *Compiler) constFloatExpr(e *parser.Expr) (float64, bool) {
+	if fv := literalFloat(e); fv != nil {
+		return *fv, true
+	}
+	if name := identName(e); name != "" {
+		v, ok := c.constFloats[name]
+		return v, ok
+	}
+	return 0, false
+}
+
+func (c *Compiler) constMapExpr(e *parser.Expr) (*parser.MapLiteral, bool) {
+	if ml := mapLiteral(e); ml != nil {
+		return ml, true
+	}
+	if name := identName(e); name != "" {
+		m, ok := c.constMaps[name]
+		return m, ok
+	}
+	return nil, false
+}
+
 func (c *Compiler) constListLenExpr(e *parser.Expr) (int, bool) {
 	if ints, ok := c.constIntListExpr(e); ok {
 		return len(ints), true
@@ -2185,6 +2289,90 @@ func (c *Compiler) constStringFromPostfix(pf *parser.PostfixExpr) (string, bool)
 		return v, ok
 	}
 	return "", false
+}
+
+func (c *Compiler) constIntFromUnary(u *parser.Unary) (int, bool) {
+	if u == nil || len(u.Ops) != 0 || u.Value == nil {
+		return 0, false
+	}
+	return c.constIntFromPostfix(u.Value)
+}
+
+func (c *Compiler) constIntFromPostfix(pf *parser.PostfixExpr) (int, bool) {
+	if pf == nil || len(pf.Ops) != 0 || pf.Target == nil {
+		return 0, false
+	}
+	if pf.Target.Lit != nil && pf.Target.Lit.Int != nil {
+		return *pf.Target.Lit.Int, true
+	}
+	if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 0 {
+		v, ok := c.constInts[pf.Target.Selector.Root]
+		return v, ok
+	}
+	return 0, false
+}
+
+func (c *Compiler) constBoolFromUnary(u *parser.Unary) (bool, bool) {
+	if u == nil || len(u.Ops) != 0 || u.Value == nil {
+		return false, false
+	}
+	return c.constBoolFromPostfix(u.Value)
+}
+
+func (c *Compiler) constBoolFromPostfix(pf *parser.PostfixExpr) (bool, bool) {
+	if pf == nil || len(pf.Ops) != 0 || pf.Target == nil {
+		return false, false
+	}
+	if pf.Target.Lit != nil && pf.Target.Lit.Bool != nil {
+		return bool(*pf.Target.Lit.Bool), true
+	}
+	if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 0 {
+		v, ok := c.constBools[pf.Target.Selector.Root]
+		return v, ok
+	}
+	return false, false
+}
+
+func (c *Compiler) constFloatFromUnary(u *parser.Unary) (float64, bool) {
+	if u == nil || len(u.Ops) != 0 || u.Value == nil {
+		return 0, false
+	}
+	return c.constFloatFromPostfix(u.Value)
+}
+
+func (c *Compiler) constFloatFromPostfix(pf *parser.PostfixExpr) (float64, bool) {
+	if pf == nil || len(pf.Ops) != 0 || pf.Target == nil {
+		return 0, false
+	}
+	if pf.Target.Lit != nil && pf.Target.Lit.Float != nil {
+		return *pf.Target.Lit.Float, true
+	}
+	if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 0 {
+		v, ok := c.constFloats[pf.Target.Selector.Root]
+		return v, ok
+	}
+	return 0, false
+}
+
+func (c *Compiler) constMapFromUnary(u *parser.Unary) (*parser.MapLiteral, bool) {
+	if u == nil || len(u.Ops) != 0 || u.Value == nil {
+		return nil, false
+	}
+	return c.constMapFromPostfix(u.Value)
+}
+
+func (c *Compiler) constMapFromPostfix(pf *parser.PostfixExpr) (*parser.MapLiteral, bool) {
+	if pf == nil || len(pf.Ops) != 0 || pf.Target == nil {
+		return nil, false
+	}
+	if pf.Target.Map != nil {
+		return pf.Target.Map, true
+	}
+	if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 0 {
+		m, ok := c.constMaps[pf.Target.Selector.Root]
+		return m, ok
+	}
+	return nil, false
 }
 
 func formatIntList(list []int) string {
