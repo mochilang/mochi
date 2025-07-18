@@ -608,6 +608,9 @@ func (c *Compiler) compileIfStmt(ifst *parser.IfStmt) (string, error) {
 		c.pinned[v] = name
 	}
 
+	savedAliases := cloneStringMap(c.aliases)
+	savedLets := cloneBoolMap(c.lets)
+
 	cond, err := c.compileExpr(ifst.Cond)
 	if err != nil {
 		for v := range pinned {
@@ -615,6 +618,8 @@ func (c *Compiler) compileIfStmt(ifst *parser.IfStmt) (string, error) {
 		}
 		return "", err
 	}
+	c.aliases = cloneStringMap(savedAliases)
+	c.lets = cloneBoolMap(savedLets)
 	thenLines := make([]string, len(ifst.Then))
 	for i, s := range ifst.Then {
 		l, err := c.compileStmtLine(s)
@@ -632,6 +637,8 @@ func (c *Compiler) compileIfStmt(ifst *parser.IfStmt) (string, error) {
 	}
 	elseCode := "ok"
 	if ifst.ElseIf != nil {
+		c.aliases = cloneStringMap(savedAliases)
+		c.lets = cloneBoolMap(savedLets)
 		ec, err := c.compileIfStmt(ifst.ElseIf)
 		if err != nil {
 			for v := range pinned {
@@ -641,6 +648,8 @@ func (c *Compiler) compileIfStmt(ifst *parser.IfStmt) (string, error) {
 		}
 		elseCode = ec
 	} else if len(ifst.Else) > 0 {
+		c.aliases = cloneStringMap(savedAliases)
+		c.lets = cloneBoolMap(savedLets)
 		parts := make([]string, len(ifst.Else))
 		for i, s := range ifst.Else {
 			l, err := c.compileStmtLine(s)
@@ -656,6 +665,12 @@ func (c *Compiler) compileIfStmt(ifst *parser.IfStmt) (string, error) {
 		if elseCode == "" {
 			elseCode = "ok"
 		}
+	}
+	c.aliases = savedAliases
+	c.lets = savedLets
+	for v, name := range pinned {
+		c.aliases[v] = name
+		c.lets[v] = true
 	}
 	if isBoolExpr(ifst.Cond) {
 		for v := range pinned {
@@ -2152,6 +2167,22 @@ func (c *Compiler) newVarName(base string) string {
 	name := fmt.Sprintf("%s%d", capitalize(base), idx)
 	c.varVers[base] = idx + 1
 	return name
+}
+
+func cloneStringMap(m map[string]string) map[string]string {
+	n := make(map[string]string, len(m))
+	for k, v := range m {
+		n[k] = v
+	}
+	return n
+}
+
+func cloneBoolMap(m map[string]bool) map[string]bool {
+	n := make(map[string]bool, len(m))
+	for k, v := range m {
+		n[k] = v
+	}
+	return n
 }
 
 func (c *Compiler) refVar(base string) string {
