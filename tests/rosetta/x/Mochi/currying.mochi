@@ -1,0 +1,47 @@
+// Mochi translation of Rosetta "Currying" task
+// Implements functions returning functions and method value/expression.
+
+fun pow(base: float, exp: float): float {
+  var result = 1.0
+  var i = 0
+  while i < int(exp) {
+    result = result * base
+    i = i + 1
+  }
+  return result
+}
+
+fun PowN(b: float): fun(float): float {
+  return fun(e: float): float => pow(b, e)
+}
+
+fun PowE(e: float): fun(float): float {
+  return fun(b: float): float => pow(b, e)
+}
+
+type Foo {
+  value: int
+
+  fun Method(b: int): int {
+    return value + b
+  }
+}
+
+fun main() {
+  let pow2 = PowN(2.0)
+  let cube = PowE(3.0)
+
+  print("2^8 = " + str(pow2(8.0)))
+  print("4\u00B3 = " + str(cube(4.0)))
+
+  var a = Foo{ value: 2 }
+  let fn1 = fun(b: int): int => a.Method(b)
+  let fn2 = fun(f: Foo, b: int): int => f.Method(b)
+
+  print("2 + 2 = " + str(a.Method(2)))
+  print("2 + 3 = " + str(fn1(3)))
+  print("2 + 4 = " + str(fn2(a, 4)))
+  print("3 + 5 = " + str(fn2(Foo{ value: 3 }, 5)))
+}
+
+main()
