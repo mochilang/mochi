@@ -235,6 +235,9 @@ func (c *Compiler) compileLet(l *parser.LetStmt) (string, error) {
 			c.types[l.Name] = t
 		}
 		c.addMapFields(l.Name, l.Value)
+		if id, ok := identName(l.Value); ok {
+			c.copySubFields(id, l.Name)
+		}
 	}
 	return fmt.Sprintf("%s = %s", capitalize(l.Name), val), nil
 }
@@ -252,6 +255,9 @@ func (c *Compiler) compileVar(v *parser.VarStmt) (string, error) {
 			c.types[v.Name] = t
 		}
 		c.addMapFields(v.Name, v.Value)
+		if id, ok := identName(v.Value); ok {
+			c.copySubFields(id, v.Name)
+		}
 	}
 	return fmt.Sprintf("%s = %s", name, val), nil
 }
@@ -707,6 +713,9 @@ func (c *Compiler) compileFor(fr *parser.ForStmt) (string, error) {
 	prevFields, okFld := c.fields[fr.Name]
 	if elemFields != nil {
 		c.fields[fr.Name] = elemFields
+	}
+	if srcName, ok := identName(fr.Source); ok {
+		c.copySubFields(srcName, fr.Name)
 	}
 	defer func() {
 		if ok {
@@ -1698,6 +1707,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			expr := k
 			tail := p.Selector.Tail
 			typ := c.types[root]
+			path := root
 			if len(tail) == 0 && (strings.HasPrefix(expr, "maps:get(") || strings.HasPrefix(expr, "mochi_get(")) {
 				return expr, nil
 			}
@@ -1709,12 +1719,17 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			for _, f := range tail {
 				if typ == "map" {
-					if fields, ok := c.fields[root]; ok && fields[f] {
+					if fields, ok := c.fields[path]; ok && fields[f] {
 						expr = fmt.Sprintf("maps:get(%s, %s)", f, expr)
 					} else {
 						expr = fmt.Sprintf("maps:get(%s, %s, undefined)", f, expr)
 					}
-					typ = "map"
+					path = path + "." + f
+					if t, ok := c.types[path]; ok {
+						typ = t
+					} else {
+						typ = ""
+					}
 				} else {
 					expr = c.smartGet(f, expr)
 					typ = ""
@@ -1724,14 +1739,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		expr := c.refVar(root)
 		typ := c.types[root]
+		path := root
 		for _, f := range p.Selector.Tail {
 			if typ == "map" {
-				if fields, ok := c.fields[root]; ok && fields[f] {
+				if fields, ok := c.fields[path]; ok && fields[f] {
 					expr = fmt.Sprintf("maps:get(%s, %s)", f, expr)
 				} else {
 					expr = fmt.Sprintf("maps:get(%s, %s, undefined)", f, expr)
 				}
-				typ = "map"
+				path = path + "." + f
+				if t, ok := c.types[path]; ok {
+					typ = t
+				} else {
+					typ = ""
+				}
 			} else {
 				expr = c.smartGet(f, expr)
 				typ = ""
@@ -2193,18 +2214,115 @@ func (c *Compiler) smartGet(key, expr string) string {
 }
 
 func (c *Compiler) addMapFields(name string, e *parser.Expr) {
-	fs := mapLiteralFields(e)
-	if fs == nil {
-		if q := extractQuery(e); q != nil {
-			fs = queryResultFields(q)
-		}
+	if id, ok := identName(e); ok {
+		c.copySubFields(id, name)
+		return
 	}
-	if fs != nil {
+	c.addFieldsRecursive(name, e)
+}
+
+func (c *Compiler) addFieldsRecursive(name string, e *parser.Expr) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		if q := extractQuery(e); q != nil {
+			c.addFieldsRecursive(name, q.Select)
+		}
+		return
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || len(u.Value.Ops) > 0 {
+		return
+	}
+	t := u.Value.Target
+	switch {
+	case t.Map != nil:
 		if c.fields[name] == nil {
 			c.fields[name] = make(map[string]bool)
 		}
-		for _, f := range fs {
-			c.fields[name][f] = true
+		c.types[name] = "map"
+		for _, it := range t.Map.Items {
+			if k, ok := identName(it.Key); ok {
+				c.fields[name][k] = true
+				c.addFieldsRecursive(name+"."+k, it.Value)
+			}
+		}
+	case t.Struct != nil:
+		if c.fields[name] == nil {
+			c.fields[name] = make(map[string]bool)
+		}
+		c.types[name] = "map"
+		for _, f := range t.Struct.Fields {
+			c.fields[name][f.Name] = true
+			c.addFieldsRecursive(name+"."+f.Name, f.Value)
+		}
+	case t.List != nil && len(t.List.Elems) > 0:
+		elem := t.List.Elems[0]
+		if isMapLiteralExpr(elem) || isStructCastExpr(elem) {
+			if c.fields[name] == nil {
+				c.fields[name] = make(map[string]bool)
+			}
+			c.types[name] = "list_map"
+			fs := mapLiteralFields(elem)
+			for _, f := range fs {
+				c.fields[name][f] = true
+				c.addFieldsRecursive(name+"."+f, getFieldValue(elem, f))
+			}
+		}
+	case t.Query != nil:
+		c.addFieldsRecursive(name, t.Query.Select)
+	}
+}
+
+func getFieldValue(e *parser.Expr, field string) *parser.Expr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || len(u.Value.Ops) > 0 {
+		return nil
+	}
+	if m := u.Value.Target.Map; m != nil {
+		for _, it := range m.Items {
+			if k, ok := identName(it.Key); ok && k == field {
+				return it.Value
+			}
+		}
+	}
+	if s := u.Value.Target.Struct; s != nil {
+		for _, f := range s.Fields {
+			if f.Name == field {
+				return f.Value
+			}
+		}
+	}
+	return nil
+}
+
+func (c *Compiler) copySubFields(src, dst string) {
+	if fs, ok := c.fields[src]; ok {
+		if c.fields[dst] == nil {
+			c.fields[dst] = make(map[string]bool)
+		}
+		for k := range fs {
+			c.fields[dst][k] = true
+		}
+	}
+	if typ, ok := c.types[src]; ok {
+		c.types[dst] = typ
+	}
+	for k, fs := range c.fields {
+		if strings.HasPrefix(k, src+".") {
+			sub := dst + k[len(src):]
+			if c.fields[sub] == nil {
+				c.fields[sub] = make(map[string]bool)
+			}
+			for f := range fs {
+				c.fields[sub][f] = true
+			}
+		}
+	}
+	for k, t := range c.types {
+		if strings.HasPrefix(k, src+".") {
+			c.types[dst+k[len(src):]] = t
 		}
 	}
 }
