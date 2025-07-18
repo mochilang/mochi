@@ -71,6 +71,14 @@ var runtimePieces = map[string]string{
 	"str":         `fun str(v: Any?): String = v.toString()`,
 	"substring":   `fun substring(s: String, start: Int, end: Int): String = s.substring(start, end)`,
 	"starts_with": `fun String.starts_with(prefix: String): Boolean = this.startsWith(prefix)`,
+	"upper": `fun upper(v: Any?): String = when (v) {
+    is String -> v.toUpperCase()
+    else -> v.toString().toUpperCase()
+}`,
+	"lower": `fun lower(v: Any?): String = when (v) {
+    is String -> v.toLowerCase()
+    else -> v.toString().toLowerCase()
+}`,
 	"toInt": `fun toInt(v: Any?): Int = when (v) {
     is Int -> v
     is Double -> v.toInt()
@@ -196,7 +204,7 @@ var runtimePieces = map[string]string{
 	"_input": `fun _input(): String { return readLine() ?: "" }`,
 }
 
-var runtimeOrder = []string{"append", "avg", "div", "count", "exists", "values", "len", "max", "min", "sum", "str", "substring", "starts_with", "toInt", "toDouble", "toBool", "union", "except", "intersect", "_load", "loadYamlSimple", "parseSimpleValue", "_save", "json", "toJson", "Group", "_input"}
+var runtimeOrder = []string{"append", "avg", "div", "count", "exists", "values", "len", "max", "min", "sum", "str", "substring", "starts_with", "upper", "lower", "toInt", "toDouble", "toBool", "union", "except", "intersect", "_load", "loadYamlSimple", "parseSimpleValue", "_save", "json", "toJson", "Group", "_input"}
 
 func buildRuntime(used map[string]bool) string {
 	var parts []string
@@ -485,6 +493,14 @@ func (c *Compiler) stmt(s *parser.Statement) error {
 		}
 		c.writeln(fmt.Sprintf("%s = %s", target, v))
 	case s.Return != nil:
+		if sel := s.Return.Value.Binary.Left.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 {
+			if t, err := c.env.GetVar(sel.Root); err == nil {
+				if _, ok := t.(types.FuncType); ok {
+					c.writeln(fmt.Sprintf("return ::%s", c.id(sel.Root)))
+					break
+				}
+			}
+		}
 		v, err := c.expr(s.Return.Value)
 		if err != nil {
 			return err
@@ -542,6 +558,22 @@ func (c *Compiler) stmt(s *parser.Statement) error {
 }
 
 func (c *Compiler) funDecl(f *parser.FunStmt) error {
+	// record function type for later references
+	if c.env != nil {
+		ft := types.FuncType{Return: types.AnyType{}}
+		if f.Return != nil {
+			ft.Return = types.ResolveTypeRef(f.Return, c.env)
+		}
+		ft.Params = make([]types.Type, len(f.Params))
+		for i, p := range f.Params {
+			if p.Type != nil {
+				ft.Params[i] = types.ResolveTypeRef(p.Type, c.env)
+			} else {
+				ft.Params[i] = types.AnyType{}
+			}
+		}
+		c.env.SetVar(f.Name, ft, false)
+	}
 	// emit basic KDoc with parameter and return type information
 	c.writeln("/**")
 	c.writeln(" * Auto-generated from Mochi")
@@ -567,6 +599,8 @@ func (c *Compiler) funDecl(f *parser.FunStmt) error {
 	ret := "Unit"
 	if f.Return != nil {
 		ret = c.typeName(f.Return)
+	} else if t, ok := firstReturnType(f.Body, c.env); ok {
+		ret = kotlinTypeOf(t)
 	}
 	prefix := ""
 	if isTailRecursive(f) {
@@ -1152,9 +1186,9 @@ func (c *Compiler) postfix(p *parser.PostfixExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
+				prefix := &parser.PostfixExpr{Target: p.Target, Ops: p.Ops[:i]}
+				ct := c.inferPostfixType(prefix)
 				if i < len(p.Ops)-1 {
-					prefix := &parser.PostfixExpr{Target: p.Target, Ops: p.Ops[:i]}
-					ct := c.inferPostfixType(prefix)
 					if mt, ok := ct.(types.MapType); ok {
 						val = fmt.Sprintf("(%s[%s] as %s)", val, idx, kotlinTypeOf(mt.Value))
 					} else if types.IsMapType(ct) {
@@ -1167,7 +1201,11 @@ func (c *Compiler) postfix(p *parser.PostfixExpr) (string, error) {
 						val = fmt.Sprintf("%s[%s]!!", val, idx)
 					}
 				} else {
-					val = fmt.Sprintf("%s[%s]", val, idx)
+					if mt, ok := ct.(types.MapType); ok {
+						val = fmt.Sprintf("(%s[%s] as %s)!!", val, idx, kotlinTypeOf(mt.Value))
+					} else {
+						val = fmt.Sprintf("%s[%s]", val, idx)
+					}
 				}
 			}
 		case op.Field != nil:
@@ -1426,11 +1464,29 @@ func (c *Compiler) builtinCall(call *parser.CallExpr, args []string) (string, bo
 		}
 	case "len":
 		if len(args) == 1 {
-			t := types.TypeOfExprBasic(call.Args[0], c.env)
-			if types.IsStringType(t) {
+			t := c.inferExprType(call.Args[0])
+			if _, ok := t.(types.StringType); ok {
 				return fmt.Sprintf("%s.length", args[0]), true
 			}
 			return fmt.Sprintf("%s.size", args[0]), true
+		}
+	case "upper":
+		if len(args) == 1 {
+			t := c.inferExprType(call.Args[0])
+			if _, ok := t.(types.StringType); ok {
+				return fmt.Sprintf("%s.toUpperCase()", args[0]), true
+			}
+			c.use("upper")
+			return fmt.Sprintf("upper(%s)", args[0]), true
+		}
+	case "lower":
+		if len(args) == 1 {
+			t := c.inferExprType(call.Args[0])
+			if _, ok := t.(types.StringType); ok {
+				return fmt.Sprintf("%s.toLowerCase()", args[0]), true
+			}
+			c.use("lower")
+			return fmt.Sprintf("lower(%s)", args[0]), true
 		}
 	case "avg":
 		if len(args) == 1 {
@@ -1601,6 +1657,9 @@ func (c *Compiler) matchExpr(m *parser.MatchExpr) (string, error) {
 				b.WriteString("\n")
 				for i, arg := range call.Args {
 					if argName, ok := identName(arg); ok {
+						if underscoreRE.MatchString(argName) {
+							argName = fmt.Sprintf("u%d", i)
+						}
 						if i < len(st.Order) {
 							field := escapeIdent(st.Order[i])
 							c.env.SetVar(argName, st.Fields[st.Order[i]], true)
@@ -2935,6 +2994,12 @@ func kotlinTypeOf(t types.Type) string {
 		return tt.Name
 	case types.GroupType:
 		return fmt.Sprintf("Group<%s, %s>", kotlinTypeOf(tt.Key), kotlinTypeOf(tt.Elem))
+	case types.FuncType:
+		parts := make([]string, len(tt.Params))
+		for i, p := range tt.Params {
+			parts[i] = kotlinTypeOf(p)
+		}
+		return fmt.Sprintf("(%s) -> %s", strings.Join(parts, ", "), kotlinTypeOf(tt.Return))
 	default:
 		return "Any?"
 	}
@@ -2950,8 +3015,12 @@ var kotlinKeywords = map[string]bool{
 }
 
 var identRE = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_]*$`)
+var underscoreRE = regexp.MustCompile(`^_+$`)
 
 func escapeIdent(name string) string {
+	if underscoreRE.MatchString(name) {
+		return "u" + strconv.Itoa(len(name))
+	}
 	if kotlinKeywords[name] || !identRE.MatchString(name) {
 		return "`" + name + "`"
 	}
@@ -3014,6 +3083,40 @@ func assignedVars(stmts []*parser.Statement) map[string]struct{} {
 		delete(set, v)
 	}
 	return set
+}
+
+func firstReturnType(stmts []*parser.Statement, env *types.Env) (types.Type, bool) {
+	for _, st := range stmts {
+		if st.Return != nil && st.Return.Value != nil {
+			return types.ExprType(st.Return.Value, env), true
+		}
+		if st.If != nil {
+			if t, ok := firstReturnType(st.If.Then, env); ok {
+				return t, true
+			}
+			cur := st.If
+			for cur.ElseIf != nil {
+				if t, ok := firstReturnType(cur.ElseIf.Then, env); ok {
+					return t, true
+				}
+				cur = cur.ElseIf
+			}
+			if t, ok := firstReturnType(cur.Else, env); ok {
+				return t, true
+			}
+		}
+		if st.For != nil {
+			if t, ok := firstReturnType(st.For.Body, env); ok {
+				return t, true
+			}
+		}
+		if st.While != nil {
+			if t, ok := firstReturnType(st.While.Body, env); ok {
+				return t, true
+			}
+		}
+	}
+	return nil, false
 }
 
 func (c *Compiler) id(name string) string {
