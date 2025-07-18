@@ -4,7 +4,7 @@ This directory holds C translations of the Mochi implementations of the TPC-H be
 
 ## Checklist
 
-- [ ] q1
+- [x] q1
 - [ ] q2
 - [ ] q3
 - [ ] q4
