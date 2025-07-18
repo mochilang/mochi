@@ -3,7 +3,7 @@ error: fpc error: exit status 1
 Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
-Compiling /tmp/TestPascalCompiler_VMValid_Goldengroup_items_iteration3024372199/001/main.pas
+Compiling /tmp/TestPascalCompiler_VMValid_Goldengroup_items_iteration621784037/001/main.pas
 main.pas(18,19) Warning: function result variable of a managed type does not seem to be initialized
 main.pas(112,13) Error: Incompatible types: got "TArray$1$crcC7B6A96D" expected "TArray$1$crcE41905E8"
 main.pas(117,15) Error: Cannot find an enumerator for the type "OleVariant"

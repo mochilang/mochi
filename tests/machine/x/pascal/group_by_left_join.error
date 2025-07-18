@@ -1,23 +1,12 @@
-line: 98
+line: 0
 error: fpc error: exit status 1
 Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
-Compiling /tmp/TestPascalCompiler_VMValid_Goldengroup_by_left_join123531433/001/main.pas
-main.pas(63,18) Error: identifier idents no member "customerId"
-main.pas(63,33) Error: identifier idents no member "id"
-main.pas(66,34) Error: Identifier not found "g"
-main.pas(68,16) Error: Identifier not found "g"
-main.pas(70,19) Error: Illegal qualifier
-main.pas(68,16) Error: Cannot find an enumerator for the type "<erroneous type>"
-main.pas(80,35) Error: Identifier not found "g"
-main.pas(82,16) Error: Identifier not found "g"
-main.pas(84,19) Error: Illegal qualifier
-main.pas(82,16) Error: Cannot find an enumerator for the type "<erroneous type>"
-main.pas(98) Fatal: There were 10 errors compiling module, stopping
+Compiling /tmp/TestPascalCompiler_VMValid_Goldengroup_by_left_join1138805956/001/main.pas
+main.pas(30,17) Error: Identifier not found "_Group"
+main.pas(30,23) Error: Error in type definition
+main.pas(30,23) Fatal: Syntax error, ";" expected but "<" found
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode
 
-  96:   end;
-  97: end.
-  98: 

@@ -25,6 +25,8 @@
   so more VM valid examples compile (71/100 passing).
 - [2025-09-06 09:40] Added field assignment support and procedure generation
   for functions without return values; compiled `record_assign` (72/100 passing).
+- [2025-09-07 10:20] Improved loop variable inference for grouped queries and
+  removed stale `.error` files; compiled `group_by` successfully (73/100 passing).
 
 ## Remaining Work
 - [x] Support advanced dataset queries required for TPC-H Q1.

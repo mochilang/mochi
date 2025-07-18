@@ -3,7 +3,7 @@ error: fpc error: exit status 1
 Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
-Compiling /tmp/TestPascalCompiler_VMValid_Goldensave_jsonl_stdout3556974319/001/main.pas
+Compiling /tmp/TestPascalCompiler_VMValid_Goldensave_jsonl_stdout3803483553/001/main.pas
 main.pas(17,58) Error: Wrong number of parameters specified for call to "ObjectToJSONString"
 fpjsonrtti.pp(922,24) Error: Found declaration: ObjectToJSONString(TObject):AnsiString;
 main.pas(40,3) Error: Generics without specialization cannot be used as a type for a variable

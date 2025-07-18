@@ -3,7 +3,7 @@ error: fpc error: exit status 1
 Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
-Compiling /tmp/TestPascalCompiler_VMValid_Goldenload_yaml809083271/001/main.pas
+Compiling /tmp/TestPascalCompiler_VMValid_Goldenload_yaml2534313555/001/main.pas
 main.pas(17,21) Warning: function result variable of a managed type does not seem to be initialized
 main.pas(21,65) Error: Wrong number of parameters specified for call to "JSONToObject"
 fpjsonrtti.pp(238,27) Error: Found declaration: JSONToObject(const UTF8String;TObject);
