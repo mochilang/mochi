@@ -19,7 +19,7 @@ public class M100Doors {
             String line = "";
             for (int col = 0; col < 10; col++) {
                 int idx = row * 10 + col;
-                if (doors.get(idx)) {
+                if (Boolean.TRUE.equals(doors.get(idx))) {
                     line = line + "1";
                 }
                 else {
