@@ -554,8 +554,15 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	c.vars = map[string]string{}
 	for _, p := range fn.Params {
 		if p.Type != nil {
-			if p.Type.Simple != nil && *p.Type.Simple == "string" {
-				c.vars[p.Name] = "string"
+			if p.Type.Simple != nil {
+				switch *p.Type.Simple {
+				case "string":
+					c.vars[p.Name] = "string"
+				case "int":
+					c.vars[p.Name] = "int"
+				case "float":
+					c.vars[p.Name] = "float"
+				}
 			}
 			if p.Type.Generic != nil && p.Type.Generic.Name == "map" {
 				c.vars[p.Name] = "map"
@@ -780,8 +787,15 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			c.writeln(fmt.Sprintf("(define %s %s)", name, expr))
 		}
 		if s.Let.Type != nil {
-			if s.Let.Type.Simple != nil && *s.Let.Type.Simple == "string" {
-				c.vars[s.Let.Name] = "string"
+			if s.Let.Type.Simple != nil {
+				switch *s.Let.Type.Simple {
+				case "string":
+					c.vars[s.Let.Name] = "string"
+				case "int":
+					c.vars[s.Let.Name] = "int"
+				case "float":
+					c.vars[s.Let.Name] = "float"
+				}
 			}
 			if s.Let.Type.Generic != nil && s.Let.Type.Generic.Name == "map" {
 				c.vars[s.Let.Name] = "map"
@@ -798,6 +812,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			if c.isMapExpr(s.Let.Value) {
 				c.vars[s.Let.Name] = "map"
 			}
+			if c.isIntExpr(s.Let.Value) {
+				c.vars[s.Let.Name] = "int"
+			}
+			if c.isFloatExpr(s.Let.Value) {
+				c.vars[s.Let.Name] = "float"
+			}
 		}
 	case s.Var != nil:
 		expr, err := c.compileExpr(s.Var.Value)
@@ -811,8 +831,15 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			c.writeln(fmt.Sprintf("(define %s %s)", name, expr))
 		}
 		if s.Var.Type != nil {
-			if s.Var.Type.Simple != nil && *s.Var.Type.Simple == "string" {
-				c.vars[s.Var.Name] = "string"
+			if s.Var.Type.Simple != nil {
+				switch *s.Var.Type.Simple {
+				case "string":
+					c.vars[s.Var.Name] = "string"
+				case "int":
+					c.vars[s.Var.Name] = "int"
+				case "float":
+					c.vars[s.Var.Name] = "float"
+				}
 			}
 			if s.Var.Type.Generic != nil && s.Var.Type.Generic.Name == "map" {
 				c.vars[s.Var.Name] = "map"
@@ -829,6 +856,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			if c.isMapExpr(s.Var.Value) {
 				c.vars[s.Var.Name] = "map"
 			}
+			if c.isIntExpr(s.Var.Value) {
+				c.vars[s.Var.Name] = "int"
+			}
+			if c.isFloatExpr(s.Var.Value) {
+				c.vars[s.Var.Name] = "float"
+			}
 		}
 	case s.Assign != nil:
 		rhs, err := c.compileExpr(s.Assign.Value)
@@ -838,6 +871,15 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		lhs := sanitizeName(s.Assign.Name)
 		if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
 			c.writeln(fmt.Sprintf("(set! %s %s)", lhs, rhs))
+			if c.isStringExpr(s.Assign.Value) {
+				c.vars[s.Assign.Name] = "string"
+			} else if c.isMapExpr(s.Assign.Value) {
+				c.vars[s.Assign.Name] = "map"
+			} else if c.isIntExpr(s.Assign.Value) {
+				c.vars[s.Assign.Name] = "int"
+			} else if c.isFloatExpr(s.Assign.Value) {
+				c.vars[s.Assign.Name] = "float"
+			}
 			break
 		}
 		var expr string
