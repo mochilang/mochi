@@ -1,22 +1,22 @@
 gfortran: exit status 1
-/tmp/circular-primes.f90:126:51:
+/tmp/circular-primes.f90:127:51:
 
-  126 |   recursive character(len=100) function showList(xs) result(res)
+  127 |   recursive character(len=100) function showList(xs) result(res)
       |                                                   1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘xs’ at (1)
-/tmp/circular-primes.f90:132:13:
+/tmp/circular-primes.f90:133:13:
 
-  132 |       out = (out + s6)
+  133 |       out = (out + s6)
       |             1
 Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
-/tmp/circular-primes.f90:133:21:
+/tmp/circular-primes.f90:134:21:
 
-  133 |       if (((i < size(xs)) - 1)) then
+  134 |       if (((i < size(xs)) - 1)) then
       |                     1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/circular-primes.f90:130:24:
+/tmp/circular-primes.f90:131:24:
 
-  130 |     do while ((i < size(xs)))
+  131 |     do while ((i < size(xs)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
 /tmp/circular-primes.f90:44:4:

@@ -1,21 +1,21 @@
 gfortran: exit status 1
-/tmp/anti-primes.f90:33:5:
+/tmp/anti-primes.f90:34:5:
 
-   33 |     n = 1
+   34 |     n = 1
       |     1
 Error: Symbol ‘n’ at (1) has no IMPLICIT type
-/tmp/anti-primes.f90:39:16:
+/tmp/anti-primes.f90:40:16:
 
-   39 |         line = (line + s0) // ' '
+   40 |         line = (line + s0) // ' '
       |                1
 Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
-/tmp/anti-primes.f90:45:26:
+/tmp/anti-primes.f90:46:26:
 
-   45 |     line = line(0+1:(size(line) - 1))
+   46 |     line = line(0+1:(size(line) - 1))
       |                          1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/anti-primes.f90:20:15:
+/tmp/anti-primes.f90:21:15:
 
-   20 |     do while (((i <= n) / 2))
+   21 |     do while (((i <= n) / 2))
       |               1
 Error: Operands of binary numeric operator ‘/’ at (1) are LOGICAL(4)/INTEGER(4)

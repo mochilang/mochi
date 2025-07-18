@@ -1,6 +1,6 @@
 gfortran: exit status 1
-/tmp/call-a-foreign-language-function.f90:15:9:
+/tmp/call-a-foreign-language-function.f90:16:9:
 
-   15 |     c2 = strdup(go1)
+   16 |     c2 = strdup(go1)
       |         1
 Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)

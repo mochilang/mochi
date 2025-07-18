@@ -19,9 +19,9 @@ Error: Expected a right parenthesis in expression at (1)
    56 |     py = int(((((py + v(((1)+1)))) / 2)))
       |                        1
 Error: Expected a right parenthesis in expression at (1)
-/tmp/chaos-game.f90:78:4:
+/tmp/chaos-game.f90:79:4:
 
-   78 |     res = (/next,mod(next,n)/)
+   79 |     res = (/next,mod(next,n)/)
       |    1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
 /tmp/chaos-game.f90:33:27:

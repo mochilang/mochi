@@ -1,74 +1,74 @@
 gfortran: exit status 1
-/tmp/carmichael-3-strong-pseudoprimes.f90:73:66:
+/tmp/carmichael-3-strong-pseudoprimes.f90:74:66:
 
-   73 |         if (mod((((mod(((((h3 + p1)) * ((p1 - 1)))),d) == 0) .and. mod((-p1 * p1),h3)) == d),h3)) then
+   74 |         if (mod((((mod(((((h3 + p1)) * ((p1 - 1)))),d) == 0) .and. mod((-p1 * p1),h3)) == d),h3)) then
       |                                                                  1
 Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/INTEGER(4)
-/tmp/carmichael-3-strong-pseudoprimes.f90:62:8:
+/tmp/carmichael-3-strong-pseudoprimes.f90:63:8:
 
-   62 |     s = s0
+   63 |     s = s0
       |        1
 Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
-/tmp/carmichael-3-strong-pseudoprimes.f90:64:10:
+/tmp/carmichael-3-strong-pseudoprimes.f90:65:10:
 
-   64 |       s = ' ' // s
+   65 |       s = ' ' // s
       |          1
 Error: Operands of string concatenation operator at (1) are CHARACTER(1)/INTEGER(4)
-/tmp/carmichael-3-strong-pseudoprimes.f90:63:20:
+/tmp/carmichael-3-strong-pseudoprimes.f90:64:20:
 
-   63 |     do while ((size(s) < width))
+   64 |     do while ((size(s) < width))
       |                    1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/carmichael-3-strong-pseudoprimes.f90:66:10:
+/tmp/carmichael-3-strong-pseudoprimes.f90:67:10:
 
-   66 |     res = s
+   67 |     res = s
       |          1
 Error: Cannot convert INTEGER(4) to CHARACTER(100) at (1)
-/tmp/carmichael-3-strong-pseudoprimes.f90:42:9:
+/tmp/carmichael-3-strong-pseudoprimes.f90:43:9:
 
-   42 |     d = 5
+   43 |     d = 5
       |         1
 ......
-   75 |           if (.not. isPrime(p2)) then
+   76 |           if (.not. isPrime(p2)) then
       |                   2
 Error: Index variable ‘d’ redefined at (1) in procedure ‘isprime’ called from within DO loop at (2)
-/tmp/carmichael-3-strong-pseudoprimes.f90:48:17:
+/tmp/carmichael-3-strong-pseudoprimes.f90:49:17:
 
-   48 |       d = (d + 2)
+   49 |       d = (d + 2)
       |                 1
 ......
-   75 |           if (.not. isPrime(p2)) then
+   76 |           if (.not. isPrime(p2)) then
       |                   2
 Error: Index variable ‘d’ redefined at (1) in procedure ‘isprime’ called from within DO loop at (2)
-/tmp/carmichael-3-strong-pseudoprimes.f90:53:17:
+/tmp/carmichael-3-strong-pseudoprimes.f90:54:17:
 
-   53 |       d = (d + 4)
+   54 |       d = (d + 4)
       |                 1
 ......
-   75 |           if (.not. isPrime(p2)) then
+   76 |           if (.not. isPrime(p2)) then
       |                   2
 Error: Index variable ‘d’ redefined at (1) in procedure ‘isprime’ called from within DO loop at (2)
-/tmp/carmichael-3-strong-pseudoprimes.f90:42:9:
+/tmp/carmichael-3-strong-pseudoprimes.f90:43:9:
 
-   42 |     d = 5
+   43 |     d = 5
       |         1
 ......
-   79 |           if (.not. isPrime(p3)) then
+   80 |           if (.not. isPrime(p3)) then
       |                   2
 Error: Index variable ‘d’ redefined at (1) in procedure ‘isprime’ called from within DO loop at (2)
-/tmp/carmichael-3-strong-pseudoprimes.f90:48:17:
+/tmp/carmichael-3-strong-pseudoprimes.f90:49:17:
 
-   48 |       d = (d + 2)
+   49 |       d = (d + 2)
       |                 1
 ......
-   79 |           if (.not. isPrime(p3)) then
+   80 |           if (.not. isPrime(p3)) then
       |                   2
 Error: Index variable ‘d’ redefined at (1) in procedure ‘isprime’ called from within DO loop at (2)
-/tmp/carmichael-3-strong-pseudoprimes.f90:53:17:
+/tmp/carmichael-3-strong-pseudoprimes.f90:54:17:
 
-   53 |       d = (d + 4)
+   54 |       d = (d + 4)
       |                 1
 ......
-   79 |           if (.not. isPrime(p3)) then
+   80 |           if (.not. isPrime(p3)) then
       |                   2
 Error: Index variable ‘d’ redefined at (1) in procedure ‘isprime’ called from within DO loop at (2)

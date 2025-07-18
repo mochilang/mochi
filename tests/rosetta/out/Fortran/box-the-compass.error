@@ -11,57 +11,57 @@ Error: Line truncated at (1) [-Werror=line-truncation]
 Error: Unterminated character constant beginning at (1)
 /tmp/box-the-compass.f90:18:132:
 
-   18 |   headings = (/0,16.87,16.88,33.75,50.62,50.63,67.5,84.37,84.38,101.25,118.12,118.13,135,151.87,151.88,168.75,185.62,185.63,202.5,219.37,219.38,236.25,253.12,253.13,270,286.87,286.88,303.75,320.62,320.63,337.5,354.37,354.38/)
+   18 |   headings = (/0.0,16.87,16.88,33.75,50.62,50.63,67.5,84.37,84.38,101.25,118.12,118.13,135.0,151.87,151.88,168.75,185.62,185.63,202.5,219.37,219.38,236.25,253.12,253.13,270.0,286.87,286.88,303.75,320.62,320.63,337.5,354.37,354.38/)
       |                                                                                                                                    1
 Error: Line truncated at (1) [-Werror=line-truncation]
 /tmp/box-the-compass.f90:18:132:
 
-   18 |   headings = (/0,16.87,16.88,33.75,50.62,50.63,67.5,84.37,84.38,101.25,118.12,118.13,135,151.87,151.88,168.75,185.62,185.63,202.5,219.37,219.38,236.25,253.12,253.13,270,286.87,286.88,303.75,320.62,320.63,337.5,354.37,354.38/)
+   18 |   headings = (/0.0,16.87,16.88,33.75,50.62,50.63,67.5,84.37,84.38,101.25,118.12,118.13,135.0,151.87,151.88,168.75,185.62,185.63,202.5,219.37,219.38,236.25,253.12,253.13,270.0,286.87,286.88,303.75,320.62,320.63,337.5,354.37,354.38/)
       |                                                                                                                                    1
 Error: Syntax error in array constructor at (1)
-/tmp/box-the-compass.f90:71:5:
+/tmp/box-the-compass.f90:72:5:
 
-   71 |     s = s1
+   72 |     s = s1
       |     1
 Error: Symbol ‘s’ at (1) has no IMPLICIT type
-/tmp/box-the-compass.f90:100:10:
+/tmp/box-the-compass.f90:101:10:
 
-  100 |     res = compassPoint(((cpx(h))+1))
+  101 |     res = compassPoint(((cpx(h))+1))
       |          1
 Error: Cannot convert INTEGER(4) to CHARACTER(100) at (1)
-/tmp/box-the-compass.f90:58:24:
+/tmp/box-the-compass.f90:59:24:
 
-   58 |     do while ((i < size(s)))
+   59 |     do while ((i < size(s)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/box-the-compass.f90:45:10:
+/tmp/box-the-compass.f90:46:10:
 
-   45 |     out = s
+   46 |     out = s
       |          1
 Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
-/tmp/box-the-compass.f90:46:13:
+/tmp/box-the-compass.f90:47:13:
 
-   46 |     i = size(s)
+   47 |     i = size(s)
       |             1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/box-the-compass.f90:48:12:
+/tmp/box-the-compass.f90:49:12:
 
-   48 |       out = out // ' '
+   49 |       out = out // ' '
       |            1
 Error: Operands of string concatenation operator at (1) are INTEGER(4)/CHARACTER(1)
-/tmp/box-the-compass.f90:51:10:
+/tmp/box-the-compass.f90:52:10:
 
-   51 |     res = out
+   52 |     res = out
       |          1
 Error: Cannot convert INTEGER(4) to CHARACTER(100) at (1)
-/tmp/box-the-compass.f90:34:18:
+/tmp/box-the-compass.f90:35:18:
 
-   34 |     n = (w - size(s))
+   35 |     n = (w - size(s))
       |                  1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/box-the-compass.f90:39:11:
+/tmp/box-the-compass.f90:40:11:
 
-   39 |     res = (res + s)
+   40 |     res = (res + s)
       |           1
 Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
 /tmp/box-the-compass.f90:24:9:

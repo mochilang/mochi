@@ -1,7 +1,7 @@
 gfortran: exit status 1
-/tmp/atomic-updates.f90:78:7:
+/tmp/atomic-updates.f90:74:7:
 
-   78 |       seedOrder = r(((0)+1))
+   74 |       seedOrder = r(((0)+1))
       |       1
 Error: Unclassifiable statement at (1)
 /tmp/atomic-updates.f90:39:4:

@@ -4,9 +4,9 @@ gfortran: exit status 1
    70 |     seed = res(((0)+1))
       |     1
 Error: Unclassifiable statement at (1)
-/tmp/barnsley-fern.f90:114:4:
+/tmp/barnsley-fern.f90:115:4:
 
-  114 |     res = (/next,mod(next,n)/)
+  115 |     res = (/next,mod(next,n)/)
       |    1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
 /tmp/barnsley-fern.f90:47:27:

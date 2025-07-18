@@ -1,6 +1,6 @@
 gfortran: exit status 1
-/tmp/array-length.f90:10:20:
+/tmp/array-length.f90:11:20:
 
-   10 |     arr = (/'apple','orange','pear'/)
+   11 |     arr = (/'apple','orange','pear'/)
       |                    1
 Error: Different CHARACTER lengths (5/6) in array constructor at (1)

@@ -1,206 +1,191 @@
 gfortran: exit status 1
-/tmp/arrays.f90:38:3:
+/tmp/arrays.f90:37:3:
 
-   38 |   s(((0)+1)) = 22
+   37 |   s(((0)+1)) = 22
       |   1
 Error: Unclassifiable statement at (1)
-/tmp/arrays.f90:64:10:
+/tmp/arrays.f90:63:10:
 
-   64 |   s = (//)
+   63 |   s = (//)
       |          1
 Error: Empty array constructor at (1) is not allowed
-/tmp/arrays.f90:78:50:
+/tmp/arrays.f90:74:50:
 
-   78 |   recursive character(len=100) function listStr(xs) result(res)
+   74 |   recursive character(len=100) function listStr(xs) result(res)
       |                                                  1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘xs’ at (1)
-/tmp/arrays.f90:80:8:
+/tmp/arrays.f90:76:8:
 
-   80 |     s = '['
+   76 |     s = '['
       |        1
 Error: Cannot convert CHARACTER(1) to INTEGER(4) at (1)
-/tmp/arrays.f90:84:11:
+/tmp/arrays.f90:80:11:
 
-   84 |       s = (s + s12)
+   80 |       s = (s + s11)
       |           1
 Error: Operands of binary numeric operator ‘+’ at (1) are INTEGER(4)/CHARACTER(100)
-/tmp/arrays.f90:85:26:
+/tmp/arrays.f90:81:26:
 
-   85 |       if (((i + 1) < size(xs))) then
+   81 |       if (((i + 1) < size(xs))) then
       |                          1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/arrays.f90:86:12:
+/tmp/arrays.f90:82:12:
 
-   86 |         s = s // ' '
+   82 |         s = s // ' '
       |            1
 Error: Operands of string concatenation operator at (1) are INTEGER(4)/CHARACTER(1)
-/tmp/arrays.f90:82:24:
+/tmp/arrays.f90:78:24:
 
-   82 |     do while ((i < size(xs)))
+   78 |     do while ((i < size(xs)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/arrays.f90:90:8:
+/tmp/arrays.f90:86:8:
 
-   90 |     s = s // ']'
+   86 |     s = s // ']'
       |        1
 Error: Operands of string concatenation operator at (1) are INTEGER(4)/CHARACTER(1)
-/tmp/arrays.f90:91:10:
+/tmp/arrays.f90:87:10:
 
-   91 |     res = s
+   87 |     res = s
       |          1
 Error: Cannot convert INTEGER(4) to CHARACTER(100) at (1)
-/tmp/arrays.f90:24:29:
+/tmp/arrays.f90:23:29:
 
-   24 |   print *, 'a = ' // listStr(a)
+   23 |   print *, 'a = ' // listStr(a)
       |                             1
 Error: Rank mismatch in argument ‘xs’ at (1) (scalar and rank-1)
-/tmp/arrays.f90:26:29:
+/tmp/arrays.f90:25:29:
 
-   26 |   print *, 'a = ' // listStr(a)
+   25 |   print *, 'a = ' // listStr(a)
       |                             1
 Error: Rank mismatch in argument ‘xs’ at (1) (scalar and rank-1)
-/tmp/arrays.f90:29:2:
+/tmp/arrays.f90:28:2:
 
-   29 |   s = a(1:4)
+   28 |   s = a(1:4)
       |  1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/arrays.f90:31:29:
+/tmp/arrays.f90:30:29:
 
-   31 |   print *, 's = ' // listStr(s)
+   30 |   print *, 's = ' // listStr(s)
       |                             1
 Error: Expected a procedure for argument ‘xs’ at (1)
-/tmp/arrays.f90:32:24:
+/tmp/arrays.f90:31:24:
 
-   32 |   write(s2,'(G0)') size(s)
+   31 |   write(s2,'(G0)') size(s)
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/arrays.f90:35:2:
+/tmp/arrays.f90:34:2:
 
-   35 |   s = a(1:5)
+   34 |   s = a(1:5)
       |  1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/arrays.f90:36:29:
+/tmp/arrays.f90:35:29:
 
-   36 |   print *, 's = ' // listStr(s)
+   35 |   print *, 's = ' // listStr(s)
       |                             1
 Error: Expected a procedure for argument ‘xs’ at (1)
+/tmp/arrays.f90:38:29:
+
+   38 |   print *, 'a = ' // listStr(a)
+      |                             1
+Error: Rank mismatch in argument ‘xs’ at (1) (scalar and rank-1)
 /tmp/arrays.f90:39:29:
 
-   39 |   print *, 'a = ' // listStr(a)
-      |                             1
-Error: Rank mismatch in argument ‘xs’ at (1) (scalar and rank-1)
-/tmp/arrays.f90:40:29:
-
-   40 |   print *, 's = ' // listStr(s)
+   39 |   print *, 's = ' // listStr(s)
       |                             1
 Error: Expected a procedure for argument ‘xs’ at (1)
-/tmp/arrays.f90:42:21:
+/tmp/arrays.f90:41:21:
 
-   42 |   allocate(app4(size(s)+1))
+   41 |   allocate(app4(size(s)+1))
       |                     1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/arrays.f90:43:14:
+/tmp/arrays.f90:42:14:
 
-   43 |   app4(1:size(s)) = s
+   42 |   app4(1:size(s)) = s
       |              1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/arrays.f90:44:12:
+/tmp/arrays.f90:43:12:
 
-   44 |   app4(size(s)+1) = 4
+   43 |   app4(size(s)+1) = 4
       |            1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/arrays.f90:45:2:
+/tmp/arrays.f90:44:2:
 
-   45 |   s = app4
+   44 |   s = app4
       |  1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/arrays.f90:47:21:
+/tmp/arrays.f90:46:21:
 
-   47 |   allocate(app5(size(s)+1))
+   46 |   allocate(app5(size(s)+1))
       |                     1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/arrays.f90:48:14:
+/tmp/arrays.f90:47:14:
 
-   48 |   app5(1:size(s)) = s
+   47 |   app5(1:size(s)) = s
       |              1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/arrays.f90:49:12:
+/tmp/arrays.f90:48:12:
 
-   49 |   app5(size(s)+1) = 5
+   48 |   app5(size(s)+1) = 5
       |            1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/arrays.f90:50:2:
+/tmp/arrays.f90:49:2:
 
-   50 |   s = app5
+   49 |   s = app5
       |  1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/arrays.f90:52:21:
+/tmp/arrays.f90:51:21:
 
-   52 |   allocate(app6(size(s)+1))
+   51 |   allocate(app6(size(s)+1))
       |                     1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/arrays.f90:53:14:
+/tmp/arrays.f90:52:14:
 
-   53 |   app6(1:size(s)) = s
+   52 |   app6(1:size(s)) = s
       |              1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/arrays.f90:54:12:
+/tmp/arrays.f90:53:12:
 
-   54 |   app6(size(s)+1) = 6
+   53 |   app6(size(s)+1) = 6
       |            1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/arrays.f90:55:2:
+/tmp/arrays.f90:54:2:
 
-   55 |   s = app6
+   54 |   s = app6
       |  1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/arrays.f90:57:29:
+/tmp/arrays.f90:56:29:
 
-   57 |   print *, 's = ' // listStr(s)
+   56 |   print *, 's = ' // listStr(s)
       |                             1
 Error: Expected a procedure for argument ‘xs’ at (1)
-/tmp/arrays.f90:58:24:
+/tmp/arrays.f90:57:24:
 
-   58 |   write(s7,'(G0)') size(s)
+   57 |   write(s7,'(G0)') size(s)
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/arrays.f90:62:29:
+/tmp/arrays.f90:61:29:
 
-   62 |   print *, 'a = ' // listStr(a)
+   61 |   print *, 'a = ' // listStr(a)
       |                             1
 Error: Rank mismatch in argument ‘xs’ at (1) (scalar and rank-1)
-/tmp/arrays.f90:63:29:
+/tmp/arrays.f90:62:29:
 
-   63 |   print *, 's = ' // listStr(s)
+   62 |   print *, 's = ' // listStr(s)
       |                             1
 Error: Expected a procedure for argument ‘xs’ at (1)
-/tmp/arrays.f90:67:23:
+/tmp/arrays.f90:65:4:
 
-   67 |     allocate(app9(size(s)+1))
-      |                       1
-Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/arrays.f90:68:16:
-
-   68 |     app9(1:size(s)) = s
-      |                1
-Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/arrays.f90:69:14:
-
-   69 |     app9(size(s)+1) = 0
-      |              1
-Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/arrays.f90:70:4:
-
-   70 |     s = app9
+   65 |     s = (/0/)
       |    1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/arrays.f90:73:29:
+/tmp/arrays.f90:68:29:
 
-   73 |   print *, 's = ' // listStr(s)
+   68 |   print *, 's = ' // listStr(s)
       |                             1
 Error: Expected a procedure for argument ‘xs’ at (1)
-/tmp/arrays.f90:74:25:
+/tmp/arrays.f90:69:24:
 
-   74 |   write(s10,'(G0)') size(s)
-      |                         1
+   69 |   write(s9,'(G0)') size(s)
+      |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array

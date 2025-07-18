@@ -1,16 +1,26 @@
 gfortran: exit status 1
-/tmp/boolean-values.f90:14:8:
+/tmp/boolean-values.f90:31:30:
 
-   14 |     l = lower(s)
+   31 |     print *, 'x == y:', merge('true','false', (x == y))
+      |                              1
+Error: Unequal character lengths (4/5) in MERGE intrinsic at (1)
+/tmp/boolean-values.f90:32:29:
+
+   32 |     print *, 'x < y:', merge('true','false', (x < y))
+      |                             1
+Error: Unequal character lengths (4/5) in MERGE intrinsic at (1)
+/tmp/boolean-values.f90:15:8:
+
+   15 |     l = lower(s)
       |        1
 Error: Function ‘lower’ at (1) has no IMPLICIT type
-/tmp/boolean-values.f90:15:17:
+/tmp/boolean-values.f90:16:17:
 
-   15 |     if ((((((((((l == '1') .or. l) == 't') .or. l) == .true.) .or. l) == 'yes') .or. l) == 'y')) then
+   16 |     if ((((((((((l == '1') .or. l) == 't') .or. l) == .true.) .or. l) == 'yes') .or. l) == 'y')) then
       |                 1
 Error: Operands of comparison operator ‘==’ at (1) are INTEGER(4)/CHARACTER(1)
-/tmp/boolean-values.f90:35:13:
+/tmp/boolean-values.f90:36:13:
 
-   35 |     bolStr = parseBool(str1)
+   36 |     bolStr = parseBool(str1)
       |             1
 Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)

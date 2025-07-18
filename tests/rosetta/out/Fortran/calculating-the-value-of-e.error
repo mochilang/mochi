@@ -1,26 +1,26 @@
 gfortran: exit status 1
-/tmp/calculating-the-value-of-e.f90:64:5:
+/tmp/calculating-the-value-of-e.f90:65:5:
 
-   64 |     intPart = digits(0+1:(size(digits) - prec))
+   65 |     intPart = digits(0+1:(size(digits) - prec))
       |     1
 Error: Unclassifiable statement at (1)
-/tmp/calculating-the-value-of-e.f90:60:13:
+/tmp/calculating-the-value-of-e.f90:61:13:
 
-   60 |     digits = s0
+   61 |     digits = s0
       |             1
 Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
-/tmp/calculating-the-value-of-e.f90:62:15:
+/tmp/calculating-the-value-of-e.f90:63:15:
 
-   62 |       digits = '0' // digits
+   63 |       digits = '0' // digits
       |               1
 Error: Operands of string concatenation operator at (1) are CHARACTER(1)/INTEGER(4)
-/tmp/calculating-the-value-of-e.f90:61:20:
+/tmp/calculating-the-value-of-e.f90:62:20:
 
-   61 |     do while ((size(digits) <= prec))
+   62 |     do while ((size(digits) <= prec))
       |                    1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/calculating-the-value-of-e.f90:66:15:
+/tmp/calculating-the-value-of-e.f90:67:15:
 
-   66 |     res = trim(intPart // '.') // fracPart
+   67 |     res = trim(intPart // '.') // fracPart
       |               1
 Error: Operands of string concatenation operator at (1) are INTEGER(4)/CHARACTER(1)

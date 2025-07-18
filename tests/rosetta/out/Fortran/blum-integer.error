@@ -1,36 +1,36 @@
 gfortran: exit status 1
-/tmp/blum-integer.f90:118:7:
+/tmp/blum-integer.f90:119:7:
 
-  118 |       res = s(0+1:need)
+  119 |       res = s(0+1:need)
       |       1
 Error: Unclassifiable statement at (1)
-/tmp/blum-integer.f90:110:5:
+/tmp/blum-integer.f90:111:5:
 
-  110 |     s = s1
+  111 |     s = s1
       |     1
 Error: Symbol ‘s’ at (1) has no IMPLICIT type
-/tmp/blum-integer.f90:99:5:
+/tmp/blum-integer.f90:100:5:
 
-   99 |     s = s0
+  100 |     s = s0
       |     1
 Error: Symbol ‘s’ at (1) has no IMPLICIT type
-/tmp/blum-integer.f90:134:33:
+/tmp/blum-integer.f90:135:33:
 
-  134 |         if (((mod(((q /= p) .and. q),4) == 3) .and. isPrime(q))) then
+  135 |         if (((mod(((q /= p) .and. q),4) == 3) .and. isPrime(q))) then
       |                                 1
 Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/INTEGER(4)
-/tmp/blum-integer.f90:160:24:
+/tmp/blum-integer.f90:161:24:
 
-  160 |                 line = (line + padLeft(blum(((idx)+1)),3)) // ' '
+  161 |                 line = (line + padLeft(blum(((idx)+1)),3)) // ' '
       |                        1
 Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
-/tmp/blum-integer.f90:164:38:
+/tmp/blum-integer.f90:165:38:
 
-  164 |               print *, line(0+1:(size(line) - 1))
+  165 |               print *, line(0+1:(size(line) - 1))
       |                                      1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/blum-integer.f90:85:24:
+/tmp/blum-integer.f90:86:24:
 
-   85 |     do while ((i < size(s)))
+   86 |     do while ((i < size(s)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array

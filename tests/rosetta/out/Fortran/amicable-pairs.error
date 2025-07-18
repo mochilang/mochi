@@ -4,9 +4,9 @@ gfortran: exit status 1
    39 |     i = 0
       |     1
 Error: Symbol ‘i’ at (1) has no IMPLICIT type
-/tmp/amicable-pairs.f90:54:5:
+/tmp/amicable-pairs.f90:50:5:
 
-   54 |     n = 2
+   50 |     n = 2
       |     1
 Error: Symbol ‘n’ at (1) has no IMPLICIT type
 /tmp/amicable-pairs.f90:30:8:

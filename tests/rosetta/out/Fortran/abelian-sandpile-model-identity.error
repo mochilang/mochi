@@ -44,99 +44,99 @@ Error: Line truncated at (1) [-Werror=line-truncation]
    59 |   print *, trim(trim(trim(pileString(s3_id) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s3_id)) // ''//char(10)//'equals'//char(10)//''//char(10)//'') // pileString(s5)
       |                                                                                                                                    1
 Error: Syntax error in argument list at (1)
-/tmp/abelian-sandpile-model-identity.f90:68:13:
+/tmp/abelian-sandpile-model-identity.f90:69:13:
 
-   68 |     allocate(res(0))
+   69 |     allocate(res(0))
       |             1
 Error: Allocate-object at (1) is neither a data pointer nor an allocatable variable
-/tmp/abelian-sandpile-model-identity.f90:113:52:
+/tmp/abelian-sandpile-model-identity.f90:114:52:
 
-  113 |   recursive character(len=100) function pileString(p) result(res)
+  114 |   recursive character(len=100) function pileString(p) result(res)
       |                                                    1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘p’ at (1)
-/tmp/abelian-sandpile-model-identity.f90:93:37:
+/tmp/abelian-sandpile-model-identity.f90:94:37:
 
-   93 |   recursive integer function topple(p) result(res)
+   94 |   recursive integer function topple(p) result(res)
       |                                     1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘p’ at (1)
-/tmp/abelian-sandpile-model-identity.f90:81:39:
+/tmp/abelian-sandpile-model-identity.f90:82:39:
 
-   81 |   recursive logical function isStable(p) result(res)
+   82 |   recursive logical function isStable(p) result(res)
       |                                       1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘p’ at (1)
-/tmp/abelian-sandpile-model-identity.f90:65:35:
+/tmp/abelian-sandpile-model-identity.f90:66:35:
 
-   65 |   recursive integer function plus(a,b) result(res)
+   66 |   recursive integer function plus(a,b) result(res)
       |                                   1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘a’ at (1)
-/tmp/abelian-sandpile-model-identity.f90:65:37:
+/tmp/abelian-sandpile-model-identity.f90:66:37:
 
-   65 |   recursive integer function plus(a,b) result(res)
+   66 |   recursive integer function plus(a,b) result(res)
       |                                     1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘b’ at (1)
-/tmp/abelian-sandpile-model-identity.f90:120:14:
+/tmp/abelian-sandpile-model-identity.f90:121:14:
 
-  120 |         write(s3,'(G0)') p(((((3 * r) + c))+1))
+  121 |         write(s3,'(G0)') p(((((3 * r) + c))+1))
       |              1
 Error: External IO UNIT cannot be an array at (1)
-/tmp/abelian-sandpile-model-identity.f90:121:13:
+/tmp/abelian-sandpile-model-identity.f90:122:13:
 
-  121 |         s = (s + s3) // ' '
+  122 |         s = (s + s3) // ' '
       |             1
 Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/INTEGER(4)
-/tmp/abelian-sandpile-model-identity.f90:62:4:
+/tmp/abelian-sandpile-model-identity.f90:63:4:
 
-   62 |     res = (/(/1,3/),(/0,2,4/),(/1,5/),(/0,4,6/),(/1,3,5,7/),(/2,4,8/),(/3,7/),(/4,6,8/),(/5,7/)/)
+   63 |     res = (/(/1,3/),(/0,2,4/),(/1,5/),(/0,4,6/),(/1,3,5,7/),(/2,4,8/),(/3,7/),(/4,6,8/),(/5,7/)/)
       |    1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/abelian-sandpile-model-identity.f90:99:8:
+/tmp/abelian-sandpile-model-identity.f90:100:8:
 
-   99 |         p(((i)+1)) = (p(((i)+1)) - 4)
+  100 |         p(((i)+1)) = (p(((i)+1)) - 4)
       |        1
 Error: The function result on the lhs of the assignment at (1) must have the pointer attribute.
-/tmp/abelian-sandpile-model-identity.f90:103:10:
+/tmp/abelian-sandpile-model-identity.f90:104:10:
 
-  103 |           p(((j)+1)) = (p(((j)+1)) + 1)
+  104 |           p(((j)+1)) = (p(((j)+1)) + 1)
       |          1
 Error: The function result on the lhs of the assignment at (1) must have the pointer attribute.
-/tmp/abelian-sandpile-model-identity.f90:101:24:
+/tmp/abelian-sandpile-model-identity.f90:102:24:
 
-  101 |         do i2 = 1, size(nbs)
+  102 |         do i2 = 1, size(nbs)
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/abelian-sandpile-model-identity.f90:97:24:
+/tmp/abelian-sandpile-model-identity.f90:98:24:
 
-   97 |     do while ((i < size(p)))
+   98 |     do while ((i < size(p)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/abelian-sandpile-model-identity.f90:83:20:
+/tmp/abelian-sandpile-model-identity.f90:84:20:
 
-   83 |     do i1 = 1, size(p)
+   84 |     do i1 = 1, size(p)
       |                    1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/abelian-sandpile-model-identity.f90:72:25:
+/tmp/abelian-sandpile-model-identity.f90:73:25:
 
-   72 |       allocate(app0(size(res)+1))
+   73 |       allocate(app0(size(res)+1))
       |                         1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/abelian-sandpile-model-identity.f90:73:18:
+/tmp/abelian-sandpile-model-identity.f90:74:18:
 
-   73 |       app0(1:size(res)) = res
+   74 |       app0(1:size(res)) = res
       |                  1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/abelian-sandpile-model-identity.f90:74:16:
+/tmp/abelian-sandpile-model-identity.f90:75:16:
 
-   74 |       app0(size(res)+1) = (a(((i)+1)) + b(((i)+1)))
+   75 |       app0(size(res)+1) = (a(((i)+1)) + b(((i)+1)))
       |                1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/abelian-sandpile-model-identity.f90:75:6:
+/tmp/abelian-sandpile-model-identity.f90:76:6:
 
-   75 |       res = app0
+   76 |       res = app0
       |      1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/abelian-sandpile-model-identity.f90:70:24:
+/tmp/abelian-sandpile-model-identity.f90:71:24:
 
-   70 |     do while ((i < size(a)))
+   71 |     do while ((i < size(a)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
 /tmp/abelian-sandpile-model-identity.f90:28:22:

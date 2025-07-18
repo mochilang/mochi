@@ -9,14 +9,14 @@ Error: Line truncated at (1) [-Werror=line-truncation]
    22 |   dna = trim(trim(trim(trim(trim(trim(trim(trim(trim('' // 'CGTAAAAAATTACAACGTCCTTTGGCTATCTCTTAAACTCCTGCTAAATG') // 'CTCGTGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTG') // 'AGGACAAAGGTCAAGATGGAGCGCATCGAACGCAATAAGGATCATTTGAT') // 'GGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTT') // 'CGATTCTGCTTATAACACTATGTTCTTATGAAATGGATGTTCTGAGTTGG') // 'TCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTATA') // 'TTTAATTTTTCTATATAGCGATCTGTATTTAAGCAATTCATTTAGGTTAT') // 'CGCCGCGATGCTCGGTTCGGACCGCCAAGCATCTGGCTCCACTGCTAGTG') // 'TCCTAAATTTGAATGGCAAACACAAATAAGATTTAGCAATTCGTGTAGAC') // 'GACCGGGGACTTGCATGATGGGAGCAGCTTTGTTAAACTACGAACGTAAT'
       |                                                                                                                      1
 Error: Unterminated character constant beginning at (1)
-/tmp/bioinformatics-base-count.f90:78:18:
+/tmp/bioinformatics-base-count.f90:79:18:
 
-   78 |     n = (w - size(s))
+   79 |     n = (w - size(s))
       |                  1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/bioinformatics-base-count.f90:83:11:
+/tmp/bioinformatics-base-count.f90:84:11:
 
-   83 |     res = (res + s)
+   84 |     res = (res + s)
       |           1
 Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
 /tmp/bioinformatics-base-count.f90:41:9:

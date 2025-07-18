@@ -1,11 +1,11 @@
 gfortran: exit status 1
-/tmp/abundant-deficient-and-perfect-number-classifications.f90:32:5:
+/tmp/abundant-deficient-and-perfect-number-classifications.f90:33:5:
 
-   32 |     i = 1
+   33 |     i = 1
       |     1
 Error: Symbol ‘i’ at (1) has no IMPLICIT type
-/tmp/abundant-deficient-and-perfect-number-classifications.f90:19:15:
+/tmp/abundant-deficient-and-perfect-number-classifications.f90:20:15:
 
-   19 |     do while (((p <= i) / 2))
+   20 |     do while (((p <= i) / 2))
       |               1
 Error: Operands of binary numeric operator ‘/’ at (1) are LOGICAL(4)/INTEGER(4)
