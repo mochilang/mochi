@@ -536,6 +536,10 @@ func (c *Compiler) compileStructType(st types.StructType) {
 	if c.structs[name] {
 		return
 	}
+	if c.inFun > 0 {
+		c.extraStructs = append(c.extraStructs, st)
+		return
+	}
 	c.structs[name] = true
 	kw := "struct"
 	if len(st.Methods) == 0 {
@@ -1523,7 +1527,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					return "", fmt.Errorf("len() expects 1 arg")
 				}
 				t := c.inferExprType(op.Call.Args[0])
-				if isListType(t) || isMapType(t) {
+				if isListType(t) || isMapType(t) || c.isListPostfix(op.Call.Args[0].Binary.Left.Value) {
 					expr = fmt.Sprintf("%s.Count", args[0])
 				} else {
 					expr = fmt.Sprintf("%s.Length", args[0])
@@ -3564,7 +3568,12 @@ func sanitizeName(name string) string {
 	}
 	var b strings.Builder
 	for i, r := range name {
-		if r == '_' || ('0' <= r && r <= '9' && i > 0) || ('A' <= r && r <= 'Z') || ('a' <= r && r <= 'z') {
+		if r == '_' || ('A' <= r && r <= 'Z') || ('a' <= r && r <= 'z') || ('0' <= r && r <= '9' && i > 0) {
+			b.WriteRune(r)
+		} else if '0' <= r && r <= '9' {
+			if i == 0 {
+				b.WriteRune('_')
+			}
 			b.WriteRune(r)
 		} else {
 			b.WriteRune('_')

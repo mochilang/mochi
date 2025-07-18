@@ -1,12 +1,5 @@
 run: exit status 1
-/tmp/TestMochiToCS9-billion-names-of-god-the-integer/Program.cs(136,22): error CS1002: ; expected [/tmp/TestMochiToCS9-billion-names-of-god-the-integer/app.csproj]
-/tmp/TestMochiToCS9-billion-names-of-god-the-integer/Program.cs(136,22): error CS1513: } expected [/tmp/TestMochiToCS9-billion-names-of-god-the-integer/app.csproj]
-/tmp/TestMochiToCS9-billion-names-of-god-the-integer/Program.cs(136,26): error CS1525: Invalid expression term '=' [/tmp/TestMochiToCS9-billion-names-of-god-the-integer/app.csproj]
-/tmp/TestMochiToCS9-billion-names-of-god-the-integer/Program.cs(140,73): error CS1513: } expected [/tmp/TestMochiToCS9-billion-names-of-god-the-integer/app.csproj]
-/tmp/TestMochiToCS9-billion-names-of-god-the-integer/Program.cs(141,17): error CS1525: Invalid expression term '=' [/tmp/TestMochiToCS9-billion-names-of-god-the-integer/app.csproj]
-/tmp/TestMochiToCS9-billion-names-of-god-the-integer/Program.cs(141,39): error CS1525: Invalid expression term ')' [/tmp/TestMochiToCS9-billion-names-of-god-the-integer/app.csproj]
-/tmp/TestMochiToCS9-billion-names-of-god-the-integer/Program.cs(144,16): error CS1525: Invalid expression term 'out' [/tmp/TestMochiToCS9-billion-names-of-god-the-integer/app.csproj]
-/tmp/TestMochiToCS9-billion-names-of-god-the-integer/Program.cs(144,16): error CS1002: ; expected [/tmp/TestMochiToCS9-billion-names-of-god-the-integer/app.csproj]
-/tmp/TestMochiToCS9-billion-names-of-god-the-integer/Program.cs(144,16): error CS1513: } expected [/tmp/TestMochiToCS9-billion-names-of-god-the-integer/app.csproj]
+/tmp/TestMochiToCS9-billion-names-of-god-the-integer/Program.cs(168,30): error CS0029: Cannot implicitly convert type 'System.Collections.Generic.List<System.Collections.Generic.List<int>>' to 'System.Collections.Generic.List<string>' [/tmp/TestMochiToCS9-billion-names-of-god-the-integer/app.csproj]
+/tmp/TestMochiToCS9-billion-names-of-god-the-integer/Program.cs(169,76): error CS1503: Argument 1: cannot convert from 'string' to 'System.Collections.Generic.List<int>' [/tmp/TestMochiToCS9-billion-names-of-god-the-integer/app.csproj]
 
 The build failed. Fix the build errors and run again.
