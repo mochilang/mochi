@@ -20,6 +20,10 @@ func (c *Compiler) varType(name string) string {
 				return "map"
 			case types.StructType:
 				return "map"
+			case types.IntType, types.Int64Type:
+				return "int"
+			case types.FloatType:
+				return "float"
 			}
 		}
 	}

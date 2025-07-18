@@ -29,6 +29,8 @@ The Scheme backend now targets chibi-scheme and can compile the `tpc-h/q1.mochi`
   strings and YAML loader converts keys to symbols to avoid runtime type errors.
 - 2025-07-17 18:00 – `count` builtin uses `string-length` or `length` when
   possible, eliminating unnecessary dataset helpers.
+- 2025-07-20 00:00 – Assignment and variable declarations now infer `int` and
+  `float` types, avoiding dataset helpers in numeric comparisons.
 
 ### Remaining Work
 - [ ] Better handling of date comparisons and sorting when running JOB benchmarks
