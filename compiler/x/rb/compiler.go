@@ -1554,6 +1554,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		return "", err
 	}
 	isStr := c.isStringPostfix(p)
+	prevSelector := p.Target != nil && p.Target.Selector != nil
 	for _, op := range p.Ops {
 		if op.Index != nil {
 			idx := op.Index
@@ -1602,6 +1603,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 				isStr = false
 			}
+			prevSelector = false
 		} else if op.Call != nil {
 			args := make([]string, len(op.Call.Args))
 			for i, a := range op.Call.Args {
@@ -1627,12 +1629,15 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				expr = builtin
 			} else {
 				argStr := strings.Join(args, ", ")
-				if _, ok := c.env.GetFunc(expr); ok {
+				if prevSelector || strings.Contains(expr, ".") && !strings.HasPrefix(expr, "method(") {
+					expr = fmt.Sprintf("%s(%s)", expr, argStr)
+				} else if _, ok := c.env.GetFunc(expr); ok {
 					expr = fmt.Sprintf("%s(%s)", expr, argStr)
 				} else {
 					expr = fmt.Sprintf("%s.call(%s)", expr, argStr)
 				}
 			}
+			prevSelector = false
 		} else if op.Cast != nil {
 			if op.Cast.Type != nil && op.Cast.Type.Simple != nil && c.env != nil {
 				if _, ok := c.env.GetStruct(*op.Cast.Type.Simple); ok {
@@ -1800,6 +1805,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 		}
 		if _, ok := typ.(types.MapType); ok {
+			if len(p.Selector.Tail) == 1 {
+				switch p.Selector.Tail[0] {
+				case "keys":
+					return fmt.Sprintf("%s.keys", name), nil
+				case "values":
+					return fmt.Sprintf("%s.values", name), nil
+				case "length", "len":
+					return fmt.Sprintf("%s.length", name), nil
+				}
+			}
 			for i, t := range p.Selector.Tail {
 				if i == 0 {
 					name += fmt.Sprintf("[%q]", t)

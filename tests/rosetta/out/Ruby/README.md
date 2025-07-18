@@ -1,4 +1,4 @@
-# Rosetta Ruby Output (43/216 compiled and run)
+# Rosetta Ruby Output (44/216 compiled and run)
 
 This directory holds Ruby source code generated from the real Mochi
 programs in `tests/rosetta/x/Mochi`. Each file has the expected
@@ -31,7 +31,7 @@ are stored in a corresponding `.error` file.
 - [x] abundant-deficient-and-perfect-number-classifications
 - [x] abundant-odd-numbers
 - [x] accumulator-factory
-- [ ] achilles-numbers
+- [x] achilles-numbers
 - [x] ackermann-function-2
 - [ ] ackermann-function-3
 - [x] ackermann-function
