@@ -58,7 +58,7 @@ func runRosettaTaskGolden(t *testing.T, name string) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type error: %v", errs[0])
 	}
-	code, err := ccode.New(env).Compile(prog)
+	code, err := ccode.NewWithAutoType(env, true).Compile(prog)
 	if err != nil {
 		t.Fatalf("compile error: %v", err)
 	}
