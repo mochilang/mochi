@@ -55,3 +55,4 @@
 - 2025-12-01 - Inlined set operations and fixed import indentation; `go_auto` now compiles. 81 of 100 programs compile and run.
 - 2025-12-05 - Method-call inference updated so `string_contains` compiles without helper functions; 82 of 100 programs compile and run.
 - 2025-12-10 - Added nested selector inference and formatted print strings; `right_join` now compiles. 83 of 100 programs compile and run.
+- 2025-12-20 - Removed '=' from module headers in import generation so Python math modules compile; 85 of 100 programs compile and run.

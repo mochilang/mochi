@@ -2,7 +2,7 @@
 
 This directory contains F# source code generated from Mochi programs. Successful runs have a `.out` file, failures produce a `.error` file.
 
-Compiled programs: 83/100
+Compiled programs: 85/100
 
 Checklist:
 - [x] append_builtin
@@ -75,8 +75,8 @@ Checklist:
 - [x] print_hello
 - [x] pure_fold
 - [x] pure_global_fold
-- [ ] python_auto
-- [ ] python_math
+- [x] python_auto
+- [x] python_math
 - [ ] query_sum_select
 - [ ] record_assign
  - [x] right_join
