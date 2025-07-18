@@ -174,8 +174,8 @@ const (
 		"  return v as Iterable<T>;\n" +
 		"}\n"
 
-	helperNow = "let _nowSeed = 0;\n" +
-		"let _nowSeeded = false;\n" +
+       helperNow = "var _nowSeed = 0;\n" +
+               "var _nowSeeded = false;\n" +
 		"{ const s = Deno.env.get('MOCHI_NOW_SEED');\n" +
 		"  if (s) { const v = parseInt(s, 10);\n" +
 		"    if (!isNaN(v)) { _nowSeed = v; _nowSeeded = true; } } }\n" +
