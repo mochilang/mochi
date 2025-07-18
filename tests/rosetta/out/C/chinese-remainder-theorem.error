@@ -1,5 +1,0 @@
-cc: exit status 1
-/tmp/chinese-remainder-theorem.c: In function ‘crt’:
-/tmp/chinese-remainder-theorem.c:79:24: error: invalid operands to binary % (have ‘double’ and ‘int’)
-   79 |     int inv = modInv(p % ni, ni);
-      |                        ^

@@ -562,6 +562,12 @@ static list_int _sha256_list(list_int v) {
     return (long long)ts.tv_sec * 1000000000LL + ts.tv_nsec;
 }
 `
+	helperFmod = `static double _fmod_simple(double x, double y) {
+    if (y == 0) return 0;
+    double r = x - (long long)(x / y) * y;
+    if (r < 0) r += y;
+    return r;
+}`
 	helperJSON = `static void _json_int(int v) { printf("%d", v); }
 static void _json_float(double v) { printf("%g", v); }
 static void _json_string(char* s) { printf("\"%s\"", s); }
@@ -811,6 +817,7 @@ var helperCode = map[string]string{
 	needInput:                helperInput,
 	needStr:                  helperStr,
 	needLower:                helperLower,
+	needFmod:                 helperFmod,
 	needNow:                  helperNow,
 	needSHA256:               helperSha256,
 	needJSON:                 helperJSON,
@@ -899,6 +906,7 @@ var helperOrder = []string{
 	needInput,
 	needStr,
 	needLower,
+	needFmod,
 	needNow,
 	needSHA256,
 	needJSON,

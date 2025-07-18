@@ -1,4 +1,4 @@
-# Rosetta C Output (79/239 compiled and run)
+# Rosetta C Output (82/239 compiled and run)
 
 This directory holds C source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -51,7 +51,7 @@ This directory holds C source code generated from the real Mochi programs in `te
 - [ ] anagrams
 - [ ] angle-difference-between-two-bearings-1
 - [ ] angle-difference-between-two-bearings-2
-- [ ] angles-geometric-normalization-and-conversion
+- [x] angles-geometric-normalization-and-conversion
 - [x] animate-a-pendulum
 - [x] animation
 - [x] anonymous-recursion-1
@@ -171,7 +171,7 @@ This directory holds C source code generated from the real Mochi programs in `te
 - [ ] canny-edge-detector
 - [ ] canonicalize-cidr
 - [ ] cantor-set
-- [ ] carmichael-3-strong-pseudoprimes
+- [x] carmichael-3-strong-pseudoprimes
 - [x] cartesian-product-of-two-or-more-lists-1
 - [ ] cartesian-product-of-two-or-more-lists-2
 - [ ] cartesian-product-of-two-or-more-lists-3
@@ -199,7 +199,7 @@ This directory holds C source code generated from the real Mochi programs in `te
 - [x] checkpoint-synchronization-4
 - [ ] chernicks-carmichael-numbers
 - [ ] cheryls-birthday
-- [ ] chinese-remainder-theorem
+- [x] chinese-remainder-theorem
 - [ ] chinese-zodiac
 - [ ] cholesky-decomposition-1
 - [ ] cholesky-decomposition

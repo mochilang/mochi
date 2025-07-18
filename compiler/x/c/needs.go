@@ -43,6 +43,7 @@ const (
 	needExceptListFloat      = "except_list_float"
 	needIntersectListFloat   = "intersect_list_float"
 	needInListFloat          = "in_list_float"
+	needFmod                 = "fmod"
 	needUnionListInt         = "union_list_int"
 	needUnionListListInt     = "union_list_list_int"
 	needUnionListString      = "union_list_string"

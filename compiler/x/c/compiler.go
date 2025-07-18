@@ -4990,7 +4990,11 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			leftString = false
 			continue
 		}
-		if op.Op == "/" && isInt(leftType) && isInt(rightType) {
+		if op.Op == "%" && (isFloat(leftType) || isFloat(rightType)) {
+			c.need(needFmod)
+			left = fmt.Sprintf("_fmod_simple(%s, %s)", left, right)
+			leftType = types.FloatType{}
+		} else if op.Op == "/" && isInt(leftType) && isInt(rightType) {
 			left = fmt.Sprintf("((double)%s) / ((double)%s)", left, right)
 			leftType = types.FloatType{}
 		} else if op.Op == "/" && (strings.Contains(left, "_sum_int(") || strings.Contains(right, "_sum_int(")) {
