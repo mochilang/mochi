@@ -121,6 +121,38 @@ func (c *Compiler) isListExpr(e *parser.Expr) bool {
 	return false
 }
 
+// numericBinary examines a binary expression and reports whether all operands
+// are statically numeric. It returns three values: allInt indicates that every
+// operand is an int, hasFloat indicates at least one operand is a float and ok
+// is true when the expression only contains arithmetic operators.
+func (c *Compiler) numericBinary(b *parser.BinaryExpr) (allInt bool, hasFloat bool, ok bool) {
+	if b == nil {
+		return false, false, false
+	}
+	ops := []string{"+", "-", "*", "/", "%"}
+	allInt = c.isIntUnary(b.Left)
+	hasFloat = c.isFloatUnary(b.Left)
+	numeric := allInt || hasFloat
+	for _, part := range b.Right {
+		if !contains(ops, part.Op) {
+			return false, false, false
+		}
+		i := c.isIntPostfix(part.Right)
+		f := c.isFloatPostfix(part.Right)
+		if !i {
+			allInt = false
+		}
+		if f {
+			hasFloat = true
+		}
+		numeric = numeric || i || f
+	}
+	if !numeric {
+		return false, false, false
+	}
+	return allInt, hasFloat, true
+}
+
 func (c *Compiler) isFloatExpr(e *parser.Expr) bool {
 	if types.IsFloatExpr(e, c.env) {
 		return true
@@ -139,6 +171,13 @@ func (c *Compiler) isFloatExpr(e *parser.Expr) bool {
 			if c.isFloatPostfix(u.Value) {
 				return true
 			}
+		}
+	} else if allInt, hasFloat, ok := c.numericBinary(e.Binary); ok {
+		if hasFloat {
+			return true
+		}
+		if !allInt {
+			return true
 		}
 	}
 	return false
@@ -172,6 +211,10 @@ func (c *Compiler) isIntExpr(e *parser.Expr) bool {
 			if c.isIntPostfix(u.Value) {
 				return true
 			}
+		}
+	} else if allInt, hasFloat, ok := c.numericBinary(e.Binary); ok {
+		if allInt && !hasFloat {
+			return true
 		}
 	}
 	return false
