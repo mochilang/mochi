@@ -83,6 +83,9 @@ type Compiler struct {
 	usesAny      bool
 	usesNow      bool
 
+	curFun    string
+	returnMap map[string]string
+
 	unions   map[string]*unionInfo
 	variants map[string]*variantInfo
 
@@ -123,6 +126,8 @@ func New() *Compiler {
 		usesAvg:        false,
 		usesAny:        false,
 		usesNow:        false,
+		curFun:         "",
+		returnMap:      map[string]string{},
 		nextStructName: "",
 	}
 }
@@ -404,6 +409,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	if c.usesAny {
 		out.WriteString("inline bool __any_eq(const std::any&a,const std::any&b){ if(a.type()!=b.type()) return false; if(a.type()==typeid(int)) return std::any_cast<int>(a)==std::any_cast<int>(b); if(a.type()==typeid(double)) return std::any_cast<double>(a)==std::any_cast<double>(b); if(a.type()==typeid(bool)) return std::any_cast<bool>(a)==std::any_cast<bool>(b); if(a.type()==typeid(std::string)) return std::any_cast<std::string>(a)==std::any_cast<std::string>(b); return false; }\n")
 		out.WriteString("inline void __print_any(const std::any&a){ if(a.type()==typeid(int)) std::cout<<std::any_cast<int>(a); else if(a.type()==typeid(double)) std::cout<<std::any_cast<double>(a); else if(a.type()==typeid(bool)) std::cout<<(std::any_cast<bool>(a)?\"true\":\"false\"); else if(a.type()==typeid(std::string)) std::cout<<std::any_cast<std::string>(a); }\n")
+		out.WriteString("inline std::string __any_str(const std::any&a){ if(a.type()==typeid(int)) return std::to_string(std::any_cast<int>(a)); if(a.type()==typeid(double)) return std::to_string(std::any_cast<double>(a)); if(a.type()==typeid(bool)) return std::any_cast<bool>(a)?\"true\":\"false\"; if(a.type()==typeid(std::string)) return std::any_cast<std::string>(a); return \"\"; }\n")
 		out.WriteByte('\n')
 	}
 	out.Write(src)
@@ -418,6 +424,9 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	}
 	c.funParams[fn.Name] = len(fn.Params)
 	c.funParams[name] = len(fn.Params)
+	prevFun := c.curFun
+	c.curFun = fn.Name
+	defer func() { c.curFun = prevFun }()
 	c.writeIndent()
 	ret, err := c.compileType(fn.Return)
 	if err != nil {
@@ -495,6 +504,11 @@ func (c *Compiler) compileStmt(st *parser.Statement) error {
 		expr, err := c.compileExpr(st.Return.Value)
 		if err != nil {
 			return err
+		}
+		if c.curFun != "" {
+			if mv := c.extractMapValueType(expr); mv != "" {
+				c.returnMap[c.curFun] = mv
+			}
 		}
 		c.writeln("return " + expr + ";")
 		return nil
@@ -647,10 +661,10 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 				c.placeholders[ph] = st.Name
 				c.vars[st.Name] = "vector"
 			}
-		} else if et := c.extractVectorElemType(exprStr); et != "" && !strings.HasPrefix(exprStr, "std::unordered_map<") && !strings.HasPrefix(exprStr, "std::map<") {
+		} else if et := c.extractVectorElemType(exprStr); et != "" && !strings.HasPrefix(exprStr, "std::unordered_map<") && !strings.HasPrefix(exprStr, "std::map<") && c.vars[exprStr] != "map" {
 			typ = fmt.Sprintf("std::vector<%s>", et)
 			elemHint = et
-		} else if et := c.elemType[exprStr]; et != "" && !strings.HasPrefix(exprStr, "std::unordered_map<") && !strings.HasPrefix(exprStr, "std::map<") {
+		} else if et := c.elemType[exprStr]; et != "" && !strings.HasPrefix(exprStr, "std::unordered_map<") && !strings.HasPrefix(exprStr, "std::map<") && c.vars[exprStr] != "map" {
 			typ = fmt.Sprintf("std::vector<%s>", et)
 			elemHint = et
 		}
@@ -746,10 +760,10 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 				c.placeholders[ph] = st.Name
 				c.vars[st.Name] = "vector"
 			}
-		} else if et := c.extractVectorElemType(exprStr); et != "" && !strings.HasPrefix(exprStr, "std::unordered_map<") && !strings.HasPrefix(exprStr, "std::map<") {
+		} else if et := c.extractVectorElemType(exprStr); et != "" && !strings.HasPrefix(exprStr, "std::unordered_map<") && !strings.HasPrefix(exprStr, "std::map<") && c.vars[exprStr] != "map" {
 			typ = fmt.Sprintf("std::vector<%s>", et)
 			elemHint = et
-		} else if et := c.elemType[exprStr]; et != "" && !strings.HasPrefix(exprStr, "std::unordered_map<") && !strings.HasPrefix(exprStr, "std::map<") {
+		} else if et := c.elemType[exprStr]; et != "" && !strings.HasPrefix(exprStr, "std::unordered_map<") && !strings.HasPrefix(exprStr, "std::map<") && c.vars[exprStr] != "map" {
 			typ = fmt.Sprintf("std::vector<%s>", et)
 			elemHint = et
 		}
@@ -835,7 +849,9 @@ func (c *Compiler) compileAssign(st *parser.AssignStmt) error {
 				}
 				c.buf.WriteString(name + ".push_back(" + arg + ");\n")
 				// update placeholder type info
-				if t := c.structLiteralType(arg); t != "" {
+				if t := c.extractVectorType(arg); t != "" {
+					c.elemType[st.Name] = t
+				} else if t := c.structLiteralType(arg); t != "" {
 					c.elemType[st.Name] = t
 					c.varStruct[st.Name] = t
 				} else if t := c.varStruct[arg]; t != "" {
@@ -857,7 +873,9 @@ func (c *Compiler) compileAssign(st *parser.AssignStmt) error {
 	if call, ok := callPattern(st.Value); ok && call.Func == "append" && len(call.Args) == 2 {
 		if id, ok2 := identName(call.Args[0]); ok2 && id == st.Name {
 			if arg, err2 := c.compileExpr(call.Args[1]); err2 == nil {
-				if t := c.structLiteralType(arg); t != "" {
+				if t := c.extractVectorType(arg); t != "" {
+					c.elemType[st.Name] = t
+				} else if t := c.structLiteralType(arg); t != "" {
 					c.elemType[st.Name] = t
 					c.varStruct[st.Name] = t
 				} else if t := c.varStruct[arg]; t != "" {
@@ -1196,6 +1214,9 @@ func (c *Compiler) predictElemTypeIn(name string, stmts []*parser.Statement) str
 				if strings.Contains(exprStr, "__append(") {
 					if idx := strings.Index(exprStr, ","); idx != -1 {
 						arg := strings.TrimSpace(exprStr[idx+1:])
+						if vt := c.extractVectorType(arg); vt != "" {
+							return vt
+						}
 						if et := c.extractVectorElemType(arg); et != "" {
 							return et
 						}
@@ -1322,7 +1343,7 @@ func (c *Compiler) compilePrint(args []*parser.Expr) error {
 		}
 		if typ != "vector" {
 			c.writeIndent()
-			if typ == "" && structType == "" && c.isAnyExpr(s) {
+			if typ == "any" || typ == "" && structType == "" && c.isAnyExpr(s) {
 				c.buf.WriteString("__print_any(" + s + "); std::cout << std::endl;")
 				c.buf.WriteByte('\n')
 				return nil
@@ -1831,38 +1852,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			elems = append(elems, s)
 		}
-		elemType := "int"
+		elemType := ""
 		if len(elems) > 0 {
-			if t := c.structLiteralType(elems[0]); t != "" {
-				elemType = t
-			} else if t := c.extractVectorType(elems[0]); t != "" {
-				elemType = t
-			} else if t := c.varStruct[elems[0]]; t != "" {
-				if idx := strings.Index(t, "{"); idx != -1 {
-					elemType = t[:idx]
-				} else {
-					elemType = t
-				}
-			} else if v := c.vars[elems[0]]; v != "" {
-				switch v {
-				case "string":
-					elemType = "std::string"
-				case "int", "double", "bool":
-					elemType = v
-				}
-			} else if t := c.inferType(elems[0]); t != "" {
-				switch t {
-				case "string":
-					elemType = "std::string"
-				case "int", "double", "bool":
-					elemType = t
-				default:
-					elemType = fmt.Sprintf("decltype(%s)", elems[0])
-				}
-			} else {
-				elemType = fmt.Sprintf("decltype(%s)", elems[0])
-			}
-			for _, e := range elems[1:] {
+			for _, e := range elems {
 				t := inferExprType(e)
 				if t == "" {
 					if s := c.structLiteralType(e); s != "" {
@@ -1876,20 +1868,39 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 							t = v
 						}
 					} else if vv := c.vars[e]; vv != "" {
-						t = vv
+						switch vv {
+						case "string":
+							t = "std::string"
+						case "int", "double", "bool":
+							t = vv
+						}
 					}
+				}
+				if t == "" {
+					continue
 				}
 				if t == "string" {
 					t = "std::string"
 				}
-				if t != elemType {
+				if elemType == "" {
+					elemType = t
+				} else if t != elemType {
 					elemType = "std::any"
 					c.usesAny = true
 					break
 				}
 			}
+			if elemType == "" {
+				elemType = "std::any"
+				c.usesAny = true
+			}
 		}
-		return fmt.Sprintf("std::vector<%s>{%s}", elemType, strings.Join(elems, ", ")), nil
+		expr := fmt.Sprintf("std::vector<%s>{%s}", elemType, strings.Join(elems, ", "))
+		c.elemType[expr] = elemType
+		if c.isStructName(elemType) {
+			c.varStruct[expr] = elemType
+		}
+		return expr, nil
 	case p.Map != nil:
 		names := []string{}
 		vals := []string{}
@@ -2199,6 +2210,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 		case "str":
 			if len(args) == 1 {
+				if c.isAnyExpr(args[0]) {
+					return fmt.Sprintf("__any_str(%s)", args[0]), nil
+				}
 				return fmt.Sprintf("std::to_string(%s)", args[0]), nil
 			}
 		case "substring":
@@ -2226,7 +2240,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if n, ok := c.funParams[name]; ok && len(args) < n {
 			return c.partialApply(name, args, n), nil
 		}
-		return name + "(" + strings.Join(args, ", ") + ")", nil
+		expr := name + "(" + strings.Join(args, ", ") + ")"
+		if mv, ok := c.returnMap[name]; ok && mv != "" {
+			c.vars[expr] = "map"
+			// store map value type for later lookups
+			c.elemType[expr] = mv
+		}
+		return expr, nil
 	case p.Load != nil:
 		return c.compileLoadExpr(p.Load)
 	case p.Save != nil:
@@ -4006,6 +4026,20 @@ func (c *Compiler) extractVectorElemType(expr string) string {
 		if texpr == "true" || texpr == "false" {
 			return "bool"
 		}
+		if v := c.vars[texpr]; v != "" {
+			switch v {
+			case "string":
+				return "std::string"
+			case "int", "double", "bool":
+				return v
+			}
+		}
+		if t := c.varStruct[texpr]; t != "" {
+			if idx := strings.Index(t, "{"); idx != -1 {
+				t = t[:idx]
+			}
+			return t
+		}
 		typ = texpr
 	}
 	if c.isStructName(typ) {
@@ -4023,6 +4057,20 @@ func (c *Compiler) extractVectorElemType(expr string) string {
 	if _, err := strconv.Atoi(typ); err == nil {
 		return "int"
 	}
+	if v := c.vars[typ]; v != "" {
+		switch v {
+		case "string":
+			return "std::string"
+		case "int", "double", "bool":
+			return v
+		}
+	}
+	if t := c.varStruct[typ]; t != "" {
+		if idx := strings.Index(t, "{"); idx != -1 {
+			t = t[:idx]
+		}
+		return t
+	}
 	return ""
 }
 
@@ -4039,6 +4087,12 @@ func (c *Compiler) extractMapValueType(expr string) string {
 				}
 				return val
 			}
+		}
+	}
+	if idx := strings.Index(expr, "("); idx != -1 {
+		name := expr[:idx]
+		if v, ok := c.returnMap[name]; ok {
+			return v
 		}
 	}
 	if t := c.elemType[expr]; t != "" {
