@@ -653,7 +653,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", fmt.Errorf("len expects 1 arg")
 			}
 			t := c.inferExprType(p.Call.Args[0])
-			switch t.(type) {
+			switch t := t.(type) {
 			case types.StringType:
 				return fmt.Sprintf("String.length(%s)", args[0]), nil
 			case types.MapType:
@@ -662,6 +662,21 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return fmt.Sprintf("length(%s.items)", args[0]), nil
 			case types.ListType:
 				return fmt.Sprintf("length(%s)", args[0]), nil
+			case types.OptionType:
+				inner := t.Elem
+				switch inner.(type) {
+				case types.ListType:
+					return fmt.Sprintf("if %s == nil, do: 0, else: length(%s)", args[0], args[0]), nil
+				case types.StringType:
+					return fmt.Sprintf("if %s == nil, do: 0, else: String.length(%s)", args[0], args[0]), nil
+				case types.MapType:
+					return fmt.Sprintf("if %s == nil, do: 0, else: map_size(%s)", args[0], args[0]), nil
+				case types.GroupType:
+					return fmt.Sprintf("if %s == nil, do: 0, else: length(%s.items)", args[0], args[0]), nil
+				default:
+					c.use("_length")
+					return fmt.Sprintf("if %s == nil, do: 0, else: _length(%s)", args[0], args[0]), nil
+				}
 			default:
 				c.use("_length")
 				return fmt.Sprintf("_length(%s)", args[0]), nil
@@ -685,7 +700,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", fmt.Errorf("exists expects 1 arg")
 			}
 			t := c.inferExprType(p.Call.Args[0])
-			switch t.(type) {
+			switch tt := t.(type) {
 			case types.ListType:
 				return fmt.Sprintf("length(%s) > 0", args[0]), nil
 			case types.MapType:
@@ -695,7 +710,19 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			case types.StringType:
 				return fmt.Sprintf("String.length(%s) > 0", args[0]), nil
 			case types.OptionType:
-				return fmt.Sprintf("%s != nil", args[0]), nil
+				inner := tt.Elem
+				switch inner.(type) {
+				case types.ListType:
+					return fmt.Sprintf("%s != nil and length(%s) > 0", args[0], args[0]), nil
+				case types.MapType:
+					return fmt.Sprintf("%s != nil and map_size(%s) > 0", args[0], args[0]), nil
+				case types.GroupType:
+					return fmt.Sprintf("%s != nil and length(%s.items) > 0", args[0], args[0]), nil
+				case types.StringType:
+					return fmt.Sprintf("%s != nil and String.length(%s) > 0", args[0], args[0]), nil
+				default:
+					return fmt.Sprintf("%s != nil", args[0]), nil
+				}
 			default:
 				c.use("_exists")
 				return fmt.Sprintf("_exists(%s)", argStr), nil
