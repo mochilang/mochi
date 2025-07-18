@@ -157,3 +157,4 @@ should compile and run successfully.
 - 2025-09-27 - Evaluated `in` operations on constant string and float lists at compile time to eliminate contains helpers.
 - 2025-09-28 - Fixed print formatting for constant integers and implemented `_save_jsonl` helper.
 - 2025-07-18 - Added fallback group key inference in guessType when groupKeys are unset.
+- 2025-09-29 - Emitted plain printf lines for constant JSONL saves and updated save_jsonl_stdout.

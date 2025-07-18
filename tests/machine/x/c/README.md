@@ -93,7 +93,7 @@ The C backend compiles Mochi programs in `tests/vm/valid`. The table below lists
 - [x] outer_join
  - [x] record_assign
 - [x] right_join
-- [ ] save_jsonl_stdout
+- [x] save_jsonl_stdout
  - [x] slice
  - [x] sort_stable
  - [x] sum_builtin

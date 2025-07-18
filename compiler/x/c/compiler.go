@@ -94,6 +94,7 @@ type Compiler struct {
 	equalListStructs map[string]bool
 	funcAliases      map[string]string
 	appendTypes      map[string]types.Type
+	jsonLines        map[string][]string
 }
 
 func (c *Compiler) pushPointerVars() map[string]bool {
@@ -133,6 +134,7 @@ func New(env *types.Env) *Compiler {
 		equalListStructs: map[string]bool{},
 		funcAliases:      map[string]string{},
 		appendTypes:      map[string]types.Type{},
+		jsonLines:        map[string][]string{},
 	}
 }
 
@@ -2270,11 +2272,45 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) string {
 	if s.Path != nil {
 		path = fmt.Sprintf("%q", *s.Path)
 	}
-	// include JSON helpers so map_string types and _isnum are defined
-	c.need(needSaveJSON)
+	format := "json"
+	if s.With != nil && s.With.Binary != nil && len(s.With.Binary.Right) == 0 {
+		if m := s.With.Binary.Left.Value.Target.Map; m != nil {
+			for _, it := range m.Items {
+				if key, ok := types.SimpleStringKey(it.Key); ok && key == "format" {
+					if _, val, ok2 := constLiteralTypeVal(it.Value); ok2 {
+						format = strings.Trim(val, "\"")
+					}
+				}
+			}
+		}
+	}
+	if format == "jsonl" && path == "\"-\"" {
+		if lines, ok := c.evalJSONLinesExpr(s.Src); ok {
+			for _, line := range lines {
+				c.writeln(fmt.Sprintf("printf(\"%s\\n\");", escapeCString(line)))
+			}
+			return ""
+		}
+		if name, ok := identName(s.Src); ok {
+			if lines, ok2 := c.jsonLines[name]; ok2 {
+				for _, line := range lines {
+					c.writeln(fmt.Sprintf("printf(\"%s\\n\");", escapeCString(line)))
+				}
+				return ""
+			}
+		}
+	}
+	if format == "jsonl" {
+		c.need(needSaveJSONL)
+	} else {
+		c.need(needSaveJSON)
+	}
 	c.need(needLoadJSON)
 	c.need(needMapStringInt)
 	c.need(needStringHeader)
+	if format == "jsonl" {
+		return fmt.Sprintf("_save_jsonl(%s, %s)", src, path)
+	}
 	return fmt.Sprintf("_save_json(%s, %s)", src, path)
 }
 
@@ -5234,8 +5270,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 				if st, ok := c.structLits[ml]; ok {
 					c.compileStructType(st)
 					vals := make([]string, len(p.List.Elems))
+					jsons := make([]string, len(p.List.Elems))
+					okJSON := true
 					for i, el := range p.List.Elems {
 						vals[i] = c.compileExpr(el)
+						if j, ok2 := jsonObjectLiteral(el.Binary.Left.Value.Target.Map); ok2 {
+							jsons[i] = j
+						} else {
+							okJSON = false
+						}
 					}
 					c.writeln(fmt.Sprintf("%s %s[] = {%s};", sanitizeTypeName(st.Name), name, strings.Join(vals, ", ")))
 					lenVar := name + "_len"
@@ -5245,6 +5288,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					}
 					if c.arrayLens != nil {
 						c.arrayLens[name] = lenVar
+					}
+					if okJSON && c.jsonLines != nil {
+						c.jsonLines[name] = jsons
 					}
 					return name
 				}
@@ -7894,4 +7940,79 @@ func (c *Compiler) isStackArrayExpr(expr string) bool {
 	}
 	_, ok := c.stackArrays[root]
 	return ok
+}
+
+// evalJSONLinesExpr returns JSON strings for a list of map literals if it can
+// be fully evaluated at compile time.
+func (c *Compiler) evalJSONLinesExpr(e *parser.Expr) ([]string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	if e.Binary.Left == nil || e.Binary.Left.Value == nil || e.Binary.Left.Value.Target == nil {
+		return nil, false
+	}
+	ll := e.Binary.Left.Value.Target.List
+	if ll == nil {
+		return nil, false
+	}
+	lines := make([]string, len(ll.Elems))
+	for i, el := range ll.Elems {
+		if el.Binary == nil || len(el.Binary.Right) != 0 {
+			return nil, false
+		}
+		if el.Binary.Left == nil || el.Binary.Left.Value == nil || el.Binary.Left.Value.Target == nil {
+			return nil, false
+		}
+		ml := el.Binary.Left.Value.Target.Map
+		if ml == nil {
+			return nil, false
+		}
+		parts := make([]string, len(ml.Items))
+		for j, it := range ml.Items {
+			key, ok := types.SimpleStringKey(it.Key)
+			if !ok {
+				return nil, false
+			}
+			typ, val, ok := constLiteralTypeVal(it.Value)
+			if !ok {
+				return nil, false
+			}
+			switch typ {
+			case "int", "double":
+				parts[j] = fmt.Sprintf("\"%s\":%s", key, val)
+			case "char*":
+				parts[j] = fmt.Sprintf("\"%s\":%s", key, val)
+			default:
+				return nil, false
+			}
+		}
+		lines[i] = fmt.Sprintf("{%s}", strings.Join(parts, ","))
+	}
+	return lines, true
+}
+
+func jsonObjectLiteral(ml *parser.MapLiteral) (string, bool) {
+	if ml == nil {
+		return "", false
+	}
+	parts := make([]string, len(ml.Items))
+	for i, it := range ml.Items {
+		key, ok := types.SimpleStringKey(it.Key)
+		if !ok {
+			return "", false
+		}
+		typ, val, ok := constLiteralTypeVal(it.Value)
+		if !ok {
+			return "", false
+		}
+		switch typ {
+		case "int", "double":
+			parts[i] = fmt.Sprintf("\"%s\":%s", key, val)
+		case "char*":
+			parts[i] = fmt.Sprintf("\"%s\":%s", key, val)
+		default:
+			return "", false
+		}
+	}
+	return "{" + strings.Join(parts, ",") + "}", true
 }
