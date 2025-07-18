@@ -2,7 +2,7 @@
 
 This directory holds Dart code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
-Compiled programs: 10/261
+Compiled programs: 34/264
 
 Checklist:
 - [x] 100-doors-2
@@ -18,7 +18,7 @@ Checklist:
 - [x] 4-rings-or-4-squares-puzzle
 - [ ] 9-billion-names-of-god-the-integer
 - [ ] 99-bottles-of-beer-2
-- [ ] 99-bottles-of-beer
+- [x] 99-bottles-of-beer
 - [ ] a+b
 - [ ] abbreviations-automatic
 - [ ] abbreviations-easy
@@ -78,11 +78,11 @@ Checklist:
 - [ ] arithmetic-numbers
 - [ ] arithmetic-rational
 - [ ] array-concatenation
-- [ ] array-length
+- [x] array-length
 - [ ] arrays
 - [ ] ascending-primes
-- [ ] ascii-art-diagram-converter
-- [ ] assertions
+- [x] ascii-art-diagram-converter
+- [x] assertions
 - [ ] associative-array-creation
 - [ ] associative-array-iteration
 - [ ] associative-array-merging
@@ -100,7 +100,7 @@ Checklist:
 - [ ] averages-simple-moving-average
 - [ ] avl-tree
 - [ ] b-zier-curves-intersections
-- [ ] babbage-problem
+- [x] babbage-problem
 - [ ] babylonian-spiral
 - [ ] balanced-brackets
 - [ ] balanced-ternary
@@ -139,7 +139,7 @@ Checklist:
 - [ ] box-the-compass
 - [ ] boyer-moore-string-search
 - [ ] brazilian-numbers
-- [ ] break-oo-privacy
+- [x] break-oo-privacy
 - [ ] brilliant-numbers
 - [ ] brownian-tree
 - [ ] bulls-and-cows-player
@@ -152,11 +152,11 @@ Checklist:
 - [ ] calendar---for-real-programmers-2
 - [ ] calendar
 - [ ] calkin-wilf-sequence
-- [ ] call-a-foreign-language-function
+- [x] call-a-foreign-language-function
 - [ ] call-a-function-1
 - [ ] call-a-function-10
-- [ ] call-a-function-11
-- [ ] call-a-function-12
+- [x] call-a-function-11
+- [x] call-a-function-12
 - [ ] call-a-function-2
 - [ ] call-a-function-3
 - [ ] call-a-function-4
@@ -178,7 +178,7 @@ Checklist:
 - [ ] cartesian-product-of-two-or-more-lists-2
 - [ ] cartesian-product-of-two-or-more-lists-3
 - [ ] cartesian-product-of-two-or-more-lists-4
-- [ ] case-sensitivity-of-identifiers
+- [x] case-sensitivity-of-identifiers
 - [ ] casting-out-nines
 - [ ] catalan-numbers-1
 - [ ] catalan-numbers-2
@@ -187,25 +187,25 @@ Checklist:
 - [ ] catmull-clark-subdivision-surface
 - [ ] chaocipher
 - [ ] chaos-game
-- [ ] character-codes-1
-- [ ] character-codes-2
-- [ ] character-codes-3
-- [ ] character-codes-4
-- [ ] character-codes-5
-- [ ] chat-server
+- [x] character-codes-1
+- [x] character-codes-2
+- [x] character-codes-3
+- [x] character-codes-4
+- [x] character-codes-5
+- [x] chat-server
 - [ ] check-machin-like-formulas
-- [ ] check-that-file-exists
-- [ ] checkpoint-synchronization-1
+- [x] check-that-file-exists
+- [x] checkpoint-synchronization-1
 - [ ] checkpoint-synchronization-2
 - [ ] checkpoint-synchronization-3
-- [ ] checkpoint-synchronization-4
+- [x] checkpoint-synchronization-4
 - [ ] chernicks-carmichael-numbers
-- [ ] cheryls-birthday
+- [x] cheryls-birthday
 - [ ] chinese-remainder-theorem
 - [ ] chinese-zodiac
 - [ ] cholesky-decomposition-1
 - [ ] cholesky-decomposition
-- [ ] chowla-numbers
+- [x] chowla-numbers
 - [ ] church-numerals-1
 - [ ] church-numerals-2
 - [ ] circles-of-given-radius-through-two-points
@@ -230,7 +230,7 @@ Checklist:
 - [ ] consecutive-primes-with-ascending-or-descending-differences
 - [ ] constrained-genericity-1
 - [ ] constrained-genericity-2
-- [ ] constrained-genericity-3
+- [x] constrained-genericity-3
 - [ ] constrained-genericity-4
 - [ ] constrained-random-points-on-a-circle-1
 - [ ] constrained-random-points-on-a-circle-2
@@ -254,6 +254,7 @@ Checklist:
 - [ ] cramers-rule
 - [ ] crc-32-1
 - [ ] crc-32-2
+- [ ] create-a-file-on-magnetic-tape
 - [ ] create-a-file
 - [ ] create-a-two-dimensional-array-at-runtime-1
 - [ ] create-an-html-table
@@ -261,8 +262,10 @@ Checklist:
 - [ ] csv-data-manipulation
 - [ ] csv-to-html-translation-1
 - [ ] csv-to-html-translation-2
-- [ ] csv-to-html-translation-3
-- [ ] csv-to-html-translation-4
+- [x] csv-to-html-translation-3
+- [x] csv-to-html-translation-4
 - [ ] csv-to-html-translation-5
+- [ ] cuban-primes
+- [ ] cullen-and-woodall-numbers
 - [ ] cusip
 - [ ] md5
