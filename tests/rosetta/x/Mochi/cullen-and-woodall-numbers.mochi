@@ -1,0 +1,63 @@
+// Mochi translation of Rosetta task "Cullen and Woodall numbers"
+
+fun pow_big(base: bigint, exp: int): bigint {
+  var result: bigint = 1
+  var b: bigint = base
+  var e = exp
+  while e > 0 {
+    if e % 2 == 1 { result = result * b }
+    b = b * b
+    e = (e / 2) as int
+  }
+  return result
+}
+
+fun cullen(n: int): bigint {
+  let two_n = pow_big(2 as bigint, n)
+  return (two_n * (n as bigint)) + (1 as bigint)
+}
+
+fun woodall(n: int): bigint {
+  return cullen(n) - (2 as bigint)
+}
+
+fun show_list(xs: list<bigint>): string {
+  var line = ""
+  var i = 0
+  while i < len(xs) {
+    line = line + str(xs[i])
+    if i < len(xs) - 1 { line = line + " " }
+    i = i + 1
+  }
+  return line
+}
+
+fun main() {
+  var cnums: list<bigint> = []
+  var i = 1
+  while i <= 20 {
+    cnums = append(cnums, cullen(i))
+    i = i + 1
+  }
+  print("First 20 Cullen numbers (n * 2^n + 1):")
+  print(show_list(cnums))
+
+  var wnums: list<bigint> = []
+  i = 1
+  while i <= 20 {
+    wnums = append(wnums, woodall(i))
+    i = i + 1
+  }
+  print("\nFirst 20 Woodall numbers (n * 2^n - 1):")
+  print(show_list(wnums))
+
+  let cprimes = [1 as bigint, 141 as bigint, 4713 as bigint, 5795 as bigint, 6611 as bigint]
+  print("\nFirst 5 Cullen primes (in terms of n):")
+  print(show_list(cprimes))
+
+  let wprimes = [2 as bigint,3 as bigint,6 as bigint,30 as bigint,75 as bigint,81 as bigint,115 as bigint,123 as bigint,249 as bigint,362 as bigint,384 as bigint,462 as bigint]
+  print("\nFirst 12 Woodall primes (in terms of n):")
+  print(show_list(wprimes))
+}
+
+main()
