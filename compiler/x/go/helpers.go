@@ -165,6 +165,28 @@ func isNumeric(t types.Type) bool { return types.IsNumericType(t) }
 func isBool(t types.Type) bool    { return types.IsBoolType(t) }
 func isString(t types.Type) bool  { return types.IsStringType(t) }
 
+// isBoolLike reports whether t is a bool or option of bool.
+func isBoolLike(t types.Type) bool {
+	if isBool(t) {
+		return true
+	}
+	if ot, ok := t.(types.OptionType); ok {
+		return isBoolLike(ot.Elem)
+	}
+	return false
+}
+
+// isAnyLike reports whether t is any or option of any.
+func isAnyLike(t types.Type) bool {
+	if isAny(t) {
+		return true
+	}
+	if ot, ok := t.(types.OptionType); ok {
+		return isAnyLike(ot.Elem)
+	}
+	return false
+}
+
 func isComparableSimple(t types.Type) bool {
 	return isInt(t) || isInt64(t) || isFloat(t) || isBool(t) || isString(t)
 }
