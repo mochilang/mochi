@@ -270,6 +270,7 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	var forward []string
 	skip := map[*parser.Statement]bool{}
 	var globals []string
+	var initGlobals []*parser.VarStmt
 	for _, s := range prog.Statements {
 		if s.Import != nil {
 			if s.Import.Lang != nil {
@@ -309,56 +310,106 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 			}
 		}
 		// collect simple global variables so functions can use them
-		if s.Var != nil && s.Var.Value != nil {
-			if typ, val, ok := constLiteralTypeVal(s.Var.Value); ok {
-				t := typ
-				var vt types.Type
-				if s.Var.Type != nil {
-					t = c.cType(s.Var.Type)
-					vt = resolveTypeRef(s.Var.Type, c.env)
-				} else {
-					switch typ {
-					case "double":
-						vt = types.FloatType{}
-					case "char*":
-						vt = types.StringType{}
-					default:
-						if isBoolLiteral(s.Var.Value) {
-							vt = types.BoolType{}
-						} else {
-							vt = types.IntType{}
+		if s.Var != nil {
+			if s.Var.Value != nil {
+				if typ, val, ok := constLiteralTypeVal(s.Var.Value); ok {
+					t := typ
+					var vt types.Type
+					if s.Var.Type != nil {
+						t = c.cType(s.Var.Type)
+						vt = resolveTypeRef(s.Var.Type, c.env)
+					} else {
+						switch typ {
+						case "double":
+							vt = types.FloatType{}
+						case "char*":
+							vt = types.StringType{}
+						default:
+							if isBoolLiteral(s.Var.Value) {
+								vt = types.BoolType{}
+							} else {
+								vt = types.IntType{}
+							}
 						}
 					}
+					globals = append(globals, fmt.Sprintf("static %s %s = %s;", t, sanitizeName(s.Var.Name), val))
+					if c.env != nil {
+						c.env.SetVar(s.Var.Name, vt, true)
+					}
+					skip[s] = true
+				} else {
+					vt := types.IntType{}
+					if s.Var.Type != nil {
+						vt = resolveTypeRef(s.Var.Type, c.env)
+					} else if c.env != nil {
+						vt = c.exprType(s.Var.Value)
+					}
+					globals = append(globals, fmt.Sprintf("static %s %s;", cTypeFromType(vt), sanitizeName(s.Var.Name)))
+					if c.env != nil {
+						c.env.SetVar(s.Var.Name, vt, true)
+					}
+					initGlobals = append(initGlobals, s.Var)
+					skip[s] = true
 				}
-				globals = append(globals, fmt.Sprintf("static %s %s = %s;", t, sanitizeName(s.Var.Name), val))
+			} else {
+				vt := types.IntType{}
+				if s.Var.Type != nil {
+					vt = resolveTypeRef(s.Var.Type, c.env)
+				}
+				globals = append(globals, fmt.Sprintf("static %s %s;", cTypeFromType(vt), sanitizeName(s.Var.Name)))
 				if c.env != nil {
 					c.env.SetVar(s.Var.Name, vt, true)
 				}
 				skip[s] = true
 			}
 		}
-		if s.Let != nil && s.Let.Value != nil {
-			if typ, val, ok := constLiteralTypeVal(s.Let.Value); ok {
-				t := typ
-				var vt types.Type
-				if s.Let.Type != nil {
-					t = c.cType(s.Let.Type)
-					vt = resolveTypeRef(s.Let.Type, c.env)
-				} else {
-					switch typ {
-					case "double":
-						vt = types.FloatType{}
-					case "char*":
-						vt = types.StringType{}
-					default:
-						if isBoolLiteral(s.Let.Value) {
-							vt = types.BoolType{}
-						} else {
-							vt = types.IntType{}
+		if s.Let != nil {
+			if s.Let.Value != nil {
+				if typ, val, ok := constLiteralTypeVal(s.Let.Value); ok {
+					t := typ
+					var vt types.Type
+					if s.Let.Type != nil {
+						t = c.cType(s.Let.Type)
+						vt = resolveTypeRef(s.Let.Type, c.env)
+					} else {
+						switch typ {
+						case "double":
+							vt = types.FloatType{}
+						case "char*":
+							vt = types.StringType{}
+						default:
+							if isBoolLiteral(s.Let.Value) {
+								vt = types.BoolType{}
+							} else {
+								vt = types.IntType{}
+							}
 						}
 					}
+					globals = append(globals, fmt.Sprintf("static %s %s = %s;", t, sanitizeName(s.Let.Name), val))
+					if c.env != nil {
+						c.env.SetVar(s.Let.Name, vt, true)
+					}
+					skip[s] = true
+				} else {
+					vt := types.IntType{}
+					if s.Let.Type != nil {
+						vt = resolveTypeRef(s.Let.Type, c.env)
+					} else if c.env != nil {
+						vt = c.exprType(s.Let.Value)
+					}
+					globals = append(globals, fmt.Sprintf("static %s %s;", cTypeFromType(vt), sanitizeName(s.Let.Name)))
+					if c.env != nil {
+						c.env.SetVar(s.Let.Name, vt, true)
+					}
+					initGlobals = append(initGlobals, &parser.VarStmt{Name: s.Let.Name, Type: s.Let.Type, Value: s.Let.Value})
+					skip[s] = true
 				}
-				globals = append(globals, fmt.Sprintf("static %s %s = %s;", t, sanitizeName(s.Let.Name), val))
+			} else {
+				vt := types.IntType{}
+				if s.Let.Type != nil {
+					vt = resolveTypeRef(s.Let.Type, c.env)
+				}
+				globals = append(globals, fmt.Sprintf("static %s %s;", cTypeFromType(vt), sanitizeName(s.Let.Name)))
 				if c.env != nil {
 					c.env.SetVar(s.Let.Name, vt, true)
 				}
@@ -441,6 +492,11 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	c.indent++
 	for _, name := range c.externObjects {
 		c.writeln(fmt.Sprintf("if (%s == NULL) { fprintf(stderr, \"extern object not registered: %s\\n\"); return 1; }", name, name))
+	}
+	for _, gv := range initGlobals {
+		if err := c.compileStmt(&parser.Statement{Assign: &parser.AssignStmt{Name: gv.Name, Value: gv.Value}}); err != nil {
+			return nil, err
+		}
 	}
 	for _, s := range prog.Statements {
 		if skip[s] {
@@ -6031,8 +6087,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			c.need(needStr)
 			c.writeln(fmt.Sprintf("char* %s = _str(%s);", name, arg))
 			return name
+		} else if p.Call.Func == "int" {
+			arg := c.compileExpr(p.Call.Args[0])
+			c.need(needStringHeader)
+			return fmt.Sprintf("atoi(%s)", arg)
 		} else if p.Call.Func == "input" {
 			c.need(needInput)
+			c.need(needStringHeader)
 			return "_input()"
 		} else if p.Call.Func == "now" {
 			c.need(needNow)
