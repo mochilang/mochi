@@ -21,13 +21,13 @@ var runtimePieces = map[string]string{
     res.add(item)
     return res
 }`,
-	"avg": `fun avg(list: List<Any?>): Number {
-    if (list.isEmpty()) return 0
-    var s = 0.0
-    for (n in list) s += toDouble(n)
-    val r = s / list.size
-    return if (r % 1.0 == 0.0) r.toInt() else r
-}`,
+	"avg": `fun avg(list: List<Any?>): Double {
+            if (list.isEmpty()) return 0
+            var s = 0.0
+            for (n in list) s += toDouble(n)
+            val r = s / list.size
+            return r
+        }`,
 	"div": `fun div(a: Any?, b: Any?): Double {
     val x = toDouble(a)
     val y = toDouble(b)
@@ -58,16 +58,16 @@ var runtimePieces = map[string]string{
     }
     return m
 }`,
-	"sum": `fun sum(list: List<Any?>): Number {
-    var s = 0.0
-    var allInt = true
-    for (n in list) {
-        val d = toDouble(n)
-        if (d % 1.0 != 0.0) allInt = false
-        s += d
-    }
-    return if (allInt) s.toInt() else s
-}`,
+	"sum": `fun sum(list: List<Any?>): Double {
+            var s = 0.0
+            var allInt = true
+            for (n in list) {
+                val d = toDouble(n)
+                if (d % 1.0 != 0.0) allInt = false
+                s += d
+            }
+            return if (allInt) s.toInt().toDouble() else s
+        }`,
 	"str":         `fun str(v: Any?): String = v.toString()`,
 	"substring":   `fun substring(s: String, start: Int, end: Int): String = s.substring(start, end)`,
 	"starts_with": `fun String.starts_with(prefix: String): Boolean = this.startsWith(prefix)`,
@@ -2699,6 +2699,13 @@ func (c *Compiler) discoverStructs(prog *parser.Program) {
 					c.mapNodes[ml] = st.Name
 					c.env.SetVar(name, types.ListType{Elem: st}, mutable)
 				}
+			} else if id, ok := identName(q.Select); ok && q.Group != nil && id == q.Group.Name {
+				keyType := types.ExprType(q.Group.Exprs[0], child)
+				elemT := leftT
+				if lt, ok := elemT.(types.ListType); ok {
+					elemT = lt.Elem
+				}
+				c.env.SetVar(name, types.ListType{Elem: types.GroupType{Key: keyType, Elem: elemT}}, mutable)
 			} else if id, ok := identName(q.Select); ok && id == q.Var {
 				if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
 					c.env.SetVar(name, types.ListType{Elem: lt.Elem}, mutable)
