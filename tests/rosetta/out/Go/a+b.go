@@ -6,20 +6,20 @@ package main
 
 import (
 	"fmt"
-	"strings"
+	"strconv"
 )
 
 type v map[string]any
 
 // line 1
-func main() {
-	a := int(any(_input()))
-	b := int(any(_input()))
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any((a + b))), "\n"))
+func mainFn() {
+	a := func() int { v, _ := strconv.Atoi(_input()); return v }()
+	b := func() int { v, _ := strconv.Atoi(_input()); return v }()
+	fmt.Println(any((a + b)))
 }
 
 func main() {
-	main()
+	mainFn()
 }
 
 func _input() string {

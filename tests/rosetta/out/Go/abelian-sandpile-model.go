@@ -6,7 +6,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 )
 
 type v map[string]any
@@ -19,10 +18,10 @@ func newPile(d int) [][]int {
 		var row []int = []int{}
 		x := 0
 		for x < d {
-			row = append(_toAnySlice(row), any(0))
+			row = append(row, 0)
 			x = (x + 1)
 		}
-		b = append(_toAnySlice(b), any(row))
+		b = append(b, row)
 		y = (y + 1)
 	}
 	return b
@@ -81,13 +80,13 @@ func drawPile(pile [][]int, d int) {
 			line = line + chars[v]
 			col = (col + 1)
 		}
-		fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(line)), "\n"))
+		fmt.Println(any(line))
 		row = (row + 1)
 	}
 }
 
 // line 61
-func main() {
+func mainFn() {
 	pile := newPile(16)
 	hdim := 7
 	pile[hdim][hdim] = 16
@@ -99,13 +98,5 @@ var dim int
 
 func main() {
 	dim = 16
-	main()
-}
-
-func _toAnySlice[T any](s []T) []any {
-	out := make([]any, len(s))
-	for i, v := range s {
-		out[i] = v
-	}
-	return out
+	mainFn()
 }

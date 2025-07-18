@@ -4560,6 +4560,20 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "str":
 		c.imports["fmt"] = true
 		return fmt.Sprintf("fmt.Sprint(%s)", argStr), nil
+	case "int":
+		if len(call.Args) != 1 {
+			return "", fmt.Errorf("int expects 1 arg")
+		}
+		arg, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		at := c.inferExprType(call.Args[0])
+		if isString(at) {
+			c.imports["strconv"] = true
+			return fmt.Sprintf("func() int { v, _ := strconv.Atoi(%s); return v }()", arg), nil
+		}
+		return fmt.Sprintf("int(%s)", arg), nil
 	case "input":
 		c.imports["fmt"] = true
 		c.use("_input")

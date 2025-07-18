@@ -6,7 +6,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 )
 
 type v map[string]any
@@ -29,7 +28,7 @@ func bigFromInt(x int) []int {
 	var digits []int = []int{}
 	n := x
 	for n > 0 {
-		digits = append(_toAnySlice(digits), any((n % 10)))
+		digits = append(digits, (n % 10))
 		n = int(int(int((float64(n) / float64(10)))))
 	}
 	return digits
@@ -50,7 +49,7 @@ func bigAdd(a []int, b []int) []int {
 			bv = b[i]
 		}
 		s := ((av + bv) + carry)
-		res = append(_toAnySlice(res), any((s % 10)))
+		res = append(res, (s % 10))
 		carry = int(int(int((float64(s) / float64(10)))))
 		i = (i + 1)
 	}
@@ -75,7 +74,7 @@ func bigSub(a []int, b []int) []int {
 		} else {
 			borrow = 0
 		}
-		res = append(_toAnySlice(res), any(diff))
+		res = append(res, diff)
 		i = (i + 1)
 	}
 	return bigTrim(res)
@@ -110,10 +109,10 @@ func cumu(n int) [][]int {
 		x := 1
 		for x <= y {
 			val := cache[(y - x)][minInt(x, (y-x))]
-			row = append(_toAnySlice(row), any(bigAdd(row[(len(row)-1)], val)))
+			row = append(row, bigAdd(row[(len(row)-1)], val))
 			x = (x + 1)
 		}
-		cache = append(_toAnySlice(cache), any(row))
+		cache = append(cache, row)
 		y = (y + 1)
 	}
 	return cache[n]
@@ -126,7 +125,7 @@ func row(n int) []string {
 	i := 0
 	for i < n {
 		diff := bigSub(e[(i+1)], e[i])
-		out = append(_toAnySlice(out), any(bigToString(diff)))
+		out = append(out, bigToString(diff))
 		i = (i + 1)
 	}
 	return out
@@ -136,7 +135,7 @@ var x int
 
 func main() {
 	x = 1
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("rows:")), "\n"))
+	fmt.Println(any("rows:"))
 	for x < 11 {
 		r := row(x)
 		line := ""
@@ -145,21 +144,13 @@ func main() {
 			line = line + " " + r[i] + " "
 			i = (i + 1)
 		}
-		fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(line)), "\n"))
+		fmt.Println(any(line))
 		x = (x + 1)
 	}
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("")), "\n"))
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("sums:")), "\n"))
+	fmt.Println(any(""))
+	fmt.Println(any("sums:"))
 	for _, num := range []int{23, 123, 1234} {
 		r := cumu(num)
-		fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(fmt.Sprint(any(num))+" "+bigToString(r[(len(r)-1)]))), "\n"))
+		fmt.Println(any(fmt.Sprint(any(num)) + " " + bigToString(r[(len(r)-1)])))
 	}
-}
-
-func _toAnySlice[T any](s []T) []any {
-	out := make([]any, len(s))
-	for i, v := range s {
-		out[i] = v
-	}
-	return out
 }

@@ -6,7 +6,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 )
 
 type v map[string]any
@@ -20,7 +19,7 @@ func fields(s string) []string {
 		ch := string([]rune(s)[i:(i + 1)])
 		if ((ch == " ") || (ch == "\n")) || (ch == "\t") {
 			if len(any(cur)) > 0 {
-				words = append(_toAnySlice(words), any(cur))
+				words = append(words, cur)
 				cur = ""
 			}
 		} else {
@@ -29,7 +28,7 @@ func fields(s string) []string {
 		i = (i + 1)
 	}
 	if len(any(cur)) > 0 {
-		words = append(_toAnySlice(words), any(cur))
+		words = append(words, cur)
 	}
 	return words
 }
@@ -127,7 +126,7 @@ func slur(p string, d int) string {
 	var a []string = []string{}
 	i := 1
 	for i < (len(any(p)) - 1) {
-		a = append(_toAnySlice(a), any(string([]rune(p)[i:(i+1)])))
+		a = append(a, string([]rune(p)[i:(i+1)]))
 		i = (i + 1)
 	}
 	idx := (len(any(a)) - 1)
@@ -154,25 +153,17 @@ func slur(p string, d int) string {
 }
 
 // line 103
-func main() {
+func mainFn() {
 	i := 99
 	for i > 0 {
-		fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(slur(numberName(i), i)+" "+pluralizeFirst(slur("bottle of", i), i)+" "+slur("beer on the wall", i))), "\n"))
-		fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(slur(numberName(i), i)+" "+pluralizeFirst(slur("bottle of", i), i)+" "+slur("beer", i))), "\n"))
-		fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(slur("take one", i)+" "+slur("down", i)+" "+slur("pass it around", i))), "\n"))
-		fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(slur(numberName((i-1)), i)+" "+pluralizeFirst(slur("bottle of", i), (i-1))+" "+slur("beer on the wall", i))), "\n"))
+		fmt.Println(any(slur(numberName(i), i) + " " + pluralizeFirst(slur("bottle of", i), i) + " " + slur("beer on the wall", i)))
+		fmt.Println(any(slur(numberName(i), i) + " " + pluralizeFirst(slur("bottle of", i), i) + " " + slur("beer", i)))
+		fmt.Println(any(slur("take one", i) + " " + slur("down", i) + " " + slur("pass it around", i)))
+		fmt.Println(any(slur(numberName((i-1)), i) + " " + pluralizeFirst(slur("bottle of", i), (i-1)) + " " + slur("beer on the wall", i)))
 		i = (i - 1)
 	}
 }
 
 func main() {
-	main()
-}
-
-func _toAnySlice[T any](s []T) []any {
-	out := make([]any, len(s))
-	for i, v := range s {
-		out[i] = v
-	}
-	return out
+	mainFn()
 }

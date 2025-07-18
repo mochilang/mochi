@@ -1,4 +1,4 @@
-# Rosetta Go Output (26/253 compiled and run)
+# Rosetta Go Output (31/253 compiled and run)
 
 This directory holds Go source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -14,10 +14,10 @@ This directory holds Go source code generated from the real Mochi programs in `t
 - [ ] 24-game-solve
 - [ ] 24-game
 - [ ] 4-rings-or-4-squares-puzzle
-- [ ] 9-billion-names-of-god-the-integer
+- [x] 9-billion-names-of-god-the-integer
 - [ ] 99-bottles-of-beer-2
-- [ ] 99-bottles-of-beer
-- [ ] a+b
+- [x] 99-bottles-of-beer
+- [x] a+b
 - [ ] abbreviations-automatic
 - [ ] abbreviations-easy
 - [ ] abbreviations-simple
@@ -25,11 +25,11 @@ This directory holds Go source code generated from the real Mochi programs in `t
 - [ ] abelian-sandpile-model-identity
 - [ ] abelian-sandpile-model
 - [ ] abstract-type
-- [ ] abundant-deficient-and-perfect-number-classifications
+- [x] abundant-deficient-and-perfect-number-classifications
 - [ ] abundant-odd-numbers
 - [ ] accumulator-factory
 - [ ] achilles-numbers
-- [ ] ackermann-function-2
+- [x] ackermann-function-2
 - [ ] ackermann-function-3
 - [ ] ackermann-function
 - [ ] active-directory-connect

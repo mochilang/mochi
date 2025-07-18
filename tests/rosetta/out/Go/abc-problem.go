@@ -20,7 +20,7 @@ func fields(s string) []string {
 		c := string([]rune(s)[i:(i + 1)])
 		if c == " " {
 			if len(any(cur)) > 0 {
-				res = append(_toAnySlice(res), any(cur))
+				res = append(res, cur)
 				cur = ""
 			}
 		} else {
@@ -29,7 +29,7 @@ func fields(s string) []string {
 		i = (i + 1)
 	}
 	if len(any(cur)) > 0 {
-		res = append(_toAnySlice(res), any(cur))
+		res = append(res, cur)
 	}
 	return res
 }
@@ -48,7 +48,7 @@ func canSpell(word string, blks []string) bool {
 			j := 0
 			for j < len(any(blks)) {
 				if j != i {
-					rest = append(_toAnySlice(rest), any(blks[j]))
+					rest = append(rest, blks[j])
 				}
 				j = (j + 1)
 			}
@@ -70,7 +70,7 @@ func newSpeller(blocks string) func(string) bool {
 }
 
 // line 49
-func main() {
+func mainFn() {
 	sp := newSpeller("BO XK DQ CP NA GT RE TG QD FS JW HU VI AN OB ER FS LY PC ZM")
 	for _, word := range []string{
 		"A",
@@ -81,18 +81,10 @@ func main() {
 		"SQUAD",
 		"CONFUSE",
 	} {
-		fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(word+" "+fmt.Sprint(any(sp(word))))), "\n"))
+		fmt.Println(any(word + " " + fmt.Sprint(any(sp(word)))))
 	}
 }
 
 func main() {
-	main()
-}
-
-func _toAnySlice[T any](s []T) []any {
-	out := make([]any, len(s))
-	for i, v := range s {
-		out[i] = v
-	}
-	return out
+	mainFn()
 }

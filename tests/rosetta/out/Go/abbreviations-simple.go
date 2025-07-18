@@ -20,7 +20,7 @@ func fields(s string) []string {
 		ch := string([]rune(s)[i:(i + 1)])
 		if ((ch == " ") || (ch == "\n")) || (ch == "\t") {
 			if len(any(cur)) > 0 {
-				words = append(_toAnySlice(words), any(cur))
+				words = append(words, cur)
 				cur = ""
 			}
 		} else {
@@ -29,7 +29,7 @@ func fields(s string) []string {
 		i = (i + 1)
 	}
 	if len(any(cur)) > 0 {
-		words = append(_toAnySlice(words), any(cur))
+		words = append(words, cur)
 	}
 	return words
 }
@@ -123,8 +123,8 @@ func readTable(table string) map[string]any {
 				i = (i + 1)
 			}
 		}
-		cmds = append(_toAnySlice(cmds), any(cmd))
-		mins = append(_toAnySlice(mins), any(minlen))
+		cmds = append(cmds, cmd)
+		mins = append(mins, minlen)
 	}
 	return map[string]any{"commands": cmds, "mins": mins}
 }
@@ -144,7 +144,7 @@ func validate(commands []string, mins []int, words []string) []string {
 				c := strings.ToUpper(cmd)
 				ww := strings.ToUpper(w)
 				if string([]rune(c)[0:wlen]) == ww {
-					results = append(_toAnySlice(results), any(c))
+					results = append(results, c)
 					found = true
 					break
 				}
@@ -152,7 +152,7 @@ func validate(commands []string, mins []int, words []string) []string {
 			ci = (ci + 1)
 		}
 		if !(found) {
-			results = append(_toAnySlice(results), any("*error*"))
+			results = append(results, "*error*")
 		}
 		wi = (wi + 1)
 	}
@@ -160,7 +160,7 @@ func validate(commands []string, mins []int, words []string) []string {
 }
 
 // line 132
-func main() {
+func mainFn() {
 	table := "" + "add 1  alter 3  backup 2  bottom 1  Cappend 2  change 1  Schange  Cinsert 2  Clast 3 " + "compress 4 copy 2 count 3 Coverlay 3 cursor 3  delete 3 Cdelete 2  down 1  duplicate " + "3 xEdit 1 expand 3 extract 3  find 1 Nfind 2 Nfindup 6 NfUP 3 Cfind 2 findUP 3 fUP 2 " + "forward 2  get  help 1 hexType 4  input 1 powerInput 3  join 1 split 2 spltJOIN load " + "locate 1 Clocate 2 lowerCase 3 upperCase 3 Lprefix 2  macro  merge 2 modify 3 move 2 " + "msg  next 1 overlay 1 parse preserve 4 purge 3 put putD query 1 quit  read recover 3 " + "refresh renum 3 repeat 3 replace 1 Creplace 2 reset 3 restore 4 rgtLEFT right 2 left " + "2  save  set  shift 2  si  sort  sos  stack 3 status 4 top  transfer 3  type 1  up 1 "
 	sentence := "riG   rePEAT copies  put mo   rest    types   fup.    6\npoweRin"
 	tbl := readTable(table)
@@ -179,18 +179,10 @@ func main() {
 		}
 		k = (k + 1)
 	}
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(out1)), "\n"))
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("full words: "+join(results, " "))), "\n"))
+	fmt.Println(any(out1))
+	fmt.Println(any("full words: " + join(results, " ")))
 }
 
 func main() {
-	main()
-}
-
-func _toAnySlice[T any](s []T) []any {
-	out := make([]any, len(s))
-	for i, v := range s {
-		out[i] = v
-	}
-	return out
+	mainFn()
 }

@@ -6,7 +6,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 )
 
 type v map[string]any
@@ -25,7 +24,7 @@ func pfacSum(i int) int {
 }
 
 // line 16
-func main() {
+func mainFn() {
 	d := 0
 	a := 0
 	pnum := 0
@@ -43,11 +42,11 @@ func main() {
 		}
 		i = (i + 1)
 	}
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("There are "+fmt.Sprint(any(d))+" deficient numbers between 1 and 20000")), "\n"))
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("There are "+fmt.Sprint(any(a))+" abundant numbers  between 1 and 20000")), "\n"))
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("There are "+fmt.Sprint(any(pnum))+" perfect numbers between 1 and 20000")), "\n"))
+	fmt.Println(any("There are " + fmt.Sprint(any(d)) + " deficient numbers between 1 and 20000"))
+	fmt.Println(any("There are " + fmt.Sprint(any(a)) + " abundant numbers  between 1 and 20000"))
+	fmt.Println(any("There are " + fmt.Sprint(any(pnum)) + " perfect numbers between 1 and 20000"))
 }
 
 func main() {
-	main()
+	mainFn()
 }

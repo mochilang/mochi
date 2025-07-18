@@ -6,7 +6,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 )
 
 type v map[string]any
@@ -23,13 +22,13 @@ func accumulator(sum any) func(any) {
 }
 
 // line 13
-func main() {
+func mainFn() {
 	x := accumulator(any(1))
 	x(any(5))
 	accumulator(any(3))
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(fmt.Sprint(any(x(any(2.3)))))), "\n"))
+	fmt.Println(any(fmt.Sprint(any(x(any(2.3))))))
 }
 
 func main() {
-	main()
+	mainFn()
 }

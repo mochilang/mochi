@@ -20,7 +20,7 @@ func fields(s string) []string {
 		ch := string([]rune(s)[i:(i + 1)])
 		if ((ch == " ") || (ch == "\n")) || (ch == "\t") {
 			if len(any(cur)) > 0 {
-				words = append(_toAnySlice(words), any(cur))
+				words = append(words, cur)
 				cur = ""
 			}
 		} else {
@@ -29,7 +29,7 @@ func fields(s string) []string {
 		i = (i + 1)
 	}
 	if len(any(cur)) > 0 {
-		words = append(_toAnySlice(words), any(cur))
+		words = append(words, cur)
 	}
 	return words
 }
@@ -77,7 +77,7 @@ func validate(commands []string, words []string, mins []int) []string {
 				c := strings.ToUpper(cmd)
 				ww := strings.ToUpper(w)
 				if string([]rune(c)[0:wlen]) == ww {
-					results = append(_toAnySlice(results), any(c))
+					results = append(results, c)
 					found = true
 					break
 				}
@@ -85,7 +85,7 @@ func validate(commands []string, words []string, mins []int) []string {
 			ci = (ci + 1)
 		}
 		if !(found) {
-			results = append(_toAnySlice(results), any("*error*"))
+			results = append(results, "*error*")
 		}
 		wi = (wi + 1)
 	}
@@ -93,7 +93,7 @@ func validate(commands []string, words []string, mins []int) []string {
 }
 
 // line 78
-func main() {
+func mainFn() {
 	table := "Add ALTer  BAckup Bottom  CAppend Change SCHANGE  CInsert CLAst COMPress Copy " + "COUnt COVerlay CURsor DELete CDelete Down DUPlicate Xedit EXPand EXTract Find " + "NFind NFINDUp NFUp CFind FINdup FUp FOrward GET Help HEXType Input POWerinput " + " Join SPlit SPLTJOIN  LOAD  Locate CLocate  LOWercase UPPercase  LPrefix MACRO " + "MErge MODify MOve MSG Next Overlay PARSE PREServe PURge PUT PUTD  Query  QUIT " + "READ  RECover REFRESH RENum REPeat  Replace CReplace  RESet  RESTore  RGTLEFT " + "RIght LEft  SAVE  SET SHift SI  SORT  SOS  STAck STATus  TOP TRAnsfer TypeUp "
 	commands := fields(table)
 	var mins []int = []int{}
@@ -109,7 +109,7 @@ func main() {
 			}
 			j = (j + 1)
 		}
-		mins = append(_toAnySlice(mins), any(count))
+		mins = append(mins, count)
 		i = (i + 1)
 	}
 	sentence := "riG   rePEAT copies  put mo   rest    types   fup.    6       poweRin"
@@ -121,18 +121,10 @@ func main() {
 		out1 = out1 + padRight(words[k], len(any(results[k]))) + " "
 		k = (k + 1)
 	}
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(out1)), "\n"))
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("full words:  "+join(results, " "))), "\n"))
+	fmt.Println(any(out1))
+	fmt.Println(any("full words:  " + join(results, " ")))
 }
 
 func main() {
-	main()
-}
-
-func _toAnySlice[T any](s []T) []any {
-	out := make([]any, len(s))
-	for i, v := range s {
-		out[i] = v
-	}
-	return out
+	mainFn()
 }

@@ -6,7 +6,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 
 	"golang.org/x/exp/constraints"
 )
@@ -21,16 +20,16 @@ func divisors(n int) []int {
 	for (i * i) <= n {
 		if (n % i) == 0 {
 			j := int((float64(n) / float64(i)))
-			divs = append(_toAnySlice(divs), any(i))
+			divs = append(divs, i)
 			if i != j {
-				divs2 = append(_toAnySlice(divs2), any(j))
+				divs2 = append(divs2, j)
 			}
 		}
 		i = (i + 1)
 	}
 	j := (len(any(divs2)) - 1)
 	for j >= 0 {
-		divs = append(_toAnySlice(divs), any(divs2[j]))
+		divs = append(divs, divs2[j])
 		j = (j - 1)
 	}
 	return divs
@@ -89,9 +88,9 @@ func abundantOdd(searchFrom int, countFrom int, countTo int, printOne bool) int 
 			}
 			s := sumStr(divs)
 			if !(printOne) {
-				fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(pad2(count)+". "+pad5(n)+" < "+s+" = "+fmt.Sprint(any(tot)))), "\n"))
+				fmt.Println(any(pad2(count) + ". " + pad5(n) + " < " + s + " = " + fmt.Sprint(any(tot))))
 			} else {
-				fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(fmt.Sprint(any(n))+" < "+s+" = "+fmt.Sprint(any(tot)))), "\n"))
+				fmt.Println(any(fmt.Sprint(any(n)) + " < " + s + " = " + fmt.Sprint(any(tot))))
 			}
 		}
 		n = (n + 2)
@@ -100,18 +99,18 @@ func abundantOdd(searchFrom int, countFrom int, countTo int, printOne bool) int 
 }
 
 // line 82
-func main() {
+func mainFn() {
 	max := 25
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("The first "+"25"+" abundant odd numbers are:")), "\n"))
+	fmt.Println(any("The first " + "25" + " abundant odd numbers are:"))
 	n := abundantOdd(1, 0, max, false)
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("\nThe one thousandth abundant odd number is:")), "\n"))
+	fmt.Println(any("\nThe one thousandth abundant odd number is:"))
 	abundantOdd(n, max, 1000, true)
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("\nThe first abundant odd number above one billion is:")), "\n"))
+	fmt.Println(any("\nThe first abundant odd number above one billion is:"))
 	abundantOdd(1000000001, 0, 1, true)
 }
 
 func main() {
-	main()
+	mainFn()
 }
 
 func _sumOrdered[T constraints.Integer | constraints.Float](s []T) float64 {
@@ -120,12 +119,4 @@ func _sumOrdered[T constraints.Integer | constraints.Float](s []T) float64 {
 		sum += float64(v)
 	}
 	return sum
-}
-
-func _toAnySlice[T any](s []T) []any {
-	out := make([]any, len(s))
-	for i, v := range s {
-		out[i] = v
-	}
-	return out
 }

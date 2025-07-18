@@ -6,7 +6,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 )
 
 type v map[string]any
@@ -70,7 +69,7 @@ func getCombs(low int, high int, unique bool) map[string]any {
 							continue
 						}
 						if !(unique) || isUnique(a, b, c, d, e, f, g) {
-							valid = append(valid, any([]int{
+							valid = append(_toAnySlice(valid), any([]int{
 								a,
 								b,
 								c,
@@ -91,11 +90,19 @@ func getCombs(low int, high int, unique bool) map[string]any {
 
 func main() {
 	r1 := getCombs(1, 7, true)
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(fmt.Sprint(r1["count"])+" unique solutions in 1 to 7")), "\n"))
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(r1["list"]), "\n"))
+	fmt.Println(any(fmt.Sprint(r1["count"]) + " unique solutions in 1 to 7"))
+	fmt.Println(r1["list"])
 	r2 := getCombs(3, 9, true)
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(fmt.Sprint(r2["count"])+" unique solutions in 3 to 9")), "\n"))
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(r2["list"]), "\n"))
+	fmt.Println(any(fmt.Sprint(r2["count"]) + " unique solutions in 3 to 9"))
+	fmt.Println(r2["list"])
 	r3 := getCombs(0, 9, false)
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(fmt.Sprint(r3["count"])+" non-unique solutions in 0 to 9")), "\n"))
+	fmt.Println(any(fmt.Sprint(r3["count"]) + " non-unique solutions in 0 to 9"))
+}
+
+func _toAnySlice[T any](s []T) []any {
+	out := make([]any, len(s))
+	for i, v := range s {
+		out[i] = v
+	}
+	return out
 }

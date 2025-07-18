@@ -1,12 +1,7 @@
 run: exit status 1
 # command-line-arguments
-/tmp/X/001/main.go:24:11: cannot use append(_toAnySlice(divs), any(i)) (value of type []any) as []int value in assignment
-/tmp/X/001/main.go:26:13: cannot use append(_toAnySlice(divs2), any(j)) (value of type []any) as []int value in assignment
-/tmp/X/001/main.go:31:12: invalid argument: any(divs2) (value of interface type any) for built-in len
-/tmp/X/001/main.go:33:10: cannot use append(_toAnySlice(divs), any(divs2[j])) (value of type []any) as []int value in assignment
-/tmp/X/001/main.go:52:14: invalid argument: any(xs) (value of interface type any) for built-in len
-/tmp/X/001/main.go:56:33: invalid argument: any(s) (value of interface type any) for built-in len
-/tmp/X/001/main.go:62:9: invalid argument: any(s) (value of interface type any) for built-in len
-/tmp/X/001/main.go:71:10: invalid argument: any(s) (value of interface type any) for built-in len
-/tmp/X/001/main.go:113:6: main redeclared in this block
-	/tmp/X/001/main.go:103:6: other declaration of main
+/tmp/X/001/main.go:30:12: invalid argument: any(divs2) (value of interface type any) for built-in len
+/tmp/X/001/main.go:51:14: invalid argument: any(xs) (value of interface type any) for built-in len
+/tmp/X/001/main.go:55:33: invalid argument: any(s) (value of interface type any) for built-in len
+/tmp/X/001/main.go:61:9: invalid argument: any(s) (value of interface type any) for built-in len
+/tmp/X/001/main.go:70:10: invalid argument: any(s) (value of interface type any) for built-in len

@@ -6,7 +6,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 )
 
 type v map[string]any
@@ -130,7 +129,7 @@ func pad(n int, width int) string {
 }
 
 // line 109
-func main() {
+func mainFn() {
 	maxDigits := 15
 	getPerfectPowers(maxDigits)
 	achSet := getAchilles(1, 5)
@@ -139,7 +138,7 @@ func main() {
 		ach = _convSlice[any, int](append(append([]int{}, ach...), []int{(k).(int)}...))
 	}
 	ach = sortInts(ach)
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("First 50 Achilles numbers:")), "\n"))
+	fmt.Println(any("First 50 Achilles numbers:"))
 	i := 0
 	for i < 50 {
 		line := ""
@@ -152,9 +151,9 @@ func main() {
 			i = (i + 1)
 			j = (j + 1)
 		}
-		fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(line)), "\n"))
+		fmt.Println(any(line))
 	}
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("\nFirst 30 strong Achilles numbers:")), "\n"))
+	fmt.Println(any("\nFirst 30 strong Achilles numbers:"))
 	var strong []int = []int{}
 	count := 0
 	idx := 0
@@ -181,9 +180,9 @@ func main() {
 			i = (i + 1)
 			j = (j + 1)
 		}
-		fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(line)), "\n"))
+		fmt.Println(any(line))
 	}
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any("\nNumber of Achilles numbers with:")), "\n"))
+	fmt.Println(any("\nNumber of Achilles numbers with:"))
 	counts := []int{
 		1,
 		12,
@@ -203,7 +202,7 @@ func main() {
 	d := 2
 	for d <= maxDigits {
 		c := counts[(d - 2)]
-		fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(pad(d, 2)+" digits: "+fmt.Sprint(any(c)))), "\n"))
+		fmt.Println(any(pad(d, 2) + " digits: " + fmt.Sprint(any(c))))
 		d = (d + 1)
 	}
 }
@@ -212,7 +211,7 @@ var pps map[int]bool
 
 func main() {
 	pps = map[int]bool{}
-	main()
+	mainFn()
 }
 
 func _convSlice[T any, U any](s []T) []U {
