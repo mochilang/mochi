@@ -74,7 +74,19 @@ func (c *Compiler) isStringExpr(e *parser.Expr) bool {
 		return true
 	}
 	root := rootNameExpr(e)
-	return c.varType(root) == "string"
+	if c.varType(root) == "string" {
+		return true
+	}
+	if e != nil && e.Binary != nil && len(e.Binary.Right) == 0 {
+		u := e.Binary.Left
+		if len(u.Ops) == 0 && u.Value != nil && u.Value.Target != nil && u.Value.Target.Call != nil {
+			fn := u.Value.Target.Call.Func
+			if fn == "str" || fn == "input" {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func (c *Compiler) isStringUnary(u *parser.Unary) bool {
