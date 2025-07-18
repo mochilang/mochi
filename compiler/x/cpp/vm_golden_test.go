@@ -53,7 +53,7 @@ func TestCPPCompiler_VMValid_Golden(t *testing.T) {
 			return nil, err
 		}
 		bin := filepath.Join(outDir, name)
-		if out, err := exec.Command("g++", codePath, "-std=c++17", "-o", bin).CombinedOutput(); err != nil {
+		if out, err := exec.Command("g++", codePath, "-std=c++20", "-o", bin).CombinedOutput(); err != nil {
 			_ = os.WriteFile(errPath, out, 0644)
 			return nil, fmt.Errorf("g++ error: %w", err)
 		}

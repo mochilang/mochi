@@ -639,7 +639,7 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 			if err != nil {
 				return err
 			}
-			exprStr = fmt.Sprintf("std::vector<%s>{}", elem)
+			exprStr = "{}"
 			elemHint = elem
 			typ = fmt.Sprintf("std::vector<%s>", elem)
 		}

@@ -90,7 +90,7 @@ func main() {
 			continue
 		}
 		bin := filepath.Join(tmpDir, name)
-		if out, err := exec.Command("g++", srcTmp, "-std=c++17", "-o", bin).CombinedOutput(); err != nil {
+		if out, err := exec.Command("g++", srcTmp, "-std=c++20", "-o", bin).CombinedOutput(); err != nil {
 			writeError(outDir, name, fmt.Sprintf("g++: %v\n%s", err, out))
 			os.Remove(filepath.Join(outDir, name+".out"))
 			continue

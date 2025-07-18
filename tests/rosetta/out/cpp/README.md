@@ -1,6 +1,6 @@
 # Rosetta C++ Output (7/253 compiled and run)
 
-This directory holds C++ source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
+This directory holds C++ source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file. Generated programs are now compiled with `-std=c++20` to support modern language features used by some tasks.
 
 ## Program checklist
 - [x] 100-doors-2
