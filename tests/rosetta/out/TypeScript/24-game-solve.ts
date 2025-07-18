@@ -82,14 +82,7 @@ function solve(xs: Record<string, any>[]): boolean {
       }
       let a = xs[i];
       let b = xs[j];
-      for (
-        const op of [
-          OP_ADD,
-          OP_SUB,
-          OP_MUL,
-          OP_DIV,
-        ]
-      ) {
+      for (const op of [OP_ADD, OP_SUB, OP_MUL, OP_DIV]) {
         var node = {
           "op": op,
           "left": a,
@@ -150,12 +143,12 @@ let digit_range: number;
 let goal: number;
 let n_cards: number;
 
-let OP_NUM = 0;
-let OP_ADD = 1;
-let OP_SUB = 2;
-let OP_MUL = 3;
-let OP_DIV = 4;
-let n_cards = 4;
-let goal = 24;
-let digit_range = 9;
+OP_NUM = 0;
+OP_ADD = 1;
+OP_SUB = 2;
+OP_MUL = 3;
+OP_DIV = 4;
+n_cards = 4;
+goal = 24;
+digit_range = 9;
 main();

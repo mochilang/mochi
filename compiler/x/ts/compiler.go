@@ -588,13 +588,13 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		}
 	}
 	if c.moduleScope && c.indent == 1 {
-		// declare at module scope
-		if needType && typStr != "" {
-			c.globals[name] = fmt.Sprintf("let %s: %s", name, typStr)
-		} else {
-			c.globals[name] = fmt.Sprintf("let %s", name)
-		}
+		// declare at module scope with initialization
 		if len(unwrapped) > 0 {
+			if needType && typStr != "" {
+				c.writeln(fmt.Sprintf("let %s: %s", name, typStr))
+			} else {
+				c.writeln(fmt.Sprintf("let %s", name))
+			}
 			for _, ln := range unwrapped {
 				c.writeln(ln)
 			}
@@ -602,7 +602,11 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 				c.writeln(fmt.Sprintf("%s = %s", name, retVar))
 			}
 		} else {
-			c.writeln(fmt.Sprintf("%s = %s", name, value))
+			if needType && typStr != "" {
+				c.writeln(fmt.Sprintf("let %s: %s = %s", name, typStr, value))
+			} else {
+				c.writeln(fmt.Sprintf("let %s = %s", name, value))
+			}
 		}
 	} else {
 		declared := c.indent == 0 && c.globals[name] != ""
@@ -683,11 +687,11 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 	needType := s.Type != nil || s.Value == nil || (c.moduleScope && c.indent == 1)
 	if c.moduleScope && c.indent == 1 {
 		if needType && typStr != "" {
-			c.globals[name] = fmt.Sprintf("var %s: %s", name, typStr)
+			c.writeln(fmt.Sprintf("var %s: %s = %s", name, typStr, value))
 		} else {
-			c.globals[name] = fmt.Sprintf("var %s", name)
+			c.writeln(fmt.Sprintf("var %s = %s", name, value))
 		}
-		c.writeln(fmt.Sprintf("%s = %s", name, value))
+		return nil
 	} else {
 		declared := c.indent == 0 && c.globals[name] != ""
 		if declared {

@@ -4506,15 +4506,6 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	}
 
 	switch call.Func {
-	case "append":
-		if len(args) == 2 {
-			lt, ok1 := c.inferExprType(call.Args[0]).(types.ListType)
-			rt := c.inferExprType(call.Args[1])
-			if ok1 && equalTypes(lt.Elem, rt) && !isAny(lt.Elem) {
-				return fmt.Sprintf("append(%s, %s)", args[0], args[1]), nil
-			}
-		}
-		return fmt.Sprintf("append(%s)", argStr), nil
 	case "print":
 		c.imports["fmt"] = true
 		if len(call.Args) == 6 {
@@ -4828,7 +4819,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		return expr, nil
 	case "append", "push":
 		if len(call.Args) != 2 {
-			return "", fmt.Errorf("append expects 2 args")
+			return fmt.Sprintf("append(%s)", argStr), nil
 		}
 		if lt, ok := c.inferExprType(call.Args[0]).(types.ListType); ok && !isAny(lt.Elem) {
 			a0 := args[0]
