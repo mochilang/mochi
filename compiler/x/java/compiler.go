@@ -93,11 +93,40 @@ func (c *Compiler) tmpName(prefix string) string {
 	return name
 }
 
+var javaReserved = map[string]struct{}{
+	"abstract": {}, "assert": {}, "boolean": {}, "break": {}, "byte": {},
+	"case": {}, "catch": {}, "char": {}, "class": {}, "const": {},
+	"continue": {}, "default": {}, "do": {}, "double": {}, "else": {},
+	"enum": {}, "extends": {}, "final": {}, "finally": {}, "float": {},
+	"for": {}, "goto": {}, "if": {}, "implements": {}, "import": {},
+	"instanceof": {}, "int": {}, "interface": {}, "long": {}, "native": {},
+	"new": {}, "package": {}, "private": {}, "protected": {}, "public": {},
+	"return": {}, "short": {}, "static": {}, "strictfp": {}, "super": {},
+	"switch": {}, "synchronized": {}, "this": {}, "throw": {}, "throws": {},
+	"transient": {}, "try": {}, "void": {}, "volatile": {}, "while": {},
+}
+
 func (c *Compiler) sanitize(name string) string {
 	if name == "_" {
 		return c.tmpName("unused")
 	}
-	return name
+	var b strings.Builder
+	for i, r := range name {
+		if r == '_' || ('0' <= r && r <= '9' && i > 0) ||
+			('A' <= r && r <= 'Z') || ('a' <= r && r <= 'z') {
+			b.WriteRune(r)
+		} else {
+			b.WriteRune('_')
+		}
+	}
+	sanitized := b.String()
+	if sanitized == "" || (sanitized[0] >= '0' && sanitized[0] <= '9') {
+		sanitized = "v" + sanitized
+	}
+	if _, ok := javaReserved[sanitized]; ok {
+		sanitized = sanitized + "_"
+	}
+	return sanitized
 }
 
 func (c *Compiler) rename(name string) string {
@@ -249,6 +278,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			continue
 		}
 		if s.Fun != nil {
+			name := c.sanitize(s.Fun.Name)
+			if name != s.Fun.Name {
+				c.renamed[s.Fun.Name] = name
+			}
 			c.funRet[s.Fun.Name] = c.typeName(s.Fun.Return)
 			c.funSigs[s.Fun.Name] = &funSig{params: s.Fun.Params, ret: s.Fun.Return}
 			continue
@@ -728,7 +761,7 @@ func classNameFromVar(s string) string {
 		return ""
 	}
 	parts := strings.FieldsFunc(s, func(r rune) bool {
-		return r == '_' || r == '-' || r == ' ' || r == '.'
+		return r == '_' || r == '-' || r == ' ' || r == '.' || r == '+'
 	})
 	for i, p := range parts {
 		if p == "" {
@@ -2214,7 +2247,21 @@ func (c *Compiler) compileLocalFun(f *parser.FunStmt) error {
 			declType = "java.util.function.IntUnaryOperator"
 		}
 	}
-	c.writeln(fmt.Sprintf("%s %s = %s;", declType, f.Name, expr))
+	name := c.sanitize(f.Name)
+	oldRename := c.renamed[f.Name]
+	if name != f.Name {
+		c.renamed[f.Name] = name
+	}
+	defer func() {
+		if name != f.Name {
+			if oldRename == "" {
+				delete(c.renamed, f.Name)
+			} else {
+				c.renamed[f.Name] = oldRename
+			}
+		}
+	}()
+	c.writeln(fmt.Sprintf("%s %s = %s;", declType, name, expr))
 	c.vars[f.Name] = typ
 	return nil
 }
@@ -2228,6 +2275,10 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 	origRename := copyMap(c.renamed)
 	c.vars = copyMap(origVars)
 	c.renamed = copyMap(c.renamed)
+	name := c.sanitize(f.Name)
+	if name != f.Name {
+		c.renamed[f.Name] = name
+	}
 	var params []string
 	for _, p := range f.Params {
 		name := c.sanitize(p.Name)
@@ -2244,7 +2295,7 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 		params = append(params, fmt.Sprintf("%s %s", pType, name))
 		c.vars[p.Name] = pType
 	}
-	c.writeln(fmt.Sprintf("static %s %s(%s) {", ret, f.Name, strings.Join(params, ", ")))
+	c.writeln(fmt.Sprintf("static %s %s(%s) {", ret, name, strings.Join(params, ", ")))
 	c.indent++
 	for _, s := range f.Body {
 		if err := c.compileStmt(s); err != nil {
@@ -2982,14 +3033,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				param := remain[0].Name
 				callArgs := append(append([]string{}, args...), param)
 				c.needFuncImports = true
-				return fmt.Sprintf("%s -> %s(%s)", param, p.Call.Func, strings.Join(callArgs, ", ")), nil
+				return fmt.Sprintf("%s -> %s(%s)", param, c.rename(p.Call.Func), strings.Join(callArgs, ", ")), nil
 			}
 			return "", fmt.Errorf("partial application unsupported")
 		}
 		if t, ok := c.vars[p.Call.Func]; ok && t == "IntUnaryOperator" {
-			return fmt.Sprintf("%s.applyAsInt(%s)", p.Call.Func, strings.Join(args, ", ")), nil
+			return fmt.Sprintf("%s.applyAsInt(%s)", c.rename(p.Call.Func), strings.Join(args, ", ")), nil
 		}
-		return fmt.Sprintf("%s(%s)", p.Call.Func, strings.Join(args, ", ")), nil
+		return fmt.Sprintf("%s(%s)", c.rename(p.Call.Func), strings.Join(args, ", ")), nil
 	case p.Group != nil:
 		expr, err := c.compileExpr(p.Group)
 		if err != nil {
