@@ -185,6 +185,11 @@ var helperLen = `function _len($v) {
     return 0;
 }`
 
+var helperIndexOf = `function _indexOf($s, $sub) {
+    $pos = strpos($s, $sub);
+    return $pos === false ? -1 : $pos;
+}`
+
 var helperMap = map[string]string{
 	"_load":     helperLoad,
 	"_save":     helperSave,
@@ -192,4 +197,5 @@ var helperMap = map[string]string{
 	"_group_by": helperGroupBy,
 	"_avg":      helperAvg,
 	"_len":      helperLen,
+	"_indexOf":  helperIndexOf,
 }

@@ -960,6 +960,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("max expects 1 arg")
 		}
 		return fmt.Sprintf("max(%s)", args[0]), nil
+	case "indexOf":
+		if len(args) != 2 {
+			return "", fmt.Errorf("indexOf expects 2 args")
+		}
+		return fmt.Sprintf("(($pos = strpos(%s, %s)) !== false ? $pos : -1)", args[0], args[1]), nil
 	case "substring":
 		if len(args) != 3 {
 			return "", fmt.Errorf("substring expects 3 args")
