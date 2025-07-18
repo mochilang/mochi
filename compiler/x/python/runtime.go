@@ -5,6 +5,7 @@ package pycode
 import (
 	"bytes"
 	"sort"
+	"strings"
 )
 
 var helperPrelude = "from typing import Any, TypeVar, Generic, Callable\n" +
@@ -561,8 +562,12 @@ func (c *Compiler) emitRuntime() {
 		names = append(names, n)
 	}
 	sort.Strings(names)
-	if len(names) > 0 {
-		c.buf.WriteString(helperPrelude)
+	prelude := helperPrelude
+	if !c.needUndefined {
+		prelude = strings.ReplaceAll(prelude, "UNDEFINED = object()\n", "")
+	}
+	if len(names) > 0 || c.needUndefined {
+		c.buf.WriteString(prelude)
 	}
 	for _, n := range names {
 		c.buf.WriteString(helperMap[n])

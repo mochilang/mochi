@@ -277,6 +277,10 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		c.env.SetVar(s.Name, t, false)
 		typ = t
 	}
+	if value == "UNDEFINED" {
+		c.needUndefined = true
+	}
+
 	explicit := s.Type != nil
 	useAnn := c.typeHints && typ != nil && !isAny(typ)
 	if explicit {
@@ -370,6 +374,10 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		c.env.SetVar(s.Name, t, true)
 		typ = t
 	}
+	if value == "UNDEFINED" {
+		c.needUndefined = true
+	}
+
 	if s.Type != nil {
 		typStr := pyType(c.namedType(c.resolveTypeRef(s.Type)))
 		if c.typeHints && needsTyping(typStr) {
