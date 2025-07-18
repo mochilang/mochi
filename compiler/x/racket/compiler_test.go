@@ -113,6 +113,7 @@ func findRoot(t *testing.T) string {
 func TestMain(m *testing.M) {
 	code := m.Run()
 	updateReadme()
+	updateRosettaReadme()
 	os.Exit(code)
 }
 
