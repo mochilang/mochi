@@ -45,15 +45,15 @@ fun main() {
     var malformed = false
     while i < 4 {
       let cg = substring(guess, i, i + 1)
-      if indexOf(seen, cg) != -1 {
+      if indexOf(seen, cg) != (-1) {
         print("Repeated digit: " + cg)
         malformed = true
         break
       }
       seen = seen + cg
       let pos = indexOf(pat, cg)
-      if pos == -1 {
-        if indexOf(valid, cg) == -1 {
+      if pos == (-1) {
+        if indexOf(valid, cg) == (-1) {
           print("Invalid digit: " + cg)
           malformed = true
           break

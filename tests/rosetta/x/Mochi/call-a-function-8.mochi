@@ -8,11 +8,26 @@ fun mapString(s: string, f: fun(string): string): string {
   return out
 }
 
+fun ord(ch: string): int {
+  let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  let lower = "abcdefghijklmnopqrstuvwxyz"
+  var idx = indexOf(upper, ch)
+  if idx >= 0 { return 65 + idx }
+  idx = indexOf(lower, ch)
+  if idx >= 0 { return 97 + idx }
+  return 0
+}
+
+fun chr(n: int): string {
+  let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  let lower = "abcdefghijklmnopqrstuvwxyz"
+  if n >= 65 && n < 91 { return upper[n-65:n-64] }
+  if n >= 97 && n < 123 { return lower[n-97:n-96] }
+  return "?"
+}
+
 fun main() {
-  let fn = fun(r: string): string {
-    if r == " " { return "" }
-    return r
-  }
+  let fn = fun(r: string): string => if r == " " { "" } else { r }
   mapString("Spaces removed", fn)
   mapString("Test", fun(r: string): string => lower(r))
   mapString("shift", fun(r: string): string => chr(ord(r) + 1))
