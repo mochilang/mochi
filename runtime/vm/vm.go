@@ -2278,6 +2278,9 @@ func (c *compiler) compileFun(fn *parser.FunStmt) (Function, error) {
 	for name, idx := range c.globals {
 		fc.vars[name] = idx
 	}
+	// Reserve registers for globals before allocating parameters to avoid
+	// clobbering them when new registers are created.
+	fc.idx = len(c.globals)
 	if len(c.globals) > fc.fn.NumRegs {
 		fc.fn.NumRegs = len(c.globals)
 	}
@@ -2441,6 +2444,12 @@ func (c *compiler) compileMain(p *parser.Program) (Function, error) {
 	for name, idx := range c.globals {
 		fc.vars[name] = idx
 	}
+	// Reserve register slots for global variables before allocating
+	// temporaries within the main function. Without this, newReg()
+	// may start from register 0 and overwrite globals during
+	// expression compilation which leads to incorrect code
+	// generation.
+	fc.idx = len(c.globals)
 	if len(c.globals) > fc.fn.NumRegs {
 		fc.fn.NumRegs = len(c.globals)
 	}
