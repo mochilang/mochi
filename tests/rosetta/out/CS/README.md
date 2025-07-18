@@ -1,42 +1,37 @@
-# Rosetta C# Output
+# Rosetta C# Output (7/238 compiled and run)
 
-This directory holds C# source code generated from the real Mochi
-programs in `tests/rosetta/x/Mochi`. Each file has the expected
-output in a matching `.out` file. Compilation or runtime failures
-are stored in a corresponding `.error` file.
+This directory holds C# source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
-Compiled programs: 7/216
-
-Checklist:
-- [x] 100-doors
+## Program checklist
 - [x] 100-doors-2
 - [x] 100-doors-3
+- [x] 100-doors
 - [ ] 100-prisoners
 - [ ] 15-puzzle-game
 - [ ] 15-puzzle-solver
 - [ ] 2048
 - [ ] 21-game
-- [ ] 24-game
 - [ ] 24-game-solve
-- [x] 4-rings-or-4-squares-puzzle
+- [ ] 24-game
+- [ ] 4-rings-or-4-squares-puzzle
 - [ ] 9-billion-names-of-god-the-integer
+- [x] 99-bottles-of-beer-2
 - [x] 99-bottles-of-beer
-- [ ] 99-bottles-of-beer-2
 - [ ] a+b
 - [ ] abbreviations-automatic
 - [ ] abbreviations-easy
 - [ ] abbreviations-simple
 - [ ] abc-problem
-- [ ] abelian-sandpile-model
 - [ ] abelian-sandpile-model-identity
+- [ ] abelian-sandpile-model
 - [x] abstract-type
 - [x] abundant-deficient-and-perfect-number-classifications
 - [ ] abundant-odd-numbers
 - [ ] accumulator-factory
 - [ ] achilles-numbers
-- [ ] ackermann-function
 - [ ] ackermann-function-2
 - [ ] ackermann-function-3
+- [ ] ackermann-function
 - [ ] active-directory-connect
 - [ ] active-directory-search-for-a-user
 - [ ] active-object
@@ -52,16 +47,16 @@ Checklist:
 - [ ] almost-prime
 - [ ] amb
 - [ ] amicable-pairs
-- [ ] anagrams
 - [ ] anagrams-deranged-anagrams
+- [ ] anagrams
 - [ ] angle-difference-between-two-bearings-1
 - [ ] angle-difference-between-two-bearings-2
 - [ ] angles-geometric-normalization-and-conversion
 - [ ] animate-a-pendulum
 - [ ] animation
-- [ ] anonymous-recursion
 - [ ] anonymous-recursion-1
 - [ ] anonymous-recursion-2
+- [ ] anonymous-recursion
 - [ ] anti-primes
 - [ ] append-a-record-to-the-end-of-a-text-file
 - [ ] apply-a-callback-to-an-array-1
@@ -74,8 +69,8 @@ Checklist:
 - [ ] arithmetic-complex
 - [ ] arithmetic-derivative
 - [ ] arithmetic-evaluation
-- [ ] arithmetic-geometric-mean
 - [ ] arithmetic-geometric-mean-calculate-pi
+- [ ] arithmetic-geometric-mean
 - [ ] arithmetic-integer-1
 - [ ] arithmetic-integer-2
 - [ ] arithmetic-numbers
@@ -123,7 +118,6 @@ Checklist:
 - [ ] bioinformatics-sequence-mutation
 - [ ] biorhythms
 - [ ] bitcoin-address-validation
-- [ ] bitmap
 - [ ] bitmap-b-zier-curves-cubic
 - [ ] bitmap-b-zier-curves-quadratic
 - [ ] bitmap-bresenhams-line-algorithm
@@ -134,6 +128,7 @@ Checklist:
 - [ ] bitmap-read-a-ppm-file
 - [ ] bitmap-read-an-image-through-a-pipe
 - [ ] bitmap-write-a-ppm-file
+- [ ] bitmap
 - [ ] bitwise-io-1
 - [ ] bitwise-io-2
 - [ ] bitwise-operations
@@ -145,15 +140,15 @@ Checklist:
 - [ ] break-oo-privacy
 - [ ] brilliant-numbers
 - [ ] brownian-tree
-- [ ] bulls-and-cows
 - [ ] bulls-and-cows-player
+- [ ] bulls-and-cows
 - [ ] burrows-wheeler-transform
 - [ ] caesar-cipher-1
 - [ ] caesar-cipher-2
 - [ ] calculating-the-value-of-e
-- [ ] calendar
 - [ ] calendar---for-real-programmers-1
 - [ ] calendar---for-real-programmers-2
+- [ ] calendar
 - [ ] calkin-wilf-sequence
 - [ ] call-a-foreign-language-function
 - [ ] call-a-function-1
@@ -168,10 +163,10 @@ Checklist:
 - [ ] call-a-function-7
 - [ ] call-a-function-8
 - [ ] call-a-function-9
-- [ ] call-an-object-method
 - [ ] call-an-object-method-1
 - [ ] call-an-object-method-2
 - [ ] call-an-object-method-3
+- [ ] call-an-object-method
 - [ ] camel-case-and-snake-case
 - [ ] canny-edge-detector
 - [ ] canonicalize-cidr
@@ -206,14 +201,36 @@ Checklist:
 - [ ] cheryls-birthday
 - [ ] chinese-remainder-theorem
 - [ ] chinese-zodiac
-- [ ] cholesky-decomposition
 - [ ] cholesky-decomposition-1
+- [ ] cholesky-decomposition
 - [ ] chowla-numbers
 - [ ] church-numerals-1
 - [ ] church-numerals-2
 - [ ] circles-of-given-radius-through-two-points
 - [ ] circular-primes
 - [ ] cistercian-numerals
+- [ ] compiler-virtual-machine-interpreter
+- [ ] concurrent-computing-1
+- [ ] concurrent-computing-2
+- [ ] concurrent-computing-3
+- [ ] conditional-structures-1
+- [ ] conditional-structures-10
+- [ ] conditional-structures-2
+- [ ] conditional-structures-3
+- [ ] conditional-structures-4
+- [ ] conditional-structures-5
+- [ ] conditional-structures-6
+- [ ] conditional-structures-7
+- [ ] conditional-structures-8
+- [ ] conditional-structures-9
+- [ ] consecutive-primes-with-ascending-or-descending-differences
+- [ ] constrained-genericity-1
+- [ ] constrained-genericity-2
+- [ ] constrained-genericity-3
+- [ ] constrained-genericity-4
+- [ ] constrained-random-points-on-a-circle-1
+- [ ] constrained-random-points-on-a-circle-2
+- [ ] continued-fraction
 - [ ] crc-32-1
 - [ ] crc-32-2
 - [ ] csv-data-manipulation
