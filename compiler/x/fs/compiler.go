@@ -624,14 +624,14 @@ func (c *Compiler) compileImport(im *parser.ImportStmt) error {
 	switch *im.Lang {
 	case "go":
 		if im.Path == "mochi/runtime/ffi/go/testpkg" {
-			c.prelude.WriteString(fmt.Sprintf("module %s =\n", alias))
+			c.prelude.WriteString(fmt.Sprintf("module %s\n", alias))
 			c.prelude.WriteString("    let Add a b = a + b\n")
 			c.prelude.WriteString("    let Pi = 3.14\n")
 			c.prelude.WriteString("    let Answer = 42\n\n")
 		}
 	case "python":
 		if im.Path == "math" {
-			c.prelude.WriteString(fmt.Sprintf("module %s =\n", alias))
+			c.prelude.WriteString(fmt.Sprintf("module %s\n", alias))
 			c.prelude.WriteString("    let pi : float = System.Math.PI\n")
 			c.prelude.WriteString("    let e : float = System.Math.E\n")
 			c.prelude.WriteString("    let sqrt (x: float) : float = System.Math.Sqrt x\n")
