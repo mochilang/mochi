@@ -1,0 +1,11 @@
+exit status 1
+panic: open tests/interpreter/valid/people.yaml: no such file or directory
+
+goroutine 1 [running]:
+main._load({0x211d806?, 0x23?}, 0xc000257ef0?)
+	/workspace/mochi/tests/machine/x/go/load_yaml.go:155 +0x265
+main.main.func1(...)
+	/workspace/mochi/tests/machine/x/go/load_yaml.go:30
+main.main()
+	/workspace/mochi/tests/machine/x/go/load_yaml.go:41 +0x110
+exit status 2

@@ -1,0 +1,4 @@
+exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/map_membership.go:20:6: non-boolean condition in if statement
+../../../tests/machine/x/go/map_membership.go:29:6: non-boolean condition in if statement

@@ -1,0 +1,4 @@
+exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/basic_compare.go:19:6: non-boolean condition in if statement
+../../../tests/machine/x/go/basic_compare.go:25:6: non-boolean condition in if statement

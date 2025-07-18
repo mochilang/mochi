@@ -1,0 +1,4 @@
+exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/in_operator.go:18:6: non-boolean condition in if statement
+../../../tests/machine/x/go/in_operator.go:24:6: non-boolean condition in if statement

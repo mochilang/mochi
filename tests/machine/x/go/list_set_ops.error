@@ -1,0 +1,3 @@
+exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/list_set_ops.go:19:53: invalid argument: any(append(append([]int{}, []int{…}...), []int{…}...)) (value of interface type any) for built-in len

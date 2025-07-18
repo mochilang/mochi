@@ -1,0 +1,6 @@
+exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/string_compare.go:16:6: non-boolean condition in if statement
+../../../tests/machine/x/go/string_compare.go:22:6: non-boolean condition in if statement
+../../../tests/machine/x/go/string_compare.go:28:6: non-boolean condition in if statement
+../../../tests/machine/x/go/string_compare.go:34:6: non-boolean condition in if statement

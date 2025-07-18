@@ -1,0 +1,4 @@
+exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/min_max_builtin.go:18:66: cannot use any(nums) (value of interface type any) as []int value in argument to _minOrdered[int]: need type assertion
+../../../tests/machine/x/go/min_max_builtin.go:19:66: cannot use any(nums) (value of interface type any) as []int value in argument to _maxOrdered[int]: need type assertion

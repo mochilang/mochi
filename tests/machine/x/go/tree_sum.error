@@ -1,0 +1,3 @@
+exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/tree_sum.go:30:13: cannot convert func() any {…}() (value of interface type any) to type int: need type assertion

@@ -1,1 +1,1 @@
-Result { cat: "b", total: 7 } Result { cat: "a", total: 4 }
+{b 7} {a 4}

@@ -1,0 +1,5 @@
+exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/bool_chain.go:22:6: non-boolean condition in if statement
+../../../tests/machine/x/go/bool_chain.go:28:6: non-boolean condition in if statement
+../../../tests/machine/x/go/bool_chain.go:34:6: non-boolean condition in if statement
