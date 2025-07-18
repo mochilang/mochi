@@ -1,4 +1,4 @@
-# Rosetta C# Output (11/238 compiled and run)
+# Rosetta C# Output (13/238 compiled and run)
 
 This directory holds C# source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -22,7 +22,7 @@ This directory holds C# source code generated from the real Mochi programs in `t
 - [x] abbreviations-easy
 - [ ] abbreviations-simple
 - [x] abc-problem
-- [ ] abelian-sandpile-model-identity
+- [x] abelian-sandpile-model-identity
 - [ ] abelian-sandpile-model
 - [x] abstract-type
 - [x] abundant-deficient-and-perfect-number-classifications
