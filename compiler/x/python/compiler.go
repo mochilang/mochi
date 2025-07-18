@@ -683,7 +683,13 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					expr = fmt.Sprintf("%s[%s]", expr, idxExpr)
 					typ = tt.Elem
 				case types.MapType:
-					expr = fmt.Sprintf("%s[%s]", expr, idxExpr)
+					key := idxExpr
+					if s, ok := stringLit(idx.Start); ok {
+						key = fmt.Sprintf("%q", sanitizeName(strings.Trim(s, "\"")))
+					} else if name, ok := identName(idx.Start); ok {
+						key = fmt.Sprintf("%q", sanitizeName(name))
+					}
+					expr = fmt.Sprintf("%s[%s]", expr, key)
 					typ = tt.Value
 				case types.StructType:
 					if s, ok := stringLit(idx.Start); ok {

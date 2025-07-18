@@ -1,4 +1,4 @@
-# Rosetta Python Output (14/239 compiled and run)
+# Rosetta Python Output (15/239 compiled and run)
 
 This directory holds Python source code generated from the Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected runtime output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -13,7 +13,7 @@ This directory holds Python source code generated from the Mochi programs in `te
 - [ ] 21-game
 - [x] 24-game-solve
 - [ ] 24-game
-- [ ] 4-rings-or-4-squares-puzzle
+- [x] 4-rings-or-4-squares-puzzle
 - [x] 9-billion-names-of-god-the-integer
 - [x] 99-bottles-of-beer-2
 - [x] 99-bottles-of-beer
