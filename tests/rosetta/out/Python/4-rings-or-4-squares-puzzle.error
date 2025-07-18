@@ -1,7 +1,0 @@
-run: exit status 1
-8 unique solutions in 1 to 7
-Traceback (most recent call last):
-  File "/tmp/4-rings-or-4-squares-puzzle.py", line 50, in <module>
-    print(r1["list"])
-          ~~^^^^^^^^
-KeyError: 'list'
