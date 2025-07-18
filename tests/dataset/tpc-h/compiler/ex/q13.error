@@ -1,0 +1,21 @@
+warning: default values for the optional arguments in _query/3 are never used
+     │
+ 125 │   defp _query(src, joins, opts \\ %{}) do
+     │        ~
+     │
+     └─ /tmp/q13.exs:125:8: Main (module)
+
+** (Protocol.UndefinedError) protocol Enumerable not implemented for type BitString
+
+Got value:
+
+    "fast delivery"
+
+    (elixir 1.18.3) lib/enum.ex:1: Enumerable.impl_for!/1
+    (elixir 1.18.3) lib/enum.ex:194: Enumerable.member?/2
+    (elixir 1.18.3) lib/enum.ex:2020: Enum.member?/2
+    /tmp/q13.exs:23: anonymous fn/3 in Main.main/0
+    (elixir 1.18.3) lib/enum.ex:2546: Enum."-reduce/3-lists^foldl/2-0-"/3
+    /tmp/q13.exs:19: anonymous fn/1 in Main.main/0
+    (elixir 1.18.3) lib/enum.ex:1714: Enum."-map/2-lists^map/1-1-"/2
+    /tmp/q13.exs:15: Main.main/0

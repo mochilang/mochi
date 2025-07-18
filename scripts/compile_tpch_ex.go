@@ -8,6 +8,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
+	"strings"
 
 	excode "mochi/compiler/x/ex"
 	"mochi/parser"
@@ -17,6 +19,7 @@ import (
 func main() {
 	os.Setenv("MOCHI_HEADER_TIME", "2006-01-02T15:04:05Z")
 	defer os.Unsetenv("MOCHI_HEADER_TIME")
+
 	root, _ := os.Getwd()
 	for {
 		if _, err := os.Stat(filepath.Join(root, "go.mod")); err == nil {
@@ -28,43 +31,70 @@ func main() {
 		}
 		root = parent
 	}
+
 	outDir := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "ex")
 	_ = os.MkdirAll(outDir, 0o755)
-	for i := 11; i <= 22; i++ {
+
+	queries := []int{}
+	if env := os.Getenv("QUERIES"); env != "" {
+		for _, part := range strings.Split(env, ",") {
+			if n, err := strconv.Atoi(strings.TrimSpace(part)); err == nil {
+				queries = append(queries, n)
+			}
+		}
+	} else {
+		for i := 1; i <= 22; i++ {
+			queries = append(queries, i)
+		}
+	}
+
+	for _, i := range queries {
 		q := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "tpc-h", q+".mochi")
+		if _, err := os.Stat(src); err != nil {
+			continue
+		}
 		prog, err := parser.Parse(src)
 		if err != nil {
-			panic(err)
+			fmt.Fprintln(os.Stderr, "parse", q, err)
+			continue
 		}
 		env := types.NewEnv(nil)
 		if errs := types.Check(prog, env); len(errs) > 0 {
-			panic(errs[0])
+			fmt.Fprintln(os.Stderr, "type", q, errs[0])
+			continue
 		}
-		code, err := excode.New(env).Compile(prog)
+		c := excode.New(env)
+		code, err := c.Compile(prog)
 		if err != nil {
-			panic(err)
+			fmt.Fprintln(os.Stderr, "compile", q, err)
+			continue
 		}
-		exPath := filepath.Join(outDir, q+".ex")
-		if err := os.WriteFile(exPath, code, 0o644); err != nil {
-			panic(err)
+		codeOut := filepath.Join(outDir, q+".ex")
+		if err := os.WriteFile(codeOut, code, 0o644); err != nil {
+			fmt.Fprintln(os.Stderr, "write code", q, err)
+			continue
 		}
 		tmp := filepath.Join(os.TempDir(), q+".exs")
 		if err := os.WriteFile(tmp, code, 0o644); err != nil {
-			panic(err)
+			fmt.Fprintln(os.Stderr, "tmp write", q, err)
+			continue
 		}
 		cmd := exec.Command("elixir", tmp)
 		cmd.Dir = root
-		var outBuf bytes.Buffer
-		var errBuf bytes.Buffer
-		cmd.Stdout = &outBuf
-		cmd.Stderr = &errBuf
-		if err := cmd.Run(); err != nil {
-			panic(fmt.Errorf("run %s: %v\n%s", q, err, errBuf.Bytes()))
+		var stderr bytes.Buffer
+		cmd.Stderr = &stderr
+		out, err := cmd.Output()
+		cleaned := append(bytes.TrimSpace(out), '\n')
+		if err != nil {
+			combined := append(bytes.TrimSpace(append(stderr.Bytes(), out...)), '\n')
+			_ = os.WriteFile(filepath.Join(outDir, q+".error"), combined, 0o644)
+			fmt.Fprintf(os.Stderr, "run %s: %v\n", q, err)
+		} else {
+			_ = os.Remove(filepath.Join(outDir, q+".error"))
 		}
-		outPath := filepath.Join(outDir, q+".out")
-		if err := os.WriteFile(outPath, bytes.TrimSpace(outBuf.Bytes()), 0o644); err != nil {
-			panic(err)
+		if err := os.WriteFile(filepath.Join(outDir, q+".out"), cleaned, 0o644); err != nil {
+			fmt.Fprintln(os.Stderr, "write out", q, err)
 		}
 	}
 }
