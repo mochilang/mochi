@@ -38,3 +38,5 @@
 - 2025-07-18 refined skip/take slicing to use direct range expressions
 - 2025-07-19 removed list membership helper when element type is known,
   using `std.mem.indexOfScalar` instead
+- 2025-07-20 added substring builtin support and negative index/slice
+  handling without runtime helpers
