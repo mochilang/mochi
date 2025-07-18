@@ -803,6 +803,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		out.WriteString("    println!();\n")
 		out.WriteString("}\n\n")
 	}
+	if c.helpers["_now"] {
+		out.WriteString("fn _now() -> i64 {\n")
+		out.WriteString("    use std::time::{SystemTime, UNIX_EPOCH};\n")
+		out.WriteString("    SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos() as i64\n")
+		out.WriteString("}\n\n")
+	}
 	out.Write(c.buf.Bytes())
 	return out.Bytes(), nil
 }
@@ -1816,22 +1822,24 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					break
 				}
 			}
+			prefix := &parser.Unary{Value: &parser.PostfixExpr{Target: p.Target, Ops: p.Ops[:opIndex]}}
+			srcT := types.TypeOfPostfix(prefix.Value, c.env)
+			if strings.HasPrefix(val, "&") {
+				val = val[1:]
+			}
 			switch rustTy {
-			case "i32":
-				if strings.HasPrefix(val, "&") {
-					val = val[1:]
+			case "i32", "f64":
+				if _, ok := srcT.(types.StringType); ok {
+					val = fmt.Sprintf("%s.parse::<%s>().unwrap()", val, rustTy)
+				} else {
+					val = fmt.Sprintf("%s as %s", val, rustTy)
 				}
-				val = fmt.Sprintf("%s.parse::<i32>().unwrap()", val)
-			case "f64":
-				if strings.HasPrefix(val, "&") {
-					val = val[1:]
-				}
-				val = fmt.Sprintf("%s.parse::<f64>().unwrap()", val)
 			case "bool":
-				if strings.HasPrefix(val, "&") {
-					val = val[1:]
+				if _, ok := srcT.(types.StringType); ok {
+					val = fmt.Sprintf("%s.parse::<bool>().unwrap()", val)
+				} else {
+					val = fmt.Sprintf("(%s != 0)", val)
 				}
-				val = fmt.Sprintf("%s.parse::<bool>().unwrap()", val)
 			default:
 				return "", fmt.Errorf("unsupported cast to %s", rustTy)
 			}
@@ -4020,6 +4028,12 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return fmt.Sprintf("&%s[%s..%s]", args[0], args[1], args[2]), nil
 		}
 		return fmt.Sprintf("&%s[%s as usize..%s as usize]", args[0], args[1], args[2]), nil
+	case "now":
+		if len(args) != 0 {
+			return "", fmt.Errorf("now expects no args")
+		}
+		c.helpers["_now"] = true
+		return "_now()", nil
 	case "json":
 		if len(args) != 1 {
 			return "", fmt.Errorf("json expects 1 arg")
