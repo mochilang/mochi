@@ -924,6 +924,10 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 		if s, ok := c.listLiteralJSON(list); ok {
 			c.constListJSON[l.Name] = s
 		}
+	} else if sl := tryStructLiteral(l.Value); sl != nil {
+		if s, ok := c.structLiteralJSON(sl); ok {
+			c.constJSON[l.Name] = s
+		}
 	}
 	if c.lastListStruct != "" {
 		c.listVars[l.Name] = c.lastListStruct
@@ -1023,6 +1027,10 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	} else if list := tryListLiteral(v.Value); list != nil {
 		if s, ok := c.listLiteralJSON(list); ok {
 			c.constListJSON[v.Name] = s
+		}
+	} else if sl := tryStructLiteral(v.Value); sl != nil {
+		if s, ok := c.structLiteralJSON(sl); ok {
+			c.constJSON[v.Name] = s
 		}
 	}
 	if c.lastListStruct != "" {
