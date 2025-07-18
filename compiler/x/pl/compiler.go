@@ -1288,18 +1288,24 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, bool, error) {
 	case p.Lit != nil:
 		return c.compileLiteral(p.Lit)
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
+		arith := false
+		if c.env != nil {
+			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+				arith = types.IsNumericType(t)
+			}
+		}
 		if c.mutVars[p.Selector.Root] {
 			tmp := c.newTmp()
 			c.writeln(fmt.Sprintf("nb_getval(%s, %s),", sanitizeAtom(p.Selector.Root), tmp))
-			return tmp, true, nil
+			return tmp, arith, nil
 		}
 		if v, ok := c.vars[p.Selector.Root]; ok {
-			return v, true, nil
+			return v, arith, nil
 		}
 		if len(p.Selector.Root) > 0 && unicode.IsUpper(rune(p.Selector.Root[0])) {
-			return sanitizeAtom(p.Selector.Root), true, nil
+			return sanitizeAtom(p.Selector.Root), arith, nil
 		}
-		return sanitizeVar(p.Selector.Root), true, nil
+		return sanitizeVar(p.Selector.Root), arith, nil
 	case p.Selector != nil:
 		var val string
 		var curType types.Type

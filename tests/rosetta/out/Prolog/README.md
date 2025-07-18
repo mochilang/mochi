@@ -1,9 +1,9 @@
-# Rosetta Prolog Output (1/220 compiled and run)
+# Rosetta Prolog Output (2/220 compiled and run)
 
 This directory holds Prolog source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
 ## Program checklist
-- [ ] 100-doors-2
+- [x] 100-doors-2
 - [ ] 100-doors-3
 - [ ] 100-doors
 - [ ] 100-prisoners
