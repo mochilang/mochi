@@ -664,8 +664,27 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			} else if t, err := c.env.GetVar(s.Let.Name); err == nil {
 				static = t
 				typ = csTypeOf(t)
+				var listStruct *types.StructType
+				if ll := listLiteral(s.Let.Value); ll != nil {
+					if lt, ok := static.(types.ListType); ok {
+						if _, ok2 := lt.Elem.(types.MapType); ok2 {
+							if st, ok3 := c.inferStructFromList(ll, s.Let.Name); ok3 {
+								lt.Elem = st
+								static = lt
+								typ = csTypeOf(lt)
+								c.env.SetStruct(st.Name, st)
+								c.compileStructType(st)
+								listStruct = &st
+							}
+						}
+					}
+				}
 				c.structHint = singular(name)
-				expr, err = c.compileExpr(s.Let.Value)
+				if listStruct != nil {
+					expr, err = c.compileListWithStruct(listLiteral(s.Let.Value), *listStruct)
+				} else {
+					expr, err = c.compileExpr(s.Let.Value)
+				}
 				c.structHint = ""
 				if err != nil {
 					return err
