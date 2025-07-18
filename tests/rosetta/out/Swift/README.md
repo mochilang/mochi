@@ -1,4 +1,4 @@
-# Rosetta Swift Output (57/271 programs run)
+# Rosetta Swift Output (62/278 programs run)
 
 This directory holds Swift source code generated from the Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -6,7 +6,7 @@ This directory holds Swift source code generated from the Mochi programs in `tes
 - [x] 100-doors-2.mochi
 - [x] 100-doors-3.mochi
 - [x] 100-doors.mochi
-- [ ] 100-prisoners.mochi
+- [x] 100-prisoners.mochi
 - [ ] 15-puzzle-game.mochi
 - [ ] 15-puzzle-solver.mochi
 - [ ] 2048.mochi
@@ -14,17 +14,17 @@ This directory holds Swift source code generated from the Mochi programs in `tes
 - [ ] 24-game-solve.mochi
 - [ ] 24-game.mochi
 - [x] 4-rings-or-4-squares-puzzle.mochi
-- [ ] 9-billion-names-of-god-the-integer.mochi
+- [x] 9-billion-names-of-god-the-integer.mochi
 - [ ] 99-bottles-of-beer-2.mochi
 - [x] 99-bottles-of-beer.mochi
 - [ ] DNS-query.mochi
-- [ ] a+b.mochi
+- [x] a+b.mochi
 - [ ] abbreviations-automatic.mochi
 - [ ] abbreviations-easy.mochi
 - [ ] abbreviations-simple.mochi
 - [ ] abc-problem.mochi
-- [ ] abelian-sandpile-model-identity.mochi
-- [ ] abelian-sandpile-model.mochi
+- [x] abelian-sandpile-model-identity.mochi
+- [x] abelian-sandpile-model.mochi
 - [x] abstract-type.mochi
 - [x] abundant-deficient-and-perfect-number-classifications.mochi
 - [ ] abundant-odd-numbers.mochi
@@ -273,4 +273,11 @@ This directory holds Swift source code generated from the Mochi programs in `tes
 - [ ] cusip.mochi
 - [ ] cyclops-numbers.mochi
 - [ ] damm-algorithm.mochi
+- [ ] date-format.mochi
+- [ ] date-manipulation.mochi
+- [ ] day-of-the-week.mochi
+- [ ] de-bruijn-sequences.mochi
+- [ ] deal-cards-for-freecell.mochi
+- [ ] death-star.mochi
+- [ ] deceptive-numbers.mochi
 - [ ] md5.mochi
