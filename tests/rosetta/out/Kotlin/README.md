@@ -5,13 +5,13 @@ programs in `tests/rosetta/x/Mochi`. Each file has the expected
 runtime output in a matching `.out` file. Compilation or runtime
 failures are stored in a corresponding `.error` file.
 
-Compiled programs: 17/216
+Compiled programs: 18/216
 
 ## Program checklist
 - [x] 100-doors-2
 - [x] 100-doors-3
 - [x] 100-doors
-- [ ] 100-prisoners
+- [x] 100-prisoners
 - [ ] 15-puzzle-game
 - [ ] 15-puzzle-solver
 - [ ] 2048

@@ -1174,11 +1174,17 @@ func (c *Compiler) postfix(p *parser.PostfixExpr) (string, error) {
 				}
 			}
 			typ := c.typeName(op.Cast.Type)
-			if typ == "Int" {
+			switch typ {
+			case "Int":
 				val = fmt.Sprintf("(%s).toInt()", val)
-			} else if typ == "String" {
+			case "Double":
+				val = fmt.Sprintf("(%s).toDouble()", val)
+			case "String":
 				val = fmt.Sprintf("%s.toString()", val)
-			} else {
+			case "Boolean":
+				c.use("toBool")
+				val = fmt.Sprintf("toBool(%s)", val)
+			default:
 				val = fmt.Sprintf("%s as %s", val, typ)
 			}
 		default:
@@ -1456,7 +1462,7 @@ func (c *Compiler) builtinCall(call *parser.CallExpr, args []string) (string, bo
 		}
 	case "now":
 		if len(args) == 0 {
-			return "System.nanoTime().toInt()", true
+			return "kotlin.math.abs(System.nanoTime().toInt())", true
 		}
 	case "append":
 		if len(args) == 2 {

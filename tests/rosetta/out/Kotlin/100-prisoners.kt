@@ -15,7 +15,7 @@ fun shuffle(xs: MutableList<Int>): MutableList<Int> {
     var arr = xs
     var i = 99
     while (i > 0) {
-        val j = System.nanoTime().toInt() % (i + 1)
+        val j = kotlin.math.abs(System.nanoTime().toInt()) % (i + 1)
         val tmp = arr[i]
         arr[i] = arr[j]
         arr[j] = tmp
@@ -67,9 +67,9 @@ fun doTrials(trials: Int, np: Int, strategy: String): Unit {
                 }
                 var d = 0
                 while (d < 50) {
-                    var n = System.nanoTime().toInt() % 100
+                    var n = kotlin.math.abs(System.nanoTime().toInt()) % 100
                     while (opened[n]) {
-                        n = System.nanoTime().toInt() % 100
+                        n = kotlin.math.abs(System.nanoTime().toInt()) % 100
                     }
                     opened[n] = true
                     if (drawers[n] == p) {
@@ -90,7 +90,7 @@ fun doTrials(trials: Int, np: Int, strategy: String): Unit {
         }
         t = t + 1
     }
-    val rf = (pardoned as Double) / (trials as Double) * 100.0
+    val rf = ((pardoned).toDouble()) / ((trials).toDouble()) * 100.0
     println("  strategy = " + strategy + "  pardoned = " + pardoned.toString() + " relative frequency = " + rf.toString() + "%")
 }
 
