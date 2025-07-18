@@ -5,7 +5,7 @@ fun shuffleStr(s: string): string {
   var arr: list<string> = []
   var i = 0
   while i < len(s) {
-    arr = arr + [s[i]]
+    arr = append(arr, s[i:i+1])
     i = i + 1
   }
   var j = len(arr) - 1
@@ -27,6 +27,12 @@ fun shuffleStr(s: string): string {
 
 fun createPolybius(): list<string> {
   let shuffled = shuffleStr(alphabet)
+  var labels: list<string> = []
+  var li = 0
+  while li < len(adfgvx) {
+    labels = append(labels, adfgvx[li:li+1])
+    li = li + 1
+  }
   print("6 x 6 Polybius square:\n")
   print("  | A D F G V X")
   print("---------------")
@@ -34,11 +40,11 @@ fun createPolybius(): list<string> {
   var i = 0
   while i < 6 {
     var row = shuffled[i*6:(i+1)*6]
-    p = p + [row]
-    var line = adfgvx[i] + " | "
+    p = append(p, row)
+    var line = labels[i:i+1] + " | "
     var j = 0
     while j < 6 {
-      line = line + row[j] + " "
+      line = line + row[j:j+1] + " "
       j = j + 1
     }
     print(line)
@@ -68,7 +74,7 @@ fun orderKey(key: string): list<int> {
   var pairs = []
   var i = 0
   while i < len(key) {
-    pairs = pairs + [[key[i], i]]
+    pairs = append(pairs, [key[i:i+1], i])
     i = i + 1
   }
   // simple bubble sort by first element
@@ -89,13 +95,19 @@ fun orderKey(key: string): list<int> {
   var res = []
   i = 0
   while i < n {
-    res = res + [pairs[i][1] as int]
+    res = append(res, pairs[i][1] as int)
     i = i + 1
   }
   return res
 }
 
 fun encrypt(polybius: list<string>, key: string, plainText: string): string {
+  var labels: list<string> = []
+  var li = 0
+  while li < len(adfgvx) {
+    labels = append(labels, adfgvx[li:li+1])
+    li = li + 1
+  }
   var temp = ""
   var i = 0
   while i < len(plainText) {
@@ -103,8 +115,8 @@ fun encrypt(polybius: list<string>, key: string, plainText: string): string {
     while r < 6 {
       var c = 0
       while c < 6 {
-        if polybius[r][c] == plainText[i] {
-          temp = temp + adfgvx[r] + adfgvx[c]
+        if polybius[r][c:c+1] == plainText[i:i+1] {
+          temp = temp + labels[r:r+1] + labels[c:c+1]
         }
         c = c + 1
       }
@@ -122,10 +134,10 @@ fun encrypt(polybius: list<string>, key: string, plainText: string): string {
     var row: list<string> = []
     var j = 0
     while j < len(key) {
-      row = row + [""]
+      row = append(row, "")
       j = j + 1
     }
-    table = table + [row]
+    table = append(table, row)
     rIdx = rIdx + 1
   }
   var idx = 0
@@ -145,7 +157,7 @@ fun encrypt(polybius: list<string>, key: string, plainText: string): string {
       colStr = colStr + table[ri][order[ci]]
       ri = ri + 1
     }
-    cols = cols + [colStr]
+    cols = append(cols, colStr)
     ci = ci + 1
   }
   var result = ""
@@ -163,7 +175,7 @@ fun encrypt(polybius: list<string>, key: string, plainText: string): string {
 fun indexOf(s: string, ch: string): int {
   var i = 0
   while i < len(s) {
-    if s[i] == ch {
+    if s[i:i+1] == ch {
       return i
     }
     i = i + 1
@@ -177,7 +189,7 @@ fun decrypt(polybius: list<string>, key: string, cipherText: string): string {
   var i = 0
   while i <= len(cipherText) {
     if i == len(cipherText) || cipherText[i] == " " {
-      colStrs = colStrs + [cipherText[start:i]]
+      colStrs = append(colStrs, cipherText[start:i])
       start = i + 1
     }
     i = i + 1
@@ -197,7 +209,7 @@ fun decrypt(polybius: list<string>, key: string, cipherText: string): string {
     var ls: list<string> = []
     var j = 0
     while j < len(s) {
-      ls = ls + [s[j]]
+      ls = append(ls, s[j:j+1])
       j = j + 1
     }
     if len(s) < maxColLen {
@@ -205,15 +217,15 @@ fun decrypt(polybius: list<string>, key: string, cipherText: string): string {
       var k = 0
       while k < maxColLen {
         if k < len(ls) {
-          pad = pad + [ls[k]]
+          pad = append(pad, ls[k])
         } else {
-          pad = pad + [""]
+          pad = append(pad, "")
         }
         k = k + 1
       }
-      cols = cols + [pad]
+      cols = append(cols, pad)
     } else {
-      cols = cols + [ls]
+      cols = append(cols, ls)
     }
     i = i + 1
   }
@@ -223,10 +235,10 @@ fun decrypt(polybius: list<string>, key: string, cipherText: string): string {
     var row: list<string> = []
     var c = 0
     while c < len(key) {
-      row = row + [""]
+      row = append(row, "")
       c = c + 1
     }
-    table = table + [row]
+    table = append(table, row)
     r = r + 1
   }
   let order = orderKey(key)
