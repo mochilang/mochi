@@ -2,7 +2,7 @@
 
 Generated C++ code for the programs under `tests/vm/valid`. Each file here has a `.cpp` source produced by the compiler and an `.out` file with its runtime output. If compilation failed, a `.error` file captures the g++ output.
 
-Compiled programs: 89/100
+Compiled programs: 100/100
 
 ## Checklist
 - [x] append_builtin
@@ -29,14 +29,14 @@ Compiled programs: 89/100
 - [x] fun_three_args
 - [x] go_auto
 - [x] group_by
-- [ ] group_by_conditional_sum
-- [ ] group_by_having
-- [ ] group_by_join
-- [ ] group_by_left_join
-- [ ] group_by_multi_join
-- [ ] group_by_multi_join_sort
-- [ ] group_by_sort
-- [ ] group_items_iteration
+- [x] group_by_conditional_sum
+- [x] group_by_having
+- [x] group_by_join
+- [x] group_by_left_join
+- [x] group_by_multi_join
+- [x] group_by_multi_join_sort
+- [x] group_by_sort
+- [x] group_items_iteration
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
@@ -60,7 +60,7 @@ Compiled programs: 89/100
 - [x] map_in_operator
  - [x] map_index
 - [x] map_int_key
-- [ ] map_literal_dynamic
+- [x] map_literal_dynamic
 - [x] map_membership
 - [x] map_nested_assign
 - [x] match_expr
@@ -70,7 +70,7 @@ Compiled programs: 89/100
 - [x] min_max_builtin
 - [x] nested_function
 - [x] order_by_map
-- [ ] outer_join
+- [x] outer_join
 - [x] partial_application
 - [x] print_hello
 - [x] pure_fold
@@ -79,8 +79,8 @@ Compiled programs: 89/100
 - [x] python_math
 - [x] query_sum_select
 - [x] record_assign
-- [ ] right_join
-- [ ] save_jsonl_stdout
+- [x] right_join
+- [x] save_jsonl_stdout
 - [x] short_circuit
 - [x] slice
 - [x] sort_stable

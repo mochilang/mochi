@@ -1,6 +1,0 @@
-/workspace/mochi/tests/machine/x/cpp/right_join.cpp: In function ‘int main()’:
-/workspace/mochi/tests/machine/x/cpp/right_join.cpp:71:22: error: no match for ‘operator!=’ (operand types are ‘Order’ and ‘Order’)
-   71 |     if ((entry.order != Order{})) {
-      |          ~~~~~~~~~~~ ^~ ~~~~~~~
-      |                |        |
-      |                Order    Order
