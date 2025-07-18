@@ -758,7 +758,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			t = types.AnyType{}
 		case op.Cast != nil:
 			if op.Cast.Type.Simple == nil {
-				return "", fmt.Errorf("unsupported cast")
+				// complex cast types have no effect in PHP
+				break
 			}
 			typ := *op.Cast.Type.Simple
 			switch typ {
@@ -895,24 +896,17 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) == 0 {
 			return "", nil
 		}
-		scalar := func(e *parser.Expr) bool {
-			switch types.TypeOfExprBasic(e, c.env).(type) {
-			case types.IntType, types.Int64Type, types.FloatType,
-				types.BoolType, types.StringType:
-				return true
-			default:
-				return false
-			}
-		}
 		if len(args) == 1 {
-			if scalar(call.Args[0]) {
-				return fmt.Sprintf("echo %s, PHP_EOL", args[0]), nil
-			}
+			return fmt.Sprintf("echo %s, PHP_EOL", args[0]), nil
 		} else {
 			allScalar := true
 			for i := range call.Args {
-				if !scalar(call.Args[i]) {
+				switch types.ExprType(call.Args[i], c.env).(type) {
+				case types.IntType, types.Int64Type, types.FloatType, types.BoolType, types.StringType:
+				default:
 					allScalar = false
+				}
+				if !allScalar {
 					break
 				}
 			}
@@ -991,6 +985,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("max expects 1 arg")
 		}
 		return fmt.Sprintf("max(%s)", args[0]), nil
+	case "int":
+		if len(args) != 1 {
+			return "", fmt.Errorf("int expects 1 arg")
+		}
+		return fmt.Sprintf("intval(%s)", args[0]), nil
 	case "substring":
 		if len(args) != 3 {
 			return "", fmt.Errorf("substring expects 3 args")
@@ -1001,11 +1000,22 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("indexOf expects 2 args")
 		}
 		return fmt.Sprintf("strpos(%s, %s)", args[0], args[1]), nil
+	case "lower":
+		if len(args) != 1 {
+			return "", fmt.Errorf("lower expects 1 arg")
+		}
+		return fmt.Sprintf("strtolower(%s)", args[0]), nil
+	case "upper":
+		if len(args) != 1 {
+			return "", fmt.Errorf("upper expects 1 arg")
+		}
+		return fmt.Sprintf("strtoupper(%s)", args[0]), nil
 	case "str":
 		if len(args) != 1 {
 			return "", fmt.Errorf("str expects 1 arg")
 		}
-		return fmt.Sprintf("strval(%s)", args[0]), nil
+		a := args[0]
+		return fmt.Sprintf("(is_bool(%s) ? (%s ? 'true' : 'false') : strval(%s))", a, a, a), nil
 	case "json":
 		if len(args) != 1 {
 			return "", fmt.Errorf("json expects 1 arg")
