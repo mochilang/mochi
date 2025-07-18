@@ -1,4 +1,26 @@
 # 📦 CHANGELOG.md
+## [0.10.30] – 2025-07-18T18:44:32+07:00
+
+### Added
+
+* Rosetta Code solutions expanded across datasets and tasks
+* `input` and `now` builtins for Racket, Java, F#, Swift and Pascal
+* Basic loop constructs in Erlang
+* Virtual machine global variable support
+
+### Changed
+
+* Go compiler handles typed append and string conversions
+* Kotlin supports float casts and safer `now` builtin
+* Scala, C# and other backends sanitize identifiers and improve inference
+* Documentation and golden outputs refreshed across languages
+
+### Fixed
+
+* C backend capture assignment handling corrected
+* Balanced bracket and other example fixes
+* Python backend manages bare returns and global variables
+
 ## [0.10.29] – 2025-07-20T09:45:10+07:00
 
 ### Added
