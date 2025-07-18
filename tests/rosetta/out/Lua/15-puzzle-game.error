@@ -1,2 +1,0 @@
-compile: luac error: exit status 1
-/usr/bin/luac: /tmp/mochi_3779297085.lua:153: 'end' expected (to close 'while' at line 124) near '::'

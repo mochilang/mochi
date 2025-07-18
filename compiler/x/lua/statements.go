@@ -399,6 +399,9 @@ func (c *Compiler) compileFor(s *parser.ForStmt) error {
 		}
 		c.writeln(fmt.Sprintf("for %s = %s, (%s)-1 do", name, start, end))
 		c.indent++
+		if needLabel {
+			c.writeln("::" + label + "::")
+		}
 	} else {
 		src, err := c.compileExpr(s.Source)
 		if err != nil {
@@ -415,6 +418,9 @@ func (c *Compiler) compileFor(s *parser.ForStmt) error {
 				c.writeln(fmt.Sprintf("for _ in ipairs(%s) do", src))
 			}
 			c.indent++
+			if needLabel {
+				c.writeln("::" + label + "::")
+			}
 		case isMap(t):
 			keys := fmt.Sprintf("_k%d", c.tmpCount)
 			tmp := fmt.Sprintf("_m%d", c.tmpCount)
@@ -429,6 +435,9 @@ func (c *Compiler) compileFor(s *parser.ForStmt) error {
 				c.writeln(fmt.Sprintf("for _ in ipairs(%s) do", keys))
 			}
 			c.indent++
+			if needLabel {
+				c.writeln("::" + label + "::")
+			}
 		case isString(t):
 			tmp := fmt.Sprintf("_s%d", c.tmpCount)
 			idx := fmt.Sprintf("_i%d", c.tmpCount)
@@ -436,6 +445,9 @@ func (c *Compiler) compileFor(s *parser.ForStmt) error {
 			c.writeln(fmt.Sprintf("local %s = %s", tmp, src))
 			c.writeln(fmt.Sprintf("for %s = 1, #%s do", idx, tmp))
 			c.indent++
+			if needLabel {
+				c.writeln("::" + label + "::")
+			}
 			if useVar {
 				pre = fmt.Sprintf("local %s = string.sub(%s, %s, %s)", name, tmp, idx, idx)
 			}
@@ -447,6 +459,9 @@ func (c *Compiler) compileFor(s *parser.ForStmt) error {
 				c.writeln(fmt.Sprintf("for _ in __iter(%s) do", src))
 			}
 			c.indent++
+			if needLabel {
+				c.writeln("::" + label + "::")
+			}
 		}
 		if pre != "" {
 			c.writeln(pre)
@@ -459,9 +474,6 @@ func (c *Compiler) compileFor(s *parser.ForStmt) error {
 			}
 			return err
 		}
-	}
-	if needLabel {
-		c.writeln("::" + label + "::")
 	}
 	c.indent--
 	c.writeln("end")
@@ -483,6 +495,9 @@ func (c *Compiler) compileWhile(s *parser.WhileStmt) error {
 	}
 	c.writeln("while " + cond + " do")
 	c.indent++
+	if needLabel {
+		c.writeln("::" + label + "::")
+	}
 	for _, st := range s.Body {
 		if err := c.compileStmt(st); err != nil {
 			if needLabel {
@@ -490,9 +505,6 @@ func (c *Compiler) compileWhile(s *parser.WhileStmt) error {
 			}
 			return err
 		}
-	}
-	if needLabel {
-		c.writeln("::" + label + "::")
 	}
 	c.indent--
 	c.writeln("end")

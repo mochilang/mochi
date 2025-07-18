@@ -488,6 +488,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return fmt.Sprintf("tostring(%s)", args[0]), nil
 		}
 		return fmt.Sprintf("tostring(%s)", argStr), nil
+	case "int":
+		c.helpers["int"] = true
+		if len(args) != 1 {
+			return "", fmt.Errorf("int expects 1 arg")
+		}
+		return fmt.Sprintf("int(%s)", args[0]), nil
 	case "input":
 		c.helpers["input"] = true
 		return "__input()", nil
@@ -654,7 +660,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		c.helpers["reduce"] = true
 		return fmt.Sprintf("__reduce(%s, %s, %s)", args[0], args[1], args[2]), nil
 	case "now":
-		return "os.time()*1000000000", nil
+		// os.time() provides second precision which is sufficient for
+		// simple randomness without overflowing Lua number precision.
+		// Using nanoseconds via multiplication can exceed 2^53 and
+		// produce rounding errors, leading to invalid indexes.
+		return "os.time()", nil
 	case "json":
 		c.helpers["json"] = true
 		return fmt.Sprintf("__json(%s)", argStr), nil
