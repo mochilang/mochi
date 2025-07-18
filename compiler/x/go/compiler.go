@@ -4807,6 +4807,23 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			expr = fmt.Sprintf("_concat[%s](%s, %s)", elemGo, expr, args[i])
 		}
 		return expr, nil
+	case "append", "push":
+		if len(call.Args) != 2 {
+			return "", fmt.Errorf("append expects 2 args")
+		}
+		if lt, ok := c.inferExprType(call.Args[0]).(types.ListType); ok && !isAny(lt.Elem) {
+			a0 := args[0]
+			a1 := args[1]
+			et := c.inferExprType(call.Args[1])
+			if !equalTypes(lt.Elem, et) {
+				a1 = c.castExpr(a1, et, lt.Elem)
+			}
+			return fmt.Sprintf("append(%s, %s)", a0, a1), nil
+		}
+		c.use("_toAnySlice")
+		args[0] = fmt.Sprintf("_toAnySlice(%s)", args[0])
+		args[1] = fmt.Sprintf("any(%s)", args[1])
+		return fmt.Sprintf("append(%s, %s)", args[0], args[1]), nil
 	case "len":
 		return fmt.Sprintf("len(%s)", argStr), nil
 	case "now":
