@@ -76,3 +76,7 @@ fails if any `.error` file is present.
 - `len` and `exists` now handle `option` values without relying on `_length`
   or `_exists`. When the underlying type is known the compiler emits direct
   Elixir code with a `nil` check.
+
+## Rosetta Improvements (2025-07-18 15:56)
+- Module attribute names are now lowercased. This fixes compilation errors for
+  tasks defining constants like `SIZE` or `THRESHOLD`.

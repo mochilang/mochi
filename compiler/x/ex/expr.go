@@ -564,8 +564,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				}
 			}
 		}
-		if _, ok := c.attrs[p.Selector.Root]; ok {
-			name = "@" + name
+		if _, ok := c.attrs[attrName(p.Selector.Root)]; ok {
+			name = "@" + attrName(p.Selector.Root)
 		}
 		if len(p.Selector.Tail) > 0 {
 			name += "." + strings.Join(p.Selector.Tail, ".")
