@@ -3,7 +3,6 @@
 package zigcode
 
 func (c *Compiler) writeBuiltins() {
-	c.writeErrorHandler()
 	if c.needsAvgInt {
 		c.writeln("fn _avg_int(v: []const i32) f64 {")
 		c.indent++
@@ -386,7 +385,7 @@ func (c *Compiler) writeBuiltins() {
 		c.writeln("fn _concat_string(a: []const u8, b: []const u8) []const u8 {")
 		c.indent++
 		c.writeln("const alloc = std.heap.page_allocator;")
-		c.writeln("return std.mem.concat(u8, &[_][]const u8{ a, b }, alloc)" + c.catchHandler() + ";")
+		c.writeln("return std.mem.concat(alloc, u8, &[_][]const u8{ a, b })" + c.catchHandler() + ";")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
@@ -473,6 +472,7 @@ func (c *Compiler) writeBuiltins() {
 		c.writeln("}")
 		c.writeln("")
 	}
+	c.writeErrorHandler()
 }
 
 func (c *Compiler) writeExpectFunc() {
