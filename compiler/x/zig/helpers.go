@@ -481,6 +481,11 @@ func canInferType(e *parser.Expr, t types.Type) bool {
 	if _, ok := t.(types.AnyType); ok {
 		return false
 	}
+	if isIntLiteralExpr(e) || isFloatLiteralExpr(e) || isBoolLiteralExpr(e) || isStringLiteralExprRaw(e) {
+		if isInt(t) || isFloat(t) || isBool(t) || isString(t) {
+			return false
+		}
+	}
 	return true
 }
 

@@ -4563,6 +4563,50 @@ func (c *Compiler) listElemTypePostfix(p *parser.PostfixExpr) string {
 	return "i32"
 }
 
+func isIntLiteralExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || u.Value.Target == nil || len(u.Value.Ops) > 0 {
+		return false
+	}
+	return u.Value.Target.Lit != nil && u.Value.Target.Lit.Int != nil
+}
+
+func isFloatLiteralExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || u.Value.Target == nil || len(u.Value.Ops) > 0 {
+		return false
+	}
+	return u.Value.Target.Lit != nil && u.Value.Target.Lit.Float != nil
+}
+
+func isBoolLiteralExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || u.Value.Target == nil || len(u.Value.Ops) > 0 {
+		return false
+	}
+	return u.Value.Target.Lit != nil && u.Value.Target.Lit.Bool != nil
+}
+
+func isStringLiteralExprRaw(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || u.Value.Target == nil || len(u.Value.Ops) > 0 {
+		return false
+	}
+	return u.Value.Target.Lit != nil && u.Value.Target.Lit.Str != nil
+}
+
 var zigReserved = map[string]bool{
 	"fn": true, "var": true, "const": true, "pub": true, "return": true,
 	"for": true, "while": true, "if": true, "else": true,

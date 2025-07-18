@@ -116,11 +116,7 @@ func TestZigCompiler_Rosetta_Golden(t *testing.T) {
 	if err != nil {
 		t.Fatalf("glob: %v", err)
 	}
-	max := 10
-	if len(files) < max {
-		max = len(files)
-	}
-	for _, f := range files[:max] {
+	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		t.Run(name, func(t *testing.T) { runRosettaTaskGolden(t, name) })
 	}
