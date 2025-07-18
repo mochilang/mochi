@@ -422,6 +422,35 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 		}
 	}
 
+	// prepare child environment with parameter types
+	var prevEnv *types.Env
+	if c.env != nil {
+		prevEnv = c.env
+		child := types.NewEnv(c.env)
+		if t, err := c.env.GetVar(fun.Name); err == nil {
+			if ft, ok := t.(types.FuncType); ok {
+				for i, p := range fun.Params {
+					var typ types.Type = types.AnyType{}
+					if i < len(ft.Params) {
+						typ = ft.Params[i]
+					} else if p.Type != nil {
+						typ = c.resolveTypeRef(p.Type)
+					}
+					child.SetVar(p.Name, typ, true)
+				}
+			}
+		} else {
+			for _, p := range fun.Params {
+				var typ types.Type = types.AnyType{}
+				if p.Type != nil {
+					typ = c.resolveTypeRef(p.Type)
+				}
+				child.SetVar(p.Name, typ, true)
+			}
+		}
+		c.env = child
+	}
+
 	c.writeIndent()
 	c.buf.WriteString("def " + sanitizeName(fun.Name) + "(")
 	for i, p := range fun.Params {
@@ -443,6 +472,9 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 	c.writeln("catch {:return, v} -> v end")
 	c.indent--
 	c.writeln("end")
+	if prevEnv != nil {
+		c.env = prevEnv
+	}
 	return nil
 }
 

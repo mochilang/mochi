@@ -68,3 +68,6 @@ fails if any `.error` file is present.
   Regenerated machine outputs for `len_builtin`, `count_builtin`, and `list_set_ops`.
 - String indexing and slicing now use `String.at/2` and `String.slice/3` when the
   operand is a string, so `_index_string` and `_slice_string` are rarely emitted.
+- Function parameters are now typed within their bodies so built-ins like `len()`
+  and `exists()` emit direct Elixir code. Regenerated machine outputs for
+  `two-sum` and `exists_builtin`.

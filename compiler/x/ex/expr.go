@@ -934,8 +934,24 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	for i, p := range fn.Params {
 		params[i] = p.Name
 	}
+	var prevEnv *types.Env
+	if c.env != nil {
+		prevEnv = c.env
+		child := types.NewEnv(c.env)
+		for _, p := range fn.Params {
+			var typ types.Type = types.AnyType{}
+			if p.Type != nil {
+				typ = c.resolveTypeRef(p.Type)
+			}
+			child.SetVar(p.Name, typ, true)
+		}
+		c.env = child
+	}
 	if fn.ExprBody != nil {
 		expr, err := c.compileExpr(fn.ExprBody)
+		if prevEnv != nil {
+			c.env = prevEnv
+		}
 		if err != nil {
 			return "", err
 		}
@@ -945,10 +961,16 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		sub := &Compiler{env: c.env, indent: c.indent + 1}
 		for _, s := range fn.BlockBody {
 			if err := sub.compileStmt(s); err != nil {
+				if prevEnv != nil {
+					c.env = prevEnv
+				}
 				return "", err
 			}
 		}
 		body := sub.buf.String()
+		if prevEnv != nil {
+			c.env = prevEnv
+		}
 		var b strings.Builder
 		b.WriteString("fn " + strings.Join(params, ", ") + " ->\n")
 		b.WriteString(body)
@@ -957,6 +979,9 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		}
 		b.WriteString("end")
 		return b.String(), nil
+	}
+	if prevEnv != nil {
+		c.env = prevEnv
 	}
 	return "", fmt.Errorf("block function expressions not supported")
 }
