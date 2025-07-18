@@ -42,6 +42,11 @@ func main() {
 	outDir := filepath.Join(root, "tests", "rosetta", "out", "Clojure")
 	_ = os.MkdirAll(outDir, 0o755)
 
+	interactive := map[string]bool{
+		"15-puzzle-game": true,
+		"21-game":        true,
+	}
+
 	var tasks []string
 	if env := os.Getenv("TASKS"); env != "" {
 		for _, part := range strings.Split(env, ",") {
@@ -80,6 +85,12 @@ func main() {
 			fmt.Fprintln(os.Stderr, "write code", name, err)
 			continue
 		}
+		if interactive[name] {
+			os.Remove(filepath.Join(outDir, name+".error"))
+			os.Remove(filepath.Join(outDir, name+".out"))
+			continue
+		}
+
 		tmp := filepath.Join(os.TempDir(), name+".clj")
 		if err := os.WriteFile(tmp, code, 0o644); err != nil {
 			writeError(outDir, name, fmt.Sprintf("tmp write: %v", err))

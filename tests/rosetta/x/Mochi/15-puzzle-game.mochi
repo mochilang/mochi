@@ -105,7 +105,7 @@ fun playOneMove() {
 
 fun play() {
   print("Starting board:")
-  while (!quit && (!isSolved())) {
+  while !quit && isSolved() == false {
     print("")
     printBoard()
     playOneMove()
