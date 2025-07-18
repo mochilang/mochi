@@ -2689,15 +2689,25 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr, asReturn bool) (string,
 				if c.isMapPostfix(p) {
 					expr = fmt.Sprintf("(%s.get(%s) orelse unreachable)", expr, idx)
 				} else if c.isStringPostfix(p) {
-					if v, ok := c.intConst(op.Index.Start); ok && v >= 0 {
-						expr = fmt.Sprintf("%s[%d..%d]", expr, v, v+1)
+					if v, ok := c.intConst(op.Index.Start); ok {
+						if v >= 0 {
+							expr = fmt.Sprintf("%s[%d..%d]", expr, v, v+1)
+						} else {
+							startExpr := toUSize(fmt.Sprintf("%s.len - %d", expr, -v))
+							expr = fmt.Sprintf("%s[%s..%s+1]", expr, startExpr, startExpr)
+						}
 					} else {
 						c.needsIndexString = true
 						expr = fmt.Sprintf("_index_string(%s, %s)", expr, idx)
 					}
 				} else if c.isListPostfix(p) {
-					if v, ok := c.intConst(op.Index.Start); ok && v >= 0 {
-						expr = fmt.Sprintf("%s[%d]", expr, v)
+					if v, ok := c.intConst(op.Index.Start); ok {
+						if v >= 0 {
+							expr = fmt.Sprintf("%s[%d]", expr, v)
+						} else {
+							idxExpr := toUSize(fmt.Sprintf("%s.len - %d", expr, -v))
+							expr = fmt.Sprintf("%s[%s]", expr, idxExpr)
+						}
 					} else {
 						elem := c.listElemTypePostfix(p)
 						c.needsIndex = true
@@ -2734,23 +2744,35 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr, asReturn bool) (string,
 					step = st
 				}
 				if c.isStringPostfix(p) || c.isStringPrimary(p.Target) {
-					if st, okS := c.intConst(op.Index.Start); okS && st >= 0 {
+					if st, okS := c.intConst(op.Index.Start); okS {
 						stepOne := true
 						if op.Index.Step != nil {
 							if sv, okSt := c.intConst(op.Index.Step); !okSt || sv != 1 {
 								stepOne = false
 							}
 						}
+						startExpr := ""
+						if st >= 0 {
+							startExpr = fmt.Sprintf("%d", st)
+						} else {
+							startExpr = fmt.Sprintf("%s.len - %d", expr, -st)
+						}
 						if stepOne {
 							if op.Index.End != nil {
-								if en, okE := c.intConst(op.Index.End); okE && en >= st {
-									expr = fmt.Sprintf("%s[%d..%d]", expr, st, en)
+								if en, okE := c.intConst(op.Index.End); okE {
+									var endExpr string
+									if en >= 0 {
+										endExpr = fmt.Sprintf("%d", en)
+									} else {
+										endExpr = fmt.Sprintf("%s.len - %d", expr, -en)
+									}
+									expr = fmt.Sprintf("%s[%s..%s]", expr, startExpr, endExpr)
 								} else {
 									exprEnd := toUSize(end)
-									expr = fmt.Sprintf("%s[%d..%s]", expr, st, exprEnd)
+									expr = fmt.Sprintf("%s[%s..%s]", expr, startExpr, exprEnd)
 								}
 							} else {
-								expr = fmt.Sprintf("%s[%d..%s.len]", expr, st, expr)
+								expr = fmt.Sprintf("%s[%s..%s.len]", expr, startExpr, expr)
 							}
 						} else {
 							c.needsSliceString = true
@@ -2761,23 +2783,35 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr, asReturn bool) (string,
 						expr = fmt.Sprintf("_slice_string(%s, %s, %s, %s)", expr, start, end, step)
 					}
 				} else if c.isListPostfix(p) || c.isListPrimary(p.Target) {
-					if st, okS := c.intConst(op.Index.Start); okS && st >= 0 {
+					if st, okS := c.intConst(op.Index.Start); okS {
 						stepOne := true
 						if op.Index.Step != nil {
 							if sv, okSt := c.intConst(op.Index.Step); !okSt || sv != 1 {
 								stepOne = false
 							}
 						}
+						startExpr := ""
+						if st >= 0 {
+							startExpr = fmt.Sprintf("%d", st)
+						} else {
+							startExpr = fmt.Sprintf("%s.len - %d", expr, -st)
+						}
 						if stepOne {
 							if op.Index.End != nil {
-								if en, okE := c.intConst(op.Index.End); okE && en >= st {
-									expr = fmt.Sprintf("%s[%d..%d]", expr, st, en)
+								if en, okE := c.intConst(op.Index.End); okE {
+									var endExpr string
+									if en >= 0 {
+										endExpr = fmt.Sprintf("%d", en)
+									} else {
+										endExpr = fmt.Sprintf("%s.len - %d", expr, -en)
+									}
+									expr = fmt.Sprintf("%s[%s..%s]", expr, startExpr, endExpr)
 								} else {
 									exprEnd := toUSize(end)
-									expr = fmt.Sprintf("%s[%d..%s]", expr, st, exprEnd)
+									expr = fmt.Sprintf("%s[%s..%s]", expr, startExpr, exprEnd)
 								}
 							} else {
-								expr = fmt.Sprintf("%s[%d..%s.len]", expr, st, expr)
+								expr = fmt.Sprintf("%s[%s..%s.len]", expr, startExpr, expr)
 							}
 						} else {
 							elem := c.listElemTypePostfix(p)
@@ -3077,7 +3111,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		c.needsJoinString = true
 		return fmt.Sprintf("_join_strings(%s, %s)", parts, sep), nil
 	}
-	if name == "substr" && len(call.Args) == 3 {
+	if (name == "substr" || name == "substring") && len(call.Args) == 3 {
 		s, err := c.compileExpr(call.Args[0], false)
 		if err != nil {
 			return "", err
@@ -3091,6 +3125,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", err
 		}
 		c.needsSliceString = true
+		c.needsErrHandler = true
 		return fmt.Sprintf("_slice_string(%s, %s, %s, 1)", s, start, end), nil
 	}
 	if name == "len" && len(call.Args) == 1 {
