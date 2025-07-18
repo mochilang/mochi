@@ -613,10 +613,10 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 	}
 	var elemHint string
 	if st.Type == nil {
-		if et := c.extractVectorElemType(exprStr); et != "" {
+		if et := c.extractVectorElemType(exprStr); et != "" && !strings.HasPrefix(exprStr, "std::unordered_map<") && !strings.HasPrefix(exprStr, "std::map<") {
 			typ = fmt.Sprintf("std::vector<%s>", et)
 			elemHint = et
-		} else if et := c.elemType[exprStr]; et != "" {
+		} else if et := c.elemType[exprStr]; et != "" && !strings.HasPrefix(exprStr, "std::unordered_map<") && !strings.HasPrefix(exprStr, "std::map<") {
 			typ = fmt.Sprintf("std::vector<%s>", et)
 			elemHint = et
 		}
@@ -658,10 +658,10 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 		}
 		c.vars[st.Name] = inferred
 	}
-	if s := c.extractVectorStruct(exprStr); s != "" {
-		c.varStruct[st.Name] = s
-	} else if t := c.varStruct[exprStr]; t != "" {
+	if t := c.varStruct[exprStr]; t != "" {
 		c.varStruct[st.Name] = t
+	} else if s := c.extractVectorStruct(exprStr); s != "" {
+		c.varStruct[st.Name] = s
 	}
 	if elemHint != "" {
 		c.elemType[st.Name] = elemHint
@@ -669,6 +669,10 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 		c.elemType[st.Name] = et
 	} else if t := c.elemType[exprStr]; t != "" {
 		c.elemType[st.Name] = t
+	}
+	if mv := c.extractMapValueType(exprStr); mv != "" {
+		c.elemType[st.Name] = mv
+		c.vars[st.Name] = "map"
 	}
 	return nil
 }
@@ -692,10 +696,10 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 	}
 	var elemHint string
 	if st.Type == nil {
-		if et := c.extractVectorElemType(exprStr); et != "" {
+		if et := c.extractVectorElemType(exprStr); et != "" && !strings.HasPrefix(exprStr, "std::unordered_map<") && !strings.HasPrefix(exprStr, "std::map<") {
 			typ = fmt.Sprintf("std::vector<%s>", et)
 			elemHint = et
-		} else if et := c.elemType[exprStr]; et != "" {
+		} else if et := c.elemType[exprStr]; et != "" && !strings.HasPrefix(exprStr, "std::unordered_map<") && !strings.HasPrefix(exprStr, "std::map<") {
 			typ = fmt.Sprintf("std::vector<%s>", et)
 			elemHint = et
 		} else if isEmptyListExpr(st.Value) {
@@ -753,10 +757,10 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 		}
 		c.vars[st.Name] = inferred
 	}
-	if s := c.extractVectorStruct(exprStr); s != "" {
-		c.varStruct[st.Name] = s
-	} else if t := c.varStruct[exprStr]; t != "" {
+	if t := c.varStruct[exprStr]; t != "" {
 		c.varStruct[st.Name] = t
+	} else if s := c.extractVectorStruct(exprStr); s != "" {
+		c.varStruct[st.Name] = s
 	}
 	if elemHint != "" {
 		c.elemType[st.Name] = elemHint
@@ -764,6 +768,10 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 		c.elemType[st.Name] = et
 	} else if t := c.elemType[exprStr]; t != "" {
 		c.elemType[st.Name] = t
+	}
+	if mv := c.extractMapValueType(exprStr); mv != "" {
+		c.elemType[st.Name] = mv
+		c.vars[st.Name] = "map"
 	}
 	return nil
 }
@@ -1688,6 +1696,20 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, error) {
 					return "", err
 				}
 				expr = fmt.Sprintf("%s[%s]", expr, idx)
+				if vt := c.extractMapValueType(base); vt != "" {
+					c.elemType[expr] = vt
+					if c.isStructName(vt) {
+						c.varStruct[expr] = vt
+					}
+					switch vt {
+					case "std::string":
+						c.vars[expr] = "string"
+					case "int", "double", "bool":
+						c.vars[expr] = strings.TrimPrefix(vt, "std::")
+					case "std::any":
+						c.vars[expr] = "any"
+					}
+				}
 			}
 		} else if op.Field != nil {
 			base := expr
@@ -2018,7 +2040,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		for i := range keys {
 			pairs = append(pairs, fmt.Sprintf("{%s, %s}", keys[i], vals[i]))
 		}
-		return fmt.Sprintf("std::unordered_map<%s,%s>{%s}", keyType, valType, strings.Join(pairs, ", ")), nil
+		expr := fmt.Sprintf("std::unordered_map<%s,%s>{%s}", keyType, valType, strings.Join(pairs, ", "))
+		c.elemType[expr] = valType
+		c.vars[expr] = "map"
+		return expr, nil
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
 	case p.If != nil:
@@ -3924,6 +3949,27 @@ func (c *Compiler) extractVectorElemType(expr string) string {
 	}
 	if _, err := strconv.Atoi(typ); err == nil {
 		return "int"
+	}
+	return ""
+}
+
+func (c *Compiler) extractMapValueType(expr string) string {
+	if strings.HasPrefix(expr, "std::unordered_map<") || strings.HasPrefix(expr, "std::map<") {
+		inner := expr[strings.Index(expr, "<")+1:]
+		idx := matchAngle(inner)
+		if idx != -1 {
+			parts := inner[:idx]
+			if comma := strings.LastIndex(parts, ","); comma != -1 {
+				val := strings.TrimSpace(parts[comma+1:])
+				if strings.HasPrefix(val, "decltype(") {
+					val = strings.TrimSuffix(strings.TrimPrefix(val, "decltype("), ")")
+				}
+				return val
+			}
+		}
+	}
+	if t := c.elemType[expr]; t != "" {
+		return t
 	}
 	return ""
 }
