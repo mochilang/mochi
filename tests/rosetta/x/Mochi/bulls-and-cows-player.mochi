@@ -19,7 +19,10 @@ fun fields(s: string): list<string> {
   while i < len(s) {
     let ch = substring(s, i, i + 1)
     if ch == " " || ch == "\t" || ch == "\n" {
-      if len(cur) > 0 { words = append(words, cur); cur = "" }
+      if len(cur) > 0 {
+        words = append(words, cur)
+        cur = ""
+      }
     } else {
       cur = cur + ch
     }
