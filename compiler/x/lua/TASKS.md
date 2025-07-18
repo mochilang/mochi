@@ -100,3 +100,7 @@
 - `__print` now outputs plain strings without quoting when called with a single argument.
 - Updated golden outputs for VM valid suite after runtime changes.
 
+
+## Progress (2025-07-19 13:45)
+- Removed `__eq` and `__print` helpers by emitting direct Lua code for equality and printing.
+- Updated set operation helpers to use native comparisons.

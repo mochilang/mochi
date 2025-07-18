@@ -451,7 +451,7 @@ const (
 		"            for _, v in ipairs(lst) do\n" +
 		"                local dup = false\n" +
 		"                for _, w in ipairs(res) do\n" +
-		"                    if __eq(v, w) then dup = true break end\n" +
+		"                    if v == w then dup = true break end\n" +
 		"                end\n" +
 		"                if not dup then res[#res+1] = v end\n" +
 		"            end\n" +
@@ -468,7 +468,7 @@ const (
 		"            local found = false\n" +
 		"            if b then\n" +
 		"                for _, w in ipairs(b) do\n" +
-		"                    if __eq(v, w) then found = true break end\n" +
+		"                    if v == w then found = true break end\n" +
 		"                end\n" +
 		"            end\n" +
 		"            if not found then res[#res+1] = v end\n" +
@@ -482,9 +482,9 @@ const (
 		"    if a and b then\n" +
 		"        for _, v in ipairs(a) do\n" +
 		"            for _, w in ipairs(b) do\n" +
-		"                if __eq(v, w) then\n" +
+		"                if v == w then\n" +
 		"                    local dup = false\n" +
-		"                    for _, r in ipairs(res) do if __eq(r, v) then dup = true break end end\n" +
+		"                    for _, r in ipairs(res) do if r == v then dup = true break end end\n" +
 		"                    if not dup then res[#res+1] = v end\n" +
 		"                    break\n" +
 		"                end\n" +
