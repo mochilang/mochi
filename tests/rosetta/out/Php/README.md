@@ -1,4 +1,4 @@
-# Rosetta PHP Output (8/253 compiled and run)
+# Rosetta PHP Output (9/264 compiled and run)
 
 This directory holds PHP source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -130,7 +130,7 @@ This directory holds PHP source code generated from the real Mochi programs in `
 - [ ] bitmap-write-a-ppm-file
 - [ ] bitmap
 - [ ] bitwise-io-1
-- [ ] bitwise-io-2
+- [x] bitwise-io-2
 - [ ] bitwise-operations
 - [ ] blum-integer
 - [ ] boolean-values
@@ -246,13 +246,24 @@ This directory holds PHP source code generated from the real Mochi programs in `
 - [ ] count-in-octal-2
 - [ ] count-in-octal-3
 - [ ] count-in-octal-4
+- [ ] count-occurrences-of-a-substring
+- [ ] count-the-coins-1
+- [ ] count-the-coins-2
+- [ ] cramers-rule
 - [ ] crc-32-1
 - [ ] crc-32-2
+- [ ] create-a-file-on-magnetic-tape
+- [ ] create-a-file
+- [ ] create-a-two-dimensional-array-at-runtime-1
+- [ ] create-an-html-table
+- [ ] create-an-object-at-a-given-address
 - [ ] csv-data-manipulation
 - [ ] csv-to-html-translation-1
 - [ ] csv-to-html-translation-2
 - [ ] csv-to-html-translation-3
 - [ ] csv-to-html-translation-4
 - [ ] csv-to-html-translation-5
+- [ ] cuban-primes
+- [ ] cullen-and-woodall-numbers
 - [ ] cusip
 - [ ] md5

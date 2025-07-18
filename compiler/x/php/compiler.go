@@ -98,11 +98,15 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	}
 }
 
-func (c *Compiler) compileLet(l *parser.LetStmt) error { return c.compileVarStmt(l.Name, l.Value) }
+func (c *Compiler) compileLet(l *parser.LetStmt) error {
+	return c.compileVarStmt(l.Name, l.Value, false)
+}
 
-func (c *Compiler) compileVar(v *parser.VarStmt) error { return c.compileVarStmt(v.Name, v.Value) }
+func (c *Compiler) compileVar(v *parser.VarStmt) error {
+	return c.compileVarStmt(v.Name, v.Value, true)
+}
 
-func (c *Compiler) compileVarStmt(name string, val *parser.Expr) error {
+func (c *Compiler) compileVarStmt(name string, val *parser.Expr, mut bool) error {
 	var value string
 	if val != nil {
 		var err error
@@ -114,6 +118,10 @@ func (c *Compiler) compileVarStmt(name string, val *parser.Expr) error {
 		value = "null"
 	}
 	c.writeln(fmt.Sprintf("$%s = %s;", sanitizeName(name), value))
+	if c.env != nil && val != nil {
+		typ := types.ExprType(val, c.env)
+		c.env.SetVar(name, typ, mut)
+	}
 	return nil
 }
 
@@ -644,9 +652,19 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					t = types.StringType{}
 				} else {
 					if length == "" {
-						val = fmt.Sprintf("array_slice(%s, %s)", val, start)
+						if _, ok := t.(types.AnyType); ok {
+							c.use("_slice")
+							val = fmt.Sprintf("_slice(%s, %s)", val, start)
+						} else {
+							val = fmt.Sprintf("array_slice(%s, %s)", val, start)
+						}
 					} else {
-						val = fmt.Sprintf("array_slice(%s, %s, %s)", val, start, length)
+						if _, ok := t.(types.AnyType); ok {
+							c.use("_slice")
+							val = fmt.Sprintf("_slice(%s, %s, %s)", val, start, length)
+						} else {
+							val = fmt.Sprintf("array_slice(%s, %s, %s)", val, start, length)
+						}
 					}
 					if lt, ok := t.(types.ListType); ok {
 						t = lt.Elem
@@ -974,6 +992,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("substring expects 3 args")
 		}
 		return fmt.Sprintf("substr(%s, %s, %s)", args[0], args[1], args[2]), nil
+	case "indexOf":
+		if len(args) != 2 {
+			return "", fmt.Errorf("indexOf expects 2 args")
+		}
+		return fmt.Sprintf("(($p = strpos(%s, %s)) !== false ? $p : -1)", args[0], args[1]), nil
 	case "str":
 		if len(args) != 1 {
 			return "", fmt.Errorf("str expects 1 arg")
