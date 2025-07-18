@@ -2,6 +2,7 @@
 
 ## Recent updates
 - [2025-07-17 16:26] Added group variable type inference so group_by programs no longer use mochi_get. Regenerated machine outputs.
+- [2025-07-18 00:10] Added map field tracking so known fields use `maps:get/2` without defaults. Removed unused mochi_get in simple programs.
 - [2025-07-17 13:05] Regenerated `cross_join`, `cross_join_filter`, and
   `dataset_sort_take_limit` with refined type inference so `maps:get` replaces
   `mochi_get`.
