@@ -1,4 +1,4 @@
-# Rosetta Swift Output (56/216 programs run)
+# Rosetta Swift Output (58/216 programs run)
 
 This directory holds Swift source code generated from the Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -140,8 +140,8 @@ This directory holds Swift source code generated from the Mochi programs in `tes
 - [x] break-oo-privacy.mochi
 - [ ] brilliant-numbers.mochi
 - [ ] brownian-tree.mochi
-- [ ] bulls-and-cows-player.mochi
-- [ ] bulls-and-cows.mochi
+- [x] bulls-and-cows-player.mochi
+- [x] bulls-and-cows.mochi
 - [ ] burrows-wheeler-transform.mochi
 - [ ] caesar-cipher-1.mochi
 - [ ] caesar-cipher-2.mochi

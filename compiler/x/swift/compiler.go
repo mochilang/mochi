@@ -1225,7 +1225,14 @@ func (c *compiler) callExpr(call *parser.CallExpr) (string, error) {
 		if len(args) != 0 {
 			return "", fmt.Errorf("now expects no arguments at line %d", call.Pos.Line)
 		}
+		c.helpers["foundation"] = true
 		return "Int(Date().timeIntervalSince1970 * 1000000000)", nil
+	case "input":
+		if len(args) != 0 {
+			return "", fmt.Errorf("input expects no arguments at line %d", call.Pos.Line)
+		}
+		c.helpers["_input"] = true
+		return "_input()", nil
 	case "substring":
 		if len(args) != 3 {
 			return "", fmt.Errorf("substring expects 3 arguments at line %d", call.Pos.Line)
@@ -3964,6 +3971,15 @@ func (c *compiler) emitRuntime() {
 			}
 		}
 	}
+	if c.helpers["_input"] {
+		for _, line := range strings.Split(helperInput, "\n") {
+			if line == "" {
+				c.buf.WriteByte('\n')
+			} else {
+				c.writeln(line)
+			}
+		}
+	}
 	if c.helpers["_expect"] {
 		for _, line := range strings.Split(helperExpect, "\n") {
 			if line == "" {
@@ -4103,6 +4119,13 @@ const helperSave = `func _save(_ rows: [[String:Any]], path: String, opts: [Stri
             handle.closeFile()
         }
     }
+}`
+
+const helperInput = `func _input() -> String {
+    if let line = readLine() {
+        return line
+    }
+    return ""
 }`
 
 const helperGroup = `class _Group {
