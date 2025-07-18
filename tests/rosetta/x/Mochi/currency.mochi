@@ -1,0 +1,112 @@
+// Mochi implementation of Rosetta "Currency" task
+// Simplified integer approach equivalent to Go version
+
+fun parseIntDigits(s: string): int {
+  var n = 0
+  var i = 0
+  let digits = {
+    "0": 0,"1":1,"2":2,"3":3,"4":4,"5":5,"6":6,"7":7,"8":8,"9":9
+  }
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if !(ch in digits) { return 0 }
+    n = n * 10 + digits[ch]
+    i = i + 1
+  }
+  return n
+}
+
+fun parseDC(s: string): int {
+  var neg = false
+  if len(s) > 0 && s[0:1] == "-" { neg = true; s = substring(s,1,len(s)) }
+  var dollars = 0
+  var cents = 0
+  var i = 0
+  var seenDot = false
+  var centDigits = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == "." {
+      seenDot = true
+      i = i + 1
+      continue
+    }
+    let d = parseIntDigits(ch)
+    if seenDot {
+      if centDigits < 2 { cents = cents*10 + d; centDigits = centDigits+1 }
+    } else {
+      dollars = dollars*10 + d
+    }
+    i = i + 1
+  }
+  if centDigits == 1 { cents = cents*10 }
+  var val = dollars*100 + cents
+  if neg { val = -val }
+  return val
+}
+
+fun parseRate(s: string): int {
+  // returns rate scaled by 10000
+  var neg = false
+  if len(s) > 0 && s[0:1] == "-" { neg = true; s = substring(s,1,len(s)) }
+  var whole = 0
+  var frac = 0
+  var digits = 0
+  var seenDot = false
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == "." { seenDot = true; i = i + 1; continue }
+    let d = parseIntDigits(ch)
+    if seenDot {
+      if digits < 4 { frac = frac*10 + d; digits = digits+1 }
+    } else {
+      whole = whole*10 + d
+    }
+    i = i + 1
+  }
+  while digits < 4 { frac = frac*10; digits=digits+1 }
+  var val = whole*10000 + frac
+  if neg { val = -val }
+  return val
+}
+
+fun dcString(dc: int): string {
+  var d = dc / 100
+  var n = dc
+  if n < 0 { n = -n }
+  var c = n % 100
+  var cstr = str(c)
+  if len(cstr) == 1 { cstr = "0" + cstr }
+  return str(d) + "." + cstr
+}
+
+fun extend(dc: int, n: int): int { return dc * n }
+
+fun tax(total: int, rate: int): int {
+  return ((total*rate + 5000) / 10000) as int
+}
+
+fun padLeft(s: string, n: int): string {
+  var out = s
+  while len(out) < n {
+    out = " " + out
+  }
+  return out
+}
+
+fun main() {
+  let hp = parseDC("5.50")
+  let mp = parseDC("2.86")
+  let rate = parseRate("0.0765")
+
+  let totalBeforeTax = extend(hp, 4000000000000000) + extend(mp, 2)
+  let t = tax(totalBeforeTax, rate)
+  let total = totalBeforeTax + t
+
+  print("Total before tax: " + padLeft(dcString(totalBeforeTax), 22))
+  print("             Tax: " + padLeft(dcString(t), 22))
+  print("           Total: " + padLeft(dcString(total), 22))
+}
+
+main()
