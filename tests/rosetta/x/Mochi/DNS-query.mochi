@@ -1,0 +1,10 @@
+import go "net" as net auto
+
+let res: list<any> = net.LookupHost("www.kame.net")
+let addrs = res[0]
+let err = res[1]
+if err == nil {
+  print(str(addrs))
+} else {
+  print(err)
+}
