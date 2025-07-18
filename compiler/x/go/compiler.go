@@ -3653,16 +3653,44 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 		buf.WriteString(fmt.Sprintf("\tvar result []%s\n", retElem))
 		lv := sanitizeName(q.Var)
 		buf.WriteString(fmt.Sprintf("\tfor _, %s := range %s {\n", lv, src))
-		buf.WriteString(fmt.Sprintf("\t\tr := %s{Order: &%s}\n", retElem, lv))
+
+		orderPtr := true
+		customerPtr := true
+		if st, ok := retType.(types.StructType); ok {
+			if ft, ok := st.Fields["order"]; ok && !strings.HasPrefix(goType(ft), "*") {
+				orderPtr = false
+			}
+			if ft, ok := st.Fields["customer"]; ok && !strings.HasPrefix(goType(ft), "*") {
+				customerPtr = false
+			}
+		}
+
+		buf.WriteString("\t\tr := " + retElem + "{")
+		if orderPtr {
+			buf.WriteString("Order: &" + lv)
+		} else {
+			buf.WriteString("Order: " + lv)
+		}
+		buf.WriteString("}\n")
 		buf.WriteString(fmt.Sprintf("\t\tif v, ok := %s[%s]; ok {\n", mapName, joinLeftKeys[0]))
 		buf.WriteString(fmt.Sprintf("\t\t\tseen[%s] = true\n", joinLeftKeys[0]))
-		buf.WriteString("\t\t\tr.Customer = v\n")
+		if customerPtr {
+			buf.WriteString("\t\t\tr.Customer = v\n")
+		} else {
+			buf.WriteString("\t\t\tr.Customer = *v\n")
+		}
 		buf.WriteString("\t\t}\n")
 		buf.WriteString("\t\tresult = append(result, r)\n")
 		buf.WriteString("\t}\n")
 		buf.WriteString(fmt.Sprintf("\tfor _, %s := range %s {\n", jv, joinSrcs[0]))
 		buf.WriteString(fmt.Sprintf("\t\tif !seen[%s] {\n", joinRightKeys[0]))
-		buf.WriteString(fmt.Sprintf("\t\t\tresult = append(result, %s{Customer: &%s})\n", retElem, jv))
+		buf.WriteString("\t\t\tresult = append(result, " + retElem + "{")
+		if customerPtr {
+			buf.WriteString("Customer: &" + jv)
+		} else {
+			buf.WriteString("Customer: " + jv)
+		}
+		buf.WriteString("})\n")
 		buf.WriteString("\t\t}\n")
 		buf.WriteString("\t}\n")
 		buf.WriteString("\treturn result\n")
