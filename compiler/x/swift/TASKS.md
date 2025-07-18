@@ -1,6 +1,8 @@
 # Swift Compiler Progress
 
 ## Recent Enhancements
+- 2025-07-29 07:00 – optional field checks added and left join placeholders
+  use typed optionals so complex joins compile and run.
 - 2025-07-28 08:00 – query expressions selecting numeric fields from groups now
   infer element types so `_avg`, `_sum`, `_min` and `_max` helpers are avoided.
 - 2025-07-27 09:00 – list element types inferred from struct fields so numeric aggregates drop the `_avg` helper.

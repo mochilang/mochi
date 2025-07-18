@@ -74,6 +74,10 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 		c.emitAutoStructs()
 	}
 	c.buf.WriteString(body)
+	src := c.buf.String()
+	src = regexp.MustCompile(`as! ([A-Za-z0-9_]+)\?\)`).ReplaceAllString(src, "as? $1)")
+	c.buf.Reset()
+	c.buf.WriteString(src)
 	var out bytes.Buffer
 	out.Write(meta.Header("//"))
 	out.WriteString(c.buf.String())
@@ -242,7 +246,9 @@ func (c *compiler) letStmt(l *parser.LetStmt) error {
 			return err
 		}
 		if typ == "" {
-			if val == "[]" || val == "[:]" {
+			if t := c.swiftTypes[l.Name]; t != "" {
+				typ = t
+			} else if val == "[]" || val == "[:]" {
 				if t := swiftTypeOf(c.varTypes[l.Name]); t != "" && t != "[Any]" && t != "[String:Any]" {
 					typ = t
 				} else {
@@ -286,7 +292,9 @@ func (c *compiler) varStmt(v *parser.VarStmt) error {
 			return err
 		}
 		if typ == "" {
-			if val == "[]" || val == "[:]" {
+			if t := c.swiftTypes[v.Name]; t != "" {
+				typ = t
+			} else if val == "[]" || val == "[:]" {
 				if t := swiftTypeOf(c.varTypes[v.Name]); t != "" && t != "[Any]" && t != "[String:Any]" {
 					typ = t
 				} else {
@@ -909,7 +917,7 @@ func (c *compiler) postfix(p *parser.PostfixExpr) (string, error) {
 						if sel := p.Target.Selector; sel != nil && len(sel.Tail) == 0 {
 							if m, ok2 := c.mapFields[sel.Root]; ok2 {
 								if t, ok3 := m[key]; ok3 {
-									if strings.HasSuffix(t, "?") {
+									if strings.Contains(t, "?") {
 										val = fmt.Sprintf("(%s[%q] as? %s)", val, key, strings.TrimSuffix(t, "?"))
 									} else {
 										val = fmt.Sprintf("(%s[%q] as! %s)", val, key, t)
@@ -1520,6 +1528,12 @@ func (c *compiler) needsNilCheck(e *parser.Expr) bool {
 	if typ == "map" || c.mapFields[sel.Root] != nil {
 		return true
 	}
+	if strings.HasSuffix(c.exprType(e), "?") {
+		return true
+	}
+	if strings.HasSuffix(typ, "?") {
+		return true
+	}
 	return false
 }
 
@@ -1568,7 +1582,7 @@ func (c *compiler) selector(s *parser.SelectorExpr) string {
 				continue
 			}
 		}
-		if strings.HasPrefix(typ, "map") || fields != nil {
+		if strings.HasPrefix(typ, "map") || (typ == "" && fields != nil) {
 			t := "Any"
 			if fields != nil {
 				if tt, ok := fields[f]; ok && tt != "" {
@@ -2557,6 +2571,10 @@ func (c *compiler) groupJoinQuery(q *parser.QueryExpr) (string, error) {
 		jv := q.Joins[0].Var
 		js := joinSrcs[0]
 		on := joinOns[0]
+		jvType := swiftTypeOf(c.elementType(q.Joins[0].Src))
+		if jvType == "" {
+			jvType = "Any"
+		}
 		b.WriteString(fmt.Sprintf("%svar _m = false\n", indent))
 		b.WriteString(fmt.Sprintf("%sfor %s in %s {\n", indent, jv, js))
 		indent += "\t"
@@ -2583,7 +2601,7 @@ func (c *compiler) groupJoinQuery(q *parser.QueryExpr) (string, error) {
 		b.WriteString(indent + "}\n")
 		b.WriteString(fmt.Sprintf("%sif !_m {\n", indent))
 		indent += "\t"
-		b.WriteString(fmt.Sprintf("%slet %s: Any? = nil\n", indent, jv))
+		b.WriteString(fmt.Sprintf("%slet %s: %s? = nil\n", indent, jv, jvType))
 		b.WriteString(fmt.Sprintf("%slet _k = %s\n", indent, keyExpr))
 		if useMapKey {
 			b.WriteString(fmt.Sprintf("%slet _ks = _keyStr(_k)\n", indent))
@@ -3484,6 +3502,19 @@ func (c *compiler) queryFieldTypes(q *parser.QueryExpr) map[string]string {
 		c.varTypes[j.Var] = c.elementType(j.Src)
 		if jf := c.elementFieldTypes(j.Src); jf != nil {
 			c.mapFields[j.Var] = jf
+		}
+		if j.Side != nil && *j.Side != "" {
+			if t := c.varTypes[j.Var]; t != "" && !strings.HasSuffix(t, "?") {
+				c.varTypes[j.Var] = t + "?"
+			}
+			if f, ok := c.mapFields[j.Var]; ok {
+				for k, vt := range f {
+					if !strings.HasSuffix(vt, "?") {
+						f[k] = vt + "?"
+					}
+				}
+				c.mapFields[j.Var] = f
+			}
 		}
 	}
 	if q.Group != nil {
