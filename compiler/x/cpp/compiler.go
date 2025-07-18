@@ -619,8 +619,35 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 		return err
 	}
 	var elemHint string
+	if st.Type != nil && isEmptyListExpr(st.Value) {
+		if st.Type.Generic != nil && st.Type.Generic.Name == "list" && len(st.Type.Generic.Args) == 1 {
+			elem, err := c.compileType(st.Type.Generic.Args[0])
+			if err != nil {
+				return err
+			}
+			exprStr = fmt.Sprintf("std::vector<%s>{}", elem)
+			elemHint = elem
+			typ = fmt.Sprintf("std::vector<%s>", elem)
+		}
+	}
 	if st.Type == nil {
-		if et := c.extractVectorElemType(exprStr); et != "" && !strings.HasPrefix(exprStr, "std::unordered_map<") && !strings.HasPrefix(exprStr, "std::map<") {
+		if isEmptyListExpr(st.Value) {
+			if et := c.predictElemType(st.Name); et != "" {
+				typ = fmt.Sprintf("std::vector<%s>", et)
+				exprStr = fmt.Sprintf("std::vector<%s>{}", et)
+				if c.isStructName(et) {
+					c.varStruct[st.Name] = et
+				}
+				c.elemType[st.Name] = et
+				c.vars[st.Name] = "vector"
+			} else {
+				ph := "__" + st.Name + "_type"
+				typ = fmt.Sprintf("std::vector<%s>", ph)
+				exprStr = fmt.Sprintf("std::vector<%s>{}", ph)
+				c.placeholders[ph] = st.Name
+				c.vars[st.Name] = "vector"
+			}
+		} else if et := c.extractVectorElemType(exprStr); et != "" && !strings.HasPrefix(exprStr, "std::unordered_map<") && !strings.HasPrefix(exprStr, "std::map<") {
 			typ = fmt.Sprintf("std::vector<%s>", et)
 			elemHint = et
 		} else if et := c.elemType[exprStr]; et != "" && !strings.HasPrefix(exprStr, "std::unordered_map<") && !strings.HasPrefix(exprStr, "std::map<") {
@@ -703,13 +730,7 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 	}
 	var elemHint string
 	if st.Type == nil {
-		if et := c.extractVectorElemType(exprStr); et != "" && !strings.HasPrefix(exprStr, "std::unordered_map<") && !strings.HasPrefix(exprStr, "std::map<") {
-			typ = fmt.Sprintf("std::vector<%s>", et)
-			elemHint = et
-		} else if et := c.elemType[exprStr]; et != "" && !strings.HasPrefix(exprStr, "std::unordered_map<") && !strings.HasPrefix(exprStr, "std::map<") {
-			typ = fmt.Sprintf("std::vector<%s>", et)
-			elemHint = et
-		} else if isEmptyListExpr(st.Value) {
+		if isEmptyListExpr(st.Value) {
 			if et := c.predictElemType(st.Name); et != "" {
 				typ = fmt.Sprintf("std::vector<%s>", et)
 				exprStr = fmt.Sprintf("std::vector<%s>{}", et)
@@ -725,6 +746,12 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 				c.placeholders[ph] = st.Name
 				c.vars[st.Name] = "vector"
 			}
+		} else if et := c.extractVectorElemType(exprStr); et != "" && !strings.HasPrefix(exprStr, "std::unordered_map<") && !strings.HasPrefix(exprStr, "std::map<") {
+			typ = fmt.Sprintf("std::vector<%s>", et)
+			elemHint = et
+		} else if et := c.elemType[exprStr]; et != "" && !strings.HasPrefix(exprStr, "std::unordered_map<") && !strings.HasPrefix(exprStr, "std::map<") {
+			typ = fmt.Sprintf("std::vector<%s>", et)
+			elemHint = et
 		}
 	}
 
