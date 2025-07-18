@@ -1,0 +1,5 @@
+Object: 'Connected to ' error: did not understand #+
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #+ (SysExcept.st:1448)
+optimized [] in UndefinedObject>>executeStatements (/tmp/active-directory-connect.st:7)
+UndefinedObject>>executeStatements (/tmp/active-directory-connect.st:11)
