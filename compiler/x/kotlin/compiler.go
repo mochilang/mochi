@@ -2634,15 +2634,30 @@ func (c *Compiler) discoverStructs(prog *parser.Program) {
 					child.SetVar(f.Var, types.AnyType{}, true)
 				}
 			}
+			leftT, _ := child.GetVar(q.Var)
 			for _, j := range q.Joins {
-				if lt, ok := types.TypeOfExprBasic(j.Src, c.env).(types.ListType); ok {
-					child.SetVar(j.Var, lt.Elem, true)
-				} else if gt, ok := types.TypeOfExprBasic(j.Src, c.env).(types.GroupType); ok {
-					child.SetVar(j.Var, gt.Elem, true)
+				jt := types.TypeOfExprBasic(j.Src, c.env)
+				var elem types.Type
+				if lt, ok := jt.(types.ListType); ok {
+					elem = lt.Elem
+				} else if gt, ok := jt.(types.GroupType); ok {
+					elem = gt.Elem
+				}
+				if j.Side != nil {
+					switch *j.Side {
+					case "left", "outer":
+						child.SetVar(j.Var, types.OptionType{Elem: elem}, true)
+					default:
+						child.SetVar(j.Var, elem, true)
+					}
+					if *j.Side == "right" || *j.Side == "outer" {
+						leftT = types.OptionType{Elem: leftT}
+					}
 				} else {
-					child.SetVar(j.Var, types.AnyType{}, true)
+					child.SetVar(j.Var, elem, true)
 				}
 			}
+			child.SetVar(q.Var, leftT, true)
 			if ml, ok := mapLiteral(q.Select); ok && q.Group == nil {
 				if st, ok := c.structFromMapLiteral(ml, child); ok {
 					c.inferred[st.Name] = st

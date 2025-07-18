@@ -55,7 +55,7 @@ Checklist:
 - [x] list_index
 - [x] list_nested_assign
 - [x] list_set_ops
-- [ ] load_yaml
+- [x] load_yaml
 - [x] map_assign
 - [x] map_in_operator
 - [x] map_index
@@ -70,7 +70,7 @@ Checklist:
 - [x] min_max_builtin
 - [x] nested_function
 - [ ] order_by_map
-- [ ] outer_join
+- [x] outer_join
 - [x] partial_application
 - [x] print_hello
 - [x] pure_fold
