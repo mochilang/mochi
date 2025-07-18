@@ -194,6 +194,10 @@ func (c *Compiler) compileMainFunc(prog *parser.Program) error {
 // compileGlobalVarDecl emits a package-level variable declaration without
 // initialisation. The actual value will be assigned inside main.
 func (c *Compiler) compileGlobalVarDecl(s *parser.Statement) error {
+	oldBuf := c.buf
+	oldIndent := c.indent
+	c.buf = c.decls
+	c.indent = 0
 	switch {
 	case s.Let != nil:
 		name := sanitizeName(s.Let.Name)
@@ -262,6 +266,8 @@ func (c *Compiler) compileGlobalVarDecl(s *parser.Statement) error {
 			c.writeln(fmt.Sprintf("_ = %s", name))
 		}
 	}
+	c.buf = oldBuf
+	c.indent = oldIndent
 	return nil
 }
 
