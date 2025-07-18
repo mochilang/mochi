@@ -1,6 +1,8 @@
 # Swift Compiler Progress
 
 ## Recent Enhancements
+- 2025-07-30 10:00 – outer join queries mark both sides optional during type
+  inference so generated structs are reused across statements.
 - 2025-07-29 07:00 – optional field checks added and left join placeholders
   use typed optionals so complex joins compile and run.
 - 2025-07-28 08:00 – query expressions selecting numeric fields from groups now
