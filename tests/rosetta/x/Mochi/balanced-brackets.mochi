@@ -1,7 +1,13 @@
 // Mochi implementation of Rosetta "Balanced brackets" task
 // Translated from Go version in tests/rosetta/x/Go/balanced-brackets.go
 
-fun generate(n: int): string {
+var seed = 1
+fun prng(max: int): int {
+  seed = (seed * 1103515245 + 12345) % 2147483648
+  return seed % max
+}
+
+fun gen(n: int): string {
   var arr: list<string> = []
   var i = 0
   while i < n {
@@ -11,7 +17,7 @@ fun generate(n: int): string {
   }
   var j = len(arr) - 1
   while j > 0 {
-    let k = now() % (j + 1)
+    let k = prng(j + 1)
     let tmp = arr[j]
     arr[j] = arr[k]
     arr[k] = tmp
@@ -53,7 +59,7 @@ fun testBalanced(s: string) {
 fun main() {
   var i = 0
   while i < 10 {
-    testBalanced(generate(i))
+    testBalanced(gen(i))
     i = i + 1
   }
   testBalanced("()")
