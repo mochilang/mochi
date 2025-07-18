@@ -5469,14 +5469,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 								fmtStr = "%.17g"
 							}
 						}
-					} else if _, ok := constFloatValue(a); ok || looksLikeFloatConst(c.compileExpr(a)) {
-						fmtStr = "%.17g"
+					} else if isFloatExpr(a, c.env) || looksLikeFloatConst(c.compileExpr(a)) {
+						if _, ok := constFloatValue(a); ok {
+							fmtStr = "%.17g"
+						}
+					}
+					argCode := c.compileExpr(a)
+					if fmtStr == "%.17g" && !strings.ContainsAny(argCode, ".eE") {
+						argCode += ".0"
 					}
 					if isBoolArg(a, c.env) {
 						fmtStr = "%s"
-						params = append(params, fmt.Sprintf("(%s)?\"true\":\"false\"", c.compileExpr(a)))
+						params = append(params, fmt.Sprintf("(%s)?\"true\":\"false\"", argCode))
 					} else {
-						params = append(params, c.compileExpr(a))
+						params = append(params, argCode)
 					}
 					fmtParts = append(fmtParts, fmtStr)
 				}
@@ -5634,8 +5640,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 									fmtStr = "%.17g"
 								}
 							}
-						} else if _, ok := constFloatValue(a); ok || looksLikeFloatConst(argExpr) {
-							fmtStr = "%.17g"
+						} else if isFloatExpr(a, c.env) || looksLikeFloatConst(argExpr) {
+							if _, ok := constFloatValue(a); ok {
+								fmtStr = "%.17g"
+							}
 						}
 						end := " "
 						if i == len(p.Call.Args)-1 {

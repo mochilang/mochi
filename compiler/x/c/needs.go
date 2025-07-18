@@ -61,6 +61,7 @@ const (
 	needJSON                 = "json"
 	needLoadJSON             = "load_json"
 	needSaveJSON             = "save_json"
+	needSaveJSONL            = "save_jsonl"
 	needFetch                = "fetch"
 	needMapStringGet         = "map_string_get"
 	needMapIntBool           = "map_int_bool"

@@ -1,6 +1,0 @@
-exit status 1
-/workspace/mochi/tests/machine/x/c/tree_sum.c: In function ‘_mochi_main’:
-/workspace/mochi/tests/machine/x/c/tree_sum.c:50:20: error: ‘Leaf’ undeclared (first use in this function)
-   50 |           .left = &Leaf,
-      |                    ^~~~
-/workspace/mochi/tests/machine/x/c/tree_sum.c:50:20: note: each undeclared identifier is reported only once for each function it appears in

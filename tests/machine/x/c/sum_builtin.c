@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 int _mochi_main() {
-  printf("%.17g\n", 6);
+  printf("%.17g\n", 6.0);
   return 0;
 }
 int main() { return _mochi_main(); }
