@@ -1,0 +1,30 @@
+// Mochi implementation of Rosetta "Count in factors" task
+// Translated from Go version at tests/rosetta/x/Go/count-in-factors.go
+
+fun show(n: int) {
+  if n == 1 {
+    print("1: 1")
+    return
+  }
+  var out = str(n) + ": "
+  var x = ""
+  var m = n
+  var f = 2
+  while m != 1 {
+    if m % f == 0 {
+      out = out + x + str(f)
+      x = "×"
+      m = (m / f) as int
+    } else {
+      f = f + 1
+    }
+  }
+  print(out)
+}
+
+show(1)
+for i in 2..10 { show(i) }
+print("...")
+for i in 2144..2155 { show(i) }
+print("...")
+for i in 9987..10000 { show(i) }
