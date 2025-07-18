@@ -32,6 +32,7 @@ The Scheme backend now targets chibi-scheme and can compile the `tpc-h/q1.mochi`
 - 2025-07-20 00:00 – Assignment and variable declarations now infer `int` and
   `float` types, avoiding dataset helpers in numeric comparisons.
 - 2025-07-18 – Enhanced numeric inference for arithmetic expressions to remove helper functions.
+- 2025-07-21 – Struct field selectors now participate in type inference, reducing helper usage.
 
 ### Remaining Work
 - [ ] Better handling of date comparisons and sorting when running JOB benchmarks
