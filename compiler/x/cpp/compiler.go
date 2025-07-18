@@ -161,14 +161,13 @@ func (c *Compiler) defineStruct(info *structInfo) {
 				}
 			}
 		}
-		if strings.Contains(t, ".") && strings.HasPrefix(t, "decltype(") {
-			t = "std::any"
-			c.usesAny = true
-		} else if strings.HasPrefix(t, "decltype(") {
+		if strings.HasPrefix(t, "decltype(") {
 			inner := strings.TrimSuffix(strings.TrimPrefix(t, "decltype("), ")")
-			if c.vars[inner] == "" && c.varStruct[inner] == "" && c.elemType[inner] == "" {
-				t = "std::any"
-				c.usesAny = true
+			if !(strings.HasPrefix(inner, "std::declval<") && strings.Contains(inner, ">().")) {
+				if c.vars[inner] == "" && c.varStruct[inner] == "" && c.elemType[inner] == "" {
+					t = "std::any"
+					c.usesAny = true
+				}
 			}
 		}
 		info.Types[i] = t
@@ -3706,7 +3705,7 @@ func inferExprType(expr string) string {
 	if _, err := strconv.ParseFloat(trimmed, 64); err == nil && strings.Contains(trimmed, ".") {
 		return "double"
 	}
-	if strings.Contains(trimmed, "true") || strings.Contains(trimmed, "false") {
+	if trimmed == "true" || trimmed == "false" {
 		return "bool"
 	}
 	if strings.Contains(trimmed, "__avg") || strings.Contains(trimmed, "std::accumulate") {
