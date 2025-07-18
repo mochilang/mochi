@@ -1,8 +1,36 @@
 run: exit status 70
-ERROR in loop on line 298 of file /tmp/24-game-solve.scm: undefined variable: now
-  called from loop on line 291 of file /tmp/24-game-solve.scm
+ERROR in list-tail on line 34 of file /usr/share/chibi/init-7.scm: invalid type, expected Number: "denom"
+  called from list-ref on line 36 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 37 of file /tmp/24-game-solve.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 37 of file /tmp/24-game-solve.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 15 of file /usr/share/chibi/scheme/misc-macros.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 15 of file /usr/share/chibi/scheme/misc-macros.scm
+  called from loop on line 133 of file /tmp/24-game-solve.scm
+  called from loop on line 274 of file /usr/share/chibi/init-7.scm
+  called from loop on line 274 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 15 of file /usr/share/chibi/scheme/misc-macros.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 15 of file /usr/share/chibi/scheme/misc-macros.scm
+  called from loop on line 131 of file /tmp/24-game-solve.scm
+  called from loop on line 115 of file /tmp/24-game-solve.scm
+  called from loop on line 110 of file /tmp/24-game-solve.scm
+  called from <anonymous> on line 15 of file /usr/share/chibi/scheme/misc-macros.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 134 of file /tmp/24-game-solve.scm
+  called from loop on line 131 of file /tmp/24-game-solve.scm
+  called from loop on line 112 of file /tmp/24-game-solve.scm
+  called from loop on line 108 of file /tmp/24-game-solve.scm
+  called from <anonymous> on line 15 of file /usr/share/chibi/scheme/misc-macros.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from loop on line 176 of file /tmp/24-game-solve.scm
   called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
   called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
   called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
-Searching for modules exporting now ...
-... none found.
+ 5
+ 8
+ 6
+ 1
+:  

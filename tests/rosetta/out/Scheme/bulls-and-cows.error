@@ -1,5 +1,5 @@
 run: exit status 70
-ERROR on line 76 of file /tmp/bulls-and-cows.scm: invalid type, expected Number: "2"
+ERROR on line 89 of file /tmp/bulls-and-cows.scm: invalid type, expected Number: "2"
   called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
   called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
   called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm

@@ -513,8 +513,20 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			pre.WriteString("(import (srfi 95))\n")
 		}
 		if c.needTime {
-			pre.WriteString("(import (chibi time))\n")
-			pre.WriteString("(define (now) (* (current-seconds) 1000000000))\n")
+			pre.WriteString("(import (chibi time) (srfi 98))\n")
+			pre.WriteString("(define _now_seeded #f)\n")
+			pre.WriteString("(define _now_seed 0)\n")
+			pre.WriteString("(define (now)\n")
+			pre.WriteString("  (when (not _now_seeded)\n")
+			pre.WriteString("    (let ((s (get-environment-variable \"MOCHI_NOW_SEED\")))\n")
+			pre.WriteString("      (when (and s (string->number s))\n")
+			pre.WriteString("        (set! _now_seed (string->number s))\n")
+			pre.WriteString("        (set! _now_seeded #t))))\n")
+			pre.WriteString("  (if _now_seeded\n")
+			pre.WriteString("      (begin\n")
+			pre.WriteString("        (set! _now_seed (modulo (+ (* _now_seed 1664525) 1013904223) 2147483647))\n")
+			pre.WriteString("        _now_seed)\n")
+			pre.WriteString("      (* (current-seconds) 1000000000)))\n")
 		}
 		if c.needListOps {
 			pre.WriteString(listOpHelpers)
@@ -1067,7 +1079,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				case "-", "*":
 					expr = fmt.Sprintf("(%s %s %s)", op, l, r)
 				case "/":
-					if intFlags[i] && intFlags[i+1] {
+					if (intFlags[i] && intFlags[i+1]) || (!floatFlags[i] && !floatFlags[i+1]) {
 						expr = fmt.Sprintf("(quotient %s %s)", l, r)
 					} else {
 						expr = fmt.Sprintf("(/ %s %s)", l, r)
@@ -1723,6 +1735,9 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	}
 	if sub.needJSON {
 		c.needJSON = true
+	}
+	if sub.needTime {
+		c.needTime = true
 	}
 
 	var buf bytes.Buffer
