@@ -624,6 +624,10 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 			t = v
 		}
 	}
+	if ot, ok := t.(types.OptionType); ok {
+		lhs = fmt.Sprintf("(*%s)", lhs)
+		t = ot.Elem
+	}
 	for _, f := range s.Field {
 		if st, ok := t.(types.StructType); ok {
 			if ft, ok2 := st.Fields[f.Name]; ok2 {
@@ -1648,7 +1652,11 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 	child := types.NewEnv(c.env)
 	for i, p := range fun.Params {
 		if i < len(ft.Params) {
-			child.SetVar(p.Name, ft.Params[i], true)
+			t := ft.Params[i]
+			if mut[p.Name] {
+				t = types.OptionType{Elem: t}
+			}
+			child.SetVar(p.Name, t, true)
 		}
 	}
 	originalEnv := c.env
@@ -2219,6 +2227,25 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					return "", err
 				}
 				switch tt := typ.(type) {
+				case types.OptionType:
+					switch et := tt.Elem.(type) {
+					case types.ListType:
+						val = fmt.Sprintf("(*%s)[%s]", val, key)
+						typ = et.Elem
+					case types.MapType:
+						keyT := c.inferExprType(idx.Start)
+						keyExpr := key
+						if !equalTypes(keyT, et.Key) || isAny(keyT) {
+							keyExpr = fmt.Sprintf("(%s).(%s)", key, goType(et.Key))
+						}
+						val = fmt.Sprintf("(*%s)[%s]", val, keyExpr)
+						typ = et.Value
+					case types.StringType:
+						val = fmt.Sprintf("string([]rune(*%s)[%s])", val, key)
+						typ = types.StringType{}
+					default:
+						return "", fmt.Errorf("cannot index into type %s", typ)
+					}
 				case types.ListType:
 					val = fmt.Sprintf("%s[%s]", val, key)
 					typ = tt.Elem
@@ -2261,7 +2288,27 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					}
 					end = e
 				}
-				switch typ.(type) {
+				switch tt := typ.(type) {
+				case types.OptionType:
+					switch et := tt.Elem.(type) {
+					case types.ListType:
+						if idx.End == nil {
+							end = fmt.Sprintf("len(*%s)", val)
+						}
+						val = fmt.Sprintf("(*%s)[%s:%s]", val, start, end)
+						typ = types.ListType{Elem: et.Elem}
+					case types.StringType:
+						if idx.End == nil {
+							end = fmt.Sprintf("len([]rune(*%s))", val)
+						}
+						val = fmt.Sprintf("string([]rune(*%s)[%s:%s])", val, start, end)
+						typ = types.StringType{}
+					default:
+						if idx.End == nil {
+							end = fmt.Sprintf("len(*%s)", val)
+						}
+						val = fmt.Sprintf("(*%s)[%s:%s]", val, start, end)
+					}
 				case types.ListType:
 					if idx.End == nil {
 						end = fmt.Sprintf("len(%s)", val)
