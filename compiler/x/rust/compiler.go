@@ -3682,7 +3682,9 @@ func (c *Compiler) tryMapListStruct(varName string, list *parser.ListLiteral) (s
 			}
 			fields[j] = fmt.Sprintf("%s: %s", k, val)
 			if jVal, ok := c.simpleConstJSON(vexpr); ok {
-				jsonFields[j] = fmt.Sprintf("\"%s\":%s", k, jVal)
+				if jsonFields != nil {
+					jsonFields[j] = fmt.Sprintf("\"%s\":%s", k, jVal)
+				}
 			} else {
 				jsonFields = nil
 			}
