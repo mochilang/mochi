@@ -173,9 +173,9 @@ tasks located under `tests/rosetta/x/Mochi`. These can be executed with:
 go test ./runtime/vm -run Rosetta -tags slow
 ```
 
-Out of 253 programs, 249 currently run successfully. Two programs fail to
-compile or execute and produce a corresponding `.error` file. Two programs
-(`21-game` and `15-puzzle-game`) require interactive input and are skipped.
+Out of 253 programs, 251 currently run successfully. No programs fail to
+compile or execute. Two programs (`21-game` and `15-puzzle-game`) require
+interactive input and are skipped.
 
 ### Clojure compiler status
 

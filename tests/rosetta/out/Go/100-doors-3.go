@@ -6,7 +6,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 )
 
 type v map[string]any
@@ -24,5 +23,5 @@ func main() {
 			result = result + "-"
 		}
 	}
-	fmt.Println(strings.TrimSuffix(fmt.Sprintln(any(result)), "\n"))
+	fmt.Println(any(result))
 }
