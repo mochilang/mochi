@@ -61,7 +61,7 @@ func TestCPPCompiler_JOBQueries(t *testing.T) {
 				t.Fatalf("write error: %v", err)
 			}
 			bin := filepath.Join(dir, "prog")
-			if out, err := exec.Command("g++", file, "-std=c++17", "-o", bin).CombinedOutput(); err != nil {
+			if out, err := exec.Command("g++", file, "-std=c++20", "-o", bin).CombinedOutput(); err != nil {
 				t.Skipf("g++ error: %v\n%s", err, out)
 				return
 			}
