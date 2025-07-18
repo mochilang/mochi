@@ -2,7 +2,7 @@
 
 Generated C++ code for the programs under `tests/vm/valid`. Each file here has a `.cpp` source produced by the compiler and an `.out` file with its runtime output. If compilation failed, a `.error` file captures the g++ output.
 
-Compiled programs: 92/100
+Compiled programs: 93/100
 
 ## Checklist
 - [x] append_builtin
@@ -58,9 +58,9 @@ Compiled programs: 92/100
 - [x] load_yaml
 - [x] map_assign
 - [x] map_in_operator
- - [x] map_index
+- [x] map_index
 - [x] map_int_key
-- [ ] map_literal_dynamic
+- [x] map_literal_dynamic
 - [x] map_membership
 - [x] map_nested_assign
 - [x] match_expr
