@@ -154,39 +154,6 @@ function __query(src, joins, opts)
     for _, r in ipairs(items) do res[#res+1] = opts.selectFn(table.unpack(r,1,r.n or #r)) end
     return res
 end
-function __str(v)
-    local t = type(v)
-    if t == 'table' then
-        if v[1] ~= nil or #v > 0 then
-            local parts = {}
-            for i=1,#v do parts[#parts+1] = __str(v[i]) end
-            local body = '['..table.concat(parts, ' ')..']'
-            if v.__name then return v.__name..' '..body end
-            return body
-        else
-            local keys = {}
-            for k in pairs(v) do if k ~= '__name' then keys[#keys+1] = k end end
-            table.sort(keys, function(a,b) return tostring(a)<tostring(b) end)
-            local parts = {}
-            for _,k in ipairs(keys) do
-                local val = v[k]
-                local vs
-                if type(val) == 'string' then
-                    vs = string.format('%q', val)
-                else
-                    vs = __str(val)
-                end
-                parts[#parts+1] = k..': '..vs
-            end
-            local body = '{'..table.concat(parts, ', ')..'}'
-            if v.__name then return v.__name..' '..body end
-            return body
-        end
-    else
-        if t == 'boolean' then return (v and '1' or '0') end
-        return tostring(v)
-    end
-end
 customers = {{["id"]=1, ["name"]="Alice"}, {["id"]=2, ["name"]="Bob"}, {["id"]=3, ["name"]="Charlie"}}
 orders = {{["id"]=100, ["customerId"]=1, ["total"]=250}, {["id"]=101, ["customerId"]=2, ["total"]=125}, {["id"]=102, ["customerId"]=1, ["total"]=300}, {["id"]=103, ["customerId"]=4, ["total"]=80}}
 result = (function()
@@ -197,5 +164,5 @@ result = (function()
 end)()
 print("--- Orders with customer info ---")
 for _, entry in ipairs(result) do
-    print((table.concat({__str("Order"), __str(entry.orderId), __str("by"), __str(entry.customerName), __str("- $"), __str(entry.total)}, ' ')):gsub(' +$',''))
+    print(table.concat({tostring("Order"), tostring(entry.orderId), tostring("by"), tostring(entry.customerName), tostring("- $"), tostring(entry.total)}, ' '))
 end

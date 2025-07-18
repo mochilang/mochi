@@ -154,39 +154,6 @@ function __query(src, joins, opts)
     for _, r in ipairs(items) do res[#res+1] = opts.selectFn(table.unpack(r,1,r.n or #r)) end
     return res
 end
-function __str(v)
-    local t = type(v)
-    if t == 'table' then
-        if v[1] ~= nil or #v > 0 then
-            local parts = {}
-            for i=1,#v do parts[#parts+1] = __str(v[i]) end
-            local body = '['..table.concat(parts, ' ')..']'
-            if v.__name then return v.__name..' '..body end
-            return body
-        else
-            local keys = {}
-            for k in pairs(v) do if k ~= '__name' then keys[#keys+1] = k end end
-            table.sort(keys, function(a,b) return tostring(a)<tostring(b) end)
-            local parts = {}
-            for _,k in ipairs(keys) do
-                local val = v[k]
-                local vs
-                if type(val) == 'string' then
-                    vs = string.format('%q', val)
-                else
-                    vs = __str(val)
-                end
-                parts[#parts+1] = k..': '..vs
-            end
-            local body = '{'..table.concat(parts, ', ')..'}'
-            if v.__name then return v.__name..' '..body end
-            return body
-        end
-    else
-        if t == 'boolean' then return (v and '1' or '0') end
-        return tostring(v)
-    end
-end
 customers = {{["id"]=1, ["name"]="Alice"}, {["id"]=2, ["name"]="Bob"}}
 orders = {{["id"]=100, ["customerId"]=1}, {["id"]=101, ["customerId"]=2}}
 items = {{["orderId"]=100, ["sku"]="a"}, {["orderId"]=101, ["sku"]="b"}}
@@ -199,5 +166,5 @@ result = (function()
 end)()
 print("--- Multi Join ---")
 for _, r in ipairs(result) do
-    print((table.concat({__str(r.name), __str("bought item"), __str(r.sku)}, ' ')):gsub(' +$',''))
+    print(table.concat({tostring(r.name), tostring("bought item"), tostring(r.sku)}, ' '))
 end

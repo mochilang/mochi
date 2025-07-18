@@ -34,39 +34,6 @@ function __indexString(s, i)
     if i < 1 or i > len then error('index out of range') end
     return string.sub(s, i, i)
 end
-function __str(v)
-    local t = type(v)
-    if t == 'table' then
-        if v[1] ~= nil or #v > 0 then
-            local parts = {}
-            for i=1,#v do parts[#parts+1] = __str(v[i]) end
-            local body = '['..table.concat(parts, ' ')..']'
-            if v.__name then return v.__name..' '..body end
-            return body
-        else
-            local keys = {}
-            for k in pairs(v) do if k ~= '__name' then keys[#keys+1] = k end end
-            table.sort(keys, function(a,b) return tostring(a)<tostring(b) end)
-            local parts = {}
-            for _,k in ipairs(keys) do
-                local val = v[k]
-                local vs
-                if type(val) == 'string' then
-                    vs = string.format('%q', val)
-                else
-                    vs = __str(val)
-                end
-                parts[#parts+1] = k..': '..vs
-            end
-            local body = '{'..table.concat(parts, ', ')..'}'
-            if v.__name then return v.__name..' '..body end
-            return body
-        end
-    else
-        if t == 'boolean' then return (v and '1' or '0') end
-        return tostring(v)
-    end
-end
 function twoSum(nums, target)
     local n = #nums
     for i = 0, (n)-1 do
@@ -80,5 +47,5 @@ function twoSum(nums, target)
 end
 
 result = twoSum({2, 7, 11, 15}, 9)
-print(__str(result[(0)+1]))
-print(__str(result[(1)+1]))
+print(result[(0)+1])
+print(result[(1)+1])

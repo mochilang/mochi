@@ -1,0 +1,6 @@
+exit status 1
+lua: /workspace/mochi/tests/machine/x/lua/order_by_map.lua:21: invalid value (table) at index 1 in table for 'concat'
+stack traceback:
+	[C]: in function 'table.concat'
+	/workspace/mochi/tests/machine/x/lua/order_by_map.lua:21: in main chunk
+	[C]: in ?

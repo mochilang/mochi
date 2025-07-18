@@ -442,39 +442,36 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	}
 	argStr := strings.Join(args, ", ")
 	switch name {
-	case "print":
-		c.helpers["str"] = true
-		parts := make([]string, len(args))
-		for i, a := range args {
-			if n, ok := identName(call.Args[i]); ok && c.uninitVars[n] {
-				parts[i] = "\"<nil>\""
-			} else {
-				parts[i] = fmt.Sprintf("__str(%s)", a)
-			}
-		}
-		if len(parts) == 1 {
-			if c.isStringExpr(call.Args[0]) {
-				if n, ok := identName(call.Args[0]); !ok || !c.uninitVars[n] {
-					return fmt.Sprintf("print(%s)", args[0]), nil
-				}
-			}
-			if c.isListExpr(call.Args[0]) {
-				tmp := fmt.Sprintf("_l%d", c.tmpCount)
-				c.tmpCount++
-				return fmt.Sprintf("(function(%s) local p={} for i=1,#%s do p[#p+1]=__str(%s[i]) end print(table.concat(p, ' ')) end)(%s)", tmp, tmp, tmp, args[0]), nil
-			}
-			return fmt.Sprintf("print(%s)", parts[0]), nil
-		}
-		return fmt.Sprintf("print((table.concat({%s}, ' ')):gsub(' +$',''))", strings.Join(parts, ", ")), nil
-	case "str":
-		c.helpers["str"] = true
-		if len(args) == 1 {
-			if v, ok := literalValue(call.Args[0]); ok {
-				return strconv.Quote(fmt.Sprint(v)), nil
-			}
-			return fmt.Sprintf("__str(%s)", args[0]), nil
-		}
-		return fmt.Sprintf("__str(%s)", argStr), nil
+        case "print":
+                parts := make([]string, len(args))
+                if len(args) == 1 {
+                        if c.isListExpr(call.Args[0]) {
+                                return fmt.Sprintf("print(table.concat(%s, ' '))", args[0]), nil
+                        }
+                        if n, ok := identName(call.Args[0]); ok && c.uninitVars[n] {
+                                return "print(\"<nil>\")", nil
+                        }
+                        return fmt.Sprintf("print(%s)", args[0]), nil
+                }
+                for i, a := range args {
+                        if n, ok := identName(call.Args[i]); ok && c.uninitVars[n] {
+                                parts[i] = "\"<nil>\""
+                        } else {
+                                parts[i] = fmt.Sprintf("tostring(%s)", a)
+                        }
+                }
+                return fmt.Sprintf("print(table.concat({%s}, ' '))", strings.Join(parts, ", ")), nil
+        case "str":
+                if len(args) == 1 {
+                        if v, ok := literalValue(call.Args[0]); ok {
+                                return strconv.Quote(fmt.Sprint(v)), nil
+                        }
+                        if c.isListExpr(call.Args[0]) {
+                                return fmt.Sprintf("table.concat(%s, ' ')", args[0]), nil
+                        }
+                        return fmt.Sprintf("tostring(%s)", args[0]), nil
+                }
+                return fmt.Sprintf("tostring(%s)", argStr), nil
 	case "input":
 		c.helpers["input"] = true
 		return "__input()", nil

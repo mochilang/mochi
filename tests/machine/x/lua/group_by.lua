@@ -49,39 +49,6 @@ function __avg(v)
     if res == math.floor(res) then return math.floor(res) end
     return res
 end
-function __str(v)
-    local t = type(v)
-    if t == 'table' then
-        if v[1] ~= nil or #v > 0 then
-            local parts = {}
-            for i=1,#v do parts[#parts+1] = __str(v[i]) end
-            local body = '['..table.concat(parts, ' ')..']'
-            if v.__name then return v.__name..' '..body end
-            return body
-        else
-            local keys = {}
-            for k in pairs(v) do if k ~= '__name' then keys[#keys+1] = k end end
-            table.sort(keys, function(a,b) return tostring(a)<tostring(b) end)
-            local parts = {}
-            for _,k in ipairs(keys) do
-                local val = v[k]
-                local vs
-                if type(val) == 'string' then
-                    vs = string.format('%q', val)
-                else
-                    vs = __str(val)
-                end
-                parts[#parts+1] = k..': '..vs
-            end
-            local body = '{'..table.concat(parts, ', ')..'}'
-            if v.__name then return v.__name..' '..body end
-            return body
-        end
-    else
-        if t == 'boolean' then return (v and '1' or '0') end
-        return tostring(v)
-    end
-end
 people = {{["name"]="Alice", ["age"]=30, ["city"]="Paris"}, {["name"]="Bob", ["age"]=15, ["city"]="Hanoi"}, {["name"]="Charlie", ["age"]=65, ["city"]="Paris"}, {["name"]="Diana", ["age"]=45, ["city"]="Hanoi"}, {["name"]="Eve", ["age"]=70, ["city"]="Paris"}, {["name"]="Frank", ["age"]=22, ["city"]="Hanoi"}}
 stats = (function()
     local _groups = __group_by(people, function(person) return person.city end)
@@ -99,5 +66,5 @@ end)())}
 end)()
 print("--- People grouped by city ---")
 for _, s in ipairs(stats) do
-    print((table.concat({__str(s.city), __str(": count ="), __str(s.count), __str(", avg_age ="), __str(s.avg_age)}, ' ')):gsub(' +$',''))
+    print(table.concat({tostring(s.city), tostring(": count ="), tostring(s.count), tostring(", avg_age ="), tostring(s.avg_age)}, ' '))
 end
