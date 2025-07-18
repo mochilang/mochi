@@ -1,5 +1,6 @@
 - 2025-07-18 07:11 UTC: Removed redundant sort casts by inferring comparable types; Kotlin VM tests pass for `sort_stable`.
 - 2025-07-18 07:49 UTC: Fixed struct inference for outer joins and regenerated Kotlin machine outputs for `load_yaml`, `outer_join`, `left_join`, and `sort_stable`.
+- 2025-07-18 08:11 UTC: Fixed aggregate query inference so `query_sum_select` compiles and updated Kotlin machine README.
 - 2025-07-17 17:30 UTC: Inferred group element types for grouped queries; `group_items_iteration` now compiles.
 - 2025-07-18 03:01 UTC: Pre-sorted simple queries before selection; `sort_stable` now compiles.
 - 2025-07-17 16:39 UTC: Removed unused `starts_with` helper and reduced numeric casts via improved inference.

@@ -1722,8 +1722,13 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		genv.SetVar(q.Group.Name, types.GroupType{Key: keyType, Elem: elem}, true)
 		selEnv = genv
 	}
-	selType := types.ExprType(q.Select, selEnv)
-	if t := selectorType(q.Select, selEnv); t != nil {
+	aggName, aggArg, isAgg := aggregateCallName(q.Select)
+	selExpr := q.Select
+	if isAgg && q.Group == nil {
+		selExpr = aggArg
+	}
+	selType := types.ExprType(selExpr, selEnv)
+	if t := selectorType(selExpr, selEnv); t != nil {
 		selType = t
 	}
 
@@ -1867,7 +1872,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		selEnv = genv
 		c.env = selEnv
 	}
-	sel, err := c.expr(q.Select)
+	sel, err := c.expr(selExpr)
 	if err != nil {
 		if q.Group != nil {
 			c.env = child
@@ -2133,11 +2138,14 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	c.env = oldEnv
 
 	var retType types.Type = types.ListType{Elem: selType}
-	if name, arg, ok := aggregateCallName(q.Select); ok && q.Group == nil {
+	if isAgg && q.Group == nil {
+		name := aggName
+		arg := aggArg
 		switch name {
 		case "sum", "avg":
 			retType = types.AnyType{}
 			c.use(name)
+			c.use("toDouble")
 		case "count":
 			retType = types.IntType{}
 			c.use("count")
