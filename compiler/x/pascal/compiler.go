@@ -113,7 +113,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln(fmt.Sprintf("program %s;", name))
 	c.writeln("{$mode objfpc}")
 	c.writeln("{$modeswitch nestedprocvars}")
-	c.writeln("uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser, fpjsonrtti;")
+	c.writeln("uses SysUtils, fgl, Classes, Variants;")
 	c.writeln("")
 	c.writeln("type")
 	c.indent++
