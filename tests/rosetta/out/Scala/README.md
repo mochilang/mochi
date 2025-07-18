@@ -1,11 +1,11 @@
-# Rosetta Scala Output (21/216 compiled and run)
+# Rosetta Scala Output (22/216 compiled and run)
 
 This directory holds Scala source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
 ## Program checklist
 - [x] 100-doors-2
 - [x] 100-doors-3
-- [ ] 100-doors
+- [x] 100-doors
 - [ ] 100-prisoners
 - [ ] 15-puzzle-game
 - [ ] 15-puzzle-solver
