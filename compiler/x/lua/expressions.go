@@ -128,53 +128,25 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 						resStr = strs[i] || strs[i+1]
 					}
 				case "==":
-					lt := typesList[i]
-					rt := typesList[i+1]
-					if isPrimitive(lt) && isPrimitive(rt) {
-						if isString(lt) && isString(rt) {
-							expr = fmt.Sprintf("((%s == %s) and 1 or 0)", l, r)
-							resNum = true
-						} else {
-							expr = fmt.Sprintf("(%s == %s)", l, r)
-						}
-					} else {
-						c.helpers["eq"] = true
-						expr = fmt.Sprintf("__eq(%s, %s)", l, r)
-					}
+					expr = fmt.Sprintf("(%s == %s)", l, r)
 					resStr = false
 				case "!=":
-					lt := typesList[i]
-					rt := typesList[i+1]
-					if isPrimitive(lt) && isPrimitive(rt) {
-						if isString(lt) && isString(rt) {
-							expr = fmt.Sprintf("((%s ~= %s) and 1 or 0)", l, r)
-							resNum = true
-						} else {
-							expr = fmt.Sprintf("(%s ~= %s)", l, r)
-						}
-					} else {
-						c.helpers["eq"] = true
-						expr = fmt.Sprintf("not __eq(%s, %s)", l, r)
-					}
+					expr = fmt.Sprintf("(%s ~= %s)", l, r)
 					resStr = false
 				case "union_all":
 					c.helpers["union_all"] = true
-					c.helpers["eq"] = true
 					expr = fmt.Sprintf("__union_all(%s, %s)", l, r)
 					resStr = false
 				case "union":
 					c.helpers["union"] = true
-					c.helpers["eq"] = true
 					expr = fmt.Sprintf("__union(%s, %s)", l, r)
 					resStr = false
 				case "except":
 					c.helpers["except"] = true
-					c.helpers["eq"] = true
 					expr = fmt.Sprintf("__except(%s, %s)", l, r)
 					resStr = false
 				case "intersect":
 					c.helpers["intersect"] = true
-					c.helpers["eq"] = true
 					expr = fmt.Sprintf("__intersect(%s, %s)", l, r)
 					resStr = false
 				default:
@@ -471,25 +443,29 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	argStr := strings.Join(args, ", ")
 	switch name {
 	case "print":
-		if len(args) > 1 {
-			parts := make([]string, len(args))
-			for i, a := range args {
-				if n, ok := identName(call.Args[i]); ok && c.uninitVars[n] {
-					parts[i] = "\"<nil>\""
-				} else {
-					c.helpers["str"] = true
-					parts[i] = fmt.Sprintf("__str(%s)", a)
+		c.helpers["str"] = true
+		parts := make([]string, len(args))
+		for i, a := range args {
+			if n, ok := identName(call.Args[i]); ok && c.uninitVars[n] {
+				parts[i] = "\"<nil>\""
+			} else {
+				parts[i] = fmt.Sprintf("__str(%s)", a)
+			}
+		}
+		if len(parts) == 1 {
+			if c.isStringExpr(call.Args[0]) {
+				if n, ok := identName(call.Args[0]); !ok || !c.uninitVars[n] {
+					return fmt.Sprintf("print(%s)", args[0]), nil
 				}
 			}
-			c.helpers["print"] = true
-			return fmt.Sprintf("__print(%s)", strings.Join(parts, ", ")), nil
+			if c.isListExpr(call.Args[0]) {
+				tmp := fmt.Sprintf("_l%d", c.tmpCount)
+				c.tmpCount++
+				return fmt.Sprintf("(function(%s) local p={} for i=1,#%s do p[#p+1]=__str(%s[i]) end print(table.concat(p, ' ')) end)(%s)", tmp, tmp, tmp, args[0]), nil
+			}
+			return fmt.Sprintf("print(%s)", parts[0]), nil
 		}
-		c.helpers["print"] = true
-		c.helpers["str"] = true
-		if n, ok := identName(call.Args[0]); !ok || !c.uninitVars[n] {
-			return fmt.Sprintf("__print(%s)", args[0]), nil
-		}
-		return fmt.Sprintf("__print(%s)", args[0]), nil
+		return fmt.Sprintf("print((table.concat({%s}, ' ')):gsub(' +$',''))", strings.Join(parts, ", ")), nil
 	case "str":
 		c.helpers["str"] = true
 		if len(args) == 1 {
