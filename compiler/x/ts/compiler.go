@@ -340,7 +340,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 				}
 			case "go":
 				if s.Import.Auto && p == "mochi/runtime/ffi/go/testpkg" {
-					c.writeln(fmt.Sprintf("const %s = { Add: (a: number, b: number) => a + b, Pi: 3.14, Answer: 42 }", alias))
+					c.writeln(fmt.Sprintf("const %s = { Add: (a: number, b: number) => a + b, Pi: 3.14, Answer: 42, FifteenPuzzleExample: () => 'Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd' }", alias))
 					c.writeln("")
 				}
 			}
@@ -605,20 +605,34 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 			c.writeln(fmt.Sprintf("%s = %s", name, value))
 		}
 	} else {
+		declared := c.indent == 0 && c.globals[name] != ""
 		if len(unwrapped) > 0 {
-			if needType && typStr != "" {
-				c.writeln(fmt.Sprintf("let %s: %s", name, typStr))
+			if declared {
+				for _, ln := range unwrapped {
+					c.writeln(ln)
+				}
+				if retVar != "" {
+					c.writeln(fmt.Sprintf("%s = %s", name, retVar))
+				} else {
+					c.writeln(fmt.Sprintf("%s = %s", name, value))
+				}
 			} else {
-				c.writeln(fmt.Sprintf("let %s", name))
-			}
-			for _, ln := range unwrapped {
-				c.writeln(ln)
-			}
-			if retVar != "" {
-				c.writeln(fmt.Sprintf("%s = %s", name, retVar))
+				if needType && typStr != "" {
+					c.writeln(fmt.Sprintf("let %s: %s", name, typStr))
+				} else {
+					c.writeln(fmt.Sprintf("let %s", name))
+				}
+				for _, ln := range unwrapped {
+					c.writeln(ln)
+				}
+				if retVar != "" {
+					c.writeln(fmt.Sprintf("%s = %s", name, retVar))
+				}
 			}
 		} else {
-			if needType && typStr != "" {
+			if declared {
+				c.writeln(fmt.Sprintf("%s = %s", name, value))
+			} else if needType && typStr != "" {
 				c.writeln(fmt.Sprintf("let %s: %s = %s", name, typStr, value))
 			} else {
 				c.writeln(fmt.Sprintf("let %s = %s", name, value))
@@ -675,7 +689,10 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		}
 		c.writeln(fmt.Sprintf("%s = %s", name, value))
 	} else {
-		if needType && typStr != "" {
+		declared := c.indent == 0 && c.globals[name] != ""
+		if declared {
+			c.writeln(fmt.Sprintf("%s = %s", name, value))
+		} else if needType && typStr != "" {
 			c.writeln(fmt.Sprintf("var %s: %s = %s", name, typStr, value))
 		} else {
 			c.writeln(fmt.Sprintf("var %s = %s", name, value))
