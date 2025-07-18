@@ -1,4 +1,4 @@
-# Rosetta Python Output (17/264 compiled and run)
+# Rosetta Python Output (18/264 compiled and run)
 
 This directory holds Python source code generated from the Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected runtime output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -27,7 +27,7 @@ This directory holds Python source code generated from the Mochi programs in `te
 - [x] abstract-type
 - [x] abundant-deficient-and-perfect-number-classifications
 - [ ] abundant-odd-numbers
-- [ ] accumulator-factory
+- [x] accumulator-factory
 - [ ] achilles-numbers
 - [ ] ackermann-function-2
 - [ ] ackermann-function-3
