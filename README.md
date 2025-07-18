@@ -675,6 +675,15 @@ Run the golden tests to verify the code and output:
 go test ./compiler/x/ex -run TestExCompiler_TPCHQueries -tags=slow -v
 ```
 
+## TPC-H Queries with Kotlin
+
+The Kotlin backend can compile the first thirteen TPC-H queries. After
+regenerating the golden outputs, only query `q1` executes successfully.
+Queries `q2`, `q3` and `q11` currently fail to compile, while `q12` and
+`q13` run but produce output mismatches. The remaining queries are not
+yet implemented.
+
+
 ## Contributing
 
 Mochi is open source and happy to have your contributions.
