@@ -71,45 +71,16 @@ function doTrials($trials, $np, $strategy) {
         $t = $t + 1;
     }
     $rf = ((float)($pardoned)) / ((float)($trials)) * 100;
-    _print("  strategy = " . $strategy . "  pardoned = " . strval($pardoned) . " relative frequency = " . strval($rf) . "%");
+    echo "  strategy = " . $strategy . "  pardoned = " . strval($pardoned) . " relative frequency = " . strval($rf) . "%", PHP_EOL;
 }
 function main() {
     $trials = 1000;
     foreach ([10, 100] as $np) {
-        _print("Results from " . strval($trials) . " trials with " . strval($np) . " prisoners:\n");
+        echo "Results from " . strval($trials) . " trials with " . strval($np) . " prisoners:\n", PHP_EOL;
         foreach (["random", "optimal"] as $strat) {
             doTrials($trials, $np, $strat);
         }
     }
 }
 main();
-function _print(...$args) {
-    $first = true;
-    foreach ($args as $a) {
-        if (!$first) echo ' ';
-        $first = false;
-        if (is_array($a)) {
-            if (array_is_list($a)) {
-                if ($a && is_array($a[0])) {
-                    $parts = [];
-                    foreach ($a as $sub) {
-                        if (is_array($sub)) {
-                            $parts[] = '[' . implode(' ', $sub) . ']';
-                        } else {
-                            $parts[] = strval($sub);
-                        }
-                    }
-                    echo implode(' ', $parts);
-                } else {
-                    echo '[' . implode(' ', array_map('strval', $a)) . ']';
-                }
-            } else {
-                echo json_encode($a);
-            }
-        } else {
-            echo strval($a);
-        }
-    }
-    echo PHP_EOL;
-}
 ?>
