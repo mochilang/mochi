@@ -1,272 +1,72 @@
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:69:12: error: ‘l’ was not declared in this scope
-   69 |   decltype(l) l;
-      |            ^
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:69:12: error: ‘l’ was not declared in this scope
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:72:37: error: ‘struct Revenue0’ has no member named ‘l_suppkey’
-   72 |   decltype(std::declval<Revenue0>().l_suppkey) key;
-      |                                     ^~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:72:37: error: ‘struct Revenue0’ has no member named ‘l_suppkey’
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:80:12: error: ‘s’ was not declared in this scope
-   80 |   decltype(s.s_suppkey) s_suppkey;
-      |            ^
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:80:12: error: ‘s’ was not declared in this scope
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:81:12: error: ‘s’ was not declared in this scope
-   81 |   decltype(s.s_name) s_name;
-      |            ^
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:81:12: error: ‘s’ was not declared in this scope
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:82:12: error: ‘s’ was not declared in this scope
-   82 |   decltype(s.s_address) s_address;
-      |            ^
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:82:12: error: ‘s’ was not declared in this scope
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:83:12: error: ‘s’ was not declared in this scope
-   83 |   decltype(s.s_phone) s_phone;
-      |            ^
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:83:12: error: ‘s’ was not declared in this scope
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:84:37: error: ‘struct Revenue0’ has no member named ‘total_revenue’
-   84 |   decltype(std::declval<Revenue0>().total_revenue) total_revenue;
-      |                                     ^~~~~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:84:37: error: ‘struct Revenue0’ has no member named ‘total_revenue’
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:212:40: error: cannot convert ‘Lineitem’ to ‘int’ in initialization
-  212 |           __g.items.push_back(Revenue0{l});
-      |                                        ^
-      |                                        |
-      |                                        Lineitem
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:219:61: error: cannot convert ‘Lineitem’ to ‘int’ in initialization
-  219 |             __struct4{__key, std::vector<Revenue0>{Revenue0{l}}});
-      |                                                             ^
-      |                                                             |
-      |                                                             Lineitem
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:219:63: error: no matching function for call to ‘std::vector<Revenue0>::vector(<brace-enclosed initializer list>)’
-  219 |             __struct4{__key, std::vector<Revenue0>{Revenue0{l}}});
-      |                                                               ^
-In file included from /usr/include/c++/13/vector:66,
-                 from /tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:9:
-/usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = Revenue0; _Alloc = std::allocator<Revenue0>]’
-  707 |         vector(_InputIterator __first, _InputIterator __last,
-      |         ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:707:9: note:   template argument deduction/substitution failed:
-/usr/include/c++/13/bits/stl_vector.h:678:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::initializer_list<_Tp>, const allocator_type&) [with _Tp = Revenue0; _Alloc = std::allocator<Revenue0>; allocator_type = std::allocator<Revenue0>]’
-  678 |       vector(initializer_list<value_type> __l,
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:678:7: note:   conversion of argument 1 would be ill-formed:
-/usr/include/c++/13/bits/stl_vector.h:659:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Tp = Revenue0; _Alloc = std::allocator<Revenue0>; std::__type_identity_t<_Alloc> = std::allocator<Revenue0>]’
-  659 |       vector(vector&& __rv, const __type_identity_t<allocator_type>& __m)
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:659:7: note:   candidate expects 2 arguments, 1 provided
-/usr/include/c++/13/bits/stl_vector.h:640:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::false_type) [with _Tp = Revenue0; _Alloc = std::allocator<Revenue0>; allocator_type = std::allocator<Revenue0>; std::false_type = std::integral_constant<bool, false>]’
-  640 |       vector(vector&& __rv, const allocator_type& __m, false_type)
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:640:7: note:   candidate expects 3 arguments, 1 provided
-/usr/include/c++/13/bits/stl_vector.h:635:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::true_type) [with _Tp = Revenue0; _Alloc = std::allocator<Revenue0>; allocator_type = std::allocator<Revenue0>; std::true_type = std::integral_constant<bool, true>]’
-  635 |       vector(vector&& __rv, const allocator_type& __m, true_type) noexcept
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:635:7: note:   candidate expects 3 arguments, 1 provided
-/usr/include/c++/13/bits/stl_vector.h:624:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Tp = Revenue0; _Alloc = std::allocator<Revenue0>; std::__type_identity_t<_Alloc> = std::allocator<Revenue0>]’
-  624 |       vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:624:7: note:   candidate expects 2 arguments, 1 provided
-/usr/include/c++/13/bits/stl_vector.h:620:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&) [with _Tp = Revenue0; _Alloc = std::allocator<Revenue0>]’
-  620 |       vector(vector&&) noexcept = default;
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:620:7: note:   conversion of argument 1 would be ill-formed:
-/usr/include/c++/13/bits/stl_vector.h:601:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = Revenue0; _Alloc = std::allocator<Revenue0>]’
-  601 |       vector(const vector& __x)
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:601:7: note:   conversion of argument 1 would be ill-formed:
-/usr/include/c++/13/bits/stl_vector.h:569:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = Revenue0; _Alloc = std::allocator<Revenue0>; size_type = long unsigned int; value_type = Revenue0; allocator_type = std::allocator<Revenue0>]’
-  569 |       vector(size_type __n, const value_type& __value,
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:569:7: note:   candidate expects 3 arguments, 1 provided
-/usr/include/c++/13/bits/stl_vector.h:556:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const allocator_type&) [with _Tp = Revenue0; _Alloc = std::allocator<Revenue0>; size_type = long unsigned int; allocator_type = std::allocator<Revenue0>]’
-  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:556:7: note:   conversion of argument 1 would be ill-formed:
-/usr/include/c++/13/bits/stl_vector.h:542:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const allocator_type&) [with _Tp = Revenue0; _Alloc = std::allocator<Revenue0>; allocator_type = std::allocator<Revenue0>]’
-  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:542:7: note:   conversion of argument 1 would be ill-formed:
-/usr/include/c++/13/bits/stl_vector.h:531:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector() [with _Tp = Revenue0; _Alloc = std::allocator<Revenue0>]’
-  531 |       vector() = default;
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:228:60: error: ‘struct Revenue0’ has no member named ‘l_extendedprice’
-  228 |             std::vector<decltype((std::declval<Revenue0>().l_extendedprice *
-      |                                                            ^~~~~~~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:229:66: error: ‘struct Revenue0’ has no member named ‘l_discount’
-  229 |                                   ((1 - std::declval<Revenue0>().l_discount))))>
+/tmp/TestCPPCompiler_TPCHQueriesq151494229137/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCHQueriesq151494229137/001/prog.cpp:240:39: error: no match for ‘operator-’ (operand types are ‘int’ and ‘std::any’)
+  240 |                                   ((1 - std::declval<Lineitem>().l_discount))))>
+      |                                     ~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/bits/stl_algobase.h:67,
+                 from /usr/include/c++/13/algorithm:60,
+                 from /tmp/TestCPPCompiler_TPCHQueriesq151494229137/001/prog.cpp:2:
+/usr/include/c++/13/bits/stl_iterator.h:625:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__y.base() - __x.base())) std::operator-(const reverse_iterator<_Iterator>&, const reverse_iterator<_IteratorR>&)’
+  625 |     operator-(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:625:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCHQueriesq151494229137/001/prog.cpp:240:66: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+  240 |                                   ((1 - std::declval<Lineitem>().l_discount))))>
       |                                                                  ^~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:228:60: error: ‘struct Revenue0’ has no member named ‘l_extendedprice’
-  228 |             std::vector<decltype((std::declval<Revenue0>().l_extendedprice *
-      |                                                            ^~~~~~~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:229:66: error: ‘struct Revenue0’ has no member named ‘l_discount’
-  229 |                                   ((1 - std::declval<Revenue0>().l_discount))))>
+/usr/include/c++/13/bits/stl_iterator.h:1800:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__x.base() - __y.base())) std::operator-(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&)’
+ 1800 |     operator-(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1800:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCHQueriesq151494229137/001/prog.cpp:240:66: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+  240 |                                   ((1 - std::declval<Lineitem>().l_discount))))>
       |                                                                  ^~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:229:80: error: template argument 1 is invalid
-  229 |                                   ((1 - std::declval<Revenue0>().l_discount))))>
+/tmp/TestCPPCompiler_TPCHQueriesq151494229137/001/prog.cpp:240:39: error: no match for ‘operator-’ (operand types are ‘int’ and ‘std::any’)
+  240 |                                   ((1 - std::declval<Lineitem>().l_discount))))>
+      |                                     ~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:625:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__y.base() - __x.base())) std::operator-(const reverse_iterator<_Iterator>&, const reverse_iterator<_IteratorR>&)’
+  625 |     operator-(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:625:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCHQueriesq151494229137/001/prog.cpp:240:66: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+  240 |                                   ((1 - std::declval<Lineitem>().l_discount))))>
+      |                                                                  ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1800:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__x.base() - __y.base())) std::operator-(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&)’
+ 1800 |     operator-(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1800:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCHQueriesq151494229137/001/prog.cpp:240:66: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+  240 |                                   ((1 - std::declval<Lineitem>().l_discount))))>
+      |                                                                  ^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq151494229137/001/prog.cpp:240:80: error: template argument 1 is invalid
+  240 |                                   ((1 - std::declval<Lineitem>().l_discount))))>
       |                                                                                ^
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:229:80: error: template argument 2 is invalid
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:232:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
-  232 |               __items.push_back((x.l_extendedprice * ((1 - x.l_discount))));
+/tmp/TestCPPCompiler_TPCHQueriesq151494229137/001/prog.cpp:240:80: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCHQueriesq151494229137/001/prog.cpp:243:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  243 |               __items.push_back((x.l_extendedprice * ((1 - x.l_discount))));
       |                       ^~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:232:36: error: ‘struct Revenue0’ has no member named ‘l_extendedprice’
-  232 |               __items.push_back((x.l_extendedprice * ((1 - x.l_discount))));
-      |                                    ^~~~~~~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:232:62: error: ‘struct Revenue0’ has no member named ‘l_discount’
-  232 |               __items.push_back((x.l_extendedprice * ((1 - x.l_discount))));
+/tmp/TestCPPCompiler_TPCHQueriesq151494229137/001/prog.cpp:243:58: error: no match for ‘operator-’ (operand types are ‘int’ and ‘std::any’)
+  243 |               __items.push_back((x.l_extendedprice * ((1 - x.l_discount))));
+      |                                                        ~ ^ ~~~~~~~~~~~~
+      |                                                        |     |
+      |                                                        int   std::any
+/usr/include/c++/13/bits/stl_iterator.h:625:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__y.base() - __x.base())) std::operator-(const reverse_iterator<_Iterator>&, const reverse_iterator<_IteratorR>&)’
+  625 |     operator-(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:625:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCHQueriesq151494229137/001/prog.cpp:243:62: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+  243 |               __items.push_back((x.l_extendedprice * ((1 - x.l_discount))));
       |                                                              ^~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:1)> [with auto:1 = int]’:
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:227:13:   required from here
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:226:38: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
-  226 |             return std::accumulate(v.begin(), v.end(), 0.0);
+/usr/include/c++/13/bits/stl_iterator.h:1800:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__x.base() - __y.base())) std::operator-(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&)’
+ 1800 |     operator-(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1800:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCHQueriesq151494229137/001/prog.cpp:243:62: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+  243 |               __items.push_back((x.l_extendedprice * ((1 - x.l_discount))));
+      |                                                              ^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq151494229137/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:1)> [with auto:1 = int]’:
+/tmp/TestCPPCompiler_TPCHQueriesq151494229137/001/prog.cpp:238:13:   required from here
+/tmp/TestCPPCompiler_TPCHQueriesq151494229137/001/prog.cpp:237:38: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  237 |             return std::accumulate(v.begin(), v.end(), 0.0);
       |                                    ~~^~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:226:49: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
-  226 |             return std::accumulate(v.begin(), v.end(), 0.0);
+/tmp/TestCPPCompiler_TPCHQueriesq151494229137/001/prog.cpp:237:49: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  237 |             return std::accumulate(v.begin(), v.end(), 0.0);
       |                                               ~~^~~
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp: In function ‘int main()’:
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:238:5: error: conversion from ‘vector<__struct5>’ to non-scalar type ‘vector<Revenue0>’ requested
-  203 |   std::vector<Revenue0> revenue0 = ([&]() {
-      |                                    ~~~~~~~~
-  204 |     std::vector<__struct4> __groups;
-      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  205 |     for (auto l : lineitem) {
-      |     ~~~~~~~~~~~~~~~~~~~~~~~~~
-  206 |       if (!(((l.l_shipdate >= start_date) && (l.l_shipdate < end_date))))
-      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  207 |         continue;
-      |         ~~~~~~~~~
-  208 |       auto __key = l.l_suppkey;
-      |       ~~~~~~~~~~~~~~~~~~~~~~~~~
-  209 |       bool __found = false;
-      |       ~~~~~~~~~~~~~~~~~~~~~
-  210 |       for (auto &__g : __groups) {
-      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  211 |         if (__g.key == __key) {
-      |         ~~~~~~~~~~~~~~~~~~~~~~~
-  212 |           __g.items.push_back(Revenue0{l});
-      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  213 |           __found = true;
-      |           ~~~~~~~~~~~~~~~
-  214 |           break;
-      |           ~~~~~~
-  215 |         }
-      |         ~
-  216 |       }
-      |       ~
-  217 |       if (!__found) {
-      |       ~~~~~~~~~~~~~~~
-  218 |         __groups.push_back(
-      |         ~~~~~~~~~~~~~~~~~~~
-  219 |             __struct4{__key, std::vector<Revenue0>{Revenue0{l}}});
-      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  220 |       }
-      |       ~
-  221 |     }
-      |     ~
-  222 |     std::vector<__struct5> __items;
-      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  223 |     for (auto &g : __groups) {
-      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
-  224 |       __items.push_back(__struct5{
-      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  225 |           g.key, ([&](auto v) {
-      |           ~~~~~~~~~~~~~~~~~~~~~
-  226 |             return std::accumulate(v.begin(), v.end(), 0.0);
-      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  227 |           })(([&]() {
-      |           ~~~~~~~~~~~
-  228 |             std::vector<decltype((std::declval<Revenue0>().l_extendedprice *
-      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  229 |                                   ((1 - std::declval<Revenue0>().l_discount))))>
-      |                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  230 |                 __items;
-      |                 ~~~~~~~~
-  231 |             for (auto x : g.items) {
-      |             ~~~~~~~~~~~~~~~~~~~~~~~~
-  232 |               __items.push_back((x.l_extendedprice * ((1 - x.l_discount))));
-      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  233 |             }
-      |             ~
-  234 |             return __items;
-      |             ~~~~~~~~~~~~~~~
-  235 |           })())});
-      |           ~~~~~~~~
-  236 |     }
-      |     ~
-  237 |     return __items;
-      |     ~~~~~~~~~~~~~~~
-  238 |   })();
-      |   ~~^~
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:240:51: error: ‘struct Revenue0’ has no member named ‘total_revenue’
-  240 |     std::vector<decltype(std::declval<Revenue0>().total_revenue)> __items;
-      |                                                   ^~~~~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:240:51: error: ‘struct Revenue0’ has no member named ‘total_revenue’
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:240:65: error: template argument 1 is invalid
-  240 |     std::vector<decltype(std::declval<Revenue0>().total_revenue)> __items;
-      |                                                                 ^
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:240:65: error: template argument 2 is invalid
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:242:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
-  242 |       __items.push_back(x.total_revenue);
-      |               ^~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:242:27: error: ‘struct Revenue0’ has no member named ‘total_revenue’
-  242 |       __items.push_back(x.total_revenue);
-      |                           ^~~~~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp: In function ‘int main()’:
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:246:50: error: request for member ‘begin’ in ‘revenues’, which is of non-class type ‘int’
-  246 |   auto max_revenue = (*std::max_element(revenues.begin(), revenues.end()));
-      |                                                  ^~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:246:68: error: request for member ‘end’ in ‘revenues’, which is of non-class type ‘int’
-  246 |   auto max_revenue = (*std::max_element(revenues.begin(), revenues.end()));
-      |                                                                    ^~~
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:248:36: error: ‘s’ was not declared in this scope
-  248 |     std::vector<std::pair<decltype(s.s_suppkey), Result>> __items;
-      |                                    ^
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:248:50: error: template argument 1 is invalid
-  248 |     std::vector<std::pair<decltype(s.s_suppkey), Result>> __items;
-      |                                                  ^~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:248:56: error: template argument 1 is invalid
-  248 |     std::vector<std::pair<decltype(s.s_suppkey), Result>> __items;
-      |                                                        ^~
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:248:56: error: template argument 2 is invalid
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:251:33: error: ‘struct Revenue0’ has no member named ‘supplier_no’
-  251 |         if (!((s.s_suppkey == r.supplier_no)))
-      |                                 ^~~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:253:18: error: ‘struct Revenue0’ has no member named ‘total_revenue’
-  253 |         if (!((r.total_revenue == max_revenue)))
-      |                  ^~~~~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:255:17: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
-  255 |         __items.push_back(
-      |                 ^~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:257:36: error: ‘struct Revenue0’ has no member named ‘total_revenue’
-  257 |                                  r.total_revenue}});
-      |                                    ^~~~~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:260:23: error: request for member ‘begin’ in ‘__items’, which is of non-class type ‘int’
-  260 |     std::sort(__items.begin(), __items.end(),
-      |                       ^~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:260:40: error: request for member ‘end’ in ‘__items’, which is of non-class type ‘int’
-  260 |     std::sort(__items.begin(), __items.end(),
-      |                                        ^~~
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:263:20: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
-  263 |     for (auto &p : __items)
-      |                    ^~~~~~~
-      |                    std::begin
-In file included from /usr/include/c++/13/string:53,
-                 from /usr/include/c++/13/bits/locale_classes.h:40,
-                 from /usr/include/c++/13/bits/ios_base.h:41,
-                 from /usr/include/c++/13/ios:44,
-                 from /usr/include/c++/13/ostream:40,
-                 from /usr/include/c++/13/iostream:41,
-                 from /tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:3:
-/usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
-  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
-      |                                     ^~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq153651247266/001/prog.cpp:263:20: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
-  263 |     for (auto &p : __items)
-      |                    ^~~~~~~
-      |                    std::end
-/usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
-  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
-      |                                     ^~~

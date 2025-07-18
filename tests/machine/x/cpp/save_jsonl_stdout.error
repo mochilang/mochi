@@ -1,3 +1,0 @@
-/usr/bin/ld: /tmp/ccxP2cQc.o: in function `__json(People const&)':
-save_jsonl_stdout.cpp:(.text._Z6__jsonRK6People[_Z6__jsonRK6People]+0x76): undefined reference to `void __json<std::any>(std::any const&)'
-collect2: error: ld returned 1 exit status
