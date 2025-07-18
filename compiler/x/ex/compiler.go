@@ -59,6 +59,10 @@ func sanitizeName(name string) string {
 	return name
 }
 
+func attrName(name string) string {
+	return strings.ToLower(sanitizeName(name))
+}
+
 func assignedVars(stmts []*parser.Statement) []string {
 	set := map[string]struct{}{}
 	decl := map[string]struct{}{}
@@ -341,9 +345,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 				}
 				val = v
 			}
-			name := sanitizeName(s.Let.Name)
+			name := attrName(s.Let.Name)
 			// only emit module attribute for simple constant expressions that are never mutated
-			if _, ok := mutatedSet[name]; !ok && isConstExpr(s.Let.Value) && !helperRe.MatchString(val) && !containsVar(val, name) {
+			if _, ok := mutatedSet[sanitizeName(s.Let.Name)]; !ok && isConstExpr(s.Let.Value) && !helperRe.MatchString(val) && !containsVar(val, sanitizeName(s.Let.Name)) {
 				c.attrs[name] = val
 				c.writeln(fmt.Sprintf("@%s %s", name, val))
 			}
@@ -481,7 +485,7 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
-		if _, ok := c.attrs[sanitizeName(s.Let.Name)]; !ok {
+		if _, ok := c.attrs[attrName(s.Let.Name)]; !ok {
 			var val string
 			var err error
 			if s.Let.Value != nil {
@@ -1796,8 +1800,8 @@ func (c *Compiler) compilePattern(e *parser.Expr) (string, error) {
 				c.ensureStruct(st)
 				return fmt.Sprintf("%%%s{}", sanitizeName(st.Name)), nil
 			}
-			if _, ok := c.attrs[t.Selector.Root]; ok {
-				return "@" + name, nil
+			if _, ok := c.attrs[attrName(t.Selector.Root)]; ok {
+				return "@" + attrName(t.Selector.Root), nil
 			}
 		}
 		return name, nil
