@@ -1,5 +1,5 @@
-Syntax error reading source at (/workspace/mochi/tests/machine/x/clj/outer_join.clj:132:1).
-EOF while reading, starting at line 24
+Execution error (OutOfMemoryError) at main/-query (outer_join.clj:71).
+Java heap space
 
 Full report at:
-/tmp/clojure-7811319382680626878.edn
+/tmp/clojure-17201402420341419840.edn

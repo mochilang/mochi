@@ -43,3 +43,5 @@ Remaining work:
 2025-07-23: Added `_print` helper to mimic Mochi printing semantics and default
   initializers for typed variables. Regenerated machine outputs for updated tests.
 2025-07-24: Avoid unnecessary struct casts when expression type already matches.
+2025-07-25: Equality operations now use native '=' when operand types are known,
+reducing helper emissions. Regenerated machine outputs.

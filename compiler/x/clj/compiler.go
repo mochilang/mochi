@@ -962,12 +962,18 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 		return fmt.Sprintf("(%s %s %s)", opName, left, right), leftType
 	case "%":
 		return fmt.Sprintf("(%s %s %s)", opName, left, right), leftType
-	case "==":
-		c.use("_equal")
-		return fmt.Sprintf("(_equal %s %s)", left, right), types.BoolType{}
-	case "!=":
-		c.use("_equal")
-		return fmt.Sprintf("(not (_equal %s %s))", left, right), types.BoolType{}
+       case "==":
+               if !isAny(leftType) && !isAny(rightType) {
+                       return fmt.Sprintf("(= %s %s)", left, right), types.BoolType{}
+               }
+               c.use("_equal")
+               return fmt.Sprintf("(_equal %s %s)", left, right), types.BoolType{}
+       case "!=":
+               if !isAny(leftType) && !isAny(rightType) {
+                       return fmt.Sprintf("(not (= %s %s))", left, right), types.BoolType{}
+               }
+               c.use("_equal")
+               return fmt.Sprintf("(not (_equal %s %s))", left, right), types.BoolType{}
 	case "<", "<=", ">", ">=":
 		// Compare strings using (compare) if either static types or
 		// heuristics indicate string values. Map fields are typed as
