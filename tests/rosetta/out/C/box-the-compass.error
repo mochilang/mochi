@@ -4,9 +4,3 @@ cc: exit status 1
   138 | char *degrees2compasspoint(double h) { return compassPoint.data[cpx(h)]; }
       |                                               ^~~~~~~~~~~~
 /tmp/box-the-compass.c:138:47: note: each undeclared identifier is reported only once for each function it appears in
-/tmp/box-the-compass.c: In function ‘_mochi_main’:
-/tmp/box-the-compass.c:214:37: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  214 |     printf("%s\n", padLeft(tmp7, 4) + "   " + padRight(cp, 19) + " " +
-      |                    ~~~~~~~~~~~~~~~~ ^
-      |                    |                |
-      |                    char *           char *

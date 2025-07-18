@@ -10,7 +10,7 @@ cc: exit status 1
 /tmp/ackermann-function-3.c:98:5: note: declared here
    98 | int show(int m, int n) {
       |     ^~~~
-/usr/bin/ld: /tmp/ccjYzf9Q.o: in function `ackermann2':
+/usr/bin/ld: /tmp/ccghlSF8.o: in function `ackermann2':
 ackermann-function-3.c:(.text+0x28c): undefined reference to `_int'
 /usr/bin/ld: ackermann-function-3.c:(.text+0x344): undefined reference to `_int'
 collect2: error: ld returned 1 exit status

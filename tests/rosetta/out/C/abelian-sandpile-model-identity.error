@@ -3,24 +3,3 @@ cc: exit status 1
 /tmp/abelian-sandpile-model-identity.c:93:11: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
    93 |     res = 0;
       |           ^
-/tmp/abelian-sandpile-model-identity.c: In function ‘_mochi_main’:
-/tmp/abelian-sandpile-model-identity.c:292:36: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  292 |   printf("%s\n", pileString(tmp25) + "\nplus\n\n" + pileString(tmp26) +
-      |                  ~~~~~~~~~~~~~~~~~ ^
-      |                  |                 |
-      |                  char *            char *
-/tmp/abelian-sandpile-model-identity.c:314:28: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  314 |   printf("%s\n", "and\n\n" + pileString(tmp27) + "\nplus\n\n" +
-      |                  ~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~
-      |                  |           |
-      |                  char *      char *
-/tmp/abelian-sandpile-model-identity.c:382:36: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  382 |   printf("%s\n", pileString(tmp31) + "\nplus\n\n" + pileString(tmp32) +
-      |                  ~~~~~~~~~~~~~~~~~ ^
-      |                  |                 |
-      |                  char *            char *
-/tmp/abelian-sandpile-model-identity.c:429:36: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  429 |   printf("%s\n", pileString(tmp35) + "\nplus\n\n" + pileString(tmp36) +
-      |                  ~~~~~~~~~~~~~~~~~ ^
-      |                  |                 |
-      |                  char *            char *

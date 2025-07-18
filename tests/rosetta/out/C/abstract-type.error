@@ -1,70 +1,64 @@
 cc: exit status 1
 /tmp/abstract-type.c: In function ‘beastKind’:
-/tmp/abstract-type.c:35:10: warning: assignment to ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
-   35 |     tmp2 = k;
+/tmp/abstract-type.c:45:10: warning: assignment to ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+   45 |     tmp2 = k;
       |          ^
-/tmp/abstract-type.c:38:11: error: redefinition of ‘k’
-   38 |     char *k = tmp1.value.cat_t.kind;
+/tmp/abstract-type.c:48:11: error: redefinition of ‘k’
+   48 |     char *k = tmp1.value.cat_t.kind;
       |           ^
-/tmp/abstract-type.c:33:11: note: previous definition of ‘k’ with type ‘char *’
-   33 |     char *k = tmp1.value.dog_t.kind;
+/tmp/abstract-type.c:43:11: note: previous definition of ‘k’ with type ‘char *’
+   43 |     char *k = tmp1.value.dog_t.kind;
       |           ^
-/tmp/abstract-type.c:39:11: error: redefinition of ‘_’
-   39 |     char *_ = tmp1.value.cat_t.name;
+/tmp/abstract-type.c:49:11: error: redefinition of ‘_’
+   49 |     char *_ = tmp1.value.cat_t.name;
       |           ^
-/tmp/abstract-type.c:34:11: note: previous definition of ‘_’ with type ‘char *’
-   34 |     char *_ = tmp1.value.dog_t.name;
+/tmp/abstract-type.c:44:11: note: previous definition of ‘_’ with type ‘char *’
+   44 |     char *_ = tmp1.value.dog_t.name;
       |           ^
-/tmp/abstract-type.c:40:10: warning: assignment to ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
-   40 |     tmp2 = k;
+/tmp/abstract-type.c:50:10: warning: assignment to ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+   50 |     tmp2 = k;
       |          ^
-/tmp/abstract-type.c:46:10: warning: returning ‘int’ from a function with return type ‘char *’ makes pointer from integer without a cast [-Wint-conversion]
-   46 |   return tmp2;
+/tmp/abstract-type.c:56:10: warning: returning ‘int’ from a function with return type ‘char *’ makes pointer from integer without a cast [-Wint-conversion]
+   56 |   return tmp2;
       |          ^~~~
 /tmp/abstract-type.c: In function ‘beastName’:
-/tmp/abstract-type.c:56:10: warning: assignment to ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
-   56 |     tmp4 = n;
+/tmp/abstract-type.c:66:10: warning: assignment to ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+   66 |     tmp4 = n;
       |          ^
-/tmp/abstract-type.c:59:11: error: redefinition of ‘_’
-   59 |     char *_ = tmp3.value.cat_t.kind;
+/tmp/abstract-type.c:69:11: error: redefinition of ‘_’
+   69 |     char *_ = tmp3.value.cat_t.kind;
       |           ^
-/tmp/abstract-type.c:54:11: note: previous definition of ‘_’ with type ‘char *’
-   54 |     char *_ = tmp3.value.dog_t.kind;
+/tmp/abstract-type.c:64:11: note: previous definition of ‘_’ with type ‘char *’
+   64 |     char *_ = tmp3.value.dog_t.kind;
       |           ^
-/tmp/abstract-type.c:60:11: error: redefinition of ‘n’
-   60 |     char *n = tmp3.value.cat_t.name;
+/tmp/abstract-type.c:70:11: error: redefinition of ‘n’
+   70 |     char *n = tmp3.value.cat_t.name;
       |           ^
-/tmp/abstract-type.c:55:11: note: previous definition of ‘n’ with type ‘char *’
-   55 |     char *n = tmp3.value.dog_t.name;
+/tmp/abstract-type.c:65:11: note: previous definition of ‘n’ with type ‘char *’
+   65 |     char *n = tmp3.value.dog_t.name;
       |           ^
-/tmp/abstract-type.c:61:10: warning: assignment to ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
-   61 |     tmp4 = n;
+/tmp/abstract-type.c:71:10: warning: assignment to ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+   71 |     tmp4 = n;
       |          ^
-/tmp/abstract-type.c:67:10: warning: returning ‘int’ from a function with return type ‘char *’ makes pointer from integer without a cast [-Wint-conversion]
-   67 |   return tmp4;
+/tmp/abstract-type.c:77:10: warning: returning ‘int’ from a function with return type ‘char *’ makes pointer from integer without a cast [-Wint-conversion]
+   77 |   return tmp4;
       |          ^~~~
 /tmp/abstract-type.c: In function ‘beastCry’:
-/tmp/abstract-type.c:76:11: error: redefinition of ‘_’
-   76 |     char *_ = tmp5.value.dog_t.name;
+/tmp/abstract-type.c:86:11: error: redefinition of ‘_’
+   86 |     char *_ = tmp5.value.dog_t.name;
       |           ^
-/tmp/abstract-type.c:75:11: note: previous definition of ‘_’ with type ‘char *’
-   75 |     char *_ = tmp5.value.dog_t.kind;
+/tmp/abstract-type.c:85:11: note: previous definition of ‘_’ with type ‘char *’
+   85 |     char *_ = tmp5.value.dog_t.kind;
       |           ^
-/tmp/abstract-type.c:80:11: error: redefinition of ‘_’
-   80 |     char *_ = tmp5.value.cat_t.kind;
+/tmp/abstract-type.c:90:11: error: redefinition of ‘_’
+   90 |     char *_ = tmp5.value.cat_t.kind;
       |           ^
-/tmp/abstract-type.c:76:11: note: previous definition of ‘_’ with type ‘char *’
-   76 |     char *_ = tmp5.value.dog_t.name;
+/tmp/abstract-type.c:86:11: note: previous definition of ‘_’ with type ‘char *’
+   86 |     char *_ = tmp5.value.dog_t.name;
       |           ^
-/tmp/abstract-type.c:81:11: error: redefinition of ‘_’
-   81 |     char *_ = tmp5.value.cat_t.name;
+/tmp/abstract-type.c:91:11: error: redefinition of ‘_’
+   91 |     char *_ = tmp5.value.cat_t.name;
       |           ^
-/tmp/abstract-type.c:80:11: note: previous definition of ‘_’ with type ‘char *’
-   80 |     char *_ = tmp5.value.cat_t.kind;
+/tmp/abstract-type.c:90:11: note: previous definition of ‘_’ with type ‘char *’
+   90 |     char *_ = tmp5.value.cat_t.kind;
       |           ^
-/tmp/abstract-type.c: In function ‘bprint’:
-/tmp/abstract-type.c:92:31: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-   92 |   printf("%s\n", beastName(b) + ", who's a " + beastKind(b) + ", cries: \"" +
-      |                  ~~~~~~~~~~~~ ^
-      |                  |            |
-      |                  char *       char *

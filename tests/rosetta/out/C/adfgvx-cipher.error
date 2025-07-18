@@ -1,111 +1,55 @@
 cc: exit status 1
-/tmp/adfgvx-cipher.c: In function ‘shuffleStr’:
-/tmp/adfgvx-cipher.c:118:15: error: invalid operands to binary + (have ‘list_string’ and ‘list_string’)
-  118 |     arr = arr + tmp1;
-      |               ^
-/tmp/adfgvx-cipher.c:124:15: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
-  124 |     int tmp = arr.data[j];
-      |               ^~~
-/tmp/adfgvx-cipher.c:126:17: warning: assignment to ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
-  126 |     arr.data[k] = tmp;
-      |                 ^
-/tmp/adfgvx-cipher.c:132:15: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  132 |     out = out + arr.data[i];
-      |               ^ ~~~~~~~~~~~
-      |                         |
-      |                         char *
 /tmp/adfgvx-cipher.c: In function ‘createPolybius’:
-/tmp/adfgvx-cipher.c:150:11: error: invalid operands to binary + (have ‘list_string’ and ‘list_string’)
-  150 |     p = p + tmp4;
-      |           ^
+/tmp/adfgvx-cipher.c:175:33: error: incompatible type for argument 1 of ‘concat_string’
+  175 |     char *tmp12 = concat_string(tmp11, " | ");
+      |                                 ^~~~~
+      |                                 |
+      |                                 list_string
+/tmp/adfgvx-cipher.c:52:34: note: expected ‘char *’ but argument is of type ‘list_string’
+   52 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
 /tmp/adfgvx-cipher.c: In function ‘orderKey’:
-/tmp/adfgvx-cipher.c:198:19: warning: assignment to ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
-  198 |     tmp17.data[1] = i;
+/tmp/adfgvx-cipher.c:221:19: warning: assignment to ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+  221 |     tmp22.data[1] = i;
       |                   ^
-/tmp/adfgvx-cipher.c:199:30: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  199 |     list_int tmp16_data[] = {tmp17};
-      |                              ^~~~~
-/tmp/adfgvx-cipher.c:201:19: error: invalid operands to binary + (have ‘list_int’ and ‘list_list_int’)
-  201 |     pairs = pairs + tmp16;
-      |                   ^
-/tmp/adfgvx-cipher.c:209:25: error: request for member ‘data’ in something not a structure or union
-  209 |       if ((pairs.data[j].data[0] > pairs.data[j + 1].data[0])) {
+/tmp/adfgvx-cipher.c:224:21: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+  224 |     tmp24.data[0] = tmp22;
+      |                     ^~~~~
+/tmp/adfgvx-cipher.c:234:25: error: request for member ‘data’ in something not a structure or union
+  234 |       if ((pairs.data[j].data[0] > pairs.data[j + 1].data[0])) {
       |                         ^
-/tmp/adfgvx-cipher.c:209:53: error: request for member ‘data’ in something not a structure or union
-  209 |       if ((pairs.data[j].data[0] > pairs.data[j + 1].data[0])) {
+/tmp/adfgvx-cipher.c:234:53: error: request for member ‘data’ in something not a structure or union
+  234 |       if ((pairs.data[j].data[0] > pairs.data[j + 1].data[0])) {
       |                                                     ^
-/tmp/adfgvx-cipher.c:222:40: error: request for member ‘data’ in something not a structure or union
-  222 |     tmp19.data[0] = (int)(pairs.data[i].data[1]);
+/tmp/adfgvx-cipher.c:248:40: error: request for member ‘data’ in something not a structure or union
+  248 |     tmp26.data[0] = (int)(pairs.data[i].data[1]);
       |                                        ^
 /tmp/adfgvx-cipher.c: In function ‘encrypt’:
-/tmp/adfgvx-cipher.c:265:17: error: invalid operands to binary + (have ‘list_string’ and ‘list_string’)
-  265 |       row = row + tmp28;
-      |                 ^
-/tmp/adfgvx-cipher.c:269:21: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-  269 |     tmp29.data[0] = row;
-      |                     ^~~
-/tmp/adfgvx-cipher.c:270:5: error: ‘table’ undeclared (first use in this function)
-  270 |     table = table + tmp29;
+/tmp/adfgvx-cipher.c:278:45: error: incompatible type for argument 2 of ‘concat_string’
+  278 |           char *tmp34 = concat_string(temp, tmp33);
+      |                                             ^~~~~
+      |                                             |
+      |                                             list_string
+/tmp/adfgvx-cipher.c:52:43: note: expected ‘char *’ but argument is of type ‘list_string’
+   52 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
+/tmp/adfgvx-cipher.c:280:46: error: incompatible type for argument 2 of ‘concat_string’
+  280 |           char *tmp36 = concat_string(tmp34, tmp35);
+      |                                              ^~~~~
+      |                                              |
+      |                                              list_string
+/tmp/adfgvx-cipher.c:52:43: note: expected ‘char *’ but argument is of type ‘list_string’
+   52 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
+/tmp/adfgvx-cipher.c:304:5: error: ‘table’ undeclared (first use in this function)
+  304 |     table = 0;
       |     ^~~~~
-/tmp/adfgvx-cipher.c:270:5: note: each undeclared identifier is reported only once for each function it appears in
-/tmp/adfgvx-cipher.c:293:17: error: invalid operands to binary + (have ‘list_string’ and ‘list_string’)
-  293 |     cols = cols + tmp31;
-      |                 ^
-/tmp/adfgvx-cipher.c:299:21: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  299 |     result = result + cols.data[ci];
-      |                     ^ ~~~~~~~~~~~~~
-      |                                |
-      |                                char *
+/tmp/adfgvx-cipher.c:304:5: note: each undeclared identifier is reported only once for each function it appears in
 /tmp/adfgvx-cipher.c: In function ‘decrypt’:
-/tmp/adfgvx-cipher.c:331:25: error: invalid operands to binary + (have ‘list_string’ and ‘list_string’)
-  331 |       colStrs = colStrs + tmp35;
-      |                         ^
-/tmp/adfgvx-cipher.c:339:25: error: request for member ‘len’ in something not a structure or union
-  339 |     if ((colStrs.data[i].len > maxColLen)) {
-      |                         ^
-/tmp/adfgvx-cipher.c:340:34: error: request for member ‘len’ in something not a structure or union
-  340 |       maxColLen = colStrs.data[i].len;
-      |                                  ^
-/tmp/adfgvx-cipher.c:346:13: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
-  346 |     int s = colStrs.data[i];
-      |             ^~~~~~~
-/tmp/adfgvx-cipher.c:349:17: error: request for member ‘len’ in something not a structure or union
-  349 |     while (j < s.len) {
-      |                 ^
-/tmp/adfgvx-cipher.c:351:24: error: request for member ‘data’ in something not a structure or union
-  351 |       tmp37.data[0] = s.data[j];
-      |                        ^
-/tmp/adfgvx-cipher.c:352:15: error: invalid operands to binary + (have ‘list_string’ and ‘list_int’)
-  352 |       ls = ls + tmp37;
-      |               ^
-/tmp/adfgvx-cipher.c:355:10: error: request for member ‘len’ in something not a structure or union
-  355 |     if (s.len < maxColLen) {
-      |          ^
-/tmp/adfgvx-cipher.c:361:25: warning: assignment to ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
-  361 |           tmp38.data[0] = ls.data[k];
-      |                         ^
-/tmp/adfgvx-cipher.c:362:21: error: invalid operands to binary + (have ‘list_string’ and ‘list_int’)
-  362 |           pad = pad + tmp38;
-      |                     ^
-/tmp/adfgvx-cipher.c:366:21: error: invalid operands to binary + (have ‘list_string’ and ‘list_string’)
-  366 |           pad = pad + tmp39;
-      |                     ^
-/tmp/adfgvx-cipher.c:371:23: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-  371 |       tmp40.data[0] = pad;
-      |                       ^~~
-/tmp/adfgvx-cipher.c:372:7: error: ‘cols’ undeclared (first use in this function); did you mean ‘ls’?
-  372 |       cols = cols + tmp40;
+/tmp/adfgvx-cipher.c:411:7: error: ‘cols’ undeclared (first use in this function); did you mean ‘ls’?
+  411 |       cols = 0;
       |       ^~~~
       |       ls
-/tmp/adfgvx-cipher.c:375:23: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-  375 |       tmp41.data[0] = ls;
-      |                       ^~
-/tmp/adfgvx-cipher.c:387:17: error: invalid operands to binary + (have ‘list_string’ and ‘list_string’)
-  387 |       row = row + tmp42;
-      |                 ^
-/tmp/adfgvx-cipher.c:391:21: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-  391 |     tmp43.data[0] = row;
-      |                     ^~~
-/tmp/adfgvx-cipher.c:392:5: error: ‘table’ undeclared (first use in this function)
-  392 |     table = table + tmp43;
+/tmp/adfgvx-cipher.c:428:5: error: ‘table’ undeclared (first use in this function)
+  428 |     table = 0;
       |     ^~~~~

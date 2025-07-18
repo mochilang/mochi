@@ -25,7 +25,7 @@ cc: exit status 1
 /tmp/24-game.c:142:23: warning: implicit declaration of function ‘_float’ [-Wimplicit-function-declaration]
   142 |       tmp10.data[0] = _float(_int(ch) - _int("0"));
       |                       ^~~~~~
-/usr/bin/ld: /tmp/ccIidzL4.o: in function `mochi_main':
+/usr/bin/ld: /tmp/ccVYaIBa.o: in function `mochi_main':
 24-game.c:(.text+0x819): undefined reference to `_int'
 /usr/bin/ld: 24-game.c:(.text+0x82f): undefined reference to `_int'
 /usr/bin/ld: 24-game.c:(.text+0x8fb): undefined reference to `_int'

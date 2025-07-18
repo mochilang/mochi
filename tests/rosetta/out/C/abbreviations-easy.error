@@ -14,14 +14,14 @@ cc: exit status 1
 /tmp/abbreviations-easy.c:201:17: error: incompatible types when initializing type ‘int’ using type ‘list_string’
   201 |   int results = validate(commands, words, mins);
       |                 ^~~~~~~~
-/tmp/abbreviations-easy.c:205:50: error: request for member ‘data’ in something not a structure or union
-  205 |     out1 = out1 + padRight(words.data[k], results.data[k].len) + " ";
-      |                                                  ^
-/tmp/abbreviations-easy.c:209:41: error: incompatible type for argument 1 of ‘join’
-  209 |   printf("%s\n", "full words:  " + join(results, " "));
-      |                                         ^~~~~~~
-      |                                         |
-      |                                         int
+/tmp/abbreviations-easy.c:206:60: error: request for member ‘data’ in something not a structure or union
+  206 |         concat_string(out1, padRight(words.data[k], results.data[k].len));
+      |                                                            ^
+/tmp/abbreviations-easy.c:212:53: error: incompatible type for argument 1 of ‘join’
+  212 |   char *tmp21 = concat_string("full words:  ", join(results, " "));
+      |                                                     ^~~~~~~
+      |                                                     |
+      |                                                     int
 /tmp/abbreviations-easy.c:109:24: note: expected ‘list_string’ but argument is of type ‘int’
   109 | char *join(list_string xs, char *sep) {
       |            ~~~~~~~~~~~~^~

@@ -62,55 +62,19 @@ cc: exit status 1
 /tmp/bioinformatics-global-alignment.c:253:29: error: request for member ‘data’ in something not a structure or union
   253 |     list_string perm = perms.data[idx];
       |                             ^
-/tmp/bioinformatics-global-alignment.c:258:17: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  258 |       sup = sup + slice_string(perm.data[i + 1], ov, strlen(perm.data[i + 1]));
-      |                 ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      |                   |
-      |                   char *
-/tmp/bioinformatics-global-alignment.c: In function ‘printCounts’:
-/tmp/bioinformatics-global-alignment.c:299:35: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  299 |   printf("%s\n", padLeft("A", 10) + padLeft(tmp20, 12));
-      |                  ~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~
-      |                  |                  |
-      |                  char *             char *
-/tmp/bioinformatics-global-alignment.c:301:35: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  301 |   printf("%s\n", padLeft("C", 10) + padLeft(tmp21, 12));
-      |                  ~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~
-      |                  |                  |
-      |                  char *             char *
-/tmp/bioinformatics-global-alignment.c:303:35: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  303 |   printf("%s\n", padLeft("G", 10) + padLeft(tmp22, 12));
-      |                  ~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~
-      |                  |                  |
-      |                  char *             char *
-/tmp/bioinformatics-global-alignment.c:305:35: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  305 |   printf("%s\n", padLeft("T", 10) + padLeft(tmp23, 12));
-      |                  ~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~
-      |                  |                  |
-      |                  char *             char *
-/tmp/bioinformatics-global-alignment.c:307:39: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  307 |   printf("%s\n", padLeft("Other", 10) + padLeft(tmp24, 12));
-      |                  ~~~~~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~
-      |                  |                      |
-      |                  char *                 char *
-/tmp/bioinformatics-global-alignment.c:310:46: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  310 |   printf("%s\n", padLeft("Total length", 14) + padLeft(tmp25, 8));
-      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~
-      |                  |                             |
-      |                  char *                        char *
 /tmp/bioinformatics-global-alignment.c: In function ‘mochi_main’:
-/tmp/bioinformatics-global-alignment.c:355:28: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  355 |   list_int tests_data[] = {tmp26, tmp27, tmp28, tmp29};
+/tmp/bioinformatics-global-alignment.c:363:28: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  363 |   list_int tests_data[] = {tmp33, tmp34, tmp35, tmp36};
       |                            ^~~~~
-/tmp/bioinformatics-global-alignment.c:355:35: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
-  355 |   list_int tests_data[] = {tmp26, tmp27, tmp28, tmp29};
+/tmp/bioinformatics-global-alignment.c:363:35: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
+  363 |   list_int tests_data[] = {tmp33, tmp34, tmp35, tmp36};
       |                                   ^~~~~
-/tmp/bioinformatics-global-alignment.c:355:42: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  355 |   list_int tests_data[] = {tmp26, tmp27, tmp28, tmp29};
+/tmp/bioinformatics-global-alignment.c:363:42: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  363 |   list_int tests_data[] = {tmp33, tmp34, tmp35, tmp36};
       |                                          ^~~~~
-/tmp/bioinformatics-global-alignment.c:355:49: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
-  355 |   list_int tests_data[] = {tmp26, tmp27, tmp28, tmp29};
+/tmp/bioinformatics-global-alignment.c:363:49: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
+  363 |   list_int tests_data[] = {tmp33, tmp34, tmp35, tmp36};
       |                                                 ^~~~~
-/tmp/bioinformatics-global-alignment.c:358:24: error: invalid initializer
-  358 |     list_string seqs = tests.data[tmp30];
+/tmp/bioinformatics-global-alignment.c:366:24: error: invalid initializer
+  366 |     list_string seqs = tests.data[tmp37];
       |                        ^~~~~

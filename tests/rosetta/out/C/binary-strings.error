@@ -1,29 +1,18 @@
 cc: exit status 1
-/tmp/binary-strings.c: In function ‘fromBytes’:
-/tmp/binary-strings.c:82:11: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-   82 |     s = s + _char(bs.data[i]);
-      |           ^ ~~~~~~~~~~~~~~~~~
-      |             |
-      |             char *
 /tmp/binary-strings.c: In function ‘_mochi_main’:
-/tmp/binary-strings.c:103:21: error: incompatible type for argument 1 of ‘_str’
-  103 |   char *tmp2 = _str(tmp1);
+/tmp/binary-strings.c:113:21: error: incompatible type for argument 1 of ‘_str’
+  113 |   char *tmp3 = _str(tmp2);
       |                     ^~~~
       |                     |
       |                     list_int
-/tmp/binary-strings.c:29:23: note: expected ‘int’ but argument is of type ‘list_int’
-   29 | static char *_str(int v) {
+/tmp/binary-strings.c:38:23: note: expected ‘int’ but argument is of type ‘list_int’
+   38 | static char *_str(int v) {
       |                   ~~~~^
-/tmp/binary-strings.c:119:21: error: incompatible type for argument 1 of ‘_str’
-  119 |   char *tmp4 = _str(tmp3);
+/tmp/binary-strings.c:129:21: error: incompatible type for argument 1 of ‘_str’
+  129 |   char *tmp5 = _str(tmp4);
       |                     ^~~~
       |                     |
       |                     list_int
-/tmp/binary-strings.c:29:23: note: expected ‘int’ but argument is of type ‘list_int’
-   29 | static char *_str(int v) {
+/tmp/binary-strings.c:38:23: note: expected ‘int’ but argument is of type ‘list_int’
+   38 | static char *_str(int v) {
       |                   ~~~~^
-/tmp/binary-strings.c:188:31: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  188 |   printf("%s\n", fromBytes(d) + " -> " + fromBytes(f));
-      |                  ~~~~~~~~~~~~ ^
-      |                  |            |
-      |                  char *       char *
