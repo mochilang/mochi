@@ -226,6 +226,21 @@ func (c *Compiler) isMapPostfix(p *parser.PostfixExpr) bool {
 	return ok
 }
 
+func (c *Compiler) isListExpr(e *parser.Expr) bool {
+	_, ok := c.inferExprType(e).(types.ListType)
+	return ok
+}
+
+func (c *Compiler) isListUnary(u *parser.Unary) bool {
+	_, ok := c.inferUnaryType(u).(types.ListType)
+	return ok
+}
+
+func (c *Compiler) isListPostfix(p *parser.PostfixExpr) bool {
+	_, ok := c.inferPostfixType(p).(types.ListType)
+	return ok
+}
+
 func (c *Compiler) isNumberExpr(e *parser.Expr) bool {
 	t := c.inferExprType(e)
 	return isNumber(t)

@@ -50,6 +50,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	strs := []bool{c.isStringUnary(b.Left)}
 	maps := []bool{c.isMapUnary(b.Left)}
 	nums := []bool{c.isNumberUnary(b.Left)}
+	lists := []bool{c.isListUnary(b.Left)}
 	typesList := []types.Type{c.inferUnaryType(b.Left)}
 	for _, part := range b.Right {
 		right, err := c.compilePostfix(part.Right)
@@ -65,6 +66,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		strs = append(strs, c.isStringPostfix(part.Right))
 		maps = append(maps, c.isMapPostfix(part.Right))
 		nums = append(nums, c.isNumberPostfix(part.Right))
+		lists = append(lists, c.isListPostfix(part.Right))
 		typesList = append(typesList, c.inferPostfixType(part.Right))
 	}
 
@@ -86,6 +88,11 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				case "in":
 					if maps[i+1] {
 						expr = fmt.Sprintf("(%s[%s] ~= nil)", r, l)
+					} else if strs[i+1] {
+						expr = fmt.Sprintf("(string.find(%s, %s, 1, true) or 0)", r, l)
+						resNum = true
+					} else if lists[i+1] {
+						expr = fmt.Sprintf("(function(_l,_v) for _,x in ipairs(_l) do if x == _v then return true end end return false end)(%s,%s)", r, l)
 					} else {
 						c.helpers["contains"] = true
 						expr = fmt.Sprintf("__contains(%s, %s)", r, l)
@@ -278,13 +285,27 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				args[i] = v
 			}
 			if strings.HasSuffix(expr, ".contains") && len(args) == 1 {
-				c.helpers["contains"] = true
 				base := strings.TrimSuffix(expr, ".contains")
-				expr = fmt.Sprintf("__contains(%s, %s)", base, args[0])
+				t := c.inferPrimaryType(p.Target)
+				switch {
+				case isMap(t):
+					expr = fmt.Sprintf("(%s[%s] ~= nil)", base, args[0])
+				case isString(t):
+					expr = fmt.Sprintf("(string.find(%s, %s, 1, true) or 0)", base, args[0])
+				case isList(t):
+					expr = fmt.Sprintf("(function(_l,_v) for _,x in ipairs(_l) do if x == _v then return true end end return false end)(%s,%s)", base, args[0])
+				default:
+					c.helpers["contains"] = true
+					expr = fmt.Sprintf("__contains(%s, %s)", base, args[0])
+				}
 			} else if strings.HasSuffix(expr, ".starts_with") && len(args) == 1 {
-				c.helpers["starts_with"] = true
 				base := strings.TrimSuffix(expr, ".starts_with")
-				expr = fmt.Sprintf("__starts_with(%s, %s)", base, args[0])
+				if isString(c.inferPrimaryType(p.Target)) {
+					expr = fmt.Sprintf("(string.sub(%s,1,#%s)==%s)", base, args[0], args[0])
+				} else {
+					c.helpers["starts_with"] = true
+					expr = fmt.Sprintf("__starts_with(%s, %s)", base, args[0])
+				}
 			} else {
 				expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
 			}
@@ -499,16 +520,29 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		c.helpers["count"] = true
 		return fmt.Sprintf("__count(%s)", argStr), nil
 	case "contains":
-		c.helpers["contains"] = true
 		if len(args) != 2 {
 			return "", fmt.Errorf("contains expects 2 args")
 		}
-		return fmt.Sprintf("__contains(%s, %s)", args[0], args[1]), nil
+		t := c.inferExprType(call.Args[0])
+		switch {
+		case isMap(t):
+			return fmt.Sprintf("(%s[%s] ~= nil)", args[0], args[1]), nil
+		case isString(t):
+			return fmt.Sprintf("(string.find(%s, %s, 1, true) or 0)", args[0], args[1]), nil
+		case isList(t):
+			return fmt.Sprintf("(function(_l,_v) for _,x in ipairs(_l) do if x == _v then return true end end return false end)(%s,%s)", args[0], args[1]), nil
+		default:
+			c.helpers["contains"] = true
+			return fmt.Sprintf("__contains(%s, %s)", args[0], args[1]), nil
+		}
 	case "starts_with":
-		c.helpers["starts_with"] = true
 		if len(args) != 2 {
 			return "", fmt.Errorf("starts_with expects 2 args")
 		}
+		if c.isStringExpr(call.Args[0]) && c.isStringExpr(call.Args[1]) {
+			return fmt.Sprintf("(string.sub(%s,1,#%s)==%s)", args[0], args[1], args[1]), nil
+		}
+		c.helpers["starts_with"] = true
 		return fmt.Sprintf("__starts_with(%s, %s)", args[0], args[1]), nil
 	case "exists":
 		if len(args) == 1 {

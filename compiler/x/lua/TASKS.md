@@ -91,6 +91,10 @@
 - Slice and substring operations now compile directly for strings and lists when types are known, avoiding the `__slice` helper.
 - Regenerated Lua sources and outputs for affected programs.
 
+## Progress (2025-07-19 13:00)
+- `in`, `contains` and `starts_with` operations now emit direct Lua code for strings, lists and maps when types are known.
+- Updated compiler helpers to include list detection utilities.
+
 ## Progress (2025-07-17 17:57)
 - Improved `__str` to quote string fields and prefix tables with `__name` when present.
 - `__print` now outputs plain strings without quoting when called with a single argument.
