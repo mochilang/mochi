@@ -1,4 +1,31 @@
 # 📦 CHANGELOG.md
+## [0.10.28] – 2025-07-18T08:39:31+07:00
+
+### Added
+
+* TPC-H dataset golden outputs regenerated across languages
+* Machine outputs for Zig, F#, Java and others
+* Deterministic `values` builtin for Go
+* `string_prefix_slice` support in Zig
+* JSON builtin for OCaml
+* Precomputed aggregates for constant lists in the C backend
+
+### Changed
+
+* Struct inference improved across C#, Kotlin, Scala and Rust
+* Go and Scala optimize joins and indexing
+* Lua, Pascal and Erlang refine printing and quoting
+* C backend handles map literal pair grouping
+* Inlined list operations across Prolog and Elixir
+* Scheme infers numeric assignments
+
+### Fixed
+
+* Fortran folds membership and length for constants
+* String list inference corrected in the C backend
+* Outer join handling fixed in Go
+* Machine README checklists updated
+
 ## [0.10.27] – 2025-07-16T22:58:30+07:00
 
 ### Added
