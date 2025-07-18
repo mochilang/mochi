@@ -3,13 +3,12 @@
 This directory stores Lua code generated from the Mochi programs in `tests/vm/valid`.
 Each program was compiled and executed using the Lua compiler. Successful runs produce a `.out` file, while failures have a `.error` file.
 
-Compiled programs: 101/101
+Compiled programs: 92/101
 
 Checklist:
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
-- [x] bigint_ops
 - [x] binary_precedence
 - [x] bool_chain
 - [x] break_continue
@@ -31,14 +30,14 @@ Checklist:
 - [x] fun_three_args
 - [x] go_auto
 - [x] group_by
-- [x] group_by_conditional_sum
+- [ ] group_by_conditional_sum
 - [x] group_by_having
 - [x] group_by_join
 - [x] group_by_left_join
-- [x] group_by_multi_join
-- [x] group_by_multi_join_sort
-- [x] group_by_sort
-- [x] group_items_iteration
+- [ ] group_by_multi_join
+- [ ] group_by_multi_join_sort
+- [ ] group_by_sort
+- [ ] group_items_iteration
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
@@ -56,7 +55,7 @@ Checklist:
 - [x] list_assign
 - [x] list_index
 - [x] list_nested_assign
-- [x] list_set_ops
+- [ ] list_set_ops
 - [x] load_yaml
 - [x] map_assign
 - [x] map_in_operator
@@ -71,7 +70,7 @@ Checklist:
 - [x] membership
 - [x] min_max_builtin
 - [x] nested_function
-- [x] order_by_map
+- [ ] order_by_map
 - [x] outer_join
 - [x] partial_application
 - [x] print_hello
@@ -84,8 +83,8 @@ Checklist:
 - [x] right_join
 - [x] save_jsonl_stdout
 - [x] short_circuit
-- [x] slice
-- [x] sort_stable
+- [ ] slice
+- [ ] sort_stable
 - [x] str_builtin
 - [x] string_compare
 - [x] string_concat

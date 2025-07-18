@@ -104,3 +104,7 @@
 ## Progress (2025-07-19 13:45)
 - Removed `__eq` and `__print` helpers by emitting direct Lua code for equality and printing.
 - Updated set operation helpers to use native comparisons.
+
+## Progress (2025-07-19 14:10)
+- Regenerated VM valid Lua sources without `__eq` and `__print` helpers.
+- 92 of 101 programs execute successfully; remaining programs now have `.error` files.

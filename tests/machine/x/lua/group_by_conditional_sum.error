@@ -1,0 +1,5 @@
+exit status 1
+lua: ...e/mochi/tests/machine/x/lua/group_by_conditional_sum.lua:248: attempt to call a table value
+stack traceback:
+	...e/mochi/tests/machine/x/lua/group_by_conditional_sum.lua:248: in main chunk
+	[C]: in ?
