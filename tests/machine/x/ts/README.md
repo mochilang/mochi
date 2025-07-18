@@ -105,3 +105,9 @@ Recent updates further shrink the runtime by inlining native operations whenever
 - [x] var_assignment
 - [x] while_loop
 
+
+## Rosetta Code subset
+The first three Rosetta tasks compile and run successfully using the TypeScript backend.
+- [x] 100-doors-2
+- [x] 100-doors-3
+- [x] 100-doors
