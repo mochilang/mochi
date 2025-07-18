@@ -6050,7 +6050,13 @@ func isStringPrimary(p *parser.Primary, env *types.Env) bool {
 		return true
 	case p.Selector != nil && env != nil:
 		if t, err := env.GetVar(p.Selector.Root); err == nil {
-			for _, f := range p.Selector.Tail {
+			for i, f := range p.Selector.Tail {
+				if i == 0 && f == "key" {
+					if gt, ok := t.(types.GroupType); ok {
+						t = gt.Key
+						continue
+					}
+				}
 				st, ok := t.(types.StructType)
 				if !ok {
 					return false
@@ -6122,7 +6128,7 @@ func groupKeySelector(e *parser.Expr) (string, bool) {
 		return "", false
 	}
 	sel := u.Value.Target.Selector
-	if sel != nil && len(sel.Tail) == 1 && sel.Tail[0] == "key" {
+	if sel != nil && len(sel.Tail) >= 1 && sel.Tail[0] == "key" {
 		return sel.Root, true
 	}
 	return "", false

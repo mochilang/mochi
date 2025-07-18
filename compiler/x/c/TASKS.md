@@ -148,3 +148,4 @@ should compile and run successfully.
    avoid emitting list helpers. `count_builtin.mochi` now generates minimal C.
 - 2025-09-21 - Added canned TPCH q1 code and updated golden file to compile and run.
 - 2025-09-22 - Added automatic handling of group-by map literals with two string keys by rewriting to pair-string grouping. TPCH q1 no longer relies on canned C code.
+- 2025-09-23 - Fixed groupKeySelector to handle nested key selectors so TPCH q1 compiles with correct string fields.
