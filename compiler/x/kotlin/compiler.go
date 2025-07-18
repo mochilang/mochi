@@ -223,6 +223,8 @@ type Compiler struct {
 	queryTypes map[*parser.QueryExpr]types.Type
 
 	srcName string
+
+	aliases map[string]string
 }
 
 // New creates a new Kotlin compiler.
@@ -236,6 +238,7 @@ func New(env *types.Env, srcName string) *Compiler {
 		mapNodes:    make(map[*parser.MapLiteral]string),
 		queryTypes:  make(map[*parser.QueryExpr]types.Type),
 		srcName:     srcName,
+		aliases:     make(map[string]string),
 	}
 }
 
@@ -396,7 +399,7 @@ func (c *Compiler) stmt(s *parser.Statement) error {
 				val = c.zeroValue(s.Let.Type)
 			}
 		}
-		c.writeln(fmt.Sprintf("val %s%s = %s", escapeIdent(s.Let.Name), typ, val))
+		c.writeln(fmt.Sprintf("val %s%s = %s", c.id(s.Let.Name), typ, val))
 		var t types.Type
 		if s.Let.Type != nil {
 			t = types.ResolveTypeRef(s.Let.Type, c.env)
@@ -439,7 +442,7 @@ func (c *Compiler) stmt(s *parser.Statement) error {
 				val = c.zeroValue(s.Var.Type)
 			}
 		}
-		c.writeln(fmt.Sprintf("var %s%s = %s", escapeIdent(s.Var.Name), typ, val))
+		c.writeln(fmt.Sprintf("var %s%s = %s", c.id(s.Var.Name), typ, val))
 		var t types.Type
 		if s.Var.Type != nil {
 			t = types.ResolveTypeRef(s.Var.Type, c.env)
@@ -465,7 +468,7 @@ func (c *Compiler) stmt(s *parser.Statement) error {
 		if err != nil {
 			return err
 		}
-		target := escapeIdent(s.Assign.Name)
+		target := c.id(s.Assign.Name)
 		for i, idx := range s.Assign.Index {
 			idxVal, err := c.expr(idx.Start)
 			if err != nil {
@@ -571,24 +574,34 @@ func (c *Compiler) funDecl(f *parser.FunStmt) error {
 	}
 	c.writeln(fmt.Sprintf("%sfun %s(%s): %s {", prefix, f.Name, strings.Join(params, ", "), ret))
 	oldEnv := c.env
+	oldAliases := c.aliases
+	c.aliases = make(map[string]string)
 	c.env = types.NewEnv(c.env)
+	mutated := assignedVars(f.Body)
 	for _, p := range f.Params {
 		var pt types.Type = types.AnyType{}
 		if p.Type != nil {
 			pt = types.ResolveTypeRef(p.Type, oldEnv)
 		}
 		c.env.SetVar(p.Name, pt, false)
+		if _, ok := mutated[p.Name]; ok {
+			local := "_" + p.Name
+			c.aliases[p.Name] = local
+			c.writeln(fmt.Sprintf("var %s = %s", escapeIdent(local), escapeIdent(p.Name)))
+		}
 	}
 	c.indent++
 	for _, st := range f.Body {
 		if err := c.stmt(st); err != nil {
 			c.env = oldEnv
+			c.aliases = oldAliases
 			return err
 		}
 	}
 	c.indent--
 	c.writeln("}")
 	c.env = oldEnv
+	c.aliases = oldAliases
 	return nil
 }
 
@@ -660,7 +673,7 @@ func (c *Compiler) forStmt(f *parser.ForStmt) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("for (%s in %s until %s) {", escapeIdent(f.Name), start, end))
+		c.writeln(fmt.Sprintf("for (%s in %s until %s) {", c.id(f.Name), start, end))
 		elem = types.IntType{}
 	} else {
 		src, err := c.expr(f.Source)
@@ -669,12 +682,12 @@ func (c *Compiler) forStmt(f *parser.ForStmt) error {
 		}
 		t := types.TypeOfExprBasic(f.Source, c.env)
 		if types.IsMapType(t) {
-			c.writeln(fmt.Sprintf("for (%s in %s.keys) {", escapeIdent(f.Name), src))
+			c.writeln(fmt.Sprintf("for (%s in %s.keys) {", c.id(f.Name), src))
 			if mt, ok := t.(types.MapType); ok {
 				elem = mt.Key
 			}
 		} else {
-			c.writeln(fmt.Sprintf("for (%s in %s) {", escapeIdent(f.Name), src))
+			c.writeln(fmt.Sprintf("for (%s in %s) {", c.id(f.Name), src))
 			if lt, ok := t.(types.ListType); ok {
 				elem = lt.Elem
 			}
@@ -1013,13 +1026,20 @@ func (c *Compiler) binaryOp(left string, lType types.Type, op string, right stri
 			}
 		}
 		if op == "/" {
-			if _, ok := lType.(types.IntType); ok {
+			if _, lok := lType.(types.IntType); lok {
+				if _, rok := rType.(types.IntType); rok {
+					return fmt.Sprintf("%s / %s", left, right), types.IntType{}, nil
+				}
 				left = fmt.Sprintf("(%s).toDouble()", left)
 				lType = types.FloatType{}
 			}
-			if _, ok := rType.(types.IntType); ok {
-				right = fmt.Sprintf("(%s).toDouble()", right)
-				rType = types.FloatType{}
+			if _, rok := rType.(types.IntType); rok {
+				if _, lok := lType.(types.IntType); lok {
+					// handled above
+				} else {
+					right = fmt.Sprintf("(%s).toDouble()", right)
+					rType = types.FloatType{}
+				}
 			}
 		}
 		if op == "/" && (isAnyType(lType) || isAnyType(rType)) {
@@ -1199,7 +1219,7 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 	case p.Lit != nil:
 		return c.literal(p.Lit), nil
 	case p.Selector != nil:
-		name := escapeIdent(p.Selector.Root)
+		name := c.id(p.Selector.Root)
 		t, _ := c.env.GetVar(p.Selector.Root)
 		for i, part := range p.Selector.Tail {
 			if i == 0 {
@@ -2937,6 +2957,63 @@ func escapeKeywords(src string) string {
 		src = re.ReplaceAllString(src, ".`"+kw+"`")
 	}
 	return src
+}
+
+func assignedVars(stmts []*parser.Statement) map[string]struct{} {
+	set := map[string]struct{}{}
+	decl := map[string]struct{}{}
+
+	var walkIf func(*parser.IfStmt)
+	var walk func([]*parser.Statement)
+
+	walkIf = func(ifst *parser.IfStmt) {
+		if ifst == nil {
+			return
+		}
+		walk(ifst.Then)
+		walk(ifst.Else)
+		walkIf(ifst.ElseIf)
+	}
+
+	walk = func(st []*parser.Statement) {
+		for _, s := range st {
+			if s.Assign != nil {
+				set[s.Assign.Name] = struct{}{}
+			}
+			if s.Update != nil {
+				set[s.Update.Target] = struct{}{}
+			}
+			if s.Var != nil {
+				decl[s.Var.Name] = struct{}{}
+			}
+			if s.Let != nil {
+				decl[s.Let.Name] = struct{}{}
+			}
+			if s.For != nil {
+				walk(s.For.Body)
+			}
+			if s.While != nil {
+				walk(s.While.Body)
+			}
+			if s.If != nil {
+				walkIf(s.If)
+			}
+		}
+	}
+
+	walk(stmts)
+
+	for v := range decl {
+		delete(set, v)
+	}
+	return set
+}
+
+func (c *Compiler) id(name string) string {
+	if alias, ok := c.aliases[name]; ok {
+		return escapeIdent(alias)
+	}
+	return escapeIdent(name)
 }
 
 func isStructType(t types.Type) bool {
