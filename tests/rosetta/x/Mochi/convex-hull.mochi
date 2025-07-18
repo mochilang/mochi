@@ -1,0 +1,80 @@
+# Mochi implementation of Rosetta "Convex hull" task
+# Translated from Go version in tests/rosetta/x/Go/convex-hull.go
+
+type Point {
+  x: int
+  y: int
+}
+
+fun ccw(a: Point, b: Point, c: Point): bool {
+  return ((b.x - a.x) * (c.y - a.y)) > ((b.y - a.y) * (c.x - a.x))
+}
+
+fun sortPoints(ps: list<Point>): list<Point> {
+  var arr = ps
+  var n = len(arr)
+  var i = 0
+  while i < n {
+    var j = 0
+    while j < n - 1 {
+      let p = arr[j]
+      let q = arr[j+1]
+      if p.x > q.x || (p.x == q.x && p.y > q.y) {
+        arr[j] = q
+        arr[j+1] = p
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun convexHull(ps: list<Point>): list<Point> {
+  ps = sortPoints(ps)
+  var h: list<Point> = []
+  for pt in ps {
+    while len(h) >= 2 && ccw(h[len(h)-2], h[len(h)-1], pt) == false {
+      h = h[:len(h)-1]
+    }
+    h = append(h, pt)
+  }
+  var i = len(ps) - 2
+  let t = len(h) + 1
+  while i >= 0 {
+    let pt = ps[i]
+    while len(h) >= t && ccw(h[len(h)-2], h[len(h)-1], pt) == false {
+      h = h[:len(h)-1]
+    }
+    h = append(h, pt)
+    i = i - 1
+  }
+  return h[:len(h)-1]
+}
+
+fun pointStr(p: Point): string {
+  return "(" + str(p.x) + "," + str(p.y) + ")"
+}
+
+fun hullStr(h: list<Point>): string {
+  var s = "["
+  var i = 0
+  while i < len(h) {
+    s = s + pointStr(h[i])
+    if i < len(h) - 1 { s = s + " " }
+    i = i + 1
+  }
+  s = s + "]"
+  return s
+}
+
+let pts: list<Point> = [
+  Point{x:16, y:3}, Point{x:12, y:17}, Point{x:0, y:6}, Point{x: -4, y: -6},
+  Point{x:16, y:6}, Point{x:16, y: -7}, Point{x:16, y: -3}, Point{x:17, y: -4},
+  Point{x:5, y:19}, Point{x:19, y: -8}, Point{x:3, y:16}, Point{x:12, y:13},
+  Point{x:3, y: -4}, Point{x:17, y:5}, Point{x: -3, y:15}, Point{x: -3, y: -9},
+  Point{x:0, y:11}, Point{x: -9, y: -3}, Point{x: -4, y: -2}, Point{x:12, y:10},
+]
+
+let hull = convexHull(pts)
+print("Convex Hull: " + hullStr(hull))
