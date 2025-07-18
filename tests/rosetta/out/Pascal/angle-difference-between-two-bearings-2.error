@@ -3,16 +3,16 @@ Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /tmp/angle-difference-between-two-bearings-2.pas
-angle-difference-between-two-bearings-2.pas(14,14) Note: Call to subroutine "operator :=(const source:Double):Variant;" marked as inline is not inlined
-angle-difference-between-two-bearings-2.pas(15,46) Note: Call to subroutine "operator :=(const source:Variant):Double;" marked as inline is not inlined
-angle-difference-between-two-bearings-2.pas(15,46) Note: Call to subroutine "operator -(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
-angle-difference-between-two-bearings-2.pas(15,46) Note: Call to subroutine "operator +(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
-angle-difference-between-two-bearings-2.pas(15,32) Note: Call to subroutine "operator +(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
-angle-difference-between-two-bearings-2.pas(15,26) Note: Call to subroutine "operator mod(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
-angle-difference-between-two-bearings-2.pas(15,18) Note: Call to subroutine "operator :=(const source:SmallInt):Variant;" marked as inline is not inlined
-angle-difference-between-two-bearings-2.pas(15,26) Note: Call to subroutine "operator :=(const source:SmallInt):Variant;" marked as inline is not inlined
-angle-difference-between-two-bearings-2.pas(15,32) Note: Call to subroutine "operator :=(const source:Byte):Variant;" marked as inline is not inlined
-angle-difference-between-two-bearings-2.pas(15,46) Note: Call to subroutine "operator :=(const source:Byte):Variant;" marked as inline is not inlined
+angle-difference-between-two-bearings-2.pas(26,14) Note: Call to subroutine "operator :=(const source:Double):Variant;" marked as inline is not inlined
+angle-difference-between-two-bearings-2.pas(27,46) Note: Call to subroutine "operator :=(const source:Variant):Double;" marked as inline is not inlined
+angle-difference-between-two-bearings-2.pas(27,46) Note: Call to subroutine "operator -(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+angle-difference-between-two-bearings-2.pas(27,46) Note: Call to subroutine "operator +(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+angle-difference-between-two-bearings-2.pas(27,32) Note: Call to subroutine "operator +(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+angle-difference-between-two-bearings-2.pas(27,26) Note: Call to subroutine "operator mod(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+angle-difference-between-two-bearings-2.pas(27,18) Note: Call to subroutine "operator :=(const source:SmallInt):Variant;" marked as inline is not inlined
+angle-difference-between-two-bearings-2.pas(27,26) Note: Call to subroutine "operator :=(const source:SmallInt):Variant;" marked as inline is not inlined
+angle-difference-between-two-bearings-2.pas(27,32) Note: Call to subroutine "operator :=(const source:Byte):Variant;" marked as inline is not inlined
+angle-difference-between-two-bearings-2.pas(27,46) Note: Call to subroutine "operator :=(const source:Byte):Variant;" marked as inline is not inlined
 angle-difference-between-two-bearings-2.pas(35,55) Error: Incompatible type for arg no. 1: Got "Double", expected "TArray$1$crcFD0234A9"
 angle-difference-between-two-bearings-2.pas(35,93) Error: Incompatible type for arg no. 1: Got "Double", expected "TArray$1$crcFD0234A9"
 angle-difference-between-two-bearings-2.pas(33,7) Error: Incompatible types: got "TArray$1$crcFD0234A9" expected "Double"

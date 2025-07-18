@@ -3,8 +3,9 @@ Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /tmp/almost-prime.pas
-almost-prime.pas(54,52) Error: Incompatible type for arg no. 1: Got "TArray$1$crc9F312717", expected "QWord"
-almost-prime.pas(63,19) Warning: function result variable of a managed type does not seem to be initialized
-almost-prime.pas(72) Fatal: There were 1 errors compiling module, stopping
+almost-prime.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
+almost-prime.pas(53,13) Error: Incompatible types: got "TArray$1$crcE41905E8" expected "TArray$1$crc9F312717"
+almost-prime.pas(64,52) Error: Incompatible type for arg no. 1: Got "TArray$1$crc9F312717", expected "QWord"
+almost-prime.pas(72) Fatal: There were 2 errors compiling module, stopping
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode

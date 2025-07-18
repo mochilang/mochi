@@ -3,7 +3,24 @@ Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /tmp/aliquot-sequence-classifications.pas
-aliquot-sequence-classifications.pas(17,20) Error: Identifier not found "_indexList"
-aliquot-sequence-classifications.pas(17,42) Fatal: Syntax error, ")" expected but "," found
+aliquot-sequence-classifications.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
+aliquot-sequence-classifications.pas(84,8) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+aliquot-sequence-classifications.pas(85,10) Note: Call to subroutine "operator +(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+aliquot-sequence-classifications.pas(85,10) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+aliquot-sequence-classifications.pas(86,9) Note: Call to subroutine "operator <(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+aliquot-sequence-classifications.pas(89,12) Note: Call to subroutine "operator +(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+aliquot-sequence-classifications.pas(89,12) Note: Call to subroutine "operator div(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+aliquot-sequence-classifications.pas(89,22) Note: Call to subroutine "operator div(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+aliquot-sequence-classifications.pas(89,16) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+aliquot-sequence-classifications.pas(89,22) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+aliquot-sequence-classifications.pas(91,13) Note: Call to subroutine "operator :=(const source:Variant):LongInt;" marked as inline is not inlined
+aliquot-sequence-classifications.pas(103,10) Error: Incompatible types: got "ShortInt" expected "<procedure variable type of function(Variant):Double is nested;Register>"
+aliquot-sequence-classifications.pas(111,13) Error: Incompatible types: got "<procedure variable type of function(Variant):Double is nested;Register>" expected "LongInt"
+aliquot-sequence-classifications.pas(115,67) Error: Identifier not found "any"
+aliquot-sequence-classifications.pas(115,70) Error: Type identifier expected
+aliquot-sequence-classifications.pas(150,25) Error: Incompatible type for arg no. 1: Got "TArray$1$crcE41905E8", expected "TArray$1$crc9F312717"
+aliquot-sequence-classifications.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
+aliquot-sequence-classifications.pas(200,57) Error: Incompatible type for arg no. 1: Got "TArray$1$crc9F312717", expected "TArray$1$crcE41905E8"
+aliquot-sequence-classifications.pas(219,11) Fatal: String exceeds line
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode

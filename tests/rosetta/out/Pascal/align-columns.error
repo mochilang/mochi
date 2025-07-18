@@ -3,8 +3,14 @@ Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /tmp/align-columns.pas
-align-columns.pas(21,69) Error: Identifier not found "_sliceString"
-align-columns.pas(23,27) Error: Identifier not found "_appendList"
-align-columns.pas(23,53) Fatal: Syntax error, ")" expected but "," found
+align-columns.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
+align-columns.pas(63,21) Warning: function result variable of a managed type does not seem to be initialized
+align-columns.pas(99,13) Error: Incompatible types: got "TArray$1$crcE41905E8" expected "TArray$1$crc862A1656"
+align-columns.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
+align-columns.pas(108,59) Error: Incompatible type for arg no. 1: Got "TArray$1$crc862A1656", expected "TArray$1$crc9F312717"
+align-columns.pas(112,49) Error: Incompatible type for arg no. 1: Got "TArray$1$crc862A1656", expected "TArray$1$crc9F312717"
+align-columns.pas(147,65) Error: Identifier not found "any"
+align-columns.pas(147,68) Error: Type identifier expected
+align-columns.pas(158,31) Fatal: String exceeds line
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode

@@ -1,8 +1,1 @@
-parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/15-puzzle-game.mochi:108:18: unexpected token "!" (expected PostfixExpr)
-  --> /workspace/mochi/tests/rosetta/x/Mochi/15-puzzle-game.mochi:108:18
-
-108 |   while !quit && !isSolved() {
-    |                  ^
-
-help:
-  Parse error occurred. Check syntax near this location.
+compile: nil expr

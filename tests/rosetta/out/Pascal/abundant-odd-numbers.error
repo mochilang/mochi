@@ -1,8 +1,21 @@
-type: error[T007]: argument 3: expected int, got bigint
-  --> /workspace/mochi/tests/rosetta/x/Mochi/abundant-odd-numbers.mochi:41:10
-
- 41 |   return substring(s, 0, len(s) - 3)
-    |          ^
-
-help:
-  Ensure the argument type matches the function’s signature.
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/abundant-odd-numbers.pas
+abundant-odd-numbers.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
+abundant-odd-numbers.pas(77,13) Error: Incompatible types: got "TArray$1$crcE41905E8" expected "TArray$1$crc9F312717"
+abundant-odd-numbers.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
+abundant-odd-numbers.pas(142,12) Error: Incompatible types: got "LongInt" expected "<procedure variable type of function(Variant):LongInt is nested;Register>"
+abundant-odd-numbers.pas(144,16) Error: Operator is not overloaded: "<procedure variable type of function(Variant):LongInt is nested;Register>" < "LongInt"
+abundant-odd-numbers.pas(146,13) Error: Incompatible types: got "TArray$1$crc9F312717" expected "TArray$1$crcE41905E8"
+abundant-odd-numbers.pas(150,22) Error: Operator is not overloaded: "<procedure variable type of function(Variant):LongInt is nested;Register>" + "ShortInt"
+abundant-odd-numbers.pas(151,31) Error: Operator is not overloaded: "<procedure variable type of function(Variant):LongInt is nested;Register>" < "LongInt"
+abundant-odd-numbers.pas(156,23) Error: Incompatible type for arg no. 1: Got "TArray$1$crcE41905E8", expected "TArray$1$crc9F312717"
+abundant-odd-numbers.pas(159,27) Error: Incompatible type for arg no. 1: Got "<procedure variable type of function(Variant):LongInt is nested;Register>", expected "LongInt"
+abundant-odd-numbers.pas(176,10) Error: Incompatible types: got "ShortInt" expected "<procedure variable type of function(Variant):Variant is nested;Register>"
+abundant-odd-numbers.pas(177,38) Error: Incompatible type for arg no. 1: Got "<procedure variable type of function(Variant):Variant is nested;Register>", expected "QWord"
+abundant-odd-numbers.pas(178,29) Error: Incompatible type for arg no. 3: Got "<procedure variable type of function(Variant):Variant is nested;Register>", expected "LongInt"
+abundant-odd-numbers.pas(179,11) Fatal: String exceeds line
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

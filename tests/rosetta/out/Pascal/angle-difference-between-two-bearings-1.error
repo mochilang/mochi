@@ -3,12 +3,12 @@ Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /tmp/angle-difference-between-two-bearings-1.pas
-angle-difference-between-two-bearings-1.pas(14,11) Note: Call to subroutine "operator :=(const source:Double):Variant;" marked as inline is not inlined
-angle-difference-between-two-bearings-1.pas(15,6) Note: Call to subroutine "operator <(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
-angle-difference-between-two-bearings-1.pas(15,9) Note: Call to subroutine "operator :=(const source:SmallInt):Variant;" marked as inline is not inlined
-angle-difference-between-two-bearings-1.pas(16,6) Note: Call to subroutine "operator >(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
-angle-difference-between-two-bearings-1.pas(16,9) Note: Call to subroutine "operator :=(const source:Byte):Variant;" marked as inline is not inlined
-angle-difference-between-two-bearings-1.pas(17,13) Note: Call to subroutine "operator :=(const source:Variant):Double;" marked as inline is not inlined
+angle-difference-between-two-bearings-1.pas(26,11) Note: Call to subroutine "operator :=(const source:Double):Variant;" marked as inline is not inlined
+angle-difference-between-two-bearings-1.pas(27,6) Note: Call to subroutine "operator <(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+angle-difference-between-two-bearings-1.pas(27,9) Note: Call to subroutine "operator :=(const source:SmallInt):Variant;" marked as inline is not inlined
+angle-difference-between-two-bearings-1.pas(28,6) Note: Call to subroutine "operator >(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+angle-difference-between-two-bearings-1.pas(28,9) Note: Call to subroutine "operator :=(const source:Byte):Variant;" marked as inline is not inlined
+angle-difference-between-two-bearings-1.pas(29,13) Note: Call to subroutine "operator :=(const source:Variant):Double;" marked as inline is not inlined
 angle-difference-between-two-bearings-1.pas(37,55) Error: Incompatible type for arg no. 1: Got "Double", expected "TArray$1$crcFD0234A9"
 angle-difference-between-two-bearings-1.pas(37,93) Error: Incompatible type for arg no. 1: Got "Double", expected "TArray$1$crcFD0234A9"
 angle-difference-between-two-bearings-1.pas(35,7) Error: Incompatible types: got "TArray$1$crcFD0234A9" expected "Double"

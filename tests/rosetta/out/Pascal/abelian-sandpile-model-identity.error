@@ -3,7 +3,10 @@ Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /tmp/abelian-sandpile-model-identity.pas
-abelian-sandpile-model-identity.pas(25,23) Error: Identifier not found "_appendList"
-abelian-sandpile-model-identity.pas(25,47) Fatal: Syntax error, ")" expected but "," found
+abelian-sandpile-model-identity.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
+abelian-sandpile-model-identity.pas(57,13) Error: Incompatible types: got "TArray$1$crcE41905E8" expected "TArray$1$crc9F312717"
+abelian-sandpile-model-identity.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
+abelian-sandpile-model-identity.pas(88,16) Error: Cannot find an enumerator for the type "Variant"
+abelian-sandpile-model-identity.pas(117,14) Fatal: String exceeds line
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode

@@ -3,44 +3,53 @@ Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /tmp/24-game-solve.pas
-24-game-solve.pas(10,57) Error: Identifier not found "any"
-24-game-solve.pas(10,60) Error: Type identifier expected
-24-game-solve.pas(16,28) Error: Identifier not found "OP_NUM"
-24-game-solve.pas(20,36) Error: Incompatible type for arg no. 2: Got "TFPGMap<System.ShortString,System.Variant>", expected "Variant"
-24-game-solve.pas(25,49) Error: Identifier not found "any"
-24-game-solve.pas(25,52) Error: Type identifier expected
-24-game-solve.pas(34,9) Error: Illegal qualifier
-24-game-solve.pas(34,25) Error: Identifier not found "OP_NUM"
-24-game-solve.pas(35,19) Error: Illegal qualifier
-24-game-solve.pas(36,19) Error: Illegal qualifier
-24-game-solve.pas(37,9) Error: Illegal qualifier
-24-game-solve.pas(37,25) Error: Identifier not found "OP_ADD"
-24-game-solve.pas(38,9) Error: Illegal qualifier
-24-game-solve.pas(38,25) Error: Identifier not found "OP_SUB"
-24-game-solve.pas(39,9) Error: Illegal qualifier
-24-game-solve.pas(39,25) Error: Identifier not found "OP_MUL"
-24-game-solve.pas(41,31) Error: Incompatible types: got "Constant String" expected "LongInt"
-24-game-solve.pas(41,42) Error: Incompatible types: got "Constant String" expected "LongInt"
-24-game-solve.pas(42,33) Error: Incompatible types: got "Constant String" expected "LongInt"
-24-game-solve.pas(42,46) Error: Incompatible types: got "Constant String" expected "LongInt"
-24-game-solve.pas(43,13) Error: Incompatible types: got "TFPGMap<System.ShortString,System.Variant>" expected "TFPGMap<System.ShortString,System.LongInt>"
-24-game-solve.pas(47,51) Error: Identifier not found "any"
-24-game-solve.pas(47,54) Error: Type identifier expected
-24-game-solve.pas(53,9) Error: Illegal qualifier
-24-game-solve.pas(53,25) Error: Identifier not found "OP_NUM"
-24-game-solve.pas(54,22) Error: Illegal qualifier
-24-game-solve.pas(55,22) Error: Illegal qualifier
-24-game-solve.pas(57,9) Error: Illegal qualifier
-24-game-solve.pas(57,25) Error: Identifier not found "OP_ADD"
-24-game-solve.pas(60,18) Error: Illegal qualifier
-24-game-solve.pas(60,34) Error: Identifier not found "OP_SUB"
-24-game-solve.pas(63,18) Error: Illegal qualifier
-24-game-solve.pas(63,34) Error: Identifier not found "OP_MUL"
-24-game-solve.pas(74,65) Error: Identifier not found "any"
-24-game-solve.pas(74,68) Error: Type identifier expected
-24-game-solve.pas(74,69) Error: Type identifier expected
-24-game-solve.pas(88,7) Error: Type mismatch
-24-game-solve.pas(90,30) Error: Identifier not found "_indexList"
-24-game-solve.pas(90,52) Fatal: Syntax error, ")" expected but "," found
+24-game-solve.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
+24-game-solve.pas(43,57) Error: Identifier not found "any"
+24-game-solve.pas(43,60) Error: Type identifier expected
+24-game-solve.pas(53,36) Error: Incompatible type for arg no. 2: Got "TFPGMap<System.ShortString,System.Variant>", expected "Variant"
+24-game-solve.pas(58,49) Error: Identifier not found "any"
+24-game-solve.pas(58,52) Error: Type identifier expected
+24-game-solve.pas(67,9) Error: Illegal qualifier
+24-game-solve.pas(68,19) Error: Illegal qualifier
+24-game-solve.pas(69,19) Error: Illegal qualifier
+24-game-solve.pas(70,9) Error: Illegal qualifier
+24-game-solve.pas(71,9) Error: Illegal qualifier
+24-game-solve.pas(72,9) Error: Illegal qualifier
+24-game-solve.pas(74,31) Error: Incompatible types: got "Constant String" expected "LongInt"
+24-game-solve.pas(74,42) Error: Incompatible types: got "Constant String" expected "LongInt"
+24-game-solve.pas(75,33) Error: Incompatible types: got "Constant String" expected "LongInt"
+24-game-solve.pas(75,46) Error: Incompatible types: got "Constant String" expected "LongInt"
+24-game-solve.pas(76,13) Error: Incompatible types: got "TFPGMap<System.ShortString,System.Variant>" expected "TFPGMap<System.ShortString,System.LongInt>"
+24-game-solve.pas(80,51) Error: Identifier not found "any"
+24-game-solve.pas(80,54) Error: Type identifier expected
+24-game-solve.pas(86,9) Error: Illegal qualifier
+24-game-solve.pas(87,22) Error: Illegal qualifier
+24-game-solve.pas(88,22) Error: Illegal qualifier
+24-game-solve.pas(90,9) Error: Illegal qualifier
+24-game-solve.pas(93,18) Error: Illegal qualifier
+24-game-solve.pas(96,18) Error: Illegal qualifier
+24-game-solve.pas(107,65) Error: Identifier not found "any"
+24-game-solve.pas(107,68) Error: Type identifier expected
+24-game-solve.pas(107,69) Error: Type identifier expected
+24-game-solve.pas(122,7) Error: Type mismatch
+24-game-solve.pas(124,52) Error: Incompatible type for arg no. 1: Got "<erroneous type>", expected "TArray$1$crc9F312717"
+24-game-solve.pas(125,12) Error: Incompatible types: got "Constant String" expected "LongInt"
+24-game-solve.pas(125,34) Error: Incompatible types: got "Constant String" expected "LongInt"
+24-game-solve.pas(125,45) Error: Incompatible types: got "Constant String" expected "LongInt"
+24-game-solve.pas(127,59) Error: Incompatible type for arg no. 1: Got "<erroneous type>", expected "TArray$1$crc9F312717"
+24-game-solve.pas(135,14) Error: Type mismatch
+24-game-solve.pas(138,16) Error: Type mismatch
+24-game-solve.pas(142,18) Error: Type mismatch
+24-game-solve.pas(147,45) Error: Incompatible type for arg no. 1: Got "<erroneous type>", expected "TArray$1$crc9F312717"
+24-game-solve.pas(148,45) Error: Incompatible type for arg no. 1: Got "<erroneous type>", expected "TArray$1$crc9F312717"
+24-game-solve.pas(155,17) Error: Incompatible types: got "TFPGMap<System.ShortString,System.Variant>" expected "TFPGMap<System.Variant,System.Variant>"
+24-game-solve.pas(156,60) Error: Incompatible type for arg no. 2: Got "TFPGMap<System.Variant,System.Variant>", expected "Variant"
+24-game-solve.pas(162,15) Error: Incompatible types: got "TFPGMap<System.ShortString,System.Variant>" expected "TFPGMap<System.Variant,System.Variant>"
+24-game-solve.pas(163,58) Error: Incompatible type for arg no. 2: Got "TFPGMap<System.Variant,System.Variant>", expected "Variant"
+24-game-solve.pas(168,15) Error: Incompatible types: got "TFPGMap<System.ShortString,System.Variant>" expected "TFPGMap<System.Variant,System.Variant>"
+24-game-solve.pas(169,58) Error: Incompatible type for arg no. 2: Got "TFPGMap<System.Variant,System.Variant>", expected "Variant"
+24-game-solve.pas(193,64) Error: Incompatible type for arg no. 2: Got "<erroneous type>", expected "Variant"
+24-game-solve.pas(198,23) Error: Incompatible type for arg no. 1: Got "TArray$1$crcE41905E8", expected "<erroneous type>"
+24-game-solve.pas(214) Fatal: There were 46 errors compiling module, stopping
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode

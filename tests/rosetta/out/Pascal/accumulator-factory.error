@@ -4,11 +4,11 @@ Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /tmp/accumulator-factory.pas
 accumulator-factory.pas(10,28) Error: Identifier not found "any"
-accumulator-factory.pas(13,30) Error: Identifier not found "any"
-accumulator-factory.pas(17,12) Error: Illegal type conversion: "{Array Of Const/Constant Open} Array of <erroneous type>" to "TArray$1$crc9F312717"
-accumulator-factory.pas(18,13) Error: Identifier not found "add"
-accumulator-factory.pas(26,21) Error: Incompatible type for arg no. 1: Got "ShortInt", expected "<erroneous type>"
-accumulator-factory.pas(27,4) Error: Illegal expression
-accumulator-factory.pas(27,4) Fatal: Syntax error, ";" expected but "(" found
+accumulator-factory.pas(21,30) Error: Identifier not found "any"
+accumulator-factory.pas(25,12) Error: Illegal type conversion: "{Array Of Const/Constant Open} Array of <erroneous type>" to "TArray$1$crcE41905E8"
+accumulator-factory.pas(26,13) Error: Identifier not found "add"
+accumulator-factory.pas(34,21) Error: Incompatible type for arg no. 1: Got "ShortInt", expected "<erroneous type>"
+accumulator-factory.pas(35,4) Error: Illegal expression
+accumulator-factory.pas(35,4) Fatal: Syntax error, ";" expected but "(" found
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode

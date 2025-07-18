@@ -3,10 +3,18 @@ Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /tmp/apply-a-callback-to-an-array-2.pas
-apply-a-callback-to-an-array-2.pas(15,7) Error: Identifier not found "x"
-apply-a-callback-to-an-array-2.pas(17,7) Error: Identifier not found "x"
-apply-a-callback-to-an-array-2.pas(26,7) Error: Identifier not found "x"
-apply-a-callback-to-an-array-2.pas(28,21) Error: Identifier not found "_appendList"
-apply-a-callback-to-an-array-2.pas(28,43) Fatal: Syntax error, ")" expected but "," found
+apply-a-callback-to-an-array-2.pas(16,19) Warning: function result variable of a managed type does not seem to be initialized
+apply-a-callback-to-an-array-2.pas(27,7) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+apply-a-callback-to-an-array-2.pas(29,8) Note: Call to subroutine "operator :=(const source:Variant):LongInt;" marked as inline is not inlined
+apply-a-callback-to-an-array-2.pas(43,13) Error: Incompatible types: got "TArray$1$crcE41905E8" expected "TArray$1$crc9F312717"
+apply-a-callback-to-an-array-2.pas(16,19) Warning: function result variable of a managed type does not seem to be initialized
+apply-a-callback-to-an-array-2.pas(50,35) Error: Identifier not found "any"
+apply-a-callback-to-an-array-2.pas(64,11) Error: Wrong number of parameters specified for call to "_lambda0"
+apply-a-callback-to-an-array-2.pas(50,10) Error: Found declaration: _lambda0(LongInt):<erroneous type> is nested;
+apply-a-callback-to-an-array-2.pas(56,10) Error: Found declaration: _lambda0(LongInt):LongInt is nested;
+apply-a-callback-to-an-array-2.pas(65,27) Error: Wrong number of parameters specified for call to "_lambda0"
+apply-a-callback-to-an-array-2.pas(50,10) Error: Found declaration: _lambda0(LongInt):<erroneous type> is nested;
+apply-a-callback-to-an-array-2.pas(56,10) Error: Found declaration: _lambda0(LongInt):LongInt is nested;
+apply-a-callback-to-an-array-2.pas(71) Fatal: There were 8 errors compiling module, stopping
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode

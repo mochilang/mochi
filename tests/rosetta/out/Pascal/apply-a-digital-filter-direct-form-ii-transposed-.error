@@ -3,7 +3,11 @@ Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /tmp/apply-a-digital-filter-direct-form-ii-transposed-.pas
-apply-a-digital-filter-direct-form-ii-transposed-.pas(19,29) Error: Identifier not found "_indexList"
-apply-a-digital-filter-direct-form-ii-transposed-.pas(19,49) Fatal: Syntax error, ")" expected but "," found
+apply-a-digital-filter-direct-form-ii-transposed-.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
+apply-a-digital-filter-direct-form-ii-transposed-.pas(44,14) Error: Operator is not overloaded: "ShortInt" div "Double"
+apply-a-digital-filter-direct-form-ii-transposed-.pas(52,94) Error: Incompatible type for arg no. 1: Got "TArray$1$crcFD0234A9", expected "TArray$1$crc9F312717"
+apply-a-digital-filter-direct-form-ii-transposed-.pas(64,13) Error: Incompatible types: got "TArray$1$crcE41905E8" expected "TArray$1$crcFD0234A9"
+apply-a-digital-filter-direct-form-ii-transposed-.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
+apply-a-digital-filter-direct-form-ii-transposed-.pas(80) Fatal: There were 3 errors compiling module, stopping
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode

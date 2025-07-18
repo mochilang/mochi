@@ -6,20 +6,12 @@ Compiling /tmp/angles-geometric-normalization-and-conversion.pas
 angles-geometric-normalization-and-conversion.pas(12,15) Error: Operator is not overloaded: "Double" mod "SmallInt"
 angles-geometric-normalization-and-conversion.pas(18,15) Error: Operator is not overloaded: "Double" mod "SmallInt"
 angles-geometric-normalization-and-conversion.pas(24,15) Error: Operator is not overloaded: "Double" mod "SmallInt"
-angles-geometric-normalization-and-conversion.pas(30,15) Error: Operator is not overloaded: "Double" mod "ShortInt"
 angles-geometric-normalization-and-conversion.pas(36,26) Error: Operator is not overloaded: "Double" div "SmallInt"
 angles-geometric-normalization-and-conversion.pas(42,27) Error: Operator is not overloaded: "Double" div "SmallInt"
 angles-geometric-normalization-and-conversion.pas(54,26) Error: Operator is not overloaded: "Double" div "SmallInt"
 angles-geometric-normalization-and-conversion.pas(60,27) Error: Operator is not overloaded: "Double" div "SmallInt"
 angles-geometric-normalization-and-conversion.pas(72,26) Error: Operator is not overloaded: "Double" div "SmallInt"
 angles-geometric-normalization-and-conversion.pas(78,26) Error: Operator is not overloaded: "Double" div "SmallInt"
-angles-geometric-normalization-and-conversion.pas(110,107) Error: Incompatible types: got "TArray$1$crcFD0234A9" expected "TArray$1$crcE41905E8"
-angles-geometric-normalization-and-conversion.pas(112,7) Error: Identifier not found "a"
-angles-geometric-normalization-and-conversion.pas(114,22) Error: Identifier not found "a"
-angles-geometric-normalization-and-conversion.pas(114,48) Error: Identifier not found "a"
-angles-geometric-normalization-and-conversion.pas(114,75) Error: Identifier not found "a"
-angles-geometric-normalization-and-conversion.pas(114,102) Error: Identifier not found "a"
-angles-geometric-normalization-and-conversion.pas(114,129) Error: Identifier not found "a"
-angles-geometric-normalization-and-conversion.pas(116,11) Fatal: String exceeds line
+angles-geometric-normalization-and-conversion.pas(117,11) Fatal: String exceeds line
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode

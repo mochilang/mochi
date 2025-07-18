@@ -3,7 +3,8 @@ Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /tmp/append-a-record-to-the-end-of-a-text-file.pas
-append-a-record-to-the-end-of-a-text-file.pas(18,24) Error: Identifier not found "_appendList"
-append-a-record-to-the-end-of-a-text-file.pas(18,50) Fatal: Syntax error, ")" expected but "," found
+append-a-record-to-the-end-of-a-text-file.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
+append-a-record-to-the-end-of-a-text-file.pas(28,50) Error: Incompatible type for arg no. 1: Got "TArray$1$crc862A1656", expected "TArray$1$crcE41905E8"
+append-a-record-to-the-end-of-a-text-file.pas(50) Fatal: There were 1 errors compiling module, stopping
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode

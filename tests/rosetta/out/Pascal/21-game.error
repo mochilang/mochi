@@ -2,8 +2,8 @@ fpc: exit status 1
 Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
-Compiling /tmp/abbreviations-easy.pas
-abbreviations-easy.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
-abbreviations-easy.pas(66,30) Fatal: String exceeds line
+Compiling /tmp/21-game.pas
+21-game.pas(56,13) Error: Incompatible types: got "TFPGMap<System.ShortString,System.LongInt>" expected "TFPGMap<System.Variant,System.Variant>"
+21-game.pas(80,11) Fatal: String exceeds line
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode
