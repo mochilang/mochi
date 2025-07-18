@@ -1226,22 +1226,17 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				}
 				switch fn {
 				case "sum":
-					c.use("_sum")
-					return fmt.Sprintf("_sum(%s)", expr), nil
+					return fmt.Sprintf("(%s).sum(0.0)", expr), nil
 				case "count":
 					return fmt.Sprintf("(%s).length", expr), nil
 				case "avg":
-					c.use("_avg")
-					return fmt.Sprintf("_avg(%s)", expr), nil
+					return fmt.Sprintf("(%[1]s).sum(0.0) / (%[1]s).length", expr), nil
 				case "min":
-					c.use("_min")
-					return fmt.Sprintf("_min(%s)", expr), nil
+					return fmt.Sprintf("((%s).min || 0)", expr), nil
 				case "max":
-					c.use("_max")
-					return fmt.Sprintf("_max(%s)", expr), nil
+					return fmt.Sprintf("((%s).max || 0)", expr), nil
 				case "first":
-					c.use("_first")
-					return fmt.Sprintf("_first(%s)", expr), nil
+					return fmt.Sprintf("(%s).first", expr), nil
 				}
 			}
 		}
