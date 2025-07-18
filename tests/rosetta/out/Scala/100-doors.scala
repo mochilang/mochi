@@ -8,7 +8,7 @@ object _100_doors {
     for(pass <- 1 until 101) {
       var idx = pass - 1
       while (idx < 100) {
-        doors(idx) = !(doors).apply(idx)
+        doors(idx) = !(doors).apply(idx).asInstanceOf[Boolean]
         idx += pass
       }
     }
@@ -16,7 +16,7 @@ object _100_doors {
       var line = ""
       for(col <- 0 until 10) {
         val idx = row * 10 + col
-        if ((doors).apply(idx)) {
+        if ((doors).apply(idx).asInstanceOf[Boolean]) {
           line += "1"
         } else {
           line += "0"

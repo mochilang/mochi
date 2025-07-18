@@ -1436,15 +1436,19 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					s = fmt.Sprintf("%s.charAt(%s)", s, idxExpr)
 					typ = types.StringType{}
 				} else {
-					s = fmt.Sprintf("(%s).apply(%s)", s, idxExpr)
+					var elem types.Type = types.AnyType{}
 					switch tt := typ.(type) {
 					case types.ListType:
-						typ = tt.Elem
+						elem = tt.Elem
 					case types.MapType:
-						typ = tt.Value
-					default:
-						typ = types.AnyType{}
+						elem = tt.Value
 					}
+					if _, ok := elem.(types.AnyType); ok {
+						s = fmt.Sprintf("(%s).apply(%s)", s, idxExpr)
+					} else {
+						s = fmt.Sprintf("(%s).apply(%s).asInstanceOf[%s]", s, idxExpr, c.typeOf(elem))
+					}
+					typ = elem
 				}
 			}
 		case op.Field != nil:
