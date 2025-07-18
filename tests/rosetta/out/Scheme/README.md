@@ -1,4 +1,4 @@
-# Rosetta Scheme Output (3/216 compiled and run)
+# Rosetta Scheme Output (4/216 compiled and run)
 
 This directory holds Scheme source code generated from the Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -6,6 +6,7 @@ This directory holds Scheme source code generated from the Mochi programs in `te
 - [x] 100-doors-2
 - [x] 100-doors-3
 - [x] 100-doors
+- [x] 99-bottles-of-beer
 - [ ] 100-prisoners
 - [ ] 15-puzzle-game
 - [ ] 15-puzzle-solver
@@ -16,7 +17,6 @@ This directory holds Scheme source code generated from the Mochi programs in `te
 - [ ] 4-rings-or-4-squares-puzzle
 - [ ] 9-billion-names-of-god-the-integer
 - [ ] 99-bottles-of-beer-2
-- [ ] 99-bottles-of-beer
 - [ ] a+b
 - [ ] abbreviations-automatic
 - [ ] abbreviations-easy

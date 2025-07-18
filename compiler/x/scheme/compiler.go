@@ -1338,7 +1338,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	switch {
 	case p.Lit != nil:
 		if p.Lit.Int != nil {
-			return strconv.Itoa(*p.Lit.Int), nil
+			return strconv.Itoa(int(*p.Lit.Int)), nil
 		}
 		if p.Lit.Float != nil {
 			s := strconv.FormatFloat(*p.Lit.Float, 'f', -1, 64)

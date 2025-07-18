@@ -3264,7 +3264,7 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 	if p.Lit != nil {
 		switch {
 		case p.Lit.Int != nil:
-			v := Value{Tag: ValueInt, Int: *p.Lit.Int}
+			v := Value{Tag: ValueInt, Int: int(*p.Lit.Int)}
 			return fc.constReg(p.Pos, v)
 		case p.Lit.Float != nil:
 			v := Value{Tag: ValueFloat, Float: *p.Lit.Float}
@@ -6468,7 +6468,7 @@ func constPostfix(p *parser.PostfixExpr) (Value, bool) {
 func constPrimary(p *parser.Primary) (Value, bool) {
 	if p.Lit != nil {
 		if p.Lit.Int != nil {
-			return Value{Tag: ValueInt, Int: *p.Lit.Int}, true
+			return Value{Tag: ValueInt, Int: int(*p.Lit.Int)}, true
 		}
 		if p.Lit.Float != nil {
 			return Value{Tag: ValueFloat, Float: *p.Lit.Float}, true
@@ -6495,7 +6495,7 @@ func constPrimary(p *parser.Primary) (Value, bool) {
 func literalToValue(l *parser.Literal) (Value, bool) {
 	switch {
 	case l.Int != nil:
-		return Value{Tag: ValueInt, Int: *l.Int}, true
+		return Value{Tag: ValueInt, Int: int(*l.Int)}, true
 	case l.Float != nil:
 		return Value{Tag: ValueFloat, Float: *l.Float}, true
 	case l.Str != nil:
