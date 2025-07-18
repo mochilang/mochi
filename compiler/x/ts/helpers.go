@@ -272,6 +272,8 @@ func tsType(t types.Type) string {
 	switch tt := t.(type) {
 	case types.IntType, types.Int64Type, types.FloatType:
 		return "number"
+	case types.BigIntType:
+		return "bigint"
 	case types.StringType:
 		return "string"
 	case types.BoolType:

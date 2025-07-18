@@ -1550,6 +1550,9 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 		if op == "/" {
 			return fmt.Sprintf("(%s / %s)", left, right), types.FloatType{}, nil
 		}
+		if _, ok := leftType.(types.BigIntType); ok {
+			return fmt.Sprintf("(%s %s %s)", left, op, right), types.BigIntType{}, nil
+		}
 		return fmt.Sprintf("(%s %s %s)", left, op, right), leftType, nil
 	case "==", "!=":
 		if isList(leftType) || isList(rightType) || isMap(leftType) || isMap(rightType) || isStruct(leftType) || isStruct(rightType) {
@@ -2130,6 +2133,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return fmt.Sprintf("Math.ceil(%s)", args[0]), nil
 		}
 		return "", fmt.Errorf("ceil expects 1 arg")
+	case "int":
+		if len(args) == 1 {
+			return fmt.Sprintf("Math.trunc(Number(%s))", args[0]), nil
+		}
+		return "", fmt.Errorf("int expects 1 arg")
 	case "concat":
 		if len(args) == 0 {
 			return "[]", nil
