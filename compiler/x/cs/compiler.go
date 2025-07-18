@@ -1630,15 +1630,21 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 		}
 	}
-	if st, ok := resultT.(types.StructType); ok && st.Name == "" && q.Group == nil {
-		base := c.structHint
-		if base == "" {
-			base = "Item"
+	if st, ok := resultT.(types.StructType); ok && q.Group == nil {
+		if st.Name == "" {
+			base := c.structHint
+			if base == "" {
+				base = "Item"
+			}
+			if name, ok2 := c.findStructByFields(st); ok2 {
+				st.Name = name
+			} else {
+				st.Name = c.newStructName(base)
+				c.extraStructs = append(c.extraStructs, st)
+			}
 		}
-		st.Name = c.newStructName(base)
 		resultType = st.Name
 		resultT = st
-		c.extraStructs = append(c.extraStructs, st)
 	} else if lt, ok := resultT.(types.ListType); ok && q.Group == nil {
 		if st, ok2 := lt.Elem.(types.StructType); ok2 && st.Name == "" {
 			base := c.structHint
