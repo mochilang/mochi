@@ -384,11 +384,19 @@ func (c *Compiler) compileMainStmt(s *parser.Statement) error {
 			} else {
 				var val string
 				if s.Let.Value != nil {
-					v, err := c.compileExpr(s.Let.Value)
-					if err != nil {
-						return err
+					if s.Let.Type != nil {
+						v, err := c.compileExprHint(s.Let.Value, c.resolveTypeRef(s.Let.Type))
+						if err != nil {
+							return err
+						}
+						val = v
+					} else {
+						v, err := c.compileExpr(s.Let.Value)
+						if err != nil {
+							return err
+						}
+						val = v
 					}
-					val = v
 				} else {
 					val = "()"
 				}
@@ -404,11 +412,19 @@ func (c *Compiler) compileMainStmt(s *parser.Statement) error {
 		} else {
 			val := "()"
 			if s.Var.Value != nil {
-				v, err := c.compileExpr(s.Var.Value)
-				if err != nil {
-					return err
+				if s.Var.Type != nil {
+					v, err := c.compileExprHint(s.Var.Value, c.resolveTypeRef(s.Var.Type))
+					if err != nil {
+						return err
+					}
+					val = v
+				} else {
+					v, err := c.compileExpr(s.Var.Value)
+					if err != nil {
+						return err
+					}
+					val = v
 				}
-				val = v
 			}
 			c.writeln(fmt.Sprintf("let %s = %s", sanitizeName(s.Var.Name), val))
 		}
@@ -663,7 +679,13 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	}
 
 	if len(fun.Body) == 1 && fun.Body[0].Return != nil {
-		val, err := c.compileExpr(fun.Body[0].Return.Value)
+		var val string
+		var err error
+		if fun.Return != nil {
+			val, err = c.compileExprHint(fun.Body[0].Return.Value, c.resolveTypeRef(fun.Return))
+		} else {
+			val, err = c.compileExpr(fun.Body[0].Return.Value)
+		}
 		if err != nil {
 			return err
 		}
@@ -762,15 +784,21 @@ func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
 }
 
 func (c *Compiler) compileAssignValue(a *parser.AssignStmt) (string, error) {
-	val, err := c.compileExpr(a.Value)
-	if err != nil {
-		return "", err
-	}
+	var val string
+	var err error
 	var typ types.Type
 	if c.env != nil {
-		if t, err := c.env.GetVar(a.Name); err == nil {
+		if t, err2 := c.env.GetVar(a.Name); err2 == nil {
 			typ = t
 		}
+	}
+	if typ != nil {
+		val, err = c.compileExprHint(a.Value, typ)
+	} else {
+		val, err = c.compileExpr(a.Value)
+	}
+	if err != nil {
+		return "", err
 	}
 	return c.assignPath(sanitizeName(a.Name), typ, a.Index, a.Field, val)
 }
@@ -990,11 +1018,19 @@ func (c *Compiler) compileStmtExpr(stmts []*parser.Statement, top bool) (string,
 		case s.Var != nil:
 			val := "()"
 			if s.Var.Value != nil {
-				v, err := c.compileExpr(s.Var.Value)
-				if err != nil {
-					return "", err
+				if s.Var.Type != nil {
+					v, err := c.compileExprHint(s.Var.Value, c.resolveTypeRef(s.Var.Type))
+					if err != nil {
+						return "", err
+					}
+					val = v
+				} else {
+					v, err := c.compileExpr(s.Var.Value)
+					if err != nil {
+						return "", err
+					}
+					val = v
 				}
-				val = v
 			}
 			expr = fmt.Sprintf("(let %s = %s in %s)", sanitizeName(s.Var.Name), val, expr)
 		case s.Break != nil:
@@ -1006,11 +1042,19 @@ func (c *Compiler) compileStmtExpr(stmts []*parser.Statement, top bool) (string,
 		case s.Let != nil:
 			val := "()"
 			if s.Let.Value != nil {
-				v, err := c.compileExpr(s.Let.Value)
-				if err != nil {
-					return "", err
+				if s.Let.Type != nil {
+					v, err := c.compileExprHint(s.Let.Value, c.resolveTypeRef(s.Let.Type))
+					if err != nil {
+						return "", err
+					}
+					val = v
+				} else {
+					v, err := c.compileExpr(s.Let.Value)
+					if err != nil {
+						return "", err
+					}
+					val = v
 				}
-				val = v
 			}
 			expr = fmt.Sprintf("(let %s = %s in %s)", sanitizeName(s.Let.Name), val, expr)
 		case s.Fun != nil:
@@ -1111,6 +1155,75 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 		return "", nil
 	}
 	return c.compileBinary(e.Binary)
+}
+
+// compileExprHint compiles an expression using a type hint when dealing with
+// literals that would otherwise default to `any`. The hint is applied
+// recursively for nested list and map literals.
+func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, error) {
+	switch ht := hint.(type) {
+	case types.ListType:
+		if e != nil && e.Binary != nil && len(e.Binary.Right) == 0 {
+			if ll := e.Binary.Left.Value.Target.List; ll != nil {
+				elems := make([]string, len(ll.Elems))
+				for i, el := range ll.Elems {
+					ev, err := c.compileExprHint(el, ht.Elem)
+					if err != nil {
+						return "", err
+					}
+					elems[i] = ev
+				}
+				return "[" + strings.Join(elems, ", ") + "]", nil
+			}
+		}
+	case types.MapType:
+		if e != nil && e.Binary != nil && len(e.Binary.Right) == 0 {
+			if ml := e.Binary.Left.Value.Target.Map; ml != nil {
+				items := make([]string, len(ml.Items))
+				for i, it := range ml.Items {
+					k, err := c.compileExprHint(it.Key, ht.Key)
+					if err != nil {
+						return "", err
+					}
+					if s, ok := simpleStringKey(it.Key); ok {
+						k = fmt.Sprintf("%q", s)
+					}
+					v, err := c.compileExprHint(it.Value, ht.Value)
+					if err != nil {
+						return "", err
+					}
+					items[i] = fmt.Sprintf("(%s, %s)", k, v)
+				}
+				c.usesMap = true
+				return fmt.Sprintf("Map.fromList [%s]", strings.Join(items, ", ")), nil
+			}
+		}
+	case types.StructType:
+		if e != nil && e.Binary != nil && len(e.Binary.Right) == 0 {
+			if ml := e.Binary.Left.Value.Target.Map; ml != nil && len(ml.Items) == len(ht.Fields) {
+				parts := make([]string, len(ml.Items))
+				for i, it := range ml.Items {
+					name, ok := identName(it.Key)
+					if !ok {
+						if s, ok2 := simpleStringKey(it.Key); ok2 {
+							name = s
+						} else {
+							return c.compileExpr(e)
+						}
+					}
+					ft, ok := ht.Fields[name]
+					val, err := c.compileExprHint(it.Value, ft)
+					if err != nil {
+						return "", err
+					}
+					parts[i] = fmt.Sprintf("%s = %s", sanitizeName(name), val)
+				}
+				c.compileStructType(ht)
+				return fmt.Sprintf("%s { %s }", sanitizeName(ht.Name), strings.Join(parts, ", ")), nil
+			}
+		}
+	}
+	return c.compileExpr(e)
 }
 
 // compileBoolExpr compiles an expression expected to yield a Bool. If the
@@ -1825,7 +1938,13 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		c.env = child
 	}
 	if fn.ExprBody != nil {
-		body, err := c.compileExpr(fn.ExprBody)
+		var body string
+		var err error
+		if fn.Return != nil {
+			body, err = c.compileExprHint(fn.ExprBody, c.resolveTypeRef(fn.Return))
+		} else {
+			body, err = c.compileExpr(fn.ExprBody)
+		}
 		if err != nil {
 			c.env = origEnv
 			return "", err

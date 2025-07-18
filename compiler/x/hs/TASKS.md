@@ -1,4 +1,7 @@
 # Haskell Backend Progress
+## Recent Updates (2025-08-30 05:00)
+- Added `compileExprHint` and `inferExprTypeHint` so typed list and map literals adopt declared types. Variable assignments and returns now use these hints, reducing `AnyValue` casts.
+
 ## Recent Updates (2025-08-20 05:00)
 - Split `_group_by` helper into a separate runtime chunk. Simple loops no longer
   import unused functions and `Data.Maybe` when grouping isn't used. The
