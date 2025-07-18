@@ -27,13 +27,13 @@ int sum_tree(tree_t t) {
   tree_t tmp1 = t;
   int tmp2;
   switch (tmp1.tag) {
-  case Tree_Leaf:
+  case tree_t_leaf_t:
     tmp2 = 0;
     break;
-  case Tree_Node:
-    tree_t left = *tmp1.value.Node.left;
-    int value = tmp1.value.Node.value;
-    tree_t right = *tmp1.value.Node.right;
+  case tree_t_node_t:
+    tree_t left = *tmp1.value.node_t.left;
+    int value = tmp1.value.node_t.value;
+    tree_t right = *tmp1.value.node_t.right;
     tmp2 = sum_tree(left) + value + sum_tree(right);
     break;
   default:

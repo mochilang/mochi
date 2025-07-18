@@ -62,11 +62,11 @@ int _mochi_main() {
   tmp1.data[0] = 1;
   tmp1.data[1] = 2;
   tmp1.data[2] = 3;
-  pairs_item_list_t tmp2 = create_pairs_item_list(3 * letters.len);
+  pairs_item_list_t tmp2 = create_pairs_item_list(3 * 2);
   int tmp3 = 0;
   for (int n_idx = 0; n_idx < 3; n_idx++) {
     int n = tmp1.data[n_idx];
-    for (int l_idx = 0; l_idx < letters.len; l_idx++) {
+    for (int l_idx = 0; l_idx < 2; l_idx++) {
       char *l = letters.data[l_idx];
       if (!(n % 2 == 0)) {
         continue;

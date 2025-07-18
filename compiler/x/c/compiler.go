@@ -85,6 +85,7 @@ type Compiler struct {
 	listLens         map[string]int
 	listVals         map[string][]int
 	listValsFloat    map[string][]float64
+	listValsString   map[string][]string
 	stackArrays      map[string]bool
 	arrayLens        map[string]string
 	assignVar        string
@@ -124,6 +125,7 @@ func New(env *types.Env) *Compiler {
 		listLens:         map[string]int{},
 		listVals:         map[string][]int{},
 		listValsFloat:    map[string][]float64{},
+		listValsString:   map[string][]string{},
 		stackArrays:      map[string]bool{},
 		arrayLens:        map[string]string{},
 		baseDir:          "",
@@ -1066,8 +1068,9 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if call, ok := callPattern(s.Assign.Value); ok && call.Func == "append" && len(call.Args) == 2 {
 			delete(c.listLens, lhs)
 			delete(c.listVals, lhs)
+			delete(c.listValsString, lhs)
 			delete(c.listValsFloat, lhs)
-			delete(c.listValsFloat, lhs)
+			delete(c.listValsString, lhs)
 		}
 		if len(s.Assign.Index) == 1 {
 			if c.env != nil {
@@ -1374,6 +1377,40 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 				c.listVals[name] = vals
 				return nil
 			}
+		} else if fvals, ok := c.evalListFloatExpr(stmt.Value); ok && (isListFloatType(t) || t == nil || types.ContainsAny(t)) {
+			if t == nil || types.ContainsAny(t) {
+				t = types.ListType{Elem: types.FloatType{}}
+				if c.env != nil {
+					c.env.SetVar(stmt.Name, t, false)
+				}
+			}
+			c.need(needListFloat)
+			c.writeln(fmt.Sprintf("list_float %s = list_float_create(%d);", name, len(fvals)))
+			for i, v := range fvals {
+				s := strconv.FormatFloat(v, 'f', -1, 64)
+				if !strings.ContainsAny(s, ".eE") {
+					s += ".0"
+				}
+				c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, s))
+			}
+			c.listLens[name] = len(fvals)
+			c.listValsFloat[name] = fvals
+			return nil
+		} else if svals, ok := c.evalListStringExpr(stmt.Value); ok && (isListStringType(t) || t == nil || types.ContainsAny(t)) {
+			if t == nil || types.ContainsAny(t) {
+				t = types.ListType{Elem: types.StringType{}}
+				if c.env != nil {
+					c.env.SetVar(stmt.Name, t, false)
+				}
+			}
+			c.need(needListString)
+			c.writeln(fmt.Sprintf("list_string %s = list_string_create(%d);", name, len(svals)))
+			for i, v := range svals {
+				c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
+			}
+			c.listLens[name] = len(svals)
+			c.listValsString[name] = svals
+			return nil
 		}
 		if f := asFetchExpr(stmt.Value); f != nil {
 			if st, ok := t.(types.StructType); ok {
@@ -1678,6 +1715,21 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 			}
 			c.listLens[name] = len(vals)
 			c.listValsFloat[name] = vals
+			return nil
+		} else if vals, ok := c.evalListStringExpr(stmt.Value); ok && (isListStringType(t) || t == nil || types.ContainsAny(t)) {
+			if t == nil || types.ContainsAny(t) {
+				t = types.ListType{Elem: types.StringType{}}
+				if c.env != nil {
+					c.env.SetVar(stmt.Name, t, true)
+				}
+			}
+			c.need(needListString)
+			c.writeln(fmt.Sprintf("list_string %s = list_string_create(%d);", name, len(vals)))
+			for i, v := range vals {
+				c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
+			}
+			c.listLens[name] = len(vals)
+			c.listValsString[name] = vals
 			return nil
 		}
 		if f := asFetchExpr(stmt.Value); f != nil {
@@ -4260,6 +4312,36 @@ func (c *Compiler) aggregateExpr(name, list string, elem types.Type) string {
 			return strconv.Itoa(len(vals))
 		}
 	}
+	if svals, ok := c.listValsString[list]; ok {
+		switch name {
+		case "count", "len":
+			return strconv.Itoa(len(svals))
+		case "min":
+			if len(svals) == 0 {
+				return "\"\""
+			}
+			m := strings.Trim(svals[0], "\"")
+			for _, v := range svals[1:] {
+				sv := strings.Trim(v, "\"")
+				if sv < m {
+					m = sv
+				}
+			}
+			return fmt.Sprintf("\"%s\"", m)
+		case "max":
+			if len(svals) == 0 {
+				return "\"\""
+			}
+			m := strings.Trim(svals[0], "\"")
+			for _, v := range svals[1:] {
+				sv := strings.Trim(v, "\"")
+				if sv > m {
+					m = sv
+				}
+			}
+			return fmt.Sprintf("\"%s\"", m)
+		}
+	}
 	switch name {
 	case "count", "len":
 		return fmt.Sprintf("%s.len", list)
@@ -4323,6 +4405,9 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 	}
 	if fvals, ok := c.evalListFloatExpr(&parser.Expr{Binary: b}); ok && len(b.Right) == 0 {
 		return c.emitConstListFloat(fvals)
+	}
+	if svals, ok := c.evalListStringExpr(&parser.Expr{Binary: b}); ok && len(b.Right) == 0 {
+		return c.emitConstListString(svals)
 	}
 	left := c.compileUnary(b.Left)
 	leftType := c.unaryType(b.Left)
@@ -7568,6 +7653,28 @@ func (c *Compiler) evalListFloatExpr(e *parser.Expr) ([]float64, bool) {
 	return vals, true
 }
 
+func (c *Compiler) evalListStringExpr(e *parser.Expr) ([]string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	if e.Binary.Left == nil || e.Binary.Left.Value == nil || e.Binary.Left.Value.Target == nil {
+		return nil, false
+	}
+	ll := e.Binary.Left.Value.Target.List
+	if ll == nil {
+		return nil, false
+	}
+	vals := make([]string, len(ll.Elems))
+	for i, el := range ll.Elems {
+		typ, val, ok := constLiteralTypeVal(el)
+		if !ok || typ != "char*" {
+			return nil, false
+		}
+		vals[i] = val
+	}
+	return vals, true
+}
+
 func (c *Compiler) evalAppendInt(listExpr, valExpr *parser.Expr) ([]int, bool) {
 	lst, ok := c.evalListIntExpr(listExpr)
 	if !ok {
@@ -7610,6 +7717,18 @@ func (c *Compiler) emitConstListFloat(vals []float64) string {
 	}
 	c.listLens[name] = len(vals)
 	c.listValsFloat[name] = vals
+	return name
+}
+
+func (c *Compiler) emitConstListString(vals []string) string {
+	name := c.newTemp()
+	c.need(needListString)
+	c.writeln(fmt.Sprintf("list_string %s = list_string_create(%d);", name, len(vals)))
+	for i, v := range vals {
+		c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
+	}
+	c.listLens[name] = len(vals)
+	c.listValsString[name] = vals
 	return name
 }
 

@@ -153,3 +153,4 @@ should compile and run successfully.
   added constant evaluation of float list aggregates. `group_items_iteration.mochi`
   now compiles.
 - 2025-09-25 - Evaluated count on constant float lists and fixed union tag naming; tree_sum.mochi now compiles.
+- 2025-09-26 - Added constant evaluation for string list literals so len/count/min/max avoid runtime helpers.
