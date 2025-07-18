@@ -1,6 +1,0 @@
-exit status 1
-# command-line-arguments
-../../../tests/machine/x/go/group_by_multi_join_sort.go:154:42: any does not satisfy constraints.Integer | constraints.Float
-../../../tests/machine/x/go/group_by_multi_join_sort.go:158:46: x.L undefined (type Customer has no field or method L)
-../../../tests/machine/x/go/group_by_multi_join_sort.go:194:18: any does not satisfy constraints.Integer | constraints.Float
-../../../tests/machine/x/go/group_by_multi_join_sort.go:198:47: x.L undefined (type Customer has no field or method L)

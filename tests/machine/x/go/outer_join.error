@@ -1,6 +1,6 @@
 exit status 1
 # command-line-arguments
-../../../tests/machine/x/go/outer_join.go:118:21: cannot convert o (variable of type *Order) to type Order
-../../../tests/machine/x/go/outer_join.go:119:24: cannot convert c (variable of type *Customer) to type Customer
-../../../tests/machine/x/go/outer_join.go:130:11: cannot convert row.Order (variable of struct type Order) to type bool
-../../../tests/machine/x/go/outer_join.go:131:12: cannot convert row.Customer (variable of struct type Customer) to type bool
+../../../tests/machine/x/go/outer_join.go:75:16: cannot use c.ID (variable of type int) as *Order value in map index
+../../../tests/machine/x/go/outer_join.go:80:28: cannot use o.CustomerID (variable of type int) as *Order value in map index
+../../../tests/machine/x/go/outer_join.go:81:10: cannot use o.CustomerID (variable of type int) as *Order value in map index
+../../../tests/machine/x/go/outer_join.go:87:13: cannot use c.ID (variable of type int) as *Order value in map index
