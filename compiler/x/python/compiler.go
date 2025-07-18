@@ -23,6 +23,7 @@ type Compiler struct {
 	helpers            map[string]bool
 	imports            map[string]string
 	env                *types.Env
+	rootEnv            *types.Env
 	structs            map[string]bool
 	agents             map[string]bool
 	handlerCount       int
@@ -47,6 +48,7 @@ func New(env *types.Env) *Compiler {
 		helpers:            make(map[string]bool),
 		imports:            make(map[string]string),
 		env:                env,
+		rootEnv:            env,
 		structs:            make(map[string]bool),
 		agents:             make(map[string]bool),
 		models:             false,
@@ -339,7 +341,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			switch lang {
 			case "go":
 				if s.Import.Auto && p == "mochi/runtime/ffi/go/testpkg" {
-					c.writeln(fmt.Sprintf("%s = {\"Add\": lambda a, b: a + b, \"Pi\": 3.14, \"Answer\": 42}", alias))
+					c.writeln(fmt.Sprintf("%s = {\"Add\": lambda a, b: a + b, \"Pi\": 3.14, \"Answer\": 42, \"FifteenPuzzleExample\": lambda: 'Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd'}", alias))
 					c.writeln("")
 				}
 			}
