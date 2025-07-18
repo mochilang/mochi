@@ -1582,6 +1582,20 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 			}
 		}
 	}
+	if c.isAnyExpr(x) {
+		for i := len(u.Ops) - 1; i >= 0; i-- {
+			op := u.Ops[i]
+			switch op {
+			case "!":
+				x = fmt.Sprintf("(!std::any_cast<bool>(%s))", x)
+			case "-", "+":
+				x = fmt.Sprintf("(%sstd::any_cast<int>(%s))", op, x)
+			default:
+				x = fmt.Sprintf("(%s%s)", op, x)
+			}
+		}
+		return x, nil
+	}
 	for i := len(u.Ops) - 1; i >= 0; i-- {
 		x = fmt.Sprintf("(%s%s)", u.Ops[i], x)
 	}
