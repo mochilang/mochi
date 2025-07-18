@@ -59,6 +59,7 @@
   `count`, folding the length at compile time to remove unnecessary helper code.
 - 2025-07-17 12:45: String literals propagate through variables so `len` on constant strings is folded to a number at compile time.
 - 2025-07-18 00:30: Membership checks with literal strings or integers fold to constants at compile time.
+- 2025-07-18 01:00: Boolean and float lists propagate through variables so `len`, `count`, `append`, and set operations fold to constants when possible.
 
 ## Remaining Work
 - [x] Support query compilation with joins and group-by for TPC-H `q1.mochi`.
