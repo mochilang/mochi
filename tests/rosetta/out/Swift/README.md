@@ -1,4 +1,4 @@
-# Rosetta Swift Output (55/216 programs run)
+# Rosetta Swift Output (56/216 programs run)
 
 This directory holds Swift source code generated from the Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -49,7 +49,7 @@ This directory holds Swift source code generated from the Mochi programs in `tes
 - [x] amicable-pairs.mochi
 - [ ] anagrams-deranged-anagrams.mochi
 - [ ] anagrams.mochi
-- [ ] angle-difference-between-two-bearings-1.mochi
+- [x] angle-difference-between-two-bearings-1.mochi
 - [ ] angle-difference-between-two-bearings-2.mochi
 - [ ] angles-geometric-normalization-and-conversion.mochi
 - [x] animate-a-pendulum.mochi
@@ -219,4 +219,3 @@ This directory holds Swift source code generated from the Mochi programs in `tes
 - [ ] csv-to-html-translation-5.mochi
 - [ ] cusip.mochi
 - [ ] md5.mochi
-
