@@ -1,5 +1,0 @@
-exit status 1
-/workspace/mochi/tests/machine/x/scala/group_items_iteration.scala:19: error: Any does not take parameters
-    val result = (for { r <- tmp } yield r).sortBy(r => r("tag")).map(r => r)
-                                                         ^
-one error found
