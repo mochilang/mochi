@@ -256,6 +256,21 @@ func (c *Compiler) isNumberPostfix(p *parser.PostfixExpr) bool {
 	return isNumber(t)
 }
 
+func (c *Compiler) isBoolExpr(e *parser.Expr) bool {
+	_, ok := c.inferExprType(e).(types.BoolType)
+	return ok
+}
+
+func (c *Compiler) isBoolUnary(u *parser.Unary) bool {
+	_, ok := c.inferUnaryType(u).(types.BoolType)
+	return ok
+}
+
+func (c *Compiler) isBoolPostfix(p *parser.PostfixExpr) bool {
+	_, ok := c.inferPostfixType(p).(types.BoolType)
+	return ok
+}
+
 // listLiteral returns the ListLiteral contained in e if e is a simple list
 // literal without any operators applied.
 func listLiteral(e *parser.Expr) (*parser.ListLiteral, bool) {

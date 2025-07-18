@@ -143,7 +143,6 @@ const (
 		"    local sum = 0\n" +
 		"    for _, it in ipairs(items) do sum = sum + it end\n" +
 		"    local res = sum / #items\n" +
-		"    if res == math.floor(res) then return math.floor(res) end\n" +
 		"    return res\n" +
 		"end\n"
 
