@@ -1,7 +1,36 @@
-/tmp/TestSwiftCompiler_VMValid_Goldenouter_join1001027921/001/main.swift:36:32: error: argument 'customer' must precede argument 'order'
-34 | 			_matched[ri] = true
-35 | 			_m = true
-36 | 			_res.append(OJoin(order: o, customer: c))
-   |                                `- error: argument 'customer' must precede argument 'order'
-37 | 		}
-38 | 		if !_m {
+/tmp/TestSwiftCompiler_VMValid_Goldenouter_join880567975/001/main.swift:50:9: error: cannot convert value of type '[OJoin]' to closure result type '[Result]'
+48 | 		}
+49 | 	}
+50 | 	return _res
+   |         |- error: cannot convert value of type '[OJoin]' to closure result type '[Result]'
+   |         `- note: arguments to generic parameter 'Element' ('OJoin' and 'Result') are expected to be equal
+51 | }())
+52 | print("--- Outer Join using syntax ---")
+
+/tmp/TestSwiftCompiler_VMValid_Goldenouter_join880567975/001/main.swift:54:12: error: cannot convert value of type 'Order' to expected condition type 'Bool'
+52 | print("--- Outer Join using syntax ---")
+53 | for row in result {
+54 |     if row.order {
+   |            `- error: cannot convert value of type 'Order' to expected condition type 'Bool'
+55 |         if row.customer != nil {
+56 |             print("Order", row.order.id, "by", row.customer.name, "- $", row.order.total)
+
+/tmp/TestSwiftCompiler_VMValid_Goldenouter_join880567975/001/main.swift:56:52: error: value of optional type 'Customer?' must be unwrapped to refer to member 'name' of wrapped base type 'Customer'
+54 |     if row.order {
+55 |         if row.customer != nil {
+56 |             print("Order", row.order.id, "by", row.customer.name, "- $", row.order.total)
+   |                                                    |- error: value of optional type 'Customer?' must be unwrapped to refer to member 'name' of wrapped base type 'Customer'
+   |                                                    |- note: chain the optional using '?' to access member 'name' only for non-'nil' base values
+   |                                                    `- note: force-unwrap using '!' to abort execution if the optional value contains 'nil'
+57 |         }
+58 |         else {
+
+/tmp/TestSwiftCompiler_VMValid_Goldenouter_join880567975/001/main.swift:63:31: error: value of optional type 'Customer?' must be unwrapped to refer to member 'name' of wrapped base type 'Customer'
+61 |     }
+62 |     else {
+63 |         print("Customer", row.customer.name, "has no orders")
+   |                               |- error: value of optional type 'Customer?' must be unwrapped to refer to member 'name' of wrapped base type 'Customer'
+   |                               |- note: chain the optional using '?' to access member 'name' only for non-'nil' base values
+   |                               `- note: force-unwrap using '!' to abort execution if the optional value contains 'nil'
+64 |     }
+65 | }

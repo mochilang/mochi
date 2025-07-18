@@ -1,7 +1,8 @@
-/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_multi_join48232815/001/main.swift:71:41: error: cannot convert value of type '(part: Int, value: Double)' to expected argument type 'Filtered'
-69 |     for x in filtered {
-70 |         let _k = x.part
-71 |         _groups[_k, default: []].append(x)
-   |                                         `- error: cannot convert value of type '(part: Int, value: Double)' to expected argument type 'Filtered'
-72 |     }
-73 |     var _tmp: [(key: Int, items: [Filtered])] = []
+/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_multi_join2939875047/001/main.swift:51:9: error: cannot convert value of type '[(part: Int, value: Double)]' to closure result type '[Filtered]'
+49 | 		}
+50 | 	}
+51 | 	return _res
+   |         |- error: cannot convert value of type '[(part: Int, value: Double)]' to closure result type '[Filtered]'
+   |         `- note: arguments to generic parameter 'Element' ('(part: Int, value: Double)' and 'Filtered') are expected to be equal
+52 | }())
+53 | var grouped = { () -> [Any] in
