@@ -1,5 +1,0 @@
-File "/tmp/TestOCamlCompiler_VMValid_Goldenlist_nested_assign104218724/001/list_nested_assign.ml", line 27, characters 34-42:
-27 |   print_endline (__show (List.nth List.nth (!matrix) 1 0));
-                                       ^^^^^^^^
-Error: This expression has type 'a list -> int -> 'a
-       but an expression was expected of type ('b -> 'c -> 'd) list
