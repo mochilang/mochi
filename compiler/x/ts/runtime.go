@@ -2,7 +2,10 @@
 
 package tscode
 
-import "sort"
+import (
+	"bytes"
+	"sort"
+)
 
 // Runtime helper functions injected into generated programs.
 const (
@@ -600,17 +603,19 @@ func (c *Compiler) use(name string) {
 	c.helpers[name] = true
 }
 
-func (c *Compiler) emitRuntime() {
+func (c *Compiler) emitRuntime() string {
 	if len(c.helpers) == 0 {
-		return
+		return ""
 	}
 	names := make([]string, 0, len(c.helpers))
 	for n := range c.helpers {
 		names = append(names, n)
 	}
 	sort.Strings(names)
+	var buf bytes.Buffer
 	for _, n := range names {
-		c.buf.WriteString(helperMap[n])
-		c.buf.WriteByte('\n')
+		buf.WriteString(helperMap[n])
+		buf.WriteByte('\n')
 	}
+	return buf.String()
 }

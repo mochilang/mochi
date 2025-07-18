@@ -92,7 +92,7 @@ func main() {
 			os.Remove(filepath.Join(outDir, name+".out"))
 			continue
 		}
-		cmd := exec.Command("deno", "run", "--quiet", "--allow-net", "--allow-read", tmp)
+		cmd := exec.Command("deno", "run", "--quiet", "--allow-net", "--allow-read", "--allow-env", tmp)
 		cmd.Env = append(os.Environ(), "DENO_TLS_CA_STORE=system", "MOCHI_NOW_SEED=1")
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			cmd.Stdin = bytes.NewReader(data)

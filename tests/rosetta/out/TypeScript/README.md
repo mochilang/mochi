@@ -1,4 +1,4 @@
-# Rosetta TypeScript Output (11/239 compiled and run)
+# Rosetta TypeScript Output (39/239 compiled and run)
 
 This directory holds TypeScript source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 

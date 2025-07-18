@@ -451,7 +451,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			}
 		}
 	}
-	c.emitRuntime()
+	runtime := c.emitRuntime()
 	if !hasMain {
 		if needsAsync {
 			c.writeln("await main()")
@@ -461,7 +461,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 	c.writeln("")
-	code := c.buf.Bytes()
+	code := append([]byte(runtime), c.buf.Bytes()...)
 	return formatTS(code), nil
 }
 
