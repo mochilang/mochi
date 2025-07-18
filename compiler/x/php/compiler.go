@@ -556,6 +556,15 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			} else {
 				leftType = types.AnyType{}
 			}
+		case "/":
+			if _, ok := leftType.(types.IntType); ok {
+				if _, ok := rightType.(types.IntType); ok {
+					res = fmt.Sprintf("intdiv(%s, %s)", res, r)
+					left = res
+					leftType = types.IntType{}
+					continue
+				}
+			}
 		default:
 			leftType = types.AnyType{}
 		}
