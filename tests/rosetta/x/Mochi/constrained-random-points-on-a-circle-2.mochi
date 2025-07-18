@@ -1,0 +1,68 @@
+// Mochi implementation of Rosetta "Constrained random points on a circle" task (version 2)
+
+let nPts = 100
+let rMin = 10
+let rMax = 15
+
+let span = rMax + 1 + rMax
+
+var poss: list<list<int>> = []
+let min2 = rMin * rMin
+let max2 = rMax * rMax
+var y = -rMax
+while y <= rMax {
+  var x = -rMax
+  while x <= rMax {
+    let r2 = x * x + y * y
+    if r2 >= min2 && r2 <= max2 {
+      poss = append(poss, [x, y])
+    }
+    x = x + 1
+  }
+  y = y + 1
+}
+print(str(len(poss)) + " possible points")
+
+var rows: list<list<string>> = []
+var r = 0
+while r < span {
+  var row: list<string> = []
+  var c = 0
+  while c < span * 2 {
+    row = append(row, " ")
+    c = c + 1
+  }
+  rows = append(rows, row)
+  r = r + 1
+}
+
+var u = 0
+var seen: map<string, bool> = {}
+var n = 0
+while n < nPts {
+  var i = now() % len(poss)
+  let x = poss[i][0]
+  let yy = poss[i][1]
+  let row = yy + rMax
+  let col = (x + rMax) * 2
+  rows[row][col] = "*"
+  let key = str(row) + "," + str(col)
+  if !seen[key] {
+    seen[key] = true
+    u = u + 1
+  }
+  n = n + 1
+}
+
+var i2 = 0
+while i2 < span {
+  var line = ""
+  var j = 0
+  while j < span * 2 {
+    line = line + rows[i2][j]
+    j = j + 1
+  }
+  print(line)
+  i2 = i2 + 1
+}
+print(str(u) + " unique points")
