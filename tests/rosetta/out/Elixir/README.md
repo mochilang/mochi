@@ -2,13 +2,13 @@
 
 This directory holds Elixir source code generated from the Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected runtime output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
-Compiled programs: 28/239
+Compiled programs: 29/239
 
 Checklist:
 - [x] 100-doors
 - [x] 100-doors-2
 - [x] 100-doors-3
-- [ ] 100-prisoners
+- [x] 100-prisoners
 - [ ] 15-puzzle-game
 - [ ] 15-puzzle-solver
 - [ ] 2048

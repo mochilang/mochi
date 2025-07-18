@@ -817,14 +817,17 @@ func (c *Compiler) compileUpdate(stmt *parser.UpdateStmt) error {
 func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 	name := sanitizeName(stmt.Name)
 	value := "nil"
+	var typ types.Type = types.AnyType{}
 	if stmt.Value != nil {
 		v, err := c.compileExpr(stmt.Value)
 		if err != nil {
 			return err
 		}
 		value = v
+		typ = c.inferExprType(stmt.Value)
 	} else if c.env != nil {
 		if t, err := c.env.GetVar(stmt.Name); err == nil {
+			typ = t
 			switch t.(type) {
 			case types.IntType, types.Int64Type:
 				value = "0"
@@ -842,6 +845,10 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 		}
 	}
 	if c.env != nil {
+		if stmt.Type != nil {
+			typ = c.resolveTypeRef(stmt.Type)
+		}
+		c.env.SetVar(stmt.Name, typ, true)
 		if t, err := c.env.GetVar(stmt.Name); err == nil {
 			c.writeln(fmt.Sprintf("# %s :: %s", name, c.typeSpec(t)))
 			switch tt := t.(type) {
