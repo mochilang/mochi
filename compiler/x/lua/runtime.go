@@ -260,6 +260,26 @@ const (
 		"    return out\n" +
 		"end\n"
 
+	helperToString = "function __to_string(v)\n" +
+		"    local t = type(v)\n" +
+		"    if t == 'string' then return v end\n" +
+		"    if t == 'number' or t == 'boolean' then return tostring(v) end\n" +
+		"    if t ~= 'table' then return tostring(v) end\n" +
+		"    if v[1] ~= nil or #v > 0 then\n" +
+		"        local parts = {}\n" +
+		"        for i=1,#v do parts[#parts+1] = __to_string(v[i]) end\n" +
+		"        return '['..table.concat(parts, ', ')..']'\n" +
+		"    end\n" +
+		"    local keys = {}\n" +
+		"    for k in pairs(v) do if k ~= '__name' then keys[#keys+1]=k end end\n" +
+		"    table.sort(keys, function(a,b) return tostring(a)<tostring(b) end)\n" +
+		"    local parts = {}\n" +
+		"    for _,k in ipairs(keys) do parts[#parts+1] = tostring(k)..': '..__to_string(v[k]) end\n" +
+		"    local body = table.concat(parts, ', ')\n" +
+		"    if v.__name then return v.__name..' {'..body..'}' end\n" +
+		"    return '{'..body..'}'\n" +
+		"end\n"
+
 	helperReduce = "function __reduce(src, fn, acc)\n" +
 		"    for _, it in ipairs(src) do\n" +
 		"        acc = fn(acc, it)\n" +
@@ -859,6 +879,7 @@ var helperMap = map[string]string{
 	"concat":         helperConcat,
 	"append":         helperAppend,
 	"values":         helperValues,
+	"to_string":      helperToString,
 	"reduce":         helperReduce,
 	"json":           helperJson,
 	"eval":           helperEval,

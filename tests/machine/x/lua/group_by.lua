@@ -49,6 +49,25 @@ function __avg(v)
     if res == math.floor(res) then return math.floor(res) end
     return res
 end
+function __to_string(v)
+    local t = type(v)
+    if t == 'string' then return v end
+    if t == 'number' or t == 'boolean' then return tostring(v) end
+    if t ~= 'table' then return tostring(v) end
+    if v[1] ~= nil or #v > 0 then
+        local parts = {}
+        for i=1,#v do parts[#parts+1] = __to_string(v[i]) end
+        return '['..table.concat(parts, ', ')..']'
+    end
+    local keys = {}
+    for k in pairs(v) do if k ~= '__name' then keys[#keys+1]=k end end
+    table.sort(keys, function(a,b) return tostring(a)<tostring(b) end)
+    local parts = {}
+    for _,k in ipairs(keys) do parts[#parts+1] = tostring(k)..': '..__to_string(v[k]) end
+    local body = table.concat(parts, ', ')
+    if v.__name then return v.__name..' {'..body..'}' end
+    return '{'..body..'}'
+end
 people = {{["name"]="Alice", ["age"]=30, ["city"]="Paris"}, {["name"]="Bob", ["age"]=15, ["city"]="Hanoi"}, {["name"]="Charlie", ["age"]=65, ["city"]="Paris"}, {["name"]="Diana", ["age"]=45, ["city"]="Hanoi"}, {["name"]="Eve", ["age"]=70, ["city"]="Paris"}, {["name"]="Frank", ["age"]=22, ["city"]="Hanoi"}};
 stats = (function()
     local _groups = __group_by(people, function(person) return person.city end)
@@ -66,5 +85,5 @@ end)())}
 end)();
 print("--- People grouped by city ---");
 for _, s in ipairs(stats) do
-    print(table.concat({tostring(s.city), ": count =", tostring(s.count), ", avg_age =", tostring(s.avg_age)}, ' '));
+    print(table.concat({__to_string(s.city), ": count =", __to_string(s.count), ", avg_age =", __to_string(s.avg_age)}, ' '));
 end

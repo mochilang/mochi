@@ -198,8 +198,12 @@ func TestMain(m *testing.M) {
 func updateReadme() {
 	root := findRepoRoot(&testing.T{})
 	srcDir := filepath.Join(root, "tests", "vm", "valid")
+	extDir := filepath.Join(root, "tests", "vm_extended", "valid")
 	outDir := filepath.Join(root, "tests", "machine", "x", "lua")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	if extFiles, err := filepath.Glob(filepath.Join(extDir, "*.mochi")); err == nil {
+		files = append(files, extFiles...)
+	}
 	total := len(files)
 	compiled := 0
 	var lines []string

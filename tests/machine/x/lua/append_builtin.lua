@@ -5,5 +5,24 @@ function __append(lst, v)
     out[#out+1] = v
     return out
 end
+function __to_string(v)
+    local t = type(v)
+    if t == 'string' then return v end
+    if t == 'number' or t == 'boolean' then return tostring(v) end
+    if t ~= 'table' then return tostring(v) end
+    if v[1] ~= nil or #v > 0 then
+        local parts = {}
+        for i=1,#v do parts[#parts+1] = __to_string(v[i]) end
+        return '['..table.concat(parts, ', ')..']'
+    end
+    local keys = {}
+    for k in pairs(v) do if k ~= '__name' then keys[#keys+1]=k end end
+    table.sort(keys, function(a,b) return tostring(a)<tostring(b) end)
+    local parts = {}
+    for _,k in ipairs(keys) do parts[#parts+1] = tostring(k)..': '..__to_string(v[k]) end
+    local body = table.concat(parts, ', ')
+    if v.__name then return v.__name..' {'..body..'}' end
+    return '{'..body..'}'
+end
 a = {1, 2};
-(function(_l0) local p={} for i=1,#_l0 do p[#p+1]=tostring(_l0[i]) end print(table.concat(p, ' ')) end)(__append(a, 3));;
+(function(_l0) local p={} for i=1,#_l0 do p[#p+1]=__to_string(_l0[i]) end print(table.concat(p, ' ')) end)(__append(a, 3));;

@@ -450,14 +450,16 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			} else if c.isStringExpr(call.Args[i]) {
 				parts[i] = a
 			} else {
-				parts[i] = fmt.Sprintf("tostring(%s)", a)
+				c.helpers["to_string"] = true
+				parts[i] = fmt.Sprintf("__to_string(%s)", a)
 			}
 		}
 		if len(parts) == 1 {
 			if c.isListExpr(call.Args[0]) {
 				tmp := fmt.Sprintf("_l%d", c.tmpCount)
 				c.tmpCount++
-				return fmt.Sprintf("(function(%s) local p={} for i=1,#%s do p[#p+1]=tostring(%s[i]) end print(table.concat(p, ' ')) end)(%s);", tmp, tmp, tmp, args[0]), nil
+				c.helpers["to_string"] = true
+				return fmt.Sprintf("(function(%s) local p={} for i=1,#%s do p[#p+1]=__to_string(%s[i]) end print(table.concat(p, ' ')) end)(%s);", tmp, tmp, tmp, args[0]), nil
 			}
 			return fmt.Sprintf("print(%s)", parts[0]), nil
 		}
@@ -470,9 +472,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			if c.isStringExpr(call.Args[0]) {
 				return args[0], nil
 			}
-			return fmt.Sprintf("tostring(%s)", args[0]), nil
+			c.helpers["to_string"] = true
+			return fmt.Sprintf("__to_string(%s)", args[0]), nil
 		}
-		return fmt.Sprintf("tostring(%s)", argStr), nil
+		c.helpers["to_string"] = true
+		return fmt.Sprintf("__to_string(%s)", argStr), nil
 	case "input":
 		c.helpers["input"] = true
 		return "__input()", nil

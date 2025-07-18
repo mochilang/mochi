@@ -154,6 +154,25 @@ function __query(src, joins, opts)
     for _, r in ipairs(items) do res[#res+1] = opts.selectFn(table.unpack(r,1,r.n or #r)) end
     return res
 end
+function __to_string(v)
+    local t = type(v)
+    if t == 'string' then return v end
+    if t == 'number' or t == 'boolean' then return tostring(v) end
+    if t ~= 'table' then return tostring(v) end
+    if v[1] ~= nil or #v > 0 then
+        local parts = {}
+        for i=1,#v do parts[#parts+1] = __to_string(v[i]) end
+        return '['..table.concat(parts, ', ')..']'
+    end
+    local keys = {}
+    for k in pairs(v) do if k ~= '__name' then keys[#keys+1]=k end end
+    table.sort(keys, function(a,b) return tostring(a)<tostring(b) end)
+    local parts = {}
+    for _,k in ipairs(keys) do parts[#parts+1] = tostring(k)..': '..__to_string(v[k]) end
+    local body = table.concat(parts, ', ')
+    if v.__name then return v.__name..' {'..body..'}' end
+    return '{'..body..'}'
+end
 customers = {{["id"]=1, ["name"]="Alice"}, {["id"]=2, ["name"]="Bob"}, {["id"]=3, ["name"]="Charlie"}, {["id"]=4, ["name"]="Diana"}};
 orders = {{["id"]=100, ["customerId"]=1, ["total"]=250}, {["id"]=101, ["customerId"]=2, ["total"]=125}, {["id"]=102, ["customerId"]=1, ["total"]=300}, {["id"]=103, ["customerId"]=5, ["total"]=80}};
 result = (function()
@@ -166,11 +185,11 @@ print("--- Outer Join using syntax ---");
 for _, row in ipairs(result) do
     if row.order then
         if row.customer then
-            print(table.concat({"Order", tostring(row.order.id), "by", tostring(row.customer.name), "- $", tostring(row.order.total)}, ' '));
+            print(table.concat({"Order", __to_string(row.order.id), "by", __to_string(row.customer.name), "- $", __to_string(row.order.total)}, ' '));
         else
-            print(table.concat({"Order", tostring(row.order.id), "by", "Unknown", "- $", tostring(row.order.total)}, ' '));
+            print(table.concat({"Order", __to_string(row.order.id), "by", "Unknown", "- $", __to_string(row.order.total)}, ' '));
         end
     else
-        print(table.concat({"Customer", tostring(row.customer.name), "has no orders"}, ' '));
+        print(table.concat({"Customer", __to_string(row.customer.name), "has no orders"}, ' '));
     end
 end

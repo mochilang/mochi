@@ -10,7 +10,6 @@ Checklist:
 - [x] avg_builtin
 - [x] basic_compare
 - [x] binary_precedence
-- [x] bigint_ops
 - [x] bool_chain
 - [x] break_continue
 - [x] cast_string_to_int
@@ -107,3 +106,4 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+- [x] bigint_ops

@@ -211,6 +211,25 @@ function __sum(v)
     for _, it in ipairs(items) do sum = sum + it end
     return sum
 end
+function __to_string(v)
+    local t = type(v)
+    if t == 'string' then return v end
+    if t == 'number' or t == 'boolean' then return tostring(v) end
+    if t ~= 'table' then return tostring(v) end
+    if v[1] ~= nil or #v > 0 then
+        local parts = {}
+        for i=1,#v do parts[#parts+1] = __to_string(v[i]) end
+        return '['..table.concat(parts, ', ')..']'
+    end
+    local keys = {}
+    for k in pairs(v) do if k ~= '__name' then keys[#keys+1]=k end end
+    table.sort(keys, function(a,b) return tostring(a)<tostring(b) end)
+    local parts = {}
+    for _,k in ipairs(keys) do parts[#parts+1] = tostring(k)..': '..__to_string(v[k]) end
+    local body = table.concat(parts, ', ')
+    if v.__name then return v.__name..' {'..body..'}' end
+    return '{'..body..'}'
+end
 nation = {{["n_nationkey"]=1, ["n_name"]="BRAZIL"}};
 customer = {{["c_custkey"]=1, ["c_name"]="Alice", ["c_acctbal"]=100.0, ["c_nationkey"]=1, ["c_address"]="123 St", ["c_phone"]="123-456", ["c_comment"]="Loyal"}};
 orders = {{["o_orderkey"]=1000, ["o_custkey"]=1, ["o_orderdate"]="1993-10-15"}, {["o_orderkey"]=2000, ["o_custkey"]=1, ["o_orderdate"]="1994-01-02"}};
@@ -237,4 +256,4 @@ end)()), ["c_acctbal"]=g.key.c_acctbal, ["n_name"]=g.key.n_name, ["c_address"]=g
     end
     return _res
 end)();
-(function(_l0) local p={} for i=1,#_l0 do p[#p+1]=tostring(_l0[i]) end print(table.concat(p, ' ')) end)(result);;
+(function(_l0) local p={} for i=1,#_l0 do p[#p+1]=__to_string(_l0[i]) end print(table.concat(p, ' ')) end)(result);;

@@ -119,3 +119,7 @@
 ## Progress (2025-07-18 15:30)
 - Added semicolons after expression and assignment statements to prevent Lua from interpreting consecutive lines as function calls.
 - Regenerated VM valid Lua sources and outputs; all 101 programs run successfully.
+
+## Progress (2025-07-20 08:05)
+- Added `__to_string` helper for formatted table output.
+- `print` and `str` now use `__to_string`, improving join result readability.
