@@ -1,4 +1,7 @@
 # C# Compiler TODO
+## Recent Updates (2025-07-27 00:00)
+- Map literals are now compiled to structs when their shape is inferrable,
+  reducing reliance on dictionary helpers.
 ## Recent Updates (2025-07-21 12:00)
 - Avoid emitting `_cast` when assigning values already typed, using direct
   numeric casts where possible. Machine output added for `binary_precedence`,
