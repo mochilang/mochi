@@ -53,3 +53,4 @@
 - 2025-11-23 - Parenthesized function call arguments and combined return branches so recursive examples like `tail_recursion` compile; 79 of 100 programs now succeed.
 - 2025-11-24 - Improved list print handling and map value type inference, removing extra `List.map string` calls when element types are known. 80 of 100 programs compile and run.
 - 2025-12-01 - Inlined set operations and fixed import indentation; `go_auto` now compiles. 81 of 100 programs compile and run.
+- 2025-12-05 - Method-call inference updated so `string_contains` compiles without helper functions; 82 of 100 programs compile and run.
