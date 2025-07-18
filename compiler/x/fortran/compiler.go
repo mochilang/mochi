@@ -368,7 +368,19 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				}
 				args[i] = v
 			}
-			c.writeln("print *, " + strings.Join(args, ", "))
+			argStr := strings.Join(args, ", ")
+			if len(argStr) > 120 {
+				tmp := fmt.Sprintf("pbuf%d", c.tmpIndex)
+				c.tmpIndex++
+				if !c.declared[tmp] {
+					c.writelnDecl(fmt.Sprintf("character(len=256) :: %s", tmp))
+					c.declared[tmp] = true
+				}
+				c.writeln(fmt.Sprintf("%s = %s", tmp, argStr))
+				c.writeln("print *, " + tmp)
+			} else {
+				c.writeln("print *, " + argStr)
+			}
 			return nil
 		}
 		if call := callExpr(s.Expr.Expr); call != nil {
@@ -901,15 +913,8 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	}
 	// declare local variables before emitting executable statements
 	for _, st := range fn.Body {
-		switch {
-		case st.Let != nil:
-			if err := c.compileLetDecl(st.Let); err != nil {
-				return err
-			}
-		case st.Var != nil:
-			if err := c.compileLetDecl(&parser.LetStmt{Name: st.Var.Name, Value: st.Var.Value, Type: st.Var.Type}); err != nil {
-				return err
-			}
+		if err := c.collectDecls(st); err != nil {
+			return err
 		}
 	}
 	prev := c.currentFunc
@@ -925,6 +930,50 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		c.writeln(fmt.Sprintf("end subroutine %s", fn.Name))
 	} else {
 		c.writeln(fmt.Sprintf("end function %s", fn.Name))
+	}
+	return nil
+}
+
+func (c *Compiler) collectDecls(st *parser.Statement) error {
+	switch {
+	case st.Let != nil:
+		return c.compileLetDecl(st.Let)
+	case st.Var != nil:
+		return c.compileLetDecl(&parser.LetStmt{Name: st.Var.Name, Value: st.Var.Value, Type: st.Var.Type})
+	case st.For != nil:
+		if !c.declared[st.For.Name] {
+			c.writelnDecl(fmt.Sprintf("integer :: %s", st.For.Name))
+			c.declared[st.For.Name] = true
+		}
+		for _, b := range st.For.Body {
+			if err := c.collectDecls(b); err != nil {
+				return err
+			}
+		}
+	case st.While != nil:
+		for _, b := range st.While.Body {
+			if err := c.collectDecls(b); err != nil {
+				return err
+			}
+		}
+	case st.If != nil:
+		for _, b := range st.If.Then {
+			if err := c.collectDecls(b); err != nil {
+				return err
+			}
+		}
+		if st.If.ElseIf != nil {
+			if err := c.collectDecls(&parser.Statement{If: st.If.ElseIf}); err != nil {
+				return err
+			}
+		}
+		if st.If.Else != nil {
+			for _, b := range st.If.Else {
+				if err := c.collectDecls(b); err != nil {
+					return err
+				}
+			}
+		}
 	}
 	return nil
 }
