@@ -1,0 +1,14 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/abbreviations-simple.kt:87:22: error: type mismatch: inferred type is Int? but Int was expected
+        n = n * 10 + digits[str.substring(i, i + 1)]
+                     ^
+/tmp/abbreviations-simple.kt:161:25: error: unresolved reference: upper
+                val c = upper(cmd)
+                        ^
+/tmp/abbreviations-simple.kt:162:26: error: unresolved reference: upper
+                val ww = upper(w)
+                         ^
+/tmp/abbreviations-simple.kt:195:57: error: unresolved reference: size
+            out1 = out1 + padRight(words[k], results[k].size)
+                                                        ^

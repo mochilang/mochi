@@ -1,117 +1,117 @@
 kotlinc: exit status 1
 OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-/tmp/24-game-solve.kt:49:9: error: operator '==' cannot be applied to 'Double' and 'Int'
+/tmp/24-game-solve.kt:47:9: error: operator '==' cannot be applied to 'Double' and 'Int'
     if (toDouble(x["op"]) == OP_NUM) {
         ^
-/tmp/24-game-solve.kt:50:16: error: type mismatch: inferred type is Any? but MutableMap<String, Int> was expected
+/tmp/24-game-solve.kt:48:16: error: type mismatch: inferred type is Any? but MutableMap<String, Int> was expected
         return x["value"]
                ^
-/tmp/24-game-solve.kt:52:22: error: type mismatch: inferred type is Any? but MutableMap<String, Any> was expected
+/tmp/24-game-solve.kt:50:22: error: type mismatch: inferred type is Any? but MutableMap<String, Any> was expected
     val l = exprEval(x["left"])
                      ^
-/tmp/24-game-solve.kt:53:22: error: type mismatch: inferred type is Any? but MutableMap<String, Any> was expected
+/tmp/24-game-solve.kt:51:22: error: type mismatch: inferred type is Any? but MutableMap<String, Any> was expected
     val r = exprEval(x["right"])
                      ^
-/tmp/24-game-solve.kt:54:9: error: operator '==' cannot be applied to 'Double' and 'Int'
+/tmp/24-game-solve.kt:52:9: error: operator '==' cannot be applied to 'Double' and 'Int'
     if (toDouble(x["op"]) == OP_ADD) {
         ^
-/tmp/24-game-solve.kt:55:47: error: operator call corresponds to a dot-qualified call 'l["num"].times(r["denom"])' which is not allowed on a nullable receiver 'l["num"]'.
-        return mutableMapOf("num" to l["num"] * r["denom"] + l["denom"] * r["num"], "denom" to l["denom"] * r["denom"])
-                                              ^
-/tmp/24-game-solve.kt:55:49: error: type mismatch: inferred type is Int? but Int was expected
-        return mutableMapOf("num" to l["num"] * r["denom"] + l["denom"] * r["num"], "denom" to l["denom"] * r["denom"])
-                                                ^
-/tmp/24-game-solve.kt:55:73: error: operator call corresponds to a dot-qualified call 'l["denom"].times(r["num"])' which is not allowed on a nullable receiver 'l["denom"]'.
-        return mutableMapOf("num" to l["num"] * r["denom"] + l["denom"] * r["num"], "denom" to l["denom"] * r["denom"])
-                                                                        ^
-/tmp/24-game-solve.kt:55:75: error: type mismatch: inferred type is Int? but Int was expected
-        return mutableMapOf("num" to l["num"] * r["denom"] + l["denom"] * r["num"], "denom" to l["denom"] * r["denom"])
-                                                                          ^
-/tmp/24-game-solve.kt:55:107: error: operator call corresponds to a dot-qualified call 'l["denom"].times(r["denom"])' which is not allowed on a nullable receiver 'l["denom"]'.
-        return mutableMapOf("num" to l["num"] * r["denom"] + l["denom"] * r["num"], "denom" to l["denom"] * r["denom"])
-                                                                                                          ^
-/tmp/24-game-solve.kt:55:109: error: type mismatch: inferred type is Int? but Int was expected
-        return mutableMapOf("num" to l["num"] * r["denom"] + l["denom"] * r["num"], "denom" to l["denom"] * r["denom"])
-                                                                                                            ^
-/tmp/24-game-solve.kt:57:9: error: operator '==' cannot be applied to 'Double' and 'Int'
+/tmp/24-game-solve.kt:53:48: error: operator call corresponds to a dot-qualified call 'l["num"].times(r["denom"])' which is not allowed on a nullable receiver 'l["num"]'.
+        return mutableMapOf("num" to (l["num"] * r["denom"] + l["denom"] * r["num"]), "denom" to (l["denom"] * r["denom"]))
+                                               ^
+/tmp/24-game-solve.kt:53:50: error: type mismatch: inferred type is Int? but Int was expected
+        return mutableMapOf("num" to (l["num"] * r["denom"] + l["denom"] * r["num"]), "denom" to (l["denom"] * r["denom"]))
+                                                 ^
+/tmp/24-game-solve.kt:53:74: error: operator call corresponds to a dot-qualified call 'l["denom"].times(r["num"])' which is not allowed on a nullable receiver 'l["denom"]'.
+        return mutableMapOf("num" to (l["num"] * r["denom"] + l["denom"] * r["num"]), "denom" to (l["denom"] * r["denom"]))
+                                                                         ^
+/tmp/24-game-solve.kt:53:76: error: type mismatch: inferred type is Int? but Int was expected
+        return mutableMapOf("num" to (l["num"] * r["denom"] + l["denom"] * r["num"]), "denom" to (l["denom"] * r["denom"]))
+                                                                           ^
+/tmp/24-game-solve.kt:53:110: error: operator call corresponds to a dot-qualified call 'l["denom"].times(r["denom"])' which is not allowed on a nullable receiver 'l["denom"]'.
+        return mutableMapOf("num" to (l["num"] * r["denom"] + l["denom"] * r["num"]), "denom" to (l["denom"] * r["denom"]))
+                                                                                                             ^
+/tmp/24-game-solve.kt:53:112: error: type mismatch: inferred type is Int? but Int was expected
+        return mutableMapOf("num" to (l["num"] * r["denom"] + l["denom"] * r["num"]), "denom" to (l["denom"] * r["denom"]))
+                                                                                                               ^
+/tmp/24-game-solve.kt:55:9: error: operator '==' cannot be applied to 'Double' and 'Int'
     if (toDouble(x["op"]) == OP_SUB) {
         ^
-/tmp/24-game-solve.kt:58:47: error: operator call corresponds to a dot-qualified call 'l["num"].times(r["denom"])' which is not allowed on a nullable receiver 'l["num"]'.
-        return mutableMapOf("num" to l["num"] * r["denom"] - l["denom"] * r["num"], "denom" to l["denom"] * r["denom"])
-                                              ^
-/tmp/24-game-solve.kt:58:49: error: type mismatch: inferred type is Int? but Int was expected
-        return mutableMapOf("num" to l["num"] * r["denom"] - l["denom"] * r["num"], "denom" to l["denom"] * r["denom"])
-                                                ^
-/tmp/24-game-solve.kt:58:73: error: operator call corresponds to a dot-qualified call 'l["denom"].times(r["num"])' which is not allowed on a nullable receiver 'l["denom"]'.
-        return mutableMapOf("num" to l["num"] * r["denom"] - l["denom"] * r["num"], "denom" to l["denom"] * r["denom"])
-                                                                        ^
-/tmp/24-game-solve.kt:58:75: error: type mismatch: inferred type is Int? but Int was expected
-        return mutableMapOf("num" to l["num"] * r["denom"] - l["denom"] * r["num"], "denom" to l["denom"] * r["denom"])
-                                                                          ^
-/tmp/24-game-solve.kt:58:107: error: operator call corresponds to a dot-qualified call 'l["denom"].times(r["denom"])' which is not allowed on a nullable receiver 'l["denom"]'.
-        return mutableMapOf("num" to l["num"] * r["denom"] - l["denom"] * r["num"], "denom" to l["denom"] * r["denom"])
-                                                                                                          ^
-/tmp/24-game-solve.kt:58:109: error: type mismatch: inferred type is Int? but Int was expected
-        return mutableMapOf("num" to l["num"] * r["denom"] - l["denom"] * r["num"], "denom" to l["denom"] * r["denom"])
-                                                                                                            ^
-/tmp/24-game-solve.kt:60:9: error: operator '==' cannot be applied to 'Double' and 'Int'
+/tmp/24-game-solve.kt:56:48: error: operator call corresponds to a dot-qualified call 'l["num"].times(r["denom"])' which is not allowed on a nullable receiver 'l["num"]'.
+        return mutableMapOf("num" to (l["num"] * r["denom"] - l["denom"] * r["num"]), "denom" to (l["denom"] * r["denom"]))
+                                               ^
+/tmp/24-game-solve.kt:56:50: error: type mismatch: inferred type is Int? but Int was expected
+        return mutableMapOf("num" to (l["num"] * r["denom"] - l["denom"] * r["num"]), "denom" to (l["denom"] * r["denom"]))
+                                                 ^
+/tmp/24-game-solve.kt:56:74: error: operator call corresponds to a dot-qualified call 'l["denom"].times(r["num"])' which is not allowed on a nullable receiver 'l["denom"]'.
+        return mutableMapOf("num" to (l["num"] * r["denom"] - l["denom"] * r["num"]), "denom" to (l["denom"] * r["denom"]))
+                                                                         ^
+/tmp/24-game-solve.kt:56:76: error: type mismatch: inferred type is Int? but Int was expected
+        return mutableMapOf("num" to (l["num"] * r["denom"] - l["denom"] * r["num"]), "denom" to (l["denom"] * r["denom"]))
+                                                                           ^
+/tmp/24-game-solve.kt:56:110: error: operator call corresponds to a dot-qualified call 'l["denom"].times(r["denom"])' which is not allowed on a nullable receiver 'l["denom"]'.
+        return mutableMapOf("num" to (l["num"] * r["denom"] - l["denom"] * r["num"]), "denom" to (l["denom"] * r["denom"]))
+                                                                                                             ^
+/tmp/24-game-solve.kt:56:112: error: type mismatch: inferred type is Int? but Int was expected
+        return mutableMapOf("num" to (l["num"] * r["denom"] - l["denom"] * r["num"]), "denom" to (l["denom"] * r["denom"]))
+                                                                                                               ^
+/tmp/24-game-solve.kt:58:9: error: operator '==' cannot be applied to 'Double' and 'Int'
     if (toDouble(x["op"]) == OP_MUL) {
         ^
-/tmp/24-game-solve.kt:61:47: error: operator call corresponds to a dot-qualified call 'l["num"].times(r["num"])' which is not allowed on a nullable receiver 'l["num"]'.
-        return mutableMapOf("num" to l["num"] * r["num"], "denom" to l["denom"] * r["denom"])
-                                              ^
-/tmp/24-game-solve.kt:61:49: error: type mismatch: inferred type is Int? but Int was expected
-        return mutableMapOf("num" to l["num"] * r["num"], "denom" to l["denom"] * r["denom"])
-                                                ^
-/tmp/24-game-solve.kt:61:81: error: operator call corresponds to a dot-qualified call 'l["denom"].times(r["denom"])' which is not allowed on a nullable receiver 'l["denom"]'.
-        return mutableMapOf("num" to l["num"] * r["num"], "denom" to l["denom"] * r["denom"])
-                                                                                ^
-/tmp/24-game-solve.kt:61:83: error: type mismatch: inferred type is Int? but Int was expected
-        return mutableMapOf("num" to l["num"] * r["num"], "denom" to l["denom"] * r["denom"])
-                                                                                  ^
-/tmp/24-game-solve.kt:63:43: error: operator call corresponds to a dot-qualified call 'l["num"].times(r["denom"])' which is not allowed on a nullable receiver 'l["num"]'.
-    return mutableMapOf("num" to l["num"] * r["denom"], "denom" to l["denom"] * r["num"])
-                                          ^
-/tmp/24-game-solve.kt:63:45: error: type mismatch: inferred type is Int? but Int was expected
-    return mutableMapOf("num" to l["num"] * r["denom"], "denom" to l["denom"] * r["num"])
-                                            ^
-/tmp/24-game-solve.kt:63:79: error: operator call corresponds to a dot-qualified call 'l["denom"].times(r["num"])' which is not allowed on a nullable receiver 'l["denom"]'.
-    return mutableMapOf("num" to l["num"] * r["denom"], "denom" to l["denom"] * r["num"])
-                                                                              ^
-/tmp/24-game-solve.kt:63:81: error: type mismatch: inferred type is Int? but Int was expected
-    return mutableMapOf("num" to l["num"] * r["denom"], "denom" to l["denom"] * r["num"])
-                                                                                ^
-/tmp/24-game-solve.kt:72:9: error: operator '==' cannot be applied to 'Double' and 'Int'
+/tmp/24-game-solve.kt:59:48: error: operator call corresponds to a dot-qualified call 'l["num"].times(r["num"])' which is not allowed on a nullable receiver 'l["num"]'.
+        return mutableMapOf("num" to (l["num"] * r["num"]), "denom" to (l["denom"] * r["denom"]))
+                                               ^
+/tmp/24-game-solve.kt:59:50: error: type mismatch: inferred type is Int? but Int was expected
+        return mutableMapOf("num" to (l["num"] * r["num"]), "denom" to (l["denom"] * r["denom"]))
+                                                 ^
+/tmp/24-game-solve.kt:59:84: error: operator call corresponds to a dot-qualified call 'l["denom"].times(r["denom"])' which is not allowed on a nullable receiver 'l["denom"]'.
+        return mutableMapOf("num" to (l["num"] * r["num"]), "denom" to (l["denom"] * r["denom"]))
+                                                                                   ^
+/tmp/24-game-solve.kt:59:86: error: type mismatch: inferred type is Int? but Int was expected
+        return mutableMapOf("num" to (l["num"] * r["num"]), "denom" to (l["denom"] * r["denom"]))
+                                                                                     ^
+/tmp/24-game-solve.kt:61:44: error: operator call corresponds to a dot-qualified call 'l["num"].times(r["denom"])' which is not allowed on a nullable receiver 'l["num"]'.
+    return mutableMapOf("num" to (l["num"] * r["denom"]), "denom" to (l["denom"] * r["num"]))
+                                           ^
+/tmp/24-game-solve.kt:61:46: error: type mismatch: inferred type is Int? but Int was expected
+    return mutableMapOf("num" to (l["num"] * r["denom"]), "denom" to (l["denom"] * r["num"]))
+                                             ^
+/tmp/24-game-solve.kt:61:82: error: operator call corresponds to a dot-qualified call 'l["denom"].times(r["num"])' which is not allowed on a nullable receiver 'l["denom"]'.
+    return mutableMapOf("num" to (l["num"] * r["denom"]), "denom" to (l["denom"] * r["num"]))
+                                                                                 ^
+/tmp/24-game-solve.kt:61:84: error: type mismatch: inferred type is Int? but Int was expected
+    return mutableMapOf("num" to (l["num"] * r["denom"]), "denom" to (l["denom"] * r["num"]))
+                                                                                   ^
+/tmp/24-game-solve.kt:70:9: error: operator '==' cannot be applied to 'Double' and 'Int'
     if (toDouble(x["op"]) == OP_NUM) {
         ^
-/tmp/24-game-solve.kt:73:16: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+/tmp/24-game-solve.kt:71:16: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
 @InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out String, ???>.get(key: String): ??? defined in kotlin.collections
         return (x["value"] as Any?)["num"].toString()
                ^
-/tmp/24-game-solve.kt:73:36: error: no get method providing array access
+/tmp/24-game-solve.kt:71:36: error: no get method providing array access
         return (x["value"] as Any?)["num"].toString()
                                    ^
-/tmp/24-game-solve.kt:75:25: error: type mismatch: inferred type is Any? but MutableMap<String, Any> was expected
+/tmp/24-game-solve.kt:73:25: error: type mismatch: inferred type is Any? but MutableMap<String, Any> was expected
     val ls = exprString(x["left"])
                         ^
-/tmp/24-game-solve.kt:76:25: error: type mismatch: inferred type is Any? but MutableMap<String, Any> was expected
+/tmp/24-game-solve.kt:74:25: error: type mismatch: inferred type is Any? but MutableMap<String, Any> was expected
     val rs = exprString(x["right"])
                         ^
-/tmp/24-game-solve.kt:78:9: error: operator '==' cannot be applied to 'Double' and 'Int'
+/tmp/24-game-solve.kt:76:9: error: operator '==' cannot be applied to 'Double' and 'Int'
     if (toDouble(x["op"]) == OP_ADD) {
         ^
-/tmp/24-game-solve.kt:82:9: error: operator '==' cannot be applied to 'Double' and 'Int'
+/tmp/24-game-solve.kt:80:9: error: operator '==' cannot be applied to 'Double' and 'Int'
     if (toDouble(x["op"]) == OP_SUB) {
         ^
-/tmp/24-game-solve.kt:86:9: error: operator '==' cannot be applied to 'Double' and 'Int'
+/tmp/24-game-solve.kt:84:9: error: operator '==' cannot be applied to 'Double' and 'Int'
     if (toDouble(x["op"]) == OP_MUL) {
         ^
-/tmp/24-game-solve.kt:103:55: error: operator call corresponds to a dot-qualified call 'f["denom"].times(goal)' which is not allowed on a nullable receiver 'f["denom"]'.
+/tmp/24-game-solve.kt:101:55: error: operator call corresponds to a dot-qualified call 'f["denom"].times(goal)' which is not allowed on a nullable receiver 'f["denom"]'.
         if (f["denom"] != 0 && f["num"] == f["denom"] * goal) {
                                                       ^
-/tmp/24-game-solve.kt:113:62: error: type mismatch: inferred type is MutableList<MutableMap<String, Any?>> but MutableList<MutableMap<String, Any>> was expected
+/tmp/24-game-solve.kt:111:62: error: type mismatch: inferred type is MutableList<MutableMap<String, Any?>> but MutableList<MutableMap<String, Any>> was expected
             var rest: MutableList<MutableMap<String, Any>> = mutableListOf<MutableMap<String, Any?>>()
                                                              ^
-/tmp/24-game-solve.kt:150:59: error: type mismatch: inferred type is MutableList<MutableMap<String, Any?>> but MutableList<MutableMap<String, Any>> was expected
+/tmp/24-game-solve.kt:148:59: error: type mismatch: inferred type is MutableList<MutableMap<String, Any?>> but MutableList<MutableMap<String, Any>> was expected
         var cards: MutableList<MutableMap<String, Any>> = mutableListOf<MutableMap<String, Any?>>()
                                                           ^

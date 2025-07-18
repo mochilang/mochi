@@ -5,7 +5,7 @@ programs in `tests/rosetta/x/Mochi`. Each file has the expected
 runtime output in a matching `.out` file. Compilation or runtime
 failures are stored in a corresponding `.error` file.
 
-Compiled programs: 6/216
+Compiled programs: 17/216
 
 ## Program checklist
 - [x] 100-doors-2
@@ -20,29 +20,29 @@ Compiled programs: 6/216
 - [ ] 24-game
 - [x] 4-rings-or-4-squares-puzzle
 - [ ] 9-billion-names-of-god-the-integer
-- [ ] 99-bottles-of-beer-2
+- [x] 99-bottles-of-beer-2
 - [x] 99-bottles-of-beer
 - [ ] a+b
 - [x] abbreviations-automatic
 - [ ] abbreviations-easy
 - [ ] abbreviations-simple
 - [ ] abc-problem
-- [ ] abelian-sandpile-model-identity
+- [x] abelian-sandpile-model-identity
 - [ ] abelian-sandpile-model
 - [ ] abstract-type
-- [ ] abundant-deficient-and-perfect-number-classifications
-- [ ] abundant-odd-numbers
+- [x] abundant-deficient-and-perfect-number-classifications
+- [x] abundant-odd-numbers
 - [ ] accumulator-factory
 - [ ] achilles-numbers
-- [ ] ackermann-function-2
+- [x] ackermann-function-2
 - [ ] ackermann-function-3
-- [ ] ackermann-function
-- [ ] active-directory-connect
+- [x] ackermann-function
+- [x] active-directory-connect
 - [ ] active-directory-search-for-a-user
 - [ ] active-object
 - [ ] add-a-variable-to-a-class-instance-at-runtime
-- [ ] additive-primes
-- [ ] address-of-a-variable
+- [x] additive-primes
+- [x] address-of-a-variable
 - [ ] adfgvx-cipher
 - [ ] aks-test-for-primes
 - [ ] algebraic-data-types
@@ -50,8 +50,8 @@ Compiled programs: 6/216
 - [ ] aliquot-sequence-classifications
 - [ ] almkvist-giullera-formula-for-pi
 - [ ] almost-prime
-- [ ] amb
-- [ ] amicable-pairs
+- [x] amb
+- [x] amicable-pairs
 - [ ] anagrams-deranged-anagrams
 - [ ] anagrams
 - [ ] angle-difference-between-two-bearings-1

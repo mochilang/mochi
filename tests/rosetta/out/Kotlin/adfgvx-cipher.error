@@ -1,0 +1,86 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/adfgvx-cipher.kt:23:15: error: type inference failed. Expected type mismatch: inferred type is List<Any> but MutableList<String> was expected
+        arr = arr + mutableListOf(s[i])
+              ^
+/tmp/adfgvx-cipher.kt:56:13: error: type inference failed. Expected type mismatch: inferred type is List<String> but MutableList<String> was expected
+        p = p + mutableListOf(row)
+            ^
+/tmp/adfgvx-cipher.kt:100:17: error: type inference failed. Expected type mismatch: inferred type is List<Any?> but MutableList<Any?> was expected
+        pairs = pairs + mutableListOf(mutableListOf(key[i], i))
+                ^
+/tmp/adfgvx-cipher.kt:108:26: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out Int, Any?>.get(key: Int): Any? defined in kotlin.collections
+            if (toDouble(pairs[j]!![0]) > toDouble(pairs[j + 1]!![0])) {
+                         ^
+/tmp/adfgvx-cipher.kt:108:36: error: no get method providing array access
+            if (toDouble(pairs[j]!![0]) > toDouble(pairs[j + 1]!![0])) {
+                                   ^
+/tmp/adfgvx-cipher.kt:108:52: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out Int, Any?>.get(key: Int): Any? defined in kotlin.collections
+            if (toDouble(pairs[j]!![0]) > toDouble(pairs[j + 1]!![0])) {
+                                                   ^
+/tmp/adfgvx-cipher.kt:108:66: error: no get method providing array access
+            if (toDouble(pairs[j]!![0]) > toDouble(pairs[j + 1]!![0])) {
+                                                                 ^
+/tmp/adfgvx-cipher.kt:120:15: error: type inference failed. Expected type mismatch: inferred type is List<Any?> but MutableList<Any?> was expected
+        res = res + mutableListOf((pairs[i]!![1]!!).toInt())
+              ^
+/tmp/adfgvx-cipher.kt:120:36: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out Int, ???>.get(key: Int): ??? defined in kotlin.collections
+        res = res + mutableListOf((pairs[i]!![1]!!).toInt())
+                                   ^
+/tmp/adfgvx-cipher.kt:120:46: error: no get method providing array access
+        res = res + mutableListOf((pairs[i]!![1]!!).toInt())
+                                             ^
+/tmp/adfgvx-cipher.kt:123:12: error: type mismatch: inferred type is MutableList<Any?> but MutableList<Int> was expected
+    return res
+           ^
+/tmp/adfgvx-cipher.kt:160:19: error: type inference failed. Expected type mismatch: inferred type is List<String> but MutableList<String> was expected
+            row = row + mutableListOf("")
+                  ^
+/tmp/adfgvx-cipher.kt:163:17: error: type inference failed. Expected type mismatch: inferred type is List<MutableList<String>> but MutableList<MutableList<String>> was expected
+        table = table + mutableListOf(row)
+                ^
+/tmp/adfgvx-cipher.kt:170:15: error: type mismatch: inferred type is Double but Int was expected
+        table[row]!![col] = temp.substring(idx, idx + 1)
+              ^
+/tmp/adfgvx-cipher.kt:183:16: error: type inference failed. Expected type mismatch: inferred type is List<String> but MutableList<String> was expected
+        cols = cols + mutableListOf(colStr)
+               ^
+/tmp/adfgvx-cipher.kt:207:13: error: operator '==' cannot be applied to 'Char' and 'String'
+        if (s[i] == ch) {
+            ^
+/tmp/adfgvx-cipher.kt:227:39: error: operator '==' cannot be applied to 'Char' and 'String'
+        if (i == cipherText.length || cipherText[i] == " ") {
+                                      ^
+/tmp/adfgvx-cipher.kt:228:23: error: type inference failed. Expected type mismatch: inferred type is List<String> but MutableList<String> was expected
+            colStrs = colStrs + mutableListOf(cipherText.substring(start, i))
+                      ^
+/tmp/adfgvx-cipher.kt:236:24: error: unresolved reference: size
+        if (colStrs[i].size > maxColLen) {
+                       ^
+/tmp/adfgvx-cipher.kt:237:36: error: unresolved reference: size
+            maxColLen = colStrs[i].size
+                                   ^
+/tmp/adfgvx-cipher.kt:248:18: error: type inference failed. Expected type mismatch: inferred type is List<Any> but MutableList<String> was expected
+            ls = ls + mutableListOf(s[j])
+                 ^
+/tmp/adfgvx-cipher.kt:256:27: error: type inference failed. Expected type mismatch: inferred type is List<String> but MutableList<String> was expected
+                    pad = pad + mutableListOf(ls[k])
+                          ^
+/tmp/adfgvx-cipher.kt:259:27: error: type inference failed. Expected type mismatch: inferred type is List<String> but MutableList<String> was expected
+                    pad = pad + mutableListOf("")
+                          ^
+/tmp/adfgvx-cipher.kt:263:20: error: type inference failed. Expected type mismatch: inferred type is List<MutableList<String>> but MutableList<MutableList<String>> was expected
+            cols = cols + mutableListOf(pad)
+                   ^
+/tmp/adfgvx-cipher.kt:266:20: error: type inference failed. Expected type mismatch: inferred type is List<MutableList<String>> but MutableList<MutableList<String>> was expected
+            cols = cols + mutableListOf(ls)
+                   ^
+/tmp/adfgvx-cipher.kt:276:19: error: type inference failed. Expected type mismatch: inferred type is List<String> but MutableList<String> was expected
+            row = row + mutableListOf("")
+                  ^
+/tmp/adfgvx-cipher.kt:279:17: error: type inference failed. Expected type mismatch: inferred type is List<MutableList<String>> but MutableList<MutableList<String>> was expected
+        table = table + mutableListOf(row)
+                ^
