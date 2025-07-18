@@ -460,7 +460,9 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 				if lt, ok := t.(ListType); ok {
 					elem := lt.Elem
 					argT := ExprType(p.Call.Args[1], env)
-					if !equalTypes(elem, argT) {
+					if _, ok := elem.(AnyType); ok {
+						elem = argT
+					} else if !equalTypes(elem, argT) {
 						elem = AnyType{}
 					}
 					return ListType{Elem: elem}
