@@ -130,6 +130,10 @@ const (
 	OpEval
 	OpFetch
 
+	// Global variable operations
+	OpGetGlobal
+	OpSetGlobal
+
 	// Closure creation
 	OpMakeClosure
 
@@ -278,6 +282,10 @@ func (op Op) String() string {
 		return "Eval"
 	case OpFetch:
 		return "Fetch"
+	case OpGetGlobal:
+		return "GetGlobal"
+	case OpSetGlobal:
+		return "SetGlobal"
 	case OpMakeClosure:
 		return "MakeClosure"
 	case OpAddInt:
@@ -364,10 +372,11 @@ type Function struct {
 }
 
 type Program struct {
-	Funcs  []Function
-	Types  []types.Type
-	File   string   `json:"file,omitempty"`
-	Source []string `json:"source,omitempty"`
+	Funcs      []Function
+	Types      []types.Type
+	File       string   `json:"file,omitempty"`
+	Source     []string `json:"source,omitempty"`
+	NumGlobals int      `json:"num_globals,omitempty"`
 }
 
 type closure struct {
@@ -548,9 +557,10 @@ func (p *Program) Disassemble(src string) string {
 }
 
 type VM struct {
-	prog   *Program
-	writer io.Writer
-	reader *bufio.Reader
+	prog    *Program
+	writer  io.Writer
+	reader  *bufio.Reader
+	globals []Value
 }
 
 // StackFrame represents a single call frame in a Mochi stack trace.
@@ -627,7 +637,7 @@ func (m *VM) newError(err error, trace []StackFrame, line int) *VMError {
 }
 
 func New(prog *Program, w io.Writer) *VM {
-	return &VM{prog: prog, writer: w, reader: bufio.NewReader(os.Stdin)}
+	return &VM{prog: prog, writer: w, reader: bufio.NewReader(os.Stdin), globals: make([]Value, prog.NumGlobals)}
 }
 
 func NewWithIO(prog *Program, r io.Reader, w io.Writer) *VM {
@@ -635,7 +645,7 @@ func NewWithIO(prog *Program, r io.Reader, w io.Writer) *VM {
 	if !ok {
 		br = bufio.NewReader(r)
 	}
-	return &VM{prog: prog, writer: w, reader: br}
+	return &VM{prog: prog, writer: w, reader: br, globals: make([]Value, prog.NumGlobals)}
 }
 
 func (m *VM) Run() error {
@@ -1734,6 +1744,16 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				return Value{}, m.newError(err, trace, ins.Line)
 			}
 			fr.regs[ins.A] = FromAny(res)
+		case OpGetGlobal:
+			if ins.B >= len(m.globals) {
+				return Value{}, fmt.Errorf("global index out of range")
+			}
+			fr.regs[ins.A] = m.globals[ins.B]
+		case OpSetGlobal:
+			if ins.A >= len(m.globals) {
+				return Value{}, fmt.Errorf("global index out of range")
+			}
+			m.globals[ins.A] = copyValue(fr.regs[ins.B])
 		case OpCount:
 			lst := fr.regs[ins.B]
 			if lst.Tag == ValueNull {
@@ -2246,7 +2266,7 @@ func compileProgram(p *parser.Program, env *types.Env) (*Program, error) {
 			Optimize(&c.funcs[i])
 		}
 	}
-	return &Program{Funcs: c.funcs, Types: c.types}, nil
+	return &Program{Funcs: c.funcs, Types: c.types, NumGlobals: len(c.globals)}, nil
 }
 
 func (c *compiler) compileFun(fn *parser.FunStmt) (Function, error) {
@@ -2254,6 +2274,13 @@ func (c *compiler) compileFun(fn *parser.FunStmt) (Function, error) {
 	fc.fn.Name = fn.Name
 	fc.fn.Line = fn.Pos.Line
 	fc.fn.NumParams = len(fn.Params)
+	// expose global variables to function body
+	for name, idx := range c.globals {
+		fc.vars[name] = idx
+	}
+	if len(c.globals) > fc.fn.NumRegs {
+		fc.fn.NumRegs = len(c.globals)
+	}
 	for _, p := range fn.Params {
 		idx := fc.newReg()
 		fc.vars[p.Name] = idx
@@ -2276,6 +2303,12 @@ func (c *compiler) compileMethod(st types.StructType, fn *parser.FunStmt) (Funct
 	fc.fn.Name = st.Name + "." + fn.Name
 	fc.fn.Line = fn.Pos.Line
 	fc.fn.NumParams = len(st.Order) + len(fn.Params)
+	for name, idx := range c.globals {
+		fc.vars[name] = idx
+	}
+	if len(c.globals) > fc.fn.NumRegs {
+		fc.fn.NumRegs = len(c.globals)
+	}
 	// struct fields as parameters
 	for _, field := range st.Order {
 		idx := fc.newReg()
@@ -2324,6 +2357,12 @@ func (c *compiler) compileFunExpr(fn *parser.FunExpr, captures []string) int {
 	fc := newFuncCompiler(c)
 	fc.fn.Line = fn.Pos.Line
 	fc.fn.NumParams = len(captures) + len(fn.Params)
+	for name, idx := range c.globals {
+		fc.vars[name] = idx
+	}
+	if len(c.globals) > fc.fn.NumRegs {
+		fc.fn.NumRegs = len(c.globals)
+	}
 	for _, name := range captures {
 		idx := fc.newReg()
 		fc.vars[name] = idx
@@ -2399,6 +2438,12 @@ func (c *compiler) compileMain(p *parser.Program) (Function, error) {
 	fc.fn.Name = "main"
 	fc.fn.Line = 0
 	fc.fn.NumParams = 0
+	for name, idx := range c.globals {
+		fc.vars[name] = idx
+	}
+	if len(c.globals) > fc.fn.NumRegs {
+		fc.fn.NumRegs = len(c.globals)
+	}
 	for _, st := range p.Statements {
 		if st.Fun != nil {
 			continue
@@ -2448,6 +2493,8 @@ func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
 	case OpSave:
 		fc.tags[i.A] = tagUnknown
 	case OpFetch:
+		fc.tags[i.A] = tagUnknown
+	case OpGetGlobal:
 		fc.tags[i.A] = tagUnknown
 	case OpCount:
 		fc.tags[i.A] = tagInt
@@ -2571,6 +2618,9 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) error {
 		}
 		fc.emit(s.Let.Pos, Instr{Op: OpMove, A: reg, B: r})
 		fc.tags[reg] = fc.tags[r]
+		if gidx, ok := fc.comp.globals[s.Let.Name]; ok {
+			fc.emit(s.Let.Pos, Instr{Op: OpSetGlobal, A: gidx, B: reg})
+		}
 		if v, ok := fc.evalConstExpr(s.Let.Value); ok {
 			if typ, err := fc.comp.env.GetVar(s.Let.Name); err == nil {
 				cv, err2 := castValue(typ, v.ToAny())
@@ -2598,6 +2648,9 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) error {
 		}
 		fc.emit(s.Var.Pos, Instr{Op: OpMove, A: reg, B: r})
 		fc.tags[reg] = fc.tags[r]
+		if gidx, ok := fc.comp.globals[s.Var.Name]; ok {
+			fc.emit(s.Var.Pos, Instr{Op: OpSetGlobal, A: gidx, B: reg})
+		}
 		return nil
 	case s.Assign != nil:
 		reg, ok := fc.vars[s.Assign.Name]
@@ -2637,6 +2690,9 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) error {
 				lastIdx := fc.compileExpr(idxOps[len(idxOps)-1].Start)
 				fc.emit(s.Assign.Pos, Instr{Op: OpSetIndex, A: container, B: lastIdx, C: val})
 			}
+		}
+		if gidx, ok := fc.comp.globals[s.Assign.Name]; ok {
+			fc.emit(s.Assign.Pos, Instr{Op: OpSetGlobal, A: gidx, B: reg})
 		}
 		return nil
 	case s.Return != nil:
@@ -3413,16 +3469,22 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 	if p.Selector != nil {
 		r, ok := fc.vars[p.Selector.Root]
 		if !ok {
-			if len(p.Selector.Tail) == 0 {
-				if st, ok := fc.comp.env.GetStruct(p.Selector.Root); ok && len(st.Order) == 0 {
-					key := fc.constReg(p.Pos, Value{Tag: ValueStr, Str: "__name"})
-					fc.constReg(p.Pos, Value{Tag: ValueStr, Str: st.Name})
-					dst := fc.newReg()
-					fc.emit(p.Pos, Instr{Op: OpMakeMap, A: dst, B: 1, C: key})
-					return dst
+			if gidx, gok := fc.comp.globals[p.Selector.Root]; gok {
+				r = fc.newReg()
+				fc.emit(p.Pos, Instr{Op: OpGetGlobal, A: r, B: gidx})
+				fc.tags[r] = tagUnknown
+			} else {
+				if len(p.Selector.Tail) == 0 {
+					if st, ok := fc.comp.env.GetStruct(p.Selector.Root); ok && len(st.Order) == 0 {
+						key := fc.constReg(p.Pos, Value{Tag: ValueStr, Str: "__name"})
+						fc.constReg(p.Pos, Value{Tag: ValueStr, Str: st.Name})
+						dst := fc.newReg()
+						fc.emit(p.Pos, Instr{Op: OpMakeMap, A: dst, B: 1, C: key})
+						return dst
+					}
 				}
+				r = fc.newReg()
 			}
-			r = fc.newReg()
 		}
 		if len(p.Selector.Tail) == 0 {
 			return r
