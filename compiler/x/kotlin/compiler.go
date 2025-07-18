@@ -1638,6 +1638,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	preSorted := false
 
 	child := types.NewEnv(c.env)
 	if lt, ok := types.TypeOfExprBasic(q.Source, c.env).(types.ListType); ok {
@@ -1705,6 +1706,40 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		selType = t
 	}
 
+	sortedSrc := src
+	if q.Sort != nil && q.Group == nil && len(q.Froms) == 0 && len(q.Joins) == 0 {
+		sortEnv := types.NewEnv(c.env)
+		sortEnv.SetVar(q.Var, elem, true)
+		oldSort := c.env
+		c.env = sortEnv
+		sortExpr, err := c.expr(q.Sort)
+		c.env = oldSort
+		if err != nil {
+			return "", err
+		}
+		sortExpr = replaceIdent(sortExpr, q.Var, "it")
+		cast := ""
+		switch types.TypeOfExprBasic(q.Sort, sortEnv).(type) {
+		case types.IntType:
+			cast = " as Int"
+		case types.FloatType:
+			cast = " as Double"
+		case types.StringType:
+			cast = " as String"
+		default:
+			cast = " as Comparable<Any>"
+		}
+		method := ".sortedBy"
+		if strings.HasPrefix(sortExpr, "-") {
+			sortExpr = strings.TrimPrefix(sortExpr, "-")
+			method = ".sortedByDescending"
+		}
+		b.WriteString(indent(lvl))
+		b.WriteString(fmt.Sprintf("val __sorted = %s%s { %s%s }\n", src, method, sortExpr, cast))
+		sortedSrc = "__sorted"
+		preSorted = true
+	}
+
 	if ml, ok := mapLiteral(q.Select); ok && q.Group == nil {
 		if name, ok := c.mapNodes[ml]; ok {
 			if st, ok := c.env.GetStruct(name); ok {
@@ -1751,7 +1786,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(fmt.Sprintf("val __res = mutableListOf<%s>()\n", kotlinTypeOf(selType)))
 	}
 	b.WriteString(indent(lvl))
-	b.WriteString(fmt.Sprintf("for (%s in %s) {\n", q.Var, src))
+	b.WriteString(fmt.Sprintf("for (%s in %s) {\n", q.Var, sortedSrc))
 	lvl++
 	for _, f := range q.Froms {
 		s, err := c.expr(f.Src)
@@ -1989,7 +2024,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	res := b.String()
-	if q.Sort != nil && q.Group == nil {
+	if q.Sort != nil && q.Group == nil && !preSorted {
 		sortEnv := c.env
 		if q.Group != nil {
 			sortEnv = types.NewEnv(c.env)
