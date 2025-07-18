@@ -548,10 +548,10 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	if c.needMath {
 		c.writeln("#include <math.h>")
 	}
-	if c.has(needStringHeader) || c.has(needConcatString) || c.has(needConcatListString) || c.has(needListString) || c.has(needUnionListString) || c.has(needExceptListString) || c.has(needIntersectListString) || c.has(needInListString) || c.has(needInString) || c.has(needMapStringInt) || c.has(needGroupByPairString) || c.has(needLower) {
+	if c.has(needStringHeader) || c.has(needConcatString) || c.has(needConcatListString) || c.has(needListString) || c.has(needUnionListString) || c.has(needExceptListString) || c.has(needIntersectListString) || c.has(needInListString) || c.has(needInString) || c.has(needMapStringInt) || c.has(needGroupByPairString) || c.has(needLower) || c.has(needUpper) || c.has(needSplit) || c.has(needFloat) {
 		c.writeln("#include <string.h>")
 	}
-	if c.has(needLower) {
+	if c.has(needLower) || c.has(needUpper) {
 		c.writeln("#include <ctype.h>")
 	}
 	if c.has(needNow) {
@@ -5585,6 +5585,25 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			c.need(needLower)
 			c.need(needStringHeader)
 			return fmt.Sprintf("_lower(%s)", arg)
+		} else if p.Call.Func == "upper" {
+			arg := c.compileExpr(p.Call.Args[0])
+			c.need(needUpper)
+			c.need(needStringHeader)
+			return fmt.Sprintf("_upper(%s)", arg)
+		} else if p.Call.Func == "float" {
+			arg := c.compileExpr(p.Call.Args[0])
+			if isStringArg(p.Call.Args[0], c.env) {
+				c.need(needFloat)
+				c.need(needStringHeader)
+				return fmt.Sprintf("_float(%s)", arg)
+			}
+			return fmt.Sprintf("(double)(%s)", arg)
+		} else if p.Call.Func == "split" {
+			s := c.compileExpr(p.Call.Args[0])
+			sep := c.compileExpr(p.Call.Args[1])
+			c.need(needSplit)
+			c.need(needStringHeader)
+			return fmt.Sprintf("_split(%s, %s)", s, sep)
 		} else if p.Call.Func == "sha256" {
 			arg := c.compileExpr(p.Call.Args[0])
 			if isStringArg(p.Call.Args[0], c.env) {
@@ -7691,7 +7710,7 @@ func constLiteralTypeVal(e *parser.Expr) (typ, val string, ok bool) {
 	}
 	switch {
 	case lit.Int != nil:
-		return "int", strconv.Itoa(*lit.Int), true
+		return "int", strconv.Itoa(int(*lit.Int)), true
 	case lit.Float != nil:
 		s := strconv.FormatFloat(*lit.Float, 'f', -1, 64)
 		if !strings.ContainsAny(s, ".eE") {
