@@ -1,0 +1,8 @@
+parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/caesar-cipher-2.mochi:25:40: unexpected token "-65" (expected "]")
+  --> /workspace/mochi/tests/rosetta/x/Mochi/caesar-cipher-2.mochi:25:40
+
+ 25 |   if n >= 65 && n < 91 { return upper[n-65:n-64] }
+    |                                        ^
+
+help:
+  Parse error occurred. Check syntax near this location.

@@ -1,19 +1,8 @@
-javac: exit status 1
-/tmp/AbelianSandpileModel.java:60: error: incompatible types: Object cannot be converted to List<List<Integer>>
-                List<List<Integer>> v = ((List)pile.get(row)).get(col);
-                                                                 ^
-/tmp/AbelianSandpileModel.java:61: error: bad operand types for binary operator '>'
-                if (v > 3) {
-                      ^
-  first type:  List<List<Integer>>
-  second type: int
-/tmp/AbelianSandpileModel.java:62: error: incompatible types: int cannot be converted to List<List<Integer>>
-                    v = 3;
-                        ^
-/tmp/AbelianSandpileModel.java:64: error: incompatible types: List<List<Integer>> cannot be converted to int
-                line = line + ((Number)chars.get(v)).doubleValue();
-                                                 ^
-Note: /tmp/AbelianSandpileModel.java uses unchecked or unsafe operations.
-Note: Recompile with -Xlint:unchecked for details.
-Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
-4 errors
+parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/abelian-sandpile-model.mochi:24:13: unexpected token "-1" (expected "]")
+  --> /workspace/mochi/tests/rosetta/x/Mochi/abelian-sandpile-model.mochi:24:13
+
+ 24 |       pile[y-1][x] = pile[y-1][x] + 1
+    |             ^
+
+help:
+  Parse error occurred. Check syntax near this location.

@@ -5,6 +5,7 @@ package javacode
 import (
 	"bytes"
 	"fmt"
+	"math"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -2648,7 +2649,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Lit != nil:
 		switch {
 		case p.Lit.Int != nil:
-			return fmt.Sprintf("%d", *p.Lit.Int), nil
+			n := int64(*p.Lit.Int)
+			if n > math.MaxInt32 || n < math.MinInt32 {
+				return fmt.Sprintf("%dL", n), nil
+			}
+			return fmt.Sprintf("%d", n), nil
 		case p.Lit.Float != nil:
 			return fmt.Sprintf("%f", *p.Lit.Float), nil
 		case p.Lit.Str != nil:

@@ -1,21 +1,8 @@
-javac: exit status 1
-/tmp/BenfordsLaw.java:7: error: incompatible types: double cannot be converted to String
-        return Double.parseDouble(String.valueOf((Integer.parseInt(x))));
-                                                                   ^
-/tmp/BenfordsLaw.java:71: error: incompatible types: double cannot be converted to String
-        return Integer.parseInt(x);
-                                ^
-/tmp/BenfordsLaw.java:76: error: incompatible types: Object cannot be converted to double
-            int d = leadingDigit(n);
-                                 ^
-/tmp/BenfordsLaw.java:78: error: incompatible types: double cannot be converted to Integer
-                counts.set(d - 1, ((Number)counts.get(d - 1)).doubleValue() + 1);
-                                                                            ^
-/tmp/BenfordsLaw.java:87: error: incompatible types: Integer cannot be converted to List
-            double obs = ((Number)(Double.parseDouble(String.valueOf(((List)counts.get(i)))))).doubleValue() / (Double.parseDouble(String.valueOf(total)));
-                                                                                      ^
-/tmp/BenfordsLaw.java:88: error: incompatible types: String cannot be converted to Number
-            String line = "  " + String.valueOf(i + 1) + "  " + padFloat3(obs, 9) + "  " + ((Number)padFloat3(preds.get(i), 8)).doubleValue();
-                                                                                                             ^
-Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
-6 errors
+parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/benfords-law.mochi:74:15: unexpected token "-1" (expected "]")
+  --> /workspace/mochi/tests/rosetta/x/Mochi/benfords-law.mochi:74:15
+
+ 74 |       counts[d-1] = counts[d-1] + 1
+    |               ^
+
+help:
+  Parse error occurred. Check syntax near this location.

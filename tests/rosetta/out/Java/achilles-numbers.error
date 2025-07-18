@@ -1,8 +1,8 @@
-javac: exit status 1
-/tmp/AchillesNumbers.java:115: error: ')' expected
-        for (Object k : (List<Object>)((Map<Integer,Boolean>)achSet).get("keys")()) {
-                                                                                ^
-/tmp/AchillesNumbers.java:115: error: -> expected
-        for (Object k : (List<Object>)((Map<Integer,Boolean>)achSet).get("keys")()) {
-                                                                                  ^
-2 errors
+parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/achilles-numbers.mochi:160:21: unexpected token "-2" (expected "]")
+  --> /workspace/mochi/tests/rosetta/x/Mochi/achilles-numbers.mochi:160:21
+
+160 |     let c = counts[d-2]
+    |                     ^
+
+help:
+  Parse error occurred. Check syntax near this location.

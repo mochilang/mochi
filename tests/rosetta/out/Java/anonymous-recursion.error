@@ -1,0 +1,8 @@
+parse: error[P052]: /workspace/mochi/tests/rosetta/x/Mochi/anonymous-recursion.mochi:3:15: unexpected token "-1" (expected ")")
+  --> /workspace/mochi/tests/rosetta/x/Mochi/anonymous-recursion.mochi:3:15
+
+  3 |   return fib(n-1) + fib(n-2)
+    |               ^
+
+help:
+  Unbalanced parentheses. Check for missing `(` or `)`.
