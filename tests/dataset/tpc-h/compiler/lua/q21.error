@@ -1,0 +1,8 @@
+run: exit status 1
+lua: /tmp/q21.lua:303: attempt to compare number with boolean
+stack traceback:
+	/tmp/q21.lua:303: in local 'whereFn'
+	/tmp/q21.lua:207: in function '__query'
+	/tmp/q21.lua:291: in function </tmp/q21.lua:289>
+	/tmp/q21.lua:289: in main chunk
+	[C]: in ?
