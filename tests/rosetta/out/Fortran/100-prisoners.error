@@ -1,61 +1,26 @@
 gfortran: exit status 1
-/tmp/100-prisoners.f90:42:7:
+/tmp/100-prisoners.f90:43:7:
 
-   42 |       tmp = arr(((i)+1))
+   43 |       tmp = arr(((i)+1))
       |       1
 Error: Unclassifiable statement at (1)
-/tmp/100-prisoners.f90:129:8:
+/tmp/100-prisoners.f90:130:8:
 
-  129 |       np = arr5(i5)
+  130 |       np = arr5(i5)
       |        1
 Error: Symbol ‘np’ at (1) has no IMPLICIT type
-/tmp/100-prisoners.f90:127:10:
+/tmp/100-prisoners.f90:128:10:
 
-  127 |     trials = 1000
+  128 |     trials = 1000
       |          1
 Error: Symbol ‘trials’ at (1) has no IMPLICIT type
-/tmp/100-prisoners.f90:134:16:
+/tmp/100-prisoners.f90:135:16:
 
-  134 |         strat = arr8(i8)
+  135 |         strat = arr8(i8)
       |                1
 Error: Cannot convert CHARACTER(7) to INTEGER(4) at (1)
-/tmp/100-prisoners.f90:67:24:
+/tmp/100-prisoners.f90:39:4:
 
-   67 |       drawers = shuffle(drawers)
-      |                        1
-Error: Rank mismatch in argument ‘xs’ at (1) (scalar and rank-1)
-/tmp/100-prisoners.f90:41:14:
-
-   41 |       j = mod(now(),((i + 1)))
-      |              1
-Error: Function ‘now’ at (1) has no IMPLICIT type
-/tmp/100-prisoners.f90:90:35:
-
-   90 |             app1(1:size(opened)) = opened
-      |                                   1
-Warning: Extension: Conversion from INTEGER(4) to LOGICAL(4) at (1)
-/tmp/100-prisoners.f90:92:21:
-
-   92 |             opened = app1
-      |                     1
-Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
-/tmp/100-prisoners.f90:97:20:
-
-   97 |             n = mod(now(),100)
-      |                    1
-Error: Function ‘now’ at (1) has no IMPLICIT type
-/tmp/100-prisoners.f90:99:22:
-
-   99 |               n = mod(now(),100)
-      |                      1
-Error: Function ‘now’ at (1) has no IMPLICIT type
-/tmp/100-prisoners.f90:98:22:
-
-   98 |             do while (opened(((n)+1)))
-      |                      1
-Error: Exit condition of DO WHILE loop at (1) must be a scalar LOGICAL expression
-/tmp/100-prisoners.f90:101:30:
-
-  101 |             opened(((n)+1)) = .true.
-      |                              1
-Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
+   39 |     arr = xs
+      |    1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
