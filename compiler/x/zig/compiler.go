@@ -2582,12 +2582,22 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr, asReturn bool) (string, e
 		if opName == "in" {
 			if right.isMap {
 				expr = fmt.Sprintf("%s.contains(%s)", right.expr, left.expr)
-			} else if right.isStrList {
-				c.needsInListString = true
-				expr = fmt.Sprintf("_contains_list_string(%s, %s)", right.expr, left.expr)
-			} else {
-				c.needsInListInt = true
-				expr = fmt.Sprintf("_contains_list_int(%s, %s)", right.expr, left.expr)
+			} else if right.isList || right.isStrList {
+				var elem string
+				if right.unary != nil {
+					elem = c.listElemTypeUnary(right.unary)
+				} else {
+					elem = c.listElemTypePostfix(right.postfix)
+				}
+				if elem == "[]const u8" {
+					lbl := c.newLabel()
+					it := c.newTmp()
+					var b strings.Builder
+					b.WriteString(lbl + ": { var found: bool = false; for (" + right.expr + ") |" + it + "| { if (std.mem.eql(u8, " + it + ", " + left.expr + ")) { found = true; break; } } break :" + lbl + " found; }")
+					expr = b.String()
+				} else {
+					expr = fmt.Sprintf("std.mem.indexOfScalar(%s, %s, %s) != null", elem, right.expr, left.expr)
+				}
 			}
 			return operand{expr: expr}, nil
 		}
