@@ -2,12 +2,12 @@
 
 This directory holds Dart code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
-Compiled programs: 27/239
+Compiled programs: 28/239
 
 Checklist:
-- [ ] 100-doors-2
-- [ ] 100-doors-3
-- [ ] 100-doors
+- [x] 100-doors-2
+- [x] 100-doors-3
+- [x] 100-doors
 - [ ] 100-prisoners
 - [ ] 15-puzzle-game
 - [ ] 15-puzzle-solver

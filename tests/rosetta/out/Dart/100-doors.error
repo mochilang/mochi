@@ -1,4 +1,0 @@
-run: exit status 254
-/tmp/100-doors.dart:12:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      idx = (idx as num) + pass;
-                         ^
