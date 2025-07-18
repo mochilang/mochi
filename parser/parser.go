@@ -31,7 +31,7 @@ var mochiLexer = lexer.MustSimple([]lexer.SimpleRule{
 	{Name: "Int", Pattern: `\d+`},
 	{Name: "String", Pattern: `"(?:\\.|[^"])*"`},
 	{Name: "Punct", Pattern: `==|!=|<=|>=|&&|\|\||=>|:-|\.\.|[-+*/%=<>!|{}\[\](),.:]`},
-	{Name: "Whitespace", Pattern: `[ \t\n\r]+`},
+	{Name: "Whitespace", Pattern: `[ \t\n\r;]+`},
 })
 
 // --- Program Structure ---

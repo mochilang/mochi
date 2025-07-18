@@ -334,9 +334,11 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 			if ls || rs {
 				expr = fmt.Sprintf("(string-append %s %s)", l, r)
 				outStr = true
-			} else {
+			} else if ln && rn {
 				expr = fmt.Sprintf("(+ %s %s)", l, r)
-				outNum = ln && rn
+				outNum = true
+			} else {
+				expr = fmt.Sprintf("(if (and (string? %s) (string? %s)) (string-append %s %s) (+ %s %s))", l, r, l, r, l, r)
 			}
 		case "-", "*", "/":
 			expr = fmt.Sprintf("(%s %s %s)", op.op, l, r)
@@ -629,11 +631,21 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", fmt.Errorf("str expects 1 arg")
 			}
 			return fmt.Sprintf("(number->string %s)", args[0]), nil
+		case "input":
+			if len(args) != 0 {
+				return "", fmt.Errorf("input expects no arg")
+			}
+			return "(read-line)", nil
 		case "exists":
 			if len(args) != 1 {
 				return "", fmt.Errorf("exists expects 1 arg")
 			}
 			return fmt.Sprintf("(not (null? %s))", args[0]), nil
+		case "now":
+			if len(args) != 0 {
+				return "", fmt.Errorf("now expects no arg")
+			}
+			return "(inexact->exact (round (* (current-inexact-milliseconds) 1000000)))", nil
 		case "json":
 			if len(args) != 1 {
 				return "", fmt.Errorf("json expects 1 arg")
