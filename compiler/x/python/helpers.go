@@ -328,6 +328,8 @@ func pyType(t types.Type) string {
 		return "dict[" + pyType(tt.Key) + ", " + pyType(tt.Value) + "]"
 	case types.GroupType:
 		return "_Group[Any, " + pyType(tt.Elem) + "]"
+	case types.OptionType:
+		return "typing.Optional[" + pyType(tt.Elem) + "]"
 	case types.StructType:
 		return sanitizeName(tt.Name)
 	case types.UnionType:

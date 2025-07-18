@@ -122,3 +122,5 @@
 - 2025-07-27 - Updated TPCH Python outputs to use compact JSON separators and regenerated golden files.
 - 2025-07-18 - List set operations now unwrap optional types so `_union`, `_except` and `_intersect` helpers are avoided when inputs are optional lists.
 - 2025-07-28 - Added bigint type support and golden tests for `tests/vm_extended/valid`.
+- 2025-07-29 - Option type hints propagate through `compileExprHint` and
+  `pyType` emits `typing.Optional` so optional lists avoid runtime helpers.
