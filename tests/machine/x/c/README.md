@@ -71,7 +71,7 @@ The C backend compiles Mochi programs in `tests/vm/valid`. The table below lists
 - [x] group_by_having
 - [x] group_by_multi_join
 - [x] group_by_sort
-- [ ] group_items_iteration
+ - [x] group_items_iteration
  - [x] in_operator
 - [x] in_operator_extended
 - [x] inner_join

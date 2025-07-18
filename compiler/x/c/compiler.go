@@ -91,6 +91,7 @@ type Compiler struct {
 	allocs           []string
 	equalListStructs map[string]bool
 	funcAliases      map[string]string
+	appendTypes      map[string]types.Type
 }
 
 func (c *Compiler) pushPointerVars() map[string]bool {
@@ -127,6 +128,7 @@ func New(env *types.Env) *Compiler {
 		allocs:           []string{},
 		equalListStructs: map[string]bool{},
 		funcAliases:      map[string]string{},
+		appendTypes:      map[string]types.Type{},
 	}
 }
 
@@ -255,6 +257,8 @@ func (c *Compiler) cType(t *parser.TypeRef) string {
 }
 
 func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
+	c.appendTypes = c.gatherAppendTypes(prog.Statements)
+	defer func() { c.appendTypes = nil }()
 	// forward declarations for user-defined types allow recursive structs
 	forwardSet := map[string]bool{}
 	var forward []string
@@ -637,6 +641,8 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 			}
 		}
 	}
+	c.appendTypes = c.gatherAppendTypes(fun.Body)
+	defer func() { c.appendTypes = nil }()
 	var retType types.Type
 	if fun.Return != nil {
 		retType = resolveTypeRef(fun.Return, c.env)
@@ -1587,6 +1593,11 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 		}
 	} else if stmt.Value != nil {
 		t = c.exprType(stmt.Value)
+		if isEmptyListLiteral(stmt.Value) && stmt.Type == nil {
+			if at, ok := c.appendTypes[stmt.Name]; ok {
+				t = at
+			}
+		}
 		if st, ok := castMapToStruct(stmt.Value, c.env); ok {
 			t = st
 		} else if ll := stmt.Value.Binary.Left.Value.Target.List; ll != nil {
@@ -1645,6 +1656,24 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 				c.listVals[name] = vals
 				return nil
 			}
+		} else if vals, ok := c.evalListFloatExpr(stmt.Value); ok && (isListFloatType(t) || t == nil || types.ContainsAny(t)) {
+			if t == nil || types.ContainsAny(t) {
+				t = types.ListType{Elem: types.FloatType{}}
+				if c.env != nil {
+					c.env.SetVar(stmt.Name, t, true)
+				}
+			}
+			c.need(needListFloat)
+			c.writeln(fmt.Sprintf("list_float %s = list_float_create(%d);", name, len(vals)))
+			for i, v := range vals {
+				s := strconv.FormatFloat(v, 'f', -1, 64)
+				if !strings.ContainsAny(s, ".eE") {
+					s += ".0"
+				}
+				c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, s))
+			}
+			c.listLens[name] = len(vals)
+			return nil
 		}
 		if f := asFetchExpr(stmt.Value); f != nil {
 			if st, ok := t.(types.StructType); ok {
@@ -1665,29 +1694,26 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 		} else if isEmptyListLiteral(stmt.Value) {
 			if isListStringType(t) {
 				c.need(needListString)
-				val := c.newTemp()
-				c.writeln(fmt.Sprintf("list_string %s = {0, NULL};", val))
-				c.writeln(formatFuncPtrDecl(typ, name, val))
+				c.writeln(fmt.Sprintf("list_string %s = {0, NULL};", name))
 			} else if isListFloatType(t) {
 				c.need(needListFloat)
-				val := c.newTemp()
-				c.writeln(fmt.Sprintf("list_float %s = {0, NULL};", val))
-				c.writeln(formatFuncPtrDecl(typ, name, val))
+				c.writeln(fmt.Sprintf("list_float %s = {0, NULL};", name))
 			} else if isListListIntType(t) {
 				c.need(needListListInt)
-				val := c.newTemp()
-				c.writeln(fmt.Sprintf("list_list_int %s = {0, NULL};", val))
-				c.writeln(formatFuncPtrDecl(typ, name, val))
+				c.writeln(fmt.Sprintf("list_list_int %s = {0, NULL};", name))
+			} else if lt, ok := t.(types.ListType); ok {
+				if st, ok2 := lt.Elem.(types.StructType); ok2 {
+					c.compileStructType(st)
+					c.compileStructListType(st)
+					listC := sanitizeListName(st.Name)
+					c.writeln(fmt.Sprintf("%s %s = {0, NULL};", listC, name))
+				} else if isListIntType(t) || isListBoolType(t) {
+					c.need(needListInt)
+					c.writeln(fmt.Sprintf("list_int %s = {0, NULL};", name))
+				}
 			} else if isListIntType(t) || isListBoolType(t) {
 				c.need(needListInt)
-				val := c.newTemp()
-				c.writeln(fmt.Sprintf("list_int %s = {0, NULL};", val))
-				c.writeln(formatFuncPtrDecl(typ, name, val))
-				for i, a := range c.allocs {
-					if a == val {
-						c.allocs[i] = name
-					}
-				}
+				c.writeln(fmt.Sprintf("list_int %s = {0, NULL};", name))
 			} else if isMapIntBoolType(t) && isEmptyMapLiteral(stmt.Value) {
 				c.need(needMapIntBool)
 				val := c.newTemp()
@@ -5176,6 +5202,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			isStr := isStringArg(p.Call.Args[0], c.env)
 			if vals, ok := c.evalListIntExpr(p.Call.Args[0]); ok {
 				return strconv.Itoa(len(vals))
+			} else if fvals, ok := c.evalListFloatExpr(p.Call.Args[0]); ok {
+				return strconv.Itoa(len(fvals))
 			}
 			arg := c.compileExpr(p.Call.Args[0])
 			if isStr {
@@ -5528,6 +5556,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					total += v
 				}
 				return strconv.Itoa(total)
+			} else if fvals, ok := c.evalListFloatExpr(p.Call.Args[0]); ok {
+				total := 0.0
+				for _, v := range fvals {
+					total += v
+				}
+				s := strconv.FormatFloat(total, 'f', -1, 64)
+				if !strings.ContainsAny(s, ".eE") {
+					s += ".0"
+				}
+				return s
 			}
 			arg := c.compileExpr(p.Call.Args[0])
 			if isListIntExpr(p.Call.Args[0], c.env) {
@@ -5558,6 +5596,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					total += v
 				}
 				avg := float64(total) / float64(len(vals))
+				s := strconv.FormatFloat(avg, 'f', -1, 64)
+				if !strings.ContainsAny(s, ".eE") {
+					s += ".0"
+				}
+				return s
+			} else if fvals, ok := c.evalListFloatExpr(p.Call.Args[0]); ok {
+				if len(fvals) == 0 {
+					return "0.0"
+				}
+				total := 0.0
+				for _, v := range fvals {
+					total += v
+				}
+				avg := total / float64(len(fvals))
 				s := strconv.FormatFloat(avg, 'f', -1, 64)
 				if !strings.ContainsAny(s, ".eE") {
 					s += ".0"
@@ -5597,6 +5649,21 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					}
 				}
 				return strconv.Itoa(m)
+			} else if fvals, ok := c.evalListFloatExpr(p.Call.Args[0]); ok {
+				if len(fvals) == 0 {
+					return "0.0"
+				}
+				m := fvals[0]
+				for _, v := range fvals[1:] {
+					if v < m {
+						m = v
+					}
+				}
+				s := strconv.FormatFloat(m, 'f', -1, 64)
+				if !strings.ContainsAny(s, ".eE") {
+					s += ".0"
+				}
+				return s
 			}
 			arg := c.compileExpr(p.Call.Args[0])
 			if isListIntExpr(p.Call.Args[0], c.env) {
@@ -5634,6 +5701,21 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					}
 				}
 				return strconv.Itoa(m)
+			} else if fvals, ok := c.evalListFloatExpr(p.Call.Args[0]); ok {
+				if len(fvals) == 0 {
+					return "0.0"
+				}
+				m := fvals[0]
+				for _, v := range fvals[1:] {
+					if v > m {
+						m = v
+					}
+				}
+				s := strconv.FormatFloat(m, 'f', -1, 64)
+				if !strings.ContainsAny(s, ".eE") {
+					s += ".0"
+				}
+				return s
 			}
 			arg := c.compileExpr(p.Call.Args[0])
 			if isListIntExpr(p.Call.Args[0], c.env) {
@@ -6116,6 +6198,48 @@ func (c *Compiler) guessType(e *parser.Expr) types.Type {
 		}
 	}
 	return t
+}
+
+// gatherAppendTypes records list element types for variables that are assigned
+// using append later in the statement list. This improves inference for
+// variables declared with an empty list literal.
+func (c *Compiler) gatherAppendTypes(stmts []*parser.Statement) map[string]types.Type {
+	res := map[string]types.Type{}
+	var walk func([]*parser.Statement)
+	walk = func(list []*parser.Statement) {
+		for _, st := range list {
+			switch {
+			case st.Assign != nil:
+				if call, ok := callPattern(st.Assign.Value); ok && call.Func == "append" && len(call.Args) == 2 {
+					if name, ok2 := identName(call.Args[0]); ok2 && name == st.Assign.Name {
+						elem := c.guessType(call.Args[1])
+						if ml := asMapLiteral(call.Args[1]); ml != nil {
+							if stt, ok3 := c.inferStructFromMap(ml, st.Assign.Name); ok3 {
+								elem = stt
+							}
+						}
+						res[st.Assign.Name] = types.ListType{Elem: elem}
+					}
+				}
+			case st.For != nil:
+				walk(st.For.Body)
+			case st.While != nil:
+				walk(st.While.Body)
+			case st.If != nil:
+				walk(st.If.Then)
+				if st.If.Else != nil {
+					walk(st.If.Else)
+				}
+				for ei := st.If.ElseIf; ei != nil; ei = ei.ElseIf {
+					walk(ei.Then)
+				}
+			case st.Fun != nil:
+				walk(st.Fun.Body)
+			}
+		}
+	}
+	walk(stmts)
+	return res
 }
 
 // groupKeySelector reports the root variable name if e is a `var.key` selector.
@@ -7349,6 +7473,29 @@ func (c *Compiler) evalListIntExpr(e *parser.Expr) ([]int, bool) {
 		return nil, false
 	}
 	return c.evalListIntBinary(e.Binary)
+}
+
+func (c *Compiler) evalListFloatExpr(e *parser.Expr) ([]float64, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	if e.Binary.Left == nil || e.Binary.Left.Value == nil || e.Binary.Left.Value.Target == nil {
+		return nil, false
+	}
+	ll := e.Binary.Left.Value.Target.List
+	if ll == nil {
+		return nil, false
+	}
+	vals := make([]float64, len(ll.Elems))
+	for i, el := range ll.Elems {
+		typ, val, ok := constLiteralTypeVal(el)
+		if !ok || typ != "double" {
+			return nil, false
+		}
+		fv, _ := strconv.ParseFloat(val, 64)
+		vals[i] = fv
+	}
+	return vals, true
 }
 
 func (c *Compiler) evalAppendInt(listExpr, valExpr *parser.Expr) ([]int, bool) {
