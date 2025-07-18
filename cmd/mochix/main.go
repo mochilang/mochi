@@ -753,7 +753,7 @@ func compileProgram(lang string, env *types.Env, prog *parser.Program, root, src
 	case "smalltalk":
 		return smalltalkcode.New().Compile(prog)
 	case "st":
-		return stcode.New().Compile(prog)
+		return stcode.New(env).Compile(prog)
 	case "swift":
 		return swiftcode.New(env).Compile(prog)
 	case "zig":
