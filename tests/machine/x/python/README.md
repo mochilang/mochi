@@ -108,3 +108,24 @@ Checklist:
 
 ## Dataset Queries
 - [x] tpch_q1
+- [x] tpch_q2
+- [x] tpch_q3
+- [x] tpch_q4
+- [x] tpch_q5
+- [x] tpch_q6
+- [x] tpch_q7
+- [x] tpch_q8
+- [x] tpch_q9
+- [x] tpch_q10
+- [x] tpch_q11
+- [x] tpch_q12
+- [x] tpch_q13
+- [x] tpch_q14
+- [x] tpch_q15
+- [x] tpch_q16
+- [x] tpch_q17
+- [x] tpch_q18
+- [x] tpch_q19
+- [x] tpch_q20
+- [x] tpch_q21
+- [x] tpch_q22

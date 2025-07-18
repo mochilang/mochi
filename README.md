@@ -675,6 +675,17 @@ Run the golden tests to verify the code and output:
 go test ./compiler/x/ex -run TestExCompiler_TPCHQueries -tags=slow -v
 ```
 
+## TPC-H Queries with Python
+
+The Python backend also passes all twenty-two TPC-H benchmark queries. Generated
+programs and expected output reside in `tests/dataset/tpc-h/compiler/py`.
+
+Run the golden tests:
+
+```bash
+go test ./compiler/x/python -run TestPyCompiler_TPCHQueries -tags=slow -v
+```
+
 ## Contributing
 
 Mochi is open source and happy to have your contributions.
