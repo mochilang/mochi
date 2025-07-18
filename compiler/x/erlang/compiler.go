@@ -49,6 +49,8 @@ type Compiler struct {
 	builtinAliases map[string]string
 
 	fields map[string]map[string]bool
+
+	fnDepth int
 }
 
 func New(srcPath string) *Compiler {
@@ -70,6 +72,7 @@ func New(srcPath string) *Compiler {
 		pinned:         make(map[string]string),
 		builtinAliases: make(map[string]string),
 		fields:         make(map[string]map[string]bool),
+		fnDepth:        0,
 	}
 }
 
@@ -219,8 +222,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 }
 
 func (c *Compiler) compileLet(l *parser.LetStmt) (string, error) {
-	if l.Value != nil && isLiteralExpr(l.Value) {
-		// inline constant literals; no variable declaration needed
+	if c.fnDepth == 0 && l.Value != nil && isLiteralExpr(l.Value) {
+		// inline constant literals for top-level lets
 		return "", nil
 	}
 	c.lets[l.Name] = true
@@ -406,6 +409,7 @@ func (c *Compiler) compileStmtLine(st *parser.Statement) (string, error) {
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
+	c.fnDepth++
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		params[i] = capitalize(p.Name)
@@ -436,6 +440,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 				}
 				c.writeln(fmt.Sprintf("case %s of true -> %s; _ -> %s end.", cond, thenExpr, elseExpr))
 				c.indent--
+				c.fnDepth--
 				return nil
 			}
 		}
@@ -460,6 +465,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		}
 	}
 	c.indent--
+	c.fnDepth--
 	return nil
 }
 
@@ -501,14 +507,8 @@ func (c *Compiler) compileTestBlock(tb *parser.TestBlock) (string, error) {
 
 func (c *Compiler) compileWhile(w *parser.WhileStmt) (string, error) {
 	mutated := map[string]bool{}
-	for _, st := range w.Body {
-		if st.Assign != nil {
-			mutated[st.Assign.Name] = true
-		}
-		if st.Update != nil {
-			mutated[st.Update.Target] = true
-		}
-	}
+	collectMutations(w.Body, mutated)
+	hasBC := hasBreakOrContinue(w.Body)
 	params := make([]string, 0, len(mutated))
 	initArgs := make([]string, 0, len(mutated))
 	for v := range mutated {
@@ -542,8 +542,16 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) (string, error) {
 		body = "ok"
 	}
 	loopName := c.newVarName("loop")
-	fun := fmt.Sprintf("fun %s(%s) -> case %s of true -> %s, %s(%s); _ -> ok end end", loopName, strings.Join(params, ", "), cond, body, loopName, strings.Join(nextArgs, ", "))
-	return fmt.Sprintf("(%s)(%s)", fun, strings.Join(initArgs, ", ")), nil
+	iterBody := body
+	if hasBC {
+		iterBody = fmt.Sprintf("try %s catch throw:continue -> {%s} end", body, strings.Join(nextArgs, ", "))
+	}
+	fun := fmt.Sprintf("fun %s(%s) -> case %s of true -> %s, %s(%s); _ -> {%s} end end", loopName, strings.Join(params, ", "), cond, iterBody, loopName, strings.Join(nextArgs, ", "), strings.Join(params, ", "))
+	call := fmt.Sprintf("{%s} = (%s)(%s)", strings.Join(nextArgs, ", "), fun, strings.Join(initArgs, ", "))
+	if hasBC {
+		call = fmt.Sprintf("try %s catch throw:break -> ok end", call)
+	}
+	return call, nil
 }
 
 func (c *Compiler) compileUpdate(st *parser.UpdateStmt) (string, error) {
@@ -1330,6 +1338,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 }
 
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
+	c.fnDepth++
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		params[i] = capitalize(p.Name)
@@ -1337,10 +1346,14 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	if fn.ExprBody != nil {
 		body, err := c.compileExpr(fn.ExprBody)
 		if err != nil {
+			c.fnDepth--
 			return "", err
 		}
-		return fmt.Sprintf("fun(%s) -> %s end", strings.Join(params, ", "), body), nil
+		res := fmt.Sprintf("fun(%s) -> %s end", strings.Join(params, ", "), body)
+		c.fnDepth--
+		return res, nil
 	}
+	c.fnDepth--
 	return "", fmt.Errorf("block function expressions not supported")
 }
 
@@ -1847,6 +1860,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		fmtStr := strings.Join(parts, " ") + "~n"
 		return fmt.Sprintf("io:format(\"%s\", [%s])", fmtStr, strings.Join(args, ", ")), nil
+	case "input":
+		if len(call.Args) != 0 {
+			return "", fmt.Errorf("input expects no args")
+		}
+		return "string:trim(io:get_line(\"\"))", nil
 	case "len":
 		if len(call.Args) != 1 {
 			return "", fmt.Errorf("len expects 1 argument")
