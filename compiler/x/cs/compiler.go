@@ -3219,11 +3219,19 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			if isMapType(t) || isStructType(t) || isGroupType(t) || isUnionType(t) {
 				return fmt.Sprintf("Console.WriteLine(JsonSerializer.Serialize(%s))", args[0]), nil
 			}
+			if isBoolType(t) {
+				return fmt.Sprintf("Console.WriteLine(%s ? 1 : 0)", args[0]), nil
+			}
 			return fmt.Sprintf("Console.WriteLine(%s)", args[0]), nil
 		}
 		parts := make([]string, len(args))
 		for i, a := range args {
-			parts[i] = fmt.Sprintf("Convert.ToString(%s)", a)
+			t := c.inferExprType(call.Args[i])
+			if isBoolType(t) {
+				parts[i] = fmt.Sprintf("Convert.ToString(%s ? 1 : 0)", a)
+			} else {
+				parts[i] = fmt.Sprintf("Convert.ToString(%s)", a)
+			}
 		}
 		joined := "string.Join(\" \", new [] { " + strings.Join(parts, ", ") + " })"
 		return fmt.Sprintf("Console.WriteLine(%s)", joined), nil
@@ -3784,6 +3792,11 @@ func isListType(t types.Type) bool {
 
 func isMapType(t types.Type) bool {
 	_, ok := t.(types.MapType)
+	return ok
+}
+
+func isBoolType(t types.Type) bool {
+	_, ok := t.(types.BoolType)
 	return ok
 }
 

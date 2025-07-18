@@ -2,7 +2,7 @@
 
 This directory holds C# source generated from the Mochi programs in `tests/vm/valid`. Each compiled program has a `.cs` file and the expected output in a matching `.out`. If the compiler failed a `.error` file will be present instead.
 
-Compiled programs: 31/100
+Compiled programs: 32/100
 
 Checklist:
 
@@ -25,7 +25,7 @@ Checklist:
 - [x] for_list_collection
 - [x] for_loop
 - [ ] for_map_collection
-- [ ] fun_call
+- [x] fun_call
 - [ ] fun_expr_in_let
 - [ ] fun_three_args
 - [ ] go_auto

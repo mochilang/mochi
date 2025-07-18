@@ -1,4 +1,8 @@
 # C# Compiler TODO
+## Recent Updates (2025-07-18 00:00)
+- Fixed boolean printing to emit 1 or 0 when printing a single expression.
+- Generated machine output for `fun_call` bringing totals to 32/100.
+
 ## Recent Updates (2025-07-27 00:00)
 - Map literals are now compiled to structs when their shape is inferrable,
   reducing reliance on dictionary helpers.
