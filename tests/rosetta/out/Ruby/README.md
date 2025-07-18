@@ -1,4 +1,4 @@
-# Rosetta Ruby Output (45/216 compiled and run)
+# Rosetta Ruby Output (46/216 compiled and run)
 
 This directory holds Ruby source code generated from the real Mochi
 programs in `tests/rosetta/x/Mochi`. Each file has the expected
@@ -11,7 +11,7 @@ are stored in a corresponding `.error` file.
 - [x] 100-doors
 - [ ] 100-prisoners
 - [ ] 15-puzzle-game
-- [ ] 15-puzzle-solver
+ - [x] 15-puzzle-solver
 - [ ] 2048
 - [ ] 21-game
 - [ ] 24-game-solve
@@ -221,4 +221,4 @@ are stored in a corresponding `.error` file.
 - [ ] csv-to-html-translation-4
 - [ ] csv-to-html-translation-5
 - [ ] cusip
-- [ ] md5
+ - [x] md5

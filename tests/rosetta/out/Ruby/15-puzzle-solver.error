@@ -1,5 +1,0 @@
-run error: exit status 1
-/workspace/mochi/tests/rosetta/out/Ruby/15-puzzle-solver.rb:4:in `<main>': undefined method `FifteenPuzzleExample' for #<struct Add=#<Proc:0x00007f72dfba9470 /workspace/mochi/tests/rosetta/out/Ruby/15-puzzle-solver.rb:2 (lambda)>, Pi=3.14, Answer=42> (NoMethodError)
-
-puts(testpkg.FifteenPuzzleExample.call())
-            ^^^^^^^^^^^^^^^^^^^^^
