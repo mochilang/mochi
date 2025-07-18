@@ -1733,6 +1733,244 @@ func (c *Compiler) compileLeftJoinGroup(q *parser.QueryExpr) (string, error) {
 	return buf.String(), nil
 }
 
+func (c *Compiler) compileLeftJoinMulti(q *parser.QueryExpr) (string, error) {
+	j0 := q.Joins[0]
+	j1 := q.Joins[1]
+	capture := queryFreeVars(q, c.env)
+	use := ""
+	if len(capture) > 0 {
+		use = " use (" + strings.Join(capture, ", ") + ")"
+	}
+
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	if _, ok := c.isGroupVarExpr(q.Source); ok {
+		src = fmt.Sprintf("%s['items']", src)
+	}
+	joinSrc0, err := c.compileExpr(j0.Src)
+	if err != nil {
+		return "", err
+	}
+	if _, ok := c.isGroupVarExpr(j0.Src); ok {
+		joinSrc0 = fmt.Sprintf("%s['items']", joinSrc0)
+	}
+	joinSrc1, err := c.compileExpr(j1.Src)
+	if err != nil {
+		return "", err
+	}
+	if _, ok := c.isGroupVarExpr(j1.Src); ok {
+		joinSrc1 = fmt.Sprintf("%s['items']", joinSrc1)
+	}
+
+	child := types.NewEnv(c.env)
+	switch t := types.TypeOfExprBasic(q.Source, c.env).(type) {
+	case types.ListType:
+		child.SetVar(q.Var, t.Elem, true)
+	case types.GroupType:
+		child.SetVar(q.Var, t.Elem, true)
+	default:
+		child.SetVar(q.Var, types.AnyType{}, true)
+	}
+	if lt, ok := types.TypeOfExprBasic(j0.Src, c.env).(types.ListType); ok {
+		child.SetVar(j0.Var, lt.Elem, true)
+	} else {
+		child.SetVar(j0.Var, types.AnyType{}, true)
+	}
+	if lt, ok := types.TypeOfExprBasic(j1.Src, c.env).(types.ListType); ok {
+		child.SetVar(j1.Var, lt.Elem, true)
+	} else {
+		child.SetVar(j1.Var, types.AnyType{}, true)
+	}
+	orig := c.env
+	c.env = child
+	cond0, err := c.compileExpr(j0.On)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	cond1, err := c.compileExpr(j1.On)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	c.env = orig
+
+	var buf bytes.Buffer
+	buf.WriteString("(function()" + use + " {\n")
+	buf.WriteString("    $result = [];\n")
+	buf.WriteString(fmt.Sprintf("    foreach (%s as $%s) {\n", src, sanitizeName(q.Var)))
+	buf.WriteString(fmt.Sprintf("        foreach (%s as $%s) {\n", joinSrc0, sanitizeName(j0.Var)))
+	buf.WriteString(fmt.Sprintf("            if (%s) {\n", cond0))
+	buf.WriteString("                $_found = false;\n")
+	buf.WriteString(fmt.Sprintf("                foreach (%s as $%s) {\n", joinSrc1, sanitizeName(j1.Var)))
+	buf.WriteString(fmt.Sprintf("                    if (%s) {\n", cond1))
+	buf.WriteString("                        $_found = true;\n")
+	buf.WriteString(fmt.Sprintf("                        $result[] = %s;\n", sel))
+	buf.WriteString("                    }\n")
+	buf.WriteString("                }\n")
+	buf.WriteString("                if (!$_found) {\n")
+	buf.WriteString(fmt.Sprintf("                    $%s = null;\n", sanitizeName(j1.Var)))
+	buf.WriteString(fmt.Sprintf("                    $result[] = %s;\n", sel))
+	buf.WriteString("                }\n")
+	buf.WriteString("            }\n")
+	buf.WriteString("        }\n")
+	buf.WriteString("    }\n")
+	buf.WriteString("    return $result;\n")
+	buf.WriteString("})()")
+	return buf.String(), nil
+}
+
+func (c *Compiler) compileRightJoin(q *parser.QueryExpr) (string, error) {
+	j := q.Joins[0]
+	capture := queryFreeVars(q, c.env)
+	use := ""
+	if len(capture) > 0 {
+		use = " use (" + strings.Join(capture, ", ") + ")"
+	}
+
+	leftSrc, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	if _, ok := c.isGroupVarExpr(q.Source); ok {
+		leftSrc = fmt.Sprintf("%s['items']", leftSrc)
+	}
+	rightSrc, err := c.compileExpr(j.Src)
+	if err != nil {
+		return "", err
+	}
+	if _, ok := c.isGroupVarExpr(j.Src); ok {
+		rightSrc = fmt.Sprintf("%s['items']", rightSrc)
+	}
+
+	child := types.NewEnv(c.env)
+	switch t := types.TypeOfExprBasic(q.Source, c.env).(type) {
+	case types.ListType:
+		child.SetVar(q.Var, t.Elem, true)
+	case types.GroupType:
+		child.SetVar(q.Var, t.Elem, true)
+	default:
+		child.SetVar(q.Var, types.AnyType{}, true)
+	}
+	if lt, ok := types.TypeOfExprBasic(j.Src, c.env).(types.ListType); ok {
+		child.SetVar(j.Var, lt.Elem, true)
+	} else {
+		child.SetVar(j.Var, types.AnyType{}, true)
+	}
+	orig := c.env
+	c.env = child
+	cond, err := c.compileExpr(j.On)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	c.env = orig
+
+	var buf bytes.Buffer
+	buf.WriteString("(function()" + use + " {\n")
+	buf.WriteString("    $result = [];\n")
+	buf.WriteString(fmt.Sprintf("    foreach (%s as $%s) {\n", rightSrc, sanitizeName(j.Var)))
+	buf.WriteString("        $_match = null;\n")
+	buf.WriteString(fmt.Sprintf("        foreach (%s as $%s) {\n", leftSrc, sanitizeName(q.Var)))
+	buf.WriteString(fmt.Sprintf("            if (%s) { $_match = $%s; break; }\n", cond, sanitizeName(q.Var)))
+	buf.WriteString("        }\n")
+	buf.WriteString(fmt.Sprintf("        $%s = $_match;\n", sanitizeName(q.Var)))
+	buf.WriteString(fmt.Sprintf("        $result[] = %s;\n", sel))
+	buf.WriteString("    }\n")
+	buf.WriteString("    return $result;\n")
+	buf.WriteString("})()")
+	return buf.String(), nil
+}
+
+func (c *Compiler) compileOuterJoin(q *parser.QueryExpr) (string, error) {
+	j := q.Joins[0]
+	capture := queryFreeVars(q, c.env)
+	use := ""
+	if len(capture) > 0 {
+		use = " use (" + strings.Join(capture, ", ") + ")"
+	}
+
+	leftSrc, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	if _, ok := c.isGroupVarExpr(q.Source); ok {
+		leftSrc = fmt.Sprintf("%s['items']", leftSrc)
+	}
+	rightSrc, err := c.compileExpr(j.Src)
+	if err != nil {
+		return "", err
+	}
+	if _, ok := c.isGroupVarExpr(j.Src); ok {
+		rightSrc = fmt.Sprintf("%s['items']", rightSrc)
+	}
+
+	child := types.NewEnv(c.env)
+	switch t := types.TypeOfExprBasic(q.Source, c.env).(type) {
+	case types.ListType:
+		child.SetVar(q.Var, t.Elem, true)
+	case types.GroupType:
+		child.SetVar(q.Var, t.Elem, true)
+	default:
+		child.SetVar(q.Var, types.AnyType{}, true)
+	}
+	if lt, ok := types.TypeOfExprBasic(j.Src, c.env).(types.ListType); ok {
+		child.SetVar(j.Var, lt.Elem, true)
+	} else {
+		child.SetVar(j.Var, types.AnyType{}, true)
+	}
+	orig := c.env
+	c.env = child
+	cond, err := c.compileExpr(j.On)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	c.env = orig
+
+	var buf bytes.Buffer
+	buf.WriteString("(function()" + use + " {\n")
+	buf.WriteString("    $result = [];\n")
+	buf.WriteString(fmt.Sprintf("    foreach (%s as $%s) {\n", leftSrc, sanitizeName(q.Var)))
+	buf.WriteString("        $_cust = null;\n")
+	buf.WriteString(fmt.Sprintf("        foreach (%s as $%s) {\n", rightSrc, sanitizeName(j.Var)))
+	buf.WriteString(fmt.Sprintf("            if (%s) { $_cust = $%s; break; }\n", cond, sanitizeName(j.Var)))
+	buf.WriteString("        }\n")
+	buf.WriteString(fmt.Sprintf("        $%s = $_cust;\n", sanitizeName(j.Var)))
+	buf.WriteString(fmt.Sprintf("        $result[] = %s;\n", sel))
+	buf.WriteString("    }\n")
+	buf.WriteString(fmt.Sprintf("    foreach (%s as $%s) {\n", rightSrc, sanitizeName(j.Var)))
+	buf.WriteString("        $_found = false;\n")
+	buf.WriteString(fmt.Sprintf("        foreach (%s as $%s) {\n", leftSrc, sanitizeName(q.Var)))
+	buf.WriteString(fmt.Sprintf("            if (%s) { $_found = true; break; }\n", cond))
+	buf.WriteString("        }\n")
+	buf.WriteString("        if (!$_found) {\n")
+	buf.WriteString(fmt.Sprintf("            $%s = null;\n", sanitizeName(q.Var)))
+	buf.WriteString(fmt.Sprintf("            $result[] = %s;\n", sel))
+	buf.WriteString("        }\n")
+	buf.WriteString("    }\n")
+	buf.WriteString("    return $result;\n")
+	buf.WriteString("})()")
+	return buf.String(), nil
+}
+
 func (c *Compiler) compileLiteral(l *parser.Literal) string {
 	switch {
 	case l.Int != nil:
@@ -1771,6 +2009,21 @@ func (c *Compiler) compileQueryExprAdvanced(q *parser.QueryExpr) (string, error)
 			if res, err := c.compileLeftJoinGroup(q); err == nil {
 				return res, nil
 			}
+		}
+	}
+	if len(q.Joins) == 2 && q.Joins[1].Side != nil && *q.Joins[1].Side == "left" && q.Joins[0].Side == nil && len(q.Froms) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
+		if res, err := c.compileLeftJoinMulti(q); err == nil {
+			return res, nil
+		}
+	}
+	if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "right" && len(q.Froms) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
+		if res, err := c.compileRightJoin(q); err == nil {
+			return res, nil
+		}
+	}
+	if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "outer" && len(q.Froms) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
+		if res, err := c.compileOuterJoin(q); err == nil {
+			return res, nil
 		}
 	}
 	capture := queryFreeVars(q, c.env)
