@@ -5,7 +5,7 @@ This directory holds Kotlin translations of the TPC-H benchmark queries generate
 ## Query Status
 
 - [x] q1
-- [ ] q2
+- [x] q2
 - [ ] q3
 - [x] q4
 - [x] q5
@@ -19,7 +19,7 @@ This directory holds Kotlin translations of the TPC-H benchmark queries generate
 - [x] q13
 - [ ] q14
 - [ ] q15
-- [ ] q16
+- [x] q16
 - [ ] q17
 - [ ] q18
 - [x] q19

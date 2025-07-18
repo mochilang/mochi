@@ -1,10 +1,8 @@
-Exception in thread "main" java.lang.ExceptionInInitializerError
-Caused by: java.io.FileNotFoundException: ../interpreter/valid/people.yaml (No such file or directory)
-	at java.base/java.io.FileInputStream.open0(Native Method)
-	at java.base/java.io.FileInputStream.open(FileInputStream.java:213)
-	at java.base/java.io.FileInputStream.<init>(FileInputStream.java:152)
-	at kotlin.io.FilesKt__FileReadWriteKt.forEachLine(FileReadWrite.kt:166)
-	at kotlin.io.FilesKt__FileReadWriteKt.readLines(FileReadWrite.kt:195)
-	at kotlin.io.FilesKt__FileReadWriteKt.readLines$default(FileReadWrite.kt:193)
-	at Load_yamlKt._load(load_yaml.kt:9)
-	at Load_yamlKt.<clinit>(load_yaml.kt:57)
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/load_yaml.kt:14:33: error: only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type String?
+                    while (clean.startsWith("../")) clean = clean.substring(3)
+                                ^
+/workspace/mochi/tests/machine/x/kotlin/load_yaml.kt:14:66: error: only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type String?
+                    while (clean.startsWith("../")) clean = clean.substring(3)
+                                                                 ^

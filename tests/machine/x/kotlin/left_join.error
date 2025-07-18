@@ -1,0 +1,5 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/left_join.kt:27:55: error: type mismatch: inferred type is Any? but Customer was expected
+            __res.add(Row0(orderId = o.id, customer = c, total = o.total))
+                                                      ^
