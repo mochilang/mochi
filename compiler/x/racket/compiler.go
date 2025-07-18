@@ -275,6 +275,7 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 
 	operands := []string{}
 	strFlags := []bool{}
+	numFlags := []bool{}
 
 	first, err := c.compileUnary(e.Binary.Left)
 	if err != nil {
@@ -282,6 +283,7 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 	}
 	operands = append(operands, first)
 	strFlags = append(strFlags, c.isStringUnary(e.Binary.Left))
+	numFlags = append(numFlags, c.isNumericUnary(e.Binary.Left))
 
 	ops := []opPart{}
 	for _, part := range e.Binary.Right {
@@ -291,6 +293,7 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 		}
 		operands = append(operands, r)
 		strFlags = append(strFlags, c.isStringPostfix(part.Right))
+		numFlags = append(numFlags, c.isNumericPostfix(part.Right))
 		ops = append(ops, opPart{op: part.Op, all: part.All})
 	}
 
@@ -319,8 +322,11 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 		r := operands[i+1]
 		ls := strFlags[i]
 		rs := strFlags[i+1]
+		ln := numFlags[i]
+		rn := numFlags[i+1]
 		var expr string
 		var outStr bool
+		var outNum bool
 		switch op.op {
 		case "+":
 			if ls || rs {
@@ -328,11 +334,14 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 				outStr = true
 			} else {
 				expr = fmt.Sprintf("(+ %s %s)", l, r)
+				outNum = ln && rn
 			}
 		case "-", "*", "/":
 			expr = fmt.Sprintf("(%s %s %s)", op.op, l, r)
+			outNum = ln && rn
 		case "%":
 			expr = fmt.Sprintf("(remainder %s %s)", l, r)
+			outNum = ln && rn
 		case "union":
 			if op.all {
 				expr = fmt.Sprintf("(append %s %s)", l, r)
@@ -360,6 +369,8 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 				strOp := map[string]string{"<": "string<?", "<=": "string<=?", ">": "string>?", ">=": "string>=?"}[op.op]
 				expr = fmt.Sprintf("(%s %s %s)", strOp, l, r)
 				outStr = false
+			} else if ln && rn {
+				expr = fmt.Sprintf("(%s %s %s)", op.op, l, r)
 			} else {
 				rtOp := map[string]string{"<": "_lt", "<=": "_le", ">": "_gt", ">=": "_ge"}[op.op]
 				c.runtimeFuncs[rtOp] = true
@@ -377,8 +388,10 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 		}
 		operands[i] = expr
 		strFlags[i] = outStr
+		numFlags[i] = outNum
 		operands = append(operands[:i+1], operands[i+2:]...)
 		strFlags = append(strFlags[:i+1], strFlags[i+2:]...)
+		numFlags = append(numFlags[:i+1], numFlags[i+2:]...)
 		ops = append(ops[:i], ops[i+1:]...)
 		return nil
 	}
@@ -539,10 +552,17 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if len(args) == 1 && (isStringLiteralExpr(p.Call.Args[0]) || c.isStringExpr(p.Call.Args[0])) {
 				return fmt.Sprintf("(displayln %s)", args[0]), nil
 			}
-			c.runtimeFuncs["_to_string"] = true
 			if len(args) == 1 {
+				if c.isBoolExpr(p.Call.Args[0]) {
+					return fmt.Sprintf("(displayln (if %s 1 0))", args[0]), nil
+				}
+				if c.isNumericExpr(p.Call.Args[0]) {
+					return fmt.Sprintf("(displayln %s)", args[0]), nil
+				}
+				c.runtimeFuncs["_to_string"] = true
 				return fmt.Sprintf("(displayln (_to_string %s))", args[0]), nil
 			}
+			c.runtimeFuncs["_to_string"] = true
 			return fmt.Sprintf("(displayln (string-join (map _to_string (list %s)) \" \"))",
 				strings.Join(args, " ")), nil
 		case "append":
@@ -1476,6 +1496,46 @@ func (c *Compiler) isStringExpr(e *parser.Expr) bool {
 	return c.isStringUnary(e.Binary.Left)
 }
 
+func (c *Compiler) isNumericPrimary(p *parser.Primary) bool {
+	if p == nil {
+		return false
+	}
+	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: p}}}}
+	t := c.exprType(expr)
+	return t == "int" || t == "float" || t == "bigint" || t == "bigrat"
+}
+
+func (c *Compiler) isNumericPostfix(p *parser.PostfixExpr) bool {
+	if p == nil {
+		return false
+	}
+	return c.isNumericPrimary(p.Target)
+}
+
+func (c *Compiler) isNumericUnary(u *parser.Unary) bool {
+	if u == nil {
+		return false
+	}
+	if len(u.Ops) > 0 && u.Ops[0] == "-" {
+		return c.isNumericPostfix(u.Value)
+	}
+	return c.isNumericPostfix(u.Value)
+}
+
+func (c *Compiler) isNumericExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	if t := c.exprType(e); t == "int" || t == "float" || t == "bigint" || t == "bigrat" {
+		return true
+	}
+	return c.isNumericUnary(e.Binary.Left)
+}
+
+func (c *Compiler) isBoolExpr(e *parser.Expr) bool {
+	return c.exprType(e) == "bool"
+}
+
 func isIdentExpr(e *parser.Expr) bool {
 	if e == nil || e.Binary == nil || e.Binary.Left == nil {
 		return false
@@ -1632,16 +1692,51 @@ func (c *Compiler) exprType(e *parser.Expr) string {
 	if e == nil || e.Binary == nil {
 		return ""
 	}
+	if len(e.Binary.Right) > 0 {
+		op := e.Binary.Right[len(e.Binary.Right)-1].Op
+		switch op {
+		case "<", "<=", ">", ">=", "==", "!=", "&&", "||", "in":
+			return "bool"
+		case "+", "-", "*", "/", "%":
+			return "int"
+		}
+	}
 	u := e.Binary.Left
-	if u == nil || u.Value == nil || len(u.Ops) != 0 {
+	if u == nil || u.Value == nil {
 		return ""
+	}
+	if len(u.Ops) > 0 {
+		if u.Ops[0] == "!" {
+			return "bool"
+		}
 	}
 	if u.Value.Target != nil {
 		switch {
-		case u.Value.Target.Lit != nil && u.Value.Target.Lit.Str != nil:
-			return "string"
-		case u.Value.Target.Call != nil && u.Value.Target.Call.Func == "str" && len(u.Value.Target.Call.Args) == 1:
-			return "string"
+		case u.Value.Target.Lit != nil:
+			if u.Value.Target.Lit.Str != nil {
+				return "string"
+			}
+			if u.Value.Target.Lit.Int != nil {
+				return "int"
+			}
+			if u.Value.Target.Lit.Float != nil {
+				return "float"
+			}
+			if u.Value.Target.Lit.Bool != nil {
+				return "bool"
+			}
+		case u.Value.Target.Call != nil:
+			call := u.Value.Target.Call
+			switch call.Func {
+			case "str":
+				return "string"
+			case "len", "count":
+				return "int"
+			case "avg":
+				return "float"
+			case "exists":
+				return "bool"
+			}
 		case u.Value.Target.Selector != nil:
 			name, ok := identName(e)
 			if ok {
