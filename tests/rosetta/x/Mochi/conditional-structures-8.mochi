@@ -1,0 +1,10 @@
+// Mochi translation of Rosetta "Conditional structures" variant 8
+
+fun example8(b1: bool, b2: bool) {
+  if b1 {
+    // fall through to next check
+  }
+  if b2 {
+    // other statements
+  }
+}

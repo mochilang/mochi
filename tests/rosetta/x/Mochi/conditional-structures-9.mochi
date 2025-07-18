@@ -1,0 +1,8 @@
+// Mochi translation of Rosetta "Conditional structures" variant 9
+
+fun example9() {
+  while true {
+    if true { break }
+    print("I want out!")
+  }
+}

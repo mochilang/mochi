@@ -1,0 +1,9 @@
+// Mochi translation of Rosetta "Conditional structures" variant 2
+
+fun example2(flag: bool) {
+  if flag {
+    // statements
+  } else {
+    // other statements
+  }
+}
