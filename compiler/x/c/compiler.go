@@ -6389,6 +6389,19 @@ func (c *Compiler) guessType(e *parser.Expr) types.Type {
 		if kt, ok2 := c.groupKeys[name]; ok2 {
 			return kt
 		}
+		// fall back to env lookup or assume string when group key type
+		// information has not been recorded yet (e.g. during
+		// gatherAppendTypes)
+		if c.env != nil {
+			if vt, err := c.env.GetVar(name); err == nil {
+				if gt, ok := vt.(types.GroupType); ok {
+					if gt.Key != nil {
+						return gt.Key
+					}
+				}
+			}
+		}
+		return types.StringType{}
 	}
 	if types.ContainsAny(t) {
 		switch {
