@@ -1237,6 +1237,9 @@ func (c *Compiler) maybeFStringPrint(exprs []*parser.Expr) (string, bool, error)
 // literals that would otherwise default to `any`, such as empty list or map
 // literals. Hints are applied recursively for nested literals.
 func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, error) {
+	if ot, ok := hint.(types.OptionType); ok {
+		return c.compileExprHint(e, ot.Elem)
+	}
 	if lt, ok := hint.(types.ListType); ok {
 		if ll := e.Binary.Left.Value.Target.List; ll != nil {
 			elems := make([]string, len(ll.Elems))
