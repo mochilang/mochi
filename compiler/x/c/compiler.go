@@ -457,7 +457,13 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 			name := "test_" + sanitizeName(s.Test.Name)
 			if caps, ok := c.capturesByFun[name]; ok && len(caps) > 0 {
 				for _, v := range caps {
-					c.writeln(fmt.Sprintf("%s_%s = %s;", name, sanitizeName(v), sanitizeName(v)))
+					vn := sanitizeName(v)
+					if lenVar, ok := c.arrayLens[vn]; ok {
+						c.writeln(fmt.Sprintf("%s_%s.len = %s;", name, vn, lenVar))
+						c.writeln(fmt.Sprintf("%s_%s.data = %s;", name, vn, vn))
+					} else {
+						c.writeln(fmt.Sprintf("%s_%s = %s;", name, vn, vn))
+					}
 				}
 			}
 			c.writeln(name + "();")
@@ -7946,8 +7952,13 @@ func (c *Compiler) isStackArrayExpr(expr string) bool {
 	if i := strings.IndexAny(expr, "[."); i >= 0 {
 		root = expr[:i]
 	}
-	_, ok := c.stackArrays[root]
-	return ok
+	if _, ok := c.stackArrays[root]; ok {
+		return true
+	}
+	if _, ok := c.arrayLens[root]; ok {
+		return true
+	}
+	return false
 }
 
 // evalJSONLinesExpr returns JSON strings for a list of map literals if it can

@@ -158,3 +158,4 @@ should compile and run successfully.
 - 2025-09-28 - Fixed print formatting for constant integers and implemented `_save_jsonl` helper.
 - 2025-07-18 - Added fallback group key inference in guessType when groupKeys are unset.
 - 2025-09-29 - Emitted plain printf lines for constant JSONL saves and updated save_jsonl_stdout.
+- 2025-07-18 - Fixed update statement loops for stack arrays and capture assignment; update_stmt.mochi now compiles.
