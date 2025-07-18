@@ -3157,13 +3157,13 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		// Use direct slicing when the bounds are constant integers.
 		if startConst, okS := c.intConst(call.Args[1]); okS {
+			startExpr := ""
+			if startConst >= 0 {
+				startExpr = fmt.Sprintf("%d", startConst)
+			} else {
+				startExpr = fmt.Sprintf("%s.len - %d", s, -startConst)
+			}
 			if endConst, okE := c.intConst(call.Args[2]); okE {
-				startExpr := ""
-				if startConst >= 0 {
-					startExpr = fmt.Sprintf("%d", startConst)
-				} else {
-					startExpr = fmt.Sprintf("%s.len - %d", s, -startConst)
-				}
 				endExpr := ""
 				if endConst >= 0 {
 					endExpr = fmt.Sprintf("%d", endConst)
@@ -3172,6 +3172,26 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				}
 				return fmt.Sprintf("%s[%s..%s]", s, startExpr, endExpr), nil
 			}
+			end, err := c.compileExpr(call.Args[2], false)
+			if err != nil {
+				return "", err
+			}
+			endU := toUSize(end)
+			return fmt.Sprintf("%s[%s..%s]", s, startExpr, endU), nil
+		}
+		if endConst, okE := c.intConst(call.Args[2]); okE {
+			endExpr := ""
+			if endConst >= 0 {
+				endExpr = fmt.Sprintf("%d", endConst)
+			} else {
+				endExpr = fmt.Sprintf("%s.len - %d", s, -endConst)
+			}
+			start, err := c.compileExpr(call.Args[1], false)
+			if err != nil {
+				return "", err
+			}
+			startU := toUSize(start)
+			return fmt.Sprintf("%s[%s..%s]", s, startU, endExpr), nil
 		}
 		start, err := c.compileExpr(call.Args[1], false)
 		if err != nil {
