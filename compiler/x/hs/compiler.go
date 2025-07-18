@@ -236,6 +236,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			c.writeln("return ()")
 		}
 		c.indent--
+	} else {
+		c.writeln("main :: IO ()")
+		c.writeln("main = user_main")
 	}
 
 	var header bytes.Buffer
@@ -447,6 +450,11 @@ func (c *Compiler) compileMainStmt(s *parser.Statement) error {
 		}
 		c.writeln(fmt.Sprintf("let %s = %s", c.sn(s.Fun.Name), expr))
 	case s.Expr != nil:
+		if c.hasUserMain {
+			if call, ok := callPattern(s.Expr.Expr); ok && call.Func == "main" && len(call.Args) == 0 {
+				return nil
+			}
+		}
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
 			return err
@@ -1314,7 +1322,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			c.usesList = true
 			expr = fmt.Sprintf("List.intersect %s %s", expr, r)
 			leftType = types.ListType{Elem: types.AnyType{}}
-		} else if op.Op == "+" && (isString(leftType) || isString(rightType)) {
+		} else if op.Op == "+" && (isString(leftType) || isString(rightType) || c.isStringUnary(b.Left) || c.isStringPostfix(op.Right)) {
 			expr = fmt.Sprintf("(%s ++ %s)", expr, r)
 			leftType = types.StringType{}
 		} else {
