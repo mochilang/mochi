@@ -1,3 +1,3 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenbitmap-ppm-conversion-through-a-pipe2597703577/001/prog.zig:121:13: error: local variable 'x' shadows local variable from outer scope
-/tmp/TestMochiZigGoldenbitmap-ppm-conversion-through-a-pipe2597703577/001/prog.zig:105:9: note: previous declaration here
+zig build: exit status 1
+/tmp/bitmap-ppm-conversion-through-a-pipe.zig:121:13: error: local variable 'x' shadows local variable from outer scope
+/tmp/bitmap-ppm-conversion-through-a-pipe.zig:105:9: note: previous declaration here

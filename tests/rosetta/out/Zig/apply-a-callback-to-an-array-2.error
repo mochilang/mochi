@@ -1,2 +1,2 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenapply-a-callback-to-an-array-24277689183/001/prog.zig:31:138: error: expected ',' after initializer
+zig build: exit status 1
+/tmp/apply-a-callback-to-an-array-2.zig:31:138: error: expected ',' after initializer

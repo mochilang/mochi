@@ -1,2 +1,2 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenboolean-values2633011557/001/prog.zig:25:11: error: unused local constant
+zig build: exit status 1
+/tmp/boolean-values.zig:25:11: error: unused local constant

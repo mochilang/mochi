@@ -1,13 +1,13 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenbitmap-b-zier-curves-cubic953379879/001/prog.zig:20:11: error: local constant shadows declaration of 'b'
-/tmp/TestMochiZigGoldenbitmap-b-zier-curves-cubic953379879/001/prog.zig:15:1: note: declared here
-/tmp/TestMochiZigGoldenbitmap-b-zier-curves-cubic953379879/001/prog.zig:56:10: error: function parameter shadows declaration of 'b'
-/tmp/TestMochiZigGoldenbitmap-b-zier-curves-cubic953379879/001/prog.zig:15:1: note: declared here
-/tmp/TestMochiZigGoldenbitmap-b-zier-curves-cubic953379879/001/prog.zig:64:9: error: function parameter shadows declaration of 'b'
-/tmp/TestMochiZigGoldenbitmap-b-zier-curves-cubic953379879/001/prog.zig:15:1: note: declared here
-/tmp/TestMochiZigGoldenbitmap-b-zier-curves-cubic953379879/001/prog.zig:78:12: error: function parameter shadows declaration of 'b'
-/tmp/TestMochiZigGoldenbitmap-b-zier-curves-cubic953379879/001/prog.zig:15:1: note: declared here
-/tmp/TestMochiZigGoldenbitmap-b-zier-curves-cubic953379879/001/prog.zig:82:9: error: function parameter shadows declaration of 'b'
-/tmp/TestMochiZigGoldenbitmap-b-zier-curves-cubic953379879/001/prog.zig:15:1: note: declared here
-/tmp/TestMochiZigGoldenbitmap-b-zier-curves-cubic953379879/001/prog.zig:117:12: error: function parameter shadows declaration of 'b'
-/tmp/TestMochiZigGoldenbitmap-b-zier-curves-cubic953379879/001/prog.zig:15:1: note: declared here
+zig build: exit status 1
+/tmp/bitmap-b-zier-curves-cubic.zig:20:11: error: local constant shadows declaration of 'b'
+/tmp/bitmap-b-zier-curves-cubic.zig:15:1: note: declared here
+/tmp/bitmap-b-zier-curves-cubic.zig:56:10: error: function parameter shadows declaration of 'b'
+/tmp/bitmap-b-zier-curves-cubic.zig:15:1: note: declared here
+/tmp/bitmap-b-zier-curves-cubic.zig:64:9: error: function parameter shadows declaration of 'b'
+/tmp/bitmap-b-zier-curves-cubic.zig:15:1: note: declared here
+/tmp/bitmap-b-zier-curves-cubic.zig:78:12: error: function parameter shadows declaration of 'b'
+/tmp/bitmap-b-zier-curves-cubic.zig:15:1: note: declared here
+/tmp/bitmap-b-zier-curves-cubic.zig:82:9: error: function parameter shadows declaration of 'b'
+/tmp/bitmap-b-zier-curves-cubic.zig:15:1: note: declared here
+/tmp/bitmap-b-zier-curves-cubic.zig:117:12: error: function parameter shadows declaration of 'b'
+/tmp/bitmap-b-zier-curves-cubic.zig:15:1: note: declared here

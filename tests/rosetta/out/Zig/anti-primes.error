@@ -1,8 +1,3 @@
-type error: error[T007]: argument 3: expected int, got bigint
-  --> /workspace/mochi/tests/rosetta/x/Mochi/anti-primes.mochi:27:10
-
- 27 |   line = substring(line, 0, len(line) - 1)
-    |          ^
-
-help:
-  Ensure the argument type matches the function’s signature.
+zig build: exit status 1
+/tmp/anti-primes.zig:29:9: error: variable of type 'comptime_int' must be const or comptime
+/tmp/anti-primes.zig:29:9: note: to modify this variable at runtime, it must be given an explicit fixed-size number type

@@ -1,15 +1,15 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenarithmetic-complex1100523472/001/prog.zig:8:19: error: function parameter shadows declaration of 'a'
-/tmp/TestMochiZigGoldenarithmetic-complex1100523472/001/prog.zig:17:1: note: declared here
-/tmp/TestMochiZigGoldenarithmetic-complex1100523472/001/prog.zig:26:8: error: function parameter shadows declaration of 'a'
-/tmp/TestMochiZigGoldenarithmetic-complex1100523472/001/prog.zig:17:1: note: declared here
-/tmp/TestMochiZigGoldenarithmetic-complex1100523472/001/prog.zig:33:8: error: function parameter shadows declaration of 'a'
-/tmp/TestMochiZigGoldenarithmetic-complex1100523472/001/prog.zig:17:1: note: declared here
-/tmp/TestMochiZigGoldenarithmetic-complex1100523472/001/prog.zig:40:8: error: function parameter shadows declaration of 'a'
-/tmp/TestMochiZigGoldenarithmetic-complex1100523472/001/prog.zig:17:1: note: declared here
-/tmp/TestMochiZigGoldenarithmetic-complex1100523472/001/prog.zig:47:8: error: function parameter shadows declaration of 'a'
-/tmp/TestMochiZigGoldenarithmetic-complex1100523472/001/prog.zig:17:1: note: declared here
-/tmp/TestMochiZigGoldenarithmetic-complex1100523472/001/prog.zig:55:9: error: function parameter shadows declaration of 'a'
-/tmp/TestMochiZigGoldenarithmetic-complex1100523472/001/prog.zig:17:1: note: declared here
-/tmp/TestMochiZigGoldenarithmetic-complex1100523472/001/prog.zig:62:9: error: function parameter shadows declaration of 'a'
-/tmp/TestMochiZigGoldenarithmetic-complex1100523472/001/prog.zig:17:1: note: declared here
+zig build: exit status 1
+/tmp/arithmetic-complex.zig:8:19: error: function parameter shadows declaration of 'a'
+/tmp/arithmetic-complex.zig:17:1: note: declared here
+/tmp/arithmetic-complex.zig:26:8: error: function parameter shadows declaration of 'a'
+/tmp/arithmetic-complex.zig:17:1: note: declared here
+/tmp/arithmetic-complex.zig:33:8: error: function parameter shadows declaration of 'a'
+/tmp/arithmetic-complex.zig:17:1: note: declared here
+/tmp/arithmetic-complex.zig:40:8: error: function parameter shadows declaration of 'a'
+/tmp/arithmetic-complex.zig:17:1: note: declared here
+/tmp/arithmetic-complex.zig:47:8: error: function parameter shadows declaration of 'a'
+/tmp/arithmetic-complex.zig:17:1: note: declared here
+/tmp/arithmetic-complex.zig:55:9: error: function parameter shadows declaration of 'a'
+/tmp/arithmetic-complex.zig:17:1: note: declared here
+/tmp/arithmetic-complex.zig:62:9: error: function parameter shadows declaration of 'a'
+/tmp/arithmetic-complex.zig:17:1: note: declared here

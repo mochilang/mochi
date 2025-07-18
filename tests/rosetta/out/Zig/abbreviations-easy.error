@@ -1,4 +1,2 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenabbreviations-easy3444536704/001/prog.zig:22:25: error: use of undeclared identifier 'substring'
-/tmp/TestMochiZigGoldenabbreviations-easy3444536704/001/prog.zig:76:27: error: use of undeclared identifier 'upper'
-/tmp/TestMochiZigGoldenabbreviations-easy3444536704/001/prog.zig:104:29: error: use of undeclared identifier 'substring'
+zig build: exit status 1
+/tmp/abbreviations-easy.zig:97:27: error: use of undeclared identifier 'upper'

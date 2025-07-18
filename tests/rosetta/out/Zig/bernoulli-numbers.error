@@ -1,2 +1,2 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenbernoulli-numbers4195840652/001/prog.zig:30:13: error: use of undeclared identifier 'num'
+zig build: exit status 1
+/tmp/bernoulli-numbers.zig:30:13: error: use of undeclared identifier 'num'

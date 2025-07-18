@@ -1,8 +1,3 @@
-type error: error[T007]: argument 3: expected int, got bigint
-  --> /workspace/mochi/tests/rosetta/x/Mochi/abundant-odd-numbers.mochi:41:10
-
- 41 |   return substring(s, 0, len(s) - 3)
-    |          ^
-
-help:
-  Ensure the argument type matches the function’s signature.
+zig build: exit status 1
+/tmp/abundant-odd-numbers.zig:9:9: error: local variable shadows declaration of 'sum'
+/tmp/abundant-odd-numbers.zig:40:1: note: declared here

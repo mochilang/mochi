@@ -1,4 +1,4 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenabelian-sandpile-model1770252064/001/prog.zig:89:10: error: no member named 'items' in '[]const []const i32'
-/tmp/TestMochiZigGoldenabelian-sandpile-model1770252064/001/prog.zig:16:9: error: variable of type 'comptime_int' must be const or comptime
-/tmp/TestMochiZigGoldenabelian-sandpile-model1770252064/001/prog.zig:16:9: note: to modify this variable at runtime, it must be given an explicit fixed-size number type
+zig build: exit status 1
+/tmp/abelian-sandpile-model.zig:89:10: error: no member named 'items' in '[]const []const i32'
+/tmp/abelian-sandpile-model.zig:16:9: error: variable of type 'comptime_int' must be const or comptime
+/tmp/abelian-sandpile-model.zig:16:9: note: to modify this variable at runtime, it must be given an explicit fixed-size number type

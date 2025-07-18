@@ -1,4 +1,5 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenarithmetic-numbers1674981016/001/prog.zig:64:30: error: use of undeclared identifier 'substring'
-/tmp/TestMochiZigGoldenarithmetic-numbers1674981016/001/prog.zig:78:13: error: local variable is never mutated
-/tmp/TestMochiZigGoldenarithmetic-numbers1674981016/001/prog.zig:78:13: note: consider using 'const'
+zig build: exit status 1
+/tmp/arithmetic-numbers.zig:80:9: error: local variable is never mutated
+/tmp/arithmetic-numbers.zig:80:9: note: consider using 'const'
+/tmp/arithmetic-numbers.zig:99:13: error: local variable is never mutated
+/tmp/arithmetic-numbers.zig:99:13: note: consider using 'const'

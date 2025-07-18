@@ -1,2 +1,2 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenbitmap-read-an-image-through-a-pipe1709516312/001/prog.zig:68:8: error: expected 'while', 'for', 'inline', or '{', found 'an identifier'
+zig build: exit status 1
+/tmp/bitmap-read-an-image-through-a-pipe.zig:68:8: error: expected 'while', 'for', 'inline', or '{', found 'an identifier'

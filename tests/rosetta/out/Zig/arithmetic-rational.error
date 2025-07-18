@@ -1,4 +1,4 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenarithmetic-rational1393594045/001/prog.zig:67:28: error: division with 'i32' and 'i32': signed integers must use @divTrunc, @divFloor, or @divExact
-/tmp/TestMochiZigGoldenarithmetic-rational1393594045/001/prog.zig:36:9: error: variable of type 'comptime_int' must be const or comptime
-/tmp/TestMochiZigGoldenarithmetic-rational1393594045/001/prog.zig:36:9: note: to modify this variable at runtime, it must be given an explicit fixed-size number type
+zig build: exit status 1
+/tmp/arithmetic-rational.zig:67:28: error: division with 'i32' and 'i32': signed integers must use @divTrunc, @divFloor, or @divExact
+/tmp/arithmetic-rational.zig:36:9: error: variable of type 'comptime_int' must be const or comptime
+/tmp/arithmetic-rational.zig:36:9: note: to modify this variable at runtime, it must be given an explicit fixed-size number type

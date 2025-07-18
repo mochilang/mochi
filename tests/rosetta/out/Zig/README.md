@@ -1,4 +1,4 @@
-# Rosetta Zig Output (10/216 compiled and run)
+# Rosetta Zig Output (10/238 compiled and run)
 
 This directory holds Zig source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. A checkbox indicates the program compiled and executed successfully. Failing programs have a `.error` file.
 
@@ -209,6 +209,28 @@ This directory holds Zig source code generated from the real Mochi programs in `
 - [ ] circles-of-given-radius-through-two-points
 - [ ] circular-primes
 - [ ] cistercian-numerals
+- [ ] compiler-virtual-machine-interpreter
+- [ ] concurrent-computing-1
+- [ ] concurrent-computing-2
+- [ ] concurrent-computing-3
+- [ ] conditional-structures-1
+- [ ] conditional-structures-10
+- [ ] conditional-structures-2
+- [ ] conditional-structures-3
+- [ ] conditional-structures-4
+- [ ] conditional-structures-5
+- [ ] conditional-structures-6
+- [ ] conditional-structures-7
+- [ ] conditional-structures-8
+- [ ] conditional-structures-9
+- [ ] consecutive-primes-with-ascending-or-descending-differences
+- [ ] constrained-genericity-1
+- [ ] constrained-genericity-2
+- [ ] constrained-genericity-3
+- [ ] constrained-genericity-4
+- [ ] constrained-random-points-on-a-circle-1
+- [ ] constrained-random-points-on-a-circle-2
+- [ ] continued-fraction
 - [ ] crc-32-1
 - [ ] crc-32-2
 - [ ] csv-data-manipulation

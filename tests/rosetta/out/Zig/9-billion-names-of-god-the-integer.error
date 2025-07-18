@@ -1,9 +1,9 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGolden9-billion-names-of-god-the-integer4058512927/001/prog.zig:44:15: error: function parameter shadows declaration of 'x'
-/tmp/TestMochiZigGolden9-billion-names-of-god-the-integer4058512927/001/prog.zig:33:1: note: declared here
-/tmp/TestMochiZigGolden9-billion-names-of-god-the-integer4058512927/001/prog.zig:70:13: error: local variable is never mutated
-/tmp/TestMochiZigGolden9-billion-names-of-god-the-integer4058512927/001/prog.zig:70:13: note: consider using 'const'
-/tmp/TestMochiZigGolden9-billion-names-of-god-the-integer4058512927/001/prog.zig:83:13: error: local variable is never mutated
-/tmp/TestMochiZigGolden9-billion-names-of-god-the-integer4058512927/001/prog.zig:83:13: note: consider using 'const'
-/tmp/TestMochiZigGolden9-billion-names-of-god-the-integer4058512927/001/prog.zig:123:13: error: local variable shadows declaration of 'row'
-/tmp/TestMochiZigGolden9-billion-names-of-god-the-integer4058512927/001/prog.zig:136:1: note: declared here
+zig build: exit status 1
+/tmp/9-billion-names-of-god-the-integer.zig:23:15: error: function parameter shadows declaration of 'x'
+/tmp/9-billion-names-of-god-the-integer.zig:12:1: note: declared here
+/tmp/9-billion-names-of-god-the-integer.zig:50:222: error: local constant 'res' shadows local variable from outer scope
+/tmp/9-billion-names-of-god-the-integer.zig:37:9: note: previous declaration here
+/tmp/9-billion-names-of-god-the-integer.zig:74:215: error: local constant 'res' shadows local variable from outer scope
+/tmp/9-billion-names-of-god-the-integer.zig:58:9: note: previous declaration here
+/tmp/9-billion-names-of-god-the-integer.zig:102:13: error: local variable shadows declaration of 'row'
+/tmp/9-billion-names-of-god-the-integer.zig:115:1: note: declared here

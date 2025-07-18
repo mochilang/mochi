@@ -1,7 +1,7 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenapproximate-equality763891772/001/prog.zig:35:9: error: variable of type 'comptime_int' must be const or comptime
-/tmp/TestMochiZigGoldenapproximate-equality763891772/001/prog.zig:35:9: note: to modify this variable at runtime, it must be given an explicit fixed-size number type
-/tmp/TestMochiZigGoldenapproximate-equality763891772/001/prog.zig:28:28: error: root struct of file 'math' has no member named 'abs'
+zig build: exit status 1
+/tmp/approximate-equality.zig:35:9: error: variable of type 'comptime_int' must be const or comptime
+/tmp/approximate-equality.zig:35:9: note: to modify this variable at runtime, it must be given an explicit fixed-size number type
+/tmp/approximate-equality.zig:28:28: error: root struct of file 'math' has no member named 'abs'
 /tmp/zig-0.12.0/lib/std/math.zig:1:1: note: struct declared here
-/tmp/TestMochiZigGoldenapproximate-equality763891772/001/prog.zig:9:19: error: expected 3 argument(s), found 2
+/tmp/approximate-equality.zig:9:19: error: expected 3 argument(s), found 2
 /tmp/zig-0.12.0/lib/std/mem.zig:3148:5: note: function declared here

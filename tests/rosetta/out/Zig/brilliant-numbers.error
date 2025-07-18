@@ -1,4 +1,8 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenbrilliant-numbers2129668773/001/prog.zig:143:21: error: local variable is never mutated
-/tmp/TestMochiZigGoldenbrilliant-numbers2129668773/001/prog.zig:143:21: note: consider using 'const'
-/tmp/TestMochiZigGoldenbrilliant-numbers2129668773/001/prog.zig:197:28: error: use of undeclared identifier 'pow'
+zig build: exit status 1
+/tmp/brilliant-numbers.zig:57:216: error: local constant 'res' shadows local variable from outer scope
+/tmp/brilliant-numbers.zig:53:9: note: previous declaration here
+/tmp/brilliant-numbers.zig:78:214: error: local constant 'res' shadows local variable from outer scope
+/tmp/brilliant-numbers.zig:65:9: note: previous declaration here
+/tmp/brilliant-numbers.zig:122:21: error: local variable is never mutated
+/tmp/brilliant-numbers.zig:122:21: note: consider using 'const'
+/tmp/brilliant-numbers.zig:176:28: error: use of undeclared identifier 'pow'

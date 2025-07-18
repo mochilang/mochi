@@ -1,0 +1,20 @@
+zig build: exit status 1
+/tmp/2048.zig:80:9: error: local variable is never mutated
+/tmp/2048.zig:80:9: note: consider using 'const'
+/tmp/2048.zig:98:9: error: local variable shadows declaration of 'pad'
+/tmp/2048.zig:96:1: note: declared here
+/tmp/2048.zig:108:33: error: function parameter shadows declaration of 'score'
+/tmp/2048.zig:16:1: note: declared here
+/tmp/2048.zig:131:15: error: function parameter shadows declaration of 'r'
+/tmp/2048.zig:14:1: note: declared here
+/tmp/2048.zig:176:23: error: local constant 'res' shadows local variable from outer scope
+/tmp/2048.zig:164:9: note: previous declaration here
+/tmp/2048.zig:211:37: error: function parameter shadows declaration of 'score'
+/tmp/2048.zig:16:1: note: declared here
+/tmp/2048.zig:239:38: error: function parameter shadows declaration of 'score'
+/tmp/2048.zig:16:1: note: declared here
+/tmp/2048.zig:294:35: error: function parameter shadows declaration of 'score'
+/tmp/2048.zig:16:1: note: declared here
+/tmp/2048.zig:323:37: error: function parameter shadows declaration of 'score'
+/tmp/2048.zig:16:1: note: declared here
+/tmp/2048.zig:397:21: error: use of undeclared identifier 'input'

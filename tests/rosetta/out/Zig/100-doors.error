@@ -1,2 +1,2 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGolden100-doors2341553259/001/prog.zig:15:21: error: unused capture
+zig build: exit status 1
+/tmp/100-doors.zig:15:19: error: unused capture

@@ -1,11 +1,11 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenavl-tree1441792855/001/prog.zig:42:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldenavl-tree1441792855/001/prog.zig:42:9: note: consider using 'const'
-/tmp/TestMochiZigGoldenavl-tree1441792855/001/prog.zig:77:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldenavl-tree1441792855/001/prog.zig:77:9: note: consider using 'const'
-/tmp/TestMochiZigGoldenavl-tree1441792855/001/prog.zig:102:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldenavl-tree1441792855/001/prog.zig:102:9: note: consider using 'const'
-/tmp/TestMochiZigGoldenavl-tree1441792855/001/prog.zig:148:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldenavl-tree1441792855/001/prog.zig:148:9: note: consider using 'const'
-/tmp/TestMochiZigGoldenavl-tree1441792855/001/prog.zig:222:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldenavl-tree1441792855/001/prog.zig:222:9: note: consider using 'const'
+zig build: exit status 1
+/tmp/avl-tree.zig:42:9: error: local variable is never mutated
+/tmp/avl-tree.zig:42:9: note: consider using 'const'
+/tmp/avl-tree.zig:77:9: error: local variable is never mutated
+/tmp/avl-tree.zig:77:9: note: consider using 'const'
+/tmp/avl-tree.zig:102:9: error: local variable is never mutated
+/tmp/avl-tree.zig:102:9: note: consider using 'const'
+/tmp/avl-tree.zig:148:9: error: local variable is never mutated
+/tmp/avl-tree.zig:148:9: note: consider using 'const'
+/tmp/avl-tree.zig:222:9: error: local variable is never mutated
+/tmp/avl-tree.zig:222:9: note: consider using 'const'

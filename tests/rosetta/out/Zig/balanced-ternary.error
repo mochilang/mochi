@@ -1,3 +1,7 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenbalanced-ternary434502116/001/prog.zig:14:46: error: use of undeclared identifier 'substring'
-/tmp/TestMochiZigGoldenbalanced-ternary434502116/001/prog.zig:25:25: error: use of undeclared identifier 'substring'
+zig build: exit status 1
+/tmp/balanced-ternary.zig:169:25: error: expected type 'usize', found '*const [2:0]u8'
+/tmp/zig-0.12.0/lib/std/hash_map.zig:14:13: error: std.auto_hash.autoHash does not allow slices here ([]const u8) because the intent is unclear. Consider using std.StringHashMap for hashing the contents of []const u8. Alternatively, consider using std.auto_hash.hash or providing your own hash function instead.
+/tmp/zig-0.12.0/lib/std/hash_map.zig:55:39: note: called from here
+/tmp/balanced-ternary.zig:42:5: error: cannot assign to constant
+/tmp/balanced-ternary.zig:34:9: error: variable of type 'comptime_int' must be const or comptime
+/tmp/balanced-ternary.zig:34:9: note: to modify this variable at runtime, it must be given an explicit fixed-size number type
