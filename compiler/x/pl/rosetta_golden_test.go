@@ -114,10 +114,7 @@ func TestPrologCompiler_Rosetta_Golden(t *testing.T) {
 	if err != nil {
 		t.Fatalf("glob: %v", err)
 	}
-	max := 1
-	if len(files) < max {
-		max = len(files)
-	}
+	max := len(files)
 	for _, f := range files[:max] {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		t.Run(name, func(t *testing.T) { runRosettaTaskGolden(t, name) })
