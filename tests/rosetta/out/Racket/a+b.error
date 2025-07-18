@@ -1,7 +1,0 @@
-run: exit status 1
-string->number: contract violation
-  expected: string?
-  given: #<eof>
-  context...:
-   /tmp/a+b.rkt:4:2
-   body of "/tmp/a+b.rkt"

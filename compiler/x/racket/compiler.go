@@ -642,6 +642,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", fmt.Errorf("int expects 1 arg")
 			}
 			return fmt.Sprintf("(string->number %s)", args[0]), nil
+		case "upper":
+			if len(args) != 1 {
+				return "", fmt.Errorf("upper expects 1 arg")
+			}
+			return fmt.Sprintf("(string-upcase %s)", args[0]), nil
+		case "lower":
+			if len(args) != 1 {
+				return "", fmt.Errorf("lower expects 1 arg")
+			}
+			return fmt.Sprintf("(string-downcase %s)", args[0]), nil
 		case "input":
 			if len(args) != 0 {
 				return "", fmt.Errorf("input expects no arg")
@@ -858,6 +868,8 @@ func (c *Compiler) compileForWithLabelsFull(f *parser.ForStmt, breakLbl, contLbl
 	if useBC {
 		c.writeln(fmt.Sprintf("%s(let/ec continue", indent(useBC, 2)))
 		c.writeln(fmt.Sprintf("%s  (let ()", indent(useBC, 3)))
+	} else {
+		c.writeln("  (let ()")
 	}
 	for _, st := range f.Body {
 		if useBC {
@@ -876,6 +888,7 @@ func (c *Compiler) compileForWithLabelsFull(f *parser.ForStmt, breakLbl, contLbl
 		c.writeln(fmt.Sprintf("%s)", indent(useBC, 1)))
 		c.writeln(")")
 	} else {
+		c.writeln("  )")
 		c.writeln(")")
 	}
 	return nil
