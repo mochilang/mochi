@@ -4,6 +4,7 @@ package kotlin_test
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -58,7 +59,8 @@ func TestKotlinCompiler_TPCH(t *testing.T) {
 	if _, err := exec.LookPath("kotlinc"); err != nil {
 		t.Skip("kotlinc not installed")
 	}
-	for _, base := range []string{"q1", "q2", "q3", "q11", "q12", "q13"} {
+	for i := 1; i <= 22; i++ {
+		base := fmt.Sprintf("q%d", i)
 		t.Run(base, func(t *testing.T) { runTPCHQuery(t, base) })
 	}
 }

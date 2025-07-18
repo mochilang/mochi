@@ -1,0 +1,16 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q17.kt:53:99: error: none of the following functions can be called with the arguments supplied: 
+public final operator fun times(other: Byte): Double defined in kotlin.Double
+public final operator fun times(other: Double): Double defined in kotlin.Double
+public final operator fun times(other: Float): Double defined in kotlin.Double
+public final operator fun times(other: Int): Double defined in kotlin.Double
+public final operator fun times(other: Long): Double defined in kotlin.Double
+public final operator fun times(other: Short): Double defined in kotlin.Double
+                if (((p.p_brand == brand) && (p.p_container == container) && (l.l_quantity < (0.2 * run { val r = run {
+                                                                                                  ^
+/tmp/q17.kt:70:28: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun BigDecimal.div(other: BigDecimal): BigDecimal defined in kotlin
+@InlineOnly public inline operator fun BigInteger.div(other: BigInteger): BigInteger defined in kotlin
+val result = sum(filtered) / 7.0
+                           ^

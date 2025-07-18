@@ -1,0 +1,17 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q16.kt:46:13: error: expecting an expression
+val result =     val __sorted = supplier.sortedBy { it.s_name as String }
+            ^
+/tmp/q16.kt:46:13: error: property getter or setter expected
+val result =     val __sorted = supplier.sortedBy { it.s_name as String }
+            ^
+/tmp/q16.kt:47:1: error: expecting a top level declaration
+run {
+^
+/tmp/q16.kt:47:5: error: expecting a top level declaration
+run {
+    ^
+/tmp/q16.kt:47:5: error: function declaration must have a name
+run {
+    ^
