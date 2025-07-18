@@ -1,4 +1,4 @@
-# Rosetta Go Output (31/253 compiled and run)
+# Rosetta Go Output (31/264 compiled and run)
 
 This directory holds Go source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -14,8 +14,8 @@ This directory holds Go source code generated from the real Mochi programs in `t
 - [ ] 24-game-solve
 - [ ] 24-game
 - [ ] 4-rings-or-4-squares-puzzle
-- [x] 9-billion-names-of-god-the-integer
-- [ ] 99-bottles-of-beer-2
+- [ ] 9-billion-names-of-god-the-integer
+- [x] 99-bottles-of-beer-2
 - [x] 99-bottles-of-beer
 - [x] a+b
 - [ ] abbreviations-automatic
@@ -246,13 +246,24 @@ This directory holds Go source code generated from the real Mochi programs in `t
 - [ ] count-in-octal-2
 - [ ] count-in-octal-3
 - [ ] count-in-octal-4
+- [ ] count-occurrences-of-a-substring
+- [ ] count-the-coins-1
+- [ ] count-the-coins-2
+- [ ] cramers-rule
 - [ ] crc-32-1
 - [ ] crc-32-2
+- [ ] create-a-file-on-magnetic-tape
+- [ ] create-a-file
+- [ ] create-a-two-dimensional-array-at-runtime-1
+- [ ] create-an-html-table
+- [ ] create-an-object-at-a-given-address
 - [ ] csv-data-manipulation
 - [ ] csv-to-html-translation-1
 - [ ] csv-to-html-translation-2
 - [ ] csv-to-html-translation-3
 - [ ] csv-to-html-translation-4
 - [ ] csv-to-html-translation-5
+- [ ] cuban-primes
+- [ ] cullen-and-woodall-numbers
 - [ ] cusip
 - [ ] md5
