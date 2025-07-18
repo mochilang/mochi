@@ -104,3 +104,8 @@
 ## Progress (2025-07-19 13:45)
 - Removed `__eq` and `__print` helpers by emitting direct Lua code for equality and printing.
 - Updated set operation helpers to use native comparisons.
+
+## Progress (2025-07-19 14:00)
+- Removed the leftover `__eq` and `__print` helper definitions from the runtime
+  and helper map.
+- Updated machine README to track `bigint_ops` bringing the total to 101/101.
