@@ -525,6 +525,14 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) (string, error) {
 			mutated[st.Update.Target] = true
 		}
 	}
+	// Remove variables declared inside the loop body so they don't become
+	// parameters to the recursive function.
+	for _, st := range w.Body {
+		if st.Var != nil {
+			delete(mutated, st.Var.Name)
+		}
+	}
+	hasBC := hasBreakOrContinue(w.Body)
 	params := make([]string, 0, len(mutated))
 	initArgs := make([]string, 0, len(mutated))
 	for v := range mutated {
@@ -557,9 +565,16 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) (string, error) {
 	if body == "" {
 		body = "ok"
 	}
+	iterBody := body
+	if hasBC {
+		iterBody = fmt.Sprintf("try %s catch throw:continue -> {%s} end", body, strings.Join(nextArgs, ", "))
+	}
 	loopName := c.newVarName("loop")
-	fun := fmt.Sprintf("fun %s(%s) -> case %s of true -> %s, %s(%s); _ -> {%s} end end", loopName, strings.Join(params, ", "), cond, body, loopName, strings.Join(nextArgs, ", "), strings.Join(params, ", "))
+	fun := fmt.Sprintf("fun %s(%s) -> case %s of true -> %s, %s(%s); _ -> {%s} end end", loopName, strings.Join(params, ", "), cond, iterBody, loopName, strings.Join(nextArgs, ", "), strings.Join(params, ", "))
 	call := fmt.Sprintf("{%s} = (%s)(%s)", strings.Join(nextArgs, ", "), fun, strings.Join(initArgs, ", "))
+	if hasBC {
+		call = fmt.Sprintf("try %s catch throw:break -> ok end", call)
+	}
 	return call, nil
 }
 

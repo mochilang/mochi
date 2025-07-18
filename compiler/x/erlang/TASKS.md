@@ -4,6 +4,7 @@
 - [2025-07-17 16:26] Added group variable type inference so group_by programs no longer use mochi_get. Regenerated machine outputs.
 - [2025-07-18 00:10] Added map field tracking so known fields use `maps:get/2` without defaults. Removed unused mochi_get in simple programs.
 - [2025-07-18 08:15] Recognized selector paths and propagated group item fields so more joins and group iterations use `maps:get` directly.
+- [2025-07-18 15:50] While loops now catch break/continue and ignore variables declared inside the loop body. Negative numbers are parsed using unary minus so Rosetta examples like `a[n-1]` compile.
 - [2025-07-17 13:05] Regenerated `cross_join`, `cross_join_filter`, and
   `dataset_sort_take_limit` with refined type inference so `maps:get` replaces
   `mochi_get`.

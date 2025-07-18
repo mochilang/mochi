@@ -2,6 +2,8 @@
 
 This directory holds Erlang source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
+The lexer now treats negative numbers using unary minus, so programs with expressions like `a[n-1]` parse correctly.
+
 ## Program checklist
 - [x] 100-doors-2
 - [x] 100-doors-3
