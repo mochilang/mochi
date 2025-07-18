@@ -33,19 +33,6 @@ function __group_by_rows(rows, keyfn, valfn)
     end
     return res
 end
-function __eq(a, b)
-    if type(a) ~= type(b) then return false end
-    if type(a) == 'number' then return math.abs(a-b) < 1e-9 end
-    if type(a) ~= 'table' then return a == b end
-    if (a[1] ~= nil or #a > 0) and (b[1] ~= nil or #b > 0) then
-        if #a ~= #b then return false end
-        for i = 1, #a do if not __eq(a[i], b[i]) then return false end end
-        return true
-    end
-    for k, v in pairs(a) do if not __eq(v, b[k]) then return false end end
-    for k, _ in pairs(b) do if a[k] == nil then return false end end
-    return true
-end
 function __merge(...)
     local res = {}
     for i=1,select('#', ...) do
@@ -55,26 +42,6 @@ function __merge(...)
         end
     end
     return res
-end
-function __print(...)
-    local n = select('#', ...)
-    if n == 1 then
-        local v = ...
-        if type(v) == 'string' then
-            print(v)
-            return
-        elseif type(v) == 'table' and (v[1] ~= nil or #v > 0) then
-            local parts = {}
-            for i=1,#v do parts[#parts+1] = __str(v[i]) end
-            print(table.concat(parts, ' '))
-            return
-        end
-    end
-    local parts = {}
-    for i=1,n do parts[#parts+1] = __str(select(i, ...)) end
-    local out = table.concat(parts, ' ')
-    out = string.gsub(out, ' +$', '')
-    print(out)
 end
 function __query(src, joins, opts)
     local whereFn = opts.where
@@ -286,10 +253,10 @@ end_date = "1994-01-01"
 result = (function()
     local _src = customer
     local _rows = __query(_src, {
-        { items = orders, on = function(c, o) return __eq(o.o_custkey, c.c_custkey) end },
-        { items = lineitem, on = function(c, o, l) return __eq(l.l_orderkey, o.o_orderkey) end },
-        { items = nation, on = function(c, o, l, n) return __eq(n.n_nationkey, c.c_nationkey) end }
-    }, { selectFn = function(c, o, l, n) return {c, o, l, n} end, where = function(c, o, l, n) return ((((o.o_orderdate >= start_date) and (o.o_orderdate < end_date)) and __eq(l.l_returnflag, "R"))) end })
+        { items = orders, on = function(c, o) return (o.o_custkey == c.c_custkey) end },
+        { items = lineitem, on = function(c, o, l) return (l.l_orderkey == o.o_orderkey) end },
+        { items = nation, on = function(c, o, l, n) return (n.n_nationkey == c.c_nationkey) end }
+    }, { selectFn = function(c, o, l, n) return {c, o, l, n} end, where = function(c, o, l, n) return ((((o.o_orderdate >= start_date) and (o.o_orderdate < end_date)) and (l.l_returnflag == "R"))) end })
     local _groups = __group_by_rows(_rows, function(c, o, l, n) return {["c_custkey"]=c.c_custkey, ["c_name"]=c.c_name, ["c_acctbal"]=c.c_acctbal, ["c_address"]=c.c_address, ["c_phone"]=c.c_phone, ["c_comment"]=c.c_comment, ["n_name"]=n.n_name} end, function(c, o, l, n) local _row = __merge(c, o, l, n); _row.c = c; _row.o = o; _row.l = l; _row.n = n; return _row end)
     local _res = {}
     for _, g in ipairs(_groups) do
@@ -303,4 +270,4 @@ end)()), ["c_acctbal"]=g.key.c_acctbal, ["n_name"]=g.key.n_name, ["c_address"]=g
     end
     return _res
 end)()
-__print(result)
+(function(_l0) local p={} for i=1,#_l0 do p[#p+1]=__str(_l0[i]) end print(table.concat(p, ' ')) end)(result)

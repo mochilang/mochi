@@ -11,39 +11,6 @@ function __add(a, b)
         return a + b
     end
 end
-function __eq(a, b)
-    if type(a) ~= type(b) then return false end
-    if type(a) == 'number' then return math.abs(a-b) < 1e-9 end
-    if type(a) ~= 'table' then return a == b end
-    if (a[1] ~= nil or #a > 0) and (b[1] ~= nil or #b > 0) then
-        if #a ~= #b then return false end
-        for i = 1, #a do if not __eq(a[i], b[i]) then return false end end
-        return true
-    end
-    for k, v in pairs(a) do if not __eq(v, b[k]) then return false end end
-    for k, _ in pairs(b) do if a[k] == nil then return false end end
-    return true
-end
-function __print(...)
-    local n = select('#', ...)
-    if n == 1 then
-        local v = ...
-        if type(v) == 'string' then
-            print(v)
-            return
-        elseif type(v) == 'table' and (v[1] ~= nil or #v > 0) then
-            local parts = {}
-            for i=1,#v do parts[#parts+1] = __str(v[i]) end
-            print(table.concat(parts, ' '))
-            return
-        end
-    end
-    local parts = {}
-    for i=1,n do parts[#parts+1] = __str(select(i, ...)) end
-    local out = table.concat(parts, ' ')
-    out = string.gsub(out, ' +$', '')
-    print(out)
-end
 function __str(v)
     local t = type(v)
     if t == 'table' then
@@ -78,10 +45,10 @@ function __str(v)
     end
 end
 function sum_rec(n, acc)
-    if __eq(n, 0) then
+    if (n == 0) then
         return acc
     end
     return sum_rec((n - 1), __add(acc, n))
 end
 
-__print(sum_rec(10, 0))
+print(__str(sum_rec(10, 0)))

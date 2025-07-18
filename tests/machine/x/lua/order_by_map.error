@@ -1,0 +1,5 @@
+exit status 1
+lua: /workspace/mochi/tests/machine/x/lua/order_by_map.lua:36: attempt to call a table value
+stack traceback:
+	/workspace/mochi/tests/machine/x/lua/order_by_map.lua:36: in main chunk
+	[C]: in ?

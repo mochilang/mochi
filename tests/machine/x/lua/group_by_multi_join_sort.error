@@ -1,0 +1,5 @@
+exit status 1
+lua: ...e/mochi/tests/machine/x/lua/group_by_multi_join_sort.lua:253: attempt to call a table value
+stack traceback:
+	...e/mochi/tests/machine/x/lua/group_by_multi_join_sort.lua:253: in main chunk
+	[C]: in ?
