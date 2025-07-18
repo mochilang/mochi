@@ -1,8 +1,215 @@
-type: error[T008]: type mismatch: expected int, got float
-  --> /workspace/mochi/tests/rosetta/x/Mochi/bitwise-io-2.mochi:10:42
+run: exit status 255
+"This is a test." as bytes: 84 65 65 65 65 65 65 65 65 65 65 65 65 65 65
 
- 10 | fun rshift(x: int, n: int): int { return x / pow2(n) }
-    |                                          ^
+Deprecated: Implicit conversion from float 10.5 to int loses precision in /tmp/bitwise-io-2.php on line 141
 
-help:
-  Change the value to match the expected type.
+Deprecated: Implicit conversion from float 5.25 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 2.625 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 1.3125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 0.65625 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 32.5 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 16.25 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 8.125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 4.0625 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 2.03125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 1.015625 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 0.5078125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 32.5 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 16.25 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 8.125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 4.0625 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 2.03125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 1.015625 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 0.5078125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 32.5 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 16.25 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 8.125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 4.0625 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 2.03125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 1.015625 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 0.5078125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 32.5 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 16.25 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 8.125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 4.0625 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 2.03125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 1.015625 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 0.5078125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 32.5 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 16.25 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 8.125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 4.0625 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 2.03125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 1.015625 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 0.5078125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 32.5 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 16.25 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 8.125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 4.0625 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 2.03125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 1.015625 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 0.5078125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 32.5 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 16.25 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 8.125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 4.0625 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 2.03125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 1.015625 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 0.5078125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 32.5 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 16.25 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 8.125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 4.0625 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 2.03125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 1.015625 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 0.5078125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 32.5 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 16.25 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 8.125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 4.0625 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 2.03125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 1.015625 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 0.5078125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 32.5 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 16.25 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 8.125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 4.0625 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 2.03125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 1.015625 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 0.5078125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 32.5 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 16.25 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 8.125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 4.0625 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 2.03125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 1.015625 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 0.5078125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 32.5 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 16.25 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 8.125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 4.0625 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 2.03125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 1.015625 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 0.5078125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 32.5 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 16.25 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 8.125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 4.0625 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 2.03125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 1.015625 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 0.5078125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 32.5 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 16.25 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 8.125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 4.0625 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 2.03125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 1.015625 to int loses precision in /tmp/bitwise-io-2.php on line 141
+
+Deprecated: Implicit conversion from float 0.5078125 to int loses precision in /tmp/bitwise-io-2.php on line 141
+    original bits: [01010100 01000001 01000001 01000001 01000001 01000001 01000001 01000001 01000001 01000001 01000001 01000001 01000001 01000001 01000001]
+
+Fatal error: Uncaught Error: Cannot use object of type Writer as array in /tmp/bitwise-io-2.php:252
+Stack trace:
+#0 /tmp/bitwise-io-2.php(268): Example()
+#1 {main}
+  thrown in /tmp/bitwise-io-2.php on line 252

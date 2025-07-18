@@ -114,7 +114,7 @@ func inferBinaryType(env *Env, b *parser.BinaryExpr) Type {
 				switch ops[i] {
 				case "+", "-", "*", "/", "%":
 					if ops[i] == "/" && isInt(left) && isInt(right) {
-						res = FloatType{}
+						res = IntType{}
 						break
 					}
 					if (isInt64(left) && (isInt64(right) || isInt(right))) ||

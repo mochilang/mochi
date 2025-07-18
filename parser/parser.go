@@ -21,6 +21,26 @@ func (b *boolLit) Capture(values []string) error {
 	return nil
 }
 
+type IntLit int
+
+func (i *IntLit) Capture(values []string) error {
+	s := values[0]
+	base := 10
+	if strings.HasPrefix(s, "0x") || strings.HasPrefix(s, "0X") {
+		base = 16
+		s = s[2:]
+	} else if strings.HasPrefix(s, "0b") || strings.HasPrefix(s, "0B") {
+		base = 2
+		s = s[2:]
+	}
+	v, err := strconv.ParseInt(s, base, 64)
+	if err != nil {
+		return err
+	}
+	*i = IntLit(v)
+	return nil
+}
+
 // --- Mochi Lexer ---
 var mochiLexer = lexer.MustSimple([]lexer.SimpleRule{
 	{Name: "Comment", Pattern: `//[^\n]*|#[^\n]*|/\*([^*]|\*+[^*/])*\*/`},
@@ -32,7 +52,7 @@ var mochiLexer = lexer.MustSimple([]lexer.SimpleRule{
 	// expressions like `len(list)-1` inside index operations to
 	// parse correctly.
 	{Name: "Float", Pattern: `\d+\.\d+`},
-	{Name: "Int", Pattern: `\d+`},
+	{Name: "Int", Pattern: `0[xX][0-9a-fA-F]+|0[bB][01]+|\d+`},
 	{Name: "String", Pattern: `"(?:\\.|[^"])*"`},
 	{Name: "Punct", Pattern: `==|!=|<=|>=|&&|\|\||=>|:-|\.\.|[-+*/%=<>!|{}\[\](),.:]`},
 	{Name: "Whitespace", Pattern: `[ \t\n\r;]+`},
@@ -304,7 +324,7 @@ type LogicPredicate struct {
 type LogicTerm struct {
 	Var *string `parser:"@Ident"`
 	Str *string `parser:"| @String"`
-	Int *int    `parser:"| @Int"`
+	Int *IntLit `parser:"| @Int"`
 }
 
 type Param struct {
@@ -538,7 +558,7 @@ type CallExpr struct {
 
 type Literal struct {
 	Pos   lexer.Position
-	Int   *int     `parser:"@Int"`
+	Int   *IntLit  `parser:"@Int"`
 	Float *float64 `parser:"| @Float"`
 	Bool  *boolLit `parser:"| @('true' | 'false')"`
 	Str   *string  `parser:"| @String"`
