@@ -283,6 +283,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.writeln(fmt.Sprintf("public class %s {", c.className))
 	c.indent++
+	if c.helpers["scanner"] {
+		c.writeln("static java.util.Scanner scanner = new java.util.Scanner(System.in);")
+	}
 	// global declarations
 	for _, s := range prog.Statements {
 		switch {
@@ -1041,6 +1044,10 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 		case "str":
 			return "String"
 		case "substring":
+			return "String"
+		case "now":
+			return "long"
+		case "input":
 			return "String"
 		case "concat":
 			if len(p.Call.Args) == 0 {
@@ -2804,6 +2811,18 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return fmt.Sprintf("%s.substring(%s, %s)", target, start, end), nil
 			}
 			return fmt.Sprintf("%s.substring(%s)", target, start), nil
+		case "now":
+			if len(p.Call.Args) != 0 {
+				return "", fmt.Errorf("now expects no arguments at line %d", p.Pos.Line)
+			}
+			return "System.currentTimeMillis()", nil
+		case "input":
+			if len(p.Call.Args) != 0 {
+				return "", fmt.Errorf("input expects no arguments at line %d", p.Pos.Line)
+			}
+			c.helpers["scanner"] = true
+			c.needUtilImports = true
+			return "scanner.nextLine()", nil
 		case "append":
 			if len(p.Call.Args) != 2 {
 				return "", fmt.Errorf("append expects 2 arguments at line %d", p.Pos.Line)
