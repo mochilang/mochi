@@ -1432,7 +1432,12 @@ func isStringLiteral(e *parser.Expr) bool {
 }
 
 func (c *Compiler) blockString(params []string, stmts []*parser.Statement) (string, error) {
-	sub := &Compiler{vars: make(map[string]bool)}
+	sub := &Compiler{
+		vars:      make(map[string]bool),
+		env:       c.env,
+		constLens: make(map[string]int),
+		constStrs: make(map[string]string),
+	}
 	for _, p := range params {
 		sub.vars[p] = true
 	}

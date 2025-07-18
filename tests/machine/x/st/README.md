@@ -1,6 +1,6 @@
-# Mochi to Smalltalk Machine Outputs (100/100 compiled)
+# Mochi to Smalltalk Machine Outputs (100/100 compiled and run)
 
-This directory contains Smalltalk source code generated from the Mochi programs in `tests/vm/valid`. A checkbox indicates the program compiled successfully. Execution requires the GNU Smalltalk interpreter which may not be available in all environments.
+This directory contains Smalltalk source code generated from the Mochi programs in `tests/vm/valid`. A checkbox indicates the program compiled and executed successfully during tests.
 
 ## Checklist
 - [x] append_builtin.mochi
