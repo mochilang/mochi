@@ -1,0 +1,28 @@
+scalac: exit status 1
+/tmp/bulls-and-cows.scala:18: error: not found: value now
+      val j = now() % (i + 1)
+              ^
+/tmp/bulls-and-cows.scala:20: error: value update is not a member of List[String]
+      arr(i) = (arr).apply(j).asInstanceOf[String]
+      ^
+/tmp/bulls-and-cows.scala:21: error: value update is not a member of List[String]
+      arr(j) = tmp
+      ^
+/tmp/bulls-and-cows.scala:33: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[String]
+ required: List[String]
+    digits = shuffle(digits)
+                     ^
+/tmp/bulls-and-cows.scala:38: error: not found: value input
+      val guess = input()
+                  ^
+/tmp/bulls-and-cows.scala:53: error: method main has return statement; needs result type
+          return
+          ^
+/tmp/bulls-and-cows.scala:61: error: method main has return statement; needs result type
+            return
+            ^
+/tmp/bulls-and-cows.scala:78: error: method main has return statement; needs result type
+        return
+        ^
+8 errors found

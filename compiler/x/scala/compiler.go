@@ -468,6 +468,10 @@ func sanitizeField(name string) string {
 	return name
 }
 
+func sanitizeVarName(name string) string {
+	return sanitizeField(name)
+}
+
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	name := sanitizeName(strings.TrimSuffix(filepath.Base(prog.Pos.Filename), filepath.Ext(prog.Pos.Filename)))
 	collectUpdates(prog.Statements, c.updates)
@@ -694,21 +698,22 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	if c.env != nil {
 		c.env.SetVar(s.Name, typ, mutable)
 	}
+	name := sanitizeVarName(s.Name)
 	if s.Type != nil {
 		typ := c.typeString(s.Type)
 		if mutable {
 			typ = c.mutableTypeString(s.Type)
 		}
 		if mutable {
-			c.writeln(fmt.Sprintf("var %s: %s = %s", s.Name, typ, rhs))
+			c.writeln(fmt.Sprintf("var %s: %s = %s", name, typ, rhs))
 		} else {
-			c.writeln(fmt.Sprintf("val %s: %s = %s", s.Name, typ, rhs))
+			c.writeln(fmt.Sprintf("val %s: %s = %s", name, typ, rhs))
 		}
 	} else {
 		if mutable {
-			c.writeln(fmt.Sprintf("var %s = %s", s.Name, rhs))
+			c.writeln(fmt.Sprintf("var %s = %s", name, rhs))
 		} else {
-			c.writeln(fmt.Sprintf("val %s = %s", s.Name, rhs))
+			c.writeln(fmt.Sprintf("val %s = %s", name, rhs))
 		}
 	}
 	return nil
@@ -766,11 +771,12 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 	if c.env != nil {
 		c.env.SetVar(s.Name, typ, true)
 	}
+	name := sanitizeVarName(s.Name)
 	if s.Type != nil {
 		ts := c.typeString(s.Type)
-		c.writeln(fmt.Sprintf("var %s: %s = %s", s.Name, ts, rhs))
+		c.writeln(fmt.Sprintf("var %s: %s = %s", name, ts, rhs))
 	} else {
-		c.writeln(fmt.Sprintf("var %s = %s", s.Name, rhs))
+		c.writeln(fmt.Sprintf("var %s = %s", name, rhs))
 	}
 	return nil
 }
@@ -809,11 +815,12 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	params := make([]string, len(fn.Params))
 	child := types.NewEnv(c.env)
 	for i, p := range fn.Params {
+		pname := sanitizeVarName(p.Name)
 		if p.Type != nil {
-			params[i] = fmt.Sprintf("%s: %s", p.Name, c.typeString(p.Type))
+			params[i] = fmt.Sprintf("%s: %s", pname, c.typeString(p.Type))
 			child.SetVar(p.Name, types.ResolveTypeRef(p.Type, c.env), false)
 		} else {
-			params[i] = p.Name
+			params[i] = pname
 			child.SetVar(p.Name, types.AnyType{}, false)
 		}
 	}
@@ -1005,18 +1012,19 @@ func (c *Compiler) compileFor(s *parser.ForStmt) error {
 		// range loops produce integer indices
 		elemType = types.IntType{}
 	}
+	name := sanitizeVarName(s.Name)
 	if t := types.ExprType(s.Source, c.env); t != nil {
 		if mt, ok := t.(types.MapType); ok {
-			c.writeln(fmt.Sprintf("for((%s, _) <- %s) {", s.Name, loop))
+			c.writeln(fmt.Sprintf("for((%s, _) <- %s) {", name, loop))
 			elemType = mt.Key
 		} else {
-			c.writeln(fmt.Sprintf("for(%s <- %s) {", s.Name, loop))
+			c.writeln(fmt.Sprintf("for(%s <- %s) {", name, loop))
 			if lt, ok := t.(types.ListType); ok {
 				elemType = lt.Elem
 			}
 		}
 	} else {
-		c.writeln(fmt.Sprintf("for(%s <- %s) {", s.Name, loop))
+		c.writeln(fmt.Sprintf("for(%s <- %s) {", name, loop))
 	}
 	child := types.NewEnv(c.env)
 	child.SetVar(s.Name, elemType, false)
@@ -1040,7 +1048,7 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 	if err != nil {
 		return err
 	}
-	target := s.Name
+	target := sanitizeVarName(s.Name)
 	// handle nested index assignment for immutable collections
 	if len(s.Index) == 2 && len(s.Field) == 0 {
 		idx0, err := c.compileExpr(s.Index[0].Start)
@@ -1603,7 +1611,7 @@ func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 			return fmt.Sprintf("scala.math.%s", attr)
 		}
 	}
-	base := s.Root
+	base := sanitizeVarName(s.Root)
 	var t types.Type
 	if v, err := c.env.GetVar(s.Root); err == nil {
 		t = v
