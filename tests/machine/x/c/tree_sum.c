@@ -47,11 +47,13 @@ int _mochi_main() {
   tree_t t = (tree_t){
       .tag = tree_t_node_t,
       .value.node_t = (node_t){
-          .left = &Leaf,
+          .left = &(tree_t){.tag = tree_t_leaf_t},
           .value = 1,
           .right = &(tree_t){.tag = tree_t_node_t,
                              .value.node_t = (node_t){
-                                 .left = &Leaf, .value = 2, .right = &Leaf}}}};
+                                 .left = &(tree_t){.tag = tree_t_leaf_t},
+                                 .value = 2,
+                                 .right = &(tree_t){.tag = tree_t_leaf_t}}}}};
   printf("%d\n", sum_tree(t));
   return 0;
 }
