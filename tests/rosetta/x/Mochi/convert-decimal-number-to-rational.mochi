@@ -1,0 +1,51 @@
+// Mochi translation of Rosetta "Convert decimal number to rational" task
+// Based on Go version in tests/rosetta/x/Go/convert-decimal-number-to-rational.go
+
+fun gcd(a: int, b: int): int {
+  var x = a
+  if x < 0 { x = -x }
+  var y = b
+  if y < 0 { y = -y }
+  while y != 0 {
+    let t = x % y
+    x = y
+    y = t
+  }
+  return x
+}
+
+fun parseRational(s: string): map<string, int> {
+  var intPart = 0
+  var fracPart = 0
+  var denom = 1
+  var afterDot = false
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i+1)
+    if ch == "." {
+      afterDot = true
+    } else {
+      let d = int(ch) - int("0")
+      if !afterDot {
+        intPart = intPart * 10 + d
+      } else {
+        fracPart = fracPart * 10 + d
+        denom = denom * 10
+      }
+    }
+    i = i + 1
+  }
+  var num = intPart * denom + fracPart
+  let g = gcd(num, denom)
+  return {"num": (num / g) as int, "den": (denom / g) as int}
+}
+
+fun main() {
+  let inputs = ["0.9054054", "0.518518", "0.75"]
+  for s in inputs {
+    let r = parseRational(s)
+    print(s + " = " + str(r["num"]) + "/" + str(r["den"]))
+  }
+}
+
+main()
