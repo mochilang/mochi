@@ -2,6 +2,9 @@
 
 This directory contains Scheme code generated from the Mochi programs in `tests/vm/valid`. Each program was executed with chibi-scheme. Successful runs have a `.out` file and failures provide a `.error`.
 
+## Recent updates
+- 2025-07-18 – Improved numeric type inference removes unnecessary helper functions.
+
 ## Program checklist
 - [x] append_builtin
 - [x] avg_builtin
