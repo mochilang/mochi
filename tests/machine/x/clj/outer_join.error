@@ -1,5 +1,0 @@
-Execution error (OutOfMemoryError) at main/-query (outer_join.clj:71).
-Java heap space
-
-Full report at:
-/tmp/clojure-17201402420341419840.edn

@@ -45,3 +45,6 @@ Remaining work:
 2025-07-24: Avoid unnecessary struct casts when expression type already matches.
 2025-07-25: Equality operations now use native '=' when operand types are known,
 reducing helper emissions. Regenerated machine outputs.
+2025-07-26: Simple left/right/outer joins now compile to direct comprehensions
+without using the `_query` helper, further reducing runtime overhead. Machine
+outputs regenerated for `outer_join`.
