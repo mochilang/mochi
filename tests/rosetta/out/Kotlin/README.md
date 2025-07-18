@@ -5,7 +5,7 @@ programs in `tests/rosetta/x/Mochi`. Each file has the expected
 runtime output in a matching `.out` file. Compilation or runtime
 failures are stored in a corresponding `.error` file.
 
-Compiled programs: 38/264
+Compiled programs: 23/271
 
 ## Program checklist
 - [x] 100-doors-2
@@ -24,7 +24,7 @@ Compiled programs: 38/264
 - [x] 99-bottles-of-beer
 - [ ] a+b
 - [x] abbreviations-automatic
-- [ ] abbreviations-easy
+- [x] abbreviations-easy
 - [ ] abbreviations-simple
 - [ ] abc-problem
 - [x] abelian-sandpile-model-identity

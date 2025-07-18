@@ -71,6 +71,8 @@ var runtimePieces = map[string]string{
 	"str":         `fun str(v: Any?): String = v.toString()`,
 	"substring":   `fun substring(s: String, start: Int, end: Int): String = s.substring(start, end)`,
 	"starts_with": `fun String.starts_with(prefix: String): Boolean = this.startsWith(prefix)`,
+	"upper":       `fun upper(s: String): String = s.toUpperCase()`,
+	"lower":       `fun lower(s: String): String = s.toLowerCase()`,
 	"toInt": `fun toInt(v: Any?): Int = when (v) {
     is Int -> v
     is Double -> v.toInt()
@@ -196,7 +198,7 @@ var runtimePieces = map[string]string{
 	"_input": `fun _input(): String { return readLine() ?: "" }`,
 }
 
-var runtimeOrder = []string{"append", "avg", "div", "count", "exists", "values", "len", "max", "min", "sum", "str", "substring", "starts_with", "toInt", "toDouble", "toBool", "union", "except", "intersect", "_load", "loadYamlSimple", "parseSimpleValue", "_save", "json", "toJson", "Group", "_input"}
+var runtimeOrder = []string{"append", "avg", "div", "count", "exists", "values", "len", "max", "min", "sum", "str", "substring", "starts_with", "upper", "lower", "toInt", "toDouble", "toBool", "union", "except", "intersect", "_load", "loadYamlSimple", "parseSimpleValue", "_save", "json", "toJson", "Group", "_input"}
 
 func buildRuntime(used map[string]bool) string {
 	var parts []string
@@ -986,6 +988,9 @@ func (c *Compiler) binaryOp(left string, lType types.Type, op string, right stri
 		c.use("intersect")
 		return fmt.Sprintf("intersect(%s.toMutableList(), %s.toMutableList())", left, right), types.ListType{}, nil
 	case "+", "-", "*", "/", "%":
+		if types.IsListType(lType) && types.IsListType(rType) && op == "+" {
+			return fmt.Sprintf("%s.toMutableList().apply { addAll(%s) }", left, right), types.ListType{}, nil
+		}
 		if _, ok := lType.(types.IntType); ok {
 			if _, rok := rType.(types.FloatType); rok {
 				left = fmt.Sprintf("(%s).toDouble()", left)
@@ -1426,11 +1431,18 @@ func (c *Compiler) builtinCall(call *parser.CallExpr, args []string) (string, bo
 		}
 	case "len":
 		if len(args) == 1 {
-			t := types.TypeOfExprBasic(call.Args[0], c.env)
-			if types.IsStringType(t) {
-				return fmt.Sprintf("%s.length", args[0]), true
-			}
-			return fmt.Sprintf("%s.size", args[0]), true
+			c.use("len")
+			return fmt.Sprintf("len(%s)", args[0]), true
+		}
+	case "upper":
+		if len(args) == 1 {
+			c.use("upper")
+			return fmt.Sprintf("upper(%s)", args[0]), true
+		}
+	case "lower":
+		if len(args) == 1 {
+			c.use("lower")
+			return fmt.Sprintf("lower(%s)", args[0]), true
 		}
 	case "avg":
 		if len(args) == 1 {
