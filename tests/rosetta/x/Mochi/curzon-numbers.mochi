@@ -1,0 +1,59 @@
+// Mochi implementation of Rosetta "Curzon numbers" task
+// Based on Go version in tests/rosetta/x/Go/curzon-numbers.go
+
+fun padLeft(n: int, width: int): string {
+  var s = str(n)
+  while len(s) < width { s = " " + s }
+  return s
+}
+
+fun modPow(base: int, exp: int, mod: int): int {
+  var result = 1 % mod
+  var b = base % mod
+  var e = exp
+  while e > 0 {
+    if e % 2 == 1 { result = (result * b) % mod }
+    b = (b * b) % mod
+    e = e / 2
+  }
+  return result
+}
+
+fun main() {
+  var k = 2
+  while k <= 10 {
+    print("The first 50 Curzon numbers using a base of " + str(k) + " :")
+    var count = 0
+    var n = 1
+    var curzon50: list<int> = []
+    while true {
+      let d = k * n + 1
+      if (modPow(k, n, d) + 1) % d == 0 {
+        if count < 50 { curzon50 = append(curzon50, n) }
+        count = count + 1
+        if count == 50 {
+          var idx = 0
+          while idx < len(curzon50) {
+            var line = ""
+            var j = 0
+            while j < 10 {
+              line = line + padLeft(curzon50[idx], 4) + " "
+              idx = idx + 1
+              j = j + 1
+            }
+            print(substring(line, 0, len(line) - 1))
+          }
+        }
+        if count == 1000 {
+          print("\nOne thousandth: " + str(n))
+          break
+        }
+      }
+      n = n + 1
+    }
+    print("")
+    k = k + 2
+  }
+}
+
+main()
