@@ -1747,6 +1747,10 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
+		typ := c.inferType(q.Where)
+		if strings.HasSuffix(typ, " option") && !isBoolExpr(q.Where) {
+			cnd = fmt.Sprintf("Option.isSome %s", cnd)
+		}
 		condParts = append(condParts, cnd)
 	}
 	var cond string
@@ -2378,6 +2382,16 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 					t = ft
 				}
 				return t
+			}
+			if fields, ok := c.tuples[p.Selector.Root]; ok && len(p.Selector.Tail) == 1 {
+				field := p.Selector.Tail[0]
+				for _, f := range fields {
+					if sanitizeIdent(f) == field {
+						if ft, ok2 := c.vars[f]; ok2 {
+							return ft
+						}
+					}
+				}
 			}
 		}
 
