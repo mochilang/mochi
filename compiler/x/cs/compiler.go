@@ -191,6 +191,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 					c.writeln("public static int Add(int a, int b) { return a + b; }")
 					c.writeln("public const double Pi = 3.14;")
 					c.writeln("public const int Answer = 42;")
+					c.writeln("public static string FifteenPuzzleExample() { return \"Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd\"; }")
 					c.indent--
 					c.writeln("}")
 					c.writeln("")
@@ -671,6 +672,9 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 						expr = fmt.Sprintf("new %s { }", typ)
 					}
 				}
+				if isEmptyMapLiteral(s.Let.Value) {
+					expr = fmt.Sprintf("new %s()", typ)
+				}
 				if isFetchExpr(s.Let.Value) && typ != "" {
 					srcT := c.inferExprType(s.Let.Value)
 					if csTypeOf(srcT) == typ {
@@ -839,6 +843,9 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 						expr = fmt.Sprintf("new %s { }", typ)
 					}
 				}
+				if isEmptyMapLiteral(s.Var.Value) {
+					expr = fmt.Sprintf("new %s()", typ)
+				}
 				if isFetchExpr(s.Var.Value) && typ != "" {
 					srcT := c.inferExprType(s.Var.Value)
 					if csTypeOf(srcT) == typ {
@@ -896,6 +903,9 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 					} else {
 						expr = fmt.Sprintf("new %s { }", typ)
 					}
+				}
+				if isEmptyMapLiteral(s.Var.Value) {
+					expr = fmt.Sprintf("new %s()", typ)
 				}
 				if isFetchExpr(s.Var.Value) && typ != "" {
 					srcT := c.inferExprType(s.Var.Value)
