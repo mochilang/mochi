@@ -41,8 +41,9 @@
   even when no explicit type is present.
 - 2025-08-07 - Inlined JSON printing for struct literals by tracking constant
   values in `let` and `var` declarations.
+- 2025-08-08 - Propagated constant JSON values through variable assignments so
+  `json` can print them without runtime helpers.
 ## Remaining Enhancements
-- [ ] Inline JSON printing for variables when values are known at compile time
 - [ ] Validate generated code for `tpc-h/q1.mochi`
 - [ ] Extend helper functions to support file I/O and dataset joins
 - [ ] Format emitted Rust code more like `rustfmt`

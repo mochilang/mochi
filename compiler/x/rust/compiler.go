@@ -928,6 +928,12 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 		if s, ok := c.structLiteralJSON(sl); ok {
 			c.constJSON[l.Name] = s
 		}
+	} else if id, ok := c.simpleIdent(l.Value); ok {
+		if s, ok2 := c.constJSON[id]; ok2 {
+			c.constJSON[l.Name] = s
+		} else if s, ok2 := c.constListJSON[id]; ok2 {
+			c.constListJSON[l.Name] = s
+		}
 	}
 	if c.lastListStruct != "" {
 		c.listVars[l.Name] = c.lastListStruct
@@ -1031,6 +1037,12 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	} else if sl := tryStructLiteral(v.Value); sl != nil {
 		if s, ok := c.structLiteralJSON(sl); ok {
 			c.constJSON[v.Name] = s
+		}
+	} else if id, ok := c.simpleIdent(v.Value); ok {
+		if s, ok2 := c.constJSON[id]; ok2 {
+			c.constJSON[v.Name] = s
+		} else if s, ok2 := c.constListJSON[id]; ok2 {
+			c.constListJSON[v.Name] = s
 		}
 	}
 	if c.lastListStruct != "" {
