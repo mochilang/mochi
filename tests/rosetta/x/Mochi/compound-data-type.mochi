@@ -1,0 +1,6 @@
+// Mochi implementation of Rosetta "Compound data type" task
+
+type Point {
+  x: float
+  y: float
+}
