@@ -1,3 +1,6 @@
+## Recent Enhancements (2025-07-29 00:00)
+- Optional collections now inline `len(x or [])` and `(len(x or []) > 0)` so the `_count` and `_exists` helpers are avoided when possible.
+
 ## Recent Enhancements (2025-07-22 00:00)
 - Typed variables without initializers now default to zero values.
 - `_fmt` now uses `repr(v)` for floats, ensuring `3.14` and `27.333333333333332` print exactly as in the VM.

@@ -974,6 +974,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if len(args) == 1 {
 			t := c.inferExprType(call.Args[0])
 			if isListLike(t) || isMapLike(t) || isStringLike(t) {
+				if _, ok := t.(types.OptionType); ok {
+					return fmt.Sprintf("len(%s or [])", args[0]), nil
+				}
 				return fmt.Sprintf("len(%s)", args[0]), nil
 			}
 			if _, ok := t.(types.GroupType); ok {
@@ -986,6 +989,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if len(args) == 1 {
 			t := c.inferExprType(call.Args[0])
 			if isListLike(t) || isMapLike(t) || isStringLike(t) {
+				if _, ok := t.(types.OptionType); ok {
+					return fmt.Sprintf("(len(%s or []) > 0)", args[0]), nil
+				}
 				return fmt.Sprintf("(len(%s) > 0)", args[0]), nil
 			}
 			if _, ok := t.(types.GroupType); ok {
