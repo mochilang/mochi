@@ -1141,9 +1141,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			typ := dartType(op.Cast.Type)
 			switch typ {
 			case "int":
-				val = fmt.Sprintf("int.parse(%s)", val)
+				// Use a numeric cast so both strings and numbers work.
+				val = fmt.Sprintf("(%s as num).toInt()", val)
 			case "double":
-				val = fmt.Sprintf("double.parse(%s)", val)
+				// Avoid double.parse which expects a string.
+				val = fmt.Sprintf("(%s as num).toDouble()", val)
 			case "String":
 				val = fmt.Sprintf("%s.toString()", val)
 			case "bool":
@@ -2489,6 +2491,14 @@ func dartTypeFromType(t types.Type) string {
 		return tt.Name
 	case types.StructType:
 		return tt.Name
+	case types.OptionType:
+		typ := dartTypeFromType(tt.Elem)
+		if typ == "" {
+			typ = "dynamic"
+		}
+		return typ
+	case types.AnyType:
+		return "dynamic"
 	default:
 		return ""
 	}
@@ -2511,6 +2521,8 @@ func dartType(t *parser.TypeRef) string {
 			return "String"
 		case "bool":
 			return "bool"
+		case "any":
+			return "dynamic"
 		}
 		return *t.Simple
 	}
