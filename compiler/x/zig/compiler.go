@@ -3263,6 +3263,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		return fmt.Sprintf("(%s).len != 0", arg), nil
 	}
 	if name == "avg" && len(call.Args) == 1 {
+		if q := extractQueryExpr(call.Args[0]); q != nil && simpleQuery(q) {
+			return c.compileAvgQuery(q)
+		}
 		arg, err := c.compileExpr(call.Args[0], false)
 		if err != nil {
 			return "", err
@@ -3281,6 +3284,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		return fmt.Sprintf("_avg_int(%s)", arg), nil
 	}
 	if name == "sum" && len(call.Args) == 1 {
+		if q := extractQueryExpr(call.Args[0]); q != nil && simpleQuery(q) {
+			return c.compileSumQuery(q)
+		}
 		arg, err := c.compileExpr(call.Args[0], false)
 		if err != nil {
 			return "", err
@@ -4760,4 +4766,109 @@ func (c *Compiler) rangeArgs(e *parser.Expr) (*parser.Expr, *parser.Expr, *parse
 	default:
 		return nil, nil, nil, false
 	}
+}
+
+func simpleQuery(q *parser.QueryExpr) bool {
+	return len(q.Froms) == 0 && len(q.Joins) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct
+}
+
+func (c *Compiler) compileSumQuery(q *parser.QueryExpr) (string, error) {
+	src, err := c.compileExpr(q.Source, false)
+	if err != nil {
+		return "", err
+	}
+	t := c.inferExprType(q.Source)
+	var elem types.Type = types.AnyType{}
+	if lt, ok := t.(types.ListType); ok {
+		elem = lt.Elem
+	} else if gt, ok := t.(types.GroupType); ok {
+		elem = gt.Elem
+		src = ensureGroupSlice(src)
+	}
+	child := types.NewEnv(c.env)
+	child.SetVar(q.Var, elem, true)
+	old := c.env
+	c.env = child
+	sel, err := c.compileExpr(q.Select, false)
+	if err != nil {
+		c.env = old
+		return "", err
+	}
+	cond := ""
+	if q.Where != nil {
+		cond, err = c.compileExpr(q.Where, false)
+		if err != nil {
+			c.env = old
+			return "", err
+		}
+	}
+	c.env = old
+	retT := c.inferExprType(q.Select)
+	typ := "i32"
+	zero := "0"
+	if _, ok := retT.(types.FloatType); ok {
+		typ = "f64"
+		zero = "0.0"
+	}
+	tmp := c.newTmp()
+	lbl := c.newLabel()
+	var b strings.Builder
+	b.WriteString(lbl + ": { var " + tmp + ": " + typ + " = " + zero + "; for (" + src + ") |" + sanitizeName(q.Var) + "| {")
+	if cond != "" {
+		b.WriteString(" if (!(" + cond + ")) continue;")
+	}
+	b.WriteString(" " + tmp + " += " + sel + "; }")
+	b.WriteString(" break :" + lbl + " " + tmp + "; }")
+	return b.String(), nil
+}
+
+func (c *Compiler) compileAvgQuery(q *parser.QueryExpr) (string, error) {
+	src, err := c.compileExpr(q.Source, false)
+	if err != nil {
+		return "", err
+	}
+	t := c.inferExprType(q.Source)
+	var elem types.Type = types.AnyType{}
+	if lt, ok := t.(types.ListType); ok {
+		elem = lt.Elem
+	} else if gt, ok := t.(types.GroupType); ok {
+		elem = gt.Elem
+		src = ensureGroupSlice(src)
+	}
+	child := types.NewEnv(c.env)
+	child.SetVar(q.Var, elem, true)
+	old := c.env
+	c.env = child
+	sel, err := c.compileExpr(q.Select, false)
+	if err != nil {
+		c.env = old
+		return "", err
+	}
+	cond := ""
+	if q.Where != nil {
+		cond, err = c.compileExpr(q.Where, false)
+		if err != nil {
+			c.env = old
+			return "", err
+		}
+	}
+	c.env = old
+	_, isFloat := c.inferExprType(q.Select).(types.FloatType)
+	sumVar := c.newTmp()
+	countVar := c.newTmp()
+	lbl := c.newLabel()
+	var b strings.Builder
+	b.WriteString(lbl + ": { var " + sumVar + ": f64 = 0; var " + countVar + ": i32 = 0; for (" + src + ") |" + sanitizeName(q.Var) + "| {")
+	if cond != "" {
+		b.WriteString(" if (!(" + cond + ")) continue;")
+	}
+	if isFloat {
+		b.WriteString(" " + sumVar + " += " + sel + ";")
+	} else {
+		b.WriteString(" " + sumVar + " += @floatFromInt(" + sel + ");")
+	}
+	b.WriteString(" " + countVar + " += 1; }")
+	b.WriteString(" if (" + countVar + " == 0) { break :" + lbl + " 0; }")
+	b.WriteString(" break :" + lbl + " " + sumVar + " / @as(f64, @floatFromInt(" + countVar + ")); }")
+	return b.String(), nil
 }
