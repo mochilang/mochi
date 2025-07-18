@@ -1112,7 +1112,7 @@ func (c *compiler) callExpr(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("str expects 1 argument at line %d", call.Pos.Line)
 		}
-		return fmt.Sprintf("String(%s)", joined), nil
+		return fmt.Sprintf("String(describing: %s)", joined), nil
 	case "append":
 		if len(args) != 2 {
 			return "", fmt.Errorf("append expects 2 arguments at line %d", call.Pos.Line)

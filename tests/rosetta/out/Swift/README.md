@@ -1,4 +1,4 @@
-# Rosetta Swift Output (58/216 programs run)
+# Rosetta Swift Output (57/271 programs run)
 
 This directory holds Swift source code generated from the Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -13,10 +13,11 @@ This directory holds Swift source code generated from the Mochi programs in `tes
 - [ ] 21-game.mochi
 - [ ] 24-game-solve.mochi
 - [ ] 24-game.mochi
-- [ ] 4-rings-or-4-squares-puzzle.mochi
+- [x] 4-rings-or-4-squares-puzzle.mochi
 - [ ] 9-billion-names-of-god-the-integer.mochi
 - [ ] 99-bottles-of-beer-2.mochi
 - [x] 99-bottles-of-beer.mochi
+- [ ] DNS-query.mochi
 - [ ] a+b.mochi
 - [ ] abbreviations-automatic.mochi
 - [ ] abbreviations-easy.mochi
@@ -140,8 +141,8 @@ This directory holds Swift source code generated from the Mochi programs in `tes
 - [x] break-oo-privacy.mochi
 - [ ] brilliant-numbers.mochi
 - [ ] brownian-tree.mochi
-- [x] bulls-and-cows-player.mochi
-- [x] bulls-and-cows.mochi
+- [ ] bulls-and-cows-player.mochi
+- [ ] bulls-and-cows.mochi
 - [ ] burrows-wheeler-transform.mochi
 - [ ] caesar-cipher-1.mochi
 - [ ] caesar-cipher-2.mochi
@@ -209,13 +210,67 @@ This directory holds Swift source code generated from the Mochi programs in `tes
 - [ ] circles-of-given-radius-through-two-points.mochi
 - [ ] circular-primes.mochi
 - [ ] cistercian-numerals.mochi
+- [ ] compiler-virtual-machine-interpreter.mochi
+- [ ] composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k.mochi
+- [ ] compound-data-type.mochi
+- [ ] concurrent-computing-1.mochi
+- [ ] concurrent-computing-2.mochi
+- [ ] concurrent-computing-3.mochi
+- [ ] conditional-structures-1.mochi
+- [ ] conditional-structures-10.mochi
+- [ ] conditional-structures-2.mochi
+- [ ] conditional-structures-3.mochi
+- [ ] conditional-structures-4.mochi
+- [ ] conditional-structures-5.mochi
+- [ ] conditional-structures-6.mochi
+- [ ] conditional-structures-7.mochi
+- [ ] conditional-structures-8.mochi
+- [ ] conditional-structures-9.mochi
+- [ ] consecutive-primes-with-ascending-or-descending-differences.mochi
+- [ ] constrained-genericity-1.mochi
+- [ ] constrained-genericity-2.mochi
+- [ ] constrained-genericity-3.mochi
+- [ ] constrained-genericity-4.mochi
+- [ ] constrained-random-points-on-a-circle-1.mochi
+- [ ] constrained-random-points-on-a-circle-2.mochi
+- [ ] continued-fraction.mochi
+- [ ] convert-decimal-number-to-rational.mochi
+- [ ] convert-seconds-to-compound-duration.mochi
+- [ ] convex-hull.mochi
+- [ ] conways-game-of-life.mochi
+- [ ] copy-a-string-1.mochi
+- [ ] copy-a-string-2.mochi
+- [ ] copy-stdin-to-stdout-1.mochi
+- [ ] copy-stdin-to-stdout-2.mochi
+- [ ] count-in-factors.mochi
+- [ ] count-in-octal-1.mochi
+- [ ] count-in-octal-2.mochi
+- [ ] count-in-octal-3.mochi
+- [ ] count-in-octal-4.mochi
+- [ ] count-occurrences-of-a-substring.mochi
+- [ ] count-the-coins-1.mochi
+- [ ] count-the-coins-2.mochi
+- [ ] cramers-rule.mochi
 - [ ] crc-32-1.mochi
 - [ ] crc-32-2.mochi
+- [ ] create-a-file-on-magnetic-tape.mochi
+- [ ] create-a-file.mochi
+- [ ] create-a-two-dimensional-array-at-runtime-1.mochi
+- [ ] create-an-html-table.mochi
+- [ ] create-an-object-at-a-given-address.mochi
 - [ ] csv-data-manipulation.mochi
 - [ ] csv-to-html-translation-1.mochi
 - [ ] csv-to-html-translation-2.mochi
 - [x] csv-to-html-translation-3.mochi
 - [x] csv-to-html-translation-4.mochi
 - [ ] csv-to-html-translation-5.mochi
+- [ ] cuban-primes.mochi
+- [ ] cullen-and-woodall-numbers.mochi
+- [ ] cumulative-standard-deviation.mochi
+- [ ] currency.mochi
+- [ ] currying.mochi
+- [ ] curzon-numbers.mochi
 - [ ] cusip.mochi
+- [ ] cyclops-numbers.mochi
+- [ ] damm-algorithm.mochi
 - [ ] md5.mochi
