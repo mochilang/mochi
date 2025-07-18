@@ -482,7 +482,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				} else if _, ok := t.(types.IntType); ok {
 					res = fmt.Sprintf("String.to_integer(%s)", res)
 				} else if _, ok := t.(types.FloatType); ok {
-					res = fmt.Sprintf("String.to_float(%s)", res)
+					res = fmt.Sprintf(":erlang.float(%s)", res)
 				}
 				typ = t
 			}
