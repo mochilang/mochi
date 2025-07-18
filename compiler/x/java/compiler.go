@@ -672,9 +672,14 @@ func (c *Compiler) typeName(t *parser.TypeRef) string {
 		return "Object"
 	}
 	if t.Fun != nil {
-		if len(t.Fun.Params) == 1 && t.Fun.Return != nil && t.Fun.Return.Simple != nil && *t.Fun.Return.Simple == "int" && t.Fun.Params[0].Simple != nil && *t.Fun.Params[0].Simple == "int" {
+		if len(t.Fun.Params) == 1 && t.Fun.Params[0].Simple != nil && *t.Fun.Params[0].Simple == "int" {
 			c.needFuncImports = true
-			return "IntUnaryOperator"
+			if t.Fun.Return == nil {
+				return "IntConsumer"
+			}
+			if t.Fun.Return.Simple != nil && *t.Fun.Return.Simple == "int" {
+				return "IntUnaryOperator"
+			}
 		}
 		return "Object"
 	}
@@ -1077,6 +1082,8 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 			return "double"
 		case "str":
 			return "String"
+		case "lower", "upper", "strings.ToLower", "strings.ToUpper":
+			return "String"
 		case "substring":
 			return "String"
 		case "now":
@@ -1113,9 +1120,14 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 		return "List<Map<String,Object>>"
 	}
 	if p != nil && p.FunExpr != nil {
-		if len(p.FunExpr.Params) == 1 && p.FunExpr.Return != nil && p.FunExpr.Return.Simple != nil && *p.FunExpr.Return.Simple == "int" && p.FunExpr.Params[0].Type != nil && p.FunExpr.Params[0].Type.Simple != nil && *p.FunExpr.Params[0].Type.Simple == "int" {
+		if len(p.FunExpr.Params) == 1 && p.FunExpr.Params[0].Type != nil && p.FunExpr.Params[0].Type.Simple != nil && *p.FunExpr.Params[0].Type.Simple == "int" {
 			c.needFuncImports = true
-			return "IntUnaryOperator"
+			if p.FunExpr.Return == nil {
+				return "IntConsumer"
+			}
+			if p.FunExpr.Return.Simple != nil && *p.FunExpr.Return.Simple == "int" {
+				return "IntUnaryOperator"
+			}
 		}
 		return "Object"
 	}
@@ -1695,7 +1707,7 @@ func (c *Compiler) compileList(l *parser.ListLiteral) (string, error) {
 		}
 		elems = append(elems, s)
 	}
-	return fmt.Sprintf("Arrays.asList(%s)", strings.Join(elems, ", ")), nil
+	return fmt.Sprintf("new ArrayList<>(Arrays.asList(%s))", strings.Join(elems, ", ")), nil
 }
 
 func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
@@ -1793,8 +1805,12 @@ func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error)
 }
 
 func (c *Compiler) compileFunExpr(f *parser.FunExpr) (string, error) {
-	if len(f.Params) == 1 && f.Return != nil && f.Return.Simple != nil && *f.Return.Simple == "int" && f.Params[0].Type != nil && f.Params[0].Type.Simple != nil && *f.Params[0].Type.Simple == "int" {
-		c.needFuncImports = true
+	if len(f.Params) == 1 && f.Params[0].Type != nil && f.Params[0].Type.Simple != nil && *f.Params[0].Type.Simple == "int" {
+		if f.Return == nil {
+			c.needFuncImports = true
+		} else if f.Return.Simple != nil && *f.Return.Simple == "int" {
+			c.needFuncImports = true
+		}
 	}
 	var params []string
 	for _, p := range f.Params {
@@ -2241,8 +2257,11 @@ func (c *Compiler) compileLocalFun(f *parser.FunStmt) error {
 	}
 	typ := "Object"
 	declType := "Object"
-	if len(f.Params) == 1 && c.typeName(f.Return) == "int" {
-		if f.Params[0].Type != nil && c.typeName(f.Params[0].Type) == "int" {
+	if len(f.Params) == 1 && f.Params[0].Type != nil && c.typeName(f.Params[0].Type) == "int" {
+		if f.Return == nil {
+			typ = "IntConsumer"
+			declType = "java.util.function.IntConsumer"
+		} else if c.typeName(f.Return) == "int" {
 			typ = "IntUnaryOperator"
 			declType = "java.util.function.IntUnaryOperator"
 		}
@@ -2559,6 +2578,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				val = fmt.Sprintf("%s.contains(%s)", strings.TrimSuffix(val, ".contains"), args[0])
 			} else if typ == "IntUnaryOperator" {
 				val = fmt.Sprintf("%s.applyAsInt(%s)", val, strings.Join(args, ", "))
+			} else if typ == "IntConsumer" {
+				val = fmt.Sprintf("%s.accept(%s)", val, strings.Join(args, ", "))
 			} else {
 				val = fmt.Sprintf("%s(%s)", val, strings.Join(args, ", "))
 			}
@@ -2837,6 +2858,24 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", err
 			}
 			return fmt.Sprintf("String.valueOf(%s)", arg), nil
+		case "lower", "strings.ToLower":
+			if len(p.Call.Args) != 1 {
+				return "", fmt.Errorf("lower expects 1 arg at line %d", p.Pos.Line)
+			}
+			arg, err := c.compileExpr(p.Call.Args[0])
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("String.valueOf(%s).toLowerCase()", arg), nil
+		case "upper", "strings.ToUpper":
+			if len(p.Call.Args) != 1 {
+				return "", fmt.Errorf("upper expects 1 arg at line %d", p.Pos.Line)
+			}
+			arg, err := c.compileExpr(p.Call.Args[0])
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("String.valueOf(%s).toUpperCase()", arg), nil
 		case "json":
 			if len(p.Call.Args) != 1 {
 				return "", fmt.Errorf("json expects one argument at line %d", p.Pos.Line)
@@ -3037,8 +3076,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			return "", fmt.Errorf("partial application unsupported")
 		}
-		if t, ok := c.vars[p.Call.Func]; ok && t == "IntUnaryOperator" {
-			return fmt.Sprintf("%s.applyAsInt(%s)", c.rename(p.Call.Func), strings.Join(args, ", ")), nil
+		if t, ok := c.vars[p.Call.Func]; ok {
+			if t == "IntUnaryOperator" {
+				return fmt.Sprintf("%s.applyAsInt(%s)", c.rename(p.Call.Func), strings.Join(args, ", ")), nil
+			}
+			if t == "IntConsumer" {
+				return fmt.Sprintf("%s.accept(%s)", c.rename(p.Call.Func), strings.Join(args, ", ")), nil
+			}
 		}
 		return fmt.Sprintf("%s(%s)", c.rename(p.Call.Func), strings.Join(args, ", ")), nil
 	case p.Group != nil:

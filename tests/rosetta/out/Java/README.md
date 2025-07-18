@@ -1,4 +1,4 @@
-# Rosetta Java Output (62/264 compiled and run)
+# Rosetta Java Output (67/278 compiled and run)
 
 This directory holds Java source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -17,6 +17,7 @@ This directory holds Java source code generated from the real Mochi programs in 
 - [ ] 9-billion-names-of-god-the-integer
 - [ ] 99-bottles-of-beer-2
 - [x] 99-bottles-of-beer
+- [ ] DNS-query
 - [ ] a+b
 - [ ] abbreviations-automatic
 - [ ] abbreviations-easy
@@ -44,7 +45,7 @@ This directory holds Java source code generated from the real Mochi programs in 
 - [ ] align-columns
 - [ ] aliquot-sequence-classifications
 - [ ] almkvist-giullera-formula-for-pi
-- [ ] almost-prime
+- [x] almost-prime
 - [ ] amb
 - [ ] amicable-pairs
 - [ ] anagrams-deranged-anagrams
@@ -60,7 +61,7 @@ This directory holds Java source code generated from the real Mochi programs in 
 - [x] anti-primes
 - [x] append-a-record-to-the-end-of-a-text-file
 - [x] apply-a-callback-to-an-array-1
-- [ ] apply-a-callback-to-an-array-2
+- [x] apply-a-callback-to-an-array-2
 - [ ] apply-a-digital-filter-direct-form-ii-transposed-
 - [ ] approximate-equality
 - [ ] arbitrary-precision-integers-included-
@@ -75,7 +76,7 @@ This directory holds Java source code generated from the real Mochi programs in 
 - [ ] arithmetic-integer-2
 - [ ] arithmetic-numbers
 - [ ] arithmetic-rational
-- [ ] array-concatenation
+- [x] array-concatenation
 - [x] array-length
 - [ ] arrays
 - [ ] ascending-primes
@@ -152,7 +153,7 @@ This directory holds Java source code generated from the real Mochi programs in 
 - [ ] calkin-wilf-sequence
 - [x] call-a-foreign-language-function
 - [x] call-a-function-1
-- [ ] call-a-function-10
+- [x] call-a-function-10
 - [x] call-a-function-11
 - [x] call-a-function-12
 - [ ] call-a-function-2
@@ -262,8 +263,21 @@ This directory holds Java source code generated from the real Mochi programs in 
 - [ ] csv-to-html-translation-2
 - [x] csv-to-html-translation-3
 - [x] csv-to-html-translation-4
-- [ ] csv-to-html-translation-5
+- [x] csv-to-html-translation-5
 - [ ] cuban-primes
 - [ ] cullen-and-woodall-numbers
+- [ ] cumulative-standard-deviation
+- [ ] currency
+- [ ] currying
+- [ ] curzon-numbers
 - [ ] cusip
+- [ ] cyclops-numbers
+- [ ] damm-algorithm
+- [ ] date-format
+- [ ] date-manipulation
+- [ ] day-of-the-week
+- [ ] de-bruijn-sequences
+- [ ] deal-cards-for-freecell
+- [ ] death-star
+- [ ] deceptive-numbers
 - [ ] md5
