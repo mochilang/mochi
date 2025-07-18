@@ -2092,7 +2092,17 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	oldEnv := c.env
 	c.env = child
 
-	parts = append(parts, fmt.Sprintf("%s <- %s", q.Var, src))
+	part := fmt.Sprintf("%s <- %s", q.Var, src)
+	if lt, ok := types.ExprType(q.Source, c.env).(types.ListType); ok {
+		if _, any := lt.Elem.(types.AnyType); !any {
+			part = fmt.Sprintf("%s: %s <- %s", q.Var, c.typeOf(lt.Elem), src)
+		}
+	} else if gt, ok := types.ExprType(q.Source, c.env).(types.GroupType); ok {
+		if _, any := gt.Elem.(types.AnyType); !any {
+			part = fmt.Sprintf("%s: %s <- %s", q.Var, c.typeOf(gt.Elem), src)
+		}
+	}
+	parts = append(parts, part)
 
 	for _, f := range q.Froms {
 		s, err := c.compileExpr(f.Src)
@@ -2100,7 +2110,17 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.env = oldEnv
 			return "", err
 		}
-		parts = append(parts, fmt.Sprintf("%s <- %s", f.Var, s))
+		fpart := fmt.Sprintf("%s <- %s", f.Var, s)
+		if lt, ok := types.ExprType(f.Src, c.env).(types.ListType); ok {
+			if _, any := lt.Elem.(types.AnyType); !any {
+				fpart = fmt.Sprintf("%s: %s <- %s", f.Var, c.typeOf(lt.Elem), s)
+			}
+		} else if gt, ok := types.ExprType(f.Src, c.env).(types.GroupType); ok {
+			if _, any := gt.Elem.(types.AnyType); !any {
+				fpart = fmt.Sprintf("%s: %s <- %s", f.Var, c.typeOf(gt.Elem), s)
+			}
+		}
+		parts = append(parts, fpart)
 		switch ft := types.ExprType(f.Src, c.env).(type) {
 		case types.ListType:
 			child.SetVar(f.Var, ft.Elem, false)
@@ -2129,7 +2149,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			cond = truthyExpr(cond, jt)
 		}
 		if j.Side == nil {
-			parts = append(parts, fmt.Sprintf("%s <- %s", j.Var, s))
+			jpart := fmt.Sprintf("%s <- %s", j.Var, s)
+			if _, any := elemT.(types.AnyType); !any {
+				jpart = fmt.Sprintf("%s: %s <- %s", j.Var, c.typeOf(elemT), s)
+			}
+			parts = append(parts, jpart)
 			parts = append(parts, fmt.Sprintf("if %s", cond))
 			child.SetVar(j.Var, elemT, false)
 		} else if *j.Side == "outer" {

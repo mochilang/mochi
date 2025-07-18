@@ -1,6 +1,8 @@
 # Scala Compiler Tasks
 
 ## Recent Enhancements
+- 2025-07-25 00:00 - Generators now include type annotations when element types
+  are known, eliminating runtime map lookups in sort expressions.
 - 2025-07-24 00:00 - Fixed `querySelectEnv` to propagate `Option` types for join
   variables. This removes extraneous helper case classes and allows `outer_join`
   and `right_join` to compile cleanly.
