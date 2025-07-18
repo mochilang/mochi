@@ -1,3 +1,4 @@
 zig build: exit status 1
-/tmp/100-doors.zig:12:19: error: type '[]i32' does not support array initialization syntax
-/tmp/100-doors.zig:12:19: note: inferred array length is specified with an underscore: '[_]i32'
+/tmp/100-doors.zig:17:127: error: expected type '[]const i32', found 'array_list.ArrayListAligned(i32,null)'
+/tmp/zig-0.12.0/lib/std/array_list.zig:31:12: note: struct declared here
+/tmp/zig-0.12.0/lib/std/array_list.zig:304:48: note: parameter type declared here

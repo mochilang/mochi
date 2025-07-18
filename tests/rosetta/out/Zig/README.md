@@ -1,10 +1,10 @@
-# Rosetta Zig Output (10/264 compiled and run)
+# Rosetta Zig Output (13/271 compiled and run)
 
 This directory holds Zig source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. A checkbox indicates the program compiled and executed successfully. Failing programs have a `.error` file.
 
 ## Program checklist
-- [ ] 100-doors-2
-- [ ] 100-doors-3
+- [x] 100-doors-2
+- [x] 100-doors-3
 - [ ] 100-doors
 - [ ] 100-prisoners
 - [ ] 15-puzzle-game
@@ -17,6 +17,7 @@ This directory holds Zig source code generated from the real Mochi programs in `
 - [ ] 9-billion-names-of-god-the-integer
 - [ ] 99-bottles-of-beer-2
 - [ ] 99-bottles-of-beer
+- [ ] DNS-query
 - [ ] a+b
 - [ ] abbreviations-automatic
 - [ ] abbreviations-easy
@@ -37,7 +38,7 @@ This directory holds Zig source code generated from the real Mochi programs in `
 - [ ] active-object
 - [ ] add-a-variable-to-a-class-instance-at-runtime
 - [ ] additive-primes
-- [ ] address-of-a-variable
+- [x] address-of-a-variable
 - [ ] adfgvx-cipher
 - [ ] aks-test-for-primes
 - [ ] algebraic-data-types
@@ -265,5 +266,11 @@ This directory holds Zig source code generated from the real Mochi programs in `
 - [ ] csv-to-html-translation-5
 - [ ] cuban-primes
 - [ ] cullen-and-woodall-numbers
+- [ ] cumulative-standard-deviation
+- [ ] currency
+- [ ] currying
+- [ ] curzon-numbers
 - [ ] cusip
+- [ ] cyclops-numbers
+- [ ] damm-algorithm
 - [ ] md5

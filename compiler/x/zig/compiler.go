@@ -2296,7 +2296,7 @@ func (c *Compiler) compileVar(st *parser.VarStmt, inFun bool) error {
 		if lt, ok := typ.(types.ListType); ok {
 			elem = strings.TrimPrefix(zigTypeOf(lt.Elem), "[]const ")
 		}
-		c.writeln(fmt.Sprintf("var %s = std.ArrayList(%s).init(std.heap.page_allocator);", name, elem))
+		c.writeln(fmt.Sprintf("var %s: []%s = &[_]%s{};", name, elem, elem))
 		return nil
 	}
 	if st.Value != nil && isEmptyMapExpr(st.Value) {
@@ -3404,7 +3404,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			lit := call.Args[0].Binary.Left.Value.Target.Lit
 			switch {
 			case lit.Int != nil:
-				return strconv.Quote(strconv.Itoa(*lit.Int)), nil
+				return strconv.Quote(strconv.Itoa(int(*lit.Int))), nil
 			case lit.Float != nil:
 				s := strconv.FormatFloat(*lit.Float, 'f', -1, 64)
 				if !strings.ContainsAny(s, ".eE") && !strings.Contains(s, ".") {
@@ -3563,7 +3563,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 func (c *Compiler) compileLiteral(l *parser.Literal, hint types.Type) (string, error) {
 	switch {
 	case l.Int != nil:
-		return strconv.Itoa(*l.Int), nil
+		return strconv.Itoa(int(*l.Int)), nil
 	case l.Float != nil:
 		s := strconv.FormatFloat(*l.Float, 'f', -1, 64)
 		if !strings.ContainsAny(s, ".eE") && !strings.Contains(s, ".") {
@@ -4753,7 +4753,7 @@ func (c *Compiler) evalIntConstPrimary(pr *parser.Primary) (int, bool) {
 		return 0, false
 	}
 	if pr.Lit != nil && pr.Lit.Int != nil {
-		return *pr.Lit.Int, true
+		return int(*pr.Lit.Int), true
 	}
 	if pr.Group != nil {
 		return c.intConst(pr.Group)
