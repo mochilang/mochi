@@ -125,27 +125,27 @@ cc: exit status 1
 /tmp/bitmap.c:293:10: error: request for member ‘ok’ in something not a structure or union
   293 |   if ((c1.ok)) {
       |          ^
-/tmp/bitmap.c:294:54: error: request for member ‘pixel’ in something not a structure or union
-  294 |     printf("%s\n", "Pixel at (0,0) is " + pixelStr(c1.pixel));
-      |                                                      ^
-/tmp/bitmap.c:296:10: error: request for member ‘ok’ in something not a structure or union
-  296 |   if ((c2.ok)) {
+/tmp/bitmap.c:294:66: error: request for member ‘pixel’ in something not a structure or union
+  294 |     char *tmp26 = concat_string("Pixel at (0,0) is ", pixelStr(c1.pixel));
+      |                                                                  ^
+/tmp/bitmap.c:297:10: error: request for member ‘ok’ in something not a structure or union
+  297 |   if ((c2.ok)) {
       |          ^
-/tmp/bitmap.c:297:56: error: request for member ‘pixel’ in something not a structure or union
-  297 |     printf("%s\n", "Pixel at (10,20) is " + pixelStr(c2.pixel));
-      |                                                        ^
-/tmp/bitmap.c:299:10: error: request for member ‘ok’ in something not a structure or union
-  299 |   if ((c3.ok)) {
+/tmp/bitmap.c:298:68: error: request for member ‘pixel’ in something not a structure or union
+  298 |     char *tmp27 = concat_string("Pixel at (10,20) is ", pixelStr(c2.pixel));
+      |                                                                    ^
+/tmp/bitmap.c:301:10: error: request for member ‘ok’ in something not a structure or union
+  301 |   if ((c3.ok)) {
       |          ^
-/tmp/bitmap.c:300:15: error: request for member ‘pixel’ in something not a structure or union
-  300 |     int p = c3.pixel;
+/tmp/bitmap.c:302:15: error: request for member ‘pixel’ in something not a structure or union
+  302 |     int p = c3.pixel;
       |               ^
-/tmp/bitmap.c:301:16: error: request for member ‘r’ in something not a structure or union
-  301 |     int r16 = p.r * 257;
+/tmp/bitmap.c:303:16: error: request for member ‘r’ in something not a structure or union
+  303 |     int r16 = p.r * 257;
       |                ^
-/tmp/bitmap.c:302:16: error: request for member ‘g’ in something not a structure or union
-  302 |     int g16 = p.g * 257;
+/tmp/bitmap.c:304:16: error: request for member ‘g’ in something not a structure or union
+  304 |     int g16 = p.g * 257;
       |                ^
-/tmp/bitmap.c:303:16: error: request for member ‘b’ in something not a structure or union
-  303 |     int b16 = p.b * 257;
+/tmp/bitmap.c:305:16: error: request for member ‘b’ in something not a structure or union
+  305 |     int b16 = p.b * 257;
       |                ^

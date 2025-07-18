@@ -3,78 +3,57 @@ cc: exit status 1
 /tmp/burrows-wheeler-transform.c:128:12: error: incompatible types when returning type ‘tmp_item_t’ but ‘int’ was expected
   128 |     return (tmp_item_t){.err = 1, .res = ""};
       |            ^
-/tmp/burrows-wheeler-transform.c:137:40: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  137 |     char *rot = slice_string(s, i, le) + slice_string(s, 0, i);
-      |                 ~~~~~~~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~
-      |                 |                        |
-      |                 char *                   char *
-/tmp/burrows-wheeler-transform.c:148:17: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  148 |     last = last + slice_string(table.data[i], le - 1, le);
-      |                 ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      |                   |
-      |                   char *
-/tmp/burrows-wheeler-transform.c:151:10: error: incompatible types when returning type ‘tmp_item1_t’ but ‘int’ was expected
-  151 |   return (tmp_item1_t){.err = 0, .res = last};
+/tmp/burrows-wheeler-transform.c:153:10: error: incompatible types when returning type ‘tmp_item1_t’ but ‘int’ was expected
+  153 |   return (tmp_item1_t){.err = 0, .res = last};
       |          ^
-/tmp/burrows-wheeler-transform.c: In function ‘ibwt’:
-/tmp/burrows-wheeler-transform.c:169:49: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  169 |       table.data[i] = slice_string(r, i, i + 1) + table.data[i];
-      |                       ~~~~~~~~~~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~
-      |                       |                                     |
-      |                       char *                                char *
 /tmp/burrows-wheeler-transform.c: In function ‘mochi_main’:
-/tmp/burrows-wheeler-transform.c:212:35: warning: hex escape sequence out of range
-  212 |   examples.data[5] = "\x02ABC\x03";
+/tmp/burrows-wheeler-transform.c:216:35: warning: hex escape sequence out of range
+  216 |   examples.data[5] = "\x02ABC\x03";
       |                                   ^
-/tmp/burrows-wheeler-transform.c:214:13: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
-  214 |     int t = examples.data[tmp10];
+/tmp/burrows-wheeler-transform.c:218:13: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+  218 |     int t = examples.data[tmp14];
       |             ^~~~~~~~
-/tmp/burrows-wheeler-transform.c:215:34: warning: passing argument 1 of ‘makePrintable’ makes pointer from integer without a cast [-Wint-conversion]
-  215 |     printf("%d\n", makePrintable(t));
+/tmp/burrows-wheeler-transform.c:219:34: warning: passing argument 1 of ‘makePrintable’ makes pointer from integer without a cast [-Wint-conversion]
+  219 |     printf("%d\n", makePrintable(t));
       |                                  ^
       |                                  |
       |                                  int
-/tmp/burrows-wheeler-transform.c:185:27: note: expected ‘char *’ but argument is of type ‘int’
-  185 | char *makePrintable(char *s) {
+/tmp/burrows-wheeler-transform.c:189:27: note: expected ‘char *’ but argument is of type ‘int’
+  189 | char *makePrintable(char *s) {
       |                     ~~~~~~^
-/tmp/burrows-wheeler-transform.c:215:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
-  215 |     printf("%d\n", makePrintable(t));
+/tmp/burrows-wheeler-transform.c:219:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
+  219 |     printf("%d\n", makePrintable(t));
       |             ~^     ~~~~~~~~~~~~~~~~
       |              |     |
       |              int   char *
       |             %s
-/tmp/burrows-wheeler-transform.c:216:19: warning: passing argument 1 of ‘bwt’ makes pointer from integer without a cast [-Wint-conversion]
-  216 |     int res = bwt(t);
+/tmp/burrows-wheeler-transform.c:220:19: warning: passing argument 1 of ‘bwt’ makes pointer from integer without a cast [-Wint-conversion]
+  220 |     int res = bwt(t);
       |                   ^
       |                   |
       |                   int
 /tmp/burrows-wheeler-transform.c:126:15: note: expected ‘char *’ but argument is of type ‘int’
   126 | int bwt(char *s) {
       |         ~~~~~~^
-/tmp/burrows-wheeler-transform.c:217:13: error: request for member ‘data’ in something not a structure or union
-  217 |     if ((res.data["err"])) {
+/tmp/burrows-wheeler-transform.c:221:13: error: request for member ‘data’ in something not a structure or union
+  221 |     if ((res.data["err"])) {
       |             ^
-/tmp/burrows-wheeler-transform.c:221:29: error: request for member ‘data’ in something not a structure or union
-  221 |       int enc = (char *)(res.data["res"]);
+/tmp/burrows-wheeler-transform.c:225:29: error: request for member ‘data’ in something not a structure or union
+  225 |       int enc = (char *)(res.data["res"]);
       |                             ^
-/tmp/burrows-wheeler-transform.c:222:46: warning: passing argument 1 of ‘makePrintable’ makes pointer from integer without a cast [-Wint-conversion]
-  222 |       printf("%s\n", " --> " + makePrintable(enc));
-      |                                              ^~~
-      |                                              |
-      |                                              int
-/tmp/burrows-wheeler-transform.c:185:27: note: expected ‘char *’ but argument is of type ‘int’
-  185 | char *makePrintable(char *s) {
+/tmp/burrows-wheeler-transform.c:226:58: warning: passing argument 1 of ‘makePrintable’ makes pointer from integer without a cast [-Wint-conversion]
+  226 |       char *tmp15 = concat_string(" --> ", makePrintable(enc));
+      |                                                          ^~~
+      |                                                          |
+      |                                                          int
+/tmp/burrows-wheeler-transform.c:189:27: note: expected ‘char *’ but argument is of type ‘int’
+  189 | char *makePrintable(char *s) {
       |                     ~~~~~~^
-/tmp/burrows-wheeler-transform.c:222:30: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  222 |       printf("%s\n", " --> " + makePrintable(enc));
-      |                      ~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~
-      |                      |         |
-      |                      char *    char *
-/tmp/burrows-wheeler-transform.c:223:22: warning: passing argument 1 of ‘ibwt’ makes pointer from integer without a cast [-Wint-conversion]
-  223 |       char *r = ibwt(enc);
+/tmp/burrows-wheeler-transform.c:228:22: warning: passing argument 1 of ‘ibwt’ makes pointer from integer without a cast [-Wint-conversion]
+  228 |       char *r = ibwt(enc);
       |                      ^~~
       |                      |
       |                      int
-/tmp/burrows-wheeler-transform.c:154:18: note: expected ‘char *’ but argument is of type ‘int’
-  154 | char *ibwt(char *r) {
+/tmp/burrows-wheeler-transform.c:156:18: note: expected ‘char *’ but argument is of type ‘int’
+  156 | char *ibwt(char *r) {
       |            ~~~~~~^

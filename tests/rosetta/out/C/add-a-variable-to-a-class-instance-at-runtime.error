@@ -1,8 +1,38 @@
-parse: error[P001]: /workspace/mochi/tests/rosetta/x/Mochi/add-a-variable-to-a-class-instance-at-runtime.mochi:20:28: unexpected token "=" (expected "}")
-  --> /workspace/mochi/tests/rosetta/x/Mochi/add-a-variable-to-a-class-instance-at-runtime.mochi:20:28
-
- 20 |     ss.runtimeFields[name] = value
-    |                            ^
-
-help:
-  Check for a missing `{` or `}` to close the block.
+cc: exit status 1
+/tmp/add-a-variable-to-a-class-instance-at-runtime.c: In function ‘mochi_main’:
+/tmp/add-a-variable-to-a-class-instance-at-runtime.c:114:39: error: ‘some_struct_t’ {aka ‘struct some_struct_t’} has no member named ‘runtime_fields’; did you mean ‘runtimeFields’?
+  114 |   some_struct_t ss = (some_struct_t){.runtime_fields = tmp1};
+      |                                       ^~~~~~~~~~~~~~
+      |                                       runtimeFields
+/tmp/add-a-variable-to-a-class-instance-at-runtime.c:114:56: error: incompatible types when initializing type ‘int’ using type ‘map_string_int’
+  114 |   some_struct_t ss = (some_struct_t){.runtime_fields = tmp1};
+      |                                                        ^~~~
+/tmp/add-a-variable-to-a-class-instance-at-runtime.c:126:5: error: unknown type name ‘map_string’; did you mean ‘map_string_int’?
+  126 |     map_string fields = ss.runtime_fields;
+      |     ^~~~~~~~~~
+      |     map_string_int
+/tmp/add-a-variable-to-a-class-instance-at-runtime.c:126:28: error: ‘some_struct_t’ {aka ‘struct some_struct_t’} has no member named ‘runtime_fields’; did you mean ‘runtimeFields’?
+  126 |     map_string fields = ss.runtime_fields;
+      |                            ^~~~~~~~~~~~~~
+      |                            runtimeFields
+/tmp/add-a-variable-to-a-class-instance-at-runtime.c:127:11: error: request for member ‘data’ in something not a structure or union
+  127 |     fields.data[name] = value;
+      |           ^
+/tmp/add-a-variable-to-a-class-instance-at-runtime.c:128:8: error: ‘some_struct_t’ {aka ‘struct some_struct_t’} has no member named ‘runtime_fields’; did you mean ‘runtimeFields’?
+  128 |     ss.runtime_fields = fields;
+      |        ^~~~~~~~~~~~~~
+      |        runtimeFields
+/tmp/add-a-variable-to-a-class-instance-at-runtime.c:135:13: error: expected ‘)’ before ‘in’
+  135 |     if (name in ss.runtime_fields) {
+      |        ~    ^~~
+      |             )
+/tmp/add-a-variable-to-a-class-instance-at-runtime.c:136:24: error: ‘some_struct_t’ {aka ‘struct some_struct_t’} has no member named ‘runtime_fields’; did you mean ‘runtimeFields’?
+  136 |       char *value = ss.runtime_fields.data[name];
+      |                        ^~~~~~~~~~~~~~
+      |                        runtimeFields
+/tmp/add-a-variable-to-a-class-instance-at-runtime.c:140:7: warning: ‘return’ with no value, in function returning non-void
+  140 |       return;
+      |       ^~~~~~
+/tmp/add-a-variable-to-a-class-instance-at-runtime.c:112:5: note: declared here
+  112 | int mochi_main() {
+      |     ^~~~~~~~~~

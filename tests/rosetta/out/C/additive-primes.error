@@ -1,7 +1,0 @@
-cc: exit status 1
-/tmp/additive-primes.c: In function ‘mochi_main’:
-/tmp/additive-primes.c:96:19: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-   96 |       line = line + pad(i) + "  ";
-      |                   ^ ~~~~~~
-      |                     |
-      |                     char *

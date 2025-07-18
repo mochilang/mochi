@@ -6,20 +6,3 @@ cc: exit status 1
 /tmp/base64-decode-data.c:154:18: error: request for member ‘len’ in something not a structure or union
   154 |   while ((i < str.len)) {
       |                  ^
-/tmp/base64-decode-data.c: In function ‘base64Encode’:
-/tmp/base64-decode-data.c:258:15: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  258 |     bin = bin + toBinary(ord(ch), 8);
-      |               ^ ~~~~~~~~~~~~~~~~~~~~
-      |                 |
-      |                 char *
-/tmp/base64-decode-data.c: In function ‘base64Decode’:
-/tmp/base64-decode-data.c:301:15: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  301 |     bin = bin + toBinary(idx, 6);
-      |               ^ ~~~~~~~~~~~~~~~~
-      |                 |
-      |                 char *
-/tmp/base64-decode-data.c:310:15: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  310 |     out = out + chr(val);
-      |               ^ ~~~~~~~~
-      |                 |
-      |                 char *

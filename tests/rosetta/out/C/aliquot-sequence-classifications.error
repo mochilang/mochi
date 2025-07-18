@@ -51,34 +51,24 @@ cc: exit status 1
   201 |   return (tmp_item1_t){.seq = seq, .aliquot = ""};
       |          ^
 /tmp/aliquot-sequence-classifications.c: In function ‘mochi_main’:
-/tmp/aliquot-sequence-classifications.c:247:34: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  247 |     printf("%s\n", padLeft(k, 2) + ": " +
-      |                    ~~~~~~~~~~~~~ ^
-      |                    |             |
-      |                    char *        char *
-/tmp/aliquot-sequence-classifications.c:248:45: error: request for member ‘data’ in something not a structure or union
-  248 |                        padRight((char *)(res.data["aliquot"]), 15) + " " +
-      |                                             ^
-/tmp/aliquot-sequence-classifications.c:249:53: error: request for member ‘data’ in something not a structure or union
-  249 |                        joinWithCommas((list_int)(res.data["seq"])));
-      |                                                     ^
-/tmp/aliquot-sequence-classifications.c:271:36: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  271 |     printf("%s\n", padLeft(val, 7) + ": " +
-      |                    ~~~~~~~~~~~~~~~ ^
-      |                    |               |
-      |                    char *          char *
-/tmp/aliquot-sequence-classifications.c:272:45: error: request for member ‘data’ in something not a structure or union
-  272 |                        padRight((char *)(res.data["aliquot"]), 15) + " " +
-      |                                             ^
-/tmp/aliquot-sequence-classifications.c:273:53: error: request for member ‘data’ in something not a structure or union
-  273 |                        joinWithCommas((list_int)(res.data["seq"])));
-      |                                                     ^
-/tmp/aliquot-sequence-classifications.c:277:13: warning: overflow in conversion from ‘long int’ to ‘int’ changes value from ‘15355717786080’ to ‘1209702880’ [-Woverflow]
-  277 |   int big = 15355717786080;
+/tmp/aliquot-sequence-classifications.c:249:51: error: request for member ‘data’ in something not a structure or union
+  249 |         concat_string(tmp17, padRight((char *)(res.data["aliquot"]), 15));
+      |                                                   ^
+/tmp/aliquot-sequence-classifications.c:252:59: error: request for member ‘data’ in something not a structure or union
+  252 |         concat_string(tmp19, joinWithCommas((list_int)(res.data["seq"])));
+      |                                                           ^
+/tmp/aliquot-sequence-classifications.c:277:51: error: request for member ‘data’ in something not a structure or union
+  277 |         concat_string(tmp21, padRight((char *)(res.data["aliquot"]), 15));
+      |                                                   ^
+/tmp/aliquot-sequence-classifications.c:280:59: error: request for member ‘data’ in something not a structure or union
+  280 |         concat_string(tmp23, joinWithCommas((list_int)(res.data["seq"])));
+      |                                                           ^
+/tmp/aliquot-sequence-classifications.c:285:13: warning: overflow in conversion from ‘long int’ to ‘int’ changes value from ‘15355717786080’ to ‘1209702880’ [-Woverflow]
+  285 |   int big = 15355717786080;
       |             ^~~~~~~~~~~~~~
-/tmp/aliquot-sequence-classifications.c:281:45: error: request for member ‘data’ in something not a structure or union
-  281 |   printf("%s\n", tmp18 + padRight((char *)(r.data["aliquot"]), 15) + " " +
-      |                                             ^
-/tmp/aliquot-sequence-classifications.c:282:49: error: request for member ‘data’ in something not a structure or union
-  282 |                      joinWithCommas((list_int)(r.data["seq"])));
-      |                                                 ^
+/tmp/aliquot-sequence-classifications.c:289:57: error: request for member ‘data’ in something not a structure or union
+  289 |   char *tmp27 = concat_string(tmp26, padRight((char *)(r.data["aliquot"]), 15));
+      |                                                         ^
+/tmp/aliquot-sequence-classifications.c:291:65: error: request for member ‘data’ in something not a structure or union
+  291 |   char *tmp29 = concat_string(tmp28, joinWithCommas((list_int)(r.data["seq"])));
+      |                                                                 ^

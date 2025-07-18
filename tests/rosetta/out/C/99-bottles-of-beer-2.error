@@ -11,30 +11,3 @@ cc: exit status 1
 /tmp/99-bottles-of-beer-2.c:144:12: warning: returning ‘int’ from a function with return type ‘char *’ makes pointer from integer without a cast [-Wint-conversion]
   144 |     return t;
       |            ^
-/tmp/99-bottles-of-beer-2.c: In function ‘slur’:
-/tmp/99-bottles-of-beer-2.c:199:9: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  199 |   s = s + slice_string(p, strlen(p) - 1, strlen(p));
-      |         ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      |           |
-      |           char *
-/tmp/99-bottles-of-beer-2.c: In function ‘mochi_main’:
-/tmp/99-bottles-of-beer-2.c:207:43: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  207 |     printf("%s\n", slur(numberName(i), i) + " " +
-      |                    ~~~~~~~~~~~~~~~~~~~~~~ ^
-      |                    |                      |
-      |                    char *                 char *
-/tmp/99-bottles-of-beer-2.c:210:43: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  210 |     printf("%s\n", slur(numberName(i), i) + " " +
-      |                    ~~~~~~~~~~~~~~~~~~~~~~ ^
-      |                    |                      |
-      |                    char *                 char *
-/tmp/99-bottles-of-beer-2.c:213:40: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  213 |     printf("%s\n", slur("take one", i) + " " + slur("down", i) + " " +
-      |                    ~~~~~~~~~~~~~~~~~~~ ^
-      |                    |                   |
-      |                    char *              char *
-/tmp/99-bottles-of-beer-2.c:215:47: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  215 |     printf("%s\n", slur(numberName(i - 1), i) + " " +
-      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~ ^
-      |                    |                          |
-      |                    char *                     char *

@@ -7,28 +7,18 @@ cc: exit status 1
   +++ |+#include <complex.h>
     6 | 
 /tmp/arithmetic-complex.c: In function ‘_mochi_main’:
-/tmp/arithmetic-complex.c:86:30: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-   86 |   printf("%s\n", "a:       " + cstr(&a));
-      |                  ~~~~~~~~~~~ ^ ~~~~~~~~
-      |                  |             |
-      |                  char *        char *
-/tmp/arithmetic-complex.c:87:30: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-   87 |   printf("%s\n", "b:       " + cstr(&b));
-      |                  ~~~~~~~~~~~ ^ ~~~~~~~~
-      |                  |             |
-      |                  char *        char *
-/tmp/arithmetic-complex.c:88:37: error: lvalue required as unary ‘&’ operand
-   88 |   printf("%s\n", "a + b:   " + cstr(&add(&a, &b)));
-      |                                     ^
-/tmp/arithmetic-complex.c:89:37: error: lvalue required as unary ‘&’ operand
-   89 |   printf("%s\n", "a * b:   " + cstr(&mul(&a, &b)));
-      |                                     ^
-/tmp/arithmetic-complex.c:90:37: error: lvalue required as unary ‘&’ operand
-   90 |   printf("%s\n", "-a:      " + cstr(&neg(&a)));
-      |                                     ^
-/tmp/arithmetic-complex.c:91:37: error: lvalue required as unary ‘&’ operand
-   91 |   printf("%s\n", "1 / a:   " + cstr(&inv(&a)));
-      |                                     ^
-/tmp/arithmetic-complex.c:92:37: error: lvalue required as unary ‘&’ operand
-   92 |   printf("%s\n", "a̅:       " + cstr(&conj(&a)));
-      |                                     ^
+/tmp/arithmetic-complex.c:90:49: error: lvalue required as unary ‘&’ operand
+   90 |   char *tmp12 = concat_string("a + b:   ", cstr(&add(&a, &b)));
+      |                                                 ^
+/tmp/arithmetic-complex.c:92:49: error: lvalue required as unary ‘&’ operand
+   92 |   char *tmp13 = concat_string("a * b:   ", cstr(&mul(&a, &b)));
+      |                                                 ^
+/tmp/arithmetic-complex.c:94:49: error: lvalue required as unary ‘&’ operand
+   94 |   char *tmp14 = concat_string("-a:      ", cstr(&neg(&a)));
+      |                                                 ^
+/tmp/arithmetic-complex.c:96:49: error: lvalue required as unary ‘&’ operand
+   96 |   char *tmp15 = concat_string("1 / a:   ", cstr(&inv(&a)));
+      |                                                 ^
+/tmp/arithmetic-complex.c:98:49: error: lvalue required as unary ‘&’ operand
+   98 |   char *tmp16 = concat_string("a̅:       ", cstr(&conj(&a)));
+      |                                                 ^

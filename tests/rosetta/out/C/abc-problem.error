@@ -8,12 +8,18 @@ cc: exit status 1
    98 |   char *c = lower(tmp7);
       |             ^~~~~
 /tmp/abc-problem.c:98:13: warning: initialization of ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
-/tmp/abc-problem.c:104:11: warning: comparison between pointer and integer
-  104 |     if (c == lower(tmp8) || c == lower(tmp9)) {
-      |           ^~
-/tmp/abc-problem.c:104:31: warning: comparison between pointer and integer
-  104 |     if (c == lower(tmp8) || c == lower(tmp9)) {
-      |                               ^~
+/tmp/abc-problem.c:104:20: warning: passing argument 2 of ‘strcmp’ makes pointer from integer without a cast [-Wint-conversion]
+  104 |     if ((strcmp(c, lower(tmp8)) == 0) || c == lower(tmp9)) {
+      |                    ^~~~~~~~~~~
+      |                    |
+      |                    int
+In file included from /tmp/abc-problem.c:5:
+/usr/include/string.h:156:50: note: expected ‘const char *’ but argument is of type ‘int’
+  156 | extern int strcmp (const char *__s1, const char *__s2)
+      |                                      ~~~~~~~~~~~~^~~~
+/tmp/abc-problem.c:104:44: warning: comparison between pointer and integer
+  104 |     if ((strcmp(c, lower(tmp8)) == 0) || c == lower(tmp9)) {
+      |                                            ^~
 /tmp/abc-problem.c:116:47: error: request for member ‘len’ in something not a structure or union
   116 |       char *tmp12 = slice_string(word, 1, word.len);
       |                                               ^

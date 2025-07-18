@@ -6348,6 +6348,14 @@ func isStringPrimary(p *parser.Primary, env *types.Env) bool {
 		return true
 	case p.Call != nil && p.Call.Func == "str":
 		return true
+	case p.Call != nil && env != nil:
+		if t, err := env.GetVar(p.Call.Func); err == nil {
+			if ft, ok := t.(types.FuncType); ok {
+				if _, ok := ft.Return.(types.StringType); ok {
+					return true
+				}
+			}
+		}
 	case p.Selector != nil && env != nil:
 		if t, err := env.GetVar(p.Selector.Root); err == nil {
 			for i, f := range p.Selector.Tail {

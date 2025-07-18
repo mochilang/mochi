@@ -1,0 +1,47 @@
+cc: exit status 1
+/tmp/composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k.c: In function ‘commatize’:
+/tmp/composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k.c:122:37: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  122 |     out = slice_string(s, i, i + 1) + out;
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~ ^
+      |           |
+      |           char *
+/tmp/composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k.c: In function ‘pad10’:
+/tmp/composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k.c:146:14: error: request for member ‘len’ in something not a structure or union
+  146 |   while ((str.len < 10)) {
+      |              ^
+/tmp/composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k.c: In function ‘mochi_main’:
+/tmp/composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k.c:190:15: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  190 |         res = 0;
+      |               ^
+/tmp/composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k.c:199:15: warning: initialization of ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+  199 |     char *e = tmp13.data[tmp14];
+      |               ^~~~~
+/tmp/composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k.c:200:35: warning: passing argument 1 of ‘commatize’ makes integer from pointer without a cast [-Wint-conversion]
+  200 |     line = line + pad10(commatize(e)) + " ";
+      |                                   ^
+      |                                   |
+      |                                   char *
+/tmp/composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k.c:115:21: note: expected ‘int’ but argument is of type ‘char *’
+  115 | char *commatize(int n) {
+      |                 ~~~~^
+/tmp/composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k.c:200:17: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  200 |     line = line + pad10(commatize(e)) + " ";
+      |                 ^ ~~~~~~~~~~~~~~~~~~~
+      |                   |
+      |                   char *
+/tmp/composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k.c:206:15: warning: initialization of ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+  206 |     char *e = tmp15.data[tmp16];
+      |               ^~~~~
+/tmp/composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k.c:207:35: warning: passing argument 1 of ‘commatize’ makes integer from pointer without a cast [-Wint-conversion]
+  207 |     line = line + pad10(commatize(e)) + " ";
+      |                                   ^
+      |                                   |
+      |                                   char *
+/tmp/composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k.c:115:21: note: expected ‘int’ but argument is of type ‘char *’
+  115 | char *commatize(int n) {
+      |                 ~~~~^
+/tmp/composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k.c:207:17: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  207 |     line = line + pad10(commatize(e)) + " ";
+      |                 ^ ~~~~~~~~~~~~~~~~~~~
+      |                   |
+      |                   char *
