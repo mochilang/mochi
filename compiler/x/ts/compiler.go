@@ -2087,11 +2087,17 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "min":
 		if len(call.Args) == 1 {
 			t := underlyingType(c.inferExprType(call.Args[0]))
-			switch t.(type) {
+			switch tt := t.(type) {
 			case types.ListType:
-				return fmt.Sprintf("Math.min(...%s)", args[0]), nil
+				elem := underlyingType(tt.Elem)
+				if isNumericType(elem) || isStringType(elem) {
+					return fmt.Sprintf("Math.min(...%s)", args[0]), nil
+				}
 			case types.GroupType:
-				return fmt.Sprintf("Math.min(...%s.items)", args[0]), nil
+				elem := underlyingType(tt.Elem)
+				if isNumericType(elem) || isStringType(elem) {
+					return fmt.Sprintf("Math.min(...%s.items)", args[0]), nil
+				}
 			}
 		}
 		c.use("_min")
@@ -2099,11 +2105,17 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "max":
 		if len(call.Args) == 1 {
 			t := underlyingType(c.inferExprType(call.Args[0]))
-			switch t.(type) {
+			switch tt := t.(type) {
 			case types.ListType:
-				return fmt.Sprintf("Math.max(...%s)", args[0]), nil
+				elem := underlyingType(tt.Elem)
+				if isNumericType(elem) || isStringType(elem) {
+					return fmt.Sprintf("Math.max(...%s)", args[0]), nil
+				}
 			case types.GroupType:
-				return fmt.Sprintf("Math.max(...%s.items)", args[0]), nil
+				elem := underlyingType(tt.Elem)
+				if isNumericType(elem) || isStringType(elem) {
+					return fmt.Sprintf("Math.max(...%s.items)", args[0]), nil
+				}
 			}
 		}
 		c.use("_max")
