@@ -1,4 +1,8 @@
---- Outer Join using syntax ---
-Exception in thread "main" java.lang.ClassCastException: class Order cannot be cast to class java.util.Map (Order is in unnamed module of loader 'app'; java.util.Map is in module java.base of loader 'bootstrap')
-	at Outer_joinKt.main(outer_join.kt:52)
-	at Outer_joinKt.main(outer_join.kt)
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/outer_join.kt:37:50: error: type mismatch: inferred type is Any? but Customer was expected
+            __res.add(Row0(order = o, customer = c))
+                                                 ^
+/workspace/mochi/tests/machine/x/kotlin/outer_join.kt:43:36: error: type mismatch: inferred type is Nothing? but Order was expected
+            __res.add(Row0(order = o, customer = c))
+                                   ^

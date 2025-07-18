@@ -1,20 +1,5 @@
 kotlinc: exit status 1
 OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-/tmp/q11.kt:109:13: error: expecting an expression
-val result =     val __sorted = grouped.sortedByDescending { (it as MutableMap<String, Any?>)["value"] as Comparable<Any> }
-            ^
-/tmp/q11.kt:109:13: error: property getter or setter expected
-val result =     val __sorted = grouped.sortedByDescending { (it as MutableMap<String, Any?>)["value"] as Comparable<Any> }
-            ^
-/tmp/q11.kt:110:1: error: expecting a top level declaration
-run {
-^
-/tmp/q11.kt:110:5: error: expecting a top level declaration
-run {
-    ^
-/tmp/q11.kt:110:5: error: function declaration must have a name
-run {
-    ^
 /tmp/q11.kt:88:53: error: type mismatch: inferred type is Number but Double was expected
         __res.add((Row0(ps_partkey = g.key, value = sum(run {
                                                     ^
