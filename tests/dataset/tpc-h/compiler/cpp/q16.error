@@ -1,4 +1,4 @@
-/usr/bin/ld: /tmp/cc5TlxgX.o: in function `__json(Result const&)':
+/usr/bin/ld: /tmp/ccNtAzDd.o: in function `__json(Result const&)':
 prog.cpp:(.text._Z6__jsonRK6Result[_Z6__jsonRK6Result]+0x76): undefined reference to `void __json<std::any>(std::any const&)'
 /usr/bin/ld: prog.cpp:(.text._Z6__jsonRK6Result[_Z6__jsonRK6Result]+0xc7): undefined reference to `void __json<std::any>(std::any const&)'
 collect2: error: ld returned 1 exit status

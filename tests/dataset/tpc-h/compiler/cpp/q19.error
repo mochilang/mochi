@@ -1,49 +1,49 @@
-/tmp/TestCPPCompiler_TPCHQueriesq191212519053/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_TPCHQueriesq191212519053/001/prog.cpp:168:31: error: no match for ‘operator-’ (operand types are ‘int’ and ‘std::any’)
+/tmp/TestCPPCompiler_TPCHQueriesq193880684961/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCHQueriesq193880684961/001/prog.cpp:168:31: error: no match for ‘operator-’ (operand types are ‘int’ and ‘std::any’)
   168 |                           ((1 - std::declval<Lineitem>().l_discount))))>
       |                             ~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 In file included from /usr/include/c++/13/bits/stl_algobase.h:67,
                  from /usr/include/c++/13/algorithm:60,
-                 from /tmp/TestCPPCompiler_TPCHQueriesq191212519053/001/prog.cpp:2:
+                 from /tmp/TestCPPCompiler_TPCHQueriesq193880684961/001/prog.cpp:2:
 /usr/include/c++/13/bits/stl_iterator.h:625:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__y.base() - __x.base())) std::operator-(const reverse_iterator<_Iterator>&, const reverse_iterator<_IteratorR>&)’
   625 |     operator-(const reverse_iterator<_IteratorL>& __x,
       |     ^~~~~~~~
 /usr/include/c++/13/bits/stl_iterator.h:625:5: note:   template argument deduction/substitution failed:
-/tmp/TestCPPCompiler_TPCHQueriesq191212519053/001/prog.cpp:168:58: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+/tmp/TestCPPCompiler_TPCHQueriesq193880684961/001/prog.cpp:168:58: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
   168 |                           ((1 - std::declval<Lineitem>().l_discount))))>
       |                                                          ^~~~~~~~~~
 /usr/include/c++/13/bits/stl_iterator.h:1800:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__x.base() - __y.base())) std::operator-(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&)’
  1800 |     operator-(const move_iterator<_IteratorL>& __x,
       |     ^~~~~~~~
 /usr/include/c++/13/bits/stl_iterator.h:1800:5: note:   template argument deduction/substitution failed:
-/tmp/TestCPPCompiler_TPCHQueriesq191212519053/001/prog.cpp:168:58: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+/tmp/TestCPPCompiler_TPCHQueriesq193880684961/001/prog.cpp:168:58: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
   168 |                           ((1 - std::declval<Lineitem>().l_discount))))>
       |                                                          ^~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq191212519053/001/prog.cpp:168:31: error: no match for ‘operator-’ (operand types are ‘int’ and ‘std::any’)
+/tmp/TestCPPCompiler_TPCHQueriesq193880684961/001/prog.cpp:168:31: error: no match for ‘operator-’ (operand types are ‘int’ and ‘std::any’)
   168 |                           ((1 - std::declval<Lineitem>().l_discount))))>
       |                             ~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /usr/include/c++/13/bits/stl_iterator.h:625:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__y.base() - __x.base())) std::operator-(const reverse_iterator<_Iterator>&, const reverse_iterator<_IteratorR>&)’
   625 |     operator-(const reverse_iterator<_IteratorL>& __x,
       |     ^~~~~~~~
 /usr/include/c++/13/bits/stl_iterator.h:625:5: note:   template argument deduction/substitution failed:
-/tmp/TestCPPCompiler_TPCHQueriesq191212519053/001/prog.cpp:168:58: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+/tmp/TestCPPCompiler_TPCHQueriesq193880684961/001/prog.cpp:168:58: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
   168 |                           ((1 - std::declval<Lineitem>().l_discount))))>
       |                                                          ^~~~~~~~~~
 /usr/include/c++/13/bits/stl_iterator.h:1800:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__x.base() - __y.base())) std::operator-(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&)’
  1800 |     operator-(const move_iterator<_IteratorL>& __x,
       |     ^~~~~~~~
 /usr/include/c++/13/bits/stl_iterator.h:1800:5: note:   template argument deduction/substitution failed:
-/tmp/TestCPPCompiler_TPCHQueriesq191212519053/001/prog.cpp:168:58: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+/tmp/TestCPPCompiler_TPCHQueriesq193880684961/001/prog.cpp:168:58: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
   168 |                           ((1 - std::declval<Lineitem>().l_discount))))>
       |                                                          ^~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq191212519053/001/prog.cpp:168:72: error: template argument 1 is invalid
+/tmp/TestCPPCompiler_TPCHQueriesq193880684961/001/prog.cpp:168:72: error: template argument 1 is invalid
   168 |                           ((1 - std::declval<Lineitem>().l_discount))))>
       |                                                                        ^
-/tmp/TestCPPCompiler_TPCHQueriesq191212519053/001/prog.cpp:168:72: error: template argument 2 is invalid
-/tmp/TestCPPCompiler_TPCHQueriesq191212519053/001/prog.cpp:239:17: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+/tmp/TestCPPCompiler_TPCHQueriesq193880684961/001/prog.cpp:168:72: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCHQueriesq193880684961/001/prog.cpp:239:17: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
   239 |         __items.push_back((l.l_extendedprice * ((1 - l.l_discount))));
       |                 ^~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq191212519053/001/prog.cpp:239:52: error: no match for ‘operator-’ (operand types are ‘int’ and ‘std::any’)
+/tmp/TestCPPCompiler_TPCHQueriesq193880684961/001/prog.cpp:239:52: error: no match for ‘operator-’ (operand types are ‘int’ and ‘std::any’)
   239 |         __items.push_back((l.l_extendedprice * ((1 - l.l_discount))));
       |                                                  ~ ^ ~~~~~~~~~~~~
       |                                                  |     |
@@ -52,21 +52,21 @@ In file included from /usr/include/c++/13/bits/stl_algobase.h:67,
   625 |     operator-(const reverse_iterator<_IteratorL>& __x,
       |     ^~~~~~~~
 /usr/include/c++/13/bits/stl_iterator.h:625:5: note:   template argument deduction/substitution failed:
-/tmp/TestCPPCompiler_TPCHQueriesq191212519053/001/prog.cpp:239:56: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+/tmp/TestCPPCompiler_TPCHQueriesq193880684961/001/prog.cpp:239:56: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
   239 |         __items.push_back((l.l_extendedprice * ((1 - l.l_discount))));
       |                                                        ^~~~~~~~~~
 /usr/include/c++/13/bits/stl_iterator.h:1800:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__x.base() - __y.base())) std::operator-(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&)’
  1800 |     operator-(const move_iterator<_IteratorL>& __x,
       |     ^~~~~~~~
 /usr/include/c++/13/bits/stl_iterator.h:1800:5: note:   template argument deduction/substitution failed:
-/tmp/TestCPPCompiler_TPCHQueriesq191212519053/001/prog.cpp:239:56: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+/tmp/TestCPPCompiler_TPCHQueriesq193880684961/001/prog.cpp:239:56: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
   239 |         __items.push_back((l.l_extendedprice * ((1 - l.l_discount))));
       |                                                        ^~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq191212519053/001/prog.cpp: In instantiation of ‘main()::<lambda(auto:1)> [with auto:1 = int]’:
-/tmp/TestCPPCompiler_TPCHQueriesq191212519053/001/prog.cpp:246:5:   required from here
-/tmp/TestCPPCompiler_TPCHQueriesq191212519053/001/prog.cpp:245:30: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+/tmp/TestCPPCompiler_TPCHQueriesq193880684961/001/prog.cpp: In instantiation of ‘main()::<lambda(auto:1)> [with auto:1 = int]’:
+/tmp/TestCPPCompiler_TPCHQueriesq193880684961/001/prog.cpp:246:5:   required from here
+/tmp/TestCPPCompiler_TPCHQueriesq193880684961/001/prog.cpp:245:30: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
   245 |     return std::accumulate(v.begin(), v.end(), 0.0);
       |                            ~~^~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq191212519053/001/prog.cpp:245:41: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+/tmp/TestCPPCompiler_TPCHQueriesq193880684961/001/prog.cpp:245:41: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
   245 |     return std::accumulate(v.begin(), v.end(), 0.0);
       |                                       ~~^~~
