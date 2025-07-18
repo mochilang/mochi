@@ -218,6 +218,18 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			c.writeln(expr)
 			return nil
 		}
+		// calling main() at top-level shouldn't print the result
+		if p := rootPrimary(s.Expr.Expr); p != nil && p.Call != nil {
+			call := p.Call
+			if call.Func == "main" && len(call.Args) == 0 {
+				expr, err := c.compileExpr(s.Expr.Expr)
+				if err != nil {
+					return err
+				}
+				c.writeln(expr)
+				return nil
+			}
+		}
 		if p := rootPrimary(s.Expr.Expr); p != nil && p.Save != nil {
 			expr, err := c.compileExpr(s.Expr.Expr)
 			if err != nil {
@@ -572,6 +584,58 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 	header := fmt.Sprintf("let rec %s %s =", f.Name, paramStr)
 	c.writeln(header)
 	c.indent++
+
+	// Detect a chain of `if` statements each returning a value followed by a
+	// final return. Emit a single `if/elif/else` expression for simpler code.
+	{
+		var conds []string
+		var vals []string
+		finalIdx := -1
+		for i, st := range f.Body {
+			if st.If != nil && st.If.Else == nil && len(st.If.Then) == 1 && st.If.Then[0].Return != nil {
+				cond, err := c.compileExpr(st.If.Cond)
+				if err != nil {
+					return err
+				}
+				v, err := c.compileExpr(st.If.Then[0].Return.Value)
+				if err != nil {
+					return err
+				}
+				conds = append(conds, cond)
+				vals = append(vals, v)
+				continue
+			}
+			if st.Return != nil {
+				finalIdx = i
+				break
+			}
+			conds = nil
+			vals = nil
+			break
+		}
+		if len(conds) > 0 && finalIdx != -1 && finalIdx == len(f.Body)-1 {
+			finalVal, err := c.compileExpr(f.Body[finalIdx].Return.Value)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("if %s then", conds[0]))
+			c.indent++
+			c.writeln(vals[0])
+			c.indent--
+			for i := 1; i < len(conds); i++ {
+				c.writeln(fmt.Sprintf("elif %s then", conds[i]))
+				c.indent++
+				c.writeln(vals[i])
+				c.indent--
+			}
+			c.writeln("else")
+			c.indent++
+			c.writeln(finalVal)
+			c.indent--
+			c.indent--
+			return nil
+		}
+	}
 
 	// special case: if body is `if ... return X` followed by `return Y`
 	if len(f.Body) == 2 && f.Body[0].If != nil && f.Body[1].Return != nil &&
@@ -1338,7 +1402,13 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 	case "str":
 		if len(args) == 1 {
-			return fmt.Sprintf("string %s", args[0]), nil
+			arg := args[0]
+			if !identifierRegexp.MatchString(arg) &&
+				!strings.HasPrefix(arg, "(") &&
+				!strings.HasPrefix(arg, "\"") {
+				arg = fmt.Sprintf("(%s)", arg)
+			}
+			return fmt.Sprintf("string %s", arg), nil
 		}
 	case "substring":
 		if len(args) == 3 {

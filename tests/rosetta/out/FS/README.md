@@ -1,4 +1,4 @@
-# Rosetta F# Output (10/216 compiled and run)
+# Rosetta F# Output (9/264 compiled and run)
 
 This directory holds F# source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. A checkbox indicates the program compiled and executed successfully. Failing programs have a `.error` file.
 
@@ -31,7 +31,7 @@ This directory holds F# source code generated from the real Mochi programs in `t
 - [ ] achilles-numbers
 - [ ] ackermann-function-2
 - [ ] ackermann-function-3
-- [ ] ackermann-function
+- [x] ackermann-function
 - [ ] active-directory-connect
 - [ ] active-directory-search-for-a-user
 - [ ] active-object
@@ -53,7 +53,7 @@ This directory holds F# source code generated from the real Mochi programs in `t
 - [x] angle-difference-between-two-bearings-2
 - [ ] angles-geometric-normalization-and-conversion
 - [ ] animate-a-pendulum
-- [ ] animation
+- [x] animation
 - [ ] anonymous-recursion-1
 - [ ] anonymous-recursion-2
 - [ ] anonymous-recursion
@@ -79,8 +79,8 @@ This directory holds F# source code generated from the real Mochi programs in `t
 - [ ] array-length
 - [ ] arrays
 - [ ] ascending-primes
-- [x] ascii-art-diagram-converter
-- [x] assertions
+- [ ] ascii-art-diagram-converter
+- [ ] assertions
 - [ ] associative-array-creation
 - [ ] associative-array-iteration
 - [ ] associative-array-merging
@@ -98,7 +98,7 @@ This directory holds F# source code generated from the real Mochi programs in `t
 - [ ] averages-simple-moving-average
 - [ ] avl-tree
 - [ ] b-zier-curves-intersections
-- [x] babbage-problem
+- [ ] babbage-problem
 - [ ] babylonian-spiral
 - [ ] balanced-brackets
 - [ ] balanced-ternary
@@ -209,13 +209,61 @@ This directory holds F# source code generated from the real Mochi programs in `t
 - [ ] circles-of-given-radius-through-two-points
 - [ ] circular-primes
 - [ ] cistercian-numerals
+- [ ] compiler-virtual-machine-interpreter
+- [ ] composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k
+- [ ] compound-data-type
+- [ ] concurrent-computing-1
+- [ ] concurrent-computing-2
+- [ ] concurrent-computing-3
+- [ ] conditional-structures-1
+- [ ] conditional-structures-10
+- [ ] conditional-structures-2
+- [ ] conditional-structures-3
+- [ ] conditional-structures-4
+- [ ] conditional-structures-5
+- [ ] conditional-structures-6
+- [ ] conditional-structures-7
+- [ ] conditional-structures-8
+- [ ] conditional-structures-9
+- [ ] consecutive-primes-with-ascending-or-descending-differences
+- [ ] constrained-genericity-1
+- [ ] constrained-genericity-2
+- [ ] constrained-genericity-3
+- [ ] constrained-genericity-4
+- [ ] constrained-random-points-on-a-circle-1
+- [ ] constrained-random-points-on-a-circle-2
+- [ ] continued-fraction
+- [ ] convert-decimal-number-to-rational
+- [ ] convert-seconds-to-compound-duration
+- [ ] convex-hull
+- [ ] conways-game-of-life
+- [ ] copy-a-string-1
+- [ ] copy-a-string-2
+- [ ] copy-stdin-to-stdout-1
+- [ ] copy-stdin-to-stdout-2
+- [ ] count-in-factors
+- [ ] count-in-octal-1
+- [ ] count-in-octal-2
+- [ ] count-in-octal-3
+- [ ] count-in-octal-4
+- [ ] count-occurrences-of-a-substring
+- [ ] count-the-coins-1
+- [ ] count-the-coins-2
+- [ ] cramers-rule
 - [ ] crc-32-1
 - [ ] crc-32-2
+- [ ] create-a-file-on-magnetic-tape
+- [ ] create-a-file
+- [ ] create-a-two-dimensional-array-at-runtime-1
+- [ ] create-an-html-table
+- [ ] create-an-object-at-a-given-address
 - [ ] csv-data-manipulation
 - [ ] csv-to-html-translation-1
 - [ ] csv-to-html-translation-2
 - [ ] csv-to-html-translation-3
 - [ ] csv-to-html-translation-4
 - [ ] csv-to-html-translation-5
+- [ ] cuban-primes
+- [ ] cullen-and-woodall-numbers
 - [ ] cusip
 - [ ] md5
