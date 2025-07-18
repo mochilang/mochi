@@ -1,4 +1,4 @@
-# Rosetta Pascal Output (3/253 compiled and run)
+# Rosetta Pascal Output (4/253 compiled and run)
 
 This directory holds Pascal source code generated from the Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -10,7 +10,7 @@ This directory holds Pascal source code generated from the Mochi programs in `te
 - [ ] 15-puzzle-game
 - [ ] 15-puzzle-solver
 - [ ] 2048
-- [ ] 21-game
+- [x] 21-game
 - [ ] 24-game-solve
 - [ ] 24-game
 - [ ] 4-rings-or-4-squares-puzzle
