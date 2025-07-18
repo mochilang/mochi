@@ -68,7 +68,7 @@ func compileOne(t *testing.T, src, outDir, name, gstPath string) {
 		t.Skipf("type error: %v", errs[0])
 		return
 	}
-	code, err := st.New().Compile(prog)
+	code, err := st.New(env).Compile(prog)
 	if err != nil {
 		writeError(outDir, name, data, err)
 		t.Skipf("compile error: %v", err)
