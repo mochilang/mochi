@@ -34,7 +34,7 @@ func runRosettaTaskGolden(t *testing.T, name string) {
 	root := findRepoRoot(t)
 	script := exec.Command("go", "run", "-tags=archive,slow", "./scripts/compile_rosetta_python.go")
 	script.Env = append(os.Environ(), "GOTOOLCHAIN=local", "TASKS="+name,
-		"MOCHI_HEADER_TIME=2006-01-02T15:04:05Z", "SOURCE_DATE_EPOCH=0")
+		"MOCHI_HEADER_TIME=2006-01-02T15:04:05Z", "SOURCE_DATE_EPOCH=0", "MOCHI_NOW_SEED=1")
 	script.Dir = root
 	if out, err := script.CombinedOutput(); err != nil {
 		t.Fatalf("compile script error: %v\n%s", err, out)
@@ -73,6 +73,7 @@ func runRosettaTaskGolden(t *testing.T, name string) {
 		t.Fatalf("write error: %v", err)
 	}
 	cmd := exec.Command("python3", file)
+	cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
 	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 		cmd.Stdin = bytes.NewReader(data)
 	}
