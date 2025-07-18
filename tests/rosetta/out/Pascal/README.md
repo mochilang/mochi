@@ -1,4 +1,4 @@
-# Rosetta Pascal Output (26/253 compiled and run)
+# Rosetta Pascal Output (25/264 compiled and run)
 
 This directory holds Pascal source code generated from the Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -246,13 +246,24 @@ This directory holds Pascal source code generated from the Mochi programs in `te
 - [ ] count-in-octal-2
 - [ ] count-in-octal-3
 - [ ] count-in-octal-4
+- [ ] count-occurrences-of-a-substring
+- [ ] count-the-coins-1
+- [ ] count-the-coins-2
+- [ ] cramers-rule
 - [ ] crc-32-1
 - [ ] crc-32-2
+- [ ] create-a-file-on-magnetic-tape
+- [ ] create-a-file
+- [ ] create-a-two-dimensional-array-at-runtime-1
+- [ ] create-an-html-table
+- [ ] create-an-object-at-a-given-address
 - [ ] csv-data-manipulation
 - [ ] csv-to-html-translation-1
 - [ ] csv-to-html-translation-2
 - [x] csv-to-html-translation-3
 - [x] csv-to-html-translation-4
 - [ ] csv-to-html-translation-5
+- [ ] cuban-primes
+- [ ] cullen-and-woodall-numbers
 - [ ] cusip
 - [ ] md5
