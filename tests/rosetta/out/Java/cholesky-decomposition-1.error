@@ -1,0 +1,95 @@
+javac: exit status 1
+/tmp/CholeskyDecomposition1.java:16: error: cannot find symbol
+        return new OrderEle(order, elements);
+                   ^
+  symbol:   class OrderEle
+  location: class CholeskyDecomposition1
+/tmp/CholeskyDecomposition1.java:19: error: incompatible types: Object cannot be converted to Map<String,Object>
+        Map<String,Object> n = m.get("order");
+                                    ^
+/tmp/CholeskyDecomposition1.java:20: error: incompatible types: Object cannot be converted to Map<String,Object>
+        Map<String,Object> ele = m.get("ele");
+                                      ^
+/tmp/CholeskyDecomposition1.java:24: error: bad operand types for binary operator '<'
+        while (r < n) {
+                 ^
+  first type:  int
+  second type: Map<String,Object>
+/tmp/CholeskyDecomposition1.java:28: error: incompatible types: Object cannot be converted to Double
+                row.add(ele.get(idx));
+                               ^
+/tmp/CholeskyDecomposition1.java:32: error: bad operand types for binary operator '<'
+            while (c < n) {
+                     ^
+  first type:  int
+  second type: Map<String,Object>
+/tmp/CholeskyDecomposition1.java:40: error: bad operand types for binary operator '<'
+        while (r < n) {
+                 ^
+  first type:  int
+  second type: Map<String,Object>
+/tmp/CholeskyDecomposition1.java:42: error: bad operand types for binary operator '<'
+            while (c < n) {
+                     ^
+  first type:  int
+  second type: Map<String,Object>
+/tmp/CholeskyDecomposition1.java:56: error: incompatible types: String cannot be converted to Number
+                line = line + ((Number)String.valueOf(((List)m.get(i)).get(j))).doubleValue();
+                                                     ^
+/tmp/CholeskyDecomposition1.java:57: error: bad operand types for binary operator '-'
+                if (j < ((Number)((Number)m.get(i).size()).doubleValue() - 1).doubleValue()) {
+                                                                         ^
+  first type:  Number
+  second type: int
+/tmp/CholeskyDecomposition1.java:70: error: incompatible types: Object cannot be converted to Map<String,Object>
+        Map<String,Object> n = m.get("order");
+                                    ^
+/tmp/CholeskyDecomposition1.java:71: error: incompatible types: Object cannot be converted to Map<String,Object>
+        Map<String,Object> ele = m.get("ele");
+                                      ^
+/tmp/CholeskyDecomposition1.java:75: error: bad operand types for binary operator '<'
+        while (r < n) {
+                 ^
+  first type:  int
+  second type: Map<String,Object>
+/tmp/CholeskyDecomposition1.java:79: error: incompatible types: Object cannot be converted to Double
+                row.add(ele.get(idx));
+                               ^
+/tmp/CholeskyDecomposition1.java:83: error: bad operand types for binary operator '<'
+            while (c < n) {
+                     ^
+  first type:  int
+  second type: Map<String,Object>
+/tmp/CholeskyDecomposition1.java:93: error: incompatible types: Object cannot be converted to Map<String,Object>
+        Map<String,Object> n = a.get("order");
+                                    ^
+/tmp/CholeskyDecomposition1.java:94: error: incompatible types: Object cannot be converted to Map<String,Object>
+        Map<String,Object> ae = a.get("ele");
+                                     ^
+/tmp/CholeskyDecomposition1.java:107: error: incompatible types: Object cannot be converted to Map<String,Object>
+            Map<String,Object> e = ae.get(i);
+                                         ^
+/tmp/CholeskyDecomposition1.java:109: error: bad operand types for binary operator '-'
+                double d = ((Number)(e - ((Number)le.get(i)).doubleValue())).doubleValue() / ((Number)le.get(dc)).doubleValue();
+                                       ^
+  first type:  Map<String,Object>
+  second type: double
+/tmp/CholeskyDecomposition1.java:117: error: bad operand types for binary operator '*'
+                    le.set(j, ((Number)le.get(j)).doubleValue() + ((Number)d * ((Number)le.get(cx)).doubleValue()).doubleValue());
+                                                                             ^
+  first type:  Number
+  second type: double
+/tmp/CholeskyDecomposition1.java:124: error: bad operand types for binary operator '-'
+                le.set(i, sqrtApprox(e - ((Number)le.get(i)).doubleValue()));
+                                       ^
+  first type:  Map<String,Object>
+  second type: double
+/tmp/CholeskyDecomposition1.java:132: error: cannot find symbol
+        return new OrderEle(n, le);
+                   ^
+  symbol:   class OrderEle
+  location: class CholeskyDecomposition1
+Note: /tmp/CholeskyDecomposition1.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+22 errors

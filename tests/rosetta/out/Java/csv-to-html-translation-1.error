@@ -1,0 +1,12 @@
+javac: exit status 1
+/tmp/CsvToHtmlTranslation1.java:9: error: cannot find symbol
+        for (Object line : split(c, "\n")) {
+                           ^
+  symbol:   method split(String,String)
+  location: class CsvToHtmlTranslation1
+/tmp/CsvToHtmlTranslation1.java:10: error: cannot find symbol
+            rows.add(split(line, ","));
+                     ^
+  symbol:   method split(Object,String)
+  location: class CsvToHtmlTranslation1
+2 errors

@@ -1,0 +1,61 @@
+javac: exit status 1
+/tmp/AbbreviationsSimple.java:44: error: incompatible types: String cannot be converted to Number
+            res = res + ((Number)xs.get(i)).doubleValue();
+                                       ^
+/tmp/AbbreviationsSimple.java:57: error: cannot find symbol
+        Digit digits = new Digit(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+        ^
+  symbol:   class Digit
+  location: class AbbreviationsSimple
+/tmp/AbbreviationsSimple.java:57: error: cannot find symbol
+        Digit digits = new Digit(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+                           ^
+  symbol:   class Digit
+  location: class AbbreviationsSimple
+/tmp/AbbreviationsSimple.java:87: error: incompatible types: String cannot be converted to List<String>
+            List<String> cmd = toks.get(i);
+                                       ^
+/tmp/AbbreviationsSimple.java:97: error: incompatible types: List<String> cannot be converted to String
+            cmds.add(cmd);
+                     ^
+/tmp/AbbreviationsSimple.java:100: error: cannot find symbol
+        return new CommandsMins(cmds, mins);
+                   ^
+  symbol:   class CommandsMins
+  location: class AbbreviationsSimple
+/tmp/AbbreviationsSimple.java:106: error: incompatible types: String cannot be converted to List<String>
+            List<String> w = words.get(wi);
+                                      ^
+/tmp/AbbreviationsSimple.java:111: error: incompatible types: String cannot be converted to List<String>
+                List<String> cmd = commands.get(ci);
+                                               ^
+/tmp/AbbreviationsSimple.java:113: error: cannot find symbol
+                    Object c = upper(cmd);
+                               ^
+  symbol:   method upper(List<String>)
+  location: class AbbreviationsSimple
+/tmp/AbbreviationsSimple.java:114: error: cannot find symbol
+                    Object ww = upper(w);
+                                ^
+  symbol:   method upper(List<String>)
+  location: class AbbreviationsSimple
+/tmp/AbbreviationsSimple.java:115: error: cannot find symbol
+                    if (Objects.equals(c.substring(0, wlen), ww)) {
+                                        ^
+  symbol:   method substring(int,int)
+  location: variable c of type Object
+/tmp/AbbreviationsSimple.java:116: error: incompatible types: Object cannot be converted to String
+                        results.add(c);
+                                    ^
+/tmp/AbbreviationsSimple.java:143: error: cannot find symbol
+                out1 = out1 + ((Number)padRight(words.get(k), results.get(k).size())).doubleValue();
+                                                                            ^
+  symbol:   method size()
+  location: class String
+/tmp/AbbreviationsSimple.java:146: error: incompatible types: String cannot be converted to Number
+                out1 = out1 + ((Number)words.get(k)).doubleValue();
+                                                ^
+Note: /tmp/AbbreviationsSimple.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+14 errors

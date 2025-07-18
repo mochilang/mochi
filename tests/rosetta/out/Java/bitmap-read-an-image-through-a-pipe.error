@@ -1,0 +1,34 @@
+javac: exit status 1
+/tmp/BitmapReadAnImageThroughAPipe.java:14: error: cannot find symbol
+        Digit digits = new Digit(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+        ^
+  symbol:   class Digit
+  location: class BitmapReadAnImageThroughAPipe
+/tmp/BitmapReadAnImageThroughAPipe.java:14: error: cannot find symbol
+        Digit digits = new Digit(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+                           ^
+  symbol:   class Digit
+  location: class BitmapReadAnImageThroughAPipe
+/tmp/BitmapReadAnImageThroughAPipe.java:51: error: incompatible types: String cannot be converted to List<String>
+        List<String> magic = toks.get(0);
+                                     ^
+/tmp/BitmapReadAnImageThroughAPipe.java:61: error: cannot find symbol
+        return new MagicWHMaxPx(magic, w, h, maxv, px);
+                   ^
+  symbol:   class MagicWHMaxPx
+  location: class BitmapReadAnImageThroughAPipe
+/tmp/BitmapReadAnImageThroughAPipe.java:66: error: incompatible types: String cannot be converted to Number
+        System.out.println(((Number)((Number)"width=" + ((Number)String.valueOf(((Map<String,Object>)img).get("w"))).doubleValue()).doubleValue() + " height=").doubleValue() + ((Number)String.valueOf(((Map<String,Object>)img).get("h"))).doubleValue());
+                                             ^
+/tmp/BitmapReadAnImageThroughAPipe.java:66: error: incompatible types: String cannot be converted to Number
+        System.out.println(((Number)((Number)"width=" + ((Number)String.valueOf(((Map<String,Object>)img).get("w"))).doubleValue()).doubleValue() + " height=").doubleValue() + ((Number)String.valueOf(((Map<String,Object>)img).get("h"))).doubleValue());
+                                                                               ^
+/tmp/BitmapReadAnImageThroughAPipe.java:66: error: cannot find symbol
+        System.out.println(((Number)((Number)"width=" + ((Number)String.valueOf(((Map<String,Object>)img).get("w"))).doubleValue()).doubleValue() + " height=").doubleValue() + ((Number)String.valueOf(((Map<String,Object>)img).get("h"))).doubleValue());
+                                                                                                                                                               ^
+  symbol:   method doubleValue()
+  location: class String
+/tmp/BitmapReadAnImageThroughAPipe.java:66: error: incompatible types: String cannot be converted to Number
+        System.out.println(((Number)((Number)"width=" + ((Number)String.valueOf(((Map<String,Object>)img).get("w"))).doubleValue()).doubleValue() + " height=").doubleValue() + ((Number)String.valueOf(((Map<String,Object>)img).get("h"))).doubleValue());
+                                                                                                                                                                                                       ^
+8 errors

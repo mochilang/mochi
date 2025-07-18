@@ -1,0 +1,6 @@
+javac: exit status 1
+/tmp/AnimateAPendulum.java:47: error: incompatible types: double cannot be converted to String
+            int pos = Integer.parseInt((10.000000 * sinApprox(phi) + 0.500000));
+                                                                   ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+1 error

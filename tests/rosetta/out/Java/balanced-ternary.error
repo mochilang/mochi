@@ -1,0 +1,39 @@
+javac: exit status 1
+/tmp/BalancedTernary.java:31: error: cannot find symbol
+                        return new BtOk(Arrays.asList(), false);
+                                   ^
+  symbol:   class BtOk
+  location: class BalancedTernary
+/tmp/BalancedTernary.java:37: error: cannot find symbol
+        return new BtOk(b, true);
+                   ^
+  symbol:   class BtOk
+  location: class BalancedTernary
+/tmp/BalancedTernary.java:46: error: incompatible types: Integer cannot be converted to List<Integer>
+            List<Integer> d = b.get(i);
+                                   ^
+/tmp/BalancedTernary.java:70: error: incompatible types: int cannot be converted to String
+            n = (int)(Integer.parseInt((n / 3)));
+                                          ^
+/tmp/BalancedTernary.java:90: error: bad operand types for binary operator '*'
+            r = (int)(r + ((Number)((Number)b.get(i)).doubleValue() * pt).doubleValue());
+                                                                    ^
+  first type:  Number
+  second type: int
+/tmp/BalancedTernary.java:126: error: incompatible types: Object cannot be converted to Map<String,Object>
+        Map<String,Object> a = ares.get("bt");
+                                       ^
+/tmp/BalancedTernary.java:129: error: incompatible types: Object cannot be converted to Map<String,Object>
+        Map<String,Object> c = cres.get("bt");
+                                       ^
+/tmp/BalancedTernary.java:130: error: incompatible types: Map<String,Object> cannot be converted to List<Integer>
+        show("a:", a);
+                   ^
+/tmp/BalancedTernary.java:132: error: incompatible types: Map<String,Object> cannot be converted to List<Integer>
+        show("c:", c);
+                   ^
+/tmp/BalancedTernary.java:133: error: incompatible types: Map<String,Object> cannot be converted to List<Integer>
+        show("a(b-c):", btMul(a, btAdd(b, btNeg(c))));
+                                                ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+10 errors

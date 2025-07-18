@@ -1,0 +1,88 @@
+javac: exit status 1
+/tmp/AlgebraicDataTypes.java:8: error: cannot find symbol
+        return new ClLeAaRi(cl, le, aa, ri);
+                   ^
+  symbol:   class ClLeAaRi
+  location: class AlgebraicDataTypes
+/tmp/AlgebraicDataTypes.java:15: error: incompatible types: String cannot be converted to Number
+        return ((Number)((Number)((Number)((Number)((Number)((Number)((Number)"T(" + ((Number)m.get("cl")).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)treeString(m.get("le"))).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)String.valueOf(m.get("aa"))).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)treeString(m.get("ri"))).doubleValue()).doubleValue() + ")";
+                                                                              ^
+/tmp/AlgebraicDataTypes.java:15: error: cannot find symbol
+        return ((Number)((Number)((Number)((Number)((Number)((Number)((Number)"T(" + ((Number)m.get("cl")).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)treeString(m.get("le"))).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)String.valueOf(m.get("aa"))).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)treeString(m.get("ri"))).doubleValue()).doubleValue() + ")";
+                                                                                                                                               ^
+  symbol:   method doubleValue()
+  location: class String
+/tmp/AlgebraicDataTypes.java:15: error: incompatible types: String cannot be converted to Number
+        return ((Number)((Number)((Number)((Number)((Number)((Number)((Number)"T(" + ((Number)m.get("cl")).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)treeString(m.get("le"))).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)String.valueOf(m.get("aa"))).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)treeString(m.get("ri"))).doubleValue()).doubleValue() + ")";
+                                                                                                                                                                                   ^
+/tmp/AlgebraicDataTypes.java:15: error: cannot find symbol
+        return ((Number)((Number)((Number)((Number)((Number)((Number)((Number)"T(" + ((Number)m.get("cl")).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)treeString(m.get("le"))).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)String.valueOf(m.get("aa"))).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)treeString(m.get("ri"))).doubleValue()).doubleValue() + ")";
+                                                                                                                                                                                                                                      ^
+  symbol:   method doubleValue()
+  location: class String
+/tmp/AlgebraicDataTypes.java:15: error: incompatible types: String cannot be converted to Number
+        return ((Number)((Number)((Number)((Number)((Number)((Number)((Number)"T(" + ((Number)m.get("cl")).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)treeString(m.get("le"))).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)String.valueOf(m.get("aa"))).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)treeString(m.get("ri"))).doubleValue()).doubleValue() + ")";
+                                                                                                                                                                                                                                                                              ^
+/tmp/AlgebraicDataTypes.java:15: error: cannot find symbol
+        return ((Number)((Number)((Number)((Number)((Number)((Number)((Number)"T(" + ((Number)m.get("cl")).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)treeString(m.get("le"))).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)String.valueOf(m.get("aa"))).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)treeString(m.get("ri"))).doubleValue()).doubleValue() + ")";
+                                                                                                                                                                                                                                                                                                                                 ^
+  symbol:   method doubleValue()
+  location: class String
+/tmp/AlgebraicDataTypes.java:15: error: incompatible types: String cannot be converted to Number
+        return ((Number)((Number)((Number)((Number)((Number)((Number)((Number)"T(" + ((Number)m.get("cl")).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)treeString(m.get("le"))).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)String.valueOf(m.get("aa"))).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)treeString(m.get("ri"))).doubleValue()).doubleValue() + ")";
+                                                                                                                                                                                                                                                                                                                                                                     ^
+/tmp/AlgebraicDataTypes.java:25: error: incompatible types: Object cannot be converted to Map<String,Object>
+        Map<String,Object> le = m.get("le");
+                                     ^
+/tmp/AlgebraicDataTypes.java:26: error: incompatible types: Object cannot be converted to Map<String,Object>
+        Map<String,Object> ri = m.get("ri");
+                                     ^
+/tmp/AlgebraicDataTypes.java:30: error: incompatible types: Object cannot be converted to Map<String,Object>
+                Map<String,Object> lele = leMap.get("le");
+                                                   ^
+/tmp/AlgebraicDataTypes.java:34: error: incompatible types: Object cannot be converted to int
+                        return node("R", node("B", leleMap.get("le"), leleMap.get("aa"), leleMap.get("ri")), leMap.get("aa"), node("B", leMap.get("ri"), m.get("aa"), ri));
+                                                                                                                                                              ^
+/tmp/AlgebraicDataTypes.java:34: error: incompatible types: Object cannot be converted to int
+                        return node("R", node("B", leleMap.get("le"), leleMap.get("aa"), leleMap.get("ri")), leMap.get("aa"), node("B", leMap.get("ri"), m.get("aa"), ri));
+                                                                                 ^
+/tmp/AlgebraicDataTypes.java:37: error: incompatible types: Object cannot be converted to Map<String,Object>
+                Map<String,Object> leri = leMap.get("ri");
+                                                   ^
+/tmp/AlgebraicDataTypes.java:41: error: incompatible types: Object cannot be converted to int
+                        return node("R", node("B", leMap.get("le"), leMap.get("aa"), leriMap.get("le")), leriMap.get("aa"), node("B", leriMap.get("ri"), m.get("aa"), ri));
+                                                                                                                                                              ^
+/tmp/AlgebraicDataTypes.java:41: error: incompatible types: Object cannot be converted to int
+                        return node("R", node("B", leMap.get("le"), leMap.get("aa"), leriMap.get("le")), leriMap.get("aa"), node("B", leriMap.get("ri"), m.get("aa"), ri));
+                                                                             ^
+/tmp/AlgebraicDataTypes.java:49: error: incompatible types: Object cannot be converted to Map<String,Object>
+                Map<String,Object> rile = riMap.get("le");
+                                                   ^
+/tmp/AlgebraicDataTypes.java:53: error: incompatible types: Object cannot be converted to int
+                        return node("R", node("B", m.get("le"), m.get("aa"), rileMap.get("le")), rileMap.get("aa"), node("B", rileMap.get("ri"), riMap.get("aa"), riMap.get("ri")));
+                                                                                                                                                          ^
+/tmp/AlgebraicDataTypes.java:53: error: incompatible types: Object cannot be converted to int
+                        return node("R", node("B", m.get("le"), m.get("aa"), rileMap.get("le")), rileMap.get("aa"), node("B", rileMap.get("ri"), riMap.get("aa"), riMap.get("ri")));
+                                                                     ^
+/tmp/AlgebraicDataTypes.java:56: error: incompatible types: Object cannot be converted to Map<String,Object>
+                Map<String,Object> riri = riMap.get("ri");
+                                                   ^
+/tmp/AlgebraicDataTypes.java:60: error: incompatible types: Object cannot be converted to int
+                        return node("R", node("B", m.get("le"), m.get("aa"), riMap.get("le")), riMap.get("aa"), node("B", ririMap.get("le"), ririMap.get("aa"), ririMap.get("ri")));
+                                                                                                                                                        ^
+/tmp/AlgebraicDataTypes.java:60: error: incompatible types: Object cannot be converted to int
+                        return node("R", node("B", m.get("le"), m.get("aa"), riMap.get("le")), riMap.get("aa"), node("B", ririMap.get("le"), ririMap.get("aa"), ririMap.get("ri")));
+                                                                     ^
+/tmp/AlgebraicDataTypes.java:72: error: incompatible types: Object cannot be converted to String
+            return balance(node(((Map<?,?>)tr).get("cl"), ins(((Map<?,?>)tr).get("le"), x), ((Map<?,?>)tr).get("aa"), ((Map<?,?>)tr).get("ri")));
+                                                  ^
+/tmp/AlgebraicDataTypes.java:75: error: incompatible types: Object cannot be converted to String
+            return balance(node(((Map<?,?>)tr).get("cl"), ((Map<?,?>)tr).get("le"), ((Map<?,?>)tr).get("aa"), ins(((Map<?,?>)tr).get("ri"), x)));
+                                                  ^
+/tmp/AlgebraicDataTypes.java:85: error: incompatible types: Object cannot be converted to int
+        return node("B", m.get("le"), m.get("aa"), m.get("ri"));
+                                           ^
+Note: /tmp/AlgebraicDataTypes.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+25 errors

@@ -1,0 +1,30 @@
+javac: exit status 1
+/tmp/ArenaStoragePool.java:12: error: cannot find symbol
+            return new PoolVal(p, 0);
+                       ^
+  symbol:   class PoolVal
+  location: class ArenaStoragePool
+/tmp/ArenaStoragePool.java:15: error: incompatible types: Integer cannot be converted to List<Integer>
+        List<Integer> v = p.get(idx);
+                               ^
+/tmp/ArenaStoragePool.java:17: error: cannot find symbol
+        return new PoolVal(p, v);
+                   ^
+  symbol:   class PoolVal
+  location: class ArenaStoragePool
+/tmp/ArenaStoragePool.java:33: error: incompatible types: Map cannot be converted to String
+        i = (int)(Integer.parseInt(((Map)res1.get("val"))));
+                                    ^
+/tmp/ArenaStoragePool.java:36: error: incompatible types: Map cannot be converted to String
+        j = (int)(Integer.parseInt(((Map)res2.get("val"))));
+                                    ^
+/tmp/ArenaStoragePool.java:47: error: incompatible types: Map cannot be converted to String
+        i = (int)(Integer.parseInt(((Map)res3.get("val"))));
+                                    ^
+/tmp/ArenaStoragePool.java:50: error: incompatible types: Map cannot be converted to String
+        j = (int)(Integer.parseInt(((Map)res4.get("val"))));
+                                    ^
+Note: /tmp/ArenaStoragePool.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+7 errors

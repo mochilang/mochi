@@ -1,0 +1,6 @@
+javac: exit status 1
+/tmp/BinaryDigits.java:12: error: incompatible types: int cannot be converted to String
+            x = (int)(Integer.parseInt((x / 2)));
+                                          ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+1 error

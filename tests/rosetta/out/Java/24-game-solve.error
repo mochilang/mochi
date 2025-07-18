@@ -1,0 +1,104 @@
+javac: exit status 1
+/tmp/M24GameSolve.java:15: error: cannot find symbol
+        return new OpValue(OP_NUM, new NumDenom(n, 1));
+                   ^
+  symbol:   class OpValue
+  location: class M24GameSolve
+/tmp/M24GameSolve.java:15: error: cannot find symbol
+        return new OpValue(OP_NUM, new NumDenom(n, 1));
+                                       ^
+  symbol:   class NumDenom
+  location: class M24GameSolve
+/tmp/M24GameSolve.java:19: error: incompatible types: Object cannot be converted to Map<String,Integer>
+            return x.get("value");
+                        ^
+/tmp/M24GameSolve.java:21: error: incompatible types: Object cannot be converted to Map<String,Object>
+        Map<String,Integer> l = exprEval(x.get("left"));
+                                              ^
+/tmp/M24GameSolve.java:22: error: incompatible types: Object cannot be converted to Map<String,Object>
+        Map<String,Integer> r = exprEval(x.get("right"));
+                                              ^
+/tmp/M24GameSolve.java:24: error: cannot find symbol
+            return new NumDenom(((Number)((Number)l.get("num")).doubleValue() * ((Number)r.get("denom")).doubleValue()).doubleValue() + ((Number)((Number)l.get("denom")).doubleValue() * ((Number)r.get("num")).doubleValue()).doubleValue(), ((Number)l.get("denom")).doubleValue() * ((Number)r.get("denom")).doubleValue());
+                       ^
+  symbol:   class NumDenom
+  location: class M24GameSolve
+/tmp/M24GameSolve.java:24: error: bad operand types for binary operator '*'
+            return new NumDenom(((Number)((Number)l.get("num")).doubleValue() * ((Number)r.get("denom")).doubleValue()).doubleValue() + ((Number)((Number)l.get("denom")).doubleValue() * ((Number)r.get("num")).doubleValue()).doubleValue(), ((Number)l.get("denom")).doubleValue() * ((Number)r.get("denom")).doubleValue());
+                                                                              ^
+  first type:  Number
+  second type: double
+/tmp/M24GameSolve.java:24: error: bad operand types for binary operator '*'
+            return new NumDenom(((Number)((Number)l.get("num")).doubleValue() * ((Number)r.get("denom")).doubleValue()).doubleValue() + ((Number)((Number)l.get("denom")).doubleValue() * ((Number)r.get("num")).doubleValue()).doubleValue(), ((Number)l.get("denom")).doubleValue() * ((Number)r.get("denom")).doubleValue());
+                                                                                                                                                                                        ^
+  first type:  Number
+  second type: double
+/tmp/M24GameSolve.java:27: error: cannot find symbol
+            return new NumDenom(((Number)((Number)l.get("num")).doubleValue() * ((Number)r.get("denom")).doubleValue()).doubleValue() - ((Number)((Number)l.get("denom")).doubleValue() * ((Number)r.get("num")).doubleValue()).doubleValue(), ((Number)l.get("denom")).doubleValue() * ((Number)r.get("denom")).doubleValue());
+                       ^
+  symbol:   class NumDenom
+  location: class M24GameSolve
+/tmp/M24GameSolve.java:27: error: bad operand types for binary operator '*'
+            return new NumDenom(((Number)((Number)l.get("num")).doubleValue() * ((Number)r.get("denom")).doubleValue()).doubleValue() - ((Number)((Number)l.get("denom")).doubleValue() * ((Number)r.get("num")).doubleValue()).doubleValue(), ((Number)l.get("denom")).doubleValue() * ((Number)r.get("denom")).doubleValue());
+                                                                              ^
+  first type:  Number
+  second type: double
+/tmp/M24GameSolve.java:27: error: bad operand types for binary operator '*'
+            return new NumDenom(((Number)((Number)l.get("num")).doubleValue() * ((Number)r.get("denom")).doubleValue()).doubleValue() - ((Number)((Number)l.get("denom")).doubleValue() * ((Number)r.get("num")).doubleValue()).doubleValue(), ((Number)l.get("denom")).doubleValue() * ((Number)r.get("denom")).doubleValue());
+                                                                                                                                                                                        ^
+  first type:  Number
+  second type: double
+/tmp/M24GameSolve.java:30: error: cannot find symbol
+            return new NumDenom(((Number)l.get("num")).doubleValue() * ((Number)r.get("num")).doubleValue(), ((Number)l.get("denom")).doubleValue() * ((Number)r.get("denom")).doubleValue());
+                       ^
+  symbol:   class NumDenom
+  location: class M24GameSolve
+/tmp/M24GameSolve.java:32: error: cannot find symbol
+        return new NumDenom(((Number)l.get("num")).doubleValue() * ((Number)r.get("denom")).doubleValue(), ((Number)l.get("denom")).doubleValue() * ((Number)r.get("num")).doubleValue());
+                   ^
+  symbol:   class NumDenom
+  location: class M24GameSolve
+/tmp/M24GameSolve.java:38: error: incompatible types: Object cannot be converted to Map<String,Object>
+        String ls = exprString(x.get("left"));
+                                    ^
+/tmp/M24GameSolve.java:39: error: incompatible types: Object cannot be converted to Map<String,Object>
+        String rs = exprString(x.get("right"));
+                                    ^
+/tmp/M24GameSolve.java:67: error: incompatible types: Map<String,Object> cannot be converted to List<Map<String,Object>>
+                List<Map<String,Object>> a = xs.get(i);
+                                                   ^
+/tmp/M24GameSolve.java:68: error: incompatible types: Map<String,Object> cannot be converted to List<Map<String,Object>>
+                List<Map<String,Object>> b = xs.get(j);
+                                                   ^
+/tmp/M24GameSolve.java:70: error: cannot find symbol
+                    Node node = new Node(op, a, b);
+                    ^
+  symbol:   class Node
+  location: class M24GameSolve
+/tmp/M24GameSolve.java:70: error: cannot find symbol
+                    Node node = new Node(op, a, b);
+                                    ^
+  symbol:   class Node
+  location: class M24GameSolve
+/tmp/M24GameSolve.java:75: error: cannot find symbol
+                Node node = new Node(OP_SUB, b, a);
+                ^
+  symbol:   class Node
+  location: class M24GameSolve
+/tmp/M24GameSolve.java:75: error: cannot find symbol
+                Node node = new Node(OP_SUB, b, a);
+                                ^
+  symbol:   class Node
+  location: class M24GameSolve
+/tmp/M24GameSolve.java:79: error: cannot find symbol
+                node = new Node(OP_DIV, b, a);
+                           ^
+  symbol:   class Node
+  location: class M24GameSolve
+/tmp/M24GameSolve.java:95: error: cannot find symbol
+                int n = (now() % (digit_range - 1)) + 1;
+                         ^
+  symbol:   method now()
+  location: class M24GameSolve
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+23 errors

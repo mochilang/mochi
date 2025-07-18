@@ -1,0 +1,27 @@
+javac: exit status 1
+/tmp/CholeskyDecomposition.java:33: error: incompatible types: Object cannot be converted to List<List<Double>>
+                List<List<Double>> sum = ((List)a.get(i)).get(j);
+                                                             ^
+/tmp/CholeskyDecomposition.java:36: error: bad operand types for binary operator '*'
+                    sum = sum - ((Number)((Number)((List)l.get(i)).get(k)).doubleValue() * ((Number)((List)l.get(j)).get(k)).doubleValue()).doubleValue();
+                                                                                         ^
+  first type:  Number
+  second type: double
+/tmp/CholeskyDecomposition.java:40: error: incompatible types: List<List<Double>> cannot be converted to double
+                    ((List)l.get(i)).set(j, sqrtApprox(sum));
+                                                       ^
+/tmp/CholeskyDecomposition.java:43: error: bad operand types for binary operator '/'
+                    ((List)l.get(i)).set(j, sum / ((Number)((List)l.get(j)).get(j)).doubleValue());
+                                                ^
+  first type:  List<List<Double>>
+  second type: double
+/tmp/CholeskyDecomposition.java:57: error: incompatible types: String cannot be converted to Number
+                line = line + ((Number)String.valueOf(((List)m.get(i)).get(j))).doubleValue();
+                                                     ^
+/tmp/CholeskyDecomposition.java:58: error: bad operand types for binary operator '-'
+                if (j < ((Number)((Number)m.get(i).size()).doubleValue() - 1).doubleValue()) {
+                                                                         ^
+  first type:  Number
+  second type: int
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+6 errors

@@ -1,0 +1,271 @@
+javac: exit status 1
+/tmp/CatmullClarkSubdivisionSurface.java:80: error: incompatible types: double cannot be converted to String
+        y = Double.parseDouble(String.valueOf((Integer.parseInt(y)))) / 10000.000000;
+                                                                ^
+/tmp/CatmullClarkSubdivisionSurface.java:126: error: incompatible types: List<Integer> cannot be converted to List<List<Integer>>
+            List<List<Integer>> face = faces.get(i);
+                                                ^
+/tmp/CatmullClarkSubdivisionSurface.java:129: error: incompatible types: List<Integer> cannot be converted to int
+                fp = sumPoint(fp, points.get(idx));
+                                             ^
+/tmp/CatmullClarkSubdivisionSurface.java:141: error: incompatible types: List<Integer> cannot be converted to List<List<Integer>>
+            List<List<Integer>> min = tmp.get(0);
+                                             ^
+/tmp/CatmullClarkSubdivisionSurface.java:145: error: incompatible types: List<Integer> cannot be converted to List<List<Integer>>
+                List<List<Integer>> e = tmp.get(j);
+                                               ^
+/tmp/CatmullClarkSubdivisionSurface.java:152: error: incompatible types: List<List<Integer>> cannot be converted to List<Integer>
+            res.add(min);
+                    ^
+/tmp/CatmullClarkSubdivisionSurface.java:169: error: incompatible types: List<Integer> cannot be converted to List<List<Integer>>
+            List<List<Integer>> face = faces.get(fnum);
+                                                ^
+/tmp/CatmullClarkSubdivisionSurface.java:173: error: incompatible types: List<Integer> cannot be converted to List<List<Integer>>
+                List<List<Integer>> pn1 = face.get(pi);
+                                                  ^
+/tmp/CatmullClarkSubdivisionSurface.java:176: error: incompatible types: List<Integer> cannot be converted to int
+                    pn2 = (int)(face.get(pi + 1));
+                               ^
+/tmp/CatmullClarkSubdivisionSurface.java:179: error: incompatible types: List<Integer> cannot be converted to int
+                    pn2 = (int)(face.get(0));
+                               ^
+/tmp/CatmullClarkSubdivisionSurface.java:181: error: bad operand types for binary operator '>'
+                if (pn1 > pn2) {
+                        ^
+  first type:  List<List<Integer>>
+  second type: int
+/tmp/CatmullClarkSubdivisionSurface.java:183: error: incompatible types: int cannot be converted to List<List<Integer>>
+                    pn1 = pn2;
+                          ^
+/tmp/CatmullClarkSubdivisionSurface.java:184: error: incompatible types: List<List<Integer>> cannot be converted to int
+                    pn2 = (int)(tmpn);
+                               ^
+/tmp/CatmullClarkSubdivisionSurface.java:186: error: incompatible types: inference variable T has incompatible bounds
+                edges.add(Arrays.asList(pn1, pn2, fnum));
+                     ^
+    equality constraints: Integer
+    lower bounds: Integer,List<List<Integer>>
+  where T is a type-variable:
+    T extends Object declared in method <T>asList(T...)
+/tmp/CatmullClarkSubdivisionSurface.java:195: error: incompatible types: List<Integer> cannot be converted to List<List<Integer>>
+            List<List<Integer>> e1 = edges.get(idx);
+                                              ^
+/tmp/CatmullClarkSubdivisionSurface.java:197: error: incompatible types: List<Integer> cannot be converted to List<List<Integer>>
+                List<List<Integer>> e2 = edges.get(idx + 1);
+                                                  ^
+/tmp/CatmullClarkSubdivisionSurface.java:199: error: incompatible types: inference variable T has incompatible bounds
+                    merged.add(Arrays.asList(e1.get(0), e1.get(1), e1.get(2), e2.get(2)));
+                          ^
+    equality constraints: Integer
+    lower bounds: List<Integer>
+  where T is a type-variable:
+    T extends Object declared in method <T>asList(T...)
+/tmp/CatmullClarkSubdivisionSurface.java:204: error: incompatible types: inference variable T has incompatible bounds
+            merged.add(Arrays.asList(e1.get(0), e1.get(1), e1.get(2), -1));
+                  ^
+    equality constraints: Integer
+    lower bounds: Integer,List<Integer>
+  where T is a type-variable:
+    T extends Object declared in method <T>asList(T...)
+/tmp/CatmullClarkSubdivisionSurface.java:209: error: incompatible types: Point cannot be converted to List<Point>
+            List<Point> p1 = points.get(me.get(0));
+                                       ^
+/tmp/CatmullClarkSubdivisionSurface.java:210: error: incompatible types: Point cannot be converted to List<Point>
+            List<Point> p2 = points.get(me.get(1));
+                                       ^
+/tmp/CatmullClarkSubdivisionSurface.java:211: error: incompatible types: List<Point> cannot be converted to Point
+            Point cp = centerPoint(p1, p2);
+                                   ^
+/tmp/CatmullClarkSubdivisionSurface.java:220: error: incompatible types: Edge cannot be converted to List<Edge>
+            List<Edge> edge = edgesFaces.get(i);
+                                            ^
+/tmp/CatmullClarkSubdivisionSurface.java:221: error: cannot find symbol
+            Object cp = edge.cp;
+                            ^
+  symbol:   variable cp
+  location: variable edge of type List<Edge>
+/tmp/CatmullClarkSubdivisionSurface.java:222: error: cannot find symbol
+            List<Point> fp1 = facePoints.get(edge.fn1);
+                                                 ^
+  symbol:   variable fn1
+  location: variable edge of type List<Edge>
+/tmp/CatmullClarkSubdivisionSurface.java:224: error: cannot find symbol
+            if (!Objects.equals(edge.fn2, 0 - 1)) {
+                                    ^
+  symbol:   variable fn2
+  location: variable edge of type List<Edge>
+/tmp/CatmullClarkSubdivisionSurface.java:225: error: cannot find symbol
+                fp2 = facePoints.get(edge.fn2);
+                                         ^
+  symbol:   variable fn2
+  location: variable edge of type List<Edge>
+/tmp/CatmullClarkSubdivisionSurface.java:227: error: incompatible types: List<Point> cannot be converted to Point
+            Point cfp = centerPoint(fp1, fp2);
+                                    ^
+/tmp/CatmullClarkSubdivisionSurface.java:228: error: incompatible types: Object cannot be converted to Point
+            edgePoints.add(centerPoint(cp, cfp));
+                                       ^
+/tmp/CatmullClarkSubdivisionSurface.java:243: error: incompatible types: Point cannot be converted to List<Point>
+            List<Point> fp = facePoints.get(fnum);
+                                           ^
+/tmp/CatmullClarkSubdivisionSurface.java:244: error: incompatible types: List<Integer> cannot be converted to List<List<Integer>>
+            for (List<Integer> pn : (List<List<Integer>>)faces.get(fnum)) {
+                                                                  ^
+/tmp/CatmullClarkSubdivisionSurface.java:245: error: incompatible types: List<Integer> cannot be converted to int
+                List<PointEx> tp = temp.get(pn);
+                                            ^
+/tmp/CatmullClarkSubdivisionSurface.java:246: error: cannot find symbol
+                temp.set(pn, new PointEx(sumPoint(tp.p, fp), tp.n + 1));
+                                                               ^
+  symbol:   variable n
+  location: variable tp of type List<PointEx>
+/tmp/CatmullClarkSubdivisionSurface.java:246: error: cannot find symbol
+                temp.set(pn, new PointEx(sumPoint(tp.p, fp), tp.n + 1));
+                                                    ^
+  symbol:   variable p
+  location: variable tp of type List<PointEx>
+/tmp/CatmullClarkSubdivisionSurface.java:246: error: incompatible types: List<Integer> cannot be converted to int
+                temp.set(pn, new PointEx(sumPoint(tp.p, fp), tp.n + 1));
+                         ^
+/tmp/CatmullClarkSubdivisionSurface.java:253: error: incompatible types: PointEx cannot be converted to List<PointEx>
+            List<PointEx> tp = temp.get(j);
+                                       ^
+/tmp/CatmullClarkSubdivisionSurface.java:254: error: cannot find symbol
+            avg.add(divPoint(tp.p, Double.parseDouble(String.valueOf(tp.n))));
+                               ^
+  symbol:   variable p
+  location: variable tp of type List<PointEx>
+/tmp/CatmullClarkSubdivisionSurface.java:254: error: cannot find symbol
+            avg.add(divPoint(tp.p, Double.parseDouble(String.valueOf(tp.n))));
+                                                                       ^
+  symbol:   variable n
+  location: variable tp of type List<PointEx>
+/tmp/CatmullClarkSubdivisionSurface.java:271: error: incompatible types: PointEx cannot be converted to List<PointEx>
+                List<PointEx> tp = temp.get(pn);
+                                           ^
+/tmp/CatmullClarkSubdivisionSurface.java:272: error: cannot find symbol
+                temp.set(pn, new PointEx(sumPoint(tp.p, cp), tp.n + 1));
+                                                               ^
+  symbol:   variable n
+  location: variable tp of type List<PointEx>
+/tmp/CatmullClarkSubdivisionSurface.java:272: error: cannot find symbol
+                temp.set(pn, new PointEx(sumPoint(tp.p, cp), tp.n + 1));
+                                                    ^
+  symbol:   variable p
+  location: variable tp of type List<PointEx>
+/tmp/CatmullClarkSubdivisionSurface.java:278: error: incompatible types: PointEx cannot be converted to List<PointEx>
+            List<PointEx> tp = temp.get(j);
+                                       ^
+/tmp/CatmullClarkSubdivisionSurface.java:279: error: cannot find symbol
+            avg.add(divPoint(tp.p, Double.parseDouble(String.valueOf(tp.n))));
+                               ^
+  symbol:   variable p
+  location: variable tp of type List<PointEx>
+/tmp/CatmullClarkSubdivisionSurface.java:279: error: cannot find symbol
+            avg.add(divPoint(tp.p, Double.parseDouble(String.valueOf(tp.n))));
+                                                                       ^
+  symbol:   variable n
+  location: variable tp of type List<PointEx>
+/tmp/CatmullClarkSubdivisionSurface.java:293: error: incompatible types: List<Integer> cannot be converted to List<List<Integer>>
+            for (List<Integer> pn : (List<List<Integer>>)faces.get(fnum)) {
+                                                                  ^
+/tmp/CatmullClarkSubdivisionSurface.java:294: error: incompatible types: List<Integer> cannot be converted to int
+                pf.set(pn, ((Number)pf.get(pn)).doubleValue() + 1);
+                                           ^
+/tmp/CatmullClarkSubdivisionSurface.java:294: error: incompatible types: List<Integer> cannot be converted to int
+                pf.set(pn, ((Number)pf.get(pn)).doubleValue() + 1);
+                       ^
+/tmp/CatmullClarkSubdivisionSurface.java:304: error: incompatible types: Integer cannot be converted to List
+            double n = Double.parseDouble(String.valueOf(((List)pf.get(i))));
+                                                                      ^
+/tmp/CatmullClarkSubdivisionSurface.java:308: error: incompatible types: Point cannot be converted to List<Point>
+            List<Point> old = points.get(i);
+                                        ^
+/tmp/CatmullClarkSubdivisionSurface.java:309: error: incompatible types: List<Point> cannot be converted to Point
+            Point p1 = mulPoint(old, m1);
+                                ^
+/tmp/CatmullClarkSubdivisionSurface.java:341: error: incompatible types: Edge cannot be converted to List<Edge>
+            List<Edge> e = edgesFaces.get(idx);
+                                         ^
+/tmp/CatmullClarkSubdivisionSurface.java:343: error: cannot find symbol
+            edgePointNums.put(key(e.pn1, e.pn2), nextPoint);
+                                   ^
+  symbol:   variable pn1
+  location: variable e of type List<Edge>
+/tmp/CatmullClarkSubdivisionSurface.java:343: error: cannot find symbol
+            edgePointNums.put(key(e.pn1, e.pn2), nextPoint);
+                                          ^
+  symbol:   variable pn2
+  location: variable e of type List<Edge>
+/tmp/CatmullClarkSubdivisionSurface.java:350: error: incompatible types: List<Integer> cannot be converted to List<List<Integer>>
+            List<List<Integer>> oldFace = faces.get(fnum);
+                                                   ^
+/tmp/CatmullClarkSubdivisionSurface.java:352: error: incompatible types: List<Integer> cannot be converted to List<List<Integer>>
+                List<List<Integer>> a = oldFace.get(0);
+                                                   ^
+/tmp/CatmullClarkSubdivisionSurface.java:353: error: incompatible types: List<Integer> cannot be converted to List<List<Integer>>
+                List<List<Integer>> b = oldFace.get(1);
+                                                   ^
+/tmp/CatmullClarkSubdivisionSurface.java:354: error: incompatible types: List<Integer> cannot be converted to List<List<Integer>>
+                List<List<Integer>> c = oldFace.get(2);
+                                                   ^
+/tmp/CatmullClarkSubdivisionSurface.java:355: error: incompatible types: List<Integer> cannot be converted to List<List<Integer>>
+                List<List<Integer>> d = oldFace.get(3);
+                                                   ^
+/tmp/CatmullClarkSubdivisionSurface.java:356: error: incompatible types: Integer cannot be converted to List<Integer>
+                List<Integer> fpnum = facePointNums.get(fnum);
+                                                       ^
+/tmp/CatmullClarkSubdivisionSurface.java:357: error: incompatible types: List<List<Integer>> cannot be converted to int
+                Map<String,Integer> ab = edgePointNums.get(key(a, b));
+                                                               ^
+/tmp/CatmullClarkSubdivisionSurface.java:358: error: incompatible types: List<List<Integer>> cannot be converted to int
+                Map<String,Integer> da = edgePointNums.get(key(d, a));
+                                                               ^
+/tmp/CatmullClarkSubdivisionSurface.java:359: error: incompatible types: List<List<Integer>> cannot be converted to int
+                Map<String,Integer> bc = edgePointNums.get(key(b, c));
+                                                               ^
+/tmp/CatmullClarkSubdivisionSurface.java:360: error: incompatible types: List<List<Integer>> cannot be converted to int
+                Map<String,Integer> cd = edgePointNums.get(key(c, d));
+                                                               ^
+/tmp/CatmullClarkSubdivisionSurface.java:361: error: incompatible types: inference variable T has incompatible bounds
+                newFaces.add(Arrays.asList(a, ab, fpnum, da));
+                        ^
+    equality constraints: Integer
+    lower bounds: List<Integer>,Map<String,Integer>,List<List<Integer>>
+  where T is a type-variable:
+    T extends Object declared in method <T>asList(T...)
+/tmp/CatmullClarkSubdivisionSurface.java:362: error: incompatible types: inference variable T has incompatible bounds
+                newFaces.add(Arrays.asList(b, bc, fpnum, ab));
+                        ^
+    equality constraints: Integer
+    lower bounds: List<Integer>,Map<String,Integer>,List<List<Integer>>
+  where T is a type-variable:
+    T extends Object declared in method <T>asList(T...)
+/tmp/CatmullClarkSubdivisionSurface.java:363: error: incompatible types: inference variable T has incompatible bounds
+                newFaces.add(Arrays.asList(c, cd, fpnum, bc));
+                        ^
+    equality constraints: Integer
+    lower bounds: List<Integer>,Map<String,Integer>,List<List<Integer>>
+  where T is a type-variable:
+    T extends Object declared in method <T>asList(T...)
+/tmp/CatmullClarkSubdivisionSurface.java:364: error: incompatible types: inference variable T has incompatible bounds
+                newFaces.add(Arrays.asList(d, da, fpnum, cd));
+                        ^
+    equality constraints: Integer
+    lower bounds: List<Integer>,Map<String,Integer>,List<List<Integer>>
+  where T is a type-variable:
+    T extends Object declared in method <T>asList(T...)
+/tmp/CatmullClarkSubdivisionSurface.java:377: error: incompatible types: String cannot be converted to Number
+        String s = "[" + ((Number)fmt2(f.get(0))).doubleValue();
+                                      ^
+/tmp/CatmullClarkSubdivisionSurface.java:380: error: incompatible types: String cannot be converted to Number
+            s = s + " " + ((Number)fmt2(f.get(i))).doubleValue();
+                                       ^
+/tmp/CatmullClarkSubdivisionSurface.java:394: error: incompatible types: Object cannot be converted to List<Point>
+            outputPoints = res.get(0);
+                                  ^
+/tmp/CatmullClarkSubdivisionSurface.java:395: error: incompatible types: Object cannot be converted to List<List<Integer>>
+            outputFaces = res.get(1);
+                                 ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+70 errors

@@ -1,0 +1,56 @@
+javac: exit status 1
+/tmp/BZierCurvesIntersections.java:140: error: cannot find symbol
+        return new ExcludeAcceptIntersect(exclude, accept, inter);
+                   ^
+  symbol:   class ExcludeAcceptIntersect
+  location: class BZierCurvesIntersections
+/tmp/BZierCurvesIntersections.java:145: error: incompatible types: Point cannot be converted to List<Point>
+            List<Point> pt = pts.get(i);
+                                    ^
+/tmp/BZierCurvesIntersections.java:146: error: cannot find symbol
+            if (absf(pt.x - xy.x) < spacing && absf(pt.y - xy.y) < spacing) {
+                       ^
+  symbol:   variable x
+  location: variable pt of type List<Point>
+/tmp/BZierCurvesIntersections.java:146: error: cannot find symbol
+            if (absf(pt.x - xy.x) < spacing && absf(pt.y - xy.y) < spacing) {
+                                                      ^
+  symbol:   variable y
+  location: variable pt of type List<Point>
+/tmp/BZierCurvesIntersections.java:155: error: cannot find symbol
+        List<Map<String,QuadCurve>> workload = Arrays.asList(new Workload(p, q));
+                                                                 ^
+  symbol:   class Workload
+  location: class BZierCurvesIntersections
+/tmp/BZierCurvesIntersections.java:158: error: incompatible types: Map<String,QuadCurve> cannot be converted to List<Map<String,QuadCurve>>
+            List<Map<String,QuadCurve>> work = workload.get(idx);
+                                                           ^
+/tmp/BZierCurvesIntersections.java:160: error: incompatible types: String cannot be converted to int
+            Map<String,Object> res = testIntersect(work.get("p"), work.get("q"), tol);
+                                                            ^
+/tmp/BZierCurvesIntersections.java:160: error: incompatible types: String cannot be converted to int
+            Map<String,Object> res = testIntersect(work.get("p"), work.get("q"), tol);
+                                                                           ^
+/tmp/BZierCurvesIntersections.java:161: error: incompatible types: Object cannot be converted to Map<String,Object>
+            Map<String,Object> excl = res.get("exclude");
+                                             ^
+/tmp/BZierCurvesIntersections.java:162: error: incompatible types: Object cannot be converted to Map<String,Object>
+            Map<String,Object> acc = res.get("accept");
+                                            ^
+/tmp/BZierCurvesIntersections.java:180: error: incompatible types: Point cannot be converted to List<Point>
+            List<Point> pt = inters.get(i);
+                                       ^
+/tmp/BZierCurvesIntersections.java:181: error: cannot find symbol
+            System.out.println("(" + String.valueOf(pt.x) + ", " + String.valueOf(pt.y) + ")");
+                                                      ^
+  symbol:   variable x
+  location: variable pt of type List<Point>
+/tmp/BZierCurvesIntersections.java:181: error: cannot find symbol
+            System.out.println("(" + String.valueOf(pt.x) + ", " + String.valueOf(pt.y) + ")");
+                                                                                    ^
+  symbol:   variable y
+  location: variable pt of type List<Point>
+Note: /tmp/BZierCurvesIntersections.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+13 errors

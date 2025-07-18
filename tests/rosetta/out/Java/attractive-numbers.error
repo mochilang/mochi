@@ -1,0 +1,5 @@
+javac: exit status 1
+/tmp/AttractiveNumbers.java:50: error: unreachable statement
+        return count;
+        ^
+1 error

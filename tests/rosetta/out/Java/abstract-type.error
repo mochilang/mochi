@@ -1,0 +1,8 @@
+javac: exit status 1
+/tmp/AbstractType.java:36: error: incompatible types: Object cannot be converted to String
+}}).get();
+       ^
+/tmp/AbstractType.java:50: error: incompatible types: Object cannot be converted to String
+}}).get();
+       ^
+2 errors

@@ -1,0 +1,112 @@
+javac: exit status 1
+/tmp/BifidCipher.java:11: error: incompatible types: List<String> cannot be converted to List<List<String>>
+            List<List<String>> row = square.get(x);
+                                               ^
+/tmp/BifidCipher.java:14: error: incompatible types: List<String> cannot be converted to List<List<String>>
+                List<List<String>> ch = row.get(y);
+                                               ^
+/tmp/BifidCipher.java:15: error: incompatible types: List<List<String>> cannot be converted to String
+                emap.put(ch, Arrays.asList(x, y));
+                         ^
+/tmp/BifidCipher.java:16: error: incompatible types: List<List<String>> cannot be converted to String
+                dmap.put(String.valueOf(x) + "," + String.valueOf(y), ch);
+                                                                      ^
+/tmp/BifidCipher.java:21: error: cannot find symbol
+        return new ED(emap, dmap);
+                   ^
+  symbol:   class ED
+  location: class BifidCipher
+/tmp/BifidCipher.java:24: error: cannot find symbol
+        Object s = upper(text);
+                   ^
+  symbol:   method upper(String)
+  location: class BifidCipher
+/tmp/BifidCipher.java:27: error: cannot find symbol
+        while (i < s.size()) {
+                    ^
+  symbol:   method size()
+  location: variable s of type Object
+/tmp/BifidCipher.java:43: error: incompatible types: List<Integer> cannot be converted to Map<String,List<Integer>>
+            Map<String,List<Integer>> xy = emap.get(ch);
+                                                   ^
+/tmp/BifidCipher.java:44: error: incompatible types: List<Integer> cannot be converted to Integer
+            row0.add(xy.get(0));
+                           ^
+/tmp/BifidCipher.java:45: error: incompatible types: List<Integer> cannot be converted to Integer
+            row1.add(xy.get(1));
+                           ^
+/tmp/BifidCipher.java:54: error: incompatible types: String cannot be converted to Number
+            String key = ((Number)((Number)String.valueOf(row0.get(j))).doubleValue() + ",").doubleValue() + ((Number)String.valueOf(row0.get(j + 1))).doubleValue();
+                                                         ^
+/tmp/BifidCipher.java:54: error: cannot find symbol
+            String key = ((Number)((Number)String.valueOf(row0.get(j))).doubleValue() + ",").doubleValue() + ((Number)String.valueOf(row0.get(j + 1))).doubleValue();
+                                                                                            ^
+  symbol:   method doubleValue()
+  location: class String
+/tmp/BifidCipher.java:54: error: incompatible types: String cannot be converted to Number
+            String key = ((Number)((Number)String.valueOf(row0.get(j))).doubleValue() + ",").doubleValue() + ((Number)String.valueOf(row0.get(j + 1))).doubleValue();
+                                                                                                                                    ^
+/tmp/BifidCipher.java:55: error: incompatible types: String cannot be converted to Number
+            res = res + ((Number)dmap.get(key)).doubleValue();
+                                         ^
+/tmp/BifidCipher.java:66: error: incompatible types: List<Integer> cannot be converted to Map<String,List<Integer>>
+            Map<String,List<Integer>> xy = emap.get(ch);
+                                                   ^
+/tmp/BifidCipher.java:67: error: incompatible types: List<Integer> cannot be converted to Integer
+            coords.add(xy.get(0));
+                             ^
+/tmp/BifidCipher.java:68: error: incompatible types: List<Integer> cannot be converted to Integer
+            coords.add(xy.get(1));
+                             ^
+/tmp/BifidCipher.java:86: error: incompatible types: String cannot be converted to Number
+            String key = ((Number)((Number)String.valueOf(k1.get(j))).doubleValue() + ",").doubleValue() + ((Number)String.valueOf(k2.get(j))).doubleValue();
+                                                         ^
+/tmp/BifidCipher.java:86: error: cannot find symbol
+            String key = ((Number)((Number)String.valueOf(k1.get(j))).doubleValue() + ",").doubleValue() + ((Number)String.valueOf(k2.get(j))).doubleValue();
+                                                                                          ^
+  symbol:   method doubleValue()
+  location: class String
+/tmp/BifidCipher.java:86: error: incompatible types: String cannot be converted to Number
+            String key = ((Number)((Number)String.valueOf(k1.get(j))).doubleValue() + ",").doubleValue() + ((Number)String.valueOf(k2.get(j))).doubleValue();
+                                                                                                                                  ^
+/tmp/BifidCipher.java:87: error: incompatible types: String cannot be converted to Number
+            res = res + ((Number)dmap.get(key)).doubleValue();
+                                         ^
+/tmp/BifidCipher.java:99: error: incompatible types: Object cannot be converted to Map<String,Object>
+        Map<String,Object> emap = maps.get("e");
+                                          ^
+/tmp/BifidCipher.java:100: error: incompatible types: Object cannot be converted to Map<String,Object>
+        Map<String,Object> dmap = maps.get("d");
+                                          ^
+/tmp/BifidCipher.java:103: error: incompatible types: Map<String,Object> cannot be converted to Map<String,List<Integer>>
+        String s = encrypt(textRosetta, emap, dmap);
+                                        ^
+/tmp/BifidCipher.java:105: error: incompatible types: Map<String,Object> cannot be converted to Map<String,List<Integer>>
+        s = decrypt(s, emap, dmap);
+                       ^
+/tmp/BifidCipher.java:108: error: incompatible types: Object cannot be converted to Map<String,Object>
+        emap = maps.get("e");
+                       ^
+/tmp/BifidCipher.java:109: error: incompatible types: Object cannot be converted to Map<String,Object>
+        dmap = maps.get("d");
+                       ^
+/tmp/BifidCipher.java:112: error: incompatible types: Map<String,Object> cannot be converted to Map<String,List<Integer>>
+        s = encrypt(textWikipedia, emap, dmap);
+                                   ^
+/tmp/BifidCipher.java:114: error: incompatible types: Map<String,Object> cannot be converted to Map<String,List<Integer>>
+        s = decrypt(s, emap, dmap);
+                       ^
+/tmp/BifidCipher.java:117: error: incompatible types: Object cannot be converted to Map<String,Object>
+        emap = maps.get("e");
+                       ^
+/tmp/BifidCipher.java:118: error: incompatible types: Object cannot be converted to Map<String,Object>
+        dmap = maps.get("d");
+                       ^
+/tmp/BifidCipher.java:121: error: incompatible types: Map<String,Object> cannot be converted to Map<String,List<Integer>>
+        s = encrypt(textTest, emap, dmap);
+                              ^
+/tmp/BifidCipher.java:123: error: incompatible types: Map<String,Object> cannot be converted to Map<String,List<Integer>>
+        s = decrypt(s, emap, dmap);
+                       ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+33 errors

@@ -1,0 +1,101 @@
+javac: exit status 1
+/tmp/CaseSensitivityOfIdentifiers.java:10: error: incompatible types: Object is not a functional interface
+        Object packageSees = (d1, d2, d3) -> {
+                             ^
+/tmp/CaseSensitivityOfIdentifiers.java:12: error: cannot find symbol
+            return new PkgDogDogPkgDOG(true, true, true);
+                       ^
+  symbol:   class PkgDogDogPkgDOG
+  location: class CaseSensitivityOfIdentifiers
+/tmp/CaseSensitivityOfIdentifiers.java:14: error: cannot find symbol
+        Object d = packageSees(pkg_dog, Dog, pkg_DOG);
+                   ^
+  symbol:   method packageSees(String,String,String)
+  location: class CaseSensitivityOfIdentifiers
+/tmp/CaseSensitivityOfIdentifiers.java:15: error: cannot find symbol
+        System.out.println("There are " + String.valueOf(d.size()) + " dogs.\n");
+                                                          ^
+  symbol:   method size()
+  location: variable d of type Object
+/tmp/CaseSensitivityOfIdentifiers.java:17: error: cannot find symbol
+        d = packageSees(pkg_dog, Dog, pkg_DOG);
+            ^
+  symbol:   method packageSees(String,String,String)
+  location: class CaseSensitivityOfIdentifiers
+/tmp/CaseSensitivityOfIdentifiers.java:19: error: incompatible types: String cannot be converted to CAP#1
+        ((Map<?,?>)d).put("dog", true);
+                          ^
+  where CAP#1 is a fresh type-variable:
+    CAP#1 extends Object from capture of ?
+/tmp/CaseSensitivityOfIdentifiers.java:20: error: incompatible types: String cannot be converted to CAP#1
+        ((Map<?,?>)d).put("Dog", true);
+                          ^
+  where CAP#1 is a fresh type-variable:
+    CAP#1 extends Object from capture of ?
+/tmp/CaseSensitivityOfIdentifiers.java:21: error: incompatible types: String cannot be converted to CAP#1
+        ((Map<?,?>)d).put("pkg_DOG", true);
+                          ^
+  where CAP#1 is a fresh type-variable:
+    CAP#1 extends Object from capture of ?
+/tmp/CaseSensitivityOfIdentifiers.java:22: error: cannot find symbol
+        System.out.println("There are " + String.valueOf(d.size()) + " dogs.\n");
+                                                          ^
+  symbol:   method size()
+  location: variable d of type Object
+/tmp/CaseSensitivityOfIdentifiers.java:24: error: cannot find symbol
+        d = packageSees(pkg_dog, Dog, pkg_DOG);
+            ^
+  symbol:   method packageSees(String,String,String)
+  location: class CaseSensitivityOfIdentifiers
+/tmp/CaseSensitivityOfIdentifiers.java:26: error: incompatible types: String cannot be converted to CAP#1
+        ((Map<?,?>)d).put("dog", true);
+                          ^
+  where CAP#1 is a fresh type-variable:
+    CAP#1 extends Object from capture of ?
+/tmp/CaseSensitivityOfIdentifiers.java:27: error: incompatible types: String cannot be converted to CAP#1
+        ((Map<?,?>)d).put("Dog", true);
+                          ^
+  where CAP#1 is a fresh type-variable:
+    CAP#1 extends Object from capture of ?
+/tmp/CaseSensitivityOfIdentifiers.java:28: error: incompatible types: String cannot be converted to CAP#1
+        ((Map<?,?>)d).put("pkg_DOG", true);
+                          ^
+  where CAP#1 is a fresh type-variable:
+    CAP#1 extends Object from capture of ?
+/tmp/CaseSensitivityOfIdentifiers.java:29: error: cannot find symbol
+        System.out.println("There are " + String.valueOf(d.size()) + " dogs.\n");
+                                                          ^
+  symbol:   method size()
+  location: variable d of type Object
+/tmp/CaseSensitivityOfIdentifiers.java:31: error: cannot find symbol
+        d = packageSees(pkg_dog, Dog, pkg_DOG);
+            ^
+  symbol:   method packageSees(String,String,String)
+  location: class CaseSensitivityOfIdentifiers
+/tmp/CaseSensitivityOfIdentifiers.java:33: error: incompatible types: String cannot be converted to CAP#1
+        ((Map<?,?>)d).put("dog", true);
+                          ^
+  where CAP#1 is a fresh type-variable:
+    CAP#1 extends Object from capture of ?
+/tmp/CaseSensitivityOfIdentifiers.java:34: error: incompatible types: String cannot be converted to CAP#1
+        ((Map<?,?>)d).put("Dog", true);
+                          ^
+  where CAP#1 is a fresh type-variable:
+    CAP#1 extends Object from capture of ?
+/tmp/CaseSensitivityOfIdentifiers.java:35: error: incompatible types: String cannot be converted to CAP#1
+        ((Map<?,?>)d).put("pkg_DOG", true);
+                          ^
+  where CAP#1 is a fresh type-variable:
+    CAP#1 extends Object from capture of ?
+/tmp/CaseSensitivityOfIdentifiers.java:36: error: incompatible types: String cannot be converted to CAP#1
+        ((Map<?,?>)d).put("DOG", true);
+                          ^
+  where CAP#1 is a fresh type-variable:
+    CAP#1 extends Object from capture of ?
+/tmp/CaseSensitivityOfIdentifiers.java:37: error: cannot find symbol
+        System.out.println("There are " + String.valueOf(d.size()) + " dogs.");
+                                                          ^
+  symbol:   method size()
+  location: variable d of type Object
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+20 errors

@@ -1,0 +1,20 @@
+javac: exit status 1
+/tmp/Amb.java:16: error: incompatible types: Object cannot be converted to List<List<String>>
+            List<List<String>> w = ((List)wordsets.get(idx)).get(i);
+                                                                ^
+/tmp/Amb.java:17: error: cannot find symbol
+            if (idx == 0 || Objects.equals(prev.substring(prev.length() - 1, prev.length()), w.substring(0, 1))) {
+                                                                                              ^
+  symbol:   method substring(int,int)
+  location: variable w of type List<List<String>>
+/tmp/Amb.java:18: error: incompatible types: List<List<String>> cannot be converted to String
+                res.set(idx, w);
+                             ^
+/tmp/Amb.java:36: error: incompatible types: String cannot be converted to Number
+            String out = "[" + ((Number)res.get(0)).doubleValue();
+                                               ^
+/tmp/Amb.java:39: error: incompatible types: String cannot be converted to Number
+                out = out + " " + ((Number)res.get(j)).doubleValue();
+                                                  ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+5 errors

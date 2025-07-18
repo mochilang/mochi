@@ -1,0 +1,82 @@
+javac: exit status 1
+/tmp/CirclesOfGivenRadiusThroughTwoPoints.java:66: error: incompatible types: cannot infer type arguments for ArrayList<>
+        List<List<Point>> td = new ArrayList<>(Arrays.asList(Arrays.asList(new Point(0.123400, 0.987600), new Point(0.876500, 0.234500), 2.000000), Arrays.asList(new Point(0.000000, 2.000000), new Point(0.000000, 0.000000), 1.000000), Arrays.asList(new Point(0.123400, 0.987600), new Point(0.123400, 0.987600), 2.000000), Arrays.asList(new Point(0.123400, 0.987600), new Point(0.876500, 0.234500), 0.500000), Arrays.asList(new Point(0.123400, 0.987600), new Point(0.123400, 0.987600), 0.000000)));
+                                            ^
+    reason: inference variable T has incompatible bounds
+      equality constraints: Point
+      lower bounds: Double,Point
+  where T is a type-variable:
+    T extends Object declared in method <T>asList(T...)
+/tmp/CirclesOfGivenRadiusThroughTwoPoints.java:68: error: incompatible types: Point cannot be converted to List<Point>
+            List<Point> p1 = tc.get(0);
+                                   ^
+/tmp/CirclesOfGivenRadiusThroughTwoPoints.java:69: error: incompatible types: Point cannot be converted to List<Point>
+            List<Point> p2 = tc.get(1);
+                                   ^
+/tmp/CirclesOfGivenRadiusThroughTwoPoints.java:70: error: incompatible types: Point cannot be converted to List<Point>
+            List<Point> r = tc.get(2);
+                                  ^
+/tmp/CirclesOfGivenRadiusThroughTwoPoints.java:71: error: cannot find symbol
+            System.out.println("p1:  {" + String.valueOf(p1.x) + " " + String.valueOf(p1.y) + "}");
+                                                           ^
+  symbol:   variable x
+  location: variable p1 of type List<Point>
+/tmp/CirclesOfGivenRadiusThroughTwoPoints.java:71: error: cannot find symbol
+            System.out.println("p1:  {" + String.valueOf(p1.x) + " " + String.valueOf(p1.y) + "}");
+                                                                                        ^
+  symbol:   variable y
+  location: variable p1 of type List<Point>
+/tmp/CirclesOfGivenRadiusThroughTwoPoints.java:72: error: cannot find symbol
+            System.out.println("p2:  {" + String.valueOf(p2.x) + " " + String.valueOf(p2.y) + "}");
+                                                           ^
+  symbol:   variable x
+  location: variable p2 of type List<Point>
+/tmp/CirclesOfGivenRadiusThroughTwoPoints.java:72: error: cannot find symbol
+            System.out.println("p2:  {" + String.valueOf(p2.x) + " " + String.valueOf(p2.y) + "}");
+                                                                                        ^
+  symbol:   variable y
+  location: variable p2 of type List<Point>
+/tmp/CirclesOfGivenRadiusThroughTwoPoints.java:74: error: incompatible types: List<Point> cannot be converted to Point
+            List<Object> res = circles(p1, p2, r);
+                                       ^
+/tmp/CirclesOfGivenRadiusThroughTwoPoints.java:75: error: incompatible types: Object cannot be converted to List<Object>
+            List<Object> c1 = res.get(0);
+                                     ^
+/tmp/CirclesOfGivenRadiusThroughTwoPoints.java:76: error: incompatible types: Object cannot be converted to List<Object>
+            List<Object> c2 = res.get(1);
+                                     ^
+/tmp/CirclesOfGivenRadiusThroughTwoPoints.java:77: error: incompatible types: Object cannot be converted to List<Object>
+            List<Object> caseStr = res.get(2);
+                                          ^
+/tmp/CirclesOfGivenRadiusThroughTwoPoints.java:80: error: cannot find symbol
+                System.out.println("   Center:  {" + String.valueOf(c1.x) + " " + String.valueOf(c1.y) + "}");
+                                                                      ^
+  symbol:   variable x
+  location: variable c1 of type List<Object>
+/tmp/CirclesOfGivenRadiusThroughTwoPoints.java:80: error: cannot find symbol
+                System.out.println("   Center:  {" + String.valueOf(c1.x) + " " + String.valueOf(c1.y) + "}");
+                                                                                                   ^
+  symbol:   variable y
+  location: variable c1 of type List<Object>
+/tmp/CirclesOfGivenRadiusThroughTwoPoints.java:84: error: cannot find symbol
+                    System.out.println("   Center 1:  {" + String.valueOf(c1.x) + " " + String.valueOf(c1.y) + "}");
+                                                                            ^
+  symbol:   variable x
+  location: variable c1 of type List<Object>
+/tmp/CirclesOfGivenRadiusThroughTwoPoints.java:84: error: cannot find symbol
+                    System.out.println("   Center 1:  {" + String.valueOf(c1.x) + " " + String.valueOf(c1.y) + "}");
+                                                                                                         ^
+  symbol:   variable y
+  location: variable c1 of type List<Object>
+/tmp/CirclesOfGivenRadiusThroughTwoPoints.java:85: error: cannot find symbol
+                    System.out.println("   Center 2:  {" + String.valueOf(c2.x) + " " + String.valueOf(c2.y) + "}");
+                                                                            ^
+  symbol:   variable x
+  location: variable c2 of type List<Object>
+/tmp/CirclesOfGivenRadiusThroughTwoPoints.java:85: error: cannot find symbol
+                    System.out.println("   Center 2:  {" + String.valueOf(c2.x) + " " + String.valueOf(c2.y) + "}");
+                                                                                                         ^
+  symbol:   variable y
+  location: variable c2 of type List<Object>
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+18 errors

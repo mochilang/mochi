@@ -1,0 +1,68 @@
+javac: exit status 1
+/tmp/BitmapWriteAPpmFile.java:59: error: incompatible types: List<Colour> cannot be converted to List<List<Colour>>
+        List<List<Colour>> row = rows.get(y);
+                                         ^
+/tmp/BitmapWriteAPpmFile.java:60: error: incompatible types: Colour cannot be converted to List<Colour>
+        row.set(x, c);
+                   ^
+/tmp/BitmapWriteAPpmFile.java:61: error: incompatible types: List<List<Colour>> cannot be converted to List<Colour>
+        rows.set(y, row);
+                    ^
+/tmp/BitmapWriteAPpmFile.java:88: error: incompatible types: Object cannot be converted to List<List<Colour>>
+                List<List<Colour>> p = ((List)b.pixels.get(y)).get(x);
+                                                                  ^
+/tmp/BitmapWriteAPpmFile.java:89: error: cannot find symbol
+                if (p.R > maxv) {
+                     ^
+  symbol:   variable R
+  location: variable p of type List<List<Colour>>
+/tmp/BitmapWriteAPpmFile.java:90: error: cannot find symbol
+                    maxv = (int)(p.R);
+                                  ^
+  symbol:   variable R
+  location: variable p of type List<List<Colour>>
+/tmp/BitmapWriteAPpmFile.java:92: error: cannot find symbol
+                if (p.G > maxv) {
+                     ^
+  symbol:   variable G
+  location: variable p of type List<List<Colour>>
+/tmp/BitmapWriteAPpmFile.java:93: error: cannot find symbol
+                    maxv = (int)(p.G);
+                                  ^
+  symbol:   variable G
+  location: variable p of type List<List<Colour>>
+/tmp/BitmapWriteAPpmFile.java:95: error: cannot find symbol
+                if (p.B > maxv) {
+                     ^
+  symbol:   variable B
+  location: variable p of type List<List<Colour>>
+/tmp/BitmapWriteAPpmFile.java:96: error: cannot find symbol
+                    maxv = (int)(p.B);
+                                  ^
+  symbol:   variable B
+  location: variable p of type List<List<Colour>>
+/tmp/BitmapWriteAPpmFile.java:103: error: cannot find symbol
+        int numsize = String.valueOf(maxv).size();
+                                          ^
+  symbol:   method size()
+  location: class String
+/tmp/BitmapWriteAPpmFile.java:109: error: incompatible types: Object cannot be converted to List<List<Colour>>
+                List<List<Colour>> p = ((List)b.pixels.get(y)).get(x);
+                                                                  ^
+/tmp/BitmapWriteAPpmFile.java:110: error: cannot find symbol
+                line = line + "   " + pad(p.R, numsize) + " " + pad(p.G, numsize) + " " + pad(p.B, numsize);
+                                           ^
+  symbol:   variable R
+  location: variable p of type List<List<Colour>>
+/tmp/BitmapWriteAPpmFile.java:110: error: cannot find symbol
+                line = line + "   " + pad(p.R, numsize) + " " + pad(p.G, numsize) + " " + pad(p.B, numsize);
+                                                                     ^
+  symbol:   variable G
+  location: variable p of type List<List<Colour>>
+/tmp/BitmapWriteAPpmFile.java:110: error: cannot find symbol
+                line = line + "   " + pad(p.R, numsize) + " " + pad(p.G, numsize) + " " + pad(p.B, numsize);
+                                                                                               ^
+  symbol:   variable B
+  location: variable p of type List<List<Colour>>
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+15 errors

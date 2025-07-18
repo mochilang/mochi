@@ -1,0 +1,13 @@
+javac: exit status 1
+/tmp/BitmapFloodFill.java:8: error: incompatible types: Object cannot be converted to List<List<String>>
+        List<List<String>> target = ((List)grid.get(y)).get(x);
+                                                           ^
+/tmp/BitmapFloodFill.java:12: error: incompatible types: Object is not a functional interface
+        Object ff = (px, py) -> {
+                    ^
+/tmp/BitmapFloodFill.java:25: error: cannot find symbol
+        ff(x, y);
+        ^
+  symbol:   method ff(int,int)
+  location: class BitmapFloodFill
+3 errors

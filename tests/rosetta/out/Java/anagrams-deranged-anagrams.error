@@ -1,0 +1,17 @@
+javac: exit status 1
+/tmp/AnagramsDerangedAnagrams.java:19: error: incompatible types: String cannot be converted to List<String>
+                    List<String> tmp = arr.get(j);
+                                              ^
+/tmp/AnagramsDerangedAnagrams.java:21: error: incompatible types: List<String> cannot be converted to String
+                    arr.set(j + 1, tmp);
+                                   ^
+/tmp/AnagramsDerangedAnagrams.java:30: error: incompatible types: String cannot be converted to Number
+            out = out + ((Number)arr.get(i)).doubleValue();
+                                        ^
+/tmp/AnagramsDerangedAnagrams.java:63: error: cannot find symbol
+            for (String c : m.get(k).keySet()) {
+                                    ^
+  symbol:   method keySet()
+  location: interface List<String>
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+4 errors

@@ -1,0 +1,23 @@
+javac: exit status 1
+/tmp/BitcoinAddressValidation.java:33: error: bad operand types for binary operator '*'
+                c = (int)(c + ((Number)58 * ((Number)a.get(j)).doubleValue()).doubleValue());
+                                          ^
+  first type:  Number
+  second type: double
+/tmp/BitcoinAddressValidation.java:35: error: incompatible types: int cannot be converted to String
+                c = (int)(Integer.parseInt((c / 256)));
+                                              ^
+/tmp/BitcoinAddressValidation.java:46: error: cannot find symbol
+        Object first = sha256(bs);
+                       ^
+  symbol:   method sha256(List<Integer>)
+  location: class BitcoinAddressValidation
+/tmp/BitcoinAddressValidation.java:47: error: cannot find symbol
+        return sha256(first);
+               ^
+  symbol:   method sha256(Object)
+  location: class BitcoinAddressValidation
+Note: /tmp/BitcoinAddressValidation.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+4 errors

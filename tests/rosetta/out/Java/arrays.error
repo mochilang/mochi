@@ -1,0 +1,25 @@
+javac: exit status 1
+/tmp/Arrays.java:6: error: cannot find symbol
+    static List<Integer> s = ((List)a).subList(0, 4);
+                                    ^
+  symbol:   variable a
+  location: class Arrays
+/tmp/Arrays.java:11: error: incompatible types: String cannot be converted to Number
+            s = s + ((Number)String.valueOf(xs.get(i))).doubleValue();
+                                           ^
+/tmp/Arrays.java:21: error: cannot find symbol
+        List<Integer> a = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0));
+                                                ^
+  symbol:   method asList(int,int,int,int,int)
+  location: class Arrays
+/tmp/Arrays.java:26: error: incompatible types: String cannot be converted to Number
+        System.out.println("a[0] = " + ((Number)String.valueOf(a.get(0))).doubleValue());
+                                                              ^
+/tmp/Arrays.java:45: error: cannot find symbol
+        s = Arrays.asList();
+                  ^
+  symbol:   method asList()
+  location: class Arrays
+Note: /tmp/Arrays.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+5 errors

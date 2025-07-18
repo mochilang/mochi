@@ -1,0 +1,59 @@
+javac: exit status 1
+/tmp/BinGivenLimits.java:16: error: incompatible types: Integer cannot be converted to List<Integer>
+            List<Integer> d = data.get(j);
+                                      ^
+/tmp/BinGivenLimits.java:28: error: incompatible types: double cannot be converted to Integer
+            bins.set(index, ((Number)bins.get(index)).doubleValue() + 1);
+                                                                    ^
+/tmp/BinGivenLimits.java:46: error: incompatible types: String cannot be converted to Number
+        System.out.println(((Number)((Number)"           < " + ((Number)padLeft(limits.get(0), 3)).doubleValue()).doubleValue() + " = ").doubleValue() + ((Number)padLeft(bins.get(0), 2)).doubleValue());
+                                             ^
+/tmp/BinGivenLimits.java:46: error: incompatible types: String cannot be converted to Number
+        System.out.println(((Number)((Number)"           < " + ((Number)padLeft(limits.get(0), 3)).doubleValue()).doubleValue() + " = ").doubleValue() + ((Number)padLeft(bins.get(0), 2)).doubleValue());
+                                                                               ^
+/tmp/BinGivenLimits.java:46: error: cannot find symbol
+        System.out.println(((Number)((Number)"           < " + ((Number)padLeft(limits.get(0), 3)).doubleValue()).doubleValue() + " = ").doubleValue() + ((Number)padLeft(bins.get(0), 2)).doubleValue());
+                                                                                                                                        ^
+  symbol:   method doubleValue()
+  location: class String
+/tmp/BinGivenLimits.java:46: error: incompatible types: String cannot be converted to Number
+        System.out.println(((Number)((Number)"           < " + ((Number)padLeft(limits.get(0), 3)).doubleValue()).doubleValue() + " = ").doubleValue() + ((Number)padLeft(bins.get(0), 2)).doubleValue());
+                                                                                                                                                                         ^
+/tmp/BinGivenLimits.java:49: error: incompatible types: String cannot be converted to Number
+            System.out.println(((Number)((Number)((Number)((Number)">= " + ((Number)padLeft(limits.get(i - 1), 3)).doubleValue()).doubleValue() + " and < ").doubleValue() + ((Number)padLeft(limits.get(i), 3)).doubleValue()).doubleValue() + " = ").doubleValue() + ((Number)padLeft(bins.get(i), 2)).doubleValue());
+                                                                   ^
+/tmp/BinGivenLimits.java:49: error: incompatible types: String cannot be converted to Number
+            System.out.println(((Number)((Number)((Number)((Number)">= " + ((Number)padLeft(limits.get(i - 1), 3)).doubleValue()).doubleValue() + " and < ").doubleValue() + ((Number)padLeft(limits.get(i), 3)).doubleValue()).doubleValue() + " = ").doubleValue() + ((Number)padLeft(bins.get(i), 2)).doubleValue());
+                                                                                           ^
+/tmp/BinGivenLimits.java:49: error: cannot find symbol
+            System.out.println(((Number)((Number)((Number)((Number)">= " + ((Number)padLeft(limits.get(i - 1), 3)).doubleValue()).doubleValue() + " and < ").doubleValue() + ((Number)padLeft(limits.get(i), 3)).doubleValue()).doubleValue() + " = ").doubleValue() + ((Number)padLeft(bins.get(i), 2)).doubleValue());
+                                                                                                                                                            ^
+  symbol:   method doubleValue()
+  location: class String
+/tmp/BinGivenLimits.java:49: error: incompatible types: String cannot be converted to Number
+            System.out.println(((Number)((Number)((Number)((Number)">= " + ((Number)padLeft(limits.get(i - 1), 3)).doubleValue()).doubleValue() + " and < ").doubleValue() + ((Number)padLeft(limits.get(i), 3)).doubleValue()).doubleValue() + " = ").doubleValue() + ((Number)padLeft(bins.get(i), 2)).doubleValue());
+                                                                                                                                                                                             ^
+/tmp/BinGivenLimits.java:49: error: cannot find symbol
+            System.out.println(((Number)((Number)((Number)((Number)">= " + ((Number)padLeft(limits.get(i - 1), 3)).doubleValue()).doubleValue() + " and < ").doubleValue() + ((Number)padLeft(limits.get(i), 3)).doubleValue()).doubleValue() + " = ").doubleValue() + ((Number)padLeft(bins.get(i), 2)).doubleValue());
+                                                                                                                                                                                                                                                      ^
+  symbol:   method doubleValue()
+  location: class String
+/tmp/BinGivenLimits.java:49: error: incompatible types: String cannot be converted to Number
+            System.out.println(((Number)((Number)((Number)((Number)">= " + ((Number)padLeft(limits.get(i - 1), 3)).doubleValue()).doubleValue() + " and < ").doubleValue() + ((Number)padLeft(limits.get(i), 3)).doubleValue()).doubleValue() + " = ").doubleValue() + ((Number)padLeft(bins.get(i), 2)).doubleValue());
+                                                                                                                                                                                                                                                                                       ^
+/tmp/BinGivenLimits.java:52: error: incompatible types: String cannot be converted to Number
+        System.out.println(((Number)((Number)">= " + ((Number)padLeft(limits.get(n - 1), 3)).doubleValue()).doubleValue() + "           = ").doubleValue() + ((Number)padLeft(bins.get(n), 2)).doubleValue());
+                                             ^
+/tmp/BinGivenLimits.java:52: error: incompatible types: String cannot be converted to Number
+        System.out.println(((Number)((Number)">= " + ((Number)padLeft(limits.get(n - 1), 3)).doubleValue()).doubleValue() + "           = ").doubleValue() + ((Number)padLeft(bins.get(n), 2)).doubleValue());
+                                                                     ^
+/tmp/BinGivenLimits.java:52: error: cannot find symbol
+        System.out.println(((Number)((Number)">= " + ((Number)padLeft(limits.get(n - 1), 3)).doubleValue()).doubleValue() + "           = ").doubleValue() + ((Number)padLeft(bins.get(n), 2)).doubleValue());
+                                                                                                                                            ^
+  symbol:   method doubleValue()
+  location: class String
+/tmp/BinGivenLimits.java:52: error: incompatible types: String cannot be converted to Number
+        System.out.println(((Number)((Number)">= " + ((Number)padLeft(limits.get(n - 1), 3)).doubleValue()).doubleValue() + "           = ").doubleValue() + ((Number)padLeft(bins.get(n), 2)).doubleValue());
+                                                                                                                                                                             ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+16 errors

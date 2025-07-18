@@ -1,0 +1,36 @@
+javac: exit status 1
+/tmp/BitwiseOperations.java:25: error: incompatible types: int cannot be converted to String
+            mask = (int)(Integer.parseInt((mask / 2)));
+                                                ^
+/tmp/BitwiseOperations.java:38: error: incompatible types: int cannot be converted to String
+            ua = (int)(Integer.parseInt((ua / 2)));
+                                            ^
+/tmp/BitwiseOperations.java:39: error: incompatible types: int cannot be converted to String
+            ub = (int)(Integer.parseInt((ub / 2)));
+                                            ^
+/tmp/BitwiseOperations.java:53: error: incompatible types: int cannot be converted to String
+            ua = (int)(Integer.parseInt((ua / 2)));
+                                            ^
+/tmp/BitwiseOperations.java:54: error: incompatible types: int cannot be converted to String
+            ub = (int)(Integer.parseInt((ub / 2)));
+                                            ^
+/tmp/BitwiseOperations.java:70: error: incompatible types: int cannot be converted to String
+            ua = (int)(Integer.parseInt((ua / 2)));
+                                            ^
+/tmp/BitwiseOperations.java:71: error: incompatible types: int cannot be converted to String
+            ub = (int)(Integer.parseInt((ub / 2)));
+                                            ^
+/tmp/BitwiseOperations.java:93: error: incompatible types: int cannot be converted to String
+            ua = (int)(Integer.parseInt((ua / 2)));
+                                            ^
+/tmp/BitwiseOperations.java:106: error: incompatible types: int cannot be converted to String
+                val = (int)(Integer.parseInt((val / 2)));
+                                                  ^
+/tmp/BitwiseOperations.java:109: error: incompatible types: int cannot be converted to String
+                val = (int)(Integer.parseInt(((val - 1) / 2)));
+                                                        ^
+/tmp/BitwiseOperations.java:136: error: incompatible types: unexpected return value
+            return null;
+                   ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+11 errors

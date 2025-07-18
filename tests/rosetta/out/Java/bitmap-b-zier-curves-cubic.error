@@ -1,0 +1,70 @@
+javac: exit status 1
+/tmp/BitmapBZierCurvesCubic.java:27: error: incompatible types: int cannot be converted to String
+        int r = Integer.parseInt(((rgb / 65536) % 256));
+                                                ^
+/tmp/BitmapBZierCurvesCubic.java:28: error: incompatible types: int cannot be converted to String
+        int g = Integer.parseInt(((rgb / 256) % 256));
+                                              ^
+/tmp/BitmapBZierCurvesCubic.java:29: error: incompatible types: int cannot be converted to String
+        int b = Integer.parseInt((rgb % 256));
+                                      ^
+/tmp/BitmapBZierCurvesCubic.java:45: error: cannot find symbol
+        return new ColsRowsData(cols, rows, d);
+                   ^
+  symbol:   class ColsRowsData
+  location: class BitmapBZierCurvesCubic
+/tmp/BitmapBZierCurvesCubic.java:48: error: incompatible types: Map cannot be converted to String
+        int cols = Integer.parseInt(((Map)b.get("cols")));
+                                     ^
+/tmp/BitmapBZierCurvesCubic.java:49: error: incompatible types: Map cannot be converted to String
+        int rows = Integer.parseInt(((Map)b.get("rows")));
+                                     ^
+/tmp/BitmapBZierCurvesCubic.java:51: error: cannot find symbol
+            ((Map<?,?>)((Map)b.get("data")).y).put(x, p);
+                                           ^
+  symbol:   variable y
+  location: interface Map
+/tmp/BitmapBZierCurvesCubic.java:51: error: incompatible types: int cannot be converted to CAP#1
+            ((Map<?,?>)((Map)b.get("data")).y).put(x, p);
+                                                   ^
+  where CAP#1 is a fresh type-variable:
+    CAP#1 extends Object from capture of ?
+/tmp/BitmapBZierCurvesCubic.java:55: error: incompatible types: Map cannot be converted to String
+        int cols = Integer.parseInt(((Map)b.get("cols")));
+                                     ^
+/tmp/BitmapBZierCurvesCubic.java:56: error: incompatible types: Map cannot be converted to String
+        int rows = Integer.parseInt(((Map)b.get("rows")));
+                                     ^
+/tmp/BitmapBZierCurvesCubic.java:61: error: cannot find symbol
+                ((Map<?,?>)((Map)b.get("data")).y).put(x, p);
+                                               ^
+  symbol:   variable y
+  location: interface Map
+/tmp/BitmapBZierCurvesCubic.java:61: error: incompatible types: int cannot be converted to CAP#1
+                ((Map<?,?>)((Map)b.get("data")).y).put(x, p);
+                                                       ^
+  where CAP#1 is a fresh type-variable:
+    CAP#1 extends Object from capture of ?
+/tmp/BitmapBZierCurvesCubic.java:131: error: incompatible types: double cannot be converted to String
+            px.set(i, Integer.parseInt((a2 * fx1 + b2 * fx2 + c2 * fx3 + d2 * fx4)));
+                                                                       ^
+/tmp/BitmapBZierCurvesCubic.java:132: error: incompatible types: double cannot be converted to String
+            py.set(i, Integer.parseInt((a2 * fy1 + b2 * fy2 + c2 * fy3 + d2 * fy4)));
+                                                                       ^
+/tmp/BitmapBZierCurvesCubic.java:135: error: incompatible types: Integer cannot be converted to List<Integer>
+        List<Integer> x0 = px.get(0);
+                                 ^
+/tmp/BitmapBZierCurvesCubic.java:136: error: incompatible types: Integer cannot be converted to List<Integer>
+        List<Integer> y0 = py.get(0);
+                                 ^
+/tmp/BitmapBZierCurvesCubic.java:139: error: incompatible types: Integer cannot be converted to List<Integer>
+            List<Integer> x = px.get(i);
+                                    ^
+/tmp/BitmapBZierCurvesCubic.java:140: error: incompatible types: Integer cannot be converted to List<Integer>
+            List<Integer> y = py.get(i);
+                                    ^
+/tmp/BitmapBZierCurvesCubic.java:141: error: incompatible types: List<Integer> cannot be converted to int
+            line(b, x0, y0, x, y, p);
+                    ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+19 errors

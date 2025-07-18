@@ -1,0 +1,12 @@
+javac: exit status 1
+/tmp/AssociativeArrayMerging.java:17: error: cannot find symbol
+        Map<String,Object> base = new Base("Rocket Skates", 12.750000, "yellow");
+                                      ^
+  symbol:   class Base
+  location: class AssociativeArrayMerging
+/tmp/AssociativeArrayMerging.java:18: error: cannot find symbol
+        Map<String,Object> update = new Update(15.250000, "red", 1974);
+                                        ^
+  symbol:   class Update
+  location: class AssociativeArrayMerging
+2 errors

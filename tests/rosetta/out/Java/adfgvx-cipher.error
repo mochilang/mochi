@@ -1,0 +1,23 @@
+javac: exit status 1
+/tmp/AdfgvxCipher.java:92: error: illegal start of type
+            res = res + ((Number)Arrays.asList(Integer.parseInt(((?)((List)pairs.get(i)).get(1))))).doubleValue();
+                                                                  ^
+/tmp/AdfgvxCipher.java:92: error: illegal start of expression
+            res = res + ((Number)Arrays.asList(Integer.parseInt(((?)((List)pairs.get(i)).get(1))))).doubleValue();
+                                                                   ^
+/tmp/AdfgvxCipher.java:92: error: ')' or ',' expected
+            res = res + ((Number)Arrays.asList(Integer.parseInt(((?)((List)pairs.get(i)).get(1))))).doubleValue();
+                                                                    ^
+/tmp/AdfgvxCipher.java:92: error: not a statement
+            res = res + ((Number)Arrays.asList(Integer.parseInt(((?)((List)pairs.get(i)).get(1))))).doubleValue();
+                                                                      ^
+/tmp/AdfgvxCipher.java:92: error: ';' expected
+            res = res + ((Number)Arrays.asList(Integer.parseInt(((?)((List)pairs.get(i)).get(1))))).doubleValue();
+                                                                          ^
+/tmp/AdfgvxCipher.java:92: error: ';' expected
+            res = res + ((Number)Arrays.asList(Integer.parseInt(((?)((List)pairs.get(i)).get(1))))).doubleValue();
+                                                                                       ^
+/tmp/AdfgvxCipher.java:92: error: ';' expected
+            res = res + ((Number)Arrays.asList(Integer.parseInt(((?)((List)pairs.get(i)).get(1))))).doubleValue();
+                                                                                               ^
+7 errors

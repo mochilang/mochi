@@ -1,8 +1,14 @@
-type error: error[T007]: argument 2: expected int, got bigint
-  --> /workspace/mochi/tests/rosetta/x/Mochi/binary-strings.mochi:7:10
-
-  7 |   return substring(letters, idx, idx + 1)
-    |          ^
-
-help:
-  Ensure the argument type matches the function’s signature.
+javac: exit status 1
+/tmp/BinaryStrings.java:7: error: <identifier> expected
+    static String char(int n) {
+                 ^
+/tmp/BinaryStrings.java:7: error: <identifier> expected
+    static String char(int n) {
+                      ^
+/tmp/BinaryStrings.java:19: error: '.class' expected
+            s = s + ((Number)char(bs.get(i))).doubleValue();
+                                 ^
+/tmp/BinaryStrings.java:19: error: ';' expected
+            s = s + ((Number)char(bs.get(i))).doubleValue();
+                                           ^
+4 errors
