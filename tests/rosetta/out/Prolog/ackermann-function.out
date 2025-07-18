@@ -1,5 +1,4 @@
-ERROR: /tmp/ackermann-function.pl:5:22: Syntax error: Operator expected
-ERROR: /tmp/ackermann-function.pl:8:3: Syntax error: Illegal start of term
-ERROR: /tmp/ackermann-function.pl:14:3: Syntax error: Illegal start of term
-ERROR: /tmp/ackermann-function.pl:19:5: Syntax error: Operand expected, unquoted comma or bar found
-ERROR: /tmp/ackermann-function.pl:39:8: Syntax error: Operand expected, unquoted comma or bar found
+ERROR: /tmp/ackermann-function.pl:8:22: Syntax error: Operator expected
+ERROR: /tmp/ackermann-function.pl:11:3: Syntax error: Illegal start of term
+ERROR: /tmp/ackermann-function.pl:17:3: Syntax error: Illegal start of term
+ERROR: /tmp/ackermann-function.pl:38:23: Syntax error: Operator priority clash
