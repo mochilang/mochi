@@ -3,7 +3,7 @@
 This directory holds Lua source code generated from the Mochi programs in `tests/rosetta/x/Mochi`.
 Each program was compiled with the Lua backend and executed with `lua`. Successful runs have a matching `.out` file; failures have a `.error` file.
 
-Compiled programs: 10/216
+Compiled programs: 14/216
 
 Checklist:
 - [x] 100-doors-2
@@ -18,12 +18,12 @@ Checklist:
 - [ ] 24-game
 - [x] 4-rings-or-4-squares-puzzle
 - [x] 9-billion-names-of-god-the-integer
-- [ ] 99-bottles-of-beer-2
+- [x] 99-bottles-of-beer-2
 - [x] 99-bottles-of-beer
 - [ ] a+b
-- [ ] abbreviations-automatic
-- [ ] abbreviations-easy
-- [ ] abbreviations-simple
+- [x] abbreviations-automatic
+- [x] abbreviations-easy
+- [x] abbreviations-simple
 - [x] abc-problem
 - [ ] abelian-sandpile-model-identity
 - [ ] abelian-sandpile-model
