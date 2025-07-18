@@ -33,6 +33,7 @@ type Compiler struct {
 	maps            map[string]bool
 	anon            map[string]string
 	anonCnt         int
+	variants        map[string]string
 	usesJson        bool
 	usesYaml        bool
 	usesBreak       bool
@@ -84,6 +85,7 @@ func New() *Compiler {
 		groups:       make(map[string]bool),
 		maps:         make(map[string]bool),
 		anon:         make(map[string]string),
+		variants:     make(map[string]string),
 		usesJson:     false,
 		usesYaml:     false,
 		usesBreak:    false,
@@ -108,6 +110,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.maps = make(map[string]bool)
 	c.anon = make(map[string]string)
 	c.anonCnt = 0
+	c.variants = make(map[string]string)
 	c.usesJson = false
 	c.usesYaml = false
 	c.usesBreak = false
@@ -542,6 +545,11 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 }
 
 func (c *Compiler) compileFun(f *parser.FunStmt) error {
+	if f.Return != nil {
+		if t, err := c.compileType(f.Return); err == nil {
+			c.vars[f.Name] = t
+		}
+	}
 	params := make([]string, len(f.Params))
 	for i, p := range f.Params {
 		params[i] = fmt.Sprintf("(%s)", p.Name)
@@ -696,6 +704,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 			} else {
 				c.writeln("| " + v.Name + " of " + strings.Join(parts, " * "))
 			}
+			c.variants[v.Name] = t.Name
 		}
 		c.indent--
 		return nil
@@ -2415,6 +2424,9 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 				if _, ok := c.structs[p.Struct.Name]; ok {
 					return p.Struct.Name
 				}
+				if u, ok := c.variants[p.Struct.Name]; ok {
+					return u
+				}
 				return "obj"
 			}
 			names := make([]string, len(p.Struct.Fields))
@@ -2431,6 +2443,9 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 		}
 
 		if p.Call != nil {
+			if t, ok := c.vars[p.Call.Func]; ok && t != "" {
+				return t
+			}
 			switch p.Call.Func {
 			case "exists":
 				return "bool"
