@@ -874,6 +874,9 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 }
 
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
+	if folded, ok := c.foldSetOps(b); ok {
+		return folded, nil
+	}
 	left, err := c.compileUnary(b.Left)
 	if err != nil {
 		return "", err
@@ -1973,6 +1976,107 @@ func (c *Compiler) constListLenExpr(e *parser.Expr) (int, bool) {
 		return len(l.Elems), true
 	}
 	return 0, false
+}
+
+func (c *Compiler) foldSetOps(b *parser.BinaryExpr) (string, bool) {
+	if len(b.Right) == 0 {
+		return "", false
+	}
+	opType := b.Right[0].Op
+	if opType != "union" && opType != "union_all" && opType != "except" && opType != "intersect" {
+		return "", false
+	}
+	for _, op := range b.Right {
+		if op.Op != opType {
+			return "", false
+		}
+	}
+
+	if ints, ok := c.constIntListFromUnary(b.Left); ok {
+		res := append([]int(nil), ints...)
+		for _, op := range b.Right {
+			next, ok := c.constIntListFromPostfix(op.Right)
+			if !ok {
+				return "", false
+			}
+			switch opType {
+			case "union":
+				res = unionInts(res, next)
+			case "union_all":
+				res = append(res, next...)
+			case "except":
+				res = exceptInts(res, next)
+			case "intersect":
+				res = intersectInts(res, next)
+			}
+		}
+		return formatIntList(res), true
+	}
+
+	if bools, ok := c.constBoolListFromUnary(b.Left); ok {
+		res := append([]bool(nil), bools...)
+		for _, op := range b.Right {
+			next, ok := c.constBoolListFromPostfix(op.Right)
+			if !ok {
+				return "", false
+			}
+			switch opType {
+			case "union":
+				res = unionBools(res, next)
+			case "union_all":
+				res = append(res, next...)
+			case "except":
+				res = exceptBools(res, next)
+			case "intersect":
+				res = intersectBools(res, next)
+			}
+		}
+		return formatBoolList(res), true
+	}
+
+	if floats, ok := c.constFloatListFromUnary(b.Left); ok {
+		res := append([]float64(nil), floats...)
+		for _, op := range b.Right {
+			next, ok := c.constFloatListFromPostfix(op.Right)
+			if !ok {
+				return "", false
+			}
+			switch opType {
+			case "union":
+				res = unionFloats(res, next)
+			case "union_all":
+				res = append(res, next...)
+			case "except":
+				res = exceptFloats(res, next)
+			case "intersect":
+				res = intersectFloats(res, next)
+			}
+		}
+		return formatFloatList(res), true
+	}
+
+	if strs, ok := c.constStringListFromUnary(b.Left); ok {
+		res := append([]string(nil), strs...)
+		for _, op := range b.Right {
+			next, ok := c.constStringListFromPostfix(op.Right)
+			if !ok {
+				return "", false
+			}
+			switch opType {
+			case "union":
+				res = unionStrings(res, next)
+			case "union_all":
+				res = append(res, next...)
+			case "except":
+				res = exceptStrings(res, next)
+			case "intersect":
+				res = intersectStrings(res, next)
+			}
+		}
+		return formatStringList(res), true
+	}
+
+	return "", false
 }
 
 func (c *Compiler) constIntListFromUnary(u *parser.Unary) ([]int, bool) {

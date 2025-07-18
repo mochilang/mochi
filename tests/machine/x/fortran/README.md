@@ -2,10 +2,15 @@
 
 The Fortran backend compiles each Mochi program under `tests/vm/valid`. This directory stores the generated `.f90` source files and their runtime output. No `.error` files are present because all examples compile successfully.
 
-List literal lengths are now computed at compile time so programs using `len` or
-`count` on constant arrays avoid runtime helper code. List set operations like
-`union` and `except` with constant integer lists are also folded at compile time.
-Append operations on constant integer lists stored in variables are resolved during compilation as well. The compiler now folds `len` and `count` for any constant list, `len` for literal strings, and membership checks for literal strings or integers. Boolean and float lists are also propagated through variables so `len`, `count`, `append`, and set operations on them require no helper calls at runtime.
+List literal lengths are computed at compile time so programs using `len` or
+`count` on constant arrays avoid runtime helper code. Set operations such as
+`union` and `except` on constant lists are folded during compilation, even when
+they appear in a chain of operations. Append operations on constant integer
+lists stored in variables are resolved during compilation as well. The compiler
+now folds `len` and `count` for any constant list, `len` for literal strings,
+and membership checks for literal strings or integers. Boolean and float lists
+are also propagated through variables so `len`, `count`, `append`, and set
+operations on them require no helper calls at runtime.
 
 Compiled programs: 100/100
 
