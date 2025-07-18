@@ -637,6 +637,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", fmt.Errorf("str expects 1 arg")
 			}
 			return fmt.Sprintf("(number->string %s)", args[0]), nil
+		case "int":
+			if len(args) != 1 {
+				return "", fmt.Errorf("int expects 1 arg")
+			}
+			return fmt.Sprintf("(string->number %s)", args[0]), nil
 		case "input":
 			if len(args) != 0 {
 				return "", fmt.Errorf("input expects no arg")
@@ -1793,6 +1798,8 @@ func (c *Compiler) exprType(e *parser.Expr) string {
 			switch call.Func {
 			case "str":
 				return "string"
+			case "int":
+				return "int"
 			case "len", "count":
 				return "int"
 			case "avg":
