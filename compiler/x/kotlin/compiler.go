@@ -116,7 +116,7 @@ var runtimePieces = map[string]string{
         if (!f.isAbsolute) {
             if (!f.exists()) {
                 System.getenv("MOCHI_ROOT")?.let { root ->
-                    var clean = path
+                    var clean = path!!
                     while (clean.startsWith("../")) clean = clean.substring(3)
                     var cand = java.io.File(root + "/tests/" + clean)
                     if (!cand.exists()) cand = java.io.File(root + "/" + clean)
@@ -879,6 +879,8 @@ func kotlinZeroValue(t types.Type) string {
 		return fmt.Sprintf("mutableListOf<%s>()", kotlinTypeOf(tt.Elem))
 	case types.MapType:
 		return fmt.Sprintf("mutableMapOf<%s, %s>()", kotlinTypeOf(tt.Key), kotlinTypeOf(tt.Value))
+	case types.OptionType:
+		return "null"
 	case types.StructType:
 		fields := make([]string, len(tt.Order))
 		for i, f := range tt.Order {
@@ -1641,13 +1643,14 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	preSorted := false
 
 	child := types.NewEnv(c.env)
-	if lt, ok := types.TypeOfExprBasic(q.Source, c.env).(types.ListType); ok {
-		child.SetVar(q.Var, lt.Elem, true)
-	} else if gt, ok := types.TypeOfExprBasic(q.Source, c.env).(types.GroupType); ok {
-		child.SetVar(q.Var, gt.Elem, true)
-	} else {
-		child.SetVar(q.Var, types.AnyType{}, true)
+	srcType := types.TypeOfExprBasic(q.Source, c.env)
+	var leftElem types.Type
+	if lt, ok := srcType.(types.ListType); ok {
+		leftElem = lt.Elem
+	} else if gt, ok := srcType.(types.GroupType); ok {
+		leftElem = gt.Elem
 	}
+	child.SetVar(q.Var, leftElem, true)
 	for _, f := range q.Froms {
 		if lt, ok := types.TypeOfExprBasic(f.Src, c.env).(types.ListType); ok {
 			child.SetVar(f.Var, lt.Elem, true)
@@ -1658,12 +1661,30 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		}
 	}
 	for _, j := range q.Joins {
-		if lt, ok := types.TypeOfExprBasic(j.Src, c.env).(types.ListType); ok {
-			child.SetVar(j.Var, lt.Elem, true)
-		} else if gt, ok := types.TypeOfExprBasic(j.Src, c.env).(types.GroupType); ok {
-			child.SetVar(j.Var, gt.Elem, true)
+		jt := types.TypeOfExprBasic(j.Src, c.env)
+		var elemT types.Type
+		if lt, ok := jt.(types.ListType); ok {
+			elemT = lt.Elem
+		} else if gt, ok := jt.(types.GroupType); ok {
+			elemT = gt.Elem
+		}
+		if j.Side != nil {
+			switch *j.Side {
+			case "left":
+				child.SetVar(j.Var, types.OptionType{Elem: elemT}, true)
+			case "right":
+				child.SetVar(j.Var, elemT, true)
+				leftElem = types.OptionType{Elem: leftElem}
+				child.SetVar(q.Var, leftElem, true)
+			case "outer":
+				child.SetVar(j.Var, types.OptionType{Elem: elemT}, true)
+				leftElem = types.OptionType{Elem: leftElem}
+				child.SetVar(q.Var, leftElem, true)
+			default:
+				child.SetVar(j.Var, elemT, true)
+			}
 		} else {
-			child.SetVar(j.Var, types.AnyType{}, true)
+			child.SetVar(j.Var, elemT, true)
 		}
 	}
 	var elem types.Type
@@ -2127,7 +2148,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	if name, arg, ok := aggregateCallName(q.Select); ok && q.Group == nil {
 		switch name {
 		case "sum", "avg":
-			retType = types.FloatType{}
+			retType = types.AnyType{}
 			c.use(name)
 		case "count":
 			retType = types.IntType{}
@@ -2174,8 +2195,12 @@ func (c *Compiler) simpleRightOuterJoin(src string, q *parser.QueryExpr, j *pars
 	b.WriteString(indent(lvl))
 	b.WriteString(fmt.Sprintf("for (%s in %s) {\n", q.Var, src))
 	lvl++
+	tmpT, _ := c.env.GetVar(j.Var)
+	if ot, ok := tmpT.(types.OptionType); ok {
+		tmpT = ot.Elem
+	}
 	b.WriteString(indent(lvl))
-	b.WriteString("val __tmp = mutableListOf<Any?>()\n")
+	b.WriteString(fmt.Sprintf("val __tmp = mutableListOf<%s?>()\n", kotlinTypeOf(tmpT)))
 	b.WriteString(indent(lvl))
 	b.WriteString(fmt.Sprintf("for (%s in %s) {\n", j.Var, js))
 	lvl++
@@ -2260,8 +2285,12 @@ func (c *Compiler) simpleLeftOuterJoin(src string, q *parser.QueryExpr, j *parse
 	b.WriteString(indent(lvl))
 	b.WriteString(fmt.Sprintf("for (%s in %s) {\n", j.Var, js))
 	lvl++
+	tmpT, _ := c.env.GetVar(q.Var)
+	if ot, ok := tmpT.(types.OptionType); ok {
+		tmpT = ot.Elem
+	}
 	b.WriteString(indent(lvl))
-	b.WriteString("val __tmp = mutableListOf<Any?>()\n")
+	b.WriteString(fmt.Sprintf("val __tmp = mutableListOf<%s?>()\n", kotlinTypeOf(tmpT)))
 	b.WriteString(indent(lvl))
 	b.WriteString(fmt.Sprintf("for (%s in %s) {\n", q.Var, src))
 	lvl++
@@ -2468,12 +2497,15 @@ func (c *Compiler) queryRowStruct(q *parser.QueryExpr) (types.StructType, bool) 
 	fields := map[string]types.Type{}
 	order := []string{}
 
-	addField := func(name string, src *parser.Expr) {
+	addField := func(name string, src *parser.Expr, opt bool) {
 		t := c.inferExprType(src)
 		if lt, ok := t.(types.ListType); ok {
 			t = lt.Elem
 		} else if gt, ok := t.(types.GroupType); ok {
 			t = gt.Elem
+		}
+		if opt {
+			t = types.OptionType{Elem: t}
 		}
 		fields[name] = t
 		order = append(order, name)
@@ -2482,18 +2514,33 @@ func (c *Compiler) queryRowStruct(q *parser.QueryExpr) (types.StructType, bool) 
 	if !identRE.MatchString(q.Var) {
 		return types.StructType{}, false
 	}
-	addField(q.Var, q.Source)
+	optLeft := false
+	for _, j := range q.Joins {
+		if j.Side != nil {
+			if *j.Side == "right" || *j.Side == "outer" {
+				optLeft = true
+				break
+			}
+		}
+	}
+	addField(q.Var, q.Source, optLeft)
 	for _, f := range q.Froms {
 		if !identRE.MatchString(f.Var) {
 			return types.StructType{}, false
 		}
-		addField(f.Var, f.Src)
+		addField(f.Var, f.Src, false)
 	}
 	for _, j := range q.Joins {
 		if !identRE.MatchString(j.Var) {
 			return types.StructType{}, false
 		}
-		addField(j.Var, j.Src)
+		opt := false
+		if j.Side != nil {
+			if *j.Side == "left" || *j.Side == "outer" {
+				opt = true
+			}
+		}
+		addField(j.Var, j.Src, opt)
 	}
 
 	name := fmt.Sprintf("Row%d", c.structCount)
@@ -2835,6 +2882,8 @@ func kotlinTypeOf(t types.Type) string {
 		return fmt.Sprintf("MutableList<%s>", kotlinTypeOf(tt.Elem))
 	case types.MapType:
 		return fmt.Sprintf("MutableMap<%s, %s>", kotlinTypeOf(tt.Key), kotlinTypeOf(tt.Value))
+	case types.OptionType:
+		return kotlinTypeOf(tt.Elem) + "?"
 	case types.StructType:
 		if tt.Name == "" {
 			return "Any?"
