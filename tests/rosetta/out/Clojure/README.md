@@ -1,4 +1,4 @@
-# Rosetta Clojure Output (4/238 compiled and run)
+# Rosetta Clojure Output (6/238 compiled and run)
 
 This directory holds Clojure source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected runtime output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -140,8 +140,8 @@ This directory holds Clojure source code generated from the real Mochi programs 
 - [ ] break-oo-privacy
 - [ ] brilliant-numbers
 - [ ] brownian-tree
-- [ ] bulls-and-cows-player
-- [ ] bulls-and-cows
+- [x] bulls-and-cows-player
+- [x] bulls-and-cows
 - [ ] burrows-wheeler-transform
 - [ ] caesar-cipher-1
 - [ ] caesar-cipher-2

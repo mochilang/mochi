@@ -30,7 +30,7 @@ var mochiLexer = lexer.MustSimple([]lexer.SimpleRule{
 	{Name: "Float", Pattern: `\d+\.\d+`},
 	{Name: "Int", Pattern: `\d+`},
 	{Name: "String", Pattern: `"(?:\\.|[^"])*"`},
-	{Name: "Punct", Pattern: `==|!=|<=|>=|&&|\|\||=>|:-|\.\.|[-+*/%=<>!|{}\[\](),.:]`},
+	{Name: "Punct", Pattern: `==|!=|<=|>=|&&|\|\||=>|:-|\.\.|[-+*/%=<>!|{}\[\](),.;:]`},
 	{Name: "Whitespace", Pattern: `[ \t\n\r]+`},
 })
 
@@ -80,7 +80,7 @@ type Statement struct {
 type TestBlock struct {
 	Pos  lexer.Position
 	Name string       `parser:"'test' @String"`
-	Body []*Statement `parser:"'{' @@* '}'"`
+	Body []*Statement `parser:"'{' [ @@ { ';'? @@ } [ ';' ]? ] '}'"`
 }
 
 type ExpectStmt struct {
@@ -93,9 +93,9 @@ type ExpectStmt struct {
 type IfStmt struct {
 	Pos    lexer.Position
 	Cond   *Expr        `parser:"'if' @@"`
-	Then   []*Statement `parser:"'{' @@* '}'"`
+	Then   []*Statement `parser:"'{' [ @@ { ';'? @@ } [ ';' ]? ] '}'"`
 	ElseIf *IfStmt      `parser:"[ 'else' @@"`
-	Else   []*Statement `parser:"| 'else' '{' @@* '}' ]"`
+	Else   []*Statement `parser:"| 'else' '{' [ @@ { ';'? @@ } [ ';' ]? ] '}' ]"`
 }
 
 // --- While Statement ---
@@ -103,7 +103,7 @@ type IfStmt struct {
 type WhileStmt struct {
 	Pos  lexer.Position
 	Cond *Expr        `parser:"'while' @@"`
-	Body []*Statement `parser:"'{' @@* '}'"`
+	Body []*Statement `parser:"'{' [ @@ { ';'? @@ } [ ';' ]? ] '}'"`
 }
 
 // --- For Statement ---
@@ -113,7 +113,7 @@ type ForStmt struct {
 	Name     string       `parser:"'for' @Ident 'in'"`
 	Source   *Expr        `parser:"@@"`          // expression to iterate
 	RangeEnd *Expr        `parser:"[ '..' @@ ]"` // optional range end
-	Body     []*Statement `parser:"'{' @@* '}'"`
+	Body     []*Statement `parser:"'{' [ @@ { ';'? @@ } [ ';' ]? ] '}'"`
 }
 
 // --- User-defined Types ---
@@ -200,7 +200,7 @@ type FunStmt struct {
 	Doc    string
 	Params []*Param     `parser:"'(' [ @@ { ',' @@ } ] ')'"`
 	Return *TypeRef     `parser:"[ ':' @@ ]"`
-	Body   []*Statement `parser:"'{' @@* '}'"`
+	Body   []*Statement `parser:"'{' [ @@ { ';'? @@ } [ ';' ]? ] '}'"`
 }
 
 type ReturnStmt struct {
@@ -516,7 +516,7 @@ type FunExpr struct {
 	Params    []*Param     `parser:"'fun' '(' [ @@ { ',' @@ } ] ')'"`
 	Return    *TypeRef     `parser:"[ ':' @@ ]"`
 	ExprBody  *Expr        `parser:"'=>' @@"`
-	BlockBody []*Statement `parser:"| '{' @@* '}'"`
+	BlockBody []*Statement `parser:"| '{' [ @@ { ';'? @@ } [ ';' ]? ] '}'"`
 }
 
 // --- Atoms ---
