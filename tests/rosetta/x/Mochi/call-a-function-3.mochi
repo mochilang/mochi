@@ -1,4 +1,15 @@
-include "./call-a-function-1.mochi"
+// Inline definitions from call-a-function-1
+fun f(): list<any> {
+  return [0, 0.0]
+}
+
+fun g(a: int, b: float): int {
+  return 0
+}
+
+fun h(s: string, nums: list<int>) {
+  // variadic parameters simulated with list
+}
 
 fun main() {
   h("ex1", [])
