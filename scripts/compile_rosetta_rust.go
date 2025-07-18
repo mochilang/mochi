@@ -82,13 +82,19 @@ func main() {
 			fmt.Fprintln(os.Stderr, "write code", name, err)
 			continue
 		}
-		tmp := filepath.Join(os.TempDir(), name+".rs")
+		safe := strings.Map(func(r rune) rune {
+			if r >= 'a' && r <= 'z' || r >= 'A' && r <= 'Z' || r >= '0' && r <= '9' || r == '_' {
+				return r
+			}
+			return '_'
+		}, name)
+		tmp := filepath.Join(os.TempDir(), safe+".rs")
 		if err := os.WriteFile(tmp, code, 0o644); err != nil {
 			writeError(outDir, name, fmt.Sprintf("tmp write: %v", err))
 			os.Remove(filepath.Join(outDir, name+".out"))
 			continue
 		}
-		bin := filepath.Join(os.TempDir(), name)
+		bin := filepath.Join(os.TempDir(), safe)
 		if out, err := exec.Command("rustc", tmp, "-O", "-o", bin).CombinedOutput(); err != nil {
 			writeError(outDir, name, fmt.Sprintf("rustc: %v\n%s", err, out))
 			os.Remove(filepath.Join(outDir, name+".out"))
