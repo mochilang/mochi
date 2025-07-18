@@ -1789,6 +1789,8 @@ func swiftTypeOf(t string) string {
 		return "[String:Any]"
 	case "list":
 		return "[Any]"
+	case "any":
+		return "Any"
 	}
 	if strings.HasPrefix(t, "list_") {
 		et := swiftTypeOf(strings.TrimPrefix(t, "list_"))
