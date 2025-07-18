@@ -1,6 +1,0 @@
-run: exit status 1
-# command-line-arguments
-/tmp/X/001/main.go:37:14: cannot use append(_toAnySlice(drawers), any(i)) (value of type []any) as []int value in assignment
-/tmp/X/001/main.go:61:15: cannot use append(_toAnySlice(opened), any(false)) (value of type []any) as []bool value in assignment
-/tmp/X/001/main.go:104:6: main redeclared in this block
-	/tmp/X/001/main.go:94:6: other declaration of main
