@@ -38,7 +38,7 @@ func runRosettaTaskGolden(t *testing.T, name string) {
 	_ = cc
 	root := repoRootRosetta(t)
 	script := exec.Command("go", "run", "-tags=archive,slow", "./scripts/compile_rosetta_c.go")
-	script.Env = append(os.Environ(), "GOTOOLCHAIN=local", "TASKS="+name)
+	script.Env = append(os.Environ(), "GOTOOLCHAIN=local", "MOCHI_NOW_SEED=1", "TASKS="+name)
 	script.Dir = root
 	if out, err := script.CombinedOutput(); err != nil {
 		t.Fatalf("compile script error: %v\n%s", err, out)
@@ -84,7 +84,9 @@ func runRosettaTaskGolden(t *testing.T, name string) {
 		t.Skipf("cc error: %v\n%s", err, out)
 		return
 	}
-	outBytes, err := exec.Command(bin).CombinedOutput()
+	cmd := exec.Command(bin)
+	cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
+	outBytes, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Skipf("run error: %v\n%s", err, outBytes)
 		return
@@ -109,7 +111,7 @@ func TestCCompiler_Rosetta_Golden(t *testing.T) {
 	if err != nil {
 		t.Fatalf("glob: %v", err)
 	}
-	max := 3
+	max := 10
 	if len(files) < max {
 		max = len(files)
 	}

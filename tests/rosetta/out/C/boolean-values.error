@@ -7,6 +7,6 @@ cc: exit status 1
 /tmp/boolean-values.c:9:47: warning: comparison between pointer and integer
     9 |   if (((strcmp(l, "1") == 0) || l == "t" || l == 1 || l == "yes" || l == "y")) {
       |                                               ^~
-/usr/bin/ld: /tmp/ccbRZBxC.o: in function `parseBool':
+/usr/bin/ld: /tmp/ccbec5R2.o: in function `parseBool':
 boolean-values.c:(.text+0x1d): undefined reference to `lower'
 collect2: error: ld returned 1 exit status

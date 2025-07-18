@@ -23,7 +23,7 @@ cc: exit status 1
    16 |   int a = _int(_input());
       |           ^~~~
       |           _input
-/usr/bin/ld: /tmp/cceqVB8u.o: in function `mochi_main':
+/usr/bin/ld: /tmp/ccR0SLoD.o: in function `mochi_main':
 a+b.c:(.text+0xdd): undefined reference to `_int'
 /usr/bin/ld: a+b.c:(.text+0xf7): undefined reference to `_int'
 collect2: error: ld returned 1 exit status
