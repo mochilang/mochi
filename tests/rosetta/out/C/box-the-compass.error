@@ -1,6 +1,0 @@
-cc: exit status 1
-/tmp/box-the-compass.c: In function ‘degrees2compasspoint’:
-/tmp/box-the-compass.c:138:47: error: ‘compassPoint’ undeclared (first use in this function)
-  138 | char *degrees2compasspoint(double h) { return compassPoint.data[cpx(h)]; }
-      |                                               ^~~~~~~~~~~~
-/tmp/box-the-compass.c:138:47: note: each undeclared identifier is reported only once for each function it appears in

@@ -39,17 +39,15 @@ cc: exit status 1
 /tmp/averages-arithmetic-mean.c:58:23: note: expected ‘int’ but argument is of type ‘list_int’
    58 | static char *_str(int v) {
       |                   ~~~~^
-/tmp/averages-arithmetic-mean.c:163:18: error: incompatible type for argument 1 of ‘mean’
-  163 |     int r = mean(v);
-      |                  ^
-      |                  |
-      |                  list_int
+/tmp/averages-arithmetic-mean.c:163:26: error: incompatible type for argument 1 of ‘mean’
+  163 |     __auto_type r = mean(v);
+      |                          ^
+      |                          |
+      |                          list_int
 /tmp/averages-arithmetic-mean.c:100:21: note: expected ‘list_float’ but argument is of type ‘list_int’
   100 | int mean(list_float v) {
       |          ~~~~~~~~~~~^
-/tmp/averages-arithmetic-mean.c:164:11: error: request for member ‘data’ in something not a structure or union
+/tmp/averages-arithmetic-mean.c:164:10: error: ‘r’ undeclared (first use in this function)
   164 |     if ((r.data["ok"])) {
-      |           ^
-/tmp/averages-arithmetic-mean.c:168:27: error: request for member ‘data’ in something not a structure or union
-  168 |       char *tmp10 = _str(r.data["mean"]);
-      |                           ^
+      |          ^
+/tmp/averages-arithmetic-mean.c:164:10: note: each undeclared identifier is reported only once for each function it appears in

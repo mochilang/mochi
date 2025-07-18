@@ -4,24 +4,15 @@ cc: exit status 1
    92 |       result = 0;
       |                ^
 /tmp/boyer-moore-string-search.c: In function ‘mochi_main’:
-/tmp/boyer-moore-string-search.c:144:26: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  144 |     printf("%d\n", tmp10 + texts.data[i]);
-      |                          ^ ~~~~~~~~~~~~~
-      |                                      |
-      |                                      char *
-/tmp/boyer-moore-string-search.c:150:16: error: incompatible types when initializing type ‘int’ using type ‘list_int’
-  150 |     int idxs = stringSearch(texts.data[j], patterns.data[j]);
-      |                ^~~~~~~~~~~~
-/tmp/boyer-moore-string-search.c:153:31: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  153 |     printf("%d\n", "Found \"" + patterns.data[j] + "\" in 'text" + tmp12 +
-      |                    ~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~
-      |                    |                         |
-      |                    char *                    char *
-/tmp/boyer-moore-string-search.c:154:50: error: incompatible type for argument 1 of ‘display’
-  154 |                        "' at indexes " + display(idxs));
-      |                                                  ^~~~
-      |                                                  |
-      |                                                  int
-/tmp/boyer-moore-string-search.c:101:24: note: expected ‘list_int’ but argument is of type ‘int’
-  101 | char *display(list_int nums) {
-      |               ~~~~~~~~~^~~~
+/tmp/boyer-moore-string-search.c:146:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
+  146 |     printf("%d\n", tmp12);
+      |             ~^     ~~~~~
+      |              |     |
+      |              int   char *
+      |             %s
+/tmp/boyer-moore-string-search.c:165:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
+  165 |     printf("%d\n", tmp24);
+      |             ~^     ~~~~~
+      |              |     |
+      |              int   char *
+      |             %s

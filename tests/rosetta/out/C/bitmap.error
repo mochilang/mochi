@@ -40,12 +40,12 @@ cc: exit status 1
       |     ^~~~
 /tmp/bitmap.c:187:5: note: each undeclared identifier is reported only once for each function it appears in
 /tmp/bitmap.c: In function ‘Fill’:
-/tmp/bitmap.c:206:28: error: request for member ‘data’ in something not a structure or union
-  206 |       pixel_list_t row = px.data[y];
-      |                            ^
-/tmp/bitmap.c:207:21: error: incompatible types when assigning to type ‘pixel_t’ {aka ‘struct pixel_t’} from type ‘pixel_t *’ {aka ‘struct pixel_t *’}
+/tmp/bitmap.c:206:27: error: request for member ‘data’ in something not a structure or union
+  206 |       __auto_type row = px.data[y];
+      |                           ^
+/tmp/bitmap.c:207:7: error: ‘row’ undeclared (first use in this function)
   207 |       row.data[x] = p;
-      |                     ^
+      |       ^~~
 /tmp/bitmap.c:208:9: error: request for member ‘data’ in something not a structure or union
   208 |       px.data[y] = row;
       |         ^
@@ -62,12 +62,12 @@ cc: exit status 1
   200 | int Fill(bitmap_t *b, pixel_t *p) {
       |          ~~~~~~~~~~^
 /tmp/bitmap.c: In function ‘SetPx’:
-/tmp/bitmap.c:223:24: error: request for member ‘data’ in something not a structure or union
-  223 |   pixel_list_t row = px.data[y];
-      |                        ^
-/tmp/bitmap.c:224:17: error: incompatible types when assigning to type ‘pixel_t’ {aka ‘struct pixel_t’} from type ‘pixel_t *’ {aka ‘struct pixel_t *’}
+/tmp/bitmap.c:223:23: error: request for member ‘data’ in something not a structure or union
+  223 |   __auto_type row = px.data[y];
+      |                       ^
+/tmp/bitmap.c:224:3: error: ‘row’ undeclared (first use in this function)
   224 |   row.data[x] = p;
-      |                 ^
+      |   ^~~
 /tmp/bitmap.c:225:5: error: request for member ‘data’ in something not a structure or union
   225 |   px.data[y] = row;
       |     ^
@@ -87,15 +87,18 @@ cc: exit status 1
 /tmp/bitmap.c:236:12: error: incompatible types when returning type ‘tmp_item_t’ but ‘int’ was expected
   236 |     return (tmp_item_t){.ok = 0};
       |            ^
-/tmp/bitmap.c:238:27: error: request for member ‘data’ in something not a structure or union
-  238 |   pixel_list_t row = b->px.data[y];
-      |                           ^
+/tmp/bitmap.c:238:26: error: request for member ‘data’ in something not a structure or union
+  238 |   __auto_type row = b->px.data[y];
+      |                          ^
+/tmp/bitmap.c:239:42: error: ‘row’ undeclared (first use in this function)
+  239 |   return (tmp_item1_t){.ok = 1, .pixel = row.data[x]};
+      |                                          ^~~
 /tmp/bitmap.c: In function ‘GetPxRgb’:
-/tmp/bitmap.c:243:17: warning: passing argument 1 of ‘GetPx’ from incompatible pointer type [-Wincompatible-pointer-types]
-  243 |   int r = GetPx(&b, x, y);
-      |                 ^~
-      |                 |
-      |                 bitmap_t ** {aka struct bitmap_t **}
+/tmp/bitmap.c:243:25: warning: passing argument 1 of ‘GetPx’ from incompatible pointer type [-Wincompatible-pointer-types]
+  243 |   __auto_type r = GetPx(&b, x, y);
+      |                         ^~
+      |                         |
+      |                         bitmap_t ** {aka struct bitmap_t **}
 /tmp/bitmap.c:234:21: note: expected ‘bitmap_t *’ {aka ‘struct bitmap_t *’} but argument is of type ‘bitmap_t **’ {aka ‘struct bitmap_t **’}
   234 | int GetPx(bitmap_t *b, int x, int y) {
       |           ~~~~~~~~~~^
@@ -137,15 +140,18 @@ cc: exit status 1
 /tmp/bitmap.c:301:10: error: request for member ‘ok’ in something not a structure or union
   301 |   if ((c3.ok)) {
       |          ^
-/tmp/bitmap.c:302:15: error: request for member ‘pixel’ in something not a structure or union
-  302 |     int p = c3.pixel;
-      |               ^
-/tmp/bitmap.c:303:16: error: request for member ‘r’ in something not a structure or union
-  303 |     int r16 = p.r * 257;
-      |                ^
-/tmp/bitmap.c:304:16: error: request for member ‘g’ in something not a structure or union
-  304 |     int g16 = p.g * 257;
-      |                ^
-/tmp/bitmap.c:305:16: error: request for member ‘b’ in something not a structure or union
-  305 |     int b16 = p.b * 257;
-      |                ^
+/tmp/bitmap.c:302:23: error: request for member ‘pixel’ in something not a structure or union
+  302 |     __auto_type p = c3.pixel;
+      |                       ^
+/tmp/bitmap.c:303:23: error: ‘p’ undeclared (first use in this function)
+  303 |     __auto_type r16 = p.r * 257;
+      |                       ^
+/tmp/bitmap.c:306:24: error: ‘r16’ undeclared (first use in this function)
+  306 |     char *tmp28 = _str(r16);
+      |                        ^~~
+/tmp/bitmap.c:309:24: error: ‘g16’ undeclared (first use in this function)
+  309 |     char *tmp31 = _str(g16);
+      |                        ^~~
+/tmp/bitmap.c:312:24: error: ‘b16’ undeclared (first use in this function)
+  312 |     char *tmp34 = _str(b16);
+      |                        ^~~

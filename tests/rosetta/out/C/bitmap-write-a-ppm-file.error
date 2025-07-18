@@ -12,12 +12,13 @@ cc: exit status 1
       |     row
 /tmp/bitmap-write-a-ppm-file.c:79:5: note: each undeclared identifier is reported only once for each function it appears in
 /tmp/bitmap-write-a-ppm-file.c: In function ‘setPixel’:
-/tmp/bitmap-write-a-ppm-file.c:87:27: error: request for member ‘data’ in something not a structure or union
-   87 |   colour_list_t row = rows.data[y];
-      |                           ^
-/tmp/bitmap-write-a-ppm-file.c:88:17: error: incompatible types when assigning to type ‘colour_t’ {aka ‘struct colour_t’} from type ‘colour_t *’ {aka ‘struct colour_t *’}
+/tmp/bitmap-write-a-ppm-file.c:87:25: error: request for member ‘data’ in something not a structure or union
+   87 |   __auto_type row = rows.data[y];
+      |                         ^
+/tmp/bitmap-write-a-ppm-file.c:88:3: error: ‘row’ undeclared (first use in this function); did you mean ‘rows’?
    88 |   row.data[x] = c;
-      |                 ^
+      |   ^~~
+      |   rows
 /tmp/bitmap-write-a-ppm-file.c:89:7: error: request for member ‘data’ in something not a structure or union
    89 |   rows.data[y] = row;
       |       ^
@@ -39,58 +40,34 @@ cc: exit status 1
    85 | int setPixel(bitmap_t *b, int x, int y, colour_t *c) {
       |                                         ~~~~~~~~~~^
 /tmp/bitmap-write-a-ppm-file.c: In function ‘writePPMP3’:
-/tmp/bitmap-write-a-ppm-file.c:121:29: error: request for member ‘data’ in something not a structure or union
-  121 |       colour_t p = b->pixels.data[y].data[x];
-      |                             ^
-/tmp/bitmap-write-a-ppm-file.c:122:12: error: ‘colour_t’ {aka ‘struct colour_t’} has no member named ‘r’
+/tmp/bitmap-write-a-ppm-file.c:121:32: error: request for member ‘data’ in something not a structure or union
+  121 |       __auto_type p = b->pixels.data[y].data[x];
+      |                                ^
+/tmp/bitmap-write-a-ppm-file.c:122:11: error: ‘p’ undeclared (first use in this function)
   122 |       if (p.r > maxv) {
-      |            ^
-/tmp/bitmap-write-a-ppm-file.c:123:17: error: ‘colour_t’ {aka ‘struct colour_t’} has no member named ‘r’
-  123 |         maxv = p.r;
-      |                 ^
-/tmp/bitmap-write-a-ppm-file.c:125:12: error: ‘colour_t’ {aka ‘struct colour_t’} has no member named ‘g’
-  125 |       if (p.g > maxv) {
-      |            ^
-/tmp/bitmap-write-a-ppm-file.c:126:17: error: ‘colour_t’ {aka ‘struct colour_t’} has no member named ‘g’
-  126 |         maxv = p.g;
-      |                 ^
-/tmp/bitmap-write-a-ppm-file.c:128:12: error: ‘colour_t’ {aka ‘struct colour_t’} has no member named ‘b’
-  128 |       if (p.b > maxv) {
-      |            ^
-/tmp/bitmap-write-a-ppm-file.c:129:17: error: ‘colour_t’ {aka ‘struct colour_t’} has no member named ‘b’
-  129 |         maxv = p.b;
-      |                 ^
-/tmp/bitmap-write-a-ppm-file.c:152:29: error: request for member ‘data’ in something not a structure or union
-  152 |       colour_t p = b->pixels.data[y].data[x];
-      |                             ^
-/tmp/bitmap-write-a-ppm-file.c:154:47: error: ‘colour_t’ {aka ‘struct colour_t’} has no member named ‘r’
-  154 |       char *tmp16 = concat_string(tmp15, pad(p.r, numsize));
-      |                                               ^
-/tmp/bitmap-write-a-ppm-file.c:156:47: error: ‘colour_t’ {aka ‘struct colour_t’} has no member named ‘g’
-  156 |       char *tmp18 = concat_string(tmp17, pad(p.g, numsize));
-      |                                               ^
-/tmp/bitmap-write-a-ppm-file.c:158:47: error: ‘colour_t’ {aka ‘struct colour_t’} has no member named ‘b’
-  158 |       char *tmp20 = concat_string(tmp19, pad(p.b, numsize));
-      |                                               ^
+      |           ^
+/tmp/bitmap-write-a-ppm-file.c:152:32: error: request for member ‘data’ in something not a structure or union
+  152 |       __auto_type p = b->pixels.data[y].data[x];
+      |                                ^
 /tmp/bitmap-write-a-ppm-file.c: In function ‘mochi_main’:
-/tmp/bitmap-write-a-ppm-file.c:177:32: error: ‘colour_t’ {aka ‘struct colour_t’} has no member named ‘r’
-  177 |   colour_t black = (colour_t){.r = 0, .g = 0, .b = 0};
-      |                                ^
-/tmp/bitmap-write-a-ppm-file.c:177:40: error: ‘colour_t’ {aka ‘struct colour_t’} has no member named ‘g’
-  177 |   colour_t black = (colour_t){.r = 0, .g = 0, .b = 0};
-      |                                        ^
-/tmp/bitmap-write-a-ppm-file.c:177:48: error: ‘colour_t’ {aka ‘struct colour_t’} has no member named ‘b’
-  177 |   colour_t black = (colour_t){.r = 0, .g = 0, .b = 0};
-      |                                                ^
-/tmp/bitmap-write-a-ppm-file.c:178:32: error: ‘colour_t’ {aka ‘struct colour_t’} has no member named ‘r’
-  178 |   colour_t white = (colour_t){.r = 255, .g = 255, .b = 255};
-      |                                ^
-/tmp/bitmap-write-a-ppm-file.c:178:42: error: ‘colour_t’ {aka ‘struct colour_t’} has no member named ‘g’
-  178 |   colour_t white = (colour_t){.r = 255, .g = 255, .b = 255};
-      |                                          ^
-/tmp/bitmap-write-a-ppm-file.c:178:52: error: ‘colour_t’ {aka ‘struct colour_t’} has no member named ‘b’
-  178 |   colour_t white = (colour_t){.r = 255, .g = 255, .b = 255};
-      |                                                    ^
+/tmp/bitmap-write-a-ppm-file.c:177:35: error: ‘colour_t’ {aka ‘struct colour_t’} has no member named ‘r’
+  177 |   __auto_type black = (colour_t){.r = 0, .g = 0, .b = 0};
+      |                                   ^
+/tmp/bitmap-write-a-ppm-file.c:177:43: error: ‘colour_t’ {aka ‘struct colour_t’} has no member named ‘g’
+  177 |   __auto_type black = (colour_t){.r = 0, .g = 0, .b = 0};
+      |                                           ^
+/tmp/bitmap-write-a-ppm-file.c:177:51: error: ‘colour_t’ {aka ‘struct colour_t’} has no member named ‘b’
+  177 |   __auto_type black = (colour_t){.r = 0, .g = 0, .b = 0};
+      |                                                   ^
+/tmp/bitmap-write-a-ppm-file.c:178:35: error: ‘colour_t’ {aka ‘struct colour_t’} has no member named ‘r’
+  178 |   __auto_type white = (colour_t){.r = 255, .g = 255, .b = 255};
+      |                                   ^
+/tmp/bitmap-write-a-ppm-file.c:178:45: error: ‘colour_t’ {aka ‘struct colour_t’} has no member named ‘g’
+  178 |   __auto_type white = (colour_t){.r = 255, .g = 255, .b = 255};
+      |                                             ^
+/tmp/bitmap-write-a-ppm-file.c:178:55: error: ‘colour_t’ {aka ‘struct colour_t’} has no member named ‘b’
+  178 |   __auto_type white = (colour_t){.r = 255, .g = 255, .b = 255};
+      |                                                       ^
 /tmp/bitmap-write-a-ppm-file.c:181:36: error: ‘colour_t’ {aka ‘struct colour_t’} has no member named ‘r’
   181 |   setPixel(&bm, 3, 3, &(colour_t){.r = 127, .g = 0, .b = 63});
       |                                    ^

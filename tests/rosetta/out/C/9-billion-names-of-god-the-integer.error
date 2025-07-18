@@ -27,9 +27,14 @@ cc: exit status 1
 /tmp/9-billion-names-of-god-the-integer.c:189:17: note: previous definition of ‘cache’ with type ‘list_list_int’
   189 |   list_list_int cache = {1, cache_data};
       |                 ^~~~~
-/tmp/9-billion-names-of-god-the-integer.c:198:22: error: invalid initializer
-  198 |       list_int val = cache.data[y - x].data[minInt(x, y - x)];
-      |                      ^~~~~
+/tmp/9-billion-names-of-god-the-integer.c:200:52: error: incompatible type for argument 2 of ‘bigAdd’
+  200 |       tmp5.data[0] = bigAdd(row.data[row.len - 1], val);
+      |                                                    ^~~
+      |                                                    |
+      |                                                    int
+/tmp/9-billion-names-of-god-the-integer.c:123:38: note: expected ‘list_int’ but argument is of type ‘int’
+  123 | list_int bigAdd(list_int a, list_int b) {
+      |                             ~~~~~~~~~^
 /tmp/9-billion-names-of-god-the-integer.c:205:13: error: incompatible types when assigning to type ‘list_list_int’ from type ‘int’
   205 |     cache = 0;
       |             ^
@@ -37,29 +42,20 @@ cc: exit status 1
   208 |   return cache.data[n];
       |          ~~~~~~~~~~^~~
 /tmp/9-billion-names-of-god-the-integer.c: In function ‘_mochi_main’:
-/tmp/9-billion-names-of-god-the-integer.c:250:13: error: incompatible types when initializing type ‘int’ using type ‘list_list_int’
-  250 |     int r = cumu(num);
-      |             ^~~~
-/tmp/9-billion-names-of-god-the-integer.c:253:53: error: request for member ‘data’ in something not a structure or union
-  253 |     char *tmp16 = concat_string(tmp15, bigToString(r.data[_count(r) - 1]));
-      |                                                     ^
 /tmp/9-billion-names-of-god-the-integer.c:253:66: error: incompatible type for argument 1 of ‘_count’
   253 |     char *tmp16 = concat_string(tmp15, bigToString(r.data[_count(r) - 1]));
       |                                                                  ^
       |                                                                  |
-      |                                                                  int
-/tmp/9-billion-names-of-god-the-integer.c:74:28: note: expected ‘list_int’ but argument is of type ‘int’
+      |                                                                  list_list_int
+/tmp/9-billion-names-of-god-the-integer.c:74:28: note: expected ‘list_int’ but argument is of type ‘list_list_int’
    74 | static int _count(list_int v) { return v.len; }
       |                   ~~~~~~~~~^
-/tmp/9-billion-names-of-god-the-integer.c:256:53: error: request for member ‘data’ in something not a structure or union
-  256 |     char *tmp19 = concat_string(tmp18, bigToString(r.data[_count(r) - 1]));
-      |                                                     ^
 /tmp/9-billion-names-of-god-the-integer.c:256:66: error: incompatible type for argument 1 of ‘_count’
   256 |     char *tmp19 = concat_string(tmp18, bigToString(r.data[_count(r) - 1]));
       |                                                                  ^
       |                                                                  |
-      |                                                                  int
-/tmp/9-billion-names-of-god-the-integer.c:74:28: note: expected ‘list_int’ but argument is of type ‘int’
+      |                                                                  list_list_int
+/tmp/9-billion-names-of-god-the-integer.c:74:28: note: expected ‘list_int’ but argument is of type ‘list_list_int’
    74 | static int _count(list_int v) { return v.len; }
       |                   ~~~~~~~~~^
 /tmp/9-billion-names-of-god-the-integer.c:257:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]

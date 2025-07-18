@@ -10,15 +10,22 @@ cc: exit status 1
 /tmp/24-game-solve.c:185:18: error: array subscript is not an integer
   185 |     return x.data["value"];
       |                  ^
-/tmp/24-game-solve.c:187:37: error: array subscript is not an integer
-  187 |   map_string_int l = exprEval(x.data["left"]);
-      |                                     ^
-/tmp/24-game-solve.c:188:37: error: array subscript is not an integer
-  188 |   map_string_int r = exprEval(x.data["right"]);
-      |                                     ^
+/tmp/24-game-solve.c:187:34: error: array subscript is not an integer
+  187 |   __auto_type l = exprEval(x.data["left"]);
+      |                                  ^
+/tmp/24-game-solve.c:188:34: error: array subscript is not an integer
+  188 |   __auto_type r = exprEval(x.data["right"]);
+      |                                  ^
 /tmp/24-game-solve.c:189:14: error: array subscript is not an integer
   189 |   if ((x.data["op"] == OP_ADD)) {
       |              ^
+/tmp/24-game-solve.c:193:28: error: ‘l’ undeclared (first use in this function)
+  193 |         map_string_int_get(l, "num") * map_string_int_get(r, "denom") +
+      |                            ^
+/tmp/24-game-solve.c:193:28: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/24-game-solve.c:193:59: error: ‘r’ undeclared (first use in this function)
+  193 |         map_string_int_get(l, "num") * map_string_int_get(r, "denom") +
+      |                                                           ^
 /tmp/24-game-solve.c:200:14: error: array subscript is not an integer
   200 |   if ((x.data["op"] == OP_SUB)) {
       |              ^
@@ -32,12 +39,12 @@ cc: exit status 1
 /tmp/24-game-solve.c:233:29: error: array subscript is not an integer
   233 |     char *tmp5 = _str(x.data["value"].data["num"]);
       |                             ^
-/tmp/24-game-solve.c:236:31: error: array subscript is not an integer
-  236 |   char *ls = exprString(x.data["left"]);
-      |                               ^
-/tmp/24-game-solve.c:237:31: error: array subscript is not an integer
-  237 |   char *rs = exprString(x.data["right"]);
-      |                               ^
+/tmp/24-game-solve.c:236:37: error: array subscript is not an integer
+  236 |   __auto_type ls = exprString(x.data["left"]);
+      |                                     ^
+/tmp/24-game-solve.c:237:37: error: array subscript is not an integer
+  237 |   __auto_type rs = exprString(x.data["right"]);
+      |                                     ^
 /tmp/24-game-solve.c:239:14: error: array subscript is not an integer
   239 |   if ((x.data["op"] == OP_ADD)) {
       |              ^
@@ -47,13 +54,22 @@ cc: exit status 1
 /tmp/24-game-solve.c:243:21: error: array subscript is not an integer
   243 |   } else if ((x.data["op"] == OP_MUL)) {
       |                     ^
+/tmp/24-game-solve.c:248:35: error: ‘ls’ undeclared (first use in this function)
+  248 |   char *tmp6 = concat_string("(", ls);
+      |                                   ^~
+/tmp/24-game-solve.c:250:36: error: ‘rs’ undeclared (first use in this function)
+  250 |   char *tmp8 = concat_string(tmp7, rs);
+      |                                    ^~
 /tmp/24-game-solve.c: In function ‘solve’:
 /tmp/24-game-solve.c:256:9: error: request for member ‘len’ in something not a structure or union
   256 |   if (xs.len == 1) {
       |         ^
-/tmp/24-game-solve.c:257:35: error: request for member ‘data’ in something not a structure or union
-  257 |     map_string_int f = exprEval(xs.data[0]);
-      |                                   ^
+/tmp/24-game-solve.c:257:32: error: request for member ‘data’ in something not a structure or union
+  257 |     __auto_type f = exprEval(xs.data[0]);
+      |                                ^
+/tmp/24-game-solve.c:258:28: error: ‘f’ undeclared (first use in this function)
+  258 |     if (map_string_int_get(f, "denom") != 0 &&
+      |                            ^
 /tmp/24-game-solve.c:260:35: error: request for member ‘data’ in something not a structure or union
   260 |       printf("%s\n", exprString(xs.data[0]));
       |                                   ^
@@ -69,13 +85,19 @@ cc: exit status 1
 /tmp/24-game-solve.c:275:29: error: request for member ‘data’ in something not a structure or union
   275 |           tmp10.data[0] = xs.data[k];
       |                             ^
-/tmp/24-game-solve.c:281:17: error: request for member ‘data’ in something not a structure or union
-  281 |       int a = xs.data[i];
-      |                 ^
-/tmp/24-game-solve.c:282:17: error: request for member ‘data’ in something not a structure or union
-  282 |       int b = xs.data[j];
-      |                 ^
-/tmp/24-game-solve.c:293:25: error: incompatible types when assigning to type ‘int’ from type ‘node_item_t’
+/tmp/24-game-solve.c:281:25: error: request for member ‘data’ in something not a structure or union
+  281 |       __auto_type a = xs.data[i];
+      |                         ^
+/tmp/24-game-solve.c:282:25: error: request for member ‘data’ in something not a structure or union
+  282 |       __auto_type b = xs.data[j];
+      |                         ^
+/tmp/24-game-solve.c:290:60: error: ‘a’ undeclared (first use in this function)
+  290 |         __auto_type node = (node_item_t){.op = op, .left = a, .right = b};
+      |                                                            ^
+/tmp/24-game-solve.c:290:72: error: ‘b’ undeclared (first use in this function)
+  290 |         __auto_type node = (node_item_t){.op = op, .left = a, .right = b};
+      |                                                                        ^
+/tmp/24-game-solve.c:293:25: error: ‘node’ undeclared (first use in this function)
   293 |         tmp14.data[0] = node;
       |                         ^~~~
 /tmp/24-game-solve.c:295:19: error: incompatible type for argument 1 of ‘solve’
@@ -86,9 +108,6 @@ cc: exit status 1
 /tmp/24-game-solve.c:255:15: note: expected ‘int’ but argument is of type ‘list_int’
   255 | int solve(int xs) {
       |           ~~~~^~
-/tmp/24-game-solve.c:302:23: error: incompatible types when assigning to type ‘int’ from type ‘node_item_t’
-  302 |       tmp16.data[0] = node;
-      |                       ^~~~
 /tmp/24-game-solve.c:304:17: error: incompatible type for argument 1 of ‘solve’
   304 |       if (solve(tmp17)) {
       |                 ^~~~~
@@ -107,12 +126,6 @@ cc: exit status 1
   307 |       node = (tmp_item_t){.op = OP_DIV, .left = b, .right = a};
       |                                                             ^
 /tmp/24-game-solve.c:307:61: note: (near initialization for ‘(anonymous)’)
-/tmp/24-game-solve.c:307:14: error: incompatible types when assigning to type ‘node_item_t’ from type ‘tmp_item_t’
-  307 |       node = (tmp_item_t){.op = OP_DIV, .left = b, .right = a};
-      |              ^
-/tmp/24-game-solve.c:310:23: error: incompatible types when assigning to type ‘int’ from type ‘node_item_t’
-  310 |       tmp18.data[0] = node;
-      |                       ^~~~
 /tmp/24-game-solve.c:312:17: error: incompatible type for argument 1 of ‘solve’
   312 |       if (solve(tmp19)) {
       |                 ^~~~~

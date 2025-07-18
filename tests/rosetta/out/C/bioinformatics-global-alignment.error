@@ -25,25 +25,9 @@ cc: exit status 1
       |       rest
 /tmp/bioinformatics-global-alignment.c:186:7: note: each undeclared identifier is reported only once for each function it appears in
 /tmp/bioinformatics-global-alignment.c: In function ‘deduplicate’:
-/tmp/bioinformatics-global-alignment.c:211:18: error: invalid initializer
-  211 |   list_int arr = distinct(slist);
-      |                  ^~~~~~~~
-/tmp/bioinformatics-global-alignment.c:219:41: warning: passing argument 1 of ‘containsStr’ makes pointer from integer without a cast [-Wint-conversion]
-  219 |       if (j != i && containsStr(arr.data[j], s1)) {
-      |                                 ~~~~~~~~^~~
-      |                                         |
-      |                                         int
-/tmp/bioinformatics-global-alignment.c:119:23: note: expected ‘char *’ but argument is of type ‘int’
-  119 | int containsStr(char *s, char *sub) {
-      |                 ~~~~~~^
-/tmp/bioinformatics-global-alignment.c:219:46: warning: passing argument 2 of ‘containsStr’ makes pointer from integer without a cast [-Wint-conversion]
-  219 |       if (j != i && containsStr(arr.data[j], s1)) {
-      |                                              ^~
-      |                                              |
-      |                                              int
-/tmp/bioinformatics-global-alignment.c:119:32: note: expected ‘char *’ but argument is of type ‘int’
-  119 | int containsStr(char *s, char *sub) {
-      |                          ~~~~~~^~~
+/tmp/bioinformatics-global-alignment.c:228:21: warning: assignment to ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+  228 |       tmp14.data[0] = s1;
+      |                     ^
 /tmp/bioinformatics-global-alignment.c:229:40: error: incompatible type for argument 1 of ‘concat_list_int’
   229 |       list_int tmp15 = concat_list_int(filtered, tmp14);
       |                                        ^~~~~~~~
@@ -60,8 +44,18 @@ cc: exit status 1
   252 |   while (idx < perms.len) {
       |                     ^
 /tmp/bioinformatics-global-alignment.c:253:29: error: request for member ‘data’ in something not a structure or union
-  253 |     list_string perm = perms.data[idx];
+  253 |     __auto_type perm = perms.data[idx];
       |                             ^
+/tmp/bioinformatics-global-alignment.c:254:23: error: ‘perm’ undeclared (first use in this function); did you mean ‘perms’?
+  254 |     __auto_type sup = perm.data[0];
+      |                       ^~~~
+      |                       perms
+/tmp/bioinformatics-global-alignment.c:259:11: error: ‘sup’ undeclared (first use in this function)
+  259 |           sup, slice_string(perm.data[i + 1], ov, strlen(perm.data[i + 1])));
+      |           ^~~
+/tmp/bioinformatics-global-alignment.c:259:47: error: ‘ov’ undeclared (first use in this function)
+  259 |           sup, slice_string(perm.data[i + 1], ov, strlen(perm.data[i + 1])));
+      |                                               ^~
 /tmp/bioinformatics-global-alignment.c: In function ‘mochi_main’:
 /tmp/bioinformatics-global-alignment.c:363:28: error: incompatible types when initializing type ‘int’ using type ‘list_string’
   363 |   list_int tests_data[] = {tmp33, tmp34, tmp35, tmp36};

@@ -1,40 +1,32 @@
 cc: exit status 1
-/tmp/achilles-numbers.c:146:5: warning: conflicting types for built-in function ‘pow10’; expected ‘double(double)’ [-Wbuiltin-declaration-mismatch]
-  146 | int pow10(int exp) {
+/tmp/achilles-numbers.c:148:5: warning: conflicting types for built-in function ‘pow10’; expected ‘double(double)’ [-Wbuiltin-declaration-mismatch]
+  148 | int pow10(int exp) {
       |     ^~~~~
-/tmp/achilles-numbers.c: In function ‘getPerfectPowers’:
-/tmp/achilles-numbers.c:188:25: error: ‘pps’ undeclared (first use in this function)
-  188 |       map_int_bool_put(&pps, p, 1);
-      |                         ^~~
-/tmp/achilles-numbers.c:188:25: note: each undeclared identifier is reported only once for each function it appears in
 /tmp/achilles-numbers.c: In function ‘getAchilles’:
-/tmp/achilles-numbers.c:198:27: error: invalid initializer
-  198 |   map_int_bool achilles = tmp1;
+/tmp/achilles-numbers.c:200:27: error: invalid initializer
+  200 |   map_int_bool achilles = tmp1;
       |                           ^~~~
-/tmp/achilles-numbers.c:209:38: error: ‘pps’ undeclared (first use in this function)
-  209 |         if ((!(map_int_bool_contains(pps, p)))) {
-      |                                      ^~~
 /tmp/achilles-numbers.c: In function ‘sortInts’:
-/tmp/achilles-numbers.c:236:15: error: invalid operands to binary + (have ‘list_int’ and ‘list_int’)
-  236 |     res = res + tmp2;
+/tmp/achilles-numbers.c:238:15: error: invalid operands to binary + (have ‘list_int’ and ‘list_int’)
+  238 |     res = res + tmp2;
       |               ^
-/tmp/achilles-numbers.c:243:19: error: invalid operands to binary + (have ‘list_int’ and ‘list_int’)
-  243 |         out = out + tmp3;
+/tmp/achilles-numbers.c:245:19: error: invalid operands to binary + (have ‘list_int’ and ‘list_int’)
+  245 |         out = out + tmp3;
       |                   ^
 /tmp/achilles-numbers.c: In function ‘mochi_main’:
-/tmp/achilles-numbers.c:269:35: error: ‘map_int_bool’ has no member named ‘keys’
-  269 |   for (int tmp8 = 0; tmp8 < achSet.keys().len; tmp8++) {
+/tmp/achilles-numbers.c:271:35: error: ‘map_int_bool’ has no member named ‘keys’
+  271 |   for (int tmp8 = 0; tmp8 < achSet.keys().len; tmp8++) {
       |                                   ^
-/tmp/achilles-numbers.c:270:19: error: ‘map_int_bool’ has no member named ‘keys’
-  270 |     int k = achSet.keys().data[tmp8];
+/tmp/achilles-numbers.c:272:19: error: ‘map_int_bool’ has no member named ‘keys’
+  272 |     int k = achSet.keys().data[tmp8];
       |                   ^
-/tmp/achilles-numbers.c:273:15: error: invalid operands to binary + (have ‘list_int’ and ‘list_int’)
-  273 |     ach = ach + tmp9;
+/tmp/achilles-numbers.c:275:15: error: invalid operands to binary + (have ‘list_int’ and ‘list_int’)
+  275 |     ach = ach + tmp9;
       |               ^
-/tmp/achilles-numbers.c:303:23: error: invalid operands to binary + (have ‘list_int’ and ‘list_int’)
-  303 |       strong = strong + tmp13;
+/tmp/achilles-numbers.c:305:23: error: invalid operands to binary + (have ‘list_int’ and ‘list_int’)
+  305 |       strong = strong + tmp13;
       |                       ^
 /tmp/achilles-numbers.c: In function ‘_mochi_main’:
-/tmp/achilles-numbers.c:353:22: error: invalid initializer
-  353 |   map_int_bool pps = tmp19;
-      |                      ^~~~~
+/tmp/achilles-numbers.c:355:9: error: incompatible types when assigning to type ‘map_int_bool’ from type ‘map_string_int’
+  355 |   pps = tmp19;
+      |         ^~~~~

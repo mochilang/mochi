@@ -16,30 +16,20 @@ cc: exit status 1
       | ^~~~~~~~
       | list_string
 /tmp/best-shuffle.c: In function ‘bestShuffle’:
-/tmp/best-shuffle.c:96:3: error: unknown type name ‘list_int’; did you mean ‘list_string’?
-   96 |   list_int r = shuffleChars(s, seed);
-      |   ^~~~~~~~
-      |   list_string
-/tmp/best-shuffle.c:97:12: error: request for member ‘data’ in something not a structure or union
-   97 |   int t = r.data[0];
-      |            ^
-/tmp/best-shuffle.c:98:13: error: request for member ‘data’ in something not a structure or union
-   98 |   int sd = r.data[1];
-      |             ^
-/tmp/best-shuffle.c:101:15: error: request for member ‘len’ in something not a structure or union
+/tmp/best-shuffle.c:97:20: error: request for member ‘data’ in something not a structure or union
+   97 |   __auto_type t = r.data[0];
+      |                    ^
+/tmp/best-shuffle.c:98:21: error: request for member ‘data’ in something not a structure or union
+   98 |   __auto_type sd = r.data[1];
+      |                     ^
+/tmp/best-shuffle.c:101:14: error: ‘t’ undeclared (first use in this function)
   101 |   while (i < t.len) {
-      |               ^
-/tmp/best-shuffle.c:103:33: warning: passing argument 1 of ‘slice_string’ makes pointer from integer without a cast [-Wint-conversion]
-  103 |     tmp5.data[0] = slice_string(t, i, i + 1);
-      |                                 ^
-      |                                 |
-      |                                 int
-/tmp/best-shuffle.c:43:33: note: expected ‘char *’ but argument is of type ‘int’
-   43 | static char *slice_string(char *s, int start, int end) {
-      |                           ~~~~~~^
-/tmp/best-shuffle.c:140:16: warning: assignment to ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+      |              ^
+/tmp/best-shuffle.c:101:14: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/best-shuffle.c:140:18: error: ‘sd’ undeclared (first use in this function); did you mean ‘s’?
   140 |   tmp8.data[1] = sd;
-      |                ^
+      |                  ^~
+      |                  s
 /tmp/best-shuffle.c:141:16: warning: assignment to ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
   141 |   tmp8.data[2] = count;
       |                ^
@@ -47,18 +37,25 @@ cc: exit status 1
   142 |   return tmp8;
       |          ^~~~
 /tmp/best-shuffle.c: In function ‘mochi_main’:
-/tmp/best-shuffle.c:157:17: error: request for member ‘data’ in something not a structure or union
-  157 |     int shuf = r.data[0];
-      |                 ^
+/tmp/best-shuffle.c:157:25: error: request for member ‘data’ in something not a structure or union
+  157 |     __auto_type shuf = r.data[0];
+      |                         ^
 /tmp/best-shuffle.c:158:13: error: request for member ‘data’ in something not a structure or union
   158 |     seed = r.data[1];
       |             ^
-/tmp/best-shuffle.c:159:16: error: request for member ‘data’ in something not a structure or union
-  159 |     int cnt = r.data[2];
-      |                ^
-/tmp/best-shuffle.c:162:31: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  162 |     printf("%d\n", ts.data[i] + " -> " + shuf + " (" + tmp10 + ")");
-      |                    ~~~~~~~~~~ ^
-      |                           |   |
-      |                           |   char *
-      |                           char *
+/tmp/best-shuffle.c:159:24: error: request for member ‘data’ in something not a structure or union
+  159 |     __auto_type cnt = r.data[2];
+      |                        ^
+/tmp/best-shuffle.c:161:39: error: ‘shuf’ undeclared (first use in this function)
+  161 |     char *tmp10 = concat_string(tmp9, shuf);
+      |                                       ^~~~
+/tmp/best-shuffle.c:163:24: error: ‘cnt’ undeclared (first use in this function); did you mean ‘int’?
+  163 |     char *tmp12 = _str(cnt);
+      |                        ^~~
+      |                        int
+/tmp/best-shuffle.c:172:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
+  172 |     printf("%d\n", tmp20);
+      |             ~^     ~~~~~
+      |              |     |
+      |              int   char *
+      |             %s

@@ -1,8 +1,14 @@
-parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/bulls-and-cows.mochi:48:31: unexpected token "-" (expected PostfixExpr)
-  --> /workspace/mochi/tests/rosetta/x/Mochi/bulls-and-cows.mochi:48:31
-
- 48 |       if indexOf(seen, cg) != -1 {
-    |                               ^
-
-help:
-  Parse error occurred. Check syntax near this location.
+cc: exit status 1
+/tmp/bulls-and-cows.c: In function ‘mochi_main’:
+/tmp/bulls-and-cows.c:114:22: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  114 |       digits.data[0] + digits.data[1] + digits.data[2] + digits.data[3];
+      |       ~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~
+      |                  |                |
+      |                  char *           char *
+/tmp/bulls-and-cows.c:138:41: error: ‘pat’ undeclared (first use in this function)
+  138 |       __auto_type pos = index_of_string(pat, cg);
+      |                                         ^~~
+/tmp/bulls-and-cows.c:138:41: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/bulls-and-cows.c:139:11: error: ‘pos’ undeclared (first use in this function)
+  139 |       if (pos == ((-1))) {
+      |           ^~~

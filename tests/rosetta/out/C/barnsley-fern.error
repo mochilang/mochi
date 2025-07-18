@@ -1,6 +1,14 @@
 cc: exit status 1
 /tmp/barnsley-fern.c: In function ‘_mochi_main’:
-/tmp/barnsley-fern.c:77:5: error: ‘grid’ undeclared (first use in this function)
-   77 |     grid = 0;
-      |     ^~~~
-/tmp/barnsley-fern.c:77:5: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/barnsley-fern.c:84:10: error: incompatible types when assigning to type ‘int’ from type ‘list_int’
+   84 |   grid = tmp2;
+      |          ^~~~
+/tmp/barnsley-fern.c:101:9: error: request for member ‘data’ in something not a structure or union
+  101 |     grid.data[iy].data[ix] = "*";
+      |         ^
+/tmp/barnsley-fern.c:129:11: error: request for member ‘data’ in something not a structure or union
+  129 |       grid.data[iy].data[ix] = "*";
+      |           ^
+/tmp/barnsley-fern.c:138:44: error: request for member ‘data’ in something not a structure or union
+  138 |       char *tmp5 = concat_string(line, grid.data[row].data[col]);
+      |                                            ^

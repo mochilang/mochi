@@ -1,15 +1,15 @@
 cc: exit status 1
 /tmp/align-columns.c: In function ‘newFormatter’:
-/tmp/align-columns.c:185:5: error: ‘fmtLines’ undeclared (first use in this function)
-  185 |     fmtLines = 0;
+/tmp/align-columns.c:188:5: error: ‘fmtLines’ undeclared (first use in this function)
+  188 |     fmtLines = 0;
       |     ^~~~~~~~
-/tmp/align-columns.c:185:5: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/align-columns.c:188:5: note: each undeclared identifier is reported only once for each function it appears in
 /tmp/align-columns.c: At top level:
-/tmp/align-columns.c:205:14: error: unknown type name ‘map_string_int’
-  205 | int printFmt(map_string_int f, int align) {
+/tmp/align-columns.c:208:14: error: unknown type name ‘map_string_int’
+  208 | int printFmt(map_string_int f, int align) {
       |              ^~~~~~~~~~~~~~
 /tmp/align-columns.c: In function ‘_mochi_main’:
-/tmp/align-columns.c:242:3: warning: implicit declaration of function ‘printFmt’; did you mean ‘printf’? [-Wimplicit-function-declaration]
-  242 |   printFmt(f, 0);
+/tmp/align-columns.c:245:3: warning: implicit declaration of function ‘printFmt’; did you mean ‘printf’? [-Wimplicit-function-declaration]
+  245 |   printFmt(f, 0);
       |   ^~~~~~~~
       |   printf

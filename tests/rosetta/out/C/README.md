@@ -1,4 +1,4 @@
-# Rosetta C Output (79/239 compiled and run)
+# Rosetta C Output (85/271 compiled and run)
 
 This directory holds C source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -17,13 +17,14 @@ This directory holds C source code generated from the real Mochi programs in `te
 - [ ] 9-billion-names-of-god-the-integer
 - [x] 99-bottles-of-beer-2
 - [x] 99-bottles-of-beer
-- [ ] a+b
+- [ ] DNS-query
+- [x] a+b
 - [ ] abbreviations-automatic
 - [ ] abbreviations-easy
 - [ ] abbreviations-simple
 - [ ] abc-problem
 - [ ] abelian-sandpile-model-identity
-- [ ] abelian-sandpile-model
+- [x] abelian-sandpile-model
 - [ ] abstract-type
 - [x] abundant-deficient-and-perfect-number-classifications
 - [x] abundant-odd-numbers
@@ -34,10 +35,10 @@ This directory holds C source code generated from the real Mochi programs in `te
 - [x] ackermann-function
 - [ ] active-directory-connect
 - [ ] active-directory-search-for-a-user
-- [ ] active-object
+- [x] active-object
 - [ ] add-a-variable-to-a-class-instance-at-runtime
 - [x] additive-primes
-- [ ] address-of-a-variable
+- [x] address-of-a-variable
 - [ ] adfgvx-cipher
 - [x] aks-test-for-primes
 - [ ] algebraic-data-types
@@ -95,7 +96,7 @@ This directory holds C source code generated from the real Mochi programs in `te
 - [ ] averages-mode
 - [x] averages-pythagorean-means
 - [x] averages-root-mean-square
-- [ ] averages-simple-moving-average
+- [x] averages-simple-moving-average
 - [ ] avl-tree
 - [ ] b-zier-curves-intersections
 - [x] babbage-problem
@@ -133,8 +134,8 @@ This directory holds C source code generated from the real Mochi programs in `te
 - [ ] bitwise-io-2
 - [x] bitwise-operations
 - [x] blum-integer
- - [x] boolean-values
-- [ ] box-the-compass
+- [x] boolean-values
+- [x] box-the-compass
 - [ ] boyer-moore-string-search
 - [ ] brazilian-numbers
 - [ ] break-oo-privacy
@@ -211,6 +212,7 @@ This directory holds C source code generated from the real Mochi programs in `te
 - [ ] cistercian-numerals
 - [ ] compiler-virtual-machine-interpreter
 - [ ] composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k
+- [ ] compound-data-type
 - [x] concurrent-computing-1
 - [x] concurrent-computing-2
 - [x] concurrent-computing-3
@@ -232,13 +234,43 @@ This directory holds C source code generated from the real Mochi programs in `te
 - [ ] constrained-random-points-on-a-circle-1
 - [ ] constrained-random-points-on-a-circle-2
 - [ ] continued-fraction
+- [ ] convert-decimal-number-to-rational
+- [ ] convert-seconds-to-compound-duration
+- [ ] convex-hull
+- [ ] conways-game-of-life
+- [ ] copy-a-string-1
+- [ ] copy-a-string-2
+- [ ] copy-stdin-to-stdout-1
+- [ ] copy-stdin-to-stdout-2
+- [ ] count-in-factors
+- [ ] count-in-octal-1
+- [ ] count-in-octal-2
+- [ ] count-in-octal-3
+- [ ] count-in-octal-4
+- [ ] count-occurrences-of-a-substring
+- [ ] count-the-coins-1
+- [ ] count-the-coins-2
+- [ ] cramers-rule
 - [ ] crc-32-1
 - [ ] crc-32-2
+- [ ] create-a-file-on-magnetic-tape
+- [ ] create-a-file
+- [ ] create-a-two-dimensional-array-at-runtime-1
+- [ ] create-an-html-table
+- [ ] create-an-object-at-a-given-address
 - [ ] csv-data-manipulation
 - [ ] csv-to-html-translation-1
 - [ ] csv-to-html-translation-2
 - [x] csv-to-html-translation-3
 - [x] csv-to-html-translation-4
 - [ ] csv-to-html-translation-5
+- [ ] cuban-primes
+- [ ] cullen-and-woodall-numbers
+- [ ] cumulative-standard-deviation
+- [ ] currency
+- [ ] currying
+- [ ] curzon-numbers
 - [ ] cusip
+- [ ] cyclops-numbers
+- [ ] damm-algorithm
 - [ ] md5

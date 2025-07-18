@@ -1,24 +1,24 @@
 cc: exit status 1
-/tmp/arithmetic-complex.c:60:11: warning: conflicting types for built-in function ‘conj’; expected ‘_Complex double(_Complex double)’ [-Wbuiltin-declaration-mismatch]
-   60 | complex_t conj(complex_t *a) {
+/tmp/arithmetic-complex.c:63:11: warning: conflicting types for built-in function ‘conj’; expected ‘_Complex double(_Complex double)’ [-Wbuiltin-declaration-mismatch]
+   63 | complex_t conj(complex_t *a) {
       |           ^~~~
 /tmp/arithmetic-complex.c:6:1: note: ‘conj’ is declared in header ‘<complex.h>’
     5 | #include <string.h>
   +++ |+#include <complex.h>
     6 | 
 /tmp/arithmetic-complex.c: In function ‘_mochi_main’:
-/tmp/arithmetic-complex.c:90:49: error: lvalue required as unary ‘&’ operand
-   90 |   char *tmp12 = concat_string("a + b:   ", cstr(&add(&a, &b)));
+/tmp/arithmetic-complex.c:93:49: error: lvalue required as unary ‘&’ operand
+   93 |   char *tmp12 = concat_string("a + b:   ", cstr(&add(&a, &b)));
       |                                                 ^
-/tmp/arithmetic-complex.c:92:49: error: lvalue required as unary ‘&’ operand
-   92 |   char *tmp13 = concat_string("a * b:   ", cstr(&mul(&a, &b)));
+/tmp/arithmetic-complex.c:95:49: error: lvalue required as unary ‘&’ operand
+   95 |   char *tmp13 = concat_string("a * b:   ", cstr(&mul(&a, &b)));
       |                                                 ^
-/tmp/arithmetic-complex.c:94:49: error: lvalue required as unary ‘&’ operand
-   94 |   char *tmp14 = concat_string("-a:      ", cstr(&neg(&a)));
+/tmp/arithmetic-complex.c:97:49: error: lvalue required as unary ‘&’ operand
+   97 |   char *tmp14 = concat_string("-a:      ", cstr(&neg(&a)));
       |                                                 ^
-/tmp/arithmetic-complex.c:96:49: error: lvalue required as unary ‘&’ operand
-   96 |   char *tmp15 = concat_string("1 / a:   ", cstr(&inv(&a)));
+/tmp/arithmetic-complex.c:99:49: error: lvalue required as unary ‘&’ operand
+   99 |   char *tmp15 = concat_string("1 / a:   ", cstr(&inv(&a)));
       |                                                 ^
-/tmp/arithmetic-complex.c:98:49: error: lvalue required as unary ‘&’ operand
-   98 |   char *tmp16 = concat_string("a̅:       ", cstr(&conj(&a)));
+/tmp/arithmetic-complex.c:101:49: error: lvalue required as unary ‘&’ operand
+  101 |   char *tmp16 = concat_string("a̅:       ", cstr(&conj(&a)));
       |                                                 ^

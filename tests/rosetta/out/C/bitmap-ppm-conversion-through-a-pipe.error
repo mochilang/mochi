@@ -37,16 +37,22 @@ cc: exit status 1
       |     ^~~~
 /tmp/bitmap-ppm-conversion-through-a-pipe.c:79:5: note: each undeclared identifier is reported only once for each function it appears in
 /tmp/bitmap-ppm-conversion-through-a-pipe.c: In function ‘FillRgb’:
-/tmp/bitmap-ppm-conversion-through-a-pipe.c:92:28: error: request for member ‘data’ in something not a structure or union
-   92 |       pixel_list_t row = px.data[y];
-      |                            ^
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:92:27: error: request for member ‘data’ in something not a structure or union
+   92 |       __auto_type row = px.data[y];
+      |                           ^
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:93:7: error: ‘row’ undeclared (first use in this function)
+   93 |       row.data[x] = p;
+      |       ^~~
 /tmp/bitmap-ppm-conversion-through-a-pipe.c:94:9: error: request for member ‘data’ in something not a structure or union
    94 |       px.data[y] = row;
       |         ^
 /tmp/bitmap-ppm-conversion-through-a-pipe.c: In function ‘SetPxRgb’:
-/tmp/bitmap-ppm-conversion-through-a-pipe.c:107:24: error: request for member ‘data’ in something not a structure or union
-  107 |   pixel_list_t row = px.data[y];
-      |                        ^
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:107:23: error: request for member ‘data’ in something not a structure or union
+  107 |   __auto_type row = px.data[y];
+      |                       ^
+/tmp/bitmap-ppm-conversion-through-a-pipe.c:108:3: error: ‘row’ undeclared (first use in this function)
+  108 |   row.data[x] = pixelFromRgb(c);
+      |   ^~~
 /tmp/bitmap-ppm-conversion-through-a-pipe.c:109:5: error: request for member ‘data’ in something not a structure or union
   109 |   px.data[y] = row;
       |     ^

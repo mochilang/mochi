@@ -1,7 +1,0 @@
-cc: exit status 1
-/tmp/abelian-sandpile-model.c: In function ‘drawPile’:
-/tmp/abelian-sandpile-model.c:137:19: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
-  137 |       line = line + chars.data[v];
-      |                   ^ ~~~~~~~~~~~~~
-      |                               |
-      |                               char *

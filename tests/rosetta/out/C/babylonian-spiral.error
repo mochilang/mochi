@@ -1,17 +1,22 @@
 cc: exit status 1
 /tmp/babylonian-spiral.c: In function ‘push’:
-/tmp/babylonian-spiral.c:157:12: error: request for member ‘len’ in something not a structure or union
-  157 |   int i = h.len - 1;
-      |            ^
+/tmp/babylonian-spiral.c:157:20: error: request for member ‘len’ in something not a structure or union
+  157 |   __auto_type i = h.len - 1;
+      |                    ^
+/tmp/babylonian-spiral.c:158:10: error: ‘i’ undeclared (first use in this function); did you mean ‘it’?
+  158 |   while (i > 0 && h.data[i - 1].data["s"] > h.data[i].data["s"]) {
+      |          ^
+      |          it
+/tmp/babylonian-spiral.c:158:10: note: each undeclared identifier is reported only once for each function it appears in
 /tmp/babylonian-spiral.c:158:20: error: request for member ‘data’ in something not a structure or union
   158 |   while (i > 0 && h.data[i - 1].data["s"] > h.data[i].data["s"]) {
       |                    ^
 /tmp/babylonian-spiral.c:158:46: error: request for member ‘data’ in something not a structure or union
   158 |   while (i > 0 && h.data[i - 1].data["s"] > h.data[i].data["s"]) {
       |                                              ^
-/tmp/babylonian-spiral.c:159:27: error: request for member ‘data’ in something not a structure or union
-  159 |     map_string_int tmp = h.data[i - 1];
-      |                           ^
+/tmp/babylonian-spiral.c:159:24: error: request for member ‘data’ in something not a structure or union
+  159 |     __auto_type tmp = h.data[i - 1];
+      |                        ^
 /tmp/babylonian-spiral.c:160:6: error: request for member ‘data’ in something not a structure or union
   160 |     h.data[i - 1] = h.data[i];
       |      ^
@@ -21,6 +26,9 @@ cc: exit status 1
 /tmp/babylonian-spiral.c:161:6: error: request for member ‘data’ in something not a structure or union
   161 |     h.data[i] = tmp;
       |      ^
+/tmp/babylonian-spiral.c:161:17: error: ‘tmp’ undeclared (first use in this function)
+  161 |     h.data[i] = tmp;
+      |                 ^~~
 /tmp/babylonian-spiral.c: In function ‘step’:
 /tmp/babylonian-spiral.c:168:11: error: request for member ‘len’ in something not a structure or union
   168 |   while (h.len == 0 || nv * nv <= h.data[0].data["s"]) {
@@ -28,18 +36,21 @@ cc: exit status 1
 /tmp/babylonian-spiral.c:168:36: error: request for member ‘data’ in something not a structure or union
   168 |   while (h.len == 0 || nv * nv <= h.data[0].data["s"]) {
       |                                    ^
-/tmp/babylonian-spiral.c:176:12: error: request for member ‘data’ in something not a structure or union
-  176 |   int s = h.data[0].data["s"];
-      |            ^
+/tmp/babylonian-spiral.c:176:20: error: request for member ‘data’ in something not a structure or union
+  176 |   __auto_type s = h.data[0].data["s"];
+      |                    ^
 /tmp/babylonian-spiral.c:178:11: error: request for member ‘len’ in something not a structure or union
   178 |   while (h.len > 0 && h.data[0].data["s"] == s) {
       |           ^
 /tmp/babylonian-spiral.c:178:24: error: request for member ‘data’ in something not a structure or union
   178 |   while (h.len > 0 && h.data[0].data["s"] == s) {
       |                        ^
-/tmp/babylonian-spiral.c:179:26: error: request for member ‘data’ in something not a structure or union
-  179 |     map_string_int it = h.data[0];
-      |                          ^
+/tmp/babylonian-spiral.c:178:46: error: ‘s’ undeclared (first use in this function)
+  178 |   while (h.len > 0 && h.data[0].data["s"] == s) {
+      |                                              ^
+/tmp/babylonian-spiral.c:179:23: error: request for member ‘data’ in something not a structure or union
+  179 |     __auto_type it = h.data[0];
+      |                       ^
 /tmp/babylonian-spiral.c:180:43: error: request for member ‘len’ in something not a structure or union
   180 |     list_int tmp2 = slice_list_int(h, 1, h.len);
       |                                           ^
@@ -54,20 +65,17 @@ cc: exit status 1
 /tmp/babylonian-spiral.c:181:9: error: incompatible types when assigning to type ‘int’ from type ‘list_int’
   181 |     h = tmp2;
       |         ^~~~
+/tmp/babylonian-spiral.c:183:39: error: ‘it’ undeclared (first use in this function); did you mean ‘int’?
+  183 |     tmp3.data[0] = map_string_int_get(it, "a");
+      |                                       ^~
+      |                                       int
 /tmp/babylonian-spiral.c:261:10: error: incompatible types when returning type ‘tmp_item_t’ but ‘int’ was expected
   261 |   return (tmp_item_t){.d = best, .heap = h, .n = nv};
       |          ^
 /tmp/babylonian-spiral.c: In function ‘positions’:
-/tmp/babylonian-spiral.c:284:19: error: ‘heap’ undeclared (first use in this function)
-  284 |     int st = step(heap, nv, tmp26);
-      |                   ^~~~
-/tmp/babylonian-spiral.c:284:19: note: each undeclared identifier is reported only once for each function it appears in
-/tmp/babylonian-spiral.c:285:24: error: request for member ‘data’ in something not a structure or union
+/tmp/babylonian-spiral.c:284:27: error: ‘heap’ undeclared (first use in this function)
+  284 |     __auto_type st = step(heap, nv, tmp26);
+      |                           ^~~~
+/tmp/babylonian-spiral.c:285:22: error: ‘st’ undeclared (first use in this function)
   285 |     dir = (list_int)(st.data["d"]);
-      |                        ^
-/tmp/babylonian-spiral.c:286:20: error: request for member ‘data’ in something not a structure or union
-  286 |     heap = (int)(st.data["heap"]);
-      |                    ^
-/tmp/babylonian-spiral.c:287:18: error: request for member ‘data’ in something not a structure or union
-  287 |     nv = (int)(st.data["n"]);
-      |                  ^
+      |                      ^~

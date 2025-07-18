@@ -11,17 +11,43 @@ cc: exit status 1
   286 |   return (tmp_item_t){.commands = cmds, .mins = mins};
       |          ^
 /tmp/abbreviations-simple.c: In function ‘validate’:
-/tmp/abbreviations-simple.c:300:19: warning: implicit declaration of function ‘upper’ [-Wimplicit-function-declaration]
-  300 |         char *c = upper(cmd);
-      |                   ^~~~~
-/tmp/abbreviations-simple.c:300:19: warning: initialization of ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
-/tmp/abbreviations-simple.c:301:20: warning: initialization of ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
-  301 |         char *ww = upper(w);
-      |                    ^~~~~
+/tmp/abbreviations-simple.c:300:25: warning: implicit declaration of function ‘upper’ [-Wimplicit-function-declaration]
+  300 |         __auto_type c = upper(cmd);
+      |                         ^~~~~
+/tmp/abbreviations-simple.c:302:34: warning: passing argument 1 of ‘slice_string’ makes pointer from integer without a cast [-Wint-conversion]
+  302 |         if ((strcmp(slice_string(c, 0, wlen), ww) == 0)) {
+      |                                  ^
+      |                                  |
+      |                                  int
+/tmp/abbreviations-simple.c:122:33: note: expected ‘char *’ but argument is of type ‘int’
+  122 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/abbreviations-simple.c:302:47: warning: passing argument 2 of ‘strcmp’ makes pointer from integer without a cast [-Wint-conversion]
+  302 |         if ((strcmp(slice_string(c, 0, wlen), ww) == 0)) {
+      |                                               ^~
+      |                                               |
+      |                                               int
+In file included from /tmp/abbreviations-simple.c:5:
+/usr/include/string.h:156:50: note: expected ‘const char *’ but argument is of type ‘int’
+  156 | extern int strcmp (const char *__s1, const char *__s2)
+      |                                      ~~~~~~~~~~~~^~~~
+/tmp/abbreviations-simple.c:304:25: warning: assignment to ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+  304 |           tmp16.data[0] = c;
+      |                         ^
 /tmp/abbreviations-simple.c: In function ‘mochi_main’:
 /tmp/abbreviations-simple.c:352:43: error: request for member ‘data’ in something not a structure or union
-  352 |   list_string commands = (list_string)(tbl.data["commands"]);
+  352 |   __auto_type commands = (list_string)(tbl.data["commands"]);
       |                                           ^
-/tmp/abbreviations-simple.c:353:33: error: request for member ‘data’ in something not a structure or union
-  353 |   list_int mins = (list_int)(tbl.data["mins"]);
-      |                                 ^
+/tmp/abbreviations-simple.c:353:36: error: request for member ‘data’ in something not a structure or union
+  353 |   __auto_type mins = (list_int)(tbl.data["mins"]);
+      |                                    ^
+/tmp/abbreviations-simple.c:355:34: error: ‘commands’ undeclared (first use in this function)
+  355 |   __auto_type results = validate(commands, mins, words);
+      |                                  ^~~~~~~~
+/tmp/abbreviations-simple.c:355:34: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/abbreviations-simple.c:355:44: error: ‘mins’ undeclared (first use in this function)
+  355 |   __auto_type results = validate(commands, mins, words);
+      |                                            ^~~~
+/tmp/abbreviations-simple.c:363:62: error: ‘results’ undeclared (first use in this function)
+  363 |           concat_string(out1, padRight(words.data[k], strlen(results.data[k])));
+      |                                                              ^~~~~~~

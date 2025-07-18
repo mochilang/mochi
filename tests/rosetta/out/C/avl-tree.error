@@ -32,56 +32,27 @@ cc: exit status 1
 /tmp/avl-tree.c:217:12: error: incompatible types when returning type ‘tmp_item_t’ but ‘int’ was expected
   217 |     return (tmp_item_t){.node = Node(data), .done = 0};
       |            ^
-/tmp/avl-tree.c:219:15: error: ‘map_string_int’ undeclared (first use in this function)
-  219 |   int node = (map_string_int)(root);
-      |               ^~~~~~~~~~~~~~
-/tmp/avl-tree.c:219:15: note: each undeclared identifier is reported only once for each function it appears in
-/tmp/avl-tree.c:221:18: error: request for member ‘data’ in something not a structure or union
+/tmp/avl-tree.c:219:23: error: ‘map_string_int’ undeclared (first use in this function)
+  219 |   __auto_type node = (map_string_int)(root);
+      |                       ^~~~~~~~~~~~~~
+/tmp/avl-tree.c:219:23: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/avl-tree.c:221:14: error: ‘node’ undeclared (first use in this function); did you mean ‘Node’?
   221 |   if (((int)(node.data["Data"])) < data) {
-      |                  ^
-/tmp/avl-tree.c:224:19: warning: implicit declaration of function ‘getLink’; did you mean ‘getline’? [-Wimplicit-function-declaration]
-  224 |   int r = insertR(getLink(node, dir), data);
-      |                   ^~~~~~~
-      |                   getline
+      |              ^~~~
+      |              Node
+/tmp/avl-tree.c:224:27: warning: implicit declaration of function ‘getLink’; did you mean ‘getline’? [-Wimplicit-function-declaration]
+  224 |   __auto_type r = insertR(getLink(node, dir), data);
+      |                           ^~~~~~~
+      |                           getline
 /tmp/avl-tree.c:225:3: warning: implicit declaration of function ‘setLink’ [-Wimplicit-function-declaration]
   225 |   setLink(node, dir, r.data["node"]);
       |   ^~~~~~~
-/tmp/avl-tree.c:225:23: error: request for member ‘data’ in something not a structure or union
+/tmp/avl-tree.c:225:22: error: ‘r’ undeclared (first use in this function)
   225 |   setLink(node, dir, r.data["node"]);
-      |                       ^
-/tmp/avl-tree.c:226:9: error: request for member ‘data’ in something not a structure or union
-  226 |   if ((r.data["done"])) {
-      |         ^
-/tmp/avl-tree.c:227:12: error: incompatible types when returning type ‘tmp_item1_t’ but ‘int’ was expected
-  227 |     return (tmp_item1_t){.node = node, .done = 1};
-      |            ^
-/tmp/avl-tree.c:229:7: error: request for member ‘data’ in something not a structure or union
-  229 |   node.data["Balance"] = ((int)(node.data["Balance"])) + (2 * dir - 1);
-      |       ^
-/tmp/avl-tree.c:229:37: error: request for member ‘data’ in something not a structure or union
-  229 |   node.data["Balance"] = ((int)(node.data["Balance"])) + (2 * dir - 1);
-      |                                     ^
-/tmp/avl-tree.c:230:12: error: request for member ‘data’ in something not a structure or union
-  230 |   if ((node.data["Balance"] == 0)) {
-      |            ^
-/tmp/avl-tree.c:231:12: error: incompatible types when returning type ‘tmp_item2_t’ but ‘int’ was expected
-  231 |     return (tmp_item2_t){.node = node, .done = 1};
-      |            ^
-/tmp/avl-tree.c:233:12: error: request for member ‘data’ in something not a structure or union
-  233 |   if ((node.data["Balance"] == 1 || node.data["Balance"] == ((-1)))) {
-      |            ^
-/tmp/avl-tree.c:233:41: error: request for member ‘data’ in something not a structure or union
-  233 |   if ((node.data["Balance"] == 1 || node.data["Balance"] == ((-1)))) {
-      |                                         ^
-/tmp/avl-tree.c:234:12: error: incompatible types when returning type ‘tmp_item3_t’ but ‘int’ was expected
-  234 |     return (tmp_item3_t){.node = node, .done = 0};
-      |            ^
+      |                      ^
 /tmp/avl-tree.c:236:32: warning: implicit declaration of function ‘insertBalance’ [-Wimplicit-function-declaration]
   236 |   return (tmp_item4_t){.node = insertBalance(node, dir), .done = 1};
       |                                ^~~~~~~~~~~~~
-/tmp/avl-tree.c:236:10: error: incompatible types when returning type ‘tmp_item4_t’ but ‘int’ was expected
-  236 |   return (tmp_item4_t){.node = insertBalance(node, dir), .done = 1};
-      |          ^
 /tmp/avl-tree.c: In function ‘Insert’:
 /tmp/avl-tree.c:241:11: error: request for member ‘data’ in something not a structure or union
   241 |   return r.data["node"];
@@ -100,60 +71,19 @@ cc: exit status 1
 /tmp/avl-tree.c:263:12: error: incompatible types when returning type ‘tmp_item_t’ but ‘int’ was expected
   263 |     return (tmp_item_t){.node = 0, .done = 0};
       |            ^
-/tmp/avl-tree.c:265:15: error: ‘map_string_int’ undeclared (first use in this function)
-  265 |   int node = (map_string_int)(root);
-      |               ^~~~~~~~~~~~~~
-/tmp/avl-tree.c:266:18: error: request for member ‘data’ in something not a structure or union
+/tmp/avl-tree.c:265:23: error: ‘map_string_int’ undeclared (first use in this function)
+  265 |   __auto_type node = (map_string_int)(root);
+      |                       ^~~~~~~~~~~~~~
+/tmp/avl-tree.c:266:14: error: ‘node’ undeclared (first use in this function); did you mean ‘Node’?
   266 |   if (((int)(node.data["Data"])) == data) {
-      |                  ^
-/tmp/avl-tree.c:268:14: error: incompatible types when returning type ‘tmp_item1_t’ but ‘int’ was expected
-  268 |       return (tmp_item1_t){.node = getLink(node, 1), .done = 0};
-      |              ^
-/tmp/avl-tree.c:271:14: error: incompatible types when returning type ‘tmp_item2_t’ but ‘int’ was expected
-  271 |       return (tmp_item2_t){.node = getLink(node, 0), .done = 0};
-      |              ^
-/tmp/avl-tree.c:277:9: error: request for member ‘data’ in something not a structure or union
-  277 |     node.data["Data"] = heir.data["Data"];
-      |         ^
-/tmp/avl-tree.c:277:29: error: request for member ‘data’ in something not a structure or union
-  277 |     node.data["Data"] = heir.data["Data"];
-      |                             ^
-/tmp/avl-tree.c:278:22: error: request for member ‘data’ in something not a structure or union
-  278 |     data = (int)(heir.data["Data"]);
-      |                      ^
-/tmp/avl-tree.c:281:18: error: request for member ‘data’ in something not a structure or union
-  281 |   if (((int)(node.data["Data"])) < data) {
-      |                  ^
-/tmp/avl-tree.c:285:23: error: request for member ‘data’ in something not a structure or union
+      |              ^~~~
+      |              Node
+/tmp/avl-tree.c:274:21: error: ‘heir’ undeclared (first use in this function)
+  274 |     while ((getLink(heir, 1) != 0)) {
+      |                     ^~~~
+/tmp/avl-tree.c:285:22: error: ‘r’ undeclared (first use in this function)
   285 |   setLink(node, dir, r.data["node"]);
-      |                       ^
-/tmp/avl-tree.c:286:9: error: request for member ‘data’ in something not a structure or union
-  286 |   if ((r.data["done"])) {
-      |         ^
-/tmp/avl-tree.c:287:12: error: incompatible types when returning type ‘tmp_item3_t’ but ‘int’ was expected
-  287 |     return (tmp_item3_t){.node = node, .done = 1};
-      |            ^
-/tmp/avl-tree.c:289:7: error: request for member ‘data’ in something not a structure or union
-  289 |   node.data["Balance"] = ((int)(node.data["Balance"])) + 1 - 2 * dir;
-      |       ^
-/tmp/avl-tree.c:289:37: error: request for member ‘data’ in something not a structure or union
-  289 |   node.data["Balance"] = ((int)(node.data["Balance"])) + 1 - 2 * dir;
-      |                                     ^
-/tmp/avl-tree.c:290:12: error: request for member ‘data’ in something not a structure or union
-  290 |   if ((node.data["Balance"] == 1 || node.data["Balance"] == ((-1)))) {
-      |            ^
-/tmp/avl-tree.c:290:41: error: request for member ‘data’ in something not a structure or union
-  290 |   if ((node.data["Balance"] == 1 || node.data["Balance"] == ((-1)))) {
-      |                                         ^
-/tmp/avl-tree.c:291:12: error: incompatible types when returning type ‘tmp_item4_t’ but ‘int’ was expected
-  291 |     return (tmp_item4_t){.node = node, .done = 1};
-      |            ^
-/tmp/avl-tree.c:293:12: error: request for member ‘data’ in something not a structure or union
-  293 |   if ((node.data["Balance"] == 0)) {
-      |            ^
-/tmp/avl-tree.c:294:12: error: incompatible types when returning type ‘tmp_item5_t’ but ‘int’ was expected
-  294 |     return (tmp_item5_t){.node = node, .done = 0};
-      |            ^
+      |                      ^
 /tmp/avl-tree.c:296:10: warning: implicit declaration of function ‘removeBalance’ [-Wimplicit-function-declaration]
   296 |   return removeBalance(node, dir);
       |          ^~~~~~~~~~~~~
@@ -187,9 +117,9 @@ cc: exit status 1
       |              int   char *
       |             %s
 /tmp/avl-tree.c: In function ‘mochi_main’:
-/tmp/avl-tree.c:380:12: error: ‘map_string_int’ undeclared (first use in this function)
-  380 |   int t = (map_string_int)(tree);
-      |            ^~~~~~~~~~~~~~
-/tmp/avl-tree.c:381:4: error: request for member ‘data’ in something not a structure or union
+/tmp/avl-tree.c:380:20: error: ‘map_string_int’ undeclared (first use in this function)
+  380 |   __auto_type t = (map_string_int)(tree);
+      |                    ^~~~~~~~~~~~~~
+/tmp/avl-tree.c:381:3: error: ‘t’ undeclared (first use in this function)
   381 |   t.data["Balance"] = 0;
-      |    ^
+      |   ^

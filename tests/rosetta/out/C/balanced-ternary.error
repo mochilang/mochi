@@ -11,41 +11,16 @@ cc: exit status 1
   187 |     b = 0;
       |         ^
 /tmp/balanced-ternary.c: In function ‘mochi_main’:
-/tmp/balanced-ternary.c:249:15: error: request for member ‘data’ in something not a structure or union
-  249 |   int a = ares.data["bt"];
-      |               ^
-/tmp/balanced-ternary.c:252:15: error: request for member ‘data’ in something not a structure or union
-  252 |   int c = cres.data["bt"];
-      |               ^
-/tmp/balanced-ternary.c:253:14: error: incompatible type for argument 2 of ‘show’
+/tmp/balanced-ternary.c:249:23: error: request for member ‘data’ in something not a structure or union
+  249 |   __auto_type a = ares.data["bt"];
+      |                       ^
+/tmp/balanced-ternary.c:252:23: error: request for member ‘data’ in something not a structure or union
+  252 |   __auto_type c = cres.data["bt"];
+      |                       ^
+/tmp/balanced-ternary.c:253:14: error: ‘a’ undeclared (first use in this function)
   253 |   show("a:", a);
       |              ^
-      |              |
-      |              int
-/tmp/balanced-ternary.c:235:32: note: expected ‘list_int’ but argument is of type ‘int’
-  235 | int show(char *label, list_int b) {
-      |                       ~~~~~~~~~^
-/tmp/balanced-ternary.c:255:14: error: incompatible type for argument 2 of ‘show’
+/tmp/balanced-ternary.c:253:14: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/balanced-ternary.c:255:14: error: ‘c’ undeclared (first use in this function)
   255 |   show("c:", c);
       |              ^
-      |              |
-      |              int
-/tmp/balanced-ternary.c:235:32: note: expected ‘list_int’ but argument is of type ‘int’
-  235 | int show(char *label, list_int b) {
-      |                       ~~~~~~~~~^
-/tmp/balanced-ternary.c:256:43: error: incompatible type for argument 1 of ‘btNeg’
-  256 |   show("a(b-c):", btMul(a, btAdd(b, btNeg(c))));
-      |                                           ^
-      |                                           |
-      |                                           int
-/tmp/balanced-ternary.c:204:25: note: expected ‘list_int’ but argument is of type ‘int’
-  204 | list_int btNeg(list_int b) {
-      |                ~~~~~~~~~^
-/tmp/balanced-ternary.c:256:25: error: incompatible type for argument 1 of ‘btMul’
-  256 |   show("a(b-c):", btMul(a, btAdd(b, btNeg(c))));
-      |                         ^
-      |                         |
-      |                         int
-/tmp/balanced-ternary.c:222:25: note: expected ‘list_int’ but argument is of type ‘int’
-  222 | list_int btMul(list_int a, list_int b) {
-      |                ~~~~~~~~~^

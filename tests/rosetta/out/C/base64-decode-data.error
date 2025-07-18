@@ -1,8 +1,8 @@
 cc: exit status 1
 /tmp/base64-decode-data.c: In function ‘parseIntStr’:
-/tmp/base64-decode-data.c:137:11: error: request for member ‘len’ in something not a structure or union
-  137 |   if ((str.len > 0 && tmp2 == "-")) {
+/tmp/base64-decode-data.c:139:11: error: request for member ‘len’ in something not a structure or union
+  139 |   if ((str.len > 0 && tmp2 == "-")) {
       |           ^
-/tmp/base64-decode-data.c:154:18: error: request for member ‘len’ in something not a structure or union
-  154 |   while ((i < str.len)) {
+/tmp/base64-decode-data.c:156:18: error: request for member ‘len’ in something not a structure or union
+  156 |   while ((i < str.len)) {
       |                  ^

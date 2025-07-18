@@ -1,8 +1,8 @@
-parse: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/bitwise-io-2.mochi:6:26: lexer: invalid input text "; i = i + 1 }\n  ..."
-  --> /workspace/mochi/tests/rosetta/x/Mochi/bitwise-io-2.mochi:6:26
+type: error[T008]: type mismatch: expected int, got float
+  --> /workspace/mochi/tests/rosetta/x/Mochi/bitwise-io-2.mochi:10:42
 
-  6 |   while i < n { v = v * 2; i = i + 1 }
-    |                          ^
+ 10 | fun rshift(x: int, n: int): int { return x / pow2(n) }
+    |                                          ^
 
 help:
-  String literals must be properly closed with a `"`.
+  Change the value to match the expected type.

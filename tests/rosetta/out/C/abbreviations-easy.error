@@ -1,27 +1,32 @@
 cc: exit status 1
 /tmp/abbreviations-easy.c: In function ‘validate’:
-/tmp/abbreviations-easy.c:138:19: warning: implicit declaration of function ‘upper’ [-Wimplicit-function-declaration]
-  138 |         char *c = upper(cmd);
-      |                   ^~~~~
-/tmp/abbreviations-easy.c:138:19: warning: initialization of ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
-/tmp/abbreviations-easy.c:139:20: warning: initialization of ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
-  139 |         char *ww = upper(w);
-      |                    ^~~~~
+/tmp/abbreviations-easy.c:138:25: warning: implicit declaration of function ‘upper’ [-Wimplicit-function-declaration]
+  138 |         __auto_type c = upper(cmd);
+      |                         ^~~~~
+/tmp/abbreviations-easy.c:140:34: warning: passing argument 1 of ‘slice_string’ makes pointer from integer without a cast [-Wint-conversion]
+  140 |         if ((strcmp(slice_string(c, 0, wlen), ww) == 0)) {
+      |                                  ^
+      |                                  |
+      |                                  int
+/tmp/abbreviations-easy.c:52:33: note: expected ‘char *’ but argument is of type ‘int’
+   52 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/abbreviations-easy.c:140:47: warning: passing argument 2 of ‘strcmp’ makes pointer from integer without a cast [-Wint-conversion]
+  140 |         if ((strcmp(slice_string(c, 0, wlen), ww) == 0)) {
+      |                                               ^~
+      |                                               |
+      |                                               int
+In file included from /tmp/abbreviations-easy.c:5:
+/usr/include/string.h:156:50: note: expected ‘const char *’ but argument is of type ‘int’
+  156 | extern int strcmp (const char *__s1, const char *__s2)
+      |                                      ~~~~~~~~~~~~^~~~
+/tmp/abbreviations-easy.c:142:24: warning: assignment to ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+  142 |           tmp9.data[0] = c;
+      |                        ^
 /tmp/abbreviations-easy.c: In function ‘mochi_main’:
 /tmp/abbreviations-easy.c:195:12: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
   195 |     mins = 0;
       |            ^
-/tmp/abbreviations-easy.c:201:17: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  201 |   int results = validate(commands, words, mins);
-      |                 ^~~~~~~~
-/tmp/abbreviations-easy.c:206:60: error: request for member ‘data’ in something not a structure or union
+/tmp/abbreviations-easy.c:206:68: error: request for member ‘len’ in something not a structure or union
   206 |         concat_string(out1, padRight(words.data[k], results.data[k].len));
-      |                                                            ^
-/tmp/abbreviations-easy.c:212:53: error: incompatible type for argument 1 of ‘join’
-  212 |   char *tmp21 = concat_string("full words:  ", join(results, " "));
-      |                                                     ^~~~~~~
-      |                                                     |
-      |                                                     int
-/tmp/abbreviations-easy.c:109:24: note: expected ‘list_string’ but argument is of type ‘int’
-  109 | char *join(list_string xs, char *sep) {
-      |            ~~~~~~~~~~~~^~
+      |                                                                    ^

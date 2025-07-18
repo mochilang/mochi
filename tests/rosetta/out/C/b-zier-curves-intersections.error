@@ -32,9 +32,14 @@ cc: exit status 1
 /tmp/b-zier-curves-intersections.c:313:17: error: request for member ‘len’ in something not a structure or union
   313 |   while (i < pts.len) {
       |                 ^
-/tmp/b-zier-curves-intersections.c:314:21: error: request for member ‘data’ in something not a structure or union
-  314 |     point_t pt = pts.data[i];
-      |                     ^
+/tmp/b-zier-curves-intersections.c:314:25: error: request for member ‘data’ in something not a structure or union
+  314 |     __auto_type pt = pts.data[i];
+      |                         ^
+/tmp/b-zier-curves-intersections.c:315:14: error: ‘pt’ undeclared (first use in this function); did you mean ‘pts’?
+  315 |     if (absf(pt.x - xy->x) < spacing && absf(pt.y - xy->y) < spacing) {
+      |              ^~
+      |              pts
+/tmp/b-zier-curves-intersections.c:315:14: note: each undeclared identifier is reported only once for each function it appears in
 /tmp/b-zier-curves-intersections.c: In function ‘findIntersects’:
 /tmp/b-zier-curves-intersections.c:327:39: warning: division by zero [-Wdiv-by-zero]
   327 |   int workload_len = sizeof(workload) / sizeof(workload[0]);
@@ -46,15 +51,16 @@ cc: exit status 1
 /tmp/b-zier-curves-intersections.c:333:14: error: assignment to expression with array type
   333 |     workload = tmp3;
       |              ^
-/tmp/b-zier-curves-intersections.c:335:19: error: request for member ‘data’ in something not a structure or union
-  335 |     int excl = res.data["exclude"];
-      |                   ^
-/tmp/b-zier-curves-intersections.c:336:18: error: request for member ‘data’ in something not a structure or union
-  336 |     int acc = res.data["accept"];
-      |                  ^
-/tmp/b-zier-curves-intersections.c:337:30: error: request for member ‘data’ in something not a structure or union
-  337 |     int inter = (point_t)(res.data["intersect"]);
-      |                              ^
+/tmp/b-zier-curves-intersections.c:335:24: error: ‘res’ undeclared (first use in this function)
+  335 |     __auto_type excl = res.data["exclude"];
+      |                        ^~~
+/tmp/b-zier-curves-intersections.c:338:10: error: ‘acc’ undeclared (first use in this function)
+  338 |     if ((acc)) {
+      |          ^~~
+/tmp/b-zier-curves-intersections.c:339:40: error: ‘inter’ undeclared (first use in this function); did you mean ‘inters’?
+  339 |       if ((!seemsToBeDuplicate(inters, inter, spacing))) {
+      |                                        ^~~~~
+      |                                        inters
 /tmp/b-zier-curves-intersections.c:339:32: error: incompatible type for argument 1 of ‘seemsToBeDuplicate’
   339 |       if ((!seemsToBeDuplicate(inters, inter, spacing))) {
       |                                ^~~~~~
@@ -63,29 +69,17 @@ cc: exit status 1
 /tmp/b-zier-curves-intersections.c:311:28: note: expected ‘int’ but argument is of type ‘point_list_t’
   311 | int seemsToBeDuplicate(int pts, point_t *xy, double spacing) {
       |                        ~~~~^~~
-/tmp/b-zier-curves-intersections.c:339:40: warning: passing argument 2 of ‘seemsToBeDuplicate’ makes pointer from integer without a cast [-Wint-conversion]
-  339 |       if ((!seemsToBeDuplicate(inters, inter, spacing))) {
-      |                                        ^~~~~
-      |                                        |
-      |                                        int
-/tmp/b-zier-curves-intersections.c:311:42: note: expected ‘point_t *’ {aka ‘struct point_t *’} but argument is of type ‘int’
-  311 | int seemsToBeDuplicate(int pts, point_t *xy, double spacing) {
-      |                                 ~~~~~~~~~^~
-/tmp/b-zier-curves-intersections.c:344:33: error: incompatible types when assigning to type ‘point_t’ {aka ‘struct point_t’} from type ‘int’
-  344 |         tmp5.data[inters.len] = inter;
-      |                                 ^~~~~
-/tmp/b-zier-curves-intersections.c:351:18: error: request for member ‘data’ in something not a structure or union
-  351 |       int p0 = ps.data[0];
-      |                  ^
-/tmp/b-zier-curves-intersections.c:352:18: error: request for member ‘data’ in something not a structure or union
-  352 |       int p1 = ps.data[1];
-      |                  ^
-/tmp/b-zier-curves-intersections.c:353:18: error: request for member ‘data’ in something not a structure or union
-  353 |       int q0 = qs.data[0];
-      |                  ^
-/tmp/b-zier-curves-intersections.c:354:18: error: request for member ‘data’ in something not a structure or union
-  354 |       int q1 = qs.data[1];
-      |                  ^
+/tmp/b-zier-curves-intersections.c:348:19: error: ‘excl’ undeclared (first use in this function)
+  348 |     } else if (((!excl))) {
+      |                   ^~~~
+/tmp/b-zier-curves-intersections.c:351:24: error: ‘ps’ undeclared (first use in this function); did you mean ‘p’?
+  351 |       __auto_type p0 = ps.data[0];
+      |                        ^~
+      |                        p
+/tmp/b-zier-curves-intersections.c:353:24: error: ‘qs’ undeclared (first use in this function); did you mean ‘q’?
+  353 |       __auto_type q0 = qs.data[0];
+      |                        ^~
+      |                        q
 /tmp/b-zier-curves-intersections.c:355:59: error: ‘(workload_t *)&workload’ is a pointer; did you mean to use ‘->’?
   355 |       workload_list_t tmp7 = create_workload_list(workload.len + 1);
       |                                                           ^
@@ -105,9 +99,17 @@ cc: exit status 1
 /tmp/b-zier-curves-intersections.c:359:47: error: ‘tmp_item_t’ has no member named ‘p’
   359 |       tmp7.data[workload.len] = (tmp_item_t){.p = p0, .q = q0};
       |                                               ^
+/tmp/b-zier-curves-intersections.c:359:51: error: ‘p0’ undeclared (first use in this function); did you mean ‘p’?
+  359 |       tmp7.data[workload.len] = (tmp_item_t){.p = p0, .q = q0};
+      |                                                   ^~
+      |                                                   p
 /tmp/b-zier-curves-intersections.c:359:56: error: ‘tmp_item_t’ has no member named ‘q’
   359 |       tmp7.data[workload.len] = (tmp_item_t){.p = p0, .q = q0};
       |                                                        ^
+/tmp/b-zier-curves-intersections.c:359:60: error: ‘q0’ undeclared (first use in this function); did you mean ‘q’?
+  359 |       tmp7.data[workload.len] = (tmp_item_t){.p = p0, .q = q0};
+      |                                                            ^~
+      |                                                            q
 /tmp/b-zier-curves-intersections.c:360:26: error: ‘(workload_t *)&workload’ is a pointer; did you mean to use ‘->’?
   360 |       tmp7.len = workload.len + 1;
       |                          ^
@@ -131,6 +133,10 @@ cc: exit status 1
   366 |       tmp9.data[workload.len] = (tmp_item1_t){.p = p0, .q = q1};
       |                         ^
       |                         ->
+/tmp/b-zier-curves-intersections.c:366:61: error: ‘q1’ undeclared (first use in this function); did you mean ‘q’?
+  366 |       tmp9.data[workload.len] = (tmp_item1_t){.p = p0, .q = q1};
+      |                                                             ^~
+      |                                                             q
 /tmp/b-zier-curves-intersections.c:367:26: error: ‘(workload_t *)&workload’ is a pointer; did you mean to use ‘->’?
   367 |       tmp9.len = workload.len + 1;
       |                          ^
@@ -154,6 +160,10 @@ cc: exit status 1
   373 |       tmp11.data[workload.len] = (tmp_item2_t){.p = p1, .q = q0};
       |                          ^
       |                          ->
+/tmp/b-zier-curves-intersections.c:373:53: error: ‘p1’ undeclared (first use in this function); did you mean ‘p’?
+  373 |       tmp11.data[workload.len] = (tmp_item2_t){.p = p1, .q = q0};
+      |                                                     ^~
+      |                                                     p
 /tmp/b-zier-curves-intersections.c:374:27: error: ‘(workload_t *)&workload’ is a pointer; did you mean to use ‘->’?
   374 |       tmp11.len = workload.len + 1;
       |                           ^
