@@ -533,6 +533,9 @@ func (c *Compiler) compileImport(im *parser.ImportStmt) error {
 		if im.Auto {
 			c.goAuto[alias] = true
 		}
+		// also require the Go package so generated code compiles
+		mod := strings.ReplaceAll(path, "/", ".")
+		c.imports[alias] = mod
 		return nil
 	default:
 		return fmt.Errorf("unsupported import language: %s", *im.Lang)
