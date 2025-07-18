@@ -1,0 +1,15 @@
+cc: exit status 1
+/tmp/consecutive-primes-with-ascending-or-descending-differences.c: In function ‘longestSeq’:
+/tmp/consecutive-primes-with-ascending-or-descending-differences.c:127:14: error: ‘primes’ undeclared (first use in this function)
+  127 |   while (i < primes.len) {
+      |              ^~~~~~
+/tmp/consecutive-primes-with-ascending-or-descending-differences.c:127:14: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/consecutive-primes-with-ascending-or-descending-differences.c:135:24: error: incompatible types when assigning to type ‘int’ from type ‘list_int’
+  135 |         tmp6.data[0] = tmp7;
+      |                        ^~~~
+/tmp/consecutive-primes-with-ascending-or-descending-differences.c:136:20: error: incompatible types when assigning to type ‘list_list_int’ from type ‘list_int’
+  136 |         longSeqs = tmp6;
+      |                    ^~~~
+/tmp/consecutive-primes-with-ascending-or-descending-differences.c:180:15: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  180 |       diffs = 0;
+      |               ^

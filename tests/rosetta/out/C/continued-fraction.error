@@ -1,0 +1,30 @@
+cc: exit status 1
+/tmp/continued-fraction.c: In function ‘cfSqrt2’:
+/tmp/continued-fraction.c:93:5: error: ‘f’ undeclared (first use in this function)
+   93 |     f = 0;
+      |     ^
+/tmp/continued-fraction.c:93:5: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/continued-fraction.c: In function ‘cfNap’:
+/tmp/continued-fraction.c:105:5: error: ‘f’ undeclared (first use in this function)
+  105 |     f = 0;
+      |     ^
+/tmp/continued-fraction.c: In function ‘cfPi’:
+/tmp/continued-fraction.c:121:5: error: ‘f’ undeclared (first use in this function)
+  121 |     f = 0;
+      |     ^
+/tmp/continued-fraction.c: In function ‘real’:
+/tmp/continued-fraction.c:132:12: error: request for member ‘len’ in something not a structure or union
+  132 |   int i = f.len - 1;
+      |            ^
+/tmp/continued-fraction.c:134:20: error: request for member ‘data’ in something not a structure or union
+  134 |     r = ((double)(f.data[i].data["b"])) / (((double)(f.data[i].data["a"])) + r);
+      |                    ^
+/tmp/continued-fraction.c:134:55: error: request for member ‘data’ in something not a structure or union
+  134 |     r = ((double)(f.data[i].data["b"])) / (((double)(f.data[i].data["a"])) + r);
+      |                                                       ^
+/tmp/continued-fraction.c:137:8: error: request for member ‘len’ in something not a structure or union
+  137 |   if (f.len > 0) {
+      |        ^
+/tmp/continued-fraction.c:138:24: error: request for member ‘data’ in something not a structure or union
+  138 |     r = r + ((double)(f.data[0].data["a"]));
+      |                        ^

@@ -1,4 +1,4 @@
-# Rosetta C Output (48/216 compiled and run)
+# Rosetta C Output (60/238 compiled and run)
 
 This directory holds C source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -152,17 +152,17 @@ This directory holds C source code generated from the real Mochi programs in `te
 - [ ] calkin-wilf-sequence
 - [ ] call-a-foreign-language-function
 - [x] call-a-function-1
-- [ ] call-a-function-10
+- [x] call-a-function-10
 - [x] call-a-function-11
 - [x] call-a-function-12
-- [ ] call-a-function-2
-- [ ] call-a-function-3
+- [x] call-a-function-2
+- [x] call-a-function-3
 - [x] call-a-function-4
 - [x] call-a-function-5
 - [x] call-a-function-6
-- [ ] call-a-function-7
+- [x] call-a-function-7
 - [ ] call-a-function-8
-- [ ] call-a-function-9
+- [x] call-a-function-9
 - [x] call-an-object-method-1
 - [ ] call-an-object-method-2
 - [ ] call-an-object-method-3
@@ -209,6 +209,28 @@ This directory holds C source code generated from the real Mochi programs in `te
 - [ ] circles-of-given-radius-through-two-points
 - [ ] circular-primes
 - [ ] cistercian-numerals
+- [ ] compiler-virtual-machine-interpreter
+- [x] concurrent-computing-1
+- [x] concurrent-computing-2
+- [x] concurrent-computing-3
+- [ ] conditional-structures-1
+- [x] conditional-structures-10
+- [ ] conditional-structures-2
+- [ ] conditional-structures-3
+- [x] conditional-structures-4
+- [ ] conditional-structures-5
+- [ ] conditional-structures-6
+- [ ] conditional-structures-7
+- [ ] conditional-structures-8
+- [x] conditional-structures-9
+- [ ] consecutive-primes-with-ascending-or-descending-differences
+- [ ] constrained-genericity-1
+- [ ] constrained-genericity-2
+- [x] constrained-genericity-3
+- [ ] constrained-genericity-4
+- [ ] constrained-random-points-on-a-circle-1
+- [ ] constrained-random-points-on-a-circle-2
+- [ ] continued-fraction
 - [ ] crc-32-1
 - [ ] crc-32-2
 - [ ] csv-data-manipulation

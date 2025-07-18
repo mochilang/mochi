@@ -1,0 +1,16 @@
+cc: exit status 1
+/tmp/constrained-random-points-on-a-circle-2.c: In function ‘_mochi_main’:
+/tmp/constrained-random-points-on-a-circle-2.c:191:5: error: ‘rows’ undeclared (first use in this function); did you mean ‘row’?
+  191 |     rows = 0;
+      |     ^~~~
+      |     row
+/tmp/constrained-random-points-on-a-circle-2.c:191:5: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/constrained-random-points-on-a-circle-2.c:195:14: error: incompatible types when initializing type ‘int’ using type ‘map_string_int’
+  195 |   int seen = tmp8;
+      |              ^~~~
+/tmp/constrained-random-points-on-a-circle-2.c:208:15: error: request for member ‘data’ in something not a structure or union
+  208 |     if ((!seen.data[key])) {
+      |               ^
+/tmp/constrained-random-points-on-a-circle-2.c:209:11: error: request for member ‘data’ in something not a structure or union
+  209 |       seen.data[key] = 1;
+      |           ^
