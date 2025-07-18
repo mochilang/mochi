@@ -4896,10 +4896,30 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		args[1] = fmt.Sprintf("any(%s)", args[1])
 		return fmt.Sprintf("append(%s, %s)", args[0], args[1]), nil
 	case "len":
-		if strings.HasPrefix(argStr, "any(") && strings.HasSuffix(argStr, ")") {
-			argStr = strings.TrimSuffix(strings.TrimPrefix(argStr, "any("), ")")
+		arg := argStr
+		if strings.HasPrefix(arg, "any(") && strings.HasSuffix(arg, ")") {
+			arg = strings.TrimSuffix(strings.TrimPrefix(arg, "any("), ")")
 		}
-		return fmt.Sprintf("len(%s)", argStr), nil
+		if len(call.Args) == 1 {
+			at := c.inferExprType(call.Args[0])
+			switch at.(type) {
+			case types.ListType, types.MapType:
+				return fmt.Sprintf("len(%s)", arg), nil
+			case types.StringType:
+				return fmt.Sprintf("len([]rune(%s))", arg), nil
+			case types.GroupType:
+				return fmt.Sprintf("len(%s.Items)", arg), nil
+			}
+			c.imports["mochi/runtime/data"] = true
+			c.imports["reflect"] = true
+			c.use("_count")
+			if lt, ok := at.(types.ListType); ok && !isAny(lt.Elem) {
+				c.use("_toAnySlice")
+				arg = fmt.Sprintf("_toAnySlice(%s)", arg)
+			}
+			return fmt.Sprintf("_count(%s)", arg), nil
+		}
+		return fmt.Sprintf("len(%s)", arg), nil
 	case "now":
 		c.use("_now")
 		return "_now()", nil
