@@ -171,6 +171,13 @@ tasks located under `tests/rosetta/x/Mochi`. Out of 216 programs, 203 run
 successfully. Twelve programs fail to compile or execute and produce a `.error`
 file. One program (`21-game`) requires interactive input and is skipped.
 
+### Clojure compiler status
+
+The Clojure backend currently generates code for a small subset of these tasks
+located under `tests/rosetta/out/Clojure`. Six programs compile, four of which
+run successfully. Two programs (`15-puzzle-game` and `15-puzzle-solver`) fail at
+runtime and have corresponding `.error` files.
+
 ### Failing programs
 
 - 15-puzzle-game
