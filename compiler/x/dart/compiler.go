@@ -87,6 +87,12 @@ num _sum(dynamic v) {
 }
 `
 
+const dartInputHelper = `
+String _input() {
+    return stdin.readLineSync() ?? '';
+}
+`
+
 // Compiler is a very small proof-of-concept translator that converts a limited
 // subset of Mochi programs into Dart code.  For many of the test programs this
 // translation is incomplete, but it is sufficient for simple examples such as
@@ -105,6 +111,7 @@ type Compiler struct {
 	useMin     bool
 	useSum     bool
 	usePrint   bool
+	useInput   bool
 	tmp        int
 	mapVars    map[string]bool
 	groupKeys  map[string]string
@@ -337,6 +344,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	if c.usePrint {
 		out.WriteString(dartPrintHelper)
+	}
+	if c.useInput {
+		out.WriteString(dartInputHelper)
 	}
 	if c.useLoad {
 		out.WriteString(dartRepoHelper)
@@ -2247,6 +2257,18 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("exists expects 1 arg")
 		}
 		return fmt.Sprintf("%s.isNotEmpty", args[0]), nil
+	case "int":
+		if len(args) != 1 {
+			return "", fmt.Errorf("int expects 1 arg")
+		}
+		return fmt.Sprintf("int.parse(%s.toString())", args[0]), nil
+	case "input":
+		if len(args) != 0 {
+			return "", fmt.Errorf("input expects no args")
+		}
+		c.useInput = true
+		c.useIO = true
+		return "_input()", nil
 	case "now":
 		if len(args) != 0 {
 			return "", fmt.Errorf("now expects no args")
