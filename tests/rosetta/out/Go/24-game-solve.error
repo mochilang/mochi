@@ -1,10 +1,13 @@
 run: exit status 1
 # command-line-arguments
-/tmp/X/001/main.go:70:9: invalid argument: any(xs) (value of interface type any) for built-in len
-/tmp/X/001/main.go:79:14: invalid argument: any(xs) (value of interface type any) for built-in len
-/tmp/X/001/main.go:81:15: invalid argument: any(xs) (value of interface type any) for built-in len
-/tmp/X/001/main.go:84:16: invalid argument: any(xs) (value of interface type any) for built-in len
-/tmp/X/001/main.go:103:74: cannot convert node (variable of struct type Node) to type map[string]any
-/tmp/X/001/main.go:112:73: cannot convert node (variable of struct type Node) to type map[string]any
-/tmp/X/001/main.go:120:73: cannot convert node (variable of struct type Node) to type map[string]any
-/tmp/X/001/main.go:138:33: cannot use n (variable of type int64) as int value in argument to newNum
+/tmp/X/001/main.go:27:30: undefined: OP_NUM
+/tmp/X/001/main.go:32:21: undefined: OP_NUM
+/tmp/X/001/main.go:37:21: undefined: OP_ADD
+/tmp/X/001/main.go:40:21: undefined: OP_SUB
+/tmp/X/001/main.go:43:21: undefined: OP_MUL
+/tmp/X/001/main.go:51:21: undefined: OP_NUM
+/tmp/X/001/main.go:57:21: undefined: OP_ADD
+/tmp/X/001/main.go:59:28: undefined: OP_SUB
+/tmp/X/001/main.go:61:28: undefined: OP_MUL
+/tmp/X/001/main.go:73:54: undefined: goal
+/tmp/X/001/main.go:73:54: too many errors

@@ -6,6 +6,8 @@ package main
 
 import (
 	"fmt"
+	"mochi/runtime/data"
+	"reflect"
 )
 
 type v map[string]any
@@ -15,10 +17,10 @@ func fields(s string) []string {
 	var words []string = []string{}
 	cur := ""
 	i := 0
-	for i < len(s) {
+	for i < _count(s) {
 		ch := string([]rune(s)[i:(i + 1)])
 		if ((ch == " ") || (ch == "\n")) || (ch == "\t") {
-			if len(cur) > 0 {
+			if _count(cur) > 0 {
 				words = append(words, cur)
 				cur = ""
 			}
@@ -27,7 +29,7 @@ func fields(s string) []string {
 		}
 		i = (i + 1)
 	}
-	if len(cur) > 0 {
+	if _count(cur) > 0 {
 		words = append(words, cur)
 	}
 	return words
@@ -37,7 +39,7 @@ func fields(s string) []string {
 func join(xs []string, sep string) string {
 	res := ""
 	i := 0
-	for i < len(xs) {
+	for i < _count(_toAnySlice(xs)) {
 		if i > 0 {
 			res = res + sep
 		}
@@ -90,7 +92,7 @@ func numberName(n int) string {
 		return small[n]
 	}
 	if n < 100 {
-		t := tens[int((float64(n) / float64(10)))]
+		t := tens[(float64(n) / float64(10))]
 		s := (n % 10)
 		if s > 0 {
 			t = t + " " + small[s]
@@ -106,7 +108,7 @@ func pluralizeFirst(s string, n int) string {
 		return s
 	}
 	w := fields(s)
-	if len(w) > 0 {
+	if _count(_toAnySlice(w)) > 0 {
 		w[0] = w[0] + "s"
 	}
 	return join(w, " ")
@@ -120,16 +122,16 @@ func randInt(seed int, n int) int {
 
 // line 72
 func slur(p string, d int) string {
-	if len(p) <= 2 {
+	if _count(p) <= 2 {
 		return p
 	}
 	var a []string = []string{}
 	i := 1
-	for i < (len(p) - 1) {
+	for i < (_count(p) - 1) {
 		a = append(a, string([]rune(p)[i:(i+1)]))
 		i = (i + 1)
 	}
-	idx := (len(a) - 1)
+	idx := (_count(_toAnySlice(a)) - 1)
 	seed := d
 	for idx >= 1 {
 		seed = (((seed * 1664525) + 1013904223) % 2147483647)
@@ -143,11 +145,11 @@ func slur(p string, d int) string {
 	}
 	s := string([]rune(p)[0:1])
 	k := 0
-	for k < len(a) {
+	for k < _count(_toAnySlice(a)) {
 		s = s + a[k]
 		k = (k + 1)
 	}
-	s = s + string([]rune(p)[(len(p)-1):len(p)])
+	s = s + string([]rune(p)[(_count(p)-1):_count(p)])
 	w := fields(s)
 	return join(w, " ")
 }
@@ -166,4 +168,41 @@ func mainFn() {
 
 func main() {
 	mainFn()
+}
+
+func _count(v any) int {
+	if g, ok := v.(*data.Group); ok {
+		return len(g.Items)
+	}
+	switch s := v.(type) {
+	case []any:
+		return len(s)
+	case []int:
+		return len(s)
+	case []float64:
+		return len(s)
+	case []string:
+		return len(s)
+	case []bool:
+		return len(s)
+	case []map[string]any:
+		return len(s)
+	case map[string]any:
+		return len(s)
+	case string:
+		return len([]rune(s))
+	}
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array {
+		return rv.Len()
+	}
+	panic("count() expects list or group")
+}
+
+func _toAnySlice[T any](s []T) []any {
+	out := make([]any, len(s))
+	for i, v := range s {
+		out[i] = v
+	}
+	return out
 }

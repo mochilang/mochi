@@ -2364,6 +2364,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 		}
 		if len(p.Selector.Tail) == 0 {
+			if ot, ok := typ.(types.OptionType); ok {
+				base = fmt.Sprintf("(*%s)", base)
+				typ = ot.Elem
+			}
 			if ut, ok := c.env.FindUnionByVariant(p.Selector.Root); ok {
 				st := ut.Variants[p.Selector.Root]
 				if len(st.Fields) == 0 {
@@ -4897,18 +4901,26 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		return fmt.Sprintf("append(%s, %s)", args[0], args[1]), nil
 	case "len":
 		arg := argStr
+		wasAny := false
 		if strings.HasPrefix(arg, "any(") && strings.HasSuffix(arg, ")") {
 			arg = strings.TrimSuffix(strings.TrimPrefix(arg, "any("), ")")
+			wasAny = true
 		}
 		if len(call.Args) == 1 {
 			at := c.inferExprType(call.Args[0])
 			switch at.(type) {
 			case types.ListType, types.MapType:
-				return fmt.Sprintf("len(%s)", arg), nil
+				if !wasAny {
+					return fmt.Sprintf("len(%s)", arg), nil
+				}
 			case types.StringType:
-				return fmt.Sprintf("len([]rune(%s))", arg), nil
+				if !wasAny {
+					return fmt.Sprintf("len([]rune(%s))", arg), nil
+				}
 			case types.GroupType:
-				return fmt.Sprintf("len(%s.Items)", arg), nil
+				if !wasAny {
+					return fmt.Sprintf("len(%s.Items)", arg), nil
+				}
 			}
 			c.imports["mochi/runtime/data"] = true
 			c.imports["reflect"] = true
@@ -4917,6 +4929,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				c.use("_toAnySlice")
 				arg = fmt.Sprintf("_toAnySlice(%s)", arg)
 			}
+			return fmt.Sprintf("_count(%s)", arg), nil
+		}
+		if wasAny {
+			c.imports["mochi/runtime/data"] = true
+			c.imports["reflect"] = true
+			c.use("_count")
 			return fmt.Sprintf("_count(%s)", arg), nil
 		}
 		return fmt.Sprintf("len(%s)", arg), nil
