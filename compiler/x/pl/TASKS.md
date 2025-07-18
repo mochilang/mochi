@@ -41,3 +41,8 @@
 ## Progress (2025-07-18 03:02 UTC)
 - Improved `in` operator compilation to use native Prolog operations for lists, strings, and maps.
 - `contains/3` helper is now omitted when static types allow specialized code.
+
+## Progress (2025-07-18 08:22 UTC)
+- Enhanced field access and indexing for maps using `get_dict` when types are known.
+- Updated `lookupVar` to prefer mutable lookups so assignments fetch the current value correctly.
+- Regenerated machine outputs for `map_assign` and `map_nested_assign`.
