@@ -23,39 +23,6 @@ function __run_tests(tests)
         io.write('\n[FAIL] ' .. failures .. ' test(s) failed.\n')
     end
 end
-function __str(v)
-    local t = type(v)
-    if t == 'table' then
-        if v[1] ~= nil or #v > 0 then
-            local parts = {}
-            for i=1,#v do parts[#parts+1] = __str(v[i]) end
-            local body = '['..table.concat(parts, ' ')..']'
-            if v.__name then return v.__name..' '..body end
-            return body
-        else
-            local keys = {}
-            for k in pairs(v) do if k ~= '__name' then keys[#keys+1] = k end end
-            table.sort(keys, function(a,b) return tostring(a)<tostring(b) end)
-            local parts = {}
-            for _,k in ipairs(keys) do
-                local val = v[k]
-                local vs
-                if type(val) == 'string' then
-                    vs = string.format('%q', val)
-                else
-                    vs = __str(val)
-                end
-                parts[#parts+1] = k..': '..vs
-            end
-            local body = '{'..table.concat(parts, ', ')..'}'
-            if v.__name then return v.__name..' '..body end
-            return body
-        end
-    else
-        if t == 'boolean' then return (v and '1' or '0') end
-        return tostring(v)
-    end
-end
 Person = {}
 Person.__index = Person
 function Person.new(o)
@@ -68,7 +35,7 @@ function test_update_adult_status()
     if not ((people == {{name="Alice", age=17, status="minor"}, {name="Bob", age=26, status="adult"}, {name="Charlie", age=19, status="adult"}, {name="Diana", age=16, status="minor"}})) then error('expect failed') end
 end
 
-people = {{name="Alice", age=17, status="minor"}, {name="Bob", age=25, status="unknown"}, {name="Charlie", age=18, status="unknown"}, {name="Diana", age=16, status="minor"}}
+people = {{name="Alice", age=17, status="minor"}, {name="Bob", age=25, status="unknown"}, {name="Charlie", age=18, status="unknown"}, {name="Diana", age=16, status="minor"}};
 for _i0 = 1, #people do
     local _it0 = people[_i0]
     local name = _it0["name"]
@@ -80,7 +47,7 @@ for _i0 = 1, #people do
     end
     people[_i0] = _it0
 end
-print("ok")
+print("ok");
 local __tests = {
     {name="update adult status", fn=test_update_adult_status},
 }

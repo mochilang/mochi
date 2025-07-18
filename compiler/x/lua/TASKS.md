@@ -115,3 +115,7 @@
 ## Progress (2025-07-19 15:00)
 - Removed `__str` helper entirely by emitting `tostring` calls and list joins.
 - Regenerated VM valid Lua sources and outputs.
+
+## Progress (2025-07-18 15:30)
+- Added semicolons after expression and assignment statements to prevent Lua from interpreting consecutive lines as function calls.
+- Regenerated VM valid Lua sources and outputs; all 101 programs run successfully.

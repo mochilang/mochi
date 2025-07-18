@@ -457,7 +457,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			if c.isListExpr(call.Args[0]) {
 				tmp := fmt.Sprintf("_l%d", c.tmpCount)
 				c.tmpCount++
-				return fmt.Sprintf("(function(%s) local p={} for i=1,#%s do p[#p+1]=tostring(%s[i]) end print(table.concat(p, ' ')) end)(%s)", tmp, tmp, tmp, args[0]), nil
+				return fmt.Sprintf("(function(%s) local p={} for i=1,#%s do p[#p+1]=tostring(%s[i]) end print(table.concat(p, ' ')) end)(%s);", tmp, tmp, tmp, args[0]), nil
 			}
 			return fmt.Sprintf("print(%s)", parts[0]), nil
 		}

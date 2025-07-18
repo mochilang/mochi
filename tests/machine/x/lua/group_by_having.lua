@@ -76,7 +76,7 @@ function __json(v)
     end
     print(enc(sort(v)))
 end
-people = {{["name"]="Alice", ["city"]="Paris"}, {["name"]="Bob", ["city"]="Hanoi"}, {["name"]="Charlie", ["city"]="Paris"}, {["name"]="Diana", ["city"]="Hanoi"}, {["name"]="Eve", ["city"]="Paris"}, {["name"]="Frank", ["city"]="Hanoi"}, {["name"]="George", ["city"]="Paris"}}
+people = {{["name"]="Alice", ["city"]="Paris"}, {["name"]="Bob", ["city"]="Hanoi"}, {["name"]="Charlie", ["city"]="Paris"}, {["name"]="Diana", ["city"]="Hanoi"}, {["name"]="Eve", ["city"]="Paris"}, {["name"]="Frank", ["city"]="Hanoi"}, {["name"]="George", ["city"]="Paris"}};
 big = (function()
     local _groups = __group_by(people, function(p) return p.city end)
     local _res = {}
@@ -86,5 +86,5 @@ big = (function()
         end
     end
     return _res
-end)()
-__json(big)
+end)();
+__json(big);

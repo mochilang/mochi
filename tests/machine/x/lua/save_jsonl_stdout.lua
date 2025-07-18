@@ -53,5 +53,5 @@ function __save(rows, path, opts)
     f:write(data)
     if f ~= io.stdout then f:close() end
 end
-people = {{["name"]="Alice", ["age"]=30}, {["name"]="Bob", ["age"]=25}}
-__save(people, "-", {["format"]="jsonl"})
+people = {{["name"]="Alice", ["age"]=30}, {["name"]="Bob", ["age"]=25}};
+__save(people, "-", {["format"]="jsonl"});

@@ -198,39 +198,6 @@ function __query(src, joins, opts)
     for _, r in ipairs(items) do res[#res+1] = opts.selectFn(table.unpack(r,1,r.n or #r)) end
     return res
 end
-function __str(v)
-    local t = type(v)
-    if t == 'table' then
-        if v[1] ~= nil or #v > 0 then
-            local parts = {}
-            for i=1,#v do parts[#parts+1] = __str(v[i]) end
-            local body = '['..table.concat(parts, ' ')..']'
-            if v.__name then return v.__name..' '..body end
-            return body
-        else
-            local keys = {}
-            for k in pairs(v) do if k ~= '__name' then keys[#keys+1] = k end end
-            table.sort(keys, function(a,b) return tostring(a)<tostring(b) end)
-            local parts = {}
-            for _,k in ipairs(keys) do
-                local val = v[k]
-                local vs
-                if type(val) == 'string' then
-                    vs = string.format('%q', val)
-                else
-                    vs = __str(val)
-                end
-                parts[#parts+1] = k..': '..vs
-            end
-            local body = '{'..table.concat(parts, ', ')..'}'
-            if v.__name then return v.__name..' '..body end
-            return body
-        end
-    else
-        if t == 'boolean' then return (v and '1' or '0') end
-        return tostring(v)
-    end
-end
 function __sum(v)
     local items
     if type(v) == 'table' and v.items ~= nil then
@@ -244,12 +211,12 @@ function __sum(v)
     for _, it in ipairs(items) do sum = sum + it end
     return sum
 end
-nation = {{["n_nationkey"]=1, ["n_name"]="BRAZIL"}}
-customer = {{["c_custkey"]=1, ["c_name"]="Alice", ["c_acctbal"]=100.0, ["c_nationkey"]=1, ["c_address"]="123 St", ["c_phone"]="123-456", ["c_comment"]="Loyal"}}
-orders = {{["o_orderkey"]=1000, ["o_custkey"]=1, ["o_orderdate"]="1993-10-15"}, {["o_orderkey"]=2000, ["o_custkey"]=1, ["o_orderdate"]="1994-01-02"}}
-lineitem = {{["l_orderkey"]=1000, ["l_returnflag"]="R", ["l_extendedprice"]=1000.0, ["l_discount"]=0.1}, {["l_orderkey"]=2000, ["l_returnflag"]="N", ["l_extendedprice"]=500.0, ["l_discount"]=0.0}}
-start_date = "1993-10-01"
-end_date = "1994-01-01"
+nation = {{["n_nationkey"]=1, ["n_name"]="BRAZIL"}};
+customer = {{["c_custkey"]=1, ["c_name"]="Alice", ["c_acctbal"]=100.0, ["c_nationkey"]=1, ["c_address"]="123 St", ["c_phone"]="123-456", ["c_comment"]="Loyal"}};
+orders = {{["o_orderkey"]=1000, ["o_custkey"]=1, ["o_orderdate"]="1993-10-15"}, {["o_orderkey"]=2000, ["o_custkey"]=1, ["o_orderdate"]="1994-01-02"}};
+lineitem = {{["l_orderkey"]=1000, ["l_returnflag"]="R", ["l_extendedprice"]=1000.0, ["l_discount"]=0.1}, {["l_orderkey"]=2000, ["l_returnflag"]="N", ["l_extendedprice"]=500.0, ["l_discount"]=0.0}};
+start_date = "1993-10-01";
+end_date = "1994-01-01";
 result = (function()
     local _src = customer
     local _rows = __query(_src, {
@@ -269,5 +236,5 @@ result = (function()
 end)()), ["c_acctbal"]=g.key.c_acctbal, ["n_name"]=g.key.n_name, ["c_address"]=g.key.c_address, ["c_phone"]=g.key.c_phone, ["c_comment"]=g.key.c_comment}
     end
     return _res
-end)()
-(function(_l0) local p={} for i=1,#_l0 do p[#p+1]=__str(_l0[i]) end print(table.concat(p, ' ')) end)(result)
+end)();
+(function(_l0) local p={} for i=1,#_l0 do p[#p+1]=tostring(_l0[i]) end print(table.concat(p, ' ')) end)(result);;
