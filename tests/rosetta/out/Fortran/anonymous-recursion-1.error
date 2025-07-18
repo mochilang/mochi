@@ -1,6 +1,6 @@
 gfortran: exit status 1
-/tmp/anonymous-recursion-1.f90:34:7:
+/tmp/anonymous-recursion-1.f90:35:7:
 
-   34 |       n = arr0(i0)
+   35 |       n = arr0(i0)
       |       1
 Error: Symbol ‘n’ at (1) has no IMPLICIT type

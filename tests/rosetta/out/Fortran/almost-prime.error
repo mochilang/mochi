@@ -1,21 +1,21 @@
 gfortran: exit status 1
-/tmp/almost-prime.f90:50:5:
+/tmp/almost-prime.f90:51:5:
 
-   50 |     k = 1
+   51 |     k = 1
       |     1
 Error: Symbol ‘k’ at (1) has no IMPLICIT type
-/tmp/almost-prime.f90:35:5:
+/tmp/almost-prime.f90:36:5:
 
-   35 |     n = 2
+   36 |     n = 2
       |     1
 Error: Symbol ‘n’ at (1) has no IMPLICIT type
-/tmp/almost-prime.f90:46:4:
+/tmp/almost-prime.f90:47:4:
 
-   46 |     res = r
+   47 |     res = r
       |    1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/almost-prime.f90:24:8:
+/tmp/almost-prime.f90:25:8:
 
-   24 |         n = (n / i)
+   25 |         n = (n / i)
       |        1
 Error: Dummy argument ‘n’ with INTENT(IN) in variable definition context (assignment) at (1)

@@ -1,49 +1,39 @@
 gfortran: exit status 1
-/tmp/chinese-remainder-theorem.f90:33:5:
+/tmp/chinese-remainder-theorem.f90:34:5:
 
-   33 |     g = res(((0)+1))
+   34 |     g = res(((0)+1))
       |     1
 Error: Unclassifiable statement at (1)
-/tmp/chinese-remainder-theorem.f90:43:11:
+/tmp/chinese-remainder-theorem.f90:44:11:
 
-   43 |     if ((r(((0)+1)) /= 1)) then
+   44 |     if ((r(((0)+1)) /= 1)) then
       |           1
 Error: Expected a right parenthesis in expression at (1)
-/tmp/chinese-remainder-theorem.f90:46:7:
+/tmp/chinese-remainder-theorem.f90:47:7:
 
-   46 |     end if
+   47 |     end if
       |       1
 Error: Expecting END FUNCTION statement at (1)
-/tmp/chinese-remainder-theorem.f90:55:34:
+/tmp/chinese-remainder-theorem.f90:56:34:
 
-   55 |   recursive integer function crt(a,n) result(res)
+   56 |   recursive integer function crt(a,n) result(res)
       |                                  1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘a’ at (1)
-/tmp/chinese-remainder-theorem.f90:55:36:
+/tmp/chinese-remainder-theorem.f90:56:36:
 
-   55 |   recursive integer function crt(a,n) result(res)
+   56 |   recursive integer function crt(a,n) result(res)
       |                                    1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘n’ at (1)
-/tmp/chinese-remainder-theorem.f90:60:24:
+/tmp/chinese-remainder-theorem.f90:30:6:
 
-   60 |     do while ((i < size(n)))
-      |                        1
-Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/chinese-remainder-theorem.f90:29:6:
-
-   29 |       res = (/b,0,1/)
+   30 |       res = (/b,0,1/)
       |      1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/chinese-remainder-theorem.f90:36:4:
+/tmp/chinese-remainder-theorem.f90:37:4:
 
-   36 |     res = (/g,((y1 - ((b / a))) * x1),x1/)
+   37 |     res = (/g,((y1 - ((b / a))) * x1),x1/)
       |    1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/chinese-remainder-theorem.f90:66:24:
-
-   66 |     do while ((i < size(n)))
-      |                        1
-Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
 /tmp/chinese-remainder-theorem.f90:21:12:
 
    21 |   res = crt(a,n)

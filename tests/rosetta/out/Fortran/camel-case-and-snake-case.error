@@ -1,127 +1,127 @@
 gfortran: exit status 1
-/tmp/camel-case-and-snake-case.f90:145:132:
+/tmp/camel-case-and-snake-case.f90:146:132:
 
-  145 |     samples = (/'snakeCase','snake_case','snake-case','snake case','snake CASE','snake.case','variable_10_case','variable10Case','ɛrgo rE tHis','hurry-up-joe!','c://my-docs/happy_Flag-Day/12.doc',' spaces '/)
+  146 |     samples = (/'snakeCase','snake_case','snake-case','snake case','snake CASE','snake.case','variable_10_case','variable10Case','ɛrgo rE tHis','hurry-up-joe!','c://my-docs/happy_Flag-Day/12.doc',' spaces '/)
       |                                                                                                                                     
 Error: Line truncated at (1) [-Werror=line-truncation]
-/tmp/camel-case-and-snake-case.f90:145:131:
+/tmp/camel-case-and-snake-case.f90:146:131:
 
-  145 |     samples = (/'snakeCase','snake_case','snake-case','snake case','snake CASE','snake.case','variable_10_case','variable10Case','ɛrgo rE tHis','hurry-up-joe!','c://my-docs/happy_Flag-Day/12.doc',' spaces '/)
+  146 |     samples = (/'snakeCase','snake_case','snake-case','snake case','snake CASE','snake.case','variable_10_case','variable10Case','ɛrgo rE tHis','hurry-up-joe!','c://my-docs/happy_Flag-Day/12.doc',' spaces '/)
       |                                                                                                                                   1
 Error: Unterminated character constant beginning at (1)
-/tmp/camel-case-and-snake-case.f90:148:7:
+/tmp/camel-case-and-snake-case.f90:149:7:
 
-  148 |       s = samples(i0)
+  149 |       s = samples(i0)
       |       1
 Error: Symbol ‘s’ at (1) has no IMPLICIT type
-/tmp/camel-case-and-snake-case.f90:87:8:
+/tmp/camel-case-and-snake-case.f90:88:8:
 
-   87 |       ch = s((i)+1:(i + 1))
+   88 |       ch = s((i)+1:(i + 1))
       |        1
 Error: Symbol ‘ch’ at (1) has no IMPLICIT type
-/tmp/camel-case-and-snake-case.f90:57:8:
+/tmp/camel-case-and-snake-case.f90:58:8:
 
-   57 |       ch = s((i)+1:(i + 1))
+   58 |       ch = s((i)+1:(i + 1))
       |        1
 Error: Symbol ‘ch’ at (1) has no IMPLICIT type
-/tmp/camel-case-and-snake-case.f90:23:30:
+/tmp/camel-case-and-snake-case.f90:24:30:
 
-   23 |     do while ((((start < size(s)) .and. s((start)+1:(start + 1))) == ' '))
+   24 |     do while ((((start < size(s)) .and. s((start)+1:(start + 1))) == ' '))
       |                              1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/camel-case-and-snake-case.f90:26:15:
+/tmp/camel-case-and-snake-case.f90:27:15:
 
-   26 |     end = size(s)
+   27 |     end = size(s)
       |               1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/camel-case-and-snake-case.f90:27:35:
+/tmp/camel-case-and-snake-case.f90:28:35:
 
-   27 |     do while ((((end > start) .and. s(((end - 1))+1:end)) == ' '))
+   28 |     do while ((((end > start) .and. s(((end - 1))+1:end)) == ' '))
       |                                   1
 Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/CHARACTER(*)
-/tmp/camel-case-and-snake-case.f90:82:4:
+/tmp/camel-case-and-snake-case.f90:83:4:
 
-   82 |     s = trimSpace(s)
+   83 |     s = trimSpace(s)
       |    1
 Error: Dummy argument ‘s’ with INTENT(IN) in variable definition context (assignment) at (1)
-/tmp/camel-case-and-snake-case.f90:89:39:
+/tmp/camel-case-and-snake-case.f90:90:33:
 
-   89 |         if (((.not. prevUnd .and. size(out)) > 0)) then
+   90 |         if (((.not. prevUnd .and. 0) > 0)) then
+      |                                 1
+Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/INTEGER(4)
+/tmp/camel-case-and-snake-case.f90:98:39:
+
+   98 |         if (((.not. prevUnd .and. size(out)) > 0)) then
       |                                       1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/camel-case-and-snake-case.f90:97:39:
+/tmp/camel-case-and-snake-case.f90:87:24:
 
-   97 |         if (((.not. prevUnd .and. size(out)) > 0)) then
-      |                                       1
-Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/camel-case-and-snake-case.f90:86:24:
-
-   86 |     do while ((i < size(s)))
+   87 |     do while ((i < size(s)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/camel-case-and-snake-case.f90:117:30:
+/tmp/camel-case-and-snake-case.f90:118:30:
 
-  117 |     do while ((((start < size(out)) .and. out((start)+1:(start + 1))) == '_'))
+  118 |     do while ((((start < size(out)) .and. out((start)+1:(start + 1))) == '_'))
       |                              1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/camel-case-and-snake-case.f90:120:15:
+/tmp/camel-case-and-snake-case.f90:121:15:
 
-  120 |     end = size(out)
+  121 |     end = size(out)
       |               1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/camel-case-and-snake-case.f90:121:35:
+/tmp/camel-case-and-snake-case.f90:122:35:
 
-  121 |     do while ((((end > start) .and. out(((end - 1))+1:end)) == '_'))
+  122 |     do while ((((end > start) .and. out(((end - 1))+1:end)) == '_'))
       |                                   1
 Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/CHARACTER(*)
-/tmp/camel-case-and-snake-case.f90:129:10:
+/tmp/camel-case-and-snake-case.f90:130:10:
 
-  129 |       c = out((j)+1:(j + 1))
+  130 |       c = out((j)+1:(j + 1))
       |          1
 Error: Cannot convert CHARACTER(*) to INTEGER(4) at (1)
-/tmp/camel-case-and-snake-case.f90:130:11:
+/tmp/camel-case-and-snake-case.f90:131:11:
 
-  130 |       if ((c == '_')) then
+  131 |       if ((c == '_')) then
       |           1
 Error: Operands of comparison operator ‘==’ at (1) are INTEGER(4)/CHARACTER(1)
-/tmp/camel-case-and-snake-case.f90:132:17:
+/tmp/camel-case-and-snake-case.f90:133:17:
 
-  132 |           res = (res + c)
+  133 |           res = (res + c)
       |                 1
 Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/INTEGER(4)
-/tmp/camel-case-and-snake-case.f90:136:15:
+/tmp/camel-case-and-snake-case.f90:137:15:
 
-  136 |         res = (res + c)
+  137 |         res = (res + c)
       |               1
 Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/INTEGER(4)
-/tmp/camel-case-and-snake-case.f90:128:24:
+/tmp/camel-case-and-snake-case.f90:129:24:
 
-  128 |     do while ((j < size(out)))
+  129 |     do while ((j < size(out)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/camel-case-and-snake-case.f90:52:4:
+/tmp/camel-case-and-snake-case.f90:53:4:
 
-   52 |     s = trimSpace(s)
+   53 |     s = trimSpace(s)
       |    1
 Error: Dummy argument ‘s’ with INTENT(IN) in variable definition context (assignment) at (1)
-/tmp/camel-case-and-snake-case.f90:56:24:
+/tmp/camel-case-and-snake-case.f90:57:24:
 
-   56 |     do while ((i < size(s)))
+   57 |     do while ((i < size(s)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/camel-case-and-snake-case.f90:42:18:
+/tmp/camel-case-and-snake-case.f90:43:18:
 
-   42 |     n = (w - size(s))
+   43 |     n = (w - size(s))
       |                  1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/camel-case-and-snake-case.f90:47:11:
+/tmp/camel-case-and-snake-case.f90:48:11:
 
-   47 |     res = (res + s)
+   48 |     res = (res + s)
       |           1
 Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
-/tmp/camel-case-and-snake-case.f90:35:29:
+/tmp/camel-case-and-snake-case.f90:36:29:
 
-   35 |     res = (((ch >= 'A') .and. ch) <= 'Z')
+   36 |     res = (((ch >= 'A') .and. ch) <= 'Z')
       |                             1
 Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/CHARACTER(100)
 f951: some warnings being treated as errors

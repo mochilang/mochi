@@ -4,14 +4,24 @@ gfortran: exit status 1
   104 |         g = (((gx(((y)+1),((x)+1)) * gx(((y)+1),((x)+1))) + gy(((y)+1),((x)+1))) * gy(((y)+1),((x)+1)))
       |                  1
 Error: Expected a right parenthesis in expression at (1)
-/tmp/canny-edge-detector.f90:177:7:
+/tmp/canny-edge-detector.f90:173:132:
 
-  177 |     img = reshape((/0,0,0,0,0,0,255,255,255,0,0,255,255,255,0,0,255,255,255,0,0,0,0,0,0/),(/5,5/))
-      |       1
+  173 |     img = reshape((/0.0,0.0,0.0,0.0,0.0,0.0,255.0,255.0,255.0,0.0,0.0,255.0,255.0,255.0,0.0,0.0,255.0,255.0,255.0,0.0,0.0,0.0,0.0,0.0,0.0/),(/5,5/))
+      |                                                                                                                                    1
+Error: Line truncated at (1) [-Werror=line-truncation]
+/tmp/canny-edge-detector.f90:173:132:
+
+  173 |     img = reshape((/0.0,0.0,0.0,0.0,0.0,0.0,255.0,255.0,255.0,0.0,0.0,255.0,255.0,255.0,0.0,0.0,255.0,255.0,255.0,0.0,0.0,0.0,0.0,0.0,0.0/),(/5,5/))
+      |                                                                                                                                    1
+Error: Syntax error in array constructor at (1)
+/tmp/canny-edge-detector.f90:174:20:
+
+  174 |     g = gradient(img)
+      |                    1
 Error: Symbol ‘img’ at (1) has no IMPLICIT type
-/tmp/canny-edge-detector.f90:158:36:
+/tmp/canny-edge-detector.f90:154:36:
 
-  158 |   recursive subroutine printMatrix(m)
+  154 |   recursive subroutine printMatrix(m)
       |                                    1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘m’ at (1)
 /tmp/canny-edge-detector.f90:122:40:
@@ -34,16 +44,11 @@ Error: PROCEDURE attribute conflicts with INTENT attribute in ‘img’ at (1)
    36 |   recursive integer function conv2d(img,k) result(res)
       |                                         1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘k’ at (1)
-/tmp/canny-edge-detector.f90:179:22:
+/tmp/canny-edge-detector.f90:175:22:
 
-  179 |     edges = threshold(g,(1020 * 1020))
+  175 |     edges = threshold(g,(1020.0 * 1020.0))
       |                      1
 Error: Expected a procedure for argument ‘g’ at (1)
-/tmp/canny-edge-detector.f90:179:12:
-
-  179 |     edges = threshold(g,(1020 * 1020))
-      |            1
-Error: Type mismatch in argument ‘t’ at (1); passed INTEGER(4) to REAL(4)
 /tmp/canny-edge-detector.f90:125:13:
 
   125 |     h = size(g)
@@ -54,39 +59,39 @@ Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
   126 |     w = size(g(((0)+1)))
       |             1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/canny-edge-detector.f90:151:6:
+/tmp/canny-edge-detector.f90:147:6:
 
-  151 |       app6(size(out)+1) = row
+  147 |       app5(size(out)+1) = row
       |      1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/canny-edge-detector.f90:155:4:
+/tmp/canny-edge-detector.f90:151:4:
 
-  155 |     res = out
+  151 |     res = out
       |    1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/canny-edge-detector.f90:180:21:
+/tmp/canny-edge-detector.f90:176:21:
 
-  180 |     call printMatrix(edges)
+  176 |     call printMatrix(edges)
       |                     1
 Error: Expected a procedure for argument ‘m’ at (1)
-/tmp/canny-edge-detector.f90:166:16:
+/tmp/canny-edge-detector.f90:162:16:
 
-  166 |         line = (line + s7)
+  162 |         line = (line + s6)
       |                1
 Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
-/tmp/canny-edge-detector.f90:167:23:
+/tmp/canny-edge-detector.f90:163:23:
 
-  167 |         if (((x < size(m(((0)+1)))) - 1)) then
+  163 |         if (((x < size(m(((0)+1)))) - 1)) then
       |                       1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/canny-edge-detector.f90:164:26:
+/tmp/canny-edge-detector.f90:160:26:
 
-  164 |       do while ((x < size(m(((0)+1)))))
+  160 |       do while ((x < size(m(((0)+1)))))
       |                          1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/canny-edge-detector.f90:161:24:
+/tmp/canny-edge-detector.f90:157:24:
 
-  161 |     do while ((y < size(m)))
+  157 |     do while ((y < size(m)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
 /tmp/canny-edge-detector.f90:94:20:
@@ -144,3 +149,4 @@ Error: Incompatible ranks 0 and 1 in assignment at (1)
   119 |     res = out
       |    1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
+f951: some warnings being treated as errors

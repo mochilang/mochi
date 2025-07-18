@@ -14,56 +14,46 @@ Error: Syntax error in array constructor at (1)
    21 |     print *, res(((k)+1))
       |                 1
 Error: Syntax error in PRINT statement at (1)
-/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:25:48:
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:26:48:
 
-   25 |   recursive integer function applyFilter(input,a,b) result(res)
+   26 |   recursive integer function applyFilter(input,a,b) result(res)
       |                                                1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘a’ at (1)
-/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:25:50:
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:26:50:
 
-   25 |   recursive integer function applyFilter(input,a,b) result(res)
+   26 |   recursive integer function applyFilter(input,a,b) result(res)
       |                                                  1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘b’ at (1)
-/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:25:46:
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:26:46:
 
-   25 |   recursive integer function applyFilter(input,a,b) result(res)
+   26 |   recursive integer function applyFilter(input,a,b) result(res)
       |                                              1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘input’ at (1)
-/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:35:43:
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:36:32:
 
-   35 |       do while ((((j <= i) .and. j) < size(b)))
-      |                                           1
-Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:35:32:
-
-   35 |       do while ((((j <= i) .and. j) < size(b)))
+   36 |       do while ((((j <= i) .and. j) < 4))
       |                                1
 Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/INTEGER(4)
-/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:40:48:
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:41:48:
 
-   40 |       do while (((((j < i) .and. j) + 1) < size(a)))
+   41 |       do while (((((j < i) .and. j) + 1) < size(a)))
       |                                                1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:40:32:
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:41:32:
 
-   40 |       do while (((((j < i) .and. j) + 1) < size(a)))
+   41 |       do while (((((j < i) .and. j) + 1) < size(a)))
       |                                1
 Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/INTEGER(4)
-/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:32:24:
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:33:24:
 
-   32 |     do while ((i < size(input)))
+   33 |     do while ((i < size(input)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:51:4:
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:52:4:
 
-   51 |     res = out
+   52 |     res = out
       |    1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:15:10:
-
-   15 |   a = (/1,-2.7756e-16,0.33333333,-1.85e-17/)
-      |          1
-Error: Element in INTEGER(4) array constructor at (1) is REAL(4)
 /tmp/apply-a-digital-filter-direct-form-ii-transposed-.f90:18:20:
 
    18 |   res = applyFilter(sig,a,b)

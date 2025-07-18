@@ -1,146 +1,146 @@
 gfortran: exit status 1
-/tmp/bitmap-histogram.f90:53:9:
+/tmp/bitmap-histogram.f90:48:9:
 
-   53 |         p = row(((x)+1))
+   48 |         p = row(((x)+1))
       |         1
 Error: Unclassifiable statement at (1)
-/tmp/bitmap-histogram.f90:91:17:
+/tmp/bitmap-histogram.f90:86:17:
 
-   91 |         if ((row(((x)+1)) < t)) then
+   86 |         if ((row(((x)+1)) < t)) then
       |                 1
 Error: Expected a right parenthesis in expression at (1)
-/tmp/bitmap-histogram.f90:97:12:
+/tmp/bitmap-histogram.f90:88:12:
 
-   97 |         else
+   88 |         else
       |            1
 Error: Unexpected ELSE statement at (1)
-/tmp/bitmap-histogram.f90:103:11:
+/tmp/bitmap-histogram.f90:94:11:
 
-  103 |         end if
+   94 |         end if
       |           1
 Error: Expecting END DO statement at (1)
-/tmp/bitmap-histogram.f90:124:17:
+/tmp/bitmap-histogram.f90:115:17:
 
-  124 |         if ((row(((x)+1)) == 0)) then
+  115 |         if ((row(((x)+1)) == 0)) then
       |                 1
 Error: Expected a right parenthesis in expression at (1)
-/tmp/bitmap-histogram.f90:126:12:
+/tmp/bitmap-histogram.f90:117:12:
 
-  126 |         else
+  117 |         else
       |            1
 Error: Unexpected ELSE statement at (1)
-/tmp/bitmap-histogram.f90:128:11:
+/tmp/bitmap-histogram.f90:119:11:
 
-  128 |         end if
+  119 |         end if
       |           1
 Error: Expecting END DO statement at (1)
-/tmp/bitmap-histogram.f90:140:5:
+/tmp/bitmap-histogram.f90:131:5:
 
-  140 |     t = medianThreshold(h)
+  131 |     t = medianThreshold(h)
       |     1
 Error: Symbol ‘t’ at (1) has no IMPLICIT type
-/tmp/bitmap-histogram.f90:116:35:
+/tmp/bitmap-histogram.f90:107:35:
 
-  116 |   recursive subroutine printImage(g)
+  107 |   recursive subroutine printImage(g)
       |                                   1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘g’ at (1)
-/tmp/bitmap-histogram.f90:81:40:
+/tmp/bitmap-histogram.f90:76:40:
 
-   81 |   recursive integer function threshold(g,t) result(res)
+   76 |   recursive integer function threshold(g,t) result(res)
       |                                        1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘g’ at (1)
-/tmp/bitmap-histogram.f90:63:46:
+/tmp/bitmap-histogram.f90:58:46:
 
-   63 |   recursive integer function medianThreshold(h) result(res)
+   58 |   recursive integer function medianThreshold(h) result(res)
       |                                              1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘h’ at (1)
-/tmp/bitmap-histogram.f90:32:40:
+/tmp/bitmap-histogram.f90:31:40:
 
-   32 |   recursive integer function histogram(g,bins) result(res)
+   31 |   recursive integer function histogram(g,bins) result(res)
       |                                        1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘g’ at (1)
-/tmp/bitmap-histogram.f90:29:4:
+/tmp/bitmap-histogram.f90:28:4:
 
-   29 |     res = (/(/0,0,10000/),(/65535,65535,65535/),(/65535,65535,65535/)/)
+   28 |     res = (/(/0,0,10000/),(/65535,65535,65535/),(/65535,65535,65535/)/)
       |    1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/bitmap-histogram.f90:137:18:
+/tmp/bitmap-histogram.f90:128:18:
 
-  137 |     h = histogram(img,0)
+  128 |     h = histogram(img,0)
       |                  1
 Error: Expected a procedure for argument ‘g’ at (1)
-/tmp/bitmap-histogram.f90:36:18:
+/tmp/bitmap-histogram.f90:35:18:
 
-   36 |       bins = size(g(((0)+1)))
+   35 |       bins = size(g(((0)+1)))
       |                  1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/bitmap-histogram.f90:52:26:
+/tmp/bitmap-histogram.f90:47:26:
 
-   52 |       do while ((x < size(row)))
+   47 |       do while ((x < size(row)))
       |                          1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/bitmap-histogram.f90:49:24:
+/tmp/bitmap-histogram.f90:44:24:
 
-   49 |     do while ((y < size(g)))
+   44 |     do while ((y < size(g)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/bitmap-histogram.f90:60:4:
+/tmp/bitmap-histogram.f90:55:4:
 
-   60 |     res = h
+   55 |     res = h
       |    1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/bitmap-histogram.f90:140:24:
+/tmp/bitmap-histogram.f90:131:24:
 
-  140 |     t = medianThreshold(h)
+  131 |     t = medianThreshold(h)
       |                        1
 Error: Rank mismatch in argument ‘h’ at (1) (scalar and rank-1)
-/tmp/bitmap-histogram.f90:66:15:
+/tmp/bitmap-histogram.f90:61:15:
 
-   66 |     ub = (size(h) - 1)
+   61 |     ub = (size(h) - 1)
       |               1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/bitmap-histogram.f90:70:11:
+/tmp/bitmap-histogram.f90:65:11:
 
-   70 |       if ((((lSum + h(((lb)+1))) < uSum) + h(((ub)+1)))) then
+   65 |       if ((((lSum + h(((lb)+1))) < uSum) + h(((ub)+1)))) then
       |           1
 Error: Operands of binary numeric operator ‘+’ at (1) are LOGICAL(4)/INTEGER(4)
-/tmp/bitmap-histogram.f90:78:38:
+/tmp/bitmap-histogram.f90:73:38:
 
-   78 |     res = int(((((ub * 65535)) / size(h))))
+   73 |     res = int(((((ub * 65535)) / size(h))))
       |                                      1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/bitmap-histogram.f90:144:20:
+/tmp/bitmap-histogram.f90:135:20:
 
-  144 |     call printImage(bw)
+  135 |     call printImage(bw)
       |                    1
 Error: Expected a procedure for argument ‘g’ at (1)
-/tmp/bitmap-histogram.f90:123:26:
+/tmp/bitmap-histogram.f90:114:26:
 
-  123 |       do while ((x < size(row)))
+  114 |       do while ((x < size(row)))
       |                          1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/bitmap-histogram.f90:119:24:
+/tmp/bitmap-histogram.f90:110:24:
 
-  119 |     do while ((y < size(g)))
+  110 |     do while ((y < size(g)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/bitmap-histogram.f90:90:26:
+/tmp/bitmap-histogram.f90:85:26:
 
-   90 |       do while ((x < size(row)))
+   85 |       do while ((x < size(row)))
       |                          1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/bitmap-histogram.f90:109:6:
+/tmp/bitmap-histogram.f90:100:6:
 
-  109 |       app3(size(out)+1) = newRow
+  100 |       app1(size(out)+1) = newRow
       |      1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/bitmap-histogram.f90:86:24:
+/tmp/bitmap-histogram.f90:81:24:
 
-   86 |     do while ((y < size(g)))
+   81 |     do while ((y < size(g)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/bitmap-histogram.f90:113:4:
+/tmp/bitmap-histogram.f90:104:4:
 
-  113 |     res = out
+  104 |     res = out
       |    1
 Error: Incompatible ranks 0 and 1 in assignment at (1)

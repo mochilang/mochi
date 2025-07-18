@@ -1,77 +1,77 @@
 gfortran: exit status 1
-/tmp/checkpoint-synchronization-2.f90:31:46:
+/tmp/checkpoint-synchronization-2.f90:32:46:
 
-   31 |   recursive character(len=100) function lower(ch) result(res)
+   32 |   recursive character(len=100) function lower(ch) result(res)
       |                                              1
 Error: Procedure ‘lower’ at (1) has an explicit interface from a previous declaration
-/tmp/checkpoint-synchronization-2.f90:32:40:
-
-   32 |     character(len=100), intent(in) :: ch
-      |                                        1
-Error: Unexpected data declaration statement in CONTAINS section at (1)
 /tmp/checkpoint-synchronization-2.f90:33:40:
 
-   33 |     upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+   33 |     character(len=100), intent(in) :: ch
       |                                        1
-Error: Unexpected assignment statement in CONTAINS section at (1)
+Error: Unexpected data declaration statement in CONTAINS section at (1)
 /tmp/checkpoint-synchronization-2.f90:34:40:
 
-   34 |     lower = 'abcdefghijklmnopqrstuvwxyz'
+   34 |     upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
       |                                        1
 Error: Unexpected assignment statement in CONTAINS section at (1)
-/tmp/checkpoint-synchronization-2.f90:35:9:
+/tmp/checkpoint-synchronization-2.f90:35:40:
 
-   35 |     i = 0
+   35 |     lower = 'abcdefghijklmnopqrstuvwxyz'
+      |                                        1
+Error: Unexpected assignment statement in CONTAINS section at (1)
+/tmp/checkpoint-synchronization-2.f90:36:9:
+
+   36 |     i = 0
       |         1
 Error: Unexpected assignment statement in CONTAINS section at (1)
-/tmp/checkpoint-synchronization-2.f90:36:32:
+/tmp/checkpoint-synchronization-2.f90:37:23:
 
-   36 |     do while ((i < size(upper)))
-      |                                1
+   37 |     do while ((i < 26))
+      |                       1
 Error: Unexpected DO statement in CONTAINS section at (1)
-/tmp/checkpoint-synchronization-2.f90:37:27:
+/tmp/checkpoint-synchronization-2.f90:38:27:
 
-   37 |       if ((ch == upper(i+1:(i + 1)))) then
+   38 |       if ((ch == upper(i+1:(i + 1)))) then
       |                           1
 Error: Syntax error in argument list at (1)
-/tmp/checkpoint-synchronization-2.f90:38:24:
+/tmp/checkpoint-synchronization-2.f90:39:24:
 
-   38 |         res = lower(i+1:(i + 1))
+   39 |         res = lower(i+1:(i + 1))
       |                        1
 Error: Syntax error in argument list at (1)
-/tmp/checkpoint-synchronization-2.f90:39:14:
+/tmp/checkpoint-synchronization-2.f90:40:14:
 
-   39 |         return
+   40 |         return
       |              1
 Error: Unexpected RETURN statement in CONTAINS section at (1)
-/tmp/checkpoint-synchronization-2.f90:40:9:
+/tmp/checkpoint-synchronization-2.f90:41:9:
 
-   40 |       end if
+   41 |       end if
       |         1
 Error: Expecting END PROGRAM statement at (1)
-/tmp/checkpoint-synchronization-2.f90:41:17:
+/tmp/checkpoint-synchronization-2.f90:42:17:
 
-   41 |       i = (i + 1)
+   42 |       i = (i + 1)
       |                 1
 Error: Unexpected assignment statement in CONTAINS section at (1)
-/tmp/checkpoint-synchronization-2.f90:42:7:
+/tmp/checkpoint-synchronization-2.f90:43:7:
 
-   42 |     end do
+   43 |     end do
       |       1
 Error: Expecting END PROGRAM statement at (1)
-/tmp/checkpoint-synchronization-2.f90:43:12:
+/tmp/checkpoint-synchronization-2.f90:44:12:
 
-   43 |     res = ch
+   44 |     res = ch
       |            1
 Error: Unexpected assignment statement in CONTAINS section at (1)
-/tmp/checkpoint-synchronization-2.f90:44:10:
+/tmp/checkpoint-synchronization-2.f90:45:10:
 
-   44 |     return
+   45 |     return
       |          1
 Error: Unexpected RETURN statement in CONTAINS section at (1)
-/tmp/checkpoint-synchronization-2.f90:45:5:
+/tmp/checkpoint-synchronization-2.f90:46:5:
 
-   45 |   end function lower
+   46 |   end function lower
       |     1
 Error: Expecting END PROGRAM statement at (1)
 /tmp/checkpoint-synchronization-2.f90:15:13:

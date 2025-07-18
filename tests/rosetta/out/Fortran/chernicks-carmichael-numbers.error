@@ -1,171 +1,171 @@
 gfortran: exit status 1
-/tmp/chernicks-carmichael-numbers.f90:55:8:
+/tmp/chernicks-carmichael-numbers.f90:56:8:
 
-   55 |       a = a(1:(n - 1))
+   56 |       a = a(1:(n - 1))
       |        1
 Error: ‘a’ at (1) is not a variable
-/tmp/chernicks-carmichael-numbers.f90:58:11:
+/tmp/chernicks-carmichael-numbers.f90:59:11:
 
-   58 |     res = a
+   59 |     res = a
       |           1
 Error: Function ‘a’ requires an argument list at (1)
-/tmp/chernicks-carmichael-numbers.f90:87:13:
+/tmp/chernicks-carmichael-numbers.f90:88:13:
 
-   87 |     allocate(res(0))
+   88 |     allocate(res(0))
       |             1
 Error: Allocate-object at (1) is neither a data pointer nor an allocatable variable
-/tmp/chernicks-carmichael-numbers.f90:139:16:
+/tmp/chernicks-carmichael-numbers.f90:140:16:
 
-  139 |       res = (//)
+  140 |       res = (//)
       |                1
 Error: Empty array constructor at (1) is not allowed
-/tmp/chernicks-carmichael-numbers.f90:145:16:
+/tmp/chernicks-carmichael-numbers.f90:146:16:
 
-  145 |       res = (//)
+  146 |       res = (//)
       |                1
 Error: Empty array constructor at (1) is not allowed
-/tmp/chernicks-carmichael-numbers.f90:153:18:
+/tmp/chernicks-carmichael-numbers.f90:154:18:
 
-  153 |         res = (//)
+  154 |         res = (//)
       |                  1
 Error: Empty array constructor at (1) is not allowed
-/tmp/chernicks-carmichael-numbers.f90:167:7:
+/tmp/chernicks-carmichael-numbers.f90:168:7:
 
-  167 |       m = 1
+  168 |       m = 1
       |       1
 Error: Symbol ‘m’ at (1) has no IMPLICIT type
-/tmp/chernicks-carmichael-numbers.f90:165:5:
+/tmp/chernicks-carmichael-numbers.f90:166:5:
 
-  165 |     n = start
+  166 |     n = start
       |     1
 Error: Symbol ‘n’ at (1) has no IMPLICIT type
-/tmp/chernicks-carmichael-numbers.f90:111:53:
+/tmp/chernicks-carmichael-numbers.f90:112:53:
 
-  111 |   recursive character(len=100) function bigToString(a) result(res)
+  112 |   recursive character(len=100) function bigToString(a) result(res)
       |                                                     1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘a’ at (1)
-/tmp/chernicks-carmichael-numbers.f90:80:42:
+/tmp/chernicks-carmichael-numbers.f90:81:42:
 
-   80 |   recursive integer function bigMulSmall(a,m) result(res)
+   81 |   recursive integer function bigMulSmall(a,m) result(res)
       |                                          1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘a’ at (1)
-/tmp/chernicks-carmichael-numbers.f90:68:5:
+/tmp/chernicks-carmichael-numbers.f90:69:5:
 
-   68 |     n = x
+   69 |     n = x
       |     1
 Error: Symbol ‘n’ at (1) has no IMPLICIT type
-/tmp/chernicks-carmichael-numbers.f90:51:38:
+/tmp/chernicks-carmichael-numbers.f90:52:38:
 
-   51 |   recursive integer function bigTrim(a) result(res)
+   52 |   recursive integer function bigTrim(a) result(res)
       |                                      1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘a’ at (1)
-/tmp/chernicks-carmichael-numbers.f90:53:5:
+/tmp/chernicks-carmichael-numbers.f90:54:5:
 
-   53 |     n = size(a)
+   54 |     n = size(a)
       |     1
 Error: Symbol ‘n’ at (1) has no IMPLICIT type
-/tmp/chernicks-carmichael-numbers.f90:173:18:
+/tmp/chernicks-carmichael-numbers.f90:174:18:
 
-  173 |         if ((size(num) > 0)) then
+  174 |         if ((size(num) > 0)) then
       |                  1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/chernicks-carmichael-numbers.f90:175:67:
+/tmp/chernicks-carmichael-numbers.f90:176:67:
 
-  175 |           print *, trim(trim('a(' // s4) // ') = ') // bigToString(num)
+  176 |           print *, trim(trim('a(' // s4) // ') = ') // bigToString(num)
       |                                                                   1
 Error: Expected a procedure for argument ‘a’ at (1)
-/tmp/chernicks-carmichael-numbers.f90:114:14:
+/tmp/chernicks-carmichael-numbers.f90:115:14:
 
-  114 |     i = (size(a) - 1)
+  115 |     i = (size(a) - 1)
       |              1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/chernicks-carmichael-numbers.f90:117:11:
+/tmp/chernicks-carmichael-numbers.f90:118:11:
 
-  117 |       s = (s + s3)
+  118 |       s = (s + s3)
       |           1
 Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
-/tmp/chernicks-carmichael-numbers.f90:64:6:
+/tmp/chernicks-carmichael-numbers.f90:65:6:
 
-   64 |       res = (/0/)
+   65 |       res = (/0/)
       |      1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/chernicks-carmichael-numbers.f90:77:4:
+/tmp/chernicks-carmichael-numbers.f90:78:4:
 
-   77 |     res = digits
+   78 |     res = digits
       |    1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/chernicks-carmichael-numbers.f90:148:23:
+/tmp/chernicks-carmichael-numbers.f90:149:23:
 
-  148 |     prod = bigMulSmall(prod,p)
+  149 |     prod = bigMulSmall(prod,p)
       |                       1
 Error: Expected a procedure for argument ‘a’ at (1)
-/tmp/chernicks-carmichael-numbers.f90:84:6:
+/tmp/chernicks-carmichael-numbers.f90:85:6:
 
-   84 |       res = (/0/)
+   85 |       res = (/0/)
       |      1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/chernicks-carmichael-numbers.f90:93:25:
+/tmp/chernicks-carmichael-numbers.f90:94:25:
 
-   93 |       allocate(app1(size(res)+1))
+   94 |       allocate(app1(size(res)+1))
       |                         1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/chernicks-carmichael-numbers.f90:94:18:
+/tmp/chernicks-carmichael-numbers.f90:95:18:
 
-   94 |       app1(1:size(res)) = res
+   95 |       app1(1:size(res)) = res
       |                  1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/chernicks-carmichael-numbers.f90:95:16:
+/tmp/chernicks-carmichael-numbers.f90:96:16:
 
-   95 |       app1(size(res)+1) = mod(prod,10)
+   96 |       app1(size(res)+1) = mod(prod,10)
       |                1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/chernicks-carmichael-numbers.f90:96:6:
+/tmp/chernicks-carmichael-numbers.f90:97:6:
 
-   96 |       res = app1
+   97 |       res = app1
       |      1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/chernicks-carmichael-numbers.f90:90:24:
+/tmp/chernicks-carmichael-numbers.f90:91:24:
 
-   90 |     do while ((i < size(a)))
+   91 |     do while ((i < size(a)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/chernicks-carmichael-numbers.f90:102:25:
+/tmp/chernicks-carmichael-numbers.f90:103:25:
 
-  102 |       allocate(app2(size(res)+1))
+  103 |       allocate(app2(size(res)+1))
       |                         1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/chernicks-carmichael-numbers.f90:103:18:
+/tmp/chernicks-carmichael-numbers.f90:104:18:
 
-  103 |       app2(1:size(res)) = res
+  104 |       app2(1:size(res)) = res
       |                  1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/chernicks-carmichael-numbers.f90:104:16:
+/tmp/chernicks-carmichael-numbers.f90:105:16:
 
-  104 |       app2(size(res)+1) = mod(carry,10)
+  105 |       app2(size(res)+1) = mod(carry,10)
       |                1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/chernicks-carmichael-numbers.f90:105:6:
+/tmp/chernicks-carmichael-numbers.f90:106:6:
 
-  105 |       res = app2
+  106 |       res = app2
       |      1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/chernicks-carmichael-numbers.f90:108:18:
+/tmp/chernicks-carmichael-numbers.f90:109:18:
 
-  108 |     res = bigTrim(res)
+  109 |     res = bigTrim(res)
       |                  1
 Error: Expected a procedure for argument ‘a’ at (1)
-/tmp/chernicks-carmichael-numbers.f90:53:13:
+/tmp/chernicks-carmichael-numbers.f90:54:13:
 
-   53 |     n = size(a)
+   54 |     n = size(a)
       |             1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/chernicks-carmichael-numbers.f90:156:25:
+/tmp/chernicks-carmichael-numbers.f90:157:25:
 
-  156 |       prod = bigMulSmall(prod,p)
+  157 |       prod = bigMulSmall(prod,p)
       |                         1
 Error: Expected a procedure for argument ‘a’ at (1)
-/tmp/chernicks-carmichael-numbers.f90:150:15:
+/tmp/chernicks-carmichael-numbers.f90:151:15:
 
-  150 |     do while (((i <= n) - 2))
+  151 |     do while (((i <= n) - 2))
       |               1
 Error: Operands of binary numeric operator ‘-’ at (1) are LOGICAL(4)/INTEGER(4)

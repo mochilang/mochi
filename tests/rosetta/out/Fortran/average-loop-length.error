@@ -1,67 +1,67 @@
 gfortran: exit status 1
-/tmp/average-loop-length.f90:64:9:
+/tmp/average-loop-length.f90:65:9:
 
-   64 |         s = s(0+1:(dot + 5))
+   65 |         s = s(0+1:(dot + 5))
       |         1
 Error: Unclassifiable statement at (1)
-/tmp/average-loop-length.f90:148:132:
+/tmp/average-loop-length.f90:149:132:
 
-  148 |       line = trim(trim(trim(trim(trim(trim(padInt(n,3) // '  ') // padFloat(a,9)) // '  ') // padFloat(b,12)) // '  (') // padFloat(err,6)) // '%)'
+  149 |       line = trim(trim(trim(trim(trim(trim(padInt(n,3) // '  ') // padFloat(a,9)) // '  ') // padFloat(b,12)) // '  (') // padFloat(err,6)) // '%)'
       |                                                                                                                                    1
 Error: Line truncated at (1) [-Werror=line-truncation]
-/tmp/average-loop-length.f90:148:132:
+/tmp/average-loop-length.f90:149:132:
 
-  148 |       line = trim(trim(trim(trim(trim(trim(padInt(n,3) // '  ') // padFloat(a,9)) // '  ') // padFloat(b,12)) // '  (') // padFloat(err,6)) // '%)'
+  149 |       line = trim(trim(trim(trim(trim(trim(padInt(n,3) // '  ') // padFloat(a,9)) // '  ') // padFloat(b,12)) // '  (') // padFloat(err,6)) // '%)'
       |                                                                                                                                    1
 Error: Syntax error in argument list at (1)
-/tmp/average-loop-length.f90:143:5:
+/tmp/average-loop-length.f90:144:5:
 
-  143 |     n = 1
+  144 |     n = 1
       |     1
 Error: Symbol ‘n’ at (1) has no IMPLICIT type
-/tmp/average-loop-length.f90:113:7:
+/tmp/average-loop-length.f90:114:7:
 
-  113 |       x = 0
+  114 |       x = 0
       |       1
 Error: Symbol ‘x’ at (1) has no IMPLICIT type
-/tmp/average-loop-length.f90:89:5:
+/tmp/average-loop-length.f90:90:5:
 
-   89 |     s = fmtF(x)
+   90 |     s = fmtF(x)
       |     1
 Error: Symbol ‘s’ at (1) has no IMPLICIT type
-/tmp/average-loop-length.f90:79:5:
+/tmp/average-loop-length.f90:80:5:
 
-   79 |     s = s1
+   80 |     s = s1
       |     1
 Error: Symbol ‘s’ at (1) has no IMPLICIT type
-/tmp/average-loop-length.f90:57:5:
+/tmp/average-loop-length.f90:58:5:
 
-   57 |     s = s0
+   58 |     s = s0
       |     1
 Error: Symbol ‘s’ at (1) has no IMPLICIT type
-/tmp/average-loop-length.f90:147:18:
+/tmp/average-loop-length.f90:148:18:
 
-  147 |       err = ((absf((a - b)) / b) * 100)
+  148 |       err = ((absf((a - b)) / b) * 100.0)
       |                  1
 Error: Type mismatch in argument ‘x’ at (1); passed INTEGER(4) to REAL(4)
-/tmp/average-loop-length.f90:108:32:
+/tmp/average-loop-length.f90:109:32:
 
-  108 |         app2(1:size(visited)) = visited
+  109 |         app2(1:size(visited)) = visited
       |                                1
 Warning: Extension: Conversion from INTEGER(4) to LOGICAL(4) at (1)
-/tmp/average-loop-length.f90:110:18:
+/tmp/average-loop-length.f90:111:18:
 
-  110 |         visited = app2
+  111 |         visited = app2
       |                  1
 Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
-/tmp/average-loop-length.f90:59:9:
+/tmp/average-loop-length.f90:60:9:
 
-   59 |     if (((dot == 0) - 1)) then
+   60 |     if (((dot == 0) - 1)) then
       |         1
 Error: Operands of binary numeric operator ‘-’ at (1) are LOGICAL(4)/INTEGER(4)
-/tmp/average-loop-length.f90:43:24:
+/tmp/average-loop-length.f90:44:24:
 
-   43 |     do while ((i < size(s)))
+   44 |     do while ((i < size(s)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
 f951: some warnings being treated as errors

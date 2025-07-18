@@ -1,46 +1,46 @@
 gfortran: exit status 1
-/tmp/averages-median-3.f90:27:7:
+/tmp/averages-median-3.f90:28:7:
 
-   27 |       pv = arr(((px)+1))
+   28 |       pv = arr(((px)+1))
       |       1
 Error: Unclassifiable statement at (1)
-/tmp/averages-median-3.f90:64:22:
+/tmp/averages-median-3.f90:65:22:
 
-   64 |     half = int(((size(arr) / 2)))
+   65 |     half = int(((size(arr) / 2)))
       |                      1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/averages-median-3.f90:26:15:
+/tmp/averages-median-3.f90:27:15:
 
-   26 |       px = mod(now(),size(arr))
+   27 |       px = mod(now(),size(arr))
       |               1
 Error: Function ‘now’ at (1) has no IMPLICIT type
-/tmp/averages-median-3.f90:28:19:
+/tmp/averages-median-3.f90:29:19:
 
-   28 |       last = (size(arr) - 1)
+   29 |       last = (size(arr) - 1)
       |                   1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/averages-median-3.f90:55:8:
+/tmp/averages-median-3.f90:56:8:
 
-   55 |         k = (k - ((px + 1)))
+   56 |         k = (k - ((px + 1)))
       |        1
 Error: Dummy argument ‘k’ with INTENT(IN) in variable definition context (assignment) at (1)
-/tmp/averages-median-3.f90:25:20:
+/tmp/averages-median-3.f90:26:20:
 
-   25 |     do while ((size(arr) > 1))
+   26 |     do while ((size(arr) > 1))
       |                    1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/averages-median-3.f90:66:18:
+/tmp/averages-median-3.f90:67:18:
 
-   66 |     if ((mod(size(arr),2) == 0)) then
+   67 |     if ((mod(size(arr),2) == 0)) then
       |                  1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/averages-median-3.f90:16:26:
+/tmp/averages-median-3.f90:16:18:
 
-   16 |   write(s0,'(G0)') median((/3,1,4,1/))
-      |                          1
-Error: Rank mismatch in argument ‘list’ at (1) (scalar and rank-1)
-/tmp/averages-median-3.f90:18:26:
+   16 |   write(s0,'(G0)') median((/3.0,1.0,4.0,1.0/))
+      |                  1
+Error: Type mismatch in argument ‘list’ at (1); passed REAL(4) to INTEGER(4)
+/tmp/averages-median-3.f90:18:18:
 
-   18 |   write(s1,'(G0)') median((/3,1,4,1,5/))
-      |                          1
-Error: Rank mismatch in argument ‘list’ at (1) (scalar and rank-1)
+   18 |   write(s1,'(G0)') median((/3.0,1.0,4.0,1.0,5.0/))
+      |                  1
+Error: Type mismatch in argument ‘list’ at (1); passed REAL(4) to INTEGER(4)

@@ -1,52 +1,52 @@
 gfortran: exit status 1
-/tmp/array-concatenation.f90:59:40:
+/tmp/array-concatenation.f90:60:40:
 
-   59 |   recursive integer function concatAny(a,b) result(res)
+   60 |   recursive integer function concatAny(a,b) result(res)
       |                                        1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘a’ at (1)
-/tmp/array-concatenation.f90:59:42:
+/tmp/array-concatenation.f90:60:42:
 
-   59 |   recursive integer function concatAny(a,b) result(res)
+   60 |   recursive integer function concatAny(a,b) result(res)
       |                                          1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘b’ at (1)
-/tmp/array-concatenation.f90:36:41:
+/tmp/array-concatenation.f90:37:41:
 
-   36 |   recursive integer function concatInts(a,b) result(res)
+   37 |   recursive integer function concatInts(a,b) result(res)
       |                                         1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘a’ at (1)
-/tmp/array-concatenation.f90:36:43:
+/tmp/array-concatenation.f90:37:43:
 
-   36 |   recursive integer function concatInts(a,b) result(res)
+   37 |   recursive integer function concatInts(a,b) result(res)
       |                                           1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘b’ at (1)
-/tmp/array-concatenation.f90:63:20:
+/tmp/array-concatenation.f90:64:20:
 
-   63 |     do i7 = 1, size(a)
+   64 |     do i7 = 1, size(a)
       |                    1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/array-concatenation.f90:71:20:
+/tmp/array-concatenation.f90:72:20:
 
-   71 |     do i9 = 1, size(b)
+   72 |     do i9 = 1, size(b)
       |                    1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/array-concatenation.f90:79:4:
+/tmp/array-concatenation.f90:80:4:
 
-   79 |     res = out
+   80 |     res = out
       |    1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/array-concatenation.f90:40:20:
+/tmp/array-concatenation.f90:41:20:
 
-   40 |     do i3 = 1, size(a)
+   41 |     do i3 = 1, size(a)
       |                    1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/array-concatenation.f90:48:20:
+/tmp/array-concatenation.f90:49:20:
 
-   48 |     do i5 = 1, size(b)
+   49 |     do i5 = 1, size(b)
       |                    1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/array-concatenation.f90:56:4:
+/tmp/array-concatenation.f90:57:4:
 
-   56 |     res = out
+   57 |     res = out
       |    1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
 /tmp/array-concatenation.f90:25:30:

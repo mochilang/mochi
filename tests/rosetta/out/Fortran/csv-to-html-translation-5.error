@@ -14,79 +14,79 @@ Error: Unterminated character constant beginning at (1)
    24 |     line = split(c,''//char(10)//'')(i0)
       |                     1
 Error: Invalid character in name at (1)
-/tmp/csv-to-html-translation-5.f90:73:10:
+/tmp/csv-to-html-translation-5.f90:74:10:
 
-   73 |     out = ''
+   74 |     out = ''
       |          1
 Error: Cannot convert CHARACTER(0) to INTEGER(4) at (1)
-/tmp/csv-to-html-translation-5.f90:76:11:
-
-   76 |       ch = s(i+1:(i + 1))
-      |           1
-Error: Cannot convert CHARACTER(*) to INTEGER(4) at (1)
 /tmp/csv-to-html-translation-5.f90:77:11:
 
-   77 |       if ((ch == '&')) then
+   77 |       ch = s(i+1:(i + 1))
+      |           1
+Error: Cannot convert CHARACTER(*) to INTEGER(4) at (1)
+/tmp/csv-to-html-translation-5.f90:78:11:
+
+   78 |       if ((ch == '&')) then
       |           1
 Error: Operands of comparison operator ‘==’ at (1) are INTEGER(4)/CHARACTER(1)
-/tmp/csv-to-html-translation-5.f90:78:14:
+/tmp/csv-to-html-translation-5.f90:79:14:
 
-   78 |         out = out // '&amp;'
+   79 |         out = out // '&amp;'
       |              1
 Error: Operands of string concatenation operator at (1) are INTEGER(4)/CHARACTER(5)
-/tmp/csv-to-html-translation-5.f90:79:16:
+/tmp/csv-to-html-translation-5.f90:80:16:
 
-   79 |       else if ((ch == '<')) then
+   80 |       else if ((ch == '<')) then
       |                1
 Error: Operands of comparison operator ‘==’ at (1) are INTEGER(4)/CHARACTER(1)
-/tmp/csv-to-html-translation-5.f90:80:14:
+/tmp/csv-to-html-translation-5.f90:81:14:
 
-   80 |         out = out // '&lt;'
+   81 |         out = out // '&lt;'
       |              1
 Error: Operands of string concatenation operator at (1) are INTEGER(4)/CHARACTER(4)
-/tmp/csv-to-html-translation-5.f90:81:16:
+/tmp/csv-to-html-translation-5.f90:82:16:
 
-   81 |       else if ((ch == '>')) then
+   82 |       else if ((ch == '>')) then
       |                1
 Error: Operands of comparison operator ‘==’ at (1) are INTEGER(4)/CHARACTER(1)
-/tmp/csv-to-html-translation-5.f90:82:14:
+/tmp/csv-to-html-translation-5.f90:83:14:
 
-   82 |         out = out // '&gt;'
+   83 |         out = out // '&gt;'
       |              1
 Error: Operands of string concatenation operator at (1) are INTEGER(4)/CHARACTER(4)
-/tmp/csv-to-html-translation-5.f90:75:24:
+/tmp/csv-to-html-translation-5.f90:76:24:
 
-   75 |     do while ((i < size(s)))
+   76 |     do while ((i < size(s)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/csv-to-html-translation-5.f90:88:4:
+/tmp/csv-to-html-translation-5.f90:89:4:
 
-   88 |     res = out
+   89 |     res = out
       |    1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/csv-to-html-translation-5.f90:49:13:
+/tmp/csv-to-html-translation-5.f90:50:13:
 
-   49 |     n = size(sep)
+   50 |     n = size(sep)
       |             1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/csv-to-html-translation-5.f90:55:28:
+/tmp/csv-to-html-translation-5.f90:56:28:
 
-   55 |         app4(size(out)+1) = s(start+1:i)
+   56 |         app4(size(out)+1) = s(start+1:i)
       |                            1
 Error: Cannot convert CHARACTER(*) to INTEGER(4) at (1)
-/tmp/csv-to-html-translation-5.f90:50:26:
+/tmp/csv-to-html-translation-5.f90:51:26:
 
-   50 |     do while (((i <= size(s)) - n))
+   51 |     do while (((i <= size(s)) - n))
       |                          1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/csv-to-html-translation-5.f90:66:39:
+/tmp/csv-to-html-translation-5.f90:67:39:
 
-   66 |     app5(size(out)+1) = s(start+1:size(s))
+   67 |     app5(size(out)+1) = s(start+1:size(s))
       |                                       1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/csv-to-html-translation-5.f90:68:4:
+/tmp/csv-to-html-translation-5.f90:69:4:
 
-   68 |     res = out
+   69 |     res = out
       |    1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
 /tmp/csv-to-html-translation-5.f90:28:25:

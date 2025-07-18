@@ -1,9 +1,4 @@
 gfortran: exit status 1
-/tmp/checkpoint-synchronization-3.f90:46:24:
-
-   46 |     do while ((i < size(up)))
-      |                        1
-Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
 /tmp/checkpoint-synchronization-3.f90:17:13:
 
    17 |   partList = (/'A','B','C','D'/)

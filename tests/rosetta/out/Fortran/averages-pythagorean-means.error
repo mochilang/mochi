@@ -1,16 +1,16 @@
 gfortran: exit status 1
-/tmp/averages-pythagorean-means.f90:57:5:
+/tmp/averages-pythagorean-means.f90:58:5:
 
-   57 |     n = 1
+   58 |     n = 1
       |     1
 Error: Symbol ‘n’ at (1) has no IMPLICIT type
-/tmp/averages-pythagorean-means.f90:43:11:
+/tmp/averages-pythagorean-means.f90:44:11:
 
-   43 |       if ((powf(mid,n) > x)) then
+   44 |       if ((powf(mid,n) > x)) then
       |           1
 Error: Type mismatch in argument ‘base’ at (1); passed INTEGER(4) to REAL(4)
-/tmp/averages-pythagorean-means.f90:73:37:
+/tmp/averages-pythagorean-means.f90:74:37:
 
-   73 |     write(s3,'(G0)') (((a >= g) .and. g) >= h)
+   74 |     write(s3,'(G0)') (((a >= g) .and. g) >= h)
       |                                     1
 Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/INTEGER(4)

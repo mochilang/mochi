@@ -1,16 +1,11 @@
 gfortran: exit status 1
-/tmp/additive-primes.f90:83:16:
+/tmp/additive-primes.f90:84:16:
 
-   83 |         line = (line + pad(i)) // '  '
+   84 |         line = (line + pad(i)) // '  '
       |                1
 Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
-/tmp/additive-primes.f90:86:34:
+/tmp/additive-primes.f90:87:34:
 
-   86 |           print *, line(0+1:(size(line) - 2))
+   87 |           print *, line(0+1:(size(line) - 2))
       |                                  1
-Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/additive-primes.f90:98:30:
-
-   98 |       print *, line(0+1:(size(line) - 2))
-      |                              1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array

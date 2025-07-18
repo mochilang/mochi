@@ -1,11 +1,11 @@
 gfortran: exit status 1
-/tmp/catalan-numbers-1.f90:13:22:
+/tmp/catalan-numbers-1.f90:14:22:
 
-   13 |     if ((((k < 0) .or. k) > n)) then
+   14 |     if ((((k < 0) .or. k) > n)) then
       |                      1
 Error: Operands of logical operator ‘.or.’ at (1) are LOGICAL(4)/INTEGER(4)
-/tmp/catalan-numbers-1.f90:18:9:
+/tmp/catalan-numbers-1.f90:19:9:
 
-   18 |     if (((kk > n) - kk)) then
+   19 |     if (((kk > n) - kk)) then
       |         1
 Error: Operands of binary numeric operator ‘-’ at (1) are LOGICAL(4)/INTEGER(4)
