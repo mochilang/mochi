@@ -47,7 +47,9 @@ type Compiler struct {
 	tempVarCount int
 	helpers      map[string]bool
 	useLinq      bool
-	varTypes     map[string]string
+        varTypes     map[string]string
+        nameMap      map[string]string
+        nameCounts   map[string]int
 	packages     map[string]bool
 	structs      map[string]bool
 	modules      map[string]bool
@@ -67,11 +69,13 @@ type Compiler struct {
 
 // New creates a new C# compiler.
 func New(env *types.Env) *Compiler {
-	return &Compiler{
-		env:          env,
-		helpers:      make(map[string]bool),
-		varTypes:     make(map[string]string),
-		packages:     make(map[string]bool),
+        return &Compiler{
+                env:          env,
+                helpers:      make(map[string]bool),
+                varTypes:     make(map[string]string),
+                nameMap:      make(map[string]string),
+                nameCounts:   make(map[string]int),
+                packages:     make(map[string]bool),
 		structs:      make(map[string]bool),
 		modules:      make(map[string]bool),
 		inFun:        0,
@@ -340,18 +344,19 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 }
 
 func (c *Compiler) compileFunStmt(fn *parser.FunStmt) error {
-	params := make([]string, len(fn.Params))
-	origVars := c.varTypes
-	c.varTypes = make(map[string]string)
-	for k, v := range origVars {
-		c.varTypes[k] = v
-	}
-	for i, p := range fn.Params {
-		pType := csType(p.Type)
-		name := sanitizeName(p.Name)
-		c.varTypes[name] = pType
-		params[i] = fmt.Sprintf("%s %s", pType, name)
-	}
+        params := make([]string, len(fn.Params))
+        origVars := c.varTypes
+        origNames := c.nameMap
+        origCounts := c.nameCounts
+        c.varTypes = cloneStringMap(origVars)
+        c.nameMap = cloneStringMap(origNames)
+        c.nameCounts = cloneIntMap(origCounts)
+        for i, p := range fn.Params {
+                pType := csType(p.Type)
+                alias := c.registerVarName(p.Name)
+                c.varTypes[alias] = pType
+                params[i] = fmt.Sprintf("%s %s", pType, alias)
+        }
 	ret := "void"
 	if fn.Return != nil {
 		ret = csType(fn.Return)
@@ -380,10 +385,12 @@ func (c *Compiler) compileFunStmt(fn *parser.FunStmt) error {
 	}
 	c.inFun--
 	c.indent--
-	c.writeln("}")
-	c.env = origEnv
-	c.varTypes = origVars
-	return nil
+        c.writeln("}")
+        c.env = origEnv
+        c.varTypes = origVars
+        c.nameMap = origNames
+        c.nameCounts = origCounts
+        return nil
 }
 
 func (c *Compiler) compileTypeMethod(fn *parser.FunStmt) error {
@@ -392,18 +399,19 @@ func (c *Compiler) compileTypeMethod(fn *parser.FunStmt) error {
 			c.writeln("// " + ln)
 		}
 	}
-	params := make([]string, len(fn.Params))
-	origVars := c.varTypes
-	c.varTypes = make(map[string]string)
-	for k, v := range origVars {
-		c.varTypes[k] = v
-	}
-	for i, p := range fn.Params {
-		pType := csType(p.Type)
-		name := sanitizeName(p.Name)
-		c.varTypes[name] = pType
-		params[i] = fmt.Sprintf("%s %s", pType, name)
-	}
+       params := make([]string, len(fn.Params))
+       origVars := c.varTypes
+       origNames := c.nameMap
+       origCounts := c.nameCounts
+       c.varTypes = cloneStringMap(origVars)
+       c.nameMap = cloneStringMap(origNames)
+       c.nameCounts = cloneIntMap(origCounts)
+       for i, p := range fn.Params {
+               pType := csType(p.Type)
+               alias := c.registerVarName(p.Name)
+               c.varTypes[alias] = pType
+               params[i] = fmt.Sprintf("%s %s", pType, alias)
+       }
 	ret := "void"
 	if fn.Return != nil {
 		ret = csType(fn.Return)
@@ -422,8 +430,10 @@ func (c *Compiler) compileTypeMethod(fn *parser.FunStmt) error {
 	c.inFun--
 	c.indent--
 	c.writeln("}")
-	c.varTypes = origVars
-	return nil
+       c.varTypes = origVars
+       c.nameMap = origNames
+       c.nameCounts = origCounts
+       return nil
 }
 
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
@@ -664,8 +674,8 @@ func (c *Compiler) scanProgram(prog *parser.Program) {
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
-	case s.Let != nil:
-		name := sanitizeName(s.Let.Name)
+       case s.Let != nil:
+               name := c.registerVarName(s.Let.Name)
 		var typ string
 		var expr string
 		var static types.Type = types.AnyType{}
@@ -828,15 +838,15 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				}
 			}
 		}
-		c.env.SetVar(s.Let.Name, static, false)
-		c.varTypes[name] = typ
+               c.env.SetVar(s.Let.Name, static, false)
+               c.varTypes[name] = typ
 		decl := "var"
 		if !c.DictMode && typ != "" && !strings.Contains(typ, "dynamic") {
 			decl = typ
 		}
 		c.writeln(fmt.Sprintf("%s %s = %s;", decl, name, expr))
-	case s.Var != nil:
-		name := sanitizeName(s.Var.Name)
+       case s.Var != nil:
+               name := c.registerVarName(s.Var.Name)
 		var typ string
 		var expr string
 		var static types.Type = types.AnyType{}
@@ -1028,8 +1038,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 }
 
 func (c *Compiler) compileFor(f *parser.ForStmt) error {
-	name := sanitizeName(f.Name)
-	useVar := name != "_"
+       name := c.registerVarName(f.Name)
+       useVar := name != "_"
 	if f.RangeEnd != nil {
 		start, err := c.compileExpr(f.Source)
 		if err != nil {
@@ -1044,16 +1054,17 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 			loopVar = c.newVar()
 		}
 		c.writeln(fmt.Sprintf("for (var %s = %s; %s < %s; %s++) {", loopVar, start, loopVar, end, loopVar))
-		origEnv := c.env
-		child := types.NewEnv(c.env)
-		child.SetVar(f.Name, types.IntType{}, true)
-		c.env = child
-		origVars := c.varTypes
-		c.varTypes = make(map[string]string)
-		for k, v := range origVars {
-			c.varTypes[k] = v
-		}
-		c.varTypes[name] = "int"
+               origEnv := c.env
+               child := types.NewEnv(c.env)
+               child.SetVar(f.Name, types.IntType{}, true)
+               c.env = child
+               origVars := c.varTypes
+               origNames := c.nameMap
+               origCounts := c.nameCounts
+               c.varTypes = cloneStringMap(origVars)
+               c.nameMap = cloneStringMap(origNames)
+               c.nameCounts = cloneIntMap(origCounts)
+               c.varTypes[name] = "int"
 		c.indent++
 		for _, s := range f.Body {
 			if err := c.compileStmt(s); err != nil {
@@ -1062,11 +1073,13 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 				return err
 			}
 		}
-		c.indent--
-		c.writeln("}")
-		c.env = origEnv
-		c.varTypes = origVars
-		return nil
+               c.indent--
+               c.writeln("}")
+               c.env = origEnv
+               c.varTypes = origVars
+               c.nameMap = origNames
+               c.nameCounts = origCounts
+               return nil
 	}
 	src, err := c.compileExpr(f.Source)
 	if err != nil {
@@ -1091,16 +1104,17 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	} else {
 		c.writeln(fmt.Sprintf("foreach (var %s in %s) {", loopVar, src))
 	}
-	origEnv := c.env
-	child := types.NewEnv(c.env)
-	child.SetVar(f.Name, elemType, true)
-	c.env = child
-	origVars := c.varTypes
-	c.varTypes = make(map[string]string)
-	for k, v := range origVars {
-		c.varTypes[k] = v
-	}
-	c.varTypes[name] = csTypeOf(elemType)
+       origEnv := c.env
+       child := types.NewEnv(c.env)
+       child.SetVar(f.Name, elemType, true)
+       c.env = child
+       origVars := c.varTypes
+       origNames := c.nameMap
+       origCounts := c.nameCounts
+       c.varTypes = cloneStringMap(origVars)
+       c.nameMap = cloneStringMap(origNames)
+       c.nameCounts = cloneIntMap(origCounts)
+       c.varTypes[name] = csTypeOf(elemType)
 	c.indent++
 	for _, s := range f.Body {
 		if err := c.compileStmt(s); err != nil {
@@ -1109,19 +1123,21 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 			return err
 		}
 	}
-	c.indent--
-	c.writeln("}")
-	c.env = origEnv
-	c.varTypes = origVars
-	return nil
+       c.indent--
+       c.writeln("}")
+       c.env = origEnv
+       c.varTypes = origVars
+       c.nameMap = origNames
+       c.nameCounts = origCounts
+       return nil
 }
 
 func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
-	lhs := sanitizeName(a.Name)
-	var curType types.Type
-	if t, err := c.env.GetVar(a.Name); err == nil {
-		curType = t
-	}
+       lhs := c.lookupVarName(a.Name)
+        var curType types.Type
+        if t, err := c.env.GetVar(a.Name); err == nil {
+                curType = t
+        }
 	for _, idx := range a.Index {
 		iexpr, err := c.compileExpr(idx.Start)
 		if err != nil {
@@ -1142,10 +1158,11 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	if err != nil {
 		return err
 	}
-	inferred := csTypeOf(c.inferExprType(a.Value))
-	cur, ok := c.varTypes[sanitizeName(a.Name)]
-	if !ok || cur == "dynamic" || cur == "dynamic[]" {
-		c.varTypes[sanitizeName(a.Name)] = inferred
+       inferred := csTypeOf(c.inferExprType(a.Value))
+       alias := c.lookupVarName(a.Name)
+       cur, ok := c.varTypes[alias]
+       if !ok || cur == "dynamic" || cur == "dynamic[]" {
+               c.varTypes[alias] = inferred
 	}
 	if ok && cur != "" && cur != "dynamic" && isFetchExpr(a.Value) {
 		srcT := c.inferExprType(a.Value)
@@ -1173,40 +1190,50 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 		}
 		cond = stripParens(cond)
 		c.writeln(prefix + "if (" + cond + ") {")
-		origVars := c.varTypes
-		c.varTypes = make(map[string]string)
-		for k, v := range origVars {
-			c.varTypes[k] = v
-		}
-		c.indent++
-		for _, st := range s.Then {
-			if err := c.compileStmt(st); err != nil {
-				c.varTypes = origVars
-				return err
-			}
-		}
-		c.indent--
-		c.varTypes = origVars
+               origVars := c.varTypes
+               origNames := c.nameMap
+               origCounts := c.nameCounts
+               c.varTypes = cloneStringMap(origVars)
+               c.nameMap = cloneStringMap(origNames)
+               c.nameCounts = cloneIntMap(origCounts)
+               c.indent++
+               for _, st := range s.Then {
+                       if err := c.compileStmt(st); err != nil {
+                               c.varTypes = origVars
+                               c.nameMap = origNames
+                               c.nameCounts = origCounts
+                               return err
+                       }
+               }
+               c.indent--
+               c.varTypes = origVars
+               c.nameMap = origNames
+               c.nameCounts = origCounts
 		if s.ElseIf != nil {
 			return rec(s.ElseIf, "} else ")
 		}
 		if len(s.Else) > 0 {
 			c.writeln("} else {")
-			origVars := c.varTypes
-			c.varTypes = make(map[string]string)
-			for k, v := range origVars {
-				c.varTypes[k] = v
-			}
-			c.indent++
-			for _, st := range s.Else {
-				if err := c.compileStmt(st); err != nil {
-					c.varTypes = origVars
-					return err
-				}
-			}
-			c.indent--
-			c.varTypes = origVars
-			c.writeln("}")
+                       origVars := c.varTypes
+                       origNames := c.nameMap
+                       origCounts := c.nameCounts
+                       c.varTypes = cloneStringMap(origVars)
+                       c.nameMap = cloneStringMap(origNames)
+                       c.nameCounts = cloneIntMap(origCounts)
+                       c.indent++
+                       for _, st := range s.Else {
+                               if err := c.compileStmt(st); err != nil {
+                                       c.varTypes = origVars
+                                       c.nameMap = origNames
+                                       c.nameCounts = origCounts
+                                       return err
+                               }
+                       }
+                       c.indent--
+                       c.varTypes = origVars
+                       c.nameMap = origNames
+                       c.nameCounts = origCounts
+                       c.writeln("}")
 		} else {
 			c.writeln("}")
 		}
@@ -1222,22 +1249,27 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 	}
 	cond = stripParens(cond)
 	c.writeln("while (" + cond + ") {")
-	origVars := c.varTypes
-	c.varTypes = make(map[string]string)
-	for k, v := range origVars {
-		c.varTypes[k] = v
-	}
-	c.indent++
-	for _, s := range w.Body {
-		if err := c.compileStmt(s); err != nil {
-			c.varTypes = origVars
-			return err
-		}
-	}
-	c.indent--
-	c.varTypes = origVars
-	c.writeln("}")
-	return nil
+       origVars := c.varTypes
+       origNames := c.nameMap
+       origCounts := c.nameCounts
+       c.varTypes = cloneStringMap(origVars)
+       c.nameMap = cloneStringMap(origNames)
+       c.nameCounts = cloneIntMap(origCounts)
+       c.indent++
+       for _, s := range w.Body {
+               if err := c.compileStmt(s); err != nil {
+                       c.varTypes = origVars
+                       c.nameMap = origNames
+                       c.nameCounts = origCounts
+                       return err
+               }
+       }
+       c.indent--
+       c.varTypes = origVars
+       c.nameMap = origNames
+       c.nameCounts = origCounts
+       c.writeln("}")
+       return nil
 }
 
 func (c *Compiler) compileGlobalVar(s *parser.Statement) error {
@@ -2917,21 +2949,22 @@ func (c *Compiler) compileAgentOn(agentName string, env *types.Env, h *parser.On
 }
 
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
-	orig := c.varTypes
-	c.varTypes = make(map[string]string)
-	for k, v := range orig {
-		c.varTypes[k] = v
-	}
+       orig := c.varTypes
+       origNames := c.nameMap
+       origCounts := c.nameCounts
+       c.varTypes = cloneStringMap(orig)
+       c.nameMap = cloneStringMap(origNames)
+       c.nameCounts = cloneIntMap(origCounts)
 
 	paramDecls := make([]string, len(fn.Params))
 	paramTypes := make([]string, len(fn.Params))
-	for i, p := range fn.Params {
-		typ := csType(p.Type)
-		name := sanitizeName(p.Name)
-		c.varTypes[name] = typ
-		paramDecls[i] = fmt.Sprintf("%s %s", typ, name)
-		paramTypes[i] = typ
-	}
+       for i, p := range fn.Params {
+               typ := csType(p.Type)
+               alias := c.registerVarName(p.Name)
+               c.varTypes[alias] = typ
+               paramDecls[i] = fmt.Sprintf("%s %s", typ, alias)
+               paramTypes[i] = typ
+       }
 	ret := csType(fn.Return)
 	if ret == "" {
 		if fn.Return == nil && fn.ExprBody != nil {
@@ -2975,8 +3008,10 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	formatted := strings.Join(lines, "\n")
 
 	result := fmt.Sprintf("new %s((%s) => {\n%s\n})", delegate, strings.Join(paramDecls, ", "), formatted)
-	c.varTypes = orig
-	return result, nil
+       c.varTypes = orig
+       c.nameMap = origNames
+       c.nameCounts = origCounts
+       return result, nil
 }
 
 func identName(e *parser.Expr) (string, bool) {
@@ -3203,8 +3238,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			items[i] = fmt.Sprintf("{ %s, %s }", k, v)
 		}
 		return fmt.Sprintf("new Dictionary<%s, %s> { %s }", keyType, valType, strings.Join(items, ", ")), nil
-	case p.Selector != nil:
-		expr := sanitizeName(p.Selector.Root)
+       case p.Selector != nil:
+               expr := c.lookupVarName(p.Selector.Root)
 		if c.modules[p.Selector.Root] {
 			if len(p.Selector.Tail) == 0 {
 				return expr, nil
@@ -3803,9 +3838,46 @@ func (c *Compiler) isStringPostfix(p *parser.PostfixExpr) bool {
 }
 
 func (c *Compiler) newVar() string {
-	name := fmt.Sprintf("_tmp%d", c.tempVarCount)
-	c.tempVarCount++
-	return name
+        name := fmt.Sprintf("_tmp%d", c.tempVarCount)
+        c.tempVarCount++
+        return name
+}
+
+func cloneStringMap(src map[string]string) map[string]string {
+        dst := make(map[string]string)
+        for k, v := range src {
+                dst[k] = v
+        }
+        return dst
+}
+
+func cloneIntMap(src map[string]int) map[string]int {
+        dst := make(map[string]int)
+        for k, v := range src {
+                dst[k] = v
+        }
+        return dst
+}
+
+func (c *Compiler) registerVarName(name string) string {
+        sanitized := sanitizeName(name)
+        alias := sanitized
+        if cnt, ok := c.nameCounts[sanitized]; ok {
+                cnt++
+                c.nameCounts[sanitized] = cnt
+                alias = fmt.Sprintf("%s_%d", sanitized, cnt)
+        } else {
+                c.nameCounts[sanitized] = 0
+        }
+        c.nameMap[name] = alias
+        return alias
+}
+
+func (c *Compiler) lookupVarName(name string) string {
+        if alias, ok := c.nameMap[name]; ok {
+                return alias
+        }
+        return sanitizeName(name)
 }
 
 func (c *Compiler) use(name string) {
