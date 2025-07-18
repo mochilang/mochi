@@ -37,3 +37,4 @@
 - 2025-07-21 12:30 - Avg builtin now uses full type inference so group queries
   may inline numeric averages without runtime helpers.
 - 2025-07-21 14:00 - Avg builtin now inlines PHP arithmetic for all list arguments, eliminating `_avg` helper.
+- 2025-07-21 15:00 - Left join queries compile to loops instead of using `_query` and `_group_by` helpers.
