@@ -1,0 +1,11 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q7.kt:103:23: error: unresolved reference: supp_nation
+        mutableListOf(supp_nation, cust_nation, l_year) as Comparable<Any>
+                      ^
+/tmp/q7.kt:103:36: error: unresolved reference: cust_nation
+        mutableListOf(supp_nation, cust_nation, l_year) as Comparable<Any>
+                                   ^
+/tmp/q7.kt:103:49: error: unresolved reference: l_year
+        mutableListOf(supp_nation, cust_nation, l_year) as Comparable<Any>
+                                                ^

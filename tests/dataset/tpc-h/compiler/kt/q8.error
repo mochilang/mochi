@@ -1,0 +1,7 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q8.kt:133:4: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun BigDecimal.div(other: BigDecimal): BigDecimal defined in kotlin
+@InlineOnly public inline operator fun BigInteger.div(other: BigInteger): BigInteger defined in kotlin
+}) / sum(run {
+   ^
