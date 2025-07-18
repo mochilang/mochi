@@ -2,7 +2,7 @@
 
 Generated C++ code for the programs under `tests/vm/valid`. Each file here has a `.cpp` source produced by the compiler and an `.out` file with its runtime output. If compilation failed, a `.error` file captures the g++ output.
 
-Compiled programs: 88/100
+Compiled programs: 89/100
 
 ## Checklist
 - [x] append_builtin

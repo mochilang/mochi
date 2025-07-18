@@ -1,287 +1,213 @@
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:73:12: error: ‘o’ was not declared in this scope
-   73 |   decltype(o.o_orderkey) o_orderkey;
-      |            ^
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:73:12: error: ‘o’ was not declared in this scope
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:74:12: error: ‘o’ was not declared in this scope
-   74 |   decltype(o.o_orderdate) o_orderdate;
-      |            ^
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:74:12: error: ‘o’ was not declared in this scope
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:75:12: error: ‘o’ was not declared in this scope
-   75 |   decltype(o.o_shippriority) o_shippriority;
-      |            ^
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:75:12: error: ‘o’ was not declared in this scope
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:78:12: error: ‘o’ was not declared in this scope
-   78 |   decltype(o) o;
-      |            ^
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:78:12: error: ‘o’ was not declared in this scope
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:79:12: error: ‘l’ was not declared in this scope
-   79 |   decltype(l) l;
-      |            ^
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:79:12: error: ‘l’ was not declared in this scope
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:247:26: error: ‘c’ was not declared in this scope
-  247 |     std::vector<decltype(c)> __items;
-      |                          ^
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:247:28: error: template argument 1 is invalid
-  247 |     std::vector<decltype(c)> __items;
-      |                            ^
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:247:28: error: template argument 2 is invalid
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:251:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
-  251 |       __items.push_back(c);
-      |               ^~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:256:26: error: ‘o’ was not declared in this scope
-  256 |     std::vector<decltype(o)> __items;
-      |                          ^
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:256:28: error: template argument 1 is invalid
-  256 |     std::vector<decltype(o)> __items;
-      |                            ^
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:256:28: error: template argument 2 is invalid
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:258:21: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
-  258 |       for (auto c : building_customers) {
-      |                     ^~~~~~~~~~~~~~~~~~
-      |                     std::begin
-In file included from /usr/include/c++/13/string:53,
-                 from /usr/include/c++/13/bits/locale_classes.h:40,
-                 from /usr/include/c++/13/bits/ios_base.h:41,
-                 from /usr/include/c++/13/ios:44,
-                 from /usr/include/c++/13/ostream:40,
-                 from /usr/include/c++/13/iostream:41,
-                 from /tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:3:
-/usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
-  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
-      |                                     ^~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:258:21: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
-  258 |       for (auto c : building_customers) {
-      |                     ^~~~~~~~~~~~~~~~~~
-      |                     std::end
-/usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
-  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
-      |                                     ^~~
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:263:17: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
-  263 |         __items.push_back(o);
-      |                 ^~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:269:26: error: ‘l’ was not declared in this scope
-  269 |     std::vector<decltype(l)> __items;
-      |                          ^
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:269:28: error: template argument 1 is invalid
-  269 |     std::vector<decltype(l)> __items;
-      |                            ^
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:269:28: error: template argument 2 is invalid
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:273:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
-  273 |       __items.push_back(l);
-      |               ^~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:279:19: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
-  279 |     for (auto o : valid_orders) {
-      |                   ^~~~~~~~~~~~
-      |                   std::begin
-/usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
-  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
-      |                                     ^~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:279:19: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
-  279 |     for (auto o : valid_orders) {
-      |                   ^~~~~~~~~~~~
-      |                   std::end
-/usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
-  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
-      |                                     ^~~
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:280:21: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
-  280 |       for (auto l : valid_lineitems) {
-      |                     ^~~~~~~~~~~~~~~
-      |                     std::begin
-/usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
-  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
-      |                                     ^~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:280:21: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
-  280 |       for (auto l : valid_lineitems) {
-      |                     ^~~~~~~~~~~~~~~
-      |                     std::end
-/usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
-  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
-      |                                     ^~~
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:295:70: error: no matching function for call to ‘std::vector<__struct5>::vector(<brace-enclosed initializer list>)’
-  295 |               __struct6{__key, std::vector<__struct5>{__struct5{o, l}}});
-      |                                                                      ^
-In file included from /usr/include/c++/13/vector:66,
-                 from /tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:9:
-/usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = __struct5; _Alloc = std::allocator<__struct5>]’
-  707 |         vector(_InputIterator __first, _InputIterator __last,
-      |         ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:707:9: note:   template argument deduction/substitution failed:
-/usr/include/c++/13/bits/stl_vector.h:678:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::initializer_list<_Tp>, const allocator_type&) [with _Tp = __struct5; _Alloc = std::allocator<__struct5>; allocator_type = std::allocator<__struct5>]’
-  678 |       vector(initializer_list<value_type> __l,
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:678:7: note:   conversion of argument 1 would be ill-formed:
-/usr/include/c++/13/bits/stl_vector.h:659:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Tp = __struct5; _Alloc = std::allocator<__struct5>; std::__type_identity_t<_Alloc> = std::allocator<__struct5>]’
-  659 |       vector(vector&& __rv, const __type_identity_t<allocator_type>& __m)
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:659:7: note:   candidate expects 2 arguments, 1 provided
-/usr/include/c++/13/bits/stl_vector.h:640:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::false_type) [with _Tp = __struct5; _Alloc = std::allocator<__struct5>; allocator_type = std::allocator<__struct5>; std::false_type = std::integral_constant<bool, false>]’
-  640 |       vector(vector&& __rv, const allocator_type& __m, false_type)
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:640:7: note:   candidate expects 3 arguments, 1 provided
-/usr/include/c++/13/bits/stl_vector.h:635:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::true_type) [with _Tp = __struct5; _Alloc = std::allocator<__struct5>; allocator_type = std::allocator<__struct5>; std::true_type = std::integral_constant<bool, true>]’
-  635 |       vector(vector&& __rv, const allocator_type& __m, true_type) noexcept
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:635:7: note:   candidate expects 3 arguments, 1 provided
-/usr/include/c++/13/bits/stl_vector.h:624:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Tp = __struct5; _Alloc = std::allocator<__struct5>; std::__type_identity_t<_Alloc> = std::allocator<__struct5>]’
-  624 |       vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:624:7: note:   candidate expects 2 arguments, 1 provided
-/usr/include/c++/13/bits/stl_vector.h:620:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&) [with _Tp = __struct5; _Alloc = std::allocator<__struct5>]’
-  620 |       vector(vector&&) noexcept = default;
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:620:7: note:   conversion of argument 1 would be ill-formed:
-/usr/include/c++/13/bits/stl_vector.h:601:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = __struct5; _Alloc = std::allocator<__struct5>]’
-  601 |       vector(const vector& __x)
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:601:7: note:   conversion of argument 1 would be ill-formed:
-/usr/include/c++/13/bits/stl_vector.h:569:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = __struct5; _Alloc = std::allocator<__struct5>; size_type = long unsigned int; value_type = std::vector<__struct5>::value_type; allocator_type = std::allocator<__struct5>]’
-  569 |       vector(size_type __n, const value_type& __value,
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:569:7: note:   candidate expects 3 arguments, 1 provided
-/usr/include/c++/13/bits/stl_vector.h:556:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const allocator_type&) [with _Tp = __struct5; _Alloc = std::allocator<__struct5>; size_type = long unsigned int; allocator_type = std::allocator<__struct5>]’
-  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:556:7: note:   conversion of argument 1 would be ill-formed:
-/usr/include/c++/13/bits/stl_vector.h:542:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const allocator_type&) [with _Tp = __struct5; _Alloc = std::allocator<__struct5>; allocator_type = std::allocator<__struct5>]’
-  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:542:7: note:   conversion of argument 1 would be ill-formed:
-/usr/include/c++/13/bits/stl_vector.h:531:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector() [with _Tp = __struct5; _Alloc = std::allocator<__struct5>]’
-  531 |       vector() = default;
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:306:56: error: request for member ‘l_extendedprice’ in ‘std::declval<__struct5>().__struct5::l’, which is of non-class type ‘int’
-  306 |                            std::declval<__struct5>().l.l_extendedprice *
-      |                                                        ^~~~~~~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:307:62: error: request for member ‘l_discount’ in ‘std::declval<__struct5>().__struct5::l’, which is of non-class type ‘int’
-  307 |                            ((1 - std::declval<__struct5>().l.l_discount))))>
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:312:23: error: no match for ‘operator==’ (operand types are ‘OrderLineJoin’ and ‘OrderLineJoin’)
+  312 |           if (__g.key == __key) {
+      |               ~~~~~~~ ^~ ~~~~~
+      |                   |      |
+      |                   |      OrderLineJoin
+      |                   OrderLineJoin
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:332:32: error: no match for ‘operator-’ (operand types are ‘int’ and ‘std::any’)
+  332 |                            ((1 - std::declval<__struct5>().l.l_discount))))>
+      |                              ~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/bits/stl_algobase.h:67,
+                 from /usr/include/c++/13/algorithm:60,
+                 from /tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:2:
+/usr/include/c++/13/bits/stl_iterator.h:625:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__y.base() - __x.base())) std::operator-(const reverse_iterator<_Iterator>&, const reverse_iterator<_IteratorR>&)’
+  625 |     operator-(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:625:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:332:62: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+  332 |                            ((1 - std::declval<__struct5>().l.l_discount))))>
       |                                                              ^~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:306:56: error: request for member ‘l_extendedprice’ in ‘std::declval<__struct5>().__struct5::l’, which is of non-class type ‘int’
-  306 |                            std::declval<__struct5>().l.l_extendedprice *
-      |                                                        ^~~~~~~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:307:62: error: request for member ‘l_discount’ in ‘std::declval<__struct5>().__struct5::l’, which is of non-class type ‘int’
-  307 |                            ((1 - std::declval<__struct5>().l.l_discount))))>
+/usr/include/c++/13/bits/stl_iterator.h:1800:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__x.base() - __y.base())) std::operator-(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&)’
+ 1800 |     operator-(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1800:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:332:62: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+  332 |                            ((1 - std::declval<__struct5>().l.l_discount))))>
       |                                                              ^~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:307:76: error: template argument 1 is invalid
-  307 |                            ((1 - std::declval<__struct5>().l.l_discount))))>
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:332:32: error: no match for ‘operator-’ (operand types are ‘int’ and ‘std::any’)
+  332 |                            ((1 - std::declval<__struct5>().l.l_discount))))>
+      |                              ~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:625:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__y.base() - __x.base())) std::operator-(const reverse_iterator<_Iterator>&, const reverse_iterator<_IteratorR>&)’
+  625 |     operator-(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:625:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:332:62: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+  332 |                            ((1 - std::declval<__struct5>().l.l_discount))))>
+      |                                                              ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1800:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__x.base() - __y.base())) std::operator-(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&)’
+ 1800 |     operator-(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1800:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:332:62: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+  332 |                            ((1 - std::declval<__struct5>().l.l_discount))))>
+      |                                                              ^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:332:76: error: template argument 1 is invalid
+  332 |                            ((1 - std::declval<__struct5>().l.l_discount))))>
       |                                                                            ^
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:307:76: error: template argument 2 is invalid
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:310:34: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
-  310 |                          __items.push_back(
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:332:76: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:335:34: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  335 |                          __items.push_back(
       |                                  ^~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:311:35: error: request for member ‘l_extendedprice’ in ‘r.__struct5::l’, which is of non-class type ‘int’
-  311 |                              (r.l.l_extendedprice * ((1 - r.l.l_discount))));
-      |                                   ^~~~~~~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:311:63: error: request for member ‘l_discount’ in ‘r.__struct5::l’, which is of non-class type ‘int’
-  311 |                              (r.l.l_extendedprice * ((1 - r.l.l_discount))));
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:336:57: error: no match for ‘operator-’ (operand types are ‘int’ and ‘std::any’)
+  336 |                              (r.l.l_extendedprice * ((1 - r.l.l_discount))));
+      |                                                       ~ ^ ~~~~~~~~~~~~~~
+      |                                                       |       |
+      |                                                       int     std::any
+/usr/include/c++/13/bits/stl_iterator.h:625:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__y.base() - __x.base())) std::operator-(const reverse_iterator<_Iterator>&, const reverse_iterator<_IteratorR>&)’
+  625 |     operator-(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:625:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:336:63: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+  336 |                              (r.l.l_extendedprice * ((1 - r.l.l_discount))));
       |                                                               ^~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:1)> [with auto:1 = int]’:
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:304:24:   required from here
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:303:49: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
-  303 |                        return std::accumulate(v.begin(), v.end(), 0.0);
+/usr/include/c++/13/bits/stl_iterator.h:1800:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__x.base() - __y.base())) std::operator-(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&)’
+ 1800 |     operator-(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1800:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:336:63: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+  336 |                              (r.l.l_extendedprice * ((1 - r.l.l_discount))));
+      |                                                               ^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:1)> [with auto:1 = int]’:
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:329:24:   required from here
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:328:49: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  328 |                        return std::accumulate(v.begin(), v.end(), 0.0);
       |                                               ~~^~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:303:60: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
-  303 |                        return std::accumulate(v.begin(), v.end(), 0.0);
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:328:60: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  328 |                        return std::accumulate(v.begin(), v.end(), 0.0);
       |                                                          ~~^~~
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:320:56: error: request for member ‘l_extendedprice’ in ‘std::declval<__struct5>().__struct5::l’, which is of non-class type ‘int’
-  320 |                            std::declval<__struct5>().l.l_extendedprice *
-      |                                                        ^~~~~~~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:321:62: error: request for member ‘l_discount’ in ‘std::declval<__struct5>().__struct5::l’, which is of non-class type ‘int’
-  321 |                            ((1 - std::declval<__struct5>().l.l_discount))))>
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:346:32: error: no match for ‘operator-’ (operand types are ‘int’ and ‘std::any’)
+  346 |                            ((1 - std::declval<__struct5>().l.l_discount))))>
+      |                              ~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:625:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__y.base() - __x.base())) std::operator-(const reverse_iterator<_Iterator>&, const reverse_iterator<_IteratorR>&)’
+  625 |     operator-(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:625:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:346:62: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+  346 |                            ((1 - std::declval<__struct5>().l.l_discount))))>
       |                                                              ^~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:320:56: error: request for member ‘l_extendedprice’ in ‘std::declval<__struct5>().__struct5::l’, which is of non-class type ‘int’
-  320 |                            std::declval<__struct5>().l.l_extendedprice *
-      |                                                        ^~~~~~~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:321:62: error: request for member ‘l_discount’ in ‘std::declval<__struct5>().__struct5::l’, which is of non-class type ‘int’
-  321 |                            ((1 - std::declval<__struct5>().l.l_discount))))>
+/usr/include/c++/13/bits/stl_iterator.h:1800:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__x.base() - __y.base())) std::operator-(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&)’
+ 1800 |     operator-(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1800:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:346:62: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+  346 |                            ((1 - std::declval<__struct5>().l.l_discount))))>
       |                                                              ^~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:321:76: error: template argument 1 is invalid
-  321 |                            ((1 - std::declval<__struct5>().l.l_discount))))>
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:346:32: error: no match for ‘operator-’ (operand types are ‘int’ and ‘std::any’)
+  346 |                            ((1 - std::declval<__struct5>().l.l_discount))))>
+      |                              ~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:625:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__y.base() - __x.base())) std::operator-(const reverse_iterator<_Iterator>&, const reverse_iterator<_IteratorR>&)’
+  625 |     operator-(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:625:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:346:62: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+  346 |                            ((1 - std::declval<__struct5>().l.l_discount))))>
+      |                                                              ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1800:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__x.base() - __y.base())) std::operator-(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&)’
+ 1800 |     operator-(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1800:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:346:62: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+  346 |                            ((1 - std::declval<__struct5>().l.l_discount))))>
+      |                                                              ^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:346:76: error: template argument 1 is invalid
+  346 |                            ((1 - std::declval<__struct5>().l.l_discount))))>
       |                                                                            ^
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:321:76: error: template argument 2 is invalid
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:324:34: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
-  324 |                          __items.push_back(
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:346:76: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:349:34: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  349 |                          __items.push_back(
       |                                  ^~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:325:35: error: request for member ‘l_extendedprice’ in ‘r.__struct5::l’, which is of non-class type ‘int’
-  325 |                              (r.l.l_extendedprice * ((1 - r.l.l_discount))));
-      |                                   ^~~~~~~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:325:63: error: request for member ‘l_discount’ in ‘r.__struct5::l’, which is of non-class type ‘int’
-  325 |                              (r.l.l_extendedprice * ((1 - r.l.l_discount))));
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:350:57: error: no match for ‘operator-’ (operand types are ‘int’ and ‘std::any’)
+  350 |                              (r.l.l_extendedprice * ((1 - r.l.l_discount))));
+      |                                                       ~ ^ ~~~~~~~~~~~~~~
+      |                                                       |       |
+      |                                                       int     std::any
+/usr/include/c++/13/bits/stl_iterator.h:625:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__y.base() - __x.base())) std::operator-(const reverse_iterator<_Iterator>&, const reverse_iterator<_IteratorR>&)’
+  625 |     operator-(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:625:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:350:63: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+  350 |                              (r.l.l_extendedprice * ((1 - r.l.l_discount))));
       |                                                               ^~~~~~~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:2)> [with auto:2 = int]’:
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:318:24:   required from here
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:317:49: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
-  317 |                        return std::accumulate(v.begin(), v.end(), 0.0);
+/usr/include/c++/13/bits/stl_iterator.h:1800:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr decltype ((__x.base() - __y.base())) std::operator-(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&)’
+ 1800 |     operator-(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1800:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:350:63: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+  350 |                              (r.l.l_extendedprice * ((1 - r.l.l_discount))));
+      |                                                               ^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:2)> [with auto:2 = int]’:
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:343:24:   required from here
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:342:49: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  342 |                        return std::accumulate(v.begin(), v.end(), 0.0);
       |                                               ~~^~~~~
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:317:60: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
-  317 |                        return std::accumulate(v.begin(), v.end(), 0.0);
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:342:60: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  342 |                        return std::accumulate(v.begin(), v.end(), 0.0);
       |                                                          ~~^~~
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:301:24: error: no matching function for call to ‘std::vector<std::pair<__struct8, __struct7> >::push_back(<brace-enclosed initializer list>)’
-  301 |       __items.push_back(
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:326:24: error: no matching function for call to ‘std::vector<std::pair<__struct8, __struct7> >::push_back(<brace-enclosed initializer list>)’
+  326 |       __items.push_back(
       |       ~~~~~~~~~~~~~~~~~^
-  302 |           {__struct8{(-([&](auto v) {
+  327 |           {__struct8{(-([&](auto v) {
       |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  303 |                        return std::accumulate(v.begin(), v.end(), 0.0);
+  328 |                        return std::accumulate(v.begin(), v.end(), 0.0);
       |                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  304 |                      })(([&]() {
+  329 |                      })(([&]() {
       |                      ~~~~~~~~~~~
-  305 |                        std::vector<decltype((
+  330 |                        std::vector<decltype((
       |                        ~~~~~~~~~~~~~~~~~~~~~~
-  306 |                            std::declval<__struct5>().l.l_extendedprice *
+  331 |                            std::declval<__struct5>().l.l_extendedprice *
       |                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  307 |                            ((1 - std::declval<__struct5>().l.l_discount))))>
+  332 |                            ((1 - std::declval<__struct5>().l.l_discount))))>
       |                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  308 |                            __items;
+  333 |                            __items;
       |                            ~~~~~~~~
-  309 |                        for (auto r : g.items) {
+  334 |                        for (auto r : g.items) {
       |                        ~~~~~~~~~~~~~~~~~~~~~~~~
-  310 |                          __items.push_back(
+  335 |                          __items.push_back(
       |                          ~~~~~~~~~~~~~~~~~~
-  311 |                              (r.l.l_extendedprice * ((1 - r.l.l_discount))));
+  336 |                              (r.l.l_extendedprice * ((1 - r.l.l_discount))));
       |                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  312 |                        }
+  337 |                        }
       |                        ~
-  313 |                        return __items;
+  338 |                        return __items;
       |                        ~~~~~~~~~~~~~~~
-  314 |                      })())),
+  339 |                      })())),
       |                      ~~~~~~~
-  315 |                      g.key.o_orderdate},
+  340 |                      g.key.o_orderdate},
       |                      ~~~~~~~~~~~~~~~~~~~
-  316 |            __struct7{g.key.o_orderkey, ([&](auto v) {
+  341 |            __struct7{g.key.o_orderkey, ([&](auto v) {
       |            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  317 |                        return std::accumulate(v.begin(), v.end(), 0.0);
+  342 |                        return std::accumulate(v.begin(), v.end(), 0.0);
       |                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  318 |                      })(([&]() {
+  343 |                      })(([&]() {
       |                      ~~~~~~~~~~~
-  319 |                        std::vector<decltype((
+  344 |                        std::vector<decltype((
       |                        ~~~~~~~~~~~~~~~~~~~~~~
-  320 |                            std::declval<__struct5>().l.l_extendedprice *
+  345 |                            std::declval<__struct5>().l.l_extendedprice *
       |                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  321 |                            ((1 - std::declval<__struct5>().l.l_discount))))>
+  346 |                            ((1 - std::declval<__struct5>().l.l_discount))))>
       |                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  322 |                            __items;
+  347 |                            __items;
       |                            ~~~~~~~~
-  323 |                        for (auto r : g.items) {
+  348 |                        for (auto r : g.items) {
       |                        ~~~~~~~~~~~~~~~~~~~~~~~~
-  324 |                          __items.push_back(
+  349 |                          __items.push_back(
       |                          ~~~~~~~~~~~~~~~~~~
-  325 |                              (r.l.l_extendedprice * ((1 - r.l.l_discount))));
+  350 |                              (r.l.l_extendedprice * ((1 - r.l.l_discount))));
       |                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  326 |                        }
+  351 |                        }
       |                        ~
-  327 |                        return __items;
+  352 |                        return __items;
       |                        ~~~~~~~~~~~~~~~
-  328 |                      })()),
+  353 |                      })()),
       |                      ~~~~~~
-  329 |                      g.key.o_orderdate, g.key.o_shippriority}});
+  354 |                      g.key.o_orderdate, g.key.o_shippriority}});
       |                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/vector:66,
+                 from /tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:10:
 /usr/include/c++/13/bits/stl_vector.h:1281:7: note: candidate: ‘void std::vector<_Tp, _Alloc>::push_back(const value_type&) [with _Tp = std::pair<__struct8, __struct7>; _Alloc = std::allocator<std::pair<__struct8, __struct7> >; value_type = std::pair<__struct8, __struct7>]’
  1281 |       push_back(const value_type& __x)
       |       ^~~~~~~~~
@@ -294,131 +220,396 @@ In file included from /usr/include/c++/13/vector:66,
 /usr/include/c++/13/bits/stl_vector.h:1298:30: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘std::vector<std::pair<__struct8, __struct7> >::value_type&&’ {aka ‘std::pair<__struct8, __struct7>&&’}
  1298 |       push_back(value_type&& __x)
       |                 ~~~~~~~~~~~~~^~~
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp: In function ‘int main()’:
-/tmp/TestCPPCompiler_TPCHQueriesq32375935580/001/prog.cpp:339:5: error: conversion from ‘vector<__struct7>’ to non-scalar type ‘vector<__struct5>’ requested
-  277 |   std::vector<__struct5> order_line_join = ([&]() {
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:364:5: error: conversion from ‘vector<__struct7>’ to non-scalar type ‘vector<__struct5>’ requested
+  302 |   std::vector<__struct5> order_line_join = ([&]() {
       |                                            ~~~~~~~~
-  278 |     std::vector<__struct6> __groups;
+  303 |     std::vector<__struct6> __groups;
       |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  279 |     for (auto o : valid_orders) {
+  304 |     for (auto o : valid_orders) {
       |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  280 |       for (auto l : valid_lineitems) {
+  305 |       for (auto l : valid_lineitems) {
       |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  281 |         if (!((l.l_orderkey == o.o_orderkey)))
+  306 |         if (!((l.l_orderkey == o.o_orderkey)))
       |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  282 |           continue;
+  307 |           continue;
       |           ~~~~~~~~~
-  283 |         auto __key =
+  308 |         auto __key =
       |         ~~~~~~~~~~~~
-  284 |             OrderLineJoin{o.o_orderkey, o.o_orderdate, o.o_shippriority};
+  309 |             OrderLineJoin{o.o_orderkey, o.o_orderdate, o.o_shippriority};
       |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  285 |         bool __found = false;
+  310 |         bool __found = false;
       |         ~~~~~~~~~~~~~~~~~~~~~
-  286 |         for (auto &__g : __groups) {
+  311 |         for (auto &__g : __groups) {
       |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  287 |           if (__g.key == __key) {
+  312 |           if (__g.key == __key) {
       |           ~~~~~~~~~~~~~~~~~~~~~~~
-  288 |             __g.items.push_back(__struct5{o, l});
+  313 |             __g.items.push_back(__struct5{o, l});
       |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  289 |             __found = true;
+  314 |             __found = true;
       |             ~~~~~~~~~~~~~~~
-  290 |             break;
+  315 |             break;
       |             ~~~~~~
-  291 |           }
+  316 |           }
       |           ~
-  292 |         }
+  317 |         }
       |         ~
-  293 |         if (!__found) {
+  318 |         if (!__found) {
       |         ~~~~~~~~~~~~~~~
-  294 |           __groups.push_back(
+  319 |           __groups.push_back(
       |           ~~~~~~~~~~~~~~~~~~~
-  295 |               __struct6{__key, std::vector<__struct5>{__struct5{o, l}}});
+  320 |               __struct6{__key, std::vector<__struct5>{__struct5{o, l}}});
       |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  296 |         }
+  321 |         }
       |         ~
-  297 |       }
+  322 |       }
       |       ~
-  298 |     }
+  323 |     }
       |     ~
-  299 |     std::vector<std::pair<__struct8, __struct7>> __items;
+  324 |     std::vector<std::pair<__struct8, __struct7>> __items;
       |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  300 |     for (auto &g : __groups) {
+  325 |     for (auto &g : __groups) {
       |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
-  301 |       __items.push_back(
+  326 |       __items.push_back(
       |       ~~~~~~~~~~~~~~~~~~
-  302 |           {__struct8{(-([&](auto v) {
+  327 |           {__struct8{(-([&](auto v) {
       |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  303 |                        return std::accumulate(v.begin(), v.end(), 0.0);
+  328 |                        return std::accumulate(v.begin(), v.end(), 0.0);
       |                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  304 |                      })(([&]() {
+  329 |                      })(([&]() {
       |                      ~~~~~~~~~~~
-  305 |                        std::vector<decltype((
+  330 |                        std::vector<decltype((
       |                        ~~~~~~~~~~~~~~~~~~~~~~
-  306 |                            std::declval<__struct5>().l.l_extendedprice *
+  331 |                            std::declval<__struct5>().l.l_extendedprice *
       |                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  307 |                            ((1 - std::declval<__struct5>().l.l_discount))))>
+  332 |                            ((1 - std::declval<__struct5>().l.l_discount))))>
       |                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  308 |                            __items;
+  333 |                            __items;
       |                            ~~~~~~~~
-  309 |                        for (auto r : g.items) {
+  334 |                        for (auto r : g.items) {
       |                        ~~~~~~~~~~~~~~~~~~~~~~~~
-  310 |                          __items.push_back(
+  335 |                          __items.push_back(
       |                          ~~~~~~~~~~~~~~~~~~
-  311 |                              (r.l.l_extendedprice * ((1 - r.l.l_discount))));
+  336 |                              (r.l.l_extendedprice * ((1 - r.l.l_discount))));
       |                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  312 |                        }
+  337 |                        }
       |                        ~
-  313 |                        return __items;
+  338 |                        return __items;
       |                        ~~~~~~~~~~~~~~~
-  314 |                      })())),
+  339 |                      })())),
       |                      ~~~~~~~
-  315 |                      g.key.o_orderdate},
+  340 |                      g.key.o_orderdate},
       |                      ~~~~~~~~~~~~~~~~~~~
-  316 |            __struct7{g.key.o_orderkey, ([&](auto v) {
+  341 |            __struct7{g.key.o_orderkey, ([&](auto v) {
       |            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  317 |                        return std::accumulate(v.begin(), v.end(), 0.0);
+  342 |                        return std::accumulate(v.begin(), v.end(), 0.0);
       |                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  318 |                      })(([&]() {
+  343 |                      })(([&]() {
       |                      ~~~~~~~~~~~
-  319 |                        std::vector<decltype((
+  344 |                        std::vector<decltype((
       |                        ~~~~~~~~~~~~~~~~~~~~~~
-  320 |                            std::declval<__struct5>().l.l_extendedprice *
+  345 |                            std::declval<__struct5>().l.l_extendedprice *
       |                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  321 |                            ((1 - std::declval<__struct5>().l.l_discount))))>
+  346 |                            ((1 - std::declval<__struct5>().l.l_discount))))>
       |                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  322 |                            __items;
+  347 |                            __items;
       |                            ~~~~~~~~
-  323 |                        for (auto r : g.items) {
+  348 |                        for (auto r : g.items) {
       |                        ~~~~~~~~~~~~~~~~~~~~~~~~
-  324 |                          __items.push_back(
+  349 |                          __items.push_back(
       |                          ~~~~~~~~~~~~~~~~~~
-  325 |                              (r.l.l_extendedprice * ((1 - r.l.l_discount))));
+  350 |                              (r.l.l_extendedprice * ((1 - r.l.l_discount))));
       |                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  326 |                        }
+  351 |                        }
       |                        ~
-  327 |                        return __items;
+  352 |                        return __items;
       |                        ~~~~~~~~~~~~~~~
-  328 |                      })()),
+  353 |                      })()),
       |                      ~~~~~~
-  329 |                      g.key.o_orderdate, g.key.o_shippriority}});
+  354 |                      g.key.o_orderdate, g.key.o_shippriority}});
       |                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  330 |     }
+  355 |     }
       |     ~
-  331 |     std::sort(__items.begin(), __items.end(), [](auto &a, auto &b) {
+  356 |     std::sort(__items.begin(), __items.end(), [](auto &a, auto &b) {
       |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  332 |       return std::tie(a.first.f0, a.first.f1) <
+  357 |       return std::tie(a.first.f0, a.first.f1) <
       |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  333 |              std::tie(b.first.f0, b.first.f1);
+  358 |              std::tie(b.first.f0, b.first.f1);
       |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  334 |     });
+  359 |     });
       |     ~~~
-  335 |     std::vector<__struct7> __res;
+  360 |     std::vector<__struct7> __res;
       |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  336 |     for (auto &p : __items)
+  361 |     for (auto &p : __items)
       |     ~~~~~~~~~~~~~~~~~~~~~~~
-  337 |       __res.push_back(p.second);
+  362 |       __res.push_back(p.second);
       |       ~~~~~~~~~~~~~~~~~~~~~~~~~~
-  338 |     return __res;
+  363 |     return __res;
       |     ~~~~~~~~~~~~~
-  339 |   })();
+  364 |   })();
       |   ~~^~
+In file included from /usr/include/c++/13/bits/memory_resource.h:47,
+                 from /usr/include/c++/13/string:58,
+                 from /usr/include/c++/13/bits/locale_classes.h:40,
+                 from /usr/include/c++/13/bits/ios_base.h:41,
+                 from /usr/include/c++/13/ios:44,
+                 from /usr/include/c++/13/ostream:40,
+                 from /usr/include/c++/13/iostream:41,
+                 from /tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:4:
+/usr/include/c++/13/tuple: In instantiation of ‘static constexpr bool std::__tuple_compare<_Tp, _Up, __i, __size>::__less(const _Tp&, const _Up&) [with _Tp = std::tuple<double&, std::any&>; _Up = std::tuple<double&, std::any&>; long unsigned int __i = 1; long unsigned int __size = 2]’:
+/usr/include/c++/13/tuple:1903:61:   required from ‘static constexpr bool std::__tuple_compare<_Tp, _Up, __i, __size>::__less(const _Tp&, const _Up&) [with _Tp = std::tuple<double&, std::any&>; _Up = std::tuple<double&, std::any&>; long unsigned int __i = 0; long unsigned int __size = 2]’
+/usr/include/c++/13/tuple:1969:31:   required from ‘constexpr bool std::operator<(const tuple<_UTypes ...>&, const tuple<_UTypes ...>&) [with _TElements = {double&, any&}; _UElements = {double&, any&}]’
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:357:47:   required from ‘main()::<lambda()>::<lambda(auto:3&, auto:4&)> [with auto:3 = std::pair<__struct8, __struct7>; auto:4 = std::pair<__struct8, __struct7>]’
+/usr/include/c++/13/bits/predefined_ops.h:158:30:   required from ‘constexpr bool __gnu_cxx::__ops::_Iter_comp_iter<_Compare>::operator()(_Iterator1, _Iterator2) [with _Iterator1 = __gnu_cxx::__normal_iterator<std::pair<__struct8, __struct7>*, std::vector<std::pair<__struct8, __struct7> > >; _Iterator2 = __gnu_cxx::__normal_iterator<std::pair<__struct8, __struct7>*, std::vector<std::pair<__struct8, __struct7> > >; _Compare = main()::<lambda()>::<lambda(auto:3&, auto:4&)>]’
+/usr/include/c++/13/bits/stl_algo.h:1819:14:   required from ‘void std::__insertion_sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<pair<__struct8, __struct7>*, vector<pair<__struct8, __struct7> > >; _Compare = __gnu_cxx::__ops::_Iter_comp_iter<main()::<lambda()>::<lambda(auto:3&, auto:4&)> >]’
+/usr/include/c++/13/bits/stl_algo.h:1859:25:   required from ‘void std::__final_insertion_sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<pair<__struct8, __struct7>*, vector<pair<__struct8, __struct7> > >; _Compare = __gnu_cxx::__ops::_Iter_comp_iter<main()::<lambda()>::<lambda(auto:3&, auto:4&)> >]’
+/usr/include/c++/13/bits/stl_algo.h:1950:31:   required from ‘void std::__sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<pair<__struct8, __struct7>*, vector<pair<__struct8, __struct7> > >; _Compare = __gnu_cxx::__ops::_Iter_comp_iter<main()::<lambda()>::<lambda(auto:3&, auto:4&)> >]’
+/usr/include/c++/13/bits/stl_algo.h:4894:18:   required from ‘void std::sort(_RAIter, _RAIter, _Compare) [with _RAIter = __gnu_cxx::__normal_iterator<pair<__struct8, __struct7>*, vector<pair<__struct8, __struct7> > >; _Compare = main()::<lambda()>::<lambda(auto:3&, auto:4&)>]’
+/tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:356:14:   required from here
+/usr/include/c++/13/tuple:1901:40: error: no match for ‘operator<’ (operand types are ‘std::any’ and ‘std::any’)
+ 1901 |         return bool(std::get<__i>(__t) < std::get<__i>(__u))
+      |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/bits/stl_algobase.h:64:
+/usr/include/c++/13/bits/stl_pair.h:835:5: note: candidate: ‘template<class _T1, class _T2> constexpr bool std::operator<(const pair<_T1, _T2>&, const pair<_T1, _T2>&)’
+  835 |     operator<(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_pair.h:835:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/tuple:1901:40: note:   ‘std::any’ is not derived from ‘const std::pair<_T1, _T2>’
+ 1901 |         return bool(std::get<__i>(__t) < std::get<__i>(__u))
+      |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:455:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator<(const reverse_iterator<_Iterator>&, const reverse_iterator<_Iterator>&)’
+  455 |     operator<(const reverse_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:455:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/tuple:1901:40: note:   ‘std::any’ is not derived from ‘const std::reverse_iterator<_Iterator>’
+ 1901 |         return bool(std::get<__i>(__t) < std::get<__i>(__u))
+      |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:500:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator<(const reverse_iterator<_Iterator>&, const reverse_iterator<_IteratorR>&)’
+  500 |     operator<(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:500:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/tuple:1901:40: note:   ‘std::any’ is not derived from ‘const std::reverse_iterator<_Iterator>’
+ 1901 |         return bool(std::get<__i>(__t) < std::get<__i>(__u))
+      |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1705:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator<(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&)’
+ 1705 |     operator<(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1705:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/tuple:1901:40: note:   ‘std::any’ is not derived from ‘const std::move_iterator<_IteratorL>’
+ 1901 |         return bool(std::get<__i>(__t) < std::get<__i>(__u))
+      |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1770:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator<(const move_iterator<_IteratorL>&, const move_iterator<_IteratorL>&)’
+ 1770 |     operator<(const move_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1770:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/tuple:1901:40: note:   ‘std::any’ is not derived from ‘const std::move_iterator<_IteratorL>’
+ 1901 |         return bool(std::get<__i>(__t) < std::get<__i>(__u))
+      |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/bits/basic_string.h:47,
+                 from /usr/include/c++/13/string:54:
+/usr/include/c++/13/string_view:671:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator<(basic_string_view<_CharT, _Traits>, basic_string_view<_CharT, _Traits>)’
+  671 |     operator< (basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:671:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/tuple:1901:40: note:   ‘std::any’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
+ 1901 |         return bool(std::get<__i>(__t) < std::get<__i>(__u))
+      |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/string_view:678:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator<(basic_string_view<_CharT, _Traits>, __type_identity_t<basic_string_view<_CharT, _Traits> >)’
+  678 |     operator< (basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:678:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/tuple:1901:40: note:   ‘std::any’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
+ 1901 |         return bool(std::get<__i>(__t) < std::get<__i>(__u))
+      |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/string_view:686:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator<(__type_identity_t<basic_string_view<_CharT, _Traits> >, basic_string_view<_CharT, _Traits>)’
+  686 |     operator< (__type_identity_t<basic_string_view<_CharT, _Traits>> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:686:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/tuple:1901:40: note:   ‘std::any’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
+ 1901 |         return bool(std::get<__i>(__t) < std::get<__i>(__u))
+      |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3829:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator<(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3829 |     operator<(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3829:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/tuple:1901:40: note:   ‘std::any’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+ 1901 |         return bool(std::get<__i>(__t) < std::get<__i>(__u))
+      |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3843:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator<(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const _CharT*)’
+ 3843 |     operator<(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3843:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/tuple:1901:40: note:   ‘std::any’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+ 1901 |         return bool(std::get<__i>(__t) < std::get<__i>(__u))
+      |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3856:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator<(const _CharT*, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3856 |     operator<(const _CharT* __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3856:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/tuple:1901:40: note:   mismatched types ‘const _CharT*’ and ‘std::any’
+ 1901 |         return bool(std::get<__i>(__t) < std::get<__i>(__u))
+      |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:2079:5: note: candidate: ‘template<class _Tp, class _Alloc> bool std::operator<(const vector<_Tp, _Alloc>&, const vector<_Tp, _Alloc>&)’
+ 2079 |     operator<(const vector<_Tp, _Alloc>& __x, const vector<_Tp, _Alloc>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:2079:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/tuple:1901:40: note:   ‘std::any’ is not derived from ‘const std::vector<_Tp, _Alloc>’
+ 1901 |         return bool(std::get<__i>(__t) < std::get<__i>(__u))
+      |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/map:64,
+                 from /tmp/TestCPPCompiler_TPCHQueriesq33444460816/001/prog.cpp:5:
+/usr/include/c++/13/bits/stl_multimap.h:1172:5: note: candidate: ‘template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator<(const multimap<_Key, _Tp, _Compare, _Allocator>&, const multimap<_Key, _Tp, _Compare, _Allocator>&)’
+ 1172 |     operator<(const multimap<_Key, _Tp, _Compare, _Alloc>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_multimap.h:1172:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/tuple:1901:40: note:   ‘std::any’ is not derived from ‘const std::multimap<_Key, _Tp, _Compare, _Allocator>’
+ 1901 |         return bool(std::get<__i>(__t) < std::get<__i>(__u))
+      |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/map:63:
+/usr/include/c++/13/bits/stl_map.h:1551:5: note: candidate: ‘template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator<(const map<_Key, _Tp, _Compare, _Allocator>&, const map<_Key, _Tp, _Compare, _Allocator>&)’
+ 1551 |     operator<(const map<_Key, _Tp, _Compare, _Alloc>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_map.h:1551:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/tuple:1901:40: note:   ‘std::any’ is not derived from ‘const std::map<_Key, _Tp, _Compare, _Allocator>’
+ 1901 |         return bool(std::get<__i>(__t) < std::get<__i>(__u))
+      |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/tuple:1961:5: note: candidate: ‘template<class ... _TElements, class ... _UElements> constexpr bool std::operator<(const tuple<_UTypes ...>&, const tuple<_UTypes ...>&)’
+ 1961 |     operator<(const tuple<_TElements...>& __t,
+      |     ^~~~~~~~
+/usr/include/c++/13/tuple:1961:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/tuple:1901:40: note:   ‘std::any’ is not derived from ‘const std::tuple<_UTypes ...>’
+ 1901 |         return bool(std::get<__i>(__t) < std::get<__i>(__u))
+      |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/bits/ios_base.h:46:
+/usr/include/c++/13/system_error:507:3: note: candidate: ‘bool std::operator<(const error_condition&, const error_condition&)’
+  507 |   operator<(const error_condition& __lhs,
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:507:36: note:   no known conversion for argument 1 from ‘std::any’ to ‘const std::error_condition&’
+  507 |   operator<(const error_condition& __lhs,
+      |             ~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/system_error:324:3: note: candidate: ‘bool std::operator<(const error_code&, const error_code&)’
+  324 |   operator<(const error_code& __lhs, const error_code& __rhs) noexcept
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:324:31: note:   no known conversion for argument 1 from ‘std::any’ to ‘const std::error_code&’
+  324 |   operator<(const error_code& __lhs, const error_code& __rhs) noexcept
+      |             ~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/tuple:1902:40: error: no match for ‘operator<’ (operand types are ‘std::any’ and ‘std::any’)
+ 1902 |           || (!bool(std::get<__i>(__u) < std::get<__i>(__t))
+      |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_pair.h:835:5: note: candidate: ‘template<class _T1, class _T2> constexpr bool std::operator<(const pair<_T1, _T2>&, const pair<_T1, _T2>&)’
+  835 |     operator<(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_pair.h:835:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/tuple:1902:40: note:   ‘std::any’ is not derived from ‘const std::pair<_T1, _T2>’
+ 1902 |           || (!bool(std::get<__i>(__u) < std::get<__i>(__t))
+      |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:455:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator<(const reverse_iterator<_Iterator>&, const reverse_iterator<_Iterator>&)’
+  455 |     operator<(const reverse_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:455:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/tuple:1902:40: note:   ‘std::any’ is not derived from ‘const std::reverse_iterator<_Iterator>’
+ 1902 |           || (!bool(std::get<__i>(__u) < std::get<__i>(__t))
+      |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:500:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator<(const reverse_iterator<_Iterator>&, const reverse_iterator<_IteratorR>&)’
+  500 |     operator<(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:500:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/tuple:1902:40: note:   ‘std::any’ is not derived from ‘const std::reverse_iterator<_Iterator>’
+ 1902 |           || (!bool(std::get<__i>(__u) < std::get<__i>(__t))
+      |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1705:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator<(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&)’
+ 1705 |     operator<(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1705:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/tuple:1902:40: note:   ‘std::any’ is not derived from ‘const std::move_iterator<_IteratorL>’
+ 1902 |           || (!bool(std::get<__i>(__u) < std::get<__i>(__t))
+      |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1770:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator<(const move_iterator<_IteratorL>&, const move_iterator<_IteratorL>&)’
+ 1770 |     operator<(const move_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1770:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/tuple:1902:40: note:   ‘std::any’ is not derived from ‘const std::move_iterator<_IteratorL>’
+ 1902 |           || (!bool(std::get<__i>(__u) < std::get<__i>(__t))
+      |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/string_view:671:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator<(basic_string_view<_CharT, _Traits>, basic_string_view<_CharT, _Traits>)’
+  671 |     operator< (basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:671:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/tuple:1902:40: note:   ‘std::any’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
+ 1902 |           || (!bool(std::get<__i>(__u) < std::get<__i>(__t))
+      |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/string_view:678:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator<(basic_string_view<_CharT, _Traits>, __type_identity_t<basic_string_view<_CharT, _Traits> >)’
+  678 |     operator< (basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:678:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/tuple:1902:40: note:   ‘std::any’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
+ 1902 |           || (!bool(std::get<__i>(__u) < std::get<__i>(__t))
+      |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/string_view:686:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator<(__type_identity_t<basic_string_view<_CharT, _Traits> >, basic_string_view<_CharT, _Traits>)’
+  686 |     operator< (__type_identity_t<basic_string_view<_CharT, _Traits>> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:686:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/tuple:1902:40: note:   ‘std::any’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
+ 1902 |           || (!bool(std::get<__i>(__u) < std::get<__i>(__t))
+      |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3829:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator<(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3829 |     operator<(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3829:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/tuple:1902:40: note:   ‘std::any’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+ 1902 |           || (!bool(std::get<__i>(__u) < std::get<__i>(__t))
+      |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3843:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator<(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const _CharT*)’
+ 3843 |     operator<(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3843:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/tuple:1902:40: note:   ‘std::any’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+ 1902 |           || (!bool(std::get<__i>(__u) < std::get<__i>(__t))
+      |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3856:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator<(const _CharT*, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3856 |     operator<(const _CharT* __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3856:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/tuple:1902:40: note:   mismatched types ‘const _CharT*’ and ‘std::any’
+ 1902 |           || (!bool(std::get<__i>(__u) < std::get<__i>(__t))
+      |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:2079:5: note: candidate: ‘template<class _Tp, class _Alloc> bool std::operator<(const vector<_Tp, _Alloc>&, const vector<_Tp, _Alloc>&)’
+ 2079 |     operator<(const vector<_Tp, _Alloc>& __x, const vector<_Tp, _Alloc>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:2079:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/tuple:1902:40: note:   ‘std::any’ is not derived from ‘const std::vector<_Tp, _Alloc>’
+ 1902 |           || (!bool(std::get<__i>(__u) < std::get<__i>(__t))
+      |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_multimap.h:1172:5: note: candidate: ‘template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator<(const multimap<_Key, _Tp, _Compare, _Allocator>&, const multimap<_Key, _Tp, _Compare, _Allocator>&)’
+ 1172 |     operator<(const multimap<_Key, _Tp, _Compare, _Alloc>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_multimap.h:1172:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/tuple:1902:40: note:   ‘std::any’ is not derived from ‘const std::multimap<_Key, _Tp, _Compare, _Allocator>’
+ 1902 |           || (!bool(std::get<__i>(__u) < std::get<__i>(__t))
+      |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_map.h:1551:5: note: candidate: ‘template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator<(const map<_Key, _Tp, _Compare, _Allocator>&, const map<_Key, _Tp, _Compare, _Allocator>&)’
+ 1551 |     operator<(const map<_Key, _Tp, _Compare, _Alloc>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_map.h:1551:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/tuple:1902:40: note:   ‘std::any’ is not derived from ‘const std::map<_Key, _Tp, _Compare, _Allocator>’
+ 1902 |           || (!bool(std::get<__i>(__u) < std::get<__i>(__t))
+      |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/tuple:1961:5: note: candidate: ‘template<class ... _TElements, class ... _UElements> constexpr bool std::operator<(const tuple<_UTypes ...>&, const tuple<_UTypes ...>&)’
+ 1961 |     operator<(const tuple<_TElements...>& __t,
+      |     ^~~~~~~~
+/usr/include/c++/13/tuple:1961:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/tuple:1902:40: note:   ‘std::any’ is not derived from ‘const std::tuple<_UTypes ...>’
+ 1902 |           || (!bool(std::get<__i>(__u) < std::get<__i>(__t))
+      |                     ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/system_error:507:3: note: candidate: ‘bool std::operator<(const error_condition&, const error_condition&)’
+  507 |   operator<(const error_condition& __lhs,
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:507:36: note:   no known conversion for argument 1 from ‘std::any’ to ‘const std::error_condition&’
+  507 |   operator<(const error_condition& __lhs,
+      |             ~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/system_error:324:3: note: candidate: ‘bool std::operator<(const error_code&, const error_code&)’
+  324 |   operator<(const error_code& __lhs, const error_code& __rhs) noexcept
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:324:31: note:   no known conversion for argument 1 from ‘std::any’ to ‘const std::error_code&’
+  324 |   operator<(const error_code& __lhs, const error_code& __rhs) noexcept
+      |             ~~~~~~~~~~~~~~~~~~^~~~~
