@@ -1,0 +1,19 @@
+exit status 1
+/workspace/mochi/tests/machine/x/c/python_math.c: In function ‘_mochi_main’:
+/workspace/mochi/tests/machine/x/c/python_math.c:19:52: error: expected ‘)’ before numeric constant
+   19 |   printf("Circle area with r = %.17g => %.17g\n", r.0, area);
+      |         ~                                          ^~
+      |                                                    )
+/workspace/mochi/tests/machine/x/c/python_math.c:19:45: warning: format ‘%g’ expects a matching ‘double’ argument [-Wformat=]
+   19 |   printf("Circle area with r = %.17g => %.17g\n", r.0, area);
+      |                                         ~~~~^
+      |                                             |
+      |                                             double
+/workspace/mochi/tests/machine/x/c/python_math.c:20:44: error: expected ‘)’ before numeric constant
+   20 |   printf("Square root of 49: %.17g\n", root.0);
+      |         ~                                  ^~
+      |                                            )
+/workspace/mochi/tests/machine/x/c/python_math.c:21:36: error: expected ‘)’ before numeric constant
+   21 |   printf("sin(π/4): %.17g\n", sin45.0);
+      |         ~                          ^~
+      |                                    )

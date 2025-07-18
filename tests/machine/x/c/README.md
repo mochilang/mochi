@@ -99,7 +99,7 @@ The C backend compiles Mochi programs in `tests/vm/valid`. The table below lists
  - [x] sum_builtin
  - [x] test_block
  - [x] tree_sum
-- [ ] update_stmt
+- [x] update_stmt
  - [x] user_type_literal
  - [x] values_builtin
 

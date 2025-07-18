@@ -61,16 +61,17 @@ int _mochi_main() {
       (person_t){.name = "Charlie", .age = 18, .status = "unknown"},
       (person_t){.name = "Diana", .age = 16, .status = "minor"}};
   int people_len = sizeof(people) / sizeof(people[0]);
-  for (int tmp4 = 0; tmp4 < people.len; tmp4++) {
-    person_t tmp5 = people.data[tmp4];
+  for (int tmp4 = 0; tmp4 < people_len; tmp4++) {
+    person_t tmp5 = people[tmp4];
     if (tmp5.age >= 18) {
       tmp5.status = "adult";
       tmp5.age = tmp5.age + 1;
     }
-    people.data[tmp4] = tmp5;
+    people[tmp4] = tmp5;
   }
   printf("ok\n");
-  test_update_adult_status_people = people;
+  test_update_adult_status_people.len = people_len;
+  test_update_adult_status_people.data = people;
   test_update_adult_status();
   return 0;
 }

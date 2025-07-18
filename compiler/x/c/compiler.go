@@ -457,7 +457,18 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 			name := "test_" + sanitizeName(s.Test.Name)
 			if caps, ok := c.capturesByFun[name]; ok && len(caps) > 0 {
 				for _, v := range caps {
-					c.writeln(fmt.Sprintf("%s_%s = %s;", name, sanitizeName(v), sanitizeName(v)))
+					src := sanitizeName(v)
+					dst := fmt.Sprintf("%s_%s", name, src)
+					if c.isStackArrayExpr(src) && c.env != nil {
+						if vt, err := c.env.GetVar(v); err == nil {
+							if _, ok := vt.(types.ListType); ok {
+								c.writeln(fmt.Sprintf("%s.len = %s;", dst, c.listLenExpr(src)))
+								c.writeln(fmt.Sprintf("%s.data = %s;", dst, src))
+								continue
+							}
+						}
+					}
+					c.writeln(fmt.Sprintf("%s = %s;", dst, src))
 				}
 			}
 			c.writeln(name + "();")
