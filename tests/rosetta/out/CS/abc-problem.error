@@ -1,5 +1,0 @@
-run: exit status 1
-/tmp/TestMochiToCSabc-problem/Program.cs(44,25): error CS1061: 'List<string>' does not contain a definition for 'Length' and no accessible extension method 'Length' accepting a first argument of type 'List<string>' could be found (are you missing a using directive or an assembly reference?) [/tmp/TestMochiToCSabc-problem/app.csproj]
-/tmp/TestMochiToCSabc-problem/Program.cs(51,33): error CS1061: 'List<string>' does not contain a definition for 'Length' and no accessible extension method 'Length' accepting a first argument of type 'List<string>' could be found (are you missing a using directive or an assembly reference?) [/tmp/TestMochiToCSabc-problem/app.csproj]
-
-The build failed. Fix the build errors and run again.
