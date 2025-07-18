@@ -1208,8 +1208,14 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		c.lets[q.Group.Name] = true
 		prevGrpTyp, hadGrpTyp := c.types[q.Group.Name]
 		prevGrpFlds, hadGrpFlds := c.fields[q.Group.Name]
-		c.types[q.Group.Name] = "list_map"
+		c.types[q.Group.Name] = "map"
 		c.fields[q.Group.Name] = map[string]bool{"key": true, "items": true}
+		if _, ok := c.fields[q.Var]; ok {
+			c.copySubFields(q.Var, q.Group.Name+".items")
+			if t, ok2 := c.types[q.Var]; ok2 && t == "map" {
+				c.types[q.Group.Name+".items"] = "list_map"
+			}
+		}
 		defer func(n string) {
 			delete(c.aliases, n)
 			delete(c.lets, n)
@@ -2364,6 +2370,9 @@ func inferExprTypeShallow(e *parser.Expr) string {
 	switch {
 	case extractQuery(e) != nil:
 		q := extractQuery(e)
+		if q.Group != nil && selectIsVar(q.Select, q.Group.Name) {
+			return "list_map"
+		}
 		t := inferExprTypeShallow(q.Select)
 		if t == "map" {
 			return "list_map"
@@ -2542,9 +2551,19 @@ func (c *Compiler) inferExprType(e *parser.Expr) string {
 	if len(u.Ops) > 0 || u.Value == nil || len(u.Value.Ops) > 0 {
 		return ""
 	}
-	if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 {
-		if typ, ok := c.types[sel.Root]; ok {
-			return typ
+	if sel := u.Value.Target.Selector; sel != nil {
+		if len(sel.Tail) == 0 {
+			if typ, ok := c.types[sel.Root]; ok {
+				return typ
+			}
+		} else {
+			path := sel.Root
+			for _, part := range sel.Tail {
+				path += "." + part
+			}
+			if typ, ok := c.types[path]; ok {
+				return typ
+			}
 		}
 	}
 	return ""

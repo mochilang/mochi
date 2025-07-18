@@ -12,8 +12,15 @@ func identName(e *parser.Expr) (string, bool) {
 	if len(u.Ops) != 0 || u.Value == nil || len(u.Value.Ops) != 0 {
 		return "", false
 	}
-	if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 {
-		return sel.Root, true
+	if sel := u.Value.Target.Selector; sel != nil {
+		name := sel.Root
+		for _, part := range sel.Tail {
+			if !identifierRegex.MatchString(part) {
+				return "", false
+			}
+			name += "." + part
+		}
+		return name, true
 	}
 	return "", false
 }
@@ -89,6 +96,9 @@ func listMapLiteralFields(e *parser.Expr) []string {
 func queryResultFields(q *parser.QueryExpr) []string {
 	if q == nil {
 		return nil
+	}
+	if q.Group != nil && selectIsVar(q.Select, q.Group.Name) {
+		return []string{"key", "items"}
 	}
 	return mapLiteralFields(q.Select)
 }
