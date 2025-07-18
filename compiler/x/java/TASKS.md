@@ -42,3 +42,4 @@
 - 2025-07-17T09:15 - removed unused append helper by rewriting self-assignments
 - 2025-07-17T09:45 - replaced mapOfEntries helper with Map.ofEntries for map literals
 - 2025-07-17T12:27 - added struct membership inference to avoid inOp helper
+- 2025-07-18 08:09 - added Set generic handling and membership inference
