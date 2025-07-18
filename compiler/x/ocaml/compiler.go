@@ -112,6 +112,7 @@ func (c *Compiler) Compile(prog *parser.Program, path string) ([]byte, error) {
 			if err := c.compileFun(s.Fun); err != nil {
 				return nil, err
 			}
+			c.indent = 0
 			c.buf.WriteByte('\n')
 		case s.Let != nil:
 			if err := c.compileGlobalLet(s.Let); err != nil {
@@ -125,7 +126,6 @@ func (c *Compiler) Compile(prog *parser.Program, path string) ([]byte, error) {
 	}
 
 	c.buf.WriteByte('\n')
-	c.writeln(";;")
 	c.writeln("let () =")
 	c.indent++
 	for _, s := range prog.Statements {
@@ -2283,7 +2283,7 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 	case l.Int != nil:
 		return fmt.Sprintf("%d", *l.Int)
 	case l.Str != nil:
-		return fmt.Sprintf("\"%s\"", *l.Str)
+		return fmt.Sprintf("%q", *l.Str)
 	case l.Float != nil:
 		s := fmt.Sprintf("%g", *l.Float)
 		if !strings.ContainsAny(s, ".eE") {
