@@ -1250,35 +1250,40 @@ func collectQueryVars(e *parser.Expr, env *types.Env, vars map[string]string) {
 		switch {
 		case p.Query != nil:
 			qt := types.TypeOfExpr(p.Query.Source, env)
-			elem := "integer"
+			var elemT types.Type = types.IntType{}
 			if lt, ok := qt.(types.ListType); ok {
-				elem = typeString(lt.Elem)
+				elemT = lt.Elem
 			}
 			if gt, ok := qt.(types.GroupType); ok {
-				elem = typeString(gt.Elem)
+				elemT = gt.Elem
 			}
+			elem := typeString(elemT)
 			vars[p.Query.Var] = elem
+			child := types.NewEnv(env)
+			child.SetVar(p.Query.Var, elemT, true)
 			for _, f := range p.Query.Froms {
 				ft := types.TypeOfExpr(f.Src, env)
-				fe := "integer"
+				var feT types.Type = types.IntType{}
 				if lt, ok := ft.(types.ListType); ok {
-					fe = typeString(lt.Elem)
+					feT = lt.Elem
 				}
 				if gt, ok := ft.(types.GroupType); ok {
-					fe = typeString(gt.Elem)
+					feT = gt.Elem
 				}
-				vars[f.Var] = fe
+				vars[f.Var] = typeString(feT)
+				child.SetVar(f.Var, feT, true)
 			}
 			for _, j := range p.Query.Joins {
 				jt := types.TypeOfExpr(j.Src, env)
-				je := "integer"
+				var jeT types.Type = types.IntType{}
 				if lt, ok := jt.(types.ListType); ok {
-					je = typeString(lt.Elem)
+					jeT = lt.Elem
 				}
 				if gt, ok := jt.(types.GroupType); ok {
-					je = typeString(gt.Elem)
+					jeT = gt.Elem
 				}
-				vars[j.Var] = je
+				vars[j.Var] = typeString(jeT)
+				child.SetVar(j.Var, jeT, true)
 			}
 			collectQueryVars(p.Query.Source, env, vars)
 			for _, f := range p.Query.Froms {
@@ -1288,10 +1293,21 @@ func collectQueryVars(e *parser.Expr, env *types.Env, vars map[string]string) {
 				collectQueryVars(j.Src, env, vars)
 				collectQueryVars(j.On, env, vars)
 			}
-			collectQueryVars(p.Query.Select, env, vars)
-			collectQueryVars(p.Query.Where, env, vars)
-			collectQueryVars(p.Query.Skip, env, vars)
-			collectQueryVars(p.Query.Take, env, vars)
+			qenv := child
+			if p.Query.Group != nil {
+				keyT := types.TypeOfExpr(p.Query.Group.Exprs[0], child)
+				if keyT == nil {
+					keyT = types.AnyType{}
+				}
+				qenv = types.NewEnv(child)
+				qenv.SetVar(p.Query.Group.Name, types.GroupType{Key: keyT, Elem: elemT}, true)
+				vars[p.Query.Group.Name] = fmt.Sprintf("specialize _Group<%s, %s>", typeString(keyT), typeString(elemT))
+				collectQueryVars(p.Query.Group.Having, qenv, vars)
+			}
+			collectQueryVars(p.Query.Select, qenv, vars)
+			collectQueryVars(p.Query.Where, child, vars)
+			collectQueryVars(p.Query.Skip, child, vars)
+			collectQueryVars(p.Query.Take, child, vars)
 		case p.FunExpr != nil:
 			for _, st := range p.FunExpr.BlockBody {
 				collectVars([]*parser.Statement{st}, env, vars)

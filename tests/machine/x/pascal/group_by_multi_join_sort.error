@@ -1,37 +1,12 @@
-line: 146
+line: 0
 error: fpc error: exit status 1
 Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
-Compiling /tmp/TestPascalCompiler_VMValid_Goldengroup_by_multi_join_sort127091579/001/main.pas
-main.pas(109,18) Error: identifier idents no member "o_custkey"
-main.pas(109,32) Error: identifier idents no member "c_custkey"
-main.pas(112,20) Error: identifier idents no member "l_orderkey"
-main.pas(112,35) Error: identifier idents no member "o_orderkey"
-main.pas(115,22) Error: identifier idents no member "n_nationkey"
-main.pas(115,38) Error: identifier idents no member "c_nationkey"
-main.pas(118,43) Error: Identifier not found "g"
-main.pas(119,40) Error: Identifier not found "g"
-main.pas(121,20) Error: Identifier not found "g"
-main.pas(123,39) Error: Illegal qualifier
-main.pas(123,65) Error: Illegal qualifier
-main.pas(123,22) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of TArray$1$crcE41905E8", expected "{Open} Array Of Pointer"
-main.pas(121,20) Error: Cannot find an enumerator for the type "<erroneous type>"
-main.pas(126,43) Error: Identifier not found "g"
-main.pas(127,40) Error: Identifier not found "g"
-main.pas(128,43) Error: Identifier not found "g"
-main.pas(129,41) Error: Identifier not found "g"
-main.pas(130,43) Error: Identifier not found "g"
-main.pas(133,20) Error: Identifier not found "g"
-main.pas(135,41) Error: Illegal qualifier
-main.pas(135,67) Error: Illegal qualifier
-main.pas(135,23) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of TArray$1$crcE41905E8", expected "{Open} Array Of Pointer"
-main.pas(133,20) Error: Cannot find an enumerator for the type "<erroneous type>"
-main.pas(15,17) Error: Can't read or write variables of this type
-main.pas(146) Fatal: There were 24 errors compiling module, stopping
+Compiling /tmp/TestPascalCompiler_VMValid_Goldengroup_by_multi_join_sort1216022478/001/main.pas
+main.pas(57,17) Error: Identifier not found "_Group"
+main.pas(57,23) Error: Error in type definition
+main.pas(57,23) Fatal: Syntax error, ";" expected but "<" found
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode
 
- 144:   specialize _printList<specialize TFPGMap<string, Variant>>(_result);
- 145: end.
- 146: 

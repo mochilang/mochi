@@ -3,7 +3,7 @@ error: fpc error: exit status 1
 Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
-Compiling /tmp/TestPascalCompiler_VMValid_Goldentwo-sum2065459757/001/main.pas
+Compiling /tmp/TestPascalCompiler_VMValid_Goldentwo-sum95170328/001/main.pas
 main.pas(26,7) Error: Identifier not found "i"
 main.pas(26,7) Error: Ordinal expression expected
 main.pas(26,7) Error: Illegal counter variable
