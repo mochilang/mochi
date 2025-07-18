@@ -1863,27 +1863,27 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 				expr = fmt.Sprintf("append(append([]any{}, %s...), %s...)", left, right)
 				next = types.ListType{Elem: types.AnyType{}}
 			}
-case op == "+" && isString(leftType) && isString(rightType):
-expr = fmt.Sprintf("%s + %s", left, right)
-next = types.StringType{}
-case op == "+" && isList(leftType) && isString(rightType):
-if lt, ok := leftType.(types.ListType); ok {
-if _, ok2 := lt.Elem.(types.StringType); ok2 {
-c.imports["strings"] = true
-expr = fmt.Sprintf("strings.Join(%s, \"\") + %s", left, right)
-next = types.StringType{}
-break
-}
-}
-case op == "+" && isString(leftType) && isList(rightType):
-if rt, ok := rightType.(types.ListType); ok {
-if _, ok2 := rt.Elem.(types.StringType); ok2 {
-c.imports["strings"] = true
-expr = fmt.Sprintf("%s + strings.Join(%s, \"\")", left, right)
-next = types.StringType{}
-break
-}
-}
+		case op == "+" && isString(leftType) && isString(rightType):
+			expr = fmt.Sprintf("%s + %s", left, right)
+			next = types.StringType{}
+		case op == "+" && isList(leftType) && isString(rightType):
+			if lt, ok := leftType.(types.ListType); ok {
+				if _, ok2 := lt.Elem.(types.StringType); ok2 {
+					c.imports["strings"] = true
+					expr = fmt.Sprintf("strings.Join(%s, \"\") + %s", left, right)
+					next = types.StringType{}
+					break
+				}
+			}
+		case op == "+" && isString(leftType) && isList(rightType):
+			if rt, ok := rightType.(types.ListType); ok {
+				if _, ok2 := rt.Elem.(types.StringType); ok2 {
+					c.imports["strings"] = true
+					expr = fmt.Sprintf("%s + strings.Join(%s, \"\")", left, right)
+					next = types.StringType{}
+					break
+				}
+			}
 		case op == "+" && isInt(leftType) && isAny(rightType):
 			left = fmt.Sprintf("float64(%s)", left)
 			right = c.castExpr(right, rightType, types.FloatType{})
@@ -1952,7 +1952,11 @@ break
 		}
 		next = types.BoolType{}
 	case "&&", "||":
-		if !(isBool(leftType) && isBool(rightType)) {
+		if isBoolLike(leftType) && isAnyLike(rightType) {
+			right = c.castExpr(right, rightType, types.BoolType{})
+		} else if isAnyLike(leftType) && isBoolLike(rightType) {
+			left = c.castExpr(left, leftType, types.BoolType{})
+		} else if !(isBoolLike(leftType) && isBoolLike(rightType)) {
 			return "", types.AnyType{}, fmt.Errorf("operator %q cannot be used on types %s and %s", op, leftType, rightType)
 		}
 		expr = fmt.Sprintf("(%s %s %s)", left, op, right)

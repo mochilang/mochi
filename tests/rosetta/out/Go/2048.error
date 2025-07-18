@@ -1,1 +1,13 @@
-compile: operator "&&" cannot be used on types any and bool
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:25:10: cannot use append(_toAnySlice(row), any(0)) (value of type []any) as []int value in assignment
+/tmp/X/001/main.go:28:7: cannot use append(_toAnySlice(b), any(row)) (value of type []any) as [][]int value in assignment
+/tmp/X/001/main.go:41:8: invalid operation: cannot index b (variable of type *[][]int)
+/tmp/X/001/main.go:42:13: cannot use append(_toAnySlice(empty), any([]int{…})) (value of type []any) as [][]int value in assignment
+/tmp/X/001/main.go:48:9: invalid argument: any(empty) (value of interface type any) for built-in len
+/tmp/X/001/main.go:51:51: invalid argument: any(empty) (value of interface type any) for built-in len
+/tmp/X/001/main.go:57:3: invalid operation: cannot index b (variable of type *[][]int)
+/tmp/X/001/main.go:58:49: invalid argument: any(empty) (value of interface type any) for built-in len
+/tmp/X/001/main.go:64:18: invalid argument: any(s) (value of interface type any) for built-in len
+/tmp/X/001/main.go:101:12: invalid argument: any(r) (value of interface type any) for built-in len
+/tmp/X/001/main.go:101:12: too many errors
