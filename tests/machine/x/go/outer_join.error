@@ -1,6 +1,0 @@
-exit status 1
-# command-line-arguments
-../../../tests/machine/x/go/outer_join.go:75:16: cannot use c.ID (variable of type int) as *Order value in map index
-../../../tests/machine/x/go/outer_join.go:80:28: cannot use o.CustomerID (variable of type int) as *Order value in map index
-../../../tests/machine/x/go/outer_join.go:81:10: cannot use o.CustomerID (variable of type int) as *Order value in map index
-../../../tests/machine/x/go/outer_join.go:87:13: cannot use c.ID (variable of type int) as *Order value in map index

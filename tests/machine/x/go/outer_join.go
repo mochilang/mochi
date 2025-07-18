@@ -69,8 +69,8 @@ func main() {
 		},
 	}
 	result := func() []Result {
-		customerMap := make(map[*Order]*Customer)
-		seen := make(map[*Order]bool)
+		customerMap := make(map[int]*Customer)
+		seen := make(map[int]bool)
 		for _, c := range customers {
 			customerMap[c.ID] = &c
 		}
