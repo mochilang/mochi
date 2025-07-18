@@ -1,0 +1,52 @@
+// Mochi translation of Rosetta "Deceptive numbers" task
+// Ported from Go version in tests/rosetta/x/Go/deceptive-numbers.go
+
+fun isPrime(n: int): bool {
+  if n < 2 { return false }
+  if n % 2 == 0 { return n == 2 }
+  if n % 3 == 0 { return n == 3 }
+  var d = 5
+  while d * d <= n {
+    if n % d == 0 { return false }
+    d = d + 2
+    if n % d == 0 { return false }
+    d = d + 4
+  }
+  return true
+}
+
+fun listToString(xs: list<int>): string {
+  var s = "["
+  var i = 0
+  while i < len(xs) {
+    s = s + str(xs[i])
+    if i < len(xs) - 1 { s = s + " " }
+    i = i + 1
+  }
+  return s + "]"
+}
+
+fun main() {
+  var count = 0
+  let limit = 25
+  var n = 17
+  var repunit: bigint = 1111111111111111 as bigint  // R(16)
+  let eleven: bigint = 11
+  let hundred: bigint = 100
+  var deceptive: list<int> = []
+  while count < limit {
+    if !isPrime(n) && n % 3 != 0 && n % 5 != 0 {
+      let bn: bigint = n as bigint
+      if repunit % bn == 0 as bigint {
+        deceptive = append(deceptive, n)
+        count = count + 1
+      }
+    }
+    n = n + 2
+    repunit = (repunit * hundred) + eleven
+  }
+  print("The first " + str(limit) + " deceptive numbers are:")
+  print(listToString(deceptive))
+}
+
+main()
