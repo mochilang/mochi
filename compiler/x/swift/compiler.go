@@ -108,6 +108,40 @@ type compiler struct {
 	builtinAliases  map[string]string
 }
 
+func paramMutations(body []*parser.Statement, params map[string]bool) map[string]bool {
+	mutated := map[string]bool{}
+	var walk func([]*parser.Statement)
+	walk = func(stmts []*parser.Statement) {
+		for _, st := range stmts {
+			if st.Assign != nil {
+				if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
+					if params[st.Assign.Name] {
+						mutated[st.Assign.Name] = true
+					}
+				}
+				if st.Assign.Value != nil {
+					// nothing
+				}
+			}
+			if st.If != nil {
+				walk(st.If.Then)
+				if st.If.ElseIf != nil {
+					walk([]*parser.Statement{{If: st.If.ElseIf}})
+				}
+				walk(st.If.Else)
+			}
+			if st.While != nil {
+				walk(st.While.Body)
+			}
+			if st.For != nil {
+				walk(st.For.Body)
+			}
+		}
+	}
+	walk(body)
+	return mutated
+}
+
 func (c *compiler) aggElemType(e *parser.Expr) string {
 	if et := listElemType(c.exprType(e)); et != "" {
 		return et
@@ -459,6 +493,16 @@ func (c *compiler) funStmt(f *parser.FunStmt) error {
 	}
 	c.buf.WriteString(" {\n")
 	c.indent++
+	paramSet := make(map[string]bool)
+	for _, p := range f.Params {
+		paramSet[p.Name] = true
+	}
+	mutated := paramMutations(f.Body, paramSet)
+	for _, p := range f.Params {
+		if mutated[p.Name] {
+			c.writeln(fmt.Sprintf("var %s = %s", sanitizeName(p.Name), sanitizeName(p.Name)))
+		}
+	}
 	for _, st := range f.Body {
 		if err := c.stmt(st); err != nil {
 			return err
@@ -1221,6 +1265,12 @@ func (c *compiler) callExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.helpers["_json"] = true
 		return fmt.Sprintf("_json(%s)", args[0]), nil
+	case "int":
+		if len(args) != 1 {
+			return "", fmt.Errorf("int expects 1 argument at line %d", call.Pos.Line)
+		}
+		c.helpers["_int"] = true
+		return fmt.Sprintf("_int(%s)", args[0]), nil
 	case "now":
 		if len(args) != 0 {
 			return "", fmt.Errorf("now expects no arguments at line %d", call.Pos.Line)
@@ -4015,6 +4065,15 @@ func (c *compiler) emitRuntime() {
 			}
 		}
 	}
+	if c.helpers["_int"] {
+		for _, line := range strings.Split(helperInt, "\n") {
+			if line == "" {
+				c.buf.WriteByte('\n')
+			} else {
+				c.writeln(line)
+			}
+		}
+	}
 	if c.helpers["_expect"] {
 		for _, line := range strings.Split(helperExpect, "\n") {
 			if line == "" {
@@ -4161,6 +4220,19 @@ const helperInput = `func _input() -> String {
         return line
     }
     return ""
+}`
+
+const helperInt = `func _int(_ v: Any) -> Int {
+    if let s = v as? String {
+        return Int(s) ?? 0
+    }
+    if let d = v as? Double {
+        return Int(d)
+    }
+    if let i = v as? Int {
+        return i
+    }
+    return 0
 }`
 
 const helperGroup = `class _Group {
