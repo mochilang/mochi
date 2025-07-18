@@ -552,7 +552,18 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 	}
 	params := make([]string, len(f.Params))
 	for i, p := range f.Params {
-		params[i] = fmt.Sprintf("(%s)", p.Name)
+		typ := ""
+		if p.Type != nil {
+			if t, err := c.compileType(p.Type); err == nil {
+				typ = t
+				c.vars[p.Name] = t
+			}
+		}
+		if typ != "" {
+			params[i] = fmt.Sprintf("(%s: %s)", p.Name, typ)
+		} else {
+			params[i] = fmt.Sprintf("(%s)", p.Name)
+		}
 	}
 	paramStr := strings.Join(params, " ")
 	if len(params) == 0 {
@@ -610,6 +621,10 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 }
 
 func (c *Compiler) compileReturn(r *parser.ReturnStmt) error {
+	if r.Value == nil {
+		c.writeln("()")
+		return nil
+	}
 	val, err := c.compileExpr(r.Value)
 	if err != nil {
 		return err
@@ -1289,6 +1304,12 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			if strings.HasPrefix(arg, "\"") {
 				return fmt.Sprintf("%s.Length", arg), nil
 			}
+			if c.inferType(call.Args[0]) == "string" {
+				if !identifierRegexp.MatchString(arg) {
+					arg = fmt.Sprintf("(%s)", arg)
+				}
+				return fmt.Sprintf("%s.Length", arg), nil
+			}
 			if identifierRegexp.MatchString(arg) && c.maps[arg] {
 				return fmt.Sprintf("%s.Count", arg), nil
 			}
@@ -1322,6 +1343,14 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	case "substring":
 		if len(args) == 3 {
 			return fmt.Sprintf("%s.Substring(%s, %s - %s)", args[0], args[1], args[2], args[1]), nil
+		}
+	case "input":
+		if len(args) == 0 {
+			return "System.Console.ReadLine()", nil
+		}
+	case "int":
+		if len(args) == 1 {
+			return fmt.Sprintf("int %s", args[0]), nil
 		}
 	case "sum":
 		if len(args) == 1 {
