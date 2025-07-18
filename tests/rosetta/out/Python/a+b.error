@@ -1,8 +1,8 @@
-type: error[T003]: unknown function: int
-  --> /workspace/mochi/tests/rosetta/x/Mochi/a+b.mochi:2:11
-
-  2 |   let a = int(input())
-    |           ^
-
-help:
-  Ensure the function is defined before it's called.
+run: exit status 1
+Traceback (most recent call last):
+  File "/tmp/a+b.py", line 8, in <module>
+    main()
+  File "/tmp/a+b.py", line 3, in main
+    a = int(input())
+            ^^^^^^^
+EOFError: EOF when reading a line
