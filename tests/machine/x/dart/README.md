@@ -2,8 +2,6 @@
 
 This directory contains Dart code generated from Mochi programs. Successful runs have a .out file, failures a .error file.
 
-Helper functions are now emitted only when referenced, so generated code is closer to the human examples.
-
 Compiled programs: 100/100
 
 Checklist:
@@ -108,3 +106,28 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+
+## TPC-H queries
+
+- [x] q1
+- [x] q2
+- [x] q3
+- [ ] q4
+- [x] q5
+- [x] q6
+- [x] q7
+- [x] q8
+- [x] q9
+- [x] q10
+- [x] q11
+- [ ] q12
+- [x] q13
+- [x] q14
+- [x] q15
+- [x] q16
+- [x] q17
+- [x] q18
+- [x] q19
+- [ ] q20
+- [ ] q21
+- [x] q22

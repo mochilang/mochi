@@ -1,0 +1,4 @@
+exit status 254
+tests/machine/x/dart/tpch_q20.dart:89:97: Error: Operator '>' cannot be called on 'int?' because it is potentially null.
+        if (!(p['p_name'].toString().substring(0, prefix.length) == prefix && ps['ps_availqty'] > ((0.5 * (s['qty'] as num)) as num))) continue;
+                                                                                                ^

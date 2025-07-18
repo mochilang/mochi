@@ -675,6 +675,17 @@ Run the golden tests to verify the code and output:
 go test ./compiler/x/ex -run TestExCompiler_TPCHQueries -tags=slow -v
 ```
 
+## TPC-H Queries with Dart
+
+The Dart backend currently fails all twenty-two TPC-H queries. Run:
+
+```bash
+go test ./compiler/x/dart -run TestDartCompiler_TPCHQueries -tags=slow -v
+```
+
+Passed queries: none
+Failed queries: q1–q22
+
 ## Contributing
 
 Mochi is open source and happy to have your contributions.
