@@ -1155,15 +1155,20 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.use("_append")
 		return fmt.Sprintf("_append(%s, %s)", args[0], args[1]), nil
-	case "strings.ToUpper":
-		if len(args) != 1 {
-			return "", fmt.Errorf("strings.ToUpper expects 1 arg")
-		}
-		return fmt.Sprintf("%s.upper()", args[0]), nil
-	case "lower":
-		if len(args) != 1 {
-			return "", fmt.Errorf("lower expects 1 arg")
-		}
+       case "strings.ToUpper":
+               if len(args) != 1 {
+                       return "", fmt.Errorf("strings.ToUpper expects 1 arg")
+               }
+               return fmt.Sprintf("%s.upper()", args[0]), nil
+       case "upper":
+               if len(args) != 1 {
+                       return "", fmt.Errorf("upper expects 1 arg")
+               }
+               return fmt.Sprintf("str(%s).upper()", args[0]), nil
+       case "lower":
+               if len(args) != 1 {
+                       return "", fmt.Errorf("lower expects 1 arg")
+               }
 		return fmt.Sprintf("str(%s).lower()", args[0]), nil
 	case "contains":
 		if len(args) != 2 {
