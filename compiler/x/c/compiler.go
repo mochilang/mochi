@@ -4582,6 +4582,30 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			leftListString = false
 			continue
 		}
+		if (op.Op == "+" || (op.Op == "union" && op.All)) && !leftString {
+			if _, ok := leftType.(types.AnyType); ok && isStringPostfixOrIndex(op.Right, c.env) {
+				c.need(needConcatString)
+				name := c.newTemp()
+				c.writeln(fmt.Sprintf("char* %s = concat_string(%s, %s);", name, left, right))
+				left = name
+				leftString = true
+				leftList = false
+				leftListInt = false
+				leftListString = false
+				continue
+			}
+		}
+		if (op.Op == "+") && leftString {
+			c.need(needConcatString)
+			name := c.newTemp()
+			c.writeln(fmt.Sprintf("char* %s = concat_string(%s, %s);", name, left, right))
+			left = name
+			leftString = true
+			leftList = false
+			leftListInt = false
+			leftListString = false
+			continue
+		}
 		if op.Op == "union" && leftListInt && isListIntPostfix(op.Right, c.env) {
 			c.need(needUnionListInt)
 			c.need(needListInt)

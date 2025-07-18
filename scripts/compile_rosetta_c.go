@@ -76,7 +76,7 @@ func main() {
 			writeError(outDir, name, fmt.Sprintf("type: %v", errs[0]))
 			continue
 		}
-		code, err := ccode.New(env).Compile(prog)
+		code, err := ccode.NewWithAutoType(env, true).Compile(prog)
 		if err != nil {
 			writeError(outDir, name, fmt.Sprintf("compile: %v", err))
 			continue
