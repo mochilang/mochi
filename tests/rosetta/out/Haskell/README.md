@@ -1,4 +1,4 @@
-# Rosetta Haskell Output (1/216 succeeded)
+# Rosetta Haskell Output (8/216 succeeded)
 
 This directory holds Haskell source code generated from the Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected runtime output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -59,7 +59,7 @@ This directory holds Haskell source code generated from the Mochi programs in `t
 - [ ] anonymous-recursion
 - [ ] anti-primes
 - [ ] append-a-record-to-the-end-of-a-text-file
-- [ ] apply-a-callback-to-an-array-1
+- [x] apply-a-callback-to-an-array-1
 - [ ] apply-a-callback-to-an-array-2
 - [ ] apply-a-digital-filter-direct-form-ii-transposed-
 - [ ] approximate-equality
@@ -187,9 +187,9 @@ This directory holds Haskell source code generated from the Mochi programs in `t
 - [ ] chaos-game
 - [ ] character-codes-1
 - [ ] character-codes-2
-- [ ] character-codes-3
-- [ ] character-codes-4
-- [ ] character-codes-5
+- [x] character-codes-3
+- [x] character-codes-4
+- [x] character-codes-5
 - [ ] chat-server
 - [ ] check-machin-like-formulas
 - [ ] check-that-file-exists
@@ -203,7 +203,7 @@ This directory holds Haskell source code generated from the Mochi programs in `t
 - [ ] chinese-zodiac
 - [ ] cholesky-decomposition-1
 - [ ] cholesky-decomposition
-- [ ] chowla-numbers
+- [x] chowla-numbers
 - [ ] church-numerals-1
 - [ ] church-numerals-2
 - [ ] circles-of-given-radius-through-two-points
@@ -214,8 +214,8 @@ This directory holds Haskell source code generated from the Mochi programs in `t
 - [ ] csv-data-manipulation
 - [ ] csv-to-html-translation-1
 - [ ] csv-to-html-translation-2
-- [ ] csv-to-html-translation-3
-- [ ] csv-to-html-translation-4
+- [x] csv-to-html-translation-3
+- [x] csv-to-html-translation-4
 - [ ] csv-to-html-translation-5
 - [ ] cusip
 - [ ] md5
