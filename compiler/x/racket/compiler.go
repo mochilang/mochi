@@ -24,6 +24,7 @@ type Compiler struct {
 	structFieldTypes map[string]map[string]string
 	varTypes         map[string]string
 	funArity         map[string]int
+	funReturns       map[string]string
 	groups           map[string]bool
 	currentGroup     string
 	groupFields      map[string]bool
@@ -41,6 +42,7 @@ func New() *Compiler {
 		structFieldTypes: make(map[string]map[string]string),
 		varTypes:         make(map[string]string),
 		funArity:         make(map[string]int),
+		funReturns:       make(map[string]string),
 		groups:           make(map[string]bool),
 		groupFields:      nil,
 		listElemTypes:    make(map[string]string),
@@ -554,7 +556,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			if len(args) == 1 {
 				if c.isBoolExpr(p.Call.Args[0]) {
-					return fmt.Sprintf("(displayln (if %s 1 0))", args[0]), nil
+					return fmt.Sprintf("(displayln %s)", args[0]), nil
 				}
 				if c.isNumericExpr(p.Call.Args[0]) {
 					return fmt.Sprintf("(displayln %s)", args[0]), nil
@@ -868,6 +870,9 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 		}
 	}
 	c.funArity[f.Name] = len(f.Params)
+	if rt := funReturnType(f.Return); rt != "" {
+		c.funReturns[f.Name] = rt
+	}
 	c.writeln(fmt.Sprintf("(define (%s %s)", f.Name, strings.Join(params, " ")))
 	c.writeln("  (let/ec return")
 	for _, st := range f.Body {
@@ -1587,16 +1592,48 @@ func isSimpleCall(e *parser.Expr, name string) (*parser.Expr, bool) {
 }
 
 func (c *Compiler) getDeclType(tr *parser.TypeRef) string {
-	if tr == nil || tr.Simple == nil {
+	if tr == nil {
 		return ""
 	}
-	name := *tr.Simple
-	if _, ok := c.structs[name]; ok {
-		return name
+	if tr.Simple != nil {
+		name := *tr.Simple
+		if _, ok := c.structs[name]; ok {
+			return name
+		}
+		switch name {
+		case "string", "int", "float", "bool", "bigint", "bigrat":
+			return name
+		}
 	}
-	switch name {
-	case "string", "int", "float", "bool", "bigint", "bigrat":
-		return name
+	if tr.Fun != nil && tr.Fun.Return != nil {
+		return c.getDeclType(tr.Fun.Return)
+	}
+	return ""
+}
+
+func funReturnType(tr *parser.TypeRef) string {
+	if tr == nil || tr.Fun == nil || tr.Fun.Return == nil {
+		return ""
+	}
+	if tr.Fun.Return.Fun != nil {
+		return ""
+	}
+	return getSimpleType(tr.Fun.Return)
+}
+
+func getSimpleType(tr *parser.TypeRef) string {
+	if tr == nil {
+		return ""
+	}
+	if tr.Simple != nil {
+		name := *tr.Simple
+		switch name {
+		case "string", "int", "float", "bool", "bigint", "bigrat":
+			return name
+		}
+	}
+	if tr.Fun != nil && tr.Fun.Return != nil {
+		return getSimpleType(tr.Fun.Return)
 	}
 	return ""
 }
@@ -1736,6 +1773,10 @@ func (c *Compiler) exprType(e *parser.Expr) string {
 				return "float"
 			case "exists":
 				return "bool"
+			default:
+				if rt, ok := c.funReturns[call.Func]; ok {
+					return rt
+				}
 			}
 		case u.Value.Target.Selector != nil:
 			name, ok := identName(e)

@@ -39,3 +39,5 @@ Recent enhancements:
 - Enhanced numeric and boolean inference to drop runtime helpers for
   comparisons and `print`. Added machine outputs for five more VM
   examples.
+- 2025-07-18 - Added return type tracking for user-defined functions and
+  boolean prints now output plain `#t`/`#f` without numeric conversion.
