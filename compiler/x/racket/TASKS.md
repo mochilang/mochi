@@ -34,3 +34,8 @@ Recent enhancements:
 - 2025-10-12 07:07 - `print` now omits runtime helpers for single string literals and outputs direct `displayln`.
 - 2025-10-20 00:00 - Type inference now records builtin types so string
   variables print without runtime helpers.
+### 2025-07-18
+
+- Enhanced numeric and boolean inference to drop runtime helpers for
+  comparisons and `print`. Added machine outputs for five more VM
+  examples.

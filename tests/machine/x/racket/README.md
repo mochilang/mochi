@@ -2,17 +2,17 @@
 
 This directory contains Racket source code generated from the Mochi programs in `tests/vm/valid` using the Racket backend. Each program was compiled and executed. Successful runs produced an `.out` file while failures produced an `.error` file.
 
-Compiled programs: 5/100
+Compiled programs: 10/100
 
 ## Checklist
 
 - [x] append_builtin
 - [x] avg_builtin
-- [ ] basic_compare
-- [ ] binary_precedence
-- [ ] bool_chain
-- [ ] break_continue
-- [ ] cast_string_to_int
+- [x] basic_compare
+- [x] binary_precedence
+- [x] bool_chain
+- [x] break_continue
+- [x] cast_string_to_int
 - [ ] cast_struct
 - [ ] closure
 - [ ] count_builtin
