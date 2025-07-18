@@ -3,8 +3,15 @@ Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /tmp/100-prisoners.pas
-100-prisoners.pas(21,16) Error: Operator is not overloaded: "TDateTime" mod "LongInt"
-100-prisoners.pas(56,29) Error: Identifier not found "_appendList"
-100-prisoners.pas(56,57) Fatal: Syntax error, ")" expected but "," found
+100-prisoners.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
+100-prisoners.pas(44,23) Note: Call to subroutine "operator :=(const source:Int64):Variant;" marked as inline is not inlined
+100-prisoners.pas(46,19) Note: Call to subroutine "operator :=(const source:Variant):LongInt;" marked as inline is not inlined
+100-prisoners.pas(47,9) Note: Call to subroutine "operator :=(const source:Variant):LongInt;" marked as inline is not inlined
+100-prisoners.pas(94,19) Error: Incompatible types: got "LongInt" expected "TArray$1$crc9F312717"
+100-prisoners.pas(95,20) Error: Operator is not overloaded: "TArray$1$crc9F312717" = "LongInt"
+100-prisoners.pas(100,19) Error: Incompatible types: got "TArray$1$crc9F312717" expected "LongInt"
+100-prisoners.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
+100-prisoners.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
+100-prisoners.pas(152,83) Fatal: String exceeds line
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode

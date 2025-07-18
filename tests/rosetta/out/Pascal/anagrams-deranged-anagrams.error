@@ -3,7 +3,26 @@ Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /tmp/anagrams-deranged-anagrams.pas
-anagrams-deranged-anagrams.pas(24,23) Error: Identifier not found "_appendList"
-anagrams-deranged-anagrams.pas(24,47) Fatal: Syntax error, ")" expected but "," found
+anagrams-deranged-anagrams.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
+anagrams-deranged-anagrams.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
+anagrams-deranged-anagrams.pas(56,74) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+anagrams-deranged-anagrams.pas(59,8) Note: Call to subroutine "operator :=(const source:Int64):Variant;" marked as inline is not inlined
+anagrams-deranged-anagrams.pas(61,9) Note: Call to subroutine "operator <(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+anagrams-deranged-anagrams.pas(61,12) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+anagrams-deranged-anagrams.pas(64,11) Note: Call to subroutine "operator <(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+anagrams-deranged-anagrams.pas(64,14) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+anagrams-deranged-anagrams.pas(64,14) Note: Call to subroutine "operator -(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+anagrams-deranged-anagrams.pas(64,18) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+anagrams-deranged-anagrams.pas(66,10) Note: Call to subroutine "operator >(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+anagrams-deranged-anagrams.pas(78,9) Note: Call to subroutine "operator <(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+anagrams-deranged-anagrams.pas(78,12) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+anagrams-deranged-anagrams.pas(80,16) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+anagrams-deranged-anagrams.pas(80,16) Note: Call to subroutine "operator +(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+anagrams-deranged-anagrams.pas(80,16) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+anagrams-deranged-anagrams.pas(116,8) Error: Incompatible types: got "TFPGMap<System.ShortString,System.LongInt>" expected "TFPGMap<System.ShortString,AnagramsDerangedAnagrams.TArray$1$crc862A1656>"
+anagrams-deranged-anagrams.pas(124,15) Error: Operator is not overloaded
+anagrams-deranged-anagrams.pas(126,46) Error: Incompatible type for arg no. 2: Got "TArray$1$crcE41905E8", expected "TArray$1$crc862A1656"
+anagrams-deranged-anagrams.pas(139,49) Error: Incompatible type for arg no. 1: Got "TArray$1$crc862A1656", expected "TArray$1$crcE41905E8"
+anagrams-deranged-anagrams.pas(147) Fatal: There were 4 errors compiling module, stopping
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode

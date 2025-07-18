@@ -3,21 +3,27 @@ Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /tmp/achilles-numbers.pas
-achilles-numbers.pas(59,12) Error: Incompatible types: got "LongInt" expected "<procedure variable type of function(ShortString):ShortString is nested;Register>"
-achilles-numbers.pas(61,16) Error: Operator is not overloaded: "Int64" < "<procedure variable type of function(ShortString):ShortString is nested;Register>"
-achilles-numbers.pas(67,13) Error: Operator is not overloaded: "LongInt" >= "<procedure variable type of function(ShortString):ShortString is nested;Register>"
-achilles-numbers.pas(68,7) Error: Identifier not found "pps"
-achilles-numbers.pas(85,12) Error: Incompatible types: got "LongInt" expected "<procedure variable type of function(Variant):ShortString is nested;Register>"
-achilles-numbers.pas(86,12) Error: Incompatible types: got "LongInt" expected "<procedure variable type of function(ShortString):ShortString is nested;Register>"
-achilles-numbers.pas(88,15) Error: Incompatible types: got "TFPGMap<System.ShortString,System.LongInt>" expected "TFPGMap<System.LongInt,System.Boolean>"
-achilles-numbers.pas(90,20) Error: Operator is not overloaded: "Int64" < "<procedure variable type of function(ShortString):ShortString is nested;Register>"
-achilles-numbers.pas(97,13) Error: Operator is not overloaded: "LongInt" >= "<procedure variable type of function(ShortString):ShortString is nested;Register>"
-achilles-numbers.pas(98,13) Error: Operator is not overloaded: "LongInt" >= "<procedure variable type of function(Variant):ShortString is nested;Register>"
-achilles-numbers.pas(121,15) Error: Incompatible types: got "Variant" expected "<procedure variable type of function(Variant):Variant is nested;Register>"
-achilles-numbers.pas(126,18) Error: Operator is not overloaded: "Variant" < "<procedure variable type of function(Variant):Variant is nested;Register>"
-achilles-numbers.pas(128,19) Error: Incompatible types: got "Variant" expected "<procedure variable type of function(Variant):Variant is nested;Register>"
-achilles-numbers.pas(133,42) Error: Illegal expression
-achilles-numbers.pas(133,50) Error: Type identifier expected
-achilles-numbers.pas(133,50) Fatal: Syntax error, "," expected but "(" found
+fgl.pp(1668,8) Note: Call to subroutine "function TFPGMap<System.ShortString,System.LongInt>.IndexOf(const AKey:ShortString):LongInt;" marked as inline is not inlined
+fgl.pp(1668,8) Note: Call to subroutine "function TFPGMap<System.LongInt,System.Boolean>.IndexOf(const AKey:LongInt):LongInt;" marked as inline is not inlined
+achilles-numbers.pas(71,12) Error: Incompatible types: got "LongInt" expected "<procedure variable type of function(ShortString):ShortString is nested;Register>"
+achilles-numbers.pas(73,16) Error: Operator is not overloaded: "Int64" < "<procedure variable type of function(ShortString):ShortString is nested;Register>"
+achilles-numbers.pas(79,13) Error: Operator is not overloaded: "LongInt" >= "<procedure variable type of function(ShortString):ShortString is nested;Register>"
+achilles-numbers.pas(97,12) Error: Incompatible types: got "LongInt" expected "<procedure variable type of function(Variant):ShortString is nested;Register>"
+achilles-numbers.pas(98,12) Error: Incompatible types: got "LongInt" expected "<procedure variable type of function(ShortString):ShortString is nested;Register>"
+achilles-numbers.pas(100,15) Error: Incompatible types: got "TFPGMap<System.ShortString,System.LongInt>" expected "TFPGMap<System.Variant,System.Variant>"
+achilles-numbers.pas(102,20) Error: Operator is not overloaded: "Int64" < "<procedure variable type of function(ShortString):ShortString is nested;Register>"
+achilles-numbers.pas(109,13) Error: Operator is not overloaded: "LongInt" >= "<procedure variable type of function(ShortString):ShortString is nested;Register>"
+achilles-numbers.pas(110,13) Error: Operator is not overloaded: "LongInt" >= "<procedure variable type of function(Variant):ShortString is nested;Register>"
+achilles-numbers.pas(115,13) Error: Incompatible types: got "TFPGMap<System.Variant,System.Variant>" expected "TFPGMap<System.LongInt,System.Boolean>"
+achilles-numbers.pas(133,15) Error: Incompatible types: got "Variant" expected "<procedure variable type of function(Variant):Variant is nested;Register>"
+achilles-numbers.pas(138,18) Error: Operator is not overloaded: "Variant" < "<procedure variable type of function(Variant):Variant is nested;Register>"
+achilles-numbers.pas(140,19) Error: Incompatible types: got "Variant" expected "<procedure variable type of function(Variant):Variant is nested;Register>"
+achilles-numbers.pas(145,24) Error: Illegal type conversion: "{Array Of Const/Constant Open} Array of <procedure variable type of function(Variant):Variant is nested;Register>" to "TArray$1$crcE41905E8"
+achilles-numbers.pas(145,12) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of TArray$1$crcE41905E8", expected "{Open} Array Of Pointer"
+achilles-numbers.pas(155,13) Error: Incompatible types: got "TArray$1$crcE41905E8" expected "TArray$1$crc9F312717"
+achilles-numbers.pas(191,13) Error: Incompatible types: got "TFPGMap<System.LongInt,System.Boolean>" expected "Variant"
+achilles-numbers.pas(193,18) Error: Cannot find an enumerator for the type "OleVariant"
+achilles-numbers.pas(197,22) Error: Incompatible type for arg no. 1: Got "TArray$1$crcE41905E8", expected "TArray$1$crc9F312717"
+achilles-numbers.pas(213,11) Fatal: String exceeds line
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode

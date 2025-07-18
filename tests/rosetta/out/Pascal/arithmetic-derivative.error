@@ -3,7 +3,13 @@ Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /tmp/arithmetic-derivative.pas
-arithmetic-derivative.pas(20,27) Error: Identifier not found "_appendList"
-arithmetic-derivative.pas(20,55) Fatal: Syntax error, ")" expected but "," found
+arithmetic-derivative.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
+arithmetic-derivative.pas(52,13) Error: Incompatible types: got "TArray$1$crcE41905E8" expected "TArray$1$crc9F312717"
+arithmetic-derivative.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
+arithmetic-derivative.pas(75,4) Error: Duplicate identifier "D"
+arithmetic-derivative.pas(84,16) Error: Incompatible types: got "TArray$1$crc9F312717" expected "TArray$1$crcE41905E8"
+arithmetic-derivative.pas(87,18) Error: Operator is not overloaded: "Double" div "ShortInt"
+arithmetic-derivative.pas(88,16) Error: Incompatible types: got "TArray$1$crc9F312717" expected "TArray$1$crcE41905E8"
+arithmetic-derivative.pas(98,14) Fatal: Syntax error, ";" expected but "(" found
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode

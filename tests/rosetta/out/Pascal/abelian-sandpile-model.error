@@ -3,7 +3,24 @@ Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /tmp/abelian-sandpile-model.pas
-abelian-sandpile-model.pas(25,25) Error: Identifier not found "_appendList"
-abelian-sandpile-model.pas(25,49) Fatal: Syntax error, ")" expected but "," found
+abelian-sandpile-model.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
+abelian-sandpile-model.pas(52,13) Error: Incompatible types: got "TArray$1$crcE41905E8" expected "TArray$1$crc09D74DF2"
+abelian-sandpile-model.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
+abelian-sandpile-model.pas(58,73) Error: Incompatible type for arg no. 1: Got "TArray$1$crc09D74DF2", expected "TArray$1$crc9F312717"
+abelian-sandpile-model.pas(60,85) Error: Incompatible type for arg no. 1: Got "TArray$1$crc09D74DF2", expected "TArray$1$crc9F312717"
+abelian-sandpile-model.pas(63,91) Error: Incompatible type for arg no. 1: Got "TArray$1$crc09D74DF2", expected "TArray$1$crc9F312717"
+abelian-sandpile-model.pas(64,77) Error: Incompatible type for arg no. 1: Got "TArray$1$crc09D74DF2", expected "TArray$1$crc9F312717"
+abelian-sandpile-model.pas(68,91) Error: Incompatible type for arg no. 1: Got "TArray$1$crc09D74DF2", expected "TArray$1$crc9F312717"
+abelian-sandpile-model.pas(69,77) Error: Incompatible type for arg no. 1: Got "TArray$1$crc09D74DF2", expected "TArray$1$crc9F312717"
+abelian-sandpile-model.pas(73,91) Error: Incompatible type for arg no. 1: Got "TArray$1$crc09D74DF2", expected "TArray$1$crc9F312717"
+abelian-sandpile-model.pas(74,77) Error: Incompatible type for arg no. 1: Got "TArray$1$crc09D74DF2", expected "TArray$1$crc9F312717"
+abelian-sandpile-model.pas(78,91) Error: Incompatible type for arg no. 1: Got "TArray$1$crc09D74DF2", expected "TArray$1$crc9F312717"
+abelian-sandpile-model.pas(79,77) Error: Incompatible type for arg no. 1: Got "TArray$1$crc09D74DF2", expected "TArray$1$crc9F312717"
+abelian-sandpile-model.pas(96,10) Error: Incompatible types: got "ShortInt" expected "TArray$1$crcE41905E8"
+abelian-sandpile-model.pas(97,14) Error: Operator is not overloaded: "TArray$1$crcE41905E8" < "LongInt"
+abelian-sandpile-model.pas(103,83) Error: Incompatible type for arg no. 2: Got "TArray$1$crcE41905E8", expected "LongInt"
+abelian-sandpile-model.pas(109,25) Error: Incompatible types: got "ShortInt" expected "TArray$1$crcE41905E8"
+abelian-sandpile-model.pas(109,12) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of TArray$1$crcE41905E8", expected "{Open} Array Of Pointer"
+abelian-sandpile-model.pas(129) Fatal: There were 16 errors compiling module, stopping
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode

@@ -3,7 +3,31 @@ Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /tmp/arena-storage-pool.pas
-arena-storage-pool.pas(12,24) Error: Identifier not found "_appendList"
-arena-storage-pool.pas(12,46) Fatal: Syntax error, ")" expected but "," found
+arena-storage-pool.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
+arena-storage-pool.pas(44,46) Error: Incompatible type for arg no. 1: Got "TArray$1$crc9F312717", expected "TArray$1$crcE41905E8"
+arena-storage-pool.pas(48,77) Error: Identifier not found "any"
+arena-storage-pool.pas(48,80) Error: Type identifier expected
+arena-storage-pool.pas(94,23) Error: Incompatible type for arg no. 1: Got "TArray$1$crcE41905E8", expected "TArray$1$crc9F312717"
+arena-storage-pool.pas(95,23) Error: Incompatible type for arg no. 1: Got "TArray$1$crcE41905E8", expected "TArray$1$crc9F312717"
+arena-storage-pool.pas(98,23) Error: Incompatible type for arg no. 1: Got "TArray$1$crcE41905E8", expected "TArray$1$crc9F312717"
+arena-storage-pool.pas(99,22) Error: Incompatible types: got "Constant String" expected "LongInt"
+arena-storage-pool.pas(99,30) Error: Incompatible types: got "Int64" expected "TArray$1$crcE41905E8"
+arena-storage-pool.pas(100,19) Error: Incompatible types: got "Constant String" expected "LongInt"
+arena-storage-pool.pas(101,23) Error: Incompatible type for arg no. 1: Got "TArray$1$crcE41905E8", expected "TArray$1$crc9F312717"
+arena-storage-pool.pas(102,22) Error: Incompatible types: got "Constant String" expected "LongInt"
+arena-storage-pool.pas(102,30) Error: Incompatible types: got "Int64" expected "TArray$1$crcE41905E8"
+arena-storage-pool.pas(103,19) Error: Incompatible types: got "Constant String" expected "LongInt"
+arena-storage-pool.pas(107,23) Error: Incompatible type for arg no. 1: Got "TArray$1$crcE41905E8", expected "TArray$1$crc9F312717"
+arena-storage-pool.pas(108,23) Error: Incompatible type for arg no. 1: Got "TArray$1$crcE41905E8", expected "TArray$1$crc9F312717"
+arena-storage-pool.pas(111,25) Error: Incompatible type for arg no. 1: Got "TArray$1$crcE41905E8", expected "TArray$1$crc9F312717"
+arena-storage-pool.pas(112,23) Error: Incompatible type for arg no. 1: Got "TArray$1$crcE41905E8", expected "TArray$1$crc9F312717"
+arena-storage-pool.pas(113,22) Error: Incompatible types: got "Constant String" expected "LongInt"
+arena-storage-pool.pas(113,30) Error: Incompatible types: got "Int64" expected "TArray$1$crcE41905E8"
+arena-storage-pool.pas(114,19) Error: Incompatible types: got "Constant String" expected "LongInt"
+arena-storage-pool.pas(115,23) Error: Incompatible type for arg no. 1: Got "TArray$1$crcE41905E8", expected "TArray$1$crc9F312717"
+arena-storage-pool.pas(116,22) Error: Incompatible types: got "Constant String" expected "LongInt"
+arena-storage-pool.pas(116,30) Error: Incompatible types: got "Int64" expected "TArray$1$crcE41905E8"
+arena-storage-pool.pas(117,19) Error: Incompatible types: got "Constant String" expected "LongInt"
+arena-storage-pool.pas(126) Fatal: There were 24 errors compiling module, stopping
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode

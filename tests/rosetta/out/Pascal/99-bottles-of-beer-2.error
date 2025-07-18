@@ -1,8 +1,9 @@
-type: error[T007]: argument 2: expected int, got bigint
-  --> /workspace/mochi/tests/rosetta/x/Mochi/99-bottles-of-beer-2.mochi:98:11
-
- 98 |   s = s + substring(p, len(p) - 1, len(p))
-    |           ^
-
-help:
-  Ensure the argument type matches the function’s signature.
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/99-bottles-of-beer-2.pas
+99-bottles-of-beer-2.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
+99-bottles-of-beer-2.pas(66,30) Fatal: String exceeds line
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

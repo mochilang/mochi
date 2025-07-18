@@ -255,22 +255,21 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 	case s.Var != nil:
 		var t types.Type
-		if c.env != nil {
+		if s.Var.Type != nil {
+			t = resolveSimpleTypeRef(s.Var.Type)
+		}
+		if t == nil && c.env != nil {
 			if tt, err := c.env.GetVar(s.Var.Name); err == nil {
 				t = tt
 			}
 		}
-		if t == nil {
-			if c.varTypes != nil {
-				if sType, ok := c.varTypes[s.Var.Name]; ok {
-					t = parsePasType(sType)
-				}
+		if t == nil && c.varTypes != nil {
+			if sType, ok := c.varTypes[s.Var.Name]; ok {
+				t = parsePasType(sType)
 			}
 		}
-		if t == nil {
-			if s.Var.Value != nil {
-				t = types.TypeOfExprBasic(s.Var.Value, c.env)
-			}
+		if t == nil && s.Var.Value != nil {
+			t = types.TypeOfExprBasic(s.Var.Value, c.env)
 		}
 		if t == nil {
 			t = resolveSimpleTypeRef(s.Var.Type)
@@ -1164,14 +1163,14 @@ func collectVars(stmts []*parser.Statement, env *types.Env, vars map[string]stri
 					typ = typeString(t)
 				}
 			}
-			if typ == "integer" && s.Var.Type != nil {
+			if s.Var.Type != nil {
 				typ = typeString(resolveSimpleTypeRef(s.Var.Type))
 			}
 			if s.Var.Value != nil {
 				if isQueryExpr(s.Var.Value) {
 					qt := inferQueryType(rootPrimary(s.Var.Value).Query, env)
 					typ = typeString(qt)
-				} else if typ == "integer" {
+				} else if typ == "integer" || typ == "Variant" {
 					typT := types.TypeOfExprBasic(s.Var.Value, env)
 					typ = typeString(typT)
 					if typ == "integer" && isStringSliceExpr(s.Var.Value, env, vars) {

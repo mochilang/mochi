@@ -1,4 +1,4 @@
-# Rosetta Pascal Output (25/264 compiled and run)
+# Rosetta Pascal Output (28/278 compiled and run)
 
 This directory holds Pascal source code generated from the Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -17,6 +17,7 @@ This directory holds Pascal source code generated from the Mochi programs in `te
 - [ ] 9-billion-names-of-god-the-integer
 - [ ] 99-bottles-of-beer-2
 - [x] 99-bottles-of-beer
+- [ ] DNS-query
 - [ ] a+b
 - [ ] abbreviations-automatic
 - [ ] abbreviations-easy
@@ -54,15 +55,15 @@ This directory holds Pascal source code generated from the Mochi programs in `te
 - [ ] angles-geometric-normalization-and-conversion
 - [ ] animate-a-pendulum
 - [x] animation
-- [ ] anonymous-recursion-1
-- [ ] anonymous-recursion-2
+- [x] anonymous-recursion-1
+- [x] anonymous-recursion-2
 - [ ] anonymous-recursion
 - [ ] anti-primes
 - [ ] append-a-record-to-the-end-of-a-text-file
 - [x] apply-a-callback-to-an-array-1
 - [ ] apply-a-callback-to-an-array-2
 - [ ] apply-a-digital-filter-direct-form-ii-transposed-
-- [ ] approximate-equality
+- [x] approximate-equality
 - [ ] arbitrary-precision-integers-included-
 - [ ] archimedean-spiral
 - [ ] arena-storage-pool
@@ -265,5 +266,18 @@ This directory holds Pascal source code generated from the Mochi programs in `te
 - [ ] csv-to-html-translation-5
 - [ ] cuban-primes
 - [ ] cullen-and-woodall-numbers
+- [ ] cumulative-standard-deviation
+- [ ] currency
+- [ ] currying
+- [ ] curzon-numbers
 - [ ] cusip
+- [ ] cyclops-numbers
+- [ ] damm-algorithm
+- [ ] date-format
+- [ ] date-manipulation
+- [ ] day-of-the-week
+- [ ] de-bruijn-sequences
+- [ ] deal-cards-for-freecell
+- [ ] death-star
+- [ ] deceptive-numbers
 - [ ] md5

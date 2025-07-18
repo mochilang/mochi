@@ -3,9 +3,56 @@ Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /tmp/2048.pas
-2048.pas(19,14) Error: Identifier not found "SIZE"
-2048.pas(23,16) Error: Identifier not found "SIZE"
-2048.pas(25,25) Error: Identifier not found "_appendList"
-2048.pas(25,49) Fatal: Syntax error, ")" expected but "," found
+2048.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
+fgl.pp(1668,8) Note: Call to subroutine "function TFPGMap<System.ShortString,System.Variant>.IndexOf(const AKey:ShortString):LongInt;" marked as inline is not inlined
+2048.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
+2048.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
+2048.pas(69,98) Error: Identifier not found "any"
+2048.pas(69,101) Error: Type identifier expected
+2048.pas(87,116) Error: Incompatible type for arg no. 1: Got "TArray$1$crc9F312717", expected "TArray$1$crc90DE1C48"
+2048.pas(94,11) Error: Incompatible types: got "TArray$1$crc9F312717" expected "TArray$1$crc90DE1C48"
+2048.pas(97,5) Error: Incompatible types: got "TArray$1$crc9F312717" expected "QWord"
+2048.pas(109,6) Error: Duplicate identifier "PAD"
+2048.pas(113,12) Error: Incompatible types: got "Int64" expected "<procedure variable type of function(LongInt):ShortString is nested;Register>"
+2048.pas(116,12) Error: Operator is not overloaded: "LongInt" < "<procedure variable type of function(LongInt):ShortString is nested;Register>"
+2048.pas(141,117) Error: Incompatible type for arg no. 1: Got "TArray$1$crc9F312717", expected "TArray$1$crc90DE1C48"
+2048.pas(142,13) Error: Operator is not overloaded: "TArray$1$crc90DE1C48" = "ShortInt"
+2048.pas(147,29) Error: Incompatible type for arg no. 1: Got "TArray$1$crc90DE1C48", expected "LongInt"
+2048.pas(164,10) Error: Illegal qualifier
+2048.pas(167,51) Error: Illegal qualifier
+2048.pas(174,81) Error: Identifier not found "any"
+2048.pas(174,84) Error: Type identifier expected
+2048.pas(197,50) Error: Incompatible types: got "Int64" expected "TArray$1$crc90DE1C48"
+2048.pas(198,26) Error: Incompatible types: got "LongInt" expected "ShortString"
+2048.pas(199,52) Error: Incompatible type for arg no. 2: Got "TArray$1$crc90DE1C48", expected "LongInt"
+2048.pas(218,113) Error: Identifier not found "any"
+2048.pas(218,116) Error: Type identifier expected
+2048.pas(232,13) Error: Incompatible types: got "Variant" expected "TFPGMap<System.ShortString,System.Variant>"
+2048.pas(237,116) Error: Incompatible type for arg no. 1: Got "TArray$1$crc9F312717", expected "TArray$1$crc90DE1C48"
+2048.pas(237,137) Error: Incompatible type for arg no. 1: Got "LongInt", expected "ShortString"
+2048.pas(238,31) Error: Incompatible type for arg no. 1: Got "LongInt", expected "ShortString"
+2048.pas(251,114) Error: Identifier not found "any"
+2048.pas(251,117) Error: Type identifier expected
+2048.pas(272,116) Error: Incompatible type for arg no. 1: Got "TArray$1$crc9F312717", expected "TArray$1$crc90DE1C48"
+2048.pas(295,154) Error: Incompatible type for arg no. 1: Got "TArray$1$crc9F312717", expected "TArray$1$crc90DE1C48"
+2048.pas(314,111) Error: Identifier not found "any"
+2048.pas(314,114) Error: Type identifier expected
+2048.pas(330,13) Error: Incompatible types: got "Variant" expected "TFPGMap<System.ShortString,System.Variant>"
+2048.pas(335,116) Error: Incompatible type for arg no. 1: Got "TArray$1$crc9F312717", expected "TArray$1$crc90DE1C48"
+2048.pas(335,137) Error: Incompatible type for arg no. 1: Got "LongInt", expected "ShortString"
+2048.pas(336,31) Error: Incompatible type for arg no. 1: Got "LongInt", expected "ShortString"
+2048.pas(349,113) Error: Identifier not found "any"
+2048.pas(349,116) Error: Type identifier expected
+2048.pas(370,116) Error: Incompatible type for arg no. 1: Got "TArray$1$crc9F312717", expected "TArray$1$crc90DE1C48"
+2048.pas(395,116) Error: Incompatible type for arg no. 1: Got "TArray$1$crc9F312717", expected "TArray$1$crc90DE1C48"
+2048.pas(396,136) Error: Incompatible type for arg no. 1: Got "TArray$1$crc9F312717", expected "TArray$1$crc90DE1C48"
+2048.pas(396,248) Error: Incompatible type for arg no. 1: Got "TArray$1$crc9F312717", expected "TArray$1$crc90DE1C48"
+2048.pas(397,136) Error: Incompatible type for arg no. 1: Got "TArray$1$crc9F312717", expected "TArray$1$crc90DE1C48"
+2048.pas(397,252) Error: Incompatible type for arg no. 1: Got "TArray$1$crc9F312717", expected "TArray$1$crc90DE1C48"
+2048.pas(417,116) Error: Incompatible type for arg no. 1: Got "TArray$1$crc9F312717", expected "TArray$1$crc90DE1C48"
+2048.pas(431,12) Error: Incompatible types: got "Variant" expected "TFPGMap<System.ShortString,System.Variant>"
+2048.pas(434,12) Error: Incompatible types: got "Variant" expected "TFPGMap<System.ShortString,System.Variant>"
+2048.pas(440,12) Error: Incompatible types: got "Text" expected "Variant"
+2048.pas(440,17) Fatal: Syntax error, ";" expected but "(" found
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode
