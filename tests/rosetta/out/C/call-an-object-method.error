@@ -1,36 +1,6 @@
 cc: exit status 1
-/tmp/call-an-object-method.c:14:3: error: unknown type name ‘box_t’
-   14 |   box_t *data;
-      |   ^~~~~
-/tmp/call-an-object-method.c: In function ‘create_box_list’:
-/tmp/call-an-object-method.c:19:31: error: ‘box_t’ undeclared (first use in this function)
-   19 |   l.data = calloc(len, sizeof(box_t));
-      |                               ^~~~~
-/tmp/call-an-object-method.c:19:31: note: each undeclared identifier is reported only once for each function it appears in
-/tmp/call-an-object-method.c: At top level:
-/tmp/call-an-object-method.c:28:1: error: unknown type name ‘box_t’
-   28 | box_t New() {
-      | ^~~~~
 /tmp/call-an-object-method.c: In function ‘New’:
-/tmp/call-an-object-method.c:29:3: error: unknown type name ‘box_t’
-   29 |   box_t b = (Box){.contents = "rabbit", .secret = 1};
-      |   ^~~~~
-/tmp/call-an-object-method.c:29:20: error: ‘Box’ {aka ‘struct Box’} has no member named ‘contents’; did you mean ‘Contents’?
-   29 |   box_t b = (Box){.contents = "rabbit", .secret = 1};
-      |                    ^~~~~~~~
-      |                    Contents
-/tmp/call-an-object-method.c:29:13: error: incompatible types when initializing type ‘int’ using type ‘Box’ {aka ‘struct Box’}
-   29 |   box_t b = (Box){.contents = "rabbit", .secret = 1};
-      |             ^
-/tmp/call-an-object-method.c: In function ‘main’:
-/tmp/call-an-object-method.c:34:3: error: unknown type name ‘box_t’
-   34 |   box_t box = New();
-      |   ^~~~~
-/tmp/call-an-object-method.c:35:18: warning: passing argument 1 of ‘Box_TellSecret’ from incompatible pointer type [-Wincompatible-pointer-types]
-   35 |   Box_TellSecret(&box);
-      |                  ^~~~
-      |                  |
-      |                  int *
-/tmp/call-an-object-method.c:26:25: note: expected ‘Box *’ {aka ‘struct Box *’} but argument is of type ‘int *’
-   26 | int Box_TellSecret(Box *self) { return self->secret; }
-      |                    ~~~~~^~~~
+/tmp/call-an-object-method.c:29:22: error: ‘box_t’ {aka ‘struct box_t’} has no member named ‘contents’; did you mean ‘Contents’?
+   29 |   box_t b = (box_t){.contents = "rabbit", .secret = 1};
+      |                      ^~~~~~~~
+      |                      Contents

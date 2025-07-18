@@ -1,58 +1,34 @@
 cc: exit status 1
-/tmp/24-game.c: In function ‘main’:
-/tmp/24-game.c:105:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  105 |     char *tmp4 = concat_string(numstr, tmp3);
-      |                                ^~~~~~
-/tmp/24-game.c:30:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   30 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/24-game.c:108:48: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  108 |   char *tmp5 = concat_string("Your numbers: ", numstr);
-      |                                                ^~~~~~
-/tmp/24-game.c:30:43: note: expected ‘char *’ but argument is of type ‘const char *’
-   30 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
+/tmp/24-game.c: In function ‘mochi_main’:
 /tmp/24-game.c:116:5: warning: ‘return’ with no value, in function returning non-void
   116 |     return;
       |     ^~~~~~
 /tmp/24-game.c:93:5: note: declared here
-   93 | int main() {
-      |     ^~~~
-/tmp/24-game.c:122:35: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  122 |     const char *ch = slice_string(expr, i, i + 1);
-      |                                   ^~~~
-/tmp/24-game.c:58:33: note: expected ‘char *’ but argument is of type ‘const char *’
-   58 | static char *slice_string(char *s, int start, int end) {
-      |                           ~~~~~~^
+   93 | int mochi_main() {
+      |     ^~~~~~~~~~
 /tmp/24-game.c:126:9: warning: ‘return’ with no value, in function returning non-void
   126 |         return;
       |         ^~~~~~
 /tmp/24-game.c:93:5: note: declared here
-   93 | int main() {
-      |     ^~~~
-/tmp/24-game.c:129:32: warning: implicit declaration of function ‘_int’; did you mean ‘_input’? [-Wimplicit-function-declaration]
-  129 |       while (digits.data[j] != _int(ch) - _int("0")) {
-      |                                ^~~~
-      |                                _input
+   93 | int mochi_main() {
+      |     ^~~~~~~~~~
+/tmp/24-game.c:129:33: warning: implicit declaration of function ‘_int’; did you mean ‘_input’? [-Wimplicit-function-declaration]
+  129 |       while ((digits.data[j] != _int(ch) - _int("0"))) {
+      |                                 ^~~~
+      |                                 _input
 /tmp/24-game.c:133:11: warning: ‘return’ with no value, in function returning non-void
   133 |           return;
       |           ^~~~~~
 /tmp/24-game.c:93:5: note: declared here
-   93 | int main() {
-      |     ^~~~
+   93 | int mochi_main() {
+      |     ^~~~~~~~~~
 /tmp/24-game.c:142:23: warning: implicit declaration of function ‘_float’ [-Wimplicit-function-declaration]
   142 |       tmp10.data[0] = _float(_int(ch) - _int("0"));
       |                       ^~~~~~
-/tmp/24-game.c:162:37: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  162 |         char *tmp12 = concat_string(ch, " invalid.");
-      |                                     ^~
-/tmp/24-game.c:30:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   30 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/24-game.c: At top level:
-/tmp/24-game.c:184:5: error: redefinition of ‘main’
-  184 | int main() {
-      |     ^~~~
-/tmp/24-game.c:93:5: note: previous definition of ‘main’ with type ‘int()’
-   93 | int main() {
-      |     ^~~~
+/usr/bin/ld: /tmp/cc8S7zMC.o: in function `mochi_main':
+24-game.c:(.text+0x819): undefined reference to `_int'
+/usr/bin/ld: 24-game.c:(.text+0x82f): undefined reference to `_int'
+/usr/bin/ld: 24-game.c:(.text+0x8fb): undefined reference to `_int'
+/usr/bin/ld: 24-game.c:(.text+0x911): undefined reference to `_int'
+/usr/bin/ld: 24-game.c:(.text+0x925): undefined reference to `_float'
+collect2: error: ld returned 1 exit status

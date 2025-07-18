@@ -1,208 +1,109 @@
 cc: exit status 1
-/tmp/cartesian-product-of-two-or-more-lists-4.c: In function ‘listStr’:
-/tmp/cartesian-product-of-two-or-more-lists-4.c:86:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   86 |     char *tmp2 = concat_string(s, tmp1);
-      |                                ^
-/tmp/cartesian-product-of-two-or-more-lists-4.c:51:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   51 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/cartesian-product-of-two-or-more-lists-4.c:89:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   89 |       char *tmp3 = concat_string(s, " ");
-      |                                  ^
-/tmp/cartesian-product-of-two-or-more-lists-4.c:51:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   51 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/cartesian-product-of-two-or-more-lists-4.c:94:30: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   94 |   char *tmp4 = concat_string(s, "]");
-      |                              ^
-/tmp/cartesian-product-of-two-or-more-lists-4.c:51:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   51 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
 /tmp/cartesian-product-of-two-or-more-lists-4.c: In function ‘llStr’:
-/tmp/cartesian-product-of-two-or-more-lists-4.c:103:11: error: invalid operands to binary + (have ‘const char *’ and ‘const char *’)
+/tmp/cartesian-product-of-two-or-more-lists-4.c:103:11: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
   103 |     s = s + listStr(lst.data[i]);
       |           ^ ~~~~~~~~~~~~~~~~~~~~
       |             |
-      |             const char *
-/tmp/cartesian-product-of-two-or-more-lists-4.c:105:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  105 |       char *tmp5 = concat_string(s, " ");
-      |                                  ^
-/tmp/cartesian-product-of-two-or-more-lists-4.c:51:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   51 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/cartesian-product-of-two-or-more-lists-4.c:110:30: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  110 |   char *tmp6 = concat_string(s, "]");
-      |                              ^
-/tmp/cartesian-product-of-two-or-more-lists-4.c:51:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   51 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/cartesian-product-of-two-or-more-lists-4.c: In function ‘copy’:
-/tmp/cartesian-product-of-two-or-more-lists-4.c:119:11: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
-  119 |     out = 0;
-      |           ^
+      |             char *
 /tmp/cartesian-product-of-two-or-more-lists-4.c: In function ‘cartN’:
-/tmp/cartesian-product-of-two-or-more-lists-4.c:127:12: error: incompatible types when returning type ‘list_int’ but ‘list_list_int’ was expected
-  127 |     return tmp8;
-      |            ^~~~
-/tmp/cartesian-product-of-two-or-more-lists-4.c:129:3: error: conversion to non-scalar type requested
-  129 |   list_list_int a = (list_list_int)(lists);
+/tmp/cartesian-product-of-two-or-more-lists-4.c:131:12: error: incompatible types when returning type ‘list_int’ but ‘list_list_int’ was expected
+  131 |     return tmp10;
+      |            ^~~~~
+/tmp/cartesian-product-of-two-or-more-lists-4.c:133:3: error: conversion to non-scalar type requested
+  133 |   list_list_int a = (list_list_int)(lists);
       |   ^~~~~~~~~~~~~
-/tmp/cartesian-product-of-two-or-more-lists-4.c:132:33: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-  132 |     list_int tmp9_data[] = {{0, tmp10}};
-      |                                 ^~~~~
-/tmp/cartesian-product-of-two-or-more-lists-4.c:139:35: error: incompatible type for argument 1 of ‘slice_list_int’
-  139 |   list_int tmp12 = slice_list_int(a, 0, last);
+/tmp/cartesian-product-of-two-or-more-lists-4.c:142:35: error: incompatible type for argument 1 of ‘slice_list_int’
+  142 |   list_int tmp13 = slice_list_int(a, 0, last);
       |                                   ^
       |                                   |
       |                                   list_list_int
 /tmp/cartesian-product-of-two-or-more-lists-4.c:65:41: note: expected ‘list_int’ but argument is of type ‘list_list_int’
    65 | static list_int slice_list_int(list_int v, int start, int end) {
       |                                ~~~~~~~~~^
-/tmp/cartesian-product-of-two-or-more-lists-4.c:140:30: error: incompatible type for argument 1 of ‘cartN’
-  140 |   list_list_int left = cartN(tmp12);
+/tmp/cartesian-product-of-two-or-more-lists-4.c:143:30: error: incompatible type for argument 1 of ‘cartN’
+  143 |   list_list_int left = cartN(tmp13);
       |                              ^~~~~
       |                              |
       |                              list_int
-/tmp/cartesian-product-of-two-or-more-lists-4.c:124:25: note: expected ‘int’ but argument is of type ‘list_int’
-  124 | list_list_int cartN(int lists) {
+/tmp/cartesian-product-of-two-or-more-lists-4.c:128:25: note: expected ‘int’ but argument is of type ‘list_int’
+  128 | list_list_int cartN(int lists) {
       |                     ~~~~^~~~~
-/tmp/cartesian-product-of-two-or-more-lists-4.c: In function ‘main’:
-/tmp/cartesian-product-of-two-or-more-lists-4.c:167:32: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-  167 |   list_int tmp19_data[] = {{2, tmp20}, {2, tmp21}};
-      |                                ^~~~~
-/tmp/cartesian-product-of-two-or-more-lists-4.c:167:44: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-  167 |   list_int tmp19_data[] = {{2, tmp20}, {2, tmp21}};
-      |                                            ^~~~~
-/tmp/cartesian-product-of-two-or-more-lists-4.c:169:30: error: incompatible type for argument 1 of ‘cartN’
-  169 |   printf("%s\n", llStr(cartN(tmp19)));
+/tmp/cartesian-product-of-two-or-more-lists-4.c: In function ‘mochi_main’:
+/tmp/cartesian-product-of-two-or-more-lists-4.c:172:30: error: incompatible type for argument 1 of ‘cartN’
+  172 |   printf("%s\n", llStr(cartN(tmp20)));
       |                              ^~~~~
       |                              |
       |                              list_list_int
-/tmp/cartesian-product-of-two-or-more-lists-4.c:124:25: note: expected ‘int’ but argument is of type ‘list_list_int’
-  124 | list_list_int cartN(int lists) {
+/tmp/cartesian-product-of-two-or-more-lists-4.c:128:25: note: expected ‘int’ but argument is of type ‘list_list_int’
+  128 | list_list_int cartN(int lists) {
       |                     ~~~~^~~~~
-/tmp/cartesian-product-of-two-or-more-lists-4.c:176:32: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-  176 |   list_int tmp22_data[] = {{2, tmp23}, {2, tmp24}};
-      |                                ^~~~~
-/tmp/cartesian-product-of-two-or-more-lists-4.c:176:44: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-  176 |   list_int tmp22_data[] = {{2, tmp23}, {2, tmp24}};
-      |                                            ^~~~~
-/tmp/cartesian-product-of-two-or-more-lists-4.c:178:30: error: incompatible type for argument 1 of ‘cartN’
-  178 |   printf("%s\n", llStr(cartN(tmp22)));
+/tmp/cartesian-product-of-two-or-more-lists-4.c:181:30: error: incompatible type for argument 1 of ‘cartN’
+  181 |   printf("%s\n", llStr(cartN(tmp23)));
       |                              ^~~~~
       |                              |
       |                              list_list_int
-/tmp/cartesian-product-of-two-or-more-lists-4.c:124:25: note: expected ‘int’ but argument is of type ‘list_list_int’
-  124 | list_list_int cartN(int lists) {
+/tmp/cartesian-product-of-two-or-more-lists-4.c:128:25: note: expected ‘int’ but argument is of type ‘list_list_int’
+  128 | list_list_int cartN(int lists) {
       |                     ~~~~^~~~~
-/tmp/cartesian-product-of-two-or-more-lists-4.c:183:32: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-  183 |   list_int tmp25_data[] = {{2, tmp26}, {0, tmp27}};
-      |                                ^~~~~
-/tmp/cartesian-product-of-two-or-more-lists-4.c:183:44: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-  183 |   list_int tmp25_data[] = {{2, tmp26}, {0, tmp27}};
-      |                                            ^~~~~
-/tmp/cartesian-product-of-two-or-more-lists-4.c:185:30: error: incompatible type for argument 1 of ‘cartN’
-  185 |   printf("%s\n", llStr(cartN(tmp25)));
+/tmp/cartesian-product-of-two-or-more-lists-4.c:188:30: error: incompatible type for argument 1 of ‘cartN’
+  188 |   printf("%s\n", llStr(cartN(tmp26)));
       |                              ^~~~~
       |                              |
       |                              list_list_int
-/tmp/cartesian-product-of-two-or-more-lists-4.c:124:25: note: expected ‘int’ but argument is of type ‘list_list_int’
-  124 | list_list_int cartN(int lists) {
+/tmp/cartesian-product-of-two-or-more-lists-4.c:128:25: note: expected ‘int’ but argument is of type ‘list_list_int’
+  128 | list_list_int cartN(int lists) {
       |                     ~~~~^~~~~
-/tmp/cartesian-product-of-two-or-more-lists-4.c:190:32: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-  190 |   list_int tmp28_data[] = {{0, tmp29}, {2, tmp30}};
-      |                                ^~~~~
-/tmp/cartesian-product-of-two-or-more-lists-4.c:190:44: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-  190 |   list_int tmp28_data[] = {{0, tmp29}, {2, tmp30}};
-      |                                            ^~~~~
-/tmp/cartesian-product-of-two-or-more-lists-4.c:192:30: error: incompatible type for argument 1 of ‘cartN’
-  192 |   printf("%s\n", llStr(cartN(tmp28)));
+/tmp/cartesian-product-of-two-or-more-lists-4.c:195:30: error: incompatible type for argument 1 of ‘cartN’
+  195 |   printf("%s\n", llStr(cartN(tmp29)));
       |                              ^~~~~
       |                              |
       |                              list_list_int
-/tmp/cartesian-product-of-two-or-more-lists-4.c:124:25: note: expected ‘int’ but argument is of type ‘list_list_int’
-  124 | list_list_int cartN(int lists) {
+/tmp/cartesian-product-of-two-or-more-lists-4.c:128:25: note: expected ‘int’ but argument is of type ‘list_list_int’
+  128 | list_list_int cartN(int lists) {
       |                     ~~~~^~~~~
-/tmp/cartesian-product-of-two-or-more-lists-4.c:208:32: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-  208 |   list_int tmp31_data[] = {{2, tmp32}, {2, tmp33}, {3, tmp34}, {2, tmp35}};
-      |                                ^~~~~
-/tmp/cartesian-product-of-two-or-more-lists-4.c:208:44: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-  208 |   list_int tmp31_data[] = {{2, tmp32}, {2, tmp33}, {3, tmp34}, {2, tmp35}};
-      |                                            ^~~~~
-/tmp/cartesian-product-of-two-or-more-lists-4.c:208:56: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-  208 |   list_int tmp31_data[] = {{2, tmp32}, {2, tmp33}, {3, tmp34}, {2, tmp35}};
-      |                                                        ^~~~~
-/tmp/cartesian-product-of-two-or-more-lists-4.c:208:68: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-  208 |   list_int tmp31_data[] = {{2, tmp32}, {2, tmp33}, {3, tmp34}, {2, tmp35}};
-      |                                                                    ^~~~~
-/tmp/cartesian-product-of-two-or-more-lists-4.c:210:37: error: incompatible type for argument 1 of ‘cartN’
-  210 |   for (int tmp36 = 0; tmp36 < cartN(tmp31).len; tmp36++) {
+/tmp/cartesian-product-of-two-or-more-lists-4.c:213:37: error: incompatible type for argument 1 of ‘cartN’
+  213 |   for (int tmp37 = 0; tmp37 < cartN(tmp32).len; tmp37++) {
       |                                     ^~~~~
       |                                     |
       |                                     list_list_int
-/tmp/cartesian-product-of-two-or-more-lists-4.c:124:25: note: expected ‘int’ but argument is of type ‘list_list_int’
-  124 | list_list_int cartN(int lists) {
+/tmp/cartesian-product-of-two-or-more-lists-4.c:128:25: note: expected ‘int’ but argument is of type ‘list_list_int’
+  128 | list_list_int cartN(int lists) {
       |                     ~~~~^~~~~
-/tmp/cartesian-product-of-two-or-more-lists-4.c:211:24: error: incompatible type for argument 1 of ‘cartN’
-  211 |     list_int p = cartN(tmp31).data[tmp36];
+/tmp/cartesian-product-of-two-or-more-lists-4.c:214:24: error: incompatible type for argument 1 of ‘cartN’
+  214 |     list_int p = cartN(tmp32).data[tmp37];
       |                        ^~~~~
       |                        |
       |                        list_list_int
-/tmp/cartesian-product-of-two-or-more-lists-4.c:124:25: note: expected ‘int’ but argument is of type ‘list_list_int’
-  124 | list_list_int cartN(int lists) {
+/tmp/cartesian-product-of-two-or-more-lists-4.c:128:25: note: expected ‘int’ but argument is of type ‘list_list_int’
+  128 | list_list_int cartN(int lists) {
       |                     ~~~~^~~~~
-/tmp/cartesian-product-of-two-or-more-lists-4.c:212:24: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
-  212 |     printf("%s\n", " " + listStr(p));
+/tmp/cartesian-product-of-two-or-more-lists-4.c:215:24: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  215 |     printf("%s\n", " " + listStr(p));
       |                    ~~~ ^ ~~~~~~~~~~
       |                    |     |
-      |                    |     const char *
+      |                    |     char *
       |                    char *
-/tmp/cartesian-product-of-two-or-more-lists-4.c:224:32: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-  224 |   list_int tmp37_data[] = {{3, tmp38}, {1, tmp39}, {2, tmp40}};
-      |                                ^~~~~
-/tmp/cartesian-product-of-two-or-more-lists-4.c:224:44: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-  224 |   list_int tmp37_data[] = {{3, tmp38}, {1, tmp39}, {2, tmp40}};
-      |                                            ^~~~~
-/tmp/cartesian-product-of-two-or-more-lists-4.c:224:56: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-  224 |   list_int tmp37_data[] = {{3, tmp38}, {1, tmp39}, {2, tmp40}};
-      |                                                        ^~~~~
-/tmp/cartesian-product-of-two-or-more-lists-4.c:226:30: error: incompatible type for argument 1 of ‘cartN’
-  226 |   printf("%s\n", llStr(cartN(tmp37)));
+/tmp/cartesian-product-of-two-or-more-lists-4.c:229:30: error: incompatible type for argument 1 of ‘cartN’
+  229 |   printf("%s\n", llStr(cartN(tmp38)));
       |                              ^~~~~
       |                              |
       |                              list_list_int
-/tmp/cartesian-product-of-two-or-more-lists-4.c:124:25: note: expected ‘int’ but argument is of type ‘list_list_int’
-  124 | list_list_int cartN(int lists) {
+/tmp/cartesian-product-of-two-or-more-lists-4.c:128:25: note: expected ‘int’ but argument is of type ‘list_list_int’
+  128 | list_list_int cartN(int lists) {
       |                     ~~~~^~~~~
-/tmp/cartesian-product-of-two-or-more-lists-4.c:235:32: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-  235 |   list_int tmp41_data[] = {{3, tmp42}, {0, tmp43}, {2, tmp44}};
-      |                                ^~~~~
-/tmp/cartesian-product-of-two-or-more-lists-4.c:235:44: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-  235 |   list_int tmp41_data[] = {{3, tmp42}, {0, tmp43}, {2, tmp44}};
-      |                                            ^~~~~
-/tmp/cartesian-product-of-two-or-more-lists-4.c:235:56: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-  235 |   list_int tmp41_data[] = {{3, tmp42}, {0, tmp43}, {2, tmp44}};
-      |                                                        ^~~~~
-/tmp/cartesian-product-of-two-or-more-lists-4.c:237:30: error: incompatible type for argument 1 of ‘cartN’
-  237 |   printf("%s\n", llStr(cartN(tmp41)));
+/tmp/cartesian-product-of-two-or-more-lists-4.c:240:30: error: incompatible type for argument 1 of ‘cartN’
+  240 |   printf("%s\n", llStr(cartN(tmp42)));
       |                              ^~~~~
       |                              |
       |                              list_list_int
-/tmp/cartesian-product-of-two-or-more-lists-4.c:124:25: note: expected ‘int’ but argument is of type ‘list_list_int’
-  124 | list_list_int cartN(int lists) {
+/tmp/cartesian-product-of-two-or-more-lists-4.c:128:25: note: expected ‘int’ but argument is of type ‘list_list_int’
+  128 | list_list_int cartN(int lists) {
       |                     ~~~~^~~~~
-/tmp/cartesian-product-of-two-or-more-lists-4.c:241:30: error: incompatible type for argument 1 of ‘cartN’
-  241 |   printf("%s\n", llStr(cartN(tmp45)));
+/tmp/cartesian-product-of-two-or-more-lists-4.c:244:30: error: incompatible type for argument 1 of ‘cartN’
+  244 |   printf("%s\n", llStr(cartN(tmp46)));
       |                              ^~~~~
       |                              |
       |                              list_int
-/tmp/cartesian-product-of-two-or-more-lists-4.c:124:25: note: expected ‘int’ but argument is of type ‘list_int’
-  124 | list_list_int cartN(int lists) {
+/tmp/cartesian-product-of-two-or-more-lists-4.c:128:25: note: expected ‘int’ but argument is of type ‘list_int’
+  128 | list_list_int cartN(int lists) {
       |                     ~~~~^~~~~
-/tmp/cartesian-product-of-two-or-more-lists-4.c: At top level:
-/tmp/cartesian-product-of-two-or-more-lists-4.c:244:5: error: redefinition of ‘main’
-  244 | int main() {
-      |     ^~~~
-/tmp/cartesian-product-of-two-or-more-lists-4.c:160:5: note: previous definition of ‘main’ with type ‘int()’
-  160 | int main() {
-      |     ^~~~

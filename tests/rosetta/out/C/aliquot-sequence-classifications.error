@@ -20,111 +20,65 @@ cc: exit status 1
    43 | static int index_of_string(char *s, char *sub) {
       |                                     ~~~~~~^~~
 /tmp/aliquot-sequence-classifications.c: In function ‘classifySequence’:
-/tmp/aliquot-sequence-classifications.c:164:12: error: redefinition of ‘seq’
-  164 |   list_int seq = seq;
-      |            ^~~
-/tmp/aliquot-sequence-classifications.c:162:12: note: previous definition of ‘seq’ with type ‘list_int’
-  162 |   list_int seq = list_int_create(1);
-      |            ^~~
-/tmp/aliquot-sequence-classifications.c:188:7: error: expected expression before ‘list_int’
-  188 |       list_int tmp6 = slice_list_int(seq, 1, maxOf(1, n - 2));
+/tmp/aliquot-sequence-classifications.c:187:7: error: expected expression before ‘list_int’
+  187 |       list_int tmp6 = slice_list_int(seq, 1, maxOf(1, n - 2));
       |       ^~~~~~~~
-/tmp/aliquot-sequence-classifications.c:189:19: error: ‘tmp6’ undeclared (first use in this function); did you mean ‘tmp2’?
-  189 |     if ((contains(tmp6, last))) {
+/tmp/aliquot-sequence-classifications.c:188:19: error: ‘tmp6’ undeclared (first use in this function); did you mean ‘tmp2’?
+  188 |     if ((contains(tmp6, last))) {
       |                   ^~~~
       |                   tmp2
-/tmp/aliquot-sequence-classifications.c:189:19: note: each undeclared identifier is reported only once for each function it appears in
-/tmp/aliquot-sequence-classifications.c:190:33: error: incompatible type for argument 1 of ‘index_of_string’
-  190 |       int idx = index_of_string(seq, last);
+/tmp/aliquot-sequence-classifications.c:188:19: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/aliquot-sequence-classifications.c:189:33: error: incompatible type for argument 1 of ‘index_of_string’
+  189 |       int idx = index_of_string(seq, last);
       |                                 ^~~
       |                                 |
       |                                 list_int
 /tmp/aliquot-sequence-classifications.c:43:34: note: expected ‘char *’ but argument is of type ‘list_int’
    43 | static int index_of_string(char *s, char *sub) {
       |                            ~~~~~~^
-/tmp/aliquot-sequence-classifications.c:190:38: warning: passing argument 2 of ‘index_of_string’ makes pointer from integer without a cast [-Wint-conversion]
-  190 |       int idx = index_of_string(seq, last);
+/tmp/aliquot-sequence-classifications.c:189:38: warning: passing argument 2 of ‘index_of_string’ makes pointer from integer without a cast [-Wint-conversion]
+  189 |       int idx = index_of_string(seq, last);
       |                                      ^~~~
       |                                      |
       |                                      int
 /tmp/aliquot-sequence-classifications.c:43:43: note: expected ‘char *’ but argument is of type ‘int’
    43 | static int index_of_string(char *s, char *sub) {
       |                                     ~~~~~~^~~
-/tmp/aliquot-sequence-classifications.c:199:14: error: incompatible types when returning type ‘tmp_item_t’ but ‘int’ was expected
-  199 |       return (tmp_item_t){.seq = seq, .aliquot = aliquot};
+/tmp/aliquot-sequence-classifications.c:198:14: error: incompatible types when returning type ‘tmp_item_t’ but ‘int’ was expected
+  198 |       return (tmp_item_t){.seq = seq, .aliquot = aliquot};
       |              ^
-/tmp/aliquot-sequence-classifications.c:202:10: error: incompatible types when returning type ‘tmp_item1_t’ but ‘int’ was expected
-  202 |   return (tmp_item1_t){.seq = seq, .aliquot = ""};
+/tmp/aliquot-sequence-classifications.c:201:10: error: incompatible types when returning type ‘tmp_item1_t’ but ‘int’ was expected
+  201 |   return (tmp_item1_t){.seq = seq, .aliquot = ""};
       |          ^
-/tmp/aliquot-sequence-classifications.c: In function ‘padLeft’:
-/tmp/aliquot-sequence-classifications.c:209:38: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  209 |     char *tmp11 = concat_string(" ", s);
-      |                                      ^
-/tmp/aliquot-sequence-classifications.c:29:43: note: expected ‘char *’ but argument is of type ‘const char *’
-   29 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/aliquot-sequence-classifications.c: In function ‘padRight’:
-/tmp/aliquot-sequence-classifications.c:218:33: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  218 |     char *tmp12 = concat_string(r, " ");
-      |                                 ^
-/tmp/aliquot-sequence-classifications.c:29:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   29 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/aliquot-sequence-classifications.c: In function ‘joinWithCommas’:
-/tmp/aliquot-sequence-classifications.c:229:33: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  229 |     char *tmp14 = concat_string(s, tmp13);
-      |                                 ^
-/tmp/aliquot-sequence-classifications.c:29:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   29 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/aliquot-sequence-classifications.c:232:35: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  232 |       char *tmp15 = concat_string(s, ", ");
-      |                                   ^
-/tmp/aliquot-sequence-classifications.c:29:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   29 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/aliquot-sequence-classifications.c:237:31: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  237 |   char *tmp16 = concat_string(s, "]");
-      |                               ^
-/tmp/aliquot-sequence-classifications.c:29:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   29 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/aliquot-sequence-classifications.c: In function ‘main’:
-/tmp/aliquot-sequence-classifications.c:248:34: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
-  248 |     printf("%s\n", padLeft(k, 2) + ": " +
+/tmp/aliquot-sequence-classifications.c: In function ‘mochi_main’:
+/tmp/aliquot-sequence-classifications.c:247:34: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  247 |     printf("%s\n", padLeft(k, 2) + ": " +
       |                    ~~~~~~~~~~~~~ ^
       |                    |             |
-      |                    const char *  char *
-/tmp/aliquot-sequence-classifications.c:249:45: error: request for member ‘data’ in something not a structure or union
-  249 |                        padRight((char *)(res.data["aliquot"]), 15) + " " +
+      |                    char *        char *
+/tmp/aliquot-sequence-classifications.c:248:45: error: request for member ‘data’ in something not a structure or union
+  248 |                        padRight((char *)(res.data["aliquot"]), 15) + " " +
       |                                             ^
-/tmp/aliquot-sequence-classifications.c:250:53: error: request for member ‘data’ in something not a structure or union
-  250 |                        joinWithCommas((list_int)(res.data["seq"])));
+/tmp/aliquot-sequence-classifications.c:249:53: error: request for member ‘data’ in something not a structure or union
+  249 |                        joinWithCommas((list_int)(res.data["seq"])));
       |                                                     ^
-/tmp/aliquot-sequence-classifications.c:272:36: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
-  272 |     printf("%s\n", padLeft(val, 7) + ": " +
+/tmp/aliquot-sequence-classifications.c:271:36: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  271 |     printf("%s\n", padLeft(val, 7) + ": " +
       |                    ~~~~~~~~~~~~~~~ ^
       |                    |               |
-      |                    const char *    char *
-/tmp/aliquot-sequence-classifications.c:273:45: error: request for member ‘data’ in something not a structure or union
-  273 |                        padRight((char *)(res.data["aliquot"]), 15) + " " +
+      |                    char *          char *
+/tmp/aliquot-sequence-classifications.c:272:45: error: request for member ‘data’ in something not a structure or union
+  272 |                        padRight((char *)(res.data["aliquot"]), 15) + " " +
       |                                             ^
-/tmp/aliquot-sequence-classifications.c:274:53: error: request for member ‘data’ in something not a structure or union
-  274 |                        joinWithCommas((list_int)(res.data["seq"])));
+/tmp/aliquot-sequence-classifications.c:273:53: error: request for member ‘data’ in something not a structure or union
+  273 |                        joinWithCommas((list_int)(res.data["seq"])));
       |                                                     ^
-/tmp/aliquot-sequence-classifications.c:278:13: warning: overflow in conversion from ‘long int’ to ‘int’ changes value from ‘15355717786080’ to ‘1209702880’ [-Woverflow]
-  278 |   int big = 15355717786080;
+/tmp/aliquot-sequence-classifications.c:277:13: warning: overflow in conversion from ‘long int’ to ‘int’ changes value from ‘15355717786080’ to ‘1209702880’ [-Woverflow]
+  277 |   int big = 15355717786080;
       |             ^~~~~~~~~~~~~~
-/tmp/aliquot-sequence-classifications.c:282:45: error: request for member ‘data’ in something not a structure or union
-  282 |   printf("%s\n", tmp18 + padRight((char *)(r.data["aliquot"]), 15) + " " +
+/tmp/aliquot-sequence-classifications.c:281:45: error: request for member ‘data’ in something not a structure or union
+  281 |   printf("%s\n", tmp18 + padRight((char *)(r.data["aliquot"]), 15) + " " +
       |                                             ^
-/tmp/aliquot-sequence-classifications.c:283:49: error: request for member ‘data’ in something not a structure or union
-  283 |                      joinWithCommas((list_int)(r.data["seq"])));
+/tmp/aliquot-sequence-classifications.c:282:49: error: request for member ‘data’ in something not a structure or union
+  282 |                      joinWithCommas((list_int)(r.data["seq"])));
       |                                                 ^
-/tmp/aliquot-sequence-classifications.c: At top level:
-/tmp/aliquot-sequence-classifications.c:286:5: error: redefinition of ‘main’
-  286 | int main() {
-      |     ^~~~
-/tmp/aliquot-sequence-classifications.c:242:5: note: previous definition of ‘main’ with type ‘int()’
-  242 | int main() {
-      |     ^~~~

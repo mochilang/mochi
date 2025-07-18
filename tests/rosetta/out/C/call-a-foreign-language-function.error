@@ -1,22 +1,8 @@
 cc: exit status 1
-/tmp/call-a-foreign-language-function.c:16:13: error: conflicting types for ‘strdup’; have ‘const char *(char *)’
-   16 | const char *strdup(char *s) {
-      |             ^~~~~~
+/tmp/call-a-foreign-language-function.c:16:7: error: conflicting types for ‘strdup’; have ‘char *(char *)’
+   16 | char *strdup(char *s) {
+      |       ^~~~~~
 In file included from /tmp/call-a-foreign-language-function.c:5:
 /usr/include/string.h:187:14: note: previous declaration of ‘strdup’ with type ‘char *(const char *)’
   187 | extern char *strdup (const char *__s)
       |              ^~~~~~
-/tmp/call-a-foreign-language-function.c: In function ‘main’:
-/tmp/call-a-foreign-language-function.c:23:27: warning: passing argument 1 of ‘strdup’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   23 |   const char *c2 = strdup(go1);
-      |                           ^~~
-/tmp/call-a-foreign-language-function.c:16:26: note: expected ‘char *’ but argument is of type ‘const char *’
-   16 | const char *strdup(char *s) {
-      |                    ~~~~~~^
-/tmp/call-a-foreign-language-function.c: At top level:
-/tmp/call-a-foreign-language-function.c:27:5: error: redefinition of ‘main’
-   27 | int main() {
-      |     ^~~~
-/tmp/call-a-foreign-language-function.c:21:5: note: previous definition of ‘main’ with type ‘int()’
-   21 | int main() {
-      |     ^~~~

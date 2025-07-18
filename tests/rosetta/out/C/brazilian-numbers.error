@@ -1,15 +1,16 @@
 cc: exit status 1
-/tmp/brazilian-numbers.c: In function ‘main’:
-/tmp/brazilian-numbers.c:93:7: error: conflicting types for ‘kinds’; have ‘int’
-   93 |   int kinds = kinds;
-      |       ^~~~~
-/tmp/brazilian-numbers.c:89:15: note: previous definition of ‘kinds’ with type ‘list_string’
-   89 |   list_string kinds = list_string_create(3);
-      |               ^~~~~
-/tmp/brazilian-numbers.c: At top level:
-/tmp/brazilian-numbers.c:139:5: error: redefinition of ‘main’
-  139 | int main() {
-      |     ^~~~
-/tmp/brazilian-numbers.c:88:5: note: previous definition of ‘main’ with type ‘int()’
-   88 | int main() {
-      |     ^~~~
+/tmp/brazilian-numbers.c: In function ‘mochi_main’:
+/tmp/brazilian-numbers.c:94:16: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+   94 |     int kind = kinds.data[tmp1];
+      |                ^~~~~
+/tmp/brazilian-numbers.c:95:38: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+   95 |     printf("%s\n", "First 20" + kind + "Brazilian numbers:");
+      |                    ~~~~~~~~~~~~~~~~~ ^
+      |                               |      |
+      |                               char * char *
+/tmp/brazilian-numbers.c:109:17: warning: comparison between pointer and integer
+  109 |       if ((kind == " ")) {
+      |                 ^~
+/tmp/brazilian-numbers.c:111:24: warning: comparison between pointer and integer
+  111 |       } else if ((kind == " odd ")) {
+      |                        ^~

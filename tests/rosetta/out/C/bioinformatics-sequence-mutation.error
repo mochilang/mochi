@@ -1,205 +1,68 @@
 cc: exit status 1
-/tmp/bioinformatics-sequence-mutation.c: In function ‘padLeft’:
-/tmp/bioinformatics-sequence-mutation.c:102:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  102 |     char *tmp2 = concat_string(res, " ");
-      |                                ^~~
-/tmp/bioinformatics-sequence-mutation.c:43:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   43 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/bioinformatics-sequence-mutation.c:106:30: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  106 |   char *tmp3 = concat_string(res, s);
-      |                              ^~~
-/tmp/bioinformatics-sequence-mutation.c:43:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   43 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
 /tmp/bioinformatics-sequence-mutation.c: In function ‘makeSeq’:
-/tmp/bioinformatics-sequence-mutation.c:118:30: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  118 |     out = out + slice_string(bases, idx, idx + 1);
-      |                              ^~~~~
-/tmp/bioinformatics-sequence-mutation.c:57:33: note: expected ‘char *’ but argument is of type ‘const char *’
-   57 | static char *slice_string(char *s, int start, int end) {
-      |                           ~~~~~~^
-/tmp/bioinformatics-sequence-mutation.c:118:15: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
+/tmp/bioinformatics-sequence-mutation.c:118:15: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
   118 |     out = out + slice_string(bases, idx, idx + 1);
       |               ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       |                 |
       |                 char *
-/tmp/bioinformatics-sequence-mutation.c:123:16: warning: assignment to ‘int’ from ‘const char *’ makes integer from pointer without a cast [-Wint-conversion]
+/tmp/bioinformatics-sequence-mutation.c:123:16: warning: assignment to ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
   123 |   tmp4.data[1] = out;
       |                ^
 /tmp/bioinformatics-sequence-mutation.c: In function ‘mutate’:
-/tmp/bioinformatics-sequence-mutation.c:137:13: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  137 |   int arr = tmp5;
-      |             ^~~~
-/tmp/bioinformatics-sequence-mutation.c:142:43: error: incompatible type for argument 1 of ‘concat_list_string’
-  142 |     list_string tmp7 = concat_list_string(arr, tmp6);
-      |                                           ^~~
-      |                                           |
-      |                                           int
-/tmp/bioinformatics-sequence-mutation.c:35:51: note: expected ‘list_string’ but argument is of type ‘int’
-   35 | static list_string concat_list_string(list_string a, list_string b) {
-      |                                       ~~~~~~~~~~~~^
-/tmp/bioinformatics-sequence-mutation.c:143:11: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-  143 |     arr = tmp7;
-      |           ^~~~
-/tmp/bioinformatics-sequence-mutation.c:150:34: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  150 |     const char *b = slice_string(bases, idx, idx + 1);
-      |                                  ^~~~~
-/tmp/bioinformatics-sequence-mutation.c:57:33: note: expected ‘char *’ but argument is of type ‘const char *’
-   57 | static char *slice_string(char *s, int start, int end) {
-      |                           ~~~~~~^
-/tmp/bioinformatics-sequence-mutation.c:152:33: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
-  152 |     printf("%s\n", "  Change @" + padLeft(tmp8, 3) + " '" + arr.data[p] +
+/tmp/bioinformatics-sequence-mutation.c:151:33: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  151 |     printf("%s\n", "  Change @" + padLeft(tmp7, 3) + " '" + arr.data[p] +
       |                    ~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~
       |                    |              |
-      |                    char *         const char *
-/tmp/bioinformatics-sequence-mutation.c:152:64: error: request for member ‘data’ in something not a structure or union
-  152 |     printf("%s\n", "  Change @" + padLeft(tmp8, 3) + " '" + arr.data[p] +
-      |                                                                ^
-/tmp/bioinformatics-sequence-mutation.c:154:8: error: request for member ‘data’ in something not a structure or union
-  154 |     arr.data[p] = b;
-      |        ^
-/tmp/bioinformatics-sequence-mutation.c:157:33: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
-  157 |     printf("%s\n", "  Delete @" + padLeft(tmp9, 3) + " '" + arr.data[p] + "'");
+      |                    char *         char *
+/tmp/bioinformatics-sequence-mutation.c:156:33: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  156 |     printf("%s\n", "  Delete @" + padLeft(tmp8, 3) + " '" + arr.data[p] + "'");
       |                    ~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~
       |                    |              |
-      |                    char *         const char *
-/tmp/bioinformatics-sequence-mutation.c:157:64: error: request for member ‘data’ in something not a structure or union
-  157 |     printf("%s\n", "  Delete @" + padLeft(tmp9, 3) + " '" + arr.data[p] + "'");
-      |                                                                ^
-/tmp/bioinformatics-sequence-mutation.c:159:19: error: request for member ‘len’ in something not a structure or union
-  159 |     while (j < arr.len - 1) {
-      |                   ^
-/tmp/bioinformatics-sequence-mutation.c:160:10: error: request for member ‘data’ in something not a structure or union
-  160 |       arr.data[j] = arr.data[j + 1];
-      |          ^
-/tmp/bioinformatics-sequence-mutation.c:160:24: error: request for member ‘data’ in something not a structure or union
-  160 |       arr.data[j] = arr.data[j + 1];
-      |                        ^
-/tmp/bioinformatics-sequence-mutation.c:163:54: error: request for member ‘len’ in something not a structure or union
-  163 |     list_string tmp10 = slice_list_string(arr, 0, arr.len - 1);
-      |                                                      ^
-/tmp/bioinformatics-sequence-mutation.c:163:43: error: incompatible type for argument 1 of ‘slice_list_string’
-  163 |     list_string tmp10 = slice_list_string(arr, 0, arr.len - 1);
-      |                                           ^~~
-      |                                           |
-      |                                           int
-/tmp/bioinformatics-sequence-mutation.c:74:50: note: expected ‘list_string’ but argument is of type ‘int’
-   74 | static list_string slice_list_string(list_string v, int start, int end) {
-      |                                      ~~~~~~~~~~~~^
-/tmp/bioinformatics-sequence-mutation.c:164:11: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-  164 |     arr = tmp10;
-      |           ^~~~~
-/tmp/bioinformatics-sequence-mutation.c:169:34: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  169 |     const char *b = slice_string(bases, idx2, idx2 + 1);
-      |                                  ^~~~~
-/tmp/bioinformatics-sequence-mutation.c:57:33: note: expected ‘char *’ but argument is of type ‘const char *’
-   57 | static char *slice_string(char *s, int start, int end) {
-      |                           ~~~~~~^
-/tmp/bioinformatics-sequence-mutation.c:172:44: error: incompatible type for argument 1 of ‘concat_list_string’
-  172 |     list_string tmp12 = concat_list_string(arr, tmp11);
-      |                                            ^~~
-      |                                            |
-      |                                            int
-/tmp/bioinformatics-sequence-mutation.c:35:51: note: expected ‘list_string’ but argument is of type ‘int’
-   35 | static list_string concat_list_string(list_string a, list_string b) {
-      |                                       ~~~~~~~~~~~~^
-/tmp/bioinformatics-sequence-mutation.c:173:11: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-  173 |     arr = tmp12;
-      |           ^~~~~
-/tmp/bioinformatics-sequence-mutation.c:174:16: error: request for member ‘len’ in something not a structure or union
-  174 |     int j = arr.len - 1;
-      |                ^
-/tmp/bioinformatics-sequence-mutation.c:176:10: error: request for member ‘data’ in something not a structure or union
-  176 |       arr.data[j] = arr.data[j - 1];
-      |          ^
-/tmp/bioinformatics-sequence-mutation.c:176:24: error: request for member ‘data’ in something not a structure or union
-  176 |       arr.data[j] = arr.data[j - 1];
-      |                        ^
-/tmp/bioinformatics-sequence-mutation.c:180:33: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
-  180 |     printf("%s\n", "  Insert @" + padLeft(tmp13, 3) + " '" + b + "'");
+      |                    char *         char *
+/tmp/bioinformatics-sequence-mutation.c:179:33: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  179 |     printf("%s\n", "  Insert @" + padLeft(tmp12, 3) + " '" + b + "'");
       |                    ~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~
       |                    |              |
-      |                    char *         const char *
-/tmp/bioinformatics-sequence-mutation.c:181:8: error: request for member ‘data’ in something not a structure or union
-  181 |     arr.data[p] = b;
-      |        ^
-/tmp/bioinformatics-sequence-mutation.c:185:17: error: request for member ‘len’ in something not a structure or union
-  185 |   while (i < arr.len) {
-      |                 ^
-/tmp/bioinformatics-sequence-mutation.c:186:41: error: request for member ‘data’ in something not a structure or union
-  186 |     char *tmp14 = concat_string(out, arr.data[i]);
-      |                                         ^
-/tmp/bioinformatics-sequence-mutation.c:186:33: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  186 |     char *tmp14 = concat_string(out, arr.data[i]);
-      |                                 ^~~
-/tmp/bioinformatics-sequence-mutation.c:43:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   43 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/bioinformatics-sequence-mutation.c:192:17: warning: assignment to ‘int’ from ‘const char *’ makes integer from pointer without a cast [-Wint-conversion]
-  192 |   tmp15.data[1] = out;
+      |                    char *         char *
+/tmp/bioinformatics-sequence-mutation.c:191:17: warning: assignment to ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+  191 |   tmp14.data[1] = out;
       |                 ^
 /tmp/bioinformatics-sequence-mutation.c: In function ‘prettyPrint’:
-/tmp/bioinformatics-sequence-mutation.c:207:38: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
-  207 |     printf("%s\n", padLeft(tmp16, 5) + ": " + tmp17);
+/tmp/bioinformatics-sequence-mutation.c:206:38: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  206 |     printf("%s\n", padLeft(tmp15, 5) + ": " + tmp16);
       |                    ~~~~~~~~~~~~~~~~~ ^
       |                    |                 |
-      |                    const char *      char *
-/tmp/bioinformatics-sequence-mutation.c:237:28: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
-  237 |   printf("%s\n", "    A: " + padLeft(tmp18, 3));
+      |                    char *            char *
+/tmp/bioinformatics-sequence-mutation.c:236:28: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  236 |   printf("%s\n", "    A: " + padLeft(tmp17, 3));
       |                  ~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~
       |                  |           |
-      |                  char *      const char *
-/tmp/bioinformatics-sequence-mutation.c:239:28: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
-  239 |   printf("%s\n", "    C: " + padLeft(tmp19, 3));
+      |                  char *      char *
+/tmp/bioinformatics-sequence-mutation.c:238:28: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  238 |   printf("%s\n", "    C: " + padLeft(tmp18, 3));
       |                  ~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~
       |                  |           |
-      |                  char *      const char *
-/tmp/bioinformatics-sequence-mutation.c:241:28: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
-  241 |   printf("%s\n", "    G: " + padLeft(tmp20, 3));
+      |                  char *      char *
+/tmp/bioinformatics-sequence-mutation.c:240:28: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  240 |   printf("%s\n", "    G: " + padLeft(tmp19, 3));
       |                  ~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~
       |                  |           |
-      |                  char *      const char *
-/tmp/bioinformatics-sequence-mutation.c:243:28: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
-  243 |   printf("%s\n", "    T: " + padLeft(tmp21, 3));
+      |                  char *      char *
+/tmp/bioinformatics-sequence-mutation.c:242:28: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  242 |   printf("%s\n", "    T: " + padLeft(tmp20, 3));
       |                  ~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~
       |                  |           |
-      |                  char *      const char *
-/tmp/bioinformatics-sequence-mutation.c: In function ‘main’:
-/tmp/bioinformatics-sequence-mutation.c:268:21: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
-  268 |   const char *dna = (char *)(res.data[1]);
-      |                     ^
-/tmp/bioinformatics-sequence-mutation.c:269:15: warning: passing argument 1 of ‘prettyPrint’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  269 |   prettyPrint(dna, 50);
-      |               ^~~
-/tmp/bioinformatics-sequence-mutation.c:196:23: note: expected ‘char *’ but argument is of type ‘const char *’
-  196 | int prettyPrint(char *dna, int rowLen) {
-      |                 ~~~~~~^~~
-/tmp/bioinformatics-sequence-mutation.c:284:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘const char *’ [-Wformat=]
-  284 |   printf("%d\n", wstring(tmp34));
+      |                  char *      char *
+/tmp/bioinformatics-sequence-mutation.c: In function ‘mochi_main’:
+/tmp/bioinformatics-sequence-mutation.c:267:15: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+  267 |   char *dna = (char *)(res.data[1]);
+      |               ^
+/tmp/bioinformatics-sequence-mutation.c:283:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
+  283 |   printf("%d\n", wstring(tmp33));
       |           ~^     ~~~~~~~~~~~~~~
       |            |     |
-      |            int   const char *
+      |            int   char *
       |           %s
-/tmp/bioinformatics-sequence-mutation.c:295:24: warning: passing argument 2 of ‘mutate’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  295 |     res = mutate(seed, dna, tmp38);
-      |                        ^~~
-/tmp/bioinformatics-sequence-mutation.c:127:30: note: expected ‘char *’ but argument is of type ‘const char *’
-  127 | list_int mutate(int s, char *dna, list_int w) {
-      |                        ~~~~~~^~~
-/tmp/bioinformatics-sequence-mutation.c:297:11: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
-  297 |     dna = (char *)(res.data[1]);
+/tmp/bioinformatics-sequence-mutation.c:296:11: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+  296 |     dna = (char *)(res.data[1]);
       |           ^
-/tmp/bioinformatics-sequence-mutation.c:301:15: warning: passing argument 1 of ‘prettyPrint’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  301 |   prettyPrint(dna, 50);
-      |               ^~~
-/tmp/bioinformatics-sequence-mutation.c:196:23: note: expected ‘char *’ but argument is of type ‘const char *’
-  196 | int prettyPrint(char *dna, int rowLen) {
-      |                 ~~~~~~^~~
-/tmp/bioinformatics-sequence-mutation.c: At top level:
-/tmp/bioinformatics-sequence-mutation.c:304:5: error: redefinition of ‘main’
-  304 | int main() {
-      |     ^~~~
-/tmp/bioinformatics-sequence-mutation.c:264:5: note: previous definition of ‘main’ with type ‘int()’
-  264 | int main() {
-      |     ^~~~

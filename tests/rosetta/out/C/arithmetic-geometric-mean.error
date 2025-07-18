@@ -6,9 +6,3 @@ In file included from /tmp/arithmetic-geometric-mean.c:4:
 /usr/include/stdlib.h:980:12: note: previous declaration of ‘abs’ with type ‘int(int)’
   980 | extern int abs (int __x) __THROW __attribute__ ((__const__)) __wur;
       |            ^~~
-/tmp/arithmetic-geometric-mean.c:44:5: error: redefinition of ‘main’
-   44 | int main() {
-      |     ^~~~
-/tmp/arithmetic-geometric-mean.c:39:5: note: previous definition of ‘main’ with type ‘int()’
-   39 | int main() {
-      |     ^~~~

@@ -1,83 +1,19 @@
 cc: exit status 1
-/tmp/chinese-zodiac.c:60:3: error: unknown type name ‘info_t’
-   60 |   info_t *data;
-      |   ^~~~~~
-/tmp/chinese-zodiac.c: In function ‘create_info_list’:
-/tmp/chinese-zodiac.c:65:31: error: ‘info_t’ undeclared (first use in this function); did you mean ‘ino_t’?
-   65 |   l.data = calloc(len, sizeof(info_t));
-      |                               ^~~~~~
-      |                               ino_t
-/tmp/chinese-zodiac.c:65:31: note: each undeclared identifier is reported only once for each function it appears in
-/tmp/chinese-zodiac.c: At top level:
-/tmp/chinese-zodiac.c:73:1: error: unknown type name ‘info_t’; did you mean ‘ino_t’?
-   73 | info_t cz(int yr, list_string animal, list_string yinYang, list_string element,
-      | ^~~~~~
-      | ino_t
 /tmp/chinese-zodiac.c: In function ‘cz’:
-/tmp/chinese-zodiac.c:81:18: error: ‘Info’ {aka ‘struct Info’} has no member named ‘yin_yang’; did you mean ‘yinYang’?
-   81 |                 .yin_yang = (char *)(yinYang.data[stem % 2]),
-      |                  ^~~~~~~~
-      |                  yinYang
-/tmp/chinese-zodiac.c:83:18: error: ‘Info’ {aka ‘struct Info’} has no member named ‘stem_branch’; did you mean ‘stemBranch’?
-   83 |                 .stem_branch = sb,
-      |                  ^~~~~~~~~~~
-      |                  stemBranch
-/tmp/chinese-zodiac.c:83:32: warning: initialization discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   83 |                 .stem_branch = sb,
-      |                                ^~
-/tmp/chinese-zodiac.c:80:10: error: incompatible types when returning type ‘Info’ {aka ‘struct Info’} but ‘int’ was expected
-   80 |   return (Info){.animal = (char *)(animal.data[branch]),
-      |          ^
-/tmp/chinese-zodiac.c: In function ‘main’:
-/tmp/chinese-zodiac.c:101:7: error: conflicting types for ‘animal’; have ‘int’
-  101 |   int animal = animal;
-      |       ^~~~~~
-/tmp/chinese-zodiac.c:88:15: note: previous definition of ‘animal’ with type ‘list_string’
-   88 |   list_string animal = list_string_create(12);
-      |               ^~~~~~
-/tmp/chinese-zodiac.c:105:7: error: conflicting types for ‘yinYang’; have ‘int’
-  105 |   int yinYang = yinYang;
-      |       ^~~~~~~
-/tmp/chinese-zodiac.c:102:15: note: previous definition of ‘yinYang’ with type ‘list_string’
-  102 |   list_string yinYang = list_string_create(2);
-      |               ^~~~~~~
-/tmp/chinese-zodiac.c:112:7: error: conflicting types for ‘element’; have ‘int’
-  112 |   int element = element;
-      |       ^~~~~~~
-/tmp/chinese-zodiac.c:106:15: note: previous definition of ‘element’ with type ‘list_string’
-  106 |   list_string element = list_string_create(5);
-      |               ^~~~~~~
-/tmp/chinese-zodiac.c:124:7: error: conflicting types for ‘stemChArr’; have ‘int’
-  124 |   int stemChArr = stemChArr;
-      |       ^~~~~~~~~
-/tmp/chinese-zodiac.c:113:15: note: previous definition of ‘stemChArr’ with type ‘list_string’
-  113 |   list_string stemChArr = list_string_create(10);
-      |               ^~~~~~~~~
-/tmp/chinese-zodiac.c:138:7: error: conflicting types for ‘branchChArr’; have ‘int’
-  138 |   int branchChArr = branchChArr;
-      |       ^~~~~~~~~~~
-/tmp/chinese-zodiac.c:125:15: note: previous definition of ‘branchChArr’ with type ‘list_string’
-  125 |   list_string branchChArr = list_string_create(12);
-      |               ^~~~~~~~~~~
-/tmp/chinese-zodiac.c:146:18: error: subscripted value is neither array nor pointer nor vector
-  146 |     int yr = tmp2[tmp3];
-      |                  ^
-/tmp/chinese-zodiac.c:147:5: error: unknown type name ‘info_t’; did you mean ‘ino_t’?
-  147 |     info_t r = cz(yr, animal, yinYang, element, stemChArr, branchChArr);
-      |     ^~~~~~
-      |     ino_t
-/tmp/chinese-zodiac.c:150:39: error: request for member ‘element’ in something not a structure or union
-  150 |     char *tmp6 = concat_string(tmp5, r.element);
-      |                                       ^
-/tmp/chinese-zodiac.c:152:39: error: request for member ‘animal’ in something not a structure or union
-  152 |     char *tmp8 = concat_string(tmp7, r.animal);
-      |                                       ^
-/tmp/chinese-zodiac.c:154:40: error: request for member ‘yin_yang’ in something not a structure or union
-  154 |     char *tmp10 = concat_string(tmp9, r.yin_yang);
-      |                                        ^
-/tmp/chinese-zodiac.c:156:25: error: request for member ‘cycle’ in something not a structure or union
-  156 |     char *tmp12 = _str(r.cycle);
-      |                         ^
-/tmp/chinese-zodiac.c:159:41: error: request for member ‘stem_branch’ in something not a structure or union
-  159 |     char *tmp15 = concat_string(tmp14, r.stem_branch);
-      |                                         ^
+/tmp/chinese-zodiac.c:81:20: error: ‘info_t’ {aka ‘struct info_t’} has no member named ‘yin_yang’; did you mean ‘yinYang’?
+   81 |                   .yin_yang = (char *)(yinYang.data[stem % 2]),
+      |                    ^~~~~~~~
+      |                    yinYang
+/tmp/chinese-zodiac.c:83:20: error: ‘info_t’ {aka ‘struct info_t’} has no member named ‘stem_branch’; did you mean ‘stemBranch’?
+   83 |                   .stem_branch = sb,
+      |                    ^~~~~~~~~~~
+      |                    stemBranch
+/tmp/chinese-zodiac.c: In function ‘_mochi_main’:
+/tmp/chinese-zodiac.c:149:41: error: ‘info_t’ {aka ‘struct info_t’} has no member named ‘yin_yang’; did you mean ‘yinYang’?
+  149 |     char *tmp10 = concat_string(tmp9, r.yin_yang);
+      |                                         ^~~~~~~~
+      |                                         yinYang
+/tmp/chinese-zodiac.c:154:42: error: ‘info_t’ {aka ‘struct info_t’} has no member named ‘stem_branch’; did you mean ‘stemBranch’?
+  154 |     char *tmp15 = concat_string(tmp14, r.stem_branch);
+      |                                          ^~~~~~~~~~~
+      |                                          stemBranch

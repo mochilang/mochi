@@ -1,210 +1,57 @@
 cc: exit status 1
-/tmp/biorhythms.c:147:7: error: duplicate member ‘_’
-  147 |   int _;
-      |       ^
-/tmp/biorhythms.c:148:7: error: duplicate member ‘_’
-  148 |   int _;
-      |       ^
-/tmp/biorhythms.c:149:7: error: duplicate member ‘_’
-  149 |   int _;
-      |       ^
-/tmp/biorhythms.c:150:7: error: duplicate member ‘_’
-  150 |   int _;
-      |       ^
-/tmp/biorhythms.c:151:7: error: duplicate member ‘_’
-  151 |   int _;
-      |       ^
-/tmp/biorhythms.c:152:7: error: duplicate member ‘_’
-  152 |   int _;
-      |       ^
-/tmp/biorhythms.c:153:7: error: duplicate member ‘_’
-  153 |   int _;
-      |       ^
-/tmp/biorhythms.c:154:7: error: duplicate member ‘_’
-  154 |   int _;
-      |       ^
-/tmp/biorhythms.c:155:7: error: duplicate member ‘_’
-  155 |   int _;
-      |       ^
 /tmp/biorhythms.c: In function ‘parseIntStr’:
-/tmp/biorhythms.c:211:11: error: request for member ‘len’ in something not a structure or union
-  211 |   if ((str.len > 0 && tmp1 == "-")) {
+/tmp/biorhythms.c:184:11: error: request for member ‘len’ in something not a structure or union
+  184 |   if ((str.len > 0 && tmp1 == "-")) {
       |           ^
-/tmp/biorhythms.c:216:27: error: invalid initializer
-  216 |   map_string_int digits = (tmp_item_t){._ = 0,
-      |                           ^
-/tmp/biorhythms.c:226:18: error: request for member ‘len’ in something not a structure or union
-  226 |   while ((i < str.len)) {
+/tmp/biorhythms.c:201:18: error: request for member ‘len’ in something not a structure or union
+  201 |   while ((i < str.len)) {
       |                  ^
-/tmp/biorhythms.c: In function ‘daysInMonth’:
-/tmp/biorhythms.c:276:12: error: redefinition of ‘lengths’
-  276 |   list_int lengths = lengths;
-      |            ^~~~~~~
-/tmp/biorhythms.c:263:12: note: previous definition of ‘lengths’ with type ‘list_int’
-  263 |   list_int lengths = list_int_create(12);
-      |            ^~~~~~~
 /tmp/biorhythms.c: In function ‘dateString’:
-/tmp/biorhythms.c:333:16: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
-  333 |   return tmp12 + pad2(m) + "-" + pad2(d);
+/tmp/biorhythms.c:307:16: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  307 |   return tmp13 + pad2(m) + "-" + pad2(d);
       |                ^ ~~~~~~~
       |                  |
-      |                  const char *
+      |                  char *
 /tmp/biorhythms.c: In function ‘biorhythms’:
-/tmp/biorhythms.c:364:7: error: conflicting types for ‘cycles’; have ‘int’
-  364 |   int cycles = cycles;
-      |       ^~~~~~
-/tmp/biorhythms.c:360:15: note: previous definition of ‘cycles’ with type ‘list_string’
-  360 |   list_string cycles = list_string_create(3);
-      |               ^~~~~~
-/tmp/biorhythms.c:372:15: error: redefinition of ‘quadrants’
-  372 |   list_string quadrants = list_string_create(2);
-      |               ^~~~~~~~~
-/tmp/biorhythms.c:369:15: note: previous definition of ‘quadrants’ with type ‘list_string’
-  369 |   list_string quadrants = list_string_create(2);
-      |               ^~~~~~~~~
-/tmp/biorhythms.c:375:15: error: redefinition of ‘quadrants’
-  375 |   list_string quadrants = list_string_create(2);
-      |               ^~~~~~~~~
-/tmp/biorhythms.c:372:15: note: previous definition of ‘quadrants’ with type ‘list_string’
-  372 |   list_string quadrants = list_string_create(2);
-      |               ^~~~~~~~~
-/tmp/biorhythms.c:378:15: error: redefinition of ‘quadrants’
-  378 |   list_string quadrants = list_string_create(2);
-      |               ^~~~~~~~~
-/tmp/biorhythms.c:375:15: note: previous definition of ‘quadrants’ with type ‘list_string’
-  375 |   list_string quadrants = list_string_create(2);
-      |               ^~~~~~~~~
-/tmp/biorhythms.c:381:32: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  381 |   list_int quadrants_data[] = {quadrants, quadrants, quadrants, quadrants};
-      |                                ^~~~~~~~~
-/tmp/biorhythms.c:381:43: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
-  381 |   list_int quadrants_data[] = {quadrants, quadrants, quadrants, quadrants};
-      |                                           ^~~~~~~~~
-/tmp/biorhythms.c:381:54: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  381 |   list_int quadrants_data[] = {quadrants, quadrants, quadrants, quadrants};
-      |                                                      ^~~~~~~~~
-/tmp/biorhythms.c:381:65: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
-  381 |   list_int quadrants_data[] = {quadrants, quadrants, quadrants, quadrants};
-      |                                                                 ^~~~~~~~~
-/tmp/biorhythms.c:382:17: error: conflicting types for ‘quadrants’; have ‘list_list_int’
-  382 |   list_list_int quadrants = {4, quadrants_data};
-      |                 ^~~~~~~~~
-/tmp/biorhythms.c:378:15: note: previous definition of ‘quadrants’ with type ‘list_string’
-  378 |   list_string quadrants = list_string_create(2);
-      |               ^~~~~~~~~
-/tmp/biorhythms.c:383:12: error: conflicting types for ‘quadrants’; have ‘list_int’
-  383 |   list_int quadrants = quadrants;
-      |            ^~~~~~~~~
-/tmp/biorhythms.c:382:17: note: previous definition of ‘quadrants’ with type ‘list_list_int’
-  382 |   list_list_int quadrants = {4, quadrants_data};
-      |                 ^~~~~~~~~
-/tmp/biorhythms.c:407:51: error: request for member ‘data’ in something not a structure or union
-  407 |       const char *trend = quadrants.data[quadrant].data[0];
-      |                                                   ^
-/tmp/biorhythms.c:408:50: error: request for member ‘data’ in something not a structure or union
-  408 |       const char *next = quadrants.data[quadrant].data[1];
-      |                                                  ^
-/tmp/biorhythms.c:411:13: warning: implicit declaration of function ‘contains’ [-Wimplicit-function-declaration]
-  411 |       if ((!contains(pct, "."))) {
+/tmp/biorhythms.c:354:32: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  354 |   list_int quadrants_data[] = {tmp19, tmp20, tmp21, tmp22};
+      |                                ^~~~~
+/tmp/biorhythms.c:354:39: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
+  354 |   list_int quadrants_data[] = {tmp19, tmp20, tmp21, tmp22};
+      |                                       ^~~~~
+/tmp/biorhythms.c:354:46: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  354 |   list_int quadrants_data[] = {tmp19, tmp20, tmp21, tmp22};
+      |                                              ^~~~~
+/tmp/biorhythms.c:354:53: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
+  354 |   list_int quadrants_data[] = {tmp19, tmp20, tmp21, tmp22};
+      |                                                     ^~~~~
+/tmp/biorhythms.c:359:17: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+  359 |     int cycle = cycles.data[i];
+      |                 ^~~~~~
+/tmp/biorhythms.c:379:21: warning: initialization of ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+  379 |       char *trend = quadrants.data[quadrant].data[0];
+      |                     ^~~~~~~~~
+/tmp/biorhythms.c:380:20: warning: initialization of ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+  380 |       char *next = quadrants.data[quadrant].data[1];
+      |                    ^~~~~~~~~
+/tmp/biorhythms.c:383:13: warning: implicit declaration of function ‘contains’ [-Wimplicit-function-declaration]
+  383 |       if ((!contains(pct, "."))) {
       |             ^~~~~~~~
-/tmp/biorhythms.c:412:37: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  412 |         char *tmp19 = concat_string(pct, ".0");
-      |                                     ^~~
-/tmp/biorhythms.c:111:34: note: expected ‘char *’ but argument is of type ‘const char *’
-  111 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/biorhythms.c:415:40: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  415 |       char *tmp20 = concat_string(" ", pct);
-      |                                        ^~~
-/tmp/biorhythms.c:111:43: note: expected ‘char *’ but argument is of type ‘const char *’
-  111 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/biorhythms.c:417:42: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  417 |       char *tmp22 = concat_string(tmp21, trend);
-      |                                          ^~~~~
-/tmp/biorhythms.c:111:43: note: expected ‘char *’ but argument is of type ‘const char *’
-  111 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/biorhythms.c:419:42: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  419 |       char *tmp24 = concat_string(tmp23, next);
-      |                                          ^~~~
-/tmp/biorhythms.c:111:43: note: expected ‘char *’ but argument is of type ‘const char *’
-  111 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/biorhythms.c:421:42: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  421 |       char *tmp26 = concat_string(tmp25, transition);
-      |                                          ^~~~~~~~~~
-/tmp/biorhythms.c:111:43: note: expected ‘char *’ but argument is of type ‘const char *’
-  111 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/biorhythms.c:428:40: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  428 |       char *tmp29 = concat_string(" ", posStr);
-      |                                        ^~~~~~
-/tmp/biorhythms.c:111:43: note: expected ‘char *’ but argument is of type ‘const char *’
-  111 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/biorhythms.c:431:33: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  431 |     char *tmp30 = concat_string(cycle, posStr);
-      |                                 ^~~~~
-/tmp/biorhythms.c:111:34: note: expected ‘char *’ but argument is of type ‘const char *’
-  111 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/biorhythms.c:431:40: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  431 |     char *tmp30 = concat_string(cycle, posStr);
-      |                                        ^~~~~~
-/tmp/biorhythms.c:111:43: note: expected ‘char *’ but argument is of type ‘const char *’
-  111 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/biorhythms.c:433:40: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  433 |     char *tmp32 = concat_string(tmp31, description);
-      |                                        ^~~~~~~~~~~
-/tmp/biorhythms.c:111:43: note: expected ‘char *’ but argument is of type ‘const char *’
-  111 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/biorhythms.c: In function ‘main’:
-/tmp/biorhythms.c:444:15: error: redefinition of ‘pairs’
-  444 |   list_string pairs = list_string_create(2);
-      |               ^~~~~
-/tmp/biorhythms.c:441:15: note: previous definition of ‘pairs’ with type ‘list_string’
-  441 |   list_string pairs = list_string_create(2);
-      |               ^~~~~
-/tmp/biorhythms.c:447:15: error: redefinition of ‘pairs’
-  447 |   list_string pairs = list_string_create(2);
-      |               ^~~~~
-/tmp/biorhythms.c:444:15: note: previous definition of ‘pairs’ with type ‘list_string’
-  444 |   list_string pairs = list_string_create(2);
-      |               ^~~~~
-/tmp/biorhythms.c:450:28: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  450 |   list_int pairs_data[] = {pairs, pairs, pairs};
+/tmp/biorhythms.c:403:35: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  403 |     printf("%d\n", cycle + posStr + " : " + description);
+      |                    ~~~~~~~~~~~~~~ ^
+      |                          |        |
+      |                          char *   char *
+/tmp/biorhythms.c: In function ‘mochi_main’:
+/tmp/biorhythms.c:419:28: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  419 |   list_int pairs_data[] = {tmp35, tmp36, tmp37};
       |                            ^~~~~
-/tmp/biorhythms.c:450:35: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
-  450 |   list_int pairs_data[] = {pairs, pairs, pairs};
+/tmp/biorhythms.c:419:35: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
+  419 |   list_int pairs_data[] = {tmp35, tmp36, tmp37};
       |                                   ^~~~~
-/tmp/biorhythms.c:450:42: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  450 |   list_int pairs_data[] = {pairs, pairs, pairs};
+/tmp/biorhythms.c:419:42: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  419 |   list_int pairs_data[] = {tmp35, tmp36, tmp37};
       |                                          ^~~~~
-/tmp/biorhythms.c:451:17: error: conflicting types for ‘pairs’; have ‘list_list_int’
-  451 |   list_list_int pairs = {3, pairs_data};
-      |                 ^~~~~
-/tmp/biorhythms.c:447:15: note: previous definition of ‘pairs’ with type ‘list_string’
-  447 |   list_string pairs = list_string_create(2);
-      |               ^~~~~
-/tmp/biorhythms.c:452:12: error: conflicting types for ‘pairs’; have ‘list_int’
-  452 |   list_int pairs = pairs;
-      |            ^~~~~
-/tmp/biorhythms.c:451:17: note: previous definition of ‘pairs’ with type ‘list_list_int’
-  451 |   list_list_int pairs = {3, pairs_data};
-      |                 ^~~~~
-/tmp/biorhythms.c:456:17: error: request for member ‘data’ in something not a structure or union
-  456 |     biorhythms(p.data[0], p.data[1]);
-      |                 ^
-/tmp/biorhythms.c:456:28: error: request for member ‘data’ in something not a structure or union
-  456 |     biorhythms(p.data[0], p.data[1]);
-      |                            ^
-/tmp/biorhythms.c: At top level:
-/tmp/biorhythms.c:461:5: error: redefinition of ‘main’
-  461 | int main() {
-      |     ^~~~
-/tmp/biorhythms.c:440:5: note: previous definition of ‘main’ with type ‘int()’
-  440 | int main() {
-      |     ^~~~
+/tmp/biorhythms.c:423:21: error: invalid initializer
+  423 |     list_string p = pairs.data[idx];
+      |                     ^~~~~

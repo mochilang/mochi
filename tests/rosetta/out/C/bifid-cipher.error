@@ -16,15 +16,9 @@ cc: exit status 1
 /tmp/bifid-cipher.c:175:20: error: request for member ‘len’ in something not a structure or union
   175 |   while (x < square.len) {
       |                    ^
-/tmp/bifid-cipher.c:176:21: error: request for member ‘data’ in something not a structure or union
-  176 |     int row = square.data[x];
-      |                     ^
-/tmp/bifid-cipher.c:178:19: error: request for member ‘len’ in something not a structure or union
-  178 |     while (y < row.len) {
-      |                   ^
-/tmp/bifid-cipher.c:179:27: error: request for member ‘data’ in something not a structure or union
-  179 |       const char *ch = row.data[y];
-      |                           ^
+/tmp/bifid-cipher.c:176:29: error: request for member ‘data’ in something not a structure or union
+  176 |     list_string row = square.data[x];
+      |                             ^
 /tmp/bifid-cipher.c:186:11: error: request for member ‘data’ in something not a structure or union
   186 |       emap.data[ch] = tmp4;
       |           ^
@@ -35,324 +29,104 @@ cc: exit status 1
   200 |   return (tmp_item_t){.e = emap, .d = dmap};
       |          ^
 /tmp/bifid-cipher.c: In function ‘remove_space’:
-/tmp/bifid-cipher.c:204:19: warning: implicit declaration of function ‘upper’ [-Wimplicit-function-declaration]
-  204 |   const char *s = upper(text);
-      |                   ^~~~~
-/tmp/bifid-cipher.c:204:19: warning: initialization of ‘const char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
-/tmp/bifid-cipher.c:208:32: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  208 |     char *tmp13 = slice_string(s, i, i + 1);
-      |                                ^
-/tmp/bifid-cipher.c:133:33: note: expected ‘char *’ but argument is of type ‘const char *’
-  133 | static char *slice_string(char *s, int start, int end) {
-      |                           ~~~~~~^
+/tmp/bifid-cipher.c:204:13: warning: implicit declaration of function ‘upper’ [-Wimplicit-function-declaration]
+  204 |   char *s = upper(text);
+      |             ^~~~~
+/tmp/bifid-cipher.c:204:13: warning: initialization of ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
 /tmp/bifid-cipher.c:210:37: error: expected ‘)’ before ‘in’
   210 |     if ((strcmp(ch, " ") != 0) && ch in emap) {
       |        ~                            ^~~
       |                                     )
-/tmp/bifid-cipher.c:211:35: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  211 |       char *tmp14 = concat_string(out, ch);
-      |                                   ^~~
-/tmp/bifid-cipher.c:119:34: note: expected ‘char *’ but argument is of type ‘const char *’
-  119 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/bifid-cipher.c:211:40: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  211 |       char *tmp14 = concat_string(out, ch);
-      |                                        ^~
-/tmp/bifid-cipher.c:119:43: note: expected ‘char *’ but argument is of type ‘const char *’
-  119 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
 /tmp/bifid-cipher.c: In function ‘encrypt’:
-/tmp/bifid-cipher.c:220:8: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  220 |   text = remove_space(text, emap);
-      |        ^
 /tmp/bifid-cipher.c:227:23: error: request for member ‘data’ in something not a structure or union
   227 |     list_int xy = emap.data[ch];
       |                       ^
-/tmp/bifid-cipher.c:228:12: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
-  228 |     row0 = 0;
-      |            ^
-/tmp/bifid-cipher.c:229:12: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
-  229 |     row1 = 0;
-      |            ^
-/tmp/bifid-cipher.c:248:21: error: request for member ‘data’ in something not a structure or union
-  248 |     res = res + dmap.data[key];
+/tmp/bifid-cipher.c:256:21: error: request for member ‘data’ in something not a structure or union
+  256 |     res = res + dmap.data[key];
       |                     ^
 /tmp/bifid-cipher.c: In function ‘decrypt’:
-/tmp/bifid-cipher.c:255:8: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  255 |   text = remove_space(text, emap);
-      |        ^
-/tmp/bifid-cipher.c:261:23: error: request for member ‘data’ in something not a structure or union
-  261 |     list_int xy = emap.data[ch];
+/tmp/bifid-cipher.c:269:23: error: request for member ‘data’ in something not a structure or union
+  269 |     list_int xy = emap.data[ch];
       |                       ^
-/tmp/bifid-cipher.c:262:14: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
-  262 |     coords = 0;
-      |              ^
-/tmp/bifid-cipher.c:275:10: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
-  275 |     k1 = 0;
-      |          ^
-/tmp/bifid-cipher.c:279:10: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
-  279 |     k2 = 0;
-      |          ^
-/tmp/bifid-cipher.c:290:21: error: request for member ‘data’ in something not a structure or union
-  290 |     res = res + dmap.data[key];
+/tmp/bifid-cipher.c:310:21: error: request for member ‘data’ in something not a structure or union
+  310 |     res = res + dmap.data[key];
       |                     ^
-/tmp/bifid-cipher.c: In function ‘main’:
-/tmp/bifid-cipher.c:303:15: error: redefinition of ‘squareRosetta’
-  303 |   list_string squareRosetta = list_string_create(5);
-      |               ^~~~~~~~~~~~~
-/tmp/bifid-cipher.c:297:15: note: previous definition of ‘squareRosetta’ with type ‘list_string’
-  297 |   list_string squareRosetta = list_string_create(5);
-      |               ^~~~~~~~~~~~~
-/tmp/bifid-cipher.c:309:15: error: redefinition of ‘squareRosetta’
-  309 |   list_string squareRosetta = list_string_create(5);
-      |               ^~~~~~~~~~~~~
-/tmp/bifid-cipher.c:303:15: note: previous definition of ‘squareRosetta’ with type ‘list_string’
-  303 |   list_string squareRosetta = list_string_create(5);
-      |               ^~~~~~~~~~~~~
-/tmp/bifid-cipher.c:315:15: error: redefinition of ‘squareRosetta’
-  315 |   list_string squareRosetta = list_string_create(5);
-      |               ^~~~~~~~~~~~~
-/tmp/bifid-cipher.c:309:15: note: previous definition of ‘squareRosetta’ with type ‘list_string’
-  309 |   list_string squareRosetta = list_string_create(5);
-      |               ^~~~~~~~~~~~~
-/tmp/bifid-cipher.c:321:15: error: redefinition of ‘squareRosetta’
-  321 |   list_string squareRosetta = list_string_create(5);
-      |               ^~~~~~~~~~~~~
-/tmp/bifid-cipher.c:315:15: note: previous definition of ‘squareRosetta’ with type ‘list_string’
-  315 |   list_string squareRosetta = list_string_create(5);
-      |               ^~~~~~~~~~~~~
-/tmp/bifid-cipher.c:327:15: error: redefinition of ‘squareRosetta’
-  327 |   list_string squareRosetta = list_string_create(5);
-      |               ^~~~~~~~~~~~~
-/tmp/bifid-cipher.c:321:15: note: previous definition of ‘squareRosetta’ with type ‘list_string’
-  321 |   list_string squareRosetta = list_string_create(5);
-      |               ^~~~~~~~~~~~~
-/tmp/bifid-cipher.c:333:36: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  333 |   list_int squareRosetta_data[] = {squareRosetta, squareRosetta, squareRosetta,
-      |                                    ^~~~~~~~~~~~~
-/tmp/bifid-cipher.c:333:51: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
-  333 |   list_int squareRosetta_data[] = {squareRosetta, squareRosetta, squareRosetta,
-      |                                                   ^~~~~~~~~~~~~
-/tmp/bifid-cipher.c:333:66: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  333 |   list_int squareRosetta_data[] = {squareRosetta, squareRosetta, squareRosetta,
-      |                                                                  ^~~~~~~~~~~~~
-/tmp/bifid-cipher.c:334:36: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
-  334 |                                    squareRosetta, squareRosetta, squareRosetta};
-      |                                    ^~~~~~~~~~~~~
-/tmp/bifid-cipher.c:334:51: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  334 |                                    squareRosetta, squareRosetta, squareRosetta};
-      |                                                   ^~~~~~~~~~~~~
-/tmp/bifid-cipher.c:334:66: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
-  334 |                                    squareRosetta, squareRosetta, squareRosetta};
-      |                                                                  ^~~~~~~~~~~~~
-/tmp/bifid-cipher.c:335:17: error: conflicting types for ‘squareRosetta’; have ‘list_list_int’
-  335 |   list_list_int squareRosetta = {6, squareRosetta_data};
-      |                 ^~~~~~~~~~~~~
-/tmp/bifid-cipher.c:327:15: note: previous definition of ‘squareRosetta’ with type ‘list_string’
-  327 |   list_string squareRosetta = list_string_create(5);
-      |               ^~~~~~~~~~~~~
-/tmp/bifid-cipher.c:336:12: error: conflicting types for ‘squareRosetta’; have ‘list_int’
-  336 |   list_int squareRosetta = squareRosetta;
-      |            ^~~~~~~~~~~~~
-/tmp/bifid-cipher.c:335:17: note: previous definition of ‘squareRosetta’ with type ‘list_list_int’
-  335 |   list_list_int squareRosetta = {6, squareRosetta_data};
-      |                 ^~~~~~~~~~~~~
-/tmp/bifid-cipher.c:343:15: error: redefinition of ‘squareWikipedia’
-  343 |   list_string squareWikipedia = list_string_create(5);
-      |               ^~~~~~~~~~~~~~~
-/tmp/bifid-cipher.c:337:15: note: previous definition of ‘squareWikipedia’ with type ‘list_string’
-  337 |   list_string squareWikipedia = list_string_create(5);
-      |               ^~~~~~~~~~~~~~~
-/tmp/bifid-cipher.c:349:15: error: redefinition of ‘squareWikipedia’
-  349 |   list_string squareWikipedia = list_string_create(5);
-      |               ^~~~~~~~~~~~~~~
-/tmp/bifid-cipher.c:343:15: note: previous definition of ‘squareWikipedia’ with type ‘list_string’
-  343 |   list_string squareWikipedia = list_string_create(5);
-      |               ^~~~~~~~~~~~~~~
-/tmp/bifid-cipher.c:355:15: error: redefinition of ‘squareWikipedia’
-  355 |   list_string squareWikipedia = list_string_create(5);
-      |               ^~~~~~~~~~~~~~~
-/tmp/bifid-cipher.c:349:15: note: previous definition of ‘squareWikipedia’ with type ‘list_string’
-  349 |   list_string squareWikipedia = list_string_create(5);
-      |               ^~~~~~~~~~~~~~~
-/tmp/bifid-cipher.c:361:15: error: redefinition of ‘squareWikipedia’
-  361 |   list_string squareWikipedia = list_string_create(5);
-      |               ^~~~~~~~~~~~~~~
-/tmp/bifid-cipher.c:355:15: note: previous definition of ‘squareWikipedia’ with type ‘list_string’
-  355 |   list_string squareWikipedia = list_string_create(5);
-      |               ^~~~~~~~~~~~~~~
-/tmp/bifid-cipher.c:367:15: error: redefinition of ‘squareWikipedia’
-  367 |   list_string squareWikipedia = list_string_create(5);
-      |               ^~~~~~~~~~~~~~~
-/tmp/bifid-cipher.c:361:15: note: previous definition of ‘squareWikipedia’ with type ‘list_string’
-  361 |   list_string squareWikipedia = list_string_create(5);
-      |               ^~~~~~~~~~~~~~~
-/tmp/bifid-cipher.c:373:38: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  373 |   list_int squareWikipedia_data[] = {squareWikipedia, squareWikipedia,
-      |                                      ^~~~~~~~~~~~~~~
-/tmp/bifid-cipher.c:373:55: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
-  373 |   list_int squareWikipedia_data[] = {squareWikipedia, squareWikipedia,
-      |                                                       ^~~~~~~~~~~~~~~
-/tmp/bifid-cipher.c:374:38: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  374 |                                      squareWikipedia, squareWikipedia,
-      |                                      ^~~~~~~~~~~~~~~
-/tmp/bifid-cipher.c:374:55: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
-  374 |                                      squareWikipedia, squareWikipedia,
-      |                                                       ^~~~~~~~~~~~~~~
-/tmp/bifid-cipher.c:375:38: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  375 |                                      squareWikipedia, squareWikipedia};
-      |                                      ^~~~~~~~~~~~~~~
-/tmp/bifid-cipher.c:375:55: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
-  375 |                                      squareWikipedia, squareWikipedia};
-      |                                                       ^~~~~~~~~~~~~~~
-/tmp/bifid-cipher.c:376:17: error: conflicting types for ‘squareWikipedia’; have ‘list_list_int’
-  376 |   list_list_int squareWikipedia = {6, squareWikipedia_data};
-      |                 ^~~~~~~~~~~~~~~
-/tmp/bifid-cipher.c:367:15: note: previous definition of ‘squareWikipedia’ with type ‘list_string’
-  367 |   list_string squareWikipedia = list_string_create(5);
-      |               ^~~~~~~~~~~~~~~
-/tmp/bifid-cipher.c:377:12: error: conflicting types for ‘squareWikipedia’; have ‘list_int’
-  377 |   list_int squareWikipedia = squareWikipedia;
-      |            ^~~~~~~~~~~~~~~
-/tmp/bifid-cipher.c:376:17: note: previous definition of ‘squareWikipedia’ with type ‘list_list_int’
-  376 |   list_list_int squareWikipedia = {6, squareWikipedia_data};
-      |                 ^~~~~~~~~~~~~~~
-/tmp/bifid-cipher.c:381:29: error: incompatible type for argument 1 of ‘square_to_maps’
-  381 |   int maps = square_to_maps(squareRosetta);
+/tmp/bifid-cipher.c: In function ‘mochi_main’:
+/tmp/bifid-cipher.c:353:36: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  353 |   list_int squareRosetta_data[] = {tmp40, tmp41, tmp42, tmp43, tmp44, tmp45};
+      |                                    ^~~~~
+/tmp/bifid-cipher.c:353:43: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
+  353 |   list_int squareRosetta_data[] = {tmp40, tmp41, tmp42, tmp43, tmp44, tmp45};
+      |                                           ^~~~~
+/tmp/bifid-cipher.c:353:50: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  353 |   list_int squareRosetta_data[] = {tmp40, tmp41, tmp42, tmp43, tmp44, tmp45};
+      |                                                  ^~~~~
+/tmp/bifid-cipher.c:353:57: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
+  353 |   list_int squareRosetta_data[] = {tmp40, tmp41, tmp42, tmp43, tmp44, tmp45};
+      |                                                         ^~~~~
+/tmp/bifid-cipher.c:353:64: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  353 |   list_int squareRosetta_data[] = {tmp40, tmp41, tmp42, tmp43, tmp44, tmp45};
+      |                                                                ^~~~~
+/tmp/bifid-cipher.c:353:71: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
+  353 |   list_int squareRosetta_data[] = {tmp40, tmp41, tmp42, tmp43, tmp44, tmp45};
+      |                                                                       ^~~~~
+/tmp/bifid-cipher.c:391:38: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  391 |   list_int squareWikipedia_data[] = {tmp46, tmp47, tmp48, tmp49, tmp50, tmp51};
+      |                                      ^~~~~
+/tmp/bifid-cipher.c:391:45: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
+  391 |   list_int squareWikipedia_data[] = {tmp46, tmp47, tmp48, tmp49, tmp50, tmp51};
+      |                                             ^~~~~
+/tmp/bifid-cipher.c:391:52: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  391 |   list_int squareWikipedia_data[] = {tmp46, tmp47, tmp48, tmp49, tmp50, tmp51};
+      |                                                    ^~~~~
+/tmp/bifid-cipher.c:391:59: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
+  391 |   list_int squareWikipedia_data[] = {tmp46, tmp47, tmp48, tmp49, tmp50, tmp51};
+      |                                                           ^~~~~
+/tmp/bifid-cipher.c:391:66: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  391 |   list_int squareWikipedia_data[] = {tmp46, tmp47, tmp48, tmp49, tmp50, tmp51};
+      |                                                                  ^~~~~
+/tmp/bifid-cipher.c:391:73: error: incompatible types when initializing type ‘int *’ using type ‘list_string’
+  391 |   list_int squareWikipedia_data[] = {tmp46, tmp47, tmp48, tmp49, tmp50, tmp51};
+      |                                                                         ^~~~~
+/tmp/bifid-cipher.c:396:29: error: incompatible type for argument 1 of ‘square_to_maps’
+  396 |   int maps = square_to_maps(squareRosetta);
       |                             ^~~~~~~~~~~~~
       |                             |
-      |                             list_int
-/tmp/bifid-cipher.c:169:24: note: expected ‘int’ but argument is of type ‘list_int’
+      |                             list_list_int
+/tmp/bifid-cipher.c:169:24: note: expected ‘int’ but argument is of type ‘list_list_int’
   169 | int square_to_maps(int square) {
       |                    ~~~~^~~~~~
-/tmp/bifid-cipher.c:382:18: error: request for member ‘data’ in something not a structure or union
-  382 |   int emap = maps.data["e"];
+/tmp/bifid-cipher.c:397:18: error: request for member ‘data’ in something not a structure or union
+  397 |   int emap = maps.data["e"];
       |                  ^
-/tmp/bifid-cipher.c:383:18: error: request for member ‘data’ in something not a structure or union
-  383 |   int dmap = maps.data["d"];
+/tmp/bifid-cipher.c:398:18: error: request for member ‘data’ in something not a structure or union
+  398 |   int dmap = maps.data["d"];
       |                  ^
-/tmp/bifid-cipher.c:385:47: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  385 |   char *tmp30 = concat_string("original:\t ", textRosetta);
-      |                                               ^~~~~~~~~~~
-/tmp/bifid-cipher.c:119:43: note: expected ‘char *’ but argument is of type ‘const char *’
-  119 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/bifid-cipher.c:387:27: warning: passing argument 1 of ‘encrypt’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  387 |   const char *s = encrypt(textRosetta, emap, dmap);
-      |                           ^~~~~~~~~~~
-/tmp/bifid-cipher.c:219:27: note: expected ‘char *’ but argument is of type ‘const char *’
-  219 | const char *encrypt(char *text, int emap, int dmap) {
-      |                     ~~~~~~^~~~
-/tmp/bifid-cipher.c:388:46: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  388 |   char *tmp31 = concat_string("codiert:\t ", s);
-      |                                              ^
-/tmp/bifid-cipher.c:119:43: note: expected ‘char *’ but argument is of type ‘const char *’
-  119 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/bifid-cipher.c:390:15: warning: passing argument 1 of ‘decrypt’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  390 |   s = decrypt(s, emap, dmap);
-      |               ^
-/tmp/bifid-cipher.c:254:27: note: expected ‘char *’ but argument is of type ‘const char *’
-  254 | const char *decrypt(char *text, int emap, int dmap) {
-      |                     ~~~~~~^~~~
-/tmp/bifid-cipher.c:391:47: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  391 |   char *tmp32 = concat_string("and back:\t ", s);
-      |                                               ^
-/tmp/bifid-cipher.c:119:43: note: expected ‘char *’ but argument is of type ‘const char *’
-  119 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/bifid-cipher.c:393:25: error: incompatible type for argument 1 of ‘square_to_maps’
-  393 |   maps = square_to_maps(squareWikipedia);
+/tmp/bifid-cipher.c:408:25: error: incompatible type for argument 1 of ‘square_to_maps’
+  408 |   maps = square_to_maps(squareWikipedia);
       |                         ^~~~~~~~~~~~~~~
       |                         |
-      |                         list_int
-/tmp/bifid-cipher.c:169:24: note: expected ‘int’ but argument is of type ‘list_int’
+      |                         list_list_int
+/tmp/bifid-cipher.c:169:24: note: expected ‘int’ but argument is of type ‘list_list_int’
   169 | int square_to_maps(int square) {
       |                    ~~~~^~~~~~
-/tmp/bifid-cipher.c:394:14: error: request for member ‘data’ in something not a structure or union
-  394 |   emap = maps.data["e"];
+/tmp/bifid-cipher.c:409:14: error: request for member ‘data’ in something not a structure or union
+  409 |   emap = maps.data["e"];
       |              ^
-/tmp/bifid-cipher.c:395:14: error: request for member ‘data’ in something not a structure or union
-  395 |   dmap = maps.data["d"];
+/tmp/bifid-cipher.c:410:14: error: request for member ‘data’ in something not a structure or union
+  410 |   dmap = maps.data["d"];
       |              ^
-/tmp/bifid-cipher.c:397:47: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  397 |   char *tmp33 = concat_string("original:\t ", textWikipedia);
-      |                                               ^~~~~~~~~~~~~
-/tmp/bifid-cipher.c:119:43: note: expected ‘char *’ but argument is of type ‘const char *’
-  119 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/bifid-cipher.c:399:15: warning: passing argument 1 of ‘encrypt’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  399 |   s = encrypt(textWikipedia, emap, dmap);
-      |               ^~~~~~~~~~~~~
-/tmp/bifid-cipher.c:219:27: note: expected ‘char *’ but argument is of type ‘const char *’
-  219 | const char *encrypt(char *text, int emap, int dmap) {
-      |                     ~~~~~~^~~~
-/tmp/bifid-cipher.c:400:46: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  400 |   char *tmp34 = concat_string("codiert:\t ", s);
-      |                                              ^
-/tmp/bifid-cipher.c:119:43: note: expected ‘char *’ but argument is of type ‘const char *’
-  119 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/bifid-cipher.c:402:15: warning: passing argument 1 of ‘decrypt’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  402 |   s = decrypt(s, emap, dmap);
-      |               ^
-/tmp/bifid-cipher.c:254:27: note: expected ‘char *’ but argument is of type ‘const char *’
-  254 | const char *decrypt(char *text, int emap, int dmap) {
-      |                     ~~~~~~^~~~
-/tmp/bifid-cipher.c:403:47: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  403 |   char *tmp35 = concat_string("and back:\t ", s);
-      |                                               ^
-/tmp/bifid-cipher.c:119:43: note: expected ‘char *’ but argument is of type ‘const char *’
-  119 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/bifid-cipher.c:405:25: error: incompatible type for argument 1 of ‘square_to_maps’
-  405 |   maps = square_to_maps(squareWikipedia);
+/tmp/bifid-cipher.c:420:25: error: incompatible type for argument 1 of ‘square_to_maps’
+  420 |   maps = square_to_maps(squareWikipedia);
       |                         ^~~~~~~~~~~~~~~
       |                         |
-      |                         list_int
-/tmp/bifid-cipher.c:169:24: note: expected ‘int’ but argument is of type ‘list_int’
+      |                         list_list_int
+/tmp/bifid-cipher.c:169:24: note: expected ‘int’ but argument is of type ‘list_list_int’
   169 | int square_to_maps(int square) {
       |                    ~~~~^~~~~~
-/tmp/bifid-cipher.c:406:14: error: request for member ‘data’ in something not a structure or union
-  406 |   emap = maps.data["e"];
+/tmp/bifid-cipher.c:421:14: error: request for member ‘data’ in something not a structure or union
+  421 |   emap = maps.data["e"];
       |              ^
-/tmp/bifid-cipher.c:407:14: error: request for member ‘data’ in something not a structure or union
-  407 |   dmap = maps.data["d"];
+/tmp/bifid-cipher.c:422:14: error: request for member ‘data’ in something not a structure or union
+  422 |   dmap = maps.data["d"];
       |              ^
-/tmp/bifid-cipher.c:409:47: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  409 |   char *tmp36 = concat_string("original:\t ", textTest);
-      |                                               ^~~~~~~~
-/tmp/bifid-cipher.c:119:43: note: expected ‘char *’ but argument is of type ‘const char *’
-  119 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/bifid-cipher.c:411:15: warning: passing argument 1 of ‘encrypt’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  411 |   s = encrypt(textTest, emap, dmap);
-      |               ^~~~~~~~
-/tmp/bifid-cipher.c:219:27: note: expected ‘char *’ but argument is of type ‘const char *’
-  219 | const char *encrypt(char *text, int emap, int dmap) {
-      |                     ~~~~~~^~~~
-/tmp/bifid-cipher.c:412:46: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  412 |   char *tmp37 = concat_string("codiert:\t ", s);
-      |                                              ^
-/tmp/bifid-cipher.c:119:43: note: expected ‘char *’ but argument is of type ‘const char *’
-  119 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/bifid-cipher.c:414:15: warning: passing argument 1 of ‘decrypt’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  414 |   s = decrypt(s, emap, dmap);
-      |               ^
-/tmp/bifid-cipher.c:254:27: note: expected ‘char *’ but argument is of type ‘const char *’
-  254 | const char *decrypt(char *text, int emap, int dmap) {
-      |                     ~~~~~~^~~~
-/tmp/bifid-cipher.c:415:47: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  415 |   char *tmp38 = concat_string("and back:\t ", s);
-      |                                               ^
-/tmp/bifid-cipher.c:119:43: note: expected ‘char *’ but argument is of type ‘const char *’
-  119 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/bifid-cipher.c: At top level:
-/tmp/bifid-cipher.c:419:5: error: redefinition of ‘main’
-  419 | int main() {
-      |     ^~~~
-/tmp/bifid-cipher.c:296:5: note: previous definition of ‘main’ with type ‘int()’
-  296 | int main() {
-      |     ^~~~

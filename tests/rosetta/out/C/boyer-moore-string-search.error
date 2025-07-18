@@ -3,47 +3,25 @@ cc: exit status 1
 /tmp/boyer-moore-string-search.c:92:16: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
    92 |       result = 0;
       |                ^
-/tmp/boyer-moore-string-search.c: In function ‘display’:
-/tmp/boyer-moore-string-search.c:106:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  106 |       char *tmp1 = concat_string(s, ", ");
-      |                                  ^
-/tmp/boyer-moore-string-search.c:35:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   35 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/boyer-moore-string-search.c:110:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  110 |     char *tmp3 = concat_string(s, tmp2);
-      |                                ^
-/tmp/boyer-moore-string-search.c:35:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   35 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/boyer-moore-string-search.c:114:30: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  114 |   char *tmp4 = concat_string(s, "]");
-      |                              ^
-/tmp/boyer-moore-string-search.c:35:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   35 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/boyer-moore-string-search.c: In function ‘main’:
-/tmp/boyer-moore-string-search.c:129:7: error: conflicting types for ‘texts’; have ‘int’
-  129 |   int texts = texts;
-      |       ^~~~~
-/tmp/boyer-moore-string-search.c:120:15: note: previous definition of ‘texts’ with type ‘list_string’
-  120 |   list_string texts = list_string_create(6);
-      |               ^~~~~
-/tmp/boyer-moore-string-search.c:137:7: error: conflicting types for ‘patterns’; have ‘int’
-  137 |   int patterns = patterns;
-      |       ^~~~~~~~
-/tmp/boyer-moore-string-search.c:130:15: note: previous definition of ‘patterns’ with type ‘list_string’
-  130 |   list_string patterns = list_string_create(6);
-      |               ^~~~~~~~
-/tmp/boyer-moore-string-search.c:156:26: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
-  156 |     printf("%s\n", tmp13 + display(idxs));
+/tmp/boyer-moore-string-search.c: In function ‘mochi_main’:
+/tmp/boyer-moore-string-search.c:144:26: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  144 |     printf("%d\n", tmp10 + texts.data[i]);
       |                          ^ ~~~~~~~~~~~~~
-      |                            |
-      |                            const char *
-/tmp/boyer-moore-string-search.c: At top level:
-/tmp/boyer-moore-string-search.c:161:5: error: redefinition of ‘main’
-  161 | int main() {
-      |     ^~~~
-/tmp/boyer-moore-string-search.c:119:5: note: previous definition of ‘main’ with type ‘int()’
-  119 | int main() {
-      |     ^~~~
+      |                                      |
+      |                                      char *
+/tmp/boyer-moore-string-search.c:150:16: error: incompatible types when initializing type ‘int’ using type ‘list_int’
+  150 |     int idxs = stringSearch(texts.data[j], patterns.data[j]);
+      |                ^~~~~~~~~~~~
+/tmp/boyer-moore-string-search.c:153:31: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  153 |     printf("%d\n", "Found \"" + patterns.data[j] + "\" in 'text" + tmp12 +
+      |                    ~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~
+      |                    |                         |
+      |                    char *                    char *
+/tmp/boyer-moore-string-search.c:154:50: error: incompatible type for argument 1 of ‘display’
+  154 |                        "' at indexes " + display(idxs));
+      |                                                  ^~~~
+      |                                                  |
+      |                                                  int
+/tmp/boyer-moore-string-search.c:101:24: note: expected ‘list_int’ but argument is of type ‘int’
+  101 | char *display(list_int nums) {
+      |               ~~~~~~~~~^~~~

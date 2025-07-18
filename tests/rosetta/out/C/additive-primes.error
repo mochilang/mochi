@@ -1,26 +1,7 @@
 cc: exit status 1
-/tmp/additive-primes.c: In function ‘main’:
-/tmp/additive-primes.c:96:19: error: invalid operands to binary + (have ‘const char *’ and ‘const char *’)
+/tmp/additive-primes.c: In function ‘mochi_main’:
+/tmp/additive-primes.c:96:19: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
    96 |       line = line + pad(i) + "  ";
       |                   ^ ~~~~~~
       |                     |
-      |                     const char *
-/tmp/additive-primes.c:99:37: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   99 |         printf("%s\n", slice_string(line, 0, strlen(line) - 2));
-      |                                     ^~~~
-/tmp/additive-primes.c:21:33: note: expected ‘char *’ but argument is of type ‘const char *’
-   21 | static char *slice_string(char *s, int start, int end) {
-      |                           ~~~~~~^
-/tmp/additive-primes.c:111:33: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  111 |     printf("%s\n", slice_string(line, 0, strlen(line) - 2));
-      |                                 ^~~~
-/tmp/additive-primes.c:21:33: note: expected ‘char *’ but argument is of type ‘const char *’
-   21 | static char *slice_string(char *s, int start, int end) {
-      |                           ~~~~~~^
-/tmp/additive-primes.c: At top level:
-/tmp/additive-primes.c:118:5: error: redefinition of ‘main’
-  118 | int main() {
-      |     ^~~~
-/tmp/additive-primes.c:87:5: note: previous definition of ‘main’ with type ‘int()’
-   87 | int main() {
-      |     ^~~~
+      |                     char *

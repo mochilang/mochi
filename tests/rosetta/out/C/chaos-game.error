@@ -1,58 +1,24 @@
 cc: exit status 1
-/tmp/chaos-game.c: In function ‘main’:
-/tmp/chaos-game.c:77:16: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-   77 |     int line = tmp3;
-      |                ^~~~
-/tmp/chaos-game.c:82:45: error: incompatible type for argument 1 of ‘concat_list_string’
-   82 |       list_string tmp5 = concat_list_string(line, tmp4);
-      |                                             ^~~~
-      |                                             |
-      |                                             int
-/tmp/chaos-game.c:49:51: note: expected ‘list_string’ but argument is of type ‘int’
-   49 | static list_string concat_list_string(list_string a, list_string b) {
-      |                                       ~~~~~~~~~~~~^
-/tmp/chaos-game.c:83:14: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-   83 |       line = tmp5;
-      |              ^~~~
-/tmp/chaos-game.c:86:12: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
-   86 |     grid = 0;
-      |            ^
+/tmp/chaos-game.c: In function ‘_mochi_main’:
+/tmp/chaos-game.c:83:5: error: ‘grid’ undeclared (first use in this function)
+   83 |     grid = 0;
+      |     ^~~~
+/tmp/chaos-game.c:83:5: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/chaos-game.c:89:12: error: redefinition of ‘vertices’
+   89 |   list_int vertices = list_int_create(2);
+      |            ^~~~~~~~
+/tmp/chaos-game.c:86:12: note: previous definition of ‘vertices’ with type ‘list_int’
+   86 |   list_int vertices = list_int_create(2);
+      |            ^~~~~~~~
 /tmp/chaos-game.c:92:12: error: redefinition of ‘vertices’
    92 |   list_int vertices = list_int_create(2);
       |            ^~~~~~~~
 /tmp/chaos-game.c:89:12: note: previous definition of ‘vertices’ with type ‘list_int’
    89 |   list_int vertices = list_int_create(2);
       |            ^~~~~~~~
-/tmp/chaos-game.c:95:12: error: redefinition of ‘vertices’
-   95 |   list_int vertices = list_int_create(2);
-      |            ^~~~~~~~
+/tmp/chaos-game.c:96:17: error: conflicting types for ‘vertices’; have ‘list_list_int’
+   96 |   list_list_int vertices = {3, vertices_data};
+      |                 ^~~~~~~~
 /tmp/chaos-game.c:92:12: note: previous definition of ‘vertices’ with type ‘list_int’
    92 |   list_int vertices = list_int_create(2);
       |            ^~~~~~~~
-/tmp/chaos-game.c:98:35: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-   98 |   list_int vertices_data[] = {{2, vertices}, {2, vertices}, {2, vertices}};
-      |                                   ^~~~~~~~
-/tmp/chaos-game.c:98:50: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-   98 |   list_int vertices_data[] = {{2, vertices}, {2, vertices}, {2, vertices}};
-      |                                                  ^~~~~~~~
-/tmp/chaos-game.c:98:65: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-   98 |   list_int vertices_data[] = {{2, vertices}, {2, vertices}, {2, vertices}};
-      |                                                                 ^~~~~~~~
-/tmp/chaos-game.c:99:17: error: conflicting types for ‘vertices’; have ‘list_list_int’
-   99 |   list_list_int vertices = {3, vertices_data};
-      |                 ^~~~~~~~
-/tmp/chaos-game.c:95:12: note: previous definition of ‘vertices’ with type ‘list_int’
-   95 |   list_int vertices = list_int_create(2);
-      |            ^~~~~~~~
-/tmp/chaos-game.c:100:17: error: redefinition of ‘vertices’
-  100 |   list_list_int vertices = vertices;
-      |                 ^~~~~~~~
-/tmp/chaos-game.c:99:17: note: previous definition of ‘vertices’ with type ‘list_list_int’
-   99 |   list_list_int vertices = {3, vertices_data};
-      |                 ^~~~~~~~
-/tmp/chaos-game.c:111:20: error: request for member ‘data’ in something not a structure or union
-  111 |       grid.data[py].data[px] = "*";
-      |                    ^
-/tmp/chaos-game.c:120:33: error: request for member ‘data’ in something not a structure or union
-  120 |       line = line + grid.data[y].data[x];
-      |                                 ^

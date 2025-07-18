@@ -6,78 +6,50 @@ cc: exit status 1
 /tmp/averages-arithmetic-mean.c:110:10: error: incompatible types when returning type ‘tmp_item1_t’ but ‘int’ was expected
   110 |   return (tmp_item1_t){.ok = 1, .mean = sum / ((double)(v.len))};
       |          ^
-/tmp/averages-arithmetic-mean.c: In function ‘main’:
-/tmp/averages-arithmetic-mean.c:122:14: error: redefinition of ‘sets’
-  122 |   list_float sets = list_float_create(8);
-      |              ^~~~
-/tmp/averages-arithmetic-mean.c:115:14: note: previous definition of ‘sets’ with type ‘list_float’
-  115 |   list_float sets = list_float_create(6);
-      |              ^~~~
-/tmp/averages-arithmetic-mean.c:131:14: error: redefinition of ‘sets’
-  131 |   list_float sets = list_float_create(15);
+/tmp/averages-arithmetic-mean.c: In function ‘mochi_main’:
+/tmp/averages-arithmetic-mean.c:147:14: error: redefinition of ‘sets’
+  147 |   list_float sets = list_float_create(8);
       |              ^~~~
 /tmp/averages-arithmetic-mean.c:122:14: note: previous definition of ‘sets’ with type ‘list_float’
   122 |   list_float sets = list_float_create(8);
       |              ^~~~
-/tmp/averages-arithmetic-mean.c:147:14: error: redefinition of ‘sets’
-  147 |   list_float sets = list_float_create(8);
-      |              ^~~~
-/tmp/averages-arithmetic-mean.c:131:14: note: previous definition of ‘sets’ with type ‘list_float’
-  131 |   list_float sets = list_float_create(15);
-      |              ^~~~
-/tmp/averages-arithmetic-mean.c:156:31: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-  156 |   list_int sets_data[] = {{0, tmp1}, sets, sets, sets, sets};
-      |                               ^~~~
-/tmp/averages-arithmetic-mean.c:156:38: error: incompatible types when initializing type ‘int’ using type ‘list_float’
-  156 |   list_int sets_data[] = {{0, tmp1}, sets, sets, sets, sets};
-      |                                      ^~~~
-/tmp/averages-arithmetic-mean.c:156:44: error: incompatible types when initializing type ‘int *’ using type ‘list_float’
-  156 |   list_int sets_data[] = {{0, tmp1}, sets, sets, sets, sets};
-      |                                            ^~~~
-/tmp/averages-arithmetic-mean.c:156:50: error: incompatible types when initializing type ‘int’ using type ‘list_float’
-  156 |   list_int sets_data[] = {{0, tmp1}, sets, sets, sets, sets};
-      |                                                  ^~~~
-/tmp/averages-arithmetic-mean.c:156:56: error: incompatible types when initializing type ‘int *’ using type ‘list_float’
-  156 |   list_int sets_data[] = {{0, tmp1}, sets, sets, sets, sets};
-      |                                                        ^~~~
+/tmp/averages-arithmetic-mean.c:156:33: error: incompatible types when initializing type ‘int’ using type ‘list_float’
+  156 |   list_int sets_data[] = {tmp1, tmp2, sets, tmp3, sets};
+      |                                 ^~~~
+/tmp/averages-arithmetic-mean.c:156:39: error: incompatible types when initializing type ‘int *’ using type ‘list_float’
+  156 |   list_int sets_data[] = {tmp1, tmp2, sets, tmp3, sets};
+      |                                       ^~~~
+/tmp/averages-arithmetic-mean.c:156:45: error: incompatible types when initializing type ‘int’ using type ‘list_float’
+  156 |   list_int sets_data[] = {tmp1, tmp2, sets, tmp3, sets};
+      |                                             ^~~~
+/tmp/averages-arithmetic-mean.c:156:51: error: incompatible types when initializing type ‘int *’ using type ‘list_float’
+  156 |   list_int sets_data[] = {tmp1, tmp2, sets, tmp3, sets};
+      |                                                   ^~~~
 /tmp/averages-arithmetic-mean.c:157:17: error: conflicting types for ‘sets’; have ‘list_list_int’
   157 |   list_list_int sets = {5, sets_data};
       |                 ^~~~
 /tmp/averages-arithmetic-mean.c:147:14: note: previous definition of ‘sets’ with type ‘list_float’
   147 |   list_float sets = list_float_create(8);
       |              ^~~~
-/tmp/averages-arithmetic-mean.c:158:17: error: redefinition of ‘sets’
-  158 |   list_list_int sets = sets;
-      |                 ^~~~
-/tmp/averages-arithmetic-mean.c:157:17: note: previous definition of ‘sets’ with type ‘list_list_int’
-  157 |   list_list_int sets = {5, sets_data};
-      |                 ^~~~
-/tmp/averages-arithmetic-mean.c:161:23: error: incompatible type for argument 1 of ‘_str’
-  161 |     char *tmp3 = _str(v);
+/tmp/averages-arithmetic-mean.c:160:23: error: incompatible type for argument 1 of ‘_str’
+  160 |     char *tmp5 = _str(v);
       |                       ^
       |                       |
       |                       list_int
 /tmp/averages-arithmetic-mean.c:58:23: note: expected ‘int’ but argument is of type ‘list_int’
    58 | static char *_str(int v) {
       |                   ~~~~^
-/tmp/averages-arithmetic-mean.c:164:18: error: incompatible type for argument 1 of ‘mean’
-  164 |     int r = mean(v);
+/tmp/averages-arithmetic-mean.c:163:18: error: incompatible type for argument 1 of ‘mean’
+  163 |     int r = mean(v);
       |                  ^
       |                  |
       |                  list_int
 /tmp/averages-arithmetic-mean.c:100:21: note: expected ‘list_float’ but argument is of type ‘list_int’
   100 | int mean(list_float v) {
       |          ~~~~~~~~~~~^
-/tmp/averages-arithmetic-mean.c:165:11: error: request for member ‘data’ in something not a structure or union
-  165 |     if ((r.data["ok"])) {
+/tmp/averages-arithmetic-mean.c:164:11: error: request for member ‘data’ in something not a structure or union
+  164 |     if ((r.data["ok"])) {
       |           ^
-/tmp/averages-arithmetic-mean.c:169:26: error: request for member ‘data’ in something not a structure or union
-  169 |       char *tmp8 = _str(r.data["mean"]);
-      |                          ^
-/tmp/averages-arithmetic-mean.c: At top level:
-/tmp/averages-arithmetic-mean.c:179:5: error: redefinition of ‘main’
-  179 | int main() {
-      |     ^~~~
-/tmp/averages-arithmetic-mean.c:113:5: note: previous definition of ‘main’ with type ‘int()’
-  113 | int main() {
-      |     ^~~~
+/tmp/averages-arithmetic-mean.c:168:27: error: request for member ‘data’ in something not a structure or union
+  168 |       char *tmp10 = _str(r.data["mean"]);
+      |                           ^

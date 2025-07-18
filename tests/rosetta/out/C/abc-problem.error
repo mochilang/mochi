@@ -3,106 +3,17 @@ cc: exit status 1
 /tmp/abc-problem.c:61:32: warning: implicit declaration of function ‘canSpell’ [-Wimplicit-function-declaration]
    61 | int _lambda0(char *w) { return canSpell(w, _lambda0_bl); }
       |                                ^~~~~~~~
-/tmp/abc-problem.c: In function ‘fields’:
-/tmp/abc-problem.c:65:13: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-   65 |   int res = tmp1;
-      |             ^~~~
-/tmp/abc-problem.c:74:22: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   74 |         tmp3.data[0] = cur;
-      |                      ^
-/tmp/abc-problem.c:75:47: error: incompatible type for argument 1 of ‘concat_list_string’
-   75 |         list_string tmp4 = concat_list_string(res, tmp3);
-      |                                               ^~~
-      |                                               |
-      |                                               int
-/tmp/abc-problem.c:21:51: note: expected ‘list_string’ but argument is of type ‘int’
-   21 | static list_string concat_list_string(list_string a, list_string b) {
-      |                                       ~~~~~~~~~~~~^
-/tmp/abc-problem.c:76:15: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-   76 |         res = tmp4;
-      |               ^~~~
-/tmp/abc-problem.c:80:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   80 |       char *tmp5 = concat_string(cur, c);
-      |                                  ^~~
-/tmp/abc-problem.c:29:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   29 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/abc-problem.c:80:39: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   80 |       char *tmp5 = concat_string(cur, c);
-      |                                       ^
-/tmp/abc-problem.c:29:43: note: expected ‘char *’ but argument is of type ‘const char *’
-   29 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/abc-problem.c:87:18: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   87 |     tmp6.data[0] = cur;
-      |                  ^
-/tmp/abc-problem.c:88:43: error: incompatible type for argument 1 of ‘concat_list_string’
-   88 |     list_string tmp7 = concat_list_string(res, tmp6);
-      |                                           ^~~
-      |                                           |
-      |                                           int
-/tmp/abc-problem.c:21:51: note: expected ‘list_string’ but argument is of type ‘int’
-   21 | static list_string concat_list_string(list_string a, list_string b) {
-      |                                       ~~~~~~~~~~~~^
-/tmp/abc-problem.c:89:11: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-   89 |     res = tmp7;
-      |           ^~~~
 /tmp/abc-problem.c: In function ‘canSpell’:
-/tmp/abc-problem.c:99:19: warning: implicit declaration of function ‘lower’ [-Wimplicit-function-declaration]
-   99 |   const char *c = lower(tmp8);
-      |                   ^~~~~
-/tmp/abc-problem.c:99:19: warning: initialization of ‘const char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
-/tmp/abc-problem.c:103:31: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  103 |     char *tmp9 = slice_string(b, 0, 1);
-      |                               ^
-/tmp/abc-problem.c:43:33: note: expected ‘char *’ but argument is of type ‘const char *’
-   43 | static char *slice_string(char *s, int start, int end) {
-      |                           ~~~~~~^
-/tmp/abc-problem.c:104:32: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  104 |     char *tmp10 = slice_string(b, 1, 2);
-      |                                ^
-/tmp/abc-problem.c:43:33: note: expected ‘char *’ but argument is of type ‘const char *’
-   43 | static char *slice_string(char *s, int start, int end) {
-      |                           ~~~~~~^
-/tmp/abc-problem.c:105:11: warning: comparison between pointer and integer
-  105 |     if (c == lower(tmp9) || c == lower(tmp10)) {
+/tmp/abc-problem.c:98:13: warning: implicit declaration of function ‘lower’ [-Wimplicit-function-declaration]
+   98 |   char *c = lower(tmp7);
+      |             ^~~~~
+/tmp/abc-problem.c:98:13: warning: initialization of ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+/tmp/abc-problem.c:104:11: warning: comparison between pointer and integer
+  104 |     if (c == lower(tmp8) || c == lower(tmp9)) {
       |           ^~
-/tmp/abc-problem.c:105:31: warning: comparison between pointer and integer
-  105 |     if (c == lower(tmp9) || c == lower(tmp10)) {
+/tmp/abc-problem.c:104:31: warning: comparison between pointer and integer
+  104 |     if (c == lower(tmp8) || c == lower(tmp9)) {
       |                               ^~
-/tmp/abc-problem.c:107:18: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  107 |       int rest = tmp11;
-      |                  ^~~~~
-/tmp/abc-problem.c:113:50: error: incompatible type for argument 1 of ‘concat_list_string’
-  113 |           list_string tmp13 = concat_list_string(rest, tmp12);
-      |                                                  ^~~~
-      |                                                  |
-      |                                                  int
-/tmp/abc-problem.c:21:51: note: expected ‘list_string’ but argument is of type ‘int’
-   21 | static list_string concat_list_string(list_string a, list_string b) {
-      |                                       ~~~~~~~~~~~~^
-/tmp/abc-problem.c:114:18: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-  114 |           rest = tmp13;
-      |                  ^~~~~
-/tmp/abc-problem.c:118:47: error: request for member ‘len’ in something not a structure or union
-  118 |       char *tmp14 = slice_string(word, 1, word.len);
+/tmp/abc-problem.c:116:47: error: request for member ‘len’ in something not a structure or union
+  116 |       char *tmp12 = slice_string(word, 1, word.len);
       |                                               ^
-/tmp/abc-problem.c:119:27: error: incompatible type for argument 2 of ‘canSpell’
-  119 |       if (canSpell(tmp14, rest)) {
-      |                           ^~~~
-      |                           |
-      |                           int
-/tmp/abc-problem.c:94:38: note: expected ‘list_string’ but argument is of type ‘int’
-   94 | int canSpell(char *word, list_string blks) {
-      |                          ~~~~~~~~~~~~^~~~
-/tmp/abc-problem.c: In function ‘newSpeller’:
-/tmp/abc-problem.c:130:27: warning: returning ‘int (*)(char *)’ from a function with incompatible return type ‘int (*)(const char *)’ [-Wincompatible-pointer-types]
-  130 |   return (_lambda0_bl = bl, _lambda0);
-      |          ~~~~~~~~~~~~~~~~~^~~~~~~~~~~
-/tmp/abc-problem.c: At top level:
-/tmp/abc-problem.c:153:5: error: redefinition of ‘main’
-  153 | int main() {
-      |     ^~~~
-/tmp/abc-problem.c:133:5: note: previous definition of ‘main’ with type ‘int()’
-  133 | int main() {
-      |     ^~~~

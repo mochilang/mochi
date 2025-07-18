@@ -1,134 +1,29 @@
 cc: exit status 1
-/tmp/abbreviations-automatic.c: In function ‘fields’:
-/tmp/abbreviations-automatic.c:124:15: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  124 |   int words = tmp1;
-      |               ^~~~
-/tmp/abbreviations-automatic.c:132:22: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  132 |         tmp2.data[0] = cur;
-      |                      ^
-/tmp/abbreviations-automatic.c:133:47: error: incompatible type for argument 1 of ‘concat_list_string’
-  133 |         list_string tmp3 = concat_list_string(words, tmp2);
-      |                                               ^~~~~
-      |                                               |
-      |                                               int
-/tmp/abbreviations-automatic.c:83:51: note: expected ‘list_string’ but argument is of type ‘int’
-   83 | static list_string concat_list_string(list_string a, list_string b) {
-      |                                       ~~~~~~~~~~~~^
-/tmp/abbreviations-automatic.c:134:17: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-  134 |         words = tmp3;
-      |                 ^~~~
-/tmp/abbreviations-automatic.c:138:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  138 |       char *tmp4 = concat_string(cur, ch);
-      |                                  ^~~
-/tmp/abbreviations-automatic.c:91:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   91 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/abbreviations-automatic.c:138:39: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  138 |       char *tmp4 = concat_string(cur, ch);
-      |                                       ^~
-/tmp/abbreviations-automatic.c:91:43: note: expected ‘char *’ but argument is of type ‘const char *’
-   91 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/abbreviations-automatic.c:145:18: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  145 |     tmp5.data[0] = cur;
-      |                  ^
-/tmp/abbreviations-automatic.c:146:43: error: incompatible type for argument 1 of ‘concat_list_string’
-  146 |     list_string tmp6 = concat_list_string(words, tmp5);
-      |                                           ^~~~~
-      |                                           |
-      |                                           int
-/tmp/abbreviations-automatic.c:83:51: note: expected ‘list_string’ but argument is of type ‘int’
-   83 | static list_string concat_list_string(list_string a, list_string b) {
-      |                                       ~~~~~~~~~~~~^
-/tmp/abbreviations-automatic.c:147:13: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-  147 |     words = tmp6;
-      |             ^~~~
 /tmp/abbreviations-automatic.c: In function ‘distinct’:
-/tmp/abbreviations-automatic.c:167:11: error: incompatible types when initializing type ‘int’ using type ‘map_string_int’
-  167 |   int m = tmp7;
+/tmp/abbreviations-automatic.c:166:11: error: incompatible types when initializing type ‘int’ using type ‘map_string_int’
+  166 |   int m = tmp6;
       |           ^~~~
-/tmp/abbreviations-automatic.c:169:13: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  169 |   int out = tmp8;
-      |             ^~~~
-/tmp/abbreviations-automatic.c:173:13: error: expected ‘)’ before ‘in’
-  173 |     if ((!(x in m))) {
+/tmp/abbreviations-automatic.c:171:13: error: expected ‘)’ before ‘in’
+  171 |     if ((!(x in m))) {
       |           ~ ^~~
       |             )
-/tmp/abbreviations-automatic.c:174:8: error: request for member ‘data’ in something not a structure or union
-  174 |       m.data[x] = 1;
+/tmp/abbreviations-automatic.c:172:8: error: request for member ‘data’ in something not a structure or union
+  172 |       m.data[x] = 1;
       |        ^
-/tmp/abbreviations-automatic.c:176:20: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  176 |       tmp9.data[0] = x;
-      |                    ^
-/tmp/abbreviations-automatic.c:177:46: error: incompatible type for argument 1 of ‘concat_list_string’
-  177 |       list_string tmp10 = concat_list_string(out, tmp9);
-      |                                              ^~~
-      |                                              |
-      |                                              int
-/tmp/abbreviations-automatic.c:83:51: note: expected ‘list_string’ but argument is of type ‘int’
-   83 | static list_string concat_list_string(list_string a, list_string b) {
-      |                                       ~~~~~~~~~~~~^
-/tmp/abbreviations-automatic.c:178:13: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-  178 |       out = tmp10;
-      |             ^~~~~
-/tmp/abbreviations-automatic.c: In function ‘abbrevLen’:
-/tmp/abbreviations-automatic.c:190:17: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  190 |     int abbrs = tmp11;
-      |                 ^~~~~
-/tmp/abbreviations-automatic.c:194:21: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  194 |       tmp12.data[0] = takeRunes(words.data[i], l);
-      |                     ^
-/tmp/abbreviations-automatic.c:195:46: error: incompatible type for argument 1 of ‘concat_list_string’
-  195 |       list_string tmp13 = concat_list_string(abbrs, tmp12);
-      |                                              ^~~~~
-      |                                              |
-      |                                              int
-/tmp/abbreviations-automatic.c:83:51: note: expected ‘list_string’ but argument is of type ‘int’
-   83 | static list_string concat_list_string(list_string a, list_string b) {
-      |                                       ~~~~~~~~~~~~^
-/tmp/abbreviations-automatic.c:196:15: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-  196 |       abbrs = tmp13;
-      |               ^~~~~
-/tmp/abbreviations-automatic.c:199:18: error: incompatible type for argument 1 of ‘distinct’
-  199 |     if (distinct(abbrs).len == size) {
-      |                  ^~~~~
-      |                  |
-      |                  int
-/tmp/abbreviations-automatic.c:165:26: note: expected ‘list_string’ but argument is of type ‘int’
-  165 | int distinct(list_string xs) {
-      |              ~~~~~~~~~~~~^~
-/tmp/abbreviations-automatic.c: In function ‘pad2’:
-/tmp/abbreviations-automatic.c:211:38: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  211 |     char *tmp15 = concat_string(" ", s);
-      |                                      ^
-/tmp/abbreviations-automatic.c:91:43: note: expected ‘char *’ but argument is of type ‘const char *’
-   91 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/abbreviations-automatic.c: In function ‘main’:
-/tmp/abbreviations-automatic.c:372:7: error: conflicting types for ‘lines’; have ‘int’
-  372 |   int lines = lines;
-      |       ^~~~~
-/tmp/abbreviations-automatic.c:218:15: note: previous definition of ‘lines’ with type ‘list_string’
-  218 |   list_string lines = list_string_create(98);
-      |               ^~~~~
-/tmp/abbreviations-automatic.c:376:23: error: incompatible type for argument 1 of ‘abbrevLen’
-  376 |     int l = abbrevLen(words);
+/tmp/abbreviations-automatic.c: In function ‘mochi_main’:
+/tmp/abbreviations-automatic.c:371:17: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  371 |     int words = fields(lines.data[i]);
+      |                 ^~~~~~
+/tmp/abbreviations-automatic.c:372:23: error: incompatible type for argument 1 of ‘abbrevLen’
+  372 |     int l = abbrevLen(words);
       |                       ^~~~~
       |                       |
       |                       int
-/tmp/abbreviations-automatic.c:185:27: note: expected ‘list_string’ but argument is of type ‘int’
-  185 | int abbrevLen(list_string words) {
+/tmp/abbreviations-automatic.c:183:27: note: expected ‘list_string’ but argument is of type ‘int’
+  183 | int abbrevLen(list_string words) {
       |               ~~~~~~~~~~~~^~~~~
-/tmp/abbreviations-automatic.c:377:28: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
-  377 |     printf("%s\n", pad2(l) + "  " + lines.data[i]);
+/tmp/abbreviations-automatic.c:373:28: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  373 |     printf("%d\n", pad2(l) + "  " + lines.data[i]);
       |                    ~~~~~~~ ^
       |                    |       |
-      |                    |       char *
-      |                    const char *
-/tmp/abbreviations-automatic.c: At top level:
-/tmp/abbreviations-automatic.c:382:5: error: redefinition of ‘main’
-  382 | int main() {
-      |     ^~~~
-/tmp/abbreviations-automatic.c:217:5: note: previous definition of ‘main’ with type ‘int()’
-  217 | int main() {
-      |     ^~~~
+      |                    char *  char *

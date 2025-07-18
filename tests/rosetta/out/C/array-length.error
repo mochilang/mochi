@@ -1,15 +1,24 @@
 cc: exit status 1
-/tmp/array-length.c: In function ‘main’:
-/tmp/array-length.c:40:7: error: conflicting types for ‘arr’; have ‘int’
-   40 |   int arr = arr;
-      |       ^~~
-/tmp/array-length.c:36:15: note: previous definition of ‘arr’ with type ‘list_string’
-   36 |   list_string arr = list_string_create(3);
-      |               ^~~
-/tmp/array-length.c: At top level:
-/tmp/array-length.c:50:5: error: redefinition of ‘main’
-   50 | int main() {
-      |     ^~~~
-/tmp/array-length.c:35:5: note: previous definition of ‘main’ with type ‘int()’
-   35 | int main() {
-      |     ^~~~
+/tmp/array-length.c: In function ‘mochi_main’:
+/tmp/array-length.c:40:21: error: incompatible type for argument 1 of ‘_str’
+   40 |   char *tmp1 = _str(arr);
+      |                     ^~~
+      |                     |
+      |                     list_string
+/tmp/array-length.c:30:23: note: expected ‘int’ but argument is of type ‘list_string’
+   30 | static char *_str(int v) {
+      |                   ~~~~^
+/tmp/array-length.c:46:21: error: incompatible type for argument 1 of ‘_str’
+   46 |   char *tmp7 = _str(arr);
+      |                     ^~~
+      |                     |
+      |                     list_string
+/tmp/array-length.c:30:23: note: expected ‘int’ but argument is of type ‘list_string’
+   30 | static char *_str(int v) {
+      |                   ~~~~^
+/tmp/array-length.c:52:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
+   52 |   printf("%d\n", tmp12);
+      |           ~^     ~~~~~
+      |            |     |
+      |            int   char *
+      |           %s

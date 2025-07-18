@@ -1,63 +1,30 @@
 cc: exit status 1
-/tmp/break-oo-privacy.c:29:3: error: unknown type name ‘foobar_t’
-   29 |   foobar_t *data;
-      |   ^~~~~~~~
-/tmp/break-oo-privacy.c: In function ‘create_foobar_list’:
-/tmp/break-oo-privacy.c:34:31: error: ‘foobar_t’ undeclared (first use in this function); did you mean ‘Foobar’?
-   34 |   l.data = calloc(len, sizeof(foobar_t));
-      |                               ^~~~~~~~
-      |                               Foobar
-/tmp/break-oo-privacy.c:34:31: note: each undeclared identifier is reported only once for each function it appears in
-/tmp/break-oo-privacy.c: At top level:
-/tmp/break-oo-privacy.c:42:1: error: unknown type name ‘foobar_t’; did you mean ‘Foobar’?
-   42 | foobar_t examineAndModify(Foobar *f) {
-      | ^~~~~~~~
-      | Foobar
 /tmp/break-oo-privacy.c: In function ‘examineAndModify’:
-/tmp/break-oo-privacy.c:43:24: error: ‘Foobar’ {aka ‘struct Foobar’} has no member named ‘exported’; did you mean ‘Exported’?
+/tmp/break-oo-privacy.c:43:24: error: ‘foobar_t’ {aka ‘struct foobar_t’} has no member named ‘exported’; did you mean ‘Exported’?
    43 |   char *tmp1 = _str(f->exported);
       |                        ^~~~~~~~
       |                        Exported
-/tmp/break-oo-privacy.c:49:24: error: ‘Foobar’ {aka ‘struct Foobar’} has no member named ‘exported’; did you mean ‘Exported’?
+/tmp/break-oo-privacy.c:49:24: error: ‘foobar_t’ {aka ‘struct foobar_t’} has no member named ‘exported’; did you mean ‘Exported’?
    49 |   char *tmp7 = _str(f->exported);
       |                        ^~~~~~~~
       |                        Exported
-/tmp/break-oo-privacy.c:59:6: error: ‘Foobar’ {aka ‘struct Foobar’} has no member named ‘exported’; did you mean ‘Exported’?
+/tmp/break-oo-privacy.c:59:6: error: ‘foobar_t’ {aka ‘struct foobar_t’} has no member named ‘exported’; did you mean ‘Exported’?
    59 |   f->exported = 16;
       |      ^~~~~~~~
       |      Exported
-/tmp/break-oo-privacy.c:62:10: warning: returning ‘Foobar *’ {aka ‘struct Foobar *’} from a function with return type ‘int’ makes integer from pointer without a cast [-Wint-conversion]
+/tmp/break-oo-privacy.c:62:10: error: incompatible types when returning type ‘foobar_t *’ {aka ‘struct foobar_t *’} but ‘foobar_t’ {aka ‘struct foobar_t’} was expected
    62 |   return f;
       |          ^
-/tmp/break-oo-privacy.c: In function ‘main’:
-/tmp/break-oo-privacy.c:71:3: error: unknown type name ‘foobar_t’; did you mean ‘Foobar’?
-   71 |   foobar_t obj = (Foobar){.exported = 12, .unexported = 42};
-      |   ^~~~~~~~
-      |   Foobar
-/tmp/break-oo-privacy.c:71:28: error: ‘Foobar’ {aka ‘struct Foobar’} has no member named ‘exported’; did you mean ‘Exported’?
-   71 |   foobar_t obj = (Foobar){.exported = 12, .unexported = 42};
-      |                            ^~~~~~~~
-      |                            Exported
-/tmp/break-oo-privacy.c:71:18: error: incompatible types when initializing type ‘int’ using type ‘Foobar’ {aka ‘struct Foobar’}
-   71 |   foobar_t obj = (Foobar){.exported = 12, .unexported = 42};
-      |                  ^
-/tmp/break-oo-privacy.c:72:25: error: request for member ‘exported’ in something not a structure or union
+/tmp/break-oo-privacy.c: In function ‘_mochi_main’:
+/tmp/break-oo-privacy.c:71:30: error: ‘foobar_t’ {aka ‘struct foobar_t’} has no member named ‘exported’; did you mean ‘Exported’?
+   71 |   foobar_t obj = (foobar_t){.exported = 12, .unexported = 42};
+      |                              ^~~~~~~~
+      |                              Exported
+/tmp/break-oo-privacy.c:72:26: error: ‘foobar_t’ {aka ‘struct foobar_t’} has no member named ‘exported’; did you mean ‘Exported’?
    72 |   char *tmp13 = _str(obj.exported);
-      |                         ^
-/tmp/break-oo-privacy.c:75:25: error: request for member ‘unexported’ in something not a structure or union
-   75 |   char *tmp16 = _str(obj.unexported);
-      |                         ^
-/tmp/break-oo-privacy.c:79:26: warning: passing argument 1 of ‘examineAndModify’ from incompatible pointer type [-Wincompatible-pointer-types]
-   79 |   obj = examineAndModify(&obj);
-      |                          ^~~~
-      |                          |
-      |                          int *
-/tmp/break-oo-privacy.c:42:35: note: expected ‘Foobar *’ {aka ‘struct Foobar *’} but argument is of type ‘int *’
-   42 | foobar_t examineAndModify(Foobar *f) {
-      |                           ~~~~~~~~^
-/tmp/break-oo-privacy.c:80:25: error: request for member ‘exported’ in something not a structure or union
+      |                          ^~~~~~~~
+      |                          Exported
+/tmp/break-oo-privacy.c:80:26: error: ‘foobar_t’ {aka ‘struct foobar_t’} has no member named ‘exported’; did you mean ‘Exported’?
    80 |   char *tmp19 = _str(obj.exported);
-      |                         ^
-/tmp/break-oo-privacy.c:83:25: error: request for member ‘unexported’ in something not a structure or union
-   83 |   char *tmp22 = _str(obj.unexported);
-      |                         ^
+      |                          ^~~~~~~~
+      |                          Exported

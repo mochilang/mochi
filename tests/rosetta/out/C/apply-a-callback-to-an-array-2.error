@@ -1,35 +1,28 @@
 cc: exit status 1
 /tmp/apply-a-callback-to-an-array-2.c: In function ‘_lambda0’:
-/tmp/apply-a-callback-to-an-array-2.c:28:3: warning: ‘return’ with no value, in function returning non-void
-   28 |   return;
+/tmp/apply-a-callback-to-an-array-2.c:36:3: warning: ‘return’ with no value, in function returning non-void
+   36 |   return;
       |   ^~~~~~
-/tmp/apply-a-callback-to-an-array-2.c:25:5: note: declared here
-   25 | int _lambda0(int i) {
+/tmp/apply-a-callback-to-an-array-2.c:33:5: note: declared here
+   33 | int _lambda0(int i) {
       |     ^~~~~~~~
 /tmp/apply-a-callback-to-an-array-2.c: At top level:
-/tmp/apply-a-callback-to-an-array-2.c:35:37: error: expected ‘;’, ‘,’ or ‘)’ before ‘f’
-   35 | int each(list_int xs, void (*)(int) f) {
+/tmp/apply-a-callback-to-an-array-2.c:43:37: error: expected ‘;’, ‘,’ or ‘)’ before ‘f’
+   43 | int each(list_int xs, void (*)(int) f) {
       |                                     ^
-/tmp/apply-a-callback-to-an-array-2.c:42:40: error: expected ‘;’, ‘,’ or ‘)’ before ‘f’
-   42 | list_int Map(list_int xs, int (*)(int) f) {
+/tmp/apply-a-callback-to-an-array-2.c:50:40: error: expected ‘;’, ‘,’ or ‘)’ before ‘f’
+   50 | list_int Map(list_int xs, int (*)(int) f) {
       |                                        ^
-/tmp/apply-a-callback-to-an-array-2.c: In function ‘main’:
-/tmp/apply-a-callback-to-an-array-2.c:64:3: warning: implicit declaration of function ‘each’ [-Wimplicit-function-declaration]
-   64 |   each(tmp3, _lambda0);
+/tmp/apply-a-callback-to-an-array-2.c: In function ‘mochi_main’:
+/tmp/apply-a-callback-to-an-array-2.c:76:3: warning: implicit declaration of function ‘each’ [-Wimplicit-function-declaration]
+   76 |   each(tmp5, _lambda0);
       |   ^~~~
-/tmp/apply-a-callback-to-an-array-2.c:71:21: warning: implicit declaration of function ‘Map’ [-Wimplicit-function-declaration]
-   71 |   char *tmp6 = _str(Map(tmp5, _lambda1));
+/tmp/apply-a-callback-to-an-array-2.c:83:21: warning: implicit declaration of function ‘Map’ [-Wimplicit-function-declaration]
+   83 |   char *tmp8 = _str(Map(tmp7, _lambda1));
       |                     ^~~
-/tmp/apply-a-callback-to-an-array-2.c:79:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
-   79 |   printf("%d\n", tmp8);
-      |           ~^     ~~~~
+/tmp/apply-a-callback-to-an-array-2.c:91:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
+   91 |   printf("%d\n", tmp10);
+      |           ~^     ~~~~~
       |            |     |
       |            int   char *
       |           %s
-/tmp/apply-a-callback-to-an-array-2.c: At top level:
-/tmp/apply-a-callback-to-an-array-2.c:82:5: error: redefinition of ‘main’
-   82 | int main() {
-      |     ^~~~
-/tmp/apply-a-callback-to-an-array-2.c:51:5: note: previous definition of ‘main’ with type ‘int()’
-   51 | int main() {
-      |     ^~~~

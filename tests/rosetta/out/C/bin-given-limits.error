@@ -1,72 +1,17 @@
 cc: exit status 1
-/tmp/bin-given-limits.c: In function ‘getBins’:
-/tmp/bin-given-limits.c:54:12: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
-   54 |     bins = 0;
-      |            ^
-/tmp/bin-given-limits.c: In function ‘padLeft’:
-/tmp/bin-given-limits.c:84:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   84 |     char *tmp2 = concat_string(out, " ");
-      |                                ^~~
-/tmp/bin-given-limits.c:35:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   35 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/bin-given-limits.c:88:30: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   88 |   char *tmp3 = concat_string(out, s);
-      |                              ^~~
-/tmp/bin-given-limits.c:35:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   35 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/bin-given-limits.c:88:35: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   88 |   char *tmp3 = concat_string(out, s);
-      |                                   ^
-/tmp/bin-given-limits.c:35:43: note: expected ‘char *’ but argument is of type ‘const char *’
-   35 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
 /tmp/bin-given-limits.c: In function ‘printBins’:
-/tmp/bin-given-limits.c:94:34: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
-   94 |   printf("%s\n", "           < " + padLeft(limits.data[0], 3) + " = " +
+/tmp/bin-given-limits.c:106:34: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  106 |   printf("%s\n", "           < " + padLeft(limits.data[0], 3) + " = " +
       |                  ~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~
       |                  |                 |
-      |                  char *            const char *
-/tmp/bin-given-limits.c:98:26: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
-   98 |     printf("%s\n", ">= " + padLeft(limits.data[i - 1], 3) + " and < " +
+      |                  char *            char *
+/tmp/bin-given-limits.c:110:26: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  110 |     printf("%s\n", ">= " + padLeft(limits.data[i - 1], 3) + " and < " +
       |                    ~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       |                    |       |
-      |                    char *  const char *
-/tmp/bin-given-limits.c:103:24: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
-  103 |   printf("%s\n", ">= " + padLeft(limits.data[n - 1], 3) + "           = " +
+      |                    char *  char *
+/tmp/bin-given-limits.c:115:24: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  115 |   printf("%s\n", ">= " + padLeft(limits.data[n - 1], 3) + "           = " +
       |                  ~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       |                  |       |
-      |                  char *  const char *
-/tmp/bin-given-limits.c: In function ‘main’:
-/tmp/bin-given-limits.c:127:37: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-  127 |   list_int limitsList_data[] = {{6, tmp4}, {10, tmp5}};
-      |                                     ^~~~
-/tmp/bin-given-limits.c:127:49: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-  127 |   list_int limitsList_data[] = {{6, tmp4}, {10, tmp5}};
-      |                                                 ^~~~
-/tmp/bin-given-limits.c:129:17: error: redefinition of ‘limitsList’
-  129 |   list_list_int limitsList = limitsList;
-      |                 ^~~~~~~~~~
-/tmp/bin-given-limits.c:128:17: note: previous definition of ‘limitsList’ with type ‘list_list_int’
-  128 |   list_list_int limitsList = {2, limitsList_data};
-      |                 ^~~~~~~~~~
-/tmp/bin-given-limits.c:382:36: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-  382 |   list_int dataList_data[] = {{50, tmp6}, {200, tmp7}};
-      |                                    ^~~~
-/tmp/bin-given-limits.c:382:49: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
-  382 |   list_int dataList_data[] = {{50, tmp6}, {200, tmp7}};
-      |                                                 ^~~~
-/tmp/bin-given-limits.c:384:17: error: redefinition of ‘dataList’
-  384 |   list_list_int dataList = dataList;
-      |                 ^~~~~~~~
-/tmp/bin-given-limits.c:383:17: note: previous definition of ‘dataList’ with type ‘list_list_int’
-  383 |   list_list_int dataList = {2, dataList_data};
-      |                 ^~~~~~~~
-/tmp/bin-given-limits.c: At top level:
-/tmp/bin-given-limits.c:397:5: error: redefinition of ‘main’
-  397 | int main() {
-      |     ^~~~
-/tmp/bin-given-limits.c:108:5: note: previous definition of ‘main’ with type ‘int()’
-  108 | int main() {
-      |     ^~~~
+      |                  char *  char *

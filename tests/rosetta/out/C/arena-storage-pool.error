@@ -6,7 +6,7 @@ cc: exit status 1
 /tmp/arena-storage-pool.c:104:10: error: incompatible types when returning type ‘tmp_item1_t’ but ‘int’ was expected
   104 |   return (tmp_item1_t){.pool = p, .val = v};
       |          ^
-/tmp/arena-storage-pool.c: In function ‘main’:
+/tmp/arena-storage-pool.c: In function ‘mochi_main’:
 /tmp/arena-storage-pool.c:126:25: error: request for member ‘data’ in something not a structure or union
   126 |   pool = (list_int)(res1.data["pool"]);
       |                         ^
@@ -31,10 +31,3 @@ cc: exit status 1
 /tmp/arena-storage-pool.c:151:17: error: request for member ‘data’ in something not a structure or union
   151 |   j = (int)(res4.data["val"]);
       |                 ^
-/tmp/arena-storage-pool.c: At top level:
-/tmp/arena-storage-pool.c:158:5: error: redefinition of ‘main’
-  158 | int main() {
-      |     ^~~~
-/tmp/arena-storage-pool.c:112:5: note: previous definition of ‘main’ with type ‘int()’
-  112 | int main() {
-      |     ^~~~

@@ -1,125 +1,73 @@
 cc: exit status 1
 /tmp/babylonian-spiral.c: In function ‘push’:
-/tmp/babylonian-spiral.c:197:12: error: request for member ‘len’ in something not a structure or union
-  197 |   int i = h.len - 1;
+/tmp/babylonian-spiral.c:157:12: error: request for member ‘len’ in something not a structure or union
+  157 |   int i = h.len - 1;
       |            ^
-/tmp/babylonian-spiral.c:198:20: error: request for member ‘data’ in something not a structure or union
-  198 |   while (i > 0 && h.data[i - 1].data["s"] > h.data[i].data["s"]) {
+/tmp/babylonian-spiral.c:158:20: error: request for member ‘data’ in something not a structure or union
+  158 |   while (i > 0 && h.data[i - 1].data["s"] > h.data[i].data["s"]) {
       |                    ^
-/tmp/babylonian-spiral.c:198:46: error: request for member ‘data’ in something not a structure or union
-  198 |   while (i > 0 && h.data[i - 1].data["s"] > h.data[i].data["s"]) {
+/tmp/babylonian-spiral.c:158:46: error: request for member ‘data’ in something not a structure or union
+  158 |   while (i > 0 && h.data[i - 1].data["s"] > h.data[i].data["s"]) {
       |                                              ^
-/tmp/babylonian-spiral.c:199:27: error: request for member ‘data’ in something not a structure or union
-  199 |     map_string_int tmp = h.data[i - 1];
+/tmp/babylonian-spiral.c:159:27: error: request for member ‘data’ in something not a structure or union
+  159 |     map_string_int tmp = h.data[i - 1];
       |                           ^
-/tmp/babylonian-spiral.c:200:6: error: request for member ‘data’ in something not a structure or union
-  200 |     h.data[i - 1] = h.data[i];
+/tmp/babylonian-spiral.c:160:6: error: request for member ‘data’ in something not a structure or union
+  160 |     h.data[i - 1] = h.data[i];
       |      ^
-/tmp/babylonian-spiral.c:200:22: error: request for member ‘data’ in something not a structure or union
-  200 |     h.data[i - 1] = h.data[i];
+/tmp/babylonian-spiral.c:160:22: error: request for member ‘data’ in something not a structure or union
+  160 |     h.data[i - 1] = h.data[i];
       |                      ^
-/tmp/babylonian-spiral.c:201:6: error: request for member ‘data’ in something not a structure or union
-  201 |     h.data[i] = tmp;
+/tmp/babylonian-spiral.c:161:6: error: request for member ‘data’ in something not a structure or union
+  161 |     h.data[i] = tmp;
       |      ^
 /tmp/babylonian-spiral.c: In function ‘step’:
-/tmp/babylonian-spiral.c:208:11: error: request for member ‘len’ in something not a structure or union
-  208 |   while (h.len == 0 || nv * nv <= h.data[0].data["s"]) {
+/tmp/babylonian-spiral.c:168:11: error: request for member ‘len’ in something not a structure or union
+  168 |   while (h.len == 0 || nv * nv <= h.data[0].data["s"]) {
       |           ^
-/tmp/babylonian-spiral.c:208:36: error: request for member ‘data’ in something not a structure or union
-  208 |   while (h.len == 0 || nv * nv <= h.data[0].data["s"]) {
+/tmp/babylonian-spiral.c:168:36: error: request for member ‘data’ in something not a structure or union
+  168 |   while (h.len == 0 || nv * nv <= h.data[0].data["s"]) {
       |                                    ^
-/tmp/babylonian-spiral.c:209:29: error: incompatible type for argument 2 of ‘push’
-  209 |     h = push(h, (tmp_item_t){.s = nv * nv, .a = nv, .b = 0});
-      |                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      |                             |
-      |                             tmp_item_t
-/tmp/babylonian-spiral.c:195:32: note: expected ‘map_string_int’ but argument is of type ‘tmp_item_t’
-  195 | int push(int h, map_string_int it) {
-      |                 ~~~~~~~~~~~~~~~^~
-/tmp/babylonian-spiral.c:212:12: error: request for member ‘data’ in something not a structure or union
-  212 |   int s = h.data[0].data["s"];
+/tmp/babylonian-spiral.c:176:12: error: request for member ‘data’ in something not a structure or union
+  176 |   int s = h.data[0].data["s"];
       |            ^
-/tmp/babylonian-spiral.c:215:11: error: request for member ‘len’ in something not a structure or union
-  215 |   while (h.len > 0 && h.data[0].data["s"] == s) {
+/tmp/babylonian-spiral.c:178:11: error: request for member ‘len’ in something not a structure or union
+  178 |   while (h.len > 0 && h.data[0].data["s"] == s) {
       |           ^
-/tmp/babylonian-spiral.c:215:24: error: request for member ‘data’ in something not a structure or union
-  215 |   while (h.len > 0 && h.data[0].data["s"] == s) {
+/tmp/babylonian-spiral.c:178:24: error: request for member ‘data’ in something not a structure or union
+  178 |   while (h.len > 0 && h.data[0].data["s"] == s) {
       |                        ^
-/tmp/babylonian-spiral.c:216:26: error: request for member ‘data’ in something not a structure or union
-  216 |     map_string_int it = h.data[0];
+/tmp/babylonian-spiral.c:179:26: error: request for member ‘data’ in something not a structure or union
+  179 |     map_string_int it = h.data[0];
       |                          ^
-/tmp/babylonian-spiral.c:217:43: error: request for member ‘len’ in something not a structure or union
-  217 |     list_int tmp2 = slice_list_int(h, 1, h.len);
+/tmp/babylonian-spiral.c:180:43: error: request for member ‘len’ in something not a structure or union
+  180 |     list_int tmp2 = slice_list_int(h, 1, h.len);
       |                                           ^
-/tmp/babylonian-spiral.c:217:36: error: incompatible type for argument 1 of ‘slice_list_int’
-  217 |     list_int tmp2 = slice_list_int(h, 1, h.len);
+/tmp/babylonian-spiral.c:180:36: error: incompatible type for argument 1 of ‘slice_list_int’
+  180 |     list_int tmp2 = slice_list_int(h, 1, h.len);
       |                                    ^
       |                                    |
       |                                    int
 /tmp/babylonian-spiral.c:119:41: note: expected ‘list_int’ but argument is of type ‘int’
   119 | static list_int slice_list_int(list_int v, int start, int end) {
       |                                ~~~~~~~~~^
-/tmp/babylonian-spiral.c:218:9: error: incompatible types when assigning to type ‘int’ from type ‘list_int’
-  218 |     h = tmp2;
+/tmp/babylonian-spiral.c:181:9: error: incompatible types when assigning to type ‘int’ from type ‘list_int’
+  181 |     h = tmp2;
       |         ^~~~
-/tmp/babylonian-spiral.c:227:32: error: incompatible type for argument 2 of ‘push’
-  227 |       h = push(h, (tmp_item1_t){.s = map_string_int_get(it, "a") *
-      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      |                                |
-      |                                tmp_item1_t
-  228 |                                          map_string_int_get(it, "a") +
-      |                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  229 |                                      (map_string_int_get(it, "b") + 1) *
-      |                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  230 |                                          (map_string_int_get(it, "b") + 1),
-      |                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  231 |                                 .a = map_string_int_get(it, "a"),
-      |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  232 |                                 .b = map_string_int_get(it, "b") + 1});
-      |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/babylonian-spiral.c:195:32: note: expected ‘map_string_int’ but argument is of type ‘tmp_item1_t’
-  195 | int push(int h, map_string_int it) {
-      |                 ~~~~~~~~~~~~~~~^~
-/tmp/babylonian-spiral.c:296:10: error: incompatible types when returning type ‘tmp_item2_t’ but ‘int’ was expected
-  296 |   return (tmp_item2_t){.d = best, .heap = h, .n = nv};
+/tmp/babylonian-spiral.c:261:10: error: incompatible types when returning type ‘tmp_item_t’ but ‘int’ was expected
+  261 |   return (tmp_item_t){.d = best, .heap = h, .n = nv};
       |          ^
 /tmp/babylonian-spiral.c: In function ‘positions’:
-/tmp/babylonian-spiral.c:308:14: error: incompatible types when initializing type ‘int’ using type ‘list_int’
-  308 |   int heap = tmp24;
-      |              ^~~~~
-/tmp/babylonian-spiral.c:323:24: error: request for member ‘data’ in something not a structure or union
-  323 |     dir = (list_int)(st.data["d"]);
+/tmp/babylonian-spiral.c:284:19: error: ‘heap’ undeclared (first use in this function)
+  284 |     int st = step(heap, nv, tmp26);
+      |                   ^~~~
+/tmp/babylonian-spiral.c:284:19: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/babylonian-spiral.c:285:24: error: request for member ‘data’ in something not a structure or union
+  285 |     dir = (list_int)(st.data["d"]);
       |                        ^
-/tmp/babylonian-spiral.c:324:20: error: request for member ‘data’ in something not a structure or union
-  324 |     heap = (int)(st.data["heap"]);
+/tmp/babylonian-spiral.c:286:20: error: request for member ‘data’ in something not a structure or union
+  286 |     heap = (int)(st.data["heap"]);
       |                    ^
-/tmp/babylonian-spiral.c:325:18: error: request for member ‘data’ in something not a structure or union
-  325 |     nv = (int)(st.data["n"]);
+/tmp/babylonian-spiral.c:287:18: error: request for member ‘data’ in something not a structure or union
+  287 |     nv = (int)(st.data["n"]);
       |                  ^
-/tmp/babylonian-spiral.c: In function ‘pad’:
-/tmp/babylonian-spiral.c:336:33: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  336 |     char *tmp29 = concat_string(r, " ");
-      |                                 ^
-/tmp/babylonian-spiral.c:105:34: note: expected ‘char *’ but argument is of type ‘const char *’
-  105 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/babylonian-spiral.c: In function ‘main’:
-/tmp/babylonian-spiral.c:356:33: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  356 |     char *tmp36 = concat_string(line, s);
-      |                                 ^~~~
-/tmp/babylonian-spiral.c:105:34: note: expected ‘char *’ but argument is of type ‘const char *’
-  105 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/babylonian-spiral.c:356:39: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  356 |     char *tmp36 = concat_string(line, s);
-      |                                       ^
-/tmp/babylonian-spiral.c:105:43: note: expected ‘char *’ but argument is of type ‘const char *’
-  105 | static char *concat_string(char *a, char *b) {
-      |                                     ~~~~~~^
-/tmp/babylonian-spiral.c: At top level:
-/tmp/babylonian-spiral.c:366:5: error: redefinition of ‘main’
-  366 | int main() {
-      |     ^~~~
-/tmp/babylonian-spiral.c:342:5: note: previous definition of ‘main’ with type ‘int()’
-  342 | int main() {
-      |     ^~~~

@@ -11,13 +11,6 @@ cc: exit status 1
 /tmp/9-billion-names-of-god-the-integer.c:161:11: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
   161 |     res = 0;
       |           ^
-/tmp/9-billion-names-of-god-the-integer.c: In function ‘bigToString’:
-/tmp/9-billion-names-of-god-the-integer.c:172:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  172 |     char *tmp4 = concat_string(s, tmp3);
-      |                                ^
-/tmp/9-billion-names-of-god-the-integer.c:65:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   65 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
 /tmp/9-billion-names-of-god-the-integer.c: In function ‘cumu’:
 /tmp/9-billion-names-of-god-the-integer.c:190:12: error: redefinition of ‘cache_data’
   190 |   list_int cache_data[] = {cache};
@@ -34,60 +27,24 @@ cc: exit status 1
 /tmp/9-billion-names-of-god-the-integer.c:189:17: note: previous definition of ‘cache’ with type ‘list_list_int’
   189 |   list_list_int cache = {1, cache_data};
       |                 ^~~~~
-/tmp/9-billion-names-of-god-the-integer.c:192:7: error: conflicting types for ‘cache’; have ‘int’
-  192 |   int cache = cache;
-      |       ^~~~~
-/tmp/9-billion-names-of-god-the-integer.c:191:17: note: previous definition of ‘cache’ with type ‘list_list_int’
-  191 |   list_list_int cache = {1, cache_data};
-      |                 ^~~~~
-/tmp/9-billion-names-of-god-the-integer.c:197:19: error: redefinition of ‘row’
-  197 |     list_list_int row = row;
-      |                   ^~~
-/tmp/9-billion-names-of-god-the-integer.c:196:19: note: previous definition of ‘row’ with type ‘list_list_int’
-  196 |     list_list_int row = {1, row_data};
-      |                   ^~~
-/tmp/9-billion-names-of-god-the-integer.c: In function ‘row’:
-/tmp/9-billion-names-of-god-the-integer.c:216:13: error: incompatible types when initializing type ‘int’ using type ‘list_string’
-  216 |   int out = tmp7;
+/tmp/9-billion-names-of-god-the-integer.c:198:22: error: invalid initializer
+  198 |       list_int val = cache.data[y - x].data[minInt(x, y - x)];
+      |                      ^~~~~
+/tmp/9-billion-names-of-god-the-integer.c:205:13: error: incompatible types when assigning to type ‘list_list_int’ from type ‘int’
+  205 |     cache = 0;
+      |             ^
+/tmp/9-billion-names-of-god-the-integer.c:208:20: error: incompatible types when returning type ‘list_int’ but ‘list_list_int’ was expected
+  208 |   return cache.data[n];
+      |          ~~~~~~~~~~^~~
+/tmp/9-billion-names-of-god-the-integer.c: In function ‘_mochi_main’:
+/tmp/9-billion-names-of-god-the-integer.c:250:13: error: incompatible types when initializing type ‘int’ using type ‘list_list_int’
+  250 |     int r = cumu(num);
       |             ^~~~
-/tmp/9-billion-names-of-god-the-integer.c:221:18: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  221 |     tmp8.data[0] = bigToString(diff);
-      |                  ^
-/tmp/9-billion-names-of-god-the-integer.c:222:43: error: incompatible type for argument 1 of ‘concat_list_string’
-  222 |     list_string tmp9 = concat_list_string(out, tmp8);
-      |                                           ^~~
-      |                                           |
-      |                                           int
-/tmp/9-billion-names-of-god-the-integer.c:49:51: note: expected ‘list_string’ but argument is of type ‘int’
-   49 | static list_string concat_list_string(list_string a, list_string b) {
-      |                                       ~~~~~~~~~~~~^
-/tmp/9-billion-names-of-god-the-integer.c:223:11: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
-  223 |     out = tmp9;
-      |           ^~~~
-/tmp/9-billion-names-of-god-the-integer.c: In function ‘main’:
-/tmp/9-billion-names-of-god-the-integer.c:235:17: error: request for member ‘len’ in something not a structure or union
-  235 |     while (i < r.len) {
-      |                 ^
-/tmp/9-billion-names-of-god-the-integer.c:236:35: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  236 |       char *tmp10 = concat_string(line, " ");
-      |                                   ^~~~
-/tmp/9-billion-names-of-god-the-integer.c:65:34: note: expected ‘char *’ but argument is of type ‘const char *’
-   65 | static char *concat_string(char *a, char *b) {
-      |                            ~~~~~~^
-/tmp/9-billion-names-of-god-the-integer.c:237:43: error: request for member ‘data’ in something not a structure or union
-  237 |       char *tmp11 = concat_string(tmp10, r.data[i]);
-      |                                           ^
-/tmp/9-billion-names-of-god-the-integer.c:252:20: error: subscripted value is neither array nor pointer nor vector
-  252 |     int num = tmp13[tmp14];
-      |                    ^
-/tmp/9-billion-names-of-god-the-integer.c:253:13: error: incompatible types when initializing type ‘int’ using type ‘list_list_int’
-  253 |     int r = cumu(num);
-      |             ^~~~
-/tmp/9-billion-names-of-god-the-integer.c:258:41: error: request for member ‘data’ in something not a structure or union
-  258 |     printf("%d\n", tmp18 + bigToString(r.data[_count(r) - 1]));
+/tmp/9-billion-names-of-god-the-integer.c:255:41: error: request for member ‘data’ in something not a structure or union
+  255 |     printf("%d\n", tmp17 + bigToString(r.data[_count(r) - 1]));
       |                                         ^
-/tmp/9-billion-names-of-god-the-integer.c:258:54: error: incompatible type for argument 1 of ‘_count’
-  258 |     printf("%d\n", tmp18 + bigToString(r.data[_count(r) - 1]));
+/tmp/9-billion-names-of-god-the-integer.c:255:54: error: incompatible type for argument 1 of ‘_count’
+  255 |     printf("%d\n", tmp17 + bigToString(r.data[_count(r) - 1]));
       |                                                      ^
       |                                                      |
       |                                                      int

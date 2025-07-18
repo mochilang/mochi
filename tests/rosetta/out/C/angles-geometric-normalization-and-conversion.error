@@ -17,17 +17,3 @@ cc: exit status 1
       |                                 ^ ~~~~~~~~~~~~~~~~~~~~~~~~~
       |                                        |
       |                                        double
-/tmp/angles-geometric-normalization-and-conversion.c: In function ‘main’:
-/tmp/angles-geometric-normalization-and-conversion.c:81:14: error: redefinition of ‘angles’
-   81 |   list_float angles = angles;
-      |              ^~~~~~
-/tmp/angles-geometric-normalization-and-conversion.c:68:14: note: previous definition of ‘angles’ with type ‘list_float’
-   68 |   list_float angles = list_float_create(12);
-      |              ^~~~~~
-/tmp/angles-geometric-normalization-and-conversion.c: At top level:
-/tmp/angles-geometric-normalization-and-conversion.c:156:5: error: redefinition of ‘main’
-  156 | int main() {
-      |     ^~~~
-/tmp/angles-geometric-normalization-and-conversion.c:67:5: note: previous definition of ‘main’ with type ‘int()’
-   67 | int main() {
-      |     ^~~~
