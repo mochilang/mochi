@@ -167,21 +167,22 @@ from the disassembler:
 ## Rosetta program checklist
 
 The VM includes golden tests for all Mochi implementations of the Rosetta Code
-tasks located under `tests/rosetta/x/Mochi`. Out of 216 programs, 203 run
-successfully. Twelve programs fail to compile or execute and produce a `.error`
-file. One program (`21-game`) requires interactive input and is skipped.
+tasks located under `tests/rosetta/x/Mochi`. These can be executed with:
+
+```bash
+go test ./runtime/vm -run Rosetta -tags slow
+```
+
+Out of 216 programs, 208 currently run successfully. Seven programs fail to
+compile or execute and produce a corresponding `.error` file. One program
+(`21-game`) requires interactive input and is skipped.
 
 ### Failing programs
 
  - add-a-variable-to-a-class-instance-at-runtime
-- adfgvx-cipher
-- balanced-brackets
-- bulls-and-cows
-- bulls-and-cows-player
-- call-a-function-10
-- call-a-function-2
-- call-a-function-3
-- call-a-function-7
-- call-a-function-8
-- call-a-function-9
+ - adfgvx-cipher
+ - balanced-brackets
+ - bulls-and-cows
+ - bulls-and-cows-player
+ - call-a-function-8
 

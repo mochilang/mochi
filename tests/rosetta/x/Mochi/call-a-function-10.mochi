@@ -5,7 +5,10 @@ fun main() {
   var d = 2
   var e = 3
   var i = 4
-  list = append(list, a, d, e, i)
+  list = append(list, a)
+  list = append(list, d)
+  list = append(list, e)
+  list = append(list, i)
   i = len(list)
 }
 

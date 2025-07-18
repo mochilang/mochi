@@ -1,4 +1,15 @@
-include "./call-a-function-1.mochi"
+// Inline definitions from call-a-function-1
+fun f(): list<any> {
+  return [0, 0.0]
+}
+
+fun g(a: int, b: float): int {
+  return 0
+}
+
+fun h(s: string, nums: list<int>) {
+  // variadic parameters simulated with list
+}
 
 fun main() {
   let ab = f()
@@ -7,9 +18,12 @@ fun main() {
   let cb = f()[1]
   let d = g(a, cb)
   let e = g(d, b)
-  let i = g(d, 2)
+  var i = g(d, 2.0)
   var list: list<int> = []
-  list = append(list, a, d, e, i)
+  list = append(list, a)
+  list = append(list, d)
+  list = append(list, e)
+  list = append(list, i)
   i = len(list)
 }
 
