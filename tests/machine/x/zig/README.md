@@ -30,3 +30,4 @@ Checklist:
 - [x] list_index
 - [x] string_index
 - [x] slice
+- [x] string_prefix_slice

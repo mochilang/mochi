@@ -2730,11 +2730,15 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr, asReturn bool) (string,
 							}
 						}
 						if stepOne {
-							if en, okE := c.intConst(op.Index.End); okE && en >= st {
-								expr = fmt.Sprintf("%s[%d..%d]", expr, st, en)
+							if op.Index.End != nil {
+								if en, okE := c.intConst(op.Index.End); okE && en >= st {
+									expr = fmt.Sprintf("%s[%d..%d]", expr, st, en)
+								} else {
+									exprEnd := toUSize(end)
+									expr = fmt.Sprintf("%s[%d..%s]", expr, st, exprEnd)
+								}
 							} else {
-								c.needsSliceString = true
-								expr = fmt.Sprintf("_slice_string(%s, %s, %s, %s)", expr, start, end, step)
+								expr = fmt.Sprintf("%s[%d..%s.len]", expr, st, expr)
 							}
 						} else {
 							c.needsSliceString = true
@@ -2753,12 +2757,15 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr, asReturn bool) (string,
 							}
 						}
 						if stepOne {
-							if en, okE := c.intConst(op.Index.End); okE && en >= st {
-								expr = fmt.Sprintf("%s[%d..%d]", expr, st, en)
+							if op.Index.End != nil {
+								if en, okE := c.intConst(op.Index.End); okE && en >= st {
+									expr = fmt.Sprintf("%s[%d..%d]", expr, st, en)
+								} else {
+									exprEnd := toUSize(end)
+									expr = fmt.Sprintf("%s[%d..%s]", expr, st, exprEnd)
+								}
 							} else {
-								elem := c.listElemTypePostfix(p)
-								c.needsSlice = true
-								expr = fmt.Sprintf("_slice_list(%s, %s, %s, %s, %s)", elem, expr, start, end, step)
+								expr = fmt.Sprintf("%s[%d..%s.len]", expr, st, expr)
 							}
 						} else {
 							elem := c.listElemTypePostfix(p)
@@ -3273,7 +3280,8 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		case types.IntType, types.Int64Type:
 			fmtStr = "{d}"
 		case types.BoolType:
-			fmtStr = "{}"
+			fmtStr = "{d}"
+			arg = fmt.Sprintf("@intFromBool(%s)", arg)
 		case types.FloatType:
 			fmtStr = "{d:.1}"
 		}
@@ -3334,7 +3342,8 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				case types.FloatType:
 					format += " {d:.1}"
 				case types.BoolType:
-					format += " {}"
+					format += " {d}"
+					v = fmt.Sprintf("@intFromBool(%s)", v)
 				default:
 					if zigTypeOf(t) == "[]const u8" || (isAnyType(t) && c.isStringExpr(a)) {
 						format += " {s}"
@@ -3367,7 +3376,8 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			case types.FloatType:
 				fmtParts[i] = "{d:.1}"
 			case types.BoolType:
-				fmtParts[i] = "{}"
+				fmtParts[i] = "{d}"
+				args[i] = fmt.Sprintf("@intFromBool(%s)", args[i])
 			default:
 				if zigTypeOf(t) == "[]const u8" || (isAnyType(t) && c.isStringExpr(a)) {
 					fmtParts[i] = "{s}"
@@ -4485,29 +4495,77 @@ func (c *Compiler) isListVar(name string) bool {
 // literal possibly prefixed with unary +/- operators. The second return value
 // reports success.
 func (c *Compiler) intConst(e *parser.Expr) (int, bool) {
-	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+	if e == nil || e.Binary == nil {
 		return 0, false
 	}
-	u := e.Binary.Left
-	if u == nil {
+	return c.evalIntConstBinary(e.Binary)
+}
+
+func (c *Compiler) evalIntConstBinary(be *parser.BinaryExpr) (int, bool) {
+	val, ok := c.evalIntConstUnary(be.Left)
+	if !ok {
 		return 0, false
 	}
-	sign := 1
-	for _, op := range u.Ops {
-		switch op {
+	for _, op := range be.Right {
+		r, ok := c.evalIntConstPostfix(op.Right)
+		if !ok {
+			return 0, false
+		}
+		switch op.Op {
+		case "+":
+			val += r
 		case "-":
-			sign = -sign
+			val -= r
+		case "*":
+			val *= r
+		case "/":
+			if r == 0 {
+				return 0, false
+			}
+			val /= r
+		default:
+			return 0, false
+		}
+	}
+	return val, true
+}
+
+func (c *Compiler) evalIntConstUnary(u *parser.Unary) (int, bool) {
+	val, ok := c.evalIntConstPostfix(u.Value)
+	if !ok {
+		return 0, false
+	}
+	for i := len(u.Ops) - 1; i >= 0; i-- {
+		switch u.Ops[i] {
+		case "-":
+			val = -val
 		case "+":
 			// ignore
 		default:
 			return 0, false
 		}
 	}
-	p := u.Value
-	if p == nil || len(p.Ops) != 0 || p.Target == nil || p.Target.Lit == nil || p.Target.Lit.Int == nil {
+	return val, true
+}
+
+func (c *Compiler) evalIntConstPostfix(p *parser.PostfixExpr) (int, bool) {
+	if p == nil || len(p.Ops) != 0 {
 		return 0, false
 	}
-	return sign * (*p.Target.Lit.Int), true
+	return c.evalIntConstPrimary(p.Target)
+}
+
+func (c *Compiler) evalIntConstPrimary(pr *parser.Primary) (int, bool) {
+	if pr == nil {
+		return 0, false
+	}
+	if pr.Lit != nil && pr.Lit.Int != nil {
+		return *pr.Lit.Int, true
+	}
+	if pr.Group != nil {
+		return c.intConst(pr.Group)
+	}
+	return 0, false
 }
 
 func stripOuterParens(s string) string {
@@ -4526,6 +4584,18 @@ func stripOuterParens(s string) string {
 		}
 	}
 	return s
+}
+
+func toUSize(s string) string {
+	s = stripOuterParens(s)
+	if strings.HasPrefix(s, "@as(i32, @intCast(") && strings.HasSuffix(s, "))") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(s, "@as(i32, @intCast("), "))")
+		return inner
+	}
+	if _, err := strconv.Atoi(s); err == nil {
+		return s
+	}
+	return fmt.Sprintf("@as(usize, @intCast(%s))", s)
 }
 
 // ensureGroupSlice ensures the correct ".Items.items" suffix is applied to a

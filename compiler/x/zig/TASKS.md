@@ -34,3 +34,4 @@
 - 2025-07-17 compiled fun_three_args.mochi in Zig
 - 2025-07-17 compiled list_index.mochi and string_index.mochi in Zig
 - 2025-07-17 improved slice and index inference to remove runtime helpers
+- 2025-07-17 enhanced int constant folding and dynamic slice ranges
