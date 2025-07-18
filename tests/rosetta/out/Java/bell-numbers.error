@@ -1,8 +1,8 @@
-type: error[T004]: `` is not callable
-  --> /workspace/mochi/tests/rosetta/x/Mochi/bell-numbers.mochi:34:31
+parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/bell-numbers.mochi:19:22: unexpected token "-1" (expected "]")
+  --> /workspace/mochi/tests/rosetta/x/Mochi/bell-numbers.mochi:19:22
 
- 34 |     print("" + str(i).padStart(2, " ") + ": " + str(bt[i][0]))
-    |                               ^
+ 19 |     tri[i][0] = tri[i-1][i-2]
+    |                      ^
 
 help:
-  Use a function or closure in this position.
+  Parse error occurred. Check syntax near this location.

@@ -1,17 +1,17 @@
 javac: exit status 1
-/tmp/A+b.java:3: error: '{' expected
+/tmp/A+b.java:5: error: '{' expected
 public class A+b {
               ^
-/tmp/A+b.java:5: error: '.class' expected
-        Object a = int(input());
+/tmp/A+b.java:7: error: '.class' expected
+        Object a = int(scanner.nextLine());
                       ^
-/tmp/A+b.java:5: error: ';' expected
-        Object a = int(input());
-                              ^
-/tmp/A+b.java:6: error: '.class' expected
-        Object b = int(input());
+/tmp/A+b.java:7: error: ';' expected
+        Object a = int(scanner.nextLine());
+                                         ^
+/tmp/A+b.java:8: error: '.class' expected
+        Object b = int(scanner.nextLine());
                       ^
-/tmp/A+b.java:6: error: ';' expected
-        Object b = int(input());
-                              ^
+/tmp/A+b.java:8: error: ';' expected
+        Object b = int(scanner.nextLine());
+                                         ^
 5 errors

@@ -1,1 +1,8 @@
-compile: postfix operations unsupported
+parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/bernoulli-numbers.mochi:8:10: unexpected token "-1" (expected "]")
+  --> /workspace/mochi/tests/rosetta/x/Mochi/bernoulli-numbers.mochi:8:10
+
+  8 |       a[j-1] = (j as bigrat) * (a[j-1] - a[j])
+    |          ^
+
+help:
+  Parse error occurred. Check syntax near this location.

@@ -1,8 +1,23 @@
-type: error[T002]: undefined variable: include
-  --> /workspace/mochi/tests/rosetta/x/Mochi/call-a-function-9.mochi:1:1
-
-  1 | include "./call-a-function-1.mochi"
-    | ^
-
-help:
-  Check if the variable was declared in this scope.
+javac: exit status 1
+/tmp/CallAFunction9.java:16: error: incompatible types: Object cannot be converted to List<Object>
+        List<Object> a = ab.get(0);
+                               ^
+/tmp/CallAFunction9.java:17: error: incompatible types: Object cannot be converted to List<Object>
+        List<Object> b = ab.get(1);
+                               ^
+/tmp/CallAFunction9.java:18: error: incompatible types: CAP#1 cannot be converted to List<Object>
+        List<Object> cb = ((Map<?,?>)f()).get(1);
+                                             ^
+  where CAP#1 is a fresh type-variable:
+    CAP#1 extends Object from capture of ?
+/tmp/CallAFunction9.java:19: error: incompatible types: List<Object> cannot be converted to int
+        int d = g(a, cb);
+                  ^
+/tmp/CallAFunction9.java:20: error: incompatible types: List<Object> cannot be converted to double
+        int e = g(d, b);
+                     ^
+/tmp/CallAFunction9.java:23: error: incompatible types: List<Object> cannot be converted to Integer
+        list.add(a);
+                 ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+6 errors

@@ -1,0 +1,15 @@
+javac: exit status 1
+/tmp/ConwaysGameOfLife.java:66: error: incompatible types: List<Boolean> cannot be converted to List<List<Boolean>>
+        List<List<Boolean>> row = rows.get(y);
+                                          ^
+/tmp/ConwaysGameOfLife.java:67: error: incompatible types: boolean cannot be converted to List<Boolean>
+        row.set(x, b);
+                   ^
+/tmp/ConwaysGameOfLife.java:68: error: incompatible types: List<List<Boolean>> cannot be converted to List<Boolean>
+        rows.set(y, row);
+                    ^
+/tmp/ConwaysGameOfLife.java:78: error: incompatible types: Object cannot be converted to boolean
+        return ((List)f.s.get(y % f.h)).get(x % f.w);
+                                           ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+4 errors

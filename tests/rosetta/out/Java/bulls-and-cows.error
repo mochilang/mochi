@@ -1,8 +1,32 @@
-parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/bulls-and-cows.mochi:48:31: unexpected token "-" (expected PostfixExpr)
-  --> /workspace/mochi/tests/rosetta/x/Mochi/bulls-and-cows.mochi:48:31
-
- 48 |       if indexOf(seen, cg) != -1 {
-    |                               ^
-
-help:
-  Parse error occurred. Check syntax near this location.
+javac: exit status 1
+/tmp/BullsAndCows.java:20: error: incompatible types: possible lossy conversion from long to int
+            int j = System.currentTimeMillis() % (i + 1);
+                                               ^
+/tmp/BullsAndCows.java:21: error: incompatible types: String cannot be converted to List<String>
+            List<String> tmp = arr.get(i);
+                                      ^
+/tmp/BullsAndCows.java:23: error: incompatible types: List<String> cannot be converted to String
+            arr.set(j, tmp);
+                       ^
+/tmp/BullsAndCows.java:35: error: incompatible types: String cannot be converted to Number
+        int pat = ((Number)((Number)((Number)digits.get(0)).doubleValue() + ((Number)digits.get(1)).doubleValue()).doubleValue() + ((Number)digits.get(2)).doubleValue()).doubleValue() + ((Number)digits.get(3)).doubleValue();
+                                                       ^
+/tmp/BullsAndCows.java:35: error: incompatible types: String cannot be converted to Number
+        int pat = ((Number)((Number)((Number)digits.get(0)).doubleValue() + ((Number)digits.get(1)).doubleValue()).doubleValue() + ((Number)digits.get(2)).doubleValue()).doubleValue() + ((Number)digits.get(3)).doubleValue();
+                                                                                               ^
+/tmp/BullsAndCows.java:35: error: incompatible types: String cannot be converted to Number
+        int pat = ((Number)((Number)((Number)digits.get(0)).doubleValue() + ((Number)digits.get(1)).doubleValue()).doubleValue() + ((Number)digits.get(2)).doubleValue()).doubleValue() + ((Number)digits.get(3)).doubleValue();
+                                                                                                                                                      ^
+/tmp/BullsAndCows.java:35: error: incompatible types: String cannot be converted to Number
+        int pat = ((Number)((Number)((Number)digits.get(0)).doubleValue() + ((Number)digits.get(1)).doubleValue()).doubleValue() + ((Number)digits.get(2)).doubleValue()).doubleValue() + ((Number)digits.get(3)).doubleValue();
+                                                                                                                                                                                                             ^
+/tmp/BullsAndCows.java:39: error: cannot find symbol
+            String guess = scanner.nextLine();
+                           ^
+  symbol:   variable scanner
+  location: class BullsAndCows
+/tmp/BullsAndCows.java:57: error: incompatible types: int cannot be converted to String
+                int pos = indexOf(pat, cg);
+                                  ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+9 errors

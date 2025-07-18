@@ -1,0 +1,8 @@
+parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/convex-hull.mochi:37:38: unexpected token "-2" (expected "]")
+  --> /workspace/mochi/tests/rosetta/x/Mochi/convex-hull.mochi:37:38
+
+ 37 |     while len(h) >= 2 && ccw(h[len(h)-2], h[len(h)-1], pt) == false {
+    |                                      ^
+
+help:
+  Parse error occurred. Check syntax near this location.

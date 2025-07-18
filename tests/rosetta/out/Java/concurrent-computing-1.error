@@ -1,0 +1,12 @@
+javac: exit status 1
+/tmp/ConcurrentComputing1.java:10: error: incompatible types: possible lossy conversion from long to int
+            int j = System.currentTimeMillis() % (i + 1);
+                                               ^
+/tmp/ConcurrentComputing1.java:11: error: incompatible types: String cannot be converted to List<String>
+            List<String> tmp = arr.get(i);
+                                      ^
+/tmp/ConcurrentComputing1.java:13: error: incompatible types: List<String> cannot be converted to String
+            arr.set(j, tmp);
+                       ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+3 errors

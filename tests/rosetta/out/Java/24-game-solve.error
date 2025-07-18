@@ -95,10 +95,8 @@ javac: exit status 1
                            ^
   symbol:   class Node
   location: class M24GameSolve
-/tmp/M24GameSolve.java:95: error: cannot find symbol
-                int n = (now() % (digit_range - 1)) + 1;
-                         ^
-  symbol:   method now()
-  location: class M24GameSolve
+/tmp/M24GameSolve.java:95: error: incompatible types: possible lossy conversion from long to int
+                int n = (System.currentTimeMillis() % (digit_range - 1)) + 1;
+                                                                         ^
 Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
 23 errors

@@ -1,8 +1,17 @@
-parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/call-a-function-8.mochi:12:35: unexpected token "{" (expected "<" TypeRef ("," TypeRef)* ">")
-  --> /workspace/mochi/tests/rosetta/x/Mochi/call-a-function-8.mochi:12:35
-
- 12 |   let fn = fun(r: string): string {
-    |                                   ^
-
-help:
-  Parse error occurred. Check syntax near this location.
+javac: exit status 1
+/tmp/CallAFunction8.java:10: error: cannot find symbol
+            out = out + f(s.substring(i, i + 1));
+                        ^
+  symbol:   method f(String)
+  location: class CallAFunction8
+/tmp/CallAFunction8.java:16: error: incompatible types: Object is not a functional interface
+        Object fn = r -> (Objects.equals(r, " ") ? "" : r);
+                    ^
+/tmp/CallAFunction8.java:18: error: incompatible types: Object is not a functional interface
+        mapString("Test", r -> lower(r));
+        ^
+/tmp/CallAFunction8.java:19: error: incompatible types: Object is not a functional interface
+        mapString("shift", r -> r);
+        ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+4 errors

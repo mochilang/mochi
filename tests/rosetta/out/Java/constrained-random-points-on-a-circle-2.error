@@ -1,0 +1,23 @@
+javac: exit status 1
+/tmp/ConstrainedRandomPointsOnACircle2.java:43: error: incompatible types: possible lossy conversion from long to int
+            int i = System.currentTimeMillis() % poss.size();
+                                               ^
+/tmp/ConstrainedRandomPointsOnACircle2.java:44: error: incompatible types: Object cannot be converted to List<List<Integer>>
+            List<List<Integer>> x = ((List)poss.get(i)).get(0);
+                                                           ^
+/tmp/ConstrainedRandomPointsOnACircle2.java:45: error: incompatible types: Object cannot be converted to List<List<Integer>>
+            List<List<Integer>> yy = ((List)poss.get(i)).get(1);
+                                                            ^
+/tmp/ConstrainedRandomPointsOnACircle2.java:46: error: bad operand types for binary operator '+'
+            int row = yy + rMax;
+                         ^
+  first type:  List<List<Integer>>
+  second type: int
+/tmp/ConstrainedRandomPointsOnACircle2.java:47: error: bad operand types for binary operator '+'
+            int col = (x + rMax) * 2;
+                         ^
+  first type:  List<List<Integer>>
+  second type: int
+Note: /tmp/ConstrainedRandomPointsOnACircle2.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+5 errors

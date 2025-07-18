@@ -1,8 +1,8 @@
-parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/15-puzzle-game.mochi:108:18: unexpected token "!" (expected PostfixExpr)
-  --> /workspace/mochi/tests/rosetta/x/Mochi/15-puzzle-game.mochi:108:18
-
-108 |   while !quit && !isSolved() {
-    |                  ^
-
-help:
-  Parse error occurred. Check syntax near this location.
+javac: exit status 1
+/tmp/M15PuzzleGame.java:45: error: '.class' expected
+        Object j = int(r.get("idx"));
+                      ^
+/tmp/M15PuzzleGame.java:45: error: ';' expected
+        Object j = int(r.get("idx"));
+                                   ^
+2 errors

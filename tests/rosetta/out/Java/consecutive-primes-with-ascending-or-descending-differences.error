@@ -1,0 +1,8 @@
+parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/consecutive-primes-with-ascending-or-descending-differences.mochi:40:33: unexpected token "-1" (expected "]")
+  --> /workspace/mochi/tests/rosetta/x/Mochi/consecutive-primes-with-ascending-or-descending-differences.mochi:40:33
+
+ 40 |     let d = primes[i] - primes[i-1]
+    |                                 ^
+
+help:
+  Parse error occurred. Check syntax near this location.

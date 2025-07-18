@@ -1,0 +1,17 @@
+javac: exit status 1
+/tmp/ConvertDecimalNumberToRational.java:34: error: '.class' expected
+                int d = int(ch) - int("0");
+                           ^
+/tmp/ConvertDecimalNumberToRational.java:34: error: not a statement
+                int d = int(ch) - int("0");
+                            ^
+/tmp/ConvertDecimalNumberToRational.java:34: error: ';' expected
+                int d = int(ch) - int("0");
+                              ^
+/tmp/ConvertDecimalNumberToRational.java:34: error: not a statement
+                int d = int(ch) - int("0");
+                                  ^
+/tmp/ConvertDecimalNumberToRational.java:34: error: ';' expected
+                int d = int(ch) - int("0");
+                                     ^
+5 errors
