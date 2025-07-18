@@ -1,5 +1,0 @@
-run: exit status 1
-/tmp/TestCSCompiler_VMValid_Goldengroup_by_left_join.mochi2089363877/001/Program.cs(23,57): error CS8197: Cannot infer the type of implicitly-typed out variable 'g'. [/tmp/TestCSCompiler_VMValid_Goldengroup_by_left_join.mochi2089363877/001/app.csproj]
-/tmp/TestCSCompiler_VMValid_Goldengroup_by_left_join.mochi2089363877/001/Program.cs(37,70): error CS0021: Cannot apply indexing with [] to an expression of type 'Program._Group<dynamic, Dictionary<string, dynamic>>' [/tmp/TestCSCompiler_VMValid_Goldengroup_by_left_join.mochi2089363877/001/app.csproj]
-
-The build failed. Fix the build errors and run again.

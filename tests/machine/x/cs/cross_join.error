@@ -1,5 +1,0 @@
-run: exit status 1
-/tmp/TestCSCompiler_VMValid_Goldencross_join.mochi3721354716/001/Program.cs(11,48): error CS0029: Cannot implicitly convert type 'System.Collections.Generic.List<Program.Order>' to 'System.Collections.Generic.List<System.Collections.Generic.Dictionary<string, int>>' [/tmp/TestCSCompiler_VMValid_Goldencross_join.mochi3721354716/001/app.csproj]
-/tmp/TestCSCompiler_VMValid_Goldencross_join.mochi3721354716/001/Program.cs(15,100): error CS0021: Cannot apply indexing with [] to an expression of type 'Program.Customer' [/tmp/TestCSCompiler_VMValid_Goldencross_join.mochi3721354716/001/app.csproj]
-
-The build failed. Fix the build errors and run again.
