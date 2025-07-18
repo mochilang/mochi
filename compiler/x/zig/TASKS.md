@@ -46,3 +46,4 @@
 - 2025-07-22 compiled go_auto, python_auto, and python_math.mochi in Zig and updated machine README to 100/100.
 - 2025-07-23 improved substring inference when only one bound is constant, avoiding `_slice_string` helper.
 - 2025-07-23 optimized sum/avg over simple queries to use direct loops instead of temporary lists
+- 2025-07-24 avoid reference slices for list variables to allow mutation

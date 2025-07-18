@@ -512,7 +512,7 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 				if ll := extractListLiteral(s.Let.Value); ll != nil && len(ll.Elems) > 0 && s.Let.Type == nil {
 					if extractMapLiteral(ll.Elems[0]) != nil {
 						structName := pascalCase(name) + "Item"
-						decl, init, err := c.compileNamedListLiteral(ll, true, structName)
+						decl, init, err := c.compileNamedListLiteral(ll, false, structName)
 						if err == nil {
 							if !c.structs[structName] {
 								c.writeln(decl)
@@ -2296,7 +2296,7 @@ func (c *Compiler) compileVar(st *parser.VarStmt, inFun bool) error {
 		if ll := extractListLiteral(st.Value); ll != nil && len(ll.Elems) > 0 && st.Type == nil {
 			if ml := extractMapLiteral(ll.Elems[0]); ml != nil {
 				if known, ok := c.matchStructFromMapLiteral(ml); ok {
-					v, err := c.compileListLiteral(ll, true)
+					v, err := c.compileListLiteral(ll, false)
 					if err == nil {
 						if c.env != nil {
 							if stype, ok2 := c.env.GetStruct(known); ok2 {
@@ -2308,7 +2308,7 @@ func (c *Compiler) compileVar(st *parser.VarStmt, inFun bool) error {
 					}
 				}
 				structName := pascalCase(name) + "Item"
-				decl, init, err := c.compileNamedListLiteral(ll, true, structName)
+				decl, init, err := c.compileNamedListLiteral(ll, false, structName)
 				if err == nil {
 					if !c.structs[structName] {
 						c.writeln(decl)
