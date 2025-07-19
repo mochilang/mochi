@@ -116,7 +116,11 @@ func (c *Compiler) compileMainFunc(prog *parser.Program) error {
 		} else {
 			name = s.Var.Name
 		}
-		if hasLaterTest(prog, i) || varUsedInFuncs(prog, name) {
+		needsDecl := hasLaterTest(prog, i) || varUsedInFuncs(prog, name)
+		if s.Let != nil && s.Let.Value != nil {
+			needsDecl = true
+		}
+		if needsDecl {
 			if err := c.compileGlobalVarDecl(s); err != nil {
 				return err
 			}
@@ -161,7 +165,11 @@ func (c *Compiler) compileMainFunc(prog *parser.Program) error {
 		} else if s.Var != nil {
 			name = s.Var.Name
 		}
-		if (s.Let != nil || s.Var != nil) && (hasLaterTest(prog, i) || varUsedInFuncs(prog, name)) {
+		needsDecl := hasLaterTest(prog, i) || varUsedInFuncs(prog, name)
+		if s.Let != nil && s.Let.Value != nil {
+			needsDecl = true
+		}
+		if (s.Let != nil || s.Var != nil) && needsDecl {
 			continue
 		}
 		body = append(body, s)
