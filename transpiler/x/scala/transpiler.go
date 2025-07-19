@@ -249,6 +249,24 @@ func (s *SliceExpr) emit(w io.Writer) {
 	fmt.Fprint(w, ")")
 }
 
+// CastExpr represents value as type conversions like `"123" as int`.
+type CastExpr struct {
+	Value Expr
+	Type  string
+}
+
+func (c *CastExpr) emit(w io.Writer) {
+	c.Value.emit(w)
+	switch c.Type {
+	case "int":
+		fmt.Fprint(w, ".toInt")
+	case "float":
+		fmt.Fprint(w, ".toDouble")
+	case "string":
+		fmt.Fprint(w, ".toString")
+	}
+}
+
 // FieldExpr represents obj.field access.
 type FieldExpr struct {
 	Receiver Expr
@@ -551,6 +569,12 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			} else {
 				expr = &MethodCallExpr{Receiver: expr, Name: "apply", Args: args}
 			}
+		case op.Cast != nil:
+			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
+				expr = &CastExpr{Value: expr, Type: *op.Cast.Type.Simple}
+			} else {
+				return nil, fmt.Errorf("unsupported cast")
+			}
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
 		}
@@ -842,6 +866,8 @@ func exprNode(e Expr) *ast.Node {
 		return n
 	case *SubstringExpr:
 		return &ast.Node{Kind: "substring", Children: []*ast.Node{exprNode(ex.Value), exprNode(ex.Start), exprNode(ex.End)}}
+	case *CastExpr:
+		return &ast.Node{Kind: "cast", Value: ex.Type, Children: []*ast.Node{exprNode(ex.Value)}}
 	case *IfExpr:
 		n := &ast.Node{Kind: "ifexpr"}
 		n.Children = append(n.Children, exprNode(ex.Cond), exprNode(ex.Then), exprNode(ex.Else))

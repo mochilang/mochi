@@ -1,5 +1,6 @@
-## Progress (2025-07-19 19:36:55)
-- Added function and if statement support
+
+## Progress (2025-07-19 19:59 +0700)
+- Implemented cast expressions and updated golden tests
 
 # Transpiler Progress
 
