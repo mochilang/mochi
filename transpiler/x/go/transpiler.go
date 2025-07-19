@@ -31,6 +31,7 @@ type Program struct {
 	UseIntersect bool
 	UseSubstring bool
 	UsePrint     bool
+	UseBtoi      bool
 	UseAtoi      bool
 }
 
@@ -47,6 +48,7 @@ var (
 	usesIntersect bool
 	usesSubstring bool
 	usesPrint     bool
+	usesBtoi      bool
 	usesIndex     bool
 	usesSlice     bool
 	usesAtoi      bool
@@ -61,12 +63,17 @@ type ExprStmt struct{ Expr Expr }
 func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
 
 // PrintStmt prints a value using Go's fmt package with Mochi semantics.
-type PrintStmt struct{ Expr Expr }
+type PrintStmt struct{ Args []Expr }
 
 func (p *PrintStmt) emit(w io.Writer) {
-	io.WriteString(w, "func() {\n    v := any(")
-	p.Expr.emit(w)
-	io.WriteString(w, ")\n    if v == nil {\n        fmt.Println(\"nil\")\n        return\n    }\n    switch x := v.(type) {\n    case bool:\n        if x { fmt.Println(1) } else { fmt.Println(0) }\n    case float64:\n        if math.Trunc(x) == x { fmt.Printf(\"%.1f\\n\", x) } else { fmt.Printf(\"%v\\n\", x) }\n    case []int:\n        for i, n := range x { if i > 0 { fmt.Print(\" \") }; fmt.Print(n) }\n        fmt.Println()\n    default:\n        fmt.Println(v)\n    }\n}()")
+	io.WriteString(w, "fmt.Println(")
+	for i, e := range p.Args {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		e.emit(w)
+	}
+	io.WriteString(w, ")")
 }
 
 type VarDecl struct {
@@ -310,6 +317,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesIntersect = false
 	usesSubstring = false
 	usesPrint = false
+	usesBtoi = false
 	usesIndex = false
 	usesSlice = false
 	usesAtoi = false
@@ -338,6 +346,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	gp.UseIntersect = usesIntersect
 	gp.UseSubstring = usesSubstring
 	gp.UsePrint = usesPrint
+	gp.UseBtoi = usesBtoi
 	gp.UseAtoi = usesAtoi
 	return gp, nil
 }
@@ -355,13 +364,24 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 	switch {
 	case st.Expr != nil:
-		if call := extractCall(st.Expr.Expr); call != nil && call.Func == "print" && len(call.Args) == 1 {
-			arg, err := compileExpr(call.Args[0])
-			if err != nil {
-				return nil, err
+		if call := extractCall(st.Expr.Expr); call != nil && call.Func == "print" {
+			args := make([]Expr, len(call.Args))
+			for i, a := range call.Args {
+				ex, err := compileExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				if isBoolExpr(a) {
+					usesBtoi = true
+					ex = &CallExpr{Func: "btoi", Args: []Expr{ex}}
+				} else if isListExpr(a) {
+					usesStrings = true
+					ex = &CallExpr{Func: "joinInts", Args: []Expr{ex}}
+				}
+				args[i] = ex
 			}
 			usesPrint = true
-			return &PrintStmt{Expr: arg}, nil
+			return &PrintStmt{Args: args}, nil
 		}
 		e, err := compileExpr(st.Expr.Expr)
 		if err != nil {
@@ -796,6 +816,112 @@ func toGoType(t *parser.TypeRef) string {
 	}
 }
 
+func isBoolExpr(e *parser.Expr) bool { return isBoolBinary(e.Binary) }
+
+func isBoolBinary(b *parser.BinaryExpr) bool {
+	if b == nil {
+		return false
+	}
+	if len(b.Right) == 0 {
+		return isBoolUnary(b.Left)
+	}
+	for _, op := range b.Right {
+		switch op.Op {
+		case "==", "!=", "<", "<=", ">", ">=", "&&", "||":
+			return true
+		}
+	}
+	return isBoolUnary(b.Left)
+}
+
+func isBoolUnary(u *parser.Unary) bool {
+	if u == nil {
+		return false
+	}
+	for _, op := range u.Ops {
+		if op == "!" {
+			return true
+		}
+	}
+	return isBoolPostfix(u.Value)
+}
+
+func isBoolPostfix(pf *parser.PostfixExpr) bool {
+	if pf == nil || len(pf.Ops) > 0 {
+		return false
+	}
+	return isBoolPrimary(pf.Target)
+}
+
+func isBoolPrimary(p *parser.Primary) bool {
+	if p == nil {
+		return false
+	}
+	switch {
+	case p.Lit != nil && p.Lit.Bool != nil:
+		return true
+	case p.Group != nil:
+		return isBoolExpr(p.Group)
+	default:
+		return false
+	}
+}
+
+func isListExpr(e *parser.Expr) bool { return isListBinary(e.Binary) }
+
+func isListBinary(b *parser.BinaryExpr) bool {
+	if b == nil {
+		return false
+	}
+	if len(b.Right) == 0 {
+		return isListUnary(b.Left)
+	}
+	for _, op := range b.Right {
+		switch op.Op {
+		case "union", "union_all", "except", "intersect":
+			return true
+		}
+	}
+	return isListUnary(b.Left)
+}
+
+func isListUnary(u *parser.Unary) bool {
+	if u == nil {
+		return false
+	}
+	return isListPostfix(u.Value)
+}
+
+func isListPostfix(pf *parser.PostfixExpr) bool {
+	if pf == nil {
+		return false
+	}
+	if len(pf.Ops) > 0 {
+		for _, op := range pf.Ops {
+			if op.Index != nil && (op.Index.Colon != nil || op.Index.Colon2 != nil) {
+				return true
+			}
+		}
+	}
+	return isListPrimary(pf.Target)
+}
+
+func isListPrimary(p *parser.Primary) bool {
+	if p == nil {
+		return false
+	}
+	switch {
+	case p.List != nil:
+		return true
+	case p.Call != nil:
+		switch p.Call.Func {
+		case "append", "union", "union_all", "except", "intersect", "slice":
+			return true
+		}
+	}
+	return false
+}
+
 // Emit formats the Go AST back into source code.
 func Emit(prog *Program) []byte {
 	var buf bytes.Buffer
@@ -803,9 +929,6 @@ func Emit(prog *Program) []byte {
 	buf.Write(meta.Header("//"))
 	buf.WriteString("package main\n\n")
 	buf.WriteString("import (\n    \"fmt\"\n")
-	if prog.UsePrint {
-		buf.WriteString("    \"math\"\n")
-	}
 	if prog.UseStrings {
 		buf.WriteString("    \"strings\"\n")
 	}
@@ -856,6 +979,12 @@ func Emit(prog *Program) []byte {
 	if prog.UseAtoi {
 		buf.WriteString("func atoi(s string) int {\n    n, _ := strconv.Atoi(s)\n    return n\n}\n\n")
 	}
+	if prog.UseBtoi {
+		buf.WriteString("func btoi(b bool) int { if b { return 1 }; return 0 }\n\n")
+	}
+	if prog.UsePrint && prog.UseStrings {
+		buf.WriteString("func joinInts(v any) string { if xs, ok := v.([]int); ok { return strings.Trim(fmt.Sprint(xs), \"[]\") }; return fmt.Sprint(v) }\n\n")
+	}
 	buf.WriteString("func main() {\n")
 	for _, s := range prog.Stmts {
 		buf.WriteString("    ")
@@ -887,7 +1016,11 @@ func toNodeProg(p *Program) *ast.Node {
 func toNodeStmt(s Stmt) *ast.Node {
 	switch st := s.(type) {
 	case *PrintStmt:
-		return &ast.Node{Kind: "print", Children: []*ast.Node{toNodeExpr(st.Expr)}}
+		n := &ast.Node{Kind: "print"}
+		for _, a := range st.Args {
+			n.Children = append(n.Children, toNodeExpr(a))
+		}
+		return n
 	case *ExprStmt:
 		return &ast.Node{Kind: "expr", Children: []*ast.Node{toNodeExpr(st.Expr)}}
 	case *VarDecl:
