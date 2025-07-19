@@ -165,6 +165,9 @@ type StringLit struct{ Value string }
 // LenExpr represents a builtin len() call.
 type LenExpr struct{ Value Expr }
 
+// StrExpr represents a builtin str() call on a constant.
+type StrExpr struct{ Value string }
+
 type UnaryExpr struct {
 	Op   string
 	Expr Expr
@@ -184,6 +187,11 @@ func (i *IntLit) emitExpr(w io.Writer) {
 }
 
 func (s *StringLit) emitExpr(w io.Writer) {
+	esc := strings.ReplaceAll(s.Value, "\"", "\"\"")
+	fmt.Fprintf(w, "\"%s\"", esc)
+}
+
+func (s *StrExpr) emitExpr(w io.Writer) {
 	esc := strings.ReplaceAll(s.Value, "\"", "\"\"")
 	fmt.Fprintf(w, "\"%s\"", esc)
 }
@@ -262,6 +270,8 @@ func isStringLit(e Expr) bool {
 	switch e.(type) {
 	case *StringLit:
 		return true
+	case *StrExpr:
+		return true
 	default:
 		return false
 	}
@@ -269,7 +279,7 @@ func isStringLit(e Expr) bool {
 
 func isSimpleExpr(e Expr) bool {
 	switch v := e.(type) {
-	case *IntLit, *StringLit, *VarRef:
+	case *IntLit, *StringLit, *VarRef, *StrExpr:
 		return true
 	case *UnaryExpr:
 		if v.Op == "-" {
@@ -987,6 +997,16 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			return nil, err
 		}
 		return &LenExpr{Value: arg}, nil
+	case p.Call != nil && p.Call.Func == "str" && len(p.Call.Args) == 1:
+		if lit := literalExpr(p.Call.Args[0]); lit != nil {
+			switch v := lit.(type) {
+			case *IntLit:
+				return &StrExpr{Value: fmt.Sprintf("%d", v.Value)}, nil
+			case *StringLit:
+				return &StrExpr{Value: v.Value}, nil
+			}
+		}
+		return nil, fmt.Errorf("unsupported primary")
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return &VarRef{Name: p.Selector.Root}, nil
 	case p.Group != nil:

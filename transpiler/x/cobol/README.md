@@ -3,7 +3,7 @@
 This directory stores COBOL code generated from Mochi programs in `tests/vm/valid`.
 Each program is transpiled and the resulting `.cob` sources are compiled with `cobc` during testing.
 
-Checklist of programs that currently transpile and run (16/100):
+Checklist of programs that currently transpile and run (17/100):
 
 - [ ] append_builtin
 - [ ] avg_builtin
@@ -84,7 +84,7 @@ Checklist of programs that currently transpile and run (16/100):
 - [ ] short_circuit
 - [ ] slice
 - [ ] sort_stable
-- [ ] str_builtin
+- [x] str_builtin
 - [ ] string_compare
 - [x] string_concat
 - [ ] string_contains
