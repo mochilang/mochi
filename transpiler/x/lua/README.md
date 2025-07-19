@@ -2,7 +2,7 @@
 
 Generated Lua code for programs in `tests/vm/valid`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-Transpiled programs: 27/100
+Transpiled programs: 28/100
 
 Checklist:
 
@@ -23,7 +23,7 @@ Checklist:
 - [ ] dataset_where_filter
 - [ ] exists_builtin
 - [ ] for_list_collection
-- [ ] for_loop
+- [x] for_loop
 - [ ] for_map_collection
 - [x] fun_call
 - [ ] fun_expr_in_let

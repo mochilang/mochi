@@ -1,3 +1,23 @@
+## Progress (2025-07-19 19:20 GMT+7)
+- 28/100 VM tests passing
+- Added support for while loops
+
+## Progress (2025-07-19 19:20 GMT+7)
+- 28/100 VM tests passing
+- Added support for while loops
+
+## Progress (2025-07-19 19:20 GMT+7)
+- 28/100 VM tests passing
+- Added support for while loops
+
+## Progress (2025-07-19 19:20 GMT+7)
+- 27/100 VM tests passing
+- Added support for while loops
+
+## Progress (2025-07-19 19:20 GMT+7)
+- 27/100 VM tests passing
+- Added support for while loops
+
 ## Progress (2025-07-19 18:29 GMT+7)
 - 27/100 VM tests passing
 - Added support for while loops

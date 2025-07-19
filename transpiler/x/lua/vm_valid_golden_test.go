@@ -62,6 +62,9 @@ func TestLuaTranspiler_VMValid_Golden(t *testing.T) {
 			return nil, err
 		}
 		outBytes := bytes.TrimSpace(out)
+		if len(outBytes) == 0 || outBytes[len(outBytes)-1] != '\n' {
+			outBytes = append(outBytes, '\n')
+		}
 		_ = os.WriteFile(outPath, outBytes, 0o644)
 		_ = os.Remove(errPath)
 		return outBytes, nil

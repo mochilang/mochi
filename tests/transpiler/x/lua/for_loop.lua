@@ -37,8 +37,6 @@ function mochi_print(v)
     print(v)
   end
 end
-mochi_print((6 * 7))
-
-mochi_print((7 // 2))
-
-mochi_print((7 % 2))
+for i = 1, 4 - 1 do
+mochi_print(i)
+end
