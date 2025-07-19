@@ -23,26 +23,26 @@
 ;; Function fields takes [s: string] and returns list of string
 (defn fields [s]
   (try
-    (def res []) ;; list of string
-    (def cur "") ;; string
-    (def i 0) ;; int
+    (def fields_res []) ;; list of string
+    (def fields_cur "") ;; string
+    (def fields_i 0) ;; int
     (loop []
-      (when (< i (count s))
+      (when (< fields_i (count s))
         (let [r (try
-          (def c (subs s i (+ i 1))) ;; string
-          (if (= c " ")
+          (def fields_c (subs s fields_i (+ fields_i 1))) ;; string
+          (if (= fields_c " ")
             (do
-              (when (> (count cur) 0)
-                (def res (conj res cur)) ;; list of string
-                (def cur "") ;; string
+              (when (> (count fields_cur) 0)
+                (def fields_res (conj fields_res fields_cur)) ;; list of string
+                (def fields_cur "") ;; string
               )
             )
 
           (do
-            (def cur (str cur c)) ;; string
+            (def fields_cur (str fields_cur fields_c)) ;; string
           )
           )
-          (def i (+ i 1)) ;; int
+          (def fields_i (+ fields_i 1)) ;; int
           :next
         (catch clojure.lang.ExceptionInfo e
           (cond
@@ -58,10 +58,10 @@
     )
   )
 )
-(when (> (count cur) 0)
-  (def res (conj res cur)) ;; list of string
+(when (> (count fields_cur) 0)
+  (def fields_res (conj fields_res fields_cur)) ;; list of string
 )
-(throw (ex-info "return" {:value res}))
+(throw (ex-info "return" {:value fields_res}))
 (catch clojure.lang.ExceptionInfo e
 (if (= (.getMessage e) "return")
   (:value (ex-data e))
@@ -75,22 +75,22 @@
 (when (= (count word) 0)
   (throw (ex-info "return" {:value true}))
 )
-(def c (clojure.string/lower-case (subs word 0 1))) ;; string
-(def i 0) ;; int
+(def canSpell_c (clojure.string/lower-case (subs word 0 1))) ;; string
+(def canSpell_i 0) ;; int
 (loop []
-  (when (< i (count blks))
+  (when (< canSpell_i (count blks))
     (let [r (try
-      (def b (_indexList blks i)) ;; string
-      (when (or (= c (clojure.string/lower-case (subs b 0 1))) (= c (clojure.string/lower-case (subs b 1 2))))
-        (def rest []) ;; list of string
-        (def j 0) ;; int
+      (def canSpell_b (_indexList blks canSpell_i)) ;; string
+      (when (or (= canSpell_c (clojure.string/lower-case (subs canSpell_b 0 1))) (= canSpell_c (clojure.string/lower-case (subs canSpell_b 1 2))))
+        (def canSpell_rest []) ;; list of string
+        (def canSpell_j 0) ;; int
         (loop []
-          (when (< j (count blks))
+          (when (< canSpell_j (count blks))
             (let [r (try
-              (when (not (= j i))
-                (def rest (conj rest (_indexList blks j))) ;; list of string
+              (when (not (= canSpell_j canSpell_i))
+                (def canSpell_rest (conj canSpell_rest (_indexList blks canSpell_j))) ;; list of string
               )
-              (def j (+ j 1)) ;; int
+              (def canSpell_j (+ canSpell_j 1)) ;; int
               :next
             (catch clojure.lang.ExceptionInfo e
               (cond
@@ -106,11 +106,11 @@
         )
       )
     )
-    (when (canSpell (subs word 1 ) rest)
+    (when (canSpell (subs word 1 ) canSpell_rest)
       (throw (ex-info "return" {:value true}))
     )
   )
-  (def i (+ i 1)) ;; int
+  (def canSpell_i (+ canSpell_i 1)) ;; int
   :next
 (catch clojure.lang.ExceptionInfo e
   (cond
@@ -137,10 +137,10 @@
 ;; Function newSpeller takes [blocks: string] and returns function
 (defn newSpeller [blocks]
 (try
-(def bl (fields blocks)) ;; list of string
+(def newSpeller_bl (fields blocks)) ;; list of string
 (throw (ex-info "return" {:value (fn [w]
   (try
-    (throw (ex-info "return" {:value (canSpell w bl)}))
+    (throw (ex-info "return" {:value (canSpell w newSpellerf0_bl)}))
   (catch clojure.lang.ExceptionInfo e
     (if (= (.getMessage e) "return")
       (:value (ex-data e))
@@ -157,12 +157,12 @@
 ;; Function main returns any
 (defn main []
 (try
-(def sp (newSpeller "BO XK DQ CP NA GT RE TG QD FS JW HU VI AN OB ER FS LY PC ZM")) ;; function
+(def main_sp (newSpeller "BO XK DQ CP NA GT RE TG QD FS JW HU VI AN OB ER FS LY PC ZM")) ;; function
 (loop [_tmp0 (seq ["A" "BARK" "BOOK" "TREAT" "COMMON" "SQUAD" "CONFUSE"])]
 (when _tmp0
-(let [word (clojure.core/first _tmp0)]
+(let [main_word (clojure.core/first _tmp0)]
 (let [r (try
-(_print (str (str word " ") (str (sp word))))
+(_print (str (str main_word " ") (str (sp main_word))))
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond

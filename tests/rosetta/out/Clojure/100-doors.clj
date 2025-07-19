@@ -27,7 +27,7 @@
   (loop [i 0]
     (when (< i 100)
       (let [r (try
-        (def doors (conj doors false)) ;; list of any
+        (def doors (conj doors false)) ;; list of bool
         :next
       (catch clojure.lang.ExceptionInfo e
         (cond
@@ -50,7 +50,7 @@
     (loop []
       (when (< idx 100)
         (let [r (try
-          (def doors (assoc doors idx (not (_indexList doors idx)))) ;; any
+          (def doors (assoc doors idx (not (_indexList doors idx)))) ;; bool
           (def idx (+ idx pass)) ;; any
           :next
         (catch clojure.lang.ExceptionInfo e

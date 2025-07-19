@@ -1,4 +1,4 @@
-# Rosetta Clojure Output (7/264 compiled and run)
+# Rosetta Clojure Output (13/264 compiled and run)
 
 This directory holds Clojure source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected runtime output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -11,17 +11,17 @@ This directory holds Clojure source code generated from the real Mochi programs 
 - [ ] 15-puzzle-solver
 - [ ] 2048
 - [ ] 21-game
-- [ ] 24-game-solve
+- [x] 24-game-solve
 - [ ] 24-game
-- [ ] 4-rings-or-4-squares-puzzle
+- [x] 4-rings-or-4-squares-puzzle
 - [ ] 9-billion-names-of-god-the-integer
-- [ ] 99-bottles-of-beer-2
+- [x] 99-bottles-of-beer-2
 - [x] 99-bottles-of-beer
 - [ ] a+b
-- [ ] abbreviations-automatic
-- [ ] abbreviations-easy
-- [ ] abbreviations-simple
-- [x] abc-problem
+- [x] abbreviations-automatic
+- [x] abbreviations-easy
+- [x] abbreviations-simple
+- [ ] abc-problem
 - [ ] abelian-sandpile-model-identity
 - [ ] abelian-sandpile-model
 - [ ] abstract-type

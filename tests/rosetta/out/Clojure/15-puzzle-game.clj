@@ -42,14 +42,14 @@
 ;; Function isSolved returns bool
 (defn isSolved []
   (try
-    (def i 0) ;; int
+    (def isSolved_i 0) ;; int
     (loop []
-      (when (< i 16)
+      (when (< isSolved_i 16)
         (let [r (try
-          (when (not (= (_indexList board i) (_indexList solved i)))
+          (when (not (= (_indexList board isSolved_i) (_indexList solved isSolved_i)))
             (throw (ex-info "return" {:value false}))
           )
-          (def i (+ i 1)) ;; int
+          (def isSolved_i (+ isSolved_i 1)) ;; int
           :next
         (catch clojure.lang.ExceptionInfo e
           (cond
@@ -99,16 +99,16 @@
 ;; Function doMove takes [m: int] and returns bool
 (defn doMove [m]
 (try
-(def r (isValidMove m)) ;; map of string to any
-(when (not (get r "ok"))
+(def doMove_r (isValidMove m)) ;; map of string to any
+(when (not (get doMove_r "ok"))
   (throw (ex-info "return" {:value false}))
 )
-(def i empty) ;; int
-(def j (int (get r "idx"))) ;; int
-(def tmp (_indexList board i)) ;; int
-(def board (assoc board i (_indexList board j))) ;; int
-(def board (assoc board j tmp)) ;; int
-(def empty j) ;; int
+(def doMove_i empty) ;; int
+(def doMove_j (int (get doMove_r "idx"))) ;; int
+(def doMove_tmp (_indexList board doMove_i)) ;; int
+(def board (assoc board doMove_i (_indexList board doMove_j))) ;; int
+(def board (assoc board doMove_j doMove_tmp)) ;; int
+(def empty doMove_j) ;; int
 (def moves (+ moves 1)) ;; int
 (throw (ex-info "return" {:value true}))
 (catch clojure.lang.ExceptionInfo e
@@ -121,12 +121,12 @@
 ;; Function shuffle takes [n: int] and returns any
 (defn shuffle [n]
 (try
-(def i 0) ;; int
+(def shuffle_i 0) ;; int
 (loop []
-  (when (or (< i n) (isSolved ))
+  (when (or (< shuffle_i n) (isSolved ))
     (let [r (try
       (when (doMove (randMove ))
-        (def i (+ i 1)) ;; int
+        (def shuffle_i (+ shuffle_i 1)) ;; int
       )
       :next
     (catch clojure.lang.ExceptionInfo e
@@ -153,35 +153,35 @@
 ;; Function printBoard returns any
 (defn printBoard []
 (try
-(def line "") ;; string
-(def i 0) ;; int
+(def printBoard_line "") ;; string
+(def printBoard_i 0) ;; int
 (loop []
-(when (< i 16)
+(when (< printBoard_i 16)
 (let [r (try
-  (def val (_indexList board i)) ;; int
-  (if (= val 0)
+  (def printBoard_val (_indexList board printBoard_i)) ;; int
+  (if (= printBoard_val 0)
     (do
-      (def line (str line "  .")) ;; string
+      (def printBoard_line (str printBoard_line "  .")) ;; string
     )
 
   (do
-    (def s (str val)) ;; string
-    (if (< val 10)
+    (def printBoard_s (str printBoard_val)) ;; string
+    (if (< printBoard_val 10)
       (do
-        (def line (str (str line "  ") s)) ;; string
+        (def printBoard_line (str (str printBoard_line "  ") printBoard_s)) ;; string
       )
 
     (do
-      (def line (str (str line " ") s)) ;; string
+      (def printBoard_line (str (str printBoard_line " ") printBoard_s)) ;; string
     )
     )
   )
   )
-  (when (= (mod i 4) 3)
-    (_print line)
-    (def line "") ;; string
+  (when (= (mod printBoard_i 4) 3)
+    (_print printBoard_line)
+    (def printBoard_line "") ;; string
   )
-  (def i (+ i 1)) ;; int
+  (def printBoard_i (+ printBoard_i 1)) ;; int
   :next
 (catch clojure.lang.ExceptionInfo e
   (cond
@@ -211,33 +211,33 @@
 (when true
 (let [r (try
 (_print (str (str "Enter move #" (str (+ moves 1))) " (U, D, L, R, or Q): "))
-(def s (_input)) ;; string
-(when (= s "")
+(def playOneMove_s (_input)) ;; string
+(when (= playOneMove_s "")
 (throw (ex-info "continue" {}))
 )
-(def c (subs s 0 1)) ;; string
-(def m 0) ;; int
-(if (or (= c "U") (= c "u"))
+(def playOneMove_c (subs playOneMove_s 0 1)) ;; string
+(def playOneMove_m 0) ;; int
+(if (or (= playOneMove_c "U") (= playOneMove_c "u"))
 (do
-  (def m 0) ;; int
+  (def playOneMove_m 0) ;; int
 )
 
-(if (or (= c "D") (= c "d"))
+(if (or (= playOneMove_c "D") (= playOneMove_c "d"))
 (do
-  (def m 1) ;; int
+  (def playOneMove_m 1) ;; int
 )
 
-(if (or (= c "R") (= c "r"))
+(if (or (= playOneMove_c "R") (= playOneMove_c "r"))
 (do
-  (def m 2) ;; int
+  (def playOneMove_m 2) ;; int
 )
 
-(if (or (= c "L") (= c "l"))
+(if (or (= playOneMove_c "L") (= playOneMove_c "l"))
 (do
-  (def m 3) ;; int
+  (def playOneMove_m 3) ;; int
 )
 
-(if (or (= c "Q") (= c "q"))
+(if (or (= playOneMove_c "Q") (= playOneMove_c "q"))
 (do
   (_print (str (str "Quiting after " (str moves)) " moves."))
   (def quit true) ;; bool
@@ -253,7 +253,7 @@
 )
 )
 )
-(when (not (doMove m))
+(when (not (doMove playOneMove_m))
 (_print "That is not a valid move at the moment.")
 (throw (ex-info "continue" {}))
 )

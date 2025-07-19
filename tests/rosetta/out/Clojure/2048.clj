@@ -43,18 +43,18 @@
 ;; Function newBoard returns list of list of int
 (defn newBoard []
   (try
-    (def b []) ;; list of list of int
-    (def y 0) ;; int
+    (def newBoard_b []) ;; list of list of int
+    (def newBoard_y 0) ;; int
     (loop []
-      (when (< y SIZE)
+      (when (< newBoard_y SIZE)
         (let [r (try
-          (def row []) ;; list of int
-          (def x 0) ;; int
+          (def newBoard_row []) ;; list of int
+          (def newBoard_x 0) ;; int
           (loop []
-            (when (< x SIZE)
+            (when (< newBoard_x SIZE)
               (let [r (try
-                (def row (conj row 0)) ;; list of int
-                (def x (+ x 1)) ;; int
+                (def newBoard_row (conj newBoard_row 0)) ;; list of int
+                (def newBoard_x (+ newBoard_x 1)) ;; int
                 :next
               (catch clojure.lang.ExceptionInfo e
                 (cond
@@ -70,8 +70,8 @@
           )
         )
       )
-      (def b (conj b row)) ;; list of list of int
-      (def y (+ y 1)) ;; int
+      (def newBoard_b (conj newBoard_b newBoard_row)) ;; list of list of int
+      (def newBoard_y (+ newBoard_y 1)) ;; int
       :next
     (catch clojure.lang.ExceptionInfo e
       (cond
@@ -87,7 +87,7 @@
 )
 )
 )
-(throw (ex-info "return" {:value b}))
+(throw (ex-info "return" {:value newBoard_b}))
 (catch clojure.lang.ExceptionInfo e
 (if (= (.getMessage e) "return")
 (:value (ex-data e))
@@ -98,19 +98,19 @@
 ;; Function spawnTile takes [b: list of list of int] and returns map of string to any
 (defn spawnTile [b]
 (try
-(def empty []) ;; list of list of int
-(def y 0) ;; int
+(def spawnTile_empty []) ;; list of list of int
+(def spawnTile_y 0) ;; int
 (loop []
-(when (< y SIZE)
+(when (< spawnTile_y SIZE)
 (let [r (try
-  (def x 0) ;; int
+  (def spawnTile_x 0) ;; int
   (loop []
-    (when (< x SIZE)
+    (when (< spawnTile_x SIZE)
       (let [r (try
-        (when (= (_indexList (_indexList b y) x) 0)
-          (def empty (conj empty [x y])) ;; list of list of int
+        (when (= (_indexList (_indexList b spawnTile_y) spawnTile_x) 0)
+          (def spawnTile_empty (conj spawnTile_empty [spawnTile_x spawnTile_y])) ;; list of list of int
         )
-        (def x (+ x 1)) ;; int
+        (def spawnTile_x (+ spawnTile_x 1)) ;; int
         :next
       (catch clojure.lang.ExceptionInfo e
         (cond
@@ -126,7 +126,7 @@
   )
 )
 )
-(def y (+ y 1)) ;; int
+(def spawnTile_y (+ spawnTile_y 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -142,17 +142,17 @@
 )
 )
 )
-(when (= (count empty) 0)
+(when (= (count spawnTile_empty) 0)
 (throw (ex-info "return" {:value {"board" b "full" true}}))
 )
-(def idx (mod (System/nanoTime) (count empty))) ;; int
-(def cell (_indexList empty idx)) ;; list of int
-(def val 4) ;; int
+(def spawnTile_idx (mod (System/nanoTime) (count spawnTile_empty))) ;; int
+(def spawnTile_cell (_indexList spawnTile_empty spawnTile_idx)) ;; list of int
+(def spawnTile_val 4) ;; int
 (when (< (mod (System/nanoTime) 10) 9)
-(def val 2) ;; int
+(def spawnTile_val 2) ;; int
 )
-(def b (assoc-in b [(_indexList cell 1) (_indexList cell 0)] val)) ;; int
-(throw (ex-info "return" {:value {"board" b "full" (= (count empty) 1)}}))
+(def b (assoc-in b [(_indexList spawnTile_cell 1) (_indexList spawnTile_cell 0)] spawnTile_val)) ;; int
+(throw (ex-info "return" {:value {"board" b "full" (= (count spawnTile_empty) 1)}}))
 (catch clojure.lang.ExceptionInfo e
 (if (= (.getMessage e) "return")
 (:value (ex-data e))
@@ -163,15 +163,15 @@
 ;; Function pad takes [n: int] and returns string
 (defn pad [n]
 (try
-(def s (str n)) ;; string
-(def pad (- 4 (count s))) ;; int
-(def i 0) ;; int
-(def out "") ;; string
+(def pad_s (str n)) ;; string
+(def pad_pad (- 4 (count pad_s))) ;; int
+(def pad_i 0) ;; int
+(def pad_out "") ;; string
 (loop []
-(when (< i pad)
+(when (< pad_i pad_pad)
 (let [r (try
-(def out (str out " ")) ;; string
-(def i (+ i 1)) ;; int
+(def pad_out (str pad_out " ")) ;; string
+(def pad_i (+ pad_i 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -187,7 +187,7 @@
 )
 )
 )
-(throw (ex-info "return" {:value (str out s)}))
+(throw (ex-info "return" {:value (str pad_out pad_s)}))
 (catch clojure.lang.ExceptionInfo e
 (if (= (.getMessage e) "return")
 (:value (ex-data e))
@@ -199,27 +199,27 @@
 (defn draw [b score]
 (try
 (_print (str "Score: " (str score)))
-(def y 0) ;; int
+(def draw_y 0) ;; int
 (loop []
-(when (< y SIZE)
+(when (< draw_y SIZE)
 (let [r (try
 (_print "+----+----+----+----+")
-(def line "|") ;; string
-(def x 0) ;; int
+(def draw_line "|") ;; string
+(def draw_x 0) ;; int
 (loop []
-(when (< x SIZE)
+(when (< draw_x SIZE)
 (let [r (try
-(def v (_indexList (_indexList b y) x)) ;; int
-(if (= v 0)
+(def draw_v (_indexList (_indexList b draw_y) draw_x)) ;; int
+(if (= draw_v 0)
 (do
-(def line (str line "    |")) ;; string
+(def draw_line (str draw_line "    |")) ;; string
 )
 
 (do
-(def line (str (str line (pad v)) "|")) ;; string
+(def draw_line (str (str draw_line (pad draw_v)) "|")) ;; string
 )
 )
-(def x (+ x 1)) ;; int
+(def draw_x (+ draw_x 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -235,8 +235,8 @@
 )
 )
 )
-(_print line)
-(def y (+ y 1)) ;; int
+(_print draw_line)
+(def draw_y (+ draw_y 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -264,13 +264,13 @@
 ;; Function reverseRow takes [r: list of int] and returns list of int
 (defn reverseRow [r]
 (try
-(def out []) ;; list of int
-(def i (- (count r) 1)) ;; int
+(def reverseRow_out []) ;; list of int
+(def reverseRow_i (- (count r) 1)) ;; int
 (loop []
-(when (>= i 0)
+(when (>= reverseRow_i 0)
 (let [r (try
-(def out (conj out (_indexList r i))) ;; list of int
-(def i (- i 1)) ;; int
+(def reverseRow_out (conj reverseRow_out (_indexList r reverseRow_i))) ;; list of int
+(def reverseRow_i (- reverseRow_i 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -286,7 +286,7 @@
 )
 )
 )
-(throw (ex-info "return" {:value out}))
+(throw (ex-info "return" {:value reverseRow_out}))
 (catch clojure.lang.ExceptionInfo e
 (if (= (.getMessage e) "return")
 (:value (ex-data e))
@@ -297,15 +297,15 @@
 ;; Function slideLeft takes [row: list of int] and returns map of string to any
 (defn slideLeft [row]
 (try
-(def xs []) ;; list of int
-(def i 0) ;; int
+(def slideLeft_xs []) ;; list of int
+(def slideLeft_i 0) ;; int
 (loop []
-(when (< i (count row))
+(when (< slideLeft_i (count row))
 (let [r (try
-(when (not (= (_indexList row i) 0))
-(def xs (conj xs (_indexList row i))) ;; list of int
+(when (not (= (_indexList row slideLeft_i) 0))
+(def slideLeft_xs (conj slideLeft_xs (_indexList row slideLeft_i))) ;; list of int
 )
-(def i (+ i 1)) ;; int
+(def slideLeft_i (+ slideLeft_i 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -321,23 +321,23 @@
 )
 )
 )
-(def res []) ;; list of int
-(def gain 0) ;; int
-(def i 0) ;; int
+(def slideLeft_res []) ;; list of int
+(def slideLeft_gain 0) ;; int
+(def slideLeft_i 0) ;; int
 (loop []
-(when (< i (count xs))
+(when (< slideLeft_i (count slideLeft_xs))
 (let [r (try
-(if (and (< (+ i 1) (count xs)) (= (_indexList xs i) (_indexList xs (+ i 1))))
+(if (and (< (+ slideLeft_i 1) (count slideLeft_xs)) (= (_indexList slideLeft_xs slideLeft_i) (_indexList slideLeft_xs (+ slideLeft_i 1))))
 (do
-(def v (* (_indexList xs i) 2)) ;; int
-(def gain (+ gain v)) ;; int
-(def res (conj res v)) ;; list of int
-(def i (+ i 2)) ;; int
+(def slideLeft_v (* (_indexList slideLeft_xs slideLeft_i) 2)) ;; int
+(def slideLeft_gain (+ slideLeft_gain slideLeft_v)) ;; int
+(def slideLeft_res (conj slideLeft_res slideLeft_v)) ;; list of int
+(def slideLeft_i (+ slideLeft_i 2)) ;; int
 )
 
 (do
-(def res (conj res (_indexList xs i))) ;; list of int
-(def i (+ i 1)) ;; int
+(def slideLeft_res (conj slideLeft_res (_indexList slideLeft_xs slideLeft_i))) ;; list of int
+(def slideLeft_i (+ slideLeft_i 1)) ;; int
 )
 )
 :next
@@ -356,9 +356,9 @@
 )
 )
 (loop []
-(when (< (count res) SIZE)
+(when (< (count slideLeft_res) SIZE)
 (let [r (try
-(def res (conj res 0)) ;; list of int
+(def slideLeft_res (conj slideLeft_res 0)) ;; list of int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -374,7 +374,7 @@
 )
 )
 )
-(throw (ex-info "return" {:value {"row" res "gain" gain}}))
+(throw (ex-info "return" {:value {"row" slideLeft_res "gain" slideLeft_gain}}))
 (catch clojure.lang.ExceptionInfo e
 (if (= (.getMessage e) "return")
 (:value (ex-data e))
@@ -385,23 +385,23 @@
 ;; Function moveLeft takes [b: list of list of int, score: int] and returns map of string to any
 (defn moveLeft [b score]
 (try
-(def moved false) ;; bool
-(def y 0) ;; int
+(def moveLeft_moved false) ;; bool
+(def moveLeft_y 0) ;; int
 (loop []
-(when (< y SIZE)
+(when (< moveLeft_y SIZE)
 (let [r (try
-(def r (slideLeft (_indexList b y))) ;; map of string to any
-(def new (get r "row")) ;; any
+(def r (slideLeft (_indexList b moveLeft_y))) ;; map of string to any
+(def moveLeft_new (get r "row")) ;; any
 (def score (+ score (get r "gain"))) ;; any
-(def x 0) ;; int
+(def moveLeft_x 0) ;; int
 (loop []
-(when (< x SIZE)
+(when (< moveLeft_x SIZE)
 (let [r (try
-(when (not (_equal (_indexList (_indexList b y) x) (get new x)))
-(def moved true) ;; bool
+(when (not (_equal (_indexList (_indexList b moveLeft_y) moveLeft_x) (get moveLeft_new moveLeft_x)))
+(def moveLeft_moved true) ;; bool
 )
-(def b (assoc-in b [y x] (get new x))) ;; any
-(def x (+ x 1)) ;; int
+(def b (assoc-in b [moveLeft_y moveLeft_x] (get moveLeft_new moveLeft_x))) ;; any
+(def moveLeft_x (+ moveLeft_x 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -417,7 +417,7 @@
 )
 )
 )
-(def y (+ y 1)) ;; int
+(def moveLeft_y (+ moveLeft_y 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -433,7 +433,7 @@
 )
 )
 )
-(throw (ex-info "return" {:value {"board" b "score" score "moved" moved}}))
+(throw (ex-info "return" {:value {"board" b "score" score "moved" moveLeft_moved}}))
 (catch clojure.lang.ExceptionInfo e
 (if (= (.getMessage e) "return")
 (:value (ex-data e))
@@ -444,25 +444,25 @@
 ;; Function moveRight takes [b: list of list of int, score: int] and returns map of string to any
 (defn moveRight [b score]
 (try
-(def moved false) ;; bool
-(def y 0) ;; int
+(def moveRight_moved false) ;; bool
+(def moveRight_y 0) ;; int
 (loop []
-(when (< y SIZE)
+(when (< moveRight_y SIZE)
 (let [r (try
-(def rev (reverseRow (_indexList b y))) ;; list of int
-(def r (slideLeft rev)) ;; map of string to any
-(def rev (get r "row")) ;; any
+(def moveRight_rev (reverseRow (_indexList b moveRight_y))) ;; list of int
+(def r (slideLeft moveRight_rev)) ;; map of string to any
+(def moveRight_rev (get r "row")) ;; any
 (def score (+ score (get r "gain"))) ;; any
-(def rev (reverseRow rev)) ;; list of int
-(def x 0) ;; int
+(def moveRight_rev (reverseRow moveRight_rev)) ;; list of int
+(def moveRight_x 0) ;; int
 (loop []
-(when (< x SIZE)
+(when (< moveRight_x SIZE)
 (let [r (try
-(when (not (= (_indexList (_indexList b y) x) (_indexList rev x)))
-(def moved true) ;; bool
+(when (not (= (_indexList (_indexList b moveRight_y) moveRight_x) (_indexList moveRight_rev moveRight_x)))
+(def moveRight_moved true) ;; bool
 )
-(def b (assoc-in b [y x] (_indexList rev x))) ;; int
-(def x (+ x 1)) ;; int
+(def b (assoc-in b [moveRight_y moveRight_x] (_indexList moveRight_rev moveRight_x))) ;; int
+(def moveRight_x (+ moveRight_x 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -478,7 +478,7 @@
 )
 )
 )
-(def y (+ y 1)) ;; int
+(def moveRight_y (+ moveRight_y 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -494,7 +494,7 @@
 )
 )
 )
-(throw (ex-info "return" {:value {"board" b "score" score "moved" moved}}))
+(throw (ex-info "return" {:value {"board" b "score" score "moved" moveRight_moved}}))
 (catch clojure.lang.ExceptionInfo e
 (if (= (.getMessage e) "return")
 (:value (ex-data e))
@@ -505,13 +505,13 @@
 ;; Function getCol takes [b: list of list of int, x: int] and returns list of int
 (defn getCol [b x]
 (try
-(def col []) ;; list of int
-(def y 0) ;; int
+(def getCol_col []) ;; list of int
+(def getCol_y 0) ;; int
 (loop []
-(when (< y SIZE)
+(when (< getCol_y SIZE)
 (let [r (try
-(def col (conj col (_indexList (_indexList b y) x))) ;; list of int
-(def y (+ y 1)) ;; int
+(def getCol_col (conj getCol_col (_indexList (_indexList b getCol_y) x))) ;; list of int
+(def getCol_y (+ getCol_y 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -527,7 +527,7 @@
 )
 )
 )
-(throw (ex-info "return" {:value col}))
+(throw (ex-info "return" {:value getCol_col}))
 (catch clojure.lang.ExceptionInfo e
 (if (= (.getMessage e) "return")
 (:value (ex-data e))
@@ -538,12 +538,12 @@
 ;; Function setCol takes [b: list of list of int, x: int, col: list of int] and returns any
 (defn setCol [b x col]
 (try
-(def y 0) ;; int
+(def setCol_y 0) ;; int
 (loop []
-(when (< y SIZE)
+(when (< setCol_y SIZE)
 (let [r (try
-(def b (assoc-in b [y x] (_indexList col y))) ;; int
-(def y (+ y 1)) ;; int
+(def b (assoc-in b [setCol_y x] (_indexList col setCol_y))) ;; int
+(def setCol_y (+ setCol_y 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -569,24 +569,24 @@
 ;; Function moveUp takes [b: list of list of int, score: int] and returns map of string to any
 (defn moveUp [b score]
 (try
-(def moved false) ;; bool
-(def x 0) ;; int
+(def moveUp_moved false) ;; bool
+(def moveUp_x 0) ;; int
 (loop []
-(when (< x SIZE)
+(when (< moveUp_x SIZE)
 (let [r (try
-(def col (getCol b x)) ;; list of int
-(def r (slideLeft col)) ;; map of string to any
-(def new (get r "row")) ;; any
+(def moveUp_col (getCol b moveUp_x)) ;; list of int
+(def r (slideLeft moveUp_col)) ;; map of string to any
+(def moveUp_new (get r "row")) ;; any
 (def score (+ score (get r "gain"))) ;; any
-(def y 0) ;; int
+(def moveUp_y 0) ;; int
 (loop []
-(when (< y SIZE)
+(when (< moveUp_y SIZE)
 (let [r (try
-(when (not (_equal (_indexList (_indexList b y) x) (get new y)))
-(def moved true) ;; bool
+(when (not (_equal (_indexList (_indexList b moveUp_y) moveUp_x) (get moveUp_new moveUp_y)))
+(def moveUp_moved true) ;; bool
 )
-(def b (assoc-in b [y x] (get new y))) ;; any
-(def y (+ y 1)) ;; int
+(def b (assoc-in b [moveUp_y moveUp_x] (get moveUp_new moveUp_y))) ;; any
+(def moveUp_y (+ moveUp_y 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -602,7 +602,7 @@
 )
 )
 )
-(def x (+ x 1)) ;; int
+(def moveUp_x (+ moveUp_x 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -618,7 +618,7 @@
 )
 )
 )
-(throw (ex-info "return" {:value {"board" b "score" score "moved" moved}}))
+(throw (ex-info "return" {:value {"board" b "score" score "moved" moveUp_moved}}))
 (catch clojure.lang.ExceptionInfo e
 (if (= (.getMessage e) "return")
 (:value (ex-data e))
@@ -629,25 +629,25 @@
 ;; Function moveDown takes [b: list of list of int, score: int] and returns map of string to any
 (defn moveDown [b score]
 (try
-(def moved false) ;; bool
-(def x 0) ;; int
+(def moveDown_moved false) ;; bool
+(def moveDown_x 0) ;; int
 (loop []
-(when (< x SIZE)
+(when (< moveDown_x SIZE)
 (let [r (try
-(def col (reverseRow (getCol b x))) ;; list of int
-(def r (slideLeft col)) ;; map of string to any
-(def col (get r "row")) ;; any
+(def moveDown_col (reverseRow (getCol b moveDown_x))) ;; list of int
+(def r (slideLeft moveDown_col)) ;; map of string to any
+(def moveDown_col (get r "row")) ;; any
 (def score (+ score (get r "gain"))) ;; any
-(def col (reverseRow col)) ;; list of int
-(def y 0) ;; int
+(def moveDown_col (reverseRow moveDown_col)) ;; list of int
+(def moveDown_y 0) ;; int
 (loop []
-(when (< y SIZE)
+(when (< moveDown_y SIZE)
 (let [r (try
-(when (not (= (_indexList (_indexList b y) x) (_indexList col y)))
-(def moved true) ;; bool
+(when (not (= (_indexList (_indexList b moveDown_y) moveDown_x) (_indexList moveDown_col moveDown_y)))
+(def moveDown_moved true) ;; bool
 )
-(def b (assoc-in b [y x] (_indexList col y))) ;; int
-(def y (+ y 1)) ;; int
+(def b (assoc-in b [moveDown_y moveDown_x] (_indexList moveDown_col moveDown_y))) ;; int
+(def moveDown_y (+ moveDown_y 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -663,7 +663,7 @@
 )
 )
 )
-(def x (+ x 1)) ;; int
+(def moveDown_x (+ moveDown_x 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -679,7 +679,7 @@
 )
 )
 )
-(throw (ex-info "return" {:value {"board" b "score" score "moved" moved}}))
+(throw (ex-info "return" {:value {"board" b "score" score "moved" moveDown_moved}}))
 (catch clojure.lang.ExceptionInfo e
 (if (= (.getMessage e) "return")
 (:value (ex-data e))
@@ -690,24 +690,24 @@
 ;; Function hasMoves takes [b: list of list of int] and returns bool
 (defn hasMoves [b]
 (try
-(def y 0) ;; int
+(def hasMoves_y 0) ;; int
 (loop []
-(when (< y SIZE)
+(when (< hasMoves_y SIZE)
 (let [r (try
-(def x 0) ;; int
+(def hasMoves_x 0) ;; int
 (loop []
-(when (< x SIZE)
+(when (< hasMoves_x SIZE)
 (let [r (try
-(when (= (_indexList (_indexList b y) x) 0)
+(when (= (_indexList (_indexList b hasMoves_y) hasMoves_x) 0)
 (throw (ex-info "return" {:value true}))
 )
-(when (and (< (+ x 1) SIZE) (= (_indexList (_indexList b y) x) (_indexList (_indexList b y) (+ x 1))))
+(when (and (< (+ hasMoves_x 1) SIZE) (= (_indexList (_indexList b hasMoves_y) hasMoves_x) (_indexList (_indexList b hasMoves_y) (+ hasMoves_x 1))))
 (throw (ex-info "return" {:value true}))
 )
-(when (and (< (+ y 1) SIZE) (= (_indexList (_indexList b y) x) (_indexList (_indexList b (+ y 1)) x)))
+(when (and (< (+ hasMoves_y 1) SIZE) (= (_indexList (_indexList b hasMoves_y) hasMoves_x) (_indexList (_indexList b (+ hasMoves_y 1)) hasMoves_x)))
 (throw (ex-info "return" {:value true}))
 )
-(def x (+ x 1)) ;; int
+(def hasMoves_x (+ hasMoves_x 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -723,7 +723,7 @@
 )
 )
 )
-(def y (+ y 1)) ;; int
+(def hasMoves_y (+ hasMoves_y 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -750,18 +750,18 @@
 ;; Function has2048 takes [b: list of list of int] and returns bool
 (defn has2048 [b]
 (try
-(def y 0) ;; int
+(def has2048_y 0) ;; int
 (loop []
-(when (< y SIZE)
+(when (< has2048_y SIZE)
 (let [r (try
-(def x 0) ;; int
+(def has2048_x 0) ;; int
 (loop []
-(when (< x SIZE)
+(when (< has2048_x SIZE)
 (let [r (try
-(when (>= (_indexList (_indexList b y) x) 2048)
+(when (>= (_indexList (_indexList b has2048_y) has2048_x) 2048)
 (throw (ex-info "return" {:value true}))
 )
-(def x (+ x 1)) ;; int
+(def has2048_x (+ has2048_x 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -777,7 +777,7 @@
 )
 )
 )
-(def y (+ y 1)) ;; int
+(def has2048_y (+ has2048_y 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
