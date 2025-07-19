@@ -5,7 +5,7 @@ programs to SWI-Prolog. It is mainly used for experimentation and golden tests.
 
 ## Golden tests
 
-Programs under `tests/vm/valid` that have generated Prolog code (14/100):
+Programs under `tests/vm/valid` that have generated Prolog code (15/100):
 
 - [ ] `append_builtin`
 - [ ] `avg_builtin`
@@ -87,7 +87,7 @@ Programs under `tests/vm/valid` that have generated Prolog code (14/100):
 - [ ] `slice`
 - [ ] `sort_stable`
  - [x] `str_builtin`
-- [ ] `string_compare`
+- [x] `string_compare`
  - [x] `string_concat`
 - [ ] `string_contains`
 - [ ] `string_in_operator`
