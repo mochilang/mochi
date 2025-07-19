@@ -1,5 +1,6 @@
 # Zig Transpiler Tasks
 
+- 2025-07-19 20:15 +0700 - Added constant folding for `min`, `max` and `substring`; generated golden tests for substring_builtin and min_max_builtin (24/100 tests passing)
 - 2025-07-19 19:46 +0700 - Added index assignment and string comparison support; generated golden tests for list_assign, list_nested_assign and string_compare (22/100 tests passing)
 
 - 2025-07-19 12:39 +0000 - Added `str` and `sum` builtin constant folding; generated golden tests for str_builtin and sum_builtin (19/100 tests passing)

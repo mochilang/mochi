@@ -4,7 +4,7 @@ This directory contains a minimal transpiler that converts a subset of Mochi int
 
 ## Golden tests
 
-Programs under `tests/vm/valid` that have generated Zig code (22/100):
+Programs under `tests/vm/valid` that have generated Zig code (24/100):
 - [ ] append_builtin
 - [ ] avg_builtin
 - [x] basic_compare
@@ -67,7 +67,7 @@ Programs under `tests/vm/valid` that have generated Zig code (22/100):
 - [ ] match_full
 - [x] math_ops
 - [ ] membership
-- [ ] min_max_builtin
+- [x] min_max_builtin
 - [ ] nested_function
 - [ ] order_by_map
 - [ ] outer_join
@@ -91,7 +91,7 @@ Programs under `tests/vm/valid` that have generated Zig code (22/100):
 - [ ] string_in_operator
 - [ ] string_index
 - [ ] string_prefix_slice
-- [ ] substring_builtin
+- [x] substring_builtin
 - [x] sum_builtin
 - [ ] tail_recursion
 - [ ] test_block
