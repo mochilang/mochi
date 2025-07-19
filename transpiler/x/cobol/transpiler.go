@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
@@ -790,10 +791,14 @@ func convertVar(name string, t *parser.TypeRef, val *parser.Expr, env *types.Env
 	if val != nil {
 		if lit := literalExpr(val); lit != nil {
 			if il, ok := lit.(*IntLit); ok {
-				if il.Value >= -9 && il.Value <= 9 {
+				n := len(strconv.Itoa(absInt(il.Value)))
+				if il.Value < 0 {
+					n++
+				}
+				if n <= 1 {
 					pic = "PIC 9"
 				} else {
-					pic = "PIC 9(9)"
+					pic = fmt.Sprintf("PIC 9(%d)", n)
 				}
 			}
 		}
@@ -1087,4 +1092,11 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 	default:
 		return nil, fmt.Errorf("unsupported literal")
 	}
+}
+
+func absInt(v int) int {
+	if v < 0 {
+		return -v
+	}
+	return v
 }

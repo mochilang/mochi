@@ -1,5 +1,6 @@
 # Transpiler Progress
 
+- 2025-07-20 01:32 +0700 - Simplified DISPLAY handling and removed TMP-STR helper; README checklist now 18/100
 - 2025-07-19 21:14 +0700 - Implemented boolean operators and generated golden files for `string_compare`; README checklist now 18/100
 
 - 2025-07-19 13:18 +0700 - Initial COBOL transpiler support
