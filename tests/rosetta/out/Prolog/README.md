@@ -1,28 +1,28 @@
-# Rosetta Prolog Output (1/278 compiled and run)
+# Rosetta Prolog Output (20/278 compiled and run)
 
 This directory holds Prolog source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
 ## Program checklist
 - [x] 100-doors-2
-- [ ] 100-doors-3
-- [ ] 100-doors
-- [ ] 100-prisoners
-- [ ] 15-puzzle-game
-- [ ] 15-puzzle-solver
-- [ ] 2048
-- [ ] 21-game
-- [ ] 24-game-solve
-- [ ] 24-game
-- [ ] 4-rings-or-4-squares-puzzle
-- [ ] 9-billion-names-of-god-the-integer
-- [ ] 99-bottles-of-beer-2
-- [ ] 99-bottles-of-beer
-- [ ] DNS-query
-- [ ] a+b
-- [ ] abbreviations-automatic
-- [ ] abbreviations-easy
-- [ ] abbreviations-simple
-- [ ] abc-problem
+- [x] 100-doors-3
+- [x] 100-doors
+- [x] 100-prisoners
+- [x] 15-puzzle-game
+- [x] 15-puzzle-solver
+- [x] 2048
+- [x] 21-game
+- [x] 24-game-solve
+- [x] 24-game
+- [x] 4-rings-or-4-squares-puzzle
+- [x] 9-billion-names-of-god-the-integer
+- [x] 99-bottles-of-beer-2
+- [x] 99-bottles-of-beer
+- [x] DNS-query
+- [x] a+b
+- [x] abbreviations-automatic
+- [x] abbreviations-easy
+- [x] abbreviations-simple
+- [x] abc-problem
 - [ ] abelian-sandpile-model-identity
 - [ ] abelian-sandpile-model
 - [ ] abstract-type
