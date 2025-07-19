@@ -296,11 +296,10 @@ func (s *SelectorExpr) emit(w io.Writer) {
 }
 
 func (i *IndexExpr) emit(w io.Writer) {
-	io.WriteString(w, "std::string(1, ")
 	i.Target.emit(w)
 	io.WriteString(w, "[")
 	i.Index.emit(w)
-	io.WriteString(w, "])")
+	io.WriteString(w, "]")
 }
 
 func (c *ContainsExpr) emit(w io.Writer) {
