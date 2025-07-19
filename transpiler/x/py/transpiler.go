@@ -97,6 +97,20 @@ type ContinueStmt struct{}
 
 func (*ContinueStmt) isStmt() {}
 
+// AssertStmt represents an assertion statement.
+type AssertStmt struct {
+	Expr Expr
+}
+
+func (*AssertStmt) isStmt() {}
+
+// CommentStmt represents a comment line.
+type CommentStmt struct {
+	Text string
+}
+
+func (*CommentStmt) isStmt() {}
+
 // IndexAssignStmt assigns to an element of a list or map.
 type IndexAssignStmt struct {
 	Target Expr
@@ -594,6 +608,18 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 	case *ContinueStmt:
 		_, err := io.WriteString(w, indent+"continue\n")
 		return err
+	case *AssertStmt:
+		if _, err := io.WriteString(w, indent+"assert "); err != nil {
+			return err
+		}
+		if err := emitExpr(w, st.Expr); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, "\n")
+		return err
+	case *CommentStmt:
+		_, err := io.WriteString(w, indent+"# "+st.Text+"\n")
+		return err
 	case *IndexAssignStmt:
 		if _, err := io.WriteString(w, indent); err != nil {
 			return err
@@ -846,6 +872,20 @@ func Emit(w io.Writer, p *Program) error {
 			if _, err := io.WriteString(w, "continue\n"); err != nil {
 				return err
 			}
+		case *AssertStmt:
+			if _, err := io.WriteString(w, "assert "); err != nil {
+				return err
+			}
+			if err := emitExpr(w, st.Expr); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, "\n"); err != nil {
+				return err
+			}
+		case *CommentStmt:
+			if _, err := io.WriteString(w, "# "+st.Text+"\n"); err != nil {
+				return err
+			}
 		case *IndexAssignStmt:
 			if err := emitExpr(w, st.Target); err != nil {
 				return err
@@ -1048,6 +1088,20 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			p.Stmts = append(p.Stmts, &BreakStmt{})
 		case st.Continue != nil:
 			p.Stmts = append(p.Stmts, &ContinueStmt{})
+		case st.Expect != nil:
+			e, err := convertExpr(st.Expect.Value)
+			if err != nil {
+				return nil, err
+			}
+			p.Stmts = append(p.Stmts, &AssertStmt{Expr: e})
+		case st.Test != nil:
+			comment := &CommentStmt{Text: "test " + strings.Trim(st.Test.Name, "\"")}
+			body, err := convertStmts(st.Test.Body, env)
+			if err != nil {
+				return nil, err
+			}
+			p.Stmts = append(p.Stmts, comment)
+			p.Stmts = append(p.Stmts, body...)
 		case st.Return != nil:
 			var e Expr
 			if st.Return.Value != nil {
@@ -1211,6 +1265,20 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 			out = append(out, &BreakStmt{})
 		case s.Continue != nil:
 			out = append(out, &ContinueStmt{})
+		case s.Expect != nil:
+			e, err := convertExpr(s.Expect.Value)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, &AssertStmt{Expr: e})
+		case s.Test != nil:
+			comment := &CommentStmt{Text: "test " + strings.Trim(s.Test.Name, "\"")}
+			body, err := convertStmts(s.Test.Body, env)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, comment)
+			out = append(out, body...)
 		case s.Return != nil:
 			var e Expr
 			if s.Return.Value != nil {
@@ -1721,6 +1789,3 @@ func exprNode(e Expr) *ast.Node {
 }
 
 // Print writes the Python AST in Lisp-like form to stdout.
-func Print(p *Program) {
-	toNode(p).Print("")
-}
