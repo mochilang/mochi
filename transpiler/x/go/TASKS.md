@@ -1,6 +1,7 @@
-## Progress (2025-07-19 17:31 +0700)
-- Added break and continue statements
-- Implemented if expressions and string-to-int casts
+## Progress (2025-07-19 19:23 +0700)
+- Fixed bool output to use 0 for false and string `nil` for nil values
+- Updated list `contains` to return index or nil to match runtime
+- 36/100 vm valid programs currently passing
 
 # Recent Progress
 - 2025-07-19 16:53 +0700 - Added golden test automation

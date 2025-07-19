@@ -805,7 +805,7 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("func max(nums []int) int {\n    if len(nums)==0 { return 0 }\n    m := nums[0]\n    for _, n := range nums[1:] { if n > m { m = n } }\n    return m\n}\n\n")
 	}
 	if prog.UseContains {
-		buf.WriteString("func contains(s any, v any) any {\n    switch xs := s.(type) {\n    case []int:\n        n, ok := v.(int)\n        if !ok { return false }\n        for _, m := range xs { if m == n { return true } }\n        return false\n    case string:\n        str, ok := v.(string)\n        if !ok { return 0 }\n        if strings.Contains(xs, str) { return 1 }\n        return 0\n    }\n    return nil\n}\n\n")
+		buf.WriteString("func contains(s any, v any) any {\n    switch xs := s.(type) {\n    case []int:\n        n, ok := v.(int)\n        if !ok { return nil }\n        for i, m := range xs { if m == n { return i } }\n        return nil\n    case string:\n        str, ok := v.(string)\n        if !ok { return 0 }\n        if strings.Contains(xs, str) { return 1 }\n        return 0\n    }\n    return nil\n}\n\n")
 	}
 	if prog.UseUnion {
 		buf.WriteString("func union(a, b []int) []int {\n    m := map[int]bool{}\n    res := []int{}\n    for _, n := range a { if !m[n] { m[n]=true; res=append(res,n) } }\n    for _, n := range b { if !m[n] { m[n]=true; res=append(res,n) } }\n    return res\n}\n\n")
@@ -832,7 +832,7 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("func atoi(s string) int {\n    n, _ := strconv.Atoi(s)\n    return n\n}\n\n")
 	}
 	if prog.UsePrint {
-		buf.WriteString("func mochiPrint(v any) {\n    switch x := v.(type) {\n    case bool:\n        if x { fmt.Println(1) } else { fmt.Println(\"nil\") }\n    case float64:\n        if math.Trunc(x) == x { fmt.Printf(\"%.1f\\n\", x) } else { fmt.Printf(\"%v\\n\", x) }\n    case []int:\n        for i, n := range x { if i > 0 { fmt.Print(\" \") }; fmt.Print(n) }\n        fmt.Println()\n    default:\n        fmt.Println(v)\n    }\n}\n\n")
+		buf.WriteString("func mochiPrint(v any) {\n    if v == nil {\n        fmt.Println(\"nil\")\n        return\n    }\n    switch x := v.(type) {\n    case bool:\n        if x { fmt.Println(1) } else { fmt.Println(0) }\n    case float64:\n        if math.Trunc(x) == x { fmt.Printf(\"%.1f\\n\", x) } else { fmt.Printf(\"%v\\n\", x) }\n    case []int:\n        for i, n := range x { if i > 0 { fmt.Print(\" \") }; fmt.Print(n) }\n        fmt.Println()\n    default:\n        fmt.Println(v)\n    }\n}\n\n")
 	}
 	buf.WriteString("func main() {\n")
 	for _, s := range prog.Stmts {
