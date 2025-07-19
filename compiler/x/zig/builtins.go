@@ -234,6 +234,33 @@ func (c *Compiler) writeBuiltins() {
 		c.writeln("}")
 		c.writeln("")
 	}
+	if c.needsInput {
+		c.writeln("fn _input() []const u8 {")
+		c.indent++
+		c.writeln("var buf = std.ArrayList(u8).init(std.heap.page_allocator);")
+		c.writeln("defer buf.deinit();")
+		c.writeln("_ = std.io.getStdIn().reader().readUntilDelimiterOrEof(&buf, '\n') catch return \"\";")
+		c.writeln("return std.mem.trim(u8, buf.items, \" \t\r\n\");")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsInt {
+		c.writeln("fn _int(v: anytype) i32 {")
+		c.indent++
+		c.writeln("return switch (@TypeOf(v)) {")
+		c.indent++
+		c.writeln("i32 => v,")
+		c.writeln("f64 => @as(i32, @intFromFloat(v)),")
+		c.writeln("bool => @intFromBool(v),")
+		c.writeln("[]const u8 => std.fmt.parseInt(i32, v, 10) catch 0,")
+		c.writeln("else => 0,")
+		c.indent--
+		c.writeln("};")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
 	if c.needsLoadJSON {
 		c.writeln("fn _load_json(comptime T: type, path: ?[]const u8) []T {")
 		c.indent++

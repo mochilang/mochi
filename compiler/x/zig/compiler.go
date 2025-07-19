@@ -35,6 +35,8 @@ type Compiler struct {
 	needsSetOps       bool
 	needsConcatList   bool
 	needsConcatString bool
+	needsInput        bool
+	needsInt          bool
 	needsSplitString  bool
 	needsJoinString   bool
 	needsJSON         bool
@@ -636,7 +638,7 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 					if lt, ok := typ.(types.ListType); ok {
 						elem = strings.TrimPrefix(zigTypeOf(lt.Elem), "[]const ")
 					}
-					c.writeln(fmt.Sprintf("var %s: []%s = &[_]%s{};", name, elem, elem))
+					c.writeln(fmt.Sprintf("var %s = std.ArrayList(%s).init(std.heap.page_allocator);", name, elem))
 				} else if isMapLiteralExpr(s.Var.Value) || isEmptyMapExpr(s.Var.Value) {
 					c.writelnType(fmt.Sprintf("var %s: %s = undefined;", name, zigTypeOf(typ)), typ)
 					var v string
@@ -3336,7 +3338,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		return fmt.Sprintf("_sum_int(%s)", arg), nil
 	}
 	if name == "append" && len(call.Args) == 2 {
-		listArg, err := c.compileExpr(call.Args[0], false)
+		listArg, err := c.compileExpr(call.Args[0], true)
 		if err != nil {
 			return "", err
 		}
@@ -3470,6 +3472,18 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.needsJSON = true
 		return fmt.Sprintf("_json(%s)", arg), nil
+	}
+	if name == "input" && len(call.Args) == 0 {
+		c.needsInput = true
+		return "_input()", nil
+	}
+	if name == "int" && len(call.Args) == 1 {
+		arg, err := c.compileExpr(call.Args[0], false)
+		if err != nil {
+			return "", err
+		}
+		c.needsInt = true
+		return fmt.Sprintf("_int(%s)", arg), nil
 	}
 	if name == "print" {
 		if len(call.Args) == 1 {
