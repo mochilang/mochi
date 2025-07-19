@@ -52,6 +52,12 @@ type IntLit struct{ Value int }
 
 type BoolLit struct{ Value bool }
 
+// UnaryExpr represents a prefix unary operation like negation or logical not.
+type UnaryExpr struct {
+	Op   string
+	Expr Expr
+}
+
 type VarRef struct{ Name string }
 
 type BinaryExpr struct {
@@ -136,6 +142,11 @@ func (b *BoolLit) emit(w io.Writer) {
 	} else {
 		io.WriteString(w, "false")
 	}
+}
+
+func (u *UnaryExpr) emit(w io.Writer) {
+	io.WriteString(w, u.Op)
+	u.Expr.emit(w)
 }
 
 func (v *VarRef) emit(w io.Writer) { io.WriteString(w, v.Name) }
@@ -339,10 +350,18 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 }
 
 func convertUnary(u *parser.Unary) (Expr, error) {
-	if len(u.Ops) > 0 {
-		return nil, fmt.Errorf("unary ops not supported")
+	if u == nil {
+		return nil, fmt.Errorf("nil unary")
 	}
-	return convertPostfix(u.Value)
+	expr, err := convertPostfix(u.Value)
+	if err != nil {
+		return nil, err
+	}
+	for i := len(u.Ops) - 1; i >= 0; i-- {
+		op := u.Ops[i]
+		expr = &UnaryExpr{Op: op, Expr: expr}
+	}
+	return expr, nil
 }
 
 func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
@@ -514,6 +533,8 @@ func toExprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "var", Value: ex.Name}
 	case *BinaryExpr:
 		return &ast.Node{Kind: ex.Op, Children: []*ast.Node{toExprNode(ex.Left), toExprNode(ex.Right)}}
+	case *UnaryExpr:
+		return &ast.Node{Kind: ex.Op, Children: []*ast.Node{toExprNode(ex.Expr)}}
 	case *IfExpr:
 		n := &ast.Node{Kind: "ifexpr"}
 		n.Children = append(n.Children, toExprNode(ex.Cond))
