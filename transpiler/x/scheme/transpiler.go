@@ -87,75 +87,129 @@ func header() []byte {
 
 func voidSym() Node { return &List{Elems: []Node{Symbol("void")}} }
 
+func convertStmts(stmts []*parser.Statement) ([]Node, error) {
+	var forms []Node
+	for _, st := range stmts {
+		f, err := convertStmt(st)
+		if err != nil {
+			return nil, err
+		}
+		if f != nil {
+			forms = append(forms, f)
+		}
+	}
+	return forms, nil
+}
+
+func convertIfStmt(is *parser.IfStmt) (Node, error) {
+	cond, err := convertParserExpr(is.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenForms, err := convertStmts(is.Then)
+	if err != nil {
+		return nil, err
+	}
+	thenNode := &List{Elems: append([]Node{Symbol("begin")}, thenForms...)}
+	var elseNode Node = voidSym()
+	if is.ElseIf != nil {
+		elseNode, err = convertIfStmt(is.ElseIf)
+		if err != nil {
+			return nil, err
+		}
+	} else if len(is.Else) > 0 {
+		elseForms, err := convertStmts(is.Else)
+		if err != nil {
+			return nil, err
+		}
+		elseNode = &List{Elems: append([]Node{Symbol("begin")}, elseForms...)}
+	}
+	return &List{Elems: []Node{Symbol("if"), cond, thenNode, elseNode}}, nil
+}
+
+func convertStmt(st *parser.Statement) (Node, error) {
+	switch {
+	case st.Expr != nil:
+		call := st.Expr.Expr.Binary.Left.Value.Target.Call
+		if call != nil && call.Func == "print" && len(call.Args) == 1 && len(st.Expr.Expr.Binary.Right) == 0 {
+			argExpr := call.Args[0]
+			arg, err := convertParserExpr(argExpr)
+			if err != nil {
+				return nil, err
+			}
+			if isBoolParserExpr(argExpr) {
+				arg = boolToInt(arg)
+			}
+			return &List{Elems: []Node{Symbol("begin"), &List{Elems: []Node{Symbol("display"), arg}}, &List{Elems: []Node{Symbol("newline")}}}}, nil
+		}
+		return nil, fmt.Errorf("unsupported expression statement")
+	case st.Let != nil:
+		name := st.Let.Name
+		var val Node
+		if st.Let.Value != nil {
+			var err error
+			val, err = convertParserExpr(st.Let.Value)
+			if err != nil {
+				return nil, err
+			}
+		} else if st.Let.Type != nil {
+			if st.Let.Type.Simple != nil && *st.Let.Type.Simple == "int" {
+				val = IntLit(0)
+			} else {
+				val = voidSym()
+			}
+		} else {
+			val = voidSym()
+		}
+		return &List{Elems: []Node{Symbol("define"), Symbol(name), val}}, nil
+	case st.Var != nil:
+		name := st.Var.Name
+		var val Node
+		if st.Var.Value != nil {
+			var err error
+			val, err = convertParserExpr(st.Var.Value)
+			if err != nil {
+				return nil, err
+			}
+		} else if st.Var.Type != nil {
+			if st.Var.Type.Simple != nil && *st.Var.Type.Simple == "int" {
+				val = IntLit(0)
+			} else {
+				val = voidSym()
+			}
+		} else {
+			val = voidSym()
+		}
+		return &List{Elems: []Node{Symbol("define"), Symbol(name), val}}, nil
+	case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
+		val, err := convertParserExpr(st.Assign.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &List{Elems: []Node{Symbol("set!"), Symbol(st.Assign.Name), val}}, nil
+	case st.If != nil:
+		return convertIfStmt(st.If)
+	default:
+		return nil, fmt.Errorf("unsupported statement")
+	}
+}
+
 // Transpile converts a Mochi AST into a minimal Scheme AST supporting
 // print statements with string literals.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	_ = env
 	p := &Program{}
 	for _, st := range prog.Statements {
-		switch {
-		case st.Expr != nil:
-			call := st.Expr.Expr.Binary.Left.Value.Target.Call
-			if call != nil && call.Func == "print" && len(call.Args) == 1 && len(st.Expr.Expr.Binary.Right) == 0 {
-				argExpr := call.Args[0]
-				arg, err := convertParserExpr(argExpr)
-				if err != nil {
-					return nil, err
-				}
-				if isBoolParserExpr(argExpr) {
-					arg = boolToInt(arg)
-				}
-				p.Forms = append(p.Forms, &List{Elems: []Node{Symbol("display"), arg}})
-				p.Forms = append(p.Forms, &List{Elems: []Node{Symbol("newline")}})
-				continue
-			}
-			return nil, fmt.Errorf("unsupported expression statement")
-		case st.Let != nil:
-			name := st.Let.Name
-			var val Node
-			if st.Let.Value != nil {
-				var err error
-				val, err = convertParserExpr(st.Let.Value)
-				if err != nil {
-					return nil, err
-				}
-			} else if st.Let.Type != nil {
-				if st.Let.Type.Simple != nil && *st.Let.Type.Simple == "int" {
-					val = IntLit(0)
-				} else {
-					val = voidSym()
-				}
+		form, err := convertStmt(st)
+		if err != nil {
+			return nil, err
+		}
+		if form != nil {
+			if lst, ok := form.(*List); ok && len(lst.Elems) > 0 && lst.Elems[0] == Symbol("begin") {
+				p.Forms = append(p.Forms, lst.Elems[1:]...)
 			} else {
-				val = voidSym()
+				p.Forms = append(p.Forms, form)
 			}
-			p.Forms = append(p.Forms, &List{Elems: []Node{Symbol("define"), Symbol(name), val}})
-		case st.Var != nil:
-			name := st.Var.Name
-			var val Node
-			if st.Var.Value != nil {
-				var err error
-				val, err = convertParserExpr(st.Var.Value)
-				if err != nil {
-					return nil, err
-				}
-			} else if st.Var.Type != nil {
-				if st.Var.Type.Simple != nil && *st.Var.Type.Simple == "int" {
-					val = IntLit(0)
-				} else {
-					val = voidSym()
-				}
-			} else {
-				val = voidSym()
-			}
-			p.Forms = append(p.Forms, &List{Elems: []Node{Symbol("define"), Symbol(name), val}})
-		case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
-			val, err := convertParserExpr(st.Assign.Value)
-			if err != nil {
-				return nil, err
-			}
-			p.Forms = append(p.Forms, &List{Elems: []Node{Symbol("set!"), Symbol(st.Assign.Name), val}})
-		default:
-			return nil, fmt.Errorf("unsupported statement")
 		}
 	}
 	return p, nil
@@ -246,10 +300,36 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 		return BoolLit(bool(*p.Lit.Bool)), nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return Symbol(p.Selector.Root), nil
+	case p.If != nil:
+		return convertIfExpr(p.If)
 	case p.Group != nil:
 		return convertParserExpr(p.Group)
 	}
 	return nil, fmt.Errorf("unsupported primary")
+}
+
+func convertIfExpr(ie *parser.IfExpr) (Node, error) {
+	cond, err := convertParserExpr(ie.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenNode, err := convertParserExpr(ie.Then)
+	if err != nil {
+		return nil, err
+	}
+	var elseNode Node = voidSym()
+	if ie.ElseIf != nil {
+		elseNode, err = convertIfExpr(ie.ElseIf)
+		if err != nil {
+			return nil, err
+		}
+	} else if ie.Else != nil {
+		elseNode, err = convertParserExpr(ie.Else)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &List{Elems: []Node{Symbol("if"), cond, thenNode, elseNode}}, nil
 }
 
 func makeBinary(op string, left, right Node) Node {

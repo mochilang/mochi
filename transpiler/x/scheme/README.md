@@ -1,14 +1,16 @@
-# Scheme Transpiler
+# Scheme Transpiler Output
 
-This package implements a very small transpiler that converts a subset of Mochi into Scheme code run by `chibi-scheme`.
+Generated Scheme code for programs in `tests/vm/valid`. Each program has a `.scm` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-Checklist of programs that currently transpile and run (10/100):
+Transpiled programs: 14/100
+
+Checklist:
 
 - [ ] append_builtin
 - [ ] avg_builtin
 - [x] basic_compare
 - [x] binary_precedence
- - [ ] bool_chain
+- [x] bool_chain
 - [ ] break_continue
 - [ ] cast_string_to_int
 - [ ] cast_struct
@@ -36,9 +38,9 @@ Checklist of programs that currently transpile and run (10/100):
 - [ ] group_by_multi_join_sort
 - [ ] group_by_sort
 - [ ] group_items_iteration
-- [ ] if_else
-- [ ] if_then_else
-- [ ] if_then_else_nested
+- [x] if_else
+- [x] if_then_else
+- [x] if_then_else_nested
 - [ ] in_operator
 - [ ] in_operator_extended
 - [ ] inner_join
@@ -97,10 +99,10 @@ Checklist of programs that currently transpile and run (10/100):
 - [ ] tree_sum
 - [ ] two-sum
 - [x] typed_let
- - [x] typed_var
+- [x] typed_var
 - [x] unary_neg
 - [ ] update_stmt
 - [ ] user_type_literal
 - [ ] values_builtin
- - [x] var_assignment
+- [x] var_assignment
 - [ ] while_loop
