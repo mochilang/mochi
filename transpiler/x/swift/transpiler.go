@@ -25,6 +25,30 @@ type Stmt interface{ emit(io.Writer) }
 
 type Expr interface{ emit(io.Writer) }
 
+type FunDecl struct {
+	Name   string
+	Params []Param
+	Ret    string
+	Body   []Stmt
+}
+
+type Param struct {
+	Name string
+	Type string
+}
+
+type ReturnStmt struct{ Expr Expr }
+
+type CallExpr struct {
+	Func string
+	Args []Expr
+}
+
+type WhileStmt struct {
+	Cond Expr
+	Body []Stmt
+}
+
 type IfStmt struct {
 	Cond   Expr
 	Then   []Stmt
@@ -72,9 +96,9 @@ func (c *CondExpr) emit(w io.Writer) {
 type PrintStmt struct{ Expr Expr }
 
 func (p *PrintStmt) emit(w io.Writer) {
-	fmt.Fprint(w, "mochiPrint(")
-	p.Expr.emit(w)
-	fmt.Fprint(w, ")\n")
+    fmt.Fprint(w, "print(")
+    p.Expr.emit(w)
+    fmt.Fprint(w, ")\n")
 }
 
 type VarDecl struct {
@@ -152,6 +176,64 @@ func (u *UnaryExpr) emit(w io.Writer) {
 	u.Expr.emit(w)
 }
 
+func (c *CallExpr) emit(w io.Writer) {
+	fmt.Fprint(w, c.Func)
+	fmt.Fprint(w, "(")
+	for i, a := range c.Args {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		a.emit(w)
+	}
+	fmt.Fprint(w, ")")
+}
+
+func (r *ReturnStmt) emit(w io.Writer) {
+	fmt.Fprint(w, "return")
+	if r.Expr != nil {
+		fmt.Fprint(w, " ")
+		r.Expr.emit(w)
+	}
+	fmt.Fprint(w, "\n")
+}
+
+func (f *FunDecl) emit(w io.Writer) {
+	fmt.Fprintf(w, "func %s(", f.Name)
+	for i, p := range f.Params {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		if p.Type != "" {
+			fmt.Fprintf(w, "_ %s: %s", p.Name, p.Type)
+		} else {
+			fmt.Fprintf(w, "_ %s", p.Name)
+		}
+	}
+	fmt.Fprint(w, ")")
+	if f.Ret != "" {
+		fmt.Fprintf(w, " -> %s", f.Ret)
+	}
+	fmt.Fprint(w, " {\n")
+	for _, s := range f.Body {
+		s.emit(w)
+	}
+	fmt.Fprint(w, "}\n")
+}
+
+func (ws *WhileStmt) emit(w io.Writer) {
+	fmt.Fprint(w, "while ")
+	if ws.Cond != nil {
+		ws.Cond.emit(w)
+	} else {
+		fmt.Fprint(w, "true")
+	}
+	fmt.Fprint(w, " {\n")
+	for _, st := range ws.Body {
+		st.emit(w)
+	}
+	fmt.Fprint(w, "}\n")
+}
+
 func repoRoot() string {
 	dir, err := os.Getwd()
 	if err != nil {
@@ -193,7 +275,6 @@ func header() string {
 func (p *Program) Emit() []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
-	buf.WriteString("func mochiPrint(_ v: Any) {\n    if let b = v as? Bool {\n        if b { print(1) } else { print(0) }\n    } else {\n        print(v)\n    }\n}\n")
 	for _, s := range p.Stmts {
 		s.emit(&buf)
 	}
@@ -273,6 +354,12 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		return &AssignStmt{Name: st.Assign.Name, Expr: ex}, nil
+	case st.Fun != nil:
+		return convertFunDecl(st.Fun)
+	case st.Return != nil:
+		return convertReturnStmt(st.Return)
+	case st.While != nil:
+		return convertWhileStmt(st.While)
 	case st.If != nil:
 		return convertIfStmt(st.If)
 	default:
@@ -305,6 +392,43 @@ func convertIfStmt(i *parser.IfStmt) (Stmt, error) {
 		}
 	}
 	return &IfStmt{Cond: cond, Then: thenStmts, ElseIf: elseIf, Else: elseStmts}, nil
+}
+
+func convertFunDecl(f *parser.FunStmt) (Stmt, error) {
+	fn := &FunDecl{Name: f.Name, Ret: toSwiftType(f.Return)}
+	for _, p := range f.Params {
+		fn.Params = append(fn.Params, Param{Name: p.Name, Type: toSwiftType(p.Type)})
+	}
+	body, err := convertStmts(f.Body)
+	if err != nil {
+		return nil, err
+	}
+	fn.Body = body
+	return fn, nil
+}
+
+func convertReturnStmt(r *parser.ReturnStmt) (Stmt, error) {
+	var ex Expr
+	var err error
+	if r.Value != nil {
+		ex, err = convertExpr(r.Value)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &ReturnStmt{Expr: ex}, nil
+}
+
+func convertWhileStmt(wst *parser.WhileStmt) (Stmt, error) {
+	cond, err := convertExpr(wst.Cond)
+	if err != nil {
+		return nil, err
+	}
+	body, err := convertStmts(wst.Body)
+	if err != nil {
+		return nil, err
+	}
+	return &WhileStmt{Cond: cond, Body: body}, nil
 }
 
 func evalPrintArg(arg *parser.Expr) (val string, isString bool, ok bool) {
@@ -383,6 +507,12 @@ func stmtNode(s Stmt) *ast.Node {
 		return &ast.Node{Kind: "var", Value: st.Name}
 	case *AssignStmt:
 		return &ast.Node{Kind: "assign", Value: st.Name}
+	case *FunDecl:
+		return &ast.Node{Kind: "fun", Value: st.Name}
+	case *ReturnStmt:
+		return &ast.Node{Kind: "return"}
+	case *WhileStmt:
+		return &ast.Node{Kind: "while"}
 	default:
 		return &ast.Node{Kind: "stmt"}
 	}
@@ -571,6 +701,12 @@ func convertPrimary(pr *parser.Primary) (Expr, error) {
 		if pr.Lit.Int != nil {
 			return &LitExpr{Value: fmt.Sprintf("%d", *pr.Lit.Int), IsString: false}, nil
 		}
+		if pr.Lit.Bool != nil {
+			if *pr.Lit.Bool {
+				return &LitExpr{Value: "true", IsString: false}, nil
+			}
+			return &LitExpr{Value: "false", IsString: false}, nil
+		}
 		return nil, fmt.Errorf("unsupported literal")
 	case pr.Call != nil:
 		if pr.Call.Func == "len" && len(pr.Call.Args) == 1 {
@@ -578,7 +714,15 @@ func convertPrimary(pr *parser.Primary) (Expr, error) {
 				return &LitExpr{Value: fmt.Sprintf("%d", n), IsString: false}, nil
 			}
 		}
-		return nil, fmt.Errorf("unsupported call")
+		ce := &CallExpr{Func: pr.Call.Func}
+		for _, a := range pr.Call.Args {
+			ae, err := convertExpr(a)
+			if err != nil {
+				return nil, err
+			}
+			ce.Args = append(ce.Args, ae)
+		}
+		return ce, nil
 	case pr.Group != nil:
 		return convertExpr(pr.Group)
 	case pr.If != nil:
