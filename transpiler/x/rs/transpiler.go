@@ -11,14 +11,17 @@ import (
 	"strings"
 	"time"
 
-	"mochi/ast"
-	"mochi/parser"
-	"mochi/types"
+        "mochi/ast"
+        "mochi/parser"
+        "mochi/types"
 )
+
+var usesHashMap bool
 
 // Program represents a Rust program consisting of a list of statements.
 type Program struct {
-	Stmts []Stmt
+        Stmts       []Stmt
+        UsesHashMap bool
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -59,11 +62,46 @@ func (n *NumberLit) emit(w io.Writer) { io.WriteString(w, n.Value) }
 type BoolLit struct{ Value bool }
 
 func (b *BoolLit) emit(w io.Writer) {
-	if b.Value {
-		io.WriteString(w, "true")
-	} else {
-		io.WriteString(w, "false")
-	}
+        if b.Value {
+                io.WriteString(w, "true")
+        } else {
+                io.WriteString(w, "false")
+        }
+}
+
+type ListLit struct{ Elems []Expr }
+
+func (l *ListLit) emit(w io.Writer) {
+        io.WriteString(w, "vec![")
+        for i, e := range l.Elems {
+                if i > 0 {
+                        io.WriteString(w, ", ")
+                }
+                e.emit(w)
+        }
+        io.WriteString(w, "]")
+}
+
+type MapEntry struct{
+        Key Expr
+        Value Expr
+}
+
+type MapLit struct{ Items []MapEntry }
+
+func (m *MapLit) emit(w io.Writer) {
+        io.WriteString(w, "HashMap::from([")
+        for i, it := range m.Items {
+                if i > 0 {
+                        io.WriteString(w, ", ")
+                }
+                io.WriteString(w, "(")
+                it.Key.emit(w)
+                io.WriteString(w, ", ")
+                it.Value.emit(w)
+                io.WriteString(w, ")")
+        }
+        io.WriteString(w, "])")
 }
 
 // LenExpr represents a call to the `len` builtin.
@@ -196,7 +234,8 @@ func (i *IfStmt) emit(w io.Writer) {}
 // Transpile converts a Mochi AST to a simplified Rust AST. Only a very small
 // subset of Mochi is supported which is sufficient for tests.
 func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
-	prog := &Program{}
+        usesHashMap = false
+        prog := &Program{}
 	for _, st := range p.Statements {
 		s, err := compileStmt(st)
 		if err != nil {
@@ -206,8 +245,9 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 			prog.Stmts = append(prog.Stmts, s)
 		}
 	}
-	_ = env // reserved for future use
-	return prog, nil
+        _ = env // reserved for future use
+        prog.UsesHashMap = usesHashMap
+        return prog, nil
 }
 
 func compileStmt(stmt *parser.Statement) (Stmt, error) {
@@ -401,10 +441,35 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			return &LenExpr{Arg: args[0]}, nil
 		}
 		return &CallExpr{Func: name, Args: args}, nil
-	case p.Lit != nil:
-		return compileLiteral(p.Lit)
-	case p.Selector != nil && len(p.Selector.Tail) == 0:
-		return &NameRef{Name: p.Selector.Root}, nil
+       case p.Lit != nil:
+               return compileLiteral(p.Lit)
+       case p.List != nil:
+               elems := make([]Expr, len(p.List.Elems))
+               for i, e := range p.List.Elems {
+                       ex, err := compileExpr(e)
+                       if err != nil {
+                               return nil, err
+                       }
+                       elems[i] = ex
+               }
+               return &ListLit{Elems: elems}, nil
+       case p.Map != nil:
+               entries := make([]MapEntry, len(p.Map.Items))
+               for i, it := range p.Map.Items {
+                       k, err := compileExpr(it.Key)
+                       if err != nil {
+                               return nil, err
+                       }
+                       v, err := compileExpr(it.Value)
+                       if err != nil {
+                               return nil, err
+                       }
+                       entries[i] = MapEntry{Key: k, Value: v}
+               }
+               usesHashMap = true
+               return &MapLit{Items: entries}, nil
+       case p.Selector != nil && len(p.Selector.Tail) == 0:
+               return &NameRef{Name: p.Selector.Root}, nil
 	case p.If != nil:
 		return compileIfExpr(p.If)
 	case p.Group != nil:
@@ -526,9 +591,12 @@ func writeIfStmt(buf *bytes.Buffer, s *IfStmt, indent int) {
 
 // Emit generates formatted Rust source from the AST.
 func Emit(prog *Program) []byte {
-	var buf bytes.Buffer
-	buf.WriteString(header())
-	buf.WriteString("fn main() {\n")
+        var buf bytes.Buffer
+        buf.WriteString(header())
+       if prog.UsesHashMap {
+               buf.WriteString("use std::collections::HashMap;\n")
+       }
+        buf.WriteString("fn main() {\n")
 	for _, s := range prog.Stmts {
 		writeStmt(&buf, s, 1)
 	}
@@ -633,12 +701,27 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "string", Value: ex.Value}
 	case *NumberLit:
 		return &ast.Node{Kind: "number", Value: ex.Value}
-	case *BoolLit:
-		if ex.Value {
-			return &ast.Node{Kind: "bool", Value: "true"}
-		}
-		return &ast.Node{Kind: "bool", Value: "false"}
-	case *BinaryExpr:
+       case *BoolLit:
+               if ex.Value {
+                       return &ast.Node{Kind: "bool", Value: "true"}
+               }
+               return &ast.Node{Kind: "bool", Value: "false"}
+       case *ListLit:
+               n := &ast.Node{Kind: "list"}
+               for _, el := range ex.Elems {
+                       n.Children = append(n.Children, exprNode(el))
+               }
+               return n
+       case *MapLit:
+               n := &ast.Node{Kind: "map"}
+               for _, it := range ex.Items {
+                       pair := &ast.Node{Kind: "item"}
+                       pair.Children = append(pair.Children, exprNode(it.Key))
+                       pair.Children = append(pair.Children, exprNode(it.Value))
+                       n.Children = append(n.Children, pair)
+               }
+               return n
+       case *BinaryExpr:
 		return &ast.Node{Kind: "bin", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
 	case *UnaryExpr:
 		return &ast.Node{Kind: "unary", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Expr)}}

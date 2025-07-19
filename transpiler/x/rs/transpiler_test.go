@@ -197,3 +197,5 @@ func TestTranspile_StringCompare(t *testing.T)    { runExample(t, "string_compar
 func TestTranspile_StringConcat(t *testing.T)     { runExample(t, "string_concat") }
 func TestTranspile_BinaryPrecedence(t *testing.T) { runExample(t, "binary_precedence") }
 func TestTranspile_LenString(t *testing.T)        { runExample(t, "len_string") }
+func TestTranspile_LenBuiltin(t *testing.T)       { runExample(t, "len_builtin") }
+func TestTranspile_LenMap(t *testing.T)          { runExample(t, "len_map") }
