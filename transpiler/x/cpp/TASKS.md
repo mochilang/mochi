@@ -1,5 +1,9 @@
 # C++ Transpiler Tasks
 
+## Recent Enhancements (2025-07-19 18:24 +0000)
+- Implemented list indexing for vector values.
+- Generated golden output for `list_index` and updated README progress to 32/100 programs.
+
 ## Recent Enhancements (2025-07-20 01:06 +0700)
 - Removed runtime helper functions and replaced `in` operator logic with an inline generic lambda.
 - Updated golden C++ outputs with more idiomatic code.

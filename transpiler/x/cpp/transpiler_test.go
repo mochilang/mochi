@@ -79,3 +79,4 @@ func TestCPPTranspiler_StringIndex(t *testing.T)       { runExample(t, "string_i
 func TestCPPTranspiler_SubstringBuiltin(t *testing.T)  { runExample(t, "substring_builtin") }
 func TestCPPTranspiler_CastStringToInt(t *testing.T)   { runExample(t, "cast_string_to_int") }
 func TestCPPTranspiler_SumBuiltin(t *testing.T)        { runExample(t, "sum_builtin") }
+func TestCPPTranspiler_ListIndex(t *testing.T)         { runExample(t, "list_index") }
