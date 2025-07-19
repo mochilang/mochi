@@ -113,6 +113,14 @@ type UnaryExpr struct {
 	Value Expr
 }
 
+type GroupExpr struct{ Expr Expr }
+
+func (g *GroupExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "(")
+	g.Expr.emit(w)
+	fmt.Fprint(w, ")")
+}
+
 func (u *UnaryExpr) emit(w io.Writer) {
 	fmt.Fprint(w, u.Op)
 	if _, ok := u.Value.(*BinaryExpr); ok {
@@ -288,7 +296,11 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return &VarExpr{Name: p.Selector.Root}, nil
 	case p.Group != nil:
-		return compileExpr(p.Group)
+		e, err := compileExpr(p.Group)
+		if err != nil {
+			return nil, err
+		}
+		return &GroupExpr{Expr: e}, nil
 	}
 	return nil, fmt.Errorf("unsupported primary")
 }
@@ -421,6 +433,10 @@ func toNodeExpr(e Expr) *ast.Node {
 	case *LenExpr:
 		n := &ast.Node{Kind: "len"}
 		n.Children = append(n.Children, toNodeExpr(ex.Value))
+		return n
+	case *GroupExpr:
+		n := &ast.Node{Kind: "group"}
+		n.Children = append(n.Children, toNodeExpr(ex.Expr))
 		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
