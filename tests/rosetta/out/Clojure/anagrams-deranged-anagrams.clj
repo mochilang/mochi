@@ -23,13 +23,13 @@
 ;; Function sortRunes takes [s: string] and returns string
 (defn sortRunes [s]
   (try
-    (def arr []) ;; list of string
-    (def i 0) ;; int
+    (def sortRunes_arr []) ;; list of string
+    (def sortRunes_i 0) ;; int
     (loop []
-      (when (< i (count s))
+      (when (< sortRunes_i (count s))
         (let [r (try
-          (def arr (conj arr (subs s i (+ i 1)))) ;; list of string
-          (def i (+ i 1)) ;; int
+          (def sortRunes_arr (conj sortRunes_arr (subs s sortRunes_i (+ sortRunes_i 1)))) ;; list of string
+          (def sortRunes_i (+ sortRunes_i 1)) ;; int
           :next
         (catch clojure.lang.ExceptionInfo e
           (cond
@@ -45,21 +45,21 @@
     )
   )
 )
-(def n (count arr)) ;; int
-(def m 0) ;; int
+(def sortRunes_n (count sortRunes_arr)) ;; int
+(def sortRunes_m 0) ;; int
 (loop []
-  (when (< m n)
+  (when (< sortRunes_m sortRunes_n)
     (let [r (try
-      (def j 0) ;; int
+      (def sortRunes_j 0) ;; int
       (loop []
-        (when (< j (- n 1))
+        (when (< sortRunes_j (- sortRunes_n 1))
           (let [r (try
-            (when (> (compare (_indexList arr j) (_indexList arr (+ j 1))) 0)
-              (def tmp (_indexList arr j)) ;; string
-              (def arr (assoc arr j (_indexList arr (+ j 1)))) ;; string
-              (def arr (assoc arr (+ j 1) tmp)) ;; string
+            (when (> (compare (_indexList sortRunes_arr sortRunes_j) (_indexList sortRunes_arr (+ sortRunes_j 1))) 0)
+              (def sortRunes_tmp (_indexList sortRunes_arr sortRunes_j)) ;; string
+              (def sortRunes_arr (assoc sortRunes_arr sortRunes_j (_indexList sortRunes_arr (+ sortRunes_j 1)))) ;; string
+              (def sortRunes_arr (assoc sortRunes_arr (+ sortRunes_j 1) sortRunes_tmp)) ;; string
             )
-            (def j (+ j 1)) ;; int
+            (def sortRunes_j (+ sortRunes_j 1)) ;; int
             :next
           (catch clojure.lang.ExceptionInfo e
             (cond
@@ -75,7 +75,7 @@
       )
     )
   )
-  (def m (+ m 1)) ;; int
+  (def sortRunes_m (+ sortRunes_m 1)) ;; int
   :next
 (catch clojure.lang.ExceptionInfo e
   (cond
@@ -91,13 +91,13 @@
 )
 )
 )
-(def out "") ;; string
-(def i 0) ;; int
+(def sortRunes_out "") ;; string
+(def sortRunes_i 0) ;; int
 (loop []
-(when (< i n)
+(when (< sortRunes_i sortRunes_n)
 (let [r (try
-(def out (str out (_indexList arr i))) ;; string
-(def i (+ i 1)) ;; int
+(def sortRunes_out (str sortRunes_out (_indexList sortRunes_arr sortRunes_i))) ;; string
+(def sortRunes_i (+ sortRunes_i 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -113,7 +113,7 @@
 )
 )
 )
-(throw (ex-info "return" {:value out}))
+(throw (ex-info "return" {:value sortRunes_out}))
 (catch clojure.lang.ExceptionInfo e
 (if (= (.getMessage e) "return")
 (:value (ex-data e))
@@ -127,14 +127,14 @@
 (when (not (= (count a) (count b)))
 (throw (ex-info "return" {:value false}))
 )
-(def i 0) ;; int
+(def deranged_i 0) ;; int
 (loop []
-(when (< i (count a))
+(when (< deranged_i (count a))
 (let [r (try
-(when (= (subs a i (+ i 1)) (subs b i (+ i 1)))
+(when (= (subs a deranged_i (+ deranged_i 1)) (subs b deranged_i (+ deranged_i 1)))
 (throw (ex-info "return" {:value false}))
 )
-(def i (+ i 1)) ;; int
+(def deranged_i (+ deranged_i 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -161,31 +161,31 @@
 ;; Function main returns any
 (defn main []
 (try
-(def words ["constitutionalism" "misconstitutional"]) ;; list of string
-(def m {}) ;; map of string to list of string
-(def bestLen 0) ;; int
-(def w1 "") ;; string
-(def w2 "") ;; string
-(loop [_tmp0 (seq words)]
+(def main_words ["constitutionalism" "misconstitutional"]) ;; list of string
+(def main_m {}) ;; map of string to list of string
+(def main_bestLen 0) ;; int
+(def main_w1 "") ;; string
+(def main_w2 "") ;; string
+(loop [_tmp0 (seq main_words)]
 (when _tmp0
-(let [w (clojure.core/first _tmp0)]
+(let [main_w (clojure.core/first _tmp0)]
 (let [r (try
-(when (<= (count w) bestLen)
+(when (<= (count main_w) main_bestLen)
 (throw (ex-info "continue" {}))
 )
-(def k (sortRunes w)) ;; string
-(when (not (contains? m k))
-(def m (assoc m k [w])) ;; list of any
+(def main_k (sortRunes main_w)) ;; string
+(when (not (contains? main_m main_k))
+(def main_m (assoc main_m main_k [main_w])) ;; list of any
 (throw (ex-info "continue" {}))
 )
-(loop [_tmp1 (seq (get m k))]
+(loop [_tmp1 (seq (get main_m main_k))]
 (when _tmp1
-(let [c (clojure.core/first _tmp1)]
+(let [main_c (clojure.core/first _tmp1)]
 (let [r (try
-(when (deranged w c)
-  (def bestLen (count w)) ;; int
-  (def w1 c) ;; any
-  (def w2 w) ;; any
+(when (deranged main_w main_c)
+  (def main_bestLen (count main_w)) ;; int
+  (def main_w1 main_c) ;; any
+  (def main_w2 main_w) ;; any
   (throw (ex-info "break" {}))
 )
 :next
@@ -204,7 +204,7 @@
 )
 )
 )
-(def m (assoc m k (conj (get m k) w))) ;; list of any
+(def main_m (assoc main_m main_k (conj (get main_m main_k) main_w))) ;; list of any
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -221,7 +221,7 @@
 )
 )
 )
-(_print (str (str (str (str w1 " ") w2) " : Length ") (str bestLen)))
+(_print (str (str (str (str main_w1 " ") main_w2) " : Length ") (str main_bestLen)))
 (catch clojure.lang.ExceptionInfo e
 (if (= (.getMessage e) "return")
 (:value (ex-data e))

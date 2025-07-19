@@ -180,9 +180,11 @@ interactive input and are skipped.
 ### Clojure compiler status
 
 The Clojure backend currently generates code for a small subset of these tasks
-located under `tests/rosetta/out/Clojure`. Six programs compile, four of which
-run successfully. Two programs (`15-puzzle-game` and `15-puzzle-solver`) fail at
-runtime and have corresponding `.error` files.
+located under `tests/rosetta/out/Clojure`. Sixteen programs compile, nine of
+which run successfully. Three programs (`adfgvx-cipher`, `amb` and
+`15-puzzle-solver`) fail at runtime and have `.error` files. Four programs
+(`2048`, `21-game`, `15-puzzle-game` and `99-bottles-of-beer-2`) require
+interactive input and are skipped.
 
 ### C# compiler status
 

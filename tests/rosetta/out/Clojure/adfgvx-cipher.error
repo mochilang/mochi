@@ -1,21 +1,20 @@
 run: exit status 1
-WARNING: key already refers to: #'clojure.core/key in namespace: main, being replaced by: #'main/key
 6 x 6 Polybius square:
 
   | A D F G V X
 ---------------
-["A"] | K 2 S E C L 
-["D"] | H V 8 R B 9 
-["F"] | P W 7 M Y 6 
-["G"] | Z F J 0 I U 
-["V"] | 5 T D N A Q 
-["X"] | 1 4 G O X 3 
+["A"] | T Q U N 8 J 
+["D"] | 0 D X 2 6 1 
+["F"] | 4 H B K C P 
+["G"] | E I Z O M 9 
+["V"] | V 5 3 A G S 
+["X"] | L F W Y 7 R 
 
-The key is B81258999
+The key is G8L889999
 
 Plaintext : ATTACKAT1200AM
 Execution error (ClassCastException) at main/orderKey$fn$fn (adfgvx-cipher.clj:268).
 class java.lang.String cannot be cast to class java.lang.Number (java.lang.String and java.lang.Number are in module java.base of loader 'bootstrap')
 
 Full report at:
-/tmp/clojure-11151600813315591709.edn
+/tmp/clojure-9591139588864525186.edn

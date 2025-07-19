@@ -26,22 +26,22 @@
     (when (= idx (count wordsets))
       (throw (ex-info "return" {:value true}))
     )
-    (def prev "") ;; string
+    (def amb_prev "") ;; string
     (when (> idx 0)
-      (def prev (_indexList res (- idx 1))) ;; string
+      (def amb_prev (_indexList res (- idx 1))) ;; string
     )
-    (def i 0) ;; int
+    (def amb_i 0) ;; int
     (loop []
-      (when (< i (count (_indexList wordsets idx)))
+      (when (< amb_i (count (_indexList wordsets idx)))
         (let [r (try
-          (def w (_indexList (_indexList wordsets idx) i)) ;; string
-          (when (or (= idx 0) (= (.substring prev (- (count prev) 1) (count prev)) (.substring w 0 1)))
-            (def res (assoc res idx w)) ;; string
+          (def amb_w (_indexList (_indexList wordsets idx) amb_i)) ;; string
+          (when (or (= idx 0) (= (.substring amb_prev (- (count amb_prev) 1) (count amb_prev)) (.substring amb_w 0 1)))
+            (def res (assoc res idx amb_w)) ;; string
             (when (amb wordsets res (+ idx 1))
               (throw (ex-info "return" {:value true}))
             )
           )
-          (def i (+ i 1)) ;; int
+          (def amb_i (+ amb_i 1)) ;; int
           :next
         (catch clojure.lang.ExceptionInfo e
           (cond
@@ -68,14 +68,14 @@
 ;; Function main returns any
 (defn main []
 (try
-(def wordset [["the" "that" "a"] ["frog" "elephant" "thing"] ["walked" "treaded" "grows"] ["slowly" "quickly"]]) ;; list of list of string
-(def res []) ;; list of string
-(def i 0) ;; int
+(def main_wordset [["the" "that" "a"] ["frog" "elephant" "thing"] ["walked" "treaded" "grows"] ["slowly" "quickly"]]) ;; list of list of string
+(def main_res []) ;; list of string
+(def main_i 0) ;; int
 (loop []
-  (when (< i (count wordset))
+  (when (< main_i (count main_wordset))
     (let [r (try
-      (def res (conj res "")) ;; list of string
-      (def i (+ i 1)) ;; int
+      (def main_res (conj main_res "")) ;; list of string
+      (def main_i (+ main_i 1)) ;; int
       :next
     (catch clojure.lang.ExceptionInfo e
       (cond
@@ -91,15 +91,15 @@
 )
 )
 )
-(if (amb wordset res 0)
+(if (amb main_wordset main_res 0)
 (do
-(def out (str "[" (_indexList res 0))) ;; string
-(def j 1) ;; int
+(def main_out (str "[" (_indexList main_res 0))) ;; string
+(def main_j 1) ;; int
 (loop []
-  (when (< j (count res))
+  (when (< main_j (count main_res))
     (let [r (try
-      (def out (str (str out " ") (_indexList res j))) ;; string
-      (def j (+ j 1)) ;; int
+      (def main_out (str (str main_out " ") (_indexList main_res main_j))) ;; string
+      (def main_j (+ main_j 1)) ;; int
       :next
     (catch clojure.lang.ExceptionInfo e
       (cond
@@ -115,8 +115,8 @@
 )
 )
 )
-(def out (str out "]")) ;; string
-(_print out)
+(def main_out (str main_out "]")) ;; string
+(_print main_out)
 )
 
 (do

@@ -26,6 +26,9 @@ type Compiler struct {
 	goModules    map[string]string
 	pyAuto       map[string]bool
 	goAuto       map[string]bool
+	funcPrefix   string
+	globals      map[string]bool
+	locals       map[string]bool
 }
 
 // New creates a new Clojure compiler instance.
@@ -39,6 +42,9 @@ func New(env *types.Env) *Compiler {
 		goModules:    map[string]string{},
 		pyAuto:       map[string]bool{},
 		goAuto:       map[string]bool{},
+		funcPrefix:   "",
+		globals:      map[string]bool{},
+		locals:       map[string]bool{},
 	}
 }
 
@@ -54,14 +60,19 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.goModules = map[string]string{}
 	c.pyAuto = map[string]bool{}
 	c.goAuto = map[string]bool{}
+	c.funcPrefix = ""
+	c.globals = map[string]bool{}
+	c.locals = map[string]bool{}
 
 	declNames := []string{}
 	for _, s := range prog.Statements {
 		if s.Let != nil {
 			declNames = append(declNames, sanitizeName(s.Let.Name))
+			c.globals[s.Let.Name] = true
 		}
 		if s.Var != nil {
 			declNames = append(declNames, sanitizeName(s.Var.Name))
+			c.globals[s.Var.Name] = true
 		}
 	}
 	if len(declNames) > 0 {
@@ -120,6 +131,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
+	prevPrefix := c.funcPrefix
+	c.funcPrefix = sanitizeName(fn.Name)
+	prevLocals := c.locals
+	c.locals = map[string]bool{}
+	for _, p := range fn.Params {
+		c.locals[p.Name] = true
+	}
+	defer func() { c.funcPrefix = prevPrefix; c.locals = prevLocals }()
+
 	origEnv := c.env
 	if origEnv != nil {
 		child := types.NewEnv(origEnv)
@@ -432,7 +452,7 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 	} else {
 		typ = c.exprType(st.Value)
 	}
-	c.writeln(fmt.Sprintf("(def %s %s) ;; %s", sanitizeName(st.Name), expr, cljTypeOf(typ)))
+	c.writeln(fmt.Sprintf("(def %s %s) ;; %s", c.localName(st.Name), expr, cljTypeOf(typ)))
 	if c.env != nil {
 		c.env.SetVar(st.Name, typ, true)
 	}
@@ -491,7 +511,7 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 	} else if st.Value != nil {
 		typ = c.exprType(st.Value)
 	}
-	c.writeln(fmt.Sprintf("(def %s %s) ;; %s", sanitizeName(st.Name), expr, cljTypeOf(typ)))
+	c.writeln(fmt.Sprintf("(def %s %s) ;; %s", c.localName(st.Name), expr, cljTypeOf(typ)))
 	if c.env != nil {
 		c.env.SetVar(st.Name, typ, true)
 	}
@@ -543,7 +563,7 @@ func (c *Compiler) compileImport(im *parser.ImportStmt) error {
 }
 
 func (c *Compiler) compileAssign(st *parser.AssignStmt) error {
-	name := sanitizeName(st.Name)
+	name := c.localName(st.Name)
 	rhs, err := c.compileExpr(st.Value)
 	if err != nil {
 		return err
@@ -592,7 +612,7 @@ func (c *Compiler) compileReturn(st *parser.ReturnStmt) error {
 }
 
 func (c *Compiler) compileFor(st *parser.ForStmt) error {
-	name := sanitizeName(st.Name)
+	name := c.localName(st.Name)
 	if st.RangeEnd != nil {
 		start, err := c.compileExpr(st.Source)
 		if err != nil {
@@ -736,7 +756,7 @@ func (c *Compiler) compileWhile(st *parser.WhileStmt) error {
 }
 
 func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
-	target := sanitizeName(u.Target)
+	target := c.localName(u.Target)
 	item := c.newTemp()
 
 	origEnv := c.env
@@ -1570,7 +1590,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return expr, nil
 	case p.Selector != nil:
-		expr := sanitizeName(p.Selector.Root)
+		expr := c.localName(p.Selector.Root)
 		for _, s := range p.Selector.Tail {
 			expr = fmt.Sprintf("(:%s %s)", sanitizeName(s), expr)
 		}
@@ -2179,6 +2199,12 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	}
 
 	sub := &Compiler{env: child, tempVarCount: c.tempVarCount, helpers: make(map[string]bool)}
+	sub.funcPrefix = c.funcPrefix + "f" + strconv.Itoa(c.tempVarCount)
+	sub.globals = c.globals
+	sub.locals = map[string]bool{}
+	for _, p := range fn.Params {
+		sub.locals[p.Name] = true
+	}
 	sub.indent = 1
 	sub.writeln("(try")
 	sub.indent++
