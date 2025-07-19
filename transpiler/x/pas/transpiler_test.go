@@ -86,7 +86,7 @@ func runCase(t *testing.T, name string) {
 }
 
 func TestPascalTranspiler(t *testing.T) {
-	for _, tc := range []string{"print_hello", "unary_neg", "math_ops", "let_and_print", "var_assignment"} {
+	for _, tc := range []string{"print_hello", "unary_neg", "math_ops", "let_and_print", "var_assignment", "typed_let", "typed_var"} {
 		t.Run(tc, func(t *testing.T) { runCase(t, tc) })
 	}
 }
