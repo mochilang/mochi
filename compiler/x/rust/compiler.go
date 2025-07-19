@@ -806,9 +806,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		out.WriteString("}\n\n")
 	}
 	if c.helpers["_now"] {
-		out.WriteString("fn _now() -> i64 {\n")
+		out.WriteString("fn _now() -> i32 {\n")
 		out.WriteString("    use std::time::{SystemTime, UNIX_EPOCH};\n")
-		out.WriteString("    SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos() as i64\n")
+		out.WriteString("    (SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos() % i32::MAX as u128) as i32\n")
 		out.WriteString("}\n\n")
 	}
 	out.Write(c.buf.Bytes())
@@ -1449,17 +1449,17 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 	if f.Return != nil {
 		retTy = rustType(f.Return)
 	}
-       // Nested functions defined inside `main` may reference variables from the
-       // surrounding scope. Rust does not allow ordinary `fn` items to capture
-       // such values, so default to generating a closure expression. This keeps
-       // the emitted code valid even when the function body references outer
-       // variables.
-       topLevel := false
-       if !topLevel {
-               c.writeln(fmt.Sprintf("let %s = move |%s| -> %s {", f.Name, strings.Join(params, ", "), retTy))
-       } else {
-               c.writeln(fmt.Sprintf("fn %s(%s) -> %s {", f.Name, strings.Join(params, ", "), retTy))
-       }
+	// Nested functions defined inside `main` may reference variables from the
+	// surrounding scope. Rust does not allow ordinary `fn` items to capture
+	// such values, so default to generating a closure expression. This keeps
+	// the emitted code valid even when the function body references outer
+	// variables.
+	topLevel := false
+	if !topLevel {
+		c.writeln(fmt.Sprintf("let %s = move |%s| -> %s {", f.Name, strings.Join(params, ", "), retTy))
+	} else {
+		c.writeln(fmt.Sprintf("fn %s(%s) -> %s {", f.Name, strings.Join(params, ", "), retTy))
+	}
 	prev := c.inMain
 	c.inMain = false
 	c.indent++
