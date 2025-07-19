@@ -15,6 +15,8 @@ import (
 	"mochi/types"
 )
 
+var constLists map[string]*ListLit
+
 // --- Simple C AST ---
 
 type Program struct {
@@ -45,6 +47,24 @@ func (p *PrintStmt) emit(w io.Writer) {
 		switch v := a.(type) {
 		case *StringLit:
 			fmt.Fprintf(w, "\tprintf(\"%s%s\");\n", escape(v.Value), sep)
+		case *ListLit:
+			for j, e := range v.Elems {
+				lsep := " "
+				if j == len(v.Elems)-1 && i == len(p.Args)-1 {
+					lsep = "\\n"
+				} else if j == len(v.Elems)-1 {
+					lsep = " "
+				}
+				io.WriteString(w, "\tprintf(\"")
+				if exprIsString(e) {
+					io.WriteString(w, "%s")
+				} else {
+					io.WriteString(w, "%d")
+				}
+				io.WriteString(w, lsep+"\", ")
+				e.emitExpr(w)
+				io.WriteString(w, ");\n")
+			}
 		default:
 			if p.Types[i] == "string" || exprIsString(a) {
 				io.WriteString(w, "\tprintf(\"%s"+sep+"\", ")
@@ -265,6 +285,19 @@ func (i *IntLit) emitExpr(w io.Writer) {
 	fmt.Fprintf(w, "%d", i.Value)
 }
 
+type ListLit struct{ Elems []Expr }
+
+func (l *ListLit) emitExpr(w io.Writer) {
+	io.WriteString(w, "{ ")
+	for i, e := range l.Elems {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		e.emitExpr(w)
+	}
+	io.WriteString(w, " }")
+}
+
 type VarRef struct{ Name string }
 
 func (v *VarRef) emitExpr(w io.Writer) {
@@ -426,6 +459,7 @@ func (p *Program) Emit() []byte {
 
 // Transpile converts a Mochi program into a C AST.
 func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
+	constLists = make(map[string]*ListLit)
 	p := &Program{}
 	mainFn := &Function{Name: "main"}
 	for _, st := range prog.Statements {
@@ -500,6 +534,11 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		if _, ok := t.(types.StringType); ok {
 			declType = "const char*"
 		}
+		if list, ok := convertListExpr(s.Let.Value); ok {
+			constLists[s.Let.Name] = &ListLit{Elems: list}
+		} else {
+			delete(constLists, s.Let.Name)
+		}
 		return &DeclStmt{Name: s.Let.Name, Value: convertExpr(s.Let.Value), Type: declType}, nil
 	case s.Var != nil:
 		t, _ := env.GetVar(s.Var.Name)
@@ -507,8 +546,18 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		if _, ok := t.(types.StringType); ok {
 			declType = "const char*"
 		}
+		if list, ok := convertListExpr(s.Var.Value); ok {
+			constLists[s.Var.Name] = &ListLit{Elems: list}
+		} else {
+			delete(constLists, s.Var.Name)
+		}
 		return &DeclStmt{Name: s.Var.Name, Value: convertExpr(s.Var.Value), Type: declType}, nil
 	case s.Assign != nil:
+		if list, ok := convertListExpr(s.Assign.Value); ok {
+			constLists[s.Assign.Name] = &ListLit{Elems: list}
+		} else {
+			delete(constLists, s.Assign.Name)
+		}
 		return &AssignStmt{Name: s.Assign.Name, Value: convertExpr(s.Assign.Value)}, nil
 	case s.Return != nil:
 		return &ReturnStmt{Expr: convertExpr(s.Return.Value)}, nil
@@ -670,6 +719,9 @@ func convertUnary(u *parser.Unary) Expr {
 	}
 	if call := u.Value.Target.Call; call != nil && len(u.Ops) == 0 {
 		if call.Func == "len" && len(call.Args) == 1 {
+			if l, ok := evalList(convertExpr(call.Args[0])); ok {
+				return &IntLit{Value: len(l.Elems)}
+			}
 			if list, ok := convertListExpr(call.Args[0]); ok {
 				return &IntLit{Value: len(list)}
 			}
@@ -682,9 +734,111 @@ func convertUnary(u *parser.Unary) Expr {
 			}
 		}
 		if call.Func == "count" && len(call.Args) == 1 {
+			if l, ok := evalList(convertExpr(call.Args[0])); ok {
+				return &IntLit{Value: len(l.Elems)}
+			}
 			if list, ok := convertListExpr(call.Args[0]); ok {
 				return &IntLit{Value: len(list)}
 			}
+		}
+		if call.Func == "sum" && len(call.Args) == 1 {
+			if l, ok := evalList(convertExpr(call.Args[0])); ok {
+				total := 0
+				for _, e := range l.Elems {
+					v, ok := evalInt(e)
+					if !ok {
+						return nil
+					}
+					total += v
+				}
+				return &IntLit{Value: total}
+			}
+			if list, ok := convertListExpr(call.Args[0]); ok {
+				total := 0
+				for _, e := range list {
+					v, ok := evalInt(e)
+					if !ok {
+						return nil
+					}
+					total += v
+				}
+				return &IntLit{Value: total}
+			}
+		}
+		if call.Func == "avg" && len(call.Args) == 1 {
+			if l, ok := evalList(convertExpr(call.Args[0])); ok {
+				total := 0
+				for _, e := range l.Elems {
+					v, ok := evalInt(e)
+					if !ok {
+						return nil
+					}
+					total += v
+				}
+				avg := float64(total) / float64(len(l.Elems))
+				return &StringLit{Value: fmt.Sprintf("%.1f", avg)}
+			}
+			if list, ok := convertListExpr(call.Args[0]); ok {
+				total := 0
+				for _, e := range list {
+					v, ok := evalInt(e)
+					if !ok {
+						return nil
+					}
+					total += v
+				}
+				avg := float64(total) / float64(len(list))
+				return &StringLit{Value: fmt.Sprintf("%.1f", avg)}
+			}
+		}
+		if call.Func == "append" && len(call.Args) == 2 {
+			if l, ok := evalList(convertExpr(call.Args[0])); ok {
+				elem := convertExpr(call.Args[1])
+				if elem == nil {
+					return nil
+				}
+				newElems := append(append([]Expr{}, l.Elems...), elem)
+				return &ListLit{Elems: newElems}
+			}
+			if list, ok := convertListExpr(call.Args[0]); ok {
+				elem := convertExpr(call.Args[1])
+				if elem == nil {
+					return nil
+				}
+				newElems := append(append([]Expr{}, list...), elem)
+				return &ListLit{Elems: newElems}
+			}
+		}
+		if call.Func == "substring" && len(call.Args) >= 2 {
+			strArg, ok := evalString(convertExpr(call.Args[0]))
+			if !ok {
+				return nil
+			}
+			startExpr := convertExpr(call.Args[1])
+			start, ok2 := evalInt(startExpr)
+			if !ok2 {
+				return nil
+			}
+			end := len([]rune(strArg))
+			if len(call.Args) == 3 {
+				endExpr := convertExpr(call.Args[2])
+				if v, ok := evalInt(endExpr); ok {
+					end = v
+				} else {
+					return nil
+				}
+			}
+			r := []rune(strArg)
+			if start < 0 {
+				start = 0
+			}
+			if end > len(r) {
+				end = len(r)
+			}
+			if start > end {
+				start = end
+			}
+			return &StringLit{Value: string(r[start:end])}
 		}
 		if call.Func == "str" && len(call.Args) == 1 {
 			arg := convertExpr(call.Args[0])
@@ -751,6 +905,32 @@ func convertListExpr(e *parser.Expr) ([]Expr, bool) {
 		out = append(out, ex)
 	}
 	return out, true
+}
+
+func evalInt(e Expr) (int, bool) {
+	if v, ok := e.(*IntLit); ok {
+		return v.Value, true
+	}
+	return 0, false
+}
+
+func evalString(e Expr) (string, bool) {
+	if v, ok := e.(*StringLit); ok {
+		return v.Value, true
+	}
+	return "", false
+}
+
+func evalList(e Expr) (*ListLit, bool) {
+	switch v := e.(type) {
+	case *ListLit:
+		return v, true
+	case *VarRef:
+		l, ok := constLists[v.Name]
+		return l, ok
+	default:
+		return nil, false
+	}
 }
 
 func exprIsString(e Expr) bool {
