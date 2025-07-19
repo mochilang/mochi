@@ -7,14 +7,10 @@ import (
 	"fmt"
 )
 
+func sum3(a int, b int, c int) int {
+	return ((a + b) + c)
+}
+
 func main() {
-	x := 12
-	msg := func() any {
-		if x > 10 {
-			return "yes"
-		} else {
-			return "no"
-		}
-	}()
-	fmt.Println(msg)
+	fmt.Println(sum3(1, 2, 3))
 }

@@ -7,8 +7,10 @@ import (
 	"fmt"
 )
 
+func add(a int, b int) int {
+	return (a + b)
+}
+
 func main() {
-	for i := 1; i < 4; i++ {
-		fmt.Println(i)
-	}
+	fmt.Println(add(2, 3))
 }

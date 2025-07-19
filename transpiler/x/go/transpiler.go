@@ -96,6 +96,53 @@ type ContinueStmt struct{}
 
 func (c *ContinueStmt) emit(w io.Writer) { fmt.Fprint(w, "continue") }
 
+type ReturnStmt struct{ Value Expr }
+
+func (r *ReturnStmt) emit(w io.Writer) {
+	fmt.Fprint(w, "return")
+	if r.Value != nil {
+		fmt.Fprint(w, " ")
+		r.Value.emit(w)
+	}
+}
+
+type ParamDecl struct {
+	Name string
+	Type string
+}
+
+type FuncDecl struct {
+	Name   string
+	Params []ParamDecl
+	Return string
+	Body   []Stmt
+}
+
+func (fd *FuncDecl) emit(w io.Writer) {
+	fmt.Fprintf(w, "func %s(", fd.Name)
+	for i, p := range fd.Params {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		if p.Type != "" {
+			fmt.Fprintf(w, "%s %s", p.Name, p.Type)
+		} else {
+			fmt.Fprint(w, p.Name)
+		}
+	}
+	fmt.Fprint(w, ")")
+	if fd.Return != "" {
+		fmt.Fprintf(w, " %s", fd.Return)
+	}
+	fmt.Fprint(w, " {\n")
+	for _, st := range fd.Body {
+		fmt.Fprint(w, "    ")
+		st.emit(w)
+		fmt.Fprint(w, "\n")
+	}
+	fmt.Fprint(w, "}")
+}
+
 type IfExpr struct {
 	Cond Expr
 	Then Expr
@@ -164,6 +211,10 @@ func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
 type IntLit struct{ Value int }
 
 func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
+
+type BoolLit struct{ Value bool }
+
+func (b *BoolLit) emit(w io.Writer) { fmt.Fprintf(w, "%t", b.Value) }
 
 // IndexExpr represents `X[i]`.
 type IndexExpr struct {
@@ -517,6 +568,10 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		return compileWhileStmt(st.While, env)
 	case st.For != nil:
 		return compileForStmt(st.For, env)
+	case st.Return != nil:
+		return compileReturnStmt(st.Return, env)
+	case st.Fun != nil:
+		return compileFunStmt(st.Fun, env)
 	case st.Break != nil:
 		return &BreakStmt{}, nil
 	case st.Continue != nil:
@@ -640,6 +695,33 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 		return nil, err
 	}
 	return &ForEachStmt{Name: fs.Name, Iterable: iter, Body: body}, nil
+}
+
+func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
+	if rs == nil {
+		return &ReturnStmt{}, nil
+	}
+	if rs.Value == nil {
+		return &ReturnStmt{}, nil
+	}
+	val, err := compileExpr(rs.Value, env)
+	if err != nil {
+		return nil, err
+	}
+	return &ReturnStmt{Value: val}, nil
+}
+
+func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
+	child := types.NewEnv(env)
+	body, err := compileStmts(fn.Body, child)
+	if err != nil {
+		return nil, err
+	}
+	params := make([]ParamDecl, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = ParamDecl{Name: p.Name, Type: toGoType(p.Type)}
+	}
+	return &FuncDecl{Name: fn.Name, Params: params, Return: toGoType(fn.Return), Body: body}, nil
 }
 
 func compileBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
@@ -880,6 +962,9 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		if p.Lit.Int != nil {
 			return &IntLit{Value: int(*p.Lit.Int)}, nil
 		}
+		if p.Lit.Bool != nil {
+			return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
+		}
 		return nil, fmt.Errorf("unsupported literal")
 	case p.If != nil:
 		return compileIfExpr(p.If, env)
@@ -1027,8 +1112,17 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("    \"strconv\"\n")
 	}
 	buf.WriteString(")\n\n")
+	for _, s := range prog.Stmts {
+		if _, ok := s.(*FuncDecl); ok {
+			s.emit(&buf)
+			buf.WriteString("\n\n")
+		}
+	}
 	buf.WriteString("func main() {\n")
 	for _, s := range prog.Stmts {
+		if _, ok := s.(*FuncDecl); ok {
+			continue
+		}
 		buf.WriteString("    ")
 		s.emit(&buf)
 		buf.WriteString("\n")
@@ -1111,6 +1205,24 @@ func toNodeStmt(s Stmt) *ast.Node {
 		return &ast.Node{Kind: "break"}
 	case *ContinueStmt:
 		return &ast.Node{Kind: "continue"}
+	case *ReturnStmt:
+		n := &ast.Node{Kind: "return"}
+		if st.Value != nil {
+			n.Children = append(n.Children, toNodeExpr(st.Value))
+		}
+		return n
+	case *FuncDecl:
+		n := &ast.Node{Kind: "func", Value: st.Name}
+		params := &ast.Node{Kind: "params"}
+		for _, p := range st.Params {
+			params.Children = append(params.Children, &ast.Node{Kind: "param", Value: p.Name})
+		}
+		body := &ast.Node{Kind: "body"}
+		for _, b := range st.Body {
+			body.Children = append(body.Children, toNodeStmt(b))
+		}
+		n.Children = append(n.Children, params, body)
+		return n
 	case *IndexAssignStmt:
 		return &ast.Node{Kind: "indexassign", Value: st.Name, Children: []*ast.Node{toNodeExpr(st.Index), toNodeExpr(st.Value)}}
 	default:
@@ -1130,6 +1242,8 @@ func toNodeExpr(e Expr) *ast.Node {
 		return &ast.Node{Kind: "string", Value: ex.Value}
 	case *IntLit:
 		return &ast.Node{Kind: "int"}
+	case *BoolLit:
+		return &ast.Node{Kind: "bool"}
 	case *VarRef:
 		return &ast.Node{Kind: "name", Value: ex.Name}
 	case *ListLit:
