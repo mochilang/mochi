@@ -112,6 +112,24 @@ type BinaryExpr struct {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
+	if b.Op == "+" {
+		if _, ok := b.Left.(*StringLit); ok {
+			io.WriteString(w, "format!(\"{}{}\", ")
+			b.Left.emit(w)
+			io.WriteString(w, ", ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
+		if _, ok := b.Right.(*StringLit); ok {
+			io.WriteString(w, "format!(\"{}{}\", ")
+			b.Left.emit(w)
+			io.WriteString(w, ", ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
+	}
 	io.WriteString(w, "(")
 	b.Left.emit(w)
 	io.WriteString(w, " ")
