@@ -21,6 +21,30 @@ type Program struct {
 
 type Stmt interface{ emit(io.Writer) }
 
+// VarStmt represents a mutable variable declaration.
+type VarStmt struct {
+	Name  string
+	Value Expr
+}
+
+func (s *VarStmt) emit(w io.Writer) {
+	io.WriteString(w, s.Name)
+	io.WriteString(w, " = ")
+	s.Value.emit(w)
+}
+
+// AssignStmt represents an assignment statement.
+type AssignStmt struct {
+	Name  string
+	Value Expr
+}
+
+func (s *AssignStmt) emit(w io.Writer) {
+	io.WriteString(w, s.Name)
+	io.WriteString(w, " = ")
+	s.Value.emit(w)
+}
+
 type Expr interface{ emit(io.Writer) }
 
 // ExprStmt represents a statement consisting of a single expression.
@@ -117,6 +141,66 @@ func (b *BoolLit) emit(w io.Writer) {
 type Ident struct{ Name string }
 
 func (id *Ident) emit(w io.Writer) { io.WriteString(w, id.Name) }
+
+// WhileStmt represents a while loop.
+type WhileStmt struct {
+	Cond Expr
+	Body []Stmt
+}
+
+func (wst *WhileStmt) emit(w io.Writer) {
+	io.WriteString(w, "while ")
+	wst.Cond.emit(w)
+	io.WriteString(w, "\n")
+	for _, st := range wst.Body {
+		st.emit(w)
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, "end")
+}
+
+// ForRangeStmt iterates from Start to End (exclusive).
+type ForRangeStmt struct {
+	Name  string
+	Start Expr
+	End   Expr
+	Body  []Stmt
+}
+
+func (f *ForRangeStmt) emit(w io.Writer) {
+	io.WriteString(w, "for ")
+	io.WriteString(w, f.Name)
+	io.WriteString(w, " in (")
+	f.Start.emit(w)
+	io.WriteString(w, "...")
+	f.End.emit(w)
+	io.WriteString(w, ")\n")
+	for _, st := range f.Body {
+		st.emit(w)
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, "end")
+}
+
+// ForInStmt iterates over an iterable expression.
+type ForInStmt struct {
+	Name     string
+	Iterable Expr
+	Body     []Stmt
+}
+
+func (f *ForInStmt) emit(w io.Writer) {
+	io.WriteString(w, "for ")
+	io.WriteString(w, f.Name)
+	io.WriteString(w, " in ")
+	f.Iterable.emit(w)
+	io.WriteString(w, "\n")
+	for _, st := range f.Body {
+		st.emit(w)
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, "end")
+}
 
 type ListLit struct{ Elems []Expr }
 
@@ -293,8 +377,27 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		return &LetStmt{Name: st.Let.Name, Value: v}, nil
+	case st.Var != nil:
+		v, err := convertExpr(st.Var.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &VarStmt{Name: st.Var.Name, Value: v}, nil
+	case st.Assign != nil:
+		v, err := convertExpr(st.Assign.Value)
+		if err != nil {
+			return nil, err
+		}
+		if len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0 {
+			return nil, fmt.Errorf("unsupported assignment")
+		}
+		return &AssignStmt{Name: st.Assign.Name, Value: v}, nil
 	case st.If != nil:
 		return convertIf(st.If)
+	case st.While != nil:
+		return convertWhile(st.While)
+	case st.For != nil:
+		return convertFor(st.For)
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
@@ -357,6 +460,49 @@ func convertIfExpr(ie *parser.IfExpr) (Expr, error) {
 		elseExpr = &BoolLit{Value: false}
 	}
 	return &CondExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
+}
+
+func convertWhile(ws *parser.WhileStmt) (Stmt, error) {
+	cond, err := convertExpr(ws.Cond)
+	if err != nil {
+		return nil, err
+	}
+	body := make([]Stmt, len(ws.Body))
+	for i, s := range ws.Body {
+		st, err := convertStmt(s)
+		if err != nil {
+			return nil, err
+		}
+		body[i] = st
+	}
+	return &WhileStmt{Cond: cond, Body: body}, nil
+}
+
+func convertFor(f *parser.ForStmt) (Stmt, error) {
+	body := make([]Stmt, len(f.Body))
+	for i, s := range f.Body {
+		st, err := convertStmt(s)
+		if err != nil {
+			return nil, err
+		}
+		body[i] = st
+	}
+	if f.RangeEnd != nil {
+		start, err := convertExpr(f.Source)
+		if err != nil {
+			return nil, err
+		}
+		end, err := convertExpr(f.RangeEnd)
+		if err != nil {
+			return nil, err
+		}
+		return &ForRangeStmt{Name: f.Name, Start: start, End: end, Body: body}, nil
+	}
+	iterable, err := convertExpr(f.Source)
+	if err != nil {
+		return nil, err
+	}
+	return &ForInStmt{Name: f.Name, Iterable: iterable, Body: body}, nil
 }
 
 func convertExpr(e *parser.Expr) (Expr, error) {
@@ -496,6 +642,10 @@ func stmtNode(s Stmt) *ast.Node {
 		return &ast.Node{Kind: "expr_stmt", Children: []*ast.Node{exprNode(st.Expr)}}
 	case *LetStmt:
 		return &ast.Node{Kind: "let", Value: st.Name, Children: []*ast.Node{exprNode(st.Value)}}
+	case *VarStmt:
+		return &ast.Node{Kind: "var", Value: st.Name, Children: []*ast.Node{exprNode(st.Value)}}
+	case *AssignStmt:
+		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{exprNode(st.Value)}}
 	case *IfStmt:
 		n := &ast.Node{Kind: "if", Children: []*ast.Node{exprNode(st.Cond)}}
 		thenNode := &ast.Node{Kind: "then"}
@@ -509,6 +659,25 @@ func stmtNode(s Stmt) *ast.Node {
 				elseNode.Children = append(elseNode.Children, stmtNode(s2))
 			}
 			n.Children = append(n.Children, elseNode)
+		}
+		return n
+	case *WhileStmt:
+		n := &ast.Node{Kind: "while", Children: []*ast.Node{exprNode(st.Cond)}}
+		for _, b := range st.Body {
+			n.Children = append(n.Children, stmtNode(b))
+		}
+		return n
+	case *ForRangeStmt:
+		n := &ast.Node{Kind: "for_range", Value: st.Name}
+		n.Children = append(n.Children, exprNode(st.Start), exprNode(st.End))
+		for _, b := range st.Body {
+			n.Children = append(n.Children, stmtNode(b))
+		}
+		return n
+	case *ForInStmt:
+		n := &ast.Node{Kind: "for_in", Value: st.Name, Children: []*ast.Node{exprNode(st.Iterable)}}
+		for _, b := range st.Body {
+			n.Children = append(n.Children, stmtNode(b))
 		}
 		return n
 	default:

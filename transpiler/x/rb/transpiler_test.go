@@ -53,6 +53,10 @@ func TestTranspilePrograms(t *testing.T) {
 		"string_concat",
 		"if_then_else",
 		"if_then_else_nested",
+		"for_loop",
+		"for_list_collection",
+		"while_loop",
+		"var_assignment",
 	}
 	root := repoRoot(t)
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "rb")
