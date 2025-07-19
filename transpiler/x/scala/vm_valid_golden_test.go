@@ -10,7 +10,6 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
-	"time"
 
 	"mochi/compiler/x/testutil"
 	"mochi/golden"
@@ -129,12 +128,10 @@ func updateReadme() {
 func updateTasks() {
 	root := repoRoot()
 	taskFile := filepath.Join(root, "transpiler", "x", "scala", "TASKS.md")
-	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
-	ts := ""
-	if err == nil {
-		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
-			ts = t.Format("2006-01-02 15:04 MST")
-		}
+	out, err := exec.Command("git", "log", "-1", "--format=%cd", "--date=format:%Y-%m-%d %H:%M:%S %Z").Output()
+	ts := strings.TrimSpace(string(out))
+	if err != nil {
+		ts = ""
 	}
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
