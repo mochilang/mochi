@@ -7438,6 +7438,11 @@ func formatValue(v Value) string {
 	switch v.Tag {
 	case ValueNull:
 		return "null"
+	case ValueBool:
+		if v.Bool {
+			return "true"
+		}
+		return "false"
 	case ValueStr:
 		return v.Str
 	case ValueMap:
