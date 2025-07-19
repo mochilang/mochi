@@ -1,1 +1,6 @@
-unsupported primary
+exit status 70
+ERROR on line 3 of file /workspace/mochi/tests/transpiler/x/scheme/list_set_ops.scm: undefined variable: union
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+Searching for modules exporting union ...
+... none found.

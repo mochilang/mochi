@@ -1,1 +1,5 @@
-unsupported postfix
+exit status 70
+ERROR: length: not a list: "fore"
+  called from <anonymous> on line 5 of file /workspace/mochi/tests/transpiler/x/scheme/string_prefix_slice.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
