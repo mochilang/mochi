@@ -85,3 +85,13 @@ func TestTranspileStringCompare(t *testing.T) { runGolden(t, "string_compare") }
 func TestTranspileLenString(t *testing.T) { runGolden(t, "len_string") }
 
 func TestTranspileStrBuiltin(t *testing.T) { runGolden(t, "str_builtin") }
+
+func TestTranspileLenBuiltin(t *testing.T) { runGolden(t, "len_builtin") }
+
+func TestTranspileLetAndPrint(t *testing.T) { runGolden(t, "let_and_print") }
+
+func TestTranspileStringConcat(t *testing.T) { runGolden(t, "string_concat") }
+
+func TestTranspileIfThenElse(t *testing.T) { runGolden(t, "if_then_else") }
+
+func TestTranspileIfThenElseNested(t *testing.T) { runGolden(t, "if_then_else_nested") }
