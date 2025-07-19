@@ -3,6 +3,7 @@
 package swifttrans
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"io"
@@ -96,9 +97,9 @@ func (c *CondExpr) emit(w io.Writer) {
 type PrintStmt struct{ Expr Expr }
 
 func (p *PrintStmt) emit(w io.Writer) {
-    fmt.Fprint(w, "print(")
-    p.Expr.emit(w)
-    fmt.Fprint(w, ")\n")
+	fmt.Fprint(w, "print(")
+	p.Expr.emit(w)
+	fmt.Fprint(w, ")\n")
 }
 
 type VarDecl struct {
@@ -159,6 +160,14 @@ type BinaryExpr struct {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
+	if b.Op == "in" {
+		fmt.Fprint(w, "(")
+		b.Right.emit(w)
+		fmt.Fprint(w, ".contains(")
+		b.Left.emit(w)
+		fmt.Fprint(w, "))")
+		return
+	}
 	fmt.Fprint(w, "(")
 	b.Left.emit(w)
 	fmt.Fprintf(w, " %s ", b.Op)
@@ -177,6 +186,26 @@ func (u *UnaryExpr) emit(w io.Writer) {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
+	switch c.Func {
+	case "str":
+		fmt.Fprint(w, "String(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		fmt.Fprint(w, ")")
+		return
+	case "substring":
+		if len(c.Args) == 3 {
+			fmt.Fprint(w, "substring(")
+			c.Args[0].emit(w)
+			fmt.Fprint(w, ", ")
+			c.Args[1].emit(w)
+			fmt.Fprint(w, ", ")
+			c.Args[2].emit(w)
+			fmt.Fprint(w, ")")
+			return
+		}
+	}
 	fmt.Fprint(w, c.Func)
 	fmt.Fprint(w, "(")
 	for i, a := range c.Args {
@@ -271,17 +300,46 @@ func header() string {
 		version(), t.Format("2006-01-02 15:04:05 MST"))
 }
 
+const prelude = "func substring(_ s: String, _ start: Int, _ end: Int) -> String {\n" +
+	"    let si = s.index(s.startIndex, offsetBy: start)\n" +
+	"    let ei = s.index(s.startIndex, offsetBy: end)\n" +
+	"    return String(s[si..<ei])\n" +
+	"}\n"
+
+func formatCode(src []byte) []byte {
+	var out bytes.Buffer
+	indent := 0
+	scanner := bufio.NewScanner(bytes.NewReader(src))
+	for scanner.Scan() {
+		line := scanner.Text()
+		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, "}") && indent > 0 {
+			indent--
+		}
+		for i := 0; i < indent; i++ {
+			out.WriteString("    ")
+		}
+		out.WriteString(trimmed)
+		out.WriteByte('\n')
+		if strings.HasSuffix(trimmed, "{") {
+			indent++
+		}
+	}
+	return out.Bytes()
+}
+
 // Emit returns the Swift source for the program.
 func (p *Program) Emit() []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
+	buf.WriteString(prelude)
 	for _, s := range p.Stmts {
 		s.emit(&buf)
 	}
 	if b := buf.Bytes(); len(b) > 0 && b[len(b)-1] != '\n' {
 		buf.WriteByte('\n')
 	}
-	return buf.Bytes()
+	return formatCode(buf.Bytes())
 }
 
 // Transpile converts a Mochi program into a simple Swift AST.

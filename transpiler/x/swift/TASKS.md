@@ -1,6 +1,8 @@
-## Progress (2025-07-19 12:47 UTC)
+## Progress (2025-07-19 13:02 UTC)
 - Generated golden tests for 31/100 programs
 - Updated README checklist and output artifacts
+- Added support for `str`, `substring` and the `in` operator
+- Swift output now has proper indentation
 
 # Swift Transpiler Tasks
 
