@@ -990,7 +990,15 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 			}
 			return fmt.Sprintf("%s %s %s", l, op, r), types.BoolType{}, nil
 		} else if op == "+" && (isStringType(leftType) || isStringType(rightType)) {
-			return fmt.Sprintf("%s + %s", left, right), types.StringType{}, nil
+			l := left
+			r := right
+			if !isStringType(leftType) {
+				l = fmt.Sprintf("%s.toString()", l)
+			}
+			if !isStringType(rightType) {
+				r = fmt.Sprintf("%s.toString()", r)
+			}
+			return fmt.Sprintf("%s + %s", l, r), types.StringType{}, nil
 		}
 
 		l := left
@@ -2229,7 +2237,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("str expects 1 arg")
 		}
-		return fmt.Sprintf("%s.toString()", args[0]), nil
+		return fmt.Sprintf("(%s).toString()", args[0]), nil
 	case "substring":
 		if len(args) == 2 {
 			return fmt.Sprintf("%s.toString().substring(%s)", args[0], args[1]), nil
