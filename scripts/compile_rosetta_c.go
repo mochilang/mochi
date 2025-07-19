@@ -94,7 +94,7 @@ func main() {
 			continue
 		}
 		bin := strings.TrimSuffix(tmp, ".c")
-		if out, err := exec.Command(cc, tmp, "-o", bin, "-lcrypto").CombinedOutput(); err != nil {
+		if out, err := exec.Command(cc, tmp, "-o", bin, "-lcrypto", "-lm").CombinedOutput(); err != nil {
 			writeError(outDir, name, fmt.Sprintf("cc: %v\n%s", err, out))
 			os.Remove(filepath.Join(outDir, name+".out"))
 			continue

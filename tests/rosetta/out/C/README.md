@@ -12,7 +12,7 @@ This directory holds C source code generated from the real Mochi programs in `te
 - [ ] 2048
 - [ ] 21-game
 - [ ] 24-game-solve
-- [ ] 24-game
+ - [x] 24-game
 - [ ] 4-rings-or-4-squares-puzzle
 - [ ] 9-billion-names-of-god-the-integer
 - [x] 99-bottles-of-beer-2
@@ -52,7 +52,7 @@ This directory holds C source code generated from the real Mochi programs in `te
 - [ ] anagrams
 - [ ] angle-difference-between-two-bearings-1
 - [ ] angle-difference-between-two-bearings-2
-- [ ] angles-geometric-normalization-and-conversion
+ - [x] angles-geometric-normalization-and-conversion
 - [x] animate-a-pendulum
 - [x] animation
 - [x] anonymous-recursion-1

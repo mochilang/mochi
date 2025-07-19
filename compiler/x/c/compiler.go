@@ -4990,7 +4990,11 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			leftString = false
 			continue
 		}
-		if op.Op == "/" && isInt(leftType) && isInt(rightType) {
+		if op.Op == "%" && (isFloat(leftType) || isFloat(rightType)) {
+			c.needMath = true
+			left = fmt.Sprintf("fmod((double)%s, (double)%s)", left, right)
+			leftType = types.FloatType{}
+		} else if op.Op == "/" && isInt(leftType) && isInt(rightType) {
 			left = fmt.Sprintf("((double)%s) / ((double)%s)", left, right)
 			leftType = types.FloatType{}
 		} else if op.Op == "/" && (strings.Contains(left, "_sum_int(") || strings.Contains(right, "_sum_int(")) {
@@ -5556,7 +5560,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		return name
 	case p.Call != nil:
 		if p.Call.Func == "len" {
-			isStr := isStringArg(p.Call.Args[0], c.env)
+			isStr := isStringExpr(p.Call.Args[0], c.env)
+			if !isStr {
+				if ct := cTypeFromType(c.exprType(p.Call.Args[0])); ct == "char*" {
+					isStr = true
+				}
+			}
 			if vals, ok := c.evalListIntExpr(p.Call.Args[0]); ok {
 				return strconv.Itoa(len(vals))
 			} else if fvals, ok := c.evalListFloatExpr(p.Call.Args[0]); ok {
@@ -5592,7 +5601,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			return fmt.Sprintf("_upper(%s)", arg)
 		} else if p.Call.Func == "float" {
 			arg := c.compileExpr(p.Call.Args[0])
-			if isStringArg(p.Call.Args[0], c.env) {
+			if isStringExpr(p.Call.Args[0], c.env) {
 				c.need(needFloat)
 				c.need(needStringHeader)
 				return fmt.Sprintf("_float(%s)", arg)
