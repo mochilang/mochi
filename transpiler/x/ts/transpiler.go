@@ -138,6 +138,27 @@ type LenExpr struct {
 	Value Expr
 }
 
+// AppendExpr represents appending an element to a list.
+type AppendExpr struct {
+	List Expr
+	Elem Expr
+}
+
+// AvgExpr represents averaging a list of numbers.
+type AvgExpr struct{ Value Expr }
+
+// SumExpr represents summing a list of numbers.
+type SumExpr struct{ Value Expr }
+
+// MinExpr returns the minimum value of a list.
+type MinExpr struct{ Value Expr }
+
+// MaxExpr returns the maximum value of a list.
+type MaxExpr struct{ Value Expr }
+
+// ValuesExpr returns Object.values(o).
+type ValuesExpr struct{ Value Expr }
+
 // SubstringExpr represents substring(s, start, end).
 type SubstringExpr struct {
 	Str   Expr
@@ -268,9 +289,76 @@ func (l *ListLit) emit(w io.Writer) {
 }
 
 func (l *LenExpr) emit(w io.Writer) {
-	io.WriteString(w, "__len(")
+	io.WriteString(w, "(")
+	io.WriteString(w, "Array.isArray(")
 	if l.Value != nil {
 		l.Value.emit(w)
+	}
+	io.WriteString(w, ") || typeof ")
+	if l.Value != nil {
+		l.Value.emit(w)
+	}
+	io.WriteString(w, "==='string' ? ")
+	if l.Value != nil {
+		l.Value.emit(w)
+	}
+	io.WriteString(w, ".length : Object.keys(")
+	if l.Value != nil {
+		l.Value.emit(w)
+	}
+	io.WriteString(w, "||{}).length)")
+}
+
+func (a *AppendExpr) emit(w io.Writer) {
+	io.WriteString(w, "[")
+	io.WriteString(w, "...")
+	if a.List != nil {
+		a.List.emit(w)
+	}
+	io.WriteString(w, ", ")
+	if a.Elem != nil {
+		a.Elem.emit(w)
+	}
+	io.WriteString(w, "]")
+}
+
+func (e *AvgExpr) emit(w io.Writer) {
+	io.WriteString(w, "((n)=>n.length==0 ? '0.0' : (n.reduce((a,b)=>a+b,0)/n.length).toFixed(1))(")
+	if e.Value != nil {
+		e.Value.emit(w)
+	}
+	io.WriteString(w, ")")
+}
+
+func (e *SumExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
+	if e.Value != nil {
+		e.Value.emit(w)
+	}
+	io.WriteString(w, ".reduce((a,b)=>a+b,0)")
+	io.WriteString(w, ")")
+}
+
+func (e *MinExpr) emit(w io.Writer) {
+	io.WriteString(w, "((arr)=>arr.length?Math.min(...arr):0)(")
+	if e.Value != nil {
+		e.Value.emit(w)
+	}
+	io.WriteString(w, ")")
+}
+
+func (e *MaxExpr) emit(w io.Writer) {
+	io.WriteString(w, "((arr)=>arr.length?Math.max(...arr):0)(")
+	if e.Value != nil {
+		e.Value.emit(w)
+	}
+	io.WriteString(w, ")")
+}
+
+func (e *ValuesExpr) emit(w io.Writer) {
+	io.WriteString(w, "Object.values(")
+	if e.Value != nil {
+		e.Value.emit(w)
 	}
 	io.WriteString(w, ")")
 }
@@ -478,11 +566,20 @@ func (f *ForRangeStmt) emit(w io.Writer) {
 func (f *ForInStmt) emit(w io.Writer) {
 	io.WriteString(w, "for (const ")
 	io.WriteString(w, f.Name)
-	io.WriteString(w, " of __iter(")
+	io.WriteString(w, " of (")
+	io.WriteString(w, "Array.isArray(")
 	if f.Iterable != nil {
 		f.Iterable.emit(w)
 	}
-	io.WriteString(w, ")) {\n")
+	io.WriteString(w, ") ? ")
+	if f.Iterable != nil {
+		f.Iterable.emit(w)
+	}
+	io.WriteString(w, " : Object.keys(")
+	if f.Iterable != nil {
+		f.Iterable.emit(w)
+	}
+	io.WriteString(w, " || {}))) {\n")
 	for _, st := range f.Body {
 		st.emit(w)
 		io.WriteString(w, "\n")
@@ -529,28 +626,7 @@ func (f *FuncDecl) emit(w io.Writer) {
 func Emit(p *Program) []byte {
 	var b bytes.Buffer
 	b.Write(meta.Header("//"))
-	b.WriteString("function __len(v:any):number {\n")
-	b.WriteString("  if (Array.isArray(v) || typeof v==='string') return v.length;\n")
-	b.WriteString("  return Object.keys(v||{}).length;\n")
-	b.WriteString("}\n")
-	b.WriteString("function __print(...args:any[]) {\n")
-	b.WriteString("  const out:string[]=[];\n")
-	b.WriteString("  for (const a of args) {\n")
-	b.WriteString("    if (typeof a==='boolean') out.push(a? '1':'0');\n")
-	b.WriteString("    else if (Array.isArray(a)) out.push(a.map(x=>typeof x==='boolean'? (x?'1':'0'):String(x)).join(' '));\n")
-	b.WriteString("    else out.push(String(a));\n")
-	b.WriteString("  }\n")
-	b.WriteString("  console.log(out.join(' '));\n")
-	b.WriteString("}\n")
-	b.WriteString("function __iter(v:any):any[] {\n  return Array.isArray(v)? v : Object.keys(v||{});\n}\n")
-	b.WriteString("function __append(a:any[], v:any):any[] { const r=a.slice(); r.push(v); return r; }\n")
-	b.WriteString("function __avg(nums:number[]):any { if(nums.length==0) return '0.0'; const v=nums.reduce((a,b)=>a+b,0)/nums.length; return v.toFixed(1); }\n")
-	b.WriteString("function __count(v:any):number { return __len(v); }\n")
-	b.WriteString("function __sum(nums:number[]):number { return nums.reduce((a,b)=>a+b,0); }\n")
-	b.WriteString("function __min(nums:number[]):number { return nums.length? Math.min(...nums):0; }\n")
-	b.WriteString("function __max(nums:number[]):number { return nums.length? Math.max(...nums):0; }\n")
-	b.WriteString("function __values(o:any):any[] { return Object.values(o); }\n")
-	b.WriteString("function __json(v:any){ console.log(JSON.stringify(v)); }\n")
+	b.WriteByte('\n')
 	for i, s := range p.Stmts {
 		if i > 0 {
 			b.WriteByte('\n')
@@ -948,7 +1024,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		switch p.Call.Func {
 		case "print":
-			return &CallExpr{Func: "__print", Args: args}, nil
+			return &CallExpr{Func: "console.log", Args: args}, nil
 		case "len":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("len expects one argument")
@@ -958,42 +1034,42 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) != 2 {
 				return nil, fmt.Errorf("append expects two arguments")
 			}
-			return &CallExpr{Func: "__append", Args: args}, nil
+			return &AppendExpr{List: args[0], Elem: args[1]}, nil
 		case "avg":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("avg expects one argument")
 			}
-			return &CallExpr{Func: "__avg", Args: args}, nil
+			return &AvgExpr{Value: args[0]}, nil
 		case "count":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("count expects one argument")
 			}
-			return &CallExpr{Func: "__count", Args: args}, nil
+			return &LenExpr{Value: args[0]}, nil
 		case "sum":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("sum expects one argument")
 			}
-			return &CallExpr{Func: "__sum", Args: args}, nil
+			return &SumExpr{Value: args[0]}, nil
 		case "min":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("min expects one argument")
 			}
-			return &CallExpr{Func: "__min", Args: args}, nil
+			return &MinExpr{Value: args[0]}, nil
 		case "max":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("max expects one argument")
 			}
-			return &CallExpr{Func: "__max", Args: args}, nil
+			return &MaxExpr{Value: args[0]}, nil
 		case "values":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("values expects one argument")
 			}
-			return &CallExpr{Func: "__values", Args: args}, nil
+			return &ValuesExpr{Value: args[0]}, nil
 		case "json":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("json expects one argument")
 			}
-			return &CallExpr{Func: "__json", Args: args}, nil
+			return &CallExpr{Func: "console.log", Args: []Expr{&CallExpr{Func: "JSON.stringify", Args: args}}}, nil
 		case "str":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("str expects one argument")
@@ -1210,6 +1286,18 @@ func exprToNode(e Expr) *ast.Node {
 		return n
 	case *LenExpr:
 		return &ast.Node{Kind: "len", Children: []*ast.Node{exprToNode(ex.Value)}}
+	case *AppendExpr:
+		return &ast.Node{Kind: "append", Children: []*ast.Node{exprToNode(ex.List), exprToNode(ex.Elem)}}
+	case *AvgExpr:
+		return &ast.Node{Kind: "avg", Children: []*ast.Node{exprToNode(ex.Value)}}
+	case *SumExpr:
+		return &ast.Node{Kind: "sum", Children: []*ast.Node{exprToNode(ex.Value)}}
+	case *MinExpr:
+		return &ast.Node{Kind: "min", Children: []*ast.Node{exprToNode(ex.Value)}}
+	case *MaxExpr:
+		return &ast.Node{Kind: "max", Children: []*ast.Node{exprToNode(ex.Value)}}
+	case *ValuesExpr:
+		return &ast.Node{Kind: "values", Children: []*ast.Node{exprToNode(ex.Value)}}
 	case *SubstringExpr:
 		return &ast.Node{Kind: "substring", Children: []*ast.Node{exprToNode(ex.Str), exprToNode(ex.Start), exprToNode(ex.End)}}
 	case *MapLit:
