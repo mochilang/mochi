@@ -38,9 +38,43 @@ type Program struct {
 // Stmt represents a Pascal statement.
 type Stmt interface{ emit(io.Writer) }
 
+// WhileStmt represents a simple while loop.
+type WhileStmt struct {
+	Cond Expr
+	Body []Stmt
+}
+
+func (w *WhileStmt) emit(out io.Writer) {
+	io.WriteString(out, "while ")
+	if w.Cond != nil {
+		w.Cond.emit(out)
+	}
+	io.WriteString(out, " do begin\n")
+	for _, s := range w.Body {
+		io.WriteString(out, "  ")
+		s.emit(out)
+		io.WriteString(out, "\n")
+	}
+	io.WriteString(out, "end;")
+}
+
 // PrintStmt prints a string literal using writeln.
 // Expr represents a Pascal expression.
 type Expr interface{ emit(io.Writer) }
+type boolExpr interface{ isBool() bool }
+
+// BoolLit is a boolean literal.
+type BoolLit struct{ Value bool }
+
+func (b *BoolLit) emit(w io.Writer) {
+	if b.Value {
+		io.WriteString(w, "true")
+	} else {
+		io.WriteString(w, "false")
+	}
+}
+
+func (b *BoolLit) isBool() bool { return true }
 
 // VarRef references a variable by name.
 type VarRef struct{ Name string }
@@ -80,7 +114,10 @@ type BinaryExpr struct {
 	Op    string
 	Left  Expr
 	Right Expr
+	Bool  bool
 }
+
+func (b *BinaryExpr) isBool() bool { return b.Bool }
 
 func (b *BinaryExpr) emit(w io.Writer) {
 	b.Left.emit(w)
@@ -105,6 +142,12 @@ type AssignStmt struct {
 }
 
 func (p *PrintStmt) emit(w io.Writer) {
+	if be, ok := p.Expr.(boolExpr); ok && be.isBool() {
+		io.WriteString(w, "writeln(ord(")
+		p.Expr.emit(w)
+		io.WriteString(w, "));")
+		return
+	}
 	io.WriteString(w, "writeln(")
 	if p.Expr != nil {
 		p.Expr.emit(w)
@@ -208,11 +251,49 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				return nil, err
 			}
 			pr.Stmts = append(pr.Stmts, &AssignStmt{Name: st.Assign.Name, Expr: ex})
+		case st.While != nil:
+			cond, err := convertExpr(st.While.Cond)
+			if err != nil {
+				return nil, err
+			}
+			body, err := convertBody(st.While.Body)
+			if err != nil {
+				return nil, err
+			}
+			pr.Stmts = append(pr.Stmts, &WhileStmt{Cond: cond, Body: body})
 		default:
 			return nil, fmt.Errorf("unsupported statement")
 		}
 	}
 	return pr, nil
+}
+
+func convertBody(body []*parser.Statement) ([]Stmt, error) {
+	var out []Stmt
+	for _, st := range body {
+		switch {
+		case st.Assign != nil:
+			ex, err := convertExpr(st.Assign.Value)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, &AssignStmt{Name: st.Assign.Name, Expr: ex})
+		case st.Expr != nil:
+			call := st.Expr.Expr.Binary.Left.Value.Target.Call
+			if call != nil && call.Func == "print" && len(call.Args) == 1 && len(st.Expr.Expr.Binary.Right) == 0 {
+				ex, err := convertExpr(call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				out = append(out, &PrintStmt{Expr: ex})
+				continue
+			}
+			return nil, fmt.Errorf("unsupported expression")
+		default:
+			return nil, fmt.Errorf("unsupported statement")
+		}
+	}
+	return out, nil
 }
 
 func convertExpr(e *parser.Expr) (Expr, error) {
@@ -237,6 +318,12 @@ func convertExpr(e *parser.Expr) (Expr, error) {
 	switch op.Op {
 	case "+", "-", "*", "/", "%":
 		return &BinaryExpr{Op: op.Op, Left: left, Right: right}, nil
+	case "==":
+		return &BinaryExpr{Op: "=", Left: left, Right: right, Bool: true}, nil
+	case "!=":
+		return &BinaryExpr{Op: "<>", Left: left, Right: right, Bool: true}, nil
+	case "<", "<=", ">", ">=":
+		return &BinaryExpr{Op: op.Op, Left: left, Right: right, Bool: true}, nil
 	default:
 		return nil, fmt.Errorf("unsupported op")
 	}
@@ -285,6 +372,8 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 		return &IntLit{Value: int64(*l.Int)}, nil
 	case l.Str != nil:
 		return &StringLit{Value: *l.Str}, nil
+	case l.Bool != nil:
+		return &BoolLit{Value: bool(*l.Bool)}, nil
 	default:
 		return nil, fmt.Errorf("unsupported literal")
 	}
