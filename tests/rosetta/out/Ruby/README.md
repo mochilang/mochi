@@ -1,4 +1,4 @@
-# Rosetta Ruby Output (42/278 compiled and run)
+# Rosetta Ruby Output (150/278 compiled and run)
 
 This directory holds Ruby source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -13,15 +13,15 @@ This directory holds Ruby source code generated from the real Mochi programs in 
 - [ ] 21-game
 - [ ] 24-game-solve
 - [ ] 24-game
-- [ ] 4-rings-or-4-squares-puzzle
-- [x] 9-billion-names-of-god-the-integer
+- [x] 4-rings-or-4-squares-puzzle
+- [ ] 9-billion-names-of-god-the-integer
 - [ ] 99-bottles-of-beer-2
 - [x] 99-bottles-of-beer
 - [ ] DNS-query
 - [x] a+b
-- [x] abbreviations-automatic
-- [x] abbreviations-easy
-- [x] abbreviations-simple
+- [ ] abbreviations-automatic
+- [ ] abbreviations-easy
+- [ ] abbreviations-simple
 - [x] abc-problem
 - [ ] abelian-sandpile-model-identity
 - [ ] abelian-sandpile-model
