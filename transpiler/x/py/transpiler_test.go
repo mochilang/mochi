@@ -143,3 +143,27 @@ func TestTranspile_InOperator(t *testing.T) {
 func TestTranspile_StringCompare(t *testing.T) {
 	runCase(t, "string_compare")
 }
+
+func TestTranspile_FunCall(t *testing.T) {
+	runCase(t, "fun_call")
+}
+
+func TestTranspile_FunThreeArgs(t *testing.T) {
+	runCase(t, "fun_three_args")
+}
+
+func TestTranspile_FunExprInLet(t *testing.T) {
+	runCase(t, "fun_expr_in_let")
+}
+
+func TestTranspile_Closure(t *testing.T) {
+	runCase(t, "closure")
+}
+
+func TestTranspile_BoolChain(t *testing.T) {
+	runCase(t, "bool_chain")
+}
+
+func TestTranspile_StringContains(t *testing.T) {
+	runCase(t, "string_contains")
+}

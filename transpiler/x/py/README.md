@@ -3,17 +3,17 @@
 This directory tracks progress of the experimental Python transpiler. Generated
 code for tests lives in `tests/transpiler/x/py`.
 
-## VM Golden Test Checklist (15/100)
+## VM Golden Test Checklist (21/100)
 
 - [ ] append_builtin
 - [ ] avg_builtin
 - [x] basic_compare
 - [x] binary_precedence
-- [ ] bool_chain
+- [x] bool_chain
 - [ ] break_continue
 - [ ] cast_string_to_int
 - [ ] cast_struct
-- [ ] closure
+- [x] closure
 - [ ] count_builtin
 - [ ] cross_join
 - [ ] cross_join_filter
@@ -24,9 +24,9 @@ code for tests lives in `tests/transpiler/x/py`.
 - [ ] for_list_collection
 - [ ] for_loop
 - [ ] for_map_collection
-- [ ] fun_call
-- [ ] fun_expr_in_let
-- [ ] fun_three_args
+- [x] fun_call
+- [x] fun_expr_in_let
+- [x] fun_three_args
 - [ ] go_auto
 - [ ] group_by
 - [ ] group_by_conditional_sum
@@ -87,7 +87,7 @@ code for tests lives in `tests/transpiler/x/py`.
 - [ ] str_builtin
 - [x] string_compare
 - [x] string_concat
-- [ ] string_contains
+- [x] string_contains
 - [ ] string_in_operator
 - [x] string_index
 - [ ] string_prefix_slice
