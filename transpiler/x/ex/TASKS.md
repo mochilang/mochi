@@ -1,11 +1,6 @@
-## Progress (2025-07-19 13:18 +0700)
+## Progress (2025-07-19 13:41 +0700)
 - VM valid golden test results updated
-
-## Progress (2025-07-19 13:18 +0700)
-- VM valid golden test results updated
-
-## Progress (2025-07-19 13:18 +0700)
-- VM valid golden test results updated
+- Added if-statement support and `String.contains?` handling.
 
 # Elixir Transpiler Tasks
 

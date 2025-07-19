@@ -61,6 +61,49 @@ type ExprStmt struct{ Expr Expr }
 
 func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
 
+// IfStmt is a simple if/else statement.
+type IfStmt struct {
+	Cond Expr
+	Then []Stmt
+	Else []Stmt
+}
+
+func (s *IfStmt) emit(w io.Writer) {
+	io.WriteString(w, "if ")
+	s.Cond.emit(w)
+	io.WriteString(w, " do\n")
+	for _, st := range s.Then {
+		st.emit(w)
+		io.WriteString(w, "\n")
+	}
+	if len(s.Else) > 0 {
+		io.WriteString(w, "else\n")
+		for _, st := range s.Else {
+			st.emit(w)
+			io.WriteString(w, "\n")
+		}
+	}
+	io.WriteString(w, "end")
+}
+
+// CondExpr represents a conditional expression.
+type CondExpr struct {
+	Cond Expr
+	Then Expr
+	Else Expr
+}
+
+func (c *CondExpr) emit(w io.Writer) {
+	io.WriteString(w, "if ")
+	c.Cond.emit(w)
+	io.WriteString(w, ", do: ")
+	c.Then.emit(w)
+	if c.Else != nil {
+		io.WriteString(w, ", else: ")
+		c.Else.emit(w)
+	}
+}
+
 // BinaryExpr represents a binary operation such as 1 + 2.
 type BinaryExpr struct {
 	Left  Expr
@@ -216,55 +259,124 @@ func Emit(p *Program) []byte {
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	res := &Program{}
 	for _, st := range prog.Statements {
-		switch {
-		case st.Expr != nil:
-			e, err := compileExpr(st.Expr.Expr, env)
-			if err != nil {
-				return nil, err
-			}
-			res.Stmts = append(res.Stmts, &ExprStmt{Expr: e})
-		case st.Let != nil:
-			var val Expr
-			if st.Let.Value != nil {
-				var err error
-				val, err = compileExpr(st.Let.Value, env)
-				if err != nil {
-					return nil, err
-				}
-			} else if st.Let.Type != nil && st.Let.Type.Simple != nil && *st.Let.Type.Simple == "int" {
-				val = &NumberLit{Value: "0"}
-			}
-			res.Stmts = append(res.Stmts, &LetStmt{Name: st.Let.Name, Value: val})
-		case st.Var != nil:
-			var val Expr
-			if st.Var.Value != nil {
-				var err error
-				val, err = compileExpr(st.Var.Value, env)
-				if err != nil {
-					return nil, err
-				}
-			} else if st.Var.Type != nil && st.Var.Type.Simple != nil && *st.Var.Type.Simple == "int" {
-				val = &NumberLit{Value: "0"}
-			}
-			res.Stmts = append(res.Stmts, &LetStmt{Name: st.Var.Name, Value: val})
-		case st.Assign != nil:
-			if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
-				val, err := compileExpr(st.Assign.Value, env)
-				if err != nil {
-					return nil, err
-				}
-				res.Stmts = append(res.Stmts, &AssignStmt{Name: st.Assign.Name, Value: val})
-			} else if st.Test == nil && st.Import == nil && st.Type == nil {
-				return nil, fmt.Errorf("unsupported statement at %d:%d", st.Pos.Line, st.Pos.Column)
-			}
-		default:
-			if st.Test == nil && st.Import == nil && st.Type == nil {
-				return nil, fmt.Errorf("unsupported statement at %d:%d", st.Pos.Line, st.Pos.Column)
-			}
+		stmt, err := compileStmt(st, env)
+		if err != nil {
+			return nil, err
+		}
+		if stmt != nil {
+			res.Stmts = append(res.Stmts, stmt)
 		}
 	}
 	_ = env
 	return res, nil
+}
+
+func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
+	switch {
+	case st.Expr != nil:
+		e, err := compileExpr(st.Expr.Expr, env)
+		if err != nil {
+			return nil, err
+		}
+		return &ExprStmt{Expr: e}, nil
+	case st.Let != nil:
+		var val Expr
+		if st.Let.Value != nil {
+			var err error
+			val, err = compileExpr(st.Let.Value, env)
+			if err != nil {
+				return nil, err
+			}
+		} else if st.Let.Type != nil && st.Let.Type.Simple != nil && *st.Let.Type.Simple == "int" {
+			val = &NumberLit{Value: "0"}
+		}
+		return &LetStmt{Name: st.Let.Name, Value: val}, nil
+	case st.Var != nil:
+		var val Expr
+		if st.Var.Value != nil {
+			var err error
+			val, err = compileExpr(st.Var.Value, env)
+			if err != nil {
+				return nil, err
+			}
+		} else if st.Var.Type != nil && st.Var.Type.Simple != nil && *st.Var.Type.Simple == "int" {
+			val = &NumberLit{Value: "0"}
+		}
+		return &LetStmt{Name: st.Var.Name, Value: val}, nil
+	case st.Assign != nil:
+		if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
+			val, err := compileExpr(st.Assign.Value, env)
+			if err != nil {
+				return nil, err
+			}
+			return &AssignStmt{Name: st.Assign.Name, Value: val}, nil
+		}
+		if len(st.Assign.Index) == 1 && len(st.Assign.Field) == 0 {
+			idx, err := compileExpr(st.Assign.Index[0].Start, env)
+			if err != nil {
+				return nil, err
+			}
+			val, err := compileExpr(st.Assign.Value, env)
+			if err != nil {
+				return nil, err
+			}
+			t, _ := env.GetVar(st.Assign.Name)
+			var call *CallExpr
+			switch t.(type) {
+			case types.ListType:
+				call = &CallExpr{Func: "List.replace_at", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx, val}}
+			case types.MapType:
+				call = &CallExpr{Func: "Map.put", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx, val}}
+			default:
+				return nil, fmt.Errorf("unsupported indexed assignment at %d:%d", st.Pos.Line, st.Pos.Column)
+			}
+			return &AssignStmt{Name: st.Assign.Name, Value: call}, nil
+		}
+		return nil, fmt.Errorf("unsupported statement at %d:%d", st.Pos.Line, st.Pos.Column)
+	case st.If != nil:
+		return compileIfStmt(st.If, env)
+	default:
+		if st.Test == nil && st.Import == nil && st.Type == nil {
+			return nil, fmt.Errorf("unsupported statement at %d:%d", st.Pos.Line, st.Pos.Column)
+		}
+	}
+	return nil, nil
+}
+
+func compileIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
+	cond, err := compileExpr(is.Cond, env)
+	if err != nil {
+		return nil, err
+	}
+	thenStmts := make([]Stmt, 0, len(is.Then))
+	for _, s := range is.Then {
+		st, err := compileStmt(s, env)
+		if err != nil {
+			return nil, err
+		}
+		if st != nil {
+			thenStmts = append(thenStmts, st)
+		}
+	}
+	var elseStmts []Stmt
+	if is.ElseIf != nil {
+		elseStmt, err := compileIfStmt(is.ElseIf, env)
+		if err != nil {
+			return nil, err
+		}
+		elseStmts = []Stmt{elseStmt}
+	} else if len(is.Else) > 0 {
+		for _, s := range is.Else {
+			st, err := compileStmt(s, env)
+			if err != nil {
+				return nil, err
+			}
+			if st != nil {
+				elseStmts = append(elseStmts, st)
+			}
+		}
+	}
+	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
 }
 
 func compileExpr(e *parser.Expr, env *types.Env) (Expr, error) {
@@ -272,6 +384,30 @@ func compileExpr(e *parser.Expr, env *types.Env) (Expr, error) {
 		return nil, fmt.Errorf("unsupported expression")
 	}
 	return compileBinary(e.Binary, env)
+}
+
+func compileIfExpr(ie *parser.IfExpr, env *types.Env) (Expr, error) {
+	cond, err := compileExpr(ie.Cond, env)
+	if err != nil {
+		return nil, err
+	}
+	thenExpr, err := compileExpr(ie.Then, env)
+	if err != nil {
+		return nil, err
+	}
+	var elseExpr Expr
+	if ie.ElseIf != nil {
+		elseExpr, err = compileIfExpr(ie.ElseIf, env)
+		if err != nil {
+			return nil, err
+		}
+	} else if ie.Else != nil {
+		elseExpr, err = compileExpr(ie.Else, env)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &CondExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
 }
 
 func compileUnary(u *parser.Unary, env *types.Env) (Expr, error) {
@@ -340,12 +476,25 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 	if pf == nil {
 		return nil, fmt.Errorf("unsupported postfix")
 	}
+	if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "contains" && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
+		arg, err := compileExpr(pf.Ops[0].Call.Args[0], env)
+		if err != nil {
+			return nil, err
+		}
+		base, err := compilePrimary(&parser.Primary{Selector: &parser.SelectorExpr{Root: pf.Target.Selector.Root}}, env)
+		if err != nil {
+			return nil, err
+		}
+		expr := &CallExpr{Func: "String.contains?", Args: []Expr{base, arg}}
+		return expr, nil
+	}
 	expr, err := compilePrimary(pf.Target, env)
 	if err != nil {
 		return nil, err
 	}
 	typ := types.TypeOfPrimary(pf.Target, env)
-	for _, op := range pf.Ops {
+	for i := 0; i < len(pf.Ops); i++ {
+		op := pf.Ops[i]
 		if op.Cast != nil {
 			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
 				expr = &CastExpr{Expr: expr, Type: *op.Cast.Type.Simple}
@@ -357,15 +506,32 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			_, isStr := typ.(types.StringType)
-			expr = &IndexExpr{Target: expr, Index: idx, IsString: isStr}
-			if isStr {
+			switch tt := typ.(type) {
+			case types.StringType:
+				expr = &IndexExpr{Target: expr, Index: idx, IsString: true}
 				typ = types.StringType{}
-			} else if lt, ok := typ.(types.ListType); ok {
-				typ = lt.Elem
-			} else {
+			case types.ListType:
+				expr = &IndexExpr{Target: expr, Index: idx, IsString: false}
+				typ = tt.Elem
+			case types.MapType:
+				expr = &CallExpr{Func: "Map.get", Args: []Expr{expr, idx}}
+				typ = tt.Value
+			default:
+				expr = &IndexExpr{Target: expr, Index: idx}
 				typ = types.AnyType{}
 			}
+		} else if op.Field != nil && op.Field.Name == "contains" && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil {
+			call := pf.Ops[i+1].Call
+			if len(call.Args) != 1 {
+				return nil, fmt.Errorf("unsupported contains call")
+			}
+			arg, err := compileExpr(call.Args[0], env)
+			if err != nil {
+				return nil, err
+			}
+			expr = &CallExpr{Func: "String.contains?", Args: []Expr{expr, arg}}
+			typ = types.BoolType{}
+			i++
 		} else {
 			return nil, fmt.Errorf("unsupported postfix")
 		}
@@ -393,8 +559,11 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		case "len":
 			name = "length"
 			if len(args) == 1 {
-				if _, ok := args[0].(*StringLit); ok {
+				t := types.TypeOfExprBasic(p.Call.Args[0], env)
+				if _, ok := t.(types.StringType); ok {
 					name = "String.length"
+				} else if _, ok := t.(types.MapType); ok {
+					name = "map_size"
 				}
 			}
 		case "sum":
@@ -438,6 +607,8 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			elems[i] = ex
 		}
 		return &ListLit{Elems: elems}, nil
+	case p.If != nil:
+		return compileIfExpr(p.If, env)
 	case p.Group != nil:
 		return compileExpr(p.Group, env)
 	}
@@ -511,6 +682,21 @@ func toNodeStmt(s Stmt) *ast.Node {
 	switch st := s.(type) {
 	case *ExprStmt:
 		return &ast.Node{Kind: "expr", Children: []*ast.Node{toNodeExpr(st.Expr)}}
+	case *IfStmt:
+		n := &ast.Node{Kind: "if", Children: []*ast.Node{toNodeExpr(st.Cond)}}
+		thenN := &ast.Node{Kind: "then"}
+		for _, t := range st.Then {
+			thenN.Children = append(thenN.Children, toNodeStmt(t))
+		}
+		n.Children = append(n.Children, thenN)
+		if len(st.Else) > 0 {
+			elseN := &ast.Node{Kind: "else"}
+			for _, e := range st.Else {
+				elseN.Children = append(elseN.Children, toNodeStmt(e))
+			}
+			n.Children = append(n.Children, elseN)
+		}
+		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
@@ -542,6 +728,8 @@ func toNodeExpr(e Expr) *ast.Node {
 		return &ast.Node{Kind: "cast", Value: ex.Type, Children: []*ast.Node{toNodeExpr(ex.Expr)}}
 	case *IndexExpr:
 		return &ast.Node{Kind: "index", Children: []*ast.Node{toNodeExpr(ex.Target), toNodeExpr(ex.Index)}}
+	case *CondExpr:
+		return &ast.Node{Kind: "cond", Children: []*ast.Node{toNodeExpr(ex.Cond), toNodeExpr(ex.Then), toNodeExpr(ex.Else)}}
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}

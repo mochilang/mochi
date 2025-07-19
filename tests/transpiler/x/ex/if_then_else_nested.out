@@ -1,0 +1,20 @@
+warning: missing parentheses for expression following "else:" keyword. Parentheses are required to solve ambiguity inside keywords.
+
+    This error happens when you have function calls without parentheses inside keywords. For example:
+
+        function(arg, one: nested_call a, b, c)
+        function(arg, one: if expr, do: :this, else: :that)
+
+    In the examples above, we don't know if the arguments "b" and "c" apply to the function "function" or "nested_call". Or if the keywords "do" and "else" apply to the function "function" or "if". You can solve this by explicitly adding parentheses:
+
+        function(arg, one: if(expr, do: :this, else: :that))
+        function(arg, one: nested_call(a, b, c))
+
+    Ambiguity found at:
+    │
+  3 │ msg = if (x > 10), do: "big", else: if (x > 5), do: "medium", else: "small"
+    │ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/transpiler/x/ex/if_then_else_nested.exs:3
+
+medium
