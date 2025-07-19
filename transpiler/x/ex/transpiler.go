@@ -886,6 +886,10 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			}
 		case "sum":
 			name = "Enum.sum"
+		case "min":
+			name = "Enum.min"
+		case "max":
+			name = "Enum.max"
 		case "avg":
 			if len(args) == 1 {
 				sumCall := &CallExpr{Func: "Enum.sum", Args: []Expr{args[0]}}
@@ -899,6 +903,12 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				list := args[0]
 				elemList := &ListLit{Elems: []Expr{args[1]}}
 				return &CallExpr{Func: "Enum.concat", Args: []Expr{list, elemList}}, nil
+			}
+		case "values":
+			if len(args) == 1 {
+				inner := &CallExpr{Func: "Map.values", Args: []Expr{args[0]}}
+				sort := &CallExpr{Func: "Enum.sort", Args: []Expr{inner}}
+				return &CallExpr{Func: "Enum.join", Args: []Expr{sort, &StringLit{Value: " "}}}, nil
 			}
 		case "substring":
 			if len(args) == 3 {
