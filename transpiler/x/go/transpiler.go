@@ -216,6 +216,27 @@ type BoolLit struct{ Value bool }
 
 func (b *BoolLit) emit(w io.Writer) { fmt.Fprintf(w, "%t", b.Value) }
 
+// MapLit represents a map literal.
+type MapLit struct {
+	KeyType   string
+	ValueType string
+	Keys      []Expr
+	Values    []Expr
+}
+
+func (m *MapLit) emit(w io.Writer) {
+	fmt.Fprintf(w, "map[%s]%s{", m.KeyType, m.ValueType)
+	for i := range m.Keys {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		m.Keys[i].emit(w)
+		fmt.Fprint(w, ": ")
+		m.Values[i].emit(w)
+	}
+	fmt.Fprint(w, "}")
+}
+
 // IndexExpr represents `X[i]`.
 type IndexExpr struct {
 	X     Expr
@@ -525,23 +546,51 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		}
 		return &ExprStmt{Expr: e}, nil
 	case st.Let != nil:
+		var typ string
+		if st.Let.Type != nil {
+			typ = toGoType(st.Let.Type)
+		} else if t, err := env.GetVar(st.Let.Name); err == nil {
+			typ = toGoTypeFromType(t)
+		}
 		if st.Let.Value != nil {
 			e, err := compileExpr(st.Let.Value, env)
 			if err != nil {
 				return nil, err
 			}
-			return &VarDecl{Name: st.Let.Name, Type: toGoType(st.Let.Type), Value: e}, nil
+			if ml, ok := e.(*MapLit); ok && ml.KeyType == "interface{}" {
+				if t, err := env.GetVar(st.Let.Name); err == nil {
+					if mt, ok2 := t.(types.MapType); ok2 {
+						ml.KeyType = toGoTypeFromType(mt.Key)
+						ml.ValueType = toGoTypeFromType(mt.Value)
+					}
+				}
+			}
+			return &VarDecl{Name: st.Let.Name, Type: typ, Value: e}, nil
 		}
-		return &VarDecl{Name: st.Let.Name, Type: toGoType(st.Let.Type)}, nil
+		return &VarDecl{Name: st.Let.Name, Type: typ}, nil
 	case st.Var != nil:
+		var typ string
+		if st.Var.Type != nil {
+			typ = toGoType(st.Var.Type)
+		} else if t, err := env.GetVar(st.Var.Name); err == nil {
+			typ = toGoTypeFromType(t)
+		}
 		if st.Var.Value != nil {
 			e, err := compileExpr(st.Var.Value, env)
 			if err != nil {
 				return nil, err
 			}
-			return &VarDecl{Name: st.Var.Name, Type: toGoType(st.Var.Type), Value: e}, nil
+			if ml, ok := e.(*MapLit); ok && ml.KeyType == "interface{}" {
+				if t, err := env.GetVar(st.Var.Name); err == nil {
+					if mt, ok2 := t.(types.MapType); ok2 {
+						ml.KeyType = toGoTypeFromType(mt.Key)
+						ml.ValueType = toGoTypeFromType(mt.Value)
+					}
+				}
+			}
+			return &VarDecl{Name: st.Var.Name, Type: typ, Value: e}, nil
 		}
-		return &VarDecl{Name: st.Var.Name, Type: toGoType(st.Var.Type)}, nil
+		return &VarDecl{Name: st.Var.Name, Type: typ}, nil
 	case st.Assign != nil:
 		if len(st.Assign.Index) == 1 && st.Assign.Index[0].Colon == nil && st.Assign.Index[0].Colon2 == nil && len(st.Assign.Field) == 0 {
 			idx, err := compileExpr(st.Assign.Index[0].Start, env)
@@ -719,9 +768,23 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 	}
 	params := make([]ParamDecl, len(fn.Params))
 	for i, p := range fn.Params {
-		params[i] = ParamDecl{Name: p.Name, Type: toGoType(p.Type)}
+		typ := toGoType(p.Type)
+		if typ == "" {
+			if t, err := child.GetVar(p.Name); err == nil {
+				typ = toGoTypeFromType(t)
+			}
+		}
+		params[i] = ParamDecl{Name: p.Name, Type: typ}
 	}
-	return &FuncDecl{Name: fn.Name, Params: params, Return: toGoType(fn.Return), Body: body}, nil
+	ret := toGoType(fn.Return)
+	if ret == "" {
+		if t, err := child.GetVar(fn.Name); err == nil {
+			if ft, ok := t.(types.FuncType); ok {
+				ret = toGoTypeFromType(ft.Return)
+			}
+		}
+	}
+	return &FuncDecl{Name: fn.Name, Params: params, Return: ret, Body: body}, nil
 }
 
 func compileBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
@@ -870,6 +933,9 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				case types.ListType:
 					expr = &IndexExpr{X: expr, Index: iex}
 					t = tt.Elem
+				case types.MapType:
+					expr = &IndexExpr{X: expr, Index: iex}
+					t = tt.Value
 				default:
 					expr = &IndexExpr{X: expr, Index: iex}
 					t = types.AnyType{}
@@ -955,6 +1021,23 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			elems[i] = ex
 		}
 		return &ListLit{Elems: elems}, nil
+	case p.Map != nil:
+		keys := make([]Expr, len(p.Map.Items))
+		vals := make([]Expr, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			ke, err := compileExpr(it.Key, env)
+			if err != nil {
+				return nil, err
+			}
+			ve, err := compileExpr(it.Value, env)
+			if err != nil {
+				return nil, err
+			}
+			keys[i] = ke
+			vals[i] = ve
+		}
+		mt, _ := types.TypeOfPrimaryBasic(p, env).(types.MapType)
+		return &MapLit{KeyType: toGoTypeFromType(mt.Key), ValueType: toGoTypeFromType(mt.Value), Keys: keys, Values: vals}, nil
 	case p.Lit != nil:
 		if p.Lit.Str != nil {
 			return &StringLit{Value: *p.Lit.Str}, nil
@@ -987,9 +1070,24 @@ func toGoType(t *parser.TypeRef) string {
 		return "string"
 	case "bool":
 		return "bool"
-	default:
-		return "interface{}"
 	}
+	return "interface{}"
+}
+
+func toGoTypeFromType(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType, types.Int64Type:
+		return "int"
+	case types.StringType:
+		return "string"
+	case types.BoolType:
+		return "bool"
+	case types.ListType:
+		return "[]" + toGoTypeFromType(tt.Elem)
+	case types.MapType:
+		return fmt.Sprintf("map[%s]%s", toGoTypeFromType(tt.Key), toGoTypeFromType(tt.Value))
+	}
+	return "interface{}"
 }
 
 func isBoolExpr(e *parser.Expr) bool { return isBoolBinary(e.Binary) }
