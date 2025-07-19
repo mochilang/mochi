@@ -279,6 +279,22 @@ func (s *ReturnStmt) emit(w io.Writer) error {
 	return nil
 }
 
+// BreakStmt represents a `break` statement.
+type BreakStmt struct{}
+
+func (s *BreakStmt) emit(w io.Writer) error {
+	_, err := io.WriteString(w, "break")
+	return err
+}
+
+// ContinueStmt represents a `continue` statement.
+type ContinueStmt struct{}
+
+func (s *ContinueStmt) emit(w io.Writer) error {
+	_, err := io.WriteString(w, "continue")
+	return err
+}
+
 // FuncDecl represents a function definition.
 type FuncDecl struct {
 	Name   string
@@ -680,6 +696,32 @@ func convertForStmt(fst *parser.ForStmt) (Stmt, error) {
 	return &ForInStmt{Name: fst.Name, Iterable: iter, Body: body}, nil
 }
 
+func convertIfExpr(ie *parser.IfExpr) (Expr, error) {
+	cond, err := convertExpr(ie.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenExpr, err := convertExpr(ie.Then)
+	if err != nil {
+		return nil, err
+	}
+	var elseExpr Expr
+	if ie.ElseIf != nil {
+		elseExpr, err = convertIfExpr(ie.ElseIf)
+		if err != nil {
+			return nil, err
+		}
+	} else if ie.Else != nil {
+		elseExpr, err = convertExpr(ie.Else)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		elseExpr = &IntLit{Value: 0}
+	}
+	return &CondExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
+}
+
 func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 	var out []Stmt
 	for _, st := range list {
@@ -745,6 +787,10 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 			}
 		}
 		return &ReturnStmt{Value: e}, nil
+	case st.Break != nil:
+		return &BreakStmt{}, nil
+	case st.Continue != nil:
+		return &ContinueStmt{}, nil
 	case st.Fun != nil:
 		body, err := convertStmtList(st.Fun.Body)
 		if err != nil {
@@ -896,6 +942,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			elems = append(elems, ex)
 		}
 		return &ListLit{Elems: elems}, nil
+	case p.If != nil:
+		return convertIfExpr(p.If)
 	case p.FunExpr != nil && p.FunExpr.ExprBody != nil:
 		var params []string
 		for _, pa := range p.FunExpr.Params {

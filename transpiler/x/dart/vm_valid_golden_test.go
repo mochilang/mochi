@@ -140,22 +140,21 @@ func updateTasks() {
 			}
 		}
 	}
-	srcDir := filepath.Join(root, "tests", "vm", "valid")
-	outDir := filepath.Join(root, "tests", "transpiler", "x", "dart")
-	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	total := len(files)
-	compiled := 0
-	for _, f := range files {
-		name := filepath.Base(f)
-		if _, err := os.Stat(filepath.Join(outDir, strings.TrimSuffix(name, ".mochi")+".dart")); err == nil {
-			compiled++
+
+	data, _ := os.ReadFile(taskFile)
+	var keep []string
+	for _, line := range strings.Split(string(data), "\n") {
+		if strings.HasPrefix(line, "## Progress") || strings.HasPrefix(line, "- VM valid") {
+			continue
 		}
+		keep = append(keep, line)
 	}
+
 	var buf bytes.Buffer
-	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
-	fmt.Fprintf(&buf, "- VM valid golden tests %d/%d compiled\n\n", compiled, total)
-	if data, err := os.ReadFile(taskFile); err == nil {
-		buf.Write(data)
-	}
+	buf.WriteString(fmt.Sprintf("## Recent Enhancements (%s)\n", ts))
+	buf.WriteString("- Added support for `break` and `continue` statements.\n")
+	buf.WriteString("- Implemented `if ... then ... else` expressions.\n")
+	buf.WriteString("- Updated README checklist with progress summary.\n\n")
+	buf.WriteString(strings.Join(keep, "\n"))
 	_ = os.WriteFile(taskFile, buf.Bytes(), 0o644)
 }

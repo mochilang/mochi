@@ -1,5 +1,10 @@
-## Progress (2025-07-19 19:36 +0700)
-- VM valid golden tests 17/100 compiled
+## Recent Enhancements (2025-07-19 20:02 +0700)
+- Added support for `break` and `continue` statements.
+- Implemented `if ... then ... else` expressions.
+- Updated README checklist with progress summary.
+
+
+
 
 # Dart Transpiler Tasks
 
@@ -8,7 +13,6 @@
 - Generated golden test for `fun_call`.
 - Refactored test helpers to reduce duplication.
 
-## Progress
 - 2025-07-19 04:48:06 +0000: feat: add dart transpiler
 - 2025-07-19 05:31:43 +0000: extend dart transpiler with vars and assignments
 - 2025-07-19 05:57:44 +0000: update dart tasks timestamp
