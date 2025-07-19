@@ -75,6 +75,10 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		}
 		return false
 	}
+	isString := func(e Expr) bool {
+		_, ok := e.(*StringLit)
+		return ok
+	}
 	if b.Op == "/" && isInt(b.Left) && isInt(b.Right) {
 		io.WriteString(w, "div(")
 		b.Left.emit(w)
@@ -87,6 +91,14 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		io.WriteString(w, "rem(")
 		b.Left.emit(w)
 		io.WriteString(w, ", ")
+		b.Right.emit(w)
+		io.WriteString(w, ")")
+		return
+	}
+	if b.Op == "+" && (isString(b.Left) || isString(b.Right)) {
+		io.WriteString(w, "(")
+		b.Left.emit(w)
+		io.WriteString(w, " <> ")
 		b.Right.emit(w)
 		io.WriteString(w, ")")
 		return
@@ -126,6 +138,25 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		a.emit(w)
 	}
+	io.WriteString(w, ")")
+}
+
+// IndexExpr represents indexing into a list or string.
+type IndexExpr struct {
+	Target   Expr
+	Index    Expr
+	IsString bool
+}
+
+func (i *IndexExpr) emit(w io.Writer) {
+	if i.IsString {
+		io.WriteString(w, "String.at(")
+	} else {
+		io.WriteString(w, "Enum.at(")
+	}
+	i.Target.emit(w)
+	io.WriteString(w, ", ")
+	i.Index.emit(w)
 	io.WriteString(w, ")")
 }
 
@@ -187,7 +218,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	for _, st := range prog.Statements {
 		switch {
 		case st.Expr != nil:
-			e, err := compileExpr(st.Expr.Expr)
+			e, err := compileExpr(st.Expr.Expr, env)
 			if err != nil {
 				return nil, err
 			}
@@ -196,7 +227,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			var val Expr
 			if st.Let.Value != nil {
 				var err error
-				val, err = compileExpr(st.Let.Value)
+				val, err = compileExpr(st.Let.Value, env)
 				if err != nil {
 					return nil, err
 				}
@@ -208,7 +239,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			var val Expr
 			if st.Var.Value != nil {
 				var err error
-				val, err = compileExpr(st.Var.Value)
+				val, err = compileExpr(st.Var.Value, env)
 				if err != nil {
 					return nil, err
 				}
@@ -218,7 +249,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			res.Stmts = append(res.Stmts, &LetStmt{Name: st.Var.Name, Value: val})
 		case st.Assign != nil:
 			if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
-				val, err := compileExpr(st.Assign.Value)
+				val, err := compileExpr(st.Assign.Value, env)
 				if err != nil {
 					return nil, err
 				}
@@ -236,18 +267,18 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	return res, nil
 }
 
-func compileExpr(e *parser.Expr) (Expr, error) {
+func compileExpr(e *parser.Expr, env *types.Env) (Expr, error) {
 	if e == nil || e.Binary == nil {
 		return nil, fmt.Errorf("unsupported expression")
 	}
-	return compileBinary(e.Binary)
+	return compileBinary(e.Binary, env)
 }
 
-func compileUnary(u *parser.Unary) (Expr, error) {
+func compileUnary(u *parser.Unary, env *types.Env) (Expr, error) {
 	if u == nil {
 		return nil, fmt.Errorf("unsupported unary")
 	}
-	expr, err := compilePostfix(u.Value)
+	expr, err := compilePostfix(u.Value, env)
 	if err != nil {
 		return nil, err
 	}
@@ -257,15 +288,15 @@ func compileUnary(u *parser.Unary) (Expr, error) {
 	return expr, nil
 }
 
-func compileBinary(b *parser.BinaryExpr) (Expr, error) {
-	left, err := compileUnary(b.Left)
+func compileBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
+	left, err := compileUnary(b.Left, env)
 	if err != nil {
 		return nil, err
 	}
 	operands := []Expr{left}
 	ops := make([]*parser.BinaryOp, len(b.Right))
 	for i, op := range b.Right {
-		expr, err := compilePostfix(op.Right)
+		expr, err := compilePostfix(op.Right, env)
 		if err != nil {
 			return nil, err
 		}
@@ -305,20 +336,35 @@ func compileBinary(b *parser.BinaryExpr) (Expr, error) {
 	return operands[0], nil
 }
 
-func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
+func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 	if pf == nil {
 		return nil, fmt.Errorf("unsupported postfix")
 	}
-	expr, err := compilePrimary(pf.Target)
+	expr, err := compilePrimary(pf.Target, env)
 	if err != nil {
 		return nil, err
 	}
+	typ := types.TypeOfPrimary(pf.Target, env)
 	for _, op := range pf.Ops {
 		if op.Cast != nil {
 			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
 				expr = &CastExpr{Expr: expr, Type: *op.Cast.Type.Simple}
 			} else {
 				return nil, fmt.Errorf("unsupported cast")
+			}
+		} else if op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil {
+			idx, err := compileExpr(op.Index.Start, env)
+			if err != nil {
+				return nil, err
+			}
+			_, isStr := typ.(types.StringType)
+			expr = &IndexExpr{Target: expr, Index: idx, IsString: isStr}
+			if isStr {
+				typ = types.StringType{}
+			} else if lt, ok := typ.(types.ListType); ok {
+				typ = lt.Elem
+			} else {
+				typ = types.AnyType{}
 			}
 		} else {
 			return nil, fmt.Errorf("unsupported postfix")
@@ -327,12 +373,12 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 	return expr, nil
 }
 
-func compilePrimary(p *parser.Primary) (Expr, error) {
+func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 	switch {
 	case p.Call != nil:
 		args := make([]Expr, len(p.Call.Args))
 		for i, a := range p.Call.Args {
-			ex, err := compileExpr(a)
+			ex, err := compileExpr(a, env)
 			if err != nil {
 				return nil, err
 			}
@@ -359,6 +405,19 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				countCall := &CallExpr{Func: "Enum.count", Args: []Expr{args[0]}}
 				return &BinaryExpr{Left: sumCall, Op: "/", Right: countCall}, nil
 			}
+		case "str":
+			name = "to_string"
+		case "append":
+			if len(args) == 2 {
+				list := args[0]
+				elemList := &ListLit{Elems: []Expr{args[1]}}
+				return &CallExpr{Func: "Enum.concat", Args: []Expr{list, elemList}}, nil
+			}
+		case "substring":
+			if len(args) == 3 {
+				diff := &BinaryExpr{Left: args[2], Op: "-", Right: args[1]}
+				return &CallExpr{Func: "String.slice", Args: []Expr{args[0], args[1], diff}}, nil
+			}
 		}
 		return &CallExpr{Func: name, Args: args}, nil
 	case p.Lit != nil:
@@ -372,7 +431,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 	case p.List != nil:
 		elems := make([]Expr, len(p.List.Elems))
 		for i, el := range p.List.Elems {
-			ex, err := compileExpr(el)
+			ex, err := compileExpr(el, env)
 			if err != nil {
 				return nil, err
 			}
@@ -380,7 +439,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &ListLit{Elems: elems}, nil
 	case p.Group != nil:
-		return compileExpr(p.Group)
+		return compileExpr(p.Group, env)
 	}
 	return nil, fmt.Errorf("unsupported primary")
 }
@@ -481,6 +540,8 @@ func toNodeExpr(e Expr) *ast.Node {
 		return &ast.Node{Kind: "unary", Value: ex.Op, Children: []*ast.Node{toNodeExpr(ex.Expr)}}
 	case *CastExpr:
 		return &ast.Node{Kind: "cast", Value: ex.Type, Children: []*ast.Node{toNodeExpr(ex.Expr)}}
+	case *IndexExpr:
+		return &ast.Node{Kind: "index", Children: []*ast.Node{toNodeExpr(ex.Target), toNodeExpr(ex.Index)}}
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
