@@ -4,6 +4,8 @@ This package contains experimental transpilers that convert Mochi bytecode to
 other programming languages. The Haskell backend currently supports a tiny
 subset of the language.
 
+Compiled programs: 6/100
+
 ## Golden test checklist
 
 - [ ] append_builtin
@@ -99,11 +101,11 @@ subset of the language.
 - [ ] tree_sum
 - [ ] two-sum
 - [x] typed_let
-- [ ] typed_var
+- [x] typed_var
 - [ ] unary_neg
 - [ ] update_stmt
 - [ ] user_type_literal
 - [ ] values_builtin
-- [ ] var_assignment
+- [x] var_assignment
 - [ ] while_loop
 
