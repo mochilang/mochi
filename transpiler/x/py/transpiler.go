@@ -169,7 +169,14 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 	if err := emitExpr(w, b.Left); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, " "+b.Op+" "); err != nil {
+	op := b.Op
+	switch op {
+	case "&&":
+		op = "and"
+	case "||":
+		op = "or"
+	}
+	if _, err := io.WriteString(w, " "+op+" "); err != nil {
 		return err
 	}
 	if err := emitExpr(w, b.Right); err != nil {
@@ -185,7 +192,11 @@ type UnaryExpr struct {
 }
 
 func (u *UnaryExpr) emit(w io.Writer) error {
-	if _, err := io.WriteString(w, u.Op); err != nil {
+	op := u.Op
+	if op == "!" {
+		op = "not "
+	}
+	if _, err := io.WriteString(w, op); err != nil {
 		return err
 	}
 	return emitExpr(w, u.Expr)
