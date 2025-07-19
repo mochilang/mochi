@@ -145,6 +145,28 @@ type BinaryExpr struct {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
+	if isStringExpr(b.Left) && isStringExpr(b.Right) {
+		switch b.Op {
+		case "<", "<=", ">", ">=":
+			fmt.Fprint(w, "(")
+			b.Left.emit(w)
+			fmt.Fprint(w, ".compareTo(")
+			b.Right.emit(w)
+			fmt.Fprint(w, ") ")
+			switch b.Op {
+			case "<":
+				fmt.Fprint(w, "< 0")
+			case "<=":
+				fmt.Fprint(w, "<= 0")
+			case ">":
+				fmt.Fprint(w, "> 0")
+			case ">=":
+				fmt.Fprint(w, ">= 0")
+			}
+			fmt.Fprint(w, ")")
+			return
+		}
+	}
 	b.Left.emit(w)
 	fmt.Fprint(w, " "+b.Op+" ")
 	b.Right.emit(w)
@@ -230,6 +252,21 @@ func (c *CallExpr) emit(w io.Writer) {
 	fmt.Fprint(w, ")")
 }
 
+type SubstringExpr struct {
+	Str   Expr
+	Start Expr
+	End   Expr
+}
+
+func (s *SubstringExpr) emit(w io.Writer) {
+	s.Str.emit(w)
+	fmt.Fprint(w, ".substring(")
+	s.Start.emit(w)
+	fmt.Fprint(w, ", ")
+	s.End.emit(w)
+	fmt.Fprint(w, ")")
+}
+
 type StringLit struct{ Value string }
 
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
@@ -258,6 +295,20 @@ func isBoolExpr(e Expr) bool {
 	default:
 		return false
 	}
+}
+
+func isStringExpr(e Expr) bool {
+	switch ex := e.(type) {
+	case *StringLit:
+		return true
+	case *CallExpr:
+		if ex.Func == "String.valueOf" {
+			return true
+		}
+	case *SubstringExpr:
+		return true
+	}
+	return false
 }
 
 // Transpile converts a Mochi AST into a simple Java AST.
@@ -450,6 +501,12 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		if name == "len" && len(args) == 1 {
 			return &LenExpr{Value: args[0]}, nil
+		}
+		if name == "str" && len(args) == 1 {
+			return &CallExpr{Func: "String.valueOf", Args: args}, nil
+		}
+		if name == "substring" && len(args) == 3 {
+			return &SubstringExpr{Str: args[0], Start: args[1], End: args[2]}, nil
 		}
 		return &CallExpr{Func: name, Args: args}, nil
 	case p.Lit != nil && p.Lit.Str != nil:
