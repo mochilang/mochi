@@ -70,7 +70,7 @@ type FunDef struct {
 }
 
 func (f *FunDef) emit(w io.Writer) {
-	io.WriteString(w, "let ")
+	io.WriteString(w, "let rec ")
 	io.WriteString(w, f.Name)
 	for _, p := range f.Params {
 		io.WriteString(w, " ")
@@ -280,6 +280,25 @@ type BinaryExpr struct {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
+	if b.Op == "in" {
+		if needsParen(b.Right) {
+			io.WriteString(w, "(")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			b.Right.emit(w)
+		}
+		io.WriteString(w, ".Contains(")
+		if needsParen(b.Left) {
+			io.WriteString(w, "(")
+			b.Left.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			b.Left.emit(w)
+		}
+		io.WriteString(w, ")")
+		return
+	}
 	if needsParen(b.Left) {
 		io.WriteString(w, "(")
 		b.Left.emit(w)
@@ -367,6 +386,8 @@ func precedence(op string) int {
 		return 2
 	case "==", "!=", "<", "<=", ">", ">=":
 		return 3
+	case "in":
+		return 3
 	case "+", "-":
 		return 4
 	case "*", "/", "%":
@@ -378,7 +399,7 @@ func precedence(op string) int {
 
 func needsParen(e Expr) bool {
 	switch e.(type) {
-	case *BinaryExpr, *UnaryExpr, *IfExpr, *AppendExpr, *SubstringExpr, *CallExpr, *IndexExpr, *LambdaExpr:
+	case *BinaryExpr, *UnaryExpr, *IfExpr, *AppendExpr, *SubstringExpr, *CallExpr, *IndexExpr, *LambdaExpr, *FieldExpr, *MethodCallExpr, *SliceExpr, *CastExpr:
 		return true
 	default:
 		return false
@@ -413,6 +434,77 @@ func (i *IndexExpr) emit(w io.Writer) {
 	io.WriteString(w, ".[")
 	i.Index.emit(w)
 	io.WriteString(w, "]")
+}
+
+// FieldExpr represents a field selection like obj.field.
+type FieldExpr struct {
+	Target Expr
+	Name   string
+}
+
+func (f *FieldExpr) emit(w io.Writer) {
+	f.Target.emit(w)
+	io.WriteString(w, ".")
+	io.WriteString(w, f.Name)
+}
+
+// MethodCallExpr represents a method invocation target.method(args).
+type MethodCallExpr struct {
+	Target Expr
+	Name   string
+	Args   []Expr
+}
+
+func (m *MethodCallExpr) emit(w io.Writer) {
+	m.Target.emit(w)
+	io.WriteString(w, ".")
+	io.WriteString(w, m.Name)
+	io.WriteString(w, "(")
+	for i, a := range m.Args {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		a.emit(w)
+	}
+	io.WriteString(w, ")")
+}
+
+// SliceExpr represents slicing start:end on strings.
+type SliceExpr struct {
+	Target Expr
+	Start  Expr
+	End    Expr
+}
+
+func (s *SliceExpr) emit(w io.Writer) {
+	s.Target.emit(w)
+	io.WriteString(w, ".Substring(")
+	s.Start.emit(w)
+	io.WriteString(w, ", ")
+	(&BinaryExpr{Left: s.End, Op: "-", Right: s.Start}).emit(w)
+	io.WriteString(w, ")")
+}
+
+// CastExpr represents expr as type.
+type CastExpr struct {
+	Expr Expr
+	Type string
+}
+
+func (c *CastExpr) emit(w io.Writer) {
+	switch c.Type {
+	case "int":
+		io.WriteString(w, "int ")
+		if needsParen(c.Expr) {
+			io.WriteString(w, "(")
+			c.Expr.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			c.Expr.emit(w)
+		}
+	default:
+		c.Expr.emit(w)
+	}
 }
 
 // Emit generates formatted F# code from the AST.
@@ -659,6 +751,38 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				return nil, err
 			}
 			expr = &IndexExpr{Target: expr, Index: idx}
+		case op.Index != nil && op.Index.Colon != nil && op.Index.End != nil && op.Index.Step == nil && op.Index.Colon2 == nil:
+			start, err := convertExpr(op.Index.Start)
+			if err != nil {
+				return nil, err
+			}
+			end, err := convertExpr(op.Index.End)
+			if err != nil {
+				return nil, err
+			}
+			expr = &SliceExpr{Target: expr, Start: start, End: end}
+		case op.Field != nil:
+			expr = &FieldExpr{Target: expr, Name: op.Field.Name}
+		case op.Call != nil:
+			args := make([]Expr, len(op.Call.Args))
+			for i, a := range op.Call.Args {
+				ae, err := convertExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				args[i] = ae
+			}
+			if fe, ok := expr.(*FieldExpr); ok {
+				expr = &MethodCallExpr{Target: fe.Target, Name: fe.Name, Args: args}
+			} else {
+				if id, ok := expr.(*IdentExpr); ok {
+					expr = &CallExpr{Func: id.Name, Args: args}
+				} else {
+					return nil, fmt.Errorf("unsupported postfix")
+				}
+			}
+		case op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil:
+			expr = &CastExpr{Expr: expr, Type: *op.Cast.Type.Simple}
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
 		}

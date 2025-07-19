@@ -10,12 +10,19 @@ Freely distributed under the Apache 2.0 Open Source License
 
 /workspace/mochi/tests/transpiler/x/fs/tail_recursion.fs(8,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (5:5). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/transpiler/x/fs/tail_recursion.fs(7,5): error FS0039: The value or constructor 'sum_rec' is not defined
+/workspace/mochi/tests/transpiler/x/fs/tail_recursion.fs(7,5): error FS0001: Type mismatch. Expecting a
+    'a    
+but given a
+    int -> ('a -> 'b -> 'c -> 'd) -> unit    
+The resulting type would be infinite when unifying ''a' and 'int -> ('a -> 'b -> 'c -> 'd) -> unit'
 
 /workspace/mochi/tests/transpiler/x/fs/tail_recursion.fs(7,28): error FS0001: The type 'int' does not match the type ''a -> int -> 'b -> 'c'
 
 /workspace/mochi/tests/transpiler/x/fs/tail_recursion.fs(6,1): warning FS0020: This expression should have type 'unit', but has type ''a'. Use 'ignore' to discard the result of the expression, or 'let' to bind the result to a name.
 
-/workspace/mochi/tests/transpiler/x/fs/tail_recursion.fs(8,23): error FS0039: The value or constructor 'sum_rec' is not defined
+/workspace/mochi/tests/transpiler/x/fs/tail_recursion.fs(8,34): error FS0001: This expression was expected to have type
+    'a -> int -> 'b -> 'c    
+but here has type
+    int    
 
 /workspace/mochi/tests/transpiler/x/fs/tail_recursion.fs(7,26): error FS0043: The type 'int' does not match the type ''a -> int -> 'b -> 'c'

@@ -30,8 +30,6 @@ Freely distributed under the Apache 2.0 Open Source License
 
 /workspace/mochi/tests/transpiler/x/fs/two-sum.fs(9,1): error FS0003: This value is not a function and cannot be applied
 
-/workspace/mochi/tests/transpiler/x/fs/two-sum.fs(11,14): error FS0039: The value or constructor 'twoSum' is not defined
+/workspace/mochi/tests/transpiler/x/fs/two-sum.fs(12,23): error FS0039: The field, constructor or member 'Item' is not defined
 
-/workspace/mochi/tests/transpiler/x/fs/two-sum.fs(12,23): error FS0752: The operator 'expr.[idx]' has been used on an object of indeterminate type based on information prior to this program point. Consider adding further type constraints
-
-/workspace/mochi/tests/transpiler/x/fs/two-sum.fs(13,23): error FS0752: The operator 'expr.[idx]' has been used on an object of indeterminate type based on information prior to this program point. Consider adding further type constraints
+/workspace/mochi/tests/transpiler/x/fs/two-sum.fs(13,23): error FS0039: The field, constructor or member 'Item' is not defined
