@@ -3,7 +3,7 @@
 This directory holds Lua source code generated from the Mochi programs in `tests/rosetta/x/Mochi`.
 Each program was compiled with the Lua backend and executed with `lua`. Successful runs have a matching `.out` file; failures have a `.error` file.
 
-Compiled programs: 16/216
+Compiled programs: 20/216
 
 Checklist:
 - [x] 100-doors-2
@@ -40,10 +40,10 @@ Checklist:
 - [ ] active-object
 - [ ] add-a-variable-to-a-class-instance-at-runtime
 - [ ] additive-primes
-- [ ] address-of-a-variable
+- [x] address-of-a-variable
 - [ ] adfgvx-cipher
-- [ ] aks-test-for-primes
-- [ ] algebraic-data-types
+- [x] aks-test-for-primes
+- [x] algebraic-data-types
 - [ ] align-columns
 - [ ] aliquot-sequence-classifications
 - [ ] almkvist-giullera-formula-for-pi
@@ -82,7 +82,7 @@ Checklist:
 - [ ] array-length
 - [ ] arrays
 - [ ] ascending-primes
-- [ ] ascii-art-diagram-converter
+- [x] ascii-art-diagram-converter
 - [ ] assertions
 - [ ] associative-array-creation
 - [ ] associative-array-iteration
