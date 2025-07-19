@@ -1,0 +1,2 @@
+WARNING: inc already refers to: #'clojure.core/inc in namespace: main, being replaced by: #'main/inc
+5

@@ -204,9 +204,40 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 			return nil, err
 		}
 		return &List{Elems: []Node{Symbol("set!"), Symbol(s.Assign.Name), v}}, nil
+	case s.Fun != nil:
+		return transpileFunStmt(s.Fun)
+	case s.Return != nil:
+		return transpileReturnStmt(s.Return)
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
+}
+
+func transpileFunStmt(f *parser.FunStmt) (Node, error) {
+	params := []Node{}
+	for _, p := range f.Params {
+		params = append(params, Symbol(p.Name))
+	}
+	body := []Node{}
+	for _, st := range f.Body {
+		n, err := transpileStmt(st)
+		if err != nil {
+			return nil, err
+		}
+		if n != nil {
+			body = append(body, n)
+		}
+	}
+	elems := []Node{Symbol("defn"), Symbol(f.Name), &Vector{Elems: params}}
+	elems = append(elems, body...)
+	return &List{Elems: elems}, nil
+}
+
+func transpileReturnStmt(r *parser.ReturnStmt) (Node, error) {
+	if r.Value == nil {
+		return Symbol("nil"), nil
+	}
+	return transpileExpr(r.Value)
 }
 
 var binOp = map[string]string{
