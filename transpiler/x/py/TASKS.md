@@ -1,4 +1,9 @@
 # Python Transpiler Tasks
+## Recent Enhancements (2025-07-20 01:49 UTC+0700)
+
+- Regenerated golden files with deterministic headers.
+- Updated README checklist (73/100).
+
 
 ## Recent Enhancements (2025-07-19 18:58 UTC+0000)
 

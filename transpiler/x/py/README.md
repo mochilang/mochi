@@ -1,5 +1,6 @@
 # Transpiler Progress
 
+This checklist is auto-generated.
 Generated Python code from programs in `tests/vm/valid` lives in `tests/transpiler/x/py`.
 
 ## VM Golden Test Checklist (75/100)
