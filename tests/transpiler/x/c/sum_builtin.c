@@ -3,6 +3,6 @@
 #include <string.h>
 
 int main() {
-	printf("123\n");
+	printf("%d\n", 6);
 	return 0;
 }

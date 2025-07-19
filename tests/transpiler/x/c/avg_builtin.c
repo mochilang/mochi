@@ -3,6 +3,6 @@
 #include <string.h>
 
 int main() {
-	printf("123\n");
+	printf("2.0\n");
 	return 0;
 }

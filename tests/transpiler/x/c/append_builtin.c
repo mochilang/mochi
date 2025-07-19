@@ -3,6 +3,9 @@
 #include <string.h>
 
 int main() {
-	printf("123\n");
+	int a = 0;
+	printf("%d ", 1);
+	printf("%d ", 2);
+	printf("%d\n", 3);
 	return 0;
 }
