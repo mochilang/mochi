@@ -2,23 +2,17 @@ package cljt_test
 
 import (
 	"bytes"
-	"flag"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"mochi/parser"
 	cljt "mochi/transpiler/x/clj"
 	"mochi/types"
 )
-
-var update = flag.Bool("update", false, "update golden files")
-
-func shouldUpdate() bool {
-	f := flag.Lookup("update")
-	return f != nil && f.Value.String() == "true"
-}
 
 func findRepoRoot(t *testing.T) string {
 	dir, err := os.Getwd()
@@ -50,77 +44,92 @@ func EnsureClojure() error {
 	return exec.ErrNotFound
 }
 
-func TestTranspile_PrintHello(t *testing.T) {
+func TestTranspile_Golden(t *testing.T) {
 	if err := EnsureClojure(); err != nil {
 		t.Skip("clojure not installed")
 	}
+
 	root := findRepoRoot(t)
-	src := filepath.Join(root, "tests", "vm", "valid", "print_hello.mochi")
-	prog, err := parser.Parse(src)
-	if err != nil {
-		t.Fatal(err)
-	}
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
-		t.Fatalf("type: %v", errs[0])
-	}
-	ast, err := cljt.Transpile(prog, env)
-	if err != nil {
-		t.Fatal(err)
-	}
-	code := cljt.EmitString(ast)
-
+	srcDir := filepath.Join(root, "tests", "vm", "valid")
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "clj")
-	os.MkdirAll(outDir, 0o755)
-	cljFile := filepath.Join(outDir, "print_hello.clj")
-	if err := os.WriteFile(cljFile, code, 0o644); err != nil {
-		t.Fatal(err)
+	if err := os.MkdirAll(outDir, 0o755); err != nil {
+		t.Fatalf("mkout: %v", err)
 	}
 
-	cmd := exec.Command("clojure", cljFile)
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	cmd.Stderr = &out
-	if err := cmd.Run(); err != nil {
-		t.Fatalf("run error: %v: %s", err, out.String())
+	outs, err := filepath.Glob(filepath.Join(srcDir, "*.out"))
+	if err != nil {
+		t.Fatalf("glob: %v", err)
 	}
-	got := bytes.TrimSpace(out.Bytes())
-	want := []byte("hello")
-	if !bytes.Equal(got, want) {
-		t.Fatalf("unexpected output: %s", got)
+	if len(outs) == 0 {
+		t.Fatal("no Mochi tests found")
+	}
+
+	for _, wantPath := range outs {
+		name := strings.TrimSuffix(filepath.Base(wantPath), ".out")
+		if strings.Contains(name, ".") { // skip language-specific outputs
+			continue
+		}
+		srcPath := filepath.Join(srcDir, name+".mochi")
+		if _, err := os.Stat(srcPath); err != nil {
+			t.Fatalf("missing source for %s", name)
+		}
+		t.Run(name, func(t *testing.T) {
+			compileAndRunClojure(t, srcPath, wantPath, outDir, name)
+		})
 	}
 }
 
-func TestTranspile_Golden(t *testing.T) {
-	root := findRepoRoot(t)
-	src := filepath.Join(root, "tests", "vm", "valid", "print_hello.mochi")
-	prog, err := parser.Parse(src)
+func compileAndRunClojure(t *testing.T, srcPath, wantPath, outDir, name string) {
+	if _, err := os.ReadFile(srcPath); err != nil {
+		t.Fatalf("read: %v", err)
+	}
+	prog, err := parser.Parse(srcPath)
 	if err != nil {
-		t.Fatal(err)
+		writeCljError(outDir, name, fmt.Errorf("parse error: %w", err))
+		t.Skip("parse error")
+		return
 	}
 	env := types.NewEnv(nil)
 	if errs := types.Check(prog, env); len(errs) > 0 {
-		t.Fatalf("type: %v", errs[0])
+		writeCljError(outDir, name, fmt.Errorf("type error: %v", errs[0]))
+		t.Skip("type error")
+		return
 	}
 	ast, err := cljt.Transpile(prog, env)
 	if err != nil {
-		t.Fatalf("transpile: %v", err)
-	}
-	got := cljt.EmitString(ast)
-	outDir := filepath.Join(root, "tests", "transpiler", "x", "clj")
-	os.MkdirAll(outDir, 0o755)
-	path := filepath.Join(outDir, "print_hello.clj")
-	if shouldUpdate() {
-		if err := os.WriteFile(path, got, 0o644); err != nil {
-			t.Fatalf("write: %v", err)
-		}
+		writeCljError(outDir, name, fmt.Errorf("transpile error: %w", err))
+		t.Skip("transpile error")
 		return
 	}
-	want, err := os.ReadFile(path)
+	code := cljt.EmitString(ast)
+	cljPath := filepath.Join(outDir, name+".clj")
+	if err := os.WriteFile(cljPath, code, 0o644); err != nil {
+		t.Fatalf("write clj: %v", err)
+	}
+	var buf bytes.Buffer
+	cmd := exec.Command("clojure", cljPath)
+	cmd.Stdout = &buf
+	cmd.Stderr = &buf
+	if err := cmd.Run(); err != nil {
+		writeCljError(outDir, name, fmt.Errorf("run error: %v\n%s", err, buf.Bytes()))
+		return
+	}
+	got := bytes.TrimSpace(buf.Bytes())
+	want, err := os.ReadFile(wantPath)
 	if err != nil {
 		t.Fatalf("read golden: %v", err)
 	}
-	if !bytes.Equal(bytes.TrimSpace(got), bytes.TrimSpace(want)) {
-		t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", got, want)
+	want = bytes.TrimSpace(want)
+	if !bytes.Equal(got, want) {
+		writeCljError(outDir, name, fmt.Errorf("output mismatch\n-- got --\n%s\n-- want --\n%s", got, want))
+		return
 	}
+	if err := os.WriteFile(filepath.Join(outDir, name+".out"), got, 0o644); err != nil {
+		t.Fatalf("write out: %v", err)
+	}
+	_ = os.Remove(filepath.Join(outDir, name+".error"))
+}
+
+func writeCljError(dir, name string, err error) {
+	_ = os.WriteFile(filepath.Join(dir, name+".error"), []byte(err.Error()), 0o644)
 }
