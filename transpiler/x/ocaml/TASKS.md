@@ -1,9 +1,9 @@
+## Progress (2025-07-20 01:34 +0700)
+- Checklist updated: 23/100 tests compiled
+- Added support for `bool_chain` and improved boolean output.
+
 ## Progress (2025-07-19 19:41 +0700)
 - Checklist updated: 22/100 tests compiled
-- Added support for `substring_builtin` and `sum_builtin` programs.
-
-## Progress (2025-07-19 19:21 +0700)
-- Checklist updated: 21/100 tests compiled
 - Added support for `substring_builtin` and `sum_builtin` programs.
 
 # OCaml Transpiler Progress
