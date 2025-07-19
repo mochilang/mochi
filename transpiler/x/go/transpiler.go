@@ -27,6 +27,16 @@ type ExprStmt struct{ Expr Expr }
 
 func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
 
+type VarDecl struct {
+	Name  string
+	Value Expr
+}
+
+func (v *VarDecl) emit(w io.Writer) {
+	fmt.Fprintf(w, "%s := ", v.Name)
+	v.Value.emit(w)
+}
+
 type CallExpr struct {
 	Func string
 	Args []Expr
@@ -48,18 +58,49 @@ type StringLit struct{ Value string }
 
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
 
+type IntLit struct{ Value int }
+
+func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
+
+type VarRef struct{ Name string }
+
+func (v *VarRef) emit(w io.Writer) { fmt.Fprint(w, v.Name) }
+
+type BinaryExpr struct {
+	Left  Expr
+	Op    string
+	Right Expr
+}
+
+func (b *BinaryExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "(")
+	b.Left.emit(w)
+	fmt.Fprintf(w, " %s ", b.Op)
+	b.Right.emit(w)
+	fmt.Fprint(w, ")")
+}
+
 // Transpile converts a Mochi program to a minimal Go AST.
 func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	gp := &Program{}
 	for _, stmt := range p.Statements {
-		if stmt.Expr != nil {
+		switch {
+		case stmt.Expr != nil:
 			e, err := compileExpr(stmt.Expr.Expr)
 			if err != nil {
 				return nil, err
 			}
 			gp.Stmts = append(gp.Stmts, &ExprStmt{Expr: e})
-		} else if stmt.Test == nil && stmt.Import == nil && stmt.Type == nil {
-			return nil, fmt.Errorf("unsupported statement at %d:%d", stmt.Pos.Line, stmt.Pos.Column)
+		case stmt.Let != nil && stmt.Let.Value != nil:
+			e, err := compileExpr(stmt.Let.Value)
+			if err != nil {
+				return nil, err
+			}
+			gp.Stmts = append(gp.Stmts, &VarDecl{Name: stmt.Let.Name, Value: e})
+		default:
+			if stmt.Test == nil && stmt.Import == nil && stmt.Type == nil {
+				return nil, fmt.Errorf("unsupported statement at %d:%d", stmt.Pos.Line, stmt.Pos.Column)
+			}
 		}
 	}
 	_ = env // reserved for future use
@@ -67,17 +108,43 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 }
 
 func compileExpr(e *parser.Expr) (Expr, error) {
-	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+	if e == nil || e.Binary == nil {
 		return nil, fmt.Errorf("unsupported expression")
 	}
-	return compileUnary(e.Binary.Left)
+	left, err := compileUnary(e.Binary.Left)
+	if err != nil {
+		return nil, err
+	}
+	if len(e.Binary.Right) == 0 {
+		return left, nil
+	}
+	if len(e.Binary.Right) > 1 {
+		return nil, fmt.Errorf("unsupported expression chain")
+	}
+	r, err := compilePostfix(e.Binary.Right[0].Right)
+	if err != nil {
+		return nil, err
+	}
+	return &BinaryExpr{Left: left, Op: e.Binary.Right[0].Op, Right: r}, nil
 }
 
 func compileUnary(u *parser.Unary) (Expr, error) {
-	if u == nil || len(u.Ops) > 0 {
-		return nil, fmt.Errorf("unsupported unary")
+	if u == nil {
+		return nil, fmt.Errorf("nil unary")
 	}
-	return compilePostfix(u.Value)
+	expr, err := compilePostfix(u.Value)
+	if err != nil {
+		return nil, err
+	}
+	for i := len(u.Ops) - 1; i >= 0; i-- {
+		op := u.Ops[i]
+		if op == "-" {
+			expr = &BinaryExpr{Left: &IntLit{Value: 0}, Op: "-", Right: expr}
+		} else {
+			return nil, fmt.Errorf("unsupported unary op")
+		}
+	}
+	return expr, nil
 }
 
 func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
@@ -103,8 +170,16 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			name = "fmt.Println"
 		}
 		return &CallExpr{Func: name, Args: args}, nil
-	case p.Lit != nil && p.Lit.Str != nil:
-		return &StringLit{Value: *p.Lit.Str}, nil
+	case p.Lit != nil:
+		if p.Lit.Str != nil {
+			return &StringLit{Value: *p.Lit.Str}, nil
+		}
+		if p.Lit.Int != nil {
+			return &IntLit{Value: int(*p.Lit.Int)}, nil
+		}
+		return nil, fmt.Errorf("unsupported literal")
+	case p.Selector != nil && len(p.Selector.Tail) == 0:
+		return &VarRef{Name: p.Selector.Root}, nil
 	}
 	return nil, fmt.Errorf("unsupported primary")
 }
@@ -147,6 +222,8 @@ func toNodeStmt(s Stmt) *ast.Node {
 	switch st := s.(type) {
 	case *ExprStmt:
 		return &ast.Node{Kind: "expr", Children: []*ast.Node{toNodeExpr(st.Expr)}}
+	case *VarDecl:
+		return &ast.Node{Kind: "var", Value: st.Name, Children: []*ast.Node{toNodeExpr(st.Value)}}
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
@@ -162,6 +239,12 @@ func toNodeExpr(e Expr) *ast.Node {
 		return n
 	case *StringLit:
 		return &ast.Node{Kind: "string", Value: ex.Value}
+	case *IntLit:
+		return &ast.Node{Kind: "int"}
+	case *VarRef:
+		return &ast.Node{Kind: "name", Value: ex.Name}
+	case *BinaryExpr:
+		return &ast.Node{Kind: "bin", Value: ex.Op, Children: []*ast.Node{toNodeExpr(ex.Left), toNodeExpr(ex.Right)}}
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
