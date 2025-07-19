@@ -167,3 +167,15 @@ func TestTranspile_BoolChain(t *testing.T) {
 func TestTranspile_StringContains(t *testing.T) {
 	runCase(t, "string_contains")
 }
+
+func TestTranspile_AppendBuiltin(t *testing.T) {
+	runCase(t, "append_builtin")
+}
+
+func TestTranspile_AvgBuiltin(t *testing.T) {
+	runCase(t, "avg_builtin")
+}
+
+func TestTranspile_LenString(t *testing.T) {
+	runCase(t, "len_string")
+}
