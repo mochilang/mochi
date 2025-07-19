@@ -1911,8 +1911,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 
 func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 	switch {
-	case l.Int != nil:
-		return strconv.Itoa(*l.Int), nil
+    case l.Int != nil:
+            return strconv.Itoa(int(*l.Int)), nil
 	case l.Float != nil:
 		if *l.Float == math.Trunc(*l.Float) {
 			return strconv.FormatFloat(*l.Float, 'f', 1, 64), nil
