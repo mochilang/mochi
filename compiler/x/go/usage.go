@@ -106,26 +106,22 @@ func (c *Compiler) compileMainFunc(prog *parser.Program) error {
 	// package level can produce invalid Go code (e.g. loops outside of
 	// functions).
 	initAssigns := []*parser.AssignStmt{}
-	for i, s := range prog.Statements {
+	for _, s := range prog.Statements {
 		if s.Let == nil && s.Var == nil {
 			continue
 		}
-		name := ""
-		if s.Let != nil {
-			name = s.Let.Name
-		} else {
-			name = s.Var.Name
+		// Always emit a package-level declaration for top-level
+		// variables and assign the initial value inside main.
+		// This avoids undefined variable errors when functions
+		// reference the variable before it is initialised.
+		if err := c.compileGlobalVarDecl(s); err != nil {
+			return err
 		}
-		if hasLaterTest(prog, i) || varUsedInFuncs(prog, name) {
-			if err := c.compileGlobalVarDecl(s); err != nil {
-				return err
-			}
-			if s.Let != nil && s.Let.Value != nil {
-				initAssigns = append(initAssigns, &parser.AssignStmt{Name: s.Let.Name, Value: s.Let.Value})
-			}
-			if s.Var != nil && s.Var.Value != nil {
-				initAssigns = append(initAssigns, &parser.AssignStmt{Name: s.Var.Name, Value: s.Var.Value})
-			}
+		if s.Let != nil && s.Let.Value != nil {
+			initAssigns = append(initAssigns, &parser.AssignStmt{Name: s.Let.Name, Value: s.Let.Value})
+		}
+		if s.Var != nil && s.Var.Value != nil {
+			initAssigns = append(initAssigns, &parser.AssignStmt{Name: s.Var.Name, Value: s.Var.Value})
 		}
 	}
 

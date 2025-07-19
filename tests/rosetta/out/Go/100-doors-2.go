@@ -11,6 +11,8 @@ import (
 type v map[string]any
 
 func main() {
+	door = 1
+	incrementer = 0
 	door := 1
 	incrementer := 0
 	for current := 1; current < 101; current++ {

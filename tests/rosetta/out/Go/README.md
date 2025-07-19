@@ -1,4 +1,4 @@
-# Rosetta Go Output (36/278 compiled and run)
+# Rosetta Go Output (38/281 compiled and run)
 
 This directory holds Go source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -6,7 +6,7 @@ This directory holds Go source code generated from the real Mochi programs in `t
 - [x] 100-doors-2
 - [x] 100-doors-3
 - [x] 100-doors
-- [ ] 100-prisoners
+- [x] 100-prisoners
 - [ ] 15-puzzle-game
 - [x] 15-puzzle-solver
 - [ ] 2048
@@ -14,10 +14,10 @@ This directory holds Go source code generated from the real Mochi programs in `t
 - [ ] 24-game-solve
 - [ ] 24-game
 - [x] 4-rings-or-4-squares-puzzle
-- [ ] 9-billion-names-of-god-the-integer
-- [ ] 99-bottles-of-beer-2
+- [x] 9-billion-names-of-god-the-integer
+- [x] 99-bottles-of-beer-2
 - [x] 99-bottles-of-beer
-- [x] DNS-query
+- [ ] DNS-query
 - [x] a+b
 - [x] abbreviations-automatic
 - [x] abbreviations-easy
@@ -210,6 +210,7 @@ This directory holds Go source code generated from the real Mochi programs in `t
 - [ ] circles-of-given-radius-through-two-points
 - [ ] circular-primes
 - [ ] cistercian-numerals
+- [ ] comma-quibbling
 - [ ] compiler-virtual-machine-interpreter
 - [ ] composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k
 - [ ] compound-data-type
@@ -280,4 +281,6 @@ This directory holds Go source code generated from the real Mochi programs in `t
 - [ ] deal-cards-for-freecell
 - [ ] death-star
 - [ ] deceptive-numbers
+- [ ] deepcopy-1
+- [ ] define-a-primitive-data-type
 - [ ] md5

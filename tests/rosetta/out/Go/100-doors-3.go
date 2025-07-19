@@ -11,6 +11,7 @@ import (
 type v map[string]any
 
 func main() {
+	result = ""
 	result := ""
 	for i := 1; i < 101; i++ {
 		j := 1
