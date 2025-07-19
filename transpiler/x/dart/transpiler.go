@@ -160,6 +160,72 @@ func (s *LetStmt) emit(w io.Writer) error {
 	return s.Value.emit(w)
 }
 
+// ReturnStmt represents a `return` statement.
+type ReturnStmt struct {
+	Value Expr
+}
+
+func (s *ReturnStmt) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "return"); err != nil {
+		return err
+	}
+	if s.Value != nil {
+		if _, err := io.WriteString(w, " "); err != nil {
+			return err
+		}
+		if err := s.Value.emit(w); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// FuncDecl represents a function definition.
+type FuncDecl struct {
+	Name   string
+	Params []string
+	Body   []Stmt
+}
+
+func (f *FuncDecl) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "dynamic "+f.Name+"("); err != nil {
+		return err
+	}
+	for i, p := range f.Params {
+		if i > 0 {
+			if _, err := io.WriteString(w, ", "); err != nil {
+				return err
+			}
+		}
+		if _, err := io.WriteString(w, p); err != nil {
+			return err
+		}
+	}
+	if _, err := io.WriteString(w, ") {\n"); err != nil {
+		return err
+	}
+	for _, st := range f.Body {
+		if _, err := io.WriteString(w, "  "); err != nil {
+			return err
+		}
+		if err := st.emit(w); err != nil {
+			return err
+		}
+		switch st.(type) {
+		case *IfStmt, *WhileStmt, *FuncDecl:
+			if _, err := io.WriteString(w, "\n"); err != nil {
+				return err
+			}
+		default:
+			if _, err := io.WriteString(w, ";\n"); err != nil {
+				return err
+			}
+		}
+	}
+	_, err := io.WriteString(w, "}")
+	return err
+}
+
 type ExprStmt struct{ Expr Expr }
 
 func (s *ExprStmt) emit(w io.Writer) error { return s.Expr.emit(w) }
@@ -283,6 +349,39 @@ func (l *ListLit) emit(w io.Writer) error {
 	return err
 }
 
+// LambdaExpr represents an inline function expression.
+type LambdaExpr struct {
+	Params []string
+	Body   Expr
+}
+
+func (l *LambdaExpr) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "("); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, "("); err != nil {
+		return err
+	}
+	for i, p := range l.Params {
+		if i > 0 {
+			if _, err := io.WriteString(w, ", "); err != nil {
+				return err
+			}
+		}
+		if _, err := io.WriteString(w, p); err != nil {
+			return err
+		}
+	}
+	if _, err := io.WriteString(w, ") => "); err != nil {
+		return err
+	}
+	if err := l.Body.emit(w); err != nil {
+		return err
+	}
+	_, err := io.WriteString(w, ")")
+	return err
+}
+
 // LenExpr represents the `len` builtin.
 type LenExpr struct{ X Expr }
 
@@ -337,10 +436,23 @@ func Emit(w io.Writer, p *Program) error {
 	if _, err := io.WriteString(w, header()); err != nil {
 		return err
 	}
+	for _, st := range p.Stmts {
+		if fd, ok := st.(*FuncDecl); ok {
+			if err := fd.emit(w); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, "\n\n"); err != nil {
+				return err
+			}
+		}
+	}
 	if _, err := io.WriteString(w, "void main() {\n"); err != nil {
 		return err
 	}
 	for _, st := range p.Stmts {
+		if _, ok := st.(*FuncDecl); ok {
+			continue
+		}
 		if _, err := io.WriteString(w, "  "); err != nil {
 			return err
 		}
@@ -471,6 +583,26 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		return &AssignStmt{Name: st.Assign.Name, Value: e}, nil
+	case st.Return != nil:
+		var e Expr
+		if st.Return.Value != nil {
+			var err error
+			e, err = convertExpr(st.Return.Value)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return &ReturnStmt{Value: e}, nil
+	case st.Fun != nil:
+		body, err := convertStmtList(st.Fun.Body)
+		if err != nil {
+			return nil, err
+		}
+		var params []string
+		for _, p := range st.Fun.Params {
+			params = append(params, p.Name)
+		}
+		return &FuncDecl{Name: st.Fun.Name, Params: params, Body: body}, nil
 	case st.While != nil:
 		return convertWhileStmt(st.While)
 	case st.If != nil:
@@ -606,6 +738,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			elems = append(elems, ex)
 		}
 		return &ListLit{Elems: elems}, nil
+	case p.FunExpr != nil && p.FunExpr.ExprBody != nil:
+		var params []string
+		for _, pa := range p.FunExpr.Params {
+			params = append(params, pa.Name)
+		}
+		body, err := convertExpr(p.FunExpr.ExprBody)
+		if err != nil {
+			return nil, err
+		}
+		return &LambdaExpr{Params: params, Body: body}, nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return &Name{Name: p.Selector.Root}, nil
 	case p.Group != nil:
@@ -653,6 +795,21 @@ func stmtNode(s Stmt) *ast.Node {
 		return node
 	case *AssignStmt:
 		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{exprNode(st.Value)}}
+	case *ReturnStmt:
+		n := &ast.Node{Kind: "return"}
+		if st.Value != nil {
+			n.Children = []*ast.Node{exprNode(st.Value)}
+		}
+		return n
+	case *FuncDecl:
+		n := &ast.Node{Kind: "func", Value: st.Name}
+		for _, p := range st.Params {
+			n.Children = append(n.Children, &ast.Node{Kind: "param", Value: p})
+		}
+		for _, b := range st.Body {
+			n.Children = append(n.Children, stmtNode(b))
+		}
+		return n
 	case *IfStmt:
 		n := &ast.Node{Kind: "if", Children: []*ast.Node{exprNode(st.Cond)}}
 		thenNode := &ast.Node{Kind: "then"}
@@ -700,6 +857,13 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "binary", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
 	case *UnaryExpr:
 		return &ast.Node{Kind: "unary", Value: ex.Op, Children: []*ast.Node{exprNode(ex.X)}}
+	case *LambdaExpr:
+		n := &ast.Node{Kind: "lambda"}
+		for _, p := range ex.Params {
+			n.Children = append(n.Children, &ast.Node{Kind: "param", Value: p})
+		}
+		n.Children = append(n.Children, exprNode(ex.Body))
+		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
