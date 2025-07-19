@@ -1,7 +1,6 @@
-## Progress (2025-07-19 13:17 UTC)
+## Progress (2025-07-20 01:52 +0700)
 - Generated golden tests for 31/100 programs
 - Updated README checklist and output artifacts
-- Prelude for `substring` is now emitted only when used
 
 # Swift Transpiler Tasks
 

@@ -19,8 +19,7 @@ import (
 
 // Program is a sequence of Swift statements.
 type Program struct {
-	Stmts         []Stmt
-	UsesSubstring bool
+	Stmts []Stmt
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -197,13 +196,13 @@ func (c *CallExpr) emit(w io.Writer) {
 		return
 	case "substring":
 		if len(c.Args) == 3 {
-			fmt.Fprint(w, "substring(")
+			fmt.Fprint(w, "String(Array(")
 			c.Args[0].emit(w)
-			fmt.Fprint(w, ", ")
+			fmt.Fprint(w, ")[")
 			c.Args[1].emit(w)
-			fmt.Fprint(w, ", ")
+			fmt.Fprint(w, "..<")
 			c.Args[2].emit(w)
-			fmt.Fprint(w, ")")
+			fmt.Fprint(w, "])")
 			return
 		}
 	}
@@ -301,12 +300,6 @@ func header() string {
 		version(), t.Format("2006-01-02 15:04:05 MST"))
 }
 
-const prelude = "func substring(_ s: String, _ start: Int, _ end: Int) -> String {\n" +
-	"    let si = s.index(s.startIndex, offsetBy: start)\n" +
-	"    let ei = s.index(s.startIndex, offsetBy: end)\n" +
-	"    return String(s[si..<ei])\n" +
-	"}\n"
-
 func formatCode(src []byte) []byte {
 	var out bytes.Buffer
 	indent := 0
@@ -329,89 +322,10 @@ func formatCode(src []byte) []byte {
 	return out.Bytes()
 }
 
-func usesSubstringExpr(e Expr) bool {
-	switch v := e.(type) {
-	case *CallExpr:
-		if v.Func == "substring" {
-			return true
-		}
-		for _, a := range v.Args {
-			if usesSubstringExpr(a) {
-				return true
-			}
-		}
-	case *BinaryExpr:
-		return usesSubstringExpr(v.Left) || usesSubstringExpr(v.Right)
-	case *UnaryExpr:
-		return usesSubstringExpr(v.Expr)
-	case *CondExpr:
-		return usesSubstringExpr(v.Cond) || usesSubstringExpr(v.Then) || usesSubstringExpr(v.Else)
-	}
-	return false
-}
-
-func usesSubstringStmt(s Stmt) bool {
-	switch v := s.(type) {
-	case *PrintStmt:
-		return usesSubstringExpr(v.Expr)
-	case *VarDecl:
-		return usesSubstringExpr(v.Expr)
-	case *AssignStmt:
-		return usesSubstringExpr(v.Expr)
-	case *ReturnStmt:
-		return usesSubstringExpr(v.Expr)
-	case *IfStmt:
-		if usesSubstringExpr(v.Cond) {
-			return true
-		}
-		for _, st := range v.Then {
-			if usesSubstringStmt(st) {
-				return true
-			}
-		}
-		if v.ElseIf != nil && usesSubstringStmt(v.ElseIf) {
-			return true
-		}
-		for _, st := range v.Else {
-			if usesSubstringStmt(st) {
-				return true
-			}
-		}
-	case *WhileStmt:
-		if usesSubstringExpr(v.Cond) {
-			return true
-		}
-		for _, st := range v.Body {
-			if usesSubstringStmt(st) {
-				return true
-			}
-		}
-	case *FunDecl:
-		for _, st := range v.Body {
-			if usesSubstringStmt(st) {
-				return true
-			}
-		}
-	}
-	return false
-}
-
-func detectSubstring(stmts []Stmt) bool {
-	for _, s := range stmts {
-		if usesSubstringStmt(s) {
-			return true
-		}
-	}
-	return false
-}
-
 // Emit returns the Swift source for the program.
 func (p *Program) Emit() []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
-	if p.UsesSubstring {
-		buf.WriteString(prelude)
-	}
 	for _, s := range p.Stmts {
 		s.emit(&buf)
 	}
@@ -430,7 +344,6 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 		return nil, err
 	}
 	p.Stmts = stmts
-	p.UsesSubstring = detectSubstring(stmts)
 	return p, nil
 }
 
