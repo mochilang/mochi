@@ -295,6 +295,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	}
 	resVar := "_Res"
 	c.retVar = resVar
+	hasReturnAtEnd := false
 	// compile nested functions before the outer body
 	for _, st := range fn.Body {
 		if st.Fun != nil {
@@ -323,6 +324,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 			} else {
 				c.writeln(fmt.Sprintf("%s = %s.", resVar, val))
 			}
+			hasReturnAtEnd = true
 		} else {
 			if err := c.compileStmt(st); err != nil {
 				return err
@@ -331,6 +333,8 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	}
 	if len(fn.Body) == 0 {
 		c.writeln(fmt.Sprintf("%s = true.", resVar))
+	} else if !hasReturnAtEnd {
+		c.writeln("true.")
 	}
 	c.indent--
 	c.writeln("")
@@ -547,10 +551,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		if arith {
-			c.writeln(fmt.Sprintf("%s is %s.", c.retVar, val))
+			c.writeln(fmt.Sprintf("%s is %s,", c.retVar, val))
 		} else {
-			c.writeln(fmt.Sprintf("%s = %s.", c.retVar, val))
+			c.writeln(fmt.Sprintf("%s = %s,", c.retVar, val))
 		}
+		c.writeln("!,")
 		return nil
 	case s.Expect != nil:
 		return c.compileExpect(s.Expect)
@@ -619,7 +624,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			if err != nil {
 				return err
 			}
-			c.writeln(fmt.Sprintf("%s,", val))
+			if strings.HasPrefix(val, "_V") {
+				c.writeln(fmt.Sprintf("%s,", call.Func))
+			} else {
+				c.writeln(fmt.Sprintf("%s,", val))
+			}
 			return nil
 		}
 		if se := getSaveExpr(s.Expr.Expr); se != nil {
