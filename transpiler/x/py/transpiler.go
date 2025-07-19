@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 
@@ -820,21 +821,35 @@ func Emit(w io.Writer, p *Program) error {
 	if _, err := io.WriteString(w, header()); err != nil {
 		return err
 	}
+	var imports []string
 	if currentImports != nil && currentImports["json"] && !hasImport(p, "json") {
-		if _, err := io.WriteString(w, "import json\n"); err != nil {
+		imports = append(imports, "import json")
+	}
+	for _, s := range p.Stmts {
+		if im, ok := s.(*ImportStmt); ok {
+			line := "import " + im.Module
+			if im.Alias != "" && im.Alias != im.Module {
+				line += " as " + im.Alias
+			}
+			imports = append(imports, line)
+		}
+	}
+	sort.Strings(imports)
+	for _, line := range imports {
+		if _, err := io.WriteString(w, line+"\n"); err != nil {
+			return err
+		}
+	}
+	if len(imports) > 0 {
+		if _, err := io.WriteString(w, "\n"); err != nil {
 			return err
 		}
 	}
 	for _, s := range p.Stmts {
 		switch st := s.(type) {
 		case *ImportStmt:
-			line := "import " + st.Module
-			if st.Alias != "" && st.Alias != st.Module {
-				line += " as " + st.Alias
-			}
-			if _, err := io.WriteString(w, line+"\n"); err != nil {
-				return err
-			}
+			// already emitted above
+			continue
 		case *ExprStmt:
 			if err := emitExpr(w, st.Expr); err != nil {
 				return err
