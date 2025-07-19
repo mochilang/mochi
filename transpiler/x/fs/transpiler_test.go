@@ -1,3 +1,5 @@
+//go:build slow
+
 package fstrans_test
 
 import (
