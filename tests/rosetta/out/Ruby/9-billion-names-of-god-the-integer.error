@@ -1,0 +1,7 @@
+run: exit status 1
+/tmp/9-billion-names-of-god-the-integer.rb:4:in `_indexString': undefined method `chars' for ["1"]:Array (NoMethodError)
+
+  chars = s.chars
+           ^^^^^^
+	from /tmp/9-billion-names-of-god-the-integer.rb:130:in `<main>'
+rows:
