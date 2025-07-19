@@ -169,6 +169,56 @@ type StringLit struct{ Value string }
 
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
 
+type ListLit struct{ Elems []Expr }
+
+func (l *ListLit) emit(w io.Writer) {
+	io.WriteString(w, "(list")
+	for _, e := range l.Elems {
+		io.WriteString(w, " ")
+		e.emit(w)
+	}
+	io.WriteString(w, ")")
+}
+
+type CallExpr struct {
+	Func string
+	Args []Expr
+}
+
+func (c *CallExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
+	io.WriteString(w, c.Func)
+	for _, a := range c.Args {
+		io.WriteString(w, " ")
+		a.emit(w)
+	}
+	io.WriteString(w, ")")
+}
+
+type LenExpr struct{ Arg Expr }
+
+func (l *LenExpr) emit(w io.Writer) {
+	io.WriteString(w, "(if (string? ")
+	l.Arg.emit(w)
+	io.WriteString(w, ") (string-length ")
+	l.Arg.emit(w)
+	io.WriteString(w, ") (length ")
+	l.Arg.emit(w)
+	io.WriteString(w, "))")
+}
+
+type AvgExpr struct{ Arg Expr }
+
+func (a *AvgExpr) emit(w io.Writer) {
+	io.WriteString(w, "(if (null? ")
+	a.Arg.emit(w)
+	io.WriteString(w, ") 0 (exact->inexact (/ (apply + ")
+	a.Arg.emit(w)
+	io.WriteString(w, ") (length ")
+	a.Arg.emit(w)
+	io.WriteString(w, "))))")
+}
+
 type BinaryExpr struct {
 	Op          string
 	Left, Right Expr
@@ -482,6 +532,10 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 	switch {
 	case p.Lit != nil:
 		return convertLiteral(p.Lit)
+	case p.List != nil:
+		return convertList(p.List, env)
+	case p.Call != nil:
+		return convertCall(p.Call, env)
 	case p.If != nil:
 		return convertIfExpr(p.If, env)
 	case p.Group != nil:
@@ -501,6 +555,45 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 		return &StringLit{Value: *l.Str}, nil
 	}
 	return nil, fmt.Errorf("unsupported literal")
+}
+
+func convertList(l *parser.ListLiteral, env *types.Env) (Expr, error) {
+	var elems []Expr
+	for _, e := range l.Elems {
+		ce, err := convertExpr(e, env)
+		if err != nil {
+			return nil, err
+		}
+		elems = append(elems, ce)
+	}
+	return &ListLit{Elems: elems}, nil
+}
+
+func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
+	var args []Expr
+	for _, a := range c.Args {
+		ae, err := convertExpr(a, env)
+		if err != nil {
+			return nil, err
+		}
+		args = append(args, ae)
+	}
+	switch c.Func {
+	case "len":
+		if len(args) != 1 {
+			return nil, fmt.Errorf("len expects 1 arg")
+		}
+		return &LenExpr{Arg: args[0]}, nil
+	case "append":
+		if len(args) == 2 {
+			return &CallExpr{Func: "append", Args: []Expr{args[0], &CallExpr{Func: "list", Args: []Expr{args[1]}}}}, nil
+		}
+	case "avg":
+		if len(args) == 1 {
+			return &AvgExpr{Arg: args[0]}, nil
+		}
+	}
+	return nil, fmt.Errorf("unsupported call")
 }
 
 func isBoolExpr(e *parser.Expr) bool {
