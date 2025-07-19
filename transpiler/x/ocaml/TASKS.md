@@ -1,3 +1,7 @@
+## Progress (2025-07-19 19:41 +0700)
+- Checklist updated: 22/100 tests compiled
+- Added support for `substring_builtin` and `sum_builtin` programs.
+
 ## Progress (2025-07-19 19:21 +0700)
 - Checklist updated: 21/100 tests compiled
 - Added support for `substring_builtin` and `sum_builtin` programs.
