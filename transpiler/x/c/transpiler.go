@@ -39,7 +39,7 @@ type Function struct {
 }
 
 type Stmt interface {
-	emit(io.Writer)
+	emit(io.Writer, int)
 }
 
 type PrintStmt struct {
@@ -47,7 +47,7 @@ type PrintStmt struct {
 	Types []string
 }
 
-func (p *PrintStmt) emit(w io.Writer) {
+func (p *PrintStmt) emit(w io.Writer, indent int) {
 	for i, a := range p.Args {
 		sep := " "
 		if i == len(p.Args)-1 {
@@ -55,7 +55,8 @@ func (p *PrintStmt) emit(w io.Writer) {
 		}
 		switch v := a.(type) {
 		case *StringLit:
-			fmt.Fprintf(w, "\tprintf(\"%s%s\");\n", escape(v.Value), sep)
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "printf(\"%s%s\");\n", escape(v.Value), sep)
 		case *ListLit:
 			for j, e := range v.Elems {
 				lsep := " "
@@ -64,7 +65,8 @@ func (p *PrintStmt) emit(w io.Writer) {
 				} else if j == len(v.Elems)-1 {
 					lsep = " "
 				}
-				io.WriteString(w, "\tprintf(\"")
+				writeIndent(w, indent)
+				io.WriteString(w, "printf(\"")
 				if exprIsString(e) {
 					io.WriteString(w, "%s")
 				} else {
@@ -75,12 +77,13 @@ func (p *PrintStmt) emit(w io.Writer) {
 				io.WriteString(w, ");\n")
 			}
 		default:
+			writeIndent(w, indent)
 			if p.Types[i] == "string" || exprIsString(a) {
-				io.WriteString(w, "\tprintf(\"%s"+sep+"\", ")
+				io.WriteString(w, "printf(\"%s"+sep+"\", ")
 				a.emitExpr(w)
 				io.WriteString(w, ");\n")
 			} else {
-				io.WriteString(w, "\tprintf(\"%d"+sep+"\", ")
+				io.WriteString(w, "printf(\"%d"+sep+"\", ")
 				a.emitExpr(w)
 				io.WriteString(w, ");\n")
 			}
@@ -90,14 +93,16 @@ func (p *PrintStmt) emit(w io.Writer) {
 
 type BreakStmt struct{}
 
-func (b *BreakStmt) emit(w io.Writer) {
-	io.WriteString(w, "\tbreak;\n")
+func (b *BreakStmt) emit(w io.Writer, indent int) {
+	writeIndent(w, indent)
+	io.WriteString(w, "break;\n")
 }
 
 type ContinueStmt struct{}
 
-func (c *ContinueStmt) emit(w io.Writer) {
-	io.WriteString(w, "\tcontinue;\n")
+func (c *ContinueStmt) emit(w io.Writer, indent int) {
+	writeIndent(w, indent)
+	io.WriteString(w, "continue;\n")
 }
 
 type CallStmt struct {
@@ -140,18 +145,19 @@ type ForStmt struct {
 	Body  []Stmt
 }
 
-func (c *CallStmt) emit(w io.Writer) {
+func (c *CallStmt) emit(w io.Writer, indent int) {
 	if c.Func == "print" && len(c.Args) == 1 {
+		writeIndent(w, indent)
 		if c.Type == "string" {
-			io.WriteString(w, "\tprintf(\"%s\\n\", ")
+			io.WriteString(w, "printf(\"%s\\n\", ")
 			c.Args[0].emitExpr(w)
 			io.WriteString(w, ");\n")
 		} else {
 			switch arg := c.Args[0].(type) {
 			case *StringLit:
-				fmt.Fprintf(w, "\tprintf(\"%s\\n\");\n", escape(arg.Value))
+				fmt.Fprintf(w, "printf(\"%s\\n\");\n", escape(arg.Value))
 			default:
-				io.WriteString(w, "\tprintf(\"%d\\n\", ")
+				io.WriteString(w, "printf(\"%d\\n\", ")
 				arg.emitExpr(w)
 				io.WriteString(w, ");\n")
 			}
@@ -160,8 +166,9 @@ func (c *CallStmt) emit(w io.Writer) {
 	}
 }
 
-func (r *ReturnStmt) emit(w io.Writer) {
-	io.WriteString(w, "\treturn")
+func (r *ReturnStmt) emit(w io.Writer, indent int) {
+	writeIndent(w, indent)
+	io.WriteString(w, "return")
 	if r.Expr != nil {
 		io.WriteString(w, " ")
 		r.Expr.emitExpr(w)
@@ -171,12 +178,12 @@ func (r *ReturnStmt) emit(w io.Writer) {
 	io.WriteString(w, ";\n")
 }
 
-func (d *DeclStmt) emit(w io.Writer) {
+func (d *DeclStmt) emit(w io.Writer, indent int) {
 	typ := d.Type
 	if typ == "" {
 		typ = "int"
 	}
-	io.WriteString(w, "\t")
+	writeIndent(w, indent)
 	if strings.HasSuffix(typ, "[]") {
 		io.WriteString(w, strings.TrimSuffix(typ, "[]"))
 		io.WriteString(w, " ")
@@ -200,8 +207,8 @@ func (d *DeclStmt) emit(w io.Writer) {
 	io.WriteString(w, ";\n")
 }
 
-func (a *AssignStmt) emit(w io.Writer) {
-	io.WriteString(w, "\t")
+func (a *AssignStmt) emit(w io.Writer, indent int) {
+	writeIndent(w, indent)
 	io.WriteString(w, a.Name)
 	io.WriteString(w, " = ")
 	if a.Value != nil {
@@ -210,22 +217,26 @@ func (a *AssignStmt) emit(w io.Writer) {
 	io.WriteString(w, ";\n")
 }
 
-func (ws *WhileStmt) emit(w io.Writer) {
-	io.WriteString(w, "\twhile (")
+func (ws *WhileStmt) emit(w io.Writer, indent int) {
+	writeIndent(w, indent)
+	io.WriteString(w, "while (")
 	if ws.Cond != nil {
 		ws.Cond.emitExpr(w)
 	}
 	io.WriteString(w, ") {\n")
 	for _, s := range ws.Body {
-		s.emit(w)
+		s.emit(w, indent+1)
 	}
-	io.WriteString(w, "\t}\n")
+	writeIndent(w, indent)
+	io.WriteString(w, "}\n")
 }
 
-func (f *ForStmt) emit(w io.Writer) {
+func (f *ForStmt) emit(w io.Writer, indent int) {
 	if len(f.List) > 0 {
-		io.WriteString(w, "\t{\n")
-		io.WriteString(w, "\t\tint arr[] = {")
+		writeIndent(w, indent)
+		io.WriteString(w, "{\n")
+		writeIndent(w, indent+1)
+		io.WriteString(w, "int arr[] = {")
 		for i, e := range f.List {
 			if i > 0 {
 				io.WriteString(w, ", ")
@@ -233,16 +244,21 @@ func (f *ForStmt) emit(w io.Writer) {
 			e.emitExpr(w)
 		}
 		io.WriteString(w, "};\n")
-		io.WriteString(w, "\t\tfor (int i = 0; i < (int)(sizeof(arr)/sizeof(arr[0])); i++) {\n")
-		fmt.Fprintf(w, "\t\t\tint %s = arr[i];\n", f.Var)
+		writeIndent(w, indent+1)
+		io.WriteString(w, "for (int i = 0; i < (int)(sizeof(arr)/sizeof(arr[0])); i++) {\n")
+		writeIndent(w, indent+2)
+		fmt.Fprintf(w, "int %s = arr[i];\n", f.Var)
 		for _, s := range f.Body {
-			s.emit(w)
+			s.emit(w, indent+2)
 		}
-		io.WriteString(w, "\t\t}\n")
-		io.WriteString(w, "\t}\n")
+		writeIndent(w, indent+1)
+		io.WriteString(w, "}\n")
+		writeIndent(w, indent)
+		io.WriteString(w, "}\n")
 		return
 	}
-	io.WriteString(w, "\tfor (int ")
+	writeIndent(w, indent)
+	io.WriteString(w, "for (int ")
 	io.WriteString(w, f.Var)
 	io.WriteString(w, " = ")
 	if f.Start != nil {
@@ -262,27 +278,31 @@ func (f *ForStmt) emit(w io.Writer) {
 	io.WriteString(w, f.Var)
 	io.WriteString(w, "++ ) {\n")
 	for _, s := range f.Body {
-		s.emit(w)
+		s.emit(w, indent+1)
 	}
-	io.WriteString(w, "\t}\n")
+	writeIndent(w, indent)
+	io.WriteString(w, "}\n")
 }
 
-func (i *IfStmt) emit(w io.Writer) {
-	io.WriteString(w, "\tif (")
+func (i *IfStmt) emit(w io.Writer, indent int) {
+	writeIndent(w, indent)
+	io.WriteString(w, "if (")
 	if i.Cond != nil {
 		i.Cond.emitExpr(w)
 	}
 	io.WriteString(w, ") {\n")
 	for _, s := range i.Then {
-		s.emit(w)
+		s.emit(w, indent+1)
 	}
-	io.WriteString(w, "\t}")
+	writeIndent(w, indent)
+	io.WriteString(w, "}")
 	if len(i.Else) > 0 {
 		io.WriteString(w, " else {\n")
 		for _, s := range i.Else {
-			s.emit(w)
+			s.emit(w, indent+1)
 		}
-		io.WriteString(w, "\t}")
+		writeIndent(w, indent)
+		io.WriteString(w, "}")
 	}
 	io.WriteString(w, "\n")
 }
@@ -450,6 +470,12 @@ func escape(s string) string {
 	return s
 }
 
+func writeIndent(w io.Writer, n int) {
+	for i := 0; i < n; i++ {
+		io.WriteString(w, "    ")
+	}
+}
+
 // repoRoot attempts to locate the repository root containing go.mod.
 
 // Emit generates C source from AST.
@@ -477,10 +503,11 @@ func (p *Program) Emit() []byte {
 		}
 		buf.WriteString(") {\n")
 		for _, s := range f.Body {
-			s.emit(&buf)
+			s.emit(&buf, 1)
 		}
 		if f.Name == "main" {
-			buf.WriteString("\treturn 0;\n")
+			writeIndent(&buf, 1)
+			buf.WriteString("return 0;\n")
 		}
 		buf.WriteString("}\n")
 	}
