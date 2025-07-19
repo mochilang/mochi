@@ -1,25 +1,35 @@
 rustc: exit status 1
+error[E0599]: `Vec<Vec<i32>>` doesn't implement `std::fmt::Display`
+  --> /tmp/4_rings_or_4_squares_puzzle.rs:57:177
+   |
+57 | ...rom("list").to_string(), valid.to_string()); m };
+   |                                   ^^^^^^^^^ `Vec<Vec<i32>>` cannot be formatted with the default formatter
+   |
+   = note: the following trait bounds were not satisfied:
+           `Vec<Vec<i32>>: std::fmt::Display`
+           which is required by `Vec<Vec<i32>>: ToString`
+           `[Vec<i32>]: std::fmt::Display`
+           which is required by `[Vec<i32>]: ToString`
+   = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
+
 error[E0308]: mismatched types
-  --> /tmp/4_rings_or_4_squares_puzzle.rs:57:135
+  --> /tmp/4_rings_or_4_squares_puzzle.rs:57:191
    |
-57 | ...::new(); m.insert(String::from("count"), count); m.insert(String::from("list"), valid); m };
-   |             -                               -----     ------                       ^^^^^ expected integer, found `Vec<Vec<i32>>`
-   |             |                               |         |
-   |             |                               |         arguments to this method are incorrect
-   |             |                               this argument has type `{integer}`...
-   |             ... which causes `m` to have type `HashMap<String, {integer}>`
+25 | ...-> std::collections::HashMap<String, i32> {
+   |       -------------------------------------- expected `HashMap<String, i32>` because of return type
+...
+57 | ...); m.insert(String::from("count").to_string(), count.to_string()); m.insert(String::from("list").to_string(), valid.to_string()); m };
+   |       -                                           ----------------- this argument has type `String`...                               ^ expected `HashMap<String, i32>`, found `HashMap<String, String>`
+   |       |
+   |       ... which causes `m` to have type `HashMap<String, String>`
    |
-   = note: expected type `{integer}`
-            found struct `Vec<Vec<i32>>`
-help: the return type of this call is `Vec<Vec<i32>>` due to the type of the argument passed
-  --> /tmp/4_rings_or_4_squares_puzzle.rs:57:104
+   = note: expected struct `HashMap<_, i32>`
+              found struct `HashMap<_, String>`
+help: try removing the method call
    |
-57 | ...rom("count"), count); m.insert(String::from("list"), valid); m };
-   |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-----^
-   |                                                         |
-   |                                                         this argument influences the return type of `insert`
-note: method defined here
-  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+57 -         return { let mut m = std::collections::HashMap::new(); m.insert(String::from("count").to_string(), count.to_string()); m.insert(String::from("list").to_string(), valid.to_string()); m };
+57 +         return { let mut m = std::collections::HashMap::new(); m.insert(String::from("count").to_string(), count); m.insert(String::from("list").to_string(), valid.to_string()); m };
+   |
 
 error[E0277]: the size for values of type `str` cannot be known at compilation time
   --> /tmp/4_rings_or_4_squares_puzzle.rs:60:55
@@ -60,7 +70,7 @@ note: required by an implicit `Sized` bound in `core::fmt::rt::Argument::<'_>::n
   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/fmt/rt.rs:116:5
    = note: this error originates in the macro `$crate::__export::format_args` which comes from the expansion of the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
 
-error: aborting due to 4 previous errors
+error: aborting due to 5 previous errors
 
-Some errors have detailed explanations: E0277, E0308.
+Some errors have detailed explanations: E0277, E0308, E0599.
 For more information about an error, try `rustc --explain E0277`.

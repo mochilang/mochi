@@ -796,20 +796,28 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		out.WriteString("    println!(\"{:?}\", value);\n")
 		out.WriteString("}\n\n")
 	}
-	if c.helpers["_print_list"] {
-		out.WriteString("fn _print_list<T: std::fmt::Debug>(v: &[T]) {\n")
-		out.WriteString("    for (i, it) in v.iter().enumerate() {\n")
-		out.WriteString("        if i > 0 { print!(\" \"); }\n")
-		out.WriteString("        print!(\"{:?}\", it);\n")
-		out.WriteString("    }\n")
-		out.WriteString("    println!();\n")
-		out.WriteString("}\n\n")
-	}
-	if c.helpers["_now"] {
-		out.WriteString("fn _now() -> i64 {\n")
-		out.WriteString("    use std::time::{SystemTime, UNIX_EPOCH};\n")
-		out.WriteString("    SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos() as i64\n")
-		out.WriteString("}\n\n")
+        if c.helpers["_print_list"] {
+                out.WriteString("fn _print_list<T: std::fmt::Debug>(v: &[T]) {\n")
+                out.WriteString("    for (i, it) in v.iter().enumerate() {\n")
+                out.WriteString("        if i > 0 { print!(\" \"); }\n")
+                out.WriteString("        print!(\"{:?}\", it);\n")
+                out.WriteString("    }\n")
+                out.WriteString("    println!();\n")
+                out.WriteString("}\n\n")
+        }
+        if c.helpers["_input"] {
+                out.WriteString("fn _input() -> String {\n")
+                out.WriteString("    use std::io::{self, Read};\n")
+                out.WriteString("    let mut s = String::new();\n")
+                out.WriteString("    io::stdin().read_line(&mut s).unwrap();\n")
+                out.WriteString("    s.trim().to_string()\n")
+                out.WriteString("}\n\n")
+        }
+        if c.helpers["_now"] {
+                out.WriteString("fn _now() -> i64 {\n")
+                out.WriteString("    use std::time::{SystemTime, UNIX_EPOCH};\n")
+                out.WriteString("    SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos() as i64\n")
+                out.WriteString("}\n\n")
 	}
 	out.Write(c.buf.Bytes())
 	return out.Bytes(), nil
@@ -3485,13 +3493,17 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 }
 
 func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
-	// If the literal matches an existing struct type, emit that struct
-	// literal instead of a generic map for stronger typing.
-	if keys, ok := c.mapLiteralKeys(m); ok {
-		if st, ok2 := c.structForKeys(keys); ok2 {
-			return c.compileStructLiteralFromMap(st.Name, m)
-		}
-	}
+    // If the literal matches an existing struct type, emit that struct
+    // literal instead of a generic map for stronger typing.
+    if keys, ok := c.mapLiteralKeys(m); ok {
+            if st, ok2 := c.structForKeys(keys); ok2 {
+                    return c.compileStructLiteralFromMap(st.Name, m)
+            }
+    }
+    // Fallback to string map if values have mixed types.
+    if _, ok := types.InferSimpleMap(m, c.env); !ok {
+            return c.compileHashMapLiteral(m)
+    }
 
 	var b strings.Builder
 	b.WriteString("{ let mut m = std::collections::HashMap::new();")
@@ -4041,10 +4053,10 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		c.helpers["min"] = true
 		return fmt.Sprintf("min(&%s)", args[0]), nil
-	case "max":
-		if len(args) != 1 {
-			return "", fmt.Errorf("max expects 1 arg")
-		}
+        case "max":
+                if len(args) != 1 {
+                        return "", fmt.Errorf("max expects 1 arg")
+                }
 		if lt, ok := types.TypeOfExpr(call.Args[0], c.env).(types.ListType); ok {
 			elem := lt.Elem
 			if _, ok := elem.(types.AnyType); ok {
@@ -4057,9 +4069,15 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 				return fmt.Sprintf("*%s.iter().max_by(|a,b| a.partial_cmp(b).unwrap()).unwrap()", args[0]), nil
 			}
 		}
-		c.helpers["max"] = true
-		return fmt.Sprintf("max(&%s)", args[0]), nil
-	case "exists":
+                c.helpers["max"] = true
+                return fmt.Sprintf("max(&%s)", args[0]), nil
+        case "input":
+                if len(args) != 0 {
+                        return "", fmt.Errorf("input expects no args")
+                }
+                c.helpers["_input"] = true
+                return "_input()", nil
+        case "exists":
 		if len(args) != 1 {
 			return "", fmt.Errorf("exists expects 1 arg")
 		}

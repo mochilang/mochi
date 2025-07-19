@@ -1,39 +1,63 @@
 rustc: exit status 1
-error[E0308]: mismatched types
- --> /tmp/24_game.rs:9:16
+warning: unused import: `Read`
+ --> /tmp/24_game.rs:3:25
   |
-8 |     let randDigit = move || -> i32 {
-  |                                --- expected `i32` because of return type
-9 |         return (_now() % 9) + 1;
-  |                ^^^^^^^^^^^^^^^^ expected `i32`, found `i64`
+3 |     use std::io::{self, Read};
+  |                         ^^^^
   |
-help: you can convert an `i64` to an `i32` and panic if the converted value doesn't fit
-  |
-9 |         return ((_now() % 9) + 1).try_into().unwrap();
-  |                +                +++++++++++++++++++++
+  = note: `#[warn(unused_imports)]` on by default
 
-error[E0425]: cannot find function `input` in this scope
-  --> /tmp/24_game.rs:23:24
+error[E0308]: mismatched types
+  --> /tmp/24_game.rs:16:16
    |
-23 |         let mut expr = input();
-   |                        ^^^^^ not found in this scope
+15 |     let randDigit = move || -> i32 {
+   |                                --- expected `i32` because of return type
+16 |         return (_now() % 9) + 1;
+   |                ^^^^^^^^^^^^^^^^ expected `i32`, found `i64`
+   |
+help: you can convert an `i64` to an `i32` and panic if the converted value doesn't fit
+   |
+16 |         return ((_now() % 9) + 1).try_into().unwrap();
+   |                +                +++++++++++++++++++++
+
+error[E0308]: mismatched types
+  --> /tmp/24_game.rs:40:22
+   |
+40 |             if ch >= String::from("0") && ch <= String::from("9") {
+   |                      ^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+   |
+help: consider dereferencing the borrow
+   |
+40 |             if *ch >= String::from("0") && ch <= String::from("9") {
+   |                +
+
+error[E0308]: mismatched types
+  --> /tmp/24_game.rs:40:49
+   |
+40 |             if ch >= String::from("0") && ch <= String::from("9") {
+   |                                                 ^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+   |
+help: consider dereferencing the borrow
+   |
+40 |             if ch >= String::from("0") && *ch <= String::from("9") {
+   |                                           +
 
 error[E0425]: cannot find function `int` in this scope
-  --> /tmp/24_game.rs:39:47
+  --> /tmp/24_game.rs:46:47
    |
-39 |                 while digits[(j) as usize] != int(ch) - int(String::from("0")) {
+46 |                 while digits[(j) as usize] != int(ch) - int(String::from("0")) {
    |                                               ^^^ not found in this scope
 
 error[E0425]: cannot find function `int` in this scope
-  --> /tmp/24_game.rs:39:57
+  --> /tmp/24_game.rs:46:57
    |
-39 |                 while digits[(j) as usize] != int(ch) - int(String::from("0")) {
+46 |                 while digits[(j) as usize] != int(ch) - int(String::from("0")) {
    |                                                         ^^^ not found in this scope
 
 error[E0369]: cannot add `Vec<i32>` to `Vec<i32>`
-  --> /tmp/24_game.rs:46:70
+  --> /tmp/24_game.rs:53:70
    |
-46 |                 digits = digits[(0) as usize..(j) as usize].to_vec() + digits[(j + 1) as usize..(digits.len()) as usize].to_vec();
+53 |                 digits = digits[(0) as usize..(j) as usize].to_vec() + digits[(j + 1) as usize..(digits.len()) as usize].to_vec();
    |                          ------------------------------------------- ^ ---------------------------------------------------------- Vec<i32>
    |                          |
    |                          Vec<i32>
@@ -44,30 +68,30 @@ note: the foreign item type `Vec<i32>` doesn't implement `Add`
    = note: not implement `Add`
 
 error[E0425]: cannot find function `int` in this scope
-  --> /tmp/24_game.rs:47:71
+  --> /tmp/24_game.rs:54:71
    |
-47 |                 stack = { let mut tmp = stack.clone(); tmp.push(float(int(ch) - int(String::from("0")))); tmp };
+54 |                 stack = { let mut tmp = stack.clone(); tmp.push(float(int(ch) - int(String::from("0")))); tmp };
    |                                                                       ^^^ not found in this scope
 
 error[E0425]: cannot find function `int` in this scope
-  --> /tmp/24_game.rs:47:81
+  --> /tmp/24_game.rs:54:81
    |
-47 |                 stack = { let mut tmp = stack.clone(); tmp.push(float(int(ch) - int(String::from("0")))); tmp };
+54 |                 stack = { let mut tmp = stack.clone(); tmp.push(float(int(ch) - int(String::from("0")))); tmp };
    |                                                                                 ^^^ not found in this scope
 
 error[E0425]: cannot find function `float` in this scope
-  --> /tmp/24_game.rs:47:65
+  --> /tmp/24_game.rs:54:65
    |
-47 |                 stack = { let mut tmp = stack.clone(); tmp.push(float(int(ch) - int(String::from("0")))); tmp };
+54 |                 stack = { let mut tmp = stack.clone(); tmp.push(float(int(ch) - int(String::from("0")))); tmp };
    |                                                                 ^^^^^ not found in this scope
 
 error[E0425]: cannot find function `abs` in this scope
-  --> /tmp/24_game.rs:64:16
+  --> /tmp/24_game.rs:71:16
    |
-64 |             if abs(stack[0] - 24.0) > 1e-06 {
+71 |             if abs(stack[0] - 24.0) > 1e-06 {
    |                ^^^ not found in this scope
 
-error: aborting due to 9 previous errors
+error: aborting due to 10 previous errors; 1 warning emitted
 
 Some errors have detailed explanations: E0308, E0369, E0425.
 For more information about an error, try `rustc --explain E0308`.

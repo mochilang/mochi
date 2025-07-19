@@ -1,12 +1,32 @@
 rustc: exit status 1
+error[E0599]: `HashMap<String, i32>` doesn't implement `std::fmt::Display`
+  --> /tmp/24_game_solve.rs:14:292
+   |
+14 | ...ng::from("denom"), 1); m }.to_string()); m };
+   |                               ^^^^^^^^^ `HashMap<String, i32>` cannot be formatted with the default formatter
+   |
+   = note: the following trait bounds were not satisfied:
+           `HashMap<String, i32>: std::fmt::Display`
+           which is required by `HashMap<String, i32>: ToString`
+   = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
+
 error[E0308]: mismatched types
-  --> /tmp/24_game_solve.rs:14:252
+  --> /tmp/24_game_solve.rs:14:306
    |
-14 | ...), n); m.insert(String::from("denom"), 1); m }); m };
-   |                                               ^ expected integer, found `HashMap<String, i32>`
+13 | ...-> std::collections::HashMap<String, i32> {
+   |       -------------------------------------- expected `HashMap<String, i32>` because of return type
+14 | ...d::collections::HashMap::new(); m.insert(String::from("op").to_string(), OP_NUM.to_string()); m.insert(String::from("value").to_string(), { let mut m = std::collections::HashMap::new(); m.insert(String::from("num"), n); m.insert(String::from("denom"), 1); m }.to_string()); m };
+   |                                    -                                        ------------------ this argument has type `String`...                                                                                                                                                    ^ expected `HashMap<String, i32>`, found `HashMap<String, String>`
+   |                                    |
+   |                                    ... which causes `m` to have type `HashMap<String, String>`
    |
-   = note: expected type `{integer}`
-            found struct `HashMap<String, i32>`
+   = note: expected struct `HashMap<_, i32>`
+              found struct `HashMap<_, String>`
+help: try removing the method call
+   |
+14 -         return { let mut m = std::collections::HashMap::new(); m.insert(String::from("op").to_string(), OP_NUM.to_string()); m.insert(String::from("value").to_string(), { let mut m = std::collections::HashMap::new(); m.insert(String::from("num"), n); m.insert(String::from("denom"), 1); m }.to_string()); m };
+14 +         return { let mut m = std::collections::HashMap::new(); m.insert(String::from("op").to_string(), OP_NUM); m.insert(String::from("value").to_string(), { let mut m = std::collections::HashMap::new(); m.insert(String::from("num"), n); m.insert(String::from("denom"), 1); m }.to_string()); m };
+   |
 
 error[E0308]: mismatched types
   --> /tmp/24_game_solve.rs:18:20
@@ -58,48 +78,40 @@ error[E0425]: cannot find function `exprString` in this scope
 38 |         let rs = exprString(&*x.get(&String::from("right")).unwrap());
    |                  ^^^^^^^^^^ not found in this scope
 
-error[E0308]: mismatched types
-  --> /tmp/24_game_solve.rs:72:149
+error[E0599]: `HashMap<String, i32>` doesn't implement `std::fmt::Display`
+  --> /tmp/24_game_solve.rs:72:187
    |
-72 | ...ap::new(); m.insert(String::from("op"), op); m.insert(String::from("left"), a); m.insert(String::from("right"), b); m };
-   |               -                            --     ------                       ^ expected `i32`, found `HashMap<String, i32>`
-   |               |                            |      |
-   |               |                            |      arguments to this method are incorrect
-   |               |                            this argument has type `i32`...
-   |               ... which causes `m` to have type `HashMap<String, i32>`
+72 | ...rom("left").to_string(), a.to_string()); m.insert(String::from("right").to_string(), b.to_string()); m };
+   |                               ^^^^^^^^^ `HashMap<String, i32>` cannot be formatted with the default formatter
    |
-   = note: expected type `i32`
-            found struct `HashMap<String, i32>`
-help: the return type of this call is `HashMap<String, i32>` due to the type of the argument passed
-  --> /tmp/24_game_solve.rs:72:118
+   = note: the following trait bounds were not satisfied:
+           `HashMap<String, i32>: std::fmt::Display`
+           which is required by `HashMap<String, i32>: ToString`
+   = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
+
+error[E0599]: `HashMap<String, i32>` doesn't implement `std::fmt::Display`
+  --> /tmp/24_game_solve.rs:72:247
    |
-72 | ...tring::from("op"), op); m.insert(String::from("left"), a); m.insert(String::from("right"), b); m };
-   |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-^
-   |                                                           |
-   |                                                           this argument influences the return type of `insert`
-note: method defined here
-  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+72 | ...om("right").to_string(), b.to_string()); m };
+   |                               ^^^^^^^^^ `HashMap<String, i32>` cannot be formatted with the default formatter
+   |
+   = note: the following trait bounds were not satisfied:
+           `HashMap<String, i32>: std::fmt::Display`
+           which is required by `HashMap<String, i32>: ToString`
+   = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
 
 error[E0308]: mismatched types
-  --> /tmp/24_game_solve.rs:72:185
+  --> /tmp/24_game_solve.rs:73:69
    |
-72 | ...hMap::new(); m.insert(String::from("op"), op); m.insert(String::from("left"), a); m.insert(String::from("right"), b); m };
-   |                 -                            --                                        ------                        ^ expected `i32`, found `HashMap<String, i32>`
-   |                 |                            |                                         |
-   |                 |                            this argument has type `i32`...           arguments to this method are incorrect
-   |                 ... which causes `m` to have type `HashMap<String, i32>`
+73 |                     if solve({ let mut tmp = rest.clone(); tmp.push(node); tmp }) {
+   |                                                                ---- ^^^^ expected `HashMap<String, i32>`, found `HashMap<String, String>`
+   |                                                                |
+   |                                                                arguments to this method are incorrect
    |
-   = note: expected type `i32`
-            found struct `HashMap<String, i32>`
-help: the return type of this call is `HashMap<String, i32>` due to the type of the argument passed
-  --> /tmp/24_game_solve.rs:72:153
-   |
-72 | ...ring::from("left"), a); m.insert(String::from("right"), b); m };
-   |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-^
-   |                                                            |
-   |                                                            this argument influences the return type of `insert`
+   = note: expected struct `HashMap<_, i32>`
+              found struct `HashMap<_, String>`
 note: method defined here
-  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:2442:12
 
 error[E0425]: cannot find function `solve` in this scope
   --> /tmp/24_game_solve.rs:73:24
@@ -107,48 +119,40 @@ error[E0425]: cannot find function `solve` in this scope
 73 |                     if solve({ let mut tmp = rest.clone(); tmp.push(node); tmp }) {
    |                        ^^^^^ not found in this scope
 
-error[E0308]: mismatched types
-  --> /tmp/24_game_solve.rs:77:149
+error[E0599]: `HashMap<String, i32>` doesn't implement `std::fmt::Display`
+  --> /tmp/24_game_solve.rs:77:187
    |
-77 | ...::new(); m.insert(String::from("op"), OP_SUB); m.insert(String::from("left"), b); m.insert(String::from("right"), a); m };
-   |             -                            ------     ------                       ^ expected `i32`, found `HashMap<String, i32>`
-   |             |                            |          |
-   |             |                            |          arguments to this method are incorrect
-   |             |                            this argument has type `i32`...
-   |             ... which causes `m` to have type `HashMap<String, i32>`
+77 | ...rom("left").to_string(), b.to_string()); m.insert(String::from("right").to_string(), a.to_string()); m };
+   |                               ^^^^^^^^^ `HashMap<String, i32>` cannot be formatted with the default formatter
    |
-   = note: expected type `i32`
-            found struct `HashMap<String, i32>`
-help: the return type of this call is `HashMap<String, i32>` due to the type of the argument passed
-  --> /tmp/24_game_solve.rs:77:118
+   = note: the following trait bounds were not satisfied:
+           `HashMap<String, i32>: std::fmt::Display`
+           which is required by `HashMap<String, i32>: ToString`
+   = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
+
+error[E0599]: `HashMap<String, i32>` doesn't implement `std::fmt::Display`
+  --> /tmp/24_game_solve.rs:77:247
    |
-77 | ...g::from("op"), OP_SUB); m.insert(String::from("left"), b); m.insert(String::from("right"), a); m };
-   |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-^
-   |                                                           |
-   |                                                           this argument influences the return type of `insert`
-note: method defined here
-  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+77 | ...om("right").to_string(), a.to_string()); m };
+   |                               ^^^^^^^^^ `HashMap<String, i32>` cannot be formatted with the default formatter
+   |
+   = note: the following trait bounds were not satisfied:
+           `HashMap<String, i32>: std::fmt::Display`
+           which is required by `HashMap<String, i32>: ToString`
+   = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
 
 error[E0308]: mismatched types
-  --> /tmp/24_game_solve.rs:77:185
+  --> /tmp/24_game_solve.rs:78:65
    |
-77 | ...ap::new(); m.insert(String::from("op"), OP_SUB); m.insert(String::from("left"), b); m.insert(String::from("right"), a); m };
-   |               -                            ------                                        ------                        ^ expected `i32`, found `HashMap<String, i32>`
-   |               |                            |                                             |
-   |               |                            this argument has type `i32`...               arguments to this method are incorrect
-   |               ... which causes `m` to have type `HashMap<String, i32>`
-   |
-   = note: expected type `i32`
-            found struct `HashMap<String, i32>`
-help: the return type of this call is `HashMap<String, i32>` due to the type of the argument passed
-  --> /tmp/24_game_solve.rs:77:153
-   |
-77 | ...ring::from("left"), b); m.insert(String::from("right"), a); m };
-   |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-^
+78 |                 if solve({ let mut tmp = rest.clone(); tmp.push(node); tmp }) {
+   |                                                            ---- ^^^^ expected `HashMap<String, i32>`, found `HashMap<String, String>`
    |                                                            |
-   |                                                            this argument influences the return type of `insert`
+   |                                                            arguments to this method are incorrect
+   |
+   = note: expected struct `HashMap<_, i32>`
+              found struct `HashMap<_, String>`
 note: method defined here
-  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:2442:12
 
 error[E0425]: cannot find function `solve` in this scope
   --> /tmp/24_game_solve.rs:78:20
@@ -156,48 +160,40 @@ error[E0425]: cannot find function `solve` in this scope
 78 |                 if solve({ let mut tmp = rest.clone(); tmp.push(node); tmp }) {
    |                    ^^^^^ not found in this scope
 
-error[E0308]: mismatched types
-  --> /tmp/24_game_solve.rs:81:141
+error[E0599]: `HashMap<String, i32>` doesn't implement `std::fmt::Display`
+  --> /tmp/24_game_solve.rs:81:179
    |
-81 | ...::new(); m.insert(String::from("op"), OP_DIV); m.insert(String::from("left"), b); m.insert(String::from("right"), a); m };
-   |             -                            ------     ------                       ^ expected `i32`, found `HashMap<String, i32>`
-   |             |                            |          |
-   |             |                            |          arguments to this method are incorrect
-   |             |                            this argument has type `i32`...
-   |             ... which causes `m` to have type `HashMap<String, i32>`
+81 | ...rom("left").to_string(), b.to_string()); m.insert(String::from("right").to_string(), a.to_string()); m };
+   |                               ^^^^^^^^^ `HashMap<String, i32>` cannot be formatted with the default formatter
    |
-   = note: expected type `i32`
-            found struct `HashMap<String, i32>`
-help: the return type of this call is `HashMap<String, i32>` due to the type of the argument passed
-  --> /tmp/24_game_solve.rs:81:110
+   = note: the following trait bounds were not satisfied:
+           `HashMap<String, i32>: std::fmt::Display`
+           which is required by `HashMap<String, i32>: ToString`
+   = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
+
+error[E0599]: `HashMap<String, i32>` doesn't implement `std::fmt::Display`
+  --> /tmp/24_game_solve.rs:81:239
    |
-81 | ...g::from("op"), OP_DIV); m.insert(String::from("left"), b); m.insert(String::from("right"), a); m };
-   |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-^
-   |                                                           |
-   |                                                           this argument influences the return type of `insert`
-note: method defined here
-  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+81 | ...om("right").to_string(), a.to_string()); m };
+   |                               ^^^^^^^^^ `HashMap<String, i32>` cannot be formatted with the default formatter
+   |
+   = note: the following trait bounds were not satisfied:
+           `HashMap<String, i32>: std::fmt::Display`
+           which is required by `HashMap<String, i32>: ToString`
+   = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
 
 error[E0308]: mismatched types
-  --> /tmp/24_game_solve.rs:81:177
+  --> /tmp/24_game_solve.rs:82:65
    |
-81 | ...ap::new(); m.insert(String::from("op"), OP_DIV); m.insert(String::from("left"), b); m.insert(String::from("right"), a); m };
-   |               -                            ------                                        ------                        ^ expected `i32`, found `HashMap<String, i32>`
-   |               |                            |                                             |
-   |               |                            this argument has type `i32`...               arguments to this method are incorrect
-   |               ... which causes `m` to have type `HashMap<String, i32>`
-   |
-   = note: expected type `i32`
-            found struct `HashMap<String, i32>`
-help: the return type of this call is `HashMap<String, i32>` due to the type of the argument passed
-  --> /tmp/24_game_solve.rs:81:145
-   |
-81 | ...ring::from("left"), b); m.insert(String::from("right"), a); m };
-   |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-^
+82 |                 if solve({ let mut tmp = rest.clone(); tmp.push(node); tmp }) {
+   |                                                            ---- ^^^^ expected `HashMap<String, i32>`, found `HashMap<String, String>`
    |                                                            |
-   |                                                            this argument influences the return type of `insert`
+   |                                                            arguments to this method are incorrect
+   |
+   = note: expected struct `HashMap<_, i32>`
+              found struct `HashMap<_, String>`
 note: method defined here
-  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:2442:12
 
 error[E0425]: cannot find function `solve` in this scope
   --> /tmp/24_game_solve.rs:82:20
@@ -223,7 +219,7 @@ help: you can convert an `i64` to an `i32` and panic if the converted value does
 98 |                 cards = { let mut tmp = cards.clone(); tmp.push(newNum(n.try_into().unwrap())); tmp };
    |                                                                         ++++++++++++++++++++
 
-error: aborting due to 17 previous errors
+error: aborting due to 21 previous errors
 
 Some errors have detailed explanations: E0308, E0425, E0599.
 For more information about an error, try `rustc --explain E0308`.

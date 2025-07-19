@@ -54,7 +54,7 @@ fn main() {
                 }
             }
         }
-        return { let mut m = std::collections::HashMap::new(); m.insert(String::from("count"), count); m.insert(String::from("list"), valid); m };
+        return { let mut m = std::collections::HashMap::new(); m.insert(String::from("count").to_string(), count.to_string()); m.insert(String::from("list").to_string(), valid.to_string()); m };
     };
     let r1 = getCombs(1, 7, true);
     println!("{}", vec![format!("{}", format!("{}{}", *r1.get(&String::from("count")).unwrap().to_string(), String::from(" unique solutions in 1 to 7")))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );

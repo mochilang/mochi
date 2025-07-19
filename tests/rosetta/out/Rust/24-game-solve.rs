@@ -11,7 +11,7 @@ fn main() {
     let OP_MUL = 3;
     let OP_DIV = 4;
     let newNum = move |n: i32| -> std::collections::HashMap<String, i32> {
-        return { let mut m = std::collections::HashMap::new(); m.insert(String::from("op"), OP_NUM); m.insert(String::from("value"), { let mut m = std::collections::HashMap::new(); m.insert(String::from("num"), n); m.insert(String::from("denom"), 1); m }); m };
+        return { let mut m = std::collections::HashMap::new(); m.insert(String::from("op").to_string(), OP_NUM.to_string()); m.insert(String::from("value").to_string(), { let mut m = std::collections::HashMap::new(); m.insert(String::from("num"), n); m.insert(String::from("denom"), 1); m }.to_string()); m };
     };
     let exprEval = move |x: &std::collections::HashMap<String, i32>| -> std::collections::HashMap<String, i32> {
         if *x.get(&String::from("op")).unwrap() == OP_NUM {
@@ -69,16 +69,16 @@ fn main() {
                 let a = xs[(i) as usize];
                 let b = xs[(j) as usize];
                 for op in vec![OP_ADD, OP_SUB, OP_MUL, OP_DIV] {
-                    let mut node = { let mut m = std::collections::HashMap::new(); m.insert(String::from("op"), op); m.insert(String::from("left"), a); m.insert(String::from("right"), b); m };
+                    let mut node = { let mut m = std::collections::HashMap::new(); m.insert(String::from("op").to_string(), op.to_string()); m.insert(String::from("left").to_string(), a.to_string()); m.insert(String::from("right").to_string(), b.to_string()); m };
                     if solve({ let mut tmp = rest.clone(); tmp.push(node); tmp }) {
                         return true;
                     }
                 }
-                let mut node = { let mut m = std::collections::HashMap::new(); m.insert(String::from("op"), OP_SUB); m.insert(String::from("left"), b); m.insert(String::from("right"), a); m };
+                let mut node = { let mut m = std::collections::HashMap::new(); m.insert(String::from("op").to_string(), OP_SUB.to_string()); m.insert(String::from("left").to_string(), b.to_string()); m.insert(String::from("right").to_string(), a.to_string()); m };
                 if solve({ let mut tmp = rest.clone(); tmp.push(node); tmp }) {
                     return true;
                 }
-                node = { let mut m = std::collections::HashMap::new(); m.insert(String::from("op"), OP_DIV); m.insert(String::from("left"), b); m.insert(String::from("right"), a); m };
+                node = { let mut m = std::collections::HashMap::new(); m.insert(String::from("op").to_string(), OP_DIV.to_string()); m.insert(String::from("left").to_string(), b.to_string()); m.insert(String::from("right").to_string(), a.to_string()); m };
                 if solve({ let mut tmp = rest.clone(); tmp.push(node); tmp }) {
                     return true;
                 }

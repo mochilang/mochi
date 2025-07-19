@@ -1,28 +1,24 @@
 rustc: exit status 1
-error[E0425]: cannot find function `input` in this scope
- --> /tmp/a_b.rs:4:21
+warning: unused import: `Read`
+ --> /tmp/a_b.rs:3:25
   |
-4 |         let a = int(input());
-  |                     ^^^^^ not found in this scope
+3 |     use std::io::{self, Read};
+  |                         ^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
 
 error[E0425]: cannot find function `int` in this scope
- --> /tmp/a_b.rs:4:17
-  |
-4 |         let a = int(input());
-  |                 ^^^ not found in this scope
-
-error[E0425]: cannot find function `input` in this scope
- --> /tmp/a_b.rs:5:21
-  |
-5 |         let b = int(input());
-  |                     ^^^^^ not found in this scope
+  --> /tmp/a_b.rs:11:17
+   |
+11 |         let a = int(_input());
+   |                 ^^^ not found in this scope
 
 error[E0425]: cannot find function `int` in this scope
- --> /tmp/a_b.rs:5:17
-  |
-5 |         let b = int(input());
-  |                 ^^^ not found in this scope
+  --> /tmp/a_b.rs:12:17
+   |
+12 |         let b = int(_input());
+   |                 ^^^ not found in this scope
 
-error: aborting due to 4 previous errors
+error: aborting due to 2 previous errors; 1 warning emitted
 
 For more information about this error, try `rustc --explain E0425`.
