@@ -123,6 +123,7 @@ type DeclStmt struct {
 
 type AssignStmt struct {
 	Name  string
+	Index Expr
 	Value Expr
 }
 
@@ -210,6 +211,11 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 func (a *AssignStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	io.WriteString(w, a.Name)
+	if a.Index != nil {
+		io.WriteString(w, "[")
+		a.Index.emitExpr(w)
+		io.WriteString(w, "]")
+	}
 	io.WriteString(w, " = ")
 	if a.Value != nil {
 		a.Value.emitExpr(w)
@@ -630,7 +636,11 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		} else {
 			delete(constStrings, s.Assign.Name)
 		}
-		return &AssignStmt{Name: s.Assign.Name, Value: valExpr}, nil
+		var idx Expr
+		if len(s.Assign.Index) == 1 && s.Assign.Index[0].Colon == nil && s.Assign.Index[0].End == nil && s.Assign.Index[0].Colon2 == nil && s.Assign.Index[0].Step == nil {
+			idx = convertExpr(s.Assign.Index[0].Start)
+		}
+		return &AssignStmt{Name: s.Assign.Name, Index: idx, Value: valExpr}, nil
 	case s.Return != nil:
 		return &ReturnStmt{Expr: convertExpr(s.Return.Value)}, nil
 	case s.While != nil:
@@ -1037,48 +1047,48 @@ func convertListExpr(e *parser.Expr) ([]Expr, bool) {
 }
 
 func evalInt(e Expr) (int, bool) {
-        switch v := e.(type) {
-        case *IntLit:
-                return v.Value, true
-        case *BinaryExpr:
-                left, ok1 := evalInt(v.Left)
-                right, ok2 := evalInt(v.Right)
-                if ok1 && ok2 {
-                        switch v.Op {
-                        case "+":
-                                return left + right, true
-                        case "-":
-                                return left - right, true
-                        case "*":
-                                return left * right, true
-                        case "/":
-                                if right != 0 {
-                                        return left / right, true
-                                }
-                        case "%":
-                                if right != 0 {
-                                        return left % right, true
-                                }
-                        }
-                }
-        case *CallExpr:
-                if v.Func == "len" && len(v.Args) == 1 {
-                        if list, ok := evalList(v.Args[0]); ok {
-                                return len(list.Elems), true
-                        }
-                        if s, ok := evalString(v.Args[0]); ok {
-                                return len([]rune(s)), true
-                        }
-                }
-        case *IndexExpr:
-                if list, ok := evalList(v.Target); ok {
-                        idx, ok2 := evalInt(v.Index)
-                        if ok2 && idx >= 0 && idx < len(list.Elems) {
-                                return evalInt(list.Elems[idx])
-                        }
-                }
-        }
-        return 0, false
+	switch v := e.(type) {
+	case *IntLit:
+		return v.Value, true
+	case *BinaryExpr:
+		left, ok1 := evalInt(v.Left)
+		right, ok2 := evalInt(v.Right)
+		if ok1 && ok2 {
+			switch v.Op {
+			case "+":
+				return left + right, true
+			case "-":
+				return left - right, true
+			case "*":
+				return left * right, true
+			case "/":
+				if right != 0 {
+					return left / right, true
+				}
+			case "%":
+				if right != 0 {
+					return left % right, true
+				}
+			}
+		}
+	case *CallExpr:
+		if v.Func == "len" && len(v.Args) == 1 {
+			if list, ok := evalList(v.Args[0]); ok {
+				return len(list.Elems), true
+			}
+			if s, ok := evalString(v.Args[0]); ok {
+				return len([]rune(s)), true
+			}
+		}
+	case *IndexExpr:
+		if list, ok := evalList(v.Target); ok {
+			idx, ok2 := evalInt(v.Index)
+			if ok2 && idx >= 0 && idx < len(list.Elems) {
+				return evalInt(list.Elems[idx])
+			}
+		}
+	}
+	return 0, false
 }
 
 func evalString(e Expr) (string, bool) {
