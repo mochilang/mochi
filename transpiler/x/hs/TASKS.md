@@ -1,3 +1,16 @@
+## Progress (2025-07-19 19:39 +0700)
+- VM valid golden test results updated
+- Added list literals and if statements inside functions
+- Enabled sum builtin support
+
+## Progress (2025-07-19 19:39 +0700)
+- VM valid golden test results updated
+- Added bool printing via fromEnum for Haskell backend
+
+## Progress (2025-07-19 19:39 +0700)
+- VM valid golden test results updated
+- Added bool printing via fromEnum for Haskell backend
+
 ## Progress (2025-07-19 19:20 +0700)
 - VM valid golden test results updated
 - Added bool printing via fromEnum for Haskell backend

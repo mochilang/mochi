@@ -1,1 +1,7 @@
-transpile: unsupported primary
+run: exit status 1
+
+/workspace/mochi/tests/transpiler/x/hs/membership.hs:6:14: error:
+    parse error on input ‘in’
+  |
+6 |     print (2 in nums)
+  |              ^^
