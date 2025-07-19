@@ -2,7 +2,7 @@
 
 Generated C# code for programs in `tests/vm/valid`. Each program has a `.cs` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.
 
-Compiled programs: 18/100
+Compiled programs: 24/100
 
 ## Checklist
 - [ ] append_builtin
@@ -21,12 +21,12 @@ Compiled programs: 18/100
 - [ ] dataset_sort_take_limit
 - [ ] dataset_where_filter
 - [ ] exists_builtin
-- [ ] for_list_collection
-- [ ] for_loop
+- [x] for_list_collection
+- [x] for_loop
 - [ ] for_map_collection
-- [ ] fun_call
+- [x] fun_call
 - [ ] fun_expr_in_let
-- [ ] fun_three_args
+- [x] fun_three_args
 - [ ] go_auto
 - [ ] group_by
 - [ ] group_by_conditional_sum
@@ -51,8 +51,8 @@ Compiled programs: 18/100
 - [ ] len_map
 - [x] len_string
 - [x] let_and_print
-- [ ] list_assign
-- [ ] list_index
+- [x] list_assign
+- [x] list_index
 - [ ] list_nested_assign
 - [ ] list_set_ops
 - [ ] load_yaml

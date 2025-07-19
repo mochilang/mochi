@@ -20,6 +20,7 @@ import (
 // --- C# AST ---
 
 type Program struct {
+	Funcs []*Function
 	Stmts []Stmt
 }
 
@@ -59,6 +60,107 @@ type AssignStmt struct {
 func (s *AssignStmt) emit(w io.Writer) {
 	fmt.Fprintf(w, "%s = ", s.Name)
 	s.Value.emit(w)
+}
+
+// AssignIndexStmt represents assignment to an indexed element like xs[i] = v.
+type AssignIndexStmt struct {
+	Target Expr
+	Index  Expr
+	Value  Expr
+}
+
+func (s *AssignIndexStmt) emit(w io.Writer) {
+	s.Target.emit(w)
+	fmt.Fprint(w, "[")
+	s.Index.emit(w)
+	fmt.Fprint(w, "] = ")
+	s.Value.emit(w)
+}
+
+// ReturnStmt represents a return statement within a function.
+type ReturnStmt struct {
+	Value Expr // optional
+}
+
+func (r *ReturnStmt) emit(w io.Writer) {
+	fmt.Fprint(w, "return")
+	if r.Value != nil {
+		fmt.Fprint(w, " ")
+		r.Value.emit(w)
+	}
+}
+
+// ForRangeStmt represents a numeric range for-loop like `for i in 0..10 {}`.
+type ForRangeStmt struct {
+	Var   string
+	Start Expr
+	End   Expr
+	Body  []Stmt
+}
+
+func (f *ForRangeStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "for (var %s = ", f.Var)
+	if f.Start != nil {
+		f.Start.emit(w)
+	} else {
+		fmt.Fprint(w, "0")
+	}
+	fmt.Fprint(w, "; ")
+	fmt.Fprintf(w, "%s < ", f.Var)
+	if f.End != nil {
+		f.End.emit(w)
+	}
+	fmt.Fprint(w, "; ")
+	fmt.Fprintf(w, "%s++) {\n", f.Var)
+	for _, st := range f.Body {
+		fmt.Fprint(w, "    ")
+		st.emit(w)
+		fmt.Fprint(w, ";\n")
+	}
+	fmt.Fprint(w, "}")
+}
+
+// ForInStmt represents iteration over elements of an iterable.
+type ForInStmt struct {
+	Var      string
+	Iterable Expr
+	Body     []Stmt
+}
+
+func (f *ForInStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "foreach (var %s in ", f.Var)
+	f.Iterable.emit(w)
+	fmt.Fprint(w, ") {\n")
+	for _, st := range f.Body {
+		fmt.Fprint(w, "    ")
+		st.emit(w)
+		fmt.Fprint(w, ";\n")
+	}
+	fmt.Fprint(w, "}")
+}
+
+// Function represents a simple function declaration.
+type Function struct {
+	Name   string
+	Params []string
+	Body   []Stmt
+}
+
+func (f *Function) emit(w io.Writer) {
+	fmt.Fprintf(w, "static int %s(", f.Name)
+	for i, p := range f.Params {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		fmt.Fprintf(w, "int %s", p)
+	}
+	fmt.Fprint(w, ") {\n")
+	for _, st := range f.Body {
+		fmt.Fprint(w, "    ")
+		st.emit(w)
+		fmt.Fprint(w, ";\n")
+	}
+	fmt.Fprint(w, "}")
 }
 
 // WhileStmt represents a while loop.
@@ -208,6 +310,19 @@ type IntLit struct{ Value int }
 
 func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
 
+// IndexExpr represents xs[i].
+type IndexExpr struct {
+	Target Expr
+	Index  Expr
+}
+
+func (ix *IndexExpr) emit(w io.Writer) {
+	ix.Target.emit(w)
+	fmt.Fprint(w, "[")
+	ix.Index.emit(w)
+	fmt.Fprint(w, "]")
+}
+
 type ListLit struct{ Elems []Expr }
 
 func (l *ListLit) emit(w io.Writer) {
@@ -263,7 +378,7 @@ func (s *StrExpr) emit(w io.Writer) {
 func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	prog := &Program{}
 	for _, st := range p.Statements {
-		s, err := compileStmt(st)
+		s, err := compileStmt(prog, st)
 		if err != nil {
 			return nil, err
 		}
@@ -314,13 +429,29 @@ func compileUnary(u *parser.Unary) (Expr, error) {
 }
 
 func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
-	if p == nil || len(p.Ops) > 0 {
+	if p == nil {
 		return nil, fmt.Errorf("unsupported postfix")
 	}
-	return compilePrimary(p.Target)
+	expr, err := compilePrimary(p.Target)
+	if err != nil {
+		return nil, err
+	}
+	for _, op := range p.Ops {
+		switch {
+		case op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil:
+			idx, err := compileExpr(op.Index.Start)
+			if err != nil {
+				return nil, err
+			}
+			expr = &IndexExpr{Target: expr, Index: idx}
+		default:
+			return nil, fmt.Errorf("unsupported postfix")
+		}
+	}
+	return expr, nil
 }
 
-func compileStmt(s *parser.Statement) (Stmt, error) {
+func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 	switch {
 	case s.Expr != nil:
 		e, err := compileExpr(s.Expr.Expr)
@@ -352,6 +483,83 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			}
 			return &AssignStmt{Name: s.Assign.Name, Value: val}, nil
 		}
+		if len(s.Assign.Index) == 1 && len(s.Assign.Field) == 0 {
+			target := &VarRef{Name: s.Assign.Name}
+			idx, err := compileExpr(s.Assign.Index[0].Start)
+			if err != nil {
+				return nil, err
+			}
+			val, err := compileExpr(s.Assign.Value)
+			if err != nil {
+				return nil, err
+			}
+			return &AssignIndexStmt{Target: target, Index: idx, Value: val}, nil
+		}
+		return nil, fmt.Errorf("unsupported assignment")
+	case s.Fun != nil:
+		params := make([]string, len(s.Fun.Params))
+		for i, p := range s.Fun.Params {
+			params[i] = p.Name
+		}
+		var body []Stmt
+		for _, b := range s.Fun.Body {
+			st, err := compileStmt(prog, b)
+			if err != nil {
+				return nil, err
+			}
+			if st != nil {
+				body = append(body, st)
+			}
+		}
+		prog.Funcs = append(prog.Funcs, &Function{Name: s.Fun.Name, Params: params, Body: body})
+		return nil, nil
+	case s.Return != nil:
+		var val Expr
+		if s.Return.Value != nil {
+			var err error
+			val, err = compileExpr(s.Return.Value)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return &ReturnStmt{Value: val}, nil
+	case s.For != nil:
+		if s.For.RangeEnd != nil {
+			start, err := compileExpr(s.For.Source)
+			if err != nil {
+				return nil, err
+			}
+			end, err := compileExpr(s.For.RangeEnd)
+			if err != nil {
+				return nil, err
+			}
+			var body []Stmt
+			for _, b := range s.For.Body {
+				st, err := compileStmt(prog, b)
+				if err != nil {
+					return nil, err
+				}
+				if st != nil {
+					body = append(body, st)
+				}
+			}
+			return &ForRangeStmt{Var: s.For.Name, Start: start, End: end, Body: body}, nil
+		}
+		iterable, err := compileExpr(s.For.Source)
+		if err != nil {
+			return nil, err
+		}
+		var body []Stmt
+		for _, b := range s.For.Body {
+			st, err := compileStmt(prog, b)
+			if err != nil {
+				return nil, err
+			}
+			if st != nil {
+				body = append(body, st)
+			}
+		}
+		return &ForInStmt{Var: s.For.Name, Iterable: iterable, Body: body}, nil
 	case s.While != nil:
 		cond, err := compileExpr(s.While.Cond)
 		if err != nil {
@@ -359,7 +567,7 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 		}
 		var body []Stmt
 		for _, b := range s.While.Body {
-			st, err := compileStmt(b)
+			st, err := compileStmt(prog, b)
 			if err != nil {
 				return nil, err
 			}
@@ -369,21 +577,21 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 		}
 		return &WhileStmt{Cond: cond, Body: body}, nil
 	case s.If != nil:
-		return compileIfStmt(s.If)
+		return compileIfStmt(prog, s.If)
 	case s.Test == nil && s.Import == nil && s.Type == nil:
 		return nil, fmt.Errorf("unsupported statement at %d:%d", s.Pos.Line, s.Pos.Column)
 	}
 	return nil, nil
 }
 
-func compileIfStmt(i *parser.IfStmt) (Stmt, error) {
+func compileIfStmt(prog *Program, i *parser.IfStmt) (Stmt, error) {
 	cond, err := compileExpr(i.Cond)
 	if err != nil {
 		return nil, err
 	}
 	var thenStmts []Stmt
 	for _, st := range i.Then {
-		s, err := compileStmt(st)
+		s, err := compileStmt(prog, st)
 		if err != nil {
 			return nil, err
 		}
@@ -393,14 +601,14 @@ func compileIfStmt(i *parser.IfStmt) (Stmt, error) {
 	}
 	var elseStmts []Stmt
 	if i.ElseIf != nil {
-		s, err := compileIfStmt(i.ElseIf)
+		s, err := compileIfStmt(prog, i.ElseIf)
 		if err != nil {
 			return nil, err
 		}
 		elseStmts = []Stmt{s}
 	} else if len(i.Else) > 0 {
 		for _, st := range i.Else {
-			s, err := compileStmt(st)
+			s, err := compileStmt(prog, st)
 			if err != nil {
 				return nil, err
 			}
@@ -507,6 +715,11 @@ func Emit(prog *Program) []byte {
 	}
 	buf.WriteString("\n")
 	buf.WriteString("class Program {\n")
+	for _, fn := range prog.Funcs {
+		buf.WriteString("\t")
+		fn.emit(&buf)
+		buf.WriteString("\n")
+	}
 	buf.WriteString("\tstatic void Main() {\n")
 	for _, s := range prog.Stmts {
 		buf.WriteString("\t\t")
@@ -558,8 +771,19 @@ func print(prog *Program) {
 
 func toNodeProg(p *Program) *ast.Node {
 	n := &ast.Node{Kind: "program"}
+	for _, fn := range p.Funcs {
+		n.Children = append(n.Children, toNodeFunc(fn))
+	}
 	for _, s := range p.Stmts {
 		n.Children = append(n.Children, toNodeStmt(s))
+	}
+	return n
+}
+
+func toNodeFunc(f *Function) *ast.Node {
+	n := &ast.Node{Kind: "fun", Value: f.Name}
+	for _, st := range f.Body {
+		n.Children = append(n.Children, toNodeStmt(st))
 	}
 	return n
 }
@@ -578,12 +802,34 @@ func toNodeStmt(s Stmt) *ast.Node {
 		return &ast.Node{Kind: "var", Value: st.Name, Children: child}
 	case *AssignStmt:
 		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{toNodeExpr(st.Value)}}
+	case *AssignIndexStmt:
+		n := &ast.Node{Kind: "assign-index"}
+		n.Children = append(n.Children, toNodeExpr(st.Target), toNodeExpr(st.Index), toNodeExpr(st.Value))
+		return n
 	case *WhileStmt:
 		n := &ast.Node{Kind: "while", Children: []*ast.Node{toNodeExpr(st.Cond)}}
 		for _, b := range st.Body {
 			n.Children = append(n.Children, toNodeStmt(b))
 		}
 		return n
+	case *ForRangeStmt:
+		n := &ast.Node{Kind: "for-range", Value: st.Var, Children: []*ast.Node{toNodeExpr(st.Start), toNodeExpr(st.End)}}
+		for _, b := range st.Body {
+			n.Children = append(n.Children, toNodeStmt(b))
+		}
+		return n
+	case *ForInStmt:
+		n := &ast.Node{Kind: "for-in", Value: st.Var, Children: []*ast.Node{toNodeExpr(st.Iterable)}}
+		for _, b := range st.Body {
+			n.Children = append(n.Children, toNodeStmt(b))
+		}
+		return n
+	case *ReturnStmt:
+		rn := &ast.Node{Kind: "return"}
+		if st.Value != nil {
+			rn.Children = []*ast.Node{toNodeExpr(st.Value)}
+		}
+		return rn
 	case *IfStmt:
 		n := &ast.Node{Kind: "if", Children: []*ast.Node{toNodeExpr(st.Cond)}}
 		thenNode := &ast.Node{Kind: "then"}
@@ -624,6 +870,8 @@ func toNodeExpr(e Expr) *ast.Node {
 		return &ast.Node{Kind: "sum", Children: []*ast.Node{toNodeExpr(ex.Arg)}}
 	case *StrExpr:
 		return &ast.Node{Kind: "str", Children: []*ast.Node{toNodeExpr(ex.Arg)}}
+	case *IndexExpr:
+		return &ast.Node{Kind: "index", Children: []*ast.Node{toNodeExpr(ex.Target), toNodeExpr(ex.Index)}}
 	case *CmpExpr:
 		return &ast.Node{Kind: "cmp", Value: ex.Op, Children: []*ast.Node{toNodeExpr(ex.Left), toNodeExpr(ex.Right)}}
 	case *UnaryExpr:
@@ -690,6 +938,26 @@ func inspectLinq(e Expr) bool {
 			}
 		}
 		return false
+	case *ForRangeStmt:
+		if inspectLinq(ex.Start) || inspectLinq(ex.End) {
+			return true
+		}
+		for _, s := range ex.Body {
+			if inspectLinq(s) {
+				return true
+			}
+		}
+		return false
+	case *ForInStmt:
+		if inspectLinq(ex.Iterable) {
+			return true
+		}
+		for _, s := range ex.Body {
+			if inspectLinq(s) {
+				return true
+			}
+		}
+		return false
 	case *CallExpr:
 		for _, a := range ex.Args {
 			if inspectLinq(a) {
@@ -706,6 +974,8 @@ func inspectLinq(e Expr) bool {
 		return inspectLinq(ex.Arg)
 	case *LenExpr:
 		return inspectLinq(ex.Arg)
+	case *IndexExpr:
+		return inspectLinq(ex.Target) || inspectLinq(ex.Index)
 	case *UnaryExpr:
 		return inspectLinq(ex.Val)
 	case *BinaryExpr:
