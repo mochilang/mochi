@@ -6,7 +6,7 @@ class Program {
     static void Main() {
         var x = 3;
         var y = 4;
-        var m = new Dictionary<object, object>{{"a", x}, {"b", y}};
+        var m = new Dictionary<string, int>{{"a", x}, {"b", y}};
         Console.WriteLine(m["a"], m["b"]);
     }
 }
