@@ -3,7 +3,7 @@
 This experimental transpiler converts a tiny subset of Mochi into Rust code. Only
 simple expressions are currently supported.
 
-## Checklist (18/100)
+## Checklist (21/100)
 - [ ] append_builtin
 - [ ] avg_builtin
 - [x] basic_compare
@@ -83,7 +83,7 @@ simple expressions are currently supported.
 - [ ] short_circuit
 - [ ] slice
 - [ ] sort_stable
-- [ ] str_builtin
+- [x] str_builtin
 - [x] string_compare
 - [x] string_concat
 - [ ] string_contains
@@ -91,7 +91,7 @@ simple expressions are currently supported.
 - [ ] string_index
 - [ ] string_prefix_slice
 - [ ] substring_builtin
-- [ ] sum_builtin
+- [x] sum_builtin
 - [ ] tail_recursion
 - [ ] test_block
 - [ ] tree_sum
@@ -101,6 +101,6 @@ simple expressions are currently supported.
 - [x] unary_neg
 - [ ] update_stmt
 - [ ] user_type_literal
-- [ ] values_builtin
+- [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
