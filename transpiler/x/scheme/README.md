@@ -2,7 +2,7 @@
 
 Generated Scheme code for programs in `tests/vm/valid`. Each program has a `.scm` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-Transpiled programs: 32/100
+Transpiled programs: 34/100
 
 Checklist:
 
@@ -12,7 +12,7 @@ Checklist:
 - [x] binary_precedence
 - [x] bool_chain
 - [ ] break_continue
-- [ ] cast_string_to_int
+- [x] cast_string_to_int
 - [ ] cast_struct
 - [ ] closure
 - [x] count_builtin
@@ -91,7 +91,7 @@ Checklist:
 - [ ] string_contains
 - [ ] string_in_operator
 - [x] string_index
-- [ ] string_prefix_slice
+- [x] string_prefix_slice
 - [x] substring_builtin
 - [x] sum_builtin
 - [ ] tail_recursion
