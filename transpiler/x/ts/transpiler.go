@@ -162,6 +162,20 @@ type IndexExpr struct {
 	Index  Expr
 }
 
+// SliceExpr represents a[start:end] slicing.
+type SliceExpr struct {
+	Target Expr
+	Start  Expr
+	End    Expr
+}
+
+// MethodCallExpr represents target.method(args...).
+type MethodCallExpr struct {
+	Target Expr
+	Method string
+	Args   []Expr
+}
+
 // FunExpr represents an anonymous function expression.
 type FunExpr struct {
 	Params []string
@@ -298,6 +312,33 @@ func (i *IndexExpr) emit(w io.Writer) {
 		i.Index.emit(w)
 	}
 	io.WriteString(w, "]")
+}
+
+func (s *SliceExpr) emit(w io.Writer) {
+	s.Target.emit(w)
+	io.WriteString(w, ".slice(")
+	if s.Start != nil {
+		s.Start.emit(w)
+	}
+	if s.End != nil {
+		io.WriteString(w, ", ")
+		s.End.emit(w)
+	}
+	io.WriteString(w, ")")
+}
+
+func (m *MethodCallExpr) emit(w io.Writer) {
+	m.Target.emit(w)
+	io.WriteString(w, ".")
+	io.WriteString(w, m.Method)
+	io.WriteString(w, "(")
+	for i, a := range m.Args {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		a.emit(w)
+	}
+	io.WriteString(w, ")")
 }
 
 func (f *FunExpr) emit(w io.Writer) {
@@ -667,18 +708,38 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 func applyIndexOps(base Expr, ops []*parser.IndexOp) (Expr, error) {
 	var err error
 	for _, op := range ops {
-		if op.Colon != nil || op.Colon2 != nil || op.End != nil || op.Step != nil {
-			return nil, fmt.Errorf("slice not supported")
+		if op.Colon != nil {
+			if op.Colon2 != nil || op.Step != nil {
+				return nil, fmt.Errorf("slice step not supported")
+			}
+			var start, end Expr
+			if op.Start != nil {
+				start, err = convertExpr(op.Start)
+				if err != nil {
+					return nil, err
+				}
+			}
+			if op.End != nil {
+				end, err = convertExpr(op.End)
+				if err != nil {
+					return nil, err
+				}
+			}
+			base = &SliceExpr{Target: base, Start: start, End: end}
+		} else {
+			if op.Colon2 != nil || op.End != nil || op.Step != nil {
+				return nil, fmt.Errorf("slice not supported")
+			}
+			if op.Start == nil {
+				return nil, fmt.Errorf("nil index")
+			}
+			var idx Expr
+			idx, err = convertExpr(op.Start)
+			if err != nil {
+				return nil, err
+			}
+			base = &IndexExpr{Target: base, Index: idx}
 		}
-		if op.Start == nil {
-			return nil, fmt.Errorf("nil index")
-		}
-		var idx Expr
-		idx, err = convertExpr(op.Start)
-		if err != nil {
-			return nil, err
-		}
-		base = &IndexExpr{Target: base, Index: idx}
 	}
 	return base, nil
 }
@@ -775,17 +836,37 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 	for _, op := range p.Ops {
 		switch {
 		case op.Index != nil:
-			if op.Index.Colon != nil || op.Index.Colon2 != nil || op.Index.End != nil || op.Index.Step != nil {
-				return nil, fmt.Errorf("postfix slice not supported")
+			if op.Index.Colon != nil {
+				if op.Index.Colon2 != nil || op.Index.Step != nil {
+					return nil, fmt.Errorf("slice step not supported")
+				}
+				var start, end Expr
+				if op.Index.Start != nil {
+					start, err = convertExpr(op.Index.Start)
+					if err != nil {
+						return nil, err
+					}
+				}
+				if op.Index.End != nil {
+					end, err = convertExpr(op.Index.End)
+					if err != nil {
+						return nil, err
+					}
+				}
+				expr = &SliceExpr{Target: expr, Start: start, End: end}
+			} else {
+				if op.Index.Colon2 != nil || op.Index.End != nil || op.Index.Step != nil {
+					return nil, fmt.Errorf("postfix slice not supported")
+				}
+				if op.Index.Start == nil {
+					return nil, fmt.Errorf("nil index")
+				}
+				idx, err := convertExpr(op.Index.Start)
+				if err != nil {
+					return nil, err
+				}
+				expr = &IndexExpr{Target: expr, Index: idx}
 			}
-			if op.Index.Start == nil {
-				return nil, fmt.Errorf("nil index")
-			}
-			idx, err := convertExpr(op.Index.Start)
-			if err != nil {
-				return nil, err
-			}
-			expr = &IndexExpr{Target: expr, Index: idx}
 		case op.Call != nil:
 			args := make([]Expr, len(op.Call.Args))
 			for i, a := range op.Call.Args {
@@ -795,7 +876,15 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				}
 				args[i] = ae
 			}
-			expr = &InvokeExpr{Callee: expr, Args: args}
+			if idx, ok := expr.(*IndexExpr); ok {
+				if lit, ok2 := idx.Index.(*StringLit); ok2 && lit.Value == "contains" && len(args) == 1 {
+					expr = &MethodCallExpr{Target: idx.Target, Method: "includes", Args: args}
+				} else {
+					expr = &InvokeExpr{Callee: expr, Args: args}
+				}
+			} else {
+				expr = &InvokeExpr{Callee: expr, Args: args}
+			}
 		case op.Field != nil:
 			expr = &IndexExpr{Target: expr, Index: &StringLit{Value: op.Field.Name}}
 		case op.Cast != nil:
@@ -1056,6 +1145,8 @@ func exprToNode(e Expr) *ast.Node {
 		return n
 	case *IndexExpr:
 		return &ast.Node{Kind: "index", Children: []*ast.Node{exprToNode(ex.Target), exprToNode(ex.Index)}}
+	case *SliceExpr:
+		return &ast.Node{Kind: "slice", Children: []*ast.Node{exprToNode(ex.Target), exprToNode(ex.Start), exprToNode(ex.End)}}
 	case *FunExpr:
 		n := &ast.Node{Kind: "funexpr"}
 		for _, p := range ex.Params {
@@ -1074,6 +1165,13 @@ func exprToNode(e Expr) *ast.Node {
 	case *InvokeExpr:
 		n := &ast.Node{Kind: "invoke"}
 		n.Children = append(n.Children, exprToNode(ex.Callee))
+		for _, a := range ex.Args {
+			n.Children = append(n.Children, exprToNode(a))
+		}
+		return n
+	case *MethodCallExpr:
+		n := &ast.Node{Kind: "method", Value: ex.Method}
+		n.Children = append(n.Children, exprToNode(ex.Target))
 		for _, a := range ex.Args {
 			n.Children = append(n.Children, exprToNode(a))
 		}

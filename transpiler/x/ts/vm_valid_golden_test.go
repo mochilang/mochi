@@ -138,9 +138,20 @@ func updateTasks() {
 			}
 		}
 	}
+	srcDir := filepath.Join(root, "tests", "vm", "valid")
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "ts")
+	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	total := len(files)
+	compiled := 0
+	for _, f := range files {
+		name := filepath.Base(f)
+		if _, err := os.Stat(filepath.Join(outDir, strings.TrimSuffix(name, ".mochi")+".ts")); err == nil {
+			compiled++
+		}
+	}
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
-	buf.WriteString("- VM valid golden test results updated\n\n")
+	fmt.Fprintf(&buf, "- VM valid golden tests %d/%d compiled\n\n", compiled, total)
 	if data, err := os.ReadFile(taskFile); err == nil {
 		buf.Write(data)
 	}
