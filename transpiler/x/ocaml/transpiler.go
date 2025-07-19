@@ -24,11 +24,100 @@ type Program struct {
 // Stmt can emit itself as OCaml code.
 type Stmt interface{ emit(io.Writer) }
 
-// PrintStmt represents a call to print_endline with a string literal.
-type PrintStmt struct{ Value string }
+// LetStmt represents a simple variable binding.
+type LetStmt struct {
+	Name string
+	Expr Expr
+}
+
+func (l *LetStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "  let %s = ", l.Name)
+	l.Expr.emit(w)
+	io.WriteString(w, " in\n")
+}
+
+// PrintStmt represents a call to print_endline.
+type PrintStmt struct{ Expr Expr }
 
 func (p *PrintStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "  print_endline (%q);\n", p.Value)
+	io.WriteString(w, "  print_endline (")
+	p.Expr.emitPrint(w)
+	io.WriteString(w, ");\n")
+}
+
+// Expr is any OCaml expression that can emit itself.
+type Expr interface {
+	emit(io.Writer)
+	emitPrint(io.Writer)
+}
+
+// Name represents a variable reference.
+type Name struct {
+	Ident string
+	Typ   string
+}
+
+func (n *Name) emit(w io.Writer) { io.WriteString(w, n.Ident) }
+func (n *Name) emitPrint(w io.Writer) {
+	switch n.Typ {
+	case "int":
+		fmt.Fprintf(w, "string_of_int %s", n.Ident)
+	case "bool":
+		fmt.Fprintf(w, "string_of_int (if %s then 1 else 0)", n.Ident)
+	default:
+		io.WriteString(w, n.Ident)
+	}
+}
+
+// IntLit represents an integer literal.
+type IntLit struct{ Value int }
+
+func (i *IntLit) emit(w io.Writer)      { fmt.Fprintf(w, "%d", i.Value) }
+func (i *IntLit) emitPrint(w io.Writer) { fmt.Fprintf(w, "string_of_int %d", i.Value) }
+
+// BoolLit represents a boolean literal.
+type BoolLit struct{ Value bool }
+
+func (b *BoolLit) emit(w io.Writer) { fmt.Fprintf(w, "%t", b.Value) }
+func (b *BoolLit) emitPrint(w io.Writer) {
+	if b.Value {
+		io.WriteString(w, "string_of_int 1")
+	} else {
+		io.WriteString(w, "string_of_int 0")
+	}
+}
+
+// StringLit represents a string literal.
+type StringLit struct{ Value string }
+
+func (s *StringLit) emit(w io.Writer)      { fmt.Fprintf(w, "%q", s.Value) }
+func (s *StringLit) emitPrint(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
+
+// BinaryExpr represents a binary operation.
+type BinaryExpr struct {
+	Left  Expr
+	Op    string
+	Right Expr
+	Typ   string
+}
+
+func (b *BinaryExpr) emit(w io.Writer) {
+	fmt.Fprintf(w, "(")
+	b.Left.emit(w)
+	fmt.Fprintf(w, " %s ", b.Op)
+	b.Right.emit(w)
+	fmt.Fprintf(w, ")")
+}
+
+func (b *BinaryExpr) emitPrint(w io.Writer) {
+	if b.Typ == "bool" {
+		io.WriteString(w, "string_of_int (if ")
+		b.emit(w)
+		io.WriteString(w, " then 1 else 0)")
+	} else {
+		io.WriteString(w, "string_of_int ")
+		b.emit(w)
+	}
 }
 
 func repoRoot() string {
@@ -81,22 +170,34 @@ func (p *Program) Emit() []byte {
 
 // Transpile converts a Mochi program into a simple OCaml AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
-	_ = env
 	pr := &Program{}
+	vars := map[string]string{}
 	for _, st := range prog.Statements {
-		if st.Expr != nil {
+		switch {
+		case st.Let != nil:
+			if st.Let.Value == nil {
+				return nil, fmt.Errorf("let without value not supported")
+			}
+			expr, typ, err := convertExpr(st.Let.Value, env, vars)
+			if err != nil {
+				return nil, err
+			}
+			vars[st.Let.Name] = typ
+			pr.Stmts = append(pr.Stmts, &LetStmt{Name: st.Let.Name, Expr: expr})
+		case st.Expr != nil:
 			call := st.Expr.Expr.Binary.Left.Value.Target.Call
 			if call != nil && call.Func == "print" && len(call.Args) == 1 {
-				arg := call.Args[0]
-				lit := arg.Binary.Left.Value.Target.Lit
-				if lit != nil && lit.Str != nil {
-					pr.Stmts = append(pr.Stmts, &PrintStmt{Value: *lit.Str})
-					continue
+				expr, _, err := convertExpr(call.Args[0], env, vars)
+				if err != nil {
+					return nil, err
 				}
+				pr.Stmts = append(pr.Stmts, &PrintStmt{Expr: expr})
+				continue
 			}
 			return nil, fmt.Errorf("unsupported expression")
+		default:
+			return nil, fmt.Errorf("unsupported statement")
 		}
-		return nil, fmt.Errorf("unsupported statement")
 	}
 	return pr, nil
 }
@@ -107,10 +208,99 @@ func Print(p *Program) {
 	for _, st := range p.Stmts {
 		switch s := st.(type) {
 		case *PrintStmt:
-			n.Children = append(n.Children, &ast.Node{Kind: "print", Value: s.Value})
+			n.Children = append(n.Children, &ast.Node{Kind: "print"})
+		case *LetStmt:
+			n.Children = append(n.Children, &ast.Node{Kind: "let", Value: s.Name})
 		default:
 			n.Children = append(n.Children, &ast.Node{Kind: "stmt"})
 		}
 	}
 	n.Print("")
+}
+
+// --- Conversion helpers ---
+
+func convertExpr(e *parser.Expr, env *types.Env, vars map[string]string) (Expr, string, error) {
+	if e == nil {
+		return nil, "", fmt.Errorf("nil expr")
+	}
+	return convertBinary(e.Binary, env, vars)
+}
+
+func convertBinary(b *parser.BinaryExpr, env *types.Env, vars map[string]string) (Expr, string, error) {
+	if b == nil {
+		return nil, "", fmt.Errorf("nil binary")
+	}
+	left, typ, err := convertUnary(b.Left, env, vars)
+	if err != nil {
+		return nil, "", err
+	}
+	expr := left
+	for _, op := range b.Right {
+		right, rtyp, err := convertPostfix(op.Right, env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		resTyp := typ
+		switch op.Op {
+		case "+", "-", "*", "/", "%":
+			resTyp = "int"
+		case "==", "!=", "<", "<=", ">", ">=":
+			resTyp = "bool"
+		default:
+			return nil, "", fmt.Errorf("op %s not supported", op.Op)
+		}
+		expr = &BinaryExpr{Left: expr, Op: op.Op, Right: right, Typ: resTyp}
+		typ = resTyp
+		_ = rtyp
+	}
+	return expr, typ, nil
+}
+
+func convertUnary(u *parser.Unary, env *types.Env, vars map[string]string) (Expr, string, error) {
+	if u == nil {
+		return nil, "", fmt.Errorf("nil unary")
+	}
+	if len(u.Ops) > 0 {
+		return nil, "", fmt.Errorf("unary ops not supported")
+	}
+	return convertPostfix(u.Value, env, vars)
+}
+
+func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]string) (Expr, string, error) {
+	if p == nil {
+		return nil, "", fmt.Errorf("nil postfix")
+	}
+	if len(p.Ops) > 0 {
+		return nil, "", fmt.Errorf("postfix ops not supported")
+	}
+	return convertPrimary(p.Target, env, vars)
+}
+
+func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]string) (Expr, string, error) {
+	switch {
+	case p.Lit != nil:
+		return convertLiteral(p.Lit)
+	case p.Group != nil:
+		return convertExpr(p.Group, env, vars)
+	case p.Selector != nil:
+		if len(p.Selector.Tail) == 0 {
+			typ := vars[p.Selector.Root]
+			return &Name{Ident: p.Selector.Root, Typ: typ}, typ, nil
+		}
+	}
+	return nil, "", fmt.Errorf("unsupported expression")
+}
+
+func convertLiteral(l *parser.Literal) (Expr, string, error) {
+	if l.Int != nil {
+		return &IntLit{Value: int(*l.Int)}, "int", nil
+	}
+	if l.Bool != nil {
+		return &BoolLit{Value: bool(*l.Bool)}, "bool", nil
+	}
+	if l.Str != nil {
+		return &StringLit{Value: *l.Str}, "string", nil
+	}
+	return nil, "", fmt.Errorf("unsupported literal")
 }
