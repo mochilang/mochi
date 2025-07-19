@@ -135,6 +135,18 @@ func (w *WhileStmt) emit(out io.Writer) {
 type Expr interface{ emit(io.Writer) }
 type boolExpr interface{ isBool() bool }
 
+type SelectorExpr struct {
+       Root string
+       Tail []string
+}
+
+func (s *SelectorExpr) emit(w io.Writer) {
+       io.WriteString(w, s.Root)
+       for _, t := range s.Tail {
+               fmt.Fprintf(w, ".%s", t)
+       }
+}
+
 // BoolLit is a boolean literal.
 type BoolLit struct{ Value bool }
 
@@ -411,36 +423,50 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				continue
 			}
 			return nil, fmt.Errorf("unsupported expression")
-		case st.Let != nil:
-			vd := VarDecl{Name: st.Let.Name}
-			if st.Let.Type != nil && st.Let.Type.Simple != nil {
-				if *st.Let.Type.Simple == "int" {
-					vd.Type = "integer"
-				}
-			}
-			if st.Let.Value != nil {
-				ex, err := convertExpr(st.Let.Value)
-				if err != nil {
-					return nil, err
-				}
-				vd.Init = ex
-			}
-			pr.Vars = append(pr.Vars, vd)
-		case st.Var != nil:
-			vd := VarDecl{Name: st.Var.Name}
-			if st.Var.Type != nil && st.Var.Type.Simple != nil {
-				if *st.Var.Type.Simple == "int" {
-					vd.Type = "integer"
-				}
-			}
-			if st.Var.Value != nil {
-				ex, err := convertExpr(st.Var.Value)
-				if err != nil {
-					return nil, err
-				}
-				vd.Init = ex
-			}
-			pr.Vars = append(pr.Vars, vd)
+               case st.Let != nil:
+                       vd := VarDecl{Name: st.Let.Name}
+                       if st.Let.Type != nil && st.Let.Type.Simple != nil {
+                               if *st.Let.Type.Simple == "int" {
+                                       vd.Type = "integer"
+                               } else if *st.Let.Type.Simple == "string" {
+                                       vd.Type = "string"
+                               }
+                       }
+                       if st.Let.Value != nil {
+                               ex, err := convertExpr(st.Let.Value)
+                               if err != nil {
+                                       return nil, err
+                               }
+                               vd.Init = ex
+                               if vd.Type == "" {
+                                       if _, ok := ex.(*StringLit); ok {
+                                               vd.Type = "string"
+                                       }
+                               }
+                       }
+                       pr.Vars = append(pr.Vars, vd)
+               case st.Var != nil:
+                       vd := VarDecl{Name: st.Var.Name}
+                       if st.Var.Type != nil && st.Var.Type.Simple != nil {
+                               if *st.Var.Type.Simple == "int" {
+                                       vd.Type = "integer"
+                               } else if *st.Var.Type.Simple == "string" {
+                                       vd.Type = "string"
+                               }
+                       }
+                       if st.Var.Value != nil {
+                               ex, err := convertExpr(st.Var.Value)
+                               if err != nil {
+                                       return nil, err
+                               }
+                               vd.Init = ex
+                               if vd.Type == "" {
+                                       if _, ok := ex.(*StringLit); ok {
+                                               vd.Type = "string"
+                                       }
+                               }
+                       }
+                       pr.Vars = append(pr.Vars, vd)
 		case st.Assign != nil:
 			ex, err := convertExpr(st.Assign.Value)
 			if err != nil {
@@ -669,20 +695,34 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 	for i := 0; i < len(pf.Ops); i++ {
 		op := pf.Ops[i]
 		switch {
-		case op.Call != nil:
-			vr, ok := expr.(*VarRef)
-			if !ok {
-				return nil, fmt.Errorf("unsupported call target")
-			}
-			var args []Expr
-			for _, a := range op.Call.Args {
-				ex, err := convertExpr(a)
-				if err != nil {
-					return nil, err
-				}
-				args = append(args, ex)
-			}
-			expr = &CallExpr{Name: vr.Name, Args: args}
+               case op.Call != nil:
+                       switch t := expr.(type) {
+                       case *VarRef:
+                               var args []Expr
+                               for _, a := range op.Call.Args {
+                                       ex, err := convertExpr(a)
+                                       if err != nil {
+                                               return nil, err
+                                       }
+                                       args = append(args, ex)
+                               }
+                               expr = &CallExpr{Name: t.Name, Args: args}
+                       case *SelectorExpr:
+                               if len(t.Tail) == 1 && t.Tail[0] == "contains" {
+                                       if len(op.Call.Args) != 1 {
+                                               return nil, fmt.Errorf("contains expects 1 arg")
+                                       }
+                                       arg, err := convertExpr(op.Call.Args[0])
+                                       if err != nil {
+                                               return nil, err
+                                       }
+                                       expr = &ContainsExpr{Str: &VarRef{Name: t.Root}, Sub: arg}
+                               } else {
+                                       return nil, fmt.Errorf("unsupported call target")
+                               }
+                       default:
+                               return nil, fmt.Errorf("unsupported call target")
+                       }
 		case op.Field != nil && op.Field.Name == "contains" && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil:
 			call := pf.Ops[i+1].Call
 			if len(call.Args) != 1 {
@@ -739,12 +779,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			args = append(args, ex)
 		}
 		name := p.Call.Func
-		if name == "len" {
-			name = "Length"
-		}
-		return &CallExpr{Name: name, Args: args}, nil
-	case p.Selector != nil && len(p.Selector.Tail) == 0:
-		return &VarRef{Name: p.Selector.Root}, nil
+       if name == "len" {
+               name = "Length"
+       } else if name == "substring" && len(args) == 3 {
+               return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
+       }
+       return &CallExpr{Name: name, Args: args}, nil
+       case p.Selector != nil && len(p.Selector.Tail) == 0:
+               return &VarRef{Name: p.Selector.Root}, nil
+       case p.Selector != nil:
+               return &SelectorExpr{Root: p.Selector.Root, Tail: p.Selector.Tail}, nil
 	case p.If != nil:
 		return convertIfExpr(p.If)
 	case p.Group != nil:

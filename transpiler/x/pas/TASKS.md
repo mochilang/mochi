@@ -1,11 +1,13 @@
 # Transpiler Tasks
 
-## Progress (2025-07-19 10:49 +0000)
-- Added expression `if` support, string indexing and `in` operator.
-- Generated golden files for `if_then_else`, `if_then_else_nested`, `string_in_operator`, `string_index` and `string_prefix_slice`.
-- Updated README progress to 22/100.
+## Progress (2025-07-19 11:43 +0000)
+- Added substring builtin support and `string.contains` method handling.
+- Variables now infer `string` type when initialized with a string literal.
+- Generated golden files for `string_contains` and `substring_builtin`.
+- Updated README progress to 24/100.
 
 ## Recent Updates
+- [2025-07-19T11:43:36+00:00] Added substring and contains features; progress to 24/100
 - [2025-07-19T11:48:55+07:00] Created README checklist and expanded Pascal transpiler
 
 - [2025-07-19T10:49:00+00:00] Added expression-if support and more string features; progress to 22/100
