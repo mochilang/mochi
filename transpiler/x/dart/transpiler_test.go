@@ -150,3 +150,23 @@ func TestTranspile_FunThreeArgs(t *testing.T) {
 func TestTranspile_BoolChain(t *testing.T) {
 	runGolden(t, "bool_chain")
 }
+
+func TestTranspile_AppendBuiltin(t *testing.T) {
+	runGolden(t, "append_builtin")
+}
+
+func TestTranspile_AvgBuiltin(t *testing.T) {
+	runGolden(t, "avg_builtin")
+}
+
+func TestTranspile_ListIndex(t *testing.T) {
+	runGolden(t, "list_index")
+}
+
+func TestTranspile_StringIndex(t *testing.T) {
+	runGolden(t, "string_index")
+}
+
+func TestTranspile_SubstringBuiltin(t *testing.T) {
+	runGolden(t, "substring_builtin")
+}

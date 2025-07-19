@@ -1,0 +1,17 @@
+run: exit status 254
+../../../tests/transpiler/x/dart/string_compare.dart:3:14: Error: The operator '<' isn't defined for the class 'String'.
+Try correcting the operator to an existing operator, or defining a '<' operator.
+  print(("a" < "b") ? 1 : 0);
+             ^
+../../../tests/transpiler/x/dart/string_compare.dart:4:14: Error: The operator '<=' isn't defined for the class 'String'.
+Try correcting the operator to an existing operator, or defining a '<=' operator.
+  print(("a" <= "a") ? 1 : 0);
+             ^^
+../../../tests/transpiler/x/dart/string_compare.dart:5:14: Error: The operator '>' isn't defined for the class 'String'.
+Try correcting the operator to an existing operator, or defining a '>' operator.
+  print(("b" > "a") ? 1 : 0);
+             ^
+../../../tests/transpiler/x/dart/string_compare.dart:6:14: Error: The operator '>=' isn't defined for the class 'String'.
+Try correcting the operator to an existing operator, or defining a '>=' operator.
+  print(("b" >= "b") ? 1 : 0);
+             ^^

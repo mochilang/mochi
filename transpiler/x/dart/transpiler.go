@@ -482,6 +482,98 @@ func (l *ListLit) emit(w io.Writer) error {
 	return err
 }
 
+// IndexExpr represents target[index].
+type IndexExpr struct {
+	Target Expr
+	Index  Expr
+}
+
+func (i *IndexExpr) emit(w io.Writer) error {
+	if err := i.Target.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, "["); err != nil {
+		return err
+	}
+	if i.Index != nil {
+		if err := i.Index.emit(w); err != nil {
+			return err
+		}
+	}
+	_, err := io.WriteString(w, "]")
+	return err
+}
+
+// SubstringExpr represents substring(s, start, end).
+type SubstringExpr struct {
+	Str   Expr
+	Start Expr
+	End   Expr
+}
+
+func (s *SubstringExpr) emit(w io.Writer) error {
+	if err := s.Str.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ".substring("); err != nil {
+		return err
+	}
+	if s.Start != nil {
+		if err := s.Start.emit(w); err != nil {
+			return err
+		}
+	}
+	if _, err := io.WriteString(w, ", "); err != nil {
+		return err
+	}
+	if s.End != nil {
+		if err := s.End.emit(w); err != nil {
+			return err
+		}
+	}
+	_, err := io.WriteString(w, ")")
+	return err
+}
+
+// AppendExpr represents append(list, value).
+type AppendExpr struct {
+	List  Expr
+	Value Expr
+}
+
+func (a *AppendExpr) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "(List.from("); err != nil {
+		return err
+	}
+	if err := a.List.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ")..add("); err != nil {
+		return err
+	}
+	if err := a.Value.emit(w); err != nil {
+		return err
+	}
+	_, err := io.WriteString(w, "))")
+	return err
+}
+
+// AvgExpr represents avg(list).
+type AvgExpr struct{ List Expr }
+
+func (a *AvgExpr) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "(() { var _list = "); err != nil {
+		return err
+	}
+	if err := a.List.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, "; if (_list.isEmpty) return 0; var _sum = 0; for (var _v in _list) { _sum += _v; } return _sum / _list.length; })()"); err != nil {
+		return err
+	}
+	return nil
+}
+
 // LambdaExpr represents an inline function expression.
 type LambdaExpr struct {
 	Params []string
@@ -898,10 +990,31 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 	if pf == nil {
 		return nil, fmt.Errorf("nil postfix")
 	}
-	if len(pf.Ops) > 0 {
-		return nil, fmt.Errorf("postfix ops not supported")
+	expr, err := convertPrimary(pf.Target)
+	if err != nil {
+		return nil, err
 	}
-	return convertPrimary(pf.Target)
+	for _, op := range pf.Ops {
+		switch {
+		case op.Index != nil:
+			if op.Index.Colon != nil || op.Index.Colon2 != nil || op.Index.End != nil || op.Index.Step != nil {
+				return nil, fmt.Errorf("slice not supported")
+			}
+			if op.Index.Start == nil {
+				return nil, fmt.Errorf("nil index")
+			}
+			idx, err := convertExpr(op.Index.Start)
+			if err != nil {
+				return nil, err
+			}
+			expr = &IndexExpr{Target: expr, Index: idx}
+		case op.Cast != nil:
+			// ignore casts
+		default:
+			return nil, fmt.Errorf("postfix op not supported")
+		}
+	}
+	return expr, nil
 }
 
 func convertPrimary(p *parser.Primary) (Expr, error) {
@@ -913,6 +1026,39 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			return &LenExpr{X: arg}, nil
+		}
+		if p.Call.Func == "append" && len(p.Call.Args) == 2 {
+			list, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			val, err := convertExpr(p.Call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			return &AppendExpr{List: list, Value: val}, nil
+		}
+		if p.Call.Func == "avg" && len(p.Call.Args) == 1 {
+			list, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &AvgExpr{List: list}, nil
+		}
+		if p.Call.Func == "substring" && len(p.Call.Args) == 3 {
+			s0, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			s1, err := convertExpr(p.Call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			s2, err := convertExpr(p.Call.Args[2])
+			if err != nil {
+				return nil, err
+			}
+			return &SubstringExpr{Str: s0, Start: s1, End: s2}, nil
 		}
 		ce := &CallExpr{Func: &Name{p.Call.Func}}
 		for _, a := range p.Call.Args {
@@ -1129,6 +1275,14 @@ func exprNode(e Expr) *ast.Node {
 		}
 		n.Children = append(n.Children, exprNode(ex.Body))
 		return n
+	case *IndexExpr:
+		return &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(ex.Target), exprNode(ex.Index)}}
+	case *SubstringExpr:
+		return &ast.Node{Kind: "substring", Children: []*ast.Node{exprNode(ex.Str), exprNode(ex.Start), exprNode(ex.End)}}
+	case *AppendExpr:
+		return &ast.Node{Kind: "append", Children: []*ast.Node{exprNode(ex.List), exprNode(ex.Value)}}
+	case *AvgExpr:
+		return &ast.Node{Kind: "avg", Children: []*ast.Node{exprNode(ex.List)}}
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
