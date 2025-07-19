@@ -559,9 +559,6 @@ func compileIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
-	if c, ok := cond.(*CallExpr); ok && c.Func == "boolInt" && len(c.Args) == 1 {
-		cond = c.Args[0]
-	}
 	thenStmts, err := compileStmts(is.Then, env)
 	if err != nil {
 		return nil, err
@@ -610,9 +607,6 @@ func compileWhileStmt(ws *parser.WhileStmt, env *types.Env) (Stmt, error) {
 	cond, err := compileExpr(ws.Cond, env)
 	if err != nil {
 		return nil, err
-	}
-	if c, ok := cond.(*CallExpr); ok && c.Func == "boolInt" && len(c.Args) == 1 {
-		cond = c.Args[0]
 	}
 	body, err := compileStmts(ws.Body, env)
 	if err != nil {
