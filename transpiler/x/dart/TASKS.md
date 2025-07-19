@@ -1,19 +1,18 @@
 # Dart Transpiler Tasks
 
-## Recent Enhancements (2025-07-19 11:03 +0000)
-- Added for-loop support with range and collection iteration.
-- Generated golden tests for `for_loop` and `for_list_collection`.
-- Implemented operator precedence for binary expressions.
-- Added `len` builtin and list literals.
-- Generated golden tests for `binary_precedence` and `len_string`.
-- Updated README checklist with progress summary.
-- Added function definitions, return statements and lambda expressions.
+## Recent Enhancements (2025-07-19 12:04 +0000)
+- Added boolean literals and logical operators.
+- Generated golden test for `fun_call`.
+- Refactored test helpers to reduce duplication.
 
 ## Progress
-- 2025-07-19 11:03 +0000: Added for-loop support.
-- 2025-07-19 17:10 +0700: Added functions and return statements.
-- 2025-07-19 13:38 GMT+7: Added basic tests, typed variables and comparisons.
-- 2025-07-19 12:57 GMT+7: Implemented simple `if` statements.
-- 2025-07-19 12:31 GMT+7: Added `let` statements, integers and assignments.
-- 2025-07-19 11:48 GMT+7: Initial transpiler supporting string prints.
-- 2025-07-19 13:45 GMT+7: Added `while` loops support.
+- 2025-07-19 04:48:06 +0000: feat: add dart transpiler
+- 2025-07-19 05:31:43 +0000: extend dart transpiler with vars and assignments
+- 2025-07-19 05:57:44 +0000: update dart tasks timestamp
+- 2025-07-19 06:38:35 +0000: dart transpiler: add basic tests
+- 2025-07-19 06:57:26 +0000: transpiler: mark x drivers as slow
+- 2025-07-19 07:07:00 +0000: dart transpiler: add while loop support
+- 2025-07-19 09:02:35 +0000: dart: add tests
+- 2025-07-19 10:54:36 +0000: dart transpiler: add function support
+- 2025-07-19 11:56:50 +0000: dart transpiler: add tests for for loops
+- 2025-07-19 12:04:00 +0000: added boolean ops and test helper
