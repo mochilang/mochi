@@ -363,3 +363,11 @@ func TestTranspile_PureGlobalFold(t *testing.T) {
 func TestTranspile_PartialApplication(t *testing.T) {
 	runCase(t, "partial_application")
 }
+
+func TestTranspile_OrderByMap(t *testing.T) {
+	runCase(t, "order_by_map")
+}
+
+func TestTranspile_SortStable(t *testing.T) {
+	runCase(t, "sort_stable")
+}

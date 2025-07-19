@@ -1,5 +1,11 @@
 # Python Transpiler Tasks
 
+## Recent Enhancements (2025-07-19 18:58 UTC+0000)
+
+- Added support for query sorting via Python `sorted`.
+- Generated golden outputs for `order_by_map` and `sort_stable`.
+- Updated README checklist to 75/100.
+
 ## Recent Enhancements (2025-07-20 01:32 UTC+0700)
 
 - Output code now uses Pythonic constructs directly without runtime helpers.

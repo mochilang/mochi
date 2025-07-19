@@ -384,6 +384,30 @@ func (lc *ListComp) emit(w io.Writer) error {
 	return err
 }
 
+// SortedExpr represents calling `sorted` on a list with a key function.
+type SortedExpr struct {
+	List Expr
+	Var  string
+	Key  Expr
+}
+
+func (s *SortedExpr) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "sorted("); err != nil {
+		return err
+	}
+	if err := emitExpr(w, s.List); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ", key=lambda "+s.Var+": "); err != nil {
+		return err
+	}
+	if err := emitExpr(w, s.Key); err != nil {
+		return err
+	}
+	_, err := io.WriteString(w, ")")
+	return err
+}
+
 type BinaryExpr struct {
 	Left  Expr
 	Op    string
@@ -1846,7 +1870,7 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 }
 
 func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
-	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Skip != nil || q.Take != nil || q.Distinct {
 		return nil, fmt.Errorf("unsupported query")
 	}
 	iter, err := convertExpr(q.Source)
@@ -1864,7 +1888,23 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			return nil, err
 		}
 	}
-	return &ListComp{Var: q.Var, Iter: iter, Expr: elem, Cond: cond}, nil
+	list := iter
+	if cond != nil {
+		list = &ListComp{Var: q.Var, Iter: iter, Expr: &Name{Name: q.Var}, Cond: cond}
+	}
+	if q.Sort != nil {
+		keyExpr, err := convertExpr(q.Sort)
+		if err != nil {
+			return nil, err
+		}
+		if d, ok := keyExpr.(*DictLit); ok {
+			vals := make([]Expr, len(d.Values))
+			copy(vals, d.Values)
+			keyExpr = &CallExpr{Func: &Name{Name: "tuple"}, Args: []Expr{&ListLit{Elems: vals}}}
+		}
+		list = &SortedExpr{List: list, Var: q.Var, Key: keyExpr}
+	}
+	return &ListComp{Var: q.Var, Iter: list, Expr: elem}, nil
 }
 
 // --- AST printing helpers ---
@@ -2019,6 +2059,11 @@ func exprNode(e Expr) *ast.Node {
 		if ex.Cond != nil {
 			n.Children = append(n.Children, exprNode(ex.Cond))
 		}
+		return n
+	case *SortedExpr:
+		n := &ast.Node{Kind: "sorted", Value: ex.Var}
+		n.Children = append(n.Children, exprNode(ex.List))
+		n.Children = append(n.Children, exprNode(ex.Key))
 		return n
 	case *CondExpr:
 		return &ast.Node{Kind: "cond", Children: []*ast.Node{exprNode(ex.Cond), exprNode(ex.Then), exprNode(ex.Else)}}
