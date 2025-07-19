@@ -1,4 +1,0 @@
-exit status 1
-# command-line-arguments
-../../../tests/transpiler/x/go/min_max_builtin.go:10:18: invalid argument: nums (variable of type []int) cannot be ordered
-../../../tests/transpiler/x/go/min_max_builtin.go:11:18: invalid argument: nums (variable of type []int) cannot be ordered
