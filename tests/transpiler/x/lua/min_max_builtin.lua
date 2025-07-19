@@ -63,6 +63,8 @@ function mochi_print(v)
     print(v)
   end
 end
-y = 0
+nums = {3, 1, 4}
 
-mochi_print(y)
+mochi_print(min(nums))
+
+mochi_print(max(nums))

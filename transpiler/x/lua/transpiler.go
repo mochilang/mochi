@@ -81,6 +81,7 @@ type StringLit struct{ Value string }
 type IntLit struct{ Value int }
 type BoolLit struct{ Value bool }
 type Ident struct{ Name string }
+type ListLit struct{ Elems []Expr }
 type BinaryExpr struct {
 	Left  Expr
 	Op    string
@@ -195,7 +196,7 @@ func (fr *ForRangeStmt) emit(w io.Writer) {
 func (fi *ForInStmt) emit(w io.Writer) {
 	io.WriteString(w, "for _, ")
 	io.WriteString(w, fi.Name)
-	io.WriteString(w, " in pairs(")
+	io.WriteString(w, " in ipairs(")
 	if fi.Iterable != nil {
 		fi.Iterable.emit(w)
 	}
@@ -229,6 +230,16 @@ func (b *BoolLit) emit(w io.Writer) {
 	} else {
 		io.WriteString(w, "false")
 	}
+}
+func (l *ListLit) emit(w io.Writer) {
+	io.WriteString(w, "{")
+	for i, e := range l.Elems {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		e.emit(w)
+	}
+	io.WriteString(w, "}")
 }
 func (id *Ident) emit(w io.Writer) { io.WriteString(w, id.Name) }
 
@@ -326,6 +337,32 @@ end
 
 function substring(s, i, j)
   return string.sub(s, i + 1, j)
+end
+
+function append(lst, item)
+  table.insert(lst, item)
+  return lst
+end
+
+function avg(lst)
+  local sum = 0
+  for _, v in ipairs(lst) do
+    sum = sum + v
+  end
+  if #lst == 0 then return 0 end
+  return sum / #lst
+end
+
+function count(lst)
+  return #lst
+end
+
+function sum(lst)
+  local s = 0
+  for _, v in ipairs(lst) do
+    s = s + v
+  end
+  return s
 end
 
 function contains(c, v)
@@ -484,6 +521,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			ce.Args = append(ce.Args, ae)
 		}
 		return ce, nil
+	case p.List != nil:
+		var elems []Expr
+		for _, e := range p.List.Elems {
+			ce, err := convertExpr(e)
+			if err != nil {
+				return nil, err
+			}
+			elems = append(elems, ce)
+		}
+		return &ListLit{Elems: elems}, nil
 	case p.Selector != nil:
 		if len(p.Selector.Tail) == 0 {
 			return &Ident{Name: p.Selector.Root}, nil
@@ -840,6 +887,12 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "int", Value: fmt.Sprintf("%d", ex.Value)}
 	case *Ident:
 		return &ast.Node{Kind: "ident", Value: ex.Name}
+	case *ListLit:
+		n := &ast.Node{Kind: "list"}
+		for _, e2 := range ex.Elems {
+			n.Children = append(n.Children, exprNode(e2))
+		}
+		return n
 	case *BinaryExpr:
 		return &ast.Node{Kind: "bin", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
 	case *IfExpr:

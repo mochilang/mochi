@@ -63,6 +63,14 @@ function mochi_print(v)
     print(v)
   end
 end
-y = 0
+numbers = {1, 2, 3, 4, 5, 6, 7, 8, 9}
 
-mochi_print(y)
+for _, n in ipairs(numbers) do
+if ((n % 2) == 0) then
+-- continue
+end
+if (n > 7) then
+break
+end
+mochi_print("odd number:", n)
+end
