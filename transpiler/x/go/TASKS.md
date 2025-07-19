@@ -1,3 +1,6 @@
+## Progress (2025-07-19 19:43 +0700)
+- Added while/for loops and index assignment support
+
 ## Progress (2025-07-19 19:23 +0700)
 - Fixed bool output to use 0 for false and string `nil` for nil values
 - Updated list `contains` to return index or nil to match runtime
