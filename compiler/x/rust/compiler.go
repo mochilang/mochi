@@ -1423,8 +1423,13 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 	mut := c.mutParams[f.Name]
 	for i, p := range f.Params {
 		typ := rustType(p.Type)
-		if p.Type != nil && p.Type.Simple != nil {
-			if _, ok := c.env.GetUnion(*p.Type.Simple); ok {
+		if p.Type != nil {
+			if p.Type.Simple != nil {
+				if _, ok := c.env.GetUnion(*p.Type.Simple); ok {
+					typ = "&" + typ
+				}
+			}
+			if types.IsMapType(types.ResolveTypeRef(p.Type, c.env)) {
 				typ = "&" + typ
 			}
 		}
@@ -3497,7 +3502,7 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	}
 
 	var b strings.Builder
-	b.WriteString("{ let mut m = std::collections::BTreeMap::new();")
+	b.WriteString("{ let mut m = std::collections::HashMap::new();")
 	for _, it := range m.Items {
 		var k string
 		if name, ok := c.simpleIdent(it.Key); ok {
@@ -3861,7 +3866,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			for i := range args {
 				if i < len(ft.Params) {
 					switch ft.Params[i].(type) {
-					case types.UnionType, types.StructType:
+					case types.UnionType, types.StructType, types.MapType:
 						if !strings.HasPrefix(args[i], "&") {
 							args[i] = "&" + args[i]
 						}
