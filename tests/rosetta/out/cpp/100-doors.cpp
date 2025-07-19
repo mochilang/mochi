@@ -4,7 +4,7 @@
 #include <vector>
 
 int main() {
-  std::vector<__doors_type> doors = {};
+  std::vector<bool> doors = {};
   for (int i = 0; i < 100; i++) {
     doors.push_back(false);
   }

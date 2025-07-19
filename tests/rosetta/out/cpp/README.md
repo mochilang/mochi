@@ -1,11 +1,11 @@
-# Rosetta C++ Output (6/280 compiled and run)
+# Rosetta C++ Output (7/281 compiled and run)
 
 This directory holds C++ source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
 ## Program checklist
 - [x] 100-doors-2
 - [x] 100-doors-3
-- [ ] 100-doors
+- [x] 100-doors
 - [ ] 100-prisoners
 - [ ] 15-puzzle-game
 - [x] 15-puzzle-solver
@@ -210,6 +210,7 @@ This directory holds C++ source code generated from the real Mochi programs in `
 - [ ] circles-of-given-radius-through-two-points
 - [ ] circular-primes
 - [ ] cistercian-numerals
+- [ ] comma-quibbling
 - [ ] compiler-virtual-machine-interpreter
 - [ ] composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k
 - [ ] compound-data-type

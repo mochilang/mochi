@@ -859,6 +859,8 @@ func (c *Compiler) compileAssign(st *parser.AssignStmt) error {
 					c.varStruct[st.Name] = t
 				} else if t := c.elemType[arg]; t != "" {
 					c.elemType[st.Name] = t
+				} else if t := inferExprType(arg); t != "" {
+					c.elemType[st.Name] = t
 				}
 				return nil
 			}
