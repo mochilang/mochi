@@ -14,6 +14,9 @@ import (
 type v map[string]any
 
 func main() {
+	res = (((func() any { v, _ := goffi.AttrAuto("net", "LookupHost", "www.kame.net"); return v }()).([]any)).([]any)).([]any)
+	addrs = res[0]
+	err = res[1]
 	var res []any = (func() any { v, _ := goffi.AttrAuto("net", "LookupHost", "www.kame.net"); return v }()).([]any)
 	addrs := res[0]
 	err := res[1]

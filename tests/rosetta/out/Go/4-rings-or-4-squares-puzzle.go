@@ -89,6 +89,9 @@ func getCombs(low int, high int, unique bool) map[string]any {
 }
 
 func main() {
+	r1 = getCombs(1, 7, true)
+	r2 = getCombs(3, 9, true)
+	r3 = getCombs(0, 9, false)
 	r1 := getCombs(1, 7, true)
 	fmt.Println(any(fmt.Sprint(r1["count"]) + " unique solutions in 1 to 7"))
 	fmt.Println(r1["list"])

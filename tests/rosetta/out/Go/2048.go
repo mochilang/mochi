@@ -303,7 +303,9 @@ func has2048(b [][]int) bool {
 
 func main() {
 	SIZE = 4
-	r = spawnTile((board).([][]int))
+	board = newBoard()
+	r = spawnTile(board)
+	full = r["full"]
 	score = 0
 	board := newBoard()
 	board = (((r["board"]).([][]int)).([][]int)).([][]int)
