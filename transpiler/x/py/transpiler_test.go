@@ -179,3 +179,35 @@ func TestTranspile_AvgBuiltin(t *testing.T) {
 func TestTranspile_LenString(t *testing.T) {
 	runCase(t, "len_string")
 }
+
+func TestTranspile_CountBuiltin(t *testing.T) {
+	runCase(t, "count_builtin")
+}
+
+func TestTranspile_SumBuiltin(t *testing.T) {
+	runCase(t, "sum_builtin")
+}
+
+func TestTranspile_ValuesBuiltin(t *testing.T) {
+	runCase(t, "values_builtin")
+}
+
+func TestTranspile_StrBuiltin(t *testing.T) {
+	runCase(t, "str_builtin")
+}
+
+func TestTranspile_StringInOperator(t *testing.T) {
+	runCase(t, "string_in_operator")
+}
+
+func TestTranspile_MapLiteralDynamic(t *testing.T) {
+	runCase(t, "map_literal_dynamic")
+}
+
+func TestTranspile_MapIntKey(t *testing.T) {
+	runCase(t, "map_int_key")
+}
+
+func TestTranspile_MapIndex(t *testing.T) {
+	runCase(t, "map_index")
+}

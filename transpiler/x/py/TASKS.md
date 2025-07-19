@@ -25,3 +25,7 @@
 ## Recent Enhancements (2025-07-19 13:40 +07)
 - Added builtin support for `append` and `avg`.
 - Enabled transpiler tests for `append_builtin`, `avg_builtin` and `len_string`.
+
+## Recent Enhancements (2025-07-19 17:19 +07)
+- Added dictionary literal support and mapping for builtins `count`, `sum` and `values`.
+- Enabled transpiler tests for `count_builtin`, `sum_builtin`, `values_builtin`, `str_builtin`, `string_in_operator`, `map_literal_dynamic`, `map_int_key` and `map_index`.

@@ -3,7 +3,7 @@
 This directory tracks progress of the experimental Python transpiler. Generated
 code for tests lives in `tests/transpiler/x/py`.
 
-## VM Golden Test Checklist (24/100)
+## VM Golden Test Checklist (32/100)
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -14,7 +14,7 @@ code for tests lives in `tests/transpiler/x/py`.
 - [ ] cast_string_to_int
 - [ ] cast_struct
 - [x] closure
-- [ ] count_builtin
+- [x] count_builtin
 - [ ] cross_join
 - [ ] cross_join_filter
 - [ ] cross_join_triple
@@ -58,9 +58,9 @@ code for tests lives in `tests/transpiler/x/py`.
 - [ ] load_yaml
 - [ ] map_assign
 - [ ] map_in_operator
-- [ ] map_index
-- [ ] map_int_key
-- [ ] map_literal_dynamic
+- [x] map_index
+- [x] map_int_key
+- [x] map_literal_dynamic
 - [ ] map_membership
 - [ ] map_nested_assign
 - [ ] match_expr
@@ -84,15 +84,15 @@ code for tests lives in `tests/transpiler/x/py`.
 - [ ] short_circuit
 - [ ] slice
 - [ ] sort_stable
-- [ ] str_builtin
+- [x] str_builtin
 - [x] string_compare
 - [x] string_concat
 - [x] string_contains
-- [ ] string_in_operator
+- [x] string_in_operator
 - [x] string_index
 - [ ] string_prefix_slice
 - [ ] substring_builtin
-- [ ] sum_builtin
+- [x] sum_builtin
 - [ ] tail_recursion
 - [ ] test_block
 - [ ] tree_sum
@@ -102,6 +102,6 @@ code for tests lives in `tests/transpiler/x/py`.
 - [x] unary_neg
 - [ ] update_stmt
 - [ ] user_type_literal
-- [ ] values_builtin
+- [x] values_builtin
 - [x] var_assignment
 - [ ] while_loop

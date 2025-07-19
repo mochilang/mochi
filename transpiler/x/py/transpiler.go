@@ -151,6 +151,32 @@ func (l *ListLit) emit(w io.Writer) error {
 	return err
 }
 
+type DictLit struct{ Keys, Values []Expr }
+
+func (d *DictLit) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "{"); err != nil {
+		return err
+	}
+	for i := range d.Keys {
+		if i > 0 {
+			if _, err := io.WriteString(w, ", "); err != nil {
+				return err
+			}
+		}
+		if err := emitExpr(w, d.Keys[i]); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, ": "); err != nil {
+			return err
+		}
+		if err := emitExpr(w, d.Values[i]); err != nil {
+			return err
+		}
+	}
+	_, err := io.WriteString(w, "}")
+	return err
+}
+
 type IndexExpr struct {
 	Target Expr
 	Index  Expr
@@ -725,6 +751,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				div := &BinaryExpr{Left: sumCall, Op: "/", Right: lenCall}
 				return &CondExpr{Cond: args[0], Then: div, Else: &IntLit{Value: "0"}}, nil
 			}
+		case "count":
+			if len(args) == 1 {
+				return &CallExpr{Func: &Name{Name: "len"}, Args: args}, nil
+			}
+		case "values":
+			if len(args) == 1 {
+				call := &CallExpr{Func: &FieldExpr{Target: args[0], Name: "values"}, Args: nil}
+				return &CallExpr{Func: &Name{Name: "list"}, Args: []Expr{call}}, nil
+			}
 		}
 		return &CallExpr{Func: &Name{Name: p.Call.Func}, Args: args}, nil
 	case p.Selector != nil:
@@ -745,6 +780,22 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			elems = append(elems, ce)
 		}
 		return &ListLit{Elems: elems}, nil
+	case p.Map != nil:
+		var keys []Expr
+		var values []Expr
+		for _, it := range p.Map.Items {
+			ke, err := convertExpr(it.Key)
+			if err != nil {
+				return nil, err
+			}
+			ve, err := convertExpr(it.Value)
+			if err != nil {
+				return nil, err
+			}
+			keys = append(keys, ke)
+			values = append(values, ve)
+		}
+		return &DictLit{Keys: keys, Values: values}, nil
 	case p.FunExpr != nil && p.FunExpr.ExprBody != nil:
 		var params []string
 		for _, pa := range p.FunExpr.Params {
@@ -871,6 +922,13 @@ func exprNode(e Expr) *ast.Node {
 		n := &ast.Node{Kind: "list"}
 		for _, el := range ex.Elems {
 			n.Children = append(n.Children, exprNode(el))
+		}
+		return n
+	case *DictLit:
+		n := &ast.Node{Kind: "dict"}
+		for i := range ex.Keys {
+			pair := &ast.Node{Kind: "pair", Children: []*ast.Node{exprNode(ex.Keys[i]), exprNode(ex.Values[i])}}
+			n.Children = append(n.Children, pair)
 		}
 		return n
 	case *BinaryExpr:
