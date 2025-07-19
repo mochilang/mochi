@@ -22,7 +22,17 @@ type Program struct {
 	Stmts []Stmt
 }
 
+var currentImports map[string]bool
+
 type Stmt interface{ isStmt() }
+
+// ImportStmt represents an `import` statement.
+type ImportStmt struct {
+	Module string
+	Alias  string
+}
+
+func (*ImportStmt) isStmt() {}
 
 type ExprStmt struct{ Expr Expr }
 
@@ -782,6 +792,14 @@ func Emit(w io.Writer, p *Program) error {
 	}
 	for _, s := range p.Stmts {
 		switch st := s.(type) {
+		case *ImportStmt:
+			line := "import " + st.Module
+			if st.Alias != "" && st.Alias != st.Module {
+				line += " as " + st.Alias
+			}
+			if _, err := io.WriteString(w, line+"\n"); err != nil {
+				return err
+			}
 		case *ExprStmt:
 			if err := emitExpr(w, st.Expr); err != nil {
 				return err
@@ -959,6 +977,7 @@ func Emit(w io.Writer, p *Program) error {
 
 // Transpile converts a Mochi program to a Python AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
+	currentImports = map[string]bool{}
 	p := &Program{}
 	for _, st := range prog.Statements {
 		switch {
@@ -1112,6 +1131,23 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				}
 			}
 			p.Stmts = append(p.Stmts, &ReturnStmt{Expr: e})
+		case st.Import != nil:
+			alias := st.Import.As
+			if alias == "" {
+				alias = parser.AliasFromPath(st.Import.Path)
+			}
+			module := strings.Trim(st.Import.Path, "\"")
+			p.Stmts = append(p.Stmts, &ImportStmt{Module: module, Alias: alias})
+			currentImports[alias] = true
+		case st.ExternVar != nil:
+			// ignore extern variable declarations
+			continue
+		case st.ExternFun != nil:
+			// ignore extern function declarations
+			continue
+		case st.ExternObject != nil:
+			// ignore extern object declarations
+			continue
 		case st.Type != nil:
 			// ignore type declarations at top level
 			continue
@@ -1289,6 +1325,19 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 				}
 			}
 			out = append(out, &ReturnStmt{Expr: e})
+		case s.Import != nil:
+			alias := s.Import.As
+			if alias == "" {
+				alias = parser.AliasFromPath(s.Import.Path)
+			}
+			module := strings.Trim(s.Import.Path, "\"")
+			out = append(out, &ImportStmt{Module: module, Alias: alias})
+		case s.ExternVar != nil:
+			continue
+		case s.ExternFun != nil:
+			continue
+		case s.ExternObject != nil:
+			continue
 		case s.Type != nil:
 			// type declarations are ignored in Python output
 			continue
@@ -1399,9 +1448,14 @@ func convertUnary(u *parser.Unary) (Expr, error) {
 
 func convertSelector(sel *parser.SelectorExpr, method bool) Expr {
 	expr := Expr(&Name{Name: sel.Root})
+	mapIndex := true
+	if currentImports != nil && currentImports[sel.Root] {
+		mapIndex = false
+	}
 	for i, t := range sel.Tail {
 		idx := i == len(sel.Tail)-1 && method
-		expr = &FieldExpr{Target: expr, Name: t, MapIndex: !idx}
+		expr = &FieldExpr{Target: expr, Name: t, MapIndex: mapIndex && !idx}
+		mapIndex = true
 	}
 	return expr
 }
@@ -1590,6 +1644,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return &LambdaExpr{Params: params, Expr: body}, nil
 	case p.If != nil:
 		return convertIfExpr(p.If)
+	case p.Match != nil:
+		return convertMatchExpr(p.Match)
 	case p.Group != nil:
 		return convertExpr(p.Group)
 	default:
@@ -1602,7 +1658,11 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 	case l.Int != nil:
 		return &IntLit{Value: fmt.Sprintf("%d", *l.Int)}, nil
 	case l.Float != nil:
-		return &FloatLit{Value: fmt.Sprintf("%g", *l.Float)}, nil
+		s := fmt.Sprintf("%g", *l.Float)
+		if !strings.ContainsAny(s, ".eE") {
+			s += ".0"
+		}
+		return &FloatLit{Value: s}, nil
 	case l.Bool != nil:
 		return &BoolLit{Value: bool(*l.Bool)}, nil
 	case l.Str != nil:
@@ -1636,6 +1696,32 @@ func convertIfExpr(ie *parser.IfExpr) (Expr, error) {
 		elseExpr = &Name{Name: "None"}
 	}
 	return &CondExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
+}
+
+func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
+	target, err := convertExpr(me.Target)
+	if err != nil {
+		return nil, err
+	}
+	var expr Expr = &Name{Name: "None"}
+	for i := len(me.Cases) - 1; i >= 0; i-- {
+		c := me.Cases[i]
+		res, err := convertExpr(c.Result)
+		if err != nil {
+			return nil, err
+		}
+		pat, err := convertExpr(c.Pattern)
+		if err != nil {
+			return nil, err
+		}
+		if n, ok := pat.(*Name); ok && n.Name == "_" {
+			expr = res
+			continue
+		}
+		cond := &BinaryExpr{Left: target, Op: "==", Right: pat}
+		expr = &CondExpr{Cond: cond, Then: res, Else: expr}
+	}
+	return expr, nil
 }
 
 // --- AST printing helpers ---
@@ -1710,6 +1796,8 @@ func stmtNode(s Stmt) *ast.Node {
 			n.Children = append(n.Children, stmtNode(b))
 		}
 		return n
+	case *ImportStmt:
+		return &ast.Node{Kind: "import", Value: st.Module}
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}

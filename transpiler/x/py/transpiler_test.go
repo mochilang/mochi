@@ -331,3 +331,19 @@ func TestTranspile_UserTypeLiteral(t *testing.T) {
 func TestTranspile_TestBlock(t *testing.T) {
 	runCase(t, "test_block")
 }
+
+func TestTranspile_MatchExpr(t *testing.T) {
+	runCase(t, "match_expr")
+}
+
+func TestTranspile_MatchFull(t *testing.T) {
+	runCase(t, "match_full")
+}
+
+func TestTranspile_PythonAuto(t *testing.T) {
+	runCase(t, "python_auto")
+}
+
+func TestTranspile_PythonMath(t *testing.T) {
+	runCase(t, "python_math")
+}
