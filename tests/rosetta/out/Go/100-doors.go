@@ -13,6 +13,7 @@ import (
 type v map[string]any
 
 func main() {
+	var doors []any = []any{}
 	for i := 0; i < 100; i++ {
 		doors = _toAnySlice(append(_toAnySlice(doors), any(false)))
 	}
