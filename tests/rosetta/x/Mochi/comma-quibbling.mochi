@@ -1,0 +1,34 @@
+// Mochi translation of Rosetta "Comma quibbling" task
+// Based on Go version in tests/rosetta/x/Go/comma-quibbling.go
+
+fun quibble(items: list<string>): string {
+  let n = len(items)
+  // debug: print size
+  // print("n=" + str(n))
+  if n == 0 {
+    return "{}"
+  } else if n == 1 {
+    return "{" + items[0] + "}"
+  } else if n == 2 {
+    return "{" + items[0] + " and " + items[1] + "}"
+  } else {
+    var prefix = ""
+    for i in 0..n-1 {
+      if i == n-1 {
+        break
+      }
+      if i > 0 { prefix = prefix + ", " }
+      prefix = prefix + items[i]
+    }
+    return "{" + prefix + " and " + items[n-1] + "}"
+  }
+}
+
+fun main() {
+  print(quibble([]))
+  print(quibble(["ABC"]))
+  print(quibble(["ABC", "DEF"]))
+  print(quibble(["ABC", "DEF", "G", "H"]))
+}
+
+main()
