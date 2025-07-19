@@ -1,88 +1,66 @@
 rustc: exit status 1
-error[E0277]: the size for values of type `str` cannot be known at compilation time
-  --> /tmp/4-rings-or-4-squares-puzzle.rs:60:55
-   |
-60 |     println!("{}", vec![format!("{}", format!("{}{}", *r1.get(&"count").unwrap().to_string(), " unique solutions in 1 to 7"))].into_iter(...
-   |                                                --     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ doesn't have a size known at compile-time
-   |                                                |
-   |                                                required by a bound introduced by this call
-   |
-   = help: the trait `Sized` is not implemented for `str`
-note: required by an implicit `Sized` bound in `core::fmt::rt::Argument::<'_>::new_display`
-  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/fmt/rt.rs:116:5
-   = note: this error originates in the macro `$crate::__export::format_args` which comes from the expansion of the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error[E0277]: the size for values of type `str` cannot be known at compilation time
-  --> /tmp/4-rings-or-4-squares-puzzle.rs:63:55
-   |
-63 |     println!("{}", vec![format!("{}", format!("{}{}", *r2.get(&"count").unwrap().to_string(), " unique solutions in 3 to 9"))].into_iter(...
-   |                                                --     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ doesn't have a size known at compile-time
-   |                                                |
-   |                                                required by a bound introduced by this call
-   |
-   = help: the trait `Sized` is not implemented for `str`
-note: required by an implicit `Sized` bound in `core::fmt::rt::Argument::<'_>::new_display`
-  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/fmt/rt.rs:116:5
-   = note: this error originates in the macro `$crate::__export::format_args` which comes from the expansion of the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error[E0277]: the size for values of type `str` cannot be known at compilation time
-  --> /tmp/4-rings-or-4-squares-puzzle.rs:66:55
-   |
-66 |     println!("{}", vec![format!("{}", format!("{}{}", *r3.get(&"count").unwrap().to_string(), " non-unique solutions in 0 to 9"))].into_i...
-   |                                                --     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ doesn't have a size known at compile-time
-   |                                                |
-   |                                                required by a bound introduced by this call
-   |
-   = help: the trait `Sized` is not implemented for `str`
-note: required by an implicit `Sized` bound in `core::fmt::rt::Argument::<'_>::new_display`
-  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/fmt/rt.rs:116:5
-   = note: this error originates in the macro `$crate::__export::format_args` which comes from the expansion of the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
-
 error[E0308]: mismatched types
-  --> /tmp/4-rings-or-4-squares-puzzle.rs:57:108
+  --> /tmp/4_rings_or_4_squares_puzzle.rs:57:135
    |
-57 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("count", count); m.insert("list", valid); m };
-   |                                                                 -                 -----     ------         ^^^^^ expected integer, found `Vec<Vec<i32>>`
-   |                                                                 |                 |         |
-   |                                                                 |                 |         arguments to this method are incorrect
-   |                                                                 |                 this argument has type `{integer}`...
-   |                                                                 ... which causes `m` to have type `BTreeMap<&str, {integer}>`
+57 | ...::new(); m.insert(String::from("count"), count); m.insert(String::from("list"), valid); m };
+   |             -                               -----     ------                       ^^^^^ expected integer, found `Vec<Vec<i32>>`
+   |             |                               |         |
+   |             |                               |         arguments to this method are incorrect
+   |             |                               this argument has type `{integer}`...
+   |             ... which causes `m` to have type `HashMap<String, {integer}>`
    |
    = note: expected type `{integer}`
             found struct `Vec<Vec<i32>>`
 help: the return type of this call is `Vec<Vec<i32>>` due to the type of the argument passed
-  --> /tmp/4-rings-or-4-squares-puzzle.rs:57:91
+  --> /tmp/4_rings_or_4_squares_puzzle.rs:57:104
    |
-57 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("count", count); m.insert("list", valid); m };
-   |                                                                                           ^^^^^^^^^^^^^^^^^-----^
-   |                                                                                                            |
-   |                                                                                                            this argument influences the return type of `insert`
+57 | ...rom("count"), count); m.insert(String::from("list"), valid); m };
+   |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-----^
+   |                                                         |
+   |                                                         this argument influences the return type of `insert`
 note: method defined here
-  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
 
-error[E0308]: mismatched types
-  --> /tmp/4-rings-or-4-squares-puzzle.rs:57:116
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+  --> /tmp/4_rings_or_4_squares_puzzle.rs:60:55
    |
-25 |     fn getCombs(low: i32, high: i32, unique: bool) -> std::collections::HashMap<&'static str, i32> {
-   |                                                       -------------------------------------------- expected `HashMap<&'static str, i32>` because of return type
-...
-57 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("count", count); m.insert("list", valid); m };
-   |                                                                                                                    ^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, {integer}>`
+60 | ...("{}", format!("{}{}", *r1.get(&String::from("count")).unwrap().to_string(), String::from(" unique solutions in 1 to 7")))].into_iter(...
+   |                    --     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ doesn't have a size known at compile-time
+   |                    |
+   |                    required by a bound introduced by this call
    |
-   = note: expected struct `HashMap<&'static str, i32>`
-              found struct `BTreeMap<&str, {integer}>`
+   = help: the trait `Sized` is not implemented for `str`
+note: required by an implicit `Sized` bound in `core::fmt::rt::Argument::<'_>::new_display`
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/fmt/rt.rs:116:5
+   = note: this error originates in the macro `$crate::__export::format_args` which comes from the expansion of the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
 
-warning: variable does not need to be mutable
-  --> /tmp/4-rings-or-4-squares-puzzle.rs:11:13
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+  --> /tmp/4_rings_or_4_squares_puzzle.rs:63:55
    |
-11 |         let mut nums = vec![a, b, c, d, e, f, g];
-   |             ----^^^^
-   |             |
-   |             help: remove this `mut`
+63 | ...("{}", format!("{}{}", *r2.get(&String::from("count")).unwrap().to_string(), String::from(" unique solutions in 3 to 9")))].into_iter(...
+   |                    --     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ doesn't have a size known at compile-time
+   |                    |
+   |                    required by a bound introduced by this call
    |
-   = note: `#[warn(unused_mut)]` on by default
+   = help: the trait `Sized` is not implemented for `str`
+note: required by an implicit `Sized` bound in `core::fmt::rt::Argument::<'_>::new_display`
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/fmt/rt.rs:116:5
+   = note: this error originates in the macro `$crate::__export::format_args` which comes from the expansion of the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
 
-error: aborting due to 5 previous errors; 1 warning emitted
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+  --> /tmp/4_rings_or_4_squares_puzzle.rs:66:55
+   |
+66 | ...("{}", format!("{}{}", *r3.get(&String::from("count")).unwrap().to_string(), String::from(" non-unique solutions in 0 to 9")))].into_i...
+   |                    --     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ doesn't have a size known at compile-time
+   |                    |
+   |                    required by a bound introduced by this call
+   |
+   = help: the trait `Sized` is not implemented for `str`
+note: required by an implicit `Sized` bound in `core::fmt::rt::Argument::<'_>::new_display`
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/fmt/rt.rs:116:5
+   = note: this error originates in the macro `$crate::__export::format_args` which comes from the expansion of the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: aborting due to 4 previous errors
 
 Some errors have detailed explanations: E0277, E0308.
 For more information about an error, try `rustc --explain E0277`.

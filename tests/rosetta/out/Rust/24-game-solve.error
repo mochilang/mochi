@@ -1,292 +1,229 @@
 rustc: exit status 1
 error[E0308]: mismatched types
- --> /tmp/24-game-solve.rs:9:198
-  |
-9 | ... m.insert("num", n); m.insert("denom", 1); m }); m };
-  |                                               ^ expected integer, found `BTreeMap<&str, i32>`
-  |
-  = note: expected type `{integer}`
-           found struct `BTreeMap<&str, i32>`
+  --> /tmp/24_game_solve.rs:14:252
+   |
+14 | ...), n); m.insert(String::from("denom"), 1); m }); m };
+   |                                               ^ expected integer, found `HashMap<String, i32>`
+   |
+   = note: expected type `{integer}`
+            found struct `HashMap<String, i32>`
 
 error[E0308]: mismatched types
- --> /tmp/24-game-solve.rs:9:204
-  |
-8 | ...-> std::collections::HashMap<&'static str, i32> {
-  |       -------------------------------------------- expected `HashMap<&'static str, i32>` because of return type
-9 | ...d::collections::BTreeMap::new(); m.insert("op", OP_NUM); m.insert("value", { let mut m = std::collections::BTreeMap::new(); m.insert("num", n); m.insert("denom", 1); m }); m };
-  |                                                                                                                                                                                ^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, {integer}>`
-  |
-  = note: expected struct `HashMap<&'static str, i32>`
-             found struct `BTreeMap<&str, {integer}>`
-
-error[E0308]: mismatched types
-  --> /tmp/24-game-solve.rs:13:20
+  --> /tmp/24_game_solve.rs:18:20
    |
-11 |     let exprEval = move |x: std::collections::HashMap<&'static str, i32>| -> std::collections::HashMap<&'static str, i32> {
-   |                                                                              -------------------------------------------- expected `HashMap<&'static str, i32>` because of return type
-12 |         if *x.get(&"op").unwrap() == OP_NUM {
-13 |             return *x.get(&"value").unwrap();
-   |                    ^^^^^^^^^^^^^^^^^^^^^^^^^ expected `HashMap<&str, i32>`, found `i32`
+16 |     let exprEval = move |x: &std::collections::HashMap<String, i32>| -> std::collections::HashMap<String, i32> {
+   |                                                                         -------------------------------------- expected `HashMap<String, i32>` because of return type
+17 |         if *x.get(&String::from("op")).unwrap() == OP_NUM {
+18 |             return *x.get(&String::from("value")).unwrap();
+   |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `HashMap<String, i32>`, found `i32`
    |
-   = note: expected struct `HashMap<&'static str, i32>`
+   = note: expected struct `HashMap<String, i32>`
                 found type `i32`
 
 error[E0425]: cannot find function `exprEval` in this scope
-  --> /tmp/24-game-solve.rs:15:17
+  --> /tmp/24_game_solve.rs:20:17
    |
-15 |         let l = exprEval(*x.get(&"left").unwrap());
+20 |         let l = exprEval(&*x.get(&String::from("left")).unwrap());
    |                 ^^^^^^^^ not found in this scope
 
 error[E0425]: cannot find function `exprEval` in this scope
-  --> /tmp/24-game-solve.rs:16:17
+  --> /tmp/24_game_solve.rs:21:17
    |
-16 |         let r = exprEval(*x.get(&"right").unwrap());
+21 |         let r = exprEval(&*x.get(&String::from("right")).unwrap());
    |                 ^^^^^^^^ not found in this scope
 
 error[E0599]: no method named `get` found for reference `&i32` in the current scope
-  --> /tmp/24-game-solve.rs:30:46
+  --> /tmp/24_game_solve.rs:35:60
    |
-30 |             return *x.get(&"value").unwrap().get(&"num").unwrap().to_string();
-   |                     -                        ^^^
+35 |             return *x.get(&String::from("value")).unwrap().get(&String::from("num")).unwrap().to_string();
+   |                     -                                      ^^^
    |                     |
-   |                     method `get` is available on `&HashMap<&'static str, i32>`
+   |                     method `get` is available on `&HashMap<String, i32>`
    |
 help: there is a method `ge` with a similar name
    |
-30 -             return *x.get(&"value").unwrap().get(&"num").unwrap().to_string();
-30 +             return *x.get(&"value").unwrap().ge(&"num").unwrap().to_string();
+35 -             return *x.get(&String::from("value")).unwrap().get(&String::from("num")).unwrap().to_string();
+35 +             return *x.get(&String::from("value")).unwrap().ge(&String::from("num")).unwrap().to_string();
    |
 
 error[E0425]: cannot find function `exprString` in this scope
-  --> /tmp/24-game-solve.rs:32:18
+  --> /tmp/24_game_solve.rs:37:18
    |
-32 |         let ls = exprString(*x.get(&"left").unwrap());
+37 |         let ls = exprString(&*x.get(&String::from("left")).unwrap());
    |                  ^^^^^^^^^^ not found in this scope
 
 error[E0425]: cannot find function `exprString` in this scope
-  --> /tmp/24-game-solve.rs:33:18
+  --> /tmp/24_game_solve.rs:38:18
    |
-33 |         let rs = exprString(*x.get(&"right").unwrap());
+38 |         let rs = exprString(&*x.get(&String::from("right")).unwrap());
    |                  ^^^^^^^^^^ not found in this scope
 
 error[E0308]: mismatched types
-  --> /tmp/24-game-solve.rs:36:21
+  --> /tmp/24_game_solve.rs:72:149
    |
-34 |         let mut opstr = String::new();
-   |                         ------------- expected due to this value
-35 |         if *x.get(&"op").unwrap() == OP_ADD {
-36 |             opstr = " + ";
-   |                     ^^^^^- help: try using a conversion method: `.to_string()`
-   |                     |
-   |                     expected `String`, found `&str`
-
-error[E0308]: mismatched types
-  --> /tmp/24-game-solve.rs:38:16
-   |
-28 |     let exprString = move |x: std::collections::HashMap<&'static str, i32>| -> &'static str {
-   |                                                                                ------------ expected `&str` because of return type
-...
-38 |         return format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", "(", ls), opstr), rs), ")");
-   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
-   |
-   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error[E0308]: mismatched types
-  --> /tmp/24-game-solve.rs:67:122
-   |
-67 | ...ections::BTreeMap::new(); m.insert("op", op); m.insert("left", a); m.insert("right", b); m };
-   |                              -              --     ------         ^ expected `i32`, found `HashMap<&str, i32>`
-   |                              |              |      |
-   |                              |              |      arguments to this method are incorrect
-   |                              |              this argument has type `i32`...
-   |                              ... which causes `m` to have type `BTreeMap<&str, i32>`
+72 | ...ap::new(); m.insert(String::from("op"), op); m.insert(String::from("left"), a); m.insert(String::from("right"), b); m };
+   |               -                            --     ------                       ^ expected `i32`, found `HashMap<String, i32>`
+   |               |                            |      |
+   |               |                            |      arguments to this method are incorrect
+   |               |                            this argument has type `i32`...
+   |               ... which causes `m` to have type `HashMap<String, i32>`
    |
    = note: expected type `i32`
-            found struct `HashMap<&str, i32>`
-help: the return type of this call is `HashMap<&str, i32>` due to the type of the argument passed
-  --> /tmp/24-game-solve.rs:67:105
+            found struct `HashMap<String, i32>`
+help: the return type of this call is `HashMap<String, i32>` due to the type of the argument passed
+  --> /tmp/24_game_solve.rs:72:118
    |
-67 | ...ap::new(); m.insert("op", op); m.insert("left", a); m.insert("right", b); m };
-   |                                   ^^^^^^^^^^^^^^^^^-^
-   |                                                    |
-   |                                                    this argument influences the return type of `insert`
+72 | ...tring::from("op"), op); m.insert(String::from("left"), a); m.insert(String::from("right"), b); m };
+   |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-^
+   |                                                           |
+   |                                                           this argument influences the return type of `insert`
 note: method defined here
-  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
 
 error[E0308]: mismatched types
-  --> /tmp/24-game-solve.rs:67:144
+  --> /tmp/24_game_solve.rs:72:185
    |
-67 | ...reeMap::new(); m.insert("op", op); m.insert("left", a); m.insert("right", b); m };
-   |                   -              --                          ------          ^ expected `i32`, found `HashMap<&str, i32>`
-   |                   |              |                           |
-   |                   |              |                           arguments to this method are incorrect
-   |                   |              this argument has type `i32`...
-   |                   ... which causes `m` to have type `BTreeMap<&str, i32>`
+72 | ...hMap::new(); m.insert(String::from("op"), op); m.insert(String::from("left"), a); m.insert(String::from("right"), b); m };
+   |                 -                            --                                        ------                        ^ expected `i32`, found `HashMap<String, i32>`
+   |                 |                            |                                         |
+   |                 |                            this argument has type `i32`...           arguments to this method are incorrect
+   |                 ... which causes `m` to have type `HashMap<String, i32>`
    |
    = note: expected type `i32`
-            found struct `HashMap<&str, i32>`
-help: the return type of this call is `HashMap<&str, i32>` due to the type of the argument passed
-  --> /tmp/24-game-solve.rs:67:126
+            found struct `HashMap<String, i32>`
+help: the return type of this call is `HashMap<String, i32>` due to the type of the argument passed
+  --> /tmp/24_game_solve.rs:72:153
    |
-67 | ...op", op); m.insert("left", a); m.insert("right", b); m };
-   |                                   ^^^^^^^^^^^^^^^^^^-^
-   |                                                     |
-   |                                                     this argument influences the return type of `insert`
+72 | ...ring::from("left"), a); m.insert(String::from("right"), b); m };
+   |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-^
+   |                                                            |
+   |                                                            this argument influences the return type of `insert`
 note: method defined here
-  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
-
-error[E0308]: mismatched types
-  --> /tmp/24-game-solve.rs:68:69
-   |
-68 |                     if solve({ let mut tmp = rest.clone(); tmp.push(node); tmp }) {
-   |                                                                ---- ^^^^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, i32>`
-   |                                                                |
-   |                                                                arguments to this method are incorrect
-   |
-   = note: expected struct `HashMap<&str, i32>`
-              found struct `BTreeMap<&str, i32>`
-note: method defined here
-  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:2442:12
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
 
 error[E0425]: cannot find function `solve` in this scope
-  --> /tmp/24-game-solve.rs:68:24
+  --> /tmp/24_game_solve.rs:73:24
    |
-68 |                     if solve({ let mut tmp = rest.clone(); tmp.push(node); tmp }) {
+73 |                     if solve({ let mut tmp = rest.clone(); tmp.push(node); tmp }) {
    |                        ^^^^^ not found in this scope
 
 error[E0308]: mismatched types
-  --> /tmp/24-game-solve.rs:72:122
+  --> /tmp/24_game_solve.rs:77:149
    |
-72 | ...tions::BTreeMap::new(); m.insert("op", OP_SUB); m.insert("left", b); m.insert("right", a); m };
-   |                            -              ------     ------         ^ expected `i32`, found `HashMap<&str, i32>`
-   |                            |              |          |
-   |                            |              |          arguments to this method are incorrect
-   |                            |              this argument has type `i32`...
-   |                            ... which causes `m` to have type `BTreeMap<&str, i32>`
-   |
-   = note: expected type `i32`
-            found struct `HashMap<&str, i32>`
-help: the return type of this call is `HashMap<&str, i32>` due to the type of the argument passed
-  --> /tmp/24-game-solve.rs:72:105
-   |
-72 | ...new(); m.insert("op", OP_SUB); m.insert("left", b); m.insert("right", a); m };
-   |                                   ^^^^^^^^^^^^^^^^^-^
-   |                                                    |
-   |                                                    this argument influences the return type of `insert`
-note: method defined here
-  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
-
-error[E0308]: mismatched types
-  --> /tmp/24-game-solve.rs:72:144
-   |
-72 | ...eMap::new(); m.insert("op", OP_SUB); m.insert("left", b); m.insert("right", a); m };
-   |                 -              ------                          ------          ^ expected `i32`, found `HashMap<&str, i32>`
-   |                 |              |                               |
-   |                 |              |                               arguments to this method are incorrect
-   |                 |              this argument has type `i32`...
-   |                 ... which causes `m` to have type `BTreeMap<&str, i32>`
+77 | ...::new(); m.insert(String::from("op"), OP_SUB); m.insert(String::from("left"), b); m.insert(String::from("right"), a); m };
+   |             -                            ------     ------                       ^ expected `i32`, found `HashMap<String, i32>`
+   |             |                            |          |
+   |             |                            |          arguments to this method are incorrect
+   |             |                            this argument has type `i32`...
+   |             ... which causes `m` to have type `HashMap<String, i32>`
    |
    = note: expected type `i32`
-            found struct `HashMap<&str, i32>`
-help: the return type of this call is `HashMap<&str, i32>` due to the type of the argument passed
-  --> /tmp/24-game-solve.rs:72:126
+            found struct `HashMap<String, i32>`
+help: the return type of this call is `HashMap<String, i32>` due to the type of the argument passed
+  --> /tmp/24_game_solve.rs:77:118
    |
-72 | ... OP_SUB); m.insert("left", b); m.insert("right", a); m };
-   |                                   ^^^^^^^^^^^^^^^^^^-^
-   |                                                     |
-   |                                                     this argument influences the return type of `insert`
+77 | ...g::from("op"), OP_SUB); m.insert(String::from("left"), b); m.insert(String::from("right"), a); m };
+   |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-^
+   |                                                           |
+   |                                                           this argument influences the return type of `insert`
 note: method defined here
-  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
 
 error[E0308]: mismatched types
-  --> /tmp/24-game-solve.rs:73:65
+  --> /tmp/24_game_solve.rs:77:185
    |
-73 |                 if solve({ let mut tmp = rest.clone(); tmp.push(node); tmp }) {
-   |                                                            ---- ^^^^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, i32>`
+77 | ...ap::new(); m.insert(String::from("op"), OP_SUB); m.insert(String::from("left"), b); m.insert(String::from("right"), a); m };
+   |               -                            ------                                        ------                        ^ expected `i32`, found `HashMap<String, i32>`
+   |               |                            |                                             |
+   |               |                            this argument has type `i32`...               arguments to this method are incorrect
+   |               ... which causes `m` to have type `HashMap<String, i32>`
+   |
+   = note: expected type `i32`
+            found struct `HashMap<String, i32>`
+help: the return type of this call is `HashMap<String, i32>` due to the type of the argument passed
+  --> /tmp/24_game_solve.rs:77:153
+   |
+77 | ...ring::from("left"), b); m.insert(String::from("right"), a); m };
+   |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-^
    |                                                            |
-   |                                                            arguments to this method are incorrect
-   |
-   = note: expected struct `HashMap<&str, i32>`
-              found struct `BTreeMap<&str, i32>`
+   |                                                            this argument influences the return type of `insert`
 note: method defined here
-  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:2442:12
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
 
 error[E0425]: cannot find function `solve` in this scope
-  --> /tmp/24-game-solve.rs:73:20
+  --> /tmp/24_game_solve.rs:78:20
    |
-73 |                 if solve({ let mut tmp = rest.clone(); tmp.push(node); tmp }) {
+78 |                 if solve({ let mut tmp = rest.clone(); tmp.push(node); tmp }) {
    |                    ^^^^^ not found in this scope
 
 error[E0308]: mismatched types
-  --> /tmp/24-game-solve.rs:76:114
+  --> /tmp/24_game_solve.rs:81:141
    |
-76 | ...tions::BTreeMap::new(); m.insert("op", OP_DIV); m.insert("left", b); m.insert("right", a); m };
-   |                            -              ------     ------         ^ expected `i32`, found `HashMap<&str, i32>`
-   |                            |              |          |
-   |                            |              |          arguments to this method are incorrect
-   |                            |              this argument has type `i32`...
-   |                            ... which causes `m` to have type `BTreeMap<&str, i32>`
-   |
-   = note: expected type `i32`
-            found struct `HashMap<&str, i32>`
-help: the return type of this call is `HashMap<&str, i32>` due to the type of the argument passed
-  --> /tmp/24-game-solve.rs:76:97
-   |
-76 | ...new(); m.insert("op", OP_DIV); m.insert("left", b); m.insert("right", a); m };
-   |                                   ^^^^^^^^^^^^^^^^^-^
-   |                                                    |
-   |                                                    this argument influences the return type of `insert`
-note: method defined here
-  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
-
-error[E0308]: mismatched types
-  --> /tmp/24-game-solve.rs:76:136
-   |
-76 | ...eMap::new(); m.insert("op", OP_DIV); m.insert("left", b); m.insert("right", a); m };
-   |                 -              ------                          ------          ^ expected `i32`, found `HashMap<&str, i32>`
-   |                 |              |                               |
-   |                 |              |                               arguments to this method are incorrect
-   |                 |              this argument has type `i32`...
-   |                 ... which causes `m` to have type `BTreeMap<&str, i32>`
+81 | ...::new(); m.insert(String::from("op"), OP_DIV); m.insert(String::from("left"), b); m.insert(String::from("right"), a); m };
+   |             -                            ------     ------                       ^ expected `i32`, found `HashMap<String, i32>`
+   |             |                            |          |
+   |             |                            |          arguments to this method are incorrect
+   |             |                            this argument has type `i32`...
+   |             ... which causes `m` to have type `HashMap<String, i32>`
    |
    = note: expected type `i32`
-            found struct `HashMap<&str, i32>`
-help: the return type of this call is `HashMap<&str, i32>` due to the type of the argument passed
-  --> /tmp/24-game-solve.rs:76:118
+            found struct `HashMap<String, i32>`
+help: the return type of this call is `HashMap<String, i32>` due to the type of the argument passed
+  --> /tmp/24_game_solve.rs:81:110
    |
-76 | ... OP_DIV); m.insert("left", b); m.insert("right", a); m };
-   |                                   ^^^^^^^^^^^^^^^^^^-^
-   |                                                     |
-   |                                                     this argument influences the return type of `insert`
+81 | ...g::from("op"), OP_DIV); m.insert(String::from("left"), b); m.insert(String::from("right"), a); m };
+   |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-^
+   |                                                           |
+   |                                                           this argument influences the return type of `insert`
 note: method defined here
-  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
 
 error[E0308]: mismatched types
-  --> /tmp/24-game-solve.rs:77:65
+  --> /tmp/24_game_solve.rs:81:177
    |
-77 |                 if solve({ let mut tmp = rest.clone(); tmp.push(node); tmp }) {
-   |                                                            ---- ^^^^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, i32>`
+81 | ...ap::new(); m.insert(String::from("op"), OP_DIV); m.insert(String::from("left"), b); m.insert(String::from("right"), a); m };
+   |               -                            ------                                        ------                        ^ expected `i32`, found `HashMap<String, i32>`
+   |               |                            |                                             |
+   |               |                            this argument has type `i32`...               arguments to this method are incorrect
+   |               ... which causes `m` to have type `HashMap<String, i32>`
+   |
+   = note: expected type `i32`
+            found struct `HashMap<String, i32>`
+help: the return type of this call is `HashMap<String, i32>` due to the type of the argument passed
+  --> /tmp/24_game_solve.rs:81:145
+   |
+81 | ...ring::from("left"), b); m.insert(String::from("right"), a); m };
+   |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-^
    |                                                            |
-   |                                                            arguments to this method are incorrect
-   |
-   = note: expected struct `HashMap<&str, i32>`
-              found struct `BTreeMap<&str, i32>`
+   |                                                            this argument influences the return type of `insert`
 note: method defined here
-  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:2442:12
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
 
 error[E0425]: cannot find function `solve` in this scope
-  --> /tmp/24-game-solve.rs:77:20
+  --> /tmp/24_game_solve.rs:82:20
    |
-77 |                 if solve({ let mut tmp = rest.clone(); tmp.push(node); tmp }) {
+82 |                 if solve({ let mut tmp = rest.clone(); tmp.push(node); tmp }) {
    |                    ^^^^^ not found in this scope
 
-error[E0425]: cannot find function `now` in this scope
-  --> /tmp/24-game-solve.rs:92:26
+error[E0308]: mismatched types
+  --> /tmp/24_game_solve.rs:98:72
    |
-92 |                 let n = (now() % (digit_range - 1)) + 1;
-   |                          ^^^ not found in this scope
+98 |                 cards = { let mut tmp = cards.clone(); tmp.push(newNum(n)); tmp };
+   |                                                                 ------ ^ expected `i32`, found `i64`
+   |                                                                 |
+   |                                                                 arguments to this function are incorrect
+   |
+note: closure parameter defined here
+  --> /tmp/24_game_solve.rs:13:24
+   |
+13 |     let newNum = move |n: i32| -> std::collections::HashMap<String, i32> {
+   |                        ^^^^^^
+help: you can convert an `i64` to an `i32` and panic if the converted value doesn't fit
+   |
+98 |                 cards = { let mut tmp = cards.clone(); tmp.push(newNum(n.try_into().unwrap())); tmp };
+   |                                                                         ++++++++++++++++++++
 
-error: aborting due to 23 previous errors
+error: aborting due to 17 previous errors
 
 Some errors have detailed explanations: E0308, E0425, E0599.
 For more information about an error, try `rustc --explain E0308`.

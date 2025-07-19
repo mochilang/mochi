@@ -1449,25 +1449,17 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 	if f.Return != nil {
 		retTy = rustType(f.Return)
 	}
-	topLevel := c.inMain && c.indent == 1
-	if topLevel {
-		for g := range c.globals {
-			for _, st := range f.Body {
-				if usesIdentStmt(st, g) {
-					topLevel = false
-					break
-				}
-			}
-			if !topLevel {
-				break
-			}
-		}
-	}
-	if !topLevel {
-		c.writeln(fmt.Sprintf("let %s = move |%s| -> %s {", f.Name, strings.Join(params, ", "), retTy))
-	} else {
-		c.writeln(fmt.Sprintf("fn %s(%s) -> %s {", f.Name, strings.Join(params, ", "), retTy))
-	}
+       // Nested functions defined inside `main` may reference variables from the
+       // surrounding scope. Rust does not allow ordinary `fn` items to capture
+       // such values, so default to generating a closure expression. This keeps
+       // the emitted code valid even when the function body references outer
+       // variables.
+       topLevel := false
+       if !topLevel {
+               c.writeln(fmt.Sprintf("let %s = move |%s| -> %s {", f.Name, strings.Join(params, ", "), retTy))
+       } else {
+               c.writeln(fmt.Sprintf("fn %s(%s) -> %s {", f.Name, strings.Join(params, ", "), retTy))
+       }
 	prev := c.inMain
 	c.inMain = false
 	c.indent++

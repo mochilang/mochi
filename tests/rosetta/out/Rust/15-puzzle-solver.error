@@ -1,6 +1,6 @@
 rustc: exit status 1
 error[E0425]: cannot find function, tuple struct or tuple variant `FifteenPuzzleExample` in module `testpkg`
- --> /tmp/15-puzzle-solver.rs:8:48
+ --> /tmp/15_puzzle_solver.rs:8:48
   |
 8 |     println!("{}", vec![format!("{}", testpkg::FifteenPuzzleExample())].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ...
   |                                                ^^^^^^^^^^^^^^^^^^^^ not found in `testpkg`

@@ -1,1 +1,182 @@
-compile: empty expr
+rustc: exit status 1
+warning: denote infinite loops with `loop { ... }`
+  --> /tmp/15_puzzle_game.rs:86:9
+   |
+86 |         while true {
+   |         ^^^^^^^^^^ help: use `loop`
+   |
+   = note: `#[warn(while_true)]` on by default
+
+error[E0308]: mismatched types
+  --> /tmp/15_puzzle_game.rs:14:16
+   |
+13 |     let randMove = move || -> i32 {
+   |                               --- expected `i32` because of return type
+14 |         return _now() % 4;
+   |                ^^^^^^^^^^ expected `i32`, found `i64`
+   |
+help: you can convert an `i64` to an `i32` and panic if the converted value doesn't fit
+   |
+14 |         return (_now() % 4).try_into().unwrap();
+   |                +          +++++++++++++++++++++
+
+error[E0308]: mismatched types
+  --> /tmp/15_puzzle_game.rs:28:169
+   |
+28 | ... - 4); m.insert(String::from("ok"), (empty as f64) / (4 as f64) > 0); m };
+   |                                        ---------------------------   ^ expected `f64`, found integer
+   |                                        |
+   |                                        expected because this is `f64`
+   |
+help: use a float literal
+   |
+28 |             return { let mut m = std::collections::HashMap::new(); m.insert(String::from("idx"), empty - 4); m.insert(String::from("ok"), (empty as f64) / (4 as f64) > 0.0); m };
+   |                                                                                                                                                                          ++
+
+error[E0308]: mismatched types
+  --> /tmp/15_puzzle_game.rs:28:139
+   |
+28 | ...hMap::new(); m.insert(String::from("idx"), empty - 4); m.insert(String::from("ok"), (empty as f64) / (4 as f64) > 0); m };
+   |                 -                             ---------     ------                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected integer, found `bool`
+   |                 |                             |             |
+   |                 |                             |             arguments to this method are incorrect
+   |                 |                             this argument has type `{integer}`...
+   |                 ... which causes `m` to have type `HashMap<String, {integer}>`
+   |
+help: the return type of this call is `bool` due to the type of the argument passed
+  --> /tmp/15_puzzle_game.rs:28:110
+   |
+28 | ...pty - 4); m.insert(String::from("ok"), (empty as f64) / (4 as f64) > 0); m };
+   |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-------------------------------^
+   |                                           |
+   |                                           this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0308]: mismatched types
+  --> /tmp/15_puzzle_game.rs:31:169
+   |
+31 | ... + 4); m.insert(String::from("ok"), (empty as f64) / (4 as f64) < 3); m };
+   |                                        ---------------------------   ^ expected `f64`, found integer
+   |                                        |
+   |                                        expected because this is `f64`
+   |
+help: use a float literal
+   |
+31 |             return { let mut m = std::collections::HashMap::new(); m.insert(String::from("idx"), empty + 4); m.insert(String::from("ok"), (empty as f64) / (4 as f64) < 3.0); m };
+   |                                                                                                                                                                          ++
+
+error[E0308]: mismatched types
+  --> /tmp/15_puzzle_game.rs:31:139
+   |
+31 | ...hMap::new(); m.insert(String::from("idx"), empty + 4); m.insert(String::from("ok"), (empty as f64) / (4 as f64) < 3); m };
+   |                 -                             ---------     ------                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `i32`, found `bool`
+   |                 |                             |             |
+   |                 |                             |             arguments to this method are incorrect
+   |                 |                             this argument has type `i32`...
+   |                 ... which causes `m` to have type `HashMap<String, i32>`
+   |
+help: the return type of this call is `bool` due to the type of the argument passed
+  --> /tmp/15_puzzle_game.rs:31:110
+   |
+31 | ...pty + 4); m.insert(String::from("ok"), (empty as f64) / (4 as f64) < 3); m };
+   |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-------------------------------^
+   |                                           |
+   |                                           this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0308]: mismatched types
+  --> /tmp/15_puzzle_game.rs:34:139
+   |
+34 | ...p::new(); m.insert(String::from("idx"), empty + 1); m.insert(String::from("ok"), empty % 4 < 3); m };
+   |              -                             ---------     ------                     ^^^^^^^^^^^^^ expected `i32`, found `bool`
+   |              |                             |             |
+   |              |                             |             arguments to this method are incorrect
+   |              |                             this argument has type `i32`...
+   |              ... which causes `m` to have type `HashMap<String, i32>`
+   |
+help: the return type of this call is `bool` due to the type of the argument passed
+  --> /tmp/15_puzzle_game.rs:34:110
+   |
+34 | ...idx"), empty + 1); m.insert(String::from("ok"), empty % 4 < 3); m };
+   |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-------------^
+   |                                                    |
+   |                                                    this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0308]: mismatched types
+  --> /tmp/15_puzzle_game.rs:37:139
+   |
+37 | ...p::new(); m.insert(String::from("idx"), empty - 1); m.insert(String::from("ok"), empty % 4 > 0); m };
+   |              -                             ---------     ------                     ^^^^^^^^^^^^^ expected `i32`, found `bool`
+   |              |                             |             |
+   |              |                             |             arguments to this method are incorrect
+   |              |                             this argument has type `i32`...
+   |              ... which causes `m` to have type `HashMap<String, i32>`
+   |
+help: the return type of this call is `bool` due to the type of the argument passed
+  --> /tmp/15_puzzle_game.rs:37:110
+   |
+37 | ...idx"), empty - 1); m.insert(String::from("ok"), empty % 4 > 0); m };
+   |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-------------^
+   |                                                    |
+   |                                                    this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0308]: mismatched types
+  --> /tmp/15_puzzle_game.rs:39:127
+   |
+39 |         return { let mut m = std::collections::HashMap::new(); m.insert(String::from("idx"), 0); m.insert(String::from("ok"), false); m };
+   |                                                                -                             -     ------                     ^^^^^ expected integer, found `bool`
+   |                                                                |                             |     |
+   |                                                                |                             |     arguments to this method are incorrect
+   |                                                                |                             this argument has type `{integer}`...
+   |                                                                ... which causes `m` to have type `HashMap<String, {integer}>`
+   |
+help: the return type of this call is `bool` due to the type of the argument passed
+  --> /tmp/15_puzzle_game.rs:39:98
+   |
+39 |         return { let mut m = std::collections::HashMap::new(); m.insert(String::from("idx"), 0); m.insert(String::from("ok"), false); m };
+   |                                                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-----^
+   |                                                                                                                               |
+   |                                                                                                                               this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0425]: cannot find function `int` in this scope
+  --> /tmp/15_puzzle_game.rs:47:17
+   |
+47 |         let j = int(*r.get(&String::from("idx")).unwrap());
+   |                 ^^^ not found in this scope
+
+error[E0277]: cannot add `String` to `{integer}`
+  --> /tmp/15_puzzle_game.rs:87:115
+   |
+87 | ...("{}{}", String::from("Enter move #"), moves + 1.to_string()), String::from(" (U, D, L, R, or Q): ")))].into_iter().filter(|s| !s.is_e...
+   |                                                 ^ no implementation for `{integer} + String`
+   |
+   = help: the trait `Add<String>` is not implemented for `{integer}`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&f128` implements `Add<f128>`
+             `&f128` implements `Add`
+             `&f16` implements `Add<f16>`
+             `&f16` implements `Add`
+             `&f32` implements `Add<f32>`
+             `&f32` implements `Add`
+             `&f64` implements `Add<f64>`
+             `&f64` implements `Add`
+           and 56 others
+
+error[E0425]: cannot find function `input` in this scope
+  --> /tmp/15_puzzle_game.rs:88:21
+   |
+88 |             let s = input();
+   |                     ^^^^^ not found in this scope
+
+error: aborting due to 11 previous errors; 1 warning emitted
+
+Some errors have detailed explanations: E0277, E0308, E0425.
+For more information about an error, try `rustc --explain E0277`.

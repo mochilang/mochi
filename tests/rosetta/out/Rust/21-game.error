@@ -1,56 +1,88 @@
 rustc: exit status 1
 warning: denote infinite loops with `loop { ... }`
-  --> /tmp/21-game.rs:54:21
+  --> /tmp/21_game.rs:59:21
    |
-54 |                     while true {
+59 |                     while true {
    |                     ^^^^^^^^^^ help: use `loop`
    |
    = note: `#[warn(while_true)]` on by default
 
-error[E0308]: mismatched types
-  --> /tmp/21-game.rs:13:60
+error[E0277]: the trait bound `String: Borrow<&str>` is not satisfied
+  --> /tmp/21_game.rs:18:38
    |
-13 |             n = n * 10 + *digits.get(&&str[i as usize..i + 1 as usize]).unwrap();
-   |                                                            ^^^^^^^^^^ expected `i32`, found `usize`
-
-error[E0308]: mismatched types
-  --> /tmp/21-game.rs:13:56
+18 |             n = n * 10 + *digits.get(&&str[(i) as usize..(i + 1) as usize]).unwrap();
+   |                                  --- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the trait `Borrow<&str>` is not implemented for `String`
+   |                                  |
+   |                                  required by a bound introduced by this call
    |
-13 |             n = n * 10 + *digits.get(&&str[i as usize..i + 1 as usize]).unwrap();
-   |                                                        ^^^^^^^^^^^^^^ expected `usize`, found `i32`
-
-error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/21-game.rs:13:58
-   |
-13 |             n = n * 10 + *digits.get(&&str[i as usize..i + 1 as usize]).unwrap();
-   |                                                          ^ no implementation for `i32 + usize`
-   |
-   = help: the trait `Add<usize>` is not implemented for `i32`
-   = help: the following other types implement trait `Add<Rhs>`:
-             `&i32` implements `Add<i32>`
-             `&i32` implements `Add`
-             `i32` implements `Add<&i32>`
-             `i32` implements `Add`
-
-error[E0425]: cannot find function `now` in this scope
-  --> /tmp/21-game.rs:23:28
-   |
-23 |         let mut computer = now() % 2 == 0;
-   |                            ^^^ not found in this scope
-
-error[E0425]: cannot find function `now` in this scope
-  --> /tmp/21-game.rs:42:34
-   |
-42 |                         choice = now() % 3 + 1;
-   |                                  ^^^ not found in this scope
+   = help: the trait `Borrow<&_>` is not implemented for `String`
+           but trait `Borrow<_>` is implemented for it
+   = help: for that trait implementation, expected `str`, found `&str`
+note: required by a bound in `HashMap::<K, V, S>::get`
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:906:5
 
 error[E0425]: cannot find function `input` in this scope
-  --> /tmp/21-game.rs:56:36
+  --> /tmp/21_game.rs:61:36
    |
-56 |                         let line = input();
+61 |                         let line = input();
    |                                    ^^^^^ not found in this scope
 
-error: aborting due to 6 previous errors; 1 warning emitted
+error[E0308]: mismatched types
+  --> /tmp/21_game.rs:69:40
+   |
+69 | ...                   if total + num > 21 {
+   |                                  ^^^ expected `i64`, found `i32`
+
+error[E0277]: cannot add `i32` to `i64`
+  --> /tmp/21_game.rs:69:38
+   |
+69 | ...                   if total + num > 21 {
+   |                                ^ no implementation for `i64 + i32`
+   |
+   = help: the trait `Add<i32>` is not implemented for `i64`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i64` implements `Add<i64>`
+             `&i64` implements `Add`
+             `i64` implements `Add<&i64>`
+             `i64` implements `Add`
+
+error[E0308]: mismatched types
+  --> /tmp/21_game.rs:76:36
+   |
+76 |                         if total + num > 21 {
+   |                                    ^^^ expected `i64`, found `i32`
+
+error[E0277]: cannot add `i32` to `i64`
+  --> /tmp/21_game.rs:76:34
+   |
+76 |                         if total + num > 21 {
+   |                                  ^ no implementation for `i64 + i32`
+   |
+   = help: the trait `Add<i32>` is not implemented for `i64`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i64` implements `Add<i64>`
+             `&i64` implements `Add`
+             `i64` implements `Add<&i64>`
+             `i64` implements `Add`
+
+error[E0308]: mismatched types
+  --> /tmp/21_game.rs:80:34
+   |
+80 |                         total += num;
+   |                                  ^^^ expected `i64`, found `i32`
+
+error[E0277]: cannot add-assign `i32` to `i64`
+  --> /tmp/21_game.rs:80:31
+   |
+80 |                         total += num;
+   |                               ^^ no implementation for `i64 += i32`
+   |
+   = help: the trait `AddAssign<i32>` is not implemented for `i64`
+   = help: the following other types implement trait `AddAssign<Rhs>`:
+             `i64` implements `AddAssign<&i64>`
+             `i64` implements `AddAssign`
+
+error: aborting due to 8 previous errors; 1 warning emitted
 
 Some errors have detailed explanations: E0277, E0308, E0425.
 For more information about an error, try `rustc --explain E0277`.
