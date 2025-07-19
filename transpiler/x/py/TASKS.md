@@ -52,3 +52,7 @@
 ## Recent Enhancements (2025-07-19 12:55 +0000)
 - Added support for list set operations `union`, `union_all`, `except` and `intersect`.
 - Generated golden test for `list_set_ops` and updated README checklist.
+
+## Recent Enhancements (2025-07-19 13:10 +0000)
+- Added transpiler tests for `map_membership`, `map_nested_assign` and `for_map_collection`.
+- Marked the new tests complete in README (51/100).
