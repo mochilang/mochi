@@ -1,7 +1,0 @@
-run: exit status 1
-# command-line-arguments
-/tmp/X/001/main.go:92:29: undefined: r1
-/tmp/X/001/main.go:93:14: undefined: r1
-/tmp/X/001/main.go:94:29: undefined: r2
-/tmp/X/001/main.go:95:14: undefined: r2
-/tmp/X/001/main.go:96:29: undefined: r3

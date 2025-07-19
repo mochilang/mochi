@@ -133,6 +133,7 @@ func row(n int) []string {
 
 func main() {
 	fmt.Println(any("rows:"))
+	var x int = 1
 	for x < 11 {
 		var r []string = row(x)
 		var line string = ""

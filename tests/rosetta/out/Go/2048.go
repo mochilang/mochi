@@ -302,10 +302,16 @@ func has2048(b [][]int) bool {
 }
 
 func main() {
+	var SIZE int = 4
+	_ = SIZE
+	var board [][]int = newBoard()
+	var r map[string]any = spawnTile(board)
 	board = (((r["board"]).([][]int)).([][]int)).([][]int)
+	var full any = r["full"]
 	r = spawnTile(board)
 	board = (((r["board"]).([][]int)).([][]int)).([][]int)
 	full = r["full"]
+	var score int = 0
 	draw(board, score)
 	for {
 		fmt.Println(any("Move: "))

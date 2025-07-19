@@ -6,6 +6,7 @@ package main
 
 import (
 	"fmt"
+	goffi "mochi/runtime/ffi/go"
 	"reflect"
 	"strings"
 )
@@ -13,6 +14,9 @@ import (
 type v map[string]any
 
 func main() {
+	var res []any = (func() any { v, _ := goffi.AttrAuto("net", "LookupHost", "www.kame.net"); return v }()).([]any)
+	var addrs any = res[0]
+	var err any = res[1]
 	if _equal(err, nil) {
 		fmt.Println(any(fmt.Sprint(addrs)))
 	} else {

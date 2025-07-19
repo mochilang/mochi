@@ -11,6 +11,7 @@ import (
 type v map[string]any
 
 func main() {
+	var result string = ""
 	for i := 1; i < 101; i++ {
 		var j int = 1
 		for (j * j) < i {

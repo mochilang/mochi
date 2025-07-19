@@ -1,6 +1,0 @@
-run: exit status 1
-# command-line-arguments
-/tmp/X/001/main.go:16:17: undefined: door
-/tmp/X/001/main.go:18:4: undefined: incrementer
-/tmp/X/001/main.go:19:4: undefined: door
-/tmp/X/001/main.go:19:25: undefined: incrementer
