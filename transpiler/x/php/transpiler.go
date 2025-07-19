@@ -104,6 +104,15 @@ type BinaryExpr struct {
 	Right Expr
 }
 
+// GroupExpr represents a parenthesized sub-expression.
+type GroupExpr struct{ X Expr }
+
+// IntDivExpr represents integer division of Left / Right.
+type IntDivExpr struct {
+	Left  Expr
+	Right Expr
+}
+
 type Var struct{ Name string }
 
 type IntLit struct{ Value int }
@@ -186,6 +195,20 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	b.Left.emit(w)
 	fmt.Fprintf(w, " %s ", b.Op)
 	b.Right.emit(w)
+}
+
+func (g *GroupExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
+	g.X.emit(w)
+	io.WriteString(w, ")")
+}
+
+func (d *IntDivExpr) emit(w io.Writer) {
+	io.WriteString(w, "intdiv(")
+	d.Left.emit(w)
+	io.WriteString(w, ", ")
+	d.Right.emit(w)
+	io.WriteString(w, ")")
 }
 
 func (u *UnaryExpr) emit(w io.Writer) {
@@ -343,6 +366,9 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	}
 
 	apply := func(left Expr, op string, right Expr) Expr {
+		if op == "/" {
+			return &IntDivExpr{Left: left, Right: right}
+		}
 		return &BinaryExpr{Left: left, Op: op, Right: right}
 	}
 
@@ -426,6 +452,28 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("substring expects 3 args")
 			}
 			return &SubstringExpr{Str: args[0], Start: args[1], End: args[2]}, nil
+		} else if name == "sum" {
+			if len(args) != 1 {
+				return nil, fmt.Errorf("sum expects 1 arg")
+			}
+			return &CallExpr{Func: "array_sum", Args: args}, nil
+		} else if name == "avg" {
+			if len(args) != 1 {
+				return nil, fmt.Errorf("avg expects 1 arg")
+			}
+			frac := &BinaryExpr{Left: &CallExpr{Func: "array_sum", Args: args}, Op: "/", Right: &CallExpr{Func: "count", Args: args}}
+			nfArgs := []Expr{frac, &IntLit{Value: 1}, &StringLit{Value: "."}, &StringLit{Value: ""}}
+			return &CallExpr{Func: "number_format", Args: nfArgs}, nil
+		} else if name == "str" {
+			if len(args) != 1 {
+				return nil, fmt.Errorf("str expects 1 arg")
+			}
+			return &CallExpr{Func: "strval", Args: args}, nil
+		} else if name == "min" || name == "max" {
+			if len(args) != 1 {
+				return nil, fmt.Errorf("%s expects 1 arg", name)
+			}
+			return &CallExpr{Func: name, Args: args}, nil
 		}
 		return &CallExpr{Func: name, Args: args}, nil
 	case p.Lit != nil:
@@ -448,7 +496,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &Var{Name: p.Selector.Root}, nil
 	case p.Group != nil:
-		return convertExpr(p.Group)
+		ex, err := convertExpr(p.Group)
+		if err != nil {
+			return nil, err
+		}
+		return &GroupExpr{X: ex}, nil
 	default:
 		return nil, fmt.Errorf("unsupported primary")
 	}
@@ -661,6 +713,10 @@ func exprNode(e Expr) *ast.Node {
 			n.Children = append(n.Children, exprNode(e))
 		}
 		return n
+	case *GroupExpr:
+		return &ast.Node{Kind: "group", Children: []*ast.Node{exprNode(ex.X)}}
+	case *IntDivExpr:
+		return &ast.Node{Kind: "intdiv", Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
 	case *SubstringExpr:
 		return &ast.Node{Kind: "substring", Children: []*ast.Node{exprNode(ex.Str), exprNode(ex.Start), exprNode(ex.End)}}
 	default:

@@ -179,6 +179,30 @@ func TestTranspile_IfElse(t *testing.T) {
 	runTranspileTest(t, "if_else")
 }
 
+func TestTranspile_BinaryPrecedence(t *testing.T) {
+	runTranspileTest(t, "binary_precedence")
+}
+
+func TestTranspile_MathOps(t *testing.T) {
+	runTranspileTest(t, "math_ops")
+}
+
+func TestTranspile_StringCompare(t *testing.T) {
+	runTranspileTest(t, "string_compare")
+}
+
+func TestTranspile_StrBuiltin(t *testing.T) {
+	runTranspileTest(t, "str_builtin")
+}
+
+func TestTranspile_SumBuiltin(t *testing.T) {
+	runTranspileTest(t, "sum_builtin")
+}
+
+func TestTranspile_AvgBuiltin(t *testing.T) {
+	runTranspileTest(t, "avg_builtin")
+}
+
 func runTranspileTest(t *testing.T, name string) {
 	if _, err := exec.LookPath("php"); err != nil {
 		t.Skip("php not installed")
