@@ -2,16 +2,16 @@
 
 Generated C# code for programs in `tests/vm/valid`. Each program has a `.cs` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.
 
-Compiled programs: 26/100
+Compiled programs: 32/100
 
 ## Checklist
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
 - [x] binary_precedence
-- [ ] bool_chain
-- [ ] break_continue
-- [ ] cast_string_to_int
+- [x] bool_chain
+- [x] break_continue
+- [x] cast_string_to_int
 - [ ] cast_struct
 - [ ] closure
 - [x] count_builtin
@@ -40,7 +40,7 @@ Compiled programs: 26/100
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
-- [ ] in_operator
+- [x] in_operator
 - [ ] in_operator_extended
 - [ ] inner_join
 - [ ] join_multi
@@ -53,7 +53,7 @@ Compiled programs: 26/100
 - [x] let_and_print
 - [x] list_assign
 - [x] list_index
-- [ ] list_nested_assign
+- [x] list_nested_assign
 - [ ] list_set_ops
 - [ ] load_yaml
 - [ ] map_assign
@@ -81,7 +81,7 @@ Compiled programs: 26/100
 - [ ] record_assign
 - [ ] right_join
 - [ ] save_jsonl_stdout
-- [ ] short_circuit
+- [x] short_circuit
 - [ ] slice
 - [ ] sort_stable
 - [x] str_builtin
