@@ -5,7 +5,7 @@ Each program is transpiled and the resulting `.cob` sources are compiled with
 `cobc` during testing.
 
 
-Checklist of programs that currently transpile and run (12/100):
+Checklist of programs that currently transpile and run (14/100):
 
 - [ ] append_builtin
 - [ ] avg_builtin
@@ -40,8 +40,8 @@ Checklist of programs that currently transpile and run (12/100):
 - [ ] group_by_sort
 - [ ] group_items_iteration
 - [x] if_else
-- [ ] if_then_else
-- [ ] if_then_else_nested
+- [x] if_then_else
+- [x] if_then_else_nested
 - [ ] in_operator
 - [ ] in_operator_extended
 - [ ] inner_join

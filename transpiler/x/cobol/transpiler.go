@@ -94,8 +94,9 @@ type DisplayStmt struct {
 
 // AssignStmt assigns an expression to a variable.
 type AssignStmt struct {
-	Name string
-	Expr Expr
+	Name     string
+	Expr     Expr
+	IsString bool
 }
 
 // IfStmt represents a simple IF/ELSE statement.
@@ -283,6 +284,13 @@ func (d *DisplayStmt) emit(w io.Writer) {
 }
 
 func (a *AssignStmt) emit(w io.Writer) {
+	if a.IsString {
+		io.WriteString(w, "MOVE ")
+		a.Expr.emitExpr(w)
+		io.WriteString(w, " TO ")
+		io.WriteString(w, strings.ToUpper(a.Name))
+		return
+	}
 	io.WriteString(w, "COMPUTE ")
 	io.WriteString(w, strings.ToUpper(a.Name))
 	io.WriteString(w, " = ")
@@ -406,7 +414,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			if err != nil {
 				return nil, err
 			}
-			pr.addStmt(&AssignStmt{Name: st.Assign.Name, Expr: ex})
+			isStr := false
+			if _, ok := types.TypeOfExpr(st.Assign.Value, env).(types.StringType); ok {
+				isStr = true
+			}
+			pr.addStmt(&AssignStmt{Name: st.Assign.Name, Expr: ex, IsString: isStr})
 		case st.Expr != nil:
 			call := st.Expr.Expr.Binary.Left.Value.Target.Call
 			if call != nil && call.Func == "print" && len(call.Args) == 1 && len(st.Expr.Expr.Binary.Right) == 0 {
@@ -461,7 +473,11 @@ func transpileStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			out = append(out, &AssignStmt{Name: s.Assign.Name, Expr: ex})
+			isStr := false
+			if _, ok := types.TypeOfExpr(s.Assign.Value, env).(types.StringType); ok {
+				isStr = true
+			}
+			out = append(out, &AssignStmt{Name: s.Assign.Name, Expr: ex, IsString: isStr})
 		case s.Expr != nil:
 			call := s.Expr.Expr.Binary.Left.Value.Target.Call
 			if call != nil && call.Func == "print" && len(call.Args) == 1 && len(s.Expr.Expr.Binary.Right) == 0 {
@@ -527,15 +543,81 @@ func convertVar(name string, t *parser.TypeRef, val *parser.Expr, env *types.Env
 	if val != nil {
 		if lit := literalExpr(val); lit != nil {
 			constVal = lit
+		} else if ie := ifExpr(val); ie != nil {
+			stmt, err := convertIfExprAssign(name, ie, env)
+			if err != nil {
+				return VarDecl{}, nil, err
+			}
+			tval := types.TypeOfExpr(val, env)
+			if _, ok := tval.(types.StringType); ok {
+				pic = "PIC X(100)"
+			}
+			return VarDecl{Name: name, Pic: pic}, stmt, nil
 		} else {
 			ex, err := convertExpr(val, env)
 			if err != nil {
 				return VarDecl{}, nil, err
 			}
-			return VarDecl{Name: name, Pic: pic}, &AssignStmt{Name: name, Expr: ex}, nil
+			tval := types.TypeOfExpr(val, env)
+			isStr := false
+			if _, ok := tval.(types.StringType); ok {
+				pic = "PIC X(100)"
+				isStr = true
+			}
+			return VarDecl{Name: name, Pic: pic}, &AssignStmt{Name: name, Expr: ex, IsString: isStr}, nil
 		}
 	}
 	return VarDecl{Name: name, Pic: pic, Val: constVal}, nil, nil
+}
+
+func ifExpr(e *parser.Expr) *parser.IfExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil
+	}
+	pf := u.Value
+	if pf == nil || len(pf.Ops) != 0 {
+		return nil
+	}
+	return pf.Target.If
+}
+
+func convertIfExprAssign(name string, ie *parser.IfExpr, env *types.Env) (Stmt, error) {
+	cond, err := convertExpr(ie.Cond, env)
+	if err != nil {
+		return nil, err
+	}
+	thenEx, err := convertExpr(ie.Then, env)
+	if err != nil {
+		return nil, err
+	}
+	isStrThen := false
+	if _, ok := types.TypeOfExpr(ie.Then, env).(types.StringType); ok {
+		isStrThen = true
+	}
+	thenStmts := []Stmt{&AssignStmt{Name: name, Expr: thenEx, IsString: isStrThen}}
+	var elseStmts []Stmt
+	if ie.ElseIf != nil {
+		st, err := convertIfExprAssign(name, ie.ElseIf, env)
+		if err != nil {
+			return nil, err
+		}
+		elseStmts = []Stmt{st}
+	} else if ie.Else != nil {
+		elseEx, err := convertExpr(ie.Else, env)
+		if err != nil {
+			return nil, err
+		}
+		isStrElse := false
+		if _, ok := types.TypeOfExpr(ie.Else, env).(types.StringType); ok {
+			isStrElse = true
+		}
+		elseStmts = []Stmt{&AssignStmt{Name: name, Expr: elseEx, IsString: isStrElse}}
+	}
+	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
 }
 
 func literalExpr(e *parser.Expr) Expr {
