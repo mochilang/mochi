@@ -1,3 +1,9 @@
+## Progress (2025-07-19 18:39 UTC)
+- Added constant folding for `min`, `max` and list `in` operator
+- Improved type inference using string detection
+- Inserted blank lines between generated functions
+- VM valid golden test results updated to 36/100
+
 ## Progress (2025-07-20 01:27 +0700)
 - VM valid golden test results updated to 36/100
 
