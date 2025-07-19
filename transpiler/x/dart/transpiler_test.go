@@ -33,7 +33,8 @@ func findRepoRoot(t *testing.T) string {
 	return ""
 }
 
-func TestTranspile_PrintHello(t *testing.T) {
+func runGolden(t *testing.T, name string) {
+	t.Helper()
 	if _, err := exec.LookPath("dart"); err != nil {
 		t.Skip("dart not installed")
 	}
@@ -41,7 +42,7 @@ func TestTranspile_PrintHello(t *testing.T) {
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "dart")
 	os.MkdirAll(outDir, 0o755)
 
-	src := filepath.Join(root, "tests", "vm", "valid", "print_hello.mochi")
+	src := filepath.Join(root, "tests", "vm", "valid", name+".mochi")
 	prog, err := parser.Parse(src)
 	if err != nil {
 		t.Fatalf("parse: %v", err)
@@ -59,7 +60,7 @@ func TestTranspile_PrintHello(t *testing.T) {
 		t.Fatalf("emit: %v", err)
 	}
 	code := buf.Bytes()
-	dartFile := filepath.Join(outDir, "print_hello.dart")
+	dartFile := filepath.Join(outDir, name+".dart")
 	if err := os.WriteFile(dartFile, code, 0o644); err != nil {
 		t.Fatalf("write: %v", err)
 	}
@@ -67,11 +68,11 @@ func TestTranspile_PrintHello(t *testing.T) {
 	out, err := cmd.CombinedOutput()
 	got := bytes.TrimSpace(out)
 	if err != nil {
-		_ = os.WriteFile(filepath.Join(outDir, "print_hello.error"), out, 0o644)
+		_ = os.WriteFile(filepath.Join(outDir, name+".error"), out, 0o644)
 		t.Fatalf("run: %v", err)
 	}
-	_ = os.Remove(filepath.Join(outDir, "print_hello.error"))
-	wantPath := filepath.Join(outDir, "print_hello.out")
+	_ = os.Remove(filepath.Join(outDir, name+".error"))
+	wantPath := filepath.Join(outDir, name+".out")
 	want, err := os.ReadFile(wantPath)
 	if err != nil {
 		t.Fatalf("read want: %v", err)
@@ -80,604 +81,68 @@ func TestTranspile_PrintHello(t *testing.T) {
 	if !bytes.Equal(got, want) {
 		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
 	}
+}
+
+func TestTranspile_PrintHello(t *testing.T) {
+	runGolden(t, "print_hello")
 }
 
 func TestTranspile_LetAndPrint(t *testing.T) {
-	if _, err := exec.LookPath("dart"); err != nil {
-		t.Skip("dart not installed")
-	}
-	root := findRepoRoot(t)
-	outDir := filepath.Join(root, "tests", "transpiler", "x", "dart")
-	os.MkdirAll(outDir, 0o755)
-
-	src := filepath.Join(root, "tests", "vm", "valid", "let_and_print.mochi")
-	prog, err := parser.Parse(src)
-	if err != nil {
-		t.Fatalf("parse: %v", err)
-	}
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
-		t.Fatalf("type: %v", errs[0])
-	}
-	ast, err := dartt.Transpile(prog, env)
-	if err != nil {
-		t.Fatalf("transpile: %v", err)
-	}
-	var buf bytes.Buffer
-	if err := dartt.Emit(&buf, ast); err != nil {
-		t.Fatalf("emit: %v", err)
-	}
-	code := buf.Bytes()
-	name := "let_and_print"
-	dartFile := filepath.Join(outDir, name+".dart")
-	if err := os.WriteFile(dartFile, code, 0o644); err != nil {
-		t.Fatalf("write: %v", err)
-	}
-	cmd := exec.Command("dart", dartFile)
-	out, err := cmd.CombinedOutput()
-	got := bytes.TrimSpace(out)
-	if err != nil {
-		_ = os.WriteFile(filepath.Join(outDir, name+".error"), out, 0o644)
-		t.Fatalf("run: %v", err)
-	}
-	_ = os.Remove(filepath.Join(outDir, name+".error"))
-	wantPath := filepath.Join(outDir, name+".out")
-	want, err := os.ReadFile(wantPath)
-	if err != nil {
-		t.Fatalf("read want: %v", err)
-	}
-	want = bytes.TrimSpace(want)
-	if !bytes.Equal(got, want) {
-		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
-	}
+	runGolden(t, "let_and_print")
 }
 
 func TestTranspile_VarAssignment(t *testing.T) {
-	if _, err := exec.LookPath("dart"); err != nil {
-		t.Skip("dart not installed")
-	}
-	root := findRepoRoot(t)
-	outDir := filepath.Join(root, "tests", "transpiler", "x", "dart")
-	os.MkdirAll(outDir, 0o755)
-
-	src := filepath.Join(root, "tests", "vm", "valid", "var_assignment.mochi")
-	prog, err := parser.Parse(src)
-	if err != nil {
-		t.Fatalf("parse: %v", err)
-	}
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
-		t.Fatalf("type: %v", errs[0])
-	}
-	ast, err := dartt.Transpile(prog, env)
-	if err != nil {
-		t.Fatalf("transpile: %v", err)
-	}
-	var buf bytes.Buffer
-	if err := dartt.Emit(&buf, ast); err != nil {
-		t.Fatalf("emit: %v", err)
-	}
-	code := buf.Bytes()
-	name := "var_assignment"
-	dartFile := filepath.Join(outDir, name+".dart")
-	if err := os.WriteFile(dartFile, code, 0o644); err != nil {
-		t.Fatalf("write: %v", err)
-	}
-	cmd := exec.Command("dart", dartFile)
-	out, err := cmd.CombinedOutput()
-	got := bytes.TrimSpace(out)
-	if err != nil {
-		_ = os.WriteFile(filepath.Join(outDir, name+".error"), out, 0o644)
-		t.Fatalf("run: %v", err)
-	}
-	_ = os.Remove(filepath.Join(outDir, name+".error"))
-	wantPath := filepath.Join(outDir, name+".out")
-	want, err := os.ReadFile(wantPath)
-	if err != nil {
-		t.Fatalf("read want: %v", err)
-	}
-	want = bytes.TrimSpace(want)
-	if !bytes.Equal(got, want) {
-		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
-	}
+	runGolden(t, "var_assignment")
 }
 
 func TestTranspile_IfElse(t *testing.T) {
-	if _, err := exec.LookPath("dart"); err != nil {
-		t.Skip("dart not installed")
-	}
-	root := findRepoRoot(t)
-	outDir := filepath.Join(root, "tests", "transpiler", "x", "dart")
-	os.MkdirAll(outDir, 0o755)
-
-	src := filepath.Join(root, "tests", "vm", "valid", "if_else.mochi")
-	prog, err := parser.Parse(src)
-	if err != nil {
-		t.Fatalf("parse: %v", err)
-	}
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
-		t.Fatalf("type: %v", errs[0])
-	}
-	ast, err := dartt.Transpile(prog, env)
-	if err != nil {
-		t.Fatalf("transpile: %v", err)
-	}
-	var buf bytes.Buffer
-	if err := dartt.Emit(&buf, ast); err != nil {
-		t.Fatalf("emit: %v", err)
-	}
-	code := buf.Bytes()
-	name := "if_else"
-	dartFile := filepath.Join(outDir, name+".dart")
-	if err := os.WriteFile(dartFile, code, 0o644); err != nil {
-		t.Fatalf("write: %v", err)
-	}
-	cmd := exec.Command("dart", dartFile)
-	out, err := cmd.CombinedOutput()
-	got := bytes.TrimSpace(out)
-	if err != nil {
-		_ = os.WriteFile(filepath.Join(outDir, name+".error"), out, 0o644)
-		t.Fatalf("run: %v", err)
-	}
-	_ = os.Remove(filepath.Join(outDir, name+".error"))
-	wantPath := filepath.Join(outDir, name+".out")
-	want, err := os.ReadFile(wantPath)
-	if err != nil {
-		t.Fatalf("read want: %v", err)
-	}
-	want = bytes.TrimSpace(want)
-	if !bytes.Equal(got, want) {
-		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
-	}
+	runGolden(t, "if_else")
 }
 
 func TestTranspile_BasicCompare(t *testing.T) {
-	if _, err := exec.LookPath("dart"); err != nil {
-		t.Skip("dart not installed")
-	}
-	root := findRepoRoot(t)
-	outDir := filepath.Join(root, "tests", "transpiler", "x", "dart")
-	os.MkdirAll(outDir, 0o755)
-
-	src := filepath.Join(root, "tests", "vm", "valid", "basic_compare.mochi")
-	prog, err := parser.Parse(src)
-	if err != nil {
-		t.Fatalf("parse: %v", err)
-	}
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
-		t.Fatalf("type: %v", errs[0])
-	}
-	ast, err := dartt.Transpile(prog, env)
-	if err != nil {
-		t.Fatalf("transpile: %v", err)
-	}
-	var buf bytes.Buffer
-	if err := dartt.Emit(&buf, ast); err != nil {
-		t.Fatalf("emit: %v", err)
-	}
-	code := buf.Bytes()
-	name := "basic_compare"
-	dartFile := filepath.Join(outDir, name+".dart")
-	if err := os.WriteFile(dartFile, code, 0o644); err != nil {
-		t.Fatalf("write: %v", err)
-	}
-	cmd := exec.Command("dart", dartFile)
-	out, err := cmd.CombinedOutput()
-	got := bytes.TrimSpace(out)
-	if err != nil {
-		_ = os.WriteFile(filepath.Join(outDir, name+".error"), out, 0o644)
-		t.Fatalf("run: %v", err)
-	}
-	_ = os.Remove(filepath.Join(outDir, name+".error"))
-	wantPath := filepath.Join(outDir, name+".out")
-	want, err := os.ReadFile(wantPath)
-	if err != nil {
-		t.Fatalf("read want: %v", err)
-	}
-	want = bytes.TrimSpace(want)
-	if !bytes.Equal(got, want) {
-		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
-	}
+	runGolden(t, "basic_compare")
 }
 
 func TestTranspile_TypedLet(t *testing.T) {
-	if _, err := exec.LookPath("dart"); err != nil {
-		t.Skip("dart not installed")
-	}
-	root := findRepoRoot(t)
-	outDir := filepath.Join(root, "tests", "transpiler", "x", "dart")
-	os.MkdirAll(outDir, 0o755)
-
-	src := filepath.Join(root, "tests", "vm", "valid", "typed_let.mochi")
-	prog, err := parser.Parse(src)
-	if err != nil {
-		t.Fatalf("parse: %v", err)
-	}
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
-		t.Fatalf("type: %v", errs[0])
-	}
-	ast, err := dartt.Transpile(prog, env)
-	if err != nil {
-		t.Fatalf("transpile: %v", err)
-	}
-	var buf bytes.Buffer
-	if err := dartt.Emit(&buf, ast); err != nil {
-		t.Fatalf("emit: %v", err)
-	}
-	code := buf.Bytes()
-	name := "typed_let"
-	dartFile := filepath.Join(outDir, name+".dart")
-	if err := os.WriteFile(dartFile, code, 0o644); err != nil {
-		t.Fatalf("write: %v", err)
-	}
-	cmd := exec.Command("dart", dartFile)
-	out, err := cmd.CombinedOutput()
-	got := bytes.TrimSpace(out)
-	if err != nil {
-		_ = os.WriteFile(filepath.Join(outDir, name+".error"), out, 0o644)
-		t.Fatalf("run: %v", err)
-	}
-	_ = os.Remove(filepath.Join(outDir, name+".error"))
-	wantPath := filepath.Join(outDir, name+".out")
-	want, err := os.ReadFile(wantPath)
-	if err != nil {
-		t.Fatalf("read want: %v", err)
-	}
-	want = bytes.TrimSpace(want)
-	if !bytes.Equal(got, want) {
-		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
-	}
+	runGolden(t, "typed_let")
 }
 
 func TestTranspile_TypedVar(t *testing.T) {
-	if _, err := exec.LookPath("dart"); err != nil {
-		t.Skip("dart not installed")
-	}
-	root := findRepoRoot(t)
-	outDir := filepath.Join(root, "tests", "transpiler", "x", "dart")
-	os.MkdirAll(outDir, 0o755)
-
-	src := filepath.Join(root, "tests", "vm", "valid", "typed_var.mochi")
-	prog, err := parser.Parse(src)
-	if err != nil {
-		t.Fatalf("parse: %v", err)
-	}
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
-		t.Fatalf("type: %v", errs[0])
-	}
-	ast, err := dartt.Transpile(prog, env)
-	if err != nil {
-		t.Fatalf("transpile: %v", err)
-	}
-	var buf bytes.Buffer
-	if err := dartt.Emit(&buf, ast); err != nil {
-		t.Fatalf("emit: %v", err)
-	}
-	code := buf.Bytes()
-	name := "typed_var"
-	dartFile := filepath.Join(outDir, name+".dart")
-	if err := os.WriteFile(dartFile, code, 0o644); err != nil {
-		t.Fatalf("write: %v", err)
-	}
-	cmd := exec.Command("dart", dartFile)
-	out, err := cmd.CombinedOutput()
-	got := bytes.TrimSpace(out)
-	if err != nil {
-		_ = os.WriteFile(filepath.Join(outDir, name+".error"), out, 0o644)
-		t.Fatalf("run: %v", err)
-	}
-	_ = os.Remove(filepath.Join(outDir, name+".error"))
-	wantPath := filepath.Join(outDir, name+".out")
-	want, err := os.ReadFile(wantPath)
-	if err != nil {
-		t.Fatalf("read want: %v", err)
-	}
-	want = bytes.TrimSpace(want)
-	if !bytes.Equal(got, want) {
-		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
-	}
+	runGolden(t, "typed_var")
 }
 
 func TestTranspile_UnaryNeg(t *testing.T) {
-	if _, err := exec.LookPath("dart"); err != nil {
-		t.Skip("dart not installed")
-	}
-	root := findRepoRoot(t)
-	outDir := filepath.Join(root, "tests", "transpiler", "x", "dart")
-	os.MkdirAll(outDir, 0o755)
-
-	src := filepath.Join(root, "tests", "vm", "valid", "unary_neg.mochi")
-	prog, err := parser.Parse(src)
-	if err != nil {
-		t.Fatalf("parse: %v", err)
-	}
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
-		t.Fatalf("type: %v", errs[0])
-	}
-	ast, err := dartt.Transpile(prog, env)
-	if err != nil {
-		t.Fatalf("transpile: %v", err)
-	}
-	var buf bytes.Buffer
-	if err := dartt.Emit(&buf, ast); err != nil {
-		t.Fatalf("emit: %v", err)
-	}
-	code := buf.Bytes()
-	name := "unary_neg"
-	dartFile := filepath.Join(outDir, name+".dart")
-	if err := os.WriteFile(dartFile, code, 0o644); err != nil {
-		t.Fatalf("write: %v", err)
-	}
-	cmd := exec.Command("dart", dartFile)
-	out, err := cmd.CombinedOutput()
-	got := bytes.TrimSpace(out)
-	if err != nil {
-		_ = os.WriteFile(filepath.Join(outDir, name+".error"), out, 0o644)
-		t.Fatalf("run: %v", err)
-	}
-	_ = os.Remove(filepath.Join(outDir, name+".error"))
-	wantPath := filepath.Join(outDir, name+".out")
-	want, err := os.ReadFile(wantPath)
-	if err != nil {
-		t.Fatalf("read want: %v", err)
-	}
-	want = bytes.TrimSpace(want)
-	if !bytes.Equal(got, want) {
-		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
-	}
+	runGolden(t, "unary_neg")
 }
 
 func TestTranspile_WhileLoop(t *testing.T) {
-	if _, err := exec.LookPath("dart"); err != nil {
-		t.Skip("dart not installed")
-	}
-	root := findRepoRoot(t)
-	outDir := filepath.Join(root, "tests", "transpiler", "x", "dart")
-	os.MkdirAll(outDir, 0o755)
-
-	src := filepath.Join(root, "tests", "vm", "valid", "while_loop.mochi")
-	prog, err := parser.Parse(src)
-	if err != nil {
-		t.Fatalf("parse: %v", err)
-	}
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
-		t.Fatalf("type: %v", errs[0])
-	}
-	ast, err := dartt.Transpile(prog, env)
-	if err != nil {
-		t.Fatalf("transpile: %v", err)
-	}
-	var buf bytes.Buffer
-	if err := dartt.Emit(&buf, ast); err != nil {
-		t.Fatalf("emit: %v", err)
-	}
-	code := buf.Bytes()
-	name := "while_loop"
-	dartFile := filepath.Join(outDir, name+".dart")
-	if err := os.WriteFile(dartFile, code, 0o644); err != nil {
-		t.Fatalf("write: %v", err)
-	}
-	cmd := exec.Command("dart", dartFile)
-	out, err := cmd.CombinedOutput()
-	got := bytes.TrimSpace(out)
-	if err != nil {
-		_ = os.WriteFile(filepath.Join(outDir, name+".error"), out, 0o644)
-		t.Fatalf("run: %v", err)
-	}
-	_ = os.Remove(filepath.Join(outDir, name+".error"))
-	wantPath := filepath.Join(outDir, name+".out")
-	want, err := os.ReadFile(wantPath)
-	if err != nil {
-		t.Fatalf("read want: %v", err)
-	}
-	want = bytes.TrimSpace(want)
-	if !bytes.Equal(got, want) {
-		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
-	}
+	runGolden(t, "while_loop")
 }
 
 func TestTranspile_BinaryPrecedence(t *testing.T) {
-	if _, err := exec.LookPath("dart"); err != nil {
-		t.Skip("dart not installed")
-	}
-	root := findRepoRoot(t)
-	outDir := filepath.Join(root, "tests", "transpiler", "x", "dart")
-	os.MkdirAll(outDir, 0o755)
-
-	src := filepath.Join(root, "tests", "vm", "valid", "binary_precedence.mochi")
-	prog, err := parser.Parse(src)
-	if err != nil {
-		t.Fatalf("parse: %v", err)
-	}
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
-		t.Fatalf("type: %v", errs[0])
-	}
-	ast, err := dartt.Transpile(prog, env)
-	if err != nil {
-		t.Fatalf("transpile: %v", err)
-	}
-	var buf bytes.Buffer
-	if err := dartt.Emit(&buf, ast); err != nil {
-		t.Fatalf("emit: %v", err)
-	}
-	code := buf.Bytes()
-	name := "binary_precedence"
-	dartFile := filepath.Join(outDir, name+".dart")
-	if err := os.WriteFile(dartFile, code, 0o644); err != nil {
-		t.Fatalf("write: %v", err)
-	}
-	cmd := exec.Command("dart", dartFile)
-	out, err := cmd.CombinedOutput()
-	got := bytes.TrimSpace(out)
-	if err != nil {
-		_ = os.WriteFile(filepath.Join(outDir, name+".error"), out, 0o644)
-		t.Fatalf("run: %v", err)
-	}
-	_ = os.Remove(filepath.Join(outDir, name+".error"))
-	wantPath := filepath.Join(outDir, name+".out")
-	want, err := os.ReadFile(wantPath)
-	if err != nil {
-		t.Fatalf("read want: %v", err)
-	}
-	want = bytes.TrimSpace(want)
-	if !bytes.Equal(got, want) {
-		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
-	}
+	runGolden(t, "binary_precedence")
 }
 
 func TestTranspile_LenString(t *testing.T) {
-	if _, err := exec.LookPath("dart"); err != nil {
-		t.Skip("dart not installed")
-	}
-	root := findRepoRoot(t)
-	outDir := filepath.Join(root, "tests", "transpiler", "x", "dart")
-	os.MkdirAll(outDir, 0o755)
-
-	src := filepath.Join(root, "tests", "vm", "valid", "len_string.mochi")
-	prog, err := parser.Parse(src)
-	if err != nil {
-		t.Fatalf("parse: %v", err)
-	}
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
-		t.Fatalf("type: %v", errs[0])
-	}
-	ast, err := dartt.Transpile(prog, env)
-	if err != nil {
-		t.Fatalf("transpile: %v", err)
-	}
-	var buf bytes.Buffer
-	if err := dartt.Emit(&buf, ast); err != nil {
-		t.Fatalf("emit: %v", err)
-	}
-	code := buf.Bytes()
-	name := "len_string"
-	dartFile := filepath.Join(outDir, name+".dart")
-	if err := os.WriteFile(dartFile, code, 0o644); err != nil {
-		t.Fatalf("write: %v", err)
-	}
-	cmd := exec.Command("dart", dartFile)
-	out, err := cmd.CombinedOutput()
-	got := bytes.TrimSpace(out)
-	if err != nil {
-		_ = os.WriteFile(filepath.Join(outDir, name+".error"), out, 0o644)
-		t.Fatalf("run: %v", err)
-	}
-	_ = os.Remove(filepath.Join(outDir, name+".error"))
-	wantPath := filepath.Join(outDir, name+".out")
-	want, err := os.ReadFile(wantPath)
-	if err != nil {
-		t.Fatalf("read want: %v", err)
-	}
-	want = bytes.TrimSpace(want)
-	if !bytes.Equal(got, want) {
-		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
-	}
+	runGolden(t, "len_string")
 }
 
 func TestTranspile_ForLoop(t *testing.T) {
-	if _, err := exec.LookPath("dart"); err != nil {
-		t.Skip("dart not installed")
-	}
-	root := findRepoRoot(t)
-	outDir := filepath.Join(root, "tests", "transpiler", "x", "dart")
-	os.MkdirAll(outDir, 0o755)
-
-	src := filepath.Join(root, "tests", "vm", "valid", "for_loop.mochi")
-	prog, err := parser.Parse(src)
-	if err != nil {
-		t.Fatalf("parse: %v", err)
-	}
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
-		t.Fatalf("type: %v", errs[0])
-	}
-	ast, err := dartt.Transpile(prog, env)
-	if err != nil {
-		t.Fatalf("transpile: %v", err)
-	}
-	var buf bytes.Buffer
-	if err := dartt.Emit(&buf, ast); err != nil {
-		t.Fatalf("emit: %v", err)
-	}
-	code := buf.Bytes()
-	name := "for_loop"
-	dartFile := filepath.Join(outDir, name+".dart")
-	if err := os.WriteFile(dartFile, code, 0o644); err != nil {
-		t.Fatalf("write: %v", err)
-	}
-	cmd := exec.Command("dart", dartFile)
-	out, err := cmd.CombinedOutput()
-	got := bytes.TrimSpace(out)
-	if err != nil {
-		_ = os.WriteFile(filepath.Join(outDir, name+".error"), out, 0o644)
-		t.Fatalf("run: %v", err)
-	}
-	_ = os.Remove(filepath.Join(outDir, name+".error"))
-	wantPath := filepath.Join(outDir, name+".out")
-	want, err := os.ReadFile(wantPath)
-	if err != nil {
-		t.Fatalf("read want: %v", err)
-	}
-	want = bytes.TrimSpace(want)
-	if !bytes.Equal(got, want) {
-		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
-	}
+	runGolden(t, "for_loop")
 }
 
 func TestTranspile_ForListCollection(t *testing.T) {
-	if _, err := exec.LookPath("dart"); err != nil {
-		t.Skip("dart not installed")
-	}
-	root := findRepoRoot(t)
-	outDir := filepath.Join(root, "tests", "transpiler", "x", "dart")
-	os.MkdirAll(outDir, 0o755)
+	runGolden(t, "for_list_collection")
+}
 
-	src := filepath.Join(root, "tests", "vm", "valid", "for_list_collection.mochi")
-	prog, err := parser.Parse(src)
-	if err != nil {
-		t.Fatalf("parse: %v", err)
-	}
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
-		t.Fatalf("type: %v", errs[0])
-	}
-	ast, err := dartt.Transpile(prog, env)
-	if err != nil {
-		t.Fatalf("transpile: %v", err)
-	}
-	var buf bytes.Buffer
-	if err := dartt.Emit(&buf, ast); err != nil {
-		t.Fatalf("emit: %v", err)
-	}
-	code := buf.Bytes()
-	name := "for_list_collection"
-	dartFile := filepath.Join(outDir, name+".dart")
-	if err := os.WriteFile(dartFile, code, 0o644); err != nil {
-		t.Fatalf("write: %v", err)
-	}
-	cmd := exec.Command("dart", dartFile)
-	out, err := cmd.CombinedOutput()
-	got := bytes.TrimSpace(out)
-	if err != nil {
-		_ = os.WriteFile(filepath.Join(outDir, name+".error"), out, 0o644)
-		t.Fatalf("run: %v", err)
-	}
-	_ = os.Remove(filepath.Join(outDir, name+".error"))
-	wantPath := filepath.Join(outDir, name+".out")
-	want, err := os.ReadFile(wantPath)
-	if err != nil {
-		t.Fatalf("read want: %v", err)
-	}
-	want = bytes.TrimSpace(want)
-	if !bytes.Equal(got, want) {
-		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
-	}
+func TestTranspile_FunCall(t *testing.T) {
+	runGolden(t, "fun_call")
+}
+
+func TestTranspile_FunExprInLet(t *testing.T) {
+	runGolden(t, "fun_expr_in_let")
+}
+
+func TestTranspile_FunThreeArgs(t *testing.T) {
+	runGolden(t, "fun_three_args")
 }

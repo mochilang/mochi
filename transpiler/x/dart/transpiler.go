@@ -427,6 +427,18 @@ type IntLit struct{ Value int }
 
 func (i *IntLit) emit(w io.Writer) error { _, err := fmt.Fprintf(w, "%d", i.Value); return err }
 
+// BoolLit represents a boolean literal.
+type BoolLit struct{ Value bool }
+
+func (b *BoolLit) emit(w io.Writer) error {
+	if b.Value {
+		_, err := io.WriteString(w, "true")
+		return err
+	}
+	_, err := io.WriteString(w, "false")
+	return err
+}
+
 // ListLit represents a list literal.
 type ListLit struct{ Elems []Expr }
 
@@ -820,10 +832,12 @@ func convertUnary(u *parser.Unary) (Expr, error) {
 	}
 	for i := len(u.Ops) - 1; i >= 0; i-- {
 		op := u.Ops[i]
-		if op != "-" {
+		switch op {
+		case "-", "!":
+			ex = &UnaryExpr{Op: op, X: ex}
+		default:
 			return nil, fmt.Errorf("unary op %s not supported", op)
 		}
-		ex = &UnaryExpr{Op: op, X: ex}
 	}
 	return ex, nil
 }
@@ -860,6 +874,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			ce.Args = append(ce.Args, ex)
 		}
 		return ce, nil
+	case p.Lit != nil && p.Lit.Bool != nil:
+		return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
 	case p.Lit != nil && p.Lit.Str != nil:
 		return &StringLit{Value: *p.Lit.Str}, nil
 	case p.Lit != nil && p.Lit.Int != nil:
@@ -892,20 +908,58 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 	return nil, fmt.Errorf("unsupported expression")
 }
 
-func isBoolExpr(e *parser.Expr) bool {
-	if e == nil || e.Binary == nil {
+func isBoolExpr(e *parser.Expr) bool { return isBoolBinary(e.Binary) }
+
+func isBoolBinary(b *parser.BinaryExpr) bool {
+	if b == nil {
 		return false
 	}
-	if len(e.Binary.Right) == 0 {
-		return false
+	if len(b.Right) == 0 {
+		return isBoolUnary(b.Left)
 	}
-	for _, op := range e.Binary.Right {
+	for _, op := range b.Right {
 		switch op.Op {
-		case "==", "!=", "<", "<=", ">", ">=":
+		case "==", "!=", "<", "<=", ">", ">=", "&&", "||":
+			return true
+		}
+		if isBoolPostfix(op.Right) {
 			return true
 		}
 	}
-	return false
+	return isBoolUnary(b.Left)
+}
+
+func isBoolUnary(u *parser.Unary) bool {
+	if u == nil {
+		return false
+	}
+	for _, op := range u.Ops {
+		if op == "!" {
+			return true
+		}
+	}
+	return isBoolPostfix(u.Value)
+}
+
+func isBoolPostfix(pf *parser.PostfixExpr) bool {
+	if pf == nil || len(pf.Ops) > 0 {
+		return false
+	}
+	return isBoolPrimary(pf.Target)
+}
+
+func isBoolPrimary(p *parser.Primary) bool {
+	if p == nil {
+		return false
+	}
+	switch {
+	case p.Lit != nil && p.Lit.Bool != nil:
+		return true
+	case p.Group != nil:
+		return isBoolExpr(p.Group)
+	default:
+		return false
+	}
 }
 
 // --- AST -> generic node (for debugging) ---
@@ -1005,6 +1059,11 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "string", Value: ex.Value}
 	case *IntLit:
 		return &ast.Node{Kind: "int", Value: fmt.Sprint(ex.Value)}
+	case *BoolLit:
+		if ex.Value {
+			return &ast.Node{Kind: "bool", Value: "true"}
+		}
+		return &ast.Node{Kind: "bool", Value: "false"}
 	case *BinaryExpr:
 		return &ast.Node{Kind: "binary", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
 	case *UnaryExpr:
