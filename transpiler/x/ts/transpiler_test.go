@@ -18,7 +18,7 @@ import (
 
 // TestTranspilePrintHello compiles the simple print_hello.mochi program to
 // TypeScript, runs the result with Deno and compares the runtime output with the
-// existing golden .output file. The generated TypeScript itself is written to
+// existing golden .out file. The generated TypeScript itself is written to
 // tests/transpiler/x/ts but not compared.
 func TestTranspilePrintHello(t *testing.T) {
 	if err := meta.EnsureDeno(); err != nil {
@@ -64,7 +64,7 @@ func TestTranspilePrintHello(t *testing.T) {
 		t.Fatalf("deno run: %v\n%s", err, buf.Bytes())
 	}
 	got := strings.TrimSpace(buf.String())
-	wantBytes, err := os.ReadFile(filepath.Join(outDir, base+".output"))
+	wantBytes, err := os.ReadFile(filepath.Join(outDir, base+".out"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -73,7 +73,7 @@ func TestTranspilePrintHello(t *testing.T) {
 		_ = os.WriteFile(filepath.Join(outDir, base+".error"), []byte("output mismatch\n-- got --\n"+got+"\n-- want --\n"+want), 0o644)
 		t.Fatalf("unexpected output: got %q want %q", got, want)
 	}
-	if err := os.WriteFile(filepath.Join(outDir, base+".output"), []byte(got+"\n"), 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(outDir, base+".out"), []byte(got+"\n"), 0o644); err != nil {
 		t.Fatal(err)
 	}
 	_ = os.Remove(filepath.Join(outDir, base+".error"))
