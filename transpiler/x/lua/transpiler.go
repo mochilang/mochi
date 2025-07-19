@@ -32,6 +32,12 @@ type CallExpr struct {
 }
 
 type StringLit struct{ Value string }
+type IntLit struct{ Value int }
+type BinaryExpr struct {
+	Left  Expr
+	Op    string
+	Right Expr
+}
 
 func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
 
@@ -48,6 +54,16 @@ func (c *CallExpr) emit(w io.Writer) {
 }
 
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
+func (i *IntLit) emit(w io.Writer)    { fmt.Fprintf(w, "%d", i.Value) }
+func (b *BinaryExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
+	b.Left.emit(w)
+	io.WriteString(w, " ")
+	io.WriteString(w, b.Op)
+	io.WriteString(w, " ")
+	b.Right.emit(w)
+	io.WriteString(w, ")")
+}
 
 func repoRoot() string {
 	dir, err := os.Getwd()
@@ -99,9 +115,139 @@ func Emit(p *Program) []byte {
 	return b.Bytes()
 }
 
-// Transpile converts a Mochi AST into a simple Lua AST. Only a tiny subset
-// of the language is supported: programs consisting of calls to the builtin
-// print function with string literal arguments.
+func convertExpr(e *parser.Expr) (Expr, error) {
+	if e == nil {
+		return nil, fmt.Errorf("nil expr")
+	}
+	return convertBinary(e.Binary)
+}
+
+func convertBinary(b *parser.BinaryExpr) (Expr, error) {
+	if b == nil {
+		return nil, fmt.Errorf("nil binary")
+	}
+	left, err := convertUnary(b.Left)
+	if err != nil {
+		return nil, err
+	}
+	exprs := []Expr{left}
+	ops := []string{}
+	for _, op := range b.Right {
+		right, err := convertPostfix(op.Right)
+		if err != nil {
+			return nil, err
+		}
+		exprs = append(exprs, right)
+		ops = append(ops, op.Op)
+	}
+	expr, err := buildPrecedence(exprs, ops)
+	if err != nil {
+		return nil, err
+	}
+	return expr, nil
+}
+
+func buildPrecedence(exprs []Expr, ops []string) (Expr, error) {
+	// handle *, / first
+	prec := func(op string) int {
+		switch op {
+		case "*", "/", "%":
+			return 2
+		case "+", "-":
+			return 1
+		default:
+			return 0
+		}
+	}
+	for {
+		idx := -1
+		for i, op := range ops {
+			if prec(op) == 2 {
+				idx = i
+				break
+			}
+		}
+		if idx == -1 {
+			break
+		}
+		expr := &BinaryExpr{Left: exprs[idx], Op: ops[idx], Right: exprs[idx+1]}
+		exprs = append(exprs[:idx], append([]Expr{expr}, exprs[idx+2:]...)...)
+		ops = append(ops[:idx], ops[idx+1:]...)
+	}
+	for len(ops) > 0 {
+		expr := &BinaryExpr{Left: exprs[0], Op: ops[0], Right: exprs[1]}
+		exprs = append([]Expr{expr}, exprs[2:]...)
+		ops = ops[1:]
+	}
+	if len(exprs) != 1 {
+		return nil, fmt.Errorf("invalid expression")
+	}
+	return exprs[0], nil
+}
+
+func convertUnary(u *parser.Unary) (Expr, error) {
+	if u == nil {
+		return nil, fmt.Errorf("nil unary")
+	}
+	expr, err := convertPostfix(u.Value)
+	if err != nil {
+		return nil, err
+	}
+	for i := len(u.Ops) - 1; i >= 0; i-- {
+		op := u.Ops[i]
+		if op != "-" {
+			return nil, fmt.Errorf("unsupported unary operator")
+		}
+		expr = &BinaryExpr{Left: &IntLit{Value: 0}, Op: "-", Right: expr}
+	}
+	return expr, nil
+}
+
+func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
+	if p == nil {
+		return nil, fmt.Errorf("nil postfix")
+	}
+	if len(p.Ops) > 0 {
+		return nil, fmt.Errorf("postfix ops not supported")
+	}
+	return convertPrimary(p.Target)
+}
+
+func convertPrimary(p *parser.Primary) (Expr, error) {
+	switch {
+	case p.Lit != nil:
+		return convertLiteral(p.Lit)
+	case p.Call != nil:
+		ce := &CallExpr{Func: p.Call.Func}
+		for _, a := range p.Call.Args {
+			ae, err := convertExpr(a)
+			if err != nil {
+				return nil, err
+			}
+			ce.Args = append(ce.Args, ae)
+		}
+		return ce, nil
+	case p.Group != nil:
+		return convertExpr(p.Group)
+	default:
+		return nil, fmt.Errorf("unsupported expression")
+	}
+}
+
+func convertLiteral(l *parser.Literal) (Expr, error) {
+	switch {
+	case l.Int != nil:
+		return &IntLit{Value: int(*l.Int)}, nil
+	case l.Str != nil:
+		return &StringLit{Value: *l.Str}, nil
+	default:
+		return nil, fmt.Errorf("unsupported literal")
+	}
+}
+
+// Transpile converts a Mochi AST into a simple Lua AST. It currently handles
+// programs made of `print` statements whose arguments are integer or string
+// expressions including unary negation and binary arithmetic.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	_ = env
 	lp := &Program{}
@@ -117,13 +263,13 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			return nil, fmt.Errorf("print expects one argument")
 		}
 		arg := call.Args[0]
-		lit := arg.Binary.Left.Value.Target.Lit
-		if lit == nil || lit.Str == nil {
-			return nil, fmt.Errorf("unsupported argument")
+		expr, err := convertExpr(arg)
+		if err != nil {
+			return nil, fmt.Errorf("unsupported argument: %w", err)
 		}
 		lp.Stmts = append(lp.Stmts, &ExprStmt{Expr: &CallExpr{
 			Func: "print",
-			Args: []Expr{&StringLit{Value: *lit.Str}},
+			Args: []Expr{expr},
 		}})
 	}
 	return lp, nil
@@ -162,6 +308,10 @@ func exprNode(e Expr) *ast.Node {
 		return n
 	case *StringLit:
 		return &ast.Node{Kind: "string", Value: ex.Value}
+	case *IntLit:
+		return &ast.Node{Kind: "int", Value: fmt.Sprintf("%d", ex.Value)}
+	case *BinaryExpr:
+		return &ast.Node{Kind: "bin", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
