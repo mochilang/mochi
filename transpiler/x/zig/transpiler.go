@@ -90,6 +90,15 @@ type BinaryExpr struct {
 	Right Expr
 }
 
+// ListLit represents a list literal of integer expressions.
+type ListLit struct{ Elems []Expr }
+
+// IndexExpr represents list indexing like `xs[i]`.
+type IndexExpr struct {
+	Target Expr
+	Index  Expr
+}
+
 func repoRoot() (string, error) {
 	dir, err := os.Getwd()
 	if err != nil {
@@ -168,15 +177,20 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 		io.WriteString(w, "    ")
 	}
 	str := isStringExpr(v.Value)
+	list, isList := v.Value.(*ListLit)
 	if v.Mutable {
 		if str {
 			fmt.Fprintf(w, "var %s: []const u8 = ", v.Name)
+		} else if isList {
+			fmt.Fprintf(w, "var %s: [%d]i64 = ", v.Name, len(list.Elems))
 		} else {
 			fmt.Fprintf(w, "var %s: i64 = ", v.Name)
 		}
 	} else {
 		if str {
 			fmt.Fprintf(w, "const %s: []const u8 = ", v.Name)
+		} else if isList {
+			fmt.Fprintf(w, "const %s: [%d]i64 = ", v.Name, len(list.Elems))
 		} else {
 			fmt.Fprintf(w, "const %s: i64 = ", v.Name)
 		}
@@ -228,6 +242,24 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	fmt.Fprintf(w, " %s ", b.Op)
 	b.Right.emit(w)
 	io.WriteString(w, ")")
+}
+
+func (l *ListLit) emit(w io.Writer) {
+	io.WriteString(w, ".{")
+	for i, e := range l.Elems {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		e.emit(w)
+	}
+	io.WriteString(w, "}")
+}
+
+func (i *IndexExpr) emit(w io.Writer) {
+	i.Target.emit(w)
+	io.WriteString(w, "[")
+	i.Index.emit(w)
+	io.WriteString(w, "]")
 }
 
 func (b *BoolLit) emit(w io.Writer) {
@@ -329,6 +361,8 @@ func (c *CallExpr) emit(w io.Writer) {
 		if len(c.Args) > 0 {
 			if s, ok := c.Args[0].(*StringLit); ok {
 				fmt.Fprintf(w, "%q.len", s.Value)
+			} else if l, ok := c.Args[0].(*ListLit); ok {
+				fmt.Fprintf(w, "%d", len(l.Elems))
 			} else {
 				io.WriteString(w, "std.mem.len(")
 				c.Args[0].emit(w)
@@ -444,6 +478,14 @@ func toExprNode(e Expr) *ast.Node {
 			return &ast.Node{Kind: "bool", Value: "true"}
 		}
 		return &ast.Node{Kind: "bool", Value: "false"}
+	case *ListLit:
+		n := &ast.Node{Kind: "list"}
+		for _, e2 := range ex.Elems {
+			n.Children = append(n.Children, toExprNode(e2))
+		}
+		return n
+	case *IndexExpr:
+		return &ast.Node{Kind: "index", Children: []*ast.Node{toExprNode(ex.Target), toExprNode(ex.Index)}}
 	case *IfExpr:
 		n := &ast.Node{Kind: "if", Children: []*ast.Node{toExprNode(ex.Cond), toExprNode(ex.Then), toExprNode(ex.Else)}}
 		return n
@@ -496,10 +538,25 @@ func compileUnary(u *parser.Unary) (Expr, error) {
 }
 
 func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
-	if pf == nil || len(pf.Ops) > 0 {
-		return nil, fmt.Errorf("unsupported postfix")
+	if pf == nil {
+		return nil, fmt.Errorf("nil postfix")
 	}
-	return compilePrimary(pf.Target)
+	expr, err := compilePrimary(pf.Target)
+	if err != nil {
+		return nil, err
+	}
+	for _, op := range pf.Ops {
+		if op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil {
+			idx, err := compileExpr(op.Index.Start)
+			if err != nil {
+				return nil, err
+			}
+			expr = &IndexExpr{Target: expr, Index: idx}
+		} else {
+			return nil, fmt.Errorf("unsupported postfix")
+		}
+	}
+	return expr, nil
 }
 
 func compilePrimary(p *parser.Primary) (Expr, error) {
@@ -525,6 +582,16 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
 		}
 		return nil, fmt.Errorf("unsupported literal")
+	case p.List != nil:
+		elems := make([]Expr, len(p.List.Elems))
+		for i, e := range p.List.Elems {
+			ex, err := compileExpr(e)
+			if err != nil {
+				return nil, err
+			}
+			elems[i] = ex
+		}
+		return &ListLit{Elems: elems}, nil
 	case p.If != nil:
 		return compileIfExpr(p.If)
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
