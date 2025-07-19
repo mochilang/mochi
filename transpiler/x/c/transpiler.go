@@ -157,9 +157,21 @@ type BinaryExpr struct {
 }
 
 func (b *BinaryExpr) emitExpr(w io.Writer) {
-	b.Left.emitExpr(w)
+	if _, ok := b.Left.(*BinaryExpr); ok {
+		io.WriteString(w, "(")
+		b.Left.emitExpr(w)
+		io.WriteString(w, ")")
+	} else {
+		b.Left.emitExpr(w)
+	}
 	fmt.Fprintf(w, " %s ", b.Op)
-	b.Right.emitExpr(w)
+	if _, ok := b.Right.(*BinaryExpr); ok {
+		io.WriteString(w, "(")
+		b.Right.emitExpr(w)
+		io.WriteString(w, ")")
+	} else {
+		b.Right.emitExpr(w)
+	}
 }
 
 func escape(s string) string {
@@ -301,18 +313,63 @@ func convertExpr(e *parser.Expr) Expr {
 	if e == nil || e.Binary == nil {
 		return nil
 	}
+	// Convert left operand
 	left := convertUnary(e.Binary.Left)
-	if len(e.Binary.Right) == 0 {
-		return left
+	if left == nil {
+		return nil
 	}
-	if len(e.Binary.Right) == 1 {
-		op := e.Binary.Right[0]
-		right := convertUnary(&parser.Unary{Value: op.Right})
-		if left != nil && right != nil {
-			return &BinaryExpr{Op: op.Op, Left: left, Right: right}
+
+	operands := []Expr{left}
+	var operators []string
+
+	// Convert remaining operators and operands
+	for _, part := range e.Binary.Right {
+		rhs := convertUnary(&parser.Unary{Value: part.Right})
+		if rhs == nil {
+			return nil
+		}
+		operators = append(operators, part.Op)
+		operands = append(operands, rhs)
+	}
+
+	// Operator precedence levels (highest to lowest) to match interpreter
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+		{"union", "union_all", "except", "intersect"},
+	}
+
+	contains := func(list []string, op string) bool {
+		for _, v := range list {
+			if v == op {
+				return true
+			}
+		}
+		return false
+	}
+
+	// Build expression tree respecting precedence
+	for _, level := range levels {
+		for i := 0; i < len(operators); {
+			if contains(level, operators[i]) {
+				bin := &BinaryExpr{Op: operators[i], Left: operands[i], Right: operands[i+1]}
+				operands[i] = bin
+				operands = append(operands[:i+1], operands[i+2:]...)
+				operators = append(operators[:i], operators[i+1:]...)
+			} else {
+				i++
+			}
 		}
 	}
-	return nil
+
+	if len(operands) != 1 {
+		return nil
+	}
+	return operands[0]
 }
 
 func convertUnary(u *parser.Unary) Expr {
@@ -340,6 +397,12 @@ func convertUnary(u *parser.Unary) Expr {
 			}
 		}
 		return &IntLit{Value: v}
+	}
+	if lit.Bool != nil && len(u.Ops) == 0 {
+		if bool(*lit.Bool) {
+			return &IntLit{Value: 1}
+		}
+		return &IntLit{Value: 0}
 	}
 	return nil
 }
