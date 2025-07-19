@@ -108,6 +108,8 @@ func TestTranspilerGolden(t *testing.T) {
 		filepath.Join(srcDir, "var_assignment.mochi"),
 		filepath.Join(srcDir, "while_loop.mochi"),
 		filepath.Join(srcDir, "if_else.mochi"),
+		filepath.Join(srcDir, "basic_compare.mochi"),
+		filepath.Join(srcDir, "binary_precedence.mochi"),
 	}
 	if err := os.MkdirAll(goldenDir, 0o755); err != nil {
 		t.Fatalf("mkdir: %v", err)
