@@ -1,5 +1,10 @@
 # Rust Transpiler Tasks
 
+## Recent Enhancements (2025-07-19 19:02 +0000)
+- Removed `mochi_print_vec` helper; lists are printed inline using `join`.
+- Added basic type inference for variables.
+- Updated golden output for `append_builtin` and README checklist.
+
 ## Recent Enhancements (2025-07-19 13:18 +0000)
 - Added support for index expressions and assignments.
 - Ignored cast operations for simple casts.
