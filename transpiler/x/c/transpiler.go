@@ -19,7 +19,7 @@ var (
 	constStrings map[string]string
 )
 
-const version = "0.10.31"
+const version = "0.10.32"
 
 // --- Simple C AST ---
 
@@ -591,15 +591,8 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			return &PrintStmt{Args: args, Types: typesList}, nil
 		}
 	case s.Let != nil:
-		t, _ := env.GetVar(s.Let.Name)
-		declType := "int"
-		switch t.(type) {
-		case types.StringType:
-			declType = "const char*"
-		case types.ListType:
-			declType = "int[]"
-		}
 		valExpr := convertExpr(s.Let.Value)
+		declType := inferCType(env, s.Let.Name, valExpr)
 		if list, ok := convertListExpr(s.Let.Value); ok {
 			constLists[s.Let.Name] = &ListLit{Elems: list}
 		} else {
@@ -612,15 +605,8 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		}
 		return &DeclStmt{Name: s.Let.Name, Value: valExpr, Type: declType}, nil
 	case s.Var != nil:
-		t, _ := env.GetVar(s.Var.Name)
-		declType := "int"
-		switch t.(type) {
-		case types.StringType:
-			declType = "const char*"
-		case types.ListType:
-			declType = "int[]"
-		}
 		valExpr := convertExpr(s.Var.Value)
+		declType := inferCType(env, s.Var.Name, valExpr)
 		if list, ok := convertListExpr(s.Var.Value); ok {
 			constLists[s.Var.Name] = &ListLit{Elems: list}
 		} else {
@@ -1119,4 +1105,22 @@ func exprIsString(e Expr) bool {
 	default:
 		return false
 	}
+}
+
+func inferCType(env *types.Env, name string, e Expr) string {
+	if _, ok := evalList(e); ok {
+		return "int[]"
+	}
+	if _, ok := evalString(e); ok {
+		return "const char*"
+	}
+	if t, err := env.GetVar(name); err == nil {
+		switch t.(type) {
+		case types.StringType:
+			return "const char*"
+		case types.ListType:
+			return "int[]"
+		}
+	}
+	return "int"
 }

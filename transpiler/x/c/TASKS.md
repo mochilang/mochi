@@ -1,3 +1,7 @@
+## Progress (2025-07-20 00:46 +0700)
+- VM valid golden test results updated to 35/100
+- Added simple type inference from constants and removed runtime helpers.
+
 ## Progress (2025-07-20 00:30 +0700)
 - VM valid golden test results updated to 35/100
 
