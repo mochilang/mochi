@@ -1028,7 +1028,33 @@ func TypeOfPostfixBasic(u *parser.Unary, env *Env) Type {
 	}
 	t := TypeOfPrimaryBasic(u.Value.Target, env)
 	for _, op := range u.Value.Ops {
-		if op.Cast != nil {
+		switch {
+		case op.Index != nil:
+			switch tt := t.(type) {
+			case ListType:
+				t = tt.Elem
+			case MapType:
+				t = tt.Value
+			default:
+				t = AnyType{}
+			}
+		case op.Field != nil:
+			if st, ok := t.(StructType); ok {
+				if ft, ok2 := st.Fields[op.Field.Name]; ok2 {
+					t = ft
+				} else {
+					t = AnyType{}
+				}
+			} else {
+				t = AnyType{}
+			}
+		case op.Call != nil:
+			if ft, ok := t.(FuncType); ok {
+				t = ft.Return
+			} else {
+				t = AnyType{}
+			}
+		case op.Cast != nil:
 			t = ResolveTypeRef(op.Cast.Type, env)
 		}
 	}
