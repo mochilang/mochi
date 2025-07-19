@@ -2,7 +2,7 @@ Starting board:
 
   1  2  3  4
   5  6  7  8
-  9 10 11 12
- 13  . 14 15
+  . 10 11 12
+  9 13 14 15
 Enter move #51 (U, D, L, R, or Q): 
 Quiting after 50 moves.
