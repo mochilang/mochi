@@ -119,6 +119,13 @@ type UnaryExpr struct {
 
 type ListLit struct{ Elems []Expr }
 
+// SubstringExpr represents substring(str, start, end).
+type SubstringExpr struct {
+	Str   Expr
+	Start Expr
+	End   Expr
+}
+
 // CondExpr represents a conditional expression using PHP's ternary operator.
 type CondExpr struct {
 	Cond Expr
@@ -195,6 +202,16 @@ func (l *ListLit) emit(w io.Writer) {
 		e.emit(w)
 	}
 	fmt.Fprint(w, "]")
+}
+
+func (s *SubstringExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "substr(")
+	s.Str.emit(w)
+	fmt.Fprint(w, ", ")
+	s.Start.emit(w)
+	fmt.Fprint(w, ", ")
+	(&BinaryExpr{Left: s.End, Op: "-", Right: s.Start}).emit(w)
+	fmt.Fprint(w, ")")
 }
 
 func (v *Var) emit(w io.Writer) { fmt.Fprintf(w, "$%s", v.Name) }
@@ -404,6 +421,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					name = "strlen"
 				}
 			}
+		} else if name == "substring" {
+			if len(args) != 3 {
+				return nil, fmt.Errorf("substring expects 3 args")
+			}
+			return &SubstringExpr{Str: args[0], Start: args[1], End: args[2]}, nil
 		}
 		return &CallExpr{Func: name, Args: args}, nil
 	case p.Lit != nil:
@@ -639,6 +661,8 @@ func exprNode(e Expr) *ast.Node {
 			n.Children = append(n.Children, exprNode(e))
 		}
 		return n
+	case *SubstringExpr:
+		return &ast.Node{Kind: "substring", Children: []*ast.Node{exprNode(ex.Str), exprNode(ex.Start), exprNode(ex.End)}}
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
