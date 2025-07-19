@@ -1,3 +1,5 @@
+//go:build slow
+
 package erl_test
 
 import (

@@ -1,3 +1,5 @@
+//go:build slow
+
 package dartt_test
 
 import (
