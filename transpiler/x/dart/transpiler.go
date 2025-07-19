@@ -219,11 +219,16 @@ func (s *IfStmt) emit(w io.Writer) error {
 
 type VarStmt struct {
 	Name  string
+	Type  string
 	Value Expr
 }
 
 func (s *VarStmt) emit(w io.Writer) error {
-	if _, err := io.WriteString(w, "var "+s.Name); err != nil {
+	prefix := "var"
+	if s.Type != "" {
+		prefix = s.Type
+	}
+	if _, err := io.WriteString(w, prefix+" "+s.Name); err != nil {
 		return err
 	}
 	if s.Value != nil {
@@ -249,11 +254,16 @@ func (s *AssignStmt) emit(w io.Writer) error {
 
 type LetStmt struct {
 	Name  string
+	Type  string
 	Value Expr
 }
 
 func (s *LetStmt) emit(w io.Writer) error {
-	if _, err := io.WriteString(w, "var "+s.Name+" = "); err != nil {
+	prefix := "var"
+	if s.Type != "" {
+		prefix = s.Type
+	}
+	if _, err := io.WriteString(w, prefix+" "+s.Name+" = "); err != nil {
 		return err
 	}
 	return s.Value.emit(w)
@@ -561,6 +571,18 @@ func (a *AppendExpr) emit(w io.Writer) error {
 // AvgExpr represents avg(list).
 type AvgExpr struct{ List Expr }
 
+// SumExpr represents sum(list).
+type SumExpr struct{ List Expr }
+
+// CountExpr represents count(list).
+type CountExpr struct{ List Expr }
+
+// MinExpr represents min(list).
+type MinExpr struct{ List Expr }
+
+// MaxExpr represents max(list).
+type MaxExpr struct{ List Expr }
+
 func (a *AvgExpr) emit(w io.Writer) error {
 	if _, err := io.WriteString(w, "(() { var _list = "); err != nil {
 		return err
@@ -569,6 +591,53 @@ func (a *AvgExpr) emit(w io.Writer) error {
 		return err
 	}
 	if _, err := io.WriteString(w, "; if (_list.isEmpty) return 0; var _sum = 0; for (var _v in _list) { _sum += _v; } return _sum / _list.length; })()"); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *SumExpr) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "(() { var _list = "); err != nil {
+		return err
+	}
+	if err := s.List.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, "; var _sum = 0; for (var _v in _list) { _sum += _v; } return _sum; })()"); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *CountExpr) emit(w io.Writer) error {
+	if err := c.List.emit(w); err != nil {
+		return err
+	}
+	_, err := io.WriteString(w, ".length")
+	return err
+}
+
+func (m *MinExpr) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "(() { var _l = "); err != nil {
+		return err
+	}
+	if err := m.List.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, "; if (_l.isEmpty) return 0; var _m = _l[0]; for (var v in _l) { if (v < _m) _m = v; } return _m; })()"); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *MaxExpr) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "(() { var _l = "); err != nil {
+		return err
+	}
+	if err := m.List.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, "; if (_l.isEmpty) return 0; var _m = _l[0]; for (var v in _l) { if (v > _m) _m = v; } return _m; })()"); err != nil {
 		return err
 	}
 	return nil
@@ -616,6 +685,18 @@ func (l *LenExpr) emit(w io.Writer) error {
 	}
 	_, err := io.WriteString(w, ".length")
 	return err
+}
+
+func inferType(e Expr) string {
+	switch e.(type) {
+	case *IntLit:
+		return "int"
+	case *BoolLit:
+		return "bool"
+	case *StringLit:
+		return "String"
+	}
+	return ""
 }
 
 func emitExpr(w io.Writer, e Expr) error { return e.emit(w) }
@@ -847,7 +928,14 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 		} else {
 			return nil, fmt.Errorf("let missing value not supported")
 		}
-		return &LetStmt{Name: st.Let.Name, Value: e}, nil
+		typ := ""
+		if st.Let.Type != nil && st.Let.Type.Simple != nil {
+			typ = *st.Let.Type.Simple
+		}
+		if typ == "" {
+			typ = inferType(e)
+		}
+		return &LetStmt{Name: st.Let.Name, Type: typ, Value: e}, nil
 	case st.Var != nil:
 		var e Expr
 		if st.Var.Value != nil {
@@ -859,7 +947,14 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 		} else if st.Var.Type != nil && st.Var.Type.Simple != nil && *st.Var.Type.Simple == "int" {
 			e = &IntLit{Value: 0}
 		}
-		return &VarStmt{Name: st.Var.Name, Value: e}, nil
+		typ := ""
+		if st.Var.Type != nil && st.Var.Type.Simple != nil {
+			typ = *st.Var.Type.Simple
+		}
+		if typ == "" {
+			typ = inferType(e)
+		}
+		return &VarStmt{Name: st.Var.Name, Type: typ, Value: e}, nil
 	case st.Assign != nil:
 		if len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0 {
 			return nil, fmt.Errorf("complex assignment not supported")
@@ -1044,6 +1139,34 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			return &AvgExpr{List: list}, nil
+		}
+		if p.Call.Func == "sum" && len(p.Call.Args) == 1 {
+			list, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &SumExpr{List: list}, nil
+		}
+		if p.Call.Func == "count" && len(p.Call.Args) == 1 {
+			list, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &CountExpr{List: list}, nil
+		}
+		if p.Call.Func == "min" && len(p.Call.Args) == 1 {
+			list, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &MinExpr{List: list}, nil
+		}
+		if p.Call.Func == "max" && len(p.Call.Args) == 1 {
+			list, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &MaxExpr{List: list}, nil
 		}
 		if p.Call.Func == "substring" && len(p.Call.Args) == 3 {
 			s0, err := convertExpr(p.Call.Args[0])
@@ -1283,6 +1406,14 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "append", Children: []*ast.Node{exprNode(ex.List), exprNode(ex.Value)}}
 	case *AvgExpr:
 		return &ast.Node{Kind: "avg", Children: []*ast.Node{exprNode(ex.List)}}
+	case *SumExpr:
+		return &ast.Node{Kind: "sum", Children: []*ast.Node{exprNode(ex.List)}}
+	case *CountExpr:
+		return &ast.Node{Kind: "count", Children: []*ast.Node{exprNode(ex.List)}}
+	case *MinExpr:
+		return &ast.Node{Kind: "min", Children: []*ast.Node{exprNode(ex.List)}}
+	case *MaxExpr:
+		return &ast.Node{Kind: "max", Children: []*ast.Node{exprNode(ex.List)}}
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}

@@ -1,4 +1,32 @@
-## Recent Enhancements (2025-07-19 21:34 +0700)
+## Recent Enhancements (2025-07-19 22:00 +0700)
+- Added support for `break` and `continue` statements.
+- Implemented `if ... then ... else` expressions.
+- Updated README checklist with progress summary.
+
+- Added support for `break` and `continue` statements.
+- Implemented `if ... then ... else` expressions.
+- Updated README checklist with progress summary.
+
+- Added support for `break` and `continue` statements.
+- Implemented `if ... then ... else` expressions.
+- Updated README checklist with progress summary.
+
+- Added support for `break` and `continue` statements.
+- Implemented `if ... then ... else` expressions.
+- Updated README checklist with progress summary.
+
+- Added support for `break` and `continue` statements.
+- Implemented `if ... then ... else` expressions.
+- Updated README checklist with progress summary.
+
+- Added support for `break` and `continue` statements.
+- Implemented `if ... then ... else` expressions.
+- Updated README checklist with progress summary.
+
+- Added support for `break` and `continue` statements.
+- Implemented `if ... then ... else` expressions.
+- Updated README checklist with progress summary.
+
 - Added support for `break` and `continue` statements.
 - Implemented `if ... then ... else` expressions.
 - Updated README checklist with progress summary.
