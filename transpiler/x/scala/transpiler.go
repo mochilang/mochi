@@ -176,9 +176,11 @@ type BinaryExpr struct {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "(")
 	b.Left.emit(w)
 	fmt.Fprintf(w, " %s ", b.Op)
 	b.Right.emit(w)
+	fmt.Fprint(w, ")")
 }
 
 // Emit generates formatted Scala source for the given program.
@@ -186,12 +188,6 @@ func Emit(p *Program) []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
 	buf.WriteString("object Main {\n")
-	buf.WriteString("    def mochiPrint(v: Any): Unit = v match {\n")
-	buf.WriteString("        case b: Boolean => if (b) println(1) else println(0)\n")
-	buf.WriteString("        case xs: List[Int] => println(xs.mkString(\" \") )\n")
-	buf.WriteString("        case x => println(x)\n")
-	buf.WriteString("    }\n")
-	buf.WriteString("\n")
 	buf.WriteString("    def main(args: Array[String]): Unit = {\n")
 	for _, st := range p.Stmts {
 		buf.WriteString("        ")
@@ -236,25 +232,70 @@ func convertExpr(e *parser.Expr) (Expr, error) {
 }
 
 func convertBinary(b *parser.BinaryExpr) (Expr, error) {
-	if len(b.Right) == 0 {
-		return convertUnary(b.Left)
-	}
-	if len(b.Right) != 1 {
-		return nil, fmt.Errorf("unsupported binary chain")
-	}
+	operands := []Expr{}
+	operators := []string{}
+
 	left, err := convertUnary(b.Left)
 	if err != nil {
 		return nil, err
 	}
-	right, err := convertPostfix(b.Right[0].Right)
-	if err != nil {
-		return nil, err
+	operands = append(operands, left)
+
+	for _, part := range b.Right {
+		operators = append(operators, part.Op)
+		right, err := convertPostfix(part.Right)
+		if err != nil {
+			return nil, err
+		}
+		operands = append(operands, right)
 	}
-	op := b.Right[0].Op
-	if op == "in" {
-		return &MethodCallExpr{Receiver: right, Name: "contains", Args: []Expr{left}}, nil
+
+	apply := func(i int) {
+		op := operators[i]
+		left := operands[i]
+		right := operands[i+1]
+		var ex Expr
+		if op == "in" {
+			ex = &MethodCallExpr{Receiver: right, Name: "contains", Args: []Expr{left}}
+		} else {
+			ex = &BinaryExpr{Left: left, Op: op, Right: right}
+		}
+		operands[i] = ex
+		operands = append(operands[:i+1], operands[i+2:]...)
+		operators = append(operators[:i], operators[i+1:]...)
 	}
-	return &BinaryExpr{Left: left, Op: op, Right: right}, nil
+
+	for _, level := range [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+		{"union", "union_all", "except", "intersect"},
+	} {
+		for i := 0; i < len(operators); {
+			if contains(level, operators[i]) {
+				apply(i)
+			} else {
+				i++
+			}
+		}
+	}
+
+	if len(operands) != 1 {
+		return nil, fmt.Errorf("unsupported binary expression")
+	}
+	return operands[0], nil
+}
+
+func contains(list []string, op string) bool {
+	for _, s := range list {
+		if s == op {
+			return true
+		}
+	}
+	return false
 }
 
 func convertUnary(u *parser.Unary) (Expr, error) {
@@ -387,7 +428,7 @@ func convertCall(c *parser.CallExpr) (Expr, error) {
 		return &LenExpr{Value: args[0]}, nil
 	}
 	if name == "print" {
-		name = "mochiPrint"
+		name = "println"
 	}
 	if name == "str" && len(args) == 1 {
 		name = "String.valueOf"
