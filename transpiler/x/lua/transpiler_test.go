@@ -165,3 +165,93 @@ func TestTranspile_UnaryNeg(t *testing.T) {
 		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
 	}
 }
+
+func TestTranspile_StringConcat(t *testing.T) {
+	if _, err := exec.LookPath("lua"); err != nil {
+		t.Skip("lua not installed")
+	}
+	root := repoRoot(t)
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "lua")
+	os.MkdirAll(outDir, 0o755)
+
+	src := filepath.Join(root, "tests", "vm", "valid", "string_concat.mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type: %v", errs[0])
+	}
+	progAST, err := lua.Transpile(prog, env)
+	if err != nil {
+		t.Fatalf("transpile: %v", err)
+	}
+	code := lua.Emit(progAST)
+	luaFile := filepath.Join(outDir, "string_concat.lua")
+	if err := os.WriteFile(luaFile, code, 0o644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+	cmd := exec.Command("lua", luaFile)
+	out, err := cmd.CombinedOutput()
+	got := bytes.TrimSpace(out)
+	if err != nil {
+		_ = os.WriteFile(filepath.Join(outDir, "string_concat.error"), out, 0o644)
+		t.Fatalf("run: %v", err)
+	}
+	_ = os.Remove(filepath.Join(outDir, "string_concat.error"))
+	wantPath := filepath.Join(outDir, "string_concat.out")
+	want, err := os.ReadFile(wantPath)
+	if err != nil {
+		t.Fatalf("read want: %v", err)
+	}
+	want = bytes.TrimSpace(want)
+	if !bytes.Equal(got, want) {
+		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
+	}
+}
+
+func TestTranspile_StringCompare(t *testing.T) {
+	if _, err := exec.LookPath("lua"); err != nil {
+		t.Skip("lua not installed")
+	}
+	root := repoRoot(t)
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "lua")
+	os.MkdirAll(outDir, 0o755)
+
+	src := filepath.Join(root, "tests", "vm", "valid", "string_compare.mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type: %v", errs[0])
+	}
+	progAST, err := lua.Transpile(prog, env)
+	if err != nil {
+		t.Fatalf("transpile: %v", err)
+	}
+	code := lua.Emit(progAST)
+	luaFile := filepath.Join(outDir, "string_compare.lua")
+	if err := os.WriteFile(luaFile, code, 0o644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+	cmd := exec.Command("lua", luaFile)
+	out, err := cmd.CombinedOutput()
+	got := bytes.TrimSpace(out)
+	if err != nil {
+		_ = os.WriteFile(filepath.Join(outDir, "string_compare.error"), out, 0o644)
+		t.Fatalf("run: %v", err)
+	}
+	_ = os.Remove(filepath.Join(outDir, "string_compare.error"))
+	wantPath := filepath.Join(outDir, "string_compare.out")
+	want, err := os.ReadFile(wantPath)
+	if err != nil {
+		t.Fatalf("read want: %v", err)
+	}
+	want = bytes.TrimSpace(want)
+	if !bytes.Equal(got, want) {
+		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
+	}
+}

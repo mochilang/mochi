@@ -2,7 +2,7 @@
 
 This directory contains a minimal Lua transpiler used for experimentation.
 
-## Golden Test Checklist
+## Golden Test Checklist (5/100)
 
 The following Mochi programs from `tests/vm/valid` have transpiler golden tests:
 
@@ -86,8 +86,8 @@ The following Mochi programs from `tests/vm/valid` have transpiler golden tests:
 - [ ] slice.mochi
 - [ ] sort_stable.mochi
 - [ ] str_builtin.mochi
-- [ ] string_compare.mochi
-- [ ] string_concat.mochi
+- [x] string_compare.mochi
+- [x] string_concat.mochi
 - [ ] string_contains.mochi
 - [ ] string_in_operator.mochi
 - [ ] string_index.mochi
