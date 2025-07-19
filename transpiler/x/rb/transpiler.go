@@ -2002,6 +2002,16 @@ func (s *LetStmt) emit(e *emitter) {
 	s.Value.emit(e)
 }
 
+// BreakStmt represents a break statement.
+type BreakStmt struct{}
+
+func (b *BreakStmt) emit(w io.Writer) { io.WriteString(w, "break") }
+
+// ContinueStmt represents a continue statement.
+type ContinueStmt struct{}
+
+func (c *ContinueStmt) emit(w io.Writer) { io.WriteString(w, "next") }
+
 type CallExpr struct {
 	Func string
 	Args []Expr
@@ -5916,6 +5926,10 @@ func stmtNode(s Stmt) *ast.Node {
 			n.Children = append(n.Children, exprNode(st.Value))
 		}
 		return n
+	case *BreakStmt:
+		return &ast.Node{Kind: "break"}
+	case *ContinueStmt:
+		return &ast.Node{Kind: "continue"}
 	case *FuncStmt:
 		n := &ast.Node{Kind: "func", Value: st.Name}
 		params := &ast.Node{Kind: "params"}
