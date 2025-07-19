@@ -1,11 +1,11 @@
-# Rosetta Zig Output (13/278 compiled and run)
+# Rosetta Zig Output (14/278 compiled and run)
 
 This directory holds Zig source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. A checkbox indicates the program compiled and executed successfully. Failing programs have a `.error` file.
 
 ## Program checklist
 - [x] 100-doors-2
 - [x] 100-doors-3
-- [ ] 100-doors
+- [x] 100-doors
 - [ ] 100-prisoners
 - [ ] 15-puzzle-game
 - [ ] 15-puzzle-solver
