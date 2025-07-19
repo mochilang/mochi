@@ -1,1 +1,8 @@
-transpile: unsupported primary
+run: exit status 1
+
+/workspace/mochi/tests/transpiler/x/hs/append_builtin.hs:6:12: error:
+    Variable not in scope: append :: [a0] -> t0 -> a1
+    Suggested fix: Perhaps use ‘mappend’ (imported from Prelude)
+  |
+6 |     print (append a 3)
+  |            ^^^^^^

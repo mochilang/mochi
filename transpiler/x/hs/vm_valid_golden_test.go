@@ -124,7 +124,7 @@ func updateReadme() {
 func updateTasks() {
 	root := repoRootDir(&testing.T{})
 	taskFile := filepath.Join(root, "transpiler", "x", "hs", "TASKS.md")
-	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	out, err := exec.Command("git", "log", "-1", "--date=iso-strict", "--format=%cd").Output()
 	ts := ""
 	if err == nil {
 		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
@@ -138,7 +138,8 @@ func updateTasks() {
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
 	buf.WriteString("- VM valid golden test results updated\n")
-	buf.WriteString("- Added bool printing via fromEnum for Haskell backend\n\n")
+	buf.WriteString("- Added list literals and if statements inside functions\n")
+	buf.WriteString("- Enabled sum builtin support\n\n")
 	if data, err := os.ReadFile(taskFile); err == nil {
 		buf.Write(data)
 	}

@@ -158,6 +158,7 @@ type UnaryExpr struct {
 	Expr Expr
 }
 type GroupExpr struct{ Expr Expr }
+type ListLit struct{ Elems []Expr }
 type CallExpr struct {
 	Fun  Expr
 	Args []Expr
@@ -180,6 +181,16 @@ func (b *BoolLit) emit(w io.Writer) {
 	} else {
 		io.WriteString(w, "False")
 	}
+}
+func (l *ListLit) emit(w io.Writer) {
+	io.WriteString(w, "[")
+	for i, e := range l.Elems {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		e.emit(w)
+	}
+	io.WriteString(w, "]")
 }
 func (n *NameRef) emit(w io.Writer) { io.WriteString(w, n.Name) }
 func (l *LenExpr) emit(w io.Writer) {
@@ -592,6 +603,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			return nil, err
 		}
 		return &GroupExpr{Expr: e}, nil
+	case p.List != nil:
+		var elems []Expr
+		for _, e := range p.List.Elems {
+			ce, err := convertExpr(e)
+			if err != nil {
+				return nil, err
+			}
+			elems = append(elems, ce)
+		}
+		return &ListLit{Elems: elems}, nil
 	case p.FunExpr != nil && p.FunExpr.ExprBody != nil:
 		var params []string
 		for _, pa := range p.FunExpr.Params {
@@ -697,6 +718,12 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 				return nil, err
 			}
 			out = append(out, &ReturnStmt{Expr: ex})
+		case st.If != nil:
+			s, err := convertIfStmt(st.If)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, s)
 		default:
 			return nil, fmt.Errorf("unsupported statement in block")
 		}
