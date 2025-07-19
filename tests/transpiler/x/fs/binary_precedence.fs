@@ -1,7 +1,16 @@
-// Mochi 0.10.31 - generated 2025-07-19 05:25:14 UTC
+// Mochi 0.10.31 - generated 2025-07-19 07:53:52 UTC
 open System
 
-printfn "%A" (1 + (2 * 3))
-printfn "%A" ((1 + 2) * 3)
-printfn "%A" ((2 * 3) + 1)
-printfn "%A" (2 * (3 + 1))
+let print (x: obj) =
+    match x with
+    | :? bool as b -> printfn "%d" (if b then 1 else 0)
+    | :? float as f -> printfn "%.1f" f
+    | :? string as s -> printfn "%s" s
+    | :? System.Collections.IEnumerable as e ->
+        e |> Seq.cast<obj> |> Seq.map string |> String.concat " " |> printfn "%s"
+    | _ -> printfn "%O" x
+
+print (1 + (2 * 3))
+print ((1 + 2) * 3)
+print ((2 * 3) + 1)
+print (2 * (3 + 1))

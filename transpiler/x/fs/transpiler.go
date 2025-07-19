@@ -60,11 +60,10 @@ type SubstringExpr struct {
 }
 
 func (s *SubstringExpr) emit(w io.Writer) {
-	io.WriteString(w, "String.sub ")
 	s.Str.emit(w)
-	io.WriteString(w, " ")
+	io.WriteString(w, ".Substring(")
 	s.Start.emit(w)
-	io.WriteString(w, " (")
+	io.WriteString(w, ", ")
 	(&BinaryExpr{Left: s.End, Op: "-", Right: s.Start}).emit(w)
 	io.WriteString(w, ")")
 }
@@ -310,7 +309,7 @@ func precedence(op string) int {
 
 func needsParen(e Expr) bool {
 	switch e.(type) {
-	case *BinaryExpr, *UnaryExpr, *IfExpr, *AppendExpr, *SubstringExpr:
+	case *BinaryExpr, *UnaryExpr, *IfExpr, *AppendExpr, *SubstringExpr, *CallExpr:
 		return true
 	default:
 		return false
@@ -339,7 +338,6 @@ func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
 func Emit(prog *Program) []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
-	buf.WriteString("open System\n\n")
 	for i, st := range prog.Stmts {
 		st.emit(&buf)
 		if i < len(prog.Stmts)-1 {
@@ -355,7 +353,15 @@ func Emit(prog *Program) []byte {
 func header() string {
 	ver := readVersion()
 	ts := time.Now().Format("2006-01-02 15:04:05 MST")
-	return fmt.Sprintf("// Mochi %s - generated %s\n", ver, ts)
+	return fmt.Sprintf("// Mochi %s - generated %s\nopen System\n\n"+
+		"let print (x: obj) =\n"+
+		"    match x with\n"+
+		"    | :? bool as b -> printfn \"%%d\" (if b then 1 else 0)\n"+
+		"    | :? float as f -> printfn \"%%.1f\" f\n"+
+		"    | :? string as s -> printfn \"%%s\" s\n"+
+		"    | :? System.Collections.IEnumerable as e ->\n"+
+		"        e |> Seq.cast<obj> |> Seq.map string |> String.concat \" \" |> printfn \"%%s\"\n"+
+		"    | _ -> printfn \"%%O\" x\n\n", ver, ts)
 }
 
 func readVersion() string {
@@ -560,7 +566,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		switch p.Call.Func {
 		case "print":
-			return &CallExpr{Func: "printfn \"%O\"", Args: args}, nil
+			return &CallExpr{Func: "print", Args: args}, nil
 		case "len":
 			return &CallExpr{Func: "Seq.length", Args: args}, nil
 		case "str":
@@ -568,7 +574,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		case "sum":
 			return &CallExpr{Func: "Seq.sum", Args: args}, nil
 		case "avg":
-			return &CallExpr{Func: "Seq.average", Args: args}, nil
+			return &CallExpr{Func: "Seq.averageBy float", Args: args}, nil
 		case "append":
 			if len(args) != 2 {
 				return nil, fmt.Errorf("append expects 2 args")
