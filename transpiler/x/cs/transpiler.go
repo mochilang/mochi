@@ -470,8 +470,13 @@ type FieldExpr struct {
 }
 
 func (f *FieldExpr) emit(w io.Writer) {
-	f.Target.emit(w)
-	fmt.Fprintf(w, ".%s", f.Name)
+	if isMapExpr(f.Target) {
+		f.Target.emit(w)
+		fmt.Fprintf(w, "[\"%s\"]", f.Name)
+	} else {
+		f.Target.emit(w)
+		fmt.Fprintf(w, ".%s", f.Name)
+	}
 }
 
 // SliceExpr represents xs[a:b] or s[a:b] for lists and strings.
@@ -928,8 +933,10 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 			case "int":
 				expr = &CallExpr{Func: "Convert.ToInt32", Args: []Expr{expr}}
 			default:
-				return nil, fmt.Errorf("unsupported cast")
+				// other casts are treated as no-ops
 			}
+		case op.Cast != nil && op.Cast.Type != nil:
+			// ignore casts to complex types (e.g. structs)
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
 		}
