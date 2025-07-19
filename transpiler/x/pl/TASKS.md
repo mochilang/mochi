@@ -1,5 +1,9 @@
 # Prolog Transpiler Tasks
 
+## Progress (2025-07-19 12:43 UTC)
+- Implemented `substring` builtin and added golden test.
+- README checklist updated to reflect 21/100 passing programs.
+
 ## Progress (2025-07-19 14:41 +0700)
 - Implemented variable assignments and simple arithmetic/boolean expressions.
 - Added golden tests for `basic_compare.mochi` and `binary_precedence.mochi`.

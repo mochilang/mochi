@@ -1,2 +1,2 @@
-ERROR: /workspace/mochi/tests/transpiler/x/pl/append_builtin.pl:3: Initialization goal raised exception:
+ERROR: /workspace/mochi/tests/transpiler/x/pl/append_builtin.pl:4: Initialization goal raised exception:
 ERROR: is/2: Type error: `[]' expected, found `[1,2]' (a list) ("x" must hold one character)
