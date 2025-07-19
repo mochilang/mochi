@@ -1,5 +1,10 @@
 # C++ Transpiler Tasks
 
+## Recent Enhancements (2025-07-19 20:34 +0700)
+- Added support for string contains, index access, substring and type casting.
+- Implemented `in` operator and `sum` builtin for vectors.
+- Generated golden tests for new features and updated README progress to 31/100 programs.
+
 ## Recent Enhancements (2025-07-19 19:50 +0700)
 - Added iteration over list collections in `for` loops.
 - Generated golden test for `for_list_collection`.
