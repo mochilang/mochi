@@ -538,3 +538,187 @@ func TestTranspileStrBuiltin(t *testing.T) {
 		t.Errorf("output mismatch\nGot: %s\nWant: %s", got, want)
 	}
 }
+
+func TestTranspileTypedLet(t *testing.T) {
+	if _, err := exec.LookPath("ocamlc"); err != nil {
+		t.Skip("ocamlc not installed")
+	}
+	root := repoRoot(t)
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "ocaml")
+	os.MkdirAll(outDir, 0o755)
+
+	src := filepath.Join(root, "tests", "vm", "valid", "typed_let.mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type: %v", errs[0])
+	}
+	ast, err := ocaml.Transpile(prog, env)
+	if err != nil {
+		t.Fatalf("transpile: %v", err)
+	}
+	code := ast.Emit()
+	mlFile := filepath.Join(outDir, "typed_let.ml")
+	if err := os.WriteFile(mlFile, code, 0o644); err != nil {
+		t.Fatalf("write ml: %v", err)
+	}
+	exe := filepath.Join(outDir, "typed_let")
+	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+		os.WriteFile(filepath.Join(outDir, "typed_let.error"), out, 0o644)
+		t.Fatalf("ocamlc: %v", err)
+	}
+	out, err := exec.Command(exe).CombinedOutput()
+	if err != nil {
+		t.Fatalf("run: %v", err)
+	}
+	got := bytes.TrimSpace(out)
+	want, err := os.ReadFile(filepath.Join(outDir, "typed_let.out"))
+	if err != nil {
+		t.Fatalf("read want: %v", err)
+	}
+	want = bytes.TrimSpace(want)
+	if !bytes.Equal(got, want) {
+		t.Errorf("output mismatch\nGot: %s\nWant: %s", got, want)
+	}
+}
+
+func TestTranspileTypedVar(t *testing.T) {
+	if _, err := exec.LookPath("ocamlc"); err != nil {
+		t.Skip("ocamlc not installed")
+	}
+	root := repoRoot(t)
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "ocaml")
+	os.MkdirAll(outDir, 0o755)
+
+	src := filepath.Join(root, "tests", "vm", "valid", "typed_var.mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type: %v", errs[0])
+	}
+	ast, err := ocaml.Transpile(prog, env)
+	if err != nil {
+		t.Fatalf("transpile: %v", err)
+	}
+	code := ast.Emit()
+	mlFile := filepath.Join(outDir, "typed_var.ml")
+	if err := os.WriteFile(mlFile, code, 0o644); err != nil {
+		t.Fatalf("write ml: %v", err)
+	}
+	exe := filepath.Join(outDir, "typed_var")
+	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+		os.WriteFile(filepath.Join(outDir, "typed_var.error"), out, 0o644)
+		t.Fatalf("ocamlc: %v", err)
+	}
+	out, err := exec.Command(exe).CombinedOutput()
+	if err != nil {
+		t.Fatalf("run: %v", err)
+	}
+	got := bytes.TrimSpace(out)
+	want, err := os.ReadFile(filepath.Join(outDir, "typed_var.out"))
+	if err != nil {
+		t.Fatalf("read want: %v", err)
+	}
+	want = bytes.TrimSpace(want)
+	if !bytes.Equal(got, want) {
+		t.Errorf("output mismatch\nGot: %s\nWant: %s", got, want)
+	}
+}
+
+func TestTranspileVarAssignment(t *testing.T) {
+	if _, err := exec.LookPath("ocamlc"); err != nil {
+		t.Skip("ocamlc not installed")
+	}
+	root := repoRoot(t)
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "ocaml")
+	os.MkdirAll(outDir, 0o755)
+
+	src := filepath.Join(root, "tests", "vm", "valid", "var_assignment.mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type: %v", errs[0])
+	}
+	ast, err := ocaml.Transpile(prog, env)
+	if err != nil {
+		t.Fatalf("transpile: %v", err)
+	}
+	code := ast.Emit()
+	mlFile := filepath.Join(outDir, "var_assignment.ml")
+	if err := os.WriteFile(mlFile, code, 0o644); err != nil {
+		t.Fatalf("write ml: %v", err)
+	}
+	exe := filepath.Join(outDir, "var_assignment")
+	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+		os.WriteFile(filepath.Join(outDir, "var_assignment.error"), out, 0o644)
+		t.Fatalf("ocamlc: %v", err)
+	}
+	out, err := exec.Command(exe).CombinedOutput()
+	if err != nil {
+		t.Fatalf("run: %v", err)
+	}
+	got := bytes.TrimSpace(out)
+	want, err := os.ReadFile(filepath.Join(outDir, "var_assignment.out"))
+	if err != nil {
+		t.Fatalf("read want: %v", err)
+	}
+	want = bytes.TrimSpace(want)
+	if !bytes.Equal(got, want) {
+		t.Errorf("output mismatch\nGot: %s\nWant: %s", got, want)
+	}
+}
+
+func TestTranspileLenString(t *testing.T) {
+	if _, err := exec.LookPath("ocamlc"); err != nil {
+		t.Skip("ocamlc not installed")
+	}
+	root := repoRoot(t)
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "ocaml")
+	os.MkdirAll(outDir, 0o755)
+
+	src := filepath.Join(root, "tests", "vm", "valid", "len_string.mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type: %v", errs[0])
+	}
+	ast, err := ocaml.Transpile(prog, env)
+	if err != nil {
+		t.Fatalf("transpile: %v", err)
+	}
+	code := ast.Emit()
+	mlFile := filepath.Join(outDir, "len_string.ml")
+	if err := os.WriteFile(mlFile, code, 0o644); err != nil {
+		t.Fatalf("write ml: %v", err)
+	}
+	exe := filepath.Join(outDir, "len_string")
+	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+		os.WriteFile(filepath.Join(outDir, "len_string.error"), out, 0o644)
+		t.Fatalf("ocamlc: %v", err)
+	}
+	out, err := exec.Command(exe).CombinedOutput()
+	if err != nil {
+		t.Fatalf("run: %v", err)
+	}
+	got := bytes.TrimSpace(out)
+	want, err := os.ReadFile(filepath.Join(outDir, "len_string.out"))
+	if err != nil {
+		t.Fatalf("read want: %v", err)
+	}
+	want = bytes.TrimSpace(want)
+	if !bytes.Equal(got, want) {
+		t.Errorf("output mismatch\nGot: %s\nWant: %s", got, want)
+	}
+}
