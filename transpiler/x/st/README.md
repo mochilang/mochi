@@ -1,8 +1,9 @@
-# Smalltalk Transpiler Output (7/100 programs)
+# Smalltalk Transpiler
 
-Generated Smalltalk code for programs in `tests/vm/valid`. Each program has a `.st` file and matching `.out` with the runtime output. Failures are stored as `.error`.
+This directory holds an experimental transpiler that converts a small subset of Mochi into Smalltalk. The generated sources for the golden tests live under `tests/transpiler/x/st`.
 
-## Program checklist
+Checklist of programs that currently transpile and run (7/100):
+
 - [ ] append_builtin
 - [ ] avg_builtin
 - [ ] basic_compare
