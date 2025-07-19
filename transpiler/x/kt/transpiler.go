@@ -52,13 +52,71 @@ type StringLit struct{ Value string }
 
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
 
+type IntLit struct{ Value int64 }
+
+func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
+
+type ListLit struct{ Elems []Expr }
+
+func (l *ListLit) emit(w io.Writer) {
+	io.WriteString(w, "listOf(")
+	for i, e := range l.Elems {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		e.emit(w)
+	}
+	io.WriteString(w, ")")
+}
+
+type CountExpr struct{ Value Expr }
+
+func (c *CountExpr) emit(w io.Writer) {
+	c.Value.emit(w)
+	io.WriteString(w, ".size")
+}
+
+type SumExpr struct{ Value Expr }
+
+func (s *SumExpr) emit(w io.Writer) {
+	s.Value.emit(w)
+	io.WriteString(w, ".sum()")
+}
+
+type AvgExpr struct{ Value Expr }
+
+func (a *AvgExpr) emit(w io.Writer) {
+	a.Value.emit(w)
+	io.WriteString(w, ".average()")
+}
+
+type LenExpr struct {
+	Value    Expr
+	IsString bool
+}
+
+func (l *LenExpr) emit(w io.Writer) {
+	l.Value.emit(w)
+	if l.IsString {
+		io.WriteString(w, ".length")
+	} else {
+		io.WriteString(w, ".size")
+	}
+}
+
+type StrExpr struct{ Value Expr }
+
+func (s *StrExpr) emit(w io.Writer) {
+	s.Value.emit(w)
+	io.WriteString(w, ".toString()")
+}
+
 // Transpile converts a Mochi program to a simple Kotlin AST.
 func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
-	_ = env
 	p := &Program{}
 	for _, st := range prog.Statements {
 		if st.Expr != nil {
-			e, err := convertExpr(st.Expr.Expr)
+			e, err := convertExpr(env, st.Expr.Expr)
 			if err != nil {
 				return nil, err
 			}
@@ -70,45 +128,82 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	return p, nil
 }
 
-func convertExpr(e *parser.Expr) (Expr, error) {
+func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return nil, fmt.Errorf("unsupported expression")
 	}
-	return convertUnary(e.Binary.Left)
+	return convertUnary(env, e.Binary.Left)
 }
 
-func convertUnary(u *parser.Unary) (Expr, error) {
+func convertUnary(env *types.Env, u *parser.Unary) (Expr, error) {
 	if u == nil || len(u.Ops) > 0 {
 		return nil, fmt.Errorf("unsupported unary")
 	}
-	return convertPostfix(u.Value)
+	return convertPostfix(env, u.Value)
 }
 
-func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
+func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 	if p == nil || len(p.Ops) > 0 {
 		return nil, fmt.Errorf("unsupported postfix")
 	}
-	return convertPrimary(p.Target)
+	return convertPrimary(env, p.Target)
 }
 
-func convertPrimary(p *parser.Primary) (Expr, error) {
+func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 	switch {
 	case p.Call != nil:
-		args := make([]Expr, len(p.Call.Args))
-		for i, a := range p.Call.Args {
-			ex, err := convertExpr(a)
+		switch p.Call.Func {
+		case "count", "sum", "avg", "len", "str":
+			if len(p.Call.Args) != 1 {
+				return nil, fmt.Errorf("%s expects 1 arg", p.Call.Func)
+			}
+			arg, err := convertExpr(env, p.Call.Args[0])
 			if err != nil {
 				return nil, err
 			}
-			args[i] = ex
+			switch p.Call.Func {
+			case "count":
+				return &CountExpr{Value: arg}, nil
+			case "sum":
+				return &SumExpr{Value: arg}, nil
+			case "avg":
+				return &AvgExpr{Value: arg}, nil
+			case "len":
+				isStr := types.IsStringExpr(p.Call.Args[0], env)
+				return &LenExpr{Value: arg, IsString: isStr}, nil
+			case "str":
+				return &StrExpr{Value: arg}, nil
+			}
+			return nil, fmt.Errorf("unsupported builtin")
+		default:
+			args := make([]Expr, len(p.Call.Args))
+			for i, a := range p.Call.Args {
+				ex, err := convertExpr(env, a)
+				if err != nil {
+					return nil, err
+				}
+				args[i] = ex
+			}
+			name := p.Call.Func
+			if name == "print" {
+				name = "println"
+			}
+			return &CallExpr{Func: name, Args: args}, nil
 		}
-		name := p.Call.Func
-		if name == "print" {
-			name = "println"
-		}
-		return &CallExpr{Func: name, Args: args}, nil
 	case p.Lit != nil && p.Lit.Str != nil:
 		return &StringLit{Value: *p.Lit.Str}, nil
+	case p.Lit != nil && p.Lit.Int != nil:
+		return &IntLit{Value: int64(*p.Lit.Int)}, nil
+	case p.List != nil:
+		elems := make([]Expr, len(p.List.Elems))
+		for i, e := range p.List.Elems {
+			ex, err := convertExpr(env, e)
+			if err != nil {
+				return nil, err
+			}
+			elems[i] = ex
+		}
+		return &ListLit{Elems: elems}, nil
 	default:
 		return nil, fmt.Errorf("unsupported expression")
 	}
@@ -178,6 +273,24 @@ func toNodeExpr(e Expr) *ast.Node {
 		n := &ast.Node{Kind: "call", Value: ex.Func}
 		for _, a := range ex.Args {
 			n.Children = append(n.Children, toNodeExpr(a))
+		}
+		return n
+	case *CountExpr:
+		return &ast.Node{Kind: "count", Children: []*ast.Node{toNodeExpr(ex.Value)}}
+	case *SumExpr:
+		return &ast.Node{Kind: "sum", Children: []*ast.Node{toNodeExpr(ex.Value)}}
+	case *AvgExpr:
+		return &ast.Node{Kind: "avg", Children: []*ast.Node{toNodeExpr(ex.Value)}}
+	case *LenExpr:
+		return &ast.Node{Kind: "len", Children: []*ast.Node{toNodeExpr(ex.Value)}}
+	case *StrExpr:
+		return &ast.Node{Kind: "str", Children: []*ast.Node{toNodeExpr(ex.Value)}}
+	case *IntLit:
+		return &ast.Node{Kind: "int", Value: ex.Value}
+	case *ListLit:
+		n := &ast.Node{Kind: "list"}
+		for _, el := range ex.Elems {
+			n.Children = append(n.Children, toNodeExpr(el))
 		}
 		return n
 	case *StringLit:
