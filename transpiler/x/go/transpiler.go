@@ -171,38 +171,82 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 	if e == nil || e.Binary == nil {
 		return nil, fmt.Errorf("unsupported expression")
 	}
-	cur, err := compileUnary(e.Binary.Left)
+	return compileBinary(e.Binary)
+}
+
+func compileBinary(b *parser.BinaryExpr) (Expr, error) {
+	first, err := compileUnary(b.Left)
 	if err != nil {
 		return nil, err
 	}
-	for _, op := range e.Binary.Right {
-		r, err := compilePostfix(op.Right)
+	operands := []Expr{first}
+	ops := make([]*parser.BinaryOp, len(b.Right))
+	for i, op := range b.Right {
+		expr, err := compilePostfix(op.Right)
 		if err != nil {
 			return nil, err
 		}
-		switch op.Op {
-		case "in":
-			usesContains = true
-			cur = &CallExpr{Func: "contains", Args: []Expr{r, cur}}
-		case "union":
-			if op.All {
-				usesUnionAll = true
-				cur = &CallExpr{Func: "unionAll", Args: []Expr{cur, r}}
-			} else {
-				usesUnion = true
-				cur = &CallExpr{Func: "union", Args: []Expr{cur, r}}
+		ops[i] = op
+		operands = append(operands, expr)
+	}
+
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+		{"union", "union_all", "except", "intersect"},
+	}
+
+	contains := func(list []string, op string) bool {
+		for _, s := range list {
+			if s == op {
+				return true
 			}
-		case "except":
-			usesExcept = true
-			cur = &CallExpr{Func: "except", Args: []Expr{cur, r}}
-		case "intersect":
-			usesIntersect = true
-			cur = &CallExpr{Func: "intersect", Args: []Expr{cur, r}}
-		default:
-			cur = &BinaryExpr{Left: cur, Op: op.Op, Right: r}
+		}
+		return false
+	}
+
+	for _, level := range levels {
+		for i := 0; i < len(ops); {
+			opName := ops[i].Op
+			if opName == "union" && ops[i].All {
+				opName = "union_all"
+			}
+			if contains(level, opName) {
+				left := operands[i]
+				right := operands[i+1]
+				var newExpr Expr
+				switch opName {
+				case "in":
+					usesContains = true
+					newExpr = &CallExpr{Func: "contains", Args: []Expr{right, left}}
+				case "union":
+					usesUnion = true
+					newExpr = &CallExpr{Func: "union", Args: []Expr{left, right}}
+				case "union_all":
+					usesUnionAll = true
+					newExpr = &CallExpr{Func: "unionAll", Args: []Expr{left, right}}
+				case "except":
+					usesExcept = true
+					newExpr = &CallExpr{Func: "except", Args: []Expr{left, right}}
+				case "intersect":
+					usesIntersect = true
+					newExpr = &CallExpr{Func: "intersect", Args: []Expr{left, right}}
+				default:
+					newExpr = &BinaryExpr{Left: left, Op: ops[i].Op, Right: right}
+				}
+				operands[i] = newExpr
+				operands = append(operands[:i+1], operands[i+2:]...)
+				ops = append(ops[:i], ops[i+1:]...)
+			} else {
+				i++
+			}
 		}
 	}
-	return cur, nil
+	return operands[0], nil
 }
 
 func compileUnary(u *parser.Unary) (Expr, error) {
@@ -282,6 +326,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			return &IntLit{Value: int(*p.Lit.Int)}, nil
 		}
 		return nil, fmt.Errorf("unsupported literal")
+	case p.Group != nil:
+		return compileExpr(p.Group)
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return &VarRef{Name: p.Selector.Root}, nil
 	}
