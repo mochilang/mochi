@@ -11,7 +11,7 @@ public class M4RingsOr4SquaresPuzzle {
         return square1 == square2 && square2 == square3 && square3 == square4;
     }
     static boolean isUnique(int a, int b, int c, int d, int e, int f, int g) {
-        List<Integer> nums = new ArrayList<>(Arrays.asList(a, b, c, d, e, f, g));
+        List<Integer> nums = new ArrayList<>(new ArrayList<>(Arrays.asList(a, b, c, d, e, f, g)));
         int i = 0;
         while (i < nums.size()) {
             int j = i + 1;
@@ -26,7 +26,7 @@ public class M4RingsOr4SquaresPuzzle {
         return true;
     }
     static Map<String,Object> getCombs(int low, int high, boolean unique) {
-        List<Object> valid = new ArrayList<>(Arrays.asList());
+        List<Object> valid = new ArrayList<>(new ArrayList<>(Arrays.asList()));
         int count = 0;
         for (int b = low; b < (high + 1); b++) {
             for (int c = low; c < (high + 1); c++) {
@@ -49,7 +49,7 @@ public class M4RingsOr4SquaresPuzzle {
                                 continue;
                             }
                             if (!unique || isUnique(a, b, c, d, e, f, g)) {
-                                valid.add(Arrays.asList(a, b, c, d, e, f, g));
+                                valid.add(new ArrayList<>(Arrays.asList(a, b, c, d, e, f, g)));
                                 count = (int)(count + 1);
                             }
                         }

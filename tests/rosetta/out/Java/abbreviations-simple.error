@@ -29,24 +29,6 @@ javac: exit status 1
 /tmp/AbbreviationsSimple.java:111: error: incompatible types: String cannot be converted to List<String>
                 List<String> cmd = commands.get(ci);
                                                ^
-/tmp/AbbreviationsSimple.java:113: error: cannot find symbol
-                    Object c = upper(cmd);
-                               ^
-  symbol:   method upper(List<String>)
-  location: class AbbreviationsSimple
-/tmp/AbbreviationsSimple.java:114: error: cannot find symbol
-                    Object ww = upper(w);
-                                ^
-  symbol:   method upper(List<String>)
-  location: class AbbreviationsSimple
-/tmp/AbbreviationsSimple.java:115: error: cannot find symbol
-                    if (Objects.equals(c.substring(0, wlen), ww)) {
-                                        ^
-  symbol:   method substring(int,int)
-  location: variable c of type Object
-/tmp/AbbreviationsSimple.java:116: error: incompatible types: Object cannot be converted to String
-                        results.add(c);
-                                    ^
 /tmp/AbbreviationsSimple.java:143: error: cannot find symbol
                 out1 = out1 + ((Number)padRight(words.get(k), results.get(k).size())).doubleValue();
                                                                             ^
@@ -58,4 +40,4 @@ javac: exit status 1
 Note: /tmp/AbbreviationsSimple.java uses unchecked or unsafe operations.
 Note: Recompile with -Xlint:unchecked for details.
 Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
-14 errors
+10 errors

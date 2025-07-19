@@ -4,7 +4,7 @@ import java.util.*;
 
 public class AbcProblem {
     static List<String> fields(String s) {
-        List<String> res = Arrays.asList();
+        List<String> res = new ArrayList<>(Arrays.asList());
         String cur = "";
         int i = 0;
         while (i < s.length()) {
@@ -29,12 +29,12 @@ public class AbcProblem {
         if (Objects.equals(word.length(), 0)) {
             return true;
         }
-        Object c = lower(word.substring(0, 1));
+        String c = String.valueOf(word.substring(0, 1)).toLowerCase();
         int i = 0;
         while (i < blks.size()) {
             List<String> b = blks.get(i);
-            if (Objects.equals(c, lower(((List)b).subList(0, 1))) || Objects.equals(c, lower(((List)b).subList(1, 2)))) {
-                List<String> rest = Arrays.asList();
+            if (Objects.equals(c, String.valueOf(((List)b).subList(0, 1)).toLowerCase()) || Objects.equals(c, String.valueOf(((List)b).subList(1, 2)).toLowerCase())) {
+                List<String> rest = new ArrayList<>(Arrays.asList());
                 int j = 0;
                 while (j < blks.size()) {
                     if (j != i) {
@@ -56,7 +56,7 @@ public class AbcProblem {
     }
     static void main() {
         Object sp = newSpeller("BO XK DQ CP NA GT RE TG QD FS JW HU VI AN OB ER FS LY PC ZM");
-        for (String word : Arrays.asList("A", "BARK", "BOOK", "TREAT", "COMMON", "SQUAD", "CONFUSE")) {
+        for (String word : new ArrayList<>(Arrays.asList("A", "BARK", "BOOK", "TREAT", "COMMON", "SQUAD", "CONFUSE"))) {
             System.out.println(word + " " + String.valueOf(sp(word)));
         }
     }

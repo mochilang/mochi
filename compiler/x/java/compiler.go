@@ -1065,6 +1065,8 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 		switch p.Call.Func {
 		case "len":
 			return "int"
+		case "int":
+			return "int"
 		case "sum", "min", "max":
 			if len(p.Call.Args) == 1 {
 				elem := listElemType(c.inferType(p.Call.Args[0]))
@@ -2849,6 +2851,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return fmt.Sprintf("%s.length()", expr), nil
 			}
 			return fmt.Sprintf("%s.size()", expr), nil
+		case "int":
+			if len(p.Call.Args) != 1 {
+				return "", fmt.Errorf("int expects one argument at line %d", p.Pos.Line)
+			}
+			arg, err := c.compileExpr(p.Call.Args[0])
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("Integer.parseInt(String.valueOf(%s))", arg), nil
 		case "str":
 			if len(p.Call.Args) != 1 {
 				return "", fmt.Errorf("str expects one argument at line %d", p.Pos.Line)

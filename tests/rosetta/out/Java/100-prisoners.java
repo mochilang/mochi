@@ -19,7 +19,7 @@ public class M100Prisoners {
         int pardoned = 0;
         int t = 0;
         while (t < trials) {
-            List<Integer> drawers = Arrays.asList();
+            List<Integer> drawers = new ArrayList<>(Arrays.asList());
             int i = 0;
             while (i < 100) {
                 drawers.add(i);
@@ -34,7 +34,7 @@ public class M100Prisoners {
                     int prev = p;
                     int d = 0;
                     while (d < 50) {
-                        List<Integer> this = drawers.get(prev);
+                        List<Integer> this_ = drawers.get(prev);
                         if (Objects.equals(this, p)) {
                             found = true;
                             break;
@@ -44,7 +44,7 @@ public class M100Prisoners {
                     }
                 }
                 else {
-                    List<Boolean> opened = Arrays.asList();
+                    List<Boolean> opened = new ArrayList<>(Arrays.asList());
                     int k = 0;
                     while (k < 100) {
                         opened.add(false);
@@ -80,9 +80,9 @@ public class M100Prisoners {
     }
     static void main() {
         int trials = 1000;
-        for (Integer np : Arrays.asList(10, 100)) {
+        for (Integer np : new ArrayList<>(Arrays.asList(10, 100))) {
             System.out.println("Results from " + String.valueOf(trials) + " trials with " + String.valueOf(np) + " prisoners:\n");
-            for (String strat : Arrays.asList("random", "optimal")) {
+            for (String strat : new ArrayList<>(Arrays.asList("random", "optimal"))) {
                 doTrials(trials, np, strat);
             }
         }

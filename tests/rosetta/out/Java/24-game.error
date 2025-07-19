@@ -1,8 +1,11 @@
-parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/24-game.mochi:51:31: unexpected token "-1" (expected "]")
-  --> /workspace/mochi/tests/rosetta/x/Mochi/24-game.mochi:51:31
-
- 51 |       var b = stack[len(stack)-1]
-    |                               ^
-
-help:
-  Parse error occurred. Check syntax near this location.
+javac: exit status 1
+/tmp/M24Game.java:44: error: '.class' expected
+                stack.add(float(Integer.parseInt(String.valueOf(ch)) - Integer.parseInt(String.valueOf("0"))));
+                               ^
+/tmp/M24Game.java:44: error: not a statement
+                stack.add(float(Integer.parseInt(String.valueOf(ch)) - Integer.parseInt(String.valueOf("0"))));
+                                                                     ^
+/tmp/M24Game.java:44: error: ';' expected
+                stack.add(float(Integer.parseInt(String.valueOf(ch)) - Integer.parseInt(String.valueOf("0"))));
+                                                                                                            ^
+3 errors

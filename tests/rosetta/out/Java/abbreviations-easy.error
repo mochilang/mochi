@@ -8,24 +8,6 @@ javac: exit status 1
 /tmp/AbbreviationsEasy.java:61: error: incompatible types: String cannot be converted to List<String>
                 List<String> cmd = commands.get(ci);
                                                ^
-/tmp/AbbreviationsEasy.java:63: error: cannot find symbol
-                    Object c = upper(cmd);
-                               ^
-  symbol:   method upper(List<String>)
-  location: class AbbreviationsEasy
-/tmp/AbbreviationsEasy.java:64: error: cannot find symbol
-                    Object ww = upper(w);
-                                ^
-  symbol:   method upper(List<String>)
-  location: class AbbreviationsEasy
-/tmp/AbbreviationsEasy.java:65: error: cannot find symbol
-                    if (Objects.equals(c.substring(0, wlen), ww)) {
-                                        ^
-  symbol:   method substring(int,int)
-  location: variable c of type Object
-/tmp/AbbreviationsEasy.java:66: error: incompatible types: Object cannot be converted to String
-                        results.add(c);
-                                    ^
 /tmp/AbbreviationsEasy.java:88: error: incompatible types: String cannot be converted to List<String>
             List<String> cmd = commands.get(i);
                                            ^
@@ -42,5 +24,4 @@ javac: exit status 1
                                                                                  ^
   symbol:   method size()
   location: class String
-Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
-11 errors
+7 errors

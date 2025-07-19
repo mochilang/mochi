@@ -35,7 +35,7 @@ func classNameFromVar(s string) string {
 		return ""
 	}
 	parts := strings.FieldsFunc(s, func(r rune) bool {
-		return r == '_' || r == '-' || r == ' ' || r == '.'
+		return r == '_' || r == '-' || r == ' ' || r == '.' || r == '+'
 	})
 	for i, p := range parts {
 		if p == "" {
