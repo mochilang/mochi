@@ -162,6 +162,19 @@ func compileStmt(p *Program, st *parser.Statement, env *types.Env) (Stmt, error)
 		expr := ""
 		var err error
 		if st.Let.Value != nil {
+			if ie := extractIfExpr(st.Let.Value); ie != nil {
+				typ := types.ExprType(st.Let.Value, env)
+				ft, err := mapTypeName(typ)
+				if err != nil {
+					return nil, err
+				}
+				p.Decls = append(p.Decls, Decl{Name: st.Let.Name, Type: ft})
+				stmt, err := compileIfExprAssign(st.Let.Name, ie, env)
+				if err != nil {
+					return nil, err
+				}
+				return stmt, nil
+			}
 			expr, err = toExpr(st.Let.Value, env)
 			if err != nil {
 				return nil, err
@@ -172,7 +185,7 @@ func compileStmt(p *Program, st *parser.Statement, env *types.Env) (Stmt, error)
 			if st.Let.Type != nil {
 				typ = types.ResolveTypeRef(st.Let.Type, env)
 			} else {
-				typ = types.TypeOfExprBasic(st.Let.Value, env)
+				typ = types.ExprType(st.Let.Value, env)
 			}
 			ft, err := mapTypeName(typ)
 			if err != nil {
@@ -199,7 +212,7 @@ func compileStmt(p *Program, st *parser.Statement, env *types.Env) (Stmt, error)
 		if st.Var.Type != nil {
 			typ = types.ResolveTypeRef(st.Var.Type, env)
 		} else if st.Var.Value != nil {
-			typ = types.TypeOfExprBasic(st.Var.Value, env)
+			typ = types.ExprType(st.Var.Value, env)
 		}
 		ft, err := mapTypeName(typ)
 		if err != nil {
@@ -278,6 +291,43 @@ func compileStmtList(p *Program, list []*parser.Statement, env *types.Env) ([]St
 		}
 	}
 	return out, nil
+}
+
+func extractIfExpr(e *parser.Expr) *parser.IfExpr {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return nil
+	}
+	if e.Binary.Left.Value == nil || e.Binary.Left.Value.Target == nil {
+		return nil
+	}
+	return e.Binary.Left.Value.Target.If
+}
+
+func compileIfExprAssign(name string, ie *parser.IfExpr, env *types.Env) (Stmt, error) {
+	cond, err := toExpr(ie.Cond, env)
+	if err != nil {
+		return nil, err
+	}
+	thenVal, err := toExpr(ie.Then, env)
+	if err != nil {
+		return nil, err
+	}
+	thenStmts := []Stmt{&AssignStmt{Name: name, Expr: thenVal}}
+	var elseStmts []Stmt
+	if ie.ElseIf != nil {
+		st, err := compileIfExprAssign(name, ie.ElseIf, env)
+		if err != nil {
+			return nil, err
+		}
+		elseStmts = []Stmt{st}
+	} else if ie.Else != nil {
+		elseVal, err := toExpr(ie.Else, env)
+		if err != nil {
+			return nil, err
+		}
+		elseStmts = []Stmt{&AssignStmt{Name: name, Expr: elseVal}}
+	}
+	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
 }
 
 func extractPrintArg(e *parser.Expr) (*parser.Expr, error) {
@@ -404,6 +454,12 @@ func toPrimary(p *parser.Primary, env *types.Env) (string, error) {
 			name += "_" + strings.Join(p.Selector.Tail, "_")
 		}
 		return name, nil
+	case p.If != nil:
+		expr, err := toIfExpr(p.If, env)
+		if err != nil {
+			return "", err
+		}
+		return expr, nil
 	case p.Group != nil:
 		expr, err := toExpr(p.Group, env)
 		if err != nil {
@@ -412,6 +468,32 @@ func toPrimary(p *parser.Primary, env *types.Env) (string, error) {
 		return "(" + expr + ")", nil
 	}
 	return "", fmt.Errorf("unsupported expression")
+}
+
+func toIfExpr(ie *parser.IfExpr, env *types.Env) (string, error) {
+	cond, err := toExpr(ie.Cond, env)
+	if err != nil {
+		return "", err
+	}
+	thenExpr, err := toExpr(ie.Then, env)
+	if err != nil {
+		return "", err
+	}
+	var elseExpr string
+	if ie.ElseIf != nil {
+		elseExpr, err = toIfExpr(ie.ElseIf, env)
+		if err != nil {
+			return "", err
+		}
+	} else if ie.Else != nil {
+		elseExpr, err = toExpr(ie.Else, env)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		elseExpr = ""
+	}
+	return fmt.Sprintf("merge(%s, %s, %s)", thenExpr, elseExpr, cond), nil
 }
 
 func mapTypeName(t types.Type) (string, error) {
