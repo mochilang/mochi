@@ -146,3 +146,7 @@ func TestTranspile_FunExprInLet(t *testing.T) {
 func TestTranspile_FunThreeArgs(t *testing.T) {
 	runGolden(t, "fun_three_args")
 }
+
+func TestTranspile_BoolChain(t *testing.T) {
+	runGolden(t, "bool_chain")
+}
