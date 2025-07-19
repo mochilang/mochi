@@ -31,6 +31,46 @@ type Stmt interface {
 	emit(io.Writer)
 }
 
+type PrintStmt struct {
+	Args  []Expr
+	Types []string
+}
+
+func (p *PrintStmt) emit(w io.Writer) {
+	for i, a := range p.Args {
+		sep := " "
+		if i == len(p.Args)-1 {
+			sep = "\\n"
+		}
+		switch v := a.(type) {
+		case *StringLit:
+			fmt.Fprintf(w, "\tprintf(\"%s%s\");\n", escape(v.Value), sep)
+		default:
+			if p.Types[i] == "string" || exprIsString(a) {
+				io.WriteString(w, "\tprintf(\"%s"+sep+"\", ")
+				a.emitExpr(w)
+				io.WriteString(w, ");\n")
+			} else {
+				io.WriteString(w, "\tprintf(\"%d"+sep+"\", ")
+				a.emitExpr(w)
+				io.WriteString(w, ");\n")
+			}
+		}
+	}
+}
+
+type BreakStmt struct{}
+
+func (b *BreakStmt) emit(w io.Writer) {
+	io.WriteString(w, "\tbreak;\n")
+}
+
+type ContinueStmt struct{}
+
+func (c *ContinueStmt) emit(w io.Writer) {
+	io.WriteString(w, "\tcontinue;\n")
+}
+
 type CallStmt struct {
 	Func string
 	Args []Expr
@@ -114,6 +154,12 @@ func (d *DeclStmt) emit(w io.Writer) {
 	if d.Value != nil {
 		io.WriteString(w, " = ")
 		d.Value.emitExpr(w)
+	} else {
+		if typ == "const char*" {
+			io.WriteString(w, " = \"\"")
+		} else {
+			io.WriteString(w, " = 0")
+		}
 	}
 	io.WriteString(w, ";\n")
 }
@@ -425,21 +471,28 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 	switch {
 	case s.Expr != nil:
 		call := s.Expr.Expr.Binary.Left.Value.Target.Call
-		if call != nil && call.Func == "print" && len(call.Args) == 1 {
-			arg := convertExpr(call.Args[0])
-			if arg != nil {
-				typ := ""
-				if exprIsString(arg) {
-					typ = "string"
-				} else if v, ok := arg.(*VarRef); ok {
+		if call != nil && call.Func == "print" {
+			var args []Expr
+			var typesList []string
+			for _, a := range call.Args {
+				ex := convertExpr(a)
+				if ex == nil {
+					return nil, fmt.Errorf("invalid print argument")
+				}
+				tname := ""
+				if exprIsString(ex) {
+					tname = "string"
+				} else if v, ok := ex.(*VarRef); ok {
 					if t, err := env.GetVar(v.Name); err == nil {
 						if _, ok := t.(types.StringType); ok {
-							typ = "string"
+							tname = "string"
 						}
 					}
 				}
-				return &CallStmt{Func: "print", Args: []Expr{arg}, Type: typ}, nil
+				args = append(args, ex)
+				typesList = append(typesList, tname)
 			}
+			return &PrintStmt{Args: args, Types: typesList}, nil
 		}
 	case s.Let != nil:
 		t, _ := env.GetVar(s.Let.Name)
@@ -483,6 +536,10 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		return nil, fmt.Errorf("unsupported for-loop")
 	case s.If != nil:
 		return compileIfStmt(env, s.If)
+	case s.Break != nil:
+		return &BreakStmt{}, nil
+	case s.Continue != nil:
+		return &ContinueStmt{}, nil
 	}
 	return nil, nil
 }
@@ -622,6 +679,11 @@ func convertUnary(u *parser.Unary) Expr {
 				if t != nil && t.Lit != nil && t.Lit.Str != nil {
 					return &IntLit{Value: len(*t.Lit.Str)}
 				}
+			}
+		}
+		if call.Func == "count" && len(call.Args) == 1 {
+			if list, ok := convertListExpr(call.Args[0]); ok {
+				return &IntLit{Value: len(list)}
 			}
 		}
 		if call.Func == "str" && len(call.Args) == 1 {

@@ -1,3 +1,7 @@
+## Progress (2025-07-19 12:54 UTC)
+- Added count_builtin constant folding and multi-argument print support.
+- Golden tests updated to 23/100
+
 ## Progress (2025-07-19 19:34 +0700)
 - VM valid golden test results updated to 22/100
 
