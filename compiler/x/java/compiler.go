@@ -978,6 +978,9 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 			}
 		}
 	}
+	if t := c.indexType(e); t != "" {
+		return t
+	}
 	if e != nil && e.Binary != nil && len(e.Binary.Right) > 0 {
 		op := e.Binary.Right[len(e.Binary.Right)-1].Op
 		switch op {
@@ -1344,6 +1347,12 @@ func (c *Compiler) compileGlobalVar(v *parser.VarStmt) error {
 		if typ == "int" && strings.Contains(expr, ".") {
 			typ = "double"
 		}
+	}
+	if strings.Contains(expr, ".get(") && strings.HasPrefix(typ, "List<") {
+		typ = listElemType(typ)
+	}
+	if strings.Contains(expr, ".get(") && strings.HasPrefix(typ, "List<") {
+		typ = listElemType(typ)
 	}
 	if typ == "var" {
 		typ = "Object"
@@ -1889,19 +1898,9 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	typ := c.typeName(v.Type)
 	orig := c.curVar
 	sanitized := c.sanitize(v.Name)
-	oldRename := c.renamed[v.Name]
 	if sanitized != v.Name {
 		c.renamed[v.Name] = sanitized
 	}
-	defer func() {
-		if sanitized != v.Name {
-			if oldRename == "" {
-				delete(c.renamed, v.Name)
-			} else {
-				c.renamed[v.Name] = oldRename
-			}
-		}
-	}()
 	c.curVar = v.Name
 	if v.Type != nil {
 		c.vars[v.Name] = typ
@@ -1935,6 +1934,9 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	if v.Value == nil {
 		c.writeln(fmt.Sprintf("%s %s = %s;", typ, sanitized, c.defaultValue(typ)))
 	} else {
+		if typ == "int" {
+			expr = fmt.Sprintf("(int)(%s)", expr)
+		}
 		c.writeln(fmt.Sprintf("%s %s = %s;", typ, sanitized, expr))
 	}
 	c.vars[v.Name] = typ
@@ -1945,19 +1947,9 @@ func (c *Compiler) compileLet(v *parser.LetStmt) error {
 	typ := c.typeName(v.Type)
 	orig := c.curVar
 	sanitized := c.sanitize(v.Name)
-	oldRename := c.renamed[v.Name]
 	if sanitized != v.Name {
 		c.renamed[v.Name] = sanitized
 	}
-	defer func() {
-		if sanitized != v.Name {
-			if oldRename == "" {
-				delete(c.renamed, v.Name)
-			} else {
-				c.renamed[v.Name] = oldRename
-			}
-		}
-	}()
 	c.curVar = v.Name
 	if v.Type != nil {
 		c.vars[v.Name] = typ
@@ -1991,6 +1983,9 @@ func (c *Compiler) compileLet(v *parser.LetStmt) error {
 	if v.Value == nil {
 		c.writeln(fmt.Sprintf("%s %s = %s;", typ, sanitized, c.defaultValue(typ)))
 	} else {
+		if typ == "int" {
+			expr = fmt.Sprintf("(int)(%s)", expr)
+		}
 		c.writeln(fmt.Sprintf("%s %s = %s;", typ, sanitized, expr))
 	}
 	c.vars[v.Name] = typ
@@ -3262,6 +3257,52 @@ func (c *Compiler) selectorType(e *parser.Expr) string {
 		}
 	}
 	return typ
+}
+
+// indexType returns the element type of a simple indexing expression like a[i].
+func (c *Compiler) indexType(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || len(e.Binary.Right) != 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if u.Value == nil {
+		return ""
+	}
+	p := u.Value
+	if len(p.Ops) == 0 || p.Ops[len(p.Ops)-1].Index == nil || p.Ops[len(p.Ops)-1].Index.Colon != nil {
+		return ""
+	}
+	// determine base type of the target before indexing
+	typ := ""
+	if p.Target.Selector != nil {
+		typ = c.vars[p.Target.Selector.Root]
+		for _, f := range p.Target.Selector.Tail {
+			if strings.HasPrefix(typ, "Map<") {
+				typ = mapValueType(typ)
+			} else {
+				typ = c.fieldType(typ, f)
+			}
+		}
+	} else if p.Target.Struct != nil {
+		typ = p.Target.Struct.Name
+	} else if p.Target.List != nil || p.Target.Call != nil {
+		typ = c.inferType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: p.Target}}}})
+	}
+	if typ == "" {
+		if p.Target.Selector != nil {
+			typ = c.vars[p.Target.Selector.Root]
+		}
+	}
+	if typ == "" {
+		return ""
+	}
+	if strings.HasPrefix(typ, "List<") {
+		return listElemType(typ)
+	}
+	if strings.HasPrefix(typ, "Map<") {
+		return mapValueType(typ)
+	}
+	return "Object"
 }
 
 func containsStr(list []string, s string) bool {
