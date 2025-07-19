@@ -888,21 +888,38 @@ func convertUnary(u *parser.Unary) Expr {
 }
 
 func convertListExpr(e *parser.Expr) ([]Expr, bool) {
-	if e == nil || e.Binary == nil {
+	if e == nil {
 		return nil, false
 	}
-	u := e.Binary.Left
-	if u == nil || u.Value == nil || u.Value.Target == nil || u.Value.Target.List == nil {
-		return nil, false
-	}
-	list := u.Value.Target.List
-	var out []Expr
-	for _, item := range list.Elems {
-		ex := convertExpr(item)
-		if ex == nil {
-			return nil, false
+	// Handle direct list literals first.
+	if e.Binary != nil {
+		u := e.Binary.Left
+		if u != nil && u.Value != nil && u.Value.Target != nil && u.Value.Target.List != nil {
+			list := u.Value.Target.List
+			var out []Expr
+			for _, item := range list.Elems {
+				ex := convertExpr(item)
+				if ex == nil {
+					return nil, false
+				}
+				out = append(out, ex)
+			}
+			return out, true
 		}
-		out = append(out, ex)
+	}
+	// Fallback to evaluating the expression which may resolve to a
+	// constant list via a previously declared variable.
+	ex := convertExpr(e)
+	if ex == nil {
+		return nil, false
+	}
+	l, ok := evalList(ex)
+	if !ok {
+		return nil, false
+	}
+	var out []Expr
+	for _, item := range l.Elems {
+		out = append(out, item)
 	}
 	return out, true
 }
