@@ -469,32 +469,78 @@ func convertExpr(e *parser.Expr) (Expr, error) {
 	if len(e.Binary.Right) == 0 {
 		return left, nil
 	}
-	expr := left
+
+	prec := func(op string) int {
+		switch op {
+		case "*", "/", "%":
+			return 3
+		case "+", "-":
+			return 2
+		case "==", "!=", "<", "<=", ">", ">=":
+			return 1
+		case "&&", "||":
+			return 0
+		}
+		return -1
+	}
+
+	var ops []string
+	var exprs []Expr
+	exprs = append(exprs, left)
+
+	build := func() error {
+		if len(ops) == 0 || len(exprs) < 2 {
+			return nil
+		}
+		op := ops[len(ops)-1]
+		ops = ops[:len(ops)-1]
+		right := exprs[len(exprs)-1]
+		exprs = exprs[:len(exprs)-1]
+		left := exprs[len(exprs)-1]
+		exprs = exprs[:len(exprs)-1]
+		var be *BinaryExpr
+		switch op {
+		case "+", "-", "*", "/", "%":
+			be = &BinaryExpr{Op: op, Left: left, Right: right}
+		case "==":
+			be = &BinaryExpr{Op: "=", Left: left, Right: right, Bool: true}
+		case "!=":
+			be = &BinaryExpr{Op: "<>", Left: left, Right: right, Bool: true}
+		case "<", "<=", ">", ">=":
+			be = &BinaryExpr{Op: op, Left: left, Right: right, Bool: true}
+		case "&&":
+			be = &BinaryExpr{Op: "and", Left: left, Right: right, Bool: true}
+		case "||":
+			be = &BinaryExpr{Op: "or", Left: left, Right: right, Bool: true}
+		default:
+			return fmt.Errorf("unsupported op")
+		}
+		exprs = append(exprs, be)
+		return nil
+	}
+
 	for _, op := range e.Binary.Right {
 		right, err := convertPostfix(op.Right)
 		if err != nil {
 			return nil, err
 		}
-		var be *BinaryExpr
-		switch op.Op {
-		case "+", "-", "*", "/", "%":
-			be = &BinaryExpr{Op: op.Op, Left: expr, Right: right}
-		case "==":
-			be = &BinaryExpr{Op: "=", Left: expr, Right: right, Bool: true}
-		case "!=":
-			be = &BinaryExpr{Op: "<>", Left: expr, Right: right, Bool: true}
-		case "<", "<=", ">", ">=":
-			be = &BinaryExpr{Op: op.Op, Left: expr, Right: right, Bool: true}
-		case "&&":
-			be = &BinaryExpr{Op: "and", Left: expr, Right: right, Bool: true}
-		case "||":
-			be = &BinaryExpr{Op: "or", Left: expr, Right: right, Bool: true}
-		default:
-			return nil, fmt.Errorf("unsupported op")
+		for len(ops) > 0 && prec(op.Op) <= prec(ops[len(ops)-1]) {
+			if err := build(); err != nil {
+				return nil, err
+			}
 		}
-		expr = be
+		exprs = append(exprs, right)
+		ops = append(ops, op.Op)
 	}
-	return expr, nil
+	for len(ops) > 0 {
+		if err := build(); err != nil {
+			return nil, err
+		}
+	}
+	if len(exprs) != 1 {
+		return nil, fmt.Errorf("invalid expression")
+	}
+	return exprs[0], nil
 }
 
 func convertUnary(u *parser.Unary) (Expr, error) {
@@ -557,7 +603,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			args = append(args, ex)
 		}
-		return &CallExpr{Name: p.Call.Func, Args: args}, nil
+		name := p.Call.Func
+		if name == "len" {
+			name = "Length"
+		}
+		return &CallExpr{Name: name, Args: args}, nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return &VarRef{Name: p.Selector.Root}, nil
 	case p.Group != nil:
