@@ -1,23 +1,25 @@
+## Progress (2025-07-19 19:57 +0700)
+- Added membership operator support for lists and strings
+- Implemented set operations: union, except and intersect
+- Mapped percent operator to `mod`
+- Added min and max builtins
+- Updated README checklist
+
 ## Progress (2025-07-19 19:39 +0700)
-- VM valid golden test results updated
 - Added list literals and if statements inside functions
 - Enabled sum builtin support
 
 ## Progress (2025-07-19 19:39 +0700)
-- VM valid golden test results updated
 - Added bool printing via fromEnum for Haskell backend
 
 ## Progress (2025-07-19 19:39 +0700)
-- VM valid golden test results updated
 - Added bool printing via fromEnum for Haskell backend
 
 ## Progress (2025-07-19 19:20 +0700)
-- VM valid golden test results updated
 - Added bool printing via fromEnum for Haskell backend
 - Implemented multi-statement function bodies to compile `bool_chain`
 
 ## Progress (2025-07-19 18:28 +0700)
-- VM valid golden test results updated
 - Added bool printing via fromEnum for Haskell backend
 
 # Transpiler Progress

@@ -1,21 +1,21 @@
 run: exit status 1
 
-/workspace/mochi/tests/transpiler/x/hs/short_circuit.hs:9:31: error:
+/workspace/mochi/tests/transpiler/x/hs/short_circuit.hs:10:31: error:
     • Couldn't match expected type ‘Bool’ with actual type ‘IO Bool’
     • In the second argument of ‘(&&)’, namely ‘boom 1 2’
       In the first argument of ‘fromEnum’, namely ‘(False && boom 1 2)’
       In the first argument of ‘print’, namely
         ‘(fromEnum (False && boom 1 2))’
-  |
-9 |     print (fromEnum (False && boom 1 2))
-  |                               ^^^^^^^^
+   |
+10 |     print (fromEnum (False && boom 1 2))
+   |                               ^^^^^^^^
 
-/workspace/mochi/tests/transpiler/x/hs/short_circuit.hs:10:30: error:
+/workspace/mochi/tests/transpiler/x/hs/short_circuit.hs:11:30: error:
     • Couldn't match expected type ‘Bool’ with actual type ‘IO Bool’
     • In the second argument of ‘(||)’, namely ‘boom 1 2’
       In the first argument of ‘fromEnum’, namely ‘(True || boom 1 2)’
       In the first argument of ‘print’, namely
         ‘(fromEnum (True || boom 1 2))’
    |
-10 |     print (fromEnum (True || boom 1 2))
+11 |     print (fromEnum (True || boom 1 2))
    |                              ^^^^^^^^

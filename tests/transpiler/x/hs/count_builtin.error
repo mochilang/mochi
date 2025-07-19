@@ -1,7 +1,7 @@
 run: exit status 1
 
-/workspace/mochi/tests/transpiler/x/hs/count_builtin.hs:4:12: error:
+/workspace/mochi/tests/transpiler/x/hs/count_builtin.hs:5:12: error:
     Variable not in scope: count :: [a0] -> a1
   |
-4 |     print (count [1, 2, 3])
+5 |     print (count [1, 2, 3])
   |            ^^^^^

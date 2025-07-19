@@ -1,7 +1,8 @@
 run: exit status 1
 
-/workspace/mochi/tests/transpiler/x/hs/in_operator.hs:6:14: error:
-    parse error on input ‘in’
+/workspace/mochi/tests/transpiler/x/hs/in_operator.hs:8:22: error:
+    Bang pattern in expression context: !(5 `elem` xs)
+    Did you mean to add a space after the '!'?
   |
-6 |     print (2 in xs)
-  |              ^^
+8 |     print (fromEnum (!(5 `elem` xs)))
+  |                      ^^^^^^^^^^^^^^
