@@ -1,2 +1,2 @@
 zig build: exit status 1
-/tmp/abbreviations-easy.zig:97:27: error: use of undeclared identifier 'upper'
+/tmp/abbreviations-easy.zig:112:27: error: use of undeclared identifier 'upper'

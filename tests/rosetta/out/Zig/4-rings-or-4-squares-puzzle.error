@@ -1,3 +1,5 @@
 zig build: exit status 1
-/tmp/4-rings-or-4-squares-puzzle.zig:25:9: error: local variable is never mutated
-/tmp/4-rings-or-4-squares-puzzle.zig:25:9: note: consider using 'const'
+/tmp/4-rings-or-4-squares-puzzle.zig:59:38: error: overflow of integer type 'usize' with value '-1'
+/tmp/4-rings-or-4-squares-puzzle.zig:13:20: note: called from here
+/root/.local/share/mise/installs/zig/0.11.0/lib/std/hash_map.zig:17:13: error: std.auto_hash.autoHash does not allow slices here ([]const u8) because the intent is unclear. Consider using std.StringHashMap for hashing the contents of []const u8. Alternatively, consider using std.auto_hash.hash or providing your own hash function instead.
+/root/.local/share/mise/installs/zig/0.11.0/lib/std/hash_map.zig:58:39: note: called from here

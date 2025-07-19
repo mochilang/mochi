@@ -1,3 +1,6 @@
 zig build: exit status 1
-/tmp/99-bottles-of-beer-2.zig:116:13: error: local variable is never mutated
-/tmp/99-bottles-of-beer-2.zig:116:13: note: consider using 'const'
+/tmp/99-bottles-of-beer-2.zig:127:22: error: expected type 'usize', found 'i32'
+/tmp/99-bottles-of-beer-2.zig:127:22: note: unsigned 64-bit int cannot represent all possible signed 32-bit values
+/tmp/99-bottles-of-beer-2.zig:166:33: error: no member named 'items' in '[]u8'
+/tmp/99-bottles-of-beer-2.zig:146:11: error: no member named 'items' in '[]const []const u8'
+/tmp/99-bottles-of-beer-2.zig:50:45: error: no member named 'items' in '[]u8'
