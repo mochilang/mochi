@@ -514,3 +514,195 @@ func TestTranspile_LetAndPrint(t *testing.T) {
 		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
 	}
 }
+
+func TestTranspile_LenString(t *testing.T) {
+	if _, err := exec.LookPath("swipl"); err != nil {
+		t.Skip("swipl not installed")
+	}
+	root := repoRoot(t)
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "pl")
+	os.MkdirAll(outDir, 0o755)
+
+	src := filepath.Join(root, "tests", "vm", "valid", "len_string.mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type: %v", errs[0])
+	}
+	ast, err := pl.Transpile(prog, env)
+	if err != nil {
+		t.Fatalf("transpile: %v", err)
+	}
+	var buf bytes.Buffer
+	if err := pl.Emit(&buf, ast); err != nil {
+		t.Fatalf("emit: %v", err)
+	}
+	plFile := filepath.Join(outDir, "len_string.pl")
+	if err := os.WriteFile(plFile, buf.Bytes(), 0o644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+	cmd := exec.Command("swipl", "-q", "-f", plFile)
+	cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root)
+	out, err := cmd.CombinedOutput()
+	got := bytes.TrimSpace(out)
+	if err != nil {
+		_ = os.WriteFile(filepath.Join(outDir, "len_string.error"), out, 0o644)
+		t.Fatalf("run: %v", err)
+	}
+	_ = os.Remove(filepath.Join(outDir, "len_string.error"))
+	want, err := os.ReadFile(filepath.Join(outDir, "len_string.out"))
+	if err != nil {
+		t.Fatalf("read want: %v", err)
+	}
+	want = bytes.TrimSpace(want)
+	if !bytes.Equal(got, want) {
+		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
+	}
+}
+
+func TestTranspile_LenBuiltin(t *testing.T) {
+	if _, err := exec.LookPath("swipl"); err != nil {
+		t.Skip("swipl not installed")
+	}
+	root := repoRoot(t)
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "pl")
+	os.MkdirAll(outDir, 0o755)
+
+	src := filepath.Join(root, "tests", "vm", "valid", "len_builtin.mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type: %v", errs[0])
+	}
+	ast, err := pl.Transpile(prog, env)
+	if err != nil {
+		t.Fatalf("transpile: %v", err)
+	}
+	var buf bytes.Buffer
+	if err := pl.Emit(&buf, ast); err != nil {
+		t.Fatalf("emit: %v", err)
+	}
+	plFile := filepath.Join(outDir, "len_builtin.pl")
+	if err := os.WriteFile(plFile, buf.Bytes(), 0o644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+	cmd := exec.Command("swipl", "-q", "-f", plFile)
+	cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root)
+	out, err := cmd.CombinedOutput()
+	got := bytes.TrimSpace(out)
+	if err != nil {
+		_ = os.WriteFile(filepath.Join(outDir, "len_builtin.error"), out, 0o644)
+		t.Fatalf("run: %v", err)
+	}
+	_ = os.Remove(filepath.Join(outDir, "len_builtin.error"))
+	want, err := os.ReadFile(filepath.Join(outDir, "len_builtin.out"))
+	if err != nil {
+		t.Fatalf("read want: %v", err)
+	}
+	want = bytes.TrimSpace(want)
+	if !bytes.Equal(got, want) {
+		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
+	}
+}
+
+func TestTranspile_StringConcat(t *testing.T) {
+	if _, err := exec.LookPath("swipl"); err != nil {
+		t.Skip("swipl not installed")
+	}
+	root := repoRoot(t)
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "pl")
+	os.MkdirAll(outDir, 0o755)
+
+	src := filepath.Join(root, "tests", "vm", "valid", "string_concat.mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type: %v", errs[0])
+	}
+	ast, err := pl.Transpile(prog, env)
+	if err != nil {
+		t.Fatalf("transpile: %v", err)
+	}
+	var buf bytes.Buffer
+	if err := pl.Emit(&buf, ast); err != nil {
+		t.Fatalf("emit: %v", err)
+	}
+	plFile := filepath.Join(outDir, "string_concat.pl")
+	if err := os.WriteFile(plFile, buf.Bytes(), 0o644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+	cmd := exec.Command("swipl", "-q", "-f", plFile)
+	cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root)
+	out, err := cmd.CombinedOutput()
+	got := bytes.TrimSpace(out)
+	if err != nil {
+		_ = os.WriteFile(filepath.Join(outDir, "string_concat.error"), out, 0o644)
+		t.Fatalf("run: %v", err)
+	}
+	_ = os.Remove(filepath.Join(outDir, "string_concat.error"))
+	want, err := os.ReadFile(filepath.Join(outDir, "string_concat.out"))
+	if err != nil {
+		t.Fatalf("read want: %v", err)
+	}
+	want = bytes.TrimSpace(want)
+	if !bytes.Equal(got, want) {
+		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
+	}
+}
+
+func TestTranspile_StrBuiltin(t *testing.T) {
+	if _, err := exec.LookPath("swipl"); err != nil {
+		t.Skip("swipl not installed")
+	}
+	root := repoRoot(t)
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "pl")
+	os.MkdirAll(outDir, 0o755)
+
+	src := filepath.Join(root, "tests", "vm", "valid", "str_builtin.mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type: %v", errs[0])
+	}
+	ast, err := pl.Transpile(prog, env)
+	if err != nil {
+		t.Fatalf("transpile: %v", err)
+	}
+	var buf bytes.Buffer
+	if err := pl.Emit(&buf, ast); err != nil {
+		t.Fatalf("emit: %v", err)
+	}
+	plFile := filepath.Join(outDir, "str_builtin.pl")
+	if err := os.WriteFile(plFile, buf.Bytes(), 0o644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+	cmd := exec.Command("swipl", "-q", "-f", plFile)
+	cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root)
+	out, err := cmd.CombinedOutput()
+	got := bytes.TrimSpace(out)
+	if err != nil {
+		_ = os.WriteFile(filepath.Join(outDir, "str_builtin.error"), out, 0o644)
+		t.Fatalf("run: %v", err)
+	}
+	_ = os.Remove(filepath.Join(outDir, "str_builtin.error"))
+	want, err := os.ReadFile(filepath.Join(outDir, "str_builtin.out"))
+	if err != nil {
+		t.Fatalf("read want: %v", err)
+	}
+	want = bytes.TrimSpace(want)
+	if !bytes.Equal(got, want) {
+		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
+	}
+}

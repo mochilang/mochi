@@ -57,19 +57,35 @@ func varName(name string, v int) string {
 }
 
 func (p *PrintStmt) emit(w io.Writer, idx int) {
-	if be, ok := p.Expr.(*BinaryExpr); ok {
+	switch e := p.Expr.(type) {
+	case *BinaryExpr:
+		be := e
 		if isBoolOp(be.Op) {
 			io.WriteString(w, "    (")
 			be.emit(w)
 			io.WriteString(w, " -> write(true) ; write(false)), nl")
 			return
 		}
-		if isArithOp(be.Op) {
+		if isArithOp(be.Op) && !(be.Op == "+" && (isStringLit(be.Left) || isStringLit(be.Right))) {
 			fmt.Fprintf(w, "    R%d is ", idx)
 			be.emit(w)
 			fmt.Fprintf(w, ", write(R%d), nl", idx)
 			return
 		}
+	case *LenExpr:
+		if _, ok := e.Value.(*StringLit); ok {
+			fmt.Fprintf(w, "    string_length(")
+		} else {
+			fmt.Fprintf(w, "    length(")
+		}
+		e.Value.emit(w)
+		fmt.Fprintf(w, ", R%d), write(R%d), nl", idx, idx)
+		return
+	case *StrExpr:
+		io.WriteString(w, "    write(")
+		e.emit(w)
+		io.WriteString(w, "), nl")
+		return
 	}
 	io.WriteString(w, "    write(")
 	p.Expr.emit(w)
@@ -86,6 +102,9 @@ type IntLit struct{ Value int }
 type BoolLit struct{ Value bool }
 type StringLit struct{ Value string }
 type Var struct{ Name string }
+type ListLit struct{ Elems []Expr }
+type LenExpr struct{ Value Expr }
+type StrExpr struct{ Value Expr }
 type BinaryExpr struct {
 	Left  Expr
 	Op    string
@@ -102,6 +121,14 @@ func (b *BoolLit) emit(w io.Writer)   { fmt.Fprintf(w, "%v", b.Value) }
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "'%s'", escape(s.Value)) }
 func (v *Var) emit(w io.Writer)       { io.WriteString(w, v.Name) }
 func (b *BinaryExpr) emit(w io.Writer) {
+	if b.Op == "+" {
+		if l, ok := b.Left.(*StringLit); ok {
+			if r, ok2 := b.Right.(*StringLit); ok2 {
+				fmt.Fprintf(w, "'%s'", escape(l.Value+r.Value))
+				return
+			}
+		}
+	}
 	b.Left.emit(w)
 	io.WriteString(w, " ")
 	io.WriteString(w, b.Op)
@@ -124,6 +151,30 @@ func (c *CastExpr) emit(w io.Writer) {
 		}
 	}
 	c.Expr.emit(w)
+}
+func (l *ListLit) emit(w io.Writer) {
+	io.WriteString(w, "[")
+	for i, e := range l.Elems {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		e.emit(w)
+	}
+	io.WriteString(w, "]")
+}
+
+func (l *LenExpr) emit(w io.Writer) {
+	io.WriteString(w, "len(")
+	l.Value.emit(w)
+	io.WriteString(w, ")")
+}
+
+func (s *StrExpr) emit(w io.Writer) {
+	if lit, ok := s.Value.(*IntLit); ok {
+		fmt.Fprintf(w, "'%d'", lit.Value)
+		return
+	}
+	s.Value.emit(w)
 }
 
 func escape(s string) string {
@@ -152,6 +203,11 @@ func isArithOp(op string) bool {
 		return true
 	}
 	return false
+}
+
+func isStringLit(e Expr) bool {
+	_, ok := e.(*StringLit)
+	return ok
 }
 
 // Transpile converts a Mochi program to a Prolog AST.
@@ -353,6 +409,32 @@ func toPrimary(p *parser.Primary, env *compileEnv) (Expr, error) {
 			return nil, fmt.Errorf("unsupported selector")
 		}
 		return &Var{Name: env.current(p.Selector.Root)}, nil
+	case p.Call != nil:
+		if len(p.Call.Args) != 1 {
+			return nil, fmt.Errorf("unsupported call")
+		}
+		arg, err := toExpr(p.Call.Args[0], env)
+		if err != nil {
+			return nil, err
+		}
+		switch p.Call.Func {
+		case "len":
+			return &LenExpr{Value: arg}, nil
+		case "str":
+			return &StrExpr{Value: arg}, nil
+		default:
+			return nil, fmt.Errorf("unsupported call")
+		}
+	case p.List != nil:
+		elems := make([]Expr, len(p.List.Elems))
+		for i, e := range p.List.Elems {
+			ex, err := toExpr(e, env)
+			if err != nil {
+				return nil, err
+			}
+			elems[i] = ex
+		}
+		return &ListLit{Elems: elems}, nil
 	case p.Group != nil:
 		expr, err := toExpr(p.Group, env)
 		if err != nil {
@@ -375,6 +457,16 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "var", Value: ex.Name}
 	case *BinaryExpr:
 		return &ast.Node{Kind: "binary", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
+	case *ListLit:
+		n := &ast.Node{Kind: "list"}
+		for _, e := range ex.Elems {
+			n.Children = append(n.Children, exprNode(e))
+		}
+		return n
+	case *LenExpr:
+		return &ast.Node{Kind: "len", Children: []*ast.Node{exprNode(ex.Value)}}
+	case *StrExpr:
+		return &ast.Node{Kind: "strcall", Children: []*ast.Node{exprNode(ex.Value)}}
 	case *GroupExpr:
 		return &ast.Node{Kind: "group", Children: []*ast.Node{exprNode(ex.Expr)}}
 	case *CastExpr:
