@@ -575,7 +575,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			name = "@" + attrName(p.Selector.Root)
 		}
 		if len(p.Selector.Tail) > 0 {
-			name += "." + strings.Join(p.Selector.Tail, ".")
+			parts := make([]string, len(p.Selector.Tail))
+			for i, part := range p.Selector.Tail {
+				parts[i] = sanitizeName(part)
+			}
+			name += "." + strings.Join(parts, ".")
 			return name, nil
 		}
 		if c.env != nil {

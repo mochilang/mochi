@@ -31,7 +31,9 @@ go test ./compiler/x/ex -run TestExCompiler_TPCHQueries -tags=slow -v
 
 The Elixir backend is regularly tested against the Mochi Rosetta suite located
 under `tests/rosetta/x/Mochi`. Most programs now compile and run correctly.
-Recent improvements to map indexing reduced several `.error` files.
+Recent improvements to map indexing reduced several `.error` files. Identifier
+sanitization now converts CamelCase names to snake_case so calls such as
+`net.lookup_host` compile correctly.
 
 ### Rosetta status (first 20)
 

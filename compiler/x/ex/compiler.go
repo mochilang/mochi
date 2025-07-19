@@ -56,7 +56,26 @@ func sanitizeName(name string) string {
 	if exReserved[name] {
 		return name + "_"
 	}
-	return name
+	// convert CamelCase to snake_case to satisfy Elixir identifier rules
+	var out []rune
+	for i, r := range name {
+		if 'A' <= r && r <= 'Z' {
+			if i > 0 {
+				prev := rune(name[i-1])
+				if prev != '_' {
+					out = append(out, '_')
+				}
+			}
+			out = append(out, r+'a'-'A')
+		} else {
+			out = append(out, r)
+		}
+	}
+	res := string(out)
+	if res == "" {
+		res = name
+	}
+	return res
 }
 
 func attrName(name string) string {
