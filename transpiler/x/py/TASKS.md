@@ -43,3 +43,8 @@
 - Added break and continue statements.
 - Added index assignment for lists and maps.
 - Enabled transpiler tests for `break_continue`, `if_else`, `list_assign`, `map_assign` and `map_in_operator`.
+
+## Recent Enhancements (2025-07-19 19:41 +07)
+- Added default value handling for typed `let` and `var` declarations.
+- Implemented nested index assignment for lists.
+- Generated golden tests for `typed_let`, `typed_var` and `list_nested_assign`.

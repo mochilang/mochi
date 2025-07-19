@@ -1,9 +1,8 @@
 # Transpiler Progress
 
-This directory tracks progress of the experimental Python transpiler. Generated
-code for tests lives in `tests/transpiler/x/py`.
+This directory tracks progress of the experimental Python transpiler. Generated code for tests lives in `tests/transpiler/x/py`.
 
-## VM Golden Test Checklist (44/100)
+## VM Golden Test Checklist (47/100)
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -53,7 +52,7 @@ code for tests lives in `tests/transpiler/x/py`.
 - [x] let_and_print
 - [x] list_assign
 - [x] list_index
-- [ ] list_nested_assign
+- [x] list_nested_assign
 - [ ] list_set_ops
 - [ ] load_yaml
 - [x] map_assign
@@ -97,8 +96,8 @@ code for tests lives in `tests/transpiler/x/py`.
 - [ ] test_block
 - [ ] tree_sum
 - [ ] two-sum
-- [ ] typed_let
-- [ ] typed_var
+- [x] typed_let
+- [x] typed_var
 - [x] unary_neg
 - [ ] update_stmt
 - [ ] user_type_literal
