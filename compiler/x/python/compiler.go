@@ -1003,7 +1003,8 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "net.LookupHost":
 		if len(args) == 1 {
 			c.imports["socket"] = "socket"
-			return fmt.Sprintf("[socket.gethostbyname_ex(%s)[2], None]", args[0]), nil
+			c.use("_lookup_host")
+			return fmt.Sprintf("_lookup_host(%s)", args[0]), nil
 		}
 		return "", fmt.Errorf("net.LookupHost expects 1 arg")
 	case "count":

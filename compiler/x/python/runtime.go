@@ -36,6 +36,13 @@ var helperInput = "def _input():\n" +
 	"    except EOFError:\n" +
 	"        return ''\n"
 
+var helperLookupHost = "def _lookup_host(host):\n" +
+	"    import socket\n" +
+	"    try:\n" +
+	"        return socket.gethostbyname_ex(host)[2], None\n" +
+	"    except Exception as e:\n" +
+	"        return [], e\n"
+
 var helperInt = "def _int(v):\n" +
 	"    try:\n" +
 	"        return int(v)\n" +
@@ -540,38 +547,39 @@ var helperQuery = "def _query(src, joins, opts):\n" +
 	"    return res\n"
 
 var helperMap = map[string]string{
-	"_gen_text":   helperGenText,
-	"_gen_embed":  helperGenEmbed,
-	"_gen_struct": helperGenStruct,
-	"_input":      helperInput,
-	"_int":        helperInt,
-	"_now":        helperNow,
-	"_group":      helperGroupClass,
-	"_group_by":   helperGroupBy,
-	"_count":      helperCount,
-	"_avg":        helperAvg,
-	"_exists":     helperExists,
-	"_sum":        helperSum,
-	"_min":        helperMin,
-	"_max":        helperMax,
-	"_first":      helperFirst,
-	"_union_all":  helperUnionAll,
-	"_union":      helperUnion,
-	"_except":     helperExcept,
-	"_intersect":  helperIntersect,
-	"_append":     helperAppend,
-	"_contains":   helperContains,
-	"_values":     helperValues,
-	"_fetch":      helperFetch,
-	"_load":       helperLoad,
-	"_save":       helperSave,
-	"_slice":      helperSlice,
-	"_reverse":    helperReverse,
-	"_stream":     helperStream,
-	"_wait_all":   helperWaitAll,
-	"_agent":      helperAgent,
-	"_sort_key":   helperSortKey,
-	"_query":      helperQuery,
+	"_gen_text":    helperGenText,
+	"_gen_embed":   helperGenEmbed,
+	"_gen_struct":  helperGenStruct,
+	"_input":       helperInput,
+	"_lookup_host": helperLookupHost,
+	"_int":         helperInt,
+	"_now":         helperNow,
+	"_group":       helperGroupClass,
+	"_group_by":    helperGroupBy,
+	"_count":       helperCount,
+	"_avg":         helperAvg,
+	"_exists":      helperExists,
+	"_sum":         helperSum,
+	"_min":         helperMin,
+	"_max":         helperMax,
+	"_first":       helperFirst,
+	"_union_all":   helperUnionAll,
+	"_union":       helperUnion,
+	"_except":      helperExcept,
+	"_intersect":   helperIntersect,
+	"_append":      helperAppend,
+	"_contains":    helperContains,
+	"_values":      helperValues,
+	"_fetch":       helperFetch,
+	"_load":        helperLoad,
+	"_save":        helperSave,
+	"_slice":       helperSlice,
+	"_reverse":     helperReverse,
+	"_stream":      helperStream,
+	"_wait_all":    helperWaitAll,
+	"_agent":       helperAgent,
+	"_sort_key":    helperSortKey,
+	"_query":       helperQuery,
 }
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }
