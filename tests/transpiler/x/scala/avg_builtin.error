@@ -1,1 +1,9 @@
-unsupported primary
+exit status 1
+/workspace/mochi/tests/transpiler/x/scala/avg_builtin.scala:5: warning: non-variable type argument Int in type pattern List[Int] (the underlying of List[Int]) is unchecked since it is eliminated by erasure
+        case xs: List[Int] => println(xs.mkString(" ") )
+                 ^
+/workspace/mochi/tests/transpiler/x/scala/avg_builtin.scala:10: error: not found: value avg
+        mochiPrint(avg(List(1, 2, 3)))
+                   ^
+one warning found
+one error found
