@@ -93,12 +93,27 @@ func (p *PrintStmt) emit(w io.Writer) {
 		io.WriteString(w, "))")
 		return
 	}
-
-	if _, ok := p.Expr.(*StringLit); ok {
-		io.WriteString(w, "putStrLn (")
-	} else {
-		io.WriteString(w, "print (")
+	if isListExpr(p.Expr) && !isStringExpr(p.Expr) {
+		io.WriteString(w, "putStrLn (unwords (map show (")
+		p.Expr.emit(w)
+		io.WriteString(w, ")))")
+		return
 	}
+
+	if isStringExpr(p.Expr) {
+		io.WriteString(w, "putStrLn (")
+		if _, ok := p.Expr.(*IndexExpr); ok {
+			io.WriteString(w, "[")
+			p.Expr.emit(w)
+			io.WriteString(w, "]")
+		} else {
+			p.Expr.emit(w)
+		}
+		io.WriteString(w, ")")
+		return
+	}
+
+	io.WriteString(w, "print (")
 	p.Expr.emit(w)
 	io.WriteString(w, ")")
 }
@@ -173,6 +188,15 @@ type IfExpr struct {
 	Then Expr
 	Else Expr
 }
+type IndexExpr struct {
+	Target Expr
+	Index  Expr
+}
+type SliceExpr struct {
+	Target Expr
+	Start  Expr
+	End    Expr
+}
 
 func (i *IntLit) emit(w io.Writer)    { io.WriteString(w, i.Value) }
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
@@ -210,6 +234,10 @@ func isStringExpr(e Expr) bool {
 		}
 	case *IfExpr:
 		return isStringExpr(ex.Then) && isStringExpr(ex.Else)
+	case *SliceExpr:
+		return isStringExpr(ex.Target)
+	case *IndexExpr:
+		return isStringExpr(ex.Target)
 	}
 	return false
 }
@@ -228,6 +256,21 @@ func isBoolExpr(e Expr) bool {
 			op := ex.Ops[0].Op
 			switch op {
 			case "==", "!=", "<", ">", "<=", ">=", "&&", "||":
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func isListExpr(e Expr) bool {
+	switch ex := e.(type) {
+	case *ListLit, *SliceExpr, *IndexExpr:
+		return true
+	case *BinaryExpr:
+		if len(ex.Ops) > 0 {
+			switch ex.Ops[0].Op {
+			case "union", "except", "intersect":
 				return true
 			}
 		}
@@ -318,6 +361,21 @@ func (i *IfExpr) emit(w io.Writer) {
 	i.Then.emit(w)
 	io.WriteString(w, " else ")
 	i.Else.emit(w)
+}
+func (i *IndexExpr) emit(w io.Writer) {
+	i.Target.emit(w)
+	io.WriteString(w, " !! ")
+	i.Index.emit(w)
+}
+func (s *SliceExpr) emit(w io.Writer) {
+	io.WriteString(w, "take (")
+	diff := &BinaryExpr{Left: s.End, Ops: []BinaryOp{{Op: "-", Right: s.Start}}}
+	diff.emit(w)
+	io.WriteString(w, ") (drop ")
+	s.Start.emit(w)
+	io.WriteString(w, " ")
+	s.Target.emit(w)
+	io.WriteString(w, ")")
 }
 
 func repoRoot() string {
@@ -586,7 +644,8 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-	for _, op := range pf.Ops {
+	for i := 0; i < len(pf.Ops); i++ {
+		op := pf.Ops[i]
 		if op.Call != nil {
 			var args []Expr
 			for _, a := range op.Call.Args {
@@ -598,6 +657,48 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			}
 			expr = &CallExpr{Fun: expr, Args: args}
 			continue
+		}
+		if op.Index != nil {
+			if op.Index.Colon == nil {
+				idx, err := convertExpr(op.Index.Start)
+				if err != nil {
+					return nil, err
+				}
+				expr = &IndexExpr{Target: expr, Index: idx}
+				continue
+			}
+			if op.Index.Colon2 != nil || op.Index.Step != nil || op.Index.End == nil {
+				return nil, fmt.Errorf("unsupported slice")
+			}
+			var start Expr = &IntLit{Value: "0"}
+			if op.Index.Start != nil {
+				s, err := convertExpr(op.Index.Start)
+				if err != nil {
+					return nil, err
+				}
+				start = s
+			}
+			end, err := convertExpr(op.Index.End)
+			if err != nil {
+				return nil, err
+			}
+			expr = &SliceExpr{Target: expr, Start: start, End: end}
+			continue
+		}
+		if op.Field != nil && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil {
+			if op.Field.Name == "contains" {
+				call := pf.Ops[i+1].Call
+				if len(call.Args) != 1 {
+					return nil, fmt.Errorf("contains expects 1 arg")
+				}
+				arg, err := convertExpr(call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				expr = &CallExpr{Fun: &NameRef{Name: "isInfixOf"}, Args: []Expr{arg, expr}}
+				i++
+				continue
+			}
 		}
 		return nil, fmt.Errorf("postfix op not supported")
 	}
@@ -665,6 +766,46 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			return &LenExpr{Arg: arg}, nil
+		}
+		if p.Call.Func == "count" && len(p.Call.Args) == 1 {
+			arg, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &LenExpr{Arg: arg}, nil
+		}
+		if p.Call.Func == "append" && len(p.Call.Args) == 2 {
+			lst, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			it, err := convertExpr(p.Call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			return &BinaryExpr{Left: lst, Ops: []BinaryOp{{Op: "union", All: true, Right: &ListLit{Elems: []Expr{it}}}}}, nil
+		}
+		if p.Call.Func == "substring" && len(p.Call.Args) == 3 {
+			str, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			start, err := convertExpr(p.Call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			end, err := convertExpr(p.Call.Args[2])
+			if err != nil {
+				return nil, err
+			}
+			return &SliceExpr{Target: str, Start: start, End: end}, nil
+		}
+		if p.Call.Func == "str" && len(p.Call.Args) == 1 {
+			arg, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &CallExpr{Fun: &NameRef{Name: "show"}, Args: []Expr{arg}}, nil
 		}
 		if p.Call.Func == "min" && len(p.Call.Args) == 1 {
 			arg, err := convertExpr(p.Call.Args[0])

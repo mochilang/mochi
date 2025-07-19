@@ -1,1 +1,12 @@
-transpile: postfix op not supported
+run: exit status 1
+
+/workspace/mochi/tests/transpiler/x/hs/string_index.hs:7:34: error:
+    • Couldn't match type ‘Char’ with ‘[a0]’
+      Expected: [[a0]]
+        Actual: String
+    • In the first argument of ‘(!!)’, namely ‘s’
+      In the second argument of ‘map’, namely ‘(s !! 1)’
+      In the first argument of ‘unwords’, namely ‘(map show (s !! 1))’
+  |
+7 |     putStrLn (unwords (map show (s !! 1)))
+  |                                  ^
