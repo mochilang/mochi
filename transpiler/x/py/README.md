@@ -2,7 +2,8 @@
 
 Generated Python code from programs in `tests/vm/valid` lives in `tests/transpiler/x/py`.
 
-## VM Golden Test Checklist (70/100)
+## VM Golden Test Checklist (73/100)
+
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -17,8 +18,8 @@ Generated Python code from programs in `tests/vm/valid` lives in `tests/transpil
 - [ ] cross_join_filter
 - [ ] cross_join_triple
 - [ ] dataset_sort_take_limit
-- [ ] dataset_where_filter
-- [ ] exists_builtin
+- [x] dataset_where_filter
+- [x] exists_builtin
 - [x] for_list_collection
 - [x] for_loop
 - [x] for_map_collection
@@ -39,7 +40,7 @@ Generated Python code from programs in `tests/vm/valid` lives in `tests/transpil
 - [x] if_then_else
 - [x] if_then_else_nested
 - [x] in_operator
-- [ ] in_operator_extended
+- [x] in_operator_extended
 - [ ] inner_join
 - [ ] join_multi
 - [x] json_builtin

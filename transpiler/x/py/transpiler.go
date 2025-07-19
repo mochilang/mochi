@@ -350,6 +350,40 @@ func (l *LambdaExpr) emit(w io.Writer) error {
 	return emitExpr(w, l.Expr)
 }
 
+// ListComp represents a Python list comprehension like
+// `[expr for var in iter if cond]`.
+type ListComp struct {
+	Var  string
+	Iter Expr
+	Expr Expr
+	Cond Expr
+}
+
+func (lc *ListComp) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "["); err != nil {
+		return err
+	}
+	if err := emitExpr(w, lc.Expr); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, " for "+lc.Var+" in "); err != nil {
+		return err
+	}
+	if err := emitExpr(w, lc.Iter); err != nil {
+		return err
+	}
+	if lc.Cond != nil {
+		if _, err := io.WriteString(w, " if "); err != nil {
+			return err
+		}
+		if err := emitExpr(w, lc.Cond); err != nil {
+			return err
+		}
+	}
+	_, err := io.WriteString(w, "]")
+	return err
+}
+
 type BinaryExpr struct {
 	Left  Expr
 	Op    string
@@ -1666,6 +1700,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				repl := &CallExpr{Func: &FieldExpr{Target: call, Name: "replace"}, Args: []Expr{&StringLit{Value: " "}, &StringLit{Value: ""}}}
 				return &CallExpr{Func: &Name{Name: "print"}, Args: []Expr{repl}}, nil
 			}
+		case "exists":
+			if len(args) == 1 {
+				length := &CallExpr{Func: &Name{Name: "len"}, Args: args}
+				return &BinaryExpr{Left: length, Op: ">", Right: &IntLit{Value: "0"}}, nil
+			}
 		}
 		return &CallExpr{Func: &Name{Name: p.Call.Func}, Args: args}, nil
 	case p.Lit != nil:
@@ -1726,6 +1765,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return convertIfExpr(p.If)
 	case p.Match != nil:
 		return convertMatchExpr(p.Match)
+	case p.Query != nil:
+		return convertQueryExpr(p.Query)
 	case p.Group != nil:
 		return convertExpr(p.Group)
 	default:
@@ -1802,6 +1843,28 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 		expr = &CondExpr{Cond: cond, Then: res, Else: expr}
 	}
 	return expr, nil
+}
+
+func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
+	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	iter, err := convertExpr(q.Source)
+	if err != nil {
+		return nil, err
+	}
+	elem, err := convertExpr(q.Select)
+	if err != nil {
+		return nil, err
+	}
+	var cond Expr
+	if q.Where != nil {
+		cond, err = convertExpr(q.Where)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &ListComp{Var: q.Var, Iter: iter, Expr: elem, Cond: cond}, nil
 }
 
 // --- AST printing helpers ---
@@ -1948,6 +2011,14 @@ func exprNode(e Expr) *ast.Node {
 			n.Children = append(n.Children, &ast.Node{Kind: "param", Value: p})
 		}
 		n.Children = append(n.Children, exprNode(ex.Expr))
+		return n
+	case *ListComp:
+		n := &ast.Node{Kind: "list_comp", Value: ex.Var}
+		n.Children = append(n.Children, exprNode(ex.Iter))
+		n.Children = append(n.Children, exprNode(ex.Expr))
+		if ex.Cond != nil {
+			n.Children = append(n.Children, exprNode(ex.Cond))
+		}
 		return n
 	case *CondExpr:
 		return &ast.Node{Kind: "cond", Children: []*ast.Node{exprNode(ex.Cond), exprNode(ex.Then), exprNode(ex.Else)}}
