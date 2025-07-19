@@ -49,6 +49,12 @@ type AssignStmt struct {
 	Value Expr
 }
 
+type IfStmt struct {
+	Cond Expr
+	Then []Stmt
+	Else []Stmt
+}
+
 type WhileStmt struct {
 	Cond Expr
 	Body []Stmt
@@ -102,6 +108,26 @@ func (ws *WhileStmt) emit(w io.Writer) {
 		s.emit(w)
 	}
 	io.WriteString(w, "\t}\n")
+}
+
+func (i *IfStmt) emit(w io.Writer) {
+	io.WriteString(w, "\tif (")
+	if i.Cond != nil {
+		i.Cond.emitExpr(w)
+	}
+	io.WriteString(w, ") {\n")
+	for _, s := range i.Then {
+		s.emit(w)
+	}
+	io.WriteString(w, "\t}")
+	if len(i.Else) > 0 {
+		io.WriteString(w, " else {\n")
+		for _, s := range i.Else {
+			s.emit(w)
+		}
+		io.WriteString(w, "\t}")
+	}
+	io.WriteString(w, "\n")
 }
 
 type Expr interface{ emitExpr(io.Writer) }
@@ -243,8 +269,32 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		return &WhileStmt{Cond: cond, Body: body}, nil
+	case s.If != nil:
+		return compileIfStmt(s.If)
 	}
 	return nil, nil
+}
+
+func compileIfStmt(n *parser.IfStmt) (Stmt, error) {
+	cond := convertExpr(n.Cond)
+	thenBody, err := compileStmts(n.Then)
+	if err != nil {
+		return nil, err
+	}
+	var elseBody []Stmt
+	if n.ElseIf != nil {
+		s, err := compileIfStmt(n.ElseIf)
+		if err != nil {
+			return nil, err
+		}
+		elseBody = []Stmt{s}
+	} else if len(n.Else) > 0 {
+		elseBody, err = compileStmts(n.Else)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &IfStmt{Cond: cond, Then: thenBody, Else: elseBody}, nil
 }
 
 func convertExpr(e *parser.Expr) Expr {

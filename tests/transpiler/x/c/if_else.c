@@ -2,6 +2,11 @@
 #include <stdio.h>
 
 int main() {
-	printf("hello\n");
+	int x = 5;
+	if (x > 3) {
+	printf("big\n");
+	} else {
+	printf("small\n");
+	}
 	return 0;
 }
