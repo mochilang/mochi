@@ -155,6 +155,26 @@ func TestTranspile_BasicCompare(t *testing.T) {
 	runTranspileTest(t, "basic_compare")
 }
 
+func TestTranspile_TypedVar(t *testing.T) {
+	runTranspileTest(t, "typed_var")
+}
+
+func TestTranspile_LenString(t *testing.T) {
+	runTranspileTest(t, "len_string")
+}
+
+func TestTranspile_IfThenElse(t *testing.T) {
+	runTranspileTest(t, "if_then_else")
+}
+
+func TestTranspile_IfThenElseNested(t *testing.T) {
+	runTranspileTest(t, "if_then_else_nested")
+}
+
+func TestTranspile_IfElse(t *testing.T) {
+	runTranspileTest(t, "if_else")
+}
+
 func runTranspileTest(t *testing.T, name string) {
 	if _, err := exec.LookPath("php"); err != nil {
 		t.Skip("php not installed")
