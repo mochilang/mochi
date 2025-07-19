@@ -1,5 +1,10 @@
 # C++ Transpiler Tasks
 
+## Recent Enhancements (2025-07-20 01:06 +0700)
+- Removed runtime helper functions and replaced `in` operator logic with an inline generic lambda.
+- Updated golden C++ outputs with more idiomatic code.
+- README progress remains 31/100 programs.
+
 ## Recent Enhancements (2025-07-19 20:34 +0700)
 - Added support for string contains, index access, substring and type casting.
 - Implemented `in` operator and `sum` builtin for vectors.
