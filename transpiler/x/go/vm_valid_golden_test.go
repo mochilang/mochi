@@ -124,23 +124,29 @@ func updateReadme() {
 func updateTasks() {
 	root := findRepoRoot(&testing.T{})
 	taskFile := filepath.Join(root, "transpiler", "x", "go", "TASKS.md")
-	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
-	ts := ""
-	if err == nil {
-		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
-			if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
-				ts = t.In(loc).Format("2006-01-02 15:04 -0700")
-			} else {
-				ts = t.Format("2006-01-02 15:04 MST")
-			}
+	tsRaw, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	msgRaw, _ := exec.Command("git", "log", "-1", "--format=%s").Output()
+	ts := strings.TrimSpace(string(tsRaw))
+	if t, err := time.Parse(time.RFC3339, ts); err == nil {
+		if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+			ts = t.In(loc).Format("2006-01-02 15:04 -0700")
+		} else {
+			ts = t.Format("2006-01-02 15:04 MST")
 		}
 	}
-	var buf bytes.Buffer
-	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
-	buf.WriteString("- Added while/for loops and index assignment support\n")
-	buf.WriteString("\n")
-	if data, err := os.ReadFile(taskFile); err == nil {
-		buf.Write(data)
+	msg := strings.TrimSpace(string(msgRaw))
+	files, _ := filepath.Glob(filepath.Join(root, "tests", "vm", "valid", "*.mochi"))
+	total := len(files)
+	compiled := 0
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		if _, err := os.Stat(filepath.Join(root, "tests", "transpiler", "x", "go", name+".out")); err == nil {
+			compiled++
+		}
 	}
-	_ = os.WriteFile(taskFile, buf.Bytes(), 0o644)
+	entry := fmt.Sprintf("## Progress (%s)\n- %s\n- Regenerated golden files - %d/%d vm valid programs passing\n\n", ts, msg, compiled, total)
+	if prev, err := os.ReadFile(taskFile); err == nil {
+		entry += string(prev)
+	}
+	_ = os.WriteFile(taskFile, []byte(entry), 0o644)
 }

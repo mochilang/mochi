@@ -431,7 +431,7 @@ type ContainsExpr struct {
 }
 
 func (c *ContainsExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "func(s any, v any) any { switch xs := s.(type) { case []int: n, ok := v.(int); if !ok { return nil }; for i, m := range xs { if m == n { return i } }; return nil; case string: str, ok := v.(string); if !ok { return 0 }; if strings.Contains(xs, str) { return 1 }; return 0 }; return nil }(")
+	fmt.Fprint(w, "func(s any, v any) bool { switch xs := s.(type) { case []int: n, ok := v.(int); if !ok { return false }; for _, m := range xs { if m == n { return true } }; return false; case string: str, ok := v.(string); if !ok { return false }; return strings.Contains(xs, str) }; return false }(")
 	c.Collection.emit(w)
 	fmt.Fprint(w, ", ")
 	c.Value.emit(w)
@@ -557,7 +557,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			if ml, ok := e.(*MapLit); ok && ml.KeyType == "interface{}" {
+			if ml, ok := e.(*MapLit); ok && ml.KeyType == "any" {
 				if t, err := env.GetVar(st.Let.Name); err == nil {
 					if mt, ok2 := t.(types.MapType); ok2 {
 						ml.KeyType = toGoTypeFromType(mt.Key)
@@ -580,7 +580,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			if ml, ok := e.(*MapLit); ok && ml.KeyType == "interface{}" {
+			if ml, ok := e.(*MapLit); ok && ml.KeyType == "any" {
 				if t, err := env.GetVar(st.Var.Name); err == nil {
 					if mt, ok2 := t.(types.MapType); ok2 {
 						ml.KeyType = toGoTypeFromType(mt.Key)
@@ -1071,7 +1071,7 @@ func toGoType(t *parser.TypeRef) string {
 	case "bool":
 		return "bool"
 	}
-	return "interface{}"
+	return "any"
 }
 
 func toGoTypeFromType(t types.Type) string {
@@ -1087,7 +1087,7 @@ func toGoTypeFromType(t types.Type) string {
 	case types.MapType:
 		return fmt.Sprintf("map[%s]%s", toGoTypeFromType(tt.Key), toGoTypeFromType(tt.Value))
 	}
-	return "interface{}"
+	return "any"
 }
 
 func isBoolExpr(e *parser.Expr) bool { return isBoolBinary(e.Binary) }
