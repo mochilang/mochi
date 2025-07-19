@@ -165,9 +165,23 @@ const (
 	helperInput = "let _inputData: string[] | null = null;\n" +
 		"function _input(): string {\n" +
 		"  if (_inputData === null) {\n" +
-		"    const fs = require('fs');\n" +
-		"    const d = fs.readFileSync(0, 'utf8');\n" +
-		"    _inputData = d.split(/\\r?\\n/);\n" +
+		"    let data: string;\n" +
+		"    if (typeof Deno !== 'undefined') {\n" +
+		"      const dec = new TextDecoder();\n" +
+		"      const chunks: string[] = [];\n" +
+		"      const buf = new Uint8Array(1024);\n" +
+		"      for (;;) {\n" +
+		"        const n = Deno.stdin.readSync(buf);\n" +
+		"        if (n === null) break;\n" +
+		"        chunks.push(dec.decode(buf.subarray(0, n)));\n" +
+		"        if (n < buf.length) break;\n" +
+		"      }\n" +
+		"      data = chunks.join('');\n" +
+		"    } else {\n" +
+		"      const fs = require('fs');\n" +
+		"      data = fs.readFileSync(0, 'utf8');\n" +
+		"    }\n" +
+		"    _inputData = data.split(/\\r?\\n/);\n" +
 		"  }\n" +
 		"  const v = _inputData.shift();\n" +
 		"  return v === undefined ? '' : v;\n" +
