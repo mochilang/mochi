@@ -2,4 +2,5 @@
 :- initialization(main).
 
 main :-
-    write(1995), nl.
+    write(-3), nl,
+    R1 is 5 + (-2), write(R1), nl.

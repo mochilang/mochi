@@ -5,12 +5,15 @@ programs to SWI-Prolog. It is mainly used for experimentation and golden tests.
 
 ## Golden tests
 
-Programs under `tests/vm/valid` that have generated Prolog code:
+Programs under `tests/vm/valid` that have generated Prolog code (7/100):
 
 - [x] `print_hello`
 - [x] `basic_compare`
 - [x] `binary_precedence`
 - [x] `cast_string_to_int`
+- [x] `typed_let`
+- [x] `typed_var`
+- [x] `unary_neg`
 
 Run `go test ./transpiler/x/pl -tags slow` to regenerate the `.pl` files and
 verify their output.

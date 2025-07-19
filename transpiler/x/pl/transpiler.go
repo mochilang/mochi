@@ -130,11 +130,29 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	for _, st := range prog.Statements {
 		switch {
 		case st.Let != nil:
-			expr, err := toExpr(st.Let.Value)
-			if err != nil {
-				return nil, err
+			var expr Expr
+			if st.Let.Value != nil {
+				var err error
+				expr, err = toExpr(st.Let.Value)
+				if err != nil {
+					return nil, err
+				}
+			} else {
+				expr = &IntLit{Value: 0}
 			}
 			p.Stmts = append(p.Stmts, &LetStmt{Name: st.Let.Name, Expr: expr})
+		case st.Var != nil:
+			var expr Expr
+			if st.Var.Value != nil {
+				var err error
+				expr, err = toExpr(st.Var.Value)
+				if err != nil {
+					return nil, err
+				}
+			} else {
+				expr = &IntLit{Value: 0}
+			}
+			p.Stmts = append(p.Stmts, &LetStmt{Name: st.Var.Name, Expr: expr})
 		case st.Expr != nil:
 			call := st.Expr.Expr.Binary.Left.Value.Target.Call
 			if call == nil || call.Func != "print" || len(call.Args) != 1 {
@@ -236,10 +254,24 @@ func toBinary(b *parser.BinaryExpr) (Expr, error) {
 }
 
 func toUnary(u *parser.Unary) (Expr, error) {
-	if len(u.Ops) > 0 {
-		return nil, fmt.Errorf("unsupported unary")
+	expr, err := toPostfix(u.Value)
+	if err != nil {
+		return nil, err
 	}
-	return toPostfix(u.Value)
+	for i := len(u.Ops) - 1; i >= 0; i-- {
+		op := u.Ops[i]
+		switch op {
+		case "-":
+			if lit, ok := expr.(*IntLit); ok {
+				expr = &IntLit{Value: -lit.Value}
+			} else {
+				expr = &BinaryExpr{Left: &IntLit{Value: 0}, Op: "-", Right: expr}
+			}
+		default:
+			return nil, fmt.Errorf("unsupported unary")
+		}
+	}
+	return expr, nil
 }
 
 func toPostfix(pf *parser.PostfixExpr) (Expr, error) {
