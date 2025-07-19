@@ -19,7 +19,8 @@ import (
 
 // Program is a sequence of Swift statements.
 type Program struct {
-	Stmts []Stmt
+	Stmts         []Stmt
+	UsesSubstring bool
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -328,11 +329,89 @@ func formatCode(src []byte) []byte {
 	return out.Bytes()
 }
 
+func usesSubstringExpr(e Expr) bool {
+	switch v := e.(type) {
+	case *CallExpr:
+		if v.Func == "substring" {
+			return true
+		}
+		for _, a := range v.Args {
+			if usesSubstringExpr(a) {
+				return true
+			}
+		}
+	case *BinaryExpr:
+		return usesSubstringExpr(v.Left) || usesSubstringExpr(v.Right)
+	case *UnaryExpr:
+		return usesSubstringExpr(v.Expr)
+	case *CondExpr:
+		return usesSubstringExpr(v.Cond) || usesSubstringExpr(v.Then) || usesSubstringExpr(v.Else)
+	}
+	return false
+}
+
+func usesSubstringStmt(s Stmt) bool {
+	switch v := s.(type) {
+	case *PrintStmt:
+		return usesSubstringExpr(v.Expr)
+	case *VarDecl:
+		return usesSubstringExpr(v.Expr)
+	case *AssignStmt:
+		return usesSubstringExpr(v.Expr)
+	case *ReturnStmt:
+		return usesSubstringExpr(v.Expr)
+	case *IfStmt:
+		if usesSubstringExpr(v.Cond) {
+			return true
+		}
+		for _, st := range v.Then {
+			if usesSubstringStmt(st) {
+				return true
+			}
+		}
+		if v.ElseIf != nil && usesSubstringStmt(v.ElseIf) {
+			return true
+		}
+		for _, st := range v.Else {
+			if usesSubstringStmt(st) {
+				return true
+			}
+		}
+	case *WhileStmt:
+		if usesSubstringExpr(v.Cond) {
+			return true
+		}
+		for _, st := range v.Body {
+			if usesSubstringStmt(st) {
+				return true
+			}
+		}
+	case *FunDecl:
+		for _, st := range v.Body {
+			if usesSubstringStmt(st) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func detectSubstring(stmts []Stmt) bool {
+	for _, s := range stmts {
+		if usesSubstringStmt(s) {
+			return true
+		}
+	}
+	return false
+}
+
 // Emit returns the Swift source for the program.
 func (p *Program) Emit() []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
-	buf.WriteString(prelude)
+	if p.UsesSubstring {
+		buf.WriteString(prelude)
+	}
 	for _, s := range p.Stmts {
 		s.emit(&buf)
 	}
@@ -351,6 +430,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 		return nil, err
 	}
 	p.Stmts = stmts
+	p.UsesSubstring = detectSubstring(stmts)
 	return p, nil
 }
 
