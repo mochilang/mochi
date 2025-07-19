@@ -1,1 +1,5 @@
-unsupported statement at 5:5
+exit status 1
+# command-line-arguments
+../../../tests/transpiler/x/go/break_continue.go:47:29: too many arguments in call to mochiPrint
+	have (string, int)
+	want (any)

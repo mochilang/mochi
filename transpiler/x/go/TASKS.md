@@ -1,5 +1,6 @@
-## Progress (2025-07-19 17:10 +0700)
-- Added while/for loops and index assignment support
+## Progress (2025-07-19 17:31 +0700)
+- Added break and continue statements
+- Implemented if expressions and string-to-int casts
 
 # Recent Progress
 - 2025-07-19 16:53 +0700 - Added golden test automation
