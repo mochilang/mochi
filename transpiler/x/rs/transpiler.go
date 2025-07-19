@@ -112,6 +112,31 @@ func (l *LenExpr) emit(w io.Writer) {
 	io.WriteString(w, ".len()")
 }
 
+// SumExpr represents a call to the `sum` builtin.
+type SumExpr struct{ Arg Expr }
+
+func (s *SumExpr) emit(w io.Writer) {
+	s.Arg.emit(w)
+	io.WriteString(w, ".iter().sum::<i64>()")
+}
+
+// StrExpr represents a call to the `str` builtin.
+type StrExpr struct{ Arg Expr }
+
+func (s *StrExpr) emit(w io.Writer) {
+	s.Arg.emit(w)
+	io.WriteString(w, ".to_string()")
+}
+
+// ValuesExpr represents a call to the `values` builtin on a map.
+type ValuesExpr struct{ Map Expr }
+
+func (v *ValuesExpr) emit(w io.Writer) {
+	io.WriteString(w, "{ let mut tmp = ")
+	v.Map.emit(w)
+	io.WriteString(w, ".values().cloned().collect::<Vec<_>>(); tmp.sort(); tmp }")
+}
+
 type NameRef struct{ Name string }
 
 func (n *NameRef) emit(w io.Writer) { io.WriteString(w, n.Name) }
@@ -460,13 +485,27 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			name = "println!"
 			if len(args) == 1 {
 				if _, ok := args[0].(*StringLit); !ok {
-					args = append([]Expr{&StringLit{Value: "{}"}}, args...)
+					fmtStr := "{}"
+					switch args[0].(type) {
+					case *ListLit, *MapLit, *ValuesExpr:
+						fmtStr = "{:?}"
+					}
+					args = append([]Expr{&StringLit{Value: fmtStr}}, args...)
 				}
 			}
 			return &CallExpr{Func: name, Args: args}, nil
 		}
 		if name == "len" && len(args) == 1 {
 			return &LenExpr{Arg: args[0]}, nil
+		}
+		if name == "sum" && len(args) == 1 {
+			return &SumExpr{Arg: args[0]}, nil
+		}
+		if name == "str" && len(args) == 1 {
+			return &StrExpr{Arg: args[0]}, nil
+		}
+		if name == "values" && len(args) == 1 {
+			return &ValuesExpr{Map: args[0]}, nil
 		}
 		return &CallExpr{Func: name, Args: args}, nil
 	case p.Lit != nil:

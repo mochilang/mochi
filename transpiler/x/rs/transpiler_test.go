@@ -200,3 +200,6 @@ func TestTranspile_LenString(t *testing.T)        { runExample(t, "len_string") 
 func TestTranspile_LenBuiltin(t *testing.T)       { runExample(t, "len_builtin") }
 func TestTranspile_LenMap(t *testing.T)           { runExample(t, "len_map") }
 func TestTranspile_WhileLoop(t *testing.T)        { runExample(t, "while_loop") }
+func TestTranspile_StrBuiltin(t *testing.T)       { runExample(t, "str_builtin") }
+func TestTranspile_SumBuiltin(t *testing.T)       { runExample(t, "sum_builtin") }
+func TestTranspile_ValuesBuiltin(t *testing.T)    { runExample(t, "values_builtin") }

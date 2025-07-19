@@ -1,5 +1,10 @@
 # Rust Transpiler Tasks
 
+## Recent Enhancements (2025-07-19 18:38 +0700)
+- Added support for `str`, `sum` and `values` builtins.
+- Generated golden tests for `str_builtin`, `sum_builtin` and `values_builtin`.
+- Updated README checklist with progress summary.
+
 ## Recent Enhancements (2025-07-19 10:41 +0000)
 - Added support for while loops.
 - Generated golden test for `while_loop`.
