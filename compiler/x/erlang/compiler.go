@@ -2037,6 +2037,24 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", err
 		}
 		return fmt.Sprintf("string:substr(%s, (%s)+1, (%s)-(%s))", str, start, end, start), nil
+	case "lower":
+		if len(call.Args) != 1 {
+			return "", fmt.Errorf("lower expects 1 arg")
+		}
+		a0, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("string:lowercase(%s)", a0), nil
+	case "upper":
+		if len(call.Args) != 1 {
+			return "", fmt.Errorf("upper expects 1 arg")
+		}
+		a0, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("string:uppercase(%s)", a0), nil
 	default:
 		if unicode.IsUpper(rune(call.Func[0])) && c.funs[call.Func] == 0 {
 			parts := make([]string, len(call.Args)+1)
