@@ -1,3 +1,7 @@
+## Progress (2025-07-19 14:24 +0000)
+- Added nested map assignment and multi-arg `print` support.
+- Generated golden outputs for `map_literal_dynamic` and `map_nested_assign`.
+
 ## Progress (2025-07-19 20:08 +0700)
 - Added list assignment support and generated golden output for `list_assign`.
 

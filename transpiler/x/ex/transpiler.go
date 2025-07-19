@@ -547,17 +547,23 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				return nil, err
 			}
 			t, _ := env.GetVar(st.Assign.Name)
-			outer, ok := t.(types.ListType)
-			if !ok {
-				return nil, fmt.Errorf("unsupported indexed assignment at %d:%d", st.Pos.Line, st.Pos.Column)
+			if outerList, ok := t.(types.ListType); ok {
+				if _, ok := outerList.Elem.(types.ListType); ok {
+					inner := &CallExpr{Func: "Enum.at", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx0}}
+					innerUpdate := &CallExpr{Func: "List.replace_at", Args: []Expr{inner, idx1, val}}
+					call := &CallExpr{Func: "List.replace_at", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx0, innerUpdate}}
+					return &AssignStmt{Name: st.Assign.Name, Value: call}, nil
+				}
 			}
-			if _, ok := outer.Elem.(types.ListType); !ok {
-				return nil, fmt.Errorf("unsupported indexed assignment at %d:%d", st.Pos.Line, st.Pos.Column)
+			if outerMap, ok := t.(types.MapType); ok {
+				if _, ok := outerMap.Value.(types.MapType); ok {
+					inner := &CallExpr{Func: "Map.get", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx0}}
+					innerUpdate := &CallExpr{Func: "Map.put", Args: []Expr{inner, idx1, val}}
+					call := &CallExpr{Func: "Map.put", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx0, innerUpdate}}
+					return &AssignStmt{Name: st.Assign.Name, Value: call}, nil
+				}
 			}
-			inner := &CallExpr{Func: "Enum.at", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx0}}
-			innerUpdate := &CallExpr{Func: "List.replace_at", Args: []Expr{inner, idx1, val}}
-			call := &CallExpr{Func: "List.replace_at", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx0, innerUpdate}}
-			return &AssignStmt{Name: st.Assign.Name, Value: call}, nil
+			return nil, fmt.Errorf("unsupported indexed assignment at %d:%d", st.Pos.Line, st.Pos.Column)
 		}
 		return nil, fmt.Errorf("unsupported statement at %d:%d", st.Pos.Line, st.Pos.Column)
 	case st.If != nil:
@@ -897,7 +903,13 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		name := p.Call.Func
 		switch name {
 		case "print":
-			name = "IO.puts"
+			if len(args) == 1 {
+				name = "IO.puts"
+			} else {
+				list := &ListLit{Elems: args}
+				join := &CallExpr{Func: "Enum.join", Args: []Expr{list, &StringLit{Value: " "}}}
+				return &CallExpr{Func: "IO.puts", Args: []Expr{join}}, nil
+			}
 		case "count":
 			name = "Enum.count"
 		case "len":
