@@ -2,7 +2,7 @@
 
 This directory contains a minimal transpiler that converts a very small subset of Mochi into Elixir source code. The generated files live in `tests/transpiler/x/ex`.
 
-Currently 29 of 100 programs transpile and run.
+Currently 32 of 100 programs transpile and run.
 
 The table below tracks which programs from `tests/vm/valid` successfully transpile and run. Checked items have generated `.exs` code and matching `.out` files in `tests/transpiler/x/ex`.
 - [x] append_builtin.mochi
@@ -21,8 +21,8 @@ The table below tracks which programs from `tests/vm/valid` successfully transpi
 - [ ] dataset_sort_take_limit.mochi
 - [ ] dataset_where_filter.mochi
 - [ ] exists_builtin.mochi
-- [ ] for_list_collection.mochi
-- [ ] for_loop.mochi
+- [x] for_list_collection.mochi
+- [x] for_loop.mochi
 - [ ] for_map_collection.mochi
 - [ ] fun_call.mochi
 - [ ] fun_expr_in_let.mochi
@@ -88,7 +88,7 @@ The table below tracks which programs from `tests/vm/valid` successfully transpi
 - [x] string_compare.mochi
 - [x] string_concat.mochi
 - [x] string_contains.mochi
-- [ ] string_in_operator.mochi
+- [x] string_in_operator.mochi
 - [x] string_index.mochi
 - [ ] string_prefix_slice.mochi
 - [x] substring_builtin.mochi

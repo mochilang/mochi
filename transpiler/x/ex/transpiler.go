@@ -88,6 +88,54 @@ func (s *IfStmt) emit(w io.Writer) {
 	io.WriteString(w, "end")
 }
 
+// WhileStmt represents a simple while loop.
+type WhileStmt struct {
+	Cond Expr
+	Body []Stmt
+}
+
+func (wst *WhileStmt) emit(w io.Writer) {
+	io.WriteString(w, "while ")
+	wst.Cond.emit(w)
+	io.WriteString(w, " do\n")
+	for _, st := range wst.Body {
+		st.emit(w)
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, "end")
+}
+
+// ForStmt represents a basic for loop over a collection or range.
+type ForStmt struct {
+	Name   string
+	Start  Expr
+	End    Expr // optional, when non-nil compile as range
+	Source Expr // used when End is nil
+	Body   []Stmt
+}
+
+func (fs *ForStmt) emit(w io.Writer) {
+	io.WriteString(w, "for ")
+	io.WriteString(w, fs.Name)
+	io.WriteString(w, " <- ")
+	if fs.End != nil {
+		io.WriteString(w, "(")
+		fs.Start.emit(w)
+		io.WriteString(w, "..(")
+		fs.End.emit(w)
+		io.WriteString(w, " - 1)")
+		io.WriteString(w, ")")
+	} else {
+		fs.Source.emit(w)
+	}
+	io.WriteString(w, " do\n")
+	for _, st := range fs.Body {
+		st.emit(w)
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, "end")
+}
+
 // CondExpr represents a conditional expression.
 type CondExpr struct {
 	Cond Expr
@@ -145,6 +193,14 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		b.Left.emit(w)
 		io.WriteString(w, " <> ")
 		b.Right.emit(w)
+		io.WriteString(w, ")")
+		return
+	}
+	if b.Op == "in" && (isString(b.Left) || isString(b.Right)) {
+		io.WriteString(w, "String.contains?(")
+		b.Right.emit(w)
+		io.WriteString(w, ", ")
+		b.Left.emit(w)
 		io.WriteString(w, ")")
 		return
 	}
@@ -337,6 +393,10 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		return nil, fmt.Errorf("unsupported statement at %d:%d", st.Pos.Line, st.Pos.Column)
 	case st.If != nil:
 		return compileIfStmt(st.If, env)
+	case st.While != nil:
+		return compileWhileStmt(st.While, env)
+	case st.For != nil:
+		return compileForStmt(st.For, env)
 	default:
 		if st.Test == nil && st.Import == nil && st.Type == nil {
 			return nil, fmt.Errorf("unsupported statement at %d:%d", st.Pos.Line, st.Pos.Column)
@@ -379,6 +439,54 @@ func compileIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
 		}
 	}
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
+}
+
+func compileWhileStmt(ws *parser.WhileStmt, env *types.Env) (Stmt, error) {
+	cond, err := compileExpr(ws.Cond, env)
+	if err != nil {
+		return nil, err
+	}
+	body := make([]Stmt, 0, len(ws.Body))
+	for _, s := range ws.Body {
+		st, err := compileStmt(s, env)
+		if err != nil {
+			return nil, err
+		}
+		if st != nil {
+			body = append(body, st)
+		}
+	}
+	return &WhileStmt{Cond: cond, Body: body}, nil
+}
+
+func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
+	start, err := compileExpr(fs.Source, env)
+	if err != nil {
+		return nil, err
+	}
+	var end Expr
+	if fs.RangeEnd != nil {
+		end, err = compileExpr(fs.RangeEnd, env)
+		if err != nil {
+			return nil, err
+		}
+	}
+	body := make([]Stmt, 0, len(fs.Body))
+	for _, s := range fs.Body {
+		st, err := compileStmt(s, env)
+		if err != nil {
+			return nil, err
+		}
+		if st != nil {
+			body = append(body, st)
+		}
+	}
+	src := start
+	if end != nil {
+		src = nil
+	}
+	res := &ForStmt{Name: fs.Name, Start: start, End: end, Source: src, Body: body}
+	return res, nil
 }
 
 func compileExpr(e *parser.Expr, env *types.Env) (Expr, error) {
@@ -698,6 +806,28 @@ func toNodeStmt(s Stmt) *ast.Node {
 			}
 			n.Children = append(n.Children, elseN)
 		}
+		return n
+	case *WhileStmt:
+		n := &ast.Node{Kind: "while", Children: []*ast.Node{toNodeExpr(st.Cond)}}
+		body := &ast.Node{Kind: "body"}
+		for _, b := range st.Body {
+			body.Children = append(body.Children, toNodeStmt(b))
+		}
+		n.Children = append(n.Children, body)
+		return n
+	case *ForStmt:
+		n := &ast.Node{Kind: "for", Value: st.Name}
+		if st.End != nil {
+			rng := &ast.Node{Kind: "range", Children: []*ast.Node{toNodeExpr(st.Start), toNodeExpr(st.End)}}
+			n.Children = append(n.Children, rng)
+		} else {
+			n.Children = append(n.Children, toNodeExpr(st.Source))
+		}
+		body := &ast.Node{Kind: "body"}
+		for _, b := range st.Body {
+			body.Children = append(body.Children, toNodeStmt(b))
+		}
+		n.Children = append(n.Children, body)
 		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
