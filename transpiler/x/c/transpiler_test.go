@@ -123,6 +123,9 @@ func TestTranspilerGolden(t *testing.T) {
 		filepath.Join(srcDir, "if_then_else_nested.mochi"),
 		filepath.Join(srcDir, "bool_chain.mochi"),
 		filepath.Join(srcDir, "fun_three_args.mochi"),
+		filepath.Join(srcDir, "typed_let.mochi"),
+		filepath.Join(srcDir, "typed_var.mochi"),
+		filepath.Join(srcDir, "str_builtin.mochi"),
 	}
 	if err := os.MkdirAll(goldenDir, 0o755); err != nil {
 		t.Fatalf("mkdir: %v", err)

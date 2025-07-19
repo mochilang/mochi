@@ -3,8 +3,7 @@
 #include <string.h>
 
 int main() {
-	printf("%d\n", 6 * 7);
-	printf("%d\n", 7 / 2);
-	printf("%d\n", 7 % 2);
+	int y;
+	printf("%d\n", y);
 	return 0;
 }

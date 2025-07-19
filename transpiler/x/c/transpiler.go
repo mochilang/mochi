@@ -624,6 +624,12 @@ func convertUnary(u *parser.Unary) Expr {
 				}
 			}
 		}
+		if call.Func == "str" && len(call.Args) == 1 {
+			arg := convertExpr(call.Args[0])
+			if lit, ok := arg.(*IntLit); ok {
+				return &StringLit{Value: fmt.Sprintf("%d", lit.Value)}
+			}
+		}
 		var args []Expr
 		for _, a := range call.Args {
 			ex := convertExpr(a)
@@ -689,6 +695,8 @@ func exprIsString(e Expr) bool {
 	switch v := e.(type) {
 	case *StringLit:
 		return true
+	case *CallExpr:
+		return v.Func == "str"
 	case *CondExpr:
 		return exprIsString(v.Then) && exprIsString(v.Else)
 	default:
