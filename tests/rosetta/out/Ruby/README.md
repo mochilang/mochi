@@ -1,4 +1,4 @@
-# Rosetta Ruby Output (33/264 compiled and run)
+# Rosetta Ruby Output (42/278 compiled and run)
 
 This directory holds Ruby source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -14,13 +14,14 @@ This directory holds Ruby source code generated from the real Mochi programs in 
 - [ ] 24-game-solve
 - [ ] 24-game
 - [ ] 4-rings-or-4-squares-puzzle
-- [ ] 9-billion-names-of-god-the-integer
+- [x] 9-billion-names-of-god-the-integer
 - [ ] 99-bottles-of-beer-2
 - [x] 99-bottles-of-beer
-- [ ] a+b
-- [ ] abbreviations-automatic
-- [ ] abbreviations-easy
-- [ ] abbreviations-simple
+- [ ] DNS-query
+- [x] a+b
+- [x] abbreviations-automatic
+- [x] abbreviations-easy
+- [x] abbreviations-simple
 - [x] abc-problem
 - [ ] abelian-sandpile-model-identity
 - [ ] abelian-sandpile-model
@@ -33,7 +34,7 @@ This directory holds Ruby source code generated from the real Mochi programs in 
 - [x] ackermann-function-3
 - [x] ackermann-function
 - [x] active-directory-connect
-- [ ] active-directory-search-for-a-user
+- [x] active-directory-search-for-a-user
 - [x] active-object
 - [ ] add-a-variable-to-a-class-instance-at-runtime
 - [x] additive-primes
@@ -45,10 +46,10 @@ This directory holds Ruby source code generated from the real Mochi programs in 
 - [ ] aliquot-sequence-classifications
 - [ ] almkvist-giullera-formula-for-pi
 - [ ] almost-prime
-- [ ] amb
+- [x] amb
 - [x] amicable-pairs
 - [ ] anagrams-deranged-anagrams
-- [ ] anagrams
+- [x] anagrams
 - [ ] angle-difference-between-two-bearings-1
 - [ ] angle-difference-between-two-bearings-2
 - [ ] angles-geometric-normalization-and-conversion
@@ -58,7 +59,7 @@ This directory holds Ruby source code generated from the real Mochi programs in 
 - [x] anonymous-recursion-2
 - [x] anonymous-recursion
 - [ ] anti-primes
-- [ ] append-a-record-to-the-end-of-a-text-file
+- [x] append-a-record-to-the-end-of-a-text-file
 - [x] apply-a-callback-to-an-array-1
 - [x] apply-a-callback-to-an-array-2
 - [x] apply-a-digital-filter-direct-form-ii-transposed-
@@ -265,5 +266,18 @@ This directory holds Ruby source code generated from the real Mochi programs in 
 - [ ] csv-to-html-translation-5
 - [ ] cuban-primes
 - [ ] cullen-and-woodall-numbers
+- [ ] cumulative-standard-deviation
+- [ ] currency
+- [ ] currying
+- [ ] curzon-numbers
 - [ ] cusip
+- [ ] cyclops-numbers
+- [ ] damm-algorithm
+- [ ] date-format
+- [ ] date-manipulation
+- [ ] day-of-the-week
+- [ ] de-bruijn-sequences
+- [ ] deal-cards-for-freecell
+- [ ] death-star
+- [ ] deceptive-numbers
 - [x] md5
