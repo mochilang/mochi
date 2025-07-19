@@ -2,9 +2,8 @@
 
 Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-Transpiled programs: 10/100
+## Golden Test Checklist (12/100)
 
-Checklist:
 - [ ] append_builtin
 - [ ] avg_builtin
 - [x] basic_compare
@@ -47,7 +46,7 @@ Checklist:
 - [ ] json_builtin
 - [ ] left_join
 - [ ] left_join_multi
-- [ ] len_builtin
+- [x] len_builtin
 - [ ] len_map
 - [x] len_string
 - [x] let_and_print
@@ -99,7 +98,7 @@ Checklist:
 - [ ] two-sum
 - [ ] typed_let
 - [ ] typed_var
-- [ ] unary_neg
+- [x] unary_neg
 - [ ] update_stmt
 - [ ] user_type_literal
 - [ ] values_builtin

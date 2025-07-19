@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"mochi/compiler/x/testutil"
 	"mochi/golden"
@@ -79,6 +80,7 @@ func TestScalaTranspiler_VMValid_Golden(t *testing.T) {
 func TestMain(m *testing.M) {
 	code := m.Run()
 	updateReadme()
+	updateTasks()
 	os.Exit(code)
 }
 
@@ -118,9 +120,27 @@ func updateReadme() {
 	var buf bytes.Buffer
 	buf.WriteString("# Scala Transpiler Output\n\n")
 	buf.WriteString("Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.\n\n")
-	buf.WriteString(fmt.Sprintf("Transpiled programs: %d/%d\n\n", compiled, total))
-	buf.WriteString("Checklist:\n")
+	buf.WriteString(fmt.Sprintf("## Golden Test Checklist (%d/%d)\n\n", compiled, total))
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
 	_ = os.WriteFile(filepath.Join(readmeDir, "README.md"), buf.Bytes(), 0o644)
+}
+
+func updateTasks() {
+	root := repoRoot()
+	taskFile := filepath.Join(root, "transpiler", "x", "scala", "TASKS.md")
+	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	ts := ""
+	if err == nil {
+		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+			ts = t.Format("2006-01-02 15:04 MST")
+		}
+	}
+	var buf bytes.Buffer
+	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
+	buf.WriteString("- VM valid golden test results updated\n\n")
+	if data, err := os.ReadFile(taskFile); err == nil {
+		buf.Write(data)
+	}
+	_ = os.WriteFile(taskFile, buf.Bytes(), 0o644)
 }

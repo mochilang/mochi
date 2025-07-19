@@ -1,5 +1,0 @@
-exit status 1
-/workspace/mochi/tests/transpiler/x/scala/substring_builtin.scala:4: error: not found: value substring
-        println(substring("mochi", 1, 4))
-                ^
-one error found
