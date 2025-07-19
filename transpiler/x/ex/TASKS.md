@@ -1,3 +1,6 @@
+## Progress (2025-07-19 20:08 +0700)
+- Added list assignment support and generated golden output for `list_assign`.
+
 ## Progress (2025-07-19 19:48 +0700)
 - Added support for `min`, `max` and `values` builtins.
 - Generated golden outputs for `min_max_builtin` and `values_builtin`.

@@ -533,6 +533,32 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 			return &AssignStmt{Name: st.Assign.Name, Value: call}, nil
 		}
+		if len(st.Assign.Index) == 2 && len(st.Assign.Field) == 0 {
+			idx0, err := compileExpr(st.Assign.Index[0].Start, env)
+			if err != nil {
+				return nil, err
+			}
+			idx1, err := compileExpr(st.Assign.Index[1].Start, env)
+			if err != nil {
+				return nil, err
+			}
+			val, err := compileExpr(st.Assign.Value, env)
+			if err != nil {
+				return nil, err
+			}
+			t, _ := env.GetVar(st.Assign.Name)
+			outer, ok := t.(types.ListType)
+			if !ok {
+				return nil, fmt.Errorf("unsupported indexed assignment at %d:%d", st.Pos.Line, st.Pos.Column)
+			}
+			if _, ok := outer.Elem.(types.ListType); !ok {
+				return nil, fmt.Errorf("unsupported indexed assignment at %d:%d", st.Pos.Line, st.Pos.Column)
+			}
+			inner := &CallExpr{Func: "Enum.at", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx0}}
+			innerUpdate := &CallExpr{Func: "List.replace_at", Args: []Expr{inner, idx1, val}}
+			call := &CallExpr{Func: "List.replace_at", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx0, innerUpdate}}
+			return &AssignStmt{Name: st.Assign.Name, Value: call}, nil
+		}
 		return nil, fmt.Errorf("unsupported statement at %d:%d", st.Pos.Line, st.Pos.Column)
 	case st.If != nil:
 		return compileIfStmt(st.If, env)
