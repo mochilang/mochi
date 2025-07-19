@@ -218,7 +218,7 @@ func (ws *WhileStmt) emit(w io.Writer) {
 func (f *ForStmt) emit(w io.Writer) {
 	if len(f.List) > 0 {
 		io.WriteString(w, "\t{\n")
-		io.WriteString(w, "\t\tint __arr[] = {")
+		io.WriteString(w, "\t\tint arr[] = {")
 		for i, e := range f.List {
 			if i > 0 {
 				io.WriteString(w, ", ")
@@ -226,8 +226,8 @@ func (f *ForStmt) emit(w io.Writer) {
 			e.emitExpr(w)
 		}
 		io.WriteString(w, "};\n")
-		io.WriteString(w, "\t\tfor (int __i = 0; __i < (int)(sizeof(__arr)/sizeof(__arr[0])); __i++) {\n")
-		fmt.Fprintf(w, "\t\t\tint %s = __arr[__i];\n", f.Var)
+		io.WriteString(w, "\t\tfor (int i = 0; i < (int)(sizeof(arr)/sizeof(arr[0])); i++) {\n")
+		fmt.Fprintf(w, "\t\t\tint %s = arr[i];\n", f.Var)
 		for _, s := range f.Body {
 			s.emit(w)
 		}
