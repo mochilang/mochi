@@ -1,8 +1,10 @@
-# Mochi Transpilers
+# Scala Transpiler Output
 
-This directory contains experimental transpilers.
+Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden test checklist
+Transpiled programs: 10/100
+
+Checklist:
 - [ ] append_builtin
 - [ ] avg_builtin
 - [x] basic_compare
@@ -47,8 +49,8 @@ This directory contains experimental transpilers.
 - [ ] left_join_multi
 - [ ] len_builtin
 - [ ] len_map
-- [ ] len_string
-- [ ] let_and_print
+- [x] len_string
+- [x] let_and_print
 - [ ] list_assign
 - [ ] list_index
 - [ ] list_nested_assign
@@ -63,7 +65,7 @@ This directory contains experimental transpilers.
 - [ ] map_nested_assign
 - [ ] match_expr
 - [ ] match_full
-- [ ] math_ops
+- [x] math_ops
 - [ ] membership
 - [ ] min_max_builtin
 - [ ] nested_function
@@ -82,14 +84,14 @@ This directory contains experimental transpilers.
 - [ ] short_circuit
 - [ ] slice
 - [ ] sort_stable
-- [ ] str_builtin
-- [ ] string_compare
-- [ ] string_concat
+- [x] str_builtin
+- [x] string_compare
+- [x] string_concat
 - [ ] string_contains
-- [ ] string_in_operator
+- [x] string_in_operator
 - [ ] string_index
 - [ ] string_prefix_slice
-- [ ] substring_builtin
+- [x] substring_builtin
 - [ ] sum_builtin
 - [ ] tail_recursion
 - [ ] test_block
