@@ -42,6 +42,14 @@ type CallExpr struct {
 	Args []Expr
 }
 
+// LenExpr represents len(x) which becomes x.length in Scala.
+type LenExpr struct{ Value Expr }
+
+func (l *LenExpr) emit(w io.Writer) {
+	l.Value.emit(w)
+	fmt.Fprint(w, ".length")
+}
+
 func (c *CallExpr) emit(w io.Writer) {
 	fmt.Fprint(w, c.Func)
 	fmt.Fprint(w, "(")
@@ -185,6 +193,9 @@ func convertCall(c *parser.CallExpr) (Expr, error) {
 		args[i] = ex
 	}
 	name := c.Func
+	if name == "len" && len(args) == 1 {
+		return &LenExpr{Value: args[0]}, nil
+	}
 	if name == "print" {
 		name = "println"
 	}
@@ -272,6 +283,8 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "bool", Value: fmt.Sprint(ex.Value)}
 	case *Name:
 		return &ast.Node{Kind: "name", Value: ex.Name}
+	case *LenExpr:
+		return &ast.Node{Kind: "len", Children: []*ast.Node{exprNode(ex.Value)}}
 	case *BinaryExpr:
 		return &ast.Node{Kind: "binary", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
 	default:
