@@ -164,6 +164,8 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 	switch {
 	case s.Expr != nil:
 		return transpileExpr(s.Expr.Expr)
+	case s.If != nil:
+		return transpileIfStmt(s.If)
 	case s.Let != nil:
 		var v Node
 		var err error
@@ -307,6 +309,74 @@ func transpilePostfix(p *parser.PostfixExpr) (Node, error) {
 	return n, nil
 }
 
+func transpileBlock(stmts []*parser.Statement) (Node, error) {
+	if len(stmts) == 0 {
+		return Symbol("nil"), nil
+	}
+	if len(stmts) == 1 {
+		return transpileStmt(stmts[0])
+	}
+	elems := []Node{Symbol("do")}
+	for _, st := range stmts {
+		n, err := transpileStmt(st)
+		if err != nil {
+			return nil, err
+		}
+		if n != nil {
+			elems = append(elems, n)
+		}
+	}
+	return &List{Elems: elems}, nil
+}
+
+func transpileIfStmt(s *parser.IfStmt) (Node, error) {
+	cond, err := transpileExpr(s.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenNode, err := transpileBlock(s.Then)
+	if err != nil {
+		return nil, err
+	}
+	var elseNode Node = Symbol("nil")
+	if s.ElseIf != nil {
+		elseNode, err = transpileIfStmt(s.ElseIf)
+		if err != nil {
+			return nil, err
+		}
+	} else if len(s.Else) > 0 {
+		elseNode, err = transpileBlock(s.Else)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &List{Elems: []Node{Symbol("if"), cond, thenNode, elseNode}}, nil
+}
+
+func transpileIfExpr(e *parser.IfExpr) (Node, error) {
+	cond, err := transpileExpr(e.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenNode, err := transpileExpr(e.Then)
+	if err != nil {
+		return nil, err
+	}
+	var elseNode Node = Symbol("nil")
+	if e.ElseIf != nil {
+		elseNode, err = transpileIfExpr(e.ElseIf)
+		if err != nil {
+			return nil, err
+		}
+	} else if e.Else != nil {
+		elseNode, err = transpileExpr(e.Else)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &List{Elems: []Node{Symbol("if"), cond, thenNode, elseNode}}, nil
+}
+
 func transpilePrimary(p *parser.Primary) (Node, error) {
 	if p == nil {
 		return nil, fmt.Errorf("nil primary")
@@ -316,6 +386,8 @@ func transpilePrimary(p *parser.Primary) (Node, error) {
 		return transpileCall(p.Call)
 	case p.Lit != nil:
 		return transpileLiteral(p.Lit)
+	case p.If != nil:
+		return transpileIfExpr(p.If)
 	case p.List != nil:
 		elems := []Node{}
 		for _, e := range p.List.Elems {

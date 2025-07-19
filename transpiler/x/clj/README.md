@@ -1,7 +1,6 @@
 # Mochi Transpiler
 
-This directory contains experimental source translators for generating code in
-a variety of languages. The Clojure backend lives under `x/clj`.
+This directory contains experimental source translators for generating code in a variety of languages. The Clojure backend lives under `x/clj`.
 
 ## Golden Test Checklist (12/100)
 
