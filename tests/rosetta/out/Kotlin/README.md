@@ -1,4 +1,4 @@
-# Rosetta Kotlin Output (24/278 compiled and run)
+# Rosetta Kotlin Output (25/284 compiled and run)
 
 This directory holds Kotlin source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -28,7 +28,7 @@ This directory holds Kotlin source code generated from the real Mochi programs i
 - [x] abstract-type
 - [x] abundant-deficient-and-perfect-number-classifications
 - [x] abundant-odd-numbers
-- [ ] accumulator-factory
+- [x] accumulator-factory
 - [ ] achilles-numbers
 - [x] ackermann-function-2
 - [ ] ackermann-function-3
@@ -210,6 +210,7 @@ This directory holds Kotlin source code generated from the real Mochi programs i
 - [ ] circles-of-given-radius-through-two-points
 - [ ] circular-primes
 - [ ] cistercian-numerals
+- [ ] comma-quibbling
 - [ ] compiler-virtual-machine-interpreter
 - [ ] composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k
 - [ ] compound-data-type
@@ -280,4 +281,9 @@ This directory holds Kotlin source code generated from the real Mochi programs i
 - [ ] deal-cards-for-freecell
 - [ ] death-star
 - [ ] deceptive-numbers
+- [ ] deconvolution-1d-2
+- [ ] deconvolution-1d-3
+- [ ] deconvolution-1d
+- [ ] deepcopy-1
+- [ ] define-a-primitive-data-type
 - [ ] md5
