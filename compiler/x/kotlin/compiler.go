@@ -493,19 +493,26 @@ func (c *Compiler) stmt(s *parser.Statement) error {
 		}
 		c.writeln(fmt.Sprintf("%s = %s", target, v))
 	case s.Return != nil:
-		if sel := s.Return.Value.Binary.Left.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 {
-			if t, err := c.env.GetVar(sel.Root); err == nil {
-				if _, ok := t.(types.FuncType); ok {
-					c.writeln(fmt.Sprintf("return ::%s", c.id(sel.Root)))
-					break
+		if s.Return.Value != nil {
+			if b := s.Return.Value.Binary; b != nil && b.Left != nil &&
+				b.Left.Value != nil && b.Left.Value.Target != nil {
+				if sel := b.Left.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 {
+					if t, err := c.env.GetVar(sel.Root); err == nil {
+						if _, ok := t.(types.FuncType); ok {
+							c.writeln(fmt.Sprintf("return ::%s", c.id(sel.Root)))
+							break
+						}
+					}
 				}
 			}
+			v, err := c.expr(s.Return.Value)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("return %s", v))
+		} else {
+			c.writeln("return")
 		}
-		v, err := c.expr(s.Return.Value)
-		if err != nil {
-			return err
-		}
-		c.writeln(fmt.Sprintf("return %s", v))
 	case s.If != nil:
 		return c.ifStmt(s.If)
 	case s.While != nil:
