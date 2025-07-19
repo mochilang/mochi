@@ -366,6 +366,18 @@ func (s *SumExpr) emit(w io.Writer) {
 	fmt.Fprint(w, ".Sum())")
 }
 
+type AppendExpr struct {
+	List Expr
+	Item Expr
+}
+
+func (a *AppendExpr) emit(w io.Writer) {
+	a.List.emit(w)
+	fmt.Fprint(w, ".Append(")
+	a.Item.emit(w)
+	fmt.Fprint(w, ").ToList()")
+}
+
 type StrExpr struct{ Arg Expr }
 
 func (s *StrExpr) emit(w io.Writer) {
@@ -394,24 +406,69 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 	if e == nil || e.Binary == nil {
 		return nil, fmt.Errorf("unsupported expression")
 	}
-	left, err := compileUnary(e.Binary.Left)
+	operands := []Expr{}
+	ops := []string{}
+
+	first, err := compileUnary(e.Binary.Left)
 	if err != nil {
 		return nil, err
 	}
-	expr := left
-	for _, op := range e.Binary.Right {
-		r, err := compilePostfix(op.Right)
+	operands = append(operands, first)
+	for _, p := range e.Binary.Right {
+		r, err := compilePostfix(p.Right)
 		if err != nil {
 			return nil, err
 		}
-		switch op.Op {
+		op := p.Op
+		if p.All {
+			op = op + "_all"
+		}
+		ops = append(ops, op)
+		operands = append(operands, r)
+	}
+
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+		{"union", "union_all", "except", "intersect"},
+	}
+
+	apply := func(left Expr, op string, right Expr) Expr {
+		switch op {
 		case "==", "!=", "<", "<=", ">", ">=":
-			expr = &CmpExpr{Op: op.Op, Left: expr, Right: r}
+			return &CmpExpr{Op: op, Left: left, Right: right}
 		default:
-			expr = &BinaryExpr{Op: op.Op, Left: expr, Right: r}
+			return &BinaryExpr{Op: op, Left: left, Right: right}
 		}
 	}
-	return expr, nil
+
+	for _, level := range levels {
+		for i := 0; i < len(ops); {
+			matched := false
+			for _, t := range level {
+				if ops[i] == t {
+					expr := apply(operands[i], ops[i], operands[i+1])
+					operands[i] = expr
+					operands = append(operands[:i+1], operands[i+2:]...)
+					ops = append(ops[:i], ops[i+1:]...)
+					matched = true
+					break
+				}
+			}
+			if !matched {
+				i++
+			}
+		}
+	}
+
+	if len(operands) != 1 {
+		return nil, fmt.Errorf("expression reduction failed")
+	}
+	return operands[0], nil
 }
 
 func compileUnary(u *parser.Unary) (Expr, error) {
@@ -636,6 +693,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		case "print":
 			name = "Console.WriteLine"
 			return &CallExpr{Func: name, Args: args}, nil
+		case "append":
+			if len(args) == 2 {
+				return &AppendExpr{List: args[0], Item: args[1]}, nil
+			}
 		case "count":
 			if len(args) == 1 {
 				return &CountExpr{Arg: args[0]}, nil
@@ -974,6 +1035,8 @@ func inspectLinq(e Expr) bool {
 		return inspectLinq(ex.Arg)
 	case *LenExpr:
 		return inspectLinq(ex.Arg)
+	case *AppendExpr:
+		return true
 	case *IndexExpr:
 		return inspectLinq(ex.Target) || inspectLinq(ex.Index)
 	case *UnaryExpr:
