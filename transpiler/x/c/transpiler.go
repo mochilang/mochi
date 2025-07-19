@@ -822,6 +822,33 @@ func convertUnary(u *parser.Unary) Expr {
 		}
 		return &IndexExpr{Target: base, Index: idx}
 	}
+	if len(u.Value.Ops) == 1 && u.Value.Ops[0].Index != nil &&
+		u.Value.Ops[0].Index.Colon != nil && u.Value.Ops[0].Index.Colon2 == nil &&
+		u.Value.Ops[0].Index.Step == nil && len(u.Ops) == 0 {
+		base := convertUnary(&parser.Unary{Value: &parser.PostfixExpr{Target: u.Value.Target}})
+		if base == nil {
+			return nil
+		}
+		start := convertExpr(u.Value.Ops[0].Index.Start)
+		end := convertExpr(u.Value.Ops[0].Index.End)
+		if str, ok := evalString(base); ok {
+			s, ok1 := evalInt(start)
+			e, ok2 := evalInt(end)
+			if ok1 && ok2 {
+				r := []rune(str)
+				if s < 0 {
+					s = 0
+				}
+				if e > len(r) {
+					e = len(r)
+				}
+				if s > e {
+					s = e
+				}
+				return &StringLit{Value: string(r[s:e])}
+			}
+		}
+	}
 	if len(u.Value.Ops) == 1 && u.Value.Ops[0].Cast != nil &&
 		u.Value.Ops[0].Cast.Type != nil &&
 		u.Value.Ops[0].Cast.Type.Simple != nil &&
