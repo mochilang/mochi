@@ -340,7 +340,7 @@ func precedence(op string) int {
 
 func needsParen(e Expr) bool {
 	switch e.(type) {
-	case *BinaryExpr, *UnaryExpr, *IfExpr, *AppendExpr, *SubstringExpr, *CallExpr:
+	case *BinaryExpr, *UnaryExpr, *IfExpr, *AppendExpr, *SubstringExpr, *CallExpr, *IndexExpr:
 		return true
 	default:
 		return false
@@ -364,6 +364,18 @@ func (c *CallExpr) emit(w io.Writer) {
 type StringLit struct{ Value string }
 
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
+
+type IndexExpr struct {
+	Target Expr
+	Index  Expr
+}
+
+func (i *IndexExpr) emit(w io.Writer) {
+	i.Target.emit(w)
+	io.WriteString(w, ".[")
+	i.Index.emit(w)
+	io.WriteString(w, "]")
+}
 
 // Emit generates formatted F# code from the AST.
 func Emit(prog *Program) []byte {
@@ -602,10 +614,26 @@ func convertUnary(u *parser.Unary) (Expr, error) {
 }
 
 func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
-	if pf == nil || len(pf.Ops) > 0 {
+	if pf == nil {
 		return nil, fmt.Errorf("unsupported postfix")
 	}
-	return convertPrimary(pf.Target)
+	expr, err := convertPrimary(pf.Target)
+	if err != nil {
+		return nil, err
+	}
+	for _, op := range pf.Ops {
+		switch {
+		case op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil && op.Index.End == nil && op.Index.Step == nil && op.Index.Start != nil:
+			idx, err := convertExpr(op.Index.Start)
+			if err != nil {
+				return nil, err
+			}
+			expr = &IndexExpr{Target: expr, Index: idx}
+		default:
+			return nil, fmt.Errorf("unsupported postfix")
+		}
+	}
+	return expr, nil
 }
 
 func convertPrimary(p *parser.Primary) (Expr, error) {
