@@ -805,6 +805,20 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		out.WriteString("    println!();\n")
 		out.WriteString("}\n\n")
 	}
+	if c.helpers["_input"] {
+		out.WriteString("fn _input() -> String {\n")
+		out.WriteString("    use std::io::{self, Read};\n")
+		out.WriteString("    let mut s = String::new();\n")
+		out.WriteString("    io::stdin().read_line(&mut s).unwrap();\n")
+		out.WriteString("    while matches!(s.chars().last(), Some('\\n') | Some('\\r')) { s.pop(); }\n")
+		out.WriteString("    s\n")
+		out.WriteString("}\n\n")
+	}
+	if c.helpers["_int"] {
+		out.WriteString("fn _int<T: std::fmt::Display>(v: T) -> i32 {\n")
+		out.WriteString("    v.to_string().trim().parse::<i32>().unwrap_or(0)\n")
+		out.WriteString("}\n\n")
+	}
 	if c.helpers["_now"] {
 		out.WriteString("use std::sync::{atomic::{AtomicBool, AtomicI64, Ordering}, Once};\n")
 		out.WriteString("static INIT_NOW: Once = Once::new();\n")
@@ -4085,6 +4099,18 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("exists expects 1 arg")
 		}
 		return fmt.Sprintf("(%s.len() > 0)", args[0]), nil
+	case "input":
+		if len(args) != 0 {
+			return "", fmt.Errorf("input expects no args")
+		}
+		c.helpers["_input"] = true
+		return "_input()", nil
+	case "int":
+		if len(args) != 1 {
+			return "", fmt.Errorf("int expects 1 arg")
+		}
+		c.helpers["_int"] = true
+		return fmt.Sprintf("_int(%s)", args[0]), nil
 	case "values":
 		if len(args) != 1 {
 			return "", fmt.Errorf("values expects 1 arg")
