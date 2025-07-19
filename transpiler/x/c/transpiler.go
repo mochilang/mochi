@@ -95,5 +95,3 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	p := &Program{Functions: []*Function{mainFn}}
 	return p, nil
 }
-
-// CompileFile parses and type-checks a Mochi source file and transpiles it to C code.
