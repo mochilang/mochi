@@ -1,6 +1,6 @@
 # Kotlin Transpiler Tasks
 
-_Last updated: 2025-07-19 11:39 UTC_
+_Last updated: 2025-07-19T12:29:09+00:00_
 
 - Basic programs using `print` are supported.
 - Added integer and list literals.
@@ -15,6 +15,11 @@ _Last updated: 2025-07-19 11:39 UTC_
 - Built-in `contains` for strings and support for the `in` operator.
 - `len` now works for maps.
 - Added built-in `values` for maps.
+
+## VM Golden Progress (2025-07-19T12:29:09+00:00)
+- Added support for `if` statements and `while` loops in the Kotlin transpiler.
+- Implemented conditional expressions via Kotlin `if`.
+- Generated golden tests for `if_else`, `if_then_else`, `if_then_else_nested` and `while_loop` and updated README progress to 31/100.
 
 ## VM Golden Progress (2025-07-19 11:39 UTC)
 - Implemented function definitions and return statements.

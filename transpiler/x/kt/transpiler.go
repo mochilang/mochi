@@ -201,6 +201,74 @@ func (s *AssignStmt) emit(w io.Writer) {
 	s.Value.emit(w)
 }
 
+// IfStmt represents a simple if/else conditional.
+type IfStmt struct {
+	Cond Expr
+	Then []Stmt
+	Else []Stmt
+}
+
+func (i *IfStmt) emit(w io.Writer) {
+	io.WriteString(w, "if (")
+	if i.Cond != nil {
+		i.Cond.emit(w)
+	}
+	io.WriteString(w, ") {\n")
+	for _, st := range i.Then {
+		io.WriteString(w, "    ")
+		st.emit(w)
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, "}")
+	if len(i.Else) > 0 {
+		io.WriteString(w, " else {\n")
+		for _, st := range i.Else {
+			io.WriteString(w, "    ")
+			st.emit(w)
+			io.WriteString(w, "\n")
+		}
+		io.WriteString(w, "}")
+	}
+}
+
+// WhileStmt represents a basic while loop.
+type WhileStmt struct {
+	Cond Expr
+	Body []Stmt
+}
+
+func (ws *WhileStmt) emit(w io.Writer) {
+	io.WriteString(w, "while (")
+	if ws.Cond != nil {
+		ws.Cond.emit(w)
+	}
+	io.WriteString(w, ") {\n")
+	for _, st := range ws.Body {
+		io.WriteString(w, "    ")
+		st.emit(w)
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, "}")
+}
+
+// IfExpr is a conditional expression using Kotlin's `if`.
+type IfExpr struct {
+	Cond Expr
+	Then Expr
+	Else Expr
+}
+
+func (ie *IfExpr) emit(w io.Writer) {
+	io.WriteString(w, "if (")
+	ie.Cond.emit(w)
+	io.WriteString(w, ") ")
+	ie.Then.emit(w)
+	if ie.Else != nil {
+		io.WriteString(w, " else ")
+		ie.Else.emit(w)
+	}
+}
+
 type ListLit struct{ Elems []Expr }
 
 func (l *ListLit) emit(w io.Writer) {
@@ -372,6 +440,18 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				params = append(params, p0.Name)
 			}
 			p.Funcs = append(p.Funcs, &FuncDef{Name: st.Fun.Name, Params: params, Body: body})
+		case st.If != nil:
+			stmt, err := convertIfStmt(env, st.If)
+			if err != nil {
+				return nil, err
+			}
+			p.Stmts = append(p.Stmts, stmt)
+		case st.While != nil:
+			stmt, err := convertWhileStmt(env, st.While)
+			if err != nil {
+				return nil, err
+			}
+			p.Stmts = append(p.Stmts, stmt)
 		default:
 			return nil, fmt.Errorf("unsupported statement")
 		}
@@ -417,11 +497,84 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				}
 			}
 			out = append(out, &ReturnStmt{Value: v})
+		case s.If != nil:
+			st, err := convertIfStmt(env, s.If)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, st)
+		case s.While != nil:
+			st, err := convertWhileStmt(env, s.While)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, st)
 		default:
 			return nil, fmt.Errorf("unsupported statement")
 		}
 	}
 	return out, nil
+}
+
+func convertIfStmt(env *types.Env, is *parser.IfStmt) (Stmt, error) {
+	cond, err := convertExpr(env, is.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenStmts, err := convertStmts(env, is.Then)
+	if err != nil {
+		return nil, err
+	}
+	var elseStmts []Stmt
+	if is.ElseIf != nil {
+		stmt, err := convertIfStmt(env, is.ElseIf)
+		if err != nil {
+			return nil, err
+		}
+		elseStmts = []Stmt{stmt}
+	} else if len(is.Else) > 0 {
+		elseStmts, err = convertStmts(env, is.Else)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
+}
+
+func convertWhileStmt(env *types.Env, ws *parser.WhileStmt) (Stmt, error) {
+	cond, err := convertExpr(env, ws.Cond)
+	if err != nil {
+		return nil, err
+	}
+	body, err := convertStmts(env, ws.Body)
+	if err != nil {
+		return nil, err
+	}
+	return &WhileStmt{Cond: cond, Body: body}, nil
+}
+
+func convertIfExpr(env *types.Env, ie *parser.IfExpr) (Expr, error) {
+	cond, err := convertExpr(env, ie.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenExpr, err := convertExpr(env, ie.Then)
+	if err != nil {
+		return nil, err
+	}
+	var elseExpr Expr
+	if ie.ElseIf != nil {
+		elseExpr, err = convertIfExpr(env, ie.ElseIf)
+		if err != nil {
+			return nil, err
+		}
+	} else if ie.Else != nil {
+		elseExpr, err = convertExpr(env, ie.Else)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
 }
 
 func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
@@ -642,6 +795,8 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			}
 			return &CallExpr{Func: name, Args: args}, nil
 		}
+	case p.If != nil:
+		return convertIfExpr(env, p.If)
 	case p.Lit != nil && p.Lit.Str != nil:
 		return &StringLit{Value: *p.Lit.Str}, nil
 	case p.Lit != nil && p.Lit.Int != nil:
@@ -747,6 +902,29 @@ func toNodeStmt(s Stmt) *ast.Node {
 		return &ast.Node{Kind: "var", Value: st.Name, Children: []*ast.Node{toNodeExpr(st.Value)}}
 	case *AssignStmt:
 		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{toNodeExpr(st.Value)}}
+	case *IfStmt:
+		n := &ast.Node{Kind: "if", Children: []*ast.Node{toNodeExpr(st.Cond)}}
+		thenNode := &ast.Node{Kind: "then"}
+		for _, t := range st.Then {
+			thenNode.Children = append(thenNode.Children, toNodeStmt(t))
+		}
+		n.Children = append(n.Children, thenNode)
+		if len(st.Else) > 0 {
+			elseNode := &ast.Node{Kind: "else"}
+			for _, e := range st.Else {
+				elseNode.Children = append(elseNode.Children, toNodeStmt(e))
+			}
+			n.Children = append(n.Children, elseNode)
+		}
+		return n
+	case *WhileStmt:
+		n := &ast.Node{Kind: "while", Children: []*ast.Node{toNodeExpr(st.Cond)}}
+		body := &ast.Node{Kind: "body"}
+		for _, b := range st.Body {
+			body.Children = append(body.Children, toNodeStmt(b))
+		}
+		n.Children = append(n.Children, body)
+		return n
 	case *ReturnStmt:
 		n := &ast.Node{Kind: "return"}
 		if st.Value != nil {
@@ -818,6 +996,13 @@ func toNodeExpr(e Expr) *ast.Node {
 		return &ast.Node{Kind: "values", Children: []*ast.Node{toNodeExpr(ex.Map)}}
 	case *SubstringExpr:
 		return &ast.Node{Kind: "substring", Children: []*ast.Node{toNodeExpr(ex.Value), toNodeExpr(ex.Start), toNodeExpr(ex.End)}}
+	case *IfExpr:
+		n := &ast.Node{Kind: "ifexpr"}
+		n.Children = append(n.Children, toNodeExpr(ex.Cond), toNodeExpr(ex.Then))
+		if ex.Else != nil {
+			n.Children = append(n.Children, toNodeExpr(ex.Else))
+		}
+		return n
 	case *StringLit:
 		return &ast.Node{Kind: "string", Value: ex.Value}
 	default:
