@@ -3,6 +3,7 @@ This directory contains the experimental Racket transpiler. Golden tests under `
 ## VM valid checklist
 
 The following programs from `tests/vm/valid` have golden transpiler output.  Items are ticked once the Racket backend successfully transpiles and runs them.
+Progress: 8/100 tests complete.
 - [ ] append_builtin
 - [ ] avg_builtin
 - [x] basic_compare
