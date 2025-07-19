@@ -1,5 +1,0 @@
-exit status 70
-ERROR: length: not a list: "mochi"
-  called from <anonymous> on line 3 of file /workspace/mochi/tests/transpiler/x/scheme/len_string.scm
-  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
-  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
