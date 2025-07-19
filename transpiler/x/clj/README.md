@@ -2,7 +2,7 @@
 
 This directory contains experimental source translators for generating code in a variety of languages. The Clojure backend lives under `x/clj`.
 
-## Golden Test Checklist (25/100)
+## Golden Test Checklist (32/100)
 - [ ] append_builtin.mochi
 - [ ] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -22,9 +22,9 @@ This directory contains experimental source translators for generating code in a
 - [ ] for_list_collection.mochi
 - [ ] for_loop.mochi
 - [ ] for_map_collection.mochi
-- [ ] fun_call.mochi
+- [x] fun_call.mochi
 - [ ] fun_expr_in_let.mochi
-- [ ] fun_three_args.mochi
+- [x] fun_three_args.mochi
 - [ ] go_auto.mochi
 - [ ] group_by.mochi
 - [ ] group_by_conditional_sum.mochi
@@ -66,20 +66,20 @@ This directory contains experimental source translators for generating code in a
 - [x] math_ops.mochi
 - [ ] membership.mochi
 - [x] min_max_builtin.mochi
-- [ ] nested_function.mochi
+- [x] nested_function.mochi
 - [ ] order_by_map.mochi
 - [ ] outer_join.mochi
 - [ ] partial_application.mochi
 - [x] print_hello.mochi
-- [ ] pure_fold.mochi
-- [ ] pure_global_fold.mochi
+- [x] pure_fold.mochi
+- [x] pure_global_fold.mochi
 - [ ] python_auto.mochi
 - [ ] python_math.mochi
 - [ ] query_sum_select.mochi
 - [ ] record_assign.mochi
 - [ ] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
-- [ ] short_circuit.mochi
+- [x] short_circuit.mochi
 - [ ] slice.mochi
 - [ ] sort_stable.mochi
 - [x] str_builtin.mochi
@@ -101,5 +101,5 @@ This directory contains experimental source translators for generating code in a
 - [ ] update_stmt.mochi
 - [ ] user_type_literal.mochi
 - [x] values_builtin.mochi
-- [ ] var_assignment.mochi
+- [x] var_assignment.mochi
 - [ ] while_loop.mochi
