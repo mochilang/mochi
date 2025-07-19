@@ -1560,7 +1560,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	isStr := c.isStringPostfix(p)
+	// Determine if the base expression is a string before applying any
+	// postfix operations. Using the full expression would give the type
+	// after indexing which leads to incorrect helpers being used.
+	isStr := c.isStringPrimary(p.Target)
 	prevSelector := p.Target != nil && p.Target.Selector != nil
 	for _, op := range p.Ops {
 		if op.Index != nil {
@@ -1911,8 +1914,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 
 func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 	switch {
-    case l.Int != nil:
-            return strconv.Itoa(int(*l.Int)), nil
+	case l.Int != nil:
+		return strconv.Itoa(int(*l.Int)), nil
 	case l.Float != nil:
 		if *l.Float == math.Trunc(*l.Float) {
 			return strconv.FormatFloat(*l.Float, 'f', 1, 64), nil
