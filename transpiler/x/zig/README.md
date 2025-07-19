@@ -4,7 +4,7 @@ This directory contains a minimal transpiler that converts a subset of Mochi int
 
 ## Golden tests
 
-Progress: 15/100
+Progress: 17/100
 - [ ] append_builtin
 - [ ] avg_builtin
 - [x] basic_compare
@@ -47,12 +47,12 @@ Progress: 15/100
 - [ ] json_builtin
 - [ ] left_join
 - [ ] left_join_multi
-- [ ] len_builtin
+ - [x] len_builtin
 - [ ] len_map
 - [x] len_string
 - [x] let_and_print
 - [ ] list_assign
-- [ ] list_index
+ - [x] list_index
 - [ ] list_nested_assign
 - [ ] list_set_ops
 - [ ] load_yaml
