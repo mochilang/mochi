@@ -1136,7 +1136,9 @@ func (c *Compiler) compileStmtExpr(stmts []*parser.Statement, top bool) (string,
 			if err != nil {
 				return "", err
 			}
-			expr = chainMaybe(fmt.Sprintf("(Nothing <$ %s)", val), expr)
+			// Wrap expression statements so their side effects are
+			// executed when the resulting IO action is run.
+			expr = chainMaybe(fmt.Sprintf("Just (%s)", val), expr)
 		}
 	}
 	return expr, nil
