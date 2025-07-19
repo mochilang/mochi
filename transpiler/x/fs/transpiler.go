@@ -98,16 +98,85 @@ type ExprStmt struct{ Expr Expr }
 
 func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
 
-type LetStmt struct {
+type AssignStmt struct {
 	Name string
 	Expr Expr
 }
 
+func (s *AssignStmt) emit(w io.Writer) {
+	io.WriteString(w, s.Name)
+	io.WriteString(w, " <- ")
+	s.Expr.emit(w)
+}
+
+type WhileStmt struct {
+	Cond Expr
+	Body []Stmt
+}
+
+func (wst *WhileStmt) emit(w io.Writer) {
+	io.WriteString(w, "while ")
+	wst.Cond.emit(w)
+	io.WriteString(w, " do\n")
+	for i, st := range wst.Body {
+		st.emit(w)
+		if i < len(wst.Body)-1 {
+			w.Write([]byte{'\n'})
+		}
+	}
+}
+
+type ForStmt struct {
+	Name  string
+	Start Expr
+	End   Expr
+	Body  []Stmt
+}
+
+func (fst *ForStmt) emit(w io.Writer) {
+	io.WriteString(w, "for ")
+	io.WriteString(w, fst.Name)
+	io.WriteString(w, " in ")
+	if fst.End != nil {
+		fst.Start.emit(w)
+		io.WriteString(w, " .. (")
+		(&BinaryExpr{Left: fst.End, Op: "-", Right: &IntLit{Value: 1}}).emit(w)
+		io.WriteString(w, ")")
+	} else {
+		fst.Start.emit(w)
+	}
+	io.WriteString(w, " do\n")
+	for i, st := range fst.Body {
+		st.emit(w)
+		if i < len(fst.Body)-1 {
+			w.Write([]byte{'\n'})
+		}
+	}
+}
+
+type LetStmt struct {
+	Name    string
+	Mutable bool
+	Type    string
+	Expr    Expr
+}
+
 func (s *LetStmt) emit(w io.Writer) {
 	io.WriteString(w, "let ")
+	if s.Mutable {
+		io.WriteString(w, "mutable ")
+	}
 	io.WriteString(w, s.Name)
+	if s.Type != "" {
+		io.WriteString(w, ": ")
+		io.WriteString(w, s.Type)
+	}
 	io.WriteString(w, " = ")
-	s.Expr.emit(w)
+	if s.Expr != nil {
+		s.Expr.emit(w)
+	} else {
+		io.WriteString(w, "0")
+	}
 }
 
 type CallExpr struct {
@@ -329,12 +398,75 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		return &ExprStmt{Expr: e}, nil
-	case st.Let != nil && st.Let.Value != nil:
-		e, err := convertExpr(st.Let.Value)
+	case st.Let != nil:
+		var e Expr
+		var err error
+		if st.Let.Value != nil {
+			e, err = convertExpr(st.Let.Value)
+			if err != nil {
+				return nil, err
+			}
+		}
+		typ := ""
+		if st.Let.Type != nil && st.Let.Type.Simple != nil {
+			typ = *st.Let.Type.Simple
+		}
+		return &LetStmt{Name: st.Let.Name, Expr: e, Type: typ}, nil
+	case st.Var != nil:
+		var e Expr
+		var err error
+		if st.Var.Value != nil {
+			e, err = convertExpr(st.Var.Value)
+			if err != nil {
+				return nil, err
+			}
+		}
+		typ := ""
+		if st.Var.Type != nil && st.Var.Type.Simple != nil {
+			typ = *st.Var.Type.Simple
+		}
+		return &LetStmt{Name: st.Var.Name, Expr: e, Type: typ, Mutable: true}, nil
+	case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
+		e, err := convertExpr(st.Assign.Value)
 		if err != nil {
 			return nil, err
 		}
-		return &LetStmt{Name: st.Let.Name, Expr: e}, nil
+		return &AssignStmt{Name: st.Assign.Name, Expr: e}, nil
+	case st.While != nil:
+		cond, err := convertExpr(st.While.Cond)
+		if err != nil {
+			return nil, err
+		}
+		body := make([]Stmt, len(st.While.Body))
+		for i, s := range st.While.Body {
+			cs, err := convertStmt(s)
+			if err != nil {
+				return nil, err
+			}
+			body[i] = cs
+		}
+		return &WhileStmt{Cond: cond, Body: body}, nil
+	case st.For != nil:
+		start, err := convertExpr(st.For.Source)
+		if err != nil {
+			return nil, err
+		}
+		var end Expr
+		if st.For.RangeEnd != nil {
+			end, err = convertExpr(st.For.RangeEnd)
+			if err != nil {
+				return nil, err
+			}
+		}
+		body := make([]Stmt, len(st.For.Body))
+		for i, s := range st.For.Body {
+			cs, err := convertStmt(s)
+			if err != nil {
+				return nil, err
+			}
+			body[i] = cs
+		}
+		return &ForStmt{Name: st.For.Name, Start: start, End: end, Body: body}, nil
 	case st.If != nil:
 		return convertIfStmt(st.If)
 	default:
