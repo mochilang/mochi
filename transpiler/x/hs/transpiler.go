@@ -71,7 +71,19 @@ type ReturnStmt struct {
 func (p *PrintStmt) emit(w io.Writer) {
 	if p.String {
 		io.WriteString(w, "putStrLn (")
-	} else if _, ok := p.Expr.(*StringLit); ok {
+		p.Expr.emit(w)
+		io.WriteString(w, ")")
+		return
+	}
+
+	if isBoolExpr(p.Expr) {
+		io.WriteString(w, "print (fromEnum (")
+		p.Expr.emit(w)
+		io.WriteString(w, "))")
+		return
+	}
+
+	if _, ok := p.Expr.(*StringLit); ok {
 		io.WriteString(w, "putStrLn (")
 	} else {
 		io.WriteString(w, "print (")
@@ -170,6 +182,29 @@ func isStringExpr(e Expr) bool {
 	case *BinaryExpr:
 		if len(ex.Ops) > 0 && ex.Ops[0].Op == "+" {
 			if isStringExpr(ex.Left) || isStringExpr(ex.Ops[0].Right) {
+				return true
+			}
+		}
+	case *IfExpr:
+		return isStringExpr(ex.Then) && isStringExpr(ex.Else)
+	}
+	return false
+}
+
+func isBoolExpr(e Expr) bool {
+	switch ex := e.(type) {
+	case *BoolLit:
+		return true
+	case *UnaryExpr:
+		if ex.Op == "!" {
+			return true
+		}
+		return isBoolExpr(ex.Expr)
+	case *BinaryExpr:
+		if len(ex.Ops) > 0 {
+			op := ex.Ops[0].Op
+			switch op {
+			case "==", "!=", "<", ">", "<=", ">=", "&&", "||":
 				return true
 			}
 		}
