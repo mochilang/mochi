@@ -1,6 +1,7 @@
 # Erlang Transpiler Progress
 
 ## Recent Updates
+- 2025-07-20 00:59 +0700 - Added map literals, indexing and map membership. Generated golden files for len_map, map_index, map_int_key, map_membership and map_in_operator.
 - 2025-07-19 17:43 +0000 - Removed runtime helpers and improved printing with io:format. Updated checklist.
 - 2025-07-19 21:14 +0700 - Added math operations and golden files for math_ops.
 - 2025-07-19 07:49 +0000 - Added `in` operator for lists. Generated golden files for in_operator and membership.
