@@ -413,6 +413,17 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		exprs = append(exprs, r)
 		ops[i] = op.Op
 	}
+	// handle membership operator early
+	for i := 0; i < len(ops); i++ {
+		if ops[i] == "in" {
+			l := exprs[i]
+			r := exprs[i+1]
+			exprs[i] = &CallExpr{Func: "lists:member", Args: []Expr{l, r}}
+			exprs = append(exprs[:i+1], exprs[i+2:]...)
+			ops = append(ops[:i], ops[i+1:]...)
+			i--
+		}
+	}
 	levels := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!="}, {"&&"}, {"||"}}
 	contains := func(list []string, v string) bool {
 		for _, s := range list {
