@@ -36,5 +36,7 @@ func mochiPrint(v any) {
 }
 
 func main() {
-	mochiPrint(len([]int{1, 2, 3}))
+	for _, n := range []int{1, 2, 3} {
+		mochiPrint(n)
+	}
 }
