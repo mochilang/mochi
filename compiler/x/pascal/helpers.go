@@ -490,6 +490,14 @@ func (c *Compiler) listElemType(p *parser.Primary) string {
 	if lt, ok := t.(types.ListType); ok {
 		return typeString(lt.Elem)
 	}
+	if p.Selector != nil && c.varTypes != nil {
+		if vt, ok := c.varTypes[p.Selector.Root]; ok {
+			if strings.HasPrefix(vt, "specialize TArray<") {
+				inner := strings.TrimSuffix(strings.TrimPrefix(vt, "specialize TArray<"), ">")
+				return inner
+			}
+		}
+	}
 	return "integer"
 }
 

@@ -1813,6 +1813,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		if p.Lit.Str != nil {
 			s := strings.ReplaceAll(*p.Lit.Str, "'", "''")
+			s = strings.ReplaceAll(s, "\n", "\\n")
 			return fmt.Sprintf("'%s'", s), nil
 		}
 		if p.Lit.Null {
