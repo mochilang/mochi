@@ -68,6 +68,12 @@ type BinaryExpr struct {
 
 type LetStmt struct {
 	Name  string
+	Type  string
+	Value Expr
+}
+
+type AssignStmt struct {
+	Name  string
 	Value Expr
 }
 
@@ -163,8 +169,30 @@ func (s *LetStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "    ")
 	}
-	fmt.Fprintf(w, "auto %s = ", s.Name)
-	s.Value.emit(w)
+	typ := s.Type
+	if typ == "" {
+		io.WriteString(w, "auto ")
+	} else {
+		io.WriteString(w, typ+" ")
+	}
+	io.WriteString(w, s.Name)
+	if s.Value != nil {
+		io.WriteString(w, " = ")
+		s.Value.emit(w)
+	} else if typ != "" {
+		io.WriteString(w, " = ")
+		io.WriteString(w, defaultValueForType(typ))
+	}
+	io.WriteString(w, ";\n")
+}
+
+func (a *AssignStmt) emit(w io.Writer, indent int) {
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "    ")
+	}
+	io.WriteString(w, a.Name)
+	io.WriteString(w, " = ")
+	a.Value.emit(w)
 	io.WriteString(w, ";\n")
 }
 
@@ -253,11 +281,39 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				return nil, fmt.Errorf("unsupported expression")
 			}
 		case stmt.Let != nil:
-			val, err := convertExpr(stmt.Let.Value)
+			var val Expr
+			var err error
+			if stmt.Let.Value != nil {
+				val, err = convertExpr(stmt.Let.Value)
+				if err != nil {
+					return nil, err
+				}
+			}
+			typ := ""
+			if stmt.Let.Type != nil && stmt.Let.Type.Simple != nil {
+				typ = cppType(*stmt.Let.Type.Simple)
+			}
+			body = append(body, &LetStmt{Name: stmt.Let.Name, Type: typ, Value: val})
+		case stmt.Var != nil:
+			var val Expr
+			var err error
+			if stmt.Var.Value != nil {
+				val, err = convertExpr(stmt.Var.Value)
+				if err != nil {
+					return nil, err
+				}
+			}
+			typ := ""
+			if stmt.Var.Type != nil && stmt.Var.Type.Simple != nil {
+				typ = cppType(*stmt.Var.Type.Simple)
+			}
+			body = append(body, &LetStmt{Name: stmt.Var.Name, Type: typ, Value: val})
+		case stmt.Assign != nil:
+			val, err := convertExpr(stmt.Assign.Value)
 			if err != nil {
 				return nil, err
 			}
-			body = append(body, &LetStmt{Name: stmt.Let.Name, Value: val})
+			body = append(body, &AssignStmt{Name: stmt.Assign.Name, Value: val})
 		case stmt.For != nil:
 			start, err := convertExpr(stmt.For.Source)
 			if err != nil {
@@ -312,11 +368,39 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			return &PrintStmt{Value: arg}, nil
 		}
 	case s.Let != nil:
-		val, err := convertExpr(s.Let.Value)
+		var val Expr
+		var err error
+		if s.Let.Value != nil {
+			val, err = convertExpr(s.Let.Value)
+			if err != nil {
+				return nil, err
+			}
+		}
+		typ := ""
+		if s.Let.Type != nil && s.Let.Type.Simple != nil {
+			typ = cppType(*s.Let.Type.Simple)
+		}
+		return &LetStmt{Name: s.Let.Name, Type: typ, Value: val}, nil
+	case s.Var != nil:
+		var val Expr
+		var err error
+		if s.Var.Value != nil {
+			val, err = convertExpr(s.Var.Value)
+			if err != nil {
+				return nil, err
+			}
+		}
+		typ := ""
+		if s.Var.Type != nil && s.Var.Type.Simple != nil {
+			typ = cppType(*s.Var.Type.Simple)
+		}
+		return &LetStmt{Name: s.Var.Name, Type: typ, Value: val}, nil
+	case s.Assign != nil:
+		val, err := convertExpr(s.Assign.Value)
 		if err != nil {
 			return nil, err
 		}
-		return &LetStmt{Name: s.Let.Name, Value: val}, nil
+		return &AssignStmt{Name: s.Assign.Name, Value: val}, nil
 	case s.If != nil:
 		return convertIfStmt(s.If)
 	}
@@ -459,6 +543,32 @@ func convertIfExpr(ie *parser.IfExpr) (*IfExpr, error) {
 	return &IfExpr{Cond: cond, Then: thenExpr, ElseIf: elseIf, Else: elseExpr}, nil
 }
 
+func cppType(t string) string {
+	switch t {
+	case "int":
+		return "int"
+	case "float":
+		return "double"
+	case "bool":
+		return "bool"
+	case "string":
+		return "std::string"
+	}
+	return "auto"
+}
+
+func defaultValueForType(t string) string {
+	switch t {
+	case "int", "double":
+		return "0"
+	case "bool":
+		return "false"
+	case "std::string":
+		return "\"\""
+	}
+	return "{}"
+}
+
 // print writes a Lisp-like representation of the transpiler AST to stdout.
 // It first converts the internal structs to ast.Node using the mochi/ast
 // package, then prints the result.
@@ -488,7 +598,13 @@ func toStmtNode(s Stmt) *ast.Node {
 	case *PrintStmt:
 		return &ast.Node{Kind: "print", Children: []*ast.Node{toExprNode(st.Value)}}
 	case *LetStmt:
-		return &ast.Node{Kind: "let", Value: st.Name, Children: []*ast.Node{toExprNode(st.Value)}}
+		n := &ast.Node{Kind: "let", Value: st.Name}
+		if st.Value != nil {
+			n.Children = []*ast.Node{toExprNode(st.Value)}
+		}
+		return n
+	case *AssignStmt:
+		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{toExprNode(st.Value)}}
 	case *ForStmt:
 		n := &ast.Node{Kind: "for", Value: st.Var}
 		n.Children = append(n.Children, toExprNode(st.Start))
