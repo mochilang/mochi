@@ -32,13 +32,13 @@
 ;; Function shuffleStr takes [s: string] and returns string
 (defn shuffleStr [s]
   (try
-    (def arr []) ;; list of string
-    (def i 0) ;; int
+    (def shuffleStr_arr []) ;; list of string
+    (def shuffleStr_i 0) ;; int
     (loop []
-      (when (< i (count s))
+      (when (< shuffleStr_i (count s))
         (let [r (try
-          (def arr (conj arr (subs s i (+ i 1)))) ;; list of string
-          (def i (+ i 1)) ;; int
+          (def shuffleStr_arr (conj shuffleStr_arr (subs s shuffleStr_i (+ shuffleStr_i 1)))) ;; list of string
+          (def shuffleStr_i (+ shuffleStr_i 1)) ;; int
           :next
         (catch clojure.lang.ExceptionInfo e
           (cond
@@ -54,15 +54,15 @@
     )
   )
 )
-(def j (- (count arr) 1)) ;; int
+(def shuffleStr_j (- (count shuffleStr_arr) 1)) ;; int
 (loop []
-  (when (> j 0)
+  (when (> shuffleStr_j 0)
     (let [r (try
-      (def k (mod (System/nanoTime) (+ j 1))) ;; int
-      (def tmp (_indexList arr j)) ;; string
-      (def arr (assoc arr j (_indexList arr k))) ;; string
-      (def arr (assoc arr k tmp)) ;; string
-      (def j (- j 1)) ;; int
+      (def shuffleStr_k (mod (System/nanoTime) (+ shuffleStr_j 1))) ;; int
+      (def shuffleStr_tmp (_indexList shuffleStr_arr shuffleStr_j)) ;; string
+      (def shuffleStr_arr (assoc shuffleStr_arr shuffleStr_j (_indexList shuffleStr_arr shuffleStr_k))) ;; string
+      (def shuffleStr_arr (assoc shuffleStr_arr shuffleStr_k shuffleStr_tmp)) ;; string
+      (def shuffleStr_j (- shuffleStr_j 1)) ;; int
       :next
     (catch clojure.lang.ExceptionInfo e
       (cond
@@ -78,13 +78,13 @@
 )
 )
 )
-(def out "") ;; string
-(def i 0) ;; int
+(def shuffleStr_out "") ;; string
+(def shuffleStr_i 0) ;; int
 (loop []
-(when (< i (count arr))
+(when (< shuffleStr_i (count shuffleStr_arr))
 (let [r (try
-  (def out (str out (_indexList arr i))) ;; string
-  (def i (+ i 1)) ;; int
+  (def shuffleStr_out (str shuffleStr_out (_indexList shuffleStr_arr shuffleStr_i))) ;; string
+  (def shuffleStr_i (+ shuffleStr_i 1)) ;; int
   :next
 (catch clojure.lang.ExceptionInfo e
   (cond
@@ -100,7 +100,7 @@
 )
 )
 )
-(throw (ex-info "return" {:value out}))
+(throw (ex-info "return" {:value shuffleStr_out}))
 (catch clojure.lang.ExceptionInfo e
 (if (= (.getMessage e) "return")
 (:value (ex-data e))
@@ -111,14 +111,14 @@
 ;; Function createPolybius returns list of string
 (defn createPolybius []
 (try
-(def shuffled (shuffleStr alphabet)) ;; string
-(def labels []) ;; list of string
-(def li 0) ;; int
+(def createPolybius_shuffled (shuffleStr alphabet)) ;; string
+(def createPolybius_labels []) ;; list of string
+(def createPolybius_li 0) ;; int
 (loop []
-(when (< li (count adfgvx))
+(when (< createPolybius_li (count adfgvx))
 (let [r (try
-(def labels (conj labels (subs adfgvx li (+ li 1)))) ;; list of string
-(def li (+ li 1)) ;; int
+(def createPolybius_labels (conj createPolybius_labels (subs adfgvx createPolybius_li (+ createPolybius_li 1)))) ;; list of string
+(def createPolybius_li (+ createPolybius_li 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -137,20 +137,20 @@
 (_print "6 x 6 Polybius square:\n")
 (_print "  | A D F G V X")
 (_print "---------------")
-(def p []) ;; list of string
-(def i 0) ;; int
+(def createPolybius_p []) ;; list of string
+(def createPolybius_i 0) ;; int
 (loop []
-(when (< i 6)
+(when (< createPolybius_i 6)
 (let [r (try
-(def row (subs shuffled (* i 6) (* (+ i 1) 6))) ;; string
-(def p (conj p row)) ;; list of string
-(def line (str (subvec labels i (+ i 1)) " | ")) ;; list of any
-(def j 0) ;; int
+(def createPolybius_row (subs createPolybius_shuffled (* createPolybius_i 6) (* (+ createPolybius_i 1) 6))) ;; string
+(def createPolybius_p (conj createPolybius_p createPolybius_row)) ;; list of string
+(def createPolybius_line (str (subvec createPolybius_labels createPolybius_i (+ createPolybius_i 1)) " | ")) ;; list of any
+(def createPolybius_j 0) ;; int
 (loop []
-(when (< j 6)
+(when (< createPolybius_j 6)
 (let [r (try
-(def line (str (str line (subs row j (+ j 1))) " ")) ;; list of any
-(def j (+ j 1)) ;; int
+(def createPolybius_line (str (str createPolybius_line (subs createPolybius_row createPolybius_j (+ createPolybius_j 1))) " ")) ;; list of any
+(def createPolybius_j (+ createPolybius_j 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -166,8 +166,8 @@
 )
 )
 )
-(_print line)
-(def i (+ i 1)) ;; int
+(_print createPolybius_line)
+(def createPolybius_i (+ createPolybius_i 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -183,7 +183,7 @@
 )
 )
 )
-(throw (ex-info "return" {:value p}))
+(throw (ex-info "return" {:value createPolybius_p}))
 (catch clojure.lang.ExceptionInfo e
 (if (= (.getMessage e) "return")
 (:value (ex-data e))
@@ -197,16 +197,16 @@
 (when (or (< n 7) (> n 12))
 (_print "Key should be within 7 and 12 letters long.")
 )
-(def pool "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789") ;; string
-(def key "") ;; string
-(def i 0) ;; int
+(def createKey_pool "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789") ;; string
+(def createKey_key "") ;; string
+(def createKey_i 0) ;; int
 (loop []
-(when (< i n)
+(when (< createKey_i n)
 (let [r (try
-(def idx (mod (System/nanoTime) (count pool))) ;; int
-(def key (str key (_indexString pool idx))) ;; string
-(def pool (str (subs pool  idx) (subs pool (+ idx 1) (count pool)))) ;; string
-(def i (+ i 1)) ;; int
+(def createKey_idx (mod (System/nanoTime) (count createKey_pool))) ;; int
+(def createKey_key (str createKey_key (_indexString createKey_pool createKey_idx))) ;; string
+(def createKey_pool (str (subs createKey_pool  createKey_idx) (subs createKey_pool (+ createKey_idx 1) (count createKey_pool)))) ;; string
+(def createKey_i (+ createKey_i 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -222,8 +222,8 @@
 )
 )
 )
-(_print (str "\nThe key is " key))
-(throw (ex-info "return" {:value key}))
+(_print (str "\nThe key is " createKey_key))
+(throw (ex-info "return" {:value createKey_key}))
 (catch clojure.lang.ExceptionInfo e
 (if (= (.getMessage e) "return")
 (:value (ex-data e))
@@ -234,13 +234,13 @@
 ;; Function orderKey takes [key: string] and returns list of int
 (defn orderKey [key]
 (try
-(def pairs []) ;; list of any
-(def i 0) ;; int
+(def orderKey_pairs []) ;; list of any
+(def orderKey_i 0) ;; int
 (loop []
-(when (< i (count key))
+(when (< orderKey_i (count key))
 (let [r (try
-(def pairs (conj pairs [(subs key i (+ i 1)) i])) ;; list of any
-(def i (+ i 1)) ;; int
+(def orderKey_pairs (conj orderKey_pairs [(subs key orderKey_i (+ orderKey_i 1)) orderKey_i])) ;; list of any
+(def orderKey_i (+ orderKey_i 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -256,21 +256,21 @@
 )
 )
 )
-(def n (count pairs)) ;; int
-(def m 0) ;; int
+(def orderKey_n (count orderKey_pairs)) ;; int
+(def orderKey_m 0) ;; int
 (loop []
-(when (< m n)
+(when (< orderKey_m orderKey_n)
 (let [r (try
-(def j 0) ;; int
+(def orderKey_j 0) ;; int
 (loop []
-(when (< j (- n 1))
+(when (< orderKey_j (- orderKey_n 1))
 (let [r (try
-(when (> (get (_indexList pairs j) 0) (get (_indexList pairs (+ j 1)) 0))
-(def tmp (_indexList pairs j)) ;; any
-(def pairs (assoc pairs j (_indexList pairs (+ j 1)))) ;; any
-(def pairs (assoc pairs (+ j 1) tmp)) ;; any
+(when (> (get (_indexList orderKey_pairs orderKey_j) 0) (get (_indexList orderKey_pairs (+ orderKey_j 1)) 0))
+(def orderKey_tmp (_indexList orderKey_pairs orderKey_j)) ;; any
+(def orderKey_pairs (assoc orderKey_pairs orderKey_j (_indexList orderKey_pairs (+ orderKey_j 1)))) ;; any
+(def orderKey_pairs (assoc orderKey_pairs (+ orderKey_j 1) orderKey_tmp)) ;; any
 )
-(def j (+ j 1)) ;; int
+(def orderKey_j (+ orderKey_j 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -286,7 +286,7 @@
 )
 )
 )
-(def m (+ m 1)) ;; int
+(def orderKey_m (+ orderKey_m 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -302,13 +302,13 @@
 )
 )
 )
-(def res []) ;; list of any
-(def i 0) ;; int
+(def orderKey_res []) ;; list of any
+(def orderKey_i 0) ;; int
 (loop []
-(when (< i n)
+(when (< orderKey_i orderKey_n)
 (let [r (try
-(def res (conj res (int (get (_indexList pairs i) 1)))) ;; list of any
-(def i (+ i 1)) ;; int
+(def orderKey_res (conj orderKey_res (int (get (_indexList orderKey_pairs orderKey_i) 1)))) ;; list of any
+(def orderKey_i (+ orderKey_i 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -324,7 +324,7 @@
 )
 )
 )
-(throw (ex-info "return" {:value res}))
+(throw (ex-info "return" {:value orderKey_res}))
 (catch clojure.lang.ExceptionInfo e
 (if (= (.getMessage e) "return")
 (:value (ex-data e))
@@ -335,13 +335,13 @@
 ;; Function encrypt takes [polybius: list of string, key: string, plainText: string] and returns string
 (defn encrypt [polybius key plainText]
 (try
-(def labels []) ;; list of string
-(def li 0) ;; int
+(def encrypt_labels []) ;; list of string
+(def encrypt_li 0) ;; int
 (loop []
-(when (< li (count adfgvx))
+(when (< encrypt_li (count adfgvx))
 (let [r (try
-(def labels (conj labels (subs adfgvx li (+ li 1)))) ;; list of string
-(def li (+ li 1)) ;; int
+(def encrypt_labels (conj encrypt_labels (subs adfgvx encrypt_li (+ encrypt_li 1)))) ;; list of string
+(def encrypt_li (+ encrypt_li 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -357,23 +357,23 @@
 )
 )
 )
-(def temp "") ;; string
-(def i 0) ;; int
+(def encrypt_temp "") ;; string
+(def encrypt_i 0) ;; int
 (loop []
-(when (< i (count plainText))
+(when (< encrypt_i (count plainText))
 (let [r (try
-(def r 0) ;; int
+(def encrypt_r 0) ;; int
 (loop []
-(when (< r 6)
+(when (< encrypt_r 6)
 (let [r (try
-(def c 0) ;; int
+(def encrypt_c 0) ;; int
 (loop []
-(when (< c 6)
+(when (< encrypt_c 6)
 (let [r (try
-(when (= (subs (_indexList polybius r) c (+ c 1)) (subs plainText i (+ i 1)))
-(def temp (str (str temp (subvec labels r (+ r 1))) (subvec labels c (+ c 1)))) ;; any
+(when (= (subs (_indexList polybius encrypt_r) encrypt_c (+ encrypt_c 1)) (subs plainText encrypt_i (+ encrypt_i 1)))
+(def encrypt_temp (str (str encrypt_temp (subvec encrypt_labels encrypt_r (+ encrypt_r 1))) (subvec encrypt_labels encrypt_c (+ encrypt_c 1)))) ;; any
 )
-(def c (+ c 1)) ;; int
+(def encrypt_c (+ encrypt_c 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -389,7 +389,7 @@
 )
 )
 )
-(def r (+ r 1)) ;; int
+(def encrypt_r (+ encrypt_r 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -405,7 +405,7 @@
 )
 )
 )
-(def i (+ i 1)) ;; int
+(def encrypt_i (+ encrypt_i 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -421,22 +421,22 @@
 )
 )
 )
-(def colLen (quot (count temp) (count key))) ;; int
-(when (> (mod (count temp) (count key)) 0)
-(def colLen (+ colLen 1)) ;; int
+(def encrypt_colLen (quot (count encrypt_temp) (count key))) ;; int
+(when (> (mod (count encrypt_temp) (count key)) 0)
+(def encrypt_colLen (+ encrypt_colLen 1)) ;; int
 )
-(def table []) ;; list of list of string
-(def rIdx 0) ;; int
+(def encrypt_table []) ;; list of list of string
+(def encrypt_rIdx 0) ;; int
 (loop []
-(when (< rIdx colLen)
+(when (< encrypt_rIdx encrypt_colLen)
 (let [r (try
-(def row []) ;; list of string
-(def j 0) ;; int
+(def encrypt_row []) ;; list of string
+(def encrypt_j 0) ;; int
 (loop []
-(when (< j (count key))
+(when (< encrypt_j (count key))
 (let [r (try
-(def row (conj row "")) ;; list of string
-(def j (+ j 1)) ;; int
+(def encrypt_row (conj encrypt_row "")) ;; list of string
+(def encrypt_j (+ encrypt_j 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -452,8 +452,8 @@
 )
 )
 )
-(def table (conj table row)) ;; list of list of string
-(def rIdx (+ rIdx 1)) ;; int
+(def encrypt_table (conj encrypt_table encrypt_row)) ;; list of list of string
+(def encrypt_rIdx (+ encrypt_rIdx 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -469,14 +469,14 @@
 )
 )
 )
-(def idx 0) ;; int
+(def encrypt_idx 0) ;; int
 (loop []
-(when (< idx (count temp))
+(when (< encrypt_idx (count encrypt_temp))
 (let [r (try
-(def row (quot idx (count key))) ;; int
-(def col (mod idx (count key))) ;; int
-(def table (assoc-in table [row col] (subs temp idx (+ idx 1)))) ;; any
-(def idx (+ idx 1)) ;; int
+(def encrypt_row (quot encrypt_idx (count key))) ;; int
+(def encrypt_col (mod encrypt_idx (count key))) ;; int
+(def encrypt_table (assoc-in encrypt_table [encrypt_row encrypt_col] (subs encrypt_temp encrypt_idx (+ encrypt_idx 1)))) ;; any
+(def encrypt_idx (+ encrypt_idx 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -492,19 +492,19 @@
 )
 )
 )
-(def order (orderKey key)) ;; list of int
-(def cols []) ;; list of string
-(def ci 0) ;; int
+(def encrypt_order (orderKey key)) ;; list of int
+(def encrypt_cols []) ;; list of string
+(def encrypt_ci 0) ;; int
 (loop []
-(when (< ci (count key))
+(when (< encrypt_ci (count key))
 (let [r (try
-(def colStr "") ;; string
-(def ri 0) ;; int
+(def encrypt_colStr "") ;; string
+(def encrypt_ri 0) ;; int
 (loop []
-(when (< ri colLen)
+(when (< encrypt_ri encrypt_colLen)
 (let [r (try
-(def colStr (str colStr (_indexList (_indexList table ri) (_indexList order ci)))) ;; string
-(def ri (+ ri 1)) ;; int
+(def encrypt_colStr (str encrypt_colStr (_indexList (_indexList encrypt_table encrypt_ri) (_indexList encrypt_order encrypt_ci)))) ;; string
+(def encrypt_ri (+ encrypt_ri 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -520,8 +520,8 @@
 )
 )
 )
-(def cols (conj cols colStr)) ;; list of string
-(def ci (+ ci 1)) ;; int
+(def encrypt_cols (conj encrypt_cols encrypt_colStr)) ;; list of string
+(def encrypt_ci (+ encrypt_ci 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -537,16 +537,16 @@
 )
 )
 )
-(def result "") ;; string
-(def ci 0) ;; int
+(def encrypt_result "") ;; string
+(def encrypt_ci 0) ;; int
 (loop []
-(when (< ci (count cols))
+(when (< encrypt_ci (count encrypt_cols))
 (let [r (try
-(def result (str result (_indexList cols ci))) ;; string
-(when (< ci (- (count cols) 1))
-(def result (str result " ")) ;; string
+(def encrypt_result (str encrypt_result (_indexList encrypt_cols encrypt_ci))) ;; string
+(when (< encrypt_ci (- (count encrypt_cols) 1))
+(def encrypt_result (str encrypt_result " ")) ;; string
 )
-(def ci (+ ci 1)) ;; int
+(def encrypt_ci (+ encrypt_ci 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -562,7 +562,7 @@
 )
 )
 )
-(throw (ex-info "return" {:value result}))
+(throw (ex-info "return" {:value encrypt_result}))
 (catch clojure.lang.ExceptionInfo e
 (if (= (.getMessage e) "return")
 (:value (ex-data e))
@@ -573,14 +573,14 @@
 ;; Function indexOf takes [s: string, ch: string] and returns int
 (defn indexOf [s ch]
 (try
-(def i 0) ;; int
+(def indexOf_i 0) ;; int
 (loop []
-(when (< i (count s))
+(when (< indexOf_i (count s))
 (let [r (try
-(when (= (subs s i (+ i 1)) ch)
-(throw (ex-info "return" {:value i}))
+(when (= (subs s indexOf_i (+ indexOf_i 1)) ch)
+(throw (ex-info "return" {:value indexOf_i}))
 )
-(def i (+ i 1)) ;; int
+(def indexOf_i (+ indexOf_i 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -607,17 +607,17 @@
 ;; Function decrypt takes [polybius: list of string, key: string, cipherText: string] and returns string
 (defn decrypt [polybius key cipherText]
 (try
-(def colStrs []) ;; list of string
-(def start 0) ;; int
-(def i 0) ;; int
+(def decrypt_colStrs []) ;; list of string
+(def decrypt_start 0) ;; int
+(def decrypt_i 0) ;; int
 (loop []
-(when (<= i (count cipherText))
+(when (<= decrypt_i (count cipherText))
 (let [r (try
-(when (or (= i (count cipherText)) (= (_indexString cipherText i) " "))
-(def colStrs (conj colStrs (subs cipherText start i))) ;; list of string
-(def start (+ i 1)) ;; int
+(when (or (= decrypt_i (count cipherText)) (= (_indexString cipherText decrypt_i) " "))
+(def decrypt_colStrs (conj decrypt_colStrs (subs cipherText decrypt_start decrypt_i))) ;; list of string
+(def decrypt_start (+ decrypt_i 1)) ;; int
 )
-(def i (+ i 1)) ;; int
+(def decrypt_i (+ decrypt_i 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -633,15 +633,15 @@
 )
 )
 )
-(def maxColLen 0) ;; int
-(def i 0) ;; int
+(def decrypt_maxColLen 0) ;; int
+(def decrypt_i 0) ;; int
 (loop []
-(when (< i (count colStrs))
+(when (< decrypt_i (count decrypt_colStrs))
 (let [r (try
-(when (> (count (_indexList colStrs i)) maxColLen)
-(def maxColLen (count (_indexList colStrs i))) ;; int
+(when (> (count (_indexList decrypt_colStrs decrypt_i)) decrypt_maxColLen)
+(def decrypt_maxColLen (count (_indexList decrypt_colStrs decrypt_i))) ;; int
 )
-(def i (+ i 1)) ;; int
+(def decrypt_i (+ decrypt_i 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -657,19 +657,19 @@
 )
 )
 )
-(def cols []) ;; list of list of string
-(def i 0) ;; int
+(def decrypt_cols []) ;; list of list of string
+(def decrypt_i 0) ;; int
 (loop []
-(when (< i (count colStrs))
+(when (< decrypt_i (count decrypt_colStrs))
 (let [r (try
-(def s (_indexList colStrs i)) ;; string
-(def ls []) ;; list of string
-(def j 0) ;; int
+(def decrypt_s (_indexList decrypt_colStrs decrypt_i)) ;; string
+(def decrypt_ls []) ;; list of string
+(def decrypt_j 0) ;; int
 (loop []
-(when (< j (count s))
+(when (< decrypt_j (count decrypt_s))
 (let [r (try
-(def ls (conj ls (subs s j (+ j 1)))) ;; list of string
-(def j (+ j 1)) ;; int
+(def decrypt_ls (conj decrypt_ls (subs decrypt_s decrypt_j (+ decrypt_j 1)))) ;; list of string
+(def decrypt_j (+ decrypt_j 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -685,23 +685,23 @@
 )
 )
 )
-(if (< (count s) maxColLen)
+(if (< (count decrypt_s) decrypt_maxColLen)
 (do
-(def pad []) ;; list of string
-(def k 0) ;; int
+(def decrypt_pad []) ;; list of string
+(def decrypt_k 0) ;; int
 (loop []
-(when (< k maxColLen)
+(when (< decrypt_k decrypt_maxColLen)
 (let [r (try
-(if (< k (count ls))
+(if (< decrypt_k (count decrypt_ls))
 (do
-(def pad (conj pad (_indexList ls k))) ;; list of string
+(def decrypt_pad (conj decrypt_pad (_indexList decrypt_ls decrypt_k))) ;; list of string
 )
 
 (do
-(def pad (conj pad "")) ;; list of string
+(def decrypt_pad (conj decrypt_pad "")) ;; list of string
 )
 )
-(def k (+ k 1)) ;; int
+(def decrypt_k (+ decrypt_k 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -717,14 +717,14 @@
 )
 )
 )
-(def cols (conj cols pad)) ;; list of list of string
+(def decrypt_cols (conj decrypt_cols decrypt_pad)) ;; list of list of string
 )
 
 (do
-(def cols (conj cols ls)) ;; list of list of string
+(def decrypt_cols (conj decrypt_cols decrypt_ls)) ;; list of list of string
 )
 )
-(def i (+ i 1)) ;; int
+(def decrypt_i (+ decrypt_i 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -740,18 +740,18 @@
 )
 )
 )
-(def table []) ;; list of list of string
-(def r 0) ;; int
+(def decrypt_table []) ;; list of list of string
+(def decrypt_r 0) ;; int
 (loop []
-(when (< r maxColLen)
+(when (< decrypt_r decrypt_maxColLen)
 (let [r (try
-(def row []) ;; list of string
-(def c 0) ;; int
+(def decrypt_row []) ;; list of string
+(def decrypt_c 0) ;; int
 (loop []
-(when (< c (count key))
+(when (< decrypt_c (count key))
 (let [r (try
-(def row (conj row "")) ;; list of string
-(def c (+ c 1)) ;; int
+(def decrypt_row (conj decrypt_row "")) ;; list of string
+(def decrypt_c (+ decrypt_c 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -767,8 +767,8 @@
 )
 )
 )
-(def table (conj table row)) ;; list of list of string
-(def r (+ r 1)) ;; int
+(def decrypt_table (conj decrypt_table decrypt_row)) ;; list of list of string
+(def decrypt_r (+ decrypt_r 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -784,17 +784,17 @@
 )
 )
 )
-(def order (orderKey key)) ;; list of int
-(def r 0) ;; int
+(def decrypt_order (orderKey key)) ;; list of int
+(def decrypt_r 0) ;; int
 (loop []
-(when (< r maxColLen)
+(when (< decrypt_r decrypt_maxColLen)
 (let [r (try
-(def c 0) ;; int
+(def decrypt_c 0) ;; int
 (loop []
-(when (< c (count key))
+(when (< decrypt_c (count key))
 (let [r (try
-(def table (assoc-in table [r (_indexList order c)] (_indexList (_indexList cols c) r))) ;; string
-(def c (+ c 1)) ;; int
+(def decrypt_table (assoc-in decrypt_table [decrypt_r (_indexList decrypt_order decrypt_c)] (_indexList (_indexList decrypt_cols decrypt_c) decrypt_r))) ;; string
+(def decrypt_c (+ decrypt_c 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -810,7 +810,7 @@
 )
 )
 )
-(def r (+ r 1)) ;; int
+(def decrypt_r (+ decrypt_r 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -826,17 +826,17 @@
 )
 )
 )
-(def temp "") ;; string
-(def r 0) ;; int
+(def decrypt_temp "") ;; string
+(def decrypt_r 0) ;; int
 (loop []
-(when (< r (count table))
+(when (< decrypt_r (count decrypt_table))
 (let [r (try
-(def j 0) ;; int
+(def decrypt_j 0) ;; int
 (loop []
-(when (< j (count (_indexList table r)))
+(when (< decrypt_j (count (_indexList decrypt_table decrypt_r)))
 (let [r (try
-(def temp (str temp (_indexList (_indexList table r) j))) ;; string
-(def j (+ j 1)) ;; int
+(def decrypt_temp (str decrypt_temp (_indexList (_indexList decrypt_table decrypt_r) decrypt_j))) ;; string
+(def decrypt_j (+ decrypt_j 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -852,7 +852,7 @@
 )
 )
 )
-(def r (+ r 1)) ;; int
+(def decrypt_r (+ decrypt_r 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -868,15 +868,15 @@
 )
 )
 )
-(def plainText "") ;; string
-(def idx 0) ;; int
+(def decrypt_plainText "") ;; string
+(def decrypt_idx 0) ;; int
 (loop []
-(when (< idx (count temp))
+(when (< decrypt_idx (count decrypt_temp))
 (let [r (try
-(def rIdx (indexOf adfgvx (subs temp idx (+ idx 1)))) ;; int
-(def cIdx (indexOf adfgvx (subs temp (+ idx 1) (+ idx 2)))) ;; int
-(def plainText (str plainText (_indexString (_indexList polybius rIdx) cIdx))) ;; string
-(def idx (+ idx 2)) ;; int
+(def decrypt_rIdx (indexOf adfgvx (subs decrypt_temp decrypt_idx (+ decrypt_idx 1)))) ;; int
+(def decrypt_cIdx (indexOf adfgvx (subs decrypt_temp (+ decrypt_idx 1) (+ decrypt_idx 2)))) ;; int
+(def decrypt_plainText (str decrypt_plainText (_indexString (_indexList polybius decrypt_rIdx) decrypt_cIdx))) ;; string
+(def decrypt_idx (+ decrypt_idx 2)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -892,7 +892,7 @@
 )
 )
 )
-(throw (ex-info "return" {:value plainText}))
+(throw (ex-info "return" {:value decrypt_plainText}))
 (catch clojure.lang.ExceptionInfo e
 (if (= (.getMessage e) "return")
 (:value (ex-data e))
@@ -903,14 +903,14 @@
 ;; Function main returns any
 (defn main []
 (try
-(def plainText "ATTACKAT1200AM") ;; string
-(def polybius (createPolybius )) ;; list of string
-(def key (createKey 9)) ;; string
-(_print (str "\nPlaintext : " plainText))
-(def cipherText (encrypt polybius key plainText)) ;; string
-(_print (str "\nEncrypted : " cipherText))
-(def plainText2 (decrypt polybius key cipherText)) ;; string
-(_print (str "\nDecrypted : " plainText2))
+(def main_plainText "ATTACKAT1200AM") ;; string
+(def main_polybius (createPolybius )) ;; list of string
+(def main_key (createKey 9)) ;; string
+(_print (str "\nPlaintext : " main_plainText))
+(def main_cipherText (encrypt main_polybius main_key main_plainText)) ;; string
+(_print (str "\nEncrypted : " main_cipherText))
+(def main_plainText2 (decrypt main_polybius main_key main_cipherText)) ;; string
+(_print (str "\nDecrypted : " main_plainText2))
 (catch clojure.lang.ExceptionInfo e
 (if (= (.getMessage e) "return")
 (:value (ex-data e))

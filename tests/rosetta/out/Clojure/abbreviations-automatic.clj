@@ -23,26 +23,26 @@
 ;; Function fields takes [s: string] and returns list of string
 (defn fields [s]
   (try
-    (def words []) ;; list of string
-    (def cur "") ;; string
-    (def i 0) ;; int
+    (def fields_words []) ;; list of string
+    (def fields_cur "") ;; string
+    (def fields_i 0) ;; int
     (loop []
-      (when (< i (count s))
+      (when (< fields_i (count s))
         (let [r (try
-          (def ch (.substring s i (+ i 1))) ;; string
-          (if (or (or (= ch " ") (= ch "\n")) (= ch "\t"))
+          (def fields_ch (.substring s fields_i (+ fields_i 1))) ;; string
+          (if (or (or (= fields_ch " ") (= fields_ch "\n")) (= fields_ch "\t"))
             (do
-              (when (> (count cur) 0)
-                (def words (conj words cur)) ;; list of string
-                (def cur "") ;; string
+              (when (> (count fields_cur) 0)
+                (def fields_words (conj fields_words fields_cur)) ;; list of string
+                (def fields_cur "") ;; string
               )
             )
 
           (do
-            (def cur (str cur ch)) ;; string
+            (def fields_cur (str fields_cur fields_ch)) ;; string
           )
           )
-          (def i (+ i 1)) ;; int
+          (def fields_i (+ fields_i 1)) ;; int
           :next
         (catch clojure.lang.ExceptionInfo e
           (cond
@@ -58,10 +58,10 @@
     )
   )
 )
-(when (> (count cur) 0)
-  (def words (conj words cur)) ;; list of string
+(when (> (count fields_cur) 0)
+  (def fields_words (conj fields_words fields_cur)) ;; list of string
 )
-(throw (ex-info "return" {:value words}))
+(throw (ex-info "return" {:value fields_words}))
 (catch clojure.lang.ExceptionInfo e
 (if (= (.getMessage e) "return")
   (:value (ex-data e))
@@ -72,16 +72,16 @@
 ;; Function takeRunes takes [s: string, n: int] and returns string
 (defn takeRunes [s n]
 (try
-(def idx 0) ;; int
-(def count 0) ;; int
+(def takeRunes_idx 0) ;; int
+(def takeRunes_count 0) ;; int
 (loop []
-  (when (< idx (count s))
+  (when (< takeRunes_idx (count s))
     (let [r (try
-      (when (= count n)
-        (throw (ex-info "return" {:value (.substring s 0 idx)}))
+      (when (= takeRunes_count n)
+        (throw (ex-info "return" {:value (.substring s 0 takeRunes_idx)}))
       )
-      (def idx (+ idx 1)) ;; int
-      (def count (+ count 1)) ;; int
+      (def takeRunes_idx (+ takeRunes_idx 1)) ;; int
+      (def takeRunes_count (+ takeRunes_count 1)) ;; int
       :next
     (catch clojure.lang.ExceptionInfo e
       (cond
@@ -108,18 +108,18 @@
 ;; Function distinct takes [xs: list of string] and returns list of string
 (defn distinct [xs]
 (try
-(def m {}) ;; map of string to bool
-(def out []) ;; list of string
-(def i 0) ;; int
+(def distinct_m {}) ;; map of string to bool
+(def distinct_out []) ;; list of string
+(def distinct_i 0) ;; int
 (loop []
-(when (< i (count xs))
+(when (< distinct_i (count xs))
 (let [r (try
-  (def x (_indexList xs i)) ;; string
-  (when (not (contains? m x))
-    (def m (assoc m x true)) ;; bool
-    (def out (conj out x)) ;; list of string
+  (def distinct_x (_indexList xs distinct_i)) ;; string
+  (when (not (contains? distinct_m distinct_x))
+    (def distinct_m (assoc distinct_m distinct_x true)) ;; bool
+    (def distinct_out (conj distinct_out distinct_x)) ;; list of string
   )
-  (def i (+ i 1)) ;; int
+  (def distinct_i (+ distinct_i 1)) ;; int
   :next
 (catch clojure.lang.ExceptionInfo e
   (cond
@@ -135,7 +135,7 @@
 )
 )
 )
-(throw (ex-info "return" {:value out}))
+(throw (ex-info "return" {:value distinct_out}))
 (catch clojure.lang.ExceptionInfo e
 (if (= (.getMessage e) "return")
 (:value (ex-data e))
@@ -146,18 +146,18 @@
 ;; Function abbrevLen takes [words: list of string] and returns int
 (defn abbrevLen [words]
 (try
-(def size (count words)) ;; int
-(def l 1) ;; int
+(def abbrevLen_size (count words)) ;; int
+(def abbrevLen_l 1) ;; int
 (loop []
 (when true
 (let [r (try
-(def abbrs []) ;; list of string
-(def i 0) ;; int
+(def abbrevLen_abbrs []) ;; list of string
+(def abbrevLen_i 0) ;; int
 (loop []
-(when (< i size)
+(when (< abbrevLen_i abbrevLen_size)
   (let [r (try
-    (def abbrs (conj abbrs (takeRunes (_indexList words i) l))) ;; list of string
-    (def i (+ i 1)) ;; int
+    (def abbrevLen_abbrs (conj abbrevLen_abbrs (takeRunes (_indexList words abbrevLen_i) abbrevLen_l))) ;; list of string
+    (def abbrevLen_i (+ abbrevLen_i 1)) ;; int
     :next
   (catch clojure.lang.ExceptionInfo e
     (cond
@@ -173,10 +173,10 @@
 )
 )
 )
-(when (= (count (distinct abbrs)) size)
-(throw (ex-info "return" {:value l}))
+(when (= (count (distinct abbrevLen_abbrs)) abbrevLen_size)
+(throw (ex-info "return" {:value abbrevLen_l}))
 )
-(def l (+ l 1)) ;; int
+(def abbrevLen_l (+ abbrevLen_l 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -203,11 +203,11 @@
 ;; Function pad2 takes [n: int] and returns string
 (defn pad2 [n]
 (try
-(def s (str n)) ;; string
-(when (< (count s) 2)
-(throw (ex-info "return" {:value (str " " s)}))
+(def pad2_s (str n)) ;; string
+(when (< (count pad2_s) 2)
+(throw (ex-info "return" {:value (str " " pad2_s)}))
 )
-(throw (ex-info "return" {:value s}))
+(throw (ex-info "return" {:value pad2_s}))
 (catch clojure.lang.ExceptionInfo e
 (if (= (.getMessage e) "return")
 (:value (ex-data e))
@@ -218,15 +218,15 @@
 ;; Function main returns any
 (defn main []
 (try
-(def lines ["Sunday Monday Tuesday Wednesday Thursday Friday Saturday" "Sondag Maandag Dinsdag Woensdag Donderdag Vrydag Saterdag" "E_djelë E_hënë E_martë E_mërkurë E_enjte E_premte E_shtunë" "Ehud Segno Maksegno Erob Hamus Arbe Kedame" "Al_Ahad Al_Ithinin Al_Tholatha'a Al_Arbia'a Al_Kamis Al_Gomia'a Al_Sabit" "Guiragui Yergou_shapti Yerek_shapti Tchorek_shapti Hink_shapti Ourpat Shapat" "domingu llunes martes miércoles xueves vienres sábadu" "Bazar_gÜnÜ Birinci_gÜn Çkinci_gÜn ÜçÜncÜ_gÜn DÖrdÜncÜ_gÜn Bes,inci_gÜn Altòncò_gÜn" "Igande Astelehen Astearte Asteazken Ostegun Ostiral Larunbat" "Robi_bar Shom_bar Mongal_bar Budhh_bar BRihashpati_bar Shukro_bar Shoni_bar" "Nedjelja Ponedeljak Utorak Srijeda Cxetvrtak Petak Subota" "Disul Dilun Dimeurzh Dimerc'her Diriaou Digwener Disadorn" "nedelia ponedelnik vtornik sriada chetvartak petak sabota" "sing_kei_yaht sing_kei_yat sing_kei_yee sing_kei_saam sing_kei_sie sing_kei_ng sing_kei_luk" "Diumenge Dilluns Dimarts Dimecres Dijous Divendres Dissabte" "Dzeenkk-eh Dzeehn_kk-ehreh Dzeehn_kk-ehreh_nah_kay_dzeeneh Tah_neesee_dzeehn_neh Deehn_ghee_dzee-neh Tl-oowey_tts-el_dehlee Dzeentt-ahzee" "dy_Sul dy_Lun dy_Meurth dy_Mergher dy_You dy_Gwener dy_Sadorn" "Dimanch Lendi Madi Mèkredi Jedi Vandredi Samdi" "nedjelja ponedjeljak utorak srijeda cxetvrtak petak subota" "nede^le ponde^lí úterÿ str^eda c^tvrtek pátek sobota" "Sondee Mondee Tiisiday Walansedee TOOsedee Feraadee Satadee" "s0ndag mandag tirsdag onsdag torsdag fredag l0rdag" "zondag maandag dinsdag woensdag donderdag vrijdag zaterdag" "Diman^co Lundo Mardo Merkredo ^Jaùdo Vendredo Sabato" "pÜhapäev esmaspäev teisipäev kolmapäev neljapäev reede laupäev" "Diu_prima Diu_sequima Diu_tritima Diu_quartima Diu_quintima Diu_sextima Diu_sabbata" "sunnudagur mánadagur tÿsdaguy mikudagur hósdagur friggjadagur leygardagur" "Yek_Sham'beh Do_Sham'beh Seh_Sham'beh Cha'har_Sham'beh Panj_Sham'beh Jom'eh Sham'beh" "sunnuntai maanantai tiistai keskiviiko torsktai perjantai lauantai" "dimanche lundi mardi mercredi jeudi vendredi samedi" "Snein Moandei Tiisdei Woansdei Tonersdei Freed Sneon" "Domingo Segunda_feira Martes Mércores Joves Venres Sábado" "k'vira orshabati samshabati otkhshabati khutshabati p'arask'evi shabati" "Sonntag Montag Dienstag Mittwoch Donnerstag Freitag Samstag" "Kiriaki' Defte'ra Tri'ti Teta'rti Pe'mpti Paraskebi' Sa'bato" "ravivaar somvaar mangalvaar budhvaar guruvaar shukravaar shanivaar" "pópule pó`akahi pó`alua pó`akolu pó`ahá pó`alima pó`aono" "Yom_rishon Yom_sheni Yom_shlishi Yom_revi'i Yom_chamishi Yom_shishi Shabat" "ravivara somavar mangalavar budhavara brahaspativar shukravara shanivar" "vasárnap hétfö kedd szerda csütörtök péntek szombat" "Sunnudagur Mánudagur ╞riδjudagur Miδvikudagar Fimmtudagur FÖstudagur Laugardagur" "sundio lundio mardio merkurdio jovdio venerdio saturdio" "Minggu Senin Selasa Rabu Kamis Jumat Sabtu" "Dominica Lunedi Martedi Mercuridi Jovedi Venerdi Sabbato" "Dé_Domhnaigh Dé_Luain Dé_Máirt Dé_Ceadaoin Dé_ardaoin Dé_hAoine Dé_Sathairn" "domenica lunedí martedí mercoledí giovedí venerdí sabato" "Nichiyou_bi Getzuyou_bi Kayou_bi Suiyou_bi Mokuyou_bi Kin'you_bi Doyou_bi" "Il-yo-il Wol-yo-il Hwa-yo-il Su-yo-il Mok-yo-il Kum-yo-il To-yo-il" "Dies_Dominica Dies_Lunæ Dies_Martis Dies_Mercurii Dies_Iovis Dies_Veneris Dies_Saturni" "sve-tdien pirmdien otrdien tresvdien ceturtdien piektdien sestdien" "Sekmadienis Pirmadienis Antradienis Trec^iadienis Ketvirtadienis Penktadienis S^es^tadienis" "Wangu Kazooba Walumbe Mukasa Kiwanuka Nnagawonye Wamunyi" "xing-_qi-_rì xing-_qi-_yi-. xing-_qi-_èr xing-_qi-_san-. xing-_qi-_sì xing-_qi-_wuv. xing-_qi-_liù" "Jedoonee Jelune Jemayrt Jecrean Jardaim Jeheiney Jesam" "Jabot Manre Juje Wonje Taije Balaire Jarere" "geminrongo minòmishi mártes mièrkoles misheushi bèrnashi mishábaro" "Ahad Isnin Selasa Rabu Khamis Jumaat Sabtu" "sφndag mandag tirsdag onsdag torsdag fredag lφrdag" "lo_dimenge lo_diluns lo_dimarç lo_dimèrcres lo_dijòus lo_divendres lo_dissabte" "djadomingo djaluna djamars djarason djaweps djabièrna djasabra" "Niedziela Poniedzial/ek Wtorek S,roda Czwartek Pia,tek Sobota" "Domingo segunda-feire terça-feire quarta-feire quinta-feire sexta-feira såbado" "Domingo Lunes martes Miercoles Jueves Viernes Sabado" "Duminicª Luni Mart'i Miercuri Joi Vineri Sâmbªtª" "voskresenie ponedelnik vtornik sreda chetverg pyatnitsa subbota" "Sunday Di-luain Di-màirt Di-ciadain Di-ardaoin Di-haoine Di-sathurne" "nedjelja ponedjeljak utorak sreda cxetvrtak petak subota" "Sontaha Mmantaha Labobedi Laboraro Labone Labohlano Moqebelo" "Iridha- Sandhudha- Anga.haruwa-dha- Badha-dha- Brahaspa.thindha- Sikura-dha- Sena.sura-dha-" "nedel^a pondelok utorok streda s^tvrtok piatok sobota" "Nedelja Ponedeljek Torek Sreda Cxetrtek Petek Sobota" "domingo lunes martes miércoles jueves viernes sábado" "sonde mundey tude-wroko dride-wroko fode-wroko freyda Saturday" "Jumapili Jumatatu Jumanne Jumatano Alhamisi Ijumaa Jumamosi" "söndag måndag tisdag onsdag torsdag fredag lordag" "Linggo Lunes Martes Miyerkoles Huwebes Biyernes Sabado" "Lé-pài-jít Pài-it Pài-jï Pài-sañ Pài-sì Pài-gÖ. Pài-lák" "wan-ar-tit wan-tjan wan-ang-kaan wan-phoet wan-pha-ru-hat-sa-boh-die wan-sook wan-sao" "Tshipi Mosupologo Labobedi Laboraro Labone Labotlhano Matlhatso" "Pazar Pazartesi Sali Çar,samba Per,sembe Cuma Cumartesi" "nedilya ponedilok vivtorok sereda chetver pyatnytsya subota" "Chu?_Nhâ.t Thú*_Hai Thú*_Ba Thú*_Tu* Thú*_Na'm Thú*_Sáu Thú*_Ba?y" "dydd_Sul dyds_Llun dydd_Mawrth dyds_Mercher dydd_Iau dydd_Gwener dyds_Sadwrn" "Dibeer Altine Talaata Allarba Al_xebes Aljuma Gaaw" "iCawa uMvulo uLwesibini uLwesithathu uLuwesine uLwesihlanu uMgqibelo" "zuntik montik dinstik mitvokh donershtik fraytik shabes" "iSonto uMsombuluko uLwesibili uLwesithathu uLwesine uLwesihlanu uMgqibelo" "Dies_Dominica Dies_Lunæ Dies_Martis Dies_Mercurii Dies_Iovis Dies_Veneris Dies_Saturni" "Bazar_gÜnÜ Bazar_ærtæsi Çærs,ænbæ_axs,amò Çærs,ænbæ_gÜnÜ CÜmæ_axs,amò CÜmæ_gÜnÜ CÜmæ_Senbæ" "Sun Moon Mars Mercury Jove Venus Saturn" "zondag maandag dinsdag woensdag donderdag vrijdag zaterdag" "KoseEraa GyoOraa BenEraa Kuoraa YOwaaraa FeEraa Memenaa" "Sonntag Montag Dienstag Mittwoch Donnerstag Freitag Sonnabend" "Domingo Luns Terza_feira Corta_feira Xoves Venres Sábado" "Dies_Solis Dies_Lunae Dies_Martis Dies_Mercurii Dies_Iovis Dies_Veneris Dies_Sabbatum" "xing-_qi-_tiàn xing-_qi-_yi-. xing-_qi-_èr xing-_qi-_san-. xing-_qi-_sì xing-_qi-_wuv. xing-_qi-_liù" "djadomingu djaluna djamars djarason djaweps djabièrnè djasabra" "Killachau Atichau Quoyllurchau Illapachau Chaskachau Kuychichau Intichau"]) ;; list of string
-(def i 0) ;; int
+(def main_lines ["Sunday Monday Tuesday Wednesday Thursday Friday Saturday" "Sondag Maandag Dinsdag Woensdag Donderdag Vrydag Saterdag" "E_djelë E_hënë E_martë E_mërkurë E_enjte E_premte E_shtunë" "Ehud Segno Maksegno Erob Hamus Arbe Kedame" "Al_Ahad Al_Ithinin Al_Tholatha'a Al_Arbia'a Al_Kamis Al_Gomia'a Al_Sabit" "Guiragui Yergou_shapti Yerek_shapti Tchorek_shapti Hink_shapti Ourpat Shapat" "domingu llunes martes miércoles xueves vienres sábadu" "Bazar_gÜnÜ Birinci_gÜn Çkinci_gÜn ÜçÜncÜ_gÜn DÖrdÜncÜ_gÜn Bes,inci_gÜn Altòncò_gÜn" "Igande Astelehen Astearte Asteazken Ostegun Ostiral Larunbat" "Robi_bar Shom_bar Mongal_bar Budhh_bar BRihashpati_bar Shukro_bar Shoni_bar" "Nedjelja Ponedeljak Utorak Srijeda Cxetvrtak Petak Subota" "Disul Dilun Dimeurzh Dimerc'her Diriaou Digwener Disadorn" "nedelia ponedelnik vtornik sriada chetvartak petak sabota" "sing_kei_yaht sing_kei_yat sing_kei_yee sing_kei_saam sing_kei_sie sing_kei_ng sing_kei_luk" "Diumenge Dilluns Dimarts Dimecres Dijous Divendres Dissabte" "Dzeenkk-eh Dzeehn_kk-ehreh Dzeehn_kk-ehreh_nah_kay_dzeeneh Tah_neesee_dzeehn_neh Deehn_ghee_dzee-neh Tl-oowey_tts-el_dehlee Dzeentt-ahzee" "dy_Sul dy_Lun dy_Meurth dy_Mergher dy_You dy_Gwener dy_Sadorn" "Dimanch Lendi Madi Mèkredi Jedi Vandredi Samdi" "nedjelja ponedjeljak utorak srijeda cxetvrtak petak subota" "nede^le ponde^lí úterÿ str^eda c^tvrtek pátek sobota" "Sondee Mondee Tiisiday Walansedee TOOsedee Feraadee Satadee" "s0ndag mandag tirsdag onsdag torsdag fredag l0rdag" "zondag maandag dinsdag woensdag donderdag vrijdag zaterdag" "Diman^co Lundo Mardo Merkredo ^Jaùdo Vendredo Sabato" "pÜhapäev esmaspäev teisipäev kolmapäev neljapäev reede laupäev" "Diu_prima Diu_sequima Diu_tritima Diu_quartima Diu_quintima Diu_sextima Diu_sabbata" "sunnudagur mánadagur tÿsdaguy mikudagur hósdagur friggjadagur leygardagur" "Yek_Sham'beh Do_Sham'beh Seh_Sham'beh Cha'har_Sham'beh Panj_Sham'beh Jom'eh Sham'beh" "sunnuntai maanantai tiistai keskiviiko torsktai perjantai lauantai" "dimanche lundi mardi mercredi jeudi vendredi samedi" "Snein Moandei Tiisdei Woansdei Tonersdei Freed Sneon" "Domingo Segunda_feira Martes Mércores Joves Venres Sábado" "k'vira orshabati samshabati otkhshabati khutshabati p'arask'evi shabati" "Sonntag Montag Dienstag Mittwoch Donnerstag Freitag Samstag" "Kiriaki' Defte'ra Tri'ti Teta'rti Pe'mpti Paraskebi' Sa'bato" "ravivaar somvaar mangalvaar budhvaar guruvaar shukravaar shanivaar" "pópule pó`akahi pó`alua pó`akolu pó`ahá pó`alima pó`aono" "Yom_rishon Yom_sheni Yom_shlishi Yom_revi'i Yom_chamishi Yom_shishi Shabat" "ravivara somavar mangalavar budhavara brahaspativar shukravara shanivar" "vasárnap hétfö kedd szerda csütörtök péntek szombat" "Sunnudagur Mánudagur ╞riδjudagur Miδvikudagar Fimmtudagur FÖstudagur Laugardagur" "sundio lundio mardio merkurdio jovdio venerdio saturdio" "Minggu Senin Selasa Rabu Kamis Jumat Sabtu" "Dominica Lunedi Martedi Mercuridi Jovedi Venerdi Sabbato" "Dé_Domhnaigh Dé_Luain Dé_Máirt Dé_Ceadaoin Dé_ardaoin Dé_hAoine Dé_Sathairn" "domenica lunedí martedí mercoledí giovedí venerdí sabato" "Nichiyou_bi Getzuyou_bi Kayou_bi Suiyou_bi Mokuyou_bi Kin'you_bi Doyou_bi" "Il-yo-il Wol-yo-il Hwa-yo-il Su-yo-il Mok-yo-il Kum-yo-il To-yo-il" "Dies_Dominica Dies_Lunæ Dies_Martis Dies_Mercurii Dies_Iovis Dies_Veneris Dies_Saturni" "sve-tdien pirmdien otrdien tresvdien ceturtdien piektdien sestdien" "Sekmadienis Pirmadienis Antradienis Trec^iadienis Ketvirtadienis Penktadienis S^es^tadienis" "Wangu Kazooba Walumbe Mukasa Kiwanuka Nnagawonye Wamunyi" "xing-_qi-_rì xing-_qi-_yi-. xing-_qi-_èr xing-_qi-_san-. xing-_qi-_sì xing-_qi-_wuv. xing-_qi-_liù" "Jedoonee Jelune Jemayrt Jecrean Jardaim Jeheiney Jesam" "Jabot Manre Juje Wonje Taije Balaire Jarere" "geminrongo minòmishi mártes mièrkoles misheushi bèrnashi mishábaro" "Ahad Isnin Selasa Rabu Khamis Jumaat Sabtu" "sφndag mandag tirsdag onsdag torsdag fredag lφrdag" "lo_dimenge lo_diluns lo_dimarç lo_dimèrcres lo_dijòus lo_divendres lo_dissabte" "djadomingo djaluna djamars djarason djaweps djabièrna djasabra" "Niedziela Poniedzial/ek Wtorek S,roda Czwartek Pia,tek Sobota" "Domingo segunda-feire terça-feire quarta-feire quinta-feire sexta-feira såbado" "Domingo Lunes martes Miercoles Jueves Viernes Sabado" "Duminicª Luni Mart'i Miercuri Joi Vineri Sâmbªtª" "voskresenie ponedelnik vtornik sreda chetverg pyatnitsa subbota" "Sunday Di-luain Di-màirt Di-ciadain Di-ardaoin Di-haoine Di-sathurne" "nedjelja ponedjeljak utorak sreda cxetvrtak petak subota" "Sontaha Mmantaha Labobedi Laboraro Labone Labohlano Moqebelo" "Iridha- Sandhudha- Anga.haruwa-dha- Badha-dha- Brahaspa.thindha- Sikura-dha- Sena.sura-dha-" "nedel^a pondelok utorok streda s^tvrtok piatok sobota" "Nedelja Ponedeljek Torek Sreda Cxetrtek Petek Sobota" "domingo lunes martes miércoles jueves viernes sábado" "sonde mundey tude-wroko dride-wroko fode-wroko freyda Saturday" "Jumapili Jumatatu Jumanne Jumatano Alhamisi Ijumaa Jumamosi" "söndag måndag tisdag onsdag torsdag fredag lordag" "Linggo Lunes Martes Miyerkoles Huwebes Biyernes Sabado" "Lé-pài-jít Pài-it Pài-jï Pài-sañ Pài-sì Pài-gÖ. Pài-lák" "wan-ar-tit wan-tjan wan-ang-kaan wan-phoet wan-pha-ru-hat-sa-boh-die wan-sook wan-sao" "Tshipi Mosupologo Labobedi Laboraro Labone Labotlhano Matlhatso" "Pazar Pazartesi Sali Çar,samba Per,sembe Cuma Cumartesi" "nedilya ponedilok vivtorok sereda chetver pyatnytsya subota" "Chu?_Nhâ.t Thú*_Hai Thú*_Ba Thú*_Tu* Thú*_Na'm Thú*_Sáu Thú*_Ba?y" "dydd_Sul dyds_Llun dydd_Mawrth dyds_Mercher dydd_Iau dydd_Gwener dyds_Sadwrn" "Dibeer Altine Talaata Allarba Al_xebes Aljuma Gaaw" "iCawa uMvulo uLwesibini uLwesithathu uLuwesine uLwesihlanu uMgqibelo" "zuntik montik dinstik mitvokh donershtik fraytik shabes" "iSonto uMsombuluko uLwesibili uLwesithathu uLwesine uLwesihlanu uMgqibelo" "Dies_Dominica Dies_Lunæ Dies_Martis Dies_Mercurii Dies_Iovis Dies_Veneris Dies_Saturni" "Bazar_gÜnÜ Bazar_ærtæsi Çærs,ænbæ_axs,amò Çærs,ænbæ_gÜnÜ CÜmæ_axs,amò CÜmæ_gÜnÜ CÜmæ_Senbæ" "Sun Moon Mars Mercury Jove Venus Saturn" "zondag maandag dinsdag woensdag donderdag vrijdag zaterdag" "KoseEraa GyoOraa BenEraa Kuoraa YOwaaraa FeEraa Memenaa" "Sonntag Montag Dienstag Mittwoch Donnerstag Freitag Sonnabend" "Domingo Luns Terza_feira Corta_feira Xoves Venres Sábado" "Dies_Solis Dies_Lunae Dies_Martis Dies_Mercurii Dies_Iovis Dies_Veneris Dies_Sabbatum" "xing-_qi-_tiàn xing-_qi-_yi-. xing-_qi-_èr xing-_qi-_san-. xing-_qi-_sì xing-_qi-_wuv. xing-_qi-_liù" "djadomingu djaluna djamars djarason djaweps djabièrnè djasabra" "Killachau Atichau Quoyllurchau Illapachau Chaskachau Kuychichau Intichau"]) ;; list of string
+(def main_i 0) ;; int
 (loop []
-(when (< i (count lines))
+(when (< main_i (count main_lines))
 (let [r (try
-(def words (fields (_indexList lines i))) ;; list of string
-(def l (abbrevLen words)) ;; int
-(_print (str (str (pad2 l) "  ") (_indexList lines i)))
-(def i (+ i 1)) ;; int
+(def main_words (fields (_indexList main_lines main_i))) ;; list of string
+(def main_l (abbrevLen main_words)) ;; int
+(_print (str (str (pad2 main_l) "  ") (_indexList main_lines main_i)))
+(def main_i (+ main_i 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond

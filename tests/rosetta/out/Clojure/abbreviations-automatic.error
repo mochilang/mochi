@@ -1,8 +1,0 @@
-run: exit status 1
-WARNING: count already refers to: #'clojure.core/count in namespace: main, being replaced by: #'main/count
-WARNING: distinct already refers to: #'clojure.core/distinct in namespace: main, being replaced by: #'main/distinct
-Execution error (IllegalStateException) at main/main (abbreviations-automatic.clj:224).
-Attempting to call unbound fn: #'main/count
-
-Full report at:
-/tmp/clojure-15832579431900371601.edn

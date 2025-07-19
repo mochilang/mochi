@@ -32,6 +32,15 @@ func sanitizeName(name string) string {
 	return s
 }
 
+// localName prefixes name with fnPrefix when compiling a function to avoid
+// collisions with globals. Global variables are not prefixed.
+func (c *Compiler) localName(name string) string {
+	if c.funcPrefix != "" && !c.globals[name] && (c.locals == nil || !c.locals[name]) {
+		return sanitizeName(c.funcPrefix + "_" + name)
+	}
+	return sanitizeName(name)
+}
+
 func equalTypes(a, b types.Type) bool {
 	if _, ok := a.(types.AnyType); ok {
 		return true
