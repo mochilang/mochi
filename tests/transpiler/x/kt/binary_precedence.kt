@@ -1,4 +1,4 @@
-// Mochi 0.10.31 - generated 2025-07-19 06:33:47 UTC
+// Mochi 0.10.31 - generated 2025-07-19 07:00:45 UTC
 fun main() {
     println((1 + (2 * 3)))
     println(((1 + 2) * 3))

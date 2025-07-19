@@ -58,6 +58,16 @@ type IntLit struct{ Value int64 }
 
 func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
 
+type BoolLit struct{ Value bool }
+
+func (b *BoolLit) emit(w io.Writer) {
+	if b.Value {
+		io.WriteString(w, "true")
+	} else {
+		io.WriteString(w, "false")
+	}
+}
+
 type VarRef struct{ Name string }
 
 func (v *VarRef) emit(w io.Writer) { io.WriteString(w, v.Name) }
@@ -83,6 +93,26 @@ type LetStmt struct {
 
 func (s *LetStmt) emit(w io.Writer) { // 'let' is immutable
 	io.WriteString(w, "val "+s.Name+" = ")
+	s.Value.emit(w)
+}
+
+type VarStmt struct {
+	Name  string
+	Value Expr
+}
+
+func (s *VarStmt) emit(w io.Writer) {
+	io.WriteString(w, "var "+s.Name+" = ")
+	s.Value.emit(w)
+}
+
+type AssignStmt struct {
+	Name  string
+	Value Expr
+}
+
+func (s *AssignStmt) emit(w io.Writer) {
+	io.WriteString(w, s.Name+" = ")
 	s.Value.emit(w)
 }
 
@@ -141,6 +171,54 @@ func (s *StrExpr) emit(w io.Writer) {
 	io.WriteString(w, ".toString()")
 }
 
+type NotExpr struct{ Value Expr }
+
+func (n *NotExpr) emit(w io.Writer) {
+	io.WriteString(w, "!")
+	n.Value.emit(w)
+}
+
+type AppendExpr struct {
+	List Expr
+	Elem Expr
+}
+
+func (a *AppendExpr) emit(w io.Writer) {
+	a.List.emit(w)
+	io.WriteString(w, " + listOf(")
+	a.Elem.emit(w)
+	io.WriteString(w, ")")
+}
+
+type MinExpr struct{ Value Expr }
+
+func (m *MinExpr) emit(w io.Writer) {
+	m.Value.emit(w)
+	io.WriteString(w, ".min()")
+}
+
+type MaxExpr struct{ Value Expr }
+
+func (m *MaxExpr) emit(w io.Writer) {
+	m.Value.emit(w)
+	io.WriteString(w, ".max()")
+}
+
+type SubstringExpr struct {
+	Value Expr
+	Start Expr
+	End   Expr
+}
+
+func (s *SubstringExpr) emit(w io.Writer) {
+	s.Value.emit(w)
+	io.WriteString(w, ".substring(")
+	s.Start.emit(w)
+	io.WriteString(w, ", ")
+	s.End.emit(w)
+	io.WriteString(w, ")")
+}
+
 // Transpile converts a Mochi program to a simple Kotlin AST.
 func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	p := &Program{}
@@ -152,12 +230,36 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				return nil, err
 			}
 			p.Stmts = append(p.Stmts, &ExprStmt{Expr: e})
-		case st.Let != nil && st.Let.Value != nil:
-			e, err := convertExpr(env, st.Let.Value)
+		case st.Let != nil:
+			var val Expr
+			if st.Let.Value != nil {
+				var err error
+				val, err = convertExpr(env, st.Let.Value)
+				if err != nil {
+					return nil, err
+				}
+			} else {
+				val = &IntLit{Value: 0}
+			}
+			p.Stmts = append(p.Stmts, &LetStmt{Name: st.Let.Name, Value: val})
+		case st.Var != nil:
+			var val Expr
+			if st.Var.Value != nil {
+				var err error
+				val, err = convertExpr(env, st.Var.Value)
+				if err != nil {
+					return nil, err
+				}
+			} else {
+				val = &IntLit{Value: 0}
+			}
+			p.Stmts = append(p.Stmts, &VarStmt{Name: st.Var.Name, Value: val})
+		case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
+			e, err := convertExpr(env, st.Assign.Value)
 			if err != nil {
 				return nil, err
 			}
-			p.Stmts = append(p.Stmts, &LetStmt{Name: st.Let.Name, Value: e})
+			p.Stmts = append(p.Stmts, &AssignStmt{Name: st.Assign.Name, Value: e})
 		default:
 			return nil, fmt.Errorf("unsupported statement")
 		}
@@ -183,7 +285,7 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 		operands = append(operands, r)
 		ops = append(ops, part.Op)
 	}
-	prec := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!="}}
+	prec := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!="}, {"&&"}, {"||"}}
 	contains := func(list []string, s string) bool {
 		for _, v := range list {
 			if v == s {
@@ -220,10 +322,14 @@ func convertUnary(env *types.Env, u *parser.Unary) (Expr, error) {
 		return nil, err
 	}
 	for i := len(u.Ops) - 1; i >= 0; i-- {
-		if u.Ops[i] != "-" {
+		switch u.Ops[i] {
+		case "-":
+			ex = &BinaryExpr{Left: &IntLit{Value: 0}, Op: "-", Right: ex}
+		case "!":
+			ex = &NotExpr{Value: ex}
+		default:
 			return nil, fmt.Errorf("unsupported unary op")
 		}
-		ex = &BinaryExpr{Left: &IntLit{Value: 0}, Op: "-", Right: ex}
 	}
 	return ex, nil
 }
@@ -261,6 +367,54 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				return &StrExpr{Value: arg}, nil
 			}
 			return nil, fmt.Errorf("unsupported builtin")
+		case "append":
+			if len(p.Call.Args) != 2 {
+				return nil, fmt.Errorf("append expects 2 args")
+			}
+			list, err := convertExpr(env, p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			elem, err := convertExpr(env, p.Call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			return &AppendExpr{List: list, Elem: elem}, nil
+		case "min":
+			if len(p.Call.Args) != 1 {
+				return nil, fmt.Errorf("min expects 1 arg")
+			}
+			arg, err := convertExpr(env, p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &MinExpr{Value: arg}, nil
+		case "max":
+			if len(p.Call.Args) != 1 {
+				return nil, fmt.Errorf("max expects 1 arg")
+			}
+			arg, err := convertExpr(env, p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &MaxExpr{Value: arg}, nil
+		case "substring":
+			if len(p.Call.Args) != 3 {
+				return nil, fmt.Errorf("substring expects 3 args")
+			}
+			str, err := convertExpr(env, p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			start, err := convertExpr(env, p.Call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			end, err := convertExpr(env, p.Call.Args[2])
+			if err != nil {
+				return nil, err
+			}
+			return &SubstringExpr{Value: str, Start: start, End: end}, nil
 		default:
 			args := make([]Expr, len(p.Call.Args))
 			for i, a := range p.Call.Args {
@@ -280,6 +434,8 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		return &StringLit{Value: *p.Lit.Str}, nil
 	case p.Lit != nil && p.Lit.Int != nil:
 		return &IntLit{Value: int64(*p.Lit.Int)}, nil
+	case p.Lit != nil && p.Lit.Bool != nil:
+		return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return &VarRef{Name: p.Selector.Root}, nil
 	case p.List != nil:
@@ -354,6 +510,10 @@ func toNodeStmt(s Stmt) *ast.Node {
 		return &ast.Node{Kind: "expr", Children: []*ast.Node{toNodeExpr(st.Expr)}}
 	case *LetStmt:
 		return &ast.Node{Kind: "let", Value: st.Name, Children: []*ast.Node{toNodeExpr(st.Value)}}
+	case *VarStmt:
+		return &ast.Node{Kind: "var", Value: st.Name, Children: []*ast.Node{toNodeExpr(st.Value)}}
+	case *AssignStmt:
+		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{toNodeExpr(st.Value)}}
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
@@ -377,18 +537,30 @@ func toNodeExpr(e Expr) *ast.Node {
 		return &ast.Node{Kind: "len", Children: []*ast.Node{toNodeExpr(ex.Value)}}
 	case *StrExpr:
 		return &ast.Node{Kind: "str", Children: []*ast.Node{toNodeExpr(ex.Value)}}
+	case *NotExpr:
+		return &ast.Node{Kind: "not", Children: []*ast.Node{toNodeExpr(ex.Value)}}
 	case *BinaryExpr:
 		return &ast.Node{Kind: "bin", Value: ex.Op, Children: []*ast.Node{toNodeExpr(ex.Left), toNodeExpr(ex.Right)}}
 	case *VarRef:
 		return &ast.Node{Kind: "name", Value: ex.Name}
 	case *IntLit:
 		return &ast.Node{Kind: "int", Value: ex.Value}
+	case *BoolLit:
+		return &ast.Node{Kind: "bool", Value: ex.Value}
 	case *ListLit:
 		n := &ast.Node{Kind: "list"}
 		for _, el := range ex.Elems {
 			n.Children = append(n.Children, toNodeExpr(el))
 		}
 		return n
+	case *AppendExpr:
+		return &ast.Node{Kind: "append", Children: []*ast.Node{toNodeExpr(ex.List), toNodeExpr(ex.Elem)}}
+	case *MinExpr:
+		return &ast.Node{Kind: "min", Children: []*ast.Node{toNodeExpr(ex.Value)}}
+	case *MaxExpr:
+		return &ast.Node{Kind: "max", Children: []*ast.Node{toNodeExpr(ex.Value)}}
+	case *SubstringExpr:
+		return &ast.Node{Kind: "substring", Children: []*ast.Node{toNodeExpr(ex.Value), toNodeExpr(ex.Start), toNodeExpr(ex.End)}}
 	case *StringLit:
 		return &ast.Node{Kind: "string", Value: ex.Value}
 	default:
