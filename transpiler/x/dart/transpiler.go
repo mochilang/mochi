@@ -317,7 +317,8 @@ type FuncDecl struct {
 }
 
 func (f *FuncDecl) emit(w io.Writer) error {
-	if _, err := io.WriteString(w, "dynamic "+f.Name+"("); err != nil {
+	retType := inferReturnType(f.Body)
+	if _, err := io.WriteString(w, retType+" "+f.Name+"("); err != nil {
 		return err
 	}
 	for i, p := range f.Params {
@@ -589,19 +590,22 @@ type AppendExpr struct {
 }
 
 func (a *AppendExpr) emit(w io.Writer) error {
-	if _, err := io.WriteString(w, "(List.from("); err != nil {
+	if _, err := io.WriteString(w, "["); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, "..."); err != nil {
 		return err
 	}
 	if err := a.List.emit(w); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, ")..add("); err != nil {
+	if _, err := io.WriteString(w, ", "); err != nil {
 		return err
 	}
 	if err := a.Value.emit(w); err != nil {
 		return err
 	}
-	_, err := io.WriteString(w, "))")
+	_, err := io.WriteString(w, "]")
 	return err
 }
 
@@ -686,12 +690,46 @@ func inferType(e Expr) string {
 			return "List<dynamic>"
 		}
 		return "List<" + inferType(ex.Elems[0]) + ">"
+	case *BinaryExpr:
+		switch ex.Op {
+		case "+", "-", "*", "/", "%":
+			return "int"
+		case "<", "<=", ">", ">=", "==", "!=", "&&", "||":
+			return "bool"
+		default:
+			return "var"
+		}
+	case *ContainsExpr:
+		return "bool"
+	case *LenExpr:
+		return "int"
+	case *SubstringExpr:
+		return "String"
+	case *AvgExpr:
+		return "num"
 	default:
 		if e == nil {
 			return "var"
 		}
 		return "var"
 	}
+}
+
+func inferReturnType(body []Stmt) string {
+	if len(body) == 0 {
+		return "void"
+	}
+	if ret, ok := body[len(body)-1].(*ReturnStmt); ok {
+		if ret.Value == nil {
+			return "void"
+		}
+		t := inferType(ret.Value)
+		if t == "var" {
+			return "dynamic"
+		}
+		return t
+	}
+	return "void"
 }
 
 func emitExpr(w io.Writer, e Expr) error { return e.emit(w) }
