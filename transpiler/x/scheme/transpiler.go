@@ -6,7 +6,6 @@ import (
 	"io"
 	"time"
 
-	"mochi/ast"
 	"mochi/parser"
 	"mochi/types"
 )
@@ -25,6 +24,16 @@ func (s StringLit) Emit(w io.Writer) { fmt.Fprintf(w, "%q", string(s)) }
 type IntLit int
 
 func (i IntLit) Emit(w io.Writer) { fmt.Fprintf(w, "%d", int(i)) }
+
+type BoolLit bool
+
+func (b BoolLit) Emit(w io.Writer) {
+	if bool(b) {
+		io.WriteString(w, "#t")
+	} else {
+		io.WriteString(w, "#f")
+	}
+}
 
 type List struct{ Elems []Node }
 
@@ -81,92 +90,184 @@ func voidSym() Node { return &List{Elems: []Node{Symbol("void")}} }
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	_ = env
 	p := &Program{}
-	astProg := ast.FromProgram(prog)
-	for _, st := range astProg.Children {
-		switch st.Kind {
-		case "call":
-			if fn, ok := st.Value.(string); ok && fn == "print" {
-				if len(st.Children) != 1 {
-					return nil, fmt.Errorf("print needs 1 arg")
-				}
-				arg, err := convertExpr(st.Children[0])
+	for _, st := range prog.Statements {
+		switch {
+		case st.Expr != nil:
+			call := st.Expr.Expr.Binary.Left.Value.Target.Call
+			if call != nil && call.Func == "print" && len(call.Args) == 1 && len(st.Expr.Expr.Binary.Right) == 0 {
+				argExpr := call.Args[0]
+				arg, err := convertParserExpr(argExpr)
 				if err != nil {
 					return nil, err
+				}
+				if isBoolParserExpr(argExpr) {
+					arg = boolToInt(arg)
 				}
 				p.Forms = append(p.Forms, &List{Elems: []Node{Symbol("display"), arg}})
 				p.Forms = append(p.Forms, &List{Elems: []Node{Symbol("newline")}})
 				continue
 			}
-			return nil, fmt.Errorf("unsupported call")
-		case "let":
-			name, _ := st.Value.(string)
+			return nil, fmt.Errorf("unsupported expression statement")
+		case st.Let != nil:
+			name := st.Let.Name
 			var val Node
-			if len(st.Children) == 0 {
-				val = voidSym()
-			} else if len(st.Children) == 1 {
-				if st.Children[0].Kind == "type" {
-					val = voidSym()
-				} else {
-					var err error
-					val, err = convertExpr(st.Children[0])
-					if err != nil {
-						return nil, err
-					}
-				}
-			} else if len(st.Children) == 2 {
+			if st.Let.Value != nil {
 				var err error
-				val, err = convertExpr(st.Children[1])
+				val, err = convertParserExpr(st.Let.Value)
 				if err != nil {
 					return nil, err
 				}
+			} else if st.Let.Type != nil {
+				if st.Let.Type.Simple != nil && *st.Let.Type.Simple == "int" {
+					val = IntLit(0)
+				} else {
+					val = voidSym()
+				}
+			} else {
+				val = voidSym()
 			}
 			p.Forms = append(p.Forms, &List{Elems: []Node{Symbol("define"), Symbol(name), val}})
 		default:
-			return nil, fmt.Errorf("unsupported statement kind %s", st.Kind)
+			return nil, fmt.Errorf("unsupported statement")
 		}
 	}
 	return p, nil
 }
 
-func convertExpr(n *ast.Node) (Node, error) {
-	switch n.Kind {
-	case "int":
-		switch v := n.Value.(type) {
-		case int:
-			return IntLit(v), nil
-		case parser.IntLit:
-			return IntLit(int(v)), nil
+func boolToInt(expr Node) Node {
+	return &List{Elems: []Node{Symbol("if"), expr, IntLit(1), IntLit(0)}}
+}
+
+func convertParserExpr(e *parser.Expr) (Node, error) {
+	if e == nil || e.Binary == nil {
+		return nil, fmt.Errorf("unsupported expression")
+	}
+	left, err := convertParserUnary(e.Binary.Left)
+	if err != nil {
+		return nil, err
+	}
+	exprs := []Node{left}
+	ops := []string{}
+	for _, op := range e.Binary.Right {
+		right, err := convertParserPostfix(op.Right)
+		if err != nil {
+			return nil, err
 		}
-	case "string":
-		if v, ok := n.Value.(string); ok {
-			return StringLit(v), nil
+		for len(ops) > 0 && precedence(ops[len(ops)-1]) >= precedence(op.Op) {
+			r := exprs[len(exprs)-1]
+			exprs = exprs[:len(exprs)-1]
+			l := exprs[len(exprs)-1]
+			exprs = exprs[:len(exprs)-1]
+			o := ops[len(ops)-1]
+			ops = ops[:len(ops)-1]
+			exprs = append(exprs, makeBinary(o, l, r))
 		}
-	case "selector":
-		if str, ok := n.Value.(string); ok && len(n.Children) == 0 {
-			return Symbol(str), nil
-		}
-	case "binary":
-		if op, ok := n.Value.(string); ok {
-			if len(n.Children) != 2 {
-				return nil, fmt.Errorf("bad binary")
-			}
-			left, err := convertExpr(n.Children[0])
-			if err != nil {
-				return nil, err
-			}
-			right, err := convertExpr(n.Children[1])
-			if err != nil {
-				return nil, err
-			}
-			switch op {
-			case "+", "-", "*", "/":
-				return &List{Elems: []Node{Symbol(op), left, right}}, nil
-			}
-		}
-	case "group":
-		if len(n.Children) == 1 {
-			return convertExpr(n.Children[0])
+		ops = append(ops, op.Op)
+		exprs = append(exprs, right)
+	}
+	for len(ops) > 0 {
+		r := exprs[len(exprs)-1]
+		exprs = exprs[:len(exprs)-1]
+		l := exprs[len(exprs)-1]
+		exprs = exprs[:len(exprs)-1]
+		o := ops[len(ops)-1]
+		ops = ops[:len(ops)-1]
+		exprs = append(exprs, makeBinary(o, l, r))
+	}
+	if len(exprs) != 1 {
+		return nil, fmt.Errorf("expr reduce error")
+	}
+	return exprs[0], nil
+}
+
+func convertParserUnary(u *parser.Unary) (Node, error) {
+	if u == nil {
+		return nil, fmt.Errorf("unsupported unary")
+	}
+	expr, err := convertParserPostfix(u.Value)
+	if err != nil {
+		return nil, err
+	}
+	for i := len(u.Ops) - 1; i >= 0; i-- {
+		op := u.Ops[i]
+		switch op {
+		case "-":
+			expr = &List{Elems: []Node{Symbol("-"), expr}}
+		case "!":
+			expr = &List{Elems: []Node{Symbol("not"), expr}}
+		default:
+			return nil, fmt.Errorf("unsupported unary op")
 		}
 	}
-	return nil, fmt.Errorf("unsupported expression kind %s", n.Kind)
+	return expr, nil
+}
+
+func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
+	if pf == nil || len(pf.Ops) > 0 {
+		return nil, fmt.Errorf("unsupported postfix")
+	}
+	return convertParserPrimary(pf.Target)
+}
+
+func convertParserPrimary(p *parser.Primary) (Node, error) {
+	switch {
+	case p.Lit != nil && p.Lit.Int != nil:
+		return IntLit(int(*p.Lit.Int)), nil
+	case p.Lit != nil && p.Lit.Str != nil:
+		return StringLit(*p.Lit.Str), nil
+	case p.Lit != nil && p.Lit.Bool != nil:
+		return BoolLit(bool(*p.Lit.Bool)), nil
+	case p.Selector != nil && len(p.Selector.Tail) == 0:
+		return Symbol(p.Selector.Root), nil
+	case p.Group != nil:
+		return convertParserExpr(p.Group)
+	}
+	return nil, fmt.Errorf("unsupported primary")
+}
+
+func makeBinary(op string, left, right Node) Node {
+	switch op {
+	case "+", "-", "*", "/", "<", "<=", ">", ">=":
+		return &List{Elems: []Node{Symbol(op), left, right}}
+	case "==":
+		return &List{Elems: []Node{Symbol("="), left, right}}
+	case "!=":
+		return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("="), left, right}}}}
+	default:
+		return &List{Elems: []Node{Symbol(op), left, right}}
+	}
+}
+
+func precedence(op string) int {
+	switch op {
+	case "||":
+		return 1
+	case "&&":
+		return 2
+	case "==", "!=", "<", "<=", ">", ">=":
+		return 3
+	case "+", "-":
+		return 4
+	case "*", "/", "%":
+		return 5
+	default:
+		return 0
+	}
+}
+
+func isBoolParserExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	if len(e.Binary.Right) == 0 {
+		p := e.Binary.Left.Value.Target
+		return p != nil && p.Lit != nil && p.Lit.Bool != nil
+	}
+	op := e.Binary.Right[0].Op
+	switch op {
+	case "==", "!=", "<", "<=", ">", ">=":
+		return true
+	default:
+		return false
+	}
 }
