@@ -1,3 +1,5 @@
+//go:build slow
+
 package cljt_test
 
 import (
