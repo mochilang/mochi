@@ -1,3 +1,6 @@
+## Progress (2025-07-19 21:32 +07)
+- fortran transpiler: add for-loop, break and continue support
+
 ## Progress (2025-07-19 19:59 +07)
 - docs: update fortran progress
 

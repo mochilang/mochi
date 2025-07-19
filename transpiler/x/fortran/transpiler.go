@@ -54,6 +54,18 @@ type WhileStmt struct {
 	Body []Stmt
 }
 
+type ForStmt struct {
+	Var   string
+	Start string
+	End   string
+	List  []string
+	Body  []Stmt
+}
+
+type BreakStmt struct{}
+
+type ContinueStmt struct{}
+
 func (f *Function) emit(w io.Writer) {
 	fmt.Fprintf(w, "  function %s(", f.Name)
 	for i, p := range f.Params {
@@ -132,6 +144,29 @@ func (s *IfStmt) emit(w io.Writer) {
 func (s *WhileStmt) emit(w io.Writer) {
 	fmt.Fprintf(w, "  do while (%s)\n", s.Cond)
 	for _, st := range s.Body {
+		st.emit(w)
+	}
+	io.WriteString(w, "  end do\n")
+}
+
+func (b *BreakStmt) emit(w io.Writer) { io.WriteString(w, "  exit\n") }
+
+func (c *ContinueStmt) emit(w io.Writer) { io.WriteString(w, "  cycle\n") }
+
+func (f *ForStmt) emit(w io.Writer) {
+	if len(f.List) > 0 {
+		fmt.Fprintf(w, "  integer, dimension(%d) :: __arr = (/ %s /)\n", len(f.List), strings.Join(f.List, ", "))
+		io.WriteString(w, "  integer :: __i\n")
+		io.WriteString(w, "  do __i = 1, size(__arr)\n")
+		fmt.Fprintf(w, "    %s = __arr(__i)\n", f.Var)
+		for _, st := range f.Body {
+			st.emit(w)
+		}
+		io.WriteString(w, "  end do\n")
+		return
+	}
+	fmt.Fprintf(w, "  do %s = %s, %s\n", f.Var, f.Start, f.End)
+	for _, st := range f.Body {
 		st.emit(w)
 	}
 	io.WriteString(w, "  end do\n")
@@ -346,6 +381,16 @@ func compileStmt(p *Program, st *parser.Statement, env *types.Env) (Stmt, error)
 			return nil, err
 		}
 		return &WhileStmt{Cond: cond, Body: body}, nil
+	case st.For != nil:
+		stmt, err := compileForStmt(p, st.For, env)
+		if err != nil {
+			return nil, err
+		}
+		return stmt, nil
+	case st.Break != nil:
+		return &BreakStmt{}, nil
+	case st.Continue != nil:
+		return &ContinueStmt{}, nil
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
@@ -363,6 +408,32 @@ func compileStmtList(p *Program, list []*parser.Statement, env *types.Env) ([]St
 		}
 	}
 	return out, nil
+}
+
+func compileForStmt(p *Program, fs *parser.ForStmt, env *types.Env) (Stmt, error) {
+	if fs.RangeEnd != nil {
+		start, err := toExpr(fs.Source, env)
+		if err != nil {
+			return nil, err
+		}
+		end, err := toExpr(fs.RangeEnd, env)
+		if err != nil {
+			return nil, err
+		}
+		body, err := compileStmtList(p, fs.Body, env)
+		if err != nil {
+			return nil, err
+		}
+		return &ForStmt{Var: fs.Name, Start: start, End: end, Body: body}, nil
+	}
+	if arr, ok := extractConstList(fs.Source, env); ok {
+		body, err := compileStmtList(p, fs.Body, env)
+		if err != nil {
+			return nil, err
+		}
+		return &ForStmt{Var: fs.Name, List: arr, Body: body}, nil
+	}
+	return nil, fmt.Errorf("unsupported for-loop")
 }
 
 func compileFunc(fs *parser.FunStmt, env *types.Env) (*Function, error) {
@@ -407,6 +478,32 @@ func compileFuncStmtList(fn *Function, list []*parser.Statement, env *types.Env)
 		}
 	}
 	return out, nil
+}
+
+func compileForFuncStmt(fn *Function, fs *parser.ForStmt, env *types.Env) (Stmt, error) {
+	if fs.RangeEnd != nil {
+		start, err := toExpr(fs.Source, env)
+		if err != nil {
+			return nil, err
+		}
+		end, err := toExpr(fs.RangeEnd, env)
+		if err != nil {
+			return nil, err
+		}
+		body, err := compileFuncStmtList(fn, fs.Body, env)
+		if err != nil {
+			return nil, err
+		}
+		return &ForStmt{Var: fs.Name, Start: start, End: end, Body: body}, nil
+	}
+	if arr, ok := extractConstList(fs.Source, env); ok {
+		body, err := compileFuncStmtList(fn, fs.Body, env)
+		if err != nil {
+			return nil, err
+		}
+		return &ForStmt{Var: fs.Name, List: arr, Body: body}, nil
+	}
+	return nil, fmt.Errorf("unsupported for-loop")
 }
 
 func compileFuncStmt(fn *Function, st *parser.Statement, env *types.Env) (Stmt, error) {
@@ -539,6 +636,16 @@ func compileFuncStmt(fn *Function, st *parser.Statement, env *types.Env) (Stmt, 
 			return nil, err
 		}
 		return &WhileStmt{Cond: cond, Body: body}, nil
+	case st.For != nil:
+		stmt, err := compileForFuncStmt(fn, st.For, env)
+		if err != nil {
+			return nil, err
+		}
+		return stmt, nil
+	case st.Break != nil:
+		return &BreakStmt{}, nil
+	case st.Continue != nil:
+		return &ContinueStmt{}, nil
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
@@ -594,6 +701,25 @@ func extractPrintArg(e *parser.Expr) (*parser.Expr, error) {
 		return nil, fmt.Errorf("unsupported expression")
 	}
 	return call.Args[0], nil
+}
+
+func extractConstList(e *parser.Expr, env *types.Env) ([]string, bool) {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || len(e.Binary.Right) > 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if u.Value == nil || u.Value.Target == nil || u.Value.Target.List == nil {
+		return nil, false
+	}
+	var out []string
+	for _, el := range u.Value.Target.List.Elems {
+		v, err := toExpr(el, env)
+		if err != nil {
+			return nil, false
+		}
+		out = append(out, v)
+	}
+	return out, true
 }
 
 func toExpr(e *parser.Expr, env *types.Env) (string, error) {
