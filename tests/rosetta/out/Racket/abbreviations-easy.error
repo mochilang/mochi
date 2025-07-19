@@ -1,9 +1,9 @@
 run: exit status 1
-/tmp/abbreviations-easy.rkt:162:0: define: not allowed in an expression context
-  in: (define c (upper cmd))
-  location...:
-   /tmp/abbreviations-easy.rkt:162:0
+length: contract violation
+  expected: list?
+  given: "RIGHT"
   context...:
-   /usr/share/racket/collects/racket/private/norm-define.rkt:9:4: normalize-definition/mk-rhs
-   /usr/share/racket/collects/racket/private/norm-define.rkt:165:4: normalize-definition
-   /usr/share/racket/collects/racket/private/kw.rkt:1171:2
+   /tmp/abbreviations-easy.rkt:238:6
+   /tmp/abbreviations-easy.rkt:235:0
+   /tmp/abbreviations-easy.rkt:192:2
+   body of "/tmp/abbreviations-easy.rkt"

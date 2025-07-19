@@ -33,6 +33,7 @@
     [else (string<? (_to_string a) (_to_string b))]))
 (define result "")
 (for ([i (in-range 1 101)])
+  (let ()
 (define j 1)
 (let/ec break
   (let loop ()
@@ -56,5 +57,6 @@
     )
   )
 )
+  )
 )
 (displayln result)

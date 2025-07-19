@@ -1,8 +1,9 @@
-type: error[T007]: argument 2: expected int, got bigint
-  --> /workspace/mochi/tests/rosetta/x/Mochi/99-bottles-of-beer-2.mochi:98:11
-
- 98 |   s = s + substring(p, len(p) - 1, len(p))
-    |           ^
-
-help:
-  Ensure the argument type matches the function’s signature.
+run: exit status 1
+string->number: contract violation
+  expected: string?
+  given: 99/10
+  context...:
+   /tmp/99-bottles-of-beer-2.rkt:76:2
+   /tmp/99-bottles-of-beer-2.rkt:211:6
+   /tmp/99-bottles-of-beer-2.rkt:208:0
+   body of "/tmp/99-bottles-of-beer-2.rkt"
