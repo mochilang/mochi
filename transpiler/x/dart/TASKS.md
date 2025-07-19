@@ -1,15 +1,17 @@
-## Recent Enhancements (2025-07-20 00:55 +0700)
+## Recent Enhancements (2025-07-20 01:16 +0700)
+- Improved variable declarations with basic type inference.
+- Simplified `avg` builtin emission using list methods.
+- Updated README checklist with progress summary.
+
+## Progress
 - Added support for `break` and `continue` statements.
 - Implemented `if ... then ... else` expressions.
-- Updated README checklist with progress summary.
 - Added list indexing support and `substring` builtin.
 - Implemented `append` and `avg` builtins.
 - Added list and string `in` operator support.
-
 - Refactored `avg` builtin to use a simple loop for clarity.
 
 # Dart Transpiler Tasks
-
 - Added boolean literals and logical operators.
 - Generated golden test for `fun_call`.
 - Refactored test helpers to reduce duplication.

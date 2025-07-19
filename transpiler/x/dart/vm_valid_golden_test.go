@@ -154,8 +154,8 @@ func updateTasks() {
 
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Recent Enhancements (%s)\n", ts))
-	buf.WriteString("- Added support for `break` and `continue` statements.\n")
-	buf.WriteString("- Implemented `if ... then ... else` expressions.\n")
+	buf.WriteString("- Improved variable declarations with basic type inference.\n")
+	buf.WriteString("- Simplified `avg` builtin emission using list methods.\n")
 	buf.WriteString("- Updated README checklist with progress summary.\n\n")
 	buf.WriteString(strings.Join(keep, "\n"))
 	_ = os.WriteFile(taskFile, buf.Bytes(), 0o644)
