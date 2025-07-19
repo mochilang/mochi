@@ -57,13 +57,14 @@ func TestTranspilePrograms(t *testing.T) {
 		"substring_builtin",
 		"typed_let",
 		"typed_var",
-                "var_assignment",
-                "len_map",
-                "list_index",
-                "string_contains",
-                "string_in_operator",
-                "string_index",
-        }
+		"var_assignment",
+		"len_map",
+		"list_index",
+		"string_contains",
+		"string_in_operator",
+		"string_index",
+		"bool_chain",
+	}
 	root := repoRoot(t)
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "kt")
 	os.MkdirAll(outDir, 0o755)
