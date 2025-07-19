@@ -384,6 +384,12 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 				&List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("member"), arg, node}}, BoolLit(true), BoolLit(false)}},
 			}}
 			i++
+		case op.Cast != nil:
+			if op.Cast.Type != nil && op.Cast.Type.Simple != nil && *op.Cast.Type.Simple == "int" {
+				node = &List{Elems: []Node{Symbol("string->number"), node}}
+			} else {
+				return nil, fmt.Errorf("unsupported cast")
+			}
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
 		}
@@ -484,9 +490,9 @@ func makeBinary(op string, left, right Node) Node {
 		}
 		return &List{Elems: []Node{Symbol(">="), left, right}}
 	case "==":
-		return &List{Elems: []Node{Symbol("="), left, right}}
+		return &List{Elems: []Node{Symbol("equal?"), left, right}}
 	case "!=":
-		return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("="), left, right}}}}
+		return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("equal?"), left, right}}}}
 	case "&&":
 		return &List{Elems: []Node{Symbol("and"), left, right}}
 	case "||":
