@@ -6,9 +6,11 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"mochi/compiler/x/testutil"
 	"mochi/golden"
@@ -63,6 +65,7 @@ func TestSwiftTranspiler_VMValid_Golden(t *testing.T) {
 func TestMain(m *testing.M) {
 	code := m.Run()
 	updateReadme()
+	updateTasks()
 	os.Exit(code)
 }
 
@@ -84,7 +87,8 @@ func repoRoot() string {
 func updateReadme() {
 	root := repoRoot()
 	srcDir := filepath.Join(root, "tests", "vm", "valid")
-	outDir := filepath.Join(root, "transpiler", "x", "swift")
+	binDir := filepath.Join(root, "tests", "transpiler", "x", "swift")
+	readmePath := filepath.Join(root, "transpiler", "x", "swift", "README.md")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	total := len(files)
 	compiled := 0
@@ -92,7 +96,7 @@ func updateReadme() {
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".swift")); err == nil {
+		if _, err := os.Stat(filepath.Join(binDir, name+".swift")); err == nil {
 			compiled++
 			mark = "[x]"
 		}
@@ -105,5 +109,25 @@ func updateReadme() {
 	buf.WriteString("Checklist:\n")
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
-	_ = os.WriteFile(filepath.Join(outDir, "README.md"), buf.Bytes(), 0o644)
+	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
+}
+
+func updateTasks() {
+	root := repoRoot()
+	taskFile := filepath.Join(root, "transpiler", "x", "swift", "TASKS.md")
+	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	ts := ""
+	if err == nil {
+		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+			ts = t.Format("2006-01-02 15:04 MST")
+		}
+	}
+	var buf bytes.Buffer
+	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
+	buf.WriteString("- VM valid golden test results updated\n")
+	buf.WriteString("\n")
+	if data, err := os.ReadFile(taskFile); err == nil {
+		buf.Write(data)
+	}
+	_ = os.WriteFile(taskFile, buf.Bytes(), 0o644)
 }
