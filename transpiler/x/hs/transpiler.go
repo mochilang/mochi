@@ -30,7 +30,7 @@ type Expr interface{ emit(io.Writer) }
 type Func struct {
 	Name   string
 	Params []string
-	Body   Expr
+	Body   []Stmt
 }
 
 func (f *Func) emit(w io.Writer) {
@@ -40,7 +40,18 @@ func (f *Func) emit(w io.Writer) {
 		io.WriteString(w, p)
 	}
 	io.WriteString(w, " = ")
-	f.Body.emit(w)
+	if len(f.Body) == 1 {
+		if r, ok := f.Body[0].(*ReturnStmt); ok {
+			r.Expr.emit(w)
+			return
+		}
+	}
+	io.WriteString(w, "do\n")
+	for _, st := range f.Body {
+		io.WriteString(w, "    ")
+		st.emit(w)
+		io.WriteString(w, "\n")
+	}
 }
 
 type PrintStmt struct {
@@ -653,10 +664,7 @@ func convertIfStmt(s *parser.IfStmt) (Stmt, error) {
 }
 
 func convertFunStmt(f *parser.FunStmt) (*Func, error) {
-	if len(f.Body) != 1 || f.Body[0].Return == nil {
-		return nil, fmt.Errorf("unsupported function body")
-	}
-	body, err := convertExpr(f.Body[0].Return.Value)
+	stmts, err := convertStmtList(f.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -664,7 +672,7 @@ func convertFunStmt(f *parser.FunStmt) (*Func, error) {
 	for _, p := range f.Params {
 		params = append(params, p.Name)
 	}
-	return &Func{Name: f.Name, Params: params, Body: body}, nil
+	return &Func{Name: f.Name, Params: params, Body: stmts}, nil
 }
 
 func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
