@@ -38,7 +38,7 @@ fn main() {
             if i > 0 {
                 res = format!("{}{}", res, sep);
             }
-            res = format!("{}{}", res, xs[(i) as usize]);
+            res = format!("{}{}", res, xs[(i) as usize].clone());
             i += 1;
         }
         return res;
@@ -50,13 +50,13 @@ fn main() {
         }
         let mut wi = 0;
         while wi < (words.len() as i32) {
-            let w = words[(wi) as usize];
+            let w = words[(wi) as usize].clone();
             let mut found = false;
             let wlen = (w.len() as i32);
             let mut ci = 0;
             while ci < (commands.len() as i32) {
-                let cmd = commands[(ci) as usize];
-                if mins[(ci) as usize] != 0 && wlen >= mins[(ci) as usize] && wlen <= (cmd.len() as i32) {
+                let cmd = commands[(ci) as usize].clone();
+                if mins[(ci) as usize].clone() != 0 && wlen >= mins[(ci) as usize].clone() && wlen <= (cmd.len() as i32) {
                     let c = upper(cmd);
                     let ww = upper(w);
                     if c[(0) as usize..(wlen) as usize].to_string() == ww {
@@ -82,7 +82,7 @@ fn main() {
         while i < (commands.len() as i32) {
             let mut count = 0;
             let mut j = 0;
-            let cmd = commands[(i) as usize];
+            let cmd = commands[(i) as usize].clone();
             while j < (cmd.len() as i32) {
                 let ch = cmd[(j) as usize..(j + 1) as usize].to_string();
                 if ch >= String::from("A") && ch <= String::from("Z") {
@@ -99,7 +99,7 @@ fn main() {
         let mut out1 = String::from("user words:  ");
         let mut k = 0;
         while k < (words.len() as i32) {
-            out1 = format!("{}{}", format!("{}{}", out1, padRight(words[(k) as usize], (results[(k) as usize].len() as i32))), String::from(" "));
+            out1 = format!("{}{}", format!("{}{}", out1, padRight(words[(k) as usize].clone(), (results[(k) as usize].clone().len() as i32))), String::from(" "));
             k += 1;
         }
         println!("{}", vec![format!("{}", out1)].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );

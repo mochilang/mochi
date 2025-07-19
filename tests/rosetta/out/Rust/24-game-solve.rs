@@ -70,9 +70,9 @@ fn main() {
     let digit_range = 9;
     let solve = move |xs: Vec<std::collections::HashMap<String, i32>>| -> bool {
         if (xs.len() as i32) == 1 {
-            let f = exprEval(&xs[0]);
+            let f = exprEval(&xs[0].clone());
             if *f.get(&String::from("denom")).unwrap() != 0 && *f.get(&String::from("num")).unwrap() == *f.get(&String::from("denom")).unwrap() * goal {
-                println!("{}", vec![format!("{}", exprString(&xs[0]))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+                println!("{}", vec![format!("{}", exprString(&xs[0].clone()))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
                 return true;
             }
             return false;
@@ -85,12 +85,12 @@ fn main() {
                 let mut k = 0;
                 while k < (xs.len() as i32) {
                     if k != i && k != j {
-                        rest = { let mut tmp = rest.clone(); tmp.push(xs[(k) as usize]); tmp };
+                        rest = { let mut tmp = rest.clone(); tmp.push(xs[(k) as usize].clone()); tmp };
                     }
                     k += 1;
                 }
-                let a = xs[(i) as usize];
-                let b = xs[(j) as usize];
+                let a = xs[(i) as usize].clone();
+                let b = xs[(j) as usize].clone();
                 for op in vec![OP_ADD, OP_SUB, OP_MUL, OP_DIV] {
                     let mut node = { let mut m = std::collections::HashMap::new(); m.insert(String::from("op"), op); m.insert(String::from("left"), a); m.insert(String::from("right"), b); m };
                     if solve({ let mut tmp = rest.clone(); tmp.push(node); tmp }) {

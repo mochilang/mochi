@@ -25,15 +25,15 @@ help: remove these parentheses
    |
 
 warning: unnecessary parentheses around function argument
-   --> /tmp/abbreviations_easy.rs:102:88
+   --> /tmp/abbreviations_easy.rs:102:96
     |
-102 | ...   out1 = format!("{}{}", format!("{}{}", out1, padRight(words[(k) as usize], (results[(k) as usize].len() as i32))), String::from(" "));
-    |                                                                                  ^                                  ^
+102 | ...   out1 = format!("{}{}", format!("{}{}", out1, padRight(words[(k) as usize].clone(), (results[(k) as usize].clone().len() as i32))), ...
+    |                                                                                          ^                                          ^
     |
 help: remove these parentheses
     |
-102 -             out1 = format!("{}{}", format!("{}{}", out1, padRight(words[(k) as usize], (results[(k) as usize].len() as i32))), String::from(" "));
-102 +             out1 = format!("{}{}", format!("{}{}", out1, padRight(words[(k) as usize], results[(k) as usize].len() as i32)), String::from(" "));
+102 -             out1 = format!("{}{}", format!("{}{}", out1, padRight(words[(k) as usize].clone(), (results[(k) as usize].clone().len() as i32))), String::from(" "));
+102 +             out1 = format!("{}{}", format!("{}{}", out1, padRight(words[(k) as usize].clone(), results[(k) as usize].clone().len() as i32)), String::from(" "));
     |
 
 error[E0425]: cannot find function `upper` in this scope

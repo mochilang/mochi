@@ -1957,9 +1957,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					}
 				} else {
 					if isIntLiteral(op.Index.Start) {
-						val = fmt.Sprintf("%s[%s]", val, idxVal)
+						val = fmt.Sprintf("%s[%s].clone()", val, idxVal)
 					} else {
-						val = fmt.Sprintf("%s[(%s) as usize]", val, idxVal)
+						val = fmt.Sprintf("%s[(%s) as usize].clone()", val, idxVal)
 					}
 				}
 			}
