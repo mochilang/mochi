@@ -6,4 +6,5 @@ func mochiPrint(_ v: Any) {
         print(v)
     }
 }
-mochiPrint("hello world")
+let y: Int = 0
+mochiPrint(y)
