@@ -73,3 +73,9 @@ func TestCPPTranspiler_ShortCircuit(t *testing.T)      { runExample(t, "short_ci
 func TestCPPTranspiler_LenBuiltin(t *testing.T)        { runExample(t, "len_builtin") }
 func TestCPPTranspiler_BreakContinue(t *testing.T)     { runExample(t, "break_continue") }
 func TestCPPTranspiler_ForListCollection(t *testing.T) { runExample(t, "for_list_collection") }
+func TestCPPTranspiler_StringContains(t *testing.T)    { runExample(t, "string_contains") }
+func TestCPPTranspiler_StringInOperator(t *testing.T)  { runExample(t, "string_in_operator") }
+func TestCPPTranspiler_StringIndex(t *testing.T)       { runExample(t, "string_index") }
+func TestCPPTranspiler_SubstringBuiltin(t *testing.T)  { runExample(t, "substring_builtin") }
+func TestCPPTranspiler_CastStringToInt(t *testing.T)   { runExample(t, "cast_string_to_int") }
+func TestCPPTranspiler_SumBuiltin(t *testing.T)        { runExample(t, "sum_builtin") }

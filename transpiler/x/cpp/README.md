@@ -1,8 +1,9 @@
 # C++ Transpiler Output
 
-Generated C++ code for programs in `tests/vm/valid`. Each program has a `.cpp` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.
+Generated C++ code for programs in `tests/vm/valid`. Each program has a `.cpp` file produced by the transpiler and a `.out` file containing its runtime output.
+Compilation or execution errors are captured in a `.error` file placed next to the source.
 
-Compiled programs: 25/100
+Compiled programs: 31/100
 
 ## Checklist
 - [ ] append_builtin
@@ -10,8 +11,8 @@ Compiled programs: 25/100
 - [x] basic_compare
 - [x] binary_precedence
 - [x] bool_chain
- - [x] break_continue
-- [ ] cast_string_to_int
+- [x] break_continue
+- [x] cast_string_to_int
 - [ ] cast_struct
 - [ ] closure
 - [ ] count_builtin
@@ -47,9 +48,9 @@ Compiled programs: 25/100
 - [ ] json_builtin
 - [ ] left_join
 - [ ] left_join_multi
- - [x] len_builtin
+- [x] len_builtin
 - [ ] len_map
- - [x] len_string
+- [x] len_string
 - [x] let_and_print
 - [ ] list_assign
 - [ ] list_index
@@ -85,14 +86,14 @@ Compiled programs: 25/100
 - [ ] slice
 - [ ] sort_stable
 - [ ] str_builtin
- - [x] string_compare
- - [x] string_concat
-- [ ] string_contains
-- [ ] string_in_operator
-- [ ] string_index
+- [x] string_compare
+- [x] string_concat
+- [x] string_contains
+- [x] string_in_operator
+- [x] string_index
 - [ ] string_prefix_slice
-- [ ] substring_builtin
-- [ ] sum_builtin
+- [x] substring_builtin
+- [x] sum_builtin
 - [ ] tail_recursion
 - [ ] test_block
 - [ ] tree_sum
@@ -104,4 +105,4 @@ Compiled programs: 25/100
 - [ ] user_type_literal
 - [ ] values_builtin
 - [x] var_assignment
- - [x] while_loop
+- [x] while_loop
