@@ -116,18 +116,34 @@ func updateTasks() {
 	root := repoRoot()
 	taskFile := filepath.Join(root, "transpiler", "x", "swift", "TASKS.md")
 	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
-	ts := ""
+	ts := time.Now()
 	if err == nil {
 		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
-			ts = t.Format("2006-01-02 15:04 MST")
+			ts = t
 		}
 	}
+	tsStr := ts.Format("2006-01-02 15:04 MST")
+
+	readmePath := filepath.Join(root, "transpiler", "x", "swift", "README.md")
+	data, _ := os.ReadFile(readmePath)
+	compiled := bytes.Count(data, []byte("[x]"))
+	total := bytes.Count(data, []byte("- ["))
+
 	var buf bytes.Buffer
-	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
-	buf.WriteString("- VM valid golden test results updated\n")
-	buf.WriteString("\n")
-	if data, err := os.ReadFile(taskFile); err == nil {
-		buf.Write(data)
+	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", tsStr))
+	buf.WriteString(fmt.Sprintf("- Generated golden tests for %d/%d programs\n", compiled, total))
+	buf.WriteString("- Updated README checklist and output artifacts\n\n")
+
+	if prev, err := os.ReadFile(taskFile); err == nil {
+		sections := bytes.Split(prev, []byte("\n\n"))
+		for _, sec := range sections {
+			sec = bytes.TrimSpace(sec)
+			if len(sec) == 0 || bytes.HasPrefix(sec, []byte("## Progress")) {
+				continue
+			}
+			buf.Write(sec)
+			buf.Write([]byte("\n\n"))
+		}
 	}
 	_ = os.WriteFile(taskFile, buf.Bytes(), 0o644)
 }

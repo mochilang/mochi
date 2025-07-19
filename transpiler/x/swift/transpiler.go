@@ -572,6 +572,13 @@ func convertPrimary(pr *parser.Primary) (Expr, error) {
 			return &LitExpr{Value: fmt.Sprintf("%d", *pr.Lit.Int), IsString: false}, nil
 		}
 		return nil, fmt.Errorf("unsupported literal")
+	case pr.Call != nil:
+		if pr.Call.Func == "len" && len(pr.Call.Args) == 1 {
+			if n, ok := evalLenConst(pr.Call.Args[0]); ok {
+				return &LitExpr{Value: fmt.Sprintf("%d", n), IsString: false}, nil
+			}
+		}
+		return nil, fmt.Errorf("unsupported call")
 	case pr.Group != nil:
 		return convertExpr(pr.Group)
 	case pr.If != nil:
@@ -580,6 +587,27 @@ func convertPrimary(pr *parser.Primary) (Expr, error) {
 		return &NameExpr{Name: pr.Selector.Root}, nil
 	}
 	return nil, fmt.Errorf("unsupported primary")
+}
+
+func evalLenConst(e *parser.Expr) (int, bool) {
+	if e == nil || e.Binary == nil {
+		return 0, false
+	}
+	left := e.Binary.Left
+	if len(left.Ops) != 0 || len(e.Binary.Right) != 0 {
+		return 0, false
+	}
+	t := left.Value.Target
+	switch {
+	case t.Lit != nil && t.Lit.Str != nil:
+		return len(*t.Lit.Str), true
+	case t.List != nil:
+		return len(t.List.Elems), true
+	case t.Map != nil:
+		return len(t.Map.Items), true
+	default:
+		return 0, false
+	}
 }
 
 func zeroValue(t *parser.TypeRef) Expr {
