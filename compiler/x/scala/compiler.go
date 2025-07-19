@@ -268,7 +268,7 @@ func (c *Compiler) emitHelpers(out *bytes.Buffer, indent int) {
 				pad + "  buf.toList\n" +
 				pad + "}\n")
 		case "_now":
-			out.WriteString(pad + "def _now(): Long = System.nanoTime()\n")
+			out.WriteString(pad + "def _now(): Int = System.nanoTime().toInt\n")
 		case "_save_jsonl":
 			out.WriteString(pad + "def _save_jsonl(rows: Iterable[Any], path: String): Unit = {\n" +
 				pad + "  def toMap(v: Any): Map[String,Any] = v match {\n" +
@@ -631,7 +631,7 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		var err error
 		if mutable {
 			if lst := s.Value.Binary.Left.Value.Target.List; lst != nil {
-				rhs, err = c.compileList(lst, true)
+				rhs, err = c.compileList(lst, false)
 			} else if mp := s.Value.Binary.Left.Value.Target.Map; mp != nil {
 				rhs, err = c.compileMap(mp, true)
 			} else {
@@ -704,9 +704,6 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	if s.Type != nil {
 		typ := c.typeString(s.Type)
 		if mutable {
-			typ = c.mutableTypeString(s.Type)
-		}
-		if mutable {
 			c.writeln(fmt.Sprintf("var %s: %s = %s", name, typ, rhs))
 		} else {
 			c.writeln(fmt.Sprintf("val %s: %s = %s", name, typ, rhs))
@@ -737,7 +734,7 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		var err error
 		// use mutable collections when assigning list or map literals
 		if lst := s.Value.Binary.Left.Value.Target.List; lst != nil {
-			rhs, err = c.compileList(lst, true)
+			rhs, err = c.compileList(lst, false)
 		} else if mp := s.Value.Binary.Left.Value.Target.Map; mp != nil {
 			rhs, err = c.compileMap(mp, true)
 		} else {
@@ -776,7 +773,6 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 	name := sanitizeVarName(s.Name)
 	if s.Type != nil {
 		ts := c.typeString(s.Type)
-		ts = c.mutableTypeString(s.Type)
 		c.writeln(fmt.Sprintf("var %s: %s = %s", name, ts, rhs))
 	} else {
 		c.writeln(fmt.Sprintf("var %s = %s", name, rhs))
@@ -830,6 +826,8 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	ret := ""
 	if fn.Return != nil {
 		ret = ": " + c.typeString(fn.Return)
+	} else if hasReturn(fn.Body) {
+		ret = ": Unit"
 	}
 
 	oldEnv := c.env
@@ -3218,4 +3216,34 @@ func (c *Compiler) addImport(im *parser.ImportStmt) error {
 	default:
 		return fmt.Errorf("unsupported import language: %s", *im.Lang)
 	}
+}
+
+func hasReturn(stmts []*parser.Statement) bool {
+	for _, st := range stmts {
+		if st.Return != nil || st.Break != nil || st.Continue != nil {
+			return true
+		}
+		if st.If != nil {
+			if hasReturn(st.If.Then) {
+				return true
+			}
+			cur := st.If
+			for cur.ElseIf != nil {
+				if hasReturn(cur.ElseIf.Then) {
+					return true
+				}
+				cur = cur.ElseIf
+			}
+			if len(cur.Else) > 0 && hasReturn(cur.Else) {
+				return true
+			}
+		}
+		if st.For != nil && hasReturn(st.For.Body) {
+			return true
+		}
+		if st.While != nil && hasReturn(st.While.Body) {
+			return true
+		}
+	}
+	return false
 }
