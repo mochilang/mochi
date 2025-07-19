@@ -31,52 +31,58 @@ func repoRoot(t *testing.T) string {
 	return ""
 }
 
-func TestTranspile_PrintHello(t *testing.T) {
+func TestTranspile_Golden(t *testing.T) {
 	if _, err := exec.LookPath("racket"); err != nil {
 		t.Skip("racket not installed")
 	}
 	root := repoRoot(t)
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "rkt")
 	os.MkdirAll(outDir, 0o755)
-
-	src := filepath.Join(root, "tests", "vm", "valid", "print_hello.mochi")
-	prog, err := parser.Parse(src)
-	if err != nil {
-		t.Fatalf("parse: %v", err)
+	names := []string{
+		"print_hello",
+		"string_concat",
+		"let_and_print",
+		"var_assignment",
+		"basic_compare",
 	}
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
-		t.Fatalf("type: %v", errs[0])
-	}
-	progAST, err := rkt.Transpile(prog, env)
-	if err != nil {
-		t.Fatalf("transpile: %v", err)
-	}
-	var buf bytes.Buffer
-	if err := rkt.Emit(&buf, progAST); err != nil {
-		t.Fatalf("emit: %v", err)
-	}
-	code := buf.Bytes()
-	rktFile := filepath.Join(outDir, "print_hello.rkt")
-	if err := os.WriteFile(rktFile, code, 0o644); err != nil {
-		t.Fatalf("write: %v", err)
-	}
-	cmd := exec.Command("racket", rktFile)
-	cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root)
-	out, err := cmd.CombinedOutput()
-	got := bytes.TrimSpace(out)
-	if err != nil {
-		_ = os.WriteFile(filepath.Join(outDir, "print_hello.error"), out, 0o644)
-		t.Fatalf("run: %v", err)
-	}
-	_ = os.Remove(filepath.Join(outDir, "print_hello.error"))
-	wantPath := filepath.Join(outDir, "print_hello.out")
-	want, err := os.ReadFile(wantPath)
-	if err != nil {
-		t.Fatalf("read want: %v", err)
-	}
-	want = bytes.TrimSpace(want)
-	if !bytes.Equal(got, want) {
-		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
+	for _, name := range names {
+		src := filepath.Join(root, "tests", "vm", "valid", name+".mochi")
+		prog, err := parser.Parse(src)
+		if err != nil {
+			t.Fatalf("parse %s: %v", name, err)
+		}
+		env := types.NewEnv(nil)
+		if errs := types.Check(prog, env); len(errs) > 0 {
+			t.Fatalf("type %s: %v", name, errs[0])
+		}
+		ast, err := rkt.Transpile(prog, env)
+		if err != nil {
+			t.Fatalf("transpile %s: %v", name, err)
+		}
+		var buf bytes.Buffer
+		if err := rkt.Emit(&buf, ast); err != nil {
+			t.Fatalf("emit %s: %v", name, err)
+		}
+		rktFile := filepath.Join(outDir, name+".rkt")
+		if err := os.WriteFile(rktFile, buf.Bytes(), 0o644); err != nil {
+			t.Fatalf("write %s: %v", name, err)
+		}
+		cmd := exec.Command("racket", rktFile)
+		cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root)
+		out, err := cmd.CombinedOutput()
+		trimmed := bytes.TrimSpace(out)
+		if err != nil {
+			_ = os.WriteFile(filepath.Join(outDir, name+".error"), out, 0o644)
+			t.Fatalf("run %s: %v", name, err)
+		}
+		_ = os.Remove(filepath.Join(outDir, name+".error"))
+		want, err := os.ReadFile(filepath.Join(outDir, name+".out"))
+		if err != nil {
+			t.Fatalf("read want %s: %v", name, err)
+		}
+		want = bytes.TrimSpace(want)
+		if !bytes.Equal(trimmed, want) {
+			t.Errorf("%s output mismatch:\nGot: %s\nWant: %s", name, trimmed, want)
+		}
 	}
 }
