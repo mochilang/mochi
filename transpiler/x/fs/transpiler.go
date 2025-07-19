@@ -27,16 +27,134 @@ type ExprStmt struct{ Expr Expr }
 
 func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
 
+type LetStmt struct {
+	Name string
+	Expr Expr
+}
+
+func (s *LetStmt) emit(w io.Writer) {
+	io.WriteString(w, "let ")
+	io.WriteString(w, s.Name)
+	io.WriteString(w, " = ")
+	s.Expr.emit(w)
+}
+
 type CallExpr struct {
 	Func string
 	Args []Expr
+}
+
+type UnaryExpr struct {
+	Op   string
+	Expr Expr
+}
+
+func (u *UnaryExpr) emit(w io.Writer) {
+	io.WriteString(w, u.Op)
+	if u.Op != "-" {
+		io.WriteString(w, " ")
+	}
+	if needsParen(u.Expr) {
+		io.WriteString(w, "(")
+		u.Expr.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		u.Expr.emit(w)
+	}
+}
+
+type BinaryExpr struct {
+	Left  Expr
+	Op    string
+	Right Expr
+}
+
+func (b *BinaryExpr) emit(w io.Writer) {
+	if needsParen(b.Left) {
+		io.WriteString(w, "(")
+		b.Left.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		b.Left.emit(w)
+	}
+	io.WriteString(w, " ")
+	io.WriteString(w, mapOp(b.Op))
+	io.WriteString(w, " ")
+	if needsParen(b.Right) {
+		io.WriteString(w, "(")
+		b.Right.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		b.Right.emit(w)
+	}
+}
+
+type IntLit struct{ Value int }
+
+func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
+
+type BoolLit struct{ Value bool }
+
+func (b *BoolLit) emit(w io.Writer) {
+	if b.Value {
+		io.WriteString(w, "true")
+	} else {
+		io.WriteString(w, "false")
+	}
+}
+
+type IdentExpr struct{ Name string }
+
+func (i *IdentExpr) emit(w io.Writer) { io.WriteString(w, i.Name) }
+
+func mapOp(op string) string {
+	switch op {
+	case "==":
+		return "="
+	case "!=":
+		return "<>"
+	default:
+		return op
+	}
+}
+
+func precedence(op string) int {
+	switch op {
+	case "||":
+		return 1
+	case "&&":
+		return 2
+	case "==", "!=", "<", "<=", ">", ">=":
+		return 3
+	case "+", "-":
+		return 4
+	case "*", "/", "%":
+		return 5
+	default:
+		return 0
+	}
+}
+
+func needsParen(e Expr) bool {
+	switch e.(type) {
+	case *BinaryExpr, *UnaryExpr:
+		return true
+	default:
+		return false
+	}
 }
 
 func (c *CallExpr) emit(w io.Writer) {
 	io.WriteString(w, c.Func)
 	for _, a := range c.Args {
 		io.WriteString(w, " ")
-		a.emit(w)
+		if needsParen(a) {
+			io.WriteString(w, "(")
+			a.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			a.emit(w)
+		}
 	}
 }
 
@@ -92,13 +210,20 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	_ = env
 	p := &Program{}
 	for _, st := range prog.Statements {
-		if st.Expr != nil {
+		switch {
+		case st.Expr != nil:
 			e, err := convertExpr(st.Expr.Expr)
 			if err != nil {
 				return nil, err
 			}
 			p.Stmts = append(p.Stmts, &ExprStmt{Expr: e})
-		} else {
+		case st.Let != nil && st.Let.Value != nil:
+			e, err := convertExpr(st.Let.Value)
+			if err != nil {
+				return nil, err
+			}
+			p.Stmts = append(p.Stmts, &LetStmt{Name: st.Let.Name, Expr: e})
+		default:
 			return nil, fmt.Errorf("unsupported statement")
 		}
 	}
@@ -106,17 +231,67 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 }
 
 func convertExpr(e *parser.Expr) (Expr, error) {
-	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+	if e == nil || e.Binary == nil {
 		return nil, fmt.Errorf("unsupported expression")
 	}
-	return convertUnary(e.Binary.Left)
+	left, err := convertUnary(e.Binary.Left)
+	if err != nil {
+		return nil, err
+	}
+	exprs := []Expr{left}
+	ops := []string{}
+	for _, op := range e.Binary.Right {
+		right, err := convertPostfix(op.Right)
+		if err != nil {
+			return nil, err
+		}
+		for len(ops) > 0 && precedence(ops[len(ops)-1]) >= precedence(op.Op) {
+			r := exprs[len(exprs)-1]
+			exprs = exprs[:len(exprs)-1]
+			l := exprs[len(exprs)-1]
+			exprs = exprs[:len(exprs)-1]
+			o := ops[len(ops)-1]
+			ops = ops[:len(ops)-1]
+			exprs = append(exprs, &BinaryExpr{Left: l, Op: o, Right: r})
+		}
+		ops = append(ops, op.Op)
+		exprs = append(exprs, right)
+	}
+	for len(ops) > 0 {
+		r := exprs[len(exprs)-1]
+		exprs = exprs[:len(exprs)-1]
+		l := exprs[len(exprs)-1]
+		exprs = exprs[:len(exprs)-1]
+		o := ops[len(ops)-1]
+		ops = ops[:len(ops)-1]
+		exprs = append(exprs, &BinaryExpr{Left: l, Op: o, Right: r})
+	}
+	if len(exprs) != 1 {
+		return nil, fmt.Errorf("expr reduce error")
+	}
+	return exprs[0], nil
 }
 
 func convertUnary(u *parser.Unary) (Expr, error) {
-	if u == nil || len(u.Ops) > 0 {
+	if u == nil {
 		return nil, fmt.Errorf("unsupported unary")
 	}
-	return convertPostfix(u.Value)
+	expr, err := convertPostfix(u.Value)
+	if err != nil {
+		return nil, err
+	}
+	for i := len(u.Ops) - 1; i >= 0; i-- {
+		op := u.Ops[i]
+		switch op {
+		case "-":
+			expr = &UnaryExpr{Op: "-", Expr: expr}
+		case "!":
+			expr = &UnaryExpr{Op: "not", Expr: expr}
+		default:
+			return nil, fmt.Errorf("unsupported unary op")
+		}
+	}
+	return expr, nil
 }
 
 func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
@@ -139,11 +314,19 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		name := p.Call.Func
 		if name == "print" {
-			name = "printfn \"%s\""
+			name = "printfn \"%A\""
 		}
 		return &CallExpr{Func: name, Args: args}, nil
 	case p.Lit != nil && p.Lit.Str != nil:
 		return &StringLit{Value: *p.Lit.Str}, nil
+	case p.Lit != nil && p.Lit.Int != nil:
+		return &IntLit{Value: int(*p.Lit.Int)}, nil
+	case p.Lit != nil && p.Lit.Bool != nil:
+		return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
+	case p.Selector != nil && len(p.Selector.Tail) == 0:
+		return &IdentExpr{Name: p.Selector.Root}, nil
+	case p.Group != nil:
+		return convertExpr(p.Group)
 	}
 	return nil, fmt.Errorf("unsupported primary")
 }
