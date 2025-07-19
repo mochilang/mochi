@@ -997,6 +997,9 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 			return "double"
 		}
 	}
+	if t := c.indexType(e); t != "" {
+		return t
+	}
 	if l := isListLiteral(e); l != nil {
 		et := "Object"
 		if len(l.Elems) > 0 {
@@ -1695,7 +1698,10 @@ func (c *Compiler) compileList(l *parser.ListLiteral) (string, error) {
 		}
 		elems = append(elems, s)
 	}
-	return fmt.Sprintf("Arrays.asList(%s)", strings.Join(elems, ", ")), nil
+	if len(elems) == 0 {
+		return "new ArrayList<>()", nil
+	}
+	return fmt.Sprintf("new ArrayList<>(Arrays.asList(%s))", strings.Join(elems, ", ")), nil
 }
 
 func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
@@ -1871,19 +1877,9 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	typ := c.typeName(v.Type)
 	orig := c.curVar
 	sanitized := c.sanitize(v.Name)
-	oldRename := c.renamed[v.Name]
 	if sanitized != v.Name {
 		c.renamed[v.Name] = sanitized
 	}
-	defer func() {
-		if sanitized != v.Name {
-			if oldRename == "" {
-				delete(c.renamed, v.Name)
-			} else {
-				c.renamed[v.Name] = oldRename
-			}
-		}
-	}()
 	c.curVar = v.Name
 	if v.Type != nil {
 		c.vars[v.Name] = typ
@@ -1927,19 +1923,9 @@ func (c *Compiler) compileLet(v *parser.LetStmt) error {
 	typ := c.typeName(v.Type)
 	orig := c.curVar
 	sanitized := c.sanitize(v.Name)
-	oldRename := c.renamed[v.Name]
 	if sanitized != v.Name {
 		c.renamed[v.Name] = sanitized
 	}
-	defer func() {
-		if sanitized != v.Name {
-			if oldRename == "" {
-				delete(c.renamed, v.Name)
-			} else {
-				c.renamed[v.Name] = oldRename
-			}
-		}
-	}()
 	c.curVar = v.Name
 	if v.Type != nil {
 		c.vars[v.Name] = typ
@@ -2640,6 +2626,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 						val = fmt.Sprintf("%s.get(%s)", val, idx)
 					} else if strings.HasPrefix(typ, "List<") {
 						val = fmt.Sprintf("%s.get(%s)", val, idx)
+						typ = listElemType(typ)
 					} else if field, ok := simpleStringKey(op.Index.Start); ok {
 						if c.hasField(typ, field) {
 							val = fmt.Sprintf("%s.%s", val, field)
@@ -2871,7 +2858,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if len(p.Call.Args) != 0 {
 				return "", fmt.Errorf("now expects no arguments at line %d", p.Pos.Line)
 			}
-			return "System.currentTimeMillis()", nil
+			return "(int)System.currentTimeMillis()", nil
 		case "input":
 			if len(p.Call.Args) != 0 {
 				return "", fmt.Errorf("input expects no arguments at line %d", p.Pos.Line)
@@ -3207,6 +3194,34 @@ func (c *Compiler) selectorType(e *parser.Expr) string {
 		}
 	}
 	return typ
+}
+
+// indexType returns the type of a simple indexing expression like a[b].
+func (c *Compiler) indexType(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || len(e.Binary.Right) != 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return ""
+	}
+	p := u.Value
+	if len(p.Ops) != 1 || p.Ops[0].Index == nil {
+		return ""
+	}
+	idx := p.Ops[0].Index
+	if idx.Colon != nil || idx.Colon2 != nil || idx.Step != nil {
+		return ""
+	}
+	baseExpr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: p.Target}}}}
+	baseType := c.inferType(baseExpr)
+	if strings.HasPrefix(baseType, "List<") {
+		return listElemType(baseType)
+	}
+	if strings.HasPrefix(baseType, "Map<") {
+		return mapValueType(baseType)
+	}
+	return ""
 }
 
 func containsStr(list []string, s string) bool {
