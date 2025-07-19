@@ -68,6 +68,53 @@ func (b *BoolLit) emit(w io.Writer) {
 	}
 }
 
+// IndexExpr represents a[i].
+type IndexExpr struct {
+	Target Expr
+	Index  Expr
+}
+
+func (ix *IndexExpr) emit(w io.Writer) {
+	ix.Target.emit(w)
+	io.WriteString(w, "[")
+	ix.Index.emit(w)
+	io.WriteString(w, "]")
+}
+
+// MapLit represents a Kotlin map literal.
+type MapLit struct{ Items []MapItem }
+
+type MapItem struct {
+	Key   Expr
+	Value Expr
+}
+
+func (m *MapLit) emit(w io.Writer) {
+	io.WriteString(w, "mapOf(")
+	for i, it := range m.Items {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		it.Key.emit(w)
+		io.WriteString(w, " to ")
+		it.Value.emit(w)
+	}
+	io.WriteString(w, ")")
+}
+
+// ContainsExpr represents s.contains(sub).
+type ContainsExpr struct {
+	Str Expr
+	Sub Expr
+}
+
+func (c *ContainsExpr) emit(w io.Writer) {
+	c.Str.emit(w)
+	io.WriteString(w, ".contains(")
+	c.Sub.emit(w)
+	io.WriteString(w, ")")
+}
+
 type VarRef struct{ Name string }
 
 func (v *VarRef) emit(w io.Writer) { io.WriteString(w, v.Name) }
@@ -285,7 +332,7 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 		operands = append(operands, r)
 		ops = append(ops, part.Op)
 	}
-	prec := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!="}, {"&&"}, {"||"}}
+	prec := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!=", "in"}, {"&&"}, {"||"}}
 	contains := func(list []string, s string) bool {
 		for _, v := range list {
 			if v == s {
@@ -335,10 +382,56 @@ func convertUnary(env *types.Env, u *parser.Unary) (Expr, error) {
 }
 
 func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
-	if p == nil || len(p.Ops) > 0 {
+	if p == nil {
 		return nil, fmt.Errorf("unsupported postfix")
 	}
-	return convertPrimary(env, p.Target)
+	if p.Target != nil && p.Target.Selector != nil && len(p.Target.Selector.Tail) == 1 && p.Target.Selector.Tail[0] == "contains" && len(p.Ops) == 1 && p.Ops[0].Call != nil {
+		if len(p.Ops[0].Call.Args) != 1 {
+			return nil, fmt.Errorf("contains expects 1 arg")
+		}
+		base, err := convertPrimary(env, &parser.Primary{Selector: &parser.SelectorExpr{Root: p.Target.Selector.Root}})
+		if err != nil {
+			return nil, err
+		}
+		arg, err := convertExpr(env, p.Ops[0].Call.Args[0])
+		if err != nil {
+			return nil, err
+		}
+		return &ContainsExpr{Str: base, Sub: arg}, nil
+	}
+	expr, err := convertPrimary(env, p.Target)
+	if err != nil {
+		return nil, err
+	}
+	for i := 0; i < len(p.Ops); i++ {
+		op := p.Ops[i]
+		switch {
+		case op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil:
+			idx, err := convertExpr(env, op.Index.Start)
+			if err != nil {
+				return nil, err
+			}
+			expr = &IndexExpr{Target: expr, Index: idx}
+		case op.Field != nil && op.Field.Name == "contains" && i+1 < len(p.Ops) && p.Ops[i+1].Call != nil:
+			call := p.Ops[i+1].Call
+			if len(call.Args) != 1 {
+				return nil, fmt.Errorf("contains expects 1 arg")
+			}
+			arg, err := convertExpr(env, call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			expr = &ContainsExpr{Str: expr, Sub: arg}
+			i++ // skip call op
+		case op.Field != nil:
+			return nil, fmt.Errorf("unsupported field access")
+		case op.Call != nil:
+			return nil, fmt.Errorf("unsupported call")
+		default:
+			return nil, fmt.Errorf("unsupported postfix")
+		}
+	}
+	return expr, nil
 }
 
 func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
@@ -448,6 +541,20 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			elems[i] = ex
 		}
 		return &ListLit{Elems: elems}, nil
+	case p.Map != nil:
+		items := make([]MapItem, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			k, err := convertExpr(env, it.Key)
+			if err != nil {
+				return nil, err
+			}
+			v, err := convertExpr(env, it.Value)
+			if err != nil {
+				return nil, err
+			}
+			items[i] = MapItem{Key: k, Value: v}
+		}
+		return &MapLit{Items: items}, nil
 	case p.Group != nil:
 		return convertExpr(env, p.Group)
 	default:
@@ -553,6 +660,16 @@ func toNodeExpr(e Expr) *ast.Node {
 			n.Children = append(n.Children, toNodeExpr(el))
 		}
 		return n
+	case *MapLit:
+		n := &ast.Node{Kind: "map"}
+		for _, it := range ex.Items {
+			n.Children = append(n.Children, &ast.Node{Kind: "entry", Children: []*ast.Node{toNodeExpr(it.Key), toNodeExpr(it.Value)}})
+		}
+		return n
+	case *IndexExpr:
+		return &ast.Node{Kind: "index", Children: []*ast.Node{toNodeExpr(ex.Target), toNodeExpr(ex.Index)}}
+	case *ContainsExpr:
+		return &ast.Node{Kind: "contains", Children: []*ast.Node{toNodeExpr(ex.Str), toNodeExpr(ex.Sub)}}
 	case *AppendExpr:
 		return &ast.Node{Kind: "append", Children: []*ast.Node{toNodeExpr(ex.List), toNodeExpr(ex.Elem)}}
 	case *MinExpr:
