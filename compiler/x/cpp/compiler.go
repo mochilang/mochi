@@ -667,6 +667,17 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 		} else if et := c.elemType[exprStr]; et != "" && !strings.HasPrefix(exprStr, "std::unordered_map<") && !strings.HasPrefix(exprStr, "std::map<") && c.vars[exprStr] != "map" {
 			typ = fmt.Sprintf("std::vector<%s>", et)
 			elemHint = et
+		} else if typ == "auto" {
+			if m := regexp.MustCompile(`^([A-Za-z_][A-Za-z0-9_]*)\[`).FindStringSubmatch(exprStr); m != nil {
+				base := m[1]
+				if et := c.elemType[base]; et != "" {
+					typ = et
+					elemHint = et
+					if c.isStructName(et) {
+						c.varStruct[st.Name] = et
+					}
+				}
+			}
 		}
 	}
 
@@ -2232,6 +2243,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 					c.usesNow = true
 				}
 				return "_now()", nil
+			}
+		case "input":
+			if len(args) == 0 {
+				c.usesIO = true
+				return "([&](){ std::string s; std::getline(std::cin, s); return s; })()", nil
 			}
 		case "json":
 			if len(args) == 1 {
