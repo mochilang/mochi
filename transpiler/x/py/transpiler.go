@@ -240,12 +240,17 @@ func (i *IndexExpr) emit(w io.Writer) error {
 }
 
 type FieldExpr struct {
-	Target Expr
-	Name   string
+	Target   Expr
+	Name     string
+	MapIndex bool
 }
 
 func (f *FieldExpr) emit(w io.Writer) error {
 	if err := emitExpr(w, f.Target); err != nil {
+		return err
+	}
+	if f.MapIndex {
+		_, err := fmt.Fprintf(w, "[%q]", f.Name)
 		return err
 	}
 	_, err := io.WriteString(w, "."+f.Name)
@@ -635,6 +640,19 @@ func header() string {
 		version(), t.Format("2006-01-02 15:04:05 MST"))
 }
 
+func typeRefSimpleName(t *parser.TypeRef) string {
+	if t == nil {
+		return ""
+	}
+	if t.Simple != nil {
+		return *t.Simple
+	}
+	if t.Generic != nil {
+		return t.Generic.Name
+	}
+	return ""
+}
+
 func zeroValueExpr(t types.Type) Expr {
 	switch t.(type) {
 	case types.IntType, types.Int64Type:
@@ -956,6 +974,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				}
 			}
 			p.Stmts = append(p.Stmts, &ReturnStmt{Expr: e})
+		case st.Type != nil:
+			// ignore type declarations at top level
+			continue
+		case st.ExternType != nil:
+			continue
 		case st.Fun != nil:
 			body, err := convertStmts(st.Fun.Body, env)
 			if err != nil {
@@ -1107,6 +1130,12 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 				}
 			}
 			out = append(out, &ReturnStmt{Expr: e})
+		case s.Type != nil:
+			// type declarations are ignored in Python output
+			continue
+		case s.ExternType != nil:
+			// ignore extern type declarations
+			continue
 		case s.Fun != nil:
 			b, err := convertStmts(s.Fun.Body, env)
 			if err != nil {
@@ -1209,15 +1238,32 @@ func convertUnary(u *parser.Unary) (Expr, error) {
 	return expr, nil
 }
 
+func convertSelector(sel *parser.SelectorExpr, method bool) Expr {
+	expr := Expr(&Name{Name: sel.Root})
+	for i, t := range sel.Tail {
+		idx := i == len(sel.Tail)-1 && method
+		expr = &FieldExpr{Target: expr, Name: t, MapIndex: !idx}
+	}
+	return expr
+}
+
 func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 	if p == nil {
 		return nil, fmt.Errorf("nil postfix")
 	}
-	expr, err := convertPrimary(p.Target)
-	if err != nil {
-		return nil, err
+	method := len(p.Ops) > 0 && p.Ops[0].Call != nil
+	var expr Expr
+	var err error
+	if p.Target.Selector != nil {
+		expr = convertSelector(p.Target.Selector, method)
+	} else {
+		expr, err = convertPrimary(p.Target)
+		if err != nil {
+			return nil, err
+		}
 	}
-	for _, op := range p.Ops {
+	for i := 0; i < len(p.Ops); i++ {
+		op := p.Ops[i]
 		switch {
 		case op.Index != nil:
 			if op.Index.Colon != nil || op.Index.Colon2 != nil {
@@ -1250,7 +1296,12 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				expr = &IndexExpr{Target: expr, Index: idx}
 			}
 		case op.Field != nil:
-			expr = &FieldExpr{Target: expr, Name: op.Field.Name}
+			// use attribute access for method calls, otherwise treat as map lookup
+			if i+1 < len(p.Ops) && p.Ops[i+1].Call != nil {
+				expr = &FieldExpr{Target: expr, Name: op.Field.Name}
+			} else {
+				expr = &FieldExpr{Target: expr, Name: op.Field.Name, MapIndex: true}
+			}
 		case op.Call != nil:
 			var args []Expr
 			for _, a := range op.Call.Args {
@@ -1264,6 +1315,20 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				expr = &BinaryExpr{Left: args[0], Op: "in", Right: fe.Target}
 			} else {
 				expr = &CallExpr{Func: expr, Args: args}
+			}
+		case op.Cast != nil:
+			name := typeRefSimpleName(op.Cast.Type)
+			switch name {
+			case "int":
+				expr = &CallExpr{Func: &Name{Name: "int"}, Args: []Expr{expr}}
+			case "float":
+				expr = &CallExpr{Func: &Name{Name: "float"}, Args: []Expr{expr}}
+			case "string":
+				expr = &CallExpr{Func: &Name{Name: "str"}, Args: []Expr{expr}}
+			case "bool":
+				expr = &CallExpr{Func: &Name{Name: "bool"}, Args: []Expr{expr}}
+			default:
+				// ignore cast for other types
 			}
 		default:
 			return nil, fmt.Errorf("postfix op not supported")
@@ -1314,12 +1379,6 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 		}
 		return &CallExpr{Func: &Name{Name: p.Call.Func}, Args: args}, nil
-	case p.Selector != nil:
-		expr := Expr(&Name{Name: p.Selector.Root})
-		for _, t := range p.Selector.Tail {
-			expr = &FieldExpr{Target: expr, Name: t}
-		}
-		return expr, nil
 	case p.Lit != nil:
 		return convertLiteral(p.Lit)
 	case p.List != nil:
