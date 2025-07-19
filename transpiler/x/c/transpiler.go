@@ -22,8 +22,9 @@ type Program struct {
 }
 
 type Function struct {
-	Name string
-	Body []Stmt
+	Name   string
+	Params []string
+	Body   []Stmt
 }
 
 type Stmt interface {
@@ -91,7 +92,14 @@ func (c *CallStmt) emit(w io.Writer) {
 }
 
 func (r *ReturnStmt) emit(w io.Writer) {
-	io.WriteString(w, "\treturn 0;\n")
+	io.WriteString(w, "\treturn")
+	if r.Expr != nil {
+		io.WriteString(w, " ")
+		r.Expr.emitExpr(w)
+	} else {
+		io.WriteString(w, " 0")
+	}
+	io.WriteString(w, ";\n")
 }
 
 func (d *DeclStmt) emit(w io.Writer) {
@@ -217,6 +225,23 @@ func (v *VarRef) emitExpr(w io.Writer) {
 	io.WriteString(w, v.Name)
 }
 
+type CallExpr struct {
+	Func string
+	Args []Expr
+}
+
+func (c *CallExpr) emitExpr(w io.Writer) {
+	io.WriteString(w, c.Func)
+	io.WriteString(w, "(")
+	for i, a := range c.Args {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		a.emitExpr(w)
+	}
+	io.WriteString(w, ")")
+}
+
 type BinaryExpr struct {
 	Op    string
 	Left  Expr
@@ -335,7 +360,15 @@ func (p *Program) Emit() []byte {
 	for _, f := range p.Functions {
 		buf.WriteString("int ")
 		buf.WriteString(f.Name)
-		buf.WriteString("() {\n")
+		buf.WriteString("(")
+		for i, p := range f.Params {
+			if i > 0 {
+				buf.WriteString(", ")
+			}
+			buf.WriteString("int ")
+			buf.WriteString(p)
+		}
+		buf.WriteString(") {\n")
 		for _, s := range f.Body {
 			s.emit(&buf)
 		}
@@ -347,13 +380,30 @@ func (p *Program) Emit() []byte {
 
 // Transpile converts a Mochi program into a C AST.
 func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
+	p := &Program{}
 	mainFn := &Function{Name: "main"}
-	body, err := compileStmts(env, prog.Statements)
-	if err != nil {
-		return nil, err
+	for _, st := range prog.Statements {
+		if st.Fun != nil {
+			body, err := compileStmts(env, st.Fun.Body)
+			if err != nil {
+				return nil, err
+			}
+			var params []string
+			for _, pa := range st.Fun.Params {
+				params = append(params, pa.Name)
+			}
+			p.Functions = append(p.Functions, &Function{Name: st.Fun.Name, Params: params, Body: body})
+			continue
+		}
+		stmt, err := compileStmt(env, st)
+		if err != nil {
+			return nil, err
+		}
+		if stmt != nil {
+			mainFn.Body = append(mainFn.Body, stmt)
+		}
 	}
-	mainFn.Body = append(mainFn.Body, body...)
-	p := &Program{Functions: []*Function{mainFn}}
+	p.Functions = append(p.Functions, mainFn)
 	return p, nil
 }
 
@@ -407,6 +457,8 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		return &DeclStmt{Name: s.Var.Name, Value: convertExpr(s.Var.Value), Type: declType}, nil
 	case s.Assign != nil:
 		return &AssignStmt{Name: s.Assign.Name, Value: convertExpr(s.Assign.Value)}, nil
+	case s.Return != nil:
+		return &ReturnStmt{Expr: convertExpr(s.Return.Value)}, nil
 	case s.While != nil:
 		cond := convertExpr(s.While.Cond)
 		body, err := compileStmts(env, s.While.Body)
@@ -572,7 +624,15 @@ func convertUnary(u *parser.Unary) Expr {
 				}
 			}
 		}
-		return nil
+		var args []Expr
+		for _, a := range call.Args {
+			ex := convertExpr(a)
+			if ex == nil {
+				return nil
+			}
+			args = append(args, ex)
+		}
+		return &CallExpr{Func: call.Func, Args: args}
 	}
 	if ifexpr := u.Value.Target.If; ifexpr != nil && len(u.Ops) == 0 {
 		return convertIfExpr(ifexpr)

@@ -1,8 +1,6 @@
-## Progress (2025-07-19 17:40 +0700)
-- VM valid golden test results updated to 17/100
-
-## Progress (2025-07-19 10:20:50 +0000)
-- VM valid golden test results updated to 15/100
+## Progress (2025-07-19 18:50 +0700)
+- Added support for function definitions, function calls, and return statements.
+- Golden tests updated to 19/100
 
 # Recent Progress
 - 2025-07-19 05:18 UTC - Added basic variables and while loops
