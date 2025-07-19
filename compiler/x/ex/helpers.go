@@ -120,3 +120,19 @@ func groupKeyNames(e *parser.Expr) []string {
 	}
 	return names
 }
+
+// isStringLit returns true if e is a literal string expression.
+func isStringLit(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Lit == nil || p.Target.Lit.Str == nil {
+		return false
+	}
+	return true
+}
