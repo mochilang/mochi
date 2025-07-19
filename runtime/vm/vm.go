@@ -7437,7 +7437,7 @@ func anyToValue(v any) Value { return FromAny(v) }
 func formatValue(v Value) string {
 	switch v.Tag {
 	case ValueNull:
-		return "null"
+		return "nil"
 	case ValueBool:
 		if v.Bool {
 			return "true"
