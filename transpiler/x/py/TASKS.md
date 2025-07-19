@@ -1,4 +1,8 @@
 # Python Transpiler Tasks
+## Recent Enhancements (2025-07-20 00:27 +0700)
+- Implemented `json` builtin using Python `json.dumps` and auto-import.
+- Generated golden output for `json_builtin`.
+- Updated README checklist to 67/100.
 ## Recent Enhancements (2025-07-19 17:01 +0000)
 - Added handling for `import` statements and ignored extern declarations.
 - Implemented `match` expression support generating nested conditionals.
