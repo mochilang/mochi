@@ -1798,6 +1798,16 @@ func (b *BlockStmt) emit(e *emitter) {
 	}
 }
 
+// BreakStmt represents a break statement.
+type BreakStmt struct{}
+
+func (b *BreakStmt) emit(w io.Writer) { io.WriteString(w, "break") }
+
+// ContinueStmt represents a continue/next statement.
+type ContinueStmt struct{}
+
+func (c *ContinueStmt) emit(w io.Writer) { io.WriteString(w, "next") }
+
 // FuncStmt represents a function definition.
 type FuncStmt struct {
 	Name   string
