@@ -22,6 +22,10 @@ type Program struct {
 	UseMin       bool
 	UseMax       bool
 	UseContains  bool
+	UseStrings   bool
+	UseIndex     bool
+	UseSlice     bool
+	UseBoolInt   bool
 	UseUnion     bool
 	UseUnionAll  bool
 	UseExcept    bool
@@ -36,12 +40,16 @@ var (
 	usesMin       bool
 	usesMax       bool
 	usesContains  bool
+	usesStrings   bool
 	usesUnion     bool
 	usesUnionAll  bool
 	usesExcept    bool
 	usesIntersect bool
 	usesSubstring bool
 	usesPrint     bool
+	usesIndex     bool
+	usesSlice     bool
+	usesBoolInt   bool
 )
 
 type Stmt interface{ emit(io.Writer) }
@@ -146,12 +154,16 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesMin = false
 	usesMax = false
 	usesContains = false
+	usesStrings = false
 	usesUnion = false
 	usesUnionAll = false
 	usesExcept = false
 	usesIntersect = false
 	usesSubstring = false
 	usesPrint = false
+	usesIndex = false
+	usesSlice = false
+	usesBoolInt = false
 	gp := &Program{}
 	for _, stmt := range p.Statements {
 		switch {
@@ -199,6 +211,10 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	gp.UseMin = usesMin
 	gp.UseMax = usesMax
 	gp.UseContains = usesContains
+	gp.UseStrings = usesStrings || usesContains
+	gp.UseIndex = usesIndex
+	gp.UseSlice = usesSlice
+	gp.UseBoolInt = usesBoolInt
 	gp.UseUnion = usesUnion
 	gp.UseUnionAll = usesUnionAll
 	gp.UseExcept = usesExcept
@@ -263,6 +279,7 @@ func compileBinary(b *parser.BinaryExpr) (Expr, error) {
 				switch opName {
 				case "in":
 					usesContains = true
+					usesStrings = true
 					newExpr = &CallExpr{Func: "contains", Args: []Expr{right, left}}
 				case "union":
 					usesUnion = true
@@ -278,6 +295,10 @@ func compileBinary(b *parser.BinaryExpr) (Expr, error) {
 					newExpr = &CallExpr{Func: "intersect", Args: []Expr{left, right}}
 				default:
 					newExpr = &BinaryExpr{Left: left, Op: ops[i].Op, Right: right}
+					if ops[i].Op == "==" || ops[i].Op == "!=" {
+						usesBoolInt = true
+						newExpr = &CallExpr{Func: "boolInt", Args: []Expr{newExpr}}
+					}
 				}
 				operands[i] = newExpr
 				operands = append(operands[:i+1], operands[i+2:]...)
@@ -310,10 +331,80 @@ func compileUnary(u *parser.Unary) (Expr, error) {
 }
 
 func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
-	if pf == nil || len(pf.Ops) > 0 {
-		return nil, fmt.Errorf("unsupported postfix")
+	if pf == nil {
+		return nil, fmt.Errorf("nil postfix")
 	}
-	return compilePrimary(pf.Target)
+	expr, err := compilePrimary(pf.Target)
+	if err != nil {
+		// allow selector with tail handled here
+		if pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) > 0 {
+			expr = &VarRef{Name: pf.Target.Selector.Root}
+		} else {
+			return nil, err
+		}
+	}
+	// handle selector tail as method call
+	tail := []string{}
+	if pf.Target != nil && pf.Target.Selector != nil {
+		tail = pf.Target.Selector.Tail
+	}
+	// if tail has one element and first op is CallOp => method call
+	if len(tail) == 1 && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
+		method := tail[0]
+		args := make([]Expr, len(pf.Ops[0].Call.Args))
+		for i, a := range pf.Ops[0].Call.Args {
+			ex, err := compileExpr(a)
+			if err != nil {
+				return nil, err
+			}
+			args[i] = ex
+		}
+		switch method {
+		case "contains":
+			usesContains = true
+			usesStrings = true
+			return &CallExpr{Func: "contains", Args: append([]Expr{expr}, args...)}, nil
+		default:
+			return nil, fmt.Errorf("unsupported method %s", method)
+		}
+	}
+	for _, op := range pf.Ops {
+		if op.Index != nil {
+			idx := op.Index
+			if idx.Colon == nil && idx.Colon2 == nil {
+				if idx.Start == nil {
+					return nil, fmt.Errorf("unsupported index")
+				}
+				iex, err := compileExpr(idx.Start)
+				if err != nil {
+					return nil, err
+				}
+				usesIndex = true
+				expr = &CallExpr{Func: "index", Args: []Expr{expr, iex}}
+			} else {
+				var start, end Expr
+				if idx.Start != nil {
+					start, err = compileExpr(idx.Start)
+					if err != nil {
+						return nil, err
+					}
+				}
+				if idx.End != nil {
+					end, err = compileExpr(idx.End)
+					if err != nil {
+						return nil, err
+					}
+				}
+				usesSlice = true
+				expr = &CallExpr{Func: "slice", Args: []Expr{expr, start, end}}
+			}
+		} else if op.Call != nil {
+			return nil, fmt.Errorf("unsupported call")
+		} else if op.Field != nil || op.Cast != nil {
+			return nil, fmt.Errorf("unsupported postfix")
+		}
+	}
+	return expr, nil
 }
 
 func compilePrimary(p *parser.Primary) (Expr, error) {
@@ -401,6 +492,9 @@ func Emit(prog *Program) []byte {
 	if prog.UsePrint {
 		buf.WriteString("    \"math\"\n")
 	}
+	if prog.UseStrings {
+		buf.WriteString("    \"strings\"\n")
+	}
 	buf.WriteString(")\n\n")
 	if prog.UseAvg {
 		buf.WriteString("func avg(nums []int) float64 {\n")
@@ -419,7 +513,7 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("func max(nums []int) int {\n    if len(nums)==0 { return 0 }\n    m := nums[0]\n    for _, n := range nums[1:] { if n > m { m = n } }\n    return m\n}\n\n")
 	}
 	if prog.UseContains {
-		buf.WriteString("func contains(s []int, v int) bool {\n    for _, n := range s { if n == v { return true } }\n    return false\n}\n\n")
+		buf.WriteString("func contains(s any, v any) any {\n    switch xs := s.(type) {\n    case []int:\n        n, ok := v.(int)\n        if !ok { return false }\n        for _, m := range xs { if m == n { return true } }\n        return false\n    case string:\n        str, ok := v.(string)\n        if !ok { return 0 }\n        if strings.Contains(xs, str) { return 1 }\n        return 0\n    }\n    return nil\n}\n\n")
 	}
 	if prog.UseUnion {
 		buf.WriteString("func union(a, b []int) []int {\n    m := map[int]bool{}\n    res := []int{}\n    for _, n := range a { if !m[n] { m[n]=true; res=append(res,n) } }\n    for _, n := range b { if !m[n] { m[n]=true; res=append(res,n) } }\n    return res\n}\n\n")
@@ -435,6 +529,15 @@ func Emit(prog *Program) []byte {
 	}
 	if prog.UseSubstring {
 		buf.WriteString("func substring(s string, i, j int) string {\n    r := []rune(s)\n    return string(r[i:j])\n}\n\n")
+	}
+	if prog.UseIndex {
+		buf.WriteString("func index(v any, i int) any {\n    switch x := v.(type) {\n    case []int:\n        return x[i]\n    case string:\n        r := []rune(x)\n        return string(r[i])\n    }\n    return nil\n}\n\n")
+	}
+	if prog.UseSlice {
+		buf.WriteString("func slice(v any, i, j int) any {\n    switch x := v.(type) {\n    case []int:\n        return x[i:j]\n    case string:\n        r := []rune(x)\n        return string(r[i:j])\n    }\n    return nil\n}\n\n")
+	}
+	if prog.UseBoolInt {
+		buf.WriteString("func boolInt(b bool) int {\n    if b { return 1 }\n    return 0\n}\n\n")
 	}
 	if prog.UsePrint {
 		buf.WriteString("func mochiPrint(v any) {\n    switch x := v.(type) {\n    case bool:\n        if x { fmt.Println(1) } else { fmt.Println(\"nil\") }\n    case float64:\n        if math.Trunc(x) == x { fmt.Printf(\"%.1f\\n\", x) } else { fmt.Printf(\"%v\\n\", x) }\n    case []int:\n        for i, n := range x { if i > 0 { fmt.Print(\" \") }; fmt.Print(n) }\n        fmt.Println()\n    default:\n        fmt.Println(v)\n    }\n}\n\n")
