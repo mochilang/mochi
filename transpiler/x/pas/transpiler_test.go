@@ -4,15 +4,13 @@ package pas_test
 
 import (
 	"bytes"
+	"mochi/parser"
+	pas "mochi/transpiler/x/pas"
+	"mochi/types"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"testing"
-
-	pascode "mochi/compiler/x/pascal"
-	"mochi/parser"
-	pas "mochi/transpiler/x/pas"
-	"mochi/types"
 )
 
 func repoRoot(t *testing.T) string {
@@ -35,12 +33,18 @@ func repoRoot(t *testing.T) string {
 	return ""
 }
 
-func runCase(t *testing.T, name string) {
+func ensureFPCQuick(t *testing.T) string {
 	t.Helper()
-	fpc, err := pascode.EnsureFPC()
+	path, err := exec.LookPath("fpc")
 	if err != nil {
 		t.Skip("fpc not installed")
 	}
+	return path
+}
+
+func runCase(t *testing.T, name string) {
+	t.Helper()
+	fpc := ensureFPCQuick(t)
 	root := repoRoot(t)
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "pas")
 	os.MkdirAll(outDir, 0o755)
@@ -86,7 +90,7 @@ func runCase(t *testing.T, name string) {
 }
 
 func TestPascalTranspiler(t *testing.T) {
-	for _, tc := range []string{"print_hello", "unary_neg", "math_ops", "let_and_print", "var_assignment", "typed_let", "typed_var", "string_concat", "string_compare", "while_loop", "if_else", "fun_call", "fun_three_args", "bool_chain"} {
+	for _, tc := range []string{"print_hello", "unary_neg", "math_ops", "let_and_print", "var_assignment", "typed_let", "typed_var", "string_concat", "string_compare", "while_loop", "if_else", "fun_call", "fun_three_args", "bool_chain", "basic_compare", "binary_precedence", "len_string"} {
 		t.Run(tc, func(t *testing.T) { runCase(t, tc) })
 	}
 }

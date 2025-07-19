@@ -1,5 +1,10 @@
 # Transpiler Tasks
 
+## Progress (2025-07-19 14:41 +0700)
+- Added operator precedence handling and `len` builtin for strings.
+- Generated golden files for `basic_compare`, `binary_precedence` and `len_string`.
+- Updated README progress to 17/100.
+
 ## Recent Updates
 - [2025-07-19T11:48:55+07:00] Created README checklist and expanded Pascal transpiler
 
