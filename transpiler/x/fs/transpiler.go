@@ -23,6 +23,50 @@ type Stmt interface{ emit(io.Writer) }
 
 type Expr interface{ emit(io.Writer) }
 
+// ListLit represents an F# list literal.
+type ListLit struct{ Elems []Expr }
+
+func (l *ListLit) emit(w io.Writer) {
+	io.WriteString(w, "[")
+	for i, e := range l.Elems {
+		e.emit(w)
+		if i < len(l.Elems)-1 {
+			io.WriteString(w, "; ")
+		}
+	}
+	io.WriteString(w, "]")
+}
+
+// AppendExpr represents append(list, elem).
+type AppendExpr struct {
+	List Expr
+	Elem Expr
+}
+
+func (a *AppendExpr) emit(w io.Writer) {
+	a.List.emit(w)
+	io.WriteString(w, " @ [")
+	a.Elem.emit(w)
+	io.WriteString(w, "]")
+}
+
+// SubstringExpr represents substring(str, start, end).
+type SubstringExpr struct {
+	Str   Expr
+	Start Expr
+	End   Expr
+}
+
+func (s *SubstringExpr) emit(w io.Writer) {
+	io.WriteString(w, "String.sub ")
+	s.Str.emit(w)
+	io.WriteString(w, " ")
+	s.Start.emit(w)
+	io.WriteString(w, " (")
+	(&BinaryExpr{Left: s.End, Op: "-", Right: s.Start}).emit(w)
+	io.WriteString(w, ")")
+}
+
 type IfStmt struct {
 	Cond Expr
 	Then []Stmt
@@ -195,7 +239,7 @@ func precedence(op string) int {
 
 func needsParen(e Expr) bool {
 	switch e.(type) {
-	case *BinaryExpr, *UnaryExpr, *IfExpr:
+	case *BinaryExpr, *UnaryExpr, *IfExpr, *AppendExpr, *SubstringExpr:
 		return true
 	default:
 		return false
@@ -380,11 +424,30 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			args[i] = ex
 		}
-		name := p.Call.Func
-		if name == "print" {
-			name = "printfn \"%O\""
+		switch p.Call.Func {
+		case "print":
+			return &CallExpr{Func: "printfn \"%O\"", Args: args}, nil
+		case "len":
+			return &CallExpr{Func: "Seq.length", Args: args}, nil
+		case "str":
+			return &CallExpr{Func: "string", Args: args}, nil
+		case "sum":
+			return &CallExpr{Func: "Seq.sum", Args: args}, nil
+		case "avg":
+			return &CallExpr{Func: "Seq.average", Args: args}, nil
+		case "append":
+			if len(args) != 2 {
+				return nil, fmt.Errorf("append expects 2 args")
+			}
+			return &AppendExpr{List: args[0], Elem: args[1]}, nil
+		case "substring":
+			if len(args) != 3 {
+				return nil, fmt.Errorf("substring expects 3 args")
+			}
+			return &SubstringExpr{Str: args[0], Start: args[1], End: args[2]}, nil
+		default:
+			return &CallExpr{Func: p.Call.Func, Args: args}, nil
 		}
-		return &CallExpr{Func: name, Args: args}, nil
 	case p.If != nil:
 		return convertIfExpr(p.If)
 	case p.Lit != nil && p.Lit.Str != nil:
@@ -393,6 +456,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return &IntLit{Value: int(*p.Lit.Int)}, nil
 	case p.Lit != nil && p.Lit.Bool != nil:
 		return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
+	case p.List != nil:
+		elems := make([]Expr, len(p.List.Elems))
+		for i, e := range p.List.Elems {
+			ex, err := convertExpr(e)
+			if err != nil {
+				return nil, err
+			}
+			elems[i] = ex
+		}
+		return &ListLit{Elems: elems}, nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return &IdentExpr{Name: p.Selector.Root}, nil
 	case p.Group != nil:

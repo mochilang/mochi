@@ -2,12 +2,9 @@
 
 This folder contains an experimental transpiler that converts Mochi source code into F#.
 
-## Golden Test Checklist
+## Golden Test Checklist (11/100)
 
-The list below tracks Mochi programs under `tests/vm/valid` that should
-successfully transpile. Checked items indicate tests known to work.
-
-Compiled programs: 11/100
+The list below tracks Mochi programs under `tests/vm/valid` that should successfully transpile. Checked items indicate tests known to work.
 
 - [ ] append_builtin.mochi
 - [ ] avg_builtin.mochi
@@ -109,4 +106,3 @@ Compiled programs: 11/100
 - [ ] values_builtin.mochi
 - [ ] var_assignment.mochi
 - [ ] while_loop.mochi
-
