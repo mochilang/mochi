@@ -2,7 +2,7 @@
 
 This folder contains the experimental Pascal transpiler.
 The checklist below tracks which example programs from `tests/vm/valid` have been successfully transpiled.
-Progress: **7/100**
+Progress: **10/100**
 
 - [ ] append_builtin.mochi
 - [ ] avg_builtin.mochi
@@ -84,8 +84,8 @@ Progress: **7/100**
 - [ ] slice.mochi
 - [ ] sort_stable.mochi
 - [ ] str_builtin.mochi
-- [ ] string_compare.mochi
-- [ ] string_concat.mochi
+- [x] string_compare.mochi
+- [x] string_concat.mochi
 - [ ] string_contains.mochi
 - [ ] string_in_operator.mochi
 - [ ] string_index.mochi
@@ -103,4 +103,4 @@ Progress: **7/100**
 - [ ] user_type_literal.mochi
 - [ ] values_builtin.mochi
 - [x] var_assignment.mochi
-- [ ] while_loop.mochi
+- [x] while_loop.mochi
