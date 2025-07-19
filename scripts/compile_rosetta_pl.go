@@ -88,7 +88,7 @@ func main() {
 		}
 		cmd := exec.Command("swipl", "-q", "-s", tmp, "-t", "halt")
 		out, err := cmd.CombinedOutput()
-		if err != nil {
+		if err != nil || bytes.Contains(out, []byte("ERROR:")) {
 			writeError(outDir, name, fmt.Sprintf("run: %v\n%s", err, out))
 			os.Remove(filepath.Join(outDir, name+".out"))
 			continue
