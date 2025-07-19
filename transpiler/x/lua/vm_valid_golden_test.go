@@ -3,6 +3,7 @@
 package lua_test
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"os"
@@ -124,6 +125,19 @@ func updateReadme() {
 func updateTasks() {
 	root := findRepoRoot(&testing.T{})
 	taskFile := filepath.Join(root, "transpiler", "x", "lua", "TASKS.md")
+	srcDir := filepath.Join(root, "tests", "vm", "valid")
+	binDir := filepath.Join(root, "tests", "transpiler", "x", "lua")
+
+	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	total := len(files)
+	compiled := 0
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		if _, err := os.Stat(filepath.Join(binDir, name+".out")); err == nil {
+			compiled++
+		}
+	}
+
 	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	ts := ""
 	if err == nil {
@@ -132,12 +146,23 @@ func updateTasks() {
 			ts = t.In(loc).Format("2006-01-02 15:04 MST")
 		}
 	}
+
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
-	buf.WriteString("- VM valid golden test results updated\n")
+	fmt.Fprintf(&buf, "- %d/%d VM tests passing\n", compiled, total)
+	buf.WriteString("- Added support for while loops\n")
 	buf.WriteString("\n")
+
 	if data, err := os.ReadFile(taskFile); err == nil {
-		buf.Write(data)
+		scanner := bufio.NewScanner(bytes.NewReader(data))
+		for scanner.Scan() {
+			line := scanner.Text()
+			if strings.Contains(line, "VM valid golden test results updated") {
+				continue
+			}
+			buf.WriteString(line + "\n")
+		}
 	}
+
 	_ = os.WriteFile(taskFile, buf.Bytes(), 0o644)
 }

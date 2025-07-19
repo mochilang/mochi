@@ -1,32 +1,11 @@
-## Progress (2025-07-19 17:31 GMT+7)
-- VM valid golden test results updated
-
-## Progress (2025-07-19 17:31 GMT+7)
-- VM valid golden test results updated
-
-## Progress (2025-07-19 17:31 GMT+7)
-- VM valid golden test results updated
-
-## Progress (2025-07-19 17:31 GMT+7)
-- VM valid golden test results updated
-
-## Progress (2025-07-19 14:41 GMT+7)
-- VM valid golden test results updated
-
-## Progress (2025-07-19 14:41 GMT+7)
-- VM valid golden test results updated
-
-## Progress (2025-07-19 14:41 GMT+7)
-- VM valid golden test results updated
+## Progress (2025-07-19 18:29 GMT+7)
+- 27/100 VM tests passing
+- Added support for while loops
 
 ## Progress (2025-07-19 13:47 GMT+7)
-- VM valid golden test results updated
-- Added support for `if` statements and expressions in the Lua transpiler
+ - Added support for `if` statements and expressions in the Lua transpiler
 
 # Lua Transpiler Tasks
-
-## Progress (2025-07-19 13:18 +0700)
-- VM valid golden test results updated
 
 ## Progress (2025-07-19 12:38 +0700)
 - Added string concatenation using `..` when operands are strings.
