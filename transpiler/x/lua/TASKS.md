@@ -1,3 +1,8 @@
+
+## Progress (2025-07-20 01:45 +07)
+- 34/100 VM tests passing
+- Inlined built-in operations and removed helper functions
+
 ## Progress (2025-07-19 21:14 GMT+7)
 - 39/100 VM tests passing
 - Added cast expressions and function literals
