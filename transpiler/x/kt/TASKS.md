@@ -1,6 +1,6 @@
 # Kotlin Transpiler Tasks
 
-_Last updated: 2025-07-19 10:39 UTC_
+_Last updated: 2025-07-19 11:39 UTC_
 
 - Basic programs using `print` are supported.
 - Added integer and list literals.
@@ -15,6 +15,10 @@ _Last updated: 2025-07-19 10:39 UTC_
 - Built-in `contains` for strings and support for the `in` operator.
 - `len` now works for maps.
 - Added built-in `values` for maps.
+
+## VM Golden Progress (2025-07-19 11:39 UTC)
+- Implemented function definitions and return statements.
+- Generated Kotlin source for `bool_chain` and updated README progress to 27/100.
 
 ## VM Golden Progress (2025-07-19 10:39 UTC)
 - Added operator precedence handling and parenthesized expressions.

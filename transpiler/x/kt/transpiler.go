@@ -18,11 +18,49 @@ import (
 )
 
 // Program represents a simple Kotlin program consisting of statements executed in main.
+// Program contains top level functions and statements executed in `main`.
 type Program struct {
+	Funcs []*FuncDef
 	Stmts []Stmt
 }
 
 type Stmt interface{ emit(io.Writer) }
+
+// ReturnStmt is a return statement inside a function.
+type ReturnStmt struct{ Value Expr }
+
+func (s *ReturnStmt) emit(w io.Writer) {
+	io.WriteString(w, "return")
+	if s.Value != nil {
+		io.WriteString(w, " ")
+		s.Value.emit(w)
+	}
+}
+
+// FuncDef represents a top level function definition.
+type FuncDef struct {
+	Name   string
+	Params []string
+	Body   []Stmt
+}
+
+func (f *FuncDef) emit(w io.Writer) {
+	io.WriteString(w, "fun "+f.Name+"(")
+	for i, p := range f.Params {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, p+": Any")
+	}
+	io.WriteString(w, "): Any {\n")
+	for _, s := range f.Body {
+		io.WriteString(w, "    ")
+		s.emit(w)
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, "}")
+	io.WriteString(w, "\n")
+}
 
 type Expr interface{ emit(io.Writer) }
 
@@ -314,11 +352,76 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				return nil, err
 			}
 			p.Stmts = append(p.Stmts, &AssignStmt{Name: st.Assign.Name, Value: e})
+		case st.Return != nil:
+			var val Expr
+			if st.Return.Value != nil {
+				var err error
+				val, err = convertExpr(env, st.Return.Value)
+				if err != nil {
+					return nil, err
+				}
+			}
+			p.Stmts = append(p.Stmts, &ReturnStmt{Value: val})
+		case st.Fun != nil:
+			body, err := convertStmts(env, st.Fun.Body)
+			if err != nil {
+				return nil, err
+			}
+			var params []string
+			for _, p0 := range st.Fun.Params {
+				params = append(params, p0.Name)
+			}
+			p.Funcs = append(p.Funcs, &FuncDef{Name: st.Fun.Name, Params: params, Body: body})
 		default:
 			return nil, fmt.Errorf("unsupported statement")
 		}
 	}
 	return p, nil
+}
+
+func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
+	var out []Stmt
+	for _, s := range list {
+		switch {
+		case s.Expr != nil:
+			e, err := convertExpr(env, s.Expr.Expr)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, &ExprStmt{Expr: e})
+		case s.Let != nil:
+			v, err := convertExpr(env, s.Let.Value)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, &LetStmt{Name: s.Let.Name, Value: v})
+		case s.Var != nil:
+			v, err := convertExpr(env, s.Var.Value)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, &VarStmt{Name: s.Var.Name, Value: v})
+		case s.Assign != nil && len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0:
+			v, err := convertExpr(env, s.Assign.Value)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, &AssignStmt{Name: s.Assign.Name, Value: v})
+		case s.Return != nil:
+			var v Expr
+			if s.Return.Value != nil {
+				var err error
+				v, err = convertExpr(env, s.Return.Value)
+				if err != nil {
+					return nil, err
+				}
+			}
+			out = append(out, &ReturnStmt{Value: v})
+		default:
+			return nil, fmt.Errorf("unsupported statement")
+		}
+	}
+	return out, nil
 }
 
 func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
@@ -584,11 +687,15 @@ func Emit(prog *Program) []byte {
 	ver := readVersion()
 	ts := time.Now().Format("2006-01-02 15:04:05 MST")
 	fmt.Fprintf(&buf, "// Mochi %s - generated %s\n", ver, ts)
+	for _, f := range prog.Funcs {
+		f.emit(&buf)
+		buf.WriteString("\n")
+	}
 	buf.WriteString("fun main() {\n")
 	for _, s := range prog.Stmts {
 		buf.WriteString("    ")
 		s.emit(&buf)
-		buf.WriteByte('\n')
+		buf.WriteString("\n")
 	}
 	buf.WriteString("}\n")
 	return buf.Bytes()
@@ -621,6 +728,9 @@ func Print(p *Program) {
 
 func toNodeProg(p *Program) *ast.Node {
 	n := &ast.Node{Kind: "program"}
+	for _, f := range p.Funcs {
+		n.Children = append(n.Children, toNodeStmt(f))
+	}
 	for _, s := range p.Stmts {
 		n.Children = append(n.Children, toNodeStmt(s))
 	}
@@ -637,6 +747,18 @@ func toNodeStmt(s Stmt) *ast.Node {
 		return &ast.Node{Kind: "var", Value: st.Name, Children: []*ast.Node{toNodeExpr(st.Value)}}
 	case *AssignStmt:
 		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{toNodeExpr(st.Value)}}
+	case *ReturnStmt:
+		n := &ast.Node{Kind: "return"}
+		if st.Value != nil {
+			n.Children = append(n.Children, toNodeExpr(st.Value))
+		}
+		return n
+	case *FuncDef:
+		n := &ast.Node{Kind: "func", Value: st.Name}
+		for _, b := range st.Body {
+			n.Children = append(n.Children, toNodeStmt(b))
+		}
+		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
