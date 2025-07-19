@@ -177,9 +177,16 @@ func (d *DeclStmt) emit(w io.Writer) {
 		typ = "int"
 	}
 	io.WriteString(w, "\t")
-	io.WriteString(w, typ)
-	io.WriteString(w, " ")
-	io.WriteString(w, d.Name)
+	if strings.HasSuffix(typ, "[]") {
+		io.WriteString(w, strings.TrimSuffix(typ, "[]"))
+		io.WriteString(w, " ")
+		io.WriteString(w, d.Name)
+		io.WriteString(w, "[]")
+	} else {
+		io.WriteString(w, typ)
+		io.WriteString(w, " ")
+		io.WriteString(w, d.Name)
+	}
 	if d.Value != nil {
 		io.WriteString(w, " = ")
 		d.Value.emitExpr(w)
@@ -305,6 +312,26 @@ func (l *ListLit) emitExpr(w io.Writer) {
 		e.emitExpr(w)
 	}
 	io.WriteString(w, " }")
+}
+
+type IndexExpr struct {
+	Target Expr
+	Index  Expr
+}
+
+func (i *IndexExpr) emitExpr(w io.Writer) {
+	if exprIsString(i.Target) {
+		io.WriteString(w, "(const char[]){")
+		i.Target.emitExpr(w)
+		io.WriteString(w, "[")
+		i.Index.emitExpr(w)
+		io.WriteString(w, "], 0}")
+		return
+	}
+	i.Target.emitExpr(w)
+	io.WriteString(w, "[")
+	i.Index.emitExpr(w)
+	io.WriteString(w, "]")
 }
 
 type VarRef struct{ Name string }
@@ -539,8 +566,11 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 	case s.Let != nil:
 		t, _ := env.GetVar(s.Let.Name)
 		declType := "int"
-		if _, ok := t.(types.StringType); ok {
+		switch t.(type) {
+		case types.StringType:
 			declType = "const char*"
+		case types.ListType:
+			declType = "int[]"
 		}
 		valExpr := convertExpr(s.Let.Value)
 		if list, ok := convertListExpr(s.Let.Value); ok {
@@ -557,8 +587,11 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 	case s.Var != nil:
 		t, _ := env.GetVar(s.Var.Name)
 		declType := "int"
-		if _, ok := t.(types.StringType); ok {
+		switch t.(type) {
+		case types.StringType:
 			declType = "const char*"
+		case types.ListType:
+			declType = "int[]"
 		}
 		valExpr := convertExpr(s.Var.Value)
 		if list, ok := convertListExpr(s.Var.Value); ok {
@@ -752,6 +785,16 @@ func convertUnary(u *parser.Unary) Expr {
 		}
 		return &CallExpr{Func: "contains", Args: []Expr{base, arg}}
 	}
+	if len(u.Value.Ops) == 1 && u.Value.Ops[0].Index != nil &&
+		u.Value.Ops[0].Index.Colon == nil && u.Value.Ops[0].Index.Colon2 == nil &&
+		u.Value.Ops[0].Index.Step == nil && len(u.Ops) == 0 {
+		base := convertUnary(&parser.Unary{Value: &parser.PostfixExpr{Target: u.Value.Target}})
+		idx := convertExpr(u.Value.Ops[0].Index.Start)
+		if base == nil || idx == nil {
+			return nil
+		}
+		return &IndexExpr{Target: base, Index: idx}
+	}
 	if len(u.Value.Ops) == 1 && u.Value.Ops[0].Cast != nil &&
 		u.Value.Ops[0].Cast.Type != nil &&
 		u.Value.Ops[0].Cast.Type.Simple != nil &&
@@ -907,6 +950,17 @@ func convertUnary(u *parser.Unary) Expr {
 	if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 && len(u.Ops) == 0 {
 		return &VarRef{Name: sel.Root}
 	}
+	if list := u.Value.Target.List; list != nil && len(u.Ops) == 0 {
+		var elems []Expr
+		for _, it := range list.Elems {
+			ex := convertExpr(it)
+			if ex == nil {
+				return nil
+			}
+			elems = append(elems, ex)
+		}
+		return &ListLit{Elems: elems}
+	}
 	lit := u.Value.Target.Lit
 	if lit == nil {
 		return nil
@@ -973,6 +1027,14 @@ func evalInt(e Expr) (int, bool) {
 	if v, ok := e.(*IntLit); ok {
 		return v.Value, true
 	}
+	if ix, ok := e.(*IndexExpr); ok {
+		if list, ok2 := evalList(ix.Target); ok2 {
+			idx, ok3 := evalInt(ix.Index)
+			if ok3 && idx >= 0 && idx < len(list.Elems) {
+				return evalInt(list.Elems[idx])
+			}
+		}
+	}
 	return 0, false
 }
 
@@ -983,6 +1045,20 @@ func evalString(e Expr) (string, bool) {
 	case *VarRef:
 		s, ok := constStrings[v.Name]
 		return s, ok
+	case *IndexExpr:
+		str, ok := evalString(v.Target)
+		if !ok {
+			return "", false
+		}
+		idx, ok2 := evalInt(v.Index)
+		if !ok2 {
+			return "", false
+		}
+		r := []rune(str)
+		if idx < 0 || idx >= len(r) {
+			return "", false
+		}
+		return string(r[idx]), true
 	default:
 		return "", false
 	}
@@ -1009,6 +1085,8 @@ func exprIsString(e Expr) bool {
 		return ok
 	case *CallExpr:
 		return v.Func == "str"
+	case *IndexExpr:
+		return exprIsString(v.Target)
 	case *CondExpr:
 		return exprIsString(v.Then) && exprIsString(v.Else)
 	default:
