@@ -275,3 +275,15 @@ func TestTranspile_ListNestedAssign(t *testing.T) {
 func TestTranspile_ListSetOps(t *testing.T) {
 	runCase(t, "list_set_ops")
 }
+
+func TestTranspile_MapMembership(t *testing.T) {
+	runCase(t, "map_membership")
+}
+
+func TestTranspile_MapNestedAssign(t *testing.T) {
+	runCase(t, "map_nested_assign")
+}
+
+func TestTranspile_ForMapCollection(t *testing.T) {
+	runCase(t, "for_map_collection")
+}
