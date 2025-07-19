@@ -1,7 +1,7 @@
 run: exit status 1
 
-/workspace/mochi/tests/transpiler/x/hs/tail_recursion.hs:6:5: error:
+/workspace/mochi/tests/transpiler/x/hs/tail_recursion.hs:7:5: error:
     parse error on input ‘return’
   |
-6 |     return (sum_rec n - 1 acc + n)
+7 |     return (sum_rec n - 1 acc + n)
   |     ^^^^^^

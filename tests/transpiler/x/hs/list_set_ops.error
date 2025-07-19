@@ -1,26 +1,11 @@
 run: exit status 1
 
-/workspace/mochi/tests/transpiler/x/hs/list_set_ops.hs:4:19: error:
-    Variable not in scope: union
+/workspace/mochi/tests/transpiler/x/hs/list_set_ops.hs:8:12: error:
+    • Couldn't match expected type ‘[a4]’ with actual type ‘Int’
+    • In the first argument of ‘(++)’, namely ‘length [1, 2]’
+      In the first argument of ‘print’, namely
+        ‘(length [1, 2] ++ [2, 3])’
+      In a stmt of a 'do' block: print (length [1, 2] ++ [2, 3])
   |
-4 |     print ([1, 2] union [2, 3])
-  |                   ^^^^^
-
-/workspace/mochi/tests/transpiler/x/hs/list_set_ops.hs:5:22: error:
-    Variable not in scope: except
-  |
-5 |     print ([1, 2, 3] except [2])
-  |                      ^^^^^^
-
-/workspace/mochi/tests/transpiler/x/hs/list_set_ops.hs:6:22: error:
-    Variable not in scope: intersect
-    Suggested fix: Perhaps use ‘interact’ (imported from Prelude)
-  |
-6 |     print ([1, 2, 3] intersect [2, 4])
-  |                      ^^^^^^^^^
-
-/workspace/mochi/tests/transpiler/x/hs/list_set_ops.hs:7:26: error:
-    Variable not in scope: union
-  |
-7 |     print (length [1, 2] union [2, 3])
-  |                          ^^^^^
+8 |     print (length [1, 2] ++ [2, 3])
+  |            ^^^^^^^^^^^^^
