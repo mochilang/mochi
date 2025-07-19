@@ -191,15 +191,19 @@ func TestTranspilerGolden(t *testing.T) {
 	srcDir := filepath.Join(root, "tests", "vm", "valid")
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "fortran")
 	os.MkdirAll(outDir, 0o755)
-       files := []string{
-               filepath.Join(srcDir, "print_hello.mochi"),
-               filepath.Join(srcDir, "typed_let.mochi"),
-               filepath.Join(srcDir, "typed_var.mochi"),
-               filepath.Join(srcDir, "var_assignment.mochi"),
-               filepath.Join(srcDir, "basic_compare.mochi"),
-               filepath.Join(srcDir, "math_ops.mochi"),
-               filepath.Join(srcDir, "unary_neg.mochi"),
-       }
+	files := []string{
+		filepath.Join(srcDir, "print_hello.mochi"),
+		filepath.Join(srcDir, "typed_let.mochi"),
+		filepath.Join(srcDir, "typed_var.mochi"),
+		filepath.Join(srcDir, "var_assignment.mochi"),
+		filepath.Join(srcDir, "basic_compare.mochi"),
+		filepath.Join(srcDir, "math_ops.mochi"),
+		filepath.Join(srcDir, "unary_neg.mochi"),
+		filepath.Join(srcDir, "binary_precedence.mochi"),
+		filepath.Join(srcDir, "let_and_print.mochi"),
+		filepath.Join(srcDir, "if_else.mochi"),
+		filepath.Join(srcDir, "while_loop.mochi"),
+	}
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
 		wantOut := filepath.Join(outDir, name+".out")
