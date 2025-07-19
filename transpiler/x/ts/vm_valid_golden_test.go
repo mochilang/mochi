@@ -1,3 +1,5 @@
+//go:build slow
+
 package tstranspiler_test
 
 import (
