@@ -1,5 +1,9 @@
-## Progress (2025-07-19 18:42 GMT+7)
+## Progress (2025-07-19 19:43 GMT+7)
+- Added support for membership operator and string `contains` method
+- Implemented string-aware `len`, `append`, `substring`, `min`, `max`, and modulo
+- Generated new Scheme outputs for golden tests (32/100 passing)
 
+## Progress (2025-07-19 18:42 GMT+7)
 
 # Progress
 

@@ -1,8 +1,0 @@
-exit status 70
-ERROR on line 7 of file /workspace/mochi/tests/transpiler/x/scheme/math_ops.scm: undefined variable: %
-  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
-  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
-Searching for modules exporting % ...
-... none found.
-42
-7/2
