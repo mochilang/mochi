@@ -1,5 +1,3 @@
 exit status 1
 # command-line-arguments
-../../../tests/transpiler/x/go/break_continue.go:51:29: too many arguments in call to mochiPrint
-	have (string, int)
-	want (any)
+../../../tests/transpiler/x/go/break_continue.go:7:2: "fmt" imported and not used

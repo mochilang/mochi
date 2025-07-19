@@ -60,6 +60,15 @@ type ExprStmt struct{ Expr Expr }
 
 func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
 
+// PrintStmt prints a value using Go's fmt package with Mochi semantics.
+type PrintStmt struct{ Expr Expr }
+
+func (p *PrintStmt) emit(w io.Writer) {
+	io.WriteString(w, "func() {\n    v := any(")
+	p.Expr.emit(w)
+	io.WriteString(w, ")\n    if v == nil {\n        fmt.Println(\"nil\")\n        return\n    }\n    switch x := v.(type) {\n    case bool:\n        if x { fmt.Println(1) } else { fmt.Println(0) }\n    case float64:\n        if math.Trunc(x) == x { fmt.Printf(\"%.1f\\n\", x) } else { fmt.Printf(\"%v\\n\", x) }\n    case []int:\n        for i, n := range x { if i > 0 { fmt.Print(\" \") }; fmt.Print(n) }\n        fmt.Println()\n    default:\n        fmt.Println(v)\n    }\n}()")
+}
+
 type VarDecl struct {
 	Name  string
 	Type  string
@@ -346,6 +355,14 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 	switch {
 	case st.Expr != nil:
+		if call := extractCall(st.Expr.Expr); call != nil && call.Func == "print" && len(call.Args) == 1 {
+			arg, err := compileExpr(call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			usesPrint = true
+			return &PrintStmt{Expr: arg}, nil
+		}
 		e, err := compileExpr(st.Expr.Expr)
 		if err != nil {
 			return nil, err
@@ -419,6 +436,17 @@ func compileStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 		}
 	}
 	return out, nil
+}
+
+func extractCall(e *parser.Expr) *parser.CallExpr {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return nil
+	}
+	u := e.Binary.Left
+	if u.Value == nil || u.Value.Target == nil || u.Value.Target.Call == nil {
+		return nil
+	}
+	return u.Value.Target.Call
 }
 
 func compileIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
@@ -707,9 +735,6 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		name := p.Call.Func
 		switch name {
-		case "print":
-			usesPrint = true
-			name = "mochiPrint"
 		case "avg":
 			usesAvg = true
 		case "count":
@@ -831,9 +856,6 @@ func Emit(prog *Program) []byte {
 	if prog.UseAtoi {
 		buf.WriteString("func atoi(s string) int {\n    n, _ := strconv.Atoi(s)\n    return n\n}\n\n")
 	}
-	if prog.UsePrint {
-		buf.WriteString("func mochiPrint(v any) {\n    if v == nil {\n        fmt.Println(\"nil\")\n        return\n    }\n    switch x := v.(type) {\n    case bool:\n        if x { fmt.Println(1) } else { fmt.Println(0) }\n    case float64:\n        if math.Trunc(x) == x { fmt.Printf(\"%.1f\\n\", x) } else { fmt.Printf(\"%v\\n\", x) }\n    case []int:\n        for i, n := range x { if i > 0 { fmt.Print(\" \") }; fmt.Print(n) }\n        fmt.Println()\n    default:\n        fmt.Println(v)\n    }\n}\n\n")
-	}
 	buf.WriteString("func main() {\n")
 	for _, s := range prog.Stmts {
 		buf.WriteString("    ")
@@ -864,6 +886,8 @@ func toNodeProg(p *Program) *ast.Node {
 
 func toNodeStmt(s Stmt) *ast.Node {
 	switch st := s.(type) {
+	case *PrintStmt:
+		return &ast.Node{Kind: "print", Children: []*ast.Node{toNodeExpr(st.Expr)}}
 	case *ExprStmt:
 		return &ast.Node{Kind: "expr", Children: []*ast.Node{toNodeExpr(st.Expr)}}
 	case *VarDecl:
