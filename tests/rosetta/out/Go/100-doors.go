@@ -15,7 +15,7 @@ type v map[string]any
 func main() {
 	doors := []any{}
 	for i := 0; i < 100; i++ {
-		doors = append(_toAnySlice(doors), any(false))
+		doors = _toAnySlice(append(_toAnySlice(doors), any(false)))
 	}
 	for pass := 1; pass < 101; pass++ {
 		idx := (pass - 1)
