@@ -34,8 +34,14 @@ type Program struct {
 	Functions []*Func
 }
 
+type Param struct {
+	Name string
+	Type string
+}
+
 type Func struct {
 	Name       string
+	Params     []Param
 	ReturnType string
 	Body       []Stmt
 }
@@ -66,6 +72,18 @@ type UnaryExpr struct {
 	Op   string
 	Expr Expr
 }
+
+type CallExpr struct {
+	Name string
+	Args []Expr
+}
+
+type LambdaExpr struct {
+	Params []Param
+	Body   Expr
+}
+
+type ReturnStmt struct{ Value Expr }
 
 type VarRef struct{ Name string }
 
@@ -130,11 +148,26 @@ func (p *Program) write(w io.Writer) {
 }
 
 func (f *Func) emit(w io.Writer) {
-	fmt.Fprintf(w, "%s %s() {\n", f.ReturnType, f.Name)
+	fmt.Fprintf(w, "%s %s(", f.ReturnType, f.Name)
+	for i, p := range f.Params {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		typ := p.Type
+		if typ == "" {
+			io.WriteString(w, "auto ")
+		} else {
+			io.WriteString(w, typ+" ")
+		}
+		io.WriteString(w, p.Name)
+	}
+	fmt.Fprintln(w, ") {")
 	for _, st := range f.Body {
 		st.emit(w, 1)
 	}
-	fmt.Fprintln(w, "    return 0;")
+	if f.Name == "main" {
+		fmt.Fprintln(w, "    return 0;")
+	}
 	fmt.Fprintln(w, "}")
 }
 
@@ -189,6 +222,36 @@ func (u *UnaryExpr) emit(w io.Writer) {
 
 func (v *VarRef) emit(w io.Writer) { io.WriteString(w, v.Name) }
 
+func (c *CallExpr) emit(w io.Writer) {
+	io.WriteString(w, c.Name)
+	io.WriteString(w, "(")
+	for i, a := range c.Args {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		a.emit(w)
+	}
+	io.WriteString(w, ")")
+}
+
+func (l *LambdaExpr) emit(w io.Writer) {
+	io.WriteString(w, "[&](")
+	for i, p := range l.Params {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		if p.Type == "" {
+			io.WriteString(w, "auto ")
+		} else {
+			io.WriteString(w, p.Type+" ")
+		}
+		io.WriteString(w, p.Name)
+	}
+	io.WriteString(w, ") { return ")
+	l.Body.emit(w)
+	io.WriteString(w, "; }")
+}
+
 func (b *BinaryExpr) emit(w io.Writer) {
 	io.WriteString(w, "(")
 	b.Left.emit(w)
@@ -225,6 +288,18 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, a.Name)
 	io.WriteString(w, " = ")
 	a.Value.emit(w)
+	io.WriteString(w, ";\n")
+}
+
+func (r *ReturnStmt) emit(w io.Writer, indent int) {
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "    ")
+	}
+	io.WriteString(w, "return")
+	if r.Value != nil {
+		io.WriteString(w, " ")
+		r.Value.emit(w)
+	}
 	io.WriteString(w, ";\n")
 }
 
@@ -302,6 +377,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	var body []Stmt
 	for _, stmt := range prog.Statements {
 		switch {
+		case stmt.Fun != nil:
+			fn, err := convertFun(stmt.Fun)
+			if err != nil {
+				return nil, err
+			}
+			cp.Functions = append(cp.Functions, fn)
 		case stmt.Expr != nil:
 			if call := extractCall(stmt.Expr.Expr); call != nil && call.Func == "print" && len(call.Args) == 1 {
 				arg, err := convertExpr(call.Args[0])
@@ -380,7 +461,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			return nil, fmt.Errorf("unsupported statement")
 		}
 	}
-	cp.Functions = []*Func{{Name: "main", ReturnType: "int", Body: body}}
+	cp.Functions = append(cp.Functions, &Func{Name: "main", ReturnType: "int", Body: body})
 	return cp, nil
 }
 
@@ -439,6 +520,16 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		return &AssignStmt{Name: s.Assign.Name, Value: val}, nil
+	case s.Return != nil:
+		var val Expr
+		if s.Return.Value != nil {
+			var err error
+			val, err = convertExpr(s.Return.Value)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return &ReturnStmt{Value: val}, nil
 	case s.If != nil:
 		return convertIfStmt(s.If)
 	case s.While != nil:
@@ -545,6 +636,32 @@ func convertWhileStmt(ws *parser.WhileStmt) (*WhileStmt, error) {
 	return &WhileStmt{Cond: cond, Body: body}, nil
 }
 
+func convertFun(fn *parser.FunStmt) (*Func, error) {
+	var body []Stmt
+	for _, st := range fn.Body {
+		s, err := convertStmt(st)
+		if err != nil {
+			return nil, err
+		}
+		body = append(body, s)
+	}
+	var params []Param
+	for _, p := range fn.Params {
+		typ := ""
+		if p.Type != nil && p.Type.Simple != nil {
+			typ = cppType(*p.Type.Simple)
+		}
+		params = append(params, Param{Name: p.Name, Type: typ})
+	}
+	ret := "int"
+	if fn.Return != nil && fn.Return.Simple != nil {
+		ret = cppType(*fn.Return.Simple)
+	} else if fn.Return == nil {
+		ret = "void"
+	}
+	return &Func{Name: fn.Name, Params: params, ReturnType: ret, Body: body}, nil
+}
+
 func convertPrimary(p *parser.Primary) (Expr, error) {
 	switch {
 	case p.Lit != nil:
@@ -557,11 +674,33 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			return &LenExpr{Value: arg}, nil
 		}
-		return nil, fmt.Errorf("unsupported call")
+		var args []Expr
+		for _, a := range p.Call.Args {
+			ce, err := convertExpr(a)
+			if err != nil {
+				return nil, err
+			}
+			args = append(args, ce)
+		}
+		return &CallExpr{Name: p.Call.Func, Args: args}, nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return &VarRef{Name: p.Selector.Root}, nil
 	case p.If != nil:
 		return convertIfExpr(p.If)
+	case p.FunExpr != nil && p.FunExpr.ExprBody != nil:
+		var params []Param
+		for _, pa := range p.FunExpr.Params {
+			typ := ""
+			if pa.Type != nil && pa.Type.Simple != nil {
+				typ = cppType(*pa.Type.Simple)
+			}
+			params = append(params, Param{Name: pa.Name, Type: typ})
+		}
+		body, err := convertExpr(p.FunExpr.ExprBody)
+		if err != nil {
+			return nil, err
+		}
+		return &LambdaExpr{Params: params, Body: body}, nil
 	case p.Group != nil:
 		return convertExpr(p.Group)
 	default:
@@ -704,6 +843,12 @@ func toStmtNode(s Stmt) *ast.Node {
 			n.Children = append(n.Children, els)
 		}
 		return n
+	case *ReturnStmt:
+		n := &ast.Node{Kind: "return"}
+		if st.Value != nil {
+			n.Children = []*ast.Node{toExprNode(st.Value)}
+		}
+		return n
 	default:
 		return &ast.Node{Kind: "stmt"}
 	}
@@ -725,6 +870,19 @@ func toExprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: ex.Op, Children: []*ast.Node{toExprNode(ex.Expr)}}
 	case *LenExpr:
 		return &ast.Node{Kind: "len", Children: []*ast.Node{toExprNode(ex.Value)}}
+	case *CallExpr:
+		n := &ast.Node{Kind: "call", Value: ex.Name}
+		for _, a := range ex.Args {
+			n.Children = append(n.Children, toExprNode(a))
+		}
+		return n
+	case *LambdaExpr:
+		n := &ast.Node{Kind: "lambda"}
+		for _, p := range ex.Params {
+			n.Children = append(n.Children, &ast.Node{Kind: "param", Value: p.Name})
+		}
+		n.Children = append(n.Children, toExprNode(ex.Body))
+		return n
 	case *IfExpr:
 		n := &ast.Node{Kind: "ifexpr"}
 		n.Children = append(n.Children, toExprNode(ex.Cond))
