@@ -1,0 +1,7 @@
+exit status 1
+Main.java:6: error: bad operand types for binary operator '=='
+        System.out.println((a == null ? "nil" : a));
+                              ^
+  first type:  int
+  second type: <null>
+1 error
