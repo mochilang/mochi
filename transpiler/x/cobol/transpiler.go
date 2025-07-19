@@ -207,6 +207,28 @@ func (u *UnaryExpr) emitExpr(w io.Writer) {
 }
 
 func (b *BinaryExpr) emitExpr(w io.Writer) {
+	if b.Op == "&&" || b.Op == "||" {
+		if l, ok := b.Left.(*BinaryExpr); ok && binaryPrec(l.Op) < binaryPrec(b.Op) {
+			io.WriteString(w, "(")
+			l.emitExpr(w)
+			io.WriteString(w, ")")
+		} else {
+			b.Left.emitExpr(w)
+		}
+		op := "AND"
+		if b.Op == "||" {
+			op = "OR"
+		}
+		io.WriteString(w, " "+op+" ")
+		if r, ok := b.Right.(*BinaryExpr); ok && binaryPrec(r.Op) < binaryPrec(b.Op) {
+			io.WriteString(w, "(")
+			r.emitExpr(w)
+			io.WriteString(w, ")")
+		} else {
+			b.Right.emitExpr(w)
+		}
+		return
+	}
 	if b.Op == "+" && (isStringLit(b.Left) || isStringLit(b.Right)) {
 		io.WriteString(w, "FUNCTION CONCATENATE(")
 		b.Left.emitExpr(w)
@@ -250,11 +272,19 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 func binaryPrec(op string) int {
 	switch op {
 	case "*", "/", "%":
-		return 2
+		return 5
 	case "+", "-":
+		return 4
+	case "<", "<=", ">", ">=":
+		return 3
+	case "==", "!=":
+		return 2
+	case "&&":
 		return 1
-	default:
+	case "||":
 		return 0
+	default:
+		return -1
 	}
 }
 
@@ -314,6 +344,19 @@ func relOpExpr(e Expr) (*BinaryExpr, bool) {
 	}
 }
 
+func boolOpExpr(e Expr) (*BinaryExpr, bool) {
+	b, ok := e.(*BinaryExpr)
+	if !ok {
+		return nil, false
+	}
+	switch b.Op {
+	case "&&", "||":
+		return b, true
+	default:
+		return nil, false
+	}
+}
+
 // --- Statement emitters ---
 
 func (d *DisplayStmt) emit(w io.Writer) {
@@ -329,6 +372,12 @@ func (d *DisplayStmt) emit(w io.Writer) {
 		}
 		fmt.Fprintf(w, " %s ", op)
 		b.Right.emitExpr(w)
+		io.WriteString(w, "\n        DISPLAY 1\n    ELSE\n        DISPLAY 0\n    END-IF")
+		return
+	}
+	if b, ok := boolOpExpr(d.Expr); ok {
+		io.WriteString(w, "IF ")
+		b.emitExpr(w)
 		io.WriteString(w, "\n        DISPLAY 1\n    ELSE\n        DISPLAY 0\n    END-IF")
 		return
 	}
@@ -928,6 +977,8 @@ func convertExpr(e *parser.Expr, env *types.Env) (Expr, error) {
 		{"+", "-"},
 		{"<", "<=", ">", ">="},
 		{"==", "!="},
+		{"&&"},
+		{"||"},
 	}
 
 	contains := func(list []string, op string) bool {
@@ -1002,6 +1053,11 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 		return &IntLit{Value: int(*l.Int)}, nil
 	case l.Str != nil:
 		return &StringLit{Value: *l.Str}, nil
+	case l.Bool != nil:
+		if *l.Bool {
+			return &IntLit{Value: 1}, nil
+		}
+		return &IntLit{Value: 0}, nil
 	default:
 		return nil, fmt.Errorf("unsupported literal")
 	}

@@ -4,10 +4,13 @@ package cobol_test
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
+	"time"
 
 	"mochi/parser"
 	cobol "mochi/transpiler/x/cobol"
@@ -101,4 +104,73 @@ func TestTranspile_Golden(t *testing.T) {
 			t.Errorf("%s output mismatch:\nGot: %s\nWant: %s", name, got, want)
 		}
 	}
+}
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	updateReadme()
+	updateTasks()
+	os.Exit(code)
+}
+
+func updateReadme() {
+	root := repoRoot(&testing.T{})
+	srcDir := filepath.Join(root, "tests", "vm", "valid")
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "cobol")
+	readmePath := filepath.Join(root, "transpiler", "x", "cobol", "README.md")
+	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	total := len(files)
+	compiled := 0
+	var lines []string
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		mark := "[ ]"
+		if _, err := os.Stat(filepath.Join(outDir, name+".cob")); err == nil {
+			compiled++
+			mark = "[x]"
+		}
+		lines = append(lines, "- "+mark+" "+name)
+	}
+	var buf bytes.Buffer
+	buf.WriteString("# COBOL Transpiler\n\n")
+	buf.WriteString("This directory stores COBOL code generated from Mochi programs in `tests/vm/valid`.\n")
+	buf.WriteString("Each program is transpiled and the resulting `.cob` sources are compiled with `cobc` during testing.\n\n")
+	fmt.Fprintf(&buf, "Checklist of programs that currently transpile and run (%d/%d):\n", compiled, total)
+	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteString("\n")
+	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
+}
+
+func updateTasks() {
+	root := repoRoot(&testing.T{})
+	taskFile := filepath.Join(root, "transpiler", "x", "cobol", "TASKS.md")
+	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	ts := strings.TrimSpace(string(out))
+	if err == nil {
+		if t, perr := time.Parse(time.RFC3339, ts); perr == nil {
+			if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+				ts = t.In(loc).Format("2006-01-02 15:04 -0700")
+			} else {
+				ts = t.Format("2006-01-02 15:04 MST")
+			}
+		}
+	}
+	srcDir := filepath.Join(root, "tests", "vm", "valid")
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "cobol")
+	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	total := len(files)
+	compiled := 0
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		if _, err := os.Stat(filepath.Join(outDir, name+".cob")); err == nil {
+			compiled++
+		}
+	}
+	var buf bytes.Buffer
+	fmt.Fprintf(&buf, "## Progress (%s)\n", ts)
+	fmt.Fprintf(&buf, "- VM valid golden tests %d/%d compiled\n\n", compiled, total)
+	if data, err := os.ReadFile(taskFile); err == nil {
+		buf.Write(data)
+	}
+	_ = os.WriteFile(taskFile, buf.Bytes(), 0o644)
 }
