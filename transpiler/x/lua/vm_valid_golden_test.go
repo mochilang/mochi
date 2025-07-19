@@ -128,7 +128,8 @@ func updateTasks() {
 	ts := ""
 	if err == nil {
 		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
-			ts = t.Format("2006-01-02 15:04 MST")
+			loc := time.FixedZone("GMT+7", 7*3600)
+			ts = t.In(loc).Format("2006-01-02 15:04 MST")
 		}
 	}
 	var buf bytes.Buffer

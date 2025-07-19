@@ -1,3 +1,7 @@
+## Progress (2025-07-19 13:47 GMT+7)
+- VM valid golden test results updated
+- Added support for `if` statements and expressions in the Lua transpiler
+
 # Lua Transpiler Tasks
 
 ## Progress (2025-07-19 13:18 +0700)
