@@ -2,12 +2,12 @@
 
 This checklist tracks Mochi programs from `tests/vm/valid` that successfully transpile using the experimental Fortran backend.
 
-Checklist of programs that currently transpile and run (7/100):
+Checklist of programs that currently transpile and run (11/100):
 
 * [ ] append_builtin.mochi
 * [ ] avg_builtin.mochi
 * [x] basic_compare.mochi
-* [ ] binary_precedence.mochi
+* [x] binary_precedence.mochi
 * [ ] bool_chain.mochi
 * [ ] break_continue.mochi
 * [ ] cast_string_to_int.mochi
@@ -36,7 +36,7 @@ Checklist of programs that currently transpile and run (7/100):
 * [ ] group_by_multi_join_sort.mochi
 * [ ] group_by_sort.mochi
 * [ ] group_items_iteration.mochi
-* [ ] if_else.mochi
+* [x] if_else.mochi
 * [ ] if_then_else.mochi
 * [ ] if_then_else_nested.mochi
 * [ ] in_operator.mochi
@@ -49,7 +49,7 @@ Checklist of programs that currently transpile and run (7/100):
 * [ ] len_builtin.mochi
 * [ ] len_map.mochi
 * [ ] len_string.mochi
-* [ ] let_and_print.mochi
+* [x] let_and_print.mochi
 * [ ] list_assign.mochi
 * [ ] list_index.mochi
 * [ ] list_nested_assign.mochi
@@ -103,4 +103,4 @@ Checklist of programs that currently transpile and run (7/100):
 * [ ] user_type_literal.mochi
 * [ ] values_builtin.mochi
 * [x] var_assignment.mochi
-* [ ] while_loop.mochi
+* [x] while_loop.mochi

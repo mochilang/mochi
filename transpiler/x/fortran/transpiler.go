@@ -29,6 +29,17 @@ type Program struct {
 
 type Stmt interface{ emit(io.Writer) }
 
+type IfStmt struct {
+	Cond string
+	Then []Stmt
+	Else []Stmt
+}
+
+type WhileStmt struct {
+	Cond string
+	Body []Stmt
+}
+
 type AssignStmt struct{ Name, Expr string }
 
 type PrintStmt struct{ Expr string }
@@ -39,6 +50,28 @@ func (s *AssignStmt) emit(w io.Writer) {
 
 func (p *PrintStmt) emit(w io.Writer) {
 	fmt.Fprintf(w, "  print *, %s\n", p.Expr)
+}
+
+func (s *IfStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "  if (%s) then\n", s.Cond)
+	for _, st := range s.Then {
+		st.emit(w)
+	}
+	if len(s.Else) > 0 {
+		io.WriteString(w, "  else\n")
+		for _, st := range s.Else {
+			st.emit(w)
+		}
+	}
+	io.WriteString(w, "  end if\n")
+}
+
+func (s *WhileStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "  do while (%s)\n", s.Cond)
+	for _, st := range s.Body {
+		st.emit(w)
+	}
+	io.WriteString(w, "  end do\n")
 }
 
 func repoRoot() string {
@@ -96,52 +129,36 @@ func (p *Program) Emit() []byte {
 }
 
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
-	_ = env
 	fp := &Program{}
 	for _, st := range prog.Statements {
-		switch {
-		case st.Let != nil:
-			expr := ""
-			var err error
-			if st.Let.Value != nil {
-				expr, err = toExpr(st.Let.Value)
-				if err != nil {
-					return nil, err
-				}
+		stmt, err := compileStmt(fp, st, env)
+		if err != nil {
+			return nil, err
+		}
+		if stmt != nil {
+			fp.Stmts = append(fp.Stmts, stmt)
+		}
+	}
+	return fp, nil
+}
+
+func compileStmt(p *Program, st *parser.Statement, env *types.Env) (Stmt, error) {
+	switch {
+	case st.Let != nil:
+		expr := ""
+		var err error
+		if st.Let.Value != nil {
+			expr, err = toExpr(st.Let.Value)
+			if err != nil {
+				return nil, err
 			}
-			if st.Let.Type != nil || st.Let.Value != nil {
-				var typ types.Type = types.AnyType{}
-				if st.Let.Type != nil {
-					typ = types.ResolveTypeRef(st.Let.Type, env)
-				} else {
-					typ = types.TypeOfExprBasic(st.Let.Value, env)
-				}
-				ft, err := mapTypeName(typ)
-				if err != nil {
-					return nil, err
-				}
-				init := expr
-				if init == "" {
-					init = defaultValue(typ)
-				}
-				fp.Decls = append(fp.Decls, Decl{Name: st.Let.Name, Type: ft, Init: init})
-			} else {
-				return nil, fmt.Errorf("unsupported let statement")
-			}
-		case st.Var != nil:
-			expr := ""
-			var err error
-			if st.Var.Value != nil {
-				expr, err = toExpr(st.Var.Value)
-				if err != nil {
-					return nil, err
-				}
-			}
+		}
+		if st.Let.Type != nil || st.Let.Value != nil {
 			var typ types.Type = types.AnyType{}
-			if st.Var.Type != nil {
-				typ = types.ResolveTypeRef(st.Var.Type, env)
-			} else if st.Var.Value != nil {
-				typ = types.TypeOfExprBasic(st.Var.Value, env)
+			if st.Let.Type != nil {
+				typ = types.ResolveTypeRef(st.Let.Type, env)
+			} else {
+				typ = types.TypeOfExprBasic(st.Let.Value, env)
 			}
 			ft, err := mapTypeName(typ)
 			if err != nil {
@@ -151,31 +168,101 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			if init == "" {
 				init = defaultValue(typ)
 			}
-			fp.Decls = append(fp.Decls, Decl{Name: st.Var.Name, Type: ft, Init: init})
-		case st.Assign != nil:
-			if len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0 {
-				return nil, fmt.Errorf("unsupported assignment")
-			}
-			expr, err := toExpr(st.Assign.Value)
+			p.Decls = append(p.Decls, Decl{Name: st.Let.Name, Type: ft, Init: init})
+			return nil, nil
+		}
+		return nil, fmt.Errorf("unsupported let statement")
+	case st.Var != nil:
+		expr := ""
+		var err error
+		if st.Var.Value != nil {
+			expr, err = toExpr(st.Var.Value)
 			if err != nil {
 				return nil, err
 			}
-			fp.Stmts = append(fp.Stmts, &AssignStmt{Name: st.Assign.Name, Expr: expr})
-		case st.Expr != nil:
-			arg, err := extractPrintArg(st.Expr.Expr)
+		}
+		var typ types.Type = types.AnyType{}
+		if st.Var.Type != nil {
+			typ = types.ResolveTypeRef(st.Var.Type, env)
+		} else if st.Var.Value != nil {
+			typ = types.TypeOfExprBasic(st.Var.Value, env)
+		}
+		ft, err := mapTypeName(typ)
+		if err != nil {
+			return nil, err
+		}
+		init := expr
+		if init == "" {
+			init = defaultValue(typ)
+		}
+		p.Decls = append(p.Decls, Decl{Name: st.Var.Name, Type: ft, Init: init})
+		return nil, nil
+	case st.Assign != nil:
+		if len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0 {
+			return nil, fmt.Errorf("unsupported assignment")
+		}
+		expr, err := toExpr(st.Assign.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &AssignStmt{Name: st.Assign.Name, Expr: expr}, nil
+	case st.Expr != nil:
+		arg, err := extractPrintArg(st.Expr.Expr)
+		if err != nil {
+			return nil, err
+		}
+		expr, err := toExpr(arg)
+		if err != nil {
+			return nil, err
+		}
+		return &PrintStmt{Expr: expr}, nil
+	case st.If != nil:
+		if st.If.ElseIf != nil {
+			return nil, fmt.Errorf("elseif not supported")
+		}
+		cond, err := toExpr(st.If.Cond)
+		if err != nil {
+			return nil, err
+		}
+		thenStmts, err := compileStmtList(p, st.If.Then, env)
+		if err != nil {
+			return nil, err
+		}
+		var elseStmts []Stmt
+		if len(st.If.Else) > 0 {
+			elseStmts, err = compileStmtList(p, st.If.Else, env)
 			if err != nil {
 				return nil, err
 			}
-			expr, err := toExpr(arg)
-			if err != nil {
-				return nil, err
-			}
-			fp.Stmts = append(fp.Stmts, &PrintStmt{Expr: expr})
-		default:
-			return nil, fmt.Errorf("unsupported statement")
+		}
+		return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
+	case st.While != nil:
+		cond, err := toExpr(st.While.Cond)
+		if err != nil {
+			return nil, err
+		}
+		body, err := compileStmtList(p, st.While.Body, env)
+		if err != nil {
+			return nil, err
+		}
+		return &WhileStmt{Cond: cond, Body: body}, nil
+	default:
+		return nil, fmt.Errorf("unsupported statement")
+	}
+}
+
+func compileStmtList(p *Program, list []*parser.Statement, env *types.Env) ([]Stmt, error) {
+	var out []Stmt
+	for _, s := range list {
+		stmt, err := compileStmt(p, s, env)
+		if err != nil {
+			return nil, err
+		}
+		if stmt != nil {
+			out = append(out, stmt)
 		}
 	}
-	return fp, nil
+	return out, nil
 }
 
 func extractPrintArg(e *parser.Expr) (*parser.Expr, error) {
