@@ -53,7 +53,7 @@ func TestCPPTranspiler_PrintHello(t *testing.T) {
 		t.Fatalf("run error: %v", err)
 	}
 	got := bytes.TrimSpace(out)
-	want, _ := os.ReadFile(filepath.Join(outDir, "print_hello.output"))
+       want, _ := os.ReadFile(filepath.Join(outDir, "print_hello.out"))
 	want = bytes.TrimSpace(want)
 	if !bytes.Equal(got, want) {
 		t.Errorf("output mismatch: got %s want %s", got, want)
