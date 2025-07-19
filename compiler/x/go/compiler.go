@@ -4809,23 +4809,25 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("lower expects 1 arg")
 		}
 		at := c.inferExprType(call.Args[0])
+		arg := stripAny(args[0])
 		if isString(at) {
 			c.imports["strings"] = true
-			return fmt.Sprintf("strings.ToLower(%s)", args[0]), nil
+			return fmt.Sprintf("strings.ToLower(%s)", arg), nil
 		}
 		c.use("_lower")
-		return fmt.Sprintf("_lower(%s)", args[0]), nil
+		return fmt.Sprintf("_lower(%s)", arg), nil
 	case "upper":
 		if len(call.Args) != 1 {
 			return "", fmt.Errorf("upper expects 1 arg")
 		}
 		at := c.inferExprType(call.Args[0])
+		arg := stripAny(args[0])
 		if isString(at) {
 			c.imports["strings"] = true
-			return fmt.Sprintf("strings.ToUpper(%s)", args[0]), nil
+			return fmt.Sprintf("strings.ToUpper(%s)", arg), nil
 		}
 		c.use("_upper")
-		return fmt.Sprintf("_upper(%s)", args[0]), nil
+		return fmt.Sprintf("_upper(%s)", arg), nil
 	case "reverse":
 		if len(call.Args) != 1 {
 			return "", fmt.Errorf("reverse expects 1 arg")
