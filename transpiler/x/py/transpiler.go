@@ -1,0 +1,207 @@
+package py
+
+import (
+	"fmt"
+	"io"
+
+	"mochi/ast"
+	"mochi/parser"
+	"mochi/types"
+)
+
+// Python AST definitions
+
+type Program struct {
+	Stmts []Stmt
+}
+
+type Stmt interface{ isStmt() }
+
+type ExprStmt struct{ Expr Expr }
+
+func (*ExprStmt) isStmt() {}
+
+type Expr interface{ emit(io.Writer) error }
+
+type CallExpr struct {
+	Func Expr
+	Args []Expr
+}
+
+func (c *CallExpr) emit(w io.Writer) error {
+	if err := emitExpr(w, c.Func); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, "("); err != nil {
+		return err
+	}
+	for i, a := range c.Args {
+		if i > 0 {
+			if _, err := io.WriteString(w, ", "); err != nil {
+				return err
+			}
+		}
+		if err := emitExpr(w, a); err != nil {
+			return err
+		}
+	}
+	if _, err := io.WriteString(w, ")"); err != nil {
+		return err
+	}
+	return nil
+}
+
+type Name struct{ Name string }
+
+func (n *Name) emit(w io.Writer) error {
+	_, err := io.WriteString(w, n.Name)
+	return err
+}
+
+type StringLit struct{ Value string }
+
+func (s *StringLit) emit(w io.Writer) error {
+	_, err := fmt.Fprintf(w, "%q", s.Value)
+	return err
+}
+
+func emitExpr(w io.Writer, e Expr) error { return e.emit(w) }
+
+// Emit renders Python code from AST
+func Emit(w io.Writer, p *Program) error {
+	for _, s := range p.Stmts {
+		switch st := s.(type) {
+		case *ExprStmt:
+			if err := emitExpr(w, st.Expr); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, "\n"); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+// Transpile converts a Mochi program to a Python AST.
+func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
+	p := &Program{}
+	for _, st := range prog.Statements {
+		if st.Expr != nil {
+			e, err := convertExpr(st.Expr.Expr)
+			if err != nil {
+				return nil, err
+			}
+			p.Stmts = append(p.Stmts, &ExprStmt{Expr: e})
+		} else {
+			return nil, fmt.Errorf("unsupported statement")
+		}
+	}
+	_ = env // unused for now
+	return p, nil
+}
+
+func convertExpr(e *parser.Expr) (Expr, error) {
+	if e == nil {
+		return nil, fmt.Errorf("nil expr")
+	}
+	return convertBinary(e.Binary)
+}
+
+func convertBinary(b *parser.BinaryExpr) (Expr, error) {
+	if b == nil {
+		return nil, fmt.Errorf("nil binary")
+	}
+	if len(b.Right) > 0 {
+		return nil, fmt.Errorf("binary operations not supported")
+	}
+	return convertUnary(b.Left)
+}
+
+func convertUnary(u *parser.Unary) (Expr, error) {
+	if u == nil {
+		return nil, fmt.Errorf("nil unary")
+	}
+	if len(u.Ops) > 0 {
+		return nil, fmt.Errorf("unary ops not supported")
+	}
+	return convertPostfix(u.Value)
+}
+
+func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
+	if p == nil {
+		return nil, fmt.Errorf("nil postfix")
+	}
+	if len(p.Ops) > 0 {
+		return nil, fmt.Errorf("postfix ops not supported")
+	}
+	return convertPrimary(p.Target)
+}
+
+func convertPrimary(p *parser.Primary) (Expr, error) {
+	switch {
+	case p.Call != nil:
+		ce := &CallExpr{Func: &Name{p.Call.Func}}
+		for _, a := range p.Call.Args {
+			ae, err := convertExpr(a)
+			if err != nil {
+				return nil, err
+			}
+			ce.Args = append(ce.Args, ae)
+		}
+		return ce, nil
+	case p.Lit != nil:
+		return convertLiteral(p.Lit)
+	default:
+		return nil, fmt.Errorf("unsupported expression")
+	}
+}
+
+func convertLiteral(l *parser.Literal) (Expr, error) {
+	if l.Str != nil {
+		return &StringLit{Value: *l.Str}, nil
+	}
+	return nil, fmt.Errorf("unsupported literal")
+}
+
+// --- AST printing helpers ---
+
+// toNode converts the Python AST into a generic ast.Node tree.
+func toNode(p *Program) *ast.Node {
+	n := &ast.Node{Kind: "program"}
+	for _, s := range p.Stmts {
+		n.Children = append(n.Children, stmtNode(s))
+	}
+	return n
+}
+
+func stmtNode(s Stmt) *ast.Node {
+	switch st := s.(type) {
+	case *ExprStmt:
+		return &ast.Node{Kind: "expr_stmt", Children: []*ast.Node{exprNode(st.Expr)}}
+	default:
+		return &ast.Node{Kind: "unknown"}
+	}
+}
+
+func exprNode(e Expr) *ast.Node {
+	switch ex := e.(type) {
+	case *CallExpr:
+		n := &ast.Node{Kind: "call", Children: []*ast.Node{exprNode(ex.Func)}}
+		for _, a := range ex.Args {
+			n.Children = append(n.Children, exprNode(a))
+		}
+		return n
+	case *Name:
+		return &ast.Node{Kind: "name", Value: ex.Name}
+	case *StringLit:
+		return &ast.Node{Kind: "string", Value: ex.Value}
+	default:
+		return &ast.Node{Kind: "unknown"}
+	}
+}
+
+// Print writes the Python AST in Lisp-like form to stdout.
+func Print(p *Program) {
+	toNode(p).Print("")
+}
