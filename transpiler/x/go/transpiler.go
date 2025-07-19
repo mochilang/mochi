@@ -146,6 +146,87 @@ type IntLit struct{ Value int }
 
 func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
 
+// WhileStmt represents a basic while loop using Go's for syntax.
+type WhileStmt struct {
+	Cond Expr
+	Body []Stmt
+}
+
+func (ws *WhileStmt) emit(w io.Writer) {
+	fmt.Fprint(w, "for ")
+	if ws.Cond != nil {
+		ws.Cond.emit(w)
+	}
+	fmt.Fprint(w, " {\n")
+	for _, st := range ws.Body {
+		fmt.Fprint(w, "    ")
+		st.emit(w)
+		fmt.Fprint(w, "\n")
+	}
+	fmt.Fprint(w, "}")
+}
+
+// ForRangeStmt represents a numeric for-loop like `for i in a..b {}`.
+type ForRangeStmt struct {
+	Name  string
+	Start Expr
+	End   Expr
+	Body  []Stmt
+}
+
+func (fr *ForRangeStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "for %s := ", fr.Name)
+	if fr.Start != nil {
+		fr.Start.emit(w)
+	}
+	fmt.Fprintf(w, "; %s < ", fr.Name)
+	if fr.End != nil {
+		fr.End.emit(w)
+	}
+	fmt.Fprintf(w, "; %s++ {\n", fr.Name)
+	for _, st := range fr.Body {
+		fmt.Fprint(w, "    ")
+		st.emit(w)
+		fmt.Fprint(w, "\n")
+	}
+	fmt.Fprint(w, "}")
+}
+
+// ForEachStmt represents iteration over a collection.
+type ForEachStmt struct {
+	Name     string
+	Iterable Expr
+	Body     []Stmt
+}
+
+func (fe *ForEachStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "for _, %s := range ", fe.Name)
+	if fe.Iterable != nil {
+		fe.Iterable.emit(w)
+	}
+	fmt.Fprint(w, " {\n")
+	for _, st := range fe.Body {
+		fmt.Fprint(w, "    ")
+		st.emit(w)
+		fmt.Fprint(w, "\n")
+	}
+	fmt.Fprint(w, "}")
+}
+
+// IndexAssignStmt represents assignment to a list element.
+type IndexAssignStmt struct {
+	Name  string
+	Index Expr
+	Value Expr
+}
+
+func (ias *IndexAssignStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "%s[", ias.Name)
+	ias.Index.emit(w)
+	fmt.Fprint(w, "] = ")
+	ias.Value.emit(w)
+}
+
 type ListLit struct{ Elems []Expr }
 
 func (l *ListLit) emit(w io.Writer) {
@@ -257,6 +338,17 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		}
 		return &VarDecl{Name: st.Var.Name, Type: toGoType(st.Var.Type)}, nil
 	case st.Assign != nil:
+		if len(st.Assign.Index) == 1 && st.Assign.Index[0].Colon == nil && st.Assign.Index[0].Colon2 == nil && len(st.Assign.Field) == 0 {
+			idx, err := compileExpr(st.Assign.Index[0].Start)
+			if err != nil {
+				return nil, err
+			}
+			val, err := compileExpr(st.Assign.Value)
+			if err != nil {
+				return nil, err
+			}
+			return &IndexAssignStmt{Name: st.Assign.Name, Index: idx, Value: val}, nil
+		}
 		if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
 			e, err := compileExpr(st.Assign.Value)
 			if err != nil {
@@ -267,6 +359,10 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		return nil, fmt.Errorf("unsupported statement at %d:%d", st.Pos.Line, st.Pos.Column)
 	case st.If != nil:
 		return compileIfStmt(st.If, env)
+	case st.While != nil:
+		return compileWhileStmt(st.While, env)
+	case st.For != nil:
+		return compileForStmt(st.For, env)
 	default:
 		if st.Test == nil && st.Import == nil && st.Type == nil {
 			return nil, fmt.Errorf("unsupported statement at %d:%d", st.Pos.Line, st.Pos.Column)
@@ -312,6 +408,45 @@ func compileIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
 		}
 	}
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
+}
+
+func compileWhileStmt(ws *parser.WhileStmt, env *types.Env) (Stmt, error) {
+	cond, err := compileExpr(ws.Cond)
+	if err != nil {
+		return nil, err
+	}
+	body, err := compileStmts(ws.Body, env)
+	if err != nil {
+		return nil, err
+	}
+	return &WhileStmt{Cond: cond, Body: body}, nil
+}
+
+func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
+	if fs.RangeEnd != nil {
+		start, err := compileExpr(fs.Source)
+		if err != nil {
+			return nil, err
+		}
+		end, err := compileExpr(fs.RangeEnd)
+		if err != nil {
+			return nil, err
+		}
+		body, err := compileStmts(fs.Body, env)
+		if err != nil {
+			return nil, err
+		}
+		return &ForRangeStmt{Name: fs.Name, Start: start, End: end, Body: body}, nil
+	}
+	iter, err := compileExpr(fs.Source)
+	if err != nil {
+		return nil, err
+	}
+	body, err := compileStmts(fs.Body, env)
+	if err != nil {
+		return nil, err
+	}
+	return &ForEachStmt{Name: fs.Name, Iterable: iter, Body: body}, nil
 }
 
 func compileBinary(b *parser.BinaryExpr) (Expr, error) {
@@ -674,6 +809,33 @@ func toNodeStmt(s Stmt) *ast.Node {
 			n.Children = append(n.Children, els)
 		}
 		return n
+	case *WhileStmt:
+		n := &ast.Node{Kind: "while", Children: []*ast.Node{toNodeExpr(st.Cond)}}
+		body := &ast.Node{Kind: "body"}
+		for _, b := range st.Body {
+			body.Children = append(body.Children, toNodeStmt(b))
+		}
+		n.Children = append(n.Children, body)
+		return n
+	case *ForRangeStmt:
+		n := &ast.Node{Kind: "forrange", Value: st.Name}
+		n.Children = append(n.Children, toNodeExpr(st.Start), toNodeExpr(st.End))
+		body := &ast.Node{Kind: "body"}
+		for _, b := range st.Body {
+			body.Children = append(body.Children, toNodeStmt(b))
+		}
+		n.Children = append(n.Children, body)
+		return n
+	case *ForEachStmt:
+		n := &ast.Node{Kind: "foreach", Value: st.Name, Children: []*ast.Node{toNodeExpr(st.Iterable)}}
+		body := &ast.Node{Kind: "body"}
+		for _, b := range st.Body {
+			body.Children = append(body.Children, toNodeStmt(b))
+		}
+		n.Children = append(n.Children, body)
+		return n
+	case *IndexAssignStmt:
+		return &ast.Node{Kind: "indexassign", Value: st.Name, Children: []*ast.Node{toNodeExpr(st.Index), toNodeExpr(st.Value)}}
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}

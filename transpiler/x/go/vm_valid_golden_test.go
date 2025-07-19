@@ -137,7 +137,7 @@ func updateTasks() {
 	}
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
-	buf.WriteString("- VM valid golden test results updated\n")
+	buf.WriteString("- Added while/for loops and index assignment support\n")
 	buf.WriteString("\n")
 	if data, err := os.ReadFile(taskFile); err == nil {
 		buf.Write(data)
