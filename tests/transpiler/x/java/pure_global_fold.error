@@ -4,9 +4,4 @@ Main.java:4: error: cannot find symbol
                    ^
   symbol:   variable k
   location: class Main
-Main.java:8: error: bad operand types for binary operator '=='
-        System.out.println((inc(3) == null ? "nil" : inc(3)));
-                                   ^
-  first type:  int
-  second type: <null>
-2 errors
+1 error
