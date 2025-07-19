@@ -7,3 +7,4 @@
 - 2025-07-19 11:02 UTC - Added if-expression support and golden tests
 - 2025-07-19 12:11 +0000 - Added while and for-loop support; updated golden tests
 - 2025-07-19 12:52 UTC - Implemented operator precedence, modulus operator, constant folding and improved numeric display; regenerated golden sources
+- 2025-07-19 13:42 +0000 - Added str() builtin support for constants and updated golden files
