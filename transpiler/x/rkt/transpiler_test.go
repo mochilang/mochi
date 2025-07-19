@@ -64,6 +64,10 @@ func TestTranspile_Golden(t *testing.T) {
 		"if_then_else",
 		"while_loop",
 		"unary_neg",
+		"len_string",
+		"len_builtin",
+		"avg_builtin",
+		"append_builtin",
 	}
 	for _, name := range names {
 		src := filepath.Join(root, "tests", "vm", "valid", name+".mochi")
