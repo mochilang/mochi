@@ -51,6 +51,16 @@ type Expr interface {
 	emitPrint(io.Writer)
 }
 
+// StrBuiltin represents a call to the builtin str() function.
+type StrBuiltin struct{ Expr Expr }
+
+func (s *StrBuiltin) emit(w io.Writer) {
+	io.WriteString(w, "string_of_int ")
+	s.Expr.emit(w)
+}
+
+func (s *StrBuiltin) emitPrint(w io.Writer) { s.emit(w) }
+
 // UnaryMinus represents negation of an integer expression.
 type UnaryMinus struct{ Expr Expr }
 
@@ -291,34 +301,93 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, vars map[string]string)
 	if b == nil {
 		return nil, "", fmt.Errorf("nil binary")
 	}
+	// Convert all operands first
 	left, typ, err := convertUnary(b.Left, env, vars)
 	if err != nil {
 		return nil, "", err
 	}
-	expr := left
+	operands := []Expr{left}
+	typesList := []string{typ}
+	ops := []string{}
 	for _, op := range b.Right {
 		right, rtyp, err := convertPostfix(op.Right, env, vars)
 		if err != nil {
 			return nil, "", err
 		}
-		resTyp := typ
-		switch op.Op {
+		operands = append(operands, right)
+		typesList = append(typesList, rtyp)
+		ops = append(ops, op.Op)
+	}
+
+	prec := func(op string) int {
+		switch op {
+		case "*", "/", "%":
+			return 2
+		case "+", "-":
+			return 1
+		case "==", "!=", "<", "<=", ">", ">=":
+			return 0
+		default:
+			return -1
+		}
+	}
+
+	// Shunting-yard like evaluation
+	var exprStack []Expr
+	var typeStack []string
+	var opStack []string
+
+	pushResult := func() {
+		if len(opStack) == 0 {
+			return
+		}
+		op := opStack[len(opStack)-1]
+		opStack = opStack[:len(opStack)-1]
+		if len(exprStack) < 2 || len(typeStack) < 2 {
+			return
+		}
+		right := exprStack[len(exprStack)-1]
+		exprStack = exprStack[:len(exprStack)-1]
+		rtyp := typeStack[len(typeStack)-1]
+		typeStack = typeStack[:len(typeStack)-1]
+		left := exprStack[len(exprStack)-1]
+		exprStack = exprStack[:len(exprStack)-1]
+		ltyp := typeStack[len(typeStack)-1]
+		typeStack = typeStack[:len(typeStack)-1]
+
+		resTyp := ltyp
+		switch op {
 		case "+", "-", "*", "/", "%":
-			if op.Op == "+" && typ == "string" && rtyp == "string" {
+			if op == "+" && ltyp == "string" && rtyp == "string" {
 				resTyp = "string"
 			} else {
 				resTyp = "int"
 			}
 		case "==", "!=", "<", "<=", ">", ">=":
 			resTyp = "bool"
-		default:
-			return nil, "", fmt.Errorf("op %s not supported", op.Op)
 		}
-		expr = &BinaryExpr{Left: expr, Op: op.Op, Right: right, Typ: resTyp}
-		typ = resTyp
-		_ = rtyp
+
+		exprStack = append(exprStack, &BinaryExpr{Left: left, Op: op, Right: right, Typ: resTyp})
+		typeStack = append(typeStack, resTyp)
 	}
-	return expr, typ, nil
+
+	exprStack = append(exprStack, operands[0])
+	typeStack = append(typeStack, typesList[0])
+	for i, op := range ops {
+		for len(opStack) > 0 && prec(opStack[len(opStack)-1]) >= prec(op) {
+			pushResult()
+		}
+		opStack = append(opStack, op)
+		exprStack = append(exprStack, operands[i+1])
+		typeStack = append(typeStack, typesList[i+1])
+	}
+	for len(opStack) > 0 {
+		pushResult()
+	}
+	if len(exprStack) != 1 {
+		return nil, "", fmt.Errorf("binary conversion failed")
+	}
+	return exprStack[0], typeStack[0], nil
 }
 
 func convertUnary(u *parser.Unary, env *types.Env, vars map[string]string) (Expr, string, error) {
@@ -359,6 +428,8 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]string) (
 		return convertExpr(p.Group, env, vars)
 	case p.If != nil:
 		return convertIf(p.If, env, vars)
+	case p.Call != nil:
+		return convertCall(p.Call, env, vars)
 	case p.Selector != nil:
 		if len(p.Selector.Tail) == 0 {
 			typ := vars[p.Selector.Root]
@@ -409,4 +480,18 @@ func convertIf(ifx *parser.IfExpr, env *types.Env, vars map[string]string) (Expr
 		return nil, "", fmt.Errorf("if branches have different types")
 	}
 	return &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr, Typ: thenTyp}, thenTyp, nil
+}
+
+func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]string) (Expr, string, error) {
+	if c.Func == "str" && len(c.Args) == 1 {
+		arg, typ, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		if typ != "int" {
+			return nil, "", fmt.Errorf("str only supports int")
+		}
+		return &StrBuiltin{Expr: arg}, "string", nil
+	}
+	return nil, "", fmt.Errorf("call %s not supported", c.Func)
 }
