@@ -2,7 +2,7 @@
 
 Generated C# code for programs in `tests/vm/valid`. Each program has a `.cs` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.
 
-Compiled programs: 41/100
+Compiled programs: 52/100
 
 ## Checklist
 - [x] append_builtin
@@ -48,7 +48,7 @@ Compiled programs: 41/100
 - [ ] left_join
 - [ ] left_join_multi
 - [x] len_builtin
-- [ ] len_map
+- [x] len_map
 - [x] len_string
 - [x] let_and_print
 - [x] list_assign
@@ -56,13 +56,13 @@ Compiled programs: 41/100
 - [x] list_nested_assign
 - [ ] list_set_ops
 - [ ] load_yaml
-- [ ] map_assign
-- [ ] map_in_operator
-- [ ] map_index
-- [ ] map_int_key
-- [ ] map_literal_dynamic
-- [ ] map_membership
-- [ ] map_nested_assign
+- [x] map_assign
+- [x] map_in_operator
+- [x] map_index
+- [x] map_int_key
+- [x] map_literal_dynamic
+- [x] map_membership
+- [x] map_nested_assign
 - [ ] match_expr
 - [ ] match_full
 - [x] math_ops
@@ -93,15 +93,15 @@ Compiled programs: 41/100
 - [x] string_prefix_slice
 - [x] substring_builtin
 - [x] sum_builtin
-- [ ] tail_recursion
+- [x] tail_recursion
 - [x] test_block
 - [ ] tree_sum
-- [ ] two-sum
+- [x] two-sum
 - [ ] typed_let
 - [ ] typed_var
 - [x] unary_neg
 - [ ] update_stmt
 - [ ] user_type_literal
-- [ ] values_builtin
+- [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
