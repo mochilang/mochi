@@ -4,10 +4,12 @@ Generated Kotlin sources for golden tests are stored in `tests/transpiler/x/kt`.
 
 The transpiler currently supports expression programs with `print`, integer and list literals, and built-ins `count`, `sum`, `avg`, `len` and `str`.
 
+Completed golden tests: **8/100**
+
 ### Golden test checklist
 
 - [ ] append_builtin.mochi
-- [ ] avg_builtin.mochi
+- [x] avg_builtin.mochi
 - [ ] basic_compare.mochi
 - [ ] binary_precedence.mochi
 - [ ] bool_chain.mochi
@@ -15,7 +17,7 @@ The transpiler currently supports expression programs with `print`, integer and 
 - [ ] cast_string_to_int.mochi
 - [ ] cast_struct.mochi
 - [ ] closure.mochi
-- [ ] count_builtin.mochi
+- [x] count_builtin.mochi
 - [ ] cross_join.mochi
 - [ ] cross_join_filter.mochi
 - [ ] cross_join_triple.mochi
@@ -48,10 +50,10 @@ The transpiler currently supports expression programs with `print`, integer and 
 - [ ] json_builtin.mochi
 - [ ] left_join.mochi
 - [ ] left_join_multi.mochi
-- [ ] len_builtin.mochi
+- [x] len_builtin.mochi
 - [ ] len_map.mochi
-- [ ] len_string.mochi
-- [ ] let_and_print.mochi
+- [x] len_string.mochi
+- [x] let_and_print.mochi
 - [ ] list_assign.mochi
 - [ ] list_index.mochi
 - [ ] list_nested_assign.mochi
@@ -73,7 +75,7 @@ The transpiler currently supports expression programs with `print`, integer and 
 - [ ] order_by_map.mochi
 - [ ] outer_join.mochi
 - [ ] partial_application.mochi
-- [ ] print_hello.mochi
+- [x] print_hello.mochi
 - [ ] pure_fold.mochi
 - [ ] pure_global_fold.mochi
 - [ ] python_auto.mochi
@@ -85,7 +87,7 @@ The transpiler currently supports expression programs with `print`, integer and 
 - [ ] short_circuit.mochi
 - [ ] slice.mochi
 - [ ] sort_stable.mochi
-- [ ] str_builtin.mochi
+- [x] str_builtin.mochi
 - [ ] string_compare.mochi
 - [ ] string_concat.mochi
 - [ ] string_contains.mochi
@@ -93,7 +95,7 @@ The transpiler currently supports expression programs with `print`, integer and 
 - [ ] string_index.mochi
 - [ ] string_prefix_slice.mochi
 - [ ] substring_builtin.mochi
-- [ ] sum_builtin.mochi
+- [x] sum_builtin.mochi
 - [ ] tail_recursion.mochi
 - [ ] test_block.mochi
 - [ ] tree_sum.mochi

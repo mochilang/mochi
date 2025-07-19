@@ -56,6 +56,34 @@ type IntLit struct{ Value int64 }
 
 func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
 
+type VarRef struct{ Name string }
+
+func (v *VarRef) emit(w io.Writer) { io.WriteString(w, v.Name) }
+
+type BinaryExpr struct {
+	Left  Expr
+	Op    string
+	Right Expr
+}
+
+func (b *BinaryExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
+	b.Left.emit(w)
+	io.WriteString(w, " "+b.Op+" ")
+	b.Right.emit(w)
+	io.WriteString(w, ")")
+}
+
+type LetStmt struct {
+	Name  string
+	Value Expr
+}
+
+func (s *LetStmt) emit(w io.Writer) { // 'let' is immutable
+	io.WriteString(w, "val "+s.Name+" = ")
+	s.Value.emit(w)
+}
+
 type ListLit struct{ Elems []Expr }
 
 func (l *ListLit) emit(w io.Writer) {
@@ -115,13 +143,20 @@ func (s *StrExpr) emit(w io.Writer) {
 func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	p := &Program{}
 	for _, st := range prog.Statements {
-		if st.Expr != nil {
+		switch {
+		case st.Expr != nil:
 			e, err := convertExpr(env, st.Expr.Expr)
 			if err != nil {
 				return nil, err
 			}
 			p.Stmts = append(p.Stmts, &ExprStmt{Expr: e})
-		} else {
+		case st.Let != nil && st.Let.Value != nil:
+			e, err := convertExpr(env, st.Let.Value)
+			if err != nil {
+				return nil, err
+			}
+			p.Stmts = append(p.Stmts, &LetStmt{Name: st.Let.Name, Value: e})
+		default:
 			return nil, fmt.Errorf("unsupported statement")
 		}
 	}
@@ -129,17 +164,47 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 }
 
 func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
-	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+	if e == nil || e.Binary == nil {
 		return nil, fmt.Errorf("unsupported expression")
 	}
-	return convertUnary(env, e.Binary.Left)
+	left, err := convertUnary(env, e.Binary.Left)
+	if err != nil {
+		return nil, err
+	}
+	if len(e.Binary.Right) == 0 {
+		return left, nil
+	}
+	if len(e.Binary.Right) > 1 {
+		return nil, fmt.Errorf("unsupported expression chain")
+	}
+	r, err := convertPostfix(env, e.Binary.Right[0].Right)
+	if err != nil {
+		return nil, err
+	}
+	op := e.Binary.Right[0].Op
+	switch op {
+	case "+", "-", "*", "/", "%", "==", "!=", "<", "<=", ">", ">=":
+		return &BinaryExpr{Left: left, Op: op, Right: r}, nil
+	default:
+		return nil, fmt.Errorf("unsupported op %s", op)
+	}
 }
 
 func convertUnary(env *types.Env, u *parser.Unary) (Expr, error) {
-	if u == nil || len(u.Ops) > 0 {
+	if u == nil {
 		return nil, fmt.Errorf("unsupported unary")
 	}
-	return convertPostfix(env, u.Value)
+	ex, err := convertPostfix(env, u.Value)
+	if err != nil {
+		return nil, err
+	}
+	for i := len(u.Ops) - 1; i >= 0; i-- {
+		if u.Ops[i] != "-" {
+			return nil, fmt.Errorf("unsupported unary op")
+		}
+		ex = &BinaryExpr{Left: &IntLit{Value: 0}, Op: "-", Right: ex}
+	}
+	return ex, nil
 }
 
 func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
@@ -194,6 +259,8 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		return &StringLit{Value: *p.Lit.Str}, nil
 	case p.Lit != nil && p.Lit.Int != nil:
 		return &IntLit{Value: int64(*p.Lit.Int)}, nil
+	case p.Selector != nil && len(p.Selector.Tail) == 0:
+		return &VarRef{Name: p.Selector.Root}, nil
 	case p.List != nil:
 		elems := make([]Expr, len(p.List.Elems))
 		for i, e := range p.List.Elems {
@@ -262,6 +329,8 @@ func toNodeStmt(s Stmt) *ast.Node {
 	switch st := s.(type) {
 	case *ExprStmt:
 		return &ast.Node{Kind: "expr", Children: []*ast.Node{toNodeExpr(st.Expr)}}
+	case *LetStmt:
+		return &ast.Node{Kind: "let", Value: st.Name, Children: []*ast.Node{toNodeExpr(st.Value)}}
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
@@ -285,6 +354,10 @@ func toNodeExpr(e Expr) *ast.Node {
 		return &ast.Node{Kind: "len", Children: []*ast.Node{toNodeExpr(ex.Value)}}
 	case *StrExpr:
 		return &ast.Node{Kind: "str", Children: []*ast.Node{toNodeExpr(ex.Value)}}
+	case *BinaryExpr:
+		return &ast.Node{Kind: "bin", Value: ex.Op, Children: []*ast.Node{toNodeExpr(ex.Left), toNodeExpr(ex.Right)}}
+	case *VarRef:
+		return &ast.Node{Kind: "name", Value: ex.Name}
 	case *IntLit:
 		return &ast.Node{Kind: "int", Value: ex.Value}
 	case *ListLit:
