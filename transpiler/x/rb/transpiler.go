@@ -104,6 +104,16 @@ type IntLit struct{ Value int }
 
 func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
 
+type BoolLit struct{ Value bool }
+
+func (b *BoolLit) emit(w io.Writer) {
+	if b.Value {
+		io.WriteString(w, "true")
+	} else {
+		io.WriteString(w, "false")
+	}
+}
+
 type Ident struct{ Name string }
 
 func (id *Ident) emit(w io.Writer) { io.WriteString(w, id.Name) }
@@ -170,6 +180,23 @@ func (a *AvgExpr) emit(w io.Writer) {
 type AppendExpr struct {
 	List Expr
 	Elem Expr
+}
+
+// CondExpr represents a conditional expression (ternary operator).
+type CondExpr struct {
+	Cond Expr
+	Then Expr
+	Else Expr
+}
+
+func (c *CondExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
+	c.Cond.emit(w)
+	io.WriteString(w, " ? ")
+	c.Then.emit(w)
+	io.WriteString(w, " : ")
+	c.Else.emit(w)
+	io.WriteString(w, ")")
 }
 
 // GroupExpr preserves explicit parentheses from the source.
@@ -306,6 +333,32 @@ func convertIf(ifst *parser.IfStmt) (Stmt, error) {
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
 }
 
+func convertIfExpr(ie *parser.IfExpr) (Expr, error) {
+	cond, err := convertExpr(ie.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenExpr, err := convertExpr(ie.Then)
+	if err != nil {
+		return nil, err
+	}
+	var elseExpr Expr
+	if ie.ElseIf != nil {
+		elseExpr, err = convertIfExpr(ie.ElseIf)
+		if err != nil {
+			return nil, err
+		}
+	} else if ie.Else != nil {
+		elseExpr, err = convertExpr(ie.Else)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		elseExpr = &BoolLit{Value: false}
+	}
+	return &CondExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
+}
+
 func convertExpr(e *parser.Expr) (Expr, error) {
 	if e == nil || e.Binary == nil {
 		return nil, fmt.Errorf("unsupported expression")
@@ -338,10 +391,12 @@ func convertUnary(u *parser.Unary) (Expr, error) {
 	}
 	for i := len(u.Ops) - 1; i >= 0; i-- {
 		op := u.Ops[i]
-		if op != "-" {
+		switch op {
+		case "-", "!":
+			ex = &UnaryExpr{Op: op, Expr: ex}
+		default:
 			return nil, fmt.Errorf("unsupported unary op")
 		}
-		ex = &UnaryExpr{Op: op, Expr: ex}
 	}
 	return ex, nil
 }
@@ -398,6 +453,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		if p.Lit.Int != nil {
 			return &IntLit{Value: int(*p.Lit.Int)}, nil
 		}
+		if p.Lit.Bool != nil {
+			return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
+		}
 		return nil, fmt.Errorf("unsupported literal")
 	case p.List != nil:
 		elems := make([]Expr, len(p.List.Elems))
@@ -409,6 +467,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			elems[i] = ex
 		}
 		return &ListLit{Elems: elems}, nil
+	case p.If != nil:
+		return convertIfExpr(p.If)
 	case p.Group != nil:
 		ex, err := convertExpr(p.Group)
 		if err != nil {
@@ -470,6 +530,11 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "int", Value: fmt.Sprintf("%d", ex.Value)}
 	case *StringLit:
 		return &ast.Node{Kind: "string", Value: ex.Value}
+	case *BoolLit:
+		if ex.Value {
+			return &ast.Node{Kind: "bool", Value: "true"}
+		}
+		return &ast.Node{Kind: "bool", Value: "false"}
 	case *ListLit:
 		n := &ast.Node{Kind: "list"}
 		for _, e := range ex.Elems {
@@ -488,6 +553,8 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "avg", Children: []*ast.Node{exprNode(ex.Value)}}
 	case *AppendExpr:
 		return &ast.Node{Kind: "append", Children: []*ast.Node{exprNode(ex.List), exprNode(ex.Elem)}}
+	case *CondExpr:
+		return &ast.Node{Kind: "cond", Children: []*ast.Node{exprNode(ex.Cond), exprNode(ex.Then), exprNode(ex.Else)}}
 	case *GroupExpr:
 		return &ast.Node{Kind: "group", Children: []*ast.Node{exprNode(ex.Expr)}}
 	default:
