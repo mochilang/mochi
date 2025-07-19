@@ -1,4 +1,4 @@
-# Rosetta Fortran Output (36/253 compiled and run)
+# Rosetta Fortran Output (36/278 compiled and run)
 
 This directory holds Fortran source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -17,6 +17,7 @@ This directory holds Fortran source code generated from the real Mochi programs 
 - [ ] 9-billion-names-of-god-the-integer
 - [ ] 99-bottles-of-beer-2
 - [x] 99-bottles-of-beer
+- [ ] DNS-query
 - [ ] a+b
 - [ ] abbreviations-automatic
 - [ ] abbreviations-easy
@@ -246,13 +247,37 @@ This directory holds Fortran source code generated from the real Mochi programs 
 - [ ] count-in-octal-2
 - [ ] count-in-octal-3
 - [ ] count-in-octal-4
+- [ ] count-occurrences-of-a-substring
+- [ ] count-the-coins-1
+- [ ] count-the-coins-2
+- [ ] cramers-rule
 - [ ] crc-32-1
 - [ ] crc-32-2
+- [ ] create-a-file-on-magnetic-tape
+- [ ] create-a-file
+- [ ] create-a-two-dimensional-array-at-runtime-1
+- [ ] create-an-html-table
+- [ ] create-an-object-at-a-given-address
 - [ ] csv-data-manipulation
 - [ ] csv-to-html-translation-1
 - [ ] csv-to-html-translation-2
 - [x] csv-to-html-translation-3
 - [x] csv-to-html-translation-4
 - [ ] csv-to-html-translation-5
+- [ ] cuban-primes
+- [ ] cullen-and-woodall-numbers
+- [ ] cumulative-standard-deviation
+- [ ] currency
+- [ ] currying
+- [ ] curzon-numbers
 - [ ] cusip
+- [ ] cyclops-numbers
+- [ ] damm-algorithm
+- [ ] date-format
+- [ ] date-manipulation
+- [ ] day-of-the-week
+- [ ] de-bruijn-sequences
+- [ ] deal-cards-for-freecell
+- [ ] death-star
+- [ ] deceptive-numbers
 - [ ] md5

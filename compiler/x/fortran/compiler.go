@@ -1855,7 +1855,8 @@ func literalIntPrimary(p *parser.Primary) *int {
 	if p == nil || p.Lit == nil || p.Lit.Int == nil {
 		return nil
 	}
-	return p.Lit.Int
+	v := int(*p.Lit.Int)
+	return &v
 }
 
 func literalIntUnary(u *parser.Unary) *int {
@@ -1863,7 +1864,8 @@ func literalIntUnary(u *parser.Unary) *int {
 		return nil
 	}
 	if u.Value.Target.Lit != nil && u.Value.Target.Lit.Int != nil {
-		return u.Value.Target.Lit.Int
+		v := int(*u.Value.Target.Lit.Int)
+		return &v
 	}
 	return nil
 }
@@ -1899,7 +1901,8 @@ func literalInt(e *parser.Expr) *int {
 		return nil
 	}
 	if u.Value.Target.Lit != nil && u.Value.Target.Lit.Int != nil {
-		return u.Value.Target.Lit.Int
+		v := int(*u.Value.Target.Lit.Int)
+		return &v
 	}
 	return nil
 }
@@ -1962,7 +1965,7 @@ func intList(l *parser.ListLiteral) ([]int, bool) {
 		if len(u.Ops) != 0 || u.Value == nil || u.Value.Target == nil || u.Value.Target.Lit == nil || u.Value.Target.Lit.Int == nil {
 			return nil, false
 		}
-		vals[i] = *u.Value.Target.Lit.Int
+		vals[i] = int(*u.Value.Target.Lit.Int)
 	}
 	return vals, true
 }
@@ -2355,7 +2358,7 @@ func (c *Compiler) constIntFromPostfix(pf *parser.PostfixExpr) (int, bool) {
 		return 0, false
 	}
 	if pf.Target.Lit != nil && pf.Target.Lit.Int != nil {
-		return *pf.Target.Lit.Int, true
+		return int(*pf.Target.Lit.Int), true
 	}
 	if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 0 {
 		v, ok := c.constInts[pf.Target.Selector.Root]
