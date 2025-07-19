@@ -6,7 +6,7 @@ various target languages. Each language backend lives under `x/<lang>`.
 ## Golden test progress
 
 The table below lists all Mochi programs under `tests/vm/valid`. Items checked
-are currently supported by the Ruby transpiler tests. **Progress:** 17/100
+are currently supported by the Ruby transpiler tests. **Progress:** 21/100
 completed.
 
 - [x] append_builtin
@@ -25,8 +25,8 @@ completed.
 - [ ] dataset_sort_take_limit
 - [ ] dataset_where_filter
 - [ ] exists_builtin
-- [ ] for_list_collection
-- [ ] for_loop
+- [x] for_list_collection
+- [x] for_loop
 - [ ] for_map_collection
 - [ ] fun_call
 - [ ] fun_expr_in_let
@@ -107,5 +107,5 @@ completed.
 - [ ] update_stmt
 - [ ] user_type_literal
 - [ ] values_builtin
-- [ ] var_assignment
-- [ ] while_loop
+- [x] var_assignment
+- [x] while_loop
