@@ -1,3 +1,8 @@
+## Progress (2025-07-19 16:04 UTC)
+- added lambda expression support for closures (progress 56/100)
+## Progress (2025-07-19 23:04 +0700)
+- py transpiler: add struct literals and field assign (progress 55/100)
+
 ## Progress (2025-07-19 14:37 UTC)
 - refine cs map types (progress 55/100)
 
@@ -15,4 +20,5 @@
 ## Remaining Work
 - [x] Implement loops and conditionals
 - [ ] Support map and list mutation operations
+
 
