@@ -287,3 +287,23 @@ func TestTranspile_MapNestedAssign(t *testing.T) {
 func TestTranspile_ForMapCollection(t *testing.T) {
 	runCase(t, "for_map_collection")
 }
+
+func TestTranspile_Membership(t *testing.T) {
+	runCase(t, "membership")
+}
+
+func TestTranspile_MinMaxBuiltin(t *testing.T) {
+	runCase(t, "min_max_builtin")
+}
+
+func TestTranspile_TailRecursion(t *testing.T) {
+	runCase(t, "tail_recursion")
+}
+
+func TestTranspile_TwoSum(t *testing.T) {
+	runCase(t, "two-sum")
+}
+
+func TestTranspile_ShortCircuit(t *testing.T) {
+	runCase(t, "short_circuit")
+}

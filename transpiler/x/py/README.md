@@ -1,8 +1,9 @@
 # Transpiler Progress
 
-This directory tracks progress of the experimental Python transpiler. Generated code for tests lives in `tests/transpiler/x/py`.
+This directory tracks progress of the experimental Python transpiler. Generated
+code for tests lives in `tests/transpiler/x/py`.
 
-## VM Golden Test Checklist (51/100)
+## VM Golden Test Checklist (56/100)
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -54,7 +55,7 @@ This directory tracks progress of the experimental Python transpiler. Generated 
 - [x] list_index
 - [x] list_nested_assign
 - [x] list_set_ops
- - [ ] load_yaml
+- [ ] load_yaml
 - [x] map_assign
 - [x] map_in_operator
 - [x] map_index
@@ -65,8 +66,8 @@ This directory tracks progress of the experimental Python transpiler. Generated 
 - [ ] match_expr
 - [ ] match_full
 - [x] math_ops
-- [ ] membership
-- [ ] min_max_builtin
+- [x] membership
+- [x] min_max_builtin
 - [ ] nested_function
 - [ ] order_by_map
 - [ ] outer_join
@@ -80,7 +81,7 @@ This directory tracks progress of the experimental Python transpiler. Generated 
 - [ ] record_assign
 - [ ] right_join
 - [ ] save_jsonl_stdout
-- [ ] short_circuit
+- [x] short_circuit
 - [x] slice
 - [ ] sort_stable
 - [x] str_builtin
@@ -92,10 +93,10 @@ This directory tracks progress of the experimental Python transpiler. Generated 
 - [x] string_prefix_slice
 - [x] substring_builtin
 - [x] sum_builtin
-- [ ] tail_recursion
+- [x] tail_recursion
 - [ ] test_block
 - [ ] tree_sum
-- [ ] two-sum
+- [x] two-sum
 - [x] typed_let
 - [x] typed_var
 - [x] unary_neg
