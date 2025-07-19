@@ -22,6 +22,12 @@ const datasetHelpers = `(import (srfi 1) (srfi 95) (chibi json) (chibi io) (chib
 (define (_to_string v)
   (call-with-output-string (lambda (p) (write v p))))
 
+(define (int v)
+  (cond
+    ((integer? v) v)
+    ((number? v) (inexact->exact (truncate v)))
+    (else 0)))
+
 (define (_yaml_value v)
   (let ((n (string->number v)))
     (if n n v)))
@@ -831,6 +837,22 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			if c.isFloatExpr(s.Let.Value) {
 				c.vars[s.Let.Name] = "float"
 			}
+			if fn := simpleCallName(s.Let.Value); fn != "" && c.env != nil {
+				if t, err := c.env.GetVar(fn); err == nil {
+					if ft, ok := t.(types.FuncType); ok {
+						switch ft.Return.(type) {
+						case types.MapType, types.StructType:
+							c.vars[s.Let.Name] = "map"
+						case types.StringType:
+							c.vars[s.Let.Name] = "string"
+						case types.IntType, types.Int64Type:
+							c.vars[s.Let.Name] = "int"
+						case types.FloatType:
+							c.vars[s.Let.Name] = "float"
+						}
+					}
+				}
+			}
 		}
 	case s.Var != nil:
 		expr, err := c.compileExpr(s.Var.Value)
@@ -875,6 +897,22 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			if c.isFloatExpr(s.Var.Value) {
 				c.vars[s.Var.Name] = "float"
 			}
+			if fn := simpleCallName(s.Var.Value); fn != "" && c.env != nil {
+				if t, err := c.env.GetVar(fn); err == nil {
+					if ft, ok := t.(types.FuncType); ok {
+						switch ft.Return.(type) {
+						case types.MapType, types.StructType:
+							c.vars[s.Var.Name] = "map"
+						case types.StringType:
+							c.vars[s.Var.Name] = "string"
+						case types.IntType, types.Int64Type:
+							c.vars[s.Var.Name] = "int"
+						case types.FloatType:
+							c.vars[s.Var.Name] = "float"
+						}
+					}
+				}
+			}
 		}
 	case s.Assign != nil:
 		rhs, err := c.compileExpr(s.Assign.Value)
@@ -892,6 +930,22 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				c.vars[s.Assign.Name] = "int"
 			} else if c.isFloatExpr(s.Assign.Value) {
 				c.vars[s.Assign.Name] = "float"
+			}
+			if fn := simpleCallName(s.Assign.Value); fn != "" && c.env != nil {
+				if t, err := c.env.GetVar(fn); err == nil {
+					if ft, ok := t.(types.FuncType); ok {
+						switch ft.Return.(type) {
+						case types.MapType, types.StructType:
+							c.vars[s.Assign.Name] = "map"
+						case types.StringType:
+							c.vars[s.Assign.Name] = "string"
+						case types.IntType, types.Int64Type:
+							c.vars[s.Assign.Name] = "int"
+						case types.FloatType:
+							c.vars[s.Assign.Name] = "float"
+						}
+					}
+				}
 			}
 			break
 		}
@@ -1653,6 +1707,15 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 			return "", fmt.Errorf("pow expects 2 args")
 		}
 		return fmt.Sprintf("(expt %s %s)", args[0], args[1]), nil
+	case "int":
+		if len(args) != 1 {
+			return "", fmt.Errorf("int expects 1 arg")
+		}
+		root := rootNameExpr(call.Args[0])
+		if c.varType(root) == "string" || c.isStringExpr(call.Args[0]) {
+			return fmt.Sprintf("(string->number %s)", args[0]), nil
+		}
+		return fmt.Sprintf("(inexact->exact %s)", args[0]), nil
 	case "now":
 		if len(args) != 0 {
 			return "", fmt.Errorf("now expects no args")
