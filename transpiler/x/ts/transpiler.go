@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"strings"
 
 	"mochi/ast"
 	"mochi/parser"
@@ -19,6 +20,8 @@ import (
 type Program struct {
 	Stmts []Stmt
 }
+
+var transpileEnv *types.Env
 
 type Stmt interface {
 	emit(io.Writer)
@@ -623,25 +626,184 @@ func (f *FuncDecl) emit(w io.Writer) {
 }
 
 // Emit converts the AST back into TypeScript source code.
+type indentWriter struct {
+	w      io.Writer
+	indent string
+}
+
+func (iw *indentWriter) Write(p []byte) (int, error) {
+	return iw.w.Write(p)
+}
+
+func (iw *indentWriter) WriteByte(c byte) error {
+	if wb, ok := iw.w.(interface{ WriteByte(byte) error }); ok {
+		return wb.WriteByte(c)
+	}
+	_, err := iw.w.Write([]byte{c})
+	return err
+}
+
 func Emit(p *Program) []byte {
 	var b bytes.Buffer
 	b.Write(meta.Header("//"))
 	b.WriteByte('\n')
-	for i, s := range p.Stmts {
-		if i > 0 {
-			b.WriteByte('\n')
-		}
-		s.emit(&b)
-		b.WriteByte('\n')
+	iw := &indentWriter{w: &b, indent: "  "}
+	for _, s := range p.Stmts {
+		emitStmt(iw, s, 0)
 	}
 	return b.Bytes()
+}
+
+func emitStmt(w *indentWriter, s Stmt, level int) {
+	pad := strings.Repeat(w.indent, level)
+	switch st := s.(type) {
+	case *ExprStmt:
+		io.WriteString(w, pad)
+		st.Expr.emit(w)
+		io.WriteString(w, "\n")
+	case *VarDecl:
+		io.WriteString(w, pad)
+		io.WriteString(w, "let ")
+		io.WriteString(w, st.Name)
+		if st.Expr != nil {
+			io.WriteString(w, " = ")
+			st.Expr.emit(w)
+		}
+		io.WriteString(w, "\n")
+	case *AssignStmt:
+		io.WriteString(w, pad)
+		io.WriteString(w, st.Name)
+		io.WriteString(w, " = ")
+		st.Expr.emit(w)
+		io.WriteString(w, "\n")
+	case *IndexAssignStmt:
+		io.WriteString(w, pad)
+		st.Target.emit(w)
+		io.WriteString(w, " = ")
+		st.Value.emit(w)
+		io.WriteString(w, "\n")
+	case *ReturnStmt:
+		io.WriteString(w, pad)
+		io.WriteString(w, "return")
+		if st.Value != nil {
+			io.WriteString(w, " ")
+			st.Value.emit(w)
+		}
+		io.WriteString(w, "\n")
+	case *BreakStmt:
+		io.WriteString(w, pad)
+		io.WriteString(w, "break\n")
+	case *ContinueStmt:
+		io.WriteString(w, pad)
+		io.WriteString(w, "continue\n")
+	case *FuncDecl:
+		io.WriteString(w, pad)
+		io.WriteString(w, "function ")
+		io.WriteString(w, st.Name)
+		io.WriteString(w, "(")
+		for i, p := range st.Params {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, p)
+		}
+		io.WriteString(w, ") {\n")
+		for _, bs := range st.Body {
+			emitStmt(w, bs, level+1)
+		}
+		io.WriteString(w, pad)
+		io.WriteString(w, "}\n")
+	case *IfStmt:
+		io.WriteString(w, pad)
+		io.WriteString(w, "if (")
+		if st.Cond != nil {
+			st.Cond.emit(w)
+		}
+		io.WriteString(w, ") {\n")
+		for _, bs := range st.Then {
+			emitStmt(w, bs, level+1)
+		}
+		io.WriteString(w, pad)
+		io.WriteString(w, "}")
+		if len(st.Else) > 0 {
+			io.WriteString(w, " else {\n")
+			for _, bs := range st.Else {
+				emitStmt(w, bs, level+1)
+			}
+			io.WriteString(w, pad)
+			io.WriteString(w, "}")
+		}
+		io.WriteString(w, "\n")
+	case *WhileStmt:
+		io.WriteString(w, pad)
+		io.WriteString(w, "while (")
+		if st.Cond != nil {
+			st.Cond.emit(w)
+		}
+		io.WriteString(w, ") {\n")
+		for _, bs := range st.Body {
+			emitStmt(w, bs, level+1)
+		}
+		io.WriteString(w, pad)
+		io.WriteString(w, "}\n")
+	case *ForRangeStmt:
+		io.WriteString(w, pad)
+		io.WriteString(w, "for (let ")
+		io.WriteString(w, st.Name)
+		io.WriteString(w, " = ")
+		if st.Start != nil {
+			st.Start.emit(w)
+		} else {
+			io.WriteString(w, "0")
+		}
+		io.WriteString(w, "; ")
+		io.WriteString(w, st.Name)
+		io.WriteString(w, " < ")
+		if st.End != nil {
+			st.End.emit(w)
+		} else {
+			io.WriteString(w, "0")
+		}
+		io.WriteString(w, "; ")
+		io.WriteString(w, st.Name)
+		io.WriteString(w, "++) {\n")
+		for _, bs := range st.Body {
+			emitStmt(w, bs, level+1)
+		}
+		io.WriteString(w, pad)
+		io.WriteString(w, "}\n")
+	case *ForInStmt:
+		io.WriteString(w, pad)
+		io.WriteString(w, "for (const ")
+		io.WriteString(w, st.Name)
+		io.WriteString(w, " of (")
+		io.WriteString(w, "Array.isArray(")
+		if st.Iterable != nil {
+			st.Iterable.emit(w)
+		}
+		io.WriteString(w, ") ? ")
+		if st.Iterable != nil {
+			st.Iterable.emit(w)
+		}
+		io.WriteString(w, " : Object.keys(")
+		if st.Iterable != nil {
+			st.Iterable.emit(w)
+		}
+		io.WriteString(w, " || {}))) {\n")
+		for _, bs := range st.Body {
+			emitStmt(w, bs, level+1)
+		}
+		io.WriteString(w, pad)
+		io.WriteString(w, "}\n")
+	}
 }
 
 // Transpile converts a Mochi program into a TypeScript AST. Only a very
 // small subset of the language is supported: programs consisting of a single
 // call to the builtin `print` with a string literal argument.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
-	_ = env // env not used by this minimal implementation
+	transpileEnv = env
+	defer func() { transpileEnv = nil }()
 	tsProg := &Program{}
 
 	for _, st := range prog.Statements {
@@ -665,7 +827,7 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 				return nil, err
 			}
 		} else if s.Let.Type != nil {
-			e = zeroValue(s.Let.Type)
+			e = zeroValue(s.Let.Type, transpileEnv)
 		}
 		return &VarDecl{Name: s.Let.Name, Expr: e}, nil
 	case s.Var != nil:
@@ -677,7 +839,7 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 				return nil, err
 			}
 		} else if s.Var.Type != nil {
-			e = zeroValue(s.Var.Type)
+			e = zeroValue(s.Var.Type, transpileEnv)
 		}
 		return &VarDecl{Name: s.Var.Name, Expr: e}, nil
 	case s.Assign != nil:
@@ -725,17 +887,17 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		}
 		return &FuncDecl{Name: s.Fun.Name, Params: params, Body: body}, nil
 	case s.If != nil:
-		return convertIfStmt(s.If)
+		return convertIfStmt(s.If, transpileEnv)
 	case s.While != nil:
-		return convertWhileStmt(s.While)
+		return convertWhileStmt(s.While, transpileEnv)
 	case s.For != nil:
-		return convertForStmt(s.For)
+		return convertForStmt(s.For, transpileEnv)
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
 }
 
-func convertIfStmt(i *parser.IfStmt) (Stmt, error) {
+func convertIfStmt(i *parser.IfStmt, env *types.Env) (Stmt, error) {
 	cond, err := convertExpr(i.Cond)
 	if err != nil {
 		return nil, err
@@ -746,7 +908,7 @@ func convertIfStmt(i *parser.IfStmt) (Stmt, error) {
 	}
 	var elseStmts []Stmt
 	if i.ElseIf != nil {
-		s, err := convertIfStmt(i.ElseIf)
+		s, err := convertIfStmt(i.ElseIf, env)
 		if err != nil {
 			return nil, err
 		}
@@ -760,7 +922,7 @@ func convertIfStmt(i *parser.IfStmt) (Stmt, error) {
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
 }
 
-func convertWhileStmt(w *parser.WhileStmt) (Stmt, error) {
+func convertWhileStmt(w *parser.WhileStmt, env *types.Env) (Stmt, error) {
 	cond, err := convertExpr(w.Cond)
 	if err != nil {
 		return nil, err
@@ -772,7 +934,7 @@ func convertWhileStmt(w *parser.WhileStmt) (Stmt, error) {
 	return &WhileStmt{Cond: cond, Body: body}, nil
 }
 
-func convertForStmt(f *parser.ForStmt) (Stmt, error) {
+func convertForStmt(f *parser.ForStmt, env *types.Env) (Stmt, error) {
 	if f.RangeEnd != nil {
 		start, err := convertExpr(f.Source)
 		if err != nil {
@@ -1148,17 +1310,25 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 
 // zeroValue returns a default expression for the given type reference. Only a
 // few primitive types are recognized; other types result in no initializer.
-func zeroValue(t *parser.TypeRef) Expr {
-	if t == nil || t.Simple == nil {
+func zeroValue(t *parser.TypeRef, env *types.Env) Expr {
+	if t == nil {
 		return nil
 	}
-	switch *t.Simple {
-	case "int", "float":
+	if env == nil {
+		env = transpileEnv
+	}
+	typ := types.ResolveTypeRef(t, env)
+	switch typ.(type) {
+	case types.IntType, types.FloatType:
 		return &NumberLit{Value: "0"}
-	case "bool":
+	case types.BoolType:
 		return &BoolLit{Value: false}
-	case "string":
+	case types.StringType:
 		return &StringLit{Value: ""}
+	case types.ListType:
+		return &ListLit{}
+	case types.MapType:
+		return &MapLit{}
 	default:
 		return nil
 	}
