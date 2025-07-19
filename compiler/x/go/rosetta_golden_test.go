@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -111,6 +112,7 @@ func TestGoCompiler_Rosetta_Golden(t *testing.T) {
 	if err != nil {
 		t.Fatalf("glob: %v", err)
 	}
+	sort.Strings(files)
 	max := 3
 	if v := os.Getenv("ROSETTA_MAX"); v != "" {
 		if n, err := strconv.Atoi(v); err == nil {
