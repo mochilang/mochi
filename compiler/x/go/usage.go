@@ -136,9 +136,8 @@ func (c *Compiler) compileMainFunc(prog *parser.Program) error {
 	// so we no longer emit explicit assignments here.
 	body := []*parser.Statement{}
 	for _, s := range prog.Statements {
-		if s.Fun != nil || s.Test != nil || s.Let != nil || s.Var != nil {
-			// Top-level functions, tests and variable declarations
-			// are handled elsewhere.
+		if s.Fun != nil || s.Test != nil {
+			// Top-level functions and test blocks are handled separately.
 			continue
 		}
 		body = append(body, s)
