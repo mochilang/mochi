@@ -16,8 +16,11 @@ import (
 
 // Program represents a Go program consisting of a sequence of statements.
 type Program struct {
-	Stmts []Stmt
+	Stmts  []Stmt
+	UseAvg bool
 }
+
+var usesAvg bool
 
 type Stmt interface{ emit(io.Writer) }
 
@@ -62,6 +65,19 @@ type IntLit struct{ Value int }
 
 func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
 
+type ListLit struct{ Elems []Expr }
+
+func (l *ListLit) emit(w io.Writer) {
+	fmt.Fprint(w, "[]int{")
+	for i, e := range l.Elems {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		e.emit(w)
+	}
+	fmt.Fprint(w, "}")
+}
+
 type VarRef struct{ Name string }
 
 func (v *VarRef) emit(w io.Writer) { fmt.Fprint(w, v.Name) }
@@ -82,6 +98,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 
 // Transpile converts a Mochi program to a minimal Go AST.
 func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
+	usesAvg = false
 	gp := &Program{}
 	for _, stmt := range p.Statements {
 		switch {
@@ -104,6 +121,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 		}
 	}
 	_ = env // reserved for future use
+	gp.UseAvg = usesAvg
 	return gp, nil
 }
 
@@ -168,8 +186,20 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		name := p.Call.Func
 		if name == "print" {
 			name = "fmt.Println"
+		} else if name == "avg" {
+			usesAvg = true
 		}
 		return &CallExpr{Func: name, Args: args}, nil
+	case p.List != nil:
+		elems := make([]Expr, len(p.List.Elems))
+		for i, e := range p.List.Elems {
+			ex, err := compileExpr(e)
+			if err != nil {
+				return nil, err
+			}
+			elems[i] = ex
+		}
+		return &ListLit{Elems: elems}, nil
 	case p.Lit != nil:
 		if p.Lit.Str != nil {
 			return &StringLit{Value: *p.Lit.Str}, nil
@@ -187,9 +217,17 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 // Emit formats the Go AST back into source code.
 func Emit(prog *Program) []byte {
 	var buf bytes.Buffer
+	buf.WriteString("//go:build ignore\n\n")
 	buf.Write(meta.Header("//"))
 	buf.WriteString("package main\n\n")
 	buf.WriteString("import \"fmt\"\n\n")
+	if prog.UseAvg {
+		buf.WriteString("func avg(nums []int) float64 {\n")
+		buf.WriteString("    sum := 0\n")
+		buf.WriteString("    for _, n := range nums { sum += n }\n")
+		buf.WriteString("    return float64(sum) / float64(len(nums))\n")
+		buf.WriteString("}\n\n")
+	}
 	buf.WriteString("func main() {\n")
 	for _, s := range prog.Stmts {
 		buf.WriteString("    ")
@@ -243,6 +281,12 @@ func toNodeExpr(e Expr) *ast.Node {
 		return &ast.Node{Kind: "int"}
 	case *VarRef:
 		return &ast.Node{Kind: "name", Value: ex.Name}
+	case *ListLit:
+		n := &ast.Node{Kind: "list"}
+		for _, e := range ex.Elems {
+			n.Children = append(n.Children, toNodeExpr(e))
+		}
+		return n
 	case *BinaryExpr:
 		return &ast.Node{Kind: "bin", Value: ex.Op, Children: []*ast.Node{toNodeExpr(ex.Left), toNodeExpr(ex.Right)}}
 	default:

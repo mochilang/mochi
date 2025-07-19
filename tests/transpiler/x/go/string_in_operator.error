@@ -1,0 +1,4 @@
+exit status 1
+# command-line-arguments
+../../../tests/transpiler/x/go/string_in_operator.go:10:24: syntax error: unexpected name in, expected )
+../../../tests/transpiler/x/go/string_in_operator.go:11:24: syntax error: unexpected name in, expected )
