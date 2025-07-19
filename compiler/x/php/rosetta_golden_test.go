@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
 
@@ -109,12 +110,22 @@ func TestPHPCompiler_Rosetta_Golden(t *testing.T) {
 	if err != nil {
 		t.Fatalf("glob: %v", err)
 	}
-	max := 3
+	sort.Strings(files)
+	max := 20
 	if len(files) < max {
 		max = len(files)
 	}
-	for _, f := range files[:max] {
-		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+	count := 0
+	for _, f := range files {
+		if count >= max {
+			break
+		}
+		base := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		if _, err := os.Stat(filepath.Join(root, "tests", "rosetta", "x", "Mochi", base+".in")); err == nil {
+			continue
+		}
+		count++
+		name := base
 		t.Run(name, func(t *testing.T) { runRosettaTaskGolden(t, name) })
 	}
 }
