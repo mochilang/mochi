@@ -16,3 +16,8 @@
 ## Recent Enhancements (2025-07-19 12:40 +07)
 - Mapped logical operators `&&`, `||` and `!` to Python syntax.
 - Added transpiler support and tests for `in_operator` and `string_compare`.
+
+## Recent Enhancements (2025-07-19 13:18 +07)
+- Implemented function definitions, return statements and lambda expressions.
+- Added method call handling and `contains` operator.
+- Enabled transpiler tests for `fun_call`, `fun_three_args`, `fun_expr_in_let`, `closure`, `bool_chain` and `string_contains`.
