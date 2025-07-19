@@ -93,47 +93,62 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	_ = env
 	p := &Program{}
 	for _, st := range prog.Statements {
-		switch {
-		case st.Expr != nil:
-			call := st.Expr.Expr.Binary.Left.Value.Target.Call
-			if call != nil && call.Func == "print" && len(call.Args) == 1 && len(st.Expr.Expr.Binary.Right) == 0 {
-				argExpr := call.Args[0]
-				arg, err := convertParserExpr(argExpr)
-				if err != nil {
-					return nil, err
-				}
-				if isBoolParserExpr(argExpr) {
-					arg = boolToInt(arg)
-				}
-				p.Forms = append(p.Forms, &List{Elems: []Node{Symbol("display"), arg}})
-				p.Forms = append(p.Forms, &List{Elems: []Node{Symbol("newline")}})
-				continue
+		nodes, err := convertStatement(st)
+		if err != nil {
+			return nil, err
+		}
+		p.Forms = append(p.Forms, nodes...)
+	}
+	return p, nil
+}
+
+func convertStatement(st *parser.Statement) ([]Node, error) {
+	switch {
+	case st.Expr != nil:
+		call := st.Expr.Expr.Binary.Left.Value.Target.Call
+		if call != nil && call.Func == "print" && len(call.Args) == 1 && len(st.Expr.Expr.Binary.Right) == 0 {
+			argExpr := call.Args[0]
+			arg, err := convertParserExpr(argExpr)
+			if err != nil {
+				return nil, err
 			}
-			return nil, fmt.Errorf("unsupported expression statement")
-		case st.Let != nil:
-			name := st.Let.Name
-			var val Node
-			if st.Let.Value != nil {
-				var err error
-				val, err = convertParserExpr(st.Let.Value)
-				if err != nil {
-					return nil, err
-				}
-			} else if st.Let.Type != nil {
-				if st.Let.Type.Simple != nil && *st.Let.Type.Simple == "int" {
-					val = IntLit(0)
-				} else {
-					val = voidSym()
-				}
+			if isBoolParserExpr(argExpr) {
+				arg = boolToInt(arg)
+			}
+			return []Node{
+				&List{Elems: []Node{Symbol("display"), arg}},
+				&List{Elems: []Node{Symbol("newline")}},
+			}, nil
+		}
+		return nil, fmt.Errorf("unsupported expression statement")
+	case st.Let != nil:
+		name := st.Let.Name
+		var val Node
+		if st.Let.Value != nil {
+			var err error
+			val, err = convertParserExpr(st.Let.Value)
+			if err != nil {
+				return nil, err
+			}
+		} else if st.Let.Type != nil {
+			if st.Let.Type.Simple != nil && *st.Let.Type.Simple == "int" {
+				val = IntLit(0)
 			} else {
 				val = voidSym()
 			}
-			p.Forms = append(p.Forms, &List{Elems: []Node{Symbol("define"), Symbol(name), val}})
-		default:
-			return nil, fmt.Errorf("unsupported statement")
+		} else {
+			val = voidSym()
 		}
+		return []Node{&List{Elems: []Node{Symbol("define"), Symbol(name), val}}}, nil
+	case st.If != nil:
+		node, err := convertIfStmt(st.If)
+		if err != nil {
+			return nil, err
+		}
+		return []Node{node}, nil
+	default:
+		return nil, fmt.Errorf("unsupported statement")
 	}
-	return p, nil
 }
 
 func boolToInt(expr Node) Node {
@@ -223,8 +238,36 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 		return Symbol(p.Selector.Root), nil
 	case p.Group != nil:
 		return convertParserExpr(p.Group)
+	case p.If != nil:
+		return convertParserIfExpr(p.If)
 	}
 	return nil, fmt.Errorf("unsupported primary")
+}
+
+func convertParserIfExpr(ie *parser.IfExpr) (Node, error) {
+	cond, err := convertParserExpr(ie.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenNode, err := convertParserExpr(ie.Then)
+	if err != nil {
+		return nil, err
+	}
+	var elseNode Node
+	if ie.ElseIf != nil {
+		elseNode, err = convertParserIfExpr(ie.ElseIf)
+		if err != nil {
+			return nil, err
+		}
+	} else if ie.Else != nil {
+		elseNode, err = convertParserExpr(ie.Else)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		elseNode = voidSym()
+	}
+	return &List{Elems: []Node{Symbol("if"), cond, thenNode, elseNode}}, nil
 }
 
 func makeBinary(op string, left, right Node) Node {
@@ -304,4 +347,48 @@ func isBoolParserExpr(e *parser.Expr) bool {
 	default:
 		return false
 	}
+}
+
+func convertIfStmt(st *parser.IfStmt) (Node, error) {
+	cond, err := convertParserExpr(st.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenNode, err := convertBlock(st.Then)
+	if err != nil {
+		return nil, err
+	}
+	var elseNode Node
+	if st.ElseIf != nil {
+		elseNode, err = convertIfStmt(st.ElseIf)
+		if err != nil {
+			return nil, err
+		}
+	} else if st.Else != nil {
+		elseNode, err = convertBlock(st.Else)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		elseNode = voidSym()
+	}
+	return &List{Elems: []Node{Symbol("if"), cond, thenNode, elseNode}}, nil
+}
+
+func convertBlock(stmts []*parser.Statement) (Node, error) {
+	var nodes []Node
+	for _, st := range stmts {
+		ns, err := convertStatement(st)
+		if err != nil {
+			return nil, err
+		}
+		nodes = append(nodes, ns...)
+	}
+	if len(nodes) == 0 {
+		return voidSym(), nil
+	}
+	if len(nodes) == 1 {
+		return nodes[0], nil
+	}
+	return &List{Elems: append([]Node{Symbol("begin")}, nodes...)}, nil
 }
