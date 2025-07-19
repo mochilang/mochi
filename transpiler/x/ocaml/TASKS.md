@@ -1,3 +1,7 @@
+## Progress (2025-07-19 20:02 +0700)
+- Checklist updated: 26/100 tests compiled
+- Added support for `string_index`, `list_index`, `list_assign`, and `string_prefix_slice` programs.
+
 ## Progress (2025-07-19 19:41 +0700)
 - Checklist updated: 22/100 tests compiled
 - Added support for `substring_builtin` and `sum_builtin` programs.

@@ -30,6 +30,9 @@ const prelude = `let string_contains s sub =
     else if String.sub s i len_sub = sub then true
     else aux (i + 1)
   in aux 0
+
+let list_set lst idx value =
+  List.mapi (fun i v -> if i = idx then value else v) lst
 `
 
 type VarInfo struct {
@@ -253,6 +256,56 @@ func (s *StringContainsBuiltin) emitPrint(w io.Writer) {
 	io.WriteString(w, "string_of_int (if ")
 	s.emit(w)
 	io.WriteString(w, " then 1 else 0)")
+}
+
+// StringIndex represents s[i].
+type StringIndex struct {
+	Str   Expr
+	Index Expr
+}
+
+func (s *StringIndex) emit(w io.Writer) {
+	io.WriteString(w, "String.sub ")
+	s.Str.emit(w)
+	io.WriteString(w, " ")
+	s.Index.emit(w)
+	io.WriteString(w, " 1")
+}
+
+func (s *StringIndex) emitPrint(w io.Writer) { s.emit(w) }
+
+// ListIndex represents lst[i].
+type ListIndex struct {
+	List  Expr
+	Index Expr
+}
+
+func (l *ListIndex) emit(w io.Writer) {
+	io.WriteString(w, "(List.nth ")
+	l.List.emit(w)
+	io.WriteString(w, " ")
+	l.Index.emit(w)
+	io.WriteString(w, ")")
+}
+
+func (l *ListIndex) emitPrint(w io.Writer) {
+	io.WriteString(w, "string_of_int ")
+	l.emit(w)
+}
+
+// ListAssignStmt updates a list element.
+type ListAssignStmt struct {
+	Name  string
+	Index Expr
+	Value Expr
+}
+
+func (la *ListAssignStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "  %s := list_set !%s ", la.Name, la.Name)
+	la.Index.emit(w)
+	io.WriteString(w, " ")
+	la.Value.emit(w)
+	io.WriteString(w, ";\n")
 }
 
 // ListLit represents a list literal of integers.
@@ -514,6 +567,17 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		info, ok := vars[st.Assign.Name]
 		if !ok || !info.ref {
 			return nil, fmt.Errorf("assignment to unknown or immutable variable")
+		}
+		if len(st.Assign.Index) == 1 && info.typ == "list" {
+			idxExpr, _, err := convertExpr(st.Assign.Index[0].Start, env, vars)
+			if err != nil {
+				return nil, err
+			}
+			valExpr, _, err := convertExpr(st.Assign.Value, env, vars)
+			if err != nil {
+				return nil, err
+			}
+			return &ListAssignStmt{Name: st.Assign.Name, Index: idxExpr, Value: valExpr}, nil
 		}
 		expr, _, err := convertExpr(st.Assign.Value, env, vars)
 		if err != nil {
@@ -810,6 +874,54 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 			expr = &StringContainsBuiltin{Str: expr, Sub: arg}
 			typ = "bool"
 			i += 2
+			continue
+		case op.Index != nil && op.Index.Colon == nil:
+			idx, ityp, err := convertExpr(op.Index.Start, env, vars)
+			if err != nil {
+				return nil, "", err
+			}
+			if ityp != "int" {
+				return nil, "", fmt.Errorf("index expects int")
+			}
+			if typ == "string" {
+				expr = &StringIndex{Str: expr, Index: idx}
+				typ = "string"
+			} else if typ == "list" {
+				expr = &ListIndex{List: expr, Index: idx}
+				typ = "int"
+			} else {
+				return nil, "", fmt.Errorf("index not supported")
+			}
+			i++
+			continue
+		case op.Index != nil && op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil:
+			var start Expr
+			if op.Index.Start != nil {
+				s, st, err := convertExpr(op.Index.Start, env, vars)
+				if err != nil {
+					return nil, "", err
+				}
+				if st != "int" {
+					return nil, "", fmt.Errorf("slice start expects int")
+				}
+				start = s
+			} else {
+				start = &IntLit{Value: 0}
+			}
+			endExpr, et, err := convertExpr(op.Index.End, env, vars)
+			if err != nil {
+				return nil, "", err
+			}
+			if et != "int" {
+				return nil, "", fmt.Errorf("slice end expects int")
+			}
+			if typ == "string" {
+				expr = &SubstringBuiltin{Str: expr, Start: start, End: endExpr}
+				typ = "string"
+			} else {
+				return nil, "", fmt.Errorf("slice not supported")
+			}
+			i++
 			continue
 		default:
 			return nil, "", fmt.Errorf("postfix op not supported")
