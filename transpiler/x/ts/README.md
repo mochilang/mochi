@@ -7,3 +7,7 @@ Generated sources for the golden tests live under `tests/transpiler/x/ts`.
 
 - [x] `print_hello.mochi`
 - [x] `if_else.mochi`
+- [x] `for_loop.mochi`
+- [x] `while_loop.mochi`
+
+Completed 4/4

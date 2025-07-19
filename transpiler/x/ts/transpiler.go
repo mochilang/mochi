@@ -31,6 +31,28 @@ type IfStmt struct {
 	Else []Stmt
 }
 
+// WhileStmt represents a while loop.
+type WhileStmt struct {
+	Cond Expr
+	Body []Stmt
+}
+
+// ForRangeStmt represents a numeric range for-loop like
+// `for i in 0..10 {}`.
+type ForRangeStmt struct {
+	Name  string
+	Start Expr
+	End   Expr
+	Body  []Stmt
+}
+
+// ForInStmt represents iteration over an iterable expression.
+type ForInStmt struct {
+	Name     string
+	Iterable Expr
+	Body     []Stmt
+}
+
 type Expr interface {
 	emit(io.Writer)
 }
@@ -195,6 +217,57 @@ func (i *IfStmt) emit(w io.Writer) {
 	}
 }
 
+func (wst *WhileStmt) emit(w io.Writer) {
+	io.WriteString(w, "while (")
+	if wst.Cond != nil {
+		wst.Cond.emit(w)
+	}
+	io.WriteString(w, ") {\n")
+	for _, st := range wst.Body {
+		st.emit(w)
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, "}")
+}
+
+func (f *ForRangeStmt) emit(w io.Writer) {
+	io.WriteString(w, "for (let ")
+	io.WriteString(w, f.Name)
+	io.WriteString(w, " = ")
+	if f.Start != nil {
+		f.Start.emit(w)
+	}
+	io.WriteString(w, "; ")
+	io.WriteString(w, f.Name)
+	io.WriteString(w, " < ")
+	if f.End != nil {
+		f.End.emit(w)
+	}
+	io.WriteString(w, "; ")
+	io.WriteString(w, f.Name)
+	io.WriteString(w, "++) {\n")
+	for _, st := range f.Body {
+		st.emit(w)
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, "}")
+}
+
+func (f *ForInStmt) emit(w io.Writer) {
+	io.WriteString(w, "for (const ")
+	io.WriteString(w, f.Name)
+	io.WriteString(w, " of ")
+	if f.Iterable != nil {
+		f.Iterable.emit(w)
+	}
+	io.WriteString(w, ") {\n")
+	for _, st := range f.Body {
+		st.emit(w)
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, "}")
+}
+
 // Emit converts the AST back into TypeScript source code.
 func Emit(p *Program) []byte {
 	var b bytes.Buffer
@@ -261,6 +334,10 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		return &ExprStmt{Expr: &CallExpr{Func: "console.log", Args: []Expr{arg}}}, nil
 	case s.If != nil:
 		return convertIfStmt(s.If)
+	case s.While != nil:
+		return convertWhileStmt(s.While)
+	case s.For != nil:
+		return convertForStmt(s.For)
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
@@ -289,6 +366,45 @@ func convertIfStmt(i *parser.IfStmt) (Stmt, error) {
 		}
 	}
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
+}
+
+func convertWhileStmt(w *parser.WhileStmt) (Stmt, error) {
+	cond, err := convertExpr(w.Cond)
+	if err != nil {
+		return nil, err
+	}
+	body, err := convertStmtList(w.Body)
+	if err != nil {
+		return nil, err
+	}
+	return &WhileStmt{Cond: cond, Body: body}, nil
+}
+
+func convertForStmt(f *parser.ForStmt) (Stmt, error) {
+	if f.RangeEnd != nil {
+		start, err := convertExpr(f.Source)
+		if err != nil {
+			return nil, err
+		}
+		end, err := convertExpr(f.RangeEnd)
+		if err != nil {
+			return nil, err
+		}
+		body, err := convertStmtList(f.Body)
+		if err != nil {
+			return nil, err
+		}
+		return &ForRangeStmt{Name: f.Name, Start: start, End: end, Body: body}, nil
+	}
+	iterable, err := convertExpr(f.Source)
+	if err != nil {
+		return nil, err
+	}
+	body, err := convertStmtList(f.Body)
+	if err != nil {
+		return nil, err
+	}
+	return &ForInStmt{Name: f.Name, Iterable: iterable, Body: body}, nil
 }
 
 func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
@@ -432,6 +548,30 @@ func stmtToNode(s Stmt) *ast.Node {
 			}
 			n.Children = append(n.Children, elseNode)
 		}
+		return n
+	case *WhileStmt:
+		n := &ast.Node{Kind: "while", Children: []*ast.Node{exprToNode(st.Cond)}}
+		body := &ast.Node{Kind: "body"}
+		for _, c := range st.Body {
+			body.Children = append(body.Children, stmtToNode(c))
+		}
+		n.Children = append(n.Children, body)
+		return n
+	case *ForRangeStmt:
+		n := &ast.Node{Kind: "for-range", Value: st.Name, Children: []*ast.Node{exprToNode(st.Start), exprToNode(st.End)}}
+		body := &ast.Node{Kind: "body"}
+		for _, c := range st.Body {
+			body.Children = append(body.Children, stmtToNode(c))
+		}
+		n.Children = append(n.Children, body)
+		return n
+	case *ForInStmt:
+		n := &ast.Node{Kind: "for-in", Value: st.Name, Children: []*ast.Node{exprToNode(st.Iterable)}}
+		body := &ast.Node{Kind: "body"}
+		for _, c := range st.Body {
+			body.Children = append(body.Children, stmtToNode(c))
+		}
+		n.Children = append(n.Children, body)
 		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
