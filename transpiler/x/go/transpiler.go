@@ -32,6 +32,7 @@ type Program struct {
 	UseSubstring bool
 	UsePrint     bool
 	UseAtoi      bool
+	UseBoolInt   bool
 }
 
 var (
@@ -50,11 +51,22 @@ var (
 	usesIndex     bool
 	usesSlice     bool
 	usesAtoi      bool
+	usesBoolInt   bool
 )
 
 type Stmt interface{ emit(io.Writer) }
 
 type Expr interface{ emit(io.Writer) }
+
+type UnaryExpr struct {
+	Op   string
+	Expr Expr
+}
+
+func (u *UnaryExpr) emit(w io.Writer) {
+	fmt.Fprint(w, u.Op)
+	u.Expr.emit(w)
+}
 
 type ExprStmt struct{ Expr Expr }
 
@@ -304,6 +316,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesIndex = false
 	usesSlice = false
 	usesAtoi = false
+	usesBoolInt = false
 	gp := &Program{}
 	for _, stmt := range p.Statements {
 		s, err := compileStmt(stmt, env)
@@ -330,6 +343,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	gp.UseSubstring = usesSubstring
 	gp.UsePrint = usesPrint
 	gp.UseAtoi = usesAtoi
+	gp.UseBoolInt = usesBoolInt
 	return gp, nil
 }
 
@@ -601,9 +615,13 @@ func compileUnary(u *parser.Unary) (Expr, error) {
 	}
 	for i := len(u.Ops) - 1; i >= 0; i-- {
 		op := u.Ops[i]
-		if op == "-" {
+		switch op {
+		case "-":
 			expr = &BinaryExpr{Left: &IntLit{Value: 0}, Op: "-", Right: expr}
-		} else {
+		case "!":
+			usesBoolInt = true
+			expr = &UnaryExpr{Op: "!", Expr: &CallExpr{Func: "boolInt", Args: []Expr{expr}}}
+		default:
 			return nil, fmt.Errorf("unsupported unary op")
 		}
 	}
@@ -830,6 +848,9 @@ func Emit(prog *Program) []byte {
 	}
 	if prog.UseAtoi {
 		buf.WriteString("func atoi(s string) int {\n    n, _ := strconv.Atoi(s)\n    return n\n}\n\n")
+	}
+	if prog.UseBoolInt {
+		buf.WriteString("func boolInt(v any) bool {\n    switch x := v.(type) {\n    case bool:\n        return x\n    case int:\n        return x != 0\n    default:\n        return false\n    }\n}\n\n")
 	}
 	if prog.UsePrint {
 		buf.WriteString("func mochiPrint(v any) {\n    switch x := v.(type) {\n    case bool:\n        if x { fmt.Println(1) } else { fmt.Println(\"nil\") }\n    case float64:\n        if math.Trunc(x) == x { fmt.Printf(\"%.1f\\n\", x) } else { fmt.Printf(\"%v\\n\", x) }\n    case []int:\n        for i, n := range x { if i > 0 { fmt.Print(\" \") }; fmt.Print(n) }\n        fmt.Println()\n    default:\n        fmt.Println(v)\n    }\n}\n\n")
