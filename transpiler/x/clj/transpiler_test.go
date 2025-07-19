@@ -100,7 +100,7 @@ func compileAndRunClojure(t *testing.T, srcPath, outDir, name string) {
 		t.Skip("transpile error")
 		return
 	}
-	code := cljt.EmitString(ast)
+	code := cljt.Format(cljt.EmitString(ast))
 	cljPath := filepath.Join(outDir, name+".clj")
 	if err := os.WriteFile(cljPath, code, 0o644); err != nil {
 		t.Fatalf("write clj: %v", err)
