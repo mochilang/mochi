@@ -3,11 +3,11 @@
 This experimental transpiler converts a tiny subset of Mochi into Rust code. Only
 simple expressions are currently supported.
 
-## Checklist (13/100)
+## Checklist (15/100)
 - [ ] append_builtin
 - [ ] avg_builtin
 - [x] basic_compare
-- [ ] binary_precedence
+ - [x] binary_precedence
 - [ ] bool_chain
 - [ ] break_continue
 - [ ] cast_string_to_int
@@ -48,7 +48,7 @@ simple expressions are currently supported.
 - [ ] left_join_multi
 - [ ] len_builtin
 - [ ] len_map
-- [ ] len_string
+ - [x] len_string
 - [x] let_and_print
 - [ ] list_assign
 - [ ] list_index
