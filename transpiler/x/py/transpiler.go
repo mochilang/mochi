@@ -196,6 +196,47 @@ func (i *IndexExpr) emit(w io.Writer) error {
 	return err
 }
 
+type SliceExpr struct {
+	Target Expr
+	Start  Expr
+	End    Expr
+	Step   Expr
+}
+
+func (s *SliceExpr) emit(w io.Writer) error {
+	if err := emitExpr(w, s.Target); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, "["); err != nil {
+		return err
+	}
+	if s.Start != nil {
+		if err := emitExpr(w, s.Start); err != nil {
+			return err
+		}
+	}
+	if s.Start != nil || s.End != nil || s.Step != nil {
+		if _, err := io.WriteString(w, ":"); err != nil {
+			return err
+		}
+	}
+	if s.End != nil {
+		if err := emitExpr(w, s.End); err != nil {
+			return err
+		}
+	}
+	if s.Step != nil {
+		if _, err := io.WriteString(w, ":"); err != nil {
+			return err
+		}
+		if err := emitExpr(w, s.Step); err != nil {
+			return err
+		}
+	}
+	_, err := io.WriteString(w, "]")
+	return err
+}
+
 type FieldExpr struct {
 	Target Expr
 	Name   string
@@ -700,11 +741,35 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 	for _, op := range p.Ops {
 		switch {
 		case op.Index != nil:
-			idx, err := convertExpr(op.Index.Start)
-			if err != nil {
-				return nil, err
+			if op.Index.Colon != nil || op.Index.Colon2 != nil || op.Index.End != nil || op.Index.Step != nil {
+				var start, end, step Expr
+				var err error
+				if op.Index.Start != nil {
+					start, err = convertExpr(op.Index.Start)
+					if err != nil {
+						return nil, err
+					}
+				}
+				if op.Index.End != nil {
+					end, err = convertExpr(op.Index.End)
+					if err != nil {
+						return nil, err
+					}
+				}
+				if op.Index.Step != nil {
+					step, err = convertExpr(op.Index.Step)
+					if err != nil {
+						return nil, err
+					}
+				}
+				expr = &SliceExpr{Target: expr, Start: start, End: end, Step: step}
+			} else {
+				idx, err := convertExpr(op.Index.Start)
+				if err != nil {
+					return nil, err
+				}
+				expr = &IndexExpr{Target: expr, Index: idx}
 			}
-			expr = &IndexExpr{Target: expr, Index: idx}
 		case op.Field != nil:
 			expr = &FieldExpr{Target: expr, Name: op.Field.Name}
 		case op.Call != nil:
@@ -759,6 +824,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 1 {
 				call := &CallExpr{Func: &FieldExpr{Target: args[0], Name: "values"}, Args: nil}
 				return &CallExpr{Func: &Name{Name: "list"}, Args: []Expr{call}}, nil
+			}
+		case "substring":
+			if len(args) == 3 {
+				return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
 			}
 		}
 		return &CallExpr{Func: &Name{Name: p.Call.Func}, Args: args}, nil
@@ -937,6 +1006,22 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "unary", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Expr)}}
 	case *IndexExpr:
 		return &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(ex.Target), exprNode(ex.Index)}}
+	case *SliceExpr:
+		n := &ast.Node{Kind: "slice", Children: []*ast.Node{exprNode(ex.Target)}}
+		if ex.Start != nil {
+			n.Children = append(n.Children, exprNode(ex.Start))
+		} else {
+			n.Children = append(n.Children, &ast.Node{Kind: "none"})
+		}
+		if ex.End != nil {
+			n.Children = append(n.Children, exprNode(ex.End))
+		} else {
+			n.Children = append(n.Children, &ast.Node{Kind: "none"})
+		}
+		if ex.Step != nil {
+			n.Children = append(n.Children, exprNode(ex.Step))
+		}
+		return n
 	case *FieldExpr:
 		return &ast.Node{Kind: "field", Value: ex.Name, Children: []*ast.Node{exprNode(ex.Target)}}
 	case *LambdaExpr:

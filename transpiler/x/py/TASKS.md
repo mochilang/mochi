@@ -32,3 +32,8 @@
 
 ## Recent Enhancements (2025-07-19 17:44 +07)
 - Enabled transpiler test for `len_map`.
+
+## Recent Enhancements (2025-07-19 18:48 +07)
+- Added slice expression support including list and string ranges.
+- Implemented builtin `substring` using slice syntax.
+- Added transpiler tests for `slice`, `string_prefix_slice` and `substring_builtin`.

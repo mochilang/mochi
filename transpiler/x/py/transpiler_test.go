@@ -215,3 +215,15 @@ func TestTranspile_MapIndex(t *testing.T) {
 func TestTranspile_LenMap(t *testing.T) {
 	runCase(t, "len_map")
 }
+
+func TestTranspile_Slice(t *testing.T) {
+	runCase(t, "slice")
+}
+
+func TestTranspile_StringPrefixSlice(t *testing.T) {
+	runCase(t, "string_prefix_slice")
+}
+
+func TestTranspile_SubstringBuiltin(t *testing.T) {
+	runCase(t, "substring_builtin")
+}
