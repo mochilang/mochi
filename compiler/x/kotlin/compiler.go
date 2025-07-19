@@ -863,7 +863,7 @@ func (c *Compiler) typeName(t *parser.TypeRef) string {
 		for i, p := range t.Fun.Params {
 			params[i] = c.typeName(p)
 		}
-		ret := "Unit"
+		ret := "Any"
 		if t.Fun.Return != nil {
 			ret = c.typeName(t.Fun.Return)
 		}
