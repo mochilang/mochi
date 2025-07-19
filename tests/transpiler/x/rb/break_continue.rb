@@ -13,8 +13,13 @@ def mochi_print(*args)
   end
   puts out.join(' ')
 end
-i = 0
-while i < 3
-mochi_print(i)
-i = i + 1
+numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+for n in numbers
+if n % 2 == 0
+next
+end
+if n > 7
+break
+end
+mochi_print("odd number:", n)
 end

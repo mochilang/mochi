@@ -63,6 +63,7 @@ func TestTranspilePrograms(t *testing.T) {
 		"while_loop",
 		"var_assignment",
 		"bool_chain",
+		"break_continue",
 		"fun_call",
 		"fun_three_args",
 	}
