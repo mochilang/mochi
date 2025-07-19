@@ -5,6 +5,8 @@ package excode
 const (
 	helperInput = "defp _input() do\n  case IO.gets(\"\") do\n    :eof -> \"\"\n    other -> String.trim(other)\n  end\nend\n"
 
+	helperInt = "defp _int(v) do\n  cond do\n    is_integer(v) -> v\n    is_float(v) -> trunc(v)\n    is_binary(v) -> case Integer.parse(String.trim(v)) do\n      {i, \"\"} -> i\n      _ -> raise \"invalid int\"\n    end\n    true -> raise \"invalid int\"\n  end\nend\n"
+
 	helperCount = "defp _count(v) do\n  cond do\n    is_list(v) -> length(v)\n    is_map(v) and Map.has_key?(v, :items) -> length(Map.get(v, :items))\n    true -> raise \"count() expects list or group\"\n  end\nend\n"
 
 	helperSum = "defp _sum(v) do\n  list = cond do\n    is_map(v) and Map.has_key?(v, :items) -> Map.get(v, :items)\n    is_list(v) -> v\n    true -> raise \"sum() expects list or group\"\n  end\n  Enum.sum(list)\nend\n"
@@ -212,6 +214,7 @@ end
 
 var helperMap = map[string]string{
 	"_input":        helperInput,
+	"_int":          helperInt,
 	"_count":        helperCount,
 	"_sum":          helperSum,
 	"_avg":          helperAvg,

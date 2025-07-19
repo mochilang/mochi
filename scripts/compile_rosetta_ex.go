@@ -94,6 +94,11 @@ func main() {
 		cmd := exec.Command("elixir", tmp)
 		var stderr bytes.Buffer
 		cmd.Stderr = &stderr
+		inFile := filepath.Join(root, "tests", "rosetta", "x", "Mochi", name+".in")
+		if f, err := os.Open(inFile); err == nil {
+			defer f.Close()
+			cmd.Stdin = f
+		}
 		out, err := cmd.Output()
 		cleaned := append(bytes.TrimSpace(out), '\n')
 		if err != nil {

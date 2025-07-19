@@ -498,7 +498,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	switch {
 	case p.Lit != nil:
 		if p.Lit.Int != nil {
-			return strconv.Itoa(*p.Lit.Int), nil
+			return strconv.Itoa(int(*p.Lit.Int)), nil
 		}
 		if p.Lit.Float != nil {
 			return strconv.FormatFloat(*p.Lit.Float, 'f', -1, 64), nil
@@ -884,7 +884,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if len(args) != 1 {
 				return "", fmt.Errorf("int expects 1 arg")
 			}
-			return fmt.Sprintf("trunc(%s)", args[0]), nil
+			c.use("_int")
+			return fmt.Sprintf("_int(%s)", args[0]), nil
 		case "float":
 			if len(args) != 1 {
 				return "", fmt.Errorf("float expects 1 arg")
