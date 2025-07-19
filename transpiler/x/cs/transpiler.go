@@ -24,6 +24,8 @@ type Program struct {
 	Stmts []Stmt
 }
 
+var stringVars map[string]bool
+
 type Stmt interface{ emit(io.Writer) }
 
 // LetStmt represents a variable declaration.
@@ -79,15 +81,15 @@ func (s *AssignIndexStmt) emit(w io.Writer) {
 
 // ReturnStmt represents a return statement within a function.
 type ReturnStmt struct {
-        Value Expr // optional
+	Value Expr // optional
 }
 
 func (r *ReturnStmt) emit(w io.Writer) {
-        fmt.Fprint(w, "return")
-        if r.Value != nil {
-                fmt.Fprint(w, " ")
-                r.Value.emit(w)
-        }
+	fmt.Fprint(w, "return")
+	if r.Value != nil {
+		fmt.Fprint(w, " ")
+		r.Value.emit(w)
+	}
 }
 
 type BreakStmt struct{}
@@ -249,83 +251,83 @@ func (v *VarRef) emit(w io.Writer) { fmt.Fprint(w, v.Name) }
 
 // BinaryExpr represents a binary operation like addition or comparison.
 type BinaryExpr struct {
-        Op    string
-        Left  Expr
-        Right Expr
+	Op    string
+	Left  Expr
+	Right Expr
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
-        fmt.Fprint(w, "(")
-        b.Left.emit(w)
-        fmt.Fprintf(w, " %s ", b.Op)
-        b.Right.emit(w)
-        fmt.Fprint(w, ")")
+	fmt.Fprint(w, "(")
+	b.Left.emit(w)
+	fmt.Fprintf(w, " %s ", b.Op)
+	b.Right.emit(w)
+	fmt.Fprint(w, ")")
 }
 
 // BoolOpExpr represents boolean && and || operations with integer semantics.
 type BoolOpExpr struct {
-        Op    string
-        Left  Expr
-        Right Expr
+	Op    string
+	Left  Expr
+	Right Expr
 }
 
 func (b *BoolOpExpr) emit(w io.Writer) {
-        fmt.Fprint(w, "(")
-        fmt.Fprint(w, "(")
-        b.Left.emit(w)
-        fmt.Fprint(w, " != 0")
-        fmt.Fprintf(w, " %s ", b.Op)
-        b.Right.emit(w)
-        fmt.Fprint(w, " != 0")
-        fmt.Fprint(w, ") ? 1 : 0)")
+	fmt.Fprint(w, "(")
+	fmt.Fprint(w, "(")
+	b.Left.emit(w)
+	fmt.Fprint(w, " != 0")
+	fmt.Fprintf(w, " %s ", b.Op)
+	b.Right.emit(w)
+	fmt.Fprint(w, " != 0")
+	fmt.Fprint(w, ") ? 1 : 0)")
 }
 
 // UnaryExpr represents a unary prefix operation.
 type UnaryExpr struct {
-        Op  string
-        Val Expr
+	Op  string
+	Val Expr
 }
 
 func (u *UnaryExpr) emit(w io.Writer) {
-        fmt.Fprint(w, u.Op)
-        u.Val.emit(w)
+	fmt.Fprint(w, u.Op)
+	u.Val.emit(w)
 }
 
 type NotExpr struct{ Val Expr }
 
 func (n *NotExpr) emit(w io.Writer) {
-        fmt.Fprint(w, "(")
-        n.Val.emit(w)
-        fmt.Fprint(w, " == 0 ? 1 : 0)")
+	fmt.Fprint(w, "(")
+	n.Val.emit(w)
+	fmt.Fprint(w, " == 0 ? 1 : 0)")
 }
 
 // CmpExpr emits comparison result as 1 or 0.
 type CmpExpr struct {
-        Op    string
-        Left  Expr
-        Right Expr
+	Op    string
+	Left  Expr
+	Right Expr
 }
 
 func (c *CmpExpr) emit(w io.Writer) {
-        fmt.Fprint(w, "(")
-        c.Left.emit(w)
-        fmt.Fprintf(w, " %s ", c.Op)
-        c.Right.emit(w)
-        fmt.Fprint(w, " ? 1 : 0)")
+	fmt.Fprint(w, "(")
+	c.Left.emit(w)
+	fmt.Fprintf(w, " %s ", c.Op)
+	c.Right.emit(w)
+	fmt.Fprint(w, " ? 1 : 0)")
 }
 
 type InExpr struct {
-        Item       Expr
-        Collection Expr
+	Item       Expr
+	Collection Expr
 }
 
 func (ie *InExpr) emit(w io.Writer) {
-        fmt.Fprint(w, "(")
-        fmt.Fprint(w, "Array.IndexOf(")
-        ie.Collection.emit(w)
-        fmt.Fprint(w, ", ")
-        ie.Item.emit(w)
-        fmt.Fprint(w, ") >= 0 ? 1 : 0)")
+	fmt.Fprint(w, "(")
+	fmt.Fprint(w, "Array.IndexOf(")
+	ie.Collection.emit(w)
+	fmt.Fprint(w, ", ")
+	ie.Item.emit(w)
+	fmt.Fprint(w, ") >= 0 ? 1 : 0)")
 }
 
 // ExprStmt represents a statement consisting solely of an expression.
@@ -361,17 +363,91 @@ func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
 type BoolLit struct{ Value bool }
 
 func (b *BoolLit) emit(w io.Writer) {
-        if b.Value {
-                fmt.Fprint(w, "1")
-        } else {
-                fmt.Fprint(w, "0")
-        }
+	if b.Value {
+		fmt.Fprint(w, "1")
+	} else {
+		fmt.Fprint(w, "0")
+	}
 }
 
 // IndexExpr represents xs[i].
 type IndexExpr struct {
 	Target Expr
 	Index  Expr
+}
+
+// FieldExpr represents obj.field access.
+type FieldExpr struct {
+	Target Expr
+	Name   string
+}
+
+func (f *FieldExpr) emit(w io.Writer) {
+	f.Target.emit(w)
+	fmt.Fprintf(w, ".%s", f.Name)
+}
+
+// SliceExpr represents xs[a:b] or s[a:b] for lists and strings.
+type SliceExpr struct {
+	Value Expr
+	Start Expr
+	End   Expr
+}
+
+func (s *SliceExpr) emit(w io.Writer) {
+	if isStringExpr(s.Value) {
+		s.Value.emit(w)
+		fmt.Fprint(w, ".Substring(")
+		s.Start.emit(w)
+		fmt.Fprint(w, ", ")
+		fmt.Fprint(w, "(")
+		s.End.emit(w)
+		fmt.Fprint(w, " - ")
+		s.Start.emit(w)
+		fmt.Fprint(w, "))")
+	} else {
+		s.Value.emit(w)
+		fmt.Fprint(w, ".Skip(")
+		s.Start.emit(w)
+		fmt.Fprint(w, ").Take(")
+		fmt.Fprint(w, "(")
+		s.End.emit(w)
+		fmt.Fprint(w, " - ")
+		s.Start.emit(w)
+		fmt.Fprint(w, ")).ToArray()")
+	}
+}
+
+// ContainsExpr represents s.contains(x)
+type ContainsExpr struct {
+	Str Expr
+	Sub Expr
+}
+
+func (c *ContainsExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "(")
+	c.Str.emit(w)
+	fmt.Fprint(w, ".Contains(")
+	c.Sub.emit(w)
+	fmt.Fprint(w, ") ? 1 : 0)")
+}
+
+func isStringExpr(e Expr) bool {
+	switch ex := e.(type) {
+	case *StringLit:
+		return true
+	case *StrExpr:
+		return true
+	case *SliceExpr:
+		return isStringExpr(ex.Value)
+	case *VarRef:
+		return stringVars[ex.Name]
+	case *CallExpr:
+		if ex.Func == "Convert.ToString" {
+			return true
+		}
+	}
+	return false
 }
 
 func (ix *IndexExpr) emit(w io.Writer) {
@@ -447,6 +523,7 @@ func (s *StrExpr) emit(w io.Writer) {
 // Transpile converts a Mochi AST to a simple C# AST.
 func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	prog := &Program{}
+	stringVars = make(map[string]bool)
 	for _, st := range p.Statements {
 		s, err := compileStmt(prog, st)
 		if err != nil {
@@ -495,18 +572,18 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 		{"union", "union_all", "except", "intersect"},
 	}
 
-       apply := func(left Expr, op string, right Expr) Expr {
-               switch op {
-               case "==", "!=", "<", "<=", ">", ">=":
-                       return &CmpExpr{Op: op, Left: left, Right: right}
-               case "&&", "||":
-                       return &BoolOpExpr{Op: op, Left: left, Right: right}
-               case "in":
-                       return &InExpr{Item: left, Collection: right}
-               default:
-                       return &BinaryExpr{Op: op, Left: left, Right: right}
-               }
-       }
+	apply := func(left Expr, op string, right Expr) Expr {
+		switch op {
+		case "==", "!=", "<", "<=", ">", ">=":
+			return &CmpExpr{Op: op, Left: left, Right: right}
+		case "&&", "||":
+			return &BoolOpExpr{Op: op, Left: left, Right: right}
+		case "in":
+			return &InExpr{Item: left, Collection: right}
+		default:
+			return &BinaryExpr{Op: op, Left: left, Right: right}
+		}
+	}
 
 	for _, level := range levels {
 		for i := 0; i < len(ops); {
@@ -541,14 +618,14 @@ func compileUnary(u *parser.Unary) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-       for i := len(u.Ops) - 1; i >= 0; i-- {
-               if u.Ops[i] == "!" {
-                       expr = &NotExpr{Val: expr}
-               } else {
-                       expr = &UnaryExpr{Op: u.Ops[i], Val: expr}
-               }
-       }
-       return expr, nil
+	for i := len(u.Ops) - 1; i >= 0; i-- {
+		if u.Ops[i] == "!" {
+			expr = &NotExpr{Val: expr}
+		} else {
+			expr = &UnaryExpr{Op: u.Ops[i], Val: expr}
+		}
+	}
+	return expr, nil
 }
 
 func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
@@ -559,26 +636,55 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-       for _, op := range p.Ops {
-               switch {
-               case op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil:
-                       idx, err := compileExpr(op.Index.Start)
-                       if err != nil {
-                               return nil, err
-                       }
-                       expr = &IndexExpr{Target: expr, Index: idx}
-               case op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil:
-                       switch *op.Cast.Type.Simple {
-                       case "int":
-                               expr = &CallExpr{Func: "Convert.ToInt32", Args: []Expr{expr}}
-                       default:
-                               return nil, fmt.Errorf("unsupported cast")
-                       }
-               default:
-                       return nil, fmt.Errorf("unsupported postfix")
-               }
-       }
-       return expr, nil
+	for i := 0; i < len(p.Ops); i++ {
+		op := p.Ops[i]
+		switch {
+		case op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil:
+			idx, err := compileExpr(op.Index.Start)
+			if err != nil {
+				return nil, err
+			}
+			expr = &IndexExpr{Target: expr, Index: idx}
+		case op.Index != nil && op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil:
+			if op.Index.Start == nil || op.Index.End == nil {
+				return nil, fmt.Errorf("unsupported slice")
+			}
+			start, err := compileExpr(op.Index.Start)
+			if err != nil {
+				return nil, err
+			}
+			end, err := compileExpr(op.Index.End)
+			if err != nil {
+				return nil, err
+			}
+			expr = &SliceExpr{Value: expr, Start: start, End: end}
+		case op.Field != nil:
+			expr = &FieldExpr{Target: expr, Name: op.Field.Name}
+		case op.Call != nil:
+			if fe, ok := expr.(*FieldExpr); ok && fe.Name == "contains" {
+				if len(op.Call.Args) != 1 {
+					return nil, fmt.Errorf("unsupported method call")
+				}
+				arg, err := compileExpr(op.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				expr = &ContainsExpr{Str: fe.Target, Sub: arg}
+			} else {
+				return nil, fmt.Errorf("unsupported call")
+			}
+		case op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil:
+			switch *op.Cast.Type.Simple {
+			case "int":
+				expr = &CallExpr{Func: "Convert.ToInt32", Args: []Expr{expr}}
+			default:
+				return nil, fmt.Errorf("unsupported cast")
+			}
+		default:
+			return nil, fmt.Errorf("unsupported postfix")
+		}
+	}
+	return expr, nil
 }
 
 func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
@@ -594,6 +700,9 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		if isStringExpr(val) {
+			stringVars[s.Let.Name] = true
+		}
 		return &LetStmt{Name: s.Let.Name, Value: val}, nil
 	case s.Var != nil:
 		var val Expr
@@ -604,6 +713,9 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				return nil, err
 			}
 		}
+		if isStringExpr(val) {
+			stringVars[s.Var.Name] = true
+		}
 		return &VarStmt{Name: s.Var.Name, Value: val}, nil
 	case s.Assign != nil:
 		if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
@@ -611,28 +723,31 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
+			if isStringExpr(val) {
+				stringVars[s.Assign.Name] = true
+			}
 			return &AssignStmt{Name: s.Assign.Name, Value: val}, nil
 		}
-               if len(s.Assign.Index) > 0 && len(s.Assign.Field) == 0 {
-                       var target Expr = &VarRef{Name: s.Assign.Name}
-                       for i := 0; i < len(s.Assign.Index)-1; i++ {
-                               idx, err := compileExpr(s.Assign.Index[i].Start)
-                               if err != nil {
-                                       return nil, err
-                               }
-                               target = &IndexExpr{Target: target, Index: idx}
-                       }
-                       idx, err := compileExpr(s.Assign.Index[len(s.Assign.Index)-1].Start)
-                       if err != nil {
-                               return nil, err
-                       }
-                       val, err := compileExpr(s.Assign.Value)
-                       if err != nil {
-                               return nil, err
-                       }
-                       return &AssignIndexStmt{Target: target, Index: idx, Value: val}, nil
-               }
-               return nil, fmt.Errorf("unsupported assignment")
+		if len(s.Assign.Index) > 0 && len(s.Assign.Field) == 0 {
+			var target Expr = &VarRef{Name: s.Assign.Name}
+			for i := 0; i < len(s.Assign.Index)-1; i++ {
+				idx, err := compileExpr(s.Assign.Index[i].Start)
+				if err != nil {
+					return nil, err
+				}
+				target = &IndexExpr{Target: target, Index: idx}
+			}
+			idx, err := compileExpr(s.Assign.Index[len(s.Assign.Index)-1].Start)
+			if err != nil {
+				return nil, err
+			}
+			val, err := compileExpr(s.Assign.Value)
+			if err != nil {
+				return nil, err
+			}
+			return &AssignIndexStmt{Target: target, Index: idx, Value: val}, nil
+		}
+		return nil, fmt.Errorf("unsupported assignment")
 	case s.Fun != nil:
 		params := make([]string, len(s.Fun.Params))
 		for i, p := range s.Fun.Params {
@@ -650,21 +765,21 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		}
 		prog.Funcs = append(prog.Funcs, &Function{Name: s.Fun.Name, Params: params, Body: body})
 		return nil, nil
-       case s.Return != nil:
-               var val Expr
-               if s.Return.Value != nil {
-                       var err error
-                       val, err = compileExpr(s.Return.Value)
-                       if err != nil {
-                               return nil, err
-                       }
-               }
-               return &ReturnStmt{Value: val}, nil
-       case s.Break != nil:
-               return &BreakStmt{}, nil
-       case s.Continue != nil:
-               return &ContinueStmt{}, nil
-       case s.For != nil:
+	case s.Return != nil:
+		var val Expr
+		if s.Return.Value != nil {
+			var err error
+			val, err = compileExpr(s.Return.Value)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return &ReturnStmt{Value: val}, nil
+	case s.Break != nil:
+		return &BreakStmt{}, nil
+	case s.Continue != nil:
+		return &ContinueStmt{}, nil
+	case s.For != nil:
 		if s.For.RangeEnd != nil {
 			start, err := compileExpr(s.For.Source)
 			if err != nil {
@@ -803,12 +918,12 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 		}
 		return &CallExpr{Func: name, Args: args}, nil
-       case p.Lit != nil && p.Lit.Str != nil:
-               return &StringLit{Value: *p.Lit.Str}, nil
-       case p.Lit != nil && p.Lit.Int != nil:
-               return &IntLit{Value: int(*p.Lit.Int)}, nil
-       case p.Lit != nil && p.Lit.Bool != nil:
-               return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
+	case p.Lit != nil && p.Lit.Str != nil:
+		return &StringLit{Value: *p.Lit.Str}, nil
+	case p.Lit != nil && p.Lit.Int != nil:
+		return &IntLit{Value: int(*p.Lit.Int)}, nil
+	case p.Lit != nil && p.Lit.Bool != nil:
+		return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
 	case p.List != nil:
 		elems := make([]Expr, len(p.List.Elems))
 		for i, e := range p.List.Elems {
@@ -819,8 +934,12 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			elems[i] = ex
 		}
 		return &ListLit{Elems: elems}, nil
-	case p.Selector != nil && len(p.Selector.Tail) == 0:
-		return &VarRef{Name: p.Selector.Root}, nil
+	case p.Selector != nil:
+		expr := Expr(&VarRef{Name: p.Selector.Root})
+		for _, t := range p.Selector.Tail {
+			expr = &FieldExpr{Target: expr, Name: t}
+		}
+		return expr, nil
 	case p.Group != nil:
 		return compileExpr(p.Group)
 	case p.If != nil:
@@ -971,17 +1090,17 @@ func toNodeStmt(s Stmt) *ast.Node {
 			n.Children = append(n.Children, toNodeStmt(b))
 		}
 		return n
-       case *ReturnStmt:
-               rn := &ast.Node{Kind: "return"}
-               if st.Value != nil {
-                       rn.Children = []*ast.Node{toNodeExpr(st.Value)}
-               }
-               return rn
-       case *BreakStmt:
-               return &ast.Node{Kind: "break"}
-       case *ContinueStmt:
-               return &ast.Node{Kind: "continue"}
-       case *IfStmt:
+	case *ReturnStmt:
+		rn := &ast.Node{Kind: "return"}
+		if st.Value != nil {
+			rn.Children = []*ast.Node{toNodeExpr(st.Value)}
+		}
+		return rn
+	case *BreakStmt:
+		return &ast.Node{Kind: "break"}
+	case *ContinueStmt:
+		return &ast.Node{Kind: "continue"}
+	case *IfStmt:
 		n := &ast.Node{Kind: "if", Children: []*ast.Node{toNodeExpr(st.Cond)}}
 		thenNode := &ast.Node{Kind: "then"}
 		for _, b := range st.Then {
@@ -1023,27 +1142,33 @@ func toNodeExpr(e Expr) *ast.Node {
 		return &ast.Node{Kind: "str", Children: []*ast.Node{toNodeExpr(ex.Arg)}}
 	case *IndexExpr:
 		return &ast.Node{Kind: "index", Children: []*ast.Node{toNodeExpr(ex.Target), toNodeExpr(ex.Index)}}
-       case *CmpExpr:
-               return &ast.Node{Kind: "cmp", Value: ex.Op, Children: []*ast.Node{toNodeExpr(ex.Left), toNodeExpr(ex.Right)}}
-       case *UnaryExpr:
-               return &ast.Node{Kind: "unary", Value: ex.Op, Children: []*ast.Node{toNodeExpr(ex.Val)}}
-       case *NotExpr:
-               return &ast.Node{Kind: "not", Children: []*ast.Node{toNodeExpr(ex.Val)}}
-       case *BoolOpExpr:
-               return &ast.Node{Kind: "boolop", Value: ex.Op, Children: []*ast.Node{toNodeExpr(ex.Left), toNodeExpr(ex.Right)}}
-       case *InExpr:
-               return &ast.Node{Kind: "in", Children: []*ast.Node{toNodeExpr(ex.Item), toNodeExpr(ex.Collection)}}
-       case *BinaryExpr:
-               return &ast.Node{Kind: "binary", Value: ex.Op, Children: []*ast.Node{toNodeExpr(ex.Left), toNodeExpr(ex.Right)}}
-       case *IfExpr:
-               return &ast.Node{Kind: "ifexpr", Children: []*ast.Node{toNodeExpr(ex.Cond), toNodeExpr(ex.Then), toNodeExpr(ex.Else)}}
-       case *IntLit:
-               return &ast.Node{Kind: "int", Value: fmt.Sprint(ex.Value)}
-       case *BoolLit:
-               if ex.Value {
-                       return &ast.Node{Kind: "bool", Value: "true"}
-               }
-               return &ast.Node{Kind: "bool", Value: "false"}
+	case *SliceExpr:
+		return &ast.Node{Kind: "slice", Children: []*ast.Node{toNodeExpr(ex.Value), toNodeExpr(ex.Start), toNodeExpr(ex.End)}}
+	case *FieldExpr:
+		return &ast.Node{Kind: "field", Value: ex.Name, Children: []*ast.Node{toNodeExpr(ex.Target)}}
+	case *ContainsExpr:
+		return &ast.Node{Kind: "contains", Children: []*ast.Node{toNodeExpr(ex.Str), toNodeExpr(ex.Sub)}}
+	case *CmpExpr:
+		return &ast.Node{Kind: "cmp", Value: ex.Op, Children: []*ast.Node{toNodeExpr(ex.Left), toNodeExpr(ex.Right)}}
+	case *UnaryExpr:
+		return &ast.Node{Kind: "unary", Value: ex.Op, Children: []*ast.Node{toNodeExpr(ex.Val)}}
+	case *NotExpr:
+		return &ast.Node{Kind: "not", Children: []*ast.Node{toNodeExpr(ex.Val)}}
+	case *BoolOpExpr:
+		return &ast.Node{Kind: "boolop", Value: ex.Op, Children: []*ast.Node{toNodeExpr(ex.Left), toNodeExpr(ex.Right)}}
+	case *InExpr:
+		return &ast.Node{Kind: "in", Children: []*ast.Node{toNodeExpr(ex.Item), toNodeExpr(ex.Collection)}}
+	case *BinaryExpr:
+		return &ast.Node{Kind: "binary", Value: ex.Op, Children: []*ast.Node{toNodeExpr(ex.Left), toNodeExpr(ex.Right)}}
+	case *IfExpr:
+		return &ast.Node{Kind: "ifexpr", Children: []*ast.Node{toNodeExpr(ex.Cond), toNodeExpr(ex.Then), toNodeExpr(ex.Else)}}
+	case *IntLit:
+		return &ast.Node{Kind: "int", Value: fmt.Sprint(ex.Value)}
+	case *BoolLit:
+		if ex.Value {
+			return &ast.Node{Kind: "bool", Value: "true"}
+		}
+		return &ast.Node{Kind: "bool", Value: "false"}
 	case *ListLit:
 		n := &ast.Node{Kind: "list"}
 		for _, el := range ex.Elems {
@@ -1137,6 +1262,10 @@ func inspectLinq(e Expr) bool {
 	case *LenExpr:
 		return inspectLinq(ex.Arg)
 	case *AppendExpr:
+		return true
+	case *SliceExpr:
+		return true
+	case *ContainsExpr:
 		return true
 	case *IndexExpr:
 		return inspectLinq(ex.Target) || inspectLinq(ex.Index)
