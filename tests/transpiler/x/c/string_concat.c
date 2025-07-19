@@ -3,9 +3,6 @@
 #include <string.h>
 
 int main() {
-	printf("%d\n", 1 + (2 * 3));
-	printf("%d\n", (1 + 2) * 3);
-	printf("%d\n", (2 * 3) + 1);
-	printf("%d\n", 2 * (3 + 1));
+	printf("%s\n", "hello world");
 	return 0;
 }

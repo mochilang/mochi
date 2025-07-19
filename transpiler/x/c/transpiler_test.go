@@ -9,8 +9,10 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
+	"time"
 
 	"mochi/parser"
 	ctrans "mochi/transpiler/x/c"
@@ -115,6 +117,8 @@ func TestTranspilerGolden(t *testing.T) {
 		filepath.Join(srcDir, "len_builtin.mochi"),
 		filepath.Join(srcDir, "len_string.mochi"),
 		filepath.Join(srcDir, "math_ops.mochi"),
+		filepath.Join(srcDir, "string_compare.mochi"),
+		filepath.Join(srcDir, "string_concat.mochi"),
 		filepath.Join(srcDir, "if_then_else.mochi"),
 		filepath.Join(srcDir, "if_then_else_nested.mochi"),
 	}
@@ -164,4 +168,75 @@ func TestTranspilerGolden(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	updateReadme()
+	updateTasks()
+	os.Exit(code)
+}
+
+func countCompiled() (int, int) {
+	root := repoRoot(&testing.T{})
+	srcDir := filepath.Join(root, "tests", "vm", "valid")
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "c")
+	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	total := len(files)
+	compiled := 0
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
+			compiled++
+		}
+	}
+	return compiled, total
+}
+
+func updateReadme() {
+	root := repoRoot(&testing.T{})
+	srcDir := filepath.Join(root, "tests", "vm", "valid")
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "c")
+	readmePath := filepath.Join(root, "transpiler", "x", "c", "README.md")
+	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	sort.Strings(files)
+	total := len(files)
+	compiled := 0
+	var lines []string
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		mark := "[ ]"
+		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
+			compiled++
+			mark = "[x]"
+		}
+		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+	}
+	var buf bytes.Buffer
+	buf.WriteString("# C Transpiler Golden Tests\n\n")
+	buf.WriteString("This directory stores C translations generated from programs in `tests/vm/valid`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.\n\n")
+	buf.WriteString(fmt.Sprintf("Checklist of programs that currently transpile and run (%d/%d):\n", compiled, total))
+	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteString("\n")
+	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
+}
+
+func updateTasks() {
+	root := repoRoot(&testing.T{})
+	taskFile := filepath.Join(root, "transpiler", "x", "c", "TASKS.md")
+	compiled, total := countCompiled()
+	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	ts := ""
+	if err == nil {
+		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+			ts = t.Format("2006-01-02 15:04 MST")
+		}
+	}
+	var buf bytes.Buffer
+	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
+	buf.WriteString(fmt.Sprintf("- VM valid golden test results updated to %d/%d\n\n", compiled, total))
+	if data, err := os.ReadFile(taskFile); err == nil {
+		buf.Write(data)
+	}
+	_ = os.WriteFile(taskFile, buf.Bytes(), 0o644)
 }
