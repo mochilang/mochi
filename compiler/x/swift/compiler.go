@@ -202,6 +202,9 @@ func (c *compiler) analyzeStmt(s *parser.Statement) {
 			c.analyzeStmt(st)
 		}
 	case s.Fun != nil:
+		for _, p := range s.Fun.Params {
+			c.varTypes[p.Name] = inferTypeRef(p.Type)
+		}
 		for _, st := range s.Fun.Body {
 			c.analyzeStmt(st)
 		}
