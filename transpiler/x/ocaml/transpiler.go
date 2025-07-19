@@ -102,19 +102,29 @@ type BinaryExpr struct {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
+	op := b.Op
+	if b.Op == "%" {
+		op = "mod"
+	}
+	if b.Op == "+" && b.Typ == "string" {
+		op = "^"
+	}
 	fmt.Fprintf(w, "(")
 	b.Left.emit(w)
-	fmt.Fprintf(w, " %s ", b.Op)
+	fmt.Fprintf(w, " %s ", op)
 	b.Right.emit(w)
 	fmt.Fprintf(w, ")")
 }
 
 func (b *BinaryExpr) emitPrint(w io.Writer) {
-	if b.Typ == "bool" {
+	switch b.Typ {
+	case "bool":
 		io.WriteString(w, "string_of_int (if ")
 		b.emit(w)
 		io.WriteString(w, " then 1 else 0)")
-	} else {
+	case "string":
+		b.emit(w)
+	default:
 		io.WriteString(w, "string_of_int ")
 		b.emit(w)
 	}
@@ -244,7 +254,11 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, vars map[string]string)
 		resTyp := typ
 		switch op.Op {
 		case "+", "-", "*", "/", "%":
-			resTyp = "int"
+			if op.Op == "+" && typ == "string" && rtyp == "string" {
+				resTyp = "string"
+			} else {
+				resTyp = "int"
+			}
 		case "==", "!=", "<", "<=", ">", ">=":
 			resTyp = "bool"
 		default:
