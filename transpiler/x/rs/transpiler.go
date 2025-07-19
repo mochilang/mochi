@@ -17,11 +17,13 @@ import (
 )
 
 var usesHashMap bool
+var usesPrintVec bool
 
 // Program represents a Rust program consisting of a list of statements.
 type Program struct {
-	Stmts       []Stmt
-	UsesHashMap bool
+	Stmts        []Stmt
+	UsesHashMap  bool
+	UsesPrintVec bool
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -135,6 +137,47 @@ func (v *ValuesExpr) emit(w io.Writer) {
 	io.WriteString(w, "{ let mut tmp = ")
 	v.Map.emit(w)
 	io.WriteString(w, ".values().cloned().collect::<Vec<_>>(); tmp.sort(); tmp }")
+}
+
+// AppendExpr represents a call to the `append` builtin on a list.
+type AppendExpr struct {
+	List Expr
+	Elem Expr
+}
+
+func (a *AppendExpr) emit(w io.Writer) {
+	io.WriteString(w, "{ let mut tmp = ")
+	a.List.emit(w)
+	io.WriteString(w, ".clone(); tmp.push(")
+	a.Elem.emit(w)
+	io.WriteString(w, "); tmp }")
+}
+
+// AvgExpr represents a call to the `avg` builtin.
+type AvgExpr struct{ List Expr }
+
+func (a *AvgExpr) emit(w io.Writer) {
+	io.WriteString(w, "format!(\"{:.1}\", { let tmp = ")
+	a.List.emit(w)
+	io.WriteString(w, "; tmp.iter().map(|x| *x as f64).sum::<f64>() / (tmp.len() as f64) })")
+}
+
+// MinExpr represents a call to the `min` builtin.
+type MinExpr struct{ List Expr }
+
+func (m *MinExpr) emit(w io.Writer) {
+	io.WriteString(w, "{ let tmp = ")
+	m.List.emit(w)
+	io.WriteString(w, ".clone(); *tmp.iter().min().unwrap_or(&0) }")
+}
+
+// MaxExpr represents a call to the `max` builtin.
+type MaxExpr struct{ List Expr }
+
+func (m *MaxExpr) emit(w io.Writer) {
+	io.WriteString(w, "{ let tmp = ")
+	m.List.emit(w)
+	io.WriteString(w, ".clone(); *tmp.iter().max().unwrap_or(&0) }")
 }
 
 type NameRef struct{ Name string }
@@ -268,6 +311,7 @@ func (ws *WhileStmt) emit(w io.Writer) {}
 // subset of Mochi is supported which is sufficient for tests.
 func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesHashMap = false
+	usesPrintVec = false
 	prog := &Program{}
 	for _, st := range p.Statements {
 		s, err := compileStmt(st)
@@ -280,6 +324,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	}
 	_ = env // reserved for future use
 	prog.UsesHashMap = usesHashMap
+	prog.UsesPrintVec = usesPrintVec
 	return prog, nil
 }
 
@@ -482,17 +527,22 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		name := p.Call.Func
 		if name == "print" {
-			name = "println!"
 			if len(args) == 1 {
+				switch args[0].(type) {
+				case *AppendExpr:
+					usesPrintVec = true
+					return &CallExpr{Func: "mochi_print_vec", Args: args}, nil
+				}
 				if _, ok := args[0].(*StringLit); !ok {
 					fmtStr := "{}"
 					switch args[0].(type) {
-					case *ListLit, *MapLit, *ValuesExpr:
+					case *MapLit, *ValuesExpr:
 						fmtStr = "{:?}"
 					}
 					args = append([]Expr{&StringLit{Value: fmtStr}}, args...)
 				}
 			}
+			name = "println!"
 			return &CallExpr{Func: name, Args: args}, nil
 		}
 		if name == "len" && len(args) == 1 {
@@ -506,6 +556,21 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		if name == "values" && len(args) == 1 {
 			return &ValuesExpr{Map: args[0]}, nil
+		}
+		if name == "append" && len(args) == 2 {
+			return &AppendExpr{List: args[0], Elem: args[1]}, nil
+		}
+		if name == "avg" && len(args) == 1 {
+			return &AvgExpr{List: args[0]}, nil
+		}
+		if name == "count" && len(args) == 1 {
+			return &LenExpr{Arg: args[0]}, nil
+		}
+		if name == "min" && len(args) == 1 {
+			return &MinExpr{List: args[0]}, nil
+		}
+		if name == "max" && len(args) == 1 {
+			return &MaxExpr{List: args[0]}, nil
 		}
 		return &CallExpr{Func: name, Args: args}, nil
 	case p.Lit != nil:
@@ -682,6 +747,13 @@ func Emit(prog *Program) []byte {
 	if prog.UsesHashMap {
 		buf.WriteString("use std::collections::HashMap;\n")
 	}
+	if prog.UsesPrintVec {
+		buf.WriteString("fn mochi_print_vec(v: Vec<i64>) {\n")
+		buf.WriteString("    for (i, n) in v.iter().enumerate() {\n")
+		buf.WriteString("        if i > 0 { print!(\" \"); }\n")
+		buf.WriteString("        print!(\"{}\", n);\n")
+		buf.WriteString("    }\n    println!();\n}\n")
+	}
 	buf.WriteString("fn main() {\n")
 	for _, s := range prog.Stmts {
 		writeStmt(&buf, s, 1)
@@ -816,6 +888,22 @@ func exprNode(e Expr) *ast.Node {
 			n.Children = append(n.Children, pair)
 		}
 		return n
+	case *LenExpr:
+		return &ast.Node{Kind: "len", Children: []*ast.Node{exprNode(ex.Arg)}}
+	case *SumExpr:
+		return &ast.Node{Kind: "sum", Children: []*ast.Node{exprNode(ex.Arg)}}
+	case *StrExpr:
+		return &ast.Node{Kind: "str", Children: []*ast.Node{exprNode(ex.Arg)}}
+	case *ValuesExpr:
+		return &ast.Node{Kind: "values", Children: []*ast.Node{exprNode(ex.Map)}}
+	case *AppendExpr:
+		return &ast.Node{Kind: "append", Children: []*ast.Node{exprNode(ex.List), exprNode(ex.Elem)}}
+	case *AvgExpr:
+		return &ast.Node{Kind: "avg", Children: []*ast.Node{exprNode(ex.List)}}
+	case *MinExpr:
+		return &ast.Node{Kind: "min", Children: []*ast.Node{exprNode(ex.List)}}
+	case *MaxExpr:
+		return &ast.Node{Kind: "max", Children: []*ast.Node{exprNode(ex.List)}}
 	case *BinaryExpr:
 		return &ast.Node{Kind: "bin", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
 	case *UnaryExpr:

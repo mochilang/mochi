@@ -1,5 +1,10 @@
 # Rust Transpiler Tasks
 
+## Recent Enhancements (2025-07-19 19:46 +0700)
+- Added support for `append`, `avg`, `count`, `min` and `max` builtins.
+- Generated golden tests for `append_builtin`, `avg_builtin`, `count_builtin` and `min_max_builtin`.
+- Updated README checklist with progress summary.
+
 ## Recent Enhancements (2025-07-19 18:38 +0700)
 - Added support for `str`, `sum` and `values` builtins.
 - Generated golden tests for `str_builtin`, `sum_builtin` and `values_builtin`.
