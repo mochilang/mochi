@@ -32,3 +32,8 @@
 
 ## Recent Enhancements (2025-07-19 17:44 +07)
 - Enabled transpiler test for `len_map`.
+
+## Recent Enhancements (2025-07-19 18:01 +07)
+- Implemented slice expressions and substring builtin.
+- Added support for `while` and `for` loops.
+- Enabled transpiler tests for `slice`, `string_prefix_slice`, `substring_builtin`, `while_loop`, `for_loop` and `for_list_collection`.
