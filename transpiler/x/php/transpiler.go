@@ -113,6 +113,13 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		b.Right.emit(w)
 		fmt.Fprint(w, ")")
 		return
+	} else if b.Op == "/" {
+		fmt.Fprint(w, "intdiv(")
+		b.Left.emit(w)
+		fmt.Fprint(w, ", ")
+		b.Right.emit(w)
+		fmt.Fprint(w, ")")
+		return
 	}
 	b.Left.emit(w)
 	fmt.Fprintf(w, " %s ", b.Op)
@@ -168,6 +175,21 @@ func Emit(w io.Writer, p *Program) error {
 		return err
 	}
 	if _, err := io.WriteString(w, helperAdd); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, helperAppend); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, helperCount); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, helperSum); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, helperAvg); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, helperStr); err != nil {
 		return err
 	}
 	_, err := io.WriteString(w, "?>")
@@ -228,7 +250,7 @@ const helperPrint = `function _print(...$args) {
                     }
                     echo implode(' ', $parts);
                 } else {
-                    echo '[' . implode(' ', array_map('strval', $a)) . ']';
+                    echo implode(' ', array_map('strval', $a));
                 }
             } else {
                 echo json_encode($a);
@@ -254,6 +276,34 @@ const helperAdd = `function _add($a, $b) {
         return $a . $b;
     }
     return $a + $b;
+}
+`
+
+const helperAppend = `function _append($arr, $val) {
+    $copy = $arr;
+    $copy[] = $val;
+    return $copy;
+}
+`
+
+const helperCount = `function _count($arr) {
+    return count($arr);
+}
+`
+
+const helperSum = `function _sum($arr) {
+    return array_sum($arr);
+}
+`
+
+const helperAvg = `function _avg($arr) {
+    if (!$arr) return "0.0";
+    return sprintf("%.1f", array_sum($arr) / count($arr));
+}
+`
+
+const helperStr = `function _str($v) {
+    return strval($v);
 }
 `
 
@@ -381,10 +431,21 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			args[i] = ex
 		}
 		name := p.Call.Func
-		if name == "print" {
+		switch name {
+		case "print":
 			name = "_print"
-		} else if name == "len" {
+		case "len":
 			name = "_len"
+		case "append":
+			name = "_append"
+		case "count":
+			name = "_count"
+		case "sum":
+			name = "_sum"
+		case "avg":
+			name = "_avg"
+		case "str":
+			name = "_str"
 		}
 		return &CallExpr{Func: name, Args: args}, nil
 	case p.Lit != nil:
