@@ -2473,6 +2473,37 @@ func toPostfix(pf *parser.PostfixExpr, env *types.Env) (string, error) {
 
 func toPrimary(p *parser.Primary, env *types.Env) (string, error) {
 	switch {
+	case p.Call != nil:
+		call := p.Call
+		if call.Func == "len" && len(call.Args) == 1 {
+			arg, err := toExpr(call.Args[0], env)
+			if err != nil {
+				return "", err
+			}
+			typ := types.TypeOfExpr(call.Args[0], env)
+			if _, ok := typ.(types.StringType); ok {
+				return fmt.Sprintf("len_trim(%s)", arg), nil
+			}
+			return "", fmt.Errorf("len not supported for %s", typ.String())
+		}
+		return "", fmt.Errorf("unsupported call %s", call.Func)
+	case p.If != nil:
+		if p.If.ElseIf != nil {
+			return "", fmt.Errorf("elseif not supported")
+		}
+		cond, err := toExpr(p.If.Cond, env)
+		if err != nil {
+			return "", err
+		}
+		thenExpr, err := toExpr(p.If.Then, env)
+		if err != nil {
+			return "", err
+		}
+		elseExpr, err := toExpr(p.If.Else, env)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("merge(%s,%s,%s)", thenExpr, elseExpr, cond), nil
 	case p.Lit != nil:
 		l := p.Lit
 		if l.Int != nil {
