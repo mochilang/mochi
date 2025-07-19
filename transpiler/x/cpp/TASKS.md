@@ -1,5 +1,12 @@
 # C++ Transpiler Tasks
 
+## Recent Enhancements (2025-07-19 19:35 +0700)
+- Added support for list literals and range-based loops over collections.
+- Implemented `break` and `continue` statements.
+- Enhanced `print` to handle multiple arguments with spacing.
+- Generated golden tests for `len_builtin` and `break_continue`.
+- Updated README progress to 24/100 programs.
+
 ## Recent Enhancements (2025-07-19 11:58 +0000)
 - Enabled short-circuit boolean evaluation test.
 - Generated golden output for `short_circuit` and updated progress to 22/100 programs.
