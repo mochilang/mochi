@@ -30,3 +30,6 @@
 ## Remaining Work
 - [x] Implement loops and conditionals
 - [ ] Support map and list mutation operations
+
+## Progress (2025-07-19 17:49 +0700)
+- VM valid golden test results updated
