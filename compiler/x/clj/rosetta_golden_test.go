@@ -23,22 +23,22 @@ func shouldUpdateRosetta() bool {
 }
 
 func runRosettaTaskGolden(t *testing.T, name string) {
-       interactive := map[string]bool{
-               "15-puzzle-game": true,
-               "15-puzzle-solver": true,
-               "2048":           true,
-               "21-game":        true,
-               "24-game":        true,
-               "a+b":            true,
-               "adfgvx-cipher":  true,
-               "amb":            true,
-               "9-billion-names-of-god-the-integer": true,
-               "DNS-query":      true,
-               "abc-problem":    true,
-       }
-       root := repoRoot(t)
+	interactive := map[string]bool{
+		"15-puzzle-game":                     true,
+		"15-puzzle-solver":                   true,
+		"2048":                               true,
+		"21-game":                            true,
+		"24-game":                            true,
+		"a+b":                                true,
+		"adfgvx-cipher":                      true,
+		"amb":                                true,
+		"9-billion-names-of-god-the-integer": true,
+		"DNS-query":                          true,
+		"abc-problem":                        true,
+	}
+	root := repoRoot(t)
 	script := exec.Command("go", "run", "-tags=archive,slow", "./scripts/compile_rosetta_clj.go")
-	script.Env = append(os.Environ(), "GOTOOLCHAIN=local", "TASKS="+name, "SOURCE_DATE_EPOCH=0")
+	script.Env = append(os.Environ(), "GOTOOLCHAIN=local", "TASKS="+name, "SOURCE_DATE_EPOCH=0", "MOCHI_NOW_SEED=1")
 	script.Dir = root
 	if out, err := script.CombinedOutput(); err != nil {
 		t.Fatalf("compile script error: %v\n%s", err, out)
@@ -69,15 +69,15 @@ func runRosettaTaskGolden(t *testing.T, name string) {
 	}
 
 	dir := t.TempDir()
-       file := filepath.Join(dir, "main.clj")
-       if err := os.WriteFile(file, code, 0644); err != nil {
-               t.Fatalf("write error: %v", err)
-       }
-       if interactive[name] {
-               t.Skip("interactive program")
-       }
-       cmd := exec.Command("clojure", file)
-	cmd.Env = append(os.Environ(), "CLASSPATH=/usr/share/java/data.json.jar:/usr/share/java/snakeyaml-engine.jar")
+	file := filepath.Join(dir, "main.clj")
+	if err := os.WriteFile(file, code, 0644); err != nil {
+		t.Fatalf("write error: %v", err)
+	}
+	if interactive[name] {
+		t.Skip("interactive program")
+	}
+	cmd := exec.Command("clojure", file)
+	cmd.Env = append(os.Environ(), "CLASSPATH=/usr/share/java/data.json.jar:/usr/share/java/snakeyaml-engine.jar", "MOCHI_NOW_SEED=1")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Skipf("run error: %v\n%s", err, out)
@@ -122,7 +122,7 @@ func TestClojureCompiler_Rosetta_Golden(t *testing.T) {
 	if err != nil {
 		t.Fatalf("glob: %v", err)
 	}
-       max := 20
+	max := 20
 	if len(files) < max {
 		max = len(files)
 	}

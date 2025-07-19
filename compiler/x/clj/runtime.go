@@ -258,6 +258,20 @@ const (
     (sequential? col) (some #(= item %) col)
     :else false))`
 
+	helperNow = `(def ^:dynamic _now_seeded (atom false))
+  (def ^:dynamic _now_seed (atom 0))
+  (defn _now []
+    (when-not @_now_seeded
+      (let [s (System/getenv "MOCHI_NOW_SEED")]
+        (when (and s (re-matches #"\d+" s))
+          (reset! _now_seed (Long/parseLong s))
+          (reset! _now_seeded true))))
+    (if @_now_seeded
+      (do
+        (swap! _now_seed #(mod (+ (* % 1664525) 1013904223) 2147483647))
+        @_now_seed)
+      (System/nanoTime)))`
+
 	helperUnionAll = `(defn _union_all [a b]
   (vec (concat a b)))`
 
@@ -420,6 +434,7 @@ var helperMap = map[string]string{
 	"_print":            helperPrint,
 	"_sort_key":         helperSortKey,
 	"_in":               helperIn,
+	"_now":              helperNow,
 	"_union_all":        helperUnionAll,
 	"_union":            helperUnion,
 	"_except":           helperExcept,
@@ -455,6 +470,7 @@ var helperOrder = []string{
 	"_print",
 	"_sort_key",
 	"_in",
+	"_now",
 	"_union_all",
 	"_union",
 	"_except",

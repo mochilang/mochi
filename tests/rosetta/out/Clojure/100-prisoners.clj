@@ -20,6 +20,19 @@
       (when (> i 0) (print " "))
       (pv a))
     (println)))
+(def ^:dynamic _now_seeded (atom false))
+  (def ^:dynamic _now_seed (atom 0))
+  (defn _now []
+    (when-not @_now_seeded
+      (let [s (System/getenv "MOCHI_NOW_SEED")]
+        (when (and s (re-matches #"\d+" s))
+          (reset! _now_seed (Long/parseLong s))
+          (reset! _now_seeded true))))
+    (if @_now_seeded
+      (do
+        (swap! _now_seed #(mod (+ (* % 1664525) 1013904223) 2147483647))
+        @_now_seed)
+      (System/nanoTime)))
 ;; Function shuffle takes [xs: list of int] and returns list of int
 (defn shuffle [xs]
   (try
@@ -28,7 +41,7 @@
     (loop []
       (when (> shuffle_i 0)
         (let [r (try
-          (def shuffle_j (mod (System/nanoTime) (+ shuffle_i 1))) ;; int
+          (def shuffle_j (mod (_now) (+ shuffle_i 1))) ;; int
           (def shuffle_tmp (_indexList shuffle_arr shuffle_i)) ;; int
           (def shuffle_arr (assoc shuffle_arr shuffle_i (_indexList shuffle_arr shuffle_j))) ;; int
           (def shuffle_arr (assoc shuffle_arr shuffle_j shuffle_tmp)) ;; int
@@ -151,11 +164,11 @@
   (loop []
     (when (< doTrials_d 50)
       (let [r (try
-        (def doTrials_n (mod (System/nanoTime) 100)) ;; int
+        (def doTrials_n (mod (_now) 100)) ;; int
         (loop []
           (when (_indexList doTrials_opened doTrials_n)
             (let [r (try
-              (def doTrials_n (mod (System/nanoTime) 100)) ;; int
+              (def doTrials_n (mod (_now) 100)) ;; int
               :next
             (catch clojure.lang.ExceptionInfo e
               (cond

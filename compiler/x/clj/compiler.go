@@ -1452,7 +1452,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					expr = fmt.Sprintf("(_json %s)", args[0])
 				}
 			case "now":
-				expr = "(System/nanoTime)"
+				c.use("_now")
+				expr = "(_now)"
 			case "str":
 				expr = fmt.Sprintf("(str %s)", strings.Join(args, " "))
 			case "upper":
@@ -1735,7 +1736,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 		case "now":
 			if len(args) == 0 {
-				return "(System/nanoTime)", nil
+				c.use("_now")
+				return "(_now)", nil
 			}
 		case "json":
 			if len(args) == 1 {

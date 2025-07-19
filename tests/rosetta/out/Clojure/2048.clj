@@ -38,6 +38,19 @@
       (when (> i 0) (print " "))
       (pv a))
     (println)))
+(def ^:dynamic _now_seeded (atom false))
+  (def ^:dynamic _now_seed (atom 0))
+  (defn _now []
+    (when-not @_now_seeded
+      (let [s (System/getenv "MOCHI_NOW_SEED")]
+        (when (and s (re-matches #"\d+" s))
+          (reset! _now_seed (Long/parseLong s))
+          (reset! _now_seeded true))))
+    (if @_now_seeded
+      (do
+        (swap! _now_seed #(mod (+ (* % 1664525) 1013904223) 2147483647))
+        @_now_seed)
+      (System/nanoTime)))
 (declare SIZE board r full score)
 
 ;; Function newBoard returns list of list of int
@@ -145,10 +158,10 @@
 (when (= (count spawnTile_empty) 0)
 (throw (ex-info "return" {:value {"board" b "full" true}}))
 )
-(def spawnTile_idx (mod (System/nanoTime) (count spawnTile_empty))) ;; int
+(def spawnTile_idx (mod (_now) (count spawnTile_empty))) ;; int
 (def spawnTile_cell (_indexList spawnTile_empty spawnTile_idx)) ;; list of int
 (def spawnTile_val 4) ;; int
-(when (< (mod (System/nanoTime) 10) 9)
+(when (< (mod (_now) 10) 9)
 (def spawnTile_val 2) ;; int
 )
 (def b (assoc-in b [(_indexList spawnTile_cell 1) (_indexList spawnTile_cell 0)] spawnTile_val)) ;; int
