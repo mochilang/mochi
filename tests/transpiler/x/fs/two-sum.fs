@@ -1,7 +1,7 @@
-// Mochi 0.10.31 - generated 2025-07-19 12:45:13 UTC
+// Mochi 0.10.31 - generated 2025-07-19 13:09:38 UTC
 open System
 
-let twoSum nums target =
+let rec twoSum nums target =
     let n = Seq.length nums
     for i in 0 .. (n - 1) do
 for j in i + 1 .. (n - 1) do

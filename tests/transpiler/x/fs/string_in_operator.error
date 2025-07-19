@@ -1,7 +1,0 @@
-exit status 1
-F# Compiler for F# 4.0 (Open Source Edition)
-Freely distributed under the Apache 2.0 Open Source License
-
-/workspace/mochi/tests/transpiler/x/fs/string_in_operator.fs(5,29): error FS0010: Unexpected keyword 'in' in expression
-
-/workspace/mochi/tests/transpiler/x/fs/string_in_operator.fs(5,34): error FS0010: Unexpected symbol ')' in implementation file

@@ -2,6 +2,6 @@ exit status 1
 F# Compiler for F# 4.0 (Open Source Edition)
 Freely distributed under the Apache 2.0 Open Source License
 
-/workspace/mochi/tests/transpiler/x/fs/membership.fs(5,25): error FS0010: Unexpected keyword 'in' in expression
+/workspace/mochi/tests/transpiler/x/fs/membership.fs(5,28): error FS0039: The field, constructor or member 'Contains' is not defined
 
-/workspace/mochi/tests/transpiler/x/fs/membership.fs(5,33): error FS0010: Unexpected symbol ')' in implementation file
+/workspace/mochi/tests/transpiler/x/fs/membership.fs(6,28): error FS0039: The field, constructor or member 'Contains' is not defined

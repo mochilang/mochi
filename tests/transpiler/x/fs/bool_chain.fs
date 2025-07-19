@@ -1,7 +1,7 @@
-// Mochi 0.10.31 - generated 2025-07-19 12:44:19 UTC
+// Mochi 0.10.31 - generated 2025-07-19 13:08:42 UTC
 open System
 
-let boom =
+let rec boom =
     printfn "%s" (string "boom")
     true
 printfn "%s" (string (((1 < 2) && (2 < 3)) && (3 < 4)))

@@ -1,7 +1,7 @@
-// Mochi 0.10.31 - generated 2025-07-19 12:45:12 UTC
+// Mochi 0.10.31 - generated 2025-07-19 13:09:37 UTC
 open System
 
-let sum_rec n acc =
+let rec sum_rec n acc =
     if n = 0 then
 acc
     sum_rec (n - 1) (acc + n)
