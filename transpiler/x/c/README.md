@@ -2,8 +2,7 @@
 
 This directory stores C translations generated from programs in `tests/vm/valid`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in a `.error` file when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (10/100):
-
+Checklist of programs that currently transpile and run (13/100):
 - [ ] append_builtin
 - [ ] avg_builtin
 - [x] basic_compare
@@ -46,9 +45,9 @@ Checklist of programs that currently transpile and run (10/100):
 - [ ] json_builtin
 - [ ] left_join
 - [ ] left_join_multi
-- [ ] len_builtin
+- [x] len_builtin
 - [ ] len_map
-- [ ] len_string
+- [x] len_string
 - [x] let_and_print
 - [ ] list_assign
 - [ ] list_index
@@ -64,7 +63,7 @@ Checklist of programs that currently transpile and run (10/100):
 - [ ] map_nested_assign
 - [ ] match_expr
 - [ ] match_full
-- [ ] math_ops
+- [x] math_ops
 - [ ] membership
 - [ ] min_max_builtin
 - [ ] nested_function
