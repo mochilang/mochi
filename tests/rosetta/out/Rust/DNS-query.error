@@ -1,0 +1,16 @@
+rustc: exit status 1
+error[E0425]: cannot find value `net` in this scope
+ --> /tmp/DNS_query.rs:3:25
+  |
+3 |     let res: Vec<i32> = net.LookupHost(String::from("www.kame.net"));
+  |                         ^^^ not found in this scope
+
+error[E0425]: cannot find value `nil` in this scope
+ --> /tmp/DNS_query.rs:6:15
+  |
+6 |     if err == nil {
+  |               ^^^ not found in this scope
+
+error: aborting due to 2 previous errors
+
+For more information about this error, try `rustc --explain E0425`.

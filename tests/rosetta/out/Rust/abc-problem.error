@@ -1,99 +1,28 @@
 rustc: exit status 1
-error[E0308]: mismatched types
- --> /tmp/abc-problem.rs:8:40
-  |
-8 |             let c = &s[i as usize..i + 1 as usize];
-  |                                        ^^^^^^^^^^ expected `i32`, found `usize`
-
-error[E0308]: mismatched types
- --> /tmp/abc-problem.rs:8:36
-  |
-8 |             let c = &s[i as usize..i + 1 as usize];
-  |                                    ^^^^^^^^^^^^^^ expected `usize`, found `i32`
-
-error[E0277]: cannot add `usize` to `i32`
- --> /tmp/abc-problem.rs:8:38
-  |
-8 |             let c = &s[i as usize..i + 1 as usize];
-  |                                      ^ no implementation for `i32 + usize`
-  |
-  = help: the trait `Add<usize>` is not implemented for `i32`
-  = help: the following other types implement trait `Add<Rhs>`:
-            `&i32` implements `Add<i32>`
-            `&i32` implements `Add`
-            `i32` implements `Add<&i32>`
-            `i32` implements `Add`
-
-error[E0308]: mismatched types
-  --> /tmp/abc-problem.rs:11:65
-   |
-11 |                     res = { let mut tmp = res.clone(); tmp.push(cur); tmp };
-   |                                                            ---- ^^^ expected `&str`, found `String`
-   |                                                            |
-   |                                                            arguments to this method are incorrect
-   |
-note: method defined here
-  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:2442:12
-help: consider borrowing here
-   |
-11 |                     res = { let mut tmp = res.clone(); tmp.push(&cur); tmp };
-   |                                                                 +
-
-error[E0308]: mismatched types
-  --> /tmp/abc-problem.rs:12:27
-   |
-5  |         let mut cur = String::new();
-   |                       ------------- expected due to this value
-...
-12 |                     cur = "";
-   |                           ^^- help: try using a conversion method: `.to_string()`
-   |                           |
-   |                           expected `String`, found `&str`
-
-error[E0308]: mismatched types
-  --> /tmp/abc-problem.rs:20:57
-   |
-20 |             res = { let mut tmp = res.clone(); tmp.push(cur); tmp };
-   |                                                    ---- ^^^ expected `&str`, found `String`
-   |                                                    |
-   |                                                    arguments to this method are incorrect
-   |
-note: method defined here
-  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:2442:12
-help: consider borrowing here
-   |
-20 |             res = { let mut tmp = res.clone(); tmp.push(&cur); tmp };
-   |                                                         +
-
 error[E0425]: cannot find function `lower` in this scope
-  --> /tmp/abc-problem.rs:28:17
+  --> /tmp/abc_problem.rs:28:17
    |
 28 |         let c = lower(&word[0..1]);
    |                 ^^^^^ not found in this scope
 
 error[E0425]: cannot find function `lower` in this scope
-  --> /tmp/abc-problem.rs:32:21
+  --> /tmp/abc_problem.rs:32:21
    |
 32 |             if c == lower(&b[0..1]) || c == lower(&b[1..2]) {
    |                     ^^^^^ not found in this scope
 
 error[E0425]: cannot find function `lower` in this scope
-  --> /tmp/abc-problem.rs:32:45
+  --> /tmp/abc_problem.rs:32:45
    |
 32 |             if c == lower(&b[0..1]) || c == lower(&b[1..2]) {
    |                                             ^^^^^ not found in this scope
 
-error[E0507]: cannot move out of `bl`, a captured variable in an `Fn` closure
-  --> /tmp/abc-problem.rs:51:60
+error[E0425]: cannot find function `canSpell` in this scope
+  --> /tmp/abc_problem.rs:41:20
    |
-50 |         let bl = fields(blocks);
-   |             -- captured outer variable
-51 |         return Box::new(move |w: &'static str| canSpell(w, bl));
-   |                         ----------------------             ^^ move occurs because `bl` has type `Vec<&str>`, which does not implement the `Copy` trait
-   |                         |
-   |                         captured by this `Fn` closure
+41 |                 if canSpell(&word[(1) as usize..(word.len()) as usize], rest) {
+   |                    ^^^^^^^^ not found in this scope
 
-error: aborting due to 10 previous errors
+error: aborting due to 4 previous errors
 
-Some errors have detailed explanations: E0277, E0308, E0425, E0507.
-For more information about an error, try `rustc --explain E0277`.
+For more information about this error, try `rustc --explain E0425`.

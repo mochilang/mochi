@@ -1,7 +1,28 @@
 rustc: exit status 1
-error: invalid character '+' in crate name: `a+b`
+error[E0425]: cannot find function `input` in this scope
+ --> /tmp/a_b.rs:4:21
   |
-  = help: you can either pass `--crate-name` on the command line or add `#![crate_name = "…"]` to set the crate name
+4 |         let a = int(input());
+  |                     ^^^^^ not found in this scope
 
-error: aborting due to 1 previous error
+error[E0425]: cannot find function `int` in this scope
+ --> /tmp/a_b.rs:4:17
+  |
+4 |         let a = int(input());
+  |                 ^^^ not found in this scope
 
+error[E0425]: cannot find function `input` in this scope
+ --> /tmp/a_b.rs:5:21
+  |
+5 |         let b = int(input());
+  |                     ^^^^^ not found in this scope
+
+error[E0425]: cannot find function `int` in this scope
+ --> /tmp/a_b.rs:5:17
+  |
+5 |         let b = int(input());
+  |                 ^^^ not found in this scope
+
+error: aborting due to 4 previous errors
+
+For more information about this error, try `rustc --explain E0425`.

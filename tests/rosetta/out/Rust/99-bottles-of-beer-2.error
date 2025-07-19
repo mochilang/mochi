@@ -1,177 +1,57 @@
 rustc: exit status 1
 error[E0308]: mismatched types
- --> /tmp/99-bottles-of-beer-2.rs:8:41
-  |
-8 |             let ch = &s[i as usize..i + 1 as usize];
-  |                                         ^^^^^^^^^^ expected `i32`, found `usize`
-
-error[E0308]: mismatched types
- --> /tmp/99-bottles-of-beer-2.rs:8:37
-  |
-8 |             let ch = &s[i as usize..i + 1 as usize];
-  |                                     ^^^^^^^^^^^^^^ expected `usize`, found `i32`
-
-error[E0277]: cannot add `usize` to `i32`
- --> /tmp/99-bottles-of-beer-2.rs:8:39
-  |
-8 |             let ch = &s[i as usize..i + 1 as usize];
-  |                                       ^ no implementation for `i32 + usize`
-  |
-  = help: the trait `Add<usize>` is not implemented for `i32`
-  = help: the following other types implement trait `Add<Rhs>`:
-            `&i32` implements `Add<i32>`
-            `&i32` implements `Add`
-            `i32` implements `Add<&i32>`
-            `i32` implements `Add`
-
-error[E0308]: mismatched types
-  --> /tmp/99-bottles-of-beer-2.rs:12:69
+  --> /tmp/99_bottles_of_beer_2.rs:77:53
    |
-12 |                     words = { let mut tmp = words.clone(); tmp.push(cur); tmp };
-   |                                                                ---- ^^^ expected `&str`, found `String`
-   |                                                                |
-   |                                                                arguments to this method are incorrect
+77 |             a = { let mut tmp = a.clone(); tmp.push(&p[(i) as usize..(i + 1) as usize]); tmp };
+   |                                                ---- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `String`, found `&str`
+   |                                                |
+   |                                                arguments to this method are incorrect
    |
 note: method defined here
   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:2442:12
-help: consider borrowing here
+help: try using a conversion method
    |
-12 |                     words = { let mut tmp = words.clone(); tmp.push(&cur); tmp };
-   |                                                                     +
+77 |             a = { let mut tmp = a.clone(); tmp.push((&p[(i) as usize..(i + 1) as usize]).to_string()); tmp };
+   |                                                     +                                  +++++++++++++
 
 error[E0308]: mismatched types
-  --> /tmp/99-bottles-of-beer-2.rs:13:27
+  --> /tmp/99_bottles_of_beer_2.rs:95:17
    |
-5  |         let mut cur = String::new();
-   |                       ------------- expected due to this value
-...
-13 |                     cur = "";
-   |                           ^^- help: try using a conversion method: `.to_string()`
-   |                           |
-   |                           expected `String`, found `&str`
-
-error[E0308]: mismatched types
-  --> /tmp/99-bottles-of-beer-2.rs:21:61
-   |
-21 |             words = { let mut tmp = words.clone(); tmp.push(cur); tmp };
-   |                                                        ---- ^^^ expected `&str`, found `String`
-   |                                                        |
-   |                                                        arguments to this method are incorrect
-   |
-note: method defined here
-  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:2442:12
-help: consider borrowing here
-   |
-21 |             words = { let mut tmp = words.clone(); tmp.push(&cur); tmp };
-   |                                                             +
-
-error[E0308]: mismatched types
-  --> /tmp/99-bottles-of-beer-2.rs:35:16
-   |
-25 |     fn join(xs: Vec<&'static str>, sep: &'static str) -> &'static str {
-   |                                                          ------------ expected `&'static str` because of return type
-...
-35 |         return res;
-   |                ^^^ expected `&str`, found `String`
-   |
-help: consider borrowing here
-   |
-35 |         return &res;
-   |                +
-
-error[E0599]: no method named `parse` found for type `f64` in the current scope
-  --> /tmp/99-bottles-of-beer-2.rs:47:57
-   |
-47 |             let mut t = tens[((n as f64) / (10 as f64)).parse::<i32>().unwrap() as usize];
-   |                                                         ^^^^^ method not found in `f64`
-
-error[E0308]: mismatched types
-  --> /tmp/99-bottles-of-beer-2.rs:62:20
-   |
-62 |             w[0] = format!("{}{}", w[0], "s");
-   |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+95 |             s = format!("{}{}", s, a[(k) as usize]);
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
    |
    = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0308]: mismatched types
-  --> /tmp/99-bottles-of-beer-2.rs:77:72
+  --> /tmp/99_bottles_of_beer_2.rs:98:13
    |
-77 |             a = { let mut tmp = a.clone(); tmp.push(&p[i as usize..i + 1 as usize]); tmp };
-   |                                                                        ^^^^^^^^^^ expected `i32`, found `usize`
+98 |         s = format!("{}{}", s, &p[((p.len() as i32) - 1) as usize..((p.len() as i32)) as usize]);
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+   |
+   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0308]: mismatched types
-  --> /tmp/99-bottles-of-beer-2.rs:77:68
+  --> /tmp/99_bottles_of_beer_2.rs:99:24
    |
-77 |             a = { let mut tmp = a.clone(); tmp.push(&p[i as usize..i + 1 as usize]); tmp };
-   |                                                                    ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+99 |         let w = fields(s);
+   |                 ------ ^- help: try using a conversion method: `.to_string()`
+   |                 |      |
+   |                 |      expected `String`, found `&str`
+   |                 arguments to this function are incorrect
+   |
+note: expected because the closure was earlier called with an argument of type `String`
+  --> /tmp/99_bottles_of_beer_2.rs:60:24
+   |
+60 |         let w = fields(s);
+   |                 ------ ^ expected because this argument is of type `String`
+   |                 |
+   |                 in this closure call
+note: closure parameter defined here
+  --> /tmp/99_bottles_of_beer_2.rs:3:24
+   |
+3  |     let fields = move |s: String| -> Vec<String> {
+   |                        ^^^^^^^^^
 
-error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/99-bottles-of-beer-2.rs:77:70
-   |
-77 |             a = { let mut tmp = a.clone(); tmp.push(&p[i as usize..i + 1 as usize]); tmp };
-   |                                                                      ^ no implementation for `i32 + usize`
-   |
-   = help: the trait `Add<usize>` is not implemented for `i32`
-   = help: the following other types implement trait `Add<Rhs>`:
-             `&i32` implements `Add<i32>`
-             `&i32` implements `Add`
-             `i32` implements `Add<&i32>`
-             `i32` implements `Add`
+error: aborting due to 4 previous errors
 
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/99-bottles-of-beer-2.rs:95:13
-   |
-95 |             s += a[k as usize];
-   |             -^^^^^^^^^^^^^^^^^
-   |             |
-   |             cannot use `+=` on type `&str`
-
-error[E0308]: mismatched types
-  --> /tmp/99-bottles-of-beer-2.rs:98:34
-   |
-98 |         s += &p[p.len() as i32 - 1 as usize..p.len() as i32 as usize];
-   |                                  ^^^^^^^^^^ expected `i32`, found `usize`
-
-error[E0277]: cannot subtract `usize` from `i32`
-  --> /tmp/99-bottles-of-beer-2.rs:98:32
-   |
-98 |         s += &p[p.len() as i32 - 1 as usize..p.len() as i32 as usize];
-   |                                ^ no implementation for `i32 - usize`
-   |
-   = help: the trait `Sub<usize>` is not implemented for `i32`
-   = help: the following other types implement trait `Sub<Rhs>`:
-             `&i32` implements `Sub<i32>`
-             `&i32` implements `Sub`
-             `i32` implements `Sub<&i32>`
-             `i32` implements `Sub`
-
-error[E0308]: mismatched types
-  --> /tmp/99-bottles-of-beer-2.rs:98:46
-   |
-98 |         s += &p[p.len() as i32 - 1 as usize..p.len() as i32 as usize];
-   |                                              ^^^^^^^^^^^^^^^^^^^^^^^ expected `i32`, found `usize`
-
-error[E0277]: the type `str` cannot be indexed by `std::ops::Range<i32>`
-  --> /tmp/99-bottles-of-beer-2.rs:98:17
-   |
-98 |         s += &p[p.len() as i32 - 1 as usize..p.len() as i32 as usize];
-   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ string indices are ranges of `usize`
-   |
-   = help: the trait `SliceIndex<str>` is not implemented for `std::ops::Range<i32>`
-   = help: the following other types implement trait `SliceIndex<T>`:
-             `std::ops::Range<usize>` implements `SliceIndex<[T]>`
-             `std::ops::Range<usize>` implements `SliceIndex<str>`
-   = note: required for `str` to implement `Index<std::ops::Range<i32>>`
-
-error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
-  --> /tmp/99-bottles-of-beer-2.rs:98:9
-   |
-98 |         s += &p[p.len() as i32 - 1 as usize..p.len() as i32 as usize];
-   |         -^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-   |         |
-   |         cannot use `+=` on type `&str`
-
-error: aborting due to 18 previous errors
-
-Some errors have detailed explanations: E0277, E0308, E0368, E0599.
-For more information about an error, try `rustc --explain E0277`.
+For more information about this error, try `rustc --explain E0308`.

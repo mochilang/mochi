@@ -1,110 +1,38 @@
 rustc: exit status 1
-error[E0308]: mismatched types
-   --> /tmp/9-billion-names-of-god-the-integer.rs:130:129
-    |
-130 | ...string(), " "), bigToString(r[r.len() as i32 - 1 as usize])))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
-    |                                                   ^^^^^^^^^^ expected `i32`, found `usize`
-
-error[E0277]: cannot subtract `usize` from `i32`
-   --> /tmp/9-billion-names-of-god-the-integer.rs:130:127
-    |
-130 | ...to_string(), " "), bigToString(r[r.len() as i32 - 1 as usize])))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
-    |                                                    ^ no implementation for `i32 - usize`
-    |
-    = help: the trait `Sub<usize>` is not implemented for `i32`
-    = help: the following other types implement trait `Sub<Rhs>`:
-              `&i32` implements `Sub<i32>`
-              `&i32` implements `Sub`
-              `i32` implements `Sub<&i32>`
-              `i32` implements `Sub`
-
-error[E0277]: the type `[Vec<i32>]` cannot be indexed by `i32`
-   --> /tmp/9-billion-names-of-god-the-integer.rs:130:112
-    |
-130 | ...ng(), " "), bigToString(r[r.len() as i32 - 1 as usize])))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
-    |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
-    |
-    = help: the trait `SliceIndex<[Vec<i32>]>` is not implemented for `i32`
-            but it is implemented for `usize`
-    = help: for that trait implementation, expected `usize`, found `i32`
-    = note: required for `Vec<Vec<i32>>` to implement `Index<i32>`
+warning: unnecessary parentheses around assigned value
+ --> /tmp/9_billion_names_of_god_the_integer.rs:9:21
+  |
+9 |         let mut n = (a.len() as i32);
+  |                     ^              ^
+  |
+  = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+  |
+9 -         let mut n = (a.len() as i32);
+9 +         let mut n = a.len() as i32;
+  |
 
 error[E0308]: mismatched types
-  --> /tmp/9-billion-names-of-god-the-integer.rs:10:30
+  --> /tmp/9_billion_names_of_god_the_integer.rs:11:17
    |
-10 |         while n > 1 && a[n - 1 as usize] == 0 {
-   |                              ^^^^^^^^^^ expected `i32`, found `usize`
-
-error[E0277]: cannot subtract `usize` from `i32`
-  --> /tmp/9-billion-names-of-god-the-integer.rs:10:28
-   |
-10 |         while n > 1 && a[n - 1 as usize] == 0 {
-   |                            ^ no implementation for `i32 - usize`
-   |
-   = help: the trait `Sub<usize>` is not implemented for `i32`
-   = help: the following other types implement trait `Sub<Rhs>`:
-             `&i32` implements `Sub<i32>`
-             `&i32` implements `Sub`
-             `i32` implements `Sub<&i32>`
-             `i32` implements `Sub`
-
-error[E0277]: the type `[i32]` cannot be indexed by `i32`
-  --> /tmp/9-billion-names-of-god-the-integer.rs:10:26
-   |
-10 |         while n > 1 && a[n - 1 as usize] == 0 {
-   |                          ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
-   |
-   = help: the trait `SliceIndex<[i32]>` is not implemented for `i32`
-           but it is implemented for `usize`
-   = help: for that trait implementation, expected `usize`, found `i32`
-   = note: required for `Vec<i32>` to implement `Index<i32>`
-
-error[E0308]: mismatched types
-  --> /tmp/9-billion-names-of-god-the-integer.rs:11:35
-   |
-11 |             a = a[0 as usize..n - 1 as usize].to_vec();
-   |                                   ^^^^^^^^^^ expected `i32`, found `usize`
-
-error[E0308]: mismatched types
-  --> /tmp/9-billion-names-of-god-the-integer.rs:11:31
-   |
-11 |             a = a[0 as usize..n - 1 as usize].to_vec();
-   |                               ^^^^^^^^^^^^^^ expected `usize`, found `i32`
-
-error[E0277]: cannot subtract `usize` from `i32`
-  --> /tmp/9-billion-names-of-god-the-integer.rs:11:33
-   |
-11 |             a = a[0 as usize..n - 1 as usize].to_vec();
-   |                                 ^ no implementation for `i32 - usize`
-   |
-   = help: the trait `Sub<usize>` is not implemented for `i32`
-   = help: the following other types implement trait `Sub<Rhs>`:
-             `&i32` implements `Sub<i32>`
-             `&i32` implements `Sub`
-             `i32` implements `Sub<&i32>`
-             `i32` implements `Sub`
-
-error[E0308]: mismatched types
-  --> /tmp/9-billion-names-of-god-the-integer.rs:11:17
-   |
-8  |     fn bigTrim(a: &mut Vec<i32>) -> Vec<i32> {
-   |                   ------------- expected due to this parameter type
+8  |     let bigTrim = move |a: &mut Vec<i32>| -> Vec<i32> {
+   |                            ------------- expected due to this parameter type
 ...
-11 |             a = a[0 as usize..n - 1 as usize].to_vec();
-   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&mut Vec<i32>`, found `Vec<i32>`
+11 |             a = a[(0) as usize..(n - 1) as usize].to_vec();
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&mut Vec<i32>`, found `Vec<i32>`
    |
    = note: expected mutable reference `&mut Vec<_>`
                          found struct `Vec<_>`
 help: consider dereferencing here to assign to the mutably borrowed value
    |
-11 |             *a = a[0 as usize..n - 1 as usize].to_vec();
+11 |             *a = a[(0) as usize..(n - 1) as usize].to_vec();
    |             +
 
 error[E0308]: mismatched types
-  --> /tmp/9-billion-names-of-god-the-integer.rs:14:16
+  --> /tmp/9_billion_names_of_god_the_integer.rs:14:16
    |
-8  |     fn bigTrim(a: &mut Vec<i32>) -> Vec<i32> {
-   |                                     -------- expected `Vec<i32>` because of return type
+8  |     let bigTrim = move |a: &mut Vec<i32>| -> Vec<i32> {
+   |                                              -------- expected `Vec<i32>` because of return type
 ...
 14 |         return a;
    |                ^- help: try using a conversion method: `.to_vec()`
@@ -115,7 +43,7 @@ error[E0308]: mismatched types
            found mutable reference `&mut Vec<_>`
 
 error[E0308]: mismatched types
-  --> /tmp/9-billion-names-of-god-the-integer.rs:43:21
+  --> /tmp/9_billion_names_of_god_the_integer.rs:43:21
    |
 30 |         let mut carry = 0;
    |                         - expected due to this value
@@ -123,132 +51,6 @@ error[E0308]: mismatched types
 43 |             carry = (s as f64) / (10 as f64);
    |                     ^^^^^^^^^^^^^^^^^^^^^^^^ expected `i32`, found `f64`
 
-error[E0308]: mismatched types
-  --> /tmp/9-billion-names-of-god-the-integer.rs:74:18
-   |
-74 |             s += a[i as usize].to_string();
-   |                  ^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
-   |
-help: consider borrowing here
-   |
-74 |             s += &a[i as usize].to_string();
-   |                  +
+error: aborting due to 3 previous errors; 1 warning emitted
 
-error[E0308]: mismatched types
-  --> /tmp/9-billion-names-of-god-the-integer.rs:77:16
-   |
-70 |     fn bigToString(a: Vec<i32>) -> &'static str {
-   |                                    ------------ expected `&'static str` because of return type
-...
-77 |         return s;
-   |                ^ expected `&str`, found `String`
-   |
-help: consider borrowing here
-   |
-77 |         return &s;
-   |                +
-
-error[E0308]: mismatched types
-  --> /tmp/9-billion-names-of-god-the-integer.rs:93:37
-   |
-93 |                 let val = cache[y - x as usize][minInt(x, y - x) as usize];
-   |                                     ^^^^^^^^^^ expected `i32`, found `usize`
-
-error[E0277]: cannot subtract `usize` from `i32`
-  --> /tmp/9-billion-names-of-god-the-integer.rs:93:35
-   |
-93 |                 let val = cache[y - x as usize][minInt(x, y - x) as usize];
-   |                                   ^ no implementation for `i32 - usize`
-   |
-   = help: the trait `Sub<usize>` is not implemented for `i32`
-   = help: the following other types implement trait `Sub<Rhs>`:
-             `&i32` implements `Sub<i32>`
-             `&i32` implements `Sub`
-             `i32` implements `Sub<&i32>`
-             `i32` implements `Sub`
-
-error[E0277]: the type `[Vec<Vec<i32>>]` cannot be indexed by `i32`
-  --> /tmp/9-billion-names-of-god-the-integer.rs:93:33
-   |
-93 |                 let val = cache[y - x as usize][minInt(x, y - x) as usize];
-   |                                 ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
-   |
-   = help: the trait `SliceIndex<[Vec<Vec<i32>>]>` is not implemented for `i32`
-           but it is implemented for `usize`
-   = help: for that trait implementation, expected `usize`, found `i32`
-   = note: required for `Vec<Vec<Vec<i32>>>` to implement `Index<i32>`
-
-error[E0308]: mismatched types
-  --> /tmp/9-billion-names-of-god-the-integer.rs:94:65
-   |
-94 |                 row = append(row, bigAdd(row[row.len() as i32 - 1 as usize], val));
-   |                                                                 ^^^^^^^^^^ expected `i32`, found `usize`
-
-error[E0277]: cannot subtract `usize` from `i32`
-  --> /tmp/9-billion-names-of-god-the-integer.rs:94:63
-   |
-94 |                 row = append(row, bigAdd(row[row.len() as i32 - 1 as usize], val));
-   |                                                               ^ no implementation for `i32 - usize`
-   |
-   = help: the trait `Sub<usize>` is not implemented for `i32`
-   = help: the following other types implement trait `Sub<Rhs>`:
-             `&i32` implements `Sub<i32>`
-             `&i32` implements `Sub`
-             `i32` implements `Sub<&i32>`
-             `i32` implements `Sub`
-
-error[E0277]: the type `[Vec<i32>]` cannot be indexed by `i32`
-  --> /tmp/9-billion-names-of-god-the-integer.rs:94:46
-   |
-94 |                 row = append(row, bigAdd(row[row.len() as i32 - 1 as usize], val));
-   |                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
-   |
-   = help: the trait `SliceIndex<[Vec<i32>]>` is not implemented for `i32`
-           but it is implemented for `usize`
-   = help: for that trait implementation, expected `usize`, found `i32`
-   = note: required for `Vec<Vec<i32>>` to implement `Index<i32>`
-
-error[E0308]: mismatched types
-   --> /tmp/9-billion-names-of-god-the-integer.rs:107:37
-    |
-107 |             let diff = bigSub(e[i + 1 as usize], e[i as usize]);
-    |                                     ^^^^^^^^^^ expected `i32`, found `usize`
-
-error[E0277]: cannot add `usize` to `i32`
-   --> /tmp/9-billion-names-of-god-the-integer.rs:107:35
-    |
-107 |             let diff = bigSub(e[i + 1 as usize], e[i as usize]);
-    |                                   ^ no implementation for `i32 + usize`
-    |
-    = help: the trait `Add<usize>` is not implemented for `i32`
-    = help: the following other types implement trait `Add<Rhs>`:
-              `&i32` implements `Add<i32>`
-              `&i32` implements `Add`
-              `i32` implements `Add<&i32>`
-              `i32` implements `Add`
-
-error[E0277]: the type `[Vec<i32>]` cannot be indexed by `i32`
-   --> /tmp/9-billion-names-of-god-the-integer.rs:107:33
-    |
-107 |             let diff = bigSub(e[i + 1 as usize], e[i as usize]);
-    |                                 ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
-    |
-    = help: the trait `SliceIndex<[Vec<i32>]>` is not implemented for `i32`
-            but it is implemented for `usize`
-    = help: for that trait implementation, expected `usize`, found `i32`
-    = note: required for `Vec<Vec<i32>>` to implement `Index<i32>`
-
-warning: variable does not need to be mutable
-  --> /tmp/9-billion-names-of-god-the-integer.rs:53:17
-   |
-53 |             let mut av = a[i as usize];
-   |                 ----^^
-   |                 |
-   |                 help: remove this `mut`
-   |
-   = note: `#[warn(unused_mut)]` on by default
-
-error: aborting due to 23 previous errors; 1 warning emitted
-
-Some errors have detailed explanations: E0277, E0308.
-For more information about an error, try `rustc --explain E0277`.
+For more information about this error, try `rustc --explain E0308`.

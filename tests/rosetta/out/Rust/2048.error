@@ -1,335 +1,310 @@
 rustc: exit status 1
-error: `<` is interpreted as a start of generic arguments for `i32`, not a comparison
-   --> /tmp/2048.rs:109:32
-    |
-109 |         while res.len() as i32 < SIZE {
-    |                                ^ ------ interpreted as generic arguments
-    |                                |
-    |                                not interpreted as comparison
-    |
-help: try comparing the cast value
-    |
-109 |         while (res.len() as i32) < SIZE {
-    |               +                +
-
 warning: denote infinite loops with `loop { ... }`
-   --> /tmp/2048.rs:254:5
+   --> /tmp/2048.rs:259:5
     |
-254 |     while true {
+259 |     while true {
     |     ^^^^^^^^^^ help: use `loop`
     |
     = note: `#[warn(while_true)]` on by default
 
 error[E0308]: mismatched types
-  --> /tmp/2048.rs:33:108
+  --> /tmp/2048.rs:38:135
    |
-33 |             return { let mut m = std::collections::BTreeMap::new(); m.insert("board", b); m.insert("full", true); m };
-   |                                                                     -                 -     ------         ^^^^ expected `&mut Vec<Vec<i32>>`, found `bool`
-   |                                                                     |                 |     |
-   |                                                                     |                 |     arguments to this method are incorrect
-   |                                                                     |                 this argument has type `&mut Vec<Vec<i32>>`...
-   |                                                                     ... which causes `m` to have type `BTreeMap<&str, &mut Vec<Vec<i32>>>`
-   |
-   = note: expected mutable reference `&mut Vec<Vec<i32>>`
-                           found type `bool`
-help: the return type of this call is `bool` due to the type of the argument passed
-  --> /tmp/2048.rs:33:91
-   |
-33 |             return { let mut m = std::collections::BTreeMap::new(); m.insert("board", b); m.insert("full", true); m };
-   |                                                                                           ^^^^^^^^^^^^^^^^^----^
-   |                                                                                                            |
-   |                                                                                                            this argument influences the return type of `insert`
-note: method defined here
-  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
-
-error[E0308]: mismatched types
-  --> /tmp/2048.rs:33:115
-   |
-19 |     let spawnTile = move |b: &mut Vec<Vec<i32>>| -> std::collections::HashMap<&'static str, i32> {
-   |                                                     -------------------------------------------- expected `HashMap<&'static str, i32>` because of return type
-...
-33 |             return { let mut m = std::collections::BTreeMap::new(); m.insert("board", b); m.insert("full", true); m };
-   |                                                                                                                   ^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, &mut Vec<Vec<i32>>>`
-   |
-   = note: expected struct `HashMap<&'static str, i32>`
-              found struct `BTreeMap<&str, &mut Vec<Vec<i32>>>`
-
-error[E0425]: cannot find function `now` in this scope
-  --> /tmp/2048.rs:35:23
-   |
-35 |         let mut idx = now() % empty.len() as i32;
-   |                       ^^^ not found in this scope
-
-error[E0425]: cannot find function `now` in this scope
-  --> /tmp/2048.rs:38:12
-   |
-38 |         if now() % 10 < 9 {
-   |            ^^^ not found in this scope
-
-error[E0308]: mismatched types
-  --> /tmp/2048.rs:42:104
-   |
-42 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("board", b); m.insert("full", empty.len() as i32 == 1); m };
-   |                                                                 -                 -     ------         ^^^^^^^^^^^^^^^^^^^^^^^ expected `&mut Vec<Vec<i32>>`, found `bool`
-   |                                                                 |                 |     |
-   |                                                                 |                 |     arguments to this method are incorrect
-   |                                                                 |                 this argument has type `&mut Vec<Vec<i32>>`...
-   |                                                                 ... which causes `m` to have type `BTreeMap<&str, &mut Vec<Vec<i32>>>`
+38 | ...::new(); m.insert(String::from("board"), b); m.insert(String::from("full"), true); m };
+   |             -                               -     ------                       ^^^^ expected `&mut Vec<Vec<i32>>`, found `bool`
+   |             |                               |     |
+   |             |                               |     arguments to this method are incorrect
+   |             |                               this argument has type `&mut Vec<Vec<i32>>`...
+   |             ... which causes `m` to have type `HashMap<String, &mut Vec<Vec<i32>>>`
    |
    = note: expected mutable reference `&mut Vec<Vec<i32>>`
                            found type `bool`
 help: the return type of this call is `bool` due to the type of the argument passed
-  --> /tmp/2048.rs:42:87
+  --> /tmp/2048.rs:38:104
    |
-42 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("board", b); m.insert("full", empty.len() as i32 == 1); m };
-   |                                                                                       ^^^^^^^^^^^^^^^^^-----------------------^
-   |                                                                                                        |
-   |                                                                                                        this argument influences the return type of `insert`
+38 | ...ng::from("board"), b); m.insert(String::from("full"), true); m };
+   |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^----^
+   |                                                          |
+   |                                                          this argument influences the return type of `insert`
 note: method defined here
-  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
 
 error[E0308]: mismatched types
-  --> /tmp/2048.rs:42:130
+  --> /tmp/2048.rs:38:142
    |
-19 |     let spawnTile = move |b: &mut Vec<Vec<i32>>| -> std::collections::HashMap<&'static str, i32> {
-   |                                                     -------------------------------------------- expected `HashMap<&'static str, i32>` because of return type
+24 | ...ec<Vec<i32>>| -> std::collections::HashMap<String, i32> {
+   |                     -------------------------------------- expected `HashMap<String, i32>` because of return type
 ...
-42 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("board", b); m.insert("full", empty.len() as i32 == 1); m };
-   |                                                                                                                                  ^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, &mut Vec<Vec<i32>>>`
+38 | ...d::collections::HashMap::new(); m.insert(String::from("board"), b); m.insert(String::from("full"), true); m };
+   |                                    -                               -                                         ^ expected `HashMap<String, i32>`, found `HashMap<String, &mut Vec<Vec<i32>>>`
+   |                                    |                               |
+   |                                    |                               this argument has type `&mut Vec<Vec<i32>>`...
+   |                                    ... which causes `m` to have type `HashMap<String, &mut Vec<Vec<i32>>>`
    |
-   = note: expected struct `HashMap<&'static str, i32>`
-              found struct `BTreeMap<&str, &mut Vec<Vec<i32>>>`
+   = note: expected struct `HashMap<_, i32>`
+              found struct `HashMap<_, &mut Vec<Vec<i32>>>`
 
 error[E0308]: mismatched types
-  --> /tmp/2048.rs:99:68
+  --> /tmp/2048.rs:40:32
    |
-99 |             if i + 1 < xs.len() as i32 && xs[i as usize] == xs[i + 1 as usize] {
-   |                                                                    ^^^^^^^^^^ expected `i32`, found `usize`
+40 |         let mut idx = _now() % (empty.len() as i32);
+   |                                ^^^^^^^^^^^^^^^^^^^^ expected `i64`, found `i32`
 
-error[E0277]: cannot add `usize` to `i32`
-  --> /tmp/2048.rs:99:66
+error[E0277]: cannot calculate the remainder of `i64` divided by `i32`
+  --> /tmp/2048.rs:40:30
    |
-99 |             if i + 1 < xs.len() as i32 && xs[i as usize] == xs[i + 1 as usize] {
-   |                                                                  ^ no implementation for `i32 + usize`
+40 |         let mut idx = _now() % (empty.len() as i32);
+   |                              ^ no implementation for `i64 % i32`
    |
-   = help: the trait `Add<usize>` is not implemented for `i32`
-   = help: the following other types implement trait `Add<Rhs>`:
-             `&i32` implements `Add<i32>`
-             `&i32` implements `Add`
-             `i32` implements `Add<&i32>`
-             `i32` implements `Add`
-
-error[E0277]: the type `[i32]` cannot be indexed by `i32`
-  --> /tmp/2048.rs:99:64
-   |
-99 |             if i + 1 < xs.len() as i32 && xs[i as usize] == xs[i + 1 as usize] {
-   |                                                                ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
-   |
-   = help: the trait `SliceIndex<[i32]>` is not implemented for `i32`
-           but it is implemented for `usize`
-   = help: for that trait implementation, expected `usize`, found `i32`
-   = note: required for `Vec<i32>` to implement `Index<i32>`
+   = help: the trait `Rem<i32>` is not implemented for `i64`
+   = help: the following other types implement trait `Rem<Rhs>`:
+             `&i64` implements `Rem<i64>`
+             `&i64` implements `Rem`
+             `i64` implements `Rem<&i64>`
+             `i64` implements `Rem`
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:112:104
+  --> /tmp/2048.rs:47:131
+   |
+47 | ...:HashMap::new(); m.insert(String::from("board"), b); m.insert(String::from("full"), (empty.len() as i32) == 1); m };
+   |                     -                               -     ------                       ^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&mut Vec<Vec<i32>>`, found `bool`
+   |                     |                               |     |
+   |                     |                               |     arguments to this method are incorrect
+   |                     |                               this argument has type `&mut Vec<Vec<i32>>`...
+   |                     ... which causes `m` to have type `HashMap<String, &mut Vec<Vec<i32>>>`
+   |
+   = note: expected mutable reference `&mut Vec<Vec<i32>>`
+                           found type `bool`
+help: the return type of this call is `bool` due to the type of the argument passed
+  --> /tmp/2048.rs:47:100
+   |
+47 | ...oard"), b); m.insert(String::from("full"), (empty.len() as i32) == 1); m };
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-------------------------^
+   |                                               |
+   |                                               this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0308]: mismatched types
+  --> /tmp/2048.rs:47:159
+   |
+24 | ...<i32>>| -> std::collections::HashMap<String, i32> {
+   |               -------------------------------------- expected `HashMap<String, i32>` because of return type
+...
+47 | ...ions::HashMap::new(); m.insert(String::from("board"), b); m.insert(String::from("full"), (empty.len() as i32) == 1); m };
+   |                          -                               - this argument has type `&mut Vec<Vec<i32>>`...               ^ expected `HashMap<String, i32>`, found `HashMap<String, &mut Vec<Vec<i32>>>`
+   |                          |
+   |                          ... which causes `m` to have type `HashMap<String, &mut Vec<Vec<i32>>>`
+   |
+   = note: expected struct `HashMap<_, i32>`
+              found struct `HashMap<_, &mut Vec<Vec<i32>>>`
+
+error[E0308]: mismatched types
+   --> /tmp/2048.rs:117:131
     |
-112 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("row", res); m.insert("gain", gain); m };
-    |                                                                 -               ---     ------         ^^^^ expected `Vec<i32>`, found `i32`
-    |                                                                 |               |       |
-    |                                                                 |               |       arguments to this method are incorrect
-    |                                                                 |               this argument has type `Vec<i32>`...
-    |                                                                 ... which causes `m` to have type `BTreeMap<&str, Vec<i32>>`
+117 | ...ashMap::new(); m.insert(String::from("row"), res); m.insert(String::from("gain"), gain); m };
+    |                   -                             ---     ------                       ^^^^ expected `Vec<i32>`, found `i32`
+    |                   |                             |       |
+    |                   |                             |       arguments to this method are incorrect
+    |                   |                             this argument has type `Vec<i32>`...
+    |                   ... which causes `m` to have type `HashMap<String, Vec<i32>>`
     |
     = note: expected struct `Vec<i32>`
                  found type `i32`
 help: the return type of this call is `i32` due to the type of the argument passed
-   --> /tmp/2048.rs:112:87
+   --> /tmp/2048.rs:117:100
     |
-112 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("row", res); m.insert("gain", gain); m };
-    |                                                                                       ^^^^^^^^^^^^^^^^^----^
-    |                                                                                                        |
-    |                                                                                                        this argument influences the return type of `insert`
+117 | ...ng::from("row"), res); m.insert(String::from("gain"), gain); m };
+    |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^----^
+    |                                                          |
+    |                                                          this argument influences the return type of `insert`
 note: method defined here
-   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:112:111
+   --> /tmp/2048.rs:117:138
     |
-86  |     let slideLeft = move |row: Vec<i32>| -> std::collections::HashMap<&'static str, i32> {
-    |                                             -------------------------------------------- expected `HashMap<&'static str, i32>` because of return type
+91  | ...: Vec<i32>| -> std::collections::HashMap<String, i32> {
+    |                   -------------------------------------- expected `HashMap<String, i32>` because of return type
 ...
-112 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("row", res); m.insert("gain", gain); m };
-    |                                                                                                               ^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, Vec<i32>>`
+117 | ...std::collections::HashMap::new(); m.insert(String::from("row"), res); m.insert(String::from("gain"), gain); m };
+    |                                      -                             --- this argument has type `Vec<i32>`...    ^ expected `HashMap<String, i32>`, found `HashMap<String, Vec<i32>>`
+    |                                      |
+    |                                      ... which causes `m` to have type `HashMap<String, Vec<i32>>`
     |
-    = note: expected struct `HashMap<&'static str, i32>`
-               found struct `BTreeMap<&str, Vec<i32>>`
+    = note: expected struct `HashMap<_, i32>`
+               found struct `HashMap<_, Vec<i32>>`
 
 error[E0368]: binary assignment operation `+=` cannot be applied to type `&mut i32`
-   --> /tmp/2048.rs:120:13
+   --> /tmp/2048.rs:125:13
     |
-120 |             score += *r.get(&"gain").unwrap();
-    |             -----^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+125 |             score += *r.get(&String::from("gain")).unwrap();
+    |             -----^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     |             |
     |             cannot use `+=` on type `&mut i32`
     |
 help: `+=` can be used on `i32` if you dereference the left-hand side
     |
-120 |             *score += *r.get(&"gain").unwrap();
+125 |             *score += *r.get(&String::from("gain")).unwrap();
     |             +
 
 error[E0608]: cannot index into a value of type `i32`
-   --> /tmp/2048.rs:123:52
+   --> /tmp/2048.rs:128:56
     |
-123 |                 if b[y as usize][x as usize] != new[x as usize] {
-    |                                                    ^^^^^^^^^^^^
+128 |                 if b[(y) as usize][(x) as usize] != new[(x) as usize] {
+    |                                                        ^^^^^^^^^^^^^^
 
 error[E0608]: cannot index into a value of type `i32`
-   --> /tmp/2048.rs:126:48
+   --> /tmp/2048.rs:131:52
     |
-126 |                 b[y as usize][x as usize] = new[x as usize];
-    |                                                ^^^^^^^^^^^^
+131 |                 b[(y) as usize][(x) as usize] = new[(x) as usize];
+    |                                                    ^^^^^^^^^^^^^^
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:131:105
+   --> /tmp/2048.rs:136:132
     |
-131 | ...s::BTreeMap::new(); m.insert("board", b); m.insert("score", score); m.insert("moved", moved); m };
-    |                        -                 -     ------          ^^^^^ expected `&mut Vec<Vec<i32>>`, found `&mut i32`
-    |                        |                 |     |
-    |                        |                 |     arguments to this method are incorrect
-    |                        |                 this argument has type `&mut Vec<Vec<i32>>`...
-    |                        ... which causes `m` to have type `BTreeMap<&str, &mut Vec<Vec<i32>>>`
+136 | ...ew(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
+    |          -                               -     ------                        ^^^^^ expected `&mut Vec<Vec<i32>>`, found `&mut i32`
+    |          |                               |     |
+    |          |                               |     arguments to this method are incorrect
+    |          |                               this argument has type `&mut Vec<Vec<i32>>`...
+    |          ... which causes `m` to have type `HashMap<String, &mut Vec<Vec<i32>>>`
     |
     = note: expected mutable reference `&mut Vec<Vec<i32>>`
                found mutable reference `&mut i32`
 help: the return type of this call is `&mut i32` due to the type of the argument passed
-   --> /tmp/2048.rs:131:87
+   --> /tmp/2048.rs:136:100
     |
-131 | ...new(); m.insert("board", b); m.insert("score", score); m.insert("moved", moved); m };
-    |                                 ^^^^^^^^^^^^^^^^^^-----^
-    |                                                   |
-    |                                                   this argument influences the return type of `insert`
+136 | ...g::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
+    |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-----^
+    |                                                          |
+    |                                                          this argument influences the return type of `insert`
 note: method defined here
-   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:131:131
+   --> /tmp/2048.rs:136:172
     |
-131 | ...::new(); m.insert("board", b); m.insert("score", score); m.insert("moved", moved); m };
-    |             -                 -                               ------          ^^^^^ expected `&mut Vec<Vec<i32>>`, found `bool`
-    |             |                 |                               |
-    |             |                 |                               arguments to this method are incorrect
-    |             |                 this argument has type `&mut Vec<Vec<i32>>`...
-    |             ... which causes `m` to have type `BTreeMap<&str, &mut Vec<Vec<i32>>>`
+136 | ...::new(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
+    |             -                               -                                             ------                        ^^^^^ expected `&mut Vec<Vec<i32>>`, found `bool`
+    |             |                               |                                             |
+    |             |                               |                                             arguments to this method are incorrect
+    |             |                               this argument has type `&mut Vec<Vec<i32>>`...
+    |             ... which causes `m` to have type `HashMap<String, &mut Vec<Vec<i32>>>`
     |
     = note: expected mutable reference `&mut Vec<Vec<i32>>`
                             found type `bool`
 help: the return type of this call is `bool` due to the type of the argument passed
-   --> /tmp/2048.rs:131:113
+   --> /tmp/2048.rs:136:140
     |
-131 | ...); m.insert("score", score); m.insert("moved", moved); m };
-    |                                 ^^^^^^^^^^^^^^^^^^-----^
-    |                                                   |
-    |                                                   this argument influences the return type of `insert`
+136 | ...rom("score"), score); m.insert(String::from("moved"), moved); m };
+    |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-----^
+    |                                                          |
+    |                                                          this argument influences the return type of `insert`
 note: method defined here
-   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:131:139
+   --> /tmp/2048.rs:136:180
     |
-114 | ...2>>, score: &mut i32| -> std::collections::HashMap<&'static str, i32> {
-    |                             -------------------------------------------- expected `HashMap<&'static str, i32>` because of return type
+119 | ...mut i32| -> std::collections::HashMap<String, i32> {
+    |                -------------------------------------- expected `HashMap<String, i32>` because of return type
 ...
-131 | ...ns::BTreeMap::new(); m.insert("board", b); m.insert("score", score); m.insert("moved", moved); m };
-    |                                                                                                   ^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, &mut Vec<Vec<i32>>>`
+136 | ...new(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
+    |           -                               - this argument has type `&mut Vec<Vec<i32>>`...                                    ^ expected `HashMap<String, i32>`, found `HashMap<String, &mut Vec<Vec<i32>>>`
+    |           |
+    |           ... which causes `m` to have type `HashMap<String, &mut Vec<Vec<i32>>>`
     |
-    = note: expected struct `HashMap<&'static str, i32>`
-               found struct `BTreeMap<&str, &mut Vec<Vec<i32>>>`
+    = note: expected struct `HashMap<_, i32>`
+               found struct `HashMap<_, &mut Vec<Vec<i32>>>`
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:139:19
+   --> /tmp/2048.rs:144:19
     |
-137 |             let mut rev = reverseRow(b[y as usize]);
-    |                           ------------------------- expected due to this value
-138 |             let r = slideLeft(rev);
-139 |             rev = *r.get(&"row").unwrap();
-    |                   ^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<i32>`, found `i32`
+142 |             let mut rev = reverseRow(b[(y) as usize]);
+    |                           --------------------------- expected due to this value
+143 |             let r = slideLeft(rev);
+144 |             rev = *r.get(&String::from("row")).unwrap();
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<i32>`, found `i32`
     |
     = note: expected struct `Vec<i32>`
                  found type `i32`
 
 error[E0368]: binary assignment operation `+=` cannot be applied to type `&mut i32`
-   --> /tmp/2048.rs:140:13
+   --> /tmp/2048.rs:145:13
     |
-140 |             score += *r.get(&"gain").unwrap();
-    |             -----^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+145 |             score += *r.get(&String::from("gain")).unwrap();
+    |             -----^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     |             |
     |             cannot use `+=` on type `&mut i32`
     |
 help: `+=` can be used on `i32` if you dereference the left-hand side
     |
-140 |             *score += *r.get(&"gain").unwrap();
+145 |             *score += *r.get(&String::from("gain")).unwrap();
     |             +
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:152:105
+   --> /tmp/2048.rs:157:132
     |
-152 | ...s::BTreeMap::new(); m.insert("board", b); m.insert("score", score); m.insert("moved", moved); m };
-    |                        -                 -     ------          ^^^^^ expected `&mut Vec<Vec<i32>>`, found `&mut i32`
-    |                        |                 |     |
-    |                        |                 |     arguments to this method are incorrect
-    |                        |                 this argument has type `&mut Vec<Vec<i32>>`...
-    |                        ... which causes `m` to have type `BTreeMap<&str, &mut Vec<Vec<i32>>>`
+157 | ...ew(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
+    |          -                               -     ------                        ^^^^^ expected `&mut Vec<Vec<i32>>`, found `&mut i32`
+    |          |                               |     |
+    |          |                               |     arguments to this method are incorrect
+    |          |                               this argument has type `&mut Vec<Vec<i32>>`...
+    |          ... which causes `m` to have type `HashMap<String, &mut Vec<Vec<i32>>>`
     |
     = note: expected mutable reference `&mut Vec<Vec<i32>>`
                found mutable reference `&mut i32`
 help: the return type of this call is `&mut i32` due to the type of the argument passed
-   --> /tmp/2048.rs:152:87
+   --> /tmp/2048.rs:157:100
     |
-152 | ...new(); m.insert("board", b); m.insert("score", score); m.insert("moved", moved); m };
-    |                                 ^^^^^^^^^^^^^^^^^^-----^
-    |                                                   |
-    |                                                   this argument influences the return type of `insert`
+157 | ...g::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
+    |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-----^
+    |                                                          |
+    |                                                          this argument influences the return type of `insert`
 note: method defined here
-   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:152:131
+   --> /tmp/2048.rs:157:172
     |
-152 | ...::new(); m.insert("board", b); m.insert("score", score); m.insert("moved", moved); m };
-    |             -                 -                               ------          ^^^^^ expected `&mut Vec<Vec<i32>>`, found `bool`
-    |             |                 |                               |
-    |             |                 |                               arguments to this method are incorrect
-    |             |                 this argument has type `&mut Vec<Vec<i32>>`...
-    |             ... which causes `m` to have type `BTreeMap<&str, &mut Vec<Vec<i32>>>`
+157 | ...::new(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
+    |             -                               -                                             ------                        ^^^^^ expected `&mut Vec<Vec<i32>>`, found `bool`
+    |             |                               |                                             |
+    |             |                               |                                             arguments to this method are incorrect
+    |             |                               this argument has type `&mut Vec<Vec<i32>>`...
+    |             ... which causes `m` to have type `HashMap<String, &mut Vec<Vec<i32>>>`
     |
     = note: expected mutable reference `&mut Vec<Vec<i32>>`
                             found type `bool`
 help: the return type of this call is `bool` due to the type of the argument passed
-   --> /tmp/2048.rs:152:113
+   --> /tmp/2048.rs:157:140
     |
-152 | ...); m.insert("score", score); m.insert("moved", moved); m };
-    |                                 ^^^^^^^^^^^^^^^^^^-----^
-    |                                                   |
-    |                                                   this argument influences the return type of `insert`
+157 | ...rom("score"), score); m.insert(String::from("moved"), moved); m };
+    |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-----^
+    |                                                          |
+    |                                                          this argument influences the return type of `insert`
 note: method defined here
-   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:152:139
+   --> /tmp/2048.rs:157:180
     |
-133 | ...2>>, score: &mut i32| -> std::collections::HashMap<&'static str, i32> {
-    |                             -------------------------------------------- expected `HashMap<&'static str, i32>` because of return type
+138 | ...&mut i32| -> std::collections::HashMap<String, i32> {
+    |                 -------------------------------------- expected `HashMap<String, i32>` because of return type
 ...
-152 | ...s::BTreeMap::new(); m.insert("board", b); m.insert("score", score); m.insert("moved", moved); m };
-    |                                                                                                  ^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, &mut Vec<Vec<i32>>>`
+157 | ...new(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
+    |           -                               - this argument has type `&mut Vec<Vec<i32>>`...                                    ^ expected `HashMap<String, i32>`, found `HashMap<String, &mut Vec<Vec<i32>>>`
+    |           |
+    |           ... which causes `m` to have type `HashMap<String, &mut Vec<Vec<i32>>>`
     |
-    = note: expected struct `HashMap<&'static str, i32>`
-               found struct `BTreeMap<&str, &mut Vec<Vec<i32>>>`
+    = note: expected struct `HashMap<_, i32>`
+               found struct `HashMap<_, &mut Vec<Vec<i32>>>`
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:174:34
+   --> /tmp/2048.rs:179:34
     |
-174 |             let mut col = getCol(b, x);
+179 |             let mut col = getCol(b, x);
     |                           ------ ^- help: try using a conversion method: `.to_vec()`
     |                           |      |
     |                           |      expected `Vec<Vec<i32>>`, found `&mut Vec<Vec<i32>>`
@@ -338,96 +313,98 @@ error[E0308]: mismatched types
     = note:         expected struct `Vec<_>`
             found mutable reference `&mut Vec<_>`
 note: closure parameter defined here
-   --> /tmp/2048.rs:154:24
+   --> /tmp/2048.rs:159:24
     |
-154 |     let getCol = move |b: Vec<Vec<i32>>, x: i32| -> Vec<i32> {
+159 |     let getCol = move |b: Vec<Vec<i32>>, x: i32| -> Vec<i32> {
     |                        ^^^^^^^^^^^^^^^^
 
 error[E0368]: binary assignment operation `+=` cannot be applied to type `&mut i32`
-   --> /tmp/2048.rs:177:13
+   --> /tmp/2048.rs:182:13
     |
-177 |             score += *r.get(&"gain").unwrap();
-    |             -----^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+182 |             score += *r.get(&String::from("gain")).unwrap();
+    |             -----^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     |             |
     |             cannot use `+=` on type `&mut i32`
     |
 help: `+=` can be used on `i32` if you dereference the left-hand side
     |
-177 |             *score += *r.get(&"gain").unwrap();
+182 |             *score += *r.get(&String::from("gain")).unwrap();
     |             +
 
 error[E0608]: cannot index into a value of type `i32`
-   --> /tmp/2048.rs:180:52
+   --> /tmp/2048.rs:185:56
     |
-180 |                 if b[y as usize][x as usize] != new[y as usize] {
-    |                                                    ^^^^^^^^^^^^
+185 |                 if b[(y) as usize][(x) as usize] != new[(y) as usize] {
+    |                                                        ^^^^^^^^^^^^^^
 
 error[E0608]: cannot index into a value of type `i32`
-   --> /tmp/2048.rs:183:48
+   --> /tmp/2048.rs:188:52
     |
-183 |                 b[y as usize][x as usize] = new[y as usize];
-    |                                                ^^^^^^^^^^^^
+188 |                 b[(y) as usize][(x) as usize] = new[(y) as usize];
+    |                                                    ^^^^^^^^^^^^^^
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:188:105
+   --> /tmp/2048.rs:193:132
     |
-188 | ...s::BTreeMap::new(); m.insert("board", b); m.insert("score", score); m.insert("moved", moved); m };
-    |                        -                 -     ------          ^^^^^ expected `&mut Vec<Vec<i32>>`, found `&mut i32`
-    |                        |                 |     |
-    |                        |                 |     arguments to this method are incorrect
-    |                        |                 this argument has type `&mut Vec<Vec<i32>>`...
-    |                        ... which causes `m` to have type `BTreeMap<&str, &mut Vec<Vec<i32>>>`
+193 | ...ew(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
+    |          -                               -     ------                        ^^^^^ expected `&mut Vec<Vec<i32>>`, found `&mut i32`
+    |          |                               |     |
+    |          |                               |     arguments to this method are incorrect
+    |          |                               this argument has type `&mut Vec<Vec<i32>>`...
+    |          ... which causes `m` to have type `HashMap<String, &mut Vec<Vec<i32>>>`
     |
     = note: expected mutable reference `&mut Vec<Vec<i32>>`
                found mutable reference `&mut i32`
 help: the return type of this call is `&mut i32` due to the type of the argument passed
-   --> /tmp/2048.rs:188:87
+   --> /tmp/2048.rs:193:100
     |
-188 | ...new(); m.insert("board", b); m.insert("score", score); m.insert("moved", moved); m };
-    |                                 ^^^^^^^^^^^^^^^^^^-----^
-    |                                                   |
-    |                                                   this argument influences the return type of `insert`
+193 | ...g::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
+    |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-----^
+    |                                                          |
+    |                                                          this argument influences the return type of `insert`
 note: method defined here
-   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:188:131
+   --> /tmp/2048.rs:193:172
     |
-188 | ...::new(); m.insert("board", b); m.insert("score", score); m.insert("moved", moved); m };
-    |             -                 -                               ------          ^^^^^ expected `&mut Vec<Vec<i32>>`, found `bool`
-    |             |                 |                               |
-    |             |                 |                               arguments to this method are incorrect
-    |             |                 this argument has type `&mut Vec<Vec<i32>>`...
-    |             ... which causes `m` to have type `BTreeMap<&str, &mut Vec<Vec<i32>>>`
+193 | ...::new(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
+    |             -                               -                                             ------                        ^^^^^ expected `&mut Vec<Vec<i32>>`, found `bool`
+    |             |                               |                                             |
+    |             |                               |                                             arguments to this method are incorrect
+    |             |                               this argument has type `&mut Vec<Vec<i32>>`...
+    |             ... which causes `m` to have type `HashMap<String, &mut Vec<Vec<i32>>>`
     |
     = note: expected mutable reference `&mut Vec<Vec<i32>>`
                             found type `bool`
 help: the return type of this call is `bool` due to the type of the argument passed
-   --> /tmp/2048.rs:188:113
+   --> /tmp/2048.rs:193:140
     |
-188 | ...); m.insert("score", score); m.insert("moved", moved); m };
-    |                                 ^^^^^^^^^^^^^^^^^^-----^
-    |                                                   |
-    |                                                   this argument influences the return type of `insert`
+193 | ...rom("score"), score); m.insert(String::from("moved"), moved); m };
+    |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-----^
+    |                                                          |
+    |                                                          this argument influences the return type of `insert`
 note: method defined here
-   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:188:139
+   --> /tmp/2048.rs:193:180
     |
-170 | ...2>>, score: &mut i32| -> std::collections::HashMap<&'static str, i32> {
-    |                             -------------------------------------------- expected `HashMap<&'static str, i32>` because of return type
+175 | ...t i32| -> std::collections::HashMap<String, i32> {
+    |              -------------------------------------- expected `HashMap<String, i32>` because of return type
 ...
-188 | ...ions::BTreeMap::new(); m.insert("board", b); m.insert("score", score); m.insert("moved", moved); m };
-    |                                                                                                     ^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, &mut Vec<Vec<i32>>>`
+193 | ...new(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
+    |           -                               - this argument has type `&mut Vec<Vec<i32>>`...                                    ^ expected `HashMap<String, i32>`, found `HashMap<String, &mut Vec<Vec<i32>>>`
+    |           |
+    |           ... which causes `m` to have type `HashMap<String, &mut Vec<Vec<i32>>>`
     |
-    = note: expected struct `HashMap<&'static str, i32>`
-               found struct `BTreeMap<&str, &mut Vec<Vec<i32>>>`
+    = note: expected struct `HashMap<_, i32>`
+               found struct `HashMap<_, &mut Vec<Vec<i32>>>`
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:194:45
+   --> /tmp/2048.rs:199:45
     |
-194 |             let mut col = reverseRow(getCol(b, x));
+199 |             let mut col = reverseRow(getCol(b, x));
     |                                      ------ ^- help: try using a conversion method: `.to_vec()`
     |                                      |      |
     |                                      |      expected `Vec<Vec<i32>>`, found `&mut Vec<Vec<i32>>`
@@ -436,296 +413,227 @@ error[E0308]: mismatched types
     = note:         expected struct `Vec<_>`
             found mutable reference `&mut Vec<_>`
 note: closure parameter defined here
-   --> /tmp/2048.rs:154:24
+   --> /tmp/2048.rs:159:24
     |
-154 |     let getCol = move |b: Vec<Vec<i32>>, x: i32| -> Vec<i32> {
+159 |     let getCol = move |b: Vec<Vec<i32>>, x: i32| -> Vec<i32> {
     |                        ^^^^^^^^^^^^^^^^
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:196:19
+   --> /tmp/2048.rs:201:19
     |
-194 |             let mut col = reverseRow(getCol(b, x));
+199 |             let mut col = reverseRow(getCol(b, x));
     |                           ------------------------ expected due to this value
-195 |             let r = slideLeft(col);
-196 |             col = *r.get(&"row").unwrap();
-    |                   ^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<i32>`, found `i32`
+200 |             let r = slideLeft(col);
+201 |             col = *r.get(&String::from("row")).unwrap();
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<i32>`, found `i32`
     |
     = note: expected struct `Vec<i32>`
                  found type `i32`
 
 error[E0368]: binary assignment operation `+=` cannot be applied to type `&mut i32`
-   --> /tmp/2048.rs:197:13
+   --> /tmp/2048.rs:202:13
     |
-197 |             score += *r.get(&"gain").unwrap();
-    |             -----^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+202 |             score += *r.get(&String::from("gain")).unwrap();
+    |             -----^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     |             |
     |             cannot use `+=` on type `&mut i32`
     |
 help: `+=` can be used on `i32` if you dereference the left-hand side
     |
-197 |             *score += *r.get(&"gain").unwrap();
+202 |             *score += *r.get(&String::from("gain")).unwrap();
     |             +
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:209:105
+   --> /tmp/2048.rs:214:132
     |
-209 | ...s::BTreeMap::new(); m.insert("board", b); m.insert("score", score); m.insert("moved", moved); m };
-    |                        -                 -     ------          ^^^^^ expected `&mut Vec<Vec<i32>>`, found `&mut i32`
-    |                        |                 |     |
-    |                        |                 |     arguments to this method are incorrect
-    |                        |                 this argument has type `&mut Vec<Vec<i32>>`...
-    |                        ... which causes `m` to have type `BTreeMap<&str, &mut Vec<Vec<i32>>>`
+214 | ...ew(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
+    |          -                               -     ------                        ^^^^^ expected `&mut Vec<Vec<i32>>`, found `&mut i32`
+    |          |                               |     |
+    |          |                               |     arguments to this method are incorrect
+    |          |                               this argument has type `&mut Vec<Vec<i32>>`...
+    |          ... which causes `m` to have type `HashMap<String, &mut Vec<Vec<i32>>>`
     |
     = note: expected mutable reference `&mut Vec<Vec<i32>>`
                found mutable reference `&mut i32`
 help: the return type of this call is `&mut i32` due to the type of the argument passed
-   --> /tmp/2048.rs:209:87
+   --> /tmp/2048.rs:214:100
     |
-209 | ...new(); m.insert("board", b); m.insert("score", score); m.insert("moved", moved); m };
-    |                                 ^^^^^^^^^^^^^^^^^^-----^
-    |                                                   |
-    |                                                   this argument influences the return type of `insert`
+214 | ...g::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
+    |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-----^
+    |                                                          |
+    |                                                          this argument influences the return type of `insert`
 note: method defined here
-   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:209:131
+   --> /tmp/2048.rs:214:172
     |
-209 | ...::new(); m.insert("board", b); m.insert("score", score); m.insert("moved", moved); m };
-    |             -                 -                               ------          ^^^^^ expected `&mut Vec<Vec<i32>>`, found `bool`
-    |             |                 |                               |
-    |             |                 |                               arguments to this method are incorrect
-    |             |                 this argument has type `&mut Vec<Vec<i32>>`...
-    |             ... which causes `m` to have type `BTreeMap<&str, &mut Vec<Vec<i32>>>`
+214 | ...::new(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
+    |             -                               -                                             ------                        ^^^^^ expected `&mut Vec<Vec<i32>>`, found `bool`
+    |             |                               |                                             |
+    |             |                               |                                             arguments to this method are incorrect
+    |             |                               this argument has type `&mut Vec<Vec<i32>>`...
+    |             ... which causes `m` to have type `HashMap<String, &mut Vec<Vec<i32>>>`
     |
     = note: expected mutable reference `&mut Vec<Vec<i32>>`
                             found type `bool`
 help: the return type of this call is `bool` due to the type of the argument passed
-   --> /tmp/2048.rs:209:113
+   --> /tmp/2048.rs:214:140
     |
-209 | ...); m.insert("score", score); m.insert("moved", moved); m };
-    |                                 ^^^^^^^^^^^^^^^^^^-----^
-    |                                                   |
-    |                                                   this argument influences the return type of `insert`
+214 | ...rom("score"), score); m.insert(String::from("moved"), moved); m };
+    |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-----^
+    |                                                          |
+    |                                                          this argument influences the return type of `insert`
 note: method defined here
-   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:209:139
+   --> /tmp/2048.rs:214:180
     |
-190 | ...2>>, score: &mut i32| -> std::collections::HashMap<&'static str, i32> {
-    |                             -------------------------------------------- expected `HashMap<&'static str, i32>` because of return type
+195 | ...mut i32| -> std::collections::HashMap<String, i32> {
+    |                -------------------------------------- expected `HashMap<String, i32>` because of return type
 ...
-209 | ...ns::BTreeMap::new(); m.insert("board", b); m.insert("score", score); m.insert("moved", moved); m };
-    |                                                                                                   ^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, &mut Vec<Vec<i32>>>`
+214 | ...new(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
+    |           -                               - this argument has type `&mut Vec<Vec<i32>>`...                                    ^ expected `HashMap<String, i32>`, found `HashMap<String, &mut Vec<Vec<i32>>>`
+    |           |
+    |           ... which causes `m` to have type `HashMap<String, &mut Vec<Vec<i32>>>`
     |
-    = note: expected struct `HashMap<&'static str, i32>`
-               found struct `BTreeMap<&str, &mut Vec<Vec<i32>>>`
+    = note: expected struct `HashMap<_, i32>`
+               found struct `HashMap<_, &mut Vec<Vec<i32>>>`
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:219:83
+   --> /tmp/2048.rs:252:13
     |
-219 |                 if x + 1 < SIZE && b[y as usize][x as usize] == b[y as usize][x + 1 as usize] {
-    |                                                                                   ^^^^^^^^^^ expected `i32`, found `usize`
-
-error[E0277]: cannot add `usize` to `i32`
-   --> /tmp/2048.rs:219:81
-    |
-219 |                 if x + 1 < SIZE && b[y as usize][x as usize] == b[y as usize][x + 1 as usize] {
-    |                                                                                 ^ no implementation for `i32 + usize`
-    |
-    = help: the trait `Add<usize>` is not implemented for `i32`
-    = help: the following other types implement trait `Add<Rhs>`:
-              `&i32` implements `Add<i32>`
-              `&i32` implements `Add`
-              `i32` implements `Add<&i32>`
-              `i32` implements `Add`
-
-error[E0277]: the type `[i32]` cannot be indexed by `i32`
-   --> /tmp/2048.rs:219:79
-    |
-219 |                 if x + 1 < SIZE && b[y as usize][x as usize] == b[y as usize][x + 1 as usize] {
-    |                                                                               ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
-    |
-    = help: the trait `SliceIndex<[i32]>` is not implemented for `i32`
-            but it is implemented for `usize`
-    = help: for that trait implementation, expected `usize`, found `i32`
-    = note: required for `Vec<i32>` to implement `Index<i32>`
-
-error[E0308]: mismatched types
-   --> /tmp/2048.rs:222:71
-    |
-222 |                 if y + 1 < SIZE && b[y as usize][x as usize] == b[y + 1 as usize][x as usize] {
-    |                                                                       ^^^^^^^^^^ expected `i32`, found `usize`
-
-error[E0277]: cannot add `usize` to `i32`
-   --> /tmp/2048.rs:222:69
-    |
-222 |                 if y + 1 < SIZE && b[y as usize][x as usize] == b[y + 1 as usize][x as usize] {
-    |                                                                     ^ no implementation for `i32 + usize`
-    |
-    = help: the trait `Add<usize>` is not implemented for `i32`
-    = help: the following other types implement trait `Add<Rhs>`:
-              `&i32` implements `Add<i32>`
-              `&i32` implements `Add`
-              `i32` implements `Add<&i32>`
-              `i32` implements `Add`
-
-error[E0277]: the type `[Vec<i32>]` cannot be indexed by `i32`
-   --> /tmp/2048.rs:222:67
-    |
-222 |                 if y + 1 < SIZE && b[y as usize][x as usize] == b[y + 1 as usize][x as usize] {
-    |                                                                   ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
-    |
-    = help: the trait `SliceIndex<[Vec<i32>]>` is not implemented for `i32`
-            but it is implemented for `usize`
-    = help: for that trait implementation, expected `usize`, found `i32`
-    = note: required for `Vec<Vec<i32>>` to implement `Index<i32>`
-
-error[E0308]: mismatched types
-   --> /tmp/2048.rs:247:13
-    |
-245 |     let mut board = newBoard();
+250 |     let mut board = newBoard();
     |                     ---------- expected due to this value
-246 |     let mut r = spawnTile(&mut board);
-247 |     board = *r.get(&"board").unwrap();
-    |             ^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<Vec<i32>>`, found `i32`
+251 |     let mut r = spawnTile(&mut board);
+252 |     board = *r.get(&String::from("board")).unwrap();
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<Vec<i32>>`, found `i32`
     |
     = note: expected struct `Vec<Vec<i32>>`
                  found type `i32`
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:250:13
+   --> /tmp/2048.rs:255:13
     |
-245 |     let mut board = newBoard();
+250 |     let mut board = newBoard();
     |                     ---------- expected due to this value
 ...
-250 |     board = *r.get(&"board").unwrap();
-    |             ^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<Vec<i32>>`, found `i32`
+255 |     board = *r.get(&String::from("board")).unwrap();
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<Vec<i32>>`, found `i32`
     |
     = note: expected struct `Vec<Vec<i32>>`
                  found type `i32`
 
 error[E0425]: cannot find function `input` in this scope
-   --> /tmp/2048.rs:256:19
+   --> /tmp/2048.rs:261:19
     |
-256 |         let cmd = input();
+261 |         let cmd = input();
     |                   ^^^^^ not found in this scope
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:260:21
+   --> /tmp/2048.rs:265:21
     |
-245 |     let mut board = newBoard();
+250 |     let mut board = newBoard();
     |                     ---------- expected due to this value
 ...
-260 |             board = *m.get(&"board").unwrap();
-    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<Vec<i32>>`, found `i32`
+265 |             board = *m.get(&String::from("board")).unwrap();
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<Vec<i32>>`, found `i32`
     |
     = note: expected struct `Vec<Vec<i32>>`
                  found type `i32`
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:262:21
+   --> /tmp/2048.rs:267:21
     |
-257 |         let mut moved = false;
+262 |         let mut moved = false;
     |                         ----- expected due to this value
 ...
-262 |             moved = *m.get(&"moved").unwrap();
-    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^ expected `bool`, found `i32`
+267 |             moved = *m.get(&String::from("moved")).unwrap();
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `bool`, found `i32`
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:266:21
+   --> /tmp/2048.rs:271:21
     |
-245 |     let mut board = newBoard();
+250 |     let mut board = newBoard();
     |                     ---------- expected due to this value
 ...
-266 |             board = *m.get(&"board").unwrap();
-    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<Vec<i32>>`, found `i32`
+271 |             board = *m.get(&String::from("board")).unwrap();
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<Vec<i32>>`, found `i32`
     |
     = note: expected struct `Vec<Vec<i32>>`
                  found type `i32`
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:268:21
+   --> /tmp/2048.rs:273:21
     |
-257 |         let mut moved = false;
+262 |         let mut moved = false;
     |                         ----- expected due to this value
 ...
-268 |             moved = *m.get(&"moved").unwrap();
-    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^ expected `bool`, found `i32`
+273 |             moved = *m.get(&String::from("moved")).unwrap();
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `bool`, found `i32`
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:272:21
+   --> /tmp/2048.rs:277:21
     |
-245 |     let mut board = newBoard();
+250 |     let mut board = newBoard();
     |                     ---------- expected due to this value
 ...
-272 |             board = *m.get(&"board").unwrap();
-    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<Vec<i32>>`, found `i32`
+277 |             board = *m.get(&String::from("board")).unwrap();
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<Vec<i32>>`, found `i32`
     |
     = note: expected struct `Vec<Vec<i32>>`
                  found type `i32`
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:274:21
+   --> /tmp/2048.rs:279:21
     |
-257 |         let mut moved = false;
+262 |         let mut moved = false;
     |                         ----- expected due to this value
 ...
-274 |             moved = *m.get(&"moved").unwrap();
-    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^ expected `bool`, found `i32`
+279 |             moved = *m.get(&String::from("moved")).unwrap();
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `bool`, found `i32`
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:278:21
+   --> /tmp/2048.rs:283:21
     |
-245 |     let mut board = newBoard();
+250 |     let mut board = newBoard();
     |                     ---------- expected due to this value
 ...
-278 |             board = *m.get(&"board").unwrap();
-    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<Vec<i32>>`, found `i32`
+283 |             board = *m.get(&String::from("board")).unwrap();
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<Vec<i32>>`, found `i32`
     |
     = note: expected struct `Vec<Vec<i32>>`
                  found type `i32`
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:280:21
+   --> /tmp/2048.rs:285:21
     |
-257 |         let mut moved = false;
+262 |         let mut moved = false;
     |                         ----- expected due to this value
 ...
-280 |             moved = *m.get(&"moved").unwrap();
-    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^ expected `bool`, found `i32`
+285 |             moved = *m.get(&String::from("moved")).unwrap();
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `bool`, found `i32`
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:287:21
+   --> /tmp/2048.rs:292:21
     |
-245 |     let mut board = newBoard();
+250 |     let mut board = newBoard();
     |                     ---------- expected due to this value
 ...
-287 |             board = *r2.get(&"board").unwrap();
-    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<Vec<i32>>`, found `i32`
+292 |             board = *r2.get(&String::from("board")).unwrap();
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<Vec<i32>>`, found `i32`
     |
     = note: expected struct `Vec<Vec<i32>>`
                  found type `i32`
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:289:16
+   --> /tmp/2048.rs:294:16
     |
-289 |             if full && (!hasMoves(board)) != Default::default() {
+294 |             if full && (!hasMoves(board)) != Default::default() {
     |                ^^^^ expected `bool`, found `i32`
 
-error[E0308]: mismatched types
-  --> /tmp/2048.rs:53:16
-   |
-44 |     fn pad(n: i32) -> &'static str {
-   |                       ------------ expected `&str` because of return type
-...
-53 |         return format!("{}{}", out, s);
-   |                ^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
-   |
-   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error: aborting due to 56 previous errors; 1 warning emitted
+error: aborting due to 45 previous errors; 1 warning emitted
 
 Some errors have detailed explanations: E0277, E0308, E0368, E0425, E0608.
 For more information about an error, try `rustc --explain E0277`.
