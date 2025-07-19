@@ -25,6 +25,44 @@ type Stmt interface{ emit(io.Writer) }
 
 type Expr interface{ emit(io.Writer) }
 
+// LambdaExpr represents an inline function expression.
+type LambdaExpr struct {
+	Params []string
+	Expr   Expr
+	Body   []Stmt
+}
+
+func (l *LambdaExpr) emit(w io.Writer) {
+	io.WriteString(w, "fun")
+	for _, p := range l.Params {
+		io.WriteString(w, " ")
+		io.WriteString(w, p)
+	}
+	io.WriteString(w, " -> ")
+	if l.Expr != nil {
+		if needsParen(l.Expr) {
+			io.WriteString(w, "(")
+			l.Expr.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			l.Expr.emit(w)
+		}
+		return
+	}
+	if len(l.Body) == 0 {
+		io.WriteString(w, "()")
+		return
+	}
+	w.Write([]byte{'\n'})
+	for i, st := range l.Body {
+		io.WriteString(w, "    ")
+		st.emit(w)
+		if i < len(l.Body)-1 {
+			w.Write([]byte{'\n'})
+		}
+	}
+}
+
 type FunDef struct {
 	Name   string
 	Params []string
@@ -340,7 +378,7 @@ func precedence(op string) int {
 
 func needsParen(e Expr) bool {
 	switch e.(type) {
-	case *BinaryExpr, *UnaryExpr, *IfExpr, *AppendExpr, *SubstringExpr, *CallExpr, *IndexExpr:
+	case *BinaryExpr, *UnaryExpr, *IfExpr, *AppendExpr, *SubstringExpr, *CallExpr, *IndexExpr, *LambdaExpr:
 		return true
 	default:
 		return false
@@ -689,6 +727,27 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			elems[i] = ex
 		}
 		return &ListLit{Elems: elems}, nil
+	case p.FunExpr != nil:
+		params := make([]string, len(p.FunExpr.Params))
+		for i, p := range p.FunExpr.Params {
+			params[i] = p.Name
+		}
+		if p.FunExpr.ExprBody != nil {
+			body, err := convertExpr(p.FunExpr.ExprBody)
+			if err != nil {
+				return nil, err
+			}
+			return &LambdaExpr{Params: params, Expr: body}, nil
+		}
+		stmts := make([]Stmt, len(p.FunExpr.BlockBody))
+		for i, s := range p.FunExpr.BlockBody {
+			cs, err := convertStmt(s)
+			if err != nil {
+				return nil, err
+			}
+			stmts[i] = cs
+		}
+		return &LambdaExpr{Params: params, Body: stmts}, nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return &IdentExpr{Name: p.Selector.Root}, nil
 	case p.Group != nil:
