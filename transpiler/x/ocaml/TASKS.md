@@ -1,6 +1,10 @@
+## Progress (2025-07-19 18:32 +0700)
+- VM valid golden test results updated
+
 # OCaml Transpiler Progress
 
 ## Recent Updates
+- 2025-07-19 18:32 +0700 - Added support for 'for_loop' and 'for_list_collection' programs.
 - 2025-07-19 10:40 +0000 - Added support for 'if_else' and 'while_loop' programs.
 - 2025-07-19 07:53 +0000 - Added support for 'typed_let', 'typed_var', 'var_assignment' and 'len_string' programs.
 - 2025-07-19 13:56 +0700 - Added support for 'binary_precedence', 'if_then_else_nested', and 'str_builtin' programs.
