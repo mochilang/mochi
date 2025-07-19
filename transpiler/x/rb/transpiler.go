@@ -21,6 +21,44 @@ type Program struct {
 
 type Stmt interface{ emit(io.Writer) }
 
+// ReturnStmt represents a return statement.
+type ReturnStmt struct {
+	Value Expr
+}
+
+func (r *ReturnStmt) emit(w io.Writer) {
+	io.WriteString(w, "return")
+	if r.Value != nil {
+		io.WriteString(w, " ")
+		r.Value.emit(w)
+	}
+}
+
+// FuncStmt represents a function definition.
+type FuncStmt struct {
+	Name   string
+	Params []string
+	Body   []Stmt
+}
+
+func (f *FuncStmt) emit(w io.Writer) {
+	io.WriteString(w, "def ")
+	io.WriteString(w, f.Name)
+	io.WriteString(w, "(")
+	for i, p := range f.Params {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, p)
+	}
+	io.WriteString(w, ")\n")
+	for _, st := range f.Body {
+		st.emit(w)
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, "end")
+}
+
 // VarStmt represents a mutable variable declaration.
 type VarStmt struct {
 	Name  string
@@ -398,6 +436,30 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		return convertWhile(st.While)
 	case st.For != nil:
 		return convertFor(st.For)
+	case st.Return != nil:
+		var v Expr
+		if st.Return.Value != nil {
+			var err error
+			v, err = convertExpr(st.Return.Value)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return &ReturnStmt{Value: v}, nil
+	case st.Fun != nil:
+		body := make([]Stmt, len(st.Fun.Body))
+		for i, s := range st.Fun.Body {
+			st2, err := convertStmt(s)
+			if err != nil {
+				return nil, err
+			}
+			body[i] = st2
+		}
+		var params []string
+		for _, p := range st.Fun.Params {
+			params = append(params, p.Name)
+		}
+		return &FuncStmt{Name: st.Fun.Name, Params: params, Body: body}, nil
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
@@ -679,6 +741,25 @@ func stmtNode(s Stmt) *ast.Node {
 		for _, b := range st.Body {
 			n.Children = append(n.Children, stmtNode(b))
 		}
+		return n
+	case *ReturnStmt:
+		n := &ast.Node{Kind: "return"}
+		if st.Value != nil {
+			n.Children = append(n.Children, exprNode(st.Value))
+		}
+		return n
+	case *FuncStmt:
+		n := &ast.Node{Kind: "func", Value: st.Name}
+		params := &ast.Node{Kind: "params"}
+		for _, p := range st.Params {
+			params.Children = append(params.Children, &ast.Node{Kind: "param", Value: p})
+		}
+		n.Children = append(n.Children, params)
+		body := &ast.Node{Kind: "body"}
+		for _, b := range st.Body {
+			body.Children = append(body.Children, stmtNode(b))
+		}
+		n.Children = append(n.Children, body)
 		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
