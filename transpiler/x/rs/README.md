@@ -15,7 +15,7 @@ Programs under `tests/vm/valid` that have generated Rust code (30/100):
 - [x] cast_string_to_int
 - [ ] cast_struct
 - [ ] closure
- - [x] count_builtin
+- [x] count_builtin
 - [ ] cross_join
 - [ ] cross_join_filter
 - [ ] cross_join_triple
@@ -53,22 +53,22 @@ Programs under `tests/vm/valid` that have generated Rust code (30/100):
 - [x] len_string
 - [x] let_and_print
 - [ ] list_assign
- - [x] list_index
+- [x] list_index
 - [ ] list_nested_assign
 - [ ] list_set_ops
 - [ ] load_yaml
 - [ ] map_assign
 - [ ] map_in_operator
- - [x] map_index
- - [x] map_int_key
- - [x] map_literal_dynamic
+- [x] map_index
+- [x] map_int_key
+- [x] map_literal_dynamic
 - [ ] map_membership
 - [ ] map_nested_assign
 - [ ] match_expr
 - [ ] match_full
 - [x] math_ops
 - [ ] membership
- - [x] min_max_builtin
+- [x] min_max_builtin
 - [ ] nested_function
 - [ ] order_by_map
 - [ ] outer_join

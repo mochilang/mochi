@@ -17,14 +17,12 @@ import (
 )
 
 var usesHashMap bool
-var usesPrintVec bool
 var mapVars map[string]bool
 
 // Program represents a Rust program consisting of a list of statements.
 type Program struct {
-	Stmts        []Stmt
-	UsesHashMap  bool
-	UsesPrintVec bool
+        Stmts       []Stmt
+        UsesHashMap bool
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -176,11 +174,20 @@ type AppendExpr struct {
 }
 
 func (a *AppendExpr) emit(w io.Writer) {
-	io.WriteString(w, "{ let mut tmp = ")
-	a.List.emit(w)
-	io.WriteString(w, ".clone(); tmp.push(")
-	a.Elem.emit(w)
-	io.WriteString(w, "); tmp }")
+        io.WriteString(w, "{ let mut tmp = ")
+        a.List.emit(w)
+        io.WriteString(w, ".clone(); tmp.push(")
+        a.Elem.emit(w)
+        io.WriteString(w, "); tmp }")
+}
+
+// JoinExpr converts a list of integers into a space separated string.
+type JoinExpr struct{ List Expr }
+
+func (j *JoinExpr) emit(w io.Writer) {
+        io.WriteString(w, "{ let tmp = ")
+        j.List.emit(w)
+        io.WriteString(w, "; tmp.iter().map(|x| x.to_string()).collect::<Vec<_>>().join(\" \") }")
 }
 
 // AvgExpr represents a call to the `avg` builtin.
@@ -352,10 +359,9 @@ func (ws *WhileStmt) emit(w io.Writer) {}
 // Transpile converts a Mochi AST to a simplified Rust AST. Only a very small
 // subset of Mochi is supported which is sufficient for tests.
 func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
-	usesHashMap = false
-	usesPrintVec = false
-	mapVars = make(map[string]bool)
-	prog := &Program{}
+        usesHashMap = false
+        mapVars = make(map[string]bool)
+        prog := &Program{}
 	for _, st := range p.Statements {
 		s, err := compileStmt(st)
 		if err != nil {
@@ -366,9 +372,8 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 		}
 	}
 	_ = env // reserved for future use
-	prog.UsesHashMap = usesHashMap
-	prog.UsesPrintVec = usesPrintVec
-	return prog, nil
+        prog.UsesHashMap = usesHashMap
+        return prog, nil
 }
 
 func compileStmt(stmt *parser.Statement) (Stmt, error) {
@@ -391,11 +396,13 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 				mapVars[stmt.Let.Name] = true
 			}
 		}
-		typ := ""
-		if stmt.Let.Type != nil && stmt.Let.Type.Simple != nil {
-			typ = rustType(*stmt.Let.Type.Simple)
-		}
-		return &VarDecl{Name: stmt.Let.Name, Expr: e, Type: typ}, nil
+               typ := ""
+               if stmt.Let.Type != nil && stmt.Let.Type.Simple != nil {
+                       typ = rustType(*stmt.Let.Type.Simple)
+               } else if e != nil {
+                       typ = inferType(e)
+               }
+               return &VarDecl{Name: stmt.Let.Name, Expr: e, Type: typ}, nil
 	case stmt.Var != nil:
 		var e Expr
 		var err error
@@ -408,11 +415,13 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 				mapVars[stmt.Var.Name] = true
 			}
 		}
-		typ := ""
-		if stmt.Var.Type != nil && stmt.Var.Type.Simple != nil {
-			typ = rustType(*stmt.Var.Type.Simple)
-		}
-		return &VarDecl{Name: stmt.Var.Name, Expr: e, Type: typ, Mutable: true}, nil
+               typ := ""
+               if stmt.Var.Type != nil && stmt.Var.Type.Simple != nil {
+                       typ = rustType(*stmt.Var.Type.Simple)
+               } else if e != nil {
+                       typ = inferType(e)
+               }
+               return &VarDecl{Name: stmt.Var.Name, Expr: e, Type: typ, Mutable: true}, nil
 	case stmt.Assign != nil:
 		val, err := compileExpr(stmt.Assign.Value)
 		if err != nil {
@@ -629,30 +638,27 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			args[i] = ex
 		}
 		name := p.Call.Func
-		if name == "print" {
-			if len(args) == 1 {
-				switch args[0].(type) {
-				case *AppendExpr:
-					usesPrintVec = true
-					return &CallExpr{Func: "mochi_print_vec", Args: args}, nil
-				}
-				if _, ok := args[0].(*StringLit); !ok {
-					fmtStr := "{}"
-					switch args[0].(type) {
-					case *MapLit, *ValuesExpr:
-						fmtStr = "{:?}"
-					}
-					args = append([]Expr{&StringLit{Value: fmtStr}}, args...)
-				}
-			} else {
-				fmtStr := "{}"
-				for i := 1; i < len(args); i++ {
-					fmtStr += " {}"
-				}
-				args = append([]Expr{&StringLit{Value: fmtStr}}, args...)
-			}
-			name = "println!"
-			return &CallExpr{Func: name, Args: args}, nil
+               if name == "print" {
+                       if len(args) == 1 {
+                               if _, ok := args[0].(*StringLit); !ok {
+                                       fmtStr := "{}"
+                                       switch args[0].(type) {
+                                       case *MapLit, *ValuesExpr:
+                                               fmtStr = "{:?}"
+                                       case *AppendExpr, *ListLit:
+                                               args[0] = &JoinExpr{List: args[0]}
+                                       }
+                                       args = append([]Expr{&StringLit{Value: fmtStr}}, args...)
+                               }
+                       } else {
+                               fmtStr := "{}"
+                               for i := 1; i < len(args); i++ {
+                                       fmtStr += " {}"
+                               }
+                               args = append([]Expr{&StringLit{Value: fmtStr}}, args...)
+                       }
+                       name = "println!"
+                       return &CallExpr{Func: name, Args: args}, nil
 		}
 		if name == "len" && len(args) == 1 {
 			return &LenExpr{Arg: args[0]}, nil
@@ -762,6 +768,23 @@ func compileLiteral(l *parser.Literal) (Expr, error) {
 	}
 }
 
+func inferType(e Expr) string {
+        switch e.(type) {
+        case *NumberLit:
+                return "i64"
+        case *BoolLit:
+                return "bool"
+        case *StringLit:
+                return "String"
+        case *ListLit, *AppendExpr, *ValuesExpr:
+                return "Vec<i64>"
+        case *MapLit:
+                usesHashMap = true
+                return "HashMap<String, i64>"
+        }
+        return ""
+}
+
 func rustType(t string) string {
 	switch t {
 	case "int":
@@ -856,14 +879,7 @@ func Emit(prog *Program) []byte {
 	if prog.UsesHashMap {
 		buf.WriteString("use std::collections::HashMap;\n")
 	}
-	if prog.UsesPrintVec {
-		buf.WriteString("fn mochi_print_vec(v: Vec<i64>) {\n")
-		buf.WriteString("    for (i, n) in v.iter().enumerate() {\n")
-		buf.WriteString("        if i > 0 { print!(\" \"); }\n")
-		buf.WriteString("        print!(\"{}\", n);\n")
-		buf.WriteString("    }\n    println!();\n}\n")
-	}
-	buf.WriteString("fn main() {\n")
+        buf.WriteString("fn main() {\n")
 	for _, s := range prog.Stmts {
 		writeStmt(&buf, s, 1)
 	}
@@ -1007,15 +1023,17 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "str", Children: []*ast.Node{exprNode(ex.Arg)}}
 	case *ValuesExpr:
 		return &ast.Node{Kind: "values", Children: []*ast.Node{exprNode(ex.Map)}}
-	case *AppendExpr:
-		return &ast.Node{Kind: "append", Children: []*ast.Node{exprNode(ex.List), exprNode(ex.Elem)}}
-	case *AvgExpr:
-		return &ast.Node{Kind: "avg", Children: []*ast.Node{exprNode(ex.List)}}
+       case *AppendExpr:
+               return &ast.Node{Kind: "append", Children: []*ast.Node{exprNode(ex.List), exprNode(ex.Elem)}}
+       case *AvgExpr:
+               return &ast.Node{Kind: "avg", Children: []*ast.Node{exprNode(ex.List)}}
 	case *MinExpr:
 		return &ast.Node{Kind: "min", Children: []*ast.Node{exprNode(ex.List)}}
-	case *MaxExpr:
-		return &ast.Node{Kind: "max", Children: []*ast.Node{exprNode(ex.List)}}
-	case *IndexExpr:
+       case *MaxExpr:
+               return &ast.Node{Kind: "max", Children: []*ast.Node{exprNode(ex.List)}}
+       case *JoinExpr:
+               return &ast.Node{Kind: "join", Children: []*ast.Node{exprNode(ex.List)}}
+       case *IndexExpr:
 		return &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(ex.Target), exprNode(ex.Index)}}
 	case *BinaryExpr:
 		return &ast.Node{Kind: "bin", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
