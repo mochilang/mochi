@@ -570,6 +570,28 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			args[i] = ex
 		}
+		switch p.Call.Func {
+		case "str":
+			if len(args) == 1 {
+				if lit, ok := args[0].(*IntLit); ok {
+					return &StringLit{Value: fmt.Sprintf("%d", lit.Value)}, nil
+				}
+			}
+		case "sum":
+			if len(args) == 1 {
+				if list, ok := args[0].(*ListLit); ok {
+					total := 0
+					for _, e := range list.Elems {
+						lit, ok := e.(*IntLit)
+						if !ok {
+							return nil, fmt.Errorf("unsupported sum element")
+						}
+						total += lit.Value
+					}
+					return &IntLit{Value: total}, nil
+				}
+			}
+		}
 		return &CallExpr{Func: p.Call.Func, Args: args}, nil
 	case p.Lit != nil:
 		if p.Lit.Str != nil {
