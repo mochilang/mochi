@@ -28,13 +28,13 @@ fn main() {
         let c = lower(&word[0..1]);
         let mut i = 0;
         while i < (blks.len() as i32) {
-            let b = blks[(i) as usize];
+            let b = blks[(i) as usize].clone();
             if c == lower(&b[0..1]) || c == lower(&b[1..2]) {
                 let mut rest: Vec<String> = vec![];
                 let mut j = 0;
                 while j < (blks.len() as i32) {
                     if j != i {
-                        rest = { let mut tmp = rest.clone(); tmp.push(blks[(j) as usize]); tmp };
+                        rest = { let mut tmp = rest.clone(); tmp.push(blks[(j) as usize].clone()); tmp };
                     }
                     j += 1;
                 }

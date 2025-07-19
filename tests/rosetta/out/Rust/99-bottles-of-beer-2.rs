@@ -29,7 +29,7 @@ fn main() {
             if i > 0 {
                 res = format!("{}{}", res, sep);
             }
-            res = format!("{}{}", res, xs[(i) as usize]);
+            res = format!("{}{}", res, xs[(i) as usize].clone());
             i += 1;
         }
         return res;
@@ -41,13 +41,13 @@ fn main() {
             return String::from("");
         }
         if n < 20 {
-            return small[(n) as usize];
+            return small[(n) as usize].clone();
         }
         if n < 100 {
-            let mut t = tens[(((n as f64) / (10 as f64)) as i32) as usize];
+            let mut t = tens[(((n as f64) / (10 as f64)) as i32) as usize].clone();
             let mut s = n % 10;
             if s > 0 {
-                t = format!("{}{}", format!("{}{}", t, String::from(" ")), small[(s) as usize]);
+                t = format!("{}{}", format!("{}{}", t, String::from(" ")), small[(s) as usize].clone());
             }
             return t;
         }
@@ -59,7 +59,7 @@ fn main() {
         }
         let w = fields(s);
         if (w.len() as i32) > 0 {
-            w[0] = format!("{}{}", w[0], String::from("s"));
+            w[0] = format!("{}{}", w[0].clone(), String::from("s"));
         }
         return join(w, String::from(" "));
     };
@@ -83,8 +83,8 @@ fn main() {
             seed = (seed * 1664525 + 1013904223) % 2147483647;
             if seed % 100 >= d {
                 let j = seed % (idx + 1);
-                let tmp = a[(idx) as usize];
-                a[(idx) as usize] = a[(j) as usize];
+                let tmp = a[(idx) as usize].clone();
+                a[(idx) as usize] = a[(j) as usize].clone();
                 a[(j) as usize] = tmp;
             }
             idx -= 1;
@@ -92,7 +92,7 @@ fn main() {
         let mut s = p[0..1].to_string();
         let mut k = 0;
         while k < (a.len() as i32) {
-            s = format!("{}{}", s, a[(k) as usize]);
+            s = format!("{}{}", s, a[(k) as usize].clone());
             k += 1;
         }
         s = format!("{}{}", s, p[((p.len() as i32) - 1) as usize..((p.len() as i32)) as usize].to_string());

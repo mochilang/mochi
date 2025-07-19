@@ -6,16 +6,16 @@ error[E0425]: cannot find function `input` in this scope
    |                        ^^^^^ not found in this scope
 
 error[E0425]: cannot find function `int` in this scope
-  --> /tmp/24_game.rs:62:47
+  --> /tmp/24_game.rs:62:55
    |
-62 |                 while digits[(j) as usize] != int(ch) - int(String::from("0")) {
-   |                                               ^^^ not found in this scope
+62 |                 while digits[(j) as usize].clone() != int(ch) - int(String::from("0")) {
+   |                                                       ^^^ not found in this scope
 
 error[E0425]: cannot find function `int` in this scope
-  --> /tmp/24_game.rs:62:57
+  --> /tmp/24_game.rs:62:65
    |
-62 |                 while digits[(j) as usize] != int(ch) - int(String::from("0")) {
-   |                                                         ^^^ not found in this scope
+62 |                 while digits[(j) as usize].clone() != int(ch) - int(String::from("0")) {
+   |                                                                 ^^^ not found in this scope
 
 error[E0369]: cannot add `Vec<i32>` to `Vec<i32>`
   --> /tmp/24_game.rs:69:70
@@ -51,7 +51,7 @@ error[E0425]: cannot find function `float` in this scope
 error[E0425]: cannot find function `abs` in this scope
   --> /tmp/24_game.rs:87:16
    |
-87 |             if abs(stack[0] - 24.0) > 1e-06 {
+87 |             if abs(stack[0].clone() - 24.0) > 1e-06 {
    |                ^^^ not found in this scope
 
 error: aborting due to 8 previous errors

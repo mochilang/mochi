@@ -7,7 +7,7 @@ fn append<T: Clone>(mut v: Vec<T>, item: T) -> Vec<T> {
 fn main() {
     let bigTrim = move |a: &mut Vec<i32>| -> Vec<i32> {
         let mut n = (a.len() as i32);
-        while n > 1 && a[(n - 1) as usize] == 0 {
+        while n > 1 && a[(n - 1) as usize].clone() == 0 {
             a = a[(0) as usize..(n - 1) as usize].to_vec();
             n -= 1;
         }
@@ -32,11 +32,11 @@ fn main() {
         while i < (a.len() as i32) || i < (b.len() as i32) || carry > 0 {
             let mut av = 0;
             if i < (a.len() as i32) {
-                av = a[(i) as usize];
+                av = a[(i) as usize].clone();
             }
             let mut bv = 0;
             if i < (b.len() as i32) {
-                bv = b[(i) as usize];
+                bv = b[(i) as usize].clone();
             }
             let mut s = av + bv + carry;
             res = { let mut tmp = res.clone(); tmp.push(s % 10); tmp };
@@ -50,10 +50,10 @@ fn main() {
         let mut borrow = 0;
         let mut i = 0;
         while i < (a.len() as i32) {
-            let mut av = a[(i) as usize];
+            let mut av = a[(i) as usize].clone();
             let mut bv = 0;
             if i < (b.len() as i32) {
-                bv = b[(i) as usize];
+                bv = b[(i) as usize].clone();
             }
             let mut diff = av - bv - borrow;
             if diff < 0 {
@@ -71,7 +71,7 @@ fn main() {
         let mut s = String::new();
         let mut i = (a.len() as i32) - 1;
         while i >= 0 {
-            s = format!("{}{}", s, a[(i) as usize].to_string());
+            s = format!("{}{}", s, a[(i) as usize].clone().to_string());
             i -= 1;
         }
         return s;
@@ -90,21 +90,21 @@ fn main() {
             let mut row: Vec<Vec<i32>> = vec![bigFromInt(0)];
             let mut x = 1;
             while x <= y {
-                let val = cache[(y - x) as usize][(minInt(x, y - x)) as usize];
-                row = append(row, bigAdd(row[((row.len() as i32) - 1) as usize], val));
+                let val = cache[(y - x) as usize].clone()[(minInt(x, y - x)) as usize].clone();
+                row = append(row, bigAdd(row[((row.len() as i32) - 1) as usize].clone(), val));
                 x += 1;
             }
             cache = { let mut tmp = cache.clone(); tmp.push(row); tmp };
             y += 1;
         }
-        return cache[(n) as usize];
+        return cache[(n) as usize].clone();
     };
     let row = move |n: i32| -> Vec<String> {
         let e = cumu(n);
         let mut out: Vec<String> = vec![];
         let mut i = 0;
         while i < n {
-            let diff = bigSub(e[(i + 1) as usize], e[(i) as usize]);
+            let diff = bigSub(e[(i + 1) as usize].clone(), e[(i) as usize].clone());
             out = { let mut tmp = out.clone(); tmp.push(bigToString(diff)); tmp };
             i += 1;
         }
@@ -117,7 +117,7 @@ fn main() {
         let mut line = String::new();
         let mut i = 0;
         while i < (r.len() as i32) {
-            line = format!("{}{}", format!("{}{}", format!("{}{}", line, String::from(" ")), r[(i) as usize]), String::from(" "));
+            line = format!("{}{}", format!("{}{}", format!("{}{}", line, String::from(" ")), r[(i) as usize].clone()), String::from(" "));
             i += 1;
         }
         println!("{}", vec![format!("{}", line)].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
@@ -127,6 +127,6 @@ fn main() {
     println!("sums:");
     for num in vec![23, 123, 1234] {
         let r = cumu(num);
-        println!("{}", vec![format!("{}", format!("{}{}", format!("{}{}", num.to_string(), String::from(" ")), bigToString(r[((r.len() as i32) - 1) as usize])))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+        println!("{}", vec![format!("{}", format!("{}{}", format!("{}{}", num.to_string(), String::from(" ")), bigToString(r[((r.len() as i32) - 1) as usize].clone())))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
     }
 }

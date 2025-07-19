@@ -39,7 +39,7 @@ fn main() {
     let isSolved = move || -> bool {
         let mut i = 0;
         while i < 16 {
-            if board[(i) as usize] != solved[(i) as usize] {
+            if board[(i) as usize].clone() != solved[(i) as usize].clone() {
                 return false;
             }
             i += 1;
@@ -68,8 +68,8 @@ fn main() {
         }
         let i = empty;
         let j = int(*r.get(&String::from("idx")).unwrap());
-        let tmp = board[(i) as usize];
-        board[(i) as usize] = board[(j) as usize];
+        let tmp = board[(i) as usize].clone();
+        board[(i) as usize] = board[(j) as usize].clone();
         board[(j) as usize] = tmp;
         empty = j;
         moves += 1;
@@ -87,7 +87,7 @@ fn main() {
         let mut line = String::new();
         let mut i = 0;
         while i < 16 {
-            let val = board[(i) as usize];
+            let val = board[(i) as usize].clone();
             if val == 0 {
                 line = format!("{}{}", line, String::from("  ."));
             } else {

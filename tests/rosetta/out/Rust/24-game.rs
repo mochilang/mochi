@@ -38,7 +38,7 @@ fn main() {
         }
         let mut numstr = String::new();
         for i in 0..4 {
-            numstr = format!("{}{}", numstr, digits[(i) as usize].to_string());
+            numstr = format!("{}{}", numstr, digits[(i) as usize].clone().to_string());
         }
         println!("{}", vec![format!("{}", format!("{}{}", format!("{}{}", String::from("Your numbers: "), numstr), String::from("
 ")))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
@@ -59,7 +59,7 @@ fn main() {
                     return ();
                 }
                 let mut j = 0;
-                while digits[(j) as usize] != int(ch) - int(String::from("0")) {
+                while digits[(j) as usize].clone() != int(ch) - int(String::from("0")) {
                     j += 1;
                     if j == (digits.len() as i32) {
                         println!("wrong numbers.");
@@ -74,8 +74,8 @@ fn main() {
                     valid = false;
                     break;
                 }
-                let mut b = stack[((stack.len() as i32) - 1) as usize];
-                let mut a = stack[((stack.len() as i32) - 2) as usize];
+                let mut b = stack[((stack.len() as i32) - 1) as usize].clone();
+                let mut a = stack[((stack.len() as i32) - 2) as usize].clone();
                 if ch == String::from("+") {
                     stack[((stack.len() as i32) - 2) as usize] = a + b;
                 }
@@ -84,8 +84,8 @@ fn main() {
             i += 1;
         }
         if valid {
-            if abs(stack[0] - 24.0) > 1e-06 {
-                println!("{}", vec![format!("{}", format!("{}{}", format!("{}{}", String::from("incorrect. "), stack[0].to_string()), String::from(" != 24")))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
+            if abs(stack[0].clone() - 24.0) > 1e-06 {
+                println!("{}", vec![format!("{}", format!("{}{}", format!("{}{}", String::from("incorrect. "), stack[0].clone().to_string()), String::from(" != 24")))].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") );
             } else {
                 println!("correct.");
             }

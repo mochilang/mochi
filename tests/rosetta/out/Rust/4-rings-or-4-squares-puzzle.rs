@@ -13,7 +13,7 @@ fn main() {
         while i < (nums.len() as i32) {
             let mut j = i + 1;
             while j < (nums.len() as i32) {
-                if nums[(i) as usize] == nums[(j) as usize] {
+                if nums[(i) as usize].clone() == nums[(j) as usize].clone() {
                     return false;
                 }
                 j += 1;

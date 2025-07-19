@@ -30,21 +30,10 @@ warning: variable does not need to be mutable
    |
    = note: `#[warn(unused_mut)]` on by default
 
-error[E0507]: cannot move out of index of `Vec<String>`
-  --> /tmp/abbreviations_automatic.rs:42:21
-   |
-42 |             let x = xs[(i) as usize];
-   |                     ^^^^^^^^^^^^^^^^ move occurs because value has type `String`, which does not implement the `Copy` trait
-   |
-help: consider borrowing here
-   |
-42 |             let x = &xs[(i) as usize];
-   |                     +
-
 error[E0382]: use of moved value: `x`
   --> /tmp/abbreviations_automatic.rs:45:61
    |
-42 |             let x = xs[(i) as usize];
+42 |             let x = xs[(i) as usize].clone();
    |                 - move occurs because `x` has type `String`, which does not implement the `Copy` trait
 43 |             if !(m.contains_key(&x)) {
 44 |                 m.insert(x, true);
@@ -52,19 +41,6 @@ error[E0382]: use of moved value: `x`
 45 |                 out = { let mut tmp = out.clone(); tmp.push(x); tmp };
    |                                                             ^ value used here after move
 
-error[E0507]: cannot move out of index of `Vec<String>`
-  --> /tmp/abbreviations_automatic.rs:58:75
-   |
-58 |                 abbrs = { let mut tmp = abbrs.clone(); tmp.push(takeRunes(words[(i) as usize], l)); tmp };
-   |                                                                           ^^^^^^^^^^^^^^^^^^^ move occurs because value has type `String`, which does not implement the `Copy` trait
+error: aborting due to 1 previous error; 3 warnings emitted
 
-error[E0507]: cannot move out of index of `Vec<String>`
-  --> /tmp/abbreviations_automatic.rs:79:32
-   |
-79 |             let words = fields(lines[(i) as usize]);
-   |                                ^^^^^^^^^^^^^^^^^^^ move occurs because value has type `String`, which does not implement the `Copy` trait
-
-error: aborting due to 4 previous errors; 3 warnings emitted
-
-Some errors have detailed explanations: E0382, E0507.
-For more information about an error, try `rustc --explain E0382`.
+For more information about this error, try `rustc --explain E0382`.

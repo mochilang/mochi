@@ -50,7 +50,7 @@ fn main() {
         while y < SIZE {
             let mut x = 0;
             while x < SIZE {
-                if b[(y) as usize][(x) as usize] == 0 {
+                if b[(y) as usize].clone()[(x) as usize].clone() == 0 {
                     empty = { let mut tmp = empty.clone(); tmp.push(vec![x, y]); tmp };
                 }
                 x += 1;
@@ -61,12 +61,12 @@ fn main() {
             return { let mut m = std::collections::HashMap::new(); m.insert(String::from("board"), b); m.insert(String::from("full"), true); m };
         }
         let mut idx = _now() % (empty.len() as i32);
-        let cell = empty[(idx) as usize];
+        let cell = empty[(idx) as usize].clone();
         let mut val = 4;
         if _now() % 10 < 9 {
             val = 2;
         }
-        b[(cell[1]) as usize][(cell[0]) as usize] = val;
+        b[(cell[1].clone()) as usize][(cell[0].clone()) as usize] = val;
         return { let mut m = std::collections::HashMap::new(); m.insert(String::from("board"), b); m.insert(String::from("full"), (empty.len() as i32) == 1); m };
     };
     let pad = move |n: i32| -> String {
@@ -88,7 +88,7 @@ fn main() {
             let mut line = String::from("|");
             let mut x = 0;
             while x < SIZE {
-                let mut v = b[(y) as usize][(x) as usize];
+                let mut v = b[(y) as usize].clone()[(x) as usize].clone();
                 if v == 0 {
                     line = format!("{}{}", line, String::from("    |"));
                 } else {
@@ -106,7 +106,7 @@ fn main() {
         let mut out: Vec<i32> = vec![];
         let mut i = (r.len() as i32) - 1;
         while i >= 0 {
-            out = { let mut tmp = out.clone(); tmp.push(r[(i) as usize]); tmp };
+            out = { let mut tmp = out.clone(); tmp.push(r[(i) as usize].clone()); tmp };
             i -= 1;
         }
         return out;
@@ -115,8 +115,8 @@ fn main() {
         let mut xs: Vec<i32> = vec![];
         let mut i = 0;
         while i < (row.len() as i32) {
-            if row[(i) as usize] != 0 {
-                xs = { let mut tmp = xs.clone(); tmp.push(row[(i) as usize]); tmp };
+            if row[(i) as usize].clone() != 0 {
+                xs = { let mut tmp = xs.clone(); tmp.push(row[(i) as usize].clone()); tmp };
             }
             i += 1;
         }
@@ -124,13 +124,13 @@ fn main() {
         let mut gain = 0;
         i = 0;
         while i < (xs.len() as i32) {
-            if i + 1 < (xs.len() as i32) && xs[(i) as usize] == xs[(i + 1) as usize] {
-                let v = xs[(i) as usize] * 2;
+            if i + 1 < (xs.len() as i32) && xs[(i) as usize].clone() == xs[(i + 1) as usize].clone() {
+                let v = xs[(i) as usize].clone() * 2;
                 gain += v;
                 res = { let mut tmp = res.clone(); tmp.push(v); tmp };
                 i += 2;
             } else {
-                res = { let mut tmp = res.clone(); tmp.push(xs[(i) as usize]); tmp };
+                res = { let mut tmp = res.clone(); tmp.push(xs[(i) as usize].clone()); tmp };
                 i += 1;
             }
         }
@@ -143,15 +143,15 @@ fn main() {
         let mut moved = false;
         let mut y = 0;
         while y < SIZE {
-            let r = slideLeft(b[(y) as usize]);
+            let r = slideLeft(b[(y) as usize].clone());
             let new = *r.get(&String::from("row")).unwrap();
             score += *r.get(&String::from("gain")).unwrap();
             let mut x = 0;
             while x < SIZE {
-                if b[(y) as usize][(x) as usize] != new[(x) as usize] {
+                if b[(y) as usize].clone()[(x) as usize].clone() != new[(x) as usize].clone() {
                     moved = true;
                 }
-                b[(y) as usize][(x) as usize] = new[(x) as usize];
+                b[(y) as usize][(x) as usize] = new[(x) as usize].clone();
                 x += 1;
             }
             y += 1;
@@ -162,17 +162,17 @@ fn main() {
         let mut moved = false;
         let mut y = 0;
         while y < SIZE {
-            let mut rev = reverseRow(b[(y) as usize]);
+            let mut rev = reverseRow(b[(y) as usize].clone());
             let r = slideLeft(rev);
             rev = *r.get(&String::from("row")).unwrap();
             score += *r.get(&String::from("gain")).unwrap();
             rev = reverseRow(rev);
             let mut x = 0;
             while x < SIZE {
-                if b[(y) as usize][(x) as usize] != rev[(x) as usize] {
+                if b[(y) as usize].clone()[(x) as usize].clone() != rev[(x) as usize].clone() {
                     moved = true;
                 }
-                b[(y) as usize][(x) as usize] = rev[(x) as usize];
+                b[(y) as usize][(x) as usize] = rev[(x) as usize].clone();
                 x += 1;
             }
             y += 1;
@@ -183,7 +183,7 @@ fn main() {
         let mut col: Vec<i32> = vec![];
         let mut y = 0;
         while y < SIZE {
-            col = { let mut tmp = col.clone(); tmp.push(b[(y) as usize][(x) as usize]); tmp };
+            col = { let mut tmp = col.clone(); tmp.push(b[(y) as usize].clone()[(x) as usize].clone()); tmp };
             y += 1;
         }
         return col;
@@ -191,7 +191,7 @@ fn main() {
     let setCol = move |b: &mut Vec<Vec<i32>>, x: i32, col: Vec<i32>| -> () {
         let mut y = 0;
         while y < SIZE {
-            b[(y) as usize][(x) as usize] = col[(y) as usize];
+            b[(y) as usize][(x) as usize] = col[(y) as usize].clone();
             y += 1;
         }
     };
@@ -205,10 +205,10 @@ fn main() {
             score += *r.get(&String::from("gain")).unwrap();
             let mut y = 0;
             while y < SIZE {
-                if b[(y) as usize][(x) as usize] != new[(y) as usize] {
+                if b[(y) as usize].clone()[(x) as usize].clone() != new[(y) as usize].clone() {
                     moved = true;
                 }
-                b[(y) as usize][(x) as usize] = new[(y) as usize];
+                b[(y) as usize][(x) as usize] = new[(y) as usize].clone();
                 y += 1;
             }
             x += 1;
@@ -226,10 +226,10 @@ fn main() {
             col = reverseRow(col);
             let mut y = 0;
             while y < SIZE {
-                if b[(y) as usize][(x) as usize] != col[(y) as usize] {
+                if b[(y) as usize].clone()[(x) as usize].clone() != col[(y) as usize].clone() {
                     moved = true;
                 }
-                b[(y) as usize][(x) as usize] = col[(y) as usize];
+                b[(y) as usize][(x) as usize] = col[(y) as usize].clone();
                 y += 1;
             }
             x += 1;
@@ -241,13 +241,13 @@ fn main() {
         while y < SIZE {
             let mut x = 0;
             while x < SIZE {
-                if b[(y) as usize][(x) as usize] == 0 {
+                if b[(y) as usize].clone()[(x) as usize].clone() == 0 {
                     return true;
                 }
-                if x + 1 < SIZE && b[(y) as usize][(x) as usize] == b[(y) as usize][(x + 1) as usize] {
+                if x + 1 < SIZE && b[(y) as usize].clone()[(x) as usize].clone() == b[(y) as usize].clone()[(x + 1) as usize].clone() {
                     return true;
                 }
-                if y + 1 < SIZE && b[(y) as usize][(x) as usize] == b[(y + 1) as usize][(x) as usize] {
+                if y + 1 < SIZE && b[(y) as usize].clone()[(x) as usize].clone() == b[(y + 1) as usize].clone()[(x) as usize].clone() {
                     return true;
                 }
                 x += 1;
@@ -261,7 +261,7 @@ fn main() {
         while y < SIZE {
             let mut x = 0;
             while x < SIZE {
-                if b[(y) as usize][(x) as usize] >= 2048 {
+                if b[(y) as usize].clone()[(x) as usize].clone() >= 2048 {
                     return true;
                 }
                 x += 1;
