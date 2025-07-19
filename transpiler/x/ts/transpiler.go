@@ -1064,6 +1064,23 @@ func postfixExprType(p *parser.PostfixExpr) types.Type {
 	return types.CheckExprType(expr, transpileEnv)
 }
 
+func isMapExpr(p *parser.PostfixExpr) bool {
+	if p == nil || p.Target == nil {
+		return false
+	}
+	if p.Target.Map != nil {
+		return true
+	}
+	if sel := p.Target.Selector; sel != nil && transpileEnv != nil {
+		if t, err := transpileEnv.GetVar(sel.Root); err == nil {
+			if _, ok := t.(types.MapType); ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	if b == nil {
 		return nil, fmt.Errorf("nil binary")
@@ -1098,8 +1115,16 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 
 	apply := func(i int) {
 		if ops[i] == "in" {
-			typ := postfixExprType(opnodes[i].Right)
-			if _, ok := typ.(types.MapType); ok {
+			isMap := false
+			if typ := postfixExprType(opnodes[i].Right); typ != nil {
+				if _, ok := typ.(types.MapType); ok {
+					isMap = true
+				}
+			}
+			if !isMap && isMapExpr(opnodes[i].Right) {
+				isMap = true
+			}
+			if isMap {
 				operands[i] = &BinaryExpr{Left: operands[i], Op: "in", Right: operands[i+1]}
 			} else {
 				operands[i] = &MethodCallExpr{Target: operands[i+1], Method: "includes", Args: []Expr{operands[i]}}
