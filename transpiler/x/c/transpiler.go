@@ -251,7 +251,9 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 		}
 		io.WriteString(w, "};\n")
 		writeIndent(w, indent+1)
-		io.WriteString(w, "for (int i = 0; i < (int)(sizeof(arr)/sizeof(arr[0])); i++) {\n")
+		io.WriteString(w, "int arr_len = (int)(sizeof(arr)/sizeof(arr[0]));\n")
+		writeIndent(w, indent+1)
+		io.WriteString(w, "for (int i = 0; i < arr_len; i++) {\n")
 		writeIndent(w, indent+2)
 		fmt.Fprintf(w, "int %s = arr[i];\n", f.Var)
 		for _, s := range f.Body {
@@ -1202,6 +1204,15 @@ func evalString(e Expr) (string, bool) {
 			return "", false
 		}
 		return string(r[idx]), true
+	case *BinaryExpr:
+		if v.Op == "+" {
+			left, ok1 := evalString(v.Left)
+			right, ok2 := evalString(v.Right)
+			if ok1 && ok2 {
+				return left + right, true
+			}
+		}
+		return "", false
 	default:
 		return "", false
 	}
@@ -1228,6 +1239,11 @@ func exprIsString(e Expr) bool {
 		return ok
 	case *CallExpr:
 		return v.Func == "str"
+	case *BinaryExpr:
+		if v.Op == "+" {
+			return exprIsString(v.Left) || exprIsString(v.Right)
+		}
+		return false
 	case *IndexExpr:
 		return exprIsString(v.Target)
 	case *CondExpr:
