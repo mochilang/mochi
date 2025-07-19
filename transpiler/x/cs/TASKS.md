@@ -1,23 +1,8 @@
-## Progress (2025-07-19 17:10 +0700)
-- VM valid golden test results updated
+## Progress (2025-07-19 12:01 UTC)
+- cs transpiler: add string comparisons and in operator (progress 39/100)
 
-## Progress (2025-07-19 17:10 +0700)
-- VM valid golden test results updated
-
-## Progress (2025-07-19 17:10 +0700)
-- VM valid golden test results updated
-
-## Progress (2025-07-19 17:10 +0700)
-- VM valid golden test results updated
-
-## Progress (2025-07-19 14:41 +0700)
-- VM valid golden test results updated
-
-## Progress (2025-07-19 14:41 +0700)
-- VM valid golden test results updated
-
-## Progress (2025-07-19 06:36 UTC)
-- VM valid golden test results updated
+## Progress (2025-07-19 18:54 +0700)
+- cs transpiler: add slice and contains (progress 39/100)
 
 # C# Transpiler Tasks
 
@@ -31,5 +16,3 @@
 - [x] Implement loops and conditionals
 - [ ] Support map and list mutation operations
 
-## Progress (2025-07-19 17:49 +0700)
-- VM valid golden test results updated

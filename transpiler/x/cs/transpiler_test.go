@@ -164,6 +164,22 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
+func countCompiled() (int, int) {
+	root := repoRoot(&testing.T{})
+	srcDir := filepath.Join(root, "tests", "vm", "valid")
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "cs")
+	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	total := len(files)
+	compiled := 0
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
+			compiled++
+		}
+	}
+	return compiled, total
+}
+
 func updateReadme() {
 	root := repoRoot(&testing.T{})
 	srcDir := filepath.Join(root, "tests", "vm", "valid")
@@ -195,18 +211,33 @@ func updateReadme() {
 func updateTasks() {
 	root := repoRoot(&testing.T{})
 	taskFile := filepath.Join(root, "transpiler", "x", "cs", "TASKS.md")
-	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	compiled, total := countCompiled()
+	out, err := exec.Command("git", "log", "-1", "--format=%cI;%s").Output()
 	ts := ""
+	msg := "updated"
 	if err == nil {
-		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
-			ts = t.Format("2006-01-02 15:04 MST")
+		parts := strings.SplitN(strings.TrimSpace(string(out)), ";", 2)
+		if len(parts) == 2 {
+			if t, perr := time.Parse(time.RFC3339, parts[0]); perr == nil {
+				ts = t.Format("2006-01-02 15:04 MST")
+			}
+			msg = parts[1]
 		}
 	}
 	var buf bytes.Buffer
 	fmt.Fprintf(&buf, "## Progress (%s)\n", ts)
-	buf.WriteString("- VM valid golden test results updated\n\n")
+	fmt.Fprintf(&buf, "- %s (progress %d/%d)\n\n", msg, compiled, total)
 	if data, err := os.ReadFile(taskFile); err == nil {
-		buf.Write(data)
+		lines := strings.Split(string(data), "\n")
+		for _, ln := range lines {
+			if strings.Contains(ln, "VM valid golden test results updated") {
+				continue
+			}
+			buf.WriteString(ln)
+			if !strings.HasSuffix(ln, "\n") {
+				buf.WriteByte('\n')
+			}
+		}
 	}
 	_ = os.WriteFile(taskFile, buf.Bytes(), 0o644)
 }
