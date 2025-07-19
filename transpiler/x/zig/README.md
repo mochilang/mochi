@@ -4,8 +4,7 @@ This directory contains a minimal transpiler that converts a subset of Mochi int
 
 ## Golden tests
 
-Progress: 14/100
-
+Progress: 15/100
 - [ ] append_builtin
 - [ ] avg_builtin
 - [x] basic_compare
@@ -105,4 +104,4 @@ Progress: 14/100
 - [ ] user_type_literal
 - [ ] values_builtin
 - [x] var_assignment
-- [ ] while_loop
+- [x] while_loop
