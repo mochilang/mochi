@@ -36,6 +36,16 @@ func (r *ReturnStmt) emit(w io.Writer) {
 	}
 }
 
+// BreakStmt represents a break statement.
+type BreakStmt struct{}
+
+func (b *BreakStmt) emit(w io.Writer) { io.WriteString(w, "break") }
+
+// ContinueStmt represents a continue/next statement.
+type ContinueStmt struct{}
+
+func (c *ContinueStmt) emit(w io.Writer) { io.WriteString(w, "next") }
+
 // FuncStmt represents a function definition.
 type FuncStmt struct {
 	Name   string
@@ -137,11 +147,9 @@ type CallExpr struct {
 func (c *CallExpr) emit(w io.Writer) {
 	io.WriteString(w, c.Func)
 	io.WriteString(w, "(")
-	for i, a := range c.Args {
-		if i > 0 {
-			io.WriteString(w, ", ")
-		}
-		if c.Func == "puts" && len(c.Args) == 1 {
+	if c.Func == "puts" {
+		if len(c.Args) == 1 {
+			a := c.Args[0]
 			io.WriteString(w, "((")
 			a.emit(w)
 			io.WriteString(w, ").is_a?(Array) ? (")
@@ -154,6 +162,30 @@ func (c *CallExpr) emit(w io.Writer) {
 			a.emit(w)
 			io.WriteString(w, "))))")
 		} else {
+			io.WriteString(w, "[")
+			for i, a := range c.Args {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				io.WriteString(w, "((")
+				a.emit(w)
+				io.WriteString(w, ").is_a?(Array) ? (")
+				a.emit(w)
+				io.WriteString(w, ").join(' ') : ((")
+				a.emit(w)
+				io.WriteString(w, ") == true ? 1 : ((")
+				a.emit(w)
+				io.WriteString(w, ") == false ? 0 : (")
+				a.emit(w)
+				io.WriteString(w, "))))")
+			}
+			io.WriteString(w, "].join(' ')")
+		}
+	} else {
+		for i, a := range c.Args {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
 			a.emit(w)
 		}
 	}
@@ -438,6 +470,10 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		return convertWhile(st.While)
 	case st.For != nil:
 		return convertFor(st.For)
+	case st.Break != nil:
+		return &BreakStmt{}, nil
+	case st.Continue != nil:
+		return &ContinueStmt{}, nil
 	case st.Return != nil:
 		var v Expr
 		if st.Return.Value != nil {
@@ -744,6 +780,10 @@ func stmtNode(s Stmt) *ast.Node {
 			n.Children = append(n.Children, stmtNode(b))
 		}
 		return n
+	case *BreakStmt:
+		return &ast.Node{Kind: "break"}
+	case *ContinueStmt:
+		return &ast.Node{Kind: "continue"}
 	case *ReturnStmt:
 		n := &ast.Node{Kind: "return"}
 		if st.Value != nil {
