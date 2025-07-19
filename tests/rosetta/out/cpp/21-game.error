@@ -1,0 +1,6 @@
+g++: exit status 1
+/tmp/21-game.cpp: In function ‘auto __mochi_main()’:
+/tmp/21-game.cpp:76:23: error: ‘input’ was not declared in this scope; did you mean ‘int’?
+   76 |           auto line = input();
+      |                       ^~~~~
+      |                       int

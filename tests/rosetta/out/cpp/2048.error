@@ -1,0 +1,1514 @@
+g++: exit status 1
+/tmp/2048.cpp: In function ‘std::vector<std::vector<int> > newBoard()’:
+/tmp/2048.cpp:51:49: error: wrong number of template arguments (0, should be at least 1)
+   51 |   std::vector<std::vector<int>> b = std::vector<>{};
+      |                                                 ^
+In file included from /usr/include/c++/13/vector:66,
+                 from /usr/include/c++/13/chrono:47,
+                 from /tmp/2048.cpp:3:
+/usr/include/c++/13/bits/stl_vector.h:428:11: note: provided for ‘template<class _Tp, class _Alloc> class std::vector’
+  428 |     class vector : protected _Vector_base<_Tp, _Alloc>
+      |           ^~~~~~
+/tmp/2048.cpp:54:40: error: wrong number of template arguments (0, should be at least 1)
+   54 |     std::vector<int> row = std::vector<>{};
+      |                                        ^
+/usr/include/c++/13/bits/stl_vector.h:428:11: note: provided for ‘template<class _Tp, class _Alloc> class std::vector’
+  428 |     class vector : protected _Vector_base<_Tp, _Alloc>
+      |           ^~~~~~
+/tmp/2048.cpp: In function ‘auto spawnTile(std::vector<std::vector<int> >)’:
+/tmp/2048.cpp:67:53: error: wrong number of template arguments (0, should be at least 1)
+   67 |   std::vector<std::vector<int>> empty = std::vector<>{};
+      |                                                     ^
+/usr/include/c++/13/bits/stl_vector.h:428:11: note: provided for ‘template<class _Tp, class _Alloc> class std::vector’
+  428 |     class vector : protected _Vector_base<_Tp, _Alloc>
+      |           ^~~~~~
+/tmp/2048.cpp:84:49: error: conversion from ‘vector<int>’ to non-scalar type ‘vector<std::vector<int>>’ requested
+   84 |   std::vector<std::vector<int>> cell = empty[idx];
+      |                                                 ^
+/tmp/2048.cpp:89:4: error: no match for ‘operator[]’ (operand types are ‘std::vector<std::vector<int> >’ and ‘__gnu_cxx::__alloc_traits<std::allocator<std::vector<int> >, std::vector<int> >::value_type’ {aka ‘std::vector<int>’})
+   89 |   b[cell[1]][cell[0]] = val;
+      |    ^
+/usr/include/c++/13/bits/stl_vector.h:1126:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::reference std::vector<_Tp, _Alloc>::operator[](size_type) [with _Tp = std::vector<int>; _Alloc = std::allocator<std::vector<int> >; reference = std::vector<int>&; size_type = long unsigned int]’
+ 1126 |       operator[](size_type __n) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:1126:28: note:   no known conversion for argument 1 from ‘__gnu_cxx::__alloc_traits<std::allocator<std::vector<int> >, std::vector<int> >::value_type’ {aka ‘std::vector<int>’} to ‘std::vector<std::vector<int> >::size_type’ {aka ‘long unsigned int’}
+ 1126 |       operator[](size_type __n) _GLIBCXX_NOEXCEPT
+      |                  ~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:1145:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::const_reference std::vector<_Tp, _Alloc>::operator[](size_type) const [with _Tp = std::vector<int>; _Alloc = std::allocator<std::vector<int> >; const_reference = const std::vector<int>&; size_type = long unsigned int]’
+ 1145 |       operator[](size_type __n) const _GLIBCXX_NOEXCEPT
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:1145:28: note:   no known conversion for argument 1 from ‘__gnu_cxx::__alloc_traits<std::allocator<std::vector<int> >, std::vector<int> >::value_type’ {aka ‘std::vector<int>’} to ‘std::vector<std::vector<int> >::size_type’ {aka ‘long unsigned int’}
+ 1145 |       operator[](size_type __n) const _GLIBCXX_NOEXCEPT
+      |                  ~~~~~~~~~~^~~
+/tmp/2048.cpp: In function ‘auto draw(std::vector<std::vector<int> >, int)’:
+/tmp/2048.cpp:114:47: error: conversion from ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’} to non-scalar type ‘std::vector<std::vector<int> >’ requested
+  114 |       std::vector<std::vector<int>> v = b[y][x];
+      |                                               ^
+/tmp/2048.cpp:115:14: error: no match for ‘operator==’ (operand types are ‘std::vector<std::vector<int> >’ and ‘int’)
+  115 |       if ((v == 0)) {
+      |            ~ ^~ ~
+      |            |    |
+      |            |    int
+      |            std::vector<std::vector<int> >
+In file included from /usr/include/x86_64-linux-gnu/c++/13/bits/c++allocator.h:33,
+                 from /usr/include/c++/13/bits/allocator.h:46,
+                 from /usr/include/c++/13/string:43,
+                 from /usr/include/c++/13/bits/locale_classes.h:40,
+                 from /usr/include/c++/13/bits/ios_base.h:41,
+                 from /usr/include/c++/13/ios:44,
+                 from /usr/include/c++/13/istream:40,
+                 from /usr/include/c++/13/sstream:40,
+                 from /usr/include/c++/13/chrono:45:
+/usr/include/c++/13/bits/new_allocator.h:215:9: note: candidate: ‘template<class _Up> constexpr bool std::operator==(const __new_allocator<vector<int> >&, const __new_allocator<_Tp>&)’ (reversed)
+  215 |         operator==(const __new_allocator&, const __new_allocator<_Up>&)
+      |         ^~~~~~~~
+/usr/include/c++/13/bits/new_allocator.h:215:9: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:115:17: note:   ‘std::vector<std::vector<int> >’ is not derived from ‘const std::__new_allocator<_Tp>’
+  115 |       if ((v == 0)) {
+      |                 ^
+/usr/include/c++/13/bits/new_allocator.h:215:9: note: candidate: ‘template<class _Up> constexpr bool std::operator==(const __new_allocator<int>&, const __new_allocator<_Tp>&)’ (reversed)
+  215 |         operator==(const __new_allocator&, const __new_allocator<_Up>&)
+      |         ^~~~~~~~
+/usr/include/c++/13/bits/new_allocator.h:215:9: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:115:17: note:   ‘std::vector<std::vector<int> >’ is not derived from ‘const std::__new_allocator<_Tp>’
+  115 |       if ((v == 0)) {
+      |                 ^
+/usr/include/c++/13/bits/allocator.h:237:5: note: candidate: ‘template<class _T1, class _T2> constexpr bool std::operator==(const allocator<_CharT>&, const allocator<_T2>&)’ (reversed)
+  237 |     operator==(const allocator<_T1>&, const allocator<_T2>&)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/allocator.h:237:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:115:17: note:   mismatched types ‘const std::allocator<_CharT>’ and ‘int’
+  115 |       if ((v == 0)) {
+      |                 ^
+In file included from /usr/include/c++/13/string:48:
+/usr/include/c++/13/bits/stl_iterator.h:534:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator==(const reverse_iterator<_IteratorL>&, const reverse_iterator<_IteratorR>&) requires requires{{std::operator==::__x->base() == std::operator==::__y->base()} -> decltype(auto) [requires std::convertible_to<<placeholder>, bool>];}’ (reversed)
+  534 |     operator==(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:534:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:115:17: note:   mismatched types ‘const std::reverse_iterator<_IteratorL>’ and ‘int’
+  115 |       if ((v == 0)) {
+      |                 ^
+/usr/include/c++/13/bits/stl_iterator.h:1678:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator==(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&) requires requires{{std::operator==::__x->base() == std::operator==::__y->base()} -> decltype(auto) [requires std::convertible_to<<placeholder>, bool>];}’ (reversed)
+ 1678 |     operator==(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1678:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:115:17: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+  115 |       if ((v == 0)) {
+      |                 ^
+In file included from /usr/include/c++/13/bits/basic_string.h:47,
+                 from /usr/include/c++/13/string:54:
+/usr/include/c++/13/string_view:616:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator==(basic_string_view<_CharT, _Traits>, __type_identity_t<basic_string_view<_CharT, _Traits> >)’ (reversed)
+  616 |     operator==(basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:616:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:115:17: note:   mismatched types ‘std::basic_string_view<_CharT, _Traits>’ and ‘int’
+  115 |       if ((v == 0)) {
+      |                 ^
+/usr/include/c++/13/bits/basic_string.h:3727:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr bool std::operator==(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const _CharT*)’ (reversed)
+ 3727 |     operator==(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3727:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:115:17: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  115 |       if ((v == 0)) {
+      |                 ^
+In file included from /usr/include/c++/13/bits/uses_allocator_args.h:38,
+                 from /usr/include/c++/13/bits/memory_resource.h:41,
+                 from /usr/include/c++/13/string:58:
+/usr/include/c++/13/tuple:1919:5: note: candidate: ‘template<class ... _TElements, class ... _UElements> constexpr bool std::operator==(const tuple<_UTypes ...>&, const tuple<_UTypes ...>&)’ (reversed)
+ 1919 |     operator==(const tuple<_TElements...>& __t,
+      |     ^~~~~~~~
+/usr/include/c++/13/tuple:1919:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:115:17: note:   mismatched types ‘const std::tuple<_UTypes ...>’ and ‘int’
+  115 |       if ((v == 0)) {
+      |                 ^
+In file included from /usr/include/c++/13/bits/shared_ptr_base.h:59,
+                 from /usr/include/c++/13/bits/shared_ptr.h:53,
+                 from /usr/include/c++/13/chrono:49:
+/usr/include/c++/13/bits/unique_ptr.h:829:5: note: candidate: ‘template<class _Tp, class _Dp, class _Up, class _Ep> bool std::operator==(const unique_ptr<_Tp, _Dp>&, const unique_ptr<_Up, _Ep>&)’ (reversed)
+  829 |     operator==(const unique_ptr<_Tp, _Dp>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/unique_ptr.h:829:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:115:17: note:   mismatched types ‘const std::unique_ptr<_Tp, _Dp>’ and ‘int’
+  115 |       if ((v == 0)) {
+      |                 ^
+/usr/include/c++/13/bits/unique_ptr.h:837:5: note: candidate: ‘template<class _Tp, class _Dp> bool std::operator==(const unique_ptr<_Tp, _Dp>&, nullptr_t)’ (reversed)
+  837 |     operator==(const unique_ptr<_Tp, _Dp>& __x, nullptr_t) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/unique_ptr.h:837:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:115:17: note:   mismatched types ‘const std::unique_ptr<_Tp, _Dp>’ and ‘int’
+  115 |       if ((v == 0)) {
+      |                 ^
+/usr/include/c++/13/bits/shared_ptr_base.h:1793:5: note: candidate: ‘template<class _Tp1, class _Tp2, __gnu_cxx::_Lock_policy _Lp> bool std::operator==(const __shared_ptr<_Tp1, _Lp>&, const __shared_ptr<_Tp2, _Lp>&)’ (reversed)
+ 1793 |     operator==(const __shared_ptr<_Tp1, _Lp>& __a,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/shared_ptr_base.h:1793:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:115:17: note:   mismatched types ‘const std::__shared_ptr<_Tp1, _Lp>’ and ‘int’
+  115 |       if ((v == 0)) {
+      |                 ^
+/usr/include/c++/13/bits/shared_ptr_base.h:1799:5: note: candidate: ‘template<class _Tp, __gnu_cxx::_Lock_policy _Lp> bool std::operator==(const __shared_ptr<_Tp, _Lp>&, nullptr_t)’ (reversed)
+ 1799 |     operator==(const __shared_ptr<_Tp, _Lp>& __a, nullptr_t) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/shared_ptr_base.h:1799:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:115:17: note:   mismatched types ‘const std::__shared_ptr<_Tp, _Lp>’ and ‘int’
+  115 |       if ((v == 0)) {
+      |                 ^
+/usr/include/c++/13/bits/shared_ptr.h:555:5: note: candidate: ‘template<class _Tp, class _Up> bool std::operator==(const shared_ptr<_Tp>&, const shared_ptr<_Tp>&)’ (reversed)
+  555 |     operator==(const shared_ptr<_Tp>& __a, const shared_ptr<_Up>& __b) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:555:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:115:17: note:   mismatched types ‘const std::shared_ptr<_Tp>’ and ‘int’
+  115 |       if ((v == 0)) {
+      |                 ^
+/usr/include/c++/13/bits/shared_ptr.h:561:5: note: candidate: ‘template<class _Tp> bool std::operator==(const shared_ptr<_Tp>&, nullptr_t)’ (reversed)
+  561 |     operator==(const shared_ptr<_Tp>& __a, nullptr_t) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:561:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:115:17: note:   mismatched types ‘const std::shared_ptr<_Tp>’ and ‘int’
+  115 |       if ((v == 0)) {
+      |                 ^
+In file included from /usr/include/c++/13/format:43,
+                 from /usr/include/c++/13/bits/chrono_io.h:39,
+                 from /usr/include/c++/13/chrono:3370:
+/usr/include/c++/13/optional:1296:5: note: candidate: ‘template<class _Tp> constexpr bool std::operator==(const optional<_Tp>&, nullopt_t)’ (reversed)
+ 1296 |     operator==(const optional<_Tp>& __lhs, nullopt_t) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/optional:1296:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:115:17: note:   mismatched types ‘const std::optional<_Tp>’ and ‘int’
+  115 |       if ((v == 0)) {
+      |                 ^
+In file included from /usr/include/c++/13/bits/ios_base.h:46:
+/usr/include/c++/13/system_error:465:3: note: candidate: ‘bool std::operator==(const error_code&, const error_condition&)’ (reversed)
+  465 |   operator==(const error_code& __lhs, const error_condition& __rhs) noexcept
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:465:32: note:   no known conversion for argument 1 from ‘int’ to ‘const std::error_code&’
+  465 |   operator==(const error_code& __lhs, const error_condition& __rhs) noexcept
+      |              ~~~~~~~~~~~~~~~~~~^~~~~
+In file included from /usr/include/c++/13/iosfwd:42,
+                 from /usr/include/c++/13/ios:40:
+/usr/include/c++/13/bits/postypes.h:192:5: note: candidate: ‘template<class _StateT> bool std::operator==(const fpos<_StateT>&, const fpos<_StateT>&)’
+  192 |     operator==(const fpos<_StateT>& __lhs, const fpos<_StateT>& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/postypes.h:192:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:115:17: note:   ‘std::vector<std::vector<int> >’ is not derived from ‘const std::fpos<_StateT>’
+  115 |       if ((v == 0)) {
+      |                 ^
+/usr/include/c++/13/bits/stl_iterator.h:593:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator==(const reverse_iterator<_IteratorL>&, const reverse_iterator<_IteratorL>&) requires requires{{std::operator==::__x->base() == std::operator==::__y->base()} -> decltype(auto) [requires std::convertible_to<<placeholder>, bool>];}’
+  593 |     operator==(const reverse_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:593:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:115:17: note:   ‘std::vector<std::vector<int> >’ is not derived from ‘const std::reverse_iterator<_IteratorL>’
+  115 |       if ((v == 0)) {
+      |                 ^
+/usr/include/c++/13/bits/stl_iterator.h:1748:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator==(const move_iterator<_IteratorL>&, const move_iterator<_IteratorL>&)’
+ 1748 |     operator==(const move_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1748:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:115:17: note:   ‘std::vector<std::vector<int> >’ is not derived from ‘const std::move_iterator<_IteratorL>’
+  115 |       if ((v == 0)) {
+      |                 ^
+In file included from /usr/include/c++/13/bits/stl_algobase.h:64,
+                 from /usr/include/c++/13/string:51:
+/usr/include/c++/13/bits/stl_pair.h:812:5: note: candidate: ‘template<class _T1, class _T2> constexpr bool std::operator==(const pair<_T1, _T2>&, const pair<_T1, _T2>&)’
+  812 |     operator==(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_pair.h:812:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:115:17: note:   ‘std::vector<std::vector<int> >’ is not derived from ‘const std::pair<_T1, _T2>’
+  115 |       if ((v == 0)) {
+      |                 ^
+/usr/include/c++/13/string_view:609:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator==(basic_string_view<_CharT, _Traits>, basic_string_view<_CharT, _Traits>)’
+  609 |     operator==(basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:609:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:115:17: note:   ‘std::vector<std::vector<int> >’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
+  115 |       if ((v == 0)) {
+      |                 ^
+/usr/include/c++/13/bits/basic_string.h:3710:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr bool std::operator==(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3710 |     operator==(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3710:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:115:17: note:   ‘std::vector<std::vector<int> >’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  115 |       if ((v == 0)) {
+      |                 ^
+In file included from /usr/include/c++/13/bits/locale_facets.h:48,
+                 from /usr/include/c++/13/bits/basic_ios.h:37,
+                 from /usr/include/c++/13/ios:46:
+/usr/include/c++/13/bits/streambuf_iterator.h:234:5: note: candidate: ‘template<class _CharT, class _Traits> bool std::operator==(const istreambuf_iterator<_CharT, _Traits>&, const istreambuf_iterator<_CharT, _Traits>&)’
+  234 |     operator==(const istreambuf_iterator<_CharT, _Traits>& __a,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/streambuf_iterator.h:234:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:115:17: note:   ‘std::vector<std::vector<int> >’ is not derived from ‘const std::istreambuf_iterator<_CharT, _Traits>’
+  115 |       if ((v == 0)) {
+      |                 ^
+/usr/include/c++/13/bits/stl_vector.h:2040:5: note: candidate: ‘template<class _Tp, class _Alloc> constexpr bool std::operator==(const vector<_Tp, _Alloc>&, const vector<_Tp, _Alloc>&)’
+ 2040 |     operator==(const vector<_Tp, _Alloc>& __x, const vector<_Tp, _Alloc>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:2040:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:115:17: note:   mismatched types ‘const std::vector<_Tp, _Alloc>’ and ‘int’
+  115 |       if ((v == 0)) {
+      |                 ^
+In file included from /usr/include/c++/13/format:38:
+/usr/include/c++/13/array:297:5: note: candidate: ‘template<class _Tp, long unsigned int _Nm> constexpr bool std::operator==(const array<_Tp, _Nm>&, const array<_Tp, _Nm>&)’
+  297 |     operator==(const array<_Tp, _Nm>& __one, const array<_Tp, _Nm>& __two)
+      |     ^~~~~~~~
+/usr/include/c++/13/array:297:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:115:17: note:   ‘std::vector<std::vector<int> >’ is not derived from ‘const std::array<_Tp, _Nm>’
+  115 |       if ((v == 0)) {
+      |                 ^
+/usr/include/c++/13/optional:1236:5: note: candidate: ‘template<class _Tp, class _Up> constexpr std::__optional_eq_t<_Tp, _Up> std::operator==(const optional<_Tp>&, const optional<_Up>&)’
+ 1236 |     operator==(const optional<_Tp>& __lhs, const optional<_Up>& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/optional:1236:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:115:17: note:   ‘std::vector<std::vector<int> >’ is not derived from ‘const std::optional<_Tp>’
+  115 |       if ((v == 0)) {
+      |                 ^
+/usr/include/c++/13/optional:1364:5: note: candidate: ‘template<class _Tp, class _Up> constexpr std::__optional_eq_t<_Tp, _Up> std::operator==(const optional<_Tp>&, const _Up&)’
+ 1364 |     operator==(const optional<_Tp>& __lhs, const _Up& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/optional:1364:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:115:17: note:   ‘std::vector<std::vector<int> >’ is not derived from ‘const std::optional<_Tp>’
+  115 |       if ((v == 0)) {
+      |                 ^
+/usr/include/c++/13/optional:1370:5: note: candidate: ‘template<class _Tp, class _Up> constexpr std::__optional_eq_t<_Up, _Tp> std::operator==(const _Up&, const optional<_Tp>&)’
+ 1370 |     operator==(const _Up& __lhs, const optional<_Tp>& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/optional:1370:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:115:17: note:   mismatched types ‘const std::optional<_Tp>’ and ‘int’
+  115 |       if ((v == 0)) {
+      |                 ^
+In file included from /usr/include/c++/13/format:47:
+/usr/include/c++/13/variant:1266:3: note: candidate: ‘template<class ... _Types> constexpr bool std::operator==(const variant<_Types ...>&, const variant<_Types ...>&)’
+ 1266 |   _VARIANT_RELATION_FUNCTION_TEMPLATE(==, equal)
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/variant:1266:3: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:115:17: note:   ‘std::vector<std::vector<int> >’ is not derived from ‘const std::variant<_Types ...>’
+  115 |       if ((v == 0)) {
+      |                 ^
+In file included from /usr/include/c++/13/unordered_map:41,
+                 from /tmp/2048.cpp:6:
+/usr/include/c++/13/bits/unordered_map.h:2143:5: note: candidate: ‘template<class _Key1, class _Tp1, class _Hash1, class _Pred1, class _Alloc1> bool std::operator==(const unordered_map<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>&, const unordered_map<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>&)’
+ 2143 |     operator==(const unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/unordered_map.h:2143:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:115:17: note:   ‘std::vector<std::vector<int> >’ is not derived from ‘const std::unordered_map<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>’
+  115 |       if ((v == 0)) {
+      |                 ^
+/usr/include/c++/13/bits/unordered_map.h:2157:5: note: candidate: ‘template<class _Key1, class _Tp1, class _Hash1, class _Pred1, class _Alloc1> bool std::operator==(const unordered_multimap<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>&, const unordered_multimap<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>&)’
+ 2157 |     operator==(const unordered_multimap<_Key, _Tp, _Hash, _Pred, _Alloc>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/unordered_map.h:2157:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:115:17: note:   ‘std::vector<std::vector<int> >’ is not derived from ‘const std::unordered_multimap<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>’
+  115 |       if ((v == 0)) {
+      |                 ^
+/usr/include/c++/13/bits/allocator.h:216:7: note: candidate: ‘constexpr bool std::operator==(const allocator<vector<int> >&, const allocator<vector<int> >&)’
+  216 |       operator==(const allocator&, const allocator&) _GLIBCXX_NOTHROW
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/allocator.h:216:18: note:   no known conversion for argument 1 from ‘std::vector<std::vector<int> >’ to ‘const std::allocator<std::vector<int> >&’
+  216 |       operator==(const allocator&, const allocator&) _GLIBCXX_NOTHROW
+      |                  ^~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/allocator.h:216:7: note: candidate: ‘constexpr bool std::operator==(const allocator<int>&, const allocator<int>&)’
+  216 |       operator==(const allocator&, const allocator&) _GLIBCXX_NOTHROW
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/allocator.h:216:18: note:   no known conversion for argument 1 from ‘std::vector<std::vector<int> >’ to ‘const std::allocator<int>&’
+  216 |       operator==(const allocator&, const allocator&) _GLIBCXX_NOTHROW
+      |                  ^~~~~~~~~~~~~~~~
+/usr/include/c++/13/system_error:449:3: note: candidate: ‘bool std::operator==(const error_code&, const error_code&)’
+  449 |   operator==(const error_code& __lhs, const error_code& __rhs) noexcept
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:449:32: note:   no known conversion for argument 1 from ‘std::vector<std::vector<int> >’ to ‘const std::error_code&’
+  449 |   operator==(const error_code& __lhs, const error_code& __rhs) noexcept
+      |              ~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/system_error:480:3: note: candidate: ‘bool std::operator==(const error_condition&, const error_condition&)’
+  480 |   operator==(const error_condition& __lhs,
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:480:37: note:   no known conversion for argument 1 from ‘std::vector<std::vector<int> >’ to ‘const std::error_condition&’
+  480 |   operator==(const error_condition& __lhs,
+      |              ~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/variant:1273:18: note: candidate: ‘constexpr bool std::operator==(monostate, monostate)’
+ 1273 |   constexpr bool operator==(monostate, monostate) noexcept { return true; }
+      |                  ^~~~~~~~
+/usr/include/c++/13/variant:1273:29: note:   no known conversion for argument 1 from ‘std::vector<std::vector<int> >’ to ‘std::monostate’
+ 1273 |   constexpr bool operator==(monostate, monostate) noexcept { return true; }
+      |                             ^~~~~~~~~
+/tmp/2048.cpp:118:29: error: cannot convert ‘std::vector<std::vector<int> >’ to ‘int’
+  118 |         line = ((line + pad(v)) + std::string("|"));
+      |                             ^
+      |                             |
+      |                             std::vector<std::vector<int> >
+/tmp/2048.cpp:94:21: note:   initializing argument 1 of ‘std::string pad(int)’
+   94 | std::string pad(int n) {
+      |                 ~~~~^
+/tmp/2048.cpp: In function ‘std::vector<int> reverseRow(std::vector<int>)’:
+/tmp/2048.cpp:130:38: error: wrong number of template arguments (0, should be at least 1)
+  130 |   std::vector<int> out = std::vector<>{};
+      |                                      ^
+/usr/include/c++/13/bits/stl_vector.h:428:11: note: provided for ‘template<class _Tp, class _Alloc> class std::vector’
+  428 |     class vector : protected _Vector_base<_Tp, _Alloc>
+      |           ^~~~~~
+/tmp/2048.cpp: In function ‘auto slideLeft(std::vector<int>)’:
+/tmp/2048.cpp:140:37: error: wrong number of template arguments (0, should be at least 1)
+  140 |   std::vector<int> xs = std::vector<>{};
+      |                                     ^
+/usr/include/c++/13/bits/stl_vector.h:428:11: note: provided for ‘template<class _Tp, class _Alloc> class std::vector’
+  428 |     class vector : protected _Vector_base<_Tp, _Alloc>
+      |           ^~~~~~
+/tmp/2048.cpp:148:38: error: wrong number of template arguments (0, should be at least 1)
+  148 |   std::vector<int> res = std::vector<>{};
+      |                                      ^
+/usr/include/c++/13/bits/stl_vector.h:428:11: note: provided for ‘template<class _Tp, class _Alloc> class std::vector’
+  428 |     class vector : protected _Vector_base<_Tp, _Alloc>
+      |           ^~~~~~
+/tmp/2048.cpp: In function ‘auto moveLeft(std::vector<std::vector<int> >, int)’:
+/tmp/2048.cpp:174:54: error: conversion from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to non-scalar type ‘std::vector<std::any>’ requested
+  174 |     std::vector<std::any> _new = r[std::string("row")];
+      |                                                      ^
+/tmp/2048.cpp:175:20: error: no match for ‘operator+’ (operand types are ‘int’ and ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’})
+  175 |     score = (score + r[std::string("gain")]);
+/usr/include/c++/13/bits/stl_iterator.h:634:5: note: candidate: ‘template<class _Iterator> constexpr std::reverse_iterator<_IteratorL> std::operator+(typename reverse_iterator<_IteratorL>::difference_type, const reverse_iterator<_IteratorL>&)’
+  634 |     operator+(typename reverse_iterator<_Iterator>::difference_type __n,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:634:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:175:43: note:   ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} is not derived from ‘const std::reverse_iterator<_IteratorL>’
+  175 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/stl_iterator.h:1808:5: note: candidate: ‘template<class _Iterator> constexpr std::move_iterator<_IteratorL> std::operator+(typename move_iterator<_IteratorL>::difference_type, const move_iterator<_IteratorL>&)’
+ 1808 |     operator+(typename move_iterator<_Iterator>::difference_type __n,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1808:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:175:43: note:   ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} is not derived from ‘const std::move_iterator<_IteratorL>’
+  175 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3553:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3553 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3553:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:175:43: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  175 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3571:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3571 |     operator+(const _CharT* __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3571:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:175:43: note:   mismatched types ‘const _CharT*’ and ‘int’
+  175 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3590:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(_CharT, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3590 |     operator+(_CharT __lhs, const basic_string<_CharT,_Traits,_Alloc>& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3590:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:175:43: note:   ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  175 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3607:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const _CharT*)’
+ 3607 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3607:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:175:43: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  175 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3625:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, _CharT)’
+ 3625 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs, _CharT __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3625:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:175:43: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  175 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3637:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3637 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3637:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:175:43: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  175 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3644:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
+ 3644 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3644:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:175:43: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  175 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3651:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
+ 3651 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3651:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:175:43: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  175 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3674:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
+ 3674 |     operator+(const _CharT* __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3674:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:175:43: note:   mismatched types ‘const _CharT*’ and ‘int’
+  175 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3681:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
+ 3681 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3681:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:175:43: note:   ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} is not derived from ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  175 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3688:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, const _CharT*)’
+ 3688 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3688:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:175:43: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  175 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3695:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, _CharT)’
+ 3695 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3695:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:175:43: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  175 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/tmp/2048.cpp:178:20: error: no match for ‘operator!=’ (operand types are ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’} and ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’})
+  178 |       if ((b[y][x] != _new[x])) {
+/usr/include/c++/13/bits/allocator.h:237:5: note: candidate: ‘template<class _T1, class _T2> constexpr bool std::operator==(const allocator<_CharT>&, const allocator<_T2>&)’ (reversed)
+  237 |     operator==(const allocator<_T1>&, const allocator<_T2>&)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/allocator.h:237:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:178:29: note:   ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} is not derived from ‘const std::allocator<_CharT>’
+  178 |       if ((b[y][x] != _new[x])) {
+      |                             ^
+/usr/include/c++/13/bits/stl_iterator.h:534:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator==(const reverse_iterator<_IteratorL>&, const reverse_iterator<_IteratorR>&) requires requires{{std::operator==::__x->base() == std::operator==::__y->base()} -> decltype(auto) [requires std::convertible_to<<placeholder>, bool>];}’ (reversed)
+  534 |     operator==(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:534:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:178:29: note:   ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} is not derived from ‘const std::reverse_iterator<_IteratorL>’
+  178 |       if ((b[y][x] != _new[x])) {
+      |                             ^
+/usr/include/c++/13/bits/stl_iterator.h:1678:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator==(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&) requires requires{{std::operator==::__x->base() == std::operator==::__y->base()} -> decltype(auto) [requires std::convertible_to<<placeholder>, bool>];}’ (reversed)
+ 1678 |     operator==(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1678:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:178:29: note:   ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} is not derived from ‘const std::move_iterator<_IteratorL>’
+  178 |       if ((b[y][x] != _new[x])) {
+      |                             ^
+/usr/include/c++/13/string_view:616:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator==(basic_string_view<_CharT, _Traits>, __type_identity_t<basic_string_view<_CharT, _Traits> >)’ (reversed)
+  616 |     operator==(basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:616:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:178:29: note:   ‘std::any’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
+  178 |       if ((b[y][x] != _new[x])) {
+      |                             ^
+/usr/include/c++/13/bits/basic_string.h:3727:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr bool std::operator==(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const _CharT*)’ (reversed)
+ 3727 |     operator==(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3727:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:178:29: note:   ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  178 |       if ((b[y][x] != _new[x])) {
+      |                             ^
+/usr/include/c++/13/tuple:1919:5: note: candidate: ‘template<class ... _TElements, class ... _UElements> constexpr bool std::operator==(const tuple<_UTypes ...>&, const tuple<_UTypes ...>&)’ (reversed)
+ 1919 |     operator==(const tuple<_TElements...>& __t,
+      |     ^~~~~~~~
+/usr/include/c++/13/tuple:1919:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:178:29: note:   ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} is not derived from ‘const std::tuple<_UTypes ...>’
+  178 |       if ((b[y][x] != _new[x])) {
+      |                             ^
+/usr/include/c++/13/bits/unique_ptr.h:829:5: note: candidate: ‘template<class _Tp, class _Dp, class _Up, class _Ep> bool std::operator==(const unique_ptr<_Tp, _Dp>&, const unique_ptr<_Up, _Ep>&)’ (reversed)
+  829 |     operator==(const unique_ptr<_Tp, _Dp>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/unique_ptr.h:829:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:178:29: note:   ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} is not derived from ‘const std::unique_ptr<_Tp, _Dp>’
+  178 |       if ((b[y][x] != _new[x])) {
+      |                             ^
+/usr/include/c++/13/bits/unique_ptr.h:837:5: note: candidate: ‘template<class _Tp, class _Dp> bool std::operator==(const unique_ptr<_Tp, _Dp>&, nullptr_t)’ (reversed)
+  837 |     operator==(const unique_ptr<_Tp, _Dp>& __x, nullptr_t) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/unique_ptr.h:837:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:178:29: note:   ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} is not derived from ‘const std::unique_ptr<_Tp, _Dp>’
+  178 |       if ((b[y][x] != _new[x])) {
+      |                             ^
+/usr/include/c++/13/bits/shared_ptr_base.h:1793:5: note: candidate: ‘template<class _Tp1, class _Tp2, __gnu_cxx::_Lock_policy _Lp> bool std::operator==(const __shared_ptr<_Tp1, _Lp>&, const __shared_ptr<_Tp2, _Lp>&)’ (reversed)
+ 1793 |     operator==(const __shared_ptr<_Tp1, _Lp>& __a,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/shared_ptr_base.h:1793:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:178:29: note:   ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} is not derived from ‘const std::__shared_ptr<_Tp1, _Lp>’
+  178 |       if ((b[y][x] != _new[x])) {
+      |                             ^
+/usr/include/c++/13/bits/shared_ptr_base.h:1799:5: note: candidate: ‘template<class _Tp, __gnu_cxx::_Lock_policy _Lp> bool std::operator==(const __shared_ptr<_Tp, _Lp>&, nullptr_t)’ (reversed)
+ 1799 |     operator==(const __shared_ptr<_Tp, _Lp>& __a, nullptr_t) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/shared_ptr_base.h:1799:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:178:29: note:   ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} is not derived from ‘const std::__shared_ptr<_Tp, _Lp>’
+  178 |       if ((b[y][x] != _new[x])) {
+      |                             ^
+/usr/include/c++/13/bits/shared_ptr.h:555:5: note: candidate: ‘template<class _Tp, class _Up> bool std::operator==(const shared_ptr<_Tp>&, const shared_ptr<_Tp>&)’ (reversed)
+  555 |     operator==(const shared_ptr<_Tp>& __a, const shared_ptr<_Up>& __b) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:555:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:178:29: note:   ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} is not derived from ‘const std::shared_ptr<_Tp>’
+  178 |       if ((b[y][x] != _new[x])) {
+      |                             ^
+/usr/include/c++/13/bits/shared_ptr.h:561:5: note: candidate: ‘template<class _Tp> bool std::operator==(const shared_ptr<_Tp>&, nullptr_t)’ (reversed)
+  561 |     operator==(const shared_ptr<_Tp>& __a, nullptr_t) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:561:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:178:29: note:   ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} is not derived from ‘const std::shared_ptr<_Tp>’
+  178 |       if ((b[y][x] != _new[x])) {
+      |                             ^
+/usr/include/c++/13/optional:1296:5: note: candidate: ‘template<class _Tp> constexpr bool std::operator==(const optional<_Tp>&, nullopt_t)’ (reversed)
+ 1296 |     operator==(const optional<_Tp>& __lhs, nullopt_t) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/optional:1296:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:178:29: note:   ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} is not derived from ‘const std::optional<_Tp>’
+  178 |       if ((b[y][x] != _new[x])) {
+      |                             ^
+/usr/include/c++/13/system_error:465:3: note: candidate: ‘bool std::operator==(const error_code&, const error_condition&)’ (reversed)
+  465 |   operator==(const error_code& __lhs, const error_condition& __rhs) noexcept
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:465:32: note:   no known conversion for argument 1 from ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} to ‘const std::error_code&’
+  465 |   operator==(const error_code& __lhs, const error_condition& __rhs) noexcept
+      |              ~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/bits/stl_iterator.h:593:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator==(const reverse_iterator<_IteratorL>&, const reverse_iterator<_IteratorL>&) requires requires{{std::operator==::__x->base() == std::operator==::__y->base()} -> decltype(auto) [requires std::convertible_to<<placeholder>, bool>];}’ (rewritten)
+  593 |     operator==(const reverse_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:593:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:178:29: note:   mismatched types ‘const std::reverse_iterator<_IteratorL>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
+  178 |       if ((b[y][x] != _new[x])) {
+      |                             ^
+/usr/include/c++/13/bits/stl_iterator.h:1748:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator==(const move_iterator<_IteratorL>&, const move_iterator<_IteratorL>&)’ (rewritten)
+ 1748 |     operator==(const move_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1748:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:178:29: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
+  178 |       if ((b[y][x] != _new[x])) {
+      |                             ^
+/usr/include/c++/13/bits/stl_pair.h:812:5: note: candidate: ‘template<class _T1, class _T2> constexpr bool std::operator==(const pair<_T1, _T2>&, const pair<_T1, _T2>&)’ (rewritten)
+  812 |     operator==(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_pair.h:812:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:178:29: note:   mismatched types ‘const std::pair<_T1, _T2>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
+  178 |       if ((b[y][x] != _new[x])) {
+      |                             ^
+/usr/include/c++/13/string_view:609:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator==(basic_string_view<_CharT, _Traits>, basic_string_view<_CharT, _Traits>)’ (rewritten)
+  609 |     operator==(basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:609:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:178:29: note:   mismatched types ‘std::basic_string_view<_CharT, _Traits>’ and ‘int’
+  178 |       if ((b[y][x] != _new[x])) {
+      |                             ^
+/usr/include/c++/13/bits/basic_string.h:3710:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr bool std::operator==(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’ (rewritten)
+ 3710 |     operator==(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3710:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:178:29: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
+  178 |       if ((b[y][x] != _new[x])) {
+      |                             ^
+/usr/include/c++/13/bits/streambuf_iterator.h:234:5: note: candidate: ‘template<class _CharT, class _Traits> bool std::operator==(const istreambuf_iterator<_CharT, _Traits>&, const istreambuf_iterator<_CharT, _Traits>&)’ (rewritten)
+  234 |     operator==(const istreambuf_iterator<_CharT, _Traits>& __a,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/streambuf_iterator.h:234:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:178:29: note:   mismatched types ‘const std::istreambuf_iterator<_CharT, _Traits>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
+  178 |       if ((b[y][x] != _new[x])) {
+      |                             ^
+/usr/include/c++/13/bits/stl_vector.h:2040:5: note: candidate: ‘template<class _Tp, class _Alloc> constexpr bool std::operator==(const vector<_Tp, _Alloc>&, const vector<_Tp, _Alloc>&)’ (rewritten)
+ 2040 |     operator==(const vector<_Tp, _Alloc>& __x, const vector<_Tp, _Alloc>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:2040:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:178:29: note:   mismatched types ‘const std::vector<_Tp, _Alloc>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
+  178 |       if ((b[y][x] != _new[x])) {
+      |                             ^
+/usr/include/c++/13/array:297:5: note: candidate: ‘template<class _Tp, long unsigned int _Nm> constexpr bool std::operator==(const array<_Tp, _Nm>&, const array<_Tp, _Nm>&)’ (rewritten)
+  297 |     operator==(const array<_Tp, _Nm>& __one, const array<_Tp, _Nm>& __two)
+      |     ^~~~~~~~
+/usr/include/c++/13/array:297:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:178:29: note:   mismatched types ‘const std::array<_Tp, _Nm>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
+  178 |       if ((b[y][x] != _new[x])) {
+      |                             ^
+/usr/include/c++/13/bits/unordered_map.h:2143:5: note: candidate: ‘template<class _Key1, class _Tp1, class _Hash1, class _Pred1, class _Alloc1> bool std::operator==(const unordered_map<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>&, const unordered_map<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>&)’ (rewritten)
+ 2143 |     operator==(const unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/unordered_map.h:2143:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:178:29: note:   mismatched types ‘const std::unordered_map<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
+  178 |       if ((b[y][x] != _new[x])) {
+      |                             ^
+/usr/include/c++/13/bits/unordered_map.h:2157:5: note: candidate: ‘template<class _Key1, class _Tp1, class _Hash1, class _Pred1, class _Alloc1> bool std::operator==(const unordered_multimap<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>&, const unordered_multimap<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>&)’ (rewritten)
+ 2157 |     operator==(const unordered_multimap<_Key, _Tp, _Hash, _Pred, _Alloc>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/unordered_map.h:2157:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:178:29: note:   mismatched types ‘const std::unordered_multimap<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
+  178 |       if ((b[y][x] != _new[x])) {
+      |                             ^
+/usr/include/c++/13/system_error:449:3: note: candidate: ‘bool std::operator==(const error_code&, const error_code&)’ (rewritten)
+  449 |   operator==(const error_code& __lhs, const error_code& __rhs) noexcept
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:449:32: note:   no known conversion for argument 1 from ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’} to ‘const std::error_code&’
+  449 |   operator==(const error_code& __lhs, const error_code& __rhs) noexcept
+      |              ~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/system_error:480:3: note: candidate: ‘bool std::operator==(const error_condition&, const error_condition&)’ (rewritten)
+  480 |   operator==(const error_condition& __lhs,
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:480:37: note:   no known conversion for argument 1 from ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’} to ‘const std::error_condition&’
+  480 |   operator==(const error_condition& __lhs,
+      |              ~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/variant:1273:18: note: candidate: ‘constexpr bool std::operator==(monostate, monostate)’ (rewritten)
+ 1273 |   constexpr bool operator==(monostate, monostate) noexcept { return true; }
+      |                  ^~~~~~~~
+/usr/include/c++/13/variant:1273:29: note:   no known conversion for argument 1 from ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’} to ‘std::monostate’
+ 1273 |   constexpr bool operator==(monostate, monostate) noexcept { return true; }
+      |                             ^~~~~~~~~
+/usr/include/c++/13/bits/postypes.h:197:5: note: candidate: ‘template<class _StateT> bool std::operator!=(const fpos<_StateT>&, const fpos<_StateT>&)’
+  197 |     operator!=(const fpos<_StateT>& __lhs, const fpos<_StateT>& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/postypes.h:197:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:178:29: note:   mismatched types ‘const std::fpos<_StateT>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
+  178 |       if ((b[y][x] != _new[x])) {
+      |                             ^
+/usr/include/c++/13/bits/stl_iterator.h:542:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator!=(const reverse_iterator<_IteratorL>&, const reverse_iterator<_IteratorR>&) requires requires{{std::operator!=::__x->base() != std::operator!=::__y->base()} -> decltype(auto) [requires std::convertible_to<<placeholder>, bool>];}’
+  542 |     operator!=(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:542:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:178:29: note:   mismatched types ‘const std::reverse_iterator<_IteratorL>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
+  178 |       if ((b[y][x] != _new[x])) {
+      |                             ^
+/usr/include/c++/13/optional:1245:5: note: candidate: ‘template<class _Tp, class _Up> constexpr std::__optional_ne_t<_Tp, _Up> std::operator!=(const optional<_Tp>&, const optional<_Up>&)’
+ 1245 |     operator!=(const optional<_Tp>& __lhs, const optional<_Up>& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/optional:1245:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:178:29: note:   mismatched types ‘const std::optional<_Tp>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
+  178 |       if ((b[y][x] != _new[x])) {
+      |                             ^
+/usr/include/c++/13/optional:1376:5: note: candidate: ‘template<class _Tp, class _Up> constexpr std::__optional_ne_t<_Tp, _Up> std::operator!=(const optional<_Tp>&, const _Up&)’
+ 1376 |     operator!=(const optional<_Tp>& __lhs, const _Up& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/optional:1376:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:178:29: note:   mismatched types ‘const std::optional<_Tp>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
+  178 |       if ((b[y][x] != _new[x])) {
+      |                             ^
+/usr/include/c++/13/optional:1382:5: note: candidate: ‘template<class _Tp, class _Up> constexpr std::__optional_ne_t<_Up, _Tp> std::operator!=(const _Up&, const optional<_Tp>&)’
+ 1382 |     operator!=(const _Up& __lhs, const optional<_Tp>& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/optional:1382:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:178:29: note:   ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} is not derived from ‘const std::optional<_Tp>’
+  178 |       if ((b[y][x] != _new[x])) {
+      |                             ^
+/usr/include/c++/13/variant:1267:3: note: candidate: ‘template<class ... _Types> constexpr bool std::operator!=(const variant<_Types ...>&, const variant<_Types ...>&)’
+ 1267 |   _VARIANT_RELATION_FUNCTION_TEMPLATE(!=, not_equal)
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/variant:1267:3: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:178:29: note:   mismatched types ‘const std::variant<_Types ...>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
+  178 |       if ((b[y][x] != _new[x])) {
+      |                             ^
+/tmp/2048.cpp:181:23: error: cannot convert ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} to ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’} in assignment
+  181 |       b[y][x] = _new[x];
+      |                       ^
+/tmp/2048.cpp: In function ‘auto moveRight(std::vector<std::vector<int> >, int)’:
+/tmp/2048.cpp:198:31: error: no match for ‘operator=’ (operand types are ‘std::vector<int>’ and ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’})
+  198 |     rev = r[std::string("row")];
+      |                               ^
+In file included from /usr/include/c++/13/vector:72:
+/usr/include/c++/13/bits/vector.tcc:210:5: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(const std::vector<_Tp, _Alloc>&) [with _Tp = int; _Alloc = std::allocator<int>]’
+  210 |     vector<_Tp, _Alloc>::
+      |     ^~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/vector.tcc:211:42: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘const std::vector<int>&’
+  211 |     operator=(const vector<_Tp, _Alloc>& __x)
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:766:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(std::vector<_Tp, _Alloc>&&) [with _Tp = int; _Alloc = std::allocator<int>]’
+  766 |       operator=(vector&& __x) noexcept(_Alloc_traits::_S_nothrow_move())
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:766:26: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘std::vector<int>&&’
+  766 |       operator=(vector&& __x) noexcept(_Alloc_traits::_S_nothrow_move())
+      |                 ~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:788:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(std::initializer_list<_Tp>) [with _Tp = int; _Alloc = std::allocator<int>]’
+  788 |       operator=(initializer_list<value_type> __l)
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:788:46: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘std::initializer_list<int>’
+  788 |       operator=(initializer_list<value_type> __l)
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/tmp/2048.cpp:199:20: error: no match for ‘operator+’ (operand types are ‘int’ and ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’})
+  199 |     score = (score + r[std::string("gain")]);
+/usr/include/c++/13/bits/stl_iterator.h:634:5: note: candidate: ‘template<class _Iterator> constexpr std::reverse_iterator<_IteratorL> std::operator+(typename reverse_iterator<_IteratorL>::difference_type, const reverse_iterator<_IteratorL>&)’
+  634 |     operator+(typename reverse_iterator<_Iterator>::difference_type __n,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:634:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:199:43: note:   ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} is not derived from ‘const std::reverse_iterator<_IteratorL>’
+  199 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/stl_iterator.h:1808:5: note: candidate: ‘template<class _Iterator> constexpr std::move_iterator<_IteratorL> std::operator+(typename move_iterator<_IteratorL>::difference_type, const move_iterator<_IteratorL>&)’
+ 1808 |     operator+(typename move_iterator<_Iterator>::difference_type __n,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1808:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:199:43: note:   ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} is not derived from ‘const std::move_iterator<_IteratorL>’
+  199 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3553:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3553 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3553:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:199:43: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  199 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3571:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3571 |     operator+(const _CharT* __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3571:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:199:43: note:   mismatched types ‘const _CharT*’ and ‘int’
+  199 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3590:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(_CharT, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3590 |     operator+(_CharT __lhs, const basic_string<_CharT,_Traits,_Alloc>& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3590:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:199:43: note:   ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  199 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3607:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const _CharT*)’
+ 3607 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3607:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:199:43: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  199 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3625:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, _CharT)’
+ 3625 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs, _CharT __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3625:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:199:43: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  199 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3637:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3637 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3637:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:199:43: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  199 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3644:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
+ 3644 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3644:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:199:43: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  199 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3651:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
+ 3651 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3651:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:199:43: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  199 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3674:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
+ 3674 |     operator+(const _CharT* __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3674:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:199:43: note:   mismatched types ‘const _CharT*’ and ‘int’
+  199 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3681:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
+ 3681 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3681:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:199:43: note:   ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} is not derived from ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  199 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3688:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, const _CharT*)’
+ 3688 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3688:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:199:43: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  199 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3695:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, _CharT)’
+ 3695 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3695:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:199:43: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  199 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/tmp/2048.cpp: In function ‘std::vector<int> getCol(std::vector<std::vector<int> >, int)’:
+/tmp/2048.cpp:218:38: error: wrong number of template arguments (0, should be at least 1)
+  218 |   std::vector<int> col = std::vector<>{};
+      |                                      ^
+/usr/include/c++/13/bits/stl_vector.h:428:11: note: provided for ‘template<class _Tp, class _Alloc> class std::vector’
+  428 |     class vector : protected _Vector_base<_Tp, _Alloc>
+      |           ^~~~~~
+/tmp/2048.cpp: In function ‘auto moveUp(std::vector<std::vector<int> >, int)’:
+/tmp/2048.cpp:241:54: error: conversion from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to non-scalar type ‘std::vector<std::any>’ requested
+  241 |     std::vector<std::any> _new = r[std::string("row")];
+      |                                                      ^
+/tmp/2048.cpp:242:20: error: no match for ‘operator+’ (operand types are ‘int’ and ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’})
+  242 |     score = (score + r[std::string("gain")]);
+/usr/include/c++/13/bits/stl_iterator.h:634:5: note: candidate: ‘template<class _Iterator> constexpr std::reverse_iterator<_IteratorL> std::operator+(typename reverse_iterator<_IteratorL>::difference_type, const reverse_iterator<_IteratorL>&)’
+  634 |     operator+(typename reverse_iterator<_Iterator>::difference_type __n,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:634:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:242:43: note:   ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} is not derived from ‘const std::reverse_iterator<_IteratorL>’
+  242 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/stl_iterator.h:1808:5: note: candidate: ‘template<class _Iterator> constexpr std::move_iterator<_IteratorL> std::operator+(typename move_iterator<_IteratorL>::difference_type, const move_iterator<_IteratorL>&)’
+ 1808 |     operator+(typename move_iterator<_Iterator>::difference_type __n,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1808:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:242:43: note:   ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} is not derived from ‘const std::move_iterator<_IteratorL>’
+  242 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3553:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3553 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3553:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:242:43: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  242 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3571:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3571 |     operator+(const _CharT* __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3571:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:242:43: note:   mismatched types ‘const _CharT*’ and ‘int’
+  242 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3590:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(_CharT, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3590 |     operator+(_CharT __lhs, const basic_string<_CharT,_Traits,_Alloc>& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3590:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:242:43: note:   ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  242 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3607:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const _CharT*)’
+ 3607 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3607:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:242:43: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  242 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3625:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, _CharT)’
+ 3625 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs, _CharT __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3625:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:242:43: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  242 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3637:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3637 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3637:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:242:43: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  242 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3644:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
+ 3644 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3644:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:242:43: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  242 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3651:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
+ 3651 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3651:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:242:43: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  242 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3674:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
+ 3674 |     operator+(const _CharT* __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3674:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:242:43: note:   mismatched types ‘const _CharT*’ and ‘int’
+  242 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3681:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
+ 3681 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3681:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:242:43: note:   ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} is not derived from ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  242 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3688:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, const _CharT*)’
+ 3688 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3688:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:242:43: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  242 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3695:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, _CharT)’
+ 3695 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3695:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:242:43: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  242 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/tmp/2048.cpp:245:20: error: no match for ‘operator!=’ (operand types are ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’} and ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’})
+  245 |       if ((b[y][x] != _new[y])) {
+/usr/include/c++/13/bits/allocator.h:237:5: note: candidate: ‘template<class _T1, class _T2> constexpr bool std::operator==(const allocator<_CharT>&, const allocator<_T2>&)’ (reversed)
+  237 |     operator==(const allocator<_T1>&, const allocator<_T2>&)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/allocator.h:237:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:245:29: note:   ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} is not derived from ‘const std::allocator<_CharT>’
+  245 |       if ((b[y][x] != _new[y])) {
+      |                             ^
+/usr/include/c++/13/bits/stl_iterator.h:534:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator==(const reverse_iterator<_IteratorL>&, const reverse_iterator<_IteratorR>&) requires requires{{std::operator==::__x->base() == std::operator==::__y->base()} -> decltype(auto) [requires std::convertible_to<<placeholder>, bool>];}’ (reversed)
+  534 |     operator==(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:534:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:245:29: note:   ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} is not derived from ‘const std::reverse_iterator<_IteratorL>’
+  245 |       if ((b[y][x] != _new[y])) {
+      |                             ^
+/usr/include/c++/13/bits/stl_iterator.h:1678:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator==(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&) requires requires{{std::operator==::__x->base() == std::operator==::__y->base()} -> decltype(auto) [requires std::convertible_to<<placeholder>, bool>];}’ (reversed)
+ 1678 |     operator==(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1678:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:245:29: note:   ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} is not derived from ‘const std::move_iterator<_IteratorL>’
+  245 |       if ((b[y][x] != _new[y])) {
+      |                             ^
+/usr/include/c++/13/string_view:616:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator==(basic_string_view<_CharT, _Traits>, __type_identity_t<basic_string_view<_CharT, _Traits> >)’ (reversed)
+  616 |     operator==(basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:616:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:245:29: note:   ‘std::any’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
+  245 |       if ((b[y][x] != _new[y])) {
+      |                             ^
+/usr/include/c++/13/bits/basic_string.h:3727:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr bool std::operator==(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const _CharT*)’ (reversed)
+ 3727 |     operator==(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3727:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:245:29: note:   ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  245 |       if ((b[y][x] != _new[y])) {
+      |                             ^
+/usr/include/c++/13/tuple:1919:5: note: candidate: ‘template<class ... _TElements, class ... _UElements> constexpr bool std::operator==(const tuple<_UTypes ...>&, const tuple<_UTypes ...>&)’ (reversed)
+ 1919 |     operator==(const tuple<_TElements...>& __t,
+      |     ^~~~~~~~
+/usr/include/c++/13/tuple:1919:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:245:29: note:   ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} is not derived from ‘const std::tuple<_UTypes ...>’
+  245 |       if ((b[y][x] != _new[y])) {
+      |                             ^
+/usr/include/c++/13/bits/unique_ptr.h:829:5: note: candidate: ‘template<class _Tp, class _Dp, class _Up, class _Ep> bool std::operator==(const unique_ptr<_Tp, _Dp>&, const unique_ptr<_Up, _Ep>&)’ (reversed)
+  829 |     operator==(const unique_ptr<_Tp, _Dp>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/unique_ptr.h:829:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:245:29: note:   ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} is not derived from ‘const std::unique_ptr<_Tp, _Dp>’
+  245 |       if ((b[y][x] != _new[y])) {
+      |                             ^
+/usr/include/c++/13/bits/unique_ptr.h:837:5: note: candidate: ‘template<class _Tp, class _Dp> bool std::operator==(const unique_ptr<_Tp, _Dp>&, nullptr_t)’ (reversed)
+  837 |     operator==(const unique_ptr<_Tp, _Dp>& __x, nullptr_t) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/unique_ptr.h:837:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:245:29: note:   ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} is not derived from ‘const std::unique_ptr<_Tp, _Dp>’
+  245 |       if ((b[y][x] != _new[y])) {
+      |                             ^
+/usr/include/c++/13/bits/shared_ptr_base.h:1793:5: note: candidate: ‘template<class _Tp1, class _Tp2, __gnu_cxx::_Lock_policy _Lp> bool std::operator==(const __shared_ptr<_Tp1, _Lp>&, const __shared_ptr<_Tp2, _Lp>&)’ (reversed)
+ 1793 |     operator==(const __shared_ptr<_Tp1, _Lp>& __a,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/shared_ptr_base.h:1793:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:245:29: note:   ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} is not derived from ‘const std::__shared_ptr<_Tp1, _Lp>’
+  245 |       if ((b[y][x] != _new[y])) {
+      |                             ^
+/usr/include/c++/13/bits/shared_ptr_base.h:1799:5: note: candidate: ‘template<class _Tp, __gnu_cxx::_Lock_policy _Lp> bool std::operator==(const __shared_ptr<_Tp, _Lp>&, nullptr_t)’ (reversed)
+ 1799 |     operator==(const __shared_ptr<_Tp, _Lp>& __a, nullptr_t) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/shared_ptr_base.h:1799:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:245:29: note:   ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} is not derived from ‘const std::__shared_ptr<_Tp, _Lp>’
+  245 |       if ((b[y][x] != _new[y])) {
+      |                             ^
+/usr/include/c++/13/bits/shared_ptr.h:555:5: note: candidate: ‘template<class _Tp, class _Up> bool std::operator==(const shared_ptr<_Tp>&, const shared_ptr<_Tp>&)’ (reversed)
+  555 |     operator==(const shared_ptr<_Tp>& __a, const shared_ptr<_Up>& __b) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:555:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:245:29: note:   ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} is not derived from ‘const std::shared_ptr<_Tp>’
+  245 |       if ((b[y][x] != _new[y])) {
+      |                             ^
+/usr/include/c++/13/bits/shared_ptr.h:561:5: note: candidate: ‘template<class _Tp> bool std::operator==(const shared_ptr<_Tp>&, nullptr_t)’ (reversed)
+  561 |     operator==(const shared_ptr<_Tp>& __a, nullptr_t) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:561:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:245:29: note:   ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} is not derived from ‘const std::shared_ptr<_Tp>’
+  245 |       if ((b[y][x] != _new[y])) {
+      |                             ^
+/usr/include/c++/13/optional:1296:5: note: candidate: ‘template<class _Tp> constexpr bool std::operator==(const optional<_Tp>&, nullopt_t)’ (reversed)
+ 1296 |     operator==(const optional<_Tp>& __lhs, nullopt_t) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/optional:1296:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:245:29: note:   ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} is not derived from ‘const std::optional<_Tp>’
+  245 |       if ((b[y][x] != _new[y])) {
+      |                             ^
+/usr/include/c++/13/system_error:465:3: note: candidate: ‘bool std::operator==(const error_code&, const error_condition&)’ (reversed)
+  465 |   operator==(const error_code& __lhs, const error_condition& __rhs) noexcept
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:465:32: note:   no known conversion for argument 1 from ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} to ‘const std::error_code&’
+  465 |   operator==(const error_code& __lhs, const error_condition& __rhs) noexcept
+      |              ~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/bits/stl_iterator.h:593:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator==(const reverse_iterator<_IteratorL>&, const reverse_iterator<_IteratorL>&) requires requires{{std::operator==::__x->base() == std::operator==::__y->base()} -> decltype(auto) [requires std::convertible_to<<placeholder>, bool>];}’ (rewritten)
+  593 |     operator==(const reverse_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:593:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:245:29: note:   mismatched types ‘const std::reverse_iterator<_IteratorL>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
+  245 |       if ((b[y][x] != _new[y])) {
+      |                             ^
+/usr/include/c++/13/bits/stl_iterator.h:1748:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator==(const move_iterator<_IteratorL>&, const move_iterator<_IteratorL>&)’ (rewritten)
+ 1748 |     operator==(const move_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1748:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:245:29: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
+  245 |       if ((b[y][x] != _new[y])) {
+      |                             ^
+/usr/include/c++/13/bits/stl_pair.h:812:5: note: candidate: ‘template<class _T1, class _T2> constexpr bool std::operator==(const pair<_T1, _T2>&, const pair<_T1, _T2>&)’ (rewritten)
+  812 |     operator==(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_pair.h:812:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:245:29: note:   mismatched types ‘const std::pair<_T1, _T2>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
+  245 |       if ((b[y][x] != _new[y])) {
+      |                             ^
+/usr/include/c++/13/string_view:609:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator==(basic_string_view<_CharT, _Traits>, basic_string_view<_CharT, _Traits>)’ (rewritten)
+  609 |     operator==(basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:609:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:245:29: note:   mismatched types ‘std::basic_string_view<_CharT, _Traits>’ and ‘int’
+  245 |       if ((b[y][x] != _new[y])) {
+      |                             ^
+/usr/include/c++/13/bits/basic_string.h:3710:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr bool std::operator==(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’ (rewritten)
+ 3710 |     operator==(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3710:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:245:29: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
+  245 |       if ((b[y][x] != _new[y])) {
+      |                             ^
+/usr/include/c++/13/bits/streambuf_iterator.h:234:5: note: candidate: ‘template<class _CharT, class _Traits> bool std::operator==(const istreambuf_iterator<_CharT, _Traits>&, const istreambuf_iterator<_CharT, _Traits>&)’ (rewritten)
+  234 |     operator==(const istreambuf_iterator<_CharT, _Traits>& __a,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/streambuf_iterator.h:234:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:245:29: note:   mismatched types ‘const std::istreambuf_iterator<_CharT, _Traits>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
+  245 |       if ((b[y][x] != _new[y])) {
+      |                             ^
+/usr/include/c++/13/bits/stl_vector.h:2040:5: note: candidate: ‘template<class _Tp, class _Alloc> constexpr bool std::operator==(const vector<_Tp, _Alloc>&, const vector<_Tp, _Alloc>&)’ (rewritten)
+ 2040 |     operator==(const vector<_Tp, _Alloc>& __x, const vector<_Tp, _Alloc>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:2040:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:245:29: note:   mismatched types ‘const std::vector<_Tp, _Alloc>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
+  245 |       if ((b[y][x] != _new[y])) {
+      |                             ^
+/usr/include/c++/13/array:297:5: note: candidate: ‘template<class _Tp, long unsigned int _Nm> constexpr bool std::operator==(const array<_Tp, _Nm>&, const array<_Tp, _Nm>&)’ (rewritten)
+  297 |     operator==(const array<_Tp, _Nm>& __one, const array<_Tp, _Nm>& __two)
+      |     ^~~~~~~~
+/usr/include/c++/13/array:297:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:245:29: note:   mismatched types ‘const std::array<_Tp, _Nm>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
+  245 |       if ((b[y][x] != _new[y])) {
+      |                             ^
+/usr/include/c++/13/bits/unordered_map.h:2143:5: note: candidate: ‘template<class _Key1, class _Tp1, class _Hash1, class _Pred1, class _Alloc1> bool std::operator==(const unordered_map<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>&, const unordered_map<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>&)’ (rewritten)
+ 2143 |     operator==(const unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/unordered_map.h:2143:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:245:29: note:   mismatched types ‘const std::unordered_map<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
+  245 |       if ((b[y][x] != _new[y])) {
+      |                             ^
+/usr/include/c++/13/bits/unordered_map.h:2157:5: note: candidate: ‘template<class _Key1, class _Tp1, class _Hash1, class _Pred1, class _Alloc1> bool std::operator==(const unordered_multimap<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>&, const unordered_multimap<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>&)’ (rewritten)
+ 2157 |     operator==(const unordered_multimap<_Key, _Tp, _Hash, _Pred, _Alloc>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/unordered_map.h:2157:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:245:29: note:   mismatched types ‘const std::unordered_multimap<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
+  245 |       if ((b[y][x] != _new[y])) {
+      |                             ^
+/usr/include/c++/13/system_error:449:3: note: candidate: ‘bool std::operator==(const error_code&, const error_code&)’ (rewritten)
+  449 |   operator==(const error_code& __lhs, const error_code& __rhs) noexcept
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:449:32: note:   no known conversion for argument 1 from ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’} to ‘const std::error_code&’
+  449 |   operator==(const error_code& __lhs, const error_code& __rhs) noexcept
+      |              ~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/system_error:480:3: note: candidate: ‘bool std::operator==(const error_condition&, const error_condition&)’ (rewritten)
+  480 |   operator==(const error_condition& __lhs,
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:480:37: note:   no known conversion for argument 1 from ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’} to ‘const std::error_condition&’
+  480 |   operator==(const error_condition& __lhs,
+      |              ~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/variant:1273:18: note: candidate: ‘constexpr bool std::operator==(monostate, monostate)’ (rewritten)
+ 1273 |   constexpr bool operator==(monostate, monostate) noexcept { return true; }
+      |                  ^~~~~~~~
+/usr/include/c++/13/variant:1273:29: note:   no known conversion for argument 1 from ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’} to ‘std::monostate’
+ 1273 |   constexpr bool operator==(monostate, monostate) noexcept { return true; }
+      |                             ^~~~~~~~~
+/usr/include/c++/13/bits/postypes.h:197:5: note: candidate: ‘template<class _StateT> bool std::operator!=(const fpos<_StateT>&, const fpos<_StateT>&)’
+  197 |     operator!=(const fpos<_StateT>& __lhs, const fpos<_StateT>& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/postypes.h:197:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:245:29: note:   mismatched types ‘const std::fpos<_StateT>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
+  245 |       if ((b[y][x] != _new[y])) {
+      |                             ^
+/usr/include/c++/13/bits/stl_iterator.h:542:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator!=(const reverse_iterator<_IteratorL>&, const reverse_iterator<_IteratorR>&) requires requires{{std::operator!=::__x->base() != std::operator!=::__y->base()} -> decltype(auto) [requires std::convertible_to<<placeholder>, bool>];}’
+  542 |     operator!=(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:542:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:245:29: note:   mismatched types ‘const std::reverse_iterator<_IteratorL>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
+  245 |       if ((b[y][x] != _new[y])) {
+      |                             ^
+/usr/include/c++/13/optional:1245:5: note: candidate: ‘template<class _Tp, class _Up> constexpr std::__optional_ne_t<_Tp, _Up> std::operator!=(const optional<_Tp>&, const optional<_Up>&)’
+ 1245 |     operator!=(const optional<_Tp>& __lhs, const optional<_Up>& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/optional:1245:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:245:29: note:   mismatched types ‘const std::optional<_Tp>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
+  245 |       if ((b[y][x] != _new[y])) {
+      |                             ^
+/usr/include/c++/13/optional:1376:5: note: candidate: ‘template<class _Tp, class _Up> constexpr std::__optional_ne_t<_Tp, _Up> std::operator!=(const optional<_Tp>&, const _Up&)’
+ 1376 |     operator!=(const optional<_Tp>& __lhs, const _Up& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/optional:1376:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:245:29: note:   mismatched types ‘const std::optional<_Tp>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
+  245 |       if ((b[y][x] != _new[y])) {
+      |                             ^
+/usr/include/c++/13/optional:1382:5: note: candidate: ‘template<class _Tp, class _Up> constexpr std::__optional_ne_t<_Up, _Tp> std::operator!=(const _Up&, const optional<_Tp>&)’
+ 1382 |     operator!=(const _Up& __lhs, const optional<_Tp>& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/optional:1382:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:245:29: note:   ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} is not derived from ‘const std::optional<_Tp>’
+  245 |       if ((b[y][x] != _new[y])) {
+      |                             ^
+/usr/include/c++/13/variant:1267:3: note: candidate: ‘template<class ... _Types> constexpr bool std::operator!=(const variant<_Types ...>&, const variant<_Types ...>&)’
+ 1267 |   _VARIANT_RELATION_FUNCTION_TEMPLATE(!=, not_equal)
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/variant:1267:3: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:245:29: note:   mismatched types ‘const std::variant<_Types ...>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
+  245 |       if ((b[y][x] != _new[y])) {
+      |                             ^
+/tmp/2048.cpp:248:23: error: cannot convert ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} to ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’} in assignment
+  248 |       b[y][x] = _new[y];
+      |                       ^
+/tmp/2048.cpp: In function ‘auto moveDown(std::vector<std::vector<int> >, int)’:
+/tmp/2048.cpp:265:31: error: no match for ‘operator=’ (operand types are ‘std::vector<int>’ and ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’})
+  265 |     col = r[std::string("row")];
+      |                               ^
+/usr/include/c++/13/bits/vector.tcc:210:5: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(const std::vector<_Tp, _Alloc>&) [with _Tp = int; _Alloc = std::allocator<int>]’
+  210 |     vector<_Tp, _Alloc>::
+      |     ^~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/vector.tcc:211:42: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘const std::vector<int>&’
+  211 |     operator=(const vector<_Tp, _Alloc>& __x)
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:766:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(std::vector<_Tp, _Alloc>&&) [with _Tp = int; _Alloc = std::allocator<int>]’
+  766 |       operator=(vector&& __x) noexcept(_Alloc_traits::_S_nothrow_move())
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:766:26: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘std::vector<int>&&’
+  766 |       operator=(vector&& __x) noexcept(_Alloc_traits::_S_nothrow_move())
+      |                 ~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:788:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(std::initializer_list<_Tp>) [with _Tp = int; _Alloc = std::allocator<int>]’
+  788 |       operator=(initializer_list<value_type> __l)
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:788:46: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘std::initializer_list<int>’
+  788 |       operator=(initializer_list<value_type> __l)
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/tmp/2048.cpp:266:20: error: no match for ‘operator+’ (operand types are ‘int’ and ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’})
+  266 |     score = (score + r[std::string("gain")]);
+/usr/include/c++/13/bits/stl_iterator.h:634:5: note: candidate: ‘template<class _Iterator> constexpr std::reverse_iterator<_IteratorL> std::operator+(typename reverse_iterator<_IteratorL>::difference_type, const reverse_iterator<_IteratorL>&)’
+  634 |     operator+(typename reverse_iterator<_Iterator>::difference_type __n,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:634:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:266:43: note:   ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} is not derived from ‘const std::reverse_iterator<_IteratorL>’
+  266 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/stl_iterator.h:1808:5: note: candidate: ‘template<class _Iterator> constexpr std::move_iterator<_IteratorL> std::operator+(typename move_iterator<_IteratorL>::difference_type, const move_iterator<_IteratorL>&)’
+ 1808 |     operator+(typename move_iterator<_Iterator>::difference_type __n,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1808:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:266:43: note:   ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} is not derived from ‘const std::move_iterator<_IteratorL>’
+  266 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3553:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3553 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3553:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:266:43: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  266 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3571:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3571 |     operator+(const _CharT* __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3571:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:266:43: note:   mismatched types ‘const _CharT*’ and ‘int’
+  266 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3590:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(_CharT, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3590 |     operator+(_CharT __lhs, const basic_string<_CharT,_Traits,_Alloc>& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3590:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:266:43: note:   ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  266 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3607:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const _CharT*)’
+ 3607 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3607:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:266:43: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  266 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3625:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, _CharT)’
+ 3625 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs, _CharT __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3625:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:266:43: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  266 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3637:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3637 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3637:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:266:43: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  266 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3644:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
+ 3644 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3644:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:266:43: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  266 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3651:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
+ 3651 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3651:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:266:43: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  266 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3674:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
+ 3674 |     operator+(const _CharT* __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3674:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:266:43: note:   mismatched types ‘const _CharT*’ and ‘int’
+  266 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3681:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
+ 3681 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3681:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:266:43: note:   ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} is not derived from ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  266 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3688:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, const _CharT*)’
+ 3688 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3688:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:266:43: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  266 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/usr/include/c++/13/bits/basic_string.h:3695:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, _CharT)’
+ 3695 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3695:5: note:   template argument deduction/substitution failed:
+/tmp/2048.cpp:266:43: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  266 |     score = (score + r[std::string("gain")]);
+      |                                           ^
+/tmp/2048.cpp: In function ‘int main()’:
+/tmp/2048.cpp:323:33: error: no match for ‘operator=’ (operand types are ‘std::vector<std::vector<int> >’ and ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’})
+  323 |   board = r[std::string("board")];
+      |                                 ^
+/usr/include/c++/13/bits/vector.tcc:210:5: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(const std::vector<_Tp, _Alloc>&) [with _Tp = std::vector<int>; _Alloc = std::allocator<std::vector<int> >]’
+  210 |     vector<_Tp, _Alloc>::
+      |     ^~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/vector.tcc:211:42: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘const std::vector<std::vector<int> >&’
+  211 |     operator=(const vector<_Tp, _Alloc>& __x)
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:766:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(std::vector<_Tp, _Alloc>&&) [with _Tp = std::vector<int>; _Alloc = std::allocator<std::vector<int> >]’
+  766 |       operator=(vector&& __x) noexcept(_Alloc_traits::_S_nothrow_move())
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:766:26: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘std::vector<std::vector<int> >&&’
+  766 |       operator=(vector&& __x) noexcept(_Alloc_traits::_S_nothrow_move())
+      |                 ~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:788:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(std::initializer_list<_Tp>) [with _Tp = std::vector<int>; _Alloc = std::allocator<std::vector<int> >]’
+  788 |       operator=(initializer_list<value_type> __l)
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:788:46: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘std::initializer_list<std::vector<int> >’
+  788 |       operator=(initializer_list<value_type> __l)
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/tmp/2048.cpp:324:53: error: conversion from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to non-scalar type ‘std::vector<std::any>’ requested
+  324 |   std::vector<std::any> full = r[std::string("full")];
+      |                                                     ^
+/tmp/2048.cpp:326:33: error: no match for ‘operator=’ (operand types are ‘std::vector<std::vector<int> >’ and ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’})
+  326 |   board = r[std::string("board")];
+      |                                 ^
+/usr/include/c++/13/bits/vector.tcc:210:5: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(const std::vector<_Tp, _Alloc>&) [with _Tp = std::vector<int>; _Alloc = std::allocator<std::vector<int> >]’
+  210 |     vector<_Tp, _Alloc>::
+      |     ^~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/vector.tcc:211:42: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘const std::vector<std::vector<int> >&’
+  211 |     operator=(const vector<_Tp, _Alloc>& __x)
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:766:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(std::vector<_Tp, _Alloc>&&) [with _Tp = std::vector<int>; _Alloc = std::allocator<std::vector<int> >]’
+  766 |       operator=(vector&& __x) noexcept(_Alloc_traits::_S_nothrow_move())
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:766:26: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘std::vector<std::vector<int> >&&’
+  766 |       operator=(vector&& __x) noexcept(_Alloc_traits::_S_nothrow_move())
+      |                 ~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:788:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(std::initializer_list<_Tp>) [with _Tp = std::vector<int>; _Alloc = std::allocator<std::vector<int> >]’
+  788 |       operator=(initializer_list<value_type> __l)
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:788:46: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘std::initializer_list<std::vector<int> >’
+  788 |       operator=(initializer_list<value_type> __l)
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/tmp/2048.cpp:327:31: error: no match for ‘operator=’ (operand types are ‘std::vector<std::any>’ and ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’})
+  327 |   full = r[std::string("full")];
+      |                               ^
+/usr/include/c++/13/bits/vector.tcc:210:5: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(const std::vector<_Tp, _Alloc>&) [with _Tp = std::any; _Alloc = std::allocator<std::any>]’
+  210 |     vector<_Tp, _Alloc>::
+      |     ^~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/vector.tcc:211:42: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘const std::vector<std::any>&’
+  211 |     operator=(const vector<_Tp, _Alloc>& __x)
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:766:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(std::vector<_Tp, _Alloc>&&) [with _Tp = std::any; _Alloc = std::allocator<std::any>]’
+  766 |       operator=(vector&& __x) noexcept(_Alloc_traits::_S_nothrow_move())
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:766:26: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘std::vector<std::any>&&’
+  766 |       operator=(vector&& __x) noexcept(_Alloc_traits::_S_nothrow_move())
+      |                 ~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:788:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(std::initializer_list<_Tp>) [with _Tp = std::any; _Alloc = std::allocator<std::any>]’
+  788 |       operator=(initializer_list<value_type> __l)
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:788:46: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘std::initializer_list<std::any>’
+  788 |       operator=(initializer_list<value_type> __l)
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/tmp/2048.cpp:332:16: error: ‘input’ was not declared in this scope; did you mean ‘int’?
+  332 |     auto cmd = input();
+      |                ^~~~~
+      |                int
+/tmp/2048.cpp:336:37: error: no match for ‘operator=’ (operand types are ‘std::vector<std::vector<int> >’ and ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’})
+  336 |       board = m[std::string("board")];
+      |                                     ^
+/usr/include/c++/13/bits/vector.tcc:210:5: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(const std::vector<_Tp, _Alloc>&) [with _Tp = std::vector<int>; _Alloc = std::allocator<std::vector<int> >]’
+  210 |     vector<_Tp, _Alloc>::
+      |     ^~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/vector.tcc:211:42: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘const std::vector<std::vector<int> >&’
+  211 |     operator=(const vector<_Tp, _Alloc>& __x)
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:766:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(std::vector<_Tp, _Alloc>&&) [with _Tp = std::vector<int>; _Alloc = std::allocator<std::vector<int> >]’
+  766 |       operator=(vector&& __x) noexcept(_Alloc_traits::_S_nothrow_move())
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:766:26: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘std::vector<std::vector<int> >&&’
+  766 |       operator=(vector&& __x) noexcept(_Alloc_traits::_S_nothrow_move())
+      |                 ~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:788:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(std::initializer_list<_Tp>) [with _Tp = std::vector<int>; _Alloc = std::allocator<std::vector<int> >]’
+  788 |       operator=(initializer_list<value_type> __l)
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:788:46: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘std::initializer_list<std::vector<int> >’
+  788 |       operator=(initializer_list<value_type> __l)
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/tmp/2048.cpp:337:37: error: cannot convert ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘int’ in assignment
+  337 |       score = m[std::string("score")];
+      |                                     ^
+/tmp/2048.cpp:338:37: error: cannot convert ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘bool’ in assignment
+  338 |       moved = m[std::string("moved")];
+      |                                     ^
+/tmp/2048.cpp:342:37: error: no match for ‘operator=’ (operand types are ‘std::vector<std::vector<int> >’ and ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’})
+  342 |       board = m[std::string("board")];
+      |                                     ^
+/usr/include/c++/13/bits/vector.tcc:210:5: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(const std::vector<_Tp, _Alloc>&) [with _Tp = std::vector<int>; _Alloc = std::allocator<std::vector<int> >]’
+  210 |     vector<_Tp, _Alloc>::
+      |     ^~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/vector.tcc:211:42: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘const std::vector<std::vector<int> >&’
+  211 |     operator=(const vector<_Tp, _Alloc>& __x)
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:766:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(std::vector<_Tp, _Alloc>&&) [with _Tp = std::vector<int>; _Alloc = std::allocator<std::vector<int> >]’
+  766 |       operator=(vector&& __x) noexcept(_Alloc_traits::_S_nothrow_move())
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:766:26: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘std::vector<std::vector<int> >&&’
+  766 |       operator=(vector&& __x) noexcept(_Alloc_traits::_S_nothrow_move())
+      |                 ~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:788:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(std::initializer_list<_Tp>) [with _Tp = std::vector<int>; _Alloc = std::allocator<std::vector<int> >]’
+  788 |       operator=(initializer_list<value_type> __l)
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:788:46: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘std::initializer_list<std::vector<int> >’
+  788 |       operator=(initializer_list<value_type> __l)
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/tmp/2048.cpp:343:37: error: cannot convert ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘int’ in assignment
+  343 |       score = m[std::string("score")];
+      |                                     ^
+/tmp/2048.cpp:344:37: error: cannot convert ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘bool’ in assignment
+  344 |       moved = m[std::string("moved")];
+      |                                     ^
+/tmp/2048.cpp:348:37: error: no match for ‘operator=’ (operand types are ‘std::vector<std::vector<int> >’ and ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’})
+  348 |       board = m[std::string("board")];
+      |                                     ^
+/usr/include/c++/13/bits/vector.tcc:210:5: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(const std::vector<_Tp, _Alloc>&) [with _Tp = std::vector<int>; _Alloc = std::allocator<std::vector<int> >]’
+  210 |     vector<_Tp, _Alloc>::
+      |     ^~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/vector.tcc:211:42: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘const std::vector<std::vector<int> >&’
+  211 |     operator=(const vector<_Tp, _Alloc>& __x)
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:766:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(std::vector<_Tp, _Alloc>&&) [with _Tp = std::vector<int>; _Alloc = std::allocator<std::vector<int> >]’
+  766 |       operator=(vector&& __x) noexcept(_Alloc_traits::_S_nothrow_move())
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:766:26: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘std::vector<std::vector<int> >&&’
+  766 |       operator=(vector&& __x) noexcept(_Alloc_traits::_S_nothrow_move())
+      |                 ~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:788:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(std::initializer_list<_Tp>) [with _Tp = std::vector<int>; _Alloc = std::allocator<std::vector<int> >]’
+  788 |       operator=(initializer_list<value_type> __l)
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:788:46: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘std::initializer_list<std::vector<int> >’
+  788 |       operator=(initializer_list<value_type> __l)
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/tmp/2048.cpp:349:37: error: cannot convert ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘int’ in assignment
+  349 |       score = m[std::string("score")];
+      |                                     ^
+/tmp/2048.cpp:350:37: error: cannot convert ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘bool’ in assignment
+  350 |       moved = m[std::string("moved")];
+      |                                     ^
+/tmp/2048.cpp:354:37: error: no match for ‘operator=’ (operand types are ‘std::vector<std::vector<int> >’ and ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’})
+  354 |       board = m[std::string("board")];
+      |                                     ^
+/usr/include/c++/13/bits/vector.tcc:210:5: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(const std::vector<_Tp, _Alloc>&) [with _Tp = std::vector<int>; _Alloc = std::allocator<std::vector<int> >]’
+  210 |     vector<_Tp, _Alloc>::
+      |     ^~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/vector.tcc:211:42: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘const std::vector<std::vector<int> >&’
+  211 |     operator=(const vector<_Tp, _Alloc>& __x)
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:766:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(std::vector<_Tp, _Alloc>&&) [with _Tp = std::vector<int>; _Alloc = std::allocator<std::vector<int> >]’
+  766 |       operator=(vector&& __x) noexcept(_Alloc_traits::_S_nothrow_move())
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:766:26: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘std::vector<std::vector<int> >&&’
+  766 |       operator=(vector&& __x) noexcept(_Alloc_traits::_S_nothrow_move())
+      |                 ~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:788:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(std::initializer_list<_Tp>) [with _Tp = std::vector<int>; _Alloc = std::allocator<std::vector<int> >]’
+  788 |       operator=(initializer_list<value_type> __l)
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:788:46: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘std::initializer_list<std::vector<int> >’
+  788 |       operator=(initializer_list<value_type> __l)
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/tmp/2048.cpp:355:37: error: cannot convert ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘int’ in assignment
+  355 |       score = m[std::string("score")];
+      |                                     ^
+/tmp/2048.cpp:356:37: error: cannot convert ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘bool’ in assignment
+  356 |       moved = m[std::string("moved")];
+      |                                     ^
+/tmp/2048.cpp:363:38: error: no match for ‘operator=’ (operand types are ‘std::vector<std::vector<int> >’ and ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’})
+  363 |       board = r2[std::string("board")];
+      |                                      ^
+/usr/include/c++/13/bits/vector.tcc:210:5: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(const std::vector<_Tp, _Alloc>&) [with _Tp = std::vector<int>; _Alloc = std::allocator<std::vector<int> >]’
+  210 |     vector<_Tp, _Alloc>::
+      |     ^~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/vector.tcc:211:42: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘const std::vector<std::vector<int> >&’
+  211 |     operator=(const vector<_Tp, _Alloc>& __x)
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:766:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(std::vector<_Tp, _Alloc>&&) [with _Tp = std::vector<int>; _Alloc = std::allocator<std::vector<int> >]’
+  766 |       operator=(vector&& __x) noexcept(_Alloc_traits::_S_nothrow_move())
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:766:26: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘std::vector<std::vector<int> >&&’
+  766 |       operator=(vector&& __x) noexcept(_Alloc_traits::_S_nothrow_move())
+      |                 ~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:788:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(std::initializer_list<_Tp>) [with _Tp = std::vector<int>; _Alloc = std::allocator<std::vector<int> >]’
+  788 |       operator=(initializer_list<value_type> __l)
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:788:46: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘std::initializer_list<std::vector<int> >’
+  788 |       operator=(initializer_list<value_type> __l)
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/tmp/2048.cpp:364:36: error: no match for ‘operator=’ (operand types are ‘std::vector<std::any>’ and ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’})
+  364 |       full = r2[std::string("full")];
+      |                                    ^
+/usr/include/c++/13/bits/vector.tcc:210:5: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(const std::vector<_Tp, _Alloc>&) [with _Tp = std::any; _Alloc = std::allocator<std::any>]’
+  210 |     vector<_Tp, _Alloc>::
+      |     ^~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/vector.tcc:211:42: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘const std::vector<std::any>&’
+  211 |     operator=(const vector<_Tp, _Alloc>& __x)
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:766:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(std::vector<_Tp, _Alloc>&&) [with _Tp = std::any; _Alloc = std::allocator<std::any>]’
+  766 |       operator=(vector&& __x) noexcept(_Alloc_traits::_S_nothrow_move())
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:766:26: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘std::vector<std::any>&&’
+  766 |       operator=(vector&& __x) noexcept(_Alloc_traits::_S_nothrow_move())
+      |                 ~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:788:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(std::initializer_list<_Tp>) [with _Tp = std::any; _Alloc = std::allocator<std::any>]’
+  788 |       operator=(initializer_list<value_type> __l)
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:788:46: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘std::initializer_list<std::any>’
+  788 |       operator=(initializer_list<value_type> __l)
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/tmp/2048.cpp:365:17: error: no match for ‘operator&&’ (operand types are ‘std::vector<std::any>’ and ‘bool’)
+  365 |       if ((full && ((!hasMoves(board))))) {
+      |            ~~~~ ^~ ~~~~~~~~~~~~~~~~~~~~
+      |            |         |
+      |            |         bool
+      |            std::vector<std::any>
+/tmp/2048.cpp:365:17: note: candidate: ‘operator&&(bool, bool)’ (built-in)
+  365 |       if ((full && ((!hasMoves(board))))) {
+      |            ~~~~~^~~~~~~~~~~~~~~~~~~~~~~
+/tmp/2048.cpp:365:17: note:   no known conversion for argument 1 from ‘std::vector<std::any>’ to ‘bool’

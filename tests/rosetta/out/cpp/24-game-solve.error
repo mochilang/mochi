@@ -1,0 +1,90 @@
+g++: exit status 1
+/tmp/24-game-solve.cpp: In function ‘bool solve(std::vector<T>)’:
+/tmp/24-game-solve.cpp:120:55: error: ‘goal’ was not declared in this scope
+  120 |                   std::any{(f[std::string("denom")] * goal)}))) {
+      |                                                       ^~~~
+/tmp/24-game-solve.cpp:130:23: error: template argument 1 is invalid
+  130 |       std::vector<auto> rest = std::vector<>{};
+      |                       ^
+/tmp/24-game-solve.cpp:130:23: error: template argument 2 is invalid
+/tmp/24-game-solve.cpp:130:44: error: wrong number of template arguments (0, should be at least 1)
+  130 |       std::vector<auto> rest = std::vector<>{};
+      |                                            ^
+In file included from /usr/include/c++/13/vector:66,
+                 from /usr/include/c++/13/chrono:47,
+                 from /tmp/24-game-solve.cpp:3:
+/usr/include/c++/13/bits/stl_vector.h:428:11: note: provided for ‘template<class _Tp, class _Alloc> class std::vector’
+  428 |     class vector : protected _Vector_base<_Tp, _Alloc>
+      |           ^~~~~~
+/tmp/24-game-solve.cpp:134:16: error: request for member ‘push_back’ in ‘rest’, which is of non-class type ‘int’
+  134 |           rest.push_back(xs[k]);
+      |                ^~~~~~~~~
+/tmp/24-game-solve.cpp:138:23: error: template argument 1 is invalid
+  138 |       std::vector<auto> a = xs[i];
+      |                       ^
+/tmp/24-game-solve.cpp:138:23: error: template argument 2 is invalid
+/tmp/24-game-solve.cpp:139:23: error: template argument 1 is invalid
+  139 |       std::vector<auto> b = xs[j];
+      |                       ^
+/tmp/24-game-solve.cpp:139:23: error: template argument 2 is invalid
+/tmp/24-game-solve.cpp:145:27: error: no matching function for call to ‘__append(int&, std::unordered_map<std::__cxx11::basic_string<char>, std::any>&)’
+  145 |         if (solve(__append(rest, node))) {
+      |                   ~~~~~~~~^~~~~~~~~~~~
+/tmp/24-game-solve.cpp:45:16: note: candidate: ‘template<class T, class U> std::vector<T> __append(const std::vector<T>&, const U&)’
+   45 | std::vector<T> __append(const std::vector<T> &v, const U &x) {
+      |                ^~~~~~~~
+/tmp/24-game-solve.cpp:45:16: note:   template argument deduction/substitution failed:
+/tmp/24-game-solve.cpp:145:27: note:   mismatched types ‘const std::vector<T>’ and ‘int’
+  145 |         if (solve(__append(rest, node))) {
+      |                   ~~~~~~~~^~~~~~~~~~~~
+/tmp/24-game-solve.cpp:153:25: error: no matching function for call to ‘__append(int&, std::unordered_map<std::__cxx11::basic_string<char>, std::any>&)’
+  153 |       if (solve(__append(rest, node))) {
+      |                 ~~~~~~~~^~~~~~~~~~~~
+/tmp/24-game-solve.cpp:45:16: note: candidate: ‘template<class T, class U> std::vector<T> __append(const std::vector<T>&, const U&)’
+   45 | std::vector<T> __append(const std::vector<T> &v, const U &x) {
+      |                ^~~~~~~~
+/tmp/24-game-solve.cpp:45:16: note:   template argument deduction/substitution failed:
+/tmp/24-game-solve.cpp:153:25: note:   mismatched types ‘const std::vector<T>’ and ‘int’
+  153 |       if (solve(__append(rest, node))) {
+      |                 ~~~~~~~~^~~~~~~~~~~~
+/tmp/24-game-solve.cpp:160:25: error: no matching function for call to ‘__append(int&, std::unordered_map<std::__cxx11::basic_string<char>, std::any>&)’
+  160 |       if (solve(__append(rest, node))) {
+      |                 ~~~~~~~~^~~~~~~~~~~~
+/tmp/24-game-solve.cpp:45:16: note: candidate: ‘template<class T, class U> std::vector<T> __append(const std::vector<T>&, const U&)’
+   45 | std::vector<T> __append(const std::vector<T> &v, const U &x) {
+      |                ^~~~~~~~
+/tmp/24-game-solve.cpp:45:16: note:   template argument deduction/substitution failed:
+/tmp/24-game-solve.cpp:160:25: note:   mismatched types ‘const std::vector<T>’ and ‘int’
+  160 |       if (solve(__append(rest, node))) {
+      |                 ~~~~~~~~^~~~~~~~~~~~
+/tmp/24-game-solve.cpp: In function ‘auto __mochi_main()’:
+/tmp/24-game-solve.cpp:173:21: error: template argument 1 is invalid
+  173 |     std::vector<auto> cards = std::vector<>{};
+      |                     ^
+/tmp/24-game-solve.cpp:173:21: error: template argument 2 is invalid
+/tmp/24-game-solve.cpp:173:43: error: wrong number of template arguments (0, should be at least 1)
+  173 |     std::vector<auto> cards = std::vector<>{};
+      |                                           ^
+/usr/include/c++/13/bits/stl_vector.h:428:11: note: provided for ‘template<class _Tp, class _Alloc> class std::vector’
+  428 |     class vector : protected _Vector_base<_Tp, _Alloc>
+      |           ^~~~~~
+/tmp/24-game-solve.cpp:175:17: error: ‘n_cards’ was not declared in this scope; did you mean ‘cards’?
+  175 |     while ((i < n_cards)) {
+      |                 ^~~~~~~
+      |                 cards
+/tmp/24-game-solve.cpp:176:30: error: ‘digit_range’ was not declared in this scope
+  176 |       auto n = (((_now() % ((digit_range - 1)))) + 1);
+      |                              ^~~~~~~~~~~
+/tmp/24-game-solve.cpp:177:13: error: request for member ‘push_back’ in ‘cards’, which is of non-class type ‘int’
+  177 |       cards.push_back(newNum(n));
+      |             ^~~~~~~~~
+/tmp/24-game-solve.cpp:182:16: error: no matching function for call to ‘solve(int&)’
+  182 |     if ((!solve(cards))) {
+      |           ~~~~~^~~~~~~
+/tmp/24-game-solve.cpp:115:6: note: candidate: ‘template<class auto:47> bool solve(std::vector<T>)’
+  115 | bool solve(std::vector<auto> xs) {
+      |      ^~~~~
+/tmp/24-game-solve.cpp:115:6: note:   template argument deduction/substitution failed:
+/tmp/24-game-solve.cpp:182:16: note:   mismatched types ‘std::vector<T>’ and ‘int’
+  182 |     if ((!solve(cards))) {
+      |           ~~~~~^~~~~~~

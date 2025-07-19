@@ -1,0 +1,146 @@
+g++: exit status 1
+/tmp/24-game.cpp:13:1: error: expected unqualified-id before ‘>’ token
+   13 | > (n).count();
+      | ^
+/tmp/24-game.cpp:14:1: error: expected declaration before ‘}’ token
+   14 | }
+      | ^
+/tmp/24-game.cpp: In function ‘int randDigit()’:
+/tmp/24-game.cpp:15:29: error: ‘_now’ was not declared in this scope
+   15 | int randDigit() { return (((_now() % 9)) + 1); }
+      |                             ^~~~
+/tmp/24-game.cpp: In function ‘auto __mochi_main()’:
+/tmp/24-game.cpp:18:15: error: ‘__digits_type’ was not declared in this scope
+   18 |   std::vector<__digits_type> digits = {};
+      |               ^~~~~~~~~~~~~
+/tmp/24-game.cpp:18:28: error: template argument 1 is invalid
+   18 |   std::vector<__digits_type> digits = {};
+      |                            ^
+/tmp/24-game.cpp:18:28: error: template argument 2 is invalid
+/tmp/24-game.cpp:20:12: error: request for member ‘push_back’ in ‘digits’, which is of non-class type ‘int’
+   20 |     digits.push_back(randDigit());
+      |            ^~~~~~~~~
+/tmp/24-game.cpp:24:45: error: invalid types ‘int[int]’ for array subscript
+   24 |     numstr = (numstr + std::to_string(digits[i]));
+      |                                             ^
+/tmp/24-game.cpp:29:15: error: ‘input’ was not declared in this scope; did you mean ‘int’?
+   29 |   auto expr = input();
+      |               ^~~~~
+      |               int
+/tmp/24-game.cpp:36:15: error: ‘__stack_type’ was not declared in this scope
+   36 |   std::vector<__stack_type> stack = {};
+      |               ^~~~~~~~~~~~
+/tmp/24-game.cpp:36:27: error: template argument 1 is invalid
+   36 |   std::vector<__stack_type> stack = {};
+      |                           ^
+/tmp/24-game.cpp:36:27: error: template argument 2 is invalid
+/tmp/24-game.cpp:42:19: error: request for member ‘size’ in ‘digits’, which is of non-class type ‘int’
+   42 |       if ((digits.size() == 0)) {
+      |                   ^~~~
+/tmp/24-game.cpp:47:21: error: invalid types ‘int[int]’ for array subscript
+   47 |       while ((digits[j] != (int(ch) - int(std::string("0"))))) {
+      |                     ^
+/tmp/24-game.cpp:47:39: error: invalid cast from type ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to type ‘int’
+   47 |       while ((digits[j] != (int(ch) - int(std::string("0"))))) {
+      |                                       ^~~~~~~~~~~~~~~~~~~~~
+/tmp/24-game.cpp:49:26: error: request for member ‘size’ in ‘digits’, which is of non-class type ‘int’
+   49 |         if ((j == digits.size())) {
+      |                          ^~~~
+/tmp/24-game.cpp: In lambda function:
+/tmp/24-game.cpp:55:66: error: invalid types ‘int[int]’ for array subscript
+   55 |                   return std::vector<std::decay_t<decltype(digits[0])>>(
+      |                                                                  ^
+/tmp/24-game.cpp:55:66: error: invalid types ‘int[int]’ for array subscript
+/tmp/24-game.cpp:55:51: error: template argument 1 is invalid
+   55 |                   return std::vector<std::decay_t<decltype(digits[0])>>(
+      |                                                   ^~~~~~~~~~~~~~~~~~~
+/tmp/24-game.cpp:55:70: error: template argument 1 is invalid
+   55 |                   return std::vector<std::decay_t<decltype(digits[0])>>(
+      |                                                                      ^~
+/tmp/24-game.cpp:55:70: error: template argument 2 is invalid
+/tmp/24-game.cpp: In lambda function:
+/tmp/24-game.cpp:59:66: error: invalid types ‘int[int]’ for array subscript
+   59 |                   return std::vector<std::decay_t<decltype(digits[0])>>(
+      |                                                                  ^
+/tmp/24-game.cpp:59:66: error: invalid types ‘int[int]’ for array subscript
+/tmp/24-game.cpp:59:51: error: template argument 1 is invalid
+   59 |                   return std::vector<std::decay_t<decltype(digits[0])>>(
+      |                                                   ^~~~~~~~~~~~~~~~~~~
+/tmp/24-game.cpp:59:70: error: template argument 1 is invalid
+   59 |                   return std::vector<std::decay_t<decltype(digits[0])>>(
+      |                                                                      ^~
+/tmp/24-game.cpp:59:70: error: template argument 2 is invalid
+/tmp/24-game.cpp:60:63: error: request for member ‘size’ in ‘digits’, which is of non-class type ‘int’
+   60 |                       v.begin() + (j + 1), v.begin() + digits.size());
+      |                                                               ^~~~
+/tmp/24-game.cpp: In function ‘auto __mochi_main()’:
+/tmp/24-game.cpp:57:28: error: invalid operands of types ‘void’ and ‘void’ to binary ‘operator+’
+   54 |       digits = (([&](auto v) {
+      |                 ~~~~~~~~~~~~~~
+   55 |                   return std::vector<std::decay_t<decltype(digits[0])>>(
+      |                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   56 |                       v.begin() + 0, v.begin() + j);
+      |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   57 |                 })(digits) +
+      |                 ~~~~~~~~~~ ^
+      |                   |
+      |                   void
+   58 |                 ([&](auto v) {
+      |                 ~~~~~~~~~~~~~~
+   59 |                   return std::vector<std::decay_t<decltype(digits[0])>>(
+      |                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   60 |                       v.begin() + (j + 1), v.begin() + digits.size());
+      |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   61 |                 })(digits));
+      |                 ~~~~~~~~~~  
+      |                   |
+      |                   void
+/tmp/24-game.cpp:62:13: error: request for member ‘push_back’ in ‘stack’, which is of non-class type ‘int’
+   62 |       stack.push_back(float((int(ch) - int(std::string("0")))));
+      |             ^~~~~~~~~
+/tmp/24-game.cpp:62:40: error: invalid cast from type ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to type ‘int’
+   62 |       stack.push_back(float((int(ch) - int(std::string("0")))));
+      |                                        ^~~~~~~~~~~~~~~~~~~~~
+/tmp/24-game.cpp:64:18: error: request for member ‘size’ in ‘stack’, which is of non-class type ‘int’
+   64 |       if ((stack.size() < 2)) {
+      |                  ^~~~
+/tmp/24-game.cpp:69:29: error: request for member ‘size’ in ‘stack’, which is of non-class type ‘int’
+   69 |       auto b = stack[(stack.size() - 1)];
+      |                             ^~~~
+/tmp/24-game.cpp:70:29: error: request for member ‘size’ in ‘stack’, which is of non-class type ‘int’
+   70 |       auto a = stack[(stack.size() - 2)];
+      |                             ^~~~
+/tmp/24-game.cpp:72:22: error: request for member ‘size’ in ‘stack’, which is of non-class type ‘int’
+   72 |         stack[(stack.size() - 2)] = (a + b);
+      |                      ^~~~
+/tmp/24-game.cpp: In lambda function:
+/tmp/24-game.cpp:75:55: error: invalid types ‘int[int]’ for array subscript
+   75 |         return std::vector<std::decay_t<decltype(stack[0])>>(
+      |                                                       ^
+/tmp/24-game.cpp:75:55: error: invalid types ‘int[int]’ for array subscript
+/tmp/24-game.cpp:75:41: error: template argument 1 is invalid
+   75 |         return std::vector<std::decay_t<decltype(stack[0])>>(
+      |                                         ^~~~~~~~~~~~~~~~~~
+/tmp/24-game.cpp:75:59: error: template argument 1 is invalid
+   75 |         return std::vector<std::decay_t<decltype(stack[0])>>(
+      |                                                           ^~
+/tmp/24-game.cpp:75:59: error: template argument 2 is invalid
+/tmp/24-game.cpp:76:47: error: request for member ‘size’ in ‘stack’, which is of non-class type ‘int’
+   76 |             v.begin() + 0, v.begin() + (stack.size() - 1));
+      |                                               ^~~~
+/tmp/24-game.cpp: In function ‘auto __mochi_main()’:
+/tmp/24-game.cpp:77:9: error: void value not ignored as it ought to be
+   74 |       stack = ([&](auto v) {
+      |               ~~~~~~~~~~~~~~
+   75 |         return std::vector<std::decay_t<decltype(stack[0])>>(
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   76 |             v.begin() + 0, v.begin() + (stack.size() - 1));
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   77 |       })(stack);
+      |       ~~^~~~~~~
+/tmp/24-game.cpp:82:20: error: invalid types ‘int[int]’ for array subscript
+   82 |     if ((abs((stack[0] - 24)) > 1e-06)) {
+      |                    ^
+/tmp/24-game.cpp:83:71: error: invalid types ‘int[int]’ for array subscript
+   83 |       std::cout << ((std::string("incorrect. ") + std::to_string(stack[0])) +
+      |                                                                       ^
