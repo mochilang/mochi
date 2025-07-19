@@ -6,13 +6,10 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"os"
-	"path/filepath"
-	"strings"
-	"time"
 
 	"mochi/ast"
 	"mochi/parser"
+	meta "mochi/transpiler/meta"
 	"mochi/types"
 )
 
@@ -56,11 +53,15 @@ type FunExpr struct {
 
 type LetStmt struct {
 	Name  string
+	Type  string
 	Value Expr
 }
 
 func (s *LetStmt) emit(w io.Writer) {
 	fmt.Fprintf(w, "val %s", s.Name)
+	if s.Type != "" {
+		fmt.Fprintf(w, ": %s", s.Type)
+	}
 	if s.Value != nil {
 		fmt.Fprint(w, " = ")
 		s.Value.emit(w)
@@ -71,11 +72,15 @@ func (s *LetStmt) emit(w io.Writer) {
 
 type VarStmt struct {
 	Name  string
+	Type  string
 	Value Expr
 }
 
 func (s *VarStmt) emit(w io.Writer) {
 	fmt.Fprintf(w, "var %s", s.Name)
+	if s.Type != "" {
+		fmt.Fprintf(w, ": %s", s.Type)
+	}
 	if s.Value != nil {
 		fmt.Fprint(w, " = ")
 		s.Value.emit(w)
@@ -334,21 +339,22 @@ func Emit(p *Program) []byte {
 	buf.WriteString("object Main {\n")
 	for _, st := range p.Stmts {
 		if fn, ok := st.(*FunStmt); ok {
-			buf.WriteString("    ")
+			buf.WriteString("  ")
 			fn.emit(&buf)
+			buf.WriteByte('\n')
 			buf.WriteByte('\n')
 		}
 	}
-	buf.WriteString("    def main(args: Array[String]): Unit = {\n")
+	buf.WriteString("  def main(args: Array[String]): Unit = {\n")
 	for _, st := range p.Stmts {
 		if _, ok := st.(*FunStmt); ok {
 			continue
 		}
-		buf.WriteString("        ")
+		buf.WriteString("    ")
 		st.emit(&buf)
 		buf.WriteByte('\n')
 	}
-	buf.WriteString("    }\n")
+	buf.WriteString("  }\n")
 	buf.WriteString("}\n")
 	return buf.Bytes()
 }
@@ -357,17 +363,16 @@ func Emit(p *Program) []byte {
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	sc := &Program{}
 	for _, st := range prog.Statements {
-		s, err := convertStmt(st)
+		s, err := convertStmt(st, env)
 		if err != nil {
 			return nil, err
 		}
 		sc.Stmts = append(sc.Stmts, s)
 	}
-	_ = env
 	return sc, nil
 }
 
-func convertStmt(st *parser.Statement) (Stmt, error) {
+func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 	switch {
 	case st.Expr != nil:
 		e, err := convertExpr(st.Expr.Expr)
@@ -384,7 +389,11 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				return nil, err
 			}
 		}
-		return &LetStmt{Name: st.Let.Name, Value: e}, nil
+		typ := toScalaType(st.Let.Type)
+		if typ == "" {
+			typ = inferType(e)
+		}
+		return &LetStmt{Name: st.Let.Name, Type: typ, Value: e}, nil
 	case st.Var != nil:
 		var e Expr
 		var err error
@@ -394,7 +403,11 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				return nil, err
 			}
 		}
-		return &VarStmt{Name: st.Var.Name, Value: e}, nil
+		typ := toScalaType(st.Var.Type)
+		if typ == "" {
+			typ = inferType(e)
+		}
+		return &VarStmt{Name: st.Var.Name, Type: typ, Value: e}, nil
 	case st.Assign != nil:
 		if len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0 {
 			return nil, fmt.Errorf("unsupported assign")
@@ -405,11 +418,11 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		return &AssignStmt{Name: st.Assign.Name, Value: e}, nil
 	case st.Fun != nil:
-		return convertFunStmt(st.Fun)
+		return convertFunStmt(st.Fun, env)
 	case st.Return != nil:
 		return convertReturnStmt(st.Return)
 	case st.If != nil:
-		return convertIfStmt(st.If)
+		return convertIfStmt(st.If, env)
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
@@ -697,13 +710,13 @@ func convertIfExpr(ie *parser.IfExpr) (Expr, error) {
 	return &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
 }
 
-func convertFunStmt(fs *parser.FunStmt) (Stmt, error) {
+func convertFunStmt(fs *parser.FunStmt, env *types.Env) (Stmt, error) {
 	fn := &FunStmt{Name: fs.Name}
 	for _, p := range fs.Params {
 		fn.Params = append(fn.Params, p.Name)
 	}
 	for _, st := range fs.Body {
-		s, err := convertStmt(st)
+		s, err := convertStmt(st, env)
 		if err != nil {
 			return nil, err
 		}
@@ -724,14 +737,14 @@ func convertReturnStmt(rs *parser.ReturnStmt) (Stmt, error) {
 	return &ReturnStmt{Value: expr}, nil
 }
 
-func convertIfStmt(is *parser.IfStmt) (Stmt, error) {
+func convertIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
 	cond, err := convertExpr(is.Cond)
 	if err != nil {
 		return nil, err
 	}
 	var thenStmts []Stmt
 	for _, st := range is.Then {
-		s, err := convertStmt(st)
+		s, err := convertStmt(st, env)
 		if err != nil {
 			return nil, err
 		}
@@ -739,14 +752,14 @@ func convertIfStmt(is *parser.IfStmt) (Stmt, error) {
 	}
 	var elseStmts []Stmt
 	if is.ElseIf != nil {
-		s, err := convertIfStmt(is.ElseIf)
+		s, err := convertIfStmt(is.ElseIf, env)
 		if err != nil {
 			return nil, err
 		}
 		elseStmts = []Stmt{s}
 	} else if len(is.Else) > 0 {
 		for _, st := range is.Else {
-			s, err := convertStmt(st)
+			s, err := convertStmt(st, env)
 			if err != nil {
 				return nil, err
 			}
@@ -756,32 +769,39 @@ func convertIfStmt(is *parser.IfStmt) (Stmt, error) {
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
 }
 
-func version() string {
-	dir, err := os.Getwd()
-	if err != nil {
-		return "dev"
+func toScalaType(t *parser.TypeRef) string {
+	if t == nil || t.Simple == nil {
+		return ""
 	}
-	for i := 0; i < 10; i++ {
-		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
-			data, err := os.ReadFile(filepath.Join(dir, "VERSION"))
-			if err != nil {
-				return "dev"
-			}
-			return strings.TrimSpace(string(data))
-		}
-		parent := filepath.Dir(dir)
-		if parent == dir {
-			break
-		}
-		dir = parent
+	switch *t.Simple {
+	case "int":
+		return "Int"
+	case "string":
+		return "String"
+	case "bool":
+		return "Boolean"
 	}
-	return "dev"
+	return "Any"
+}
+
+func inferType(e Expr) string {
+	switch ex := e.(type) {
+	case *IntLit:
+		return "Int"
+	case *StringLit:
+		return "String"
+	case *BoolLit:
+		return "Boolean"
+	case *ListLit:
+		return "List[Any]"
+	default:
+		_ = ex
+	}
+	return ""
 }
 
 func header() string {
-	loc := time.FixedZone("GMT+7", 7*3600)
-	t := time.Now().In(loc)
-	return fmt.Sprintf("// Generated by Mochi transpiler v%s on %s\n", version(), t.Format("2006-01-02 15:04:05 MST"))
+	return string(meta.Header("//"))
 }
 
 // Print converts the Scala AST to ast.Node and prints it.
