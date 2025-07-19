@@ -302,15 +302,27 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 func convertStmt(s *parser.Statement) (Stmt, error) {
 	switch {
 	case s.Let != nil:
-		e, err := convertExpr(s.Let.Value)
-		if err != nil {
-			return nil, err
+		var e Expr
+		var err error
+		if s.Let.Value != nil {
+			e, err = convertExpr(s.Let.Value)
+			if err != nil {
+				return nil, err
+			}
+		} else if s.Let.Type != nil {
+			e = zeroValue(s.Let.Type)
 		}
 		return &VarDecl{Name: s.Let.Name, Expr: e}, nil
 	case s.Var != nil:
-		e, err := convertExpr(s.Var.Value)
-		if err != nil {
-			return nil, err
+		var e Expr
+		var err error
+		if s.Var.Value != nil {
+			e, err = convertExpr(s.Var.Value)
+			if err != nil {
+				return nil, err
+			}
+		} else if s.Var.Type != nil {
+			e = zeroValue(s.Var.Type)
 		}
 		return &VarDecl{Name: s.Var.Name, Expr: e}, nil
 	case s.Assign != nil:
@@ -505,6 +517,24 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 		return &StringLit{Value: *l.Str}, nil
 	default:
 		return nil, fmt.Errorf("unsupported literal")
+	}
+}
+
+// zeroValue returns a default expression for the given type reference. Only a
+// few primitive types are recognized; other types result in no initializer.
+func zeroValue(t *parser.TypeRef) Expr {
+	if t == nil || t.Simple == nil {
+		return nil
+	}
+	switch *t.Simple {
+	case "int", "float":
+		return &NumberLit{Value: "0"}
+	case "bool":
+		return &BoolLit{Value: false}
+	case "string":
+		return &StringLit{Value: ""}
+	default:
+		return nil
 	}
 }
 

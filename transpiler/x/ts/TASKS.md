@@ -1,7 +1,6 @@
-# TypeScript Transpiler Tasks
+# TypeScript Transpiler Progress
 
-Last updated: 2025-07-19 13:18 +0700
-
-- [x] Basic `print` support
-- [x] `if` statements
-- [x] loops
+- 2025-07-19 13:18 +07 - Basic `print` support
+- 2025-07-19 13:18 +07 - `if` statements
+- 2025-07-19 13:18 +07 - loops
+- 2025-07-19 13:33 +07 - typed variable declarations
