@@ -16,34 +16,16 @@ import (
 
 // Program represents a Go program consisting of a sequence of statements.
 type Program struct {
-	Stmts        []Stmt
-	UseAvg       bool
-	UseSum       bool
-	UseMin       bool
-	UseMax       bool
-	UseContains  bool
-	UseStrings   bool
-	UseUnion     bool
-	UseUnionAll  bool
-	UseExcept    bool
-	UseIntersect bool
-	UsePrint     bool
-	UseAtoi      bool
+	Stmts      []Stmt
+	UseStrings bool
+	UseStrconv bool
+	UsePrint   bool
 }
 
 var (
-	usesAvg       bool
-	usesSum       bool
-	usesMin       bool
-	usesMax       bool
-	usesContains  bool
-	usesStrings   bool
-	usesUnion     bool
-	usesUnionAll  bool
-	usesExcept    bool
-	usesIntersect bool
-	usesPrint     bool
-	usesAtoi      bool
+	usesStrings bool
+	usesStrconv bool
+	usesPrint   bool
 )
 
 type Stmt interface{ emit(io.Writer) }
@@ -339,20 +321,104 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	fmt.Fprint(w, ")")
 }
 
+type AvgExpr struct{ List Expr }
+
+func (a *AvgExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "func(nums []int) float64 { sum := 0; for _, n := range nums { sum += n }; return float64(sum)/float64(len(nums)) }(")
+	a.List.emit(w)
+	fmt.Fprint(w, ")")
+}
+
+type SumExpr struct{ List Expr }
+
+func (s *SumExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "func(nums []int) int { s := 0; for _, n := range nums { s += n }; return s }(")
+	s.List.emit(w)
+	fmt.Fprint(w, ")")
+}
+
+type MinExpr struct{ List Expr }
+
+func (m *MinExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "func(nums []int) int { if len(nums)==0 { return 0 }; min := nums[0]; for _, n := range nums[1:] { if n < min { min = n } }; return min }(")
+	m.List.emit(w)
+	fmt.Fprint(w, ")")
+}
+
+type MaxExpr struct{ List Expr }
+
+func (m *MaxExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "func(nums []int) int { if len(nums)==0 { return 0 }; max := nums[0]; for _, n := range nums[1:] { if n > max { max = n } }; return max }(")
+	m.List.emit(w)
+	fmt.Fprint(w, ")")
+}
+
+type ContainsExpr struct {
+	Collection Expr
+	Value      Expr
+}
+
+func (c *ContainsExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "func(s any, v any) any { switch xs := s.(type) { case []int: n, ok := v.(int); if !ok { return nil }; for i, m := range xs { if m == n { return i } }; return nil; case string: str, ok := v.(string); if !ok { return 0 }; if strings.Contains(xs, str) { return 1 }; return 0 }; return nil }(")
+	c.Collection.emit(w)
+	fmt.Fprint(w, ", ")
+	c.Value.emit(w)
+	fmt.Fprint(w, ")")
+}
+
+type UnionExpr struct{ Left, Right Expr }
+
+func (u *UnionExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "func(a, b []int) []int { m := map[int]bool{}; res := []int{}; for _, n := range a { if !m[n] { m[n]=true; res=append(res,n) } }; for _, n := range b { if !m[n] { m[n]=true; res=append(res,n) } }; return res }(")
+	u.Left.emit(w)
+	fmt.Fprint(w, ", ")
+	u.Right.emit(w)
+	fmt.Fprint(w, ")")
+}
+
+type UnionAllExpr struct{ Left, Right Expr }
+
+func (u *UnionAllExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "func(a, b []int) []int { res := make([]int, len(a)); copy(res, a); res = append(res, b...); return res }(")
+	u.Left.emit(w)
+	fmt.Fprint(w, ", ")
+	u.Right.emit(w)
+	fmt.Fprint(w, ")")
+}
+
+type ExceptExpr struct{ Left, Right Expr }
+
+func (e *ExceptExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "func(a, b []int) []int { m := map[int]bool{}; for _, n := range b { m[n]=true }; res := []int{}; for _, n := range a { if !m[n] { res=append(res,n) } }; return res }(")
+	e.Left.emit(w)
+	fmt.Fprint(w, ", ")
+	e.Right.emit(w)
+	fmt.Fprint(w, ")")
+}
+
+type IntersectExpr struct{ Left, Right Expr }
+
+func (i *IntersectExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "func(a, b []int) []int { m := map[int]bool{}; for _, n := range a { m[n]=true }; res := []int{}; for _, n := range b { if m[n] { res=append(res,n) } }; return res }(")
+	i.Left.emit(w)
+	fmt.Fprint(w, ", ")
+	i.Right.emit(w)
+	fmt.Fprint(w, ")")
+}
+
+type AtoiExpr struct{ Expr Expr }
+
+func (a *AtoiExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "func() int { n, _ := strconv.Atoi(")
+	a.Expr.emit(w)
+	fmt.Fprint(w, "); return n }()")
+}
+
 // Transpile converts a Mochi program to a minimal Go AST.
 func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
-	usesAvg = false
-	usesSum = false
-	usesMin = false
-	usesMax = false
-	usesContains = false
 	usesStrings = false
-	usesUnion = false
-	usesUnionAll = false
-	usesExcept = false
-	usesIntersect = false
+	usesStrconv = false
 	usesPrint = false
-	usesAtoi = false
 	gp := &Program{}
 	for _, stmt := range p.Statements {
 		s, err := compileStmt(stmt, env)
@@ -364,18 +430,9 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 		}
 	}
 	_ = env // reserved for future use
-	gp.UseAvg = usesAvg
-	gp.UseSum = usesSum
-	gp.UseMin = usesMin
-	gp.UseMax = usesMax
-	gp.UseContains = usesContains
-	gp.UseStrings = usesStrings || usesContains
-	gp.UseUnion = usesUnion
-	gp.UseUnionAll = usesUnionAll
-	gp.UseExcept = usesExcept
-	gp.UseIntersect = usesIntersect
+	gp.UseStrings = usesStrings
+	gp.UseStrconv = usesStrconv
 	gp.UsePrint = usesPrint
-	gp.UseAtoi = usesAtoi
 	return gp, nil
 }
 
@@ -638,21 +695,16 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 				var newExpr Expr
 				switch opName {
 				case "in":
-					usesContains = true
 					usesStrings = true
-					newExpr = &CallExpr{Func: "contains", Args: []Expr{right, left}}
+					newExpr = &ContainsExpr{Collection: right, Value: left}
 				case "union":
-					usesUnion = true
-					newExpr = &CallExpr{Func: "union", Args: []Expr{left, right}}
+					newExpr = &UnionExpr{Left: left, Right: right}
 				case "union_all":
-					usesUnionAll = true
-					newExpr = &CallExpr{Func: "unionAll", Args: []Expr{left, right}}
+					newExpr = &UnionAllExpr{Left: left, Right: right}
 				case "except":
-					usesExcept = true
-					newExpr = &CallExpr{Func: "except", Args: []Expr{left, right}}
+					newExpr = &ExceptExpr{Left: left, Right: right}
 				case "intersect":
-					usesIntersect = true
-					newExpr = &CallExpr{Func: "intersect", Args: []Expr{left, right}}
+					newExpr = &IntersectExpr{Left: left, Right: right}
 				default:
 					newExpr = &BinaryExpr{Left: left, Op: ops[i].Op, Right: right}
 				}
@@ -717,9 +769,8 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 		}
 		switch method {
 		case "contains":
-			usesContains = true
 			usesStrings = true
-			return &CallExpr{Func: "contains", Args: append([]Expr{expr}, args...)}, nil
+			return &ContainsExpr{Collection: expr, Value: args[0]}, nil
 		default:
 			return nil, fmt.Errorf("unsupported method %s", method)
 		}
@@ -777,8 +828,8 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			return nil, fmt.Errorf("unsupported call")
 		} else if op.Cast != nil {
 			if op.Cast.Type != nil && op.Cast.Type.Simple != nil && *op.Cast.Type.Simple == "int" {
-				usesAtoi = true
-				expr = &CallExpr{Func: "atoi", Args: []Expr{expr}}
+				usesStrconv = true
+				expr = &AtoiExpr{Expr: expr}
 			} else {
 				return nil, fmt.Errorf("unsupported postfix")
 			}
@@ -803,17 +854,17 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		name := p.Call.Func
 		switch name {
 		case "avg":
-			usesAvg = true
+			return &AvgExpr{List: args[0]}, nil
 		case "count":
 			name = "len"
 		case "str":
 			name = "fmt.Sprint"
 		case "sum":
-			usesSum = true
+			return &SumExpr{List: args[0]}, nil
 		case "min":
-			usesMin = true
+			return &MinExpr{List: args[0]}, nil
 		case "max":
-			usesMax = true
+			return &MaxExpr{List: args[0]}, nil
 		case "substring":
 			return &CallExpr{Func: "string", Args: []Expr{&SliceExpr{X: &RuneSliceExpr{Expr: args[0]}, Start: args[1], End: args[2]}}}, nil
 		}
@@ -978,44 +1029,10 @@ func Emit(prog *Program) []byte {
 	if prog.UseStrings {
 		buf.WriteString("    \"strings\"\n")
 	}
-	if prog.UseAtoi {
+	if prog.UseStrconv {
 		buf.WriteString("    \"strconv\"\n")
 	}
 	buf.WriteString(")\n\n")
-	if prog.UseAvg {
-		buf.WriteString("func avg(nums []int) float64 {\n")
-		buf.WriteString("    sum := 0\n")
-		buf.WriteString("    for _, n := range nums { sum += n }\n")
-		buf.WriteString("    return float64(sum) / float64(len(nums))\n")
-		buf.WriteString("}\n\n")
-	}
-	if prog.UseSum {
-		buf.WriteString("func sum(nums []int) int {\n    s := 0\n    for _, n := range nums { s += n }\n    return s\n}\n\n")
-	}
-	if prog.UseMin {
-		buf.WriteString("func min(nums []int) int {\n    if len(nums)==0 { return 0 }\n    m := nums[0]\n    for _, n := range nums[1:] { if n < m { m = n } }\n    return m\n}\n\n")
-	}
-	if prog.UseMax {
-		buf.WriteString("func max(nums []int) int {\n    if len(nums)==0 { return 0 }\n    m := nums[0]\n    for _, n := range nums[1:] { if n > m { m = n } }\n    return m\n}\n\n")
-	}
-	if prog.UseContains {
-		buf.WriteString("func contains(s any, v any) any {\n    switch xs := s.(type) {\n    case []int:\n        n, ok := v.(int)\n        if !ok { return nil }\n        for i, m := range xs { if m == n { return i } }\n        return nil\n    case string:\n        str, ok := v.(string)\n        if !ok { return 0 }\n        if strings.Contains(xs, str) { return 1 }\n        return 0\n    }\n    return nil\n}\n\n")
-	}
-	if prog.UseUnion {
-		buf.WriteString("func union(a, b []int) []int {\n    m := map[int]bool{}\n    res := []int{}\n    for _, n := range a { if !m[n] { m[n]=true; res=append(res,n) } }\n    for _, n := range b { if !m[n] { m[n]=true; res=append(res,n) } }\n    return res\n}\n\n")
-	}
-	if prog.UseUnionAll {
-		buf.WriteString("func unionAll(a, b []int) []int {\n    res := make([]int, len(a))\n    copy(res, a)\n    res = append(res, b...)\n    return res\n}\n\n")
-	}
-	if prog.UseExcept {
-		buf.WriteString("func except(a, b []int) []int {\n    m := map[int]bool{}\n    for _, n := range b { m[n]=true }\n    res := []int{}\n    for _, n := range a { if !m[n] { res=append(res,n) } }\n    return res\n}\n\n")
-	}
-	if prog.UseIntersect {
-		buf.WriteString("func intersect(a, b []int) []int {\n    m := map[int]bool{}\n    for _, n := range a { m[n]=true }\n    res := []int{}\n    for _, n := range b { if m[n] { res=append(res,n) } }\n    return res\n}\n\n")
-	}
-	if prog.UseAtoi {
-		buf.WriteString("func atoi(s string) int {\n    n, _ := strconv.Atoi(s)\n    return n\n}\n\n")
-	}
 	buf.WriteString("func main() {\n")
 	for _, s := range prog.Stmts {
 		buf.WriteString("    ")
@@ -1143,6 +1160,26 @@ func toNodeExpr(e Expr) *ast.Node {
 		return &ast.Node{Kind: "runes", Children: []*ast.Node{toNodeExpr(ex.Expr)}}
 	case *BinaryExpr:
 		return &ast.Node{Kind: "bin", Value: ex.Op, Children: []*ast.Node{toNodeExpr(ex.Left), toNodeExpr(ex.Right)}}
+	case *AvgExpr:
+		return &ast.Node{Kind: "avg", Children: []*ast.Node{toNodeExpr(ex.List)}}
+	case *SumExpr:
+		return &ast.Node{Kind: "sum", Children: []*ast.Node{toNodeExpr(ex.List)}}
+	case *MinExpr:
+		return &ast.Node{Kind: "min", Children: []*ast.Node{toNodeExpr(ex.List)}}
+	case *MaxExpr:
+		return &ast.Node{Kind: "max", Children: []*ast.Node{toNodeExpr(ex.List)}}
+	case *ContainsExpr:
+		return &ast.Node{Kind: "contains", Children: []*ast.Node{toNodeExpr(ex.Collection), toNodeExpr(ex.Value)}}
+	case *UnionExpr:
+		return &ast.Node{Kind: "union", Children: []*ast.Node{toNodeExpr(ex.Left), toNodeExpr(ex.Right)}}
+	case *UnionAllExpr:
+		return &ast.Node{Kind: "unionall", Children: []*ast.Node{toNodeExpr(ex.Left), toNodeExpr(ex.Right)}}
+	case *ExceptExpr:
+		return &ast.Node{Kind: "except", Children: []*ast.Node{toNodeExpr(ex.Left), toNodeExpr(ex.Right)}}
+	case *IntersectExpr:
+		return &ast.Node{Kind: "intersect", Children: []*ast.Node{toNodeExpr(ex.Left), toNodeExpr(ex.Right)}}
+	case *AtoiExpr:
+		return &ast.Node{Kind: "atoi", Children: []*ast.Node{toNodeExpr(ex.Expr)}}
 	case *IfExpr:
 		n := &ast.Node{Kind: "ifexpr"}
 		n.Children = append(n.Children, toNodeExpr(ex.Cond), toNodeExpr(ex.Then))
