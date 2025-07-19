@@ -1,9 +1,9 @@
-# Rosetta Haskell Output (8/278 succeeded)
+# Rosetta Haskell Output (9/280 succeeded)
 
 This directory holds Haskell source code generated from the Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected runtime output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
 ## Program checklist
-- [ ] 100-doors-2
+- [x] 100-doors-2
 - [ ] 100-doors-3
 - [ ] 100-doors
 - [ ] 100-prisoners
@@ -280,4 +280,6 @@ This directory holds Haskell source code generated from the Mochi programs in `t
 - [ ] deal-cards-for-freecell
 - [ ] death-star
 - [ ] deceptive-numbers
+- [ ] deepcopy-1
+- [ ] define-a-primitive-data-type
 - [ ] md5
