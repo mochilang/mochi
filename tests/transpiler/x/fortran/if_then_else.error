@@ -1,1 +1,11 @@
-unsupported expression
+exit status 1
+/workspace/mochi/tests/transpiler/x/fortran/if_then_else.f90:4:36:
+
+    4 |   character(len=100) :: msg = merge("yes","no",(x > 10))
+      |                                    1
+Error: Unequal character lengths (3/2) in MERGE intrinsic at (1)
+/workspace/mochi/tests/transpiler/x/fortran/if_then_else.f90:5:16:
+
+    5 |   print *, trim(msg)
+      |                1
+Error: ‘string’ argument of ‘trim’ intrinsic at (1) must be CHARACTER
