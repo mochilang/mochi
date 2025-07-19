@@ -1,52 +1,52 @@
 run: exit status 1
     warning: variable "cur" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 24 │               cur = cur + c
+ 27 │               cur = cur <> c
     │               ~
     │
-    └─ /tmp/abc-problem.exs:24:15: Main.fields/1
+    └─ /tmp/abc-problem.exs:27:15: Main.fields/1
 
     warning: variable "cur" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 21 │                 cur = ""
+ 24 │                 cur = ""
     │                 ~
     │
-    └─ /tmp/abc-problem.exs:21:17: Main.fields/1
+    └─ /tmp/abc-problem.exs:24:17: Main.fields/1
 
     warning: variable "res" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 20 │                 res = res ++ [cur]
+ 23 │                 res = res ++ [cur]
     │                 ~
     │
-    └─ /tmp/abc-problem.exs:20:17: Main.fields/1
+    └─ /tmp/abc-problem.exs:23:17: Main.fields/1
 
     warning: variable "res" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 44 │         res = res ++ [cur]
+ 47 │         res = res ++ [cur]
     │         ~
     │
-    └─ /tmp/abc-problem.exs:44:9: Main.fields/1
+    └─ /tmp/abc-problem.exs:47:9: Main.fields/1
 
     warning: variable "rest" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 80 │                       rest = rest ++ [Enum.at(blks, j)]
+ 86 │                       rest = rest ++ [Enum.at(blks, j)]
     │                       ~
     │
-    └─ /tmp/abc-problem.exs:80:23: Main.canSpell/2
+    └─ /tmp/abc-problem.exs:86:23: Main.canSpell/2
 
      warning: variable "sp" is unused (if the variable is not meant to be used, prefix it with an underscore)
      │
- 135 │       sp = newSpeller("BO XK DQ CP NA GT RE TG QD FS JW HU VI AN OB ER FS LY PC ZM")
+ 141 │       sp = newSpeller("BO XK DQ CP NA GT RE TG QD FS JW HU VI AN OB ER FS LY PC ZM")
      │       ~
      │
-     └─ /tmp/abc-problem.exs:135:7: Main.main/0
+     └─ /tmp/abc-problem.exs:141:7: Main.main/0
 
      error: undefined function sp/1 (expected Main to define such a function or for it to be imported, but none are available)
      │
- 138 │         IO.inspect((word <> " ") <> to_string(sp(word)))
+ 144 │         IO.inspect((word <> " ") <> to_string(sp(word)))
      │                                               ^^
      │
-     └─ /tmp/abc-problem.exs:138:47: Main.main/0
+     └─ /tmp/abc-problem.exs:144:47: Main.main/0
 
 ** (CompileError) /tmp/abc-problem.exs: cannot compile module Main (errors have been logged)
 
