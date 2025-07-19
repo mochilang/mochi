@@ -24,6 +24,24 @@ type Stmt interface {
 	emit(io.Writer)
 }
 
+// BreakStmt represents a break statement inside loops.
+type BreakStmt struct{}
+
+// ContinueStmt represents a continue statement inside loops.
+type ContinueStmt struct{}
+
+// ReturnStmt represents returning from a function.
+type ReturnStmt struct {
+	Value Expr
+}
+
+// FuncDecl represents a function definition.
+type FuncDecl struct {
+	Name   string
+	Params []string
+	Body   []Stmt
+}
+
 // IfStmt represents a conditional statement with an optional else branch.
 type IfStmt struct {
 	Cond Expr
@@ -320,6 +338,41 @@ func (f *ForInStmt) emit(w io.Writer) {
 	io.WriteString(w, "}")
 }
 
+func (b *BreakStmt) emit(w io.Writer) { io.WriteString(w, "break;") }
+
+func (c *ContinueStmt) emit(w io.Writer) { io.WriteString(w, "continue;") }
+
+func (r *ReturnStmt) emit(w io.Writer) {
+	io.WriteString(w, "return")
+	if r.Value != nil {
+		io.WriteString(w, " ")
+		r.Value.emit(w)
+	}
+	if b, ok := w.(interface{ WriteByte(byte) error }); ok {
+		b.WriteByte(';')
+	} else {
+		io.WriteString(w, ";")
+	}
+}
+
+func (f *FuncDecl) emit(w io.Writer) {
+	io.WriteString(w, "function ")
+	io.WriteString(w, f.Name)
+	io.WriteString(w, "(")
+	for i, p := range f.Params {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, p)
+	}
+	io.WriteString(w, ") {\n")
+	for _, st := range f.Body {
+		st.emit(w)
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, "}")
+}
+
 // Emit converts the AST back into TypeScript source code.
 func Emit(p *Program) []byte {
 	var b bytes.Buffer
@@ -384,18 +437,35 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		}
 		return &AssignStmt{Name: s.Assign.Name, Expr: e}, nil
 	case s.Expr != nil:
-		call := s.Expr.Expr.Binary.Left.Value.Target.Call
-		if call == nil || call.Func != "print" {
-			return nil, fmt.Errorf("unsupported expression")
-		}
-		if len(call.Args) != 1 {
-			return nil, fmt.Errorf("print expects one argument")
-		}
-		arg, err := convertExpr(call.Args[0])
+		e, err := convertExpr(s.Expr.Expr)
 		if err != nil {
 			return nil, err
 		}
-		return &ExprStmt{Expr: &CallExpr{Func: "console.log", Args: []Expr{arg}}}, nil
+		return &ExprStmt{Expr: e}, nil
+	case s.Return != nil:
+		var e Expr
+		if s.Return.Value != nil {
+			var err error
+			e, err = convertExpr(s.Return.Value)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return &ReturnStmt{Value: e}, nil
+	case s.Break != nil:
+		return &BreakStmt{}, nil
+	case s.Continue != nil:
+		return &ContinueStmt{}, nil
+	case s.Fun != nil:
+		body, err := convertStmtList(s.Fun.Body)
+		if err != nil {
+			return nil, err
+		}
+		var params []string
+		for _, p := range s.Fun.Params {
+			params = append(params, p.Name)
+		}
+		return &FuncDecl{Name: s.Fun.Name, Params: params, Body: body}, nil
 	case s.If != nil:
 		return convertIfStmt(s.If)
 	case s.While != nil:
@@ -494,19 +564,59 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	if b == nil {
 		return nil, fmt.Errorf("nil binary")
 	}
-	left, err := convertUnary(b.Left)
+	operands := []Expr{}
+	ops := []string{}
+
+	first, err := convertUnary(b.Left)
 	if err != nil {
 		return nil, err
 	}
-	expr := left
-	for _, op := range b.Right {
-		right, err := convertPostfix(op.Right)
+	operands = append(operands, first)
+	for _, r := range b.Right {
+		o, err := convertPostfix(r.Right)
 		if err != nil {
 			return nil, err
 		}
-		expr = &BinaryExpr{Left: expr, Op: op.Op, Right: right}
+		operands = append(operands, o)
+		ops = append(ops, r.Op)
 	}
-	return expr, nil
+
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+	}
+
+	apply := func(i int) {
+		expr := &BinaryExpr{Left: operands[i], Op: ops[i], Right: operands[i+1]}
+		operands[i] = expr
+		operands = append(operands[:i+1], operands[i+2:]...)
+		ops = append(ops[:i], ops[i+1:]...)
+	}
+
+	for _, lvl := range levels {
+		for i := 0; i < len(ops); {
+			matched := false
+			for _, t := range lvl {
+				if ops[i] == t {
+					apply(i)
+					matched = true
+					break
+				}
+			}
+			if !matched {
+				i++
+			}
+		}
+	}
+
+	if len(operands) != 1 {
+		return nil, fmt.Errorf("expression reduction failed")
+	}
+	return operands[0], nil
 }
 
 func convertUnary(u *parser.Unary) (Expr, error) {
@@ -550,6 +660,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			args[i] = ae
 		}
 		switch p.Call.Func {
+		case "print":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("print expects one argument")
+			}
+			return &CallExpr{Func: "console.log", Args: args}, nil
 		case "len":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("len expects one argument")
@@ -682,6 +797,25 @@ func stmtToNode(s Stmt) *ast.Node {
 			body.Children = append(body.Children, stmtToNode(c))
 		}
 		n.Children = append(n.Children, body)
+		return n
+	case *BreakStmt:
+		return &ast.Node{Kind: "break"}
+	case *ContinueStmt:
+		return &ast.Node{Kind: "continue"}
+	case *ReturnStmt:
+		child := &ast.Node{Kind: "return"}
+		if st.Value != nil {
+			child.Children = []*ast.Node{exprToNode(st.Value)}
+		}
+		return child
+	case *FuncDecl:
+		n := &ast.Node{Kind: "func", Value: st.Name}
+		for _, p := range st.Params {
+			n.Children = append(n.Children, &ast.Node{Kind: "param", Value: p})
+		}
+		for _, b := range st.Body {
+			n.Children = append(n.Children, stmtToNode(b))
+		}
 		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
