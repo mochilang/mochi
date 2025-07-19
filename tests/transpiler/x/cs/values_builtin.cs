@@ -5,7 +5,7 @@ using System.Linq;
 
 class Program {
     static void Main() {
-        var m = new Dictionary<object, object>{{"a", 1}, {"b", 2}, {"c", 3}};
+        var m = new Dictionary<string, int>{{"a", 1}, {"b", 2}, {"c", 3}};
         Console.WriteLine(m.Values.ToList());
     }
 }

@@ -26,6 +26,7 @@ type Program struct {
 
 var stringVars map[string]bool
 var mapVars map[string]bool
+var varTypes map[string]string
 var usesDict bool
 
 type Stmt interface{ emit(io.Writer) }
@@ -141,7 +142,12 @@ type ForInStmt struct {
 
 func (f *ForInStmt) emit(w io.Writer) {
 	fmt.Fprintf(w, "foreach (var %s in ", f.Var)
-	f.Iterable.emit(w)
+	if isMapExpr(f.Iterable) {
+		f.Iterable.emit(w)
+		fmt.Fprint(w, ".Keys")
+	} else {
+		f.Iterable.emit(w)
+	}
 	fmt.Fprint(w, ") {\n")
 	for _, st := range f.Body {
 		fmt.Fprint(w, "    ")
@@ -497,6 +503,52 @@ func isMapExpr(e Expr) bool {
 	return false
 }
 
+func typeOfExpr(e Expr) string {
+	switch ex := e.(type) {
+	case *StringLit:
+		return "string"
+	case *IntLit:
+		return "int"
+	case *BoolLit:
+		return "int"
+	case *MapLit:
+		k, v := mapTypes(ex)
+		return fmt.Sprintf("Dictionary<%s, %s>", k, v)
+	case *VarRef:
+		if t, ok := varTypes[ex.Name]; ok {
+			return t
+		}
+	}
+	return ""
+}
+
+func mapTypes(m *MapLit) (string, string) {
+	keyType := ""
+	valType := ""
+	for i, it := range m.Items {
+		kt := typeOfExpr(it.Key)
+		vt := typeOfExpr(it.Value)
+		if i == 0 {
+			keyType = kt
+			valType = vt
+		} else {
+			if keyType != kt {
+				keyType = ""
+			}
+			if valType != vt {
+				valType = ""
+			}
+		}
+	}
+	if keyType == "" {
+		keyType = "object"
+	}
+	if valType == "" {
+		valType = "object"
+	}
+	return keyType, valType
+}
+
 func (ix *IndexExpr) emit(w io.Writer) {
 	ix.Target.emit(w)
 	fmt.Fprint(w, "[")
@@ -525,7 +577,11 @@ type MapItem struct {
 type MapLit struct{ Items []MapItem }
 
 func (m *MapLit) emit(w io.Writer) {
-	fmt.Fprint(w, "new Dictionary<object, object>{")
+	k, v := mapTypes(m)
+	if k != "object" || v != "object" {
+		usesDict = true
+	}
+	fmt.Fprintf(w, "new Dictionary<%s, %s>{", k, v)
 	for i, it := range m.Items {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
@@ -642,6 +698,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	prog := &Program{}
 	stringVars = make(map[string]bool)
 	mapVars = make(map[string]bool)
+	varTypes = make(map[string]string)
 	usesDict = false
 	for _, st := range p.Statements {
 		s, err := compileStmt(prog, st)
@@ -843,6 +900,9 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		if isMapExpr(val) {
 			mapVars[s.Let.Name] = true
 		}
+		if t := typeOfExpr(val); t != "" {
+			varTypes[s.Let.Name] = t
+		}
 		return &LetStmt{Name: s.Let.Name, Value: val}, nil
 	case s.Var != nil:
 		var val Expr
@@ -871,6 +931,9 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		if isMapExpr(val) {
 			mapVars[s.Var.Name] = true
 		}
+		if t := typeOfExpr(val); t != "" {
+			varTypes[s.Var.Name] = t
+		}
 		return &VarStmt{Name: s.Var.Name, Value: val}, nil
 	case s.Assign != nil:
 		if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
@@ -883,6 +946,9 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			}
 			if isMapExpr(val) {
 				mapVars[s.Assign.Name] = true
+			}
+			if t := typeOfExpr(val); t != "" {
+				varTypes[s.Assign.Name] = t
 			}
 			return &AssignStmt{Name: s.Assign.Name, Value: val}, nil
 		}

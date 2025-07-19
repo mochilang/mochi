@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 class Program {
     static void Main() {
-        var m = new Dictionary<object, object>{{"a", 1}, {"b", 2}};
+        var m = new Dictionary<string, int>{{"a", 1}, {"b", 2}};
         Console.WriteLine((m.ContainsKey("a") ? 1 : 0));
         Console.WriteLine((m.ContainsKey("c") ? 1 : 0));
     }
