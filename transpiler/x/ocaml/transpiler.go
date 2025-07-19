@@ -115,6 +115,51 @@ func (ws *WhileStmt) emit(w io.Writer) {
 	io.WriteString(w, "  done;\n")
 }
 
+// ForRangeStmt represents a numeric for-loop like `for i in a..b {}`.
+type ForRangeStmt struct {
+	Name  string
+	Start Expr
+	End   Expr
+	Body  []Stmt
+}
+
+func (fr *ForRangeStmt) emit(w io.Writer) {
+	io.WriteString(w, "  for ")
+	io.WriteString(w, fr.Name)
+	io.WriteString(w, " = ")
+	if fr.Start != nil {
+		fr.Start.emit(w)
+	} else {
+		io.WriteString(w, "0")
+	}
+	io.WriteString(w, " to (")
+	fr.End.emit(w)
+	io.WriteString(w, " - 1) do\n")
+	for _, st := range fr.Body {
+		st.emit(w)
+	}
+	io.WriteString(w, "  done;\n")
+}
+
+// ForEachStmt represents iteration over a collection.
+type ForEachStmt struct {
+	Name     string
+	Iterable Expr
+	Body     []Stmt
+}
+
+func (fe *ForEachStmt) emit(w io.Writer) {
+	io.WriteString(w, "  List.iter (fun ")
+	io.WriteString(w, fe.Name)
+	io.WriteString(w, " ->\n")
+	for _, st := range fe.Body {
+		st.emit(w)
+	}
+	io.WriteString(w, "  ) ")
+	fe.Iterable.emit(w)
+	io.WriteString(w, ";\n")
+}
+
 // Expr is any OCaml expression that can emit itself.
 type Expr interface {
 	emit(io.Writer)
@@ -144,6 +189,22 @@ func (l *LenBuiltin) emitPrint(w io.Writer) {
 	l.Arg.emit(w)
 	io.WriteString(w, ")")
 }
+
+// ListLit represents a list literal of integers.
+type ListLit struct{ Elems []Expr }
+
+func (l *ListLit) emit(w io.Writer) {
+	io.WriteString(w, "[")
+	for i, e := range l.Elems {
+		if i > 0 {
+			io.WriteString(w, "; ")
+		}
+		e.emit(w)
+	}
+	io.WriteString(w, "]")
+}
+
+func (l *ListLit) emitPrint(w io.Writer) { l.emit(w) }
 
 // UnaryMinus represents negation of an integer expression.
 type UnaryMinus struct{ Expr Expr }
@@ -437,6 +498,35 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			return nil, err
 		}
 		return &WhileStmt{Cond: cond, Body: body}, nil
+	case st.For != nil:
+		if st.For.RangeEnd != nil {
+			start, _, err := convertExpr(st.For.Source, env, vars)
+			if err != nil {
+				return nil, err
+			}
+			endExpr, _, err := convertExpr(st.For.RangeEnd, env, vars)
+			if err != nil {
+				return nil, err
+			}
+			vars[st.For.Name] = VarInfo{typ: "int"}
+			body, err := transpileStmts(st.For.Body, env, vars)
+			if err != nil {
+				return nil, err
+			}
+			delete(vars, st.For.Name)
+			return &ForRangeStmt{Name: st.For.Name, Start: start, End: endExpr, Body: body}, nil
+		}
+		iter, _, err := convertExpr(st.For.Source, env, vars)
+		if err != nil {
+			return nil, err
+		}
+		vars[st.For.Name] = VarInfo{typ: "int"}
+		body, err := transpileStmts(st.For.Body, env, vars)
+		if err != nil {
+			return nil, err
+		}
+		delete(vars, st.For.Name)
+		return &ForEachStmt{Name: st.For.Name, Iterable: iter, Body: body}, nil
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
@@ -629,6 +719,16 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 		return convertIf(p.If, env, vars)
 	case p.Call != nil:
 		return convertCall(p.Call, env, vars)
+	case p.List != nil:
+		elems := make([]Expr, len(p.List.Elems))
+		for i, e := range p.List.Elems {
+			ex, _, err := convertExpr(e, env, vars)
+			if err != nil {
+				return nil, "", err
+			}
+			elems[i] = ex
+		}
+		return &ListLit{Elems: elems}, "list", nil
 	case p.Selector != nil:
 		if len(p.Selector.Tail) == 0 {
 			info := vars[p.Selector.Root]

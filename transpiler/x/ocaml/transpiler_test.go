@@ -4,10 +4,14 @@ package ocaml_test
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
+	"strings"
 	"testing"
+	"time"
 
 	"mochi/parser"
 	ocaml "mochi/transpiler/x/ocaml"
@@ -813,4 +817,150 @@ func TestTranspileWhileLoop(t *testing.T) {
 	if !bytes.Equal(got, want) {
 		t.Errorf("output mismatch\nGot: %s\nWant: %s", got, want)
 	}
+}
+
+func TestTranspileForLoop(t *testing.T) {
+	if _, err := exec.LookPath("ocamlc"); err != nil {
+		t.Skip("ocamlc not installed")
+	}
+	root := repoRoot(t)
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "ocaml")
+	os.MkdirAll(outDir, 0o755)
+
+	src := filepath.Join(root, "tests", "vm", "valid", "for_loop.mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type: %v", errs[0])
+	}
+	ast, err := ocaml.Transpile(prog, env)
+	if err != nil {
+		t.Fatalf("transpile: %v", err)
+	}
+	code := ast.Emit()
+	mlFile := filepath.Join(outDir, "for_loop.ml")
+	if err := os.WriteFile(mlFile, code, 0o644); err != nil {
+		t.Fatalf("write ml: %v", err)
+	}
+	exe := filepath.Join(outDir, "for_loop")
+	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+		os.WriteFile(filepath.Join(outDir, "for_loop.error"), out, 0o644)
+		t.Fatalf("ocamlc: %v", err)
+	}
+	out, err := exec.Command(exe).CombinedOutput()
+	if err != nil {
+		t.Fatalf("run: %v", err)
+	}
+	got := bytes.TrimSpace(out)
+	want, err := os.ReadFile(filepath.Join(outDir, "for_loop.out"))
+	if err != nil {
+		t.Fatalf("read want: %v", err)
+	}
+	want = bytes.TrimSpace(want)
+	if !bytes.Equal(got, want) {
+		t.Errorf("output mismatch\nGot: %s\nWant: %s", got, want)
+	}
+}
+
+func TestTranspileForListCollection(t *testing.T) {
+	if _, err := exec.LookPath("ocamlc"); err != nil {
+		t.Skip("ocamlc not installed")
+	}
+	root := repoRoot(t)
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "ocaml")
+	os.MkdirAll(outDir, 0o755)
+
+	src := filepath.Join(root, "tests", "vm", "valid", "for_list_collection.mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type: %v", errs[0])
+	}
+	ast, err := ocaml.Transpile(prog, env)
+	if err != nil {
+		t.Fatalf("transpile: %v", err)
+	}
+	code := ast.Emit()
+	mlFile := filepath.Join(outDir, "for_list_collection.ml")
+	if err := os.WriteFile(mlFile, code, 0o644); err != nil {
+		t.Fatalf("write ml: %v", err)
+	}
+	exe := filepath.Join(outDir, "for_list_collection")
+	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+		os.WriteFile(filepath.Join(outDir, "for_list_collection.error"), out, 0o644)
+		t.Fatalf("ocamlc: %v", err)
+	}
+	out, err := exec.Command(exe).CombinedOutput()
+	if err != nil {
+		t.Fatalf("run: %v", err)
+	}
+	got := bytes.TrimSpace(out)
+	want, err := os.ReadFile(filepath.Join(outDir, "for_list_collection.out"))
+	if err != nil {
+		t.Fatalf("read want: %v", err)
+	}
+	want = bytes.TrimSpace(want)
+	if !bytes.Equal(got, want) {
+		t.Errorf("output mismatch\nGot: %s\nWant: %s", got, want)
+	}
+}
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	updateReadme()
+	updateTasks()
+	os.Exit(code)
+}
+
+func updateReadme() {
+	root := repoRoot(&testing.T{})
+	srcDir := filepath.Join(root, "tests", "vm", "valid")
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "ocaml")
+	readmePath := filepath.Join(root, "transpiler", "x", "ocaml", "README.md")
+	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	total := len(files)
+	compiled := 0
+	var lines []string
+	sort.Strings(files)
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		mark := "[ ]"
+		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
+			compiled++
+			mark = "[x]"
+		}
+		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+	}
+	var buf bytes.Buffer
+	buf.WriteString("# Transpiler Golden Test Checklist\n\n")
+	buf.WriteString("The following Mochi programs under `tests/vm/valid` are used as golden inputs for transpiler implementations.  Tick a box once the OCaml transpiler can successfully generate code that matches the VM output.\n\n")
+	fmt.Fprintf(&buf, "Completed: %d/%d\n\n", compiled, total)
+	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteString("\n")
+	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
+}
+
+func updateTasks() {
+	root := repoRoot(&testing.T{})
+	taskFile := filepath.Join(root, "transpiler", "x", "ocaml", "TASKS.md")
+	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	ts := ""
+	if err == nil {
+		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+			ts = t.Format("2006-01-02 15:04 MST")
+		}
+	}
+	var buf bytes.Buffer
+	fmt.Fprintf(&buf, "## Progress (%s)\n", ts)
+	buf.WriteString("- VM valid golden test results updated\n\n")
+	if data, err := os.ReadFile(taskFile); err == nil {
+		buf.Write(data)
+	}
+	_ = os.WriteFile(taskFile, buf.Bytes(), 0o644)
 }
