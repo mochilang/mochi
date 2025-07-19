@@ -46,6 +46,15 @@ type Expr interface{ emit(io.Writer) }
 
 type PrintStmt struct{ Value Expr }
 
+// WhileStmt represents a simple while loop.
+type WhileStmt struct {
+	Cond Expr
+	Body []Stmt
+}
+
+// LenExpr represents the builtin len() for strings.
+type LenExpr struct{ Value Expr }
+
 type StringLit struct{ Value string }
 
 type IntLit struct{ Value int }
@@ -138,7 +147,30 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, " << std::endl;\n")
 }
 
-func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
+func (wst *WhileStmt) emit(w io.Writer, indent int) {
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "    ")
+	}
+	io.WriteString(w, "while (")
+	wst.Cond.emit(w)
+	io.WriteString(w, ") {\n")
+	for _, st := range wst.Body {
+		st.emit(w, indent+1)
+	}
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "    ")
+	}
+	io.WriteString(w, "}\n")
+}
+
+func (l *LenExpr) emit(w io.Writer) {
+	l.Value.emit(w)
+	io.WriteString(w, ".size()")
+}
+
+func (s *StringLit) emit(w io.Writer) {
+	fmt.Fprintf(w, "std::string(%q)", s.Value)
+}
 
 func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
 
@@ -332,6 +364,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				fs.Body = append(fs.Body, st)
 			}
 			body = append(body, fs)
+		case stmt.While != nil:
+			ws, err := convertWhileStmt(stmt.While)
+			if err != nil {
+				return nil, err
+			}
+			body = append(body, ws)
 		case stmt.If != nil:
 			ifs, err := convertIfStmt(stmt.If)
 			if err != nil {
@@ -403,6 +441,8 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		return &AssignStmt{Name: s.Assign.Name, Value: val}, nil
 	case s.If != nil:
 		return convertIfStmt(s.If)
+	case s.While != nil:
+		return convertWhileStmt(s.While)
 	}
 	return nil, fmt.Errorf("unsupported statement")
 }
@@ -489,10 +529,35 @@ func convertIfStmt(is *parser.IfStmt) (*IfStmt, error) {
 	return &IfStmt{Cond: cond, Then: then, ElseIf: elseIf, Else: elseStmts}, nil
 }
 
+func convertWhileStmt(ws *parser.WhileStmt) (*WhileStmt, error) {
+	cond, err := convertExpr(ws.Cond)
+	if err != nil {
+		return nil, err
+	}
+	var body []Stmt
+	for _, st := range ws.Body {
+		cs, err := convertStmt(st)
+		if err != nil {
+			return nil, err
+		}
+		body = append(body, cs)
+	}
+	return &WhileStmt{Cond: cond, Body: body}, nil
+}
+
 func convertPrimary(p *parser.Primary) (Expr, error) {
 	switch {
 	case p.Lit != nil:
 		return convertLiteral(p.Lit)
+	case p.Call != nil:
+		if p.Call.Func == "len" && len(p.Call.Args) == 1 {
+			arg, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &LenExpr{Value: arg}, nil
+		}
+		return nil, fmt.Errorf("unsupported call")
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return &VarRef{Name: p.Selector.Root}, nil
 	case p.If != nil:
@@ -605,6 +670,13 @@ func toStmtNode(s Stmt) *ast.Node {
 		return n
 	case *AssignStmt:
 		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{toExprNode(st.Value)}}
+	case *WhileStmt:
+		n := &ast.Node{Kind: "while"}
+		n.Children = append(n.Children, toExprNode(st.Cond))
+		for _, b := range st.Body {
+			n.Children = append(n.Children, toStmtNode(b))
+		}
+		return n
 	case *ForStmt:
 		n := &ast.Node{Kind: "for", Value: st.Var}
 		n.Children = append(n.Children, toExprNode(st.Start))
@@ -651,6 +723,8 @@ func toExprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: ex.Op, Children: []*ast.Node{toExprNode(ex.Left), toExprNode(ex.Right)}}
 	case *UnaryExpr:
 		return &ast.Node{Kind: ex.Op, Children: []*ast.Node{toExprNode(ex.Expr)}}
+	case *LenExpr:
+		return &ast.Node{Kind: "len", Children: []*ast.Node{toExprNode(ex.Value)}}
 	case *IfExpr:
 		n := &ast.Node{Kind: "ifexpr"}
 		n.Children = append(n.Children, toExprNode(ex.Cond))
