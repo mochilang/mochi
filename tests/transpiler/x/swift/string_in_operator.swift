@@ -6,4 +6,6 @@ func mochiPrint(_ v: Any) {
         print(v)
     }
 }
-mochiPrint("hello world")
+let s = "catch"
+mochiPrint(("cat" in s))
+mochiPrint(("dog" in s))

@@ -23,17 +23,89 @@ type Program struct {
 
 type Stmt interface{ emit(io.Writer) }
 
-type PrintStmt struct {
+type Expr interface{ emit(io.Writer) }
+
+type PrintStmt struct{ Expr Expr }
+
+func (p *PrintStmt) emit(w io.Writer) {
+	fmt.Fprint(w, "mochiPrint(")
+	p.Expr.emit(w)
+	fmt.Fprint(w, ")\n")
+}
+
+type VarDecl struct {
+	Name  string
+	Const bool
+	Type  string
+	Expr  Expr
+}
+
+func (v *VarDecl) emit(w io.Writer) {
+	kw := "var"
+	if v.Const && v.Expr != nil {
+		kw = "let"
+	}
+	fmt.Fprint(w, kw+" "+v.Name)
+	if v.Type != "" {
+		fmt.Fprintf(w, ": %s", v.Type)
+	}
+	if v.Expr != nil {
+		fmt.Fprint(w, " = ")
+		v.Expr.emit(w)
+	}
+	fmt.Fprint(w, "\n")
+}
+
+type AssignStmt struct {
+	Name string
+	Expr Expr
+}
+
+func (a *AssignStmt) emit(w io.Writer) {
+	fmt.Fprint(w, a.Name+" = ")
+	a.Expr.emit(w)
+	fmt.Fprint(w, "\n")
+}
+
+type LitExpr struct {
 	Value    string
 	IsString bool
 }
 
-func (p *PrintStmt) emit(w io.Writer) {
-	if p.IsString {
-		fmt.Fprintf(w, "print(%q)\n", p.Value)
+func (l *LitExpr) emit(w io.Writer) {
+	if l.IsString {
+		fmt.Fprintf(w, "%q", l.Value)
 	} else {
-		fmt.Fprintf(w, "print(%s)\n", p.Value)
+		fmt.Fprint(w, l.Value)
 	}
+}
+
+type NameExpr struct{ Name string }
+
+func (n *NameExpr) emit(w io.Writer) { fmt.Fprint(w, n.Name) }
+
+type BinaryExpr struct {
+	Left  Expr
+	Op    string
+	Right Expr
+}
+
+func (b *BinaryExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "(")
+	b.Left.emit(w)
+	fmt.Fprintf(w, " %s ", b.Op)
+	b.Right.emit(w)
+	fmt.Fprint(w, ")")
+}
+
+type UnaryExpr struct {
+	Op   string
+	Expr Expr
+}
+
+func (u *UnaryExpr) emit(w io.Writer) {
+	fmt.Fprint(w, u.Op)
+	u.Expr.emit(w)
 }
 
 func repoRoot() string {
@@ -77,6 +149,7 @@ func header() string {
 func (p *Program) Emit() []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
+	buf.WriteString("func mochiPrint(_ v: Any) {\n    if let b = v as? Bool {\n        if b { print(1) } else { print(0) }\n    } else {\n        print(v)\n    }\n}\n")
 	for _, s := range p.Stmts {
 		s.emit(&buf)
 	}
@@ -91,18 +164,56 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	_ = env
 	p := &Program{}
 	for _, st := range prog.Statements {
-		if st.Expr != nil {
+		switch {
+		case st.Expr != nil:
 			call := st.Expr.Expr.Binary.Left.Value.Target.Call
 			if call != nil && call.Func == "print" && len(call.Args) == 1 {
 				arg := call.Args[0]
 				if val, str, ok := evalPrintArg(arg); ok {
-					p.Stmts = append(p.Stmts, &PrintStmt{Value: val, IsString: str})
+					p.Stmts = append(p.Stmts, &PrintStmt{Expr: &LitExpr{Value: val, IsString: str}})
 					continue
 				}
+				ex, err := convertExpr(arg)
+				if err != nil {
+					return nil, err
+				}
+				p.Stmts = append(p.Stmts, &PrintStmt{Expr: ex})
+				continue
 			}
 			return nil, fmt.Errorf("unsupported expression")
+		case st.Let != nil:
+			var ex Expr
+			var err error
+			if st.Let.Value != nil {
+				ex, err = convertExpr(st.Let.Value)
+				if err != nil {
+					return nil, err
+				}
+			} else if st.Let.Type != nil {
+				ex = zeroValue(st.Let.Type)
+			}
+			p.Stmts = append(p.Stmts, &VarDecl{Name: st.Let.Name, Const: true, Type: toSwiftType(st.Let.Type), Expr: ex})
+		case st.Var != nil:
+			var ex Expr
+			var err error
+			if st.Var.Value != nil {
+				ex, err = convertExpr(st.Var.Value)
+				if err != nil {
+					return nil, err
+				}
+			} else if st.Var.Type != nil {
+				ex = zeroValue(st.Var.Type)
+			}
+			p.Stmts = append(p.Stmts, &VarDecl{Name: st.Var.Name, Const: false, Type: toSwiftType(st.Var.Type), Expr: ex})
+		case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
+			ex, err := convertExpr(st.Assign.Value)
+			if err != nil {
+				return nil, err
+			}
+			p.Stmts = append(p.Stmts, &AssignStmt{Name: st.Assign.Name, Expr: ex})
+		default:
+			return nil, fmt.Errorf("unsupported statement")
 		}
-		return nil, fmt.Errorf("unsupported statement")
 	}
 	return p, nil
 }
@@ -178,7 +289,11 @@ func toNode(p *Program) *ast.Node {
 func stmtNode(s Stmt) *ast.Node {
 	switch st := s.(type) {
 	case *PrintStmt:
-		return &ast.Node{Kind: "print", Value: st.Value}
+		return &ast.Node{Kind: "print"}
+	case *VarDecl:
+		return &ast.Node{Kind: "var", Value: st.Name}
+	case *AssignStmt:
+		return &ast.Node{Kind: "assign", Value: st.Name}
 	default:
 		return &ast.Node{Kind: "stmt"}
 	}
@@ -279,6 +394,105 @@ func evalIntConstPrimary(pr *parser.Primary) (int, bool) {
 		return intConst(pr.Group)
 	}
 	return 0, false
+}
+
+func convertExpr(e *parser.Expr) (Expr, error) {
+	if e == nil || e.Binary == nil {
+		return nil, fmt.Errorf("unsupported expression")
+	}
+	first, err := convertUnary(e.Binary.Left)
+	if err != nil {
+		return nil, err
+	}
+	expr := first
+	for _, op := range e.Binary.Right {
+		right, err := convertPostfix(op.Right)
+		if err != nil {
+			return nil, err
+		}
+		expr = &BinaryExpr{Left: expr, Op: op.Op, Right: right}
+	}
+	return expr, nil
+}
+
+func convertUnary(u *parser.Unary) (Expr, error) {
+	if u == nil {
+		return nil, fmt.Errorf("nil unary")
+	}
+	expr, err := convertPostfix(u.Value)
+	if err != nil {
+		return nil, err
+	}
+	for i := len(u.Ops) - 1; i >= 0; i-- {
+		switch u.Ops[i] {
+		case "-":
+			expr = &UnaryExpr{Op: "-", Expr: expr}
+		case "+":
+			// ignore
+		default:
+			return nil, fmt.Errorf("unsupported unary op")
+		}
+	}
+	return expr, nil
+}
+
+func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
+	if p == nil || len(p.Ops) != 0 {
+		return nil, fmt.Errorf("unsupported postfix")
+	}
+	return convertPrimary(p.Target)
+}
+
+func convertPrimary(pr *parser.Primary) (Expr, error) {
+	switch {
+	case pr == nil:
+		return nil, fmt.Errorf("nil primary")
+	case pr.Lit != nil:
+		if pr.Lit.Str != nil {
+			return &LitExpr{Value: *pr.Lit.Str, IsString: true}, nil
+		}
+		if pr.Lit.Int != nil {
+			return &LitExpr{Value: fmt.Sprintf("%d", *pr.Lit.Int), IsString: false}, nil
+		}
+		return nil, fmt.Errorf("unsupported literal")
+	case pr.Group != nil:
+		return convertExpr(pr.Group)
+	case pr.Selector != nil && len(pr.Selector.Tail) == 0:
+		return &NameExpr{Name: pr.Selector.Root}, nil
+	}
+	return nil, fmt.Errorf("unsupported primary")
+}
+
+func zeroValue(t *parser.TypeRef) Expr {
+	if t == nil || t.Simple == nil {
+		return &LitExpr{Value: "0", IsString: false}
+	}
+	switch *t.Simple {
+	case "int":
+		return &LitExpr{Value: "0", IsString: false}
+	case "string":
+		return &LitExpr{Value: "", IsString: true}
+	case "bool":
+		return &LitExpr{Value: "false", IsString: false}
+	default:
+		return &LitExpr{Value: "0", IsString: false}
+	}
+}
+
+func toSwiftType(t *parser.TypeRef) string {
+	if t == nil || t.Simple == nil {
+		return ""
+	}
+	switch *t.Simple {
+	case "int":
+		return "Int"
+	case "string":
+		return "String"
+	case "bool":
+		return "Bool"
+	default:
+		return "Any"
+	}
 }
 
 // TestIntConst is a helper for debugging
