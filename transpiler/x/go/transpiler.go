@@ -332,10 +332,15 @@ type ForEachStmt struct {
 	Name     string
 	Iterable Expr
 	Body     []Stmt
+	IsMap    bool
 }
 
 func (fe *ForEachStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "for _, %s := range ", fe.Name)
+	if fe.IsMap {
+		fmt.Fprintf(w, "for %s := range ", fe.Name)
+	} else {
+		fmt.Fprintf(w, "for _, %s := range ", fe.Name)
+	}
 	if fe.Iterable != nil {
 		fe.Iterable.emit(w)
 	}
@@ -761,7 +766,9 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &ForEachStmt{Name: fs.Name, Iterable: iter, Body: body}, nil
+	t := types.TypeOfExpr(fs.Source, env)
+	_, isMap := t.(types.MapType)
+	return &ForEachStmt{Name: fs.Name, Iterable: iter, Body: body, IsMap: isMap}, nil
 }
 
 func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {

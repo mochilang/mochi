@@ -1,3 +1,7 @@
+## Progress (2025-07-20 02:08 +0700)
+- go transpiler: handle map iteration
+- Regenerated golden files - 52/100 vm valid programs passing
+
 ## Progress (2025-07-20 01:49 +0700)
 - docs(go): update VM checklist and tasks
 - Regenerated golden files - 52/100 vm valid programs passing
