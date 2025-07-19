@@ -1,3 +1,7 @@
+## Progress (2025-07-19 18:07 +0700)
+- Added unary `!` operator using boolInt conversion
+- 38/100 golden tests now pass
+
 ## Progress (2025-07-19 17:31 +0700)
 - Added break and continue statements
 - Implemented if expressions and string-to-int casts
