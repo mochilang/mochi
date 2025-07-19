@@ -2,7 +2,7 @@
 
 Generated C++ code for programs in `tests/vm/valid`. Each program has a `.cpp` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.
 
-Compiled programs: 20/100
+Compiled programs: 21/100
 
 ## Checklist
 - [ ] append_builtin
@@ -85,7 +85,7 @@ Compiled programs: 20/100
 - [ ] slice
 - [ ] sort_stable
 - [ ] str_builtin
-- [ ] string_compare
+ - [x] string_compare
  - [x] string_concat
 - [ ] string_contains
 - [ ] string_in_operator
