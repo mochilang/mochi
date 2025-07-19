@@ -1,8 +1,50 @@
 javac: exit status 1
-/tmp/M15PuzzleGame.java:45: error: '.class' expected
-        Object j = int(r.get("idx"));
-                      ^
-/tmp/M15PuzzleGame.java:45: error: ';' expected
-        Object j = int(r.get("idx"));
-                                   ^
-2 errors
+/tmp/M15PuzzleGame.java:12: error: incompatible types: possible lossy conversion from long to int
+        return System.currentTimeMillis() % 4;
+                                          ^
+/tmp/M15PuzzleGame.java:26: error: cannot find symbol
+            return new IdxOk(empty - 4, empty / 4 > 0);
+                       ^
+  symbol:   class IdxOk
+  location: class M15PuzzleGame
+/tmp/M15PuzzleGame.java:29: error: cannot find symbol
+            return new IdxOk(empty + 4, empty / 4 < 3);
+                       ^
+  symbol:   class IdxOk
+  location: class M15PuzzleGame
+/tmp/M15PuzzleGame.java:32: error: cannot find symbol
+            return new IdxOk(empty + 1, empty % 4 < 3);
+                       ^
+  symbol:   class IdxOk
+  location: class M15PuzzleGame
+/tmp/M15PuzzleGame.java:35: error: cannot find symbol
+            return new IdxOk(empty - 1, empty % 4 > 0);
+                       ^
+  symbol:   class IdxOk
+  location: class M15PuzzleGame
+/tmp/M15PuzzleGame.java:37: error: cannot find symbol
+        return new IdxOk(0, false);
+                   ^
+  symbol:   class IdxOk
+  location: class M15PuzzleGame
+/tmp/M15PuzzleGame.java:46: error: incompatible types: Integer cannot be converted to List<Integer>
+        List<Integer> tmp = board.get(i);
+                                     ^
+/tmp/M15PuzzleGame.java:48: error: incompatible types: List<Integer> cannot be converted to Integer
+        board.set(j, tmp);
+                     ^
+/tmp/M15PuzzleGame.java:65: error: incompatible types: Integer cannot be converted to List<Integer>
+            List<Integer> val = board.get(i);
+                                         ^
+/tmp/M15PuzzleGame.java:71: error: bad operand types for binary operator '<'
+                if (val < 10) {
+                        ^
+  first type:  List<Integer>
+  second type: int
+/tmp/M15PuzzleGame.java:88: error: cannot find symbol
+            String s = scanner.nextLine();
+                       ^
+  symbol:   variable scanner
+  location: class M15PuzzleGame
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+11 errors

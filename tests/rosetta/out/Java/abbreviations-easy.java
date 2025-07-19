@@ -4,7 +4,7 @@ import java.util.*;
 
 public class AbbreviationsEasy {
     static List<String> fields(String s) {
-        List<String> words = Arrays.asList();
+        List<String> words = new ArrayList<>(Arrays.asList());
         String cur = "";
         int i = 0;
         while (i < s.length()) {
@@ -47,7 +47,7 @@ public class AbbreviationsEasy {
         return res;
     }
     static List<String> validate(List<String> commands, List<String> words, List<Integer> mins) {
-        List<String> results = Arrays.asList();
+        List<String> results = new ArrayList<>(Arrays.asList());
         if (Objects.equals(words.size(), 0)) {
             return results;
         }
@@ -60,8 +60,8 @@ public class AbbreviationsEasy {
             while (ci < commands.size()) {
                 List<String> cmd = commands.get(ci);
                 if (!Objects.equals(mins.get(ci), 0) && wlen >= ((Number)mins.get(ci)).doubleValue() && wlen <= cmd.size()) {
-                    Object c = upper(cmd);
-                    Object ww = upper(w);
+                    String c = String.valueOf(cmd).toUpperCase();
+                    String ww = String.valueOf(w).toUpperCase();
                     if (Objects.equals(c.substring(0, wlen), ww)) {
                         results.add(c);
                         found = true;
@@ -80,7 +80,7 @@ public class AbbreviationsEasy {
     static void main() {
         String table = "Add ALTer  BAckup Bottom  CAppend Change SCHANGE  CInsert CLAst COMPress Copy " + "COUnt COVerlay CURsor DELete CDelete Down DUPlicate Xedit EXPand EXTract Find " + "NFind NFINDUp NFUp CFind FINdup FUp FOrward GET Help HEXType Input POWerinput " + " Join SPlit SPLTJOIN  LOAD  Locate CLocate  LOWercase UPPercase  LPrefix MACRO " + "MErge MODify MOve MSG Next Overlay PARSE PREServe PURge PUT PUTD  Query  QUIT " + "READ  RECover REFRESH RENum REPeat  Replace CReplace  RESet  RESTore  RGTLEFT " + "RIght LEft  SAVE  SET SHift SI  SORT  SOS  STAck STATus  TOP TRAnsfer TypeUp ";
         List<String> commands = fields(table);
-        List<Integer> mins = Arrays.asList();
+        List<Integer> mins = new ArrayList<>(Arrays.asList());
         int i = 0;
         while (i < commands.size()) {
             int count = 0;

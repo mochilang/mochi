@@ -1,8 +1,27 @@
 javac: exit status 1
-/tmp/M100Prisoners.java:37: error: not a statement
-                        List<Integer> this = drawers.get(prev);
-                            ^
-/tmp/M100Prisoners.java:37: error: ';' expected
-                        List<Integer> this = drawers.get(prev);
+/tmp/M100Prisoners.java:10: error: incompatible types: possible lossy conversion from long to int
+            int j = System.currentTimeMillis() % (i + 1);
+                                               ^
+/tmp/M100Prisoners.java:11: error: incompatible types: Integer cannot be converted to List<Integer>
+            List<Integer> tmp = arr.get(i);
+                                       ^
+/tmp/M100Prisoners.java:13: error: incompatible types: List<Integer> cannot be converted to Integer
+            arr.set(j, tmp);
+                       ^
+/tmp/M100Prisoners.java:37: error: incompatible types: Integer cannot be converted to List<Integer>
+                        List<Integer> this_ = drawers.get(prev);
+                                                         ^
+/tmp/M100Prisoners.java:38: error: non-static variable this cannot be referenced from a static context
+                        if (Objects.equals(this, p)) {
+                                           ^
+/tmp/M100Prisoners.java:42: error: non-static variable this cannot be referenced from a static context
+                        prev = (int)(this);
                                      ^
-2 errors
+/tmp/M100Prisoners.java:42: error: incompatible types: M100Prisoners cannot be converted to int
+                        prev = (int)(this);
+                                    ^
+/tmp/M100Prisoners.java:55: error: incompatible types: possible lossy conversion from long to int
+                        int n = System.currentTimeMillis() % 100;
+                                                           ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+8 errors

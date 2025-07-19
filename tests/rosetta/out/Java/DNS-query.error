@@ -1,0 +1,18 @@
+javac: exit status 1
+/tmp/DNSQuery.java:7: error: cannot find symbol
+        List<Object> res = net.LookupHost("www.kame.net");
+                           ^
+  symbol:   variable net
+  location: class DNSQuery
+/tmp/DNSQuery.java:8: error: incompatible types: Object cannot be converted to List<Object>
+        List<Object> addrs = res.get(0);
+                                    ^
+/tmp/DNSQuery.java:9: error: incompatible types: Object cannot be converted to List<Object>
+        List<Object> err = res.get(1);
+                                  ^
+/tmp/DNSQuery.java:10: error: cannot find symbol
+        if (Objects.equals(err, nil)) {
+                                ^
+  symbol:   variable nil
+  location: class DNSQuery
+4 errors

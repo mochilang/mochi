@@ -2,10 +2,10 @@
 // a+b.mochi
 import java.util.*;
 
-public class A+b {
+public class AB {
     static void main() {
-        Object a = int(scanner.nextLine());
-        Object b = int(scanner.nextLine());
+        int a = Integer.parseInt(String.valueOf(scanner.nextLine()));
+        int b = Integer.parseInt(String.valueOf(scanner.nextLine()));
         System.out.println(a + b);
     }
     public static void main(String[] args) {

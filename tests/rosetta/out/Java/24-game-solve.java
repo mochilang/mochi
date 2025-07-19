@@ -56,7 +56,7 @@ public class M24GameSolve {
         while (i < xs.size()) {
             int j = i + 1;
             while (j < xs.size()) {
-                List<Map<String,Object>> rest = Arrays.asList();
+                List<Map<String,Object>> rest = new ArrayList<>(Arrays.asList());
                 int k = 0;
                 while (k < xs.size()) {
                     if (k != i && k != j) {
@@ -66,7 +66,7 @@ public class M24GameSolve {
                 }
                 List<Map<String,Object>> a = xs.get(i);
                 List<Map<String,Object>> b = xs.get(j);
-                for (Integer op : Arrays.asList(OP_ADD, OP_SUB, OP_MUL, OP_DIV)) {
+                for (Integer op : new ArrayList<>(Arrays.asList(OP_ADD, OP_SUB, OP_MUL, OP_DIV))) {
                     Node node = new Node(op, a, b);
                     if (solve(append(rest, node))) {
                         return true;
@@ -89,7 +89,7 @@ public class M24GameSolve {
     static void main() {
         int iter = 0;
         while (iter < 10) {
-            List<Map<String,Object>> cards = Arrays.asList();
+            List<Map<String,Object>> cards = new ArrayList<>(Arrays.asList());
             int i = 0;
             while (i < n_cards) {
                 int n = (System.currentTimeMillis() % (digit_range - 1)) + 1;

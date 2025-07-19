@@ -3,8 +3,8 @@
 import java.util.*;
 
 public class M15PuzzleGame {
-    static List<Integer> board = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0));
-    static List<Integer> solved = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0));
+    static List<Integer> board = new ArrayList<>(new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0)));
+    static List<Integer> solved = new ArrayList<>(new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0)));
     static int empty = 15;
     static int moves = 0;
     static boolean quit = false;
@@ -42,7 +42,7 @@ public class M15PuzzleGame {
             return false;
         }
         int i = empty;
-        Object j = int(r.get("idx"));
+        int j = Integer.parseInt(String.valueOf(r.get("idx")));
         List<Integer> tmp = board.get(i);
         board.set(i, board.get(j));
         board.set(j, tmp);
@@ -103,7 +103,7 @@ public class M15PuzzleGame {
     }
     static void play() {
         System.out.println("Starting board:");
-        while ((!quit && (!((Boolean)isSolved())))) {
+        while (!quit && Objects.equals(isSolved(), false)) {
             System.out.println("");
             printBoard();
             playOneMove();

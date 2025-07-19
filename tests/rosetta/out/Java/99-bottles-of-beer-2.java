@@ -4,7 +4,7 @@ import java.util.*;
 
 public class M99BottlesOfBeer2 {
     static List<String> fields(String s) {
-        List<String> words = Arrays.asList();
+        List<String> words = new ArrayList<>(Arrays.asList());
         String cur = "";
         int i = 0;
         while (i < s.length()) {
@@ -38,8 +38,8 @@ public class M99BottlesOfBeer2 {
         return res;
     }
     static String numberName(int n) {
-        List<String> small = new ArrayList<>(Arrays.asList("no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"));
-        List<String> tens = new ArrayList<>(Arrays.asList("ones", "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"));
+        List<String> small = new ArrayList<>(new ArrayList<>(Arrays.asList("no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen")));
+        List<String> tens = new ArrayList<>(new ArrayList<>(Arrays.asList("ones", "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety")));
         if (n < 0) {
             return "";
         }
@@ -74,7 +74,7 @@ public class M99BottlesOfBeer2 {
         if (p.length() <= 2) {
             return p;
         }
-        List<String> a = Arrays.asList();
+        List<String> a = new ArrayList<>(Arrays.asList());
         int i = 1;
         while (i < p.length() - 1) {
             a.add(p.substring(i, i + 1));

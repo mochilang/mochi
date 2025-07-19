@@ -8,10 +8,10 @@ public class M2048 {
     static Map<String,Object> r = spawnTile(board);
     static int score = 0;
     static List<List<Integer>> newBoard() {
-        List<List<Integer>> b = Arrays.asList();
+        List<List<Integer>> b = new ArrayList<>(Arrays.asList());
         int y = 0;
         while (y < SIZE) {
-            List<Integer> row = Arrays.asList();
+            List<Integer> row = new ArrayList<>(Arrays.asList());
             int x = 0;
             while (x < SIZE) {
                 row.add(0);
@@ -23,13 +23,13 @@ public class M2048 {
         return b;
     }
     static Map<String,Object> spawnTile(List<List<Integer>> b) {
-        List<List<Integer>> empty = Arrays.asList();
+        List<List<Integer>> empty = new ArrayList<>(Arrays.asList());
         int y = 0;
         while (y < SIZE) {
             int x = 0;
             while (x < SIZE) {
                 if (Objects.equals(((List)b.get(y)).get(x), 0)) {
-                    empty.add(Arrays.asList(x, y));
+                    empty.add(new ArrayList<>(Arrays.asList(x, y)));
                 }
                 x = (int)(x + 1);
             }
@@ -82,7 +82,7 @@ public class M2048 {
         System.out.println("W=Up S=Down A=Left D=Right Q=Quit");
     }
     static List<Integer> reverseRow(List<Integer> r) {
-        List<Integer> out = Arrays.asList();
+        List<Integer> out = new ArrayList<>(Arrays.asList());
         int i = r.size() - 1;
         while (i >= 0) {
             out.add(r.get(i));
@@ -91,7 +91,7 @@ public class M2048 {
         return out;
     }
     static Map<String,Object> slideLeft(List<Integer> row) {
-        List<Integer> xs = Arrays.asList();
+        List<Integer> xs = new ArrayList<>(Arrays.asList());
         int i = 0;
         while (i < row.size()) {
             if (!Objects.equals(row.get(i), 0)) {
@@ -99,7 +99,7 @@ public class M2048 {
             }
             i = (int)(i + 1);
         }
-        List<Integer> res = Arrays.asList();
+        List<Integer> res = new ArrayList<>(Arrays.asList());
         int gain = 0;
         i = (int)(0);
         while (i < xs.size()) {
@@ -124,7 +124,7 @@ public class M2048 {
         int y = 0;
         while (y < SIZE) {
             Map<String,Object> r = slideLeft(b.get(y));
-            Map<String,Object> new = r.get("row");
+            Map<String,Object> new_ = r.get("row");
             score = (int)(score + ((Number)r.get("gain")).doubleValue());
             int x = 0;
             while (x < SIZE) {
@@ -160,7 +160,7 @@ public class M2048 {
         return new BoardScoreMoved(b, score, moved);
     }
     static List<Integer> getCol(List<List<Integer>> b, int x) {
-        List<Integer> col = Arrays.asList();
+        List<Integer> col = new ArrayList<>(Arrays.asList());
         int y = 0;
         while (y < SIZE) {
             col.add(((List)b.get(y)).get(x));
@@ -181,7 +181,7 @@ public class M2048 {
         while (x < SIZE) {
             List<Integer> col = getCol(b, x);
             Map<String,Object> r = slideLeft(col);
-            Map<String,Object> new = r.get("row");
+            Map<String,Object> new_ = r.get("row");
             score = (int)(score + ((Number)r.get("gain")).doubleValue());
             int y = 0;
             while (y < SIZE) {

@@ -4,7 +4,7 @@ import java.util.*;
 
 public class M100Doors {
     public static void main(String[] args) {
-        List<Object> doors = new ArrayList<>(Arrays.asList());
+        List<Object> doors = new ArrayList<>(new ArrayList<>(Arrays.asList()));
         for (int i = 0; i < 100; i++) {
             doors.add(false);
         }

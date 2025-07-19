@@ -4,7 +4,7 @@ import java.util.*;
 
 public class AbbreviationsSimple {
     static List<String> fields(String s) {
-        List<String> words = Arrays.asList();
+        List<String> words = new ArrayList<>(Arrays.asList());
         String cur = "";
         int i = 0;
         while (i < s.length()) {
@@ -80,14 +80,14 @@ public class AbbreviationsSimple {
     }
     static Map<String,Object> readTable(String table) {
         List<String> toks = fields(table);
-        List<String> cmds = Arrays.asList();
-        List<Integer> mins = Arrays.asList();
+        List<String> cmds = new ArrayList<>(Arrays.asList());
+        List<Integer> mins = new ArrayList<>(Arrays.asList());
         int i = 0;
         while (i < toks.size()) {
             List<String> cmd = toks.get(i);
             int minlen = cmd.size();
             i = (int)(i + 1);
-            if (i < toks.size() && isDigits(toks.get(i))) {
+            if (i < toks.size() && Boolean.TRUE.equals(isDigits(toks.get(i)))) {
                 int num = parseIntStr(toks.get(i));
                 if (num >= 1 && num < cmd.size()) {
                     minlen = (int)(num);
@@ -100,7 +100,7 @@ public class AbbreviationsSimple {
         return new CommandsMins(cmds, mins);
     }
     static List<String> validate(List<String> commands, List<Integer> mins, List<String> words) {
-        List<String> results = Arrays.asList();
+        List<String> results = new ArrayList<>(Arrays.asList());
         int wi = 0;
         while (wi < words.size()) {
             List<String> w = words.get(wi);
@@ -110,8 +110,8 @@ public class AbbreviationsSimple {
             while (ci < commands.size()) {
                 List<String> cmd = commands.get(ci);
                 if (!Objects.equals(mins.get(ci), 0) && wlen >= ((Number)mins.get(ci)).doubleValue() && wlen <= cmd.size()) {
-                    Object c = upper(cmd);
-                    Object ww = upper(w);
+                    String c = String.valueOf(cmd).toUpperCase();
+                    String ww = String.valueOf(w).toUpperCase();
                     if (Objects.equals(c.substring(0, wlen), ww)) {
                         results.add(c);
                         found = true;
