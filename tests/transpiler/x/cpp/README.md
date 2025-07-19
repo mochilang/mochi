@@ -1,5 +1,6 @@
 # C++ Transpiler Output
 
-This directory contains C++ code emitted by the experimental Mochi transpiler. Each
-`.cpp` file corresponds to a program under `tests/vm/valid` that can be transpiled
-to C++.
+Generated C++ code for programs in `tests/vm/valid`. Each program has a `.cpp`
+file produced by the transpiler and a `.output` file containing its runtime
+output. Compilation or execution errors are captured in a `.error` file placed
+next to the source.

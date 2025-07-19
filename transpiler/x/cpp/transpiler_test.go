@@ -43,15 +43,17 @@ func TestCPPTranspiler_PrintHello(t *testing.T) {
 	}
 	bin := filepath.Join(outDir, "print_hello")
 	if out, err := exec.Command("g++", codePath, "-std=c++20", "-o", bin).CombinedOutput(); err != nil {
-		t.Fatalf("compile error: %v: %s", err, out)
+		os.WriteFile(filepath.Join(outDir, "print_hello.error"), out, 0o644)
+		t.Fatalf("compile error: %v", err)
 	}
 	defer os.Remove(bin)
 	out, err := exec.Command(bin).CombinedOutput()
 	if err != nil {
-		t.Fatalf("run error: %v: %s", err, out)
+		os.WriteFile(filepath.Join(outDir, "print_hello.error"), out, 0o644)
+		t.Fatalf("run error: %v", err)
 	}
 	got := bytes.TrimSpace(out)
-	want, _ := os.ReadFile(filepath.Join(root, "tests", "vm", "valid", "print_hello.out"))
+	want, _ := os.ReadFile(filepath.Join(outDir, "print_hello.output"))
 	want = bytes.TrimSpace(want)
 	if !bytes.Equal(got, want) {
 		t.Errorf("output mismatch: got %s want %s", got, want)
