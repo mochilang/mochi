@@ -6,4 +6,6 @@ func mochiPrint(_ v: Any) {
         print(v)
     }
 }
-mochiPrint(1995)
+let x = 8
+let msg = ((x > 10) ? "big" : ((x > 5) ? "medium" : "small"))
+mochiPrint(msg)

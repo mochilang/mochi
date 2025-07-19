@@ -25,6 +25,50 @@ type Stmt interface{ emit(io.Writer) }
 
 type Expr interface{ emit(io.Writer) }
 
+type IfStmt struct {
+	Cond   Expr
+	Then   []Stmt
+	ElseIf *IfStmt
+	Else   []Stmt
+}
+
+func (i *IfStmt) emit(w io.Writer) {
+	fmt.Fprint(w, "if ")
+	i.Cond.emit(w)
+	fmt.Fprint(w, " {\n")
+	for _, s := range i.Then {
+		s.emit(w)
+	}
+	fmt.Fprint(w, "}")
+	if i.ElseIf != nil {
+		fmt.Fprint(w, " else ")
+		i.ElseIf.emit(w)
+	} else if len(i.Else) > 0 {
+		fmt.Fprint(w, " else {\n")
+		for _, s := range i.Else {
+			s.emit(w)
+		}
+		fmt.Fprint(w, "}")
+	}
+	fmt.Fprint(w, "\n")
+}
+
+type CondExpr struct {
+	Cond Expr
+	Then Expr
+	Else Expr
+}
+
+func (c *CondExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "(")
+	c.Cond.emit(w)
+	fmt.Fprint(w, " ? ")
+	c.Then.emit(w)
+	fmt.Fprint(w, " : ")
+	c.Else.emit(w)
+	fmt.Fprint(w, ")")
+}
+
 type PrintStmt struct{ Expr Expr }
 
 func (p *PrintStmt) emit(w io.Writer) {
@@ -163,59 +207,104 @@ func (p *Program) Emit() []byte {
 func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	_ = env
 	p := &Program{}
-	for _, st := range prog.Statements {
-		switch {
-		case st.Expr != nil:
-			call := st.Expr.Expr.Binary.Left.Value.Target.Call
-			if call != nil && call.Func == "print" && len(call.Args) == 1 {
-				arg := call.Args[0]
-				if val, str, ok := evalPrintArg(arg); ok {
-					p.Stmts = append(p.Stmts, &PrintStmt{Expr: &LitExpr{Value: val, IsString: str}})
-					continue
-				}
-				ex, err := convertExpr(arg)
-				if err != nil {
-					return nil, err
-				}
-				p.Stmts = append(p.Stmts, &PrintStmt{Expr: ex})
-				continue
+	stmts, err := convertStmts(prog.Statements)
+	if err != nil {
+		return nil, err
+	}
+	p.Stmts = stmts
+	return p, nil
+}
+
+func convertStmts(list []*parser.Statement) ([]Stmt, error) {
+	var out []Stmt
+	for _, st := range list {
+		cs, err := convertStmt(st)
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, cs)
+	}
+	return out, nil
+}
+
+func convertStmt(st *parser.Statement) (Stmt, error) {
+	switch {
+	case st.Expr != nil:
+		call := st.Expr.Expr.Binary.Left.Value.Target.Call
+		if call != nil && call.Func == "print" && len(call.Args) == 1 {
+			arg := call.Args[0]
+			if val, str, ok := evalPrintArg(arg); ok {
+				return &PrintStmt{Expr: &LitExpr{Value: val, IsString: str}}, nil
 			}
-			return nil, fmt.Errorf("unsupported expression")
-		case st.Let != nil:
-			var ex Expr
-			var err error
-			if st.Let.Value != nil {
-				ex, err = convertExpr(st.Let.Value)
-				if err != nil {
-					return nil, err
-				}
-			} else if st.Let.Type != nil {
-				ex = zeroValue(st.Let.Type)
-			}
-			p.Stmts = append(p.Stmts, &VarDecl{Name: st.Let.Name, Const: true, Type: toSwiftType(st.Let.Type), Expr: ex})
-		case st.Var != nil:
-			var ex Expr
-			var err error
-			if st.Var.Value != nil {
-				ex, err = convertExpr(st.Var.Value)
-				if err != nil {
-					return nil, err
-				}
-			} else if st.Var.Type != nil {
-				ex = zeroValue(st.Var.Type)
-			}
-			p.Stmts = append(p.Stmts, &VarDecl{Name: st.Var.Name, Const: false, Type: toSwiftType(st.Var.Type), Expr: ex})
-		case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
-			ex, err := convertExpr(st.Assign.Value)
+			ex, err := convertExpr(arg)
 			if err != nil {
 				return nil, err
 			}
-			p.Stmts = append(p.Stmts, &AssignStmt{Name: st.Assign.Name, Expr: ex})
-		default:
-			return nil, fmt.Errorf("unsupported statement")
+			return &PrintStmt{Expr: ex}, nil
+		}
+		return nil, fmt.Errorf("unsupported expression")
+	case st.Let != nil:
+		var ex Expr
+		var err error
+		if st.Let.Value != nil {
+			ex, err = convertExpr(st.Let.Value)
+			if err != nil {
+				return nil, err
+			}
+		} else if st.Let.Type != nil {
+			ex = zeroValue(st.Let.Type)
+		}
+		return &VarDecl{Name: st.Let.Name, Const: true, Type: toSwiftType(st.Let.Type), Expr: ex}, nil
+	case st.Var != nil:
+		var ex Expr
+		var err error
+		if st.Var.Value != nil {
+			ex, err = convertExpr(st.Var.Value)
+			if err != nil {
+				return nil, err
+			}
+		} else if st.Var.Type != nil {
+			ex = zeroValue(st.Var.Type)
+		}
+		return &VarDecl{Name: st.Var.Name, Const: false, Type: toSwiftType(st.Var.Type), Expr: ex}, nil
+	case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
+		ex, err := convertExpr(st.Assign.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &AssignStmt{Name: st.Assign.Name, Expr: ex}, nil
+	case st.If != nil:
+		return convertIfStmt(st.If)
+	default:
+		return nil, fmt.Errorf("unsupported statement")
+	}
+}
+
+func convertIfStmt(i *parser.IfStmt) (Stmt, error) {
+	cond, err := convertExpr(i.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenStmts, err := convertStmts(i.Then)
+	if err != nil {
+		return nil, err
+	}
+	var elseIf *IfStmt
+	if i.ElseIf != nil {
+		s, err := convertIfStmt(i.ElseIf)
+		if err != nil {
+			return nil, err
+		}
+		elseIf = s.(*IfStmt)
+	}
+	var elseStmts []Stmt
+	if i.Else != nil {
+		elseStmts, err = convertStmts(i.Else)
+		if err != nil {
+			return nil, err
 		}
 	}
-	return p, nil
+	return &IfStmt{Cond: cond, Then: thenStmts, ElseIf: elseIf, Else: elseStmts}, nil
 }
 
 func evalPrintArg(arg *parser.Expr) (val string, isString bool, ok bool) {
@@ -443,6 +532,34 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 	return convertPrimary(p.Target)
 }
 
+func convertIfExpr(i *parser.IfExpr) (Expr, error) {
+	cond, err := convertExpr(i.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenExpr, err := convertExpr(i.Then)
+	if err != nil {
+		return nil, err
+	}
+	if i.ElseIf != nil {
+		elseExpr, err := convertIfExpr(i.ElseIf)
+		if err != nil {
+			return nil, err
+		}
+		return &CondExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
+	}
+	var elseExpr Expr
+	if i.Else != nil {
+		elseExpr, err = convertExpr(i.Else)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		elseExpr = &LitExpr{Value: "0", IsString: false}
+	}
+	return &CondExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
+}
+
 func convertPrimary(pr *parser.Primary) (Expr, error) {
 	switch {
 	case pr == nil:
@@ -457,6 +574,8 @@ func convertPrimary(pr *parser.Primary) (Expr, error) {
 		return nil, fmt.Errorf("unsupported literal")
 	case pr.Group != nil:
 		return convertExpr(pr.Group)
+	case pr.If != nil:
+		return convertIfExpr(pr.If)
 	case pr.Selector != nil && len(pr.Selector.Tail) == 0:
 		return &NameExpr{Name: pr.Selector.Root}, nil
 	}
