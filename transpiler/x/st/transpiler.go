@@ -56,9 +56,9 @@ func (v value) String() string {
 		return fmt.Sprintf("%d", v.i)
 	case valBool:
 		if v.b {
-			return "true"
+			return "1"
 		}
-		return "false"
+		return "0"
 	case valString:
 		return v.s
 	default:
@@ -116,21 +116,57 @@ func evalExpr(e *parser.Expr, vars map[string]value) (value, error) {
 }
 
 func evalBinary(b *parser.BinaryExpr, vars map[string]value) (value, error) {
-	v, err := evalUnary(b.Left, vars)
+	values := []value{}
+	ops := []string{}
+	left, err := evalUnary(b.Left, vars)
 	if err != nil {
 		return value{}, err
 	}
+	values = append(values, left)
 	for _, op := range b.Right {
 		right, err := evalPostfix(op.Right, vars)
 		if err != nil {
 			return value{}, err
 		}
-		v, err = applyOp(v, op.Op, right)
-		if err != nil {
-			return value{}, err
+		ops = append(ops, op.Op)
+		values = append(values, right)
+	}
+	prec := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">=", "==", "!="},
+		{"&&"},
+		{"||"},
+	}
+	for _, level := range prec {
+		i := 0
+		for i < len(ops) {
+			if contains(level, ops[i]) {
+				v, err := applyOp(values[i], ops[i], values[i+1])
+				if err != nil {
+					return value{}, err
+				}
+				values[i] = v
+				values = append(values[:i+1], values[i+2:]...)
+				ops = append(ops[:i], ops[i+1:]...)
+			} else {
+				i++
+			}
 		}
 	}
-	return v, nil
+	if len(values) != 1 {
+		return value{}, fmt.Errorf("eval error")
+	}
+	return values[0], nil
+}
+
+func contains(list []string, s string) bool {
+	for _, v := range list {
+		if v == s {
+			return true
+		}
+	}
+	return false
 }
 
 func applyOp(a value, op string, b value) (value, error) {
