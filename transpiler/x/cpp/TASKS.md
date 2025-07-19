@@ -1,5 +1,10 @@
 # C++ Transpiler Tasks
 
+## Recent Enhancements (2025-07-19 21:14 +0700)
+- Added `append` and `avg` builtins with vector printing support.
+- Generated golden tests for `append_builtin` and `avg_builtin`.
+- Updated README progress to 33/100 programs.
+
 ## Recent Enhancements (2025-07-19 20:34 +0700)
 - Added support for string contains, index access, substring and type casting.
 - Implemented `in` operator and `sum` builtin for vectors.

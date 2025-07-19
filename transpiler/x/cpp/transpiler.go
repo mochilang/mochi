@@ -31,6 +31,17 @@ bool contains(const C& c, const V& v) {
 }
 `
 
+const vectorPrintHelper = `
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const std::vector<T>& v) {
+    for (size_t i = 0; i < v.size(); ++i) {
+        if (i > 0) os << ' ';
+        os << v[i];
+    }
+    return os;
+}
+`
+
 func init() {
 	_, file, _, _ := runtime.Caller(0)
 	root := filepath.Join(filepath.Dir(file), "../../..")
@@ -134,6 +145,13 @@ type InExpr struct {
 }
 
 type SumExpr struct{ Arg Expr }
+
+type AppendExpr struct {
+	List Expr
+	Elem Expr
+}
+
+type AvgExpr struct{ List Expr }
 
 type CastExpr struct {
 	Value Expr
@@ -368,6 +386,25 @@ func (s *SumExpr) emit(w io.Writer) {
 	}
 }
 
+func (a *AppendExpr) emit(w io.Writer) {
+	io.WriteString(w, "([&]{ auto tmp = ")
+	a.List.emit(w)
+	io.WriteString(w, "; tmp.push_back(")
+	a.Elem.emit(w)
+	io.WriteString(w, "); return tmp; })()")
+}
+
+func (a *AvgExpr) emit(w io.Writer) {
+	if currentProgram != nil {
+		currentProgram.addInclude("<numeric>")
+		currentProgram.addInclude("<sstream>")
+		currentProgram.addInclude("<iomanip>")
+	}
+	io.WriteString(w, "([&]{ auto tmp = ")
+	a.List.emit(w)
+	io.WriteString(w, "; double _avg = tmp.empty() ? 0.0 : std::accumulate(tmp.begin(), tmp.end(), 0.0) / tmp.size(); std::ostringstream ss; ss << std::fixed << std::setprecision(1) << _avg; return ss.str(); })()")
+}
+
 func (c *CastExpr) emit(w io.Writer) {
 	if c.Type == "int" {
 		io.WriteString(w, "std::stoi(")
@@ -590,6 +627,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					}
 					args = append(args, ce)
 				}
+				if currentProgram != nil {
+					currentProgram.addInclude("<vector>")
+					currentProgram.addHelper(vectorPrintHelper)
+				}
 				body = append(body, &PrintStmt{Values: args})
 			} else {
 				return nil, fmt.Errorf("unsupported expression")
@@ -691,6 +732,10 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 					return nil, err
 				}
 				args = append(args, ce)
+			}
+			if currentProgram != nil {
+				currentProgram.addInclude("<vector>")
+				currentProgram.addHelper(vectorPrintHelper)
 			}
 			return &PrintStmt{Values: args}, nil
 		}
@@ -942,6 +987,34 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					currentProgram.addInclude("<numeric>")
 				}
 				return &SumExpr{Arg: arg}, nil
+			}
+		case "append":
+			if len(p.Call.Args) == 2 {
+				listArg, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				elemArg, err := convertExpr(p.Call.Args[1])
+				if err != nil {
+					return nil, err
+				}
+				if currentProgram != nil {
+					currentProgram.addInclude("<vector>")
+				}
+				return &AppendExpr{List: listArg, Elem: elemArg}, nil
+			}
+		case "avg":
+			if len(p.Call.Args) == 1 {
+				arg, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				if currentProgram != nil {
+					currentProgram.addInclude("<numeric>")
+					currentProgram.addInclude("<sstream>")
+					currentProgram.addInclude("<iomanip>")
+				}
+				return &AvgExpr{List: arg}, nil
 			}
 		case "substring":
 			if len(p.Call.Args) == 3 {
@@ -1200,6 +1273,14 @@ func toExprNode(e Expr) *ast.Node {
 	case *SumExpr:
 		n := &ast.Node{Kind: "sum"}
 		n.Children = []*ast.Node{toExprNode(ex.Arg)}
+		return n
+	case *AppendExpr:
+		n := &ast.Node{Kind: "append"}
+		n.Children = []*ast.Node{toExprNode(ex.List), toExprNode(ex.Elem)}
+		return n
+	case *AvgExpr:
+		n := &ast.Node{Kind: "avg"}
+		n.Children = []*ast.Node{toExprNode(ex.List)}
 		return n
 	case *CastExpr:
 		n := &ast.Node{Kind: "cast", Value: ex.Type}
