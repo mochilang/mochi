@@ -255,7 +255,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					res = fmt.Sprintf("String.at(%s, %s)", res, idx)
 					typ = types.StringType{}
 				default:
-					res = fmt.Sprintf("Enum.at((%s), %s)", res, idx)
+					if isStringLit(op.Index.Start) {
+						res = fmt.Sprintf("Map.get(%s, %s)", res, idx)
+					} else {
+						res = fmt.Sprintf("Enum.at((%s), %s)", res, idx)
+					}
 					if lt, ok := tt.(types.ListType); ok {
 						typ = lt.Elem
 					}
