@@ -22,9 +22,23 @@ type Decl struct {
 	Init string
 }
 
+type Param struct {
+	Name string
+	Type string
+}
+
+type Function struct {
+	Name   string
+	Params []Param
+	Ret    string
+	Decls  []Decl
+	Stmts  []Stmt
+}
+
 type Program struct {
 	Decls []Decl
 	Stmts []Stmt
+	Funcs []*Function
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -40,11 +54,46 @@ type WhileStmt struct {
 	Body []Stmt
 }
 
+func (f *Function) emit(w io.Writer) {
+	fmt.Fprintf(w, "  function %s(", f.Name)
+	for i, p := range f.Params {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		fmt.Fprint(w, p.Name)
+	}
+	fmt.Fprintln(w, ") result(res)")
+	fmt.Fprintf(w, "    %s :: res\n", f.Ret)
+	for _, d := range f.Params {
+		fmt.Fprintf(w, "    %s :: %s\n", d.Type, d.Name)
+	}
+	for _, d := range f.Decls {
+		fmt.Fprintf(w, "    %s :: %s", d.Type, d.Name)
+		if d.Init != "" {
+			fmt.Fprintf(w, " = %s", d.Init)
+		}
+		fmt.Fprintln(w)
+	}
+	for _, s := range f.Stmts {
+		s.emit(w)
+	}
+	fmt.Fprintf(w, "  end function %s\n", f.Name)
+}
+
 type AssignStmt struct{ Name, Expr string }
+
+type ReturnStmt struct{ Expr string }
 
 type PrintStmt struct {
 	Expr string
 	Typ  types.Type
+}
+
+func (r *ReturnStmt) emit(w io.Writer) {
+	if r.Expr != "" {
+		fmt.Fprintf(w, "  res = %s\n", r.Expr)
+	}
+	io.WriteString(w, "  return\n")
 }
 
 func (s *AssignStmt) emit(w io.Writer) {
@@ -137,6 +186,12 @@ func (p *Program) Emit() []byte {
 	}
 	for _, s := range p.Stmts {
 		s.emit(&buf)
+	}
+	if len(p.Funcs) > 0 {
+		buf.WriteString("contains\n")
+		for _, f := range p.Funcs {
+			f.emit(&buf)
+		}
 	}
 	buf.WriteString("end program main\n")
 	return buf.Bytes()
@@ -233,6 +288,23 @@ func compileStmt(p *Program, st *parser.Statement, env *types.Env) (Stmt, error)
 			return nil, err
 		}
 		return &AssignStmt{Name: st.Assign.Name, Expr: expr}, nil
+	case st.Return != nil:
+		expr := ""
+		var err error
+		if st.Return.Value != nil {
+			expr, err = toExpr(st.Return.Value, env)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return &ReturnStmt{Expr: expr}, nil
+	case st.Fun != nil:
+		fn, err := compileFunc(st.Fun, env)
+		if err != nil {
+			return nil, err
+		}
+		p.Funcs = append(p.Funcs, fn)
+		return nil, nil
 	case st.Expr != nil:
 		arg, err := extractPrintArg(st.Expr.Expr)
 		if err != nil {
@@ -291,6 +363,185 @@ func compileStmtList(p *Program, list []*parser.Statement, env *types.Env) ([]St
 		}
 	}
 	return out, nil
+}
+
+func compileFunc(fs *parser.FunStmt, env *types.Env) (*Function, error) {
+	fn := &Function{Name: fs.Name}
+	if fs.Return != nil {
+		t := types.ResolveTypeRef(fs.Return, env)
+		rt, err := mapTypeName(t)
+		if err != nil {
+			return nil, err
+		}
+		fn.Ret = rt
+	} else {
+		fn.Ret = "integer"
+	}
+	funcEnv := types.NewEnv(env)
+	for _, p := range fs.Params {
+		pt := types.ResolveTypeRef(p.Type, env)
+		ft, err := mapTypeName(pt)
+		if err != nil {
+			return nil, err
+		}
+		funcEnv.Types()[p.Name] = pt
+		fn.Params = append(fn.Params, Param{Name: p.Name, Type: ft})
+	}
+	body, err := compileFuncStmtList(fn, fs.Body, funcEnv)
+	if err != nil {
+		return nil, err
+	}
+	fn.Stmts = body
+	return fn, nil
+}
+
+func compileFuncStmtList(fn *Function, list []*parser.Statement, env *types.Env) ([]Stmt, error) {
+	var out []Stmt
+	for _, st := range list {
+		s, err := compileFuncStmt(fn, st, env)
+		if err != nil {
+			return nil, err
+		}
+		if s != nil {
+			out = append(out, s)
+		}
+	}
+	return out, nil
+}
+
+func compileFuncStmt(fn *Function, st *parser.Statement, env *types.Env) (Stmt, error) {
+	switch {
+	case st.Let != nil:
+		expr := ""
+		var err error
+		if st.Let.Value != nil {
+			if ie := extractIfExpr(st.Let.Value); ie != nil {
+				typ := types.ExprType(st.Let.Value, env)
+				ft, err := mapTypeName(typ)
+				if err != nil {
+					return nil, err
+				}
+				fn.Decls = append(fn.Decls, Decl{Name: st.Let.Name, Type: ft})
+				stmt, err := compileIfExprAssign(st.Let.Name, ie, env)
+				if err != nil {
+					return nil, err
+				}
+				return stmt, nil
+			}
+			expr, err = toExpr(st.Let.Value, env)
+			if err != nil {
+				return nil, err
+			}
+		}
+		if st.Let.Type != nil || st.Let.Value != nil {
+			var typ types.Type = types.AnyType{}
+			if st.Let.Type != nil {
+				typ = types.ResolveTypeRef(st.Let.Type, env)
+			} else {
+				typ = types.ExprType(st.Let.Value, env)
+			}
+			ft, err := mapTypeName(typ)
+			if err != nil {
+				return nil, err
+			}
+			init := expr
+			if init == "" {
+				init = defaultValue(typ)
+			}
+			fn.Decls = append(fn.Decls, Decl{Name: st.Let.Name, Type: ft, Init: init})
+			env.Types()[st.Let.Name] = typ
+			return nil, nil
+		}
+		return nil, fmt.Errorf("unsupported let statement")
+	case st.Var != nil:
+		expr := ""
+		var err error
+		if st.Var.Value != nil {
+			expr, err = toExpr(st.Var.Value, env)
+			if err != nil {
+				return nil, err
+			}
+		}
+		var typ types.Type = types.AnyType{}
+		if st.Var.Type != nil {
+			typ = types.ResolveTypeRef(st.Var.Type, env)
+		} else if st.Var.Value != nil {
+			typ = types.ExprType(st.Var.Value, env)
+		}
+		ft, err := mapTypeName(typ)
+		if err != nil {
+			return nil, err
+		}
+		init := expr
+		if init == "" {
+			init = defaultValue(typ)
+		}
+		fn.Decls = append(fn.Decls, Decl{Name: st.Var.Name, Type: ft, Init: init})
+		env.Types()[st.Var.Name] = typ
+		return nil, nil
+	case st.Assign != nil:
+		if len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0 {
+			return nil, fmt.Errorf("unsupported assignment")
+		}
+		expr, err := toExpr(st.Assign.Value, env)
+		if err != nil {
+			return nil, err
+		}
+		return &AssignStmt{Name: st.Assign.Name, Expr: expr}, nil
+	case st.Return != nil:
+		expr := ""
+		var err error
+		if st.Return.Value != nil {
+			expr, err = toExpr(st.Return.Value, env)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return &ReturnStmt{Expr: expr}, nil
+	case st.Expr != nil:
+		arg, err := extractPrintArg(st.Expr.Expr)
+		if err != nil {
+			return nil, err
+		}
+		expr, err := toExpr(arg, env)
+		if err != nil {
+			return nil, err
+		}
+		typ := types.TypeOfExpr(arg, env)
+		return &PrintStmt{Expr: expr, Typ: typ}, nil
+	case st.If != nil:
+		if st.If.ElseIf != nil {
+			return nil, fmt.Errorf("elseif not supported")
+		}
+		cond, err := toExpr(st.If.Cond, env)
+		if err != nil {
+			return nil, err
+		}
+		thenStmts, err := compileFuncStmtList(fn, st.If.Then, env)
+		if err != nil {
+			return nil, err
+		}
+		var elseStmts []Stmt
+		if len(st.If.Else) > 0 {
+			elseStmts, err = compileFuncStmtList(fn, st.If.Else, env)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
+	case st.While != nil:
+		cond, err := toExpr(st.While.Cond, env)
+		if err != nil {
+			return nil, err
+		}
+		body, err := compileFuncStmtList(fn, st.While.Body, env)
+		if err != nil {
+			return nil, err
+		}
+		return &WhileStmt{Cond: cond, Body: body}, nil
+	default:
+		return nil, fmt.Errorf("unsupported statement")
+	}
 }
 
 func extractIfExpr(e *parser.Expr) *parser.IfExpr {
@@ -454,6 +705,16 @@ func toPrimary(p *parser.Primary, env *types.Env) (string, error) {
 			name += "_" + strings.Join(p.Selector.Tail, "_")
 		}
 		return name, nil
+	case p.Call != nil:
+		var args []string
+		for _, a := range p.Call.Args {
+			ex, err := toExpr(a, env)
+			if err != nil {
+				return "", err
+			}
+			args = append(args, ex)
+		}
+		return fmt.Sprintf("%s(%s)", p.Call.Func, strings.Join(args, ", ")), nil
 	case p.If != nil:
 		expr, err := toIfExpr(p.If, env)
 		if err != nil {
