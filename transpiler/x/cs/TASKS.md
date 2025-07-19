@@ -1,3 +1,7 @@
+## Progress (2025-07-19 21:41 +0700)
+- Improved code formatting and removed debug helpers.
+- README checklist updated to reflect current golden tests.
+
 ## Progress (2025-07-19 14:37 UTC)
 - refine cs map types (progress 55/100)
 
