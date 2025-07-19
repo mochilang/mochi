@@ -4,12 +4,12 @@ This directory contains a minimal transpiler that converts a subset of Mochi int
 
 ## Golden tests
 
-Progress: 9/100
+Progress: 14/100
 
 - [ ] append_builtin
 - [ ] avg_builtin
 - [x] basic_compare
-- [ ] binary_precedence
+- [x] binary_precedence
 - [ ] bool_chain
 - [ ] break_continue
 - [ ] cast_string_to_int
@@ -38,9 +38,9 @@ Progress: 9/100
 - [ ] group_by_multi_join_sort
 - [ ] group_by_sort
 - [ ] group_items_iteration
-- [ ] if_else
-- [ ] if_then_else
-- [ ] if_then_else_nested
+- [x] if_else
+- [x] if_then_else
+- [x] if_then_else_nested
 - [ ] in_operator
 - [ ] in_operator_extended
 - [ ] inner_join
@@ -87,7 +87,7 @@ Progress: 9/100
 - [ ] sort_stable
 - [ ] str_builtin
 - [ ] string_compare
-- [ ] string_concat
+- [x] string_concat
 - [ ] string_contains
 - [ ] string_in_operator
 - [ ] string_index

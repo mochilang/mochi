@@ -30,6 +30,23 @@ type Stmt interface{ emit(io.Writer, int) }
 
 type Expr interface{ emit(io.Writer) }
 
+// BoolLit represents a boolean literal.
+type BoolLit struct{ Value bool }
+
+// IfStmt represents a simple if-else statement.
+type IfStmt struct {
+	Cond Expr
+	Then []Stmt
+	Else []Stmt
+}
+
+// IfExpr represents an if expression returning a value.
+type IfExpr struct {
+	Cond Expr
+	Then Expr
+	Else Expr
+}
+
 // CallExpr represents a simple function call.
 type CallExpr struct {
 	Func string
@@ -129,6 +146,12 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "    ")
 	}
+	if isBoolExpr(s.Value) {
+		io.WriteString(w, "std.debug.print(\"{any}\\n\", .{@intFromBool(")
+		s.Value.emit(w)
+		io.WriteString(w, ")});\n")
+		return
+	}
 	io.WriteString(w, "std.debug.print(\"{any}\\n\", .{")
 	s.Value.emit(w)
 	io.WriteString(w, "});\n")
@@ -138,10 +161,19 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "    ")
 	}
+	str := isStringExpr(v.Value)
 	if v.Mutable {
-		fmt.Fprintf(w, "var %s: i64 = ", v.Name)
+		if str {
+			fmt.Fprintf(w, "var %s: []const u8 = ", v.Name)
+		} else {
+			fmt.Fprintf(w, "var %s: i64 = ", v.Name)
+		}
 	} else {
-		fmt.Fprintf(w, "const %s: i64 = ", v.Name)
+		if str {
+			fmt.Fprintf(w, "const %s: []const u8 = ", v.Name)
+		} else {
+			fmt.Fprintf(w, "const %s: i64 = ", v.Name)
+		}
 	}
 	if v.Value != nil {
 		v.Value.emit(w)
@@ -177,6 +209,14 @@ func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
 func (v *VarRef) emit(w io.Writer) { io.WriteString(w, v.Name) }
 
 func (b *BinaryExpr) emit(w io.Writer) {
+	if b.Op == "+" {
+		if l, ok := b.Left.(*StringLit); ok {
+			if r, ok2 := b.Right.(*StringLit); ok2 {
+				fmt.Fprintf(w, "%q", l.Value+r.Value)
+				return
+			}
+		}
+	}
 	io.WriteString(w, "(")
 	b.Left.emit(w)
 	fmt.Fprintf(w, " %s ", b.Op)
@@ -184,14 +224,97 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	io.WriteString(w, ")")
 }
 
+func (b *BoolLit) emit(w io.Writer) {
+	if b.Value {
+		io.WriteString(w, "true")
+	} else {
+		io.WriteString(w, "false")
+	}
+}
+
+func (i *IfStmt) emit(w io.Writer, indent int) {
+	for j := 0; j < indent; j++ {
+		io.WriteString(w, "    ")
+	}
+	io.WriteString(w, "if (")
+	i.Cond.emit(w)
+	io.WriteString(w, ") {\n")
+	for _, st := range i.Then {
+		st.emit(w, indent+1)
+	}
+	for j := 0; j < indent; j++ {
+		io.WriteString(w, "    ")
+	}
+	if len(i.Else) == 0 {
+		io.WriteString(w, "}\n")
+		return
+	}
+	io.WriteString(w, "} else {\n")
+	for _, st := range i.Else {
+		st.emit(w, indent+1)
+	}
+	for j := 0; j < indent; j++ {
+		io.WriteString(w, "    ")
+	}
+	io.WriteString(w, "}\n")
+}
+
+func (i *IfExpr) emit(w io.Writer) {
+	io.WriteString(w, "if (")
+	i.Cond.emit(w)
+	io.WriteString(w, ") ")
+	i.Then.emit(w)
+	io.WriteString(w, " else ")
+	i.Else.emit(w)
+}
+
+func isStringExpr(e Expr) bool {
+	switch ex := e.(type) {
+	case *StringLit:
+		return true
+	case *IfExpr:
+		return isStringExpr(ex.Then) && isStringExpr(ex.Else)
+	case *BinaryExpr:
+		if ex.Op == "+" {
+			return isStringExpr(ex.Left) && isStringExpr(ex.Right)
+		}
+		return false
+	default:
+		return false
+	}
+}
+
+func isBoolExpr(e Expr) bool {
+	switch ex := e.(type) {
+	case *BoolLit:
+		return true
+	case *BinaryExpr:
+		switch ex.Op {
+		case "==", "!=", "<", "<=", ">", ">=", "&&", "||":
+			return true
+		}
+		return false
+	case *IfExpr:
+		return isBoolExpr(ex.Then) && isBoolExpr(ex.Else)
+	default:
+		return false
+	}
+}
+
 func (c *CallExpr) emit(w io.Writer) {
 	switch c.Func {
 	case "len":
-		io.WriteString(w, "std.mem.len(")
 		if len(c.Args) > 0 {
-			c.Args[0].emit(w)
+			if s, ok := c.Args[0].(*StringLit); ok {
+				fmt.Fprintf(w, "%q.len", s.Value)
+			} else {
+				io.WriteString(w, "std.mem.len(")
+				c.Args[0].emit(w)
+				io.WriteString(w, ")")
+			}
+		} else {
+			io.WriteString(w, "0")
 		}
-		io.WriteString(w, ")")
 	default:
 		io.WriteString(w, c.Func)
 		io.WriteString(w, "(")
@@ -208,60 +331,24 @@ func (c *CallExpr) emit(w io.Writer) {
 // Transpile converts a Mochi program into our simple Zig AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	main := &Func{Name: "main"}
+	mutables := map[string]bool{}
 	for _, st := range prog.Statements {
-		switch {
-		case st.Expr != nil:
-			call := st.Expr.Expr.Binary.Left.Value.Target.Call
-			if call == nil || call.Func != "print" || len(call.Args) != 1 {
-				return nil, fmt.Errorf("unsupported expression")
-			}
-			arg, err := compileExpr(call.Args[0])
-			if err != nil {
-				return nil, err
-			}
-			main.Body = append(main.Body, &PrintStmt{Value: arg})
-		case st.Let != nil:
-			var expr Expr
-			var err error
-			if st.Let.Value != nil {
-				expr, err = compileExpr(st.Let.Value)
-				if err != nil {
-					return nil, err
-				}
-			} else {
-				expr = &IntLit{Value: 0}
-			}
-			main.Body = append(main.Body, &VarDecl{Name: st.Let.Name, Value: expr, Mutable: false})
-		case st.Var != nil:
-			var expr Expr
-			var err error
-			if st.Var.Value != nil {
-				expr, err = compileExpr(st.Var.Value)
-				if err != nil {
-					return nil, err
-				}
-			} else {
-				expr = &IntLit{Value: 0}
-			}
-			mutable := false
-			for _, s2 := range prog.Statements {
-				if s2.Assign != nil && s2.Assign.Name == st.Var.Name {
-					mutable = true
-					break
-				}
-			}
-			main.Body = append(main.Body, &VarDecl{Name: st.Var.Name, Value: expr, Mutable: mutable})
-		case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
-			expr, err := compileExpr(st.Assign.Value)
-			if err != nil {
-				return nil, err
-			}
-			main.Body = append(main.Body, &AssignStmt{Name: st.Assign.Name, Value: expr})
-		default:
-			if st.Test == nil && st.Import == nil && st.Type == nil {
-				return nil, fmt.Errorf("unsupported statement")
-			}
+		if st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
+			mutables[st.Assign.Name] = true
 		}
+	}
+	for _, st := range prog.Statements {
+		s, err := compileStmt(st, prog)
+		if err != nil {
+			if st.Test == nil && st.Import == nil && st.Type == nil {
+				return nil, err
+			}
+			continue
+		}
+		if vd, ok := s.(*VarDecl); ok && !vd.Mutable {
+			vd.Mutable = mutables[vd.Name]
+		}
+		main.Body = append(main.Body, s)
 	}
 	_ = env
 	return &Program{Functions: []*Func{main}}, nil
@@ -292,6 +379,21 @@ func toStmtNode(s Stmt) *ast.Node {
 	switch st := s.(type) {
 	case *PrintStmt:
 		return &ast.Node{Kind: "print", Children: []*ast.Node{toExprNode(st.Value)}}
+	case *IfStmt:
+		n := &ast.Node{Kind: "if", Children: []*ast.Node{toExprNode(st.Cond)}}
+		then := &ast.Node{Kind: "then"}
+		for _, c := range st.Then {
+			then.Children = append(then.Children, toStmtNode(c))
+		}
+		n.Children = append(n.Children, then)
+		if len(st.Else) > 0 {
+			el := &ast.Node{Kind: "else"}
+			for _, c := range st.Else {
+				el.Children = append(el.Children, toStmtNode(c))
+			}
+			n.Children = append(n.Children, el)
+		}
+		return n
 	default:
 		return &ast.Node{Kind: "stmt"}
 	}
@@ -307,6 +409,14 @@ func toExprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "name", Value: ex.Name}
 	case *BinaryExpr:
 		return &ast.Node{Kind: "bin", Value: ex.Op, Children: []*ast.Node{toExprNode(ex.Left), toExprNode(ex.Right)}}
+	case *BoolLit:
+		if ex.Value {
+			return &ast.Node{Kind: "bool", Value: "true"}
+		}
+		return &ast.Node{Kind: "bool", Value: "false"}
+	case *IfExpr:
+		n := &ast.Node{Kind: "if", Children: []*ast.Node{toExprNode(ex.Cond), toExprNode(ex.Then), toExprNode(ex.Else)}}
+		return n
 	case *CallExpr:
 		n := &ast.Node{Kind: "call", Value: ex.Func}
 		for _, a := range ex.Args {
@@ -326,17 +436,15 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-	if len(e.Binary.Right) == 0 {
-		return left, nil
+	expr := left
+	for _, op := range e.Binary.Right {
+		r, err := compilePostfix(op.Right)
+		if err != nil {
+			return nil, err
+		}
+		expr = &BinaryExpr{Left: expr, Op: op.Op, Right: r}
 	}
-	if len(e.Binary.Right) > 1 {
-		return nil, fmt.Errorf("unsupported expression chain")
-	}
-	r, err := compilePostfix(e.Binary.Right[0].Right)
-	if err != nil {
-		return nil, err
-	}
-	return &BinaryExpr{Left: left, Op: e.Binary.Right[0].Op, Right: r}, nil
+	return expr, nil
 }
 
 func compileUnary(u *parser.Unary) (Expr, error) {
@@ -383,12 +491,124 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		if p.Lit.Int != nil {
 			return &IntLit{Value: int(*p.Lit.Int)}, nil
 		}
+		if p.Lit.Bool != nil {
+			return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
+		}
 		return nil, fmt.Errorf("unsupported literal")
+	case p.If != nil:
+		return compileIfExpr(p.If)
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return &VarRef{Name: p.Selector.Root}, nil
 	case p.Group != nil:
 		return compileExpr(p.Group)
 	default:
 		return nil, fmt.Errorf("unsupported primary")
+	}
+}
+
+func compileIfExpr(ie *parser.IfExpr) (Expr, error) {
+	cond, err := compileExpr(ie.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenExpr, err := compileExpr(ie.Then)
+	if err != nil {
+		return nil, err
+	}
+	var elseExpr Expr
+	if ie.ElseIf != nil {
+		elseExpr, err = compileIfExpr(ie.ElseIf)
+		if err != nil {
+			return nil, err
+		}
+	} else if ie.Else != nil {
+		elseExpr, err = compileExpr(ie.Else)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		return nil, fmt.Errorf("missing else expression")
+	}
+	return &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
+}
+
+func compileIfStmt(is *parser.IfStmt, prog *parser.Program) (Stmt, error) {
+	cond, err := compileExpr(is.Cond)
+	if err != nil {
+		return nil, err
+	}
+	var thenStmts []Stmt
+	for _, s := range is.Then {
+		st, err := compileStmt(s, prog)
+		if err != nil {
+			return nil, err
+		}
+		thenStmts = append(thenStmts, st)
+	}
+	var elseStmts []Stmt
+	if is.ElseIf != nil {
+		st, err := compileIfStmt(is.ElseIf, prog)
+		if err != nil {
+			return nil, err
+		}
+		elseStmts = []Stmt{st}
+	} else if len(is.Else) > 0 {
+		for _, s := range is.Else {
+			st, err := compileStmt(s, prog)
+			if err != nil {
+				return nil, err
+			}
+			elseStmts = append(elseStmts, st)
+		}
+	}
+	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
+}
+
+func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
+	switch {
+	case s.Expr != nil:
+		call := s.Expr.Expr.Binary.Left.Value.Target.Call
+		if call == nil || call.Func != "print" || len(call.Args) != 1 {
+			return nil, fmt.Errorf("unsupported expression")
+		}
+		arg, err := compileExpr(call.Args[0])
+		if err != nil {
+			return nil, err
+		}
+		return &PrintStmt{Value: arg}, nil
+	case s.Let != nil:
+		var expr Expr
+		var err error
+		if s.Let.Value != nil {
+			expr, err = compileExpr(s.Let.Value)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			expr = &IntLit{Value: 0}
+		}
+		return &VarDecl{Name: s.Let.Name, Value: expr}, nil
+	case s.Var != nil:
+		var expr Expr
+		var err error
+		if s.Var.Value != nil {
+			expr, err = compileExpr(s.Var.Value)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			expr = &IntLit{Value: 0}
+		}
+		return &VarDecl{Name: s.Var.Name, Value: expr}, nil
+	case s.Assign != nil && len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0:
+		expr, err := compileExpr(s.Assign.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &AssignStmt{Name: s.Assign.Name, Value: expr}, nil
+	case s.If != nil:
+		return compileIfStmt(s.If, prog)
+	default:
+		return nil, fmt.Errorf("unsupported statement")
 	}
 }
