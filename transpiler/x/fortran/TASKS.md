@@ -1,3 +1,18 @@
+## Progress (2025-07-20 01:31 +07)
+- transpiler/fortran: simplify output
+
+## Progress (2025-07-20 01:17 +07)
+- docs(fortran): update progress and add bool_chain
+
+## Progress (2025-07-20 01:17 +07)
+- docs(fortran): update progress and add bool_chain
+
+## Progress (2025-07-20 01:17 +07)
+- docs(fortran): update progress and add bool_chain
+
+## Progress (2025-07-20 01:17 +07)
+- docs(fortran): update progress and add bool_chain
+
 # Transpiler Tasks
 ## Progress (2025-07-20 00:49 +07)
 - regenerate README and tasks; add bool_chain test
