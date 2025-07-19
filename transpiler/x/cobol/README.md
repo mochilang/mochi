@@ -1,11 +1,9 @@
 # COBOL Transpiler
 
 This directory stores COBOL code generated from Mochi programs in `tests/vm/valid`.
-Each program is transpiled and the resulting `.cob` sources are compiled with
-`cobc` during testing.
+Each program is transpiled and the resulting `.cob` sources are compiled with `cobc` during testing.
 
-
-Checklist of programs that currently transpile and run (14/100):
+Checklist of programs that currently transpile and run (15/100):
 
 - [ ] append_builtin
 - [ ] avg_builtin
@@ -24,7 +22,7 @@ Checklist of programs that currently transpile and run (14/100):
 - [ ] dataset_where_filter
 - [ ] exists_builtin
 - [ ] for_list_collection
-- [ ] for_loop
+- [x] for_loop
 - [ ] for_map_collection
 - [ ] fun_call
 - [ ] fun_expr_in_let
@@ -51,7 +49,7 @@ Checklist of programs that currently transpile and run (14/100):
 - [ ] left_join_multi
 - [ ] len_builtin
 - [ ] len_map
-- [x] len_string
+- [ ] len_string
 - [x] let_and_print
 - [ ] list_assign
 - [ ] list_index
@@ -67,7 +65,6 @@ Checklist of programs that currently transpile and run (14/100):
 - [ ] map_nested_assign
 - [ ] match_expr
 - [ ] match_full
-- [ ] math_ops
 - [x] math_ops
 - [ ] membership
 - [ ] min_max_builtin
@@ -107,4 +104,4 @@ Checklist of programs that currently transpile and run (14/100):
 - [ ] user_type_literal
 - [ ] values_builtin
 - [x] var_assignment
-- [ ] while_loop
+- [x] while_loop
