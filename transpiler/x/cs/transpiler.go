@@ -468,6 +468,8 @@ func isStringExpr(e Expr) bool {
 		return true
 	case *SliceExpr:
 		return isStringExpr(ex.Value)
+	case *SubstringExpr:
+		return true
 	case *VarRef:
 		return stringVars[ex.Name]
 	case *CallExpr:
@@ -546,6 +548,46 @@ func (s *StrExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "Convert.ToString(")
 	s.Arg.emit(w)
 	fmt.Fprint(w, ")")
+}
+
+type MinExpr struct{ Arg Expr }
+
+func (m *MinExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "(")
+	m.Arg.emit(w)
+	fmt.Fprint(w, ".Min())")
+}
+
+type MaxExpr struct{ Arg Expr }
+
+func (m *MaxExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "(")
+	m.Arg.emit(w)
+	fmt.Fprint(w, ".Max())")
+}
+
+type SubstringExpr struct {
+	Str   Expr
+	Start Expr
+	End   Expr
+}
+
+func (s *SubstringExpr) emit(w io.Writer) {
+	s.Str.emit(w)
+	fmt.Fprint(w, ".Substring(")
+	s.Start.emit(w)
+	fmt.Fprint(w, ", (")
+	s.End.emit(w)
+	fmt.Fprint(w, " - ")
+	s.Start.emit(w)
+	fmt.Fprint(w, "))")
+}
+
+type ValuesExpr struct{ Map Expr }
+
+func (v *ValuesExpr) emit(w io.Writer) {
+	v.Map.emit(w)
+	fmt.Fprint(w, ".Values.ToList()")
 }
 
 // Transpile converts a Mochi AST to a simple C# AST.
@@ -944,6 +986,22 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 1 {
 				return &StrExpr{Arg: args[0]}, nil
 			}
+		case "min":
+			if len(args) == 1 {
+				return &MinExpr{Arg: args[0]}, nil
+			}
+		case "max":
+			if len(args) == 1 {
+				return &MaxExpr{Arg: args[0]}, nil
+			}
+		case "substring":
+			if len(args) == 3 {
+				return &SubstringExpr{Str: args[0], Start: args[1], End: args[2]}, nil
+			}
+		case "values":
+			if len(args) == 1 {
+				return &ValuesExpr{Map: args[0]}, nil
+			}
 		}
 		return &CallExpr{Func: name, Args: args}, nil
 	case p.Lit != nil && p.Lit.Str != nil:
@@ -1168,6 +1226,14 @@ func toNodeExpr(e Expr) *ast.Node {
 		return &ast.Node{Kind: "sum", Children: []*ast.Node{toNodeExpr(ex.Arg)}}
 	case *StrExpr:
 		return &ast.Node{Kind: "str", Children: []*ast.Node{toNodeExpr(ex.Arg)}}
+	case *MinExpr:
+		return &ast.Node{Kind: "min", Children: []*ast.Node{toNodeExpr(ex.Arg)}}
+	case *MaxExpr:
+		return &ast.Node{Kind: "max", Children: []*ast.Node{toNodeExpr(ex.Arg)}}
+	case *SubstringExpr:
+		return &ast.Node{Kind: "substring", Children: []*ast.Node{toNodeExpr(ex.Str), toNodeExpr(ex.Start), toNodeExpr(ex.End)}}
+	case *ValuesExpr:
+		return &ast.Node{Kind: "values", Children: []*ast.Node{toNodeExpr(ex.Map)}}
 	case *IndexExpr:
 		return &ast.Node{Kind: "index", Children: []*ast.Node{toNodeExpr(ex.Target), toNodeExpr(ex.Index)}}
 	case *SliceExpr:
@@ -1290,6 +1356,12 @@ func inspectLinq(e Expr) bool {
 	case *LenExpr:
 		return inspectLinq(ex.Arg)
 	case *AppendExpr:
+		return true
+	case *MinExpr:
+		return true
+	case *MaxExpr:
+		return true
+	case *ValuesExpr:
 		return true
 	case *SliceExpr:
 		return true
