@@ -1,1 +1,8 @@
-unsupported statement
+exit status 1
+/workspace/mochi/tests/transpiler/x/scala/closure.scala:3: error: ':' expected but ')' found.
+    def makeAdder(n) = {
+                   ^
+/workspace/mochi/tests/transpiler/x/scala/closure.scala:10: error: identifier expected but '}' found.
+}
+^
+two errors found
