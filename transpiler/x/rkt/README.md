@@ -1,7 +1,7 @@
 # Mochi Racket Transpiler
 This directory contains the experimental Racket transpiler. Golden tests under `tests/transpiler/x/rkt` check the generated code and its runtime output.
 
-## Golden Test Checklist (17/100)
+## Golden Test Checklist (20/100)
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -12,7 +12,7 @@ This directory contains the experimental Racket transpiler. Golden tests under `
 - [ ] cast_string_to_int
 - [ ] cast_struct
 - [ ] closure
-- [ ] count_builtin
+- [x] count_builtin
 - [ ] cross_join
 - [ ] cross_join_filter
 - [ ] cross_join_triple
@@ -82,7 +82,7 @@ This directory contains the experimental Racket transpiler. Golden tests under `
 - [ ] short_circuit
 - [ ] slice
 - [ ] sort_stable
-- [ ] str_builtin
+- [x] str_builtin
 - [x] string_compare
 - [x] string_concat
 - [ ] string_contains
@@ -90,7 +90,7 @@ This directory contains the experimental Racket transpiler. Golden tests under `
 - [ ] string_index
 - [ ] string_prefix_slice
 - [ ] substring_builtin
-- [ ] sum_builtin
+- [x] sum_builtin
 - [ ] tail_recursion
 - [ ] test_block
 - [ ] tree_sum

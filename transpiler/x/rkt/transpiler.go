@@ -219,6 +219,22 @@ func (a *AvgExpr) emit(w io.Writer) {
 	io.WriteString(w, "))))")
 }
 
+type SumExpr struct{ Arg Expr }
+
+func (s *SumExpr) emit(w io.Writer) {
+	io.WriteString(w, "(apply + ")
+	s.Arg.emit(w)
+	io.WriteString(w, ")")
+}
+
+type StrExpr struct{ Arg Expr }
+
+func (s *StrExpr) emit(w io.Writer) {
+	io.WriteString(w, "(format \"~a\" ")
+	s.Arg.emit(w)
+	io.WriteString(w, ")")
+}
+
 type BinaryExpr struct {
 	Op          string
 	Left, Right Expr
@@ -591,6 +607,18 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 	case "avg":
 		if len(args) == 1 {
 			return &AvgExpr{Arg: args[0]}, nil
+		}
+	case "sum":
+		if len(args) == 1 {
+			return &SumExpr{Arg: args[0]}, nil
+		}
+	case "count":
+		if len(args) == 1 {
+			return &LenExpr{Arg: args[0]}, nil
+		}
+	case "str":
+		if len(args) == 1 {
+			return &StrExpr{Arg: args[0]}, nil
 		}
 	}
 	return nil, fmt.Errorf("unsupported call")
