@@ -39,6 +39,48 @@ func (s *LetStmt) emit(w io.Writer) {
 	s.Expr.emit(w)
 }
 
+type VarStmt struct {
+	Name string
+	Expr Expr
+}
+
+func (s *VarStmt) emit(w io.Writer) {
+	fmt.Fprint(w, "var "+s.Name)
+	if s.Expr != nil {
+		fmt.Fprint(w, " = ")
+		s.Expr.emit(w)
+	}
+}
+
+type AssignStmt struct {
+	Name string
+	Expr Expr
+}
+
+func (s *AssignStmt) emit(w io.Writer) {
+	fmt.Fprint(w, s.Name+" = ")
+	s.Expr.emit(w)
+}
+
+type WhileStmt struct {
+	Cond Expr
+	Body []Stmt
+}
+
+func (wst *WhileStmt) emit(w io.Writer) {
+	fmt.Fprint(w, "while (")
+	if wst.Cond != nil {
+		wst.Cond.emit(w)
+	}
+	fmt.Fprint(w, ") {\n")
+	for _, s := range wst.Body {
+		fmt.Fprint(w, "\t")
+		s.emit(w)
+		fmt.Fprint(w, ";\n")
+	}
+	fmt.Fprint(w, "}")
+}
+
 type BinaryExpr struct {
 	Left  Expr
 	Op    string
@@ -58,6 +100,13 @@ func (i *IntLit) emit(w io.Writer) { fmt.Fprint(w, i.Value) }
 type VarExpr struct{ Name string }
 
 func (v *VarExpr) emit(w io.Writer) { fmt.Fprint(w, v.Name) }
+
+type LenExpr struct{ Value Expr }
+
+func (l *LenExpr) emit(w io.Writer) {
+	l.Value.emit(w)
+	fmt.Fprint(w, ".length()")
+}
 
 type UnaryExpr struct {
 	Op    string
@@ -98,27 +147,68 @@ func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
 
 // Transpile converts a Mochi AST into a simple Java AST.
 func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
-	prog := &Program{}
-	for _, stmt := range p.Statements {
-		switch {
-		case stmt.Expr != nil:
-			e, err := compileExpr(stmt.Expr.Expr)
-			if err != nil {
-				return nil, err
-			}
-			prog.Stmts = append(prog.Stmts, &ExprStmt{Expr: e})
-		case stmt.Let != nil && stmt.Let.Value != nil:
-			e, err := compileExpr(stmt.Let.Value)
-			if err != nil {
-				return nil, err
-			}
-			prog.Stmts = append(prog.Stmts, &LetStmt{Name: stmt.Let.Name, Expr: e})
-		case stmt.Test == nil && stmt.Import == nil && stmt.Type == nil:
-			return nil, fmt.Errorf("unsupported statement at %d:%d", stmt.Pos.Line, stmt.Pos.Column)
+	var prog Program
+	for _, s := range p.Statements {
+		st, err := compileStmt(s)
+		if err != nil {
+			return nil, err
+		}
+		if st != nil {
+			prog.Stmts = append(prog.Stmts, st)
 		}
 	}
 	_ = env // reserved
-	return prog, nil
+	return &prog, nil
+}
+
+func compileStmt(s *parser.Statement) (Stmt, error) {
+	switch {
+	case s.Expr != nil:
+		e, err := compileExpr(s.Expr.Expr)
+		if err != nil {
+			return nil, err
+		}
+		return &ExprStmt{Expr: e}, nil
+	case s.Let != nil && s.Let.Value != nil:
+		e, err := compileExpr(s.Let.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &LetStmt{Name: s.Let.Name, Expr: e}, nil
+	case s.Var != nil:
+		e, err := compileExpr(s.Var.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &VarStmt{Name: s.Var.Name, Expr: e}, nil
+	case s.Assign != nil:
+		if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
+			e, err := compileExpr(s.Assign.Value)
+			if err != nil {
+				return nil, err
+			}
+			return &AssignStmt{Name: s.Assign.Name, Expr: e}, nil
+		}
+	case s.While != nil:
+		cond, err := compileExpr(s.While.Cond)
+		if err != nil {
+			return nil, err
+		}
+		var body []Stmt
+		for _, b := range s.While.Body {
+			st, err := compileStmt(b)
+			if err != nil {
+				return nil, err
+			}
+			if st != nil {
+				body = append(body, st)
+			}
+		}
+		return &WhileStmt{Cond: cond, Body: body}, nil
+	case s.Test == nil && s.Import == nil && s.Type == nil:
+		return nil, fmt.Errorf("unsupported statement at %d:%d", s.Pos.Line, s.Pos.Column)
+	}
+	return nil, nil
 }
 
 func compileExpr(e *parser.Expr) (Expr, error) {
@@ -185,6 +275,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		name := p.Call.Func
 		if name == "print" {
 			name = "System.out.println"
+			return &CallExpr{Func: name, Args: args}, nil
+		}
+		if name == "len" && len(args) == 1 {
+			return &LenExpr{Value: args[0]}, nil
 		}
 		return &CallExpr{Func: name, Args: args}, nil
 	case p.Lit != nil && p.Lit.Str != nil:
@@ -207,7 +301,11 @@ func Emit(prog *Program) []byte {
 	for _, s := range prog.Stmts {
 		buf.WriteString("\t\t")
 		s.emit(&buf)
-		buf.WriteString(";\n")
+		if _, ok := s.(*WhileStmt); ok {
+			buf.WriteString("\n")
+		} else {
+			buf.WriteString(";\n")
+		}
 	}
 	buf.WriteString("\t}\n")
 	buf.WriteString("}\n")
@@ -274,6 +372,25 @@ func toNodeStmt(s Stmt) *ast.Node {
 		n := &ast.Node{Kind: "let", Value: st.Name}
 		n.Children = append(n.Children, toNodeExpr(st.Expr))
 		return n
+	case *VarStmt:
+		n := &ast.Node{Kind: "var", Value: st.Name}
+		if st.Expr != nil {
+			n.Children = append(n.Children, toNodeExpr(st.Expr))
+		}
+		return n
+	case *AssignStmt:
+		n := &ast.Node{Kind: "assign", Value: st.Name}
+		n.Children = append(n.Children, toNodeExpr(st.Expr))
+		return n
+	case *WhileStmt:
+		n := &ast.Node{Kind: "while"}
+		if st.Cond != nil {
+			n.Children = append(n.Children, toNodeExpr(st.Cond))
+		}
+		for _, b := range st.Body {
+			n.Children = append(n.Children, toNodeStmt(b))
+		}
+		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
@@ -300,6 +417,10 @@ func toNodeExpr(e Expr) *ast.Node {
 	case *BinaryExpr:
 		n := &ast.Node{Kind: "bin", Value: ex.Op}
 		n.Children = append(n.Children, toNodeExpr(ex.Left), toNodeExpr(ex.Right))
+		return n
+	case *LenExpr:
+		n := &ast.Node{Kind: "len"}
+		n.Children = append(n.Children, toNodeExpr(ex.Value))
 		return n
 	default:
 		return &ast.Node{Kind: "unknown"}

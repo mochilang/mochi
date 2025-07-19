@@ -6,6 +6,8 @@ This directory contains experimental transpilers that convert Mochi source code 
 
 The following checklist tracks Mochi programs found in `tests/vm/valid`. Use it to mark which examples are supported by the Java transpiler.
 
+Checklist of programs that currently transpile and run (10/100):
+
 - [ ] append_builtin.mochi
 - [ ] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -50,7 +52,7 @@ The following checklist tracks Mochi programs found in `tests/vm/valid`. Use it 
 - [ ] left_join_multi.mochi
 - [ ] len_builtin.mochi
 - [ ] len_map.mochi
-- [ ] len_string.mochi
+ - [x] len_string.mochi
 - [x] let_and_print.mochi
 - [ ] list_assign.mochi
 - [ ] list_index.mochi
@@ -104,5 +106,5 @@ The following checklist tracks Mochi programs found in `tests/vm/valid`. Use it 
 - [ ] update_stmt.mochi
 - [ ] user_type_literal.mochi
 - [ ] values_builtin.mochi
-- [ ] var_assignment.mochi
-- [ ] while_loop.mochi
+ - [x] var_assignment.mochi
+ - [x] while_loop.mochi
