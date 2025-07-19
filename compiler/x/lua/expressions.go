@@ -1476,7 +1476,8 @@ func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
 func (c *Compiler) compileLiteral(lit *parser.Literal) (string, error) {
 	switch {
 	case lit.Int != nil:
-		return strconv.Itoa(*lit.Int), nil
+		// parser.IntLit is a distinct type, so convert explicitly
+		return strconv.Itoa(int(*lit.Int)), nil
 	case lit.Float != nil:
 		s := strconv.FormatFloat(*lit.Float, 'f', -1, 64)
 		if !strings.ContainsAny(s, ".eE") && !strings.Contains(s, ".") {
