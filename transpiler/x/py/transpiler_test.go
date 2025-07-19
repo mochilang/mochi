@@ -53,9 +53,11 @@ func TestTranspile_PrintHello(t *testing.T) {
 		t.Fatalf("transpile: %v", err)
 	}
 	var buf bytes.Buffer
+	os.Setenv("SOURCE_DATE_EPOCH", "0")
 	if err := py.Emit(&buf, progAST); err != nil {
 		t.Fatalf("emit: %v", err)
 	}
+	os.Unsetenv("SOURCE_DATE_EPOCH")
 	code := buf.Bytes()
 	pyFile := filepath.Join(outDir, "print_hello.py")
 	if err := os.WriteFile(pyFile, code, 0o644); err != nil {
@@ -64,11 +66,14 @@ func TestTranspile_PrintHello(t *testing.T) {
 	cmd := exec.Command("python3", pyFile)
 	cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root)
 	out, err := cmd.CombinedOutput()
-	if err != nil {
-		t.Fatalf("run: %v: %s", err, out)
-	}
 	got := bytes.TrimSpace(out)
-	want, err := os.ReadFile(filepath.Join(root, "tests", "vm", "valid", "print_hello.out"))
+	if err != nil {
+		_ = os.WriteFile(filepath.Join(outDir, "print_hello.error"), out, 0o644)
+		t.Fatalf("run: %v", err)
+	}
+	_ = os.Remove(filepath.Join(outDir, "print_hello.error"))
+	wantPath := filepath.Join(outDir, "print_hello.output")
+	want, err := os.ReadFile(wantPath)
 	if err != nil {
 		t.Fatalf("read want: %v", err)
 	}
