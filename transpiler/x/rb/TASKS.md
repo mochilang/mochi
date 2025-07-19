@@ -1,11 +1,9 @@
-## Progress (2025-07-19 17:38 +0700)
+## Progress (2025-07-19 18:48 +0700)
 - VM valid golden test results updated
 
-## Progress (2025-07-19 17:38 +0700)
+## Progress (2025-07-19 18:48 +0700)
 - VM valid golden test results updated
-
-## Progress (2025-07-19 17:38 +0700)
-- VM valid golden test results updated
+- Added len_map, list_assign and map_literal_dynamic tests
 
 ## Progress (2025-07-19 09:53 UTC)
 - Removed mochi_print helper and added type-based print logic
