@@ -251,6 +251,13 @@ func (m *MaxExpr) emit(w io.Writer) {
 	io.WriteString(w, ".max()")
 }
 
+type ValuesExpr struct{ Map Expr }
+
+func (v *ValuesExpr) emit(w io.Writer) {
+	v.Map.emit(w)
+	io.WriteString(w, ".values")
+}
+
 type SubstringExpr struct {
 	Value Expr
 	Start Expr
@@ -491,6 +498,15 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			return &MaxExpr{Value: arg}, nil
+		case "values":
+			if len(p.Call.Args) != 1 {
+				return nil, fmt.Errorf("values expects 1 arg")
+			}
+			m, err := convertExpr(env, p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &ValuesExpr{Map: m}, nil
 		case "substring":
 			if len(p.Call.Args) != 3 {
 				return nil, fmt.Errorf("substring expects 3 args")
@@ -676,6 +692,8 @@ func toNodeExpr(e Expr) *ast.Node {
 		return &ast.Node{Kind: "min", Children: []*ast.Node{toNodeExpr(ex.Value)}}
 	case *MaxExpr:
 		return &ast.Node{Kind: "max", Children: []*ast.Node{toNodeExpr(ex.Value)}}
+	case *ValuesExpr:
+		return &ast.Node{Kind: "values", Children: []*ast.Node{toNodeExpr(ex.Map)}}
 	case *SubstringExpr:
 		return &ast.Node{Kind: "substring", Children: []*ast.Node{toNodeExpr(ex.Value), toNodeExpr(ex.Start), toNodeExpr(ex.End)}}
 	case *StringLit:
