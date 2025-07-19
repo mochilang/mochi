@@ -1,0 +1,153 @@
+package cpp
+
+import (
+	"bytes"
+	"fmt"
+	"io"
+
+	"mochi/ast"
+	"mochi/parser"
+	"mochi/types"
+)
+
+type Program struct {
+	Includes  []string
+	Functions []*Func
+}
+
+type Func struct {
+	Name       string
+	ReturnType string
+	Body       []Stmt
+}
+
+type Stmt interface{ emit(io.Writer, int) }
+
+type Expr interface{ emit(io.Writer) }
+
+type PrintStmt struct{ Value Expr }
+
+type StringLit struct{ Value string }
+
+func (p *Program) Emit() []byte {
+	var buf bytes.Buffer
+	p.write(&buf)
+	return buf.Bytes()
+}
+
+func (p *Program) write(w io.Writer) {
+	for _, inc := range p.Includes {
+		fmt.Fprintf(w, "#include %s\n", inc)
+	}
+	fmt.Fprintln(w)
+	for i, fn := range p.Functions {
+		if i > 0 {
+			fmt.Fprintln(w)
+		}
+		fn.emit(w)
+	}
+}
+
+func (f *Func) emit(w io.Writer) {
+	fmt.Fprintf(w, "%s %s() {\n", f.ReturnType, f.Name)
+	for _, st := range f.Body {
+		st.emit(w, 1)
+	}
+	fmt.Fprintln(w, "    return 0;")
+	fmt.Fprintln(w, "}")
+}
+
+func (s *PrintStmt) emit(w io.Writer, indent int) {
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "    ")
+	}
+	io.WriteString(w, "std::cout << ")
+	s.Value.emit(w)
+	io.WriteString(w, " << std::endl;\n")
+}
+
+func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
+
+func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
+	_ = env
+	cp := &Program{Includes: []string{"<iostream>", "<string>"}}
+	var body []Stmt
+	for _, stmt := range prog.Statements {
+		if stmt.Expr != nil {
+			if str, ok := extractPrintString(stmt.Expr.Expr); ok {
+				body = append(body, &PrintStmt{Value: &StringLit{Value: str}})
+			} else {
+				return nil, fmt.Errorf("unsupported expression")
+			}
+		} else {
+			return nil, fmt.Errorf("unsupported statement")
+		}
+	}
+	cp.Functions = []*Func{{Name: "main", ReturnType: "int", Body: body}}
+	return cp, nil
+}
+
+func extractPrintString(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return "", false
+	}
+	u := e.Binary.Left
+	if u.Value == nil || u.Value.Target == nil || u.Value.Target.Call == nil {
+		return "", false
+	}
+	call := u.Value.Target.Call
+	if call.Func != "print" || len(call.Args) != 1 {
+		return "", false
+	}
+	arg := call.Args[0]
+	if arg == nil || arg.Binary == nil || arg.Binary.Left == nil {
+		return "", false
+	}
+	pv := arg.Binary.Left.Value
+	if pv == nil || pv.Target == nil || pv.Target.Lit == nil || pv.Target.Lit.Str == nil {
+		return "", false
+	}
+	return *pv.Target.Lit.Str, true
+}
+
+// print writes a Lisp-like representation of the transpiler AST to stdout.
+// It first converts the internal structs to ast.Node using the mochi/ast
+// package, then prints the result.
+func print(prog *Program) {
+	n := prog.toNode()
+	fmt.Print(n.String())
+}
+
+func (p *Program) toNode() *ast.Node {
+	root := &ast.Node{Kind: "program"}
+	for _, fn := range p.Functions {
+		root.Children = append(root.Children, fn.toNode())
+	}
+	return root
+}
+
+func (f *Func) toNode() *ast.Node {
+	n := &ast.Node{Kind: "func", Value: f.Name}
+	for _, st := range f.Body {
+		n.Children = append(n.Children, toStmtNode(st))
+	}
+	return n
+}
+
+func toStmtNode(s Stmt) *ast.Node {
+	switch st := s.(type) {
+	case *PrintStmt:
+		return &ast.Node{Kind: "print", Children: []*ast.Node{toExprNode(st.Value)}}
+	default:
+		return &ast.Node{Kind: "stmt"}
+	}
+}
+
+func toExprNode(e Expr) *ast.Node {
+	switch ex := e.(type) {
+	case *StringLit:
+		return &ast.Node{Kind: "str", Value: ex.Value}
+	default:
+		return &ast.Node{Kind: "expr"}
+	}
+}
