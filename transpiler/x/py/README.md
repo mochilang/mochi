@@ -1,8 +1,9 @@
 # Transpiler Progress
 
-This directory tracks progress of the experimental Python transpiler. Generated code for tests lives in `tests/transpiler/x/py`.
+This directory tracks progress of the experimental Python transpiler. Generated
+code for tests lives in `tests/transpiler/x/py`.
 
-## VM Golden Test Checklist
+## VM Golden Test Checklist (15/100)
 
 - [ ] append_builtin
 - [ ] avg_builtin
@@ -39,19 +40,19 @@ This directory tracks progress of the experimental Python transpiler. Generated 
 - [ ] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
-- [ ] in_operator
+- [x] in_operator
 - [ ] in_operator_extended
 - [ ] inner_join
 - [ ] join_multi
 - [ ] json_builtin
 - [ ] left_join
 - [ ] left_join_multi
- - [x] len_builtin
+- [x] len_builtin
 - [ ] len_map
 - [ ] len_string
- - [x] let_and_print
+- [x] let_and_print
 - [ ] list_assign
- - [x] list_index
+- [x] list_index
 - [ ] list_nested_assign
 - [ ] list_set_ops
 - [ ] load_yaml
@@ -64,7 +65,7 @@ This directory tracks progress of the experimental Python transpiler. Generated 
 - [ ] map_nested_assign
 - [ ] match_expr
 - [ ] match_full
- - [x] math_ops
+- [x] math_ops
 - [ ] membership
 - [ ] min_max_builtin
 - [ ] nested_function
@@ -84,11 +85,11 @@ This directory tracks progress of the experimental Python transpiler. Generated 
 - [ ] slice
 - [ ] sort_stable
 - [ ] str_builtin
-- [ ] string_compare
- - [x] string_concat
+- [x] string_compare
+- [x] string_concat
 - [ ] string_contains
 - [ ] string_in_operator
- - [x] string_index
+- [x] string_index
 - [ ] string_prefix_slice
 - [ ] substring_builtin
 - [ ] sum_builtin
@@ -98,9 +99,9 @@ This directory tracks progress of the experimental Python transpiler. Generated 
 - [ ] two-sum
 - [ ] typed_let
 - [ ] typed_var
- - [x] unary_neg
+- [x] unary_neg
 - [ ] update_stmt
 - [ ] user_type_literal
 - [ ] values_builtin
- - [x] var_assignment
+- [x] var_assignment
 - [ ] while_loop

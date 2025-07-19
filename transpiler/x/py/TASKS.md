@@ -12,3 +12,7 @@
 ## Recent Enhancements (2025-07-19 12:28 +07)
 - Added conditional expressions with `if ... then ... else`.
 - Added transpiler tests for `if_then_else` and `if_then_else_nested`.
+
+## Recent Enhancements (2025-07-19 12:40 +07)
+- Mapped logical operators `&&`, `||` and `!` to Python syntax.
+- Added transpiler support and tests for `in_operator` and `string_compare`.

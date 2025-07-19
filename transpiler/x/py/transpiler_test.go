@@ -135,3 +135,11 @@ func TestTranspile_IfThenElse(t *testing.T) {
 func TestTranspile_IfThenElseNested(t *testing.T) {
 	runCase(t, "if_then_else_nested")
 }
+
+func TestTranspile_InOperator(t *testing.T) {
+	runCase(t, "in_operator")
+}
+
+func TestTranspile_StringCompare(t *testing.T) {
+	runCase(t, "string_compare")
+}
