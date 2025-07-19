@@ -309,6 +309,10 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		c.writeln(fmt.Sprintf("%s(%s) :-", sanitizeAtom(fn.Name), resVar))
 	}
 	c.indent++
+	c.writeln("catch(")
+	c.indent++
+	c.writeln("(")
+	c.indent++
 	for i, st := range fn.Body {
 		if st.Fun != nil {
 			continue
@@ -319,10 +323,11 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 				return err
 			}
 			if arith {
-				c.writeln(fmt.Sprintf("%s is %s.", resVar, val))
-			} else {
-				c.writeln(fmt.Sprintf("%s = %s.", resVar, val))
+				tmp := c.newTmp()
+				c.writeln(fmt.Sprintf("%s is %s,", tmp, val))
+				val = tmp
 			}
+			c.writeln(fmt.Sprintf("throw(return(%s)),", val))
 		} else {
 			if err := c.compileStmt(st); err != nil {
 				return err
@@ -330,10 +335,19 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		}
 	}
 	if len(fn.Body) == 0 {
-		c.writeln(fmt.Sprintf("%s = true.", resVar))
+		c.writeln("true")
 	}
+	c.writeln("true")
 	c.indent--
-	c.writeln("")
+	c.writeln(")")
+	handler := c.newTmp()
+	c.writeln(fmt.Sprintf(", return(%s),", handler))
+	c.indent++
+	c.writeln(fmt.Sprintf("%s = %s", resVar, handler))
+	c.indent--
+	c.writeln(")")
+	c.indent--
+	c.writeln(".")
 	c.vars = oldVars
 	c.tmp = oldTmp
 	c.nested = oldNested
@@ -547,10 +561,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		if arith {
-			c.writeln(fmt.Sprintf("%s is %s.", c.retVar, val))
-		} else {
-			c.writeln(fmt.Sprintf("%s = %s.", c.retVar, val))
+			tmp := c.newTmp()
+			c.writeln(fmt.Sprintf("%s is %s,", tmp, val))
+			val = tmp
 		}
+		c.writeln(fmt.Sprintf("throw(return(%s)),", val))
 		return nil
 	case s.Expect != nil:
 		return c.compileExpect(s.Expect)
