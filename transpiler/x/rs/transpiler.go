@@ -18,6 +18,7 @@ import (
 
 var usesHashMap bool
 var usesPrintVec bool
+var mapVars map[string]bool
 
 // Program represents a Rust program consisting of a list of statements.
 type Program struct {
@@ -104,6 +105,35 @@ func (m *MapLit) emit(w io.Writer) {
 		io.WriteString(w, ")")
 	}
 	io.WriteString(w, "])")
+}
+
+// IndexExpr represents `target[index]` access.
+type IndexExpr struct {
+	Target Expr
+	Index  Expr
+}
+
+func (i *IndexExpr) emit(w io.Writer) {
+	switch t := i.Target.(type) {
+	case *NameRef:
+		if mapVars[t.Name] {
+			t.emit(w)
+			io.WriteString(w, "[&")
+			i.Index.emit(w)
+			io.WriteString(w, "]")
+			return
+		}
+	case *MapLit:
+		i.Target.emit(w)
+		io.WriteString(w, "[&")
+		i.Index.emit(w)
+		io.WriteString(w, "]")
+		return
+	}
+	i.Target.emit(w)
+	io.WriteString(w, "[")
+	i.Index.emit(w)
+	io.WriteString(w, "]")
 }
 
 // LenExpr represents a call to the `len` builtin.
@@ -221,6 +251,18 @@ func (a *AssignStmt) emit(w io.Writer) {
 	a.Expr.emit(w)
 }
 
+// IndexAssignStmt assigns to an indexed expression like x[i] = v.
+type IndexAssignStmt struct {
+	Target Expr
+	Value  Expr
+}
+
+func (s *IndexAssignStmt) emit(w io.Writer) {
+	s.Target.emit(w)
+	io.WriteString(w, " = ")
+	s.Value.emit(w)
+}
+
 type BinaryExpr struct {
 	Left  Expr
 	Op    string
@@ -312,6 +354,7 @@ func (ws *WhileStmt) emit(w io.Writer) {}
 func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesHashMap = false
 	usesPrintVec = false
+	mapVars = make(map[string]bool)
 	prog := &Program{}
 	for _, st := range p.Statements {
 		s, err := compileStmt(st)
@@ -344,6 +387,9 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
+			if _, ok := e.(*MapLit); ok {
+				mapVars[stmt.Let.Name] = true
+			}
 		}
 		typ := ""
 		if stmt.Let.Type != nil && stmt.Let.Type.Simple != nil {
@@ -358,6 +404,9 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
+			if _, ok := e.(*MapLit); ok {
+				mapVars[stmt.Var.Name] = true
+			}
 		}
 		typ := ""
 		if stmt.Var.Type != nil && stmt.Var.Type.Simple != nil {
@@ -365,11 +414,22 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		}
 		return &VarDecl{Name: stmt.Var.Name, Expr: e, Type: typ, Mutable: true}, nil
 	case stmt.Assign != nil:
-		e, err := compileExpr(stmt.Assign.Value)
+		val, err := compileExpr(stmt.Assign.Value)
 		if err != nil {
 			return nil, err
 		}
-		return &AssignStmt{Name: stmt.Assign.Name, Expr: e}, nil
+		if len(stmt.Assign.Index) > 0 {
+			target := Expr(&NameRef{Name: stmt.Assign.Name})
+			target, err = applyIndexOps(target, stmt.Assign.Index)
+			if err != nil {
+				return nil, err
+			}
+			return &IndexAssignStmt{Target: target, Value: val}, nil
+		}
+		if _, ok := val.(*MapLit); ok {
+			mapVars[stmt.Assign.Name] = true
+		}
+		return &AssignStmt{Name: stmt.Assign.Name, Expr: val}, nil
 	case stmt.If != nil:
 		return compileIfStmt(stmt.If)
 	case stmt.While != nil:
@@ -435,6 +495,25 @@ func compileWhileStmt(n *parser.WhileStmt) (Stmt, error) {
 		}
 	}
 	return &WhileStmt{Cond: cond, Body: body}, nil
+}
+
+func applyIndexOps(base Expr, ops []*parser.IndexOp) (Expr, error) {
+	var err error
+	for _, op := range ops {
+		if op.Colon != nil || op.Colon2 != nil || op.End != nil || op.Step != nil {
+			return nil, fmt.Errorf("slice not supported")
+		}
+		if op.Start == nil {
+			return nil, fmt.Errorf("nil index")
+		}
+		var idx Expr
+		idx, err = compileExpr(op.Start)
+		if err != nil {
+			return nil, err
+		}
+		base = &IndexExpr{Target: base, Index: idx}
+	}
+	return base, nil
 }
 
 func compileExpr(e *parser.Expr) (Expr, error) {
@@ -508,10 +587,34 @@ func compileUnary(u *parser.Unary) (Expr, error) {
 }
 
 func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
-	if p == nil || len(p.Ops) > 0 {
+	if p == nil {
 		return nil, fmt.Errorf("unsupported postfix")
 	}
-	return compilePrimary(p.Target)
+	expr, err := compilePrimary(p.Target)
+	if err != nil {
+		return nil, err
+	}
+	for _, op := range p.Ops {
+		switch {
+		case op.Index != nil:
+			if op.Index.Colon != nil || op.Index.Colon2 != nil || op.Index.End != nil || op.Index.Step != nil {
+				return nil, fmt.Errorf("slice not supported")
+			}
+			if op.Index.Start == nil {
+				return nil, fmt.Errorf("nil index")
+			}
+			idx, err := compileExpr(op.Index.Start)
+			if err != nil {
+				return nil, err
+			}
+			expr = &IndexExpr{Target: expr, Index: idx}
+		case op.Cast != nil:
+			// ignore casts
+		default:
+			return nil, fmt.Errorf("unsupported postfix")
+		}
+	}
+	return expr, nil
 }
 
 func compilePrimary(p *parser.Primary) (Expr, error) {
@@ -541,6 +644,12 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					}
 					args = append([]Expr{&StringLit{Value: fmtStr}}, args...)
 				}
+			} else {
+				fmtStr := "{}"
+				for i := 1; i < len(args); i++ {
+					fmtStr += " {}"
+				}
+				args = append([]Expr{&StringLit{Value: fmtStr}}, args...)
 			}
 			name = "println!"
 			return &CallExpr{Func: name, Args: args}, nil
@@ -822,6 +931,8 @@ func stmtNode(s Stmt) *ast.Node {
 		return n
 	case *AssignStmt:
 		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{exprNode(st.Expr)}}
+	case *IndexAssignStmt:
+		return &ast.Node{Kind: "idx-assign", Children: []*ast.Node{exprNode(st.Target), exprNode(st.Value)}}
 	case *IfStmt:
 		n := &ast.Node{Kind: "if"}
 		n.Children = append(n.Children, exprNode(st.Cond))
@@ -904,6 +1015,8 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "min", Children: []*ast.Node{exprNode(ex.List)}}
 	case *MaxExpr:
 		return &ast.Node{Kind: "max", Children: []*ast.Node{exprNode(ex.List)}}
+	case *IndexExpr:
+		return &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(ex.Target), exprNode(ex.Index)}}
 	case *BinaryExpr:
 		return &ast.Node{Kind: "bin", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
 	case *UnaryExpr:

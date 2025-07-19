@@ -5,14 +5,14 @@ simple expressions are currently supported.
 
 ## Golden tests
 
-Programs under `tests/vm/valid` that have generated Rust code (25/100):
+Programs under `tests/vm/valid` that have generated Rust code (30/100):
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
 - [x] binary_precedence
 - [ ] bool_chain
 - [ ] break_continue
-- [ ] cast_string_to_int
+- [x] cast_string_to_int
 - [ ] cast_struct
 - [ ] closure
  - [x] count_builtin
@@ -53,15 +53,15 @@ Programs under `tests/vm/valid` that have generated Rust code (25/100):
 - [x] len_string
 - [x] let_and_print
 - [ ] list_assign
-- [ ] list_index
+ - [x] list_index
 - [ ] list_nested_assign
 - [ ] list_set_ops
 - [ ] load_yaml
 - [ ] map_assign
 - [ ] map_in_operator
-- [ ] map_index
-- [ ] map_int_key
-- [ ] map_literal_dynamic
+ - [x] map_index
+ - [x] map_int_key
+ - [x] map_literal_dynamic
 - [ ] map_membership
 - [ ] map_nested_assign
 - [ ] match_expr

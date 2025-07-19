@@ -1,5 +1,11 @@
 # Rust Transpiler Tasks
 
+## Recent Enhancements (2025-07-19 13:18 +0000)
+- Added support for index expressions and assignments.
+- Ignored cast operations for simple casts.
+- Generated golden tests for `cast_string_to_int`, `list_index`, `map_index`, `map_int_key` and `map_literal_dynamic`.
+- Updated README checklist with progress summary.
+
 ## Recent Enhancements (2025-07-19 19:46 +0700)
 - Added support for `append`, `avg`, `count`, `min` and `max` builtins.
 - Generated golden tests for `append_builtin`, `avg_builtin`, `count_builtin` and `min_max_builtin`.
