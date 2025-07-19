@@ -268,11 +268,11 @@ func (l *ListLit) emit(w io.Writer) {
 }
 
 func (l *LenExpr) emit(w io.Writer) {
-	io.WriteString(w, "(")
+	io.WriteString(w, "__len(")
 	if l.Value != nil {
 		l.Value.emit(w)
 	}
-	io.WriteString(w, ").length")
+	io.WriteString(w, ")")
 }
 
 func (s *SubstringExpr) emit(w io.Writer) {
@@ -521,6 +521,19 @@ func (f *FuncDecl) emit(w io.Writer) {
 func Emit(p *Program) []byte {
 	var b bytes.Buffer
 	b.Write(meta.Header("//"))
+	b.WriteString("function __len(v:any):number {\n")
+	b.WriteString("  if (Array.isArray(v) || typeof v==='string') return v.length;\n")
+	b.WriteString("  return Object.keys(v||{}).length;\n")
+	b.WriteString("}\n")
+	b.WriteString("function __print(...args:any[]) {\n")
+	b.WriteString("  const out:string[]=[];\n")
+	b.WriteString("  for (const a of args) {\n")
+	b.WriteString("    if (typeof a==='boolean') out.push(a? '1':'0');\n")
+	b.WriteString("    else if (Array.isArray(a)) out.push(a.map(x=>typeof x==='boolean'? (x?'1':'0'):String(x)).join(' '));\n")
+	b.WriteString("    else out.push(String(a));\n")
+	b.WriteString("  }\n")
+	b.WriteString("  console.log(out.join(' '));\n")
+	b.WriteString("}\n")
 	for i, s := range p.Stmts {
 		if i > 0 {
 			b.WriteByte('\n')
@@ -913,7 +926,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		switch p.Call.Func {
 		case "print":
-			return &CallExpr{Func: "console.log", Args: args}, nil
+			return &CallExpr{Func: "__print", Args: args}, nil
 		case "len":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("len expects one argument")
