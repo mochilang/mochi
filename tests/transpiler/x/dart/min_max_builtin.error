@@ -1,0 +1,7 @@
+run: exit status 254
+../../../tests/transpiler/x/dart/min_max_builtin.dart:4:9: Error: Method not found: 'min'.
+  print(min(nums));
+        ^^^
+../../../tests/transpiler/x/dart/min_max_builtin.dart:5:9: Error: Method not found: 'max'.
+  print(max(nums));
+        ^^^

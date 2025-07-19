@@ -146,7 +146,7 @@ func updateTasks() {
 	data, _ := os.ReadFile(taskFile)
 	var keep []string
 	for _, line := range strings.Split(string(data), "\n") {
-		if strings.HasPrefix(line, "## Progress") || strings.HasPrefix(line, "- VM valid") {
+		if strings.HasPrefix(line, "## Recent") || strings.HasPrefix(line, "## Progress") || strings.HasPrefix(line, "- VM valid") {
 			continue
 		}
 		keep = append(keep, line)

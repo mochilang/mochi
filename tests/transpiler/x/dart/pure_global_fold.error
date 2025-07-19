@@ -1,0 +1,4 @@
+run: exit status 254
+../../../tests/transpiler/x/dart/pure_global_fold.dart:3:15: Error: Undefined name 'k'.
+  return (x + k);
+              ^

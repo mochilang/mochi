@@ -1,0 +1,10 @@
+run: exit status 254
+../../../tests/transpiler/x/dart/in_operator.dart:4:12: Error: Expected ')' before this.
+  print((2 in xs));
+           ^^
+../../../tests/transpiler/x/dart/in_operator.dart:5:13: Error: Expected ')' before this.
+  print(!(5 in xs) ? 1 : 0);
+            ^^
+../../../tests/transpiler/x/dart/in_operator.dart:5:11: Error: A value of type 'int' can't be assigned to a variable of type 'bool'.
+  print(!(5 in xs) ? 1 : 0);
+          ^
