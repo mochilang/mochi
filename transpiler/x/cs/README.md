@@ -2,13 +2,13 @@
 
 Generated C# code for programs in `tests/vm/valid`. Each program has a `.cs` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.
 
-Compiled programs: 24/100
+Compiled programs: 26/100
 
 ## Checklist
-- [ ] append_builtin
+- [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
-- [ ] binary_precedence
+- [x] binary_precedence
 - [ ] bool_chain
 - [ ] break_continue
 - [ ] cast_string_to_int
