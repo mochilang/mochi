@@ -2,8 +2,10 @@
 #include <stdio.h>
 #include <string.h>
 
+int add(int a, int b) {
+    return a + b;
+}
 int main() {
-    const char* s = "mochi";
-    printf("%s\n", (const char[]){s[1], 0});
+    printf("%d\n", add(2, 3));
     return 0;
 }
