@@ -447,6 +447,21 @@ func convertUnary(u *parser.Unary) Expr {
 	if g := u.Value.Target.Group; g != nil {
 		return convertExpr(g)
 	}
+	if call := u.Value.Target.Call; call != nil && len(u.Ops) == 0 {
+		if call.Func == "len" && len(call.Args) == 1 {
+			if list, ok := convertListExpr(call.Args[0]); ok {
+				return &IntLit{Value: len(list)}
+			}
+			arg := call.Args[0]
+			if arg != nil && arg.Binary != nil && arg.Binary.Left != nil && arg.Binary.Left.Value != nil {
+				t := arg.Binary.Left.Value.Target
+				if t != nil && t.Lit != nil && t.Lit.Str != nil {
+					return &IntLit{Value: len(*t.Lit.Str)}
+				}
+			}
+		}
+		return nil
+	}
 	if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 && len(u.Ops) == 0 {
 		return &VarRef{Name: sel.Root}
 	}
