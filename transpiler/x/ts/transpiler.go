@@ -1350,6 +1350,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 		}
 		return &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
+	case p.Match != nil:
+		return convertMatchExpr(p.Match)
 	case p.List != nil:
 		elems := make([]Expr, len(p.List.Elems))
 		for i, e := range p.List.Elems {
@@ -1396,6 +1398,32 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 	default:
 		return nil, fmt.Errorf("unsupported expression")
 	}
+}
+
+func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
+	target, err := convertExpr(me.Target)
+	if err != nil {
+		return nil, err
+	}
+	var expr Expr = &NameRef{Name: "undefined"}
+	for i := len(me.Cases) - 1; i >= 0; i-- {
+		c := me.Cases[i]
+		res, err := convertExpr(c.Result)
+		if err != nil {
+			return nil, err
+		}
+		pat, err := convertExpr(c.Pattern)
+		if err != nil {
+			return nil, err
+		}
+		if n, ok := pat.(*NameRef); ok && n.Name == "_" {
+			expr = res
+			continue
+		}
+		cond := &BinaryExpr{Left: target, Op: "===", Right: pat}
+		expr = &IfExpr{Cond: cond, Then: res, Else: expr}
+	}
+	return expr, nil
 }
 
 func convertLiteral(l *parser.Literal) (Expr, error) {
