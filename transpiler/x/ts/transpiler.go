@@ -145,6 +145,42 @@ type SubstringExpr struct {
 	End   Expr
 }
 
+// MapLit represents a map/object literal.
+type MapLit struct {
+	Entries []MapEntry
+}
+
+// MapEntry is a key/value pair inside a MapLit.
+type MapEntry struct {
+	Key   Expr
+	Value Expr
+}
+
+// IndexExpr represents `target[index]` access.
+type IndexExpr struct {
+	Target Expr
+	Index  Expr
+}
+
+// FunExpr represents an anonymous function expression.
+type FunExpr struct {
+	Params []string
+	Body   []Stmt
+	Expr   Expr
+}
+
+// InvokeExpr represents calling a function expression.
+type InvokeExpr struct {
+	Callee Expr
+	Args   []Expr
+}
+
+// IndexAssignStmt assigns to an indexed expression like x[i] = v.
+type IndexAssignStmt struct {
+	Target Expr
+	Value  Expr
+}
+
 func (s *ExprStmt) emit(w io.Writer) {
 	if s == nil {
 		return
@@ -239,6 +275,73 @@ func (s *SubstringExpr) emit(w io.Writer) {
 		s.End.emit(w)
 	}
 	io.WriteString(w, ")")
+}
+
+func (m *MapLit) emit(w io.Writer) {
+	io.WriteString(w, "{")
+	for i, e := range m.Entries {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, "[")
+		e.Key.emit(w)
+		io.WriteString(w, "]: ")
+		e.Value.emit(w)
+	}
+	io.WriteString(w, "}")
+}
+
+func (i *IndexExpr) emit(w io.Writer) {
+	i.Target.emit(w)
+	io.WriteString(w, "[")
+	if i.Index != nil {
+		i.Index.emit(w)
+	}
+	io.WriteString(w, "]")
+}
+
+func (f *FunExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
+	for i, p := range f.Params {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, p)
+	}
+	io.WriteString(w, ") => ")
+	if f.Expr != nil {
+		f.Expr.emit(w)
+	} else {
+		io.WriteString(w, "{\n")
+		for _, st := range f.Body {
+			st.emit(w)
+			io.WriteString(w, "\n")
+		}
+		io.WriteString(w, "}")
+	}
+}
+
+func (i *InvokeExpr) emit(w io.Writer) {
+	i.Callee.emit(w)
+	io.WriteString(w, "(")
+	for j, a := range i.Args {
+		if j > 0 {
+			io.WriteString(w, ", ")
+		}
+		a.emit(w)
+	}
+	io.WriteString(w, ")")
+}
+
+func (s *IndexAssignStmt) emit(w io.Writer) {
+	s.Target.emit(w)
+	io.WriteString(w, " = ")
+	s.Value.emit(w)
+	if b, ok := w.(interface{ WriteByte(byte) error }); ok {
+		b.WriteByte(';')
+	} else {
+		io.WriteString(w, ";")
+	}
 }
 
 func (v *VarDecl) emit(w io.Writer) {
@@ -431,11 +534,19 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		}
 		return &VarDecl{Name: s.Var.Name, Expr: e}, nil
 	case s.Assign != nil:
-		e, err := convertExpr(s.Assign.Value)
+		val, err := convertExpr(s.Assign.Value)
 		if err != nil {
 			return nil, err
 		}
-		return &AssignStmt{Name: s.Assign.Name, Expr: e}, nil
+		if len(s.Assign.Index) > 0 {
+			target := Expr(&NameRef{Name: s.Assign.Name})
+			target, err = applyIndexOps(target, s.Assign.Index)
+			if err != nil {
+				return nil, err
+			}
+			return &IndexAssignStmt{Target: target, Value: val}, nil
+		}
+		return &AssignStmt{Name: s.Assign.Name, Expr: val}, nil
 	case s.Expr != nil:
 		e, err := convertExpr(s.Expr.Expr)
 		if err != nil {
@@ -553,6 +664,25 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 	return out, nil
 }
 
+func applyIndexOps(base Expr, ops []*parser.IndexOp) (Expr, error) {
+	var err error
+	for _, op := range ops {
+		if op.Colon != nil || op.Colon2 != nil || op.End != nil || op.Step != nil {
+			return nil, fmt.Errorf("slice not supported")
+		}
+		if op.Start == nil {
+			return nil, fmt.Errorf("nil index")
+		}
+		var idx Expr
+		idx, err = convertExpr(op.Start)
+		if err != nil {
+			return nil, err
+		}
+		base = &IndexExpr{Target: base, Index: idx}
+	}
+	return base, nil
+}
+
 func convertExpr(e *parser.Expr) (Expr, error) {
 	if e == nil {
 		return nil, fmt.Errorf("nil expr")
@@ -638,10 +768,43 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 	if p == nil {
 		return nil, fmt.Errorf("nil postfix")
 	}
-	if len(p.Ops) > 0 {
-		return nil, fmt.Errorf("postfix ops not supported")
+	expr, err := convertPrimary(p.Target)
+	if err != nil {
+		return nil, err
 	}
-	return convertPrimary(p.Target)
+	for _, op := range p.Ops {
+		switch {
+		case op.Index != nil:
+			if op.Index.Colon != nil || op.Index.Colon2 != nil || op.Index.End != nil || op.Index.Step != nil {
+				return nil, fmt.Errorf("postfix slice not supported")
+			}
+			if op.Index.Start == nil {
+				return nil, fmt.Errorf("nil index")
+			}
+			idx, err := convertExpr(op.Index.Start)
+			if err != nil {
+				return nil, err
+			}
+			expr = &IndexExpr{Target: expr, Index: idx}
+		case op.Call != nil:
+			args := make([]Expr, len(op.Call.Args))
+			for i, a := range op.Call.Args {
+				ae, err := convertExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				args[i] = ae
+			}
+			expr = &InvokeExpr{Callee: expr, Args: args}
+		case op.Field != nil:
+			expr = &IndexExpr{Target: expr, Index: &StringLit{Value: op.Field.Name}}
+		case op.Cast != nil:
+			// ignore casts
+		default:
+			return nil, fmt.Errorf("postfix op not supported")
+		}
+	}
+	return expr, nil
 }
 
 func convertPrimary(p *parser.Primary) (Expr, error) {
@@ -661,9 +824,6 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		switch p.Call.Func {
 		case "print":
-			if len(args) != 1 {
-				return nil, fmt.Errorf("print expects one argument")
-			}
 			return &CallExpr{Func: "console.log", Args: args}, nil
 		case "len":
 			if len(args) != 1 {
@@ -693,6 +853,37 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			elems[i] = ex
 		}
 		return &ListLit{Elems: elems}, nil
+	case p.Map != nil:
+		entries := make([]MapEntry, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			k, err := convertExpr(it.Key)
+			if err != nil {
+				return nil, err
+			}
+			v, err := convertExpr(it.Value)
+			if err != nil {
+				return nil, err
+			}
+			entries[i] = MapEntry{Key: k, Value: v}
+		}
+		return &MapLit{Entries: entries}, nil
+	case p.FunExpr != nil:
+		var params []string
+		for _, pa := range p.FunExpr.Params {
+			params = append(params, pa.Name)
+		}
+		if p.FunExpr.ExprBody != nil {
+			expr, err := convertExpr(p.FunExpr.ExprBody)
+			if err != nil {
+				return nil, err
+			}
+			return &FunExpr{Params: params, Expr: expr}, nil
+		}
+		body, err := convertStmtList(p.FunExpr.BlockBody)
+		if err != nil {
+			return nil, err
+		}
+		return &FunExpr{Params: params, Body: body}, nil
 	case p.Group != nil:
 		return convertExpr(p.Group)
 	default:
@@ -759,6 +950,8 @@ func stmtToNode(s Stmt) *ast.Node {
 		return &ast.Node{Kind: "let", Value: st.Name, Children: []*ast.Node{exprToNode(st.Expr)}}
 	case *AssignStmt:
 		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{exprToNode(st.Expr)}}
+	case *IndexAssignStmt:
+		return &ast.Node{Kind: "idx-assign", Children: []*ast.Node{exprToNode(st.Target), exprToNode(st.Value)}}
 	case *IfStmt:
 		n := &ast.Node{Kind: "if", Children: []*ast.Node{exprToNode(st.Cond)}}
 		thenNode := &ast.Node{Kind: "then"}
@@ -855,6 +1048,36 @@ func exprToNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "len", Children: []*ast.Node{exprToNode(ex.Value)}}
 	case *SubstringExpr:
 		return &ast.Node{Kind: "substring", Children: []*ast.Node{exprToNode(ex.Str), exprToNode(ex.Start), exprToNode(ex.End)}}
+	case *MapLit:
+		n := &ast.Node{Kind: "map"}
+		for _, e := range ex.Entries {
+			n.Children = append(n.Children, &ast.Node{Kind: "entry", Children: []*ast.Node{exprToNode(e.Key), exprToNode(e.Value)}})
+		}
+		return n
+	case *IndexExpr:
+		return &ast.Node{Kind: "index", Children: []*ast.Node{exprToNode(ex.Target), exprToNode(ex.Index)}}
+	case *FunExpr:
+		n := &ast.Node{Kind: "funexpr"}
+		for _, p := range ex.Params {
+			n.Children = append(n.Children, &ast.Node{Kind: "param", Value: p})
+		}
+		if ex.Expr != nil {
+			n.Children = append(n.Children, exprToNode(ex.Expr))
+		} else {
+			body := &ast.Node{Kind: "body"}
+			for _, st := range ex.Body {
+				body.Children = append(body.Children, stmtToNode(st))
+			}
+			n.Children = append(n.Children, body)
+		}
+		return n
+	case *InvokeExpr:
+		n := &ast.Node{Kind: "invoke"}
+		n.Children = append(n.Children, exprToNode(ex.Callee))
+		for _, a := range ex.Args {
+			n.Children = append(n.Children, exprToNode(a))
+		}
+		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}

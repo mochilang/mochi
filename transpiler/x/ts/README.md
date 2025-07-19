@@ -3,16 +3,16 @@
 This directory contains the experimental TypeScript transpiler.
 Generated sources for the golden tests live under `tests/transpiler/x/ts`.
 
-## VM Golden Test Checklist (37/100)
+## VM Golden Test Checklist (57/100)
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
 - [x] binary_precedence.mochi
 - [x] bool_chain.mochi
-- [ ] break_continue.mochi
-- [ ] cast_string_to_int.mochi
+- [x] break_continue.mochi
+- [x] cast_string_to_int.mochi
 - [ ] cast_struct.mochi
-- [ ] closure.mochi
+- [x] closure.mochi
 - [x] count_builtin.mochi
 - [ ] cross_join.mochi
 - [ ] cross_join_filter.mochi
@@ -22,9 +22,9 @@ Generated sources for the golden tests live under `tests/transpiler/x/ts`.
 - [ ] exists_builtin.mochi
 - [x] for_list_collection.mochi
 - [x] for_loop.mochi
-- [ ] for_map_collection.mochi
+- [x] for_map_collection.mochi
 - [x] fun_call.mochi
-- [ ] fun_expr_in_let.mochi
+- [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
 - [ ] go_auto.mochi
 - [ ] group_by.mochi
@@ -43,25 +43,25 @@ Generated sources for the golden tests live under `tests/transpiler/x/ts`.
 - [ ] in_operator_extended.mochi
 - [ ] inner_join.mochi
 - [ ] join_multi.mochi
-- [ ] json_builtin.mochi
+- [x] json_builtin.mochi
 - [ ] left_join.mochi
 - [ ] left_join_multi.mochi
 - [x] len_builtin.mochi
-- [ ] len_map.mochi
+- [x] len_map.mochi
 - [x] len_string.mochi
 - [x] let_and_print.mochi
-- [ ] list_assign.mochi
-- [ ] list_index.mochi
-- [ ] list_nested_assign.mochi
+- [x] list_assign.mochi
+- [x] list_index.mochi
+- [x] list_nested_assign.mochi
 - [x] list_set_ops.mochi
 - [ ] load_yaml.mochi
-- [ ] map_assign.mochi
-- [ ] map_in_operator.mochi
-- [ ] map_index.mochi
-- [ ] map_int_key.mochi
-- [ ] map_literal_dynamic.mochi
-- [ ] map_membership.mochi
-- [ ] map_nested_assign.mochi
+- [x] map_assign.mochi
+- [x] map_in_operator.mochi
+- [x] map_index.mochi
+- [x] map_int_key.mochi
+- [x] map_literal_dynamic.mochi
+- [x] map_membership.mochi
+- [x] map_nested_assign.mochi
 - [ ] match_expr.mochi
 - [ ] match_full.mochi
 - [x] math_ops.mochi
@@ -88,19 +88,19 @@ Generated sources for the golden tests live under `tests/transpiler/x/ts`.
 - [x] string_concat.mochi
 - [ ] string_contains.mochi
 - [x] string_in_operator.mochi
-- [ ] string_index.mochi
+- [x] string_index.mochi
 - [ ] string_prefix_slice.mochi
 - [x] substring_builtin.mochi
 - [x] sum_builtin.mochi
 - [x] tail_recursion.mochi
 - [ ] test_block.mochi
 - [ ] tree_sum.mochi
-- [ ] two-sum.mochi
+- [x] two-sum.mochi
 - [x] typed_let.mochi
 - [x] typed_var.mochi
 - [x] unary_neg.mochi
 - [ ] update_stmt.mochi
 - [ ] user_type_literal.mochi
-- [ ] values_builtin.mochi
+- [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
