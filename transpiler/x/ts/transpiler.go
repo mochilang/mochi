@@ -110,6 +110,23 @@ type UnaryExpr struct {
 	Expr Expr
 }
 
+// ListLit represents a list/array literal.
+type ListLit struct {
+	Elems []Expr
+}
+
+// LenExpr represents the builtin len() call.
+type LenExpr struct {
+	Value Expr
+}
+
+// SubstringExpr represents substring(s, start, end).
+type SubstringExpr struct {
+	Str   Expr
+	Start Expr
+	End   Expr
+}
+
 func (s *ExprStmt) emit(w io.Writer) {
 	if s == nil {
 		return
@@ -169,6 +186,41 @@ func (b *BinaryExpr) emit(w io.Writer) {
 func (u *UnaryExpr) emit(w io.Writer) {
 	io.WriteString(w, u.Op)
 	u.Expr.emit(w)
+}
+
+func (l *ListLit) emit(w io.Writer) {
+	io.WriteString(w, "[")
+	for i, e := range l.Elems {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		e.emit(w)
+	}
+	io.WriteString(w, "]")
+}
+
+func (l *LenExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
+	if l.Value != nil {
+		l.Value.emit(w)
+	}
+	io.WriteString(w, ").length")
+}
+
+func (s *SubstringExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
+	if s.Str != nil {
+		s.Str.emit(w)
+	}
+	io.WriteString(w, ").substring(")
+	if s.Start != nil {
+		s.Start.emit(w)
+	}
+	io.WriteString(w, ", ")
+	if s.End != nil {
+		s.End.emit(w)
+	}
+	io.WriteString(w, ")")
 }
 
 func (v *VarDecl) emit(w io.Writer) {
@@ -489,15 +541,43 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return &NameRef{Name: p.Selector.Root}, nil
 	case p.Call != nil:
-		ce := &CallExpr{Func: p.Call.Func}
-		for _, a := range p.Call.Args {
+		args := make([]Expr, len(p.Call.Args))
+		for i, a := range p.Call.Args {
 			ae, err := convertExpr(a)
 			if err != nil {
 				return nil, err
 			}
-			ce.Args = append(ce.Args, ae)
+			args[i] = ae
 		}
-		return ce, nil
+		switch p.Call.Func {
+		case "len":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("len expects one argument")
+			}
+			return &LenExpr{Value: args[0]}, nil
+		case "str":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("str expects one argument")
+			}
+			return &CallExpr{Func: "String", Args: args}, nil
+		case "substring":
+			if len(args) != 3 {
+				return nil, fmt.Errorf("substring expects three arguments")
+			}
+			return &SubstringExpr{Str: args[0], Start: args[1], End: args[2]}, nil
+		default:
+			return &CallExpr{Func: p.Call.Func, Args: args}, nil
+		}
+	case p.List != nil:
+		elems := make([]Expr, len(p.List.Elems))
+		for i, e := range p.List.Elems {
+			ex, err := convertExpr(e)
+			if err != nil {
+				return nil, err
+			}
+			elems[i] = ex
+		}
+		return &ListLit{Elems: elems}, nil
 	case p.Group != nil:
 		return convertExpr(p.Group)
 	default:
@@ -631,6 +711,16 @@ func exprToNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "bin", Value: ex.Op, Children: []*ast.Node{exprToNode(ex.Left), exprToNode(ex.Right)}}
 	case *UnaryExpr:
 		return &ast.Node{Kind: "unary", Value: ex.Op, Children: []*ast.Node{exprToNode(ex.Expr)}}
+	case *ListLit:
+		n := &ast.Node{Kind: "list"}
+		for _, e := range ex.Elems {
+			n.Children = append(n.Children, exprToNode(e))
+		}
+		return n
+	case *LenExpr:
+		return &ast.Node{Kind: "len", Children: []*ast.Node{exprToNode(ex.Value)}}
+	case *SubstringExpr:
+		return &ast.Node{Kind: "substring", Children: []*ast.Node{exprToNode(ex.Str), exprToNode(ex.Start), exprToNode(ex.End)}}
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
