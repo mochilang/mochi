@@ -167,27 +167,46 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 	if e == nil || e.Binary == nil {
 		return nil, fmt.Errorf("unsupported expression")
 	}
-	left, err := convertUnary(env, e.Binary.Left)
+	first, err := convertUnary(env, e.Binary.Left)
 	if err != nil {
 		return nil, err
 	}
-	if len(e.Binary.Right) == 0 {
-		return left, nil
+	operands := []Expr{first}
+	ops := []string{}
+	for _, part := range e.Binary.Right {
+		r, err := convertPostfix(env, part.Right)
+		if err != nil {
+			return nil, err
+		}
+		operands = append(operands, r)
+		ops = append(ops, part.Op)
 	}
-	if len(e.Binary.Right) > 1 {
-		return nil, fmt.Errorf("unsupported expression chain")
+	prec := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!="}}
+	contains := func(list []string, s string) bool {
+		for _, v := range list {
+			if v == s {
+				return true
+			}
+		}
+		return false
 	}
-	r, err := convertPostfix(env, e.Binary.Right[0].Right)
-	if err != nil {
-		return nil, err
+	for _, level := range prec {
+		for i := 0; i < len(ops); {
+			if contains(level, ops[i]) {
+				l := operands[i]
+				r := operands[i+1]
+				operands[i] = &BinaryExpr{Left: l, Op: ops[i], Right: r}
+				operands = append(operands[:i+1], operands[i+2:]...)
+				ops = append(ops[:i], ops[i+1:]...)
+			} else {
+				i++
+			}
+		}
 	}
-	op := e.Binary.Right[0].Op
-	switch op {
-	case "+", "-", "*", "/", "%", "==", "!=", "<", "<=", ">", ">=":
-		return &BinaryExpr{Left: left, Op: op, Right: r}, nil
-	default:
-		return nil, fmt.Errorf("unsupported op %s", op)
+	if len(operands) != 1 {
+		return nil, fmt.Errorf("invalid expression")
 	}
+	return operands[0], nil
 }
 
 func convertUnary(env *types.Env, u *parser.Unary) (Expr, error) {
@@ -271,6 +290,8 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			elems[i] = ex
 		}
 		return &ListLit{Elems: elems}, nil
+	case p.Group != nil:
+		return convertExpr(env, p.Group)
 	default:
 		return nil, fmt.Errorf("unsupported expression")
 	}

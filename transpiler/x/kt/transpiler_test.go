@@ -44,6 +44,12 @@ func TestTranspilePrograms(t *testing.T) {
 		"len_string",
 		"str_builtin",
 		"let_and_print",
+		"basic_compare",
+		"binary_precedence",
+		"math_ops",
+		"unary_neg",
+		"string_compare",
+		"string_concat",
 	}
 	root := repoRoot(t)
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "kt")
