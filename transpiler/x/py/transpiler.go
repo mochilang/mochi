@@ -27,6 +27,27 @@ type ExprStmt struct{ Expr Expr }
 
 func (*ExprStmt) isStmt() {}
 
+type LetStmt struct {
+	Name string
+	Expr Expr
+}
+
+func (*LetStmt) isStmt() {}
+
+type VarStmt struct {
+	Name string
+	Expr Expr
+}
+
+func (*VarStmt) isStmt() {}
+
+type AssignStmt struct {
+	Name string
+	Expr Expr
+}
+
+func (*AssignStmt) isStmt() {}
+
 type Expr interface{ emit(io.Writer) error }
 
 type CallExpr struct {
@@ -68,6 +89,134 @@ type StringLit struct{ Value string }
 
 func (s *StringLit) emit(w io.Writer) error {
 	_, err := fmt.Fprintf(w, "%q", s.Value)
+	return err
+}
+
+type IntLit struct{ Value string }
+
+func (i *IntLit) emit(w io.Writer) error {
+	_, err := io.WriteString(w, i.Value)
+	return err
+}
+
+type FloatLit struct{ Value string }
+
+func (f *FloatLit) emit(w io.Writer) error {
+	_, err := io.WriteString(w, f.Value)
+	return err
+}
+
+type BoolLit struct{ Value bool }
+
+func (b *BoolLit) emit(w io.Writer) error {
+	if b.Value {
+		_, err := io.WriteString(w, "true")
+		return err
+	}
+	_, err := io.WriteString(w, "false")
+	return err
+}
+
+type ListLit struct{ Elems []Expr }
+
+func (l *ListLit) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "["); err != nil {
+		return err
+	}
+	for i, e := range l.Elems {
+		if i > 0 {
+			if _, err := io.WriteString(w, ", "); err != nil {
+				return err
+			}
+		}
+		if err := emitExpr(w, e); err != nil {
+			return err
+		}
+	}
+	_, err := io.WriteString(w, "]")
+	return err
+}
+
+type IndexExpr struct {
+	Target Expr
+	Index  Expr
+}
+
+func (i *IndexExpr) emit(w io.Writer) error {
+	if err := emitExpr(w, i.Target); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, "["); err != nil {
+		return err
+	}
+	if err := emitExpr(w, i.Index); err != nil {
+		return err
+	}
+	_, err := io.WriteString(w, "]")
+	return err
+}
+
+type BinaryExpr struct {
+	Left  Expr
+	Op    string
+	Right Expr
+}
+
+func (b *BinaryExpr) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "("); err != nil {
+		return err
+	}
+	if err := emitExpr(w, b.Left); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, " "+b.Op+" "); err != nil {
+		return err
+	}
+	if err := emitExpr(w, b.Right); err != nil {
+		return err
+	}
+	_, err := io.WriteString(w, ")")
+	return err
+}
+
+type UnaryExpr struct {
+	Op   string
+	Expr Expr
+}
+
+func (u *UnaryExpr) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, u.Op); err != nil {
+		return err
+	}
+	return emitExpr(w, u.Expr)
+}
+
+type CondExpr struct {
+	Cond Expr
+	Then Expr
+	Else Expr
+}
+
+func (c *CondExpr) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "("); err != nil {
+		return err
+	}
+	if err := emitExpr(w, c.Then); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, " if "); err != nil {
+		return err
+	}
+	if err := emitExpr(w, c.Cond); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, " else "); err != nil {
+		return err
+	}
+	if err := emitExpr(w, c.Else); err != nil {
+		return err
+	}
+	_, err := io.WriteString(w, ")")
 	return err
 }
 
@@ -124,6 +273,36 @@ func Emit(w io.Writer, p *Program) error {
 			if _, err := io.WriteString(w, "\n"); err != nil {
 				return err
 			}
+		case *LetStmt:
+			if _, err := io.WriteString(w, st.Name+" = "); err != nil {
+				return err
+			}
+			if err := emitExpr(w, st.Expr); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, "\n"); err != nil {
+				return err
+			}
+		case *VarStmt:
+			if _, err := io.WriteString(w, st.Name+" = "); err != nil {
+				return err
+			}
+			if err := emitExpr(w, st.Expr); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, "\n"); err != nil {
+				return err
+			}
+		case *AssignStmt:
+			if _, err := io.WriteString(w, st.Name+" = "); err != nil {
+				return err
+			}
+			if err := emitExpr(w, st.Expr); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, "\n"); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -133,13 +312,33 @@ func Emit(w io.Writer, p *Program) error {
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	p := &Program{}
 	for _, st := range prog.Statements {
-		if st.Expr != nil {
+		switch {
+		case st.Expr != nil:
 			e, err := convertExpr(st.Expr.Expr)
 			if err != nil {
 				return nil, err
 			}
 			p.Stmts = append(p.Stmts, &ExprStmt{Expr: e})
-		} else {
+		case st.Let != nil:
+			e, err := convertExpr(st.Let.Value)
+			if err != nil {
+				return nil, err
+			}
+			p.Stmts = append(p.Stmts, &LetStmt{Name: st.Let.Name, Expr: e})
+		case st.Var != nil:
+			e, err := convertExpr(st.Var.Value)
+			if err != nil {
+				return nil, err
+			}
+			p.Stmts = append(p.Stmts, &VarStmt{Name: st.Var.Name, Expr: e})
+		case st.Assign != nil:
+			e, err := convertExpr(st.Assign.Value)
+			if err != nil {
+				return nil, err
+			}
+			// TODO: ignore index and field for now
+			p.Stmts = append(p.Stmts, &AssignStmt{Name: st.Assign.Name, Expr: e})
+		default:
 			return nil, fmt.Errorf("unsupported statement")
 		}
 	}
@@ -158,30 +357,101 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	if b == nil {
 		return nil, fmt.Errorf("nil binary")
 	}
-	if len(b.Right) > 0 {
-		return nil, fmt.Errorf("binary operations not supported")
+	operands := []Expr{}
+	ops := []string{}
+
+	first, err := convertUnary(b.Left)
+	if err != nil {
+		return nil, err
 	}
-	return convertUnary(b.Left)
+	operands = append(operands, first)
+	for _, p := range b.Right {
+		o, err := convertPostfix(p.Right)
+		if err != nil {
+			return nil, err
+		}
+		op := p.Op
+		if p.All {
+			op = op + "_all"
+		}
+		ops = append(ops, op)
+		operands = append(operands, o)
+	}
+
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+		{"union", "union_all", "except", "intersect"},
+	}
+
+	apply := func(left Expr, op string, right Expr) Expr {
+		return &BinaryExpr{Left: left, Op: op, Right: right}
+	}
+
+	for _, level := range levels {
+		for i := 0; i < len(ops); {
+			matched := false
+			for _, t := range level {
+				if ops[i] == t {
+					expr := apply(operands[i], ops[i], operands[i+1])
+					operands[i] = expr
+					operands = append(operands[:i+1], operands[i+2:]...)
+					ops = append(ops[:i], ops[i+1:]...)
+					matched = true
+					break
+				}
+			}
+			if !matched {
+				i++
+			}
+		}
+	}
+
+	if len(operands) != 1 {
+		return nil, fmt.Errorf("expression reduction failed")
+	}
+	return operands[0], nil
 }
 
 func convertUnary(u *parser.Unary) (Expr, error) {
 	if u == nil {
 		return nil, fmt.Errorf("nil unary")
 	}
-	if len(u.Ops) > 0 {
-		return nil, fmt.Errorf("unary ops not supported")
+	expr, err := convertPostfix(u.Value)
+	if err != nil {
+		return nil, err
 	}
-	return convertPostfix(u.Value)
+	for i := len(u.Ops) - 1; i >= 0; i-- {
+		expr = &UnaryExpr{Op: u.Ops[i], Expr: expr}
+	}
+	return expr, nil
 }
 
 func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 	if p == nil {
 		return nil, fmt.Errorf("nil postfix")
 	}
-	if len(p.Ops) > 0 {
-		return nil, fmt.Errorf("postfix ops not supported")
+	expr, err := convertPrimary(p.Target)
+	if err != nil {
+		return nil, err
 	}
-	return convertPrimary(p.Target)
+	for _, op := range p.Ops {
+		switch {
+		case op.Index != nil:
+			idx, err := convertExpr(op.Index.Start)
+			if err != nil {
+				return nil, err
+			}
+			expr = &IndexExpr{Target: expr, Index: idx}
+		default:
+			return nil, fmt.Errorf("postfix op not supported")
+		}
+	}
+	return expr, nil
 }
 
 func convertPrimary(p *parser.Primary) (Expr, error) {
@@ -196,18 +466,68 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			ce.Args = append(ce.Args, ae)
 		}
 		return ce, nil
+	case p.Selector != nil && len(p.Selector.Tail) == 0:
+		return &Name{Name: p.Selector.Root}, nil
 	case p.Lit != nil:
 		return convertLiteral(p.Lit)
+	case p.List != nil:
+		var elems []Expr
+		for _, e := range p.List.Elems {
+			ce, err := convertExpr(e)
+			if err != nil {
+				return nil, err
+			}
+			elems = append(elems, ce)
+		}
+		return &ListLit{Elems: elems}, nil
+	case p.If != nil:
+		return convertIfExpr(p.If)
+	case p.Group != nil:
+		return convertExpr(p.Group)
 	default:
 		return nil, fmt.Errorf("unsupported expression")
 	}
 }
 
 func convertLiteral(l *parser.Literal) (Expr, error) {
-	if l.Str != nil {
+	switch {
+	case l.Int != nil:
+		return &IntLit{Value: fmt.Sprintf("%d", *l.Int)}, nil
+	case l.Float != nil:
+		return &FloatLit{Value: fmt.Sprintf("%g", *l.Float)}, nil
+	case l.Bool != nil:
+		return &BoolLit{Value: bool(*l.Bool)}, nil
+	case l.Str != nil:
 		return &StringLit{Value: *l.Str}, nil
+	default:
+		return nil, fmt.Errorf("unsupported literal")
 	}
-	return nil, fmt.Errorf("unsupported literal")
+}
+
+func convertIfExpr(ie *parser.IfExpr) (Expr, error) {
+	cond, err := convertExpr(ie.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenExpr, err := convertExpr(ie.Then)
+	if err != nil {
+		return nil, err
+	}
+	var elseExpr Expr
+	if ie.ElseIf != nil {
+		elseExpr, err = convertIfExpr(ie.ElseIf)
+		if err != nil {
+			return nil, err
+		}
+	} else if ie.Else != nil {
+		elseExpr, err = convertExpr(ie.Else)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		elseExpr = &Name{Name: "None"}
+	}
+	return &CondExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
 }
 
 // --- AST printing helpers ---
@@ -225,6 +545,12 @@ func stmtNode(s Stmt) *ast.Node {
 	switch st := s.(type) {
 	case *ExprStmt:
 		return &ast.Node{Kind: "expr_stmt", Children: []*ast.Node{exprNode(st.Expr)}}
+	case *LetStmt:
+		return &ast.Node{Kind: "let", Value: st.Name, Children: []*ast.Node{exprNode(st.Expr)}}
+	case *VarStmt:
+		return &ast.Node{Kind: "var", Value: st.Name, Children: []*ast.Node{exprNode(st.Expr)}}
+	case *AssignStmt:
+		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{exprNode(st.Expr)}}
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
@@ -242,6 +568,29 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "name", Value: ex.Name}
 	case *StringLit:
 		return &ast.Node{Kind: "string", Value: ex.Value}
+	case *IntLit:
+		return &ast.Node{Kind: "int", Value: ex.Value}
+	case *FloatLit:
+		return &ast.Node{Kind: "float", Value: ex.Value}
+	case *BoolLit:
+		if ex.Value {
+			return &ast.Node{Kind: "bool", Value: "true"}
+		}
+		return &ast.Node{Kind: "bool", Value: "false"}
+	case *ListLit:
+		n := &ast.Node{Kind: "list"}
+		for _, el := range ex.Elems {
+			n.Children = append(n.Children, exprNode(el))
+		}
+		return n
+	case *BinaryExpr:
+		return &ast.Node{Kind: "bin", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
+	case *UnaryExpr:
+		return &ast.Node{Kind: "unary", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Expr)}}
+	case *IndexExpr:
+		return &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(ex.Target), exprNode(ex.Index)}}
+	case *CondExpr:
+		return &ast.Node{Kind: "cond", Children: []*ast.Node{exprNode(ex.Cond), exprNode(ex.Then), exprNode(ex.Else)}}
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}

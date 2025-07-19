@@ -33,7 +33,8 @@ func findRepoRoot(t *testing.T) string {
 	return ""
 }
 
-func TestTranspile_PrintHello(t *testing.T) {
+func runCase(t *testing.T, name string) {
+	t.Helper()
 	if _, err := exec.LookPath("python3"); err != nil {
 		t.Skip("python3 not installed")
 	}
@@ -41,7 +42,7 @@ func TestTranspile_PrintHello(t *testing.T) {
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "py")
 	os.MkdirAll(outDir, 0o755)
 
-	src := filepath.Join(root, "tests", "vm", "valid", "print_hello.mochi")
+	src := filepath.Join(root, "tests", "vm", "valid", name+".mochi")
 	prog, err := parser.Parse(src)
 	if err != nil {
 		t.Fatalf("parse: %v", err)
@@ -59,7 +60,7 @@ func TestTranspile_PrintHello(t *testing.T) {
 		t.Fatalf("emit: %v", err)
 	}
 	code := buf.Bytes()
-	pyFile := filepath.Join(outDir, "print_hello.py")
+	pyFile := filepath.Join(outDir, name+".py")
 	if err := os.WriteFile(pyFile, code, 0o644); err != nil {
 		t.Fatalf("write: %v", err)
 	}
@@ -68,11 +69,11 @@ func TestTranspile_PrintHello(t *testing.T) {
 	out, err := cmd.CombinedOutput()
 	got := bytes.TrimSpace(out)
 	if err != nil {
-		_ = os.WriteFile(filepath.Join(outDir, "print_hello.error"), out, 0o644)
+		_ = os.WriteFile(filepath.Join(outDir, name+".error"), out, 0o644)
 		t.Fatalf("run: %v", err)
 	}
-	_ = os.Remove(filepath.Join(outDir, "print_hello.error"))
-	wantPath := filepath.Join(outDir, "print_hello.out")
+	_ = os.Remove(filepath.Join(outDir, name+".error"))
+	wantPath := filepath.Join(outDir, name+".out")
 	want, err := os.ReadFile(wantPath)
 	if err != nil {
 		t.Fatalf("read want: %v", err)
@@ -81,4 +82,56 @@ func TestTranspile_PrintHello(t *testing.T) {
 	if !bytes.Equal(got, want) {
 		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
 	}
+}
+
+func TestTranspile_PrintHello(t *testing.T) {
+	runCase(t, "print_hello")
+}
+
+func TestTranspile_BinaryPrecedence(t *testing.T) {
+	runCase(t, "binary_precedence")
+}
+
+func TestTranspile_BasicCompare(t *testing.T) {
+	runCase(t, "basic_compare")
+}
+
+func TestTranspile_LetAndPrint(t *testing.T) {
+	runCase(t, "let_and_print")
+}
+
+func TestTranspile_ListIndex(t *testing.T) {
+	runCase(t, "list_index")
+}
+
+func TestTranspile_StringIndex(t *testing.T) {
+	runCase(t, "string_index")
+}
+
+func TestTranspile_VarAssignment(t *testing.T) {
+	runCase(t, "var_assignment")
+}
+
+func TestTranspile_MathOps(t *testing.T) {
+	runCase(t, "math_ops")
+}
+
+func TestTranspile_StringConcat(t *testing.T) {
+	runCase(t, "string_concat")
+}
+
+func TestTranspile_UnaryNeg(t *testing.T) {
+	runCase(t, "unary_neg")
+}
+
+func TestTranspile_LenBuiltin(t *testing.T) {
+	runCase(t, "len_builtin")
+}
+
+func TestTranspile_IfThenElse(t *testing.T) {
+	runCase(t, "if_then_else")
+}
+
+func TestTranspile_IfThenElseNested(t *testing.T) {
+	runCase(t, "if_then_else_nested")
 }
