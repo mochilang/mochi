@@ -1,28 +1,16 @@
-## Progress (2025-07-19 21:27 +0700)
+## Progress (2025-07-19 22:14 +0700)
 - Added while/for loops and index assignment support
 
-## Progress (2025-07-19 21:14 +0700)
-- Added while/for loops and index assignment support
+## Progress (2025-07-19 21:46 +0700)
+- Removed runtime helper functions for printing and indexing
+- Added direct slice/index expressions for lists and strings
+- Enhanced type inference pass through environment
+- 38/100 vm valid programs currently passing
 
-## Progress (2025-07-19 21:14 +0700)
-- Added while/for loops and index assignment support
-
-## Progress (2025-07-19 21:14 +0700)
-- Added while/for loops and index assignment support
-
-## Progress (2025-07-19 21:14 +0700)
-- Added while/for loops and index assignment support
-
-## Progress (2025-07-19 20:08 +0700)
-- Added while/for loops and index assignment support
-
-## Progress (2025-07-19 19:43 +0700)
-- Added while/for loops and index assignment support
-
-## Progress (2025-07-19 19:23 +0700)
-- Fixed bool output to use 0 for false and string `nil` for nil values
-- Updated list `contains` to return index or nil to match runtime
-- 36/100 vm valid programs currently passing
+## Progress (2025-07-19 15:13 +0000)
+- Simplified boolean printing to output true/false directly
+- Updated golden Go outputs accordingly
+- Restored README checklist showing 38/100 compiled programs
 
 # Recent Progress
 - 2025-07-19 16:53 +0700 - Added golden test automation

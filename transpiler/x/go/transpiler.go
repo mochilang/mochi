@@ -23,15 +23,11 @@ type Program struct {
 	UseMax       bool
 	UseContains  bool
 	UseStrings   bool
-	UseIndex     bool
-	UseSlice     bool
 	UseUnion     bool
 	UseUnionAll  bool
 	UseExcept    bool
 	UseIntersect bool
-	UseSubstring bool
 	UsePrint     bool
-	UseBtoi      bool
 	UseAtoi      bool
 }
 
@@ -46,11 +42,7 @@ var (
 	usesUnionAll  bool
 	usesExcept    bool
 	usesIntersect bool
-	usesSubstring bool
 	usesPrint     bool
-	usesBtoi      bool
-	usesIndex     bool
-	usesSlice     bool
 	usesAtoi      bool
 )
 
@@ -191,6 +183,50 @@ type IntLit struct{ Value int }
 
 func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
 
+// IndexExpr represents `X[i]`.
+type IndexExpr struct {
+	X     Expr
+	Index Expr
+}
+
+func (ix *IndexExpr) emit(w io.Writer) {
+	ix.X.emit(w)
+	fmt.Fprint(w, "[")
+	if ix.Index != nil {
+		ix.Index.emit(w)
+	}
+	fmt.Fprint(w, "]")
+}
+
+// SliceExpr represents `X[i:j]`.
+type SliceExpr struct {
+	X     Expr
+	Start Expr
+	End   Expr
+}
+
+func (sx *SliceExpr) emit(w io.Writer) {
+	sx.X.emit(w)
+	fmt.Fprint(w, "[")
+	if sx.Start != nil {
+		sx.Start.emit(w)
+	}
+	fmt.Fprint(w, ":")
+	if sx.End != nil {
+		sx.End.emit(w)
+	}
+	fmt.Fprint(w, "]")
+}
+
+// RuneSliceExpr represents `[]rune(expr)`.
+type RuneSliceExpr struct{ Expr Expr }
+
+func (rs *RuneSliceExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "[]rune(")
+	rs.Expr.emit(w)
+	fmt.Fprint(w, ")")
+}
+
 // WhileStmt represents a basic while loop using Go's for syntax.
 type WhileStmt struct {
 	Cond Expr
@@ -315,11 +351,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesUnionAll = false
 	usesExcept = false
 	usesIntersect = false
-	usesSubstring = false
 	usesPrint = false
-	usesBtoi = false
-	usesIndex = false
-	usesSlice = false
 	usesAtoi = false
 	gp := &Program{}
 	for _, stmt := range p.Statements {
@@ -338,25 +370,21 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	gp.UseMax = usesMax
 	gp.UseContains = usesContains
 	gp.UseStrings = usesStrings || usesContains
-	gp.UseIndex = usesIndex
-	gp.UseSlice = usesSlice
 	gp.UseUnion = usesUnion
 	gp.UseUnionAll = usesUnionAll
 	gp.UseExcept = usesExcept
 	gp.UseIntersect = usesIntersect
-	gp.UseSubstring = usesSubstring
 	gp.UsePrint = usesPrint
-	gp.UseBtoi = usesBtoi
 	gp.UseAtoi = usesAtoi
 	return gp, nil
 }
 
-func compileExpr(e *parser.Expr) (Expr, error) {
+func compileExpr(e *parser.Expr, env *types.Env) (Expr, error) {
 	if e == nil {
 		return nil, fmt.Errorf("unsupported expression")
 	}
 	if e.Binary != nil {
-		return compileBinary(e.Binary)
+		return compileBinary(e.Binary, env)
 	}
 	return nil, fmt.Errorf("unsupported expression")
 }
@@ -367,30 +395,30 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		if call := extractCall(st.Expr.Expr); call != nil && call.Func == "print" {
 			args := make([]Expr, len(call.Args))
 			for i, a := range call.Args {
-				ex, err := compileExpr(a)
+				ex, err := compileExpr(a, env)
 				if err != nil {
 					return nil, err
 				}
-				if isBoolExpr(a) {
-					usesBtoi = true
-					ex = &CallExpr{Func: "btoi", Args: []Expr{ex}}
-				} else if isListExpr(a) {
+				if isListExpr(a) {
 					usesStrings = true
-					ex = &CallExpr{Func: "joinInts", Args: []Expr{ex}}
+					ex = &CallExpr{Func: "strings.Trim", Args: []Expr{
+						&CallExpr{Func: "fmt.Sprint", Args: []Expr{ex}},
+						&StringLit{Value: "[]"},
+					}}
 				}
 				args[i] = ex
 			}
 			usesPrint = true
 			return &PrintStmt{Args: args}, nil
 		}
-		e, err := compileExpr(st.Expr.Expr)
+		e, err := compileExpr(st.Expr.Expr, env)
 		if err != nil {
 			return nil, err
 		}
 		return &ExprStmt{Expr: e}, nil
 	case st.Let != nil:
 		if st.Let.Value != nil {
-			e, err := compileExpr(st.Let.Value)
+			e, err := compileExpr(st.Let.Value, env)
 			if err != nil {
 				return nil, err
 			}
@@ -399,7 +427,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		return &VarDecl{Name: st.Let.Name, Type: toGoType(st.Let.Type)}, nil
 	case st.Var != nil:
 		if st.Var.Value != nil {
-			e, err := compileExpr(st.Var.Value)
+			e, err := compileExpr(st.Var.Value, env)
 			if err != nil {
 				return nil, err
 			}
@@ -408,18 +436,18 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		return &VarDecl{Name: st.Var.Name, Type: toGoType(st.Var.Type)}, nil
 	case st.Assign != nil:
 		if len(st.Assign.Index) == 1 && st.Assign.Index[0].Colon == nil && st.Assign.Index[0].Colon2 == nil && len(st.Assign.Field) == 0 {
-			idx, err := compileExpr(st.Assign.Index[0].Start)
+			idx, err := compileExpr(st.Assign.Index[0].Start, env)
 			if err != nil {
 				return nil, err
 			}
-			val, err := compileExpr(st.Assign.Value)
+			val, err := compileExpr(st.Assign.Value, env)
 			if err != nil {
 				return nil, err
 			}
 			return &IndexAssignStmt{Name: st.Assign.Name, Index: idx, Value: val}, nil
 		}
 		if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
-			e, err := compileExpr(st.Assign.Value)
+			e, err := compileExpr(st.Assign.Value, env)
 			if err != nil {
 				return nil, err
 			}
@@ -470,7 +498,7 @@ func extractCall(e *parser.Expr) *parser.CallExpr {
 }
 
 func compileIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
-	cond, err := compileExpr(is.Cond)
+	cond, err := compileExpr(is.Cond, env)
 	if err != nil {
 		return nil, err
 	}
@@ -497,23 +525,23 @@ func compileIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
 }
 
-func compileIfExpr(ie *parser.IfExpr) (Expr, error) {
-	cond, err := compileExpr(ie.Cond)
+func compileIfExpr(ie *parser.IfExpr, env *types.Env) (Expr, error) {
+	cond, err := compileExpr(ie.Cond, env)
 	if err != nil {
 		return nil, err
 	}
-	thenExpr, err := compileExpr(ie.Then)
+	thenExpr, err := compileExpr(ie.Then, env)
 	if err != nil {
 		return nil, err
 	}
 	var elseExpr Expr
 	if ie.ElseIf != nil {
-		elseExpr, err = compileIfExpr(ie.ElseIf)
+		elseExpr, err = compileIfExpr(ie.ElseIf, env)
 		if err != nil {
 			return nil, err
 		}
 	} else if ie.Else != nil {
-		elseExpr, err = compileExpr(ie.Else)
+		elseExpr, err = compileExpr(ie.Else, env)
 		if err != nil {
 			return nil, err
 		}
@@ -522,7 +550,7 @@ func compileIfExpr(ie *parser.IfExpr) (Expr, error) {
 }
 
 func compileWhileStmt(ws *parser.WhileStmt, env *types.Env) (Stmt, error) {
-	cond, err := compileExpr(ws.Cond)
+	cond, err := compileExpr(ws.Cond, env)
 	if err != nil {
 		return nil, err
 	}
@@ -538,11 +566,11 @@ func compileWhileStmt(ws *parser.WhileStmt, env *types.Env) (Stmt, error) {
 
 func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 	if fs.RangeEnd != nil {
-		start, err := compileExpr(fs.Source)
+		start, err := compileExpr(fs.Source, env)
 		if err != nil {
 			return nil, err
 		}
-		end, err := compileExpr(fs.RangeEnd)
+		end, err := compileExpr(fs.RangeEnd, env)
 		if err != nil {
 			return nil, err
 		}
@@ -552,7 +580,7 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 		}
 		return &ForRangeStmt{Name: fs.Name, Start: start, End: end, Body: body}, nil
 	}
-	iter, err := compileExpr(fs.Source)
+	iter, err := compileExpr(fs.Source, env)
 	if err != nil {
 		return nil, err
 	}
@@ -563,15 +591,15 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 	return &ForEachStmt{Name: fs.Name, Iterable: iter, Body: body}, nil
 }
 
-func compileBinary(b *parser.BinaryExpr) (Expr, error) {
-	first, err := compileUnary(b.Left)
+func compileBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
+	first, err := compileUnary(b.Left, env)
 	if err != nil {
 		return nil, err
 	}
 	operands := []Expr{first}
 	ops := make([]*parser.BinaryOp, len(b.Right))
 	for i, op := range b.Right {
-		expr, err := compilePostfix(op.Right)
+		expr, err := compilePostfix(op.Right, env)
 		if err != nil {
 			return nil, err
 		}
@@ -639,11 +667,11 @@ func compileBinary(b *parser.BinaryExpr) (Expr, error) {
 	return operands[0], nil
 }
 
-func compileUnary(u *parser.Unary) (Expr, error) {
+func compileUnary(u *parser.Unary, env *types.Env) (Expr, error) {
 	if u == nil {
 		return nil, fmt.Errorf("nil unary")
 	}
-	expr, err := compilePostfix(u.Value)
+	expr, err := compilePostfix(u.Value, env)
 	if err != nil {
 		return nil, err
 	}
@@ -658,11 +686,11 @@ func compileUnary(u *parser.Unary) (Expr, error) {
 	return expr, nil
 }
 
-func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
+func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 	if pf == nil {
 		return nil, fmt.Errorf("nil postfix")
 	}
-	expr, err := compilePrimary(pf.Target)
+	expr, err := compilePrimary(pf.Target, env)
 	if err != nil {
 		// allow selector with tail handled here
 		if pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) > 0 {
@@ -681,7 +709,7 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 		method := tail[0]
 		args := make([]Expr, len(pf.Ops[0].Call.Args))
 		for i, a := range pf.Ops[0].Call.Args {
-			ex, err := compileExpr(a)
+			ex, err := compileExpr(a, env)
 			if err != nil {
 				return nil, err
 			}
@@ -696,6 +724,7 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 			return nil, fmt.Errorf("unsupported method %s", method)
 		}
 	}
+	t := types.TypeOfPrimaryBasic(pf.Target, env)
 	for _, op := range pf.Ops {
 		if op.Index != nil {
 			idx := op.Index
@@ -703,28 +732,46 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 				if idx.Start == nil {
 					return nil, fmt.Errorf("unsupported index")
 				}
-				iex, err := compileExpr(idx.Start)
+				iex, err := compileExpr(idx.Start, env)
 				if err != nil {
 					return nil, err
 				}
-				usesIndex = true
-				expr = &CallExpr{Func: "index", Args: []Expr{expr, iex}}
+				switch tt := t.(type) {
+				case types.StringType:
+					expr = &CallExpr{Func: "string", Args: []Expr{&IndexExpr{X: &RuneSliceExpr{Expr: expr}, Index: iex}}}
+					t = types.StringType{}
+				case types.ListType:
+					expr = &IndexExpr{X: expr, Index: iex}
+					t = tt.Elem
+				default:
+					expr = &IndexExpr{X: expr, Index: iex}
+					t = types.AnyType{}
+				}
 			} else {
 				var start, end Expr
 				if idx.Start != nil {
-					start, err = compileExpr(idx.Start)
+					start, err = compileExpr(idx.Start, env)
 					if err != nil {
 						return nil, err
 					}
 				}
 				if idx.End != nil {
-					end, err = compileExpr(idx.End)
+					end, err = compileExpr(idx.End, env)
 					if err != nil {
 						return nil, err
 					}
 				}
-				usesSlice = true
-				expr = &CallExpr{Func: "slice", Args: []Expr{expr, start, end}}
+				switch tt := t.(type) {
+				case types.StringType:
+					expr = &CallExpr{Func: "string", Args: []Expr{&SliceExpr{X: &RuneSliceExpr{Expr: expr}, Start: start, End: end}}}
+					t = types.StringType{}
+				case types.ListType:
+					expr = &SliceExpr{X: expr, Start: start, End: end}
+					t = types.ListType{Elem: tt.Elem}
+				default:
+					expr = &SliceExpr{X: expr, Start: start, End: end}
+					t = types.AnyType{}
+				}
 			}
 		} else if op.Call != nil {
 			return nil, fmt.Errorf("unsupported call")
@@ -742,12 +789,12 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 	return expr, nil
 }
 
-func compilePrimary(p *parser.Primary) (Expr, error) {
+func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 	switch {
 	case p.Call != nil:
 		args := make([]Expr, len(p.Call.Args))
 		for i, a := range p.Call.Args {
-			ex, err := compileExpr(a)
+			ex, err := compileExpr(a, env)
 			if err != nil {
 				return nil, err
 			}
@@ -768,14 +815,13 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		case "max":
 			usesMax = true
 		case "substring":
-			usesSubstring = true
-			return &CallExpr{Func: "substring", Args: args}, nil
+			return &CallExpr{Func: "string", Args: []Expr{&SliceExpr{X: &RuneSliceExpr{Expr: args[0]}, Start: args[1], End: args[2]}}}, nil
 		}
 		return &CallExpr{Func: name, Args: args}, nil
 	case p.List != nil:
 		elems := make([]Expr, len(p.List.Elems))
 		for i, e := range p.List.Elems {
-			ex, err := compileExpr(e)
+			ex, err := compileExpr(e, env)
 			if err != nil {
 				return nil, err
 			}
@@ -791,9 +837,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		return nil, fmt.Errorf("unsupported literal")
 	case p.If != nil:
-		return compileIfExpr(p.If)
+		return compileIfExpr(p.If, env)
 	case p.Group != nil:
-		return compileExpr(p.Group)
+		return compileExpr(p.Group, env)
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return &VarRef{Name: p.Selector.Root}, nil
 	}
@@ -967,23 +1013,8 @@ func Emit(prog *Program) []byte {
 	if prog.UseIntersect {
 		buf.WriteString("func intersect(a, b []int) []int {\n    m := map[int]bool{}\n    for _, n := range a { m[n]=true }\n    res := []int{}\n    for _, n := range b { if m[n] { res=append(res,n) } }\n    return res\n}\n\n")
 	}
-	if prog.UseSubstring {
-		buf.WriteString("func substring(s string, i, j int) string {\n    r := []rune(s)\n    return string(r[i:j])\n}\n\n")
-	}
-	if prog.UseIndex {
-		buf.WriteString("func index(v any, i int) any {\n    switch x := v.(type) {\n    case []int:\n        return x[i]\n    case string:\n        r := []rune(x)\n        return string(r[i])\n    }\n    return nil\n}\n\n")
-	}
-	if prog.UseSlice {
-		buf.WriteString("func slice(v any, i, j int) any {\n    switch x := v.(type) {\n    case []int:\n        return x[i:j]\n    case string:\n        r := []rune(x)\n        return string(r[i:j])\n    }\n    return nil\n}\n\n")
-	}
 	if prog.UseAtoi {
 		buf.WriteString("func atoi(s string) int {\n    n, _ := strconv.Atoi(s)\n    return n\n}\n\n")
-	}
-	if prog.UseBtoi {
-		buf.WriteString("func btoi(b bool) int { if b { return 1 }; return 0 }\n\n")
-	}
-	if prog.UsePrint && prog.UseStrings {
-		buf.WriteString("func joinInts(v any) string { if xs, ok := v.([]int); ok { return strings.Trim(fmt.Sprint(xs), \"[]\") }; return fmt.Sprint(v) }\n\n")
 	}
 	buf.WriteString("func main() {\n")
 	for _, s := range prog.Stmts {
@@ -1096,6 +1127,20 @@ func toNodeExpr(e Expr) *ast.Node {
 			n.Children = append(n.Children, toNodeExpr(e))
 		}
 		return n
+	case *IndexExpr:
+		return &ast.Node{Kind: "index", Children: []*ast.Node{toNodeExpr(ex.X), toNodeExpr(ex.Index)}}
+	case *SliceExpr:
+		n := &ast.Node{Kind: "slice"}
+		n.Children = append(n.Children, toNodeExpr(ex.X))
+		if ex.Start != nil {
+			n.Children = append(n.Children, toNodeExpr(ex.Start))
+		}
+		if ex.End != nil {
+			n.Children = append(n.Children, toNodeExpr(ex.End))
+		}
+		return n
+	case *RuneSliceExpr:
+		return &ast.Node{Kind: "runes", Children: []*ast.Node{toNodeExpr(ex.Expr)}}
 	case *BinaryExpr:
 		return &ast.Node{Kind: "bin", Value: ex.Op, Children: []*ast.Node{toNodeExpr(ex.Left), toNodeExpr(ex.Right)}}
 	case *IfExpr:
