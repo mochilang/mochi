@@ -4,7 +4,7 @@ This directory contains a minimal transpiler that converts a subset of Mochi int
 
 ## Golden tests
 
-Progress: 5/100
+Progress: 6/100
 
 - [ ] append_builtin
 - [ ] avg_builtin
@@ -66,7 +66,7 @@ Progress: 5/100
 - [ ] map_nested_assign
 - [ ] match_expr
 - [ ] match_full
-- [ ] math_ops
+- [x] math_ops
 - [ ] membership
 - [ ] min_max_builtin
 - [ ] nested_function
