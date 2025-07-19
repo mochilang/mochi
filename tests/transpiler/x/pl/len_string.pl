@@ -3,5 +3,4 @@
 :- initialization(main).
 
 main :-
-    X is 0,
-    write(X), nl.
+    string_length('mochi', R0), write(R0), nl.
