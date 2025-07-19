@@ -39,10 +39,30 @@ type ReturnStmt struct {
 	Expr Expr
 }
 
+type DeclStmt struct {
+	Name  string
+	Value Expr
+}
+
+type AssignStmt struct {
+	Name  string
+	Value Expr
+}
+
+type WhileStmt struct {
+	Cond Expr
+	Body []Stmt
+}
+
 func (c *CallStmt) emit(w io.Writer) {
 	if c.Func == "print" && len(c.Args) == 1 {
-		if s, ok := c.Args[0].(*StringLit); ok {
-			fmt.Fprintf(w, "\tprintf(\"%s\\n\");\n", escape(s.Value))
+		switch arg := c.Args[0].(type) {
+		case *StringLit:
+			fmt.Fprintf(w, "\tprintf(\"%s\\n\");\n", escape(arg.Value))
+		default:
+			io.WriteString(w, "\tprintf(\"%d\\n\", ")
+			arg.emitExpr(w)
+			io.WriteString(w, ");\n")
 		}
 		return
 	}
@@ -52,9 +72,69 @@ func (r *ReturnStmt) emit(w io.Writer) {
 	io.WriteString(w, "\treturn 0;\n")
 }
 
-type Expr interface{}
+func (d *DeclStmt) emit(w io.Writer) {
+	io.WriteString(w, "\tint ")
+	io.WriteString(w, d.Name)
+	if d.Value != nil {
+		io.WriteString(w, " = ")
+		d.Value.emitExpr(w)
+	}
+	io.WriteString(w, ";\n")
+}
+
+func (a *AssignStmt) emit(w io.Writer) {
+	io.WriteString(w, "\t")
+	io.WriteString(w, a.Name)
+	io.WriteString(w, " = ")
+	if a.Value != nil {
+		a.Value.emitExpr(w)
+	}
+	io.WriteString(w, ";\n")
+}
+
+func (ws *WhileStmt) emit(w io.Writer) {
+	io.WriteString(w, "\twhile (")
+	if ws.Cond != nil {
+		ws.Cond.emitExpr(w)
+	}
+	io.WriteString(w, ") {\n")
+	for _, s := range ws.Body {
+		s.emit(w)
+	}
+	io.WriteString(w, "\t}\n")
+}
+
+type Expr interface{ emitExpr(io.Writer) }
 
 type StringLit struct{ Value string }
+
+func (s *StringLit) emitExpr(w io.Writer) {
+	fmt.Fprintf(w, "\"%s\"", escape(s.Value))
+}
+
+type IntLit struct{ Value int }
+
+func (i *IntLit) emitExpr(w io.Writer) {
+	fmt.Fprintf(w, "%d", i.Value)
+}
+
+type VarRef struct{ Name string }
+
+func (v *VarRef) emitExpr(w io.Writer) {
+	io.WriteString(w, v.Name)
+}
+
+type BinaryExpr struct {
+	Op    string
+	Left  Expr
+	Right Expr
+}
+
+func (b *BinaryExpr) emitExpr(w io.Writer) {
+	b.Left.emitExpr(w)
+	fmt.Fprintf(w, " %s ", b.Op)
+	b.Right.emitExpr(w)
+}
 
 func escape(s string) string {
 	s = strings.ReplaceAll(s, "\\", "\\\\")
@@ -117,19 +197,99 @@ func (p *Program) Emit() []byte {
 // Transpile converts a Mochi program into a C AST.
 func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	mainFn := &Function{Name: "main"}
-	for _, s := range prog.Statements {
-		if s.Expr != nil {
-			call := s.Expr.Expr.Binary.Left.Value.Target.Call
-			if call != nil && call.Func == "print" && len(call.Args) == 1 {
-				arg := call.Args[0]
-				lit := arg.Binary.Left.Value.Target.Lit
-				if lit != nil && lit.Str != nil {
-					mainFn.Body = append(mainFn.Body, &CallStmt{Func: "print", Args: []Expr{&StringLit{Value: *lit.Str}}})
-					continue
-				}
-			}
-		}
+	body, err := compileStmts(prog.Statements)
+	if err != nil {
+		return nil, err
 	}
+	mainFn.Body = append(mainFn.Body, body...)
 	p := &Program{Functions: []*Function{mainFn}}
 	return p, nil
+}
+
+func compileStmts(list []*parser.Statement) ([]Stmt, error) {
+	var out []Stmt
+	for _, s := range list {
+		stmt, err := compileStmt(s)
+		if err != nil {
+			return nil, err
+		}
+		if stmt != nil {
+			out = append(out, stmt)
+		}
+	}
+	return out, nil
+}
+
+func compileStmt(s *parser.Statement) (Stmt, error) {
+	switch {
+	case s.Expr != nil:
+		call := s.Expr.Expr.Binary.Left.Value.Target.Call
+		if call != nil && call.Func == "print" && len(call.Args) == 1 {
+			arg := convertExpr(call.Args[0])
+			if arg != nil {
+				return &CallStmt{Func: "print", Args: []Expr{arg}}, nil
+			}
+		}
+	case s.Let != nil:
+		return &DeclStmt{Name: s.Let.Name, Value: convertExpr(s.Let.Value)}, nil
+	case s.Var != nil:
+		return &DeclStmt{Name: s.Var.Name, Value: convertExpr(s.Var.Value)}, nil
+	case s.Assign != nil:
+		return &AssignStmt{Name: s.Assign.Name, Value: convertExpr(s.Assign.Value)}, nil
+	case s.While != nil:
+		cond := convertExpr(s.While.Cond)
+		body, err := compileStmts(s.While.Body)
+		if err != nil {
+			return nil, err
+		}
+		return &WhileStmt{Cond: cond, Body: body}, nil
+	}
+	return nil, nil
+}
+
+func convertExpr(e *parser.Expr) Expr {
+	if e == nil || e.Binary == nil {
+		return nil
+	}
+	left := convertUnary(e.Binary.Left)
+	if len(e.Binary.Right) == 0 {
+		return left
+	}
+	if len(e.Binary.Right) == 1 {
+		op := e.Binary.Right[0]
+		right := convertUnary(&parser.Unary{Value: op.Right})
+		if left != nil && right != nil {
+			return &BinaryExpr{Op: op.Op, Left: left, Right: right}
+		}
+	}
+	return nil
+}
+
+func convertUnary(u *parser.Unary) Expr {
+	if u == nil || u.Value == nil {
+		return nil
+	}
+	if g := u.Value.Target.Group; g != nil {
+		return convertExpr(g)
+	}
+	if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 && len(u.Ops) == 0 {
+		return &VarRef{Name: sel.Root}
+	}
+	lit := u.Value.Target.Lit
+	if lit == nil {
+		return nil
+	}
+	if lit.Str != nil && len(u.Ops) == 0 {
+		return &StringLit{Value: *lit.Str}
+	}
+	if lit.Int != nil {
+		v := int(*lit.Int)
+		for _, op := range u.Ops {
+			if op == "-" {
+				v = -v
+			}
+		}
+		return &IntLit{Value: v}
+	}
+	return nil
 }

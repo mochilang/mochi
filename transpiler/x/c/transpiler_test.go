@@ -101,8 +101,13 @@ func TestTranspilerGolden(t *testing.T) {
 	root := repoRoot(t)
 	srcDir := filepath.Join(root, "tests", "vm", "valid")
 	goldenDir := filepath.Join(root, "tests", "transpiler", "x", "c")
-	pattern := filepath.Join(srcDir, "print_hello.mochi")
-	files := []string{pattern}
+	files := []string{
+		filepath.Join(srcDir, "print_hello.mochi"),
+		filepath.Join(srcDir, "unary_neg.mochi"),
+		filepath.Join(srcDir, "let_and_print.mochi"),
+		filepath.Join(srcDir, "var_assignment.mochi"),
+		filepath.Join(srcDir, "while_loop.mochi"),
+	}
 	if err := os.MkdirAll(goldenDir, 0o755); err != nil {
 		t.Fatalf("mkdir: %v", err)
 	}
