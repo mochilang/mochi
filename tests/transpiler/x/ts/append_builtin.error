@@ -1,5 +1,0 @@
-run: exit status 1
-[0m[1m[31merror[0m: Uncaught (in promise) ReferenceError: append is not defined
-__print(append(a, 3));
-[0m[31m^[0m
-    at [0m[36mfile:///workspace/mochi/tests/transpiler/x/ts/append_builtin.ts[0m:[0m[33m17[0m:[0m[33m1[0m

@@ -297,9 +297,17 @@ func (m *MapLit) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
-		io.WriteString(w, "[")
-		e.Key.emit(w)
-		io.WriteString(w, "]: ")
+		switch k := e.Key.(type) {
+		case *StringLit:
+			fmt.Fprintf(w, "%q: ", k.Value)
+		case *NameRef:
+			io.WriteString(w, k.Name)
+			io.WriteString(w, ": ")
+		default:
+			io.WriteString(w, "[")
+			e.Key.emit(w)
+			io.WriteString(w, "]: ")
+		}
 		e.Value.emit(w)
 	}
 	io.WriteString(w, "}")
@@ -470,11 +478,11 @@ func (f *ForRangeStmt) emit(w io.Writer) {
 func (f *ForInStmt) emit(w io.Writer) {
 	io.WriteString(w, "for (const ")
 	io.WriteString(w, f.Name)
-	io.WriteString(w, " of ")
+	io.WriteString(w, " of __iter(")
 	if f.Iterable != nil {
 		f.Iterable.emit(w)
 	}
-	io.WriteString(w, ") {\n")
+	io.WriteString(w, ")) {\n")
 	for _, st := range f.Body {
 		st.emit(w)
 		io.WriteString(w, "\n")
@@ -534,6 +542,15 @@ func Emit(p *Program) []byte {
 	b.WriteString("  }\n")
 	b.WriteString("  console.log(out.join(' '));\n")
 	b.WriteString("}\n")
+	b.WriteString("function __iter(v:any):any[] {\n  return Array.isArray(v)? v : Object.keys(v||{});\n}\n")
+	b.WriteString("function __append(a:any[], v:any):any[] { const r=a.slice(); r.push(v); return r; }\n")
+	b.WriteString("function __avg(nums:number[]):any { if(nums.length==0) return '0.0'; const v=nums.reduce((a,b)=>a+b,0)/nums.length; return v.toFixed(1); }\n")
+	b.WriteString("function __count(v:any):number { return __len(v); }\n")
+	b.WriteString("function __sum(nums:number[]):number { return nums.reduce((a,b)=>a+b,0); }\n")
+	b.WriteString("function __min(nums:number[]):number { return nums.length? Math.min(...nums):0; }\n")
+	b.WriteString("function __max(nums:number[]):number { return nums.length? Math.max(...nums):0; }\n")
+	b.WriteString("function __values(o:any):any[] { return Object.values(o); }\n")
+	b.WriteString("function __json(v:any){ console.log(JSON.stringify(v)); }\n")
 	for i, s := range p.Stmts {
 		if i > 0 {
 			b.WriteByte('\n')
@@ -795,8 +812,13 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	}
 
 	apply := func(i int) {
-		expr := &BinaryExpr{Left: operands[i], Op: ops[i], Right: operands[i+1]}
-		operands[i] = expr
+		if ops[i] == "in" {
+			expr := &MethodCallExpr{Target: operands[i+1], Method: "includes", Args: []Expr{operands[i]}}
+			operands[i] = expr
+		} else {
+			expr := &BinaryExpr{Left: operands[i], Op: ops[i], Right: operands[i+1]}
+			operands[i] = expr
+		}
 		operands = append(operands[:i+1], operands[i+2:]...)
 		ops = append(ops[:i], ops[i+1:]...)
 	}
@@ -932,6 +954,46 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("len expects one argument")
 			}
 			return &LenExpr{Value: args[0]}, nil
+		case "append":
+			if len(args) != 2 {
+				return nil, fmt.Errorf("append expects two arguments")
+			}
+			return &CallExpr{Func: "__append", Args: args}, nil
+		case "avg":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("avg expects one argument")
+			}
+			return &CallExpr{Func: "__avg", Args: args}, nil
+		case "count":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("count expects one argument")
+			}
+			return &CallExpr{Func: "__count", Args: args}, nil
+		case "sum":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("sum expects one argument")
+			}
+			return &CallExpr{Func: "__sum", Args: args}, nil
+		case "min":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("min expects one argument")
+			}
+			return &CallExpr{Func: "__min", Args: args}, nil
+		case "max":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("max expects one argument")
+			}
+			return &CallExpr{Func: "__max", Args: args}, nil
+		case "values":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("values expects one argument")
+			}
+			return &CallExpr{Func: "__values", Args: args}, nil
+		case "json":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("json expects one argument")
+			}
+			return &CallExpr{Func: "__json", Args: args}, nil
 		case "str":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("str expects one argument")

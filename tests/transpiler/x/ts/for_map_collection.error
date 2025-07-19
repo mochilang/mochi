@@ -1,5 +1,0 @@
-run: exit status 1
-[0m[1m[31merror[0m: Uncaught (in promise) TypeError: m is not iterable
-for (const k of m) {
-[0m[31m                ^[0m
-    at [0m[36mfile:///workspace/mochi/tests/transpiler/x/ts/for_map_collection.ts[0m:[0m[33m17[0m:[0m[33m17[0m

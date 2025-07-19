@@ -151,7 +151,8 @@ func updateTasks() {
 	}
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
-	fmt.Fprintf(&buf, "- VM valid golden tests %d/%d compiled\n\n", compiled, total)
+	fmt.Fprintf(&buf, "- Generated TypeScript for %d/%d programs\n", compiled, total)
+	buf.WriteString("- Updated README checklist and outputs\n\n")
 	if data, err := os.ReadFile(taskFile); err == nil {
 		buf.Write(data)
 	}
