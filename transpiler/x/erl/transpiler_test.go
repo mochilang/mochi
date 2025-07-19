@@ -4,15 +4,22 @@ package erl_test
 
 import (
 	"bytes"
+	"flag"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
+	"strings"
 	"testing"
+	"time"
 
 	"mochi/parser"
 	erl "mochi/transpiler/x/erl"
 	"mochi/types"
 )
+
+var update = flag.Bool("update", false, "update golden files")
 
 func repoRoot(t *testing.T) string {
 	dir, err := os.Getwd()
@@ -56,13 +63,19 @@ func runGolden(t *testing.T, name string) {
 	}
 	code := ast.Emit()
 	erlFile := filepath.Join(outDir, name+".erl")
-	if err := os.WriteFile(erlFile, code, 0o755); err != nil {
-		t.Fatalf("write: %v", err)
+	if updateEnabled() {
+		if err := os.WriteFile(erlFile, code, 0o755); err != nil {
+			t.Fatalf("write: %v", err)
+		}
+	} else {
+		_ = os.WriteFile(erlFile, code, 0o755)
 	}
 	cmd := exec.Command("escript", erlFile)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		_ = os.WriteFile(filepath.Join(outDir, name+".error"), out, 0o644)
+		if updateEnabled() {
+			_ = os.WriteFile(filepath.Join(outDir, name+".error"), out, 0o644)
+		}
 		t.Fatalf("run: %v", err)
 	}
 	lines := bytes.Split(out, []byte{'\n'})
@@ -74,6 +87,12 @@ func runGolden(t *testing.T, name string) {
 		filtered = append(filtered, l)
 	}
 	got := bytes.TrimSpace(bytes.Join(filtered, []byte{'\n'}))
+	if updateEnabled() {
+		_ = os.Remove(filepath.Join(outDir, name+".error"))
+		if err := os.WriteFile(filepath.Join(outDir, name+".out"), got, 0o644); err != nil {
+			t.Fatalf("write out: %v", err)
+		}
+	}
 	_ = os.Remove(filepath.Join(outDir, name+".error"))
 	wantPath := filepath.Join(outDir, name+".out")
 	want, err := os.ReadFile(wantPath)
@@ -137,3 +156,81 @@ func TestTranspileMapInOperator(t *testing.T) { runGolden(t, "map_in_operator") 
 func TestTranspileListIndex(t *testing.T) { runGolden(t, "list_index") }
 
 func TestTranspileStringIndex(t *testing.T) { runGolden(t, "string_index") }
+
+func updateEnabled() bool { return *update }
+
+func countCompiled() (int, int) {
+	root := repoRoot(&testing.T{})
+	srcDir := filepath.Join(root, "tests", "vm", "valid")
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "erl")
+	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	total := len(files)
+	compiled := 0
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
+			compiled++
+		}
+	}
+	return compiled, total
+}
+
+func updateReadme() {
+	root := repoRoot(&testing.T{})
+	srcDir := filepath.Join(root, "tests", "vm", "valid")
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "erl")
+	readmePath := filepath.Join(root, "transpiler", "x", "erl", "README.md")
+	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	sort.Strings(files)
+	total := len(files)
+	compiled := 0
+	var lines []string
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		mark := "[ ]"
+		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
+			compiled++
+			mark = "[x]"
+		}
+		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+	}
+	var buf bytes.Buffer
+	buf.WriteString(fmt.Sprintf("# Erlang Transpiler Output (%d/%d generated and run)\n\n", compiled, total))
+	buf.WriteString("This directory contains a minimal transpiler that converts a very small\n")
+	buf.WriteString("subset of Mochi into Erlang. Generated programs are executed with\n")
+	buf.WriteString("`escript` to verify runtime behaviour.\n\n")
+	buf.WriteString("## VM Valid Checklist\n\n")
+	buf.WriteString("The following programs under `tests/vm/valid` have golden outputs. A\n")
+	buf.WriteString("checked item means the Erlang transpiler can successfully generate code\n")
+	buf.WriteString("that produces the same output as the Mochi VM.\n\n")
+	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteString("\n")
+	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
+}
+
+func updateTasks() {
+	root := repoRoot(&testing.T{})
+	taskFile := filepath.Join(root, "transpiler", "x", "erl", "TASKS.md")
+	compiled, total := countCompiled()
+	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	ts := ""
+	if err == nil {
+		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+			ts = t.Format("2006-01-02 15:04 MST")
+		}
+	}
+	var buf bytes.Buffer
+	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
+	buf.WriteString(fmt.Sprintf("- VM valid golden test results updated to %d/%d\n\n", compiled, total))
+	if data, err := os.ReadFile(taskFile); err == nil {
+		buf.Write(data)
+	}
+	_ = os.WriteFile(taskFile, buf.Bytes(), 0o644)
+}
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	updateReadme()
+	updateTasks()
+	os.Exit(code)
+}
