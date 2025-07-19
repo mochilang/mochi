@@ -107,13 +107,17 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 
 func evalPrintArg(arg *parser.Expr) (val string, isString bool, ok bool) {
 	lit := arg.Binary.Left.Value.Target.Lit
-	if lit != nil && len(arg.Binary.Left.Value.Ops) == 0 && len(arg.Binary.Right) == 0 {
+	if lit != nil && len(arg.Binary.Left.Ops) == 0 && len(arg.Binary.Left.Value.Ops) == 0 && len(arg.Binary.Right) == 0 {
 		switch {
 		case lit.Str != nil:
 			return *lit.Str, true, true
 		case lit.Int != nil:
 			return fmt.Sprintf("%d", *lit.Int), false, true
 		}
+	}
+
+	if v, ok := intConst(arg); ok {
+		return fmt.Sprintf("%d", v), false, true
 	}
 
 	// cast string literal to int
@@ -177,3 +181,102 @@ func stmtNode(s Stmt) *ast.Node {
 		return &ast.Node{Kind: "stmt"}
 	}
 }
+
+func intConst(e *parser.Expr) (int, bool) {
+	if e == nil || e.Binary == nil {
+		return 0, false
+	}
+	return evalIntConstBinary(e.Binary)
+}
+
+func evalIntConstBinary(be *parser.BinaryExpr) (int, bool) {
+	v, ok := evalIntConstUnary(be.Left)
+	if !ok {
+		return 0, false
+	}
+	vals := []int{v}
+	ops := []string{}
+	for _, op := range be.Right {
+		r, ok := evalIntConstPostfix(op.Right)
+		if !ok {
+			return 0, false
+		}
+		vals = append(vals, r)
+		ops = append(ops, op.Op)
+	}
+
+	for i := 0; i < len(ops); {
+		switch ops[i] {
+		case "*":
+			vals[i] *= vals[i+1]
+		case "/":
+			if vals[i+1] == 0 {
+				return 0, false
+			}
+			vals[i] /= vals[i+1]
+		case "%":
+			if vals[i+1] == 0 {
+				return 0, false
+			}
+			vals[i] %= vals[i+1]
+		default:
+			i++
+			continue
+		}
+		vals = append(vals[:i+1], vals[i+2:]...)
+		ops = append(ops[:i], ops[i+1:]...)
+	}
+
+	res := vals[0]
+	for i, op := range ops {
+		switch op {
+		case "+":
+			res += vals[i+1]
+		case "-":
+			res -= vals[i+1]
+		default:
+			return 0, false
+		}
+	}
+	return res, true
+}
+
+func evalIntConstUnary(u *parser.Unary) (int, bool) {
+	val, ok := evalIntConstPostfix(u.Value)
+	if !ok {
+		return 0, false
+	}
+	for i := len(u.Ops) - 1; i >= 0; i-- {
+		switch u.Ops[i] {
+		case "-":
+			val = -val
+		case "+":
+			// ignore
+		default:
+			return 0, false
+		}
+	}
+	return val, true
+}
+
+func evalIntConstPostfix(p *parser.PostfixExpr) (int, bool) {
+	if p == nil || len(p.Ops) != 0 {
+		return 0, false
+	}
+	return evalIntConstPrimary(p.Target)
+}
+
+func evalIntConstPrimary(pr *parser.Primary) (int, bool) {
+	if pr == nil {
+		return 0, false
+	}
+	if pr.Lit != nil && pr.Lit.Int != nil {
+		return int(*pr.Lit.Int), true
+	}
+	if pr.Group != nil {
+		return intConst(pr.Group)
+	}
+	return 0, false
+}
+
+// TestIntConst is a helper for debugging
