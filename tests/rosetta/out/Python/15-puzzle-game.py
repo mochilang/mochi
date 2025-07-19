@@ -70,9 +70,9 @@ def isValidMove(m):
 
 
 def doMove(m):
-    global moves
     global board
     global empty
+    global moves
     r = isValidMove(m)
     if not r["ok"]:
         return False
