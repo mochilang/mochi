@@ -281,7 +281,8 @@ func isMapStringType(t types.Type) bool {
 func isMapStringIntType(t types.Type) bool {
 	if mt, ok := t.(types.MapType); ok {
 		if _, ok := mt.Key.(types.StringType); ok {
-			if _, ok2 := mt.Value.(types.IntType); ok2 {
+			switch mt.Value.(type) {
+			case types.IntType, types.BoolType:
 				return true
 			}
 		}
