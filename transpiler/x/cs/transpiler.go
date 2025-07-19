@@ -201,7 +201,6 @@ func (ws *WhileStmt) emit(w io.Writer) {
 	fmt.Fprint(w, "while (")
 	if ws.Cond != nil {
 		ws.Cond.emit(w)
-		fmt.Fprint(w, " != 0")
 	}
 	fmt.Fprint(w, ") {\n")
 	for _, st := range ws.Body {
@@ -223,7 +222,6 @@ func (i *IfStmt) emit(w io.Writer) {
 	fmt.Fprint(w, "if (")
 	if i.Cond != nil {
 		i.Cond.emit(w)
-		fmt.Fprint(w, " != 0")
 	}
 	fmt.Fprint(w, ") {\n")
 	for _, st := range i.Then {
@@ -253,7 +251,7 @@ type IfExpr struct {
 func (ie *IfExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "(")
 	ie.Cond.emit(w)
-	fmt.Fprint(w, " != 0 ? ")
+	fmt.Fprint(w, " ? ")
 	ie.Then.emit(w)
 	fmt.Fprint(w, " : ")
 	ie.Else.emit(w)
@@ -291,13 +289,10 @@ type BoolOpExpr struct {
 
 func (b *BoolOpExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "(")
-	fmt.Fprint(w, "(")
 	b.Left.emit(w)
-	fmt.Fprint(w, " != 0")
 	fmt.Fprintf(w, " %s ", b.Op)
 	b.Right.emit(w)
-	fmt.Fprint(w, " != 0")
-	fmt.Fprint(w, ") ? 1 : 0)")
+	fmt.Fprint(w, ")")
 }
 
 // UnaryExpr represents a unary prefix operation.
@@ -314,9 +309,9 @@ func (u *UnaryExpr) emit(w io.Writer) {
 type NotExpr struct{ Val Expr }
 
 func (n *NotExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "(")
+	fmt.Fprint(w, "(!")
 	n.Val.emit(w)
-	fmt.Fprint(w, " == 0 ? 1 : 0)")
+	fmt.Fprint(w, ")")
 }
 
 // CmpExpr emits comparison result as 1 or 0.
@@ -345,13 +340,13 @@ func (c *CmpExpr) emit(w io.Writer) {
 		case ">=":
 			fmt.Fprint(w, " >= 0")
 		}
-		fmt.Fprint(w, " ? 1 : 0)")
+		fmt.Fprint(w, ")")
 		return
 	}
 	c.Left.emit(w)
 	fmt.Fprintf(w, " %s ", c.Op)
 	c.Right.emit(w)
-	fmt.Fprint(w, " ? 1 : 0)")
+	fmt.Fprint(w, ")")
 }
 
 type InExpr struct {
@@ -365,18 +360,18 @@ func (ie *InExpr) emit(w io.Writer) {
 		ie.Collection.emit(w)
 		fmt.Fprint(w, ".Contains(")
 		ie.Item.emit(w)
-		fmt.Fprint(w, ") ? 1 : 0")
+		fmt.Fprint(w, ")")
 	} else if isMapExpr(ie.Collection) {
 		ie.Collection.emit(w)
 		fmt.Fprint(w, ".ContainsKey(")
 		ie.Item.emit(w)
-		fmt.Fprint(w, ") ? 1 : 0")
+		fmt.Fprint(w, ")")
 	} else {
 		fmt.Fprint(w, "Array.IndexOf(")
 		ie.Collection.emit(w)
 		fmt.Fprint(w, ", ")
 		ie.Item.emit(w)
-		fmt.Fprint(w, ") >= 0 ? 1 : 0")
+		fmt.Fprint(w, ") >= 0")
 	}
 	fmt.Fprint(w, ")")
 }
@@ -415,9 +410,9 @@ type BoolLit struct{ Value bool }
 
 func (b *BoolLit) emit(w io.Writer) {
 	if b.Value {
-		fmt.Fprint(w, "1")
+		fmt.Fprint(w, "true")
 	} else {
-		fmt.Fprint(w, "0")
+		fmt.Fprint(w, "false")
 	}
 }
 
@@ -565,7 +560,7 @@ func csType(t *parser.TypeRef) string {
 		case "string":
 			return "string"
 		case "bool":
-			return "int"
+			return "bool"
 		}
 		return "object"
 	}
@@ -603,7 +598,17 @@ func typeOfExpr(e Expr) string {
 	case *IntLit:
 		return "int"
 	case *BoolLit:
-		return "int"
+		return "bool"
+	case *BoolOpExpr:
+		return "bool"
+	case *CmpExpr:
+		return "bool"
+	case *NotExpr:
+		return "bool"
+	case *InExpr:
+		return "bool"
+	case *IfExpr:
+		return "bool"
 	case *ListLit:
 		return listType(ex)
 	case *MapLit:

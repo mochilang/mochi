@@ -1,3 +1,6 @@
+## Progress (2025-07-19 18:08 UTC)
+- cs transpiler: emit bool values and simplify condition checks (progress 58/100)
+
 ## Progress (2025-07-19 18:02 UTC)
 - cs transpiler: add list type inference and new golden test (progress 58/100)
 
