@@ -226,9 +226,41 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 }
 
 func makeBinary(op string, left, right Node) Node {
+	isStr := func(n Node) bool {
+		switch n.(type) {
+		case StringLit:
+			return true
+		}
+		return false
+	}
 	switch op {
-	case "+", "-", "*", "/", "<", "<=", ">", ">=":
+	case "+":
+		if isStr(left) || isStr(right) {
+			return &List{Elems: []Node{Symbol("string-append"), left, right}}
+		}
+		return &List{Elems: []Node{Symbol("+"), left, right}}
+	case "-", "*", "/":
 		return &List{Elems: []Node{Symbol(op), left, right}}
+	case "<":
+		if isStr(left) || isStr(right) {
+			return &List{Elems: []Node{Symbol("string<?"), left, right}}
+		}
+		return &List{Elems: []Node{Symbol("<"), left, right}}
+	case "<=":
+		if isStr(left) || isStr(right) {
+			return &List{Elems: []Node{Symbol("string<=?"), left, right}}
+		}
+		return &List{Elems: []Node{Symbol("<="), left, right}}
+	case ">":
+		if isStr(left) || isStr(right) {
+			return &List{Elems: []Node{Symbol("string>?"), left, right}}
+		}
+		return &List{Elems: []Node{Symbol(">"), left, right}}
+	case ">=":
+		if isStr(left) || isStr(right) {
+			return &List{Elems: []Node{Symbol("string>=?"), left, right}}
+		}
+		return &List{Elems: []Node{Symbol(">="), left, right}}
 	case "==":
 		return &List{Elems: []Node{Symbol("="), left, right}}
 	case "!=":

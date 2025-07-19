@@ -2,7 +2,7 @@
 
 This package implements a very small transpiler that converts a subset of Mochi into Scheme code run by `chibi-scheme`.
 
-Checklist of programs that currently transpile and run (5/100):
+Checklist of programs that currently transpile and run (8/100):
 
 - [ ] append_builtin
 - [ ] avg_builtin
@@ -84,8 +84,8 @@ Checklist of programs that currently transpile and run (5/100):
 - [ ] slice
 - [ ] sort_stable
 - [ ] str_builtin
-- [ ] string_compare
-- [ ] string_concat
+- [x] string_compare
+- [x] string_concat
 - [ ] string_contains
 - [ ] string_in_operator
 - [ ] string_index
@@ -98,7 +98,7 @@ Checklist of programs that currently transpile and run (5/100):
 - [ ] two-sum
 - [x] typed_let
 - [ ] typed_var
-- [ ] unary_neg
+- [x] unary_neg
 - [ ] update_stmt
 - [ ] user_type_literal
 - [ ] values_builtin
