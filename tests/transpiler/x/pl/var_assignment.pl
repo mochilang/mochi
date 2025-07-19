@@ -3,6 +3,6 @@
 :- initialization(main).
 
 main :-
-    R0 is 6 * 7, write(R0), nl,
-    R1 is 7 / 2, write(R1), nl,
-    R2 is 7 mod 2, write(R2), nl.
+    X is 1,
+    X1 is 2,
+    write(X1), nl.
