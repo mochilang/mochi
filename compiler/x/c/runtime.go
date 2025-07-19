@@ -549,6 +549,19 @@ static list_int _sha256_list(list_int v) {
     return buf;
 }
 `
+	helperStrListInt = `static char* _str_list_int(list_int v) {
+    int cap = v.len * 12 + 2;
+    char* buf = (char*)malloc(cap);
+    int pos = 0;
+    buf[pos++] = '[';
+    for (int i = 0; i < v.len; i++) {
+        if (i) buf[pos++] = ',';
+        pos += sprintf(buf+pos, "%d", v.data[i]);
+    }
+    buf[pos++] = ']';
+    buf[pos] = '\\0';
+    return buf;
+}`
 	helperLower = `static char* _lower(char* s) {
     int len = strlen(s);
     char* buf = (char*)malloc(len + 1);
@@ -828,6 +841,7 @@ var helperCode = map[string]string{
 	needInMapIntString:       helperMapIntString,
 	needInput:                helperInput,
 	needStr:                  helperStr,
+	needStrListInt:           helperStrListInt,
 	needLower:                helperLower,
 	needUpper:                helperUpper,
 	needFloat:                helperFloat,
@@ -919,6 +933,7 @@ var helperOrder = []string{
 	needInMapIntString,
 	needInput,
 	needStr,
+	needStrListInt,
 	needLower,
 	needUpper,
 	needFloat,

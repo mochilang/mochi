@@ -6177,8 +6177,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		} else if p.Call.Func == "str" {
 			arg := c.compileExpr(p.Call.Args[0])
 			name := c.newTemp()
-			c.need(needStr)
-			c.writeln(fmt.Sprintf("char* %s = _str(%s);", name, arg))
+			if isListIntExpr(p.Call.Args[0], c.env) {
+				c.need(needStrListInt)
+				c.writeln(fmt.Sprintf("char* %s = _str_list_int(%s);", name, arg))
+			} else {
+				c.need(needStr)
+				c.writeln(fmt.Sprintf("char* %s = _str(%s);", name, arg))
+			}
 			return name
 		} else if p.Call.Func == "int" {
 			arg := c.compileExpr(p.Call.Args[0])
