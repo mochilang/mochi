@@ -1157,6 +1157,16 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 		if p.Lit.Str != nil {
 			return value{kind: valString, s: *p.Lit.Str}, nil
 		}
+	case p.List != nil:
+		elems := make([]value, 0, len(p.List.Elems))
+		for _, e := range p.List.Elems {
+			v, err := evalExpr(e, vars)
+			if err != nil {
+				return value{}, err
+			}
+			elems = append(elems, v)
+		}
+		return value{kind: valList, list: elems}, nil
 	case p.Selector != nil:
 		if v, ok := vars[p.Selector.Root]; ok {
 			for _, f := range p.Selector.Tail {
