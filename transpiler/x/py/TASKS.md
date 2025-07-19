@@ -1,4 +1,8 @@
 # Python Transpiler Tasks
+## Recent Enhancements (2025-07-20 01:06 UTC+0700)
+- Imports are now gathered and sorted for cleaner style.
+- Header remains deterministic using git timestamps.
+- Regenerated golden outputs and updated README checklist.
 ## Recent Enhancements (2025-07-20 00:52 UTC+07:00)
 - Added partial application support emitting lambdas.
 - Generated golden outputs for `pure_fold`, `pure_global_fold` and `partial_application`.

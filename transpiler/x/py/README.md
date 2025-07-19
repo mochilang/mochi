@@ -3,7 +3,6 @@
 Generated Python code from programs in `tests/vm/valid` lives in `tests/transpiler/x/py`.
 
 ## VM Golden Test Checklist (70/100)
-
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
