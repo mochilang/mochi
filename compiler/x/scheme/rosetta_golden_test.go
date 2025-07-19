@@ -4,6 +4,7 @@ package schemecode_test
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -107,7 +108,7 @@ func TestSchemeCompiler_Rosetta_Golden(t *testing.T) {
 	if err != nil {
 		t.Fatalf("glob: %v", err)
 	}
-	max := 3
+	max := 20
 	if len(files) < max {
 		max = len(files)
 	}
@@ -115,4 +116,30 @@ func TestSchemeCompiler_Rosetta_Golden(t *testing.T) {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		t.Run(name, func(t *testing.T) { runRosettaTaskGolden(t, name) })
 	}
+}
+
+func updateRosettaReadme() {
+	root := testutil.FindRepoRoot(&testing.T{})
+	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
+	outDir := filepath.Join(root, "tests", "rosetta", "out", "Scheme")
+	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	total := len(files)
+	compiled := 0
+	var lines []string
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		mark := "[ ]"
+		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
+			compiled++
+			mark = "[x]"
+		}
+		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+	}
+	var buf bytes.Buffer
+	fmt.Fprintf(&buf, "# Rosetta Scheme Output (%d/%d compiled and run)\n\n", compiled, total)
+	buf.WriteString("This directory holds Scheme source code generated from the Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.\n\n")
+	buf.WriteString("## Program checklist\n")
+	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteString("\n")
+	_ = os.WriteFile(filepath.Join(outDir, "README.md"), buf.Bytes(), 0o644)
 }
