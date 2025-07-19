@@ -1,5 +1,10 @@
 # Rust Transpiler Tasks
 
+## Recent Enhancements (2025-07-19 06:29 +0000)
+- Added support for basic math operations and string handling.
+- Generated golden tests for `math_ops`, `string_compare` and `string_concat`.
+- Updated README checklist with progress summary.
+
 ## Recent Enhancements (2025-07-19 12:47 +0700)
 - Added support for `if` expressions and statements.
 - Generated golden tests for `basic_compare`, `if_else`, `if_then_else` and `if_then_else_nested`.
