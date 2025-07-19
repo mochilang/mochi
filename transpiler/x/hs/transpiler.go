@@ -21,9 +21,77 @@ type Program struct {
 
 type Stmt interface{ emit(io.Writer) }
 
-type PrintStmt struct{ Value string }
+type Expr interface{ emit(io.Writer) }
 
-func (p *PrintStmt) emit(w io.Writer) { fmt.Fprintf(w, "putStrLn %q", p.Value) }
+type PrintStmt struct{ Expr Expr }
+type LetStmt struct {
+	Name string
+	Expr Expr
+}
+
+func (p *PrintStmt) emit(w io.Writer) {
+	if _, ok := p.Expr.(*StringLit); ok {
+		io.WriteString(w, "putStrLn (")
+	} else {
+		io.WriteString(w, "print (")
+	}
+	p.Expr.emit(w)
+	io.WriteString(w, ")")
+}
+
+func (l *LetStmt) emit(w io.Writer) {
+	io.WriteString(w, l.Name)
+	io.WriteString(w, " = ")
+	l.Expr.emit(w)
+}
+
+type IntLit struct{ Value string }
+type StringLit struct{ Value string }
+type BoolLit struct{ Value bool }
+type NameRef struct{ Name string }
+type BinaryExpr struct {
+	Left Expr
+	Ops  []BinaryOp
+}
+
+type BinaryOp struct {
+	Op    string
+	Right Expr
+}
+type UnaryExpr struct {
+	Op   string
+	Expr Expr
+}
+type GroupExpr struct{ Expr Expr }
+
+func (i *IntLit) emit(w io.Writer)    { io.WriteString(w, i.Value) }
+func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
+func (b *BoolLit) emit(w io.Writer) {
+	if b.Value {
+		io.WriteString(w, "True")
+	} else {
+		io.WriteString(w, "False")
+	}
+}
+func (n *NameRef) emit(w io.Writer) { io.WriteString(w, n.Name) }
+func (b *BinaryExpr) emit(w io.Writer) {
+	b.Left.emit(w)
+	for _, op := range b.Ops {
+		io.WriteString(w, " ")
+		io.WriteString(w, op.Op)
+		io.WriteString(w, " ")
+		op.Right.emit(w)
+	}
+}
+func (u *UnaryExpr) emit(w io.Writer) {
+	io.WriteString(w, u.Op)
+	u.Expr.emit(w)
+}
+func (g *GroupExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
+	g.Expr.emit(w)
+	io.WriteString(w, ")")
+}
 
 func repoRoot() string {
 	dir, err := os.Getwd()
@@ -65,9 +133,19 @@ func header() string {
 func Emit(p *Program) []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
+	for _, s := range p.Stmts {
+		if l, ok := s.(*LetStmt); ok {
+			l.emit(&buf)
+			buf.WriteByte('\n')
+			buf.WriteByte('\n')
+		}
+	}
 	buf.WriteString("main :: IO ()\n")
 	buf.WriteString("main = do\n")
 	for _, s := range p.Stmts {
+		if _, ok := s.(*LetStmt); ok {
+			continue
+		}
 		buf.WriteString("    ")
 		s.emit(&buf)
 		buf.WriteByte('\n')
@@ -80,19 +158,28 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	_ = env
 	h := &Program{}
 	for _, st := range prog.Statements {
-		if st.Expr != nil {
+		switch {
+		case st.Let != nil:
+			ex, err := convertExpr(st.Let.Value)
+			if err != nil {
+				return nil, err
+			}
+			h.Stmts = append(h.Stmts, &LetStmt{Name: st.Let.Name, Expr: ex})
+		case st.Expr != nil:
 			call := st.Expr.Expr.Binary.Left.Value.Target.Call
 			if call != nil && call.Func == "print" && len(call.Args) == 1 {
-				arg := call.Args[0]
-				lit := arg.Binary.Left.Value.Target.Lit
-				if lit != nil && lit.Str != nil {
-					h.Stmts = append(h.Stmts, &PrintStmt{Value: *lit.Str})
-					continue
+				arg, err := convertExpr(call.Args[0])
+				if err != nil {
+					return nil, err
 				}
+				h.Stmts = append(h.Stmts, &PrintStmt{Expr: arg})
+				continue
 			}
 			return nil, fmt.Errorf("unsupported expression")
-		} else {
-			return nil, fmt.Errorf("unsupported statement")
+		default:
+			if st.Test == nil && st.Import == nil && st.Type == nil {
+				return nil, fmt.Errorf("unsupported statement")
+			}
 		}
 	}
 	return h, nil
@@ -112,8 +199,118 @@ func toNode(p *Program) *ast.Node {
 func stmtNode(s Stmt) *ast.Node {
 	switch st := s.(type) {
 	case *PrintStmt:
-		return &ast.Node{Kind: "print", Value: st.Value}
+		return &ast.Node{Kind: "print", Children: []*ast.Node{exprNode(st.Expr)}}
+	case *LetStmt:
+		return &ast.Node{Kind: "let", Value: st.Name, Children: []*ast.Node{exprNode(st.Expr)}}
 	default:
 		return &ast.Node{Kind: "stmt"}
+	}
+}
+
+func exprNode(e Expr) *ast.Node {
+	switch ex := e.(type) {
+	case *IntLit:
+		return &ast.Node{Kind: "int", Value: ex.Value}
+	case *StringLit:
+		return &ast.Node{Kind: "string", Value: ex.Value}
+	case *BoolLit:
+		if ex.Value {
+			return &ast.Node{Kind: "bool", Value: "True"}
+		}
+		return &ast.Node{Kind: "bool", Value: "False"}
+	case *NameRef:
+		return &ast.Node{Kind: "name", Value: ex.Name}
+	case *BinaryExpr:
+		n := &ast.Node{Kind: "bin"}
+		n.Children = append(n.Children, exprNode(ex.Left))
+		for _, op := range ex.Ops {
+			n.Children = append(n.Children, &ast.Node{Kind: "op", Value: op.Op})
+			n.Children = append(n.Children, exprNode(op.Right))
+		}
+		return n
+	case *UnaryExpr:
+		return &ast.Node{Kind: "unary", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Expr)}}
+	case *GroupExpr:
+		return &ast.Node{Kind: "group", Children: []*ast.Node{exprNode(ex.Expr)}}
+	default:
+		return &ast.Node{Kind: "expr"}
+	}
+}
+
+func convertExpr(e *parser.Expr) (Expr, error) {
+	if e == nil {
+		// treat missing expression as zero
+		return &IntLit{Value: "0"}, nil
+	}
+	return convertBinary(e.Binary)
+}
+
+func convertBinary(b *parser.BinaryExpr) (Expr, error) {
+	left, err := convertUnary(b.Left)
+	if err != nil {
+		return nil, err
+	}
+	be := &BinaryExpr{Left: left}
+	for _, op := range b.Right {
+		right, err := convertPostfix(op.Right)
+		if err != nil {
+			return nil, err
+		}
+		be.Ops = append(be.Ops, BinaryOp{Op: op.Op, Right: right})
+	}
+	if len(be.Ops) == 0 {
+		return left, nil
+	}
+	return be, nil
+}
+
+func convertUnary(u *parser.Unary) (Expr, error) {
+	expr, err := convertPostfix(u.Value)
+	if err != nil {
+		return nil, err
+	}
+	for i := len(u.Ops) - 1; i >= 0; i-- {
+		expr = &UnaryExpr{Op: u.Ops[i], Expr: expr}
+	}
+	return expr, nil
+}
+
+func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
+	if pf == nil {
+		return nil, fmt.Errorf("nil postfix")
+	}
+	if len(pf.Ops) > 0 {
+		return nil, fmt.Errorf("postfix ops not supported")
+	}
+	return convertPrimary(pf.Target)
+}
+
+func convertPrimary(p *parser.Primary) (Expr, error) {
+	switch {
+	case p.Lit != nil:
+		return convertLiteral(p.Lit)
+	case p.Selector != nil && len(p.Selector.Tail) == 0:
+		return &NameRef{Name: p.Selector.Root}, nil
+	case p.Group != nil:
+		e, err := convertExpr(p.Group)
+		if err != nil {
+			return nil, err
+		}
+		return &GroupExpr{Expr: e}, nil
+	default:
+		return nil, fmt.Errorf("unsupported primary")
+	}
+}
+
+func convertLiteral(l *parser.Literal) (Expr, error) {
+	switch {
+	case l.Int != nil:
+		return &IntLit{Value: fmt.Sprintf("%d", *l.Int)}, nil
+	case l.Str != nil:
+		return &StringLit{Value: *l.Str}, nil
+	case l.Bool != nil:
+		return &BoolLit{Value: bool(*l.Bool)}, nil
+	default:
+		return nil, fmt.Errorf("unsupported literal")
 	}
 }
