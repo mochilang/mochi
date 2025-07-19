@@ -1,6 +1,8 @@
 # C# Transpiler Output
 
-Generated C# code for programs in `tests/vm/valid`.
+Generated C# code for programs in `tests/vm/valid`. Each program has a `.cs` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.
+
+Compiled programs: 13/100
 
 ## Checklist
 - [ ] append_builtin
@@ -47,7 +49,7 @@ Generated C# code for programs in `tests/vm/valid`.
 - [ ] left_join_multi
 - [x] len_builtin
 - [ ] len_map
-- [ ] len_string
+- [x] len_string
 - [x] let_and_print
 - [ ] list_assign
 - [ ] list_index
@@ -84,7 +86,7 @@ Generated C# code for programs in `tests/vm/valid`.
 - [ ] sort_stable
 - [x] str_builtin
 - [ ] string_compare
-- [ ] string_concat
+- [x] string_concat
 - [ ] string_contains
 - [ ] string_in_operator
 - [ ] string_index
@@ -92,12 +94,12 @@ Generated C# code for programs in `tests/vm/valid`.
 - [ ] substring_builtin
 - [x] sum_builtin
 - [ ] tail_recursion
-- [ ] test_block
+- [x] test_block
 - [ ] tree_sum
 - [ ] two-sum
 - [ ] typed_let
 - [ ] typed_var
-- [ ] unary_neg
+- [x] unary_neg
 - [ ] update_stmt
 - [ ] user_type_literal
 - [ ] values_builtin
