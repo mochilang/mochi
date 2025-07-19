@@ -30,6 +30,18 @@ type AssignStmt struct {
 	Value Expr
 }
 
+type IfStmt struct {
+	Cond Expr
+	Then []Stmt
+	Else []Stmt
+}
+
+type IfExpr struct {
+	Cond Expr
+	Then Expr
+	Else Expr
+}
+
 type CallExpr struct {
 	Func string
 	Args []Expr
@@ -68,6 +80,36 @@ func (a *AssignStmt) emit(w io.Writer) {
 	}
 }
 
+func (i *IfStmt) emit(w io.Writer) {
+	io.WriteString(w, "if ")
+	if i.Cond != nil {
+		i.Cond.emit(w)
+	}
+	io.WriteString(w, " then\n")
+	for _, st := range i.Then {
+		st.emit(w)
+		io.WriteString(w, "\n")
+	}
+	if len(i.Else) > 0 {
+		io.WriteString(w, "else\n")
+		for _, st := range i.Else {
+			st.emit(w)
+			io.WriteString(w, "\n")
+		}
+	}
+	io.WriteString(w, "end")
+}
+
+func (ie *IfExpr) emit(w io.Writer) {
+	io.WriteString(w, "((")
+	ie.Cond.emit(w)
+	io.WriteString(w, ") and (")
+	ie.Then.emit(w)
+	io.WriteString(w, ") or (")
+	ie.Else.emit(w)
+	io.WriteString(w, "))")
+}
+
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
 func (i *IntLit) emit(w io.Writer)    { fmt.Fprintf(w, "%d", i.Value) }
 func (id *Ident) emit(w io.Writer)    { io.WriteString(w, id.Name) }
@@ -94,6 +136,10 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	}
 	if op == "+" && (isStringExpr(b.Left) || isStringExpr(b.Right)) {
 		op = ".."
+	} else if op == "&&" {
+		op = "and"
+	} else if op == "||" {
+		op = "or"
 	}
 	io.WriteString(w, op)
 	io.WriteString(w, " ")
@@ -270,6 +316,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return nil, fmt.Errorf("unsupported selector")
 	case p.Group != nil:
 		return convertExpr(p.Group)
+	case p.If != nil:
+		return convertIfExpr(p.If)
 	default:
 		return nil, fmt.Errorf("unsupported expression")
 	}
@@ -286,54 +334,112 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 	}
 }
 
-// Transpile converts a Mochi AST into a simple Lua AST. It currently handles
-// programs made of `print` statements whose arguments are integer or string
-// expressions including unary negation and binary arithmetic.
+func convertIfExpr(ie *parser.IfExpr) (Expr, error) {
+	cond, err := convertExpr(ie.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenExpr, err := convertExpr(ie.Then)
+	if err != nil {
+		return nil, err
+	}
+	var elseExpr Expr
+	if ie.ElseIf != nil {
+		elseExpr, err = convertIfExpr(ie.ElseIf)
+		if err != nil {
+			return nil, err
+		}
+	} else if ie.Else != nil {
+		elseExpr, err = convertExpr(ie.Else)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		elseExpr = &Ident{Name: "nil"}
+	}
+	return &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
+}
+
+func convertIfStmt(is *parser.IfStmt) (Stmt, error) {
+	cond, err := convertExpr(is.Cond)
+	if err != nil {
+		return nil, err
+	}
+	var thenStmts []Stmt
+	for _, st := range is.Then {
+		s, err := convertStmt(st)
+		if err != nil {
+			return nil, err
+		}
+		thenStmts = append(thenStmts, s)
+	}
+	var elseStmts []Stmt
+	if is.ElseIf != nil {
+		s, err := convertIfStmt(is.ElseIf)
+		if err != nil {
+			return nil, err
+		}
+		elseStmts = []Stmt{s}
+	} else if len(is.Else) > 0 {
+		for _, st := range is.Else {
+			s, err := convertStmt(st)
+			if err != nil {
+				return nil, err
+			}
+			elseStmts = append(elseStmts, s)
+		}
+	}
+	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
+}
+
+func convertStmt(st *parser.Statement) (Stmt, error) {
+	switch {
+	case st.Expr != nil:
+		expr, err := convertExpr(st.Expr.Expr)
+		if err != nil {
+			return nil, err
+		}
+		return &ExprStmt{Expr: expr}, nil
+	case st.Let != nil:
+		var expr Expr
+		var err error
+		if st.Let.Value != nil {
+			expr, err = convertExpr(st.Let.Value)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return &AssignStmt{Name: st.Let.Name, Value: expr}, nil
+	case st.Var != nil:
+		var expr Expr
+		var err error
+		if st.Var.Value != nil {
+			expr, err = convertExpr(st.Var.Value)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return &AssignStmt{Name: st.Var.Name, Value: expr}, nil
+	case st.If != nil:
+		return convertIfStmt(st.If)
+	default:
+		return nil, fmt.Errorf("unsupported statement")
+	}
+}
+
+// Transpile converts a Mochi AST into a simple Lua AST supporting variable
+// declarations, assignments, `if` statements and expressions, and calls like
+// `print`. Expressions handle unary negation, arithmetic, comparison and basic
+// boolean operators.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	_ = env
 	lp := &Program{}
 	for _, st := range prog.Statements {
-		switch {
-		case st.Expr != nil:
-			call := st.Expr.Expr.Binary.Left.Value.Target.Call
-			if call == nil || call.Func != "print" {
-				return nil, fmt.Errorf("unsupported expression")
-			}
-			if len(call.Args) != 1 {
-				return nil, fmt.Errorf("print expects one argument")
-			}
-			arg := call.Args[0]
-			expr, err := convertExpr(arg)
-			if err != nil {
-				return nil, fmt.Errorf("unsupported argument: %w", err)
-			}
-			lp.Stmts = append(lp.Stmts, &ExprStmt{Expr: &CallExpr{
-				Func: "print",
-				Args: []Expr{expr},
-			}})
-		case st.Let != nil:
-			var expr Expr
-			if st.Let.Value != nil {
-				var err error
-				expr, err = convertExpr(st.Let.Value)
-				if err != nil {
-					return nil, err
-				}
-			}
-			lp.Stmts = append(lp.Stmts, &AssignStmt{Name: st.Let.Name, Value: expr})
-		case st.Var != nil:
-			var expr Expr
-			if st.Var.Value != nil {
-				var err error
-				expr, err = convertExpr(st.Var.Value)
-				if err != nil {
-					return nil, err
-				}
-			}
-			lp.Stmts = append(lp.Stmts, &AssignStmt{Name: st.Var.Name, Value: expr})
-		default:
-			return nil, fmt.Errorf("unsupported statement")
+		s, err := convertStmt(st)
+		if err != nil {
+			return nil, err
 		}
+		lp.Stmts = append(lp.Stmts, s)
 	}
 	return lp, nil
 }
@@ -362,6 +468,22 @@ func stmtNode(s Stmt) *ast.Node {
 			child = exprNode(st.Value)
 		}
 		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{child}}
+	case *IfStmt:
+		n := &ast.Node{Kind: "if"}
+		n.Children = append(n.Children, exprNode(st.Cond))
+		thenNode := &ast.Node{Kind: "then"}
+		for _, s2 := range st.Then {
+			thenNode.Children = append(thenNode.Children, stmtNode(s2))
+		}
+		n.Children = append(n.Children, thenNode)
+		if len(st.Else) > 0 {
+			elseNode := &ast.Node{Kind: "else"}
+			for _, s2 := range st.Else {
+				elseNode.Children = append(elseNode.Children, stmtNode(s2))
+			}
+			n.Children = append(n.Children, elseNode)
+		}
+		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
@@ -386,6 +508,10 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "ident", Value: ex.Name}
 	case *BinaryExpr:
 		return &ast.Node{Kind: "bin", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
+	case *IfExpr:
+		n := &ast.Node{Kind: "cond"}
+		n.Children = append(n.Children, exprNode(ex.Cond), exprNode(ex.Then), exprNode(ex.Else))
+		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
