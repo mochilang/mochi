@@ -2,7 +2,7 @@
 
 Generated Python code from programs in `tests/vm/valid` lives in `tests/transpiler/x/py`.
 
-## VM Golden Test Checklist (67/100)
+## VM Golden Test Checklist (70/100)
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -43,7 +43,7 @@ Generated Python code from programs in `tests/vm/valid` lives in `tests/transpil
 - [ ] in_operator_extended
 - [ ] inner_join
 - [ ] join_multi
- - [x] json_builtin
+- [x] json_builtin
 - [ ] left_join
 - [ ] left_join_multi
 - [x] len_builtin
@@ -70,10 +70,10 @@ Generated Python code from programs in `tests/vm/valid` lives in `tests/transpil
 - [x] nested_function
 - [ ] order_by_map
 - [ ] outer_join
-- [ ] partial_application
+- [x] partial_application
 - [x] print_hello
-- [ ] pure_fold
-- [ ] pure_global_fold
+- [x] pure_fold
+- [x] pure_global_fold
 - [x] python_auto
 - [x] python_math
 - [ ] query_sum_select
@@ -94,7 +94,7 @@ Generated Python code from programs in `tests/vm/valid` lives in `tests/transpil
 - [x] sum_builtin
 - [x] tail_recursion
 - [x] test_block
- - [ ] tree_sum
+- [ ] tree_sum
 - [x] two-sum
 - [x] typed_let
 - [x] typed_var
