@@ -1,3 +1,7 @@
+## Progress (2025-07-19 19:57 GMT+7)
+- 43/100 VM tests passing
+- Added list indexing, slice expressions and list assignment.
+
 ## Progress (2025-07-19 19:41 GMT+7)
 - 36/100 VM tests passing
 - Added list literals and built-in functions: append, avg, count, sum.

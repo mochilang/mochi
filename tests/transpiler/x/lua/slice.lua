@@ -80,4 +80,8 @@ function mochi_print(v)
     print(v)
   end
 end
-mochi_print(len("mochi"))
+mochi_print(slice({1, 2, 3}, 1, 3))
+
+mochi_print(slice({1, 2, 3}, 0, 2))
+
+mochi_print(slice("hello", 1, 4))

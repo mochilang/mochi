@@ -87,6 +87,24 @@ type BinaryExpr struct {
 	Op    string
 	Right Expr
 }
+type IndexExpr struct {
+	Target Expr
+	Index  Expr
+}
+type SliceExpr struct {
+	Target Expr
+	Start  Expr
+	End    Expr
+}
+type FieldExpr struct {
+	Target Expr
+	Name   string
+}
+type IndexAssignStmt struct {
+	Target Expr
+	Index  Expr
+	Value  Expr
+}
 
 func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
 
@@ -242,6 +260,43 @@ func (l *ListLit) emit(w io.Writer) {
 	io.WriteString(w, "}")
 }
 func (id *Ident) emit(w io.Writer) { io.WriteString(w, id.Name) }
+func (ix *IndexExpr) emit(w io.Writer) {
+	ix.Target.emit(w)
+	io.WriteString(w, "[")
+	if ix.Index != nil {
+		ix.Index.emit(w)
+	}
+	io.WriteString(w, "]")
+}
+func (s *SliceExpr) emit(w io.Writer) {
+	io.WriteString(w, "slice(")
+	s.Target.emit(w)
+	io.WriteString(w, ", ")
+	if s.Start != nil {
+		s.Start.emit(w)
+	} else {
+		io.WriteString(w, "0")
+	}
+	io.WriteString(w, ", ")
+	if s.End != nil {
+		s.End.emit(w)
+	} else {
+		io.WriteString(w, "0")
+	}
+	io.WriteString(w, ")")
+}
+func (f *FieldExpr) emit(w io.Writer) {
+	f.Target.emit(w)
+	io.WriteString(w, ".")
+	io.WriteString(w, f.Name)
+}
+func (ia *IndexAssignStmt) emit(w io.Writer) {
+	ia.Target.emit(w)
+	io.WriteString(w, "[")
+	ia.Index.emit(w)
+	io.WriteString(w, "] = ")
+	ia.Value.emit(w)
+}
 
 func isStringExpr(e Expr) bool {
 	switch ex := e.(type) {
@@ -365,6 +420,17 @@ function sum(lst)
   return s
 end
 
+function slice(x, i, j)
+  if type(x) == "string" then
+    return substring(x, i, j)
+  end
+  local out = {}
+  for idx = i + 1, j do
+    out[#out + 1] = x[idx]
+  end
+  return out
+end
+
 function contains(c, v)
   if type(c) == "string" then
     return string.find(c, v, 1, true) ~= nil
@@ -383,6 +449,12 @@ function mochi_print(v)
     else
       print(0)
     end
+  elseif type(v) == "table" then
+    for i, x in ipairs(v) do
+      if i > 1 then io.write(" ") end
+      io.write(tostring(x))
+    end
+    io.write("\n")
   else
     print(v)
   end
@@ -497,10 +569,66 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 	if p == nil {
 		return nil, fmt.Errorf("nil postfix")
 	}
-	if len(p.Ops) > 0 {
-		return nil, fmt.Errorf("postfix ops not supported")
+	expr, err := convertPrimary(p.Target)
+	if err != nil {
+		return nil, err
 	}
-	return convertPrimary(p.Target)
+	for _, op := range p.Ops {
+		switch {
+		case op.Index != nil:
+			if op.Index.Colon != nil || op.Index.Colon2 != nil {
+				var start, end Expr
+				if op.Index.Start != nil {
+					start, err = convertExpr(op.Index.Start)
+					if err != nil {
+						return nil, err
+					}
+				}
+				if op.Index.End != nil {
+					end, err = convertExpr(op.Index.End)
+					if err != nil {
+						return nil, err
+					}
+				}
+				expr = &SliceExpr{Target: expr, Start: start, End: end}
+			} else {
+				idx, err := convertExpr(op.Index.Start)
+				if err != nil {
+					return nil, err
+				}
+				expr = &IndexExpr{Target: expr, Index: idx}
+			}
+		case op.Field != nil:
+			expr = &FieldExpr{Target: expr, Name: op.Field.Name}
+		case op.Call != nil:
+			var args []Expr
+			for _, a := range op.Call.Args {
+				ae, err := convertExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				args = append(args, ae)
+			}
+			if fe, ok := expr.(*FieldExpr); ok {
+				if fe.Name == "contains" && len(args) == 1 {
+					expr = &BinaryExpr{Left: args[0], Op: "in", Right: fe.Target}
+				} else {
+					return nil, fmt.Errorf("unsupported method call")
+				}
+			} else if id, ok := expr.(*Ident); ok {
+				name := id.Name
+				if name == "print" {
+					name = "mochi_print"
+				}
+				expr = &CallExpr{Func: name, Args: args}
+			} else {
+				return nil, fmt.Errorf("unsupported call")
+			}
+		default:
+			return nil, fmt.Errorf("postfix op not supported")
+		}
+	}
+	return expr, nil
 }
 
 func convertPrimary(p *parser.Primary) (Expr, error) {
@@ -532,10 +660,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &ListLit{Elems: elems}, nil
 	case p.Selector != nil:
-		if len(p.Selector.Tail) == 0 {
-			return &Ident{Name: p.Selector.Root}, nil
+		expr := Expr(&Ident{Name: p.Selector.Root})
+		for _, t := range p.Selector.Tail {
+			expr = &FieldExpr{Target: expr, Name: t}
 		}
-		return nil, fmt.Errorf("unsupported selector")
+		return expr, nil
 	case p.Group != nil:
 		return convertExpr(p.Group)
 	case p.If != nil:
@@ -727,6 +856,25 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		return &AssignStmt{Name: st.Var.Name, Value: expr}, nil
 	case st.Assign != nil:
+		if len(st.Assign.Index) > 0 && len(st.Assign.Field) == 0 {
+			target := Expr(&Ident{Name: st.Assign.Name})
+			for i := 0; i < len(st.Assign.Index)-1; i++ {
+				idx, err := convertExpr(st.Assign.Index[i].Start)
+				if err != nil {
+					return nil, err
+				}
+				target = &IndexExpr{Target: target, Index: idx}
+			}
+			idx, err := convertExpr(st.Assign.Index[len(st.Assign.Index)-1].Start)
+			if err != nil {
+				return nil, err
+			}
+			val, err := convertExpr(st.Assign.Value)
+			if err != nil {
+				return nil, err
+			}
+			return &IndexAssignStmt{Target: target, Index: idx, Value: val}, nil
+		}
 		if len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0 {
 			return nil, fmt.Errorf("unsupported assignment")
 		}
@@ -795,6 +943,8 @@ func stmtNode(s Stmt) *ast.Node {
 			child = exprNode(st.Value)
 		}
 		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{child}}
+	case *IndexAssignStmt:
+		return &ast.Node{Kind: "index_assign", Children: []*ast.Node{exprNode(st.Target), exprNode(st.Index), exprNode(st.Value)}}
 	case *FunStmt:
 		n := &ast.Node{Kind: "fun", Value: st.Name}
 		params := &ast.Node{Kind: "params"}
@@ -893,6 +1043,12 @@ func exprNode(e Expr) *ast.Node {
 			n.Children = append(n.Children, exprNode(e2))
 		}
 		return n
+	case *IndexExpr:
+		return &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(ex.Target), exprNode(ex.Index)}}
+	case *SliceExpr:
+		return &ast.Node{Kind: "slice", Children: []*ast.Node{exprNode(ex.Target), exprNode(ex.Start), exprNode(ex.End)}}
+	case *FieldExpr:
+		return &ast.Node{Kind: "field", Value: ex.Name, Children: []*ast.Node{exprNode(ex.Target)}}
 	case *BinaryExpr:
 		return &ast.Node{Kind: "bin", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
 	case *IfExpr:

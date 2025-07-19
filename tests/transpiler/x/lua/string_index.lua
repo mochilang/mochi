@@ -80,4 +80,6 @@ function mochi_print(v)
     print(v)
   end
 end
-mochi_print(len("mochi"))
+s = "mochi"
+
+mochi_print(s[1])

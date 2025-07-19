@@ -80,4 +80,6 @@ function mochi_print(v)
     print(v)
   end
 end
-mochi_print(len("mochi"))
+xs = {10, 20, 30}
+
+mochi_print(xs[1])
