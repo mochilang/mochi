@@ -1,4 +1,25 @@
 # 📦 CHANGELOG.md
+## [0.10.31] – 2025-07-19T10:21:06+07:00
+
+### Added
+
+* New Mochi examples such as Deconvolution-1D and Day-of-the-week
+* Rosetta golden tests expanded and sorted for determinism
+* TypeScript runtime `input` helper for Deno
+
+### Changed
+
+* Kotlin functions now return values
+* Scala and Swift handle return statements and list casts
+* Go manages top-level variables in `main`
+* C and C++ extend builtins and inference
+* Rust and Python improve constant handling and DNS lookup
+
+### Fixed
+
+* Go backend `len(any)` and global variable issues
+* Ruby and Java index inference bugs
+* READMEs refreshed across languages
 ## [0.10.30] – 2025-07-18T18:44:32+07:00
 
 ### Added
