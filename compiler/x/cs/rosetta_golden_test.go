@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
 
@@ -104,7 +105,8 @@ func TestCSCompiler_Rosetta_Golden(t *testing.T) {
 	if err != nil {
 		t.Fatalf("glob: %v", err)
 	}
-       max := 10
+	sort.Strings(files)
+	max := 20
 	if len(files) < max {
 		max = len(files)
 	}
