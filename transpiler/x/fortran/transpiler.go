@@ -211,7 +211,11 @@ func toExpr(e *parser.Expr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		expr = fmt.Sprintf("(%s %s %s)", expr, opStr, rhs)
+		if opStr == "mod" {
+			expr = fmt.Sprintf("mod(%s, %s)", expr, rhs)
+		} else {
+			expr = fmt.Sprintf("(%s %s %s)", expr, opStr, rhs)
+		}
 	}
 	return expr, nil
 }
