@@ -175,7 +175,11 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 				return nil, err
 			}
 		} else {
-			v = Symbol("nil")
+			if s.Let.Type != nil {
+				v = defaultValue(s.Let.Type)
+			} else {
+				v = Symbol("nil")
+			}
 		}
 		return &List{Elems: []Node{Symbol("def"), Symbol(s.Let.Name), v}}, nil
 	case s.Var != nil:
@@ -187,7 +191,11 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 				return nil, err
 			}
 		} else {
-			v = Symbol("nil")
+			if s.Var.Type != nil {
+				v = defaultValue(s.Var.Type)
+			} else {
+				v = Symbol("nil")
+			}
 		}
 		return &List{Elems: []Node{Symbol("def"), Symbol(s.Var.Name), v}}, nil
 	case s.Assign != nil:
@@ -414,6 +422,12 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 		elems = append(elems, Symbol("println"))
 	case "len":
 		elems = append(elems, Symbol("count"))
+	case "count":
+		elems = append(elems, Symbol("count"))
+	case "min":
+		elems = append(elems, Symbol("apply"), Symbol("min"))
+	case "max":
+		elems = append(elems, Symbol("apply"), Symbol("max"))
 	case "substring":
 		elems = append(elems, Symbol("subs"))
 	default:
@@ -442,6 +456,24 @@ func transpileLiteral(l *parser.Literal) (Node, error) {
 		return Symbol("false"), nil
 	default:
 		return nil, fmt.Errorf("unsupported literal")
+	}
+}
+
+func defaultValue(t *parser.TypeRef) Node {
+	if t == nil || t.Simple == nil {
+		return Symbol("nil")
+	}
+	switch *t.Simple {
+	case "int":
+		return IntLit(0)
+	case "float":
+		return Symbol("0.0")
+	case "bool":
+		return Symbol("false")
+	case "string":
+		return StringLit("")
+	default:
+		return Symbol("nil")
 	}
 }
 

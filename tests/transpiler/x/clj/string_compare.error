@@ -3,4 +3,4 @@ Execution error (ClassCastException) at main/-main (string_compare.clj:3).
 class java.lang.String cannot be cast to class java.lang.Number (java.lang.String and java.lang.Number are in module java.base of loader 'bootstrap')
 
 Full report at:
-/tmp/clojure-2672145000802175718.edn
+/tmp/clojure-4209996616254638170.edn

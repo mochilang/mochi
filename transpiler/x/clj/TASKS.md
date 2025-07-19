@@ -9,3 +9,4 @@ Progress for the experimental Clojure backend.
 - 2025-07-19 05:24:50 +0000 - Added string ops and moved docs
 - 2025-07-19 12:30:04 +0700 - Added var/assign statements and list indexing support
 - 2025-07-19 13:18:44 +0700 - Added if statement and expression support
+- 2025-07-19 06:37:13 +0000 - Added default values for typed vars and built-in functions count/min/max. Updated golden outputs.

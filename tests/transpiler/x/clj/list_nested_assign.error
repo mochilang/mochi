@@ -1,1 +1,6 @@
-transpile error: unsupported statement
+run error: exit status 1
+Execution error (IllegalStateException) at main/-main (list_nested_assign.clj:4).
+Can't change/establish root binding of: matrix with set
+
+Full report at:
+/tmp/clojure-17232561877344240831.edn
