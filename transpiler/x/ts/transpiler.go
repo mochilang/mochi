@@ -213,6 +213,13 @@ type InvokeExpr struct {
 	Args   []Expr
 }
 
+// IfExpr represents a ternary conditional expression `cond ? a : b`.
+type IfExpr struct {
+	Cond Expr
+	Then Expr
+	Else Expr
+}
+
 // IndexAssignStmt assigns to an indexed expression like x[i] = v.
 type IndexAssignStmt struct {
 	Target Expr
@@ -469,6 +476,26 @@ func (i *InvokeExpr) emit(w io.Writer) {
 			io.WriteString(w, ", ")
 		}
 		a.emit(w)
+	}
+	io.WriteString(w, ")")
+}
+
+func (e *IfExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
+	if e.Cond != nil {
+		e.Cond.emit(w)
+	}
+	io.WriteString(w, " ? ")
+	if e.Then != nil {
+		e.Then.emit(w)
+	} else {
+		io.WriteString(w, "null")
+	}
+	io.WriteString(w, " : ")
+	if e.Else != nil {
+		e.Else.emit(w)
+	} else {
+		io.WriteString(w, "null")
 	}
 	io.WriteString(w, ")")
 }
@@ -1246,6 +1273,28 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		default:
 			return &CallExpr{Func: p.Call.Func, Args: args}, nil
 		}
+	case p.If != nil:
+		cond, err := convertExpr(p.If.Cond)
+		if err != nil {
+			return nil, err
+		}
+		thenExpr, err := convertExpr(p.If.Then)
+		if err != nil {
+			return nil, err
+		}
+		var elseExpr Expr
+		if p.If.ElseIf != nil {
+			elseExpr, err = convertPrimary(&parser.Primary{If: p.If.ElseIf})
+			if err != nil {
+				return nil, err
+			}
+		} else if p.If.Else != nil {
+			elseExpr, err = convertExpr(p.If.Else)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
 	case p.List != nil:
 		elems := make([]Expr, len(p.List.Elems))
 		for i, e := range p.List.Elems {
@@ -1513,6 +1562,12 @@ func exprToNode(e Expr) *ast.Node {
 		for _, a := range ex.Args {
 			n.Children = append(n.Children, exprToNode(a))
 		}
+		return n
+	case *IfExpr:
+		n := &ast.Node{Kind: "ifexpr"}
+		n.Children = append(n.Children, exprToNode(ex.Cond))
+		n.Children = append(n.Children, exprToNode(ex.Then))
+		n.Children = append(n.Children, exprToNode(ex.Else))
 		return n
 	case *MethodCallExpr:
 		n := &ast.Node{Kind: "method", Value: ex.Method}
