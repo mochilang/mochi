@@ -55,11 +55,31 @@ func (c *CallExpr) emit(w io.Writer) {
 
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
 func (i *IntLit) emit(w io.Writer)    { fmt.Fprintf(w, "%d", i.Value) }
+
+func isStringExpr(e Expr) bool {
+	switch ex := e.(type) {
+	case *StringLit:
+		return true
+	case *BinaryExpr:
+		if ex.Op == ".." || ex.Op == "+" {
+			return isStringExpr(ex.Left) || isStringExpr(ex.Right)
+		}
+	}
+	return false
+}
+
 func (b *BinaryExpr) emit(w io.Writer) {
 	io.WriteString(w, "(")
 	b.Left.emit(w)
 	io.WriteString(w, " ")
-	io.WriteString(w, b.Op)
+	op := b.Op
+	if op == "!=" {
+		op = "~="
+	}
+	if op == "+" && (isStringExpr(b.Left) || isStringExpr(b.Right)) {
+		op = ".."
+	}
+	io.WriteString(w, op)
 	io.WriteString(w, " ")
 	b.Right.emit(w)
 	io.WriteString(w, ")")
