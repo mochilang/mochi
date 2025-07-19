@@ -16,21 +16,126 @@ import (
 	"mochi/types"
 )
 
-// Program represents a sequence of OCaml statements.
 // Program represents an OCaml program. All statements are emitted inside
-// a `let () =` block. Helper functions may be emitted before the block.
+// a `let () =` block.
 type Program struct {
 	Stmts []Stmt
 }
 
-const prelude = `let string_contains s sub =
-  let len_s = String.length s and len_sub = String.length sub in
-  let rec aux i =
-    if i + len_sub > len_s then false
-    else if String.sub s i len_sub = sub then true
-    else aux (i + 1)
-  in aux 0
-`
+func (p *Program) UsesStrModule() bool {
+	var exprUses func(Expr) bool
+	exprUses = func(e Expr) bool {
+		switch x := e.(type) {
+		case *StringContainsBuiltin:
+			return true
+		case *BinaryExpr:
+			return exprUses(x.Left) || exprUses(x.Right)
+		case *UnaryMinus:
+			return exprUses(x.Expr)
+		case *IfExpr:
+			return exprUses(x.Cond) || exprUses(x.Then) || exprUses(x.Else)
+		case *ListLit:
+			for _, el := range x.Elems {
+				if exprUses(el) {
+					return true
+				}
+			}
+			return false
+		case *StrBuiltin:
+			return exprUses(x.Expr)
+		case *LenBuiltin:
+			return exprUses(x.Arg)
+		case *SubstringBuiltin:
+			return exprUses(x.Str) || exprUses(x.Start) || exprUses(x.End)
+		case *SumBuiltin:
+			return exprUses(x.List)
+		case *FuncCall:
+			for _, a := range x.Args {
+				if exprUses(a) {
+					return true
+				}
+			}
+			return false
+		default:
+			return false
+		}
+	}
+	var stmtUses func(Stmt) bool
+	stmtUses = func(s Stmt) bool {
+		switch st := s.(type) {
+		case *LetStmt:
+			return exprUses(st.Expr)
+		case *VarStmt:
+			return exprUses(st.Expr)
+		case *AssignStmt:
+			return exprUses(st.Expr)
+		case *PrintStmt:
+			return exprUses(st.Expr)
+		case *IfStmt:
+			if exprUses(st.Cond) {
+				return true
+			}
+			for _, t := range st.Then {
+				if stmtUses(t) {
+					return true
+				}
+			}
+			for _, e := range st.Else {
+				if stmtUses(e) {
+					return true
+				}
+			}
+			return false
+		case *WhileStmt:
+			if exprUses(st.Cond) {
+				return true
+			}
+			for _, b := range st.Body {
+				if stmtUses(b) {
+					return true
+				}
+			}
+			return false
+		case *ForRangeStmt:
+			if exprUses(st.Start) || exprUses(st.End) {
+				return true
+			}
+			for _, b := range st.Body {
+				if stmtUses(b) {
+					return true
+				}
+			}
+			return false
+		case *ForEachStmt:
+			if exprUses(st.Iterable) {
+				return true
+			}
+			for _, b := range st.Body {
+				if stmtUses(b) {
+					return true
+				}
+			}
+			return false
+		case *FunStmt:
+			for _, b := range st.Body {
+				if stmtUses(b) {
+					return true
+				}
+			}
+			if st.Ret != nil {
+				return exprUses(st.Ret)
+			}
+			return false
+		}
+		return false
+	}
+	for _, s := range p.Stmts {
+		if stmtUses(s) {
+			return true
+		}
+	}
+	return false
+}
 
 type VarInfo struct {
 	typ string
@@ -171,6 +276,27 @@ func (fe *ForEachStmt) emit(w io.Writer) {
 	io.WriteString(w, ";\n")
 }
 
+// FunStmt represents a simple function declaration with no parameters.
+type FunStmt struct {
+	Name string
+	Body []Stmt
+	Ret  Expr
+}
+
+func (f *FunStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "let rec %s () =\n", f.Name)
+	for _, st := range f.Body {
+		st.emit(w)
+	}
+	io.WriteString(w, "  ")
+	if f.Ret != nil {
+		f.Ret.emit(w)
+	} else {
+		io.WriteString(w, "()")
+	}
+	io.WriteString(w, "\n\n")
+}
+
 // Expr is any OCaml expression that can emit itself.
 type Expr interface {
 	emit(io.Writer)
@@ -243,16 +369,54 @@ type StringContainsBuiltin struct {
 }
 
 func (s *StringContainsBuiltin) emit(w io.Writer) {
-	io.WriteString(w, "string_contains ")
+	io.WriteString(w, "(let len_s = String.length ")
 	s.Str.emit(w)
-	io.WriteString(w, " ")
+	io.WriteString(w, " and len_sub = String.length ")
 	s.Sub.emit(w)
+	io.WriteString(w, " in let rec aux i = if i + len_sub > len_s then false else if String.sub ")
+	s.Str.emit(w)
+	io.WriteString(w, " i len_sub = ")
+	s.Sub.emit(w)
+	io.WriteString(w, " then true else aux (i + 1) in aux 0)")
 }
 
 func (s *StringContainsBuiltin) emitPrint(w io.Writer) {
-	io.WriteString(w, "string_of_int (if ")
+	io.WriteString(w, "string_of_bool (if ")
 	s.emit(w)
-	io.WriteString(w, " then 1 else 0)")
+	io.WriteString(w, " then true else false)")
+}
+
+// FuncCall represents a call to a user-defined function.
+type FuncCall struct {
+	Name string
+	Args []Expr
+	Ret  string
+}
+
+func (f *FuncCall) emit(w io.Writer) {
+	io.WriteString(w, f.Name)
+	if len(f.Args) == 0 {
+		io.WriteString(w, " ()")
+		return
+	}
+	for _, a := range f.Args {
+		io.WriteString(w, " ")
+		a.emit(w)
+	}
+}
+
+func (f *FuncCall) emitPrint(w io.Writer) {
+	switch f.Ret {
+	case "int":
+		io.WriteString(w, "string_of_int ")
+		f.emit(w)
+	case "bool":
+		io.WriteString(w, "string_of_bool (")
+		f.emit(w)
+		io.WriteString(w, ")")
+	default:
+		f.emit(w)
+	}
 }
 
 // ListLit represents a list literal of integers.
@@ -309,13 +473,13 @@ func (i *IfExpr) emitPrint(w io.Writer) {
 		io.WriteString(w, "string_of_int ")
 		i.emit(w)
 	case "bool":
-		io.WriteString(w, "string_of_int (if ")
+		io.WriteString(w, "string_of_bool (if ")
 		i.Cond.emit(w)
 		io.WriteString(w, " then (if ")
 		i.Then.emit(w)
-		io.WriteString(w, " then 1 else 0) else (if ")
+		io.WriteString(w, " then true else false) else (if ")
 		i.Else.emit(w)
-		io.WriteString(w, " then 1 else 0))")
+		io.WriteString(w, " then true else false))")
 	default:
 		i.emit(w)
 	}
@@ -344,7 +508,7 @@ func (n *Name) emitPrint(w io.Writer) {
 	case "int":
 		fmt.Fprintf(w, "string_of_int %s", ident)
 	case "bool":
-		fmt.Fprintf(w, "string_of_int (if %s then 1 else 0)", ident)
+		fmt.Fprintf(w, "string_of_bool %s", ident)
 	default:
 		io.WriteString(w, ident)
 	}
@@ -362,9 +526,9 @@ type BoolLit struct{ Value bool }
 func (b *BoolLit) emit(w io.Writer) { fmt.Fprintf(w, "%t", b.Value) }
 func (b *BoolLit) emitPrint(w io.Writer) {
 	if b.Value {
-		io.WriteString(w, "string_of_int 1")
+		io.WriteString(w, "string_of_bool true")
 	} else {
-		io.WriteString(w, "string_of_int 0")
+		io.WriteString(w, "string_of_bool false")
 	}
 }
 
@@ -400,9 +564,9 @@ func (b *BinaryExpr) emit(w io.Writer) {
 func (b *BinaryExpr) emitPrint(w io.Writer) {
 	switch b.Typ {
 	case "bool":
-		io.WriteString(w, "string_of_int (if ")
+		io.WriteString(w, "string_of_bool (if ")
 		b.emit(w)
-		io.WriteString(w, " then 1 else 0)")
+		io.WriteString(w, " then true else false)")
 	case "string":
 		b.emit(w)
 	default:
@@ -464,10 +628,19 @@ func (p *Program) Emit() []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
 	buf.WriteString("\n")
-	buf.WriteString(prelude)
-	buf.WriteString("\n")
+	if p.UsesStrModule() {
+		// no external modules required
+	}
+	for _, s := range p.Stmts {
+		if _, ok := s.(*FunStmt); ok {
+			s.emit(&buf)
+		}
+	}
 	buf.WriteString("let () =\n")
 	for _, s := range p.Stmts {
+		if _, ok := s.(*FunStmt); ok {
+			continue
+		}
 		s.emit(&buf)
 	}
 	return buf.Bytes()
@@ -594,6 +767,42 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		}
 		delete(vars, st.For.Name)
 		return &ForEachStmt{Name: st.For.Name, Iterable: iter, Body: body}, nil
+	case st.Fun != nil:
+		child := types.NewEnv(env)
+		fnVars := map[string]VarInfo{}
+		bodyStmts := st.Fun.Body
+		if len(bodyStmts) > 0 && bodyStmts[len(bodyStmts)-1].Return != nil {
+			bodyStmts = bodyStmts[:len(bodyStmts)-1]
+		}
+		body, err := transpileStmts(bodyStmts, child, fnVars)
+		if err != nil {
+			return nil, err
+		}
+		var ret Expr
+		if len(st.Fun.Body) > 0 {
+			last := st.Fun.Body[len(st.Fun.Body)-1]
+			if last.Return != nil && last.Return.Value != nil {
+				r, _, err := convertExpr(last.Return.Value, child, fnVars)
+				if err != nil {
+					return nil, err
+				}
+				ret = r
+			}
+		}
+		env.SetFunc(st.Fun.Name, st.Fun)
+		var retTyp types.Type = types.BoolType{}
+		if st.Fun.Return != nil && st.Fun.Return.Simple != nil {
+			switch *st.Fun.Return.Simple {
+			case "int":
+				retTyp = types.IntType{}
+			case "string":
+				retTyp = types.StringType{}
+			case "bool":
+				retTyp = types.BoolType{}
+			}
+		}
+		env.SetFuncType(st.Fun.Name, types.FuncType{Return: retTyp})
+		return &FunStmt{Name: st.Fun.Name, Body: body, Ret: ret}, nil
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
@@ -678,10 +887,14 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, vars map[string]VarInfo
 	prec := func(op string) int {
 		switch op {
 		case "*", "/", "%":
-			return 2
+			return 4
 		case "+", "-":
-			return 1
+			return 3
 		case "==", "!=", "<", "<=", ">", ">=":
+			return 2
+		case "&&":
+			return 1
+		case "||":
 			return 0
 		default:
 			return -1
@@ -719,7 +932,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, vars map[string]VarInfo
 			} else {
 				resTyp = "int"
 			}
-		case "==", "!=", "<", "<=", ">", ">=":
+		case "==", "!=", "<", "<=", ">", ">=", "&&", "||":
 			resTyp = "bool"
 		}
 
@@ -944,6 +1157,21 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			return nil, "", fmt.Errorf("sum expects list")
 		}
 		return &SumBuiltin{List: listArg}, "int", nil
+	}
+	if fn, ok := env.GetFunc(c.Func); ok {
+		ret := "int"
+		if fn.Return != nil && fn.Return.Simple != nil {
+			ret = *fn.Return.Simple
+		}
+		args := make([]Expr, len(c.Args))
+		for i, a := range c.Args {
+			ex, _, err := convertExpr(a, env, vars)
+			if err != nil {
+				return nil, "", err
+			}
+			args[i] = ex
+		}
+		return &FuncCall{Name: c.Func, Args: args, Ret: ret}, ret, nil
 	}
 	return nil, "", fmt.Errorf("call %s not supported", c.Func)
 }
