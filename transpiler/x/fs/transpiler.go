@@ -25,6 +25,42 @@ type Stmt interface{ emit(io.Writer) }
 
 type Expr interface{ emit(io.Writer) }
 
+// BreakStmt represents a break statement inside loops.
+type BreakStmt struct{}
+
+func (b *BreakStmt) emit(w io.Writer) { io.WriteString(w, "raise Break") }
+
+// ContinueStmt represents a continue statement inside loops.
+type ContinueStmt struct{}
+
+func (c *ContinueStmt) emit(w io.Writer) { io.WriteString(w, "raise Continue") }
+
+func hasBreakContinue(stmts []Stmt) bool {
+	for _, st := range stmts {
+		switch s := st.(type) {
+		case *BreakStmt, *ContinueStmt:
+			return true
+		case *WhileStmt:
+			if hasBreakContinue(s.Body) {
+				return true
+			}
+		case *ForStmt:
+			if hasBreakContinue(s.Body) {
+				return true
+			}
+		case *IfStmt:
+			if hasBreakContinue(s.Then) || hasBreakContinue(s.Else) {
+				return true
+			}
+		case *FunDef:
+			if hasBreakContinue(s.Body) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 // LambdaExpr represents an inline function expression.
 type LambdaExpr struct {
 	Params []string
@@ -185,14 +221,27 @@ type WhileStmt struct {
 }
 
 func (wst *WhileStmt) emit(w io.Writer) {
+	bc := hasBreakContinue(wst.Body)
+	if bc {
+		io.WriteString(w, "try\n    ")
+	}
 	io.WriteString(w, "while ")
 	wst.Cond.emit(w)
 	io.WriteString(w, " do\n")
+	if bc {
+		io.WriteString(w, "        try\n")
+	}
 	for i, st := range wst.Body {
+		if bc {
+			io.WriteString(w, "            ")
+		}
 		st.emit(w)
 		if i < len(wst.Body)-1 {
 			w.Write([]byte{'\n'})
 		}
+	}
+	if bc {
+		io.WriteString(w, "\n        with Continue -> ()\n    with Break -> ()")
 	}
 }
 
@@ -204,6 +253,10 @@ type ForStmt struct {
 }
 
 func (fst *ForStmt) emit(w io.Writer) {
+	bc := hasBreakContinue(fst.Body)
+	if bc {
+		io.WriteString(w, "try\n    ")
+	}
 	io.WriteString(w, "for ")
 	io.WriteString(w, fst.Name)
 	io.WriteString(w, " in ")
@@ -216,11 +269,20 @@ func (fst *ForStmt) emit(w io.Writer) {
 		fst.Start.emit(w)
 	}
 	io.WriteString(w, " do\n")
+	if bc {
+		io.WriteString(w, "        try\n")
+	}
 	for i, st := range fst.Body {
+		if bc {
+			io.WriteString(w, "            ")
+		}
 		st.emit(w)
 		if i < len(fst.Body)-1 {
 			w.Write([]byte{'\n'})
 		}
+	}
+	if bc {
+		io.WriteString(w, "\n        with Continue -> ()\n    with Break -> ()")
 	}
 }
 
@@ -511,6 +573,9 @@ func (c *CastExpr) emit(w io.Writer) {
 func Emit(prog *Program) []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
+	if hasBreakContinue(prog.Stmts) {
+		buf.WriteString("exception Break\nexception Continue\n\n")
+	}
 	for i, st := range prog.Stmts {
 		st.emit(&buf)
 		if i < len(prog.Stmts)-1 {
@@ -664,6 +729,10 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			body[i] = cs
 		}
 		return &ForStmt{Name: st.For.Name, Start: start, End: end, Body: body}, nil
+	case st.Break != nil:
+		return &BreakStmt{}, nil
+	case st.Continue != nil:
+		return &ContinueStmt{}, nil
 	case st.If != nil:
 		return convertIfStmt(st.If)
 	default:
@@ -874,8 +943,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			stmts[i] = cs
 		}
 		return &LambdaExpr{Params: params, Body: stmts}, nil
-	case p.Selector != nil && len(p.Selector.Tail) == 0:
-		return &IdentExpr{Name: p.Selector.Root}, nil
+	case p.Selector != nil:
+		var expr Expr = &IdentExpr{Name: p.Selector.Root}
+		for _, t := range p.Selector.Tail {
+			expr = &FieldExpr{Target: expr, Name: t}
+		}
+		return expr, nil
 	case p.Group != nil:
 		return convertExpr(p.Group)
 	}
