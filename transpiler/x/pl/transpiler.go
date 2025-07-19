@@ -119,7 +119,7 @@ func isBoolOp(op string) bool {
 
 func isArithOp(op string) bool {
 	switch op {
-	case "+", "-", "*", "/":
+	case "+", "-", "*", "/", "%", "mod":
 		return true
 	}
 	return false
@@ -241,6 +241,8 @@ func toBinary(b *parser.BinaryExpr) (Expr, error) {
 		switch op {
 		case "+", "-", "*", "/":
 			opStr = op
+		case "%":
+			opStr = "mod"
 		case "==":
 			opStr = "=:="
 		case "!=":
