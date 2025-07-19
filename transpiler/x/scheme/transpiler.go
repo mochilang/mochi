@@ -129,6 +129,31 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				val = voidSym()
 			}
 			p.Forms = append(p.Forms, &List{Elems: []Node{Symbol("define"), Symbol(name), val}})
+		case st.Var != nil:
+			name := st.Var.Name
+			var val Node
+			if st.Var.Value != nil {
+				var err error
+				val, err = convertParserExpr(st.Var.Value)
+				if err != nil {
+					return nil, err
+				}
+			} else if st.Var.Type != nil {
+				if st.Var.Type.Simple != nil && *st.Var.Type.Simple == "int" {
+					val = IntLit(0)
+				} else {
+					val = voidSym()
+				}
+			} else {
+				val = voidSym()
+			}
+			p.Forms = append(p.Forms, &List{Elems: []Node{Symbol("define"), Symbol(name), val}})
+		case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
+			val, err := convertParserExpr(st.Assign.Value)
+			if err != nil {
+				return nil, err
+			}
+			p.Forms = append(p.Forms, &List{Elems: []Node{Symbol("set!"), Symbol(st.Assign.Name), val}})
 		default:
 			return nil, fmt.Errorf("unsupported statement")
 		}
@@ -267,6 +292,10 @@ func makeBinary(op string, left, right Node) Node {
 		return &List{Elems: []Node{Symbol("="), left, right}}
 	case "!=":
 		return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("="), left, right}}}}
+	case "&&":
+		return &List{Elems: []Node{Symbol("and"), left, right}}
+	case "||":
+		return &List{Elems: []Node{Symbol("or"), left, right}}
 	default:
 		return &List{Elems: []Node{Symbol(op), left, right}}
 	}
@@ -299,7 +328,7 @@ func isBoolParserExpr(e *parser.Expr) bool {
 	}
 	op := e.Binary.Right[0].Op
 	switch op {
-	case "==", "!=", "<", "<=", ">", ">=":
+	case "==", "!=", "<", "<=", ">", ">=", "&&", "||":
 		return true
 	default:
 		return false
