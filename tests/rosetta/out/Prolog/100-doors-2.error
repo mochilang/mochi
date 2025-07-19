@@ -1,2 +1,0 @@
-run: exit status 2
-ERROR: /tmp/100-doors-2.pl:6: user:main is/2: Type error: `[]' expected, found `"Door 1 Open"' (a string) ("x" must hold one character)
