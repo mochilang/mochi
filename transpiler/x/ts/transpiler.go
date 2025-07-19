@@ -728,16 +728,28 @@ func emitStmt(w *indentWriter, s Stmt, level int) {
 		io.WriteString(w, "continue\n")
 	case *FuncDecl:
 		io.WriteString(w, pad)
-		io.WriteString(w, "function ")
+		io.WriteString(w, "const ")
 		io.WriteString(w, st.Name)
-		io.WriteString(w, "(")
+		io.WriteString(w, " = (")
 		for i, p := range st.Params {
 			if i > 0 {
 				io.WriteString(w, ", ")
 			}
 			io.WriteString(w, p)
 		}
-		io.WriteString(w, ") {\n")
+		if len(st.Body) == 1 {
+			if ret, ok := st.Body[0].(*ReturnStmt); ok {
+				io.WriteString(w, ") => ")
+				if ret.Value != nil {
+					ret.Value.emit(w)
+				} else {
+					io.WriteString(w, "undefined")
+				}
+				io.WriteString(w, "\n")
+				break
+			}
+		}
+		io.WriteString(w, ") => {\n")
 		for _, bs := range st.Body {
 			emitStmt(w, bs, level+1)
 		}
