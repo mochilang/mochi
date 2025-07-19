@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 int main() {
-	printf("hello\n");
+	printf("%d\n", -3);
+	printf("%d\n", 5 + -2);
 	return 0;
 }

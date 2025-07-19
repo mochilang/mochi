@@ -2,6 +2,10 @@
 #include <stdio.h>
 
 int main() {
-	printf("hello\n");
+	int i = 0;
+	while (i < 3) {
+	printf("%d\n", i);
+	i = i + 1;
+	}
 	return 0;
 }
