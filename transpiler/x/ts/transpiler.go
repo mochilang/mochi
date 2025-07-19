@@ -176,6 +176,13 @@ type MethodCallExpr struct {
 	Args   []Expr
 }
 
+// CondExpr represents a ternary conditional expression.
+type CondExpr struct {
+	Cond Expr
+	Then Expr
+	Else Expr
+}
+
 // FunExpr represents an anonymous function expression.
 type FunExpr struct {
 	Params []string
@@ -345,6 +352,22 @@ func (m *MethodCallExpr) emit(w io.Writer) {
 			io.WriteString(w, ", ")
 		}
 		a.emit(w)
+	}
+	io.WriteString(w, ")")
+}
+
+func (c *CondExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
+	if c.Cond != nil {
+		c.Cond.emit(w)
+	}
+	io.WriteString(w, " ? ")
+	if c.Then != nil {
+		c.Then.emit(w)
+	}
+	io.WriteString(w, " : ")
+	if c.Else != nil {
+		c.Else.emit(w)
 	}
 	io.WriteString(w, ")")
 }
@@ -723,6 +746,32 @@ func convertForStmt(f *parser.ForStmt) (Stmt, error) {
 	return &ForInStmt{Name: f.Name, Iterable: iterable, Body: body}, nil
 }
 
+func convertIfExpr(ie *parser.IfExpr) (Expr, error) {
+	cond, err := convertExpr(ie.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenExpr, err := convertExpr(ie.Then)
+	if err != nil {
+		return nil, err
+	}
+	var elseExpr Expr
+	if ie.ElseIf != nil {
+		elseExpr, err = convertIfExpr(ie.ElseIf)
+		if err != nil {
+			return nil, err
+		}
+	} else if ie.Else != nil {
+		elseExpr, err = convertExpr(ie.Else)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		elseExpr = &BoolLit{Value: false}
+	}
+	return &CondExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
+}
+
 func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 	var out []Stmt
 	for _, s := range list {
@@ -1007,6 +1056,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		default:
 			return &CallExpr{Func: p.Call.Func, Args: args}, nil
 		}
+	case p.If != nil:
+		return convertIfExpr(p.If)
 	case p.List != nil:
 		elems := make([]Expr, len(p.List.Elems))
 		for i, e := range p.List.Elems {
@@ -1251,6 +1302,8 @@ func exprToNode(e Expr) *ast.Node {
 			n.Children = append(n.Children, exprToNode(a))
 		}
 		return n
+	case *CondExpr:
+		return &ast.Node{Kind: "cond", Children: []*ast.Node{exprToNode(ex.Cond), exprToNode(ex.Then), exprToNode(ex.Else)}}
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
