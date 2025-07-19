@@ -60,6 +60,14 @@ type WhileStmt struct {
 	Body []Stmt
 }
 
+type ForStmt struct {
+	Var   string
+	Start Expr
+	End   Expr
+	List  []Expr
+	Body  []Stmt
+}
+
 func (c *CallStmt) emit(w io.Writer) {
 	if c.Func == "print" && len(c.Args) == 1 {
 		switch arg := c.Args[0].(type) {
@@ -105,6 +113,51 @@ func (ws *WhileStmt) emit(w io.Writer) {
 	}
 	io.WriteString(w, ") {\n")
 	for _, s := range ws.Body {
+		s.emit(w)
+	}
+	io.WriteString(w, "\t}\n")
+}
+
+func (f *ForStmt) emit(w io.Writer) {
+	if len(f.List) > 0 {
+		io.WriteString(w, "\t{\n")
+		io.WriteString(w, "\t\tint __arr[] = {")
+		for i, e := range f.List {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			e.emitExpr(w)
+		}
+		io.WriteString(w, "};\n")
+		io.WriteString(w, "\t\tfor (int __i = 0; __i < (int)(sizeof(__arr)/sizeof(__arr[0])); __i++) {\n")
+		fmt.Fprintf(w, "\t\t\tint %s = __arr[__i];\n", f.Var)
+		for _, s := range f.Body {
+			s.emit(w)
+		}
+		io.WriteString(w, "\t\t}\n")
+		io.WriteString(w, "\t}\n")
+		return
+	}
+	io.WriteString(w, "\tfor (int ")
+	io.WriteString(w, f.Var)
+	io.WriteString(w, " = ")
+	if f.Start != nil {
+		f.Start.emitExpr(w)
+	} else {
+		io.WriteString(w, "0")
+	}
+	io.WriteString(w, "; ")
+	io.WriteString(w, f.Var)
+	io.WriteString(w, " < ")
+	if f.End != nil {
+		f.End.emitExpr(w)
+	} else {
+		io.WriteString(w, "0")
+	}
+	io.WriteString(w, "; ")
+	io.WriteString(w, f.Var)
+	io.WriteString(w, "++ ) {\n")
+	for _, s := range f.Body {
 		s.emit(w)
 	}
 	io.WriteString(w, "\t}\n")
@@ -281,6 +334,21 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		return &WhileStmt{Cond: cond, Body: body}, nil
+	case s.For != nil:
+		body, err := compileStmts(s.For.Body)
+		if err != nil {
+			return nil, err
+		}
+		if s.For.RangeEnd != nil {
+			start := convertExpr(s.For.Source)
+			end := convertExpr(s.For.RangeEnd)
+			return &ForStmt{Var: s.For.Name, Start: start, End: end, Body: body}, nil
+		}
+		list, ok := convertListExpr(s.For.Source)
+		if ok {
+			return &ForStmt{Var: s.For.Name, List: list, Body: body}, nil
+		}
+		return nil, fmt.Errorf("unsupported for-loop")
 	case s.If != nil:
 		return compileIfStmt(s.If)
 	}
@@ -405,4 +473,24 @@ func convertUnary(u *parser.Unary) Expr {
 		return &IntLit{Value: 0}
 	}
 	return nil
+}
+
+func convertListExpr(e *parser.Expr) ([]Expr, bool) {
+	if e == nil || e.Binary == nil {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if u == nil || u.Value == nil || u.Value.Target == nil || u.Value.Target.List == nil {
+		return nil, false
+	}
+	list := u.Value.Target.List
+	var out []Expr
+	for _, item := range list.Elems {
+		ex := convertExpr(item)
+		if ex == nil {
+			return nil, false
+		}
+		out = append(out, ex)
+	}
+	return out, true
 }
