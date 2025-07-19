@@ -569,6 +569,22 @@ func csType(t *parser.TypeRef) string {
 		}
 		return "object"
 	}
+	if t.Generic != nil {
+		switch t.Generic.Name {
+		case "list":
+			if len(t.Generic.Args) == 1 {
+				return fmt.Sprintf("%s[]", csType(t.Generic.Args[0]))
+			}
+			return "object[]"
+		case "map":
+			if len(t.Generic.Args) == 2 {
+				k := csType(t.Generic.Args[0])
+				v := csType(t.Generic.Args[1])
+				return fmt.Sprintf("Dictionary<%s, %s>", k, v)
+			}
+			return "Dictionary<object, object>"
+		}
+	}
 	if t.Fun != nil {
 		var parts []string
 		for _, p := range t.Fun.Params {
@@ -588,6 +604,8 @@ func typeOfExpr(e Expr) string {
 		return "int"
 	case *BoolLit:
 		return "int"
+	case *ListLit:
+		return listType(ex)
 	case *MapLit:
 		k, v := mapTypes(ex)
 		return fmt.Sprintf("Dictionary<%s, %s>", k, v)
@@ -626,6 +644,22 @@ func mapTypes(m *MapLit) (string, string) {
 		valType = "object"
 	}
 	return keyType, valType
+}
+
+func listType(l *ListLit) string {
+	elemType := ""
+	for i, e := range l.Elems {
+		t := typeOfExpr(e)
+		if i == 0 {
+			elemType = t
+		} else if elemType != t {
+			elemType = ""
+		}
+	}
+	if elemType == "" {
+		elemType = "object"
+	}
+	return fmt.Sprintf("%s[]", elemType)
 }
 
 func (ix *IndexExpr) emit(w io.Writer) {

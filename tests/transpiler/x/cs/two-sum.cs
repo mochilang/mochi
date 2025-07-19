@@ -1,8 +1,8 @@
-// Mochi 0.10.31 - generated 2025-07-19 13:00:19 UTC
+// Mochi 0.10.31 - generated 2025-07-19 18:01:33 UTC
 using System;
 
 class Program {
-    static int twoSum(int nums, int target) {
+    static int[] twoSum(int[] nums, int target) {
     var n = nums.Length;
     for (var i = 0; i < n; i++) {
     for (var j = (i + 1); j < n; j++) {
