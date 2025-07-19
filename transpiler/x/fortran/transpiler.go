@@ -229,7 +229,7 @@ func compileStmt(p *Program, st *parser.Statement, env *types.Env) (Stmt, error)
 		if err != nil {
 			return nil, err
 		}
-		typ := types.TypeOfExprBasic(arg, env)
+		typ := types.TypeOfExpr(arg, env)
 		return &PrintStmt{Expr: expr, Typ: typ}, nil
 	case st.If != nil:
 		if st.If.ElseIf != nil {

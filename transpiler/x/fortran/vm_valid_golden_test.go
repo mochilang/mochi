@@ -128,21 +128,24 @@ func updateReadme() {
 func updateTasks() {
 	root := repoRootDir(&testing.T{})
 	taskFile := filepath.Join(root, "transpiler", "x", "fortran", "TASKS.md")
-	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	tsOut, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	ts := ""
-	if err == nil {
-		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
-			if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
-				ts = t.In(loc).Format("2006-01-02 15:04 MST")
-			} else {
-				ts = t.Format("2006-01-02 15:04 MST")
-			}
+	if t, err := time.Parse(time.RFC3339, strings.TrimSpace(string(tsOut))); err == nil {
+		if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+			ts = t.In(loc).Format("2006-01-02 15:04 MST")
+		} else {
+			ts = t.Format("2006-01-02 15:04 MST")
 		}
 	}
+	msgOut, _ := exec.Command("git", "log", "-1", "--format=%s").Output()
+	msg := strings.TrimSpace(string(msgOut))
+	if msg == "" {
+		msg = "update"
+	}
+
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
-	buf.WriteString("- VM valid golden test results updated\n")
-	buf.WriteString("\n")
+	buf.WriteString("- " + msg + "\n\n")
 	if data, err := os.ReadFile(taskFile); err == nil {
 		buf.Write(data)
 	}
