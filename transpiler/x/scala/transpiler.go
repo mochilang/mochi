@@ -35,7 +35,37 @@ type LetStmt struct {
 }
 
 func (s *LetStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "val %s = ", s.Name)
+	fmt.Fprintf(w, "val %s", s.Name)
+	if s.Value != nil {
+		fmt.Fprint(w, " = ")
+		s.Value.emit(w)
+	} else {
+		fmt.Fprint(w, " = 0")
+	}
+}
+
+type VarStmt struct {
+	Name  string
+	Value Expr
+}
+
+func (s *VarStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "var %s", s.Name)
+	if s.Value != nil {
+		fmt.Fprint(w, " = ")
+		s.Value.emit(w)
+	} else {
+		fmt.Fprint(w, " = 0")
+	}
+}
+
+type AssignStmt struct {
+	Name  string
+	Value Expr
+}
+
+func (s *AssignStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "%s = ", s.Name)
 	s.Value.emit(w)
 }
 
@@ -210,12 +240,35 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				return nil, err
 			}
 			sc.Stmts = append(sc.Stmts, &ExprStmt{Expr: e})
-		case st.Let != nil && st.Let.Value != nil:
-			e, err := convertExpr(st.Let.Value)
+		case st.Let != nil:
+			var e Expr
+			var err error
+			if st.Let.Value != nil {
+				e, err = convertExpr(st.Let.Value)
+				if err != nil {
+					return nil, err
+				}
+			}
+			sc.Stmts = append(sc.Stmts, &LetStmt{Name: st.Let.Name, Value: e})
+		case st.Var != nil:
+			var e Expr
+			var err error
+			if st.Var.Value != nil {
+				e, err = convertExpr(st.Var.Value)
+				if err != nil {
+					return nil, err
+				}
+			}
+			sc.Stmts = append(sc.Stmts, &VarStmt{Name: st.Var.Name, Value: e})
+		case st.Assign != nil:
+			if len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0 {
+				return nil, fmt.Errorf("unsupported assign")
+			}
+			e, err := convertExpr(st.Assign.Value)
 			if err != nil {
 				return nil, err
 			}
-			sc.Stmts = append(sc.Stmts, &LetStmt{Name: st.Let.Name, Value: e})
+			sc.Stmts = append(sc.Stmts, &AssignStmt{Name: st.Assign.Name, Value: e})
 		default:
 			return nil, fmt.Errorf("unsupported statement")
 		}
