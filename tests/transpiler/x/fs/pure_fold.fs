@@ -1,4 +1,4 @@
-// Mochi 0.10.31 - generated 2025-07-19 10:39:02 UTC
+// Mochi 0.10.31 - generated 2025-07-19 10:38:42 UTC
 open System
 
 let print (x: obj) =
@@ -10,5 +10,6 @@ let print (x: obj) =
         e |> Seq.cast<obj> |> Seq.map string |> String.concat " " |> printfn "%s"
     | _ -> printfn "%O" x
 
-let mutable x: int = 0
-print x
+let triple x =
+    x * 3
+print (triple (1 + 2))

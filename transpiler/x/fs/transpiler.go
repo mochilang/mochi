@@ -25,6 +25,37 @@ type Stmt interface{ emit(io.Writer) }
 
 type Expr interface{ emit(io.Writer) }
 
+type FunDef struct {
+	Name   string
+	Params []string
+	Body   []Stmt
+}
+
+func (f *FunDef) emit(w io.Writer) {
+	io.WriteString(w, "let ")
+	io.WriteString(w, f.Name)
+	for _, p := range f.Params {
+		io.WriteString(w, " ")
+		io.WriteString(w, p)
+	}
+	io.WriteString(w, " =\n")
+	for i, st := range f.Body {
+		io.WriteString(w, "    ")
+		st.emit(w)
+		if i < len(f.Body)-1 {
+			w.Write([]byte{'\n'})
+		}
+	}
+}
+
+type ReturnStmt struct{ Expr Expr }
+
+func (r *ReturnStmt) emit(w io.Writer) {
+	if r.Expr != nil {
+		r.Expr.emit(w)
+	}
+}
+
 // ListLit represents an F# list literal.
 type ListLit struct{ Elems []Expr }
 
@@ -440,6 +471,30 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		return &AssignStmt{Name: st.Assign.Name, Expr: e}, nil
+	case st.Return != nil:
+		var e Expr
+		if st.Return.Value != nil {
+			var err error
+			e, err = convertExpr(st.Return.Value)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return &ReturnStmt{Expr: e}, nil
+	case st.Fun != nil:
+		body := make([]Stmt, len(st.Fun.Body))
+		for i, s := range st.Fun.Body {
+			cs, err := convertStmt(s)
+			if err != nil {
+				return nil, err
+			}
+			body[i] = cs
+		}
+		params := make([]string, len(st.Fun.Params))
+		for i, p := range st.Fun.Params {
+			params[i] = p.Name
+		}
+		return &FunDef{Name: st.Fun.Name, Params: params, Body: body}, nil
 	case st.While != nil:
 		cond, err := convertExpr(st.While.Cond)
 		if err != nil {
