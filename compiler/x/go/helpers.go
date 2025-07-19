@@ -39,6 +39,14 @@ func indentBlock(s string, depth int) string {
 	return strings.Join(lines, "\n") + "\n"
 }
 
+func stripAny(s string) string {
+	s = strings.TrimSpace(s)
+	for strings.HasPrefix(s, "any(") && strings.HasSuffix(s, ")") {
+		s = strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(s, "any("), ")"))
+	}
+	return s
+}
+
 // joinItems formats a list of items either on a single line or
 // across multiple indented lines depending on the length. The
 // `indent` value is the current indentation depth and `threshold`
