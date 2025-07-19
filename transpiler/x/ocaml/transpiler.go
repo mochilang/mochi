@@ -74,6 +74,47 @@ func (p *PrintStmt) emit(w io.Writer) {
 	io.WriteString(w, ");\n")
 }
 
+// IfStmt represents a basic if/else statement.
+type IfStmt struct {
+	Cond Expr
+	Then []Stmt
+	Else []Stmt
+}
+
+func (i *IfStmt) emit(w io.Writer) {
+	io.WriteString(w, "  if ")
+	i.Cond.emit(w)
+	io.WriteString(w, " then (\n")
+	for _, st := range i.Then {
+		st.emit(w)
+	}
+	io.WriteString(w, "  )")
+	if len(i.Else) > 0 {
+		io.WriteString(w, " else (\n")
+		for _, st := range i.Else {
+			st.emit(w)
+		}
+		io.WriteString(w, "  )")
+	}
+	io.WriteString(w, ";\n")
+}
+
+// WhileStmt represents a simple while loop.
+type WhileStmt struct {
+	Cond Expr
+	Body []Stmt
+}
+
+func (ws *WhileStmt) emit(w io.Writer) {
+	io.WriteString(w, "  while ")
+	ws.Cond.emit(w)
+	io.WriteString(w, " do\n")
+	for _, st := range ws.Body {
+		st.emit(w)
+	}
+	io.WriteString(w, "  done;\n")
+}
+
 // Expr is any OCaml expression that can emit itself.
 type Expr interface {
 	emit(io.Writer)
@@ -305,70 +346,124 @@ func (p *Program) Emit() []byte {
 }
 
 // Transpile converts a Mochi program into a simple OCaml AST.
-func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
-	pr := &Program{}
-	vars := map[string]VarInfo{}
-	for _, st := range prog.Statements {
-		switch {
-		case st.Let != nil:
-			var expr Expr
-			var typ string
-			var err error
-			if st.Let.Value != nil {
-				expr, typ, err = convertExpr(st.Let.Value, env, vars)
-				if err != nil {
-					return nil, err
-				}
-			} else if st.Let.Type != nil && st.Let.Type.Simple != nil {
-				typ = *st.Let.Type.Simple
-				expr = defaultValueExpr(typ)
-			} else {
-				return nil, fmt.Errorf("let without value not supported")
-			}
-			vars[st.Let.Name] = VarInfo{typ: typ}
-			pr.Stmts = append(pr.Stmts, &LetStmt{Name: st.Let.Name, Expr: expr})
-		case st.Var != nil:
-			var expr Expr
-			var typ string
-			var err error
-			if st.Var.Value != nil {
-				expr, typ, err = convertExpr(st.Var.Value, env, vars)
-				if err != nil {
-					return nil, err
-				}
-			} else if st.Var.Type != nil && st.Var.Type.Simple != nil {
-				typ = *st.Var.Type.Simple
-				expr = defaultValueExpr(typ)
-			} else {
-				return nil, fmt.Errorf("var without type or value not supported")
-			}
-			vars[st.Var.Name] = VarInfo{typ: typ, ref: true}
-			pr.Stmts = append(pr.Stmts, &VarStmt{Name: st.Var.Name, Expr: expr})
-		case st.Assign != nil:
-			info, ok := vars[st.Assign.Name]
-			if !ok || !info.ref {
-				return nil, fmt.Errorf("assignment to unknown or immutable variable")
-			}
-			expr, _, err := convertExpr(st.Assign.Value, env, vars)
+func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo) (Stmt, error) {
+	switch {
+	case st.Let != nil:
+		var expr Expr
+		var typ string
+		var err error
+		if st.Let.Value != nil {
+			expr, typ, err = convertExpr(st.Let.Value, env, vars)
 			if err != nil {
 				return nil, err
 			}
-			pr.Stmts = append(pr.Stmts, &AssignStmt{Name: st.Assign.Name, Expr: expr})
-		case st.Expr != nil:
-			call := st.Expr.Expr.Binary.Left.Value.Target.Call
-			if call != nil && call.Func == "print" && len(call.Args) == 1 {
-				expr, _, err := convertExpr(call.Args[0], env, vars)
-				if err != nil {
-					return nil, err
-				}
-				pr.Stmts = append(pr.Stmts, &PrintStmt{Expr: expr})
-				continue
+		} else if st.Let.Type != nil && st.Let.Type.Simple != nil {
+			typ = *st.Let.Type.Simple
+			expr = defaultValueExpr(typ)
+		} else {
+			return nil, fmt.Errorf("let without value not supported")
+		}
+		vars[st.Let.Name] = VarInfo{typ: typ}
+		return &LetStmt{Name: st.Let.Name, Expr: expr}, nil
+	case st.Var != nil:
+		var expr Expr
+		var typ string
+		var err error
+		if st.Var.Value != nil {
+			expr, typ, err = convertExpr(st.Var.Value, env, vars)
+			if err != nil {
+				return nil, err
 			}
-			return nil, fmt.Errorf("unsupported expression")
-		default:
-			return nil, fmt.Errorf("unsupported statement")
+		} else if st.Var.Type != nil && st.Var.Type.Simple != nil {
+			typ = *st.Var.Type.Simple
+			expr = defaultValueExpr(typ)
+		} else {
+			return nil, fmt.Errorf("var without type or value not supported")
+		}
+		vars[st.Var.Name] = VarInfo{typ: typ, ref: true}
+		return &VarStmt{Name: st.Var.Name, Expr: expr}, nil
+	case st.Assign != nil:
+		info, ok := vars[st.Assign.Name]
+		if !ok || !info.ref {
+			return nil, fmt.Errorf("assignment to unknown or immutable variable")
+		}
+		expr, _, err := convertExpr(st.Assign.Value, env, vars)
+		if err != nil {
+			return nil, err
+		}
+		return &AssignStmt{Name: st.Assign.Name, Expr: expr}, nil
+	case st.Expr != nil:
+		call := st.Expr.Expr.Binary.Left.Value.Target.Call
+		if call != nil && call.Func == "print" && len(call.Args) == 1 {
+			expr, _, err := convertExpr(call.Args[0], env, vars)
+			if err != nil {
+				return nil, err
+			}
+			return &PrintStmt{Expr: expr}, nil
+		}
+		return nil, fmt.Errorf("unsupported expression")
+	case st.If != nil:
+		cond, _, err := convertExpr(st.If.Cond, env, vars)
+		if err != nil {
+			return nil, err
+		}
+		thenStmts, err := transpileStmts(st.If.Then, env, vars)
+		if err != nil {
+			return nil, err
+		}
+		var elseStmts []Stmt
+		if st.If.ElseIf != nil {
+			elseStmt, err := transpileStmt(&parser.Statement{If: st.If.ElseIf}, env, vars)
+			if err != nil {
+				return nil, err
+			}
+			if elseStmt != nil {
+				elseStmts = []Stmt{elseStmt}
+			}
+		} else if len(st.If.Else) > 0 {
+			elseStmts, err = transpileStmts(st.If.Else, env, vars)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
+	case st.While != nil:
+		cond, _, err := convertExpr(st.While.Cond, env, vars)
+		if err != nil {
+			return nil, err
+		}
+		body, err := transpileStmts(st.While.Body, env, vars)
+		if err != nil {
+			return nil, err
+		}
+		return &WhileStmt{Cond: cond, Body: body}, nil
+	default:
+		return nil, fmt.Errorf("unsupported statement")
+	}
+}
+
+func transpileStmts(list []*parser.Statement, env *types.Env, vars map[string]VarInfo) ([]Stmt, error) {
+	var out []Stmt
+	for _, st := range list {
+		compiled, err := transpileStmt(st, env, vars)
+		if err != nil {
+			return nil, err
+		}
+		if compiled != nil {
+			out = append(out, compiled)
 		}
 	}
+	return out, nil
+}
+
+func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
+	pr := &Program{}
+	vars := map[string]VarInfo{}
+	stmts, err := transpileStmts(prog.Statements, env, vars)
+	if err != nil {
+		return nil, err
+	}
+	pr.Stmts = stmts
 	return pr, nil
 }
 
