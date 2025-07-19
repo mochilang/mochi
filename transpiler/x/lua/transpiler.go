@@ -31,6 +31,12 @@ type AssignStmt struct {
 	Name  string
 	Value Expr
 }
+type FunStmt struct {
+	Name   string
+	Params []string
+	Body   []Stmt
+}
+type ReturnStmt struct{ Value Expr }
 
 type IfStmt struct {
 	Cond Expr
@@ -51,6 +57,7 @@ type CallExpr struct {
 
 type StringLit struct{ Value string }
 type IntLit struct{ Value int }
+type BoolLit struct{ Value bool }
 type Ident struct{ Name string }
 type BinaryExpr struct {
 	Left  Expr
@@ -79,6 +86,32 @@ func (a *AssignStmt) emit(w io.Writer) {
 		io.WriteString(w, "nil")
 	} else {
 		a.Value.emit(w)
+	}
+}
+
+func (f *FunStmt) emit(w io.Writer) {
+	io.WriteString(w, "function ")
+	io.WriteString(w, f.Name)
+	io.WriteString(w, "(")
+	for i, p := range f.Params {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, p)
+	}
+	io.WriteString(w, ")\n")
+	for _, st := range f.Body {
+		st.emit(w)
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, "end")
+}
+
+func (r *ReturnStmt) emit(w io.Writer) {
+	io.WriteString(w, "return")
+	if r.Value != nil {
+		io.WriteString(w, " ")
+		r.Value.emit(w)
 	}
 }
 
@@ -114,7 +147,14 @@ func (ie *IfExpr) emit(w io.Writer) {
 
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
 func (i *IntLit) emit(w io.Writer)    { fmt.Fprintf(w, "%d", i.Value) }
-func (id *Ident) emit(w io.Writer)    { io.WriteString(w, id.Name) }
+func (b *BoolLit) emit(w io.Writer) {
+	if b.Value {
+		io.WriteString(w, "true")
+	} else {
+		io.WriteString(w, "false")
+	}
+}
+func (id *Ident) emit(w io.Writer) { io.WriteString(w, id.Name) }
 
 func isStringExpr(e Expr) bool {
 	switch ex := e.(type) {
@@ -386,6 +426,8 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 		return &IntLit{Value: int(*l.Int)}, nil
 	case l.Str != nil:
 		return &StringLit{Value: *l.Str}, nil
+	case l.Bool != nil:
+		return &BoolLit{Value: bool(*l.Bool)}, nil
 	default:
 		return nil, fmt.Errorf("unsupported literal")
 	}
@@ -449,6 +491,33 @@ func convertIfStmt(is *parser.IfStmt) (Stmt, error) {
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
 }
 
+func convertReturnStmt(rs *parser.ReturnStmt) (Stmt, error) {
+	var expr Expr
+	var err error
+	if rs.Value != nil {
+		expr, err = convertExpr(rs.Value)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &ReturnStmt{Value: expr}, nil
+}
+
+func convertFunStmt(fs *parser.FunStmt) (Stmt, error) {
+	f := &FunStmt{Name: fs.Name}
+	for _, p := range fs.Params {
+		f.Params = append(f.Params, p.Name)
+	}
+	for _, st := range fs.Body {
+		s, err := convertStmt(st)
+		if err != nil {
+			return nil, err
+		}
+		f.Body = append(f.Body, s)
+	}
+	return f, nil
+}
+
 func convertStmt(st *parser.Statement) (Stmt, error) {
 	switch {
 	case st.Expr != nil:
@@ -477,6 +546,19 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 		}
 		return &AssignStmt{Name: st.Var.Name, Value: expr}, nil
+	case st.Assign != nil:
+		if len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0 {
+			return nil, fmt.Errorf("unsupported assignment")
+		}
+		expr, err := convertExpr(st.Assign.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &AssignStmt{Name: st.Assign.Name, Value: expr}, nil
+	case st.Fun != nil:
+		return convertFunStmt(st.Fun)
+	case st.Return != nil:
+		return convertReturnStmt(st.Return)
 	case st.If != nil:
 		return convertIfStmt(st.If)
 	default:
@@ -525,6 +607,25 @@ func stmtNode(s Stmt) *ast.Node {
 			child = exprNode(st.Value)
 		}
 		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{child}}
+	case *FunStmt:
+		n := &ast.Node{Kind: "fun", Value: st.Name}
+		params := &ast.Node{Kind: "params"}
+		for _, p := range st.Params {
+			params.Children = append(params.Children, &ast.Node{Kind: "param", Value: p})
+		}
+		n.Children = append(n.Children, params)
+		body := &ast.Node{Kind: "body"}
+		for _, s2 := range st.Body {
+			body.Children = append(body.Children, stmtNode(s2))
+		}
+		n.Children = append(n.Children, body)
+		return n
+	case *ReturnStmt:
+		var child *ast.Node
+		if st.Value != nil {
+			child = exprNode(st.Value)
+		}
+		return &ast.Node{Kind: "return", Children: []*ast.Node{child}}
 	case *IfStmt:
 		n := &ast.Node{Kind: "if"}
 		n.Children = append(n.Children, exprNode(st.Cond))

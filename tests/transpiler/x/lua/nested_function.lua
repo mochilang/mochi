@@ -37,4 +37,11 @@ function mochi_print(v)
     print(v)
   end
 end
-mochi_print("hello")
+function outer(x)
+function inner(y)
+return (x + y)
+end
+return inner(5)
+end
+
+mochi_print(outer(3))

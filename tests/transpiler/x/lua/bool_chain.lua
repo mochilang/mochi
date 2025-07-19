@@ -37,4 +37,13 @@ function mochi_print(v)
     print(v)
   end
 end
-mochi_print("hello")
+function boom()
+mochi_print("boom")
+return true
+end
+
+mochi_print((((1 < 2) and (2 < 3)) and (3 < 4)))
+
+mochi_print((((1 < 2) and (2 > 3)) and boom()))
+
+mochi_print(((((1 < 2) and (2 < 3)) and (3 > 4)) and boom()))

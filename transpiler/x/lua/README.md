@@ -2,7 +2,7 @@
 
 Generated Lua code for programs in `tests/vm/valid`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-Transpiled programs: 17/100
+Transpiled programs: 26/100
 
 Checklist:
 
@@ -10,7 +10,7 @@ Checklist:
 - [ ] avg_builtin
 - [x] basic_compare
 - [x] binary_precedence
-- [ ] bool_chain
+- [x] bool_chain
 - [ ] break_continue
 - [ ] cast_string_to_int
 - [ ] cast_struct
@@ -25,9 +25,9 @@ Checklist:
 - [ ] for_list_collection
 - [ ] for_loop
 - [ ] for_map_collection
-- [ ] fun_call
+- [x] fun_call
 - [ ] fun_expr_in_let
-- [ ] fun_three_args
+- [x] fun_three_args
 - [ ] go_auto
 - [ ] group_by
 - [ ] group_by_conditional_sum
@@ -69,20 +69,20 @@ Checklist:
 - [x] math_ops
 - [ ] membership
 - [ ] min_max_builtin
-- [ ] nested_function
+- [x] nested_function
 - [ ] order_by_map
 - [ ] outer_join
 - [ ] partial_application
 - [x] print_hello
-- [ ] pure_fold
-- [ ] pure_global_fold
+- [x] pure_fold
+- [x] pure_global_fold
 - [ ] python_auto
 - [ ] python_math
 - [ ] query_sum_select
 - [ ] record_assign
 - [ ] right_join
 - [ ] save_jsonl_stdout
-- [ ] short_circuit
+- [x] short_circuit
 - [ ] slice
 - [ ] sort_stable
 - [x] str_builtin
@@ -94,7 +94,7 @@ Checklist:
 - [ ] string_prefix_slice
 - [x] substring_builtin
 - [ ] sum_builtin
-- [ ] tail_recursion
+- [x] tail_recursion
 - [ ] test_block
 - [ ] tree_sum
 - [ ] two-sum
@@ -104,5 +104,5 @@ Checklist:
 - [ ] update_stmt
 - [ ] user_type_literal
 - [ ] values_builtin
-- [ ] var_assignment
+- [x] var_assignment
 - [ ] while_loop

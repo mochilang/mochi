@@ -1,1 +1,6 @@
-unsupported statement
+exit status 1
+lua: ...ace/mochi/tests/transpiler/x/lua/partial_application.lua:41: attempt to perform arithmetic on a nil value (local 'b')
+stack traceback:
+	...ace/mochi/tests/transpiler/x/lua/partial_application.lua:41: in function 'add'
+	...ace/mochi/tests/transpiler/x/lua/partial_application.lua:44: in main chunk
+	[C]: in ?
