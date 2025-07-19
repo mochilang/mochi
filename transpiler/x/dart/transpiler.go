@@ -55,7 +55,106 @@ func (w *WhileStmt) emit(out io.Writer) error {
 			if _, err := io.WriteString(out, "\n"); err != nil {
 				return err
 			}
+		} else if _, ok := st.(*ForRangeStmt); ok {
+			if _, err := io.WriteString(out, "\n"); err != nil {
+				return err
+			}
+		} else if _, ok := st.(*ForInStmt); ok {
+			if _, err := io.WriteString(out, "\n"); err != nil {
+				return err
+			}
 		} else {
+			if _, err := io.WriteString(out, ";\n"); err != nil {
+				return err
+			}
+		}
+	}
+	_, err := io.WriteString(out, "}")
+	return err
+}
+
+// ForRangeStmt represents a numeric for-loop like `for i in 0..10 {}`.
+type ForRangeStmt struct {
+	Name  string
+	Start Expr
+	End   Expr
+	Body  []Stmt
+}
+
+func (f *ForRangeStmt) emit(out io.Writer) error {
+	if _, err := io.WriteString(out, "for (var "+f.Name+" = "); err != nil {
+		return err
+	}
+	if f.Start != nil {
+		if err := f.Start.emit(out); err != nil {
+			return err
+		}
+	}
+	if _, err := io.WriteString(out, "; "+f.Name+" < "); err != nil {
+		return err
+	}
+	if f.End != nil {
+		if err := f.End.emit(out); err != nil {
+			return err
+		}
+	}
+	if _, err := io.WriteString(out, "; "+f.Name+"++) {\n"); err != nil {
+		return err
+	}
+	for _, st := range f.Body {
+		if _, err := io.WriteString(out, "  "); err != nil {
+			return err
+		}
+		if err := st.emit(out); err != nil {
+			return err
+		}
+		switch st.(type) {
+		case *IfStmt, *WhileStmt, *ForRangeStmt, *ForInStmt:
+			if _, err := io.WriteString(out, "\n"); err != nil {
+				return err
+			}
+		default:
+			if _, err := io.WriteString(out, ";\n"); err != nil {
+				return err
+			}
+		}
+	}
+	_, err := io.WriteString(out, "}")
+	return err
+}
+
+// ForInStmt represents iteration over an iterable expression.
+type ForInStmt struct {
+	Name     string
+	Iterable Expr
+	Body     []Stmt
+}
+
+func (f *ForInStmt) emit(out io.Writer) error {
+	if _, err := io.WriteString(out, "for (var "+f.Name+" in "); err != nil {
+		return err
+	}
+	if f.Iterable != nil {
+		if err := f.Iterable.emit(out); err != nil {
+			return err
+		}
+	}
+	if _, err := io.WriteString(out, ") {\n"); err != nil {
+		return err
+	}
+	for _, st := range f.Body {
+		if _, err := io.WriteString(out, "  "); err != nil {
+			return err
+		}
+		if err := st.emit(out); err != nil {
+			return err
+		}
+		switch st.(type) {
+		case *IfStmt, *WhileStmt, *ForRangeStmt, *ForInStmt:
+			if _, err := io.WriteString(out, "\n"); err != nil {
+				return err
+			}
+		default:
 			if _, err := io.WriteString(out, ";\n"); err != nil {
 				return err
 			}
@@ -212,7 +311,7 @@ func (f *FuncDecl) emit(w io.Writer) error {
 			return err
 		}
 		switch st.(type) {
-		case *IfStmt, *WhileStmt, *FuncDecl:
+		case *IfStmt, *WhileStmt, *ForRangeStmt, *ForInStmt, *FuncDecl:
 			if _, err := io.WriteString(w, "\n"); err != nil {
 				return err
 			}
@@ -467,6 +566,14 @@ func Emit(w io.Writer, p *Program) error {
 			if _, err := io.WriteString(w, "\n"); err != nil {
 				return err
 			}
+		} else if _, ok := st.(*ForRangeStmt); ok {
+			if _, err := io.WriteString(w, "\n"); err != nil {
+				return err
+			}
+		} else if _, ok := st.(*ForInStmt); ok {
+			if _, err := io.WriteString(w, "\n"); err != nil {
+				return err
+			}
 		} else {
 			if _, err := io.WriteString(w, ";\n"); err != nil {
 				return err
@@ -526,6 +633,33 @@ func convertWhileStmt(wst *parser.WhileStmt) (Stmt, error) {
 		return nil, err
 	}
 	return &WhileStmt{Cond: cond, Body: body}, nil
+}
+
+func convertForStmt(fst *parser.ForStmt) (Stmt, error) {
+	if fst.RangeEnd != nil {
+		start, err := convertExpr(fst.Source)
+		if err != nil {
+			return nil, err
+		}
+		end, err := convertExpr(fst.RangeEnd)
+		if err != nil {
+			return nil, err
+		}
+		body, err := convertStmtList(fst.Body)
+		if err != nil {
+			return nil, err
+		}
+		return &ForRangeStmt{Name: fst.Name, Start: start, End: end, Body: body}, nil
+	}
+	iter, err := convertExpr(fst.Source)
+	if err != nil {
+		return nil, err
+	}
+	body, err := convertStmtList(fst.Body)
+	if err != nil {
+		return nil, err
+	}
+	return &ForInStmt{Name: fst.Name, Iterable: iter, Body: body}, nil
 }
 
 func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
@@ -605,6 +739,8 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 		return &FuncDecl{Name: st.Fun.Name, Params: params, Body: body}, nil
 	case st.While != nil:
 		return convertWhileStmt(st.While)
+	case st.For != nil:
+		return convertForStmt(st.For)
 	case st.If != nil:
 		return convertIfStmt(st.If)
 	default:
@@ -827,6 +963,22 @@ func stmtNode(s Stmt) *ast.Node {
 		return n
 	case *WhileStmt:
 		n := &ast.Node{Kind: "while", Children: []*ast.Node{exprNode(st.Cond)}}
+		body := &ast.Node{Kind: "body"}
+		for _, b := range st.Body {
+			body.Children = append(body.Children, stmtNode(b))
+		}
+		n.Children = append(n.Children, body)
+		return n
+	case *ForRangeStmt:
+		n := &ast.Node{Kind: "for-range", Value: st.Name, Children: []*ast.Node{exprNode(st.Start), exprNode(st.End)}}
+		body := &ast.Node{Kind: "body"}
+		for _, b := range st.Body {
+			body.Children = append(body.Children, stmtNode(b))
+		}
+		n.Children = append(n.Children, body)
+		return n
+	case *ForInStmt:
+		n := &ast.Node{Kind: "for-in", Value: st.Name, Children: []*ast.Node{exprNode(st.Iterable)}}
 		body := &ast.Node{Kind: "body"}
 		for _, b := range st.Body {
 			body.Children = append(body.Children, stmtNode(b))

@@ -1,6 +1,8 @@
 # Dart Transpiler Tasks
 
-## Recent Enhancements (2025-07-19 17:10 +0700)
+## Recent Enhancements (2025-07-19 11:03 +0000)
+- Added for-loop support with range and collection iteration.
+- Generated golden tests for `for_loop` and `for_list_collection`.
 - Implemented operator precedence for binary expressions.
 - Added `len` builtin and list literals.
 - Generated golden tests for `binary_precedence` and `len_string`.
@@ -8,6 +10,7 @@
 - Added function definitions, return statements and lambda expressions.
 
 ## Progress
+- 2025-07-19 11:03 +0000: Added for-loop support.
 - 2025-07-19 17:10 +0700: Added functions and return statements.
 - 2025-07-19 13:38 GMT+7: Added basic tests, typed variables and comparisons.
 - 2025-07-19 12:57 GMT+7: Implemented simple `if` statements.
