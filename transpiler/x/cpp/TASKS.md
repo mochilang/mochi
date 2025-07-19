@@ -1,5 +1,8 @@
 # C++ Transpiler Tasks
-
+## Recent Enhancements (2025-07-19 14:44 +0000)
+- Removed template helper and now inline membership checks.
+- Updated README checklist using 31 compiled examples.
+- Regenerated golden C++ outputs.
 ## Recent Enhancements (2025-07-19 20:34 +0700)
 - Added support for string contains, index access, substring and type casting.
 - Implemented `in` operator and `sum` builtin for vectors.
