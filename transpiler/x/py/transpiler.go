@@ -572,6 +572,25 @@ func header() string {
 		version(), t.Format("2006-01-02 15:04:05 MST"))
 }
 
+func zeroValueExpr(t types.Type) Expr {
+	switch t.(type) {
+	case types.IntType, types.Int64Type:
+		return &IntLit{Value: "0"}
+	case types.FloatType:
+		return &FloatLit{Value: "0.0"}
+	case types.StringType:
+		return &StringLit{Value: ""}
+	case types.BoolType:
+		return &BoolLit{Value: false}
+	case types.ListType:
+		return &ListLit{}
+	case types.MapType, types.StructType:
+		return &DictLit{}
+	default:
+		return &Name{Name: "None"}
+	}
+}
+
 // Emit renders Python code from AST
 func Emit(w io.Writer, p *Program) error {
 	if _, err := io.WriteString(w, header()); err != nil {
@@ -752,15 +771,31 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			}
 			p.Stmts = append(p.Stmts, &ExprStmt{Expr: e})
 		case st.Let != nil:
-			e, err := convertExpr(st.Let.Value)
-			if err != nil {
-				return nil, err
+			var e Expr
+			var err error
+			if st.Let.Value != nil {
+				e, err = convertExpr(st.Let.Value)
+				if err != nil {
+					return nil, err
+				}
+			} else if st.Let.Type != nil && env != nil {
+				e = zeroValueExpr(types.ResolveTypeRef(st.Let.Type, env))
+			} else {
+				return nil, fmt.Errorf("let without value")
 			}
 			p.Stmts = append(p.Stmts, &LetStmt{Name: st.Let.Name, Expr: e})
 		case st.Var != nil:
-			e, err := convertExpr(st.Var.Value)
-			if err != nil {
-				return nil, err
+			var e Expr
+			var err error
+			if st.Var.Value != nil {
+				e, err = convertExpr(st.Var.Value)
+				if err != nil {
+					return nil, err
+				}
+			} else if st.Var.Type != nil && env != nil {
+				e = zeroValueExpr(types.ResolveTypeRef(st.Var.Type, env))
+			} else {
+				return nil, fmt.Errorf("var without value")
 			}
 			p.Stmts = append(p.Stmts, &VarStmt{Name: st.Var.Name, Expr: e})
 		case st.While != nil:
@@ -768,7 +803,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			if err != nil {
 				return nil, err
 			}
-			body, err := convertStmts(st.While.Body)
+			body, err := convertStmts(st.While.Body, env)
 			if err != nil {
 				return nil, err
 			}
@@ -785,7 +820,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				}
 				iter = &CallExpr{Func: &Name{Name: "range"}, Args: []Expr{iter, end}}
 			}
-			body, err := convertStmts(st.For.Body)
+			body, err := convertStmts(st.For.Body, env)
 			if err != nil {
 				return nil, err
 			}
@@ -795,12 +830,26 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			if err != nil {
 				return nil, err
 			}
-			if len(st.Assign.Index) == 1 && st.Assign.Index[0].Colon == nil && st.Assign.Index[0].Colon2 == nil && len(st.Assign.Field) == 0 {
-				idx, err := convertExpr(st.Assign.Index[0].Start)
+			if len(st.Assign.Index) >= 1 && len(st.Assign.Field) == 0 {
+				target := Expr(&Name{Name: st.Assign.Name})
+				for i := 0; i < len(st.Assign.Index)-1; i++ {
+					if st.Assign.Index[i].Colon != nil || st.Assign.Index[i].Colon2 != nil {
+						return nil, fmt.Errorf("unsupported assignment")
+					}
+					idx, err := convertExpr(st.Assign.Index[i].Start)
+					if err != nil {
+						return nil, err
+					}
+					target = &IndexExpr{Target: target, Index: idx}
+				}
+				last := st.Assign.Index[len(st.Assign.Index)-1]
+				if last.Colon != nil || last.Colon2 != nil {
+					return nil, fmt.Errorf("unsupported assignment")
+				}
+				idx, err := convertExpr(last.Start)
 				if err != nil {
 					return nil, err
 				}
-				target := Expr(&Name{Name: st.Assign.Name})
 				p.Stmts = append(p.Stmts, &IndexAssignStmt{Target: target, Index: idx, Value: val})
 			} else if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
 				p.Stmts = append(p.Stmts, &AssignStmt{Name: st.Assign.Name, Expr: val})
@@ -812,7 +861,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			if err != nil {
 				return nil, err
 			}
-			thenStmts, err := convertStmts(st.If.Then)
+			thenStmts, err := convertStmts(st.If.Then, env)
 			if err != nil {
 				return nil, err
 			}
@@ -824,7 +873,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				}
 				elseStmts = elseStmt.Stmts
 			} else if len(st.If.Else) > 0 {
-				elseStmts, err = convertStmts(st.If.Else)
+				elseStmts, err = convertStmts(st.If.Else, env)
 				if err != nil {
 					return nil, err
 				}
@@ -845,7 +894,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			}
 			p.Stmts = append(p.Stmts, &ReturnStmt{Expr: e})
 		case st.Fun != nil:
-			body, err := convertStmts(st.Fun.Body)
+			body, err := convertStmts(st.Fun.Body, env)
 			if err != nil {
 				return nil, err
 			}
@@ -862,7 +911,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	return p, nil
 }
 
-func convertStmts(list []*parser.Statement) ([]Stmt, error) {
+func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 	var out []Stmt
 	for _, s := range list {
 		switch {
@@ -873,15 +922,31 @@ func convertStmts(list []*parser.Statement) ([]Stmt, error) {
 			}
 			out = append(out, &ExprStmt{Expr: e})
 		case s.Let != nil:
-			e, err := convertExpr(s.Let.Value)
-			if err != nil {
-				return nil, err
+			var e Expr
+			var err error
+			if s.Let.Value != nil {
+				e, err = convertExpr(s.Let.Value)
+				if err != nil {
+					return nil, err
+				}
+			} else if s.Let.Type != nil {
+				e = zeroValueExpr(types.ResolveTypeRef(s.Let.Type, env))
+			} else {
+				return nil, fmt.Errorf("let without value")
 			}
 			out = append(out, &LetStmt{Name: s.Let.Name, Expr: e})
 		case s.Var != nil:
-			e, err := convertExpr(s.Var.Value)
-			if err != nil {
-				return nil, err
+			var e Expr
+			var err error
+			if s.Var.Value != nil {
+				e, err = convertExpr(s.Var.Value)
+				if err != nil {
+					return nil, err
+				}
+			} else if s.Var.Type != nil {
+				e = zeroValueExpr(types.ResolveTypeRef(s.Var.Type, env))
+			} else {
+				return nil, fmt.Errorf("var without value")
 			}
 			out = append(out, &VarStmt{Name: s.Var.Name, Expr: e})
 		case s.While != nil:
@@ -889,7 +954,7 @@ func convertStmts(list []*parser.Statement) ([]Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			body, err := convertStmts(s.While.Body)
+			body, err := convertStmts(s.While.Body, env)
 			if err != nil {
 				return nil, err
 			}
@@ -906,7 +971,7 @@ func convertStmts(list []*parser.Statement) ([]Stmt, error) {
 				}
 				iter = &CallExpr{Func: &Name{Name: "range"}, Args: []Expr{iter, end}}
 			}
-			body, err := convertStmts(s.For.Body)
+			body, err := convertStmts(s.For.Body, env)
 			if err != nil {
 				return nil, err
 			}
@@ -916,12 +981,26 @@ func convertStmts(list []*parser.Statement) ([]Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			if len(s.Assign.Index) == 1 && s.Assign.Index[0].Colon == nil && s.Assign.Index[0].Colon2 == nil && len(s.Assign.Field) == 0 {
-				idx, err := convertExpr(s.Assign.Index[0].Start)
+			if len(s.Assign.Index) >= 1 && len(s.Assign.Field) == 0 {
+				target := Expr(&Name{Name: s.Assign.Name})
+				for i := 0; i < len(s.Assign.Index)-1; i++ {
+					if s.Assign.Index[i].Colon != nil || s.Assign.Index[i].Colon2 != nil {
+						return nil, fmt.Errorf("unsupported assignment")
+					}
+					idx, err := convertExpr(s.Assign.Index[i].Start)
+					if err != nil {
+						return nil, err
+					}
+					target = &IndexExpr{Target: target, Index: idx}
+				}
+				last := s.Assign.Index[len(s.Assign.Index)-1]
+				if last.Colon != nil || last.Colon2 != nil {
+					return nil, fmt.Errorf("unsupported assignment")
+				}
+				idx, err := convertExpr(last.Start)
 				if err != nil {
 					return nil, err
 				}
-				target := Expr(&Name{Name: s.Assign.Name})
 				out = append(out, &IndexAssignStmt{Target: target, Index: idx, Value: val})
 			} else if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
 				out = append(out, &AssignStmt{Name: s.Assign.Name, Expr: val})
@@ -933,19 +1012,19 @@ func convertStmts(list []*parser.Statement) ([]Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			thenStmts, err := convertStmts(s.If.Then)
+			thenStmts, err := convertStmts(s.If.Then, env)
 			if err != nil {
 				return nil, err
 			}
 			var elseStmts []Stmt
 			if s.If.ElseIf != nil {
-				sub, err := convertStmts([]*parser.Statement{{If: s.If.ElseIf}})
+				sub, err := convertStmts([]*parser.Statement{{If: s.If.ElseIf}}, env)
 				if err != nil {
 					return nil, err
 				}
 				elseStmts = sub
 			} else if len(s.If.Else) > 0 {
-				elseStmts, err = convertStmts(s.If.Else)
+				elseStmts, err = convertStmts(s.If.Else, env)
 				if err != nil {
 					return nil, err
 				}
@@ -966,7 +1045,7 @@ func convertStmts(list []*parser.Statement) ([]Stmt, error) {
 			}
 			out = append(out, &ReturnStmt{Expr: e})
 		case s.Fun != nil:
-			b, err := convertStmts(s.Fun.Body)
+			b, err := convertStmts(s.Fun.Body, env)
 			if err != nil {
 				return nil, err
 			}

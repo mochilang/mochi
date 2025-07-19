@@ -259,3 +259,15 @@ func TestTranspile_MapAssign(t *testing.T) {
 func TestTranspile_MapInOperator(t *testing.T) {
 	runCase(t, "map_in_operator")
 }
+
+func TestTranspile_TypedLet(t *testing.T) {
+	runCase(t, "typed_let")
+}
+
+func TestTranspile_TypedVar(t *testing.T) {
+	runCase(t, "typed_var")
+}
+
+func TestTranspile_ListNestedAssign(t *testing.T) {
+	runCase(t, "list_nested_assign")
+}
