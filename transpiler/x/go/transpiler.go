@@ -54,12 +54,33 @@ func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
 
 type VarDecl struct {
 	Name  string
+	Type  string
 	Value Expr
 }
 
 func (v *VarDecl) emit(w io.Writer) {
-	fmt.Fprintf(w, "%s := ", v.Name)
-	v.Value.emit(w)
+	switch {
+	case v.Value != nil && v.Type != "":
+		fmt.Fprintf(w, "var %s %s = ", v.Name, v.Type)
+		v.Value.emit(w)
+	case v.Value != nil:
+		fmt.Fprintf(w, "%s := ", v.Name)
+		v.Value.emit(w)
+	case v.Type != "":
+		fmt.Fprintf(w, "var %s %s", v.Name, v.Type)
+	default:
+		fmt.Fprintf(w, "var %s", v.Name)
+	}
+}
+
+type AssignStmt struct {
+	Name  string
+	Value Expr
+}
+
+func (a *AssignStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "%s = ", a.Name)
+	a.Value.emit(w)
 }
 
 type CallExpr struct {
@@ -140,12 +161,32 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 				return nil, err
 			}
 			gp.Stmts = append(gp.Stmts, &ExprStmt{Expr: e})
-		case stmt.Let != nil && stmt.Let.Value != nil:
-			e, err := compileExpr(stmt.Let.Value)
+		case stmt.Let != nil:
+			if stmt.Let.Value != nil {
+				e, err := compileExpr(stmt.Let.Value)
+				if err != nil {
+					return nil, err
+				}
+				gp.Stmts = append(gp.Stmts, &VarDecl{Name: stmt.Let.Name, Type: toGoType(stmt.Let.Type), Value: e})
+			} else {
+				gp.Stmts = append(gp.Stmts, &VarDecl{Name: stmt.Let.Name, Type: toGoType(stmt.Let.Type)})
+			}
+		case stmt.Var != nil:
+			if stmt.Var.Value != nil {
+				e, err := compileExpr(stmt.Var.Value)
+				if err != nil {
+					return nil, err
+				}
+				gp.Stmts = append(gp.Stmts, &VarDecl{Name: stmt.Var.Name, Type: toGoType(stmt.Var.Type), Value: e})
+			} else {
+				gp.Stmts = append(gp.Stmts, &VarDecl{Name: stmt.Var.Name, Type: toGoType(stmt.Var.Type)})
+			}
+		case stmt.Assign != nil && len(stmt.Assign.Index) == 0 && len(stmt.Assign.Field) == 0:
+			e, err := compileExpr(stmt.Assign.Value)
 			if err != nil {
 				return nil, err
 			}
-			gp.Stmts = append(gp.Stmts, &VarDecl{Name: stmt.Let.Name, Value: e})
+			gp.Stmts = append(gp.Stmts, &AssignStmt{Name: stmt.Assign.Name, Value: e})
 		default:
 			if stmt.Test == nil && stmt.Import == nil && stmt.Type == nil {
 				return nil, fmt.Errorf("unsupported statement at %d:%d", stmt.Pos.Line, stmt.Pos.Column)
@@ -332,6 +373,22 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		return &VarRef{Name: p.Selector.Root}, nil
 	}
 	return nil, fmt.Errorf("unsupported primary")
+}
+
+func toGoType(t *parser.TypeRef) string {
+	if t == nil || t.Simple == nil {
+		return ""
+	}
+	switch *t.Simple {
+	case "int":
+		return "int"
+	case "string":
+		return "string"
+	case "bool":
+		return "bool"
+	default:
+		return "interface{}"
+	}
 }
 
 // Emit formats the Go AST back into source code.
