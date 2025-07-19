@@ -79,3 +79,50 @@ func TestTranspilePrintHello(t *testing.T) {
 		t.Errorf("output mismatch: got %s want %s", got, want)
 	}
 }
+
+func TestTranspileTypedLet(t *testing.T) {
+	if _, err := exec.LookPath("gfortran"); err != nil {
+		t.Skip("gfortran not installed")
+	}
+	root := repoRoot(t)
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "fortran")
+	os.MkdirAll(outDir, 0o755)
+
+	src := filepath.Join(root, "tests", "vm", "valid", "typed_var.mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type: %v", errs[0])
+	}
+	ast, err := ftn.Transpile(prog, env)
+	if err != nil {
+		t.Fatalf("transpile: %v", err)
+	}
+	code := ast.Emit()
+	f90Path := filepath.Join(outDir, "typed_var.f90")
+	if err := os.WriteFile(f90Path, code, 0o644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+	exe := filepath.Join(outDir, "typed_var")
+	if out, err := exec.Command("gfortran", f90Path, "-o", exe).CombinedOutput(); err != nil {
+		os.WriteFile(filepath.Join(outDir, "typed_var.error"), out, 0o644)
+		t.Fatalf("compile error: %v", err)
+	}
+	out, err := exec.Command(exe).CombinedOutput()
+	if err != nil {
+		os.WriteFile(filepath.Join(outDir, "typed_var.error"), out, 0o644)
+		t.Fatalf("run error: %v", err)
+	}
+	got := bytes.TrimSpace(out)
+	want, err := os.ReadFile(filepath.Join(outDir, "typed_var.out"))
+	if err != nil {
+		t.Fatalf("read want: %v", err)
+	}
+	want = bytes.TrimSpace(want)
+	if !bytes.Equal(got, want) {
+		t.Errorf("output mismatch: got %s want %s", got, want)
+	}
+}
