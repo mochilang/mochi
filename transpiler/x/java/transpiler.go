@@ -335,16 +335,28 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		return &ExprStmt{Expr: e}, nil
-	case s.Let != nil && s.Let.Value != nil:
-		e, err := compileExpr(s.Let.Value)
-		if err != nil {
-			return nil, err
+	case s.Let != nil:
+		var e Expr
+		var err error
+		if s.Let.Value != nil {
+			e, err = compileExpr(s.Let.Value)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			e = defaultExprForType(s.Let.Type)
 		}
 		return &LetStmt{Name: s.Let.Name, Expr: e}, nil
 	case s.Var != nil:
-		e, err := compileExpr(s.Var.Value)
-		if err != nil {
-			return nil, err
+		var e Expr
+		var err error
+		if s.Var.Value != nil {
+			e, err = compileExpr(s.Var.Value)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			e = defaultExprForType(s.Var.Type)
 		}
 		return &VarStmt{Name: s.Var.Name, Expr: e}, nil
 	case s.Assign != nil:
@@ -431,6 +443,20 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 		return nil, fmt.Errorf("unsupported statement at %d:%d", s.Pos.Line, s.Pos.Column)
 	}
 	return nil, nil
+}
+
+func defaultExprForType(t *parser.TypeRef) Expr {
+	if t != nil && t.Simple != nil {
+		switch *t.Simple {
+		case "int":
+			return &IntLit{Value: 0}
+		case "bool":
+			return &BoolLit{Value: false}
+		case "string":
+			return &StringLit{Value: ""}
+		}
+	}
+	return &IntLit{Value: 0}
 }
 
 func compileExpr(e *parser.Expr) (Expr, error) {

@@ -2,7 +2,7 @@
 
 Generated Java code for programs in `tests/vm/valid`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-Transpiled programs: 18/100
+Transpiled programs: 20/100
 
 Checklist:
 - [ ] append_builtin
@@ -97,8 +97,8 @@ Checklist:
 - [x] test_block
 - [ ] tree_sum
 - [ ] two-sum
-- [ ] typed_let
-- [ ] typed_var
+- [x] typed_let
+- [x] typed_var
 - [x] unary_neg
 - [ ] update_stmt
 - [ ] user_type_literal
