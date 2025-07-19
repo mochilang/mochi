@@ -1,4 +1,8 @@
 # Python Transpiler Tasks
+## Recent Enhancements (2025-07-19 16:16 +0000)
+- Added support for `test` blocks translating to Python `assert` statements.
+- Generated golden output for `test_block`.
+- Updated README checklist to 62/100.
 ## Recent Enhancements (2025-07-19 15:47 +0000)
 - Added struct literal and field assignment support.
 - Generated golden outputs for `record_assign` and `user_type_literal`.

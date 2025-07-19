@@ -327,3 +327,7 @@ func TestTranspile_RecordAssign(t *testing.T) {
 func TestTranspile_UserTypeLiteral(t *testing.T) {
 	runCase(t, "user_type_literal")
 }
+
+func TestTranspile_TestBlock(t *testing.T) {
+	runCase(t, "test_block")
+}
