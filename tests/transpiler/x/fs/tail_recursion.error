@@ -2,20 +2,20 @@ exit status 1
 F# Compiler for F# 4.0 (Open Source Edition)
 Freely distributed under the Apache 2.0 Open Source License
 
-/workspace/mochi/tests/transpiler/x/fs/tail_recursion.fs(15,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (14:5). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/transpiler/x/fs/tail_recursion.fs(6,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (5:5). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/transpiler/x/fs/tail_recursion.fs(15,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (14:5). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/transpiler/x/fs/tail_recursion.fs(6,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (5:5). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/transpiler/x/fs/tail_recursion.fs(17,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (14:5). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/transpiler/x/fs/tail_recursion.fs(8,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (5:5). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/transpiler/x/fs/tail_recursion.fs(17,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (14:5). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/transpiler/x/fs/tail_recursion.fs(8,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (5:5). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/transpiler/x/fs/tail_recursion.fs(16,5): error FS0039: The value or constructor 'sum_rec' is not defined
+/workspace/mochi/tests/transpiler/x/fs/tail_recursion.fs(7,5): error FS0039: The value or constructor 'sum_rec' is not defined
 
-/workspace/mochi/tests/transpiler/x/fs/tail_recursion.fs(16,28): error FS0001: The type 'int' does not match the type ''a -> int -> 'b -> 'c'
+/workspace/mochi/tests/transpiler/x/fs/tail_recursion.fs(7,28): error FS0001: The type 'int' does not match the type ''a -> int -> 'b -> 'c'
 
-/workspace/mochi/tests/transpiler/x/fs/tail_recursion.fs(15,1): warning FS0020: This expression should have type 'unit', but has type ''a'. Use 'ignore' to discard the result of the expression, or 'let' to bind the result to a name.
+/workspace/mochi/tests/transpiler/x/fs/tail_recursion.fs(6,1): warning FS0020: This expression should have type 'unit', but has type ''a'. Use 'ignore' to discard the result of the expression, or 'let' to bind the result to a name.
 
-/workspace/mochi/tests/transpiler/x/fs/tail_recursion.fs(17,8): error FS0039: The value or constructor 'sum_rec' is not defined
+/workspace/mochi/tests/transpiler/x/fs/tail_recursion.fs(8,23): error FS0039: The value or constructor 'sum_rec' is not defined
 
-/workspace/mochi/tests/transpiler/x/fs/tail_recursion.fs(16,26): error FS0043: The type 'int' does not match the type ''a -> int -> 'b -> 'c'
+/workspace/mochi/tests/transpiler/x/fs/tail_recursion.fs(7,26): error FS0043: The type 'int' does not match the type ''a -> int -> 'b -> 'c'

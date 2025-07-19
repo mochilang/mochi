@@ -1,16 +1,7 @@
-// Mochi 0.10.31 - generated 2025-07-19 10:38:45 UTC
+// Mochi 0.10.31 - generated 2025-07-19 12:44:56 UTC
 open System
-
-let print (x: obj) =
-    match x with
-    | :? bool as b -> printfn "%d" (if b then 1 else 0)
-    | :? float as f -> printfn "%.1f" f
-    | :? string as s -> printfn "%s" s
-    | :? System.Collections.IEnumerable as e ->
-        e |> Seq.cast<obj> |> Seq.map string |> String.concat " " |> printfn "%s"
-    | _ -> printfn "%O" x
 
 let k = 2
 let inc x =
     x + k
-print (inc 3)
+printfn "%s" (string (inc 3))

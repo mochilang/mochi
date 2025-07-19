@@ -1,16 +1,7 @@
-// Mochi 0.10.31 - generated 2025-07-19 10:38:51 UTC
+// Mochi 0.10.31 - generated 2025-07-19 12:45:02 UTC
 open System
 
-let print (x: obj) =
-    match x with
-    | :? bool as b -> printfn "%d" (if b then 1 else 0)
-    | :? float as f -> printfn "%.1f" f
-    | :? string as s -> printfn "%s" s
-    | :? System.Collections.IEnumerable as e ->
-        e |> Seq.cast<obj> |> Seq.map string |> String.concat " " |> printfn "%s"
-    | _ -> printfn "%O" x
-
-print ("a" < "b")
-print ("a" <= "a")
-print ("b" > "a")
-print ("b" >= "b")
+printfn "%s" (string ("a" < "b"))
+printfn "%s" (string ("a" <= "a"))
+printfn "%s" (string ("b" > "a"))
+printfn "%s" (string ("b" >= "b"))
