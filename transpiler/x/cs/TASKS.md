@@ -1,9 +1,9 @@
 # C# Transpiler Tasks
 
-## Recent Enhancements (2025-07-19 05:23 UTC)
-- Added support for `count`, `avg`, `len`, `sum`, and `str` builtins with list and int literals.
-- Implemented variable declarations and arithmetic expressions.
-- Golden tests generated for `basic_compare`, `len_builtin`, `sum_builtin`, `str_builtin`, `let_and_print`, and `math_ops`.
+## Recent Enhancements (2025-07-19 12:33 +0700)
+- Added support for `len` on strings and unary negation.
+- Implemented string concatenation and test block handling.
+- Golden tests now cover `len_string`, `string_concat`, `test_block`, and `unary_neg` in addition to previous cases.
 
 ## Remaining Work
 - [ ] Implement loops and conditionals
