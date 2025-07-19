@@ -95,3 +95,13 @@ func TestTranspileStringConcat(t *testing.T) { runGolden(t, "string_concat") }
 func TestTranspileIfThenElse(t *testing.T) { runGolden(t, "if_then_else") }
 
 func TestTranspileIfThenElseNested(t *testing.T) { runGolden(t, "if_then_else_nested") }
+
+func TestTranspileAppendBuiltin(t *testing.T) { runGolden(t, "append_builtin") }
+
+func TestTranspileAvgBuiltin(t *testing.T) { runGolden(t, "avg_builtin") }
+
+func TestTranspileCountBuiltin(t *testing.T) { runGolden(t, "count_builtin") }
+
+func TestTranspileSumBuiltin(t *testing.T) { runGolden(t, "sum_builtin") }
+
+func TestTranspileMinMaxBuiltin(t *testing.T) { runGolden(t, "min_max_builtin") }

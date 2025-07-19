@@ -1,4 +1,4 @@
-# Erlang Transpiler Output (13/100 generated and run)
+# Erlang Transpiler Output (18/100 generated and run)
 
 This directory contains a minimal transpiler that converts a very small
 subset of Mochi into Erlang. Generated programs are executed with
@@ -10,8 +10,8 @@ The following programs under `tests/vm/valid` have golden outputs. A
 checked item means the Erlang transpiler can successfully generate code
 that produces the same output as the Mochi VM.
 
-- [ ] append_builtin
-- [ ] avg_builtin
+- [x] append_builtin
+- [x] avg_builtin
 - [x] basic_compare
 - [x] binary_precedence
 - [ ] bool_chain
@@ -19,7 +19,7 @@ that produces the same output as the Mochi VM.
 - [x] cast_string_to_int
 - [ ] cast_struct
 - [ ] closure
-- [ ] count_builtin
+- [x] count_builtin
 - [ ] cross_join
 - [ ] cross_join_filter
 - [ ] cross_join_triple
@@ -72,7 +72,7 @@ that produces the same output as the Mochi VM.
 - [ ] match_full
 - [ ] math_ops
 - [ ] membership
-- [ ] min_max_builtin
+- [x] min_max_builtin
 - [ ] nested_function
 - [ ] order_by_map
 - [ ] outer_join
@@ -97,7 +97,7 @@ that produces the same output as the Mochi VM.
 - [ ] string_index
 - [ ] string_prefix_slice
 - [ ] substring_builtin
-- [ ] sum_builtin
+- [x] sum_builtin
 - [ ] tail_recursion
 - [ ] test_block
 - [ ] tree_sum
