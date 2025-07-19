@@ -19,12 +19,29 @@ import (
 
 // Program represents a minimal Haskell program AST.
 type Program struct {
+	Funcs []Func
 	Stmts []Stmt
 }
 
 type Stmt interface{ emit(io.Writer) }
 
 type Expr interface{ emit(io.Writer) }
+
+type Func struct {
+	Name   string
+	Params []string
+	Body   Expr
+}
+
+func (f *Func) emit(w io.Writer) {
+	io.WriteString(w, f.Name)
+	for _, p := range f.Params {
+		io.WriteString(w, " ")
+		io.WriteString(w, p)
+	}
+	io.WriteString(w, " = ")
+	f.Body.emit(w)
+}
 
 type PrintStmt struct {
 	Expr   Expr
@@ -46,6 +63,9 @@ type IfStmt struct {
 	Cond Expr
 	Then []Stmt
 	Else []Stmt
+}
+type ReturnStmt struct {
+	Expr Expr
 }
 
 func (p *PrintStmt) emit(w io.Writer) {
@@ -90,6 +110,11 @@ func (i *IfStmt) emit(w io.Writer) {
 		}
 	}
 }
+func (r *ReturnStmt) emit(w io.Writer) {
+	io.WriteString(w, "return (")
+	r.Expr.emit(w)
+	io.WriteString(w, ")")
+}
 
 type IntLit struct{ Value string }
 type StringLit struct{ Value string }
@@ -109,6 +134,14 @@ type UnaryExpr struct {
 	Expr Expr
 }
 type GroupExpr struct{ Expr Expr }
+type CallExpr struct {
+	Fun  Expr
+	Args []Expr
+}
+type LambdaExpr struct {
+	Params []string
+	Body   Expr
+}
 type IfExpr struct {
 	Cond Expr
 	Then Expr
@@ -142,6 +175,24 @@ func (g *GroupExpr) emit(w io.Writer) {
 	io.WriteString(w, "(")
 	g.Expr.emit(w)
 	io.WriteString(w, ")")
+}
+func (c *CallExpr) emit(w io.Writer) {
+	c.Fun.emit(w)
+	for _, a := range c.Args {
+		io.WriteString(w, " ")
+		a.emit(w)
+	}
+}
+func (l *LambdaExpr) emit(w io.Writer) {
+	io.WriteString(w, "\\")
+	for i, p := range l.Params {
+		if i > 0 {
+			io.WriteString(w, " ")
+		}
+		io.WriteString(w, p)
+	}
+	io.WriteString(w, " -> ")
+	l.Body.emit(w)
 }
 func (i *IfExpr) emit(w io.Writer) {
 	io.WriteString(w, "if ")
@@ -192,6 +243,11 @@ func header() string {
 func Emit(p *Program) []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
+	for _, f := range p.Funcs {
+		f.emit(&buf)
+		buf.WriteByte('\n')
+		buf.WriteByte('\n')
+	}
 	for _, s := range p.Stmts {
 		if l, ok := s.(*LetStmt); ok {
 			l.emit(&buf)
@@ -237,6 +293,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				return nil, err
 			}
 			vars[st.Assign.Name] = ex
+		case st.Fun != nil:
+			fn, err := convertFunStmt(st.Fun)
+			if err != nil {
+				return nil, err
+			}
+			h.Funcs = append(h.Funcs, *fn)
 		case st.If != nil:
 			s, err := convertIfStmt(st.If)
 			if err != nil {
@@ -342,6 +404,19 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "unary", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Expr)}}
 	case *GroupExpr:
 		return &ast.Node{Kind: "group", Children: []*ast.Node{exprNode(ex.Expr)}}
+	case *CallExpr:
+		n := &ast.Node{Kind: "call", Children: []*ast.Node{exprNode(ex.Fun)}}
+		for _, a := range ex.Args {
+			n.Children = append(n.Children, exprNode(a))
+		}
+		return n
+	case *LambdaExpr:
+		n := &ast.Node{Kind: "lambda"}
+		for _, p := range ex.Params {
+			n.Children = append(n.Children, &ast.Node{Kind: "param", Value: p})
+		}
+		n.Children = append(n.Children, exprNode(ex.Body))
+		return n
 	case *IfExpr:
 		return &ast.Node{Kind: "ifexpr", Children: []*ast.Node{exprNode(ex.Cond), exprNode(ex.Then), exprNode(ex.Else)}}
 	default:
@@ -391,10 +466,26 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 	if pf == nil {
 		return nil, fmt.Errorf("nil postfix")
 	}
-	if len(pf.Ops) > 0 {
-		return nil, fmt.Errorf("postfix ops not supported")
+	expr, err := convertPrimary(pf.Target)
+	if err != nil {
+		return nil, err
 	}
-	return convertPrimary(pf.Target)
+	for _, op := range pf.Ops {
+		if op.Call != nil {
+			var args []Expr
+			for _, a := range op.Call.Args {
+				ex, err := convertExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				args = append(args, ex)
+			}
+			expr = &CallExpr{Fun: expr, Args: args}
+			continue
+		}
+		return nil, fmt.Errorf("postfix op not supported")
+	}
+	return expr, nil
 }
 
 func convertPrimary(p *parser.Primary) (Expr, error) {
@@ -423,6 +514,27 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			return nil, err
 		}
 		return &GroupExpr{Expr: e}, nil
+	case p.FunExpr != nil && p.FunExpr.ExprBody != nil:
+		var params []string
+		for _, pa := range p.FunExpr.Params {
+			params = append(params, pa.Name)
+		}
+		body, err := convertExpr(p.FunExpr.ExprBody)
+		if err != nil {
+			return nil, err
+		}
+		return &LambdaExpr{Params: params, Body: body}, nil
+	case p.Call != nil:
+		fun := &NameRef{Name: p.Call.Func}
+		var args []Expr
+		for _, a := range p.Call.Args {
+			ex, err := convertExpr(a)
+			if err != nil {
+				return nil, err
+			}
+			args = append(args, ex)
+		}
+		return &CallExpr{Fun: fun, Args: args}, nil
 	default:
 		return nil, fmt.Errorf("unsupported primary")
 	}
@@ -466,6 +578,21 @@ func convertIfStmt(s *parser.IfStmt) (Stmt, error) {
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
 }
 
+func convertFunStmt(f *parser.FunStmt) (*Func, error) {
+	if len(f.Body) != 1 || f.Body[0].Return == nil {
+		return nil, fmt.Errorf("unsupported function body")
+	}
+	body, err := convertExpr(f.Body[0].Return.Value)
+	if err != nil {
+		return nil, err
+	}
+	var params []string
+	for _, p := range f.Params {
+		params = append(params, p.Name)
+	}
+	return &Func{Name: f.Name, Params: params, Body: body}, nil
+}
+
 func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 	var out []Stmt
 	for _, st := range list {
@@ -485,6 +612,12 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 				continue
 			}
 			return nil, fmt.Errorf("unsupported expression")
+		case st.Return != nil:
+			ex, err := convertExpr(st.Return.Value)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, &ReturnStmt{Expr: ex})
 		default:
 			return nil, fmt.Errorf("unsupported statement in block")
 		}
