@@ -53,11 +53,9 @@ func TestTranspile_PrintHello(t *testing.T) {
 		t.Fatalf("transpile: %v", err)
 	}
 	var buf bytes.Buffer
-	os.Setenv("SOURCE_DATE_EPOCH", "0")
 	if err := py.Emit(&buf, progAST); err != nil {
 		t.Fatalf("emit: %v", err)
 	}
-	os.Unsetenv("SOURCE_DATE_EPOCH")
 	code := buf.Bytes()
 	pyFile := filepath.Join(outDir, "print_hello.py")
 	if err := os.WriteFile(pyFile, code, 0o644); err != nil {
@@ -72,7 +70,7 @@ func TestTranspile_PrintHello(t *testing.T) {
 		t.Fatalf("run: %v", err)
 	}
 	_ = os.Remove(filepath.Join(outDir, "print_hello.error"))
-	wantPath := filepath.Join(outDir, "print_hello.output")
+	wantPath := filepath.Join(outDir, "print_hello.out")
 	want, err := os.ReadFile(wantPath)
 	if err != nil {
 		t.Fatalf("read want: %v", err)
