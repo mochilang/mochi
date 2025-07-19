@@ -2,11 +2,12 @@
 {$mode objfpc}
 program Main;
 var
-  i: integer;
+  x: integer;
 begin
-  i := 0;
-  while i < 3 do begin
-  writeln(i);
-  i := i + 1;
+  x := 5;
+  if x > 3 then begin
+  writeln('big');
+end else begin
+  writeln('small');
 end;
 end.
