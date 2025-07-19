@@ -310,6 +310,26 @@ type CmpExpr struct {
 
 func (c *CmpExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "(")
+	if (c.Op == "<" || c.Op == "<=" || c.Op == ">" || c.Op == ">=") &&
+		(isStringExpr(c.Left) || isStringExpr(c.Right)) {
+		fmt.Fprint(w, "string.Compare(")
+		c.Left.emit(w)
+		fmt.Fprint(w, ", ")
+		c.Right.emit(w)
+		fmt.Fprint(w, ")")
+		switch c.Op {
+		case "<":
+			fmt.Fprint(w, " < 0")
+		case "<=":
+			fmt.Fprint(w, " <= 0")
+		case ">":
+			fmt.Fprint(w, " > 0")
+		case ">=":
+			fmt.Fprint(w, " >= 0")
+		}
+		fmt.Fprint(w, " ? 1 : 0)")
+		return
+	}
 	c.Left.emit(w)
 	fmt.Fprintf(w, " %s ", c.Op)
 	c.Right.emit(w)
@@ -323,11 +343,19 @@ type InExpr struct {
 
 func (ie *InExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "(")
-	fmt.Fprint(w, "Array.IndexOf(")
-	ie.Collection.emit(w)
-	fmt.Fprint(w, ", ")
-	ie.Item.emit(w)
-	fmt.Fprint(w, ") >= 0 ? 1 : 0)")
+	if isStringExpr(ie.Collection) {
+		ie.Collection.emit(w)
+		fmt.Fprint(w, ".Contains(")
+		ie.Item.emit(w)
+		fmt.Fprint(w, ") ? 1 : 0")
+	} else {
+		fmt.Fprint(w, "Array.IndexOf(")
+		ie.Collection.emit(w)
+		fmt.Fprint(w, ", ")
+		ie.Item.emit(w)
+		fmt.Fprint(w, ") >= 0 ? 1 : 0")
+	}
+	fmt.Fprint(w, ")")
 }
 
 // ExprStmt represents a statement consisting solely of an expression.

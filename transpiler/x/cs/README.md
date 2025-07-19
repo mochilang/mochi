@@ -2,7 +2,7 @@
 
 Generated C# code for programs in `tests/vm/valid`. Each program has a `.cs` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.
 
-Compiled programs: 36/100
+Compiled programs: 39/100
 
 ## Checklist
 - [x] append_builtin
@@ -66,7 +66,7 @@ Compiled programs: 36/100
 - [ ] match_expr
 - [ ] match_full
 - [x] math_ops
-- [ ] membership
+- [x] membership
 - [ ] min_max_builtin
 - [ ] nested_function
 - [ ] order_by_map
@@ -85,10 +85,10 @@ Compiled programs: 36/100
 - [x] slice
 - [ ] sort_stable
 - [x] str_builtin
-- [ ] string_compare
+- [x] string_compare
 - [x] string_concat
 - [x] string_contains
-- [ ] string_in_operator
+- [x] string_in_operator
 - [x] string_index
 - [x] string_prefix_slice
 - [ ] substring_builtin
