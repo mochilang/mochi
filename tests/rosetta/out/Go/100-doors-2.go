@@ -11,12 +11,8 @@ import (
 type v map[string]any
 
 func main() {
-	door = 1
-	incrementer = 0
-	door := 1
-	incrementer := 0
 	for current := 1; current < 101; current++ {
-		line := "Door " + fmt.Sprint(any(current)) + " "
+		var line string = "Door " + fmt.Sprint(any(current)) + " "
 		if current == door {
 			line = line + "Open"
 			incrementer = (incrementer + 1)

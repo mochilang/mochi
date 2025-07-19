@@ -13,10 +13,10 @@ type v map[string]any
 // line 3
 func fields(s string) []string {
 	var words []string = []string{}
-	cur := ""
-	i := 0
+	var cur string = ""
+	var i int = 0
 	for i < len([]rune(s)) {
-		ch := string([]rune(s)[i:(i + 1)])
+		var ch string = string([]rune(s)[i:(i + 1)])
 		if ((ch == " ") || (ch == "\n")) || (ch == "\t") {
 			if len([]rune(cur)) > 0 {
 				words = append(words, cur)
@@ -35,8 +35,8 @@ func fields(s string) []string {
 
 // line 23
 func takeRunes(s string, n int) string {
-	idx := 0
-	count := 0
+	var idx int = 0
+	var count int = 0
 	for idx < len([]rune(s)) {
 		if count == n {
 			return string([]rune(s)[0:idx])
@@ -51,9 +51,9 @@ func takeRunes(s string, n int) string {
 func distinct(xs []string) []string {
 	var m map[string]bool = map[string]bool{}
 	var out []string = []string{}
-	i := 0
+	var i int = 0
 	for i < len(xs) {
-		x := xs[i]
+		var x string = xs[i]
 		key0 := x
 		m1 := m
 		_, ok2 := m1[key0]
@@ -68,11 +68,11 @@ func distinct(xs []string) []string {
 
 // line 49
 func abbrevLen(words []string) int {
-	size := len(words)
-	l := 1
+	var size int = len(words)
+	var l int = 1
 	for {
 		var abbrs []string = []string{}
-		i := 0
+		var i int = 0
 		for i < size {
 			abbrs = append(abbrs, takeRunes(words[i], l))
 			i = (i + 1)
@@ -87,7 +87,7 @@ func abbrevLen(words []string) int {
 
 // line 65
 func pad2(n int) string {
-	s := fmt.Sprint(any(n))
+	var s string = fmt.Sprint(any(n))
 	if len([]rune(s)) < 2 {
 		return " " + s
 	}
@@ -96,7 +96,7 @@ func pad2(n int) string {
 
 // line 71
 func mainFn() {
-	lines := []string{
+	var lines []string = []string{
 		"Sunday Monday Tuesday Wednesday Thursday Friday Saturday",
 		"Sondag Maandag Dinsdag Woensdag Donderdag Vrydag Saterdag",
 		"E_djelë E_hënë E_martë E_mërkurë E_enjte E_premte E_shtunë",
@@ -196,10 +196,10 @@ func mainFn() {
 		"djadomingu djaluna djamars djarason djaweps djabièrnè djasabra",
 		"Killachau Atichau Quoyllurchau Illapachau Chaskachau Kuychichau Intichau",
 	}
-	i := 0
+	var i int = 0
 	for i < len(lines) {
-		words := fields(lines[i])
-		l := abbrevLen(words)
+		var words []string = fields(lines[i])
+		var l int = abbrevLen(words)
 		fmt.Println(any(pad2(l) + "  " + lines[i]))
 		i = (i + 1)
 	}

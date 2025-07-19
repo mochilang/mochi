@@ -1,0 +1,5 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:17:42: undefined: doors
+/tmp/X/001/main.go:22:4: undefined: doors
+/tmp/X/001/main.go:30:15: undefined: doors

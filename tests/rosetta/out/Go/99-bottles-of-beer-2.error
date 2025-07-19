@@ -1,0 +1,3 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:93:23: invalid argument: index (float64(n) / float64(10)) (value of type float64) must be integer

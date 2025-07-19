@@ -12,7 +12,7 @@ type v map[string]any
 
 // line 3
 func bigTrim(a []int) []int {
-	n := len(a)
+	var n int = len(a)
 	for (n > 1) && (a[(n-1)] == 0) {
 		a = a[0:(n - 1)]
 		n = (n - 1)
@@ -26,7 +26,7 @@ func bigFromInt(x int) []int {
 		return []int{0}
 	}
 	var digits []int = []int{}
-	n := x
+	var n int = x
 	for n > 0 {
 		digits = append(digits, (n % 10))
 		n = (float64(n) / float64(10))
@@ -37,18 +37,18 @@ func bigFromInt(x int) []int {
 // line 23
 func bigAdd(a []int, b []int) []int {
 	var res []int = []int{}
-	carry := 0
-	i := 0
+	var carry int = 0
+	var i int = 0
 	for ((i < len(a)) || (i < len(b))) || (carry > 0) {
-		av := 0
+		var av int = 0
 		if i < len(a) {
 			av = a[i]
 		}
-		bv := 0
+		var bv int = 0
 		if i < len(b) {
 			bv = b[i]
 		}
-		s := ((av + bv) + carry)
+		var s int = ((av + bv) + carry)
 		res = append(res, (s % 10))
 		carry = (float64(s) / float64(10))
 		i = (i + 1)
@@ -59,15 +59,15 @@ func bigAdd(a []int, b []int) []int {
 // line 40
 func bigSub(a []int, b []int) []int {
 	var res []int = []int{}
-	borrow := 0
-	i := 0
+	var borrow int = 0
+	var i int = 0
 	for i < len(a) {
-		av := a[i]
-		bv := 0
+		var av int = a[i]
+		var bv int = 0
 		if i < len(b) {
 			bv = b[i]
 		}
-		diff := ((av - bv) - borrow)
+		var diff int = ((av - bv) - borrow)
 		if diff < 0 {
 			diff = (diff + 10)
 			borrow = 1
@@ -82,8 +82,8 @@ func bigSub(a []int, b []int) []int {
 
 // line 61
 func bigToString(a []int) string {
-	s := ""
-	i := (len(a) - 1)
+	var s string = ""
+	var i int = (len(a) - 1)
 	for i >= 0 {
 		s = s + fmt.Sprint(any(a[i]))
 		i = (i - 1)
@@ -103,12 +103,12 @@ func minInt(a int, b int) int {
 // line 75
 func cumu(n int) [][]int {
 	var cache [][][]int = [][][]int{[][]int{bigFromInt(1)}}
-	y := 1
+	var y int = 1
 	for y <= n {
 		var row [][]int = [][]int{bigFromInt(0)}
-		x := 1
+		var x int = 1
 		for x <= y {
-			val := cache[(y - x)][minInt(x, (y-x))]
+			var val []int = cache[(y - x)][minInt(x, (y-x))]
 			row = append(row, bigAdd(row[(len(row)-1)], val))
 			x = (x + 1)
 		}
@@ -120,11 +120,11 @@ func cumu(n int) [][]int {
 
 // line 92
 func row(n int) []string {
-	e := cumu(n)
+	var e [][]int = cumu(n)
 	var out []string = []string{}
-	i := 0
+	var i int = 0
 	for i < n {
-		diff := bigSub(e[(i+1)], e[i])
+		var diff []int = bigSub(e[(i+1)], e[i])
 		out = append(out, bigToString(diff))
 		i = (i + 1)
 	}
@@ -132,12 +132,11 @@ func row(n int) []string {
 }
 
 func main() {
-	x = 1
 	fmt.Println(any("rows:"))
 	for x < 11 {
-		r := row(x)
-		line := ""
-		i := 0
+		var r []string = row(x)
+		var line string = ""
+		var i int = 0
 		for i < len(r) {
 			line = line + " " + r[i] + " "
 			i = (i + 1)
@@ -148,7 +147,7 @@ func main() {
 	fmt.Println(any(""))
 	fmt.Println(any("sums:"))
 	for _, num := range []int{23, 123, 1234} {
-		r := cumu(num)
+		var r [][]int = cumu(num)
 		fmt.Println(any(fmt.Sprint(any(num)) + " " + bigToString(r[(len(r)-1)])))
 	}
 }

@@ -15,14 +15,14 @@ type v map[string]any
 
 // line 3
 func parseIntStr(str string) int {
-	i := 0
-	neg := false
+	var i int = 0
+	var neg bool = false
 	if (len([]rune(str)) > 0) && (string([]rune(str)[0:1]) == "-") {
 		neg = true
 		i = 1
 	}
-	n := 0
-	digits := map[string]int{
+	var n int = 0
+	var digits map[string]int = map[string]int{
 		"0": 0,
 		"1": 1,
 		"2": 2,
@@ -46,8 +46,8 @@ func parseIntStr(str string) int {
 
 // line 31
 func mainFn() {
-	total := 0
-	computer := ((int64(_now()) % int64(2)) == 0)
+	var total int = 0
+	var computer bool = ((int64(_now()) % int64(2)) == 0)
 	fmt.Println(any("Enter q to quit at any time\n"))
 	if computer {
 		fmt.Println(any("The computer will choose first"))
@@ -55,14 +55,14 @@ func mainFn() {
 		fmt.Println(any("You will choose first"))
 	}
 	fmt.Println(any("\n\nRunning total is now 0\n\n"))
-	round := 1
-	done := false
+	var round int = 1
+	var done bool = false
 	for !(done) {
 		fmt.Println(any("ROUND " + fmt.Sprint(any(round)) + ":\n\n"))
-		i := 0
+		var i int = 0
 		for (i < 2) && (!(done)) {
 			if computer {
-				choice := 0
+				var choice int = 0
 				if total < 18 {
 					choice = (int64((int64(_now()) % int64(3))) + int64(1))
 				} else {
@@ -78,13 +78,13 @@ func mainFn() {
 			} else {
 				for {
 					fmt.Println(any("Your choice 1 to 3 : "))
-					line := _input()
+					var line string = _input()
 					if (line == "q") || (line == "Q") {
 						fmt.Println(any("OK, quitting the game"))
 						done = true
 						break
 					}
-					num := parseIntStr(line)
+					var num int = parseIntStr(line)
 					if (num < 1) || (num > 3) {
 						if (total + num) > 21 {
 							fmt.Println(any("Too big, try again"))
@@ -135,10 +135,10 @@ func init() {
 		}
 	}
 }
-func _now() int {
+func _now() int64 {
 	if seededNow {
 		nowSeed = (nowSeed*1664525 + 1013904223) % 2147483647
-		return int(nowSeed)
+		return nowSeed
 	}
-	return int(time.Now().UnixNano())
+	return time.Now().UnixNano()
 }

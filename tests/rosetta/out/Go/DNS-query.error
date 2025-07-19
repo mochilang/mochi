@@ -1,0 +1,5 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:16:12: undefined: err
+/tmp/X/001/main.go:17:30: undefined: addrs
+/tmp/X/001/main.go:19:15: undefined: err

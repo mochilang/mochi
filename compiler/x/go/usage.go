@@ -105,23 +105,14 @@ func (c *Compiler) compileMainFunc(prog *parser.Program) error {
 	// initialise them inside main. Initialising complex expressions at the
 	// package level can produce invalid Go code (e.g. loops outside of
 	// functions).
-	initAssigns := []*parser.AssignStmt{}
 	for _, s := range prog.Statements {
 		if s.Let == nil && s.Var == nil {
 			continue
 		}
-		// Always emit a package-level declaration for top-level
-		// variables and assign the initial value inside main.
-		// This avoids undefined variable errors when functions
-		// reference the variable before it is initialised.
+		// Emit package-level declaration so variables exist before
+		// their first assignment inside main.
 		if err := c.compileGlobalVarDecl(s); err != nil {
 			return err
-		}
-		if s.Let != nil && s.Let.Value != nil {
-			initAssigns = append(initAssigns, &parser.AssignStmt{Name: s.Let.Name, Value: s.Let.Value})
-		}
-		if s.Var != nil && s.Var.Value != nil {
-			initAssigns = append(initAssigns, &parser.AssignStmt{Name: s.Var.Name, Value: s.Var.Value})
 		}
 	}
 
@@ -141,23 +132,13 @@ func (c *Compiler) compileMainFunc(prog *parser.Program) error {
 			c.writeln(fmt.Sprintf("if _, ok := extern.Get(%q); !ok { panic(\"extern object not registered: %s\") }", name, name))
 		}
 	}
-	for _, a := range initAssigns {
-		if err := c.compileAssign(a); err != nil {
-			return err
-		}
-	}
+	// Variable initialisation happens as part of the statement list
+	// so we no longer emit explicit assignments here.
 	body := []*parser.Statement{}
-	for i, s := range prog.Statements {
-		if s.Fun != nil || s.Test != nil {
-			continue
-		}
-		name := ""
-		if s.Let != nil {
-			name = s.Let.Name
-		} else if s.Var != nil {
-			name = s.Var.Name
-		}
-		if (s.Let != nil || s.Var != nil) && (hasLaterTest(prog, i) || varUsedInFuncs(prog, name)) {
+	for _, s := range prog.Statements {
+		if s.Fun != nil || s.Test != nil || s.Let != nil || s.Var != nil {
+			// Top-level functions, tests and variable declarations
+			// are handled elsewhere.
 			continue
 		}
 		body = append(body, s)

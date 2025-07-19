@@ -15,11 +15,11 @@ type v map[string]any
 
 // line 1
 func shuffle(xs []int) []int {
-	arr := xs
-	i := 99
+	var arr []int = xs
+	var i int = 99
 	for i > 0 {
-		j := (int64(_now()) % int64((i + 1)))
-		tmp := arr[i]
+		var j int64 = (int64(_now()) % int64((i + 1)))
+		var tmp int = arr[i]
 		arr[i] = arr[j]
 		arr[j] = tmp
 		i = (i - 1)
@@ -29,25 +29,25 @@ func shuffle(xs []int) []int {
 
 // line 14
 func doTrials(trials int, np int, strategy string) {
-	pardoned := 0
-	t := 0
+	var pardoned int = 0
+	var t int = 0
 	for t < trials {
 		var drawers []int = []int{}
-		i := 0
+		var i int = 0
 		for i < 100 {
 			drawers = append(drawers, i)
 			i = (i + 1)
 		}
 		drawers = shuffle(drawers)
-		p := 0
-		success := true
+		var p int = 0
+		var success bool = true
 		for p < np {
-			found := false
+			var found bool = false
 			if strategy == "optimal" {
-				prev := p
-				d := 0
+				var prev int = p
+				var d int = 0
 				for d < 50 {
-					this := drawers[prev]
+					var this int = drawers[prev]
 					if this == p {
 						found = true
 						break
@@ -57,14 +57,14 @@ func doTrials(trials int, np int, strategy string) {
 				}
 			} else {
 				var opened []bool = []bool{}
-				k := 0
+				var k int = 0
 				for k < 100 {
 					opened = append(opened, false)
 					k = (k + 1)
 				}
-				d := 0
+				var d int = 0
 				for d < 50 {
-					n := (int64(_now()) % int64(100))
+					var n int64 = (int64(_now()) % int64(100))
 					for opened[n] {
 						n = (int64(_now()) % int64(100))
 					}
@@ -87,13 +87,13 @@ func doTrials(trials int, np int, strategy string) {
 		}
 		t = (t + 1)
 	}
-	rf := (((float64(pardoned)) / (float64(trials))) * 100.0)
+	var rf float64 = (((float64(pardoned)) / (float64(trials))) * 100.0)
 	fmt.Println(any("  strategy = " + strategy + "  pardoned = " + fmt.Sprint(any(pardoned)) + " relative frequency = " + fmt.Sprint(any(rf)) + "%"))
 }
 
 // line 77
 func mainFn() {
-	trials := 1000
+	var trials int = 1000
 	for _, np := range []int{10, 100} {
 		fmt.Println(any("Results from " + fmt.Sprint(any(trials)) + " trials with " + fmt.Sprint(any(np)) + " prisoners:\n"))
 		for _, strat := range []string{"random", "optimal"} {
@@ -117,10 +117,10 @@ func init() {
 		}
 	}
 }
-func _now() int {
+func _now() int64 {
 	if seededNow {
 		nowSeed = (nowSeed*1664525 + 1013904223) % 2147483647
-		return int(nowSeed)
+		return nowSeed
 	}
-	return int(time.Now().UnixNano())
+	return time.Now().UnixNano()
 }

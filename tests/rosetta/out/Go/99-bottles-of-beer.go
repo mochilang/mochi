@@ -23,7 +23,7 @@ func bottles(n int) string {
 
 // line 11
 func mainFn() {
-	i := 99
+	var i int = 99
 	for i > 0 {
 		fmt.Println(any(bottles(i) + " of beer on the wall"))
 		fmt.Println(any(bottles(i) + " of beer"))

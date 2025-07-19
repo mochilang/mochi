@@ -14,10 +14,10 @@ type v map[string]any
 // line 1
 func fields(s string) []string {
 	var words []string = []string{}
-	cur := ""
-	i := 0
+	var cur string = ""
+	var i int = 0
 	for i < len([]rune(s)) {
-		ch := string([]rune(s)[i:(i + 1)])
+		var ch string = string([]rune(s)[i:(i + 1)])
 		if ((ch == " ") || (ch == "\n")) || (ch == "\t") {
 			if len([]rune(cur)) > 0 {
 				words = append(words, cur)
@@ -36,8 +36,8 @@ func fields(s string) []string {
 
 // line 23
 func padRight(s string, width int) string {
-	out := s
-	i := len([]rune(s))
+	var out string = s
+	var i int = len([]rune(s))
 	for i < width {
 		out = out + " "
 		i = (i + 1)
@@ -47,8 +47,8 @@ func padRight(s string, width int) string {
 
 // line 33
 func join(xs []string, sep string) string {
-	res := ""
-	i := 0
+	var res string = ""
+	var i int = 0
 	for i < len(xs) {
 		if i > 0 {
 			res = res + sep
@@ -65,17 +65,17 @@ func validate(commands []string, words []string, mins []int) []string {
 	if len(words) == 0 {
 		return results
 	}
-	wi := 0
+	var wi int = 0
 	for wi < len(words) {
-		w := words[wi]
-		found := false
-		wlen := len([]rune(w))
-		ci := 0
+		var w string = words[wi]
+		var found bool = false
+		var wlen int = len([]rune(w))
+		var ci int = 0
 		for ci < len(commands) {
-			cmd := commands[ci]
+			var cmd string = commands[ci]
 			if ((mins[ci] != 0) && (wlen >= mins[ci])) && (wlen <= len([]rune(cmd))) {
-				c := strings.ToUpper(cmd)
-				ww := strings.ToUpper(w)
+				var c string = strings.ToUpper(cmd)
+				var ww string = strings.ToUpper(w)
 				if string([]rune(c)[0:wlen]) == ww {
 					results = append(results, c)
 					found = true
@@ -94,16 +94,16 @@ func validate(commands []string, words []string, mins []int) []string {
 
 // line 78
 func mainFn() {
-	table := "Add ALTer  BAckup Bottom  CAppend Change SCHANGE  CInsert CLAst COMPress Copy " + "COUnt COVerlay CURsor DELete CDelete Down DUPlicate Xedit EXPand EXTract Find " + "NFind NFINDUp NFUp CFind FINdup FUp FOrward GET Help HEXType Input POWerinput " + " Join SPlit SPLTJOIN  LOAD  Locate CLocate  LOWercase UPPercase  LPrefix MACRO " + "MErge MODify MOve MSG Next Overlay PARSE PREServe PURge PUT PUTD  Query  QUIT " + "READ  RECover REFRESH RENum REPeat  Replace CReplace  RESet  RESTore  RGTLEFT " + "RIght LEft  SAVE  SET SHift SI  SORT  SOS  STAck STATus  TOP TRAnsfer TypeUp "
-	commands := fields(table)
+	var table string = "Add ALTer  BAckup Bottom  CAppend Change SCHANGE  CInsert CLAst COMPress Copy " + "COUnt COVerlay CURsor DELete CDelete Down DUPlicate Xedit EXPand EXTract Find " + "NFind NFINDUp NFUp CFind FINdup FUp FOrward GET Help HEXType Input POWerinput " + " Join SPlit SPLTJOIN  LOAD  Locate CLocate  LOWercase UPPercase  LPrefix MACRO " + "MErge MODify MOve MSG Next Overlay PARSE PREServe PURge PUT PUTD  Query  QUIT " + "READ  RECover REFRESH RENum REPeat  Replace CReplace  RESet  RESTore  RGTLEFT " + "RIght LEft  SAVE  SET SHift SI  SORT  SOS  STAck STATus  TOP TRAnsfer TypeUp "
+	var commands []string = fields(table)
 	var mins []int = []int{}
-	i := 0
+	var i int = 0
 	for i < len(commands) {
-		count := 0
-		j := 0
-		cmd := commands[i]
+		var count int = 0
+		var j int = 0
+		var cmd string = commands[i]
 		for j < len([]rune(cmd)) {
-			ch := string([]rune(cmd)[j:(j + 1)])
+			var ch string = string([]rune(cmd)[j:(j + 1)])
 			if (ch >= "A") && (ch <= "Z") {
 				count = (count + 1)
 			}
@@ -112,11 +112,11 @@ func mainFn() {
 		mins = append(mins, count)
 		i = (i + 1)
 	}
-	sentence := "riG   rePEAT copies  put mo   rest    types   fup.    6       poweRin"
-	words := fields(sentence)
-	results := validate(commands, words, mins)
-	out1 := "user words:  "
-	k := 0
+	var sentence string = "riG   rePEAT copies  put mo   rest    types   fup.    6       poweRin"
+	var words []string = fields(sentence)
+	var results []string = validate(commands, words, mins)
+	var out1 string = "user words:  "
+	var k int = 0
 	for k < len(words) {
 		out1 = out1 + padRight(words[k], len([]rune(results[k]))) + " "
 		k = (k + 1)

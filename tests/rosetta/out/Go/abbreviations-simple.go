@@ -14,10 +14,10 @@ type v map[string]any
 // line 3
 func fields(s string) []string {
 	var words []string = []string{}
-	cur := ""
-	i := 0
+	var cur string = ""
+	var i int = 0
 	for i < len([]rune(s)) {
-		ch := string([]rune(s)[i:(i + 1)])
+		var ch string = string([]rune(s)[i:(i + 1)])
 		if ((ch == " ") || (ch == "\n")) || (ch == "\t") {
 			if len([]rune(cur)) > 0 {
 				words = append(words, cur)
@@ -36,8 +36,8 @@ func fields(s string) []string {
 
 // line 23
 func padRight(s string, width int) string {
-	out := s
-	i := len([]rune(s))
+	var out string = s
+	var i int = len([]rune(s))
 	for i < width {
 		out = out + " "
 		i = (i + 1)
@@ -47,8 +47,8 @@ func padRight(s string, width int) string {
 
 // line 33
 func join(xs []string, sep string) string {
-	res := ""
-	i := 0
+	var res string = ""
+	var i int = 0
 	for i < len(xs) {
 		if i > 0 {
 			res = res + sep
@@ -61,14 +61,14 @@ func join(xs []string, sep string) string {
 
 // line 44
 func parseIntStr(str string) int {
-	i := 0
-	neg := false
+	var i int = 0
+	var neg bool = false
 	if (len([]rune(str)) > 0) && (string([]rune(str)[0:1]) == "-") {
 		neg = true
 		i = 1
 	}
-	n := 0
-	digits := map[string]int{
+	var n int = 0
+	var digits map[string]int = map[string]int{
 		"0": 0,
 		"1": 1,
 		"2": 2,
@@ -95,9 +95,9 @@ func isDigits(s string) bool {
 	if len([]rune(s)) == 0 {
 		return false
 	}
-	i := 0
+	var i int = 0
 	for i < len([]rune(s)) {
-		ch := string([]rune(s)[i:(i + 1)])
+		var ch string = string([]rune(s)[i:(i + 1)])
 		if (ch < "0") || (ch > "9") {
 			return false
 		}
@@ -108,16 +108,16 @@ func isDigits(s string) bool {
 
 // line 83
 func readTable(table string) map[string]any {
-	toks := fields(table)
+	var toks []string = fields(table)
 	var cmds []string = []string{}
 	var mins []int = []int{}
-	i := 0
+	var i int = 0
 	for i < len(toks) {
-		cmd := toks[i]
-		minlen := len([]rune(cmd))
+		var cmd string = toks[i]
+		var minlen int = len([]rune(cmd))
 		i = (i + 1)
 		if (i < len(toks)) && isDigits(toks[i]) {
-			num := parseIntStr(toks[i])
+			var num int = parseIntStr(toks[i])
 			if (num >= 1) && (num < len([]rune(cmd))) {
 				minlen = num
 				i = (i + 1)
@@ -132,17 +132,17 @@ func readTable(table string) map[string]any {
 // line 105
 func validate(commands []string, mins []int, words []string) []string {
 	var results []string = []string{}
-	wi := 0
+	var wi int = 0
 	for wi < len(words) {
-		w := words[wi]
-		found := false
-		wlen := len([]rune(w))
-		ci := 0
+		var w string = words[wi]
+		var found bool = false
+		var wlen int = len([]rune(w))
+		var ci int = 0
 		for ci < len(commands) {
-			cmd := commands[ci]
+			var cmd string = commands[ci]
 			if ((mins[ci] != 0) && (wlen >= mins[ci])) && (wlen <= len([]rune(cmd))) {
-				c := strings.ToUpper(cmd)
-				ww := strings.ToUpper(w)
+				var c string = strings.ToUpper(cmd)
+				var ww string = strings.ToUpper(w)
 				if string([]rune(c)[0:wlen]) == ww {
 					results = append(results, c)
 					found = true
@@ -161,15 +161,15 @@ func validate(commands []string, mins []int, words []string) []string {
 
 // line 132
 func mainFn() {
-	table := "" + "add 1  alter 3  backup 2  bottom 1  Cappend 2  change 1  Schange  Cinsert 2  Clast 3 " + "compress 4 copy 2 count 3 Coverlay 3 cursor 3  delete 3 Cdelete 2  down 1  duplicate " + "3 xEdit 1 expand 3 extract 3  find 1 Nfind 2 Nfindup 6 NfUP 3 Cfind 2 findUP 3 fUP 2 " + "forward 2  get  help 1 hexType 4  input 1 powerInput 3  join 1 split 2 spltJOIN load " + "locate 1 Clocate 2 lowerCase 3 upperCase 3 Lprefix 2  macro  merge 2 modify 3 move 2 " + "msg  next 1 overlay 1 parse preserve 4 purge 3 put putD query 1 quit  read recover 3 " + "refresh renum 3 repeat 3 replace 1 Creplace 2 reset 3 restore 4 rgtLEFT right 2 left " + "2  save  set  shift 2  si  sort  sos  stack 3 status 4 top  transfer 3  type 1  up 1 "
-	sentence := "riG   rePEAT copies  put mo   rest    types   fup.    6\npoweRin"
-	tbl := readTable(table)
-	commands := (tbl["commands"]).([]string)
-	mins := (tbl["mins"]).([]int)
-	words := fields(sentence)
-	results := validate(commands, mins, words)
-	out1 := "user words:"
-	k := 0
+	var table string = "" + "add 1  alter 3  backup 2  bottom 1  Cappend 2  change 1  Schange  Cinsert 2  Clast 3 " + "compress 4 copy 2 count 3 Coverlay 3 cursor 3  delete 3 Cdelete 2  down 1  duplicate " + "3 xEdit 1 expand 3 extract 3  find 1 Nfind 2 Nfindup 6 NfUP 3 Cfind 2 findUP 3 fUP 2 " + "forward 2  get  help 1 hexType 4  input 1 powerInput 3  join 1 split 2 spltJOIN load " + "locate 1 Clocate 2 lowerCase 3 upperCase 3 Lprefix 2  macro  merge 2 modify 3 move 2 " + "msg  next 1 overlay 1 parse preserve 4 purge 3 put putD query 1 quit  read recover 3 " + "refresh renum 3 repeat 3 replace 1 Creplace 2 reset 3 restore 4 rgtLEFT right 2 left " + "2  save  set  shift 2  si  sort  sos  stack 3 status 4 top  transfer 3  type 1  up 1 "
+	var sentence string = "riG   rePEAT copies  put mo   rest    types   fup.    6\npoweRin"
+	var tbl map[string]any = readTable(table)
+	var commands []string = (tbl["commands"]).([]string)
+	var mins []int = (tbl["mins"]).([]int)
+	var words []string = fields(sentence)
+	var results []string = validate(commands, mins, words)
+	var out1 string = "user words:"
+	var k int = 0
 	for k < len(words) {
 		out1 = out1 + " "
 		if k < (len(words) - 1) {

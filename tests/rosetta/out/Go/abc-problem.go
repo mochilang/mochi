@@ -14,10 +14,10 @@ type v map[string]any
 // line 2
 func fields(s string) []string {
 	var res []string = []string{}
-	cur := ""
-	i := 0
+	var cur string = ""
+	var i int = 0
 	for i < len([]rune(s)) {
-		c := string([]rune(s)[i:(i + 1)])
+		var c string = string([]rune(s)[i:(i + 1)])
 		if c == " " {
 			if len([]rune(cur)) > 0 {
 				res = append(res, cur)
@@ -39,13 +39,13 @@ func canSpell(word string, blks []string) bool {
 	if len([]rune(word)) == 0 {
 		return true
 	}
-	c := strings.ToLower(string([]rune(word)[0:1]))
-	i := 0
+	var c string = strings.ToLower(string([]rune(word)[0:1]))
+	var i int = 0
 	for i < len(blks) {
-		b := blks[i]
+		var b string = blks[i]
 		if (c == strings.ToLower(string([]rune(b)[0:1]))) || (c == strings.ToLower(string([]rune(b)[1:2]))) {
 			var rest []string = []string{}
-			j := 0
+			var j int = 0
 			for j < len(blks) {
 				if j != i {
 					rest = append(rest, blks[j])
@@ -63,7 +63,7 @@ func canSpell(word string, blks []string) bool {
 
 // line 44
 func newSpeller(blocks string) func(string) bool {
-	bl := fields(blocks)
+	var bl []string = fields(blocks)
 	return func(w string) bool {
 		return canSpell(w, bl)
 	}
@@ -71,7 +71,7 @@ func newSpeller(blocks string) func(string) bool {
 
 // line 49
 func mainFn() {
-	sp := newSpeller("BO XK DQ CP NA GT RE TG QD FS JW HU VI AN OB ER FS LY PC ZM")
+	var sp func(string) bool = newSpeller("BO XK DQ CP NA GT RE TG QD FS JW HU VI AN OB ER FS LY PC ZM")
 	for _, word := range []string{
 		"A",
 		"BARK",

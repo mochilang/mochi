@@ -19,10 +19,10 @@ type v map[string]any
 // line 4
 func newBoard() [][]int {
 	var b [][]int = [][]int{}
-	y := 0
+	var y int = 0
 	for y < SIZE {
 		var row []int = []int{}
-		x := 0
+		var x int = 0
 		for x < SIZE {
 			row = append(row, 0)
 			x = (x + 1)
@@ -36,9 +36,9 @@ func newBoard() [][]int {
 // line 20
 func spawnTile(b *[][]int) map[string]any {
 	var empty [][]int = [][]int{}
-	y := 0
+	var y int = 0
 	for y < SIZE {
-		x := 0
+		var x int = 0
 		for x < SIZE {
 			if _equal((*b)[y][x], 0) {
 				empty = append(empty, []int{x, y})
@@ -50,9 +50,9 @@ func spawnTile(b *[][]int) map[string]any {
 	if len(empty) == 0 {
 		return map[string]any{"board": b, "full": true}
 	}
-	idx := (int64(_now()) % int64(len(empty)))
-	cell := empty[idx]
-	val := 4
+	var idx int64 = (int64(_now()) % int64(len(empty)))
+	var cell []int = empty[idx]
+	var val int = 4
 	if (int64(_now()) % int64(10)) < 9 {
 		val = 2
 	}
@@ -62,10 +62,10 @@ func spawnTile(b *[][]int) map[string]any {
 
 // line 42
 func pad(n int) string {
-	s := fmt.Sprint(any(n))
-	pad := (4 - len([]rune(s)))
-	i := 0
-	out := ""
+	var s string = fmt.Sprint(any(n))
+	var pad int = (4 - len([]rune(s)))
+	var i int = 0
+	var out string = ""
 	for i < pad {
 		out = out + " "
 		i = (i + 1)
@@ -76,13 +76,13 @@ func pad(n int) string {
 // line 54
 func draw(b [][]int, score int) {
 	fmt.Println(any("Score: " + fmt.Sprint(any(score))))
-	y := 0
+	var y int = 0
 	for y < SIZE {
 		fmt.Println(any("+----+----+----+----+"))
-		line := "|"
-		x := 0
+		var line string = "|"
+		var x int = 0
 		for x < SIZE {
-			v := b[y][x]
+			var v int = b[y][x]
 			if v == 0 {
 				line = line + "    |"
 			} else {
@@ -100,7 +100,7 @@ func draw(b [][]int, score int) {
 // line 77
 func reverseRow(r []int) []int {
 	var out []int = []int{}
-	i := (len(r) - 1)
+	var i int = (len(r) - 1)
 	for i >= 0 {
 		out = append(out, r[i])
 		i = (i - 1)
@@ -111,7 +111,7 @@ func reverseRow(r []int) []int {
 // line 87
 func slideLeft(row []int) map[string]any {
 	var xs []int = []int{}
-	i := 0
+	var i int = 0
 	for i < len(row) {
 		if row[i] != 0 {
 			xs = append(xs, row[i])
@@ -119,11 +119,11 @@ func slideLeft(row []int) map[string]any {
 		i = (i + 1)
 	}
 	var res []int = []int{}
-	gain := 0
+	var gain int = 0
 	i = 0
 	for i < len(xs) {
 		if ((i + 1) < len(xs)) && (xs[i] == xs[(i+1)]) {
-			v := (xs[i] * 2)
+			var v int = (xs[i] * 2)
 			gain = (gain + v)
 			res = append(res, v)
 			i = (i + 2)
@@ -140,13 +140,13 @@ func slideLeft(row []int) map[string]any {
 
 // line 112
 func moveLeft(b *[][]int, score int) map[string]any {
-	moved := false
-	y := 0
+	var moved bool = false
+	var y int = 0
 	for y < SIZE {
-		r := slideLeft(((*b)[y]).([]int))
-		new := r["row"]
+		var r map[string]any = slideLeft(((*b)[y]).([]int))
+		var new any = r["row"]
 		score = int(int(int((float64(score) + (r["gain"]).(float64)))))
-		x := 0
+		var x int = 0
 		for x < SIZE {
 			if !_equal((*b)[y][x], (new).([]any)[x]) {
 				moved = true
@@ -165,15 +165,15 @@ func moveLeft(b *[][]int, score int) map[string]any {
 
 // line 130
 func moveRight(b *[][]int, score int) map[string]any {
-	moved := false
-	y := 0
+	var moved bool = false
+	var y int = 0
 	for y < SIZE {
-		rev := reverseRow(((*b)[y]).([]int))
-		r := slideLeft(rev)
+		var rev []int = reverseRow(((*b)[y]).([]int))
+		var r map[string]any = slideLeft(rev)
 		rev = (((r["row"]).([]int)).([]int)).([]int)
 		score = int(int(int((float64(score) + (r["gain"]).(float64)))))
 		rev = reverseRow(rev)
-		x := 0
+		var x int = 0
 		for x < SIZE {
 			if !_equal((*b)[y][x], rev[x]) {
 				moved = true
@@ -193,7 +193,7 @@ func moveRight(b *[][]int, score int) map[string]any {
 // line 150
 func getCol(b [][]int, x int) []int {
 	var col []int = []int{}
-	y := 0
+	var y int = 0
 	for y < SIZE {
 		col = append(col, b[y][x])
 		y = (y + 1)
@@ -203,7 +203,7 @@ func getCol(b [][]int, x int) []int {
 
 // line 160
 func setCol(b *[][]int, x int, col []int) {
-	y := 0
+	var y int = 0
 	for y < SIZE {
 		(*b)[y][x] = col[y]
 		y = (y + 1)
@@ -212,14 +212,14 @@ func setCol(b *[][]int, x int, col []int) {
 
 // line 168
 func moveUp(b *[][]int, score int) map[string]any {
-	moved := false
-	x := 0
+	var moved bool = false
+	var x int = 0
 	for x < SIZE {
-		col := getCol(b, x)
-		r := slideLeft(col)
-		new := r["row"]
+		var col []int = getCol(b, x)
+		var r map[string]any = slideLeft(col)
+		var new any = r["row"]
 		score = int(int(int((float64(score) + (r["gain"]).(float64)))))
-		y := 0
+		var y int = 0
 		for y < SIZE {
 			if !_equal((*b)[y][x], (new).([]any)[y]) {
 				moved = true
@@ -238,15 +238,15 @@ func moveUp(b *[][]int, score int) map[string]any {
 
 // line 187
 func moveDown(b *[][]int, score int) map[string]any {
-	moved := false
-	x := 0
+	var moved bool = false
+	var x int = 0
 	for x < SIZE {
-		col := reverseRow(getCol(b, x))
-		r := slideLeft(col)
+		var col []int = reverseRow(getCol(b, x))
+		var r map[string]any = slideLeft(col)
 		col = (((r["row"]).([]int)).([]int)).([]int)
 		score = int(int(int((float64(score) + (r["gain"]).(float64)))))
 		col = reverseRow(col)
-		y := 0
+		var y int = 0
 		for y < SIZE {
 			if !_equal((*b)[y][x], col[y]) {
 				moved = true
@@ -265,9 +265,9 @@ func moveDown(b *[][]int, score int) map[string]any {
 
 // line 207
 func hasMoves(b [][]int) bool {
-	y := 0
+	var y int = 0
 	for y < SIZE {
-		x := 0
+		var x int = 0
 		for x < SIZE {
 			if b[y][x] == 0 {
 				return true
@@ -287,9 +287,9 @@ func hasMoves(b [][]int) bool {
 
 // line 222
 func has2048(b [][]int) bool {
-	y := 0
+	var y int = 0
 	for y < SIZE {
-		x := 0
+		var x int = 0
 		for x < SIZE {
 			if b[y][x] >= 2048 {
 				return true
@@ -302,42 +302,35 @@ func has2048(b [][]int) bool {
 }
 
 func main() {
-	SIZE = 4
-	board = newBoard()
-	r = spawnTile(board)
-	full = r["full"]
-	score = 0
-	board := newBoard()
 	board = (((r["board"]).([][]int)).([][]int)).([][]int)
-	full := r["full"]
 	r = spawnTile(board)
 	board = (((r["board"]).([][]int)).([][]int)).([][]int)
 	full = r["full"]
 	draw(board, score)
 	for {
 		fmt.Println(any("Move: "))
-		cmd := _input()
-		moved := false
+		var cmd string = _input()
+		var moved bool = false
 		if (cmd == "a") || (cmd == "A") {
-			m := moveLeft(board, score)
+			var m map[string]any = moveLeft(board, score)
 			board = (((m["board"]).([][]int)).([][]int)).([][]int)
 			score = (((m["score"]).(int)).(int)).(int)
 			moved = _exists(_exists(_exists(m["moved"])))
 		}
 		if (cmd == "d") || (cmd == "D") {
-			m := moveRight(board, score)
+			var m map[string]any = moveRight(board, score)
 			board = (((m["board"]).([][]int)).([][]int)).([][]int)
 			score = (((m["score"]).(int)).(int)).(int)
 			moved = _exists(_exists(_exists(m["moved"])))
 		}
 		if (cmd == "w") || (cmd == "W") {
-			m := moveUp(board, score)
+			var m map[string]any = moveUp(board, score)
 			board = (((m["board"]).([][]int)).([][]int)).([][]int)
 			score = (((m["score"]).(int)).(int)).(int)
 			moved = _exists(_exists(_exists(m["moved"])))
 		}
 		if (cmd == "s") || (cmd == "S") {
-			m := moveDown(board, score)
+			var m map[string]any = moveDown(board, score)
 			board = (((m["board"]).([][]int)).([][]int)).([][]int)
 			score = (((m["score"]).(int)).(int)).(int)
 			moved = _exists(_exists(_exists(m["moved"])))
@@ -346,7 +339,7 @@ func main() {
 			break
 		}
 		if moved {
-			r2 := spawnTile(board)
+			var r2 map[string]any = spawnTile(board)
 			board = (((r2["board"]).([][]int)).([][]int)).([][]int)
 			full = r2["full"]
 			if _exists((_exists(full) && (!(hasMoves(board))))) {
@@ -521,10 +514,10 @@ func init() {
 		}
 	}
 }
-func _now() int {
+func _now() int64 {
 	if seededNow {
 		nowSeed = (nowSeed*1664525 + 1013904223) % 2147483647
-		return int(nowSeed)
+		return nowSeed
 	}
-	return int(time.Now().UnixNano())
+	return time.Now().UnixNano()
 }

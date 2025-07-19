@@ -1,0 +1,7 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:32:7: cannot use (float64(n) / float64(10)) (value of type float64) as int value in assignment
+/tmp/X/001/main.go:53:11: cannot use (float64(s) / float64(10)) (value of type float64) as int value in assignment
+/tmp/X/001/main.go:136:6: undefined: x
+/tmp/X/001/main.go:137:24: undefined: x
+/tmp/X/001/main.go:145:3: undefined: x
