@@ -7438,10 +7438,15 @@ func formatValue(v Value) string {
 	switch v.Tag {
 	case ValueNull:
 		return "null"
+	case ValueBool:
+		if v.Bool {
+			return "true"
+		}
+		return "false"
 	case ValueStr:
 		return v.Str
 	case ValueMap:
-		return "[object Object]"
+		return valueToString(v)
 	case ValueList:
 		parts := make([]string, len(v.List))
 		for i, x := range v.List {
