@@ -28,10 +28,32 @@ type Stmt interface{ emit(io.Writer, int) }
 
 type Expr interface{ emit(io.Writer) }
 
-// PrintStmt writes a string literal using std.debug.print.
+// PrintStmt writes a value using std.debug.print.
 type PrintStmt struct{ Value Expr }
 
+type VarDecl struct {
+	Const bool
+	Name  string
+	Value Expr
+}
+
+type AssignStmt struct {
+	Name  string
+	Value Expr
+}
+
+type WhileStmt struct {
+	Cond Expr
+	Body []Stmt
+}
+
 type StringLit struct{ Value string }
+type IntLit struct{ Value int }
+type VarRef struct{ Name string }
+type BinaryExpr struct {
+	Op          string
+	Left, Right Expr
+}
 
 func repoRoot() (string, error) {
 	dir, err := os.Getwd()
@@ -95,29 +117,164 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "    ")
 	}
-	io.WriteString(w, "std.debug.print(")
+	io.WriteString(w, "std.debug.print(\"{any}\\n\", .{")
 	s.Value.emit(w)
-	io.WriteString(w, ", .{});\n")
+	io.WriteString(w, "});\n")
 }
 
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
+func (i *IntLit) emit(w io.Writer)    { fmt.Fprintf(w, "%d", i.Value) }
+func (v *VarRef) emit(w io.Writer)    { io.WriteString(w, v.Name) }
+func (b *BinaryExpr) emit(w io.Writer) {
+	b.Left.emit(w)
+	fmt.Fprintf(w, " %s ", b.Op)
+	b.Right.emit(w)
+}
+
+func (d *VarDecl) emit(w io.Writer, indent int) {
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "    ")
+	}
+	if d.Const {
+		io.WriteString(w, "const ")
+	} else {
+		io.WriteString(w, "var ")
+	}
+	io.WriteString(w, d.Name)
+	if d.Value != nil {
+		io.WriteString(w, " = ")
+		d.Value.emit(w)
+	}
+	io.WriteString(w, ";\n")
+}
+
+func (a *AssignStmt) emit(w io.Writer, indent int) {
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "    ")
+	}
+	io.WriteString(w, a.Name)
+	io.WriteString(w, " = ")
+	a.Value.emit(w)
+	io.WriteString(w, ";\n")
+}
+
+func (ws *WhileStmt) emit(w io.Writer, indent int) {
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "    ")
+	}
+	io.WriteString(w, "while (")
+	if ws.Cond != nil {
+		ws.Cond.emit(w)
+	}
+	io.WriteString(w, ") {\n")
+	for _, st := range ws.Body {
+		st.emit(w, indent+1)
+	}
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "    ")
+	}
+	io.WriteString(w, "}\n")
+}
 
 // Transpile converts a Mochi program into our simple Zig AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	main := &Func{Name: "main"}
-	for _, st := range prog.Statements {
-		if st.Expr == nil {
-			return nil, fmt.Errorf("unsupported statement")
-		}
-		if str, ok := extractPrintString(st.Expr.Expr); ok {
-			main.Body = append(main.Body, &PrintStmt{Value: &StringLit{Value: str + "\\n"}})
-		} else {
-			return nil, fmt.Errorf("unsupported expression")
-		}
+	body, err := compileStmts(prog.Statements)
+	if err != nil {
+		return nil, err
 	}
+	main.Body = append(main.Body, body...)
 	p := &Program{Functions: []*Func{main}}
 	_ = env
 	return p, nil
+}
+
+func compileStmts(list []*parser.Statement) ([]Stmt, error) {
+	var out []Stmt
+	for _, s := range list {
+		st, err := compileStmt(s)
+		if err != nil {
+			return nil, err
+		}
+		if st != nil {
+			out = append(out, st)
+		}
+	}
+	return out, nil
+}
+
+func compileStmt(s *parser.Statement) (Stmt, error) {
+	switch {
+	case s.Expr != nil:
+		call := s.Expr.Expr.Binary.Left.Value.Target.Call
+		if call != nil && call.Func == "print" && len(call.Args) == 1 {
+			arg := convertExpr(call.Args[0])
+			if arg != nil {
+				return &PrintStmt{Value: arg}, nil
+			}
+		}
+	case s.Let != nil:
+		return &VarDecl{Const: true, Name: s.Let.Name, Value: convertExpr(s.Let.Value)}, nil
+	case s.Var != nil:
+		return &VarDecl{Const: false, Name: s.Var.Name, Value: convertExpr(s.Var.Value)}, nil
+	case s.Assign != nil:
+		return &AssignStmt{Name: s.Assign.Name, Value: convertExpr(s.Assign.Value)}, nil
+	case s.While != nil:
+		cond := convertExpr(s.While.Cond)
+		body, err := compileStmts(s.While.Body)
+		if err != nil {
+			return nil, err
+		}
+		return &WhileStmt{Cond: cond, Body: body}, nil
+	}
+	return nil, fmt.Errorf("unsupported statement")
+}
+
+func convertExpr(e *parser.Expr) Expr {
+	if e == nil || e.Binary == nil {
+		return nil
+	}
+	left := convertUnary(e.Binary.Left)
+	if len(e.Binary.Right) == 0 {
+		return left
+	}
+	if len(e.Binary.Right) == 1 {
+		op := e.Binary.Right[0]
+		right := convertUnary(&parser.Unary{Value: op.Right})
+		if left != nil && right != nil {
+			return &BinaryExpr{Op: op.Op, Left: left, Right: right}
+		}
+	}
+	return nil
+}
+
+func convertUnary(u *parser.Unary) Expr {
+	if u == nil || u.Value == nil {
+		return nil
+	}
+	if g := u.Value.Target.Group; g != nil {
+		return convertExpr(g)
+	}
+	if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 && len(u.Ops) == 0 {
+		return &VarRef{Name: sel.Root}
+	}
+	lit := u.Value.Target.Lit
+	if lit == nil {
+		return nil
+	}
+	if lit.Str != nil && len(u.Ops) == 0 {
+		return &StringLit{Value: *lit.Str}
+	}
+	if lit.Int != nil {
+		v := int(*lit.Int)
+		for _, op := range u.Ops {
+			if op == "-" {
+				v = -v
+			}
+		}
+		return &IntLit{Value: v}
+	}
+	return nil
 }
 
 func extractPrintString(e *parser.Expr) (string, bool) {
@@ -168,6 +325,24 @@ func toStmtNode(s Stmt) *ast.Node {
 	switch st := s.(type) {
 	case *PrintStmt:
 		return &ast.Node{Kind: "print", Children: []*ast.Node{toExprNode(st.Value)}}
+	case *VarDecl:
+		kind := "var"
+		if st.Const {
+			kind = "let"
+		}
+		n := &ast.Node{Kind: kind, Value: st.Name}
+		if st.Value != nil {
+			n.Children = []*ast.Node{toExprNode(st.Value)}
+		}
+		return n
+	case *AssignStmt:
+		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{toExprNode(st.Value)}}
+	case *WhileStmt:
+		n := &ast.Node{Kind: "while", Children: []*ast.Node{toExprNode(st.Cond)}}
+		for _, b := range st.Body {
+			n.Children = append(n.Children, toStmtNode(b))
+		}
+		return n
 	default:
 		return &ast.Node{Kind: "stmt"}
 	}
@@ -177,6 +352,12 @@ func toExprNode(e Expr) *ast.Node {
 	switch ex := e.(type) {
 	case *StringLit:
 		return &ast.Node{Kind: "str", Value: ex.Value}
+	case *IntLit:
+		return &ast.Node{Kind: "int", Value: fmt.Sprintf("%d", ex.Value)}
+	case *VarRef:
+		return &ast.Node{Kind: "var", Value: ex.Name}
+	case *BinaryExpr:
+		return &ast.Node{Kind: ex.Op, Children: []*ast.Node{toExprNode(ex.Left), toExprNode(ex.Right)}}
 	default:
 		return &ast.Node{Kind: "expr"}
 	}
