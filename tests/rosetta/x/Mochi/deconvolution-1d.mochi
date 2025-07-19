@@ -1,0 +1,45 @@
+// Mochi translation of Rosetta "Deconvolution/1D" task - variant 1
+// Ported from tests/rosetta/x/Go/deconvolution-1d-1.go
+
+fun listToStringInts(xs: list<float>): string {
+  var s = "["
+  var i = 0
+  while i < len(xs) {
+    s = s + str(xs[i] as int)
+    if i < len(xs) - 1 { s = s + " " }
+    i = i + 1
+  }
+  return s + "]"
+}
+
+fun deconv(g: list<float>, f: list<float>): list<float> {
+  var h: list<float> = []
+  var n = 0
+  let hn = len(g) - len(f) + 1
+  while n < hn {
+    var v = g[n]
+    var lower = 0
+    if n >= len(f) { lower = n - len(f) + 1 }
+    var i = lower
+    while i < n {
+      v = v - h[i] * f[n - i]
+      i = i + 1
+    }
+    v = v / f[0]
+    h = append(h, v)
+    n = n + 1
+  }
+  return h
+}
+
+fun main() {
+  let h = [-8.0, -9.0, -3.0, -1.0, -6.0, 7.0]
+  let f = [-3.0, -6.0, -1.0, 8.0, -6.0, 3.0, -1.0, -9.0, -9.0, 3.0, -2.0, 5.0, 2.0, -2.0, -7.0, -1.0]
+  let g = [24.0, 75.0, 71.0, -34.0, 3.0, 22.0, -45.0, 23.0, 245.0, 25.0, 52.0, 25.0, -67.0, -96.0, 96.0, 31.0, 55.0, 36.0, 29.0, -43.0, -7.0]
+  print(listToStringInts(h))
+  print(listToStringInts(deconv(g, f)))
+  print(listToStringInts(f))
+  print(listToStringInts(deconv(g, h)))
+}
+
+main()

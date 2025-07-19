@@ -1,0 +1,117 @@
+// Mochi translation of Rosetta "Deconvolution/1D" task - variant 2 using FFT
+// Ported from tests/rosetta/x/Go/deconvolution-1d-2.go
+
+fun indexOf(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if substring(s, i, i+1) == ch { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun fmt1(x: float): string {
+  var y = ((x * 10.0) + 0.5) as int as float / 10.0
+  var s = str(y)
+  let dot = indexOf(s, ".")
+  if dot == -1 { s = s + ".0" }
+  return s
+}
+
+fun listToString1(xs: list<float>): string {
+  var s = "["
+  var i = 0
+  while i < len(xs) {
+    s = s + fmt1(xs[i])
+    if i < len(xs) - 1 { s = s + " " }
+    i = i + 1
+  }
+  return s + "]"
+}
+
+fun fft(in: list<complex>): list<complex> {
+  let n = len(in)
+  var out: list<complex> = in
+  var size = 1
+  while size < n {
+    size = size * 2
+  }
+  // naive discrete Fourier transform (for simplicity)
+  var res: list<complex> = []
+  var k = 0
+  while k < size {
+    var sum: complex = 0+0i
+    var t = 0
+    while t < n {
+      let angle = -2.0 * PI * (k as float) * (t as float) / (size as float)
+      sum = sum + in[t] * cis(angle)
+      t = t + 1
+    }
+    res = append(res, sum)
+    k = k + 1
+  }
+  return res
+}
+
+fun ifft(in: list<complex>): list<complex> {
+  let n = len(in)
+  var out: list<complex> = []
+  var k = 0
+  while k < n {
+    var sum: complex = 0+0i
+    var t = 0
+    while t < n {
+      let angle = 2.0 * PI * (k as float) * (t as float) / (n as float)
+      sum = sum + in[t] * cis(angle)
+      t = t + 1
+    }
+    out = append(out, sum / (n as float))
+    k = k + 1
+  }
+  return out
+}
+
+fun deconv(g: list<float>, f: list<float>): list<float> {
+  var n = 1
+  while n < len(g) { n = n * 2 }
+  var g2: list<complex> = []
+  var i = 0
+  while i < n {
+    if i < len(g) { g2 = append(g2, (g[i] as complex)) } else { g2 = append(g2, 0+0i) }
+    i = i + 1
+  }
+  var f2: list<complex> = []
+  i = 0
+  while i < n {
+    if i < len(f) { f2 = append(f2, (f[i] as complex)) } else { f2 = append(f2, 0+0i) }
+    i = i + 1
+  }
+  let gt = fft(g2)
+  let ft = fft(f2)
+  var j = 0
+  while j < n {
+    gt[j] = gt[j] / ft[j]
+    j = j + 1
+  }
+  let ht = ifft(gt)
+  var out: list<float> = []
+  out = append(out, (real(ht[0]) as float))
+  j = 1
+  while j < len(g) - len(f) + 1 {
+    out = append(out, (real(ht[n - j]) as float))
+    j = j + 1
+  }
+  return out
+}
+
+fun main() {
+  let h = [-8.0, -9.0, -3.0, -1.0, -6.0, 7.0]
+  let f = [-3.0, -6.0, -1.0, 8.0, -6.0, 3.0, -1.0, -9.0, -9.0, 3.0, -2.0, 5.0, 2.0, -2.0, -7.0, -1.0]
+  let g = [24.0, 75.0, 71.0, -34.0, 3.0, 22.0, -45.0, 23.0, 245.0, 25.0, 52.0, 25.0, -67.0, -96.0, 96.0, 31.0, 55.0, 36.0, 29.0, -43.0, -7.0]
+  print(listToString1(h))
+  print(listToString1(deconv(g, f)))
+  print(listToString1(f))
+  print(listToString1(deconv(g, h)))
+}
+
+main()
