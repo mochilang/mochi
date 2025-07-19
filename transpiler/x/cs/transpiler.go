@@ -815,9 +815,27 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		}
 		return &ExprStmt{Expr: e}, nil
 	case s.Let != nil:
-		val, err := compileExpr(s.Let.Value)
-		if err != nil {
-			return nil, err
+		var val Expr
+		var err error
+		if s.Let.Value != nil {
+			val, err = compileExpr(s.Let.Value)
+			if err != nil {
+				return nil, err
+			}
+		} else if s.Let.Type != nil && s.Let.Type.Simple != nil {
+			switch *s.Let.Type.Simple {
+			case "int":
+				val = &IntLit{Value: 0}
+			case "string":
+				val = &StringLit{Value: ""}
+				stringVars[s.Let.Name] = true
+			case "bool":
+				val = &BoolLit{Value: false}
+			default:
+				return nil, fmt.Errorf("unsupported let type")
+			}
+		} else {
+			return nil, fmt.Errorf("unsupported let")
 		}
 		if isStringExpr(val) {
 			stringVars[s.Let.Name] = true
@@ -833,6 +851,18 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			val, err = compileExpr(s.Var.Value)
 			if err != nil {
 				return nil, err
+			}
+		} else if s.Var.Type != nil && s.Var.Type.Simple != nil {
+			switch *s.Var.Type.Simple {
+			case "int":
+				val = &IntLit{Value: 0}
+			case "string":
+				val = &StringLit{Value: ""}
+				stringVars[s.Var.Name] = true
+			case "bool":
+				val = &BoolLit{Value: false}
+			default:
+				return nil, fmt.Errorf("unsupported var type")
 			}
 		}
 		if isStringExpr(val) {
