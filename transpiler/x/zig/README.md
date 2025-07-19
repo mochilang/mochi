@@ -4,7 +4,7 @@ This directory contains a minimal transpiler that converts a subset of Mochi int
 
 ## Golden tests
 
-Progress: 17/100
+Programs under `tests/vm/valid` that have generated Zig code (19/100):
 - [ ] append_builtin
 - [ ] avg_builtin
 - [x] basic_compare
@@ -47,12 +47,12 @@ Progress: 17/100
 - [ ] json_builtin
 - [ ] left_join
 - [ ] left_join_multi
- - [x] len_builtin
+- [x] len_builtin
 - [ ] len_map
 - [x] len_string
 - [x] let_and_print
 - [ ] list_assign
- - [x] list_index
+- [x] list_index
 - [ ] list_nested_assign
 - [ ] list_set_ops
 - [ ] load_yaml
@@ -84,7 +84,7 @@ Progress: 17/100
 - [ ] short_circuit
 - [ ] slice
 - [ ] sort_stable
-- [ ] str_builtin
+- [x] str_builtin
 - [ ] string_compare
 - [x] string_concat
 - [ ] string_contains
@@ -92,7 +92,7 @@ Progress: 17/100
 - [ ] string_index
 - [ ] string_prefix_slice
 - [ ] substring_builtin
-- [ ] sum_builtin
+- [x] sum_builtin
 - [ ] tail_recursion
 - [ ] test_block
 - [ ] tree_sum
