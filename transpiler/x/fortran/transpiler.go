@@ -42,14 +42,28 @@ type WhileStmt struct {
 
 type AssignStmt struct{ Name, Expr string }
 
-type PrintStmt struct{ Expr string }
+type PrintStmt struct {
+	Expr string
+	Typ  types.Type
+}
 
 func (s *AssignStmt) emit(w io.Writer) {
 	fmt.Fprintf(w, "  %s = %s\n", s.Name, s.Expr)
 }
 
 func (p *PrintStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "  print *, %s\n", p.Expr)
+	switch p.Typ.(type) {
+	case types.IntType, types.Int64Type, types.BigIntType:
+		fmt.Fprintf(w, "  print '(I0)', %s\n", p.Expr)
+	case types.FloatType, types.BigRatType:
+		fmt.Fprintf(w, "  print '(F0.6)', %s\n", p.Expr)
+	case types.BoolType:
+		fmt.Fprintf(w, "  print '(I0)', merge(1,0,%s)\n", p.Expr)
+	case types.StringType:
+		fmt.Fprintf(w, "  print *, trim(%s)\n", p.Expr)
+	default:
+		fmt.Fprintf(w, "  print *, %s\n", p.Expr)
+	}
 }
 
 func (s *IfStmt) emit(w io.Writer) {
@@ -215,7 +229,8 @@ func compileStmt(p *Program, st *parser.Statement, env *types.Env) (Stmt, error)
 		if err != nil {
 			return nil, err
 		}
-		return &PrintStmt{Expr: expr}, nil
+		typ := types.TypeOfExprBasic(arg, env)
+		return &PrintStmt{Expr: expr, Typ: typ}, nil
 	case st.If != nil:
 		if st.If.ElseIf != nil {
 			return nil, fmt.Errorf("elseif not supported")
