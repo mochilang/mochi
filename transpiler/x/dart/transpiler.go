@@ -151,6 +151,29 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 	return b.Right.emit(w)
 }
 
+// CondExpr represents a conditional expression like `cond ? a : b`.
+type CondExpr struct {
+	Cond Expr
+	Then Expr
+	Else Expr
+}
+
+func (c *CondExpr) emit(w io.Writer) error {
+	if err := c.Cond.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, " ? "); err != nil {
+		return err
+	}
+	if err := c.Then.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, " : "); err != nil {
+		return err
+	}
+	return c.Else.emit(w)
+}
+
 type CallExpr struct {
 	Func Expr
 	Args []Expr
@@ -316,9 +339,17 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 		}
 		return &ExprStmt{Expr: e}, nil
 	case st.Let != nil:
-		e, err := convertExpr(st.Let.Value)
-		if err != nil {
-			return nil, err
+		var e Expr
+		var err error
+		if st.Let.Value != nil {
+			e, err = convertExpr(st.Let.Value)
+			if err != nil {
+				return nil, err
+			}
+		} else if st.Let.Type != nil && st.Let.Type.Simple != nil && *st.Let.Type.Simple == "int" {
+			e = &IntLit{Value: 0}
+		} else {
+			return nil, fmt.Errorf("let missing value not supported")
 		}
 		return &LetStmt{Name: st.Let.Name, Value: e}, nil
 	case st.Var != nil:
@@ -329,6 +360,8 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
+		} else if st.Var.Type != nil && st.Var.Type.Simple != nil && *st.Var.Type.Simple == "int" {
+			e = &IntLit{Value: 0}
 		}
 		return &VarStmt{Name: st.Var.Name, Value: e}, nil
 	case st.Assign != nil:
@@ -416,6 +449,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
+			if p.Call.Func == "print" && len(p.Call.Args) == 1 && isBoolExpr(a) {
+				ex = &CondExpr{Cond: ex, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
+			}
 			ce.Args = append(ce.Args, ex)
 		}
 		return ce, nil
@@ -425,8 +461,26 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return &IntLit{Value: int(*p.Lit.Int)}, nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return &Name{Name: p.Selector.Root}, nil
+	case p.Group != nil:
+		return convertExpr(p.Group)
 	}
 	return nil, fmt.Errorf("unsupported expression")
+}
+
+func isBoolExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	if len(e.Binary.Right) == 0 {
+		return false
+	}
+	for _, op := range e.Binary.Right {
+		switch op.Op {
+		case "==", "!=", "<", "<=", ">", ">=":
+			return true
+		}
+	}
+	return false
 }
 
 // --- AST -> generic node (for debugging) ---
