@@ -28,6 +28,43 @@ type ExprStmt struct{ Expr Expr }
 
 func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
 
+// IfStmt represents a conditional statement with optional else branch.
+type IfStmt struct {
+	Cond Expr
+	Then []Stmt
+	Else []Stmt
+}
+
+func (s *IfStmt) emit(w io.Writer) {
+	io.WriteString(w, "if ")
+	s.Cond.emit(w)
+	io.WriteString(w, "\n")
+	for _, st := range s.Then {
+		st.emit(w)
+		io.WriteString(w, "\n")
+	}
+	if len(s.Else) > 0 {
+		io.WriteString(w, "else\n")
+		for _, st := range s.Else {
+			st.emit(w)
+			io.WriteString(w, "\n")
+		}
+	}
+	io.WriteString(w, "end")
+}
+
+// LetStmt represents a variable binding.
+type LetStmt struct {
+	Name  string
+	Value Expr
+}
+
+func (s *LetStmt) emit(w io.Writer) {
+	io.WriteString(w, s.Name)
+	io.WriteString(w, " = ")
+	s.Value.emit(w)
+}
+
 type CallExpr struct {
 	Func string
 	Args []Expr
@@ -40,7 +77,21 @@ func (c *CallExpr) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
-		a.emit(w)
+		if c.Func == "puts" && len(c.Args) == 1 {
+			io.WriteString(w, "((")
+			a.emit(w)
+			io.WriteString(w, ").is_a?(Array) ? (")
+			a.emit(w)
+			io.WriteString(w, ").join(' ') : ((")
+			a.emit(w)
+			io.WriteString(w, ") == true ? 1 : ((")
+			a.emit(w)
+			io.WriteString(w, ") == false ? 0 : (")
+			a.emit(w)
+			io.WriteString(w, "))))")
+		} else {
+			a.emit(w)
+		}
 	}
 	io.WriteString(w, ")")
 }
@@ -48,6 +99,94 @@ func (c *CallExpr) emit(w io.Writer) {
 type StringLit struct{ Value string }
 
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
+
+type IntLit struct{ Value int }
+
+func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
+
+type Ident struct{ Name string }
+
+func (id *Ident) emit(w io.Writer) { io.WriteString(w, id.Name) }
+
+type ListLit struct{ Elems []Expr }
+
+func (l *ListLit) emit(w io.Writer) {
+	io.WriteString(w, "[")
+	for i, e := range l.Elems {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		e.emit(w)
+	}
+	io.WriteString(w, "]")
+}
+
+type BinaryExpr struct {
+	Op    string
+	Left  Expr
+	Right Expr
+}
+
+func (b *BinaryExpr) emit(w io.Writer) {
+	b.Left.emit(w)
+	io.WriteString(w, " "+b.Op+" ")
+	b.Right.emit(w)
+}
+
+type UnaryExpr struct {
+	Op   string
+	Expr Expr
+}
+
+func (u *UnaryExpr) emit(w io.Writer) {
+	io.WriteString(w, u.Op)
+	u.Expr.emit(w)
+}
+
+type LenExpr struct{ Value Expr }
+
+func (l *LenExpr) emit(w io.Writer) {
+	l.Value.emit(w)
+	io.WriteString(w, ".length")
+}
+
+type SumExpr struct{ Value Expr }
+
+func (s *SumExpr) emit(w io.Writer) {
+	s.Value.emit(w)
+	io.WriteString(w, ".sum")
+}
+
+type AvgExpr struct{ Value Expr }
+
+func (a *AvgExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
+	a.Value.emit(w)
+	io.WriteString(w, ".sum.to_f / ")
+	a.Value.emit(w)
+	io.WriteString(w, ".length)")
+}
+
+type AppendExpr struct {
+	List Expr
+	Elem Expr
+}
+
+// GroupExpr preserves explicit parentheses from the source.
+type GroupExpr struct{ Expr Expr }
+
+func (g *GroupExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
+	g.Expr.emit(w)
+	io.WriteString(w, ")")
+}
+
+func (a *AppendExpr) emit(w io.Writer) {
+	a.List.emit(w)
+	io.WriteString(w, " + [")
+	a.Elem.emit(w)
+	io.WriteString(w, "]")
+}
 
 func repoRoot() string {
 	dir, err := os.Getwd()
@@ -103,31 +242,108 @@ func Emit(w io.Writer, p *Program) error {
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	rbProg := &Program{}
 	for _, st := range prog.Statements {
-		if st.Expr == nil {
-			return nil, fmt.Errorf("unsupported statement")
-		}
-		e, err := convertExpr(st.Expr.Expr)
+		conv, err := convertStmt(st)
 		if err != nil {
 			return nil, err
 		}
-		rbProg.Stmts = append(rbProg.Stmts, &ExprStmt{Expr: e})
+		rbProg.Stmts = append(rbProg.Stmts, conv)
 	}
 	_ = env
 	return rbProg, nil
 }
 
+func convertStmt(st *parser.Statement) (Stmt, error) {
+	switch {
+	case st.Expr != nil:
+		e, err := convertExpr(st.Expr.Expr)
+		if err != nil {
+			return nil, err
+		}
+		return &ExprStmt{Expr: e}, nil
+	case st.Let != nil:
+		v, err := convertExpr(st.Let.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &LetStmt{Name: st.Let.Name, Value: v}, nil
+	case st.If != nil:
+		return convertIf(st.If)
+	default:
+		return nil, fmt.Errorf("unsupported statement")
+	}
+}
+
+func convertIf(ifst *parser.IfStmt) (Stmt, error) {
+	cond, err := convertExpr(ifst.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenStmts := make([]Stmt, len(ifst.Then))
+	for i, s := range ifst.Then {
+		st, err := convertStmt(s)
+		if err != nil {
+			return nil, err
+		}
+		thenStmts[i] = st
+	}
+	var elseStmts []Stmt
+	if ifst.ElseIf != nil {
+		st, err := convertIf(ifst.ElseIf)
+		if err != nil {
+			return nil, err
+		}
+		elseStmts = []Stmt{st}
+	} else if len(ifst.Else) > 0 {
+		elseStmts = make([]Stmt, len(ifst.Else))
+		for i, s := range ifst.Else {
+			st, err := convertStmt(s)
+			if err != nil {
+				return nil, err
+			}
+			elseStmts[i] = st
+		}
+	}
+	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
+}
+
 func convertExpr(e *parser.Expr) (Expr, error) {
-	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+	if e == nil || e.Binary == nil {
 		return nil, fmt.Errorf("unsupported expression")
 	}
-	return convertUnary(e.Binary.Left)
+	left, err := convertUnary(e.Binary.Left)
+	if err != nil {
+		return nil, err
+	}
+	expr := left
+	for _, op := range e.Binary.Right {
+		if op.All {
+			return nil, fmt.Errorf("unsupported binary op")
+		}
+		right, err := convertPostfix(op.Right)
+		if err != nil {
+			return nil, err
+		}
+		expr = &BinaryExpr{Op: op.Op, Left: expr, Right: right}
+	}
+	return expr, nil
 }
 
 func convertUnary(u *parser.Unary) (Expr, error) {
-	if u == nil || len(u.Ops) > 0 {
+	if u == nil {
 		return nil, fmt.Errorf("unsupported unary")
 	}
-	return convertPostfix(u.Value)
+	ex, err := convertPostfix(u.Value)
+	if err != nil {
+		return nil, err
+	}
+	for i := len(u.Ops) - 1; i >= 0; i-- {
+		op := u.Ops[i]
+		if op != "-" {
+			return nil, fmt.Errorf("unsupported unary op")
+		}
+		ex = &UnaryExpr{Op: op, Expr: ex}
+	}
+	return ex, nil
 }
 
 func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
@@ -149,12 +365,58 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			args[i] = ex
 		}
 		name := p.Call.Func
-		if name == "print" {
-			name = "puts"
+		switch name {
+		case "print":
+			return &CallExpr{Func: "puts", Args: args}, nil
+		case "len", "count":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("len/count takes one arg")
+			}
+			return &LenExpr{Value: args[0]}, nil
+		case "sum":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("sum takes one arg")
+			}
+			return &SumExpr{Value: args[0]}, nil
+		case "avg":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("avg takes one arg")
+			}
+			return &AvgExpr{Value: args[0]}, nil
+		case "append":
+			if len(args) != 2 {
+				return nil, fmt.Errorf("append takes two args")
+			}
+			return &AppendExpr{List: args[0], Elem: args[1]}, nil
+		default:
+			return &CallExpr{Func: name, Args: args}, nil
 		}
-		return &CallExpr{Func: name, Args: args}, nil
-	case p.Lit != nil && p.Lit.Str != nil:
-		return &StringLit{Value: *p.Lit.Str}, nil
+	case p.Lit != nil:
+		if p.Lit.Str != nil {
+			return &StringLit{Value: *p.Lit.Str}, nil
+		}
+		if p.Lit.Int != nil {
+			return &IntLit{Value: int(*p.Lit.Int)}, nil
+		}
+		return nil, fmt.Errorf("unsupported literal")
+	case p.List != nil:
+		elems := make([]Expr, len(p.List.Elems))
+		for i, e := range p.List.Elems {
+			ex, err := convertExpr(e)
+			if err != nil {
+				return nil, err
+			}
+			elems[i] = ex
+		}
+		return &ListLit{Elems: elems}, nil
+	case p.Group != nil:
+		ex, err := convertExpr(p.Group)
+		if err != nil {
+			return nil, err
+		}
+		return &GroupExpr{Expr: ex}, nil
+	case p.Selector != nil && len(p.Selector.Tail) == 0:
+		return &Ident{Name: p.Selector.Root}, nil
 	default:
 		return nil, fmt.Errorf("unsupported primary")
 	}
@@ -172,6 +434,23 @@ func stmtNode(s Stmt) *ast.Node {
 	switch st := s.(type) {
 	case *ExprStmt:
 		return &ast.Node{Kind: "expr_stmt", Children: []*ast.Node{exprNode(st.Expr)}}
+	case *LetStmt:
+		return &ast.Node{Kind: "let", Value: st.Name, Children: []*ast.Node{exprNode(st.Value)}}
+	case *IfStmt:
+		n := &ast.Node{Kind: "if", Children: []*ast.Node{exprNode(st.Cond)}}
+		thenNode := &ast.Node{Kind: "then"}
+		for _, s2 := range st.Then {
+			thenNode.Children = append(thenNode.Children, stmtNode(s2))
+		}
+		n.Children = append(n.Children, thenNode)
+		if len(st.Else) > 0 {
+			elseNode := &ast.Node{Kind: "else"}
+			for _, s2 := range st.Else {
+				elseNode.Children = append(elseNode.Children, stmtNode(s2))
+			}
+			n.Children = append(n.Children, elseNode)
+		}
+		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
@@ -185,8 +464,32 @@ func exprNode(e Expr) *ast.Node {
 			n.Children = append(n.Children, exprNode(a))
 		}
 		return n
+	case *Ident:
+		return &ast.Node{Kind: "ident", Value: ex.Name}
+	case *IntLit:
+		return &ast.Node{Kind: "int", Value: fmt.Sprintf("%d", ex.Value)}
 	case *StringLit:
 		return &ast.Node{Kind: "string", Value: ex.Value}
+	case *ListLit:
+		n := &ast.Node{Kind: "list"}
+		for _, e := range ex.Elems {
+			n.Children = append(n.Children, exprNode(e))
+		}
+		return n
+	case *BinaryExpr:
+		return &ast.Node{Kind: "bin", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
+	case *UnaryExpr:
+		return &ast.Node{Kind: "unary", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Expr)}}
+	case *LenExpr:
+		return &ast.Node{Kind: "len", Children: []*ast.Node{exprNode(ex.Value)}}
+	case *SumExpr:
+		return &ast.Node{Kind: "sum", Children: []*ast.Node{exprNode(ex.Value)}}
+	case *AvgExpr:
+		return &ast.Node{Kind: "avg", Children: []*ast.Node{exprNode(ex.Value)}}
+	case *AppendExpr:
+		return &ast.Node{Kind: "append", Children: []*ast.Node{exprNode(ex.List), exprNode(ex.Elem)}}
+	case *GroupExpr:
+		return &ast.Node{Kind: "group", Children: []*ast.Node{exprNode(ex.Expr)}}
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
