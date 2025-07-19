@@ -226,6 +226,18 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.collectForVars(prog.Statements)
 	c.collectAssignVars(prog.Statements)
+	// remove duplicate variable declarations that map to the same COBOL name
+	seen := make(map[string]bool)
+	dedup := make([]varDecl, 0, len(c.vars))
+	for i := len(c.vars) - 1; i >= 0; i-- {
+		k := cobolName(c.vars[i].name)
+		if seen[k] {
+			continue
+		}
+		seen[k] = true
+		dedup = append([]varDecl{c.vars[i]}, dedup...)
+	}
+	c.vars = dedup
 	if needsTmpVar(prog.Statements) {
 		c.tmpVar = "TMP"
 		if !c.hasVar(c.tmpVar) {
@@ -291,10 +303,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln(fmt.Sprintf("%s.", fn.name))
 		old := c.indent
 		c.indent += 4
-		using := ""
 		if len(fn.params) > 0 {
-			using = " USING " + strings.Join(fn.params, " ")
-			c.writeln("PROCEDURE DIVISION" + using + ".")
+			c.writeln("PROCEDURE DIVISION.")
 			c.indent += 4
 		}
 		c.curFun = &fn
@@ -478,7 +488,23 @@ func (c *Compiler) addFun(fn *parser.FunStmt) error {
 	}
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
-		params[i] = cobolName(p.Name)
+		paramName := cobolName(p.Name)
+		params[i] = paramName
+		if !c.hasVar(paramName) {
+			var pic string = "PIC 9"
+			var val string = "0"
+			if p.Type != nil {
+				pt := types.ResolveTypeRef(p.Type, c.env)
+				pic = cobolPic(pt, "")
+				switch pt.(type) {
+				case types.StringType:
+					val = "\"\""
+				case types.BoolType:
+					val = "FALSE"
+				}
+			}
+			c.vars = append(c.vars, varDecl{name: paramName, pic: pic, val: val})
+		}
 	}
 	c.funs = append(c.funs, funDecl{name: name, result: res, params: params, body: fn.Body})
 	return nil
@@ -918,24 +944,36 @@ func (c *Compiler) compileUserCall(call *parser.CallExpr) (string, error) {
 		}
 	}
 	name := "FN_" + cobolName(strings.ReplaceAll(call.Func, "-", "_"))
-	args := make([]string, len(call.Args))
-	for i, a := range call.Args {
-		s, err := c.compileExpr(a)
-		if err != nil {
-			return "", err
+	if fn, ok := c.env.GetFunc(call.Func); ok {
+		for i, a := range call.Args {
+			s, err := c.compileExpr(a)
+			if err != nil {
+				return "", err
+			}
+			if !isSimpleExpr(a) {
+				tmp := c.ensureTmpVar()
+				c.writeln(fmt.Sprintf("COMPUTE %s = %s", tmp, s))
+				s = tmp
+			}
+			if i < len(fn.Params) {
+				param := cobolName(fn.Params[i].Name)
+				c.writeln(fmt.Sprintf("COMPUTE %s = %s", param, s))
+			}
 		}
-		if !isSimpleExpr(a) {
-			tmp := c.ensureTmpVar()
-			c.writeln(fmt.Sprintf("COMPUTE %s = %s", tmp, s))
-			s = tmp
+	} else {
+		for _, a := range call.Args {
+			s, err := c.compileExpr(a)
+			if err != nil {
+				return "", err
+			}
+			if !isSimpleExpr(a) {
+				tmp := c.ensureTmpVar()
+				c.writeln(fmt.Sprintf("COMPUTE %s = %s", tmp, s))
+				s = tmp
+			}
 		}
-		args[i] = s
 	}
-	line := fmt.Sprintf("PERFORM %s", name)
-	if len(args) > 0 {
-		line += " USING " + strings.Join(args, " ")
-	}
-	c.writeln(line)
+	c.writeln(fmt.Sprintf("PERFORM %s", name))
 	return cobolName(name + "_RES"), nil
 }
 
@@ -1725,7 +1763,7 @@ func seqIntList(e *parser.Expr) (int, bool) {
 		if len(p2.Ops) != 0 || p2.Target == nil || p2.Target.Lit == nil || p2.Target.Lit.Int == nil {
 			return 0, false
 		}
-		v := *p2.Target.Lit.Int
+		v := int(*p2.Target.Lit.Int)
 		if v != i+1 {
 			return 0, false
 		}
@@ -1823,7 +1861,7 @@ func intLiteral(e *parser.Expr) (int, bool) {
 	if u.Value == nil || len(u.Value.Ops) != 0 || u.Value.Target == nil || u.Value.Target.Lit == nil || u.Value.Target.Lit.Int == nil {
 		return 0, false
 	}
-	v := *u.Value.Target.Lit.Int
+	v := int(*u.Value.Target.Lit.Int)
 	if neg {
 		v = -v
 	}

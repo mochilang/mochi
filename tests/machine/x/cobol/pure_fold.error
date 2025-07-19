@@ -1,4 +1,0 @@
-/tmp/TestCobolCompiler_VMValid_Golden2638179460/040/prog.cob:12: error: syntax error, unexpected USING
-/tmp/TestCobolCompiler_VMValid_Golden2638179460/040/prog.cob: in paragraph 'FN_TRIPLE':
-/tmp/TestCobolCompiler_VMValid_Golden2638179460/040/prog.cob:17: error: syntax error, unexpected PROCEDURE
-/tmp/TestCobolCompiler_VMValid_Golden2638179460/040/prog.cob:18: error: 'X' is not defined, but is a reserved word in another dialect
