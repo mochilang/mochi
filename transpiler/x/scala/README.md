@@ -2,12 +2,12 @@
 
 Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (20/100)
+## Golden Test Checklist (25/100)
 
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
-- [ ] binary_precedence
+- [x] binary_precedence
 - [ ] bool_chain
 - [ ] break_continue
 - [ ] cast_string_to_int
@@ -51,7 +51,7 @@ Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scal
 - [x] len_string
 - [x] let_and_print
 - [ ] list_assign
-- [ ] list_index
+- [x] list_index
 - [ ] list_nested_assign
 - [x] list_set_ops
 - [ ] load_yaml
@@ -65,8 +65,8 @@ Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scal
 - [ ] match_expr
 - [ ] match_full
 - [x] math_ops
-- [ ] membership
-- [ ] min_max_builtin
+- [x] membership
+- [x] min_max_builtin
 - [ ] nested_function
 - [ ] order_by_map
 - [ ] outer_join
@@ -91,7 +91,7 @@ Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scal
 - [x] string_index
 - [x] string_prefix_slice
 - [x] substring_builtin
-- [ ] sum_builtin
+- [x] sum_builtin
 - [ ] tail_recursion
 - [ ] test_block
 - [ ] tree_sum
