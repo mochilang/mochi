@@ -1,0 +1,7 @@
+ocamlc: exit status 2
+File "/tmp/24-game-solve.ml", line 1:
+Warning 24 [bad-module-name]: bad source file name: "24-game-solve" is not a valid module name.
+File "/tmp/24-game-solve.ml", line 23, characters 0-6:
+23 | Random.self_init ()
+     ^^^^^^
+Error: Syntax error

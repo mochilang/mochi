@@ -1,7 +1,7 @@
 ocamlc: exit status 2
 File "/tmp/100-prisoners.ml", line 1:
 Warning 24 [bad-module-name]: bad source file name: "100-prisoners" is not a valid module name.
-File "/tmp/100-prisoners.ml", line 176, characters 4-7:
-176 |     let () =
-          ^^^
+File "/tmp/100-prisoners.ml", line 177, characters 0-3:
+177 | let () =
+      ^^^
 Error: Syntax error

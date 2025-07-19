@@ -20,22 +20,32 @@ exception Break
 exception Continue
 
 
-let door : int ref = ref 1
-let incrementer : int ref = ref 0
+let rec bottles (n : int) : string =
+  if (n = 0) then (
+    "No more bottles"
+  ) ;
+  if (n = 1) then (
+    "1 bottle"
+  ) ;
+  (__show (n) ^ " bottles")
+
+let rec main () =
+  let i : int ref = ref 99 in
+  let rec __loop0 () =
+    if ((!i) > 0) then (
+      try
+        print_endline ((bottles (!i) ^ " of beer on the wall"));
+        print_endline ((bottles (!i) ^ " of beer"));
+        print_endline ("Take one down, pass it around");
+        print_endline ((bottles ((!i) - 1) ^ " of beer on the wall"));
+        i := ((!i) - 1);
+        __loop0 ()
+      with Continue -> ()
+    ) else ()
+  in try __loop0 () with Break -> ()
+  ;
+  ()
+
 
 let () =
-  try
-    for current = 1 to 101 do
-      try
-        let line : string ref = ref (("Door " ^ __show (current)) ^ " ") in
-        if (current = (!door)) then (
-          line := ((!line) ^ "Open");
-          incrementer := ((!incrementer) + 1);
-          door := ((((!door) + 2) * (!incrementer)) + 1);
-        ) else (
-          line := ((!line) ^ "Closed");
-        ) ;
-        print_endline ((!line));
-      with Continue -> ()
-    done
-  with Break -> () ;
+  main ();

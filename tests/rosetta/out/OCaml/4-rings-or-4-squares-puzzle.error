@@ -1,0 +1,9 @@
+ocamlc: exit status 2
+File "/tmp/4-rings-or-4-squares-puzzle.ml", line 1:
+Warning 24 [bad-module-name]: bad source file name: "4-rings-or-4-squares-puzzle" is not a valid module name.
+File "/tmp/4-rings-or-4-squares-puzzle.ml", line 41, characters 16-21:
+41 |                 false
+                     ^^^^^
+Error: This variant expression is expected to have type unit
+         because it is in the result of a conditional with no else branch
+       There is no constructor false within type unit

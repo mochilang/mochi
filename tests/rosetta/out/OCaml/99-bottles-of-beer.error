@@ -1,0 +1,10 @@
+ocamlc: exit status 2
+File "/tmp/99-bottles-of-beer.ml", line 1:
+Warning 24 [bad-module-name]: bad source file name: "99-bottles-of-beer" is not a valid module name.
+File "/tmp/99-bottles-of-beer.ml", lines 24-26, characters 18-3:
+24 | ..................(
+25 |     "No more bottles"
+26 |   )..
+Error: This expression has type string but an expression was expected of type
+         unit
+       because it is in the result of a conditional with no else branch

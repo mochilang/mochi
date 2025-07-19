@@ -1,0 +1,7 @@
+ocamlc: exit status 2
+File "/tmp/DNS-query.ml", line 1:
+Warning 24 [bad-module-name]: bad source file name: "DNS-query" is not a valid module name.
+File "/tmp/DNS-query.ml", line 20, characters 38-52:
+20 | let res : Obj.t list = net.LookupHost "www.kame.net"
+                                           ^^^^^^^^^^^^^^
+Error: Syntax error

@@ -16,26 +16,12 @@ let rec __show v =
     | 253 -> string_of_float (magic v)
     | _ -> "<value>"
 
-exception Break
-exception Continue
 
+let rec main () =
+  let a : int = int input () in
+  let b : int = int input () in
+  print_endline (string_of_int (a + b));
 
-let door : int ref = ref 1
-let incrementer : int ref = ref 0
 
 let () =
-  try
-    for current = 1 to 101 do
-      try
-        let line : string ref = ref (("Door " ^ __show (current)) ^ " ") in
-        if (current = (!door)) then (
-          line := ((!line) ^ "Open");
-          incrementer := ((!incrementer) + 1);
-          door := ((((!door) + 2) * (!incrementer)) + 1);
-        ) else (
-          line := ((!line) ^ "Closed");
-        ) ;
-        print_endline ((!line));
-      with Continue -> ()
-    done
-  with Break -> () ;
+  main ();

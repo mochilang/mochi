@@ -1,0 +1,5 @@
+ocamlc: exit status 2
+File "/tmp/abbreviations-simple.ml", line 1:
+Warning 24 [bad-module-name]: bad source file name: "Abbreviations-simple" is not a valid module name.
+File "/tmp/abbreviations-simple.ml", line 227, characters 0-0:
+Error: Syntax error

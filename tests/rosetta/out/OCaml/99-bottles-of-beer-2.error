@@ -1,0 +1,8 @@
+ocamlc: exit status 2
+File "/tmp/99-bottles-of-beer-2.ml", line 1:
+Warning 24 [bad-module-name]: bad source file name: "99-bottles-of-beer-2" is not a valid module name.
+File "/tmp/99-bottles-of-beer-2.ml", line 23, characters 18-24:
+23 |           cur := ((!cur) + ch);
+                       ^^^^^^
+Error: This expression has type string but an expression was expected of type
+         int

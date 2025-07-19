@@ -16,26 +16,12 @@ let rec __show v =
     | 253 -> string_of_float (magic v)
     | _ -> "<value>"
 
-exception Break
-exception Continue
 
-
-let door : int ref = ref 1
-let incrementer : int ref = ref 0
+module Testpkg = struct
+  let add a b = a + b
+  let pi = 3.14
+  let answer = 42
+end
 
 let () =
-  try
-    for current = 1 to 101 do
-      try
-        let line : string ref = ref (("Door " ^ __show (current)) ^ " ") in
-        if (current = (!door)) then (
-          line := ((!line) ^ "Open");
-          incrementer := ((!incrementer) + 1);
-          door := ((((!door) + 2) * (!incrementer)) + 1);
-        ) else (
-          line := ((!line) ^ "Closed");
-        ) ;
-        print_endline ((!line));
-      with Continue -> ()
-    done
-  with Break -> () ;
+  print_endline (__show (Testpkg.FifteenPuzzleExample ));

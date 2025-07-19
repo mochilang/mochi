@@ -1,0 +1,8 @@
+ocamlc: exit status 2
+File "/tmp/21-game.ml", line 1:
+Warning 24 [bad-module-name]: bad source file name: "21-game" is not a valid module name.
+File "/tmp/21-game.ml", line 22, characters 25-35:
+22 | let string_slice s i j = String.sub s i (j - i)
+                              ^^^^^^^^^^
+Error: This function has type string -> int -> int -> string
+       It is applied to too many arguments; maybe you forgot a `;'.
