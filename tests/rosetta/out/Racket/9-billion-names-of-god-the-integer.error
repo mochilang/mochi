@@ -3,12 +3,12 @@ remainder: contract violation
   expected: integer?
   given: 1/10
   context...:
-   /tmp/9-billion-names-of-god-the-integer.rkt:92:6
-   /tmp/9-billion-names-of-god-the-integer.rkt:89:0
-   /tmp/9-billion-names-of-god-the-integer.rkt:80:2
-   /tmp/9-billion-names-of-god-the-integer.rkt:193:2
-   /tmp/9-billion-names-of-god-the-integer.rkt:220:2
-   /tmp/9-billion-names-of-god-the-integer.rkt:241:6
-   /tmp/9-billion-names-of-god-the-integer.rkt:238:0
+   /tmp/9-billion-names-of-god-the-integer.rkt:35:6
+   /tmp/9-billion-names-of-god-the-integer.rkt:32:0
+   /tmp/9-billion-names-of-god-the-integer.rkt:21:2
+   /tmp/9-billion-names-of-god-the-integer.rkt:158:2
+   /tmp/9-billion-names-of-god-the-integer.rkt:189:2
+   /tmp/9-billion-names-of-god-the-integer.rkt:212:6
+   /tmp/9-billion-names-of-god-the-integer.rkt:209:0
    body of "/tmp/9-billion-names-of-god-the-integer.rkt"
 rows:

@@ -3,6 +3,7 @@
 (define door 1)
 (define incrementer 0)
 (for ([current (in-range 1 101)])
+  (let ()
 (define line (string-append (string-append "Door " (number->string current)) " "))
 (if (equal? current door)
   (begin
@@ -19,4 +20,5 @@
   )
 )
 (displayln line)
+  )
 )

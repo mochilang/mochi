@@ -2,7 +2,7 @@
 
 This directory contains Racket source code generated from the Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected runtime output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
-Compiled programs: 27/271
+Compiled programs: 29/278
 
 ## Checklist
 
@@ -12,7 +12,7 @@ Compiled programs: 27/271
 - [ ] 100-prisoners
 - [ ] 15-puzzle-game
 - [ ] 15-puzzle-solver
-- [ ] 2048
+- [x] 2048
 - [ ] 21-game
 - [x] 24-game-solve
 - [ ] 24-game
@@ -21,7 +21,7 @@ Compiled programs: 27/271
 - [ ] 99-bottles-of-beer-2
 - [x] 99-bottles-of-beer
 - [ ] DNS-query
-- [ ] a+b
+- [x] a+b
 - [x] abbreviations-automatic
 - [ ] abbreviations-easy
 - [ ] abbreviations-simple
@@ -276,4 +276,11 @@ Compiled programs: 27/271
 - [ ] cusip
 - [ ] cyclops-numbers
 - [ ] damm-algorithm
+- [ ] date-format
+- [ ] date-manipulation
+- [ ] day-of-the-week
+- [ ] de-bruijn-sequences
+- [ ] deal-cards-for-freecell
+- [ ] death-star
+- [ ] deceptive-numbers
 - [ ] md5
