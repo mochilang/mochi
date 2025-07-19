@@ -1,1 +1,6 @@
-transpile error: unsupported primary
+run error: exit status 1
+Syntax error compiling at (/workspace/mochi/tests/transpiler/x/clj/append_builtin.clj:4:25).
+Unable to resolve symbol: append in this context
+
+Full report at:
+/tmp/clojure-7284582051315420505.edn

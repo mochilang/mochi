@@ -2,7 +2,7 @@
 
 This directory contains experimental source translators for generating code in a variety of languages. The Clojure backend lives under `x/clj`.
 
-## Golden Test Checklist (12/100)
+## Golden Test Checklist (21/100)
 
 - [ ] append_builtin.mochi
 - [ ] avg_builtin.mochi
@@ -13,7 +13,7 @@ This directory contains experimental source translators for generating code in a
 - [ ] cast_string_to_int.mochi
 - [ ] cast_struct.mochi
 - [ ] closure.mochi
-- [ ] count_builtin.mochi
+- [x] count_builtin.mochi
 - [ ] cross_join.mochi
 - [ ] cross_join_filter.mochi
 - [ ] cross_join_triple.mochi
@@ -36,9 +36,9 @@ This directory contains experimental source translators for generating code in a
 - [ ] group_by_multi_join_sort.mochi
 - [ ] group_by_sort.mochi
 - [ ] group_items_iteration.mochi
-- [ ] if_else.mochi
-- [ ] if_then_else.mochi
-- [ ] if_then_else_nested.mochi
+- [x] if_else.mochi
+- [x] if_then_else.mochi
+- [x] if_then_else_nested.mochi
 - [ ] in_operator.mochi
 - [ ] in_operator_extended.mochi
 - [ ] inner_join.mochi
@@ -46,7 +46,7 @@ This directory contains experimental source translators for generating code in a
 - [ ] json_builtin.mochi
 - [ ] left_join.mochi
 - [ ] left_join_multi.mochi
-- [ ] len_builtin.mochi
+- [x] len_builtin.mochi
 - [ ] len_map.mochi
 - [x] len_string.mochi
 - [x] let_and_print.mochi
@@ -66,7 +66,7 @@ This directory contains experimental source translators for generating code in a
 - [ ] match_full.mochi
 - [x] math_ops.mochi
 - [ ] membership.mochi
-- [ ] min_max_builtin.mochi
+- [x] min_max_builtin.mochi
 - [ ] nested_function.mochi
 - [ ] order_by_map.mochi
 - [ ] outer_join.mochi
@@ -88,7 +88,7 @@ This directory contains experimental source translators for generating code in a
 - [x] string_concat.mochi
 - [ ] string_contains.mochi
 - [ ] string_in_operator.mochi
-- [ ] string_index.mochi
+- [x] string_index.mochi
 - [ ] string_prefix_slice.mochi
 - [x] substring_builtin.mochi
 - [ ] sum_builtin.mochi
@@ -96,8 +96,8 @@ This directory contains experimental source translators for generating code in a
 - [ ] test_block.mochi
 - [ ] tree_sum.mochi
 - [ ] two-sum.mochi
-- [ ] typed_let.mochi
-- [ ] typed_var.mochi
+- [x] typed_let.mochi
+- [x] typed_var.mochi
 - [x] unary_neg.mochi
 - [ ] update_stmt.mochi
 - [ ] user_type_literal.mochi

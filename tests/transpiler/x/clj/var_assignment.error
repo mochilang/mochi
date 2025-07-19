@@ -1,0 +1,6 @@
+run error: exit status 1
+Execution error (IllegalStateException) at main/-main (var_assignment.clj:4).
+Can't change/establish root binding of: x with set
+
+Full report at:
+/tmp/clojure-14807759397720601229.edn
