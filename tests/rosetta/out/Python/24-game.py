@@ -6,6 +6,9 @@ from typing import Any, TypeVar, Generic, Callable
 T = TypeVar("T")
 K = TypeVar("K")
 UNDEFINED = object()
+import sys
+
+sys.set_int_max_str_digits(0)
 
 
 def _input():

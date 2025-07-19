@@ -1,4 +1,4 @@
-# Rosetta Python Output (32/278 compiled and run)
+# Rosetta Python Output (40/278 compiled and run)
 
 This directory holds Python source code generated from the Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected runtime output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -30,16 +30,16 @@ This directory holds Python source code generated from the Mochi programs in `te
 - [x] abundant-odd-numbers
 - [x] accumulator-factory
 - [x] achilles-numbers
-- [ ] ackermann-function-2
-- [ ] ackermann-function-3
-- [ ] ackermann-function
-- [ ] active-directory-connect
-- [ ] active-directory-search-for-a-user
-- [ ] active-object
-- [ ] add-a-variable-to-a-class-instance-at-runtime
+- [x] ackermann-function-2
+- [x] ackermann-function-3
+- [x] ackermann-function
+- [x] active-directory-connect
+- [x] active-directory-search-for-a-user
+- [x] active-object
+- [x] add-a-variable-to-a-class-instance-at-runtime
 - [x] additive-primes
 - [x] address-of-a-variable
-- [ ] adfgvx-cipher
+- [x] adfgvx-cipher
 - [x] aks-test-for-primes
 - [ ] algebraic-data-types
 - [ ] align-columns
