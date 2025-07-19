@@ -25,6 +25,10 @@ type Stmt interface{ emit(io.Writer) }
 type Expr interface{ emit(io.Writer) }
 
 type ExprStmt struct{ Expr Expr }
+type AssignStmt struct {
+	Name  string
+	Value Expr
+}
 
 type CallExpr struct {
 	Func string
@@ -33,6 +37,7 @@ type CallExpr struct {
 
 type StringLit struct{ Value string }
 type IntLit struct{ Value int }
+type Ident struct{ Name string }
 type BinaryExpr struct {
 	Left  Expr
 	Op    string
@@ -53,8 +58,19 @@ func (c *CallExpr) emit(w io.Writer) {
 	io.WriteString(w, ")")
 }
 
+func (a *AssignStmt) emit(w io.Writer) {
+	io.WriteString(w, a.Name)
+	io.WriteString(w, " = ")
+	if a.Value == nil {
+		io.WriteString(w, "nil")
+	} else {
+		a.Value.emit(w)
+	}
+}
+
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
 func (i *IntLit) emit(w io.Writer)    { fmt.Fprintf(w, "%d", i.Value) }
+func (id *Ident) emit(w io.Writer)    { io.WriteString(w, id.Name) }
 
 func isStringExpr(e Expr) bool {
 	switch ex := e.(type) {
@@ -247,6 +263,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			ce.Args = append(ce.Args, ae)
 		}
 		return ce, nil
+	case p.Selector != nil:
+		if len(p.Selector.Tail) == 0 {
+			return &Ident{Name: p.Selector.Root}, nil
+		}
+		return nil, fmt.Errorf("unsupported selector")
 	case p.Group != nil:
 		return convertExpr(p.Group)
 	default:
@@ -272,25 +293,47 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	_ = env
 	lp := &Program{}
 	for _, st := range prog.Statements {
-		if st.Expr == nil {
+		switch {
+		case st.Expr != nil:
+			call := st.Expr.Expr.Binary.Left.Value.Target.Call
+			if call == nil || call.Func != "print" {
+				return nil, fmt.Errorf("unsupported expression")
+			}
+			if len(call.Args) != 1 {
+				return nil, fmt.Errorf("print expects one argument")
+			}
+			arg := call.Args[0]
+			expr, err := convertExpr(arg)
+			if err != nil {
+				return nil, fmt.Errorf("unsupported argument: %w", err)
+			}
+			lp.Stmts = append(lp.Stmts, &ExprStmt{Expr: &CallExpr{
+				Func: "print",
+				Args: []Expr{expr},
+			}})
+		case st.Let != nil:
+			var expr Expr
+			if st.Let.Value != nil {
+				var err error
+				expr, err = convertExpr(st.Let.Value)
+				if err != nil {
+					return nil, err
+				}
+			}
+			lp.Stmts = append(lp.Stmts, &AssignStmt{Name: st.Let.Name, Value: expr})
+		case st.Var != nil:
+			var expr Expr
+			if st.Var.Value != nil {
+				var err error
+				expr, err = convertExpr(st.Var.Value)
+				if err != nil {
+					return nil, err
+				}
+			}
+			lp.Stmts = append(lp.Stmts, &AssignStmt{Name: st.Var.Name, Value: expr})
+		default:
 			return nil, fmt.Errorf("unsupported statement")
 		}
-		call := st.Expr.Expr.Binary.Left.Value.Target.Call
-		if call == nil || call.Func != "print" {
-			return nil, fmt.Errorf("unsupported expression")
-		}
-		if len(call.Args) != 1 {
-			return nil, fmt.Errorf("print expects one argument")
-		}
-		arg := call.Args[0]
-		expr, err := convertExpr(arg)
-		if err != nil {
-			return nil, fmt.Errorf("unsupported argument: %w", err)
-		}
-		lp.Stmts = append(lp.Stmts, &ExprStmt{Expr: &CallExpr{
-			Func: "print",
-			Args: []Expr{expr},
-		}})
 	}
 	return lp, nil
 }
@@ -313,12 +356,21 @@ func stmtNode(s Stmt) *ast.Node {
 	switch st := s.(type) {
 	case *ExprStmt:
 		return &ast.Node{Kind: "expr_stmt", Children: []*ast.Node{exprNode(st.Expr)}}
+	case *AssignStmt:
+		var child *ast.Node
+		if st.Value != nil {
+			child = exprNode(st.Value)
+		}
+		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{child}}
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
 }
 
 func exprNode(e Expr) *ast.Node {
+	if e == nil {
+		return &ast.Node{Kind: "nil"}
+	}
 	switch ex := e.(type) {
 	case *CallExpr:
 		n := &ast.Node{Kind: "call", Value: ex.Func}
@@ -330,6 +382,8 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "string", Value: ex.Value}
 	case *IntLit:
 		return &ast.Node{Kind: "int", Value: fmt.Sprintf("%d", ex.Value)}
+	case *Ident:
+		return &ast.Node{Kind: "ident", Value: ex.Name}
 	case *BinaryExpr:
 		return &ast.Node{Kind: "bin", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
 	default:

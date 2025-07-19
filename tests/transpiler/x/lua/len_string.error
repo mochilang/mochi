@@ -1,0 +1,5 @@
+exit status 1
+lua: /workspace/mochi/tests/transpiler/x/lua/len_string.lua:2: attempt to call a nil value (global 'len')
+stack traceback:
+	/workspace/mochi/tests/transpiler/x/lua/len_string.lua:2: in main chunk
+	[C]: in ?
