@@ -1053,12 +1053,24 @@ func convertExpr(e *parser.Expr) (Expr, error) {
 	return convertBinary(e.Binary)
 }
 
+func postfixExprType(p *parser.PostfixExpr) types.Type {
+	if p == nil {
+		return types.AnyType{}
+	}
+	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: p}}}
+	if transpileEnv == nil {
+		return types.ExprType(expr, nil)
+	}
+	return types.CheckExprType(expr, transpileEnv)
+}
+
 func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	if b == nil {
 		return nil, fmt.Errorf("nil binary")
 	}
 	operands := []Expr{}
 	ops := []string{}
+	opnodes := []*parser.BinaryOp{}
 
 	first, err := convertUnary(b.Left)
 	if err != nil {
@@ -1072,6 +1084,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		}
 		operands = append(operands, o)
 		ops = append(ops, r.Op)
+		opnodes = append(opnodes, r)
 	}
 
 	levels := [][]string{
@@ -1085,14 +1098,18 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 
 	apply := func(i int) {
 		if ops[i] == "in" {
-			expr := &MethodCallExpr{Target: operands[i+1], Method: "includes", Args: []Expr{operands[i]}}
-			operands[i] = expr
+			typ := postfixExprType(opnodes[i].Right)
+			if _, ok := typ.(types.MapType); ok {
+				operands[i] = &BinaryExpr{Left: operands[i], Op: "in", Right: operands[i+1]}
+			} else {
+				operands[i] = &MethodCallExpr{Target: operands[i+1], Method: "includes", Args: []Expr{operands[i]}}
+			}
 		} else {
-			expr := &BinaryExpr{Left: operands[i], Op: ops[i], Right: operands[i+1]}
-			operands[i] = expr
+			operands[i] = &BinaryExpr{Left: operands[i], Op: ops[i], Right: operands[i+1]}
 		}
 		operands = append(operands[:i+1], operands[i+2:]...)
 		ops = append(ops[:i], ops[i+1:]...)
+		opnodes = append(opnodes[:i], opnodes[i+1:]...)
 	}
 
 	for _, lvl := range levels {
