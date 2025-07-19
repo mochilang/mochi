@@ -577,30 +577,53 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 	case *ContinueStmt:
 		_, err := io.WriteString(w, indent+"continue\n")
 		return err
-	case *IndexAssignStmt:
-		if _, err := io.WriteString(w, indent); err != nil {
-			return err
-		}
-		if err := emitExpr(w, st.Target); err != nil {
-			return err
-		}
-		if _, err := io.WriteString(w, "["); err != nil {
-			return err
-		}
-		if err := emitExpr(w, st.Index); err != nil {
-			return err
-		}
-		if _, err := io.WriteString(w, "] = "); err != nil {
-			return err
-		}
-		if err := emitExpr(w, st.Value); err != nil {
-			return err
-		}
-		_, err := io.WriteString(w, "\n")
-		return err
-	default:
-		return fmt.Errorf("unsupported stmt")
-	}
+        case *IndexAssignStmt:
+                if _, err := io.WriteString(w, indent); err != nil {
+                        return err
+                }
+                if err := emitExpr(w, st.Target); err != nil {
+                        return err
+                }
+                if _, err := io.WriteString(w, "["); err != nil {
+                        return err
+                }
+                if err := emitExpr(w, st.Index); err != nil {
+                        return err
+                }
+                if _, err := io.WriteString(w, "] = "); err != nil {
+                        return err
+                }
+                if err := emitExpr(w, st.Value); err != nil {
+                        return err
+                }
+                _, err := io.WriteString(w, "\n")
+                return err
+       case *FuncDef:
+               if _, err := io.WriteString(w, indent+"def "+st.Name+"("); err != nil {
+                       return err
+               }
+               for i, p := range st.Params {
+                       if i > 0 {
+                               if _, err := io.WriteString(w, ", "); err != nil {
+                                       return err
+                               }
+                       }
+                       if _, err := io.WriteString(w, p); err != nil {
+                               return err
+                       }
+               }
+               if _, err := io.WriteString(w, "):\n"); err != nil {
+                       return err
+               }
+               for _, bs := range st.Body {
+                       if err := emitStmtIndent(w, bs, indent+"    "); err != nil {
+                               return err
+                       }
+               }
+               return nil
+        default:
+                return fmt.Errorf("unsupported stmt")
+        }
 }
 
 func repoRoot() string {
