@@ -12,7 +12,7 @@ import (
 	"mochi/types"
 )
 
-func findRepoRoot(t *testing.T) string {
+func repoRoot(t *testing.T) string {
 	dir, err := os.Getwd()
 	if err != nil {
 		t.Fatal("cannot determine working directory")
@@ -31,52 +31,75 @@ func findRepoRoot(t *testing.T) string {
 	return ""
 }
 
-func TestTranspile_PrintHello(t *testing.T) {
+func TestTranspilePrograms(t *testing.T) {
 	if _, err := exec.LookPath("ruby"); err != nil {
 		t.Skip("ruby not installed")
 	}
-	root := findRepoRoot(t)
+	tests := []string{
+		"print_hello",
+		"append_builtin",
+		"avg_builtin",
+		"count_builtin",
+		"len_builtin",
+		"len_string",
+		"sum_builtin",
+		"let_and_print",
+		"if_else",
+		"basic_compare",
+		"binary_precedence",
+		"math_ops",
+		"unary_neg",
+		"string_compare",
+		"string_concat",
+	}
+	root := repoRoot(t)
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "rb")
 	os.MkdirAll(outDir, 0o755)
-
-	src := filepath.Join(root, "tests", "vm", "valid", "print_hello.mochi")
-	prog, err := parser.Parse(src)
-	if err != nil {
-		t.Fatalf("parse: %v", err)
-	}
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
-		t.Fatalf("type: %v", errs[0])
-	}
-	progAST, err := rb.Transpile(prog, env)
-	if err != nil {
-		t.Fatalf("transpile: %v", err)
-	}
-	var buf bytes.Buffer
-	if err := rb.Emit(&buf, progAST); err != nil {
-		t.Fatalf("emit: %v", err)
-	}
-	code := buf.Bytes()
-	rbFile := filepath.Join(outDir, "print_hello.rb")
-	if err := os.WriteFile(rbFile, code, 0o644); err != nil {
-		t.Fatalf("write: %v", err)
-	}
-	cmd := exec.Command("ruby", rbFile)
-	cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root)
-	out, err := cmd.CombinedOutput()
-	got := bytes.TrimSpace(out)
-	if err != nil {
-		_ = os.WriteFile(filepath.Join(outDir, "print_hello.error"), out, 0o644)
-		t.Fatalf("run: %v", err)
-	}
-	_ = os.Remove(filepath.Join(outDir, "print_hello.error"))
-	wantPath := filepath.Join(outDir, "print_hello.out")
-	want, err := os.ReadFile(wantPath)
-	if err != nil {
-		t.Fatalf("read want: %v", err)
-	}
-	want = bytes.TrimSpace(want)
-	if !bytes.Equal(got, want) {
-		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
+	for _, name := range tests {
+		t.Run(name, func(t *testing.T) {
+			src := filepath.Join(root, "tests", "vm", "valid", name+".mochi")
+			prog, err := parser.Parse(src)
+			if err != nil {
+				t.Fatalf("parse: %v", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				t.Fatalf("type: %v", errs[0])
+			}
+			ast, err := rb.Transpile(prog, env)
+			if err != nil {
+				t.Fatalf("transpile: %v", err)
+			}
+			var buf bytes.Buffer
+			if err := rb.Emit(&buf, ast); err != nil {
+				t.Fatalf("emit: %v", err)
+			}
+			code := buf.Bytes()
+			rbFile := filepath.Join(outDir, name+".rb")
+			if err := os.WriteFile(rbFile, code, 0o644); err != nil {
+				t.Fatalf("write: %v", err)
+			}
+			cmd := exec.Command("ruby", rbFile)
+			cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root)
+			out, err := cmd.CombinedOutput()
+			got := bytes.TrimSpace(out)
+			if err != nil {
+				_ = os.WriteFile(filepath.Join(outDir, name+".error"), out, 0o644)
+				t.Fatalf("run: %v", err)
+			}
+			_ = os.Remove(filepath.Join(outDir, name+".error"))
+			wantPath := filepath.Join(root, "tests", "vm", "valid", name+".out")
+			want, err := os.ReadFile(wantPath)
+			if err != nil {
+				t.Fatalf("read want: %v", err)
+			}
+			want = bytes.TrimSpace(want)
+			if !bytes.Equal(got, want) {
+				t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
+			}
+			if err := os.WriteFile(filepath.Join(outDir, name+".out"), got, 0o644); err != nil {
+				t.Fatal(err)
+			}
+		})
 	}
 }
