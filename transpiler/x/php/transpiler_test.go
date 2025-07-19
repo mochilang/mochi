@@ -79,3 +79,117 @@ func TestTranspile_PrintHello(t *testing.T) {
 		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
 	}
 }
+
+func TestTranspile_LetAndPrint(t *testing.T) {
+	if _, err := exec.LookPath("php"); err != nil {
+		t.Skip("php not installed")
+	}
+	root := repoRoot(t)
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "php")
+	os.MkdirAll(outDir, 0o755)
+
+	src := filepath.Join(root, "tests", "vm", "valid", "let_and_print.mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type: %v", errs[0])
+	}
+	ast, err := php.Transpile(prog, env)
+	if err != nil {
+		t.Fatalf("transpile: %v", err)
+	}
+	var buf bytes.Buffer
+	if err := php.Emit(&buf, ast); err != nil {
+		t.Fatalf("emit: %v", err)
+	}
+	code := buf.Bytes()
+	phpFile := filepath.Join(outDir, "let_and_print.php")
+	if err := os.WriteFile(phpFile, code, 0o644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+	cmd := exec.Command("php", phpFile)
+	out, err := cmd.CombinedOutput()
+	got := bytes.TrimSpace(out)
+	if err != nil {
+		_ = os.WriteFile(filepath.Join(outDir, "let_and_print.error"), out, 0o644)
+		t.Fatalf("run: %v", err)
+	}
+	_ = os.Remove(filepath.Join(outDir, "let_and_print.error"))
+	wantPath := filepath.Join(outDir, "let_and_print.out")
+	want, err := os.ReadFile(wantPath)
+	if err != nil {
+		t.Fatalf("read want: %v", err)
+	}
+	want = bytes.TrimSpace(want)
+	if !bytes.Equal(got, want) {
+		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
+	}
+}
+
+func TestTranspile_UnaryNeg(t *testing.T) {
+	runTranspileTest(t, "unary_neg")
+}
+
+func TestTranspile_StringConcat(t *testing.T) {
+	runTranspileTest(t, "string_concat")
+}
+
+func TestTranspile_LenBuiltin(t *testing.T) {
+	runTranspileTest(t, "len_builtin")
+}
+
+func TestTranspile_VarAssignment(t *testing.T) {
+	runTranspileTest(t, "var_assignment")
+}
+
+func runTranspileTest(t *testing.T, name string) {
+	if _, err := exec.LookPath("php"); err != nil {
+		t.Skip("php not installed")
+	}
+	root := repoRoot(t)
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "php")
+	os.MkdirAll(outDir, 0o755)
+
+	src := filepath.Join(root, "tests", "vm", "valid", name+".mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type: %v", errs[0])
+	}
+	ast, err := php.Transpile(prog, env)
+	if err != nil {
+		t.Fatalf("transpile: %v", err)
+	}
+	var buf bytes.Buffer
+	if err := php.Emit(&buf, ast); err != nil {
+		t.Fatalf("emit: %v", err)
+	}
+	code := buf.Bytes()
+	phpFile := filepath.Join(outDir, name+".php")
+	if err := os.WriteFile(phpFile, code, 0o644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+	cmd := exec.Command("php", phpFile)
+	out, err := cmd.CombinedOutput()
+	got := bytes.TrimSpace(out)
+	if err != nil {
+		_ = os.WriteFile(filepath.Join(outDir, name+".error"), out, 0o644)
+		t.Fatalf("run: %v", err)
+	}
+	_ = os.Remove(filepath.Join(outDir, name+".error"))
+	wantPath := filepath.Join(outDir, name+".out")
+	want, err := os.ReadFile(wantPath)
+	if err != nil {
+		t.Fatalf("read want: %v", err)
+	}
+	want = bytes.TrimSpace(want)
+	if !bytes.Equal(got, want) {
+		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
+	}
+}

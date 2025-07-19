@@ -25,6 +25,40 @@ type ExprStmt struct{ Expr Expr }
 
 func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
 
+type LetStmt struct {
+	Name  string
+	Value Expr
+}
+
+func (s *LetStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "$%s = ", s.Name)
+	s.Value.emit(w)
+}
+
+type VarStmt struct {
+	Name  string
+	Value Expr
+}
+
+func (s *VarStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "$%s = ", s.Name)
+	if s.Value != nil {
+		s.Value.emit(w)
+	} else {
+		io.WriteString(w, "null")
+	}
+}
+
+type AssignStmt struct {
+	Name  string
+	Value Expr
+}
+
+func (s *AssignStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "$%s = ", s.Name)
+	s.Value.emit(w)
+}
+
 type Expr interface{ emit(io.Writer) }
 
 type CallExpr struct {
@@ -32,7 +66,26 @@ type CallExpr struct {
 	Args []Expr
 }
 
+type BinaryExpr struct {
+	Left  Expr
+	Op    string
+	Right Expr
+}
+
+type Var struct{ Name string }
+
+type IntLit struct{ Value int }
+
+type BoolLit struct{ Value bool }
+
 type StringLit struct{ Value string }
+
+type UnaryExpr struct {
+	Op string
+	X  Expr
+}
+
+type ListLit struct{ Elems []Expr }
 
 func (c *CallExpr) emit(w io.Writer) {
 	fmt.Fprint(w, c.Func)
@@ -47,6 +100,48 @@ func (c *CallExpr) emit(w io.Writer) {
 }
 
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
+
+func (b *BinaryExpr) emit(w io.Writer) {
+	if b.Op == "+" {
+		fmt.Fprint(w, "_add(")
+		b.Left.emit(w)
+		fmt.Fprint(w, ", ")
+		b.Right.emit(w)
+		fmt.Fprint(w, ")")
+		return
+	}
+	b.Left.emit(w)
+	fmt.Fprintf(w, " %s ", b.Op)
+	b.Right.emit(w)
+}
+
+func (u *UnaryExpr) emit(w io.Writer) {
+	fmt.Fprint(w, u.Op)
+	u.X.emit(w)
+}
+
+func (l *ListLit) emit(w io.Writer) {
+	fmt.Fprint(w, "[")
+	for i, e := range l.Elems {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		e.emit(w)
+	}
+	fmt.Fprint(w, "]")
+}
+
+func (v *Var) emit(w io.Writer) { fmt.Fprintf(w, "$%s", v.Name) }
+
+func (i *IntLit) emit(w io.Writer) { fmt.Fprint(w, i.Value) }
+
+func (b *BoolLit) emit(w io.Writer) {
+	if b.Value {
+		fmt.Fprint(w, "true")
+	} else {
+		fmt.Fprint(w, "false")
+	}
+}
 
 // Emit writes formatted PHP source to w.
 func Emit(w io.Writer, p *Program) error {
@@ -63,6 +158,12 @@ func Emit(w io.Writer, p *Program) error {
 		}
 	}
 	if _, err := io.WriteString(w, helperPrint); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, helperLen); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, helperAdd); err != nil {
 		return err
 	}
 	_, err := io.WriteString(w, "?>")
@@ -136,6 +237,22 @@ const helperPrint = `function _print(...$args) {
 }
 `
 
+const helperLen = `function _len($v) {
+    if (is_array($v)) {
+        return count($v);
+    }
+    return strlen(strval($v));
+}
+`
+
+const helperAdd = `function _add($a, $b) {
+    if (is_string($a) || is_string($b)) {
+        return $a . $b;
+    }
+    return $a + $b;
+}
+`
+
 // Transpile converts a Mochi program into our PHP AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	p := &Program{}
@@ -146,6 +263,31 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				return nil, err
 			}
 			p.Stmts = append(p.Stmts, &ExprStmt{Expr: e})
+		} else if st.Let != nil {
+			e, err := convertExpr(st.Let.Value)
+			if err != nil {
+				return nil, err
+			}
+			p.Stmts = append(p.Stmts, &LetStmt{Name: st.Let.Name, Value: e})
+		} else if st.Var != nil {
+			var val Expr
+			if st.Var.Value != nil {
+				v, err := convertExpr(st.Var.Value)
+				if err != nil {
+					return nil, err
+				}
+				val = v
+			}
+			p.Stmts = append(p.Stmts, &VarStmt{Name: st.Var.Name, Value: val})
+		} else if st.Assign != nil {
+			if len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0 {
+				return nil, fmt.Errorf("complex assignment not supported")
+			}
+			e, err := convertExpr(st.Assign.Value)
+			if err != nil {
+				return nil, err
+			}
+			p.Stmts = append(p.Stmts, &AssignStmt{Name: st.Assign.Name, Value: e})
 		} else {
 			return nil, fmt.Errorf("unsupported statement")
 		}
@@ -165,20 +307,39 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	if b == nil {
 		return nil, fmt.Errorf("nil binary")
 	}
-	if len(b.Right) > 0 {
+	left, err := convertUnary(b.Left)
+	if err != nil {
+		return nil, err
+	}
+	if len(b.Right) == 0 {
+		return left, nil
+	}
+	if len(b.Right) != 1 {
 		return nil, fmt.Errorf("binary op not supported")
 	}
-	return convertUnary(b.Left)
+	right, err := convertPostfix(b.Right[0].Right)
+	if err != nil {
+		return nil, err
+	}
+	return &BinaryExpr{Left: left, Op: b.Right[0].Op, Right: right}, nil
 }
 
 func convertUnary(u *parser.Unary) (Expr, error) {
 	if u == nil {
 		return nil, fmt.Errorf("nil unary")
 	}
-	if len(u.Ops) > 0 {
-		return nil, fmt.Errorf("unary ops not supported")
+	x, err := convertPostfix(u.Value)
+	if err != nil {
+		return nil, err
 	}
-	return convertPostfix(u.Value)
+	for i := len(u.Ops) - 1; i >= 0; i-- {
+		op := u.Ops[i]
+		if op != "-" {
+			return nil, fmt.Errorf("unary op %s not supported", op)
+		}
+		x = &UnaryExpr{Op: "-", X: x}
+	}
+	return x, nil
 }
 
 func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
@@ -205,18 +366,42 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		name := p.Call.Func
 		if name == "print" {
 			name = "_print"
+		} else if name == "len" {
+			name = "_len"
 		}
 		return &CallExpr{Func: name, Args: args}, nil
 	case p.Lit != nil:
 		return convertLiteral(p.Lit)
+	case p.List != nil:
+		elems := make([]Expr, len(p.List.Elems))
+		for i, e := range p.List.Elems {
+			ex, err := convertExpr(e)
+			if err != nil {
+				return nil, err
+			}
+			elems[i] = ex
+		}
+		return &ListLit{Elems: elems}, nil
+	case p.Selector != nil:
+		if len(p.Selector.Tail) > 0 {
+			return nil, fmt.Errorf("selector tail not supported")
+		}
+		return &Var{Name: p.Selector.Root}, nil
+	case p.Group != nil:
+		return convertExpr(p.Group)
 	default:
 		return nil, fmt.Errorf("unsupported primary")
 	}
 }
 
 func convertLiteral(l *parser.Literal) (Expr, error) {
-	if l.Str != nil {
+	switch {
+	case l.Str != nil:
 		return &StringLit{Value: *l.Str}, nil
+	case l.Int != nil:
+		return &IntLit{Value: int(*l.Int)}, nil
+	case l.Bool != nil:
+		return &BoolLit{Value: bool(*l.Bool)}, nil
 	}
 	return nil, fmt.Errorf("unsupported literal")
 }
@@ -234,6 +419,16 @@ func stmtNode(s Stmt) *ast.Node {
 	switch st := s.(type) {
 	case *ExprStmt:
 		return &ast.Node{Kind: "expr_stmt", Children: []*ast.Node{exprNode(st.Expr)}}
+	case *LetStmt:
+		return &ast.Node{Kind: "let_stmt", Value: st.Name, Children: []*ast.Node{exprNode(st.Value)}}
+	case *VarStmt:
+		child := &ast.Node{Kind: "null"}
+		if st.Value != nil {
+			child = exprNode(st.Value)
+		}
+		return &ast.Node{Kind: "var_stmt", Value: st.Name, Children: []*ast.Node{child}}
+	case *AssignStmt:
+		return &ast.Node{Kind: "assign_stmt", Value: st.Name, Children: []*ast.Node{exprNode(st.Value)}}
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
@@ -249,6 +444,22 @@ func exprNode(e Expr) *ast.Node {
 		return n
 	case *StringLit:
 		return &ast.Node{Kind: "string", Value: ex.Value}
+	case *BinaryExpr:
+		return &ast.Node{Kind: "binary", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
+	case *UnaryExpr:
+		return &ast.Node{Kind: "unary", Value: ex.Op, Children: []*ast.Node{exprNode(ex.X)}}
+	case *Var:
+		return &ast.Node{Kind: "var", Value: ex.Name}
+	case *IntLit:
+		return &ast.Node{Kind: "int", Value: ex.Value}
+	case *BoolLit:
+		return &ast.Node{Kind: "bool", Value: ex.Value}
+	case *ListLit:
+		n := &ast.Node{Kind: "list"}
+		for _, e := range ex.Elems {
+			n.Children = append(n.Children, exprNode(e))
+		}
+		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
