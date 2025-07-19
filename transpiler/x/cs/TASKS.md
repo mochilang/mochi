@@ -1,3 +1,10 @@
+## Progress (2025-07-19 18:42 UTC)
+- cs transpiler: clean up AST helpers and update docs (progress 58/100)
+
+## Progress (2025-07-20 01:23 +0700)
+- transpiler/cs: refine bool handling and docs (progress 58/100)
+
+
 ## Progress (2025-07-19 18:08 UTC)
 - cs transpiler: emit bool values and simplify condition checks (progress 58/100)
 
@@ -29,6 +36,12 @@
 ## Remaining Work
 - [x] Implement loops and conditionals
 - [ ] Support map and list mutation operations
+
+
+
+
+
+
 
 
 
