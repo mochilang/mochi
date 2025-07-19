@@ -1,6 +1,6 @@
 # Transpiler Tasks
-
 ## Recent Enhancements
-- 2025-07-19 11:48 +0700 Enhanced Fortran transpiler to handle assignments and basic expressions.
-- 2025-07-19 05:24 +0000 Added typed variables and assignment support.
-- 2025-07-19 12:37 +0700 Added golden tests for typed let and variable assignment.
+- 2025-07-19 06:27  - fortran transpiler: support more tests
+- 2025-07-19 13:02  - fortran transpiler: add golden tests and update docs
+- 2025-07-19 12:37  - move progress docs and extend fortran transpiler
+- 2025-07-19 11:48  - Add simple Fortran transpiler
