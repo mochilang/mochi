@@ -1,3 +1,6 @@
+## Progress (2025-07-19 18:16 +07)
+- fortran transpiler: support boolean printing
+
 ## Progress (2025-07-19 17:31 +07)
 - VM valid golden test results updated
 
