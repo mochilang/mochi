@@ -55,9 +55,9 @@ var
   ch: Variant;
   cur: string;
   i: integer;
-  words: specialize TArray<Variant>;
+  words: specialize TArray<string>;
 begin
-  words := specialize TArray<Variant>([]);
+  words := specialize TArray<string>([]);
   cur := '';
   i := 0;
   while (i < Length(s)) do
@@ -68,7 +68,7 @@ begin
     begin
       if (Length(cur) > 0) then
       begin
-        words := specialize _appendList<Variant>(words, cur);
+        words := specialize _appendList<string>(words, cur);
         cur := '';
       end;
     end else
@@ -100,7 +100,7 @@ end;
 
 function join(xs: specialize TArray<string>; sep: string): string;
 var
-  i: Variant;
+  i: integer;
   res: string;
 begin
   res := '';
@@ -121,18 +121,18 @@ var
   ci: integer;
   cmd: Variant;
   found: boolean;
-  results: specialize TArray<Variant>;
-  w: specialize TArray<Variant>;
+  results: specialize TArray<string>;
+  w: specialize TArray<string>;
   wi: integer;
   wlen: Variant;
   ww: Variant;
 begin
-  results := specialize TArray<Variant>([]);
+  results := specialize TArray<string>([]);
   if (Length(words) = 0) then ;
   wi := 0;
   while (wi < Length(words)) do
   begin
-    w := specialize _indexList<Variant>(words, wi);
+    w := specialize _indexList<string>(words, wi);
     found := False;
     wlen := Length(w);
     ci := 0;
@@ -145,7 +145,7 @@ begin
         ww := UpperCase(w);
         if (_sliceString(c, 0, 0 + wlen) = ww) then
         begin
-          results := specialize _appendList<Variant>(results, c);
+          results := specialize _appendList<string>(results, c);
           found := True;
           break;
         end;
@@ -165,19 +165,19 @@ var
   cmd: Variant;
   commands: Variant;
   count: function(p0: Variant): integer is nested;
-  i: Variant;
+  i: integer;
   j: integer;
   k: integer;
-  mins: specialize TArray<Variant>;
+  mins: specialize TArray<integer>;
   out1: string;
-  results: specialize TArray<Variant>;
+  results: specialize TArray<string>;
   sentence: string;
   table: string;
-  words: specialize TArray<Variant>;
+  words: specialize TArray<string>;
 begin
   table := 'Add ALTer  BAckup Bottom  CAppend Change SCHANGE  CInsert CLAst COMPress Copy ' + 'COUnt COVerlay CURsor DELete CDelete Down DUPlicate Xedit EXPand EXTract Find ' + 'NFind NFINDUp NFUp CFind FINdup FUp FOrward GET Help HEXType Input POWerinput ' + ' Join SPlit SPLTJOIN  LOAD  Locate CLocate  LOWercase UPPercase  LPrefix MACRO ' + 'MErge MODify MOve MSG Next Overlay PARSE PREServe PURge PUT PUTD  Query  QUIT ' + 'READ  RECover REFRESH RENum REPeat  Replace CReplace  RESet  RESTore  RGTLEFT ' + 'RIght LEft  SAVE  SET SHift SI  SORT  SOS  STAck STATus  TOP TRAnsfer TypeUp ';
   commands := fields(table);
-  mins := specialize TArray<Variant>([]);
+  mins := specialize TArray<integer>([]);
   i := 0;
   while (i < Length(commands)) do
   begin
@@ -190,7 +190,7 @@ begin
       if ((ch >= 'A') and (ch <= 'Z')) then ;
       j := j + 1;
     end;
-    mins := specialize _appendList<Variant>(mins, count);
+    mins := specialize _appendList<integer>(mins, count);
     i := i + 1;
   end;
   sentence := 'riG   rePEAT copies  put mo   rest    types   fup.    6       poweRin';
@@ -200,7 +200,7 @@ begin
   k := 0;
   while (k < Length(words)) do
   begin
-    out1 := out1 + padRight(specialize _indexList<Variant>(words, k), Length(specialize _indexList<Variant>(results, k))) + ' ';
+    out1 := out1 + padRight(specialize _indexList<string>(words, k), Length(specialize _indexList<string>(results, k))) + ' ';
     k := k + 1;
   end;
   writeln(out1);

@@ -47,9 +47,9 @@ var
   c: Variant;
   cur: string;
   i: integer;
-  res: specialize TArray<Variant>;
+  res: specialize TArray<string>;
 begin
-  res := specialize TArray<Variant>([]);
+  res := specialize TArray<string>([]);
   cur := '';
   i := 0;
   while (i < Length(s)) do
@@ -59,7 +59,7 @@ begin
     begin
       if (Length(cur) > 0) then
       begin
-        res := specialize _appendList<Variant>(res, cur);
+        res := specialize _appendList<string>(res, cur);
         cur := '';
       end;
     end else
@@ -79,7 +79,7 @@ var
   c: Variant;
   i: integer;
   j: integer;
-  rest: specialize TArray<Variant>;
+  rest: specialize TArray<string>;
 begin
   if (Length(word) = 0) then ;
   c := LowerCase(_sliceString(word, 0, 1));
@@ -89,7 +89,7 @@ begin
     b := specialize _indexList<integer>(blks, i);
     if ((c = LowerCase(Copy(b, 1, 1 - 0))) or (c = LowerCase(Copy(b, 1 + 1, 2 - 1)))) then
     begin
-      rest := specialize TArray<Variant>([]);
+      rest := specialize TArray<string>([]);
       j := 0;
       while (j < Length(blks)) do
       begin

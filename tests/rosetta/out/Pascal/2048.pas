@@ -32,7 +32,7 @@ end;
 
 var
   SIZE: integer;
-  board: specialize TArray<specialize TArray<integer>>;
+  board: Variant;
   cmd: Variant;
   full: specialize TFPGMap<string, Variant>;
   m: Variant;
@@ -66,7 +66,7 @@ begin
   exit;
 end;
 
-function spawnTile(b: specialize TArray<specialize TArray<integer>>): specialize TFPGMap<string, any>;
+function spawnTile(b: specialize TArray<specialize TArray<integer>>): specialize TFPGMap<string, Variant>;
 var
   _tmp0: specialize TFPGMap<string, Variant>;
   _tmp1: specialize TFPGMap<string, Variant>;
@@ -171,7 +171,7 @@ begin
   exit;
 end;
 
-function slideLeft(row: specialize TArray<integer>): specialize TFPGMap<string, any>;
+function slideLeft(row: specialize TArray<integer>): specialize TFPGMap<string, Variant>;
 var
   _tmp2: specialize TFPGMap<string, Variant>;
   gain: integer;
@@ -215,7 +215,7 @@ begin
   exit;
 end;
 
-function moveLeft(b: specialize TArray<specialize TArray<integer>>; score: integer): specialize TFPGMap<string, any>;
+function moveLeft(b: specialize TArray<specialize TArray<integer>>; score: integer): specialize TFPGMap<string, Variant>;
 var
   _tmp3: specialize TFPGMap<string, Variant>;
   moved: boolean;
@@ -248,7 +248,7 @@ begin
   exit;
 end;
 
-function moveRight(b: specialize TArray<specialize TArray<integer>>; score: integer): specialize TFPGMap<string, any>;
+function moveRight(b: specialize TArray<specialize TArray<integer>>; score: integer): specialize TFPGMap<string, Variant>;
 var
   _tmp4: specialize TFPGMap<string, Variant>;
   moved: boolean;
@@ -311,7 +311,7 @@ begin
   end;
 end;
 
-function moveUp(b: specialize TArray<specialize TArray<integer>>; score: integer): specialize TFPGMap<string, any>;
+function moveUp(b: specialize TArray<specialize TArray<integer>>; score: integer): specialize TFPGMap<string, Variant>;
 var
   _tmp5: specialize TFPGMap<string, Variant>;
   col: specialize TArray<integer>;
@@ -346,7 +346,7 @@ begin
   exit;
 end;
 
-function moveDown(b: specialize TArray<specialize TArray<integer>>; score: integer): specialize TFPGMap<string, any>;
+function moveDown(b: specialize TArray<specialize TArray<integer>>; score: integer): specialize TFPGMap<string, Variant>;
 var
   _tmp6: specialize TFPGMap<string, Variant>;
   col: specialize TArray<integer>;

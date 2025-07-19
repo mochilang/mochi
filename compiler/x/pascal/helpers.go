@@ -427,6 +427,8 @@ func parsePasType(s string) types.Type {
 		return types.BoolType{}
 	case "char":
 		return types.StringType{}
+	case "Variant":
+		return types.AnyType{}
 	}
 	if strings.HasPrefix(s, "specialize TArray<") && strings.HasSuffix(s, ">") {
 		inner := strings.TrimSuffix(strings.TrimPrefix(s, "specialize TArray<"), ">")

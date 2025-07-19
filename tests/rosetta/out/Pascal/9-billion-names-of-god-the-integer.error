@@ -4,29 +4,41 @@ Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /tmp/9-billion-names-of-god-the-integer.pas
 9-billion-names-of-god-the-integer.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
-9-billion-names-of-god-the-integer.pas(53,8) Note: Call to subroutine "operator :=(const source:Int64):Variant;" marked as inline is not inlined
-9-billion-names-of-god-the-integer.pas(54,10) Note: Call to subroutine "operator >(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
-9-billion-names-of-god-the-integer.pas(54,13) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
-9-billion-names-of-god-the-integer.pas(54,62) Note: Call to subroutine "operator :=(const source:Variant):LongInt;" marked as inline is not inlined
-9-billion-names-of-god-the-integer.pas(54,62) Note: Call to subroutine "operator -(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
-9-billion-names-of-god-the-integer.pas(54,59) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
-9-billion-names-of-god-the-integer.pas(56,52) Note: Call to subroutine "operator :=(const source:Variant):LongInt;" marked as inline is not inlined
-9-billion-names-of-god-the-integer.pas(56,52) Note: Call to subroutine "operator -(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
-9-billion-names-of-god-the-integer.pas(56,49) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
-9-billion-names-of-god-the-integer.pas(57,12) Note: Call to subroutine "operator -(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
-9-billion-names-of-god-the-integer.pas(57,12) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
-9-billion-names-of-god-the-integer.pas(76,13) Error: Incompatible types: got "TArray$1$crcE41905E8" expected "TArray$1$crc9F312717"
+9-billion-names-of-god-the-integer.pas(58,8) Note: Call to subroutine "operator :=(const source:Int64):Variant;" marked as inline is not inlined
+9-billion-names-of-god-the-integer.pas(59,10) Note: Call to subroutine "operator >(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+9-billion-names-of-god-the-integer.pas(59,13) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+9-billion-names-of-god-the-integer.pas(59,62) Note: Call to subroutine "operator :=(const source:Variant):LongInt;" marked as inline is not inlined
+9-billion-names-of-god-the-integer.pas(59,62) Note: Call to subroutine "operator -(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+9-billion-names-of-god-the-integer.pas(59,59) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+9-billion-names-of-god-the-integer.pas(61,52) Note: Call to subroutine "operator :=(const source:Variant):LongInt;" marked as inline is not inlined
+9-billion-names-of-god-the-integer.pas(61,52) Note: Call to subroutine "operator -(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+9-billion-names-of-god-the-integer.pas(61,49) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+9-billion-names-of-god-the-integer.pas(62,12) Note: Call to subroutine "operator -(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+9-billion-names-of-god-the-integer.pas(62,12) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
 9-billion-names-of-god-the-integer.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
-9-billion-names-of-god-the-integer.pas(103,24) Error: Incompatible type for arg no. 1: Got "TArray$1$crcE41905E8", expected "TArray$1$crc9F312717"
-9-billion-names-of-god-the-integer.pas(136,24) Error: Incompatible type for arg no. 1: Got "TArray$1$crcE41905E8", expected "TArray$1$crc9F312717"
-9-billion-names-of-god-the-integer.pas(181,74) Error: Incompatible types: got "TArray$1$crcF9AFD986" expected "<procedure variable type of function(LongInt):{Dynamic} Array Of ShortString is nested;Register>"
-9-billion-names-of-god-the-integer.pas(186,62) Error: Illegal qualifier
-9-billion-names-of-god-the-integer.pas(186,62) Error: Type mismatch
-9-billion-names-of-god-the-integer.pas(189,56) Error: Incompatible type for arg no. 2: Got "<procedure variable type of function(LongInt):{Dynamic} Array Of ShortString is nested;Register>", expected "Variant"
-9-billion-names-of-god-the-integer.pas(212,13) Error: Incompatible types: got "TArray$1$crcE41905E8" expected "TArray$1$crc862A1656"
-9-billion-names-of-god-the-integer.pas(236,18) Error: Incompatible type for arg no. 1: Got "<procedure variable type of function(Variant):LongInt is nested;Register>", expected "LongInt"
-9-billion-names-of-god-the-integer.pas(237,25) Error: Incompatible type for arg no. 1: Got "<procedure variable type of function(Variant):LongInt is nested;Register>", expected "QWord"
-9-billion-names-of-god-the-integer.pas(234,7) Error: Incompatible types: got "LongInt" expected "<procedure variable type of function(Variant):LongInt is nested;Register>"
-9-billion-names-of-god-the-integer.pas(240) Fatal: There were 11 errors compiling module, stopping
+9-billion-names-of-god-the-integer.pas(126,11) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+9-billion-names-of-god-the-integer.pas(129,21) Note: Call to subroutine "operator -(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+9-billion-names-of-god-the-integer.pas(129,21) Note: Call to subroutine "operator -(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+9-billion-names-of-god-the-integer.pas(129,16) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+9-billion-names-of-god-the-integer.pas(129,21) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+9-billion-names-of-god-the-integer.pas(130,8) Note: Call to subroutine "operator <(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+9-billion-names-of-god-the-integer.pas(130,14) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+9-billion-names-of-god-the-integer.pas(132,20) Note: Call to subroutine "operator +(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+9-billion-names-of-god-the-integer.pas(132,20) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+9-billion-names-of-god-the-integer.pas(138,53) Note: Call to subroutine "operator :=(const source:Variant):LongInt;" marked as inline is not inlined
+9-billion-names-of-god-the-integer.pas(151,18) Note: Call to subroutine "operator :=(const source:Int64):Variant;" marked as inline is not inlined
+9-billion-names-of-god-the-integer.pas(152,9) Note: Call to subroutine "operator >=(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+9-billion-names-of-god-the-integer.pas(152,12) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+9-billion-names-of-god-the-integer.pas(154,58) Note: Call to subroutine "operator :=(const source:Variant):LongInt;" marked as inline is not inlined
+9-billion-names-of-god-the-integer.pas(155,12) Note: Call to subroutine "operator -(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+9-billion-names-of-god-the-integer.pas(155,12) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+9-billion-names-of-god-the-integer.pas(190,165) Error: Incompatible type for arg no. 1: Got "TArray$1$crc47A4C996", expected "TArray$1$crcDEAD982C"
+9-billion-names-of-god-the-integer.pas(191,196) Error: Incompatible type for arg no. 2: Got "TArray$1$crcDEAD982C", expected "TArray$1$crc9F312717"
+9-billion-names-of-god-the-integer.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
+9-billion-names-of-god-the-integer.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
+9-billion-names-of-god-the-integer.pas(241,18) Error: Incompatible type for arg no. 1: Got "<procedure variable type of function(Variant):LongInt is nested;Register>", expected "LongInt"
+9-billion-names-of-god-the-integer.pas(242,25) Error: Incompatible type for arg no. 1: Got "<procedure variable type of function(Variant):LongInt is nested;Register>", expected "QWord"
+9-billion-names-of-god-the-integer.pas(239,7) Error: Incompatible types: got "LongInt" expected "<procedure variable type of function(Variant):LongInt is nested;Register>"
+9-billion-names-of-god-the-integer.pas(245) Fatal: There were 5 errors compiling module, stopping
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode

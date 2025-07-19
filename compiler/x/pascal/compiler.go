@@ -1034,6 +1034,8 @@ func (c *Compiler) typeRef(t *parser.TypeRef) string {
 			return "string"
 		case "bool":
 			return "boolean"
+		case "any":
+			return "Variant"
 		}
 	}
 	if t.Fun != nil {

@@ -40,7 +40,7 @@ var
   goal: integer;
   n_cards: integer;
 
-function newNum(n: integer): specialize TFPGMap<string, any>;
+function newNum(n: integer): specialize TFPGMap<string, Variant>;
 var
   _tmp0: specialize TFPGMap<string, Variant>;
   _tmp1: specialize TFPGMap<string, Variant>;
@@ -55,7 +55,7 @@ begin
   exit;
 end;
 
-function exprEval(x: specialize TFPGMap<string, any>): specialize TFPGMap<string, integer>;
+function exprEval(x: specialize TFPGMap<string, Variant>): specialize TFPGMap<string, integer>;
 var
   _tmp2: specialize TFPGMap<string, Variant>;
   _tmp3: specialize TFPGMap<string, Variant>;
@@ -77,7 +77,7 @@ begin
   exit;
 end;
 
-function exprString(x: specialize TFPGMap<string, any>): string;
+function exprString(x: specialize TFPGMap<string, Variant>): string;
 var
   ls: Variant;
   opstr: string;
@@ -104,7 +104,7 @@ begin
   exit;
 end;
 
-function solve(xs: specialize TArray<specialize TFPGMap<string, any>>): boolean;
+function solve(xs: specialize TArray<specialize TFPGMap<string, Variant>>): boolean;
 var
   _tmp6: specialize TFPGMap<string, Variant>;
   _tmp7: specialize TFPGMap<string, Variant>;
@@ -117,7 +117,7 @@ var
   k: integer;
   node: specialize TFPGMap<Variant, Variant>;
   op: Variant;
-  rest: specialize TArray<Variant>;
+  rest: specialize TArray<specialize TFPGMap<string, integer>>;
 begin
   if (Length(xs) = 1) then
   begin
@@ -137,7 +137,7 @@ begin
     j := i + 1;
     while (j < Length(xs)) do
     begin
-      rest := specialize TArray<Variant>([]);
+      rest := specialize TArray<specialize TFPGMap<string, integer>>([]);
       k := 0;
       while (k < Length(xs)) do
       begin
@@ -153,20 +153,20 @@ begin
         _tmp6.AddOrSetData('left', a);
         _tmp6.AddOrSetData('right', b);
         node := _tmp6;
-        if solve(specialize _appendList<Variant>(rest, node)) then ;
+        if solve(specialize _appendList<specialize TFPGMap<string, integer>>(rest, node)) then ;
       end;
       _tmp7 := specialize TFPGMap<string, Variant>.Create;
       _tmp7.AddOrSetData('op', OP_SUB);
       _tmp7.AddOrSetData('left', b);
       _tmp7.AddOrSetData('right', a);
       node := _tmp7;
-      if solve(specialize _appendList<Variant>(rest, node)) then ;
+      if solve(specialize _appendList<specialize TFPGMap<string, integer>>(rest, node)) then ;
       _tmp8 := specialize TFPGMap<string, Variant>.Create;
       _tmp8.AddOrSetData('op', OP_DIV);
       _tmp8.AddOrSetData('left', b);
       _tmp8.AddOrSetData('right', a);
       node := _tmp8;
-      if solve(specialize _appendList<Variant>(rest, node)) then ;
+      if solve(specialize _appendList<specialize TFPGMap<string, integer>>(rest, node)) then ;
       j := j + 1;
     end;
     i := i + 1;
@@ -177,7 +177,7 @@ end;
 
 procedure main();
 var
-  cards: specialize TArray<Variant>;
+  cards: specialize TArray<specialize TFPGMap<string, integer>>;
   i: integer;
   iter: integer;
   n: Variant;
@@ -185,12 +185,12 @@ begin
   iter := 0;
   while (iter < 10) do
   begin
-    cards := specialize TArray<Variant>([]);
+    cards := specialize TArray<specialize TFPGMap<string, integer>>([]);
     i := 0;
     while (i < n_cards) do
     begin
       n := _now() mod digit_range - 1 + 1;
-      cards := specialize _appendList<Variant>(cards, newNum(n));
+      cards := specialize _appendList<specialize TFPGMap<string, integer>>(cards, newNum(n));
       writeln(' ' + IntToStr(n));
       i := i + 1;
     end;

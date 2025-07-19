@@ -55,9 +55,9 @@ var
   ch: Variant;
   cur: string;
   i: integer;
-  words: specialize TArray<Variant>;
+  words: specialize TArray<string>;
 begin
-  words := specialize TArray<Variant>([]);
+  words := specialize TArray<string>([]);
   cur := '';
   i := 0;
   while (i < Length(s)) do
@@ -68,7 +68,7 @@ begin
     begin
       if (Length(cur) > 0) then
       begin
-        words := specialize _appendList<Variant>(words, cur);
+        words := specialize _appendList<string>(words, cur);
         cur := '';
       end;
     end else
@@ -100,7 +100,7 @@ end;
 
 function join(xs: specialize TArray<string>; sep: string): string;
 var
-  i: Variant;
+  i: integer;
   res: string;
 begin
   res := '';
@@ -119,7 +119,7 @@ function parseIntStr(str: string): integer;
 var
   _tmp0: specialize TFPGMap<string, integer>;
   digits: specialize TFPGMap<Variant, Variant>;
-  i: Variant;
+  i: integer;
   n: integer;
   neg: boolean;
 begin
@@ -156,7 +156,7 @@ end;
 function isDigits(s: string): boolean;
 var
   ch: Variant;
-  i: Variant;
+  i: integer;
 begin
   if (Length(s) = 0) then ;
   i := 0;
@@ -170,20 +170,20 @@ begin
   exit;
 end;
 
-function readTable(table: string): specialize TFPGMap<string, any>;
+function readTable(table: string): specialize TFPGMap<string, Variant>;
 var
-  _tmp1: specialize TFPGMap<string, specialize TArray<Variant>>;
+  _tmp1: specialize TFPGMap<string, Variant>;
   cmd: Variant;
-  cmds: specialize TArray<Variant>;
-  i: Variant;
+  cmds: specialize TArray<string>;
+  i: integer;
   minlen: Variant;
-  mins: specialize TArray<Variant>;
+  mins: specialize TArray<integer>;
   num: function(p0: Variant): integer is nested;
   toks: Variant;
 begin
   toks := fields(table);
-  cmds := specialize TArray<Variant>([]);
-  mins := specialize TArray<Variant>([]);
+  cmds := specialize TArray<string>([]);
+  mins := specialize TArray<integer>([]);
   i := 0;
   while (i < Length(toks)) do
   begin
@@ -199,10 +199,10 @@ begin
         i := i + 1;
       end;
     end;
-    cmds := specialize _appendList<Variant>(cmds, cmd);
-    mins := specialize _appendList<Variant>(mins, minlen);
+    cmds := specialize _appendList<string>(cmds, cmd);
+    mins := specialize _appendList<integer>(mins, minlen);
   end;
-  _tmp1 := specialize TFPGMap<string, specialize TArray<Variant>>.Create;
+  _tmp1 := specialize TFPGMap<string, Variant>.Create;
   _tmp1.AddOrSetData('commands', cmds);
   _tmp1.AddOrSetData('mins', mins);
   result := _tmp1;
@@ -215,30 +215,30 @@ var
   ci: integer;
   cmd: Variant;
   found: boolean;
-  results: specialize TArray<Variant>;
-  w: specialize TArray<Variant>;
+  results: specialize TArray<string>;
+  w: specialize TArray<string>;
   wi: integer;
   wlen: Variant;
   ww: Variant;
 begin
-  results := specialize TArray<Variant>([]);
+  results := specialize TArray<string>([]);
   wi := 0;
   while (wi < Length(words)) do
   begin
-    w := specialize _indexList<Variant>(words, wi);
+    w := specialize _indexList<string>(words, wi);
     found := False;
     wlen := Length(w);
     ci := 0;
     while (ci < Length(commands)) do
     begin
       cmd := specialize _indexList<integer>(commands, ci);
-      if (((specialize _indexList<Variant>(mins, ci) <> 0) and (wlen >= specialize _indexList<Variant>(mins, ci))) and (wlen <= Length(cmd))) then
+      if (((specialize _indexList<integer>(mins, ci) <> 0) and (wlen >= specialize _indexList<integer>(mins, ci))) and (wlen <= Length(cmd))) then
       begin
         c := UpperCase(cmd);
         ww := UpperCase(w);
         if (_sliceString(c, 0, 0 + wlen) = ww) then
         begin
-          results := specialize _appendList<Variant>(results, c);
+          results := specialize _appendList<string>(results, c);
           found := True;
           break;
         end;
@@ -256,13 +256,13 @@ procedure main();
 var
   commands: specialize TArray<string>;
   k: integer;
-  mins: specialize TArray<Variant>;
+  mins: specialize TArray<integer>;
   out1: string;
-  results: specialize TArray<Variant>;
+  results: specialize TArray<string>;
   sentence: string;
   table: string;
   tbl: Variant;
-  words: specialize TArray<Variant>;
+  words: specialize TArray<string>;
 begin
   table := '' + 'add 1  alter 3  backup 2  bottom 1  Cappend 2  change 1  Schange  Cinsert 2  Clast 3 ' + 'compress 4 copy 2 count 3 Coverlay 3 cursor 3  delete 3 Cdelete 2  down 1  duplicate ' + '3 xEdit 1 expand 3 extract 3  find 1 Nfind 2 Nfindup 6 NfUP 3 Cfind 2 findUP 3 fUP 2 ' + 'forward 2  get  help 1 hexType 4  input 1 powerInput 3  join 1 split 2 spltJOIN load ' + 'locate 1 Clocate 2 lowerCase 3 upperCase 3 Lprefix 2  macro  merge 2 modify 3 move 2 ' + 'msg  next 1 overlay 1 parse preserve 4 purge 3 put putD query 1 quit  read recover 3 ' + 'refresh renum 3 repeat 3 replace 1 Creplace 2 reset 3 restore 4 rgtLEFT right 2 left ' + '2  save  set  shift 2  si  sort  sos  stack 3 status 4 top  transfer 3  type 1  up 1 ';
   sentence := 'riG   rePEAT copies  put mo   rest    types   fup.    6
@@ -279,10 +279,10 @@ poweRin';
     out1 := out1 + ' ';
     if (k < Length(words) - 1) then
     begin
-      out1 := out1 + padRight(specialize _indexList<Variant>(words, k), Length(specialize _indexList<Variant>(results, k)));
+      out1 := out1 + padRight(specialize _indexList<string>(words, k), Length(specialize _indexList<string>(results, k)));
     end else
     begin
-      out1 := out1 + specialize _indexList<Variant>(words, k);
+      out1 := out1 + specialize _indexList<string>(words, k);
     end;
     k := k + 1;
   end;

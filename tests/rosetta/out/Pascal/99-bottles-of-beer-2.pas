@@ -55,9 +55,9 @@ var
   ch: Variant;
   cur: string;
   i: integer;
-  words: specialize TArray<Variant>;
+  words: specialize TArray<string>;
 begin
-  words := specialize TArray<Variant>([]);
+  words := specialize TArray<string>([]);
   cur := '';
   i := 0;
   while (i < Length(s)) do
@@ -68,7 +68,7 @@ begin
     begin
       if (Length(cur) > 0) then
       begin
-        words := specialize _appendList<Variant>(words, cur);
+        words := specialize _appendList<string>(words, cur);
         cur := '';
       end;
     end else
@@ -144,22 +144,22 @@ end;
 
 function slur(p: string; d: integer): string;
 var
-  a: specialize TArray<Variant>;
+  a: specialize TArray<string>;
   i: integer;
   idx: Variant;
   j: Variant;
   k: integer;
   s: Variant;
   seed: Variant;
-  tmp: specialize TArray<Variant>;
+  tmp: specialize TArray<string>;
   w: Variant;
 begin
   if (Length(p) <= 2) then ;
-  a := specialize TArray<Variant>([]);
+  a := specialize TArray<string>([]);
   i := 1;
   while (i < Length(p) - 1) do
   begin
-    a := specialize _appendList<Variant>(a, _sliceString(p, i, i + i + 1));
+    a := specialize _appendList<string>(a, _sliceString(p, i, i + i + 1));
     i := i + 1;
   end;
   idx := Length(a) - 1;
@@ -170,8 +170,8 @@ begin
     if (seed mod 100 >= d) then
     begin
       j := seed mod idx + 1;
-      tmp := specialize _indexList<Variant>(a, idx);
-      a[idx] := specialize _indexList<Variant>(a, j);
+      tmp := specialize _indexList<string>(a, idx);
+      a[idx] := specialize _indexList<string>(a, j);
       a[j] := tmp;
     end;
     idx := idx - 1;
@@ -180,7 +180,7 @@ begin
   k := 0;
   while (k < Length(a)) do
   begin
-    s := s + specialize _indexList<Variant>(a, k);
+    s := s + specialize _indexList<string>(a, k);
     k := k + 1;
   end;
   s := s + _sliceString(p, Length(p) - 1, Length(p) - 1 + Length(p));
