@@ -1,3 +1,25 @@
+## Progress (2025-07-20 01:01 +0700)
+- Improved nil printing and typed variable handling
+- Simplified `in` operator to return bool
+
+## Progress (2025-07-20 00:52 +0700)
+- Added while/for loops and index assignment support
+
+## Progress (2025-07-20 00:52 +0700)
+- Added while/for loops and index assignment support
+
+## Progress (2025-07-20 00:52 +0700)
+- Added while/for loops and index assignment support
+
+## Progress (2025-07-20 00:52 +0700)
+- Added while/for loops and index assignment support
+
+## Progress (2025-07-20 00:52 +0700)
+- Added while/for loops and index assignment support
+
+## Progress (2025-07-20 00:52 +0700)
+- Added while/for loops and index assignment support
+
 ## Progress (2025-07-19 23:52 +0700)
 - Added while/for loops and index assignment support
 

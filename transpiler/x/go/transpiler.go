@@ -45,7 +45,9 @@ func (p *PrintStmt) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
+		io.WriteString(w, "func(v any) string { s := fmt.Sprint(v); if s == \"<nil>\" { return \"null\" }; return s }(")
 		e.emit(w)
+		io.WriteString(w, ")")
 	}
 	io.WriteString(w, ")")
 }
@@ -410,7 +412,7 @@ type ContainsExpr struct {
 }
 
 func (c *ContainsExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "func(s any, v any) any { switch xs := s.(type) { case []int: n, ok := v.(int); if !ok { return nil }; for i, m := range xs { if m == n { return i } }; return nil; case string: str, ok := v.(string); if !ok { return 0 }; if strings.Contains(xs, str) { return 1 }; return 0 }; return nil }(")
+	fmt.Fprint(w, "func(s any, v any) bool { switch xs := s.(type) { case []int: n, ok := v.(int); if !ok { return false }; for _, m := range xs { if m == n { return true } }; return false; case string: str, ok := v.(string); if !ok { return false }; return strings.Contains(xs, str) }; return false }(")
 	c.Collection.emit(w)
 	fmt.Fprint(w, ", ")
 	c.Value.emit(w)
@@ -532,7 +534,11 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 			return &VarDecl{Name: st.Let.Name, Type: toGoType(st.Let.Type), Value: e}, nil
 		}
-		return &VarDecl{Name: st.Let.Name, Type: toGoType(st.Let.Type)}, nil
+		typ := toGoType(st.Let.Type)
+		if typ != "" {
+			typ = "*" + typ
+		}
+		return &VarDecl{Name: st.Let.Name, Type: typ}, nil
 	case st.Var != nil:
 		if st.Var.Value != nil {
 			e, err := compileExpr(st.Var.Value, env)
@@ -541,7 +547,11 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 			return &VarDecl{Name: st.Var.Name, Type: toGoType(st.Var.Type), Value: e}, nil
 		}
-		return &VarDecl{Name: st.Var.Name, Type: toGoType(st.Var.Type)}, nil
+		typ := toGoType(st.Var.Type)
+		if typ != "" {
+			typ = "*" + typ
+		}
+		return &VarDecl{Name: st.Var.Name, Type: typ}, nil
 	case st.Assign != nil:
 		if len(st.Assign.Index) == 1 && st.Assign.Index[0].Colon == nil && st.Assign.Index[0].Colon2 == nil && len(st.Assign.Field) == 0 {
 			idx, err := compileExpr(st.Assign.Index[0].Start, env)

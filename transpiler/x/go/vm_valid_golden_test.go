@@ -137,7 +137,8 @@ func updateTasks() {
 	}
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
-	buf.WriteString("- Added while/for loops and index assignment support\n")
+	buf.WriteString("- Improved nil printing and typed variable handling\n")
+	buf.WriteString("- Simplified `in` operator to return bool\n")
 	buf.WriteString("\n")
 	if data, err := os.ReadFile(taskFile); err == nil {
 		buf.Write(data)
