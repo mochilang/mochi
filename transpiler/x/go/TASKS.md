@@ -1,3 +1,7 @@
+## Progress (2025-07-20 01:49 +0700)
+- docs(go): update VM checklist and tasks
+- Regenerated golden files - 52/100 vm valid programs passing
+
 ## Progress (2025-07-20 01:38 +0700)
 - regenerate go golden files
 - Regenerated golden files - 52/100 vm valid programs passing
