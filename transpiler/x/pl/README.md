@@ -4,7 +4,7 @@ This directory contains a tiny transpiler that converts a restricted subset of M
 
 ## Golden tests
 
-Programs under `tests/vm/valid` that have generated Prolog code (21/100):
+Programs under `tests/vm/valid` that have generated Prolog code (24/100):
 
 - [x] `append_builtin`
 - [x] `avg_builtin`
@@ -53,9 +53,9 @@ Programs under `tests/vm/valid` that have generated Prolog code (21/100):
 - [x] `len_string`
 - [x] `let_and_print`
 - [ ] `list_assign`
-- [ ] `list_index`
-- [ ] `list_nested_assign`
-- [ ] `list_set_ops`
+ - [x] `list_index`
+ - [ ] `list_nested_assign`
+ - [x] `list_set_ops`
 - [ ] `load_yaml`
 - [ ] `map_assign`
 - [ ] `map_in_operator`
@@ -90,7 +90,7 @@ Programs under `tests/vm/valid` that have generated Prolog code (21/100):
 - [x] `string_concat`
 - [ ] `string_contains`
 - [ ] `string_in_operator`
-- [ ] `string_index`
+ - [x] `string_index`
 - [ ] `string_prefix_slice`
 - [x] `substring_builtin`
 - [x] `sum_builtin`
