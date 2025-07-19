@@ -159,18 +159,28 @@ func (f *ForInStmt) emit(w io.Writer) {
 
 // Function represents a simple function declaration.
 type Function struct {
-	Name   string
-	Params []string
-	Body   []Stmt
+	Name       string
+	Params     []string
+	ParamTypes []string
+	ReturnType string
+	Body       []Stmt
 }
 
 func (f *Function) emit(w io.Writer) {
-	fmt.Fprintf(w, "static int %s(", f.Name)
+	ret := f.ReturnType
+	if ret == "" {
+		ret = "void"
+	}
+	fmt.Fprintf(w, "static %s %s(", ret, f.Name)
 	for i, p := range f.Params {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
 		}
-		fmt.Fprintf(w, "int %s", p)
+		typ := "int"
+		if len(f.ParamTypes) > i && f.ParamTypes[i] != "" {
+			typ = f.ParamTypes[i]
+		}
+		fmt.Fprintf(w, "%s %s", typ, p)
 	}
 	fmt.Fprint(w, ") {\n")
 	for _, st := range f.Body {
@@ -417,6 +427,42 @@ type IndexExpr struct {
 	Index  Expr
 }
 
+type FunLit struct {
+	Params     []string
+	ParamTypes []string
+	ReturnType string
+	Body       []Stmt
+	ExprBody   Expr
+}
+
+func (f *FunLit) emit(w io.Writer) {
+	fmt.Fprint(w, "(")
+	for i, p := range f.Params {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		if len(f.ParamTypes) > i && f.ParamTypes[i] != "" {
+			fmt.Fprintf(w, "%s %s", f.ParamTypes[i], p)
+		} else {
+			fmt.Fprint(w, p)
+		}
+	}
+	fmt.Fprint(w, ") => ")
+	if f.ExprBody != nil {
+		f.ExprBody.emit(w)
+	} else {
+		fmt.Fprint(w, "{")
+		for i, st := range f.Body {
+			if i > 0 {
+				fmt.Fprint(w, " ")
+			}
+			st.emit(w)
+			fmt.Fprint(w, ";")
+		}
+		fmt.Fprint(w, "}")
+	}
+}
+
 // FieldExpr represents obj.field access.
 type FieldExpr struct {
 	Target Expr
@@ -503,6 +549,32 @@ func isMapExpr(e Expr) bool {
 	return false
 }
 
+func csType(t *parser.TypeRef) string {
+	if t == nil {
+		return "object"
+	}
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int":
+			return "int"
+		case "string":
+			return "string"
+		case "bool":
+			return "int"
+		}
+		return "object"
+	}
+	if t.Fun != nil {
+		var parts []string
+		for _, p := range t.Fun.Params {
+			parts = append(parts, csType(p))
+		}
+		parts = append(parts, csType(t.Fun.Return))
+		return fmt.Sprintf("Func<%s>", strings.Join(parts, ", "))
+	}
+	return "object"
+}
+
 func typeOfExpr(e Expr) string {
 	switch ex := e.(type) {
 	case *StringLit:
@@ -514,6 +586,8 @@ func typeOfExpr(e Expr) string {
 	case *MapLit:
 		k, v := mapTypes(ex)
 		return fmt.Sprintf("Dictionary<%s, %s>", k, v)
+	case *FunLit:
+		return fmt.Sprintf("Func<%s>", strings.Join(append(append([]string{}, ex.ParamTypes...), ex.ReturnType), ", "))
 	case *VarRef:
 		if t, ok := varTypes[ex.Name]; ok {
 			return t
@@ -974,8 +1048,10 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		return nil, fmt.Errorf("unsupported assignment")
 	case s.Fun != nil:
 		params := make([]string, len(s.Fun.Params))
+		ptypes := make([]string, len(s.Fun.Params))
 		for i, p := range s.Fun.Params {
 			params[i] = p.Name
+			ptypes[i] = csType(p.Type)
 		}
 		var body []Stmt
 		for _, b := range s.Fun.Body {
@@ -987,7 +1063,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				body = append(body, st)
 			}
 		}
-		prog.Funcs = append(prog.Funcs, &Function{Name: s.Fun.Name, Params: params, Body: body})
+		prog.Funcs = append(prog.Funcs, &Function{Name: s.Fun.Name, Params: params, ParamTypes: ptypes, ReturnType: csType(s.Fun.Return), Body: body})
 		return nil, nil
 	case s.Return != nil:
 		var val Expr
@@ -1200,8 +1276,38 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		return compileExpr(p.Group)
 	case p.If != nil:
 		return compileIfExpr(p.If)
+	case p.FunExpr != nil:
+		return compileFunExpr(p.FunExpr)
 	}
 	return nil, fmt.Errorf("unsupported primary")
+}
+
+func compileFunExpr(f *parser.FunExpr) (Expr, error) {
+	params := make([]string, len(f.Params))
+	ptypes := make([]string, len(f.Params))
+	for i, p := range f.Params {
+		params[i] = p.Name
+		ptypes[i] = csType(p.Type)
+	}
+	var body []Stmt
+	var expr Expr
+	var err error
+	if f.ExprBody != nil {
+		expr, err = compileExpr(f.ExprBody)
+		if err != nil {
+			return nil, err
+		}
+	}
+	for _, st := range f.BlockBody {
+		s, err2 := compileStmt(nil, st)
+		if err2 != nil {
+			return nil, err2
+		}
+		if s != nil {
+			body = append(body, s)
+		}
+	}
+	return &FunLit{Params: params, ParamTypes: ptypes, ReturnType: csType(f.Return), Body: body, ExprBody: expr}, nil
 }
 
 func compileIfExpr(i *parser.IfExpr) (Expr, error) {
