@@ -598,6 +598,39 @@ func funFreeVars(fn *parser.FunExpr, env *types.Env) []string {
 	return out
 }
 
+// funStmtFreeVars computes the free variables of a named function statement.
+func funStmtFreeVars(fn *parser.FunStmt, env *types.Env) []string {
+	vars := map[string]struct{}{}
+	for _, st := range fn.Body {
+		scanStmt(st, vars)
+	}
+	defs := map[string]struct{}{}
+	for _, p := range fn.Params {
+		defs[p.Name] = struct{}{}
+	}
+	for _, st := range fn.Body {
+		collectDefs(st, defs)
+	}
+	for name := range defs {
+		delete(vars, name)
+	}
+	outMap := map[string]struct{}{}
+	for k := range vars {
+		if env != nil {
+			if _, err := env.GetVar(k); err != nil {
+				continue
+			}
+		}
+		outMap["$"+sanitizeName(k)] = struct{}{}
+	}
+	out := make([]string, 0, len(outMap))
+	for k := range outMap {
+		out = append(out, k)
+	}
+	sort.Strings(out)
+	return out
+}
+
 func collectDefs(s *parser.Statement, defs map[string]struct{}) {
 	switch {
 	case s.Let != nil:
