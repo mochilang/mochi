@@ -2,10 +2,8 @@
 #include <stdio.h>
 
 int main() {
-	int a = 10 - 3;
-	int b = 2 + 2;
-	printf("%d\n", a);
-	printf("%d\n", a == 7);
-	printf("%d\n", b < 5);
+	for (int i = 1; i < 4; i++ ) {
+	printf("%d\n", i);
+	}
 	return 0;
 }
