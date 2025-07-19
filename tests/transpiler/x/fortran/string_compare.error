@@ -1,0 +1,21 @@
+exit status 1
+/workspace/mochi/tests/transpiler/x/fortran/string_compare.f90:3:16:
+
+    3 |   print *, trim(("a" < "b"))
+      |                1
+Error: ‘string’ argument of ‘trim’ intrinsic at (1) must be CHARACTER
+/workspace/mochi/tests/transpiler/x/fortran/string_compare.f90:4:16:
+
+    4 |   print *, trim(("a" <= "a"))
+      |                1
+Error: ‘string’ argument of ‘trim’ intrinsic at (1) must be CHARACTER
+/workspace/mochi/tests/transpiler/x/fortran/string_compare.f90:5:16:
+
+    5 |   print *, trim(("b" > "a"))
+      |                1
+Error: ‘string’ argument of ‘trim’ intrinsic at (1) must be CHARACTER
+/workspace/mochi/tests/transpiler/x/fortran/string_compare.f90:6:16:
+
+    6 |   print *, trim(("b" >= "b"))
+      |                1
+Error: ‘string’ argument of ‘trim’ intrinsic at (1) must be CHARACTER
