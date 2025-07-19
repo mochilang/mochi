@@ -722,6 +722,13 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	var retType types.Type
 	if fun.Return != nil {
 		retType = resolveTypeRef(fun.Return, c.env)
+		if types.IsStringAnyMapLike(retType) && c.env != nil {
+			c.env = bodyEnv
+			if t := c.inferFunReturnType(fun.Body); !types.IsStringAnyMapLike(t) {
+				retType = t
+			}
+			c.env = oldEnv
+		}
 	} else {
 		if c.env != nil {
 			c.env = bodyEnv
@@ -848,6 +855,13 @@ func (c *Compiler) compileTypeMethod(structName string, fun *parser.FunStmt) err
 	var retType types.Type
 	if fun.Return != nil {
 		retType = resolveTypeRef(fun.Return, c.env)
+		if types.IsStringAnyMapLike(retType) && c.env != nil {
+			c.env = bodyEnv
+			if t := c.inferFunReturnType(fun.Body); !types.IsStringAnyMapLike(t) {
+				retType = t
+			}
+			c.env = oldEnv
+		}
 	} else {
 		if c.env != nil {
 			c.env = bodyEnv
