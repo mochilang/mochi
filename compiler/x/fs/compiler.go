@@ -1082,6 +1082,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					continue
 				}
 			}
+			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
+				val = fmt.Sprintf("%s %s", *op.Cast.Type.Simple, val)
+				continue
+			}
 			continue
 		}
 		return "", fmt.Errorf("unsupported postfix expression")
