@@ -98,7 +98,7 @@ func TestCSTranspiler_Golden(t *testing.T) {
 	for _, csPath := range files {
 		name := strings.TrimSuffix(filepath.Base(csPath), ".cs")
 		src := filepath.Join(root, "tests", "vm", "valid", name+".mochi")
-		wantPath := strings.TrimSuffix(csPath, ".cs") + ".output"
+		wantPath := strings.TrimSuffix(csPath, ".cs") + ".out"
 
 		t.Run(name, func(t *testing.T) {
 			prog, err := parser.Parse(src)

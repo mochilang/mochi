@@ -131,7 +131,7 @@ func Emit(prog *Program) []byte {
 // formatCS performs very basic formatting and prepends a standard header.
 func formatCS(src []byte) []byte {
 	ver := readVersion()
-	ts := time.Now().Format(time.RFC3339)
+	ts := time.Now().Format("2006-01-02 15:04:05 MST")
 	header := fmt.Sprintf("// Mochi %s - generated %s\n", ver, ts)
 	src = bytes.ReplaceAll(src, []byte("\t"), []byte("    "))
 	if len(src) > 0 && src[len(src)-1] != '\n' {
