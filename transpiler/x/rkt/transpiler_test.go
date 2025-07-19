@@ -10,7 +10,6 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
-	"time"
 
 	"mochi/parser"
 	rkt "mochi/transpiler/x/rkt"
@@ -68,6 +67,9 @@ func TestTranspile_Golden(t *testing.T) {
 		"len_builtin",
 		"avg_builtin",
 		"append_builtin",
+		"count_builtin",
+		"sum_builtin",
+		"str_builtin",
 	}
 	for _, name := range names {
 		src := filepath.Join(root, "tests", "vm", "valid", name+".mochi")
@@ -141,16 +143,15 @@ func updateReadme() {
 func updateTasks() {
 	root := repoRoot(&testing.T{})
 	taskPath := filepath.Join(root, "transpiler", "x", "rkt", "TASKS.md")
-	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
-	ts := ""
-	if err == nil {
-		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
-			ts = t.Format("2006-01-02 15:04 MST")
-		}
+	out, err := exec.Command("git", "log", "-1", "--format=%cd", "--date=format:%Y-%m-%d %H:%M:%S %Z").Output()
+	ts := strings.TrimSpace(string(out))
+	if err != nil {
+		ts = ""
 	}
 	var buf bytes.Buffer
 	fmt.Fprintf(&buf, "## Progress (%s)\n", ts)
-	buf.WriteString("- VM valid golden test results updated\n\n")
+	buf.WriteString("- Added str(), sum() and count() builtin support\n")
+	buf.WriteString("- Updated golden tests and README\n\n")
 	if data, err := os.ReadFile(taskPath); err == nil {
 		buf.Write(data)
 	}

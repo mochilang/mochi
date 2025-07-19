@@ -1,8 +1,6 @@
-## Progress (2025-07-19 17:31 +0700)
-- VM valid golden test results updated
-
-## Progress (2025-07-19 14:41 +0700)
-- VM valid golden test results updated
+## Progress (2025-07-19 18:36:23)
+- Added str(), sum() and count() builtin support
+- Updated golden tests and README
 
 # Transpiler Tasks
 
