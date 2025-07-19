@@ -1,4 +1,4 @@
-# Rosetta Python Output (40/278 compiled and run)
+# Rosetta Python Output (40/281 compiled and run)
 
 This directory holds Python source code generated from the Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected runtime output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -210,6 +210,7 @@ This directory holds Python source code generated from the Mochi programs in `te
 - [ ] circles-of-given-radius-through-two-points
 - [ ] circular-primes
 - [ ] cistercian-numerals
+- [ ] comma-quibbling
 - [ ] compiler-virtual-machine-interpreter
 - [ ] composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k
 - [ ] compound-data-type
@@ -280,4 +281,6 @@ This directory holds Python source code generated from the Mochi programs in `te
 - [ ] deal-cards-for-freecell
 - [ ] death-star
 - [ ] deceptive-numbers
+- [ ] deepcopy-1
+- [ ] define-a-primitive-data-type
 - [ ] md5
