@@ -80,4 +80,20 @@ function mochi_print(v)
     print(v)
   end
 end
-mochi_print(len("mochi"))
+function twoSum(nums, target)
+n = len(nums)
+for i = 0, n - 1 do
+for j = (i + 1), n - 1 do
+if ((nums[i] + nums[j]) == target) then
+return {i, j}
+end
+end
+end
+return {(0 - 1), (0 - 1)}
+end
+
+result = twoSum({2, 7, 11, 15}, 9)
+
+mochi_print(result[0])
+
+mochi_print(result[1])

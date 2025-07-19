@@ -2,7 +2,7 @@
 
 Generated Lua code for programs in `tests/vm/valid`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-Transpiled programs: 36/100
+Transpiled programs: 43/100
 
 Checklist:
 
@@ -52,9 +52,9 @@ Checklist:
 - [ ] len_map
 - [x] len_string
 - [x] let_and_print
-- [ ] list_assign
-- [ ] list_index
-- [ ] list_nested_assign
+- [x] list_assign
+- [x] list_index
+- [x] list_nested_assign
 - [ ] list_set_ops
 - [ ] load_yaml
 - [ ] map_assign
@@ -83,15 +83,15 @@ Checklist:
 - [ ] right_join
 - [ ] save_jsonl_stdout
 - [x] short_circuit
-- [ ] slice
+- [x] slice
 - [ ] sort_stable
 - [x] str_builtin
 - [x] string_compare
 - [x] string_concat
-- [ ] string_contains
+- [x] string_contains
 - [x] string_in_operator
-- [ ] string_index
-- [ ] string_prefix_slice
+- [x] string_index
+- [x] string_prefix_slice
 - [x] substring_builtin
 - [x] sum_builtin
 - [x] tail_recursion

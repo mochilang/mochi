@@ -80,4 +80,12 @@ function mochi_print(v)
     print(v)
   end
 end
-mochi_print(len("mochi"))
+prefix = "fore"
+
+s1 = "forest"
+
+mochi_print((slice(s1, 0, len(prefix)) == prefix))
+
+s2 = "desert"
+
+mochi_print((slice(s2, 0, len(prefix)) == prefix))

@@ -1,1 +1,6 @@
-postfix ops not supported
+exit status 1
+lua: /workspace/mochi/tests/transpiler/x/lua/two-sum.lua:87: attempt to perform arithmetic on a nil value (field '?')
+stack traceback:
+	/workspace/mochi/tests/transpiler/x/lua/two-sum.lua:87: in function 'twoSum'
+	/workspace/mochi/tests/transpiler/x/lua/two-sum.lua:95: in main chunk
+	[C]: in ?

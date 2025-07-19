@@ -80,4 +80,8 @@ function mochi_print(v)
     print(v)
   end
 end
-mochi_print(len("mochi"))
+nums = {1, 2}
+
+nums[1] = 3
+
+mochi_print(nums[1])

@@ -80,4 +80,8 @@ function mochi_print(v)
     print(v)
   end
 end
-mochi_print(len("mochi"))
+matrix = {{1, 2}, {3, 4}}
+
+matrix[1][0] = 5
+
+mochi_print(matrix[1][0])
