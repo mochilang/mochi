@@ -819,6 +819,98 @@ func TestTranspileWhileLoop(t *testing.T) {
 	}
 }
 
+func TestTranspileSubstringBuiltin(t *testing.T) {
+	if _, err := exec.LookPath("ocamlc"); err != nil {
+		t.Skip("ocamlc not installed")
+	}
+	root := repoRoot(t)
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "ocaml")
+	os.MkdirAll(outDir, 0o755)
+
+	src := filepath.Join(root, "tests", "vm", "valid", "substring_builtin.mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type: %v", errs[0])
+	}
+	ast, err := ocaml.Transpile(prog, env)
+	if err != nil {
+		t.Fatalf("transpile: %v", err)
+	}
+	code := ast.Emit()
+	mlFile := filepath.Join(outDir, "substring_builtin.ml")
+	if err := os.WriteFile(mlFile, code, 0o644); err != nil {
+		t.Fatalf("write ml: %v", err)
+	}
+	exe := filepath.Join(outDir, "substring_builtin")
+	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+		os.WriteFile(filepath.Join(outDir, "substring_builtin.error"), out, 0o644)
+		t.Fatalf("ocamlc: %v", err)
+	}
+	out, err := exec.Command(exe).CombinedOutput()
+	if err != nil {
+		t.Fatalf("run: %v", err)
+	}
+	got := bytes.TrimSpace(out)
+	want, err := os.ReadFile(filepath.Join(outDir, "substring_builtin.out"))
+	if err != nil {
+		t.Fatalf("read want: %v", err)
+	}
+	want = bytes.TrimSpace(want)
+	if !bytes.Equal(got, want) {
+		t.Errorf("output mismatch\nGot: %s\nWant: %s", got, want)
+	}
+}
+
+func TestTranspileSumBuiltin(t *testing.T) {
+	if _, err := exec.LookPath("ocamlc"); err != nil {
+		t.Skip("ocamlc not installed")
+	}
+	root := repoRoot(t)
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "ocaml")
+	os.MkdirAll(outDir, 0o755)
+
+	src := filepath.Join(root, "tests", "vm", "valid", "sum_builtin.mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type: %v", errs[0])
+	}
+	ast, err := ocaml.Transpile(prog, env)
+	if err != nil {
+		t.Fatalf("transpile: %v", err)
+	}
+	code := ast.Emit()
+	mlFile := filepath.Join(outDir, "sum_builtin.ml")
+	if err := os.WriteFile(mlFile, code, 0o644); err != nil {
+		t.Fatalf("write ml: %v", err)
+	}
+	exe := filepath.Join(outDir, "sum_builtin")
+	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+		os.WriteFile(filepath.Join(outDir, "sum_builtin.error"), out, 0o644)
+		t.Fatalf("ocamlc: %v", err)
+	}
+	out, err := exec.Command(exe).CombinedOutput()
+	if err != nil {
+		t.Fatalf("run: %v", err)
+	}
+	got := bytes.TrimSpace(out)
+	want, err := os.ReadFile(filepath.Join(outDir, "sum_builtin.out"))
+	if err != nil {
+		t.Fatalf("read want: %v", err)
+	}
+	want = bytes.TrimSpace(want)
+	if !bytes.Equal(got, want) {
+		t.Errorf("output mismatch\nGot: %s\nWant: %s", got, want)
+	}
+}
+
 func TestTranspileForLoop(t *testing.T) {
 	if _, err := exec.LookPath("ocamlc"); err != nil {
 		t.Skip("ocamlc not installed")
@@ -957,8 +1049,15 @@ func updateTasks() {
 		}
 	}
 	var buf bytes.Buffer
+	srcDir := filepath.Join(root, "tests", "vm", "valid")
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "ocaml")
+	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	total := len(files)
+	compiledFiles, _ := filepath.Glob(filepath.Join(outDir, "*.out"))
+	compiled := len(compiledFiles)
 	fmt.Fprintf(&buf, "## Progress (%s)\n", ts)
-	buf.WriteString("- VM valid golden test results updated\n\n")
+	fmt.Fprintf(&buf, "- Checklist updated: %d/%d tests compiled\n", compiled, total)
+	buf.WriteString("- Added support for `substring_builtin` and `sum_builtin` programs.\n\n")
 	if data, err := os.ReadFile(taskFile); err == nil {
 		buf.Write(data)
 	}

@@ -190,6 +190,41 @@ func (l *LenBuiltin) emitPrint(w io.Writer) {
 	io.WriteString(w, ")")
 }
 
+// SubstringBuiltin represents substring(str, start, end).
+type SubstringBuiltin struct {
+	Str   Expr
+	Start Expr
+	End   Expr
+}
+
+func (s *SubstringBuiltin) emit(w io.Writer) {
+	io.WriteString(w, "String.sub ")
+	s.Str.emit(w)
+	io.WriteString(w, " ")
+	s.Start.emit(w)
+	io.WriteString(w, " (")
+	s.End.emit(w)
+	io.WriteString(w, " - ")
+	s.Start.emit(w)
+	io.WriteString(w, ")")
+}
+
+func (s *SubstringBuiltin) emitPrint(w io.Writer) { s.emit(w) }
+
+// SumBuiltin represents sum(list).
+type SumBuiltin struct{ List Expr }
+
+func (s *SumBuiltin) emit(w io.Writer) {
+	io.WriteString(w, "(List.fold_left (fun acc x -> acc + x) 0 ")
+	s.List.emit(w)
+	io.WriteString(w, ")")
+}
+
+func (s *SumBuiltin) emitPrint(w io.Writer) {
+	io.WriteString(w, "string_of_int ")
+	s.emit(w)
+}
+
 // ListLit represents a list literal of integers.
 type ListLit struct{ Elems []Expr }
 
@@ -801,6 +836,40 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			return nil, "", fmt.Errorf("len only supports string")
 		}
 		return &LenBuiltin{Arg: arg}, "int", nil
+	}
+	if c.Func == "substring" && len(c.Args) == 3 {
+		strArg, typ, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		if typ != "string" {
+			return nil, "", fmt.Errorf("substring expects string")
+		}
+		startArg, typ2, err := convertExpr(c.Args[1], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		if typ2 != "int" {
+			return nil, "", fmt.Errorf("substring start expects int")
+		}
+		endArg, typ3, err := convertExpr(c.Args[2], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		if typ3 != "int" {
+			return nil, "", fmt.Errorf("substring end expects int")
+		}
+		return &SubstringBuiltin{Str: strArg, Start: startArg, End: endArg}, "string", nil
+	}
+	if c.Func == "sum" && len(c.Args) == 1 {
+		listArg, typ, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		if typ != "list" {
+			return nil, "", fmt.Errorf("sum expects list")
+		}
+		return &SumBuiltin{List: listArg}, "int", nil
 	}
 	return nil, "", fmt.Errorf("call %s not supported", c.Func)
 }
