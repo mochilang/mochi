@@ -4,13 +4,13 @@ This directory contains a minimal transpiler that converts a very small subset o
 
 ## VM golden test checklist
 
-Currently 10 of 100 programs transpile and run.
+Currently 15 of 100 programs transpile and run.
 
 
 The table below tracks which programs from `tests/vm/valid` successfully transpile and run. Checked items have generated `.exs` code and matching `.out` files in `tests/transpiler/x/ex`.
 - [ ] append_builtin.mochi
 - [x] avg_builtin.mochi
-- [ ] basic_compare.mochi
+- [x] basic_compare.mochi
 - [x] binary_precedence.mochi
 - [ ] bool_chain.mochi
 - [ ] break_continue.mochi
@@ -53,7 +53,7 @@ The table below tracks which programs from `tests/vm/valid` successfully transpi
 - [x] len_builtin.mochi
 - [ ] len_map.mochi
 - [x] len_string.mochi
-- [ ] let_and_print.mochi
+- [x] let_and_print.mochi
 - [ ] list_assign.mochi
 - [ ] list_index.mochi
 - [ ] list_nested_assign.mochi
@@ -100,11 +100,11 @@ The table below tracks which programs from `tests/vm/valid` successfully transpi
 - [ ] test_block.mochi
 - [ ] tree_sum.mochi
 - [ ] two-sum.mochi
-- [ ] typed_let.mochi
-- [ ] typed_var.mochi
+- [x] typed_let.mochi
+- [x] typed_var.mochi
 - [x] unary_neg.mochi
 - [ ] update_stmt.mochi
 - [ ] user_type_literal.mochi
 - [ ] values_builtin.mochi
-- [ ] var_assignment.mochi
+- [x] var_assignment.mochi
 - [ ] while_loop.mochi

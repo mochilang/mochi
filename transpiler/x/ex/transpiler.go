@@ -21,6 +21,39 @@ type Program struct {
 
 type Stmt interface{ emit(io.Writer) }
 
+// VarRef references a variable name or dotted selector.
+type VarRef struct{ Name string }
+
+func (v *VarRef) emit(w io.Writer) { io.WriteString(w, v.Name) }
+
+// LetStmt binds a variable optionally to a value.
+type LetStmt struct {
+	Name  string
+	Value Expr
+}
+
+func (s *LetStmt) emit(w io.Writer) {
+	io.WriteString(w, s.Name)
+	io.WriteString(w, " = ")
+	if s.Value != nil {
+		s.Value.emit(w)
+	} else {
+		io.WriteString(w, "nil")
+	}
+}
+
+// AssignStmt reassigns a variable.
+type AssignStmt struct {
+	Name  string
+	Value Expr
+}
+
+func (s *AssignStmt) emit(w io.Writer) {
+	io.WriteString(w, s.Name)
+	io.WriteString(w, " = ")
+	s.Value.emit(w)
+}
+
 type Expr interface{ emit(io.Writer) }
 
 // ExprStmt is a statement consisting solely of an expression.
@@ -152,14 +185,51 @@ func Emit(p *Program) []byte {
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	res := &Program{}
 	for _, st := range prog.Statements {
-		if st.Expr != nil {
+		switch {
+		case st.Expr != nil:
 			e, err := compileExpr(st.Expr.Expr)
 			if err != nil {
 				return nil, err
 			}
 			res.Stmts = append(res.Stmts, &ExprStmt{Expr: e})
-		} else if st.Test == nil && st.Import == nil && st.Type == nil {
-			return nil, fmt.Errorf("unsupported statement at %d:%d", st.Pos.Line, st.Pos.Column)
+		case st.Let != nil:
+			var val Expr
+			if st.Let.Value != nil {
+				var err error
+				val, err = compileExpr(st.Let.Value)
+				if err != nil {
+					return nil, err
+				}
+			} else if st.Let.Type != nil && st.Let.Type.Simple != nil && *st.Let.Type.Simple == "int" {
+				val = &NumberLit{Value: "0"}
+			}
+			res.Stmts = append(res.Stmts, &LetStmt{Name: st.Let.Name, Value: val})
+		case st.Var != nil:
+			var val Expr
+			if st.Var.Value != nil {
+				var err error
+				val, err = compileExpr(st.Var.Value)
+				if err != nil {
+					return nil, err
+				}
+			} else if st.Var.Type != nil && st.Var.Type.Simple != nil && *st.Var.Type.Simple == "int" {
+				val = &NumberLit{Value: "0"}
+			}
+			res.Stmts = append(res.Stmts, &LetStmt{Name: st.Var.Name, Value: val})
+		case st.Assign != nil:
+			if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
+				val, err := compileExpr(st.Assign.Value)
+				if err != nil {
+					return nil, err
+				}
+				res.Stmts = append(res.Stmts, &AssignStmt{Name: st.Assign.Name, Value: val})
+			} else if st.Test == nil && st.Import == nil && st.Type == nil {
+				return nil, fmt.Errorf("unsupported statement at %d:%d", st.Pos.Line, st.Pos.Column)
+			}
+		default:
+			if st.Test == nil && st.Import == nil && st.Type == nil {
+				return nil, fmt.Errorf("unsupported statement at %d:%d", st.Pos.Line, st.Pos.Column)
+			}
 		}
 	}
 	_ = env
@@ -293,6 +363,12 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		return &CallExpr{Func: name, Args: args}, nil
 	case p.Lit != nil:
 		return compileLiteral(p.Lit)
+	case p.Selector != nil:
+		name := p.Selector.Root
+		for _, t := range p.Selector.Tail {
+			name += "." + t
+		}
+		return &VarRef{Name: name}, nil
 	case p.List != nil:
 		elems := make([]Expr, len(p.List.Elems))
 		for i, el := range p.List.Elems {
