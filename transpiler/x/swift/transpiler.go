@@ -21,10 +21,17 @@ type Program struct {
 
 type Stmt interface{ emit(io.Writer) }
 
-type PrintStmt struct{ Value string }
+type PrintStmt struct {
+	Value    string
+	IsString bool
+}
 
 func (p *PrintStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "print(%q)\n", p.Value)
+	if p.IsString {
+		fmt.Fprintf(w, "print(%q)\n", p.Value)
+	} else {
+		fmt.Fprintf(w, "print(%s)\n", p.Value)
+	}
 }
 
 func repoRoot() string {
@@ -86,9 +93,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			call := st.Expr.Expr.Binary.Left.Value.Target.Call
 			if call != nil && call.Func == "print" && len(call.Args) == 1 {
 				arg := call.Args[0]
-				lit := arg.Binary.Left.Value.Target.Lit
-				if lit != nil && lit.Str != nil {
-					p.Stmts = append(p.Stmts, &PrintStmt{Value: *lit.Str})
+				if val, str, ok := evalPrintArg(arg); ok {
+					p.Stmts = append(p.Stmts, &PrintStmt{Value: val, IsString: str})
 					continue
 				}
 			}
@@ -97,6 +103,56 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 		return nil, fmt.Errorf("unsupported statement")
 	}
 	return p, nil
+}
+
+func evalPrintArg(arg *parser.Expr) (val string, isString bool, ok bool) {
+	lit := arg.Binary.Left.Value.Target.Lit
+	if lit != nil && len(arg.Binary.Left.Value.Ops) == 0 && len(arg.Binary.Right) == 0 {
+		switch {
+		case lit.Str != nil:
+			return *lit.Str, true, true
+		case lit.Int != nil:
+			return fmt.Sprintf("%d", *lit.Int), false, true
+		}
+	}
+
+	// cast string literal to int
+	if lit != nil && lit.Str != nil && len(arg.Binary.Left.Value.Ops) == 1 {
+		if c := arg.Binary.Left.Value.Ops[0].Cast; c != nil && c.Type != nil && c.Type.Simple != nil && *c.Type.Simple == "int" {
+			return *lit.Str, false, true
+		}
+	}
+
+	if lit != nil && len(arg.Binary.Right) == 1 {
+		op := arg.Binary.Right[0]
+		rightLit := op.Right.Target.Lit
+		if rightLit != nil && rightLit.Str != nil && lit.Str != nil {
+			switch op.Op {
+			case "+":
+				return *lit.Str + *rightLit.Str, true, true
+			case "<", "<=", ">", ">=":
+				left := *lit.Str
+				right := *rightLit.Str
+				var res bool
+				switch op.Op {
+				case "<":
+					res = left < right
+				case "<=":
+					res = left <= right
+				case ">":
+					res = left > right
+				case ">=":
+					res = left >= right
+				}
+				if res {
+					return "1", false, true
+				}
+				return "0", false, true
+			}
+		}
+	}
+
+	return "", false, false
 }
 
 // Print writes a lisp-like representation of the AST to stdout using the ast package.
