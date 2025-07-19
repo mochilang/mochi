@@ -1,7 +1,0 @@
-/workspace/mochi/tests/transpiler/x/cpp/string_contains.cpp: In function ‘int main()’:
-/workspace/mochi/tests/transpiler/x/cpp/string_contains.cpp:7:66: error: invalid operands of types ‘const std::__cxx11::basic_string<char>::size_type’ {aka ‘const long unsigned int’} and ‘<unresolved overloaded function type>’ to binary ‘operator<<’
-    7 |     std::cout << s.find(std::string("cat")) != std::string::npos << std::endl;
-      |                                                ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
-/workspace/mochi/tests/transpiler/x/cpp/string_contains.cpp:8:66: error: invalid operands of types ‘const std::__cxx11::basic_string<char>::size_type’ {aka ‘const long unsigned int’} and ‘<unresolved overloaded function type>’ to binary ‘operator<<’
-    8 |     std::cout << s.find(std::string("dog")) != std::string::npos << std::endl;
-      |                                                ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~

@@ -1,9 +1,0 @@
-/workspace/mochi/tests/transpiler/x/cpp/string_in_operator.cpp: In function ‘int main()’:
-/workspace/mochi/tests/transpiler/x/cpp/string_in_operator.cpp:7:37: error: expected ‘)’ before ‘in’
-    7 |     std::cout << (std::string("cat") in s) << std::endl;
-      |                  ~                  ^~~
-      |                                     )
-/workspace/mochi/tests/transpiler/x/cpp/string_in_operator.cpp:8:37: error: expected ‘)’ before ‘in’
-    8 |     std::cout << (std::string("dog") in s) << std::endl;
-      |                  ~                  ^~~
-      |                                     )

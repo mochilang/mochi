@@ -20,17 +20,6 @@ import (
 var version string
 var currentProgram *Program
 
-const containsHelper = `
-template <typename C, typename V>
-bool contains(const C& c, const V& v) {
-    if constexpr(std::is_same_v<C, std::string>) {
-        return c.find(v) != std::string::npos;
-    } else {
-        return std::find(c.begin(), c.end(), v) != c.end();
-    }
-}
-`
-
 func init() {
 	_, file, _, _ := runtime.Caller(0)
 	root := filepath.Join(filepath.Dir(file), "../../..")
@@ -44,7 +33,6 @@ func init() {
 type Program struct {
 	Includes  []string
 	Functions []*Func
-	Helpers   []string
 }
 
 func (p *Program) addInclude(inc string) {
@@ -54,15 +42,6 @@ func (p *Program) addInclude(inc string) {
 		}
 	}
 	p.Includes = append(p.Includes, inc)
-}
-
-func (p *Program) addHelper(h string) {
-	for _, v := range p.Helpers {
-		if v == h {
-			return
-		}
-	}
-	p.Helpers = append(p.Helpers, h)
 }
 
 type Param struct {
@@ -211,12 +190,6 @@ func (p *Program) write(w io.Writer) {
 	for _, inc := range p.Includes {
 		fmt.Fprintf(w, "#include %s\n", inc)
 	}
-	if len(p.Helpers) > 0 {
-		fmt.Fprintln(w)
-		for _, h := range p.Helpers {
-			fmt.Fprintln(w, h)
-		}
-	}
 	fmt.Fprintln(w)
 	for i, fn := range p.Functions {
 		if i > 0 {
@@ -342,9 +315,9 @@ func (c *ContainsExpr) emit(w io.Writer) {
 func (in *InExpr) emit(w io.Writer) {
 	if currentProgram != nil {
 		currentProgram.addInclude("<algorithm>")
-		currentProgram.addHelper(containsHelper)
+		currentProgram.addInclude("<type_traits>")
 	}
-	io.WriteString(w, "contains(")
+	io.WriteString(w, "([&](const auto& c, const auto& v){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.find(v) != std::string::npos; else return std::find(c.begin(), c.end(), v) != c.end(); })(")
 	in.Coll.emit(w)
 	io.WriteString(w, ", ")
 	in.Value.emit(w)
@@ -775,7 +748,6 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 			if currentProgram != nil {
 				currentProgram.addInclude("<algorithm>")
 				currentProgram.addInclude("<type_traits>")
-				currentProgram.addHelper(containsHelper)
 			}
 			expr = &InExpr{Value: expr, Coll: right}
 		} else {
