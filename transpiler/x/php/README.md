@@ -2,13 +2,13 @@
 
 Generated PHP code for selected Mochi programs under `tests/vm/valid`. Each program has a `.php` file and a corresponding `.out` file with the runtime output. Any execution failures are captured in a `.error` file.
 
-Compiled programs: 14/100
+Compiled programs: 20/100
 
 ## Checklist
 - [ ] append_builtin
-- [ ] avg_builtin
+- [x] avg_builtin
 - [x] basic_compare
-- [ ] binary_precedence
+- [x] binary_precedence
 - [ ] bool_chain
 - [ ] break_continue
 - [ ] cast_string_to_int
@@ -65,7 +65,7 @@ Compiled programs: 14/100
 - [ ] map_nested_assign
 - [ ] match_expr
 - [ ] match_full
-- [ ] math_ops
+- [x] math_ops
 - [ ] membership
 - [ ] min_max_builtin
 - [ ] nested_function
@@ -84,15 +84,15 @@ Compiled programs: 14/100
 - [ ] short_circuit
 - [ ] slice
 - [ ] sort_stable
-- [ ] str_builtin
-- [ ] string_compare
+- [x] str_builtin
+- [x] string_compare
 - [x] string_concat
 - [ ] string_contains
 - [ ] string_in_operator
 - [ ] string_index
 - [ ] string_prefix_slice
 - [x] substring_builtin
-- [ ] sum_builtin
+- [x] sum_builtin
 - [ ] tail_recursion
 - [ ] test_block
 - [ ] tree_sum
