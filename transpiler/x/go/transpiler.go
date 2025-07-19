@@ -428,14 +428,32 @@ func (m *MaxExpr) emit(w io.Writer) {
 type ContainsExpr struct {
 	Collection Expr
 	Value      Expr
+	Kind       string // list, map, or string
+	ElemType   string
 }
 
 func (c *ContainsExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "func(s any, v any) bool { switch xs := s.(type) { case []int: n, ok := v.(int); if !ok { return false }; for _, m := range xs { if m == n { return true } }; return false; case string: str, ok := v.(string); if !ok { return false }; return strings.Contains(xs, str) }; return false }(")
-	c.Collection.emit(w)
-	fmt.Fprint(w, ", ")
-	c.Value.emit(w)
-	fmt.Fprint(w, ")")
+	switch c.Kind {
+	case "string":
+		usesStrings = true
+		fmt.Fprint(w, "strings.Contains(")
+		c.Collection.emit(w)
+		fmt.Fprint(w, ", ")
+		c.Value.emit(w)
+		fmt.Fprint(w, ")")
+	case "map":
+		fmt.Fprint(w, "func() bool { _, ok := ")
+		c.Collection.emit(w)
+		fmt.Fprint(w, "[")
+		c.Value.emit(w)
+		fmt.Fprint(w, "]; return ok }()")
+	default: // list
+		fmt.Fprint(w, "func() bool { for _, v := range ")
+		c.Collection.emit(w)
+		fmt.Fprint(w, " { if v == ")
+		c.Value.emit(w)
+		fmt.Fprint(w, " { return true } }; return false }()")
+	}
 }
 
 type UnionExpr struct{ Left, Right Expr }
@@ -792,7 +810,9 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
+	firstType := types.TypeOfUnary(b.Left, env)
 	operands := []Expr{first}
+	typesList := []types.Type{firstType}
 	ops := make([]*parser.BinaryOp, len(b.Right))
 	for i, op := range b.Right {
 		expr, err := compilePostfix(op.Right, env)
@@ -801,6 +821,7 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 		}
 		ops[i] = op
 		operands = append(operands, expr)
+		typesList = append(typesList, types.TypeOfPostfix(op.Right, env))
 	}
 
 	levels := [][]string{
@@ -834,8 +855,24 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 				var newExpr Expr
 				switch opName {
 				case "in":
-					usesStrings = true
-					newExpr = &ContainsExpr{Collection: right, Value: left}
+					ctype := typesList[i+1]
+					var kind, et string
+					switch ct := ctype.(type) {
+					case types.StringType:
+						kind = "string"
+					case types.MapType:
+						kind = "map"
+						et = toGoTypeFromType(ct.Key)
+					case types.ListType:
+						kind = "list"
+						et = toGoTypeFromType(ct.Elem)
+					default:
+						kind = "list"
+					}
+					if kind == "string" {
+						usesStrings = true
+					}
+					newExpr = &ContainsExpr{Collection: right, Value: left, Kind: kind, ElemType: et}
 				case "union":
 					newExpr = &UnionExpr{Left: left, Right: right}
 				case "union_all":
@@ -849,6 +886,8 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 				}
 				operands[i] = newExpr
 				operands = append(operands[:i+1], operands[i+2:]...)
+				typesList[i] = typesList[i+1]
+				typesList = append(typesList[:i+1], typesList[i+2:]...)
 				ops = append(ops[:i], ops[i+1:]...)
 			} else {
 				i++
@@ -908,8 +947,24 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 		}
 		switch method {
 		case "contains":
-			usesStrings = true
-			return &ContainsExpr{Collection: expr, Value: args[0]}, nil
+			mtype := types.TypeOfPrimary(pf.Target, env)
+			var kind, et string
+			switch mt := mtype.(type) {
+			case types.StringType:
+				kind = "string"
+			case types.MapType:
+				kind = "map"
+				et = toGoTypeFromType(mt.Key)
+			case types.ListType:
+				kind = "list"
+				et = toGoTypeFromType(mt.Elem)
+			default:
+				kind = "list"
+			}
+			if kind == "string" {
+				usesStrings = true
+			}
+			return &ContainsExpr{Collection: expr, Value: args[0], Kind: kind, ElemType: et}, nil
 		default:
 			return nil, fmt.Errorf("unsupported method %s", method)
 		}
