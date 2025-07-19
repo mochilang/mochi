@@ -1,5 +1,5 @@
 exit status 1
-/tmp/TestSwiftTranspiler_VMValid_Golden1806608260/009/main.swift:10:19: error: expected ',' separator
+/tmp/TestSwiftTranspiler_VMValid_Golden1846125927/012/main.swift:10:19: error: expected ',' separator
  8 | }
  9 | let s = "catch"
 10 | mochiPrint(("cat" in s))
@@ -7,7 +7,7 @@ exit status 1
 11 | mochiPrint(("dog" in s))
 12 | 
 
-/tmp/TestSwiftTranspiler_VMValid_Golden1806608260/009/main.swift:10:19: error: expected expression in list of expressions
+/tmp/TestSwiftTranspiler_VMValid_Golden1846125927/012/main.swift:10:19: error: expected expression in list of expressions
  8 | }
  9 | let s = "catch"
 10 | mochiPrint(("cat" in s))
@@ -15,14 +15,14 @@ exit status 1
 11 | mochiPrint(("dog" in s))
 12 | 
 
-/tmp/TestSwiftTranspiler_VMValid_Golden1806608260/009/main.swift:11:19: error: expected ',' separator
+/tmp/TestSwiftTranspiler_VMValid_Golden1846125927/012/main.swift:11:19: error: expected ',' separator
  9 | let s = "catch"
 10 | mochiPrint(("cat" in s))
 11 | mochiPrint(("dog" in s))
    |                   `- error: expected ',' separator
 12 | 
 
-/tmp/TestSwiftTranspiler_VMValid_Golden1806608260/009/main.swift:11:19: error: expected expression in list of expressions
+/tmp/TestSwiftTranspiler_VMValid_Golden1846125927/012/main.swift:11:19: error: expected expression in list of expressions
  9 | let s = "catch"
 10 | mochiPrint(("cat" in s))
 11 | mochiPrint(("dog" in s))

@@ -6,4 +6,9 @@ func mochiPrint(_ v: Any) {
         print(v)
     }
 }
-mochiPrint(1995)
+let x = 5
+if (x > 3) {
+mochiPrint("big")
+} else {
+mochiPrint("small")
+}
