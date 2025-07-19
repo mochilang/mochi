@@ -46,6 +46,8 @@ func TestTranspile_Golden(t *testing.T) {
 		"let_and_print",
 		"var_assignment",
 		"basic_compare",
+		"math_ops",
+		"string_compare",
 		"if_else",
 		"if_then_else",
 		"unary_neg",
