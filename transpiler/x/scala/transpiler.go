@@ -80,6 +80,36 @@ type Name struct{ Name string }
 
 func (n *Name) emit(w io.Writer) { fmt.Fprint(w, n.Name) }
 
+// ListLit represents a simple list literal using Scala's List.
+type ListLit struct{ Elems []Expr }
+
+func (l *ListLit) emit(w io.Writer) {
+	fmt.Fprint(w, "List(")
+	for i, e := range l.Elems {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		e.emit(w)
+	}
+	fmt.Fprint(w, ")")
+}
+
+// SubstringExpr represents substring(s, i, j) which becomes s.substring(i, j).
+type SubstringExpr struct {
+	Value Expr
+	Start Expr
+	End   Expr
+}
+
+func (s *SubstringExpr) emit(w io.Writer) {
+	s.Value.emit(w)
+	fmt.Fprint(w, ".substring(")
+	s.Start.emit(w)
+	fmt.Fprint(w, ", ")
+	s.End.emit(w)
+	fmt.Fprint(w, ")")
+}
+
 type BinaryExpr struct {
 	Left  Expr
 	Op    string
@@ -159,10 +189,19 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 }
 
 func convertUnary(u *parser.Unary) (Expr, error) {
-	if len(u.Ops) > 0 {
-		return nil, fmt.Errorf("unsupported unary")
+	expr, err := convertPostfix(u.Value)
+	if err != nil {
+		return nil, err
 	}
-	return convertPostfix(u.Value)
+	for i := len(u.Ops) - 1; i >= 0; i-- {
+		switch u.Ops[i] {
+		case "-":
+			expr = &BinaryExpr{Left: &IntLit{Value: 0}, Op: "-", Right: expr}
+		default:
+			return nil, fmt.Errorf("unsupported unary")
+		}
+	}
+	return expr, nil
 }
 
 func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
@@ -178,6 +217,18 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return convertCall(p.Call)
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return &Name{Name: p.Selector.Root}, nil
+	case p.List != nil:
+		elems := make([]Expr, len(p.List.Elems))
+		for i, e := range p.List.Elems {
+			ex, err := convertExpr(e)
+			if err != nil {
+				return nil, err
+			}
+			elems[i] = ex
+		}
+		return &ListLit{Elems: elems}, nil
+	case p.Group != nil:
+		return convertExpr(p.Group)
 	case p.Lit != nil:
 		return convertLiteral(p.Lit)
 	default:
@@ -200,6 +251,12 @@ func convertCall(c *parser.CallExpr) (Expr, error) {
 	}
 	if name == "print" {
 		name = "println"
+	}
+	if name == "str" && len(args) == 1 {
+		name = "String.valueOf"
+	}
+	if name == "substring" && len(args) == 3 {
+		return &SubstringExpr{Value: args[0], Start: args[1], End: args[2]}, nil
 	}
 	return &CallExpr{Func: name, Args: args}, nil
 }
@@ -289,6 +346,14 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "len", Children: []*ast.Node{exprNode(ex.Value)}}
 	case *BinaryExpr:
 		return &ast.Node{Kind: "binary", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
+	case *ListLit:
+		n := &ast.Node{Kind: "list"}
+		for _, e := range ex.Elems {
+			n.Children = append(n.Children, exprNode(e))
+		}
+		return n
+	case *SubstringExpr:
+		return &ast.Node{Kind: "substring", Children: []*ast.Node{exprNode(ex.Value), exprNode(ex.Start), exprNode(ex.End)}}
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
