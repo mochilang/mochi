@@ -1,6 +1,6 @@
 # Kotlin Transpiler Tasks
 
-_Last updated: 2025-07-19T12:29:09+00:00_
+_Last updated: 2025-07-19T12:53:06+00:00_
 
 - Basic programs using `print` are supported.
 - Added integer and list literals.
@@ -31,3 +31,8 @@ _Last updated: 2025-07-19T12:29:09+00:00_
 - More Kotlin tests run for `append_builtin`, `min_max_builtin`, `substring_builtin`, `typed_let`, `typed_var` and `var_assignment`.
 - Added tests for `len_map`, `list_index`, `string_contains`, `string_in_operator` and `string_index`.
 - Added test for `values_builtin`.
+
+## VM Golden Progress (2025-07-19T12:53:06+00:00)
+- Implemented `for` loops over ranges and collections.
+- Added `break` and `continue` statements.
+- Generated Kotlin sources for `for_loop`, `for_list_collection` and `break_continue` and updated README progress to 34/100.
