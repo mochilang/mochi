@@ -313,9 +313,17 @@ func TestTranspile_CastStringToInt(t *testing.T) {
 }
 
 func TestTranspile_CastStruct(t *testing.T) {
-        runCase(t, "cast_struct")
+	runCase(t, "cast_struct")
 }
 
 func TestTranspile_NestedFunction(t *testing.T) {
-        runCase(t, "nested_function")
+	runCase(t, "nested_function")
+}
+
+func TestTranspile_RecordAssign(t *testing.T) {
+	runCase(t, "record_assign")
+}
+
+func TestTranspile_UserTypeLiteral(t *testing.T) {
+	runCase(t, "user_type_literal")
 }

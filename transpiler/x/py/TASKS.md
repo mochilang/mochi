@@ -1,4 +1,8 @@
 # Python Transpiler Tasks
+## Recent Enhancements (2025-07-19 15:47 +0000)
+- Added struct literal and field assignment support.
+- Generated golden outputs for `record_assign` and `user_type_literal`.
+- Updated README checklist to 61/100.
 ## Recent Enhancements (2025-07-19 15:26 +0000)
 - Emitted cleaner Python by dropping redundant parentheses in binary expressions.
 - Header timestamps now come from Git for deterministic builds.
