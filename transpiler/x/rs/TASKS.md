@@ -1,5 +1,10 @@
 # Rust Transpiler Tasks
 
+## Recent Enhancements (2025-07-19 07:52 +0000)
+- Added support for list and map literals.
+- Generated golden tests for `len_builtin` and `len_map`.
+- Updated README checklist with progress summary.
+
 ## Recent Enhancements (2025-07-19 07:04 +0000)
 - Implemented operator precedence for binary expressions.
 - Added support for the `len` builtin.
