@@ -13,46 +13,296 @@ import (
 	"mochi/types"
 )
 
-// Program represents a simple Erlang module containing a main function.
+// Program is a minimal Erlang module consisting of sequential statements.
 type Program struct {
-	Body []Expr
+	Stmts []Stmt
 }
+
+type Stmt interface{ emit(io.Writer) }
 
 type Expr interface{ emit(io.Writer) }
 
+// PrintStmt represents a call to print/1.
+type PrintStmt struct{ Expr Expr }
+
+// LetStmt represents a variable binding.
+type LetStmt struct {
+	Name string
+	Expr Expr
+}
+
+// CallExpr represents a function call.
 type CallExpr struct {
 	Func string
-	Arg  string
+	Args []Expr
+}
+
+// BinaryExpr is a binary operation.
+type BinaryExpr struct {
+	Left  Expr
+	Op    string
+	Right Expr
+}
+
+// UnaryExpr is a prefix unary operation.
+type UnaryExpr struct {
+	Op   string
+	Expr Expr
+}
+
+// NameRef refers to a variable.
+type NameRef struct{ Name string }
+
+type IntLit struct{ Value int64 }
+
+type BoolLit struct{ Value bool }
+
+type StringLit struct{ Value string }
+
+func (p *PrintStmt) emit(w io.Writer) {
+	switch e := p.Expr.(type) {
+	case *StringLit:
+		io.WriteString(w, "io:format(\"~s~n\", [")
+	case *CallExpr:
+		if e.Func == "str" {
+			io.WriteString(w, "io:format(\"~s~n\", [")
+		} else {
+			io.WriteString(w, "io:format(\"~p~n\", [")
+		}
+	default:
+		io.WriteString(w, "io:format(\"~p~n\", [")
+	}
+	p.Expr.emit(w)
+	io.WriteString(w, "])")
+}
+
+func (l *LetStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "%s = ", sanitize(l.Name))
+	l.Expr.emit(w)
 }
 
 func (c *CallExpr) emit(w io.Writer) {
-	fmt.Fprintf(w, "%s(%q)", c.Func, c.Arg)
+	name := c.Func
+	switch c.Func {
+	case "len":
+		name = "length"
+	case "str":
+		name = "integer_to_list"
+	}
+	io.WriteString(w, name)
+	io.WriteString(w, "(")
+	for i, a := range c.Args {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		a.emit(w)
+	}
+	io.WriteString(w, ")")
 }
 
-// Transpile converts a Mochi program to a minimal Erlang AST supporting
-// string print statements.
+func (b *BinaryExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
+	b.Left.emit(w)
+	io.WriteString(w, " "+mapOp(b.Op)+" ")
+	b.Right.emit(w)
+	io.WriteString(w, ")")
+}
+
+func (u *UnaryExpr) emit(w io.Writer) {
+	if u.Op == "!" {
+		io.WriteString(w, "not ")
+	} else {
+		io.WriteString(w, u.Op)
+	}
+	u.Expr.emit(w)
+}
+
+func (n *NameRef) emit(w io.Writer) { io.WriteString(w, sanitize(n.Name)) }
+
+func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
+
+func (b *BoolLit) emit(w io.Writer) {
+	if b.Value {
+		io.WriteString(w, "true")
+	} else {
+		io.WriteString(w, "false")
+	}
+}
+
+func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
+
+func mapOp(op string) string {
+	switch op {
+	case "&&":
+		return "andalso"
+	case "||":
+		return "orelse"
+	case "!=":
+		return "/="
+	case "<=":
+		return "=<"
+	default:
+		return op
+	}
+}
+
+func sanitize(name string) string {
+	if name == "" {
+		return "V"
+	}
+	return strings.ToUpper(name[:1]) + name[1:]
+}
+
+// Transpile converts a subset of Mochi to an Erlang AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	_ = env
 	p := &Program{}
 	for _, st := range prog.Statements {
-		if st.Expr == nil {
+		switch {
+		case st.Let != nil:
+			e, err := convertExpr(st.Let.Value)
+			if err != nil {
+				return nil, err
+			}
+			p.Stmts = append(p.Stmts, &LetStmt{Name: st.Let.Name, Expr: e})
+		case st.Expr != nil:
+			e, err := convertExpr(st.Expr.Expr)
+			if err != nil {
+				return nil, err
+			}
+			if c, ok := e.(*CallExpr); ok && c.Func == "print" && len(c.Args) == 1 {
+				p.Stmts = append(p.Stmts, &PrintStmt{Expr: c.Args[0]})
+			} else {
+				return nil, fmt.Errorf("unsupported expression")
+			}
+		default:
 			return nil, fmt.Errorf("unsupported statement")
 		}
-		call := st.Expr.Expr.Binary.Left.Value.Target.Call
-		if call == nil || call.Func != "print" || len(call.Args) != 1 {
-			return nil, fmt.Errorf("unsupported expression")
-		}
-		arg := call.Args[0]
-		lit := arg.Binary.Left.Value.Target.Lit
-		if lit == nil || lit.Str == nil {
-			return nil, fmt.Errorf("unsupported argument")
-		}
-		p.Body = append(p.Body, &CallExpr{Func: "io:format", Arg: *lit.Str + "~n"})
 	}
 	return p, nil
 }
 
-// Emit renders Erlang source for the program with a header.
+func convertExpr(e *parser.Expr) (Expr, error) {
+	if e == nil {
+		return nil, fmt.Errorf("nil expr")
+	}
+	return convertBinary(e.Binary)
+}
+
+func convertBinary(b *parser.BinaryExpr) (Expr, error) {
+	if b == nil {
+		return nil, fmt.Errorf("nil binary")
+	}
+	left, err := convertUnary(b.Left)
+	if err != nil {
+		return nil, err
+	}
+	ops := make([]string, len(b.Right))
+	exprs := []Expr{left}
+	for i, op := range b.Right {
+		r, err := convertPostfix(op.Right)
+		if err != nil {
+			return nil, err
+		}
+		exprs = append(exprs, r)
+		ops[i] = op.Op
+	}
+	levels := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!="}, {"&&"}, {"||"}}
+	contains := func(list []string, v string) bool {
+		for _, s := range list {
+			if s == v {
+				return true
+			}
+		}
+		return false
+	}
+	for _, lvl := range levels {
+		for i := 0; i < len(ops); {
+			if contains(lvl, ops[i]) {
+				l := exprs[i]
+				r := exprs[i+1]
+				exprs[i] = &BinaryExpr{Left: l, Op: ops[i], Right: r}
+				exprs = append(exprs[:i+1], exprs[i+2:]...)
+				ops = append(ops[:i], ops[i+1:]...)
+			} else {
+				i++
+			}
+		}
+	}
+	return exprs[0], nil
+}
+
+func convertUnary(u *parser.Unary) (Expr, error) {
+	if u == nil {
+		return nil, fmt.Errorf("nil unary")
+	}
+	expr, err := convertPostfix(u.Value)
+	if err != nil {
+		return nil, err
+	}
+	for i := len(u.Ops) - 1; i >= 0; i-- {
+		op := u.Ops[i]
+		expr = &UnaryExpr{Op: op, Expr: expr}
+	}
+	return expr, nil
+}
+
+func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
+	if pf == nil {
+		return nil, fmt.Errorf("nil postfix")
+	}
+	expr, err := convertPrimary(pf.Target)
+	if err != nil {
+		return nil, err
+	}
+	for _, op := range pf.Ops {
+		switch {
+		case op.Cast != nil && op.Cast.Type.Simple != nil && *op.Cast.Type.Simple == "int":
+			expr = &CallExpr{Func: "list_to_integer", Args: []Expr{expr}}
+		default:
+			return nil, fmt.Errorf("unsupported postfix")
+		}
+	}
+	return expr, nil
+}
+
+func convertPrimary(p *parser.Primary) (Expr, error) {
+	switch {
+	case p.Lit != nil:
+		return convertLiteral(p.Lit)
+	case p.Selector != nil && len(p.Selector.Tail) == 0:
+		return &NameRef{Name: p.Selector.Root}, nil
+	case p.Call != nil:
+		ce := &CallExpr{Func: p.Call.Func}
+		for _, a := range p.Call.Args {
+			ae, err := convertExpr(a)
+			if err != nil {
+				return nil, err
+			}
+			ce.Args = append(ce.Args, ae)
+		}
+		return ce, nil
+	case p.Group != nil:
+		return convertExpr(p.Group)
+	default:
+		return nil, fmt.Errorf("unsupported primary")
+	}
+}
+
+func convertLiteral(l *parser.Literal) (Expr, error) {
+	switch {
+	case l.Int != nil:
+		return &IntLit{Value: int64(*l.Int)}, nil
+	case l.Bool != nil:
+		return &BoolLit{Value: bool(*l.Bool)}, nil
+	case l.Str != nil:
+		return &StringLit{Value: *l.Str}, nil
+	default:
+		return nil, fmt.Errorf("unsupported literal")
+	}
+}
+
+// Emit renders Erlang source for the program.
 func (p *Program) Emit() []byte {
 	var buf bytes.Buffer
 	buf.WriteString("#!/usr/bin/env escript\n")
@@ -60,10 +310,10 @@ func (p *Program) Emit() []byte {
 	buf.WriteString("-module(main).\n")
 	buf.WriteString("-export([main/1]).\n\n")
 	buf.WriteString("main(_) ->\n")
-	for i, e := range p.Body {
+	for i, s := range p.Stmts {
 		buf.WriteString("    ")
-		e.emit(&buf)
-		if i < len(p.Body)-1 {
+		s.emit(&buf)
+		if i < len(p.Stmts)-1 {
 			buf.WriteString(",\n")
 		} else {
 			buf.WriteString(".\n")

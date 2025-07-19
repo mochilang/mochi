@@ -31,7 +31,7 @@ func repoRoot(t *testing.T) string {
 	return ""
 }
 
-func TestTranspilePrintHello(t *testing.T) {
+func runGolden(t *testing.T, name string) {
 	if _, err := exec.LookPath("escript"); err != nil {
 		t.Skip("escript not installed")
 	}
@@ -39,7 +39,7 @@ func TestTranspilePrintHello(t *testing.T) {
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "erl")
 	os.MkdirAll(outDir, 0o755)
 
-	src := filepath.Join(root, "tests", "vm", "valid", "print_hello.mochi")
+	src := filepath.Join(root, "tests", "vm", "valid", name+".mochi")
 	prog, err := parser.Parse(src)
 	if err != nil {
 		t.Fatalf("parse: %v", err)
@@ -53,7 +53,7 @@ func TestTranspilePrintHello(t *testing.T) {
 		t.Fatalf("transpile: %v", err)
 	}
 	code := ast.Emit()
-	erlFile := filepath.Join(outDir, "print_hello.erl")
+	erlFile := filepath.Join(outDir, name+".erl")
 	if err := os.WriteFile(erlFile, code, 0o755); err != nil {
 		t.Fatalf("write: %v", err)
 	}
@@ -61,11 +61,11 @@ func TestTranspilePrintHello(t *testing.T) {
 	out, err := cmd.CombinedOutput()
 	got := bytes.TrimSpace(out)
 	if err != nil {
-		_ = os.WriteFile(filepath.Join(outDir, "print_hello.error"), out, 0o644)
+		_ = os.WriteFile(filepath.Join(outDir, name+".error"), out, 0o644)
 		t.Fatalf("run: %v", err)
 	}
-	_ = os.Remove(filepath.Join(outDir, "print_hello.error"))
-	wantPath := filepath.Join(outDir, "print_hello.out")
+	_ = os.Remove(filepath.Join(outDir, name+".error"))
+	wantPath := filepath.Join(outDir, name+".out")
 	want, err := os.ReadFile(wantPath)
 	if err != nil {
 		t.Fatalf("read want: %v", err)
@@ -75,3 +75,13 @@ func TestTranspilePrintHello(t *testing.T) {
 		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
 	}
 }
+
+func TestTranspilePrintHello(t *testing.T) { runGolden(t, "print_hello") }
+
+func TestTranspileUnaryNeg(t *testing.T) { runGolden(t, "unary_neg") }
+
+func TestTranspileStringCompare(t *testing.T) { runGolden(t, "string_compare") }
+
+func TestTranspileLenString(t *testing.T) { runGolden(t, "len_string") }
+
+func TestTranspileStrBuiltin(t *testing.T) { runGolden(t, "str_builtin") }

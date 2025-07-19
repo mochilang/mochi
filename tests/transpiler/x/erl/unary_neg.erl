@@ -4,4 +4,5 @@
 -export([main/1]).
 
 main(_) ->
-    io:format("~s~n", ["hello"]).
+    io:format("~p~n", [-3]),
+    io:format("~p~n", [(5 + -2)]).
