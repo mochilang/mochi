@@ -1,0 +1,5 @@
+exit status 1
+Main.java:5: error: variable y might not have been initialized
+        System.out.println(y);
+                           ^
+1 error

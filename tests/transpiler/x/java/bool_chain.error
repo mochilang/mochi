@@ -3,13 +3,13 @@ Main.java:5: error: incompatible types: boolean cannot be converted to int
         return true;
                ^
 Main.java:9: error: bad operand types for binary operator '&&'
-        System.out.println(((1 < 2) && (2 > 3) && boom() ? 1 : 0));
-                                               ^
+        System.out.println((1 < 2) && (2 > 3) && boom());
+                                              ^
   first type:  boolean
   second type: int
 Main.java:10: error: bad operand types for binary operator '&&'
-        System.out.println(((1 < 2) && (2 < 3) && (3 > 4) && boom() ? 1 : 0));
-                                                          ^
+        System.out.println((1 < 2) && (2 < 3) && (3 > 4) && boom());
+                                                         ^
   first type:  boolean
   second type: int
 3 errors
