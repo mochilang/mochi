@@ -96,7 +96,8 @@ func TestMain(m *testing.M) {
 func updateReadme() {
 	root := findRepoRoot(&testing.T{})
 	srcDir := filepath.Join(root, "tests", "vm", "valid")
-	outDir := filepath.Join(root, "tests", "transpiler", "x", "go")
+	binDir := filepath.Join(root, "tests", "transpiler", "x", "go")
+	readmePath := filepath.Join(root, "transpiler", "x", "go", "README.md")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	total := len(files)
 	compiled := 0
@@ -104,7 +105,7 @@ func updateReadme() {
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
+		if _, err := os.Stat(filepath.Join(binDir, name+".out")); err == nil {
 			compiled++
 			mark = "[x]"
 		}
@@ -117,7 +118,7 @@ func updateReadme() {
 	buf.WriteString("Checklist:\n\n")
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
-	_ = os.WriteFile(filepath.Join(outDir, "README.md"), buf.Bytes(), 0o644)
+	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
 }
 
 func updateTasks() {
