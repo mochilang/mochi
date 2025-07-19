@@ -223,8 +223,15 @@ type VarStmt struct {
 }
 
 func (s *VarStmt) emit(w io.Writer) error {
-	if _, err := io.WriteString(w, "var "+s.Name); err != nil {
-		return err
+	typ := inferType(s.Value)
+	if typ == "var" {
+		if _, err := io.WriteString(w, "var "+s.Name); err != nil {
+			return err
+		}
+	} else {
+		if _, err := io.WriteString(w, typ+" "+s.Name); err != nil {
+			return err
+		}
 	}
 	if s.Value != nil {
 		if _, err := io.WriteString(w, " = "); err != nil {
@@ -253,8 +260,15 @@ type LetStmt struct {
 }
 
 func (s *LetStmt) emit(w io.Writer) error {
-	if _, err := io.WriteString(w, "var "+s.Name+" = "); err != nil {
-		return err
+	typ := inferType(s.Value)
+	if typ == "var" {
+		if _, err := io.WriteString(w, "var "+s.Name+" = "); err != nil {
+			return err
+		}
+	} else {
+		if _, err := io.WriteString(w, typ+" "+s.Name+" = "); err != nil {
+			return err
+		}
 	}
 	return s.Value.emit(w)
 }
@@ -595,16 +609,23 @@ func (a *AppendExpr) emit(w io.Writer) error {
 type AvgExpr struct{ List Expr }
 
 func (a *AvgExpr) emit(w io.Writer) error {
-	if _, err := io.WriteString(w, "(() { var _list = "); err != nil {
+	if err := a.List.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ".isEmpty ? 0 : ("); err != nil {
 		return err
 	}
 	if err := a.List.emit(w); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, "; if (_list.isEmpty) return 0; var _sum = 0; for (var _v in _list) { _sum += _v; } return _sum / _list.length; })()"); err != nil {
+	if _, err := io.WriteString(w, ".reduce((a, b) => a + b) / "); err != nil {
 		return err
 	}
-	return nil
+	if err := a.List.emit(w); err != nil {
+		return err
+	}
+	_, err := io.WriteString(w, ".length)")
+	return err
 }
 
 // LambdaExpr represents an inline function expression.
@@ -649,6 +670,28 @@ func (l *LenExpr) emit(w io.Writer) error {
 	}
 	_, err := io.WriteString(w, ".length")
 	return err
+}
+
+// inferType attempts to guess the Dart type for the given expression.
+func inferType(e Expr) string {
+	switch ex := e.(type) {
+	case *IntLit:
+		return "int"
+	case *BoolLit:
+		return "bool"
+	case *StringLit:
+		return "String"
+	case *ListLit:
+		if len(ex.Elems) == 0 {
+			return "List<dynamic>"
+		}
+		return "List<" + inferType(ex.Elems[0]) + ">"
+	default:
+		if e == nil {
+			return "var"
+		}
+		return "var"
+	}
 }
 
 func emitExpr(w io.Writer, e Expr) error { return e.emit(w) }
