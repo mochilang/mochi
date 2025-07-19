@@ -1,1 +1,3 @@
-compile error: unsupported statement at line 1
+run: exit status 127
+/tmp/15-puzzle-solver.erl:6:64: syntax error before: '('
+escript: There were compilation errors.
