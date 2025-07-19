@@ -366,6 +366,19 @@ type BinaryExpr struct {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) error {
+	if b.Op == "in" {
+		if err := b.Right.emit(w); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, ".contains("); err != nil {
+			return err
+		}
+		if err := b.Left.emit(w); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, ")")
+		return err
+	}
 	if _, err := io.WriteString(w, "("); err != nil {
 		return err
 	}
@@ -530,6 +543,26 @@ func (s *SubstringExpr) emit(w io.Writer) error {
 		if err := s.End.emit(w); err != nil {
 			return err
 		}
+	}
+	_, err := io.WriteString(w, ")")
+	return err
+}
+
+// ContainsExpr represents right.contains(left).
+type ContainsExpr struct {
+	Target Expr
+	Elem   Expr
+}
+
+func (c *ContainsExpr) emit(w io.Writer) error {
+	if err := c.Target.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ".contains("); err != nil {
+		return err
+	}
+	if err := c.Elem.emit(w); err != nil {
+		return err
 	}
 	_, err := io.WriteString(w, ")")
 	return err
@@ -953,7 +986,12 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 			if contains(level, ops[i]) {
 				left := operands[i]
 				right := operands[i+1]
-				expr := &BinaryExpr{Left: left, Op: ops[i], Right: right}
+				var expr Expr
+				if ops[i] == "in" {
+					expr = &ContainsExpr{Target: right, Elem: left}
+				} else {
+					expr = &BinaryExpr{Left: left, Op: ops[i], Right: right}
+				}
 				operands[i] = expr
 				operands = append(operands[:i+1], operands[i+2:]...)
 				ops = append(ops[:i], ops[i+1:]...)
@@ -1281,6 +1319,8 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "substring", Children: []*ast.Node{exprNode(ex.Str), exprNode(ex.Start), exprNode(ex.End)}}
 	case *AppendExpr:
 		return &ast.Node{Kind: "append", Children: []*ast.Node{exprNode(ex.List), exprNode(ex.Value)}}
+	case *ContainsExpr:
+		return &ast.Node{Kind: "contains", Children: []*ast.Node{exprNode(ex.Target), exprNode(ex.Elem)}}
 	case *AvgExpr:
 		return &ast.Node{Kind: "avg", Children: []*ast.Node{exprNode(ex.List)}}
 	default:

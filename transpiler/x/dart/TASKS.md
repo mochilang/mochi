@@ -1,11 +1,10 @@
-## Recent Enhancements (2025-07-19 21:34 +0700)
+## Recent Enhancements (2025-07-20 00:55 +0700)
 - Added support for `break` and `continue` statements.
 - Implemented `if ... then ... else` expressions.
 - Updated README checklist with progress summary.
-
 - Added list indexing support and `substring` builtin.
 - Implemented `append` and `avg` builtins.
-- Updated README checklist with progress summary.
+- Added list and string `in` operator support.
 
 - Refactored `avg` builtin to use a simple loop for clarity.
 
