@@ -94,24 +94,6 @@ func normalize(root string, b []byte) []byte {
 	return []byte(out)
 }
 
-func TestPrintHello(t *testing.T) {
-	if _, err := ctrans.EnsureCC(); err != nil {
-		t.Skipf("C compiler not installed: %v", err)
-	}
-	root := repoRoot(t)
-	src := filepath.Join(root, "tests", "vm", "valid", "print_hello.mochi")
-	out, err := transpileAndRun(src)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if bytes.TrimSpace(out) == nil {
-		t.Fatalf("no output")
-	}
-	if string(bytes.TrimSpace(out)) != "hello" {
-		t.Fatalf("unexpected output: %s", out)
-	}
-}
-
 func TestTranspilerGolden(t *testing.T) {
 	if _, err := ctrans.EnsureCC(); err != nil {
 		t.Skipf("C compiler not installed: %v", err)
@@ -141,7 +123,16 @@ func TestTranspilerGolden(t *testing.T) {
 
 			got, err := transpileAndRun(src)
 			if err != nil {
+				if updateEnabled() {
+					errPath := filepath.Join(goldenDir, name+".error")
+					if werr := os.WriteFile(errPath, []byte(err.Error()+"\n"), 0o644); werr != nil {
+						t.Fatalf("write error file: %v (run error: %v)", werr, err)
+					}
+				}
 				t.Fatalf("run: %v", err)
+			}
+			if updateEnabled() {
+				_ = os.Remove(filepath.Join(goldenDir, name+".error"))
 			}
 			got = bytes.TrimSpace(got)
 			wantData, err := os.ReadFile(wantOut)
