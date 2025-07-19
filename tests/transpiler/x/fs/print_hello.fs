@@ -1,4 +1,4 @@
-// Mochi 0.10.31 - generated 2025-07-19 04:39:30 UTC
+// Mochi 0.10.31 - generated 2025-07-19 05:47:56 UTC
 open System
 
-printfn "%s" "hello"
+printfn "%O" "hello"
