@@ -6825,7 +6825,9 @@ func isMapStringIntLiteral(ml *parser.MapLiteral, env *types.Env) bool {
 			return false
 		}
 		if env != nil {
-			if _, ok := types.ExprType(it.Value, env).(types.IntType); !ok {
+			switch types.ExprType(it.Value, env).(type) {
+			case types.IntType, types.BoolType:
+			default:
 				return false
 			}
 		}
