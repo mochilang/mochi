@@ -139,6 +139,10 @@ func TestTranspile_StringConcat(t *testing.T) {
 	runTranspileTest(t, "string_concat")
 }
 
+func TestTranspile_SubstringBuiltin(t *testing.T) {
+	runTranspileTest(t, "substring_builtin")
+}
+
 func TestTranspile_LenBuiltin(t *testing.T) {
 	runTranspileTest(t, "len_builtin")
 }
