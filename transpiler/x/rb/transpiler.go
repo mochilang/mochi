@@ -129,6 +129,16 @@ func (s *LetStmt) emit(w io.Writer) {
 	s.Value.emit(w)
 }
 
+// BreakStmt represents a break statement.
+type BreakStmt struct{}
+
+func (b *BreakStmt) emit(w io.Writer) { io.WriteString(w, "break") }
+
+// ContinueStmt represents a continue statement.
+type ContinueStmt struct{}
+
+func (c *ContinueStmt) emit(w io.Writer) { io.WriteString(w, "next") }
+
 type CallExpr struct {
 	Func string
 	Args []Expr
@@ -332,6 +342,60 @@ func (g *GroupExpr) emit(w io.Writer) {
 	io.WriteString(w, ")")
 }
 
+// IndexExpr represents indexing into a list or string.
+type IndexExpr struct {
+	Target Expr
+	Index  Expr
+}
+
+func (i *IndexExpr) emit(w io.Writer) {
+	i.Target.emit(w)
+	io.WriteString(w, "[")
+	i.Index.emit(w)
+	io.WriteString(w, "]")
+}
+
+// FieldExpr represents a field access expression.
+type FieldExpr struct {
+	Target Expr
+	Name   string
+}
+
+func (f *FieldExpr) emit(w io.Writer) {
+	f.Target.emit(w)
+	io.WriteString(w, ".")
+	io.WriteString(w, f.Name)
+}
+
+// InExpr implements the `in` operator.
+type InExpr struct {
+	Elem       Expr
+	Collection Expr
+}
+
+func (in *InExpr) emit(w io.Writer) {
+	in.Collection.emit(w)
+	io.WriteString(w, ".include?(")
+	in.Elem.emit(w)
+	io.WriteString(w, ")")
+}
+
+// SubstrExpr represents substring(start,end).
+type SubstrExpr struct {
+	Str   Expr
+	Start Expr
+	End   Expr
+}
+
+func (s *SubstrExpr) emit(w io.Writer) {
+	s.Str.emit(w)
+	io.WriteString(w, "[")
+	s.Start.emit(w)
+	io.WriteString(w, "...")
+	s.End.emit(w)
+	io.WriteString(w, "]")
+}
+
 func (a *AppendExpr) emit(w io.Writer) {
 	a.List.emit(w)
 	io.WriteString(w, " + [")
@@ -438,6 +502,10 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		return convertWhile(st.While)
 	case st.For != nil:
 		return convertFor(st.For)
+	case st.Break != nil:
+		return &BreakStmt{}, nil
+	case st.Continue != nil:
+		return &ContinueStmt{}, nil
 	case st.Return != nil:
 		var v Expr
 		if st.Return.Value != nil {
@@ -586,7 +654,11 @@ func convertExpr(e *parser.Expr) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		expr = &BinaryExpr{Op: op.Op, Left: expr, Right: right}
+		if op.Op == "in" {
+			expr = &InExpr{Elem: expr, Collection: right}
+		} else {
+			expr = &BinaryExpr{Op: op.Op, Left: expr, Right: right}
+		}
 	}
 	return expr, nil
 }
@@ -612,10 +684,80 @@ func convertUnary(u *parser.Unary) (Expr, error) {
 }
 
 func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
-	if pf == nil || len(pf.Ops) > 0 {
+	if pf == nil {
 		return nil, fmt.Errorf("unsupported postfix")
 	}
-	return convertPrimary(pf.Target)
+	expr, err := convertPrimary(pf.Target)
+	if err != nil {
+		return nil, err
+	}
+	for _, op := range pf.Ops {
+		switch {
+		case op.Index != nil:
+			if op.Index.Start == nil || op.Index.Colon != nil || op.Index.End != nil || op.Index.Colon2 != nil || op.Index.Step != nil {
+				return nil, fmt.Errorf("unsupported slice")
+			}
+			idx, err := convertExpr(op.Index.Start)
+			if err != nil {
+				return nil, err
+			}
+			expr = &IndexExpr{Target: expr, Index: idx}
+		case op.Field != nil:
+			expr = &FieldExpr{Target: expr, Name: op.Field.Name}
+		case op.Call != nil:
+			args := make([]Expr, len(op.Call.Args))
+			for i, a := range op.Call.Args {
+				ae, err := convertExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				args[i] = ae
+			}
+			if fe, ok := expr.(*FieldExpr); ok && fe.Name == "contains" && len(args) == 1 {
+				expr = &InExpr{Elem: args[0], Collection: fe.Target}
+				continue
+			}
+			if id, ok := expr.(*Ident); ok {
+				name := id.Name
+				switch name {
+				case "print":
+					expr = &CallExpr{Func: "puts", Args: args}
+				case "len", "count":
+					if len(args) != 1 {
+						return nil, fmt.Errorf("len/count takes one arg")
+					}
+					expr = &LenExpr{Value: args[0]}
+				case "sum":
+					if len(args) != 1 {
+						return nil, fmt.Errorf("sum takes one arg")
+					}
+					expr = &SumExpr{Value: args[0]}
+				case "avg":
+					if len(args) != 1 {
+						return nil, fmt.Errorf("avg takes one arg")
+					}
+					expr = &AvgExpr{Value: args[0]}
+				case "append":
+					if len(args) != 2 {
+						return nil, fmt.Errorf("append takes two args")
+					}
+					expr = &AppendExpr{List: args[0], Elem: args[1]}
+				case "substring":
+					if len(args) != 3 {
+						return nil, fmt.Errorf("substring takes three args")
+					}
+					expr = &SubstrExpr{Str: args[0], Start: args[1], End: args[2]}
+				default:
+					expr = &CallExpr{Func: name, Args: args}
+				}
+			} else {
+				return nil, fmt.Errorf("unsupported call")
+			}
+		default:
+			return nil, fmt.Errorf("unsupported postfix")
+		}
+	}
+	return expr, nil
 }
 
 func convertPrimary(p *parser.Primary) (Expr, error) {
@@ -653,6 +795,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("append takes two args")
 			}
 			return &AppendExpr{List: args[0], Elem: args[1]}, nil
+		case "substring":
+			if len(args) != 3 {
+				return nil, fmt.Errorf("substring takes three args")
+			}
+			return &SubstrExpr{Str: args[0], Start: args[1], End: args[2]}, nil
 		default:
 			return &CallExpr{Func: name, Args: args}, nil
 		}
@@ -685,8 +832,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			return nil, err
 		}
 		return &GroupExpr{Expr: ex}, nil
-	case p.Selector != nil && len(p.Selector.Tail) == 0:
-		return &Ident{Name: p.Selector.Root}, nil
+	case p.Selector != nil:
+		var expr Expr = &Ident{Name: p.Selector.Root}
+		for _, t := range p.Selector.Tail {
+			expr = &FieldExpr{Target: expr, Name: t}
+		}
+		return expr, nil
 	default:
 		return nil, fmt.Errorf("unsupported primary")
 	}
@@ -750,6 +901,10 @@ func stmtNode(s Stmt) *ast.Node {
 			n.Children = append(n.Children, exprNode(st.Value))
 		}
 		return n
+	case *BreakStmt:
+		return &ast.Node{Kind: "break"}
+	case *ContinueStmt:
+		return &ast.Node{Kind: "continue"}
 	case *FuncStmt:
 		n := &ast.Node{Kind: "func", Value: st.Name}
 		params := &ast.Node{Kind: "params"}
@@ -809,6 +964,14 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "cond", Children: []*ast.Node{exprNode(ex.Cond), exprNode(ex.Then), exprNode(ex.Else)}}
 	case *GroupExpr:
 		return &ast.Node{Kind: "group", Children: []*ast.Node{exprNode(ex.Expr)}}
+	case *IndexExpr:
+		return &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(ex.Target), exprNode(ex.Index)}}
+	case *FieldExpr:
+		return &ast.Node{Kind: "field", Value: ex.Name, Children: []*ast.Node{exprNode(ex.Target)}}
+	case *InExpr:
+		return &ast.Node{Kind: "in", Children: []*ast.Node{exprNode(ex.Elem), exprNode(ex.Collection)}}
+	case *SubstrExpr:
+		return &ast.Node{Kind: "substr", Children: []*ast.Node{exprNode(ex.Str), exprNode(ex.Start), exprNode(ex.End)}}
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
