@@ -3,8 +3,7 @@
 #include <string.h>
 
 int main() {
-	const char* s = "catch";
-	printf("%d\n", strstr(s, "cat") != NULL);
-	printf("%d\n", strstr(s, "dog") != NULL);
+	const char* s = "mochi";
+	printf("%s\n", (const char[]){s[1], 0});
 	return 0;
 }
