@@ -25,13 +25,13 @@ type Program struct {
 	UseStrings   bool
 	UseIndex     bool
 	UseSlice     bool
-	UseBoolInt   bool
 	UseUnion     bool
 	UseUnionAll  bool
 	UseExcept    bool
 	UseIntersect bool
 	UseSubstring bool
 	UsePrint     bool
+	UseAtoi      bool
 }
 
 var (
@@ -49,7 +49,7 @@ var (
 	usesPrint     bool
 	usesIndex     bool
 	usesSlice     bool
-	usesBoolInt   bool
+	usesAtoi      bool
 )
 
 type Stmt interface{ emit(io.Writer) }
@@ -96,6 +96,35 @@ type IfStmt struct {
 	Cond Expr
 	Then []Stmt
 	Else []Stmt
+}
+
+type BreakStmt struct{}
+
+func (b *BreakStmt) emit(w io.Writer) { fmt.Fprint(w, "break") }
+
+type ContinueStmt struct{}
+
+func (c *ContinueStmt) emit(w io.Writer) { fmt.Fprint(w, "continue") }
+
+type IfExpr struct {
+	Cond Expr
+	Then Expr
+	Else Expr
+}
+
+func (ie *IfExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "func() any {")
+	fmt.Fprint(w, "if ")
+	ie.Cond.emit(w)
+	fmt.Fprint(w, " { return ")
+	ie.Then.emit(w)
+	fmt.Fprint(w, " }")
+	if ie.Else != nil {
+		fmt.Fprint(w, " else { return ")
+		ie.Else.emit(w)
+		fmt.Fprint(w, " }")
+	}
+	fmt.Fprint(w, " }()")
 }
 
 func (i *IfStmt) emit(w io.Writer) {
@@ -274,7 +303,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesPrint = false
 	usesIndex = false
 	usesSlice = false
-	usesBoolInt = false
+	usesAtoi = false
 	gp := &Program{}
 	for _, stmt := range p.Statements {
 		s, err := compileStmt(stmt, env)
@@ -294,21 +323,24 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	gp.UseStrings = usesStrings || usesContains
 	gp.UseIndex = usesIndex
 	gp.UseSlice = usesSlice
-	gp.UseBoolInt = usesBoolInt
 	gp.UseUnion = usesUnion
 	gp.UseUnionAll = usesUnionAll
 	gp.UseExcept = usesExcept
 	gp.UseIntersect = usesIntersect
 	gp.UseSubstring = usesSubstring
 	gp.UsePrint = usesPrint
+	gp.UseAtoi = usesAtoi
 	return gp, nil
 }
 
 func compileExpr(e *parser.Expr) (Expr, error) {
-	if e == nil || e.Binary == nil {
+	if e == nil {
 		return nil, fmt.Errorf("unsupported expression")
 	}
-	return compileBinary(e.Binary)
+	if e.Binary != nil {
+		return compileBinary(e.Binary)
+	}
+	return nil, fmt.Errorf("unsupported expression")
 }
 
 func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
@@ -363,6 +395,10 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		return compileWhileStmt(st.While, env)
 	case st.For != nil:
 		return compileForStmt(st.For, env)
+	case st.Break != nil:
+		return &BreakStmt{}, nil
+	case st.Continue != nil:
+		return &ContinueStmt{}, nil
 	default:
 		if st.Test == nil && st.Import == nil && st.Type == nil {
 			return nil, fmt.Errorf("unsupported statement at %d:%d", st.Pos.Line, st.Pos.Column)
@@ -390,6 +426,9 @@ func compileIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
+	if c, ok := cond.(*CallExpr); ok && c.Func == "boolInt" && len(c.Args) == 1 {
+		cond = c.Args[0]
+	}
 	thenStmts, err := compileStmts(is.Then, env)
 	if err != nil {
 		return nil, err
@@ -410,10 +449,37 @@ func compileIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
 }
 
+func compileIfExpr(ie *parser.IfExpr) (Expr, error) {
+	cond, err := compileExpr(ie.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenExpr, err := compileExpr(ie.Then)
+	if err != nil {
+		return nil, err
+	}
+	var elseExpr Expr
+	if ie.ElseIf != nil {
+		elseExpr, err = compileIfExpr(ie.ElseIf)
+		if err != nil {
+			return nil, err
+		}
+	} else if ie.Else != nil {
+		elseExpr, err = compileExpr(ie.Else)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
+}
+
 func compileWhileStmt(ws *parser.WhileStmt, env *types.Env) (Stmt, error) {
 	cond, err := compileExpr(ws.Cond)
 	if err != nil {
 		return nil, err
+	}
+	if c, ok := cond.(*CallExpr); ok && c.Func == "boolInt" && len(c.Args) == 1 {
+		cond = c.Args[0]
 	}
 	body, err := compileStmts(ws.Body, env)
 	if err != nil {
@@ -513,10 +579,6 @@ func compileBinary(b *parser.BinaryExpr) (Expr, error) {
 					newExpr = &CallExpr{Func: "intersect", Args: []Expr{left, right}}
 				default:
 					newExpr = &BinaryExpr{Left: left, Op: ops[i].Op, Right: right}
-					if ops[i].Op == "==" || ops[i].Op == "!=" {
-						usesBoolInt = true
-						newExpr = &CallExpr{Func: "boolInt", Args: []Expr{newExpr}}
-					}
 				}
 				operands[i] = newExpr
 				operands = append(operands[:i+1], operands[i+2:]...)
@@ -618,7 +680,14 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 			}
 		} else if op.Call != nil {
 			return nil, fmt.Errorf("unsupported call")
-		} else if op.Field != nil || op.Cast != nil {
+		} else if op.Cast != nil {
+			if op.Cast.Type != nil && op.Cast.Type.Simple != nil && *op.Cast.Type.Simple == "int" {
+				usesAtoi = true
+				expr = &CallExpr{Func: "atoi", Args: []Expr{expr}}
+			} else {
+				return nil, fmt.Errorf("unsupported postfix")
+			}
+		} else if op.Field != nil {
 			return nil, fmt.Errorf("unsupported postfix")
 		}
 	}
@@ -676,6 +745,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			return &IntLit{Value: int(*p.Lit.Int)}, nil
 		}
 		return nil, fmt.Errorf("unsupported literal")
+	case p.If != nil:
+		return compileIfExpr(p.If)
 	case p.Group != nil:
 		return compileExpr(p.Group)
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
@@ -712,6 +783,9 @@ func Emit(prog *Program) []byte {
 	}
 	if prog.UseStrings {
 		buf.WriteString("    \"strings\"\n")
+	}
+	if prog.UseAtoi {
+		buf.WriteString("    \"strconv\"\n")
 	}
 	buf.WriteString(")\n\n")
 	if prog.UseAvg {
@@ -754,8 +828,8 @@ func Emit(prog *Program) []byte {
 	if prog.UseSlice {
 		buf.WriteString("func slice(v any, i, j int) any {\n    switch x := v.(type) {\n    case []int:\n        return x[i:j]\n    case string:\n        r := []rune(x)\n        return string(r[i:j])\n    }\n    return nil\n}\n\n")
 	}
-	if prog.UseBoolInt {
-		buf.WriteString("func boolInt(b bool) int {\n    if b { return 1 }\n    return 0\n}\n\n")
+	if prog.UseAtoi {
+		buf.WriteString("func atoi(s string) int {\n    n, _ := strconv.Atoi(s)\n    return n\n}\n\n")
 	}
 	if prog.UsePrint {
 		buf.WriteString("func mochiPrint(v any) {\n    switch x := v.(type) {\n    case bool:\n        if x { fmt.Println(1) } else { fmt.Println(\"nil\") }\n    case float64:\n        if math.Trunc(x) == x { fmt.Printf(\"%.1f\\n\", x) } else { fmt.Printf(\"%v\\n\", x) }\n    case []int:\n        for i, n := range x { if i > 0 { fmt.Print(\" \") }; fmt.Print(n) }\n        fmt.Println()\n    default:\n        fmt.Println(v)\n    }\n}\n\n")
@@ -834,6 +908,10 @@ func toNodeStmt(s Stmt) *ast.Node {
 		}
 		n.Children = append(n.Children, body)
 		return n
+	case *BreakStmt:
+		return &ast.Node{Kind: "break"}
+	case *ContinueStmt:
+		return &ast.Node{Kind: "continue"}
 	case *IndexAssignStmt:
 		return &ast.Node{Kind: "indexassign", Value: st.Name, Children: []*ast.Node{toNodeExpr(st.Index), toNodeExpr(st.Value)}}
 	default:
@@ -863,6 +941,13 @@ func toNodeExpr(e Expr) *ast.Node {
 		return n
 	case *BinaryExpr:
 		return &ast.Node{Kind: "bin", Value: ex.Op, Children: []*ast.Node{toNodeExpr(ex.Left), toNodeExpr(ex.Right)}}
+	case *IfExpr:
+		n := &ast.Node{Kind: "ifexpr"}
+		n.Children = append(n.Children, toNodeExpr(ex.Cond), toNodeExpr(ex.Then))
+		if ex.Else != nil {
+			n.Children = append(n.Children, toNodeExpr(ex.Else))
+		}
+		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
