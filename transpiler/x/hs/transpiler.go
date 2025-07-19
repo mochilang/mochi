@@ -24,7 +24,10 @@ type Stmt interface{ emit(io.Writer) }
 
 type Expr interface{ emit(io.Writer) }
 
-type PrintStmt struct{ Expr Expr }
+type PrintStmt struct {
+	Expr   Expr
+	String bool
+}
 type LetStmt struct {
 	Name string
 	Expr Expr
@@ -36,8 +39,17 @@ type AssignStmt struct {
 	Expr Expr
 }
 
+// IfStmt executes a list of statements based on a condition.
+type IfStmt struct {
+	Cond Expr
+	Then []Stmt
+	Else []Stmt
+}
+
 func (p *PrintStmt) emit(w io.Writer) {
-	if _, ok := p.Expr.(*StringLit); ok {
+	if p.String {
+		io.WriteString(w, "putStrLn (")
+	} else if _, ok := p.Expr.(*StringLit); ok {
 		io.WriteString(w, "putStrLn (")
 	} else {
 		io.WriteString(w, "print (")
@@ -58,6 +70,25 @@ func (a *AssignStmt) emit(w io.Writer) {
 	a.Expr.emit(w)
 }
 
+func (i *IfStmt) emit(w io.Writer) {
+	io.WriteString(w, "if ")
+	i.Cond.emit(w)
+	io.WriteString(w, " then\n")
+	for _, st := range i.Then {
+		io.WriteString(w, "        ")
+		st.emit(w)
+		io.WriteString(w, "\n")
+	}
+	if len(i.Else) > 0 {
+		io.WriteString(w, "    else\n")
+		for _, st := range i.Else {
+			io.WriteString(w, "        ")
+			st.emit(w)
+			io.WriteString(w, "\n")
+		}
+	}
+}
+
 type IntLit struct{ Value string }
 type StringLit struct{ Value string }
 type BoolLit struct{ Value bool }
@@ -76,6 +107,11 @@ type UnaryExpr struct {
 	Expr Expr
 }
 type GroupExpr struct{ Expr Expr }
+type IfExpr struct {
+	Cond Expr
+	Then Expr
+	Else Expr
+}
 
 func (i *IntLit) emit(w io.Writer)    { io.WriteString(w, i.Value) }
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
@@ -104,6 +140,14 @@ func (g *GroupExpr) emit(w io.Writer) {
 	io.WriteString(w, "(")
 	g.Expr.emit(w)
 	io.WriteString(w, ")")
+}
+func (i *IfExpr) emit(w io.Writer) {
+	io.WriteString(w, "if ")
+	i.Cond.emit(w)
+	io.WriteString(w, " then ")
+	i.Then.emit(w)
+	io.WriteString(w, " else ")
+	i.Else.emit(w)
 }
 
 func repoRoot() string {
@@ -191,6 +235,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				return nil, err
 			}
 			vars[st.Assign.Name] = ex
+		case st.If != nil:
+			s, err := convertIfStmt(st.If)
+			if err != nil {
+				return nil, err
+			}
+			h.Stmts = append(h.Stmts, s)
 		case st.Expr != nil:
 			call := st.Expr.Expr.Binary.Left.Value.Target.Call
 			if call != nil && call.Func == "print" && len(call.Args) == 1 {
@@ -198,7 +248,18 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				if err != nil {
 					return nil, err
 				}
-				h.Stmts = append(h.Stmts, &PrintStmt{Expr: arg})
+				str := false
+				if lit, ok := arg.(*NameRef); ok {
+					if v, ok := vars[lit.Name]; ok {
+						if _, ok := v.(*StringLit); ok {
+							str = true
+						}
+					}
+				}
+				if _, ok := arg.(*StringLit); ok {
+					str = true
+				}
+				h.Stmts = append(h.Stmts, &PrintStmt{Expr: arg, String: str})
 				continue
 			}
 			return nil, fmt.Errorf("unsupported expression")
@@ -240,6 +301,15 @@ func stmtNode(s Stmt) *ast.Node {
 		return &ast.Node{Kind: "let", Value: st.Name, Children: []*ast.Node{exprNode(st.Expr)}}
 	case *AssignStmt:
 		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{exprNode(st.Expr)}}
+	case *IfStmt:
+		n := &ast.Node{Kind: "if", Children: []*ast.Node{exprNode(st.Cond)}}
+		for _, c := range st.Then {
+			n.Children = append(n.Children, stmtNode(c))
+		}
+		for _, c := range st.Else {
+			n.Children = append(n.Children, stmtNode(c))
+		}
+		return n
 	default:
 		return &ast.Node{Kind: "stmt"}
 	}
@@ -270,6 +340,8 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "unary", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Expr)}}
 	case *GroupExpr:
 		return &ast.Node{Kind: "group", Children: []*ast.Node{exprNode(ex.Expr)}}
+	case *IfExpr:
+		return &ast.Node{Kind: "ifexpr", Children: []*ast.Node{exprNode(ex.Cond), exprNode(ex.Then), exprNode(ex.Else)}}
 	default:
 		return &ast.Node{Kind: "expr"}
 	}
@@ -329,6 +401,20 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return convertLiteral(p.Lit)
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return &NameRef{Name: p.Selector.Root}, nil
+	case p.If != nil:
+		cond, err := convertExpr(p.If.Cond)
+		if err != nil {
+			return nil, err
+		}
+		thn, err := convertExpr(p.If.Then)
+		if err != nil {
+			return nil, err
+		}
+		els, err := convertExpr(p.If.Else)
+		if err != nil {
+			return nil, err
+		}
+		return &IfExpr{Cond: cond, Then: thn, Else: els}, nil
 	case p.Group != nil:
 		e, err := convertExpr(p.Group)
 		if err != nil {
@@ -351,4 +437,55 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 	default:
 		return nil, fmt.Errorf("unsupported literal")
 	}
+}
+
+func convertIfStmt(s *parser.IfStmt) (Stmt, error) {
+	cond, err := convertExpr(s.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenStmts, err := convertStmtList(s.Then)
+	if err != nil {
+		return nil, err
+	}
+	var elseStmts []Stmt
+	if s.ElseIf != nil {
+		es, err := convertIfStmt(s.ElseIf)
+		if err != nil {
+			return nil, err
+		}
+		elseStmts = []Stmt{es}
+	} else if len(s.Else) > 0 {
+		elseStmts, err = convertStmtList(s.Else)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
+}
+
+func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
+	var out []Stmt
+	for _, st := range list {
+		switch {
+		case st.Expr != nil:
+			call := st.Expr.Expr.Binary.Left.Value.Target.Call
+			if call != nil && call.Func == "print" && len(call.Args) == 1 {
+				arg, err := convertExpr(call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				str := false
+				if _, ok := arg.(*StringLit); ok {
+					str = true
+				}
+				out = append(out, &PrintStmt{Expr: arg, String: str})
+				continue
+			}
+			return nil, fmt.Errorf("unsupported expression")
+		default:
+			return nil, fmt.Errorf("unsupported statement in block")
+		}
+	}
+	return out, nil
 }
