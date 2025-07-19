@@ -1037,18 +1037,48 @@ func convertListExpr(e *parser.Expr) ([]Expr, bool) {
 }
 
 func evalInt(e Expr) (int, bool) {
-	if v, ok := e.(*IntLit); ok {
-		return v.Value, true
-	}
-	if ix, ok := e.(*IndexExpr); ok {
-		if list, ok2 := evalList(ix.Target); ok2 {
-			idx, ok3 := evalInt(ix.Index)
-			if ok3 && idx >= 0 && idx < len(list.Elems) {
-				return evalInt(list.Elems[idx])
-			}
-		}
-	}
-	return 0, false
+        switch v := e.(type) {
+        case *IntLit:
+                return v.Value, true
+        case *BinaryExpr:
+                left, ok1 := evalInt(v.Left)
+                right, ok2 := evalInt(v.Right)
+                if ok1 && ok2 {
+                        switch v.Op {
+                        case "+":
+                                return left + right, true
+                        case "-":
+                                return left - right, true
+                        case "*":
+                                return left * right, true
+                        case "/":
+                                if right != 0 {
+                                        return left / right, true
+                                }
+                        case "%":
+                                if right != 0 {
+                                        return left % right, true
+                                }
+                        }
+                }
+        case *CallExpr:
+                if v.Func == "len" && len(v.Args) == 1 {
+                        if list, ok := evalList(v.Args[0]); ok {
+                                return len(list.Elems), true
+                        }
+                        if s, ok := evalString(v.Args[0]); ok {
+                                return len([]rune(s)), true
+                        }
+                }
+        case *IndexExpr:
+                if list, ok := evalList(v.Target); ok {
+                        idx, ok2 := evalInt(v.Index)
+                        if ok2 && idx >= 0 && idx < len(list.Elems) {
+                                return evalInt(list.Elems[idx])
+                        }
+                }
+        }
+        return 0, false
 }
 
 func evalString(e Expr) (string, bool) {
