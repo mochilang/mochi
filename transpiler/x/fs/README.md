@@ -7,6 +7,8 @@ This folder contains an experimental transpiler that converts Mochi source code 
 The list below tracks Mochi programs under `tests/vm/valid` that should
 successfully transpile. Checked items indicate tests known to work.
 
+Compiled programs: 11/100
+
 - [ ] append_builtin.mochi
 - [ ] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -39,9 +41,9 @@ successfully transpile. Checked items indicate tests known to work.
 - [ ] group_by_multi_join_sort.mochi
 - [ ] group_by_sort.mochi
 - [ ] group_items_iteration.mochi
-- [ ] if_else.mochi
-- [ ] if_then_else.mochi
-- [ ] if_then_else_nested.mochi
+- [x] if_else.mochi
+- [x] if_then_else.mochi
+- [x] if_then_else_nested.mochi
 - [ ] in_operator.mochi
 - [ ] in_operator_extended.mochi
 - [ ] inner_join.mochi
@@ -67,7 +69,7 @@ successfully transpile. Checked items indicate tests known to work.
 - [ ] map_nested_assign.mochi
 - [ ] match_expr.mochi
 - [ ] match_full.mochi
-- [ ] math_ops.mochi
+- [x] math_ops.mochi
 - [ ] membership.mochi
 - [ ] min_max_builtin.mochi
 - [ ] nested_function.mochi
@@ -87,8 +89,8 @@ successfully transpile. Checked items indicate tests known to work.
 - [ ] slice.mochi
 - [ ] sort_stable.mochi
 - [ ] str_builtin.mochi
-- [ ] string_compare.mochi
-- [ ] string_concat.mochi
+- [x] string_compare.mochi
+- [x] string_concat.mochi
 - [ ] string_contains.mochi
 - [ ] string_in_operator.mochi
 - [ ] string_index.mochi

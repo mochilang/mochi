@@ -23,6 +23,33 @@ type Stmt interface{ emit(io.Writer) }
 
 type Expr interface{ emit(io.Writer) }
 
+type IfStmt struct {
+	Cond Expr
+	Then []Stmt
+	Else []Stmt
+}
+
+func (i *IfStmt) emit(w io.Writer) {
+	io.WriteString(w, "if ")
+	i.Cond.emit(w)
+	io.WriteString(w, " then\n")
+	for idx, st := range i.Then {
+		st.emit(w)
+		if idx < len(i.Then)-1 {
+			w.Write([]byte{'\n'})
+		}
+	}
+	if len(i.Else) > 0 {
+		io.WriteString(w, "\nelse\n")
+		for idx, st := range i.Else {
+			st.emit(w)
+			if idx < len(i.Else)-1 {
+				w.Write([]byte{'\n'})
+			}
+		}
+	}
+}
+
 type ExprStmt struct{ Expr Expr }
 
 func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
@@ -107,6 +134,37 @@ type IdentExpr struct{ Name string }
 
 func (i *IdentExpr) emit(w io.Writer) { io.WriteString(w, i.Name) }
 
+type UnitLit struct{}
+
+func (u *UnitLit) emit(w io.Writer) { io.WriteString(w, "()") }
+
+type IfExpr struct {
+	Cond Expr
+	Then Expr
+	Else Expr
+}
+
+func (i *IfExpr) emit(w io.Writer) {
+	io.WriteString(w, "if ")
+	i.Cond.emit(w)
+	io.WriteString(w, " then ")
+	if needsParen(i.Then) {
+		io.WriteString(w, "(")
+		i.Then.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		i.Then.emit(w)
+	}
+	io.WriteString(w, " else ")
+	if needsParen(i.Else) {
+		io.WriteString(w, "(")
+		i.Else.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		i.Else.emit(w)
+	}
+}
+
 func mapOp(op string) string {
 	switch op {
 	case "==":
@@ -137,7 +195,7 @@ func precedence(op string) int {
 
 func needsParen(e Expr) bool {
 	switch e.(type) {
-	case *BinaryExpr, *UnaryExpr:
+	case *BinaryExpr, *UnaryExpr, *IfExpr:
 		return true
 	default:
 		return false
@@ -210,24 +268,34 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	_ = env
 	p := &Program{}
 	for _, st := range prog.Statements {
-		switch {
-		case st.Expr != nil:
-			e, err := convertExpr(st.Expr.Expr)
-			if err != nil {
-				return nil, err
-			}
-			p.Stmts = append(p.Stmts, &ExprStmt{Expr: e})
-		case st.Let != nil && st.Let.Value != nil:
-			e, err := convertExpr(st.Let.Value)
-			if err != nil {
-				return nil, err
-			}
-			p.Stmts = append(p.Stmts, &LetStmt{Name: st.Let.Name, Expr: e})
-		default:
-			return nil, fmt.Errorf("unsupported statement")
+		conv, err := convertStmt(st)
+		if err != nil {
+			return nil, err
 		}
+		p.Stmts = append(p.Stmts, conv)
 	}
 	return p, nil
+}
+
+func convertStmt(st *parser.Statement) (Stmt, error) {
+	switch {
+	case st.Expr != nil:
+		e, err := convertExpr(st.Expr.Expr)
+		if err != nil {
+			return nil, err
+		}
+		return &ExprStmt{Expr: e}, nil
+	case st.Let != nil && st.Let.Value != nil:
+		e, err := convertExpr(st.Let.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &LetStmt{Name: st.Let.Name, Expr: e}, nil
+	case st.If != nil:
+		return convertIfStmt(st.If)
+	default:
+		return nil, fmt.Errorf("unsupported statement")
+	}
 }
 
 func convertExpr(e *parser.Expr) (Expr, error) {
@@ -314,9 +382,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		name := p.Call.Func
 		if name == "print" {
-			name = "printfn \"%A\""
+			name = "printfn \"%O\""
 		}
 		return &CallExpr{Func: name, Args: args}, nil
+	case p.If != nil:
+		return convertIfExpr(p.If)
 	case p.Lit != nil && p.Lit.Str != nil:
 		return &StringLit{Value: *p.Lit.Str}, nil
 	case p.Lit != nil && p.Lit.Int != nil:
@@ -329,4 +399,60 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return convertExpr(p.Group)
 	}
 	return nil, fmt.Errorf("unsupported primary")
+}
+
+func convertIfExpr(in *parser.IfExpr) (Expr, error) {
+	cond, err := convertExpr(in.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenExpr, err := convertExpr(in.Then)
+	if err != nil {
+		return nil, err
+	}
+	var elseExpr Expr
+	if in.ElseIf != nil {
+		elseExpr, err = convertIfExpr(in.ElseIf)
+	} else if in.Else != nil {
+		elseExpr, err = convertExpr(in.Else)
+	} else {
+		elseExpr = &UnitLit{}
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
+}
+
+func convertIfStmt(in *parser.IfStmt) (Stmt, error) {
+	cond, err := convertExpr(in.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenStmts := make([]Stmt, len(in.Then))
+	for i, s := range in.Then {
+		cs, err := convertStmt(s)
+		if err != nil {
+			return nil, err
+		}
+		thenStmts[i] = cs
+	}
+	var elseStmts []Stmt
+	if in.ElseIf != nil {
+		es, err := convertIfStmt(in.ElseIf)
+		if err != nil {
+			return nil, err
+		}
+		elseStmts = []Stmt{es}
+	} else if len(in.Else) > 0 {
+		elseStmts = make([]Stmt, len(in.Else))
+		for i, s := range in.Else {
+			cs, err := convertStmt(s)
+			if err != nil {
+				return nil, err
+			}
+			elseStmts[i] = cs
+		}
+	}
+	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
 }
