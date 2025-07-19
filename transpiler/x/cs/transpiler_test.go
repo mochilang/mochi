@@ -70,7 +70,10 @@ func TestTranspilePrintHello(t *testing.T) {
 		t.Fatalf("dotnet run error: %v\n%s", err, out)
 	}
 	got := bytes.TrimSpace(out)
-	want, _ := os.ReadFile(wantPath)
+	want, err := os.ReadFile(wantPath)
+	if err != nil {
+		t.Fatalf("read expected output: %v", err)
+	}
 	want = bytes.TrimSpace(want)
 	if !bytes.Equal(got, want) {
 		t.Fatalf("output mismatch\nGot: %s\nWant: %s", got, want)
@@ -127,8 +130,13 @@ func TestCSTranspiler_Golden(t *testing.T) {
 			}
 			cmd := exec.Command("dotnet", "run", "--project", proj)
 			out, err := cmd.CombinedOutput()
+			errPath := strings.TrimSuffix(csPath, ".cs") + ".error"
 			if err != nil {
+				_ = os.WriteFile(errPath, out, 0644)
 				t.Fatalf("dotnet run error: %v\n%s", err, out)
+			}
+			if _, statErr := os.Stat(errPath); statErr == nil {
+				_ = os.Remove(errPath)
 			}
 			got := bytes.TrimSpace(out)
 			want, err := os.ReadFile(wantPath)
