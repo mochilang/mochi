@@ -10,40 +10,21 @@ import (
 	"strings"
 	"testing"
 
-	tscode "mochi/compiler/x/ts"
 	"mochi/parser"
+	meta "mochi/transpiler/meta"
 	tstranspiler "mochi/transpiler/x/ts"
 	"mochi/types"
 )
 
-func repoRoot(t *testing.T) string {
-	dir, err := os.Getwd()
-	if err != nil {
-		t.Fatal(err)
-	}
-	for i := 0; i < 10; i++ {
-		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
-			return dir
-		}
-		parent := filepath.Dir(dir)
-		if parent == dir {
-			break
-		}
-		dir = parent
-	}
-	t.Fatal("go.mod not found")
-	return ""
-}
-
 // TestTranspilePrintHello compiles the simple print_hello.mochi program to
 // TypeScript, runs the result with Deno and compares the runtime output with the
-// existing golden .out file. The generated TypeScript itself is written to
+// existing golden .output file. The generated TypeScript itself is written to
 // tests/transpiler/x/ts but not compared.
 func TestTranspilePrintHello(t *testing.T) {
-	if err := tscode.EnsureDeno(); err != nil {
+	if err := meta.EnsureDeno(); err != nil {
 		t.Skipf("deno not installed: %v", err)
 	}
-	root := repoRoot(t)
+	root := meta.RepoRoot()
 	src := filepath.Join(root, "tests", "vm", "valid", "print_hello.mochi")
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "ts")
 	os.MkdirAll(outDir, 0o755)
@@ -83,7 +64,7 @@ func TestTranspilePrintHello(t *testing.T) {
 		t.Fatalf("deno run: %v\n%s", err, buf.Bytes())
 	}
 	got := strings.TrimSpace(buf.String())
-	wantBytes, err := os.ReadFile(filepath.Join(root, "tests", "vm", "valid", "print_hello.out"))
+	wantBytes, err := os.ReadFile(filepath.Join(outDir, base+".output"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -92,7 +73,7 @@ func TestTranspilePrintHello(t *testing.T) {
 		_ = os.WriteFile(filepath.Join(outDir, base+".error"), []byte("output mismatch\n-- got --\n"+got+"\n-- want --\n"+want), 0o644)
 		t.Fatalf("unexpected output: got %q want %q", got, want)
 	}
-	if err := os.WriteFile(filepath.Join(outDir, base+".out"), []byte(got+"\n"), 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(outDir, base+".output"), []byte(got+"\n"), 0o644); err != nil {
 		t.Fatal(err)
 	}
 	_ = os.Remove(filepath.Join(outDir, base+".error"))
