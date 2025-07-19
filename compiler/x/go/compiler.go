@@ -4896,10 +4896,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		args[1] = fmt.Sprintf("any(%s)", args[1])
 		return fmt.Sprintf("append(%s, %s)", args[0], args[1]), nil
 	case "len":
-		arg := argStr
-		if strings.HasPrefix(arg, "any(") && strings.HasSuffix(arg, ")") {
-			arg = strings.TrimSuffix(strings.TrimPrefix(arg, "any("), ")")
-		}
+		arg := stripAny(argStr)
 		if len(call.Args) == 1 {
 			at := c.inferExprType(call.Args[0])
 			switch at.(type) {
