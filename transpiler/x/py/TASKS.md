@@ -1,4 +1,9 @@
 # Python Transpiler Tasks
+## Recent Enhancements (2025-07-19 17:01 +0000)
+- Added handling for `import` statements and ignored extern declarations.
+- Implemented `match` expression support generating nested conditionals.
+- Generated golden outputs for `match_expr`, `match_full`, `python_auto` and `python_math`.
+- Updated README checklist to 66/100.
 ## Recent Enhancements (2025-07-19 16:16 +0000)
 - Added support for `test` blocks translating to Python `assert` statements.
 - Generated golden output for `test_block`.
