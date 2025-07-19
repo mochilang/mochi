@@ -185,13 +185,20 @@ type BinaryExpr struct {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "("); err != nil {
+		return err
+	}
 	if err := b.Left.emit(w); err != nil {
 		return err
 	}
 	if _, err := io.WriteString(w, " "+b.Op+" "); err != nil {
 		return err
 	}
-	return b.Right.emit(w)
+	if err := b.Right.emit(w); err != nil {
+		return err
+	}
+	_, err := io.WriteString(w, ")")
+	return err
 }
 
 // CondExpr represents a conditional expression like `cond ? a : b`.
@@ -254,6 +261,38 @@ func (s *StringLit) emit(w io.Writer) error { _, err := fmt.Fprintf(w, "%q", s.V
 type IntLit struct{ Value int }
 
 func (i *IntLit) emit(w io.Writer) error { _, err := fmt.Fprintf(w, "%d", i.Value); return err }
+
+// ListLit represents a list literal.
+type ListLit struct{ Elems []Expr }
+
+func (l *ListLit) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "["); err != nil {
+		return err
+	}
+	for i, e := range l.Elems {
+		if i > 0 {
+			if _, err := io.WriteString(w, ", "); err != nil {
+				return err
+			}
+		}
+		if err := e.emit(w); err != nil {
+			return err
+		}
+	}
+	_, err := io.WriteString(w, "]")
+	return err
+}
+
+// LenExpr represents the `len` builtin.
+type LenExpr struct{ X Expr }
+
+func (l *LenExpr) emit(w io.Writer) error {
+	if err := l.X.emit(w); err != nil {
+		return err
+	}
+	_, err := io.WriteString(w, ".length")
+	return err
+}
 
 func emitExpr(w io.Writer, e Expr) error { return e.emit(w) }
 
@@ -452,25 +491,55 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	if b == nil {
 		return nil, fmt.Errorf("nil binary")
 	}
-	left, err := convertUnary(b.Left)
+	first, err := convertUnary(b.Left)
 	if err != nil {
 		return nil, err
 	}
-	expr := left
-	for _, op := range b.Right {
+	operands := []Expr{first}
+	ops := make([]string, len(b.Right))
+	for i, op := range b.Right {
 		right, err := convertPostfix(op.Right)
 		if err != nil {
 			return nil, err
 		}
-		switch op.Op {
-		case "+", "-", "*", "/", "%", "==", "!=", "<", "<=", ">", ">=":
-			// supported
-		default:
-			return nil, fmt.Errorf("op %s not supported", op.Op)
-		}
-		expr = &BinaryExpr{Left: expr, Op: op.Op, Right: right}
+		operands = append(operands, right)
+		ops[i] = op.Op
 	}
-	return expr, nil
+
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+	}
+
+	contains := func(list []string, op string) bool {
+		for _, s := range list {
+			if s == op {
+				return true
+			}
+		}
+		return false
+	}
+
+	for _, level := range levels {
+		for i := 0; i < len(ops); {
+			if contains(level, ops[i]) {
+				left := operands[i]
+				right := operands[i+1]
+				expr := &BinaryExpr{Left: left, Op: ops[i], Right: right}
+				operands[i] = expr
+				operands = append(operands[:i+1], operands[i+2:]...)
+				ops = append(ops[:i], ops[i+1:]...)
+			} else {
+				i++
+			}
+		}
+	}
+
+	return operands[0], nil
 }
 
 func convertUnary(u *parser.Unary) (Expr, error) {
@@ -504,6 +573,13 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 func convertPrimary(p *parser.Primary) (Expr, error) {
 	switch {
 	case p.Call != nil:
+		if p.Call.Func == "len" && len(p.Call.Args) == 1 {
+			arg, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &LenExpr{X: arg}, nil
+		}
 		ce := &CallExpr{Func: &Name{p.Call.Func}}
 		for _, a := range p.Call.Args {
 			ex, err := convertExpr(a)
@@ -520,6 +596,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return &StringLit{Value: *p.Lit.Str}, nil
 	case p.Lit != nil && p.Lit.Int != nil:
 		return &IntLit{Value: int(*p.Lit.Int)}, nil
+	case p.List != nil:
+		var elems []Expr
+		for _, e := range p.List.Elems {
+			ex, err := convertExpr(e)
+			if err != nil {
+				return nil, err
+			}
+			elems = append(elems, ex)
+		}
+		return &ListLit{Elems: elems}, nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return &Name{Name: p.Selector.Root}, nil
 	case p.Group != nil:
