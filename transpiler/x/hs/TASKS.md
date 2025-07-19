@@ -1,5 +1,4 @@
 ## Progress (2025-07-19 18:28 +0700)
-- VM valid golden test results updated
 - Added bool printing via fromEnum for Haskell backend
 
 # Transpiler Progress

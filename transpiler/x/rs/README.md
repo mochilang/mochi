@@ -1,11 +1,10 @@
 # Mochi to Rust transpiler
 
-This experimental transpiler converts a tiny subset of Mochi into Rust code. Only
-simple expressions are currently supported.
+This experimental transpiler converts a tiny subset of Mochi into Rust code.
 
-## Checklist (21/100)
-- [ ] append_builtin
-- [ ] avg_builtin
+## Checklist (24/100)
+- [x] append_builtin
+- [x] avg_builtin
 - [x] basic_compare
 - [x] binary_precedence
 - [ ] bool_chain
@@ -13,7 +12,7 @@ simple expressions are currently supported.
 - [ ] cast_string_to_int
 - [ ] cast_struct
 - [ ] closure
-- [ ] count_builtin
+- [x] count_builtin
 - [ ] cross_join
 - [ ] cross_join_filter
 - [ ] cross_join_triple

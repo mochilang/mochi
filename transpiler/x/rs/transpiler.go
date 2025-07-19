@@ -137,6 +137,39 @@ func (v *ValuesExpr) emit(w io.Writer) {
 	io.WriteString(w, ".values().cloned().collect::<Vec<_>>(); tmp.sort(); tmp }")
 }
 
+// AppendExpr represents a call to the `append` builtin.
+type AppendExpr struct {
+	List Expr
+	Elem Expr
+}
+
+func (a *AppendExpr) emit(w io.Writer) {
+	io.WriteString(w, "{ let mut tmp = ")
+	a.List.emit(w)
+	io.WriteString(w, ".clone(); tmp.push(")
+	a.Elem.emit(w)
+	io.WriteString(w, "); tmp }")
+}
+
+// CountExpr represents a call to the `count` builtin.
+type CountExpr struct{ Arg Expr }
+
+func (c *CountExpr) emit(w io.Writer) {
+	c.Arg.emit(w)
+	io.WriteString(w, ".len()")
+}
+
+// AvgExpr represents a call to the `avg` builtin.
+type AvgExpr struct{ Arg Expr }
+
+func (a *AvgExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
+	a.Arg.emit(w)
+	io.WriteString(w, ".iter().sum::<i64>() as f64 / ")
+	a.Arg.emit(w)
+	io.WriteString(w, ".len() as f64)")
+}
+
 type NameRef struct{ Name string }
 
 func (n *NameRef) emit(w io.Writer) { io.WriteString(w, n.Name) }
@@ -487,7 +520,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				if _, ok := args[0].(*StringLit); !ok {
 					fmtStr := "{}"
 					switch args[0].(type) {
-					case *ListLit, *MapLit, *ValuesExpr:
+					case *ListLit, *MapLit, *ValuesExpr, *AppendExpr:
 						fmtStr = "{:?}"
 					}
 					args = append([]Expr{&StringLit{Value: fmtStr}}, args...)
@@ -506,6 +539,15 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		if name == "values" && len(args) == 1 {
 			return &ValuesExpr{Map: args[0]}, nil
+		}
+		if name == "append" && len(args) == 2 {
+			return &AppendExpr{List: args[0], Elem: args[1]}, nil
+		}
+		if name == "count" && len(args) == 1 {
+			return &CountExpr{Arg: args[0]}, nil
+		}
+		if name == "avg" && len(args) == 1 {
+			return &AvgExpr{Arg: args[0]}, nil
 		}
 		return &CallExpr{Func: name, Args: args}, nil
 	case p.Lit != nil:
@@ -816,6 +858,15 @@ func exprNode(e Expr) *ast.Node {
 			n.Children = append(n.Children, pair)
 		}
 		return n
+	case *AppendExpr:
+		n := &ast.Node{Kind: "append"}
+		n.Children = append(n.Children, exprNode(ex.List))
+		n.Children = append(n.Children, exprNode(ex.Elem))
+		return n
+	case *CountExpr:
+		return &ast.Node{Kind: "count", Children: []*ast.Node{exprNode(ex.Arg)}}
+	case *AvgExpr:
+		return &ast.Node{Kind: "avg", Children: []*ast.Node{exprNode(ex.Arg)}}
 	case *BinaryExpr:
 		return &ast.Node{Kind: "bin", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
 	case *UnaryExpr:

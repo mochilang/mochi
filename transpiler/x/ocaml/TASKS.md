@@ -1,5 +1,4 @@
 ## Progress (2025-07-19 18:32 +0700)
-- VM valid golden test results updated
 
 # OCaml Transpiler Progress
 

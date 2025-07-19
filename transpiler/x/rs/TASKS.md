@@ -1,3 +1,7 @@
+## Progress (2025-07-19 19:28 +0700)
+- Added support for `append`, `avg` and `count` builtins.
+- Regenerated VM golden outputs and updated README.
+
 # Rust Transpiler Tasks
 
 ## Recent Enhancements (2025-07-19 18:38 +0700)

@@ -203,3 +203,6 @@ func TestTranspile_WhileLoop(t *testing.T)        { runExample(t, "while_loop") 
 func TestTranspile_StrBuiltin(t *testing.T)       { runExample(t, "str_builtin") }
 func TestTranspile_SumBuiltin(t *testing.T)       { runExample(t, "sum_builtin") }
 func TestTranspile_ValuesBuiltin(t *testing.T)    { runExample(t, "values_builtin") }
+func TestTranspile_AppendBuiltin(t *testing.T)    { runExample(t, "append_builtin") }
+func TestTranspile_AvgBuiltin(t *testing.T)       { runExample(t, "avg_builtin") }
+func TestTranspile_CountBuiltin(t *testing.T)     { runExample(t, "count_builtin") }
