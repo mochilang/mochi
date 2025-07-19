@@ -3,26 +3,26 @@
 This directory holds TypeScript source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
 ## Program checklist
-- [x] 100-doors-2
-- [x] 100-doors-3
-- [x] 100-doors
-- [x] 100-prisoners
-- [x] 15-puzzle-game
-- [x] 15-puzzle-solver
-- [x] 2048
-- [x] 21-game
-- [x] 24-game-solve
-- [x] 24-game
-- [x] 4-rings-or-4-squares-puzzle
-- [x] 9-billion-names-of-god-the-integer
-- [x] 99-bottles-of-beer-2
-- [x] 99-bottles-of-beer
- - [ ] DNS-query
- - [x] a+b
- - [x] abbreviations-automatic
- - [x] abbreviations-easy
- - [x] abbreviations-simple
- - [x] abc-problem
+1. [x] 100-doors-2
+2. [x] 100-doors-3
+3. [x] 100-doors
+4. [x] 100-prisoners
+5. [x] 15-puzzle-game
+6. [x] 15-puzzle-solver
+7. [x] 2048
+8. [x] 21-game
+9. [x] 24-game-solve
+10. [x] 24-game
+11. [x] 4-rings-or-4-squares-puzzle
+12. [x] 9-billion-names-of-god-the-integer
+13. [x] 99-bottles-of-beer-2
+14. [x] 99-bottles-of-beer
+15. [ ] DNS-query
+16. [x] a+b
+17. [x] abbreviations-automatic
+18. [x] abbreviations-easy
+19. [x] abbreviations-simple
+20. [x] abc-problem
 - [ ] abelian-sandpile-model-identity
 - [ ] abelian-sandpile-model
 - [ ] abstract-type
