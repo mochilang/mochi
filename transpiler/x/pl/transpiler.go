@@ -86,6 +86,40 @@ func (p *PrintStmt) emit(w io.Writer, idx int) {
 		e.emit(w)
 		io.WriteString(w, "), nl")
 		return
+	case *CountExpr:
+		fmt.Fprintf(w, "    length(")
+		e.Value.emit(w)
+		fmt.Fprintf(w, ", R%d), write(R%d), nl", idx, idx)
+		return
+	case *SumExpr:
+		fmt.Fprintf(w, "    sum_list(")
+		e.Value.emit(w)
+		fmt.Fprintf(w, ", R%d), write(R%d), nl", idx, idx)
+		return
+	case *AvgExpr:
+		fmt.Fprintf(w, "    sum_list(")
+		e.Value.emit(w)
+		fmt.Fprintf(w, ", S%d), length(", idx)
+		e.Value.emit(w)
+		fmt.Fprintf(w, ", L%d), R%d is S%d / L%d, write(R%d), nl", idx, idx, idx, idx, idx)
+		return
+	case *MinExpr:
+		fmt.Fprintf(w, "    min_list(")
+		e.Value.emit(w)
+		fmt.Fprintf(w, ", R%d), write(R%d), nl", idx, idx)
+		return
+	case *MaxExpr:
+		fmt.Fprintf(w, "    max_list(")
+		e.Value.emit(w)
+		fmt.Fprintf(w, ", R%d), write(R%d), nl", idx, idx)
+		return
+	case *AppendExpr:
+		fmt.Fprintf(w, "    append(")
+		e.List.emit(w)
+		io.WriteString(w, ", [")
+		e.Elem.emit(w)
+		fmt.Fprintf(w, "], R%d), write(R%d), nl", idx, idx)
+		return
 	}
 	io.WriteString(w, "    write(")
 	p.Expr.emit(w)
@@ -105,6 +139,15 @@ type Var struct{ Name string }
 type ListLit struct{ Elems []Expr }
 type LenExpr struct{ Value Expr }
 type StrExpr struct{ Value Expr }
+type CountExpr struct{ Value Expr }
+type SumExpr struct{ Value Expr }
+type AvgExpr struct{ Value Expr }
+type MinExpr struct{ Value Expr }
+type MaxExpr struct{ Value Expr }
+type AppendExpr struct {
+	List Expr
+	Elem Expr
+}
 type BinaryExpr struct {
 	Left  Expr
 	Op    string
@@ -177,6 +220,46 @@ func (s *StrExpr) emit(w io.Writer) {
 	s.Value.emit(w)
 }
 
+func (c *CountExpr) emit(w io.Writer) {
+	io.WriteString(w, "length(")
+	c.Value.emit(w)
+	io.WriteString(w, ", R)")
+}
+
+func (s *SumExpr) emit(w io.Writer) {
+	io.WriteString(w, "sum_list(")
+	s.Value.emit(w)
+	io.WriteString(w, ", R)")
+}
+
+func (a *AvgExpr) emit(w io.Writer) {
+	io.WriteString(w, "sum_list(")
+	a.Value.emit(w)
+	io.WriteString(w, ", S), length(")
+	a.Value.emit(w)
+	io.WriteString(w, ", L), R is S / L")
+}
+
+func (m *MinExpr) emit(w io.Writer) {
+	io.WriteString(w, "min_list(")
+	m.Value.emit(w)
+	io.WriteString(w, ", R)")
+}
+
+func (m *MaxExpr) emit(w io.Writer) {
+	io.WriteString(w, "max_list(")
+	m.Value.emit(w)
+	io.WriteString(w, ", R)")
+}
+
+func (a *AppendExpr) emit(w io.Writer) {
+	io.WriteString(w, "append(")
+	a.List.emit(w)
+	io.WriteString(w, ", [")
+	a.Elem.emit(w)
+	io.WriteString(w, "], R)")
+}
+
 func escape(s string) string {
 	s = strings.ReplaceAll(s, "'", "''")
 	return s
@@ -191,7 +274,7 @@ func cap(name string) string {
 
 func isBoolOp(op string) bool {
 	switch op {
-	case "=:=", "=\\=", "<", "<=", ">", ">=":
+	case "=:=", "=\\=", "<", "<=", ">", ">=", "@<", "@=<", "@>", "@>=":
 		return true
 	}
 	return false
@@ -343,7 +426,20 @@ func toBinary(b *parser.BinaryExpr, env *compileEnv) (Expr, error) {
 		case "!=":
 			opStr = "=\\="
 		case "<", "<=", ">", ">=":
-			opStr = op
+			if isStringLit(left) || isStringLit(right) {
+				switch op {
+				case "<":
+					opStr = "@<"
+				case "<=":
+					opStr = "@=<"
+				case ">":
+					opStr = "@>"
+				case ">=":
+					opStr = "@>="
+				}
+			} else {
+				opStr = op
+			}
 		default:
 			return nil, fmt.Errorf("unsupported op")
 		}
@@ -410,18 +506,44 @@ func toPrimary(p *parser.Primary, env *compileEnv) (Expr, error) {
 		}
 		return &Var{Name: env.current(p.Selector.Root)}, nil
 	case p.Call != nil:
-		if len(p.Call.Args) != 1 {
-			return nil, fmt.Errorf("unsupported call")
-		}
-		arg, err := toExpr(p.Call.Args[0], env)
-		if err != nil {
-			return nil, err
-		}
 		switch p.Call.Func {
-		case "len":
-			return &LenExpr{Value: arg}, nil
-		case "str":
-			return &StrExpr{Value: arg}, nil
+		case "len", "str", "count", "sum", "avg", "min", "max":
+			if len(p.Call.Args) != 1 {
+				return nil, fmt.Errorf("unsupported call")
+			}
+			arg, err := toExpr(p.Call.Args[0], env)
+			if err != nil {
+				return nil, err
+			}
+			switch p.Call.Func {
+			case "len":
+				return &LenExpr{Value: arg}, nil
+			case "str":
+				return &StrExpr{Value: arg}, nil
+			case "count":
+				return &CountExpr{Value: arg}, nil
+			case "sum":
+				return &SumExpr{Value: arg}, nil
+			case "avg":
+				return &AvgExpr{Value: arg}, nil
+			case "min":
+				return &MinExpr{Value: arg}, nil
+			case "max":
+				return &MaxExpr{Value: arg}, nil
+			}
+		case "append":
+			if len(p.Call.Args) != 2 {
+				return nil, fmt.Errorf("unsupported call")
+			}
+			listArg, err := toExpr(p.Call.Args[0], env)
+			if err != nil {
+				return nil, err
+			}
+			elemArg, err := toExpr(p.Call.Args[1], env)
+			if err != nil {
+				return nil, err
+			}
+			return &AppendExpr{List: listArg, Elem: elemArg}, nil
 		default:
 			return nil, fmt.Errorf("unsupported call")
 		}
@@ -467,6 +589,18 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "len", Children: []*ast.Node{exprNode(ex.Value)}}
 	case *StrExpr:
 		return &ast.Node{Kind: "strcall", Children: []*ast.Node{exprNode(ex.Value)}}
+	case *CountExpr:
+		return &ast.Node{Kind: "count", Children: []*ast.Node{exprNode(ex.Value)}}
+	case *SumExpr:
+		return &ast.Node{Kind: "sum", Children: []*ast.Node{exprNode(ex.Value)}}
+	case *AvgExpr:
+		return &ast.Node{Kind: "avg", Children: []*ast.Node{exprNode(ex.Value)}}
+	case *MinExpr:
+		return &ast.Node{Kind: "min", Children: []*ast.Node{exprNode(ex.Value)}}
+	case *MaxExpr:
+		return &ast.Node{Kind: "max", Children: []*ast.Node{exprNode(ex.Value)}}
+	case *AppendExpr:
+		return &ast.Node{Kind: "append", Children: []*ast.Node{exprNode(ex.List), exprNode(ex.Elem)}}
 	case *GroupExpr:
 		return &ast.Node{Kind: "group", Children: []*ast.Node{exprNode(ex.Expr)}}
 	case *CastExpr:

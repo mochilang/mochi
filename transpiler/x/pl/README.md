@@ -5,10 +5,10 @@ programs to SWI-Prolog. It is mainly used for experimentation and golden tests.
 
 ## Golden tests
 
-Programs under `tests/vm/valid` that have generated Prolog code (15/100):
+Programs under `tests/vm/valid` that have generated Prolog code (20/100):
 
-- [ ] `append_builtin`
-- [ ] `avg_builtin`
+- [x] `append_builtin`
+- [x] `avg_builtin`
 - [x] `basic_compare`
 - [x] `binary_precedence`
 - [ ] `bool_chain`
@@ -16,7 +16,7 @@ Programs under `tests/vm/valid` that have generated Prolog code (15/100):
 - [x] `cast_string_to_int`
 - [ ] `cast_struct`
 - [ ] `closure`
-- [ ] `count_builtin`
+- [x] `count_builtin`
 - [ ] `cross_join`
 - [ ] `cross_join_filter`
 - [ ] `cross_join_triple`
@@ -69,7 +69,7 @@ Programs under `tests/vm/valid` that have generated Prolog code (15/100):
 - [ ] `match_full`
 - [x] `math_ops`
 - [ ] `membership`
-- [ ] `min_max_builtin`
+- [x] `min_max_builtin`
 - [ ] `nested_function`
 - [ ] `order_by_map`
 - [ ] `outer_join`
@@ -86,15 +86,15 @@ Programs under `tests/vm/valid` that have generated Prolog code (15/100):
 - [ ] `short_circuit`
 - [ ] `slice`
 - [ ] `sort_stable`
- - [x] `str_builtin`
+- [x] `str_builtin`
 - [x] `string_compare`
- - [x] `string_concat`
+- [x] `string_concat`
 - [ ] `string_contains`
 - [ ] `string_in_operator`
 - [ ] `string_index`
 - [ ] `string_prefix_slice`
 - [ ] `substring_builtin`
-- [ ] `sum_builtin`
+- [x] `sum_builtin`
 - [ ] `tail_recursion`
 - [ ] `test_block`
 - [ ] `tree_sum`

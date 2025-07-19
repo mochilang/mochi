@@ -1,0 +1,2 @@
+ERROR: /workspace/mochi/tests/transpiler/x/pl/min_max_builtin.pl:3: Initialization goal raised exception:
+ERROR: is/2: Type error: `[]' expected, found `[3,1,4]' (a list) ("x" must hold one character)
