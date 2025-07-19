@@ -2,7 +2,7 @@
 
 Generated Scheme code for programs in `tests/vm/valid`. Each program has a `.scm` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-Transpiled programs: 14/100
+Transpiled programs: 17/100
 
 Checklist:
 
@@ -22,8 +22,8 @@ Checklist:
 - [ ] dataset_sort_take_limit
 - [ ] dataset_where_filter
 - [ ] exists_builtin
-- [ ] for_list_collection
-- [ ] for_loop
+- [x] for_list_collection
+- [x] for_loop
 - [ ] for_map_collection
 - [ ] fun_call
 - [ ] fun_expr_in_let
@@ -105,4 +105,4 @@ Checklist:
 - [ ] user_type_literal
 - [ ] values_builtin
 - [x] var_assignment
-- [ ] while_loop
+- [x] while_loop
