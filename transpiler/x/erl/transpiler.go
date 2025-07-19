@@ -74,6 +74,13 @@ type BoolLit struct{ Value bool }
 
 type StringLit struct{ Value string }
 
+// IfStmt represents a simple if statement with optional else branch.
+type IfStmt struct {
+	Cond Expr
+	Then []Stmt
+	Else []Stmt
+}
+
 func (p *PrintStmt) emit(w io.Writer) {
 	io.WriteString(w, "print_value(")
 	p.Expr.emit(w)
@@ -253,6 +260,28 @@ func (b *BoolLit) emit(w io.Writer) {
 
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
 
+func (i *IfStmt) emit(w io.Writer) {
+	io.WriteString(w, "case ")
+	i.Cond.emit(w)
+	io.WriteString(w, " of\n        true -> ")
+	for idx, st := range i.Then {
+		if idx > 0 {
+			io.WriteString(w, ",\n            ")
+		}
+		st.emit(w)
+	}
+	if len(i.Else) > 0 {
+		io.WriteString(w, ";\n        _ -> ")
+		for idx, st := range i.Else {
+			if idx > 0 {
+				io.WriteString(w, ",\n            ")
+			}
+			st.emit(w)
+		}
+	}
+	io.WriteString(w, "\n    end")
+}
+
 func mapOp(op string) string {
 	switch op {
 	case "&&":
@@ -281,37 +310,82 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	p := &Program{}
 	strVars := map[string]bool{}
 	for _, st := range prog.Statements {
-		switch {
-		case st.Let != nil:
-			e, err := convertExpr(st.Let.Value)
-			if err != nil {
-				return nil, err
-			}
-			if isStringExpr(e) {
-				strVars[st.Let.Name] = true
-			}
-			p.Stmts = append(p.Stmts, &LetStmt{Name: st.Let.Name, Expr: e})
-		case st.Expr != nil:
-			e, err := convertExpr(st.Expr.Expr)
-			if err != nil {
-				return nil, err
-			}
-			if c, ok := e.(*CallExpr); ok && c.Func == "print" && len(c.Args) == 1 {
-				arg := c.Args[0]
-				if n, ok := arg.(*NameRef); ok {
-					if strVars[n.Name] {
-						n.IsString = true
-					}
-				}
-				p.Stmts = append(p.Stmts, &PrintStmt{Expr: arg})
-			} else {
-				return nil, fmt.Errorf("unsupported expression")
-			}
-		default:
-			return nil, fmt.Errorf("unsupported statement")
+		stmts, err := convertStmt(st, strVars)
+		if err != nil {
+			return nil, err
 		}
+		p.Stmts = append(p.Stmts, stmts...)
 	}
 	return p, nil
+}
+
+func convertStmt(st *parser.Statement, strVars map[string]bool) ([]Stmt, error) {
+	switch {
+	case st.Let != nil:
+		e, err := convertExpr(st.Let.Value)
+		if err != nil {
+			return nil, err
+		}
+		if isStringExpr(e) {
+			strVars[st.Let.Name] = true
+		}
+		return []Stmt{&LetStmt{Name: st.Let.Name, Expr: e}}, nil
+	case st.Expr != nil:
+		e, err := convertExpr(st.Expr.Expr)
+		if err != nil {
+			return nil, err
+		}
+		if c, ok := e.(*CallExpr); ok && c.Func == "print" && len(c.Args) == 1 {
+			arg := c.Args[0]
+			if n, ok := arg.(*NameRef); ok {
+				if strVars[n.Name] {
+					n.IsString = true
+				}
+			}
+			return []Stmt{&PrintStmt{Expr: arg}}, nil
+		}
+		return nil, fmt.Errorf("unsupported expression")
+	case st.If != nil:
+		s, err := convertIfStmt(st.If, strVars)
+		if err != nil {
+			return nil, err
+		}
+		return []Stmt{s}, nil
+	default:
+		return nil, fmt.Errorf("unsupported statement")
+	}
+}
+
+func convertIfStmt(n *parser.IfStmt, strVars map[string]bool) (*IfStmt, error) {
+	cond, err := convertExpr(n.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenStmts := []Stmt{}
+	for _, st := range n.Then {
+		cs, err := convertStmt(st, strVars)
+		if err != nil {
+			return nil, err
+		}
+		thenStmts = append(thenStmts, cs...)
+	}
+	var elseStmts []Stmt
+	if n.ElseIf != nil {
+		es, err := convertIfStmt(n.ElseIf, strVars)
+		if err != nil {
+			return nil, err
+		}
+		elseStmts = []Stmt{es}
+	} else if len(n.Else) > 0 {
+		for _, st := range n.Else {
+			cs, err := convertStmt(st, strVars)
+			if err != nil {
+				return nil, err
+			}
+			elseStmts = append(elseStmts, cs...)
+		}
+	}
+	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
 }
 
 func convertExpr(e *parser.Expr) (Expr, error) {

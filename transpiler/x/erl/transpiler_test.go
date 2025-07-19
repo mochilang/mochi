@@ -115,3 +115,5 @@ func TestTranspileCountBuiltin(t *testing.T) { runGolden(t, "count_builtin") }
 func TestTranspileSumBuiltin(t *testing.T) { runGolden(t, "sum_builtin") }
 
 func TestTranspileMinMaxBuiltin(t *testing.T) { runGolden(t, "min_max_builtin") }
+
+func TestTranspileIfElse(t *testing.T) { runGolden(t, "if_else") }
