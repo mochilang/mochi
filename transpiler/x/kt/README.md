@@ -2,13 +2,13 @@
 
 Generated Kotlin sources for golden tests are stored in `tests/transpiler/x/kt`.
 
-The transpiler currently supports expression programs with `print`, integer and list literals, and built-ins `count`, `sum`, `avg`, `len` and `str`.
+The transpiler currently supports expression programs with `print`, integer and list literals, mutable variables and built-ins `count`, `sum`, `avg`, `len`, `str`, `append`, `min`, `max` and `substring`.
 
-Completed golden tests: **14/100**
+Completed golden tests: **20/100**
 
 ### Golden test checklist
 
-- [ ] append_builtin.mochi
+- [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
 - [x] binary_precedence.mochi
@@ -70,7 +70,7 @@ Completed golden tests: **14/100**
 - [ ] match_full.mochi
  - [x] math_ops.mochi
 - [ ] membership.mochi
-- [ ] min_max_builtin.mochi
+- [x] min_max_builtin.mochi
 - [ ] nested_function.mochi
 - [ ] order_by_map.mochi
 - [ ] outer_join.mochi
@@ -94,17 +94,17 @@ Completed golden tests: **14/100**
 - [ ] string_in_operator.mochi
 - [ ] string_index.mochi
 - [ ] string_prefix_slice.mochi
-- [ ] substring_builtin.mochi
+- [x] substring_builtin.mochi
 - [x] sum_builtin.mochi
 - [ ] tail_recursion.mochi
 - [ ] test_block.mochi
 - [ ] tree_sum.mochi
 - [ ] two-sum.mochi
-- [ ] typed_let.mochi
-- [ ] typed_var.mochi
+- [x] typed_let.mochi
+- [x] typed_var.mochi
  - [x] unary_neg.mochi
 - [ ] update_stmt.mochi
 - [ ] user_type_literal.mochi
 - [ ] values_builtin.mochi
-- [ ] var_assignment.mochi
+- [x] var_assignment.mochi
 - [ ] while_loop.mochi
