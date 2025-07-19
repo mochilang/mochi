@@ -473,7 +473,7 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		c.writeln(fmt.Sprintf("var %s %s", name, typStr))
 		c.writeln(fmt.Sprintf("%s = %s", name, value))
 	} else if s.Type == nil && c.indent > 0 {
-		c.writeln(fmt.Sprintf("%s := %s", name, value))
+		c.writeln(fmt.Sprintf("var %s %s = %s", name, typStr, value))
 	} else {
 		c.writeln(fmt.Sprintf("var %s %s = %s", name, typStr, value))
 	}
@@ -599,7 +599,7 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		c.writeln(fmt.Sprintf("var %s %s", name, typStr))
 		c.writeln(fmt.Sprintf("%s = %s", name, value))
 	} else if s.Type == nil && c.indent > 0 {
-		c.writeln(fmt.Sprintf("%s := %s", name, value))
+		c.writeln(fmt.Sprintf("var %s %s = %s", name, typStr, value))
 	} else {
 		c.writeln(fmt.Sprintf("var %s %s = %s", name, typStr, value))
 	}
@@ -727,7 +727,7 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 	if finalTyp != nil {
 		exprGo := goType(exprT)
 		typGo := goType(finalTyp)
-		if typGo != "" && typGo != exprGo && (isAny(exprT) || !equalTypes(finalTyp, exprT)) {
+		if typGo != "" && typGo != exprGo {
 			value = c.castExpr(value, exprT, finalTyp)
 		}
 	}
