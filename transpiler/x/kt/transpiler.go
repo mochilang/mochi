@@ -174,6 +174,35 @@ type VarRef struct{ Name string }
 
 func (v *VarRef) emit(w io.Writer) { io.WriteString(w, v.Name) }
 
+// FieldExpr represents obj.field access.
+type FieldExpr struct {
+	Receiver Expr
+	Name     string
+}
+
+func (f *FieldExpr) emit(w io.Writer) {
+	f.Receiver.emit(w)
+	io.WriteString(w, "."+f.Name)
+}
+
+// CastExpr represents value as type conversions like "\"123\" as int".
+type CastExpr struct {
+	Value Expr
+	Type  string
+}
+
+func (c *CastExpr) emit(w io.Writer) {
+	c.Value.emit(w)
+	switch c.Type {
+	case "int":
+		io.WriteString(w, ".toInt()")
+	case "float":
+		io.WriteString(w, ".toDouble()")
+	case "string":
+		io.WriteString(w, ".toString()")
+	}
+}
+
 type BinaryExpr struct {
 	Left  Expr
 	Op    string
@@ -487,6 +516,44 @@ func (s *SubstringExpr) emit(w io.Writer) {
 	io.WriteString(w, ")")
 }
 
+func kotlinType(t *parser.TypeRef) string {
+	if t == nil {
+		return ""
+	}
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int":
+			return "Int"
+		case "bool":
+			return "Boolean"
+		case "string":
+			return "String"
+		}
+		return "Any"
+	}
+	if t.Generic != nil {
+		switch t.Generic.Name {
+		case "list":
+			elem := kotlinType(t.Generic.Args[0])
+			if elem == "" {
+				elem = "Any"
+			}
+			return "MutableList<" + elem + ">"
+		case "map":
+			k := kotlinType(t.Generic.Args[0])
+			v := kotlinType(t.Generic.Args[1])
+			if k == "" {
+				k = "Any"
+			}
+			if v == "" {
+				v = "Any"
+			}
+			return "MutableMap<" + k + ", " + v + ">"
+		}
+	}
+	return "Any"
+}
+
 // Transpile converts a Mochi program to a simple Kotlin AST.
 func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	p := &Program{}
@@ -555,26 +622,13 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			}
 			var params []string
 			for _, p0 := range st.Fun.Params {
-				typ := "Any"
-				if p0.Type != nil && p0.Type.Simple != nil {
-					switch *p0.Type.Simple {
-					case "int":
-						typ = "Int"
-					case "bool":
-						typ = "Boolean"
-					}
+				typ := kotlinType(p0.Type)
+				if typ == "" {
+					typ = "Any"
 				}
 				params = append(params, fmt.Sprintf("%s: %s", p0.Name, typ))
 			}
-			ret := ""
-			if st.Fun.Return != nil && st.Fun.Return.Simple != nil {
-				switch *st.Fun.Return.Simple {
-				case "int":
-					ret = "Int"
-				case "bool":
-					ret = "Boolean"
-				}
-			}
+			ret := kotlinType(st.Fun.Return)
 			p.Funcs = append(p.Funcs, &FuncDef{Name: st.Fun.Name, Params: params, Ret: ret, Body: body})
 		case st.If != nil:
 			stmt, err := convertIfStmt(env, st.If)
@@ -738,6 +792,9 @@ func convertForStmt(env *types.Env, fs *parser.ForStmt) (Stmt, error) {
 	iter, err := convertExpr(env, fs.Source)
 	if err != nil {
 		return nil, err
+	}
+	if types.IsMapExpr(fs.Source, env) {
+		iter = &FieldExpr{Receiver: iter, Name: "keys"}
 	}
 	body, err := convertStmts(env, fs.Body)
 	if err != nil {
@@ -925,7 +982,13 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			expr = &ContainsExpr{Str: expr, Sub: arg}
 			i++ // skip call op
 		case op.Field != nil:
-			return nil, fmt.Errorf("unsupported field access")
+			expr = &FieldExpr{Receiver: expr, Name: op.Field.Name}
+		case op.Cast != nil:
+			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
+				expr = &CastExpr{Value: expr, Type: *op.Cast.Type.Simple}
+			} else {
+				return nil, fmt.Errorf("unsupported cast")
+			}
 		case op.Call != nil:
 			return nil, fmt.Errorf("unsupported call")
 		default:
@@ -1266,6 +1329,10 @@ func toNodeExpr(e Expr) *ast.Node {
 		return &ast.Node{Kind: "values", Children: []*ast.Node{toNodeExpr(ex.Map)}}
 	case *SubstringExpr:
 		return &ast.Node{Kind: "substring", Children: []*ast.Node{toNodeExpr(ex.Value), toNodeExpr(ex.Start), toNodeExpr(ex.End)}}
+	case *FieldExpr:
+		return &ast.Node{Kind: "field", Value: ex.Name, Children: []*ast.Node{toNodeExpr(ex.Receiver)}}
+	case *CastExpr:
+		return &ast.Node{Kind: "cast", Value: ex.Type, Children: []*ast.Node{toNodeExpr(ex.Value)}}
 	case *SliceExpr:
 		n := &ast.Node{Kind: "slice", Children: []*ast.Node{toNodeExpr(ex.Value)}}
 		if ex.Start != nil {

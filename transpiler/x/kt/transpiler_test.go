@@ -77,6 +77,12 @@ func TestTranspilePrograms(t *testing.T) {
 		"map_assign",
 		"slice",
 		"string_prefix_slice",
+		"cast_string_to_int",
+		"for_map_collection",
+		"list_nested_assign",
+		"map_nested_assign",
+		"tail_recursion",
+		"two-sum",
 	}
 	root := repoRoot(t)
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "kt")

@@ -1,6 +1,6 @@
 # Kotlin Transpiler Tasks
 
-_Last updated: 2025-07-19T12:53:06+00:00_
+_Last updated: 2025-07-19 14:14 UTC_
 
 - Basic programs using `print` are supported.
 - Added integer and list literals.
@@ -41,3 +41,10 @@ _Last updated: 2025-07-19T12:53:06+00:00_
 - Added support for list and map mutation by emitting mutable collections.
 - Implemented slice expressions for lists and strings.
 - New golden tests generated: `fun_call`, `fun_three_args`, `slice` and `string_prefix_slice` bringing progress to 38/100.
+
+## VM Golden Progress (2025-07-19 14:14 UTC)
+- Added cast expressions and field access support.
+- For loops now iterate over map keys when given a map expression.
+- Added Kotlin type generation for generic lists and maps.
+- Generated Kotlin tests for `cast_string_to_int`, `for_map_collection`, `list_nested_assign`, `map_nested_assign`, `tail_recursion` and `two-sum`.
+- README progress updated to 46/100.
