@@ -1,5 +1,10 @@
 # Python Transpiler Tasks
 
+## Recent Enhancements (2025-07-20 01:32 UTC+0700)
+
+- Output code now uses Pythonic constructs directly without runtime helpers.
+- Regenerated README checklist (73/100).
+
 ## Recent Enhancements (2025-07-20 01:14 UTC+0700)
 
 - Added basic query expression handling via Python list comprehensions.
