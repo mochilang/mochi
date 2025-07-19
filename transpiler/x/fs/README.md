@@ -2,7 +2,7 @@
 
 This folder contains an experimental transpiler that converts Mochi source code into F#.
 
-## Golden Test Checklist (32/100)
+## Golden Test Checklist (36/100)
 
 The list below tracks Mochi programs under `tests/vm/valid` that should successfully transpile. Checked items indicate tests known to work.
 
@@ -14,7 +14,7 @@ The list below tracks Mochi programs under `tests/vm/valid` that should successf
 - [ ] break_continue.mochi
 - [ ] cast_string_to_int.mochi
 - [ ] cast_struct.mochi
-- [ ] closure.mochi
+- [x] closure.mochi
 - [ ] count_builtin.mochi
 - [ ] cross_join.mochi
 - [ ] cross_join_filter.mochi
@@ -26,7 +26,7 @@ The list below tracks Mochi programs under `tests/vm/valid` that should successf
 - [x] for_loop.mochi
 - [ ] for_map_collection.mochi
 - [x] fun_call.mochi
-- [ ] fun_expr_in_let.mochi
+- [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
 - [ ] go_auto.mochi
 - [ ] group_by.mochi
@@ -53,7 +53,7 @@ The list below tracks Mochi programs under `tests/vm/valid` that should successf
 - [x] len_string.mochi
 - [x] let_and_print.mochi
 - [ ] list_assign.mochi
-- [ ] list_index.mochi
+- [x] list_index.mochi
 - [ ] list_nested_assign.mochi
 - [ ] list_set_ops.mochi
 - [ ] load_yaml.mochi
@@ -90,7 +90,7 @@ The list below tracks Mochi programs under `tests/vm/valid` that should successf
 - [x] string_concat.mochi
 - [ ] string_contains.mochi
 - [ ] string_in_operator.mochi
-- [ ] string_index.mochi
+- [x] string_index.mochi
 - [ ] string_prefix_slice.mochi
 - [x] substring_builtin.mochi
 - [x] sum_builtin.mochi
