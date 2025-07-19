@@ -110,6 +110,34 @@ func (wst *WhileStmt) emit(w io.Writer) {
 	fmt.Fprint(w, "}")
 }
 
+type ForRangeStmt struct {
+	Name  string
+	Start Expr
+	End   Expr
+	Body  []Stmt
+}
+
+func (fr *ForRangeStmt) emit(w io.Writer) {
+	fmt.Fprint(w, "for (int "+fr.Name+" = ")
+	if fr.Start != nil {
+		fr.Start.emit(w)
+	} else {
+		fmt.Fprint(w, "0")
+	}
+	fmt.Fprint(w, "; ")
+	fmt.Fprint(w, fr.Name+" < ")
+	fr.End.emit(w)
+	fmt.Fprint(w, "; ")
+	fmt.Fprint(w, fr.Name+"++")
+	fmt.Fprint(w, ") {\n")
+	for _, s := range fr.Body {
+		fmt.Fprint(w, "\t")
+		s.emit(w)
+		fmt.Fprint(w, ";\n")
+	}
+	fmt.Fprint(w, "}")
+}
+
 type BinaryExpr struct {
 	Left  Expr
 	Op    string
@@ -191,7 +219,13 @@ func (c *CallExpr) emit(w io.Writer) {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
 		}
-		a.emit(w)
+		if c.Func == "System.out.println" && isBoolExpr(a) {
+			fmt.Fprint(w, "(")
+			a.emit(w)
+			fmt.Fprint(w, " ? 1 : 0)")
+		} else {
+			a.emit(w)
+		}
 	}
 	fmt.Fprint(w, ")")
 }
@@ -199,6 +233,32 @@ func (c *CallExpr) emit(w io.Writer) {
 type StringLit struct{ Value string }
 
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
+
+func isBoolExpr(e Expr) bool {
+	switch ex := e.(type) {
+	case *BoolLit:
+		return true
+	case *UnaryExpr:
+		if ex.Op == "!" {
+			return true
+		}
+		return isBoolExpr(ex.Value)
+	case *BinaryExpr:
+		switch ex.Op {
+		case "==", "!=", "<", "<=", ">", ">=", "&&", "||":
+			return true
+		default:
+			return false
+		}
+	case *GroupExpr:
+		return isBoolExpr(ex.Expr)
+	case *TernaryExpr:
+		// assume then/else of same type
+		return isBoolExpr(ex.Then)
+	default:
+		return false
+	}
+}
 
 // Transpile converts a Mochi AST into a simple Java AST.
 func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
@@ -296,6 +356,26 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			}
 		}
 		return &WhileStmt{Cond: cond, Body: body}, nil
+	case s.For != nil && s.For.RangeEnd != nil:
+		start, err := compileExpr(s.For.Source)
+		if err != nil {
+			return nil, err
+		}
+		end, err := compileExpr(s.For.RangeEnd)
+		if err != nil {
+			return nil, err
+		}
+		var body []Stmt
+		for _, b := range s.For.Body {
+			st, err := compileStmt(b)
+			if err != nil {
+				return nil, err
+			}
+			if st != nil {
+				body = append(body, st)
+			}
+		}
+		return &ForRangeStmt{Name: s.For.Name, Start: start, End: end, Body: body}, nil
 	case s.Test == nil && s.Import == nil && s.Type == nil:
 		return nil, fmt.Errorf("unsupported statement at %d:%d", s.Pos.Line, s.Pos.Column)
 	}
@@ -428,6 +508,8 @@ func Emit(prog *Program) []byte {
 		s.emit(&buf)
 		if _, ok := s.(*WhileStmt); ok {
 			buf.WriteString("\n")
+		} else if _, ok := s.(*ForRangeStmt); ok {
+			buf.WriteString("\n")
 		} else {
 			buf.WriteString(";\n")
 		}
@@ -528,6 +610,15 @@ func toNodeStmt(s Stmt) *ast.Node {
 		if st.Cond != nil {
 			n.Children = append(n.Children, toNodeExpr(st.Cond))
 		}
+		for _, b := range st.Body {
+			n.Children = append(n.Children, toNodeStmt(b))
+		}
+		return n
+	case *ForRangeStmt:
+		n := &ast.Node{Kind: "for"}
+		startNode := &ast.Node{Kind: "start", Children: []*ast.Node{toNodeExpr(st.Start)}}
+		endNode := &ast.Node{Kind: "end", Children: []*ast.Node{toNodeExpr(st.End)}}
+		n.Children = append(n.Children, &ast.Node{Kind: "var", Value: st.Name}, startNode, endNode)
 		for _, b := range st.Body {
 			n.Children = append(n.Children, toNodeStmt(b))
 		}
