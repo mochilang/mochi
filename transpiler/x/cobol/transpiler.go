@@ -20,6 +20,89 @@ type Program struct {
 	Stmts []Stmt
 }
 
+type evalEnv map[string]int
+
+// evalExpr returns the integer value of a simple arithmetic expression.
+// It supports integer literals, identifiers and the operators '+', '-',
+// '*', '/' and '%'. Unary '-' is also handled. Any other expression
+// results in an error.
+func evalExpr(e *parser.Expr, env evalEnv) (int, error) {
+	if e == nil || e.Binary == nil {
+		return 0, fmt.Errorf("invalid expression")
+	}
+	v, err := evalUnary(e.Binary.Left, env)
+	if err != nil {
+		return 0, err
+	}
+	for _, op := range e.Binary.Right {
+		rhs, err := evalPostfix(op.Right, env)
+		if err != nil {
+			return 0, err
+		}
+		switch op.Op {
+		case "+":
+			v += rhs
+		case "-":
+			v -= rhs
+		case "*":
+			v *= rhs
+		case "/":
+			if rhs == 0 {
+				return 0, fmt.Errorf("divide by zero")
+			}
+			v /= rhs
+		case "%":
+			if rhs == 0 {
+				return 0, fmt.Errorf("mod by zero")
+			}
+			v %= rhs
+		default:
+			return 0, fmt.Errorf("unsupported op: %s", op.Op)
+		}
+	}
+	return v, nil
+}
+
+func evalUnary(u *parser.Unary, env evalEnv) (int, error) {
+	v, err := evalPostfix(u.Value, env)
+	if err != nil {
+		return 0, err
+	}
+	for i := len(u.Ops) - 1; i >= 0; i-- {
+		switch u.Ops[i] {
+		case "-":
+			v = -v
+		case "!":
+			return 0, fmt.Errorf("unsupported unary op")
+		}
+	}
+	return v, nil
+}
+
+func evalPostfix(pf *parser.PostfixExpr, env evalEnv) (int, error) {
+	if pf == nil || len(pf.Ops) > 0 {
+		return 0, fmt.Errorf("unsupported postfix")
+	}
+	if pf.Target.Group != nil {
+		return evalExpr(pf.Target.Group, env)
+	}
+	return evalPrimary(pf.Target, env)
+}
+
+func evalPrimary(p *parser.Primary, env evalEnv) (int, error) {
+	switch {
+	case p.Lit != nil && p.Lit.Int != nil:
+		return int(*p.Lit.Int), nil
+	case p.Selector != nil && len(p.Selector.Tail) == 0:
+		v, ok := env[p.Selector.Root]
+		if !ok {
+			return 0, fmt.Errorf("unknown var %s", p.Selector.Root)
+		}
+		return v, nil
+	}
+	return 0, fmt.Errorf("unsupported primary")
+}
+
 type Stmt interface{ emit(io.Writer) }
 
 type DisplayStmt struct{ Value string }
@@ -79,10 +162,48 @@ func Emit(p *Program) []byte {
 // Transpile converts a Mochi AST into our simple COBOL AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	pr := &Program{}
+	vars := evalEnv{}
 	for _, st := range prog.Statements {
-		if st.Expr != nil {
+		switch {
+		case st.Let != nil:
+			if st.Let.Value != nil {
+				v, err := evalExpr(st.Let.Value, vars)
+				if err != nil {
+					return nil, err
+				}
+				vars[st.Let.Name] = v
+			} else {
+				vars[st.Let.Name] = 0
+			}
+		case st.Var != nil:
+			if st.Var.Value != nil {
+				v, err := evalExpr(st.Var.Value, vars)
+				if err != nil {
+					return nil, err
+				}
+				vars[st.Var.Name] = v
+			} else {
+				vars[st.Var.Name] = 0
+			}
+		case st.Assign != nil:
+			if len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0 {
+				return nil, fmt.Errorf("unsupported assignment")
+			}
+			v, err := evalExpr(st.Assign.Value, vars)
+			if err != nil {
+				return nil, err
+			}
+			if _, ok := vars[st.Assign.Name]; !ok {
+				return nil, fmt.Errorf("undefined variable %s", st.Assign.Name)
+			}
+			vars[st.Assign.Name] = v
+		case st.Expr != nil:
 			call := st.Expr.Expr.Binary.Left.Value.Target.Call
 			if call != nil && call.Func == "print" && len(call.Args) == 1 {
+				if val, err := evalExpr(call.Args[0], vars); err == nil {
+					pr.Stmts = append(pr.Stmts, &DisplayStmt{Value: fmt.Sprint(val)})
+					continue
+				}
 				arg := call.Args[0]
 				lit := arg.Binary.Left.Value.Target.Lit
 				if lit != nil && lit.Str != nil {

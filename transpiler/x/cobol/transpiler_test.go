@@ -33,7 +33,7 @@ func repoRoot(t *testing.T) string {
 	return ""
 }
 
-func TestTranspile_PrintHello(t *testing.T) {
+func runFile(t *testing.T, name string) {
 	if err := cobol.EnsureCOBOL(); err != nil {
 		t.Skip("cobc not installed")
 	}
@@ -41,7 +41,7 @@ func TestTranspile_PrintHello(t *testing.T) {
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "cobol")
 	os.MkdirAll(outDir, 0o755)
 
-	src := filepath.Join(root, "tests", "vm", "valid", "print_hello.mochi")
+	src := filepath.Join(root, "tests", "vm", "valid", name+".mochi")
 	prog, err := parser.Parse(src)
 	if err != nil {
 		t.Fatalf("parse: %v", err)
@@ -55,24 +55,24 @@ func TestTranspile_PrintHello(t *testing.T) {
 		t.Fatalf("transpile: %v", err)
 	}
 	code := cobol.Emit(ast)
-	cobPath := filepath.Join(outDir, "print_hello.cob")
+	cobPath := filepath.Join(outDir, name+".cob")
 	if err := os.WriteFile(cobPath, code, 0o644); err != nil {
 		t.Fatalf("write: %v", err)
 	}
-	exe := filepath.Join(outDir, "print_hello")
+	exe := filepath.Join(outDir, name)
 	if out, err := exec.Command("cobc", "-free", cobPath, "-x", "-o", exe).CombinedOutput(); err != nil {
-		_ = os.WriteFile(filepath.Join(outDir, "print_hello.error"), out, 0o644)
+		_ = os.WriteFile(filepath.Join(outDir, name+".error"), out, 0o644)
 		t.Fatalf("compile: %v", err)
 	}
 	defer os.Remove(exe)
 	out, err := exec.Command(exe).CombinedOutput()
 	got := bytes.TrimSpace(out)
 	if err != nil {
-		_ = os.WriteFile(filepath.Join(outDir, "print_hello.error"), out, 0o644)
+		_ = os.WriteFile(filepath.Join(outDir, name+".error"), out, 0o644)
 		t.Fatalf("run: %v", err)
 	}
-	_ = os.Remove(filepath.Join(outDir, "print_hello.error"))
-	wantPath := filepath.Join(outDir, "print_hello.out")
+	_ = os.Remove(filepath.Join(outDir, name+".error"))
+	wantPath := filepath.Join(outDir, name+".out")
 	want, err := os.ReadFile(wantPath)
 	if err != nil {
 		t.Fatalf("read want: %v", err)
@@ -82,3 +82,11 @@ func TestTranspile_PrintHello(t *testing.T) {
 		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
 	}
 }
+
+func TestTranspile_PrintHello(t *testing.T)    { runFile(t, "print_hello") }
+func TestTranspile_LetAndPrint(t *testing.T)   { runFile(t, "let_and_print") }
+func TestTranspile_TypedLet(t *testing.T)      { runFile(t, "typed_let") }
+func TestTranspile_TypedVar(t *testing.T)      { runFile(t, "typed_var") }
+func TestTranspile_UnaryNeg(t *testing.T)      { runFile(t, "unary_neg") }
+func TestTranspile_VarAssignment(t *testing.T) { runFile(t, "var_assignment") }
+func TestTranspile_MathOps(t *testing.T)       { runFile(t, "math_ops") }
