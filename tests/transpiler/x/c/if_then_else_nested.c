@@ -2,8 +2,8 @@
 #include <stdio.h>
 
 int main() {
-	printf("%d\n", 6 * 7);
-	printf("%d\n", 7 / 2);
-	printf("%d\n", 7 % 2);
+	int x = 8;
+	const char* msg = (x > 10 ? "big" : (x > 5 ? "medium" : "small"));
+	printf("%s\n", msg);
 	return 0;
 }

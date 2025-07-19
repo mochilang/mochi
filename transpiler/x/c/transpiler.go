@@ -33,6 +33,7 @@ type Stmt interface {
 type CallStmt struct {
 	Func string
 	Args []Expr
+	Type string
 }
 
 type ReturnStmt struct {
@@ -42,6 +43,7 @@ type ReturnStmt struct {
 type DeclStmt struct {
 	Name  string
 	Value Expr
+	Type  string
 }
 
 type AssignStmt struct {
@@ -70,13 +72,19 @@ type ForStmt struct {
 
 func (c *CallStmt) emit(w io.Writer) {
 	if c.Func == "print" && len(c.Args) == 1 {
-		switch arg := c.Args[0].(type) {
-		case *StringLit:
-			fmt.Fprintf(w, "\tprintf(\"%s\\n\");\n", escape(arg.Value))
-		default:
-			io.WriteString(w, "\tprintf(\"%d\\n\", ")
-			arg.emitExpr(w)
+		if c.Type == "string" {
+			io.WriteString(w, "\tprintf(\"%s\\n\", ")
+			c.Args[0].emitExpr(w)
 			io.WriteString(w, ");\n")
+		} else {
+			switch arg := c.Args[0].(type) {
+			case *StringLit:
+				fmt.Fprintf(w, "\tprintf(\"%s\\n\");\n", escape(arg.Value))
+			default:
+				io.WriteString(w, "\tprintf(\"%d\\n\", ")
+				arg.emitExpr(w)
+				io.WriteString(w, ");\n")
+			}
 		}
 		return
 	}
@@ -87,7 +95,13 @@ func (r *ReturnStmt) emit(w io.Writer) {
 }
 
 func (d *DeclStmt) emit(w io.Writer) {
-	io.WriteString(w, "\tint ")
+	typ := d.Type
+	if typ == "" {
+		typ = "int"
+	}
+	io.WriteString(w, "\t")
+	io.WriteString(w, typ)
+	io.WriteString(w, " ")
 	io.WriteString(w, d.Name)
 	if d.Value != nil {
 		io.WriteString(w, " = ")
@@ -209,6 +223,28 @@ type BinaryExpr struct {
 	Right Expr
 }
 
+type CondExpr struct {
+	Cond Expr
+	Then Expr
+	Else Expr
+}
+
+func (c *CondExpr) emitExpr(w io.Writer) {
+	io.WriteString(w, "(")
+	if c.Cond != nil {
+		c.Cond.emitExpr(w)
+	}
+	io.WriteString(w, " ? ")
+	if c.Then != nil {
+		c.Then.emitExpr(w)
+	}
+	io.WriteString(w, " : ")
+	if c.Else != nil {
+		c.Else.emitExpr(w)
+	}
+	io.WriteString(w, ")")
+}
+
 func (b *BinaryExpr) emitExpr(w io.Writer) {
 	if _, ok := b.Left.(*BinaryExpr); ok {
 		io.WriteString(w, "(")
@@ -288,7 +324,7 @@ func (p *Program) Emit() []byte {
 // Transpile converts a Mochi program into a C AST.
 func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	mainFn := &Function{Name: "main"}
-	body, err := compileStmts(prog.Statements)
+	body, err := compileStmts(env, prog.Statements)
 	if err != nil {
 		return nil, err
 	}
@@ -297,10 +333,10 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	return p, nil
 }
 
-func compileStmts(list []*parser.Statement) ([]Stmt, error) {
+func compileStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 	var out []Stmt
 	for _, s := range list {
-		stmt, err := compileStmt(s)
+		stmt, err := compileStmt(env, s)
 		if err != nil {
 			return nil, err
 		}
@@ -311,31 +347,51 @@ func compileStmts(list []*parser.Statement) ([]Stmt, error) {
 	return out, nil
 }
 
-func compileStmt(s *parser.Statement) (Stmt, error) {
+func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 	switch {
 	case s.Expr != nil:
 		call := s.Expr.Expr.Binary.Left.Value.Target.Call
 		if call != nil && call.Func == "print" && len(call.Args) == 1 {
 			arg := convertExpr(call.Args[0])
 			if arg != nil {
-				return &CallStmt{Func: "print", Args: []Expr{arg}}, nil
+				typ := ""
+				if exprIsString(arg) {
+					typ = "string"
+				} else if v, ok := arg.(*VarRef); ok {
+					if t, err := env.GetVar(v.Name); err == nil {
+						if _, ok := t.(types.StringType); ok {
+							typ = "string"
+						}
+					}
+				}
+				return &CallStmt{Func: "print", Args: []Expr{arg}, Type: typ}, nil
 			}
 		}
 	case s.Let != nil:
-		return &DeclStmt{Name: s.Let.Name, Value: convertExpr(s.Let.Value)}, nil
+		t, _ := env.GetVar(s.Let.Name)
+		declType := "int"
+		if _, ok := t.(types.StringType); ok {
+			declType = "const char*"
+		}
+		return &DeclStmt{Name: s.Let.Name, Value: convertExpr(s.Let.Value), Type: declType}, nil
 	case s.Var != nil:
-		return &DeclStmt{Name: s.Var.Name, Value: convertExpr(s.Var.Value)}, nil
+		t, _ := env.GetVar(s.Var.Name)
+		declType := "int"
+		if _, ok := t.(types.StringType); ok {
+			declType = "const char*"
+		}
+		return &DeclStmt{Name: s.Var.Name, Value: convertExpr(s.Var.Value), Type: declType}, nil
 	case s.Assign != nil:
 		return &AssignStmt{Name: s.Assign.Name, Value: convertExpr(s.Assign.Value)}, nil
 	case s.While != nil:
 		cond := convertExpr(s.While.Cond)
-		body, err := compileStmts(s.While.Body)
+		body, err := compileStmts(env, s.While.Body)
 		if err != nil {
 			return nil, err
 		}
 		return &WhileStmt{Cond: cond, Body: body}, nil
 	case s.For != nil:
-		body, err := compileStmts(s.For.Body)
+		body, err := compileStmts(env, s.For.Body)
 		if err != nil {
 			return nil, err
 		}
@@ -350,31 +406,55 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 		}
 		return nil, fmt.Errorf("unsupported for-loop")
 	case s.If != nil:
-		return compileIfStmt(s.If)
+		return compileIfStmt(env, s.If)
 	}
 	return nil, nil
 }
 
-func compileIfStmt(n *parser.IfStmt) (Stmt, error) {
+func compileIfStmt(env *types.Env, n *parser.IfStmt) (Stmt, error) {
 	cond := convertExpr(n.Cond)
-	thenBody, err := compileStmts(n.Then)
+	thenBody, err := compileStmts(env, n.Then)
 	if err != nil {
 		return nil, err
 	}
 	var elseBody []Stmt
 	if n.ElseIf != nil {
-		s, err := compileIfStmt(n.ElseIf)
+		s, err := compileIfStmt(env, n.ElseIf)
 		if err != nil {
 			return nil, err
 		}
 		elseBody = []Stmt{s}
 	} else if len(n.Else) > 0 {
-		elseBody, err = compileStmts(n.Else)
+		elseBody, err = compileStmts(env, n.Else)
 		if err != nil {
 			return nil, err
 		}
 	}
 	return &IfStmt{Cond: cond, Then: thenBody, Else: elseBody}, nil
+}
+
+func convertIfExpr(n *parser.IfExpr) Expr {
+	if n == nil {
+		return nil
+	}
+	cond := convertExpr(n.Cond)
+	if cond == nil {
+		return nil
+	}
+	thenExpr := convertExpr(n.Then)
+	if thenExpr == nil {
+		return nil
+	}
+	var elseExpr Expr
+	if n.ElseIf != nil {
+		elseExpr = convertIfExpr(n.ElseIf)
+	} else if n.Else != nil {
+		elseExpr = convertExpr(n.Else)
+	}
+	if elseExpr == nil {
+		return nil
+	}
+	return &CondExpr{Cond: cond, Then: thenExpr, Else: elseExpr}
 }
 
 func convertExpr(e *parser.Expr) Expr {
@@ -462,6 +542,9 @@ func convertUnary(u *parser.Unary) Expr {
 		}
 		return nil
 	}
+	if ifexpr := u.Value.Target.If; ifexpr != nil && len(u.Ops) == 0 {
+		return convertIfExpr(ifexpr)
+	}
 	if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 && len(u.Ops) == 0 {
 		return &VarRef{Name: sel.Root}
 	}
@@ -508,4 +591,15 @@ func convertListExpr(e *parser.Expr) ([]Expr, bool) {
 		out = append(out, ex)
 	}
 	return out, true
+}
+
+func exprIsString(e Expr) bool {
+	switch v := e.(type) {
+	case *StringLit:
+		return true
+	case *CondExpr:
+		return exprIsString(v.Then) && exprIsString(v.Else)
+	default:
+		return false
+	}
 }
