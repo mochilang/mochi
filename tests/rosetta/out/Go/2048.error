@@ -1,13 +1,13 @@
 run: exit status 1
 # command-line-arguments
-/tmp/X/001/main.go:43:8: invalid operation: cannot index b (variable of type *[][]int)
-/tmp/X/001/main.go:50:9: invalid argument: any(empty) (value of interface type any) for built-in len
-/tmp/X/001/main.go:53:36: invalid argument: any(empty) (value of interface type any) for built-in len
-/tmp/X/001/main.go:59:3: invalid operation: cannot index b (variable of type *[][]int)
-/tmp/X/001/main.go:60:49: invalid argument: any(empty) (value of interface type any) for built-in len
-/tmp/X/001/main.go:66:18: invalid argument: any(s) (value of interface type any) for built-in len
-/tmp/X/001/main.go:103:12: invalid argument: any(r) (value of interface type any) for built-in len
-/tmp/X/001/main.go:115:14: invalid argument: any(row) (value of interface type any) for built-in len
-/tmp/X/001/main.go:124:14: invalid argument: any(xs) (value of interface type any) for built-in len
-/tmp/X/001/main.go:125:21: invalid argument: any(xs) (value of interface type any) for built-in len
-/tmp/X/001/main.go:125:21: too many errors
+/tmp/X/001/main.go:23:10: undefined: SIZE
+/tmp/X/001/main.go:26:11: undefined: SIZE
+/tmp/X/001/main.go:40:10: undefined: SIZE
+/tmp/X/001/main.go:42:11: undefined: SIZE
+/tmp/X/001/main.go:80:10: undefined: SIZE
+/tmp/X/001/main.go:84:11: undefined: SIZE
+/tmp/X/001/main.go:135:17: undefined: SIZE
+/tmp/X/001/main.go:145:10: undefined: SIZE
+/tmp/X/001/main.go:146:18: invalid operation: ((*b)[y]) (variable of type []int) is not an interface
+/tmp/X/001/main.go:150:11: undefined: SIZE
+/tmp/X/001/main.go:150:11: too many errors

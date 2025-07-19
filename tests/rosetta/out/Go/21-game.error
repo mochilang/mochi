@@ -1,5 +1,3 @@
 run: exit status 1
 # command-line-arguments
-/tmp/X/001/main.go:20:10: invalid argument: any(str) (value of interface type any) for built-in len
-/tmp/X/001/main.go:37:14: invalid argument: any(str) (value of interface type any) for built-in len
 /tmp/X/001/main.go:67:15: cannot use (int64((int64(_now()) % int64(3))) + int64(1)) (value of type int64) as int value in assignment

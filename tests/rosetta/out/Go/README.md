@@ -1,12 +1,12 @@
-# Rosetta Go Output (33/278 compiled and run)
+# Rosetta Go Output (36/278 compiled and run)
 
 This directory holds Go source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
 ## Program checklist
-- [ ] 100-doors-2
-- [ ] 100-doors-3
-- [ ] 100-doors
-- [x] 100-prisoners
+- [x] 100-doors-2
+- [x] 100-doors-3
+- [x] 100-doors
+- [ ] 100-prisoners
 - [ ] 15-puzzle-game
 - [x] 15-puzzle-solver
 - [ ] 2048
@@ -17,7 +17,7 @@ This directory holds Go source code generated from the real Mochi programs in `t
 - [ ] 9-billion-names-of-god-the-integer
 - [ ] 99-bottles-of-beer-2
 - [x] 99-bottles-of-beer
-- [ ] DNS-query
+- [x] DNS-query
 - [x] a+b
 - [x] abbreviations-automatic
 - [x] abbreviations-easy

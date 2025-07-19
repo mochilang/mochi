@@ -15,10 +15,10 @@ func fields(s string) []string {
 	var words []string = []string{}
 	cur := ""
 	i := 0
-	for i < len(s) {
+	for i < len([]rune(s)) {
 		ch := string([]rune(s)[i:(i + 1)])
 		if ((ch == " ") || (ch == "\n")) || (ch == "\t") {
-			if len(cur) > 0 {
+			if len([]rune(cur)) > 0 {
 				words = append(words, cur)
 				cur = ""
 			}
@@ -27,7 +27,7 @@ func fields(s string) []string {
 		}
 		i = (i + 1)
 	}
-	if len(cur) > 0 {
+	if len([]rune(cur)) > 0 {
 		words = append(words, cur)
 	}
 	return words
@@ -90,7 +90,7 @@ func numberName(n int) string {
 		return small[n]
 	}
 	if n < 100 {
-		t := tens[int((float64(n) / float64(10)))]
+		t := tens[(float64(n) / float64(10))]
 		s := (n % 10)
 		if s > 0 {
 			t = t + " " + small[s]
@@ -120,12 +120,12 @@ func randInt(seed int, n int) int {
 
 // line 72
 func slur(p string, d int) string {
-	if len(p) <= 2 {
+	if len([]rune(p)) <= 2 {
 		return p
 	}
 	var a []string = []string{}
 	i := 1
-	for i < (len(p) - 1) {
+	for i < (len([]rune(p)) - 1) {
 		a = append(a, string([]rune(p)[i:(i+1)]))
 		i = (i + 1)
 	}
@@ -147,7 +147,7 @@ func slur(p string, d int) string {
 		s = s + a[k]
 		k = (k + 1)
 	}
-	s = s + string([]rune(p)[(len(p)-1):len(p)])
+	s = s + string([]rune(p)[(len([]rune(p))-1):len([]rune(p))])
 	w := fields(s)
 	return join(w, " ")
 }
