@@ -2,13 +2,10 @@
 
 This directory contains a minimal transpiler that converts a very small subset of Mochi into Elixir source code. The generated files live in `tests/transpiler/x/ex`.
 
-## VM golden test checklist
-
-Currently 15 of 100 programs transpile and run.
-
+Currently 25 of 100 programs transpile and run.
 
 The table below tracks which programs from `tests/vm/valid` successfully transpile and run. Checked items have generated `.exs` code and matching `.out` files in `tests/transpiler/x/ex`.
-- [ ] append_builtin.mochi
+- [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
 - [x] binary_precedence.mochi
@@ -43,7 +40,7 @@ The table below tracks which programs from `tests/vm/valid` successfully transpi
 - [ ] if_else.mochi
 - [ ] if_then_else.mochi
 - [ ] if_then_else_nested.mochi
-- [ ] in_operator.mochi
+- [x] in_operator.mochi
 - [ ] in_operator_extended.mochi
 - [ ] inner_join.mochi
 - [ ] join_multi.mochi
@@ -55,7 +52,7 @@ The table below tracks which programs from `tests/vm/valid` successfully transpi
 - [x] len_string.mochi
 - [x] let_and_print.mochi
 - [ ] list_assign.mochi
-- [ ] list_index.mochi
+- [x] list_index.mochi
 - [ ] list_nested_assign.mochi
 - [ ] list_set_ops.mochi
 - [ ] load_yaml.mochi
@@ -69,7 +66,7 @@ The table below tracks which programs from `tests/vm/valid` successfully transpi
 - [ ] match_expr.mochi
 - [ ] match_full.mochi
 - [x] math_ops.mochi
-- [ ] membership.mochi
+- [x] membership.mochi
 - [ ] min_max_builtin.mochi
 - [ ] nested_function.mochi
 - [ ] order_by_map.mochi
@@ -87,17 +84,17 @@ The table below tracks which programs from `tests/vm/valid` successfully transpi
 - [ ] short_circuit.mochi
 - [ ] slice.mochi
 - [ ] sort_stable.mochi
-- [ ] str_builtin.mochi
-- [ ] string_compare.mochi
-- [ ] string_concat.mochi
+- [x] str_builtin.mochi
+- [x] string_compare.mochi
+- [x] string_concat.mochi
 - [ ] string_contains.mochi
 - [ ] string_in_operator.mochi
-- [ ] string_index.mochi
+- [x] string_index.mochi
 - [ ] string_prefix_slice.mochi
-- [ ] substring_builtin.mochi
+- [x] substring_builtin.mochi
 - [x] sum_builtin.mochi
 - [ ] tail_recursion.mochi
-- [ ] test_block.mochi
+- [x] test_block.mochi
 - [ ] tree_sum.mochi
 - [ ] two-sum.mochi
 - [x] typed_let.mochi
