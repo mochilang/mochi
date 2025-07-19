@@ -1173,8 +1173,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 	switch {
 	case p.Lit != nil:
 		return convertLiteral(p.Lit)
-	case p.Selector != nil && len(p.Selector.Tail) == 0:
-		return &NameRef{Name: p.Selector.Root}, nil
+	case p.Selector != nil:
+		expr := selectorToExpr(p.Selector)
+		return expr, nil
 	case p.Call != nil:
 		args := make([]Expr, len(p.Call.Args))
 		for i, a := range p.Call.Args {
@@ -1332,6 +1333,17 @@ func zeroValue(t *parser.TypeRef, env *types.Env) Expr {
 	default:
 		return nil
 	}
+}
+
+// selectorToExpr converts a selector expression like a.b.c into nested index
+// expressions so the transpiler can treat it uniformly with dynamic property
+// access. It never returns nil.
+func selectorToExpr(sel *parser.SelectorExpr) Expr {
+	expr := Expr(&NameRef{Name: sel.Root})
+	for _, part := range sel.Tail {
+		expr = &IndexExpr{Target: expr, Index: &StringLit{Value: part}}
+	}
+	return expr
 }
 
 // print converts the given TypeScript AST into a generic ast.Node tree and
