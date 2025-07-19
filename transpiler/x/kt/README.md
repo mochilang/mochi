@@ -4,7 +4,7 @@ Generated Kotlin sources for golden tests are stored in `tests/transpiler/x/kt`.
 
 The transpiler currently supports expression programs with `print`, integer and list literals, mutable variables and built-ins `count`, `sum`, `avg`, `len`, `str`, `append`, `min`, `max`, `substring` and `values`.
 
-Completed golden tests: **38/100**
+Completed golden tests: **46/100**
 
 ### Golden test checklist
 
@@ -14,7 +14,7 @@ Completed golden tests: **38/100**
 - [x] binary_precedence.mochi
 - [x] bool_chain.mochi
 - [x] break_continue.mochi
-- [ ] cast_string_to_int.mochi
+- [x] cast_string_to_int.mochi
 - [ ] cast_struct.mochi
 - [ ] closure.mochi
 - [x] count_builtin.mochi
@@ -26,7 +26,7 @@ Completed golden tests: **38/100**
 - [ ] exists_builtin.mochi
 - [x] for_list_collection.mochi
 - [x] for_loop.mochi
-- [ ] for_map_collection.mochi
+- [x] for_map_collection.mochi
 - [x] fun_call.mochi
 - [ ] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
@@ -54,18 +54,18 @@ Completed golden tests: **38/100**
 - [x] len_map.mochi
 - [x] len_string.mochi
 - [x] let_and_print.mochi
-- [ ] list_assign.mochi
+- [x] list_assign.mochi
 - [x] list_index.mochi
-- [ ] list_nested_assign.mochi
+- [x] list_nested_assign.mochi
 - [ ] list_set_ops.mochi
 - [ ] load_yaml.mochi
-- [ ] map_assign.mochi
+- [x] map_assign.mochi
 - [ ] map_in_operator.mochi
 - [ ] map_index.mochi
 - [ ] map_int_key.mochi
 - [ ] map_literal_dynamic.mochi
 - [ ] map_membership.mochi
-- [ ] map_nested_assign.mochi
+- [x] map_nested_assign.mochi
 - [ ] match_expr.mochi
 - [ ] match_full.mochi
 - [x] math_ops.mochi
@@ -96,10 +96,10 @@ Completed golden tests: **38/100**
 - [x] string_prefix_slice.mochi
 - [x] substring_builtin.mochi
 - [x] sum_builtin.mochi
-- [ ] tail_recursion.mochi
+- [x] tail_recursion.mochi
 - [ ] test_block.mochi
 - [ ] tree_sum.mochi
-- [ ] two-sum.mochi
+- [x] two-sum.mochi
 - [x] typed_let.mochi
 - [x] typed_var.mochi
 - [x] unary_neg.mochi
