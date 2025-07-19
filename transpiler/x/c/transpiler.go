@@ -309,6 +309,12 @@ type CallExpr struct {
 	Args []Expr
 }
 
+// IndexExpr accesses an element of a list or string.
+type IndexExpr struct {
+	Target Expr
+	Index  Expr
+}
+
 func (c *CallExpr) emitExpr(w io.Writer) {
 	io.WriteString(w, c.Func)
 	io.WriteString(w, "(")
@@ -319,6 +325,15 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 		a.emitExpr(w)
 	}
 	io.WriteString(w, ")")
+}
+
+func (i *IndexExpr) emitExpr(w io.Writer) {
+	i.Target.emitExpr(w)
+	io.WriteString(w, "[")
+	if i.Index != nil {
+		i.Index.emitExpr(w)
+	}
+	io.WriteString(w, "]")
 }
 
 type BinaryExpr struct {
@@ -521,6 +536,16 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 						if _, ok := t.(types.StringType); ok {
 							tname = "string"
 						}
+					}
+				} else if idx, ok := ex.(*IndexExpr); ok {
+					if v, ok2 := idx.Target.(*VarRef); ok2 {
+						if t, err := env.GetVar(v.Name); err == nil {
+							if _, ok := t.(types.StringType); ok {
+								tname = "string"
+							}
+						}
+					} else if exprIsString(idx.Target) {
+						tname = "string"
 					}
 				}
 				args = append(args, ex)
@@ -859,8 +884,23 @@ func convertUnary(u *parser.Unary) Expr {
 	if ifexpr := u.Value.Target.If; ifexpr != nil && len(u.Ops) == 0 {
 		return convertIfExpr(ifexpr)
 	}
-	if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 && len(u.Ops) == 0 {
-		return &VarRef{Name: sel.Root}
+	if sel := u.Value.Target.Selector; sel != nil {
+		base := &VarRef{Name: sel.Root}
+		if len(sel.Tail) == 0 && len(u.Value.Ops) == 1 && u.Value.Ops[0].Index != nil {
+			idx := convertExpr(u.Value.Ops[0].Index.Start)
+			return &IndexExpr{Target: base, Index: idx}
+		}
+		if len(sel.Tail) == 1 && sel.Tail[0] == "contains" && len(u.Value.Ops) == 1 && u.Value.Ops[0].Call != nil && len(u.Value.Ops[0].Call.Args) == 1 {
+			arg := convertExpr(u.Value.Ops[0].Call.Args[0])
+			if arg == nil {
+				return nil
+			}
+			call := &CallExpr{Func: "strstr", Args: []Expr{base, arg}}
+			return &BinaryExpr{Left: call, Op: "!=", Right: &IntLit{Value: 0}}
+		}
+		if len(sel.Tail) == 0 && len(u.Ops) == 0 {
+			return base
+		}
 	}
 	lit := u.Value.Target.Lit
 	if lit == nil {
@@ -956,6 +996,8 @@ func exprIsString(e Expr) bool {
 		return true
 	case *CallExpr:
 		return v.Func == "str"
+	case *IndexExpr:
+		return exprIsString(v.Target)
 	case *CondExpr:
 		return exprIsString(v.Then) && exprIsString(v.Else)
 	default:
