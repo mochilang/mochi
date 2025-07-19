@@ -20,7 +20,24 @@ import (
 // --- Simple Java AST ---
 
 type Program struct {
+	Funcs []*Function
 	Stmts []Stmt
+}
+
+type Function struct {
+	Name   string
+	Params []string
+	Body   []Stmt
+}
+
+type ReturnStmt struct{ Expr Expr }
+
+func (r *ReturnStmt) emit(w io.Writer) {
+	fmt.Fprint(w, "return")
+	if r.Expr != nil {
+		fmt.Fprint(w, " ")
+		r.Expr.emit(w)
+	}
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -64,8 +81,13 @@ type LetStmt struct {
 }
 
 func (s *LetStmt) emit(w io.Writer) {
-	fmt.Fprint(w, "var "+s.Name+" = ")
-	s.Expr.emit(w)
+	fmt.Fprint(w, "var "+s.Name)
+	if s.Expr != nil {
+		fmt.Fprint(w, " = ")
+		s.Expr.emit(w)
+	} else {
+		fmt.Fprint(w, " = 0")
+	}
 }
 
 type VarStmt struct {
@@ -78,6 +100,8 @@ func (s *VarStmt) emit(w io.Writer) {
 	if s.Expr != nil {
 		fmt.Fprint(w, " = ")
 		s.Expr.emit(w)
+	} else {
+		fmt.Fprint(w, " = 0")
 	}
 }
 
@@ -315,6 +339,18 @@ func isStringExpr(e Expr) bool {
 func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	var prog Program
 	for _, s := range p.Statements {
+		if s.Fun != nil {
+			body, err := compileStmts(s.Fun.Body)
+			if err != nil {
+				return nil, err
+			}
+			var params []string
+			for _, p := range s.Fun.Params {
+				params = append(params, p.Name)
+			}
+			prog.Funcs = append(prog.Funcs, &Function{Name: s.Fun.Name, Params: params, Body: body})
+			continue
+		}
 		st, err := compileStmt(s)
 		if err != nil {
 			return nil, err
@@ -335,18 +371,24 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		return &ExprStmt{Expr: e}, nil
-	case s.Let != nil && s.Let.Value != nil:
-		e, err := compileExpr(s.Let.Value)
-		if err != nil {
-			return nil, err
+	case s.Let != nil:
+		if s.Let.Value != nil {
+			e, err := compileExpr(s.Let.Value)
+			if err != nil {
+				return nil, err
+			}
+			return &LetStmt{Name: s.Let.Name, Expr: e}, nil
 		}
-		return &LetStmt{Name: s.Let.Name, Expr: e}, nil
+		return &LetStmt{Name: s.Let.Name}, nil
 	case s.Var != nil:
-		e, err := compileExpr(s.Var.Value)
-		if err != nil {
-			return nil, err
+		if s.Var.Value != nil {
+			e, err := compileExpr(s.Var.Value)
+			if err != nil {
+				return nil, err
+			}
+			return &VarStmt{Name: s.Var.Name, Expr: e}, nil
 		}
-		return &VarStmt{Name: s.Var.Name, Expr: e}, nil
+		return &VarStmt{Name: s.Var.Name}, nil
 	case s.Assign != nil:
 		if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
 			e, err := compileExpr(s.Assign.Value)
@@ -391,6 +433,16 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			}
 		}
 		return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
+	case s.Return != nil:
+		var e Expr
+		var err error
+		if s.Return.Value != nil {
+			e, err = compileExpr(s.Return.Value)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return &ReturnStmt{Expr: e}, nil
 	case s.While != nil:
 		cond, err := compileExpr(s.While.Cond)
 		if err != nil {
@@ -431,6 +483,20 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 		return nil, fmt.Errorf("unsupported statement at %d:%d", s.Pos.Line, s.Pos.Column)
 	}
 	return nil, nil
+}
+
+func compileStmts(list []*parser.Statement) ([]Stmt, error) {
+	var out []Stmt
+	for _, s := range list {
+		st, err := compileStmt(s)
+		if err != nil {
+			return nil, err
+		}
+		if st != nil {
+			out = append(out, st)
+		}
+	}
+	return out, nil
 }
 
 func compileExpr(e *parser.Expr) (Expr, error) {
@@ -559,15 +625,35 @@ func compileIfExpr(ie *parser.IfExpr) (Expr, error) {
 func Emit(prog *Program) []byte {
 	var buf bytes.Buffer
 	buf.WriteString("public class Main {\n")
+	for _, fn := range prog.Funcs {
+		buf.WriteString("\tstatic int " + fn.Name + "(")
+		for i, p := range fn.Params {
+			if i > 0 {
+				buf.WriteString(", ")
+			}
+			buf.WriteString("int " + p)
+		}
+		buf.WriteString(") {\n")
+		for _, s := range fn.Body {
+			buf.WriteString("\t\t")
+			s.emit(&buf)
+			switch s.(type) {
+			case *WhileStmt, *ForRangeStmt, *IfStmt:
+				buf.WriteString("\n")
+			default:
+				buf.WriteString(";\n")
+			}
+		}
+		buf.WriteString("\t}\n")
+	}
 	buf.WriteString("\tpublic static void main(String[] args) {\n")
 	for _, s := range prog.Stmts {
 		buf.WriteString("\t\t")
 		s.emit(&buf)
-		if _, ok := s.(*WhileStmt); ok {
+		switch s.(type) {
+		case *WhileStmt, *ForRangeStmt, *IfStmt:
 			buf.WriteString("\n")
-		} else if _, ok := s.(*ForRangeStmt); ok {
-			buf.WriteString("\n")
-		} else {
+		default:
 			buf.WriteString(";\n")
 		}
 	}

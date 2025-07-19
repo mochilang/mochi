@@ -1,1 +1,7 @@
-unsupported statement at 2:1
+exit status 1
+Main.java:4: error: cannot find symbol
+        return x + k;
+                   ^
+  symbol:   variable k
+  location: class Main
+1 error
