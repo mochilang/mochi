@@ -1,0 +1,590 @@
+g++: exit status 1
+/tmp/15-puzzle-game.cpp: In function ‘bool doMove(int)’:
+/tmp/15-puzzle-game.cpp:99:12: error: invalid cast from type ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to type ‘int’
+   99 |   auto j = int(r[std::string("idx")]);
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/15-puzzle-game.cpp:100:33: error: conversion from ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’} to non-scalar type ‘std::vector<int>’ requested
+  100 |   std::vector<int> tmp = board[i];
+      |                                 ^
+/tmp/15-puzzle-game.cpp: In function ‘auto printBoard()’:
+/tmp/15-puzzle-game.cpp:121:35: error: conversion from ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’} to non-scalar type ‘std::vector<int>’ requested
+  121 |     std::vector<int> val = board[i];
+      |                                   ^
+/tmp/15-puzzle-game.cpp:122:14: error: no match for ‘operator==’ (operand types are ‘std::vector<int>’ and ‘int’)
+  122 |     if ((val == 0)) {
+      |          ~~~ ^~ ~
+      |          |      |
+      |          |      int
+      |          std::vector<int>
+In file included from /usr/include/x86_64-linux-gnu/c++/13/bits/c++allocator.h:33,
+                 from /usr/include/c++/13/bits/allocator.h:46,
+                 from /usr/include/c++/13/string:43,
+                 from /usr/include/c++/13/bits/locale_classes.h:40,
+                 from /usr/include/c++/13/bits/ios_base.h:41,
+                 from /usr/include/c++/13/ios:44,
+                 from /usr/include/c++/13/istream:40,
+                 from /usr/include/c++/13/sstream:40,
+                 from /usr/include/c++/13/chrono:45,
+                 from /tmp/15-puzzle-game.cpp:3:
+/usr/include/c++/13/bits/new_allocator.h:215:9: note: candidate: ‘template<class _Up> constexpr bool std::operator==(const __new_allocator<int>&, const __new_allocator<_Tp>&)’ (reversed)
+  215 |         operator==(const __new_allocator&, const __new_allocator<_Up>&)
+      |         ^~~~~~~~
+/usr/include/c++/13/bits/new_allocator.h:215:9: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:122:17: note:   ‘std::vector<int>’ is not derived from ‘const std::__new_allocator<_Tp>’
+  122 |     if ((val == 0)) {
+      |                 ^
+/usr/include/c++/13/bits/allocator.h:237:5: note: candidate: ‘template<class _T1, class _T2> constexpr bool std::operator==(const allocator<_CharT>&, const allocator<_T2>&)’ (reversed)
+  237 |     operator==(const allocator<_T1>&, const allocator<_T2>&)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/allocator.h:237:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:122:17: note:   mismatched types ‘const std::allocator<_CharT>’ and ‘int’
+  122 |     if ((val == 0)) {
+      |                 ^
+In file included from /usr/include/c++/13/string:48:
+/usr/include/c++/13/bits/stl_iterator.h:534:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator==(const reverse_iterator<_IteratorL>&, const reverse_iterator<_IteratorR>&) requires requires{{std::operator==::__x->base() == std::operator==::__y->base()} -> decltype(auto) [requires std::convertible_to<<placeholder>, bool>];}’ (reversed)
+  534 |     operator==(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:534:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:122:17: note:   mismatched types ‘const std::reverse_iterator<_IteratorL>’ and ‘int’
+  122 |     if ((val == 0)) {
+      |                 ^
+/usr/include/c++/13/bits/stl_iterator.h:1678:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator==(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&) requires requires{{std::operator==::__x->base() == std::operator==::__y->base()} -> decltype(auto) [requires std::convertible_to<<placeholder>, bool>];}’ (reversed)
+ 1678 |     operator==(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1678:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:122:17: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+  122 |     if ((val == 0)) {
+      |                 ^
+In file included from /usr/include/c++/13/bits/basic_string.h:47,
+                 from /usr/include/c++/13/string:54:
+/usr/include/c++/13/string_view:616:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator==(basic_string_view<_CharT, _Traits>, __type_identity_t<basic_string_view<_CharT, _Traits> >)’ (reversed)
+  616 |     operator==(basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:616:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:122:17: note:   mismatched types ‘std::basic_string_view<_CharT, _Traits>’ and ‘int’
+  122 |     if ((val == 0)) {
+      |                 ^
+/usr/include/c++/13/bits/basic_string.h:3727:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr bool std::operator==(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const _CharT*)’ (reversed)
+ 3727 |     operator==(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3727:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:122:17: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  122 |     if ((val == 0)) {
+      |                 ^
+In file included from /usr/include/c++/13/bits/uses_allocator_args.h:38,
+                 from /usr/include/c++/13/bits/memory_resource.h:41,
+                 from /usr/include/c++/13/string:58:
+/usr/include/c++/13/tuple:1919:5: note: candidate: ‘template<class ... _TElements, class ... _UElements> constexpr bool std::operator==(const tuple<_UTypes ...>&, const tuple<_UTypes ...>&)’ (reversed)
+ 1919 |     operator==(const tuple<_TElements...>& __t,
+      |     ^~~~~~~~
+/usr/include/c++/13/tuple:1919:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:122:17: note:   mismatched types ‘const std::tuple<_UTypes ...>’ and ‘int’
+  122 |     if ((val == 0)) {
+      |                 ^
+In file included from /usr/include/c++/13/bits/shared_ptr_base.h:59,
+                 from /usr/include/c++/13/bits/shared_ptr.h:53,
+                 from /usr/include/c++/13/chrono:49:
+/usr/include/c++/13/bits/unique_ptr.h:829:5: note: candidate: ‘template<class _Tp, class _Dp, class _Up, class _Ep> bool std::operator==(const unique_ptr<_Tp, _Dp>&, const unique_ptr<_Up, _Ep>&)’ (reversed)
+  829 |     operator==(const unique_ptr<_Tp, _Dp>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/unique_ptr.h:829:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:122:17: note:   mismatched types ‘const std::unique_ptr<_Tp, _Dp>’ and ‘int’
+  122 |     if ((val == 0)) {
+      |                 ^
+/usr/include/c++/13/bits/unique_ptr.h:837:5: note: candidate: ‘template<class _Tp, class _Dp> bool std::operator==(const unique_ptr<_Tp, _Dp>&, nullptr_t)’ (reversed)
+  837 |     operator==(const unique_ptr<_Tp, _Dp>& __x, nullptr_t) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/unique_ptr.h:837:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:122:17: note:   mismatched types ‘const std::unique_ptr<_Tp, _Dp>’ and ‘int’
+  122 |     if ((val == 0)) {
+      |                 ^
+/usr/include/c++/13/bits/shared_ptr_base.h:1793:5: note: candidate: ‘template<class _Tp1, class _Tp2, __gnu_cxx::_Lock_policy _Lp> bool std::operator==(const __shared_ptr<_Tp1, _Lp>&, const __shared_ptr<_Tp2, _Lp>&)’ (reversed)
+ 1793 |     operator==(const __shared_ptr<_Tp1, _Lp>& __a,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/shared_ptr_base.h:1793:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:122:17: note:   mismatched types ‘const std::__shared_ptr<_Tp1, _Lp>’ and ‘int’
+  122 |     if ((val == 0)) {
+      |                 ^
+/usr/include/c++/13/bits/shared_ptr_base.h:1799:5: note: candidate: ‘template<class _Tp, __gnu_cxx::_Lock_policy _Lp> bool std::operator==(const __shared_ptr<_Tp, _Lp>&, nullptr_t)’ (reversed)
+ 1799 |     operator==(const __shared_ptr<_Tp, _Lp>& __a, nullptr_t) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/shared_ptr_base.h:1799:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:122:17: note:   mismatched types ‘const std::__shared_ptr<_Tp, _Lp>’ and ‘int’
+  122 |     if ((val == 0)) {
+      |                 ^
+/usr/include/c++/13/bits/shared_ptr.h:555:5: note: candidate: ‘template<class _Tp, class _Up> bool std::operator==(const shared_ptr<_Tp>&, const shared_ptr<_Tp>&)’ (reversed)
+  555 |     operator==(const shared_ptr<_Tp>& __a, const shared_ptr<_Up>& __b) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:555:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:122:17: note:   mismatched types ‘const std::shared_ptr<_Tp>’ and ‘int’
+  122 |     if ((val == 0)) {
+      |                 ^
+/usr/include/c++/13/bits/shared_ptr.h:561:5: note: candidate: ‘template<class _Tp> bool std::operator==(const shared_ptr<_Tp>&, nullptr_t)’ (reversed)
+  561 |     operator==(const shared_ptr<_Tp>& __a, nullptr_t) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:561:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:122:17: note:   mismatched types ‘const std::shared_ptr<_Tp>’ and ‘int’
+  122 |     if ((val == 0)) {
+      |                 ^
+In file included from /usr/include/c++/13/format:43,
+                 from /usr/include/c++/13/bits/chrono_io.h:39,
+                 from /usr/include/c++/13/chrono:3370:
+/usr/include/c++/13/optional:1296:5: note: candidate: ‘template<class _Tp> constexpr bool std::operator==(const optional<_Tp>&, nullopt_t)’ (reversed)
+ 1296 |     operator==(const optional<_Tp>& __lhs, nullopt_t) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/optional:1296:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:122:17: note:   mismatched types ‘const std::optional<_Tp>’ and ‘int’
+  122 |     if ((val == 0)) {
+      |                 ^
+In file included from /usr/include/c++/13/bits/ios_base.h:46:
+/usr/include/c++/13/system_error:465:3: note: candidate: ‘bool std::operator==(const error_code&, const error_condition&)’ (reversed)
+  465 |   operator==(const error_code& __lhs, const error_condition& __rhs) noexcept
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:465:32: note:   no known conversion for argument 1 from ‘int’ to ‘const std::error_code&’
+  465 |   operator==(const error_code& __lhs, const error_condition& __rhs) noexcept
+      |              ~~~~~~~~~~~~~~~~~~^~~~~
+In file included from /usr/include/c++/13/iosfwd:42,
+                 from /usr/include/c++/13/ios:40:
+/usr/include/c++/13/bits/postypes.h:192:5: note: candidate: ‘template<class _StateT> bool std::operator==(const fpos<_StateT>&, const fpos<_StateT>&)’
+  192 |     operator==(const fpos<_StateT>& __lhs, const fpos<_StateT>& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/postypes.h:192:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:122:17: note:   ‘std::vector<int>’ is not derived from ‘const std::fpos<_StateT>’
+  122 |     if ((val == 0)) {
+      |                 ^
+/usr/include/c++/13/bits/stl_iterator.h:593:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator==(const reverse_iterator<_IteratorL>&, const reverse_iterator<_IteratorL>&) requires requires{{std::operator==::__x->base() == std::operator==::__y->base()} -> decltype(auto) [requires std::convertible_to<<placeholder>, bool>];}’
+  593 |     operator==(const reverse_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:593:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:122:17: note:   ‘std::vector<int>’ is not derived from ‘const std::reverse_iterator<_IteratorL>’
+  122 |     if ((val == 0)) {
+      |                 ^
+/usr/include/c++/13/bits/stl_iterator.h:1748:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator==(const move_iterator<_IteratorL>&, const move_iterator<_IteratorL>&)’
+ 1748 |     operator==(const move_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1748:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:122:17: note:   ‘std::vector<int>’ is not derived from ‘const std::move_iterator<_IteratorL>’
+  122 |     if ((val == 0)) {
+      |                 ^
+In file included from /usr/include/c++/13/bits/stl_algobase.h:64,
+                 from /usr/include/c++/13/string:51:
+/usr/include/c++/13/bits/stl_pair.h:812:5: note: candidate: ‘template<class _T1, class _T2> constexpr bool std::operator==(const pair<_T1, _T2>&, const pair<_T1, _T2>&)’
+  812 |     operator==(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_pair.h:812:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:122:17: note:   ‘std::vector<int>’ is not derived from ‘const std::pair<_T1, _T2>’
+  122 |     if ((val == 0)) {
+      |                 ^
+/usr/include/c++/13/string_view:609:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator==(basic_string_view<_CharT, _Traits>, basic_string_view<_CharT, _Traits>)’
+  609 |     operator==(basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:609:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:122:17: note:   ‘std::vector<int>’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
+  122 |     if ((val == 0)) {
+      |                 ^
+/usr/include/c++/13/bits/basic_string.h:3710:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr bool std::operator==(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3710 |     operator==(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3710:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:122:17: note:   ‘std::vector<int>’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  122 |     if ((val == 0)) {
+      |                 ^
+In file included from /usr/include/c++/13/bits/locale_facets.h:48,
+                 from /usr/include/c++/13/bits/basic_ios.h:37,
+                 from /usr/include/c++/13/ios:46:
+/usr/include/c++/13/bits/streambuf_iterator.h:234:5: note: candidate: ‘template<class _CharT, class _Traits> bool std::operator==(const istreambuf_iterator<_CharT, _Traits>&, const istreambuf_iterator<_CharT, _Traits>&)’
+  234 |     operator==(const istreambuf_iterator<_CharT, _Traits>& __a,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/streambuf_iterator.h:234:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:122:17: note:   ‘std::vector<int>’ is not derived from ‘const std::istreambuf_iterator<_CharT, _Traits>’
+  122 |     if ((val == 0)) {
+      |                 ^
+In file included from /usr/include/c++/13/vector:66,
+                 from /usr/include/c++/13/chrono:47:
+/usr/include/c++/13/bits/stl_vector.h:2040:5: note: candidate: ‘template<class _Tp, class _Alloc> constexpr bool std::operator==(const vector<_Tp, _Alloc>&, const vector<_Tp, _Alloc>&)’
+ 2040 |     operator==(const vector<_Tp, _Alloc>& __x, const vector<_Tp, _Alloc>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:2040:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:122:17: note:   mismatched types ‘const std::vector<_Tp, _Alloc>’ and ‘int’
+  122 |     if ((val == 0)) {
+      |                 ^
+In file included from /usr/include/c++/13/format:38:
+/usr/include/c++/13/array:297:5: note: candidate: ‘template<class _Tp, long unsigned int _Nm> constexpr bool std::operator==(const array<_Tp, _Nm>&, const array<_Tp, _Nm>&)’
+  297 |     operator==(const array<_Tp, _Nm>& __one, const array<_Tp, _Nm>& __two)
+      |     ^~~~~~~~
+/usr/include/c++/13/array:297:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:122:17: note:   ‘std::vector<int>’ is not derived from ‘const std::array<_Tp, _Nm>’
+  122 |     if ((val == 0)) {
+      |                 ^
+/usr/include/c++/13/optional:1236:5: note: candidate: ‘template<class _Tp, class _Up> constexpr std::__optional_eq_t<_Tp, _Up> std::operator==(const optional<_Tp>&, const optional<_Up>&)’
+ 1236 |     operator==(const optional<_Tp>& __lhs, const optional<_Up>& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/optional:1236:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:122:17: note:   ‘std::vector<int>’ is not derived from ‘const std::optional<_Tp>’
+  122 |     if ((val == 0)) {
+      |                 ^
+/usr/include/c++/13/optional:1364:5: note: candidate: ‘template<class _Tp, class _Up> constexpr std::__optional_eq_t<_Tp, _Up> std::operator==(const optional<_Tp>&, const _Up&)’
+ 1364 |     operator==(const optional<_Tp>& __lhs, const _Up& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/optional:1364:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:122:17: note:   ‘std::vector<int>’ is not derived from ‘const std::optional<_Tp>’
+  122 |     if ((val == 0)) {
+      |                 ^
+/usr/include/c++/13/optional:1370:5: note: candidate: ‘template<class _Tp, class _Up> constexpr std::__optional_eq_t<_Up, _Tp> std::operator==(const _Up&, const optional<_Tp>&)’
+ 1370 |     operator==(const _Up& __lhs, const optional<_Tp>& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/optional:1370:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:122:17: note:   mismatched types ‘const std::optional<_Tp>’ and ‘int’
+  122 |     if ((val == 0)) {
+      |                 ^
+In file included from /usr/include/c++/13/format:47:
+/usr/include/c++/13/variant:1266:3: note: candidate: ‘template<class ... _Types> constexpr bool std::operator==(const variant<_Types ...>&, const variant<_Types ...>&)’
+ 1266 |   _VARIANT_RELATION_FUNCTION_TEMPLATE(==, equal)
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/variant:1266:3: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:122:17: note:   ‘std::vector<int>’ is not derived from ‘const std::variant<_Types ...>’
+  122 |     if ((val == 0)) {
+      |                 ^
+In file included from /usr/include/c++/13/unordered_map:41,
+                 from /tmp/15-puzzle-game.cpp:6:
+/usr/include/c++/13/bits/unordered_map.h:2143:5: note: candidate: ‘template<class _Key1, class _Tp1, class _Hash1, class _Pred1, class _Alloc1> bool std::operator==(const unordered_map<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>&, const unordered_map<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>&)’
+ 2143 |     operator==(const unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/unordered_map.h:2143:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:122:17: note:   ‘std::vector<int>’ is not derived from ‘const std::unordered_map<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>’
+  122 |     if ((val == 0)) {
+      |                 ^
+/usr/include/c++/13/bits/unordered_map.h:2157:5: note: candidate: ‘template<class _Key1, class _Tp1, class _Hash1, class _Pred1, class _Alloc1> bool std::operator==(const unordered_multimap<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>&, const unordered_multimap<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>&)’
+ 2157 |     operator==(const unordered_multimap<_Key, _Tp, _Hash, _Pred, _Alloc>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/unordered_map.h:2157:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:122:17: note:   ‘std::vector<int>’ is not derived from ‘const std::unordered_multimap<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>’
+  122 |     if ((val == 0)) {
+      |                 ^
+/usr/include/c++/13/bits/allocator.h:216:7: note: candidate: ‘constexpr bool std::operator==(const allocator<int>&, const allocator<int>&)’
+  216 |       operator==(const allocator&, const allocator&) _GLIBCXX_NOTHROW
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/allocator.h:216:18: note:   no known conversion for argument 1 from ‘std::vector<int>’ to ‘const std::allocator<int>&’
+  216 |       operator==(const allocator&, const allocator&) _GLIBCXX_NOTHROW
+      |                  ^~~~~~~~~~~~~~~~
+/usr/include/c++/13/system_error:449:3: note: candidate: ‘bool std::operator==(const error_code&, const error_code&)’
+  449 |   operator==(const error_code& __lhs, const error_code& __rhs) noexcept
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:449:32: note:   no known conversion for argument 1 from ‘std::vector<int>’ to ‘const std::error_code&’
+  449 |   operator==(const error_code& __lhs, const error_code& __rhs) noexcept
+      |              ~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/system_error:480:3: note: candidate: ‘bool std::operator==(const error_condition&, const error_condition&)’
+  480 |   operator==(const error_condition& __lhs,
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:480:37: note:   no known conversion for argument 1 from ‘std::vector<int>’ to ‘const std::error_condition&’
+  480 |   operator==(const error_condition& __lhs,
+      |              ~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/variant:1273:18: note: candidate: ‘constexpr bool std::operator==(monostate, monostate)’
+ 1273 |   constexpr bool operator==(monostate, monostate) noexcept { return true; }
+      |                  ^~~~~~~~
+/usr/include/c++/13/variant:1273:29: note:   no known conversion for argument 1 from ‘std::vector<int>’ to ‘std::monostate’
+ 1273 |   constexpr bool operator==(monostate, monostate) noexcept { return true; }
+      |                             ^~~~~~~~~
+/tmp/15-puzzle-game.cpp:125:30: error: no matching function for call to ‘to_string(std::vector<int>&)’
+  125 |       auto s = std::to_string(val);
+      |                ~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/bits/basic_string.h:4162:3: note: candidate: ‘std::string std::__cxx11::to_string(int)’
+ 4162 |   to_string(int __val)
+      |   ^~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:4162:17: note:   no known conversion for argument 1 from ‘std::vector<int>’ to ‘int’
+ 4162 |   to_string(int __val)
+      |             ~~~~^~~~~
+/usr/include/c++/13/bits/basic_string.h:4177:3: note: candidate: ‘std::string std::__cxx11::to_string(unsigned int)’
+ 4177 |   to_string(unsigned __val)
+      |   ^~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:4177:22: note:   no known conversion for argument 1 from ‘std::vector<int>’ to ‘unsigned int’
+ 4177 |   to_string(unsigned __val)
+      |             ~~~~~~~~~^~~~~
+/usr/include/c++/13/bits/basic_string.h:4189:3: note: candidate: ‘std::string std::__cxx11::to_string(long int)’
+ 4189 |   to_string(long __val)
+      |   ^~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:4189:18: note:   no known conversion for argument 1 from ‘std::vector<int>’ to ‘long int’
+ 4189 |   to_string(long __val)
+      |             ~~~~~^~~~~
+/usr/include/c++/13/bits/basic_string.h:4204:3: note: candidate: ‘std::string std::__cxx11::to_string(long unsigned int)’
+ 4204 |   to_string(unsigned long __val)
+      |   ^~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:4204:27: note:   no known conversion for argument 1 from ‘std::vector<int>’ to ‘long unsigned int’
+ 4204 |   to_string(unsigned long __val)
+      |             ~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/bits/basic_string.h:4216:3: note: candidate: ‘std::string std::__cxx11::to_string(long long int)’
+ 4216 |   to_string(long long __val)
+      |   ^~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:4216:23: note:   no known conversion for argument 1 from ‘std::vector<int>’ to ‘long long int’
+ 4216 |   to_string(long long __val)
+      |             ~~~~~~~~~~^~~~~
+/usr/include/c++/13/bits/basic_string.h:4229:3: note: candidate: ‘std::string std::__cxx11::to_string(long long unsigned int)’
+ 4229 |   to_string(unsigned long long __val)
+      |   ^~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:4229:32: note:   no known conversion for argument 1 from ‘std::vector<int>’ to ‘long long unsigned int’
+ 4229 |   to_string(unsigned long long __val)
+      |             ~~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/bits/basic_string.h:4241:3: note: candidate: ‘std::string std::__cxx11::to_string(float)’
+ 4241 |   to_string(float __val)
+      |   ^~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:4241:19: note:   no known conversion for argument 1 from ‘std::vector<int>’ to ‘float’
+ 4241 |   to_string(float __val)
+      |             ~~~~~~^~~~~
+/usr/include/c++/13/bits/basic_string.h:4251:3: note: candidate: ‘std::string std::__cxx11::to_string(double)’
+ 4251 |   to_string(double __val)
+      |   ^~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:4251:20: note:   no known conversion for argument 1 from ‘std::vector<int>’ to ‘double’
+ 4251 |   to_string(double __val)
+      |             ~~~~~~~^~~~~
+/usr/include/c++/13/bits/basic_string.h:4261:3: note: candidate: ‘std::string std::__cxx11::to_string(long double)’
+ 4261 |   to_string(long double __val)
+      |   ^~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:4261:25: note:   no known conversion for argument 1 from ‘std::vector<int>’ to ‘long double’
+ 4261 |   to_string(long double __val)
+      |             ~~~~~~~~~~~~^~~~~
+/tmp/15-puzzle-game.cpp:126:16: error: no match for ‘operator<’ (operand types are ‘std::vector<int>’ and ‘int’)
+  126 |       if ((val < 10)) {
+      |            ~~~ ^ ~~
+      |            |     |
+      |            |     int
+      |            std::vector<int>
+/usr/include/c++/13/bits/stl_iterator.h:583:5: note: candidate: ‘template<class _IteratorL, class _IteratorR>  requires  three_way_comparable_with<_IteratorR, _IteratorL, std::partial_ordering> constexpr std::compare_three_way_result_t<_IteratorL, _IteratorR> std::operator<=>(const reverse_iterator<_IteratorL>&, const reverse_iterator<_IteratorR>&)’ (reversed)
+  583 |     operator<=>(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:583:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:126:18: note:   mismatched types ‘const std::reverse_iterator<_IteratorL>’ and ‘int’
+  126 |       if ((val < 10)) {
+      |                  ^~
+/usr/include/c++/13/bits/stl_iterator.h:1690:5: note: candidate: ‘template<class _IteratorL, class _IteratorR>  requires  three_way_comparable_with<_IteratorR, _IteratorL, std::partial_ordering> constexpr std::compare_three_way_result_t<_IteratorL, _IteratorR> std::operator<=>(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&)’ (reversed)
+ 1690 |     operator<=>(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1690:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:126:18: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+  126 |       if ((val < 10)) {
+      |                  ^~
+/usr/include/c++/13/string_view:633:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr decltype (__char_traits_cmp_cat<_Traits>(0)) std::operator<=>(basic_string_view<_CharT, _Traits>, __type_identity_t<basic_string_view<_CharT, _Traits> >)’ (reversed)
+  633 |     operator<=>(basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:633:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:126:18: note:   mismatched types ‘std::basic_string_view<_CharT, _Traits>’ and ‘int’
+  126 |       if ((val < 10)) {
+      |                  ^~
+/usr/include/c++/13/bits/basic_string.h:3760:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr decltype (__char_traits_cmp_cat<_Traits>(0)) std::operator<=>(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const _CharT*)’ (reversed)
+ 3760 |     operator<=>(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3760:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:126:18: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  126 |       if ((val < 10)) {
+      |                  ^~
+/usr/include/c++/13/tuple:1952:5: note: candidate: ‘template<class ... _Tps, class ... _Ups> constexpr std::common_comparison_category_t<decltype (std::__detail::__synth3way(declval<_Tps&>(), declval<_Ups&>()))...> std::operator<=>(const tuple<_UTypes ...>&, const tuple<_UTypes ...>&)’ (reversed)
+ 1952 |     operator<=>(const tuple<_Tps...>& __t, const tuple<_Ups...>& __u)
+      |     ^~~~~~~~
+/usr/include/c++/13/tuple:1952:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:126:18: note:   mismatched types ‘const std::tuple<_UTypes ...>’ and ‘int’
+  126 |       if ((val < 10)) {
+      |                  ^~
+/usr/include/c++/13/bits/unique_ptr.h:988:5: note: candidate: ‘template<class _Tp, class _Dp, class _Up, class _Ep>  requires  three_way_comparable_with<typename std::unique_ptr<_Tp, _Dp>::pointer, typename std::unique_ptr<_Up, _Ep>::pointer, std::partial_ordering> std::compare_three_way_result_t<typename std::unique_ptr<_Tp, _Dp>::pointer, typename std::unique_ptr<_Up, _Ep>::pointer> std::operator<=>(const unique_ptr<_Tp, _Dp>&, const unique_ptr<_Up, _Ep>&)’ (reversed)
+  988 |     operator<=>(const unique_ptr<_Tp, _Dp>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/unique_ptr.h:988:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:126:18: note:   mismatched types ‘const std::unique_ptr<_Tp, _Dp>’ and ‘int’
+  126 |       if ((val < 10)) {
+      |                  ^~
+/usr/include/c++/13/bits/unique_ptr.h:997:5: note: candidate: ‘template<class _Tp, class _Dp>  requires  three_way_comparable<typename std::unique_ptr<_Tp, _Dp>::pointer, std::partial_ordering> std::compare_three_way_result_t<typename std::unique_ptr<_Tp, _Dp>::pointer> std::operator<=>(const unique_ptr<_Tp, _Dp>&, nullptr_t)’ (reversed)
+  997 |     operator<=>(const unique_ptr<_Tp, _Dp>& __x, nullptr_t)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/unique_ptr.h:997:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:126:18: note:   mismatched types ‘const std::unique_ptr<_Tp, _Dp>’ and ‘int’
+  126 |       if ((val < 10)) {
+      |                  ^~
+/usr/include/c++/13/bits/shared_ptr_base.h:1805:5: note: candidate: ‘template<class _Tp, class _Up, __gnu_cxx::_Lock_policy _Lp> std::strong_ordering std::operator<=>(const __shared_ptr<_Tp1, _Lp>&, const __shared_ptr<_Tp2, _Lp>&)’ (reversed)
+ 1805 |     operator<=>(const __shared_ptr<_Tp, _Lp>& __a,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/shared_ptr_base.h:1805:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:126:18: note:   mismatched types ‘const std::__shared_ptr<_Tp1, _Lp>’ and ‘int’
+  126 |       if ((val < 10)) {
+      |                  ^~
+/usr/include/c++/13/bits/shared_ptr_base.h:1811:5: note: candidate: ‘template<class _Tp, __gnu_cxx::_Lock_policy _Lp> std::strong_ordering std::operator<=>(const __shared_ptr<_Tp, _Lp>&, nullptr_t)’ (reversed)
+ 1811 |     operator<=>(const __shared_ptr<_Tp, _Lp>& __a, nullptr_t) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/shared_ptr_base.h:1811:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:126:18: note:   mismatched types ‘const std::__shared_ptr<_Tp, _Lp>’ and ‘int’
+  126 |       if ((val < 10)) {
+      |                  ^~
+/usr/include/c++/13/bits/shared_ptr.h:567:5: note: candidate: ‘template<class _Tp, class _Up> std::strong_ordering std::operator<=>(const shared_ptr<_Tp>&, const shared_ptr<_Tp>&)’ (reversed)
+  567 |     operator<=>(const shared_ptr<_Tp>& __a,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:567:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:126:18: note:   mismatched types ‘const std::shared_ptr<_Tp>’ and ‘int’
+  126 |       if ((val < 10)) {
+      |                  ^~
+/usr/include/c++/13/bits/shared_ptr.h:573:5: note: candidate: ‘template<class _Tp> std::strong_ordering std::operator<=>(const shared_ptr<_Tp>&, nullptr_t)’ (reversed)
+  573 |     operator<=>(const shared_ptr<_Tp>& __a, nullptr_t) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:573:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:126:18: note:   mismatched types ‘const std::shared_ptr<_Tp>’ and ‘int’
+  126 |       if ((val < 10)) {
+      |                  ^~
+/usr/include/c++/13/optional:1287:5: note: candidate: ‘template<class _Tp, class _Up>  requires  three_way_comparable_with<_Up, _Tp, std::partial_ordering> constexpr std::compare_three_way_result_t<_IteratorL, _IteratorR> std::operator<=>(const optional<_Tp>&, const optional<_Up>&)’ (reversed)
+ 1287 |     operator<=>(const optional<_Tp>& __x, const optional<_Up>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/optional:1287:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:126:18: note:   mismatched types ‘const std::optional<_Tp>’ and ‘int’
+  126 |       if ((val < 10)) {
+      |                  ^~
+/usr/include/c++/13/optional:1302:5: note: candidate: ‘template<class _Tp> constexpr std::strong_ordering std::operator<=>(const optional<_Tp>&, nullopt_t)’ (reversed)
+ 1302 |     operator<=>(const optional<_Tp>& __x, nullopt_t) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/optional:1302:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:126:18: note:   mismatched types ‘const std::optional<_Tp>’ and ‘int’
+  126 |       if ((val < 10)) {
+      |                  ^~
+/usr/include/c++/13/optional:1439:5: note: candidate: ‘template<class _Tp, class _Up>  requires !(__is_optional_v<_Up>) && (three_way_comparable_with<_Up, _Tp, std::partial_ordering>) constexpr std::compare_three_way_result_t<_IteratorL, _IteratorR> std::operator<=>(const optional<_Tp>&, const _Up&)’ (reversed)
+ 1439 |     operator<=>(const optional<_Tp>& __x, const _Up& __v)
+      |     ^~~~~~~~
+/usr/include/c++/13/optional:1439:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:126:18: note:   mismatched types ‘const std::optional<_Tp>’ and ‘int’
+  126 |       if ((val < 10)) {
+      |                  ^~
+/usr/include/c++/13/bits/stl_iterator.h:601:5: note: candidate: ‘template<class _Iterator>  requires  three_way_comparable<_Iterator, std::partial_ordering> constexpr std::compare_three_way_result_t<_Iterator, _Iterator> std::operator<=>(const reverse_iterator<_IteratorL>&, const reverse_iterator<_IteratorL>&)’ (rewritten)
+  601 |     operator<=>(const reverse_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:601:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:126:18: note:   ‘std::vector<int>’ is not derived from ‘const std::reverse_iterator<_IteratorL>’
+  126 |       if ((val < 10)) {
+      |                  ^~
+/usr/include/c++/13/bits/stl_iterator.h:1756:5: note: candidate: ‘template<class _Iterator>  requires  three_way_comparable<_Iterator, std::partial_ordering> constexpr std::compare_three_way_result_t<_Iterator, _Iterator> std::operator<=>(const move_iterator<_IteratorL>&, const move_iterator<_IteratorL>&)’ (rewritten)
+ 1756 |     operator<=>(const move_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1756:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:126:18: note:   ‘std::vector<int>’ is not derived from ‘const std::move_iterator<_IteratorL>’
+  126 |       if ((val < 10)) {
+      |                  ^~
+/usr/include/c++/13/bits/stl_pair.h:819:5: note: candidate: ‘template<class _T1, class _T2> constexpr std::common_comparison_category_t<decltype (std::__detail::__synth3way(declval<_Iterator&>(), declval<_Iterator&>())), decltype (std::__detail::__synth3way(declval<_T2&>(), declval<_T2&>()))> std::operator<=>(const pair<_T1, _T2>&, const pair<_T1, _T2>&)’ (rewritten)
+  819 |     operator<=>(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_pair.h:819:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:126:18: note:   ‘std::vector<int>’ is not derived from ‘const std::pair<_T1, _T2>’
+  126 |       if ((val < 10)) {
+      |                  ^~
+/usr/include/c++/13/string_view:625:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr decltype (__char_traits_cmp_cat<_Traits>(0)) std::operator<=>(basic_string_view<_CharT, _Traits>, basic_string_view<_CharT, _Traits>)’ (rewritten)
+  625 |     operator<=>(basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:625:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:126:18: note:   ‘std::vector<int>’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
+  126 |       if ((val < 10)) {
+      |                  ^~
+/usr/include/c++/13/bits/basic_string.h:3745:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr decltype (__char_traits_cmp_cat<_Traits>(0)) std::operator<=>(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’ (rewritten)
+ 3745 |     operator<=>(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3745:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:126:18: note:   ‘std::vector<int>’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  126 |       if ((val < 10)) {
+      |                  ^~
+/usr/include/c++/13/bits/stl_vector.h:2059:5: note: candidate: ‘template<class _Tp, class _Alloc> constexpr std::__detail::__synth3way_t<_Iterator> std::operator<=>(const vector<_Tp, _Alloc>&, const vector<_Tp, _Alloc>&)’ (rewritten)
+ 2059 |     operator<=>(const vector<_Tp, _Alloc>& __x, const vector<_Tp, _Alloc>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:2059:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:126:18: note:   mismatched types ‘const std::vector<_Tp, _Alloc>’ and ‘int’
+  126 |       if ((val < 10)) {
+      |                  ^~
+/usr/include/c++/13/array:304:5: note: candidate: ‘template<class _Tp, long unsigned int _Nm> constexpr std::__detail::__synth3way_t<_Iterator> std::operator<=>(const array<_Tp, _Nm>&, const array<_Tp, _Nm>&)’ (rewritten)
+  304 |     operator<=>(const array<_Tp, _Nm>& __a, const array<_Tp, _Nm>& __b)
+      |     ^~~~~~~~
+/usr/include/c++/13/array:304:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:126:18: note:   ‘std::vector<int>’ is not derived from ‘const std::array<_Tp, _Nm>’
+  126 |       if ((val < 10)) {
+      |                  ^~
+/usr/include/c++/13/variant:1280:5: note: candidate: ‘template<class ... _Types>  requires (three_way_comparable<_Types, std::partial_ordering> && ...) constexpr std::common_comparison_category_t<typename std::__detail::__cmp3way_res_impl<_Types, _Types>::type ...> std::operator<=>(const variant<_Types ...>&, const variant<_Types ...>&)’ (rewritten)
+ 1280 |     operator<=>(const variant<_Types...>& __v, const variant<_Types...>& __w)
+      |     ^~~~~~~~
+/usr/include/c++/13/variant:1280:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:126:18: note:   ‘std::vector<int>’ is not derived from ‘const std::variant<_Types ...>’
+  126 |       if ((val < 10)) {
+      |                  ^~
+/usr/include/c++/13/system_error:316:3: note: candidate: ‘std::strong_ordering std::operator<=>(const error_code&, const error_code&)’ (rewritten)
+  316 |   operator<=>(const error_code& __lhs, const error_code& __rhs) noexcept
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:316:33: note:   no known conversion for argument 1 from ‘std::vector<int>’ to ‘const std::error_code&’
+  316 |   operator<=>(const error_code& __lhs, const error_code& __rhs) noexcept
+      |               ~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/system_error:498:3: note: candidate: ‘std::strong_ordering std::operator<=>(const error_condition&, const error_condition&)’ (rewritten)
+  498 |   operator<=>(const error_condition& __lhs,
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:498:38: note:   no known conversion for argument 1 from ‘std::vector<int>’ to ‘const std::error_condition&’
+  498 |   operator<=>(const error_condition& __lhs,
+      |               ~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/variant:1303:3: note: candidate: ‘constexpr std::strong_ordering std::operator<=>(monostate, monostate)’ (rewritten)
+ 1303 |   operator<=>(monostate, monostate) noexcept { return strong_ordering::equal; }
+      |   ^~~~~~~~
+/usr/include/c++/13/variant:1303:15: note:   no known conversion for argument 1 from ‘std::vector<int>’ to ‘std::monostate’
+ 1303 |   operator<=>(monostate, monostate) noexcept { return strong_ordering::equal; }
+      |               ^~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:550:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator<(const reverse_iterator<_IteratorL>&, const reverse_iterator<_IteratorR>&) requires requires{{std::operator<::__x->base() > std::operator<::__y->base()} -> decltype(auto) [requires std::convertible_to<<placeholder>, bool>];}’
+  550 |     operator<(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:550:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:126:18: note:   ‘std::vector<int>’ is not derived from ‘const std::reverse_iterator<_IteratorL>’
+  126 |       if ((val < 10)) {
+      |                  ^~
+/usr/include/c++/13/bits/stl_iterator.h:1705:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator<(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&) requires requires{{std::operator<::__x->base() < std::operator<::__y->base()} -> decltype(auto) [requires std::convertible_to<<placeholder>, bool>];}’
+ 1705 |     operator<(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1705:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:126:18: note:   ‘std::vector<int>’ is not derived from ‘const std::move_iterator<_IteratorL>’
+  126 |       if ((val < 10)) {
+      |                  ^~
+/usr/include/c++/13/bits/unique_ptr.h:877:5: note: candidate: ‘template<class _Tp, class _Dp, class _Up, class _Ep> bool std::operator<(const unique_ptr<_Tp, _Dp>&, const unique_ptr<_Up, _Ep>&)’
+  877 |     operator<(const unique_ptr<_Tp, _Dp>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/unique_ptr.h:877:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:126:18: note:   ‘std::vector<int>’ is not derived from ‘const std::unique_ptr<_Tp, _Dp>’
+  126 |       if ((val < 10)) {
+      |                  ^~
+/usr/include/c++/13/bits/unique_ptr.h:890:5: note: candidate: ‘template<class _Tp, class _Dp> bool std::operator<(const unique_ptr<_Tp, _Dp>&, nullptr_t)’
+  890 |     operator<(const unique_ptr<_Tp, _Dp>& __x, nullptr_t)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/unique_ptr.h:890:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:126:18: note:   ‘std::vector<int>’ is not derived from ‘const std::unique_ptr<_Tp, _Dp>’
+  126 |       if ((val < 10)) {
+      |                  ^~
+/usr/include/c++/13/bits/unique_ptr.h:900:5: note: candidate: ‘template<class _Tp, class _Dp> bool std::operator<(nullptr_t, const unique_ptr<_Tp, _Dp>&)’
+  900 |     operator<(nullptr_t, const unique_ptr<_Tp, _Dp>& __x)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/unique_ptr.h:900:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:126:18: note:   mismatched types ‘const std::unique_ptr<_Tp, _Dp>’ and ‘int’
+  126 |       if ((val < 10)) {
+      |                  ^~
+/usr/include/c++/13/optional:1254:5: note: candidate: ‘template<class _Tp, class _Up> constexpr std::__optional_lt_t<_Tp, _Up> std::operator<(const optional<_Tp>&, const optional<_Up>&)’
+ 1254 |     operator<(const optional<_Tp>& __lhs, const optional<_Up>& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/optional:1254:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:126:18: note:   ‘std::vector<int>’ is not derived from ‘const std::optional<_Tp>’
+  126 |       if ((val < 10)) {
+      |                  ^~
+/usr/include/c++/13/optional:1388:5: note: candidate: ‘template<class _Tp, class _Up> constexpr std::__optional_lt_t<_Tp, _Up> std::operator<(const optional<_Tp>&, const _Up&)’
+ 1388 |     operator<(const optional<_Tp>& __lhs, const _Up& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/optional:1388:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:126:18: note:   ‘std::vector<int>’ is not derived from ‘const std::optional<_Tp>’
+  126 |       if ((val < 10)) {
+      |                  ^~
+/usr/include/c++/13/optional:1394:5: note: candidate: ‘template<class _Tp, class _Up> constexpr std::__optional_lt_t<_Up, _Tp> std::operator<(const _Up&, const optional<_Tp>&)’
+ 1394 |     operator<(const _Up& __lhs, const optional<_Tp>& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/optional:1394:5: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:126:18: note:   mismatched types ‘const std::optional<_Tp>’ and ‘int’
+  126 |       if ((val < 10)) {
+      |                  ^~
+/usr/include/c++/13/variant:1264:3: note: candidate: ‘template<class ... _Types> constexpr bool std::operator<(const variant<_Types ...>&, const variant<_Types ...>&)’
+ 1264 |   _VARIANT_RELATION_FUNCTION_TEMPLATE(<, less)
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/variant:1264:3: note:   template argument deduction/substitution failed:
+/tmp/15-puzzle-game.cpp:126:18: note:   ‘std::vector<int>’ is not derived from ‘const std::variant<_Types ...>’
+  126 |       if ((val < 10)) {
+      |                  ^~
+/tmp/15-puzzle-game.cpp: In function ‘auto playOneMove()’:
+/tmp/15-puzzle-game.cpp:145:14: error: ‘input’ was not declared in this scope; did you mean ‘int’?
+  145 |     auto s = input();
+      |              ^~~~~
+      |              int

@@ -4260,12 +4260,22 @@ func (c *Compiler) compileLambda(params []*parser.Param, exprBody *parser.Expr, 
 	}
 	buf.WriteString(") {")
 
-	sub := &Compiler{indent: 1, tmp: c.tmp, vars: map[string]string{}, aliases: map[string]string{}, scope: c.scope + 1}
+	sub := &Compiler{indent: 1, tmp: c.tmp, vars: map[string]string{}, aliases: map[string]string{}, scope: c.scope + 1, varStruct: map[string]string{}, elemType: map[string]string{}}
 	for _, p := range params {
 		if p.Type != nil {
 			typ, _ := c.compileType(p.Type)
-			if typ == "std::string" {
+			switch {
+			case typ == "std::string":
 				sub.vars[p.Name] = "string"
+			case typ == "int" || typ == "double" || typ == "bool":
+				sub.vars[p.Name] = strings.TrimPrefix(typ, "std.")
+			case strings.HasPrefix(typ, "std::vector<"):
+				sub.vars[p.Name] = "vector"
+				elem := typ[len("std::vector<") : len(typ)-1]
+				sub.elemType[p.Name] = elem
+				if c.isStructName(elem) {
+					sub.varStruct[p.Name] = elem
+				}
 			}
 		}
 	}

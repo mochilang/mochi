@@ -1,0 +1,290 @@
+g++: exit status 1
+/tmp/100-prisoners.cpp: In function ‘std::vector<int> shuffle(std::vector<int>)’:
+/tmp/100-prisoners.cpp:16:33: error: conversion from ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’} to non-scalar type ‘std::vector<int>’ requested
+   16 |     std::vector<int> tmp = arr[i];
+      |                                 ^
+/tmp/100-prisoners.cpp:18:14: error: cannot convert ‘std::vector<int>’ to ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’} in assignment
+   18 |     arr[j] = tmp;
+      |              ^~~
+      |              |
+      |              std::vector<int>
+/tmp/100-prisoners.cpp: In function ‘auto doTrials(int, int, std::string)’:
+/tmp/100-prisoners.cpp:28:44: error: wrong number of template arguments (0, should be at least 1)
+   28 |     std::vector<int> drawers = std::vector<>{};
+      |                                            ^
+In file included from /usr/include/c++/13/vector:66,
+                 from /usr/include/c++/13/chrono:47,
+                 from /tmp/100-prisoners.cpp:2:
+/usr/include/c++/13/bits/stl_vector.h:428:11: note: provided for ‘template<class _Tp, class _Alloc> class std::vector’
+  428 |     class vector : protected _Vector_base<_Tp, _Alloc>
+      |           ^~~~~~
+/tmp/100-prisoners.cpp:43:48: error: conversion from ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’} to non-scalar type ‘std::vector<int>’ requested
+   43 |           std::vector<int> _this = drawers[prev];
+      |                                                ^
+/tmp/100-prisoners.cpp:44:22: error: no match for ‘operator==’ (operand types are ‘std::vector<int>’ and ‘int’)
+   44 |           if ((_this == p)) {
+      |                ~~~~~ ^~ ~
+      |                |        |
+      |                |        int
+      |                std::vector<int>
+In file included from /usr/include/x86_64-linux-gnu/c++/13/bits/c++allocator.h:33,
+                 from /usr/include/c++/13/bits/allocator.h:46,
+                 from /usr/include/c++/13/string:43,
+                 from /usr/include/c++/13/bits/locale_classes.h:40,
+                 from /usr/include/c++/13/bits/ios_base.h:41,
+                 from /usr/include/c++/13/ios:44,
+                 from /usr/include/c++/13/istream:40,
+                 from /usr/include/c++/13/sstream:40,
+                 from /usr/include/c++/13/chrono:45:
+/usr/include/c++/13/bits/new_allocator.h:215:9: note: candidate: ‘template<class _Up> constexpr bool std::operator==(const __new_allocator<int>&, const __new_allocator<_Tp>&)’ (reversed)
+  215 |         operator==(const __new_allocator&, const __new_allocator<_Up>&)
+      |         ^~~~~~~~
+/usr/include/c++/13/bits/new_allocator.h:215:9: note:   template argument deduction/substitution failed:
+/tmp/100-prisoners.cpp:44:25: note:   ‘std::vector<int>’ is not derived from ‘const std::__new_allocator<_Tp>’
+   44 |           if ((_this == p)) {
+      |                         ^
+/usr/include/c++/13/bits/allocator.h:237:5: note: candidate: ‘template<class _T1, class _T2> constexpr bool std::operator==(const allocator<_CharT>&, const allocator<_T2>&)’ (reversed)
+  237 |     operator==(const allocator<_T1>&, const allocator<_T2>&)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/allocator.h:237:5: note:   template argument deduction/substitution failed:
+/tmp/100-prisoners.cpp:44:25: note:   mismatched types ‘const std::allocator<_CharT>’ and ‘int’
+   44 |           if ((_this == p)) {
+      |                         ^
+In file included from /usr/include/c++/13/string:48:
+/usr/include/c++/13/bits/stl_iterator.h:534:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator==(const reverse_iterator<_IteratorL>&, const reverse_iterator<_IteratorR>&) requires requires{{std::operator==::__x->base() == std::operator==::__y->base()} -> decltype(auto) [requires std::convertible_to<<placeholder>, bool>];}’ (reversed)
+  534 |     operator==(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:534:5: note:   template argument deduction/substitution failed:
+/tmp/100-prisoners.cpp:44:25: note:   mismatched types ‘const std::reverse_iterator<_IteratorL>’ and ‘int’
+   44 |           if ((_this == p)) {
+      |                         ^
+/usr/include/c++/13/bits/stl_iterator.h:1678:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator==(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&) requires requires{{std::operator==::__x->base() == std::operator==::__y->base()} -> decltype(auto) [requires std::convertible_to<<placeholder>, bool>];}’ (reversed)
+ 1678 |     operator==(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1678:5: note:   template argument deduction/substitution failed:
+/tmp/100-prisoners.cpp:44:25: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+   44 |           if ((_this == p)) {
+      |                         ^
+In file included from /usr/include/c++/13/bits/basic_string.h:47,
+                 from /usr/include/c++/13/string:54:
+/usr/include/c++/13/string_view:616:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator==(basic_string_view<_CharT, _Traits>, __type_identity_t<basic_string_view<_CharT, _Traits> >)’ (reversed)
+  616 |     operator==(basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:616:5: note:   template argument deduction/substitution failed:
+/tmp/100-prisoners.cpp:44:25: note:   mismatched types ‘std::basic_string_view<_CharT, _Traits>’ and ‘int’
+   44 |           if ((_this == p)) {
+      |                         ^
+/usr/include/c++/13/bits/basic_string.h:3727:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr bool std::operator==(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const _CharT*)’ (reversed)
+ 3727 |     operator==(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3727:5: note:   template argument deduction/substitution failed:
+/tmp/100-prisoners.cpp:44:25: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+   44 |           if ((_this == p)) {
+      |                         ^
+In file included from /usr/include/c++/13/bits/uses_allocator_args.h:38,
+                 from /usr/include/c++/13/bits/memory_resource.h:41,
+                 from /usr/include/c++/13/string:58:
+/usr/include/c++/13/tuple:1919:5: note: candidate: ‘template<class ... _TElements, class ... _UElements> constexpr bool std::operator==(const tuple<_UTypes ...>&, const tuple<_UTypes ...>&)’ (reversed)
+ 1919 |     operator==(const tuple<_TElements...>& __t,
+      |     ^~~~~~~~
+/usr/include/c++/13/tuple:1919:5: note:   template argument deduction/substitution failed:
+/tmp/100-prisoners.cpp:44:25: note:   mismatched types ‘const std::tuple<_UTypes ...>’ and ‘int’
+   44 |           if ((_this == p)) {
+      |                         ^
+In file included from /usr/include/c++/13/bits/shared_ptr_base.h:59,
+                 from /usr/include/c++/13/bits/shared_ptr.h:53,
+                 from /usr/include/c++/13/chrono:49:
+/usr/include/c++/13/bits/unique_ptr.h:829:5: note: candidate: ‘template<class _Tp, class _Dp, class _Up, class _Ep> bool std::operator==(const unique_ptr<_Tp, _Dp>&, const unique_ptr<_Up, _Ep>&)’ (reversed)
+  829 |     operator==(const unique_ptr<_Tp, _Dp>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/unique_ptr.h:829:5: note:   template argument deduction/substitution failed:
+/tmp/100-prisoners.cpp:44:25: note:   mismatched types ‘const std::unique_ptr<_Tp, _Dp>’ and ‘int’
+   44 |           if ((_this == p)) {
+      |                         ^
+/usr/include/c++/13/bits/unique_ptr.h:837:5: note: candidate: ‘template<class _Tp, class _Dp> bool std::operator==(const unique_ptr<_Tp, _Dp>&, nullptr_t)’ (reversed)
+  837 |     operator==(const unique_ptr<_Tp, _Dp>& __x, nullptr_t) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/unique_ptr.h:837:5: note:   template argument deduction/substitution failed:
+/tmp/100-prisoners.cpp:44:25: note:   mismatched types ‘const std::unique_ptr<_Tp, _Dp>’ and ‘int’
+   44 |           if ((_this == p)) {
+      |                         ^
+/usr/include/c++/13/bits/shared_ptr_base.h:1793:5: note: candidate: ‘template<class _Tp1, class _Tp2, __gnu_cxx::_Lock_policy _Lp> bool std::operator==(const __shared_ptr<_Tp1, _Lp>&, const __shared_ptr<_Tp2, _Lp>&)’ (reversed)
+ 1793 |     operator==(const __shared_ptr<_Tp1, _Lp>& __a,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/shared_ptr_base.h:1793:5: note:   template argument deduction/substitution failed:
+/tmp/100-prisoners.cpp:44:25: note:   mismatched types ‘const std::__shared_ptr<_Tp1, _Lp>’ and ‘int’
+   44 |           if ((_this == p)) {
+      |                         ^
+/usr/include/c++/13/bits/shared_ptr_base.h:1799:5: note: candidate: ‘template<class _Tp, __gnu_cxx::_Lock_policy _Lp> bool std::operator==(const __shared_ptr<_Tp, _Lp>&, nullptr_t)’ (reversed)
+ 1799 |     operator==(const __shared_ptr<_Tp, _Lp>& __a, nullptr_t) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/shared_ptr_base.h:1799:5: note:   template argument deduction/substitution failed:
+/tmp/100-prisoners.cpp:44:25: note:   mismatched types ‘const std::__shared_ptr<_Tp, _Lp>’ and ‘int’
+   44 |           if ((_this == p)) {
+      |                         ^
+/usr/include/c++/13/bits/shared_ptr.h:555:5: note: candidate: ‘template<class _Tp, class _Up> bool std::operator==(const shared_ptr<_Tp>&, const shared_ptr<_Tp>&)’ (reversed)
+  555 |     operator==(const shared_ptr<_Tp>& __a, const shared_ptr<_Up>& __b) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:555:5: note:   template argument deduction/substitution failed:
+/tmp/100-prisoners.cpp:44:25: note:   mismatched types ‘const std::shared_ptr<_Tp>’ and ‘int’
+   44 |           if ((_this == p)) {
+      |                         ^
+/usr/include/c++/13/bits/shared_ptr.h:561:5: note: candidate: ‘template<class _Tp> bool std::operator==(const shared_ptr<_Tp>&, nullptr_t)’ (reversed)
+  561 |     operator==(const shared_ptr<_Tp>& __a, nullptr_t) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:561:5: note:   template argument deduction/substitution failed:
+/tmp/100-prisoners.cpp:44:25: note:   mismatched types ‘const std::shared_ptr<_Tp>’ and ‘int’
+   44 |           if ((_this == p)) {
+      |                         ^
+In file included from /usr/include/c++/13/format:43,
+                 from /usr/include/c++/13/bits/chrono_io.h:39,
+                 from /usr/include/c++/13/chrono:3370:
+/usr/include/c++/13/optional:1296:5: note: candidate: ‘template<class _Tp> constexpr bool std::operator==(const optional<_Tp>&, nullopt_t)’ (reversed)
+ 1296 |     operator==(const optional<_Tp>& __lhs, nullopt_t) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/optional:1296:5: note:   template argument deduction/substitution failed:
+/tmp/100-prisoners.cpp:44:25: note:   mismatched types ‘const std::optional<_Tp>’ and ‘int’
+   44 |           if ((_this == p)) {
+      |                         ^
+In file included from /usr/include/c++/13/bits/ios_base.h:46:
+/usr/include/c++/13/system_error:465:3: note: candidate: ‘bool std::operator==(const error_code&, const error_condition&)’ (reversed)
+  465 |   operator==(const error_code& __lhs, const error_condition& __rhs) noexcept
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:465:32: note:   no known conversion for argument 1 from ‘int’ to ‘const std::error_code&’
+  465 |   operator==(const error_code& __lhs, const error_condition& __rhs) noexcept
+      |              ~~~~~~~~~~~~~~~~~~^~~~~
+In file included from /usr/include/c++/13/iosfwd:42,
+                 from /usr/include/c++/13/ios:40:
+/usr/include/c++/13/bits/postypes.h:192:5: note: candidate: ‘template<class _StateT> bool std::operator==(const fpos<_StateT>&, const fpos<_StateT>&)’
+  192 |     operator==(const fpos<_StateT>& __lhs, const fpos<_StateT>& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/postypes.h:192:5: note:   template argument deduction/substitution failed:
+/tmp/100-prisoners.cpp:44:25: note:   ‘std::vector<int>’ is not derived from ‘const std::fpos<_StateT>’
+   44 |           if ((_this == p)) {
+      |                         ^
+/usr/include/c++/13/bits/stl_iterator.h:593:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator==(const reverse_iterator<_IteratorL>&, const reverse_iterator<_IteratorL>&) requires requires{{std::operator==::__x->base() == std::operator==::__y->base()} -> decltype(auto) [requires std::convertible_to<<placeholder>, bool>];}’
+  593 |     operator==(const reverse_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:593:5: note:   template argument deduction/substitution failed:
+/tmp/100-prisoners.cpp:44:25: note:   ‘std::vector<int>’ is not derived from ‘const std::reverse_iterator<_IteratorL>’
+   44 |           if ((_this == p)) {
+      |                         ^
+/usr/include/c++/13/bits/stl_iterator.h:1748:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator==(const move_iterator<_IteratorL>&, const move_iterator<_IteratorL>&)’
+ 1748 |     operator==(const move_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1748:5: note:   template argument deduction/substitution failed:
+/tmp/100-prisoners.cpp:44:25: note:   ‘std::vector<int>’ is not derived from ‘const std::move_iterator<_IteratorL>’
+   44 |           if ((_this == p)) {
+      |                         ^
+In file included from /usr/include/c++/13/bits/stl_algobase.h:64,
+                 from /usr/include/c++/13/string:51:
+/usr/include/c++/13/bits/stl_pair.h:812:5: note: candidate: ‘template<class _T1, class _T2> constexpr bool std::operator==(const pair<_T1, _T2>&, const pair<_T1, _T2>&)’
+  812 |     operator==(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_pair.h:812:5: note:   template argument deduction/substitution failed:
+/tmp/100-prisoners.cpp:44:25: note:   ‘std::vector<int>’ is not derived from ‘const std::pair<_T1, _T2>’
+   44 |           if ((_this == p)) {
+      |                         ^
+/usr/include/c++/13/string_view:609:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator==(basic_string_view<_CharT, _Traits>, basic_string_view<_CharT, _Traits>)’
+  609 |     operator==(basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:609:5: note:   template argument deduction/substitution failed:
+/tmp/100-prisoners.cpp:44:25: note:   ‘std::vector<int>’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
+   44 |           if ((_this == p)) {
+      |                         ^
+/usr/include/c++/13/bits/basic_string.h:3710:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr bool std::operator==(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3710 |     operator==(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3710:5: note:   template argument deduction/substitution failed:
+/tmp/100-prisoners.cpp:44:25: note:   ‘std::vector<int>’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+   44 |           if ((_this == p)) {
+      |                         ^
+In file included from /usr/include/c++/13/bits/locale_facets.h:48,
+                 from /usr/include/c++/13/bits/basic_ios.h:37,
+                 from /usr/include/c++/13/ios:46:
+/usr/include/c++/13/bits/streambuf_iterator.h:234:5: note: candidate: ‘template<class _CharT, class _Traits> bool std::operator==(const istreambuf_iterator<_CharT, _Traits>&, const istreambuf_iterator<_CharT, _Traits>&)’
+  234 |     operator==(const istreambuf_iterator<_CharT, _Traits>& __a,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/streambuf_iterator.h:234:5: note:   template argument deduction/substitution failed:
+/tmp/100-prisoners.cpp:44:25: note:   ‘std::vector<int>’ is not derived from ‘const std::istreambuf_iterator<_CharT, _Traits>’
+   44 |           if ((_this == p)) {
+      |                         ^
+/usr/include/c++/13/bits/stl_vector.h:2040:5: note: candidate: ‘template<class _Tp, class _Alloc> constexpr bool std::operator==(const vector<_Tp, _Alloc>&, const vector<_Tp, _Alloc>&)’
+ 2040 |     operator==(const vector<_Tp, _Alloc>& __x, const vector<_Tp, _Alloc>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:2040:5: note:   template argument deduction/substitution failed:
+/tmp/100-prisoners.cpp:44:25: note:   mismatched types ‘const std::vector<_Tp, _Alloc>’ and ‘int’
+   44 |           if ((_this == p)) {
+      |                         ^
+In file included from /usr/include/c++/13/format:38:
+/usr/include/c++/13/array:297:5: note: candidate: ‘template<class _Tp, long unsigned int _Nm> constexpr bool std::operator==(const array<_Tp, _Nm>&, const array<_Tp, _Nm>&)’
+  297 |     operator==(const array<_Tp, _Nm>& __one, const array<_Tp, _Nm>& __two)
+      |     ^~~~~~~~
+/usr/include/c++/13/array:297:5: note:   template argument deduction/substitution failed:
+/tmp/100-prisoners.cpp:44:25: note:   ‘std::vector<int>’ is not derived from ‘const std::array<_Tp, _Nm>’
+   44 |           if ((_this == p)) {
+      |                         ^
+/usr/include/c++/13/optional:1236:5: note: candidate: ‘template<class _Tp, class _Up> constexpr std::__optional_eq_t<_Tp, _Up> std::operator==(const optional<_Tp>&, const optional<_Up>&)’
+ 1236 |     operator==(const optional<_Tp>& __lhs, const optional<_Up>& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/optional:1236:5: note:   template argument deduction/substitution failed:
+/tmp/100-prisoners.cpp:44:25: note:   ‘std::vector<int>’ is not derived from ‘const std::optional<_Tp>’
+   44 |           if ((_this == p)) {
+      |                         ^
+/usr/include/c++/13/optional:1364:5: note: candidate: ‘template<class _Tp, class _Up> constexpr std::__optional_eq_t<_Tp, _Up> std::operator==(const optional<_Tp>&, const _Up&)’
+ 1364 |     operator==(const optional<_Tp>& __lhs, const _Up& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/optional:1364:5: note:   template argument deduction/substitution failed:
+/tmp/100-prisoners.cpp:44:25: note:   ‘std::vector<int>’ is not derived from ‘const std::optional<_Tp>’
+   44 |           if ((_this == p)) {
+      |                         ^
+/usr/include/c++/13/optional:1370:5: note: candidate: ‘template<class _Tp, class _Up> constexpr std::__optional_eq_t<_Up, _Tp> std::operator==(const _Up&, const optional<_Tp>&)’
+ 1370 |     operator==(const _Up& __lhs, const optional<_Tp>& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/optional:1370:5: note:   template argument deduction/substitution failed:
+/tmp/100-prisoners.cpp:44:25: note:   mismatched types ‘const std::optional<_Tp>’ and ‘int’
+   44 |           if ((_this == p)) {
+      |                         ^
+In file included from /usr/include/c++/13/format:47:
+/usr/include/c++/13/variant:1266:3: note: candidate: ‘template<class ... _Types> constexpr bool std::operator==(const variant<_Types ...>&, const variant<_Types ...>&)’
+ 1266 |   _VARIANT_RELATION_FUNCTION_TEMPLATE(==, equal)
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/variant:1266:3: note:   template argument deduction/substitution failed:
+/tmp/100-prisoners.cpp:44:25: note:   ‘std::vector<int>’ is not derived from ‘const std::variant<_Types ...>’
+   44 |           if ((_this == p)) {
+      |                         ^
+/usr/include/c++/13/bits/allocator.h:216:7: note: candidate: ‘constexpr bool std::operator==(const allocator<int>&, const allocator<int>&)’
+  216 |       operator==(const allocator&, const allocator&) _GLIBCXX_NOTHROW
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/allocator.h:216:18: note:   no known conversion for argument 1 from ‘std::vector<int>’ to ‘const std::allocator<int>&’
+  216 |       operator==(const allocator&, const allocator&) _GLIBCXX_NOTHROW
+      |                  ^~~~~~~~~~~~~~~~
+/usr/include/c++/13/system_error:449:3: note: candidate: ‘bool std::operator==(const error_code&, const error_code&)’
+  449 |   operator==(const error_code& __lhs, const error_code& __rhs) noexcept
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:449:32: note:   no known conversion for argument 1 from ‘std::vector<int>’ to ‘const std::error_code&’
+  449 |   operator==(const error_code& __lhs, const error_code& __rhs) noexcept
+      |              ~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/system_error:480:3: note: candidate: ‘bool std::operator==(const error_condition&, const error_condition&)’
+  480 |   operator==(const error_condition& __lhs,
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:480:37: note:   no known conversion for argument 1 from ‘std::vector<int>’ to ‘const std::error_condition&’
+  480 |   operator==(const error_condition& __lhs,
+      |              ~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/variant:1273:18: note: candidate: ‘constexpr bool std::operator==(monostate, monostate)’
+ 1273 |   constexpr bool operator==(monostate, monostate) noexcept { return true; }
+      |                  ^~~~~~~~
+/usr/include/c++/13/variant:1273:29: note:   no known conversion for argument 1 from ‘std::vector<int>’ to ‘std::monostate’
+ 1273 |   constexpr bool operator==(monostate, monostate) noexcept { return true; }
+      |                             ^~~~~~~~~
+/tmp/100-prisoners.cpp:48:18: error: cannot convert ‘std::vector<int>’ to ‘int’ in assignment
+   48 |           prev = _this;
+      |                  ^~~~~
+      |                  |
+      |                  std::vector<int>
+/tmp/100-prisoners.cpp:52:48: error: wrong number of template arguments (0, should be at least 1)
+   52 |         std::vector<bool> opened = std::vector<>{};
+      |                                                ^
+/usr/include/c++/13/bits/stl_vector.h:428:11: note: provided for ‘template<class _Tp, class _Alloc> class std::vector’
+  428 |     class vector : protected _Vector_base<_Tp, _Alloc>
+      |           ^~~~~~

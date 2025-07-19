@@ -1,0 +1,6 @@
+g++: exit status 1
+/tmp/a+b.cpp: In function ‘auto __mochi_main()’:
+/tmp/a+b.cpp:5:16: error: ‘input’ was not declared in this scope; did you mean ‘int’?
+    5 |   auto a = int(input());
+      |                ^~~~~
+      |                int

@@ -1,76 +1,42 @@
-g++ error: exit status 1
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp: In function ‘auto fields(std::string)’:
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:15:24: error: no matching function for call to ‘std::vector<int>::push_back(std::__cxx11::basic_string<char>&)’
-   15 |         words.push_back(cur);
-      |         ~~~~~~~~~~~~~~~^~~~~
+g++: exit status 1
+/tmp/abbreviations-easy.cpp: In function ‘std::vector<std::__cxx11::basic_string<char> > fields(std::string)’:
+/tmp/abbreviations-easy.cpp:7:48: error: wrong number of template arguments (0, should be at least 1)
+    7 |   std::vector<std::string> words = std::vector<>{};
+      |                                                ^
 In file included from /usr/include/c++/13/vector:66,
-                 from /tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:4:
-/usr/include/c++/13/bits/stl_vector.h:1281:7: note: candidate: ‘void std::vector<_Tp, _Alloc>::push_back(const value_type&) [with _Tp = int; _Alloc = std::allocator<int>; value_type = int]’
- 1281 |       push_back(const value_type& __x)
-      |       ^~~~~~~~~
-/usr/include/c++/13/bits/stl_vector.h:1281:35: note:   no known conversion for argument 1 from ‘std::__cxx11::basic_string<char>’ to ‘const std::vector<int>::value_type&’ {aka ‘const int&’}
- 1281 |       push_back(const value_type& __x)
-      |                 ~~~~~~~~~~~~~~~~~~^~~
-/usr/include/c++/13/bits/stl_vector.h:1298:7: note: candidate: ‘void std::vector<_Tp, _Alloc>::push_back(value_type&&) [with _Tp = int; _Alloc = std::allocator<int>; value_type = int]’
- 1298 |       push_back(value_type&& __x)
-      |       ^~~~~~~~~
-/usr/include/c++/13/bits/stl_vector.h:1298:30: note:   no known conversion for argument 1 from ‘std::__cxx11::basic_string<char>’ to ‘std::vector<int>::value_type&&’ {aka ‘int&&’}
- 1298 |       push_back(value_type&& __x)
-      |                 ~~~~~~~~~~~~~^~~
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:24:20: error: no matching function for call to ‘std::vector<int>::push_back(std::__cxx11::basic_string<char>&)’
-   24 |     words.push_back(cur);
-      |     ~~~~~~~~~~~~~~~^~~~~
-/usr/include/c++/13/bits/stl_vector.h:1281:7: note: candidate: ‘void std::vector<_Tp, _Alloc>::push_back(const value_type&) [with _Tp = int; _Alloc = std::allocator<int>; value_type = int]’
- 1281 |       push_back(const value_type& __x)
-      |       ^~~~~~~~~
-/usr/include/c++/13/bits/stl_vector.h:1281:35: note:   no known conversion for argument 1 from ‘std::__cxx11::basic_string<char>’ to ‘const std::vector<int>::value_type&’ {aka ‘const int&’}
- 1281 |       push_back(const value_type& __x)
-      |                 ~~~~~~~~~~~~~~~~~~^~~
-/usr/include/c++/13/bits/stl_vector.h:1298:7: note: candidate: ‘void std::vector<_Tp, _Alloc>::push_back(value_type&&) [with _Tp = int; _Alloc = std::allocator<int>; value_type = int]’
- 1298 |       push_back(value_type&& __x)
-      |       ^~~~~~~~~
-/usr/include/c++/13/bits/stl_vector.h:1298:30: note:   no known conversion for argument 1 from ‘std::__cxx11::basic_string<char>’ to ‘std::vector<int>::value_type&&’ {aka ‘int&&’}
- 1298 |       push_back(value_type&& __x)
-      |                 ~~~~~~~~~~~~~^~~
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp: At global scope:
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:39:18: warning: use of ‘auto’ in parameter declaration only available with ‘-std=c++20’ or ‘-fconcepts’
-   39 | std::string join(auto xs, std::string sep) {
-      |                  ^~~~
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:52:15: warning: use of ‘auto’ in parameter declaration only available with ‘-std=c++20’ or ‘-fconcepts’
-   52 | auto validate(auto commands, auto words, auto mins) {
-      |               ^~~~
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:52:30: warning: use of ‘auto’ in parameter declaration only available with ‘-std=c++20’ or ‘-fconcepts’
-   52 | auto validate(auto commands, auto words, auto mins) {
-      |                              ^~~~
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:52:42: warning: use of ‘auto’ in parameter declaration only available with ‘-std=c++20’ or ‘-fconcepts’
-   52 | auto validate(auto commands, auto words, auto mins) {
-      |                                          ^~~~
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp: In function ‘auto validate(auto:2, auto:3, auto:4)’:
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:77:24: error: no matching function for call to ‘std::vector<int>::push_back(std::string)’
-   77 |       results.push_back(std::string("*error*"));
-      |       ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~
-/usr/include/c++/13/bits/stl_vector.h:1281:7: note: candidate: ‘void std::vector<_Tp, _Alloc>::push_back(const value_type&) [with _Tp = int; _Alloc = std::allocator<int>; value_type = int]’
- 1281 |       push_back(const value_type& __x)
-      |       ^~~~~~~~~
-/usr/include/c++/13/bits/stl_vector.h:1281:35: note:   no known conversion for argument 1 from ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘const std::vector<int>::value_type&’ {aka ‘const int&’}
- 1281 |       push_back(const value_type& __x)
-      |                 ~~~~~~~~~~~~~~~~~~^~~
-/usr/include/c++/13/bits/stl_vector.h:1298:7: note: candidate: ‘void std::vector<_Tp, _Alloc>::push_back(value_type&&) [with _Tp = int; _Alloc = std::allocator<int>; value_type = int]’
- 1298 |       push_back(value_type&& __x)
-      |       ^~~~~~~~~
-/usr/include/c++/13/bits/stl_vector.h:1298:30: note:   no known conversion for argument 1 from ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘std::vector<int>::value_type&&’ {aka ‘int&&’}
- 1298 |       push_back(value_type&& __x)
-      |                 ~~~~~~~~~~~~~^~~
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp: At global scope:
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:84:1: error: ‘::main’ must return ‘int’
-   84 | auto main() {
-      | ^~~~
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp: In function ‘int main()’:
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:106:21: error: request for member ‘size’ in ‘cmd’, which is of non-class type ‘int’
-  106 |     while ((j < cmd.size())) {
-      |                     ^~~~
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:107:32: error: no matching function for call to ‘std::__cxx11::basic_string<char>::basic_string(int&)’
-  107 |       auto ch = std::string(cmd).substr(j, ((j + 1)) - (j));
+                 from /tmp/abbreviations-easy.cpp:4:
+/usr/include/c++/13/bits/stl_vector.h:428:11: note: provided for ‘template<class _Tp, class _Alloc> class std::vector’
+  428 |     class vector : protected _Vector_base<_Tp, _Alloc>
+      |           ^~~~~~
+/tmp/abbreviations-easy.cpp: In function ‘std::vector<std::__cxx11::basic_string<char> > validate(std::vector<std::__cxx11::basic_string<char> >, std::vector<std::__cxx11::basic_string<char> >, std::vector<int>)’:
+/tmp/abbreviations-easy.cpp:55:50: error: wrong number of template arguments (0, should be at least 1)
+   55 |   std::vector<std::string> results = std::vector<>{};
+      |                                                  ^
+/usr/include/c++/13/bits/stl_vector.h:428:11: note: provided for ‘template<class _Tp, class _Alloc> class std::vector’
+  428 |     class vector : protected _Vector_base<_Tp, _Alloc>
+      |           ^~~~~~
+/tmp/abbreviations-easy.cpp:61:42: error: conversion from ‘__gnu_cxx::__alloc_traits<std::allocator<std::__cxx11::basic_string<char> >, std::__cxx11::basic_string<char> >::value_type’ {aka ‘std::__cxx11::basic_string<char>’} to non-scalar type ‘std::vector<std::__cxx11::basic_string<char> >’ requested
+   61 |     std::vector<std::string> w = words[wi];
+      |                                          ^
+/tmp/abbreviations-easy.cpp:66:49: error: conversion from ‘__gnu_cxx::__alloc_traits<std::allocator<std::__cxx11::basic_string<char> >, std::__cxx11::basic_string<char> >::value_type’ {aka ‘std::__cxx11::basic_string<char>’} to non-scalar type ‘std::vector<std::__cxx11::basic_string<char> >’ requested
+   66 |       std::vector<std::string> cmd = commands[ci];
+      |                                                 ^
+/tmp/abbreviations-easy.cpp:68:18: error: ‘upper’ was not declared in this scope; did you mean ‘toupper’?
+   68 |         auto c = upper(cmd);
+      |                  ^~~~~
+      |                  toupper
+/tmp/abbreviations-easy.cpp: In function ‘auto __mochi_main()’:
+/tmp/abbreviations-easy.cpp:102:39: error: wrong number of template arguments (0, should be at least 1)
+  102 |   std::vector<int> mins = std::vector<>{};
+      |                                       ^
+/usr/include/c++/13/bits/stl_vector.h:428:11: note: provided for ‘template<class _Tp, class _Alloc> class std::vector’
+  428 |     class vector : protected _Vector_base<_Tp, _Alloc>
+      |           ^~~~~~
+/tmp/abbreviations-easy.cpp:107:46: error: conversion from ‘__gnu_cxx::__alloc_traits<std::allocator<std::__cxx11::basic_string<char> >, std::__cxx11::basic_string<char> >::value_type’ {aka ‘std::__cxx11::basic_string<char>’} to non-scalar type ‘std::vector<std::__cxx11::basic_string<char> >’ requested
+  107 |     std::vector<std::string> cmd = commands[i];
+      |                                              ^
+/tmp/abbreviations-easy.cpp:109:32: error: no matching function for call to ‘std::__cxx11::basic_string<char>::basic_string(std::vector<std::__cxx11::basic_string<char> >&)’
+  109 |       auto ch = std::string(cmd).substr(j, ((j + 1)) - (j));
       |                                ^
 In file included from /usr/include/c++/13/string:54,
                  from /usr/include/c++/13/bits/locale_classes.h:40,
@@ -78,8 +44,8 @@ In file included from /usr/include/c++/13/string:54,
                  from /usr/include/c++/13/ios:44,
                  from /usr/include/c++/13/ostream:40,
                  from /usr/include/c++/13/iostream:41,
-                 from /tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:2:
-/usr/include/c++/13/bits/basic_string.h:795:9: note: candidate: ‘template<class _Tp, class> std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const _Tp&, const _Alloc&) [with <template-parameter-2-2> = _Tp; _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+                 from /tmp/abbreviations-easy.cpp:2:
+/usr/include/c++/13/bits/basic_string.h:795:9: note: candidate: ‘template<class _Tp, class> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const _Tp&, const _Alloc&) [with <template-parameter-2-2> = _Tp; _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
   795 |         basic_string(const _Tp& __t, const _Alloc& __a = _Alloc())
       |         ^~~~~~~~~~~~
 /usr/include/c++/13/bits/basic_string.h:795:9: note:   template argument deduction/substitution failed:
@@ -88,224 +54,92 @@ In file included from /usr/include/c++/13/bits/move.h:37,
                  from /usr/include/c++/13/exception:164,
                  from /usr/include/c++/13/ios:41:
 /usr/include/c++/13/type_traits: In substitution of ‘template<bool _Cond, class _Tp> using std::enable_if_t = typename std::enable_if::type [with bool _Cond = false; _Tp = void]’:
-/usr/include/c++/13/bits/basic_string.h:144:8:   required by substitution of ‘template<class _CharT, class _Traits, class _Alloc> template<class _Tp, class _Res> using std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_If_sv = std::enable_if_t<std::__and_<std::is_convertible<const _Tp&, std::basic_string_view<_CharT, _Traits> >, std::__not_<std::is_convertible<const _Tp*, const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>*> >, std::__not_<std::is_convertible<const _Tp&, const _CharT*> > >::value, _Res> [with _Tp = int; _Res = void; _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+/usr/include/c++/13/bits/basic_string.h:144:8:   required by substitution of ‘template<class _CharT, class _Traits, class _Alloc> template<class _Tp, class _Res> using std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_If_sv = std::enable_if_t<std::__and_<std::is_convertible<const _Tp&, std::basic_string_view<_CharT, _Traits> >, std::__not_<std::is_convertible<const _Tp*, const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>*> >, std::__not_<std::is_convertible<const _Tp&, const _CharT*> > >::value, _Res> [with _Tp = std::vector<std::__cxx11::basic_string<char> >; _Res = void; _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
 /usr/include/c++/13/bits/basic_string.h:792:30:   required from here
 /usr/include/c++/13/type_traits:2610:11: error: no type named ‘type’ in ‘struct std::enable_if<false, void>’
  2610 |     using enable_if_t = typename enable_if<_Cond, _Tp>::type;
       |           ^~~~~~~~~~~
-/usr/include/c++/13/bits/basic_string.h:783:9: note: candidate: ‘template<class _Tp, class> std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const _Tp&, size_type, size_type, const _Alloc&) [with <template-parameter-2-2> = _Tp; _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+/usr/include/c++/13/bits/basic_string.h:783:9: note: candidate: ‘template<class _Tp, class> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const _Tp&, size_type, size_type, const _Alloc&) [with <template-parameter-2-2> = _Tp; _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
   783 |         basic_string(const _Tp& __t, size_type __pos, size_type __n,
       |         ^~~~~~~~~~~~
 /usr/include/c++/13/bits/basic_string.h:783:9: note:   template argument deduction/substitution failed:
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:107:32: note:   candidate expects 4 arguments, 1 provided
-  107 |       auto ch = std::string(cmd).substr(j, ((j + 1)) - (j));
+/tmp/abbreviations-easy.cpp:109:32: note:   candidate expects 4 arguments, 1 provided
+  109 |       auto ch = std::string(cmd).substr(j, ((j + 1)) - (j));
       |                                ^
-/usr/include/c++/13/bits/basic_string.h:760:9: note: candidate: ‘template<class _InputIterator, class> std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(_InputIterator, _InputIterator, const _Alloc&) [with <template-parameter-2-2> = _InputIterator; _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+/usr/include/c++/13/bits/basic_string.h:760:9: note: candidate: ‘template<class _InputIterator, class> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(_InputIterator, _InputIterator, const _Alloc&) [with <template-parameter-2-2> = _InputIterator; _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
   760 |         basic_string(_InputIterator __beg, _InputIterator __end,
       |         ^~~~~~~~~~~~
 /usr/include/c++/13/bits/basic_string.h:760:9: note:   template argument deduction/substitution failed:
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:107:32: note:   candidate expects 3 arguments, 1 provided
-  107 |       auto ch = std::string(cmd).substr(j, ((j + 1)) - (j));
+/tmp/abbreviations-easy.cpp:109:32: note:   candidate expects 3 arguments, 1 provided
+  109 |       auto ch = std::string(cmd).substr(j, ((j + 1)) - (j));
       |                                ^
-/usr/include/c++/13/bits/basic_string.h:664:7: note: candidate: ‘template<class> std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(size_type, _CharT, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+/usr/include/c++/13/bits/basic_string.h:664:7: note: candidate: ‘template<class> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(size_type, _CharT, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
   664 |       basic_string(size_type __n, _CharT __c, const _Alloc& __a = _Alloc())
       |       ^~~~~~~~~~~~
 /usr/include/c++/13/bits/basic_string.h:664:7: note:   template argument deduction/substitution failed:
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:107:32: note:   candidate expects 3 arguments, 1 provided
-  107 |       auto ch = std::string(cmd).substr(j, ((j + 1)) - (j));
+/tmp/abbreviations-easy.cpp:109:32: note:   candidate expects 3 arguments, 1 provided
+  109 |       auto ch = std::string(cmd).substr(j, ((j + 1)) - (j));
       |                                ^
-/usr/include/c++/13/bits/basic_string.h:641:7: note: candidate: ‘template<class> std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const _CharT*, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+/usr/include/c++/13/bits/basic_string.h:641:7: note: candidate: ‘template<class> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const _CharT*, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
   641 |       basic_string(const _CharT* __s, const _Alloc& __a = _Alloc())
       |       ^~~~~~~~~~~~
 /usr/include/c++/13/bits/basic_string.h:641:7: note:   template argument deduction/substitution failed:
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:107:29: note:   cannot convert ‘cmd’ (type ‘int’) to type ‘const char*’
-  107 |       auto ch = std::string(cmd).substr(j, ((j + 1)) - (j));
+/tmp/abbreviations-easy.cpp:109:29: note:   cannot convert ‘cmd’ (type ‘std::vector<std::__cxx11::basic_string<char> >’) to type ‘const char*’
+  109 |       auto ch = std::string(cmd).substr(j, ((j + 1)) - (j));
       |                             ^~~
-/usr/include/c++/13/bits/basic_string.h:716:7: note: candidate: ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+/usr/include/c++/13/bits/basic_string.h:716:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
   716 |       basic_string(basic_string&& __str, const _Alloc& __a)
       |       ^~~~~~~~~~~~
 /usr/include/c++/13/bits/basic_string.h:716:7: note:   candidate expects 2 arguments, 1 provided
-/usr/include/c++/13/bits/basic_string.h:711:7: note: candidate: ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+/usr/include/c++/13/bits/basic_string.h:711:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
   711 |       basic_string(const basic_string& __str, const _Alloc& __a)
       |       ^~~~~~~~~~~~
 /usr/include/c++/13/bits/basic_string.h:711:7: note:   candidate expects 2 arguments, 1 provided
-/usr/include/c++/13/bits/basic_string.h:706:7: note: candidate: ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(std::initializer_list<_Tp>, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+/usr/include/c++/13/bits/basic_string.h:706:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(std::initializer_list<_Tp>, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
   706 |       basic_string(initializer_list<_CharT> __l, const _Alloc& __a = _Alloc())
       |       ^~~~~~~~~~~~
-/usr/include/c++/13/bits/basic_string.h:706:45: note:   no known conversion for argument 1 from ‘int’ to ‘std::initializer_list<char>’
+/usr/include/c++/13/bits/basic_string.h:706:45: note:   no known conversion for argument 1 from ‘std::vector<std::__cxx11::basic_string<char> >’ to ‘std::initializer_list<char>’
   706 |       basic_string(initializer_list<_CharT> __l, const _Alloc& __a = _Alloc())
       |                    ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
-/usr/include/c++/13/bits/basic_string.h:677:7: note: candidate: ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+/usr/include/c++/13/bits/basic_string.h:677:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
   677 |       basic_string(basic_string&& __str) noexcept
       |       ^~~~~~~~~~~~
-/usr/include/c++/13/bits/basic_string.h:677:35: note:   no known conversion for argument 1 from ‘int’ to ‘std::__cxx11::basic_string<char>&&’
+/usr/include/c++/13/bits/basic_string.h:677:35: note:   no known conversion for argument 1 from ‘std::vector<std::__cxx11::basic_string<char> >’ to ‘std::__cxx11::basic_string<char>&&’
   677 |       basic_string(basic_string&& __str) noexcept
       |                    ~~~~~~~~~~~~~~~^~~~~
-/usr/include/c++/13/bits/basic_string.h:619:7: note: candidate: ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const _CharT*, size_type, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>; size_type = long unsigned int]’
+/usr/include/c++/13/bits/basic_string.h:619:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const _CharT*, size_type, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>; size_type = long unsigned int]’
   619 |       basic_string(const _CharT* __s, size_type __n,
       |       ^~~~~~~~~~~~
 /usr/include/c++/13/bits/basic_string.h:619:7: note:   candidate expects 3 arguments, 1 provided
-/usr/include/c++/13/bits/basic_string.h:599:7: note: candidate: ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&, size_type, size_type, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>; size_type = long unsigned int]’
+/usr/include/c++/13/bits/basic_string.h:599:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&, size_type, size_type, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>; size_type = long unsigned int]’
   599 |       basic_string(const basic_string& __str, size_type __pos,
       |       ^~~~~~~~~~~~
 /usr/include/c++/13/bits/basic_string.h:599:7: note:   candidate expects 4 arguments, 1 provided
-/usr/include/c++/13/bits/basic_string.h:581:7: note: candidate: ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&, size_type, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>; size_type = long unsigned int]’
+/usr/include/c++/13/bits/basic_string.h:581:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&, size_type, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>; size_type = long unsigned int]’
   581 |       basic_string(const basic_string& __str, size_type __pos,
       |       ^~~~~~~~~~~~
 /usr/include/c++/13/bits/basic_string.h:581:7: note:   candidate expects 3 arguments, 1 provided
-/usr/include/c++/13/bits/basic_string.h:564:7: note: candidate: ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&, size_type, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>; size_type = long unsigned int]’
+/usr/include/c++/13/bits/basic_string.h:564:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&, size_type, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>; size_type = long unsigned int]’
   564 |       basic_string(const basic_string& __str, size_type __pos,
       |       ^~~~~~~~~~~~
 /usr/include/c++/13/bits/basic_string.h:564:7: note:   candidate expects 3 arguments, 1 provided
-/usr/include/c++/13/bits/basic_string.h:547:7: note: candidate: ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+/usr/include/c++/13/bits/basic_string.h:547:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
   547 |       basic_string(const basic_string& __str)
       |       ^~~~~~~~~~~~
-/usr/include/c++/13/bits/basic_string.h:547:40: note:   no known conversion for argument 1 from ‘int’ to ‘const std::__cxx11::basic_string<char>&’
+/usr/include/c++/13/bits/basic_string.h:547:40: note:   no known conversion for argument 1 from ‘std::vector<std::__cxx11::basic_string<char> >’ to ‘const std::__cxx11::basic_string<char>&’
   547 |       basic_string(const basic_string& __str)
       |                    ~~~~~~~~~~~~~~~~~~~~^~~~~
-/usr/include/c++/13/bits/basic_string.h:535:7: note: candidate: ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+/usr/include/c++/13/bits/basic_string.h:535:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
   535 |       basic_string(const _Alloc& __a) _GLIBCXX_NOEXCEPT
       |       ^~~~~~~~~~~~
-/usr/include/c++/13/bits/basic_string.h:535:34: note:   no known conversion for argument 1 from ‘int’ to ‘const std::allocator<char>&’
+/usr/include/c++/13/bits/basic_string.h:535:34: note:   no known conversion for argument 1 from ‘std::vector<std::__cxx11::basic_string<char> >’ to ‘const std::allocator<char>&’
   535 |       basic_string(const _Alloc& __a) _GLIBCXX_NOEXCEPT
       |                    ~~~~~~~~~~~~~~^~~
-/usr/include/c++/13/bits/basic_string.h:522:7: note: candidate: ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string() [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+/usr/include/c++/13/bits/basic_string.h:522:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string() [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
   522 |       basic_string()
       |       ^~~~~~~~~~~~
 /usr/include/c++/13/bits/basic_string.h:522:7: note:   candidate expects 0 arguments, 1 provided
-/usr/include/c++/13/bits/basic_string.h:176:7: note: candidate: ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(__sv_wrapper, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+/usr/include/c++/13/bits/basic_string.h:176:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(__sv_wrapper, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
   176 |       basic_string(__sv_wrapper __svw, const _Alloc& __a)
       |       ^~~~~~~~~~~~
 /usr/include/c++/13/bits/basic_string.h:176:7: note:   candidate expects 2 arguments, 1 provided
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp: In instantiation of ‘auto validate(auto:2, auto:3, auto:4) [with auto:2 = std::vector<int>; auto:3 = std::vector<int>; auto:4 = std::vector<int>]’:
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:119:26:   required from here
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:61:19: error: request for member ‘size’ in ‘w’, which is of non-class type ‘int’
-   61 |     auto wlen = w.size();
-      |                 ~~^~~~
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:65:68: error: request for member ‘size’ in ‘cmd’, which is of non-class type ‘int’
-   65 |       if ((((mins[ci] != 0) && (wlen >= mins[ci])) && (wlen <= cmd.size()))) {
-      |                                                                ~~~~^~~~
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:66:23: error: ‘upper’ was not declared in this scope; did you mean ‘toupper’?
-   66 |         auto c = upper(cmd);
-      |                  ~~~~~^~~~~
-      |                  toupper
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:67:24: error: ‘upper’ was not declared in this scope, and no declarations were found by argument-dependent lookup at the point of instantiation
-   67 |         auto ww = upper(w);
-      |                   ~~~~~^~~
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:66:23: note: ‘upper’ declared here, later in the translation unit
-   66 |         auto c = upper(cmd);
-      |                  ~~~~~^~~~~
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:123:51: error: request for member ‘size’ in ‘results.std::vector<int>::operator[](((std::vector<int>::size_type)k))’, which is of non-class type ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
-  123 |     out1 = ((out1 + padRight(words[k], results[k].size())) + std::string(" "));
-      |                                                   ^~~~
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp: At global scope:
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:131:5: error: redefinition of ‘int main()’
-  131 | int main() {
-      |     ^~~~
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:84:6: note: ‘int main()’ previously defined here
-   84 | auto main() {
-      |      ^~~~
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp: In instantiation of ‘std::string join(auto:1, std::string) [with auto:1 = std::vector<int>; std::string = std::__cxx11::basic_string<char>]’:
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:127:52:   required from here
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:46:16: error: no match for ‘operator+’ (operand types are ‘std::__cxx11::basic_string<char>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’})
-   46 |     res = (res + xs[i]);
-      |           ~~~~~^~~~~~~~
-In file included from /usr/include/c++/13/string:48:
-/usr/include/c++/13/bits/stl_iterator.h:634:5: note: candidate: ‘template<class _Iterator> constexpr std::reverse_iterator<_Iterator> std::operator+(typename reverse_iterator<_Iterator>::difference_type, const reverse_iterator<_Iterator>&)’
-  634 |     operator+(typename reverse_iterator<_Iterator>::difference_type __n,
-      |     ^~~~~~~~
-/usr/include/c++/13/bits/stl_iterator.h:634:5: note:   template argument deduction/substitution failed:
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:46:16: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
-   46 |     res = (res + xs[i]);
-      |           ~~~~~^~~~~~~~
-/usr/include/c++/13/bits/stl_iterator.h:1808:5: note: candidate: ‘template<class _Iterator> constexpr std::move_iterator<_IteratorL> std::operator+(typename move_iterator<_IteratorL>::difference_type, const move_iterator<_IteratorL>&)’
- 1808 |     operator+(typename move_iterator<_Iterator>::difference_type __n,
-      |     ^~~~~~~~
-/usr/include/c++/13/bits/stl_iterator.h:1808:5: note:   template argument deduction/substitution failed:
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:46:16: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
-   46 |     res = (res + xs[i]);
-      |           ~~~~~^~~~~~~~
-/usr/include/c++/13/bits/basic_string.h:3553:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
- 3553 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
-      |     ^~~~~~~~
-/usr/include/c++/13/bits/basic_string.h:3553:5: note:   template argument deduction/substitution failed:
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:46:16: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
-   46 |     res = (res + xs[i]);
-      |           ~~~~~^~~~~~~~
-/usr/include/c++/13/bits/basic_string.h:3571:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
- 3571 |     operator+(const _CharT* __lhs,
-      |     ^~~~~~~~
-/usr/include/c++/13/bits/basic_string.h:3571:5: note:   template argument deduction/substitution failed:
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:46:16: note:   mismatched types ‘const _CharT*’ and ‘std::__cxx11::basic_string<char>’
-   46 |     res = (res + xs[i]);
-      |           ~~~~~^~~~~~~~
-/usr/include/c++/13/bits/basic_string.h:3590:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(_CharT, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
- 3590 |     operator+(_CharT __lhs, const basic_string<_CharT,_Traits,_Alloc>& __rhs)
-      |     ^~~~~~~~
-/usr/include/c++/13/bits/basic_string.h:3590:5: note:   template argument deduction/substitution failed:
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:46:16: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
-   46 |     res = (res + xs[i]);
-      |           ~~~~~^~~~~~~~
-/usr/include/c++/13/bits/basic_string.h:3607:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const _CharT*)’
- 3607 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
-      |     ^~~~~~~~
-/usr/include/c++/13/bits/basic_string.h:3607:5: note:   template argument deduction/substitution failed:
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:46:16: note:   mismatched types ‘const _CharT*’ and ‘int’
-   46 |     res = (res + xs[i]);
-      |           ~~~~~^~~~~~~~
-/usr/include/c++/13/bits/basic_string.h:3625:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, _CharT)’
- 3625 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs, _CharT __rhs)
-      |     ^~~~~~~~
-/usr/include/c++/13/bits/basic_string.h:3625:5: note:   template argument deduction/substitution failed:
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:46:16: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
-   46 |     res = (res + xs[i]);
-      |           ~~~~~^~~~~~~~
-/usr/include/c++/13/bits/basic_string.h:3637:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
- 3637 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
-      |     ^~~~~~~~
-/usr/include/c++/13/bits/basic_string.h:3637:5: note:   template argument deduction/substitution failed:
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:46:16: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
-   46 |     res = (res + xs[i]);
-      |           ~~~~~^~~~~~~~
-/usr/include/c++/13/bits/basic_string.h:3644:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
- 3644 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
-      |     ^~~~~~~~
-/usr/include/c++/13/bits/basic_string.h:3644:5: note:   template argument deduction/substitution failed:
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:46:16: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
-   46 |     res = (res + xs[i]);
-      |           ~~~~~^~~~~~~~
-/usr/include/c++/13/bits/basic_string.h:3651:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
- 3651 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
-      |     ^~~~~~~~
-/usr/include/c++/13/bits/basic_string.h:3651:5: note:   template argument deduction/substitution failed:
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:46:16: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
-   46 |     res = (res + xs[i]);
-      |           ~~~~~^~~~~~~~
-/usr/include/c++/13/bits/basic_string.h:3674:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
- 3674 |     operator+(const _CharT* __lhs,
-      |     ^~~~~~~~
-/usr/include/c++/13/bits/basic_string.h:3674:5: note:   template argument deduction/substitution failed:
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:46:16: note:   mismatched types ‘const _CharT*’ and ‘std::__cxx11::basic_string<char>’
-   46 |     res = (res + xs[i]);
-      |           ~~~~~^~~~~~~~
-/usr/include/c++/13/bits/basic_string.h:3681:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
- 3681 |     operator+(_CharT __lhs,
-      |     ^~~~~~~~
-/usr/include/c++/13/bits/basic_string.h:3681:5: note:   template argument deduction/substitution failed:
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:46:16: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type’ {aka ‘int’}
-   46 |     res = (res + xs[i]);
-      |           ~~~~~^~~~~~~~
-/usr/include/c++/13/bits/basic_string.h:3688:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, const _CharT*)’
- 3688 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
-      |     ^~~~~~~~
-/usr/include/c++/13/bits/basic_string.h:3688:5: note:   template argument deduction/substitution failed:
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:46:16: note:   mismatched types ‘const _CharT*’ and ‘int’
-   46 |     res = (res + xs[i]);
-      |           ~~~~~^~~~~~~~
-/usr/include/c++/13/bits/basic_string.h:3695:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, _CharT)’
- 3695 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
-      |     ^~~~~~~~
-/usr/include/c++/13/bits/basic_string.h:3695:5: note:   template argument deduction/substitution failed:
-/tmp/TestMochiCPPGoldenabbreviations-easy2905937086/001/prog.cpp:46:16: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
-   46 |     res = (res + xs[i]);
-      |           ~~~~~^~~~~~~~
