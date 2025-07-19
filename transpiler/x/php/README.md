@@ -2,10 +2,12 @@
 
 Generated PHP code for selected Mochi programs under `tests/vm/valid`. Each program has a `.php` file and a corresponding `.out` file with the runtime output. Any execution failures are captured in a `.error` file.
 
+Compiled programs: 8/100
+
 ## Checklist
 - [ ] append_builtin
 - [ ] avg_builtin
-- [ ] basic_compare
+- [x] basic_compare
 - [ ] binary_precedence
 - [ ] bool_chain
 - [ ] break_continue
@@ -95,7 +97,7 @@ Generated PHP code for selected Mochi programs under `tests/vm/valid`. Each prog
 - [ ] test_block
 - [ ] tree_sum
 - [ ] two-sum
-- [ ] typed_let
+- [x] typed_let
 - [ ] typed_var
 - [x] unary_neg
 - [ ] update_stmt

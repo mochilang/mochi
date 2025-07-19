@@ -32,7 +32,11 @@ type LetStmt struct {
 
 func (s *LetStmt) emit(w io.Writer) {
 	fmt.Fprintf(w, "$%s = ", s.Name)
-	s.Value.emit(w)
+	if s.Value != nil {
+		s.Value.emit(w)
+	} else {
+		io.WriteString(w, "null")
+	}
 }
 
 type VarStmt struct {
@@ -264,11 +268,24 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			}
 			p.Stmts = append(p.Stmts, &ExprStmt{Expr: e})
 		} else if st.Let != nil {
-			e, err := convertExpr(st.Let.Value)
-			if err != nil {
-				return nil, err
+			var val Expr
+			if st.Let.Value != nil {
+				v, err := convertExpr(st.Let.Value)
+				if err != nil {
+					return nil, err
+				}
+				val = v
+			} else if st.Let.Type != nil && st.Let.Type.Simple != nil {
+				switch *st.Let.Type.Simple {
+				case "int":
+					val = &IntLit{Value: 0}
+				case "bool":
+					val = &BoolLit{Value: false}
+				case "string":
+					val = &StringLit{Value: ""}
+				}
 			}
-			p.Stmts = append(p.Stmts, &LetStmt{Name: st.Let.Name, Value: e})
+			p.Stmts = append(p.Stmts, &LetStmt{Name: st.Let.Name, Value: val})
 		} else if st.Var != nil {
 			var val Expr
 			if st.Var.Value != nil {
@@ -435,6 +452,9 @@ func stmtNode(s Stmt) *ast.Node {
 }
 
 func exprNode(e Expr) *ast.Node {
+	if e == nil {
+		return &ast.Node{Kind: "null"}
+	}
 	switch ex := e.(type) {
 	case *CallExpr:
 		n := &ast.Node{Kind: "call", Value: ex.Func}
