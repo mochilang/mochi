@@ -71,6 +71,12 @@ func TestTranspilePrograms(t *testing.T) {
 		"for_list_collection",
 		"for_loop",
 		"while_loop",
+		"fun_call",
+		"fun_three_args",
+		"list_assign",
+		"map_assign",
+		"slice",
+		"string_prefix_slice",
 	}
 	root := repoRoot(t)
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "kt")

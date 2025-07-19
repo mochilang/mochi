@@ -1,4 +1,4 @@
-// Mochi 0.10.31 - generated 2025-07-19 08:00:02 UTC
+// Mochi 0.10.31 - generated 2025-07-19 13:22:08 UTC
 fun main() {
     val s = "mochi"
     println(s[1])

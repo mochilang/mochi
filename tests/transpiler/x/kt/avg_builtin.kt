@@ -1,4 +1,4 @@
-// Mochi 0.10.31 - generated 2025-07-19 07:58:45 UTC
+// Mochi 0.10.31 - generated 2025-07-19 13:21:19 UTC
 fun main() {
-    println(listOf(1, 2, 3).average())
+    println(mutableListOf(1, 2, 3).average())
 }
