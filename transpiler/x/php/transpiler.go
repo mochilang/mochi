@@ -2801,6 +2801,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			}
 			addGlobalFunc(name)
 		}
+		p.Stmts = append(p.Stmts, conv)
 	}
 	for _, st := range prog.Statements {
 		conv, err := convertStmt(st)
