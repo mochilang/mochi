@@ -81,9 +81,7 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
-	io.WriteString(w, "return")
 	if r.Value != nil {
-		io.WriteString(w, " ")
 		r.Value.emit(w)
 	}
 }
@@ -357,6 +355,17 @@ type NumberLit struct{ Value string }
 
 func (n *NumberLit) emit(w io.Writer) { io.WriteString(w, n.Value) }
 
+// BoolLit is a boolean literal.
+type BoolLit struct{ Value bool }
+
+func (b *BoolLit) emit(w io.Writer) {
+	if b.Value {
+		io.WriteString(w, "true")
+	} else {
+		io.WriteString(w, "false")
+	}
+}
+
 // ListLit is a list literal like [1,2,3].
 type ListLit struct{ Elems []Expr }
 
@@ -413,9 +422,36 @@ func (c *CastExpr) emit(w io.Writer) {
 func Emit(p *Program) []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
+	hasFunc := false
 	for _, st := range p.Stmts {
-		st.emit(&buf, 0)
-		buf.WriteString("\n")
+		if _, ok := st.(*FuncDecl); ok {
+			hasFunc = true
+			break
+		}
+	}
+	if hasFunc {
+		buf.WriteString("defmodule Main do\n")
+		var main []Stmt
+		for _, st := range p.Stmts {
+			if _, ok := st.(*FuncDecl); ok {
+				st.emit(&buf, 1)
+				buf.WriteString("\n")
+			} else {
+				main = append(main, st)
+			}
+		}
+		buf.WriteString("  def main() do\n")
+		for _, st := range main {
+			st.emit(&buf, 2)
+			buf.WriteString("\n")
+		}
+		buf.WriteString("  end\nend\n")
+		buf.WriteString("Main.main()\n")
+	} else {
+		for _, st := range p.Stmts {
+			st.emit(&buf, 0)
+			buf.WriteString("\n")
+		}
 	}
 	return buf.Bytes()
 }
@@ -917,6 +953,8 @@ func compileLiteral(l *parser.Literal) (Expr, error) {
 		return &NumberLit{Value: fmt.Sprintf("%d", *l.Int)}, nil
 	case l.Float != nil:
 		return &NumberLit{Value: fmt.Sprintf("%g", *l.Float)}, nil
+	case l.Bool != nil:
+		return &BoolLit{Value: bool(*l.Bool)}, nil
 	case l.Str != nil:
 		return &StringLit{Value: *l.Str}, nil
 	default:
@@ -1047,6 +1085,11 @@ func toNodeExpr(e Expr) *ast.Node {
 		return &ast.Node{Kind: "string", Value: ex.Value}
 	case *NumberLit:
 		return &ast.Node{Kind: "number", Value: ex.Value}
+	case *BoolLit:
+		if ex.Value {
+			return &ast.Node{Kind: "bool", Value: "true"}
+		}
+		return &ast.Node{Kind: "bool", Value: "false"}
 	case *ListLit:
 		n := &ast.Node{Kind: "list"}
 		for _, el := range ex.Elems {
