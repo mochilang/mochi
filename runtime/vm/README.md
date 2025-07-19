@@ -190,6 +190,13 @@ The C# backend now supports global variable declarations and proper scoping of
 variables within conditional and loop blocks. The first set of Rosetta
 programs compile and run successfully with no remaining `.error` files.
 
+### Scala compiler status
+
+The Scala backend can now compile simple list manipulations using `updated`
+for immutable lists. The first few tasks (`100-doors`, `100-doors-2`, and
+`100-doors-3`) compile and run successfully. Additional tasks still fail and
+produce `.error` files pending further feature support.
+
 ### Failing programs
 
  - bulls-and-cows

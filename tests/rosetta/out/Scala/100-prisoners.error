@@ -1,8 +1,41 @@
 scalac: exit status 1
-/tmp/100-prisoners.scala:35: error: '.' expected but '=' found.
-            val this = (drawers).apply(prev)
-                     ^
-/tmp/100-prisoners.scala:36: error: identifier expected but ';' found.
-            if (this == p) {
-^
-two errors found
+/tmp/100-prisoners.scala:11: error: type mismatch;
+ found   : Long
+ required: Int
+      arr = arr.updated(i, (arr).apply(j).asInstanceOf[Int])
+                                       ^
+/tmp/100-prisoners.scala:12: error: type mismatch;
+ found   : Long
+ required: Int
+      arr = arr.updated(j, tmp)
+                        ^
+/tmp/100-prisoners.scala:28: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Int]
+ required: List[Int]
+      drawers = shuffle(drawers)
+                        ^
+/tmp/100-prisoners.scala:40: error: method doTrials has return statement; needs result type
+              return
+              ^
+/tmp/100-prisoners.scala:55: error: type mismatch;
+ found   : Long
+ required: Int
+            while ((opened).apply(n).asInstanceOf[Boolean]) {
+                                  ^
+/tmp/100-prisoners.scala:58: error: type mismatch;
+ found   : Long
+ required: Int
+            opened = opened.updated(n, true)
+                                    ^
+/tmp/100-prisoners.scala:59: error: type mismatch;
+ found   : Long
+ required: Int
+            if ((drawers).apply(n).asInstanceOf[Int] == p) {
+                                ^
+/tmp/100-prisoners.scala:61: error: method doTrials has return statement; needs result type
+              return
+              ^
+/tmp/100-prisoners.scala:68: error: method doTrials has return statement; needs result type
+          return
+          ^
+9 errors found

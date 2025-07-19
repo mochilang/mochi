@@ -776,6 +776,7 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 	name := sanitizeVarName(s.Name)
 	if s.Type != nil {
 		ts := c.typeString(s.Type)
+		ts = c.mutableTypeString(s.Type)
 		c.writeln(fmt.Sprintf("var %s: %s = %s", name, ts, rhs))
 	} else {
 		c.writeln(fmt.Sprintf("var %s = %s", name, rhs))
@@ -1051,6 +1052,22 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 		return err
 	}
 	target := sanitizeVarName(s.Name)
+	if len(s.Index) == 1 && len(s.Field) == 0 {
+		if t, err := c.env.GetVar(s.Name); err == nil {
+			if _, ok := t.(types.ListType); ok {
+				idxExpr := "0"
+				if s.Index[0].Start != nil {
+					var err error
+					idxExpr, err = c.compileExpr(s.Index[0].Start)
+					if err != nil {
+						return err
+					}
+				}
+				c.writeln(fmt.Sprintf("%s = %s.updated(%s, %s)", target, target, idxExpr, expr))
+				return nil
+			}
+		}
+	}
 	// handle nested index assignment for immutable collections
 	if len(s.Index) == 2 && len(s.Field) == 0 {
 		idx0, err := c.compileExpr(s.Index[0].Start)
