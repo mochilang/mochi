@@ -98,7 +98,7 @@ func TestCSTranspiler_Golden(t *testing.T) {
 	for _, csPath := range files {
 		name := strings.TrimSuffix(filepath.Base(csPath), ".cs")
 		src := filepath.Join(root, "tests", "vm", "valid", name+".mochi")
-		wantPath := filepath.Join(root, "tests", "vm", "valid", name+".out")
+		wantPath := strings.TrimSuffix(csPath, ".cs") + ".output"
 
 		t.Run(name, func(t *testing.T) {
 			prog, err := parser.Parse(src)
@@ -115,7 +115,7 @@ func TestCSTranspiler_Golden(t *testing.T) {
 			}
 			code := transpiler.Emit(ast)
 			if err := os.WriteFile(csPath, code, 0644); err != nil {
-				t.Fatalf("write golden: %v", err)
+				t.Fatalf("write generated: %v", err)
 			}
 
 			dir := t.TempDir()
