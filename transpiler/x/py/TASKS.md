@@ -29,3 +29,7 @@
 ## Recent Enhancements (2025-07-19 17:19 +07)
 - Added dictionary literal support and mapping for builtins `count`, `sum` and `values`.
 - Enabled transpiler tests for `count_builtin`, `sum_builtin`, `values_builtin`, `str_builtin`, `string_in_operator`, `map_literal_dynamic`, `map_int_key` and `map_index`.
+
+## Recent Enhancements (2025-07-19 17:45 +07)
+- Added support for assigning to list and map indices.
+- Enabled transpiler tests for `len_map`, `list_assign`, `list_nested_assign` and `map_assign`.

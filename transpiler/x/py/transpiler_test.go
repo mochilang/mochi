@@ -211,3 +211,19 @@ func TestTranspile_MapIntKey(t *testing.T) {
 func TestTranspile_MapIndex(t *testing.T) {
 	runCase(t, "map_index")
 }
+
+func TestTranspile_LenMap(t *testing.T) {
+	runCase(t, "len_map")
+}
+
+func TestTranspile_ListAssign(t *testing.T) {
+	runCase(t, "list_assign")
+}
+
+func TestTranspile_ListNestedAssign(t *testing.T) {
+	runCase(t, "list_nested_assign")
+}
+
+func TestTranspile_MapAssign(t *testing.T) {
+	runCase(t, "map_assign")
+}

@@ -48,6 +48,15 @@ type AssignStmt struct {
 
 func (*AssignStmt) isStmt() {}
 
+// ExprAssignStmt represents assignments to complex expressions like
+// list or map indices and object fields.
+type ExprAssignStmt struct {
+	Target Expr
+	Expr   Expr
+}
+
+func (*ExprAssignStmt) isStmt() {}
+
 type ReturnStmt struct {
 	Expr Expr
 }
@@ -345,6 +354,21 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 		}
 		_, err := io.WriteString(w, "\n")
 		return err
+	case *ExprAssignStmt:
+		if _, err := io.WriteString(w, indent); err != nil {
+			return err
+		}
+		if err := emitExpr(w, st.Target); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, " = "); err != nil {
+			return err
+		}
+		if err := emitExpr(w, st.Expr); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, "\n")
+		return err
 	case *LetStmt:
 		if _, err := io.WriteString(w, indent+st.Name+" = "); err != nil {
 			return err
@@ -449,6 +473,19 @@ func Emit(w io.Writer, p *Program) error {
 			if _, err := io.WriteString(w, "\n"); err != nil {
 				return err
 			}
+		case *ExprAssignStmt:
+			if err := emitExpr(w, st.Target); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, " = "); err != nil {
+				return err
+			}
+			if err := emitExpr(w, st.Expr); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, "\n"); err != nil {
+				return err
+			}
 		case *ReturnStmt:
 			if _, err := io.WriteString(w, "return"); err != nil {
 				return err
@@ -519,8 +556,15 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			if err != nil {
 				return nil, err
 			}
-			// TODO: ignore index and field for now
-			p.Stmts = append(p.Stmts, &AssignStmt{Name: st.Assign.Name, Expr: e})
+			if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
+				p.Stmts = append(p.Stmts, &AssignStmt{Name: st.Assign.Name, Expr: e})
+			} else {
+				tgt, err := convertAssignTarget(st.Assign.Name, st.Assign.Index, st.Assign.Field)
+				if err != nil {
+					return nil, err
+				}
+				p.Stmts = append(p.Stmts, &ExprAssignStmt{Target: tgt, Expr: e})
+			}
 		case st.Return != nil:
 			var e Expr
 			if st.Return.Value != nil {
@@ -576,7 +620,15 @@ func convertStmts(list []*parser.Statement) ([]Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			out = append(out, &AssignStmt{Name: s.Assign.Name, Expr: e})
+			if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
+				out = append(out, &AssignStmt{Name: s.Assign.Name, Expr: e})
+			} else {
+				tgt, err := convertAssignTarget(s.Assign.Name, s.Assign.Index, s.Assign.Field)
+				if err != nil {
+					return nil, err
+				}
+				out = append(out, &ExprAssignStmt{Target: tgt, Expr: e})
+			}
 		case s.Return != nil:
 			var e Expr
 			if s.Return.Value != nil {
@@ -856,6 +908,23 @@ func convertIfExpr(ie *parser.IfExpr) (Expr, error) {
 	return &CondExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
 }
 
+// convertAssignTarget builds an expression for assignment targets with index
+// or field selectors.
+func convertAssignTarget(name string, idx []*parser.IndexOp, fields []*parser.FieldOp) (Expr, error) {
+	var target Expr = &Name{Name: name}
+	for _, op := range idx {
+		i, err := convertExpr(op.Start)
+		if err != nil {
+			return nil, err
+		}
+		target = &IndexExpr{Target: target, Index: i}
+	}
+	for _, f := range fields {
+		target = &FieldExpr{Target: target, Name: f.Name}
+	}
+	return target, nil
+}
+
 // --- AST printing helpers ---
 
 // toNode converts the Python AST into a generic ast.Node tree.
@@ -877,6 +946,8 @@ func stmtNode(s Stmt) *ast.Node {
 		return &ast.Node{Kind: "var", Value: st.Name, Children: []*ast.Node{exprNode(st.Expr)}}
 	case *AssignStmt:
 		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{exprNode(st.Expr)}}
+	case *ExprAssignStmt:
+		return &ast.Node{Kind: "assign_expr", Children: []*ast.Node{exprNode(st.Target), exprNode(st.Expr)}}
 	case *ReturnStmt:
 		child := &ast.Node{Kind: "return"}
 		if st.Expr != nil {
