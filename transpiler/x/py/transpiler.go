@@ -1011,6 +1011,13 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				p.Stmts = append(p.Stmts, &IndexAssignStmt{Target: target, Index: idx, Value: val})
 			} else if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
 				p.Stmts = append(p.Stmts, &AssignStmt{Name: st.Assign.Name, Expr: val})
+			} else if len(st.Assign.Index) == 0 && len(st.Assign.Field) > 0 {
+				target := Expr(&Name{Name: st.Assign.Name})
+				for i := 0; i < len(st.Assign.Field)-1; i++ {
+					target = &FieldExpr{Target: target, Name: st.Assign.Field[i].Name, MapIndex: true}
+				}
+				idx := &StringLit{Value: st.Assign.Field[len(st.Assign.Field)-1].Name}
+				p.Stmts = append(p.Stmts, &IndexAssignStmt{Target: target, Index: idx, Value: val})
 			} else {
 				return nil, fmt.Errorf("unsupported assignment")
 			}
@@ -1167,6 +1174,13 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 				out = append(out, &IndexAssignStmt{Target: target, Index: idx, Value: val})
 			} else if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
 				out = append(out, &AssignStmt{Name: s.Assign.Name, Expr: val})
+			} else if len(s.Assign.Index) == 0 && len(s.Assign.Field) > 0 {
+				target := Expr(&Name{Name: s.Assign.Name})
+				for i := 0; i < len(s.Assign.Field)-1; i++ {
+					target = &FieldExpr{Target: target, Name: s.Assign.Field[i].Name, MapIndex: true}
+				}
+				idx := &StringLit{Value: s.Assign.Field[len(s.Assign.Field)-1].Name}
+				out = append(out, &IndexAssignStmt{Target: target, Index: idx, Value: val})
 			} else {
 				return nil, fmt.Errorf("unsupported assignment")
 			}
@@ -1481,6 +1495,18 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			keys = append(keys, ke)
+			values = append(values, ve)
+		}
+		return &DictLit{Keys: keys, Values: values}, nil
+	case p.Struct != nil:
+		var keys []Expr
+		var values []Expr
+		for _, f := range p.Struct.Fields {
+			ve, err := convertExpr(f.Value)
+			if err != nil {
+				return nil, err
+			}
+			keys = append(keys, &StringLit{Value: f.Name})
 			values = append(values, ve)
 		}
 		return &DictLit{Keys: keys, Values: values}, nil
