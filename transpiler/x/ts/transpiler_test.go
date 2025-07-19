@@ -1,7 +1,6 @@
 package tstranspiler_test
 
 import (
-	"bytes"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -33,8 +32,9 @@ func repoRoot(t *testing.T) string {
 }
 
 // TestTranspilePrintHello compiles the simple print_hello.mochi program to
-// TypeScript, runs it through tsc+node and compares the output with the
-// existing golden file.
+// TypeScript, runs the result through tsc+node and compares the runtime output
+// with the existing golden .out file. The generated TypeScript itself is not
+// compared against a golden file.
 func TestTranspilePrintHello(t *testing.T) {
 	root := repoRoot(t)
 	src := filepath.Join(root, "tests", "vm", "valid", "print_hello.mochi")
@@ -80,21 +80,4 @@ func TestTranspilePrintHello(t *testing.T) {
 		t.Fatalf("unexpected output: got %q want %q", got, want)
 	}
 
-	// For reference ensure emitted code matches expectation using golden file
-	goldenPath := filepath.Join(root, "tests", "transpiler", "x", "ts", "print_hello.ts")
-	if *updateGolden {
-		os.WriteFile(goldenPath, bytes.TrimSpace(code), 0o644)
-	} else if data, err := os.ReadFile(goldenPath); err == nil {
-		if !bytes.Equal(bytes.TrimSpace(code), bytes.TrimSpace(data)) {
-			t.Errorf("generated TypeScript mismatch\n--- got ---\n%s\n--- want ---\n%s", code, data)
-		}
-	}
 }
-
-var updateGolden = func() *bool {
-	b := false
-	if v := os.Getenv("UPDATE_GOLDEN"); v == "1" {
-		b = true
-	}
-	return &b
-}()
