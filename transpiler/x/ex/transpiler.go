@@ -159,6 +159,7 @@ type BinaryExpr struct {
 	Left  Expr
 	Op    string
 	Right Expr
+	MapIn bool
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
@@ -193,6 +194,14 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		b.Left.emit(w)
 		io.WriteString(w, " <> ")
 		b.Right.emit(w)
+		io.WriteString(w, ")")
+		return
+	}
+	if b.Op == "in" && b.MapIn {
+		io.WriteString(w, "Map.has_key?(")
+		b.Right.emit(w)
+		io.WriteString(w, ", ")
+		b.Left.emit(w)
 		io.WriteString(w, ")")
 		return
 	}
@@ -283,6 +292,27 @@ func (l *ListLit) emit(w io.Writer) {
 		e.emit(w)
 	}
 	io.WriteString(w, "]")
+}
+
+// MapLit represents a map literal like %{key => value}.
+type MapLit struct{ Items []MapItem }
+
+type MapItem struct {
+	Key   Expr
+	Value Expr
+}
+
+func (m *MapLit) emit(w io.Writer) {
+	io.WriteString(w, "%{")
+	for i, it := range m.Items {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		it.Key.emit(w)
+		io.WriteString(w, " => ")
+		it.Value.emit(w)
+	}
+	io.WriteString(w, "}")
 }
 
 // CastExpr represents a simple cast like expr as int.
@@ -482,6 +512,11 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 		}
 	}
 	src := start
+	if fs.RangeEnd == nil {
+		if _, ok := types.TypeOfExprBasic(fs.Source, env).(types.MapType); ok {
+			src = &CallExpr{Func: "Map.keys", Args: []Expr{start}}
+		}
+	}
 	if end != nil {
 		src = nil
 	}
@@ -568,7 +603,13 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 	for _, level := range levels {
 		for i := 0; i < len(ops); {
 			if contains(level, ops[i].Op) {
-				operands[i] = &BinaryExpr{Left: operands[i], Op: ops[i].Op, Right: operands[i+1]}
+				bin := &BinaryExpr{Left: operands[i], Op: ops[i].Op, Right: operands[i+1]}
+				if ops[i].Op == "in" {
+					if _, ok := types.TypeOfPostfix(ops[i].Right, env).(types.MapType); ok {
+						bin.MapIn = true
+					}
+				}
+				operands[i] = bin
 				operands = append(operands[:i+1], operands[i+2:]...)
 				ops = append(ops[:i], ops[i+1:]...)
 			} else {
@@ -717,6 +758,20 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			elems[i] = ex
 		}
 		return &ListLit{Elems: elems}, nil
+	case p.Map != nil:
+		items := make([]MapItem, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			k, err := compileExpr(it.Key, env)
+			if err != nil {
+				return nil, err
+			}
+			v, err := compileExpr(it.Value, env)
+			if err != nil {
+				return nil, err
+			}
+			items[i] = MapItem{Key: k, Value: v}
+		}
+		return &MapLit{Items: items}, nil
 	case p.If != nil:
 		return compileIfExpr(p.If, env)
 	case p.Group != nil:
@@ -850,6 +905,15 @@ func toNodeExpr(e Expr) *ast.Node {
 		n := &ast.Node{Kind: "list"}
 		for _, el := range ex.Elems {
 			n.Children = append(n.Children, toNodeExpr(el))
+		}
+		return n
+	case *MapLit:
+		n := &ast.Node{Kind: "map"}
+		for _, it := range ex.Items {
+			item := &ast.Node{Kind: "item"}
+			item.Children = append(item.Children, toNodeExpr(it.Key))
+			item.Children = append(item.Children, toNodeExpr(it.Value))
+			n.Children = append(n.Children, item)
 		}
 		return n
 	case *BinaryExpr:

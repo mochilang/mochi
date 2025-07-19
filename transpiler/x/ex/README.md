@@ -2,7 +2,7 @@
 
 This directory contains a minimal transpiler that converts a very small subset of Mochi into Elixir source code. The generated files live in `tests/transpiler/x/ex`.
 
-Currently 32 of 100 programs transpile and run.
+Currently 39 of 100 programs transpile and run.
 
 The table below tracks which programs from `tests/vm/valid` successfully transpile and run. Checked items have generated `.exs` code and matching `.out` files in `tests/transpiler/x/ex`.
 - [x] append_builtin.mochi
@@ -23,7 +23,7 @@ The table below tracks which programs from `tests/vm/valid` successfully transpi
 - [ ] exists_builtin.mochi
 - [x] for_list_collection.mochi
 - [x] for_loop.mochi
-- [ ] for_map_collection.mochi
+- [x] for_map_collection.mochi
 - [ ] fun_call.mochi
 - [ ] fun_expr_in_let.mochi
 - [ ] fun_three_args.mochi
@@ -48,7 +48,7 @@ The table below tracks which programs from `tests/vm/valid` successfully transpi
 - [ ] left_join.mochi
 - [ ] left_join_multi.mochi
 - [x] len_builtin.mochi
-- [ ] len_map.mochi
+- [x] len_map.mochi
 - [x] len_string.mochi
 - [x] let_and_print.mochi
 - [ ] list_assign.mochi
@@ -56,12 +56,12 @@ The table below tracks which programs from `tests/vm/valid` successfully transpi
 - [ ] list_nested_assign.mochi
 - [ ] list_set_ops.mochi
 - [ ] load_yaml.mochi
-- [ ] map_assign.mochi
-- [ ] map_in_operator.mochi
-- [ ] map_index.mochi
-- [ ] map_int_key.mochi
+- [x] map_assign.mochi
+- [x] map_in_operator.mochi
+- [x] map_index.mochi
+- [x] map_int_key.mochi
 - [ ] map_literal_dynamic.mochi
-- [ ] map_membership.mochi
+- [x] map_membership.mochi
 - [ ] map_nested_assign.mochi
 - [ ] match_expr.mochi
 - [ ] match_full.mochi
