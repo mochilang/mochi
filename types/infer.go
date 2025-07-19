@@ -470,7 +470,7 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 			}
 			return ListType{Elem: AnyType{}}
 		case "now":
-			return Int64Type{}
+			return IntType{}
 		case "to_json":
 			return StringType{}
 		default:
