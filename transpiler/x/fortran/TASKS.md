@@ -1,3 +1,6 @@
+## Progress (2025-07-19 19:55 +07)
+- fortran transpiler: add if-expression support
+
 ## Progress (2025-07-19 18:16 +07)
 - fortran transpiler: support boolean printing
 

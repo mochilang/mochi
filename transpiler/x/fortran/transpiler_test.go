@@ -202,6 +202,8 @@ func TestTranspilerGolden(t *testing.T) {
 		filepath.Join(srcDir, "binary_precedence.mochi"),
 		filepath.Join(srcDir, "let_and_print.mochi"),
 		filepath.Join(srcDir, "if_else.mochi"),
+		filepath.Join(srcDir, "if_then_else.mochi"),
+		filepath.Join(srcDir, "if_then_else_nested.mochi"),
 		filepath.Join(srcDir, "while_loop.mochi"),
 	}
 	for _, src := range files {
