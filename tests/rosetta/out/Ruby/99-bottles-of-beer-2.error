@@ -1,8 +1,0 @@
-run: exit status 1
-/tmp/99-bottles-of-beer-2.rb:4:in `_indexString': undefined method `chars' for ["ones", "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]:Array (NoMethodError)
-
-  chars = s.chars
-           ^^^^^^
-	from /tmp/99-bottles-of-beer-2.rb:67:in `numberName'
-	from /tmp/99-bottles-of-beer-2.rb:129:in `main'
-	from /tmp/99-bottles-of-beer-2.rb:137:in `<main>'
