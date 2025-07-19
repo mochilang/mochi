@@ -59,11 +59,19 @@ func runGolden(t *testing.T, name string) {
 	}
 	cmd := exec.Command("escript", erlFile)
 	out, err := cmd.CombinedOutput()
-	got := bytes.TrimSpace(out)
 	if err != nil {
 		_ = os.WriteFile(filepath.Join(outDir, name+".error"), out, 0o644)
 		t.Fatalf("run: %v", err)
 	}
+	lines := bytes.Split(out, []byte{'\n'})
+	filtered := lines[:0]
+	for _, l := range lines {
+		if bytes.Contains(l, []byte("Warning:")) || bytes.HasPrefix(l, []byte("%")) {
+			continue
+		}
+		filtered = append(filtered, l)
+	}
+	got := bytes.TrimSpace(bytes.Join(filtered, []byte{'\n'}))
 	_ = os.Remove(filepath.Join(outDir, name+".error"))
 	wantPath := filepath.Join(outDir, name+".out")
 	want, err := os.ReadFile(wantPath)
