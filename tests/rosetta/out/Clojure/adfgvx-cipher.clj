@@ -239,7 +239,7 @@
 (loop []
 (when (< orderKey_i (count key))
 (let [r (try
-(def orderKey_pairs (conj orderKey_pairs [(subs key orderKey_i (+ orderKey_i 1)) orderKey_i])) ;; list of any
+(def orderKey_pairs (conj orderKey_pairs [(subs key orderKey_i (+ orderKey_i 1)) orderKey_i])) ;; list of list of any
 (def orderKey_i (+ orderKey_i 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
@@ -265,10 +265,10 @@
 (loop []
 (when (< orderKey_j (- orderKey_n 1))
 (let [r (try
-(when (> (get (_indexList orderKey_pairs orderKey_j) 0) (get (_indexList orderKey_pairs (+ orderKey_j 1)) 0))
-(def orderKey_tmp (_indexList orderKey_pairs orderKey_j)) ;; any
-(def orderKey_pairs (assoc orderKey_pairs orderKey_j (_indexList orderKey_pairs (+ orderKey_j 1)))) ;; any
-(def orderKey_pairs (assoc orderKey_pairs (+ orderKey_j 1) orderKey_tmp)) ;; any
+(when (> (_indexList (_indexList orderKey_pairs orderKey_j) 0) (_indexList (_indexList orderKey_pairs (+ orderKey_j 1)) 0))
+(def orderKey_tmp (_indexList orderKey_pairs orderKey_j)) ;; list of any
+(def orderKey_pairs (assoc orderKey_pairs orderKey_j (_indexList orderKey_pairs (+ orderKey_j 1)))) ;; list of any
+(def orderKey_pairs (assoc orderKey_pairs (+ orderKey_j 1) orderKey_tmp)) ;; list of any
 )
 (def orderKey_j (+ orderKey_j 1)) ;; int
 :next
@@ -307,7 +307,7 @@
 (loop []
 (when (< orderKey_i orderKey_n)
 (let [r (try
-(def orderKey_res (conj orderKey_res (int (get (_indexList orderKey_pairs orderKey_i) 1)))) ;; list of any
+(def orderKey_res (conj orderKey_res (int (_indexList (_indexList orderKey_pairs orderKey_i) 1)))) ;; list of int
 (def orderKey_i (+ orderKey_i 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e

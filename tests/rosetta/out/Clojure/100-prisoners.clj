@@ -23,16 +23,16 @@
 ;; Function shuffle takes [xs: list of int] and returns list of int
 (defn shuffle [xs]
   (try
-    (def arr xs) ;; list of int
-    (def i 99) ;; int
+    (def shuffle_arr xs) ;; list of int
+    (def shuffle_i 99) ;; int
     (loop []
-      (when (> i 0)
+      (when (> shuffle_i 0)
         (let [r (try
-          (def j (mod (System/nanoTime) (+ i 1))) ;; int
-          (def tmp (_indexList arr i)) ;; int
-          (def arr (assoc arr i (_indexList arr j))) ;; int
-          (def arr (assoc arr j tmp)) ;; int
-          (def i (- i 1)) ;; int
+          (def shuffle_j (mod (System/nanoTime) (+ shuffle_i 1))) ;; int
+          (def shuffle_tmp (_indexList shuffle_arr shuffle_i)) ;; int
+          (def shuffle_arr (assoc shuffle_arr shuffle_i (_indexList shuffle_arr shuffle_j))) ;; int
+          (def shuffle_arr (assoc shuffle_arr shuffle_j shuffle_tmp)) ;; int
+          (def shuffle_i (- shuffle_i 1)) ;; int
           :next
         (catch clojure.lang.ExceptionInfo e
           (cond
@@ -48,7 +48,7 @@
     )
   )
 )
-(throw (ex-info "return" {:value arr}))
+(throw (ex-info "return" {:value shuffle_arr}))
 (catch clojure.lang.ExceptionInfo e
 (if (= (.getMessage e) "return")
   (:value (ex-data e))
@@ -59,18 +59,18 @@
 ;; Function doTrials takes [trials: int, np: int, strategy: string] and returns any
 (defn doTrials [trials np strategy]
 (try
-(def pardoned 0) ;; int
-(def t 0) ;; int
+(def doTrials_pardoned 0) ;; int
+(def doTrials_t 0) ;; int
 (loop []
-  (when (< t trials)
+  (when (< doTrials_t trials)
     (let [r (try
-      (def drawers []) ;; list of int
-      (def i 0) ;; int
+      (def doTrials_drawers []) ;; list of int
+      (def doTrials_i 0) ;; int
       (loop []
-        (when (< i 100)
+        (when (< doTrials_i 100)
           (let [r (try
-            (def drawers (conj drawers i)) ;; list of int
-            (def i (+ i 1)) ;; int
+            (def doTrials_drawers (conj doTrials_drawers doTrials_i)) ;; list of int
+            (def doTrials_i (+ doTrials_i 1)) ;; int
             :next
           (catch clojure.lang.ExceptionInfo e
             (cond
@@ -86,27 +86,27 @@
       )
     )
   )
-  (def drawers (shuffle drawers)) ;; list of int
-  (def p 0) ;; int
-  (def success true) ;; bool
+  (def doTrials_drawers (shuffle doTrials_drawers)) ;; list of int
+  (def doTrials_p 0) ;; int
+  (def doTrials_success true) ;; bool
   (loop []
-    (when (< p np)
+    (when (< doTrials_p np)
       (let [r (try
-        (def found false) ;; bool
+        (def doTrials_found false) ;; bool
         (if (= strategy "optimal")
           (do
-            (def prev p) ;; int
-            (def d 0) ;; int
+            (def doTrials_prev doTrials_p) ;; int
+            (def doTrials_d 0) ;; int
             (loop []
-              (when (< d 50)
+              (when (< doTrials_d 50)
                 (let [r (try
-                  (def this (_indexList drawers prev)) ;; int
-                  (when (= this p)
-                    (def found true) ;; bool
+                  (def doTrials_this (_indexList doTrials_drawers doTrials_prev)) ;; int
+                  (when (= doTrials_this doTrials_p)
+                    (def doTrials_found true) ;; bool
                     (throw (ex-info "break" {}))
                   )
-                  (def prev this) ;; int
-                  (def d (+ d 1)) ;; int
+                  (def doTrials_prev doTrials_this) ;; int
+                  (def doTrials_d (+ doTrials_d 1)) ;; int
                   :next
                 (catch clojure.lang.ExceptionInfo e
                   (cond
@@ -125,13 +125,13 @@
       )
 
     (do
-      (def opened []) ;; list of bool
-      (def k 0) ;; int
+      (def doTrials_opened []) ;; list of bool
+      (def doTrials_k 0) ;; int
       (loop []
-        (when (< k 100)
+        (when (< doTrials_k 100)
           (let [r (try
-            (def opened (conj opened false)) ;; list of bool
-            (def k (+ k 1)) ;; int
+            (def doTrials_opened (conj doTrials_opened false)) ;; list of bool
+            (def doTrials_k (+ doTrials_k 1)) ;; int
             :next
           (catch clojure.lang.ExceptionInfo e
             (cond
@@ -147,15 +147,15 @@
       )
     )
   )
-  (def d 0) ;; int
+  (def doTrials_d 0) ;; int
   (loop []
-    (when (< d 50)
+    (when (< doTrials_d 50)
       (let [r (try
-        (def n (mod (System/nanoTime) 100)) ;; int
+        (def doTrials_n (mod (System/nanoTime) 100)) ;; int
         (loop []
-          (when (_indexList opened n)
+          (when (_indexList doTrials_opened doTrials_n)
             (let [r (try
-              (def n (mod (System/nanoTime) 100)) ;; int
+              (def doTrials_n (mod (System/nanoTime) 100)) ;; int
               :next
             (catch clojure.lang.ExceptionInfo e
               (cond
@@ -171,12 +171,12 @@
         )
       )
     )
-    (def opened (assoc opened n true)) ;; bool
-    (when (= (_indexList drawers n) p)
-      (def found true) ;; bool
+    (def doTrials_opened (assoc doTrials_opened doTrials_n true)) ;; bool
+    (when (= (_indexList doTrials_drawers doTrials_n) doTrials_p)
+      (def doTrials_found true) ;; bool
       (throw (ex-info "break" {}))
     )
-    (def d (+ d 1)) ;; int
+    (def doTrials_d (+ doTrials_d 1)) ;; int
     :next
   (catch clojure.lang.ExceptionInfo e
     (cond
@@ -194,11 +194,11 @@
 )
 )
 )
-(when (not found)
-(def success false) ;; bool
+(when (not doTrials_found)
+(def doTrials_success false) ;; bool
 (throw (ex-info "break" {}))
 )
-(def p (+ p 1)) ;; int
+(def doTrials_p (+ doTrials_p 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -214,10 +214,10 @@
 )
 )
 )
-(when success
-(def pardoned (+ pardoned 1)) ;; int
+(when doTrials_success
+(def doTrials_pardoned (+ doTrials_pardoned 1)) ;; int
 )
-(def t (+ t 1)) ;; int
+(def doTrials_t (+ doTrials_t 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -233,8 +233,8 @@
 )
 )
 )
-(def rf (* (/ (double pardoned) (double trials)) 100.0)) ;; float
-(_print (str (str (str (str (str (str "  strategy = " strategy) "  pardoned = ") (str pardoned)) " relative frequency = ") (str rf)) "%"))
+(def doTrials_rf (* (/ (double doTrials_pardoned) (double trials)) 100.0)) ;; float
+(_print (str (str (str (str (str (str "  strategy = " strategy) "  pardoned = ") (str doTrials_pardoned)) " relative frequency = ") (str doTrials_rf)) "%"))
 (catch clojure.lang.ExceptionInfo e
 (if (= (.getMessage e) "return")
 (:value (ex-data e))
@@ -245,17 +245,17 @@
 ;; Function main returns any
 (defn main []
 (try
-(def trials 1000) ;; int
+(def main_trials 1000) ;; int
 (loop [_tmp0 (seq [10 100])]
 (when _tmp0
-(let [np (clojure.core/first _tmp0)]
+(let [main_np (clojure.core/first _tmp0)]
 (let [r (try
-(_print (str (str (str (str "Results from " (str trials)) " trials with ") (str np)) " prisoners:\n"))
+(_print (str (str (str (str "Results from " (str main_trials)) " trials with ") (str main_np)) " prisoners:\n"))
 (loop [_tmp1 (seq ["random" "optimal"])]
 (when _tmp1
-(let [strat (clojure.core/first _tmp1)]
+(let [main_strat (clojure.core/first _tmp1)]
 (let [r (try
-(doTrials trials np strat)
+(doTrials main_trials main_np main_strat)
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond

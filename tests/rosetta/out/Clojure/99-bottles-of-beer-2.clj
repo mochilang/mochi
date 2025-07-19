@@ -23,26 +23,26 @@
 ;; Function fields takes [s: string] and returns list of string
 (defn fields [s]
   (try
-    (def words []) ;; list of string
-    (def cur "") ;; string
-    (def i 0) ;; int
+    (def fields_words []) ;; list of string
+    (def fields_cur "") ;; string
+    (def fields_i 0) ;; int
     (loop []
-      (when (< i (count s))
+      (when (< fields_i (count s))
         (let [r (try
-          (def ch (.substring s i (+ i 1))) ;; string
-          (if (or (or (= ch " ") (= ch "\n")) (= ch "\t"))
+          (def fields_ch (.substring s fields_i (+ fields_i 1))) ;; string
+          (if (or (or (= fields_ch " ") (= fields_ch "\n")) (= fields_ch "\t"))
             (do
-              (when (> (count cur) 0)
-                (def words (conj words cur)) ;; list of string
-                (def cur "") ;; string
+              (when (> (count fields_cur) 0)
+                (def fields_words (conj fields_words fields_cur)) ;; list of string
+                (def fields_cur "") ;; string
               )
             )
 
           (do
-            (def cur (str cur ch)) ;; string
+            (def fields_cur (str fields_cur fields_ch)) ;; string
           )
           )
-          (def i (+ i 1)) ;; int
+          (def fields_i (+ fields_i 1)) ;; int
           :next
         (catch clojure.lang.ExceptionInfo e
           (cond
@@ -58,10 +58,10 @@
     )
   )
 )
-(when (> (count cur) 0)
-  (def words (conj words cur)) ;; list of string
+(when (> (count fields_cur) 0)
+  (def fields_words (conj fields_words fields_cur)) ;; list of string
 )
-(throw (ex-info "return" {:value words}))
+(throw (ex-info "return" {:value fields_words}))
 (catch clojure.lang.ExceptionInfo e
 (if (= (.getMessage e) "return")
   (:value (ex-data e))
@@ -72,16 +72,16 @@
 ;; Function join takes [xs: list of string, sep: string] and returns string
 (defn join [xs sep]
 (try
-(def res "") ;; string
-(def i 0) ;; int
+(def join_res "") ;; string
+(def join_i 0) ;; int
 (loop []
-  (when (< i (count xs))
+  (when (< join_i (count xs))
     (let [r (try
-      (when (> i 0)
-        (def res (str res sep)) ;; string
+      (when (> join_i 0)
+        (def join_res (str join_res sep)) ;; string
       )
-      (def res (str res (_indexList xs i))) ;; string
-      (def i (+ i 1)) ;; int
+      (def join_res (str join_res (_indexList xs join_i))) ;; string
+      (def join_i (+ join_i 1)) ;; int
       :next
     (catch clojure.lang.ExceptionInfo e
       (cond
@@ -97,7 +97,7 @@
 )
 )
 )
-(throw (ex-info "return" {:value res}))
+(throw (ex-info "return" {:value join_res}))
 (catch clojure.lang.ExceptionInfo e
 (if (= (.getMessage e) "return")
 (:value (ex-data e))
@@ -108,21 +108,21 @@
 ;; Function numberName takes [n: int] and returns string
 (defn numberName [n]
 (try
-(def small ["no" "one" "two" "three" "four" "five" "six" "seven" "eight" "nine" "ten" "eleven" "twelve" "thirteen" "fourteen" "fifteen" "sixteen" "seventeen" "eighteen" "nineteen"]) ;; list of string
-(def tens ["ones" "ten" "twenty" "thirty" "forty" "fifty" "sixty" "seventy" "eighty" "ninety"]) ;; list of string
+(def numberName_small ["no" "one" "two" "three" "four" "five" "six" "seven" "eight" "nine" "ten" "eleven" "twelve" "thirteen" "fourteen" "fifteen" "sixteen" "seventeen" "eighteen" "nineteen"]) ;; list of string
+(def numberName_tens ["ones" "ten" "twenty" "thirty" "forty" "fifty" "sixty" "seventy" "eighty" "ninety"]) ;; list of string
 (when (< n 0)
 (throw (ex-info "return" {:value ""}))
 )
 (when (< n 20)
-(throw (ex-info "return" {:value (_indexList small n)}))
+(throw (ex-info "return" {:value (_indexList numberName_small n)}))
 )
 (when (< n 100)
-(def t (_indexList tens (int (quot n 10)))) ;; string
-(def s (mod n 10)) ;; int
-(when (> s 0)
-(def t (str (str t " ") (_indexList small s))) ;; string
+(def numberName_t (_indexList numberName_tens (int (quot n 10)))) ;; string
+(def numberName_s (mod n 10)) ;; int
+(when (> numberName_s 0)
+(def numberName_t (str (str numberName_t " ") (_indexList numberName_small numberName_s))) ;; string
 )
-(throw (ex-info "return" {:value t}))
+(throw (ex-info "return" {:value numberName_t}))
 )
 (throw (ex-info "return" {:value ""}))
 (catch clojure.lang.ExceptionInfo e
@@ -138,11 +138,11 @@
 (when (= n 1)
 (throw (ex-info "return" {:value s}))
 )
-(def w (fields s)) ;; list of string
-(when (> (count w) 0)
-(def w (assoc w 0 (str (_indexList w 0) "s"))) ;; string
+(def pluralizeFirst_w (fields s)) ;; list of string
+(when (> (count pluralizeFirst_w) 0)
+(def pluralizeFirst_w (assoc pluralizeFirst_w 0 (str (_indexList pluralizeFirst_w 0) "s"))) ;; string
 )
-(throw (ex-info "return" {:value (join w " ")}))
+(throw (ex-info "return" {:value (join pluralizeFirst_w " ")}))
 (catch clojure.lang.ExceptionInfo e
 (if (= (.getMessage e) "return")
 (:value (ex-data e))
@@ -153,8 +153,8 @@
 ;; Function randInt takes [seed: int, n: int] and returns int
 (defn randInt [seed n]
 (try
-(def next (mod (+ (* seed 1664525) 1013904223) 2147483647)) ;; int
-(throw (ex-info "return" {:value (mod next n)}))
+(def randInt_next (mod (+ (* seed 1664525) 1013904223) 2147483647)) ;; int
+(throw (ex-info "return" {:value (mod randInt_next n)}))
 (catch clojure.lang.ExceptionInfo e
 (if (= (.getMessage e) "return")
 (:value (ex-data e))
@@ -168,13 +168,13 @@
 (when (<= (count p) 2)
 (throw (ex-info "return" {:value p}))
 )
-(def a []) ;; list of string
-(def i 1) ;; int
+(def slur_a []) ;; list of string
+(def slur_i 1) ;; int
 (loop []
-(when (< i (- (count p) 1))
+(when (< slur_i (- (count p) 1))
 (let [r (try
-  (def a (conj a (.substring p i (+ i 1)))) ;; list of string
-  (def i (+ i 1)) ;; int
+  (def slur_a (conj slur_a (.substring p slur_i (+ slur_i 1)))) ;; list of string
+  (def slur_i (+ slur_i 1)) ;; int
   :next
 (catch clojure.lang.ExceptionInfo e
   (cond
@@ -190,19 +190,19 @@
 )
 )
 )
-(def idx (- (count a) 1)) ;; int
-(def seed d) ;; int
+(def slur_idx (- (count slur_a) 1)) ;; int
+(def slur_seed d) ;; int
 (loop []
-(when (>= idx 1)
+(when (>= slur_idx 1)
 (let [r (try
-(def seed (mod (+ (* seed 1664525) 1013904223) 2147483647)) ;; int
-(when (>= (mod seed 100) d)
-(def j (mod seed (+ idx 1))) ;; int
-(def tmp (_indexList a idx)) ;; string
-(def a (assoc a idx (_indexList a j))) ;; string
-(def a (assoc a j tmp)) ;; string
+(def slur_seed (mod (+ (* slur_seed 1664525) 1013904223) 2147483647)) ;; int
+(when (>= (mod slur_seed 100) d)
+(def slur_j (mod slur_seed (+ slur_idx 1))) ;; int
+(def slur_tmp (_indexList slur_a slur_idx)) ;; string
+(def slur_a (assoc slur_a slur_idx (_indexList slur_a slur_j))) ;; string
+(def slur_a (assoc slur_a slur_j slur_tmp)) ;; string
 )
-(def idx (- idx 1)) ;; int
+(def slur_idx (- slur_idx 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -218,13 +218,13 @@
 )
 )
 )
-(def s (.substring p 0 1)) ;; string
-(def k 0) ;; int
+(def slur_s (.substring p 0 1)) ;; string
+(def slur_k 0) ;; int
 (loop []
-(when (< k (count a))
+(when (< slur_k (count slur_a))
 (let [r (try
-(def s (str s (_indexList a k))) ;; string
-(def k (+ k 1)) ;; int
+(def slur_s (str slur_s (_indexList slur_a slur_k))) ;; string
+(def slur_k (+ slur_k 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond
@@ -240,9 +240,9 @@
 )
 )
 )
-(def s (str s (.substring p (- (count p) 1) (count p)))) ;; string
-(def w (fields s)) ;; list of string
-(throw (ex-info "return" {:value (join w " ")}))
+(def slur_s (str slur_s (.substring p (- (count p) 1) (count p)))) ;; string
+(def slur_w (fields slur_s)) ;; list of string
+(throw (ex-info "return" {:value (join slur_w " ")}))
 (catch clojure.lang.ExceptionInfo e
 (if (= (.getMessage e) "return")
 (:value (ex-data e))
@@ -253,15 +253,15 @@
 ;; Function main returns any
 (defn main []
 (try
-(def i 99) ;; int
+(def main_i 99) ;; int
 (loop []
-(when (> i 0)
+(when (> main_i 0)
 (let [r (try
-(_print (str (str (str (str (slur (numberName i) i) " ") (pluralizeFirst (slur "bottle of" i) i)) " ") (slur "beer on the wall" i)))
-(_print (str (str (str (str (slur (numberName i) i) " ") (pluralizeFirst (slur "bottle of" i) i)) " ") (slur "beer" i)))
-(_print (str (str (str (str (slur "take one" i) " ") (slur "down" i)) " ") (slur "pass it around" i)))
-(_print (str (str (str (str (slur (numberName (- i 1)) i) " ") (pluralizeFirst (slur "bottle of" i) (- i 1))) " ") (slur "beer on the wall" i)))
-(def i (- i 1)) ;; int
+(_print (str (str (str (str (slur (numberName main_i) main_i) " ") (pluralizeFirst (slur "bottle of" main_i) main_i)) " ") (slur "beer on the wall" main_i)))
+(_print (str (str (str (str (slur (numberName main_i) main_i) " ") (pluralizeFirst (slur "bottle of" main_i) main_i)) " ") (slur "beer" main_i)))
+(_print (str (str (str (str (slur "take one" main_i) " ") (slur "down" main_i)) " ") (slur "pass it around" main_i)))
+(_print (str (str (str (str (slur (numberName (- main_i 1)) main_i) " ") (pluralizeFirst (slur "bottle of" main_i) (- main_i 1))) " ") (slur "beer on the wall" main_i)))
+(def main_i (- main_i 1)) ;; int
 :next
 (catch clojure.lang.ExceptionInfo e
 (cond

@@ -34,15 +34,15 @@
 ;; Function main returns any
 (defn main []
   (try
-    (def i 99) ;; int
+    (def main_i 99) ;; int
     (loop []
-      (when (> i 0)
+      (when (> main_i 0)
         (let [r (try
-          (_print (str (bottles i) " of beer on the wall"))
-          (_print (str (bottles i) " of beer"))
+          (_print (str (bottles main_i) " of beer on the wall"))
+          (_print (str (bottles main_i) " of beer"))
           (_print "Take one down, pass it around")
-          (_print (str (bottles (- i 1)) " of beer on the wall"))
-          (def i (- i 1)) ;; int
+          (_print (str (bottles (- main_i 1)) " of beer on the wall"))
+          (def main_i (- main_i 1)) ;; int
           :next
         (catch clojure.lang.ExceptionInfo e
           (cond

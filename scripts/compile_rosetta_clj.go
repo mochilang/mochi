@@ -42,10 +42,19 @@ func main() {
 	outDir := filepath.Join(root, "tests", "rosetta", "out", "Clojure")
 	_ = os.MkdirAll(outDir, 0o755)
 
-	interactive := map[string]bool{
-		"15-puzzle-game": true,
-		"21-game":        true,
-	}
+       interactive := map[string]bool{
+               "15-puzzle-game": true,
+               "15-puzzle-solver": true,
+               "2048":           true,
+               "21-game":        true,
+               "24-game":        true,
+               "a+b":            true,
+               "adfgvx-cipher":  true,
+               "amb":            true,
+               "9-billion-names-of-god-the-integer": true,
+               "DNS-query":      true,
+               "abc-problem":    true,
+       }
 
 	var tasks []string
 	if env := os.Getenv("TASKS"); env != "" {

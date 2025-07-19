@@ -1,6 +1,0 @@
-run: exit status 1
-Execution error (FileNotFoundException) at main/eval138$loading (15-puzzle-solver.clj:2).
-Could not locate mochi/runtime/ffi/go/testpkg__init.class, mochi/runtime/ffi/go/testpkg.clj or mochi/runtime/ffi/go/testpkg.cljc on classpath.
-
-Full report at:
-/tmp/clojure-17607987841924728248.edn
