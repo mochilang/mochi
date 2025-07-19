@@ -231,6 +231,28 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	}
+	if b.Op == "&&" || b.Op == "||" {
+		if l, ok := b.Left.(*BinaryExpr); ok && binaryPrec(l.Op) < binaryPrec(b.Op) {
+			io.WriteString(w, "(")
+			l.emitExpr(w)
+			io.WriteString(w, ")")
+		} else {
+			b.Left.emitExpr(w)
+		}
+		if b.Op == "&&" {
+			io.WriteString(w, " AND ")
+		} else {
+			io.WriteString(w, " OR ")
+		}
+		if r, ok := b.Right.(*BinaryExpr); ok && binaryPrec(r.Op) < binaryPrec(b.Op) {
+			io.WriteString(w, "(")
+			r.emitExpr(w)
+			io.WriteString(w, ")")
+		} else {
+			b.Right.emitExpr(w)
+		}
+		return
+	}
 	if l, ok := b.Left.(*BinaryExpr); ok && binaryPrec(l.Op) < binaryPrec(b.Op) {
 		io.WriteString(w, "(")
 		l.emitExpr(w)
@@ -291,6 +313,9 @@ func isSimpleExpr(e Expr) bool {
 		if v.Op == "+" && (isStringLit(v.Left) || isStringLit(v.Right)) {
 			return true
 		}
+		if v.Op == "&&" || v.Op == "||" {
+			return isBoolExpr(v.Left) && isBoolExpr(v.Right)
+		}
 	default:
 		return false
 	}
@@ -324,21 +349,56 @@ func relOpExpr(e Expr) (*BinaryExpr, bool) {
 	}
 }
 
+func isBoolExpr(e Expr) bool {
+	switch b := e.(type) {
+	case *BinaryExpr:
+		switch b.Op {
+		case "==", "!=", "<", "<=", ">", ">=":
+			return true
+		case "&&", "||":
+			return isBoolExpr(b.Left) && isBoolExpr(b.Right)
+		}
+	}
+	return false
+}
+
+func emitCondExpr(w io.Writer, e Expr) {
+	switch b := e.(type) {
+	case *BinaryExpr:
+		switch b.Op {
+		case "&&", "||":
+			emitCondExpr(w, b.Left)
+			if b.Op == "&&" {
+				io.WriteString(w, " AND ")
+			} else {
+				io.WriteString(w, " OR ")
+			}
+			emitCondExpr(w, b.Right)
+		case "==", "!=", "<", "<=", ">", ">=":
+			b.Left.emitExpr(w)
+			op := b.Op
+			switch op {
+			case "==":
+				op = "="
+			case "!=":
+				op = "<>"
+			}
+			fmt.Fprintf(w, " %s ", op)
+			b.Right.emitExpr(w)
+		default:
+			b.emitExpr(w)
+		}
+	default:
+		e.emitExpr(w)
+	}
+}
+
 // --- Statement emitters ---
 
 func (d *DisplayStmt) emit(w io.Writer) {
-	if b, ok := relOpExpr(d.Expr); ok {
+	if isBoolExpr(d.Expr) {
 		io.WriteString(w, "IF ")
-		b.Left.emitExpr(w)
-		op := b.Op
-		switch op {
-		case "==":
-			op = "="
-		case "!=":
-			op = "<>"
-		}
-		fmt.Fprintf(w, " %s ", op)
-		b.Right.emitExpr(w)
+		emitCondExpr(w, d.Expr)
 		io.WriteString(w, "\n        DISPLAY 1\n    ELSE\n        DISPLAY 0\n    END-IF")
 		return
 	}
@@ -938,6 +998,8 @@ func convertExpr(e *parser.Expr, env *types.Env) (Expr, error) {
 		{"+", "-"},
 		{"<", "<=", ">", ">="},
 		{"==", "!="},
+		{"&&"},
+		{"||"},
 	}
 
 	contains := func(list []string, op string) bool {
