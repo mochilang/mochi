@@ -1,11 +1,10 @@
 # Prolog Transpiler
 
-This directory contains a tiny transpiler that converts a restricted subset of Mochi
-programs to SWI-Prolog. It is mainly used for experimentation and golden tests.
+This directory contains a tiny transpiler that converts a restricted subset of Mochi programs to SWI-Prolog. It is mainly used for experimentation and golden tests.
 
 ## Golden tests
 
-Programs under `tests/vm/valid` that have generated Prolog code (20/100):
+Programs under `tests/vm/valid` that have generated Prolog code (21/100):
 
 - [x] `append_builtin`
 - [x] `avg_builtin`
@@ -93,7 +92,7 @@ Programs under `tests/vm/valid` that have generated Prolog code (20/100):
 - [ ] `string_in_operator`
 - [ ] `string_index`
 - [ ] `string_prefix_slice`
-- [ ] `substring_builtin`
+- [x] `substring_builtin`
 - [x] `sum_builtin`
 - [ ] `tail_recursion`
 - [ ] `test_block`
@@ -109,5 +108,4 @@ Programs under `tests/vm/valid` that have generated Prolog code (20/100):
 - [ ] `while_loop`
 
 
-Run `go test ./transpiler/x/pl -tags slow` to regenerate the `.pl` files and
-verify their output.
+Run `go test ./transpiler/x/pl -tags slow` to regenerate the `.pl` files and verify their output.
