@@ -3,12 +3,12 @@
 This directory contains experimental source translators for generating code in
 a variety of languages. The Clojure backend lives under `x/clj`.
 
-## Golden Test Checklist
+## Golden Test Checklist (12/100)
 
 - [ ] append_builtin.mochi
 - [ ] avg_builtin.mochi
-- [ ] basic_compare.mochi
-- [ ] binary_precedence.mochi
+- [x] basic_compare.mochi
+- [x] binary_precedence.mochi
 - [ ] bool_chain.mochi
 - [ ] break_continue.mochi
 - [ ] cast_string_to_int.mochi
@@ -49,10 +49,10 @@ a variety of languages. The Clojure backend lives under `x/clj`.
 - [ ] left_join_multi.mochi
 - [ ] len_builtin.mochi
 - [ ] len_map.mochi
-- [ ] len_string.mochi
-- [ ] let_and_print.mochi
+- [x] len_string.mochi
+- [x] let_and_print.mochi
 - [ ] list_assign.mochi
-- [ ] list_index.mochi
+- [x] list_index.mochi
 - [ ] list_nested_assign.mochi
 - [ ] list_set_ops.mochi
 - [ ] load_yaml.mochi
@@ -65,14 +65,14 @@ a variety of languages. The Clojure backend lives under `x/clj`.
 - [ ] map_nested_assign.mochi
 - [ ] match_expr.mochi
 - [ ] match_full.mochi
-- [ ] math_ops.mochi
+- [x] math_ops.mochi
 - [ ] membership.mochi
 - [ ] min_max_builtin.mochi
 - [ ] nested_function.mochi
 - [ ] order_by_map.mochi
 - [ ] outer_join.mochi
 - [ ] partial_application.mochi
-- [ ] print_hello.mochi
+- [x] print_hello.mochi
 - [ ] pure_fold.mochi
 - [ ] pure_global_fold.mochi
 - [ ] python_auto.mochi
@@ -84,14 +84,14 @@ a variety of languages. The Clojure backend lives under `x/clj`.
 - [ ] short_circuit.mochi
 - [ ] slice.mochi
 - [ ] sort_stable.mochi
-- [ ] str_builtin.mochi
+- [x] str_builtin.mochi
 - [ ] string_compare.mochi
-- [ ] string_concat.mochi
+- [x] string_concat.mochi
 - [ ] string_contains.mochi
 - [ ] string_in_operator.mochi
 - [ ] string_index.mochi
 - [ ] string_prefix_slice.mochi
-- [ ] substring_builtin.mochi
+- [x] substring_builtin.mochi
 - [ ] sum_builtin.mochi
 - [ ] tail_recursion.mochi
 - [ ] test_block.mochi
@@ -99,9 +99,9 @@ a variety of languages. The Clojure backend lives under `x/clj`.
 - [ ] two-sum.mochi
 - [ ] typed_let.mochi
 - [ ] typed_var.mochi
-- [ ] unary_neg.mochi
+- [x] unary_neg.mochi
 - [ ] update_stmt.mochi
 - [ ] user_type_literal.mochi
 - [ ] values_builtin.mochi
-- [ ] var_assignment.mochi
+- [x] var_assignment.mochi
 - [ ] while_loop.mochi

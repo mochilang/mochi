@@ -134,7 +134,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 
 	body := []Node{}
 	for _, st := range prog.Statements {
-		if st.Let != nil {
+		if st.Let != nil || st.Var != nil {
 			n, err := transpileStmt(st)
 			if err != nil {
 				return nil, err
@@ -165,14 +165,35 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 	case s.Expr != nil:
 		return transpileExpr(s.Expr.Expr)
 	case s.Let != nil:
-		if s.Let.Value == nil {
-			return nil, fmt.Errorf("let without value")
+		var v Node
+		var err error
+		if s.Let.Value != nil {
+			v, err = transpileExpr(s.Let.Value)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			v = Symbol("nil")
 		}
-		v, err := transpileExpr(s.Let.Value)
+		return &List{Elems: []Node{Symbol("def"), Symbol(s.Let.Name), v}}, nil
+	case s.Var != nil:
+		var v Node
+		var err error
+		if s.Var.Value != nil {
+			v, err = transpileExpr(s.Var.Value)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			v = Symbol("nil")
+		}
+		return &List{Elems: []Node{Symbol("def"), Symbol(s.Var.Name), v}}, nil
+	case s.Assign != nil:
+		v, err := transpileExpr(s.Assign.Value)
 		if err != nil {
 			return nil, err
 		}
-		return &List{Elems: []Node{Symbol("def"), Symbol(s.Let.Name), v}}, nil
+		return &List{Elems: []Node{Symbol("set!"), Symbol(s.Assign.Name), v}}, nil
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
@@ -191,21 +212,21 @@ var binOp = map[string]string{
 	">":  ">",
 	">=": ">=",
 	"&&": "and",
-        "||": "or",
+	"||": "or",
 }
 
 func isStringNode(n Node) bool {
-       switch t := n.(type) {
-       case StringLit:
-               return true
-       case *List:
-               if len(t.Elems) > 0 {
-                       if sym, ok := t.Elems[0].(Symbol); ok && sym == "str" {
-                               return true
-                       }
-               }
-       }
-       return false
+	switch t := n.(type) {
+	case StringLit:
+		return true
+	case *List:
+		if len(t.Elems) > 0 {
+			if sym, ok := t.Elems[0].(Symbol); ok && sym == "str" {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func transpileExpr(e *parser.Expr) (Node, error) {
@@ -225,17 +246,17 @@ func transpileExpr(e *parser.Expr) (Node, error) {
 		if err != nil {
 			return nil, err
 		}
-               sym, ok := binOp[op.Op]
-               if !ok {
-                       return nil, fmt.Errorf("binary op not supported")
-               }
-               if sym == "+" && (isStringNode(n) || isStringNode(right)) {
-                       n = &List{Elems: []Node{Symbol("str"), n, right}}
-               } else {
-                       n = &List{Elems: []Node{Symbol(sym), n, right}}
-               }
-       }
-       return n, nil
+		sym, ok := binOp[op.Op]
+		if !ok {
+			return nil, fmt.Errorf("binary op not supported")
+		}
+		if sym == "+" && (isStringNode(n) || isStringNode(right)) {
+			n = &List{Elems: []Node{Symbol("str"), n, right}}
+		} else {
+			n = &List{Elems: []Node{Symbol(sym), n, right}}
+		}
+	}
+	return n, nil
 }
 
 func transpileUnary(u *parser.Unary) (Node, error) {
@@ -263,10 +284,27 @@ func transpilePostfix(p *parser.PostfixExpr) (Node, error) {
 	if p == nil {
 		return nil, fmt.Errorf("nil postfix")
 	}
-	if len(p.Ops) != 0 {
-		return nil, fmt.Errorf("postfix ops not supported")
+	n, err := transpilePrimary(p.Target)
+	if err != nil {
+		return nil, err
 	}
-	return transpilePrimary(p.Target)
+	for _, op := range p.Ops {
+		switch {
+		case op.Index != nil:
+			idx := op.Index
+			if idx.Colon != nil || idx.Colon2 != nil || idx.End != nil || idx.Step != nil {
+				return nil, fmt.Errorf("slices not supported")
+			}
+			i, err := transpileExpr(idx.Start)
+			if err != nil {
+				return nil, err
+			}
+			n = &List{Elems: []Node{Symbol("nth"), n, i}}
+		default:
+			return nil, fmt.Errorf("postfix ops not supported")
+		}
+	}
+	return n, nil
 }
 
 func transpilePrimary(p *parser.Primary) (Node, error) {
@@ -278,6 +316,16 @@ func transpilePrimary(p *parser.Primary) (Node, error) {
 		return transpileCall(p.Call)
 	case p.Lit != nil:
 		return transpileLiteral(p.Lit)
+	case p.List != nil:
+		elems := []Node{}
+		for _, e := range p.List.Elems {
+			n, err := transpileExpr(e)
+			if err != nil {
+				return nil, err
+			}
+			elems = append(elems, n)
+		}
+		return &Vector{Elems: elems}, nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return Symbol(p.Selector.Root), nil
 	case p.Group != nil:
@@ -288,17 +336,17 @@ func transpilePrimary(p *parser.Primary) (Node, error) {
 }
 
 func transpileCall(c *parser.CallExpr) (Node, error) {
-        elems := []Node{}
-        switch c.Func {
-        case "print":
-                elems = append(elems, Symbol("println"))
-       case "len":
-               elems = append(elems, Symbol("count"))
-       case "substring":
-               elems = append(elems, Symbol("subs"))
-        default:
-                elems = append(elems, Symbol(c.Func))
-        }
+	elems := []Node{}
+	switch c.Func {
+	case "print":
+		elems = append(elems, Symbol("println"))
+	case "len":
+		elems = append(elems, Symbol("count"))
+	case "substring":
+		elems = append(elems, Symbol("subs"))
+	default:
+		elems = append(elems, Symbol(c.Func))
+	}
 	for _, arg := range c.Args {
 		a, err := transpileExpr(arg)
 		if err != nil {
