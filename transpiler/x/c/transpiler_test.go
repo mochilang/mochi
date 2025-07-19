@@ -39,7 +39,7 @@ func repoRoot(t *testing.T) string {
 	return ""
 }
 
-func compileFile(src string) ([]byte, error) {
+func transpileFile(src string) ([]byte, error) {
 	prog, err := parser.Parse(src)
 	if err != nil {
 		return nil, fmt.Errorf("parse error: %w", err)
@@ -55,8 +55,8 @@ func compileFile(src string) ([]byte, error) {
 	return ast.Emit(), nil
 }
 
-func compileAndRun(src string) ([]byte, error) {
-	code, err := compileFile(src)
+func transpileAndRun(src string) ([]byte, error) {
+	code, err := transpileFile(src)
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +100,7 @@ func TestPrintHello(t *testing.T) {
 	}
 	root := repoRoot(t)
 	src := filepath.Join(root, "tests", "vm", "valid", "print_hello.mochi")
-	out, err := compileAndRun(src)
+	out, err := transpileAndRun(src)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -129,9 +129,9 @@ func TestTranspilerGolden(t *testing.T) {
 		wantOut := filepath.Join(srcDir, name+".out")
 		t.Run(name, func(t *testing.T) {
 			if updateEnabled() && name == "print_hello" {
-				code, err := compileFile(src)
+				code, err := transpileFile(src)
 				if err != nil {
-					t.Fatalf("compile: %v", err)
+					t.Fatalf("transpile: %v", err)
 				}
 				code = normalize(root, code)
 				if err := os.WriteFile(filepath.Join(goldenDir, name+".c"), code, 0o644); err != nil {
@@ -139,7 +139,7 @@ func TestTranspilerGolden(t *testing.T) {
 				}
 			}
 
-			got, err := compileAndRun(src)
+			got, err := transpileAndRun(src)
 			if err != nil {
 				t.Fatalf("run: %v", err)
 			}
