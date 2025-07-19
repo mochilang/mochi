@@ -17,32 +17,32 @@ This directory holds TypeScript source code generated from the real Mochi progra
 12. [x] 9-billion-names-of-god-the-integer
 13. [x] 99-bottles-of-beer-2
 14. [x] 99-bottles-of-beer
-15. [ ] DNS-query
-16. [x] a+b
-17. [x] abbreviations-automatic
-18. [x] abbreviations-easy
-19. [x] abbreviations-simple
-20. [x] abc-problem
-- [ ] abelian-sandpile-model-identity
-- [ ] abelian-sandpile-model
-- [ ] abstract-type
-- [ ] abundant-deficient-and-perfect-number-classifications
-- [ ] abundant-odd-numbers
-- [ ] accumulator-factory
-- [ ] achilles-numbers
+15. [x] DNS-query
+-16. [x] a+b
+-17. [x] abbreviations-automatic
+-18. [x] abbreviations-easy
+-19. [x] abbreviations-simple
+-20. [x] abc-problem
+- [x] abelian-sandpile-model-identity
+- [x] abelian-sandpile-model
+- [x] abstract-type
+- [x] abundant-deficient-and-perfect-number-classifications
+- [x] abundant-odd-numbers
+- [x] accumulator-factory
+- [x] achilles-numbers
 - [x] ackermann-function-2
 - [x] ackermann-function-3
 - [x] ackermann-function
-- [ ] active-directory-connect
-- [ ] active-directory-search-for-a-user
-- [ ] active-object
-- [ ] add-a-variable-to-a-class-instance-at-runtime
-- [ ] additive-primes
-- [ ] address-of-a-variable
+- [x] active-directory-connect
+- [x] active-directory-search-for-a-user
+- [x] active-object
+- [x] add-a-variable-to-a-class-instance-at-runtime
+- [x] additive-primes
+- [x] address-of-a-variable
 - [ ] adfgvx-cipher
-- [ ] aks-test-for-primes
-- [ ] algebraic-data-types
-- [ ] align-columns
+- [x] aks-test-for-primes
+- [x] algebraic-data-types
+- [x] align-columns
 - [ ] aliquot-sequence-classifications
 - [ ] almkvist-giullera-formula-for-pi
 - [ ] almost-prime
