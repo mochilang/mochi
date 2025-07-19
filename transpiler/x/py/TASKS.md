@@ -1,4 +1,9 @@
 # Python Transpiler Tasks
+## Recent Enhancements (2025-07-19 15:16 +0000)
+- Added support for nested function definitions.
+- Generated golden output for `nested_function`.
+- Updated README checklist to 59/100.
+
 
 ## Recent Enhancements (2025-07-19 21:55 +07)
 - Added cast expression support for builtin numeric and string types.
