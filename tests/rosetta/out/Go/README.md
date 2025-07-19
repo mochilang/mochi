@@ -1,4 +1,4 @@
-# Rosetta Go Output (32/278 compiled and run)
+# Rosetta Go Output (33/278 compiled and run)
 
 This directory holds Go source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -22,7 +22,7 @@ This directory holds Go source code generated from the real Mochi programs in `t
 - [x] abbreviations-automatic
 - [x] abbreviations-easy
 - [x] abbreviations-simple
-- [ ] abc-problem
+- [x] abc-problem
 - [ ] abelian-sandpile-model-identity
 - [ ] abelian-sandpile-model
 - [ ] abstract-type
