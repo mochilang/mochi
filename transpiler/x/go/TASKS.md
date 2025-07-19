@@ -1,3 +1,6 @@
+## Progress (2025-07-19 20:08 +0700)
+- Added while/for loops and index assignment support
+
 ## Progress (2025-07-19 19:43 +0700)
 - Added while/for loops and index assignment support
 

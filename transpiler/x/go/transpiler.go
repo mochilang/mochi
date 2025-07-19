@@ -61,12 +61,17 @@ type ExprStmt struct{ Expr Expr }
 func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
 
 // PrintStmt prints a value using Go's fmt package with Mochi semantics.
-type PrintStmt struct{ Expr Expr }
+type PrintStmt struct{ Args []Expr }
 
 func (p *PrintStmt) emit(w io.Writer) {
-	io.WriteString(w, "func() {\n    v := any(")
-	p.Expr.emit(w)
-	io.WriteString(w, ")\n    if v == nil {\n        fmt.Println(\"nil\")\n        return\n    }\n    switch x := v.(type) {\n    case bool:\n        if x { fmt.Println(1) } else { fmt.Println(0) }\n    case float64:\n        if math.Trunc(x) == x { fmt.Printf(\"%.1f\\n\", x) } else { fmt.Printf(\"%v\\n\", x) }\n    case []int:\n        for i, n := range x { if i > 0 { fmt.Print(\" \") }; fmt.Print(n) }\n        fmt.Println()\n    default:\n        fmt.Println(v)\n    }\n}()")
+	io.WriteString(w, "printValues(")
+	for i, e := range p.Args {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		e.emit(w)
+	}
+	io.WriteString(w, ")")
 }
 
 type VarDecl struct {
@@ -355,13 +360,18 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 	switch {
 	case st.Expr != nil:
-		if call := extractCall(st.Expr.Expr); call != nil && call.Func == "print" && len(call.Args) == 1 {
-			arg, err := compileExpr(call.Args[0])
-			if err != nil {
-				return nil, err
+		if call := extractCall(st.Expr.Expr); call != nil && call.Func == "print" {
+			args := make([]Expr, len(call.Args))
+			for i, a := range call.Args {
+				ex, err := compileExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				args[i] = ex
 			}
 			usesPrint = true
-			return &PrintStmt{Expr: arg}, nil
+			usesStrings = true
+			return &PrintStmt{Args: args}, nil
 		}
 		e, err := compileExpr(st.Expr.Expr)
 		if err != nil {
@@ -803,9 +813,6 @@ func Emit(prog *Program) []byte {
 	buf.Write(meta.Header("//"))
 	buf.WriteString("package main\n\n")
 	buf.WriteString("import (\n    \"fmt\"\n")
-	if prog.UsePrint {
-		buf.WriteString("    \"math\"\n")
-	}
 	if prog.UseStrings {
 		buf.WriteString("    \"strings\"\n")
 	}
@@ -856,6 +863,10 @@ func Emit(prog *Program) []byte {
 	if prog.UseAtoi {
 		buf.WriteString("func atoi(s string) int {\n    n, _ := strconv.Atoi(s)\n    return n\n}\n\n")
 	}
+	if prog.UsePrint {
+		buf.WriteString("func formatValue(v any) string {\n    if v == nil { return \"nil\" }\n    switch x := v.(type) {\n    case bool:\n        if x { return \"1\" }\n        return \"0\"\n    case []int:\n        parts := make([]string, len(x))\n        for i, n := range x { parts[i] = fmt.Sprint(n) }\n        return strings.Join(parts, \" \")\n    default:\n        return fmt.Sprint(v)\n    }\n}\n\n")
+		buf.WriteString("func printValues(vals ...any) {\n    out := make([]string, len(vals))\n    for i, v := range vals { out[i] = formatValue(v) }\n    fmt.Println(strings.Join(out, \" \"))\n}\n\n")
+	}
 	buf.WriteString("func main() {\n")
 	for _, s := range prog.Stmts {
 		buf.WriteString("    ")
@@ -887,7 +898,11 @@ func toNodeProg(p *Program) *ast.Node {
 func toNodeStmt(s Stmt) *ast.Node {
 	switch st := s.(type) {
 	case *PrintStmt:
-		return &ast.Node{Kind: "print", Children: []*ast.Node{toNodeExpr(st.Expr)}}
+		n := &ast.Node{Kind: "print"}
+		for _, a := range st.Args {
+			n.Children = append(n.Children, toNodeExpr(a))
+		}
+		return n
 	case *ExprStmt:
 		return &ast.Node{Kind: "expr", Children: []*ast.Node{toNodeExpr(st.Expr)}}
 	case *VarDecl:
