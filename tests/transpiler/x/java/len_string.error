@@ -1,0 +1,7 @@
+exit status 1
+Main.java:4: error: bad operand types for binary operator '=='
+        System.out.println(("mochi".length() == null ? "nil" : "mochi".length()));
+                                             ^
+  first type:  int
+  second type: <null>
+1 error

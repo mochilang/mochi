@@ -1,0 +1,7 @@
+exit status 1
+Main.java:7: error: bad operand types for binary operator '=='
+        System.out.println((sum3(1, 2, 3) == null ? "nil" : sum3(1, 2, 3)));
+                                          ^
+  first type:  int
+  second type: <null>
+1 error

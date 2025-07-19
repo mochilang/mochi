@@ -17,6 +17,19 @@ import (
 	"mochi/types"
 )
 
+func javaType(t string) string {
+	switch t {
+	case "int":
+		return "Integer"
+	case "bool":
+		return "Boolean"
+	case "string":
+		return "String"
+	default:
+		return "Object"
+	}
+}
+
 // --- Simple Java AST ---
 
 type Program struct {
@@ -77,14 +90,21 @@ func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
 
 type LetStmt struct {
 	Name string
+	Type string
 	Expr Expr
 }
 
 func (s *LetStmt) emit(w io.Writer) {
-	fmt.Fprint(w, "var "+s.Name)
+	if s.Type != "" {
+		fmt.Fprint(w, javaType(s.Type)+" "+s.Name)
+	} else {
+		fmt.Fprint(w, "var "+s.Name)
+	}
 	if s.Expr != nil {
 		fmt.Fprint(w, " = ")
 		s.Expr.emit(w)
+	} else if s.Type != "" {
+		fmt.Fprint(w, " = null")
 	} else {
 		fmt.Fprint(w, " = 0")
 	}
@@ -92,14 +112,21 @@ func (s *LetStmt) emit(w io.Writer) {
 
 type VarStmt struct {
 	Name string
+	Type string
 	Expr Expr
 }
 
 func (s *VarStmt) emit(w io.Writer) {
-	fmt.Fprint(w, "var "+s.Name)
+	if s.Type != "" {
+		fmt.Fprint(w, javaType(s.Type)+" "+s.Name)
+	} else {
+		fmt.Fprint(w, "var "+s.Name)
+	}
 	if s.Expr != nil {
 		fmt.Fprint(w, " = ")
 		s.Expr.emit(w)
+	} else if s.Type != "" {
+		fmt.Fprint(w, " = null")
 	} else {
 		fmt.Fprint(w, " = 0")
 	}
@@ -265,10 +292,18 @@ func (c *CallExpr) emit(w io.Writer) {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
 		}
-		if c.Func == "System.out.println" && isBoolExpr(a) {
-			fmt.Fprint(w, "(")
-			a.emit(w)
-			fmt.Fprint(w, " ? 1 : 0)")
+		if c.Func == "System.out.println" {
+			if isBoolExpr(a) {
+				fmt.Fprint(w, "(")
+				a.emit(w)
+				fmt.Fprint(w, " ? 1 : 0)")
+			} else {
+				fmt.Fprint(w, "(")
+				a.emit(w)
+				fmt.Fprint(w, " == null ? \"nil\" : ")
+				a.emit(w)
+				fmt.Fprint(w, ")")
+			}
 		} else {
 			a.emit(w)
 		}
@@ -377,18 +412,22 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			return &LetStmt{Name: s.Let.Name, Expr: e}, nil
+			t := typeRefString(s.Let.Type)
+			return &LetStmt{Name: s.Let.Name, Type: t, Expr: e}, nil
 		}
-		return &LetStmt{Name: s.Let.Name}, nil
+		t := typeRefString(s.Let.Type)
+		return &LetStmt{Name: s.Let.Name, Type: t}, nil
 	case s.Var != nil:
 		if s.Var.Value != nil {
 			e, err := compileExpr(s.Var.Value)
 			if err != nil {
 				return nil, err
 			}
-			return &VarStmt{Name: s.Var.Name, Expr: e}, nil
+			t := typeRefString(s.Var.Type)
+			return &VarStmt{Name: s.Var.Name, Type: t, Expr: e}, nil
 		}
-		return &VarStmt{Name: s.Var.Name}, nil
+		t := typeRefString(s.Var.Type)
+		return &VarStmt{Name: s.Var.Name, Type: t}, nil
 	case s.Assign != nil:
 		if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
 			e, err := compileExpr(s.Assign.Value)
@@ -699,6 +738,19 @@ func readVersion() string {
 	}
 	version = "unknown"
 	return version
+}
+
+func typeRefString(tr *parser.TypeRef) string {
+	if tr == nil {
+		return ""
+	}
+	if tr.Simple != nil {
+		return *tr.Simple
+	}
+	if tr.Generic != nil {
+		return tr.Generic.Name
+	}
+	return ""
 }
 
 // Print converts the custom AST into ast.Node form and prints it.
