@@ -82,7 +82,9 @@ func runRosettaTask(t *testing.T, name string) {
 	if err := os.WriteFile(file, code, 0644); err != nil {
 		t.Fatalf("write go: %v", err)
 	}
-	out, err := exec.Command("go", "run", file).CombinedOutput()
+	cmd := exec.Command("go", "run", file)
+	cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
+	out, err := cmd.CombinedOutput()
 	if err != nil {
 		writeErr(root, name, fmt.Errorf("run: %v\n%s", err, out))
 		t.Skipf("run error: %v", err)
