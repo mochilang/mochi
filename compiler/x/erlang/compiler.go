@@ -1686,7 +1686,28 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					}
 				}
 			}
-			if p.Target.Selector != nil && len(p.Target.Selector.Tail) > 0 && (p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1] == "contains" || p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1] == "starts_with") {
+			if p.Target.Selector != nil && len(p.Target.Selector.Tail) > 0 && p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1] == "keys" && len(args) == 0 {
+				base := c.refVar(p.Target.Selector.Root)
+				if v, ok := c.globals[p.Target.Selector.Root]; ok {
+					base = v
+				}
+				typ2 := c.types[p.Target.Selector.Root]
+				for _, f := range p.Target.Selector.Tail[:len(p.Target.Selector.Tail)-1] {
+					if typ2 == "map" {
+						if fields, ok := c.fields[p.Target.Selector.Root]; ok && fields[f] {
+							base = fmt.Sprintf("maps:get(%s, %s)", f, base)
+						} else {
+							base = fmt.Sprintf("maps:get(%s, %s, undefined)", f, base)
+						}
+						typ2 = "map"
+					} else {
+						base = c.smartGet(f, base)
+						typ2 = ""
+					}
+				}
+				val = fmt.Sprintf("maps:keys(%s)", base)
+				typ = "list"
+			} else if p.Target.Selector != nil && len(p.Target.Selector.Tail) > 0 && (p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1] == "contains" || p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1] == "starts_with") {
 				base := c.refVar(p.Target.Selector.Root)
 				if v, ok := c.globals[p.Target.Selector.Root]; ok {
 					base = v
