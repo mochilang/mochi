@@ -121,6 +121,7 @@ func TestVMValidPrograms(t *testing.T) {
 func TestMain(m *testing.M) {
 	code := m.Run()
 	updateReadme()
+	updateRosettaReadme()
 	os.Exit(code)
 }
 
