@@ -148,7 +148,7 @@ func compileStmt(p *Program, st *parser.Statement, env *types.Env) (Stmt, error)
 		expr := ""
 		var err error
 		if st.Let.Value != nil {
-			expr, err = toExpr(st.Let.Value)
+			expr, err = toExpr(st.Let.Value, env)
 			if err != nil {
 				return nil, err
 			}
@@ -176,7 +176,7 @@ func compileStmt(p *Program, st *parser.Statement, env *types.Env) (Stmt, error)
 		expr := ""
 		var err error
 		if st.Var.Value != nil {
-			expr, err = toExpr(st.Var.Value)
+			expr, err = toExpr(st.Var.Value, env)
 			if err != nil {
 				return nil, err
 			}
@@ -201,7 +201,7 @@ func compileStmt(p *Program, st *parser.Statement, env *types.Env) (Stmt, error)
 		if len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0 {
 			return nil, fmt.Errorf("unsupported assignment")
 		}
-		expr, err := toExpr(st.Assign.Value)
+		expr, err := toExpr(st.Assign.Value, env)
 		if err != nil {
 			return nil, err
 		}
@@ -211,7 +211,7 @@ func compileStmt(p *Program, st *parser.Statement, env *types.Env) (Stmt, error)
 		if err != nil {
 			return nil, err
 		}
-		expr, err := toExpr(arg)
+		expr, err := toExpr(arg, env)
 		if err != nil {
 			return nil, err
 		}
@@ -220,7 +220,7 @@ func compileStmt(p *Program, st *parser.Statement, env *types.Env) (Stmt, error)
 		if st.If.ElseIf != nil {
 			return nil, fmt.Errorf("elseif not supported")
 		}
-		cond, err := toExpr(st.If.Cond)
+		cond, err := toExpr(st.If.Cond, env)
 		if err != nil {
 			return nil, err
 		}
@@ -237,7 +237,7 @@ func compileStmt(p *Program, st *parser.Statement, env *types.Env) (Stmt, error)
 		}
 		return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
 	case st.While != nil:
-		cond, err := toExpr(st.While.Cond)
+		cond, err := toExpr(st.While.Cond, env)
 		if err != nil {
 			return nil, err
 		}
@@ -280,21 +280,23 @@ func extractPrintArg(e *parser.Expr) (*parser.Expr, error) {
 	return call.Args[0], nil
 }
 
-func toExpr(e *parser.Expr) (string, error) {
+func toExpr(e *parser.Expr, env *types.Env) (string, error) {
 	if e == nil || e.Binary == nil || e.Binary.Left == nil {
 		return "", fmt.Errorf("unsupported expression")
 	}
-	left, err := toUnary(e.Binary.Left)
+	left, err := toUnary(e.Binary.Left, env)
 	if err != nil {
 		return "", err
 	}
 	expr := left
+	leftType := types.TypeOfPostfixBasic(e.Binary.Left, env)
 	for _, op := range e.Binary.Right {
-		rhs, err := toPostfix(op.Right)
+		rhs, err := toPostfix(op.Right, env)
 		if err != nil {
 			return "", err
 		}
-		opStr, err := mapOp(op.Op)
+		rightType := types.TypeOfPostfixBasic(&parser.Unary{Value: op.Right}, env)
+		opStr, err := mapOp(op.Op, leftType, rightType)
 		if err != nil {
 			return "", err
 		}
@@ -303,13 +305,24 @@ func toExpr(e *parser.Expr) (string, error) {
 		} else {
 			expr = fmt.Sprintf("(%s %s %s)", expr, opStr, rhs)
 		}
+		switch op.Op {
+		case "==", "!=", "<", "<=", ">", ">=", "&&", "||":
+			leftType = types.BoolType{}
+		case "+":
+			if types.IsStringType(leftType) && types.IsStringType(rightType) {
+				leftType = types.StringType{}
+			}
+		}
 	}
 	return expr, nil
 }
 
-func mapOp(op string) (string, error) {
+func mapOp(op string, left, right types.Type) (string, error) {
 	switch op {
 	case "+", "-", "*", "/":
+		if op == "+" && types.IsStringType(left) && types.IsStringType(right) {
+			return "//", nil
+		}
 		return op, nil
 	case "%":
 		return "mod", nil
@@ -328,8 +341,8 @@ func mapOp(op string) (string, error) {
 	}
 }
 
-func toUnary(u *parser.Unary) (string, error) {
-	val, err := toPostfix(u.Value)
+func toUnary(u *parser.Unary, env *types.Env) (string, error) {
+	val, err := toPostfix(u.Value, env)
 	if err != nil {
 		return "", err
 	}
@@ -346,14 +359,14 @@ func toUnary(u *parser.Unary) (string, error) {
 	return val, nil
 }
 
-func toPostfix(pf *parser.PostfixExpr) (string, error) {
+func toPostfix(pf *parser.PostfixExpr, env *types.Env) (string, error) {
 	if len(pf.Ops) > 0 {
 		return "", fmt.Errorf("postfix operations unsupported")
 	}
-	return toPrimary(pf.Target)
+	return toPrimary(pf.Target, env)
 }
 
-func toPrimary(p *parser.Primary) (string, error) {
+func toPrimary(p *parser.Primary, env *types.Env) (string, error) {
 	switch {
 	case p.Lit != nil:
 		l := p.Lit
@@ -377,7 +390,7 @@ func toPrimary(p *parser.Primary) (string, error) {
 		}
 		return name, nil
 	case p.Group != nil:
-		expr, err := toExpr(p.Group)
+		expr, err := toExpr(p.Group, env)
 		if err != nil {
 			return "", err
 		}

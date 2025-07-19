@@ -17,7 +17,7 @@ import (
 	"mochi/types"
 )
 
-var update = flag.Bool("update", false, "update golden files")
+var updateFlag = flag.Bool("updateftn", false, "update golden files")
 
 func repoRoot(t *testing.T) string {
 	dir, err := os.Getwd()
@@ -39,7 +39,7 @@ func repoRoot(t *testing.T) string {
 }
 
 func updateEnabled() bool {
-	return *update
+	return *updateFlag
 }
 
 func transpileFile(src string) ([]byte, error) {
