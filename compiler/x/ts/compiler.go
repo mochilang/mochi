@@ -80,21 +80,30 @@ func containsFetch(stmts []*parser.Statement) bool {
 }
 
 func hasFetch(v reflect.Value) bool {
-        if !v.IsValid() {
-                return false
-        }
-       if v.Type() == reflect.TypeOf(&parser.CallExpr{}) {
-               if v.IsNil() {
-                       return false
-               }
-               call := v.Interface().(*parser.CallExpr)
-               if call.Func == "net.LookupHost" {
-                       return true
-               }
-       }
-        if v.Type() == fetchExprType || v.Type() == fetchStmtType {
-                return !v.IsNil()
-        }
+	if !v.IsValid() {
+		return false
+	}
+	if v.Type() == reflect.TypeOf(&parser.CallExpr{}) {
+		if v.IsNil() {
+			return false
+		}
+		call := v.Interface().(*parser.CallExpr)
+		if call.Func == "net.LookupHost" {
+			return true
+		}
+	}
+	if v.Type() == reflect.TypeOf(&parser.PostfixExpr{}) {
+		if v.IsNil() {
+			return false
+		}
+		p := v.Interface().(*parser.PostfixExpr)
+		if sel := p.Target.Selector; sel != nil && len(p.Ops) > 0 && p.Ops[0].Call != nil && sel.Root == "net" && len(sel.Tail) == 1 && sel.Tail[0] == "LookupHost" {
+			return true
+		}
+	}
+	if v.Type() == fetchExprType || v.Type() == fetchStmtType {
+		return !v.IsNil()
+	}
 	switch v.Kind() {
 	case reflect.Ptr, reflect.Interface:
 		if v.IsNil() {
@@ -323,6 +332,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if prog.Pos.Filename != "" {
 		c.writeln("// Source: " + prog.Pos.Filename)
 	}
+	c.writeln("")
+	c.writeln("const nil = null")
 	c.writeln("")
 
 	// Collect TypeScript imports and emit them.
@@ -725,17 +736,17 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 }
 
 func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
-        lhs := sanitizeName(s.Name)
-        for _, idx := range s.Index {
-                iexpr, err := c.compileExpr(idx.Start)
-                if err != nil {
-                        return err
-                }
-                lhs = fmt.Sprintf("%s[%s]", lhs, iexpr)
-        }
-       for _, f := range s.Field {
-               lhs = fmt.Sprintf("%s.%s", lhs, sanitizeName(f.Name))
-       }
+	lhs := sanitizeName(s.Name)
+	for _, idx := range s.Index {
+		iexpr, err := c.compileExpr(idx.Start)
+		if err != nil {
+			return err
+		}
+		lhs = fmt.Sprintf("%s[%s]", lhs, iexpr)
+	}
+	for _, f := range s.Field {
+		lhs = fmt.Sprintf("%s.%s", lhs, sanitizeName(f.Name))
+	}
 	if q, ok := queryExprOf(s.Value); ok {
 		expr, err := c.compileQueryExpr(q)
 		if err != nil {
@@ -1587,23 +1598,23 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 				return fmt.Sprintf("%s.concat(%s)", left, right), leftType, nil
 			}
 		}
-               if op == "+" && isString(leftType) && isString(rightType) {
-                       return fmt.Sprintf("%s + %s", left, right), types.StringType{}, nil
-               }
-               if op == "+" && isList(leftType) && isString(rightType) {
-                       if lt, ok := leftType.(types.ListType); ok {
-                               if _, ok := lt.Elem.(types.StringType); ok {
-                                       return fmt.Sprintf("(%s).join('') + %s", left, right), types.StringType{}, nil
-                               }
-                       }
-               }
-               if op == "+" && isString(leftType) && isList(rightType) {
-                       if rt, ok := rightType.(types.ListType); ok {
-                               if _, ok := rt.Elem.(types.StringType); ok {
-                                       return fmt.Sprintf("%s + (%s).join('')", left, right), types.StringType{}, nil
-                               }
-                       }
-               }
+		if op == "+" && isString(leftType) && isString(rightType) {
+			return fmt.Sprintf("%s + %s", left, right), types.StringType{}, nil
+		}
+		if op == "+" && isList(leftType) && isString(rightType) {
+			if lt, ok := leftType.(types.ListType); ok {
+				if _, ok := lt.Elem.(types.StringType); ok {
+					return fmt.Sprintf("(%s).join('') + %s", left, right), types.StringType{}, nil
+				}
+			}
+		}
+		if op == "+" && isString(leftType) && isList(rightType) {
+			if rt, ok := rightType.(types.ListType); ok {
+				if _, ok := rt.Elem.(types.StringType); ok {
+					return fmt.Sprintf("%s + (%s).join('')", left, right), types.StringType{}, nil
+				}
+			}
+		}
 		if op == "/" {
 			return fmt.Sprintf("(%s / %s)", left, right), types.FloatType{}, nil
 		}
@@ -1686,6 +1697,17 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					rootExpr := &parser.Primary{Selector: &parser.SelectorExpr{Root: sel.Root}}
 					rootTyp := underlyingType(c.inferPrimaryType(rootExpr))
 					root := sanitizeName(sel.Root)
+					// special case for go net.LookupHost
+					if root == "net" && method == "LookupHost" && len(op.Call.Args) == 1 {
+						arg, err := c.compileExpr(op.Call.Args[0])
+						if err != nil {
+							return "", err
+						}
+						c.use("_lookupHost")
+						expr = fmt.Sprintf("(await (async () => { try { const a = await _lookupHost(%s); return [a, null]; } catch (e) { return [null, String(e)]; } })())", arg)
+						typ = types.ListType{Elem: types.AnyType{}}
+						continue
+					}
 					switch method {
 					case "keys":
 						if len(op.Call.Args) == 0 {
@@ -1972,7 +1994,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			case types.BoolType:
 				return fmt.Sprintf("console.log(%s ? 'True' : 'False')", args[0]), nil
 			case types.ListType:
-				return fmt.Sprintf("console.log(%s.join(' '))", args[0]), nil
+				return fmt.Sprintf("console.log(Array.isArray(%[1]s) ? %[1]s.join(' ') : String(%[1]s))", args[0]), nil
 			case types.FloatType:
 				return fmt.Sprintf("console.log((%s).toFixed(1))", args[0]), nil
 			default:
@@ -2205,35 +2227,35 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return fmt.Sprintf("(%s).substring(%s, (%s)+(%s))", args[0], args[1], args[1], args[2]), nil
 		}
 		return fmt.Sprintf("(%s).substring(%s)", args[0], args[1]), nil
-        case "reverse":
-                if len(args) == 1 {
-                        t := underlyingType(c.inferExprType(call.Args[0]))
-                        if _, ok := t.(types.StringType); ok {
-                                return fmt.Sprintf("%s.split('') .reverse().join('')", args[0]), nil
-                        }
-                        return fmt.Sprintf("%s.slice().reverse()", args[0]), nil
-                }
-                return fmt.Sprintf("[].concat(%s).reverse()", strings.Join(args, ", ")), nil
-        case "first":
-                if len(args) == 1 {
-                        return fmt.Sprintf("(%s)[0]", args[0]), nil
-                }
-                return fmt.Sprintf("(%s)[0]", argStr), nil
-        case "now":
-                // Use helper so tests can seed deterministic timestamps via
-                // the MOCHI_NOW_SEED environment variable, matching the
-                // behaviour of the Go runtime.
-                c.use("_now")
-                return "_now()", nil
-       case "net.LookupHost":
-               if len(args) == 1 {
-                       c.use("_lookupHost")
-                       return fmt.Sprintf("(await (async () => { try { const a = await _lookupHost(%s); return [a, null]; } catch (e) { return [null, String(e)]; } })())", args[0]), nil
-               }
-               return "", fmt.Errorf("net.LookupHost expects 1 arg")
-        case "json":
-                c.use("_json")
-                return fmt.Sprintf("console.log(_json(%s))", argStr), nil
+	case "reverse":
+		if len(args) == 1 {
+			t := underlyingType(c.inferExprType(call.Args[0]))
+			if _, ok := t.(types.StringType); ok {
+				return fmt.Sprintf("%s.split('') .reverse().join('')", args[0]), nil
+			}
+			return fmt.Sprintf("%s.slice().reverse()", args[0]), nil
+		}
+		return fmt.Sprintf("[].concat(%s).reverse()", strings.Join(args, ", ")), nil
+	case "first":
+		if len(args) == 1 {
+			return fmt.Sprintf("(%s)[0]", args[0]), nil
+		}
+		return fmt.Sprintf("(%s)[0]", argStr), nil
+	case "now":
+		// Use helper so tests can seed deterministic timestamps via
+		// the MOCHI_NOW_SEED environment variable, matching the
+		// behaviour of the Go runtime.
+		c.use("_now")
+		return "_now()", nil
+	case "net.LookupHost":
+		if len(args) == 1 {
+			c.use("_lookupHost")
+			return fmt.Sprintf("(await (async () => { try { const a = await _lookupHost(%s); return [a, null]; } catch (e) { return [null, String(e)]; } })())", args[0]), nil
+		}
+		return "", fmt.Errorf("net.LookupHost expects 1 arg")
+	case "json":
+		c.use("_json")
+		return fmt.Sprintf("console.log(_json(%s))", argStr), nil
 	default:
 		if fn, ok := c.env.GetFunc(call.Func); ok {
 			if len(call.Args) < len(fn.Params) {
