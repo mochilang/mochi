@@ -136,15 +136,15 @@ type Expr interface{ emit(io.Writer) }
 type boolExpr interface{ isBool() bool }
 
 type SelectorExpr struct {
-       Root string
-       Tail []string
+	Root string
+	Tail []string
 }
 
 func (s *SelectorExpr) emit(w io.Writer) {
-       io.WriteString(w, s.Root)
-       for _, t := range s.Tail {
-               fmt.Fprintf(w, ".%s", t)
-       }
+	io.WriteString(w, s.Root)
+	for _, t := range s.Tail {
+		fmt.Fprintf(w, ".%s", t)
+	}
 }
 
 // BoolLit is a boolean literal.
@@ -192,6 +192,20 @@ type StringLit struct{ Value string }
 
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%s", quote(s.Value)) }
 
+// ListLit is a simple list literal using Pascal's open array syntax.
+type ListLit struct{ Elems []Expr }
+
+func (l *ListLit) emit(w io.Writer) {
+	io.WriteString(w, "[")
+	for i, e := range l.Elems {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		e.emit(w)
+	}
+	io.WriteString(w, "]")
+}
+
 // UnaryExpr represents a unary operation like negation.
 type UnaryExpr struct {
 	Op   string
@@ -235,19 +249,24 @@ func (c *ContainsExpr) isBool() bool { return true }
 type IndexExpr struct {
 	Target Expr
 	Index  Expr
+	String bool
 }
 
 func (i *IndexExpr) emit(w io.Writer) {
 	i.Target.emit(w)
 	io.WriteString(w, "[")
 	i.Index.emit(w)
-	io.WriteString(w, "+1]")
+	if i.String {
+		io.WriteString(w, "+1")
+	}
+	io.WriteString(w, "]")
 }
 
 type SliceExpr struct {
 	Target Expr
 	Start  Expr
 	End    Expr
+	String bool
 }
 
 func (s *SliceExpr) emit(w io.Writer) {
@@ -256,9 +275,15 @@ func (s *SliceExpr) emit(w io.Writer) {
 	io.WriteString(w, ", ")
 	if s.Start != nil {
 		s.Start.emit(w)
-		io.WriteString(w, "+1")
+		if s.String {
+			io.WriteString(w, "+1")
+		}
 	} else {
-		io.WriteString(w, "1")
+		if s.String {
+			io.WriteString(w, "1")
+		} else {
+			io.WriteString(w, "0")
+		}
 	}
 	io.WriteString(w, ", ")
 	if s.End != nil && s.Start != nil {
@@ -415,7 +440,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 		case st.Expr != nil:
 			call := st.Expr.Expr.Binary.Left.Value.Target.Call
 			if call != nil && call.Func == "print" && len(call.Args) == 1 && len(st.Expr.Expr.Binary.Right) == 0 {
-				ex, err := convertExpr(call.Args[0])
+				ex, err := convertExpr(env, call.Args[0])
 				if err != nil {
 					return nil, err
 				}
@@ -423,82 +448,96 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				continue
 			}
 			return nil, fmt.Errorf("unsupported expression")
-               case st.Let != nil:
-                       vd := VarDecl{Name: st.Let.Name}
-                       if st.Let.Type != nil && st.Let.Type.Simple != nil {
-                               if *st.Let.Type.Simple == "int" {
-                                       vd.Type = "integer"
-                               } else if *st.Let.Type.Simple == "string" {
-                                       vd.Type = "string"
-                               }
-                       }
-                       if st.Let.Value != nil {
-                               ex, err := convertExpr(st.Let.Value)
-                               if err != nil {
-                                       return nil, err
-                               }
-                               vd.Init = ex
-                               if vd.Type == "" {
-                                       if _, ok := ex.(*StringLit); ok {
-                                               vd.Type = "string"
-                                       }
-                               }
-                       }
-                       pr.Vars = append(pr.Vars, vd)
-               case st.Var != nil:
-                       vd := VarDecl{Name: st.Var.Name}
-                       if st.Var.Type != nil && st.Var.Type.Simple != nil {
-                               if *st.Var.Type.Simple == "int" {
-                                       vd.Type = "integer"
-                               } else if *st.Var.Type.Simple == "string" {
-                                       vd.Type = "string"
-                               }
-                       }
-                       if st.Var.Value != nil {
-                               ex, err := convertExpr(st.Var.Value)
-                               if err != nil {
-                                       return nil, err
-                               }
-                               vd.Init = ex
-                               if vd.Type == "" {
-                                       if _, ok := ex.(*StringLit); ok {
-                                               vd.Type = "string"
-                                       }
-                               }
-                       }
-                       pr.Vars = append(pr.Vars, vd)
+		case st.Let != nil:
+			vd := VarDecl{Name: st.Let.Name}
+			if st.Let.Type != nil && st.Let.Type.Simple != nil {
+				if *st.Let.Type.Simple == "int" {
+					vd.Type = "integer"
+				} else if *st.Let.Type.Simple == "string" {
+					vd.Type = "string"
+				}
+			}
+			if st.Let.Value != nil {
+				ex, err := convertExpr(env, st.Let.Value)
+				if err != nil {
+					return nil, err
+				}
+				vd.Init = ex
+				if vd.Type == "" {
+					switch t := types.ExprType(st.Let.Value, env).(type) {
+					case types.StringType:
+						vd.Type = "string"
+					case types.ListType:
+						if _, ok := t.Elem.(types.StringType); ok {
+							vd.Type = "array of string"
+						} else {
+							vd.Type = "array of integer"
+						}
+					}
+				}
+			}
+			pr.Vars = append(pr.Vars, vd)
+		case st.Var != nil:
+			vd := VarDecl{Name: st.Var.Name}
+			if st.Var.Type != nil && st.Var.Type.Simple != nil {
+				if *st.Var.Type.Simple == "int" {
+					vd.Type = "integer"
+				} else if *st.Var.Type.Simple == "string" {
+					vd.Type = "string"
+				}
+			}
+			if st.Var.Value != nil {
+				ex, err := convertExpr(env, st.Var.Value)
+				if err != nil {
+					return nil, err
+				}
+				vd.Init = ex
+				if vd.Type == "" {
+					switch t := types.ExprType(st.Var.Value, env).(type) {
+					case types.StringType:
+						vd.Type = "string"
+					case types.ListType:
+						if _, ok := t.Elem.(types.StringType); ok {
+							vd.Type = "array of string"
+						} else {
+							vd.Type = "array of integer"
+						}
+					}
+				}
+			}
+			pr.Vars = append(pr.Vars, vd)
 		case st.Assign != nil:
-			ex, err := convertExpr(st.Assign.Value)
+			ex, err := convertExpr(env, st.Assign.Value)
 			if err != nil {
 				return nil, err
 			}
 			pr.Stmts = append(pr.Stmts, &AssignStmt{Name: st.Assign.Name, Expr: ex})
 		case st.While != nil:
-			cond, err := convertExpr(st.While.Cond)
+			cond, err := convertExpr(env, st.While.Cond)
 			if err != nil {
 				return nil, err
 			}
-			body, err := convertBody(st.While.Body)
+			body, err := convertBody(env, st.While.Body)
 			if err != nil {
 				return nil, err
 			}
 			pr.Stmts = append(pr.Stmts, &WhileStmt{Cond: cond, Body: body})
 		case st.If != nil:
-			cond, err := convertExpr(st.If.Cond)
+			cond, err := convertExpr(env, st.If.Cond)
 			if err != nil {
 				return nil, err
 			}
-			thenBody, err := convertBody(st.If.Then)
+			thenBody, err := convertBody(env, st.If.Then)
 			if err != nil {
 				return nil, err
 			}
-			elseBody, err := convertBody(st.If.Else)
+			elseBody, err := convertBody(env, st.If.Else)
 			if err != nil {
 				return nil, err
 			}
 			pr.Stmts = append(pr.Stmts, &IfStmt{Cond: cond, Then: thenBody, Else: elseBody})
 		case st.Fun != nil:
-			fnBody, err := convertBody(st.Fun.Body)
+			fnBody, err := convertBody(env, st.Fun.Body)
 			if err != nil {
 				return nil, err
 			}
@@ -516,7 +555,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			}
 			pr.Funs = append(pr.Funs, FunDecl{Name: st.Fun.Name, Params: params, ReturnType: rt, Body: fnBody})
 		case st.Return != nil:
-			ex, err := convertExpr(st.Return.Value)
+			ex, err := convertExpr(env, st.Return.Value)
 			if err != nil {
 				return nil, err
 			}
@@ -528,12 +567,12 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	return pr, nil
 }
 
-func convertBody(body []*parser.Statement) ([]Stmt, error) {
+func convertBody(env *types.Env, body []*parser.Statement) ([]Stmt, error) {
 	var out []Stmt
 	for _, st := range body {
 		switch {
 		case st.Assign != nil:
-			ex, err := convertExpr(st.Assign.Value)
+			ex, err := convertExpr(env, st.Assign.Value)
 			if err != nil {
 				return nil, err
 			}
@@ -541,7 +580,7 @@ func convertBody(body []*parser.Statement) ([]Stmt, error) {
 		case st.Expr != nil:
 			call := st.Expr.Expr.Binary.Left.Value.Target.Call
 			if call != nil && call.Func == "print" && len(call.Args) == 1 && len(st.Expr.Expr.Binary.Right) == 0 {
-				ex, err := convertExpr(call.Args[0])
+				ex, err := convertExpr(env, call.Args[0])
 				if err != nil {
 					return nil, err
 				}
@@ -550,21 +589,21 @@ func convertBody(body []*parser.Statement) ([]Stmt, error) {
 			}
 			return nil, fmt.Errorf("unsupported expression")
 		case st.If != nil:
-			cond, err := convertExpr(st.If.Cond)
+			cond, err := convertExpr(env, st.If.Cond)
 			if err != nil {
 				return nil, err
 			}
-			thenBody, err := convertBody(st.If.Then)
+			thenBody, err := convertBody(env, st.If.Then)
 			if err != nil {
 				return nil, err
 			}
-			elseBody, err := convertBody(st.If.Else)
+			elseBody, err := convertBody(env, st.If.Else)
 			if err != nil {
 				return nil, err
 			}
 			out = append(out, &IfStmt{Cond: cond, Then: thenBody, Else: elseBody})
 		case st.Return != nil:
-			ex, err := convertExpr(st.Return.Value)
+			ex, err := convertExpr(env, st.Return.Value)
 			if err != nil {
 				return nil, err
 			}
@@ -576,11 +615,11 @@ func convertBody(body []*parser.Statement) ([]Stmt, error) {
 	return out, nil
 }
 
-func convertExpr(e *parser.Expr) (Expr, error) {
+func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 	if e == nil || e.Binary == nil {
 		return nil, fmt.Errorf("unsupported expr")
 	}
-	left, err := convertUnary(e.Binary.Left)
+	left, err := convertUnary(env, e.Binary.Left)
 	if err != nil {
 		return nil, err
 	}
@@ -640,7 +679,7 @@ func convertExpr(e *parser.Expr) (Expr, error) {
 	}
 
 	for _, op := range e.Binary.Right {
-		right, err := convertPostfix(op.Right)
+		right, err := convertPostfix(env, op.Right)
 		if err != nil {
 			return nil, err
 		}
@@ -663,11 +702,11 @@ func convertExpr(e *parser.Expr) (Expr, error) {
 	return exprs[0], nil
 }
 
-func convertUnary(u *parser.Unary) (Expr, error) {
+func convertUnary(env *types.Env, u *parser.Unary) (Expr, error) {
 	if u == nil {
 		return nil, fmt.Errorf("nil unary")
 	}
-	expr, err := convertPostfix(u.Value)
+	expr, err := convertPostfix(env, u.Value)
 	if err != nil {
 		return nil, err
 	}
@@ -684,66 +723,70 @@ func convertUnary(u *parser.Unary) (Expr, error) {
 	return expr, nil
 }
 
-func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
+func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 	if pf == nil {
 		return nil, fmt.Errorf("nil postfix")
 	}
-	expr, err := convertPrimary(pf.Target)
+	expr, err := convertPrimary(env, pf.Target)
 	if err != nil {
 		return nil, err
 	}
 	for i := 0; i < len(pf.Ops); i++ {
 		op := pf.Ops[i]
 		switch {
-               case op.Call != nil:
-                       switch t := expr.(type) {
-                       case *VarRef:
-                               var args []Expr
-                               for _, a := range op.Call.Args {
-                                       ex, err := convertExpr(a)
-                                       if err != nil {
-                                               return nil, err
-                                       }
-                                       args = append(args, ex)
-                               }
-                               expr = &CallExpr{Name: t.Name, Args: args}
-                       case *SelectorExpr:
-                               if len(t.Tail) == 1 && t.Tail[0] == "contains" {
-                                       if len(op.Call.Args) != 1 {
-                                               return nil, fmt.Errorf("contains expects 1 arg")
-                                       }
-                                       arg, err := convertExpr(op.Call.Args[0])
-                                       if err != nil {
-                                               return nil, err
-                                       }
-                                       expr = &ContainsExpr{Str: &VarRef{Name: t.Root}, Sub: arg}
-                               } else {
-                                       return nil, fmt.Errorf("unsupported call target")
-                               }
-                       default:
-                               return nil, fmt.Errorf("unsupported call target")
-                       }
+		case op.Call != nil:
+			switch t := expr.(type) {
+			case *VarRef:
+				var args []Expr
+				for _, a := range op.Call.Args {
+					ex, err := convertExpr(env, a)
+					if err != nil {
+						return nil, err
+					}
+					args = append(args, ex)
+				}
+				expr = &CallExpr{Name: t.Name, Args: args}
+			case *SelectorExpr:
+				if len(t.Tail) == 1 && t.Tail[0] == "contains" {
+					if len(op.Call.Args) != 1 {
+						return nil, fmt.Errorf("contains expects 1 arg")
+					}
+					arg, err := convertExpr(env, op.Call.Args[0])
+					if err != nil {
+						return nil, err
+					}
+					expr = &ContainsExpr{Str: &VarRef{Name: t.Root}, Sub: arg}
+				} else {
+					return nil, fmt.Errorf("unsupported call target")
+				}
+			default:
+				return nil, fmt.Errorf("unsupported call target")
+			}
 		case op.Field != nil && op.Field.Name == "contains" && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil:
 			call := pf.Ops[i+1].Call
 			if len(call.Args) != 1 {
 				return nil, fmt.Errorf("contains expects 1 arg")
 			}
-			arg, err := convertExpr(call.Args[0])
+			arg, err := convertExpr(env, call.Args[0])
 			if err != nil {
 				return nil, err
 			}
 			expr = &ContainsExpr{Str: expr, Sub: arg}
 			i++
 		case op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil:
-			idx, err := convertExpr(op.Index.Start)
+			idx, err := convertExpr(env, op.Index.Start)
 			if err != nil {
 				return nil, err
 			}
-			expr = &IndexExpr{Target: expr, Index: idx}
+			tmp := *pf
+			tmp.Ops = tmp.Ops[:i]
+			t := types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &tmp}}}, env)
+			_, isStr := t.(types.StringType)
+			expr = &IndexExpr{Target: expr, Index: idx, String: isStr}
 		case op.Index != nil && op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil:
 			var start Expr
 			if op.Index.Start != nil {
-				s, err := convertExpr(op.Index.Start)
+				s, err := convertExpr(env, op.Index.Start)
 				if err != nil {
 					return nil, err
 				}
@@ -751,13 +794,17 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			}
 			var end Expr
 			if op.Index.End != nil {
-				e, err := convertExpr(op.Index.End)
+				e, err := convertExpr(env, op.Index.End)
 				if err != nil {
 					return nil, err
 				}
 				end = e
 			}
-			expr = &SliceExpr{Target: expr, Start: start, End: end}
+			tmp := *pf
+			tmp.Ops = tmp.Ops[:i]
+			t := types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &tmp}}}, env)
+			_, isStr := t.(types.StringType)
+			expr = &SliceExpr{Target: expr, Start: start, End: end, String: isStr}
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
 		}
@@ -765,34 +812,44 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 	return expr, nil
 }
 
-func convertPrimary(p *parser.Primary) (Expr, error) {
+func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 	switch {
 	case p.Lit != nil:
 		return convertLiteral(p.Lit)
 	case p.Call != nil:
 		var args []Expr
 		for _, a := range p.Call.Args {
-			ex, err := convertExpr(a)
+			ex, err := convertExpr(env, a)
 			if err != nil {
 				return nil, err
 			}
 			args = append(args, ex)
 		}
 		name := p.Call.Func
-       if name == "len" {
-               name = "Length"
-       } else if name == "substring" && len(args) == 3 {
-               return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
-       }
-       return &CallExpr{Name: name, Args: args}, nil
-       case p.Selector != nil && len(p.Selector.Tail) == 0:
-               return &VarRef{Name: p.Selector.Root}, nil
-       case p.Selector != nil:
-               return &SelectorExpr{Root: p.Selector.Root, Tail: p.Selector.Tail}, nil
+		if name == "len" {
+			name = "Length"
+		} else if name == "substring" && len(args) == 3 {
+			return &SliceExpr{Target: args[0], Start: args[1], End: args[2], String: true}, nil
+		}
+		return &CallExpr{Name: name, Args: args}, nil
+	case p.List != nil:
+		var elems []Expr
+		for _, el := range p.List.Elems {
+			ex, err := convertExpr(env, el)
+			if err != nil {
+				return nil, err
+			}
+			elems = append(elems, ex)
+		}
+		return &ListLit{Elems: elems}, nil
+	case p.Selector != nil && len(p.Selector.Tail) == 0:
+		return &VarRef{Name: p.Selector.Root}, nil
+	case p.Selector != nil:
+		return &SelectorExpr{Root: p.Selector.Root, Tail: p.Selector.Tail}, nil
 	case p.If != nil:
-		return convertIfExpr(p.If)
+		return convertIfExpr(env, p.If)
 	case p.Group != nil:
-		return convertExpr(p.Group)
+		return convertExpr(env, p.Group)
 	default:
 		return nil, fmt.Errorf("unsupported primary")
 	}
@@ -811,25 +868,25 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 	}
 }
 
-func convertIfExpr(ie *parser.IfExpr) (*IfExpr, error) {
-	cond, err := convertExpr(ie.Cond)
+func convertIfExpr(env *types.Env, ie *parser.IfExpr) (*IfExpr, error) {
+	cond, err := convertExpr(env, ie.Cond)
 	if err != nil {
 		return nil, err
 	}
-	thenExpr, err := convertExpr(ie.Then)
+	thenExpr, err := convertExpr(env, ie.Then)
 	if err != nil {
 		return nil, err
 	}
 	var elseExpr Expr
 	var elseIf *IfExpr
 	if ie.ElseIf != nil {
-		ei, err := convertIfExpr(ie.ElseIf)
+		ei, err := convertIfExpr(env, ie.ElseIf)
 		if err != nil {
 			return nil, err
 		}
 		elseIf = ei
 	} else if ie.Else != nil {
-		e, err := convertExpr(ie.Else)
+		e, err := convertExpr(env, ie.Else)
 		if err != nil {
 			return nil, err
 		}

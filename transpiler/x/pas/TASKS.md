@@ -1,11 +1,12 @@
 # Transpiler Tasks
 
-## Progress (2025-07-19 12:29 +0000)
-- Added short_circuit handling using Pascal's short-circuit boolean ops.
-- Generated golden files for the new `short_circuit` test.
-- Updated README progress to 25/100.
+## Progress (2025-07-19 12:53 +0000)
+- Added list literal and array indexing support.
+- Added tests `len_builtin` and `list_index`.
+- Updated README progress to 27/100.
 
 ## Recent Updates
+- [2025-07-19T12:53:18Z] Added list literal support and new tests; progress to 27/100
 - [2025-07-19T12:29:49Z] Added short_circuit test and progress to 25/100
 - [2025-07-19T11:43:36+00:00] Added substring and contains features; progress to 24/100
 - [2025-07-19T11:48:55+07:00] Created README checklist and expanded Pascal transpiler
