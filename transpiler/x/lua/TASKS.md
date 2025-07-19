@@ -1,3 +1,7 @@
+## Progress (2025-07-20 00:50 GMT+7)
+- 39/100 VM tests passing
+- Removed runtime helper functions and emit idiomatic Lua built-ins
+
 ## Progress (2025-07-19 21:14 GMT+7)
 - 39/100 VM tests passing
 - Added cast expressions and function literals
