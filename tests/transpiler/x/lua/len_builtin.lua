@@ -63,6 +63,4 @@ function mochi_print(v)
     print(v)
   end
 end
-y = 0
-
-mochi_print(y)
+mochi_print(len({1, 2, 3}))

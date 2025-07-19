@@ -63,6 +63,6 @@ function mochi_print(v)
     print(v)
   end
 end
-y = 0
+a = {1, 2}
 
-mochi_print(y)
+mochi_print(append(a, 3))

@@ -2,27 +2,27 @@
 
 Generated Lua code for programs in `tests/vm/valid`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-Transpiled programs: 28/100
+Transpiled programs: 36/100
 
 Checklist:
 
-- [ ] append_builtin
-- [ ] avg_builtin
+- [x] append_builtin
+- [x] avg_builtin
 - [x] basic_compare
 - [x] binary_precedence
 - [x] bool_chain
-- [ ] break_continue
+- [x] break_continue
 - [ ] cast_string_to_int
 - [ ] cast_struct
 - [ ] closure
-- [ ] count_builtin
+- [x] count_builtin
 - [ ] cross_join
 - [ ] cross_join_filter
 - [ ] cross_join_triple
 - [ ] dataset_sort_take_limit
 - [ ] dataset_where_filter
 - [ ] exists_builtin
-- [ ] for_list_collection
+- [x] for_list_collection
 - [x] for_loop
 - [ ] for_map_collection
 - [x] fun_call
@@ -48,7 +48,7 @@ Checklist:
 - [ ] json_builtin
 - [ ] left_join
 - [ ] left_join_multi
-- [ ] len_builtin
+- [x] len_builtin
 - [ ] len_map
 - [x] len_string
 - [x] let_and_print
@@ -67,7 +67,7 @@ Checklist:
 - [ ] match_expr
 - [ ] match_full
 - [x] math_ops
-- [ ] membership
+- [x] membership
 - [ ] min_max_builtin
 - [x] nested_function
 - [ ] order_by_map
@@ -93,7 +93,7 @@ Checklist:
 - [ ] string_index
 - [ ] string_prefix_slice
 - [x] substring_builtin
-- [ ] sum_builtin
+- [x] sum_builtin
 - [x] tail_recursion
 - [ ] test_block
 - [ ] tree_sum

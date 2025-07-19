@@ -63,6 +63,8 @@ function mochi_print(v)
     print(v)
   end
 end
-y = 0
+nums = {1, 2, 3}
 
-mochi_print(y)
+mochi_print(contains(nums, 2))
+
+mochi_print(contains(nums, 4))

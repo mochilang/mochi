@@ -63,6 +63,6 @@ function mochi_print(v)
     print(v)
   end
 end
-y = 0
-
-mochi_print(y)
+for _, n in ipairs({1, 2, 3}) do
+mochi_print(n)
+end

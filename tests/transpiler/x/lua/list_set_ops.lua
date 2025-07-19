@@ -63,6 +63,10 @@ function mochi_print(v)
     print(v)
   end
 end
-y = 0
+mochi_print(({1, 2} union {2, 3}))
 
-mochi_print(y)
+mochi_print(({1, 2, 3} except {2}))
+
+mochi_print(({1, 2, 3} intersect {2, 4}))
+
+mochi_print(len(({1, 2} union {2, 3})))
