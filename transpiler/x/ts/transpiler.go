@@ -1,3 +1,5 @@
+//go:build slow
+
 package tstranspiler
 
 import (
@@ -8,6 +10,8 @@ import (
 	"mochi/ast"
 	"mochi/parser"
 	"mochi/types"
+
+	meta "mochi/transpiler/meta"
 )
 
 // Simple TypeScript AST nodes used by the transpiler.
@@ -74,6 +78,7 @@ func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
 // Emit converts the AST back into TypeScript source code.
 func Emit(p *Program) []byte {
 	var b bytes.Buffer
+	b.Write(meta.Header("//"))
 	for i, s := range p.Stmts {
 		if i > 0 {
 			b.WriteByte('\n')
