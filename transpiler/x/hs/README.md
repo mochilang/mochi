@@ -2,7 +2,7 @@
 
 This package contains experimental transpilers that convert Mochi bytecode to other programming languages. The Haskell backend currently supports a tiny subset of the language.
 
-Compiled programs: 15/100
+Compiled programs: 22/100
 
 ## Golden test checklist
 - [ ] append_builtin
@@ -13,7 +13,7 @@ Compiled programs: 15/100
 - [ ] break_continue
 - [ ] cast_string_to_int
 - [ ] cast_struct
-- [ ] closure
+- [x] closure
 - [ ] count_builtin
 - [ ] cross_join
 - [ ] cross_join_filter
@@ -39,7 +39,7 @@ Compiled programs: 15/100
 - [ ] group_items_iteration
 - [x] if_else
 - [x] if_then_else
-- [ ] if_then_else_nested
+- [x] if_then_else_nested
 - [ ] in_operator
 - [ ] in_operator_extended
 - [ ] inner_join
@@ -71,10 +71,10 @@ Compiled programs: 15/100
 - [ ] nested_function
 - [ ] order_by_map
 - [ ] outer_join
-- [ ] partial_application
+- [x] partial_application
 - [x] print_hello
-- [ ] pure_fold
-- [ ] pure_global_fold
+- [x] pure_fold
+- [x] pure_global_fold
 - [ ] python_auto
 - [ ] python_math
 - [ ] query_sum_select
@@ -85,7 +85,7 @@ Compiled programs: 15/100
 - [ ] slice
 - [ ] sort_stable
 - [ ] str_builtin
-- [ ] string_compare
+- [x] string_compare
 - [x] string_concat
 - [ ] string_contains
 - [ ] string_in_operator
@@ -94,7 +94,7 @@ Compiled programs: 15/100
 - [ ] substring_builtin
 - [ ] sum_builtin
 - [ ] tail_recursion
-- [ ] test_block
+- [x] test_block
 - [ ] tree_sum
 - [ ] two-sum
 - [x] typed_let

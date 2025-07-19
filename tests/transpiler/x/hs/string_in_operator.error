@@ -1,0 +1,7 @@
+run: exit status 1
+
+/workspace/mochi/tests/transpiler/x/hs/string_in_operator.hs:6:18: error:
+    parse error on input ‘in’
+  |
+6 |     print ("cat" in s)
+  |                  ^^
