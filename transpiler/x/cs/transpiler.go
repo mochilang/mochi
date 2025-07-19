@@ -25,6 +25,8 @@ type Program struct {
 }
 
 var stringVars map[string]bool
+var mapVars map[string]bool
+var usesDict bool
 
 type Stmt interface{ emit(io.Writer) }
 
@@ -348,6 +350,11 @@ func (ie *InExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ".Contains(")
 		ie.Item.emit(w)
 		fmt.Fprint(w, ") ? 1 : 0")
+	} else if isMapExpr(ie.Collection) {
+		ie.Collection.emit(w)
+		fmt.Fprint(w, ".ContainsKey(")
+		ie.Item.emit(w)
+		fmt.Fprint(w, ") ? 1 : 0")
 	} else {
 		fmt.Fprint(w, "Array.IndexOf(")
 		ie.Collection.emit(w)
@@ -480,6 +487,16 @@ func isStringExpr(e Expr) bool {
 	return false
 }
 
+func isMapExpr(e Expr) bool {
+	switch ex := e.(type) {
+	case *MapLit:
+		return true
+	case *VarRef:
+		return mapVars[ex.Name]
+	}
+	return false
+}
+
 func (ix *IndexExpr) emit(w io.Writer) {
 	ix.Target.emit(w)
 	fmt.Fprint(w, "[")
@@ -500,11 +517,37 @@ func (l *ListLit) emit(w io.Writer) {
 	fmt.Fprint(w, "}")
 }
 
+type MapItem struct {
+	Key   Expr
+	Value Expr
+}
+
+type MapLit struct{ Items []MapItem }
+
+func (m *MapLit) emit(w io.Writer) {
+	fmt.Fprint(w, "new Dictionary<object, object>{")
+	for i, it := range m.Items {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		fmt.Fprint(w, "{")
+		it.Key.emit(w)
+		fmt.Fprint(w, ", ")
+		it.Value.emit(w)
+		fmt.Fprint(w, "}")
+	}
+	fmt.Fprint(w, "}")
+}
+
 type CountExpr struct{ Arg Expr }
 
 func (c *CountExpr) emit(w io.Writer) {
 	c.Arg.emit(w)
-	fmt.Fprint(w, ".Length")
+	if isMapExpr(c.Arg) {
+		fmt.Fprint(w, ".Count")
+	} else {
+		fmt.Fprint(w, ".Length")
+	}
 }
 
 type AvgExpr struct{ Arg Expr }
@@ -519,7 +562,11 @@ type LenExpr struct{ Arg Expr }
 
 func (l *LenExpr) emit(w io.Writer) {
 	l.Arg.emit(w)
-	fmt.Fprint(w, ".Length")
+	if isMapExpr(l.Arg) {
+		fmt.Fprint(w, ".Count")
+	} else {
+		fmt.Fprint(w, ".Length")
+	}
 }
 
 type SumExpr struct{ Arg Expr }
@@ -594,6 +641,8 @@ func (v *ValuesExpr) emit(w io.Writer) {
 func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	prog := &Program{}
 	stringVars = make(map[string]bool)
+	mapVars = make(map[string]bool)
+	usesDict = false
 	for _, st := range p.Statements {
 		s, err := compileStmt(prog, st)
 		if err != nil {
@@ -773,6 +822,9 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		if isStringExpr(val) {
 			stringVars[s.Let.Name] = true
 		}
+		if isMapExpr(val) {
+			mapVars[s.Let.Name] = true
+		}
 		return &LetStmt{Name: s.Let.Name, Value: val}, nil
 	case s.Var != nil:
 		var val Expr
@@ -786,6 +838,9 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		if isStringExpr(val) {
 			stringVars[s.Var.Name] = true
 		}
+		if isMapExpr(val) {
+			mapVars[s.Var.Name] = true
+		}
 		return &VarStmt{Name: s.Var.Name, Value: val}, nil
 	case s.Assign != nil:
 		if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
@@ -795,6 +850,9 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			}
 			if isStringExpr(val) {
 				stringVars[s.Assign.Name] = true
+			}
+			if isMapExpr(val) {
+				mapVars[s.Assign.Name] = true
 			}
 			return &AssignStmt{Name: s.Assign.Name, Value: val}, nil
 		}
@@ -1000,6 +1058,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 		case "values":
 			if len(args) == 1 {
+				usesDict = true
 				return &ValuesExpr{Map: args[0]}, nil
 			}
 		}
@@ -1020,6 +1079,21 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			elems[i] = ex
 		}
 		return &ListLit{Elems: elems}, nil
+	case p.Map != nil:
+		items := make([]MapItem, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			k, err := compileExpr(it.Key)
+			if err != nil {
+				return nil, err
+			}
+			v, err := compileExpr(it.Value)
+			if err != nil {
+				return nil, err
+			}
+			items[i] = MapItem{Key: k, Value: v}
+		}
+		usesDict = true
+		return &MapLit{Items: items}, nil
 	case p.Selector != nil:
 		expr := Expr(&VarRef{Name: p.Selector.Root})
 		for _, t := range p.Selector.Tail {
@@ -1062,6 +1136,9 @@ func compileIfExpr(i *parser.IfExpr) (Expr, error) {
 func Emit(prog *Program) []byte {
 	var buf bytes.Buffer
 	buf.WriteString("using System;\n")
+	if usesDict {
+		buf.WriteString("using System.Collections.Generic;\n")
+	}
 	if needsLinq(prog) {
 		buf.WriteString("using System.Linq;\n")
 	}
@@ -1267,6 +1344,13 @@ func toNodeExpr(e Expr) *ast.Node {
 		n := &ast.Node{Kind: "list"}
 		for _, el := range ex.Elems {
 			n.Children = append(n.Children, toNodeExpr(el))
+		}
+		return n
+	case *MapLit:
+		n := &ast.Node{Kind: "map"}
+		for _, it := range ex.Items {
+			pair := &ast.Node{Kind: "entry", Children: []*ast.Node{toNodeExpr(it.Key), toNodeExpr(it.Value)}}
+			n.Children = append(n.Children, pair)
 		}
 		return n
 	case *StringLit:
