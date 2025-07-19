@@ -1,3 +1,14 @@
+## Progress (2025-07-20 01:18 +0700)
+- VM valid golden test results updated
+- Added list literals and if statements inside functions
+- Enabled sum builtin support
+
+## Progress (2025-07-20 00:50 +0700)
+- Updated golden test checklist (29/100 passing)
+- Improved Haskell code formatting and timestamp generation
+- Removed redundant runtime helpers
+- Extended boolean type inference for print statements
+
 ## Progress (2025-07-19 19:57 +0700)
 - Added membership operator support for lists and strings
 - Implemented set operations: union, except and intersect
@@ -8,12 +19,6 @@
 ## Progress (2025-07-19 19:39 +0700)
 - Added list literals and if statements inside functions
 - Enabled sum builtin support
-
-## Progress (2025-07-19 19:39 +0700)
-- Added bool printing via fromEnum for Haskell backend
-
-## Progress (2025-07-19 19:39 +0700)
-- Added bool printing via fromEnum for Haskell backend
 
 ## Progress (2025-07-19 19:20 +0700)
 - Added bool printing via fromEnum for Haskell backend
