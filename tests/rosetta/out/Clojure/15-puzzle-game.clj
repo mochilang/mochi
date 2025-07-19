@@ -26,12 +26,25 @@
       (when (> i 0) (print " "))
       (pv a))
     (println)))
+(def ^:dynamic _now_seeded (atom false))
+  (def ^:dynamic _now_seed (atom 0))
+  (defn _now []
+    (when-not @_now_seeded
+      (let [s (System/getenv "MOCHI_NOW_SEED")]
+        (when (and s (re-matches #"\d+" s))
+          (reset! _now_seed (Long/parseLong s))
+          (reset! _now_seeded true))))
+    (if @_now_seeded
+      (do
+        (swap! _now_seed #(mod (+ (* % 1664525) 1013904223) 2147483647))
+        @_now_seed)
+      (System/nanoTime)))
 (declare board solved empty moves quit)
 
 ;; Function randMove returns int
 (defn randMove []
   (try
-    (throw (ex-info "return" {:value (mod (System/nanoTime) 4)}))
+    (throw (ex-info "return" {:value (mod (_now) 4)}))
   (catch clojure.lang.ExceptionInfo e
     (if (= (.getMessage e) "return")
       (:value (ex-data e))

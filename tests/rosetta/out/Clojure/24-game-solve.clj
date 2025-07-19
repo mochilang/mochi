@@ -32,6 +32,19 @@
       (when (> i 0) (print " "))
       (pv a))
     (println)))
+(def ^:dynamic _now_seeded (atom false))
+  (def ^:dynamic _now_seed (atom 0))
+  (defn _now []
+    (when-not @_now_seeded
+      (let [s (System/getenv "MOCHI_NOW_SEED")]
+        (when (and s (re-matches #"\d+" s))
+          (reset! _now_seed (Long/parseLong s))
+          (reset! _now_seeded true))))
+    (if @_now_seeded
+      (do
+        (swap! _now_seed #(mod (+ (* % 1664525) 1013904223) 2147483647))
+        @_now_seed)
+      (System/nanoTime)))
 (declare OP_NUM OP_ADD OP_SUB OP_MUL OP_DIV n_cards goal digit_range)
 
 ;; Function newNum takes [n: int] and returns map of string to any
@@ -237,7 +250,7 @@
 (loop []
 (when (< main_i n_cards)
 (let [r (try
-(def main_n (+ (mod (System/nanoTime) (- digit_range 1)) 1)) ;; int
+(def main_n (+ (mod (_now) (- digit_range 1)) 1)) ;; int
 (def main_cards (conj main_cards (newNum main_n))) ;; list of map of string to any
 (_print (str " " (str main_n)))
 (def main_i (+ main_i 1)) ;; int

@@ -20,6 +20,19 @@
       (when (> i 0) (print " "))
       (pv a))
     (println)))
+(def ^:dynamic _now_seeded (atom false))
+  (def ^:dynamic _now_seed (atom 0))
+  (defn _now []
+    (when-not @_now_seeded
+      (let [s (System/getenv "MOCHI_NOW_SEED")]
+        (when (and s (re-matches #"\d+" s))
+          (reset! _now_seed (Long/parseLong s))
+          (reset! _now_seeded true))))
+    (if @_now_seeded
+      (do
+        (swap! _now_seed #(mod (+ (* % 1664525) 1013904223) 2147483647))
+        @_now_seed)
+      (System/nanoTime)))
 ;; Function parseIntStr takes [str: string] and returns int
 (defn parseIntStr [str]
   (try
@@ -66,7 +79,7 @@
 (defn main []
 (try
 (def main_total 0) ;; int
-(def main_computer (= (mod (System/nanoTime) 2) 0)) ;; bool
+(def main_computer (= (mod (_now) 2) 0)) ;; bool
 (_print "Enter q to quit at any time\n")
 (if main_computer
   (do
@@ -93,7 +106,7 @@
                 (def main_choice 0) ;; int
                 (if (< main_total 18)
                   (do
-                    (def main_choice (+ (mod (System/nanoTime) 3) 1)) ;; int
+                    (def main_choice (+ (mod (_now) 3) 1)) ;; int
                   )
 
                 (do
