@@ -26,6 +26,18 @@ type Program struct {
 
 type Stmt interface{ emit(io.Writer) }
 
+// IndexAssignStmt assigns to a[i] or m[key].
+type IndexAssignStmt struct {
+	Target Expr
+	Value  Expr
+}
+
+func (s *IndexAssignStmt) emit(w io.Writer) {
+	s.Target.emit(w)
+	io.WriteString(w, " = ")
+	s.Value.emit(w)
+}
+
 // ReturnStmt is a return statement inside a function.
 type ReturnStmt struct{ Value Expr }
 
@@ -41,6 +53,7 @@ func (s *ReturnStmt) emit(w io.Writer) {
 type FuncDef struct {
 	Name   string
 	Params []string
+	Ret    string
 	Body   []Stmt
 }
 
@@ -50,9 +63,13 @@ func (f *FuncDef) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
-		io.WriteString(w, p+": Any")
+		io.WriteString(w, p)
 	}
-	io.WriteString(w, "): Any {\n")
+	ret := f.Ret
+	if ret == "" {
+		ret = "Any"
+	}
+	io.WriteString(w, "): "+ret+" {\n")
 	for _, s := range f.Body {
 		io.WriteString(w, "    ")
 		s.emit(w)
@@ -128,7 +145,7 @@ type MapItem struct {
 }
 
 func (m *MapLit) emit(w io.Writer) {
-	io.WriteString(w, "mapOf(")
+	io.WriteString(w, "mutableMapOf(")
 	for i, it := range m.Items {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -329,12 +346,46 @@ func (ie *IfExpr) emit(w io.Writer) {
 type ListLit struct{ Elems []Expr }
 
 func (l *ListLit) emit(w io.Writer) {
-	io.WriteString(w, "listOf(")
+	io.WriteString(w, "mutableListOf(")
 	for i, e := range l.Elems {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
 		e.emit(w)
+	}
+	io.WriteString(w, ")")
+}
+
+// SliceExpr represents s[i:j] for strings and lists.
+type SliceExpr struct {
+	Value    Expr
+	Start    Expr
+	End      Expr
+	IsString bool
+}
+
+func (s *SliceExpr) emit(w io.Writer) {
+	s.Value.emit(w)
+	if s.IsString {
+		io.WriteString(w, ".substring(")
+	} else {
+		io.WriteString(w, ".subList(")
+	}
+	if s.Start != nil {
+		s.Start.emit(w)
+	} else {
+		io.WriteString(w, "0")
+	}
+	io.WriteString(w, ", ")
+	if s.End != nil {
+		s.End.emit(w)
+	} else {
+		s.Value.emit(w)
+		if s.IsString {
+			io.WriteString(w, ".length")
+		} else {
+			io.WriteString(w, ".size")
+		}
 	}
 	io.WriteString(w, ")")
 }
@@ -395,7 +446,7 @@ type AppendExpr struct {
 
 func (a *AppendExpr) emit(w io.Writer) {
 	a.List.emit(w)
-	io.WriteString(w, " + listOf(")
+	io.WriteString(w, " + mutableListOf(")
 	a.Elem.emit(w)
 	io.WriteString(w, ")")
 }
@@ -477,6 +528,16 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				return nil, err
 			}
 			p.Stmts = append(p.Stmts, &AssignStmt{Name: st.Assign.Name, Value: e})
+		case st.Assign != nil && len(st.Assign.Index) > 0 && len(st.Assign.Field) == 0:
+			target, err := buildIndexTarget(env, st.Assign.Name, st.Assign.Index)
+			if err != nil {
+				return nil, err
+			}
+			v, err := convertExpr(env, st.Assign.Value)
+			if err != nil {
+				return nil, err
+			}
+			p.Stmts = append(p.Stmts, &IndexAssignStmt{Target: target, Value: v})
 		case st.Return != nil:
 			var val Expr
 			if st.Return.Value != nil {
@@ -494,9 +555,27 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			}
 			var params []string
 			for _, p0 := range st.Fun.Params {
-				params = append(params, p0.Name)
+				typ := "Any"
+				if p0.Type != nil && p0.Type.Simple != nil {
+					switch *p0.Type.Simple {
+					case "int":
+						typ = "Int"
+					case "bool":
+						typ = "Boolean"
+					}
+				}
+				params = append(params, fmt.Sprintf("%s: %s", p0.Name, typ))
 			}
-			p.Funcs = append(p.Funcs, &FuncDef{Name: st.Fun.Name, Params: params, Body: body})
+			ret := ""
+			if st.Fun.Return != nil && st.Fun.Return.Simple != nil {
+				switch *st.Fun.Return.Simple {
+				case "int":
+					ret = "Int"
+				case "bool":
+					ret = "Boolean"
+				}
+			}
+			p.Funcs = append(p.Funcs, &FuncDef{Name: st.Fun.Name, Params: params, Ret: ret, Body: body})
 		case st.If != nil:
 			stmt, err := convertIfStmt(env, st.If)
 			if err != nil {
@@ -554,6 +633,16 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				return nil, err
 			}
 			out = append(out, &AssignStmt{Name: s.Assign.Name, Value: v})
+		case s.Assign != nil && len(s.Assign.Index) > 0 && len(s.Assign.Field) == 0:
+			target, err := buildIndexTarget(env, s.Assign.Name, s.Assign.Index)
+			if err != nil {
+				return nil, err
+			}
+			v, err := convertExpr(env, s.Assign.Value)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, &IndexAssignStmt{Target: target, Value: v})
 		case s.Return != nil:
 			var v Expr
 			if s.Return.Value != nil {
@@ -655,6 +744,21 @@ func convertForStmt(env *types.Env, fs *parser.ForStmt) (Stmt, error) {
 		return nil, err
 	}
 	return &ForEachStmt{Name: fs.Name, Iterable: iter, Body: body}, nil
+}
+
+func buildIndexTarget(env *types.Env, name string, idx []*parser.IndexOp) (Expr, error) {
+	var target Expr = &VarRef{Name: name}
+	for _, op := range idx {
+		if op.Colon != nil || op.Colon2 != nil {
+			return nil, fmt.Errorf("slice assign unsupported")
+		}
+		i, err := convertExpr(env, op.Start)
+		if err != nil {
+			return nil, err
+		}
+		target = &IndexExpr{Target: target, Index: i}
+	}
+	return target, nil
 }
 
 func convertIfExpr(env *types.Env, ie *parser.IfExpr) (Expr, error) {
@@ -779,6 +883,36 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				return nil, err
 			}
 			expr = &IndexExpr{Target: expr, Index: idx}
+		case op.Index != nil && op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil:
+			var startExpr Expr
+			if op.Index.Start != nil {
+				startExpr, err = convertExpr(env, op.Index.Start)
+				if err != nil {
+					return nil, err
+				}
+			}
+			var endExpr Expr
+			if op.Index.End != nil {
+				endExpr, err = convertExpr(env, op.Index.End)
+				if err != nil {
+					return nil, err
+				}
+			}
+			isStr := false
+			switch v := expr.(type) {
+			case *VarRef:
+				if typ, err := env.GetVar(v.Name); err == nil {
+					if _, ok := typ.(types.StringType); ok {
+						isStr = true
+					}
+				}
+			case *StringLit:
+				isStr = true
+			}
+			if endExpr == nil {
+				endExpr = &LenExpr{Value: expr, IsString: isStr}
+			}
+			expr = &SliceExpr{Value: expr, Start: startExpr, End: endExpr, IsString: isStr}
 		case op.Field != nil && op.Field.Name == "contains" && i+1 < len(p.Ops) && p.Ops[i+1].Call != nil:
 			call := p.Ops[i+1].Call
 			if len(call.Args) != 1 {
@@ -895,7 +1029,16 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			}
 			name := p.Call.Func
 			if name == "print" {
-				name = "println"
+				if len(args) == 1 {
+					name = "println"
+					return &CallExpr{Func: name, Args: args}, nil
+				}
+				// concatenate arguments with spaces
+				expr := args[0]
+				for _, a := range args[1:] {
+					expr = &BinaryExpr{Left: &BinaryExpr{Left: expr, Op: "+", Right: &StringLit{Value: " "}}, Op: "+", Right: a}
+				}
+				return &CallExpr{Func: "println", Args: []Expr{expr}}, nil
 			}
 			return &CallExpr{Func: name, Args: args}, nil
 		}
@@ -1006,6 +1149,8 @@ func toNodeStmt(s Stmt) *ast.Node {
 		return &ast.Node{Kind: "var", Value: st.Name, Children: []*ast.Node{toNodeExpr(st.Value)}}
 	case *AssignStmt:
 		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{toNodeExpr(st.Value)}}
+	case *IndexAssignStmt:
+		return &ast.Node{Kind: "indexassign", Children: []*ast.Node{toNodeExpr(st.Target), toNodeExpr(st.Value)}}
 	case *IfStmt:
 		n := &ast.Node{Kind: "if", Children: []*ast.Node{toNodeExpr(st.Cond)}}
 		thenNode := &ast.Node{Kind: "then"}
@@ -1121,6 +1266,19 @@ func toNodeExpr(e Expr) *ast.Node {
 		return &ast.Node{Kind: "values", Children: []*ast.Node{toNodeExpr(ex.Map)}}
 	case *SubstringExpr:
 		return &ast.Node{Kind: "substring", Children: []*ast.Node{toNodeExpr(ex.Value), toNodeExpr(ex.Start), toNodeExpr(ex.End)}}
+	case *SliceExpr:
+		n := &ast.Node{Kind: "slice", Children: []*ast.Node{toNodeExpr(ex.Value)}}
+		if ex.Start != nil {
+			n.Children = append(n.Children, toNodeExpr(ex.Start))
+		} else {
+			n.Children = append(n.Children, &ast.Node{Kind: "none"})
+		}
+		if ex.End != nil {
+			n.Children = append(n.Children, toNodeExpr(ex.End))
+		} else {
+			n.Children = append(n.Children, &ast.Node{Kind: "none"})
+		}
+		return n
 	case *IfExpr:
 		n := &ast.Node{Kind: "ifexpr"}
 		n.Children = append(n.Children, toNodeExpr(ex.Cond), toNodeExpr(ex.Then))

@@ -36,3 +36,8 @@ _Last updated: 2025-07-19T12:53:06+00:00_
 - Implemented `for` loops over ranges and collections.
 - Added `break` and `continue` statements.
 - Generated Kotlin sources for `for_loop`, `for_list_collection` and `break_continue` and updated README progress to 34/100.
+
+## VM Golden Progress (2025-07-19 13:24 UTC)
+- Added support for list and map mutation by emitting mutable collections.
+- Implemented slice expressions for lists and strings.
+- New golden tests generated: `fun_call`, `fun_three_args`, `slice` and `string_prefix_slice` bringing progress to 38/100.

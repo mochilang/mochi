@@ -1,5 +1,5 @@
-// Mochi 0.10.31 - generated 2025-07-19 11:38:49 UTC
-fun boom(): Any {
+// Mochi 0.10.31 - generated 2025-07-19 13:22:10 UTC
+fun boom(): Boolean {
     println("boom")
     return true
 }
