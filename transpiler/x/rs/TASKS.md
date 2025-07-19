@@ -1,5 +1,10 @@
 # Rust Transpiler Tasks
 
+## Recent Enhancements (2025-07-19 10:41 +0000)
+- Added support for while loops.
+- Generated golden test for `while_loop`.
+- Updated README checklist with progress summary.
+
 ## Recent Enhancements (2025-07-19 07:52 +0000)
 - Added support for list and map literals.
 - Generated golden tests for `len_builtin` and `len_map`.
