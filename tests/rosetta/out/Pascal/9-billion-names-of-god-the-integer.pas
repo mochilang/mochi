@@ -16,6 +16,11 @@ begin
   Result[n] := val;
 end;
 
+generic function _countList<T>(arr: specialize TArray<T>): integer;
+begin
+  Result := Length(arr);
+end;
+
 generic function _indexList<T>(arr: specialize TArray<T>; i: integer): T;
 begin
   if i < 0 then i := Length(arr) + i;
@@ -40,7 +45,7 @@ end;
 
 
 var
-  i: Variant;
+  i: integer;
   line: string;
   num: function(p0: Variant): integer is nested;
   r: Variant;
@@ -62,15 +67,15 @@ end;
 
 function bigFromInt(x: integer): specialize TArray<integer>;
 var
-  digits: specialize TArray<Variant>;
-  n: Variant;
+  digits: specialize TArray<integer>;
+  n: integer;
 begin
   if (x = 0) then ;
-  digits := specialize TArray<Variant>([]);
+  digits := specialize TArray<integer>([]);
   n := x;
   while (n > 0) do
   begin
-    digits := specialize _appendList<Variant>(digits, n mod 10);
+    digits := specialize _appendList<integer>(digits, n mod 10);
     n := n div 10;
   end;
   result := digits;
@@ -83,10 +88,10 @@ var
   bv: integer;
   carry: integer;
   i: integer;
-  res: specialize TArray<Variant>;
+  res: specialize TArray<integer>;
   s: integer;
 begin
-  res := specialize TArray<Variant>([]);
+  res := specialize TArray<integer>([]);
   carry := 0;
   i := 0;
   while (((i < Length(a)) or (i < Length(b))) or (carry > 0)) do
@@ -96,7 +101,7 @@ begin
     bv := 0;
     if (i < Length(b)) then ;
     s := av + bv + carry;
-    res := specialize _appendList<Variant>(res, s mod 10);
+    res := specialize _appendList<integer>(res, s mod 10);
     carry := s div 10;
     i := i + 1;
   end;
@@ -111,9 +116,9 @@ var
   bv: integer;
   diff: Variant;
   i: integer;
-  res: specialize TArray<Variant>;
+  res: specialize TArray<integer>;
 begin
-  res := specialize TArray<Variant>([]);
+  res := specialize TArray<integer>([]);
   borrow := 0;
   i := 0;
   while (i < Length(a)) do
@@ -130,7 +135,7 @@ begin
     begin
       borrow := 0;
     end;
-    res := specialize _appendList<Variant>(res, diff);
+    res := specialize _appendList<integer>(res, diff);
     i := i + 1;
   end;
   result := bigTrim(res);
@@ -168,13 +173,13 @@ end;
 
 function cumu(n: integer): specialize TArray<specialize TArray<integer>>;
 var
-  cache: specialize TArray<Variant>;
-  row: function(p0: integer): specialize TArray<string> is nested;
-  val: specialize TArray<Variant>;
+  cache: specialize TArray<specialize TArray<specialize TArray<integer>>>;
+  row: specialize TArray<specialize TArray<integer>>;
+  val: specialize TArray<specialize TArray<specialize TArray<integer>>>;
   x: integer;
   y: integer;
 begin
-  cache := specialize TArray<Variant>([specialize TArray<specialize TArray<integer>>([bigFromInt(1)])]);
+  cache := specialize TArray<specialize TArray<specialize TArray<integer>>>([specialize TArray<specialize TArray<integer>>([bigFromInt(1)])]);
   y := 1;
   while (y <= n) do
   begin
@@ -182,14 +187,14 @@ begin
     x := 1;
     while (x <= y) do
     begin
-      val := specialize _indexList<Variant>(specialize _indexList<Variant>(cache, y - x), minInt(x, y - x));
-      row := specialize _appendList<Variant>(row, bigAdd(row[Length(row) - 1], val));
+      val := specialize _indexList<specialize TArray<specialize TArray<integer>>>(specialize _indexList<specialize TArray<specialize TArray<integer>>>(cache, y - x), minInt(x, y - x));
+      row := specialize _appendList<specialize TArray<integer>>(row, bigAdd(specialize _indexList<specialize TArray<integer>>(row, specialize _countList<specialize TArray<integer>>(row) - 1), val));
       x := x + 1;
     end;
-    cache := specialize _appendList<Variant>(cache, row);
+    cache := specialize _appendList<specialize TArray<specialize TArray<integer>>>(cache, row);
     y := y + 1;
   end;
-  result := specialize _indexList<Variant>(cache, n);
+  result := specialize _indexList<specialize TArray<specialize TArray<integer>>>(cache, n);
   exit;
 end;
 
@@ -197,16 +202,16 @@ function row(n: integer): specialize TArray<string>;
 var
   diff: Variant;
   e: Variant;
-  i: Variant;
-  out: specialize TArray<Variant>;
+  i: integer;
+  out: specialize TArray<string>;
 begin
   e := cumu(n);
-  out := specialize TArray<Variant>([]);
+  out := specialize TArray<string>([]);
   i := 0;
   while (i < n) do
   begin
     diff := bigSub(e[i + 1], e[i]);
-    out := specialize _appendList<Variant>(out, bigToString(diff));
+    out := specialize _appendList<string>(out, bigToString(diff));
     i := i + 1;
   end;
   result := out;

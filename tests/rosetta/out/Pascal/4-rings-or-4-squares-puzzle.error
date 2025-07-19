@@ -20,8 +20,6 @@ fgl.pp(1668,8) Note: Call to subroutine "function TFPGMap<System.ShortString,Sys
 4-rings-or-4-squares-puzzle.pas(54,54) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
 4-rings-or-4-squares-puzzle.pas(54,57) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
 4-rings-or-4-squares-puzzle.pas(61,10) Note: Call to subroutine "operator =(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
-4-rings-or-4-squares-puzzle.pas(70,93) Error: Identifier not found "any"
-4-rings-or-4-squares-puzzle.pas(70,96) Error: Type identifier expected
 4-rings-or-4-squares-puzzle.pas(85,12) Error: Incompatible types: got "ShortInt" expected "<procedure variable type of function(Variant):LongInt is nested;Register>"
 4-rings-or-4-squares-puzzle.pas(86,7) Error: Ordinal expression expected
 4-rings-or-4-squares-puzzle.pas(88,9) Error: Ordinal expression expected
@@ -31,6 +29,6 @@ fgl.pp(1668,8) Note: Call to subroutine "function TFPGMap<System.ShortString,Sys
 4-rings-or-4-squares-puzzle.pas(106,30) Error: Operator is not overloaded: "<procedure variable type of function(Variant):LongInt is nested;Register>" + "ShortInt"
 4-rings-or-4-squares-puzzle.pas(114,36) Error: Incompatible type for arg no. 2: Got "<procedure variable type of function(Variant):LongInt is nested;Register>", expected "Variant"
 4-rings-or-4-squares-puzzle.pas(13,19) Warning: function result variable of a managed type does not seem to be initialized
-4-rings-or-4-squares-puzzle.pas(130) Fatal: There were 10 errors compiling module, stopping
+4-rings-or-4-squares-puzzle.pas(130) Fatal: There were 8 errors compiling module, stopping
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode

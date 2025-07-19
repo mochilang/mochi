@@ -67,7 +67,7 @@ begin
   exit;
 end;
 
-function getCombs(low: integer; high: integer; unique: boolean): specialize TFPGMap<string, any>;
+function getCombs(low: integer; high: integer; unique: boolean): specialize TFPGMap<string, Variant>;
 var
   _tmp0: specialize TFPGMap<string, Variant>;
   a: Variant;
