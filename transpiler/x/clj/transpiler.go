@@ -1,0 +1,238 @@
+package cljt
+
+import (
+	"bytes"
+	"fmt"
+	"io"
+	"strconv"
+
+	"mochi/ast"
+	"mochi/parser"
+	"mochi/types"
+)
+
+// --- Simple Clojure AST ---
+
+// Node represents any Clojure AST node that can be emitted as code.
+type Node interface {
+	Emit(io.Writer)
+}
+
+// Symbol represents a Clojure symbol.
+type Symbol string
+
+func (s Symbol) Emit(w io.Writer) {
+	io.WriteString(w, string(s))
+}
+
+// StringLit represents a quoted string literal.
+type StringLit string
+
+func (s StringLit) Emit(w io.Writer) {
+	fmt.Fprintf(w, "%q", string(s))
+}
+
+// IntLit represents an integer literal.
+type IntLit int64
+
+func (i IntLit) Emit(w io.Writer) {
+	io.WriteString(w, strconv.FormatInt(int64(i), 10))
+}
+
+// List represents a Clojure list form: (elem1 elem2 ...)
+type List struct {
+	Elems []Node
+}
+
+func (l *List) Emit(w io.Writer) {
+	io.WriteString(w, "(")
+	for i, e := range l.Elems {
+		if i > 0 {
+			io.WriteString(w, " ")
+		}
+		if e != nil {
+			e.Emit(w)
+		}
+	}
+	io.WriteString(w, ")")
+}
+
+// Program is a sequence of top-level forms.
+type Program struct {
+	Forms []Node
+}
+
+func (p *Program) Emit(w io.Writer) {
+	for i, f := range p.Forms {
+		if f == nil {
+			continue
+		}
+		f.Emit(w)
+		if i < len(p.Forms)-1 {
+			io.WriteString(w, "\n")
+		}
+	}
+}
+
+// EmitString returns the program source as a byte slice.
+func EmitString(p *Program) []byte {
+	var buf bytes.Buffer
+	if p != nil {
+		p.Emit(&buf)
+	}
+	return buf.Bytes()
+}
+
+// --- Transpiler ---
+
+// Transpile converts a Mochi program into a Clojure AST. The implementation
+// is intentionally minimal and currently only supports very small programs used
+// by a subset of tests.
+func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
+	if prog == nil {
+		return nil, fmt.Errorf("nil program")
+	}
+
+	pr := &Program{}
+
+	// emit (ns main)
+	pr.Forms = append(pr.Forms, &List{Elems: []Node{Symbol("ns"), Symbol("main")}})
+
+	// translate main body
+	body := []Node{}
+	for _, st := range prog.Statements {
+		n, err := transpileStmt(st)
+		if err != nil {
+			return nil, err
+		}
+		if n != nil {
+			body = append(body, n)
+		}
+	}
+
+	mainElems := []Node{Symbol("defn"), Symbol("-main"), &List{}}
+	mainElems = append(mainElems, body...)
+	pr.Forms = append(pr.Forms, &List{Elems: mainElems})
+
+	// invoke main
+	pr.Forms = append(pr.Forms, &List{Elems: []Node{Symbol("-main")}})
+	return pr, nil
+}
+
+func transpileStmt(s *parser.Statement) (Node, error) {
+	switch {
+	case s.Expr != nil:
+		return transpileExpr(s.Expr.Expr)
+	default:
+		return nil, fmt.Errorf("unsupported statement")
+	}
+}
+
+func transpileExpr(e *parser.Expr) (Node, error) {
+	if e == nil {
+		return nil, fmt.Errorf("nil expr")
+	}
+	if e.Binary == nil {
+		return nil, fmt.Errorf("unsupported expr")
+	}
+	return transpileUnary(e.Binary.Left)
+}
+
+func transpileUnary(u *parser.Unary) (Node, error) {
+	if u == nil {
+		return nil, fmt.Errorf("nil unary")
+	}
+	if len(u.Ops) != 0 {
+		return nil, fmt.Errorf("unary op not supported")
+	}
+	return transpilePostfix(u.Value)
+}
+
+func transpilePostfix(p *parser.PostfixExpr) (Node, error) {
+	if p == nil {
+		return nil, fmt.Errorf("nil postfix")
+	}
+	if len(p.Ops) != 0 {
+		return nil, fmt.Errorf("postfix ops not supported")
+	}
+	return transpilePrimary(p.Target)
+}
+
+func transpilePrimary(p *parser.Primary) (Node, error) {
+	if p == nil {
+		return nil, fmt.Errorf("nil primary")
+	}
+	switch {
+	case p.Call != nil:
+		return transpileCall(p.Call)
+	case p.Lit != nil:
+		return transpileLiteral(p.Lit)
+	default:
+		return nil, fmt.Errorf("unsupported primary")
+	}
+}
+
+func transpileCall(c *parser.CallExpr) (Node, error) {
+	elems := []Node{}
+	switch c.Func {
+	case "print":
+		elems = append(elems, Symbol("println"))
+	default:
+		elems = append(elems, Symbol(c.Func))
+	}
+	for _, arg := range c.Args {
+		a, err := transpileExpr(arg)
+		if err != nil {
+			return nil, err
+		}
+		elems = append(elems, a)
+	}
+	return &List{Elems: elems}, nil
+}
+
+func transpileLiteral(l *parser.Literal) (Node, error) {
+	switch {
+	case l.Str != nil:
+		return StringLit(*l.Str), nil
+	case l.Int != nil:
+		return IntLit(*l.Int), nil
+	case l.Bool != nil:
+		if bool(*l.Bool) {
+			return Symbol("true"), nil
+		}
+		return Symbol("false"), nil
+	default:
+		return nil, fmt.Errorf("unsupported literal")
+	}
+}
+
+// Print converts the AST node n into a generic ast.Node and writes it to stdout.
+func Print(n Node) {
+	toAst(n).Print("")
+}
+
+// toAst recursively converts our simple AST types into a mochi/ast.Node.
+func toAst(n Node) *ast.Node {
+	switch t := n.(type) {
+	case Symbol:
+		return &ast.Node{Kind: "symbol", Value: string(t)}
+	case StringLit:
+		return &ast.Node{Kind: "string", Value: string(t)}
+	case IntLit:
+		return &ast.Node{Kind: "int", Value: int64(t)}
+	case *List:
+		m := &ast.Node{Kind: "list"}
+		for _, el := range t.Elems {
+			m.Children = append(m.Children, toAst(el))
+		}
+		return m
+	case *Program:
+		p := &ast.Node{Kind: "program"}
+		for _, f := range t.Forms {
+			p.Children = append(p.Children, toAst(f))
+		}
+		return p
+	default:
+		return &ast.Node{Kind: "unknown"}
+	}
+}
