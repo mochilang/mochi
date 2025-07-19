@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
@@ -716,6 +717,16 @@ func convertUnary(u *parser.Unary) Expr {
 	}
 	if g := u.Value.Target.Group; g != nil {
 		return convertExpr(g)
+	}
+	if len(u.Value.Ops) == 1 && u.Value.Ops[0].Cast != nil &&
+		u.Value.Ops[0].Cast.Type != nil &&
+		u.Value.Ops[0].Cast.Type.Simple != nil &&
+		*u.Value.Ops[0].Cast.Type.Simple == "int" && len(u.Ops) == 0 {
+		if lit := u.Value.Target.Lit; lit != nil && lit.Str != nil {
+			if n, err := strconv.Atoi(*lit.Str); err == nil {
+				return &IntLit{Value: n}
+			}
+		}
 	}
 	if call := u.Value.Target.Call; call != nil && len(u.Ops) == 0 {
 		if call.Func == "len" && len(call.Args) == 1 {
