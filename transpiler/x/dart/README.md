@@ -1,11 +1,11 @@
-# Dart Transpiler Output (4/100 generated and run)
+# Dart Transpiler Output (8/100 generated and run)
 
 Generated Dart code for programs in `tests/vm/valid`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
 ## Program checklist
 - [ ] append_builtin.mochi
 - [ ] avg_builtin.mochi
-- [ ] basic_compare.mochi
+- [x] basic_compare.mochi
 - [ ] binary_precedence.mochi
 - [ ] bool_chain.mochi
 - [ ] break_continue.mochi
@@ -95,9 +95,9 @@ Generated Dart code for programs in `tests/vm/valid`. Each program has a `.dart`
 - [ ] test_block.mochi
 - [ ] tree_sum.mochi
 - [ ] two-sum.mochi
-- [ ] typed_let.mochi
-- [ ] typed_var.mochi
-- [ ] unary_neg.mochi
+- [x] typed_let.mochi
+- [x] typed_var.mochi
+- [x] unary_neg.mochi
 - [ ] update_stmt.mochi
 - [ ] user_type_literal.mochi
 - [ ] values_builtin.mochi
