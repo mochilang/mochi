@@ -1,4 +1,4 @@
-# Mochi -> TypeScript Transpiler
+# Mochi → TypeScript Transpiler
 
 This directory contains the experimental TypeScript transpiler.
 Generated sources for the golden tests live under `tests/transpiler/x/ts`.

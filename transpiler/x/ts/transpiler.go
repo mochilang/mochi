@@ -72,6 +72,7 @@ type ForInStmt struct {
 	Name     string
 	Iterable Expr
 	Body     []Stmt
+	Keys     bool // if true, iterate over keys using `in` instead of values
 }
 
 type Expr interface {
@@ -83,9 +84,12 @@ type ExprStmt struct {
 }
 
 // VarDecl represents a variable declaration like `let x = expr`.
+// VarDecl represents a variable declaration like `let x = expr`. If Const is
+// true the variable is emitted as `const`, otherwise `let`.
 type VarDecl struct {
-	Name string
-	Expr Expr
+	Name  string
+	Expr  Expr
+	Const bool
 }
 
 // AssignStmt represents an assignment like `x = expr`.
@@ -512,7 +516,11 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 }
 
 func (v *VarDecl) emit(w io.Writer) {
-	io.WriteString(w, "let ")
+	if v.Const {
+		io.WriteString(w, "const ")
+	} else {
+		io.WriteString(w, "let ")
+	}
 	io.WriteString(w, v.Name)
 	if v.Expr != nil {
 		io.WriteString(w, " = ")
@@ -596,20 +604,15 @@ func (f *ForRangeStmt) emit(w io.Writer) {
 func (f *ForInStmt) emit(w io.Writer) {
 	io.WriteString(w, "for (const ")
 	io.WriteString(w, f.Name)
-	io.WriteString(w, " of (")
-	io.WriteString(w, "Array.isArray(")
+	if f.Keys {
+		io.WriteString(w, " in ")
+	} else {
+		io.WriteString(w, " of ")
+	}
 	if f.Iterable != nil {
 		f.Iterable.emit(w)
 	}
-	io.WriteString(w, ") ? ")
-	if f.Iterable != nil {
-		f.Iterable.emit(w)
-	}
-	io.WriteString(w, " : Object.keys(")
-	if f.Iterable != nil {
-		f.Iterable.emit(w)
-	}
-	io.WriteString(w, " || {}))) {\n")
+	io.WriteString(w, ") {\n")
 	for _, st := range f.Body {
 		st.emit(w)
 		io.WriteString(w, "\n")
@@ -803,20 +806,15 @@ func emitStmt(w *indentWriter, s Stmt, level int) {
 		io.WriteString(w, pad)
 		io.WriteString(w, "for (const ")
 		io.WriteString(w, st.Name)
-		io.WriteString(w, " of (")
-		io.WriteString(w, "Array.isArray(")
+		if st.Keys {
+			io.WriteString(w, " in ")
+		} else {
+			io.WriteString(w, " of ")
+		}
 		if st.Iterable != nil {
 			st.Iterable.emit(w)
 		}
-		io.WriteString(w, ") ? ")
-		if st.Iterable != nil {
-			st.Iterable.emit(w)
-		}
-		io.WriteString(w, " : Object.keys(")
-		if st.Iterable != nil {
-			st.Iterable.emit(w)
-		}
-		io.WriteString(w, " || {}))) {\n")
+		io.WriteString(w, ") {\n")
 		for _, bs := range st.Body {
 			emitStmt(w, bs, level+1)
 		}
@@ -856,7 +854,8 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		} else if s.Let.Type != nil {
 			e = zeroValue(s.Let.Type, transpileEnv)
 		}
-		return &VarDecl{Name: s.Let.Name, Expr: e}, nil
+		mutable, _ := transpileEnv.IsMutable(s.Let.Name)
+		return &VarDecl{Name: s.Let.Name, Expr: e, Const: !mutable}, nil
 	case s.Var != nil:
 		var e Expr
 		var err error
@@ -868,7 +867,8 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		} else if s.Var.Type != nil {
 			e = zeroValue(s.Var.Type, transpileEnv)
 		}
-		return &VarDecl{Name: s.Var.Name, Expr: e}, nil
+		mutable, _ := transpileEnv.IsMutable(s.Var.Name)
+		return &VarDecl{Name: s.Var.Name, Expr: e, Const: !mutable}, nil
 	case s.Assign != nil:
 		val, err := convertExpr(s.Assign.Value)
 		if err != nil {
@@ -985,7 +985,14 @@ func convertForStmt(f *parser.ForStmt, env *types.Env) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &ForInStmt{Name: f.Name, Iterable: iterable, Body: body}, nil
+	keys := false
+	if env != nil {
+		switch types.ExprType(f.Source, env).(type) {
+		case types.MapType:
+			keys = true
+		}
+	}
+	return &ForInStmt{Name: f.Name, Iterable: iterable, Body: body, Keys: keys}, nil
 }
 
 func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
@@ -1455,7 +1462,11 @@ func stmtToNode(s Stmt) *ast.Node {
 		n.Children = append(n.Children, body)
 		return n
 	case *ForInStmt:
-		n := &ast.Node{Kind: "for-in", Value: st.Name, Children: []*ast.Node{exprToNode(st.Iterable)}}
+		value := st.Name
+		if st.Keys {
+			value += "-keys"
+		}
+		n := &ast.Node{Kind: "for-in", Value: value, Children: []*ast.Node{exprToNode(st.Iterable)}}
 		body := &ast.Node{Kind: "body"}
 		for _, c := range st.Body {
 			body.Children = append(body.Children, stmtToNode(c))
