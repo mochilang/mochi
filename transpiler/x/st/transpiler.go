@@ -43,6 +43,7 @@ const (
 	valInt
 	valBool
 	valString
+	valList
 )
 
 type value struct {
@@ -50,6 +51,7 @@ type value struct {
 	i    int
 	b    bool
 	s    string
+	list []value
 }
 
 func (v value) String() string {
@@ -63,6 +65,12 @@ func (v value) String() string {
 		return "0"
 	case valString:
 		return v.s
+	case valList:
+		parts := make([]string, len(v.list))
+		for i, elem := range v.list {
+			parts[i] = elem.String()
+		}
+		return strings.Join(parts, " ")
 	default:
 		return ""
 	}
@@ -299,6 +307,16 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 		if p.Lit.Str != nil {
 			return value{kind: valString, s: *p.Lit.Str}, nil
 		}
+	case p.List != nil:
+		elems := make([]value, 0, len(p.List.Elems))
+		for _, e := range p.List.Elems {
+			v, err := evalExpr(e, vars)
+			if err != nil {
+				return value{}, err
+			}
+			elems = append(elems, v)
+		}
+		return value{kind: valList, list: elems}, nil
 	case p.Selector != nil:
 		if len(p.Selector.Tail) == 0 {
 			if v, ok := vars[p.Selector.Root]; ok {
@@ -402,6 +420,62 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				}
 			}
 			return nil
+		case st.While != nil:
+			for {
+				cond, err := evalExpr(st.While.Cond, vars)
+				if err != nil {
+					return err
+				}
+				if cond.kind != valBool {
+					return fmt.Errorf("non-bool condition")
+				}
+				if !cond.b {
+					break
+				}
+				for _, s := range st.While.Body {
+					if err := processStmt(s); err != nil {
+						return err
+					}
+				}
+			}
+			return nil
+		case st.For != nil:
+			src, err := evalExpr(st.For.Source, vars)
+			if err != nil {
+				return err
+			}
+			if st.For.RangeEnd != nil {
+				end, err := evalExpr(st.For.RangeEnd, vars)
+				if err != nil {
+					return err
+				}
+				if src.kind != valInt || end.kind != valInt {
+					return fmt.Errorf("non-int range")
+				}
+				for i := src.i; i < end.i; i++ {
+					vars[st.For.Name] = value{kind: valInt, i: i}
+					for _, s := range st.For.Body {
+						if err := processStmt(s); err != nil {
+							return err
+						}
+					}
+				}
+				delete(vars, st.For.Name)
+				return nil
+			}
+			if src.kind == valList {
+				for _, elem := range src.list {
+					vars[st.For.Name] = elem
+					for _, s := range st.For.Body {
+						if err := processStmt(s); err != nil {
+							return err
+						}
+					}
+				}
+				delete(vars, st.For.Name)
+				return nil
+			}
+			return fmt.Errorf("unsupported for source")
 		case st.Expr != nil:
 			call := st.Expr.Expr.Binary.Left.Value.Target.Call
 			if call == nil || call.Func != "print" || len(call.Args) != 1 {
