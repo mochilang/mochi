@@ -102,7 +102,11 @@ func main() {
 			os.Remove(filepath.Join(outDir, name+".out"))
 			continue
 		}
-		out, err := exec.Command("mono", exe).CombinedOutput()
+		run := exec.Command("mono", exe)
+		if in, err := os.ReadFile(filepath.Join(root, "tests", "rosetta", "x", "Mochi", name+".in")); err == nil {
+			run.Stdin = bytes.NewReader(in)
+		}
+		out, err := run.CombinedOutput()
 		if err != nil {
 			writeError(outDir, name, fmt.Sprintf("run: %v\n%s", err, out))
 			os.Remove(filepath.Join(outDir, name+".out"))

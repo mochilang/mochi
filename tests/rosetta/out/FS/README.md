@@ -1,4 +1,4 @@
-# Rosetta F# Output (10/278 compiled and run)
+# Rosetta F# Output (12/278 compiled and run)
 
 This directory holds F# source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. A checkbox indicates the program compiled and executed successfully. Failing programs have a `.error` file.
 
@@ -16,9 +16,9 @@ This directory holds F# source code generated from the real Mochi programs in `t
 - [ ] 4-rings-or-4-squares-puzzle
 - [ ] 9-billion-names-of-god-the-integer
 - [ ] 99-bottles-of-beer-2
-- [ ] 99-bottles-of-beer
+- [x] 99-bottles-of-beer
 - [ ] DNS-query
-- [ ] a+b
+- [x] a+b
 - [ ] abbreviations-automatic
 - [ ] abbreviations-easy
 - [ ] abbreviations-simple
