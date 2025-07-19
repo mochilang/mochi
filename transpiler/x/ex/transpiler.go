@@ -21,7 +21,7 @@ type Program struct {
 	Stmts []Stmt
 }
 
-type Stmt interface{ emit(io.Writer) }
+type Stmt interface{ emit(io.Writer, int) }
 
 // VarRef references a variable name or dotted selector.
 type VarRef struct{ Name string }
@@ -34,7 +34,10 @@ type LetStmt struct {
 	Value Expr
 }
 
-func (s *LetStmt) emit(w io.Writer) {
+func (s *LetStmt) emit(w io.Writer, indent int) {
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
+	}
 	io.WriteString(w, s.Name)
 	io.WriteString(w, " = ")
 	if s.Value != nil {
@@ -50,7 +53,10 @@ type AssignStmt struct {
 	Value Expr
 }
 
-func (s *AssignStmt) emit(w io.Writer) {
+func (s *AssignStmt) emit(w io.Writer, indent int) {
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
+	}
 	io.WriteString(w, s.Name)
 	io.WriteString(w, " = ")
 	s.Value.emit(w)
@@ -61,7 +67,26 @@ type Expr interface{ emit(io.Writer) }
 // ExprStmt is a statement consisting solely of an expression.
 type ExprStmt struct{ Expr Expr }
 
-func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
+func (s *ExprStmt) emit(w io.Writer, indent int) {
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
+	}
+	s.Expr.emit(w)
+}
+
+// ReturnStmt returns from a function optionally with a value.
+type ReturnStmt struct{ Value Expr }
+
+func (r *ReturnStmt) emit(w io.Writer, indent int) {
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, "return")
+	if r.Value != nil {
+		io.WriteString(w, " ")
+		r.Value.emit(w)
+	}
+}
 
 // IfStmt is a simple if/else statement.
 type IfStmt struct {
@@ -70,20 +95,29 @@ type IfStmt struct {
 	Else []Stmt
 }
 
-func (s *IfStmt) emit(w io.Writer) {
+func (s *IfStmt) emit(w io.Writer, indent int) {
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
+	}
 	io.WriteString(w, "if ")
 	s.Cond.emit(w)
 	io.WriteString(w, " do\n")
 	for _, st := range s.Then {
-		st.emit(w)
+		st.emit(w, indent+1)
 		io.WriteString(w, "\n")
 	}
 	if len(s.Else) > 0 {
+		for i := 0; i < indent; i++ {
+			io.WriteString(w, "  ")
+		}
 		io.WriteString(w, "else\n")
 		for _, st := range s.Else {
-			st.emit(w)
+			st.emit(w, indent+1)
 			io.WriteString(w, "\n")
 		}
+	}
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
 	}
 	io.WriteString(w, "end")
 }
@@ -94,13 +128,19 @@ type WhileStmt struct {
 	Body []Stmt
 }
 
-func (wst *WhileStmt) emit(w io.Writer) {
+func (wst *WhileStmt) emit(w io.Writer, indent int) {
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
+	}
 	io.WriteString(w, "while ")
 	wst.Cond.emit(w)
 	io.WriteString(w, " do\n")
 	for _, st := range wst.Body {
-		st.emit(w)
+		st.emit(w, indent+1)
 		io.WriteString(w, "\n")
+	}
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
 	}
 	io.WriteString(w, "end")
 }
@@ -114,7 +154,10 @@ type ForStmt struct {
 	Body   []Stmt
 }
 
-func (fs *ForStmt) emit(w io.Writer) {
+func (fs *ForStmt) emit(w io.Writer, indent int) {
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
+	}
 	io.WriteString(w, "for ")
 	io.WriteString(w, fs.Name)
 	io.WriteString(w, " <- ")
@@ -130,8 +173,42 @@ func (fs *ForStmt) emit(w io.Writer) {
 	}
 	io.WriteString(w, " do\n")
 	for _, st := range fs.Body {
-		st.emit(w)
+		st.emit(w, indent+1)
 		io.WriteString(w, "\n")
+	}
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, "end")
+}
+
+// FuncDecl defines a simple function.
+type FuncDecl struct {
+	Name   string
+	Params []string
+	Body   []Stmt
+}
+
+func (fn *FuncDecl) emit(w io.Writer, indent int) {
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, "def ")
+	io.WriteString(w, fn.Name)
+	io.WriteString(w, "(")
+	for i, p := range fn.Params {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, p)
+	}
+	io.WriteString(w, ") do\n")
+	for _, st := range fn.Body {
+		st.emit(w, indent+1)
+		io.WriteString(w, "\n")
+	}
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
 	}
 	io.WriteString(w, "end")
 }
@@ -337,7 +414,7 @@ func Emit(p *Program) []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
 	for _, st := range p.Stmts {
-		st.emit(&buf)
+		st.emit(&buf, 0)
 		buf.WriteString("\n")
 	}
 	return buf.Bytes()
@@ -427,6 +504,32 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		return compileWhileStmt(st.While, env)
 	case st.For != nil:
 		return compileForStmt(st.For, env)
+	case st.Return != nil:
+		var val Expr
+		if st.Return.Value != nil {
+			var err error
+			val, err = compileExpr(st.Return.Value, env)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return &ReturnStmt{Value: val}, nil
+	case st.Fun != nil:
+		body := make([]Stmt, 0, len(st.Fun.Body))
+		for _, b := range st.Fun.Body {
+			bs, err := compileStmt(b, env)
+			if err != nil {
+				return nil, err
+			}
+			if bs != nil {
+				body = append(body, bs)
+			}
+		}
+		params := make([]string, len(st.Fun.Params))
+		for i, p := range st.Fun.Params {
+			params[i] = p.Name
+		}
+		return &FuncDecl{Name: st.Fun.Name, Params: params, Body: body}, nil
 	default:
 		if st.Test == nil && st.Import == nil && st.Type == nil {
 			return nil, fmt.Errorf("unsupported statement at %d:%d", st.Pos.Line, st.Pos.Column)
@@ -671,6 +774,34 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				expr = &IndexExpr{Target: expr, Index: idx}
 				typ = types.AnyType{}
 			}
+		} else if op.Index != nil && (op.Index.Colon != nil || op.Index.Colon2 != nil) {
+			var start Expr = &NumberLit{Value: "0"}
+			if op.Index.Start != nil {
+				s, err := compileExpr(op.Index.Start, env)
+				if err != nil {
+					return nil, err
+				}
+				start = s
+			}
+			if op.Index.End == nil {
+				return nil, fmt.Errorf("unsupported slice without end")
+			}
+			end, err := compileExpr(op.Index.End, env)
+			if err != nil {
+				return nil, err
+			}
+			diff := &BinaryExpr{Left: end, Op: "-", Right: start}
+			switch tt := typ.(type) {
+			case types.StringType:
+				expr = &CallExpr{Func: "String.slice", Args: []Expr{expr, start, diff}}
+				typ = types.StringType{}
+			case types.ListType:
+				expr = &CallExpr{Func: "Enum.slice", Args: []Expr{expr, start, diff}}
+				typ = tt.Elem
+			default:
+				expr = &CallExpr{Func: "Enum.slice", Args: []Expr{expr, start, diff}}
+				typ = types.AnyType{}
+			}
 		} else if op.Field != nil && op.Field.Name == "contains" && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil {
 			call := pf.Ops[i+1].Call
 			if len(call.Args) != 1 {
@@ -847,6 +978,21 @@ func toNodeStmt(s Stmt) *ast.Node {
 	switch st := s.(type) {
 	case *ExprStmt:
 		return &ast.Node{Kind: "expr", Children: []*ast.Node{toNodeExpr(st.Expr)}}
+	case *ReturnStmt:
+		n := &ast.Node{Kind: "return"}
+		if st.Value != nil {
+			n.Children = []*ast.Node{toNodeExpr(st.Value)}
+		}
+		return n
+	case *FuncDecl:
+		n := &ast.Node{Kind: "func", Value: st.Name}
+		for _, p := range st.Params {
+			n.Children = append(n.Children, &ast.Node{Kind: "param", Value: p})
+		}
+		for _, b := range st.Body {
+			n.Children = append(n.Children, toNodeStmt(b))
+		}
+		return n
 	case *IfStmt:
 		n := &ast.Node{Kind: "if", Children: []*ast.Node{toNodeExpr(st.Cond)}}
 		thenN := &ast.Node{Kind: "then"}
