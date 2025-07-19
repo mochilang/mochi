@@ -1,5 +1,7 @@
 (program
-  (let neg (int -1))
+  (let neg
+    (unary - (int 1))
+  )
   (let not
     (unary ! (bool true))
   )
