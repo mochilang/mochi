@@ -1,1 +1,5 @@
-unsupported statement at 1:1
+exit status 1
+# command-line-arguments
+../../../tests/transpiler/x/go/tail_recursion.go:45:10: cannot use acc (variable of interface type any) as int value in return statement: need type assertion
+../../../tests/transpiler/x/go/tail_recursion.go:47:18: invalid operation: n - 1 (mismatched types any and int)
+../../../tests/transpiler/x/go/tail_recursion.go:47:27: invalid operation: operator + not defined on acc (variable of interface type any)

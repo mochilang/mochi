@@ -54,6 +54,44 @@ var (
 
 type Stmt interface{ emit(io.Writer) }
 
+type ReturnStmt struct{ Value Expr }
+
+func (r *ReturnStmt) emit(w io.Writer) {
+	fmt.Fprint(w, "return")
+	if r.Value != nil {
+		fmt.Fprint(w, " ")
+		r.Value.emit(w)
+	}
+}
+
+type FuncDecl struct {
+	Name   string
+	Params []string
+	Ret    string
+	Body   []Stmt
+}
+
+func (f *FuncDecl) emit(w io.Writer) {
+	fmt.Fprintf(w, "func %s(", f.Name)
+	for i, p := range f.Params {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		fmt.Fprintf(w, "%s any", p)
+	}
+	fmt.Fprint(w, ")")
+	if f.Ret != "" {
+		fmt.Fprintf(w, " %s", f.Ret)
+	}
+	fmt.Fprint(w, " {\n")
+	for _, st := range f.Body {
+		fmt.Fprint(w, "    ")
+		st.emit(w)
+		fmt.Fprint(w, "\n")
+	}
+	fmt.Fprint(w, "}")
+}
+
 type Expr interface{ emit(io.Writer) }
 
 type ExprStmt struct{ Expr Expr }
@@ -174,6 +212,16 @@ func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
 type IntLit struct{ Value int }
 
 func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
+
+type BoolLit struct{ Value bool }
+
+func (b *BoolLit) emit(w io.Writer) {
+	if b.Value {
+		fmt.Fprint(w, "true")
+	} else {
+		fmt.Fprint(w, "false")
+	}
+}
 
 // WhileStmt represents a basic while loop using Go's for syntax.
 type WhileStmt struct {
@@ -395,6 +443,26 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		return compileWhileStmt(st.While, env)
 	case st.For != nil:
 		return compileForStmt(st.For, env)
+	case st.Fun != nil:
+		body, err := compileStmts(st.Fun.Body, env)
+		if err != nil {
+			return nil, err
+		}
+		var params []string
+		for _, p := range st.Fun.Params {
+			params = append(params, p.Name)
+		}
+		return &FuncDecl{Name: st.Fun.Name, Params: params, Ret: toGoType(st.Fun.Return), Body: body}, nil
+	case st.Return != nil:
+		var val Expr
+		if st.Return.Value != nil {
+			var err error
+			val, err = compileExpr(st.Return.Value)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return &ReturnStmt{Value: val}, nil
 	case st.Break != nil:
 		return &BreakStmt{}, nil
 	case st.Continue != nil:
@@ -744,6 +812,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		if p.Lit.Int != nil {
 			return &IntLit{Value: int(*p.Lit.Int)}, nil
 		}
+		if p.Lit.Bool != nil {
+			return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
+		}
 		return nil, fmt.Errorf("unsupported literal")
 	case p.If != nil:
 		return compileIfExpr(p.If)
@@ -832,10 +903,19 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("func atoi(s string) int {\n    n, _ := strconv.Atoi(s)\n    return n\n}\n\n")
 	}
 	if prog.UsePrint {
-		buf.WriteString("func mochiPrint(v any) {\n    switch x := v.(type) {\n    case bool:\n        if x { fmt.Println(1) } else { fmt.Println(\"nil\") }\n    case float64:\n        if math.Trunc(x) == x { fmt.Printf(\"%.1f\\n\", x) } else { fmt.Printf(\"%v\\n\", x) }\n    case []int:\n        for i, n := range x { if i > 0 { fmt.Print(\" \") }; fmt.Print(n) }\n        fmt.Println()\n    default:\n        fmt.Println(v)\n    }\n}\n\n")
+		buf.WriteString("func mochiPrint(v ...any) {\n    for i, val := range v {\n        if i > 0 { fmt.Print(\" \") }\n        switch x := val.(type) {\n        case bool:\n            if x { fmt.Print(1) } else { fmt.Print(\"nil\") }\n        case float64:\n            if math.Trunc(x) == x { fmt.Printf(\"%.1f\", x) } else { fmt.Printf(\"%v\", x) }\n        case []int:\n            for j, n := range x { if j > 0 { fmt.Print(\" \") }; fmt.Print(n) }\n        default:\n            fmt.Print(val)\n        }\n    }\n    fmt.Println()\n}\n\n")
+	}
+	for _, s := range prog.Stmts {
+		if fd, ok := s.(*FuncDecl); ok {
+			fd.emit(&buf)
+			buf.WriteString("\n\n")
+		}
 	}
 	buf.WriteString("func main() {\n")
 	for _, s := range prog.Stmts {
+		if _, ok := s.(*FuncDecl); ok {
+			continue
+		}
 		buf.WriteString("    ")
 		s.emit(&buf)
 		buf.WriteString("\n")
@@ -912,6 +992,21 @@ func toNodeStmt(s Stmt) *ast.Node {
 		return &ast.Node{Kind: "break"}
 	case *ContinueStmt:
 		return &ast.Node{Kind: "continue"}
+	case *ReturnStmt:
+		n := &ast.Node{Kind: "return"}
+		if st.Value != nil {
+			n.Children = []*ast.Node{toNodeExpr(st.Value)}
+		}
+		return n
+	case *FuncDecl:
+		n := &ast.Node{Kind: "func", Value: st.Name}
+		for _, p := range st.Params {
+			n.Children = append(n.Children, &ast.Node{Kind: "param", Value: p})
+		}
+		for _, b := range st.Body {
+			n.Children = append(n.Children, toNodeStmt(b))
+		}
+		return n
 	case *IndexAssignStmt:
 		return &ast.Node{Kind: "indexassign", Value: st.Name, Children: []*ast.Node{toNodeExpr(st.Index), toNodeExpr(st.Value)}}
 	default:

@@ -1,3 +1,9 @@
+## Progress (2025-07-19 18:33 +0700)
+- Added while/for loops and index assignment support
+
+## Progress (2025-07-19 18:33 +0700)
+- Added while/for loops and index assignment support
+
 ## Progress (2025-07-19 17:31 +0700)
 - Added break and continue statements
 - Implemented if expressions and string-to-int casts
