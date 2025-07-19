@@ -329,6 +329,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 								continue
 							}
 						}
+					case "go_net":
+						if method == "lookup_host" && len(args) == 1 {
+							c.use("_lookup_host")
+							res = fmt.Sprintf("_lookup_host(%s)", args[0])
+							continue
+						}
 					}
 				}
 			}
@@ -552,6 +558,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "%{" + strings.Join(items, ", ") + "}", nil
 	case p.Selector != nil:
+		if p.Selector.Root == "nil" && len(p.Selector.Tail) == 0 {
+			return "nil", nil
+		}
 		name := sanitizeName(p.Selector.Root)
 		if kind, ok := c.builtinAliases[p.Selector.Root]; ok && len(p.Selector.Tail) == 1 {
 			switch kind {
@@ -569,6 +578,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				case "e":
 					return ":math.exp(1)", nil
 				}
+			case "go_net":
+				// no constant fields supported
 			}
 		}
 		if _, ok := c.attrs[attrName(p.Selector.Root)]; ok {

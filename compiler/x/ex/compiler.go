@@ -266,6 +266,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			case "go":
 				if s.Import.Auto && p == "mochi/runtime/ffi/go/testpkg" {
 					c.builtinAliases[alias] = "go_testpkg"
+				} else if p == "net" {
+					c.builtinAliases[alias] = "go_net"
 				}
 			case "python":
 				if p == "math" {

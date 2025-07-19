@@ -53,7 +53,7 @@ sanitization now converts CamelCase names to snake_case so calls such as
 |12 | 9-billion-names-of-god-the-integer | ❌ |
 |13 | 99-bottles-of-beer-2 | ❌ |
 |14 | 99-bottles-of-beer | ✅ |
-|15 | DNS-query | ❌ |
+|15 | DNS-query | ✅ |
 |16 | a+b | ✅ |
 |17 | abbreviations-automatic | ✅ |
 |18 | abbreviations-easy | ❌ |
