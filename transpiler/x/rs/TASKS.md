@@ -1,0 +1,12 @@
+# Rust Transpiler Tasks
+
+## Recent Enhancements (2025-07-19 11:52)
+- Added variable declarations, assignments and basic arithmetic.
+- Updated `print` emission to handle non-string arguments.
+- Added golden test for `let_and_print`.
+
+## Recent Enhancements (2025-07-19 05:29 UTC)
+- Moved README and task log into language-specific folder.
+- Added support for typed variables, assignments and unary expressions.
+- Generated golden tests for `typed_let`, `typed_var`, `var_assignment` and `unary_neg`.
+

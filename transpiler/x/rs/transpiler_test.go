@@ -80,3 +80,109 @@ func TestTranspile_PrintHello(t *testing.T) {
 		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
 	}
 }
+
+func TestTranspile_LetAndPrint(t *testing.T) {
+	if _, err := exec.LookPath("rustc"); err != nil {
+		t.Skip("rustc not installed")
+	}
+	root := repoRoot(t)
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "rs")
+	os.MkdirAll(outDir, 0o755)
+
+	base := "let_and_print"
+	src := filepath.Join(root, "tests", "vm", "valid", base+".mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type: %v", errs[0])
+	}
+	progAST, err := rs.Transpile(prog, env)
+	if err != nil {
+		t.Fatalf("transpile: %v", err)
+	}
+	code := rs.Emit(progAST)
+	rsFile := filepath.Join(outDir, base+".rs")
+	if err := os.WriteFile(rsFile, code, 0o644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+	tmp := t.TempDir()
+	bin := filepath.Join(tmp, base)
+	if out, err := exec.Command("rustc", rsFile, "-O", "-o", bin).CombinedOutput(); err != nil {
+		os.WriteFile(filepath.Join(outDir, base+".error"), out, 0o644)
+		t.Fatalf("rustc: %v", err)
+	}
+	out, err := exec.Command(bin).CombinedOutput()
+	got := bytes.TrimSpace(out)
+	if err != nil {
+		os.WriteFile(filepath.Join(outDir, base+".error"), out, 0o644)
+		t.Fatalf("run: %v", err)
+	}
+	_ = os.Remove(filepath.Join(outDir, base+".error"))
+	wantPath := filepath.Join(outDir, base+".out")
+	want, err := os.ReadFile(wantPath)
+	if err != nil {
+		t.Fatalf("read want: %v", err)
+	}
+	want = bytes.TrimSpace(want)
+	if !bytes.Equal(got, want) {
+		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
+	}
+}
+
+func runExample(t *testing.T, base string) {
+	if _, err := exec.LookPath("rustc"); err != nil {
+		t.Skip("rustc not installed")
+	}
+	root := repoRoot(t)
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "rs")
+	os.MkdirAll(outDir, 0o755)
+
+	src := filepath.Join(root, "tests", "vm", "valid", base+".mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type: %v", errs[0])
+	}
+	progAST, err := rs.Transpile(prog, env)
+	if err != nil {
+		t.Fatalf("transpile: %v", err)
+	}
+	code := rs.Emit(progAST)
+	rsFile := filepath.Join(outDir, base+".rs")
+	if err := os.WriteFile(rsFile, code, 0o644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+	tmp := t.TempDir()
+	bin := filepath.Join(tmp, base)
+	if out, err := exec.Command("rustc", rsFile, "-O", "-o", bin).CombinedOutput(); err != nil {
+		os.WriteFile(filepath.Join(outDir, base+".error"), out, 0o644)
+		t.Fatalf("rustc: %v", err)
+	}
+	out, err := exec.Command(bin).CombinedOutput()
+	got := bytes.TrimSpace(out)
+	if err != nil {
+		os.WriteFile(filepath.Join(outDir, base+".error"), out, 0o644)
+		t.Fatalf("run: %v", err)
+	}
+	_ = os.Remove(filepath.Join(outDir, base+".error"))
+	wantPath := filepath.Join(outDir, base+".out")
+	want, err := os.ReadFile(wantPath)
+	if err != nil {
+		t.Fatalf("read want: %v", err)
+	}
+	want = bytes.TrimSpace(want)
+	if !bytes.Equal(got, want) {
+		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
+	}
+}
+
+func TestTranspile_TypedLet(t *testing.T)      { runExample(t, "typed_let") }
+func TestTranspile_TypedVar(t *testing.T)      { runExample(t, "typed_var") }
+func TestTranspile_VarAssignment(t *testing.T) { runExample(t, "var_assignment") }
+func TestTranspile_UnaryNeg(t *testing.T)      { runExample(t, "unary_neg") }
