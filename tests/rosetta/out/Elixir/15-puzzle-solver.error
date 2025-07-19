@@ -1,5 +1,5 @@
-run error: exit status 1
-** (SyntaxError) invalid syntax found on /workspace/mochi/tests/rosetta/out/Elixir/15-puzzle-solver.exs:4:42:
+run: exit status 1
+** (SyntaxError) invalid syntax found on /tmp/15-puzzle-solver.exs:4:42:
     error: unexpected ( after alias FifteenPuzzleExample. Function names and identifiers in Elixir start with lowercase characters or underscore. For example:
 
         hello_world()
@@ -13,5 +13,5 @@ run error: exit status 1
   4 │ 		IO.inspect(testpkg.FifteenPuzzleExample())
     │                                          ^
     │
-    └─ /workspace/mochi/tests/rosetta/out/Elixir/15-puzzle-solver.exs:4:42
+    └─ /tmp/15-puzzle-solver.exs:4:42
     (elixir 1.18.3) lib/code.ex:1525: Code.require_file/2

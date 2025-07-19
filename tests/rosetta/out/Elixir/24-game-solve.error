@@ -1,9 +1,0 @@
-run: exit status 1
-** (SyntaxError) invalid syntax found on /tmp/24-game-solve.exs:3:10:
-    error: syntax error before: "0"
-    │
-  3 │ 	@OP_NUM 0
-    │          ^
-    │
-    └─ /tmp/24-game-solve.exs:3:10
-    (elixir 1.18.3) lib/code.ex:1525: Code.require_file/2

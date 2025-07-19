@@ -1,8 +1,234 @@
-parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/15-puzzle-game.mochi:108:18: unexpected token "!" (expected PostfixExpr)
-  --> /workspace/mochi/tests/rosetta/x/Mochi/15-puzzle-game.mochi:108:18
+run: exit status 1
+    error: undefined variable "board"
+    │
+ 23 │             if Enum.at(board, i) != Enum.at(@solved, i) do
+    │                        ^^^^^
+    │
+    └─ /tmp/15-puzzle-game.exs:23:24: Main.isSolved/0
 
-108 |   while !quit && !isSolved() {
-    |                  ^
+    error: undefined variable "empty"
+    │
+ 50 │         throw({:return, %{"idx" => empty - 4, "ok" => empty / 4 > 0}})
+    │                                    ^^^^^
+    │
+    └─ /tmp/15-puzzle-game.exs:50:36: Main.isValidMove/1
 
-help:
-  Parse error occurred. Check syntax near this location.
+    error: undefined variable "empty"
+    │
+ 50 │         throw({:return, %{"idx" => empty - 4, "ok" => empty / 4 > 0}})
+    │                                                       ^^^^^
+    │
+    └─ /tmp/15-puzzle-game.exs:50:55: Main.isValidMove/1
+
+    error: undefined variable "empty"
+    │
+ 54 │         throw({:return, %{"idx" => empty + 4, "ok" => empty / 4 < 3}})
+    │                                    ^^^^^
+    │
+    └─ /tmp/15-puzzle-game.exs:54:36: Main.isValidMove/1
+
+    error: undefined variable "empty"
+    │
+ 54 │         throw({:return, %{"idx" => empty + 4, "ok" => empty / 4 < 3}})
+    │                                                       ^^^^^
+    │
+    └─ /tmp/15-puzzle-game.exs:54:55: Main.isValidMove/1
+
+    error: undefined variable "empty"
+    │
+ 58 │         throw({:return, %{"idx" => empty + 1, "ok" => rem(empty, 4) < 3}})
+    │                                    ^^^^^
+    │
+    └─ /tmp/15-puzzle-game.exs:58:36: Main.isValidMove/1
+
+    error: undefined variable "empty"
+    │
+ 58 │         throw({:return, %{"idx" => empty + 1, "ok" => rem(empty, 4) < 3}})
+    │                                                           ^^^^^
+    │
+    └─ /tmp/15-puzzle-game.exs:58:59: Main.isValidMove/1
+
+    error: undefined variable "empty"
+    │
+ 62 │         throw({:return, %{"idx" => empty - 1, "ok" => rem(empty, 4) > 0}})
+    │                                    ^^^^^
+    │
+    └─ /tmp/15-puzzle-game.exs:62:36: Main.isValidMove/1
+
+    error: undefined variable "empty"
+    │
+ 62 │         throw({:return, %{"idx" => empty - 1, "ok" => rem(empty, 4) > 0}})
+    │                                                           ^^^^^
+    │
+    └─ /tmp/15-puzzle-game.exs:62:59: Main.isValidMove/1
+
+    error: undefined variable "empty"
+    │
+ 80 │       i = empty
+    │           ^^^^^
+    │
+    └─ /tmp/15-puzzle-game.exs:80:11: Main.doMove/1
+
+    error: undefined variable "board"
+    │
+ 82 │       tmp = Enum.at(board, i)
+    │                     ^^^^^
+    │
+    └─ /tmp/15-puzzle-game.exs:82:21: Main.doMove/1
+
+    error: undefined variable "board"
+    │
+ 83 │       board = List.replace_at(board, i, Enum.at(board, j))
+    │                               ^^^^^
+    │
+    └─ /tmp/15-puzzle-game.exs:83:31: Main.doMove/1
+
+    error: undefined variable "board"
+    │
+ 83 │       board = List.replace_at(board, i, Enum.at(board, j))
+    │                                                 ^^^^^
+    │
+    └─ /tmp/15-puzzle-game.exs:83:49: Main.doMove/1
+
+    error: undefined variable "moves"
+    │
+ 86 │       moves = moves + 1
+    │               ^^^^^
+    │
+    └─ /tmp/15-puzzle-game.exs:86:15: Main.doMove/1
+
+    warning: variable "board" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 84 │       board = List.replace_at(board, j, tmp)
+    │       ~
+    │
+    └─ /tmp/15-puzzle-game.exs:84:7: Main.doMove/1
+
+    warning: variable "empty" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 85 │       empty = j
+    │       ~
+    │
+    └─ /tmp/15-puzzle-game.exs:85:7: Main.doMove/1
+
+    warning: variable "moves" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 86 │       moves = moves + 1
+    │       ~
+    │
+    └─ /tmp/15-puzzle-game.exs:86:7: Main.doMove/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 104 │               i = i + 1
+     │               ~
+     │
+     └─ /tmp/15-puzzle-game.exs:104:15: Main.shuffle/1
+
+     error: undefined variable "board"
+     │
+ 137 │             val = Enum.at(board, i)
+     │                           ^^^^^
+     │
+     └─ /tmp/15-puzzle-game.exs:137:27: Main.printBoard/0
+
+     warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 147 │                 line = (line <> " ") <> s
+     │                 ~
+     │
+     └─ /tmp/15-puzzle-game.exs:147:17: Main.printBoard/0
+
+     warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 145 │                 line = (line <> "  ") <> s
+     │                 ~
+     │
+     └─ /tmp/15-puzzle-game.exs:145:17: Main.printBoard/0
+
+     warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 140 │               line = line <> "  ."
+     │               ~
+     │
+     └─ /tmp/15-puzzle-game.exs:140:15: Main.printBoard/0
+
+     warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 153 │               line = ""
+     │               ~
+     │
+     └─ /tmp/15-puzzle-game.exs:153:15: Main.printBoard/0
+
+     error: undefined variable "moves"
+     │
+ 181 │             IO.puts(("Enter move #" <> to_string(moves + 1)) <> " (U, D, L, R, or Q): ")
+     │                                                  ^^^^^
+     │
+     └─ /tmp/15-puzzle-game.exs:181:50: Main.playOneMove/0
+
+     error: undefined variable "moves"
+     │
+ 206 │                       IO.puts(("Quiting after " <> to_string(moves)) <> " moves.")
+     │                                                              ^^^^^
+     │
+     └─ /tmp/15-puzzle-game.exs:206:62: Main.playOneMove/0
+
+     warning: variable "quit" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 207 │                       quit = true
+     │                       ~
+     │
+     └─ /tmp/15-puzzle-game.exs:207:23: Main.playOneMove/0
+
+     warning: variable "m" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 203 │                     m = 3
+     │                     ~
+     │
+     └─ /tmp/15-puzzle-game.exs:203:21: Main.playOneMove/0
+
+     warning: variable "m" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 200 │                   m = 2
+     │                   ~
+     │
+     └─ /tmp/15-puzzle-game.exs:200:19: Main.playOneMove/0
+
+     warning: variable "m" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 197 │                 m = 1
+     │                 ~
+     │
+     └─ /tmp/15-puzzle-game.exs:197:17: Main.playOneMove/0
+
+     warning: variable "m" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 194 │               m = 0
+     │               ~
+     │
+     └─ /tmp/15-puzzle-game.exs:194:15: Main.playOneMove/0
+
+     error: undefined variable "quit"
+     │
+ 240 │       {_, quit} = t4.(t4, quit)
+     │                           ^^^^
+     │
+     └─ /tmp/15-puzzle-game.exs:240:27: Main.playOneMove/0
+
+     error: undefined variable "quit"
+     │
+ 254 │           if !quit && isSolved() == false do
+     │               ^^^^
+     │
+     └─ /tmp/15-puzzle-game.exs:254:15: Main.play/0
+
+     error: undefined variable "moves"
+     │
+ 271 │         IO.puts(("You solved the puzzle in " <> to_string(moves)) <> " moves.")
+     │                                                           ^^^^^
+     │
+     └─ /tmp/15-puzzle-game.exs:271:59: Main.play/0
+
+** (CompileError) /tmp/15-puzzle-game.exs: cannot compile module Main (errors have been logged)
+
