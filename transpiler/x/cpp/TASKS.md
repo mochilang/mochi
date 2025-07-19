@@ -1,5 +1,9 @@
 # C++ Transpiler Tasks
 
+## Recent Enhancements (2025-07-19 11:58 +0000)
+- Enabled short-circuit boolean evaluation test.
+- Generated golden output for `short_circuit` and updated progress to 22/100 programs.
+
 ## Recent Enhancements (2025-07-19 10:53 +0000)
 - Added support for string comparison expressions.
 - Generated golden test for `string_compare`.

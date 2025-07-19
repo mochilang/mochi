@@ -69,3 +69,4 @@ func TestCPPTranspiler_FunThreeArgs(t *testing.T)  { runExample(t, "fun_three_ar
 func TestCPPTranspiler_FunExprInLet(t *testing.T)  { runExample(t, "fun_expr_in_let") }
 func TestCPPTranspiler_BoolChain(t *testing.T)     { runExample(t, "bool_chain") }
 func TestCPPTranspiler_StringCompare(t *testing.T) { runExample(t, "string_compare") }
+func TestCPPTranspiler_ShortCircuit(t *testing.T) { runExample(t, "short_circuit") }
