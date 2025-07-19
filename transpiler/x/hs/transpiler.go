@@ -527,7 +527,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		els, err := convertExpr(p.If.Else)
+		var elseExpr *parser.Expr
+		if p.If.ElseIf != nil {
+			// chain else-if as nested if expression
+			e := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{If: p.If.ElseIf}}}}}
+			elseExpr = e
+		} else {
+			elseExpr = p.If.Else
+		}
+		els, err := convertExpr(elseExpr)
 		if err != nil {
 			return nil, err
 		}
