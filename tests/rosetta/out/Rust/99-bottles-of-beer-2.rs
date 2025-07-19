@@ -5,7 +5,7 @@ fn main() {
         let mut cur = String::new();
         let mut i = 0;
         while i < (s.len() as i32) {
-            let ch = &s[(i) as usize..(i + 1) as usize];
+            let ch = s[(i) as usize..(i + 1) as usize].to_string();
             if ch == String::from(" ") || ch == String::from("
 ") || ch == String::from("	") {
                 if (cur.len() as i32) > 0 {
@@ -74,7 +74,7 @@ fn main() {
         let mut a: Vec<String> = vec![];
         let mut i = 1;
         while i < (p.len() as i32) - 1 {
-            a = { let mut tmp = a.clone(); tmp.push(&p[(i) as usize..(i + 1) as usize]); tmp };
+            a = { let mut tmp = a.clone(); tmp.push(p[(i) as usize..(i + 1) as usize].to_string()); tmp };
             i += 1;
         }
         let mut idx = (a.len() as i32) - 1;
@@ -89,13 +89,13 @@ fn main() {
             }
             idx -= 1;
         }
-        let mut s = &p[0..1];
+        let mut s = p[0..1].to_string();
         let mut k = 0;
         while k < (a.len() as i32) {
             s = format!("{}{}", s, a[(k) as usize]);
             k += 1;
         }
-        s = format!("{}{}", s, &p[((p.len() as i32) - 1) as usize..((p.len() as i32)) as usize]);
+        s = format!("{}{}", s, p[((p.len() as i32) - 1) as usize..((p.len() as i32)) as usize].to_string());
         let w = fields(s);
         return join(w, String::from(" "));
     };

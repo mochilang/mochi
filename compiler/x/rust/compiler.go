@@ -806,9 +806,30 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		out.WriteString("}\n\n")
 	}
 	if c.helpers["_now"] {
-		out.WriteString("fn _now() -> i64 {\n")
+		out.WriteString("use std::sync::{atomic::{AtomicBool, AtomicI64, Ordering}, Once};\n")
+		out.WriteString("static INIT_NOW: Once = Once::new();\n")
+		out.WriteString("static NOW_SEEDED: AtomicBool = AtomicBool::new(false);\n")
+		out.WriteString("static NOW_SEED: AtomicI64 = AtomicI64::new(0);\n\n")
+		out.WriteString("fn _init_now_seed() {\n")
+		out.WriteString("    INIT_NOW.call_once(|| {\n")
+		out.WriteString("        if let Ok(s) = std::env::var(\"MOCHI_NOW_SEED\") {\n")
+		out.WriteString("            if let Ok(v) = s.parse::<i64>() {\n")
+		out.WriteString("                NOW_SEED.store(v, Ordering::SeqCst);\n")
+		out.WriteString("                NOW_SEEDED.store(true, Ordering::SeqCst);\n")
+		out.WriteString("            }\n")
+		out.WriteString("        }\n")
+		out.WriteString("    });\n")
+		out.WriteString("}\n\n")
+		out.WriteString("fn _now() -> i32 {\n")
+		out.WriteString("    _init_now_seed();\n")
+		out.WriteString("    if NOW_SEEDED.load(Ordering::SeqCst) {\n")
+		out.WriteString("        let mut n = NOW_SEED.load(Ordering::SeqCst);\n")
+		out.WriteString("        n = (n * 1664525 + 1013904223) % 2147483647;\n")
+		out.WriteString("        NOW_SEED.store(n, Ordering::SeqCst);\n")
+		out.WriteString("        return n as i32;\n")
+		out.WriteString("    }\n")
 		out.WriteString("    use std::time::{SystemTime, UNIX_EPOCH};\n")
-		out.WriteString("    SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos() as i64\n")
+		out.WriteString("    (SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos() as i64 % i64::from(i32::MAX)) as i32\n")
 		out.WriteString("}\n\n")
 	}
 	out.Write(c.buf.Bytes())
@@ -1449,17 +1470,17 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 	if f.Return != nil {
 		retTy = rustType(f.Return)
 	}
-       // Nested functions defined inside `main` may reference variables from the
-       // surrounding scope. Rust does not allow ordinary `fn` items to capture
-       // such values, so default to generating a closure expression. This keeps
-       // the emitted code valid even when the function body references outer
-       // variables.
-       topLevel := false
-       if !topLevel {
-               c.writeln(fmt.Sprintf("let %s = move |%s| -> %s {", f.Name, strings.Join(params, ", "), retTy))
-       } else {
-               c.writeln(fmt.Sprintf("fn %s(%s) -> %s {", f.Name, strings.Join(params, ", "), retTy))
-       }
+	// Nested functions defined inside `main` may reference variables from the
+	// surrounding scope. Rust does not allow ordinary `fn` items to capture
+	// such values, so default to generating a closure expression. This keeps
+	// the emitted code valid even when the function body references outer
+	// variables.
+	topLevel := false
+	if !topLevel {
+		c.writeln(fmt.Sprintf("let %s = move |%s| -> %s {", f.Name, strings.Join(params, ", "), retTy))
+	} else {
+		c.writeln(fmt.Sprintf("fn %s(%s) -> %s {", f.Name, strings.Join(params, ", "), retTy))
+	}
 	prev := c.inMain
 	c.inMain = false
 	c.indent++
@@ -4079,9 +4100,9 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("substring expects 3 args")
 		}
 		if isIntLiteral(call.Args[1]) && isIntLiteral(call.Args[2]) {
-			return fmt.Sprintf("&%s[%s..%s]", args[0], args[1], args[2]), nil
+			return fmt.Sprintf("%s[%s..%s].to_string()", args[0], args[1], args[2]), nil
 		}
-		return fmt.Sprintf("&%s[(%s) as usize..(%s) as usize]", args[0], args[1], args[2]), nil
+		return fmt.Sprintf("%s[(%s) as usize..(%s) as usize].to_string()", args[0], args[1], args[2]), nil
 	case "now":
 		if len(args) != 0 {
 			return "", fmt.Errorf("now expects no args")

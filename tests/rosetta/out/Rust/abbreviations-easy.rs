@@ -5,7 +5,7 @@ fn main() {
         let mut cur = String::new();
         let mut i = 0;
         while i < (s.len() as i32) {
-            let ch = &s[(i) as usize..(i + 1) as usize];
+            let ch = s[(i) as usize..(i + 1) as usize].to_string();
             if ch == String::from(" ") || ch == String::from("
 ") || ch == String::from("	") {
                 if (cur.len() as i32) > 0 {
@@ -59,7 +59,7 @@ fn main() {
                 if mins[(ci) as usize] != 0 && wlen >= mins[(ci) as usize] && wlen <= (cmd.len() as i32) {
                     let c = upper(cmd);
                     let ww = upper(w);
-                    if &c[(0) as usize..(wlen) as usize] == ww {
+                    if c[(0) as usize..(wlen) as usize].to_string() == ww {
                         results = { let mut tmp = results.clone(); tmp.push(c); tmp };
                         found = true;
                         break;
@@ -84,7 +84,7 @@ fn main() {
             let mut j = 0;
             let cmd = commands[(i) as usize];
             while j < (cmd.len() as i32) {
-                let ch = &cmd[(j) as usize..(j + 1) as usize];
+                let ch = cmd[(j) as usize..(j + 1) as usize].to_string();
                 if ch >= String::from("A") && ch <= String::from("Z") {
                     count += 1;
                 }
