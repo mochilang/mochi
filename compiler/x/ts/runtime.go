@@ -258,7 +258,7 @@ const (
 		"  return String(a) < String(b) ? -1 : (String(a) > String(b) ? 1 : 0);\n" +
 		"}\n"
 
-	helperFetch = "async function _fetch(url: string, opts: Record<string, unknown> | undefined): Promise<unknown> {\n" +
+        helperFetch = "async function _fetch(url: string, opts: Record<string, unknown> | undefined): Promise<unknown> {\n" +
 		"  if (url.startsWith('file://')) {\n" +
 		"    let path = url.slice(7);\n" +
 		"    if (!path.startsWith('/')) {\n" +
@@ -293,8 +293,20 @@ const (
 		"  const resp = await fetch(url, init);\n" +
 		"  if (id) clearTimeout(id);\n" +
 		"  const text = await resp.text();\n" +
-		"  try { return JSON.parse(text); } catch { return text; }\n" +
-		"}\n"
+                "  try { return JSON.parse(text); } catch { return text; }\n" +
+                "}\n"
+
+       helperLookupHost = "async function _lookupHost(name: string): Promise<string[]> {\n" +
+               "  try {\n" +
+               "    if (typeof Deno !== 'undefined' && 'resolveDns' in Deno) {\n" +
+               "      return await Deno.resolveDns(name, 'A');\n" +
+               "    }\n" +
+               "    const dns = require('dns').promises;\n" +
+               "    return await dns.resolve4(name);\n" +
+               "  } catch {\n" +
+               "    return [];\n" +
+               "  }\n" +
+               "}\n"
 
 	helperToAnyMap = "function _toAnyMap(m: unknown): Record<string, unknown> {\n" +
 		"  return m as Record<string, unknown>;\n" +
@@ -599,9 +611,10 @@ var helperMap = map[string]string{
 	"_gen_embed":   helperGenEmbed,
 	"_gen_struct":  helperGenStruct,
 	"_cmp":         helperCmp,
-	"_equal":       helperEqual,
-	"_fetch":       helperFetch,
-	"_toAnyMap":    helperToAnyMap,
+        "_equal":       helperEqual,
+        "_fetch":       helperFetch,
+       "_lookupHost":  helperLookupHost,
+        "_toAnyMap":    helperToAnyMap,
 	"_union_all":   helperUnionAll,
 	"_union":       helperUnion,
 	"_except":      helperExcept,
