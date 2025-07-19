@@ -1,3 +1,6 @@
+## Progress (2025-07-19 12:43 UTC)
+- cs transpiler: add substring and min/max builtins (progress 41/100)
+
 ## Progress (2025-07-19 12:01 UTC)
 - cs transpiler: add string comparisons and in operator (progress 39/100)
 
@@ -15,4 +18,5 @@
 ## Remaining Work
 - [x] Implement loops and conditionals
 - [ ] Support map and list mutation operations
+
 
