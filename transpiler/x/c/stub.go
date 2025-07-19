@@ -1,3 +1,3 @@
-//go:build !slow
+//go:build slow
 
 package ctrans
