@@ -17,9 +17,20 @@ import (
 )
 
 // Program represents a sequence of OCaml statements.
+// Program represents an OCaml program. All statements are emitted inside
+// a `let () =` block. Helper functions may be emitted before the block.
 type Program struct {
 	Stmts []Stmt
 }
+
+const prelude = `let string_contains s sub =
+  let len_s = String.length s and len_sub = String.length sub in
+  let rec aux i =
+    if i + len_sub > len_s then false
+    else if String.sub s i len_sub = sub then true
+    else aux (i + 1)
+  in aux 0
+`
 
 type VarInfo struct {
 	typ string
@@ -223,6 +234,25 @@ func (s *SumBuiltin) emit(w io.Writer) {
 func (s *SumBuiltin) emitPrint(w io.Writer) {
 	io.WriteString(w, "string_of_int ")
 	s.emit(w)
+}
+
+// StringContainsBuiltin represents s.contains(sub).
+type StringContainsBuiltin struct {
+	Str Expr
+	Sub Expr
+}
+
+func (s *StringContainsBuiltin) emit(w io.Writer) {
+	io.WriteString(w, "string_contains ")
+	s.Str.emit(w)
+	io.WriteString(w, " ")
+	s.Sub.emit(w)
+}
+
+func (s *StringContainsBuiltin) emitPrint(w io.Writer) {
+	io.WriteString(w, "string_of_int (if ")
+	s.emit(w)
+	io.WriteString(w, " then 1 else 0)")
 }
 
 // ListLit represents a list literal of integers.
@@ -433,6 +463,8 @@ func defaultValueExpr(typ string) Expr {
 func (p *Program) Emit() []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
+	buf.WriteString("\n")
+	buf.WriteString(prelude)
 	buf.WriteString("\n")
 	buf.WriteString("let () =\n")
 	for _, s := range p.Stmts {
@@ -738,10 +770,52 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 	if p == nil {
 		return nil, "", fmt.Errorf("nil postfix")
 	}
-	if len(p.Ops) > 0 {
-		return nil, "", fmt.Errorf("postfix ops not supported")
+	// Handle selector call patterns like s.contains("sub")
+	if p.Target != nil && p.Target.Selector != nil &&
+		len(p.Target.Selector.Tail) == 1 && p.Target.Selector.Tail[0] == "contains" &&
+		len(p.Ops) == 1 && p.Ops[0].Call != nil {
+		arg, at, err := convertExpr(p.Ops[0].Call.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		info := vars[p.Target.Selector.Root]
+		if info.typ != "string" || at != "string" {
+			return nil, "", fmt.Errorf("contains expects string")
+		}
+		root := &Name{Ident: p.Target.Selector.Root, Typ: info.typ, Ref: info.ref}
+		return &StringContainsBuiltin{Str: root, Sub: arg}, "bool", nil
 	}
-	return convertPrimary(p.Target, env, vars)
+	expr, typ, err := convertPrimary(p.Target, env, vars)
+	if err != nil {
+		return nil, "", err
+	}
+	for i := 0; i < len(p.Ops); {
+		op := p.Ops[i]
+		switch {
+		case op.Field != nil && op.Field.Name == "contains":
+			if i+1 >= len(p.Ops) || p.Ops[i+1].Call == nil {
+				return nil, "", fmt.Errorf("contains must be called")
+			}
+			call := p.Ops[i+1].Call
+			if len(call.Args) != 1 {
+				return nil, "", fmt.Errorf("contains expects 1 arg")
+			}
+			arg, aTyp, err := convertExpr(call.Args[0], env, vars)
+			if err != nil {
+				return nil, "", err
+			}
+			if typ != "string" || aTyp != "string" {
+				return nil, "", fmt.Errorf("contains expects string")
+			}
+			expr = &StringContainsBuiltin{Str: expr, Sub: arg}
+			typ = "bool"
+			i += 2
+			continue
+		default:
+			return nil, "", fmt.Errorf("postfix op not supported")
+		}
+	}
+	return expr, typ, nil
 }
 
 func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) (Expr, string, error) {
