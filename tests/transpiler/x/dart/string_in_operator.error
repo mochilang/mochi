@@ -1,7 +1,0 @@
-run: exit status 254
-../../../tests/transpiler/x/dart/string_in_operator.dart:4:16: Error: Expected ')' before this.
-  print(("cat" in s));
-               ^^
-../../../tests/transpiler/x/dart/string_in_operator.dart:5:16: Error: Expected ')' before this.
-  print(("dog" in s));
-               ^^

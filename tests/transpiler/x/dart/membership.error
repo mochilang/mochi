@@ -1,7 +1,0 @@
-run: exit status 254
-../../../tests/transpiler/x/dart/membership.dart:4:12: Error: Expected ')' before this.
-  print((2 in nums));
-           ^^
-../../../tests/transpiler/x/dart/membership.dart:5:12: Error: Expected ')' before this.
-  print((4 in nums));
-           ^^
