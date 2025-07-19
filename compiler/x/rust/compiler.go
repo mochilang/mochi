@@ -1544,7 +1544,7 @@ func (c *Compiler) compileImport(im *parser.ImportStmt) error {
 
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 	if e == nil || e.Binary == nil {
-		return "", fmt.Errorf("empty expr")
+		return "()", nil
 	}
 	return c.compileBinary(e.Binary)
 }
