@@ -108,40 +108,44 @@ func TestTranspilerGolden(t *testing.T) {
 	}
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		wantOut := filepath.Join(srcDir, name+".out")
+		wantOut := filepath.Join(goldenDir, name+".output")
 		t.Run(name, func(t *testing.T) {
-			if updateEnabled() && name == "print_hello" {
-				code, err := transpileFile(src)
-				if err != nil {
-					t.Fatalf("transpile: %v", err)
-				}
-				code = normalize(root, code)
-				if err := os.WriteFile(filepath.Join(goldenDir, name+".c"), code, 0o644); err != nil {
+			code, err := transpileFile(src)
+			if err != nil {
+				t.Fatalf("transpile: %v", err)
+			}
+			if updateEnabled() {
+				norm := normalize(root, code)
+				if err := os.WriteFile(filepath.Join(goldenDir, name+".c"), norm, 0o644); err != nil {
 					t.Fatalf("write golden: %v", err)
 				}
 			}
 
-			got, err := transpileAndRun(src)
-			if err != nil {
+			got, runErr := transpileAndRun(src)
+			if runErr != nil {
 				if updateEnabled() {
 					errPath := filepath.Join(goldenDir, name+".error")
-					if werr := os.WriteFile(errPath, []byte(err.Error()+"\n"), 0o644); werr != nil {
-						t.Fatalf("write error file: %v (run error: %v)", werr, err)
+					if werr := os.WriteFile(errPath, []byte(runErr.Error()+"\n"), 0o644); werr != nil {
+						t.Fatalf("write error file: %v (run error: %v)", werr, runErr)
 					}
 				}
-				t.Fatalf("run: %v", err)
+				t.Fatalf("run: %v", runErr)
 			}
 			if updateEnabled() {
 				_ = os.Remove(filepath.Join(goldenDir, name+".error"))
+				trimmed := bytes.TrimSpace(got)
+				if err := os.WriteFile(wantOut, trimmed, 0o644); err != nil {
+					t.Fatalf("write output: %v", err)
+				}
 			}
-			got = bytes.TrimSpace(got)
+			trimmed := bytes.TrimSpace(got)
 			wantData, err := os.ReadFile(wantOut)
 			if err != nil {
 				t.Fatalf("read expected: %v", err)
 			}
 			wantData = bytes.TrimSpace(wantData)
-			if !bytes.Equal(got, wantData) {
-				t.Errorf("output mismatch for %s: got %q want %q", name, got, wantData)
+			if !bytes.Equal(trimmed, wantData) {
+				t.Errorf("output mismatch for %s: got %q want %q", name, trimmed, wantData)
 			}
 		})
 	}
