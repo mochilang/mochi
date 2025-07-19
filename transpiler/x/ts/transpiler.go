@@ -24,6 +24,13 @@ type Stmt interface {
 	emit(io.Writer)
 }
 
+// IfStmt represents a conditional statement with an optional else branch.
+type IfStmt struct {
+	Cond Expr
+	Then []Stmt
+	Else []Stmt
+}
+
 type Expr interface {
 	emit(io.Writer)
 }
@@ -167,6 +174,27 @@ func (a *AssignStmt) emit(w io.Writer) {
 	}
 }
 
+func (i *IfStmt) emit(w io.Writer) {
+	io.WriteString(w, "if (")
+	if i.Cond != nil {
+		i.Cond.emit(w)
+	}
+	io.WriteString(w, ") {\n")
+	for _, st := range i.Then {
+		st.emit(w)
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, "}")
+	if len(i.Else) > 0 {
+		io.WriteString(w, " else {\n")
+		for _, st := range i.Else {
+			st.emit(w)
+			io.WriteString(w, "\n")
+		}
+		io.WriteString(w, "}")
+	}
+}
+
 // Emit converts the AST back into TypeScript source code.
 func Emit(p *Program) []byte {
 	var b bytes.Buffer
@@ -189,43 +217,90 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	tsProg := &Program{}
 
 	for _, st := range prog.Statements {
-		switch {
-		case st.Let != nil:
-			e, err := convertExpr(st.Let.Value)
-			if err != nil {
-				return nil, err
-			}
-			tsProg.Stmts = append(tsProg.Stmts, &VarDecl{Name: st.Let.Name, Expr: e})
-		case st.Var != nil:
-			e, err := convertExpr(st.Var.Value)
-			if err != nil {
-				return nil, err
-			}
-			tsProg.Stmts = append(tsProg.Stmts, &VarDecl{Name: st.Var.Name, Expr: e})
-		case st.Assign != nil:
-			e, err := convertExpr(st.Assign.Value)
-			if err != nil {
-				return nil, err
-			}
-			tsProg.Stmts = append(tsProg.Stmts, &AssignStmt{Name: st.Assign.Name, Expr: e})
-		case st.Expr != nil:
-			call := st.Expr.Expr.Binary.Left.Value.Target.Call
-			if call == nil || call.Func != "print" {
-				return nil, fmt.Errorf("unsupported expression")
-			}
-			if len(call.Args) != 1 {
-				return nil, fmt.Errorf("print expects one argument")
-			}
-			arg, err := convertExpr(call.Args[0])
-			if err != nil {
-				return nil, err
-			}
-			tsProg.Stmts = append(tsProg.Stmts, &ExprStmt{Expr: &CallExpr{Func: "console.log", Args: []Expr{arg}}})
-		default:
-			return nil, fmt.Errorf("unsupported statement")
+		stmt, err := convertStmt(st)
+		if err != nil {
+			return nil, err
 		}
+		tsProg.Stmts = append(tsProg.Stmts, stmt)
 	}
 	return tsProg, nil
+}
+
+func convertStmt(s *parser.Statement) (Stmt, error) {
+	switch {
+	case s.Let != nil:
+		e, err := convertExpr(s.Let.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &VarDecl{Name: s.Let.Name, Expr: e}, nil
+	case s.Var != nil:
+		e, err := convertExpr(s.Var.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &VarDecl{Name: s.Var.Name, Expr: e}, nil
+	case s.Assign != nil:
+		e, err := convertExpr(s.Assign.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &AssignStmt{Name: s.Assign.Name, Expr: e}, nil
+	case s.Expr != nil:
+		call := s.Expr.Expr.Binary.Left.Value.Target.Call
+		if call == nil || call.Func != "print" {
+			return nil, fmt.Errorf("unsupported expression")
+		}
+		if len(call.Args) != 1 {
+			return nil, fmt.Errorf("print expects one argument")
+		}
+		arg, err := convertExpr(call.Args[0])
+		if err != nil {
+			return nil, err
+		}
+		return &ExprStmt{Expr: &CallExpr{Func: "console.log", Args: []Expr{arg}}}, nil
+	case s.If != nil:
+		return convertIfStmt(s.If)
+	default:
+		return nil, fmt.Errorf("unsupported statement")
+	}
+}
+
+func convertIfStmt(i *parser.IfStmt) (Stmt, error) {
+	cond, err := convertExpr(i.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenStmts, err := convertStmtList(i.Then)
+	if err != nil {
+		return nil, err
+	}
+	var elseStmts []Stmt
+	if i.ElseIf != nil {
+		s, err := convertIfStmt(i.ElseIf)
+		if err != nil {
+			return nil, err
+		}
+		elseStmts = []Stmt{s}
+	} else if len(i.Else) > 0 {
+		elseStmts, err = convertStmtList(i.Else)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
+}
+
+func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
+	var out []Stmt
+	for _, s := range list {
+		st, err := convertStmt(s)
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, st)
+	}
+	return out, nil
 }
 
 func convertExpr(e *parser.Expr) (Expr, error) {
@@ -343,6 +418,21 @@ func stmtToNode(s Stmt) *ast.Node {
 		return &ast.Node{Kind: "let", Value: st.Name, Children: []*ast.Node{exprToNode(st.Expr)}}
 	case *AssignStmt:
 		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{exprToNode(st.Expr)}}
+	case *IfStmt:
+		n := &ast.Node{Kind: "if", Children: []*ast.Node{exprToNode(st.Cond)}}
+		thenNode := &ast.Node{Kind: "then"}
+		for _, c := range st.Then {
+			thenNode.Children = append(thenNode.Children, stmtToNode(c))
+		}
+		n.Children = append(n.Children, thenNode)
+		if len(st.Else) > 0 {
+			elseNode := &ast.Node{Kind: "else"}
+			for _, c := range st.Else {
+				elseNode.Children = append(elseNode.Children, stmtToNode(c))
+			}
+			n.Children = append(n.Children, elseNode)
+		}
+		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
