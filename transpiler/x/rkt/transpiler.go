@@ -80,6 +80,33 @@ type IfExpr struct {
 	Else Expr
 }
 
+func convertIfExpr(n *parser.IfExpr, env *types.Env) (Expr, error) {
+	if n == nil || n.Else == nil && n.ElseIf == nil {
+		return nil, fmt.Errorf("unsupported if expression")
+	}
+	cond, err := convertExpr(n.Cond, env)
+	if err != nil {
+		return nil, err
+	}
+	thenExpr, err := convertExpr(n.Then, env)
+	if err != nil {
+		return nil, err
+	}
+	var elseExpr Expr
+	if n.ElseIf != nil {
+		elseExpr, err = convertIfExpr(n.ElseIf, env)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		elseExpr, err = convertExpr(n.Else, env)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
+}
+
 func (i *IfExpr) emit(w io.Writer) {
 	io.WriteString(w, "(if ")
 	i.Cond.emit(w)
@@ -271,9 +298,6 @@ func convertStatements(list []*parser.Statement, env *types.Env) ([]Stmt, error)
 }
 
 func convertIfStmt(n *parser.IfStmt, env *types.Env) (Stmt, error) {
-	if n.ElseIf != nil {
-		return nil, fmt.Errorf("else-if not supported")
-	}
 	cond, err := convertExpr(n.Cond, env)
 	if err != nil {
 		return nil, err
@@ -283,7 +307,14 @@ func convertIfStmt(n *parser.IfStmt, env *types.Env) (Stmt, error) {
 		return nil, err
 	}
 	var elseStmts []Stmt
-	if len(n.Else) > 0 {
+	switch {
+	case n.ElseIf != nil:
+		s, err := convertIfStmt(n.ElseIf, env)
+		if err != nil {
+			return nil, err
+		}
+		elseStmts = []Stmt{s}
+	case len(n.Else) > 0:
 		elseStmts, err = convertStatements(n.Else, env)
 		if err != nil {
 			return nil, err
@@ -304,21 +335,25 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-	if len(b.Right) == 0 {
-		return left, nil
+	expr := left
+	for _, op := range b.Right {
+		right, err := convertPostfix(op.Right, env)
+		if err != nil {
+			return nil, err
+		}
+		opName := op.Op
+		if opName == "+" && (types.IsStringUnary(b.Left, env) || types.IsStringPostfix(op.Right, env)) {
+			opName = "string-append"
+		}
+		if opName == "&&" {
+			opName = "and"
+		}
+		if opName == "||" {
+			opName = "or"
+		}
+		expr = &BinaryExpr{Op: opName, Left: expr, Right: right}
 	}
-	if len(b.Right) > 1 {
-		return nil, fmt.Errorf("complex binary not supported")
-	}
-	op := b.Right[0]
-	right, err := convertPostfix(op.Right, env)
-	if err != nil {
-		return nil, err
-	}
-	if op.Op == "+" && (types.IsStringUnary(b.Left, env) || types.IsStringPostfix(op.Right, env)) {
-		return &BinaryExpr{Op: "string-append", Left: left, Right: right}, nil
-	}
-	return &BinaryExpr{Op: op.Op, Left: left, Right: right}, nil
+	return expr, nil
 }
 
 func convertUnary(u *parser.Unary, env *types.Env) (Expr, error) {
@@ -355,20 +390,8 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 	switch {
 	case p.Lit != nil:
 		return convertLiteral(p.Lit)
-	case p.If != nil && p.If.ElseIf == nil && p.If.Else != nil:
-		cond, err := convertExpr(p.If.Cond, env)
-		if err != nil {
-			return nil, err
-		}
-		thenExpr, err := convertExpr(p.If.Then, env)
-		if err != nil {
-			return nil, err
-		}
-		elseExpr, err := convertExpr(p.If.Else, env)
-		if err != nil {
-			return nil, err
-		}
-		return &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
+	case p.If != nil:
+		return convertIfExpr(p.If, env)
 	case p.Group != nil:
 		return convertExpr(p.Group, env)
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
@@ -396,8 +419,8 @@ func isBoolExpr(e *parser.Expr) bool {
 		p := e.Binary.Left.Value.Target
 		return p != nil && p.Lit != nil && p.Lit.Bool != nil
 	}
-	op := e.Binary.Right[0].Op
-	switch op {
+	last := e.Binary.Right[len(e.Binary.Right)-1].Op
+	switch last {
 	case "==", "!=", "<", "<=", ">", ">=", "&&", "||":
 		return true
 	default:
