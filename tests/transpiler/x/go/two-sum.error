@@ -1,1 +1,11 @@
-unsupported statement at 1:1
+exit status 1
+# command-line-arguments
+../../../tests/transpiler/x/go/two-sum.go:55:11: invalid argument: nums (variable of interface type any) for built-in len
+../../../tests/transpiler/x/go/two-sum.go:58:8: invalid operation: operator + not defined on index(nums, i) (value of interface type any)
+../../../tests/transpiler/x/go/two-sum.go:59:12: too many return values
+	have ([]int)
+	want ()
+../../../tests/transpiler/x/go/two-sum.go:63:9: too many return values
+	have ([]int)
+	want ()
+../../../tests/transpiler/x/go/two-sum.go:67:12: twoSum([]int{…}, 9) (no value) used as value

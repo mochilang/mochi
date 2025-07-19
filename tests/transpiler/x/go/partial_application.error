@@ -1,1 +1,7 @@
-unsupported statement at 1:1
+exit status 1
+# command-line-arguments
+../../../tests/transpiler/x/go/partial_application.go:44:10: invalid operation: operator + not defined on a (variable of interface type any)
+../../../tests/transpiler/x/go/partial_application.go:48:14: not enough arguments in call to add
+	have (number)
+	want (any, any)
+../../../tests/transpiler/x/go/partial_application.go:49:13: invalid operation: cannot call non-function add5 (variable of type int)
