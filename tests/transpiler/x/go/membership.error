@@ -1,0 +1,4 @@
+exit status 1
+# command-line-arguments
+../../../tests/transpiler/x/go/membership.go:10:20: syntax error: unexpected name in, expected )
+../../../tests/transpiler/x/go/membership.go:11:20: syntax error: unexpected name in, expected )
