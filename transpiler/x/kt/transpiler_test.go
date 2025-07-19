@@ -43,6 +43,7 @@ func TestTranspilePrograms(t *testing.T) {
 		"len_builtin",
 		"len_string",
 		"str_builtin",
+		"let_and_print",
 	}
 	root := repoRoot(t)
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "kt")
