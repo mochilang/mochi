@@ -1,0 +1,3 @@
+exit status 1
+# command-line-arguments
+../../../tests/transpiler/x/go/values_builtin.go:12:14: undefined: values
