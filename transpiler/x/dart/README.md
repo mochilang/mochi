@@ -1,4 +1,4 @@
-# Dart Transpiler Output (8/100 generated and run)
+# Dart Transpiler Output (9/100 generated and run)
 
 Generated Dart code for programs in `tests/vm/valid`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
@@ -102,4 +102,4 @@ Generated Dart code for programs in `tests/vm/valid`. Each program has a `.dart`
 - [ ] user_type_literal.mochi
 - [ ] values_builtin.mochi
 - [x] var_assignment.mochi
-- [ ] while_loop.mochi
+- [x] while_loop.mochi

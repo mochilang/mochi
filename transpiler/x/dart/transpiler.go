@@ -22,6 +22,47 @@ type Program struct {
 
 type Stmt interface{ emit(io.Writer) error }
 
+// WhileStmt represents a simple while loop.
+type WhileStmt struct {
+	Cond Expr
+	Body []Stmt
+}
+
+func (w *WhileStmt) emit(out io.Writer) error {
+	if _, err := io.WriteString(out, "while ("); err != nil {
+		return err
+	}
+	if err := w.Cond.emit(out); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(out, ") {\n"); err != nil {
+		return err
+	}
+	for _, st := range w.Body {
+		if _, err := io.WriteString(out, "  "); err != nil {
+			return err
+		}
+		if err := st.emit(out); err != nil {
+			return err
+		}
+		if _, ok := st.(*IfStmt); ok {
+			if _, err := io.WriteString(out, "\n"); err != nil {
+				return err
+			}
+		} else if _, ok := st.(*WhileStmt); ok {
+			if _, err := io.WriteString(out, "\n"); err != nil {
+				return err
+			}
+		} else {
+			if _, err := io.WriteString(out, ";\n"); err != nil {
+				return err
+			}
+		}
+	}
+	_, err := io.WriteString(out, "}")
+	return err
+}
+
 // IfStmt represents a conditional statement with an optional else branch.
 type IfStmt struct {
 	Cond Expr
@@ -269,6 +310,10 @@ func Emit(w io.Writer, p *Program) error {
 			if _, err := io.WriteString(w, "\n"); err != nil {
 				return err
 			}
+		} else if _, ok := st.(*WhileStmt); ok {
+			if _, err := io.WriteString(w, "\n"); err != nil {
+				return err
+			}
 		} else {
 			if _, err := io.WriteString(w, ";\n"); err != nil {
 				return err
@@ -316,6 +361,18 @@ func convertIfStmt(i *parser.IfStmt) (Stmt, error) {
 		}
 	}
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
+}
+
+func convertWhileStmt(wst *parser.WhileStmt) (Stmt, error) {
+	cond, err := convertExpr(wst.Cond)
+	if err != nil {
+		return nil, err
+	}
+	body, err := convertStmtList(wst.Body)
+	if err != nil {
+		return nil, err
+	}
+	return &WhileStmt{Cond: cond, Body: body}, nil
 }
 
 func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
@@ -373,6 +430,8 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		return &AssignStmt{Name: st.Assign.Name, Value: e}, nil
+	case st.While != nil:
+		return convertWhileStmt(st.While)
 	case st.If != nil:
 		return convertIfStmt(st.If)
 	default:
@@ -520,6 +579,14 @@ func stmtNode(s Stmt) *ast.Node {
 			}
 			n.Children = append(n.Children, elseNode)
 		}
+		return n
+	case *WhileStmt:
+		n := &ast.Node{Kind: "while", Children: []*ast.Node{exprNode(st.Cond)}}
+		body := &ast.Node{Kind: "body"}
+		for _, b := range st.Body {
+			body.Children = append(body.Children, stmtNode(b))
+		}
+		n.Children = append(n.Children, body)
 		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
