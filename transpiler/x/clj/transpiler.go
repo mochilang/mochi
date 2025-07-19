@@ -60,6 +60,24 @@ func (l *List) Emit(w io.Writer) {
 	io.WriteString(w, ")")
 }
 
+// Vector represents a Clojure vector: [elem1 elem2 ...]
+type Vector struct {
+	Elems []Node
+}
+
+func (v *Vector) Emit(w io.Writer) {
+	io.WriteString(w, "[")
+	for i, e := range v.Elems {
+		if i > 0 {
+			io.WriteString(w, " ")
+		}
+		if e != nil {
+			e.Emit(w)
+		}
+	}
+	io.WriteString(w, "]")
+}
+
 // Program is a sequence of top-level forms.
 type Program struct {
 	Forms []Node
@@ -114,9 +132,16 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	// emit (ns main)
 	pr.Forms = append(pr.Forms, &List{Elems: []Node{Symbol("ns"), Symbol("main")}})
 
-	// translate main body
 	body := []Node{}
 	for _, st := range prog.Statements {
+		if st.Let != nil {
+			n, err := transpileStmt(st)
+			if err != nil {
+				return nil, err
+			}
+			pr.Forms = append(pr.Forms, n)
+			continue
+		}
 		n, err := transpileStmt(st)
 		if err != nil {
 			return nil, err
@@ -126,7 +151,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		}
 	}
 
-	mainElems := []Node{Symbol("defn"), Symbol("-main"), &List{}}
+	mainElems := []Node{Symbol("defn"), Symbol("-main"), &Vector{}}
 	mainElems = append(mainElems, body...)
 	pr.Forms = append(pr.Forms, &List{Elems: mainElems})
 
@@ -139,9 +164,48 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 	switch {
 	case s.Expr != nil:
 		return transpileExpr(s.Expr.Expr)
+	case s.Let != nil:
+		if s.Let.Value == nil {
+			return nil, fmt.Errorf("let without value")
+		}
+		v, err := transpileExpr(s.Let.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &List{Elems: []Node{Symbol("def"), Symbol(s.Let.Name), v}}, nil
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
+}
+
+var binOp = map[string]string{
+	"+":  "+",
+	"-":  "-",
+	"*":  "*",
+	"/":  "/",
+	"%":  "mod",
+	"==": "=",
+	"!=": "not=",
+	"<":  "<",
+	"<=": "<=",
+	">":  ">",
+	">=": ">=",
+	"&&": "and",
+        "||": "or",
+}
+
+func isStringNode(n Node) bool {
+       switch t := n.(type) {
+       case StringLit:
+               return true
+       case *List:
+               if len(t.Elems) > 0 {
+                       if sym, ok := t.Elems[0].(Symbol); ok && sym == "str" {
+                               return true
+                       }
+               }
+       }
+       return false
 }
 
 func transpileExpr(e *parser.Expr) (Node, error) {
@@ -151,17 +215,48 @@ func transpileExpr(e *parser.Expr) (Node, error) {
 	if e.Binary == nil {
 		return nil, fmt.Errorf("unsupported expr")
 	}
-	return transpileUnary(e.Binary.Left)
+	left, err := transpileUnary(e.Binary.Left)
+	if err != nil {
+		return nil, err
+	}
+	n := left
+	for _, op := range e.Binary.Right {
+		right, err := transpilePostfix(op.Right)
+		if err != nil {
+			return nil, err
+		}
+               sym, ok := binOp[op.Op]
+               if !ok {
+                       return nil, fmt.Errorf("binary op not supported")
+               }
+               if sym == "+" && (isStringNode(n) || isStringNode(right)) {
+                       n = &List{Elems: []Node{Symbol("str"), n, right}}
+               } else {
+                       n = &List{Elems: []Node{Symbol(sym), n, right}}
+               }
+       }
+       return n, nil
 }
 
 func transpileUnary(u *parser.Unary) (Node, error) {
 	if u == nil {
 		return nil, fmt.Errorf("nil unary")
 	}
-	if len(u.Ops) != 0 {
-		return nil, fmt.Errorf("unary op not supported")
+	n, err := transpilePostfix(u.Value)
+	if err != nil {
+		return nil, err
 	}
-	return transpilePostfix(u.Value)
+	for i := len(u.Ops) - 1; i >= 0; i-- {
+		switch u.Ops[i] {
+		case "-":
+			n = &List{Elems: []Node{Symbol("-"), n}}
+		case "!":
+			n = &List{Elems: []Node{Symbol("not"), n}}
+		default:
+			return nil, fmt.Errorf("unary op not supported")
+		}
+	}
+	return n, nil
 }
 
 func transpilePostfix(p *parser.PostfixExpr) (Node, error) {
@@ -183,19 +278,27 @@ func transpilePrimary(p *parser.Primary) (Node, error) {
 		return transpileCall(p.Call)
 	case p.Lit != nil:
 		return transpileLiteral(p.Lit)
+	case p.Selector != nil && len(p.Selector.Tail) == 0:
+		return Symbol(p.Selector.Root), nil
+	case p.Group != nil:
+		return transpileExpr(p.Group)
 	default:
 		return nil, fmt.Errorf("unsupported primary")
 	}
 }
 
 func transpileCall(c *parser.CallExpr) (Node, error) {
-	elems := []Node{}
-	switch c.Func {
-	case "print":
-		elems = append(elems, Symbol("println"))
-	default:
-		elems = append(elems, Symbol(c.Func))
-	}
+        elems := []Node{}
+        switch c.Func {
+        case "print":
+                elems = append(elems, Symbol("println"))
+       case "len":
+               elems = append(elems, Symbol("count"))
+       case "substring":
+               elems = append(elems, Symbol("subs"))
+        default:
+                elems = append(elems, Symbol(c.Func))
+        }
 	for _, arg := range c.Args {
 		a, err := transpileExpr(arg)
 		if err != nil {
