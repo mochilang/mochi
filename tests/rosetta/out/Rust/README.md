@@ -1,4 +1,4 @@
-# Rosetta Rust Output (32/271 compiled and run)
+# Rosetta Rust Output (33/271 compiled and run)
 
 This directory holds Rust source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -193,7 +193,7 @@ This directory holds Rust source code generated from the real Mochi programs in 
 - [x] character-codes-5
 - [ ] chat-server
 - [ ] check-machin-like-formulas
-- [ ] check-that-file-exists
+- [x] check-that-file-exists
 - [ ] checkpoint-synchronization-1
 - [ ] checkpoint-synchronization-2
 - [ ] checkpoint-synchronization-3
