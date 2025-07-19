@@ -130,6 +130,8 @@ end
 
 	helperGenStruct = "defp _gen_struct(mod, prompt, _model, _params) do\n  data = Jason.decode!(prompt)\n  struct(mod, for {k,v} <- data, into: %{}, do: {String.to_atom(k), v})\nend\n"
 
+	helperLookupHost = "defp _lookup_host(host) do\n  case :inet.gethostbyname(String.to_charlist(host)) do\n    {:ok, {:hostent, _, _, _, _, addrs}} ->\n      ips = Enum.map(addrs, fn a -> :inet.ntoa(a) |> List.to_string() end)\n      [ips, nil]\n    {:error, reason} ->\n      [nil, reason]\n  end\nend\n"
+
 	helperUnionAll = "defp _union_all(a, b) do\n  a ++ b\nend\n"
 
 	helperUnion = "defp _union(a, b) do\n  Enum.uniq(a ++ b)\nend\n"
@@ -241,6 +243,7 @@ var helperMap = map[string]string{
 	"_gen_text":     helperGenText,
 	"_gen_embed":    helperGenEmbed,
 	"_gen_struct":   helperGenStruct,
+	"_lookup_host":  helperLookupHost,
 	"_union_all":    helperUnionAll,
 	"_union":        helperUnion,
 	"_except":       helperExcept,
