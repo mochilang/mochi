@@ -108,7 +108,7 @@ func TestTranspilerGolden(t *testing.T) {
 	}
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		wantOut := filepath.Join(goldenDir, name+".output")
+		wantOut := filepath.Join(goldenDir, name+".out")
 		t.Run(name, func(t *testing.T) {
 			code, err := transpileFile(src)
 			if err != nil {
