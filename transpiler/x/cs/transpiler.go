@@ -36,6 +36,100 @@ func (s *LetStmt) emit(w io.Writer) {
 	s.Value.emit(w)
 }
 
+// VarStmt represents a mutable variable declaration.
+type VarStmt struct {
+	Name  string
+	Value Expr // optional
+}
+
+func (s *VarStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "var %s", s.Name)
+	if s.Value != nil {
+		fmt.Fprint(w, " = ")
+		s.Value.emit(w)
+	}
+}
+
+// AssignStmt represents simple assignment to a variable.
+type AssignStmt struct {
+	Name  string
+	Value Expr
+}
+
+func (s *AssignStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "%s = ", s.Name)
+	s.Value.emit(w)
+}
+
+// WhileStmt represents a while loop.
+type WhileStmt struct {
+	Cond Expr
+	Body []Stmt
+}
+
+func (ws *WhileStmt) emit(w io.Writer) {
+	fmt.Fprint(w, "while (")
+	if ws.Cond != nil {
+		ws.Cond.emit(w)
+		fmt.Fprint(w, " != 0")
+	}
+	fmt.Fprint(w, ") {\n")
+	for _, st := range ws.Body {
+		fmt.Fprint(w, "    ")
+		st.emit(w)
+		fmt.Fprint(w, ";\n")
+	}
+	fmt.Fprint(w, "}")
+}
+
+// IfStmt represents a conditional statement.
+type IfStmt struct {
+	Cond Expr
+	Then []Stmt
+	Else []Stmt
+}
+
+func (i *IfStmt) emit(w io.Writer) {
+	fmt.Fprint(w, "if (")
+	if i.Cond != nil {
+		i.Cond.emit(w)
+		fmt.Fprint(w, " != 0")
+	}
+	fmt.Fprint(w, ") {\n")
+	for _, st := range i.Then {
+		fmt.Fprint(w, "    ")
+		st.emit(w)
+		fmt.Fprint(w, ";\n")
+	}
+	fmt.Fprint(w, "}")
+	if len(i.Else) > 0 {
+		fmt.Fprint(w, " else {\n")
+		for _, st := range i.Else {
+			fmt.Fprint(w, "    ")
+			st.emit(w)
+			fmt.Fprint(w, ";\n")
+		}
+		fmt.Fprint(w, "}")
+	}
+}
+
+// IfExpr is a ternary conditional expression.
+type IfExpr struct {
+	Cond Expr
+	Then Expr
+	Else Expr
+}
+
+func (ie *IfExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "(")
+	ie.Cond.emit(w)
+	fmt.Fprint(w, " != 0 ? ")
+	ie.Then.emit(w)
+	fmt.Fprint(w, " : ")
+	ie.Else.emit(w)
+	fmt.Fprint(w, ")")
+}
+
 type Expr interface{ emit(io.Writer) }
 
 // VarRef references a variable by name.
@@ -168,22 +262,13 @@ func (s *StrExpr) emit(w io.Writer) {
 // Transpile converts a Mochi AST to a simple C# AST.
 func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	prog := &Program{}
-	for _, stmt := range p.Statements {
-		switch {
-		case stmt.Expr != nil:
-			e, err := compileExpr(stmt.Expr.Expr)
-			if err != nil {
-				return nil, err
-			}
-			prog.Stmts = append(prog.Stmts, &ExprStmt{Expr: e})
-		case stmt.Let != nil:
-			val, err := compileExpr(stmt.Let.Value)
-			if err != nil {
-				return nil, err
-			}
-			prog.Stmts = append(prog.Stmts, &LetStmt{Name: stmt.Let.Name, Value: val})
-		case stmt.Test == nil && stmt.Import == nil && stmt.Type == nil:
-			return nil, fmt.Errorf("unsupported statement at %d:%d", stmt.Pos.Line, stmt.Pos.Column)
+	for _, st := range p.Statements {
+		s, err := compileStmt(st)
+		if err != nil {
+			return nil, err
+		}
+		if s != nil {
+			prog.Stmts = append(prog.Stmts, s)
 		}
 	}
 	_ = env // env reserved for future use
@@ -233,6 +318,98 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 		return nil, fmt.Errorf("unsupported postfix")
 	}
 	return compilePrimary(p.Target)
+}
+
+func compileStmt(s *parser.Statement) (Stmt, error) {
+	switch {
+	case s.Expr != nil:
+		e, err := compileExpr(s.Expr.Expr)
+		if err != nil {
+			return nil, err
+		}
+		return &ExprStmt{Expr: e}, nil
+	case s.Let != nil:
+		val, err := compileExpr(s.Let.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &LetStmt{Name: s.Let.Name, Value: val}, nil
+	case s.Var != nil:
+		var val Expr
+		var err error
+		if s.Var.Value != nil {
+			val, err = compileExpr(s.Var.Value)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return &VarStmt{Name: s.Var.Name, Value: val}, nil
+	case s.Assign != nil:
+		if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
+			val, err := compileExpr(s.Assign.Value)
+			if err != nil {
+				return nil, err
+			}
+			return &AssignStmt{Name: s.Assign.Name, Value: val}, nil
+		}
+	case s.While != nil:
+		cond, err := compileExpr(s.While.Cond)
+		if err != nil {
+			return nil, err
+		}
+		var body []Stmt
+		for _, b := range s.While.Body {
+			st, err := compileStmt(b)
+			if err != nil {
+				return nil, err
+			}
+			if st != nil {
+				body = append(body, st)
+			}
+		}
+		return &WhileStmt{Cond: cond, Body: body}, nil
+	case s.If != nil:
+		return compileIfStmt(s.If)
+	case s.Test == nil && s.Import == nil && s.Type == nil:
+		return nil, fmt.Errorf("unsupported statement at %d:%d", s.Pos.Line, s.Pos.Column)
+	}
+	return nil, nil
+}
+
+func compileIfStmt(i *parser.IfStmt) (Stmt, error) {
+	cond, err := compileExpr(i.Cond)
+	if err != nil {
+		return nil, err
+	}
+	var thenStmts []Stmt
+	for _, st := range i.Then {
+		s, err := compileStmt(st)
+		if err != nil {
+			return nil, err
+		}
+		if s != nil {
+			thenStmts = append(thenStmts, s)
+		}
+	}
+	var elseStmts []Stmt
+	if i.ElseIf != nil {
+		s, err := compileIfStmt(i.ElseIf)
+		if err != nil {
+			return nil, err
+		}
+		elseStmts = []Stmt{s}
+	} else if len(i.Else) > 0 {
+		for _, st := range i.Else {
+			s, err := compileStmt(st)
+			if err != nil {
+				return nil, err
+			}
+			if s != nil {
+				elseStmts = append(elseStmts, s)
+			}
+		}
+	}
+	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
 }
 
 func compilePrimary(p *parser.Primary) (Expr, error) {
@@ -291,8 +468,34 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		return &VarRef{Name: p.Selector.Root}, nil
 	case p.Group != nil:
 		return compileExpr(p.Group)
+	case p.If != nil:
+		return compileIfExpr(p.If)
 	}
 	return nil, fmt.Errorf("unsupported primary")
+}
+
+func compileIfExpr(i *parser.IfExpr) (Expr, error) {
+	cond, err := compileExpr(i.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenExpr, err := compileExpr(i.Then)
+	if err != nil {
+		return nil, err
+	}
+	var elseExpr Expr
+	if i.ElseIf != nil {
+		elseExpr, err = compileIfExpr(i.ElseIf)
+		if err != nil {
+			return nil, err
+		}
+	} else if i.Else != nil {
+		elseExpr, err = compileExpr(i.Else)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
 }
 
 // Emit generates formatted C# source from the AST.
@@ -367,6 +570,35 @@ func toNodeStmt(s Stmt) *ast.Node {
 		return &ast.Node{Kind: "expr", Children: []*ast.Node{toNodeExpr(st.Expr)}}
 	case *LetStmt:
 		return &ast.Node{Kind: "let", Value: st.Name, Children: []*ast.Node{toNodeExpr(st.Value)}}
+	case *VarStmt:
+		var child []*ast.Node
+		if st.Value != nil {
+			child = []*ast.Node{toNodeExpr(st.Value)}
+		}
+		return &ast.Node{Kind: "var", Value: st.Name, Children: child}
+	case *AssignStmt:
+		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{toNodeExpr(st.Value)}}
+	case *WhileStmt:
+		n := &ast.Node{Kind: "while", Children: []*ast.Node{toNodeExpr(st.Cond)}}
+		for _, b := range st.Body {
+			n.Children = append(n.Children, toNodeStmt(b))
+		}
+		return n
+	case *IfStmt:
+		n := &ast.Node{Kind: "if", Children: []*ast.Node{toNodeExpr(st.Cond)}}
+		thenNode := &ast.Node{Kind: "then"}
+		for _, b := range st.Then {
+			thenNode.Children = append(thenNode.Children, toNodeStmt(b))
+		}
+		n.Children = append(n.Children, thenNode)
+		if len(st.Else) > 0 {
+			elseNode := &ast.Node{Kind: "else"}
+			for _, b := range st.Else {
+				elseNode.Children = append(elseNode.Children, toNodeStmt(b))
+			}
+			n.Children = append(n.Children, elseNode)
+		}
+		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
@@ -398,6 +630,8 @@ func toNodeExpr(e Expr) *ast.Node {
 		return &ast.Node{Kind: "unary", Value: ex.Op, Children: []*ast.Node{toNodeExpr(ex.Val)}}
 	case *BinaryExpr:
 		return &ast.Node{Kind: "binary", Value: ex.Op, Children: []*ast.Node{toNodeExpr(ex.Left), toNodeExpr(ex.Right)}}
+	case *IfExpr:
+		return &ast.Node{Kind: "ifexpr", Children: []*ast.Node{toNodeExpr(ex.Cond), toNodeExpr(ex.Then), toNodeExpr(ex.Else)}}
 	case *IntLit:
 		return &ast.Node{Kind: "int", Value: fmt.Sprint(ex.Value)}
 	case *ListLit:
@@ -429,6 +663,33 @@ func inspectLinq(e Expr) bool {
 		return true
 	case *SumExpr:
 		return true
+	case *IfExpr:
+		return inspectLinq(ex.Cond) || inspectLinq(ex.Then) || inspectLinq(ex.Else)
+	case *IfStmt:
+		if inspectLinq(ex.Cond) {
+			return true
+		}
+		for _, s := range ex.Then {
+			if inspectLinq(s) {
+				return true
+			}
+		}
+		for _, s := range ex.Else {
+			if inspectLinq(s) {
+				return true
+			}
+		}
+		return false
+	case *WhileStmt:
+		if inspectLinq(ex.Cond) {
+			return true
+		}
+		for _, s := range ex.Body {
+			if inspectLinq(s) {
+				return true
+			}
+		}
+		return false
 	case *CallExpr:
 		for _, a := range ex.Args {
 			if inspectLinq(a) {

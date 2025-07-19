@@ -4,11 +4,13 @@ package cstranspiler_test
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"mochi/parser"
 	transpiler "mochi/transpiler/x/cs"
@@ -67,6 +69,7 @@ func TestTranspilePrintHello(t *testing.T) {
 		t.Fatal(err)
 	}
 	cmd := exec.Command("dotnet", "run", "--project", proj)
+	cmd.Env = append(os.Environ(), "DOTNET_NOLOGO=1", "DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("dotnet run error: %v\n%s", err, out)
@@ -131,6 +134,7 @@ func TestCSTranspiler_Golden(t *testing.T) {
 				t.Fatal(err)
 			}
 			cmd := exec.Command("dotnet", "run", "--project", proj)
+			cmd.Env = append(os.Environ(), "DOTNET_NOLOGO=1", "DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1")
 			out, err := cmd.CombinedOutput()
 			errPath := strings.TrimSuffix(csPath, ".cs") + ".error"
 			if err != nil {
@@ -151,4 +155,58 @@ func TestCSTranspiler_Golden(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	updateReadme()
+	updateTasks()
+	os.Exit(code)
+}
+
+func updateReadme() {
+	root := repoRoot(&testing.T{})
+	srcDir := filepath.Join(root, "tests", "vm", "valid")
+	binDir := filepath.Join(root, "tests", "transpiler", "x", "cs")
+	readmePath := filepath.Join(root, "transpiler", "x", "cs", "README.md")
+	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	total := len(files)
+	compiled := 0
+	var lines []string
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		mark := "[ ]"
+		if _, err := os.Stat(filepath.Join(binDir, name+".out")); err == nil {
+			compiled++
+			mark = "[x]"
+		}
+		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+	}
+	var buf bytes.Buffer
+	buf.WriteString("# C# Transpiler Output\n\n")
+	buf.WriteString("Generated C# code for programs in `tests/vm/valid`. Each program has a `.cs` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.\n\n")
+	fmt.Fprintf(&buf, "Compiled programs: %d/%d\n\n", compiled, total)
+	buf.WriteString("## Checklist\n")
+	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteString("\n")
+	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
+}
+
+func updateTasks() {
+	root := repoRoot(&testing.T{})
+	taskFile := filepath.Join(root, "transpiler", "x", "cs", "TASKS.md")
+	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	ts := ""
+	if err == nil {
+		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+			ts = t.Format("2006-01-02 15:04 MST")
+		}
+	}
+	var buf bytes.Buffer
+	fmt.Fprintf(&buf, "## Progress (%s)\n", ts)
+	buf.WriteString("- VM valid golden test results updated\n\n")
+	if data, err := os.ReadFile(taskFile); err == nil {
+		buf.Write(data)
+	}
+	_ = os.WriteFile(taskFile, buf.Bytes(), 0o644)
 }
