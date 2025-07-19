@@ -113,6 +113,9 @@ type IntLit struct{ Value int }
 
 type StringLit struct{ Value string }
 
+// LenExpr represents a builtin len() call.
+type LenExpr struct{ Value Expr }
+
 type UnaryExpr struct {
 	Op   string
 	Expr Expr
@@ -134,6 +137,12 @@ func (i *IntLit) emitExpr(w io.Writer) {
 func (s *StringLit) emitExpr(w io.Writer) {
 	esc := strings.ReplaceAll(s.Value, "\"", "\"\"")
 	fmt.Fprintf(w, "\"%s\"", esc)
+}
+
+func (l *LenExpr) emitExpr(w io.Writer) {
+	io.WriteString(w, "FUNCTION LENGTH(")
+	l.Value.emitExpr(w)
+	io.WriteString(w, ")")
 }
 
 func (u *UnaryExpr) emitExpr(w io.Writer) {
@@ -158,7 +167,14 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 		return
 	}
 	b.Left.emitExpr(w)
-	fmt.Fprintf(w, " %s ", b.Op)
+	op := b.Op
+	switch b.Op {
+	case "==":
+		op = "="
+	case "!=":
+		op = "<>"
+	}
+	fmt.Fprintf(w, " %s ", op)
 	b.Right.emitExpr(w)
 }
 
@@ -205,9 +221,37 @@ func isDirectNumber(e Expr) bool {
 	return false
 }
 
+func relOpExpr(e Expr) (*BinaryExpr, bool) {
+	b, ok := e.(*BinaryExpr)
+	if !ok {
+		return nil, false
+	}
+	switch b.Op {
+	case "==", "!=", "<", "<=", ">", ">=":
+		return b, true
+	default:
+		return nil, false
+	}
+}
+
 // --- Statement emitters ---
 
 func (d *DisplayStmt) emit(w io.Writer) {
+	if b, ok := relOpExpr(d.Expr); ok {
+		io.WriteString(w, "IF ")
+		b.Left.emitExpr(w)
+		op := b.Op
+		switch op {
+		case "==":
+			op = "="
+		case "!=":
+			op = "<>"
+		}
+		fmt.Fprintf(w, " %s ", op)
+		b.Right.emitExpr(w)
+		io.WriteString(w, "\n        DISPLAY 1\n    ELSE\n        DISPLAY 0\n    END-IF")
+		return
+	}
 	if d.IsString {
 		if d.Temp {
 			io.WriteString(w, "COMPUTE TMP = ")
@@ -220,8 +264,10 @@ func (d *DisplayStmt) emit(w io.Writer) {
 		return
 	}
 	if !d.Temp && isDirectNumber(d.Expr) {
-		io.WriteString(w, "DISPLAY ")
+		io.WriteString(w, "MOVE ")
 		d.Expr.emitExpr(w)
+		io.WriteString(w, " TO TMP-STR")
+		io.WriteString(w, "\n    DISPLAY FUNCTION TRIM(TMP-STR)")
 		return
 	}
 	if d.Temp {
@@ -561,6 +607,12 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 	switch {
 	case p.Lit != nil:
 		return convertLiteral(p.Lit)
+	case p.Call != nil && p.Call.Func == "len" && len(p.Call.Args) == 1:
+		arg, err := convertExpr(p.Call.Args[0], env)
+		if err != nil {
+			return nil, err
+		}
+		return &LenExpr{Value: arg}, nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return &VarRef{Name: p.Selector.Root}, nil
 	case p.Group != nil:

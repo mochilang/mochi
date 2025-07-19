@@ -5,12 +5,12 @@ Each program is transpiled and the resulting `.cob` sources are compiled with
 `cobc` during testing.
 
 
-Checklist of programs that currently transpile and run (8/100):
+Checklist of programs that currently transpile and run (12/100):
 
 - [ ] append_builtin
 - [ ] avg_builtin
-- [ ] basic_compare
-- [ ] binary_precedence
+- [x] basic_compare
+- [x] binary_precedence
 - [ ] bool_chain
 - [ ] break_continue
 - [ ] cast_string_to_int
@@ -51,7 +51,7 @@ Checklist of programs that currently transpile and run (8/100):
 - [ ] left_join_multi
 - [ ] len_builtin
 - [ ] len_map
-- [ ] len_string
+- [x] len_string
 - [x] let_and_print
 - [ ] list_assign
 - [ ] list_index
@@ -68,6 +68,7 @@ Checklist of programs that currently transpile and run (8/100):
 - [ ] match_expr
 - [ ] match_full
 - [ ] math_ops
+- [x] math_ops
 - [ ] membership
 - [ ] min_max_builtin
 - [ ] nested_function
