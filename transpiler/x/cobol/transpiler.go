@@ -29,6 +29,207 @@ func (d *DisplayStmt) emit(w io.Writer) {
 	fmt.Fprintf(w, "    DISPLAY \"%s\"\n", esc)
 }
 
+type valKind int
+
+const (
+	valInvalid valKind = iota
+	valInt
+	valBool
+	valString
+)
+
+type value struct {
+	kind valKind
+	i    int
+	b    bool
+	s    string
+}
+
+func (v value) String() string {
+	switch v.kind {
+	case valInt:
+		return fmt.Sprintf("%d", v.i)
+	case valBool:
+		if v.b {
+			return "true"
+		}
+		return "false"
+	case valString:
+		return v.s
+	default:
+		return ""
+	}
+}
+
+func zeroValue(t *parser.TypeRef) value {
+	if t == nil || t.Simple == nil {
+		return value{}
+	}
+	switch *t.Simple {
+	case "int":
+		return value{kind: valInt}
+	case "bool":
+		return value{kind: valBool}
+	case "string":
+		return value{kind: valString}
+	default:
+		return value{}
+	}
+}
+
+func evalExpr(e *parser.Expr, vars map[string]value) (value, error) {
+	if e == nil {
+		return value{}, fmt.Errorf("nil expr")
+	}
+	return evalBinary(e.Binary, vars)
+}
+
+func evalBinary(b *parser.BinaryExpr, vars map[string]value) (value, error) {
+	v, err := evalUnary(b.Left, vars)
+	if err != nil {
+		return value{}, err
+	}
+	for _, op := range b.Right {
+		right, err := evalPostfix(op.Right, vars)
+		if err != nil {
+			return value{}, err
+		}
+		v, err = applyOp(v, op.Op, right)
+		if err != nil {
+			return value{}, err
+		}
+	}
+	return v, nil
+}
+
+func applyOp(a value, op string, b value) (value, error) {
+	switch op {
+	case "+":
+		if a.kind == valString && b.kind == valString {
+			return value{kind: valString, s: a.s + b.s}, nil
+		}
+		if a.kind == valInt && b.kind == valInt {
+			return value{kind: valInt, i: a.i + b.i}, nil
+		}
+	case "-":
+		if a.kind == valInt && b.kind == valInt {
+			return value{kind: valInt, i: a.i - b.i}, nil
+		}
+	case "*":
+		if a.kind == valInt && b.kind == valInt {
+			return value{kind: valInt, i: a.i * b.i}, nil
+		}
+	case "/":
+		if a.kind == valInt && b.kind == valInt && b.i != 0 {
+			return value{kind: valInt, i: a.i / b.i}, nil
+		}
+	case "%":
+		if a.kind == valInt && b.kind == valInt && b.i != 0 {
+			return value{kind: valInt, i: a.i % b.i}, nil
+		}
+	case "<":
+		if a.kind == valInt && b.kind == valInt {
+			return value{kind: valBool, b: a.i < b.i}, nil
+		}
+	case "<=":
+		if a.kind == valInt && b.kind == valInt {
+			return value{kind: valBool, b: a.i <= b.i}, nil
+		}
+	case ">":
+		if a.kind == valInt && b.kind == valInt {
+			return value{kind: valBool, b: a.i > b.i}, nil
+		}
+	case ">=":
+		if a.kind == valInt && b.kind == valInt {
+			return value{kind: valBool, b: a.i >= b.i}, nil
+		}
+	case "==":
+		if a.kind == valInt && b.kind == valInt {
+			return value{kind: valBool, b: a.i == b.i}, nil
+		}
+		if a.kind == valBool && b.kind == valBool {
+			return value{kind: valBool, b: a.b == b.b}, nil
+		}
+		if a.kind == valString && b.kind == valString {
+			return value{kind: valBool, b: a.s == b.s}, nil
+		}
+	case "!=":
+		res, err := applyOp(a, "==", b)
+		if err != nil {
+			return value{}, err
+		}
+		return value{kind: valBool, b: !res.b}, nil
+	case "&&":
+		if a.kind == valBool && b.kind == valBool {
+			return value{kind: valBool, b: a.b && b.b}, nil
+		}
+	case "||":
+		if a.kind == valBool && b.kind == valBool {
+			return value{kind: valBool, b: a.b || b.b}, nil
+		}
+	}
+	return value{}, fmt.Errorf("unsupported op")
+}
+
+func evalUnary(u *parser.Unary, vars map[string]value) (value, error) {
+	v, err := evalPostfix(u.Value, vars)
+	if err != nil {
+		return value{}, err
+	}
+	for i := len(u.Ops) - 1; i >= 0; i-- {
+		switch u.Ops[i] {
+		case "-":
+			if v.kind == valInt {
+				v.i = -v.i
+			} else {
+				return value{}, fmt.Errorf("bad unary")
+			}
+		case "!":
+			if v.kind == valBool {
+				v.b = !v.b
+			} else {
+				return value{}, fmt.Errorf("bad unary")
+			}
+		}
+	}
+	return v, nil
+}
+
+func evalPostfix(p *parser.PostfixExpr, vars map[string]value) (value, error) {
+	v, err := evalPrimary(p.Target, vars)
+	if err != nil {
+		return value{}, err
+	}
+	if len(p.Ops) > 0 {
+		return value{}, fmt.Errorf("postfix not supported")
+	}
+	return v, nil
+}
+
+func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
+	switch {
+	case p.Lit != nil:
+		if p.Lit.Int != nil {
+			return value{kind: valInt, i: int(*p.Lit.Int)}, nil
+		}
+		if p.Lit.Bool != nil {
+			return value{kind: valBool, b: bool(*p.Lit.Bool)}, nil
+		}
+		if p.Lit.Str != nil {
+			return value{kind: valString, s: *p.Lit.Str}, nil
+		}
+	case p.Selector != nil:
+		if len(p.Selector.Tail) == 0 {
+			if v, ok := vars[p.Selector.Root]; ok {
+				return v, nil
+			}
+		}
+	case p.Group != nil:
+		return evalExpr(p.Group, vars)
+	}
+	return value{}, fmt.Errorf("unsupported primary")
+}
+
 func repoRoot() string {
 	dir, err := os.Getwd()
 	if err != nil {
@@ -79,20 +280,83 @@ func Emit(p *Program) []byte {
 // Transpile converts a Mochi AST into our simple COBOL AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	pr := &Program{}
-	for _, st := range prog.Statements {
-		if st.Expr != nil {
-			call := st.Expr.Expr.Binary.Left.Value.Target.Call
-			if call != nil && call.Func == "print" && len(call.Args) == 1 {
-				arg := call.Args[0]
-				lit := arg.Binary.Left.Value.Target.Lit
-				if lit != nil && lit.Str != nil {
-					pr.Stmts = append(pr.Stmts, &DisplayStmt{Value: *lit.Str})
-					continue
-				}
-			}
-			return nil, fmt.Errorf("unsupported statement")
-		}
+	vars := map[string]value{}
+	if err := transpileStmts(prog.Statements, vars, pr); err != nil {
+		return nil, err
 	}
 	_ = env
 	return pr, nil
+}
+
+func transpileStmts(stmts []*parser.Statement, vars map[string]value, pr *Program) error {
+	for _, st := range stmts {
+		switch {
+		case st.Let != nil:
+			v := value{}
+			if st.Let.Value != nil {
+				var err error
+				v, err = evalExpr(st.Let.Value, vars)
+				if err != nil {
+					return err
+				}
+			} else if st.Let.Type != nil {
+				v = zeroValue(st.Let.Type)
+			}
+			vars[st.Let.Name] = v
+		case st.Var != nil:
+			v := value{}
+			if st.Var.Value != nil {
+				var err error
+				v, err = evalExpr(st.Var.Value, vars)
+				if err != nil {
+					return err
+				}
+			} else if st.Var.Type != nil {
+				v = zeroValue(st.Var.Type)
+			}
+			vars[st.Var.Name] = v
+		case st.Assign != nil:
+			if len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0 {
+				return fmt.Errorf("unsupported assign")
+			}
+			v, err := evalExpr(st.Assign.Value, vars)
+			if err != nil {
+				return err
+			}
+			if _, ok := vars[st.Assign.Name]; !ok {
+				return fmt.Errorf("assign to unknown var")
+			}
+			vars[st.Assign.Name] = v
+		case st.If != nil:
+			cond, err := evalExpr(st.If.Cond, vars)
+			if err != nil {
+				return err
+			}
+			if cond.kind != valBool {
+				return fmt.Errorf("non-bool if condition")
+			}
+			if cond.b {
+				if err := transpileStmts(st.If.Then, vars, pr); err != nil {
+					return err
+				}
+			} else {
+				if err := transpileStmts(st.If.Else, vars, pr); err != nil {
+					return err
+				}
+			}
+		case st.Expr != nil:
+			call := st.Expr.Expr.Binary.Left.Value.Target.Call
+			if call == nil || call.Func != "print" || len(call.Args) != 1 {
+				return fmt.Errorf("unsupported expression")
+			}
+			arg, err := evalExpr(call.Args[0], vars)
+			if err != nil {
+				return err
+			}
+			pr.Stmts = append(pr.Stmts, &DisplayStmt{Value: arg.String()})
+		default:
+			return fmt.Errorf("unsupported statement")
+		}
+	}
+	return nil
 }
