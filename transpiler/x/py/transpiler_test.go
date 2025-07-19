@@ -213,29 +213,49 @@ func TestTranspile_MapIndex(t *testing.T) {
 }
 
 func TestTranspile_LenMap(t *testing.T) {
-        runCase(t, "len_map")
+	runCase(t, "len_map")
 }
 
 func TestTranspile_Slice(t *testing.T) {
-        runCase(t, "slice")
+	runCase(t, "slice")
 }
 
 func TestTranspile_StringPrefixSlice(t *testing.T) {
-        runCase(t, "string_prefix_slice")
+	runCase(t, "string_prefix_slice")
 }
 
 func TestTranspile_SubstringBuiltin(t *testing.T) {
-        runCase(t, "substring_builtin")
+	runCase(t, "substring_builtin")
 }
 
 func TestTranspile_WhileLoop(t *testing.T) {
-        runCase(t, "while_loop")
+	runCase(t, "while_loop")
 }
 
 func TestTranspile_ForLoop(t *testing.T) {
-        runCase(t, "for_loop")
+	runCase(t, "for_loop")
 }
 
 func TestTranspile_ForListCollection(t *testing.T) {
-        runCase(t, "for_list_collection")
+	runCase(t, "for_list_collection")
+}
+
+func TestTranspile_BreakContinue(t *testing.T) {
+	runCase(t, "break_continue")
+}
+
+func TestTranspile_IfElse(t *testing.T) {
+	runCase(t, "if_else")
+}
+
+func TestTranspile_ListAssign(t *testing.T) {
+	runCase(t, "list_assign")
+}
+
+func TestTranspile_MapAssign(t *testing.T) {
+	runCase(t, "map_assign")
+}
+
+func TestTranspile_MapInOperator(t *testing.T) {
+	runCase(t, "map_in_operator")
 }
