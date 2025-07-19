@@ -148,6 +148,22 @@ func mainFn() {
 }
 
 func main() {
+	var OP_NUM int = 0
+	_ = OP_NUM
+	var OP_ADD int = 1
+	_ = OP_ADD
+	var OP_SUB int = 2
+	_ = OP_SUB
+	var OP_MUL int = 3
+	_ = OP_MUL
+	var OP_DIV int = 4
+	_ = OP_DIV
+	var n_cards int = 4
+	_ = n_cards
+	var goal int = 24
+	_ = goal
+	var digit_range int = 9
+	_ = digit_range
 	mainFn()
 }
 

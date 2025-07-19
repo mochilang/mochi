@@ -108,6 +108,33 @@ invoke the Go toolchain. Run them with:
 go test ./compile/go -tags slow
 ```
 
+## Rosetta Progress
+
+The Go backend is tested against the first 20 Mochi Rosetta programs. Results:
+
+| # | Program | Result |
+|---|---------|--------|
+| 1 | 100-doors-2 | ✅ |
+| 2 | 100-doors-3 | ✅ |
+| 3 | 100-doors | ✅ |
+| 4 | 100-prisoners | ❌ |
+| 5 | 15-puzzle-game | ❌ |
+| 6 | 15-puzzle-solver | ✅ |
+| 7 | 2048 | ❌ |
+| 8 | 21-game | ❌ |
+| 9 | 24-game-solve | ❌ |
+|10 | 24-game | ❌ |
+|11 | 4-rings-or-4-squares-puzzle | ✅ |
+|12 | 9-billion-names-of-god-the-integer | ❌ |
+|13 | 99-bottles-of-beer-2 | ❌ |
+|14 | 99-bottles-of-beer | ✅ |
+|15 | DNS-query | ✅ |
+|16 | a+b | ✅ |
+|17 | abbreviations-automatic | ✅ |
+|18 | abbreviations-easy | ✅ |
+|19 | abbreviations-simple | ✅ |
+|20 | abc-problem | ✅ |
+
 ## Notes
 
 The backend supports advanced Mochi features including streams, agents, dataset

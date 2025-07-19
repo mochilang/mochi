@@ -11,6 +11,8 @@ import (
 type v map[string]any
 
 func main() {
+	var door int = 1
+	var incrementer int = 0
 	for current := 1; current < 101; current++ {
 		var line string = "Door " + fmt.Sprint(any(current)) + " "
 		if current == door {
