@@ -121,3 +121,5 @@ func TestTranspileIfElse(t *testing.T) { runGolden(t, "if_else") }
 func TestTranspileInOperator(t *testing.T) { runGolden(t, "in_operator") }
 
 func TestTranspileMembership(t *testing.T) { runGolden(t, "membership") }
+
+func TestTranspileMathOps(t *testing.T) { runGolden(t, "math_ops") }

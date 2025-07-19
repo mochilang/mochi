@@ -283,18 +283,22 @@ func (i *IfStmt) emit(w io.Writer) {
 }
 
 func mapOp(op string) string {
-	switch op {
-	case "&&":
-		return "andalso"
-	case "||":
-		return "orelse"
-	case "!=":
-		return "/="
-	case "<=":
-		return "=<"
-	default:
-		return op
-	}
+       switch op {
+       case "&&":
+               return "andalso"
+       case "||":
+               return "orelse"
+       case "!=":
+               return "/="
+       case "<=":
+               return "=<"
+       case "/":
+               return "div"
+       case "%":
+               return "rem"
+       default:
+               return op
+       }
 }
 
 func sanitize(name string) string {
