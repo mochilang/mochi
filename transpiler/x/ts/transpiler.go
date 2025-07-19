@@ -370,7 +370,7 @@ func (e *ValuesExpr) emit(w io.Writer) {
 	if e.Value != nil {
 		e.Value.emit(w)
 	}
-	io.WriteString(w, ")")
+	io.WriteString(w, ").join(\" \")")
 }
 
 func (s *SubstringExpr) emit(w io.Writer) {
