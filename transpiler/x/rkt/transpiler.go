@@ -351,6 +351,9 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 		if opName == "||" {
 			opName = "or"
 		}
+		if opName == "%" {
+			opName = "modulo"
+		}
 		expr = &BinaryExpr{Op: opName, Left: expr, Right: right}
 	}
 	return expr, nil
