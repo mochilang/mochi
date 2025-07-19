@@ -106,3 +106,4 @@ The list below tracks Mochi programs under `tests/vm/valid` that should successf
 - [ ] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
+
