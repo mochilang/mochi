@@ -1,3 +1,15 @@
+## Progress (2025-07-20 01:29 +07)
+- fortran transpiler: improve loops and printing
+
+## Progress (2025-07-20 01:14 +07)
+- py transpiler: sort imports and update tests
+
+## Progress (2025-07-20 01:14 +07)
+- py transpiler: sort imports and update tests
+
+## Progress (2025-07-20 01:14 +07)
+- py transpiler: sort imports and update tests
+
 ## Progress (2025-07-19 21:32 +07)
 - fortran transpiler: add for-loop, break and continue support
 
