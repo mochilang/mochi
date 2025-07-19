@@ -1,5 +1,5 @@
-## Progress (2025-07-19 18:58:45)
-- VM valid golden test results updated
+## Progress (2025-07-19 19:36:55)
+- Added function and if statement support
 
 # Transpiler Progress
 

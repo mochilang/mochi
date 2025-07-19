@@ -29,6 +29,31 @@ type ExprStmt struct{ Expr Expr }
 
 func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
 
+type FunStmt struct {
+	Name   string
+	Params []string
+	Body   []Stmt
+}
+
+type ReturnStmt struct{ Value Expr }
+
+type IfStmt struct {
+	Cond Expr
+	Then []Stmt
+	Else []Stmt
+}
+
+type IfExpr struct {
+	Cond Expr
+	Then Expr
+	Else Expr
+}
+
+type FunExpr struct {
+	Params []string
+	Expr   Expr
+}
+
 type LetStmt struct {
 	Name  string
 	Value Expr
@@ -67,6 +92,77 @@ type AssignStmt struct {
 func (s *AssignStmt) emit(w io.Writer) {
 	fmt.Fprintf(w, "%s = ", s.Name)
 	s.Value.emit(w)
+}
+
+func (f *FunStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "def %s(", f.Name)
+	for i, p := range f.Params {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		fmt.Fprint(w, p)
+	}
+	fmt.Fprint(w, ") = {\n")
+	for _, st := range f.Body {
+		fmt.Fprint(w, "        ")
+		st.emit(w)
+		fmt.Fprint(w, "\n")
+	}
+	fmt.Fprint(w, "    }")
+}
+
+func (r *ReturnStmt) emit(w io.Writer) {
+	if r.Value != nil {
+		r.Value.emit(w)
+	}
+}
+
+func (i *IfStmt) emit(w io.Writer) {
+	fmt.Fprint(w, "if (")
+	i.Cond.emit(w)
+	fmt.Fprint(w, ") {\n")
+	for _, st := range i.Then {
+		fmt.Fprint(w, "        ")
+		st.emit(w)
+		fmt.Fprint(w, "\n")
+	}
+	fmt.Fprint(w, "    }")
+	if len(i.Else) > 0 {
+		fmt.Fprint(w, " else {\n")
+		for _, st := range i.Else {
+			fmt.Fprint(w, "        ")
+			st.emit(w)
+			fmt.Fprint(w, "\n")
+		}
+		fmt.Fprint(w, "    }")
+	}
+}
+
+func (ie *IfExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "if (")
+	ie.Cond.emit(w)
+	fmt.Fprint(w, ") ")
+	fmt.Fprint(w, "{")
+	ie.Then.emit(w)
+	fmt.Fprint(w, "} else {")
+	ie.Else.emit(w)
+	fmt.Fprint(w, "}")
+}
+
+func (f *FunExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "(")
+	fmt.Fprint(w, "(")
+	for i, p := range f.Params {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		fmt.Fprintf(w, "%s: Any", p)
+	}
+	fmt.Fprint(w, ") => ")
+	if f.Expr != nil {
+		f.Expr.emit(w)
+	}
+	fmt.Fprint(w, ")")
 }
 
 type CallExpr struct {
@@ -218,8 +314,18 @@ func Emit(p *Program) []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
 	buf.WriteString("object Main {\n")
+	for _, st := range p.Stmts {
+		if fn, ok := st.(*FunStmt); ok {
+			buf.WriteString("    ")
+			fn.emit(&buf)
+			buf.WriteByte('\n')
+		}
+	}
 	buf.WriteString("    def main(args: Array[String]): Unit = {\n")
 	for _, st := range p.Stmts {
+		if _, ok := st.(*FunStmt); ok {
+			continue
+		}
 		buf.WriteString("        ")
 		st.emit(&buf)
 		buf.WriteByte('\n')
@@ -233,48 +339,62 @@ func Emit(p *Program) []byte {
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	sc := &Program{}
 	for _, st := range prog.Statements {
-		switch {
-		case st.Expr != nil:
-			e, err := convertExpr(st.Expr.Expr)
-			if err != nil {
-				return nil, err
-			}
-			sc.Stmts = append(sc.Stmts, &ExprStmt{Expr: e})
-		case st.Let != nil:
-			var e Expr
-			var err error
-			if st.Let.Value != nil {
-				e, err = convertExpr(st.Let.Value)
-				if err != nil {
-					return nil, err
-				}
-			}
-			sc.Stmts = append(sc.Stmts, &LetStmt{Name: st.Let.Name, Value: e})
-		case st.Var != nil:
-			var e Expr
-			var err error
-			if st.Var.Value != nil {
-				e, err = convertExpr(st.Var.Value)
-				if err != nil {
-					return nil, err
-				}
-			}
-			sc.Stmts = append(sc.Stmts, &VarStmt{Name: st.Var.Name, Value: e})
-		case st.Assign != nil:
-			if len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0 {
-				return nil, fmt.Errorf("unsupported assign")
-			}
-			e, err := convertExpr(st.Assign.Value)
-			if err != nil {
-				return nil, err
-			}
-			sc.Stmts = append(sc.Stmts, &AssignStmt{Name: st.Assign.Name, Value: e})
-		default:
-			return nil, fmt.Errorf("unsupported statement")
+		s, err := convertStmt(st)
+		if err != nil {
+			return nil, err
 		}
+		sc.Stmts = append(sc.Stmts, s)
 	}
 	_ = env
 	return sc, nil
+}
+
+func convertStmt(st *parser.Statement) (Stmt, error) {
+	switch {
+	case st.Expr != nil:
+		e, err := convertExpr(st.Expr.Expr)
+		if err != nil {
+			return nil, err
+		}
+		return &ExprStmt{Expr: e}, nil
+	case st.Let != nil:
+		var e Expr
+		var err error
+		if st.Let.Value != nil {
+			e, err = convertExpr(st.Let.Value)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return &LetStmt{Name: st.Let.Name, Value: e}, nil
+	case st.Var != nil:
+		var e Expr
+		var err error
+		if st.Var.Value != nil {
+			e, err = convertExpr(st.Var.Value)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return &VarStmt{Name: st.Var.Name, Value: e}, nil
+	case st.Assign != nil:
+		if len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0 {
+			return nil, fmt.Errorf("unsupported assign")
+		}
+		e, err := convertExpr(st.Assign.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &AssignStmt{Name: st.Assign.Name, Value: e}, nil
+	case st.Fun != nil:
+		return convertFunStmt(st.Fun)
+	case st.Return != nil:
+		return convertReturnStmt(st.Return)
+	case st.If != nil:
+		return convertIfStmt(st.If)
+	default:
+		return nil, fmt.Errorf("unsupported statement")
+	}
 }
 
 func convertExpr(e *parser.Expr) (Expr, error) {
@@ -458,6 +578,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			elems[i] = ex
 		}
 		return &ListLit{Elems: elems}, nil
+	case p.If != nil:
+		return convertIfExpr(p.If)
+	case p.FunExpr != nil:
+		return convertFunExpr(p.FunExpr)
 	case p.Group != nil:
 		return convertExpr(p.Group)
 	case p.Lit != nil:
@@ -503,6 +627,109 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 		return &BoolLit{Value: bool(*l.Bool)}, nil
 	}
 	return nil, fmt.Errorf("unsupported literal")
+}
+
+func convertFunExpr(fe *parser.FunExpr) (Expr, error) {
+	f := &FunExpr{}
+	for _, p := range fe.Params {
+		f.Params = append(f.Params, p.Name)
+	}
+	if fe.ExprBody != nil {
+		expr, err := convertExpr(fe.ExprBody)
+		if err != nil {
+			return nil, err
+		}
+		f.Expr = expr
+	} else {
+		return nil, fmt.Errorf("unsupported fun expr")
+	}
+	return f, nil
+}
+
+func convertIfExpr(ie *parser.IfExpr) (Expr, error) {
+	cond, err := convertExpr(ie.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenExpr, err := convertExpr(ie.Then)
+	if err != nil {
+		return nil, err
+	}
+	var elseExpr Expr
+	if ie.ElseIf != nil {
+		elseExpr, err = convertIfExpr(ie.ElseIf)
+		if err != nil {
+			return nil, err
+		}
+	} else if ie.Else != nil {
+		elseExpr, err = convertExpr(ie.Else)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if elseExpr == nil {
+		elseExpr = &IntLit{Value: 0}
+	}
+	return &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
+}
+
+func convertFunStmt(fs *parser.FunStmt) (Stmt, error) {
+	fn := &FunStmt{Name: fs.Name}
+	for _, p := range fs.Params {
+		fn.Params = append(fn.Params, p.Name)
+	}
+	for _, st := range fs.Body {
+		s, err := convertStmt(st)
+		if err != nil {
+			return nil, err
+		}
+		fn.Body = append(fn.Body, s)
+	}
+	return fn, nil
+}
+
+func convertReturnStmt(rs *parser.ReturnStmt) (Stmt, error) {
+	var expr Expr
+	var err error
+	if rs.Value != nil {
+		expr, err = convertExpr(rs.Value)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &ReturnStmt{Value: expr}, nil
+}
+
+func convertIfStmt(is *parser.IfStmt) (Stmt, error) {
+	cond, err := convertExpr(is.Cond)
+	if err != nil {
+		return nil, err
+	}
+	var thenStmts []Stmt
+	for _, st := range is.Then {
+		s, err := convertStmt(st)
+		if err != nil {
+			return nil, err
+		}
+		thenStmts = append(thenStmts, s)
+	}
+	var elseStmts []Stmt
+	if is.ElseIf != nil {
+		s, err := convertIfStmt(is.ElseIf)
+		if err != nil {
+			return nil, err
+		}
+		elseStmts = []Stmt{s}
+	} else if len(is.Else) > 0 {
+		for _, st := range is.Else {
+			s, err := convertStmt(st)
+			if err != nil {
+				return nil, err
+			}
+			elseStmts = append(elseStmts, s)
+		}
+	}
+	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
 }
 
 func version() string {
@@ -552,6 +779,36 @@ func stmtNode(s Stmt) *ast.Node {
 		return &ast.Node{Kind: "expr_stmt", Children: []*ast.Node{exprNode(st.Expr)}}
 	case *LetStmt:
 		return &ast.Node{Kind: "let", Value: st.Name, Children: []*ast.Node{exprNode(st.Value)}}
+	case *ReturnStmt:
+		return &ast.Node{Kind: "return", Children: []*ast.Node{exprNode(st.Value)}}
+	case *FunStmt:
+		n := &ast.Node{Kind: "fun", Value: st.Name}
+		params := &ast.Node{Kind: "params"}
+		for _, p := range st.Params {
+			params.Children = append(params.Children, &ast.Node{Kind: "param", Value: p})
+		}
+		body := &ast.Node{Kind: "body"}
+		for _, s2 := range st.Body {
+			body.Children = append(body.Children, stmtNode(s2))
+		}
+		n.Children = append(n.Children, params, body)
+		return n
+	case *IfStmt:
+		n := &ast.Node{Kind: "if"}
+		n.Children = append(n.Children, exprNode(st.Cond))
+		thenNode := &ast.Node{Kind: "then"}
+		for _, s2 := range st.Then {
+			thenNode.Children = append(thenNode.Children, stmtNode(s2))
+		}
+		n.Children = append(n.Children, thenNode)
+		if len(st.Else) > 0 {
+			elseNode := &ast.Node{Kind: "else"}
+			for _, s2 := range st.Else {
+				elseNode.Children = append(elseNode.Children, stmtNode(s2))
+			}
+			n.Children = append(n.Children, elseNode)
+		}
+		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
@@ -585,6 +842,18 @@ func exprNode(e Expr) *ast.Node {
 		return n
 	case *SubstringExpr:
 		return &ast.Node{Kind: "substring", Children: []*ast.Node{exprNode(ex.Value), exprNode(ex.Start), exprNode(ex.End)}}
+	case *IfExpr:
+		n := &ast.Node{Kind: "ifexpr"}
+		n.Children = append(n.Children, exprNode(ex.Cond), exprNode(ex.Then), exprNode(ex.Else))
+		return n
+	case *FunExpr:
+		n := &ast.Node{Kind: "funexpr"}
+		params := &ast.Node{Kind: "params"}
+		for _, p := range ex.Params {
+			params.Children = append(params.Children, &ast.Node{Kind: "param", Value: p})
+		}
+		n.Children = append(n.Children, params, exprNode(ex.Expr))
+		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}

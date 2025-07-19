@@ -2,17 +2,17 @@
 
 Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (28/100)
+## Golden Test Checklist (42/100)
 
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
 - [x] binary_precedence
-- [ ] bool_chain
+- [x] bool_chain
 - [ ] break_continue
 - [ ] cast_string_to_int
 - [ ] cast_struct
-- [ ] closure
+- [x] closure
 - [x] count_builtin
 - [ ] cross_join
 - [ ] cross_join_filter
@@ -23,9 +23,9 @@ Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scal
 - [ ] for_list_collection
 - [ ] for_loop
 - [ ] for_map_collection
-- [ ] fun_call
-- [ ] fun_expr_in_let
-- [ ] fun_three_args
+- [x] fun_call
+- [x] fun_expr_in_let
+- [x] fun_three_args
 - [ ] go_auto
 - [ ] group_by
 - [ ] group_by_conditional_sum
@@ -36,9 +36,9 @@ Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scal
 - [ ] group_by_multi_join_sort
 - [ ] group_by_sort
 - [ ] group_items_iteration
-- [ ] if_else
-- [ ] if_then_else
-- [ ] if_then_else_nested
+- [x] if_else
+- [x] if_then_else
+- [x] if_then_else_nested
 - [ ] in_operator
 - [ ] in_operator_extended
 - [ ] inner_join
@@ -67,20 +67,20 @@ Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scal
 - [x] math_ops
 - [x] membership
 - [x] min_max_builtin
-- [ ] nested_function
+- [x] nested_function
 - [ ] order_by_map
 - [ ] outer_join
-- [ ] partial_application
+- [x] partial_application
 - [x] print_hello
-- [ ] pure_fold
-- [ ] pure_global_fold
+- [x] pure_fold
+- [x] pure_global_fold
 - [ ] python_auto
 - [ ] python_math
 - [ ] query_sum_select
 - [ ] record_assign
 - [ ] right_join
 - [ ] save_jsonl_stdout
-- [ ] short_circuit
+- [x] short_circuit
 - [x] slice
 - [ ] sort_stable
 - [x] str_builtin
@@ -92,7 +92,7 @@ Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scal
 - [x] string_prefix_slice
 - [x] substring_builtin
 - [x] sum_builtin
-- [ ] tail_recursion
+- [x] tail_recursion
 - [ ] test_block
 - [ ] tree_sum
 - [ ] two-sum

@@ -1,1 +1,8 @@
-unsupported statement
+exit status 1
+/workspace/mochi/tests/transpiler/x/scala/fun_call.scala:3: error: ':' expected but ',' found.
+    def add(a, b) = {
+             ^
+/workspace/mochi/tests/transpiler/x/scala/fun_call.scala:9: error: identifier expected but '}' found.
+}
+^
+two errors found
