@@ -11,3 +11,4 @@ Progress for the experimental Clojure backend.
 - 2025-07-19 13:18:44 +0700 - Added if statement and expression support
 - 2025-07-19 06:37:13 +0000 - Added default values for typed vars and built-in functions count/min/max. Updated golden outputs.
 - 2025-07-19T07:51:42+00:00 - Added function and return support
+- 2025-07-19 14:14:53 +0000 - Added map literals, sum/values builtins and string membership operator

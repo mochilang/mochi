@@ -254,6 +254,7 @@ var binOp = map[string]string{
 	">=": ">=",
 	"&&": "and",
 	"||": "or",
+	"in": "in",
 }
 
 func isStringNode(n Node) bool {
@@ -286,6 +287,10 @@ func transpileExpr(e *parser.Expr) (Node, error) {
 		right, err := transpilePostfix(op.Right)
 		if err != nil {
 			return nil, err
+		}
+		if op.Op == "in" {
+			n = &List{Elems: []Node{Symbol("clojure.string/includes?"), right, n}}
+			continue
 		}
 		sym, ok := binOp[op.Op]
 		if !ok {
@@ -437,6 +442,20 @@ func transpilePrimary(p *parser.Primary) (Node, error) {
 			elems = append(elems, n)
 		}
 		return &Vector{Elems: elems}, nil
+	case p.Map != nil:
+		elems := []Node{Symbol("hash-map")}
+		for _, it := range p.Map.Items {
+			k, err := transpileExpr(it.Key)
+			if err != nil {
+				return nil, err
+			}
+			v, err := transpileExpr(it.Value)
+			if err != nil {
+				return nil, err
+			}
+			elems = append(elems, k, v)
+		}
+		return &List{Elems: elems}, nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return Symbol(p.Selector.Root), nil
 	case p.Group != nil:
@@ -461,6 +480,10 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 		elems = append(elems, Symbol("apply"), Symbol("max"))
 	case "substring":
 		elems = append(elems, Symbol("subs"))
+	case "sum":
+		elems = append(elems, Symbol("reduce"), Symbol("+"), IntLit(0))
+	case "values":
+		elems = append(elems, Symbol("vals"))
 	default:
 		elems = append(elems, Symbol(c.Func))
 	}
