@@ -7,6 +7,11 @@ import (
 	"fmt"
 )
 
+func add(a int, b int) int {
+	return (a + b)
+}
+
 func main() {
-	fmt.Println("hello")
+	add5 := add(5)
+	fmt.Println(add5(3))
 }
