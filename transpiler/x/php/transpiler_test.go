@@ -150,7 +150,31 @@ func TestTranspile_TypedLet(t *testing.T) {
 }
 
 func TestTranspile_BasicCompare(t *testing.T) {
-	runTranspileTest(t, "basic_compare")
+        runTranspileTest(t, "basic_compare")
+}
+
+func TestTranspile_AppendBuiltin(t *testing.T) {
+        runTranspileTest(t, "append_builtin")
+}
+
+func TestTranspile_AvgBuiltin(t *testing.T) {
+        runTranspileTest(t, "avg_builtin")
+}
+
+func TestTranspile_CountBuiltin(t *testing.T) {
+        runTranspileTest(t, "count_builtin")
+}
+
+func TestTranspile_MathOps(t *testing.T) {
+        runTranspileTest(t, "math_ops")
+}
+
+func TestTranspile_StrBuiltin(t *testing.T) {
+        runTranspileTest(t, "str_builtin")
+}
+
+func TestTranspile_SumBuiltin(t *testing.T) {
+        runTranspileTest(t, "sum_builtin")
 }
 
 func runTranspileTest(t *testing.T, name string) {
