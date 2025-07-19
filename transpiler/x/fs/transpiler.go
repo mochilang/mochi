@@ -434,15 +434,7 @@ func Emit(prog *Program) []byte {
 func header() string {
 	ver := readVersion()
 	ts := time.Now().Format("2006-01-02 15:04:05 MST")
-	return fmt.Sprintf("// Mochi %s - generated %s\nopen System\n\n"+
-		"let print (x: obj) =\n"+
-		"    match x with\n"+
-		"    | :? bool as b -> printfn \"%%d\" (if b then 1 else 0)\n"+
-		"    | :? float as f -> printfn \"%%.1f\" f\n"+
-		"    | :? string as s -> printfn \"%%s\" s\n"+
-		"    | :? System.Collections.IEnumerable as e ->\n"+
-		"        e |> Seq.cast<obj> |> Seq.map string |> String.concat \" \" |> printfn \"%%s\"\n"+
-		"    | _ -> printfn \"%%O\" x\n\n", ver, ts)
+	return fmt.Sprintf("// Mochi %s - generated %s\nopen System\n\n", ver, ts)
 }
 
 func readVersion() string {
@@ -687,7 +679,17 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		switch p.Call.Func {
 		case "print":
-			return &CallExpr{Func: "print", Args: args}, nil
+			if len(args) == 1 {
+				arg := &CallExpr{Func: "string", Args: []Expr{args[0]}}
+				return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{arg}}, nil
+			}
+			elems := make([]Expr, len(args))
+			for i, a := range args {
+				elems[i] = &CallExpr{Func: "string", Args: []Expr{a}}
+			}
+			list := &ListLit{Elems: elems}
+			concat := &CallExpr{Func: "String.concat", Args: []Expr{&StringLit{Value: " "}, list}}
+			return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{concat}}, nil
 		case "len":
 			return &CallExpr{Func: "Seq.length", Args: args}, nil
 		case "str":

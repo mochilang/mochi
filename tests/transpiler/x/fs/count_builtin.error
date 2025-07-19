@@ -2,4 +2,4 @@ exit status 1
 F# Compiler for F# 4.0 (Open Source Edition)
 Freely distributed under the Apache 2.0 Open Source License
 
-/workspace/mochi/tests/transpiler/x/fs/count_builtin.fs(13,8): error FS0039: The value or constructor 'count' is not defined
+/workspace/mochi/tests/transpiler/x/fs/count_builtin.fs(4,23): error FS0039: The value or constructor 'count' is not defined
