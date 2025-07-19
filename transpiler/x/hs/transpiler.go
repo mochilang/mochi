@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 
@@ -29,6 +30,12 @@ type LetStmt struct {
 	Expr Expr
 }
 
+// AssignStmt updates the value of an existing variable.
+type AssignStmt struct {
+	Name string
+	Expr Expr
+}
+
 func (p *PrintStmt) emit(w io.Writer) {
 	if _, ok := p.Expr.(*StringLit); ok {
 		io.WriteString(w, "putStrLn (")
@@ -43,6 +50,12 @@ func (l *LetStmt) emit(w io.Writer) {
 	io.WriteString(w, l.Name)
 	io.WriteString(w, " = ")
 	l.Expr.emit(w)
+}
+
+func (a *AssignStmt) emit(w io.Writer) {
+	io.WriteString(w, a.Name)
+	io.WriteString(w, " = ")
+	a.Expr.emit(w)
 }
 
 type IntLit struct{ Value string }
@@ -157,6 +170,7 @@ func Emit(p *Program) []byte {
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	_ = env
 	h := &Program{}
+	vars := map[string]Expr{}
 	for _, st := range prog.Statements {
 		switch {
 		case st.Let != nil:
@@ -164,7 +178,19 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			if err != nil {
 				return nil, err
 			}
-			h.Stmts = append(h.Stmts, &LetStmt{Name: st.Let.Name, Expr: ex})
+			vars[st.Let.Name] = ex
+		case st.Var != nil:
+			ex, err := convertExpr(st.Var.Value)
+			if err != nil {
+				return nil, err
+			}
+			vars[st.Var.Name] = ex
+		case st.Assign != nil:
+			ex, err := convertExpr(st.Assign.Value)
+			if err != nil {
+				return nil, err
+			}
+			vars[st.Assign.Name] = ex
 		case st.Expr != nil:
 			call := st.Expr.Expr.Binary.Left.Value.Target.Call
 			if call != nil && call.Func == "print" && len(call.Args) == 1 {
@@ -181,6 +207,16 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				return nil, fmt.Errorf("unsupported statement")
 			}
 		}
+	}
+	// deterministically emit variables in alphabetical order
+	names := make([]string, 0, len(vars))
+	for n := range vars {
+		names = append(names, n)
+	}
+	sort.Strings(names)
+	for i := len(names) - 1; i >= 0; i-- {
+		n := names[i]
+		h.Stmts = append([]Stmt{&LetStmt{Name: n, Expr: vars[n]}}, h.Stmts...)
 	}
 	return h, nil
 }
@@ -202,6 +238,8 @@ func stmtNode(s Stmt) *ast.Node {
 		return &ast.Node{Kind: "print", Children: []*ast.Node{exprNode(st.Expr)}}
 	case *LetStmt:
 		return &ast.Node{Kind: "let", Value: st.Name, Children: []*ast.Node{exprNode(st.Expr)}}
+	case *AssignStmt:
+		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{exprNode(st.Expr)}}
 	default:
 		return &ast.Node{Kind: "stmt"}
 	}
