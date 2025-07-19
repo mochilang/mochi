@@ -77,11 +77,11 @@ type MapItem struct {
 	Value Expr
 }
 
-// IndexExpr represents indexing into either a list or map.
+// IndexExpr represents indexing into a list, map or string.
 type IndexExpr struct {
 	Target   Expr
 	Index    Expr
-	Kind     string // "list" or "map"
+	Kind     string // "list", "map" or "string"
 	IsString bool
 }
 
@@ -312,6 +312,12 @@ func (i *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, ", ")
 		i.Target.emit(w)
 		io.WriteString(w, ")")
+	case "string":
+		io.WriteString(w, "string:substr(")
+		i.Target.emit(w)
+		io.WriteString(w, ", ")
+		i.Index.emit(w)
+		io.WriteString(w, " + 1, 1)")
 	default: // list
 		io.WriteString(w, "lists:nth(")
 		i.Index.emit(w)
@@ -580,6 +586,9 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				if mapValueIsString(expr, env) {
 					isStr = true
 				}
+			} else if isStringExpr(expr) {
+				kind = "string"
+				isStr = true
 			}
 			expr = &IndexExpr{Target: expr, Index: idx, Kind: kind, IsString: isStr}
 		default:

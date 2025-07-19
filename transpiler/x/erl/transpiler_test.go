@@ -133,3 +133,7 @@ func TestTranspileMapIntKey(t *testing.T) { runGolden(t, "map_int_key") }
 func TestTranspileMapMembership(t *testing.T) { runGolden(t, "map_membership") }
 
 func TestTranspileMapInOperator(t *testing.T) { runGolden(t, "map_in_operator") }
+
+func TestTranspileListIndex(t *testing.T) { runGolden(t, "list_index") }
+
+func TestTranspileStringIndex(t *testing.T) { runGolden(t, "string_index") }
