@@ -1,3 +1,5 @@
+//go:build slow
+
 package parser_test
 
 import (

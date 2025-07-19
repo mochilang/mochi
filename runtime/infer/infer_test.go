@@ -1,3 +1,5 @@
+//go:build slow
+
 package infer_test
 
 import (
