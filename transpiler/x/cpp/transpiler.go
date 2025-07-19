@@ -18,6 +18,7 @@ import (
 )
 
 var version string
+var currentProgram *Program
 
 func init() {
 	_, file, _, _ := runtime.Caller(0)
@@ -32,6 +33,15 @@ func init() {
 type Program struct {
 	Includes  []string
 	Functions []*Func
+}
+
+func (p *Program) addInclude(inc string) {
+	for _, v := range p.Includes {
+		if v == inc {
+			return
+		}
+	}
+	p.Includes = append(p.Includes, inc)
 }
 
 type Param struct {
@@ -50,7 +60,7 @@ type Stmt interface{ emit(io.Writer, int) }
 
 type Expr interface{ emit(io.Writer) }
 
-type PrintStmt struct{ Value Expr }
+type PrintStmt struct{ Values []Expr }
 
 // WhileStmt represents a simple while loop.
 type WhileStmt struct {
@@ -66,6 +76,15 @@ type StringLit struct{ Value string }
 type IntLit struct{ Value int }
 
 type BoolLit struct{ Value bool }
+
+// BreakStmt represents a break statement.
+type BreakStmt struct{}
+
+// ContinueStmt represents a continue statement.
+type ContinueStmt struct{}
+
+// ListLit represents a list literal converted to std::vector.
+type ListLit struct{ Elems []Expr }
 
 // UnaryExpr represents a prefix unary operation like negation or logical not.
 type UnaryExpr struct {
@@ -175,8 +194,14 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "    ")
 	}
-	io.WriteString(w, "std::cout << ")
-	s.Value.emit(w)
+	io.WriteString(w, "std::cout")
+	for i, v := range s.Values {
+		io.WriteString(w, " << ")
+		if i > 0 {
+			io.WriteString(w, " \" \" << ")
+		}
+		v.emit(w)
+	}
 	io.WriteString(w, " << std::endl;\n")
 }
 
@@ -199,6 +224,17 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 func (l *LenExpr) emit(w io.Writer) {
 	l.Value.emit(w)
 	io.WriteString(w, ".size()")
+}
+
+func (l *ListLit) emit(w io.Writer) {
+	io.WriteString(w, "std::vector{")
+	for i, e := range l.Elems {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		e.emit(w)
+	}
+	io.WriteString(w, "}")
 }
 
 func (s *StringLit) emit(w io.Writer) {
@@ -303,21 +339,43 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, ";\n")
 }
 
+func (b *BreakStmt) emit(w io.Writer, indent int) {
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "    ")
+	}
+	io.WriteString(w, "break;\n")
+}
+
+func (c *ContinueStmt) emit(w io.Writer, indent int) {
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "    ")
+	}
+	io.WriteString(w, "continue;\n")
+}
+
 func (f *ForStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "    ")
 	}
-	io.WriteString(w, "for (int ")
-	io.WriteString(w, f.Var)
-	io.WriteString(w, " = ")
-	f.Start.emit(w)
-	io.WriteString(w, "; ")
-	io.WriteString(w, f.Var)
-	io.WriteString(w, " < ")
-	f.End.emit(w)
-	io.WriteString(w, "; ")
-	io.WriteString(w, f.Var)
-	io.WriteString(w, "++ ) {\n")
+	if f.End == nil {
+		io.WriteString(w, "for (auto ")
+		io.WriteString(w, f.Var)
+		io.WriteString(w, " : ")
+		f.Start.emit(w)
+		io.WriteString(w, ") {\n")
+	} else {
+		io.WriteString(w, "for (int ")
+		io.WriteString(w, f.Var)
+		io.WriteString(w, " = ")
+		f.Start.emit(w)
+		io.WriteString(w, "; ")
+		io.WriteString(w, f.Var)
+		io.WriteString(w, " < ")
+		f.End.emit(w)
+		io.WriteString(w, "; ")
+		io.WriteString(w, f.Var)
+		io.WriteString(w, "++ ) {\n")
+	}
 	for _, st := range f.Body {
 		st.emit(w, indent+1)
 	}
@@ -374,6 +432,8 @@ func (i *IfExpr) emit(w io.Writer) {
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	_ = env
 	cp := &Program{Includes: []string{"<iostream>", "<string>"}}
+	currentProgram = cp
+	defer func() { currentProgram = nil }()
 	var body []Stmt
 	for _, stmt := range prog.Statements {
 		switch {
@@ -384,12 +444,16 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			}
 			cp.Functions = append(cp.Functions, fn)
 		case stmt.Expr != nil:
-			if call := extractCall(stmt.Expr.Expr); call != nil && call.Func == "print" && len(call.Args) == 1 {
-				arg, err := convertExpr(call.Args[0])
-				if err != nil {
-					return nil, err
+			if call := extractCall(stmt.Expr.Expr); call != nil && call.Func == "print" {
+				var args []Expr
+				for _, a := range call.Args {
+					ce, err := convertExpr(a)
+					if err != nil {
+						return nil, err
+					}
+					args = append(args, ce)
 				}
-				body = append(body, &PrintStmt{Value: arg})
+				body = append(body, &PrintStmt{Values: args})
 			} else {
 				return nil, fmt.Errorf("unsupported expression")
 			}
@@ -432,9 +496,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			if err != nil {
 				return nil, err
 			}
-			end, err := convertExpr(stmt.For.RangeEnd)
-			if err != nil {
-				return nil, err
+			var end Expr
+			if stmt.For.RangeEnd != nil {
+				end, err = convertExpr(stmt.For.RangeEnd)
+				if err != nil {
+					return nil, err
+				}
 			}
 			fs := &ForStmt{Var: stmt.For.Name, Start: start, End: end}
 			for _, s := range stmt.For.Body {
@@ -479,12 +546,16 @@ func extractCall(e *parser.Expr) *parser.CallExpr {
 func convertStmt(s *parser.Statement) (Stmt, error) {
 	switch {
 	case s.Expr != nil:
-		if call := extractCall(s.Expr.Expr); call != nil && call.Func == "print" && len(call.Args) == 1 {
-			arg, err := convertExpr(call.Args[0])
-			if err != nil {
-				return nil, err
+		if call := extractCall(s.Expr.Expr); call != nil && call.Func == "print" {
+			var args []Expr
+			for _, a := range call.Args {
+				ce, err := convertExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				args = append(args, ce)
 			}
-			return &PrintStmt{Value: arg}, nil
+			return &PrintStmt{Values: args}, nil
 		}
 	case s.Let != nil:
 		var val Expr
@@ -520,6 +591,10 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		return &AssignStmt{Name: s.Assign.Name, Value: val}, nil
+	case s.Break != nil:
+		return &BreakStmt{}, nil
+	case s.Continue != nil:
+		return &ContinueStmt{}, nil
 	case s.Return != nil:
 		var val Expr
 		if s.Return.Value != nil {
@@ -687,6 +762,19 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return &VarRef{Name: p.Selector.Root}, nil
 	case p.If != nil:
 		return convertIfExpr(p.If)
+	case p.List != nil:
+		if currentProgram != nil {
+			currentProgram.addInclude("<vector>")
+		}
+		var elems []Expr
+		for _, e := range p.List.Elems {
+			ce, err := convertExpr(e)
+			if err != nil {
+				return nil, err
+			}
+			elems = append(elems, ce)
+		}
+		return &ListLit{Elems: elems}, nil
 	case p.FunExpr != nil && p.FunExpr.ExprBody != nil:
 		var params []Param
 		for _, pa := range p.FunExpr.Params {
@@ -800,7 +888,11 @@ func (f *Func) toNode() *ast.Node {
 func toStmtNode(s Stmt) *ast.Node {
 	switch st := s.(type) {
 	case *PrintStmt:
-		return &ast.Node{Kind: "print", Children: []*ast.Node{toExprNode(st.Value)}}
+		n := &ast.Node{Kind: "print"}
+		for _, v := range st.Values {
+			n.Children = append(n.Children, toExprNode(v))
+		}
+		return n
 	case *LetStmt:
 		n := &ast.Node{Kind: "let", Value: st.Name}
 		if st.Value != nil {
@@ -849,6 +941,10 @@ func toStmtNode(s Stmt) *ast.Node {
 			n.Children = []*ast.Node{toExprNode(st.Value)}
 		}
 		return n
+	case *BreakStmt:
+		return &ast.Node{Kind: "break"}
+	case *ContinueStmt:
+		return &ast.Node{Kind: "continue"}
 	default:
 		return &ast.Node{Kind: "stmt"}
 	}
@@ -870,6 +966,12 @@ func toExprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: ex.Op, Children: []*ast.Node{toExprNode(ex.Expr)}}
 	case *LenExpr:
 		return &ast.Node{Kind: "len", Children: []*ast.Node{toExprNode(ex.Value)}}
+	case *ListLit:
+		n := &ast.Node{Kind: "list"}
+		for _, e := range ex.Elems {
+			n.Children = append(n.Children, toExprNode(e))
+		}
+		return n
 	case *CallExpr:
 		n := &ast.Node{Kind: "call", Value: ex.Name}
 		for _, a := range ex.Args {
