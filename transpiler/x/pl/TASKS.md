@@ -20,3 +20,9 @@
 - Implemented `append`, `count`, `sum`, `min`, `max`, `avg` and `substring` support.
 - Generated Prolog code and outputs for additional golden tests.
 - Updated README checklist to 20/100 passing programs.
+
+## Progress (2025-07-19 13:10 UTC)
+- Added indexing support via `get_item` for lists and strings.
+- Implemented set operations `union`, `union_all`, `except` and `intersect`.
+- Generated golden files for `list_index.mochi`, `string_index.mochi` and `list_set_ops.mochi`.
+- README checklist updated to 24/100 passing programs.
