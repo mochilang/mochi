@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
@@ -390,11 +391,21 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 		_, err := io.WriteString(w, "]")
 		return err
 	default:
-		if _, err := io.WriteString(w, "("); err != nil {
-			return err
-		}
-		if err := emitExpr(w, b.Left); err != nil {
-			return err
+		lp := precedence(b.Op)
+		if lb, ok := b.Left.(*BinaryExpr); ok && precedence(lb.Op) > lp {
+			if _, err := io.WriteString(w, "("); err != nil {
+				return err
+			}
+			if err := emitExpr(w, b.Left); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, ")"); err != nil {
+				return err
+			}
+		} else {
+			if err := emitExpr(w, b.Left); err != nil {
+				return err
+			}
 		}
 		op := b.Op
 		switch op {
@@ -406,11 +417,17 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 		if _, err := io.WriteString(w, " "+op+" "); err != nil {
 			return err
 		}
-		if err := emitExpr(w, b.Right); err != nil {
+		if rb, ok := b.Right.(*BinaryExpr); ok && precedence(rb.Op) >= lp {
+			if _, err := io.WriteString(w, "("); err != nil {
+				return err
+			}
+			if err := emitExpr(w, b.Right); err != nil {
+				return err
+			}
+			_, err := io.WriteString(w, ")")
 			return err
 		}
-		_, err := io.WriteString(w, ")")
-		return err
+		return emitExpr(w, b.Right)
 	}
 }
 
@@ -577,53 +594,53 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 	case *ContinueStmt:
 		_, err := io.WriteString(w, indent+"continue\n")
 		return err
-        case *IndexAssignStmt:
-                if _, err := io.WriteString(w, indent); err != nil {
-                        return err
-                }
-                if err := emitExpr(w, st.Target); err != nil {
-                        return err
-                }
-                if _, err := io.WriteString(w, "["); err != nil {
-                        return err
-                }
-                if err := emitExpr(w, st.Index); err != nil {
-                        return err
-                }
-                if _, err := io.WriteString(w, "] = "); err != nil {
-                        return err
-                }
-                if err := emitExpr(w, st.Value); err != nil {
-                        return err
-                }
-                _, err := io.WriteString(w, "\n")
-                return err
-       case *FuncDef:
-               if _, err := io.WriteString(w, indent+"def "+st.Name+"("); err != nil {
-                       return err
-               }
-               for i, p := range st.Params {
-                       if i > 0 {
-                               if _, err := io.WriteString(w, ", "); err != nil {
-                                       return err
-                               }
-                       }
-                       if _, err := io.WriteString(w, p); err != nil {
-                               return err
-                       }
-               }
-               if _, err := io.WriteString(w, "):\n"); err != nil {
-                       return err
-               }
-               for _, bs := range st.Body {
-                       if err := emitStmtIndent(w, bs, indent+"    "); err != nil {
-                               return err
-                       }
-               }
-               return nil
-        default:
-                return fmt.Errorf("unsupported stmt")
-        }
+	case *IndexAssignStmt:
+		if _, err := io.WriteString(w, indent); err != nil {
+			return err
+		}
+		if err := emitExpr(w, st.Target); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, "["); err != nil {
+			return err
+		}
+		if err := emitExpr(w, st.Index); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, "] = "); err != nil {
+			return err
+		}
+		if err := emitExpr(w, st.Value); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, "\n")
+		return err
+	case *FuncDef:
+		if _, err := io.WriteString(w, indent+"def "+st.Name+"("); err != nil {
+			return err
+		}
+		for i, p := range st.Params {
+			if i > 0 {
+				if _, err := io.WriteString(w, ", "); err != nil {
+					return err
+				}
+			}
+			if _, err := io.WriteString(w, p); err != nil {
+				return err
+			}
+		}
+		if _, err := io.WriteString(w, "):\n"); err != nil {
+			return err
+		}
+		for _, bs := range st.Body {
+			if err := emitStmtIndent(w, bs, indent+"    "); err != nil {
+				return err
+			}
+		}
+		return nil
+	default:
+		return fmt.Errorf("unsupported stmt")
+	}
 }
 
 func repoRoot() string {
@@ -656,9 +673,25 @@ func version() string {
 	return strings.TrimSpace(string(data))
 }
 
+func gitTime() time.Time {
+	root := repoRoot()
+	if root == "" {
+		return time.Now()
+	}
+	cmd := exec.Command("git", "-C", root, "log", "-1", "--format=%cI")
+	out, err := cmd.Output()
+	if err != nil {
+		return time.Now()
+	}
+	t, err := time.Parse(time.RFC3339, strings.TrimSpace(string(out)))
+	if err != nil {
+		return time.Now()
+	}
+	return t
+}
+
 func header() string {
-	loc := time.FixedZone("GMT+7", 7*3600)
-	t := time.Now().In(loc)
+	t := gitTime().UTC()
 	return fmt.Sprintf("# Generated by Mochi transpiler v%s on %s\n",
 		version(), t.Format("2006-01-02 15:04:05 MST"))
 }
@@ -692,6 +725,27 @@ func zeroValueExpr(t types.Type) Expr {
 		return &DictLit{}
 	default:
 		return &Name{Name: "None"}
+	}
+}
+
+func precedence(op string) int {
+	switch op {
+	case "*", "/", "%":
+		return 0
+	case "+", "-":
+		return 1
+	case "<", "<=", ">", ">=":
+		return 2
+	case "==", "!=", "in":
+		return 3
+	case "&&":
+		return 4
+	case "||":
+		return 5
+	case "union", "union_all", "except", "intersect":
+		return 6
+	default:
+		return 7
 	}
 }
 

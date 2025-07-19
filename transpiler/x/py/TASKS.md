@@ -1,4 +1,9 @@
 # Python Transpiler Tasks
+## Recent Enhancements (2025-07-19 15:26 +0000)
+- Emitted cleaner Python by dropping redundant parentheses in binary expressions.
+- Header timestamps now come from Git for deterministic builds.
+- Removed unused runtime helper code.
+- Updated README checklist to 59/100.
 ## Recent Enhancements (2025-07-19 15:16 +0000)
 - Added support for nested function definitions.
 - Generated golden output for `nested_function`.

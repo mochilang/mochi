@@ -1,7 +1,6 @@
 # Transpiler Progress
 
-This directory tracks progress of the experimental Python transpiler. Generated
-code for tests lives in `tests/transpiler/x/py`.
+Generated Python code from programs in `tests/vm/valid` lives in `tests/transpiler/x/py`.
 
 ## VM Golden Test Checklist (59/100)
 
