@@ -52,6 +52,24 @@ func simpleStringKey(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
+// simpleCallName returns the function name if e is a simple call expression
+// like `foo(...)` without additional operators. It mirrors helpers used for
+// inference elsewhere in this backend.
+func simpleCallName(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || len(e.Binary.Right) != 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return ""
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Call == nil {
+		return ""
+	}
+	return p.Target.Call.Func
+}
+
 func contains(list []string, s string) bool {
 	for _, v := range list {
 		if v == s {
