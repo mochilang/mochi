@@ -2,7 +2,7 @@
 
 The COBOL backend compiles each Mochi program under `tests/vm/valid`. This directory stores the generated `.cob` source files and their runtime output. Any compilation or runtime failures produce a corresponding `.error` file.
 
-Compiled programs: 46/100
+Compiled programs: 49/100
 
 Checklist:
 - [x] append_builtin
@@ -24,9 +24,9 @@ Checklist:
 - [x] for_list_collection
 - [x] for_loop
 - [x] for_map_collection
-- [ ] fun_call
+- [x] fun_call
 - [ ] fun_expr_in_let
-- [ ] fun_three_args
+- [x] fun_three_args
 - [ ] go_auto
 - [ ] group_by
 - [ ] group_by_conditional_sum
@@ -73,7 +73,7 @@ Checklist:
 - [ ] outer_join
 - [ ] partial_application
 - [x] print_hello
-- [ ] pure_fold
+- [x] pure_fold
 - [ ] pure_global_fold
 - [ ] python_auto
 - [ ] python_math
@@ -93,7 +93,7 @@ Checklist:
 - [x] string_prefix_slice
 - [x] substring_builtin
 - [x] sum_builtin
-- [ ] tail_recursion
+- [x] tail_recursion
 - [ ] test_block
 - [ ] tree_sum
 - [ ] two-sum
