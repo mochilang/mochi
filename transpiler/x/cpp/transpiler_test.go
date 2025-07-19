@@ -60,15 +60,16 @@ func runExample(t *testing.T, base string) {
 	}
 }
 
-func TestCPPTranspiler_PrintHello(t *testing.T)    { runExample(t, "print_hello") }
-func TestCPPTranspiler_StringConcat(t *testing.T)  { runExample(t, "string_concat") }
-func TestCPPTranspiler_LenString(t *testing.T)     { runExample(t, "len_string") }
-func TestCPPTranspiler_WhileLoop(t *testing.T)     { runExample(t, "while_loop") }
-func TestCPPTranspiler_FunCall(t *testing.T)       { runExample(t, "fun_call") }
-func TestCPPTranspiler_FunThreeArgs(t *testing.T)  { runExample(t, "fun_three_args") }
-func TestCPPTranspiler_FunExprInLet(t *testing.T)  { runExample(t, "fun_expr_in_let") }
-func TestCPPTranspiler_BoolChain(t *testing.T)     { runExample(t, "bool_chain") }
-func TestCPPTranspiler_StringCompare(t *testing.T) { runExample(t, "string_compare") }
-func TestCPPTranspiler_ShortCircuit(t *testing.T)  { runExample(t, "short_circuit") }
-func TestCPPTranspiler_LenBuiltin(t *testing.T)    { runExample(t, "len_builtin") }
-func TestCPPTranspiler_BreakContinue(t *testing.T) { runExample(t, "break_continue") }
+func TestCPPTranspiler_PrintHello(t *testing.T)        { runExample(t, "print_hello") }
+func TestCPPTranspiler_StringConcat(t *testing.T)      { runExample(t, "string_concat") }
+func TestCPPTranspiler_LenString(t *testing.T)         { runExample(t, "len_string") }
+func TestCPPTranspiler_WhileLoop(t *testing.T)         { runExample(t, "while_loop") }
+func TestCPPTranspiler_FunCall(t *testing.T)           { runExample(t, "fun_call") }
+func TestCPPTranspiler_FunThreeArgs(t *testing.T)      { runExample(t, "fun_three_args") }
+func TestCPPTranspiler_FunExprInLet(t *testing.T)      { runExample(t, "fun_expr_in_let") }
+func TestCPPTranspiler_BoolChain(t *testing.T)         { runExample(t, "bool_chain") }
+func TestCPPTranspiler_StringCompare(t *testing.T)     { runExample(t, "string_compare") }
+func TestCPPTranspiler_ShortCircuit(t *testing.T)      { runExample(t, "short_circuit") }
+func TestCPPTranspiler_LenBuiltin(t *testing.T)        { runExample(t, "len_builtin") }
+func TestCPPTranspiler_BreakContinue(t *testing.T)     { runExample(t, "break_continue") }
+func TestCPPTranspiler_ForListCollection(t *testing.T) { runExample(t, "for_list_collection") }

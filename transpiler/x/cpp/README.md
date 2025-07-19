@@ -2,7 +2,7 @@
 
 Generated C++ code for programs in `tests/vm/valid`. Each program has a `.cpp` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.
 
-Compiled programs: 24/100
+Compiled programs: 25/100
 
 ## Checklist
 - [ ] append_builtin
@@ -21,7 +21,7 @@ Compiled programs: 24/100
 - [ ] dataset_sort_take_limit
 - [ ] dataset_where_filter
 - [ ] exists_builtin
-- [ ] for_list_collection
+- [x] for_list_collection
 - [x] for_loop
 - [ ] for_map_collection
 - [x] fun_call
