@@ -3,7 +3,6 @@
 #include <string.h>
 
 int main() {
-	int x = 0;
-	printf("%d\n", x);
+	printf("%d\n", 3);
 	return 0;
 }
