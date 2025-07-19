@@ -2,13 +2,13 @@
 
 Generated Dart code for programs in `tests/vm/valid`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-## VM Golden Test Checklist (17/100)
+## VM Golden Test Checklist (20/100)
 - [ ] append_builtin.mochi
 - [ ] avg_builtin.mochi
 - [x] basic_compare.mochi
 - [x] binary_precedence.mochi
 - [x] bool_chain.mochi
-- [ ] break_continue.mochi
+- [x] break_continue.mochi
 - [ ] cast_string_to_int.mochi
 - [ ] cast_struct.mochi
 - [ ] closure.mochi
@@ -36,8 +36,8 @@ Generated Dart code for programs in `tests/vm/valid`. Each program has a `.dart`
 - [ ] group_by_sort.mochi
 - [ ] group_items_iteration.mochi
 - [x] if_else.mochi
-- [ ] if_then_else.mochi
-- [ ] if_then_else_nested.mochi
+- [x] if_then_else.mochi
+- [x] if_then_else_nested.mochi
 - [ ] in_operator.mochi
 - [ ] in_operator_extended.mochi
 - [ ] inner_join.mochi
