@@ -131,60 +131,144 @@ func (u *UnaryExpr) emit(w io.Writer) {
 	u.Expr.emit(w)
 }
 
+type IfExpr struct {
+	Cond   Expr
+	Then   Expr
+	ElseIf *IfExpr
+	Else   Expr
+}
+
+func (i *IfExpr) emit(w io.Writer) {
+	io.WriteString(w, "if ")
+	i.Cond.emit(w)
+	io.WriteString(w, " { ")
+	i.Then.emit(w)
+	io.WriteString(w, " }")
+	if i.ElseIf != nil {
+		io.WriteString(w, " else ")
+		i.ElseIf.emit(w)
+	} else if i.Else != nil {
+		io.WriteString(w, " else { ")
+		i.Else.emit(w)
+		io.WriteString(w, " }")
+	}
+}
+
+type IfStmt struct {
+	Cond   Expr
+	Then   []Stmt
+	ElseIf *IfStmt
+	Else   []Stmt
+}
+
+func (i *IfStmt) emit(w io.Writer) {}
+
 // --- Transpiler ---
 
 // Transpile converts a Mochi AST to a simplified Rust AST. Only a very small
 // subset of Mochi is supported which is sufficient for tests.
 func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	prog := &Program{}
-	for _, stmt := range p.Statements {
-		switch {
-		case stmt.Expr != nil:
-			e, err := compileExpr(stmt.Expr.Expr)
-			if err != nil {
-				return nil, err
-			}
-			prog.Stmts = append(prog.Stmts, &ExprStmt{Expr: e})
-		case stmt.Let != nil:
-			var e Expr
-			var err error
-			if stmt.Let.Value != nil {
-				e, err = compileExpr(stmt.Let.Value)
-				if err != nil {
-					return nil, err
-				}
-			}
-			typ := ""
-			if stmt.Let.Type != nil && stmt.Let.Type.Simple != nil {
-				typ = rustType(*stmt.Let.Type.Simple)
-			}
-			prog.Stmts = append(prog.Stmts, &VarDecl{Name: stmt.Let.Name, Expr: e, Type: typ})
-		case stmt.Var != nil:
-			var e Expr
-			var err error
-			if stmt.Var.Value != nil {
-				e, err = compileExpr(stmt.Var.Value)
-				if err != nil {
-					return nil, err
-				}
-			}
-			typ := ""
-			if stmt.Var.Type != nil && stmt.Var.Type.Simple != nil {
-				typ = rustType(*stmt.Var.Type.Simple)
-			}
-			prog.Stmts = append(prog.Stmts, &VarDecl{Name: stmt.Var.Name, Expr: e, Type: typ, Mutable: true})
-		case stmt.Assign != nil:
-			e, err := compileExpr(stmt.Assign.Value)
-			if err != nil {
-				return nil, err
-			}
-			prog.Stmts = append(prog.Stmts, &AssignStmt{Name: stmt.Assign.Name, Expr: e})
-		case stmt.Test == nil && stmt.Import == nil && stmt.Type == nil:
-			return nil, fmt.Errorf("unsupported statement at %d:%d", stmt.Pos.Line, stmt.Pos.Column)
+	for _, st := range p.Statements {
+		s, err := compileStmt(st)
+		if err != nil {
+			return nil, err
+		}
+		if s != nil {
+			prog.Stmts = append(prog.Stmts, s)
 		}
 	}
 	_ = env // reserved for future use
 	return prog, nil
+}
+
+func compileStmt(stmt *parser.Statement) (Stmt, error) {
+	switch {
+	case stmt.Expr != nil:
+		e, err := compileExpr(stmt.Expr.Expr)
+		if err != nil {
+			return nil, err
+		}
+		return &ExprStmt{Expr: e}, nil
+	case stmt.Let != nil:
+		var e Expr
+		var err error
+		if stmt.Let.Value != nil {
+			e, err = compileExpr(stmt.Let.Value)
+			if err != nil {
+				return nil, err
+			}
+		}
+		typ := ""
+		if stmt.Let.Type != nil && stmt.Let.Type.Simple != nil {
+			typ = rustType(*stmt.Let.Type.Simple)
+		}
+		return &VarDecl{Name: stmt.Let.Name, Expr: e, Type: typ}, nil
+	case stmt.Var != nil:
+		var e Expr
+		var err error
+		if stmt.Var.Value != nil {
+			e, err = compileExpr(stmt.Var.Value)
+			if err != nil {
+				return nil, err
+			}
+		}
+		typ := ""
+		if stmt.Var.Type != nil && stmt.Var.Type.Simple != nil {
+			typ = rustType(*stmt.Var.Type.Simple)
+		}
+		return &VarDecl{Name: stmt.Var.Name, Expr: e, Type: typ, Mutable: true}, nil
+	case stmt.Assign != nil:
+		e, err := compileExpr(stmt.Assign.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &AssignStmt{Name: stmt.Assign.Name, Expr: e}, nil
+	case stmt.If != nil:
+		return compileIfStmt(stmt.If)
+	case stmt.Test == nil && stmt.Import == nil && stmt.Type == nil:
+		return nil, fmt.Errorf("unsupported statement at %d:%d", stmt.Pos.Line, stmt.Pos.Column)
+	}
+	return nil, nil
+}
+
+func compileIfStmt(n *parser.IfStmt) (Stmt, error) {
+	cond, err := compileExpr(n.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenStmts := make([]Stmt, 0, len(n.Then))
+	for _, st := range n.Then {
+		cs, err := compileStmt(st)
+		if err != nil {
+			return nil, err
+		}
+		if cs != nil {
+			thenStmts = append(thenStmts, cs)
+		}
+	}
+	var elseStmts []Stmt
+	if len(n.Else) > 0 {
+		elseStmts = make([]Stmt, 0, len(n.Else))
+		for _, st := range n.Else {
+			cs, err := compileStmt(st)
+			if err != nil {
+				return nil, err
+			}
+			if cs != nil {
+				elseStmts = append(elseStmts, cs)
+			}
+		}
+	}
+	var elseIf *IfStmt
+	if n.ElseIf != nil {
+		s, err := compileIfStmt(n.ElseIf)
+		if err != nil {
+			return nil, err
+		}
+		elseIf = s.(*IfStmt)
+	}
+	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts, ElseIf: elseIf}, nil
 }
 
 func compileExpr(e *parser.Expr) (Expr, error) {
@@ -253,10 +337,40 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		return compileLiteral(p.Lit)
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return &NameRef{Name: p.Selector.Root}, nil
+	case p.If != nil:
+		return compileIfExpr(p.If)
 	case p.Group != nil:
 		return compileExpr(p.Group)
 	}
 	return nil, fmt.Errorf("unsupported primary")
+}
+
+func compileIfExpr(n *parser.IfExpr) (Expr, error) {
+	cond, err := compileExpr(n.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenExpr, err := compileExpr(n.Then)
+	if err != nil {
+		return nil, err
+	}
+	var elseIf *IfExpr
+	if n.ElseIf != nil {
+		ei, err := compileIfExpr(n.ElseIf)
+		if err != nil {
+			return nil, err
+		}
+		elseIf = ei.(*IfExpr)
+	}
+	var elseExpr Expr
+	if n.Else != nil {
+		e, err := compileExpr(n.Else)
+		if err != nil {
+			return nil, err
+		}
+		elseExpr = e
+	}
+	return &IfExpr{Cond: cond, Then: thenExpr, ElseIf: elseIf, Else: elseExpr}, nil
 }
 
 func compileLiteral(l *parser.Literal) (Expr, error) {
@@ -302,15 +416,53 @@ func defaultValueForType(t string) string {
 	return "Default::default()"
 }
 
+func writeStmt(buf *bytes.Buffer, s Stmt, indent int) {
+	for i := 0; i < indent; i++ {
+		buf.WriteString("    ")
+	}
+	switch st := s.(type) {
+	case *IfStmt:
+		writeIfStmt(buf, st, indent)
+	default:
+		st.emit(buf)
+		buf.WriteString(";")
+	}
+	buf.WriteByte('\n')
+}
+
+func writeIfStmt(buf *bytes.Buffer, s *IfStmt, indent int) {
+	buf.WriteString("if ")
+	s.Cond.emit(buf)
+	buf.WriteString(" {\n")
+	for _, st := range s.Then {
+		writeStmt(buf, st, indent+1)
+	}
+	for i := 0; i < indent; i++ {
+		buf.WriteString("    ")
+	}
+	buf.WriteString("}")
+	if s.ElseIf != nil {
+		buf.WriteString(" else ")
+		writeIfStmt(buf, s.ElseIf, indent)
+	} else if len(s.Else) > 0 {
+		buf.WriteString(" else {\n")
+		for _, st := range s.Else {
+			writeStmt(buf, st, indent+1)
+		}
+		for i := 0; i < indent; i++ {
+			buf.WriteString("    ")
+		}
+		buf.WriteString("}")
+	}
+}
+
 // Emit generates formatted Rust source from the AST.
 func Emit(prog *Program) []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
 	buf.WriteString("fn main() {\n")
 	for _, s := range prog.Stmts {
-		buf.WriteString("    ")
-		s.emit(&buf)
-		buf.WriteString(";\n")
+		writeStmt(&buf, s, 1)
 	}
 	buf.WriteString("}\n")
 	if b := buf.Bytes(); len(b) > 0 && b[len(b)-1] != '\n' {
@@ -376,6 +528,24 @@ func stmtNode(s Stmt) *ast.Node {
 		return n
 	case *AssignStmt:
 		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{exprNode(st.Expr)}}
+	case *IfStmt:
+		n := &ast.Node{Kind: "if"}
+		n.Children = append(n.Children, exprNode(st.Cond))
+		thenNode := &ast.Node{Kind: "then"}
+		for _, s2 := range st.Then {
+			thenNode.Children = append(thenNode.Children, stmtNode(s2))
+		}
+		n.Children = append(n.Children, thenNode)
+		if st.ElseIf != nil {
+			n.Children = append(n.Children, stmtNode(st.ElseIf))
+		} else if len(st.Else) > 0 {
+			elseNode := &ast.Node{Kind: "else"}
+			for _, s2 := range st.Else {
+				elseNode.Children = append(elseNode.Children, stmtNode(s2))
+			}
+			n.Children = append(n.Children, elseNode)
+		}
+		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
@@ -404,6 +574,16 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "bin", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
 	case *UnaryExpr:
 		return &ast.Node{Kind: "unary", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Expr)}}
+	case *IfExpr:
+		n := &ast.Node{Kind: "if_expr"}
+		n.Children = append(n.Children, exprNode(ex.Cond))
+		n.Children = append(n.Children, exprNode(ex.Then))
+		if ex.ElseIf != nil {
+			n.Children = append(n.Children, exprNode(ex.ElseIf))
+		} else if ex.Else != nil {
+			n.Children = append(n.Children, exprNode(ex.Else))
+		}
+		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}

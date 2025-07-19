@@ -182,7 +182,11 @@ func runExample(t *testing.T, base string) {
 	}
 }
 
-func TestTranspile_TypedLet(t *testing.T)      { runExample(t, "typed_let") }
-func TestTranspile_TypedVar(t *testing.T)      { runExample(t, "typed_var") }
-func TestTranspile_VarAssignment(t *testing.T) { runExample(t, "var_assignment") }
-func TestTranspile_UnaryNeg(t *testing.T)      { runExample(t, "unary_neg") }
+func TestTranspile_TypedLet(t *testing.T)         { runExample(t, "typed_let") }
+func TestTranspile_TypedVar(t *testing.T)         { runExample(t, "typed_var") }
+func TestTranspile_VarAssignment(t *testing.T)    { runExample(t, "var_assignment") }
+func TestTranspile_UnaryNeg(t *testing.T)         { runExample(t, "unary_neg") }
+func TestTranspile_BasicCompare(t *testing.T)     { runExample(t, "basic_compare") }
+func TestTranspile_IfElse(t *testing.T)           { runExample(t, "if_else") }
+func TestTranspile_IfThenElse(t *testing.T)       { runExample(t, "if_then_else") }
+func TestTranspile_IfThenElseNested(t *testing.T) { runExample(t, "if_then_else_nested") }

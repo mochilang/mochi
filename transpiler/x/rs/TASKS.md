@@ -1,5 +1,10 @@
 # Rust Transpiler Tasks
 
+## Recent Enhancements (2025-07-19 12:47 +0700)
+- Added support for `if` expressions and statements.
+- Generated golden tests for `basic_compare`, `if_else`, `if_then_else` and `if_then_else_nested`.
+- Updated README checklist with progress summary.
+
 ## Recent Enhancements (2025-07-19 11:52)
 - Added variable declarations, assignments and basic arithmetic.
 - Updated `print` emission to handle non-string arguments.
