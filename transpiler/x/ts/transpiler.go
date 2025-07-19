@@ -14,6 +14,12 @@ import (
 	meta "mochi/transpiler/meta"
 )
 
+func writeIndent(w io.Writer, n int) {
+	for i := 0; i < n; i++ {
+		io.WriteString(w, "  ")
+	}
+}
+
 // Simple TypeScript AST nodes used by the transpiler.
 
 type Program struct {
@@ -451,6 +457,7 @@ func (f *FunExpr) emit(w io.Writer) {
 	} else {
 		io.WriteString(w, "{\n")
 		for _, st := range f.Body {
+			writeIndent(w, 1)
 			st.emit(w)
 			io.WriteString(w, "\n")
 		}
@@ -513,6 +520,7 @@ func (i *IfStmt) emit(w io.Writer) {
 	}
 	io.WriteString(w, ") {\n")
 	for _, st := range i.Then {
+		writeIndent(w, 1)
 		st.emit(w)
 		io.WriteString(w, "\n")
 	}
@@ -520,6 +528,7 @@ func (i *IfStmt) emit(w io.Writer) {
 	if len(i.Else) > 0 {
 		io.WriteString(w, " else {\n")
 		for _, st := range i.Else {
+			writeIndent(w, 1)
 			st.emit(w)
 			io.WriteString(w, "\n")
 		}
@@ -534,6 +543,7 @@ func (wst *WhileStmt) emit(w io.Writer) {
 	}
 	io.WriteString(w, ") {\n")
 	for _, st := range wst.Body {
+		writeIndent(w, 1)
 		st.emit(w)
 		io.WriteString(w, "\n")
 	}
@@ -557,6 +567,7 @@ func (f *ForRangeStmt) emit(w io.Writer) {
 	io.WriteString(w, f.Name)
 	io.WriteString(w, "++) {\n")
 	for _, st := range f.Body {
+		writeIndent(w, 1)
 		st.emit(w)
 		io.WriteString(w, "\n")
 	}
@@ -581,6 +592,7 @@ func (f *ForInStmt) emit(w io.Writer) {
 	}
 	io.WriteString(w, " || {}))) {\n")
 	for _, st := range f.Body {
+		writeIndent(w, 1)
 		st.emit(w)
 		io.WriteString(w, "\n")
 	}
@@ -616,6 +628,7 @@ func (f *FuncDecl) emit(w io.Writer) {
 	}
 	io.WriteString(w, ") {\n")
 	for _, st := range f.Body {
+		writeIndent(w, 1)
 		st.emit(w)
 		io.WriteString(w, "\n")
 	}
