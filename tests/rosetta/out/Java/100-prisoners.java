@@ -5,10 +5,10 @@ import java.util.*;
 public class M100Prisoners {
     static List<Integer> shuffle(List<Integer> xs) {
         List<Integer> arr = xs;
-        int i = 99;
+        int i = (int)(99);
         while (i > 0) {
-            int j = System.currentTimeMillis() % (i + 1);
-            List<Integer> tmp = arr.get(i);
+            int j = (int)(System.currentTimeMillis() % (i + 1));
+            Integer tmp = arr.get(i);
             arr.set(i, arr.get(j));
             arr.set(j, tmp);
             i = (int)(i - 1);
@@ -16,43 +16,43 @@ public class M100Prisoners {
         return arr;
     }
     static void doTrials(int trials, int np, String strategy) {
-        int pardoned = 0;
-        int t = 0;
+        int pardoned = (int)(0);
+        int t = (int)(0);
         while (t < trials) {
             List<Integer> drawers = new ArrayList<>(Arrays.asList());
-            int i = 0;
+            int i = (int)(0);
             while (i < 100) {
                 drawers.add(i);
                 i = (int)(i + 1);
             }
             drawers = shuffle(drawers);
-            int p = 0;
+            int p = (int)(0);
             boolean success = true;
             while (p < np) {
                 boolean found = false;
                 if (Objects.equals(strategy, "optimal")) {
-                    int prev = p;
-                    int d = 0;
+                    int prev = (int)(p);
+                    int d = (int)(0);
                     while (d < 50) {
-                        List<Integer> this_ = drawers.get(prev);
-                        if (Objects.equals(this, p)) {
+                        Integer this_ = drawers.get(prev);
+                        if (Objects.equals(this_, p)) {
                             found = true;
                             break;
                         }
-                        prev = (int)(this);
+                        prev = (int)(this_);
                         d = (int)(d + 1);
                     }
                 }
                 else {
                     List<Boolean> opened = new ArrayList<>(Arrays.asList());
-                    int k = 0;
+                    int k = (int)(0);
                     while (k < 100) {
                         opened.add(false);
                         k = (int)(k + 1);
                     }
-                    int d = 0;
+                    int d = (int)(0);
                     while (d < 50) {
-                        int n = System.currentTimeMillis() % 100;
+                        int n = (int)(System.currentTimeMillis() % 100);
                         while (opened.get(n)) {
                             n = (int)(System.currentTimeMillis() % 100);
                         }
@@ -79,7 +79,7 @@ public class M100Prisoners {
         System.out.println("  strategy = " + strategy + "  pardoned = " + String.valueOf(pardoned) + " relative frequency = " + String.valueOf(rf) + "%");
     }
     static void main() {
-        int trials = 1000;
+        int trials = (int)(1000);
         for (Integer np : new ArrayList<>(Arrays.asList(10, 100))) {
             System.out.println("Results from " + String.valueOf(trials) + " trials with " + String.valueOf(np) + " prisoners:\n");
             for (String strat : new ArrayList<>(Arrays.asList("random", "optimal"))) {

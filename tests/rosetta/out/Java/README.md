@@ -1,4 +1,4 @@
-# Rosetta Java Output (67/278 compiled and run)
+# Rosetta Java Output (68/278 compiled and run)
 
 This directory holds Java source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -6,7 +6,7 @@ This directory holds Java source code generated from the real Mochi programs in 
 - [x] 100-doors-2
 - [x] 100-doors-3
 - [x] 100-doors
-- [ ] 100-prisoners
+- [x] 100-prisoners
 - [ ] 15-puzzle-game
 - [ ] 15-puzzle-solver
 - [ ] 2048
