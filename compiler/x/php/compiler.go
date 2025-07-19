@@ -168,6 +168,11 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		params[i] = "$" + sanitizeName(p.Name)
 	}
 	c.writeln(fmt.Sprintf("function %s(%s) {", sanitizeName(fn.Name), strings.Join(params, ", ")))
+	c.indent++
+	capture := funStmtFreeVars(fn, c.env)
+	if len(capture) > 0 {
+		c.writeln(fmt.Sprintf("global %s;", strings.Join(capture, ", ")))
+	}
 	child := types.NewEnv(c.env)
 	for _, p := range fn.Params {
 		typ := resolveTypeRef(p.Type, c.env)
@@ -185,6 +190,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	if len(fn.Body) == 0 {
 		c.writeln("return;")
 	}
+	c.indent--
 	c.indent--
 	c.writeln("}")
 	c.env = origEnv
