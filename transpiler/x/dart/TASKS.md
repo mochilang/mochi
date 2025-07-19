@@ -1,9 +1,12 @@
-## Recent Enhancements (2025-07-20 01:24 +0700)
+## Recent Enhancements (2025-07-20 01:40 +0700)
+- Improved variable declarations with basic type inference.
+- Simplified `avg` builtin emission using list methods.
+- Updated README checklist with progress summary.
+
 - Removed runtime helper functions for a cleaner output.
 - Improved type inference for boolean and numeric expressions.
 - Simplified loop and function emission for readability.
 
-## Progress
 - Added support for `break` and `continue` statements.
 - Implemented `if ... then ... else` expressions.
 - Added list indexing support and `substring` builtin.
