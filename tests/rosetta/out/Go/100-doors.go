@@ -13,22 +13,20 @@ import (
 type v map[string]any
 
 func main() {
-	doors = []any{}
-	doors := []any{}
 	for i := 0; i < 100; i++ {
 		doors = _toAnySlice(append(_toAnySlice(doors), any(false)))
 	}
 	for pass := 1; pass < 101; pass++ {
-		idx := (pass - 1)
+		var idx int = (pass - 1)
 		for idx < 100 {
 			doors[idx] = !((doors[idx]).(bool))
 			idx = (idx + pass)
 		}
 	}
 	for row := 0; row < 10; row++ {
-		line := ""
+		var line string = ""
 		for col := 0; col < 10; col++ {
-			idx := ((row * 10) + col)
+			var idx int = ((row * 10) + col)
 			if _exists(doors[idx]) {
 				line = line + "1"
 			} else {

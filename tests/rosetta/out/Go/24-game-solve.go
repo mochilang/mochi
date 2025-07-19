@@ -31,8 +31,8 @@ func exprEval(x map[string]any) map[string]int {
 	if _equal(x["op"], OP_NUM) {
 		return (x["value"]).(map[string]int)
 	}
-	l := exprEval((x["left"]).(map[string]any))
-	r := exprEval((x["right"]).(map[string]any))
+	var l map[string]int = exprEval((x["left"]).(map[string]any))
+	var r map[string]int = exprEval((x["right"]).(map[string]any))
 	if _equal(x["op"], OP_ADD) {
 		return map[string]int{"num": ((l["num"] * r["denom"]) + (l["denom"] * r["num"])), "denom": (l["denom"] * r["denom"])}
 	}
@@ -50,9 +50,9 @@ func exprString(x map[string]any) string {
 	if _equal(x["op"], OP_NUM) {
 		return fmt.Sprint((x["value"]).(map[string]any)["num"])
 	}
-	ls := exprString((x["left"]).(map[string]any))
-	rs := exprString((x["right"]).(map[string]any))
-	opstr := ""
+	var ls string = exprString((x["left"]).(map[string]any))
+	var rs string = exprString((x["right"]).(map[string]any))
+	var opstr string = ""
 	if _equal(x["op"], OP_ADD) {
 		opstr = " + "
 	} else if _equal(x["op"], OP_SUB) {
@@ -68,34 +68,34 @@ func exprString(x map[string]any) string {
 // line 47
 func solve(xs []map[string]any) bool {
 	if len(xs) == 1 {
-		f := exprEval(xs[0])
+		var f map[string]int = exprEval(xs[0])
 		if (f["denom"] != 0) && (f["num"] == (f["denom"] * goal)) {
 			fmt.Println(any(exprString(xs[0])))
 			return true
 		}
 		return false
 	}
-	i := 0
+	var i int = 0
 	for i < len(xs) {
-		j := (i + 1)
+		var j int = (i + 1)
 		for j < len(xs) {
 			var rest []map[string]any = []map[string]any{}
-			k := 0
+			var k int = 0
 			for k < len(xs) {
 				if (k != i) && (k != j) {
 					rest = append(rest, xs[k])
 				}
 				k = (k + 1)
 			}
-			a := xs[i]
-			b := xs[j]
+			var a map[string]any = xs[i]
+			var b map[string]any = xs[j]
 			for _, op := range []int{
 				OP_ADD,
 				OP_SUB,
 				OP_MUL,
 				OP_DIV,
 			} {
-				node := Node{
+				var node Node = Node{
 					Op:    op,
 					Left:  a,
 					Right: b,
@@ -104,7 +104,7 @@ func solve(xs []map[string]any) bool {
 					return true
 				}
 			}
-			node := Node{
+			var node Node = Node{
 				Op:    OP_SUB,
 				Left:  b,
 				Right: a,
@@ -129,12 +129,12 @@ func solve(xs []map[string]any) bool {
 
 // line 83
 func mainFn() {
-	iter := 0
+	var iter int = 0
 	for iter < 10 {
 		var cards []map[string]any = []map[string]any{}
-		i := 0
+		var i int = 0
 		for i < n_cards {
-			n := (int64((int64(_now()) % int64((digit_range - 1)))) + int64(1))
+			var n int64 = (int64((int64(_now()) % int64((digit_range - 1)))) + int64(1))
 			cards = append(cards, newNum(n))
 			fmt.Println(any(" " + fmt.Sprint(any(n))))
 			i = (i + 1)
@@ -148,14 +148,6 @@ func mainFn() {
 }
 
 func main() {
-	OP_NUM = 0
-	OP_ADD = 1
-	OP_SUB = 2
-	OP_MUL = 3
-	OP_DIV = 4
-	n_cards = 4
-	goal = 24
-	digit_range = 9
 	mainFn()
 }
 
@@ -275,10 +267,10 @@ func init() {
 		}
 	}
 }
-func _now() int {
+func _now() int64 {
 	if seededNow {
 		nowSeed = (nowSeed*1664525 + 1013904223) % 2147483647
-		return int(nowSeed)
+		return nowSeed
 	}
-	return int(time.Now().UnixNano())
+	return time.Now().UnixNano()
 }

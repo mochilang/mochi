@@ -13,8 +13,8 @@ type v map[string]any
 
 // line 1
 func mainFn() {
-	a := func() int { v, _ := strconv.Atoi(_input()); return v }()
-	b := func() int { v, _ := strconv.Atoi(_input()); return v }()
+	var a int = func() int { v, _ := strconv.Atoi(_input()); return v }()
+	var b int = func() int { v, _ := strconv.Atoi(_input()); return v }()
 	fmt.Println(any((a + b)))
 }
 

@@ -1,0 +1,13 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:23:10: undefined: SIZE
+/tmp/X/001/main.go:26:11: undefined: SIZE
+/tmp/X/001/main.go:40:10: undefined: SIZE
+/tmp/X/001/main.go:42:11: undefined: SIZE
+/tmp/X/001/main.go:80:10: undefined: SIZE
+/tmp/X/001/main.go:84:11: undefined: SIZE
+/tmp/X/001/main.go:135:17: undefined: SIZE
+/tmp/X/001/main.go:145:10: undefined: SIZE
+/tmp/X/001/main.go:146:36: invalid operation: ((*b)[y]) (variable of type []int) is not an interface
+/tmp/X/001/main.go:150:11: undefined: SIZE
+/tmp/X/001/main.go:150:11: too many errors

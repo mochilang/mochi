@@ -13,10 +13,10 @@ type v map[string]any
 // line 1
 func fields(s string) []string {
 	var words []string = []string{}
-	cur := ""
-	i := 0
+	var cur string = ""
+	var i int = 0
 	for i < len([]rune(s)) {
-		ch := string([]rune(s)[i:(i + 1)])
+		var ch string = string([]rune(s)[i:(i + 1)])
 		if ((ch == " ") || (ch == "\n")) || (ch == "\t") {
 			if len([]rune(cur)) > 0 {
 				words = append(words, cur)
@@ -35,8 +35,8 @@ func fields(s string) []string {
 
 // line 23
 func join(xs []string, sep string) string {
-	res := ""
-	i := 0
+	var res string = ""
+	var i int = 0
 	for i < len(xs) {
 		if i > 0 {
 			res = res + sep
@@ -49,7 +49,7 @@ func join(xs []string, sep string) string {
 
 // line 36
 func numberName(n int) string {
-	small := []string{
+	var small []string = []string{
 		"no",
 		"one",
 		"two",
@@ -71,7 +71,7 @@ func numberName(n int) string {
 		"eighteen",
 		"nineteen",
 	}
-	tens := []string{
+	var tens []string = []string{
 		"ones",
 		"ten",
 		"twenty",
@@ -90,8 +90,8 @@ func numberName(n int) string {
 		return small[n]
 	}
 	if n < 100 {
-		t := tens[(float64(n) / float64(10))]
-		s := (n % 10)
+		var t string = tens[(float64(n) / float64(10))]
+		var s int = (n % 10)
 		if s > 0 {
 			t = t + " " + small[s]
 		}
@@ -105,7 +105,7 @@ func pluralizeFirst(s string, n int) string {
 	if n == 1 {
 		return s
 	}
-	w := fields(s)
+	var w []string = fields(s)
 	if len(w) > 0 {
 		w[0] = w[0] + "s"
 	}
@@ -114,7 +114,7 @@ func pluralizeFirst(s string, n int) string {
 
 // line 67
 func randInt(seed int, n int) int {
-	next := (((seed * 1664525) + 1013904223) % 2147483647)
+	var next int = (((seed * 1664525) + 1013904223) % 2147483647)
 	return (next % n)
 }
 
@@ -124,37 +124,37 @@ func slur(p string, d int) string {
 		return p
 	}
 	var a []string = []string{}
-	i := 1
+	var i int = 1
 	for i < (len([]rune(p)) - 1) {
 		a = append(a, string([]rune(p)[i:(i+1)]))
 		i = (i + 1)
 	}
-	idx := (len(a) - 1)
-	seed := d
+	var idx int = (len(a) - 1)
+	var seed int = d
 	for idx >= 1 {
 		seed = (((seed * 1664525) + 1013904223) % 2147483647)
 		if (seed % 100) >= d {
-			j := (seed % (idx + 1))
-			tmp := a[idx]
+			var j int = (seed % (idx + 1))
+			var tmp string = a[idx]
 			a[idx] = a[j]
 			a[j] = tmp
 		}
 		idx = (idx - 1)
 	}
-	s := string([]rune(p)[0:1])
-	k := 0
+	var s string = string([]rune(p)[0:1])
+	var k int = 0
 	for k < len(a) {
 		s = s + a[k]
 		k = (k + 1)
 	}
 	s = s + string([]rune(p)[(len([]rune(p))-1):len([]rune(p))])
-	w := fields(s)
+	var w []string = fields(s)
 	return join(w, " ")
 }
 
 // line 103
 func mainFn() {
-	i := 99
+	var i int = 99
 	for i > 0 {
 		fmt.Println(any(slur(numberName(i), i) + " " + pluralizeFirst(slur("bottle of", i), i) + " " + slur("beer on the wall", i)))
 		fmt.Println(any(slur(numberName(i), i) + " " + pluralizeFirst(slur("bottle of", i), i) + " " + slur("beer", i)))

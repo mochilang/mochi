@@ -1,0 +1,13 @@
+run: exit status 1
+# command-line-arguments
+/tmp/X/001/main.go:26:30: undefined: OP_NUM
+/tmp/X/001/main.go:31:21: undefined: OP_NUM
+/tmp/X/001/main.go:36:21: undefined: OP_ADD
+/tmp/X/001/main.go:39:21: undefined: OP_SUB
+/tmp/X/001/main.go:42:21: undefined: OP_MUL
+/tmp/X/001/main.go:50:21: undefined: OP_NUM
+/tmp/X/001/main.go:56:21: undefined: OP_ADD
+/tmp/X/001/main.go:58:28: undefined: OP_SUB
+/tmp/X/001/main.go:60:28: undefined: OP_MUL
+/tmp/X/001/main.go:72:54: undefined: goal
+/tmp/X/001/main.go:72:54: too many errors
