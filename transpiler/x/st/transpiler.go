@@ -200,17 +200,29 @@ func applyOp(a value, op string, b value) (value, error) {
 		if a.kind == valInt && b.kind == valInt {
 			return value{kind: valBool, b: a.i < b.i}, nil
 		}
+		if a.kind == valString && b.kind == valString {
+			return value{kind: valBool, b: a.s < b.s}, nil
+		}
 	case "<=":
 		if a.kind == valInt && b.kind == valInt {
 			return value{kind: valBool, b: a.i <= b.i}, nil
+		}
+		if a.kind == valString && b.kind == valString {
+			return value{kind: valBool, b: a.s <= b.s}, nil
 		}
 	case ">":
 		if a.kind == valInt && b.kind == valInt {
 			return value{kind: valBool, b: a.i > b.i}, nil
 		}
+		if a.kind == valString && b.kind == valString {
+			return value{kind: valBool, b: a.s > b.s}, nil
+		}
 	case ">=":
 		if a.kind == valInt && b.kind == valInt {
 			return value{kind: valBool, b: a.i >= b.i}, nil
+		}
+		if a.kind == valString && b.kind == valString {
+			return value{kind: valBool, b: a.s >= b.s}, nil
 		}
 	case "==":
 		if a.kind == valInt && b.kind == valInt {
@@ -293,17 +305,41 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 				return v, nil
 			}
 		}
+	case p.If != nil:
+		return evalIfExpr(p.If, vars)
 	case p.Group != nil:
 		return evalExpr(p.Group, vars)
 	}
 	return value{}, fmt.Errorf("unsupported primary")
 }
 
+func evalIfExpr(ie *parser.IfExpr, vars map[string]value) (value, error) {
+	cond, err := evalExpr(ie.Cond, vars)
+	if err != nil {
+		return value{}, err
+	}
+	if cond.kind != valBool {
+		return value{}, fmt.Errorf("non-bool condition")
+	}
+	if cond.b {
+		return evalExpr(ie.Then, vars)
+	}
+	if ie.ElseIf != nil {
+		return evalIfExpr(ie.ElseIf, vars)
+	}
+	if ie.Else != nil {
+		return evalExpr(ie.Else, vars)
+	}
+	return value{}, nil
+}
+
 // Transpile converts a Mochi program into our Smalltalk AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	vars := map[string]value{}
 	p := &Program{}
-	for _, st := range prog.Statements {
+
+	var processStmt func(*parser.Statement) error
+	processStmt = func(st *parser.Statement) error {
 		switch {
 		case st.Let != nil:
 			v := value{}
@@ -311,7 +347,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				var err error
 				v, err = evalExpr(st.Let.Value, vars)
 				if err != nil {
-					return nil, err
+					return err
 				}
 			} else if st.Let.Type != nil {
 				v = zeroValue(st.Let.Type)
@@ -323,7 +359,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				var err error
 				v, err = evalExpr(st.Var.Value, vars)
 				if err != nil {
-					return nil, err
+					return err
 				}
 			} else if st.Var.Type != nil {
 				v = zeroValue(st.Var.Type)
@@ -331,30 +367,63 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			vars[st.Var.Name] = v
 		case st.Assign != nil:
 			if len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0 {
-				return nil, fmt.Errorf("unsupported assign")
+				return fmt.Errorf("unsupported assign")
 			}
 			v, err := evalExpr(st.Assign.Value, vars)
 			if err != nil {
-				return nil, err
+				return err
 			}
 			if _, ok := vars[st.Assign.Name]; !ok {
-				return nil, fmt.Errorf("assign to unknown var")
+				return fmt.Errorf("assign to unknown var")
 			}
 			vars[st.Assign.Name] = v
+		case st.If != nil:
+			cond, err := evalExpr(st.If.Cond, vars)
+			if err != nil {
+				return err
+			}
+			if cond.kind != valBool {
+				return fmt.Errorf("non-bool condition")
+			}
+			if cond.b {
+				for _, s := range st.If.Then {
+					if err := processStmt(s); err != nil {
+						return err
+					}
+				}
+				return nil
+			}
+			if st.If.ElseIf != nil {
+				return processStmt(&parser.Statement{If: st.If.ElseIf})
+			}
+			for _, s := range st.If.Else {
+				if err := processStmt(s); err != nil {
+					return err
+				}
+			}
+			return nil
 		case st.Expr != nil:
 			call := st.Expr.Expr.Binary.Left.Value.Target.Call
 			if call == nil || call.Func != "print" || len(call.Args) != 1 {
-				return nil, fmt.Errorf("unsupported expression")
+				return fmt.Errorf("unsupported expression")
 			}
 			arg, err := evalExpr(call.Args[0], vars)
 			if err != nil {
-				return nil, err
+				return err
 			}
 			p.Stmts = append(p.Stmts, &ExprStmt{Expr: &PrintString{Value: arg.String()}})
 		default:
-			return nil, fmt.Errorf("unsupported statement")
+			return fmt.Errorf("unsupported statement")
+		}
+		return nil
+	}
+
+	for _, st := range prog.Statements {
+		if err := processStmt(st); err != nil {
+			return nil, err
 		}
 	}
+
 	_ = env
 	return p, nil
 }
