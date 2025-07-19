@@ -705,15 +705,28 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 func convertPrimary(p *parser.Primary) (Expr, error) {
 	switch {
 	case p.Call != nil:
-		ce := &CallExpr{Func: &Name{p.Call.Func}}
+		var args []Expr
 		for _, a := range p.Call.Args {
 			ae, err := convertExpr(a)
 			if err != nil {
 				return nil, err
 			}
-			ce.Args = append(ce.Args, ae)
+			args = append(args, ae)
 		}
-		return ce, nil
+		switch p.Call.Func {
+		case "append":
+			if len(args) == 2 {
+				return &BinaryExpr{Left: args[0], Op: "+", Right: &ListLit{Elems: []Expr{args[1]}}}, nil
+			}
+		case "avg":
+			if len(args) == 1 {
+				sumCall := &CallExpr{Func: &Name{Name: "sum"}, Args: []Expr{args[0]}}
+				lenCall := &CallExpr{Func: &Name{Name: "len"}, Args: []Expr{args[0]}}
+				div := &BinaryExpr{Left: sumCall, Op: "/", Right: lenCall}
+				return &CondExpr{Cond: args[0], Then: div, Else: &IntLit{Value: "0"}}, nil
+			}
+		}
+		return &CallExpr{Func: &Name{Name: p.Call.Func}, Args: args}, nil
 	case p.Selector != nil:
 		expr := Expr(&Name{Name: p.Selector.Root})
 		for _, t := range p.Selector.Tail {

@@ -21,3 +21,7 @@
 - Implemented function definitions, return statements and lambda expressions.
 - Added method call handling and `contains` operator.
 - Enabled transpiler tests for `fun_call`, `fun_three_args`, `fun_expr_in_let`, `closure`, `bool_chain` and `string_contains`.
+
+## Recent Enhancements (2025-07-19 13:40 +07)
+- Added builtin support for `append` and `avg`.
+- Enabled transpiler tests for `append_builtin`, `avg_builtin` and `len_string`.
