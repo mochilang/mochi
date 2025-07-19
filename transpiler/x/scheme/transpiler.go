@@ -353,18 +353,37 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 	if err != nil {
 		return nil, err
 	}
-	for _, op := range pf.Ops {
+	for i := 0; i < len(pf.Ops); i++ {
+		op := pf.Ops[i]
 		switch {
 		case op.Call != nil:
+			var err error
 			node, err = convertCall(node, op.Call)
 			if err != nil {
 				return nil, err
 			}
 		case op.Index != nil:
+			var err error
 			node, err = convertIndex(node, op.Index)
 			if err != nil {
 				return nil, err
 			}
+		case op.Field != nil && op.Field.Name == "contains" && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil:
+			call := pf.Ops[i+1].Call
+			if len(call.Args) != 1 {
+				return nil, fmt.Errorf("contains expects 1 arg")
+			}
+			arg, err := convertParserExpr(call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			node = &List{Elems: []Node{
+				Symbol("if"),
+				&List{Elems: []Node{Symbol("string?"), node}},
+				&List{Elems: []Node{Symbol("string-contains"), node, arg}},
+				&List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("member"), arg, node}}, BoolLit(true), BoolLit(false)}},
+			}}
+			i++
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
 		}
@@ -442,6 +461,8 @@ func makeBinary(op string, left, right Node) Node {
 		return &List{Elems: []Node{Symbol("+"), left, right}}
 	case "-", "*", "/":
 		return &List{Elems: []Node{Symbol(op), left, right}}
+	case "%":
+		return &List{Elems: []Node{Symbol("modulo"), left, right}}
 	case "<":
 		if isStr(left) || isStr(right) {
 			return &List{Elems: []Node{Symbol("string<?"), left, right}}
@@ -470,6 +491,13 @@ func makeBinary(op string, left, right Node) Node {
 		return &List{Elems: []Node{Symbol("and"), left, right}}
 	case "||":
 		return &List{Elems: []Node{Symbol("or"), left, right}}
+	case "in":
+		return &List{Elems: []Node{
+			Symbol("if"),
+			&List{Elems: []Node{Symbol("string?"), right}},
+			&List{Elems: []Node{Symbol("string-contains"), right, left}},
+			&List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("member"), left, right}}, BoolLit(true), BoolLit(false)}},
+		}}
 	default:
 		return &List{Elems: []Node{Symbol(op), left, right}}
 	}
@@ -481,7 +509,7 @@ func precedence(op string) int {
 		return 1
 	case "&&":
 		return 2
-	case "==", "!=", "<", "<=", ">", ">=":
+	case "==", "!=", "<", "<=", ">", ">=", "in":
 		return 3
 	case "+", "-":
 		return 4
@@ -502,7 +530,7 @@ func isBoolParserExpr(e *parser.Expr) bool {
 	}
 	op := e.Binary.Right[0].Op
 	switch op {
-	case "==", "!=", "<", "<=", ">", ">=", "&&", "||":
+	case "==", "!=", "<", "<=", ">", ">=", "&&", "||", "in":
 		return true
 	default:
 		return false
@@ -527,12 +555,17 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 		if len(args) != 1 {
 			return nil, fmt.Errorf("len expects 1 arg")
 		}
-		return &List{Elems: []Node{Symbol("length"), args[0]}}, nil
+		return &List{Elems: []Node{
+			Symbol("if"),
+			&List{Elems: []Node{Symbol("string?"), args[0]}},
+			&List{Elems: []Node{Symbol("string-length"), args[0]}},
+			&List{Elems: []Node{Symbol("length"), args[0]}},
+		}}, nil
 	case "append":
 		if len(args) != 2 {
 			return nil, fmt.Errorf("append expects 2 args")
 		}
-		return &List{Elems: []Node{Symbol("append"), args[0], &List{Elems: []Node{args[1]}}}}, nil
+		return &List{Elems: []Node{Symbol("append"), args[0], &List{Elems: []Node{Symbol("list"), args[1]}}}}, nil
 	case "sum":
 		if len(args) != 1 {
 			return nil, fmt.Errorf("sum expects 1 arg")
@@ -556,6 +589,16 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 			return nil, fmt.Errorf("str expects 1 arg")
 		}
 		return &List{Elems: []Node{Symbol("number->string"), args[0]}}, nil
+	case "min", "max":
+		if len(args) != 1 {
+			return nil, fmt.Errorf("%s expects 1 arg", sym)
+		}
+		return &List{Elems: []Node{Symbol("apply"), Symbol(string(sym)), args[0]}}, nil
+	case "substring":
+		if len(args) != 3 {
+			return nil, fmt.Errorf("substring expects 3 args")
+		}
+		return &List{Elems: []Node{Symbol("substring"), args[0], args[1], args[2]}}, nil
 	default:
 		return nil, fmt.Errorf("unsupported call")
 	}
