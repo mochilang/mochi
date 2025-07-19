@@ -1050,7 +1050,11 @@ func (c *compiler) postfix(p *parser.PostfixExpr) (string, error) {
 			case "Int", "Double", "Bool", "String":
 				val = fmt.Sprintf("%s(%s)", typ, val)
 			default:
-				return "", fmt.Errorf("unsupported cast to %s", typ)
+				if strings.HasPrefix(typ, "[") {
+					val = fmt.Sprintf("%s as! %s", val, typ)
+				} else {
+					return "", fmt.Errorf("unsupported cast to %s", typ)
+				}
 			}
 		default:
 			return "", fmt.Errorf("postfix operations not supported")
@@ -1165,6 +1169,11 @@ func (c *compiler) callExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("append expects 2 arguments at line %d", call.Pos.Line)
 		}
 		return fmt.Sprintf("%s + [%s]", args[0], args[1]), nil
+	case "upper":
+		if len(args) != 1 {
+			return "", fmt.Errorf("upper expects 1 argument at line %d", call.Pos.Line)
+		}
+		return fmt.Sprintf("%s.uppercased()", args[0]), nil
 	case "avg":
 		if len(args) != 1 {
 			return "", fmt.Errorf("avg expects 1 argument at line %d", call.Pos.Line)

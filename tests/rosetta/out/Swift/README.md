@@ -1,4 +1,4 @@
-# Rosetta Swift Output (62/278 programs run)
+# Rosetta Swift Output (63/284 programs run)
 
 This directory holds Swift source code generated from the Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
@@ -21,7 +21,7 @@ This directory holds Swift source code generated from the Mochi programs in `tes
 - [x] a+b.mochi
 - [ ] abbreviations-automatic.mochi
 - [ ] abbreviations-easy.mochi
-- [ ] abbreviations-simple.mochi
+- [x] abbreviations-simple.mochi
 - [ ] abc-problem.mochi
 - [x] abelian-sandpile-model-identity.mochi
 - [x] abelian-sandpile-model.mochi
@@ -210,6 +210,7 @@ This directory holds Swift source code generated from the Mochi programs in `tes
 - [ ] circles-of-given-radius-through-two-points.mochi
 - [ ] circular-primes.mochi
 - [ ] cistercian-numerals.mochi
+- [ ] comma-quibbling.mochi
 - [ ] compiler-virtual-machine-interpreter.mochi
 - [ ] composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k.mochi
 - [ ] compound-data-type.mochi
@@ -280,4 +281,9 @@ This directory holds Swift source code generated from the Mochi programs in `tes
 - [ ] deal-cards-for-freecell.mochi
 - [ ] death-star.mochi
 - [ ] deceptive-numbers.mochi
+- [ ] deconvolution-1d-2.mochi
+- [ ] deconvolution-1d-3.mochi
+- [ ] deconvolution-1d.mochi
+- [ ] deepcopy-1.mochi
+- [ ] define-a-primitive-data-type.mochi
 - [ ] md5.mochi
