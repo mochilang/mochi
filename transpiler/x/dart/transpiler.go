@@ -22,6 +22,59 @@ type Program struct {
 
 type Stmt interface{ emit(io.Writer) error }
 
+// IfStmt represents a conditional statement with an optional else branch.
+type IfStmt struct {
+	Cond Expr
+	Then []Stmt
+	Else []Stmt
+}
+
+func (s *IfStmt) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "if ("); err != nil {
+		return err
+	}
+	if err := s.Cond.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ") {\n"); err != nil {
+		return err
+	}
+	for _, st := range s.Then {
+		if _, err := io.WriteString(w, "    "); err != nil {
+			return err
+		}
+		if err := st.emit(w); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, ";\n"); err != nil {
+			return err
+		}
+	}
+	if _, err := io.WriteString(w, "  }"); err != nil {
+		return err
+	}
+	if len(s.Else) > 0 {
+		if _, err := io.WriteString(w, " else {\n"); err != nil {
+			return err
+		}
+		for _, st := range s.Else {
+			if _, err := io.WriteString(w, "    "); err != nil {
+				return err
+			}
+			if err := st.emit(w); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, ";\n"); err != nil {
+				return err
+			}
+		}
+		if _, err := io.WriteString(w, "  }"); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 type VarStmt struct {
 	Name  string
 	Value Expr
@@ -189,8 +242,14 @@ func Emit(w io.Writer, p *Program) error {
 		if err := st.emit(w); err != nil {
 			return err
 		}
-		if _, err := io.WriteString(w, ";\n"); err != nil {
-			return err
+		if _, ok := st.(*IfStmt); ok {
+			if _, err := io.WriteString(w, "\n"); err != nil {
+				return err
+			}
+		} else {
+			if _, err := io.WriteString(w, ";\n"); err != nil {
+				return err
+			}
 		}
 	}
 	_, err := io.WriteString(w, "}\n")
@@ -201,44 +260,91 @@ func Emit(w io.Writer, p *Program) error {
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	p := &Program{}
 	for _, st := range prog.Statements {
-		switch {
-		case st.Expr != nil:
-			e, err := convertExpr(st.Expr.Expr)
-			if err != nil {
-				return nil, err
-			}
-			p.Stmts = append(p.Stmts, &ExprStmt{Expr: e})
-		case st.Let != nil:
-			e, err := convertExpr(st.Let.Value)
-			if err != nil {
-				return nil, err
-			}
-			p.Stmts = append(p.Stmts, &LetStmt{Name: st.Let.Name, Value: e})
-		case st.Var != nil:
-			var e Expr
-			if st.Var.Value != nil {
-				var err error
-				e, err = convertExpr(st.Var.Value)
-				if err != nil {
-					return nil, err
-				}
-			}
-			p.Stmts = append(p.Stmts, &VarStmt{Name: st.Var.Name, Value: e})
-		case st.Assign != nil:
-			if len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0 {
-				return nil, fmt.Errorf("complex assignment not supported")
-			}
-			e, err := convertExpr(st.Assign.Value)
-			if err != nil {
-				return nil, err
-			}
-			p.Stmts = append(p.Stmts, &AssignStmt{Name: st.Assign.Name, Value: e})
-		default:
-			return nil, fmt.Errorf("unsupported statement")
+		s, err := convertStmtInternal(st)
+		if err != nil {
+			return nil, err
 		}
+		p.Stmts = append(p.Stmts, s)
 	}
 	_ = env
 	return p, nil
+}
+
+func convertIfStmt(i *parser.IfStmt) (Stmt, error) {
+	cond, err := convertExpr(i.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenStmts, err := convertStmtList(i.Then)
+	if err != nil {
+		return nil, err
+	}
+	var elseStmts []Stmt
+	if i.ElseIf != nil {
+		s, err := convertIfStmt(i.ElseIf)
+		if err != nil {
+			return nil, err
+		}
+		elseStmts = []Stmt{s}
+	} else if len(i.Else) > 0 {
+		elseStmts, err = convertStmtList(i.Else)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
+}
+
+func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
+	var out []Stmt
+	for _, st := range list {
+		s, err := convertStmtInternal(st)
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, s)
+	}
+	return out, nil
+}
+
+func convertStmtInternal(st *parser.Statement) (Stmt, error) {
+	switch {
+	case st.Expr != nil:
+		e, err := convertExpr(st.Expr.Expr)
+		if err != nil {
+			return nil, err
+		}
+		return &ExprStmt{Expr: e}, nil
+	case st.Let != nil:
+		e, err := convertExpr(st.Let.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &LetStmt{Name: st.Let.Name, Value: e}, nil
+	case st.Var != nil:
+		var e Expr
+		if st.Var.Value != nil {
+			var err error
+			e, err = convertExpr(st.Var.Value)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return &VarStmt{Name: st.Var.Name, Value: e}, nil
+	case st.Assign != nil:
+		if len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0 {
+			return nil, fmt.Errorf("complex assignment not supported")
+		}
+		e, err := convertExpr(st.Assign.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &AssignStmt{Name: st.Assign.Name, Value: e}, nil
+	case st.If != nil:
+		return convertIfStmt(st.If)
+	default:
+		return nil, fmt.Errorf("unsupported statement")
+	}
 }
 
 func convertExpr(e *parser.Expr) (Expr, error) {
@@ -346,6 +452,21 @@ func stmtNode(s Stmt) *ast.Node {
 		return node
 	case *AssignStmt:
 		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{exprNode(st.Value)}}
+	case *IfStmt:
+		n := &ast.Node{Kind: "if", Children: []*ast.Node{exprNode(st.Cond)}}
+		thenNode := &ast.Node{Kind: "then"}
+		for _, c := range st.Then {
+			thenNode.Children = append(thenNode.Children, stmtNode(c))
+		}
+		n.Children = append(n.Children, thenNode)
+		if len(st.Else) > 0 {
+			elseNode := &ast.Node{Kind: "else"}
+			for _, c := range st.Else {
+				elseNode.Children = append(elseNode.Children, stmtNode(c))
+			}
+			n.Children = append(n.Children, elseNode)
+		}
+		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
