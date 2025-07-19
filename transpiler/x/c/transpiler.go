@@ -16,7 +16,10 @@ import (
 	"mochi/types"
 )
 
-var constLists map[string]*ListLit
+var (
+	constLists   map[string]*ListLit
+	constStrings map[string]string
+)
 
 // --- Simple C AST ---
 
@@ -311,6 +314,14 @@ type CallExpr struct {
 }
 
 func (c *CallExpr) emitExpr(w io.Writer) {
+	if c.Func == "contains" && len(c.Args) == 2 {
+		io.WriteString(w, "strstr(")
+		c.Args[0].emitExpr(w)
+		io.WriteString(w, ", ")
+		c.Args[1].emitExpr(w)
+		io.WriteString(w, ") != NULL")
+		return
+	}
 	io.WriteString(w, c.Func)
 	io.WriteString(w, "(")
 	for i, a := range c.Args {
@@ -351,6 +362,14 @@ func (c *CondExpr) emitExpr(w io.Writer) {
 }
 
 func (b *BinaryExpr) emitExpr(w io.Writer) {
+	if b.Op == "in" && exprIsString(b.Left) && exprIsString(b.Right) {
+		io.WriteString(w, "strstr(")
+		b.Right.emitExpr(w)
+		io.WriteString(w, ", ")
+		b.Left.emitExpr(w)
+		io.WriteString(w, ") != NULL")
+		return
+	}
 	if (exprIsString(b.Left) || exprIsString(b.Right)) &&
 		(b.Op == "==" || b.Op == "!=" || b.Op == "<" || b.Op == "<=" || b.Op == ">" || b.Op == ">=") {
 		io.WriteString(w, "strcmp(")
@@ -371,6 +390,8 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 			io.WriteString(w, "> 0")
 		case ">=":
 			io.WriteString(w, ">= 0")
+		case "in":
+			io.WriteString(w, "!= 0")
 		}
 		return
 	}
@@ -461,6 +482,7 @@ func (p *Program) Emit() []byte {
 // Transpile converts a Mochi program into a C AST.
 func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	constLists = make(map[string]*ListLit)
+	constStrings = make(map[string]string)
 	p := &Program{}
 	mainFn := &Function{Name: "main"}
 	for _, st := range prog.Statements {
@@ -535,31 +557,49 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		if _, ok := t.(types.StringType); ok {
 			declType = "const char*"
 		}
+		valExpr := convertExpr(s.Let.Value)
 		if list, ok := convertListExpr(s.Let.Value); ok {
 			constLists[s.Let.Name] = &ListLit{Elems: list}
 		} else {
 			delete(constLists, s.Let.Name)
 		}
-		return &DeclStmt{Name: s.Let.Name, Value: convertExpr(s.Let.Value), Type: declType}, nil
+		if strVal, ok := evalString(valExpr); ok {
+			constStrings[s.Let.Name] = strVal
+		} else {
+			delete(constStrings, s.Let.Name)
+		}
+		return &DeclStmt{Name: s.Let.Name, Value: valExpr, Type: declType}, nil
 	case s.Var != nil:
 		t, _ := env.GetVar(s.Var.Name)
 		declType := "int"
 		if _, ok := t.(types.StringType); ok {
 			declType = "const char*"
 		}
+		valExpr := convertExpr(s.Var.Value)
 		if list, ok := convertListExpr(s.Var.Value); ok {
 			constLists[s.Var.Name] = &ListLit{Elems: list}
 		} else {
 			delete(constLists, s.Var.Name)
 		}
-		return &DeclStmt{Name: s.Var.Name, Value: convertExpr(s.Var.Value), Type: declType}, nil
+		if strVal, ok := evalString(valExpr); ok {
+			constStrings[s.Var.Name] = strVal
+		} else {
+			delete(constStrings, s.Var.Name)
+		}
+		return &DeclStmt{Name: s.Var.Name, Value: valExpr, Type: declType}, nil
 	case s.Assign != nil:
+		valExpr := convertExpr(s.Assign.Value)
 		if list, ok := convertListExpr(s.Assign.Value); ok {
 			constLists[s.Assign.Name] = &ListLit{Elems: list}
 		} else {
 			delete(constLists, s.Assign.Name)
 		}
-		return &AssignStmt{Name: s.Assign.Name, Value: convertExpr(s.Assign.Value)}, nil
+		if strVal, ok := evalString(valExpr); ok {
+			constStrings[s.Assign.Name] = strVal
+		} else {
+			delete(constStrings, s.Assign.Name)
+		}
+		return &AssignStmt{Name: s.Assign.Name, Value: valExpr}, nil
 	case s.Return != nil:
 		return &ReturnStmt{Expr: convertExpr(s.Return.Value)}, nil
 	case s.While != nil:
@@ -700,11 +740,12 @@ func convertExpr(e *parser.Expr) Expr {
 	if len(operands) != 1 {
 		return nil
 	}
-	// Constant fold simple string concatenation
-	if bin, ok := operands[0].(*BinaryExpr); ok && bin.Op == "+" {
-		if l, ok := bin.Left.(*StringLit); ok {
-			if r, ok2 := bin.Right.(*StringLit); ok2 {
-				return &StringLit{Value: l.Value + r.Value}
+	if bin, ok := operands[0].(*BinaryExpr); ok {
+		if bin.Op == "+" {
+			if l, ok := bin.Left.(*StringLit); ok {
+				if r, ok2 := bin.Right.(*StringLit); ok2 {
+					return &StringLit{Value: l.Value + r.Value}
+				}
 			}
 		}
 	}
@@ -717,6 +758,14 @@ func convertUnary(u *parser.Unary) Expr {
 	}
 	if g := u.Value.Target.Group; g != nil {
 		return convertExpr(g)
+	}
+	if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) == 1 && sel.Tail[0] == "contains" && len(u.Value.Ops) == 1 && u.Value.Ops[0].Call != nil && len(u.Ops) == 0 {
+		base := &VarRef{Name: sel.Root}
+		arg := convertExpr(u.Value.Ops[0].Call.Args[0])
+		if arg == nil {
+			return nil
+		}
+		return &CallExpr{Func: "contains", Args: []Expr{base, arg}}
 	}
 	if len(u.Value.Ops) == 1 && u.Value.Ops[0].Cast != nil &&
 		u.Value.Ops[0].Cast.Type != nil &&
@@ -943,10 +992,15 @@ func evalInt(e Expr) (int, bool) {
 }
 
 func evalString(e Expr) (string, bool) {
-	if v, ok := e.(*StringLit); ok {
+	switch v := e.(type) {
+	case *StringLit:
 		return v.Value, true
+	case *VarRef:
+		s, ok := constStrings[v.Name]
+		return s, ok
+	default:
+		return "", false
 	}
-	return "", false
 }
 
 func evalList(e Expr) (*ListLit, bool) {
@@ -965,6 +1019,9 @@ func exprIsString(e Expr) bool {
 	switch v := e.(type) {
 	case *StringLit:
 		return true
+	case *VarRef:
+		_, ok := constStrings[v.Name]
+		return ok
 	case *CallExpr:
 		return v.Func == "str"
 	case *CondExpr:
