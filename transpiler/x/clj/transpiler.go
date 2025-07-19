@@ -201,11 +201,23 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 		if err != nil {
 			return nil, err
 		}
-		return &List{Elems: []Node{Symbol("set!"), Symbol(s.Assign.Name), v}}, nil
+		if len(s.Assign.Index) == 1 && s.Assign.Index[0].Colon == nil && s.Assign.Index[0].Colon2 == nil && s.Assign.Index[0].End == nil && s.Assign.Index[0].Step == nil {
+			idx, err := transpileExpr(s.Assign.Index[0].Start)
+			if err != nil {
+				return nil, err
+			}
+			assign := &List{Elems: []Node{Symbol("assoc"), Symbol(s.Assign.Name), idx, v}}
+			return &List{Elems: []Node{Symbol("def"), Symbol(s.Assign.Name), assign}}, nil
+		}
+		return &List{Elems: []Node{Symbol("def"), Symbol(s.Assign.Name), v}}, nil
 	case s.Fun != nil:
 		return transpileFunStmt(s.Fun)
 	case s.Return != nil:
 		return transpileReturnStmt(s.Return)
+	case s.While != nil:
+		return transpileWhileStmt(s.While)
+	case s.For != nil:
+		return transpileForStmt(s.For)
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
@@ -527,4 +539,61 @@ func defaultValue(t *parser.TypeRef) Node {
 	default:
 		return Symbol("nil")
 	}
+}
+
+func blockForms(stmts []*parser.Statement) ([]Node, error) {
+	forms := []Node{}
+	for _, st := range stmts {
+		n, err := transpileStmt(st)
+		if err != nil {
+			return nil, err
+		}
+		if n != nil {
+			forms = append(forms, n)
+		}
+	}
+	return forms, nil
+}
+
+func transpileWhileStmt(w *parser.WhileStmt) (Node, error) {
+	cond, err := transpileExpr(w.Cond)
+	if err != nil {
+		return nil, err
+	}
+	body, err := blockForms(w.Body)
+	if err != nil {
+		return nil, err
+	}
+	elems := []Node{Symbol("while"), cond}
+	elems = append(elems, body...)
+	return &List{Elems: elems}, nil
+}
+
+func transpileForStmt(f *parser.ForStmt) (Node, error) {
+	body, err := blockForms(f.Body)
+	if err != nil {
+		return nil, err
+	}
+	var seq Node
+	if f.RangeEnd != nil {
+		start, err := transpileExpr(f.Source)
+		if err != nil {
+			return nil, err
+		}
+		end, err := transpileExpr(f.RangeEnd)
+		if err != nil {
+			return nil, err
+		}
+		seq = &List{Elems: []Node{Symbol("range"), start, end}}
+	} else {
+		iter, err := transpileExpr(f.Source)
+		if err != nil {
+			return nil, err
+		}
+		seq = iter
+	}
+	binding := &Vector{Elems: []Node{Symbol(f.Name), seq}}
+	elems := []Node{Symbol("doseq"), binding}
+	elems = append(elems, body...)
+	return &List{Elems: elems}, nil
 }
