@@ -347,3 +347,93 @@ func TestTranspile_FunThreeArgs(t *testing.T) {
 		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
 	}
 }
+
+func TestTranspile_StringConcat(t *testing.T) {
+	if _, err := exec.LookPath("runhaskell"); err != nil {
+		t.Skip("runhaskell not installed")
+	}
+	root := repoRoot(t)
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "hs")
+	os.MkdirAll(outDir, 0o755)
+
+	base := "string_concat"
+	src := filepath.Join(root, "tests", "vm", "valid", base+".mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type: %v", errs[0])
+	}
+	ast, err := hs.Transpile(prog, env)
+	if err != nil {
+		t.Fatalf("transpile: %v", err)
+	}
+	code := hs.Emit(ast)
+	hsFile := filepath.Join(outDir, base+".hs")
+	if err := os.WriteFile(hsFile, code, 0o644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+	cmd := exec.Command("runhaskell", hsFile)
+	out, err := cmd.CombinedOutput()
+	got := bytes.TrimSpace(out)
+	if err != nil {
+		_ = os.WriteFile(filepath.Join(outDir, base+".error"), out, 0o644)
+		t.Fatalf("run: %v", err)
+	}
+	_ = os.Remove(filepath.Join(outDir, base+".error"))
+	want, err := os.ReadFile(filepath.Join(outDir, base+".out"))
+	if err != nil {
+		t.Fatalf("read want: %v", err)
+	}
+	want = bytes.TrimSpace(want)
+	if !bytes.Equal(got, want) {
+		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
+	}
+}
+
+func TestTranspile_LenString(t *testing.T) {
+	if _, err := exec.LookPath("runhaskell"); err != nil {
+		t.Skip("runhaskell not installed")
+	}
+	root := repoRoot(t)
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "hs")
+	os.MkdirAll(outDir, 0o755)
+
+	base := "len_string"
+	src := filepath.Join(root, "tests", "vm", "valid", base+".mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type: %v", errs[0])
+	}
+	ast, err := hs.Transpile(prog, env)
+	if err != nil {
+		t.Fatalf("transpile: %v", err)
+	}
+	code := hs.Emit(ast)
+	hsFile := filepath.Join(outDir, base+".hs")
+	if err := os.WriteFile(hsFile, code, 0o644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+	cmd := exec.Command("runhaskell", hsFile)
+	out, err := cmd.CombinedOutput()
+	got := bytes.TrimSpace(out)
+	if err != nil {
+		_ = os.WriteFile(filepath.Join(outDir, base+".error"), out, 0o644)
+		t.Fatalf("run: %v", err)
+	}
+	_ = os.Remove(filepath.Join(outDir, base+".error"))
+	want, err := os.ReadFile(filepath.Join(outDir, base+".out"))
+	if err != nil {
+		t.Fatalf("read want: %v", err)
+	}
+	want = bytes.TrimSpace(want)
+	if !bytes.Equal(got, want) {
+		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
+	}
+}
