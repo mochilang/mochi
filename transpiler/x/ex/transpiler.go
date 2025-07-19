@@ -28,6 +28,56 @@ type ExprStmt struct{ Expr Expr }
 
 func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
 
+// BinaryExpr represents a binary operation such as 1 + 2.
+type BinaryExpr struct {
+	Left  Expr
+	Op    string
+	Right Expr
+}
+
+func (b *BinaryExpr) emit(w io.Writer) {
+	isInt := func(e Expr) bool {
+		if n, ok := e.(*NumberLit); ok {
+			return !strings.Contains(n.Value, ".")
+		}
+		return false
+	}
+	if b.Op == "/" && isInt(b.Left) && isInt(b.Right) {
+		io.WriteString(w, "div(")
+		b.Left.emit(w)
+		io.WriteString(w, ", ")
+		b.Right.emit(w)
+		io.WriteString(w, ")")
+		return
+	}
+	if b.Op == "%" {
+		io.WriteString(w, "rem(")
+		b.Left.emit(w)
+		io.WriteString(w, ", ")
+		b.Right.emit(w)
+		io.WriteString(w, ")")
+		return
+	}
+	io.WriteString(w, "(")
+	b.Left.emit(w)
+	io.WriteString(w, " ")
+	io.WriteString(w, b.Op)
+	io.WriteString(w, " ")
+	b.Right.emit(w)
+	io.WriteString(w, ")")
+}
+
+// UnaryExpr represents a prefix unary operation.
+type UnaryExpr struct {
+	Op   string
+	Expr Expr
+}
+
+func (u *UnaryExpr) emit(w io.Writer) {
+	io.WriteString(w, u.Op)
+	u.Expr.emit(w)
+}
+
 // CallExpr represents a function call.
 type CallExpr struct {
 	Func string
@@ -50,6 +100,42 @@ func (c *CallExpr) emit(w io.Writer) {
 type StringLit struct{ Value string }
 
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
+
+// NumberLit is a numeric literal.
+type NumberLit struct{ Value string }
+
+func (n *NumberLit) emit(w io.Writer) { io.WriteString(w, n.Value) }
+
+// ListLit is a list literal like [1,2,3].
+type ListLit struct{ Elems []Expr }
+
+func (l *ListLit) emit(w io.Writer) {
+	io.WriteString(w, "[")
+	for i, e := range l.Elems {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		e.emit(w)
+	}
+	io.WriteString(w, "]")
+}
+
+// CastExpr represents a simple cast like expr as int.
+type CastExpr struct {
+	Expr Expr
+	Type string
+}
+
+func (c *CastExpr) emit(w io.Writer) {
+	switch c.Type {
+	case "int":
+		io.WriteString(w, "String.to_integer(")
+		c.Expr.emit(w)
+		io.WriteString(w, ")")
+	default:
+		c.Expr.emit(w)
+	}
+}
 
 // Emit generates Elixir source from the AST.
 func Emit(p *Program) []byte {
@@ -81,24 +167,94 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 }
 
 func compileExpr(e *parser.Expr) (Expr, error) {
-	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+	if e == nil || e.Binary == nil {
 		return nil, fmt.Errorf("unsupported expression")
 	}
-	return compileUnary(e.Binary.Left)
+	return compileBinary(e.Binary)
 }
 
 func compileUnary(u *parser.Unary) (Expr, error) {
-	if u == nil || len(u.Ops) > 0 {
+	if u == nil {
 		return nil, fmt.Errorf("unsupported unary")
 	}
-	return compilePostfix(u.Value)
+	expr, err := compilePostfix(u.Value)
+	if err != nil {
+		return nil, err
+	}
+	for i := len(u.Ops) - 1; i >= 0; i-- {
+		expr = &UnaryExpr{Op: u.Ops[i], Expr: expr}
+	}
+	return expr, nil
+}
+
+func compileBinary(b *parser.BinaryExpr) (Expr, error) {
+	left, err := compileUnary(b.Left)
+	if err != nil {
+		return nil, err
+	}
+	operands := []Expr{left}
+	ops := make([]*parser.BinaryOp, len(b.Right))
+	for i, op := range b.Right {
+		expr, err := compilePostfix(op.Right)
+		if err != nil {
+			return nil, err
+		}
+		ops[i] = op
+		operands = append(operands, expr)
+	}
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+	}
+	contains := func(list []string, op string) bool {
+		for _, s := range list {
+			if s == op {
+				return true
+			}
+		}
+		return false
+	}
+	for _, level := range levels {
+		for i := 0; i < len(ops); {
+			if contains(level, ops[i].Op) {
+				operands[i] = &BinaryExpr{Left: operands[i], Op: ops[i].Op, Right: operands[i+1]}
+				operands = append(operands[:i+1], operands[i+2:]...)
+				ops = append(ops[:i], ops[i+1:]...)
+			} else {
+				i++
+			}
+		}
+	}
+	if len(operands) != 1 {
+		return nil, fmt.Errorf("invalid expression")
+	}
+	return operands[0], nil
 }
 
 func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
-	if pf == nil || len(pf.Ops) > 0 {
+	if pf == nil {
 		return nil, fmt.Errorf("unsupported postfix")
 	}
-	return compilePrimary(pf.Target)
+	expr, err := compilePrimary(pf.Target)
+	if err != nil {
+		return nil, err
+	}
+	for _, op := range pf.Ops {
+		if op.Cast != nil {
+			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
+				expr = &CastExpr{Expr: expr, Type: *op.Cast.Type.Simple}
+			} else {
+				return nil, fmt.Errorf("unsupported cast")
+			}
+		} else {
+			return nil, fmt.Errorf("unsupported postfix")
+		}
+	}
+	return expr, nil
 }
 
 func compilePrimary(p *parser.Primary) (Expr, error) {
@@ -113,14 +269,57 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			args[i] = ex
 		}
 		name := p.Call.Func
-		if name == "print" {
+		switch name {
+		case "print":
 			name = "IO.puts"
+		case "count":
+			name = "Enum.count"
+		case "len":
+			name = "length"
+			if len(args) == 1 {
+				if _, ok := args[0].(*StringLit); ok {
+					name = "String.length"
+				}
+			}
+		case "sum":
+			name = "Enum.sum"
+		case "avg":
+			if len(args) == 1 {
+				sumCall := &CallExpr{Func: "Enum.sum", Args: []Expr{args[0]}}
+				countCall := &CallExpr{Func: "Enum.count", Args: []Expr{args[0]}}
+				return &BinaryExpr{Left: sumCall, Op: "/", Right: countCall}, nil
+			}
 		}
 		return &CallExpr{Func: name, Args: args}, nil
-	case p.Lit != nil && p.Lit.Str != nil:
-		return &StringLit{Value: *p.Lit.Str}, nil
+	case p.Lit != nil:
+		return compileLiteral(p.Lit)
+	case p.List != nil:
+		elems := make([]Expr, len(p.List.Elems))
+		for i, el := range p.List.Elems {
+			ex, err := compileExpr(el)
+			if err != nil {
+				return nil, err
+			}
+			elems[i] = ex
+		}
+		return &ListLit{Elems: elems}, nil
+	case p.Group != nil:
+		return compileExpr(p.Group)
 	}
 	return nil, fmt.Errorf("unsupported primary")
+}
+
+func compileLiteral(l *parser.Literal) (Expr, error) {
+	switch {
+	case l.Int != nil:
+		return &NumberLit{Value: fmt.Sprintf("%d", *l.Int)}, nil
+	case l.Float != nil:
+		return &NumberLit{Value: fmt.Sprintf("%g", *l.Float)}, nil
+	case l.Str != nil:
+		return &StringLit{Value: *l.Str}, nil
+	default:
+		return nil, fmt.Errorf("unsupported literal")
+	}
 }
 
 func repoRoot() string {
@@ -192,6 +391,20 @@ func toNodeExpr(e Expr) *ast.Node {
 		return n
 	case *StringLit:
 		return &ast.Node{Kind: "string", Value: ex.Value}
+	case *NumberLit:
+		return &ast.Node{Kind: "number", Value: ex.Value}
+	case *ListLit:
+		n := &ast.Node{Kind: "list"}
+		for _, el := range ex.Elems {
+			n.Children = append(n.Children, toNodeExpr(el))
+		}
+		return n
+	case *BinaryExpr:
+		return &ast.Node{Kind: "bin", Value: ex.Op, Children: []*ast.Node{toNodeExpr(ex.Left), toNodeExpr(ex.Right)}}
+	case *UnaryExpr:
+		return &ast.Node{Kind: "unary", Value: ex.Op, Children: []*ast.Node{toNodeExpr(ex.Expr)}}
+	case *CastExpr:
+		return &ast.Node{Kind: "cast", Value: ex.Type, Children: []*ast.Node{toNodeExpr(ex.Expr)}}
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
