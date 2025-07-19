@@ -40,6 +40,12 @@ type IfStmt struct {
 	Else []Stmt
 }
 
+// WhileStmt represents a basic while loop.
+type WhileStmt struct {
+	Cond Expr
+	Body []Stmt
+}
+
 // IfExpr represents an if expression returning a value.
 type IfExpr struct {
 	Cond Expr
@@ -259,6 +265,22 @@ func (i *IfStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, "}\n")
 }
 
+func (wst *WhileStmt) emit(w io.Writer, indent int) {
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "    ")
+	}
+	io.WriteString(w, "while (")
+	wst.Cond.emit(w)
+	io.WriteString(w, ") {\n")
+	for _, st := range wst.Body {
+		st.emit(w, indent+1)
+	}
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "    ")
+	}
+	io.WriteString(w, "}\n")
+}
+
 func (i *IfExpr) emit(w io.Writer) {
 	io.WriteString(w, "if (")
 	i.Cond.emit(w)
@@ -393,6 +415,14 @@ func toStmtNode(s Stmt) *ast.Node {
 			}
 			n.Children = append(n.Children, el)
 		}
+		return n
+	case *WhileStmt:
+		n := &ast.Node{Kind: "while", Children: []*ast.Node{toExprNode(st.Cond)}}
+		body := &ast.Node{Kind: "body"}
+		for _, c := range st.Body {
+			body.Children = append(body.Children, toStmtNode(c))
+		}
+		n.Children = append(n.Children, body)
 		return n
 	default:
 		return &ast.Node{Kind: "stmt"}
@@ -564,6 +594,22 @@ func compileIfStmt(is *parser.IfStmt, prog *parser.Program) (Stmt, error) {
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
 }
 
+func compileWhileStmt(ws *parser.WhileStmt, prog *parser.Program) (Stmt, error) {
+	cond, err := compileExpr(ws.Cond)
+	if err != nil {
+		return nil, err
+	}
+	body := make([]Stmt, 0, len(ws.Body))
+	for _, s := range ws.Body {
+		st, err := compileStmt(s, prog)
+		if err != nil {
+			return nil, err
+		}
+		body = append(body, st)
+	}
+	return &WhileStmt{Cond: cond, Body: body}, nil
+}
+
 func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 	switch {
 	case s.Expr != nil:
@@ -599,7 +645,7 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		} else {
 			expr = &IntLit{Value: 0}
 		}
-		return &VarDecl{Name: s.Var.Name, Value: expr}, nil
+		return &VarDecl{Name: s.Var.Name, Value: expr, Mutable: true}, nil
 	case s.Assign != nil && len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0:
 		expr, err := compileExpr(s.Assign.Value)
 		if err != nil {
@@ -608,6 +654,8 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		return &AssignStmt{Name: s.Assign.Name, Value: expr}, nil
 	case s.If != nil:
 		return compileIfStmt(s.If, prog)
+	case s.While != nil:
+		return compileWhileStmt(s.While, prog)
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
