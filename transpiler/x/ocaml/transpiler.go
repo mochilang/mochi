@@ -30,6 +30,9 @@ const prelude = `let string_contains s sub =
     else if String.sub s i len_sub = sub then true
     else aux (i + 1)
   in aux 0
+
+let string_of_int_list lst =
+  String.concat " " (List.map string_of_int lst)
 `
 
 type VarInfo struct {
@@ -187,17 +190,25 @@ func (s *StrBuiltin) emit(w io.Writer) {
 
 func (s *StrBuiltin) emitPrint(w io.Writer) { s.emit(w) }
 
-// LenBuiltin represents a call to len() builtin for strings.
-type LenBuiltin struct{ Arg Expr }
+// LenBuiltin represents a call to len() builtin.
+// Mode specifies whether we are operating on a string or list.
+type LenBuiltin struct {
+	Arg  Expr
+	Mode string
+}
 
 func (l *LenBuiltin) emit(w io.Writer) {
-	io.WriteString(w, "String.length ")
+	if l.Mode == "string" {
+		io.WriteString(w, "String.length ")
+	} else {
+		io.WriteString(w, "List.length ")
+	}
 	l.Arg.emit(w)
 }
 
 func (l *LenBuiltin) emitPrint(w io.Writer) {
-	io.WriteString(w, "string_of_int (String.length ")
-	l.Arg.emit(w)
+	io.WriteString(w, "string_of_int (")
+	l.emit(w)
 	io.WriteString(w, ")")
 }
 
@@ -236,6 +247,25 @@ func (s *SumBuiltin) emitPrint(w io.Writer) {
 	s.emit(w)
 }
 
+// AppendBuiltin represents append(list, elem).
+type AppendBuiltin struct {
+	List Expr
+	Elem Expr
+}
+
+func (a *AppendBuiltin) emit(w io.Writer) {
+	io.WriteString(w, "(")
+	a.List.emit(w)
+	io.WriteString(w, " @ [")
+	a.Elem.emit(w)
+	io.WriteString(w, "])")
+}
+
+func (a *AppendBuiltin) emitPrint(w io.Writer) {
+	io.WriteString(w, "string_of_int_list ")
+	a.emit(w)
+}
+
 // StringContainsBuiltin represents s.contains(sub).
 type StringContainsBuiltin struct {
 	Str Expr
@@ -269,7 +299,10 @@ func (l *ListLit) emit(w io.Writer) {
 	io.WriteString(w, "]")
 }
 
-func (l *ListLit) emitPrint(w io.Writer) { l.emit(w) }
+func (l *ListLit) emitPrint(w io.Writer) {
+	io.WriteString(w, "string_of_int_list ")
+	l.emit(w)
+}
 
 // UnaryMinus represents negation of an integer expression.
 type UnaryMinus struct{ Expr Expr }
@@ -345,6 +378,8 @@ func (n *Name) emitPrint(w io.Writer) {
 		fmt.Fprintf(w, "string_of_int %s", ident)
 	case "bool":
 		fmt.Fprintf(w, "string_of_int (if %s then 1 else 0)", ident)
+	case "list":
+		fmt.Fprintf(w, "string_of_int_list %s", ident)
 	default:
 		io.WriteString(w, ident)
 	}
@@ -906,10 +941,24 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		if err != nil {
 			return nil, "", err
 		}
-		if typ != "string" {
-			return nil, "", fmt.Errorf("len only supports string")
+		switch typ {
+		case "string":
+			return &LenBuiltin{Arg: arg, Mode: "string"}, "int", nil
+		case "list":
+			return &LenBuiltin{Arg: arg, Mode: "list"}, "int", nil
+		default:
+			return nil, "", fmt.Errorf("len only supports string or list")
 		}
-		return &LenBuiltin{Arg: arg}, "int", nil
+	}
+	if c.Func == "count" && len(c.Args) == 1 {
+		arg, typ, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		if typ != "list" {
+			return nil, "", fmt.Errorf("count expects list")
+		}
+		return &LenBuiltin{Arg: arg, Mode: "list"}, "int", nil
 	}
 	if c.Func == "substring" && len(c.Args) == 3 {
 		strArg, typ, err := convertExpr(c.Args[0], env, vars)
@@ -934,6 +983,23 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			return nil, "", fmt.Errorf("substring end expects int")
 		}
 		return &SubstringBuiltin{Str: strArg, Start: startArg, End: endArg}, "string", nil
+	}
+	if c.Func == "append" && len(c.Args) == 2 {
+		listArg, typ, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		if typ != "list" {
+			return nil, "", fmt.Errorf("append expects list")
+		}
+		elemArg, etyp, err := convertExpr(c.Args[1], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		if etyp != "int" {
+			return nil, "", fmt.Errorf("append only supports int elements")
+		}
+		return &AppendBuiltin{List: listArg, Elem: elemArg}, "list", nil
 	}
 	if c.Func == "sum" && len(c.Args) == 1 {
 		listArg, typ, err := convertExpr(c.Args[0], env, vars)
