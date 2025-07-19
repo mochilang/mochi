@@ -1,3 +1,8 @@
+## Progress (2025-07-20 01:18 +0700)
+- VM valid golden test results updated to 35/100
+- Improved code formatting and constant list type inference.
+- Removed unused runtime functions.
+
 ## Progress (2025-07-19 18:14 UTC)
 - VM valid golden test results updated to 35/100
 
