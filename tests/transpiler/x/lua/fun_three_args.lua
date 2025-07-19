@@ -37,4 +37,8 @@ function mochi_print(v)
     print(v)
   end
 end
-mochi_print("hello")
+function sum3(a, b, c)
+return ((a + b) + c)
+end
+
+mochi_print(sum3(1, 2, 3))

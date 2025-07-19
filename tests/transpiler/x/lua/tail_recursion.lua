@@ -37,4 +37,11 @@ function mochi_print(v)
     print(v)
   end
 end
-mochi_print("hello")
+function sum_rec(n, acc)
+if (n == 0) then
+return acc
+end
+return sum_rec((n - 1), (acc + n))
+end
+
+mochi_print(sum_rec(10, 0))

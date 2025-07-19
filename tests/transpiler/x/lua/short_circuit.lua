@@ -37,4 +37,11 @@ function mochi_print(v)
     print(v)
   end
 end
-mochi_print("hello")
+function boom(a, b)
+mochi_print("boom")
+return true
+end
+
+mochi_print((false and boom(1, 2)))
+
+mochi_print((true or boom(1, 2)))

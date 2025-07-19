@@ -37,4 +37,8 @@ function mochi_print(v)
     print(v)
   end
 end
-mochi_print("hello")
+function add(a, b)
+return (a + b)
+end
+
+mochi_print(add(2, 3))

@@ -37,4 +37,10 @@ function mochi_print(v)
     print(v)
   end
 end
-mochi_print("hello")
+k = 2
+
+function inc(x)
+return (x + k)
+end
+
+mochi_print(inc(3))

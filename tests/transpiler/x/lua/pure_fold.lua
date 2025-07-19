@@ -37,4 +37,8 @@ function mochi_print(v)
     print(v)
   end
 end
-mochi_print("hello")
+function triple(x)
+return (x * 3)
+end
+
+mochi_print(triple((1 + 2)))
