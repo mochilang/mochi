@@ -1,5 +1,6 @@
-## Progress (2025-07-19 18:32 +0700)
-- VM valid golden test results updated
+## Progress (2025-07-19 19:21 +0700)
+- Checklist updated: 21/100 tests compiled
+- Added support for `substring_builtin` and `sum_builtin` programs.
 
 # OCaml Transpiler Progress
 
