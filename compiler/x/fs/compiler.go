@@ -129,6 +129,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	}
 	var header bytes.Buffer
 	header.Write(meta.Header("//"))
+	header.WriteString("module Program\n")
 	header.WriteString("open System\n")
 	if c.usesJson {
 		header.WriteString("open Microsoft.FSharp.Reflection\n")
@@ -137,6 +138,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 		header.WriteString("open System.IO\n")
 		header.WriteString("open YamlDotNet.Serialization\n")
 	}
+	header.WriteString("\n")
 	header.WriteString("\n")
 	if c.usesBreak || c.usesContinue {
 		header.WriteString("exception Break\n")
@@ -1425,7 +1427,13 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 	case "int":
 		if len(args) == 1 {
-			return fmt.Sprintf("int %s", args[0]), nil
+			arg := args[0]
+			if !identifierRegexp.MatchString(arg) &&
+				!strings.HasPrefix(arg, "(") &&
+				!strings.HasPrefix(arg, "\"") {
+				arg = fmt.Sprintf("(%s)", arg)
+			}
+			return fmt.Sprintf("int %s", arg), nil
 		}
 	case "sum":
 		if len(args) == 1 {
