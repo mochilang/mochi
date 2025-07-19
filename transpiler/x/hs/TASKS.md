@@ -1,3 +1,8 @@
+## Progress (2025-07-19 19:20 +0700)
+- VM valid golden test results updated
+- Added bool printing via fromEnum for Haskell backend
+- Implemented multi-statement function bodies to compile `bool_chain`
+
 ## Progress (2025-07-19 18:28 +0700)
 - VM valid golden test results updated
 - Added bool printing via fromEnum for Haskell backend
