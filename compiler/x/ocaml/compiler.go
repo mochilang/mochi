@@ -2455,7 +2455,7 @@ func (c *Compiler) typeRef(t *parser.TypeRef) string {
 		return strings.Join(parts, " -> ")
 	}
 	if t.Simple != nil {
-		switch *t.Simple {
+		switch strings.ToLower(*t.Simple) {
 		case "int":
 			return "int"
 		case "float":
@@ -2464,6 +2464,8 @@ func (c *Compiler) typeRef(t *parser.TypeRef) string {
 			return "bool"
 		case "string":
 			return "string"
+		case "any":
+			return "Obj.t"
 		default:
 			return strings.ToLower(*t.Simple)
 		}
