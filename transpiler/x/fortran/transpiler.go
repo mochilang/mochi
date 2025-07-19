@@ -110,7 +110,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				}
 			}
 			if st.Let.Type != nil || st.Let.Value != nil {
-				typ := types.AnyType{}
+				var typ types.Type = types.AnyType{}
 				if st.Let.Type != nil {
 					typ = types.ResolveTypeRef(st.Let.Type, env)
 				} else {
@@ -137,7 +137,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					return nil, err
 				}
 			}
-			typ := types.AnyType{}
+			var typ types.Type = types.AnyType{}
 			if st.Var.Type != nil {
 				typ = types.ResolveTypeRef(st.Var.Type, env)
 			} else if st.Var.Value != nil {
