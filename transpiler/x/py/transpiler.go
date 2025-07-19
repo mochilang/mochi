@@ -41,6 +41,15 @@ type VarStmt struct {
 
 func (*VarStmt) isStmt() {}
 
+// IndexAssignStmt represents assignments like `xs[i] = expr`.
+type IndexAssignStmt struct {
+	Name  string
+	Index Expr
+	Expr  Expr
+}
+
+func (*IndexAssignStmt) isStmt() {}
+
 type AssignStmt struct {
 	Name string
 	Expr Expr
@@ -63,16 +72,16 @@ type FuncDef struct {
 func (*FuncDef) isStmt() {}
 
 type WhileStmt struct {
-        Cond Expr
-        Body []Stmt
+	Cond Expr
+	Body []Stmt
 }
 
 func (*WhileStmt) isStmt() {}
 
 type ForStmt struct {
-        Var  string
-        Iter Expr
-        Body []Stmt
+	Var  string
+	Iter Expr
+	Body []Stmt
 }
 
 func (*ForStmt) isStmt() {}
@@ -212,55 +221,55 @@ func (i *IndexExpr) emit(w io.Writer) error {
 }
 
 type FieldExpr struct {
-        Target Expr
-        Name   string
+	Target Expr
+	Name   string
 }
 
 func (f *FieldExpr) emit(w io.Writer) error {
-        if err := emitExpr(w, f.Target); err != nil {
-                return err
-        }
-        _, err := io.WriteString(w, "."+f.Name)
-        return err
+	if err := emitExpr(w, f.Target); err != nil {
+		return err
+	}
+	_, err := io.WriteString(w, "."+f.Name)
+	return err
 }
 
 type SliceExpr struct {
-        Target Expr
-        Start  Expr
-        End    Expr
-        Step   Expr
+	Target Expr
+	Start  Expr
+	End    Expr
+	Step   Expr
 }
 
 func (s *SliceExpr) emit(w io.Writer) error {
-        if err := emitExpr(w, s.Target); err != nil {
-                return err
-        }
-        if _, err := io.WriteString(w, "["); err != nil {
-                return err
-        }
-        if s.Start != nil {
-                if err := emitExpr(w, s.Start); err != nil {
-                        return err
-                }
-        }
-        if _, err := io.WriteString(w, ":"); err != nil {
-                return err
-        }
-        if s.End != nil {
-                if err := emitExpr(w, s.End); err != nil {
-                        return err
-                }
-        }
-        if s.Step != nil {
-                if _, err := io.WriteString(w, ":"); err != nil {
-                        return err
-                }
-                if err := emitExpr(w, s.Step); err != nil {
-                        return err
-                }
-        }
-        _, err := io.WriteString(w, "]")
-        return err
+	if err := emitExpr(w, s.Target); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, "["); err != nil {
+		return err
+	}
+	if s.Start != nil {
+		if err := emitExpr(w, s.Start); err != nil {
+			return err
+		}
+	}
+	if _, err := io.WriteString(w, ":"); err != nil {
+		return err
+	}
+	if s.End != nil {
+		if err := emitExpr(w, s.End); err != nil {
+			return err
+		}
+	}
+	if s.Step != nil {
+		if _, err := io.WriteString(w, ":"); err != nil {
+			return err
+		}
+		if err := emitExpr(w, s.Step); err != nil {
+			return err
+		}
+	}
+	_, err := io.WriteString(w, "]")
+	return err
 }
 
 type LambdaExpr struct {
@@ -399,6 +408,21 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 		}
 		_, err := io.WriteString(w, "\n")
 		return err
+	case *IndexAssignStmt:
+		if _, err := io.WriteString(w, indent+st.Name+"["); err != nil {
+			return err
+		}
+		if err := emitExpr(w, st.Index); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, "] = "); err != nil {
+			return err
+		}
+		if err := emitExpr(w, st.Expr); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, "\n")
+		return err
 	case *LetStmt:
 		if _, err := io.WriteString(w, indent+st.Name+" = "); err != nil {
 			return err
@@ -408,50 +432,50 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 		}
 		_, err := io.WriteString(w, "\n")
 		return err
-       case *VarStmt:
-               if _, err := io.WriteString(w, indent+st.Name+" = "); err != nil {
-                       return err
-               }
-               if err := emitExpr(w, st.Expr); err != nil {
-                       return err
-               }
-               _, err := io.WriteString(w, "\n")
-               return err
-       case *WhileStmt:
-               if _, err := io.WriteString(w, indent+"while "); err != nil {
-                       return err
-               }
-               if err := emitExpr(w, st.Cond); err != nil {
-                       return err
-               }
-               if _, err := io.WriteString(w, ":\n"); err != nil {
-                       return err
-               }
-               for _, bs := range st.Body {
-                       if err := emitStmtIndent(w, bs, indent+"    "); err != nil {
-                               return err
-                       }
-               }
-               return nil
-       case *ForStmt:
-               if _, err := io.WriteString(w, indent+"for "+st.Var+" in "); err != nil {
-                       return err
-               }
-               if err := emitExpr(w, st.Iter); err != nil {
-                       return err
-               }
-               if _, err := io.WriteString(w, ":\n"); err != nil {
-                       return err
-               }
-               for _, bs := range st.Body {
-                       if err := emitStmtIndent(w, bs, indent+"    "); err != nil {
-                               return err
-                       }
-               }
-               return nil
-       default:
-               return fmt.Errorf("unsupported stmt")
-       }
+	case *VarStmt:
+		if _, err := io.WriteString(w, indent+st.Name+" = "); err != nil {
+			return err
+		}
+		if err := emitExpr(w, st.Expr); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, "\n")
+		return err
+	case *WhileStmt:
+		if _, err := io.WriteString(w, indent+"while "); err != nil {
+			return err
+		}
+		if err := emitExpr(w, st.Cond); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, ":\n"); err != nil {
+			return err
+		}
+		for _, bs := range st.Body {
+			if err := emitStmtIndent(w, bs, indent+"    "); err != nil {
+				return err
+			}
+		}
+		return nil
+	case *ForStmt:
+		if _, err := io.WriteString(w, indent+"for "+st.Var+" in "); err != nil {
+			return err
+		}
+		if err := emitExpr(w, st.Iter); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, ":\n"); err != nil {
+			return err
+		}
+		for _, bs := range st.Body {
+			if err := emitStmtIndent(w, bs, indent+"    "); err != nil {
+				return err
+			}
+		}
+		return nil
+	default:
+		return fmt.Errorf("unsupported stmt")
+	}
 }
 
 func repoRoot() string {
@@ -515,48 +539,64 @@ func Emit(w io.Writer, p *Program) error {
 			if _, err := io.WriteString(w, "\n"); err != nil {
 				return err
 			}
-               case *VarStmt:
-                       if _, err := io.WriteString(w, st.Name+" = "); err != nil {
-                               return err
-                       }
-                       if err := emitExpr(w, st.Expr); err != nil {
-                               return err
-                       }
-                       if _, err := io.WriteString(w, "\n"); err != nil {
-                               return err
-                       }
-               case *WhileStmt:
-                       if _, err := io.WriteString(w, "while "); err != nil {
-                               return err
-                       }
-                       if err := emitExpr(w, st.Cond); err != nil {
-                               return err
-                       }
-                       if _, err := io.WriteString(w, ":\n"); err != nil {
-                               return err
-                       }
-                       for _, bs := range st.Body {
-                               if err := emitStmtIndent(w, bs, "    "); err != nil {
-                                       return err
-                               }
-                       }
-               case *ForStmt:
-                       if _, err := io.WriteString(w, "for "+st.Var+" in "); err != nil {
-                               return err
-                       }
-                       if err := emitExpr(w, st.Iter); err != nil {
-                               return err
-                       }
-                       if _, err := io.WriteString(w, ":\n"); err != nil {
-                               return err
-                       }
-                       for _, bs := range st.Body {
-                               if err := emitStmtIndent(w, bs, "    "); err != nil {
-                                       return err
-                               }
-                       }
-               case *AssignStmt:
+		case *VarStmt:
 			if _, err := io.WriteString(w, st.Name+" = "); err != nil {
+				return err
+			}
+			if err := emitExpr(w, st.Expr); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, "\n"); err != nil {
+				return err
+			}
+		case *WhileStmt:
+			if _, err := io.WriteString(w, "while "); err != nil {
+				return err
+			}
+			if err := emitExpr(w, st.Cond); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, ":\n"); err != nil {
+				return err
+			}
+			for _, bs := range st.Body {
+				if err := emitStmtIndent(w, bs, "    "); err != nil {
+					return err
+				}
+			}
+		case *ForStmt:
+			if _, err := io.WriteString(w, "for "+st.Var+" in "); err != nil {
+				return err
+			}
+			if err := emitExpr(w, st.Iter); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, ":\n"); err != nil {
+				return err
+			}
+			for _, bs := range st.Body {
+				if err := emitStmtIndent(w, bs, "    "); err != nil {
+					return err
+				}
+			}
+		case *AssignStmt:
+			if _, err := io.WriteString(w, st.Name+" = "); err != nil {
+				return err
+			}
+			if err := emitExpr(w, st.Expr); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, "\n"); err != nil {
+				return err
+			}
+		case *IndexAssignStmt:
+			if _, err := io.WriteString(w, st.Name+"["); err != nil {
+				return err
+			}
+			if err := emitExpr(w, st.Index); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, "] = "); err != nil {
 				return err
 			}
 			if err := emitExpr(w, st.Expr); err != nil {
@@ -624,46 +664,61 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				return nil, err
 			}
 			p.Stmts = append(p.Stmts, &LetStmt{Name: st.Let.Name, Expr: e})
-               case st.Var != nil:
-                       e, err := convertExpr(st.Var.Value)
-                       if err != nil {
-                               return nil, err
-                       }
-                       p.Stmts = append(p.Stmts, &VarStmt{Name: st.Var.Name, Expr: e})
-               case st.While != nil:
-                       cond, err := convertExpr(st.While.Cond)
-                       if err != nil {
-                               return nil, err
-                       }
-                       body, err := convertStmts(st.While.Body)
-                       if err != nil {
-                               return nil, err
-                       }
-                       p.Stmts = append(p.Stmts, &WhileStmt{Cond: cond, Body: body})
-               case st.For != nil:
-                       iter, err := convertExpr(st.For.Source)
-                       if err != nil {
-                               return nil, err
-                       }
-                       if st.For.RangeEnd != nil {
-                               end, err := convertExpr(st.For.RangeEnd)
-                               if err != nil {
-                                       return nil, err
-                               }
-                               iter = &CallExpr{Func: &Name{Name: "range"}, Args: []Expr{iter, end}}
-                       }
-                       body, err := convertStmts(st.For.Body)
-                       if err != nil {
-                               return nil, err
-                       }
-                       p.Stmts = append(p.Stmts, &ForStmt{Var: st.For.Name, Iter: iter, Body: body})
-               case st.Assign != nil:
+		case st.Var != nil:
+			e, err := convertExpr(st.Var.Value)
+			if err != nil {
+				return nil, err
+			}
+			p.Stmts = append(p.Stmts, &VarStmt{Name: st.Var.Name, Expr: e})
+		case st.Type != nil:
+			// ignore type declarations
+			continue
+		case st.While != nil:
+			cond, err := convertExpr(st.While.Cond)
+			if err != nil {
+				return nil, err
+			}
+			body, err := convertStmts(st.While.Body)
+			if err != nil {
+				return nil, err
+			}
+			p.Stmts = append(p.Stmts, &WhileStmt{Cond: cond, Body: body})
+		case st.For != nil:
+			iter, err := convertExpr(st.For.Source)
+			if err != nil {
+				return nil, err
+			}
+			if st.For.RangeEnd != nil {
+				end, err := convertExpr(st.For.RangeEnd)
+				if err != nil {
+					return nil, err
+				}
+				iter = &CallExpr{Func: &Name{Name: "range"}, Args: []Expr{iter, end}}
+			}
+			body, err := convertStmts(st.For.Body)
+			if err != nil {
+				return nil, err
+			}
+			p.Stmts = append(p.Stmts, &ForStmt{Var: st.For.Name, Iter: iter, Body: body})
+		case st.Assign != nil:
 			e, err := convertExpr(st.Assign.Value)
 			if err != nil {
 				return nil, err
 			}
-			// TODO: ignore index and field for now
-			p.Stmts = append(p.Stmts, &AssignStmt{Name: st.Assign.Name, Expr: e})
+			if len(st.Assign.Index) == 1 && len(st.Assign.Field) == 0 {
+				idx, err := convertExpr(st.Assign.Index[0].Start)
+				if err != nil {
+					return nil, err
+				}
+				p.Stmts = append(p.Stmts, &IndexAssignStmt{Name: st.Assign.Name, Index: idx, Expr: e})
+			} else if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 1 {
+				idx := &StringLit{Value: st.Assign.Field[0].Name}
+				p.Stmts = append(p.Stmts, &IndexAssignStmt{Name: st.Assign.Name, Index: idx, Expr: e})
+			} else if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
+				p.Stmts = append(p.Stmts, &AssignStmt{Name: st.Assign.Name, Expr: e})
+			} else {
+				return nil, fmt.Errorf("unsupported assignment")
+			}
 		case st.Return != nil:
 			var e Expr
 			if st.Return.Value != nil {
@@ -708,45 +763,60 @@ func convertStmts(list []*parser.Statement) ([]Stmt, error) {
 				return nil, err
 			}
 			out = append(out, &LetStmt{Name: s.Let.Name, Expr: e})
-               case s.Var != nil:
-                       e, err := convertExpr(s.Var.Value)
-                       if err != nil {
-                               return nil, err
-                       }
-                       out = append(out, &VarStmt{Name: s.Var.Name, Expr: e})
-               case s.While != nil:
-                       cond, err := convertExpr(s.While.Cond)
-                       if err != nil {
-                               return nil, err
-                       }
-                       body, err := convertStmts(s.While.Body)
-                       if err != nil {
-                               return nil, err
-                       }
-                       out = append(out, &WhileStmt{Cond: cond, Body: body})
-               case s.For != nil:
-                       iter, err := convertExpr(s.For.Source)
-                       if err != nil {
-                               return nil, err
-                       }
-                       if s.For.RangeEnd != nil {
-                               end, err := convertExpr(s.For.RangeEnd)
-                               if err != nil {
-                                       return nil, err
-                               }
-                               iter = &CallExpr{Func: &Name{Name: "range"}, Args: []Expr{iter, end}}
-                       }
-                       body, err := convertStmts(s.For.Body)
-                       if err != nil {
-                               return nil, err
-                       }
-                       out = append(out, &ForStmt{Var: s.For.Name, Iter: iter, Body: body})
-               case s.Assign != nil:
+		case s.Var != nil:
+			e, err := convertExpr(s.Var.Value)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, &VarStmt{Name: s.Var.Name, Expr: e})
+		case s.Type != nil:
+			continue
+		case s.While != nil:
+			cond, err := convertExpr(s.While.Cond)
+			if err != nil {
+				return nil, err
+			}
+			body, err := convertStmts(s.While.Body)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, &WhileStmt{Cond: cond, Body: body})
+		case s.For != nil:
+			iter, err := convertExpr(s.For.Source)
+			if err != nil {
+				return nil, err
+			}
+			if s.For.RangeEnd != nil {
+				end, err := convertExpr(s.For.RangeEnd)
+				if err != nil {
+					return nil, err
+				}
+				iter = &CallExpr{Func: &Name{Name: "range"}, Args: []Expr{iter, end}}
+			}
+			body, err := convertStmts(s.For.Body)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, &ForStmt{Var: s.For.Name, Iter: iter, Body: body})
+		case s.Assign != nil:
 			e, err := convertExpr(s.Assign.Value)
 			if err != nil {
 				return nil, err
 			}
-			out = append(out, &AssignStmt{Name: s.Assign.Name, Expr: e})
+			if len(s.Assign.Index) == 1 && len(s.Assign.Field) == 0 {
+				idx, err := convertExpr(s.Assign.Index[0].Start)
+				if err != nil {
+					return nil, err
+				}
+				out = append(out, &IndexAssignStmt{Name: s.Assign.Name, Index: idx, Expr: e})
+			} else if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 1 {
+				idx := &StringLit{Value: s.Assign.Field[0].Name}
+				out = append(out, &IndexAssignStmt{Name: s.Assign.Name, Index: idx, Expr: e})
+			} else if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
+				out = append(out, &AssignStmt{Name: s.Assign.Name, Expr: e})
+			} else {
+				return nil, fmt.Errorf("unsupported assignment")
+			}
 		case s.Return != nil:
 			var e Expr
 			if s.Return.Value != nil {
@@ -869,36 +939,36 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 	}
 	for _, op := range p.Ops {
 		switch {
-               case op.Index != nil:
-                       if op.Index.Colon != nil || op.Index.Colon2 != nil {
-                               var start, end, step Expr
-                               var err error
-                               if op.Index.Start != nil {
-                                       start, err = convertExpr(op.Index.Start)
-                                       if err != nil {
-                                               return nil, err
-                                       }
-                               }
-                               if op.Index.End != nil {
-                                       end, err = convertExpr(op.Index.End)
-                                       if err != nil {
-                                               return nil, err
-                                       }
-                               }
-                               if op.Index.Step != nil {
-                                       step, err = convertExpr(op.Index.Step)
-                                       if err != nil {
-                                               return nil, err
-                                       }
-                               }
-                               expr = &SliceExpr{Target: expr, Start: start, End: end, Step: step}
-                       } else {
-                               idx, err := convertExpr(op.Index.Start)
-                               if err != nil {
-                                       return nil, err
-                               }
-                               expr = &IndexExpr{Target: expr, Index: idx}
-                       }
+		case op.Index != nil:
+			if op.Index.Colon != nil || op.Index.Colon2 != nil {
+				var start, end, step Expr
+				var err error
+				if op.Index.Start != nil {
+					start, err = convertExpr(op.Index.Start)
+					if err != nil {
+						return nil, err
+					}
+				}
+				if op.Index.End != nil {
+					end, err = convertExpr(op.Index.End)
+					if err != nil {
+						return nil, err
+					}
+				}
+				if op.Index.Step != nil {
+					step, err = convertExpr(op.Index.Step)
+					if err != nil {
+						return nil, err
+					}
+				}
+				expr = &SliceExpr{Target: expr, Start: start, End: end, Step: step}
+			} else {
+				idx, err := convertExpr(op.Index.Start)
+				if err != nil {
+					return nil, err
+				}
+				expr = &IndexExpr{Target: expr, Index: idx}
+			}
 		case op.Field != nil:
 			expr = &FieldExpr{Target: expr, Name: op.Field.Name}
 		case op.Call != nil:
@@ -949,17 +1019,17 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 1 {
 				return &CallExpr{Func: &Name{Name: "len"}, Args: args}, nil
 			}
-               case "values":
-                       if len(args) == 1 {
-                               call := &CallExpr{Func: &FieldExpr{Target: args[0], Name: "values"}, Args: nil}
-                               return &CallExpr{Func: &Name{Name: "list"}, Args: []Expr{call}}, nil
-                       }
-               case "substring":
-                       if len(args) == 3 {
-                               return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
-                       }
-               }
-               return &CallExpr{Func: &Name{Name: p.Call.Func}, Args: args}, nil
+		case "values":
+			if len(args) == 1 {
+				call := &CallExpr{Func: &FieldExpr{Target: args[0], Name: "values"}, Args: nil}
+				return &CallExpr{Func: &Name{Name: "list"}, Args: []Expr{call}}, nil
+			}
+		case "substring":
+			if len(args) == 3 {
+				return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
+			}
+		}
+		return &CallExpr{Func: &Name{Name: p.Call.Func}, Args: args}, nil
 	case p.Selector != nil:
 		expr := Expr(&Name{Name: p.Selector.Root})
 		for _, t := range p.Selector.Tail {
@@ -991,6 +1061,18 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			keys = append(keys, ke)
+			values = append(values, ve)
+		}
+		return &DictLit{Keys: keys, Values: values}, nil
+	case p.Struct != nil:
+		var keys []Expr
+		var values []Expr
+		for _, f := range p.Struct.Fields {
+			keys = append(keys, &StringLit{Value: f.Name})
+			ve, err := convertExpr(f.Value)
+			if err != nil {
+				return nil, err
+			}
 			values = append(values, ve)
 		}
 		return &DictLit{Keys: keys, Values: values}, nil
@@ -1071,34 +1153,36 @@ func stmtNode(s Stmt) *ast.Node {
 		return &ast.Node{Kind: "expr_stmt", Children: []*ast.Node{exprNode(st.Expr)}}
 	case *LetStmt:
 		return &ast.Node{Kind: "let", Value: st.Name, Children: []*ast.Node{exprNode(st.Expr)}}
-       case *VarStmt:
-               return &ast.Node{Kind: "var", Value: st.Name, Children: []*ast.Node{exprNode(st.Expr)}}
-       case *AssignStmt:
-               return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{exprNode(st.Expr)}}
-       case *ReturnStmt:
-               child := &ast.Node{Kind: "return"}
-               if st.Expr != nil {
-                       child.Children = []*ast.Node{exprNode(st.Expr)}
-               }
-               return child
-       case *WhileStmt:
-               n := &ast.Node{Kind: "while"}
-               n.Children = append(n.Children, exprNode(st.Cond))
-               for _, b := range st.Body {
-                       n.Children = append(n.Children, stmtNode(b))
-               }
-               return n
-       case *ForStmt:
-               n := &ast.Node{Kind: "for", Value: st.Var}
-               n.Children = append(n.Children, exprNode(st.Iter))
-               for _, b := range st.Body {
-                       n.Children = append(n.Children, stmtNode(b))
-               }
-               return n
-       case *FuncDef:
-               n := &ast.Node{Kind: "func", Value: st.Name}
-               for _, p := range st.Params {
-                       n.Children = append(n.Children, &ast.Node{Kind: "param", Value: p})
+	case *VarStmt:
+		return &ast.Node{Kind: "var", Value: st.Name, Children: []*ast.Node{exprNode(st.Expr)}}
+	case *AssignStmt:
+		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{exprNode(st.Expr)}}
+	case *IndexAssignStmt:
+		return &ast.Node{Kind: "index_assign", Value: st.Name, Children: []*ast.Node{exprNode(st.Index), exprNode(st.Expr)}}
+	case *ReturnStmt:
+		child := &ast.Node{Kind: "return"}
+		if st.Expr != nil {
+			child.Children = []*ast.Node{exprNode(st.Expr)}
+		}
+		return child
+	case *WhileStmt:
+		n := &ast.Node{Kind: "while"}
+		n.Children = append(n.Children, exprNode(st.Cond))
+		for _, b := range st.Body {
+			n.Children = append(n.Children, stmtNode(b))
+		}
+		return n
+	case *ForStmt:
+		n := &ast.Node{Kind: "for", Value: st.Var}
+		n.Children = append(n.Children, exprNode(st.Iter))
+		for _, b := range st.Body {
+			n.Children = append(n.Children, stmtNode(b))
+		}
+		return n
+	case *FuncDef:
+		n := &ast.Node{Kind: "func", Value: st.Name}
+		for _, p := range st.Params {
+			n.Children = append(n.Children, &ast.Node{Kind: "param", Value: p})
 		}
 		for _, b := range st.Body {
 			n.Children = append(n.Children, stmtNode(b))
@@ -1147,27 +1231,27 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "bin", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
 	case *UnaryExpr:
 		return &ast.Node{Kind: "unary", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Expr)}}
-       case *IndexExpr:
-               return &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(ex.Target), exprNode(ex.Index)}}
-       case *SliceExpr:
-               n := &ast.Node{Kind: "slice"}
-               n.Children = append(n.Children, exprNode(ex.Target))
-               if ex.Start != nil {
-                       n.Children = append(n.Children, exprNode(ex.Start))
-               } else {
-                       n.Children = append(n.Children, &ast.Node{Kind: "none"})
-               }
-               if ex.End != nil {
-                       n.Children = append(n.Children, exprNode(ex.End))
-               } else {
-                       n.Children = append(n.Children, &ast.Node{Kind: "none"})
-               }
-               if ex.Step != nil {
-                       n.Children = append(n.Children, exprNode(ex.Step))
-               }
-               return n
-       case *FieldExpr:
-               return &ast.Node{Kind: "field", Value: ex.Name, Children: []*ast.Node{exprNode(ex.Target)}}
+	case *IndexExpr:
+		return &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(ex.Target), exprNode(ex.Index)}}
+	case *SliceExpr:
+		n := &ast.Node{Kind: "slice"}
+		n.Children = append(n.Children, exprNode(ex.Target))
+		if ex.Start != nil {
+			n.Children = append(n.Children, exprNode(ex.Start))
+		} else {
+			n.Children = append(n.Children, &ast.Node{Kind: "none"})
+		}
+		if ex.End != nil {
+			n.Children = append(n.Children, exprNode(ex.End))
+		} else {
+			n.Children = append(n.Children, &ast.Node{Kind: "none"})
+		}
+		if ex.Step != nil {
+			n.Children = append(n.Children, exprNode(ex.Step))
+		}
+		return n
+	case *FieldExpr:
+		return &ast.Node{Kind: "field", Value: ex.Name, Children: []*ast.Node{exprNode(ex.Target)}}
 	case *LambdaExpr:
 		n := &ast.Node{Kind: "lambda"}
 		for _, p := range ex.Params {

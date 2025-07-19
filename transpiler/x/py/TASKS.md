@@ -37,3 +37,8 @@
 - Implemented slice expressions and substring builtin.
 - Added support for `while` and `for` loops.
 - Enabled transpiler tests for `slice`, `string_prefix_slice`, `substring_builtin`, `while_loop`, `for_loop` and `for_list_collection`.
+
+## Recent Enhancements (2025-07-19 19:43 +07)
+- Added index assignment for lists and maps.
+- Enabled transpiler tests for `list_assign` and `map_assign`.
+
