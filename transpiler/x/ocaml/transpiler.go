@@ -51,6 +51,56 @@ type Expr interface {
 	emitPrint(io.Writer)
 }
 
+// UnaryMinus represents negation of an integer expression.
+type UnaryMinus struct{ Expr Expr }
+
+func (u *UnaryMinus) emit(w io.Writer) {
+	io.WriteString(w, "(-")
+	u.Expr.emit(w)
+	io.WriteString(w, ")")
+}
+
+func (u *UnaryMinus) emitPrint(w io.Writer) {
+	io.WriteString(w, "string_of_int (-")
+	u.Expr.emit(w)
+	io.WriteString(w, ")")
+}
+
+// IfExpr represents a conditional expression.
+type IfExpr struct {
+	Cond Expr
+	Then Expr
+	Else Expr
+	Typ  string
+}
+
+func (i *IfExpr) emit(w io.Writer) {
+	io.WriteString(w, "if ")
+	i.Cond.emit(w)
+	io.WriteString(w, " then ")
+	i.Then.emit(w)
+	io.WriteString(w, " else ")
+	i.Else.emit(w)
+}
+
+func (i *IfExpr) emitPrint(w io.Writer) {
+	switch i.Typ {
+	case "int":
+		io.WriteString(w, "string_of_int ")
+		i.emit(w)
+	case "bool":
+		io.WriteString(w, "string_of_int (if ")
+		i.Cond.emit(w)
+		io.WriteString(w, " then (if ")
+		i.Then.emit(w)
+		io.WriteString(w, " then 1 else 0) else (if ")
+		i.Else.emit(w)
+		io.WriteString(w, " then 1 else 0))")
+	default:
+		i.emit(w)
+	}
+}
+
 // Name represents a variable reference.
 type Name struct {
 	Ident string
@@ -276,6 +326,16 @@ func convertUnary(u *parser.Unary, env *types.Env, vars map[string]string) (Expr
 		return nil, "", fmt.Errorf("nil unary")
 	}
 	if len(u.Ops) > 0 {
+		if len(u.Ops) == 1 && u.Ops[0] == "-" {
+			expr, typ, err := convertPostfix(u.Value, env, vars)
+			if err != nil {
+				return nil, "", err
+			}
+			if typ != "int" {
+				return nil, "", fmt.Errorf("unary - only for ints")
+			}
+			return &UnaryMinus{Expr: expr}, "int", nil
+		}
 		return nil, "", fmt.Errorf("unary ops not supported")
 	}
 	return convertPostfix(u.Value, env, vars)
@@ -297,6 +357,8 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]string) (
 		return convertLiteral(p.Lit)
 	case p.Group != nil:
 		return convertExpr(p.Group, env, vars)
+	case p.If != nil:
+		return convertIf(p.If, env, vars)
 	case p.Selector != nil:
 		if len(p.Selector.Tail) == 0 {
 			typ := vars[p.Selector.Root]
@@ -317,4 +379,34 @@ func convertLiteral(l *parser.Literal) (Expr, string, error) {
 		return &StringLit{Value: *l.Str}, "string", nil
 	}
 	return nil, "", fmt.Errorf("unsupported literal")
+}
+
+func convertIf(ifx *parser.IfExpr, env *types.Env, vars map[string]string) (Expr, string, error) {
+	cond, _, err := convertExpr(ifx.Cond, env, vars)
+	if err != nil {
+		return nil, "", err
+	}
+	thenExpr, thenTyp, err := convertExpr(ifx.Then, env, vars)
+	if err != nil {
+		return nil, "", err
+	}
+	var elseExpr Expr
+	var elseTyp string
+	if ifx.ElseIf != nil {
+		elseExpr, elseTyp, err = convertIf(ifx.ElseIf, env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+	} else if ifx.Else != nil {
+		elseExpr, elseTyp, err = convertExpr(ifx.Else, env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+	} else {
+		return nil, "", fmt.Errorf("if expression missing else")
+	}
+	if thenTyp != elseTyp {
+		return nil, "", fmt.Errorf("if branches have different types")
+	}
+	return &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr, Typ: thenTyp}, thenTyp, nil
 }
