@@ -1,5 +1,10 @@
 # C++ Transpiler Tasks
 
+## Recent Enhancements (2025-07-19 19:50 +0700)
+- Added iteration over list collections in `for` loops.
+- Generated golden test for `for_list_collection`.
+- Updated README progress to 25/100 programs.
+
 ## Recent Enhancements (2025-07-19 19:35 +0700)
 - Added support for list literals and range-based loops over collections.
 - Implemented `break` and `continue` statements.
