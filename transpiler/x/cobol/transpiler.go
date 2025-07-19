@@ -215,7 +215,21 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	}
-	b.Left.emitExpr(w)
+	if b.Op == "%" {
+		io.WriteString(w, "FUNCTION MOD(")
+		b.Left.emitExpr(w)
+		io.WriteString(w, ", ")
+		b.Right.emitExpr(w)
+		io.WriteString(w, ")")
+		return
+	}
+	if l, ok := b.Left.(*BinaryExpr); ok && binaryPrec(l.Op) < binaryPrec(b.Op) {
+		io.WriteString(w, "(")
+		l.emitExpr(w)
+		io.WriteString(w, ")")
+	} else {
+		b.Left.emitExpr(w)
+	}
 	op := b.Op
 	switch b.Op {
 	case "==":
@@ -224,7 +238,24 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 		op = "<>"
 	}
 	fmt.Fprintf(w, " %s ", op)
-	b.Right.emitExpr(w)
+	if r, ok := b.Right.(*BinaryExpr); ok && binaryPrec(r.Op) < binaryPrec(b.Op) {
+		io.WriteString(w, "(")
+		r.emitExpr(w)
+		io.WriteString(w, ")")
+	} else {
+		b.Right.emitExpr(w)
+	}
+}
+
+func binaryPrec(op string) int {
+	switch op {
+	case "*", "/", "%":
+		return 2
+	case "+", "-":
+		return 1
+	default:
+		return 0
+	}
 }
 
 func isStringLit(e Expr) bool {
@@ -313,13 +344,19 @@ func (d *DisplayStmt) emit(w io.Writer) {
 		return
 	}
 	if !d.Temp && isDirectNumber(d.Expr) {
+		if il, ok := d.Expr.(*IntLit); ok {
+			fmt.Fprintf(w, "DISPLAY %d", il.Value)
+			return
+		}
+		if ue, ok := d.Expr.(*UnaryExpr); ok && ue.Op == "-" {
+			if il, ok := ue.Expr.(*IntLit); ok {
+				fmt.Fprintf(w, "DISPLAY -%d", il.Value)
+				return
+			}
+		}
 		if vr, ok := d.Expr.(*VarRef); ok {
 			io.WriteString(w, "DISPLAY ")
 			vr.emitExpr(w)
-			return
-		}
-		if il, ok := d.Expr.(*IntLit); ok {
-			fmt.Fprintf(w, "DISPLAY %d", il.Value)
 			return
 		}
 		io.WriteString(w, "MOVE ")
@@ -458,7 +495,7 @@ func Emit(p *Program) []byte {
 			if v.Val != nil {
 				buf.WriteString(" VALUE ")
 				v.Val.emitExpr(&buf)
-			} else if v.Pic == "PIC 9(9)" {
+			} else if strings.HasPrefix(v.Pic, "PIC 9") {
 				buf.WriteString(" VALUE 0")
 			}
 			buf.WriteString(".\n")
@@ -773,6 +810,9 @@ func convertIfExprAssign(name string, ie *parser.IfExpr, env *types.Env) (Stmt, 
 }
 
 func literalExpr(e *parser.Expr) Expr {
+	if v, ok := intConstExpr(e); ok {
+		return &IntLit{Value: v}
+	}
 	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
 		return nil
 	}
@@ -798,22 +838,122 @@ func literalExpr(e *parser.Expr) Expr {
 	}
 }
 
+func intConstExpr(e *parser.Expr) (int, bool) {
+	if e == nil || e.Binary == nil {
+		return 0, false
+	}
+	val, ok := intConstUnary(e.Binary.Left)
+	if !ok {
+		return 0, false
+	}
+	cur := val
+	for _, op := range e.Binary.Right {
+		r, ok := intConstPostfix(op.Right)
+		if !ok {
+			return 0, false
+		}
+		switch op.Op {
+		case "+":
+			cur += r
+		case "-":
+			cur -= r
+		case "*":
+			cur *= r
+		case "/":
+			if r == 0 {
+				return 0, false
+			}
+			cur /= r
+		case "%":
+			if r == 0 {
+				return 0, false
+			}
+			cur %= r
+		default:
+			return 0, false
+		}
+	}
+	return cur, true
+}
+
+func intConstUnary(u *parser.Unary) (int, bool) {
+	if u == nil {
+		return 0, false
+	}
+	v, ok := intConstPostfix(u.Value)
+	if !ok {
+		return 0, false
+	}
+	for i := len(u.Ops) - 1; i >= 0; i-- {
+		if u.Ops[i] != "-" {
+			return 0, false
+		}
+		v = -v
+	}
+	return v, true
+}
+
+func intConstPostfix(pf *parser.PostfixExpr) (int, bool) {
+	if pf == nil || len(pf.Ops) != 0 || pf.Target == nil {
+		return 0, false
+	}
+	lit := pf.Target.Lit
+	if lit == nil || lit.Int == nil {
+		return 0, false
+	}
+	return int(*lit.Int), true
+}
+
 func convertExpr(e *parser.Expr, env *types.Env) (Expr, error) {
 	if e == nil || e.Binary == nil {
 		return nil, fmt.Errorf("unsupported expr")
 	}
-	cur, err := convertUnary(e.Binary.Left, env)
+	first, err := convertUnary(e.Binary.Left, env)
 	if err != nil {
 		return nil, err
 	}
-	for _, op := range e.Binary.Right {
-		r, err := convertPostfix(op.Right, env)
+	operands := []Expr{first}
+	ops := make([]*parser.BinaryOp, len(e.Binary.Right))
+	for i, op := range e.Binary.Right {
+		ex, err := convertPostfix(op.Right, env)
 		if err != nil {
 			return nil, err
 		}
-		cur = &BinaryExpr{Op: op.Op, Left: cur, Right: r}
+		operands = append(operands, ex)
+		ops[i] = op
 	}
-	return cur, nil
+
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!="},
+	}
+
+	contains := func(list []string, op string) bool {
+		for _, s := range list {
+			if s == op {
+				return true
+			}
+		}
+		return false
+	}
+
+	for _, level := range levels {
+		for i := 0; i < len(ops); {
+			if contains(level, ops[i].Op) {
+				left := operands[i]
+				right := operands[i+1]
+				newExpr := &BinaryExpr{Op: ops[i].Op, Left: left, Right: right}
+				operands[i] = newExpr
+				operands = append(operands[:i+1], operands[i+2:]...)
+				ops = append(ops[:i], ops[i+1:]...)
+			} else {
+				i++
+			}
+		}
+	}
+	return operands[0], nil
 }
 
 func convertUnary(u *parser.Unary, env *types.Env) (Expr, error) {
