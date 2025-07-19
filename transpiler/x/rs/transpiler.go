@@ -66,6 +66,14 @@ func (b *BoolLit) emit(w io.Writer) {
 	}
 }
 
+// LenExpr represents a call to the `len` builtin.
+type LenExpr struct{ Arg Expr }
+
+func (l *LenExpr) emit(w io.Writer) {
+	l.Arg.emit(w)
+	io.WriteString(w, ".len()")
+}
+
 type NameRef struct{ Name string }
 
 func (n *NameRef) emit(w io.Writer) { io.WriteString(w, n.Name) }
@@ -295,19 +303,55 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 	if e == nil || e.Binary == nil {
 		return nil, fmt.Errorf("unsupported expression")
 	}
-	left, err := compileUnary(e.Binary.Left)
+	first, err := compileUnary(e.Binary.Left)
 	if err != nil {
 		return nil, err
 	}
-	expr := left
-	for _, op := range e.Binary.Right {
+	operands := []Expr{first}
+	ops := make([]string, len(e.Binary.Right))
+	for i, op := range e.Binary.Right {
 		right, err := compilePostfix(op.Right)
 		if err != nil {
 			return nil, err
 		}
-		expr = &BinaryExpr{Left: expr, Op: op.Op, Right: right}
+		operands = append(operands, right)
+		ops[i] = op.Op
 	}
-	return expr, nil
+
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+	}
+
+	contains := func(list []string, op string) bool {
+		for _, s := range list {
+			if s == op {
+				return true
+			}
+		}
+		return false
+	}
+
+	for _, level := range levels {
+		for i := 0; i < len(ops); {
+			if contains(level, ops[i]) {
+				left := operands[i]
+				right := operands[i+1]
+				expr := &BinaryExpr{Left: left, Op: ops[i], Right: right}
+				operands[i] = expr
+				operands = append(operands[:i+1], operands[i+2:]...)
+				ops = append(ops[:i], ops[i+1:]...)
+			} else {
+				i++
+			}
+		}
+	}
+
+	return operands[0], nil
 }
 
 func compileUnary(u *parser.Unary) (Expr, error) {
@@ -351,6 +395,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					args = append([]Expr{&StringLit{Value: "{}"}}, args...)
 				}
 			}
+			return &CallExpr{Func: name, Args: args}, nil
+		}
+		if name == "len" && len(args) == 1 {
+			return &LenExpr{Arg: args[0]}, nil
 		}
 		return &CallExpr{Func: name, Args: args}, nil
 	case p.Lit != nil:

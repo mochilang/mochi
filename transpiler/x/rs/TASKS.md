@@ -1,5 +1,11 @@
 # Rust Transpiler Tasks
 
+## Recent Enhancements (2025-07-19 07:04 +0000)
+- Implemented operator precedence for binary expressions.
+- Added support for the `len` builtin.
+- Generated golden tests for `binary_precedence` and `len_string`.
+- Updated README checklist with progress summary.
+
 ## Recent Enhancements (2025-07-19 06:29 +0000)
 - Added support for basic math operations and string handling.
 - Generated golden tests for `math_ops`, `string_compare` and `string_concat`.
