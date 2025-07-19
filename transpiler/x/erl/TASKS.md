@@ -1,6 +1,7 @@
 # Erlang Transpiler Progress
 
 ## Recent Updates
+- 2025-07-19 07:49 +0000 - Added `in` operator for lists. Generated golden files for in_operator and membership.
 - 2025-07-19 13:31 +0700 - Added built-ins `append`, `avg`, `count`, `sum`, `min` and `max`. Generated golden files for append_builtin, avg_builtin, count_builtin, sum_builtin and min_max_builtin.
 - 2025-07-19 12:35 +0700 - Added list literals and `if` expressions. Generated golden files for len_builtin, let_and_print, string_concat, if_then_else and if_then_else_nested.
 - 2025-07-19 12:23 +0700 - Added support for `len` and `str` built-ins plus unary negation. Generated golden files for len_string, str_builtin, string_compare and unary_neg.
