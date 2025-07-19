@@ -1,0 +1,63 @@
+// Mochi translation of Rosetta "Deconvolution/1D" task - variant 3
+// Ported from tests/rosetta/x/Go/deconvolution-1d-3.go
+
+fun indexOf(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if substring(s, i, i+1) == ch { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun fmt1(x: float): string {
+  var y = ((x * 10.0) + 0.5) as int as float / 10.0
+  var s = str(y)
+  let dot = indexOf(s, ".")
+  if dot == -1 { s = s + ".0" }
+  return s
+}
+
+fun printColumnMatrix(xs: list<float>) {
+  if len(xs) == 0 { return }
+  print("\u23A1" + fmt1(xs[0]) + "\u23A4")
+  var i = 1
+  while i < len(xs) - 1 {
+    print("\u23A2" + fmt1(xs[i]) + "\u23A5")
+    i = i + 1
+  }
+  print("\u23A3 " + fmt1(xs[len(xs)-1]) + "\u23A6")
+}
+
+fun deconv(g: list<float>, f: list<float>): list<float> {
+  var h: list<float> = []
+  var n = 0
+  let hn = len(g) - len(f) + 1
+  while n < hn {
+    var v = g[n]
+    var lower = 0
+    if n >= len(f) { lower = n - len(f) + 1 }
+    var i = lower
+    while i < n {
+      v = v - h[i] * f[n - i]
+      i = i + 1
+    }
+    v = v / f[0]
+    h = append(h, v)
+    n = n + 1
+  }
+  return h
+}
+
+fun main() {
+  let h = [-8.0, -9.0, -3.0, -1.0, -6.0, 7.0]
+  let f = [-3.0, -6.0, -1.0, 8.0, -6.0, 3.0, -1.0, -9.0, -9.0, 3.0, -2.0, 5.0, 2.0, -2.0, -7.0, -1.0]
+  let g = [24.0, 75.0, 71.0, -34.0, 3.0, 22.0, -45.0, 23.0, 245.0, 25.0, 52.0, 25.0, -67.0, -96.0, 96.0, 31.0, 55.0, 36.0, 29.0, -43.0, -7.0]
+  print("deconv(g, f) =")
+  printColumnMatrix(deconv(g, f))
+  print("")
+  print("deconv(g, h) =")
+  printColumnMatrix(deconv(g, h))
+}
+
+main()
