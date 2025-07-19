@@ -89,6 +89,7 @@ type ExprStmt struct {
 type VarDecl struct {
 	Name  string
 	Expr  Expr
+	Type  string
 	Const bool
 }
 
@@ -522,6 +523,10 @@ func (v *VarDecl) emit(w io.Writer) {
 		io.WriteString(w, "let ")
 	}
 	io.WriteString(w, v.Name)
+	if v.Type != "" {
+		io.WriteString(w, ": ")
+		io.WriteString(w, v.Type)
+	}
 	if v.Expr != nil {
 		io.WriteString(w, " = ")
 		v.Expr.emit(w)
@@ -689,36 +694,23 @@ func emitStmt(w *indentWriter, s Stmt, level int) {
 	switch st := s.(type) {
 	case *ExprStmt:
 		io.WriteString(w, pad)
-		st.Expr.emit(w)
+		st.emit(w)
 		io.WriteString(w, "\n")
 	case *VarDecl:
 		io.WriteString(w, pad)
-		io.WriteString(w, "let ")
-		io.WriteString(w, st.Name)
-		if st.Expr != nil {
-			io.WriteString(w, " = ")
-			st.Expr.emit(w)
-		}
+		st.emit(w)
 		io.WriteString(w, "\n")
 	case *AssignStmt:
 		io.WriteString(w, pad)
-		io.WriteString(w, st.Name)
-		io.WriteString(w, " = ")
-		st.Expr.emit(w)
+		st.emit(w)
 		io.WriteString(w, "\n")
 	case *IndexAssignStmt:
 		io.WriteString(w, pad)
-		st.Target.emit(w)
-		io.WriteString(w, " = ")
-		st.Value.emit(w)
+		st.emit(w)
 		io.WriteString(w, "\n")
 	case *ReturnStmt:
 		io.WriteString(w, pad)
-		io.WriteString(w, "return")
-		if st.Value != nil {
-			io.WriteString(w, " ")
-			st.Value.emit(w)
-		}
+		st.emit(w)
 		io.WriteString(w, "\n")
 	case *BreakStmt:
 		io.WriteString(w, pad)
@@ -867,7 +859,8 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			e = zeroValue(s.Let.Type, transpileEnv)
 		}
 		mutable, _ := transpileEnv.IsMutable(s.Let.Name)
-		return &VarDecl{Name: s.Let.Name, Expr: e, Const: !mutable}, nil
+		t, _ := transpileEnv.GetVar(s.Let.Name)
+		return &VarDecl{Name: s.Let.Name, Expr: e, Const: !mutable, Type: tsType(t)}, nil
 	case s.Var != nil:
 		var e Expr
 		var err error
@@ -880,7 +873,8 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			e = zeroValue(s.Var.Type, transpileEnv)
 		}
 		mutable, _ := transpileEnv.IsMutable(s.Var.Name)
-		return &VarDecl{Name: s.Var.Name, Expr: e, Const: !mutable}, nil
+		t, _ := transpileEnv.GetVar(s.Var.Name)
+		return &VarDecl{Name: s.Var.Name, Expr: e, Const: !mutable, Type: tsType(t)}, nil
 	case s.Assign != nil:
 		val, err := convertExpr(s.Assign.Value)
 		if err != nil {
@@ -1442,6 +1436,23 @@ func zeroValue(t *parser.TypeRef, env *types.Env) Expr {
 		return &MapLit{}
 	default:
 		return nil
+	}
+}
+
+func tsType(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType, types.Int64Type, types.FloatType, types.BigIntType, types.BigRatType:
+		return "number"
+	case types.BoolType:
+		return "boolean"
+	case types.StringType:
+		return "string"
+	case types.ListType:
+		return tsType(tt.Elem) + "[]"
+	case types.MapType:
+		return "Record<string, " + tsType(tt.Value) + ">"
+	default:
+		return "any"
 	}
 }
 
