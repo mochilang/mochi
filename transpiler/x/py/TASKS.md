@@ -48,3 +48,7 @@
 - Added default value handling for typed `let` and `var` declarations.
 - Implemented nested index assignment for lists.
 - Generated golden tests for `typed_let`, `typed_var` and `list_nested_assign`.
+
+## Recent Enhancements (2025-07-19 12:55 +0000)
+- Added support for list set operations `union`, `union_all`, `except` and `intersect`.
+- Generated golden test for `list_set_ops` and updated README checklist.

@@ -323,27 +323,90 @@ type BinaryExpr struct {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) error {
-	if _, err := io.WriteString(w, "("); err != nil {
+	switch b.Op {
+	case "union":
+		if _, err := io.WriteString(w, "list(set("); err != nil {
+			return err
+		}
+		if err := emitExpr(w, b.Left); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, ") | set("); err != nil {
+			return err
+		}
+		if err := emitExpr(w, b.Right); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, "))")
+		return err
+	case "union_all":
+		if _, err := io.WriteString(w, "("); err != nil {
+			return err
+		}
+		if err := emitExpr(w, b.Left); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, " + "); err != nil {
+			return err
+		}
+		if err := emitExpr(w, b.Right); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, ")")
+		return err
+	case "except":
+		if _, err := io.WriteString(w, "[x for x in "); err != nil {
+			return err
+		}
+		if err := emitExpr(w, b.Left); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, " if x not in "); err != nil {
+			return err
+		}
+		if err := emitExpr(w, b.Right); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, "]")
+		return err
+	case "intersect":
+		if _, err := io.WriteString(w, "[x for x in "); err != nil {
+			return err
+		}
+		if err := emitExpr(w, b.Left); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, " if x in "); err != nil {
+			return err
+		}
+		if err := emitExpr(w, b.Right); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, "]")
+		return err
+	default:
+		if _, err := io.WriteString(w, "("); err != nil {
+			return err
+		}
+		if err := emitExpr(w, b.Left); err != nil {
+			return err
+		}
+		op := b.Op
+		switch op {
+		case "&&":
+			op = "and"
+		case "||":
+			op = "or"
+		}
+		if _, err := io.WriteString(w, " "+op+" "); err != nil {
+			return err
+		}
+		if err := emitExpr(w, b.Right); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, ")")
 		return err
 	}
-	if err := emitExpr(w, b.Left); err != nil {
-		return err
-	}
-	op := b.Op
-	switch op {
-	case "&&":
-		op = "and"
-	case "||":
-		op = "or"
-	}
-	if _, err := io.WriteString(w, " "+op+" "); err != nil {
-		return err
-	}
-	if err := emitExpr(w, b.Right); err != nil {
-		return err
-	}
-	_, err := io.WriteString(w, ")")
-	return err
 }
 
 type UnaryExpr struct {

@@ -271,3 +271,7 @@ func TestTranspile_TypedVar(t *testing.T) {
 func TestTranspile_ListNestedAssign(t *testing.T) {
 	runCase(t, "list_nested_assign")
 }
+
+func TestTranspile_ListSetOps(t *testing.T) {
+	runCase(t, "list_set_ops")
+}
