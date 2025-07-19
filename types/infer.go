@@ -1095,12 +1095,22 @@ func FieldType(t Type, path []string) Type {
 				return AnyType{}
 			}
 		case MapType:
-			t = tt.Value
+			if p == "length" || p == "size" {
+				t = IntType{}
+			} else {
+				t = tt.Value
+			}
 		case ListType:
-			if p == "size" {
+			if p == "size" || p == "length" {
 				t = IntType{}
 			} else {
 				t = tt.Elem
+			}
+		case StringType:
+			if p == "length" || p == "size" {
+				t = IntType{}
+			} else {
+				return AnyType{}
 			}
 		case GroupType:
 			if p == "key" {

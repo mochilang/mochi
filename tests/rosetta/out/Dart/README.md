@@ -2,23 +2,24 @@
 
 This directory holds Dart code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
-Compiled programs: 35/264
+Compiled programs: 3/278
 
 Checklist:
-- [x] 100-doors-2
-- [x] 100-doors-3
-- [x] 100-doors
-- [x] 100-prisoners
+- [ ] 100-doors-2
+- [ ] 100-doors-3
+- [ ] 100-doors
+- [ ] 100-prisoners
 - [ ] 15-puzzle-game
 - [ ] 15-puzzle-solver
 - [ ] 2048
 - [ ] 21-game
 - [ ] 24-game-solve
 - [ ] 24-game
-- [x] 4-rings-or-4-squares-puzzle
-- [ ] 9-billion-names-of-god-the-integer
-- [ ] 99-bottles-of-beer-2
-- [x] 99-bottles-of-beer
+- [ ] 4-rings-or-4-squares-puzzle
+- [x] 9-billion-names-of-god-the-integer
+- [x] 99-bottles-of-beer-2
+- [ ] 99-bottles-of-beer
+- [ ] DNS-query
 - [ ] a+b
 - [ ] abbreviations-automatic
 - [ ] abbreviations-easy
@@ -26,20 +27,20 @@ Checklist:
 - [ ] abc-problem
 - [ ] abelian-sandpile-model-identity
 - [ ] abelian-sandpile-model
-- [x] abstract-type
+- [ ] abstract-type
 - [ ] abundant-deficient-and-perfect-number-classifications
 - [ ] abundant-odd-numbers
-- [ ] accumulator-factory
+- [x] accumulator-factory
 - [ ] achilles-numbers
- - [x] ackermann-function-2
+- [ ] ackermann-function-2
 - [ ] ackermann-function-3
-- [x] ackermann-function
+- [ ] ackermann-function
 - [ ] active-directory-connect
 - [ ] active-directory-search-for-a-user
 - [ ] active-object
 - [ ] add-a-variable-to-a-class-instance-at-runtime
-- [x] additive-primes
-- [x] address-of-a-variable
+- [ ] additive-primes
+- [ ] address-of-a-variable
 - [ ] adfgvx-cipher
 - [ ] aks-test-for-primes
 - [ ] algebraic-data-types
@@ -60,7 +61,7 @@ Checklist:
 - [ ] anonymous-recursion-2
 - [ ] anonymous-recursion
 - [ ] anti-primes
-- [x] append-a-record-to-the-end-of-a-text-file
+- [ ] append-a-record-to-the-end-of-a-text-file
 - [ ] apply-a-callback-to-an-array-1
 - [ ] apply-a-callback-to-an-array-2
 - [ ] apply-a-digital-filter-direct-form-ii-transposed-
@@ -78,11 +79,11 @@ Checklist:
 - [ ] arithmetic-numbers
 - [ ] arithmetic-rational
 - [ ] array-concatenation
-- [x] array-length
+- [ ] array-length
 - [ ] arrays
 - [ ] ascending-primes
-- [x] ascii-art-diagram-converter
-- [x] assertions
+- [ ] ascii-art-diagram-converter
+- [ ] assertions
 - [ ] associative-array-creation
 - [ ] associative-array-iteration
 - [ ] associative-array-merging
@@ -100,7 +101,7 @@ Checklist:
 - [ ] averages-simple-moving-average
 - [ ] avl-tree
 - [ ] b-zier-curves-intersections
-- [x] babbage-problem
+- [ ] babbage-problem
 - [ ] babylonian-spiral
 - [ ] balanced-brackets
 - [ ] balanced-ternary
@@ -139,7 +140,7 @@ Checklist:
 - [ ] box-the-compass
 - [ ] boyer-moore-string-search
 - [ ] brazilian-numbers
-- [x] break-oo-privacy
+- [ ] break-oo-privacy
 - [ ] brilliant-numbers
 - [ ] brownian-tree
 - [ ] bulls-and-cows-player
@@ -152,11 +153,11 @@ Checklist:
 - [ ] calendar---for-real-programmers-2
 - [ ] calendar
 - [ ] calkin-wilf-sequence
-- [x] call-a-foreign-language-function
+- [ ] call-a-foreign-language-function
 - [ ] call-a-function-1
 - [ ] call-a-function-10
-- [x] call-a-function-11
-- [x] call-a-function-12
+- [ ] call-a-function-11
+- [ ] call-a-function-12
 - [ ] call-a-function-2
 - [ ] call-a-function-3
 - [ ] call-a-function-4
@@ -178,7 +179,7 @@ Checklist:
 - [ ] cartesian-product-of-two-or-more-lists-2
 - [ ] cartesian-product-of-two-or-more-lists-3
 - [ ] cartesian-product-of-two-or-more-lists-4
-- [x] case-sensitivity-of-identifiers
+- [ ] case-sensitivity-of-identifiers
 - [ ] casting-out-nines
 - [ ] catalan-numbers-1
 - [ ] catalan-numbers-2
@@ -187,25 +188,25 @@ Checklist:
 - [ ] catmull-clark-subdivision-surface
 - [ ] chaocipher
 - [ ] chaos-game
-- [x] character-codes-1
-- [x] character-codes-2
-- [x] character-codes-3
-- [x] character-codes-4
-- [x] character-codes-5
-- [x] chat-server
+- [ ] character-codes-1
+- [ ] character-codes-2
+- [ ] character-codes-3
+- [ ] character-codes-4
+- [ ] character-codes-5
+- [ ] chat-server
 - [ ] check-machin-like-formulas
-- [x] check-that-file-exists
-- [x] checkpoint-synchronization-1
+- [ ] check-that-file-exists
+- [ ] checkpoint-synchronization-1
 - [ ] checkpoint-synchronization-2
 - [ ] checkpoint-synchronization-3
-- [x] checkpoint-synchronization-4
+- [ ] checkpoint-synchronization-4
 - [ ] chernicks-carmichael-numbers
-- [x] cheryls-birthday
+- [ ] cheryls-birthday
 - [ ] chinese-remainder-theorem
 - [ ] chinese-zodiac
 - [ ] cholesky-decomposition-1
 - [ ] cholesky-decomposition
-- [x] chowla-numbers
+- [ ] chowla-numbers
 - [ ] church-numerals-1
 - [ ] church-numerals-2
 - [ ] circles-of-given-radius-through-two-points
@@ -230,7 +231,7 @@ Checklist:
 - [ ] consecutive-primes-with-ascending-or-descending-differences
 - [ ] constrained-genericity-1
 - [ ] constrained-genericity-2
-- [x] constrained-genericity-3
+- [ ] constrained-genericity-3
 - [ ] constrained-genericity-4
 - [ ] constrained-random-points-on-a-circle-1
 - [ ] constrained-random-points-on-a-circle-2
@@ -262,10 +263,23 @@ Checklist:
 - [ ] csv-data-manipulation
 - [ ] csv-to-html-translation-1
 - [ ] csv-to-html-translation-2
-- [x] csv-to-html-translation-3
-- [x] csv-to-html-translation-4
+- [ ] csv-to-html-translation-3
+- [ ] csv-to-html-translation-4
 - [ ] csv-to-html-translation-5
 - [ ] cuban-primes
 - [ ] cullen-and-woodall-numbers
+- [ ] cumulative-standard-deviation
+- [ ] currency
+- [ ] currying
+- [ ] curzon-numbers
 - [ ] cusip
+- [ ] cyclops-numbers
+- [ ] damm-algorithm
+- [ ] date-format
+- [ ] date-manipulation
+- [ ] day-of-the-week
+- [ ] de-bruijn-sequences
+- [ ] deal-cards-for-freecell
+- [ ] death-star
+- [ ] deceptive-numbers
 - [ ] md5
