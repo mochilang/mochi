@@ -2,12 +2,12 @@
 
 Generated Scheme code for programs in `tests/vm/valid`. Each program has a `.scm` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-Transpiled programs: 17/100
+Transpiled programs: 25/100
 
 Checklist:
 
 - [ ] append_builtin
-- [ ] avg_builtin
+- [x] avg_builtin
 - [x] basic_compare
 - [x] binary_precedence
 - [x] bool_chain
@@ -15,7 +15,7 @@ Checklist:
 - [ ] cast_string_to_int
 - [ ] cast_struct
 - [ ] closure
-- [ ] count_builtin
+- [x] count_builtin
 - [ ] cross_join
 - [ ] cross_join_filter
 - [ ] cross_join_triple
@@ -48,12 +48,12 @@ Checklist:
 - [ ] json_builtin
 - [ ] left_join
 - [ ] left_join_multi
-- [ ] len_builtin
+- [x] len_builtin
 - [ ] len_map
 - [ ] len_string
 - [x] let_and_print
 - [ ] list_assign
-- [ ] list_index
+- [x] list_index
 - [ ] list_nested_assign
 - [ ] list_set_ops
 - [ ] load_yaml
@@ -83,17 +83,17 @@ Checklist:
 - [ ] right_join
 - [ ] save_jsonl_stdout
 - [ ] short_circuit
-- [ ] slice
+- [x] slice
 - [ ] sort_stable
-- [ ] str_builtin
+- [x] str_builtin
 - [x] string_compare
 - [x] string_concat
 - [ ] string_contains
 - [ ] string_in_operator
-- [ ] string_index
+- [x] string_index
 - [ ] string_prefix_slice
 - [ ] substring_builtin
-- [ ] sum_builtin
+- [x] sum_builtin
 - [ ] tail_recursion
 - [ ] test_block
 - [ ] tree_sum

@@ -1,5 +1,5 @@
 exit status 70
-ERROR on line 3 of file /workspace/mochi/tests/transpiler/x/scheme/string_in_operator.scm: undefined variable: in
+ERROR on line 4 of file /workspace/mochi/tests/transpiler/x/scheme/string_in_operator.scm: undefined variable: in
   called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
   called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
 Searching for modules exporting in ...
