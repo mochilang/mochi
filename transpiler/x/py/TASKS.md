@@ -43,3 +43,8 @@
 - Added break and continue statements.
 - Added index assignment for lists and maps.
 - Enabled transpiler tests for `break_continue`, `if_else`, `list_assign`, `map_assign` and `map_in_operator`.
+
+## Recent Enhancements (2025-07-19 19:53 +07)
+- Added nested index assignment for lists and maps.
+- Implemented builtins `min` and `max`.
+- Added transpiler tests for `membership`, `map_membership`, `list_nested_assign`, `map_nested_assign` and `min_max_builtin`.

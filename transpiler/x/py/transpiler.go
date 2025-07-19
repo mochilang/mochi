@@ -795,14 +795,26 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			if err != nil {
 				return nil, err
 			}
-			if len(st.Assign.Index) == 1 && st.Assign.Index[0].Colon == nil && st.Assign.Index[0].Colon2 == nil && len(st.Assign.Field) == 0 {
-				idx, err := convertExpr(st.Assign.Index[0].Start)
-				if err != nil {
-					return nil, err
+			target := Expr(&Name{Name: st.Assign.Name})
+			for _, f := range st.Assign.Field {
+				target = &FieldExpr{Target: target, Name: f.Name}
+			}
+			if len(st.Assign.Index) > 0 {
+				for i, idxOp := range st.Assign.Index {
+					if idxOp.Colon != nil || idxOp.Colon2 != nil {
+						return nil, fmt.Errorf("unsupported assignment")
+					}
+					idx, err := convertExpr(idxOp.Start)
+					if err != nil {
+						return nil, err
+					}
+					if i == len(st.Assign.Index)-1 {
+						p.Stmts = append(p.Stmts, &IndexAssignStmt{Target: target, Index: idx, Value: val})
+					} else {
+						target = &IndexExpr{Target: target, Index: idx}
+					}
 				}
-				target := Expr(&Name{Name: st.Assign.Name})
-				p.Stmts = append(p.Stmts, &IndexAssignStmt{Target: target, Index: idx, Value: val})
-			} else if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
+			} else if len(st.Assign.Field) == 0 {
 				p.Stmts = append(p.Stmts, &AssignStmt{Name: st.Assign.Name, Expr: val})
 			} else {
 				return nil, fmt.Errorf("unsupported assignment")
@@ -916,14 +928,26 @@ func convertStmts(list []*parser.Statement) ([]Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			if len(s.Assign.Index) == 1 && s.Assign.Index[0].Colon == nil && s.Assign.Index[0].Colon2 == nil && len(s.Assign.Field) == 0 {
-				idx, err := convertExpr(s.Assign.Index[0].Start)
-				if err != nil {
-					return nil, err
+			target := Expr(&Name{Name: s.Assign.Name})
+			for _, f := range s.Assign.Field {
+				target = &FieldExpr{Target: target, Name: f.Name}
+			}
+			if len(s.Assign.Index) > 0 {
+				for i, idxOp := range s.Assign.Index {
+					if idxOp.Colon != nil || idxOp.Colon2 != nil {
+						return nil, fmt.Errorf("unsupported assignment")
+					}
+					idx, err := convertExpr(idxOp.Start)
+					if err != nil {
+						return nil, err
+					}
+					if i == len(s.Assign.Index)-1 {
+						out = append(out, &IndexAssignStmt{Target: target, Index: idx, Value: val})
+					} else {
+						target = &IndexExpr{Target: target, Index: idx}
+					}
 				}
-				target := Expr(&Name{Name: s.Assign.Name})
-				out = append(out, &IndexAssignStmt{Target: target, Index: idx, Value: val})
-			} else if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
+			} else if len(s.Assign.Field) == 0 {
 				out = append(out, &AssignStmt{Name: s.Assign.Name, Expr: val})
 			} else {
 				return nil, fmt.Errorf("unsupported assignment")
@@ -1156,6 +1180,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		case "count":
 			if len(args) == 1 {
 				return &CallExpr{Func: &Name{Name: "len"}, Args: args}, nil
+			}
+		case "min", "max":
+			if len(args) == 1 {
+				return &CallExpr{Func: &Name{Name: p.Call.Func}, Args: args}, nil
 			}
 		case "values":
 			if len(args) == 1 {

@@ -259,3 +259,23 @@ func TestTranspile_MapAssign(t *testing.T) {
 func TestTranspile_MapInOperator(t *testing.T) {
 	runCase(t, "map_in_operator")
 }
+
+func TestTranspile_Membership(t *testing.T) {
+	runCase(t, "membership")
+}
+
+func TestTranspile_MapMembership(t *testing.T) {
+	runCase(t, "map_membership")
+}
+
+func TestTranspile_ListNestedAssign(t *testing.T) {
+	runCase(t, "list_nested_assign")
+}
+
+func TestTranspile_MapNestedAssign(t *testing.T) {
+	runCase(t, "map_nested_assign")
+}
+
+func TestTranspile_MinMaxBuiltin(t *testing.T) {
+	runCase(t, "min_max_builtin")
+}
