@@ -3,26 +3,26 @@
 This directory holds Rust source code generated from the real Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
 ## Program checklist
-- [x] 100-doors-2
-- [x] 100-doors-3
-- [x] 100-doors
-- [x] 100-prisoners
-- [ ] 15-puzzle-game
-- [ ] 15-puzzle-solver
-- [ ] 2048
-- [ ] 21-game
-- [ ] 24-game-solve
-- [ ] 24-game
-- [ ] 4-rings-or-4-squares-puzzle
-- [ ] 9-billion-names-of-god-the-integer
-- [ ] 99-bottles-of-beer-2
-- [x] 99-bottles-of-beer
-- [ ] DNS-query
-- [ ] a+b
-- [ ] abbreviations-automatic
-- [ ] abbreviations-easy
-- [ ] abbreviations-simple
-- [ ] abc-problem
+1. [x] 100-doors-2
+2. [x] 100-doors-3
+3. [x] 100-doors
+4. [ ] 100-prisoners
+5. [ ] 15-puzzle-game
+6. [ ] 15-puzzle-solver
+7. [ ] 2048
+8. [ ] 21-game
+9. [ ] 24-game-solve
+10. [ ] 24-game
+11. [ ] 4-rings-or-4-squares-puzzle
+12. [ ] 9-billion-names-of-god-the-integer
+13. [ ] 99-bottles-of-beer-2
+14. [x] 99-bottles-of-beer
+15. [ ] DNS-query
+16. [ ] a+b
+17. [ ] abbreviations-automatic
+18. [ ] abbreviations-easy
+19. [ ] abbreviations-simple
+20. [ ] abc-problem
 - [ ] abelian-sandpile-model-identity
 - [ ] abelian-sandpile-model
 - [ ] abstract-type
