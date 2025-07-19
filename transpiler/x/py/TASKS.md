@@ -1,5 +1,10 @@
 # Python Transpiler Tasks
 
+## Recent Enhancements (2025-07-19 21:55 +07)
+- Added cast expression support for builtin numeric and string types.
+- Generated golden outputs for `cast_string_to_int` and `cast_struct`.
+- Updated README checklist to 58/100.
+
 ## Recent Enhancements (2025-07-19 11:52)
 - Added support for integer, float and boolean literals.
 - Added binary and unary expression handling so arithmetic works.

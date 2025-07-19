@@ -3,7 +3,7 @@
 This directory tracks progress of the experimental Python transpiler. Generated
 code for tests lives in `tests/transpiler/x/py`.
 
-## VM Golden Test Checklist (56/100)
+## VM Golden Test Checklist (58/100)
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -11,8 +11,8 @@ code for tests lives in `tests/transpiler/x/py`.
 - [x] binary_precedence
 - [x] bool_chain
 - [x] break_continue
-- [ ] cast_string_to_int
-- [ ] cast_struct
+- [x] cast_string_to_int
+- [x] cast_struct
 - [x] closure
 - [x] count_builtin
 - [ ] cross_join

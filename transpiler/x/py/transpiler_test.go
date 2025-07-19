@@ -307,3 +307,11 @@ func TestTranspile_TwoSum(t *testing.T) {
 func TestTranspile_ShortCircuit(t *testing.T) {
 	runCase(t, "short_circuit")
 }
+
+func TestTranspile_CastStringToInt(t *testing.T) {
+	runCase(t, "cast_string_to_int")
+}
+
+func TestTranspile_CastStruct(t *testing.T) {
+	runCase(t, "cast_struct")
+}
