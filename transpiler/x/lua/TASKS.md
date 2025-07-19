@@ -1,5 +1,8 @@
 # Lua Transpiler Tasks
 
+## Progress (2025-07-19 13:18 +0700)
+- VM valid golden test results updated
+
 ## Progress (2025-07-19 12:38 +0700)
 - Added string concatenation using `..` when operands are strings.
 - Added support for comparison expressions.
