@@ -1,57 +1,68 @@
 rustc: exit status 1
-error[E0308]: mismatched types
-  --> /tmp/99_bottles_of_beer_2.rs:77:53
+warning: unused variable: `randInt`
+  --> /tmp/99_bottles_of_beer_2.rs:66:9
    |
-77 |             a = { let mut tmp = a.clone(); tmp.push(&p[(i) as usize..(i + 1) as usize]); tmp };
-   |                                                ---- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `String`, found `&str`
-   |                                                |
-   |                                                arguments to this method are incorrect
+66 |     let randInt = move |seed: i32, n: i32| -> i32 {
+   |         ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_randInt`
    |
-note: method defined here
-  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:2442:12
-help: try using a conversion method
-   |
-77 |             a = { let mut tmp = a.clone(); tmp.push((&p[(i) as usize..(i + 1) as usize]).to_string()); tmp };
-   |                                                     +                                  +++++++++++++
+   = note: `#[warn(unused_variables)]` on by default
 
-error[E0308]: mismatched types
-  --> /tmp/99_bottles_of_beer_2.rs:95:17
+warning: variable does not need to be mutable
+  --> /tmp/99_bottles_of_beer_2.rs:48:17
    |
-95 |             s = format!("{}{}", s, a[(k) as usize]);
-   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
-   |
-   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error[E0308]: mismatched types
-  --> /tmp/99_bottles_of_beer_2.rs:98:13
-   |
-98 |         s = format!("{}{}", s, &p[((p.len() as i32) - 1) as usize..((p.len() as i32)) as usize]);
-   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
-   |
-   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error[E0308]: mismatched types
-  --> /tmp/99_bottles_of_beer_2.rs:99:24
-   |
-99 |         let w = fields(s);
-   |                 ------ ^- help: try using a conversion method: `.to_string()`
-   |                 |      |
-   |                 |      expected `String`, found `&str`
-   |                 arguments to this function are incorrect
-   |
-note: expected because the closure was earlier called with an argument of type `String`
-  --> /tmp/99_bottles_of_beer_2.rs:60:24
-   |
-60 |         let w = fields(s);
-   |                 ------ ^ expected because this argument is of type `String`
+48 |             let mut s = n % 10;
+   |                 ----^
    |                 |
-   |                 in this closure call
-note: closure parameter defined here
-  --> /tmp/99_bottles_of_beer_2.rs:3:24
+   |                 help: remove this `mut`
    |
-3  |     let fields = move |s: String| -> Vec<String> {
-   |                        ^^^^^^^^^
+   = note: `#[warn(unused_mut)]` on by default
 
-error: aborting due to 4 previous errors
+error[E0507]: cannot move out of index of `Vec<String>`
+  --> /tmp/99_bottles_of_beer_2.rs:44:20
+   |
+44 |             return small[(n) as usize];
+   |                    ^^^^^^^^^^^^^^^^^^^ move occurs because value has type `String`, which does not implement the `Copy` trait
 
-For more information about this error, try `rustc --explain E0308`.
+error[E0507]: cannot move out of index of `Vec<String>`
+  --> /tmp/99_bottles_of_beer_2.rs:47:25
+   |
+47 |             let mut t = tens[(((n as f64) / (10 as f64)) as i32) as usize];
+   |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ move occurs because value has type `String`, which does not implement the `Copy` trait
+   |
+help: consider borrowing here
+   |
+47 |             let mut t = &tens[(((n as f64) / (10 as f64)) as i32) as usize];
+   |                         +
+
+error[E0596]: cannot borrow `w` as mutable, as it is not declared as mutable
+  --> /tmp/99_bottles_of_beer_2.rs:62:13
+   |
+62 |             w[0] = format!("{}{}", w[0], String::from("s"));
+   |             ^ cannot borrow as mutable
+   |
+help: consider changing this to be mutable
+   |
+60 |         let mut w = fields(s);
+   |             +++
+
+error[E0507]: cannot move out of index of `Vec<String>`
+  --> /tmp/99_bottles_of_beer_2.rs:86:27
+   |
+86 |                 let tmp = a[(idx) as usize];
+   |                           ^^^^^^^^^^^^^^^^^ move occurs because value has type `String`, which does not implement the `Copy` trait
+   |
+help: consider borrowing here
+   |
+86 |                 let tmp = &a[(idx) as usize];
+   |                           +
+
+error[E0507]: cannot move out of index of `Vec<String>`
+  --> /tmp/99_bottles_of_beer_2.rs:87:37
+   |
+87 |                 a[(idx) as usize] = a[(j) as usize];
+   |                                     ^^^^^^^^^^^^^^^ move occurs because value has type `String`, which does not implement the `Copy` trait
+
+error: aborting due to 5 previous errors; 2 warnings emitted
+
+Some errors have detailed explanations: E0507, E0596.
+For more information about an error, try `rustc --explain E0507`.

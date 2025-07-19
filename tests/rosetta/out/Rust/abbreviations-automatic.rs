@@ -5,7 +5,7 @@ fn main() {
         let mut cur = String::new();
         let mut i = 0;
         while i < (s.len() as i32) {
-            let ch = &s[(i) as usize..(i + 1) as usize];
+            let ch = s[(i) as usize..(i + 1) as usize].to_string();
             if ch == String::from(" ") || ch == String::from("
 ") || ch == String::from("	") {
                 if (cur.len() as i32) > 0 {
@@ -27,7 +27,7 @@ fn main() {
         let mut count = 0;
         while idx < (s.len() as i32) {
             if count == n {
-                return &s[(0) as usize..(idx) as usize];
+                return s[(0) as usize..(idx) as usize].to_string();
             }
             idx += 1;
             count += 1;

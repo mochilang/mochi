@@ -1,16 +1,16 @@
 rustc: exit status 1
 warning: denote infinite loops with `loop { ... }`
-   --> /tmp/2048.rs:259:5
+   --> /tmp/2048.rs:282:5
     |
-259 |     while true {
+282 |     while true {
     |     ^^^^^^^^^^ help: use `loop`
     |
     = note: `#[warn(while_true)]` on by default
 
 error[E0308]: mismatched types
-  --> /tmp/2048.rs:38:135
+  --> /tmp/2048.rs:61:135
    |
-38 | ...::new(); m.insert(String::from("board"), b); m.insert(String::from("full"), true); m };
+61 | ...::new(); m.insert(String::from("board"), b); m.insert(String::from("full"), true); m };
    |             -                               -     ------                       ^^^^ expected `&mut Vec<Vec<i32>>`, found `bool`
    |             |                               |     |
    |             |                               |     arguments to this method are incorrect
@@ -20,9 +20,9 @@ error[E0308]: mismatched types
    = note: expected mutable reference `&mut Vec<Vec<i32>>`
                            found type `bool`
 help: the return type of this call is `bool` due to the type of the argument passed
-  --> /tmp/2048.rs:38:104
+  --> /tmp/2048.rs:61:104
    |
-38 | ...ng::from("board"), b); m.insert(String::from("full"), true); m };
+61 | ...ng::from("board"), b); m.insert(String::from("full"), true); m };
    |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^----^
    |                                                          |
    |                                                          this argument influences the return type of `insert`
@@ -30,12 +30,12 @@ note: method defined here
   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
 
 error[E0308]: mismatched types
-  --> /tmp/2048.rs:38:142
+  --> /tmp/2048.rs:61:142
    |
-24 | ...ec<Vec<i32>>| -> std::collections::HashMap<String, i32> {
+47 | ...ec<Vec<i32>>| -> std::collections::HashMap<String, i32> {
    |                     -------------------------------------- expected `HashMap<String, i32>` because of return type
 ...
-38 | ...d::collections::HashMap::new(); m.insert(String::from("board"), b); m.insert(String::from("full"), true); m };
+61 | ...d::collections::HashMap::new(); m.insert(String::from("board"), b); m.insert(String::from("full"), true); m };
    |                                    -                               -                                         ^ expected `HashMap<String, i32>`, found `HashMap<String, &mut Vec<Vec<i32>>>`
    |                                    |                               |
    |                                    |                               this argument has type `&mut Vec<Vec<i32>>`...
@@ -45,28 +45,9 @@ error[E0308]: mismatched types
               found struct `HashMap<_, &mut Vec<Vec<i32>>>`
 
 error[E0308]: mismatched types
-  --> /tmp/2048.rs:40:32
+  --> /tmp/2048.rs:70:131
    |
-40 |         let mut idx = _now() % (empty.len() as i32);
-   |                                ^^^^^^^^^^^^^^^^^^^^ expected `i64`, found `i32`
-
-error[E0277]: cannot calculate the remainder of `i64` divided by `i32`
-  --> /tmp/2048.rs:40:30
-   |
-40 |         let mut idx = _now() % (empty.len() as i32);
-   |                              ^ no implementation for `i64 % i32`
-   |
-   = help: the trait `Rem<i32>` is not implemented for `i64`
-   = help: the following other types implement trait `Rem<Rhs>`:
-             `&i64` implements `Rem<i64>`
-             `&i64` implements `Rem`
-             `i64` implements `Rem<&i64>`
-             `i64` implements `Rem`
-
-error[E0308]: mismatched types
-  --> /tmp/2048.rs:47:131
-   |
-47 | ...:HashMap::new(); m.insert(String::from("board"), b); m.insert(String::from("full"), (empty.len() as i32) == 1); m };
+70 | ...:HashMap::new(); m.insert(String::from("board"), b); m.insert(String::from("full"), (empty.len() as i32) == 1); m };
    |                     -                               -     ------                       ^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&mut Vec<Vec<i32>>`, found `bool`
    |                     |                               |     |
    |                     |                               |     arguments to this method are incorrect
@@ -76,9 +57,9 @@ error[E0308]: mismatched types
    = note: expected mutable reference `&mut Vec<Vec<i32>>`
                            found type `bool`
 help: the return type of this call is `bool` due to the type of the argument passed
-  --> /tmp/2048.rs:47:100
+  --> /tmp/2048.rs:70:100
    |
-47 | ...oard"), b); m.insert(String::from("full"), (empty.len() as i32) == 1); m };
+70 | ...oard"), b); m.insert(String::from("full"), (empty.len() as i32) == 1); m };
    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-------------------------^
    |                                               |
    |                                               this argument influences the return type of `insert`
@@ -86,12 +67,12 @@ note: method defined here
   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
 
 error[E0308]: mismatched types
-  --> /tmp/2048.rs:47:159
+  --> /tmp/2048.rs:70:159
    |
-24 | ...<i32>>| -> std::collections::HashMap<String, i32> {
+47 | ...<i32>>| -> std::collections::HashMap<String, i32> {
    |               -------------------------------------- expected `HashMap<String, i32>` because of return type
 ...
-47 | ...ions::HashMap::new(); m.insert(String::from("board"), b); m.insert(String::from("full"), (empty.len() as i32) == 1); m };
+70 | ...ions::HashMap::new(); m.insert(String::from("board"), b); m.insert(String::from("full"), (empty.len() as i32) == 1); m };
    |                          -                               - this argument has type `&mut Vec<Vec<i32>>`...               ^ expected `HashMap<String, i32>`, found `HashMap<String, &mut Vec<Vec<i32>>>`
    |                          |
    |                          ... which causes `m` to have type `HashMap<String, &mut Vec<Vec<i32>>>`
@@ -100,9 +81,9 @@ error[E0308]: mismatched types
               found struct `HashMap<_, &mut Vec<Vec<i32>>>`
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:117:131
+   --> /tmp/2048.rs:140:131
     |
-117 | ...ashMap::new(); m.insert(String::from("row"), res); m.insert(String::from("gain"), gain); m };
+140 | ...ashMap::new(); m.insert(String::from("row"), res); m.insert(String::from("gain"), gain); m };
     |                   -                             ---     ------                       ^^^^ expected `Vec<i32>`, found `i32`
     |                   |                             |       |
     |                   |                             |       arguments to this method are incorrect
@@ -112,9 +93,9 @@ error[E0308]: mismatched types
     = note: expected struct `Vec<i32>`
                  found type `i32`
 help: the return type of this call is `i32` due to the type of the argument passed
-   --> /tmp/2048.rs:117:100
+   --> /tmp/2048.rs:140:100
     |
-117 | ...ng::from("row"), res); m.insert(String::from("gain"), gain); m };
+140 | ...ng::from("row"), res); m.insert(String::from("gain"), gain); m };
     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^----^
     |                                                          |
     |                                                          this argument influences the return type of `insert`
@@ -122,12 +103,12 @@ note: method defined here
    --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:117:138
+   --> /tmp/2048.rs:140:138
     |
-91  | ...: Vec<i32>| -> std::collections::HashMap<String, i32> {
+114 | ...: Vec<i32>| -> std::collections::HashMap<String, i32> {
     |                   -------------------------------------- expected `HashMap<String, i32>` because of return type
 ...
-117 | ...std::collections::HashMap::new(); m.insert(String::from("row"), res); m.insert(String::from("gain"), gain); m };
+140 | ...std::collections::HashMap::new(); m.insert(String::from("row"), res); m.insert(String::from("gain"), gain); m };
     |                                      -                             --- this argument has type `Vec<i32>`...    ^ expected `HashMap<String, i32>`, found `HashMap<String, Vec<i32>>`
     |                                      |
     |                                      ... which causes `m` to have type `HashMap<String, Vec<i32>>`
@@ -136,34 +117,34 @@ error[E0308]: mismatched types
                found struct `HashMap<_, Vec<i32>>`
 
 error[E0368]: binary assignment operation `+=` cannot be applied to type `&mut i32`
-   --> /tmp/2048.rs:125:13
+   --> /tmp/2048.rs:148:13
     |
-125 |             score += *r.get(&String::from("gain")).unwrap();
+148 |             score += *r.get(&String::from("gain")).unwrap();
     |             -----^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     |             |
     |             cannot use `+=` on type `&mut i32`
     |
 help: `+=` can be used on `i32` if you dereference the left-hand side
     |
-125 |             *score += *r.get(&String::from("gain")).unwrap();
+148 |             *score += *r.get(&String::from("gain")).unwrap();
     |             +
 
 error[E0608]: cannot index into a value of type `i32`
-   --> /tmp/2048.rs:128:56
+   --> /tmp/2048.rs:151:56
     |
-128 |                 if b[(y) as usize][(x) as usize] != new[(x) as usize] {
+151 |                 if b[(y) as usize][(x) as usize] != new[(x) as usize] {
     |                                                        ^^^^^^^^^^^^^^
 
 error[E0608]: cannot index into a value of type `i32`
-   --> /tmp/2048.rs:131:52
+   --> /tmp/2048.rs:154:52
     |
-131 |                 b[(y) as usize][(x) as usize] = new[(x) as usize];
+154 |                 b[(y) as usize][(x) as usize] = new[(x) as usize];
     |                                                    ^^^^^^^^^^^^^^
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:136:132
+   --> /tmp/2048.rs:159:132
     |
-136 | ...ew(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
+159 | ...ew(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
     |          -                               -     ------                        ^^^^^ expected `&mut Vec<Vec<i32>>`, found `&mut i32`
     |          |                               |     |
     |          |                               |     arguments to this method are incorrect
@@ -173,9 +154,9 @@ error[E0308]: mismatched types
     = note: expected mutable reference `&mut Vec<Vec<i32>>`
                found mutable reference `&mut i32`
 help: the return type of this call is `&mut i32` due to the type of the argument passed
-   --> /tmp/2048.rs:136:100
+   --> /tmp/2048.rs:159:100
     |
-136 | ...g::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
+159 | ...g::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
     |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-----^
     |                                                          |
     |                                                          this argument influences the return type of `insert`
@@ -183,9 +164,9 @@ note: method defined here
    --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:136:172
+   --> /tmp/2048.rs:159:172
     |
-136 | ...::new(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
+159 | ...::new(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
     |             -                               -                                             ------                        ^^^^^ expected `&mut Vec<Vec<i32>>`, found `bool`
     |             |                               |                                             |
     |             |                               |                                             arguments to this method are incorrect
@@ -195,9 +176,9 @@ error[E0308]: mismatched types
     = note: expected mutable reference `&mut Vec<Vec<i32>>`
                             found type `bool`
 help: the return type of this call is `bool` due to the type of the argument passed
-   --> /tmp/2048.rs:136:140
+   --> /tmp/2048.rs:159:140
     |
-136 | ...rom("score"), score); m.insert(String::from("moved"), moved); m };
+159 | ...rom("score"), score); m.insert(String::from("moved"), moved); m };
     |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-----^
     |                                                          |
     |                                                          this argument influences the return type of `insert`
@@ -205,12 +186,12 @@ note: method defined here
    --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:136:180
+   --> /tmp/2048.rs:159:180
     |
-119 | ...mut i32| -> std::collections::HashMap<String, i32> {
+142 | ...mut i32| -> std::collections::HashMap<String, i32> {
     |                -------------------------------------- expected `HashMap<String, i32>` because of return type
 ...
-136 | ...new(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
+159 | ...new(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
     |           -                               - this argument has type `&mut Vec<Vec<i32>>`...                                    ^ expected `HashMap<String, i32>`, found `HashMap<String, &mut Vec<Vec<i32>>>`
     |           |
     |           ... which causes `m` to have type `HashMap<String, &mut Vec<Vec<i32>>>`
@@ -219,34 +200,34 @@ error[E0308]: mismatched types
                found struct `HashMap<_, &mut Vec<Vec<i32>>>`
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:144:19
+   --> /tmp/2048.rs:167:19
     |
-142 |             let mut rev = reverseRow(b[(y) as usize]);
+165 |             let mut rev = reverseRow(b[(y) as usize]);
     |                           --------------------------- expected due to this value
-143 |             let r = slideLeft(rev);
-144 |             rev = *r.get(&String::from("row")).unwrap();
+166 |             let r = slideLeft(rev);
+167 |             rev = *r.get(&String::from("row")).unwrap();
     |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<i32>`, found `i32`
     |
     = note: expected struct `Vec<i32>`
                  found type `i32`
 
 error[E0368]: binary assignment operation `+=` cannot be applied to type `&mut i32`
-   --> /tmp/2048.rs:145:13
+   --> /tmp/2048.rs:168:13
     |
-145 |             score += *r.get(&String::from("gain")).unwrap();
+168 |             score += *r.get(&String::from("gain")).unwrap();
     |             -----^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     |             |
     |             cannot use `+=` on type `&mut i32`
     |
 help: `+=` can be used on `i32` if you dereference the left-hand side
     |
-145 |             *score += *r.get(&String::from("gain")).unwrap();
+168 |             *score += *r.get(&String::from("gain")).unwrap();
     |             +
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:157:132
+   --> /tmp/2048.rs:180:132
     |
-157 | ...ew(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
+180 | ...ew(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
     |          -                               -     ------                        ^^^^^ expected `&mut Vec<Vec<i32>>`, found `&mut i32`
     |          |                               |     |
     |          |                               |     arguments to this method are incorrect
@@ -256,9 +237,9 @@ error[E0308]: mismatched types
     = note: expected mutable reference `&mut Vec<Vec<i32>>`
                found mutable reference `&mut i32`
 help: the return type of this call is `&mut i32` due to the type of the argument passed
-   --> /tmp/2048.rs:157:100
+   --> /tmp/2048.rs:180:100
     |
-157 | ...g::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
+180 | ...g::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
     |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-----^
     |                                                          |
     |                                                          this argument influences the return type of `insert`
@@ -266,9 +247,9 @@ note: method defined here
    --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:157:172
+   --> /tmp/2048.rs:180:172
     |
-157 | ...::new(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
+180 | ...::new(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
     |             -                               -                                             ------                        ^^^^^ expected `&mut Vec<Vec<i32>>`, found `bool`
     |             |                               |                                             |
     |             |                               |                                             arguments to this method are incorrect
@@ -278,9 +259,9 @@ error[E0308]: mismatched types
     = note: expected mutable reference `&mut Vec<Vec<i32>>`
                             found type `bool`
 help: the return type of this call is `bool` due to the type of the argument passed
-   --> /tmp/2048.rs:157:140
+   --> /tmp/2048.rs:180:140
     |
-157 | ...rom("score"), score); m.insert(String::from("moved"), moved); m };
+180 | ...rom("score"), score); m.insert(String::from("moved"), moved); m };
     |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-----^
     |                                                          |
     |                                                          this argument influences the return type of `insert`
@@ -288,12 +269,12 @@ note: method defined here
    --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:157:180
+   --> /tmp/2048.rs:180:180
     |
-138 | ...&mut i32| -> std::collections::HashMap<String, i32> {
+161 | ...&mut i32| -> std::collections::HashMap<String, i32> {
     |                 -------------------------------------- expected `HashMap<String, i32>` because of return type
 ...
-157 | ...new(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
+180 | ...new(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
     |           -                               - this argument has type `&mut Vec<Vec<i32>>`...                                    ^ expected `HashMap<String, i32>`, found `HashMap<String, &mut Vec<Vec<i32>>>`
     |           |
     |           ... which causes `m` to have type `HashMap<String, &mut Vec<Vec<i32>>>`
@@ -302,9 +283,9 @@ error[E0308]: mismatched types
                found struct `HashMap<_, &mut Vec<Vec<i32>>>`
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:179:34
+   --> /tmp/2048.rs:202:34
     |
-179 |             let mut col = getCol(b, x);
+202 |             let mut col = getCol(b, x);
     |                           ------ ^- help: try using a conversion method: `.to_vec()`
     |                           |      |
     |                           |      expected `Vec<Vec<i32>>`, found `&mut Vec<Vec<i32>>`
@@ -313,40 +294,40 @@ error[E0308]: mismatched types
     = note:         expected struct `Vec<_>`
             found mutable reference `&mut Vec<_>`
 note: closure parameter defined here
-   --> /tmp/2048.rs:159:24
+   --> /tmp/2048.rs:182:24
     |
-159 |     let getCol = move |b: Vec<Vec<i32>>, x: i32| -> Vec<i32> {
+182 |     let getCol = move |b: Vec<Vec<i32>>, x: i32| -> Vec<i32> {
     |                        ^^^^^^^^^^^^^^^^
 
 error[E0368]: binary assignment operation `+=` cannot be applied to type `&mut i32`
-   --> /tmp/2048.rs:182:13
+   --> /tmp/2048.rs:205:13
     |
-182 |             score += *r.get(&String::from("gain")).unwrap();
+205 |             score += *r.get(&String::from("gain")).unwrap();
     |             -----^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     |             |
     |             cannot use `+=` on type `&mut i32`
     |
 help: `+=` can be used on `i32` if you dereference the left-hand side
     |
-182 |             *score += *r.get(&String::from("gain")).unwrap();
+205 |             *score += *r.get(&String::from("gain")).unwrap();
     |             +
 
 error[E0608]: cannot index into a value of type `i32`
-   --> /tmp/2048.rs:185:56
+   --> /tmp/2048.rs:208:56
     |
-185 |                 if b[(y) as usize][(x) as usize] != new[(y) as usize] {
+208 |                 if b[(y) as usize][(x) as usize] != new[(y) as usize] {
     |                                                        ^^^^^^^^^^^^^^
 
 error[E0608]: cannot index into a value of type `i32`
-   --> /tmp/2048.rs:188:52
+   --> /tmp/2048.rs:211:52
     |
-188 |                 b[(y) as usize][(x) as usize] = new[(y) as usize];
+211 |                 b[(y) as usize][(x) as usize] = new[(y) as usize];
     |                                                    ^^^^^^^^^^^^^^
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:193:132
+   --> /tmp/2048.rs:216:132
     |
-193 | ...ew(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
+216 | ...ew(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
     |          -                               -     ------                        ^^^^^ expected `&mut Vec<Vec<i32>>`, found `&mut i32`
     |          |                               |     |
     |          |                               |     arguments to this method are incorrect
@@ -356,9 +337,9 @@ error[E0308]: mismatched types
     = note: expected mutable reference `&mut Vec<Vec<i32>>`
                found mutable reference `&mut i32`
 help: the return type of this call is `&mut i32` due to the type of the argument passed
-   --> /tmp/2048.rs:193:100
+   --> /tmp/2048.rs:216:100
     |
-193 | ...g::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
+216 | ...g::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
     |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-----^
     |                                                          |
     |                                                          this argument influences the return type of `insert`
@@ -366,9 +347,9 @@ note: method defined here
    --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:193:172
+   --> /tmp/2048.rs:216:172
     |
-193 | ...::new(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
+216 | ...::new(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
     |             -                               -                                             ------                        ^^^^^ expected `&mut Vec<Vec<i32>>`, found `bool`
     |             |                               |                                             |
     |             |                               |                                             arguments to this method are incorrect
@@ -378,9 +359,9 @@ error[E0308]: mismatched types
     = note: expected mutable reference `&mut Vec<Vec<i32>>`
                             found type `bool`
 help: the return type of this call is `bool` due to the type of the argument passed
-   --> /tmp/2048.rs:193:140
+   --> /tmp/2048.rs:216:140
     |
-193 | ...rom("score"), score); m.insert(String::from("moved"), moved); m };
+216 | ...rom("score"), score); m.insert(String::from("moved"), moved); m };
     |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-----^
     |                                                          |
     |                                                          this argument influences the return type of `insert`
@@ -388,12 +369,12 @@ note: method defined here
    --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:193:180
+   --> /tmp/2048.rs:216:180
     |
-175 | ...t i32| -> std::collections::HashMap<String, i32> {
+198 | ...t i32| -> std::collections::HashMap<String, i32> {
     |              -------------------------------------- expected `HashMap<String, i32>` because of return type
 ...
-193 | ...new(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
+216 | ...new(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
     |           -                               - this argument has type `&mut Vec<Vec<i32>>`...                                    ^ expected `HashMap<String, i32>`, found `HashMap<String, &mut Vec<Vec<i32>>>`
     |           |
     |           ... which causes `m` to have type `HashMap<String, &mut Vec<Vec<i32>>>`
@@ -402,9 +383,9 @@ error[E0308]: mismatched types
                found struct `HashMap<_, &mut Vec<Vec<i32>>>`
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:199:45
+   --> /tmp/2048.rs:222:45
     |
-199 |             let mut col = reverseRow(getCol(b, x));
+222 |             let mut col = reverseRow(getCol(b, x));
     |                                      ------ ^- help: try using a conversion method: `.to_vec()`
     |                                      |      |
     |                                      |      expected `Vec<Vec<i32>>`, found `&mut Vec<Vec<i32>>`
@@ -413,40 +394,40 @@ error[E0308]: mismatched types
     = note:         expected struct `Vec<_>`
             found mutable reference `&mut Vec<_>`
 note: closure parameter defined here
-   --> /tmp/2048.rs:159:24
+   --> /tmp/2048.rs:182:24
     |
-159 |     let getCol = move |b: Vec<Vec<i32>>, x: i32| -> Vec<i32> {
+182 |     let getCol = move |b: Vec<Vec<i32>>, x: i32| -> Vec<i32> {
     |                        ^^^^^^^^^^^^^^^^
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:201:19
+   --> /tmp/2048.rs:224:19
     |
-199 |             let mut col = reverseRow(getCol(b, x));
+222 |             let mut col = reverseRow(getCol(b, x));
     |                           ------------------------ expected due to this value
-200 |             let r = slideLeft(col);
-201 |             col = *r.get(&String::from("row")).unwrap();
+223 |             let r = slideLeft(col);
+224 |             col = *r.get(&String::from("row")).unwrap();
     |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<i32>`, found `i32`
     |
     = note: expected struct `Vec<i32>`
                  found type `i32`
 
 error[E0368]: binary assignment operation `+=` cannot be applied to type `&mut i32`
-   --> /tmp/2048.rs:202:13
+   --> /tmp/2048.rs:225:13
     |
-202 |             score += *r.get(&String::from("gain")).unwrap();
+225 |             score += *r.get(&String::from("gain")).unwrap();
     |             -----^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     |             |
     |             cannot use `+=` on type `&mut i32`
     |
 help: `+=` can be used on `i32` if you dereference the left-hand side
     |
-202 |             *score += *r.get(&String::from("gain")).unwrap();
+225 |             *score += *r.get(&String::from("gain")).unwrap();
     |             +
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:214:132
+   --> /tmp/2048.rs:237:132
     |
-214 | ...ew(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
+237 | ...ew(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
     |          -                               -     ------                        ^^^^^ expected `&mut Vec<Vec<i32>>`, found `&mut i32`
     |          |                               |     |
     |          |                               |     arguments to this method are incorrect
@@ -456,9 +437,9 @@ error[E0308]: mismatched types
     = note: expected mutable reference `&mut Vec<Vec<i32>>`
                found mutable reference `&mut i32`
 help: the return type of this call is `&mut i32` due to the type of the argument passed
-   --> /tmp/2048.rs:214:100
+   --> /tmp/2048.rs:237:100
     |
-214 | ...g::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
+237 | ...g::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
     |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-----^
     |                                                          |
     |                                                          this argument influences the return type of `insert`
@@ -466,9 +447,9 @@ note: method defined here
    --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:214:172
+   --> /tmp/2048.rs:237:172
     |
-214 | ...::new(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
+237 | ...::new(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
     |             -                               -                                             ------                        ^^^^^ expected `&mut Vec<Vec<i32>>`, found `bool`
     |             |                               |                                             |
     |             |                               |                                             arguments to this method are incorrect
@@ -478,9 +459,9 @@ error[E0308]: mismatched types
     = note: expected mutable reference `&mut Vec<Vec<i32>>`
                             found type `bool`
 help: the return type of this call is `bool` due to the type of the argument passed
-   --> /tmp/2048.rs:214:140
+   --> /tmp/2048.rs:237:140
     |
-214 | ...rom("score"), score); m.insert(String::from("moved"), moved); m };
+237 | ...rom("score"), score); m.insert(String::from("moved"), moved); m };
     |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-----^
     |                                                          |
     |                                                          this argument influences the return type of `insert`
@@ -488,12 +469,12 @@ note: method defined here
    --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:214:180
+   --> /tmp/2048.rs:237:180
     |
-195 | ...mut i32| -> std::collections::HashMap<String, i32> {
+218 | ...mut i32| -> std::collections::HashMap<String, i32> {
     |                -------------------------------------- expected `HashMap<String, i32>` because of return type
 ...
-214 | ...new(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
+237 | ...new(); m.insert(String::from("board"), b); m.insert(String::from("score"), score); m.insert(String::from("moved"), moved); m };
     |           -                               - this argument has type `&mut Vec<Vec<i32>>`...                                    ^ expected `HashMap<String, i32>`, found `HashMap<String, &mut Vec<Vec<i32>>>`
     |           |
     |           ... which causes `m` to have type `HashMap<String, &mut Vec<Vec<i32>>>`
@@ -502,138 +483,138 @@ error[E0308]: mismatched types
                found struct `HashMap<_, &mut Vec<Vec<i32>>>`
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:252:13
+   --> /tmp/2048.rs:275:13
     |
-250 |     let mut board = newBoard();
+273 |     let mut board = newBoard();
     |                     ---------- expected due to this value
-251 |     let mut r = spawnTile(&mut board);
-252 |     board = *r.get(&String::from("board")).unwrap();
+274 |     let mut r = spawnTile(&mut board);
+275 |     board = *r.get(&String::from("board")).unwrap();
     |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<Vec<i32>>`, found `i32`
     |
     = note: expected struct `Vec<Vec<i32>>`
                  found type `i32`
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:255:13
+   --> /tmp/2048.rs:278:13
     |
-250 |     let mut board = newBoard();
+273 |     let mut board = newBoard();
     |                     ---------- expected due to this value
 ...
-255 |     board = *r.get(&String::from("board")).unwrap();
+278 |     board = *r.get(&String::from("board")).unwrap();
     |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<Vec<i32>>`, found `i32`
     |
     = note: expected struct `Vec<Vec<i32>>`
                  found type `i32`
 
 error[E0425]: cannot find function `input` in this scope
-   --> /tmp/2048.rs:261:19
+   --> /tmp/2048.rs:284:19
     |
-261 |         let cmd = input();
+284 |         let cmd = input();
     |                   ^^^^^ not found in this scope
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:265:21
+   --> /tmp/2048.rs:288:21
     |
-250 |     let mut board = newBoard();
+273 |     let mut board = newBoard();
     |                     ---------- expected due to this value
 ...
-265 |             board = *m.get(&String::from("board")).unwrap();
+288 |             board = *m.get(&String::from("board")).unwrap();
     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<Vec<i32>>`, found `i32`
     |
     = note: expected struct `Vec<Vec<i32>>`
                  found type `i32`
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:267:21
+   --> /tmp/2048.rs:290:21
     |
-262 |         let mut moved = false;
+285 |         let mut moved = false;
     |                         ----- expected due to this value
 ...
-267 |             moved = *m.get(&String::from("moved")).unwrap();
+290 |             moved = *m.get(&String::from("moved")).unwrap();
     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `bool`, found `i32`
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:271:21
+   --> /tmp/2048.rs:294:21
     |
-250 |     let mut board = newBoard();
+273 |     let mut board = newBoard();
     |                     ---------- expected due to this value
 ...
-271 |             board = *m.get(&String::from("board")).unwrap();
+294 |             board = *m.get(&String::from("board")).unwrap();
     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<Vec<i32>>`, found `i32`
     |
     = note: expected struct `Vec<Vec<i32>>`
                  found type `i32`
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:273:21
+   --> /tmp/2048.rs:296:21
     |
-262 |         let mut moved = false;
+285 |         let mut moved = false;
     |                         ----- expected due to this value
 ...
-273 |             moved = *m.get(&String::from("moved")).unwrap();
+296 |             moved = *m.get(&String::from("moved")).unwrap();
     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `bool`, found `i32`
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:277:21
+   --> /tmp/2048.rs:300:21
     |
-250 |     let mut board = newBoard();
+273 |     let mut board = newBoard();
     |                     ---------- expected due to this value
 ...
-277 |             board = *m.get(&String::from("board")).unwrap();
+300 |             board = *m.get(&String::from("board")).unwrap();
     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<Vec<i32>>`, found `i32`
     |
     = note: expected struct `Vec<Vec<i32>>`
                  found type `i32`
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:279:21
+   --> /tmp/2048.rs:302:21
     |
-262 |         let mut moved = false;
+285 |         let mut moved = false;
     |                         ----- expected due to this value
 ...
-279 |             moved = *m.get(&String::from("moved")).unwrap();
+302 |             moved = *m.get(&String::from("moved")).unwrap();
     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `bool`, found `i32`
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:283:21
+   --> /tmp/2048.rs:306:21
     |
-250 |     let mut board = newBoard();
+273 |     let mut board = newBoard();
     |                     ---------- expected due to this value
 ...
-283 |             board = *m.get(&String::from("board")).unwrap();
+306 |             board = *m.get(&String::from("board")).unwrap();
     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<Vec<i32>>`, found `i32`
     |
     = note: expected struct `Vec<Vec<i32>>`
                  found type `i32`
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:285:21
+   --> /tmp/2048.rs:308:21
     |
-262 |         let mut moved = false;
+285 |         let mut moved = false;
     |                         ----- expected due to this value
 ...
-285 |             moved = *m.get(&String::from("moved")).unwrap();
+308 |             moved = *m.get(&String::from("moved")).unwrap();
     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `bool`, found `i32`
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:292:21
+   --> /tmp/2048.rs:315:21
     |
-250 |     let mut board = newBoard();
+273 |     let mut board = newBoard();
     |                     ---------- expected due to this value
 ...
-292 |             board = *r2.get(&String::from("board")).unwrap();
+315 |             board = *r2.get(&String::from("board")).unwrap();
     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<Vec<i32>>`, found `i32`
     |
     = note: expected struct `Vec<Vec<i32>>`
                  found type `i32`
 
 error[E0308]: mismatched types
-   --> /tmp/2048.rs:294:16
+   --> /tmp/2048.rs:317:16
     |
-294 |             if full && (!hasMoves(board)) != Default::default() {
+317 |             if full && (!hasMoves(board)) != Default::default() {
     |                ^^^^ expected `bool`, found `i32`
 
-error: aborting due to 45 previous errors; 1 warning emitted
+error: aborting due to 43 previous errors; 1 warning emitted
 
-Some errors have detailed explanations: E0277, E0308, E0368, E0425, E0608.
-For more information about an error, try `rustc --explain E0277`.
+Some errors have detailed explanations: E0308, E0368, E0425, E0608.
+For more information about an error, try `rustc --explain E0308`.
