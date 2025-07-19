@@ -1,3 +1,15 @@
+## Progress (2025-07-19 21:14 GMT+7)
+- 39/100 VM tests passing
+- Added cast expressions and function literals
+
+## Progress (2025-07-19 21:14 GMT+7)
+- 39/100 VM tests passing
+- Added support for while loops
+
+## Progress (2025-07-19 21:14 GMT+7)
+- 36/100 VM tests passing
+- Added support for while loops
+
 ## Progress (2025-07-19 19:41 GMT+7)
 - 36/100 VM tests passing
 - Added list literals and built-in functions: append, avg, count, sum.

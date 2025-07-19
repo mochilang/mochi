@@ -82,6 +82,11 @@ type IntLit struct{ Value int }
 type BoolLit struct{ Value bool }
 type Ident struct{ Name string }
 type ListLit struct{ Elems []Expr }
+type FunExpr struct {
+	Params []string
+	Body   []Stmt
+	Expr   Expr
+}
 type BinaryExpr struct {
 	Left  Expr
 	Op    string
@@ -240,6 +245,27 @@ func (l *ListLit) emit(w io.Writer) {
 		e.emit(w)
 	}
 	io.WriteString(w, "}")
+}
+
+func (f *FunExpr) emit(w io.Writer) {
+	io.WriteString(w, "function(")
+	for i, p := range f.Params {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, p)
+	}
+	io.WriteString(w, ")\n")
+	if f.Expr != nil {
+		io.WriteString(w, "return ")
+		f.Expr.emit(w)
+		io.WriteString(w, "\n")
+	}
+	for _, st := range f.Body {
+		st.emit(w)
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, "end")
 }
 func (id *Ident) emit(w io.Writer) { io.WriteString(w, id.Name) }
 
@@ -497,10 +523,19 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 	if p == nil {
 		return nil, fmt.Errorf("nil postfix")
 	}
-	if len(p.Ops) > 0 {
-		return nil, fmt.Errorf("postfix ops not supported")
+	expr, err := convertPrimary(p.Target)
+	if err != nil {
+		return nil, err
 	}
-	return convertPrimary(p.Target)
+	for _, op := range p.Ops {
+		switch {
+		case op.Cast != nil:
+			// ignore cast type, just keep expression
+		default:
+			return nil, fmt.Errorf("postfix ops not supported")
+		}
+	}
+	return expr, nil
 }
 
 func convertPrimary(p *parser.Primary) (Expr, error) {
@@ -531,6 +566,26 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			elems = append(elems, ce)
 		}
 		return &ListLit{Elems: elems}, nil
+	case p.FunExpr != nil:
+		fe := &FunExpr{}
+		for _, pa := range p.FunExpr.Params {
+			fe.Params = append(fe.Params, pa.Name)
+		}
+		if p.FunExpr.ExprBody != nil {
+			expr, err := convertExpr(p.FunExpr.ExprBody)
+			if err != nil {
+				return nil, err
+			}
+			fe.Expr = expr
+		}
+		for _, st := range p.FunExpr.BlockBody {
+			s, err := convertStmt(st)
+			if err != nil {
+				return nil, err
+			}
+			fe.Body = append(fe.Body, s)
+		}
+		return fe, nil
 	case p.Selector != nil:
 		if len(p.Selector.Tail) == 0 {
 			return &Ident{Name: p.Selector.Root}, nil
