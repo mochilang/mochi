@@ -12,7 +12,7 @@ Checklist:
 - [x] 100-prisoners
 - [x] 15-puzzle-game
 - [x] 15-puzzle-solver
-- [x] 2048
+- [ ] 2048
  - [x] 21-game
  - [x] 24-game-solve
  - [x] 24-game
@@ -39,7 +39,7 @@ Checklist:
 - [ ] active-directory-search-for-a-user
 - [ ] active-object
 - [ ] add-a-variable-to-a-class-instance-at-runtime
-- [ ] additive-primes
+- [x] additive-primes
 - [x] address-of-a-variable
 - [ ] adfgvx-cipher
 - [x] aks-test-for-primes
