@@ -27,6 +27,33 @@ type Stmt interface{ emit(io.Writer) }
 
 type Expr interface{ emit(io.Writer) }
 
+type IfStmt struct {
+	Cond Expr
+	Then []Stmt
+	Else []Stmt
+}
+
+func (s *IfStmt) emit(w io.Writer) {
+	fmt.Fprint(w, "if (")
+	s.Cond.emit(w)
+	fmt.Fprint(w, ") {\n")
+	for _, st := range s.Then {
+		fmt.Fprint(w, "\t")
+		st.emit(w)
+		fmt.Fprint(w, ";\n")
+	}
+	fmt.Fprint(w, "}")
+	if len(s.Else) > 0 {
+		fmt.Fprint(w, " else {\n")
+		for _, st := range s.Else {
+			fmt.Fprint(w, "\t")
+			st.emit(w)
+			fmt.Fprint(w, ";\n")
+		}
+		fmt.Fprint(w, "}")
+	}
+}
+
 type ExprStmt struct{ Expr Expr }
 
 func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
@@ -123,6 +150,24 @@ func (g *GroupExpr) emit(w io.Writer) {
 	fmt.Fprint(w, ")")
 }
 
+type TernaryExpr struct {
+	Cond Expr
+	Then Expr
+	Else Expr
+}
+
+func (t *TernaryExpr) emit(w io.Writer) {
+	t.Cond.emit(w)
+	fmt.Fprint(w, " ? ")
+	t.Then.emit(w)
+	fmt.Fprint(w, " : ")
+	t.Else.emit(w)
+}
+
+type BoolLit struct{ Value bool }
+
+func (b *BoolLit) emit(w io.Writer) { fmt.Fprint(w, b.Value) }
+
 func (u *UnaryExpr) emit(w io.Writer) {
 	fmt.Fprint(w, u.Op)
 	if _, ok := u.Value.(*BinaryExpr); ok {
@@ -199,6 +244,42 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			}
 			return &AssignStmt{Name: s.Assign.Name, Expr: e}, nil
 		}
+	case s.If != nil:
+		cond, err := compileExpr(s.If.Cond)
+		if err != nil {
+			return nil, err
+		}
+		var thenStmts []Stmt
+		for _, b := range s.If.Then {
+			st, err := compileStmt(b)
+			if err != nil {
+				return nil, err
+			}
+			if st != nil {
+				thenStmts = append(thenStmts, st)
+			}
+		}
+		var elseStmts []Stmt
+		if s.If.ElseIf != nil {
+			st, err := compileStmt(&parser.Statement{If: s.If.ElseIf})
+			if err != nil {
+				return nil, err
+			}
+			if st != nil {
+				elseStmts = append(elseStmts, st)
+			}
+		} else {
+			for _, b := range s.If.Else {
+				st, err := compileStmt(b)
+				if err != nil {
+					return nil, err
+				}
+				if st != nil {
+					elseStmts = append(elseStmts, st)
+				}
+			}
+		}
+		return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
 	case s.While != nil:
 		cond, err := compileExpr(s.While.Cond)
 		if err != nil {
@@ -236,7 +317,7 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 			return nil, err
 		}
 		switch op.Op {
-		case "+", "-", "*", "/", "%", "==", "!=", "<", "<=", ">", ">=":
+		case "+", "-", "*", "/", "%", "==", "!=", "<", "<=", ">", ">=", "&&", "||":
 			expr = &BinaryExpr{Left: expr, Op: op.Op, Right: r}
 		default:
 			return nil, fmt.Errorf("unsupported binary op: %s", op.Op)
@@ -295,6 +376,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		return &StringLit{Value: *p.Lit.Str}, nil
 	case p.Lit != nil && p.Lit.Int != nil:
 		return &IntLit{Value: int(*p.Lit.Int)}, nil
+	case p.Lit != nil && p.Lit.Bool != nil:
+		return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return &VarExpr{Name: p.Selector.Root}, nil
 	case p.Group != nil:
@@ -303,8 +386,36 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			return nil, err
 		}
 		return &GroupExpr{Expr: e}, nil
+	case p.If != nil:
+		return compileIfExpr(p.If)
 	}
 	return nil, fmt.Errorf("unsupported primary")
+}
+
+func compileIfExpr(ie *parser.IfExpr) (Expr, error) {
+	cond, err := compileExpr(ie.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenExpr, err := compileExpr(ie.Then)
+	if err != nil {
+		return nil, err
+	}
+	var elseExpr Expr
+	if ie.ElseIf != nil {
+		elseExpr, err = compileIfExpr(ie.ElseIf)
+		if err != nil {
+			return nil, err
+		}
+	} else if ie.Else != nil {
+		elseExpr, err = compileExpr(ie.Else)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		elseExpr = &BoolLit{Value: false}
+	}
+	return &TernaryExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
 }
 
 // Emit generates formatted Java source from the AST.
@@ -396,6 +507,22 @@ func toNodeStmt(s Stmt) *ast.Node {
 		n := &ast.Node{Kind: "assign", Value: st.Name}
 		n.Children = append(n.Children, toNodeExpr(st.Expr))
 		return n
+	case *IfStmt:
+		n := &ast.Node{Kind: "if"}
+		n.Children = append(n.Children, toNodeExpr(st.Cond))
+		thenNode := &ast.Node{Kind: "then"}
+		for _, b := range st.Then {
+			thenNode.Children = append(thenNode.Children, toNodeStmt(b))
+		}
+		n.Children = append(n.Children, thenNode)
+		if len(st.Else) > 0 {
+			elseNode := &ast.Node{Kind: "else"}
+			for _, b := range st.Else {
+				elseNode.Children = append(elseNode.Children, toNodeStmt(b))
+			}
+			n.Children = append(n.Children, elseNode)
+		}
+		return n
 	case *WhileStmt:
 		n := &ast.Node{Kind: "while"}
 		if st.Cond != nil {
@@ -422,6 +549,8 @@ func toNodeExpr(e Expr) *ast.Node {
 		return &ast.Node{Kind: "string", Value: ex.Value}
 	case *IntLit:
 		return &ast.Node{Kind: "int", Value: ex.Value}
+	case *BoolLit:
+		return &ast.Node{Kind: "bool", Value: ex.Value}
 	case *VarExpr:
 		return &ast.Node{Kind: "var", Value: ex.Name}
 	case *UnaryExpr:
@@ -439,6 +568,10 @@ func toNodeExpr(e Expr) *ast.Node {
 	case *GroupExpr:
 		n := &ast.Node{Kind: "group"}
 		n.Children = append(n.Children, toNodeExpr(ex.Expr))
+		return n
+	case *TernaryExpr:
+		n := &ast.Node{Kind: "ternary"}
+		n.Children = append(n.Children, toNodeExpr(ex.Cond), toNodeExpr(ex.Then), toNodeExpr(ex.Else))
 		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
