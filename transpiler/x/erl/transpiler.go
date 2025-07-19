@@ -50,8 +50,21 @@ type UnaryExpr struct {
 	Expr Expr
 }
 
+// ListLit represents a list literal.
+type ListLit struct{ Elems []Expr }
+
+// IfExpr is a conditional expression.
+type IfExpr struct {
+	Cond Expr
+	Then Expr
+	Else Expr
+}
+
 // NameRef refers to a variable.
-type NameRef struct{ Name string }
+type NameRef struct {
+	Name     string
+	IsString bool
+}
 
 type IntLit struct{ Value int64 }
 
@@ -60,20 +73,33 @@ type BoolLit struct{ Value bool }
 type StringLit struct{ Value string }
 
 func (p *PrintStmt) emit(w io.Writer) {
-	switch e := p.Expr.(type) {
-	case *StringLit:
+	if isStringExpr(p.Expr) {
 		io.WriteString(w, "io:format(\"~s~n\", [")
-	case *CallExpr:
-		if e.Func == "str" {
-			io.WriteString(w, "io:format(\"~s~n\", [")
-		} else {
-			io.WriteString(w, "io:format(\"~p~n\", [")
-		}
-	default:
+	} else {
 		io.WriteString(w, "io:format(\"~p~n\", [")
 	}
 	p.Expr.emit(w)
 	io.WriteString(w, "])")
+}
+
+func isStringExpr(e Expr) bool {
+	switch v := e.(type) {
+	case *StringLit:
+		return true
+	case *CallExpr:
+		return v.Func == "str"
+	case *BinaryExpr:
+		if v.Op == "++" || v.Op == "+" {
+			return isStringExpr(v.Left) || isStringExpr(v.Right)
+		}
+		return false
+	case *IfExpr:
+		return isStringExpr(v.Then) && isStringExpr(v.Else)
+	case *NameRef:
+		return v.IsString
+	default:
+		return false
+	}
 }
 
 func (l *LetStmt) emit(w io.Writer) {
@@ -102,8 +128,18 @@ func (c *CallExpr) emit(w io.Writer) {
 
 func (b *BinaryExpr) emit(w io.Writer) {
 	io.WriteString(w, "(")
+	op := mapOp(b.Op)
+	// use string concatenation operator when needed
+	if b.Op == "+" {
+		if _, ok := b.Left.(*StringLit); ok {
+			op = "++"
+		}
+		if _, ok := b.Right.(*StringLit); ok {
+			op = "++"
+		}
+	}
 	b.Left.emit(w)
-	io.WriteString(w, " "+mapOp(b.Op)+" ")
+	io.WriteString(w, " "+op+" ")
 	b.Right.emit(w)
 	io.WriteString(w, ")")
 }
@@ -115,6 +151,27 @@ func (u *UnaryExpr) emit(w io.Writer) {
 		io.WriteString(w, u.Op)
 	}
 	u.Expr.emit(w)
+}
+
+func (l *ListLit) emit(w io.Writer) {
+	io.WriteString(w, "[")
+	for i, e := range l.Elems {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		e.emit(w)
+	}
+	io.WriteString(w, "]")
+}
+
+func (i *IfExpr) emit(w io.Writer) {
+	io.WriteString(w, "(if ")
+	i.Cond.emit(w)
+	io.WriteString(w, " -> ")
+	i.Then.emit(w)
+	io.WriteString(w, "; true -> ")
+	i.Else.emit(w)
+	io.WriteString(w, " end)")
 }
 
 func (n *NameRef) emit(w io.Writer) { io.WriteString(w, sanitize(n.Name)) }
@@ -157,12 +214,16 @@ func sanitize(name string) string {
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	_ = env
 	p := &Program{}
+	strVars := map[string]bool{}
 	for _, st := range prog.Statements {
 		switch {
 		case st.Let != nil:
 			e, err := convertExpr(st.Let.Value)
 			if err != nil {
 				return nil, err
+			}
+			if isStringExpr(e) {
+				strVars[st.Let.Name] = true
 			}
 			p.Stmts = append(p.Stmts, &LetStmt{Name: st.Let.Name, Expr: e})
 		case st.Expr != nil:
@@ -171,7 +232,13 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				return nil, err
 			}
 			if c, ok := e.(*CallExpr); ok && c.Func == "print" && len(c.Args) == 1 {
-				p.Stmts = append(p.Stmts, &PrintStmt{Expr: c.Args[0]})
+				arg := c.Args[0]
+				if n, ok := arg.(*NameRef); ok {
+					if strVars[n.Name] {
+						n.IsString = true
+					}
+				}
+				p.Stmts = append(p.Stmts, &PrintStmt{Expr: arg})
 			} else {
 				return nil, fmt.Errorf("unsupported expression")
 			}
@@ -284,9 +351,45 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return ce, nil
 	case p.Group != nil:
 		return convertExpr(p.Group)
+	case p.List != nil:
+		elems := make([]Expr, len(p.List.Elems))
+		for i, e := range p.List.Elems {
+			ae, err := convertExpr(e)
+			if err != nil {
+				return nil, err
+			}
+			elems[i] = ae
+		}
+		return &ListLit{Elems: elems}, nil
+	case p.If != nil:
+		return convertIf(p.If)
 	default:
 		return nil, fmt.Errorf("unsupported primary")
 	}
+}
+
+func convertIf(ifx *parser.IfExpr) (Expr, error) {
+	cond, err := convertExpr(ifx.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenExpr, err := convertExpr(ifx.Then)
+	if err != nil {
+		return nil, err
+	}
+	elseExpr := Expr(&BoolLit{Value: false})
+	if ifx.Else != nil {
+		elseExpr, err = convertExpr(ifx.Else)
+		if err != nil {
+			return nil, err
+		}
+	} else if ifx.ElseIf != nil {
+		elseExpr, err = convertIf(ifx.ElseIf)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
 }
 
 func convertLiteral(l *parser.Literal) (Expr, error) {
