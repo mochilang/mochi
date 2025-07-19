@@ -1,6 +1,6 @@
 exit status 1
-lua: ...ace/mochi/tests/transpiler/x/lua/partial_application.lua:67: attempt to perform arithmetic on a nil value (local 'b')
+lua: ...ace/mochi/tests/transpiler/x/lua/partial_application.lua:3: attempt to perform arithmetic on a nil value (local 'b')
 stack traceback:
-	...ace/mochi/tests/transpiler/x/lua/partial_application.lua:67: in function 'add'
-	...ace/mochi/tests/transpiler/x/lua/partial_application.lua:70: in main chunk
+	...ace/mochi/tests/transpiler/x/lua/partial_application.lua:3: in function 'add'
+	...ace/mochi/tests/transpiler/x/lua/partial_application.lua:6: in main chunk
 	[C]: in ?
