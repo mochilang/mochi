@@ -1,5 +1,10 @@
 # C++ Transpiler Tasks
 
+## Recent Enhancements (2025-07-19 10:53 +0000)
+- Added support for string comparison expressions.
+- Generated golden test for `string_compare`.
+- Updated README progress to 21/100 programs.
+
 ## Recent Enhancements (2025-07-19 17:10 +0700)
 - Added function declarations, return statements and lambda expressions.
 - Enabled transpiler tests for `fun_call`, `fun_three_args`, `fun_expr_in_let` and `bool_chain`.
