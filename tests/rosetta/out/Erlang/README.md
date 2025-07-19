@@ -14,8 +14,8 @@ This directory holds Erlang source code generated from the real Mochi programs i
 - [ ] 24-game-solve
 - [ ] 24-game
 - [ ] 4-rings-or-4-squares-puzzle
-- [x] 9-billion-names-of-god-the-integer
-- [x] 99-bottles-of-beer-2
+- [ ] 9-billion-names-of-god-the-integer
+- [ ] 99-bottles-of-beer-2
 - [x] 99-bottles-of-beer
 - [ ] DNS-query
 - [ ] a+b

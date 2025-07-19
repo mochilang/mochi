@@ -1,0 +1,18 @@
+run: exit status 127
+/tmp/a+b.erl:6:9: function int/1 undefined
+%    6|     A = int(input()),
+%     |         ^
+
+/tmp/a+b.erl:6:13: function input/0 undefined
+%    6|     A = int(input()),
+%     |             ^
+
+/tmp/a+b.erl:7:9: function int/1 undefined
+%    7|     B = int(input()),
+%     |         ^
+
+/tmp/a+b.erl:7:13: function input/0 undefined
+%    7|     B = int(input()),
+%     |             ^
+
+escript: There were compilation errors.

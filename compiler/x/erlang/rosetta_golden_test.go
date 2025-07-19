@@ -97,7 +97,10 @@ func TestErlangCompiler_Rosetta_Golden(t *testing.T) {
 	if err != nil {
 		t.Fatalf("glob: %v", err)
 	}
-	max := 3
+	// Run golden tests for the first 20 programs in alphabetical order.
+	// This allows broader coverage compared to the default which only
+	// exercised three examples.
+	max := 20
 	if len(files) < max {
 		max = len(files)
 	}
