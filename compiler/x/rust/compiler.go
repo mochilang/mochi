@@ -1608,12 +1608,25 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	}
 	res := left
 	leftAST := b.Left
+	prevRes := left
+	lastOp := ""
 	for _, op := range b.Right {
 		r, err := c.compilePostfix(op.Right)
 		if err != nil {
 			return "", err
 		}
 		rBase := strings.TrimSuffix(r, ".clone()")
+		if (op.Op == "-" || op.Op == "+") && isZeroUnary(leftAST) && isComparisonOp(lastOp) {
+			if op.Op == "-" {
+				res = fmt.Sprintf("%s %s -%s", prevRes, lastOp, r)
+			} else {
+				res = fmt.Sprintf("%s %s %s", prevRes, lastOp, r)
+			}
+			prevRes = res
+			lastOp = op.Op
+			leftAST = &parser.Unary{Value: op.Right}
+			continue
+		}
 		switch op.Op {
 		case "in":
 			if c.env != nil {
@@ -1855,8 +1868,35 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			res = fmt.Sprintf("%s %s %s", res, op.Op, r)
 		}
 		leftAST = &parser.Unary{Value: op.Right}
+		prevRes = res
+		lastOp = op.Op
 	}
 	return res, nil
+}
+
+func isZeroUnary(u *parser.Unary) bool {
+	if u == nil || len(u.Ops) > 0 {
+		return false
+	}
+	p := u.Value
+	if p == nil || len(p.Ops) > 0 || p.Target == nil || p.Target.Lit == nil {
+		return false
+	}
+	if p.Target.Lit.Int != nil {
+		return *p.Target.Lit.Int == 0
+	}
+	if p.Target.Lit.Float != nil {
+		return *p.Target.Lit.Float == 0
+	}
+	return false
+}
+
+func isComparisonOp(op string) bool {
+	switch op {
+	case "<", "<=", ">", ">=":
+		return true
+	}
+	return false
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
