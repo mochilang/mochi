@@ -469,6 +469,20 @@ type Name struct{ Name string }
 
 func (n *Name) emit(w io.Writer) error { _, err := io.WriteString(w, n.Name); return err }
 
+// SelectorExpr represents receiver.field access.
+type SelectorExpr struct {
+	Receiver Expr
+	Field    string
+}
+
+func (s *SelectorExpr) emit(w io.Writer) error {
+	if err := s.Receiver.emit(w); err != nil {
+		return err
+	}
+	_, err := io.WriteString(w, "."+s.Field)
+	return err
+}
+
 type StringLit struct{ Value string }
 
 func (s *StringLit) emit(w io.Writer) error { _, err := fmt.Fprintf(w, "%q", s.Value); return err }
@@ -507,6 +521,39 @@ func (l *ListLit) emit(w io.Writer) error {
 		}
 	}
 	_, err := io.WriteString(w, "]")
+	return err
+}
+
+// MapLit represents a simple map literal.
+type MapLit struct{ Entries []MapEntry }
+
+// MapEntry is a key/value pair inside a map literal.
+type MapEntry struct {
+	Key   Expr
+	Value Expr
+}
+
+func (m *MapLit) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "{"); err != nil {
+		return err
+	}
+	for i, e := range m.Entries {
+		if i > 0 {
+			if _, err := io.WriteString(w, ", "); err != nil {
+				return err
+			}
+		}
+		if err := e.Key.emit(w); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, ": "); err != nil {
+			return err
+		}
+		if err := e.Value.emit(w); err != nil {
+			return err
+		}
+	}
+	_, err := io.WriteString(w, "}")
 	return err
 }
 
@@ -690,6 +737,11 @@ func inferType(e Expr) string {
 			return "List<dynamic>"
 		}
 		return "List<" + inferType(ex.Elems[0]) + ">"
+	case *MapLit:
+		if len(ex.Entries) == 0 {
+			return "Map<dynamic, dynamic>"
+		}
+		return "Map<" + inferType(ex.Entries[0].Key) + ", " + inferType(ex.Entries[0].Value) + ">"
 	case *BinaryExpr:
 		switch ex.Op {
 		case "+", "-", "*", "/", "%":
@@ -1113,7 +1165,8 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-	for _, op := range pf.Ops {
+	for i := 0; i < len(pf.Ops); i++ {
+		op := pf.Ops[i]
 		switch {
 		case op.Index != nil:
 			if op.Index.Colon != nil || op.Index.Colon2 != nil || op.Index.End != nil || op.Index.Step != nil {
@@ -1127,6 +1180,33 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				return nil, err
 			}
 			expr = &IndexExpr{Target: expr, Index: idx}
+		case op.Field != nil:
+			// method call if next op is call
+			if i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil {
+				call := pf.Ops[i+1]
+				var args []Expr
+				for _, a := range call.Call.Args {
+					ex, err := convertExpr(a)
+					if err != nil {
+						return nil, err
+					}
+					args = append(args, ex)
+				}
+				expr = &CallExpr{Func: &SelectorExpr{Receiver: expr, Field: op.Field.Name}, Args: args}
+				i++
+			} else {
+				expr = &SelectorExpr{Receiver: expr, Field: op.Field.Name}
+			}
+		case op.Call != nil:
+			var args []Expr
+			for _, a := range op.Call.Args {
+				ex, err := convertExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				args = append(args, ex)
+			}
+			expr = &CallExpr{Func: expr, Args: args}
 		case op.Cast != nil:
 			// ignore casts
 		default:
@@ -1207,6 +1287,20 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			elems = append(elems, ex)
 		}
 		return &ListLit{Elems: elems}, nil
+	case p.Map != nil:
+		var entries []MapEntry
+		for _, it := range p.Map.Items {
+			k, err := convertExpr(it.Key)
+			if err != nil {
+				return nil, err
+			}
+			v, err := convertExpr(it.Value)
+			if err != nil {
+				return nil, err
+			}
+			entries = append(entries, MapEntry{Key: k, Value: v})
+		}
+		return &MapLit{Entries: entries}, nil
 	case p.If != nil:
 		return convertIfExpr(p.If)
 	case p.FunExpr != nil && p.FunExpr.ExprBody != nil:
@@ -1219,8 +1313,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			return nil, err
 		}
 		return &LambdaExpr{Params: params, Body: body}, nil
-	case p.Selector != nil && len(p.Selector.Tail) == 0:
-		return &Name{Name: p.Selector.Root}, nil
+	case p.Selector != nil:
+		expr := Expr(&Name{Name: p.Selector.Root})
+		for _, f := range p.Selector.Tail {
+			expr = &SelectorExpr{Receiver: expr, Field: f}
+		}
+		return expr, nil
 	case p.Group != nil:
 		return convertExpr(p.Group)
 	}
