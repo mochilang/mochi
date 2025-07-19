@@ -1,11 +1,10 @@
-## Recent Enhancements (2025-07-20 01:48 +0700)
-- Improved variable declarations with basic type inference.
-- Simplified `avg` builtin emission using list methods.
-- Updated README checklist with progress summary.
+## Recent Enhancements (2025-07-20 01:52 +0700)
+- Updated README checklist to include all golden tests.
+- Enhanced type inference for lists and maps.
+- Removed version/time helpers for simpler output.
 
 - Added support for map literals and method calls.
 - Generated golden outputs for `len_map` and `string_contains`.
-- Updated README checklist (48/100).
 
 - Added support for `break` and `continue` statements.
 - Implemented `if ... then ... else` expressions.
