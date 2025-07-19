@@ -78,6 +78,10 @@ func TestTranspilePrintHello(t *testing.T) {
 }
 
 func TestCSTranspiler_Golden(t *testing.T) {
+	if _, err := exec.LookPath("dotnet"); err != nil {
+		t.Skip("dotnet not installed")
+	}
+
 	root := repoRoot(t)
 	goldenDir := filepath.Join(root, "tests", "transpiler", "x", "cs")
 	files, err := filepath.Glob(filepath.Join(goldenDir, "*.cs"))
@@ -88,9 +92,10 @@ func TestCSTranspiler_Golden(t *testing.T) {
 		t.Fatalf("no golden files in %s", goldenDir)
 	}
 
-	for _, wantPath := range files {
-		name := strings.TrimSuffix(filepath.Base(wantPath), ".cs")
+	for _, csPath := range files {
+		name := strings.TrimSuffix(filepath.Base(csPath), ".cs")
 		src := filepath.Join(root, "tests", "vm", "valid", name+".mochi")
+		wantPath := filepath.Join(root, "tests", "vm", "valid", name+".out")
 
 		t.Run(name, func(t *testing.T) {
 			prog, err := parser.Parse(src)
@@ -105,13 +110,34 @@ func TestCSTranspiler_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("transpile error: %v", err)
 			}
-			got := transpiler.Emit(ast)
+			code := transpiler.Emit(ast)
+			if err := os.WriteFile(csPath, code, 0644); err != nil {
+				t.Fatalf("write golden: %v", err)
+			}
+
+			dir := t.TempDir()
+			proj := filepath.Join(dir, "app.csproj")
+			csproj := `<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework></PropertyGroup></Project>`
+			if err := os.WriteFile(proj, []byte(csproj), 0644); err != nil {
+				t.Fatal(err)
+			}
+			file := filepath.Join(dir, "Program.cs")
+			if err := os.WriteFile(file, code, 0644); err != nil {
+				t.Fatal(err)
+			}
+			cmd := exec.Command("dotnet", "run", "--project", proj)
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				t.Fatalf("dotnet run error: %v\n%s", err, out)
+			}
+			got := bytes.TrimSpace(out)
 			want, err := os.ReadFile(wantPath)
 			if err != nil {
-				t.Fatalf("read golden: %v", err)
+				t.Fatalf("read expected output: %v", err)
 			}
+			want = bytes.TrimSpace(want)
 			if !bytes.Equal(got, want) {
-				t.Fatalf("golden mismatch\n--- got ---\n%s\n--- want ---\n%s", got, want)
+				t.Fatalf("output mismatch\nGot: %s\nWant: %s", got, want)
 			}
 		})
 	}
