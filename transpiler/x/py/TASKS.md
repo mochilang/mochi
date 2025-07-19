@@ -1,4 +1,8 @@
 # Python Transpiler Tasks
+## Recent Enhancements (2025-07-20 00:52 UTC+07:00)
+- Added partial application support emitting lambdas.
+- Generated golden outputs for `pure_fold`, `pure_global_fold` and `partial_application`.
+- Updated README checklist to 70/100.
 ## Recent Enhancements (2025-07-20 00:27 +0700)
 - Implemented `json` builtin using Python `json.dumps` and auto-import.
 - Generated golden output for `json_builtin`.

@@ -22,7 +22,10 @@ type Program struct {
 	Stmts []Stmt
 }
 
-var currentImports map[string]bool
+var (
+	currentImports map[string]bool
+	currentEnv     *types.Env
+)
 
 type Stmt interface{ isStmt() }
 
@@ -1010,6 +1013,7 @@ func Emit(w io.Writer, p *Program) error {
 // Transpile converts a Mochi program to a Python AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	currentImports = map[string]bool{}
+	currentEnv = env
 	p := &Program{}
 	for _, st := range prog.Statements {
 		switch {
@@ -1592,6 +1596,21 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			args = append(args, ae)
+		}
+		if currentEnv != nil {
+			if fn, ok := currentEnv.GetFunc(p.Call.Func); ok {
+				if len(args) < len(fn.Params) {
+					rem := fn.Params[len(args):]
+					var names []string
+					var extra []Expr
+					for _, p := range rem {
+						names = append(names, p.Name)
+						extra = append(extra, &Name{Name: p.Name})
+					}
+					call := &CallExpr{Func: &Name{Name: p.Call.Func}, Args: append(args, extra...)}
+					return &LambdaExpr{Params: names, Expr: call}, nil
+				}
+			}
 		}
 		switch p.Call.Func {
 		case "append":

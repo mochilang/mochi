@@ -351,3 +351,15 @@ func TestTranspile_PythonMath(t *testing.T) {
 func TestTranspile_JsonBuiltin(t *testing.T) {
 	runCase(t, "json_builtin")
 }
+
+func TestTranspile_PureFold(t *testing.T) {
+	runCase(t, "pure_fold")
+}
+
+func TestTranspile_PureGlobalFold(t *testing.T) {
+	runCase(t, "pure_global_fold")
+}
+
+func TestTranspile_PartialApplication(t *testing.T) {
+	runCase(t, "partial_application")
+}
