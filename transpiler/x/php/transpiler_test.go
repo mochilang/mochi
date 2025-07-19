@@ -145,6 +145,14 @@ func TestTranspile_VarAssignment(t *testing.T) {
 	runTranspileTest(t, "var_assignment")
 }
 
+func TestTranspile_TypedLet(t *testing.T) {
+	runTranspileTest(t, "typed_let")
+}
+
+func TestTranspile_BasicCompare(t *testing.T) {
+	runTranspileTest(t, "basic_compare")
+}
+
 func runTranspileTest(t *testing.T, name string) {
 	if _, err := exec.LookPath("php"); err != nil {
 		t.Skip("php not installed")
