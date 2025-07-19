@@ -49,6 +49,23 @@ type WhileStmt struct {
 	Body []Stmt
 }
 
+type ForRangeStmt struct {
+	Name  string
+	Start Expr
+	End   Expr
+	Body  []Stmt
+}
+
+type ForInStmt struct {
+	Name     string
+	Iterable Expr
+	Body     []Stmt
+}
+
+type BreakStmt struct{}
+
+type ContinueStmt struct{}
+
 type IfExpr struct {
 	Cond Expr
 	Then Expr
@@ -153,6 +170,47 @@ func (wst *WhileStmt) emit(w io.Writer) {
 	io.WriteString(w, "end")
 }
 
+func (fr *ForRangeStmt) emit(w io.Writer) {
+	io.WriteString(w, "for ")
+	io.WriteString(w, fr.Name)
+	io.WriteString(w, " = ")
+	if fr.Start != nil {
+		fr.Start.emit(w)
+	} else {
+		io.WriteString(w, "0")
+	}
+	io.WriteString(w, ", ")
+	if fr.End != nil {
+		fr.End.emit(w)
+		io.WriteString(w, " - 1")
+	}
+	io.WriteString(w, " do\n")
+	for _, st := range fr.Body {
+		st.emit(w)
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, "end")
+}
+
+func (fi *ForInStmt) emit(w io.Writer) {
+	io.WriteString(w, "for _, ")
+	io.WriteString(w, fi.Name)
+	io.WriteString(w, " in pairs(")
+	if fi.Iterable != nil {
+		fi.Iterable.emit(w)
+	}
+	io.WriteString(w, ") do\n")
+	for _, st := range fi.Body {
+		st.emit(w)
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, "end")
+}
+
+func (b *BreakStmt) emit(w io.Writer) { io.WriteString(w, "break") }
+
+func (c *ContinueStmt) emit(w io.Writer) { io.WriteString(w, "-- continue") }
+
 func (ie *IfExpr) emit(w io.Writer) {
 	io.WriteString(w, "((")
 	ie.Cond.emit(w)
@@ -208,6 +266,8 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		op = "and"
 	} else if op == "||" {
 		op = "or"
+	} else if op == "/" {
+		op = "//"
 	}
 	io.WriteString(w, op)
 	io.WriteString(w, " ")
@@ -537,6 +597,41 @@ func convertWhileStmt(ws *parser.WhileStmt) (Stmt, error) {
 	return &WhileStmt{Cond: cond, Body: body}, nil
 }
 
+func convertForStmt(fs *parser.ForStmt) (Stmt, error) {
+	if fs.RangeEnd != nil {
+		start, err := convertExpr(fs.Source)
+		if err != nil {
+			return nil, err
+		}
+		end, err := convertExpr(fs.RangeEnd)
+		if err != nil {
+			return nil, err
+		}
+		var body []Stmt
+		for _, st := range fs.Body {
+			s, err := convertStmt(st)
+			if err != nil {
+				return nil, err
+			}
+			body = append(body, s)
+		}
+		return &ForRangeStmt{Name: fs.Name, Start: start, End: end, Body: body}, nil
+	}
+	iter, err := convertExpr(fs.Source)
+	if err != nil {
+		return nil, err
+	}
+	var body []Stmt
+	for _, st := range fs.Body {
+		s, err := convertStmt(st)
+		if err != nil {
+			return nil, err
+		}
+		body = append(body, s)
+	}
+	return &ForInStmt{Name: fs.Name, Iterable: iter, Body: body}, nil
+}
+
 func convertFunStmt(fs *parser.FunStmt) (Stmt, error) {
 	f := &FunStmt{Name: fs.Name}
 	for _, p := range fs.Params {
@@ -568,6 +663,8 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
+		} else if st.Let.Type != nil && st.Let.Type.Simple != nil && *st.Let.Type.Simple == "int" {
+			expr = &IntLit{Value: 0}
 		}
 		return &AssignStmt{Name: st.Let.Name, Value: expr}, nil
 	case st.Var != nil:
@@ -578,6 +675,8 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
+		} else if st.Var.Type != nil && st.Var.Type.Simple != nil && *st.Var.Type.Simple == "int" {
+			expr = &IntLit{Value: 0}
 		}
 		return &AssignStmt{Name: st.Var.Name, Value: expr}, nil
 	case st.Assign != nil:
@@ -597,6 +696,12 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		return convertIfStmt(st.If)
 	case st.While != nil:
 		return convertWhileStmt(st.While)
+	case st.For != nil:
+		return convertForStmt(st.For)
+	case st.Break != nil:
+		return &BreakStmt{}, nil
+	case st.Continue != nil:
+		return &ContinueStmt{}, nil
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
@@ -687,6 +792,32 @@ func stmtNode(s Stmt) *ast.Node {
 		}
 		n.Children = append(n.Children, body)
 		return n
+	case *ForRangeStmt:
+		{
+			n := &ast.Node{Kind: "for_range", Value: st.Name}
+			n.Children = append(n.Children, exprNode(st.Start), exprNode(st.End))
+			body := &ast.Node{Kind: "body"}
+			for _, s2 := range st.Body {
+				body.Children = append(body.Children, stmtNode(s2))
+			}
+			n.Children = append(n.Children, body)
+			return n
+		}
+	case *ForInStmt:
+		{
+			n := &ast.Node{Kind: "for_in", Value: st.Name}
+			n.Children = append(n.Children, exprNode(st.Iterable))
+			body := &ast.Node{Kind: "body"}
+			for _, s2 := range st.Body {
+				body.Children = append(body.Children, stmtNode(s2))
+			}
+			n.Children = append(n.Children, body)
+			return n
+		}
+	case *BreakStmt:
+		return &ast.Node{Kind: "break"}
+	case *ContinueStmt:
+		return &ast.Node{Kind: "continue"}
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
