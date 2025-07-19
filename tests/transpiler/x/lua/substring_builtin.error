@@ -1,5 +1,0 @@
-exit status 1
-lua: ...space/mochi/tests/transpiler/x/lua/substring_builtin.lua:2: attempt to call a nil value (global 'substring')
-stack traceback:
-	...space/mochi/tests/transpiler/x/lua/substring_builtin.lua:2: in main chunk
-	[C]: in ?
