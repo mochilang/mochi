@@ -1,3 +1,7 @@
+## Progress (2025-07-20 00:09 +0700)
+- Added while/for loops and index assignment support
+
+
 ## Progress (2025-07-19 23:35 +0700)
 - Removed legacy boolInt handling in if/while statements
 - Regenerated golden test files

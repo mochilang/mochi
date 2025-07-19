@@ -324,7 +324,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 type AvgExpr struct{ List Expr }
 
 func (a *AvgExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "func(nums []int) float64 { sum := 0; for _, n := range nums { sum += n }; return float64(sum)/float64(len(nums)) }(")
+	fmt.Fprint(w, "func(nums []int) float64 {\n    sum := 0\n    for _, n := range nums {\n        sum += n\n    }\n    return float64(sum) / float64(len(nums))\n}(")
 	a.List.emit(w)
 	fmt.Fprint(w, ")")
 }
@@ -332,7 +332,7 @@ func (a *AvgExpr) emit(w io.Writer) {
 type SumExpr struct{ List Expr }
 
 func (s *SumExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "func(nums []int) int { s := 0; for _, n := range nums { s += n }; return s }(")
+	fmt.Fprint(w, "func(nums []int) int {\n    sum := 0\n    for _, n := range nums {\n        sum += n\n    }\n    return sum\n}(")
 	s.List.emit(w)
 	fmt.Fprint(w, ")")
 }
@@ -340,7 +340,7 @@ func (s *SumExpr) emit(w io.Writer) {
 type MinExpr struct{ List Expr }
 
 func (m *MinExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "func(nums []int) int { if len(nums)==0 { return 0 }; min := nums[0]; for _, n := range nums[1:] { if n < min { min = n } }; return min }(")
+	fmt.Fprint(w, "func(nums []int) int {\n    if len(nums) == 0 {\n        return 0\n    }\n    min := nums[0]\n    for _, n := range nums[1:] {\n        if n < min {\n            min = n\n        }\n    }\n    return min\n}(")
 	m.List.emit(w)
 	fmt.Fprint(w, ")")
 }
@@ -348,7 +348,7 @@ func (m *MinExpr) emit(w io.Writer) {
 type MaxExpr struct{ List Expr }
 
 func (m *MaxExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "func(nums []int) int { if len(nums)==0 { return 0 }; max := nums[0]; for _, n := range nums[1:] { if n > max { max = n } }; return max }(")
+	fmt.Fprint(w, "func(nums []int) int {\n    if len(nums) == 0 {\n        return 0\n    }\n    max := nums[0]\n    for _, n := range nums[1:] {\n        if n > max {\n            max = n\n        }\n    }\n    return max\n}(")
 	m.List.emit(w)
 	fmt.Fprint(w, ")")
 }
@@ -359,7 +359,7 @@ type ContainsExpr struct {
 }
 
 func (c *ContainsExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "func(s any, v any) any { switch xs := s.(type) { case []int: n, ok := v.(int); if !ok { return nil }; for i, m := range xs { if m == n { return i } }; return nil; case string: str, ok := v.(string); if !ok { return 0 }; if strings.Contains(xs, str) { return 1 }; return 0 }; return nil }(")
+	fmt.Fprint(w, "func(coll any, val any) any {\n    switch xs := coll.(type) {\n    case []int:\n        v, ok := val.(int)\n        if !ok {\n            return nil\n        }\n        for i, n := range xs {\n            if n == v {\n                return i\n            }\n        }\n        return nil\n    case string:\n        s, ok := val.(string)\n        if !ok {\n            return 0\n        }\n        if strings.Contains(xs, s) {\n            return 1\n        }\n        return 0\n    }\n    return nil\n}(")
 	c.Collection.emit(w)
 	fmt.Fprint(w, ", ")
 	c.Value.emit(w)
@@ -479,7 +479,11 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			return &VarDecl{Name: st.Let.Name, Type: toGoType(st.Let.Type), Value: e}, nil
+			typ := toGoType(st.Let.Type)
+			if typ == "" {
+				typ = guessGoType(st.Let.Value)
+			}
+			return &VarDecl{Name: st.Let.Name, Type: typ, Value: e}, nil
 		}
 		return &VarDecl{Name: st.Let.Name, Type: toGoType(st.Let.Type)}, nil
 	case st.Var != nil:
@@ -488,7 +492,11 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			return &VarDecl{Name: st.Var.Name, Type: toGoType(st.Var.Type), Value: e}, nil
+			typ := toGoType(st.Var.Type)
+			if typ == "" {
+				typ = guessGoType(st.Var.Value)
+			}
+			return &VarDecl{Name: st.Var.Name, Type: typ, Value: e}, nil
 		}
 		return &VarDecl{Name: st.Var.Name, Type: toGoType(st.Var.Type)}, nil
 	case st.Assign != nil:
@@ -1011,6 +1019,70 @@ func isListPrimary(p *parser.Primary) bool {
 		}
 	}
 	return false
+}
+
+func isStringExpr(e *parser.Expr) bool { return isStringBinary(e.Binary) }
+
+func isStringBinary(b *parser.BinaryExpr) bool {
+	if b == nil {
+		return false
+	}
+	if len(b.Right) == 0 {
+		return isStringUnary(b.Left)
+	}
+	for _, op := range b.Right {
+		if op.Op == "+" {
+			if isStringUnary(b.Left) || isStringPostfix(op.Right) {
+				return true
+			}
+		}
+	}
+	return isStringUnary(b.Left)
+}
+
+func isStringUnary(u *parser.Unary) bool {
+	if u == nil {
+		return false
+	}
+	return isStringPostfix(u.Value)
+}
+
+func isStringPostfix(pf *parser.PostfixExpr) bool {
+	if pf == nil || len(pf.Ops) > 0 {
+		return false
+	}
+	return isStringPrimary(pf.Target)
+}
+
+func isStringPrimary(p *parser.Primary) bool {
+	if p == nil {
+		return false
+	}
+	switch {
+	case p.Lit != nil && p.Lit.Str != nil:
+		return true
+	case p.Call != nil:
+		switch p.Call.Func {
+		case "str", "substring":
+			return true
+		}
+	case p.Group != nil:
+		return isStringExpr(p.Group)
+	}
+	return false
+}
+
+func guessGoType(e *parser.Expr) string {
+	switch {
+	case isBoolExpr(e):
+		return "bool"
+	case isStringExpr(e):
+		return "string"
+	case isListExpr(e):
+		return "[]int"
+	default:
+		return "int"
+	}
 }
 
 // Emit formats the Go AST back into source code.
