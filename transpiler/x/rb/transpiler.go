@@ -95,6 +95,21 @@ func (s *AssignStmt) emit(w io.Writer) {
 	s.Value.emit(w)
 }
 
+// IndexAssignStmt represents assignment to an indexed element.
+type IndexAssignStmt struct {
+	Name  string
+	Index Expr
+	Value Expr
+}
+
+func (s *IndexAssignStmt) emit(w io.Writer) {
+	io.WriteString(w, s.Name)
+	io.WriteString(w, "[")
+	s.Index.emit(w)
+	io.WriteString(w, "] = ")
+	s.Value.emit(w)
+}
+
 type Expr interface{ emit(io.Writer) }
 
 // ExprStmt represents a statement consisting of a single expression.
@@ -249,6 +264,59 @@ func (l *ListLit) emit(w io.Writer) {
 		e.emit(w)
 	}
 	io.WriteString(w, "]")
+}
+
+// MapLit represents a Ruby hash literal.
+type MapLit struct{ Items []MapItem }
+
+// MapItem is a key/value pair inside a map literal.
+type MapItem struct {
+	Key   Expr
+	Value Expr
+}
+
+func (m *MapLit) emit(w io.Writer) {
+	io.WriteString(w, "{")
+	for i, it := range m.Items {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		it.Key.emit(w)
+		io.WriteString(w, " => ")
+		it.Value.emit(w)
+	}
+	io.WriteString(w, "}")
+}
+
+// IndexExpr represents indexing into a collection.
+type IndexExpr struct {
+	Target Expr
+	Index  Expr
+}
+
+func (ix *IndexExpr) emit(w io.Writer) {
+	ix.Target.emit(w)
+	io.WriteString(w, "[")
+	ix.Index.emit(w)
+	io.WriteString(w, "]")
+}
+
+// CastExpr represents a type conversion.
+type CastExpr struct {
+	Value Expr
+	Type  string
+}
+
+func (c *CastExpr) emit(w io.Writer) {
+	c.Value.emit(w)
+	switch c.Type {
+	case "int":
+		io.WriteString(w, ".to_i")
+	case "float":
+		io.WriteString(w, ".to_f")
+	case "string":
+		io.WriteString(w, ".to_s")
+	}
 }
 
 type BinaryExpr struct {
@@ -407,7 +475,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		if err != nil {
 			return nil, err
 		}
-		rbProg.Stmts = append(rbProg.Stmts, conv)
+		if conv != nil {
+			rbProg.Stmts = append(rbProg.Stmts, conv)
+		}
 	}
 	return rbProg, nil
 }
@@ -420,6 +490,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		return &ExprStmt{Expr: e}, nil
+	case st.Type != nil:
+		// type declarations are ignored in Ruby output
+		return nil, nil
 	case st.Let != nil:
 		v, err := convertExpr(st.Let.Value)
 		if err != nil {
@@ -437,10 +510,21 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
-		if len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0 {
-			return nil, fmt.Errorf("unsupported assignment")
+		if len(st.Assign.Index) == 1 && len(st.Assign.Field) == 0 {
+			idx, err := convertExpr(st.Assign.Index[0].Start)
+			if err != nil {
+				return nil, err
+			}
+			return &IndexAssignStmt{Name: st.Assign.Name, Index: idx, Value: v}, nil
 		}
-		return &AssignStmt{Name: st.Assign.Name, Value: v}, nil
+		if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 1 {
+			idx := &StringLit{Value: st.Assign.Field[0].Name}
+			return &IndexAssignStmt{Name: st.Assign.Name, Index: idx, Value: v}, nil
+		}
+		if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
+			return &AssignStmt{Name: st.Assign.Name, Value: v}, nil
+		}
+		return nil, fmt.Errorf("unsupported assignment")
 	case st.If != nil:
 		return convertIf(st.If)
 	case st.While != nil:
@@ -625,10 +709,33 @@ func convertUnary(u *parser.Unary) (Expr, error) {
 }
 
 func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
-	if pf == nil || len(pf.Ops) > 0 {
+	if pf == nil {
 		return nil, fmt.Errorf("unsupported postfix")
 	}
-	return convertPrimary(pf.Target)
+	expr, err := convertPrimary(pf.Target)
+	if err != nil {
+		return nil, err
+	}
+	for _, op := range pf.Ops {
+		switch {
+		case op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil:
+			idx, err := convertExpr(op.Index.Start)
+			if err != nil {
+				return nil, err
+			}
+			expr = &IndexExpr{Target: expr, Index: idx}
+		case op.Field != nil:
+			idx := &StringLit{Value: op.Field.Name}
+			expr = &IndexExpr{Target: expr, Index: idx}
+		case op.Cast != nil:
+			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
+				expr = &CastExpr{Value: expr, Type: *op.Cast.Type.Simple}
+			}
+		default:
+			return nil, fmt.Errorf("unsupported postfix")
+		}
+	}
+	return expr, nil
 }
 
 func convertPrimary(p *parser.Primary) (Expr, error) {
@@ -690,6 +797,20 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			elems[i] = ex
 		}
 		return &ListLit{Elems: elems}, nil
+	case p.Map != nil:
+		items := make([]MapItem, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			k, err := convertExpr(it.Key)
+			if err != nil {
+				return nil, err
+			}
+			v, err := convertExpr(it.Value)
+			if err != nil {
+				return nil, err
+			}
+			items[i] = MapItem{Key: k, Value: v}
+		}
+		return &MapLit{Items: items}, nil
 	case p.If != nil:
 		return convertIfExpr(p.If)
 	case p.Group != nil:
@@ -698,8 +819,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			return nil, err
 		}
 		return &GroupExpr{Expr: ex}, nil
-	case p.Selector != nil && len(p.Selector.Tail) == 0:
-		return &Ident{Name: p.Selector.Root}, nil
+	case p.Selector != nil:
+		expr := Expr(&Ident{Name: p.Selector.Root})
+		for _, t := range p.Selector.Tail {
+			expr = &IndexExpr{Target: expr, Index: &StringLit{Value: t}}
+		}
+		return expr, nil
 	default:
 		return nil, fmt.Errorf("unsupported primary")
 	}
@@ -748,6 +873,8 @@ func stmtNode(s Stmt) *ast.Node {
 		return &ast.Node{Kind: "var", Value: st.Name, Children: []*ast.Node{exprNode(st.Value)}}
 	case *AssignStmt:
 		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{exprNode(st.Value)}}
+	case *IndexAssignStmt:
+		return &ast.Node{Kind: "index_assign", Value: st.Name, Children: []*ast.Node{exprNode(st.Index), exprNode(st.Value)}}
 	case *IfStmt:
 		n := &ast.Node{Kind: "if", Children: []*ast.Node{exprNode(st.Cond)}}
 		thenNode := &ast.Node{Kind: "then"}
@@ -835,6 +962,12 @@ func exprNode(e Expr) *ast.Node {
 			n.Children = append(n.Children, exprNode(e))
 		}
 		return n
+	case *MapLit:
+		n := &ast.Node{Kind: "map"}
+		for _, it := range ex.Items {
+			n.Children = append(n.Children, &ast.Node{Kind: "entry", Children: []*ast.Node{exprNode(it.Key), exprNode(it.Value)}})
+		}
+		return n
 	case *BinaryExpr:
 		return &ast.Node{Kind: "bin", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
 	case *UnaryExpr:
@@ -853,6 +986,10 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "join", Children: []*ast.Node{exprNode(ex.List)}}
 	case *GroupExpr:
 		return &ast.Node{Kind: "group", Children: []*ast.Node{exprNode(ex.Expr)}}
+	case *IndexExpr:
+		return &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(ex.Target), exprNode(ex.Index)}}
+	case *CastExpr:
+		return &ast.Node{Kind: "cast", Value: ex.Type, Children: []*ast.Node{exprNode(ex.Value)}}
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
