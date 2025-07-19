@@ -2,7 +2,7 @@
 
 This folder contains an experimental transpiler that converts Mochi source code into F#.
 
-## Golden Test Checklist (25/100)
+## Golden Test Checklist (32/100)
 
 The list below tracks Mochi programs under `tests/vm/valid` that should successfully transpile. Checked items indicate tests known to work.
 
@@ -10,7 +10,7 @@ The list below tracks Mochi programs under `tests/vm/valid` that should successf
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
 - [x] binary_precedence.mochi
-- [ ] bool_chain.mochi
+- [x] bool_chain.mochi
 - [ ] break_continue.mochi
 - [ ] cast_string_to_int.mochi
 - [ ] cast_struct.mochi
@@ -25,9 +25,9 @@ The list below tracks Mochi programs under `tests/vm/valid` that should successf
 - [x] for_list_collection.mochi
 - [x] for_loop.mochi
 - [ ] for_map_collection.mochi
-- [ ] fun_call.mochi
+- [x] fun_call.mochi
 - [ ] fun_expr_in_let.mochi
-- [ ] fun_three_args.mochi
+- [x] fun_three_args.mochi
 - [ ] go_auto.mochi
 - [ ] group_by.mochi
 - [ ] group_by_conditional_sum.mochi
@@ -72,17 +72,17 @@ The list below tracks Mochi programs under `tests/vm/valid` that should successf
 - [ ] nested_function.mochi
 - [ ] order_by_map.mochi
 - [ ] outer_join.mochi
-- [ ] partial_application.mochi
+- [x] partial_application.mochi
 - [x] print_hello.mochi
-- [ ] pure_fold.mochi
-- [ ] pure_global_fold.mochi
+- [x] pure_fold.mochi
+- [x] pure_global_fold.mochi
 - [ ] python_auto.mochi
 - [ ] python_math.mochi
 - [ ] query_sum_select.mochi
 - [ ] record_assign.mochi
 - [ ] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
-- [ ] short_circuit.mochi
+- [x] short_circuit.mochi
 - [ ] slice.mochi
 - [ ] sort_stable.mochi
 - [x] str_builtin.mochi
