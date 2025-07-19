@@ -6,7 +6,8 @@ various target languages. Each language backend lives under `x/<lang>`.
 ## Golden test progress
 
 The table below lists all Mochi programs under `tests/vm/valid`. Items checked
-are currently supported by the Ruby transpiler tests.
+are currently supported by the Ruby transpiler tests. **Progress:** 17/100
+completed.
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -41,8 +42,8 @@ are currently supported by the Ruby transpiler tests.
 - [ ] group_by_sort
 - [ ] group_items_iteration
 - [x] if_else
-- [ ] if_then_else
-- [ ] if_then_else_nested
+- [x] if_then_else
+- [x] if_then_else_nested
 - [ ] in_operator
 - [ ] in_operator_extended
 - [ ] inner_join
