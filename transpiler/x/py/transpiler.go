@@ -1304,6 +1304,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				call := &CallExpr{Func: &FieldExpr{Target: args[0], Name: "values"}, Args: nil}
 				return &CallExpr{Func: &Name{Name: "list"}, Args: []Expr{call}}, nil
 			}
+		case "min", "max":
+			if len(args) == 1 {
+				return &CallExpr{Func: &Name{Name: p.Call.Func}, Args: args}, nil
+			}
 		case "substring":
 			if len(args) == 3 {
 				return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil

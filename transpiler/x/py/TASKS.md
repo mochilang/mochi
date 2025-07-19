@@ -56,3 +56,8 @@
 ## Recent Enhancements (2025-07-19 13:10 +0000)
 - Added transpiler tests for `map_membership`, `map_nested_assign` and `for_map_collection`.
 - Marked the new tests complete in README (51/100).
+
+## Recent Enhancements (2025-07-19 21:44 +07)
+- Added builtin mapping for `min` and `max`.
+- Generated golden tests for `membership`, `min_max_builtin`, `tail_recursion`, `two-sum` and `short_circuit`.
+- Updated README checklist to 56/100.
