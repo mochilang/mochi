@@ -1,13 +1,12 @@
 # Mochi Racket Transpiler
 This directory contains the experimental Racket transpiler. Golden tests under `tests/transpiler/x/rkt` check the generated code and its runtime output.
-## VM valid checklist
 
-The following programs from `tests/vm/valid` have golden transpiler output.  Items are ticked once the Racket backend successfully transpiles and runs them.
-Progress: 11/100 tests complete.
+## Golden Test Checklist (13/100)
+
 - [ ] append_builtin
 - [ ] avg_builtin
 - [x] basic_compare
-- [ ] binary_precedence
+- [x] binary_precedence
 - [ ] bool_chain
 - [ ] break_continue
 - [ ] cast_string_to_int
@@ -64,7 +63,7 @@ Progress: 11/100 tests complete.
 - [ ] map_nested_assign
 - [ ] match_expr
 - [ ] match_full
- - [x] math_ops
+- [x] math_ops
 - [ ] membership
 - [ ] min_max_builtin
 - [ ] nested_function
@@ -84,7 +83,7 @@ Progress: 11/100 tests complete.
 - [ ] slice
 - [ ] sort_stable
 - [ ] str_builtin
- - [x] string_compare
+- [x] string_compare
 - [x] string_concat
 - [ ] string_contains
 - [ ] string_in_operator
@@ -103,4 +102,4 @@ Progress: 11/100 tests complete.
 - [ ] user_type_literal
 - [ ] values_builtin
 - [x] var_assignment
-- [ ] while_loop
+- [x] while_loop
