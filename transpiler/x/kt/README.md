@@ -4,18 +4,16 @@ Generated Kotlin sources for golden tests are stored in `tests/transpiler/x/kt`.
 
 The transpiler currently supports expression programs with `print`, integer and list literals, mutable variables and built-ins `count`, `sum`, `avg`, `len`, `str`, `append`, `min`, `max`, `substring` and `values`.
 
-Completed golden tests: **31/100**
+Completed golden tests: **34/100**
 
 ### Golden test checklist
-
-
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
 - [x] binary_precedence.mochi
 - [x] bool_chain.mochi
-- [ ] break_continue.mochi
+- [x] break_continue.mochi
 - [ ] cast_string_to_int.mochi
 - [ ] cast_struct.mochi
 - [ ] closure.mochi
@@ -26,8 +24,8 @@ Completed golden tests: **31/100**
 - [ ] dataset_sort_take_limit.mochi
 - [ ] dataset_where_filter.mochi
 - [ ] exists_builtin.mochi
-- [ ] for_list_collection.mochi
-- [ ] for_loop.mochi
+- [x] for_list_collection.mochi
+- [x] for_loop.mochi
 - [ ] for_map_collection.mochi
 - [ ] fun_call.mochi
 - [ ] fun_expr_in_let.mochi
@@ -42,9 +40,9 @@ Completed golden tests: **31/100**
 - [ ] group_by_multi_join_sort.mochi
 - [ ] group_by_sort.mochi
 - [ ] group_items_iteration.mochi
- - [x] if_else.mochi
- - [x] if_then_else.mochi
- - [x] if_then_else_nested.mochi
+- [x] if_else.mochi
+- [x] if_then_else.mochi
+- [x] if_then_else_nested.mochi
 - [ ] in_operator.mochi
 - [ ] in_operator_extended.mochi
 - [ ] inner_join.mochi
@@ -109,5 +107,4 @@ Completed golden tests: **31/100**
 - [ ] user_type_literal.mochi
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
- - [x] while_loop.mochi
-
+- [x] while_loop.mochi

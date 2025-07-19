@@ -67,6 +67,9 @@ func TestTranspilePrograms(t *testing.T) {
 		"if_else",
 		"if_then_else",
 		"if_then_else_nested",
+		"break_continue",
+		"for_list_collection",
+		"for_loop",
 		"while_loop",
 	}
 	root := repoRoot(t)

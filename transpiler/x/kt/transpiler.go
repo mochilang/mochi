@@ -251,6 +251,63 @@ func (ws *WhileStmt) emit(w io.Writer) {
 	io.WriteString(w, "}")
 }
 
+// ForRangeStmt represents a numeric for-loop like `for i in a..b {}`.
+type ForRangeStmt struct {
+	Name  string
+	Start Expr
+	End   Expr
+	Body  []Stmt
+}
+
+func (fr *ForRangeStmt) emit(w io.Writer) {
+	io.WriteString(w, "for ("+fr.Name+" in ")
+	if fr.Start != nil {
+		fr.Start.emit(w)
+	}
+	io.WriteString(w, " until ")
+	if fr.End != nil {
+		fr.End.emit(w)
+	}
+	io.WriteString(w, ") {\n")
+	for _, st := range fr.Body {
+		io.WriteString(w, "    ")
+		st.emit(w)
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, "}")
+}
+
+// ForEachStmt iterates over a collection.
+type ForEachStmt struct {
+	Name     string
+	Iterable Expr
+	Body     []Stmt
+}
+
+func (fe *ForEachStmt) emit(w io.Writer) {
+	io.WriteString(w, "for ("+fe.Name+" in ")
+	if fe.Iterable != nil {
+		fe.Iterable.emit(w)
+	}
+	io.WriteString(w, ") {\n")
+	for _, st := range fe.Body {
+		io.WriteString(w, "    ")
+		st.emit(w)
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, "}")
+}
+
+// BreakStmt represents a break statement.
+type BreakStmt struct{}
+
+func (b *BreakStmt) emit(w io.Writer) { io.WriteString(w, "break") }
+
+// ContinueStmt represents a continue statement.
+type ContinueStmt struct{}
+
+func (c *ContinueStmt) emit(w io.Writer) { io.WriteString(w, "continue") }
+
 // IfExpr is a conditional expression using Kotlin's `if`.
 type IfExpr struct {
 	Cond Expr
@@ -452,6 +509,16 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				return nil, err
 			}
 			p.Stmts = append(p.Stmts, stmt)
+		case st.For != nil:
+			stmt, err := convertForStmt(env, st.For)
+			if err != nil {
+				return nil, err
+			}
+			p.Stmts = append(p.Stmts, stmt)
+		case st.Break != nil:
+			p.Stmts = append(p.Stmts, &BreakStmt{})
+		case st.Continue != nil:
+			p.Stmts = append(p.Stmts, &ContinueStmt{})
 		default:
 			return nil, fmt.Errorf("unsupported statement")
 		}
@@ -509,6 +576,16 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				return nil, err
 			}
 			out = append(out, st)
+		case s.For != nil:
+			st, err := convertForStmt(env, s.For)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, st)
+		case s.Break != nil:
+			out = append(out, &BreakStmt{})
+		case s.Continue != nil:
+			out = append(out, &ContinueStmt{})
 		default:
 			return nil, fmt.Errorf("unsupported statement")
 		}
@@ -551,6 +628,33 @@ func convertWhileStmt(env *types.Env, ws *parser.WhileStmt) (Stmt, error) {
 		return nil, err
 	}
 	return &WhileStmt{Cond: cond, Body: body}, nil
+}
+
+func convertForStmt(env *types.Env, fs *parser.ForStmt) (Stmt, error) {
+	if fs.RangeEnd != nil {
+		start, err := convertExpr(env, fs.Source)
+		if err != nil {
+			return nil, err
+		}
+		end, err := convertExpr(env, fs.RangeEnd)
+		if err != nil {
+			return nil, err
+		}
+		body, err := convertStmts(env, fs.Body)
+		if err != nil {
+			return nil, err
+		}
+		return &ForRangeStmt{Name: fs.Name, Start: start, End: end, Body: body}, nil
+	}
+	iter, err := convertExpr(env, fs.Source)
+	if err != nil {
+		return nil, err
+	}
+	body, err := convertStmts(env, fs.Body)
+	if err != nil {
+		return nil, err
+	}
+	return &ForEachStmt{Name: fs.Name, Iterable: iter, Body: body}, nil
 }
 
 func convertIfExpr(env *types.Env, ie *parser.IfExpr) (Expr, error) {
@@ -925,6 +1029,27 @@ func toNodeStmt(s Stmt) *ast.Node {
 		}
 		n.Children = append(n.Children, body)
 		return n
+	case *ForRangeStmt:
+		n := &ast.Node{Kind: "forrange", Value: st.Name}
+		n.Children = append(n.Children, toNodeExpr(st.Start), toNodeExpr(st.End))
+		body := &ast.Node{Kind: "body"}
+		for _, b := range st.Body {
+			body.Children = append(body.Children, toNodeStmt(b))
+		}
+		n.Children = append(n.Children, body)
+		return n
+	case *ForEachStmt:
+		n := &ast.Node{Kind: "foreach", Value: st.Name, Children: []*ast.Node{toNodeExpr(st.Iterable)}}
+		body := &ast.Node{Kind: "body"}
+		for _, b := range st.Body {
+			body.Children = append(body.Children, toNodeStmt(b))
+		}
+		n.Children = append(n.Children, body)
+		return n
+	case *BreakStmt:
+		return &ast.Node{Kind: "break"}
+	case *ContinueStmt:
+		return &ast.Node{Kind: "continue"}
 	case *ReturnStmt:
 		n := &ast.Node{Kind: "return"}
 		if st.Value != nil {
