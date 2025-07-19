@@ -2,6 +2,8 @@
 
 This directory contains experimental transpilers.
 
+Checklist of programs that currently transpile and run (4/100):
+
 ## Golden test checklist
 - [ ] append_builtin
 - [ ] avg_builtin
@@ -48,7 +50,7 @@ This directory contains experimental transpilers.
 - [ ] len_builtin
 - [ ] len_map
 - [ ] len_string
-- [ ] let_and_print
+- [x] let_and_print
 - [ ] list_assign
 - [ ] list_index
 - [ ] list_nested_assign
@@ -97,7 +99,7 @@ This directory contains experimental transpilers.
 - [ ] two-sum
 - [ ] typed_let
 - [ ] typed_var
-- [ ] unary_neg
+- [x] unary_neg
 - [ ] update_stmt
 - [ ] user_type_literal
 - [ ] values_builtin

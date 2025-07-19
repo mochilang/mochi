@@ -23,6 +23,16 @@ type Stmt interface{ emit(io.Writer) }
 
 type Expr interface{ emit(io.Writer) }
 
+type UnaryExpr struct {
+	Op   string
+	Expr Expr
+}
+
+func (u *UnaryExpr) emit(w io.Writer) {
+	fmt.Fprint(w, u.Op)
+	u.Expr.emit(w)
+}
+
 type ExprStmt struct{ Expr Expr }
 
 func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
@@ -131,28 +141,33 @@ func convertExpr(e *parser.Expr) (Expr, error) {
 }
 
 func convertBinary(b *parser.BinaryExpr) (Expr, error) {
-	if len(b.Right) == 0 {
-		return convertUnary(b.Left)
-	}
-	if len(b.Right) != 1 {
-		return nil, fmt.Errorf("unsupported binary chain")
-	}
-	left, err := convertUnary(b.Left)
+	expr, err := convertUnary(b.Left)
 	if err != nil {
 		return nil, err
 	}
-	right, err := convertPostfix(b.Right[0].Right)
-	if err != nil {
-		return nil, err
+	for _, r := range b.Right {
+		right, err := convertPostfix(r.Right)
+		if err != nil {
+			return nil, err
+		}
+		expr = &BinaryExpr{Left: expr, Op: r.Op, Right: right}
 	}
-	return &BinaryExpr{Left: left, Op: b.Right[0].Op, Right: right}, nil
+	return expr, nil
 }
 
 func convertUnary(u *parser.Unary) (Expr, error) {
-	if len(u.Ops) > 0 {
-		return nil, fmt.Errorf("unsupported unary")
+	expr, err := convertPostfix(u.Value)
+	if err != nil {
+		return nil, err
 	}
-	return convertPostfix(u.Value)
+	for i := len(u.Ops) - 1; i >= 0; i-- {
+		op := u.Ops[i]
+		if op != "-" {
+			return nil, fmt.Errorf("unsupported unary")
+		}
+		expr = &UnaryExpr{Op: op, Expr: expr}
+	}
+	return expr, nil
 }
 
 func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
@@ -170,6 +185,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return &Name{Name: p.Selector.Root}, nil
 	case p.Lit != nil:
 		return convertLiteral(p.Lit)
+	case p.Group != nil:
+		return convertExpr(p.Group)
 	default:
 		return nil, fmt.Errorf("unsupported primary")
 	}
@@ -274,6 +291,8 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "name", Value: ex.Name}
 	case *BinaryExpr:
 		return &ast.Node{Kind: "binary", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
+	case *UnaryExpr:
+		return &ast.Node{Kind: "unary", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Expr)}}
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
