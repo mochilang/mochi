@@ -356,7 +356,13 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 	if err := b.Left.emit(w); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, " "+b.Op+" "); err != nil {
+	op := b.Op
+	if op == "&&" {
+		op = "&"
+	} else if op == "||" {
+		op = "|"
+	}
+	if _, err := io.WriteString(w, " "+op+" "); err != nil {
 		return err
 	}
 	if err := b.Right.emit(w); err != nil {

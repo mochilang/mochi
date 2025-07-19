@@ -1,3 +1,6 @@
+## Progress (2025-07-19 19:36 +0700)
+- VM valid golden tests 17/100 compiled
+
 # Dart Transpiler Tasks
 
 ## Recent Enhancements (2025-07-19 12:04 +0000)
