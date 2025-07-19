@@ -130,3 +130,147 @@ func TestSchemeTranspiler_LetAndPrint(t *testing.T) {
 		t.Errorf("output mismatch: got %s want %s", got, want)
 	}
 }
+
+func TestSchemeTranspiler_TypedLet(t *testing.T) {
+	schemePath, err := ensureScheme()
+	if err != nil {
+		t.Skipf("scheme not installed: %v", err)
+	}
+
+	root := findRepoRoot(t)
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "scheme")
+	os.MkdirAll(outDir, 0o755)
+
+	src := filepath.Join(root, "tests", "vm", "valid", "typed_let.mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type: %v", errs[0])
+	}
+	ast, err := scheme.Transpile(prog, env)
+	if err != nil {
+		t.Fatalf("transpile: %v", err)
+	}
+	code := scheme.Format(scheme.EmitString(ast))
+	scmPath := filepath.Join(outDir, "typed_let.scm")
+	if err := os.WriteFile(scmPath, code, 0o644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+
+	cmd := exec.Command(schemePath, "-m", "chibi", scmPath)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		_ = os.WriteFile(filepath.Join(outDir, "typed_let.error"), out, 0o644)
+		t.Fatalf("run: %v", err)
+	}
+	_ = os.Remove(filepath.Join(outDir, "typed_let.error"))
+	got := bytes.TrimSpace(out)
+	wantPath := filepath.Join(outDir, "typed_let.out")
+	want, err := os.ReadFile(wantPath)
+	if err != nil {
+		t.Fatalf("read want: %v", err)
+	}
+	want = bytes.TrimSpace(want)
+	if !bytes.Equal(got, want) {
+		t.Errorf("output mismatch: got %s want %s", got, want)
+	}
+}
+
+func TestSchemeTranspiler_BinaryPrecedence(t *testing.T) {
+	schemePath, err := ensureScheme()
+	if err != nil {
+		t.Skipf("scheme not installed: %v", err)
+	}
+
+	root := findRepoRoot(t)
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "scheme")
+	os.MkdirAll(outDir, 0o755)
+
+	src := filepath.Join(root, "tests", "vm", "valid", "binary_precedence.mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type: %v", errs[0])
+	}
+	ast, err := scheme.Transpile(prog, env)
+	if err != nil {
+		t.Fatalf("transpile: %v", err)
+	}
+	code := scheme.Format(scheme.EmitString(ast))
+	scmPath := filepath.Join(outDir, "binary_precedence.scm")
+	if err := os.WriteFile(scmPath, code, 0o644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+
+	cmd := exec.Command(schemePath, "-m", "chibi", scmPath)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		_ = os.WriteFile(filepath.Join(outDir, "binary_precedence.error"), out, 0o644)
+		t.Fatalf("run: %v", err)
+	}
+	_ = os.Remove(filepath.Join(outDir, "binary_precedence.error"))
+	got := bytes.TrimSpace(out)
+	wantPath := filepath.Join(outDir, "binary_precedence.out")
+	want, err := os.ReadFile(wantPath)
+	if err != nil {
+		t.Fatalf("read want: %v", err)
+	}
+	want = bytes.TrimSpace(want)
+	if !bytes.Equal(got, want) {
+		t.Errorf("output mismatch: got %s want %s", got, want)
+	}
+}
+
+func TestSchemeTranspiler_BasicCompare(t *testing.T) {
+	schemePath, err := ensureScheme()
+	if err != nil {
+		t.Skipf("scheme not installed: %v", err)
+	}
+
+	root := findRepoRoot(t)
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "scheme")
+	os.MkdirAll(outDir, 0o755)
+
+	src := filepath.Join(root, "tests", "vm", "valid", "basic_compare.mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type: %v", errs[0])
+	}
+	ast, err := scheme.Transpile(prog, env)
+	if err != nil {
+		t.Fatalf("transpile: %v", err)
+	}
+	code := scheme.Format(scheme.EmitString(ast))
+	scmPath := filepath.Join(outDir, "basic_compare.scm")
+	if err := os.WriteFile(scmPath, code, 0o644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+
+	cmd := exec.Command(schemePath, "-m", "chibi", scmPath)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		_ = os.WriteFile(filepath.Join(outDir, "basic_compare.error"), out, 0o644)
+		t.Fatalf("run: %v", err)
+	}
+	_ = os.Remove(filepath.Join(outDir, "basic_compare.error"))
+	got := bytes.TrimSpace(out)
+	wantPath := filepath.Join(outDir, "basic_compare.out")
+	want, err := os.ReadFile(wantPath)
+	if err != nil {
+		t.Fatalf("read want: %v", err)
+	}
+	want = bytes.TrimSpace(want)
+	if !bytes.Equal(got, want) {
+		t.Errorf("output mismatch: got %s want %s", got, want)
+	}
+}
