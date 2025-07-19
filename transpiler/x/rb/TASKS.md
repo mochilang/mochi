@@ -1,4 +1,6 @@
-## Progress (2025-07-19 13:55 +0700)
+## Progress (2025-07-19 09:53 UTC)
+- Removed mochi_print helper and added type-based print logic
+## Progress (2025-07-19 09:46 UTC)
 - VM valid golden test results updated
 
 ## Completed Tasks
