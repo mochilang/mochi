@@ -2,10 +2,10 @@
 
 Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (12/100)
+## Golden Test Checklist (20/100)
 
-- [ ] append_builtin
-- [ ] avg_builtin
+- [x] append_builtin
+- [x] avg_builtin
 - [x] basic_compare
 - [ ] binary_precedence
 - [ ] bool_chain
@@ -13,7 +13,7 @@ Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scal
 - [ ] cast_string_to_int
 - [ ] cast_struct
 - [ ] closure
-- [ ] count_builtin
+- [x] count_builtin
 - [ ] cross_join
 - [ ] cross_join_filter
 - [ ] cross_join_triple
@@ -53,7 +53,7 @@ Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scal
 - [ ] list_assign
 - [ ] list_index
 - [ ] list_nested_assign
-- [ ] list_set_ops
+- [x] list_set_ops
 - [ ] load_yaml
 - [ ] map_assign
 - [ ] map_in_operator
@@ -81,15 +81,15 @@ Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scal
 - [ ] right_join
 - [ ] save_jsonl_stdout
 - [ ] short_circuit
-- [ ] slice
+- [x] slice
 - [ ] sort_stable
 - [x] str_builtin
 - [x] string_compare
 - [x] string_concat
-- [ ] string_contains
+- [x] string_contains
 - [x] string_in_operator
-- [ ] string_index
-- [ ] string_prefix_slice
+- [x] string_index
+- [x] string_prefix_slice
 - [x] substring_builtin
 - [ ] sum_builtin
 - [ ] tail_recursion

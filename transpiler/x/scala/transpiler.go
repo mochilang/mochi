@@ -94,6 +94,65 @@ func (l *ListLit) emit(w io.Writer) {
 	fmt.Fprint(w, ")")
 }
 
+// IndexExpr represents x[i] which becomes x(i) in Scala.
+type IndexExpr struct {
+	Value Expr
+	Index Expr
+}
+
+func (idx *IndexExpr) emit(w io.Writer) {
+	idx.Value.emit(w)
+	fmt.Fprint(w, "(")
+	idx.Index.emit(w)
+	fmt.Fprint(w, ")")
+}
+
+// SliceExpr represents x[a:b] which becomes x.slice(a, b).
+type SliceExpr struct {
+	Value Expr
+	Start Expr
+	End   Expr
+}
+
+func (s *SliceExpr) emit(w io.Writer) {
+	s.Value.emit(w)
+	fmt.Fprint(w, ".slice(")
+	s.Start.emit(w)
+	fmt.Fprint(w, ", ")
+	s.End.emit(w)
+	fmt.Fprint(w, ")")
+}
+
+// FieldExpr represents obj.field access.
+type FieldExpr struct {
+	Receiver Expr
+	Name     string
+}
+
+func (f *FieldExpr) emit(w io.Writer) {
+	f.Receiver.emit(w)
+	fmt.Fprintf(w, ".%s", f.Name)
+}
+
+// MethodCallExpr represents obj.method(args...).
+type MethodCallExpr struct {
+	Receiver Expr
+	Name     string
+	Args     []Expr
+}
+
+func (m *MethodCallExpr) emit(w io.Writer) {
+	m.Receiver.emit(w)
+	fmt.Fprintf(w, ".%s(", m.Name)
+	for i, a := range m.Args {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		a.emit(w)
+	}
+	fmt.Fprint(w, ")")
+}
+
 // SubstringExpr represents substring(s, i, j) which becomes s.substring(i, j).
 type SubstringExpr struct {
 	Value Expr
@@ -127,6 +186,12 @@ func Emit(p *Program) []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
 	buf.WriteString("object Main {\n")
+	buf.WriteString("    def mochiPrint(v: Any): Unit = v match {\n")
+	buf.WriteString("        case b: Boolean => if (b) println(1) else println(0)\n")
+	buf.WriteString("        case xs: List[Int] => println(xs.mkString(\" \") )\n")
+	buf.WriteString("        case x => println(x)\n")
+	buf.WriteString("    }\n")
+	buf.WriteString("\n")
 	buf.WriteString("    def main(args: Array[String]): Unit = {\n")
 	for _, st := range p.Stmts {
 		buf.WriteString("        ")
@@ -185,7 +250,11 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &BinaryExpr{Left: left, Op: b.Right[0].Op, Right: right}, nil
+	op := b.Right[0].Op
+	if op == "in" {
+		return &MethodCallExpr{Receiver: right, Name: "contains", Args: []Expr{left}}, nil
+	}
+	return &BinaryExpr{Left: left, Op: op, Right: right}, nil
 }
 
 func convertUnary(u *parser.Unary) (Expr, error) {
@@ -205,18 +274,86 @@ func convertUnary(u *parser.Unary) (Expr, error) {
 }
 
 func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
-	if pf == nil || len(pf.Ops) != 0 {
+	if pf == nil {
 		return nil, fmt.Errorf("unsupported postfix")
 	}
-	return convertPrimary(pf.Target)
+	expr, err := convertPrimary(pf.Target)
+	if err != nil {
+		return nil, err
+	}
+	for i := 0; i < len(pf.Ops); i++ {
+		op := pf.Ops[i]
+		switch {
+		case op.Field != nil:
+			if i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil {
+				call := pf.Ops[i+1].Call
+				args := make([]Expr, len(call.Args))
+				for j, a := range call.Args {
+					ex, err := convertExpr(a)
+					if err != nil {
+						return nil, err
+					}
+					args[j] = ex
+				}
+				expr = &MethodCallExpr{Receiver: expr, Name: op.Field.Name, Args: args}
+				i++
+			} else {
+				expr = &FieldExpr{Receiver: expr, Name: op.Field.Name}
+			}
+		case op.Index != nil:
+			idx := op.Index
+			if idx.Colon != nil || idx.Colon2 != nil {
+				if idx.Start == nil || idx.End == nil {
+					return nil, fmt.Errorf("unsupported slice")
+				}
+				start, err := convertExpr(idx.Start)
+				if err != nil {
+					return nil, err
+				}
+				end, err := convertExpr(idx.End)
+				if err != nil {
+					return nil, err
+				}
+				expr = &SliceExpr{Value: expr, Start: start, End: end}
+			} else {
+				start, err := convertExpr(idx.Start)
+				if err != nil {
+					return nil, err
+				}
+				expr = &IndexExpr{Value: expr, Index: start}
+			}
+		case op.Call != nil:
+			call := op.Call
+			args := make([]Expr, len(call.Args))
+			for j, a := range call.Args {
+				ex, err := convertExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				args[j] = ex
+			}
+			if f, ok := expr.(*FieldExpr); ok {
+				expr = &MethodCallExpr{Receiver: f.Receiver, Name: f.Name, Args: args}
+			} else {
+				expr = &MethodCallExpr{Receiver: expr, Name: "apply", Args: args}
+			}
+		default:
+			return nil, fmt.Errorf("unsupported postfix")
+		}
+	}
+	return expr, nil
 }
 
 func convertPrimary(p *parser.Primary) (Expr, error) {
 	switch {
 	case p.Call != nil:
 		return convertCall(p.Call)
-	case p.Selector != nil && len(p.Selector.Tail) == 0:
-		return &Name{Name: p.Selector.Root}, nil
+	case p.Selector != nil:
+		expr := Expr(&Name{Name: p.Selector.Root})
+		for _, f := range p.Selector.Tail {
+			expr = &FieldExpr{Receiver: expr, Name: f}
+		}
+		return expr, nil
 	case p.List != nil:
 		elems := make([]Expr, len(p.List.Elems))
 		for i, e := range p.List.Elems {
@@ -250,7 +387,7 @@ func convertCall(c *parser.CallExpr) (Expr, error) {
 		return &LenExpr{Value: args[0]}, nil
 	}
 	if name == "print" {
-		name = "println"
+		name = "mochiPrint"
 	}
 	if name == "str" && len(args) == 1 {
 		name = "String.valueOf"

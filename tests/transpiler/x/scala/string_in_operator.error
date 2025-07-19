@@ -1,8 +1,0 @@
-exit status 1
-/workspace/mochi/tests/transpiler/x/scala/string_in_operator.scala:5: error: value in is not a member of String
-        println("cat" in s)
-                      ^
-/workspace/mochi/tests/transpiler/x/scala/string_in_operator.scala:6: error: value in is not a member of String
-        println("dog" in s)
-                      ^
-two errors found
