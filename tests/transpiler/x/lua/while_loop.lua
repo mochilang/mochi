@@ -37,10 +37,9 @@ function mochi_print(v)
     print(v)
   end
 end
-k = 2
+i = 0
 
-function inc(x)
-return (x + k)
+while (i < 3) do
+mochi_print(i)
+i = (i + 1)
 end
-
-mochi_print(inc(3))

@@ -44,6 +44,11 @@ type IfStmt struct {
 	Else []Stmt
 }
 
+type WhileStmt struct {
+	Cond Expr
+	Body []Stmt
+}
+
 type IfExpr struct {
 	Cond Expr
 	Then Expr
@@ -131,6 +136,19 @@ func (i *IfStmt) emit(w io.Writer) {
 			st.emit(w)
 			io.WriteString(w, "\n")
 		}
+	}
+	io.WriteString(w, "end")
+}
+
+func (wst *WhileStmt) emit(w io.Writer) {
+	io.WriteString(w, "while ")
+	if wst.Cond != nil {
+		wst.Cond.emit(w)
+	}
+	io.WriteString(w, " do\n")
+	for _, st := range wst.Body {
+		st.emit(w)
+		io.WriteString(w, "\n")
 	}
 	io.WriteString(w, "end")
 }
@@ -503,6 +521,22 @@ func convertReturnStmt(rs *parser.ReturnStmt) (Stmt, error) {
 	return &ReturnStmt{Value: expr}, nil
 }
 
+func convertWhileStmt(ws *parser.WhileStmt) (Stmt, error) {
+	cond, err := convertExpr(ws.Cond)
+	if err != nil {
+		return nil, err
+	}
+	var body []Stmt
+	for _, st := range ws.Body {
+		s, err := convertStmt(st)
+		if err != nil {
+			return nil, err
+		}
+		body = append(body, s)
+	}
+	return &WhileStmt{Cond: cond, Body: body}, nil
+}
+
 func convertFunStmt(fs *parser.FunStmt) (Stmt, error) {
 	f := &FunStmt{Name: fs.Name}
 	for _, p := range fs.Params {
@@ -561,6 +595,8 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		return convertReturnStmt(st.Return)
 	case st.If != nil:
 		return convertIfStmt(st.If)
+	case st.While != nil:
+		return convertWhileStmt(st.While)
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
@@ -641,6 +677,15 @@ func stmtNode(s Stmt) *ast.Node {
 			}
 			n.Children = append(n.Children, elseNode)
 		}
+		return n
+	case *WhileStmt:
+		n := &ast.Node{Kind: "while"}
+		n.Children = append(n.Children, exprNode(st.Cond))
+		body := &ast.Node{Kind: "body"}
+		for _, s2 := range st.Body {
+			body.Children = append(body.Children, stmtNode(s2))
+		}
+		n.Children = append(n.Children, body)
 		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
