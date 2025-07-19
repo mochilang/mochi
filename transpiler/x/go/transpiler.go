@@ -91,6 +91,36 @@ func (a *AssignStmt) emit(w io.Writer) {
 	a.Value.emit(w)
 }
 
+// IfStmt represents a simple if/else statement.
+type IfStmt struct {
+	Cond Expr
+	Then []Stmt
+	Else []Stmt
+}
+
+func (i *IfStmt) emit(w io.Writer) {
+	fmt.Fprint(w, "if ")
+	if i.Cond != nil {
+		i.Cond.emit(w)
+	}
+	fmt.Fprint(w, " {\n")
+	for _, s := range i.Then {
+		fmt.Fprint(w, "    ")
+		s.emit(w)
+		fmt.Fprint(w, "\n")
+	}
+	fmt.Fprint(w, "}")
+	if len(i.Else) > 0 {
+		fmt.Fprint(w, " else {\n")
+		for _, s := range i.Else {
+			fmt.Fprint(w, "    ")
+			s.emit(w)
+			fmt.Fprint(w, "\n")
+		}
+		fmt.Fprint(w, "}")
+	}
+}
+
 type CallExpr struct {
 	Func string
 	Args []Expr
@@ -166,43 +196,12 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesBoolInt = false
 	gp := &Program{}
 	for _, stmt := range p.Statements {
-		switch {
-		case stmt.Expr != nil:
-			e, err := compileExpr(stmt.Expr.Expr)
-			if err != nil {
-				return nil, err
-			}
-			gp.Stmts = append(gp.Stmts, &ExprStmt{Expr: e})
-		case stmt.Let != nil:
-			if stmt.Let.Value != nil {
-				e, err := compileExpr(stmt.Let.Value)
-				if err != nil {
-					return nil, err
-				}
-				gp.Stmts = append(gp.Stmts, &VarDecl{Name: stmt.Let.Name, Type: toGoType(stmt.Let.Type), Value: e})
-			} else {
-				gp.Stmts = append(gp.Stmts, &VarDecl{Name: stmt.Let.Name, Type: toGoType(stmt.Let.Type)})
-			}
-		case stmt.Var != nil:
-			if stmt.Var.Value != nil {
-				e, err := compileExpr(stmt.Var.Value)
-				if err != nil {
-					return nil, err
-				}
-				gp.Stmts = append(gp.Stmts, &VarDecl{Name: stmt.Var.Name, Type: toGoType(stmt.Var.Type), Value: e})
-			} else {
-				gp.Stmts = append(gp.Stmts, &VarDecl{Name: stmt.Var.Name, Type: toGoType(stmt.Var.Type)})
-			}
-		case stmt.Assign != nil && len(stmt.Assign.Index) == 0 && len(stmt.Assign.Field) == 0:
-			e, err := compileExpr(stmt.Assign.Value)
-			if err != nil {
-				return nil, err
-			}
-			gp.Stmts = append(gp.Stmts, &AssignStmt{Name: stmt.Assign.Name, Value: e})
-		default:
-			if stmt.Test == nil && stmt.Import == nil && stmt.Type == nil {
-				return nil, fmt.Errorf("unsupported statement at %d:%d", stmt.Pos.Line, stmt.Pos.Column)
-			}
+		s, err := compileStmt(stmt, env)
+		if err != nil {
+			return nil, err
+		}
+		if s != nil {
+			gp.Stmts = append(gp.Stmts, s)
 		}
 	}
 	_ = env // reserved for future use
@@ -229,6 +228,90 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 		return nil, fmt.Errorf("unsupported expression")
 	}
 	return compileBinary(e.Binary)
+}
+
+func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
+	switch {
+	case st.Expr != nil:
+		e, err := compileExpr(st.Expr.Expr)
+		if err != nil {
+			return nil, err
+		}
+		return &ExprStmt{Expr: e}, nil
+	case st.Let != nil:
+		if st.Let.Value != nil {
+			e, err := compileExpr(st.Let.Value)
+			if err != nil {
+				return nil, err
+			}
+			return &VarDecl{Name: st.Let.Name, Type: toGoType(st.Let.Type), Value: e}, nil
+		}
+		return &VarDecl{Name: st.Let.Name, Type: toGoType(st.Let.Type)}, nil
+	case st.Var != nil:
+		if st.Var.Value != nil {
+			e, err := compileExpr(st.Var.Value)
+			if err != nil {
+				return nil, err
+			}
+			return &VarDecl{Name: st.Var.Name, Type: toGoType(st.Var.Type), Value: e}, nil
+		}
+		return &VarDecl{Name: st.Var.Name, Type: toGoType(st.Var.Type)}, nil
+	case st.Assign != nil:
+		if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
+			e, err := compileExpr(st.Assign.Value)
+			if err != nil {
+				return nil, err
+			}
+			return &AssignStmt{Name: st.Assign.Name, Value: e}, nil
+		}
+		return nil, fmt.Errorf("unsupported statement at %d:%d", st.Pos.Line, st.Pos.Column)
+	case st.If != nil:
+		return compileIfStmt(st.If, env)
+	default:
+		if st.Test == nil && st.Import == nil && st.Type == nil {
+			return nil, fmt.Errorf("unsupported statement at %d:%d", st.Pos.Line, st.Pos.Column)
+		}
+	}
+	return nil, nil
+}
+
+func compileStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
+	var out []Stmt
+	for _, s := range list {
+		st, err := compileStmt(s, env)
+		if err != nil {
+			return nil, err
+		}
+		if st != nil {
+			out = append(out, st)
+		}
+	}
+	return out, nil
+}
+
+func compileIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
+	cond, err := compileExpr(is.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenStmts, err := compileStmts(is.Then, env)
+	if err != nil {
+		return nil, err
+	}
+	var elseStmts []Stmt
+	if is.ElseIf != nil {
+		elseStmt, err := compileIfStmt(is.ElseIf, env)
+		if err != nil {
+			return nil, err
+		}
+		elseStmts = []Stmt{elseStmt}
+	} else if len(is.Else) > 0 {
+		elseStmts, err = compileStmts(is.Else, env)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
 }
 
 func compileBinary(b *parser.BinaryExpr) (Expr, error) {
@@ -576,6 +659,21 @@ func toNodeStmt(s Stmt) *ast.Node {
 		return &ast.Node{Kind: "expr", Children: []*ast.Node{toNodeExpr(st.Expr)}}
 	case *VarDecl:
 		return &ast.Node{Kind: "var", Value: st.Name, Children: []*ast.Node{toNodeExpr(st.Value)}}
+	case *IfStmt:
+		n := &ast.Node{Kind: "if", Children: []*ast.Node{toNodeExpr(st.Cond)}}
+		then := &ast.Node{Kind: "then"}
+		for _, t := range st.Then {
+			then.Children = append(then.Children, toNodeStmt(t))
+		}
+		n.Children = append(n.Children, then)
+		if len(st.Else) > 0 {
+			els := &ast.Node{Kind: "else"}
+			for _, e := range st.Else {
+				els.Children = append(els.Children, toNodeStmt(e))
+			}
+			n.Children = append(n.Children, els)
+		}
+		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
