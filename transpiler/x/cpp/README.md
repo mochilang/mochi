@@ -2,14 +2,14 @@
 
 Generated C++ code for programs in `tests/vm/valid`. Each program has a `.cpp` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.
 
-Compiled programs: 16/100
+Compiled programs: 20/100
 
 ## Checklist
 - [ ] append_builtin
 - [ ] avg_builtin
 - [x] basic_compare
 - [x] binary_precedence
-- [ ] bool_chain
+- [x] bool_chain
 - [ ] break_continue
 - [ ] cast_string_to_int
 - [ ] cast_struct
@@ -24,9 +24,9 @@ Compiled programs: 16/100
 - [ ] for_list_collection
 - [x] for_loop
 - [ ] for_map_collection
-- [ ] fun_call
-- [ ] fun_expr_in_let
-- [ ] fun_three_args
+- [x] fun_call
+- [x] fun_expr_in_let
+- [x] fun_three_args
 - [ ] go_auto
 - [ ] group_by
 - [ ] group_by_conditional_sum

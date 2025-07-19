@@ -1,5 +1,10 @@
 # C++ Transpiler Tasks
 
+## Recent Enhancements (2025-07-19 17:10 +0700)
+- Added function declarations, return statements and lambda expressions.
+- Enabled transpiler tests for `fun_call`, `fun_three_args`, `fun_expr_in_let` and `bool_chain`.
+- Updated README progress to 20/100 programs.
+
 ## Recent Enhancements (2025-07-19 05:37:05 UTC)
 - Added checklist of VM valid programs in README.
 - Transpiler supports `let` statements, simple binary expressions, range-based `for` loops and basic `if` constructs.
