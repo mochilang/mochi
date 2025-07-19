@@ -120,6 +120,7 @@ type IntLit struct{ Value string }
 type StringLit struct{ Value string }
 type BoolLit struct{ Value bool }
 type NameRef struct{ Name string }
+type LenExpr struct{ Arg Expr }
 type BinaryExpr struct {
 	Left Expr
 	Ops  []BinaryOp
@@ -158,13 +159,37 @@ func (b *BoolLit) emit(w io.Writer) {
 	}
 }
 func (n *NameRef) emit(w io.Writer) { io.WriteString(w, n.Name) }
+func (l *LenExpr) emit(w io.Writer) {
+	io.WriteString(w, "length ")
+	l.Arg.emit(w)
+}
+func isStringExpr(e Expr) bool {
+	switch ex := e.(type) {
+	case *StringLit:
+		return true
+	case *BinaryExpr:
+		if len(ex.Ops) > 0 && ex.Ops[0].Op == "+" {
+			if isStringExpr(ex.Left) || isStringExpr(ex.Ops[0].Right) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func (b *BinaryExpr) emit(w io.Writer) {
-	b.Left.emit(w)
+	left := b.Left
+	left.emit(w)
 	for _, op := range b.Ops {
 		io.WriteString(w, " ")
-		io.WriteString(w, op.Op)
+		if op.Op == "+" && (isStringExpr(left) || isStringExpr(op.Right)) {
+			io.WriteString(w, "++")
+		} else {
+			io.WriteString(w, op.Op)
+		}
 		io.WriteString(w, " ")
 		op.Right.emit(w)
+		left = op.Right
 	}
 }
 func (u *UnaryExpr) emit(w io.Writer) {
@@ -312,16 +337,13 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				if err != nil {
 					return nil, err
 				}
-				str := false
-				if lit, ok := arg.(*NameRef); ok {
-					if v, ok := vars[lit.Name]; ok {
-						if _, ok := v.(*StringLit); ok {
-							str = true
+				str := isStringExpr(arg)
+				if !str {
+					if lit, ok := arg.(*NameRef); ok {
+						if v, ok := vars[lit.Name]; ok {
+							str = isStringExpr(v)
 						}
 					}
-				}
-				if _, ok := arg.(*StringLit); ok {
-					str = true
 				}
 				h.Stmts = append(h.Stmts, &PrintStmt{Expr: arg, String: str})
 				continue
@@ -392,6 +414,8 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "bool", Value: "False"}
 	case *NameRef:
 		return &ast.Node{Kind: "name", Value: ex.Name}
+	case *LenExpr:
+		return &ast.Node{Kind: "len", Children: []*ast.Node{exprNode(ex.Arg)}}
 	case *BinaryExpr:
 		n := &ast.Node{Kind: "bin"}
 		n.Children = append(n.Children, exprNode(ex.Left))
@@ -525,6 +549,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &LambdaExpr{Params: params, Body: body}, nil
 	case p.Call != nil:
+		if p.Call.Func == "len" && len(p.Call.Args) == 1 {
+			arg, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &LenExpr{Arg: arg}, nil
+		}
 		fun := &NameRef{Name: p.Call.Func}
 		var args []Expr
 		for _, a := range p.Call.Args {
@@ -604,10 +635,7 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 				if err != nil {
 					return nil, err
 				}
-				str := false
-				if _, ok := arg.(*StringLit); ok {
-					str = true
-				}
+				str := isStringExpr(arg)
 				out = append(out, &PrintStmt{Expr: arg, String: str})
 				continue
 			}
