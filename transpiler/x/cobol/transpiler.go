@@ -35,6 +35,16 @@ func (p *Program) addStmt(s Stmt) {
 	}
 }
 
+func (p *Program) ensureIntVar(name string) {
+	upper := strings.ToUpper(name)
+	for _, v := range p.Vars {
+		if strings.ToUpper(v.Name) == upper {
+			return
+		}
+	}
+	p.Vars = append(p.Vars, VarDecl{Name: name, Pic: "PIC 9"})
+}
+
 func stmtNeedsTmp(s Stmt) bool {
 	switch st := s.(type) {
 	case *DisplayStmt:
@@ -47,6 +57,18 @@ func stmtNeedsTmp(s Stmt) bool {
 		}
 		for _, e := range st.Else {
 			if stmtNeedsTmp(e) {
+				return true
+			}
+		}
+	case *WhileStmt:
+		for _, b := range st.Body {
+			if stmtNeedsTmp(b) {
+				return true
+			}
+		}
+	case *ForRangeStmt:
+		for _, b := range st.Body {
+			if stmtNeedsTmp(b) {
 				return true
 			}
 		}
@@ -66,6 +88,18 @@ func needsStr(s Stmt) bool {
 		}
 		for _, e := range st.Else {
 			if needsStr(e) {
+				return true
+			}
+		}
+	case *WhileStmt:
+		for _, b := range st.Body {
+			if needsStr(b) {
+				return true
+			}
+		}
+	case *ForRangeStmt:
+		for _, b := range st.Body {
+			if needsStr(b) {
 				return true
 			}
 		}
@@ -104,6 +138,20 @@ type IfStmt struct {
 	Cond Expr
 	Then []Stmt
 	Else []Stmt
+}
+
+// WhileStmt represents a basic while loop.
+type WhileStmt struct {
+	Cond Expr
+	Body []Stmt
+}
+
+// ForRangeStmt represents a numeric for loop like `for i in a..b {}` where b is exclusive.
+type ForRangeStmt struct {
+	Var   string
+	Start Expr
+	End   Expr
+	Body  []Stmt
 }
 
 // --- Expressions ---
@@ -265,6 +313,15 @@ func (d *DisplayStmt) emit(w io.Writer) {
 		return
 	}
 	if !d.Temp && isDirectNumber(d.Expr) {
+		if vr, ok := d.Expr.(*VarRef); ok {
+			io.WriteString(w, "DISPLAY ")
+			vr.emitExpr(w)
+			return
+		}
+		if il, ok := d.Expr.(*IntLit); ok {
+			fmt.Fprintf(w, "DISPLAY %d", il.Value)
+			return
+		}
 		io.WriteString(w, "MOVE ")
 		d.Expr.emitExpr(w)
 		io.WriteString(w, " TO TMP-STR")
@@ -315,6 +372,44 @@ func (i *IfStmt) emit(w io.Writer) {
 		}
 	}
 	io.WriteString(w, "END-IF")
+}
+
+func (wst *WhileStmt) emit(w io.Writer) {
+	io.WriteString(w, "PERFORM UNTIL NOT(")
+	wst.Cond.emitExpr(w)
+	io.WriteString(w, ")\n")
+	for _, s := range wst.Body {
+		io.WriteString(w, "    ")
+		s.emit(w)
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, "END-PERFORM")
+}
+
+func (fr *ForRangeStmt) emit(w io.Writer) {
+	io.WriteString(w, "PERFORM VARYING ")
+	io.WriteString(w, strings.ToUpper(fr.Var))
+	io.WriteString(w, " FROM ")
+	if fr.Start != nil {
+		fr.Start.emitExpr(w)
+	} else {
+		io.WriteString(w, "0")
+	}
+	io.WriteString(w, " BY 1 UNTIL ")
+	io.WriteString(w, strings.ToUpper(fr.Var))
+	io.WriteString(w, " >= ")
+	if fr.End != nil {
+		fr.End.emitExpr(w)
+	} else {
+		io.WriteString(w, "0")
+	}
+	io.WriteString(w, "\n")
+	for _, s := range fr.Body {
+		io.WriteString(w, "    ")
+		s.emit(w)
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, "END-PERFORM")
 }
 
 // --- Program emitter ---
@@ -456,6 +551,35 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				return nil, err
 			}
 			pr.addStmt(&IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts})
+		case st.While != nil:
+			cond, err := convertExpr(st.While.Cond, env)
+			if err != nil {
+				return nil, err
+			}
+			body, err := transpileStmts(st.While.Body, env)
+			if err != nil {
+				return nil, err
+			}
+			pr.addStmt(&WhileStmt{Cond: cond, Body: body})
+		case st.For != nil:
+			if st.For.RangeEnd != nil {
+				pr.ensureIntVar(st.For.Name)
+				start, err := convertExpr(st.For.Source, env)
+				if err != nil {
+					return nil, err
+				}
+				end, err := convertExpr(st.For.RangeEnd, env)
+				if err != nil {
+					return nil, err
+				}
+				body, err := transpileStmts(st.For.Body, env)
+				if err != nil {
+					return nil, err
+				}
+				pr.addStmt(&ForRangeStmt{Var: st.For.Name, Start: start, End: end, Body: body})
+			} else {
+				return nil, fmt.Errorf("unsupported statement")
+			}
 		default:
 			return nil, fmt.Errorf("unsupported statement")
 		}
@@ -509,6 +633,34 @@ func transpileStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 				return nil, err
 			}
 			out = append(out, &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts})
+		case s.While != nil:
+			cond, err := convertExpr(s.While.Cond, env)
+			if err != nil {
+				return nil, err
+			}
+			body, err := transpileStmts(s.While.Body, env)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, &WhileStmt{Cond: cond, Body: body})
+		case s.For != nil:
+			if s.For.RangeEnd != nil {
+				start, err := convertExpr(s.For.Source, env)
+				if err != nil {
+					return nil, err
+				}
+				end, err := convertExpr(s.For.RangeEnd, env)
+				if err != nil {
+					return nil, err
+				}
+				body, err := transpileStmts(s.For.Body, env)
+				if err != nil {
+					return nil, err
+				}
+				out = append(out, &ForRangeStmt{Var: s.For.Name, Start: start, End: end, Body: body})
+			} else {
+				return nil, fmt.Errorf("unsupported statement")
+			}
 		default:
 			return nil, fmt.Errorf("unsupported statement")
 		}
