@@ -48,6 +48,7 @@ type Compiler struct {
 	needLoadYaml    bool
 	needSaveJSONL   bool
 	needJSON        bool
+	needRandom      bool
 
 	// imported module aliases to OCaml module names and field mappings
 	imports map[string]importInfo
@@ -67,6 +68,7 @@ func New(env *types.Env) *Compiler {
 		env:         env,
 		structNames: make(map[string]string),
 		imports:     make(map[string]importInfo),
+		needRandom:  false,
 	}
 }
 
@@ -2095,6 +2097,12 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		args[i] = s
 	}
 	switch call.Func {
+	case "now":
+		c.needRandom = true
+		if len(args) != 0 {
+			return "", fmt.Errorf("now expects no args")
+		}
+		return "Random.bits ()", nil
 	case "print":
 		if len(args) == 0 {
 			return "", fmt.Errorf("print expects at least 1 arg")
@@ -3309,6 +3317,11 @@ func (c *Compiler) emitRuntime() {
 	}
 
 	if c.needShow || c.needContains || c.needSlice || c.needStringSlice || c.needListSet || c.needMapSet || c.needMapGet || c.needListOps || c.needSum || c.needSumFloat || c.needGroup || c.needLoop || c.needLoadYaml || c.needSaveJSONL || c.needJSON {
+		c.buf.WriteByte('\n')
+	}
+
+	if c.needRandom {
+		c.writeln("Random.self_init ()")
 		c.buf.WriteByte('\n')
 	}
 }

@@ -1,0 +1,8 @@
+ocamlc: exit status 2
+File "/tmp/9-billion-names-of-god-the-integer.ml", line 1:
+Warning 24 [bad-module-name]: bad source file name: "9-billion-names-of-god-the-integer" is not a valid module name.
+File "/tmp/9-billion-names-of-god-the-integer.ml", line 29, characters 20-23:
+29 |   let n : int ref = ref List.length a in
+                         ^^^
+Error: This function has type 'a -> 'a ref
+       It is applied to too many arguments; maybe you forgot a `;'.

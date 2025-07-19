@@ -1,0 +1,7 @@
+ocamlc: exit status 2
+File "/tmp/15-puzzle-solver.ml", line 1:
+Warning 24 [bad-module-name]: bad source file name: "15-puzzle-solver" is not a valid module name.
+File "/tmp/15-puzzle-solver.ml", line 27, characters 25-53:
+27 |   print_endline (__show (Testpkg.FifteenPuzzleExample ));
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: Unbound constructor Testpkg.FifteenPuzzleExample
