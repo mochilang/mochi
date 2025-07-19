@@ -347,3 +347,7 @@ func TestTranspile_PythonAuto(t *testing.T) {
 func TestTranspile_PythonMath(t *testing.T) {
 	runCase(t, "python_math")
 }
+
+func TestTranspile_JsonBuiltin(t *testing.T) {
+	runCase(t, "json_builtin")
+}

@@ -745,6 +745,24 @@ func typeRefSimpleName(t *parser.TypeRef) string {
 	return ""
 }
 
+func isSimpleIdent(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
 func zeroValueExpr(t types.Type) Expr {
 	switch t.(type) {
 	case types.IntType, types.Int64Type:
@@ -785,10 +803,24 @@ func precedence(op string) int {
 	}
 }
 
+func hasImport(p *Program, mod string) bool {
+	for _, s := range p.Stmts {
+		if im, ok := s.(*ImportStmt); ok && im.Module == mod {
+			return true
+		}
+	}
+	return false
+}
+
 // Emit renders Python code from AST
 func Emit(w io.Writer, p *Program) error {
 	if _, err := io.WriteString(w, header()); err != nil {
 		return err
+	}
+	if currentImports != nil && currentImports["json"] && !hasImport(p, "json") {
+		if _, err := io.WriteString(w, "import json\n"); err != nil {
+			return err
+		}
 	}
 	for _, s := range p.Stmts {
 		switch st := s.(type) {
@@ -1590,6 +1622,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 3 {
 				return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
 			}
+		case "json":
+			if len(args) == 1 {
+				if currentImports != nil {
+					currentImports["json"] = true
+				}
+				dumps := &FieldExpr{Target: &Name{Name: "json"}, Name: "dumps"}
+				call := &CallExpr{Func: dumps, Args: args}
+				repl := &CallExpr{Func: &FieldExpr{Target: call, Name: "replace"}, Args: []Expr{&StringLit{Value: " "}, &StringLit{Value: ""}}}
+				return &CallExpr{Func: &Name{Name: "print"}, Args: []Expr{repl}}, nil
+			}
 		}
 		return &CallExpr{Func: &Name{Name: p.Call.Func}, Args: args}, nil
 	case p.Lit != nil:
@@ -1608,15 +1650,19 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		var keys []Expr
 		var values []Expr
 		for _, it := range p.Map.Items {
-			ke, err := convertExpr(it.Key)
-			if err != nil {
-				return nil, err
+			if id, ok := isSimpleIdent(it.Key); ok {
+				keys = append(keys, &StringLit{Value: id})
+			} else {
+				ke, err := convertExpr(it.Key)
+				if err != nil {
+					return nil, err
+				}
+				keys = append(keys, ke)
 			}
 			ve, err := convertExpr(it.Value)
 			if err != nil {
 				return nil, err
 			}
-			keys = append(keys, ke)
 			values = append(values, ve)
 		}
 		return &DictLit{Keys: keys, Values: values}, nil
