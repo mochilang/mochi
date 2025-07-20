@@ -1,1 +1,6 @@
-unsupported expression
+exit status 1
+lua: ...space/mochi/tests/transpiler/x/lua/map_nested_assign.lua:4: attempt to add a 'string' with a 'number'
+stack traceback:
+	[C]: in metamethod 'add'
+	...space/mochi/tests/transpiler/x/lua/map_nested_assign.lua:4: in main chunk
+	[C]: in ?

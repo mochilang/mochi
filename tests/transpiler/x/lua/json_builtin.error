@@ -1,1 +1,5 @@
-unsupported expression
+exit status 1
+lua: /workspace/mochi/tests/transpiler/x/lua/json_builtin.lua:2: table index is nil
+stack traceback:
+	/workspace/mochi/tests/transpiler/x/lua/json_builtin.lua:2: in main chunk
+	[C]: in ?
