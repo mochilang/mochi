@@ -85,20 +85,20 @@ func (f *Function) emit(w io.Writer) {
 		writeIndent(w, 4)
 		fmt.Fprintf(w, "%s :: %s\n", d.Type, d.Name)
 	}
-        for _, d := range f.Decls {
-                writeIndent(w, 4)
-                fmt.Fprintf(w, "%s :: %s", d.Type, d.Name)
-                if d.Init != "" {
-                        fmt.Fprintf(w, " = %s", d.Init)
-                }
-                fmt.Fprintln(w)
-        }
-        if len(f.Decls) > 0 {
-                fmt.Fprintln(w)
-        }
-        for _, s := range f.Stmts {
-                s.emit(w, 4)
-        }
+	for _, d := range f.Decls {
+		writeIndent(w, 4)
+		fmt.Fprintf(w, "%s :: %s", d.Type, d.Name)
+		if d.Init != "" {
+			fmt.Fprintf(w, " = %s", d.Init)
+		}
+		fmt.Fprintln(w)
+	}
+	if len(f.Decls) > 0 {
+		fmt.Fprintln(w)
+	}
+	for _, s := range f.Stmts {
+		s.emit(w, 4)
+	}
 	writeIndent(w, 2)
 	fmt.Fprintf(w, "end function %s\n", f.Name)
 }
@@ -134,9 +134,17 @@ func (p *PrintStmt) emit(w io.Writer, ind int) {
 	case types.FloatType, types.BigRatType:
 		writeIndent(w, ind)
 		fmt.Fprintf(w, "print '(F0.6)', %s\n", p.Expr)
-        case types.BoolType:
-                writeIndent(w, ind)
-                fmt.Fprintf(w, "print *, merge('true ','false', %s)\n", p.Expr)
+	case types.BoolType:
+		writeIndent(w, ind)
+		fmt.Fprintf(w, "if (%s) then\n", p.Expr)
+		writeIndent(w, ind+2)
+		fmt.Fprintln(w, "print *, 'true'")
+		writeIndent(w, ind)
+		io.WriteString(w, "else\n")
+		writeIndent(w, ind+2)
+		fmt.Fprintln(w, "print *, 'false'")
+		writeIndent(w, ind)
+		io.WriteString(w, "end if\n")
 	case types.StringType:
 		writeIndent(w, ind)
 		fmt.Fprintf(w, "print *, trim(%s)\n", p.Expr)
@@ -212,23 +220,23 @@ func (f *ForStmt) emit(w io.Writer, ind int) {
 }
 
 func (p *Program) Emit() []byte {
-        var buf bytes.Buffer
-        buf.WriteString("program main\n")
-        buf.WriteString("  implicit none\n")
-        for _, d := range p.Decls {
-                writeIndent(&buf, 2)
-                fmt.Fprintf(&buf, "%s :: %s", d.Type, d.Name)
-                if d.Init != "" {
-                        fmt.Fprintf(&buf, " = %s", d.Init)
-                }
-                buf.WriteByte('\n')
-        }
-        if len(p.Decls) > 0 {
-                buf.WriteByte('\n')
-        }
-        for _, s := range p.Stmts {
-                s.emit(&buf, 2)
-        }
+	var buf bytes.Buffer
+	buf.WriteString("program main\n")
+	buf.WriteString("  implicit none\n")
+	for _, d := range p.Decls {
+		writeIndent(&buf, 2)
+		fmt.Fprintf(&buf, "%s :: %s", d.Type, d.Name)
+		if d.Init != "" {
+			fmt.Fprintf(&buf, " = %s", d.Init)
+		}
+		buf.WriteByte('\n')
+	}
+	if len(p.Decls) > 0 {
+		buf.WriteByte('\n')
+	}
+	for _, s := range p.Stmts {
+		s.emit(&buf, 2)
+	}
 	if len(p.Funcs) > 0 {
 		buf.WriteString("contains\n")
 		for _, f := range p.Funcs {
@@ -782,12 +790,12 @@ func toBinaryExpr(b *parser.BinaryExpr, env *types.Env) (string, error) {
 		{".or."},
 	}
 
-        apply := func(a, op, b string) string {
-                if op == "mod" {
-                        return fmt.Sprintf("mod(%s, %s)", a, b)
-                }
-                return fmt.Sprintf("%s %s %s", a, op, b)
-        }
+	apply := func(a, op, b string) string {
+		if op == "mod" {
+			return fmt.Sprintf("mod(%s, %s)", a, b)
+		}
+		return fmt.Sprintf("%s %s %s", a, op, b)
+	}
 
 	contains := func(list []string, s string) bool {
 		for _, v := range list {
