@@ -2,5 +2,6 @@
 $add = function($a, $b) {
   return $a + $b;
 };
-echo $add(2, 3), PHP_EOL;
+$add5 = $add(5);
+echo add5(3), PHP_EOL;
 ?>

@@ -1,0 +1,3 @@
+run: exit status 255
+
+Parse error: syntax error, unexpected identifier "in" in /workspace/mochi/tests/transpiler/x/php/map_in_operator.php on line 3

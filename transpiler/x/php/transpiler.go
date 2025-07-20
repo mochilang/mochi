@@ -18,6 +18,7 @@ var builtinNames = map[string]struct{}{
 	"str": {}, "min": {}, "max": {}, "append": {},
 }
 var closureNames = map[string]bool{}
+var globalNames []string
 
 // --- Simple PHP AST ---
 
@@ -513,6 +514,8 @@ func Emit(w io.Writer, p *Program) error {
 // Transpile converts a Mochi program into our PHP AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	transpileEnv = env
+	globalNames = nil
+	closureNames = map[string]bool{}
 	defer func() { transpileEnv = nil }()
 	p := &Program{}
 	for _, st := range prog.Statements {
@@ -520,7 +523,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		if err != nil {
 			return nil, err
 		}
-		p.Stmts = append(p.Stmts, conv)
+		if conv != nil {
+			p.Stmts = append(p.Stmts, conv)
+		}
 	}
 	_ = env
 	return p, nil
@@ -618,10 +623,12 @@ func convertUnary(u *parser.Unary) (Expr, error) {
 	}
 	for i := len(u.Ops) - 1; i >= 0; i-- {
 		op := u.Ops[i]
-		if op != "-" {
+		switch op {
+		case "-", "!":
+			x = &UnaryExpr{Op: op, X: x}
+		default:
 			return nil, fmt.Errorf("unary op %s not supported", op)
 		}
-		x = &UnaryExpr{Op: "-", X: x}
 	}
 	return x, nil
 }
@@ -683,7 +690,7 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			case "bool":
 				e = &CallExpr{Func: "boolval", Args: []Expr{e}}
 			default:
-				return nil, fmt.Errorf("unsupported cast to %s", *op.Cast.Type.Simple)
+				// ignore casts to user types
 			}
 		case op.Field != nil && op.Field.Name == "contains":
 			if i+1 >= len(pf.Ops) || pf.Ops[i+1].Call == nil {
@@ -705,6 +712,8 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				return nil, fmt.Errorf("contains on unsupported type")
 			}
 			i++
+		case op.Field != nil:
+			e = &IndexExpr{X: e, Index: &StringLit{Value: op.Field.Name}}
 		case op.Index != nil:
 			var start Expr = &IntLit{Value: 0}
 			if op.Index.Start != nil {
@@ -768,7 +777,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			name = "echo"
 			for i := range args {
 				if isListExpr(args[i]) {
-					join := &CallExpr{Func: "implode", Args: []Expr{&StringLit{Value: " "}, args[i]}}
+					join := &CallExpr{Func: "implode", Args: []Expr{&StringLit{Value: ", "}, args[i]}}
 					inner := &BinaryExpr{Left: &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: join}, Op: "+", Right: &StringLit{Value: "]"}}
 					args[i] = inner
 				} else {
@@ -849,6 +858,34 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			items[i] = MapEntry{Key: k, Value: v}
 		}
 		return &MapLit{Items: items}, nil
+	case p.FunExpr != nil:
+		params := make([]string, len(p.FunExpr.Params))
+		for i, p2 := range p.FunExpr.Params {
+			params[i] = p2.Name
+		}
+		funcStack = append(funcStack, params)
+		var body []Stmt
+		if p.FunExpr.ExprBody != nil {
+			ex, err := convertExpr(p.FunExpr.ExprBody)
+			if err != nil {
+				funcStack = funcStack[:len(funcStack)-1]
+				return nil, err
+			}
+			body = []Stmt{&ReturnStmt{Value: ex}}
+		} else {
+			var err error
+			body, err = convertStmtList(p.FunExpr.BlockBody)
+			if err != nil {
+				funcStack = funcStack[:len(funcStack)-1]
+				return nil, err
+			}
+		}
+		funcStack = funcStack[:len(funcStack)-1]
+		uses := []string{}
+		for _, frame := range funcStack {
+			uses = append(uses, frame...)
+		}
+		return &ClosureExpr{Params: params, Uses: uses, Body: body}, nil
 	case p.If != nil:
 		return convertIfExpr(p.If)
 	case p.Selector != nil:
@@ -905,6 +942,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				val = &StringLit{Value: ""}
 			}
 		}
+		if len(funcStack) == 0 {
+			globalNames = append(globalNames, st.Let.Name)
+		}
 		return &LetStmt{Name: st.Let.Name, Value: val}, nil
 	case st.Var != nil:
 		var val Expr
@@ -923,6 +963,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			case "string":
 				val = &StringLit{Value: ""}
 			}
+		}
+		if len(funcStack) == 0 {
+			globalNames = append(globalNames, st.Var.Name)
 		}
 		return &VarStmt{Name: st.Var.Name, Value: val}, nil
 	case st.Assign != nil:
@@ -955,16 +998,19 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
-		if len(funcStack) > 0 {
-			uses := []string{}
-			for _, frame := range funcStack {
-				uses = append(uses, frame...)
-			}
-			clo := &ClosureExpr{Params: params, Uses: uses, Body: body}
-			closureNames[st.Fun.Name] = true
-			return &LetStmt{Name: st.Fun.Name, Value: clo}, nil
+		uses := []string{}
+		for _, frame := range funcStack {
+			uses = append(uses, frame...)
 		}
-		return &FuncDecl{Name: st.Fun.Name, Params: params, Body: body}, nil
+		if len(funcStack) == 0 {
+			uses = append(uses, globalNames...)
+		}
+		clo := &ClosureExpr{Params: params, Uses: uses, Body: body}
+		closureNames[st.Fun.Name] = true
+		if len(funcStack) == 0 {
+			globalNames = append(globalNames, st.Fun.Name)
+		}
+		return &LetStmt{Name: st.Fun.Name, Value: clo}, nil
 	case st.While != nil:
 		cond, err := convertExpr(st.While.Cond)
 		if err != nil {
@@ -1009,19 +1055,23 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		return &ContinueStmt{}, nil
 	case st.If != nil:
 		return convertIfStmt(st.If)
+	case st.Type != nil:
+		return nil, nil
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
 }
 
 func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
-	out := make([]Stmt, len(list))
-	for i, s := range list {
+	out := []Stmt{}
+	for _, s := range list {
 		st, err := convertStmt(s)
 		if err != nil {
 			return nil, err
 		}
-		out[i] = st
+		if st != nil {
+			out = append(out, st)
+		}
 	}
 	return out, nil
 }
