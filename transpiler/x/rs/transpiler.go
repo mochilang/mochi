@@ -269,6 +269,11 @@ type FieldExpr struct {
 }
 
 func (f *FieldExpr) emit(w io.Writer) {
+	if strings.HasPrefix(inferType(f.Receiver), "HashMap<") {
+		f.Receiver.emit(w)
+		fmt.Fprintf(w, "[\"%s\"]", f.Name)
+		return
+	}
 	f.Receiver.emit(w)
 	io.WriteString(w, ".")
 	io.WriteString(w, f.Name)
@@ -616,6 +621,8 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			typ = inferType(e)
 			if _, ok := e.(*StringLit); ok {
 				typ = ""
+			} else if _, ok := e.(*MapLit); ok {
+				typ = ""
 			}
 		}
 		if typ == "fn" {
@@ -646,6 +653,8 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		} else if e != nil {
 			typ = inferType(e)
 			if _, ok := e.(*StringLit); ok {
+				typ = ""
+			} else if _, ok := e.(*MapLit); ok {
 				typ = ""
 			}
 		}
