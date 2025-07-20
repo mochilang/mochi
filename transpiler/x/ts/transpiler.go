@@ -182,6 +182,13 @@ type SubstringExpr struct {
 	End   Expr
 }
 
+type UnionExpr struct{ Left, Right Expr }
+type UnionAllExpr struct{ Left, Right Expr }
+type ExceptExpr struct{ Left, Right Expr }
+type IntersectExpr struct{ Left, Right Expr }
+
+type FormatListExpr struct{ Value Expr }
+
 // MapLit represents a map/object literal.
 type MapLit struct {
 	Entries []MapEntry
@@ -405,6 +412,64 @@ func (e *ValuesExpr) emit(w io.Writer) {
 		e.Value.emit(w)
 	}
 	io.WriteString(w, ")")
+}
+
+func (u *UnionExpr) emit(w io.Writer) {
+	io.WriteString(w, "Array.from(new Set([...")
+	if u.Left != nil {
+		u.Left.emit(w)
+	}
+	io.WriteString(w, ", ...")
+	if u.Right != nil {
+		u.Right.emit(w)
+	}
+	io.WriteString(w, "]))")
+}
+
+func (u *UnionAllExpr) emit(w io.Writer) {
+	io.WriteString(w, "[")
+	io.WriteString(w, "...")
+	if u.Left != nil {
+		u.Left.emit(w)
+	}
+	io.WriteString(w, ", ...")
+	if u.Right != nil {
+		u.Right.emit(w)
+	}
+	io.WriteString(w, "]")
+}
+
+func (e *ExceptExpr) emit(w io.Writer) {
+	if e.Left != nil {
+		e.Left.emit(w)
+	}
+	io.WriteString(w, ".filter(x => !")
+	if e.Right != nil {
+		e.Right.emit(w)
+	}
+	io.WriteString(w, ".includes(x))")
+}
+
+func (e *IntersectExpr) emit(w io.Writer) {
+	if e.Left != nil {
+		e.Left.emit(w)
+	}
+	io.WriteString(w, ".filter(x => ")
+	if e.Right != nil {
+		e.Right.emit(w)
+	}
+	io.WriteString(w, ".includes(x))")
+}
+
+func (f *FormatListExpr) emit(w io.Writer) {
+	io.WriteString(w, "\"[\" + ")
+	if f.Value != nil {
+		f.Value.emit(w)
+		io.WriteString(w, ".join(\", \")")
+	} else {
+		io.WriteString(w, "\"\"")
+	}
+	io.WriteString(w, " + \"]\"")
 }
 
 func (s *SubstringExpr) emit(w io.Writer) {
@@ -1297,10 +1362,12 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		{"==", "!=", "in"},
 		{"&&"},
 		{"||"},
+		{"union", "except", "intersect"},
 	}
 
 	apply := func(i int) {
-		if ops[i] == "in" {
+		switch ops[i] {
+		case "in":
 			isMap := false
 			if typ := postfixExprType(opnodes[i].Right); typ != nil {
 				if _, ok := typ.(types.MapType); ok {
@@ -1315,7 +1382,17 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 			} else {
 				operands[i] = &MethodCallExpr{Target: operands[i+1], Method: "includes", Args: []Expr{operands[i]}}
 			}
-		} else {
+		case "union":
+			if opnodes[i].All {
+				operands[i] = &UnionAllExpr{Left: operands[i], Right: operands[i+1]}
+			} else {
+				operands[i] = &UnionExpr{Left: operands[i], Right: operands[i+1]}
+			}
+		case "except":
+			operands[i] = &ExceptExpr{Left: operands[i], Right: operands[i+1]}
+		case "intersect":
+			operands[i] = &IntersectExpr{Left: operands[i], Right: operands[i+1]}
+		default:
 			operands[i] = &BinaryExpr{Left: operands[i], Op: ops[i], Right: operands[i+1]}
 		}
 		operands = append(operands[:i+1], operands[i+2:]...)
@@ -1461,7 +1538,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		case "print":
 			if len(args) == 1 && transpileEnv != nil {
 				if _, ok := types.ExprType(p.Call.Args[0], transpileEnv).(types.ListType); ok {
-					args = []Expr{&SpreadExpr{Expr: args[0]}}
+					args = []Expr{&FormatListExpr{Value: args[0]}}
 				}
 			}
 			return &CallExpr{Func: "console.log", Args: args}, nil
@@ -1873,6 +1950,16 @@ func exprToNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "max", Children: []*ast.Node{exprToNode(ex.Value)}}
 	case *ValuesExpr:
 		return &ast.Node{Kind: "values", Children: []*ast.Node{exprToNode(ex.Value)}}
+	case *UnionExpr:
+		return &ast.Node{Kind: "union", Children: []*ast.Node{exprToNode(ex.Left), exprToNode(ex.Right)}}
+	case *UnionAllExpr:
+		return &ast.Node{Kind: "unionall", Children: []*ast.Node{exprToNode(ex.Left), exprToNode(ex.Right)}}
+	case *ExceptExpr:
+		return &ast.Node{Kind: "except", Children: []*ast.Node{exprToNode(ex.Left), exprToNode(ex.Right)}}
+	case *IntersectExpr:
+		return &ast.Node{Kind: "intersect", Children: []*ast.Node{exprToNode(ex.Left), exprToNode(ex.Right)}}
+	case *FormatListExpr:
+		return &ast.Node{Kind: "fmtlist", Children: []*ast.Node{exprToNode(ex.Value)}}
 	case *SubstringExpr:
 		return &ast.Node{Kind: "substring", Children: []*ast.Node{exprToNode(ex.Str), exprToNode(ex.Start), exprToNode(ex.End)}}
 	case *MapLit:
