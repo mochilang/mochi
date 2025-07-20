@@ -476,6 +476,27 @@ func (f *FormatList) emit(e *emitter) {
 	io.WriteString(e.w, ").join(', ') + \"]\"")
 }
 
+// MethodCallExpr represents calling a method on a target expression.
+type MethodCallExpr struct {
+	Target Expr
+	Method string
+	Args   []Expr
+}
+
+func (m *MethodCallExpr) emit(e *emitter) {
+	m.Target.emit(e)
+	io.WriteString(e.w, ".")
+	io.WriteString(e.w, m.Method)
+	io.WriteString(e.w, "(")
+	for i, a := range m.Args {
+		if i > 0 {
+			io.WriteString(e.w, ", ")
+		}
+		a.emit(e)
+	}
+	io.WriteString(e.w, ")")
+}
+
 func (a *AppendExpr) emit(e *emitter) {
 	a.List.emit(e)
 	io.WriteString(e.w, " + [")
@@ -803,6 +824,15 @@ func convertExpr(e *parser.Expr) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
+		if op.Op == "in" {
+			typ := types.TypeOfPostfix(op.Right, currentEnv)
+			if _, ok := typ.(types.MapType); ok {
+				expr = &MethodCallExpr{Target: right, Method: "key?", Args: []Expr{expr}}
+			} else {
+				expr = &MethodCallExpr{Target: right, Method: "include?", Args: []Expr{expr}}
+			}
+			continue
+		}
 		expr = &BinaryExpr{Op: op.Op, Left: expr, Right: right}
 	}
 	return expr, nil
@@ -967,7 +997,7 @@ func convertPrintCall(args []Expr, orig []*parser.Expr) (Expr, error) {
 				ex = &FormatList{List: ex}
 			}
 		case types.BoolType:
-			if !isStringComparison(orig[0]) {
+			if !isStringComparison(orig[0]) && !isMembershipExpr(orig[0]) {
 				ex = &CondExpr{Cond: ex, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
 			}
 		}
@@ -984,7 +1014,7 @@ func convertPrintCall(args []Expr, orig []*parser.Expr) (Expr, error) {
 				ex = &FormatList{List: ex}
 			}
 		case types.BoolType:
-			if !isStringComparison(orig[i]) {
+			if !isStringComparison(orig[i]) && !isMembershipExpr(orig[i]) {
 				ex = &CondExpr{Cond: ex, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
 			}
 		}
@@ -1024,6 +1054,13 @@ func isValuesCall(e *parser.Expr) bool {
 		return true
 	}
 	return false
+}
+
+func isMembershipExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 1 {
+		return false
+	}
+	return e.Binary.Right[0].Op == "in"
 }
 
 func toNode(p *Program) *ast.Node {
@@ -1163,6 +1200,13 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(ex.Target), exprNode(ex.Index)}}
 	case *CastExpr:
 		return &ast.Node{Kind: "cast", Value: ex.Type, Children: []*ast.Node{exprNode(ex.Value)}}
+	case *MethodCallExpr:
+		n := &ast.Node{Kind: "method", Value: ex.Method}
+		n.Children = append(n.Children, exprNode(ex.Target))
+		for _, a := range ex.Args {
+			n.Children = append(n.Children, exprNode(a))
+		}
+		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}

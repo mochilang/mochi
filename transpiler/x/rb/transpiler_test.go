@@ -75,6 +75,9 @@ func TestTranspilePrograms(t *testing.T) {
 		"map_assign",
 		"typed_let",
 		"typed_var",
+		"in_operator",
+		"map_in_operator",
+		"string_in_operator",
 		"values_builtin",
 	}
 	root := repoRoot(t)

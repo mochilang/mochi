@@ -1,3 +1,13 @@
+## Progress (2025-07-20 12:35 +0700)
+- rb: support in operator
+- Generated Ruby for 39/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 12:35 +0700)
+- rb: support in operator
+- Generated Ruby for 39/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-20 11:38 +0700)
 - cobol: add golden test suite and update checklist
 - Generated Ruby for 36/100 programs
