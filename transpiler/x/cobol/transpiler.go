@@ -1072,6 +1072,20 @@ func intConstPostfix(pf *parser.PostfixExpr) (int, bool) {
 	return int(*lit.Int), true
 }
 
+func listLiteralLen(e *parser.Expr) (int, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return 0, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return 0, false
+	}
+	if lst := u.Value.Target.List; lst != nil {
+		return len(lst.Elems), true
+	}
+	return 0, false
+}
+
 func convertExpr(e *parser.Expr, env *types.Env) (Expr, error) {
 	if e == nil || e.Binary == nil {
 		return nil, fmt.Errorf("unsupported expr")
@@ -1202,6 +1216,9 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 	case p.Lit != nil:
 		return convertLiteral(p.Lit)
 	case p.Call != nil && p.Call.Func == "len" && len(p.Call.Args) == 1:
+		if n, ok := listLiteralLen(p.Call.Args[0]); ok {
+			return &IntLit{Value: n}, nil
+		}
 		arg, err := convertExpr(p.Call.Args[0], env)
 		if err != nil {
 			return nil, err
