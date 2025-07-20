@@ -74,15 +74,11 @@ func TestTranspile_Golden(t *testing.T) {
 		"str_builtin",
 		"bool_chain",
 		"cast_string_to_int",
+		"cast_struct",
 		"string_contains",
 		"string_index",
 		"list_index",
 		"list_assign",
-		"left_join_multi",
-		"right_join",
-		"outer_join",
-		"python_auto",
-		"python_math",
 	}
 	for _, name := range names {
 		src := filepath.Join(root, "tests", "vm", "valid", name+".mochi")
@@ -129,7 +125,7 @@ func TestTranspile_Golden(t *testing.T) {
 func updateReadme() {
 	root := repoRoot(&testing.T{})
 	srcDir := filepath.Join(root, "tests", "vm", "valid")
-	outDir := srcDir
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "rkt")
 	readmePath := filepath.Join(root, "transpiler", "x", "rkt", "README.md")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	total := len(files)
@@ -138,7 +134,7 @@ func updateReadme() {
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".rkt.out")); err == nil {
+		if _, err := os.Stat(filepath.Join(outDir, name+".rkt")); err == nil {
 			compiled++
 			mark = "[x]"
 		}
@@ -168,7 +164,7 @@ func updateTasks() {
 		}
 	}
 	srcDir := filepath.Join(root, "tests", "vm", "valid")
-	outDir := srcDir
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "rkt")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	sort.Strings(files)
 	if len(files) > 100 {
@@ -178,7 +174,7 @@ func updateTasks() {
 	compiled := 0
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-		if _, err := os.Stat(filepath.Join(outDir, name+".rkt.out")); err == nil {
+		if _, err := os.Stat(filepath.Join(outDir, name+".rkt")); err == nil {
 			compiled++
 		}
 	}

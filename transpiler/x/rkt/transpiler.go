@@ -1072,13 +1072,25 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				}
 			case *IndexExpr:
 				if mod, ok := n.Target.(*Name); ok {
-					if lit, ok := n.Index.(*StringLit); ok {
-						fn := mod.Name + "." + lit.Value
-						var err error
-						expr, err = convertCall(&parser.CallExpr{Func: fn, Args: op.Call.Args}, env)
+					if _, imp := importedModules[mod.Name]; imp {
+						if lit, ok := n.Index.(*StringLit); ok {
+							fn := mod.Name + "." + lit.Value
+							var err error
+							expr, err = convertCall(&parser.CallExpr{Func: fn, Args: op.Call.Args}, env)
+							if err != nil {
+								return nil, err
+							}
+							break
+						}
+					}
+				}
+				if lit, ok := n.Index.(*StringLit); ok && lit.Value == "contains" {
+					if types.IsStringPrimary(pf.Target, env) {
+						arg, err := convertExpr(op.Call.Args[0], env)
 						if err != nil {
 							return nil, err
 						}
+						expr = &CallExpr{Func: "string-contains?", Args: []Expr{n.Target, arg}}
 						break
 					}
 				}
