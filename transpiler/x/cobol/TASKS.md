@@ -1,3 +1,13 @@
+## Progress (2025-07-20 11:55 +0700)
+- cobol: support string to int cast
+- Generated COBOL for 20/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 11:49 +0700)
+- clj docs: update checklist and progress
+- Generated COBOL for 20/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-20 11:45 +0700)
 - cobol: simplify display and remove runtime helpers
 - Generated COBOL for 19/100 programs

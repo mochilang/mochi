@@ -1028,10 +1028,37 @@ func convertUnary(u *parser.Unary, env *types.Env) (Expr, error) {
 }
 
 func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
-	if pf == nil || len(pf.Ops) > 0 {
+	if pf == nil {
 		return nil, fmt.Errorf("unsupported postfix")
 	}
-	return convertPrimary(pf.Target, env)
+	ex, err := convertPrimary(pf.Target, env)
+	if err != nil {
+		return nil, err
+	}
+	for _, op := range pf.Ops {
+		if op.Cast != nil {
+			if op.Cast.Type == nil || op.Cast.Type.Simple == nil {
+				return nil, fmt.Errorf("unsupported cast")
+			}
+			switch *op.Cast.Type.Simple {
+			case "int":
+				sl, ok := ex.(*StringLit)
+				if !ok {
+					return nil, fmt.Errorf("unsupported cast")
+				}
+				v, err := strconv.Atoi(sl.Value)
+				if err != nil {
+					return nil, fmt.Errorf("invalid int cast")
+				}
+				ex = &IntLit{Value: v}
+			default:
+				return nil, fmt.Errorf("unsupported cast")
+			}
+		} else {
+			return nil, fmt.Errorf("unsupported postfix")
+		}
+	}
+	return ex, nil
 }
 
 func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
