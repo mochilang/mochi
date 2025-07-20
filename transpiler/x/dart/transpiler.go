@@ -2149,16 +2149,19 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 }
 
 func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
-	if len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+	if q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
 		return nil, fmt.Errorf("unsupported query")
 	}
+
 	vars := []string{q.Var}
 	iters := []Expr{}
+
 	src, err := convertExpr(q.Source)
 	if err != nil {
 		return nil, err
 	}
 	iters = append(iters, src)
+
 	for _, f := range q.Froms {
 		e, err := convertExpr(f.Src)
 		if err != nil {
@@ -2167,13 +2170,42 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		vars = append(vars, f.Var)
 		iters = append(iters, e)
 	}
+
 	var cond Expr
-	if q.Where != nil {
-		cond, err = convertExpr(q.Where)
+
+	for _, j := range q.Joins {
+		if j.Side != nil {
+			return nil, fmt.Errorf("unsupported query")
+		}
+		e, err := convertExpr(j.Src)
 		if err != nil {
 			return nil, err
 		}
+		vars = append(vars, j.Var)
+		iters = append(iters, e)
+		jc, err := convertExpr(j.On)
+		if err != nil {
+			return nil, err
+		}
+		if cond == nil {
+			cond = jc
+		} else {
+			cond = &BinaryExpr{Left: cond, Op: "&&", Right: jc}
+		}
 	}
+
+	if q.Where != nil {
+		wcond, err := convertExpr(q.Where)
+		if err != nil {
+			return nil, err
+		}
+		if cond == nil {
+			cond = wcond
+		} else {
+			cond = &BinaryExpr{Left: cond, Op: "&&", Right: wcond}
+		}
+	}
+
 	body := Expr(&Name{Name: q.Var})
 	if q.Select != nil {
 		body, err = convertExpr(q.Select)
@@ -2181,6 +2213,7 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			return nil, err
 		}
 	}
+
 	return &MultiListComp{Vars: vars, Iters: iters, Expr: body, Cond: cond}, nil
 }
 
