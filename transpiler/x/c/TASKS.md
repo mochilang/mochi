@@ -1,3 +1,8 @@
+## Progress (2025-07-20 09:33 +0700)
+- Added unary `!` operator support in the C transpiler.
+- Included `min_max_builtin` and `in_operator` in golden tests.
+- VM valid golden test results updated to 41/100
+
 ## Progress (2025-07-20 09:25 +0700)
 - Added constant list slicing and string list type inference.
 - VM valid golden test results updated to 39/100

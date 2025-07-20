@@ -336,6 +336,20 @@ func (i *IntLit) emitExpr(w io.Writer) {
 	fmt.Fprintf(w, "%d", i.Value)
 }
 
+type UnaryExpr struct {
+	Op   string
+	Expr Expr
+}
+
+func (u *UnaryExpr) emitExpr(w io.Writer) {
+	io.WriteString(w, u.Op)
+	io.WriteString(w, "(")
+	if u.Expr != nil {
+		u.Expr.emitExpr(w)
+	}
+	io.WriteString(w, ")")
+}
+
 type ListLit struct{ Elems []Expr }
 
 func (l *ListLit) emitExpr(w io.Writer) {
@@ -885,6 +899,33 @@ func convertUnary(u *parser.Unary) Expr {
 	if u == nil || u.Value == nil {
 		return nil
 	}
+	if len(u.Ops) > 0 {
+		base := convertUnary(&parser.Unary{Value: u.Value})
+		if base == nil {
+			return nil
+		}
+		for i := len(u.Ops) - 1; i >= 0; i-- {
+			switch u.Ops[i] {
+			case "-":
+				if v, ok := evalInt(base); ok {
+					base = &IntLit{Value: -v}
+				} else {
+					base = &UnaryExpr{Op: "-", Expr: base}
+				}
+			case "!":
+				if v, ok := evalInt(base); ok {
+					if v == 0 {
+						base = &IntLit{Value: 1}
+					} else {
+						base = &IntLit{Value: 0}
+					}
+				} else {
+					base = &UnaryExpr{Op: "!", Expr: base}
+				}
+			}
+		}
+		return base
+	}
 	if g := u.Value.Target.Group; g != nil {
 		return convertExpr(g)
 	}
@@ -1279,6 +1320,22 @@ func evalInt(e Expr) (int, bool) {
 				return evalInt(list.Elems[idx])
 			}
 		}
+	case *UnaryExpr:
+		if v.Op == "-" {
+			n, ok := evalInt(v.Expr)
+			if ok {
+				return -n, true
+			}
+		}
+		if v.Op == "!" {
+			n, ok := evalInt(v.Expr)
+			if ok {
+				if n == 0 {
+					return 1, true
+				}
+				return 0, true
+			}
+		}
 	}
 	return 0, false
 }
@@ -1313,6 +1370,8 @@ func evalString(e Expr) (string, bool) {
 			}
 		}
 		return "", false
+	case *UnaryExpr:
+		return evalString(v.Expr)
 	default:
 		return "", false
 	}
@@ -1348,6 +1407,8 @@ func exprIsString(e Expr) bool {
 		return exprIsString(v.Target)
 	case *CondExpr:
 		return exprIsString(v.Then) && exprIsString(v.Else)
+	case *UnaryExpr:
+		return exprIsString(v.Expr)
 	default:
 		return false
 	}
