@@ -1,3 +1,54 @@
+## Progress (2025-07-20 11:38 +0700)
+- cobol: add golden test suite and update checklist
+- Generated Ruby for 36/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 11:38 +0700)
+- cobol: add golden test suite and update checklist
+- Generated Ruby for 36/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 11:38 +0700)
+- cobol: add golden test suite and update checklist
+- Generated Ruby for 36/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 11:38 +0700)
+- cobol: add golden test suite and update checklist
+- Generated Ruby for 35/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 11:38 +0700)
+- cobol: add golden test suite and update checklist
+- Generated Ruby for 35/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 11:38 +0700)
+- cobol: add golden test suite and update checklist
+- Generated Ruby for 35/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 11:38 +0700)
+- cobol: add golden test suite and update checklist
+- Generated Ruby for 35/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 11:38 +0700)
+- cobol: add golden test suite and update checklist
+- Generated Ruby for 35/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 11:38 +0700)
+- cobol: add golden test suite and update checklist
+- Generated Ruby for 35/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 11:38 +0700)
+- VM valid golden test results updated
+
+## Progress (2025-07-20 11:38 +0700)
+- VM valid golden test results updated
+
 ## Progress (2025-07-20 03:34 +0000)
 - Improved Ruby emitter with indentation
 - Lists printed with brackets using FormatList

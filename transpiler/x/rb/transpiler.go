@@ -371,6 +371,14 @@ type BinaryExpr struct {
 }
 
 func (b *BinaryExpr) emit(e *emitter) {
+	if b.Op == "/" {
+		io.WriteString(e.w, "(")
+		b.Left.emit(e)
+		io.WriteString(e.w, ".to_f / ")
+		b.Right.emit(e)
+		io.WriteString(e.w, ")")
+		return
+	}
 	b.Left.emit(e)
 	io.WriteString(e.w, " "+b.Op+" ")
 	b.Right.emit(e)
@@ -405,7 +413,7 @@ type AvgExpr struct{ Value Expr }
 func (a *AvgExpr) emit(e *emitter) {
 	io.WriteString(e.w, "(")
 	a.Value.emit(e)
-	io.WriteString(e.w, ".sum / ")
+	io.WriteString(e.w, ".sum.to_f / ")
 	a.Value.emit(e)
 	io.WriteString(e.w, ".length)")
 }
@@ -413,6 +421,14 @@ func (a *AvgExpr) emit(e *emitter) {
 type AppendExpr struct {
 	List Expr
 	Elem Expr
+}
+
+// ValuesExpr returns the list of values of a map.
+type ValuesExpr struct{ Map Expr }
+
+func (v *ValuesExpr) emit(e *emitter) {
+	v.Map.emit(e)
+	io.WriteString(e.w, ".values")
 }
 
 // CondExpr represents a conditional expression (ternary operator).
@@ -457,7 +473,7 @@ type FormatList struct{ List Expr }
 func (f *FormatList) emit(e *emitter) {
 	io.WriteString(e.w, "\"[\" + (")
 	f.List.emit(e)
-	io.WriteString(e.w, ").join(' ') + \"]\"")
+	io.WriteString(e.w, ").join(', ') + \"]\"")
 }
 
 func (a *AppendExpr) emit(e *emitter) {
@@ -872,6 +888,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("avg takes one arg")
 			}
 			return &AvgExpr{Value: args[0]}, nil
+		case "values":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("values takes one arg")
+			}
+			return &ValuesExpr{Map: args[0]}, nil
 		case "append":
 			if len(args) != 2 {
 				return nil, fmt.Errorf("append takes two args")
@@ -938,21 +959,71 @@ func convertPrintCall(args []Expr, orig []*parser.Expr) (Expr, error) {
 	if len(args) == 1 {
 		ex := args[0]
 		t := types.ExprType(orig[0], currentEnv)
-		if _, ok := t.(types.ListType); ok {
-			ex = &FormatList{List: ex}
+		switch t.(type) {
+		case types.ListType:
+			if isValuesCall(orig[0]) {
+				ex = &JoinExpr{List: ex}
+			} else {
+				ex = &FormatList{List: ex}
+			}
+		case types.BoolType:
+			if !isStringComparison(orig[0]) {
+				ex = &CondExpr{Cond: ex, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
+			}
 		}
 		return &CallExpr{Func: "puts", Args: []Expr{ex}}, nil
 	}
 	conv := make([]Expr, len(args))
 	for i, a := range args {
 		ex := a
-		if _, ok := types.ExprType(orig[i], currentEnv).(types.ListType); ok {
-			ex = &FormatList{List: ex}
+		switch types.ExprType(orig[i], currentEnv).(type) {
+		case types.ListType:
+			if isValuesCall(orig[i]) {
+				ex = &JoinExpr{List: ex}
+			} else {
+				ex = &FormatList{List: ex}
+			}
+		case types.BoolType:
+			if !isStringComparison(orig[i]) {
+				ex = &CondExpr{Cond: ex, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
+			}
 		}
 		conv[i] = ex
 	}
 	list := &ListLit{Elems: conv}
 	return &CallExpr{Func: "puts", Args: []Expr{&JoinExpr{List: list}}}, nil
+}
+
+func isStringComparison(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 1 {
+		return false
+	}
+	op := e.Binary.Right[0].Op
+	switch op {
+	case "==", "!=", "<", "<=", ">", ">=":
+		lt := types.TypeOfUnary(e.Binary.Left, currentEnv)
+		rt := types.TypeOfPostfix(e.Binary.Right[0].Right, currentEnv)
+		if _, ok := lt.(types.StringType); ok {
+			if _, ok2 := rt.(types.StringType); ok2 {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func isValuesCall(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || u.Value == nil || u.Value.Target == nil {
+		return false
+	}
+	if u.Value.Target.Call != nil && u.Value.Target.Call.Func == "values" {
+		return true
+	}
+	return false
 }
 
 func toNode(p *Program) *ast.Node {
@@ -1080,6 +1151,8 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "avg", Children: []*ast.Node{exprNode(ex.Value)}}
 	case *AppendExpr:
 		return &ast.Node{Kind: "append", Children: []*ast.Node{exprNode(ex.List), exprNode(ex.Elem)}}
+	case *ValuesExpr:
+		return &ast.Node{Kind: "values", Children: []*ast.Node{exprNode(ex.Map)}}
 	case *CondExpr:
 		return &ast.Node{Kind: "cond", Children: []*ast.Node{exprNode(ex.Cond), exprNode(ex.Then), exprNode(ex.Else)}}
 	case *JoinExpr:
