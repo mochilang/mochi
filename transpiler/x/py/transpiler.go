@@ -2681,18 +2681,52 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 	if q.Group == nil {
 		return nil, fmt.Errorf("missing group clause")
 	}
-	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Distinct || len(q.Group.Exprs) != 1 {
-		return nil, fmt.Errorf("unsupported group-by query")
-	}
 
+	vars := []string{q.Var}
+	iters := []Expr{}
 	src, err := convertExpr(q.Source)
 	if err != nil {
 		return nil, err
 	}
-	keyExpr, err := convertExpr(q.Group.Exprs[0])
+	iters = append(iters, src)
+	for _, f := range q.Froms {
+		e, err := convertExpr(f.Src)
+		if err != nil {
+			return nil, err
+		}
+		vars = append(vars, f.Var)
+		iters = append(iters, e)
+	}
+	for _, j := range q.Joins {
+		e, err := convertExpr(j.Src)
+		if err != nil {
+			return nil, err
+		}
+		cond, err := convertExpr(j.On)
+		if err != nil {
+			return nil, err
+		}
+		if j.Side != nil && *j.Side == "left" {
+			comp := &ListComp{Var: j.Var, Iter: e, Expr: &Name{Name: j.Var}, Cond: cond}
+			e = &BinaryExpr{Left: comp, Op: "||", Right: &ListLit{Elems: []Expr{&Name{Name: "None"}}}}
+		} else {
+			e = &ListComp{Var: j.Var, Iter: e, Expr: &Name{Name: j.Var}, Cond: cond}
+		}
+		vars = append(vars, j.Var)
+		iters = append(iters, e)
+	}
+
+	keyVal, err := convertExpr(q.Group.Exprs[0])
 	if err != nil {
 		return nil, err
 	}
+	keyExpr := keyVal
+	if dl, ok := keyVal.(*DictLit); ok {
+		vals := make([]Expr, len(dl.Values))
+		copy(vals, dl.Values)
+		keyExpr = &CallExpr{Func: &Name{Name: "tuple"}, Args: []Expr{&ListLit{Elems: vals}}}
+	}
+
 	var where Expr
 	if q.Where != nil {
 		where, err = convertExpr(q.Where)
@@ -2734,8 +2768,22 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 		&LetStmt{Name: groupsVar, Expr: &DictLit{}},
 	}
 
-	setdef := &CallExpr{Func: &FieldExpr{Target: &Name{Name: groupsVar}, Name: "setdefault"}, Args: []Expr{keyExpr, &ListLit{}}}
-	appendCall := &CallExpr{Func: &FieldExpr{Target: &Name{Name: tmpVar}, Name: "append"}, Args: []Expr{&Name{Name: q.Var}}}
+	var row Expr
+	if len(vars) == 1 {
+		row = &Name{Name: vars[0]}
+	} else {
+		var rk []Expr
+		var rv []Expr
+		for _, v := range vars {
+			rk = append(rk, &StringLit{Value: v})
+			rv = append(rv, &Name{Name: v})
+		}
+		row = &DictLit{Keys: rk, Values: rv}
+	}
+
+	initMap := &DictLit{Keys: []Expr{&StringLit{Value: "key"}, &StringLit{Value: "items"}}, Values: []Expr{keyVal, &ListLit{}}}
+	setdef := &CallExpr{Func: &FieldExpr{Target: &Name{Name: groupsVar}, Name: "setdefault"}, Args: []Expr{keyExpr, initMap}}
+	appendCall := &CallExpr{Func: &FieldExpr{Target: &FieldExpr{Target: &Name{Name: tmpVar}, Name: "items", MapIndex: true}, Name: "append"}, Args: []Expr{row}}
 	inner := []Stmt{
 		&LetStmt{Name: tmpVar, Expr: setdef},
 		&ExprStmt{Expr: appendCall},
@@ -2743,21 +2791,23 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 	if where != nil {
 		inner = []Stmt{&IfStmt{Cond: where, Then: inner}}
 	}
-	stmts = append(stmts, &ForStmt{Var: q.Var, Iter: src, Body: inner})
 
-	groupDict := &DictLit{Keys: []Expr{&StringLit{Value: "key"}, &StringLit{Value: "items"}}, Values: []Expr{&Name{Name: "k"}, &Name{Name: "items"}}}
-	appendRes := &ExprStmt{Expr: &CallExpr{Func: &FieldExpr{Target: &Name{Name: target}, Name: "append"}, Args: []Expr{sel}}}
-	body := []Stmt{
-		&LetStmt{Name: q.Group.Name, Expr: groupDict},
+	bodyLoop := inner
+	for i := len(vars) - 1; i >= 0; i-- {
+		bodyLoop = []Stmt{&ForStmt{Var: vars[i], Iter: iters[i], Body: bodyLoop}}
 	}
+	stmts = append(stmts, bodyLoop...)
+
+	appendRes := &ExprStmt{Expr: &CallExpr{Func: &FieldExpr{Target: &Name{Name: target}, Name: "append"}, Args: []Expr{sel}}}
+	body := []Stmt{}
 	if having != nil {
 		body = append(body, &IfStmt{Cond: having, Then: []Stmt{appendRes}})
 	} else {
 		body = append(body, appendRes)
 	}
-	iterItems := &CallExpr{Func: &FieldExpr{Target: &Name{Name: groupsVar}, Name: "items"}, Args: nil}
+	iterVals := &CallExpr{Func: &FieldExpr{Target: &Name{Name: groupsVar}, Name: "values"}, Args: nil}
 	stmts = append(stmts, &LetStmt{Name: target, Expr: &ListLit{}})
-	stmts = append(stmts, &ForStmt{Var: "k, items", Iter: iterItems, Body: body})
+	stmts = append(stmts, &ForStmt{Var: q.Group.Name, Iter: iterVals, Body: body})
 
 	return stmts, nil
 }
