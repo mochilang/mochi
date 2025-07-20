@@ -1,0 +1,1 @@
+/workspace/mochi/tests/transpiler/x/zig/string_compare.zig:5:38: error: operator < not allowed for type '*const [1:0]u8'
