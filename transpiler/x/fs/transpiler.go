@@ -279,22 +279,59 @@ type BinaryExpr struct {
 
 func (b *BinaryExpr) emit(w io.Writer) {
 	if b.Op == "in" {
-		if needsParen(b.Right) {
-			io.WriteString(w, "(")
-			b.Right.emit(w)
+		rtyp := inferType(b.Right)
+		if rtyp == "string" {
+			if needsParen(b.Right) {
+				io.WriteString(w, "(")
+				b.Right.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				b.Right.emit(w)
+			}
+			io.WriteString(w, ".Contains(")
+			if needsParen(b.Left) {
+				io.WriteString(w, "(")
+				b.Left.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				b.Left.emit(w)
+			}
 			io.WriteString(w, ")")
+		} else if rtyp == "list" {
+			io.WriteString(w, "List.contains ")
+			if needsParen(b.Left) {
+				io.WriteString(w, "(")
+				b.Left.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				b.Left.emit(w)
+			}
+			io.WriteString(w, " ")
+			if needsParen(b.Right) {
+				io.WriteString(w, "(")
+				b.Right.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				b.Right.emit(w)
+			}
 		} else {
-			b.Right.emit(w)
+			io.WriteString(w, "Seq.contains ")
+			if needsParen(b.Left) {
+				io.WriteString(w, "(")
+				b.Left.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				b.Left.emit(w)
+			}
+			io.WriteString(w, " ")
+			if needsParen(b.Right) {
+				io.WriteString(w, "(")
+				b.Right.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				b.Right.emit(w)
+			}
 		}
-		io.WriteString(w, ".Contains(")
-		if needsParen(b.Left) {
-			io.WriteString(w, "(")
-			b.Left.emit(w)
-			io.WriteString(w, ")")
-		} else {
-			b.Left.emit(w)
-		}
-		io.WriteString(w, ")")
 		return
 	}
 	if needsParen(b.Left) {
@@ -443,11 +480,11 @@ func inferType(e Expr) string {
 		switch v.Func {
 		case "string":
 			return "string"
-		case "Seq.length":
+		case "Seq.length", "List.length", "String.length":
 			return "int"
-		case "Seq.sum":
+		case "Seq.sum", "List.sum":
 			return "int"
-		case "Seq.averageBy float":
+		case "Seq.averageBy float", "List.averageBy float":
 			return "float"
 		}
 	case *IfExpr:
@@ -624,6 +661,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			typ = *st.Let.Type.Simple
 		} else {
 			typ = inferType(e)
+			if typ == "list" {
+				typ = ""
+			}
 		}
 		return &LetStmt{Name: st.Let.Name, Expr: e, Type: typ}, nil
 	case st.Var != nil:
@@ -640,6 +680,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			typ = *st.Var.Type.Simple
 		} else {
 			typ = inferType(e)
+			if typ == "list" {
+				typ = ""
+			}
 		}
 		return &LetStmt{Name: st.Var.Name, Expr: e, Type: typ, Mutable: true}, nil
 	case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
@@ -865,13 +908,30 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			concat := &CallExpr{Func: "String.concat", Args: []Expr{&StringLit{Value: " "}, list}}
 			return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{concat}}, nil
 		case "len":
-			return &CallExpr{Func: "Seq.length", Args: args}, nil
+			fn := "Seq.length"
+			if len(args) == 1 {
+				switch inferType(args[0]) {
+				case "list":
+					fn = "List.length"
+				case "string":
+					fn = "String.length"
+				}
+			}
+			return &CallExpr{Func: fn, Args: args}, nil
 		case "str":
 			return &CallExpr{Func: "string", Args: args}, nil
 		case "sum":
-			return &CallExpr{Func: "Seq.sum", Args: args}, nil
+			fn := "Seq.sum"
+			if len(args) == 1 && inferType(args[0]) == "list" {
+				fn = "List.sum"
+			}
+			return &CallExpr{Func: fn, Args: args}, nil
 		case "avg":
-			return &CallExpr{Func: "Seq.averageBy float", Args: args}, nil
+			fn := "Seq.averageBy float"
+			if len(args) == 1 && inferType(args[0]) == "list" {
+				fn = "List.averageBy float"
+			}
+			return &CallExpr{Func: fn, Args: args}, nil
 		case "append":
 			if len(args) != 2 {
 				return nil, fmt.Errorf("append expects 2 args")
