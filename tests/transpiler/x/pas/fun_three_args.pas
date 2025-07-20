@@ -1,6 +1,5 @@
 {$mode objfpc}
 program Main;
-uses SysUtils;
 function sum3(a: integer; b: integer; c: integer): integer;
 begin
   exit((a + b) + c);

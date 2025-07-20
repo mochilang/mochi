@@ -1,6 +1,5 @@
 {$mode objfpc}
 program Main;
-uses SysUtils;
 var
   i: integer;
 begin

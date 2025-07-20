@@ -23,9 +23,10 @@ type VarDecl struct {
 // Program is a minimal Pascal AST consisting of a sequence of statements
 // plus optional variable declarations.
 type Program struct {
-	Funs  []FunDecl
-	Vars  []VarDecl
-	Stmts []Stmt
+	Funs        []FunDecl
+	Vars        []VarDecl
+	Stmts       []Stmt
+	UseSysUtils bool
 }
 
 // Stmt represents a Pascal statement.
@@ -410,7 +411,10 @@ func (a *AssignStmt) emit(w io.Writer) {
 // Emit renders Pascal code for the program with a deterministic header.
 func (p *Program) Emit() []byte {
 	var buf bytes.Buffer
-	buf.WriteString("{$mode objfpc}\nprogram Main;\nuses SysUtils;\n")
+	buf.WriteString("{$mode objfpc}\nprogram Main;\n")
+	if p.UseSysUtils {
+		buf.WriteString("uses SysUtils;\n")
+	}
 	for _, f := range p.Funs {
 		f.emit(&buf)
 	}
@@ -601,6 +605,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			pr.Vars = append(pr.Vars, VarDecl{Name: name, Type: typ})
 		}
 	}
+	markSysUtils(pr)
 	return pr, nil
 }
 
@@ -984,10 +989,14 @@ func inferType(e Expr) string {
 		}
 		return rt
 	case *CallExpr:
-		if v.Name == "Length" {
+		switch v.Name {
+		case "Length", "Pos":
 			return "integer"
+		case "IntToStr":
+			return "string"
+		default:
+			return ""
 		}
-		return ""
 	case *IfExpr:
 		thenT := inferType(v.Then)
 		elseT := ""
@@ -1017,7 +1026,110 @@ func inferType(e Expr) string {
 			return "array of " + t
 		}
 		return ""
+	case *ContainsExpr:
+		return "boolean"
+	case *IndexExpr:
+		if v.String {
+			return "string"
+		}
+		return "integer"
+	case *SliceExpr:
+		if v.String {
+			return "string"
+		}
+		return "array of integer"
 	default:
 		return ""
+	}
+}
+
+func usesSysUtilsExpr(e Expr) bool {
+	switch v := e.(type) {
+	case *CallExpr:
+		if v.Name == "IntToStr" {
+			return true
+		}
+		for _, a := range v.Args {
+			if usesSysUtilsExpr(a) {
+				return true
+			}
+		}
+	case *IfExpr:
+		return true
+	case *BinaryExpr:
+		if usesSysUtilsExpr(v.Left) || usesSysUtilsExpr(v.Right) {
+			return true
+		}
+	case *UnaryExpr:
+		return usesSysUtilsExpr(v.Expr)
+	case *ContainsExpr:
+		return usesSysUtilsExpr(v.Str) || usesSysUtilsExpr(v.Sub)
+	case *IndexExpr:
+		return usesSysUtilsExpr(v.Target) || usesSysUtilsExpr(v.Index)
+	case *SliceExpr:
+		return usesSysUtilsExpr(v.Target) ||
+			(v.Start != nil && usesSysUtilsExpr(v.Start)) ||
+			(v.End != nil && usesSysUtilsExpr(v.End))
+	}
+	return false
+}
+
+func usesSysUtilsStmt(s Stmt) bool {
+	switch v := s.(type) {
+	case *PrintStmt:
+		return usesSysUtilsExpr(v.Expr)
+	case *AssignStmt:
+		return usesSysUtilsExpr(v.Expr)
+	case *IndexAssignStmt:
+		return usesSysUtilsExpr(v.Index) || usesSysUtilsExpr(v.Expr)
+	case *ReturnStmt:
+		return usesSysUtilsExpr(v.Expr)
+	case *IfStmt:
+		if usesSysUtilsExpr(v.Cond) {
+			return true
+		}
+		for _, st := range v.Then {
+			if usesSysUtilsStmt(st) {
+				return true
+			}
+		}
+		for _, st := range v.Else {
+			if usesSysUtilsStmt(st) {
+				return true
+			}
+		}
+	case *WhileStmt:
+		if usesSysUtilsExpr(v.Cond) {
+			return true
+		}
+		for _, st := range v.Body {
+			if usesSysUtilsStmt(st) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func markSysUtils(p *Program) {
+	for _, v := range p.Vars {
+		if v.Init != nil && usesSysUtilsExpr(v.Init) {
+			p.UseSysUtils = true
+			return
+		}
+	}
+	for _, st := range p.Stmts {
+		if usesSysUtilsStmt(st) {
+			p.UseSysUtils = true
+			return
+		}
+	}
+	for _, f := range p.Funs {
+		for _, st := range f.Body {
+			if usesSysUtilsStmt(st) {
+				p.UseSysUtils = true
+				return
+			}
+		}
 	}
 }

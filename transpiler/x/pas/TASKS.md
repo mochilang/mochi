@@ -1,3 +1,7 @@
+## Progress (2025-07-20 04:46 +0000)
+- pascal: inline sysutils usage and improve inference
+- 30/100 VM programs transpiled successfully
+
 ## Progress (2025-07-20 03:33 UTC)
 - pas transpiler: added str_builtin and sum_builtin support, removed StrUtils
 - 30/100 VM programs transpiled successfully

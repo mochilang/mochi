@@ -104,4 +104,5 @@ Generated sources for the golden tests live under `tests/transpiler/x/pas`.
 - [ ] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
+
 *Checklist generated automatically from tests/vm/valid*

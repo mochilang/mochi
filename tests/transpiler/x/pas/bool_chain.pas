@@ -1,6 +1,5 @@
 {$mode objfpc}
 program Main;
-uses SysUtils;
 function boom(): boolean;
 begin
   writeln('boom');
