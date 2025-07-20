@@ -1,1 +1,13 @@
-unsupported primary
+exit status 1
+# command-line-arguments
+../../../tests/transpiler/x/go/outer_join.go:60:16: cannot use o (variable of struct type Order) as map[string]int value in struct literal
+../../../tests/transpiler/x/go/outer_join.go:61:16: cannot use c (variable of struct type Customer) as map[string]any value in struct literal
+../../../tests/transpiler/x/go/outer_join.go:77:9: invalid operation: cannot index row (variable of struct type Result)
+../../../tests/transpiler/x/go/outer_join.go:78:10: invalid operation: cannot index row (variable of struct type Result)
+../../../tests/transpiler/x/go/outer_join.go:79:70: row.Order.ID undefined (type map[string]int has no field or method ID)
+../../../tests/transpiler/x/go/outer_join.go:79:103: row.Customer.Name undefined (type map[string]any has no field or method Name)
+../../../tests/transpiler/x/go/outer_join.go:79:136: row.Order.Total undefined (type map[string]int has no field or method Total)
+../../../tests/transpiler/x/go/outer_join.go:81:70: row.Order.ID undefined (type map[string]int has no field or method ID)
+../../../tests/transpiler/x/go/outer_join.go:81:128: row.Order.Total undefined (type map[string]int has no field or method Total)
+../../../tests/transpiler/x/go/outer_join.go:84:75: row.Customer.Name undefined (type map[string]any has no field or method Name)
+../../../tests/transpiler/x/go/outer_join.go:84:75: too many errors
