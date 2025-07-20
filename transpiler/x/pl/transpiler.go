@@ -54,6 +54,14 @@ type LetStmt struct {
 	Name string
 	Expr Expr
 }
+
+// IndexAssignStmt updates a list element at runtime.
+type IndexAssignStmt struct {
+	Name   string
+	Target string
+	Index  Expr
+	Value  Expr
+}
 type IfStmt struct {
 	Cond Expr
 	Then []Stmt
@@ -324,6 +332,17 @@ func (l *LetStmt) emit(w io.Writer, _ int) {
 		fmt.Fprintf(w, "    %s = ", l.Name)
 	}
 	l.Expr.emit(w)
+}
+
+func (s *IndexAssignStmt) emit(w io.Writer, idx int) {
+	tmp := fmt.Sprintf("T%d", idx)
+	fmt.Fprintf(w, "    nth0(")
+	s.Index.emit(w)
+	fmt.Fprintf(w, ", %s, _, %s),\n    nth0(", s.Target, tmp)
+	s.Index.emit(w)
+	fmt.Fprintf(w, ", %s, ", s.Name)
+	s.Value.emit(w)
+	fmt.Fprintf(w, ", %s)", tmp)
 }
 
 func emitIfToVar(w io.Writer, name string, ie *IfExpr) {
@@ -689,13 +708,21 @@ func intValue(e Expr) (int, bool) {
 	return 0, false
 }
 
+func nextSimpleAssign(sts []*parser.Statement, idx int, name string) bool {
+	if idx+1 >= len(sts) {
+		return false
+	}
+	n := sts[idx+1]
+	return n.Assign != nil && n.Assign.Name == name && len(n.Assign.Index) == 0 && len(n.Assign.Field) == 0
+}
+
 // Transpile converts a Mochi program to a Prolog AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	_ = env
 	constFuncs := collectConstFuncs(prog)
 	ce := newCompileEnv(constFuncs)
 	p := &Program{}
-	for _, st := range prog.Statements {
+	for i, st := range prog.Statements {
 		switch {
 		case st.Fun != nil:
 			if len(st.Fun.Params) == 0 && st.Fun.Return != nil {
@@ -722,6 +749,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			ce.setConst(name, expr)
 			p.Stmts = append(p.Stmts, &LetStmt{Name: name, Expr: expr})
 		case st.Var != nil:
+			if nextSimpleAssign(prog.Statements, i, st.Var.Name) {
+				continue
+			}
 			var expr Expr
 			if st.Var.Value != nil {
 				var err error
@@ -743,6 +773,19 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			name := ce.fresh(st.Assign.Name)
 			ce.setConst(name, expr)
 			p.Stmts = append(p.Stmts, &LetStmt{Name: name, Expr: expr})
+		case st.Assign != nil && len(st.Assign.Index) == 1 && st.Assign.Index[0].Colon == nil && st.Assign.Index[0].End == nil && st.Assign.Index[0].Step == nil:
+			idx, err := toExpr(st.Assign.Index[0].Start, ce)
+			if err != nil {
+				return nil, err
+			}
+			val, err := toExpr(st.Assign.Value, ce)
+			if err != nil {
+				return nil, err
+			}
+			target := ce.current(st.Assign.Name)
+			name := ce.fresh(st.Assign.Name)
+			ce.setConst(name, nil)
+			p.Stmts = append(p.Stmts, &IndexAssignStmt{Name: name, Target: target, Index: idx, Value: val})
 		case st.If != nil:
 			cond, err := toExpr(st.If.Cond, ce)
 			if err != nil {
@@ -825,7 +868,7 @@ func toNode(p *Program) *ast.Node {
 
 func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 	var out []Stmt
-	for _, s := range sts {
+	for i, s := range sts {
 		switch {
 		case s.Expr != nil:
 			call := s.Expr.Expr.Binary.Left.Value.Target.Call
@@ -852,6 +895,9 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 			env.setConst(name, expr)
 			out = append(out, &LetStmt{Name: name, Expr: expr})
 		case s.Var != nil:
+			if nextSimpleAssign(sts, i, s.Var.Name) {
+				continue
+			}
 			var expr Expr
 			if s.Var.Value != nil {
 				var err error
@@ -882,20 +928,10 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			listName := env.current(s.Assign.Name)
-			if listLit, ok := env.constExpr(listName).(*ListLit); ok {
-				if iv, ok2 := intValue(idx); ok2 && iv >= 0 && iv < len(listLit.Elems) {
-					newElems := make([]Expr, len(listLit.Elems))
-					copy(newElems, listLit.Elems)
-					newElems[iv] = val
-					name := env.fresh(s.Assign.Name)
-					lit := &ListLit{Elems: newElems}
-					env.setConst(name, lit)
-					out = append(out, &LetStmt{Name: name, Expr: lit})
-					break
-				}
-			}
-			return nil, fmt.Errorf("unsupported statement")
+			target := env.current(s.Assign.Name)
+			name := env.fresh(s.Assign.Name)
+			env.setConst(name, nil)
+			out = append(out, &IndexAssignStmt{Name: name, Target: target, Index: idx, Value: val})
 		case s.If != nil:
 			cond, err := toExpr(s.If.Cond, env)
 			if err != nil {
