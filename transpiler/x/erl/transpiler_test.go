@@ -167,6 +167,16 @@ func TestTranspileTypedVar(t *testing.T) { runGolden(t, "typed_var") }
 
 func TestTranspileVarAssignment(t *testing.T) { runGolden(t, "var_assignment") }
 
+func TestTranspileSubstringBuiltin(t *testing.T) { runGolden(t, "substring_builtin") }
+
+func TestTranspileStringContains(t *testing.T) { runGolden(t, "string_contains") }
+
+func TestTranspileStringInOperator(t *testing.T) { runGolden(t, "string_in_operator") }
+
+func TestTranspileSlice(t *testing.T) { runGolden(t, "slice") }
+
+func TestTranspileStringPrefixSlice(t *testing.T) { runGolden(t, "string_prefix_slice") }
+
 func updateEnabled() bool { return *update }
 
 func countCompiled() (int, int) {
