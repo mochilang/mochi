@@ -93,8 +93,6 @@ func (s *LetStmt) emit(w io.Writer) {
 	if s.Value != nil {
 		fmt.Fprint(w, " = ")
 		s.Value.emit(w)
-	} else {
-		fmt.Fprint(w, " = 0")
 	}
 }
 
@@ -112,8 +110,6 @@ func (s *VarStmt) emit(w io.Writer) {
 	if s.Value != nil {
 		fmt.Fprint(w, " = ")
 		s.Value.emit(w)
-	} else {
-		fmt.Fprint(w, " = 0")
 	}
 }
 
@@ -414,19 +410,27 @@ func (b *BinaryExpr) emit(w io.Writer) {
 func Emit(p *Program) []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
-	buf.WriteString("object Main extends App {\n")
+	buf.WriteString("object Main {\n")
+
 	for _, st := range p.Stmts {
 		if fn, ok := st.(*FunStmt); ok {
 			buf.WriteString("  ")
 			fn.emit(&buf)
 			buf.WriteByte('\n')
 			buf.WriteByte('\n')
-		} else {
-			buf.WriteString("  ")
-			st.emit(&buf)
-			buf.WriteByte('\n')
 		}
 	}
+
+	buf.WriteString("  def main(args: Array[String]): Unit = {\n")
+	for _, st := range p.Stmts {
+		if _, ok := st.(*FunStmt); ok {
+			continue
+		}
+		buf.WriteString("    ")
+		st.emit(&buf)
+		buf.WriteByte('\n')
+	}
+	buf.WriteString("  }\n")
 	buf.WriteString("}\n")
 	return buf.Bytes()
 }
@@ -939,7 +943,19 @@ func inferType(e Expr) string {
 	case *BoolLit:
 		return "Boolean"
 	case *ListLit:
-		return "List[Any]"
+		if len(ex.Elems) == 0 {
+			return "List[Any]"
+		}
+		t := inferType(ex.Elems[0])
+		if t == "" {
+			return "List[Any]"
+		}
+		for _, e := range ex.Elems[1:] {
+			if inferType(e) != t {
+				return "List[Any]"
+			}
+		}
+		return fmt.Sprintf("List[%s]", t)
 	case *LenExpr:
 		return "Int"
 	case *BinaryExpr:

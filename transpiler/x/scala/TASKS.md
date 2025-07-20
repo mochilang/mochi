@@ -1,3 +1,15 @@
+## Progress (2025-07-20 09:09 +0700)
+- scala transpiler: idiomatic main and type inference
+- Regenerated golden files - 46/100 vm valid programs passing
+
+## Progress (2025-07-20 08:55 +0700)
+- update scala task log
+- Regenerated golden files - 46/100 vm valid programs passing
+
+## Progress (2025-07-20 08:55 +0700)
+- update scala task log
+- Regenerated golden files - 46/100 vm valid programs passing
+
 ## Progress (2025-07-20 01:47 +0000)
 - scala transpiler: added parameter and return types for functions
 - Regenerated golden files - 38/100 vm valid programs passing
