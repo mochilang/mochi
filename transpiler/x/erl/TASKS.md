@@ -1,3 +1,39 @@
+## Progress (2025-07-20 23:08 +0700)
+- erl transpiler: add join_multi test
+- Regenerated golden files - 71/100 vm valid programs passing
+
+## Progress (2025-07-20 22:59 +0700)
+- erl transpiler: support struct literals
+- Regenerated golden files - 71/100 vm valid programs passing
+
+## Progress (2025-07-20 22:59 +0700)
+- erl transpiler: support struct literals
+- Regenerated golden files - 70/100 vm valid programs passing
+
+## Progress (2025-07-20 22:59 +0700)
+- erl transpiler: support struct literals
+- Regenerated golden files - 70/100 vm valid programs passing
+
+## Progress (2025-07-20 22:59 +0700)
+- erl transpiler: support struct literals
+- Regenerated golden files - 70/100 vm valid programs passing
+
+## Progress (2025-07-20 22:59 +0700)
+- erl transpiler: support struct literals
+- Regenerated golden files - 70/100 vm valid programs passing
+
+## Progress (2025-07-20 22:59 +0700)
+- erl transpiler: support struct literals
+- Regenerated golden files - 70/100 vm valid programs passing
+
+## Progress (2025-07-20 22:59 +0700)
+- erl transpiler: support struct literals
+- Regenerated golden files - 70/100 vm valid programs passing
+
+## Progress (2025-07-20 22:59 +0700)
+- erl transpiler: support struct literals
+- Regenerated golden files - 70/100 vm valid programs passing
+
 ## Progress (2025-07-20 22:28 +0700)
 - erl transpiler: update tests
 - Regenerated golden files - 70/100 vm valid programs passing
