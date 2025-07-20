@@ -648,6 +648,8 @@ func (i *IfStmt) emit(w io.Writer) {
 			}
 			st.emit(w)
 		}
+	} else {
+		io.WriteString(w, ";\n        _ -> ok")
 	}
 	io.WriteString(w, "\n    end")
 }
@@ -776,6 +778,13 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 			return []Stmt{&ReturnStmt{Expr: val}}, nil
 		}
 		return []Stmt{&ReturnStmt{}}, nil
+	case st.Fun != nil:
+		fnExpr, err := convertFunStmtAsExpr(st.Fun, env, ctx)
+		if err != nil {
+			return nil, err
+		}
+		alias := ctx.newAlias(st.Fun.Name)
+		return []Stmt{&LetStmt{Name: alias, Expr: fnExpr}}, nil
 	case st.Let != nil:
 		var e Expr
 		var err error
@@ -926,7 +935,7 @@ func convertIfStmt(n *parser.IfStmt, env *types.Env, ctx *context) (*IfStmt, err
 
 func convertFunStmt(fn *parser.FunStmt, env *types.Env, ctx *context) (*FuncDecl, error) {
 	child := types.NewEnv(env)
-	fctx := newContext()
+	fctx := ctx.clone()
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		params[i] = fctx.newAlias(p.Name)
@@ -954,6 +963,38 @@ func convertFunStmt(fn *parser.FunStmt, env *types.Env, ctx *context) (*FuncDecl
 		ret = &AtomLit{Name: "nil"}
 	}
 	return &FuncDecl{Name: fn.Name, Params: params, Body: stmts, Return: ret}, nil
+}
+
+func convertFunStmtAsExpr(fn *parser.FunStmt, env *types.Env, ctx *context) (Expr, error) {
+	child := types.NewEnv(env)
+	fctx := ctx.clone()
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = fctx.newAlias(p.Name)
+	}
+	var stmts []Stmt
+	var ret Expr
+	for i, st := range fn.Body {
+		if r := st.Return; r != nil && i == len(fn.Body)-1 {
+			if r.Value != nil {
+				var err error
+				ret, err = convertExpr(r.Value, child, fctx)
+				if err != nil {
+					return nil, err
+				}
+			}
+			continue
+		}
+		ss, err := convertStmt(st, child, fctx)
+		if err != nil {
+			return nil, err
+		}
+		stmts = append(stmts, ss...)
+	}
+	if ret == nil {
+		ret = &AtomLit{Name: "nil"}
+	}
+	return &AnonFunc{Params: params, Body: stmts, Return: ret}, nil
 }
 
 func convertExpr(e *parser.Expr, env *types.Env, ctx *context) (Expr, error) {
@@ -1215,7 +1256,8 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 }
 
 func convertFunExpr(fn *parser.FunExpr, env *types.Env, ctx *context) (Expr, error) {
-	fctx := newContext()
+	child := types.NewEnv(env)
+	fctx := ctx.clone()
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		params[i] = fctx.newAlias(p.Name)
@@ -1224,7 +1266,7 @@ func convertFunExpr(fn *parser.FunExpr, env *types.Env, ctx *context) (Expr, err
 	var ret Expr
 	if fn.ExprBody != nil {
 		var err error
-		ret, err = convertExpr(fn.ExprBody, env, fctx)
+		ret, err = convertExpr(fn.ExprBody, child, fctx)
 		if err != nil {
 			return nil, err
 		}
@@ -1233,14 +1275,14 @@ func convertFunExpr(fn *parser.FunExpr, env *types.Env, ctx *context) (Expr, err
 			if r := st.Return; r != nil && i == len(fn.BlockBody)-1 {
 				if r.Value != nil {
 					var err error
-					ret, err = convertExpr(r.Value, env, fctx)
+					ret, err = convertExpr(r.Value, child, fctx)
 					if err != nil {
 						return nil, err
 					}
 				}
 				continue
 			}
-			ss, err := convertStmt(st, env, fctx)
+			ss, err := convertStmt(st, child, fctx)
 			if err != nil {
 				return nil, err
 			}
