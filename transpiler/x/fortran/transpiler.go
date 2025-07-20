@@ -439,6 +439,7 @@ func compileForStmt(p *Program, fs *parser.ForStmt, env *types.Env) (Stmt, error
 	}
 	if ft, err := mapTypeName(loopType); err == nil {
 		p.Decls = append(p.Decls, Decl{Name: fs.Name, Type: ft})
+		env.Types()[fs.Name] = loopType
 	}
 	if fs.RangeEnd != nil {
 		start, err := toExpr(fs.Source, env)
@@ -449,6 +450,7 @@ func compileForStmt(p *Program, fs *parser.ForStmt, env *types.Env) (Stmt, error
 		if err != nil {
 			return nil, err
 		}
+		end = fmt.Sprintf("%s - 1", end)
 		body, err := compileStmtList(p, fs.Body, env)
 		if err != nil {
 			return nil, err
@@ -521,6 +523,7 @@ func compileForFuncStmt(fn *Function, fs *parser.ForStmt, env *types.Env) (Stmt,
 	}
 	if ft, err := mapTypeName(loopType); err == nil {
 		fn.Decls = append(fn.Decls, Decl{Name: fs.Name, Type: ft})
+		env.Types()[fs.Name] = loopType
 	}
 	if fs.RangeEnd != nil {
 		start, err := toExpr(fs.Source, env)
@@ -531,6 +534,7 @@ func compileForFuncStmt(fn *Function, fs *parser.ForStmt, env *types.Env) (Stmt,
 		if err != nil {
 			return nil, err
 		}
+		end = fmt.Sprintf("%s - 1", end)
 		body, err := compileFuncStmtList(fn, fs.Body, env)
 		if err != nil {
 			return nil, err

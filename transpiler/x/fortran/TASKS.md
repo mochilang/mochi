@@ -1,3 +1,6 @@
+## Progress (2025-07-20 12:53 +0700)
+- fortran: handle range loops
+
 ## Progress (2025-07-20 12:33 +0700)
 - update fortran progress
 
