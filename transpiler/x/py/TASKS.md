@@ -1,4 +1,10 @@
 # Python Transpiler Tasks
+## Recent Enhancements (2025-07-20 08:11 UTC+0700)
+
+- Added YAML dataset loading and JSONL saving without runtime helpers.
+- Generated golden outputs for `load_yaml` and `save_jsonl_stdout`.
+- Updated README checklist (78/100).
+
 ## Recent Enhancements (2025-07-20 02:09 UTC+0700)
 
 - Added aggregate query support for simple `sum` selections.
