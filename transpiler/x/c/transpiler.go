@@ -7,11 +7,14 @@ import (
 	"fmt"
 	"io"
 	"os/exec"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
 
+	"mochi/interpreter"
 	"mochi/parser"
+	"mochi/runtime/data"
 	"mochi/types"
 )
 
@@ -862,6 +865,9 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		} else {
 			delete(constStrings, s.Let.Name)
 		}
+		if val, ok := valueFromExpr(valExpr); ok {
+			env.SetValue(s.Let.Name, val, true)
+		}
 		return &DeclStmt{Name: s.Let.Name, Value: valExpr, Type: declType}, nil
 	case s.Var != nil:
 		currentVarName = s.Var.Name
@@ -877,6 +883,9 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			constStrings[s.Var.Name] = strVal
 		} else {
 			delete(constStrings, s.Var.Name)
+		}
+		if val, ok := valueFromExpr(valExpr); ok {
+			env.SetValue(s.Var.Name, val, true)
 		}
 		return &DeclStmt{Name: s.Var.Name, Value: valExpr, Type: declType}, nil
 	case s.Assign != nil:
@@ -911,6 +920,9 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		}
 		if !simple {
 			return nil, fmt.Errorf("unsupported assignment")
+		}
+		if val, ok := valueFromExpr(valExpr); ok && len(idxs) == 0 && len(fields) == 0 {
+			env.SetValue(s.Assign.Name, val, true)
 		}
 		return &AssignStmt{Name: s.Assign.Name, Indexes: idxs, Fields: fields, Value: valExpr}, nil
 	case s.Return != nil:
@@ -1528,6 +1540,12 @@ func convertUnary(u *parser.Unary) Expr {
 	}
 	if mexpr := u.Value.Target.Match; mexpr != nil && len(u.Ops) == 0 {
 		return convertMatchExpr(mexpr)
+	}
+	if qexpr := u.Value.Target.Query; qexpr != nil && len(u.Ops) == 0 {
+		if res, ok := evalQueryConst(qexpr); ok {
+			return res
+		}
+		return nil
 	}
 	if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 && len(u.Ops) == 0 {
 		return &VarRef{Name: sel.Root}
@@ -2200,4 +2218,110 @@ func inferCType(env *types.Env, name string, e Expr) string {
 		}
 	}
 	return "int"
+}
+
+func anyToExpr(v any) Expr {
+	switch t := v.(type) {
+	case int:
+		return &IntLit{Value: t}
+	case int64:
+		return &IntLit{Value: int(t)}
+	case float64:
+		return &FloatLit{Value: t}
+	case string:
+		return &StringLit{Value: t}
+	case []any:
+		var elems []Expr
+		for _, it := range t {
+			ex := anyToExpr(it)
+			if ex == nil {
+				return nil
+			}
+			elems = append(elems, ex)
+		}
+		return &ListLit{Elems: elems}
+	case map[string]any:
+		var fields []StructField
+		keys := make([]string, 0, len(t))
+		for k := range t {
+			if k == "__join__" {
+				continue
+			}
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, k := range keys {
+			ex := anyToExpr(t[k])
+			if ex == nil {
+				return nil
+			}
+			fields = append(fields, StructField{Name: k, Value: ex})
+		}
+		structCounter++
+		name := fmt.Sprintf("Anon%d", structCounter)
+		stFields := map[string]types.Type{}
+		for _, f := range fields {
+			stFields[f.Name] = types.AnyType{}
+		}
+		currentEnv.SetStruct(name, types.StructType{Name: name, Fields: stFields, Order: keys})
+		structTypes = currentEnv.Structs()
+		return &StructLit{Name: name, Fields: fields}
+	case *data.Group:
+		m := map[string]any{"key": t.Key, "items": t.Items}
+		return anyToExpr(m)
+	default:
+		return nil
+	}
+}
+
+func evalQueryConst(q *parser.QueryExpr) (*ListLit, bool) {
+	results, err := data.RunQuery(q, currentEnv, data.MemoryEngine{}, func(env *types.Env, e *parser.Expr) (any, error) {
+		ip := interpreter.New(&parser.Program{}, env.Copy(), "")
+		return ip.EvalExpr(e)
+	})
+	if err != nil {
+		return nil, false
+	}
+	var elems []Expr
+	for _, r := range results {
+		ex := anyToExpr(r)
+		if ex == nil {
+			return nil, false
+		}
+		elems = append(elems, ex)
+	}
+	return &ListLit{Elems: elems}, true
+}
+
+func valueFromExpr(e Expr) (any, bool) {
+	switch v := e.(type) {
+	case *IntLit:
+		return v.Value, true
+	case *FloatLit:
+		return v.Value, true
+	case *StringLit:
+		return v.Value, true
+	case *ListLit:
+		var out []any
+		for _, it := range v.Elems {
+			val, ok := valueFromExpr(it)
+			if !ok {
+				return nil, false
+			}
+			out = append(out, val)
+		}
+		return out, true
+	case *StructLit:
+		m := map[string]any{}
+		for _, f := range v.Fields {
+			val, ok := valueFromExpr(f.Value)
+			if !ok {
+				return nil, false
+			}
+			m[f.Name] = val
+		}
+		return m, true
+	default:
+		return nil, false
+	}
 }
