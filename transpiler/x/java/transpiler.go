@@ -11,6 +11,8 @@ import (
 	"mochi/types"
 )
 
+var varTypes map[string]string
+
 func javaType(t string) string {
 	switch t {
 	case "int":
@@ -63,6 +65,10 @@ func inferType(e Expr) string {
 		switch ex.Func {
 		case "String.valueOf", "substring":
 			return "String"
+		}
+	case *VarExpr:
+		if t, ok := varTypes[ex.Name]; ok {
+			return t
 		}
 	}
 	return ""
@@ -419,6 +425,7 @@ func isStringExpr(e Expr) bool {
 // Transpile converts a Mochi AST into a simple Java AST.
 func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	var prog Program
+	varTypes = map[string]string{}
 	for _, s := range p.Statements {
 		if s.Fun != nil {
 			body, err := compileStmts(s.Fun.Body)
@@ -463,9 +470,18 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				return nil, err
 			}
 			t := typeRefString(s.Let.Type)
+			if t == "" {
+				t = inferType(e)
+			}
+			if t != "" {
+				varTypes[s.Let.Name] = t
+			}
 			return &LetStmt{Name: s.Let.Name, Type: t, Expr: e}, nil
 		}
 		t := typeRefString(s.Let.Type)
+		if t != "" {
+			varTypes[s.Let.Name] = t
+		}
 		return &LetStmt{Name: s.Let.Name, Type: t}, nil
 	case s.Var != nil:
 		if s.Var.Value != nil {
@@ -474,15 +490,29 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				return nil, err
 			}
 			t := typeRefString(s.Var.Type)
+			if t == "" {
+				t = inferType(e)
+			}
+			if t != "" {
+				varTypes[s.Var.Name] = t
+			}
 			return &VarStmt{Name: s.Var.Name, Type: t, Expr: e}, nil
 		}
 		t := typeRefString(s.Var.Type)
+		if t != "" {
+			varTypes[s.Var.Name] = t
+		}
 		return &VarStmt{Name: s.Var.Name, Type: t}, nil
 	case s.Assign != nil:
 		if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
 			e, err := compileExpr(s.Assign.Value)
 			if err != nil {
 				return nil, err
+			}
+			if _, ok := varTypes[s.Assign.Name]; !ok {
+				if t := inferType(e); t != "" {
+					varTypes[s.Assign.Name] = t
+				}
 			}
 			return &AssignStmt{Name: s.Assign.Name, Expr: e}, nil
 		}
