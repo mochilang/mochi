@@ -1,0 +1,31 @@
+compile: exit status 1
+/workspace/mochi/tests/transpiler/x/cpp/group_by.cpp: In lambda function:
+/workspace/mochi/tests/transpiler/x/cpp/group_by.cpp:38:116: error: template argument 1 is invalid
+   38 |     __items.push_back(StatsItem{.city = g.key, .count = g.size(), .avg_age = ([&]{ auto tmp = ([]{ std::vector<auto> __items;
+      |                                                                                                                    ^
+/workspace/mochi/tests/transpiler/x/cpp/group_by.cpp:38:116: error: template argument 2 is invalid
+/workspace/mochi/tests/transpiler/x/cpp/group_by.cpp:39:15: error: ‘g’ is not captured
+   39 | for (auto p : g) {
+      |               ^
+/workspace/mochi/tests/transpiler/x/cpp/group_by.cpp:38:97: note: the lambda has no capture-default
+   38 |     __items.push_back(StatsItem{.city = g.key, .count = g.size(), .avg_age = ([&]{ auto tmp = ([]{ std::vector<auto> __items;
+      |                                                                                                 ^
+/workspace/mochi/tests/transpiler/x/cpp/group_by.cpp:37:12: note: ‘GGroup g’ declared here
+   37 |     GGroup g{__kv.first, __kv.second};
+      |            ^
+/workspace/mochi/tests/transpiler/x/cpp/group_by.cpp:40:17: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+   40 |         __items.push_back(p.age);
+      |                 ^~~~~~~~~
+/workspace/mochi/tests/transpiler/x/cpp/group_by.cpp: In lambda function:
+/workspace/mochi/tests/transpiler/x/cpp/group_by.cpp:42:34: error: request for member ‘empty’ in ‘tmp’, which is of non-class type ‘int’
+   42 | return __items; }()); return tmp.empty() ? 0.0 : std::accumulate(tmp.begin(), tmp.end(), 0.0) / tmp.size(); }())});
+      |                                  ^~~~~
+/workspace/mochi/tests/transpiler/x/cpp/group_by.cpp:42:70: error: request for member ‘begin’ in ‘tmp’, which is of non-class type ‘int’
+   42 | return __items; }()); return tmp.empty() ? 0.0 : std::accumulate(tmp.begin(), tmp.end(), 0.0) / tmp.size(); }())});
+      |                                                                      ^~~~~
+/workspace/mochi/tests/transpiler/x/cpp/group_by.cpp:42:83: error: request for member ‘end’ in ‘tmp’, which is of non-class type ‘int’
+   42 | return __items; }()); return tmp.empty() ? 0.0 : std::accumulate(tmp.begin(), tmp.end(), 0.0) / tmp.size(); }())});
+      |                                                                                   ^~~
+/workspace/mochi/tests/transpiler/x/cpp/group_by.cpp:42:101: error: request for member ‘size’ in ‘tmp’, which is of non-class type ‘int’
+   42 | return __items; }()); return tmp.empty() ? 0.0 : std::accumulate(tmp.begin(), tmp.end(), 0.0) / tmp.size(); }())});
+      |                                                                                                     ^~~~

@@ -256,6 +256,21 @@ type MultiListComp struct {
 	ElemType string
 }
 
+// GroupComp represents a query with a grouping step.
+type GroupComp struct {
+	Vars        []string
+	Iters       []Expr
+	Cond        Expr
+	Key         Expr
+	ItemVar     string
+	GroupName   string
+	GroupStruct string
+	Body        Expr
+	ElemType    string
+	KeyType     string
+	ItemType    string
+}
+
 func (p *Program) Emit() []byte {
 	var buf bytes.Buffer
 	p.write(&buf)
@@ -275,6 +290,11 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintf(w, "struct %s {\n", st.Name)
 		for _, f := range st.Fields {
 			fmt.Fprintf(w, "    %s %s;\n", f.Type, f.Name)
+		}
+		if strings.HasSuffix(st.Name, "Group") && len(st.Fields) == 2 && st.Fields[1].Name == "items" {
+			fmt.Fprintln(w, "    auto begin() { return items.begin(); }")
+			fmt.Fprintln(w, "    auto end() { return items.end(); }")
+			fmt.Fprintln(w, "    size_t size() const { return items.size(); }")
 		}
 		fmt.Fprintln(w, "};")
 		fmt.Fprintln(w)
@@ -719,6 +739,42 @@ func (lc *MultiListComp) emit(w io.Writer) {
 	io.WriteString(w, "return __items; }())")
 }
 
+func (gc *GroupComp) emit(w io.Writer) {
+	io.WriteString(w, "([]{ std::vector<"+gc.ElemType+"> __items;\n")
+	io.WriteString(w, "std::map<"+gc.KeyType+", std::vector<"+gc.ItemType+">> __groups;\n")
+	for i, v := range gc.Vars {
+		io.WriteString(w, "for (auto ")
+		io.WriteString(w, v)
+		io.WriteString(w, " : ")
+		gc.Iters[i].emit(w)
+		io.WriteString(w, ") {\n")
+	}
+	if gc.Cond != nil {
+		io.WriteString(w, "    if(")
+		gc.Cond.emit(w)
+		io.WriteString(w, ") {\n")
+	}
+	io.WriteString(w, "        __groups[")
+	gc.Key.emit(w)
+	io.WriteString(w, "].push_back(")
+	io.WriteString(w, gc.ItemVar)
+	io.WriteString(w, ");\n")
+	if gc.Cond != nil {
+		io.WriteString(w, "    }\n")
+	}
+	for range gc.Vars {
+		io.WriteString(w, "}\n")
+	}
+	io.WriteString(w, "for(auto &__kv : __groups) {\n")
+	io.WriteString(w, "    ")
+	io.WriteString(w, gc.GroupStruct+" "+gc.GroupName+"{__kv.first, __kv.second};\n")
+	io.WriteString(w, "    __items.push_back(")
+	gc.Body.emit(w)
+	io.WriteString(w, ");\n")
+	io.WriteString(w, "}\n")
+	io.WriteString(w, "return __items; }())")
+}
+
 func (e *ExistsExpr) emit(w io.Writer) {
 	if currentProgram != nil {
 		currentProgram.addInclude("<vector>")
@@ -962,6 +1018,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					}
 				} else if comp, ok := val.(*MultiListComp); ok {
 					typ = fmt.Sprintf("std::vector<%s>", comp.ElemType)
+				} else if gcomp, ok := val.(*GroupComp); ok {
+					typ = fmt.Sprintf("std::vector<%s>", gcomp.ElemType)
 				}
 			}
 			globals = append(globals, &LetStmt{Name: stmt.Let.Name, Type: typ, Value: val})
@@ -997,6 +1055,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					}
 				} else if comp, ok := val.(*MultiListComp); ok {
 					typ = fmt.Sprintf("std::vector<%s>", comp.ElemType)
+				} else if gcomp, ok := val.(*GroupComp); ok {
+					typ = fmt.Sprintf("std::vector<%s>", gcomp.ElemType)
 				}
 			}
 			globals = append(globals, &LetStmt{Name: stmt.Var.Name, Type: typ, Value: val})
@@ -1680,7 +1740,7 @@ func convertIfExpr(ie *parser.IfExpr) (*IfExpr, error) {
 }
 
 func convertSimpleQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, string, error) {
-	if len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+	if q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
 		return nil, nil, "", fmt.Errorf("unsupported query")
 	}
 	vars := []string{q.Var}
@@ -1715,6 +1775,31 @@ func convertSimpleQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, s
 			}
 		}
 	}
+	joinConds := []Expr{}
+	for _, j := range q.Joins {
+		if j.Side != nil {
+			return nil, nil, "", fmt.Errorf("unsupported join side")
+		}
+		js, err := convertExpr(j.Src)
+		if err != nil {
+			return nil, nil, "", err
+		}
+		vars = append(vars, j.Var)
+		iters = append(iters, js)
+		if vr, ok := js.(*VarRef); ok {
+			if t, ok2 := currentProgram.ListTypes[vr.Name]; ok2 {
+				qTypes[j.Var] = t
+			} else {
+				et := elementTypeFromListType(guessType(j.Src))
+				qTypes[j.Var] = et
+			}
+		}
+		jc, err := convertExpr(j.On)
+		if err != nil {
+			return nil, nil, "", err
+		}
+		joinConds = append(joinConds, jc)
+	}
 	var cond Expr
 	oldTypes := localTypes
 	localTypes = qTypes
@@ -1724,6 +1809,13 @@ func convertSimpleQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, s
 		cond, err = convertExpr(q.Where)
 		if err != nil {
 			return nil, nil, "", err
+		}
+	}
+	for _, jc := range joinConds {
+		if cond == nil {
+			cond = jc
+		} else {
+			cond = &BinaryExpr{Left: cond, Op: "&&", Right: jc}
 		}
 	}
 	body, err := convertExpr(q.Select)
@@ -1767,6 +1859,70 @@ func convertSimpleQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, s
 				elemType = structName
 			}
 		}
+	}
+	if q.Group != nil {
+		if len(q.Group.Exprs) != 1 {
+			return nil, nil, "", fmt.Errorf("unsupported group")
+		}
+		keyExpr, err := convertExpr(q.Group.Exprs[0])
+		if err != nil {
+			return nil, nil, "", err
+		}
+		keyType := exprType(keyExpr)
+		itemVar := vars[len(vars)-1]
+		itemType := qTypes[itemVar]
+		structName := strings.Title(q.Group.Name) + "Group"
+		gdef := &StructDef{Name: structName, Fields: []Param{{Name: "key", Type: keyType}, {Name: "items", Type: fmt.Sprintf("std::vector<%s>", itemType)}}}
+		if currentProgram != nil {
+			currentProgram.Structs = append(currentProgram.Structs, *gdef)
+		}
+		qTypes[q.Group.Name] = structName
+		body, err = convertExpr(q.Select)
+		if err != nil {
+			return nil, nil, "", err
+		}
+		elemType = guessType(q.Select)
+		if ml, ok := body.(*MapLit); ok {
+			if keys := make([]string, len(ml.Keys)); true {
+				for i, k := range ml.Keys {
+					n, ok := keyName(k)
+					if !ok {
+						keys = nil
+						break
+					}
+					keys[i] = n
+				}
+				if keys != nil {
+					structName2 := strings.Title(target) + "Item"
+					fields2 := make([]Param, len(keys))
+					flds2 := make([]FieldLit, len(keys))
+					for i, k := range keys {
+						typ := exprType(ml.Values[i])
+						if sel, ok := ml.Values[i].(*SelectorExpr); ok {
+							if vr, ok2 := sel.Target.(*VarRef); ok2 {
+								if s, ok3 := qTypes[vr.Name]; ok3 {
+									typ = structFieldType(s, sel.Field)
+								}
+							}
+						} else if vr, ok := ml.Values[i].(*VarRef); ok {
+							if t, ok2 := qTypes[vr.Name]; ok2 {
+								typ = t
+							}
+						}
+						fields2[i] = Param{Name: k, Type: typ}
+						flds2[i] = FieldLit{Name: k, Value: ml.Values[i]}
+					}
+					body = &StructLit{Name: structName2, Fields: flds2}
+					def = &StructDef{Name: structName2, Fields: fields2}
+					elemType = structName2
+				}
+			}
+		}
+		if currentProgram != nil {
+			currentProgram.addInclude("<vector>")
+			currentProgram.addInclude("<map>")
+		}
+		return &GroupComp{Vars: vars, Iters: iters, Cond: cond, Key: keyExpr, ItemVar: itemVar, GroupName: q.Group.Name, GroupStruct: structName, Body: body, ElemType: elemType, KeyType: keyType, ItemType: itemType}, def, elemType, nil
 	}
 	if currentProgram != nil {
 		currentProgram.addInclude("<vector>")
@@ -1932,6 +2088,16 @@ func exprType(e Expr) string {
 			return fmt.Sprintf("std::map<%s, %s>", exprType(v.Keys[0]), exprType(v.Values[0]))
 		}
 		return "std::map<auto, auto>"
+	case *SelectorExpr:
+		if vr, ok := v.Target.(*VarRef); ok {
+			if t, ok2 := localTypes[vr.Name]; ok2 {
+				ft := structFieldType(t, v.Field)
+				if ft != "" {
+					return ft
+				}
+			}
+		}
+		return "auto"
 	case *UnaryExpr:
 		if v.Op == "!" {
 			return "bool"
@@ -1964,7 +2130,13 @@ func exprType(e Expr) string {
 			return t
 		}
 		return "auto"
+	case *LenExpr:
+		return "int"
+	case *AvgExpr:
+		return "double"
 	case *MultiListComp:
+		return fmt.Sprintf("std::vector<%s>", v.ElemType)
+	case *GroupComp:
 		return fmt.Sprintf("std::vector<%s>", v.ElemType)
 	case *ExistsExpr:
 		return "bool"
