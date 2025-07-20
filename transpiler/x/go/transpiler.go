@@ -536,9 +536,18 @@ func (ls *ListStringExpr) emit(w io.Writer) {
 type FloatStringExpr struct{ Value Expr }
 
 func (fs *FloatStringExpr) emit(w io.Writer) {
-	io.WriteString(w, "func() string { f := ")
-	fs.Value.emit(w)
-	io.WriteString(w, "; if f == float64(int(f)) { return fmt.Sprintf(\"%.1f\", f) }; return fmt.Sprint(f) }()")
+        io.WriteString(w, "func() string { f := ")
+        fs.Value.emit(w)
+        io.WriteString(w, "; if f == float64(int(f)) { return fmt.Sprintf(\"%.1f\", f) }; return fmt.Sprint(f) }()")
+}
+
+// BoolIntExpr converts a boolean to 1 or 0.
+type BoolIntExpr struct{ Value Expr }
+
+func (bi *BoolIntExpr) emit(w io.Writer) {
+        io.WriteString(w, "func() int { if ")
+        bi.Value.emit(w)
+        io.WriteString(w, " { return 1 }; return 0 }()")
 }
 
 type ContainsExpr struct {
@@ -691,11 +700,15 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					switch t.(type) {
 					case types.ListType:
 						ex = &ListStringExpr{List: ex}
-					case types.FloatType:
-						ex = &FloatStringExpr{Value: ex}
-					}
-				}
-				args[i] = ex
+                                        case types.FloatType:
+                                                ex = &FloatStringExpr{Value: ex}
+                                        case types.BoolType:
+                                                if isBoolExpr(a) && boolExprNumeric(a, env) {
+                                                        ex = &BoolIntExpr{Value: ex}
+                                                }
+                                        }
+                                }
+                                args[i] = ex
 			}
 			usesPrint = true
 			return &PrintStmt{Args: args}, nil
@@ -1474,6 +1487,23 @@ func isBoolPrimary(p *parser.Primary) bool {
 	default:
 		return false
 	}
+}
+
+func boolExprNumeric(e *parser.Expr, env *types.Env) bool {
+        if e == nil || e.Binary == nil {
+                return false
+        }
+        left := types.TypeOfUnary(e.Binary.Left, env)
+        if _, ok := left.(types.StringType); ok {
+                return false
+        }
+        for _, op := range e.Binary.Right {
+                rt := types.TypeOfPostfix(op.Right, env)
+                if _, ok := rt.(types.StringType); ok {
+                        return false
+                }
+        }
+        return true
 }
 
 func isListExpr(e *parser.Expr) bool { return isListBinary(e.Binary) }
