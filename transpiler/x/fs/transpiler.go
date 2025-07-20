@@ -497,23 +497,25 @@ func inferType(e Expr) string {
 		return "list"
 	case *SubstringExpr:
 		return "string"
-       case *CallExpr:
-               switch v.Func {
-               case "string":
-                       return "string"
-               case "Seq.length", "List.length", "String.length":
-                       return "int"
-               case "Seq.sum", "List.sum":
-                       return "int"
-               case "Seq.averageBy float", "List.averageBy float":
-                       return "float"
-               }
-       case *MethodCallExpr:
-               switch v.Name {
-               case "contains", "Contains":
-                       return "bool"
-               }
-       case *IfExpr:
+	case *SliceExpr:
+		return inferType(v.Target)
+	case *CallExpr:
+		switch v.Func {
+		case "string":
+			return "string"
+		case "Seq.length", "List.length", "String.length":
+			return "int"
+		case "Seq.sum", "List.sum":
+			return "int"
+		case "Seq.averageBy float", "List.averageBy float":
+			return "float"
+		}
+	case *MethodCallExpr:
+		switch v.Name {
+		case "contains", "Contains":
+			return "bool"
+		}
+	case *IfExpr:
 		t := inferType(v.Then)
 		e2 := inferType(v.Else)
 		if t == e2 {
@@ -594,6 +596,15 @@ type SliceExpr struct {
 }
 
 func (s *SliceExpr) emit(w io.Writer) {
+	if inferType(s.Target) == "list" {
+		s.Target.emit(w)
+		io.WriteString(w, ".[")
+		s.Start.emit(w)
+		io.WriteString(w, "..(")
+		(&BinaryExpr{Left: s.End, Op: "-", Right: &IntLit{Value: 1}}).emit(w)
+		io.WriteString(w, ")]")
+		return
+	}
 	s.Target.emit(w)
 	io.WriteString(w, ".Substring(")
 	s.Start.emit(w)
@@ -936,6 +947,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					return &CallExpr{Func: "printfn \"%b\"", Args: []Expr{args[0]}}, nil
 				case "int":
 					return &CallExpr{Func: "printfn \"%d\"", Args: []Expr{args[0]}}, nil
+				case "list":
+					mapped := &CallExpr{Func: "List.map string", Args: []Expr{args[0]}}
+					concat := &CallExpr{Func: "String.concat", Args: []Expr{&StringLit{Value: " "}, mapped}}
+					wrapped := &BinaryExpr{Left: &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: concat}, Op: "+", Right: &StringLit{Value: "]"}}
+					return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{wrapped}}, nil
 				default:
 					arg := &CallExpr{Func: "string", Args: []Expr{args[0]}}
 					return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{arg}}, nil
@@ -1040,12 +1056,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		varTypes = save
 		return &LambdaExpr{Params: params, Body: stmts}, nil
-       case p.Selector != nil:
-               expr := Expr(&IdentExpr{Name: p.Selector.Root})
-               for _, name := range p.Selector.Tail {
-                       expr = &FieldExpr{Target: expr, Name: name}
-               }
-               return expr, nil
+	case p.Selector != nil:
+		expr := Expr(&IdentExpr{Name: p.Selector.Root})
+		for _, name := range p.Selector.Tail {
+			expr = &FieldExpr{Target: expr, Name: name}
+		}
+		return expr, nil
 	case p.Group != nil:
 		return convertExpr(p.Group)
 	}

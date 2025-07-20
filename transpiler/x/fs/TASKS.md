@@ -1,29 +1,10 @@
-## Progress (2025-07-20 11:38 +0700)
+## Progress (2025-07-20 05:04 UTC)
 - VM valid golden test results updated
 
-## Progress (2025-07-20 11:05 +0700)
+## Progress (2025-07-20 11:53 +0700)
+- Added list slicing support using F# range syntax
+- Lists printed in bracketed form without runtime helpers
 - VM valid golden test results updated
-
-## Progress (2025-07-20 10:18 +0700)
-- VM valid golden test results updated
-- Basic variable type tracking improves inference
-
-## Progress (2025-07-20 09:43 +0700)
-- Improved `in` operator handling for lists and strings
-- Built-in `len`, `sum`, and `avg` use `List` functions when possible
-- Avoid emitting `list` type annotations
-- VM valid golden test results updated
-## Progress (2025-07-20 09:12 +0700)
-- Adjusted print formatting for booleans and header now uses git commit time
-
-## Progress (2025-07-20 09:12 +0700)
-- VM valid golden test results updated
-
-## Progress (2025-07-20 08:47 +0700)
-- Refined F# emitter to produce cleaner code and improved type inference
-
-## Progress (2025-07-20 01:31 UTC)
-- Enhanced F# transpiler for readability and better inference
 
 # Transpiler Progress
 
