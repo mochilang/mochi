@@ -12,11 +12,16 @@ import (
 	"mochi/types"
 )
 
+var (
+	extraDecls []*DataClass
+)
+
 // Program represents a simple Kotlin program consisting of statements executed in main.
 // Program contains top level functions and statements executed in `main`.
 type Program struct {
-	Funcs []*FuncDef
-	Stmts []Stmt
+	Structs []*DataClass
+	Funcs   []*FuncDef
+	Stmts   []Stmt
 }
 
 func indent(w io.Writer, n int) {
@@ -58,6 +63,33 @@ type FuncDef struct {
 	Params []string
 	Ret    string
 	Body   []Stmt
+}
+
+// DataClass declares a simple Kotlin data class.
+type DataClass struct {
+	Name   string
+	Fields []ParamDecl
+}
+
+type ParamDecl struct {
+	Name string
+	Type string
+}
+
+func (d *DataClass) emit(w io.Writer, indentLevel int) {
+	indent(w, indentLevel)
+	io.WriteString(w, "data class "+d.Name+"(")
+	for i, f := range d.Fields {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		typ := f.Type
+		if typ == "" {
+			typ = "Any"
+		}
+		io.WriteString(w, "val "+f.Name+": "+typ)
+	}
+	io.WriteString(w, ")")
 }
 
 func (f *FuncDef) emit(w io.Writer, indentLevel int) {
@@ -624,6 +656,54 @@ func (s *SubstringExpr) emit(w io.Writer) {
 	io.WriteString(w, ")")
 }
 
+// MultiListComp represents a list comprehension with multiple iterators.
+type MultiListComp struct {
+	Vars  []string
+	Iters []Expr
+	Expr  Expr
+	Cond  Expr
+}
+
+func (lc *MultiListComp) emit(w io.Writer) {
+	io.WriteString(w, "run {\n")
+	indent(w, 1)
+	elemType := guessType(lc.Expr)
+	if elemType == "" {
+		elemType = "Any"
+	}
+	fmt.Fprintf(w, "val _res = mutableListOf<%s>()\n", elemType)
+	for i, v := range lc.Vars {
+		indent(w, 1+i)
+		fmt.Fprintf(w, "for (%s in ", v)
+		lc.Iters[i].emit(w)
+		io.WriteString(w, ") {\n")
+	}
+	if lc.Cond != nil {
+		indent(w, 1+len(lc.Vars))
+		io.WriteString(w, "if (")
+		lc.Cond.emit(w)
+		io.WriteString(w, ") {\n")
+		indent(w, 2+len(lc.Vars))
+		io.WriteString(w, "_res.add(")
+		lc.Expr.emit(w)
+		io.WriteString(w, ")\n")
+		indent(w, 1+len(lc.Vars))
+		io.WriteString(w, "}\n")
+	} else {
+		indent(w, 1+len(lc.Vars))
+		io.WriteString(w, "_res.add(")
+		lc.Expr.emit(w)
+		io.WriteString(w, ")\n")
+	}
+	for i := len(lc.Vars); i > 0; i-- {
+		indent(w, i)
+		io.WriteString(w, "}\n")
+	}
+	indent(w, 1)
+	io.WriteString(w, "_res\n")
+	io.WriteString(w, "}")
+}
+
 // WhenExpr models Kotlin's when expression produced from a Mochi match.
 type WhenExpr struct {
 	Target Expr
@@ -652,6 +732,43 @@ func (wex *WhenExpr) emit(w io.Writer) {
 	}
 	io.WriteString(w, "}")
 }
+
+type queryFrom struct {
+	Var string
+	Src Expr
+}
+
+type QueryExpr struct {
+	Var    string
+	Src    Expr
+	Froms  []queryFrom
+	Where  Expr
+	Select Expr
+}
+
+func (q *QueryExpr) emit(w io.Writer) {
+	q.Src.emit(w)
+	for _, f := range q.Froms {
+		io.WriteString(w, ".flatMap {")
+		io.WriteString(w, f.Var+" -> ")
+		f.Src.emit(w)
+		io.WriteString(w, " }")
+	}
+	if q.Where != nil {
+		io.WriteString(w, ".flatMap {")
+		io.WriteString(w, q.Var+" -> if (")
+		q.Where.emit(w)
+		io.WriteString(w, ") listOf(")
+		q.VarRef().emit(w)
+		io.WriteString(w, ") else emptyList() }")
+	}
+	io.WriteString(w, ".map {")
+	io.WriteString(w, q.Var+" -> ")
+	q.Select.emit(w)
+	io.WriteString(w, " }")
+}
+
+func (q *QueryExpr) VarRef() Expr { return &VarRef{Name: q.Var} }
 
 func kotlinType(t *parser.TypeRef) string {
 	if t == nil {
@@ -780,6 +897,12 @@ func guessType(e Expr) string {
 			return "MutableMap<" + k + ", " + val + ">"
 		}
 		return "MutableMap<Any, Any>"
+	case *MultiListComp:
+		elem := guessType(v.Expr)
+		if elem == "" {
+			elem = "Any"
+		}
+		return "MutableList<" + elem + ">"
 	case *FuncLit:
 		return ""
 	}
@@ -788,6 +911,7 @@ func guessType(e Expr) string {
 
 // Transpile converts a Mochi program to a simple Kotlin AST.
 func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
+	extraDecls = nil
 	p := &Program{}
 	for _, st := range prog.Statements {
 		switch {
@@ -1158,6 +1282,55 @@ func convertMatchExpr(env *types.Env, me *parser.MatchExpr) (Expr, error) {
 	return &WhenExpr{Target: target, Cases: cases}, nil
 }
 
+func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
+	if len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	src, err := convertExpr(env, q.Source)
+	if err != nil {
+		return nil, err
+	}
+	child := types.NewEnv(env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	froms := make([]queryFrom, len(q.Froms))
+	for i, f := range q.Froms {
+		fe, err := convertExpr(child, f.Src)
+		if err != nil {
+			return nil, err
+		}
+		child.SetVar(f.Var, types.AnyType{}, true)
+		froms[i] = queryFrom{Var: f.Var, Src: fe}
+	}
+	var where Expr
+	if q.Where != nil {
+		where, err = convertExpr(child, q.Where)
+		if err != nil {
+			return nil, err
+		}
+	}
+	sel, err := convertExpr(child, q.Select)
+	if err != nil {
+		return nil, err
+	}
+	return &MultiListComp{Vars: append([]string{q.Var}, namesFromFroms(froms)...), Iters: append([]Expr{src}, exprsFromFroms(froms)...), Expr: sel, Cond: where}, nil
+}
+
+func namesFromFroms(f []queryFrom) []string {
+	out := make([]string, len(f))
+	for i, fr := range f {
+		out[i] = fr.Var
+	}
+	return out
+}
+
+func exprsFromFroms(f []queryFrom) []Expr {
+	out := make([]Expr, len(f))
+	for i, fr := range f {
+		out[i] = fr.Src
+	}
+	return out
+}
+
 func isUnderscore(e *parser.Expr) bool {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
 		return false
@@ -1507,6 +1680,8 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			items[i] = MapItem{Key: k, Value: v}
 		}
 		return &MapLit{Items: items}, nil
+	case p.Query != nil:
+		return convertQueryExpr(env, p.Query)
 	case p.Match != nil:
 		return convertMatchExpr(env, p.Match)
 	case p.FunExpr != nil:
@@ -1521,6 +1696,10 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 // Emit returns formatted Kotlin source code for prog.
 func Emit(prog *Program) []byte {
 	var buf bytes.Buffer
+	for _, d := range prog.Structs {
+		d.emit(&buf, 0)
+		buf.WriteString("\n")
+	}
 	for _, f := range prog.Funcs {
 		f.emit(&buf, 0)
 		buf.WriteString("\n")

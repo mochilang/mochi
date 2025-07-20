@@ -93,6 +93,7 @@ func TestTranspilePrograms(t *testing.T) {
 		"closure",
 		"nested_function",
 		"map_literal_dynamic",
+		"cross_join",
 		"pure_fold",
 		"pure_global_fold",
 		"short_circuit",
