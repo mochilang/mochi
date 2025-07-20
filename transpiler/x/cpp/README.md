@@ -1,5 +1,6 @@
 # C++ Transpiler Output
 
+This checklist is auto-generated.
 Generated C++ code for programs in `tests/vm/valid`. Each program has a `.cpp` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.
 
 ## VM Golden Test Checklist (44/100)
