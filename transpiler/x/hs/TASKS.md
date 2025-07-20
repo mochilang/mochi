@@ -1,3 +1,8 @@
+## Progress (2025-07-20 10:18 +0700)
+- VM valid golden test results updated
+- Added list literals and if statements inside functions
+- Enabled sum builtin support
+
 ## Progress (2025-07-20 08:51 +0700)
 - Added builtin support for `append`, `count` and `avg`
 - Improved string type inference for cleaner Haskell output
