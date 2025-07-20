@@ -945,6 +945,26 @@ func convertUnary(u *parser.Unary) Expr {
 				return &StringLit{Value: string(r[s:e])}
 			}
 		}
+		if list, ok := evalList(base); ok {
+			s, ok1 := evalInt(start)
+			e, ok2 := evalInt(end)
+			if ok1 && ok2 {
+				if s < 0 {
+					s = 0
+				}
+				if e > len(list.Elems) {
+					e = len(list.Elems)
+				}
+				if s > e {
+					s = e
+				}
+				slice := make([]Expr, 0, e-s)
+				for _, it := range list.Elems[s:e] {
+					slice = append(slice, it)
+				}
+				return &ListLit{Elems: slice}
+			}
+		}
 	}
 	if len(u.Value.Ops) == 1 && u.Value.Ops[0].Cast != nil &&
 		u.Value.Ops[0].Cast.Type != nil &&
@@ -1334,7 +1354,17 @@ func exprIsString(e Expr) bool {
 }
 
 func inferCType(env *types.Env, name string, e Expr) string {
-	if _, ok := evalList(e); ok {
+	if l, ok := evalList(e); ok {
+		allStr := true
+		for _, it := range l.Elems {
+			if !exprIsString(it) {
+				allStr = false
+				break
+			}
+		}
+		if allStr {
+			return "const char*[]"
+		}
 		return "int[]"
 	}
 	if _, ok := evalString(e); ok {
@@ -1344,10 +1374,13 @@ func inferCType(env *types.Env, name string, e Expr) string {
 		return "const char*"
 	}
 	if t, err := env.GetVar(name); err == nil {
-		switch t.(type) {
+		switch tt := t.(type) {
 		case types.StringType:
 			return "const char*"
 		case types.ListType:
+			if _, ok := tt.Elem.(types.StringType); ok {
+				return "const char*[]"
+			}
 			return "int[]"
 		}
 	}
