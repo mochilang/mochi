@@ -245,6 +245,13 @@ type UnaryExpr struct {
 
 type ListLit struct{ Elems []Expr }
 
+type MapEntry struct {
+	Key   Expr
+	Value Expr
+}
+
+type MapLit struct{ Items []MapEntry }
+
 // SubstringExpr represents substring(str, start, end).
 type SubstringExpr struct {
 	Str   Expr
@@ -370,6 +377,19 @@ func (l *ListLit) emit(w io.Writer) {
 			fmt.Fprint(w, ", ")
 		}
 		e.emit(w)
+	}
+	fmt.Fprint(w, "]")
+}
+
+func (m *MapLit) emit(w io.Writer) {
+	fmt.Fprint(w, "[")
+	for i, it := range m.Items {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		it.Key.emit(w)
+		fmt.Fprint(w, " => ")
+		it.Value.emit(w)
 	}
 	fmt.Fprint(w, "]")
 }
@@ -695,7 +715,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 		} else if name == "len" {
 			if len(args) == 1 {
-				if isListArg(args[0]) {
+				if isListArg(args[0]) || isMapArg(args[0]) {
 					name = "count"
 				} else {
 					name = "strlen"
@@ -753,6 +773,20 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			elems[i] = ex
 		}
 		return &ListLit{Elems: elems}, nil
+	case p.Map != nil:
+		items := make([]MapEntry, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			k, err := convertExpr(it.Key)
+			if err != nil {
+				return nil, err
+			}
+			v, err := convertExpr(it.Value)
+			if err != nil {
+				return nil, err
+			}
+			items[i] = MapEntry{Key: k, Value: v}
+		}
+		return &MapLit{Items: items}, nil
 	case p.If != nil:
 		return convertIfExpr(p.If)
 	case p.Selector != nil:
@@ -994,6 +1028,22 @@ func isListArg(e Expr) bool {
 	return false
 }
 
+func isMapArg(e Expr) bool {
+	switch v := e.(type) {
+	case *MapLit:
+		return true
+	case *Var:
+		if transpileEnv != nil {
+			if t, err := transpileEnv.GetVar(v.Name); err == nil {
+				if types.IsMapType(t) {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
 func isListExpr(e Expr) bool {
 	if isListArg(e) {
 		return true
@@ -1002,6 +1052,13 @@ func isListExpr(e Expr) bool {
 		if c.Func == "array_merge" {
 			return true
 		}
+	}
+	return false
+}
+
+func isMapExpr(e Expr) bool {
+	if isMapArg(e) {
+		return true
 	}
 	return false
 }
@@ -1177,6 +1234,14 @@ func exprNode(e Expr) *ast.Node {
 		n := &ast.Node{Kind: "list"}
 		for _, e := range ex.Elems {
 			n.Children = append(n.Children, exprNode(e))
+		}
+		return n
+	case *MapLit:
+		n := &ast.Node{Kind: "map"}
+		for _, it := range ex.Items {
+			entry := &ast.Node{Kind: "entry"}
+			entry.Children = append(entry.Children, exprNode(it.Key), exprNode(it.Value))
+			n.Children = append(n.Children, entry)
 		}
 		return n
 	case *GroupExpr:
