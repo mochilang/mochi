@@ -170,9 +170,6 @@ type MaxExpr struct{ Value Expr }
 // ValuesExpr returns Object.values(o).
 type ValuesExpr struct{ Value Expr }
 
-// FormatExpr renders values for printing. Arrays are joined by space.
-type FormatExpr struct{ Value Expr }
-
 // SubstringExpr represents substring(s, start, end).
 type SubstringExpr struct {
 	Str   Expr
@@ -386,14 +383,6 @@ func (e *ValuesExpr) emit(w io.Writer) {
 		e.Value.emit(w)
 	}
 	io.WriteString(w, ")")
-}
-
-func (f *FormatExpr) emit(w io.Writer) {
-	io.WriteString(w, "(() => { const v = ")
-	if f.Value != nil {
-		f.Value.emit(w)
-	}
-	io.WriteString(w, "; return Array.isArray(v) ? v.join(\" \") : v; })()")
 }
 
 func (s *SubstringExpr) emit(w io.Writer) {
@@ -1287,11 +1276,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		switch p.Call.Func {
 		case "print":
-			printArgs := make([]Expr, len(args))
-			for i, a := range args {
-				printArgs[i] = &FormatExpr{Value: a}
-			}
-			return &CallExpr{Func: "console.log", Args: printArgs}, nil
+			return &CallExpr{Func: "console.log", Args: args}, nil
 		case "len":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("len expects one argument")
