@@ -1,5 +1,10 @@
-## Progress (2025-07-20 09:12 +0700)
-- VM valid golden test results updated to 33/100
+## Progress (2025-07-20 09:38 +0700)
+- VM valid golden test results updated to 34/100
+
+## Progress (2025-07-20 09:38 +0700)
+- Added simple function declaration support and return handling.
+- Generated golden files for bool_chain.
+- VM valid golden test results updated to 34/100
 
 ## Progress (2025-07-20 09:12 +0700)
 - VM valid golden test results updated to 33/100
