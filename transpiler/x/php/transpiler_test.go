@@ -219,6 +219,10 @@ func TestTranspile_MinMaxBuiltin(t *testing.T) {
 	runTranspileTest(t, "min_max_builtin")
 }
 
+func TestTranspile_CastStringToInt(t *testing.T) {
+	runTranspileTest(t, "cast_string_to_int")
+}
+
 func runTranspileTest(t *testing.T, name string) {
 	if _, err := exec.LookPath("php"); err != nil {
 		t.Skip("php not installed")
