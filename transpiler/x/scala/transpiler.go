@@ -123,13 +123,15 @@ func (s *VarStmt) emit(w io.Writer) {
 	}
 }
 
+// AssignStmt represents `target = value` assignments.
 type AssignStmt struct {
-	Name  string
-	Value Expr
+	Target Expr
+	Value  Expr
 }
 
 func (s *AssignStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "%s = ", s.Name)
+	s.Target.emit(w)
+	fmt.Fprint(w, " = ")
 	s.Value.emit(w)
 }
 
@@ -294,11 +296,11 @@ type Name struct{ Name string }
 
 func (n *Name) emit(w io.Writer) { fmt.Fprint(w, n.Name) }
 
-// ListLit represents a simple list literal using Scala's List.
+// ListLit represents a mutable list using ArrayBuffer.
 type ListLit struct{ Elems []Expr }
 
 func (l *ListLit) emit(w io.Writer) {
-	fmt.Fprint(w, "List(")
+	fmt.Fprint(w, "ArrayBuffer(")
 	for i, e := range l.Elems {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
@@ -507,14 +509,22 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		}
 		return &VarStmt{Name: st.Var.Name, Type: typ, Value: e}, nil
 	case st.Assign != nil:
-		if len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0 {
+		target := Expr(&Name{Name: st.Assign.Name})
+		if len(st.Assign.Index) > 0 {
+			var err error
+			target, err = applyIndexOps(target, st.Assign.Index)
+			if err != nil {
+				return nil, err
+			}
+		}
+		if len(st.Assign.Field) > 0 {
 			return nil, fmt.Errorf("unsupported assign")
 		}
 		e, err := convertExpr(st.Assign.Value)
 		if err != nil {
 			return nil, err
 		}
-		return &AssignStmt{Name: st.Assign.Name, Value: e}, nil
+		return &AssignStmt{Target: target, Value: e}, nil
 	case st.Fun != nil:
 		return convertFunStmt(st.Fun, env)
 	case st.Return != nil:
@@ -606,6 +616,25 @@ func contains(list []string, op string) bool {
 		}
 	}
 	return false
+}
+
+func applyIndexOps(base Expr, ops []*parser.IndexOp) (Expr, error) {
+	var err error
+	for _, op := range ops {
+		if op.Colon != nil || op.Colon2 != nil || op.End != nil || op.Step != nil {
+			return nil, fmt.Errorf("unsupported assign")
+		}
+		if op.Start == nil {
+			return nil, fmt.Errorf("nil index")
+		}
+		var idx Expr
+		idx, err = convertExpr(op.Start)
+		if err != nil {
+			return nil, err
+		}
+		base = &IndexExpr{Value: base, Index: idx}
+	}
+	return base, nil
 }
 
 func convertUnary(u *parser.Unary) (Expr, error) {
@@ -1010,7 +1039,7 @@ func toScalaTypeFromType(t types.Type) string {
 	case types.BoolType:
 		return "Boolean"
 	case types.ListType:
-		return fmt.Sprintf("List[%s]", toScalaTypeFromType(tt.Elem))
+		return fmt.Sprintf("ArrayBuffer[%s]", toScalaTypeFromType(tt.Elem))
 	case types.MapType:
 		return fmt.Sprintf("Map[%s,%s]", toScalaTypeFromType(tt.Key), toScalaTypeFromType(tt.Value))
 	}
@@ -1028,18 +1057,18 @@ func inferType(e Expr) string {
 		return "Boolean"
 	case *ListLit:
 		if len(ex.Elems) == 0 {
-			return "List[Any]"
+			return "ArrayBuffer[Any]"
 		}
 		t := inferType(ex.Elems[0])
 		if t == "" {
-			return "List[Any]"
+			return "ArrayBuffer[Any]"
 		}
 		for _, e := range ex.Elems[1:] {
 			if inferType(e) != t {
-				return "List[Any]"
+				return "ArrayBuffer[Any]"
 			}
 		}
-		return fmt.Sprintf("List[%s]", t)
+		return fmt.Sprintf("ArrayBuffer[%s]", t)
 	case *MapLit:
 		if len(ex.Items) == 0 {
 			return "Map[Any,Any]"
@@ -1064,14 +1093,14 @@ func inferType(e Expr) string {
 	case *LenExpr:
 		return "Int"
 	case *AppendExpr:
-		if t := inferType(ex.List); strings.HasPrefix(t, "List[") {
+		if t := inferType(ex.List); strings.HasPrefix(t, "ArrayBuffer[") {
 			return t
 		}
-		return "List[Any]"
+		return "ArrayBuffer[Any]"
 	case *IndexExpr:
 		t := inferType(ex.Value)
-		if strings.HasPrefix(t, "List[") {
-			inner := strings.TrimSuffix(strings.TrimPrefix(t, "List["), "]")
+		if strings.HasPrefix(t, "ArrayBuffer[") {
+			inner := strings.TrimSuffix(strings.TrimPrefix(t, "ArrayBuffer["), "]")
 			if inner != "" {
 				return inner
 			}
@@ -1136,7 +1165,9 @@ func inferTypeWithEnv(e Expr, env *types.Env) string {
 }
 
 func header() string {
-	return string(meta.Header("//"))
+	h := string(meta.Header("//"))
+	h += "import scala.collection.mutable.ArrayBuffer\n"
+	return h
 }
 
 // Print converts the Scala AST to ast.Node and prints it.
@@ -1186,6 +1217,10 @@ func stmtNode(s Stmt) *ast.Node {
 			body.Children = append(body.Children, stmtNode(s2))
 		}
 		n.Children = append(n.Children, body)
+		return n
+	case *AssignStmt:
+		n := &ast.Node{Kind: "assign"}
+		n.Children = append(n.Children, exprNode(st.Target), exprNode(st.Value))
 		return n
 	case *FunStmt:
 		n := &ast.Node{Kind: "fun", Value: st.Name}
