@@ -205,6 +205,7 @@ func TestTranspilerGolden(t *testing.T) {
 		filepath.Join(srcDir, "if_then_else.mochi"),
 		filepath.Join(srcDir, "if_then_else_nested.mochi"),
 		filepath.Join(srcDir, "while_loop.mochi"),
+		filepath.Join(srcDir, "string_index.mochi"),
 	}
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")

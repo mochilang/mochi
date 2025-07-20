@@ -1,3 +1,6 @@
+## Progress (2025-07-20 16:45 +0700)
+- fortran: support string indexing and update golden tests
+
 ## Progress (2025-07-20 14:31 +0700)
 - feat(scala): support structs and match
 
