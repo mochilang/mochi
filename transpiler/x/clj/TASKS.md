@@ -1,3 +1,31 @@
+## Progress (2025-07-20 22:01 +0700)
+- clj: infer struct types and left join
+- Regenerated golden files - 79/100 vm valid programs passing
+
+## Progress (2025-07-20 22:01 +0700)
+- clj: infer struct types and left join
+- Regenerated golden files - 79/100 vm valid programs passing
+
+## Progress (2025-07-20 22:01 +0700)
+- clj: infer struct types and left join
+- Regenerated golden files - 79/100 vm valid programs passing
+
+## Progress (2025-07-20 22:01 +0700)
+- clj: infer struct types and left join
+- Regenerated golden files - 79/100 vm valid programs passing
+
+## Progress (2025-07-20 22:01 +0700)
+- clj: infer struct types and left join
+- Regenerated golden files - 76/100 vm valid programs passing
+
+## Progress (2025-07-20 22:01 +0700)
+- clj: infer struct types and left join
+- Regenerated golden files - 76/100 vm valid programs passing
+
+## Progress (2025-07-20 22:01 +0700)
+- clj: infer struct types and left join
+- Regenerated golden files - 76/100 vm valid programs passing
+
 ## Progress (2025-07-20 21:35 +0700)
 - clj: add group-by support
 - Regenerated golden files - 76/100 vm valid programs passing

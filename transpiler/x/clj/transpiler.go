@@ -326,6 +326,10 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 				if currentProgram != nil {
 					addRecordDef(currentProgram, name, st.Order)
 				}
+				st.Name = name
+				if transpileEnv != nil {
+					transpileEnv.SetStruct(name, st)
+				}
 			}
 		} else {
 			if s.Let.Type != nil {
@@ -348,6 +352,10 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 				name := fmt.Sprintf("Anon%d", structCount)
 				if currentProgram != nil {
 					addRecordDef(currentProgram, name, st.Order)
+				}
+				st.Name = name
+				if transpileEnv != nil {
+					transpileEnv.SetStruct(name, st)
 				}
 			}
 		} else {
