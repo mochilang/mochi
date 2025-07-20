@@ -221,12 +221,14 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintf(w, "#include %s\n", inc)
 	}
 	fmt.Fprintln(w)
+	currentProgram = p
 	for i, fn := range p.Functions {
 		if i > 0 {
 			fmt.Fprintln(w)
 		}
 		fn.emit(w)
 	}
+	currentProgram = nil
 }
 
 func (f *Func) emit(w io.Writer) {
@@ -257,13 +259,31 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "    ")
 	}
-	io.WriteString(w, "std::cout")
+	io.WriteString(w, "std::cout << std::boolalpha")
 	for i, v := range s.Values {
 		io.WriteString(w, " << ")
 		if i > 0 {
 			io.WriteString(w, " \" \" << ")
 		}
 		switch ex := v.(type) {
+		case *UnaryExpr:
+			if ex.Op == "!" {
+				io.WriteString(w, "static_cast<int>(")
+				ex.emit(w)
+				io.WriteString(w, ")")
+				continue
+			}
+			ex.emit(w)
+			continue
+		case *BinaryExpr:
+			if ex.Op == "&&" || ex.Op == "||" {
+				io.WriteString(w, "static_cast<int>(")
+				ex.emit(w)
+				io.WriteString(w, ")")
+				continue
+			}
+			ex.emit(w)
+			continue
 		case *ListLit:
 			if currentProgram != nil {
 				currentProgram.addInclude("<sstream>")
@@ -347,7 +367,7 @@ func (m *MapLit) emit(w io.Writer) {
 }
 
 func (s *StringLit) emit(w io.Writer) {
-	fmt.Fprintf(w, "%q", s.Value)
+	fmt.Fprintf(w, "std::string(%q)", s.Value)
 }
 
 func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
@@ -512,6 +532,14 @@ func (l *LambdaExpr) emit(w io.Writer) {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
+	if b.Op == "/" {
+		io.WriteString(w, "((double)(")
+		b.Left.emit(w)
+		io.WriteString(w, ") / (")
+		b.Right.emit(w)
+		io.WriteString(w, "))")
+		return
+	}
 	io.WriteString(w, "(")
 	b.Left.emit(w)
 	io.WriteString(w, " "+b.Op+" ")
