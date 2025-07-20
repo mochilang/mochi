@@ -3,6 +3,7 @@
 package py
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"os"
@@ -636,6 +637,12 @@ func (c *CondExpr) emit(w io.Writer) error {
 }
 
 func emitExpr(w io.Writer, e Expr) error { return e.emit(w) }
+
+func exprString(e Expr) string {
+	var buf bytes.Buffer
+	_ = emitExpr(&buf, e)
+	return buf.String()
+}
 
 func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 	switch st := s.(type) {
@@ -2242,10 +2249,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				if currentImports != nil {
 					currentImports["json"] = true
 				}
-				dumps := &FieldExpr{Target: &Name{Name: "json"}, Name: "dumps"}
-				call := &CallExpr{Func: dumps, Args: args}
-				repl := &CallExpr{Func: &FieldExpr{Target: call, Name: "replace"}, Args: []Expr{&StringLit{Value: " "}, &StringLit{Value: ""}}}
-				return &CallExpr{Func: &Name{Name: "print"}, Args: []Expr{repl}}, nil
+				dumps := exprString(args[0])
+				raw := &RawExpr{Code: fmt.Sprintf("json.dumps(%s, indent=2)", dumps)}
+				return &CallExpr{Func: &Name{Name: "print"}, Args: []Expr{raw}}, nil
 			}
 		case "exists":
 			if len(args) == 1 {
@@ -2461,7 +2467,7 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 }
 
 func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
-	if len(q.Joins) > 0 || q.Group != nil || q.Distinct {
+	if q.Group != nil || q.Distinct {
 		return nil, fmt.Errorf("unsupported query")
 	}
 
@@ -2480,6 +2486,27 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		vars = append(vars, f.Var)
 		iters = append(iters, e)
 	}
+	var cond Expr
+	for _, j := range q.Joins {
+		if j.Side != nil {
+			return nil, fmt.Errorf("unsupported query")
+		}
+		e, err := convertExpr(j.Src)
+		if err != nil {
+			return nil, err
+		}
+		vars = append(vars, j.Var)
+		iters = append(iters, e)
+		jc, err := convertExpr(j.On)
+		if err != nil {
+			return nil, err
+		}
+		if cond == nil {
+			cond = jc
+		} else {
+			cond = &BinaryExpr{Left: cond, Op: "&&", Right: jc}
+		}
+	}
 
 	var elem Expr
 	aggName, aggExpr, useAgg := aggregatorCall(q.Select)
@@ -2490,11 +2517,15 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 	}
 
-	var cond Expr
 	if q.Where != nil {
-		cond, err = convertExpr(q.Where)
+		wcond, err := convertExpr(q.Where)
 		if err != nil {
 			return nil, err
+		}
+		if cond == nil {
+			cond = wcond
+		} else {
+			cond = &BinaryExpr{Left: cond, Op: "&&", Right: wcond}
 		}
 	}
 

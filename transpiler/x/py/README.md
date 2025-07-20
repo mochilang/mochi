@@ -3,7 +3,7 @@
 This checklist is auto-generated.
 Generated Python code from programs in `tests/vm/valid` lives in `tests/transpiler/x/py`.
 
-## VM Golden Test Checklist (87/100)
+## VM Golden Test Checklist (88/100)
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -41,7 +41,7 @@ Generated Python code from programs in `tests/vm/valid` lives in `tests/transpil
 - [x] if_then_else_nested
 - [x] in_operator
 - [x] in_operator_extended
-- [ ] inner_join
+- [x] inner_join
 - [ ] join_multi
 - [x] json_builtin
 - [ ] left_join
