@@ -1,6 +1,6 @@
-## Progress (2025-07-20 10:18 +0700)
-- prolog: improve readability and remove style check
-- Generated golden tests for 32/100 programs
+## Progress (2025-07-20 11:38 +0700)
+- cobol: add golden test suite and update checklist
+- Generated golden tests for 41/100 programs
 - Updated README checklist and output artifacts
 
 # Swift Transpiler Tasks

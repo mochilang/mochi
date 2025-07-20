@@ -2,26 +2,26 @@
 
 Generated Swift code for programs in `tests/vm/valid`. Each program has a `.swift` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-Transpiled programs: 32/100
+Transpiled programs: 41/100
 
 Checklist:
-- [ ] append_builtin
-- [ ] avg_builtin
+- [x] append_builtin
+- [x] avg_builtin
 - [x] basic_compare
 - [x] binary_precedence
 - [x] bool_chain
-- [ ] break_continue
+- [x] break_continue
 - [x] cast_string_to_int
 - [ ] cast_struct
 - [ ] closure
-- [ ] count_builtin
+- [x] count_builtin
 - [ ] cross_join
 - [ ] cross_join_filter
 - [ ] cross_join_triple
 - [ ] dataset_sort_take_limit
 - [ ] dataset_where_filter
 - [ ] exists_builtin
-- [ ] for_list_collection
+- [x] for_list_collection
 - [x] for_loop
 - [ ] for_map_collection
 - [x] fun_call
@@ -54,7 +54,7 @@ Checklist:
 - [ ] list_assign
 - [ ] list_index
 - [ ] list_nested_assign
-- [ ] list_set_ops
+- [x] list_set_ops
 - [ ] load_yaml
 - [ ] map_assign
 - [ ] map_in_operator
@@ -66,8 +66,8 @@ Checklist:
 - [ ] match_expr
 - [ ] match_full
 - [x] math_ops
-- [ ] membership
-- [ ] min_max_builtin
+- [x] membership
+- [x] min_max_builtin
 - [x] nested_function
 - [ ] order_by_map
 - [ ] outer_join
@@ -92,7 +92,7 @@ Checklist:
 - [ ] string_index
 - [ ] string_prefix_slice
 - [x] substring_builtin
-- [ ] sum_builtin
+- [x] sum_builtin
 - [x] tail_recursion
 - [ ] test_block
 - [ ] tree_sum
