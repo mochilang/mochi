@@ -263,7 +263,7 @@ type LenExpr struct{ Value Expr }
 
 func (l *LenExpr) emit(w io.Writer) {
 	l.Value.emit(w)
-	fmt.Fprint(w, ".length")
+	fmt.Fprint(w, ".size")
 }
 
 func (c *CallExpr) emit(w io.Writer) {
@@ -304,6 +304,28 @@ func (l *ListLit) emit(w io.Writer) {
 			fmt.Fprint(w, ", ")
 		}
 		e.emit(w)
+	}
+	fmt.Fprint(w, ")")
+}
+
+// MapEntry represents a key/value pair inside a map literal.
+type MapEntry struct {
+	Key   Expr
+	Value Expr
+}
+
+// MapLit represents a simple map literal using Scala's Map.
+type MapLit struct{ Items []MapEntry }
+
+func (m *MapLit) emit(w io.Writer) {
+	fmt.Fprint(w, "Map(")
+	for i, it := range m.Items {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		it.Key.emit(w)
+		fmt.Fprint(w, " -> ")
+		it.Value.emit(w)
 	}
 	fmt.Fprint(w, ")")
 }
@@ -695,6 +717,20 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			elems[i] = ex
 		}
 		return &ListLit{Elems: elems}, nil
+	case p.Map != nil:
+		entries := make([]MapEntry, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			k, err := convertExpr(it.Key)
+			if err != nil {
+				return nil, err
+			}
+			v, err := convertExpr(it.Value)
+			if err != nil {
+				return nil, err
+			}
+			entries[i] = MapEntry{Key: k, Value: v}
+		}
+		return &MapLit{Items: entries}, nil
 	case p.If != nil:
 		return convertIfExpr(p.If)
 	case p.FunExpr != nil:
@@ -718,20 +754,48 @@ func convertCall(c *parser.CallExpr) (Expr, error) {
 		args[i] = ex
 	}
 	name := c.Func
-	if name == "len" && len(args) == 1 {
-		return &LenExpr{Value: args[0]}, nil
-	}
-	if name == "print" {
+	switch name {
+	case "len", "count":
+		if len(args) == 1 {
+			return &LenExpr{Value: args[0]}, nil
+		}
+	case "print":
 		name = "println"
-	}
-	if name == "str" && len(args) == 1 {
-		name = "String.valueOf"
-	}
-	if name == "append" && len(args) == 2 {
-		return &AppendExpr{List: args[0], Elem: args[1]}, nil
-	}
-	if name == "substring" && len(args) == 3 {
-		return &SubstringExpr{Value: args[0], Start: args[1], End: args[2]}, nil
+	case "str":
+		if len(args) == 1 {
+			name = "String.valueOf"
+		}
+	case "append":
+		if len(args) == 2 {
+			return &AppendExpr{List: args[0], Elem: args[1]}, nil
+		}
+	case "substring":
+		if len(args) == 3 {
+			return &SubstringExpr{Value: args[0], Start: args[1], End: args[2]}, nil
+		}
+	case "sum":
+		if len(args) == 1 {
+			return &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "sum"}}, nil
+		}
+	case "avg":
+		if len(args) == 1 {
+			sum := &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "sum"}}
+			ln := &LenExpr{Value: args[0]}
+			return &BinaryExpr{Left: sum, Op: "/", Right: ln}, nil
+		}
+	case "min":
+		if len(args) == 1 {
+			return &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "min"}}, nil
+		}
+	case "max":
+		if len(args) == 1 {
+			return &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "max"}}, nil
+		}
+	case "values":
+		if len(args) == 1 {
+			valCall := &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "values"}}
+			return &CallExpr{Fn: &FieldExpr{Receiver: valCall, Name: "toList"}}, nil
+		}
 	}
 	return &CallExpr{Fn: &Name{Name: name}, Args: args}, nil
 }
@@ -976,6 +1040,27 @@ func inferType(e Expr) string {
 			}
 		}
 		return fmt.Sprintf("List[%s]", t)
+	case *MapLit:
+		if len(ex.Items) == 0 {
+			return "Map[Any,Any]"
+		}
+		kt := inferType(ex.Items[0].Key)
+		if kt == "" {
+			kt = "Any"
+		}
+		vt := inferType(ex.Items[0].Value)
+		if vt == "" {
+			vt = "Any"
+		}
+		for _, it := range ex.Items[1:] {
+			if inferType(it.Key) != kt {
+				kt = "Any"
+			}
+			if inferType(it.Value) != vt {
+				vt = "Any"
+			}
+		}
+		return fmt.Sprintf("Map[%s,%s]", kt, vt)
 	case *LenExpr:
 		return "Int"
 	case *AppendExpr:
@@ -984,10 +1069,22 @@ func inferType(e Expr) string {
 		}
 		return "List[Any]"
 	case *IndexExpr:
-		if t := inferType(ex.Value); strings.HasPrefix(t, "List[") {
+		t := inferType(ex.Value)
+		if strings.HasPrefix(t, "List[") {
 			inner := strings.TrimSuffix(strings.TrimPrefix(t, "List["), "]")
 			if inner != "" {
 				return inner
+			}
+			return "Any"
+		}
+		if strings.HasPrefix(t, "Map[") {
+			parts := strings.TrimSuffix(strings.TrimPrefix(t, "Map["), "]")
+			kv := strings.SplitN(parts, ",", 2)
+			if len(kv) == 2 {
+				valType := strings.TrimSpace(kv[1])
+				if valType != "" {
+					return valType
+				}
 			}
 		}
 		return "Any"
@@ -1152,6 +1249,14 @@ func exprNode(e Expr) *ast.Node {
 		n := &ast.Node{Kind: "list"}
 		for _, e := range ex.Elems {
 			n.Children = append(n.Children, exprNode(e))
+		}
+		return n
+	case *MapLit:
+		n := &ast.Node{Kind: "map"}
+		for _, it := range ex.Items {
+			pair := &ast.Node{Kind: "pair"}
+			pair.Children = append(pair.Children, exprNode(it.Key), exprNode(it.Value))
+			n.Children = append(n.Children, pair)
 		}
 		return n
 	case *SubstringExpr:
