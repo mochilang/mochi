@@ -1,3 +1,33 @@
+## Progress (2025-07-20 21:45 +0700)
+- fortran: improve boolean and substring handling
+
+## Progress (2025-07-20 21:29 +0700)
+- fs tasks: log join support progress
+
+## Progress (2025-07-20 21:29 +0700)
+- fs tasks: log join support progress
+
+## Progress (2025-07-20 21:29 +0700)
+- fs tasks: log join support progress
+
+## Progress (2025-07-20 21:29 +0700)
+- fs tasks: log join support progress
+
+## Progress (2025-07-20 21:29 +0700)
+- fs tasks: log join support progress
+
+## Progress (2025-07-20 21:29 +0700)
+- fs tasks: log join support progress
+
+## Progress (2025-07-20 21:29 +0700)
+- fs tasks: log join support progress
+
+## Progress (2025-07-20 21:29 +0700)
+- fs tasks: log join support progress
+
+## Progress (2025-07-20 21:29 +0700)
+- fs tasks: log join support progress
+
 ## Progress (2025-07-20 16:45 +0700)
 - fortran: support string indexing and update golden tests
 

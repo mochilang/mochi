@@ -143,15 +143,7 @@ func (p *PrintStmt) emit(w io.Writer, ind int) {
 		}
 	case types.BoolType:
 		writeIndent(w, ind)
-		fmt.Fprintf(w, "if (%s) then\n", p.Expr)
-		writeIndent(w, ind+2)
-		fmt.Fprintln(w, "print *, 'true'")
-		writeIndent(w, ind)
-		io.WriteString(w, "else\n")
-		writeIndent(w, ind+2)
-		fmt.Fprintln(w, "print *, 'false'")
-		writeIndent(w, ind)
-		io.WriteString(w, "end if\n")
+		fmt.Fprintf(w, "print '(I0)', merge(1,0,%s)\n", p.Expr)
 	case types.StringType:
 		writeIndent(w, ind)
 		fmt.Fprintf(w, "print *, trim(%s)\n", p.Expr)
@@ -1079,11 +1071,11 @@ func toPrimary(p *parser.Primary, env *types.Env) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			length, err := toExpr(p.Call.Args[2], env)
+			end, err := toExpr(p.Call.Args[2], env)
 			if err != nil {
 				return "", err
 			}
-			return fmt.Sprintf("%s(%s:%s+%s-1)", src, start, start, length), nil
+			return fmt.Sprintf("%s(%s+1:%s)", src, start, end), nil
 		}
 		if p.Call.Func == "avg" && len(p.Call.Args) == 1 {
 			argExpr, err := toExpr(p.Call.Args[0], env)
