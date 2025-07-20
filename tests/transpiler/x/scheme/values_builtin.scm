@@ -1,0 +1,11 @@
+;; Generated on 2025-07-20 22:17 +0700
+(import (srfi 1) (srfi 69) (chibi string))
+(define m (alist->hash-table (list (cons "a" 1)
+       (cons "b" 2)
+       (cons "c" 3)
+      )
+    )
+  )
+(display (values m)
+  )
+(newline)

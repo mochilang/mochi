@@ -626,9 +626,15 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 	case p.Map != nil:
 		pairs := []Node{Symbol("list")}
 		for _, it := range p.Map.Items {
-			k, err := convertParserExpr(it.Key)
-			if err != nil {
-				return nil, err
+			var k Node
+			if s, ok := types.SimpleStringKey(it.Key); ok {
+				k = StringLit(s)
+			} else {
+				var err error
+				k, err = convertParserExpr(it.Key)
+				if err != nil {
+					return nil, err
+				}
 			}
 			v, err := convertParserExpr(it.Value)
 			if err != nil {
@@ -699,21 +705,63 @@ func convertFunExpr(fe *parser.FunExpr) (Node, error) {
 }
 
 func convertQueryExpr(q *parser.QueryExpr) (Node, error) {
+	prevEnv := currentEnv
+	env := types.NewEnv(currentEnv)
+
+	srcType := types.ExprType(q.Source, currentEnv)
+	var elemType types.Type = types.AnyType{}
+	if lt, ok := srcType.(types.ListType); ok {
+		elemType = lt.Elem
+	} else if gt, ok := srcType.(types.GroupType); ok {
+		elemType = gt.Elem
+	}
+	env.SetVar(q.Var, elemType, true)
+	for _, f := range q.Froms {
+		ft := types.ExprType(f.Src, currentEnv)
+		var fe types.Type = types.AnyType{}
+		if lt, ok := ft.(types.ListType); ok {
+			fe = lt.Elem
+		}
+		env.SetVar(f.Var, fe, true)
+	}
+	for _, j := range q.Joins {
+		jt := types.ExprType(j.Src, currentEnv)
+		var je types.Type = types.AnyType{}
+		if lt, ok := jt.(types.ListType); ok {
+			je = lt.Elem
+		}
+		env.SetVar(j.Var, je, true)
+	}
+	currentEnv = env
+
 	loops := []struct {
 		name   string
 		source Node
 	}{}
 	src, err := convertParserExpr(q.Source)
 	if err != nil {
+		currentEnv = prevEnv
 		return nil, err
 	}
 	loops = append(loops, struct {
 		name   string
 		source Node
 	}{q.Var, src})
+	for _, j := range q.Joins {
+		src, err := convertParserExpr(j.Src)
+		if err != nil {
+			currentEnv = prevEnv
+			return nil, err
+		}
+		loops = append(loops, struct {
+			name   string
+			source Node
+		}{j.Var, src})
+	}
 	for _, f := range q.Froms {
 		src, err := convertParserExpr(f.Src)
 		if err != nil {
+			currentEnv = prevEnv
 			return nil, err
 		}
 		loops = append(loops, struct {
@@ -723,13 +771,27 @@ func convertQueryExpr(q *parser.QueryExpr) (Node, error) {
 	}
 	sel, err := convertParserExpr(q.Select)
 	if err != nil {
+		currentEnv = prevEnv
 		return nil, err
 	}
-	var where Node
+	var cond Node
 	if q.Where != nil {
-		where, err = convertParserExpr(q.Where)
+		cond, err = convertParserExpr(q.Where)
 		if err != nil {
+			currentEnv = prevEnv
 			return nil, err
+		}
+	}
+	for _, j := range q.Joins {
+		jc, err := convertParserExpr(j.On)
+		if err != nil {
+			currentEnv = prevEnv
+			return nil, err
+		}
+		if cond == nil {
+			cond = jc
+		} else {
+			cond = makeBinary("&&", cond, jc)
 		}
 	}
 	resSym := gensym("res")
@@ -740,8 +802,8 @@ func convertQueryExpr(q *parser.QueryExpr) (Node, error) {
 			&List{Elems: []Node{Symbol("list"), sel}},
 		}},
 	}})
-	if where != nil {
-		appendNode = &List{Elems: []Node{Symbol("if"), where, appendNode, voidSym()}}
+	if cond != nil {
+		appendNode = &List{Elems: []Node{Symbol("if"), cond, appendNode, voidSym()}}
 	}
 	body := appendNode
 	for i := len(loops) - 1; i >= 0; i-- {
@@ -752,6 +814,7 @@ func convertQueryExpr(q *parser.QueryExpr) (Node, error) {
 			l.source,
 		}}
 	}
+	currentEnv = prevEnv
 	return &List{Elems: []Node{
 		Symbol("let"),
 		&List{Elems: []Node{&List{Elems: []Node{resSym, &List{Elems: []Node{Symbol("list")}}}}}},
