@@ -1,3 +1,7 @@
+## Progress (2025-07-20 14:11 +0700)
+- enhance scala transpiler for structs and match
+- Regenerated golden files - 59/100 vm valid programs passing
+
 ## Progress (2025-07-20 13:26 +0700)
 - scala: implement list aggregation builtins (avg, count, min, max)
 - Update Scala golden test checklist - 54/100 passing
