@@ -1316,7 +1316,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		}
 		var body []Stmt
 		for _, b := range s.Fun.Body {
-			st, err := compileStmt(prog, b)
+			st, err := compileStmt(nil, b)
 			if err != nil {
 				return nil, err
 			}
@@ -1324,8 +1324,14 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				body = append(body, st)
 			}
 		}
-		prog.Funcs = append(prog.Funcs, &Function{Name: s.Fun.Name, Params: params, ParamTypes: ptypes, ReturnType: csType(s.Fun.Return), Body: body})
-		return nil, nil
+		fnType := fmt.Sprintf("Func<%s>", strings.Join(append(append([]string{}, ptypes...), csType(s.Fun.Return)), ", "))
+		varTypes[s.Fun.Name] = fnType
+		if prog != nil {
+			prog.Funcs = append(prog.Funcs, &Function{Name: s.Fun.Name, Params: params, ParamTypes: ptypes, ReturnType: csType(s.Fun.Return), Body: body})
+			return nil, nil
+		}
+		lit := &FunLit{Params: params, ParamTypes: ptypes, ReturnType: csType(s.Fun.Return), Body: body}
+		return &LetStmt{Name: s.Fun.Name, Value: lit}, nil
 	case s.Return != nil:
 		var val Expr
 		if s.Return.Value != nil {
@@ -1459,6 +1465,27 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			args[i] = ex
 		}
 		name := p.Call.Func
+		if sig, ok := varTypes[name]; ok && strings.HasPrefix(sig, "Func<") {
+			parts := strings.Split(strings.TrimSuffix(strings.TrimPrefix(sig, "Func<"), ">"), ",")
+			total := len(parts) - 1
+			if len(args) < total {
+				missing := total - len(args)
+				params := make([]string, missing)
+				ptypes := make([]string, missing)
+				for i := 0; i < missing; i++ {
+					params[i] = fmt.Sprintf("p%d", i)
+					ptypes[i] = strings.TrimSpace(parts[len(args)+i])
+				}
+				callArgs := make([]Expr, 0, total)
+				callArgs = append(callArgs, args...)
+				for i := 0; i < missing; i++ {
+					callArgs = append(callArgs, &VarRef{Name: params[i]})
+				}
+				retType := strings.TrimSpace(parts[len(parts)-1])
+				body := &CallExpr{Func: name, Args: callArgs}
+				return &FunLit{Params: params, ParamTypes: ptypes, ReturnType: retType, ExprBody: body}, nil
+			}
+		}
 		switch name {
 		case "print":
 			name = "Console.WriteLine"
@@ -1570,6 +1597,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		return &MapLit{Items: items}, nil
 	case p.Query != nil:
 		return compileQueryExpr(p.Query)
+	case p.Match != nil:
+		return compileMatchExpr(p.Match)
 	case p.Selector != nil:
 		expr := Expr(&VarRef{Name: p.Selector.Root})
 		for _, t := range p.Selector.Tail {
@@ -1636,6 +1665,38 @@ func compileIfExpr(i *parser.IfExpr) (Expr, error) {
 		}
 	}
 	return &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
+}
+
+func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
+	target, err := compileExpr(me.Target)
+	if err != nil {
+		return nil, err
+	}
+	var expr Expr
+	for i := len(me.Cases) - 1; i >= 0; i-- {
+		c := me.Cases[i]
+		res, err := compileExpr(c.Result)
+		if err != nil {
+			return nil, err
+		}
+		patExpr, err := compileExpr(c.Pattern)
+		if err != nil {
+			return nil, err
+		}
+		if i == len(me.Cases)-1 {
+			expr = res
+			if vr, ok := patExpr.(*VarRef); ok && vr.Name == "_" {
+				continue
+			}
+		}
+		if vr, ok := patExpr.(*VarRef); ok && vr.Name == "_" {
+			expr = res
+			continue
+		}
+		cond := &CmpExpr{Op: "==", Left: target, Right: patExpr}
+		expr = &IfExpr{Cond: cond, Then: res, Else: expr}
+	}
+	return expr, nil
 }
 
 func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
