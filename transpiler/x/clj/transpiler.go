@@ -431,6 +431,20 @@ func transpileExpr(e *parser.Expr) (Node, error) {
 			}
 			continue
 		}
+		if (op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=") && (isStringNode(n) || isStringNode(right)) {
+			cmp := &List{Elems: []Node{Symbol("compare"), n, right}}
+			switch op.Op {
+			case "<":
+				n = &List{Elems: []Node{Symbol("neg?"), cmp}}
+			case "<=":
+				n = &List{Elems: []Node{Symbol("<="), cmp, IntLit(0)}}
+			case ">":
+				n = &List{Elems: []Node{Symbol("pos?"), cmp}}
+			case ">=":
+				n = &List{Elems: []Node{Symbol(">="), cmp, IntLit(0)}}
+			}
+			continue
+		}
 		sym, ok := binOp[op.Op]
 		if !ok {
 			return nil, fmt.Errorf("binary op not supported")
@@ -488,6 +502,12 @@ func transpilePostfix(p *parser.PostfixExpr) (Node, error) {
 				n = &List{Elems: []Node{Symbol("get"), n, i}}
 			} else {
 				n = &List{Elems: []Node{Symbol("nth"), n, i}}
+			}
+		case op.Cast != nil:
+			var err error
+			n, err = castNode(n, op.Cast.Type)
+			if err != nil {
+				return nil, err
 			}
 		default:
 			return nil, fmt.Errorf("postfix ops not supported")
@@ -683,6 +703,28 @@ func defaultValue(t *parser.TypeRef) Node {
 		return &List{Elems: []Node{Symbol("hash-map")}}
 	default:
 		return Symbol("nil")
+	}
+}
+
+func castNode(n Node, t *parser.TypeRef) (Node, error) {
+	if t == nil || t.Simple == nil {
+		return n, nil
+	}
+	switch *t.Simple {
+	case "int":
+		if isStringNode(n) {
+			return &List{Elems: []Node{Symbol("Integer/parseInt"), n}}, nil
+		}
+		return &List{Elems: []Node{Symbol("int"), n}}, nil
+	case "float":
+		if isStringNode(n) {
+			return &List{Elems: []Node{Symbol("Double/parseDouble"), n}}, nil
+		}
+		return &List{Elems: []Node{Symbol("double"), n}}, nil
+	case "string":
+		return &List{Elems: []Node{Symbol("str"), n}}, nil
+	default:
+		return nil, fmt.Errorf("cast to %s not supported", *t.Simple)
 	}
 }
 
