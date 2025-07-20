@@ -1,3 +1,0 @@
-exit status 1
-# command-line-arguments
-../../../tests/transpiler/x/go/nested_function.go:11:10: syntax error: unexpected name inner, expected (
