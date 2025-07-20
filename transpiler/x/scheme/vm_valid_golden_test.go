@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
 	"time"
@@ -124,18 +125,39 @@ func updateReadme() {
 func updateTasks() {
 	root := findRepoRoot2(&testing.T{})
 	taskFile := filepath.Join(root, "transpiler", "x", "scheme", "TASKS.md")
+
 	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	ts := ""
 	if err == nil {
 		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
-			loc := time.FixedZone("GMT+7", 7*3600)
-			ts = t.In(loc).Format("2006-01-02 15:04 MST")
+			if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+				ts = t.In(loc).Format("2006-01-02 15:04 -0700")
+			} else {
+				ts = t.Format("2006-01-02 15:04 MST")
+			}
 		}
 	}
+
+	srcDir := filepath.Join(root, "tests", "vm", "valid")
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "scheme")
+	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	sort.Strings(files)
+	if len(files) > 100 {
+		files = files[:100]
+	}
+	total := len(files)
+	compiled := 0
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
+			compiled++
+		}
+	}
+
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
-	buf.WriteString("- VM valid golden test results updated\n")
-	buf.WriteString("\n")
+	fmt.Fprintf(&buf, "- Generated Scheme for %d/%d programs\n", compiled, total)
+	buf.WriteString("- Updated README checklist and outputs\n\n")
 	if data, err := os.ReadFile(taskFile); err == nil {
 		buf.Write(data)
 	}
