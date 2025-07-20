@@ -666,8 +666,39 @@ func (c *Comprehension) emit(w io.Writer) {
 		io.WriteString(w, ", filter: ")
 		c.Filter.emit(w)
 	}
-	io.WriteString(w, ", do: ")
-	c.Body.emit(w)
+	io.WriteString(w, " do\n")
+	indent := 1
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
+	}
+	if m, ok := c.Body.(*MapLit); ok && len(m.Items) > 1 {
+		io.WriteString(w, "%{\n")
+		for i, it := range m.Items {
+			for j := 0; j < indent+1; j++ {
+				io.WriteString(w, "  ")
+			}
+			if a, ok := it.Key.(*AtomLit); ok {
+				io.WriteString(w, a.Name)
+				io.WriteString(w, ": ")
+			} else {
+				it.Key.emit(w)
+				io.WriteString(w, " => ")
+			}
+			it.Value.emit(w)
+			if i < len(m.Items)-1 {
+				io.WriteString(w, ",\n")
+			} else {
+				io.WriteString(w, "\n")
+			}
+		}
+		for i := 0; i < indent; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "}")
+	} else {
+		c.Body.emit(w)
+	}
+	io.WriteString(w, "\nend")
 }
 
 // CastExpr represents a simple cast like expr as int.
