@@ -4,14 +4,14 @@ This directory contains a minimal transpiler that converts a subset of Mochi int
 It currently supports print statements with integer or string expressions, variable declarations and assignments, unary negation and simple addition.
 
 ## Golden tests
-Programs under `tests/vm/valid` that have generated Zig code (31/100 completed):
+Programs under `tests/vm/valid` that have generated Zig code (37/100 completed):
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
 - [x] binary_precedence
 - [ ] bool_chain
 - [x] break_continue
-- [ ] cast_string_to_int
+- [x] cast_string_to_int
 - [ ] cast_struct
 - [ ] closure
 - [ ] count_builtin
@@ -40,7 +40,7 @@ Programs under `tests/vm/valid` that have generated Zig code (31/100 completed):
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
-- [ ] in_operator
+- [x] in_operator
 - [ ] in_operator_extended
 - [ ] inner_join
 - [ ] join_multi
@@ -66,7 +66,7 @@ Programs under `tests/vm/valid` that have generated Zig code (31/100 completed):
 - [ ] match_expr
 - [ ] match_full
 - [x] math_ops
-- [ ] membership
+- [x] membership
 - [x] min_max_builtin
 - [ ] nested_function
 - [ ] order_by_map
@@ -82,15 +82,15 @@ Programs under `tests/vm/valid` that have generated Zig code (31/100 completed):
 - [ ] right_join
 - [ ] save_jsonl_stdout
 - [ ] short_circuit
-- [ ] slice
+- [x] slice
 - [ ] sort_stable
 - [x] str_builtin
 - [x] string_compare
 - [x] string_concat
 - [x] string_contains
-- [ ] string_in_operator
+- [x] string_in_operator
 - [x] string_index
-- [ ] string_prefix_slice
+- [x] string_prefix_slice
 - [x] substring_builtin
 - [x] sum_builtin
 - [ ] tail_recursion

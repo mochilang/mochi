@@ -108,6 +108,22 @@ type BinaryExpr struct {
 	Right Expr
 }
 
+// SliceExpr represents a slice operation like xs[a:b].
+type SliceExpr struct {
+	Target Expr
+	Start  Expr
+	End    Expr
+}
+
+// CastExpr casts a value to a named type.
+type CastExpr struct {
+	Value Expr
+	Type  string
+}
+
+// NotExpr represents logical negation.
+type NotExpr struct{ Expr Expr }
+
 // ListLit represents a list literal of integer expressions.
 type ListLit struct{ Elems []Expr }
 
@@ -279,6 +295,28 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			}
 		}
 	}
+	if b.Op == "in" {
+		if _, ok := b.Right.(*StringLit); ok {
+			io.WriteString(w, "std.mem.indexOf(u8, ")
+			b.Right.emit(w)
+			io.WriteString(w, ", ")
+			b.Left.emit(w)
+			io.WriteString(w, ") != null")
+		} else if _, ok := b.Left.(*StringLit); ok {
+			io.WriteString(w, "std.mem.indexOf(u8, ")
+			b.Right.emit(w)
+			io.WriteString(w, ", ")
+			b.Left.emit(w)
+			io.WriteString(w, ") != null")
+		} else {
+			io.WriteString(w, "std.mem.indexOfScalar(i64, ")
+			b.Right.emit(w)
+			io.WriteString(w, ", ")
+			b.Left.emit(w)
+			io.WriteString(w, ") != null")
+		}
+		return
+	}
 	b.Left.emit(w)
 	fmt.Fprintf(w, " %s ", b.Op)
 	b.Right.emit(w)
@@ -310,6 +348,36 @@ func (i *IndexExpr) emit(w io.Writer) {
 	io.WriteString(w, "[")
 	i.Index.emit(w)
 	io.WriteString(w, "]")
+}
+
+func (sli *SliceExpr) emit(w io.Writer) {
+	sli.Target.emit(w)
+	io.WriteString(w, "[")
+	if sli.Start != nil {
+		sli.Start.emit(w)
+	}
+	io.WriteString(w, "..")
+	if sli.End != nil {
+		sli.End.emit(w)
+	}
+	io.WriteString(w, "]")
+}
+
+func (c *CastExpr) emit(w io.Writer) {
+	switch c.Type {
+	case "int":
+		io.WriteString(w, "std.fmt.parseInt(i64, ")
+		c.Value.emit(w)
+		io.WriteString(w, ", 10) catch 0")
+	default:
+		c.Value.emit(w)
+	}
+}
+
+func (n *NotExpr) emit(w io.Writer) {
+	io.WriteString(w, "!(")
+	n.Expr.emit(w)
+	io.WriteString(w, ")")
 }
 
 func (b *BoolLit) emit(w io.Writer) {
@@ -543,9 +611,12 @@ func compileUnary(u *parser.Unary) (Expr, error) {
 		return nil, err
 	}
 	for i := len(u.Ops) - 1; i >= 0; i-- {
-		if u.Ops[i] == "-" {
+		switch u.Ops[i] {
+		case "-":
 			expr = &BinaryExpr{Left: &IntLit{Value: 0}, Op: "-", Right: expr}
-		} else {
+		case "!":
+			expr = &NotExpr{Expr: expr}
+		default:
 			return nil, fmt.Errorf("unsupported unary op")
 		}
 	}
@@ -577,15 +648,42 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 		return nil, err
 	}
 	for _, op := range pf.Ops {
-		if op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil {
-			idx, err := compileExpr(op.Index.Start)
-			if err != nil {
-				return nil, err
+		if op.Index != nil {
+			if op.Index.Colon == nil && op.Index.Colon2 == nil {
+				idx, err := compileExpr(op.Index.Start)
+				if err != nil {
+					return nil, err
+				}
+				expr = &IndexExpr{Target: expr, Index: idx}
+				continue
 			}
-			expr = &IndexExpr{Target: expr, Index: idx}
-		} else {
+			if op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil {
+				var start, end Expr
+				if op.Index.Start != nil {
+					start, err = compileExpr(op.Index.Start)
+					if err != nil {
+						return nil, err
+					}
+				}
+				if op.Index.End != nil {
+					end, err = compileExpr(op.Index.End)
+					if err != nil {
+						return nil, err
+					}
+				}
+				expr = &SliceExpr{Target: expr, Start: start, End: end}
+				continue
+			}
 			return nil, fmt.Errorf("unsupported postfix")
 		}
+		if op.Cast != nil {
+			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
+				expr = &CastExpr{Value: expr, Type: *op.Cast.Type.Simple}
+				continue
+			}
+			return nil, fmt.Errorf("unsupported cast type")
+		}
+		return nil, fmt.Errorf("unsupported postfix")
 	}
 	return expr, nil
 }
