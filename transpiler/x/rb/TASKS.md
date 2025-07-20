@@ -1,7 +1,6 @@
-## Progress (2025-07-20 13:26 +0700)
-- Added method-call support for Ruby emitter (e.g. string.contains)
-- Improved boolean printing for membership expressions
-- Generated Ruby for 42/100 programs
+## Progress (2025-07-20 14:03 +0700)
+- rb: support string contains and more tests
+- Generated Ruby for 55/100 programs
 - Updated README checklist and outputs
 
 ## Completed Tasks

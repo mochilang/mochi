@@ -119,14 +119,15 @@ func (s *AssignStmt) emit(e *emitter) {
 }
 
 // IndexAssignStmt represents assignment to an indexed element.
+// IndexAssignStmt assigns to an indexed element of an expression.
 type IndexAssignStmt struct {
-	Name  string
-	Index Expr
-	Value Expr
+	Target Expr
+	Index  Expr
+	Value  Expr
 }
 
 func (s *IndexAssignStmt) emit(e *emitter) {
-	io.WriteString(e.w, s.Name)
+	s.Target.emit(e)
 	io.WriteString(e.w, "[")
 	s.Index.emit(e)
 	io.WriteString(e.w, "] = ")
@@ -371,14 +372,6 @@ type BinaryExpr struct {
 }
 
 func (b *BinaryExpr) emit(e *emitter) {
-	if b.Op == "/" {
-		io.WriteString(e.w, "(")
-		b.Left.emit(e)
-		io.WriteString(e.w, ".to_f / ")
-		b.Right.emit(e)
-		io.WriteString(e.w, ")")
-		return
-	}
 	b.Left.emit(e)
 	io.WriteString(e.w, " "+b.Op+" ")
 	b.Right.emit(e)
@@ -421,6 +414,20 @@ func (a *AvgExpr) emit(e *emitter) {
 type AppendExpr struct {
 	List Expr
 	Elem Expr
+}
+
+// SliceExpr represents a slice operation like a[1...3].
+type SliceExpr struct {
+	Target Expr
+	Start  Expr
+	End    Expr
+}
+
+// LambdaExpr represents a Ruby lambda expression.
+type LambdaExpr struct {
+	Params []string
+	Body   []Stmt
+	Expr   Expr
 }
 
 // ValuesExpr returns the list of values of a map.
@@ -504,6 +511,53 @@ func (a *AppendExpr) emit(e *emitter) {
 	io.WriteString(e.w, "]")
 }
 
+func (s *SliceExpr) emit(e *emitter) {
+	s.Target.emit(e)
+	io.WriteString(e.w, "[")
+	if s.Start != nil {
+		s.Start.emit(e)
+	}
+	io.WriteString(e.w, "...")
+	if s.End != nil {
+		s.End.emit(e)
+	}
+	io.WriteString(e.w, "]")
+}
+
+func (l *LambdaExpr) emit(e *emitter) {
+	io.WriteString(e.w, "->(")
+	for i, p := range l.Params {
+		if i > 0 {
+			io.WriteString(e.w, ", ")
+		}
+		io.WriteString(e.w, p)
+	}
+	io.WriteString(e.w, ") {")
+	if len(l.Body) > 0 {
+		e.nl()
+		e.indent++
+		for _, st := range l.Body {
+			e.writeIndent()
+			st.emit(e)
+			e.nl()
+		}
+		if l.Expr != nil {
+			e.writeIndent()
+			l.Expr.emit(e)
+			e.nl()
+		}
+		e.indent--
+		e.writeIndent()
+		io.WriteString(e.w, "}")
+		return
+	}
+	io.WriteString(e.w, " ")
+	if l.Expr != nil {
+		l.Expr.emit(e)
+	}
+	io.WriteString(e.w, " }")
+}
+
 func repoRoot() string {
 	dir, err := os.Getwd()
 	if err != nil {
@@ -576,6 +630,7 @@ func zeroValueExpr(t types.Type) Expr {
 
 // global environment used for type inference during conversion
 var currentEnv *types.Env
+var funcDepth int
 
 // Emit writes Ruby code for program p to w.
 func Emit(w io.Writer, p *Program) error {
@@ -651,16 +706,35 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
-		if len(st.Assign.Index) == 1 && len(st.Assign.Field) == 0 {
-			idx, err := convertExpr(st.Assign.Index[0].Start)
+		if len(st.Assign.Index) >= 1 && len(st.Assign.Field) == 0 {
+			target := Expr(&Ident{Name: st.Assign.Name})
+			for i := 0; i < len(st.Assign.Index)-1; i++ {
+				if st.Assign.Index[i].Colon != nil || st.Assign.Index[i].Colon2 != nil {
+					return nil, fmt.Errorf("unsupported assignment")
+				}
+				idx, err := convertExpr(st.Assign.Index[i].Start)
+				if err != nil {
+					return nil, err
+				}
+				target = &IndexExpr{Target: target, Index: idx}
+			}
+			last := st.Assign.Index[len(st.Assign.Index)-1]
+			if last.Colon != nil || last.Colon2 != nil {
+				return nil, fmt.Errorf("unsupported assignment")
+			}
+			idx, err := convertExpr(last.Start)
 			if err != nil {
 				return nil, err
 			}
-			return &IndexAssignStmt{Name: st.Assign.Name, Index: idx, Value: v}, nil
+			return &IndexAssignStmt{Target: target, Index: idx, Value: v}, nil
 		}
-		if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 1 {
-			idx := &StringLit{Value: st.Assign.Field[0].Name}
-			return &IndexAssignStmt{Name: st.Assign.Name, Index: idx, Value: v}, nil
+		if len(st.Assign.Index) == 0 && len(st.Assign.Field) >= 1 {
+			target := Expr(&Ident{Name: st.Assign.Name})
+			for i := 0; i < len(st.Assign.Field)-1; i++ {
+				target = &IndexExpr{Target: target, Index: &StringLit{Value: st.Assign.Field[i].Name}}
+			}
+			idx := &StringLit{Value: st.Assign.Field[len(st.Assign.Field)-1].Name}
+			return &IndexAssignStmt{Target: target, Index: idx, Value: v}, nil
 		}
 		if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
 			return &AssignStmt{Name: st.Assign.Name, Value: v}, nil
@@ -687,17 +761,35 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		return &ReturnStmt{Value: v}, nil
 	case st.Fun != nil:
+		funcDepth++
 		body := make([]Stmt, len(st.Fun.Body))
 		for i, s := range st.Fun.Body {
 			st2, err := convertStmt(s)
 			if err != nil {
+				funcDepth--
 				return nil, err
 			}
 			body[i] = st2
 		}
+		funcDepth--
 		var params []string
 		for _, p := range st.Fun.Params {
 			params = append(params, p.Name)
+		}
+		if funcDepth == 0 && currentEnv != nil {
+			// copy struct params to preserve value semantics
+			for _, p := range st.Fun.Params {
+				if p.Type != nil {
+					if _, ok := types.ResolveTypeRef(p.Type, currentEnv).(types.StructType); ok {
+						dup := &CallExpr{Func: "Marshal.load", Args: []Expr{&CallExpr{Func: "Marshal.dump", Args: []Expr{&Ident{Name: p.Name}}}}}
+						body = append([]Stmt{&AssignStmt{Name: p.Name, Value: dup}}, body...)
+					}
+				}
+			}
+		}
+		if funcDepth > 0 {
+			lam := &LambdaExpr{Params: params, Body: body}
+			return &LetStmt{Name: st.Fun.Name, Value: lam}, nil
 		}
 		return &FuncStmt{Name: st.Fun.Name, Params: params, Body: body}, nil
 	default:
@@ -804,6 +896,11 @@ func convertFor(f *parser.ForStmt) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
+	if currentEnv != nil {
+		if _, ok := types.ExprType(f.Source, currentEnv).(types.MapType); ok {
+			iterable = &MethodCallExpr{Target: iterable, Method: "keys"}
+		}
+	}
 	return &ForInStmt{Name: f.Name, Iterable: iterable, Body: body}, nil
 }
 
@@ -900,6 +997,22 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				return nil, err
 			}
 			expr = &IndexExpr{Target: expr, Index: idx}
+		case op.Index != nil && (op.Index.Colon != nil || op.Index.Colon2 != nil):
+			var start, end Expr
+			var err error
+			if op.Index.Start != nil {
+				start, err = convertExpr(op.Index.Start)
+				if err != nil {
+					return nil, err
+				}
+			}
+			if op.Index.End != nil {
+				end, err = convertExpr(op.Index.End)
+				if err != nil {
+					return nil, err
+				}
+			}
+			expr = &SliceExpr{Target: expr, Start: start, End: end}
 		case op.Field != nil && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil:
 			// method call like expr.field(args)
 			call := pf.Ops[i+1].Call
@@ -961,6 +1074,21 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("avg takes one arg")
 			}
 			return &AvgExpr{Value: args[0]}, nil
+		case "min":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("min takes one arg")
+			}
+			return &MethodCallExpr{Target: args[0], Method: "min"}, nil
+		case "max":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("max takes one arg")
+			}
+			return &MethodCallExpr{Target: args[0], Method: "max"}, nil
+		case "str":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("str takes one arg")
+			}
+			return &CastExpr{Value: args[0], Type: "string"}, nil
 		case "values":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("values takes one arg")
@@ -972,6 +1100,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			return &AppendExpr{List: args[0], Elem: args[1]}, nil
 		default:
+			if currentEnv != nil {
+				if _, ok := currentEnv.GetFunc(name); !ok {
+					return &MethodCallExpr{Target: &Ident{Name: name}, Method: "call", Args: args}, nil
+				}
+			}
 			return &CallExpr{Func: name, Args: args}, nil
 		}
 	case p.Lit != nil:
@@ -1009,6 +1142,17 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			items[i] = MapItem{Key: k, Value: v}
 		}
 		return &MapLit{Items: items}, nil
+	case p.Struct != nil:
+		items := make([]MapItem, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			k := &StringLit{Value: f.Name}
+			v, err := convertExpr(f.Value)
+			if err != nil {
+				return nil, err
+			}
+			items[i] = MapItem{Key: k, Value: v}
+		}
+		return &MapLit{Items: items}, nil
 	case p.If != nil:
 		return convertIfExpr(p.If)
 	case p.Group != nil:
@@ -1024,6 +1168,30 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return expr, nil
 	default:
+		if p.FunExpr != nil {
+			params := make([]string, len(p.FunExpr.Params))
+			for i, pa := range p.FunExpr.Params {
+				params[i] = pa.Name
+			}
+			if p.FunExpr.ExprBody != nil {
+				body, err := convertExpr(p.FunExpr.ExprBody)
+				if err != nil {
+					return nil, err
+				}
+				return &LambdaExpr{Params: params, Expr: body}, nil
+			}
+			if len(p.FunExpr.BlockBody) > 0 {
+				stmts := make([]Stmt, len(p.FunExpr.BlockBody))
+				for i, s := range p.FunExpr.BlockBody {
+					st, err := convertStmt(s)
+					if err != nil {
+						return nil, err
+					}
+					stmts[i] = st
+				}
+				return &LambdaExpr{Params: params, Body: stmts}, nil
+			}
+		}
 		return nil, fmt.Errorf("unsupported primary")
 	}
 }
@@ -1040,7 +1208,7 @@ func convertPrintCall(args []Expr, orig []*parser.Expr) (Expr, error) {
 				ex = &FormatList{List: ex}
 			}
 		case types.BoolType:
-			if !isStringComparison(orig[0]) && !isMembershipExpr(orig[0]) {
+			if !isMembershipExpr(orig[0]) {
 				ex = &CondExpr{Cond: ex, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
 			}
 		}
@@ -1057,7 +1225,7 @@ func convertPrintCall(args []Expr, orig []*parser.Expr) (Expr, error) {
 				ex = &FormatList{List: ex}
 			}
 		case types.BoolType:
-			if !isStringComparison(orig[i]) && !isMembershipExpr(orig[i]) {
+			if !isMembershipExpr(orig[i]) {
 				ex = &CondExpr{Cond: ex, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
 			}
 		}
@@ -1065,24 +1233,6 @@ func convertPrintCall(args []Expr, orig []*parser.Expr) (Expr, error) {
 	}
 	list := &ListLit{Elems: conv}
 	return &CallExpr{Func: "puts", Args: []Expr{&JoinExpr{List: list}}}, nil
-}
-
-func isStringComparison(e *parser.Expr) bool {
-	if e == nil || e.Binary == nil || len(e.Binary.Right) != 1 {
-		return false
-	}
-	op := e.Binary.Right[0].Op
-	switch op {
-	case "==", "!=", "<", "<=", ">", ">=":
-		lt := types.TypeOfUnary(e.Binary.Left, currentEnv)
-		rt := types.TypeOfPostfix(e.Binary.Right[0].Right, currentEnv)
-		if _, ok := lt.(types.StringType); ok {
-			if _, ok2 := rt.(types.StringType); ok2 {
-				return true
-			}
-		}
-	}
-	return false
 }
 
 func isValuesCall(e *parser.Expr) bool {
@@ -1134,7 +1284,11 @@ func stmtNode(s Stmt) *ast.Node {
 	case *AssignStmt:
 		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{exprNode(st.Value)}}
 	case *IndexAssignStmt:
-		return &ast.Node{Kind: "index_assign", Value: st.Name, Children: []*ast.Node{exprNode(st.Index), exprNode(st.Value)}}
+		n := &ast.Node{Kind: "index_assign"}
+		n.Children = append(n.Children, exprNode(st.Target))
+		n.Children = append(n.Children, exprNode(st.Index))
+		n.Children = append(n.Children, exprNode(st.Value))
+		return n
 	case *IfStmt:
 		n := &ast.Node{Kind: "if", Children: []*ast.Node{exprNode(st.Cond)}}
 		thenNode := &ast.Node{Kind: "then"}
@@ -1240,8 +1394,38 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "avg", Children: []*ast.Node{exprNode(ex.Value)}}
 	case *AppendExpr:
 		return &ast.Node{Kind: "append", Children: []*ast.Node{exprNode(ex.List), exprNode(ex.Elem)}}
+	case *SliceExpr:
+		n := &ast.Node{Kind: "slice"}
+		n.Children = append(n.Children, exprNode(ex.Target))
+		if ex.Start != nil {
+			n.Children = append(n.Children, exprNode(ex.Start))
+		} else {
+			n.Children = append(n.Children, &ast.Node{Kind: "nil"})
+		}
+		if ex.End != nil {
+			n.Children = append(n.Children, exprNode(ex.End))
+		} else {
+			n.Children = append(n.Children, &ast.Node{Kind: "nil"})
+		}
+		return n
 	case *ValuesExpr:
 		return &ast.Node{Kind: "values", Children: []*ast.Node{exprNode(ex.Map)}}
+	case *LambdaExpr:
+		n := &ast.Node{Kind: "lambda"}
+		params := &ast.Node{Kind: "params"}
+		for _, p := range ex.Params {
+			params.Children = append(params.Children, &ast.Node{Kind: "param", Value: p})
+		}
+		n.Children = append(n.Children, params)
+		body := &ast.Node{Kind: "body"}
+		for _, st := range ex.Body {
+			body.Children = append(body.Children, stmtNode(st))
+		}
+		if ex.Expr != nil {
+			body.Children = append(body.Children, exprNode(ex.Expr))
+		}
+		n.Children = append(n.Children, body)
+		return n
 	case *CondExpr:
 		return &ast.Node{Kind: "cond", Children: []*ast.Node{exprNode(ex.Cond), exprNode(ex.Then), exprNode(ex.Else)}}
 	case *JoinExpr:
