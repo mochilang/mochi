@@ -111,8 +111,8 @@ type AssignStmt struct{ Name, Expr string }
 type ReturnStmt struct{ Expr string }
 
 type PrintStmt struct {
-	Expr string
-	Typ  types.Type
+	Exprs []string
+	Types []types.Type
 }
 
 func (r *ReturnStmt) emit(w io.Writer, ind int) {
@@ -130,27 +130,28 @@ func (s *AssignStmt) emit(w io.Writer, ind int) {
 }
 
 func (p *PrintStmt) emit(w io.Writer, ind int) {
-	switch p.Typ.(type) {
-	case types.IntType, types.Int64Type, types.BigIntType:
-		writeIndent(w, ind)
-		fmt.Fprintf(w, "print '(I0)', %s\n", p.Expr)
-	case types.FloatType, types.BigRatType:
-		writeIndent(w, ind)
-		if strings.HasPrefix(p.Expr, "int(sum(") {
-			fmt.Fprintf(w, "print '(I0)', %s\n", p.Expr)
-		} else {
-			fmt.Fprintf(w, "print '(F0.1)', %s\n", p.Expr)
+	writeIndent(w, ind)
+	if len(p.Exprs) == 1 {
+		expr := p.Exprs[0]
+		switch p.Types[0].(type) {
+		case types.IntType, types.Int64Type, types.BigIntType:
+			fmt.Fprintf(w, "print '(I0)', %s\n", expr)
+		case types.FloatType, types.BigRatType:
+			if strings.HasPrefix(expr, "int(sum(") {
+				fmt.Fprintf(w, "print '(I0)', %s\n", expr)
+			} else {
+				fmt.Fprintf(w, "print '(F0.1)', %s\n", expr)
+			}
+		case types.BoolType:
+			fmt.Fprintf(w, "print '(I0)', merge(1,0,%s)\n", expr)
+		case types.StringType:
+			fmt.Fprintf(w, "print *, trim(%s)\n", expr)
+		default:
+			fmt.Fprintf(w, "print *, %s\n", expr)
 		}
-	case types.BoolType:
-		writeIndent(w, ind)
-		fmt.Fprintf(w, "print '(I0)', merge(1,0,%s)\n", p.Expr)
-	case types.StringType:
-		writeIndent(w, ind)
-		fmt.Fprintf(w, "print *, trim(%s)\n", p.Expr)
-	default:
-		writeIndent(w, ind)
-		fmt.Fprintf(w, "print *, %s\n", p.Expr)
+		return
 	}
+	fmt.Fprintf(w, "print *, %s\n", strings.Join(p.Exprs, ", "))
 }
 
 func (s *IfStmt) emit(w io.Writer, ind int) {
@@ -398,16 +399,21 @@ func compileStmt(p *Program, st *parser.Statement, env *types.Env) (Stmt, error)
 		p.Funcs = append(p.Funcs, fn)
 		return nil, nil
 	case st.Expr != nil:
-		arg, err := extractPrintArg(st.Expr.Expr)
+		args, err := extractPrintArgs(st.Expr.Expr)
 		if err != nil {
 			return nil, err
 		}
-		expr, err := toExpr(arg, env)
-		if err != nil {
-			return nil, err
+		var exprs []string
+		var typs []types.Type
+		for _, a := range args {
+			ex, err := toExpr(a, env)
+			if err != nil {
+				return nil, err
+			}
+			exprs = append(exprs, ex)
+			typs = append(typs, types.TypeOfExpr(a, env))
 		}
-		typ := types.TypeOfExpr(arg, env)
-		return &PrintStmt{Expr: expr, Typ: typ}, nil
+		return &PrintStmt{Exprs: exprs, Types: typs}, nil
 	case st.If != nil:
 		if st.If.ElseIf != nil {
 			return nil, fmt.Errorf("elseif not supported")
@@ -708,16 +714,21 @@ func compileFuncStmt(fn *Function, st *parser.Statement, env *types.Env) (Stmt, 
 		}
 		return &ReturnStmt{Expr: expr}, nil
 	case st.Expr != nil:
-		arg, err := extractPrintArg(st.Expr.Expr)
+		args, err := extractPrintArgs(st.Expr.Expr)
 		if err != nil {
 			return nil, err
 		}
-		expr, err := toExpr(arg, env)
-		if err != nil {
-			return nil, err
+		var exprs []string
+		var typs []types.Type
+		for _, a := range args {
+			ex, err := toExpr(a, env)
+			if err != nil {
+				return nil, err
+			}
+			exprs = append(exprs, ex)
+			typs = append(typs, types.TypeOfExpr(a, env))
 		}
-		typ := types.TypeOfExpr(arg, env)
-		return &PrintStmt{Expr: expr, Typ: typ}, nil
+		return &PrintStmt{Exprs: exprs, Types: typs}, nil
 	case st.If != nil:
 		if st.If.ElseIf != nil {
 			return nil, fmt.Errorf("elseif not supported")
@@ -811,7 +822,7 @@ func compileIfExprAssign(name string, ie *parser.IfExpr, env *types.Env) (Stmt, 
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
 }
 
-func extractPrintArg(e *parser.Expr) (*parser.Expr, error) {
+func extractPrintArgs(e *parser.Expr) ([]*parser.Expr, error) {
 	if e == nil || e.Binary == nil || e.Binary.Left == nil {
 		return nil, fmt.Errorf("unsupported expression")
 	}
@@ -820,10 +831,10 @@ func extractPrintArg(e *parser.Expr) (*parser.Expr, error) {
 		return nil, fmt.Errorf("unsupported expression")
 	}
 	call := u.Value.Target.Call
-	if call.Func != "print" || len(call.Args) != 1 {
+	if call.Func != "print" {
 		return nil, fmt.Errorf("unsupported expression")
 	}
-	return call.Args[0], nil
+	return call.Args, nil
 }
 
 func extractConstList(e *parser.Expr, env *types.Env) ([]string, bool) {
