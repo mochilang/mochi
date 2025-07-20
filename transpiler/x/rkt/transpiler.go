@@ -326,14 +326,6 @@ type BinaryExpr struct {
 	Left, Right Expr
 }
 
-type BoolToInt struct{ Expr Expr }
-
-func (b *BoolToInt) emit(w io.Writer) {
-	io.WriteString(w, "(if ")
-	b.Expr.emit(w)
-	io.WriteString(w, " 1 0)")
-}
-
 func (b *BinaryExpr) emit(w io.Writer) {
 	switch b.Op {
 	case "!=":
@@ -479,9 +471,6 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			e, err := convertExpr(call.Args[0], env)
 			if err != nil {
 				return nil, err
-			}
-			if isBoolExpr(call.Args[0]) {
-				e = &BoolToInt{Expr: e}
 			}
 			return &PrintStmt{Expr: e}, nil
 		}
@@ -823,32 +812,4 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		return &CallExpr{Func: c.Func, Args: args}, nil
 	}
 	return nil, fmt.Errorf("unsupported call")
-}
-
-func isBoolExpr(e *parser.Expr) bool {
-	if e == nil || e.Binary == nil {
-		return false
-	}
-	if len(e.Binary.Right) == 0 {
-		p := e.Binary.Left.Value
-		if p.Target != nil && p.Target.Lit != nil && p.Target.Lit.Bool != nil {
-			return true
-		}
-		if p.Target != nil && p.Target.Selector != nil && len(p.Target.Selector.Tail) > 0 {
-			if len(p.Ops) > 0 && p.Ops[0].Call != nil {
-				switch p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1] {
-				case "contains":
-					return true
-				}
-			}
-		}
-		return false
-	}
-	last := e.Binary.Right[len(e.Binary.Right)-1].Op
-	switch last {
-	case "==", "!=", "<", "<=", ">", ">=", "&&", "||":
-		return true
-	default:
-		return false
-	}
 }

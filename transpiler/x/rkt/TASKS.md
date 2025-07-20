@@ -1,3 +1,8 @@
+## Progress (2025-07-20 11:38 +0700)
+- Removed BoolToInt helper; booleans print as #t/#f
+- Updated README checklist (92/100)
+- Regenerated golden outputs
+
 ## Progress (2025-07-20 10:18 +0700)
 - Generated Racket for 92/100 programs
 - Updated README checklist
