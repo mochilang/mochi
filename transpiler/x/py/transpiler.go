@@ -386,10 +386,11 @@ type ListComp struct {
 // MultiListComp represents a list comprehension with multiple input
 // iterators, e.g. `[f(a,b) for a in A for b in B if cond]`.
 type MultiListComp struct {
-	Vars  []string
-	Iters []Expr
-	Expr  Expr
-	Cond  Expr
+	Vars   []string
+	Iters  []Expr
+	Expr   Expr
+	Cond   Expr
+	Parens bool
 }
 
 func (lc *ListComp) emit(w io.Writer) error {
@@ -418,7 +419,13 @@ func (lc *ListComp) emit(w io.Writer) error {
 }
 
 func (lc *MultiListComp) emit(w io.Writer) error {
-	if _, err := io.WriteString(w, "["); err != nil {
+	open := "["
+	close := "]"
+	if lc.Parens {
+		open = "("
+		close = ")"
+	}
+	if _, err := io.WriteString(w, open); err != nil {
 		return err
 	}
 	if err := emitExpr(w, lc.Expr); err != nil {
@@ -440,7 +447,7 @@ func (lc *MultiListComp) emit(w io.Writer) error {
 			return err
 		}
 	}
-	_, err := io.WriteString(w, "]")
+	_, err := io.WriteString(w, close)
 	return err
 }
 
@@ -2314,7 +2321,7 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		comp := &MultiListComp{Vars: vars, Iters: iters, Expr: arg, Cond: cond}
+		comp := &MultiListComp{Vars: vars, Iters: iters, Expr: arg, Cond: cond, Parens: true}
 		aggList := Expr(comp)
 		if q.Sort != nil {
 			aggList = &SortedExpr{List: aggList, Var: q.Var, Key: keyExpr}
@@ -2551,7 +2558,11 @@ func exprNode(e Expr) *ast.Node {
 		}
 		return n
 	case *MultiListComp:
-		n := &ast.Node{Kind: "list_comp_multi"}
+		kind := "list_comp_multi"
+		if ex.Parens {
+			kind = "gen_comp_multi"
+		}
+		n := &ast.Node{Kind: kind}
 		for i, v := range ex.Vars {
 			iter := &ast.Node{Kind: "for", Value: v, Children: []*ast.Node{exprNode(ex.Iters[i])}}
 			n.Children = append(n.Children, iter)
