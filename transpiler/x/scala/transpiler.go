@@ -62,6 +62,16 @@ type ForEachStmt struct {
 	Body     []Stmt
 }
 
+// BreakStmt represents a break statement.
+type BreakStmt struct{}
+
+func (b *BreakStmt) emit(w io.Writer) { fmt.Fprint(w, "break") }
+
+// ContinueStmt represents a continue statement.
+type ContinueStmt struct{}
+
+func (c *ContinueStmt) emit(w io.Writer) { fmt.Fprint(w, "continue") }
+
 type IfStmt struct {
 	Cond Expr
 	Then []Stmt
@@ -299,6 +309,18 @@ func (l *ListLit) emit(w io.Writer) {
 	fmt.Fprint(w, ")")
 }
 
+// AppendExpr represents append(list, elem) as `list :+ elem`.
+type AppendExpr struct {
+	List Expr
+	Elem Expr
+}
+
+func (a *AppendExpr) emit(w io.Writer) {
+	a.List.emit(w)
+	fmt.Fprint(w, " :+ ")
+	a.Elem.emit(w)
+}
+
 // IndexExpr represents x[i] which becomes x(i) in Scala.
 type IndexExpr struct {
 	Value Expr
@@ -467,7 +489,7 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		}
 		typ := toScalaType(st.Let.Type)
 		if typ == "" {
-			typ = inferType(e)
+			typ = inferTypeWithEnv(e, env)
 		}
 		return &LetStmt{Name: st.Let.Name, Type: typ, Value: e}, nil
 	case st.Var != nil:
@@ -481,7 +503,7 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		}
 		typ := toScalaType(st.Var.Type)
 		if typ == "" {
-			typ = inferType(e)
+			typ = inferTypeWithEnv(e, env)
 		}
 		return &VarStmt{Name: st.Var.Name, Type: typ, Value: e}, nil
 	case st.Assign != nil:
@@ -503,6 +525,10 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		return convertForStmt(st.For, env)
 	case st.If != nil:
 		return convertIfStmt(st.If, env)
+	case st.Break != nil:
+		return &BreakStmt{}, nil
+	case st.Continue != nil:
+		return &ContinueStmt{}, nil
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
@@ -727,6 +753,9 @@ func convertCall(c *parser.CallExpr) (Expr, error) {
 	if name == "str" && len(args) == 1 {
 		name = "String.valueOf"
 	}
+	if name == "append" && len(args) == 2 {
+		return &AppendExpr{List: args[0], Elem: args[1]}, nil
+	}
 	if name == "substring" && len(args) == 3 {
 		return &SubstringExpr{Value: args[0], Start: args[1], End: args[2]}, nil
 	}
@@ -934,6 +963,23 @@ func toScalaType(t *parser.TypeRef) string {
 	return "Any"
 }
 
+func toScalaTypeFromType(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType, types.Int64Type:
+		return "Int"
+	case types.StringType:
+		return "String"
+	case types.BoolType:
+		return "Boolean"
+	case types.ListType:
+		return fmt.Sprintf("List[%s]", toScalaTypeFromType(tt.Elem))
+	case types.MapType:
+		return fmt.Sprintf("Map[%s,%s]", toScalaTypeFromType(tt.Key), toScalaTypeFromType(tt.Value))
+	}
+	return "Any"
+}
+
+// inferType attempts a best-effort static type deduction for the expression.
 func inferType(e Expr) string {
 	switch ex := e.(type) {
 	case *IntLit:
@@ -989,6 +1035,18 @@ func inferType(e Expr) string {
 		}
 	default:
 		_ = ex
+	}
+	return ""
+}
+
+func inferTypeWithEnv(e Expr, env *types.Env) string {
+	if t := inferType(e); t != "" {
+		return t
+	}
+	if n, ok := e.(*Name); ok && env != nil {
+		if typ, err := env.GetVar(n.Name); err == nil {
+			return toScalaTypeFromType(typ)
+		}
 	}
 	return ""
 }
@@ -1073,6 +1131,10 @@ func stmtNode(s Stmt) *ast.Node {
 			n.Children = append(n.Children, elseNode)
 		}
 		return n
+	case *BreakStmt:
+		return &ast.Node{Kind: "break"}
+	case *ContinueStmt:
+		return &ast.Node{Kind: "continue"}
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
