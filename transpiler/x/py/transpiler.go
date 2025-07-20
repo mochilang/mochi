@@ -143,6 +143,16 @@ type SaveStmt struct {
 
 func (*SaveStmt) isStmt() {}
 
+// UpdateStmt represents an `update` statement on a list of structs.
+type UpdateStmt struct {
+	Target string
+	Fields []string
+	Values []Expr
+	Cond   Expr
+}
+
+func (*UpdateStmt) isStmt() {}
+
 // RawExpr is a simple expression emitted verbatim.
 type RawExpr struct{ Code string }
 
@@ -803,6 +813,40 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 			return nil
 		}
 		return fmt.Errorf("unsupported save format")
+	case *UpdateStmt:
+		idx := "idx"
+		it := "item"
+		if _, err := fmt.Fprintf(w, "%sfor %s, %s in enumerate(%s):\n", indent, idx, it, st.Target); err != nil {
+			return err
+		}
+		inner := indent + "    "
+		if st.Cond != nil {
+			if _, err := io.WriteString(w, inner+"if "); err != nil {
+				return err
+			}
+			if err := emitExpr(w, st.Cond); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, ":\n"); err != nil {
+				return err
+			}
+			inner += "    "
+		}
+		for i, f := range st.Fields {
+			if _, err := fmt.Fprintf(w, "%s%s[%q] = ", inner, it, f); err != nil {
+				return err
+			}
+			if err := emitExpr(w, st.Values[i]); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, "\n"); err != nil {
+				return err
+			}
+		}
+		if _, err := fmt.Fprintf(w, "%s%s[%s] = %s\n", indent+"    ", st.Target, idx, it); err != nil {
+			return err
+		}
+		return nil
 	default:
 		return fmt.Errorf("unsupported stmt")
 	}
@@ -932,6 +976,68 @@ func zeroValueExpr(t types.Type) Expr {
 		return &DictLit{}
 	default:
 		return &Name{Name: "None"}
+	}
+}
+
+// substituteFields replaces Name nodes that match the given field names with
+// map access on the provided variable.
+func substituteFields(e Expr, varName string, fields map[string]bool) Expr {
+	switch ex := e.(type) {
+	case *Name:
+		if fields[ex.Name] {
+			return &FieldExpr{Target: &Name{Name: varName}, Name: ex.Name, MapIndex: true}
+		}
+		return ex
+	case *BinaryExpr:
+		ex.Left = substituteFields(ex.Left, varName, fields)
+		ex.Right = substituteFields(ex.Right, varName, fields)
+		return ex
+	case *UnaryExpr:
+		ex.Expr = substituteFields(ex.Expr, varName, fields)
+		return ex
+	case *CallExpr:
+		ex.Func = substituteFields(ex.Func, varName, fields)
+		for i := range ex.Args {
+			ex.Args[i] = substituteFields(ex.Args[i], varName, fields)
+		}
+		return ex
+	case *FieldExpr:
+		ex.Target = substituteFields(ex.Target, varName, fields)
+		return ex
+	case *IndexExpr:
+		ex.Target = substituteFields(ex.Target, varName, fields)
+		ex.Index = substituteFields(ex.Index, varName, fields)
+		return ex
+	case *SliceExpr:
+		ex.Target = substituteFields(ex.Target, varName, fields)
+		if ex.Start != nil {
+			ex.Start = substituteFields(ex.Start, varName, fields)
+		}
+		if ex.End != nil {
+			ex.End = substituteFields(ex.End, varName, fields)
+		}
+		if ex.Step != nil {
+			ex.Step = substituteFields(ex.Step, varName, fields)
+		}
+		return ex
+	case *CondExpr:
+		ex.Cond = substituteFields(ex.Cond, varName, fields)
+		ex.Then = substituteFields(ex.Then, varName, fields)
+		ex.Else = substituteFields(ex.Else, varName, fields)
+		return ex
+	case *ListLit:
+		for i := range ex.Elems {
+			ex.Elems[i] = substituteFields(ex.Elems[i], varName, fields)
+		}
+		return ex
+	case *DictLit:
+		for i := range ex.Keys {
+			ex.Keys[i] = substituteFields(ex.Keys[i], varName, fields)
+			ex.Values[i] = substituteFields(ex.Values[i], varName, fields)
+		}
+		return ex
+	default:
+		return ex
 	}
 }
 
@@ -1243,6 +1349,10 @@ func Emit(w io.Writer, p *Program) error {
 			if err := emitStmtIndent(w, st, ""); err != nil {
 				return err
 			}
+		case *UpdateStmt:
+			if err := emitStmtIndent(w, st, ""); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -1370,6 +1480,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			} else {
 				return nil, fmt.Errorf("unsupported assignment")
 			}
+		case st.Update != nil:
+			up, err := convertUpdate(st.Update, env)
+			if err != nil {
+				return nil, err
+			}
+			p.Stmts = append(p.Stmts, up)
 		case st.If != nil:
 			cond, err := convertExpr(st.If.Cond)
 			if err != nil {
@@ -1580,6 +1696,12 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 			} else {
 				return nil, fmt.Errorf("unsupported assignment")
 			}
+		case s.Update != nil:
+			up, err := convertUpdate(s.Update, env)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, up)
 		case s.If != nil:
 			cond, err := convertExpr(s.If.Cond)
 			if err != nil {
@@ -2206,6 +2328,63 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	return list, nil
 }
 
+func convertUpdate(u *parser.UpdateStmt, env *types.Env) (*UpdateStmt, error) {
+	if env == nil {
+		return nil, fmt.Errorf("missing env")
+	}
+	t, err := env.GetVar(u.Target)
+	if err != nil {
+		return nil, err
+	}
+	lt, ok := t.(types.ListType)
+	if !ok {
+		return nil, fmt.Errorf("update target not list")
+	}
+	st, ok := lt.Elem.(types.StructType)
+	if !ok {
+		return nil, fmt.Errorf("update element not struct")
+	}
+	child := types.NewEnv(env)
+	fieldSet := map[string]bool{}
+	for name, ft := range st.Fields {
+		child.SetVar(name, ft, true)
+		fieldSet[name] = true
+	}
+	prev := currentEnv
+	currentEnv = child
+	var fields []string
+	var values []Expr
+	for _, item := range u.Set.Items {
+		key, ok := isSimpleIdent(item.Key)
+		if !ok {
+			key, ok = literalString(item.Key)
+			if !ok {
+				currentEnv = prev
+				return nil, fmt.Errorf("unsupported update key")
+			}
+		}
+		val, err := convertExpr(item.Value)
+		if err != nil {
+			currentEnv = prev
+			return nil, err
+		}
+		val = substituteFields(val, "item", fieldSet)
+		fields = append(fields, key)
+		values = append(values, val)
+	}
+	var cond Expr
+	if u.Where != nil {
+		cond, err = convertExpr(u.Where)
+		if err != nil {
+			currentEnv = prev
+			return nil, err
+		}
+		cond = substituteFields(cond, "item", fieldSet)
+	}
+	currentEnv = prev
+	return &UpdateStmt{Target: u.Target, Fields: fields, Values: values, Cond: cond}, nil
+}
+
 // --- AST printing helpers ---
 
 // toNode converts the Python AST into a generic ast.Node tree.
@@ -2269,6 +2448,18 @@ func stmtNode(s Stmt) *ast.Node {
 		return &ast.Node{Kind: "continue"}
 	case *IndexAssignStmt:
 		return &ast.Node{Kind: "index_assign", Children: []*ast.Node{exprNode(st.Target), exprNode(st.Index), exprNode(st.Value)}}
+	case *UpdateStmt:
+		n := &ast.Node{Kind: "update", Value: st.Target}
+		setNode := &ast.Node{Kind: "set"}
+		for i, f := range st.Fields {
+			pair := &ast.Node{Kind: "pair", Children: []*ast.Node{&ast.Node{Kind: "string", Value: f}, exprNode(st.Values[i])}}
+			setNode.Children = append(setNode.Children, pair)
+		}
+		n.Children = append(n.Children, setNode)
+		if st.Cond != nil {
+			n.Children = append(n.Children, &ast.Node{Kind: "where", Children: []*ast.Node{exprNode(st.Cond)}})
+		}
+		return n
 	case *FuncDef:
 		n := &ast.Node{Kind: "func", Value: st.Name}
 		for _, p := range st.Params {
