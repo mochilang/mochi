@@ -1,3 +1,6 @@
+## Progress (2025-07-20 11:43 +0700)
+- fortran: improve boolean printing
+
 ## Progress (2025-07-20 11:06 +0700)
 - docs(fortran): update progress checklist
 
