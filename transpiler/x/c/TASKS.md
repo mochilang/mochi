@@ -1,3 +1,8 @@
+## Progress (2025-07-20 11:37 +0700)
+- Added closure conversion for nested functions and updated call sites.
+- Enabled `nested_function` golden test.
+- VM valid golden test results updated to 43/100
+
 ## Progress (2025-07-20 11:24 +0700)
 - Refined timestamp handling using git commit time.
 - Added basic boolean inference for cleaner C code.

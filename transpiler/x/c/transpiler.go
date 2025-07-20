@@ -16,8 +16,11 @@ import (
 )
 
 var (
-	constLists   map[string]*ListLit
-	constStrings map[string]string
+	constLists    map[string]*ListLit
+	constStrings  map[string]string
+	nestedFuncs   []*Function
+	closureParams map[string][]string
+	paramStack    [][]Param
 )
 
 const version = "0.10.32"
@@ -612,31 +615,32 @@ func (p *Program) Emit() []byte {
 func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	constLists = make(map[string]*ListLit)
 	constStrings = make(map[string]string)
+	nestedFuncs = nil
+	closureParams = make(map[string][]string)
+	paramStack = nil
 	p := &Program{}
 	mainFn := &Function{Name: "main"}
 	for _, st := range prog.Statements {
 		if st.Fun != nil {
-			body, err := compileStmts(env, st.Fun.Body)
+			nestedFuncs = nil
+			fun, err := compileFunction(env, st.Fun.Name, &parser.FunExpr{Params: st.Fun.Params, BlockBody: st.Fun.Body})
 			if err != nil {
 				return nil, err
 			}
-			var params []Param
-			for _, pa := range st.Fun.Params {
-				typ := "int"
-				if pa.Type != nil && pa.Type.Simple != nil && *pa.Type.Simple == "string" {
-					typ = "const char*"
-				}
-				params = append(params, Param{Name: pa.Name, Type: typ})
-			}
-			p.Functions = append(p.Functions, &Function{Name: st.Fun.Name, Params: params, Body: body})
+			p.Functions = append(p.Functions, nestedFuncs...)
+			nestedFuncs = nil
+			p.Functions = append(p.Functions, fun)
 			continue
 		}
 		if st.Let != nil {
 			if fn := detectFunExpr(st.Let.Value); fn != nil {
+				nestedFuncs = nil
 				fun, err := compileFunction(env, st.Let.Name, fn)
 				if err != nil {
 					return nil, err
 				}
+				p.Functions = append(p.Functions, nestedFuncs...)
+				nestedFuncs = nil
 				p.Functions = append(p.Functions, fun)
 				continue
 			}
@@ -649,6 +653,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			mainFn.Body = append(mainFn.Body, stmt)
 		}
 	}
+	p.Functions = append(p.Functions, nestedFuncs...)
+	nestedFuncs = nil
 	p.Functions = append(p.Functions, mainFn)
 	return p, nil
 }
@@ -752,6 +758,23 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			return nil, fmt.Errorf("unsupported assignment")
 		}
 		return &AssignStmt{Name: s.Assign.Name, Indexes: idxs, Value: valExpr}, nil
+	case s.Fun != nil:
+		fun, err := compileFunction(env, s.Fun.Name, &parser.FunExpr{Params: s.Fun.Params, BlockBody: s.Fun.Body})
+		if err != nil {
+			return nil, err
+		}
+		var caps []string
+		if len(paramStack) > 0 {
+			outer := paramStack[len(paramStack)-1]
+			for i := len(outer) - 1; i >= 0; i-- {
+				pa := outer[i]
+				caps = append([]string{pa.Name}, caps...)
+				fun.Params = append([]Param{{Name: pa.Name, Type: pa.Type}}, fun.Params...)
+			}
+		}
+		closureParams[s.Fun.Name] = caps
+		nestedFuncs = append(nestedFuncs, fun)
+		return nil, nil
 	case s.Return != nil:
 		return &ReturnStmt{Expr: convertExpr(s.Return.Value)}, nil
 	case s.While != nil:
@@ -852,7 +875,9 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 		}
 		params = append(params, Param{Name: p.Name, Type: typ})
 	}
+	paramStack = append(paramStack, params)
 	body, err := compileStmts(env, fn.BlockBody)
+	paramStack = paramStack[:len(paramStack)-1]
 	if err != nil {
 		return nil, err
 	}
@@ -1275,6 +1300,11 @@ func convertUnary(u *parser.Unary) Expr {
 			}
 			args = append(args, ex)
 		}
+		if caps, ok := closureParams[call.Func]; ok {
+			for i := len(caps) - 1; i >= 0; i-- {
+				args = append([]Expr{&VarRef{Name: caps[i]}}, args...)
+			}
+		}
 		return &CallExpr{Func: call.Func, Args: args}
 	}
 	if ifexpr := u.Value.Target.If; ifexpr != nil && len(u.Ops) == 0 {
@@ -1677,4 +1707,81 @@ func inferCType(env *types.Env, name string, e Expr) string {
 		}
 	}
 	return "int"
+}
+
+func collectExprVars(e Expr, set map[string]bool) {
+	switch v := e.(type) {
+	case *VarRef:
+		set[v.Name] = true
+	case *BinaryExpr:
+		collectExprVars(v.Left, set)
+		collectExprVars(v.Right, set)
+	case *UnaryExpr:
+		collectExprVars(v.Expr, set)
+	case *CallExpr:
+		for _, a := range v.Args {
+			collectExprVars(a, set)
+		}
+	case *ListLit:
+		for _, a := range v.Elems {
+			collectExprVars(a, set)
+		}
+	case *IndexExpr:
+		collectExprVars(v.Target, set)
+		collectExprVars(v.Index, set)
+	case *CondExpr:
+		collectExprVars(v.Cond, set)
+		collectExprVars(v.Then, set)
+		collectExprVars(v.Else, set)
+	}
+}
+
+func collectStmtVars(s Stmt, set map[string]bool) {
+	switch v := s.(type) {
+	case *ReturnStmt:
+		if v.Expr != nil {
+			collectExprVars(v.Expr, set)
+		}
+	case *PrintStmt:
+		for _, a := range v.Args {
+			collectExprVars(a, set)
+		}
+	case *DeclStmt:
+		if v.Value != nil {
+			collectExprVars(v.Value, set)
+		}
+	case *AssignStmt:
+		for _, idx := range v.Indexes {
+			collectExprVars(idx, set)
+		}
+		if v.Value != nil {
+			collectExprVars(v.Value, set)
+		}
+	case *IfStmt:
+		collectExprVars(v.Cond, set)
+		for _, b := range v.Then {
+			collectStmtVars(b, set)
+		}
+		for _, b := range v.Else {
+			collectStmtVars(b, set)
+		}
+	case *WhileStmt:
+		collectExprVars(v.Cond, set)
+		for _, b := range v.Body {
+			collectStmtVars(b, set)
+		}
+	case *ForStmt:
+		if v.Start != nil {
+			collectExprVars(v.Start, set)
+		}
+		if v.End != nil {
+			collectExprVars(v.End, set)
+		}
+		for _, a := range v.List {
+			collectExprVars(a, set)
+		}
+		for _, b := range v.Body {
+			collectStmtVars(b, set)
+		}
+	}
 }
