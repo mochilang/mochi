@@ -1,3 +1,18 @@
+## Progress (2025-07-20 12:49 +0700)
+- cobol: implement runtime substring
+- Generated COBOL for 22/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 12:44 +0700)
+- Applying previous commit.
+- Generated COBOL for 22/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 12:44 +0700)
+- Applying previous commit.
+- Generated COBOL for 22/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-20 12:19 +0700)
 - update scala progress
 - Generated COBOL for 22/100 programs
