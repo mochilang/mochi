@@ -13,12 +13,15 @@ import (
 )
 
 var varTypes map[string]string
+var funcRet map[string]string
 
 func javaType(t string) string {
 	switch t {
 	case "int":
 		return "int"
 	case "bool":
+		return "boolean"
+	case "boolean":
 		return "boolean"
 	case "string":
 		return "String"
@@ -32,6 +35,8 @@ func javaType(t string) string {
 		return "boolean[]"
 	case "map":
 		return "java.util.Map"
+	case "fn":
+		return "java.util.function.IntUnaryOperator"
 	default:
 		return "int"
 	}
@@ -68,6 +73,8 @@ func inferType(e Expr) string {
 		return "int[]"
 	case *MapLit:
 		return "map"
+	case *LambdaExpr:
+		return "fn"
 	case *UnaryExpr:
 		if ex.Op == "!" {
 			return "boolean"
@@ -113,11 +120,17 @@ func inferType(e Expr) string {
 			return "int"
 		case "System.out.println":
 			return "void"
+		default:
+			if t, ok := funcRet[ex.Func]; ok {
+				return t
+			}
 		}
 	case *MethodCallExpr:
 		switch ex.Name {
 		case "contains":
 			return "boolean"
+		case "applyAsInt":
+			return "int"
 		}
 	case *VarExpr:
 		if t, ok := varTypes[ex.Name]; ok {
@@ -177,6 +190,45 @@ func (r *ReturnStmt) emit(w io.Writer, indent string) {
 type Stmt interface{ emit(io.Writer, string) }
 
 type Expr interface{ emit(io.Writer) }
+
+// LambdaExpr represents a simple lambda expression with a single return value.
+type LambdaExpr struct {
+	Params []Param
+	Body   []Stmt
+	Return string
+}
+
+func (l *LambdaExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "(")
+	for i, p := range l.Params {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		typ := javaType(p.Type)
+		if typ == "" {
+			typ = "int"
+		}
+		fmt.Fprintf(w, "%s %s", typ, p.Name)
+	}
+	fmt.Fprint(w, ") -> ")
+	if len(l.Body) == 1 {
+		if rs, ok := l.Body[0].(*ReturnStmt); ok {
+			if rs.Expr != nil {
+				rs.Expr.emit(w)
+				return
+			}
+		}
+		if es, ok := l.Body[0].(*ExprStmt); ok {
+			es.Expr.emit(w)
+			return
+		}
+	}
+	fmt.Fprint(w, "{\n")
+	for _, st := range l.Body {
+		st.emit(w, "    ")
+	}
+	fmt.Fprint(w, "}")
+}
 
 type IfStmt struct {
 	Cond Expr
@@ -712,6 +764,7 @@ func isNumericBool(e Expr) bool {
 func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	var prog Program
 	varTypes = map[string]string{}
+	funcRet = map[string]string{}
 	for _, s := range p.Statements {
 		if s.Fun != nil {
 			body, err := compileStmts(s.Fun.Body)
@@ -726,6 +779,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 			if ret == "" {
 				ret = inferReturnType(body)
 			}
+			funcRet[s.Fun.Name] = ret
 			prog.Funcs = append(prog.Funcs, &Function{Name: s.Fun.Name, Params: params, Return: ret, Body: body})
 			continue
 		}
@@ -789,6 +843,13 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			varTypes[s.Var.Name] = t
 		}
 		return &VarStmt{Name: s.Var.Name, Type: t}, nil
+	case s.Fun != nil:
+		expr, err := compileFunExpr(&parser.FunExpr{Params: s.Fun.Params, Return: s.Fun.Return, BlockBody: s.Fun.Body})
+		if err != nil {
+			return nil, err
+		}
+		varTypes[s.Fun.Name] = "fn"
+		return &VarStmt{Name: s.Fun.Name, Type: "fn", Expr: expr}, nil
 	case s.Assign != nil:
 		if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
 			e, err := compileExpr(s.Assign.Value)
@@ -1053,7 +1114,13 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 			if fe, ok := expr.(*FieldExpr); ok {
 				expr = &MethodCallExpr{Target: fe.Target, Name: fe.Name, Args: args}
 			} else if v, ok := expr.(*VarExpr); ok {
-				expr = &CallExpr{Func: v.Name, Args: args}
+				if t, ok := varTypes[v.Name]; ok && t == "fn" {
+					expr = &MethodCallExpr{Target: expr, Name: "applyAsInt", Args: args}
+				} else {
+					expr = &CallExpr{Func: v.Name, Args: args}
+				}
+			} else if _, ok := expr.(*LambdaExpr); ok {
+				expr = &MethodCallExpr{Target: expr, Name: "applyAsInt", Args: args}
 			} else {
 				return nil, fmt.Errorf("unsupported call")
 			}
@@ -1083,6 +1150,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			args[i] = ex
 		}
 		name := p.Call.Func
+		if t, ok := varTypes[name]; ok && t == "fn" {
+			return &MethodCallExpr{Target: &VarExpr{Name: name}, Name: "applyAsInt", Args: args}, nil
+		}
 		if name == "print" {
 			name = "System.out.println"
 			for i, a := range args {
@@ -1157,6 +1227,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			vals[i] = ve
 		}
 		return &MapLit{Keys: keys, Values: vals}, nil
+	case p.FunExpr != nil:
+		return compileFunExpr(p.FunExpr)
+	case p.Match != nil:
+		return compileMatchExpr(p.Match)
 	}
 	return nil, fmt.Errorf("unsupported primary")
 }
@@ -1185,6 +1259,61 @@ func compileIfExpr(ie *parser.IfExpr) (Expr, error) {
 		elseExpr = &BoolLit{Value: false}
 	}
 	return &TernaryExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
+}
+
+func compileFunExpr(fn *parser.FunExpr) (Expr, error) {
+	params := make([]Param, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = Param{Name: p.Name, Type: typeRefString(p.Type)}
+	}
+	var body []Stmt
+	if fn.ExprBody != nil {
+		ex, err := compileExpr(fn.ExprBody)
+		if err != nil {
+			return nil, err
+		}
+		body = []Stmt{&ReturnStmt{Expr: ex}}
+	} else {
+		var err error
+		body, err = compileStmts(fn.BlockBody)
+		if err != nil {
+			return nil, err
+		}
+	}
+	ret := typeRefString(fn.Return)
+	if ret == "" {
+		ret = inferReturnType(body)
+	}
+	return &LambdaExpr{Params: params, Body: body, Return: ret}, nil
+}
+
+func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
+	target, err := compileExpr(me.Target)
+	if err != nil {
+		return nil, err
+	}
+	var expr Expr
+	for i := len(me.Cases) - 1; i >= 0; i-- {
+		c := me.Cases[i]
+		res, err := compileExpr(c.Result)
+		if err != nil {
+			return nil, err
+		}
+		pat, err := compileExpr(c.Pattern)
+		if err != nil {
+			return nil, err
+		}
+		if v, ok := pat.(*VarExpr); ok && v.Name == "_" {
+			expr = res
+			continue
+		}
+		cond := &BinaryExpr{Left: target, Op: "==", Right: pat}
+		if expr == nil {
+			expr = res
+		}
+		expr = &TernaryExpr{Cond: cond, Then: res, Else: expr}
+	}
+	return expr, nil
 }
 
 // Emit generates formatted Java source from the AST.
@@ -1258,6 +1387,9 @@ func typeRefString(tr *parser.TypeRef) string {
 	}
 	if tr.Generic != nil {
 		return tr.Generic.Name
+	}
+	if tr.Fun != nil {
+		return "fn"
 	}
 	return ""
 }
