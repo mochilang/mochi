@@ -144,7 +144,7 @@ func header() []byte {
 		}
 	}
 	loc, _ := time.LoadLocation("Asia/Bangkok")
-	return []byte(fmt.Sprintf(";; Generated on %s\n(import (srfi 1) (srfi 69) (chibi string))\n", ts.In(loc).Format("2006-01-02 15:04 -0700")))
+	return []byte(fmt.Sprintf(";; Generated on %s\n(import (srfi 1) (srfi 69) (srfi 95) (chibi string))\n", ts.In(loc).Format("2006-01-02 15:04 -0700")))
 }
 
 func voidSym() Node { return &List{Elems: []Node{Symbol("quote"), Symbol("nil")}} }
@@ -975,6 +975,25 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 			return nil, fmt.Errorf("substring expects 3 args")
 		}
 		return &List{Elems: []Node{Symbol("substring"), args[0], args[1], args[2]}}, nil
+	case "values":
+		if len(args) != 1 {
+			return nil, fmt.Errorf("values expects 1 arg")
+		}
+		var cmp Symbol = "<"
+		if mt, ok := types.ExprType(call.Args[0], currentEnv).(types.MapType); ok {
+			switch mt.Value.(type) {
+			case types.StringType:
+				cmp = "string<?"
+			case types.IntType:
+				cmp = "<"
+			default:
+				cmp = "string<?"
+			}
+		}
+		vals := &List{Elems: []Node{Symbol("hash-table-values"), args[0]}}
+		sorted := &List{Elems: []Node{Symbol("sort"), vals, cmp}}
+		mapped := &List{Elems: []Node{Symbol("map"), Symbol("number->string"), sorted}}
+		return &List{Elems: []Node{Symbol("string-join"), mapped, StringLit(" ")}}, nil
 	default:
 		elems := make([]Node, 0, len(args)+1)
 		elems = append(elems, Symbol(sym))
