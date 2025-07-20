@@ -435,6 +435,7 @@ func (p *Program) Emit() []byte {
 func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	_ = env
 	pr := &Program{}
+	varTypes := map[string]string{}
 	for _, st := range prog.Statements {
 		switch {
 		case st.Expr != nil:
@@ -511,13 +512,19 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			if err != nil {
 				return nil, err
 			}
+			if _, ok := varTypes[st.Assign.Name]; !ok {
+				if t := inferType(ex); t != "" {
+					varTypes[st.Assign.Name] = t
+					pr.Vars = append(pr.Vars, VarDecl{Name: st.Assign.Name, Type: t})
+				}
+			}
 			pr.Stmts = append(pr.Stmts, &AssignStmt{Name: st.Assign.Name, Expr: ex})
 		case st.While != nil:
 			cond, err := convertExpr(env, st.While.Cond)
 			if err != nil {
 				return nil, err
 			}
-			body, err := convertBody(env, st.While.Body)
+			body, err := convertBody(env, st.While.Body, varTypes)
 			if err != nil {
 				return nil, err
 			}
@@ -527,17 +534,17 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			if err != nil {
 				return nil, err
 			}
-			thenBody, err := convertBody(env, st.If.Then)
+			thenBody, err := convertBody(env, st.If.Then, varTypes)
 			if err != nil {
 				return nil, err
 			}
-			elseBody, err := convertBody(env, st.If.Else)
+			elseBody, err := convertBody(env, st.If.Else, varTypes)
 			if err != nil {
 				return nil, err
 			}
 			pr.Stmts = append(pr.Stmts, &IfStmt{Cond: cond, Then: thenBody, Else: elseBody})
 		case st.Fun != nil:
-			fnBody, err := convertBody(env, st.Fun.Body)
+			fnBody, err := convertBody(env, st.Fun.Body, varTypes)
 			if err != nil {
 				return nil, err
 			}
@@ -564,10 +571,22 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			return nil, fmt.Errorf("unsupported statement")
 		}
 	}
+	for name, typ := range varTypes {
+		exists := false
+		for _, v := range pr.Vars {
+			if v.Name == name {
+				exists = true
+				break
+			}
+		}
+		if !exists {
+			pr.Vars = append(pr.Vars, VarDecl{Name: name, Type: typ})
+		}
+	}
 	return pr, nil
 }
 
-func convertBody(env *types.Env, body []*parser.Statement) ([]Stmt, error) {
+func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]string) ([]Stmt, error) {
 	var out []Stmt
 	for _, st := range body {
 		switch {
@@ -575,6 +594,11 @@ func convertBody(env *types.Env, body []*parser.Statement) ([]Stmt, error) {
 			ex, err := convertExpr(env, st.Assign.Value)
 			if err != nil {
 				return nil, err
+			}
+			if _, ok := varTypes[st.Assign.Name]; !ok {
+				if t := inferType(ex); t != "" {
+					varTypes[st.Assign.Name] = t
+				}
 			}
 			out = append(out, &AssignStmt{Name: st.Assign.Name, Expr: ex})
 		case st.Expr != nil:
@@ -593,11 +617,11 @@ func convertBody(env *types.Env, body []*parser.Statement) ([]Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			thenBody, err := convertBody(env, st.If.Then)
+			thenBody, err := convertBody(env, st.If.Then, varTypes)
 			if err != nil {
 				return nil, err
 			}
-			elseBody, err := convertBody(env, st.If.Else)
+			elseBody, err := convertBody(env, st.If.Else, varTypes)
 			if err != nil {
 				return nil, err
 			}
@@ -893,6 +917,19 @@ func convertIfExpr(env *types.Env, ie *parser.IfExpr) (*IfExpr, error) {
 		elseExpr = e
 	}
 	return &IfExpr{Cond: cond, Then: thenExpr, ElseIf: elseIf, Else: elseExpr}, nil
+}
+
+func inferType(e Expr) string {
+	switch e.(type) {
+	case *IntLit:
+		return "integer"
+	case *StringLit:
+		return "string"
+	case *BoolLit:
+		return "boolean"
+	default:
+		return ""
+	}
 }
 
 func repoRoot() (string, error) {
