@@ -2198,7 +2198,20 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					return &CallExpr{Func: &Name{Name: "print"}, Args: []Expr{join}}, nil
 				}
 			}
-			return &CallExpr{Func: &Name{Name: "print"}, Args: args}, nil
+
+			formatArg := func(e Expr) Expr {
+				if currentImports != nil {
+					currentImports["json"] = true
+				}
+				code := fmt.Sprintf("(lambda _x: 'nil' if _x is None else json.dumps(_x) if isinstance(_x, dict) else str(_x))(%s)", exprString(e))
+				return &RawExpr{Code: code}
+			}
+
+			outArgs := make([]Expr, len(args))
+			for i, a := range args {
+				outArgs[i] = formatArg(a)
+			}
+			return &CallExpr{Func: &Name{Name: "print"}, Args: outArgs}, nil
 		case "append":
 			if len(args) == 2 {
 				return &BinaryExpr{Left: args[0], Op: "+", Right: &ListLit{Elems: []Expr{args[1]}}}, nil
@@ -2489,7 +2502,7 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	var cond Expr
 	for _, j := range q.Joins {
 		if j.Side != nil {
-			if *j.Side != "left" || len(q.Joins) > 1 || len(q.Froms) > 0 {
+			if *j.Side != "left" {
 				return nil, fmt.Errorf("unsupported query")
 			}
 			src, err := convertExpr(j.Src)
