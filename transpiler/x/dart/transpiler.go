@@ -715,6 +715,27 @@ func (l *LenExpr) emit(w io.Writer) error {
 }
 
 // inferType attempts to guess the Dart type for the given expression.
+var currentEnv *types.Env
+
+func dartType(t types.Type) string {
+	switch v := t.(type) {
+	case types.IntType, types.Int64Type:
+		return "int"
+	case types.FloatType, types.BigRatType:
+		return "num"
+	case types.BoolType:
+		return "bool"
+	case types.StringType:
+		return "String"
+	case types.ListType:
+		return "List<" + dartType(v.Elem) + ">"
+	case types.MapType:
+		return "Map<" + dartType(v.Key) + ", " + dartType(v.Value) + ">"
+	default:
+		return "dynamic"
+	}
+}
+
 func inferType(e Expr) string {
 	switch ex := e.(type) {
 	case *IntLit:
@@ -724,6 +745,11 @@ func inferType(e Expr) string {
 	case *StringLit:
 		return "String"
 	case *Name:
+		if currentEnv != nil {
+			if t, err := currentEnv.GetVar(ex.Name); err == nil {
+				return dartType(t)
+			}
+		}
 		return "var"
 	case *ListLit:
 		if len(ex.Elems) == 0 {
@@ -902,6 +928,7 @@ func Emit(w io.Writer, p *Program) error {
 
 // Transpile converts a Mochi program into a simple Dart AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
+	currentEnv = env
 	p := &Program{}
 	for _, st := range prog.Statements {
 		s, err := convertStmtInternal(st)
@@ -910,7 +937,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		}
 		p.Stmts = append(p.Stmts, s)
 	}
-	_ = env
+	currentEnv = nil
 	return p, nil
 }
 

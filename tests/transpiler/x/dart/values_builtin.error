@@ -1,1 +1,4 @@
-transpile: unsupported expression
+run: exit status 254
+../../../tests/transpiler/x/dart/values_builtin.dart:4:9: Error: Method not found: 'values'.
+  print(values(m));
+        ^^^^^^

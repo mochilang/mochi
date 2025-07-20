@@ -1,1 +1,16 @@
-transpile: unsupported expression
+run: exit status 254
+../../../tests/transpiler/x/dart/json_builtin.dart:3:13: Error: The keyword 'var' can't be used as a type name.
+  final Map<var, int> m = {a: 1, b: 2};
+            ^^^
+../../../tests/transpiler/x/dart/json_builtin.dart:3:13: Error: 'var' isn't a type.
+  final Map<var, int> m = {a: 1, b: 2};
+            ^^^
+../../../tests/transpiler/x/dart/json_builtin.dart:3:28: Error: Undefined name 'a'.
+  final Map<var, int> m = {a: 1, b: 2};
+                           ^
+../../../tests/transpiler/x/dart/json_builtin.dart:3:34: Error: Undefined name 'b'.
+  final Map<var, int> m = {a: 1, b: 2};
+                                 ^
+../../../tests/transpiler/x/dart/json_builtin.dart:4:3: Error: Method not found: 'json'.
+  json(m);
+  ^^^^
