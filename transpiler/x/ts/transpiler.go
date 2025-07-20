@@ -118,6 +118,9 @@ type BoolLit struct {
 	Value bool
 }
 
+// NullLit is the `null` literal.
+type NullLit struct{}
+
 // NameRef refers to a variable.
 type NameRef struct {
 	Name string
@@ -277,6 +280,8 @@ func (b *BoolLit) emit(w io.Writer) {
 		io.WriteString(w, "false")
 	}
 }
+
+func (n *NullLit) emit(w io.Writer) { io.WriteString(w, "null") }
 
 func (n *NameRef) emit(w io.Writer) { io.WriteString(w, n.Name) }
 
@@ -1453,6 +1458,8 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 		return &BoolLit{Value: bool(*l.Bool)}, nil
 	case l.Str != nil:
 		return &StringLit{Value: *l.Str}, nil
+	case l.Null:
+		return &NullLit{}, nil
 	default:
 		return nil, fmt.Errorf("unsupported literal")
 	}
@@ -1479,6 +1486,8 @@ func zeroValue(t *parser.TypeRef, env *types.Env) Expr {
 		return &ListLit{}
 	case types.MapType:
 		return &MapLit{}
+	case types.OptionType:
+		return &NullLit{}
 	default:
 		return nil
 	}
@@ -1495,7 +1504,9 @@ func tsType(t types.Type) string {
 	case types.ListType:
 		return tsType(tt.Elem) + "[]"
 	case types.MapType:
-		return "Record<string, " + tsType(tt.Value) + ">"
+		return "Record<" + tsType(tt.Key) + ", " + tsType(tt.Value) + ">"
+	case types.OptionType:
+		return tsType(tt.Elem) + " | null"
 	default:
 		return "any"
 	}
@@ -1624,6 +1635,8 @@ func exprToNode(e Expr) *ast.Node {
 			return &ast.Node{Kind: "bool", Value: "true"}
 		}
 		return &ast.Node{Kind: "bool", Value: "false"}
+	case *NullLit:
+		return &ast.Node{Kind: "null"}
 	case *NameRef:
 		return &ast.Node{Kind: "name", Value: ex.Name}
 	case *BinaryExpr:
