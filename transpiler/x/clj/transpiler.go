@@ -94,42 +94,42 @@ func (v *Vector) Emit(w io.Writer) {
 
 // Set represents a Clojure set: #{elem1 elem2 ...}
 type Set struct {
-        Elems []Node
+	Elems []Node
 }
 
 func (s *Set) Emit(w io.Writer) {
-        io.WriteString(w, "#{")
-        for i, e := range s.Elems {
-                if i > 0 {
-                        io.WriteString(w, " ")
-                }
-                if e != nil {
-                        e.Emit(w)
-                }
-        }
-        io.WriteString(w, "}")
+	io.WriteString(w, "#{")
+	for i, e := range s.Elems {
+		if i > 0 {
+			io.WriteString(w, " ")
+		}
+		if e != nil {
+			e.Emit(w)
+		}
+	}
+	io.WriteString(w, "}")
 }
 
 // Map represents a Clojure map: {:k v ...}
 type Map struct {
-        Pairs [][2]Node
+	Pairs [][2]Node
 }
 
 func (m *Map) Emit(w io.Writer) {
-        io.WriteString(w, "{")
-        for i, kv := range m.Pairs {
-                if i > 0 {
-                        io.WriteString(w, " ")
-                }
-                if kv[0] != nil {
-                        kv[0].Emit(w)
-                        io.WriteString(w, " ")
-                }
-                if kv[1] != nil {
-                        kv[1].Emit(w)
-                }
-        }
-        io.WriteString(w, "}")
+	io.WriteString(w, "{")
+	for i, kv := range m.Pairs {
+		if i > 0 {
+			io.WriteString(w, " ")
+		}
+		if kv[0] != nil {
+			kv[0].Emit(w)
+			io.WriteString(w, " ")
+		}
+		if kv[1] != nil {
+			kv[1].Emit(w)
+		}
+	}
+	io.WriteString(w, "}")
 }
 
 // Defn represents a function definition.
@@ -445,25 +445,25 @@ func isStringNode(n Node) bool {
 }
 
 func isMapNode(n Node) bool {
-        switch t := n.(type) {
-        case *Map:
-                return true
-        case *List:
-                if len(t.Elems) > 0 {
-                        if sym, ok := t.Elems[0].(Symbol); ok && sym == "hash-map" {
-                                return true
-                        }
-                }
-        case Symbol:
-                if transpileEnv != nil {
-                        if typ, err := transpileEnv.GetVar(string(t)); err == nil {
-                                if _, ok := typ.(types.MapType); ok {
-                                        return true
-                                }
-                        }
-                }
-        }
-        return false
+	switch t := n.(type) {
+	case *Map:
+		return true
+	case *List:
+		if len(t.Elems) > 0 {
+			if sym, ok := t.Elems[0].(Symbol); ok && sym == "hash-map" {
+				return true
+			}
+		}
+	case Symbol:
+		if transpileEnv != nil {
+			if typ, err := transpileEnv.GetVar(string(t)); err == nil {
+				if _, ok := typ.(types.MapType); ok {
+					return true
+				}
+			}
+		}
+	}
+	return false
 }
 
 func isNumberNode(n Node) bool {
@@ -662,9 +662,9 @@ func transpilePostfix(p *parser.PostfixExpr) (Node, error) {
 				i++
 				continue
 			}
-                       // access map fields by keyword as function
-                       key := Keyword(op.Field.Name)
-                       n = &List{Elems: []Node{key, n}}
+			// access map fields by keyword as function
+			key := Keyword(op.Field.Name)
+			n = &List{Elems: []Node{key, n}}
 		case op.Call != nil:
 			args := []Node{}
 			for _, a := range op.Call.Args {
@@ -796,23 +796,23 @@ func transpilePrimary(p *parser.Primary) (Node, error) {
 			elems = append(elems, n)
 		}
 		return &Vector{Elems: elems}, nil
-       case p.Map != nil:
-               pairs := [][2]Node{}
-               for _, it := range p.Map.Items {
-                       k, err := transpileExpr(it.Key)
-                       if err != nil {
-                               return nil, err
-                       }
-                       if sym, ok := k.(Symbol); ok {
-                               k = Keyword(sym)
-                       }
-                       v, err := transpileExpr(it.Value)
-                       if err != nil {
-                               return nil, err
-                       }
-                       pairs = append(pairs, [2]Node{k, v})
-               }
-               return &Map{Pairs: pairs}, nil
+	case p.Map != nil:
+		pairs := [][2]Node{}
+		for _, it := range p.Map.Items {
+			k, err := transpileExpr(it.Key)
+			if err != nil {
+				return nil, err
+			}
+			if sym, ok := k.(Symbol); ok {
+				k = Keyword(sym)
+			}
+			v, err := transpileExpr(it.Value)
+			if err != nil {
+				return nil, err
+			}
+			pairs = append(pairs, [2]Node{k, v})
+		}
+		return &Map{Pairs: pairs}, nil
 	case p.Match != nil:
 		return transpileMatchExpr(p.Match)
 	case p.FunExpr != nil:
@@ -971,15 +971,19 @@ func transpileQueryExpr(q *parser.QueryExpr) (Node, error) {
 	if q == nil {
 		return nil, fmt.Errorf("nil query")
 	}
-	if q.Where != nil || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || len(q.Joins) > 0 || q.Distinct {
+	if q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
 		return nil, fmt.Errorf("unsupported query features")
 	}
+
 	bindings := []Node{}
 	src, err := transpileExpr(q.Source)
 	if err != nil {
 		return nil, err
 	}
 	bindings = append(bindings, Symbol(q.Var), src)
+
+	conds := []Node{}
+
 	for _, f := range q.Froms {
 		fe, err := transpileExpr(f.Src)
 		if err != nil {
@@ -987,12 +991,45 @@ func transpileQueryExpr(q *parser.QueryExpr) (Node, error) {
 		}
 		bindings = append(bindings, Symbol(f.Var), fe)
 	}
+
+	for _, j := range q.Joins {
+		if j.Side != nil {
+			return nil, fmt.Errorf("unsupported join type")
+		}
+		je, err := transpileExpr(j.Src)
+		if err != nil {
+			return nil, err
+		}
+		bindings = append(bindings, Symbol(j.Var), je)
+		if j.On != nil {
+			onExpr, err := transpileExpr(j.On)
+			if err != nil {
+				return nil, err
+			}
+			conds = append(conds, onExpr)
+		}
+	}
+
+	if q.Where != nil {
+		ce, err := transpileExpr(q.Where)
+		if err != nil {
+			return nil, err
+		}
+		conds = append(conds, ce)
+	}
+
 	sel, err := transpileExpr(q.Select)
 	if err != nil {
 		return nil, err
 	}
-       forForm := &List{Elems: []Node{Symbol("for"), &Vector{Elems: bindings}, sel}}
-       return forForm, nil
+
+	vecElems := bindings
+	for _, c := range conds {
+		vecElems = append(vecElems, Keyword("when"), c)
+	}
+
+	forForm := &List{Elems: []Node{Symbol("for"), &Vector{Elems: vecElems}, sel}}
+	return forForm, nil
 }
 
 func defaultValue(t *parser.TypeRef) Node {
@@ -1010,11 +1047,11 @@ func defaultValue(t *parser.TypeRef) Node {
 		return StringLit("")
 	case "list":
 		return &Vector{}
-       case "map":
-               return &Map{}
-       default:
-               return Symbol("nil")
-       }
+	case "map":
+		return &Map{}
+	default:
+		return Symbol("nil")
+	}
 }
 
 func castNode(n Node, t *parser.TypeRef) (Node, error) {

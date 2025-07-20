@@ -2,7 +2,7 @@
 
 This directory contains experimental source translators for generating Clojure code. Each program in `tests/vm/valid` is transpiled and executed with `clojure`.
 
-Compiled programs: 67/100
+Compiled programs: 68/100
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -15,7 +15,7 @@ Compiled programs: 67/100
 - [x] closure
 - [x] count_builtin
 - [x] cross_join
-- [ ] cross_join_filter
+- [x] cross_join_filter
 - [x] cross_join_triple
 - [ ] dataset_sort_take_limit
 - [ ] dataset_where_filter
