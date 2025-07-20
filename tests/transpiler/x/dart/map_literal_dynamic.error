@@ -5,10 +5,3 @@ run: exit status 254
 ../../../tests/transpiler/x/dart/map_literal_dynamic.dart:5:15: Error: 'var' isn't a type.
   Map<String, var> m = {"a": x, "b": y};
               ^^^
-../../../tests/transpiler/x/dart/map_literal_dynamic.dart:6:8: Error: Too many positional arguments: 1 allowed, but 2 found.
-Try removing the extra positional arguments.
-  print(m["a"], m["b"]);
-       ^
-org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
-void print(Object? object) {
-     ^^^^^
