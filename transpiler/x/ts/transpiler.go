@@ -755,8 +755,10 @@ func (q *QueryExprJS) emit(w io.Writer) {
 		emitLoops(0, 1)
 		if q.Sort != nil {
 			io.WriteString(iw, "  result.sort((a, b) => {")
-			io.WriteString(iw, "const ak = JSON.stringify(a.k); const bk = JSON.stringify(b.k);")
-			io.WriteString(iw, " return ak < bk ? -1 : ak > bk ? 1 : 0})\n")
+			io.WriteString(iw, "const ak = a.k; const bk = b.k;")
+			io.WriteString(iw, " if (ak < bk) return -1; if (ak > bk) return 1;")
+			io.WriteString(iw, " const sak = JSON.stringify(ak); const sbk = JSON.stringify(bk);")
+			io.WriteString(iw, " return sak < sbk ? -1 : sak > sbk ? 1 : 0})\n")
 			io.WriteString(iw, "  const out = result.map(r => r.v)\n")
 		} else {
 			io.WriteString(iw, "  const out = result\n")
@@ -883,7 +885,7 @@ func (q *QueryExprJS) emit(w io.Writer) {
 		io.WriteString(iw, "] = r; return {item: r, key: ")
 		q.Sort.emit(iw)
 		io.WriteString(iw, "} });\n")
-		io.WriteString(iw, "    _pairs.sort((a,b)=>{const ak=JSON.stringify(a.key);const bk=JSON.stringify(b.key);return ak<bk?-1:ak>bk?1:0});\n")
+		io.WriteString(iw, "    _pairs.sort((a,b)=>{const ak=a.key;const bk=b.key;if(ak<bk)return -1;if(ak>bk)return 1;const sak=JSON.stringify(ak);const sbk=JSON.stringify(bk);return sak<sbk?-1:sak>sbk?1:0});\n")
 		io.WriteString(iw, "    _rows = _pairs.map(p=>p.item); }\n")
 	}
 
