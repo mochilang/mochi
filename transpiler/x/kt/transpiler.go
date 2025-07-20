@@ -141,6 +141,14 @@ func (ix *IndexExpr) emit(w io.Writer) {
 	io.WriteString(w, "]")
 }
 
+// NonNullExpr appends `!!` to force unwrap a nullable value.
+type NonNullExpr struct{ Value Expr }
+
+func (n *NonNullExpr) emit(w io.Writer) {
+	n.Value.emit(w)
+	io.WriteString(w, "!!")
+}
+
 // MapLit represents a Kotlin map literal.
 type MapLit struct{ Items []MapItem }
 
@@ -891,15 +899,18 @@ func convertForStmt(env *types.Env, fs *parser.ForStmt) (Stmt, error) {
 
 func buildIndexTarget(env *types.Env, name string, idx []*parser.IndexOp) (Expr, error) {
 	var target Expr = &VarRef{Name: name}
-	for _, op := range idx {
+	for j, op := range idx {
 		if op.Colon != nil || op.Colon2 != nil {
 			return nil, fmt.Errorf("slice assign unsupported")
 		}
-		i, err := convertExpr(env, op.Start)
+		idxExpr, err := convertExpr(env, op.Start)
 		if err != nil {
 			return nil, err
 		}
-		target = &IndexExpr{Target: target, Index: i}
+		target = &IndexExpr{Target: target, Index: idxExpr}
+		if j < len(idx)-1 {
+			target = &NonNullExpr{Value: target}
+		}
 	}
 	return target, nil
 }
@@ -1026,6 +1037,9 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				return nil, err
 			}
 			expr = &IndexExpr{Target: expr, Index: idx}
+			if i+1 < len(p.Ops) {
+				expr = &NonNullExpr{Value: expr}
+			}
 		case op.Index != nil && op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil:
 			var startExpr Expr
 			if op.Index.Start != nil {
