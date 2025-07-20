@@ -141,6 +141,57 @@ func (u *UpdateStmt) emit(w io.Writer) {
 	}
 }
 
+type ForRangeStmt struct {
+	Name  string
+	Start Expr
+	End   Expr
+	Body  []Stmt
+}
+
+func (fr *ForRangeStmt) emit(w io.Writer) {
+	io.WriteString(w, "(for ([")
+	io.WriteString(w, fr.Name)
+	io.WriteString(w, " (in-range ")
+	if fr.Start != nil {
+		fr.Start.emit(w)
+	} else {
+		io.WriteString(w, "0")
+	}
+	io.WriteString(w, " ")
+	fr.End.emit(w)
+	io.WriteString(w, ")])\n")
+	for _, st := range fr.Body {
+		st.emit(w)
+	}
+	io.WriteString(w, ")\n")
+}
+
+type ForInStmt struct {
+	Name     string
+	Iterable Expr
+	Body     []Stmt
+	Keys     bool
+}
+
+func (f *ForInStmt) emit(w io.Writer) {
+	io.WriteString(w, "(for ([")
+	io.WriteString(w, f.Name)
+	io.WriteString(w, " ")
+	if f.Keys {
+		io.WriteString(w, "(in-hash-keys ")
+		f.Iterable.emit(w)
+		io.WriteString(w, ")])\n")
+	} else {
+		io.WriteString(w, "")
+		f.Iterable.emit(w)
+		io.WriteString(w, "])\n")
+	}
+	for _, st := range f.Body {
+		st.emit(w)
+	}
+	io.WriteString(w, ")\n")
+}
+
 type ReturnStmt struct{ Expr Expr }
 
 func (r *ReturnStmt) emit(w io.Writer) {
@@ -360,6 +411,50 @@ func (c *CastExpr) emit(w io.Writer) {
 	default:
 		c.Value.emit(w)
 	}
+}
+
+type LeftJoinExpr struct {
+	LeftVar  string
+	LeftSrc  Expr
+	RightVar string
+	RightSrc Expr
+	Cond     Expr
+	Select   Expr
+}
+
+func (l *LeftJoinExpr) emit(w io.Writer) {
+	io.WriteString(w, "(let ([_res '()])\n")
+	io.WriteString(w, "  (for ([")
+	io.WriteString(w, l.LeftVar)
+	io.WriteString(w, " ")
+	l.LeftSrc.emit(w)
+	io.WriteString(w, "])\n")
+	io.WriteString(w, "    (let ([matched #f])\n")
+	io.WriteString(w, "      (for ([")
+	io.WriteString(w, l.RightVar)
+	io.WriteString(w, " ")
+	l.RightSrc.emit(w)
+	io.WriteString(w, "])\n")
+	io.WriteString(w, "        (when ")
+	l.Cond.emit(w)
+	io.WriteString(w, "\n")
+	io.WriteString(w, "          (set! matched #t)\n")
+	io.WriteString(w, "          (set! _res (append _res (list ")
+	l.Select.emit(w)
+	io.WriteString(w, ")))\n")
+	io.WriteString(w, "      )\n")
+	io.WriteString(w, "      (when (not matched)\n")
+	io.WriteString(w, "        (let ([")
+	io.WriteString(w, l.RightVar)
+	io.WriteString(w, " #f])\n")
+	io.WriteString(w, "          (set! _res (append _res (list ")
+	l.Select.emit(w)
+	io.WriteString(w, ")))\n")
+	io.WriteString(w, "        )\n")
+	io.WriteString(w, "      )\n")
+	io.WriteString(w, "    ))\n")
+	io.WriteString(w, "  )\n")
+	io.WriteString(w, "  _res)")
 }
 
 func isSimpleIdent(e *parser.Expr) (string, bool) {
@@ -600,12 +695,22 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		return convertFunStmt(st.Fun, env)
 	case st.Expr != nil:
 		call := st.Expr.Expr.Binary.Left.Value.Target.Call
-		if call != nil && call.Func == "print" && len(call.Args) == 1 {
-			e, err := convertExpr(call.Args[0], env)
-			if err != nil {
-				return nil, err
+		if call != nil && call.Func == "print" {
+			var parts []Expr
+			for _, a := range call.Args {
+				pe, err := convertExpr(a, env)
+				if err != nil {
+					return nil, err
+				}
+				parts = append(parts, pe)
 			}
-			return &PrintStmt{Expr: e}, nil
+			if len(parts) == 1 {
+				return &PrintStmt{Expr: parts[0]}, nil
+			}
+			fmtStr := strings.TrimSpace(strings.Repeat("~a ", len(parts)))
+			args := []Expr{&StringLit{Value: fmtStr}}
+			args = append(args, parts...)
+			return &PrintStmt{Expr: &CallExpr{Func: "format", Args: args}}, nil
 		}
 		return nil, fmt.Errorf("unsupported expression statement")
 	case st.Update != nil:
@@ -626,6 +731,8 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		return convertIfStmt(st.If, env)
 	case st.While != nil:
 		return convertWhileStmt(st.While, env)
+	case st.For != nil:
+		return convertForStmt(st.For, env)
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
@@ -679,6 +786,41 @@ func convertWhileStmt(n *parser.WhileStmt, env *types.Env) (Stmt, error) {
 		return nil, err
 	}
 	return &WhileStmt{Cond: cond, Body: body}, nil
+}
+
+func convertForStmt(n *parser.ForStmt, env *types.Env) (Stmt, error) {
+	if n.RangeEnd != nil {
+		start, err := convertExpr(n.Source, env)
+		if err != nil {
+			return nil, err
+		}
+		end, err := convertExpr(n.RangeEnd, env)
+		if err != nil {
+			return nil, err
+		}
+		child := types.NewEnv(env)
+		child.SetVar(n.Name, types.AnyType{}, true)
+		body, err := convertStatements(n.Body, child)
+		if err != nil {
+			return nil, err
+		}
+		return &ForRangeStmt{Name: n.Name, Start: start, End: end, Body: body}, nil
+	}
+	iter, err := convertExpr(n.Source, env)
+	if err != nil {
+		return nil, err
+	}
+	child := types.NewEnv(env)
+	child.SetVar(n.Name, types.AnyType{}, true)
+	body, err := convertStatements(n.Body, child)
+	if err != nil {
+		return nil, err
+	}
+	keys := false
+	if _, ok := types.ExprType(n.Source, env).(types.MapType); ok {
+		keys = true
+	}
+	return &ForInStmt{Name: n.Name, Iterable: iter, Body: body, Keys: keys}, nil
 }
 
 func convertFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
@@ -876,28 +1018,13 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			ops = append([]*parser.PostfixOp{{Field: &parser.FieldOp{Name: t}}}, ops...)
 		}
 	}
-	pendingField := ""
 	for _, op := range ops {
 		switch {
 		case op.Field != nil:
-			pendingField = op.Field.Name
+			expr = &IndexExpr{Target: expr, Index: &StringLit{Value: op.Field.Name}, IsMap: true}
 		case op.Call != nil:
-			if pendingField != "" {
-				switch pendingField {
-				case "contains":
-					if len(op.Call.Args) != 1 {
-						return nil, fmt.Errorf("contains expects 1 arg")
-					}
-					arg, err := convertExpr(op.Call.Args[0], env)
-					if err != nil {
-						return nil, err
-					}
-					expr = &CallExpr{Func: "string-contains?", Args: []Expr{expr, arg}}
-				default:
-					return nil, fmt.Errorf("unsupported method %s", pendingField)
-				}
-				pendingField = ""
-			} else if n, ok := expr.(*Name); ok {
+			if n, ok := expr.(*Name); ok {
+				var err error
 				expr, err = convertCall(&parser.CallExpr{Func: n.Name, Args: op.Call.Args}, env)
 				if err != nil {
 					return nil, err
@@ -930,8 +1057,12 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		return convertList(p.List, env)
 	case p.Struct != nil:
 		return convertStruct(p.Struct, env)
+	case p.Map != nil:
+		return convertMap(p.Map, env)
 	case p.Call != nil:
 		return convertCall(p.Call, env)
+	case p.Query != nil:
+		return convertLeftJoinQuery(p.Query, env)
 	case p.If != nil:
 		return convertIfExpr(p.If, env)
 	case p.Group != nil:
@@ -984,6 +1115,22 @@ func convertStruct(s *parser.StructLiteral, env *types.Env) (Expr, error) {
 	return &CallExpr{Func: "hash", Args: args}, nil
 }
 
+func convertMap(m *parser.MapLiteral, env *types.Env) (Expr, error) {
+	var args []Expr
+	for _, it := range m.Items {
+		k, err := convertExpr(it.Key, env)
+		if err != nil {
+			return nil, err
+		}
+		v, err := convertExpr(it.Value, env)
+		if err != nil {
+			return nil, err
+		}
+		args = append(args, k, v)
+	}
+	return &CallExpr{Func: "hash", Args: args}, nil
+}
+
 func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 	var args []Expr
 	for _, a := range c.Args {
@@ -1023,4 +1170,34 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		return &CallExpr{Func: c.Func, Args: args}, nil
 	}
 	return nil, fmt.Errorf("unsupported call")
+}
+
+func convertLeftJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
+	if q == nil || len(q.Joins) != 1 || q.Distinct || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Where != nil || len(q.Froms) > 0 {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	j := q.Joins[0]
+	if j.Side == nil || *j.Side != "left" {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	leftSrc, err := convertExpr(q.Source, env)
+	if err != nil {
+		return nil, err
+	}
+	rightSrc, err := convertExpr(j.Src, env)
+	if err != nil {
+		return nil, err
+	}
+	child := types.NewEnv(env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	child.SetVar(j.Var, types.AnyType{}, true)
+	cond, err := convertExpr(j.On, child)
+	if err != nil {
+		return nil, err
+	}
+	sel, err := convertExpr(q.Select, child)
+	if err != nil {
+		return nil, err
+	}
+	return &LeftJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel}, nil
 }

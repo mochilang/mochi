@@ -1,3 +1,8 @@
+## Progress (2025-07-20 06:00 +0000)
+- Added left join query support
+- Generated Racket for 94/100 programs
+- Updated README checklist
+
 ## Progress (2025-07-20 12:19 +0700)
 - Generated Racket for 93/100 programs
 - Added update statement and struct literal support
