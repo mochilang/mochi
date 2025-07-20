@@ -1192,6 +1192,9 @@ func inferType(e Expr) string {
 			if !ok {
 				if nextStructHint != "" {
 					base := capitalize(nextStructHint)
+					if strings.HasSuffix(base, "s") && len(base) > 1 {
+						base = base[:len(base)-1]
+					}
 					cnt := structNameCount[base]
 					if cnt > 0 {
 						name = fmt.Sprintf("%s%d", base, cnt+1)
