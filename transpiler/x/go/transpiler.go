@@ -1780,28 +1780,35 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 		} else if op.Call != nil {
 			return nil, fmt.Errorf("unsupported call")
 		} else if op.Cast != nil {
-			if op.Cast.Type != nil {
-				if op.Cast.Type.Simple != nil {
-					name := *op.Cast.Type.Simple
-					if name == "int" {
-						usesStrconv = true
-						expr = &AtoiExpr{Expr: expr}
-					} else if _, ok := env.GetStruct(name); ok {
-						if ml, ok := expr.(*MapLit); ok {
-							ml.KeyType = "string"
-							ml.ValueType = "any"
-						}
-					} else {
-						return nil, fmt.Errorf("unsupported postfix")
-					}
-				} else if op.Cast.Type.Struct != nil {
+			if op.Cast.Type == nil {
+				return nil, fmt.Errorf("unsupported postfix")
+			}
+			if op.Cast.Type.Simple != nil {
+				name := *op.Cast.Type.Simple
+				if name == "int" {
+					usesStrconv = true
+					expr = &AtoiExpr{Expr: expr}
+				} else if st, ok := env.GetStruct(name); ok {
 					if ml, ok := expr.(*MapLit); ok {
-						ml.KeyType = "string"
-						ml.ValueType = "any"
+						fields := make([]Expr, len(st.Order))
+						for i, fn := range st.Order {
+							fields[i] = zeroValueExpr(toGoTypeFromType(st.Fields[fn]))
+							for j, k := range ml.Keys {
+								if sl, ok := k.(*StringLit); ok && sl.Value == fn {
+									fields[i] = ml.Values[j]
+									break
+								}
+							}
+						}
+						expr = &StructLit{Name: name, Fields: fields, Names: st.Order}
+					} else {
+						expr = &AssertExpr{Expr: expr, Type: name}
 					}
 				} else {
 					return nil, fmt.Errorf("unsupported postfix")
 				}
+			} else if op.Cast.Type.Struct != nil {
+				return nil, fmt.Errorf("unsupported postfix")
 			} else {
 				return nil, fmt.Errorf("unsupported postfix")
 			}

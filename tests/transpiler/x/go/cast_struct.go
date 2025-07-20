@@ -12,7 +12,9 @@ type Todo struct {
 	Title string `json:"title"`
 }
 
-var todo Todo = map[string]any{"title": "hi"}
+var todo Todo = Todo{
+	Title: "hi",
+}
 
 func main() {
 	fmt.Println(strings.TrimSpace(fmt.Sprint(todo.Title)))
