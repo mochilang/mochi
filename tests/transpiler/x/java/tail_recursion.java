@@ -2,8 +2,8 @@
 public class Main {
     static int sum_rec(int n, int acc) {
         if (n == 0) {
-    return acc;
-}
+            return acc;
+        ]}
         return sum_rec(n - 1, acc + n);
     }
     public static void main(String[] args) {

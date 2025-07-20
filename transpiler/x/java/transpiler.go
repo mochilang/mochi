@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 
-	"mochi/ast"
 	"mochi/parser"
 	"mochi/types"
 )
@@ -26,16 +25,45 @@ func javaType(t string) string {
 }
 
 func inferType(e Expr) string {
-	switch e.(type) {
+	switch ex := e.(type) {
 	case *IntLit:
 		return "int"
 	case *BoolLit:
 		return "boolean"
 	case *StringLit:
 		return "String"
-	default:
-		return ""
+	case *UnaryExpr:
+		if ex.Op == "!" {
+			return "boolean"
+		}
+		return inferType(ex.Value)
+	case *BinaryExpr:
+		switch ex.Op {
+		case "+":
+			if isStringExpr(ex.Left) || isStringExpr(ex.Right) {
+				return "String"
+			}
+			return "int"
+		case "-", "*", "/", "%":
+			return "int"
+		case "==", "!=", "<", "<=", ">", ">=", "&&", "||":
+			return "boolean"
+		}
+	case *TernaryExpr:
+		t := inferType(ex.Then)
+		if t == "" {
+			t = inferType(ex.Else)
+		}
+		return t
+	case *LenExpr:
+		return "int"
+	case *CallExpr:
+		switch ex.Func {
+		case "String.valueOf", "substring":
+			return "String"
+		}
 	}
+	return ""
 }
 
 // --- Simple Java AST ---
@@ -53,15 +81,16 @@ type Function struct {
 
 type ReturnStmt struct{ Expr Expr }
 
-func (r *ReturnStmt) emit(w io.Writer) {
-	fmt.Fprint(w, "return")
+func (r *ReturnStmt) emit(w io.Writer, indent string) {
+	fmt.Fprint(w, indent+"return")
 	if r.Expr != nil {
 		fmt.Fprint(w, " ")
 		r.Expr.emit(w)
 	}
+	fmt.Fprint(w, ";\n")
 }
 
-type Stmt interface{ emit(io.Writer) }
+type Stmt interface{ emit(io.Writer, string) }
 
 type Expr interface{ emit(io.Writer) }
 
@@ -71,30 +100,30 @@ type IfStmt struct {
 	Else []Stmt
 }
 
-func (s *IfStmt) emit(w io.Writer) {
-	fmt.Fprint(w, "if (")
+func (s *IfStmt) emit(w io.Writer, indent string) {
+	fmt.Fprint(w, indent+"if (")
 	s.Cond.emit(w)
 	fmt.Fprint(w, ") {\n")
 	for _, st := range s.Then {
-		fmt.Fprint(w, "\t")
-		st.emit(w)
-		fmt.Fprint(w, ";\n")
+		st.emit(w, indent+"    ")
 	}
-	fmt.Fprint(w, "}")
+	fmt.Fprint(w, indent+"]}\n")
 	if len(s.Else) > 0 {
-		fmt.Fprint(w, " else {\n")
+		fmt.Fprint(w, indent+"else {\n")
 		for _, st := range s.Else {
-			fmt.Fprint(w, "\t")
-			st.emit(w)
-			fmt.Fprint(w, ";\n")
+			st.emit(w, indent+"    ")
 		}
-		fmt.Fprint(w, "}")
+		fmt.Fprint(w, indent+"}\n")
 	}
 }
 
 type ExprStmt struct{ Expr Expr }
 
-func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
+func (s *ExprStmt) emit(w io.Writer, indent string) {
+	fmt.Fprint(w, indent)
+	s.Expr.emit(w)
+	fmt.Fprint(w, ";\n")
+}
 
 type LetStmt struct {
 	Name string
@@ -102,7 +131,8 @@ type LetStmt struct {
 	Expr Expr
 }
 
-func (s *LetStmt) emit(w io.Writer) {
+func (s *LetStmt) emit(w io.Writer, indent string) {
+	fmt.Fprint(w, indent)
 	typ := s.Type
 	if typ == "" && s.Expr != nil {
 		typ = inferType(s.Expr)
@@ -116,6 +146,7 @@ func (s *LetStmt) emit(w io.Writer) {
 		fmt.Fprint(w, " = ")
 		s.Expr.emit(w)
 	}
+	fmt.Fprint(w, ";\n")
 }
 
 type VarStmt struct {
@@ -124,7 +155,8 @@ type VarStmt struct {
 	Expr Expr
 }
 
-func (s *VarStmt) emit(w io.Writer) {
+func (s *VarStmt) emit(w io.Writer, indent string) {
+	fmt.Fprint(w, indent)
 	typ := s.Type
 	if typ == "" && s.Expr != nil {
 		typ = inferType(s.Expr)
@@ -138,6 +170,7 @@ func (s *VarStmt) emit(w io.Writer) {
 		fmt.Fprint(w, " = ")
 		s.Expr.emit(w)
 	}
+	fmt.Fprint(w, ";\n")
 }
 
 type AssignStmt struct {
@@ -145,9 +178,10 @@ type AssignStmt struct {
 	Expr Expr
 }
 
-func (s *AssignStmt) emit(w io.Writer) {
-	fmt.Fprint(w, s.Name+" = ")
+func (s *AssignStmt) emit(w io.Writer, indent string) {
+	fmt.Fprint(w, indent+s.Name+" = ")
 	s.Expr.emit(w)
+	fmt.Fprint(w, ";\n")
 }
 
 type WhileStmt struct {
@@ -155,18 +189,16 @@ type WhileStmt struct {
 	Body []Stmt
 }
 
-func (wst *WhileStmt) emit(w io.Writer) {
-	fmt.Fprint(w, "while (")
+func (wst *WhileStmt) emit(w io.Writer, indent string) {
+	fmt.Fprint(w, indent+"while (")
 	if wst.Cond != nil {
 		wst.Cond.emit(w)
 	}
 	fmt.Fprint(w, ") {\n")
-	for _, s := range wst.Body {
-		fmt.Fprint(w, "\t")
-		s.emit(w)
-		fmt.Fprint(w, ";\n")
+	for _, st := range wst.Body {
+		st.emit(w, indent+"    ")
 	}
-	fmt.Fprint(w, "}")
+	fmt.Fprint(w, indent+"}\n")
 }
 
 type ForRangeStmt struct {
@@ -176,8 +208,8 @@ type ForRangeStmt struct {
 	Body  []Stmt
 }
 
-func (fr *ForRangeStmt) emit(w io.Writer) {
-	fmt.Fprint(w, "for (int "+fr.Name+" = ")
+func (fr *ForRangeStmt) emit(w io.Writer, indent string) {
+	fmt.Fprint(w, indent+"for (int "+fr.Name+" = ")
 	if fr.Start != nil {
 		fr.Start.emit(w)
 	} else {
@@ -189,12 +221,10 @@ func (fr *ForRangeStmt) emit(w io.Writer) {
 	fmt.Fprint(w, "; ")
 	fmt.Fprint(w, fr.Name+"++")
 	fmt.Fprint(w, ") {\n")
-	for _, s := range fr.Body {
-		fmt.Fprint(w, "\t")
-		s.emit(w)
-		fmt.Fprint(w, ";\n")
+	for _, st := range fr.Body {
+		st.emit(w, indent+"    ")
 	}
-	fmt.Fprint(w, "}")
+	fmt.Fprint(w, indent+"}\n")
 }
 
 type BinaryExpr struct {
@@ -323,32 +353,6 @@ func (s *SubstringExpr) emit(w io.Writer) {
 type StringLit struct{ Value string }
 
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
-
-func isBoolExpr(e Expr) bool {
-	switch ex := e.(type) {
-	case *BoolLit:
-		return true
-	case *UnaryExpr:
-		if ex.Op == "!" {
-			return true
-		}
-		return isBoolExpr(ex.Value)
-	case *BinaryExpr:
-		switch ex.Op {
-		case "==", "!=", "<", "<=", ">", ">=", "&&", "||":
-			return true
-		default:
-			return false
-		}
-	case *GroupExpr:
-		return isBoolExpr(ex.Expr)
-	case *TernaryExpr:
-		// assume then/else of same type
-		return isBoolExpr(ex.Then)
-	default:
-		return false
-	}
-}
 
 func isStringExpr(e Expr) bool {
 	switch ex := e.(type) {
@@ -659,7 +663,7 @@ func Emit(prog *Program) []byte {
 	var buf bytes.Buffer
 	buf.WriteString("public class Main {\n")
 	for _, fn := range prog.Funcs {
-		buf.WriteString("\tstatic int " + fn.Name + "(")
+		buf.WriteString("    static int " + fn.Name + "(")
 		for i, p := range fn.Params {
 			if i > 0 {
 				buf.WriteString(", ")
@@ -668,29 +672,15 @@ func Emit(prog *Program) []byte {
 		}
 		buf.WriteString(") {\n")
 		for _, s := range fn.Body {
-			buf.WriteString("\t\t")
-			s.emit(&buf)
-			switch s.(type) {
-			case *WhileStmt, *ForRangeStmt, *IfStmt:
-				buf.WriteString("\n")
-			default:
-				buf.WriteString(";\n")
-			}
+			s.emit(&buf, "        ")
 		}
-		buf.WriteString("\t}\n")
+		buf.WriteString("    }\n")
 	}
-	buf.WriteString("\tpublic static void main(String[] args) {\n")
+	buf.WriteString("    public static void main(String[] args) {\n")
 	for _, s := range prog.Stmts {
-		buf.WriteString("\t\t")
-		s.emit(&buf)
-		switch s.(type) {
-		case *WhileStmt, *ForRangeStmt, *IfStmt:
-			buf.WriteString("\n")
-		default:
-			buf.WriteString(";\n")
-		}
+		s.emit(&buf, "        ")
 	}
-	buf.WriteString("\t}\n")
+	buf.WriteString("    }\n")
 	buf.WriteString("}\n")
 	return formatJava(buf.Bytes())
 }
@@ -715,115 +705,4 @@ func typeRefString(tr *parser.TypeRef) string {
 		return tr.Generic.Name
 	}
 	return ""
-}
-
-// Print converts the custom AST into ast.Node form and prints it.
-func Print(p *Program) {
-	toNodeProg(p).Print("")
-}
-
-func toNodeProg(p *Program) *ast.Node {
-	n := &ast.Node{Kind: "program"}
-	for _, s := range p.Stmts {
-		n.Children = append(n.Children, toNodeStmt(s))
-	}
-	return n
-}
-
-func toNodeStmt(s Stmt) *ast.Node {
-	switch st := s.(type) {
-	case *ExprStmt:
-		return &ast.Node{Kind: "expr", Children: []*ast.Node{toNodeExpr(st.Expr)}}
-	case *LetStmt:
-		n := &ast.Node{Kind: "let", Value: st.Name}
-		n.Children = append(n.Children, toNodeExpr(st.Expr))
-		return n
-	case *VarStmt:
-		n := &ast.Node{Kind: "var", Value: st.Name}
-		if st.Expr != nil {
-			n.Children = append(n.Children, toNodeExpr(st.Expr))
-		}
-		return n
-	case *AssignStmt:
-		n := &ast.Node{Kind: "assign", Value: st.Name}
-		n.Children = append(n.Children, toNodeExpr(st.Expr))
-		return n
-	case *IfStmt:
-		n := &ast.Node{Kind: "if"}
-		n.Children = append(n.Children, toNodeExpr(st.Cond))
-		thenNode := &ast.Node{Kind: "then"}
-		for _, b := range st.Then {
-			thenNode.Children = append(thenNode.Children, toNodeStmt(b))
-		}
-		n.Children = append(n.Children, thenNode)
-		if len(st.Else) > 0 {
-			elseNode := &ast.Node{Kind: "else"}
-			for _, b := range st.Else {
-				elseNode.Children = append(elseNode.Children, toNodeStmt(b))
-			}
-			n.Children = append(n.Children, elseNode)
-		}
-		return n
-	case *WhileStmt:
-		n := &ast.Node{Kind: "while"}
-		if st.Cond != nil {
-			n.Children = append(n.Children, toNodeExpr(st.Cond))
-		}
-		for _, b := range st.Body {
-			n.Children = append(n.Children, toNodeStmt(b))
-		}
-		return n
-	case *ForRangeStmt:
-		n := &ast.Node{Kind: "for"}
-		startNode := &ast.Node{Kind: "start", Children: []*ast.Node{toNodeExpr(st.Start)}}
-		endNode := &ast.Node{Kind: "end", Children: []*ast.Node{toNodeExpr(st.End)}}
-		n.Children = append(n.Children, &ast.Node{Kind: "var", Value: st.Name}, startNode, endNode)
-		for _, b := range st.Body {
-			n.Children = append(n.Children, toNodeStmt(b))
-		}
-		return n
-	default:
-		return &ast.Node{Kind: "unknown"}
-	}
-}
-
-func toNodeExpr(e Expr) *ast.Node {
-	switch ex := e.(type) {
-	case *CallExpr:
-		n := &ast.Node{Kind: "call", Value: ex.Func}
-		for _, a := range ex.Args {
-			n.Children = append(n.Children, toNodeExpr(a))
-		}
-		return n
-	case *StringLit:
-		return &ast.Node{Kind: "string", Value: ex.Value}
-	case *IntLit:
-		return &ast.Node{Kind: "int", Value: ex.Value}
-	case *BoolLit:
-		return &ast.Node{Kind: "bool", Value: ex.Value}
-	case *VarExpr:
-		return &ast.Node{Kind: "var", Value: ex.Name}
-	case *UnaryExpr:
-		n := &ast.Node{Kind: "unary", Value: ex.Op}
-		n.Children = append(n.Children, toNodeExpr(ex.Value))
-		return n
-	case *BinaryExpr:
-		n := &ast.Node{Kind: "bin", Value: ex.Op}
-		n.Children = append(n.Children, toNodeExpr(ex.Left), toNodeExpr(ex.Right))
-		return n
-	case *LenExpr:
-		n := &ast.Node{Kind: "len"}
-		n.Children = append(n.Children, toNodeExpr(ex.Value))
-		return n
-	case *GroupExpr:
-		n := &ast.Node{Kind: "group"}
-		n.Children = append(n.Children, toNodeExpr(ex.Expr))
-		return n
-	case *TernaryExpr:
-		n := &ast.Node{Kind: "ternary"}
-		n.Children = append(n.Children, toNodeExpr(ex.Cond), toNodeExpr(ex.Then), toNodeExpr(ex.Else))
-		return n
-	default:
-		return &ast.Node{Kind: "unknown"}
-	}
 }
