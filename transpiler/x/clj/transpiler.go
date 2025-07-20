@@ -78,6 +78,24 @@ func (v *Vector) Emit(w io.Writer) {
 	io.WriteString(w, "]")
 }
 
+// Set represents a Clojure set: #{elem1 elem2 ...}
+type Set struct {
+	Elems []Node
+}
+
+func (s *Set) Emit(w io.Writer) {
+	io.WriteString(w, "#{")
+	for i, e := range s.Elems {
+		if i > 0 {
+			io.WriteString(w, " ")
+		}
+		if e != nil {
+			e.Emit(w)
+		}
+	}
+	io.WriteString(w, "}")
+}
+
 // Defn represents a function definition.
 type Defn struct {
 	Name   string
@@ -349,6 +367,23 @@ func isMapNode(n Node) bool {
 	return false
 }
 
+func isNumberNode(n Node) bool {
+	switch t := n.(type) {
+	case IntLit:
+		return true
+	case Symbol:
+		if transpileEnv != nil {
+			if typ, err := transpileEnv.GetVar(string(t)); err == nil {
+				switch typ.(type) {
+				case types.IntType, types.FloatType:
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
 func transpileExpr(e *parser.Expr) (Node, error) {
 	if e == nil {
 		return nil, fmt.Errorf("nil expr")
@@ -372,8 +407,8 @@ func transpileExpr(e *parser.Expr) (Node, error) {
 			} else if isMapNode(right) {
 				n = &List{Elems: []Node{Symbol("contains?"), right, n}}
 			} else {
-				pred := &List{Elems: []Node{Symbol("fn"), &Vector{Elems: []Node{Symbol("x")}}, &List{Elems: []Node{Symbol("="), Symbol("x"), n}}}}
-				n = &List{Elems: []Node{Symbol("some"), pred, right}}
+				set := &Set{Elems: []Node{n}}
+				n = &List{Elems: []Node{Symbol("some"), set, right}}
 			}
 			continue
 		}
@@ -471,7 +506,7 @@ func transpileIfStmt(s *parser.IfStmt) (Node, error) {
 	if err != nil {
 		return nil, err
 	}
-	var elseNode Node = Symbol("nil")
+	var elseNode Node
 	if s.ElseIf != nil {
 		elseNode, err = transpileIfStmt(s.ElseIf)
 		if err != nil {
@@ -482,6 +517,9 @@ func transpileIfStmt(s *parser.IfStmt) (Node, error) {
 		if err != nil {
 			return nil, err
 		}
+	}
+	if elseNode == nil {
+		return &List{Elems: []Node{Symbol("when"), cond, thenNode}}, nil
 	}
 	return &List{Elems: []Node{Symbol("if"), cond, thenNode, elseNode}}, nil
 }
@@ -495,7 +533,7 @@ func transpileIfExpr(e *parser.IfExpr) (Node, error) {
 	if err != nil {
 		return nil, err
 	}
-	var elseNode Node = Symbol("nil")
+	var elseNode Node
 	if e.ElseIf != nil {
 		elseNode, err = transpileIfExpr(e.ElseIf)
 		if err != nil {
@@ -506,6 +544,9 @@ func transpileIfExpr(e *parser.IfExpr) (Node, error) {
 		if err != nil {
 			return nil, err
 		}
+	}
+	if elseNode == nil {
+		return &List{Elems: []Node{Symbol("when"), cond, thenNode}}, nil
 	}
 	return &List{Elems: []Node{Symbol("if"), cond, thenNode, elseNode}}, nil
 }
