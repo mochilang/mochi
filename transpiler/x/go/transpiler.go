@@ -650,7 +650,11 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 			}
 			if typ == "" {
-				typ = toGoTypeFromType(types.TypeOfExpr(st.Let.Value, env))
+				t := types.TypeOfExpr(st.Let.Value, env)
+				if types.IsAnyType(t) {
+					t = types.TypeOfExprBasic(st.Let.Value, env)
+				}
+				typ = toGoTypeFromType(t)
 			}
 			return &VarDecl{Name: st.Let.Name, Type: typ, Value: e}, nil
 		}
@@ -676,7 +680,11 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 			}
 			if typ == "" {
-				typ = toGoTypeFromType(types.TypeOfExpr(st.Var.Value, env))
+				t := types.TypeOfExpr(st.Var.Value, env)
+				if types.IsAnyType(t) {
+					t = types.TypeOfExprBasic(st.Var.Value, env)
+				}
+				typ = toGoTypeFromType(t)
 			}
 			return &VarDecl{Name: st.Var.Name, Type: typ, Value: e}, nil
 		}
