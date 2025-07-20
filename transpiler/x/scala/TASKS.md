@@ -1,3 +1,31 @@
+## Progress (2025-07-20 12:10 +0700)
+- scala transpiler: support index assignment
+- Regenerated golden files - 55/100 vm valid programs passing
+
+## Progress (2025-07-20 12:00 +0700)
+- zig transpiler: simplify lists and min/max
+- Regenerated golden files - 56/100 vm valid programs passing
+
+## Progress (2025-07-20 12:00 +0700)
+- zig transpiler: simplify lists and min/max
+- Regenerated golden files - 56/100 vm valid programs passing
+
+## Progress (2025-07-20 12:00 +0700)
+- zig transpiler: simplify lists and min/max
+- Regenerated golden files - 56/100 vm valid programs passing
+
+## Progress (2025-07-20 12:00 +0700)
+- zig transpiler: simplify lists and min/max
+- Regenerated golden files - 56/100 vm valid programs passing
+
+## Progress (2025-07-20 12:00 +0700)
+- zig transpiler: simplify lists and min/max
+- Regenerated golden files - 54/100 vm valid programs passing
+
+## Progress (2025-07-20 12:00 +0700)
+- zig transpiler: simplify lists and min/max
+- Regenerated golden files - 54/100 vm valid programs passing
+
 ## Progress (2025-07-20 11:51 +0700)
 - scala transpiler: add map support and builtin improvements
 - Regenerated golden files - 55/100 vm valid programs passing

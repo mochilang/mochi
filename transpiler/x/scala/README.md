@@ -43,14 +43,14 @@ Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scal
 - [ ] in_operator_extended
 - [ ] inner_join
 - [ ] join_multi
-- [x] json_builtin
+- [ ] json_builtin
 - [ ] left_join
 - [ ] left_join_multi
 - [x] len_builtin
 - [x] len_map
 - [x] len_string
 - [x] let_and_print
-- [ ] list_assign
+- [x] list_assign
 - [x] list_index
 - [ ] list_nested_assign
 - [x] list_set_ops
