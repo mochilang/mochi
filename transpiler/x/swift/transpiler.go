@@ -197,6 +197,18 @@ func (a *AssignStmt) emit(w io.Writer) {
 	fmt.Fprint(w, "\n")
 }
 
+type IndexAssignStmt struct {
+	Target Expr
+	Value  Expr
+}
+
+func (ia *IndexAssignStmt) emit(w io.Writer) {
+	ia.Target.emit(w)
+	fmt.Fprint(w, " = ")
+	ia.Value.emit(w)
+	fmt.Fprint(w, "\n")
+}
+
 type LitExpr struct {
 	Value    string
 	IsString bool
@@ -224,6 +236,18 @@ func (a *ArrayLit) emit(w io.Writer) {
 		}
 		e.emit(w)
 	}
+	fmt.Fprint(w, "]")
+}
+
+type IndexExpr struct {
+	Base  Expr
+	Index Expr
+}
+
+func (ie *IndexExpr) emit(w io.Writer) {
+	ie.Base.emit(w)
+	fmt.Fprint(w, "[")
+	ie.Index.emit(w)
 	fmt.Fprint(w, "]")
 }
 
@@ -575,6 +599,23 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		return &AssignStmt{Name: st.Assign.Name, Expr: ex}, nil
+	case st.Assign != nil && len(st.Assign.Index) > 0 && len(st.Assign.Field) == 0:
+		lhs := Expr(&NameExpr{Name: st.Assign.Name})
+		for _, idx := range st.Assign.Index {
+			if idx.Start == nil || idx.Colon != nil || idx.End != nil || idx.Colon2 != nil || idx.Step != nil {
+				return nil, fmt.Errorf("unsupported index")
+			}
+			ix, err := convertExpr(idx.Start)
+			if err != nil {
+				return nil, err
+			}
+			lhs = &IndexExpr{Base: lhs, Index: ix}
+		}
+		val, err := convertExpr(st.Assign.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &IndexAssignStmt{Target: lhs, Value: val}, nil
 	case st.Fun != nil:
 		return convertFunDecl(st.Fun)
 	case st.Return != nil:
@@ -906,6 +947,8 @@ func convertUnary(u *parser.Unary) (Expr, error) {
 		switch u.Ops[i] {
 		case "-":
 			expr = &UnaryExpr{Op: "-", Expr: expr}
+		case "!":
+			expr = &UnaryExpr{Op: "!", Expr: expr}
 		case "+":
 			// ignore
 		default:
@@ -916,10 +959,28 @@ func convertUnary(u *parser.Unary) (Expr, error) {
 }
 
 func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
-	if p == nil || len(p.Ops) != 0 {
+	if p == nil {
+		return nil, fmt.Errorf("nil postfix")
+	}
+	expr, err := convertPrimary(p.Target)
+	if err != nil {
+		return nil, err
+	}
+	for _, op := range p.Ops {
+		if op.Index != nil {
+			if op.Index.Start == nil || op.Index.Colon != nil || op.Index.End != nil || op.Index.Colon2 != nil || op.Index.Step != nil {
+				return nil, fmt.Errorf("unsupported index")
+			}
+			idx, err := convertExpr(op.Index.Start)
+			if err != nil {
+				return nil, err
+			}
+			expr = &IndexExpr{Base: expr, Index: idx}
+			continue
+		}
 		return nil, fmt.Errorf("unsupported postfix")
 	}
-	return convertPrimary(p.Target)
+	return expr, nil
 }
 
 func convertIfExpr(i *parser.IfExpr) (Expr, error) {

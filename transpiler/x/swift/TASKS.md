@@ -1,6 +1,6 @@
-## Progress (2025-07-20 12:37 +0700)
-- swift transpiler: add fun expr support
-- Generated golden tests for 41/100 programs
+## Progress (2025-07-20 13:26 +0700)
+- fix tests
+- Generated golden tests for 44/100 programs
 - Updated README checklist and output artifacts
 
 # Swift Transpiler Tasks
