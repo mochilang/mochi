@@ -1,3 +1,18 @@
+## Progress (2025-07-20 16:45 +0700)
+- release: v0.10.32
+- Generated Ruby for 66/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 16:45 +0700)
+- release: v0.10.32
+- Generated Ruby for 65/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 16:45 +0700)
+- release: v0.10.32
+- Generated Ruby for 65/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-20 15:00 +0700)
 - st transpiler: support maps and membership
 - Generated Ruby for 65/100 programs
