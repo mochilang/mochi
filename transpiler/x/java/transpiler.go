@@ -101,6 +101,11 @@ func inferType(e Expr) string {
 		case "System.out.println":
 			return "void"
 		}
+	case *MethodCallExpr:
+		switch ex.Name {
+		case "contains":
+			return "boolean"
+		}
 	case *VarExpr:
 		if t, ok := varTypes[ex.Name]; ok {
 			return t
@@ -431,6 +436,17 @@ type VarExpr struct{ Name string }
 
 func (v *VarExpr) emit(w io.Writer) { fmt.Fprint(w, v.Name) }
 
+// FieldExpr represents obj.field access.
+type FieldExpr struct {
+	Target Expr
+	Name   string
+}
+
+func (f *FieldExpr) emit(w io.Writer) {
+	f.Target.emit(w)
+	fmt.Fprint(w, "."+f.Name)
+}
+
 type LenExpr struct{ Value Expr }
 
 func (l *LenExpr) emit(w io.Writer) {
@@ -483,6 +499,25 @@ func (u *UnaryExpr) emit(w io.Writer) {
 type CallExpr struct {
 	Func string
 	Args []Expr
+}
+
+// MethodCallExpr represents target.method(args...)
+type MethodCallExpr struct {
+	Target Expr
+	Name   string
+	Args   []Expr
+}
+
+func (m *MethodCallExpr) emit(w io.Writer) {
+	m.Target.emit(w)
+	fmt.Fprint(w, "."+m.Name+"(")
+	for i, a := range m.Args {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		a.emit(w)
+	}
+	fmt.Fprint(w, ")")
 }
 
 func (c *CallExpr) emit(w io.Writer) {
@@ -858,7 +893,8 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-	for _, op := range pf.Ops {
+	for i := 0; i < len(pf.Ops); i++ {
+		op := pf.Ops[i]
 		switch {
 		case op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil:
 			if op.Index.Start == nil {
@@ -882,6 +918,24 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 				return nil, err
 			}
 			expr = &SliceExpr{Value: expr, Start: start, End: end}
+		case op.Field != nil:
+			expr = &FieldExpr{Target: expr, Name: op.Field.Name}
+		case op.Call != nil:
+			args := make([]Expr, len(op.Call.Args))
+			for j, a := range op.Call.Args {
+				ex, err := compileExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				args[j] = ex
+			}
+			if fe, ok := expr.(*FieldExpr); ok {
+				expr = &MethodCallExpr{Target: fe.Target, Name: fe.Name, Args: args}
+			} else if v, ok := expr.(*VarExpr); ok {
+				expr = &CallExpr{Func: v.Name, Args: args}
+			} else {
+				return nil, fmt.Errorf("unsupported call")
+			}
 		case op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil:
 			switch *op.Cast.Type.Simple {
 			case "int":
@@ -935,8 +989,12 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		return &IntLit{Value: int(*p.Lit.Int)}, nil
 	case p.Lit != nil && p.Lit.Bool != nil:
 		return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
-	case p.Selector != nil && len(p.Selector.Tail) == 0:
-		return &VarExpr{Name: p.Selector.Root}, nil
+	case p.Selector != nil:
+		expr := Expr(&VarExpr{Name: p.Selector.Root})
+		for _, name := range p.Selector.Tail {
+			expr = &FieldExpr{Target: expr, Name: name}
+		}
+		return expr, nil
 	case p.Group != nil:
 		e, err := compileExpr(p.Group)
 		if err != nil {

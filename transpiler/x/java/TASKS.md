@@ -1,4 +1,6 @@
-## Progress (2025-07-20 12:01 +0700)
+## Progress (2025-07-20 12:37 +0700)
+- java transpiler: support method calls (a5791d107)
+
 - java transpiler: improve formatting and inference (5540777bf)
 
 - java transpiler: add foreach loops and list/map literals (93aba1531)
