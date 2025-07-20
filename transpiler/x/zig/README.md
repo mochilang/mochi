@@ -1,6 +1,7 @@
 # Zig Transpiler
 
-This directory contains a minimal transpiler that converts a subset of Mochi into Zig code. It currently supports print statements with integer or string expressions, variable declarations and assignments, unary negation and simple addition.
+This directory contains a minimal transpiler that converts a subset of Mochi into Zig code.
+It currently supports print statements with integer or string expressions, variable declarations and assignments, unary negation and simple addition.
 
 ## Golden tests
 Programs under `tests/vm/valid` that have generated Zig code (26/100 completed):

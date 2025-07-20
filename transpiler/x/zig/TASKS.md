@@ -1,3 +1,9 @@
+## Progress (2025-07-20 10:18 +0700)
+- Removed runtime helper functions and simplified header generation.
+- Leveraged Zig's type inference for variable declarations.
+- Cleaned binary expression formatting and list literals.
+- Regenerated golden files and updated README checklist (26/100 tests passing)
+
 ## Progress (2025-07-20 09:22 +0700)
 - Improved type inference for strings, booleans and constant lists.
 - Removed AST debug helpers and cleaned generated code format.
@@ -14,6 +20,7 @@
 
 # Zig Transpiler Tasks
 
+- 2025-07-20 10:18 +0700 - Removed helper functions and used Zig's type inference (26/100 tests passing)
 - 2025-07-20 08:31 +0700 - Added for-loop support and generated golden tests for new loops (26/100 tests passing)
 
 - 2025-07-19 19:14 +0000 - Improved code generation and cleaned up helper logic (24/100 tests passing)
