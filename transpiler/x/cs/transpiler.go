@@ -23,6 +23,7 @@ var stringVars map[string]bool
 var mapVars map[string]bool
 var varTypes map[string]string
 var usesDict bool
+var usesLinq bool
 
 type Stmt interface{ emit(io.Writer) }
 
@@ -41,7 +42,11 @@ type LetStmt struct {
 }
 
 func (s *LetStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "var %s = ", s.Name)
+	if t, ok := varTypes[s.Name]; ok && t != "" {
+		fmt.Fprintf(w, "%s %s = ", t, s.Name)
+	} else {
+		fmt.Fprintf(w, "var %s = ", s.Name)
+	}
 	s.Value.emit(w)
 }
 
@@ -52,7 +57,11 @@ type VarStmt struct {
 }
 
 func (s *VarStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "var %s", s.Name)
+	if t, ok := varTypes[s.Name]; ok && t != "" {
+		fmt.Fprintf(w, "%s %s", t, s.Name)
+	} else {
+		fmt.Fprintf(w, "var %s", s.Name)
+	}
 	if s.Value != nil {
 		fmt.Fprint(w, " = ")
 		s.Value.emit(w)
@@ -880,6 +889,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	mapVars = make(map[string]bool)
 	varTypes = make(map[string]string)
 	usesDict = false
+	usesLinq = false
 	for _, st := range p.Statements {
 		s, err := compileStmt(prog, st)
 		if err != nil {
@@ -936,6 +946,9 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 			return &BoolOpExpr{Op: op, Left: left, Right: right}
 		case "in":
 			return &InExpr{Item: left, Collection: right}
+		case "union", "union_all", "except", "intersect":
+			usesLinq = true
+			fallthrough
 		default:
 			return &BinaryExpr{Op: op, Left: left, Right: right}
 		}
@@ -1013,6 +1026,9 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
+			if !isStringExpr(expr) {
+				usesLinq = true
+			}
 			expr = &SliceExpr{Value: expr, Start: start, End: end}
 		case op.Field != nil:
 			expr = &FieldExpr{Target: expr, Name: op.Field.Name}
@@ -1073,6 +1089,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			default:
 				return nil, fmt.Errorf("unsupported let type")
 			}
+			varTypes[s.Let.Name] = csType(s.Let.Type)
 		} else {
 			return nil, fmt.Errorf("unsupported let")
 		}
@@ -1106,6 +1123,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			default:
 				return nil, fmt.Errorf("unsupported var type")
 			}
+			varTypes[s.Var.Name] = csType(s.Var.Type)
 		}
 		if isStringExpr(val) {
 			stringVars[s.Var.Name] = true
@@ -1312,6 +1330,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			return &CallExpr{Func: name, Args: args}, nil
 		case "append":
 			if len(args) == 2 {
+				usesLinq = true
 				return &AppendExpr{List: args[0], Item: args[1]}, nil
 			}
 		case "count":
@@ -1320,6 +1339,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 		case "avg":
 			if len(args) == 1 {
+				usesLinq = true
 				return &AvgExpr{Arg: args[0]}, nil
 			}
 		case "len":
@@ -1328,6 +1348,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 		case "sum":
 			if len(args) == 1 {
+				usesLinq = true
 				return &SumExpr{Arg: args[0]}, nil
 			}
 		case "str":
@@ -1336,10 +1357,12 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 		case "min":
 			if len(args) == 1 {
+				usesLinq = true
 				return &MinExpr{Arg: args[0]}, nil
 			}
 		case "max":
 			if len(args) == 1 {
+				usesLinq = true
 				return &MaxExpr{Arg: args[0]}, nil
 			}
 		case "substring":
@@ -1349,6 +1372,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		case "values":
 			if len(args) == 1 {
 				usesDict = true
+				usesLinq = true
 				return &ValuesExpr{Map: args[0]}, nil
 			}
 		}
@@ -1459,7 +1483,9 @@ func Emit(prog *Program) []byte {
 	if usesDict {
 		buf.WriteString("using System.Collections.Generic;\n")
 	}
-	buf.WriteString("using System.Linq;\n")
+	if usesLinq {
+		buf.WriteString("using System.Linq;\n")
+	}
 	buf.WriteString("\n")
 	buf.WriteString("class Program {\n")
 	for _, fn := range prog.Funcs {
