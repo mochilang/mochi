@@ -1,4 +1,16 @@
-## Progress (2025-07-20 13:26 +0700)
+## Progress (2025-07-20 13:57 +0700)
+- java transpiler: improve inference and indexing (befee42d0)
+
+- java transpiler: improve inference and indexing (befee42d0)
+
+- java transpiler: improve inference and indexing (befee42d0)
+
+- java transpiler: improve inference and indexing (befee42d0)
+
+- java transpiler: improve inference and indexing (befee42d0)
+
+- java transpiler: improve inference and indexing (befee42d0)
+
 - fix tests (a05878f0e)
 
 - fix tests (a05878f0e)

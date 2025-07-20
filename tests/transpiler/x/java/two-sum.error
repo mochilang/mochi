@@ -3,7 +3,7 @@ Main.java:2: error: incompatible types: int[] cannot be converted to int
     static int result = twoSum(new int[]{2, 7, 11, 15}, 9);
                                ^
 Main.java:5: error: int cannot be dereferenced
-        int n = nums.length();
+        int n = nums.length;
                     ^
 Main.java:8: error: array required, but int found
                 if (nums[i] + nums[j] == target) {
