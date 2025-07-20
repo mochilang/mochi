@@ -1,10 +1,12 @@
 # Transpiler Tasks
 
-## Progress (2025-07-20 08:31 +0700)
-- Improved code generation formatting and added basic type inference for auto-declared variables.
+## Progress (2025-07-20 08:56 +0700)
+- Removed header comment and runtime helpers for cleaner output.
+- Enhanced type inference for binary expressions and function calls.
 - Updated README checklist with 27/100 tests.
 
 ## Recent Updates
+- [2025-07-20T08:56:36+07:00] Removed helpers and improved inference; progress 27/100
 - [2025-07-20T08:31:52+07:00] Improved formatting and added variable inference.
 - [2025-07-19T12:53:18Z] Added list literal support and new tests; progress to 27/100
 - [2025-07-19T12:29:49Z] Added short_circuit test and progress to 25/100
