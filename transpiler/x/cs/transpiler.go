@@ -6,11 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"os"
-	"path/filepath"
-	"runtime"
 	"strings"
-	"time"
 
 	"mochi/parser"
 	"mochi/types"
@@ -272,11 +268,38 @@ type BinaryExpr struct {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "(")
-	b.Left.emit(w)
-	fmt.Fprintf(w, " %s ", b.Op)
-	b.Right.emit(w)
-	fmt.Fprint(w, ")")
+	switch b.Op {
+	case "union":
+		fmt.Fprint(w, "(")
+		b.Left.emit(w)
+		fmt.Fprint(w, ".Concat(")
+		b.Right.emit(w)
+		fmt.Fprint(w, ").Distinct().ToArray())")
+	case "union_all":
+		fmt.Fprint(w, "(")
+		b.Left.emit(w)
+		fmt.Fprint(w, ".Concat(")
+		b.Right.emit(w)
+		fmt.Fprint(w, ").ToArray())")
+	case "except":
+		fmt.Fprint(w, "(")
+		b.Left.emit(w)
+		fmt.Fprint(w, ".Except(")
+		b.Right.emit(w)
+		fmt.Fprint(w, ").ToArray())")
+	case "intersect":
+		fmt.Fprint(w, "(")
+		b.Left.emit(w)
+		fmt.Fprint(w, ".Intersect(")
+		b.Right.emit(w)
+		fmt.Fprint(w, ").ToArray())")
+	default:
+		fmt.Fprint(w, "(")
+		b.Left.emit(w)
+		fmt.Fprintf(w, " %s ", b.Op)
+		b.Right.emit(w)
+		fmt.Fprint(w, ")")
+	}
 }
 
 // BoolOpExpr represents boolean && and || operations with integer semantics.
@@ -1537,6 +1560,9 @@ func inspectLinq(e Expr) bool {
 	case *UnaryExpr:
 		return inspectLinq(ex.Val)
 	case *BinaryExpr:
+		if ex.Op == "union" || ex.Op == "union_all" || ex.Op == "except" || ex.Op == "intersect" {
+			return true
+		}
 		return inspectLinq(ex.Left) || inspectLinq(ex.Right)
 	}
 	return false
