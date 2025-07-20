@@ -2567,6 +2567,7 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 	}
 
 	prev := currentEnv
+	selIdent, selIsIdent := isSimpleIdent(q.Select)
 	genv := types.NewEnv(env)
 	genv.SetVar(q.Group.Name, types.AnyType{}, true)
 	currentEnv = genv
@@ -2584,8 +2585,9 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 		}
 	}
 	currentEnv = prev
-
-	sel = replaceGroup(sel, q.Group.Name)
+	if !(selIsIdent && selIdent == q.Group.Name) {
+		sel = replaceGroup(sel, q.Group.Name)
+	}
 	if having != nil {
 		having = replaceGroup(having, q.Group.Name)
 	}
