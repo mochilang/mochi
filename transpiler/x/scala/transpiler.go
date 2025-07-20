@@ -227,11 +227,9 @@ func (ie *IfExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "if (")
 	ie.Cond.emit(w)
 	fmt.Fprint(w, ") ")
-	fmt.Fprint(w, "{")
 	ie.Then.emit(w)
-	fmt.Fprint(w, "} else {")
+	fmt.Fprint(w, " else ")
 	ie.Else.emit(w)
-	fmt.Fprint(w, "}")
 }
 
 func (f *FunExpr) emit(w io.Writer) {
@@ -254,8 +252,9 @@ func (f *FunExpr) emit(w io.Writer) {
 	fmt.Fprint(w, ")")
 }
 
+// CallExpr represents calling a function expression with arguments.
 type CallExpr struct {
-	Func string
+	Fn   Expr
 	Args []Expr
 }
 
@@ -268,7 +267,7 @@ func (l *LenExpr) emit(w io.Writer) {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
-	fmt.Fprint(w, c.Func)
+	c.Fn.emit(w)
 	fmt.Fprint(w, "(")
 	for i, a := range c.Args {
 		if i > 0 {
@@ -379,25 +378,6 @@ func (f *FieldExpr) emit(w io.Writer) {
 	fmt.Fprintf(w, ".%s", f.Name)
 }
 
-// MethodCallExpr represents obj.method(args...).
-type MethodCallExpr struct {
-	Receiver Expr
-	Name     string
-	Args     []Expr
-}
-
-func (m *MethodCallExpr) emit(w io.Writer) {
-	m.Receiver.emit(w)
-	fmt.Fprintf(w, ".%s(", m.Name)
-	for i, a := range m.Args {
-		if i > 0 {
-			fmt.Fprint(w, ", ")
-		}
-		a.emit(w)
-	}
-	fmt.Fprint(w, ")")
-}
-
 // SubstringExpr represents substring(s, i, j) which becomes s.substring(i, j).
 type SubstringExpr struct {
 	Value Expr
@@ -421,11 +401,9 @@ type BinaryExpr struct {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "(")
 	b.Left.emit(w)
 	fmt.Fprintf(w, " %s ", b.Op)
 	b.Right.emit(w)
-	fmt.Fprint(w, ")")
 }
 
 // Emit generates formatted Scala source for the given program.
@@ -566,7 +544,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		right := operands[i+1]
 		var ex Expr
 		if op == "in" {
-			ex = &MethodCallExpr{Receiver: right, Name: "contains", Args: []Expr{left}}
+			ex = &CallExpr{Fn: &FieldExpr{Receiver: right, Name: "contains"}, Args: []Expr{left}}
 		} else {
 			ex = &BinaryExpr{Left: left, Op: op, Right: right}
 		}
@@ -646,7 +624,7 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 					}
 					args[j] = ex
 				}
-				expr = &MethodCallExpr{Receiver: expr, Name: op.Field.Name, Args: args}
+				expr = &CallExpr{Fn: &FieldExpr{Receiver: expr, Name: op.Field.Name}, Args: args}
 				i++
 			} else {
 				expr = &FieldExpr{Receiver: expr, Name: op.Field.Name}
@@ -683,11 +661,7 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				}
 				args[j] = ex
 			}
-			if f, ok := expr.(*FieldExpr); ok {
-				expr = &MethodCallExpr{Receiver: f.Receiver, Name: f.Name, Args: args}
-			} else {
-				expr = &MethodCallExpr{Receiver: expr, Name: "apply", Args: args}
-			}
+			expr = &CallExpr{Fn: expr, Args: args}
 		case op.Cast != nil:
 			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
 				expr = &CastExpr{Value: expr, Type: *op.Cast.Type.Simple}
@@ -759,7 +733,7 @@ func convertCall(c *parser.CallExpr) (Expr, error) {
 	if name == "substring" && len(args) == 3 {
 		return &SubstringExpr{Value: args[0], Start: args[1], End: args[2]}, nil
 	}
-	return &CallExpr{Func: name, Args: args}, nil
+	return &CallExpr{Fn: &Name{Name: name}, Args: args}, nil
 }
 
 func convertLiteral(l *parser.Literal) (Expr, error) {
@@ -1004,6 +978,19 @@ func inferType(e Expr) string {
 		return fmt.Sprintf("List[%s]", t)
 	case *LenExpr:
 		return "Int"
+	case *AppendExpr:
+		if t := inferType(ex.List); strings.HasPrefix(t, "List[") {
+			return t
+		}
+		return "List[Any]"
+	case *IndexExpr:
+		if t := inferType(ex.Value); strings.HasPrefix(t, "List[") {
+			inner := strings.TrimSuffix(strings.TrimPrefix(t, "List["), "]")
+			if inner != "" {
+				return inner
+			}
+		}
+		return "Any"
 	case *BinaryExpr:
 		switch ex.Op {
 		case "+", "-", "*", "/", "%":
@@ -1143,7 +1130,8 @@ func stmtNode(s Stmt) *ast.Node {
 func exprNode(e Expr) *ast.Node {
 	switch ex := e.(type) {
 	case *CallExpr:
-		n := &ast.Node{Kind: "call", Value: ex.Func}
+		n := &ast.Node{Kind: "call"}
+		n.Children = append(n.Children, exprNode(ex.Fn))
 		for _, a := range ex.Args {
 			n.Children = append(n.Children, exprNode(a))
 		}
