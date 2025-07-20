@@ -4,7 +4,7 @@ This directory contains a minimal transpiler that converts a subset of Mochi int
 It currently supports print statements with integer or string expressions, variable declarations and assignments, unary negation and simple addition.
 
 ## Golden tests
-Programs under `tests/vm/valid` that have generated Zig code (59/100 completed):
+Programs under `tests/vm/valid` that have generated Zig code (60/100 completed):
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -25,7 +25,7 @@ Programs under `tests/vm/valid` that have generated Zig code (59/100 completed):
 - [x] for_loop
 - [ ] for_map_collection
 - [x] fun_call
-- [ ] fun_expr_in_let
+- [x] fun_expr_in_let
 - [x] fun_three_args
 - [ ] go_auto
 - [ ] group_by
