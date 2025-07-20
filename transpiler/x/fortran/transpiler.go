@@ -143,7 +143,7 @@ func (p *PrintStmt) emit(w io.Writer, ind int) {
 				fmt.Fprintf(w, "print '(F0.1)', %s\n", expr)
 			}
 		case types.BoolType:
-			fmt.Fprintf(w, "print '(I0)', merge(1,0,%s)\n", expr)
+			fmt.Fprintf(w, "print '(A)', trim(merge('true  ','false ',%s))\n", expr)
 		case types.StringType:
 			fmt.Fprintf(w, "print *, trim(%s)\n", expr)
 		default:
@@ -985,6 +985,20 @@ func toUnary(u *parser.Unary, env *types.Env) (string, error) {
 }
 
 func toPostfix(pf *parser.PostfixExpr, env *types.Env) (string, error) {
+	if pf.Target != nil && pf.Target.Selector != nil &&
+		len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "contains" &&
+		len(pf.Ops) == 1 && pf.Ops[0].Call != nil && len(pf.Ops[0].Call.Args) == 1 {
+		root := pf.Target.Selector.Root
+		arg, err := toExpr(pf.Ops[0].Call.Args[0], env)
+		if err != nil {
+			return "", err
+		}
+		rootType := env.Types()[root]
+		if !types.IsStringType(rootType) || !types.IsStringType(types.ExprType(pf.Ops[0].Call.Args[0], env)) {
+			return "", fmt.Errorf("contains expects string")
+		}
+		return fmt.Sprintf("index(%s, %s) > 0", root, arg), nil
+	}
 	val, err := toPrimary(pf.Target, env)
 	if err != nil {
 		return "", err
