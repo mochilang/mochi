@@ -274,13 +274,22 @@ func (fe *ForEachStmt) emit(w io.Writer) {
 
 // FunStmt represents a simple function declaration with no parameters.
 type FunStmt struct {
-	Name string
-	Body []Stmt
-	Ret  Expr
+	Name   string
+	Params []string
+	Body   []Stmt
+	Ret    Expr
 }
 
 func (f *FunStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "let rec %s () =\n", f.Name)
+	fmt.Fprintf(w, "let rec %s", f.Name)
+	if len(f.Params) == 0 {
+		io.WriteString(w, " ()")
+	} else {
+		for _, p := range f.Params {
+			fmt.Fprintf(w, " %s", p)
+		}
+	}
+	io.WriteString(w, " =\n")
 	for _, st := range f.Body {
 		st.emit(w)
 	}
@@ -358,6 +367,22 @@ func (s *SumBuiltin) emitPrint(w io.Writer) {
 	s.emit(w)
 }
 
+// AvgBuiltin represents avg(list).
+type AvgBuiltin struct{ List Expr }
+
+func (a *AvgBuiltin) emit(w io.Writer) {
+	io.WriteString(w, "((List.fold_left (fun acc x -> acc + x) 0 ")
+	a.List.emit(w)
+	io.WriteString(w, ") / List.length ")
+	a.List.emit(w)
+	io.WriteString(w, ")")
+}
+
+func (a *AvgBuiltin) emitPrint(w io.Writer) {
+	io.WriteString(w, "string_of_int ")
+	a.emit(w)
+}
+
 // AppendBuiltin represents append(list, value).
 type AppendBuiltin struct {
 	List  Expr
@@ -424,8 +449,9 @@ func (f *FuncCall) emit(w io.Writer) {
 func (f *FuncCall) emitPrint(w io.Writer) {
 	switch f.Ret {
 	case "int":
-		io.WriteString(w, "string_of_int ")
+		io.WriteString(w, "string_of_int (")
 		f.emit(w)
+		io.WriteString(w, ")")
 	case "bool":
 		io.WriteString(w, "string_of_bool (")
 		f.emit(w)
@@ -544,11 +570,11 @@ func (i *IfExpr) emitPrint(w io.Writer) {
 	case "bool":
 		io.WriteString(w, "string_of_bool (if ")
 		i.Cond.emit(w)
-		io.WriteString(w, " then (if ")
+		io.WriteString(w, " then ")
 		i.Then.emit(w)
-		io.WriteString(w, " then true else false) else (if ")
+		io.WriteString(w, " else ")
 		i.Else.emit(w)
-		io.WriteString(w, " then true else false))")
+		io.WriteString(w, ")")
 	default:
 		i.emit(w)
 	}
@@ -633,9 +659,8 @@ func (b *BinaryExpr) emit(w io.Writer) {
 func (b *BinaryExpr) emitPrint(w io.Writer) {
 	switch b.Typ {
 	case "bool":
-		io.WriteString(w, "string_of_bool (if ")
+		io.WriteString(w, "string_of_bool ")
 		b.emit(w)
-		io.WriteString(w, " then true else false)")
 	case "string":
 		b.emit(w)
 	default:
@@ -823,6 +848,15 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 	case st.Fun != nil:
 		child := types.NewEnv(env)
 		fnVars := map[string]VarInfo{}
+		params := make([]string, len(st.Fun.Params))
+		for i, p := range st.Fun.Params {
+			params[i] = p.Name
+			typ := "int"
+			if p.Type != nil && p.Type.Simple != nil {
+				typ = *p.Type.Simple
+			}
+			fnVars[p.Name] = VarInfo{typ: typ}
+		}
 		bodyStmts := st.Fun.Body
 		if len(bodyStmts) > 0 && bodyStmts[len(bodyStmts)-1].Return != nil {
 			bodyStmts = bodyStmts[:len(bodyStmts)-1]
@@ -855,7 +889,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			}
 		}
 		env.SetFuncType(st.Fun.Name, types.FuncType{Return: retTyp})
-		return &FunStmt{Name: st.Fun.Name, Body: body, Ret: ret}, nil
+		return &FunStmt{Name: st.Fun.Name, Params: params, Body: body, Ret: ret}, nil
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
@@ -1236,6 +1270,16 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			return nil, "", fmt.Errorf("sum expects list")
 		}
 		return &SumBuiltin{List: listArg}, "int", nil
+	}
+	if c.Func == "avg" && len(c.Args) == 1 {
+		listArg, typ, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		if typ != "list" {
+			return nil, "", fmt.Errorf("avg expects list")
+		}
+		return &AvgBuiltin{List: listArg}, "int", nil
 	}
 	if fn, ok := env.GetFunc(c.Func); ok {
 		ret := "int"

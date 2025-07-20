@@ -1,3 +1,8 @@
+## Progress (2025-07-20 08:27 +0700)
+- Checklist updated: 29/100 tests compiled
+- Added `avg_builtin` and `fun_call` programs with support for function parameters.
+- Simplified boolean printing and improved function declarations.
+
 ## Progress (2025-07-20 08:14 +0700)
 - Checklist updated: 27/100 tests compiled
 - Added list index assignment support generating `List.mapi` updates. Generated golden files for `list_assign`.
