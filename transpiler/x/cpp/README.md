@@ -3,7 +3,7 @@
 This checklist is auto-generated.
 Generated C++ code for programs in `tests/vm/valid`. Each program has a `.cpp` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.
 
-## VM Golden Test Checklist (69/100)
+## VM Golden Test Checklist (80/100)
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -28,19 +28,19 @@ Generated C++ code for programs in `tests/vm/valid`. Each program has a `.cpp` f
 - [x] fun_three_args
 - [ ] go_auto
 - [x] group_by
-- [ ] group_by_conditional_sum
+- [x] group_by_conditional_sum
 - [ ] group_by_having
 - [x] group_by_join
 - [ ] group_by_left_join
 - [ ] group_by_multi_join
 - [ ] group_by_multi_join_sort
-- [ ] group_by_sort
-- [ ] group_items_iteration
+- [x] group_by_sort
+- [x] group_items_iteration
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
 - [x] in_operator
-- [ ] in_operator_extended
+- [x] in_operator_extended
 - [x] inner_join
 - [x] join_multi
 - [ ] json_builtin
@@ -53,7 +53,7 @@ Generated C++ code for programs in `tests/vm/valid`. Each program has a `.cpp` f
 - [x] list_assign
 - [x] list_index
 - [x] list_nested_assign
-- [ ] list_set_ops
+- [x] list_set_ops
 - [ ] load_yaml
 - [x] map_assign
 - [x] map_in_operator
@@ -68,21 +68,21 @@ Generated C++ code for programs in `tests/vm/valid`. Each program has a `.cpp` f
 - [x] membership
 - [x] min_max_builtin
 - [x] nested_function
-- [ ] order_by_map
+- [x] order_by_map
 - [ ] outer_join
-- [ ] partial_application
+- [x] partial_application
 - [x] print_hello
 - [x] pure_fold
 - [x] pure_global_fold
 - [ ] python_auto
 - [ ] python_math
-- [ ] query_sum_select
+- [x] query_sum_select
 - [ ] record_assign
 - [ ] right_join
 - [ ] save_jsonl_stdout
 - [x] short_circuit
 - [x] slice
-- [ ] sort_stable
+- [x] sort_stable
 - [x] str_builtin
 - [x] string_compare
 - [x] string_concat
@@ -95,12 +95,12 @@ Generated C++ code for programs in `tests/vm/valid`. Each program has a `.cpp` f
 - [x] tail_recursion
 - [ ] test_block
 - [ ] tree_sum
-- [ ] two-sum
+- [x] two-sum
 - [x] typed_let
 - [x] typed_var
 - [x] unary_neg
 - [ ] update_stmt
-- [ ] user_type_literal
+- [x] user_type_literal
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop

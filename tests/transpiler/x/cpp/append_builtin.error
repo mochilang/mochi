@@ -1,0 +1,5 @@
+compile: exit status 1
+/workspace/mochi/tests/transpiler/x/cpp/append_builtin.cpp: In lambda function:
+/workspace/mochi/tests/transpiler/x/cpp/append_builtin.cpp:9:61: error: aggregate ‘std::ostringstream ss’ has incomplete type and cannot be defined
+    9 |     std::cout << std::boolalpha << ([&]{ std::ostringstream ss; auto tmp = ([&]{ auto v = a; v.push_back(3); return v; }()); for(size_t i=0;i<tmp.size();++i){ if(i>0) ss<<" "; ss<<tmp[i]; } return ss.str(); }()) << std::endl;
+      |                                                             ^~

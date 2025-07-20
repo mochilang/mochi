@@ -1323,6 +1323,34 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			return &AssignIndexStmt{Target: target, Index: idx, Value: val}, nil
 		}
 		return &AssignStmt{Name: s.Assign.Name, Value: val}, nil
+	case s.For != nil:
+		start, err := convertExpr(s.For.Source)
+		if err != nil {
+			return nil, err
+		}
+		var end Expr
+		if s.For.RangeEnd != nil {
+			end, err = convertExpr(s.For.RangeEnd)
+			if err != nil {
+				return nil, err
+			}
+		}
+		fs := &ForStmt{Var: s.For.Name, Start: start, End: end}
+		if currentEnv != nil {
+			if t := types.TypeOfExpr(s.For.Source, currentEnv); t != nil {
+				if _, ok := t.(types.MapType); ok {
+					fs.IsMap = true
+				}
+			}
+		}
+		for _, st := range s.For.Body {
+			cs, err := convertStmt(st)
+			if err != nil {
+				return nil, err
+			}
+			fs.Body = append(fs.Body, cs)
+		}
+		return fs, nil
 	case s.Break != nil:
 		return &BreakStmt{}, nil
 	case s.Continue != nil:
