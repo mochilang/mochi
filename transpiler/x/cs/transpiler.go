@@ -31,7 +31,6 @@ var varTypes map[string]string
 var usesDict bool
 var usesLinq bool
 var usesJson bool
-var usesGroup bool
 
 type Stmt interface{ emit(io.Writer) }
 
@@ -1034,7 +1033,6 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesDict = false
 	usesLinq = false
 	usesJson = false
-	usesGroup = false
 	for _, st := range p.Statements {
 		s, err := compileStmt(prog, st)
 		if err != nil {
@@ -1808,13 +1806,11 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			mapVars[curVar] = savedMap
 			return nil, err
 		}
-		keyType := typeOfExpr(keyExpr)
 		elemType := varTypes[curVar]
 		tmp := q.Group.Name + "Tmp"
 		fmt.Fprintf(builder, " group %s by %s into %s", curVar, exprString(keyExpr), tmp)
-		fmt.Fprintf(builder, " let %s = new Group<%s, %s>(%s.Key, %s)", q.Group.Name, keyType, elemType, tmp, tmp)
+		fmt.Fprintf(builder, " let %s = new { key = %s.Key, items = %s.ToArray() }", q.Group.Name, tmp, tmp)
 		varTypes[q.Group.Name] = fmt.Sprintf("%s[]", elemType)
-		usesGroup = true
 		if q.Group.Having != nil {
 			cond, err := compileExpr(q.Group.Having)
 			if err != nil {
@@ -1887,7 +1883,7 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 func Emit(prog *Program) []byte {
 	var buf bytes.Buffer
 	buf.WriteString("using System;\n")
-	if usesDict || usesGroup {
+	if usesDict {
 		buf.WriteString("using System.Collections.Generic;\n")
 	}
 	if usesLinq {
@@ -1897,15 +1893,7 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("using System.Text.Json;\n")
 	}
 	buf.WriteString("\n")
-	if usesGroup {
-		buf.WriteString("class Group<K,T> : IEnumerable<T> {\n")
-		buf.WriteString("    public K key;\n")
-		buf.WriteString("    List<T> items;\n")
-		buf.WriteString("    public Group(K k, IEnumerable<T> it) { key = k; items = new List<T>(it); }\n")
-		buf.WriteString("    public IEnumerator<T> GetEnumerator() => items.GetEnumerator();\n")
-		buf.WriteString("    System.Collections.IEnumerator IEnumerable.GetEnumerator() => items.GetEnumerator();\n")
-		buf.WriteString("}\n\n")
-	}
+
 	buf.WriteString("class Program {\n")
 	for _, g := range prog.Globals {
 		buf.WriteString("\tstatic ")
