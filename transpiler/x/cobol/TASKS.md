@@ -1,3 +1,8 @@
+## Progress (2025-07-20 12:58 +0700)
+- cobol: constant len for list literals
+- Generated COBOL for 23/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-20 12:49 +0700)
 - cobol: implement runtime substring
 - Generated COBOL for 22/100 programs
