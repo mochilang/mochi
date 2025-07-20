@@ -323,16 +323,23 @@ func (s *StrBuiltin) emit(w io.Writer) {
 func (s *StrBuiltin) emitPrint(w io.Writer) { s.emit(w) }
 
 // LenBuiltin represents a call to len() builtin for strings.
-type LenBuiltin struct{ Arg Expr }
+type LenBuiltin struct {
+	Arg Expr
+	Typ string
+}
 
 func (l *LenBuiltin) emit(w io.Writer) {
-	io.WriteString(w, "String.length ")
+	if l.Typ == "string" {
+		io.WriteString(w, "String.length ")
+	} else {
+		io.WriteString(w, "List.length ")
+	}
 	l.Arg.emit(w)
 }
 
 func (l *LenBuiltin) emitPrint(w io.Writer) {
-	io.WriteString(w, "string_of_int (String.length ")
-	l.Arg.emit(w)
+	io.WriteString(w, "string_of_int (")
+	l.emit(w)
 	io.WriteString(w, ")")
 }
 
@@ -1397,10 +1404,12 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		if err != nil {
 			return nil, "", err
 		}
-		if typ != "string" {
-			return nil, "", fmt.Errorf("len only supports string")
+		switch typ {
+		case "string", "list":
+			return &LenBuiltin{Arg: arg, Typ: typ}, "int", nil
+		default:
+			return nil, "", fmt.Errorf("len unsupported for %s", typ)
 		}
-		return &LenBuiltin{Arg: arg}, "int", nil
 	}
 	if c.Func == "substring" && len(c.Args) == 3 {
 		strArg, typ, err := convertExpr(c.Args[0], env, vars)
