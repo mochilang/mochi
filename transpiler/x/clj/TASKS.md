@@ -1,3 +1,39 @@
+## Progress (2025-07-20 14:49 +0700)
+- feat(clj): handle match and set ops
+- Regenerated golden files - 63/100 vm valid programs passing
+
+## Progress (2025-07-20 14:31 +0700)
+- feat(scala): support structs and match
+- Regenerated golden files - 63/100 vm valid programs passing
+
+## Progress (2025-07-20 14:31 +0700)
+- feat(scala): support structs and match
+- Regenerated golden files - 62/100 vm valid programs passing
+
+## Progress (2025-07-20 14:31 +0700)
+- feat(scala): support structs and match
+- Regenerated golden files - 62/100 vm valid programs passing
+
+## Progress (2025-07-20 14:31 +0700)
+- feat(scala): support structs and match
+- Regenerated golden files - 62/100 vm valid programs passing
+
+## Progress (2025-07-20 14:31 +0700)
+- feat(scala): support structs and match
+- Regenerated golden files - 61/100 vm valid programs passing
+
+## Progress (2025-07-20 14:31 +0700)
+- feat(scala): support structs and match
+- Regenerated golden files - 60/100 vm valid programs passing
+
+## Progress (2025-07-20 14:31 +0700)
+- feat(scala): support structs and match
+- Regenerated golden files - 59/100 vm valid programs passing
+
+## Progress (2025-07-20 14:31 +0700)
+- feat(scala): support structs and match
+- Regenerated golden files - 58/100 vm valid programs passing
+
 ## Progress (2025-07-20 13:58 +0700)
 - clj transpiler: support partials and nested assigns
 - Regenerated golden files - 58/100 vm valid programs passing

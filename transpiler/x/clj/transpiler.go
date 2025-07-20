@@ -210,6 +210,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 
 	// emit (ns main)
 	pr.Forms = append(pr.Forms, &List{Elems: []Node{Symbol("ns"), Symbol("main")}})
+	pr.Forms = append(pr.Forms, &List{Elems: []Node{Symbol("require"), Symbol("'clojure.set")}})
 
 	body := []Node{}
 	for _, st := range prog.Statements {
@@ -335,7 +336,27 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 		params = append(params, Symbol(p.Name))
 	}
 	body := []Node{}
-	for _, st := range f.Body {
+	for i := 0; i < len(f.Body); i++ {
+		st := f.Body[i]
+		// Pattern: if ... return X; return Y
+		if i+1 == len(f.Body)-1 && st.If != nil && f.Body[i+1].Return != nil {
+			if len(st.If.Then) == 1 && st.If.Then[0].Return != nil && st.If.Else == nil && st.If.ElseIf == nil {
+				cond, err := transpileExpr(st.If.Cond)
+				if err != nil {
+					return nil, err
+				}
+				thenExpr, err := transpileExpr(st.If.Then[0].Return.Value)
+				if err != nil {
+					return nil, err
+				}
+				elseExpr, err := transpileExpr(f.Body[i+1].Return.Value)
+				if err != nil {
+					return nil, err
+				}
+				body = append(body, &List{Elems: []Node{Symbol("if"), cond, thenExpr, elseExpr}})
+				break
+			}
+		}
 		n, err := transpileStmt(st)
 		if err != nil {
 			return nil, err
@@ -355,20 +376,24 @@ func transpileReturnStmt(r *parser.ReturnStmt) (Node, error) {
 }
 
 var binOp = map[string]string{
-	"+":  "+",
-	"-":  "-",
-	"*":  "*",
-	"/":  "/",
-	"%":  "mod",
-	"==": "=",
-	"!=": "not=",
-	"<":  "<",
-	"<=": "<=",
-	">":  ">",
-	">=": ">=",
-	"&&": "and",
-	"||": "or",
-	"in": "in",
+	"+":         "+",
+	"-":         "-",
+	"*":         "*",
+	"/":         "/",
+	"%":         "mod",
+	"==":        "=",
+	"!=":        "not=",
+	"<":         "<",
+	"<=":        "<=",
+	">":         ">",
+	">=":        ">=",
+	"&&":        "and",
+	"||":        "or",
+	"in":        "in",
+	"union":     "union",
+	"union_all": "union_all",
+	"except":    "except",
+	"intersect": "intersect",
 }
 
 func isStringNode(n Node) bool {
@@ -485,9 +510,26 @@ func transpileExpr(e *parser.Expr) (Node, error) {
 		if !ok {
 			return nil, fmt.Errorf("binary op not supported")
 		}
-		if sym == "+" && (isStringNode(n) || isStringNode(right)) {
-			n = &List{Elems: []Node{Symbol("str"), n, right}}
-		} else {
+		switch sym {
+		case "+":
+			if isStringNode(n) || isStringNode(right) {
+				n = &List{Elems: []Node{Symbol("str"), n, right}}
+			} else {
+				n = &List{Elems: []Node{Symbol("+"), n, right}}
+			}
+		case "union":
+			setFn := func(x Node) Node { return &List{Elems: []Node{Symbol("set"), x}} }
+			u := &List{Elems: []Node{Symbol("clojure.set/union"), setFn(n), setFn(right)}}
+			n = &List{Elems: []Node{Symbol("vec"), u}}
+		case "union_all":
+			n = &List{Elems: []Node{Symbol("vec"), &List{Elems: []Node{Symbol("concat"), n, right}}}}
+		case "except":
+			diff := &List{Elems: []Node{Symbol("clojure.set/difference"), &List{Elems: []Node{Symbol("set"), n}}, &List{Elems: []Node{Symbol("set"), right}}}}
+			n = &List{Elems: []Node{Symbol("vec"), diff}}
+		case "intersect":
+			inter := &List{Elems: []Node{Symbol("clojure.set/intersection"), &List{Elems: []Node{Symbol("set"), n}}, &List{Elems: []Node{Symbol("set"), right}}}}
+			n = &List{Elems: []Node{Symbol("vec"), inter}}
+		default:
 			n = &List{Elems: []Node{Symbol(sym), n, right}}
 		}
 	}
@@ -569,7 +611,7 @@ func transpilePostfix(p *parser.PostfixExpr) (Node, error) {
 			if err != nil {
 				return nil, err
 			}
-			if isMapNode(n) {
+			if isMapNode(n) || isStringNode(i) {
 				n = &List{Elems: []Node{Symbol("get"), n, i}}
 			} else {
 				n = &List{Elems: []Node{Symbol("nth"), n, i}}
@@ -737,6 +779,8 @@ func transpilePrimary(p *parser.Primary) (Node, error) {
 			elems = append(elems, k, v)
 		}
 		return &List{Elems: elems}, nil
+	case p.Match != nil:
+		return transpileMatchExpr(p.Match)
 	case p.FunExpr != nil:
 		params := []Node{}
 		for _, pm := range p.FunExpr.Params {
@@ -854,6 +898,36 @@ func transpileLiteral(l *parser.Literal) (Node, error) {
 	default:
 		return nil, fmt.Errorf("unsupported literal")
 	}
+}
+
+func transpileMatchExpr(m *parser.MatchExpr) (Node, error) {
+	target, err := transpileExpr(m.Target)
+	if err != nil {
+		return nil, err
+	}
+	elems := []Node{Symbol("cond")}
+	for _, c := range m.Cases {
+		pat, err := transpileExpr(c.Pattern)
+		if err != nil {
+			return nil, err
+		}
+		if sym, ok := pat.(Symbol); ok && string(sym) == "_" {
+			elems = append(elems, Symbol("true"))
+			res, err := transpileExpr(c.Result)
+			if err != nil {
+				return nil, err
+			}
+			elems = append(elems, res)
+			continue
+		}
+		eq := &List{Elems: []Node{Symbol("="), target, pat}}
+		res, err := transpileExpr(c.Result)
+		if err != nil {
+			return nil, err
+		}
+		elems = append(elems, eq, res)
+	}
+	return &List{Elems: elems}, nil
 }
 
 func defaultValue(t *parser.TypeRef) Node {
