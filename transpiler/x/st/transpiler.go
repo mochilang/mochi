@@ -356,11 +356,31 @@ func evalUnary(u *parser.Unary, vars map[string]value) (value, error) {
 }
 
 func evalPostfix(p *parser.PostfixExpr, vars map[string]value) (value, error) {
+	// special case string method calls like s.contains("cat")
+	if p.Target != nil && p.Target.Selector != nil && len(p.Target.Selector.Tail) == 1 && len(p.Ops) > 0 && p.Ops[0].Call != nil {
+		root, ok := vars[p.Target.Selector.Root]
+		if ok && root.kind == valString && p.Target.Selector.Tail[0] == "contains" {
+			call := p.Ops[0].Call
+			if len(call.Args) != 1 {
+				return value{}, fmt.Errorf("bad args")
+			}
+			arg, err := evalExpr(call.Args[0], vars)
+			if err != nil {
+				return value{}, err
+			}
+			if arg.kind != valString {
+				return value{}, fmt.Errorf("bad args")
+			}
+			return value{kind: valBool, b: strings.Contains(root.s, arg.s)}, nil
+		}
+	}
+
 	v, err := evalPrimary(p.Target, vars)
 	if err != nil {
 		return value{}, err
 	}
-	for _, op := range p.Ops {
+	for i := 0; i < len(p.Ops); i++ {
+		op := p.Ops[i]
 		switch {
 		case op.Index != nil:
 			idxOp := op.Index
@@ -423,6 +443,25 @@ func evalPostfix(p *parser.PostfixExpr, vars map[string]value) (value, error) {
 				}
 			default:
 				return value{}, fmt.Errorf("unsupported cast")
+			}
+		case op.Field != nil:
+			// support simple string methods like contains
+			if i+1 < len(p.Ops) && p.Ops[i+1].Call != nil && op.Field.Name == "contains" && v.kind == valString {
+				call := p.Ops[i+1].Call
+				if len(call.Args) != 1 {
+					return value{}, fmt.Errorf("bad args")
+				}
+				arg, err := evalExpr(call.Args[0], vars)
+				if err != nil {
+					return value{}, err
+				}
+				if arg.kind != valString {
+					return value{}, fmt.Errorf("bad args")
+				}
+				v = value{kind: valBool, b: strings.Contains(v.s, arg.s)}
+				i++
+			} else {
+				return value{}, fmt.Errorf("postfix not supported")
 			}
 		default:
 			return value{}, fmt.Errorf("postfix not supported")
