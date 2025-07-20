@@ -1,3 +1,7 @@
+## Progress (2025-07-20 16:21 +0700)
+- update go transpiler progress
+- Regenerated golden files - 69/100 vm valid programs passing
+
 ## Progress (2025-07-20 15:24 +0700)
 - go transpiler: basic struct support
 - Regenerated golden files - 67/100 vm valid programs passing
