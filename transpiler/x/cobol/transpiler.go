@@ -80,7 +80,13 @@ func stmtNeedsTmp(s Stmt) bool {
 func needsStr(s Stmt) bool {
 	switch st := s.(type) {
 	case *DisplayStmt:
-		return !st.IsString
+		if st.IsString {
+			return false
+		}
+		if st.Temp {
+			return true
+		}
+		return !isDirectNumber(st.Expr)
 	case *IfStmt:
 		for _, t := range st.Then {
 			if needsStr(t) {
