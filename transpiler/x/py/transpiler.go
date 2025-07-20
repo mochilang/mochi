@@ -1116,6 +1116,103 @@ func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
 	return p.Target.Save
 }
 
+func ExtractQueryExpr(e *parser.Expr) *parser.QueryExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.Query
+}
+
+func replaceGroup(e Expr, name string) Expr {
+	switch ex := e.(type) {
+	case *Name:
+		if ex.Name == name {
+			return &FieldExpr{Target: &Name{Name: name}, Name: "items", MapIndex: true}
+		}
+		return ex
+	case *BinaryExpr:
+		ex.Left = replaceGroup(ex.Left, name)
+		ex.Right = replaceGroup(ex.Right, name)
+		return ex
+	case *UnaryExpr:
+		ex.Expr = replaceGroup(ex.Expr, name)
+		return ex
+	case *CallExpr:
+		ex.Func = replaceGroup(ex.Func, name)
+		for i := range ex.Args {
+			ex.Args[i] = replaceGroup(ex.Args[i], name)
+		}
+		return ex
+	case *FieldExpr:
+		if n, ok := ex.Target.(*Name); ok && n.Name == name {
+			return ex
+		}
+		ex.Target = replaceGroup(ex.Target, name)
+		return ex
+	case *IndexExpr:
+		if n, ok := ex.Target.(*Name); ok && n.Name == name {
+			return &FieldExpr{Target: n, Name: "items", MapIndex: true}
+		}
+		ex.Target = replaceGroup(ex.Target, name)
+		ex.Index = replaceGroup(ex.Index, name)
+		return ex
+	case *SliceExpr:
+		ex.Target = replaceGroup(ex.Target, name)
+		if ex.Start != nil {
+			ex.Start = replaceGroup(ex.Start, name)
+		}
+		if ex.End != nil {
+			ex.End = replaceGroup(ex.End, name)
+		}
+		if ex.Step != nil {
+			ex.Step = replaceGroup(ex.Step, name)
+		}
+		return ex
+	case *CondExpr:
+		ex.Cond = replaceGroup(ex.Cond, name)
+		ex.Then = replaceGroup(ex.Then, name)
+		ex.Else = replaceGroup(ex.Else, name)
+		return ex
+	case *ListLit:
+		for i := range ex.Elems {
+			ex.Elems[i] = replaceGroup(ex.Elems[i], name)
+		}
+		return ex
+	case *DictLit:
+		for i := range ex.Keys {
+			ex.Keys[i] = replaceGroup(ex.Keys[i], name)
+			ex.Values[i] = replaceGroup(ex.Values[i], name)
+		}
+		return ex
+	case *ListComp:
+		ex.Iter = replaceGroup(ex.Iter, name)
+		ex.Expr = replaceGroup(ex.Expr, name)
+		if ex.Cond != nil {
+			ex.Cond = replaceGroup(ex.Cond, name)
+		}
+		return ex
+	case *MultiListComp:
+		for i := range ex.Iters {
+			ex.Iters[i] = replaceGroup(ex.Iters[i], name)
+		}
+		ex.Expr = replaceGroup(ex.Expr, name)
+		if ex.Cond != nil {
+			ex.Cond = replaceGroup(ex.Cond, name)
+		}
+		return ex
+	default:
+		return ex
+	}
+}
+
 func precedence(op string) int {
 	switch op {
 	case "*", "/", "%":
@@ -1401,33 +1498,49 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				p.Stmts = append(p.Stmts, &ExprStmt{Expr: e})
 			}
 		case st.Let != nil:
-			var e Expr
-			var err error
-			if st.Let.Value != nil {
-				e, err = convertExpr(st.Let.Value)
+			if q := ExtractQueryExpr(st.Let.Value); q != nil && q.Group != nil {
+				stmts, err := convertGroupQuery(q, env, st.Let.Name)
 				if err != nil {
 					return nil, err
 				}
-			} else if st.Let.Type != nil && env != nil {
-				e = zeroValueExpr(types.ResolveTypeRef(st.Let.Type, env))
+				p.Stmts = append(p.Stmts, stmts...)
 			} else {
-				return nil, fmt.Errorf("let without value")
+				var e Expr
+				var err error
+				if st.Let.Value != nil {
+					e, err = convertExpr(st.Let.Value)
+					if err != nil {
+						return nil, err
+					}
+				} else if st.Let.Type != nil && env != nil {
+					e = zeroValueExpr(types.ResolveTypeRef(st.Let.Type, env))
+				} else {
+					return nil, fmt.Errorf("let without value")
+				}
+				p.Stmts = append(p.Stmts, &LetStmt{Name: st.Let.Name, Expr: e})
 			}
-			p.Stmts = append(p.Stmts, &LetStmt{Name: st.Let.Name, Expr: e})
 		case st.Var != nil:
-			var e Expr
-			var err error
-			if st.Var.Value != nil {
-				e, err = convertExpr(st.Var.Value)
+			if q := ExtractQueryExpr(st.Var.Value); q != nil && q.Group != nil {
+				stmts, err := convertGroupQuery(q, env, st.Var.Name)
 				if err != nil {
 					return nil, err
 				}
-			} else if st.Var.Type != nil && env != nil {
-				e = zeroValueExpr(types.ResolveTypeRef(st.Var.Type, env))
+				p.Stmts = append(p.Stmts, stmts...)
 			} else {
-				return nil, fmt.Errorf("var without value")
+				var e Expr
+				var err error
+				if st.Var.Value != nil {
+					e, err = convertExpr(st.Var.Value)
+					if err != nil {
+						return nil, err
+					}
+				} else if st.Var.Type != nil && env != nil {
+					e = zeroValueExpr(types.ResolveTypeRef(st.Var.Type, env))
+				} else {
+					return nil, fmt.Errorf("var without value")
+				}
+				p.Stmts = append(p.Stmts, &VarStmt{Name: st.Var.Name, Expr: e})
 			}
-			p.Stmts = append(p.Stmts, &VarStmt{Name: st.Var.Name, Expr: e})
 		case st.While != nil:
 			cond, err := convertExpr(st.While.Cond)
 			if err != nil {
@@ -1617,33 +1730,49 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 				out = append(out, &ExprStmt{Expr: e})
 			}
 		case s.Let != nil:
-			var e Expr
-			var err error
-			if s.Let.Value != nil {
-				e, err = convertExpr(s.Let.Value)
+			if q := ExtractQueryExpr(s.Let.Value); q != nil && q.Group != nil {
+				stmts, err := convertGroupQuery(q, env, s.Let.Name)
 				if err != nil {
 					return nil, err
 				}
-			} else if s.Let.Type != nil {
-				e = zeroValueExpr(types.ResolveTypeRef(s.Let.Type, env))
+				out = append(out, stmts...)
 			} else {
-				return nil, fmt.Errorf("let without value")
+				var e Expr
+				var err error
+				if s.Let.Value != nil {
+					e, err = convertExpr(s.Let.Value)
+					if err != nil {
+						return nil, err
+					}
+				} else if s.Let.Type != nil {
+					e = zeroValueExpr(types.ResolveTypeRef(s.Let.Type, env))
+				} else {
+					return nil, fmt.Errorf("let without value")
+				}
+				out = append(out, &LetStmt{Name: s.Let.Name, Expr: e})
 			}
-			out = append(out, &LetStmt{Name: s.Let.Name, Expr: e})
 		case s.Var != nil:
-			var e Expr
-			var err error
-			if s.Var.Value != nil {
-				e, err = convertExpr(s.Var.Value)
+			if q := ExtractQueryExpr(s.Var.Value); q != nil && q.Group != nil {
+				stmts, err := convertGroupQuery(q, env, s.Var.Name)
 				if err != nil {
 					return nil, err
 				}
-			} else if s.Var.Type != nil {
-				e = zeroValueExpr(types.ResolveTypeRef(s.Var.Type, env))
+				out = append(out, stmts...)
 			} else {
-				return nil, fmt.Errorf("var without value")
+				var e Expr
+				var err error
+				if s.Var.Value != nil {
+					e, err = convertExpr(s.Var.Value)
+					if err != nil {
+						return nil, err
+					}
+				} else if s.Var.Type != nil {
+					e = zeroValueExpr(types.ResolveTypeRef(s.Var.Type, env))
+				} else {
+					return nil, fmt.Errorf("var without value")
+				}
+				out = append(out, &VarStmt{Name: s.Var.Name, Expr: e})
 			}
-			out = append(out, &VarStmt{Name: s.Var.Name, Expr: e})
 		case s.While != nil:
 			cond, err := convertExpr(s.While.Cond)
 			if err != nil {
@@ -2026,13 +2155,23 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 1 {
 				sumCall := &CallExpr{Func: &Name{Name: "sum"}, Args: []Expr{args[0]}}
 				lenCall := &CallExpr{Func: &Name{Name: "len"}, Args: []Expr{args[0]}}
-				div := &BinaryExpr{Left: sumCall, Op: "/", Right: lenCall}
+				var div Expr = &BinaryExpr{Left: sumCall, Op: "/", Right: lenCall}
 				zero := Expr(&IntLit{Value: "0"})
+				intCheck := false
 				if currentEnv != nil {
 					t := types.ExprType(p.Call.Args[0], currentEnv)
 					if _, ok := t.(types.FloatType); ok {
 						zero = &FloatLit{Value: "0.0"}
+					} else {
+						intCheck = true
 					}
+				} else {
+					intCheck = true
+				}
+				if intCheck {
+					intDiv := &CallExpr{Func: &Name{Name: "int"}, Args: []Expr{div}}
+					eq := &BinaryExpr{Left: div, Op: "==", Right: intDiv}
+					div = &CondExpr{Cond: eq, Then: intDiv, Else: div}
 				}
 				return &CondExpr{Cond: args[0], Then: div, Else: zero}, nil
 			}
@@ -2401,6 +2540,89 @@ func convertUpdate(u *parser.UpdateStmt, env *types.Env) (*UpdateStmt, error) {
 	}
 	currentEnv = prev
 	return &UpdateStmt{Target: u.Target, Fields: fields, Values: values, Cond: cond}, nil
+}
+
+func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]Stmt, error) {
+	if q.Group == nil {
+		return nil, fmt.Errorf("missing group clause")
+	}
+	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Distinct || len(q.Group.Exprs) != 1 {
+		return nil, fmt.Errorf("unsupported group-by query")
+	}
+
+	src, err := convertExpr(q.Source)
+	if err != nil {
+		return nil, err
+	}
+	keyExpr, err := convertExpr(q.Group.Exprs[0])
+	if err != nil {
+		return nil, err
+	}
+	var where Expr
+	if q.Where != nil {
+		where, err = convertExpr(q.Where)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	prev := currentEnv
+	genv := types.NewEnv(env)
+	genv.SetVar(q.Group.Name, types.AnyType{}, true)
+	currentEnv = genv
+	sel, err := convertExpr(q.Select)
+	if err != nil {
+		currentEnv = prev
+		return nil, err
+	}
+	var having Expr
+	if q.Group.Having != nil {
+		having, err = convertExpr(q.Group.Having)
+		if err != nil {
+			currentEnv = prev
+			return nil, err
+		}
+	}
+	currentEnv = prev
+
+	sel = replaceGroup(sel, q.Group.Name)
+	if having != nil {
+		having = replaceGroup(having, q.Group.Name)
+	}
+
+	groupsVar := "_" + target + "_groups"
+	tmpVar := "_g"
+
+	stmts := []Stmt{
+		&LetStmt{Name: groupsVar, Expr: &DictLit{}},
+	}
+
+	setdef := &CallExpr{Func: &FieldExpr{Target: &Name{Name: groupsVar}, Name: "setdefault"}, Args: []Expr{keyExpr, &ListLit{}}}
+	appendCall := &CallExpr{Func: &FieldExpr{Target: &Name{Name: tmpVar}, Name: "append"}, Args: []Expr{&Name{Name: q.Var}}}
+	inner := []Stmt{
+		&LetStmt{Name: tmpVar, Expr: setdef},
+		&ExprStmt{Expr: appendCall},
+	}
+	if where != nil {
+		inner = []Stmt{&IfStmt{Cond: where, Then: inner}}
+	}
+	stmts = append(stmts, &ForStmt{Var: q.Var, Iter: src, Body: inner})
+
+	groupDict := &DictLit{Keys: []Expr{&StringLit{Value: "key"}, &StringLit{Value: "items"}}, Values: []Expr{&Name{Name: "k"}, &Name{Name: "items"}}}
+	appendRes := &ExprStmt{Expr: &CallExpr{Func: &FieldExpr{Target: &Name{Name: target}, Name: "append"}, Args: []Expr{sel}}}
+	body := []Stmt{
+		&LetStmt{Name: q.Group.Name, Expr: groupDict},
+	}
+	if having != nil {
+		body = append(body, &IfStmt{Cond: having, Then: []Stmt{appendRes}})
+	} else {
+		body = append(body, appendRes)
+	}
+	iterItems := &CallExpr{Func: &FieldExpr{Target: &Name{Name: groupsVar}, Name: "items"}, Args: nil}
+	stmts = append(stmts, &LetStmt{Name: target, Expr: &ListLit{}})
+	stmts = append(stmts, &ForStmt{Var: "k, items", Iter: iterItems, Body: body})
+
+	return stmts, nil
 }
 
 // --- AST printing helpers ---
