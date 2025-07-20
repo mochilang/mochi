@@ -2,13 +2,13 @@
 
 This checklist tracks Mochi programs from `tests/vm/valid` that successfully transpile using the experimental Fortran backend.
 
-Checklist of programs that currently transpile and run (23/100):
+Checklist of programs that currently transpile and run (32/100):
 
 - [ ] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
 - [x] binary_precedence
-- [ ] bool_chain
+- [x] bool_chain
 - [ ] break_continue
 - [ ] cast_string_to_int
 - [ ] cast_struct
@@ -51,7 +51,7 @@ Checklist of programs that currently transpile and run (23/100):
 - [x] len_string
 - [x] let_and_print
 - [ ] list_assign
-- [ ] list_index
+- [x] list_index
 - [ ] list_nested_assign
 - [ ] list_set_ops
 - [ ] load_yaml
@@ -72,15 +72,15 @@ Checklist of programs that currently transpile and run (23/100):
 - [ ] outer_join
 - [ ] partial_application
 - [x] print_hello
-- [ ] pure_fold
-- [ ] pure_global_fold
+- [x] pure_fold
+- [x] pure_global_fold
 - [ ] python_auto
 - [ ] python_math
 - [ ] query_sum_select
 - [ ] record_assign
 - [ ] right_join
 - [ ] save_jsonl_stdout
-- [ ] short_circuit
+- [x] short_circuit
 - [ ] slice
 - [ ] sort_stable
 - [ ] str_builtin
@@ -90,12 +90,12 @@ Checklist of programs that currently transpile and run (23/100):
 - [ ] string_in_operator
 - [ ] string_index
 - [ ] string_prefix_slice
-- [ ] substring_builtin
+- [x] substring_builtin
 - [x] sum_builtin
-- [ ] tail_recursion
-- [ ] test_block
+- [x] tail_recursion
+- [x] test_block
 - [ ] tree_sum
-- [ ] two-sum
+- [x] two-sum
 - [x] typed_let
 - [x] typed_var
 - [x] unary_neg

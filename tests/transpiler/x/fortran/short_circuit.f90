@@ -1,24 +1,21 @@
 program main
   implicit none
-  if ((1 < 2) .and. (2 < 3) .and. (3 < 4)) then
+  if (.false. .and. boom(1, 2)) then
     print *, 'true'
   else
     print *, 'false'
   end if
-  if ((1 < 2) .and. (2 > 3) .and. boom()) then
-    print *, 'true'
-  else
-    print *, 'false'
-  end if
-  if ((1 < 2) .and. (2 < 3) .and. (3 > 4) .and. boom()) then
+  if (.true. .or. boom(1, 2)) then
     print *, 'true'
   else
     print *, 'false'
   end if
 contains
-  recursive function boom() result(res)
+  recursive function boom(a, b) result(res)
     implicit none
     logical :: res
+    integer :: a
+    integer :: b
     print *, trim("boom")
     res = .true.
     return

@@ -1,3 +1,27 @@
+## Progress (2025-07-20 14:31 +0700)
+- feat(scala): support structs and match
+
+## Progress (2025-07-20 14:31 +0700)
+- feat(scala): support structs and match
+
+## Progress (2025-07-20 14:31 +0700)
+- feat(scala): support structs and match
+
+## Progress (2025-07-20 14:31 +0700)
+- feat(scala): support structs and match
+
+## Progress (2025-07-20 14:31 +0700)
+- feat(scala): support structs and match
+
+## Progress (2025-07-20 14:31 +0700)
+- feat(scala): support structs and match
+
+## Progress (2025-07-20 14:31 +0700)
+- feat(scala): support structs and match
+
+## Progress (2025-07-20 14:31 +0700)
+- feat(scala): support structs and match
+
 ## Progress (2025-07-20 13:26 +0700)
 - fortran transpiler: support avg_builtin, len_builtin and sum_builtin
 
