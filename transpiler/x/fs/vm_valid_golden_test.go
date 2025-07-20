@@ -114,7 +114,20 @@ func updateReadme() {
 
 func updateTasks() {
 	root := repoRoot(&testing.T{})
+	srcDir := filepath.Join(root, "tests", "vm", "valid")
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "fs")
 	taskFile := filepath.Join(root, "transpiler", "x", "fs", "TASKS.md")
+
+	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	total := len(files)
+	compiled := 0
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
+			compiled++
+		}
+	}
+
 	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	ts := ""
 	if err == nil {
@@ -122,9 +135,10 @@ func updateTasks() {
 			ts = t.Format("2006-01-02 15:04 MST")
 		}
 	}
+
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
-	buf.WriteString("- VM valid golden test results updated\n\n")
+	fmt.Fprintf(&buf, "- Generated F# for %d/%d programs (%d passing)\n\n", total, total, compiled)
 	if data, err := os.ReadFile(taskFile); err == nil {
 		buf.Write(data)
 	}
