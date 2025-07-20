@@ -34,6 +34,27 @@ type FunStmt struct {
 
 type ReturnStmt struct{ Value Expr }
 
+// WhileStmt represents `while cond { ... }` loops.
+type WhileStmt struct {
+	Cond Expr
+	Body []Stmt
+}
+
+// ForRangeStmt represents `for i in a..b { ... }` loops.
+type ForRangeStmt struct {
+	Name  string
+	Start Expr
+	End   Expr
+	Body  []Stmt
+}
+
+// ForEachStmt represents `for x in list { ... }` loops.
+type ForEachStmt struct {
+	Name     string
+	Iterable Expr
+	Body     []Stmt
+}
+
 type IfStmt struct {
 	Cond Expr
 	Then []Stmt
@@ -120,6 +141,44 @@ func (r *ReturnStmt) emit(w io.Writer) {
 	if r.Value != nil {
 		r.Value.emit(w)
 	}
+}
+
+func (ws *WhileStmt) emit(w io.Writer) {
+	fmt.Fprint(w, "while (")
+	ws.Cond.emit(w)
+	fmt.Fprint(w, ") {\n")
+	for _, st := range ws.Body {
+		fmt.Fprint(w, "    ")
+		st.emit(w)
+		fmt.Fprint(w, "\n")
+	}
+	fmt.Fprint(w, "  }")
+}
+
+func (fr *ForRangeStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "for (%s <- ", fr.Name)
+	fr.Start.emit(w)
+	fmt.Fprint(w, " until ")
+	fr.End.emit(w)
+	fmt.Fprint(w, ") {\n")
+	for _, st := range fr.Body {
+		fmt.Fprint(w, "    ")
+		st.emit(w)
+		fmt.Fprint(w, "\n")
+	}
+	fmt.Fprint(w, "  }")
+}
+
+func (fe *ForEachStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "for (%s <- ", fe.Name)
+	fe.Iterable.emit(w)
+	fmt.Fprint(w, ") {\n")
+	for _, st := range fe.Body {
+		fmt.Fprint(w, "    ")
+		st.emit(w)
+		fmt.Fprint(w, "\n")
+	}
+	fmt.Fprint(w, "  }")
 }
 
 func (i *IfStmt) emit(w io.Writer) {
@@ -415,6 +474,10 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		return convertFunStmt(st.Fun, env)
 	case st.Return != nil:
 		return convertReturnStmt(st.Return)
+	case st.While != nil:
+		return convertWhileStmt(st.While, env)
+	case st.For != nil:
+		return convertForStmt(st.For, env)
 	case st.If != nil:
 		return convertIfStmt(st.If, env)
 	default:
@@ -731,6 +794,57 @@ func convertReturnStmt(rs *parser.ReturnStmt) (Stmt, error) {
 	return &ReturnStmt{Value: expr}, nil
 }
 
+func convertWhileStmt(ws *parser.WhileStmt, env *types.Env) (Stmt, error) {
+	cond, err := convertExpr(ws.Cond)
+	if err != nil {
+		return nil, err
+	}
+	var body []Stmt
+	for _, st := range ws.Body {
+		s, err := convertStmt(st, env)
+		if err != nil {
+			return nil, err
+		}
+		body = append(body, s)
+	}
+	return &WhileStmt{Cond: cond, Body: body}, nil
+}
+
+func convertForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
+	if fs.RangeEnd != nil {
+		start, err := convertExpr(fs.Source)
+		if err != nil {
+			return nil, err
+		}
+		end, err := convertExpr(fs.RangeEnd)
+		if err != nil {
+			return nil, err
+		}
+		var body []Stmt
+		for _, st := range fs.Body {
+			s, err := convertStmt(st, env)
+			if err != nil {
+				return nil, err
+			}
+			body = append(body, s)
+		}
+		return &ForRangeStmt{Name: fs.Name, Start: start, End: end, Body: body}, nil
+	}
+	iter, err := convertExpr(fs.Source)
+	if err != nil {
+		return nil, err
+	}
+	var body []Stmt
+	for _, st := range fs.Body {
+		s, err := convertStmt(st, env)
+		if err != nil {
+			return nil, err
+		}
+		body = append(body, s)
+	}
+	return &ForEachStmt{Name: fs.Name, Iterable: iter, Body: body}, nil
+}
+
 func convertIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
 	cond, err := convertExpr(is.Cond)
 	if err != nil {
@@ -797,6 +911,14 @@ func inferType(e Expr) string {
 		case "==", "!=", ">", "<", ">=", "<=":
 			return "Boolean"
 		}
+	case *CastExpr:
+		return toScalaType(&parser.TypeRef{Simple: &ex.Type})
+	case *IfExpr:
+		t1 := inferType(ex.Then)
+		t2 := inferType(ex.Else)
+		if t1 == t2 {
+			return t1
+		}
 	default:
 		_ = ex
 	}
@@ -828,6 +950,33 @@ func stmtNode(s Stmt) *ast.Node {
 		return &ast.Node{Kind: "let", Value: st.Name, Children: []*ast.Node{exprNode(st.Value)}}
 	case *ReturnStmt:
 		return &ast.Node{Kind: "return", Children: []*ast.Node{exprNode(st.Value)}}
+	case *WhileStmt:
+		n := &ast.Node{Kind: "while"}
+		n.Children = append(n.Children, exprNode(st.Cond))
+		body := &ast.Node{Kind: "body"}
+		for _, s2 := range st.Body {
+			body.Children = append(body.Children, stmtNode(s2))
+		}
+		n.Children = append(n.Children, body)
+		return n
+	case *ForRangeStmt:
+		n := &ast.Node{Kind: "forrange", Value: st.Name}
+		n.Children = append(n.Children, exprNode(st.Start), exprNode(st.End))
+		body := &ast.Node{Kind: "body"}
+		for _, s2 := range st.Body {
+			body.Children = append(body.Children, stmtNode(s2))
+		}
+		n.Children = append(n.Children, body)
+		return n
+	case *ForEachStmt:
+		n := &ast.Node{Kind: "foreach", Value: st.Name}
+		n.Children = append(n.Children, exprNode(st.Iterable))
+		body := &ast.Node{Kind: "body"}
+		for _, s2 := range st.Body {
+			body.Children = append(body.Children, stmtNode(s2))
+		}
+		n.Children = append(n.Children, body)
+		return n
 	case *FunStmt:
 		n := &ast.Node{Kind: "fun", Value: st.Name}
 		params := &ast.Node{Kind: "params"}
