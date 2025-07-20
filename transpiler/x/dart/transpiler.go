@@ -584,8 +584,26 @@ func (m *MapLit) emit(w io.Writer) error {
 				return err
 			}
 		}
-		if err := e.Key.emit(w); err != nil {
-			return err
+		if n, ok := e.Key.(*Name); ok {
+			if currentEnv != nil {
+				if _, err := currentEnv.GetVar(n.Name); err == nil {
+					if err := n.emit(w); err != nil {
+						return err
+					}
+				} else {
+					if _, err := fmt.Fprintf(w, "\"%s\"", n.Name); err != nil {
+						return err
+					}
+				}
+			} else {
+				if _, err := fmt.Fprintf(w, "\"%s\"", n.Name); err != nil {
+					return err
+				}
+			}
+		} else {
+			if err := e.Key.emit(w); err != nil {
+				return err
+			}
 		}
 		if _, err := io.WriteString(w, ": "); err != nil {
 			return err
@@ -883,6 +901,47 @@ func (f *FormatList) emit(w io.Writer) error {
 	return nil
 }
 
+// MultiListComp represents a list comprehension with multiple input iterators.
+type MultiListComp struct {
+	Vars  []string
+	Iters []Expr
+	Expr  Expr
+	Cond  Expr
+}
+
+func (lc *MultiListComp) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "["); err != nil {
+		return err
+	}
+	if err := lc.Expr.emit(w); err != nil {
+		return err
+	}
+	for i, v := range lc.Vars {
+		if _, err := io.WriteString(w, " for (var "+v+" in "); err != nil {
+			return err
+		}
+		if err := lc.Iters[i].emit(w); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, ")"); err != nil {
+			return err
+		}
+	}
+	if lc.Cond != nil {
+		if _, err := io.WriteString(w, " if ("); err != nil {
+			return err
+		}
+		if err := lc.Cond.emit(w); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, ")"); err != nil {
+			return err
+		}
+	}
+	_, err := io.WriteString(w, "]")
+	return err
+}
+
 // LambdaExpr represents an inline function expression.
 type LambdaExpr struct {
 	Params []string
@@ -983,9 +1042,20 @@ func inferType(e Expr) string {
 			return "Map<dynamic, dynamic>"
 		}
 		kt := inferType(ex.Entries[0].Key)
+		if kt == "var" {
+			if _, ok := ex.Entries[0].Key.(*Name); ok {
+				kt = "String"
+			}
+		}
 		vt := inferType(ex.Entries[0].Value)
 		for _, it := range ex.Entries[1:] {
-			if t := inferType(it.Key); t != kt {
+			t := inferType(it.Key)
+			if t == "var" {
+				if _, ok := it.Key.(*Name); ok {
+					t = "String"
+				}
+			}
+			if t != kt {
 				kt = "dynamic"
 			}
 			if t := inferType(it.Value); t != vt {
@@ -993,6 +1063,8 @@ func inferType(e Expr) string {
 			}
 		}
 		return "Map<" + kt + ", " + vt + ">"
+	case *MultiListComp:
+		return "List<" + inferType(ex.Expr) + ">"
 	case *BinaryExpr:
 		switch ex.Op {
 		case "+":
@@ -1874,29 +1946,39 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 }
 
 func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
-	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+	if len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
 		return nil, fmt.Errorf("unsupported query")
 	}
+	vars := []string{q.Var}
+	iters := []Expr{}
 	src, err := convertExpr(q.Source)
 	if err != nil {
 		return nil, err
 	}
-	expr := src
+	iters = append(iters, src)
+	for _, f := range q.Froms {
+		e, err := convertExpr(f.Src)
+		if err != nil {
+			return nil, err
+		}
+		vars = append(vars, f.Var)
+		iters = append(iters, e)
+	}
+	var cond Expr
 	if q.Where != nil {
-		cond, err := convertExpr(q.Where)
+		cond, err = convertExpr(q.Where)
 		if err != nil {
 			return nil, err
 		}
-		expr = &CallExpr{Func: &SelectorExpr{Receiver: expr, Field: "where"}, Args: []Expr{&LambdaExpr{Params: []string{q.Var}, Body: cond}}}
 	}
+	body := Expr(&Name{Name: q.Var})
 	if q.Select != nil {
-		body, err := convertExpr(q.Select)
+		body, err = convertExpr(q.Select)
 		if err != nil {
 			return nil, err
 		}
-		expr = &CallExpr{Func: &SelectorExpr{Receiver: expr, Field: "map"}, Args: []Expr{&LambdaExpr{Params: []string{q.Var}, Body: body}}}
 	}
-	return &CallExpr{Func: &SelectorExpr{Receiver: expr, Field: "toList"}}, nil
+	return &MultiListComp{Vars: vars, Iters: iters, Expr: body, Cond: cond}, nil
 }
 
 // --- AST -> generic node (for debugging) ---
@@ -2036,6 +2118,16 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "str", Children: []*ast.Node{exprNode(ex.Value)}}
 	case *FormatList:
 		return &ast.Node{Kind: "format-list", Children: []*ast.Node{exprNode(ex.List)}}
+	case *MultiListComp:
+		n := &ast.Node{Kind: "multi-list-comp"}
+		for i, v := range ex.Vars {
+			n.Children = append(n.Children, &ast.Node{Kind: "for", Value: v, Children: []*ast.Node{exprNode(ex.Iters[i])}})
+		}
+		if ex.Cond != nil {
+			n.Children = append(n.Children, &ast.Node{Kind: "if", Children: []*ast.Node{exprNode(ex.Cond)}})
+		}
+		n.Children = append(n.Children, exprNode(ex.Expr))
+		return n
 	case *NotNilExpr:
 		return &ast.Node{Kind: "notnil", Children: []*ast.Node{exprNode(ex.X)}}
 	default:

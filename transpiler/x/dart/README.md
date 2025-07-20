@@ -2,7 +2,7 @@
 
 Generated Dart code for programs in `tests/vm/valid`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-## VM Golden Test Checklist (73/100)
+## VM Golden Test Checklist (69/100)
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -13,11 +13,11 @@ Generated Dart code for programs in `tests/vm/valid`. Each program has a `.dart`
 - [x] cast_struct.mochi
 - [x] closure.mochi
 - [x] count_builtin.mochi
-- [ ] cross_join.mochi
+- [x] cross_join.mochi
 - [ ] cross_join_filter.mochi
 - [ ] cross_join_triple.mochi
 - [ ] dataset_sort_take_limit.mochi
-- [x] dataset_where_filter.mochi
+- [ ] dataset_where_filter.mochi
 - [x] exists_builtin.mochi
 - [x] for_list_collection.mochi
 - [x] for_loop.mochi
@@ -39,7 +39,7 @@ Generated Dart code for programs in `tests/vm/valid`. Each program has a `.dart`
 - [x] if_then_else.mochi
 - [x] if_then_else_nested.mochi
 - [x] in_operator.mochi
-- [x] in_operator_extended.mochi
+- [ ] in_operator_extended.mochi
 - [ ] inner_join.mochi
 - [ ] join_multi.mochi
 - [x] json_builtin.mochi
@@ -75,7 +75,7 @@ Generated Dart code for programs in `tests/vm/valid`. Each program has a `.dart`
 - [x] pure_global_fold.mochi
 - [ ] python_auto.mochi
 - [ ] python_math.mochi
-- [x] query_sum_select.mochi
+- [ ] query_sum_select.mochi
 - [x] record_assign.mochi
 - [ ] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
@@ -93,13 +93,13 @@ Generated Dart code for programs in `tests/vm/valid`. Each program has a `.dart`
 - [x] sum_builtin.mochi
 - [x] tail_recursion.mochi
 - [x] test_block.mochi
-- [x] tree_sum.mochi
+- [ ] tree_sum.mochi
 - [x] two-sum.mochi
 - [x] typed_let.mochi
 - [x] typed_var.mochi
 - [x] unary_neg.mochi
 - [ ] update_stmt.mochi
-- [x] user_type_literal.mochi
+- [ ] user_type_literal.mochi
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
