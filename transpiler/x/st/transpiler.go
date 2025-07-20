@@ -53,7 +53,10 @@ func keyString(v value) (string, error) {
 	}
 }
 
-func (v value) String() string {
+func (v value) String() string { return formatValue(v, 0) }
+
+func formatValue(v value, indent int) string {
+	pad := func(i int) string { return strings.Repeat(" ", i) }
 	switch v.kind {
 	case valInt:
 		return fmt.Sprintf("%d", v.i)
@@ -67,23 +70,39 @@ func (v value) String() string {
 	case valFloat:
 		return fmt.Sprintf("%.1f", v.f)
 	case valList:
-		parts := make([]string, len(v.list))
-		for i, elem := range v.list {
-			parts[i] = elem.String()
+		if len(v.list) == 0 {
+			return "#()"
 		}
-		return "#(" + strings.Join(parts, " ") + ")"
+		lines := []string{"#("}
+		for i, elem := range v.list {
+			line := pad(indent+2) + formatValue(elem, indent+2)
+			if i < len(v.list)-1 {
+				line += "."
+			}
+			lines = append(lines, line)
+		}
+		lines = append(lines, pad(indent)+")")
+		return strings.Join(lines, "\n")
 	case valMap:
+		if len(v.kv) == 0 {
+			return "Dictionary newFrom: {}"
+		}
 		keys := make([]string, 0, len(v.kv))
 		for k := range v.kv {
 			keys = append(keys, k)
 		}
 		sort.Strings(keys)
-		items := make([]string, len(keys))
+		lines := []string{"Dictionary newFrom: {"}
 		for i, k := range keys {
 			val := v.kv[k]
-			items[i] = fmt.Sprintf("'%s'->%s", escape(k), val.String())
+			line := pad(indent+2) + fmt.Sprintf("'%s'->%s", escape(k), formatValue(val, indent+2))
+			if i < len(keys)-1 {
+				line += "."
+			}
+			lines = append(lines, line)
 		}
-		return "Dictionary newFrom: { " + strings.Join(items, ". ") + " }"
+		lines = append(lines, pad(indent)+"}")
+		return strings.Join(lines, "\n")
 	default:
 		return ""
 	}
@@ -113,6 +132,20 @@ func Emit(w io.Writer, prog *Program) error {
 		}
 	}
 	return nil
+}
+
+func appendAssign(lines *[]string, name string, v value) {
+	sv := formatValue(v, 0)
+	parts := strings.Split(sv, "\n")
+	if len(parts) == 1 {
+		*lines = append(*lines, fmt.Sprintf("%s := %s.", name, parts[0]))
+		return
+	}
+	*lines = append(*lines, fmt.Sprintf("%s := %s", name, parts[0]))
+	for _, line := range parts[1:] {
+		*lines = append(*lines, line)
+	}
+	(*lines)[len(*lines)-1] += "."
 }
 
 func escape(s string) string { return strings.ReplaceAll(s, "'", "''") }
@@ -388,10 +421,21 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 			return value{kind: valString, s: *p.Lit.Str}, nil
 		}
 	case p.Selector != nil:
-		if len(p.Selector.Tail) == 0 {
-			if v, ok := vars[p.Selector.Root]; ok {
-				return v, nil
+		if v, ok := vars[p.Selector.Root]; ok {
+			for _, f := range p.Selector.Tail {
+				if v.kind != valMap {
+					return value{}, fmt.Errorf("field access on non-map")
+				}
+				fv, ok := v.kv[f]
+				if !ok {
+					return value{}, fmt.Errorf("missing field")
+				}
+				v = fv
 			}
+			return v, nil
+		}
+		if len(p.Selector.Tail) == 0 {
+			return value{kind: valString, s: p.Selector.Root}, nil
 		}
 	case p.List != nil:
 		elems := make([]value, len(p.List.Elems))
@@ -421,6 +465,8 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 			m[key] = v
 		}
 		return value{kind: valMap, kv: m}, nil
+	case p.Query != nil:
+		return evalQueryExpr(p.Query, vars)
 	case p.Call != nil:
 		switch p.Call.Func {
 		case "len", "count":
@@ -626,6 +672,67 @@ func evalIfExpr(ie *parser.IfExpr, vars map[string]value) (value, error) {
 	return value{}, nil
 }
 
+func copyVars(vars map[string]value) map[string]value {
+	m := make(map[string]value, len(vars))
+	for k, v := range vars {
+		m[k] = v
+	}
+	return m
+}
+
+func evalQueryExpr(q *parser.QueryExpr, vars map[string]value) (value, error) {
+	type clause struct {
+		name string
+		src  *parser.Expr
+	}
+	clauses := []clause{{q.Var, q.Source}}
+	for _, f := range q.Froms {
+		clauses = append(clauses, clause{f.Var, f.Src})
+	}
+
+	var results []value
+	var iter func(int, map[string]value) error
+	iter = func(i int, local map[string]value) error {
+		if i == len(clauses) {
+			if q.Where != nil {
+				cond, err := evalExpr(q.Where, local)
+				if err != nil {
+					return err
+				}
+				if cond.kind != valBool || !cond.b {
+					return nil
+				}
+			}
+			v, err := evalExpr(q.Select, local)
+			if err != nil {
+				return err
+			}
+			results = append(results, v)
+			return nil
+		}
+		cl := clauses[i]
+		listv, err := evalExpr(cl.src, local)
+		if err != nil {
+			return err
+		}
+		if listv.kind != valList {
+			return fmt.Errorf("query source must be list")
+		}
+		for _, elem := range listv.list {
+			next := copyVars(local)
+			next[cl.name] = elem
+			if err := iter(i+1, next); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+	if err := iter(0, copyVars(vars)); err != nil {
+		return value{}, err
+	}
+	return value{kind: valList, list: results}, nil
+}
+
 // Transpile converts a Mochi program into our Smalltalk AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	vars := map[string]value{}
@@ -646,7 +753,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				v = zeroValue(st.Let.Type)
 			}
 			vars[st.Let.Name] = v
-			p.Lines = append(p.Lines, fmt.Sprintf("%s := %s.", st.Let.Name, v))
+			appendAssign(&p.Lines, st.Let.Name, v)
 		case st.Var != nil:
 			v := value{}
 			if st.Var.Value != nil {
@@ -659,7 +766,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				v = zeroValue(st.Var.Type)
 			}
 			vars[st.Var.Name] = v
-			p.Lines = append(p.Lines, fmt.Sprintf("%s := %s.", st.Var.Name, v))
+			appendAssign(&p.Lines, st.Var.Name, v)
 		case st.Assign != nil:
 			if len(st.Assign.Field) > 0 {
 				return fmt.Errorf("unsupported assign")
@@ -722,7 +829,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					return fmt.Errorf("assign to unknown var")
 				}
 				vars[st.Assign.Name] = v
-				p.Lines = append(p.Lines, fmt.Sprintf("%s := %s.", st.Assign.Name, v))
+				appendAssign(&p.Lines, st.Assign.Name, v)
 			}
 		case st.If != nil:
 			cond, err := evalExpr(st.If.Cond, vars)
@@ -748,6 +855,50 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					return err
 				}
 			}
+			return nil
+		case st.For != nil:
+			src, err := evalExpr(st.For.Source, vars)
+			if err != nil {
+				return err
+			}
+			var items []value
+			if st.For.RangeEnd != nil {
+				endv, err := evalExpr(st.For.RangeEnd, vars)
+				if err != nil {
+					return err
+				}
+				if src.kind != valInt || endv.kind != valInt {
+					return fmt.Errorf("range must be int")
+				}
+				for i := src.i; i < endv.i; i++ {
+					items = append(items, value{kind: valInt, i: i})
+				}
+			} else {
+				switch src.kind {
+				case valList:
+					items = src.list
+				case valMap:
+					keys := make([]string, 0, len(src.kv))
+					for k := range src.kv {
+						keys = append(keys, k)
+					}
+					sort.Strings(keys)
+					for _, k := range keys {
+						items = append(items, value{kind: valString, s: k})
+					}
+				default:
+					return fmt.Errorf("for over unsupported type")
+				}
+			}
+			for _, it := range items {
+				vars[st.For.Name] = it
+				for _, b := range st.For.Body {
+					if err := processStmt(b); err != nil {
+						return err
+					}
+				}
+			}
+			delete(vars, st.For.Name)
 			return nil
 		case st.Expr != nil:
 			call := st.Expr.Expr.Binary.Left.Value.Target.Call

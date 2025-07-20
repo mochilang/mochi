@@ -1,11 +1,9 @@
-## Progress (2025-07-20 16:45 +0700)
-- VM valid golden test results updated
+## Progress (2025-07-20 11:00 UTC)
+- Improved formatting of generated Smalltalk code
+- cross_join sample now renders readable lists and maps
 
-## Progress (2025-07-20 16:45 +0700)
-- VM valid golden test results updated
-
-## Progress (2025-07-20 16:45 +0700)
-- VM valid golden test results updated
+## Progress (2025-07-20 10:38 UTC)
+- Added cross_join support and updated golden outputs
 
 ## Progress (2025-07-20 16:45 +0700)
 - VM valid golden test results updated
