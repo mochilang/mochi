@@ -205,6 +205,14 @@ func TestTranspileTailRecursion(t *testing.T) { runGolden(t, "tail_recursion") }
 
 func TestTranspileTwoSum(t *testing.T) { runGolden(t, "two-sum") }
 
+func TestTranspileListAssign(t *testing.T)        { runGolden(t, "list_assign") }
+func TestTranspileMapAssign(t *testing.T)         { runGolden(t, "map_assign") }
+func TestTranspileListNestedAssign(t *testing.T)  { runGolden(t, "list_nested_assign") }
+func TestTranspileMapNestedAssign(t *testing.T)   { runGolden(t, "map_nested_assign") }
+func TestTranspileMapLiteralDynamic(t *testing.T) { runGolden(t, "map_literal_dynamic") }
+func TestTranspileMatchExpr(t *testing.T)         { runGolden(t, "match_expr") }
+func TestTranspileMatchFull(t *testing.T)         { runGolden(t, "match_full") }
+
 func TestTranspileTestBlock(t *testing.T) { runGolden(t, "test_block") }
 
 func updateEnabled() bool { return *update }

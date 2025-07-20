@@ -103,8 +103,8 @@ type SubstringExpr struct {
 	End   Expr
 }
 
-// PrintStmt represents a call to print/1.
-type PrintStmt struct{ Expr Expr }
+// PrintStmt represents a call to print with one or more arguments.
+type PrintStmt struct{ Args []Expr }
 
 // ReturnStmt represents returning a value from a function.
 type ReturnStmt struct{ Expr Expr }
@@ -216,13 +216,41 @@ type WhileStmt struct {
 	Next   []string // variable names for next iteration
 }
 
+// ListAssignStmt assigns to an element of a list.
+type ListAssignStmt struct {
+	Name  string
+	Old   string
+	Index Expr
+	Value Expr
+}
+
+// MapAssignStmt assigns to a key in a map.
+type MapAssignStmt struct {
+	Name  string
+	Old   string
+	Key   Expr
+	Value Expr
+}
+
 func (p *PrintStmt) emit(w io.Writer) {
-	format := "~p~n"
-	if isStringExpr(p.Expr) {
-		format = "~s~n"
+	if len(p.Args) == 0 {
+		return
 	}
-	fmt.Fprintf(w, "io:format(\"%s\", [", format)
-	p.Expr.emit(w)
+	parts := make([]string, len(p.Args))
+	for i, a := range p.Args {
+		if isStringExpr(a) {
+			parts[i] = "~s"
+		} else {
+			parts[i] = "~p"
+		}
+	}
+	fmt.Fprintf(w, "io:format(\"%s~n\", [", strings.Join(parts, " "))
+	for i, a := range p.Args {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		a.emit(w)
+	}
 	io.WriteString(w, "])")
 }
 
@@ -320,6 +348,10 @@ func isMapExpr(e Expr, env *types.Env, ctx *context) bool {
 					return true
 				}
 			}
+		}
+	case *IndexExpr:
+		if v.Kind == "map" {
+			return true
 		}
 	}
 	return false
@@ -710,6 +742,26 @@ func (ws *WhileStmt) emit(w io.Writer) {
 	io.WriteString(w, ")")
 }
 
+func (la *ListAssignStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "%s = lists:sublist(%s, ", la.Name, la.Old)
+	la.Index.emit(w)
+	io.WriteString(w, ") ++ [")
+	la.Value.emit(w)
+	io.WriteString(w, "] ++ lists:nthtail(")
+	la.Index.emit(w)
+	io.WriteString(w, " + 1, ")
+	io.WriteString(w, la.Old)
+	io.WriteString(w, ")")
+}
+
+func (ma *MapAssignStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "%s = maps:put(", ma.Name)
+	ma.Key.emit(w)
+	io.WriteString(w, ", ")
+	ma.Value.emit(w)
+	fmt.Fprintf(w, ", %s)", ma.Old)
+}
+
 func mapOp(op string) string {
 	switch op {
 	case "&&":
@@ -821,14 +873,74 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		}
 		alias := ctx.newAlias(st.Assign.Name)
 		return []Stmt{&LetStmt{Name: alias, Expr: val}}, nil
+	case st.Assign != nil && len(st.Assign.Index) == 1 && len(st.Assign.Field) == 0:
+		idx, err := convertExpr(st.Assign.Index[0].Start, env, ctx)
+		if err != nil {
+			return nil, err
+		}
+		val, err := convertExpr(st.Assign.Value, env, ctx)
+		if err != nil {
+			return nil, err
+		}
+		old := ctx.current(st.Assign.Name)
+		alias := ctx.newAlias(st.Assign.Name)
+		kind := "list"
+		if t, err := env.GetVar(st.Assign.Name); err == nil {
+			if _, ok := t.(types.MapType); ok {
+				kind = "map"
+			}
+		}
+		if kind == "map" {
+			return []Stmt{&MapAssignStmt{Name: alias, Old: old, Key: idx, Value: val}}, nil
+		}
+		return []Stmt{&ListAssignStmt{Name: alias, Old: old, Index: idx, Value: val}}, nil
+	case st.Assign != nil && len(st.Assign.Index) == 2 && len(st.Assign.Field) == 0:
+		old := ctx.current(st.Assign.Name)
+		idx1, err := convertExpr(st.Assign.Index[0].Start, env, ctx)
+		if err != nil {
+			return nil, err
+		}
+		idx2, err := convertExpr(st.Assign.Index[1].Start, env, ctx)
+		if err != nil {
+			return nil, err
+		}
+		val, err := convertExpr(st.Assign.Value, env, ctx)
+		if err != nil {
+			return nil, err
+		}
+		alias := ctx.newAlias(st.Assign.Name)
+		tmp := ctx.newAlias("tmp")
+		tmp2 := ctx.newAlias("tmp")
+		kind := "list"
+		if t, err := env.GetVar(st.Assign.Name); err == nil {
+			if _, ok := t.(types.MapType); ok {
+				kind = "map"
+			}
+		}
+		var stmts []Stmt
+		// extract inner value
+		inner := &IndexExpr{Target: &NameRef{Name: old}, Index: idx1, Kind: kind}
+		stmts = append(stmts, &LetStmt{Name: tmp, Expr: inner})
+		// update inner
+		if kind == "map" {
+			stmts = append(stmts, &MapAssignStmt{Name: tmp2, Old: tmp, Key: idx2, Value: val})
+		} else {
+			stmts = append(stmts, &ListAssignStmt{Name: tmp2, Old: tmp, Index: idx2, Value: val})
+		}
+		// assign back
+		if kind == "map" {
+			stmts = append(stmts, &MapAssignStmt{Name: alias, Old: old, Key: idx1, Value: &NameRef{Name: tmp2}})
+		} else {
+			stmts = append(stmts, &ListAssignStmt{Name: alias, Old: old, Index: idx1, Value: &NameRef{Name: tmp2}})
+		}
+		return stmts, nil
 	case st.Expr != nil:
 		e, err := convertExpr(st.Expr.Expr, env, ctx)
 		if err != nil {
 			return nil, err
 		}
-		if c, ok := e.(*CallExpr); ok && c.Func == "print" && len(c.Args) == 1 {
-			arg := c.Args[0]
-			return []Stmt{&PrintStmt{Expr: arg}}, nil
+		if c, ok := e.(*CallExpr); ok && c.Func == "print" {
+			return []Stmt{&PrintStmt{Args: c.Args}}, nil
 		}
 		return nil, fmt.Errorf("unsupported expression")
 	case st.If != nil:
@@ -1262,6 +1374,8 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 		return &MapLit{Items: items}, nil
 	case p.If != nil:
 		return convertIf(p.If, env, ctx)
+	case p.Match != nil:
+		return convertMatch(p.Match, env, ctx)
 	default:
 		return nil, fmt.Errorf("unsupported primary")
 	}
@@ -1329,6 +1443,32 @@ func convertIf(ifx *parser.IfExpr, env *types.Env, ctx *context) (Expr, error) {
 		}
 	}
 	return &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
+}
+
+func convertMatch(me *parser.MatchExpr, env *types.Env, ctx *context) (Expr, error) {
+	target, err := convertExpr(me.Target, env, ctx)
+	if err != nil {
+		return nil, err
+	}
+	var expr Expr = &AtomLit{Name: "nil"}
+	for i := len(me.Cases) - 1; i >= 0; i-- {
+		c := me.Cases[i]
+		res, err := convertExpr(c.Result, env, ctx)
+		if err != nil {
+			return nil, err
+		}
+		pat, err := convertExpr(c.Pattern, env, ctx)
+		if err != nil {
+			return nil, err
+		}
+		if n, ok := pat.(*NameRef); ok && n.Name == "_" {
+			expr = res
+			continue
+		}
+		cond := &BinaryExpr{Left: target, Op: "==", Right: pat}
+		expr = &IfExpr{Cond: cond, Then: res, Else: expr}
+	}
+	return expr, nil
 }
 
 func convertLiteral(l *parser.Literal) (Expr, error) {
