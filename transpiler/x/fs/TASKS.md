@@ -1,3 +1,6 @@
+## Progress (2025-07-20 21:17 +0700)
+- Added basic join support and improved type inference in the F# transpiler
+- VM valid golden test results updated
 ## Progress (2025-07-20 17:52 +0700)
 - VM valid golden test results updated
 
