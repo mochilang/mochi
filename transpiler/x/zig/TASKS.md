@@ -1,3 +1,9 @@
+## Progress (2025-07-20 05:59 +0000)
+- Implemented constant-folding for `append` builtin including variables.
+- Improved mutable variable detection across blocks and added string comparison using `std.mem.order`.
+- Generated golden file for `append_builtin` and updated others.
+- Updated README checklist (28/100 tests passing)
+
 ## Progress (2025-07-20 12:19 +0700)
 - Added string.contains builtin support using std.mem.contains.
 - Generated golden files for `string_contains`.
@@ -36,6 +42,8 @@
 - Regenerated golden files - 24/100 vm valid programs passing
 
 # Zig Transpiler Tasks
+
+- 2025-07-20 05:59 +0000 - Implemented append builtin and improved string comparison (28/100 tests passing)
 
 - 2025-07-20 12:19 +0700 - Added string.contains builtin and generated golden files (27/100 tests passing)
 
