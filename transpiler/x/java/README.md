@@ -2,106 +2,104 @@
 
 Generated Java code for programs in `tests/vm/valid`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-Transpiled programs: 28/100
-
-Checklist:
-- [ ] append_builtin
-- [ ] avg_builtin
-- [x] basic_compare
-- [x] binary_precedence
-- [x] bool_chain
-- [ ] break_continue
-- [ ] cast_string_to_int
-- [ ] cast_struct
-- [ ] closure
-- [ ] count_builtin
-- [ ] cross_join
-- [ ] cross_join_filter
-- [ ] cross_join_triple
-- [ ] dataset_sort_take_limit
-- [ ] dataset_where_filter
-- [ ] exists_builtin
-- [ ] for_list_collection
-- [x] for_loop
-- [ ] for_map_collection
-- [x] fun_call
-- [ ] fun_expr_in_let
-- [x] fun_three_args
-- [ ] go_auto
-- [ ] group_by
-- [ ] group_by_conditional_sum
-- [ ] group_by_having
-- [ ] group_by_join
-- [ ] group_by_left_join
-- [ ] group_by_multi_join
-- [ ] group_by_multi_join_sort
-- [ ] group_by_sort
-- [ ] group_items_iteration
-- [x] if_else
-- [x] if_then_else
-- [x] if_then_else_nested
-- [ ] in_operator
-- [ ] in_operator_extended
-- [ ] inner_join
-- [ ] join_multi
-- [ ] json_builtin
-- [ ] left_join
-- [ ] left_join_multi
-- [ ] len_builtin
-- [ ] len_map
-- [x] len_string
-- [x] let_and_print
-- [ ] list_assign
-- [ ] list_index
-- [ ] list_nested_assign
-- [ ] list_set_ops
-- [ ] load_yaml
-- [ ] map_assign
-- [ ] map_in_operator
-- [ ] map_index
-- [ ] map_int_key
-- [ ] map_literal_dynamic
-- [ ] map_membership
-- [ ] map_nested_assign
-- [ ] match_expr
-- [ ] match_full
-- [x] math_ops
-- [ ] membership
-- [ ] min_max_builtin
-- [ ] nested_function
-- [ ] order_by_map
-- [ ] outer_join
-- [x] partial_application
-- [x] print_hello
-- [x] pure_fold
-- [x] pure_global_fold
-- [ ] python_auto
-- [ ] python_math
-- [ ] query_sum_select
-- [ ] record_assign
-- [ ] right_join
-- [ ] save_jsonl_stdout
-- [x] short_circuit
-- [ ] slice
-- [ ] sort_stable
-- [x] str_builtin
-- [x] string_compare
-- [x] string_concat
-- [ ] string_contains
-- [ ] string_in_operator
-- [ ] string_index
-- [ ] string_prefix_slice
-- [x] substring_builtin
-- [ ] sum_builtin
-- [x] tail_recursion
-- [x] test_block
-- [ ] tree_sum
-- [ ] two-sum
-- [x] typed_let
-- [x] typed_var
-- [x] unary_neg
-- [ ] update_stmt
-- [ ] user_type_literal
-- [ ] values_builtin
-- [x] var_assignment
-- [x] while_loop
+## VM Golden Test Checklist (28/100)
+- [ ] append_builtin.mochi
+- [ ] avg_builtin.mochi
+- [x] basic_compare.mochi
+- [x] binary_precedence.mochi
+- [x] bool_chain.mochi
+- [ ] break_continue.mochi
+- [ ] cast_string_to_int.mochi
+- [ ] cast_struct.mochi
+- [ ] closure.mochi
+- [ ] count_builtin.mochi
+- [ ] cross_join.mochi
+- [ ] cross_join_filter.mochi
+- [ ] cross_join_triple.mochi
+- [ ] dataset_sort_take_limit.mochi
+- [ ] dataset_where_filter.mochi
+- [ ] exists_builtin.mochi
+- [ ] for_list_collection.mochi
+- [x] for_loop.mochi
+- [ ] for_map_collection.mochi
+- [x] fun_call.mochi
+- [ ] fun_expr_in_let.mochi
+- [x] fun_three_args.mochi
+- [ ] go_auto.mochi
+- [ ] group_by.mochi
+- [ ] group_by_conditional_sum.mochi
+- [ ] group_by_having.mochi
+- [ ] group_by_join.mochi
+- [ ] group_by_left_join.mochi
+- [ ] group_by_multi_join.mochi
+- [ ] group_by_multi_join_sort.mochi
+- [ ] group_by_sort.mochi
+- [ ] group_items_iteration.mochi
+- [x] if_else.mochi
+- [x] if_then_else.mochi
+- [x] if_then_else_nested.mochi
+- [ ] in_operator.mochi
+- [ ] in_operator_extended.mochi
+- [ ] inner_join.mochi
+- [ ] join_multi.mochi
+- [ ] json_builtin.mochi
+- [ ] left_join.mochi
+- [ ] left_join_multi.mochi
+- [ ] len_builtin.mochi
+- [ ] len_map.mochi
+- [x] len_string.mochi
+- [x] let_and_print.mochi
+- [ ] list_assign.mochi
+- [ ] list_index.mochi
+- [ ] list_nested_assign.mochi
+- [ ] list_set_ops.mochi
+- [ ] load_yaml.mochi
+- [ ] map_assign.mochi
+- [ ] map_in_operator.mochi
+- [ ] map_index.mochi
+- [ ] map_int_key.mochi
+- [ ] map_literal_dynamic.mochi
+- [ ] map_membership.mochi
+- [ ] map_nested_assign.mochi
+- [ ] match_expr.mochi
+- [ ] match_full.mochi
+- [x] math_ops.mochi
+- [ ] membership.mochi
+- [ ] min_max_builtin.mochi
+- [ ] nested_function.mochi
+- [ ] order_by_map.mochi
+- [ ] outer_join.mochi
+- [x] partial_application.mochi
+- [x] print_hello.mochi
+- [x] pure_fold.mochi
+- [x] pure_global_fold.mochi
+- [ ] python_auto.mochi
+- [ ] python_math.mochi
+- [ ] query_sum_select.mochi
+- [ ] record_assign.mochi
+- [ ] right_join.mochi
+- [ ] save_jsonl_stdout.mochi
+- [x] short_circuit.mochi
+- [ ] slice.mochi
+- [ ] sort_stable.mochi
+- [x] str_builtin.mochi
+- [x] string_compare.mochi
+- [x] string_concat.mochi
+- [ ] string_contains.mochi
+- [ ] string_in_operator.mochi
+- [ ] string_index.mochi
+- [ ] string_prefix_slice.mochi
+- [x] substring_builtin.mochi
+- [ ] sum_builtin.mochi
+- [x] tail_recursion.mochi
+- [x] test_block.mochi
+- [ ] tree_sum.mochi
+- [ ] two-sum.mochi
+- [x] typed_let.mochi
+- [x] typed_var.mochi
+- [x] unary_neg.mochi
+- [ ] update_stmt.mochi
+- [ ] user_type_literal.mochi
+- [ ] values_builtin.mochi
+- [x] var_assignment.mochi
+- [x] while_loop.mochi

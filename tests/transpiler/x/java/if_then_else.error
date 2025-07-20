@@ -1,0 +1,5 @@
+exit status 1
+Main.java:6: error: non-static variable msg cannot be referenced from a static context
+        System.out.println(msg);
+                           ^
+1 error

@@ -1,7 +1,5 @@
 exit status 1
-Main.java:4: error: cannot find symbol
+Main.java:5: error: non-static variable k cannot be referenced from a static context
         return x + k;
                    ^
-  symbol:   variable k
-  location: class Main
 1 error
