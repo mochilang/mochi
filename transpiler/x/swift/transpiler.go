@@ -239,10 +239,30 @@ func (a *ArrayLit) emit(w io.Writer) {
 	fmt.Fprint(w, "]")
 }
 
+// MapLit represents a dictionary literal.
+type MapLit struct {
+	Keys   []Expr
+	Values []Expr
+}
+
+func (m *MapLit) emit(w io.Writer) {
+	fmt.Fprint(w, "[")
+	for i := range m.Keys {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		m.Keys[i].emit(w)
+		fmt.Fprint(w, ": ")
+		m.Values[i].emit(w)
+	}
+	fmt.Fprint(w, "]")
+}
+
 type IndexExpr struct {
 	Base     Expr
 	Index    Expr
 	AsString bool
+	Force    bool
 }
 
 func (ie *IndexExpr) emit(w io.Writer) {
@@ -258,21 +278,33 @@ func (ie *IndexExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "[")
 	ie.Index.emit(w)
 	fmt.Fprint(w, "]")
+	if ie.Force {
+		fmt.Fprint(w, "!")
+	}
 }
 
 type BinaryExpr struct {
 	Left  Expr
 	Op    string
 	Right Expr
+	InMap bool
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
 	if b.Op == "in" {
-		fmt.Fprint(w, "(")
-		b.Right.emit(w)
-		fmt.Fprint(w, ".contains(")
-		b.Left.emit(w)
-		fmt.Fprint(w, "))")
+		if b.InMap {
+			fmt.Fprint(w, "(")
+			b.Right.emit(w)
+			fmt.Fprint(w, "[")
+			b.Left.emit(w)
+			fmt.Fprint(w, "] != nil)")
+		} else {
+			fmt.Fprint(w, "(")
+			b.Right.emit(w)
+			fmt.Fprint(w, ".contains(")
+			b.Left.emit(w)
+			fmt.Fprint(w, "))")
+		}
 		return
 	}
 
@@ -631,6 +663,12 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 		return &AssignStmt{Name: st.Assign.Name, Expr: ex}, nil
 	case st.Assign != nil && len(st.Assign.Index) > 0 && len(st.Assign.Field) == 0:
 		lhs := Expr(&NameExpr{Name: st.Assign.Name})
+		var cur types.Type
+		if env != nil {
+			if t, err := env.GetVar(st.Assign.Name); err == nil {
+				cur = t
+			}
+		}
 		for _, idx := range st.Assign.Index {
 			if idx.Start == nil || idx.Colon != nil || idx.End != nil || idx.Colon2 != nil || idx.Step != nil {
 				return nil, fmt.Errorf("unsupported index")
@@ -638,6 +676,11 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 			ix, err := convertExpr(env, idx.Start)
 			if err != nil {
 				return nil, err
+			}
+			if mt, ok := cur.(types.MapType); ok {
+				cur = mt.Value
+			} else if lt, ok := cur.(types.ListType); ok {
+				cur = lt.Elem
 			}
 			lhs = &IndexExpr{Base: lhs, Index: ix}
 		}
@@ -960,7 +1003,13 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		expr = &BinaryExpr{Left: expr, Op: op.Op, Right: right}
+		inMap := false
+		if op.Op == "in" && env != nil {
+			if t := types.TypeOfPostfix(op.Right, env); types.IsMapType(t) {
+				inMap = true
+			}
+		}
+		expr = &BinaryExpr{Left: expr, Op: op.Op, Right: right, InMap: inMap}
 	}
 	return expr, nil
 }
@@ -1006,12 +1055,16 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				return nil, err
 			}
 			isStr := false
+			force := false
 			if env != nil {
 				if t := types.TypeOfPrimaryBasic(p.Target, env); types.IsStringType(t) {
 					isStr = true
 				}
+				if types.IsMapPrimary(p.Target, env) {
+					force = true
+				}
 			}
-			expr = &IndexExpr{Base: expr, Index: idx, AsString: isStr}
+			expr = &IndexExpr{Base: expr, Index: idx, AsString: isStr, Force: force}
 			continue
 		}
 		return nil, fmt.Errorf("unsupported postfix")
@@ -1075,6 +1128,22 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			elems = append(elems, ce)
 		}
 		return &ArrayLit{Elems: elems}, nil
+	case pr.Map != nil:
+		var keys []Expr
+		var vals []Expr
+		for _, it := range pr.Map.Items {
+			k, err := convertExpr(env, it.Key)
+			if err != nil {
+				return nil, err
+			}
+			v, err := convertExpr(env, it.Value)
+			if err != nil {
+				return nil, err
+			}
+			keys = append(keys, k)
+			vals = append(vals, v)
+		}
+		return &MapLit{Keys: keys, Values: vals}, nil
 	case pr.Call != nil:
 		if pr.Call.Func == "len" && len(pr.Call.Args) == 1 {
 			if n, ok := evalLenConst(pr.Call.Args[0]); ok {
@@ -1133,7 +1202,18 @@ func evalLenConst(e *parser.Expr) (int, bool) {
 }
 
 func zeroValue(t *parser.TypeRef) Expr {
-	if t == nil || t.Simple == nil {
+	if t == nil {
+		return &LitExpr{Value: "nil", IsString: false}
+	}
+	if t.Generic != nil {
+		switch t.Generic.Name {
+		case "list":
+			return &ArrayLit{}
+		case "map":
+			return &MapLit{}
+		}
+	}
+	if t.Simple == nil {
 		return &LitExpr{Value: "nil", IsString: false}
 	}
 	switch *t.Simple {
@@ -1149,8 +1229,19 @@ func zeroValue(t *parser.TypeRef) Expr {
 }
 
 func toSwiftType(t *parser.TypeRef) string {
-	if t == nil || t.Simple == nil {
+	if t == nil {
 		return ""
+	}
+	if t.Generic != nil {
+		switch t.Generic.Name {
+		case "list":
+			return "[" + toSwiftType(t.Generic.Args[0]) + "]"
+		case "map":
+			return "[" + toSwiftType(t.Generic.Args[0]) + ": " + toSwiftType(t.Generic.Args[1]) + "]"
+		}
+	}
+	if t.Simple == nil {
+		return "Any"
 	}
 	switch *t.Simple {
 	case "int":
@@ -1165,7 +1256,18 @@ func toSwiftType(t *parser.TypeRef) string {
 }
 
 func toSwiftOptionalType(t *parser.TypeRef) string {
-	if t == nil || t.Simple == nil {
+	if t == nil {
+		return "Any?"
+	}
+	if t.Generic != nil {
+		switch t.Generic.Name {
+		case "list":
+			return "[" + toSwiftType(t.Generic.Args[0]) + "]?"
+		case "map":
+			return "[" + toSwiftType(t.Generic.Args[0]) + ": " + toSwiftType(t.Generic.Args[1]) + "]?"
+		}
+	}
+	if t.Simple == nil {
 		return "Any?"
 	}
 	switch *t.Simple {
