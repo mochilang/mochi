@@ -1,3 +1,7 @@
+## Progress (2025-07-20 09:32 +0700)
+- Generated more idiomatic DISPLAY output without TMP-STR
+- Updated README checklist via script (18/100)
+
 ## Progress (2025-07-20 08:26 +0700)
 - Removed TMP-STR helper variable
 - Improved PIC inference for constant strings
@@ -13,6 +17,8 @@
 
 
 # Transpiler Progress
+
+- 2025-07-20 09:32 +0700 - Removed TMP-STR usage for numeric output; README auto-generated
 
 - 2025-07-20 09:20 GMT+7 - Refined display formatting using TMP-STR helper
 

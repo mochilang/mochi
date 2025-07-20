@@ -2,6 +2,8 @@
 
 Generated COBOL code from Mochi programs in `tests/vm/valid`. Each test is compiled with `cobc`.
 
+This checklist is auto-generated.
+
 ## VM Golden Test Checklist (18/100)
 - [ ] append_builtin
 - [ ] avg_builtin
