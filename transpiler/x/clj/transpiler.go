@@ -965,6 +965,16 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 		lambda := &List{Elems: []Node{Symbol("fn"), &Vector{Elems: []Node{Symbol("m")}}, body}}
 		call := &List{Elems: []Node{lambda, arg}}
 		return &List{Elems: []Node{Symbol("println"), call}}, nil
+	case "exists":
+		if len(c.Args) != 1 {
+			return nil, fmt.Errorf("exists expects 1 arg")
+		}
+		arg, err := transpileExpr(c.Args[0])
+		if err != nil {
+			return nil, err
+		}
+		cnt := &List{Elems: []Node{Symbol("count"), arg}}
+		return &List{Elems: []Node{Symbol(">"), cnt, IntLit(0)}}, nil
 	case "values":
 		elems = append(elems, Symbol("vals"))
 	default:
