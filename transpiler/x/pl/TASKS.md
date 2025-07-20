@@ -1,3 +1,7 @@
+## Progress (2025-07-20 07:48 +0000)
+- pl: implement membership and slice features
+- 31/100 VM programs transpiled successfully
+
 ## Progress (2025-07-20 07:07 +0000)
 - transpiler/pl: add if expr and string index support
 - 26/100 VM programs transpiled successfully

@@ -2,7 +2,7 @@
 
 This directory contains a tiny transpiler that converts a restricted subset of Mochi programs to SWI-Prolog. It is mainly used for experimentation and golden tests.
 
-## VM Golden Test Checklist (26/100)
+## VM Golden Test Checklist (31/100)
 - [x] `append_builtin`
 - [x] `avg_builtin`
 - [x] `basic_compare`
@@ -35,7 +35,7 @@ This directory contains a tiny transpiler that converts a restricted subset of M
 - [ ] `group_by_multi_join_sort`
 - [ ] `group_by_sort`
 - [ ] `group_items_iteration`
-- [ ] `if_else`
+- [x] `if_else`
 - [x] `if_then_else`
 - [x] `if_then_else_nested`
 - [ ] `in_operator`
@@ -64,7 +64,7 @@ This directory contains a tiny transpiler that converts a restricted subset of M
 - [ ] `match_expr`
 - [ ] `match_full`
 - [x] `math_ops`
-- [ ] `membership`
+- [x] `membership`
 - [x] `min_max_builtin`
 - [ ] `nested_function`
 - [ ] `order_by_map`
@@ -80,13 +80,13 @@ This directory contains a tiny transpiler that converts a restricted subset of M
 - [ ] `right_join`
 - [ ] `save_jsonl_stdout`
 - [ ] `short_circuit`
-- [ ] `slice`
+- [x] `slice`
 - [ ] `sort_stable`
 - [x] `str_builtin`
 - [x] `string_compare`
 - [x] `string_concat`
-- [ ] `string_contains`
-- [ ] `string_in_operator`
+- [x] `string_contains`
+- [x] `string_in_operator`
 - [x] `string_index`
 - [ ] `string_prefix_slice`
 - [x] `substring_builtin`
