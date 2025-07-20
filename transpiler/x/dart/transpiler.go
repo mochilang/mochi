@@ -560,6 +560,82 @@ type IndexExpr struct {
 	Index  Expr
 }
 
+// SliceExpr represents target[start:end].
+type SliceExpr struct {
+	Target Expr
+	Start  Expr
+	End    Expr
+}
+
+func (s *SliceExpr) emit(w io.Writer) error {
+	if inferType(s.Target) == "String" {
+		if err := s.Target.emit(w); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, ".substring("); err != nil {
+			return err
+		}
+		if s.Start != nil {
+			if err := s.Start.emit(w); err != nil {
+				return err
+			}
+		} else {
+			if _, err := io.WriteString(w, "0"); err != nil {
+				return err
+			}
+		}
+		if _, err := io.WriteString(w, ", "); err != nil {
+			return err
+		}
+		if s.End != nil {
+			if err := s.End.emit(w); err != nil {
+				return err
+			}
+		} else {
+			if err := s.Target.emit(w); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, ".length"); err != nil {
+				return err
+			}
+		}
+		_, err := io.WriteString(w, ")")
+		return err
+	}
+	if err := s.Target.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ".sublist("); err != nil {
+		return err
+	}
+	if s.Start != nil {
+		if err := s.Start.emit(w); err != nil {
+			return err
+		}
+	} else {
+		if _, err := io.WriteString(w, "0"); err != nil {
+			return err
+		}
+	}
+	if _, err := io.WriteString(w, ", "); err != nil {
+		return err
+	}
+	if s.End != nil {
+		if err := s.End.emit(w); err != nil {
+			return err
+		}
+	} else {
+		if err := s.Target.emit(w); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, ".length"); err != nil {
+			return err
+		}
+	}
+	_, err := io.WriteString(w, ")")
+	return err
+}
+
 func (i *IndexExpr) emit(w io.Writer) error {
 	if err := i.Target.emit(w); err != nil {
 		return err
@@ -850,6 +926,12 @@ func inferType(e Expr) string {
 		return "int"
 	case *SubstringExpr:
 		return "String"
+	case *SliceExpr:
+		t := inferType(ex.Target)
+		if t == "String" {
+			return "String"
+		}
+		return t
 	case *AppendExpr:
 		return inferType(ex.List)
 	case *AvgExpr:
@@ -1227,16 +1309,33 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 		switch {
 		case op.Index != nil:
 			if op.Index.Colon != nil || op.Index.Colon2 != nil || op.Index.End != nil || op.Index.Step != nil {
-				return nil, fmt.Errorf("slice not supported")
+				if op.Index.Step != nil || op.Index.Colon2 != nil {
+					return nil, fmt.Errorf("slice step not supported")
+				}
+				var startExpr, endExpr Expr
+				if op.Index.Start != nil {
+					startExpr, err = convertExpr(op.Index.Start)
+					if err != nil {
+						return nil, err
+					}
+				}
+				if op.Index.End != nil {
+					endExpr, err = convertExpr(op.Index.End)
+					if err != nil {
+						return nil, err
+					}
+				}
+				expr = &SliceExpr{Target: expr, Start: startExpr, End: endExpr}
+			} else {
+				if op.Index.Start == nil {
+					return nil, fmt.Errorf("nil index")
+				}
+				idx, err := convertExpr(op.Index.Start)
+				if err != nil {
+					return nil, err
+				}
+				expr = &IndexExpr{Target: expr, Index: idx}
 			}
-			if op.Index.Start == nil {
-				return nil, fmt.Errorf("nil index")
-			}
-			idx, err := convertExpr(op.Index.Start)
-			if err != nil {
-				return nil, err
-			}
-			expr = &IndexExpr{Target: expr, Index: idx}
 		case op.Field != nil:
 			// method call if next op is call
 			if i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil {
@@ -1606,6 +1705,8 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(ex.Target), exprNode(ex.Index)}}
 	case *SubstringExpr:
 		return &ast.Node{Kind: "substring", Children: []*ast.Node{exprNode(ex.Str), exprNode(ex.Start), exprNode(ex.End)}}
+	case *SliceExpr:
+		return &ast.Node{Kind: "slice", Children: []*ast.Node{exprNode(ex.Target), exprNode(ex.Start), exprNode(ex.End)}}
 	case *AppendExpr:
 		return &ast.Node{Kind: "append", Children: []*ast.Node{exprNode(ex.List), exprNode(ex.Value)}}
 	case *ContainsExpr:
