@@ -76,6 +76,7 @@ func TestTranspilePrograms(t *testing.T) {
 		"while_loop",
 		"fun_call",
 		"fun_three_args",
+		"fun_expr_in_let",
 		"list_assign",
 		"map_assign",
 		"map_in_operator",

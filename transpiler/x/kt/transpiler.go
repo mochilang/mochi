@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"strings"
 
 	"mochi/parser"
 	"mochi/types"
@@ -107,6 +108,61 @@ func (c *CallExpr) emit(w io.Writer) {
 		a.emit(w)
 	}
 	io.WriteString(w, ")")
+}
+
+// InvokeExpr calls a function value stored in an expression.
+type InvokeExpr struct {
+	Callee Expr
+	Args   []Expr
+}
+
+func (in *InvokeExpr) emit(w io.Writer) {
+	in.Callee.emit(w)
+	io.WriteString(w, "(")
+	for i, a := range in.Args {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		a.emit(w)
+	}
+	io.WriteString(w, ")")
+}
+
+// FuncLit is a Kotlin lambda expression.
+type FuncLit struct {
+	Params []string
+	Body   []Stmt
+}
+
+func (f *FuncLit) emit(w io.Writer) {
+	io.WriteString(w, "{")
+	if len(f.Params) > 0 {
+		io.WriteString(w, " ")
+		for i, p := range f.Params {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, p)
+		}
+		io.WriteString(w, " -> ")
+	}
+	if len(f.Body) == 1 {
+		if rs, ok := f.Body[0].(*ReturnStmt); ok {
+			if rs.Value != nil {
+				rs.Value.emit(w)
+			}
+		} else {
+			f.Body[0].emit(w, 0)
+		}
+		io.WriteString(w, " }")
+		return
+	}
+	io.WriteString(w, "\n")
+	for _, s := range f.Body {
+		s.emit(w, 1)
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, "}")
 }
 
 // StringLit represents a quoted string literal.
@@ -223,9 +279,21 @@ type BinaryExpr struct {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
-	b.Left.emit(w)
+	if _, ok := b.Left.(*BinaryExpr); ok {
+		io.WriteString(w, "(")
+		b.Left.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		b.Left.emit(w)
+	}
 	io.WriteString(w, " "+b.Op+" ")
-	b.Right.emit(w)
+	if _, ok := b.Right.(*BinaryExpr); ok {
+		io.WriteString(w, "(")
+		b.Right.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		b.Right.emit(w)
+	}
 }
 
 type LetStmt struct {
@@ -620,6 +688,20 @@ func kotlinTypeFromType(t types.Type) string {
 			v = "Any"
 		}
 		return "MutableMap<" + k + ", " + v + ">"
+	case types.FuncType:
+		params := make([]string, len(tt.Params))
+		for i, p := range tt.Params {
+			pt := kotlinTypeFromType(p)
+			if pt == "" {
+				pt = "Any"
+			}
+			params[i] = pt
+		}
+		ret := kotlinTypeFromType(tt.Return)
+		if ret == "" {
+			ret = "Any"
+		}
+		return "(" + strings.Join(params, ", ") + ") -> " + ret
 	}
 	return ""
 }
@@ -654,6 +736,8 @@ func guessType(e Expr) string {
 			return "MutableMap<" + k + ", " + val + ">"
 		}
 		return "MutableMap<Any, Any>"
+	case *FuncLit:
+		return ""
 	}
 	return ""
 }
@@ -984,6 +1068,32 @@ func convertIfExpr(env *types.Env, ie *parser.IfExpr) (Expr, error) {
 	return &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
 }
 
+func convertFunExpr(env *types.Env, f *parser.FunExpr) (Expr, error) {
+	params := make([]string, len(f.Params))
+	for i, p := range f.Params {
+		typ := kotlinType(p.Type)
+		if typ == "" {
+			typ = "Any"
+		}
+		params[i] = fmt.Sprintf("%s: %s", p.Name, typ)
+	}
+	var body []Stmt
+	if f.ExprBody != nil {
+		expr, err := convertExpr(env, f.ExprBody)
+		if err != nil {
+			return nil, err
+		}
+		body = []Stmt{&ReturnStmt{Value: expr}}
+	} else {
+		var err error
+		body, err = convertStmts(env, f.BlockBody)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &FuncLit{Params: params, Body: body}, nil
+}
+
 func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 	if e == nil || e.Binary == nil {
 		return nil, fmt.Errorf("unsupported expression")
@@ -1135,7 +1245,15 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				return nil, fmt.Errorf("unsupported cast")
 			}
 		case op.Call != nil:
-			return nil, fmt.Errorf("unsupported call")
+			args := make([]Expr, len(op.Call.Args))
+			for i, a := range op.Call.Args {
+				ex, err := convertExpr(env, a)
+				if err != nil {
+					return nil, err
+				}
+				args[i] = ex
+			}
+			expr = &InvokeExpr{Callee: expr, Args: args}
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
 		}
@@ -1284,6 +1402,8 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			items[i] = MapItem{Key: k, Value: v}
 		}
 		return &MapLit{Items: items}, nil
+	case p.FunExpr != nil:
+		return convertFunExpr(env, p.FunExpr)
 	case p.Group != nil:
 		return convertExpr(env, p.Group)
 	default:
