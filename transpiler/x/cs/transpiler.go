@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 
 	"mochi/parser"
@@ -15,6 +16,7 @@ import (
 // --- C# AST ---
 
 type Program struct {
+	Structs []StructDecl
 	Globals []*Global
 	Funcs   []*Function
 	Stmts   []Stmt
@@ -25,9 +27,20 @@ type Global struct {
 	Value Expr
 }
 
+type StructDecl struct {
+	Name   string
+	Fields []StructField
+}
+
+type StructField struct {
+	Name string
+	Type string
+}
+
 var stringVars map[string]bool
 var mapVars map[string]bool
 var varTypes map[string]string
+var structTypes map[string]types.StructType
 var usesDict bool
 var usesLinq bool
 var usesJson bool
@@ -99,6 +112,19 @@ func (s *AssignIndexStmt) emit(w io.Writer) {
 	s.Index.emit(w)
 	fmt.Fprint(w, "] = ")
 	s.Value.emit(w)
+}
+
+// AssignFieldStmt represents obj.field assignment.
+type AssignFieldStmt struct {
+	Target Expr
+	Name   string
+	Value  Expr
+}
+
+func (a *AssignFieldStmt) emit(w io.Writer) {
+	a.Target.emit(w)
+	fmt.Fprintf(w, ".%s = ", a.Name)
+	a.Value.emit(w)
 }
 
 // ReturnStmt represents a return statement within a function.
@@ -666,6 +692,9 @@ func csType(t *parser.TypeRef) string {
 		case "bool":
 			return "bool"
 		}
+		if st, ok := structTypes[*t.Simple]; ok {
+			return st.Name
+		}
 		return "object"
 	}
 	if t.Generic != nil {
@@ -693,6 +722,46 @@ func csType(t *parser.TypeRef) string {
 		return fmt.Sprintf("Func<%s>", strings.Join(parts, ", "))
 	}
 	return "object"
+}
+
+func csTypeFromType(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType, types.Int64Type:
+		return "int"
+	case types.FloatType:
+		return "double"
+	case types.StringType:
+		return "string"
+	case types.BoolType:
+		return "bool"
+	case types.ListType:
+		return fmt.Sprintf("%s[]", csTypeFromType(tt.Elem))
+	case types.MapType:
+		return fmt.Sprintf("Dictionary<%s, %s>", csTypeFromType(tt.Key), csTypeFromType(tt.Value))
+	case types.OptionType:
+		return csTypeFromType(tt.Elem)
+	case types.StructType:
+		return tt.Name
+	default:
+		return "object"
+	}
+}
+
+func structMapType(st types.StructType) string {
+	valType := ""
+	for _, name := range st.Order {
+		t := csTypeFromType(st.Fields[name])
+		if valType == "" {
+			valType = t
+		} else if valType != t {
+			valType = "object"
+			break
+		}
+	}
+	if valType == "" {
+		valType = "object"
+	}
+	return fmt.Sprintf("Dictionary<string, %s>", valType)
 }
 
 func typeOfExpr(e Expr) string {
@@ -781,6 +850,8 @@ func typeOfExpr(e Expr) string {
 	case *MapLit:
 		k, v := mapTypes(ex)
 		return fmt.Sprintf("Dictionary<%s, %s>", k, v)
+	case *StructLit:
+		return ex.Name
 	case *FunLit:
 		return fmt.Sprintf("Func<%s>", strings.Join(append(append([]string{}, ex.ParamTypes...), ex.ReturnType), ", "))
 	case *VarRef:
@@ -892,6 +963,28 @@ func (m *MapLit) emit(w io.Writer) {
 		fmt.Fprint(w, ", ")
 		it.Value.emit(w)
 		fmt.Fprint(w, "}")
+	}
+	fmt.Fprint(w, "}")
+}
+
+type StructFieldValue struct {
+	Name  string
+	Value Expr
+}
+
+type StructLit struct {
+	Name   string
+	Fields []StructFieldValue
+}
+
+func (s *StructLit) emit(w io.Writer) {
+	fmt.Fprintf(w, "new %s{", s.Name)
+	for i, f := range s.Fields {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		fmt.Fprintf(w, "%s = ", f.Name)
+		f.Value.emit(w)
 	}
 	fmt.Fprint(w, "}")
 }
@@ -1034,6 +1127,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	stringVars = make(map[string]bool)
 	mapVars = make(map[string]bool)
 	varTypes = make(map[string]string)
+	structTypes = env.Structs()
 	usesDict = false
 	usesLinq = false
 	usesJson = false
@@ -1290,6 +1384,17 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			return nil, nil
 		}
 		return &VarStmt{Name: s.Var.Name, Value: val}, nil
+	case s.Type != nil:
+		if prog != nil {
+			if st, ok := structTypes[s.Type.Name]; ok {
+				fields := make([]StructField, len(st.Order))
+				for i, n := range st.Order {
+					fields[i] = StructField{Name: n, Type: csTypeFromType(st.Fields[n])}
+				}
+				prog.Structs = append(prog.Structs, StructDecl{Name: s.Type.Name, Fields: fields})
+			}
+		}
+		return nil, nil
 	case s.Assign != nil:
 		if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
 			val, err := compileExpr(s.Assign.Value)
@@ -1326,6 +1431,22 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			}
 			return &AssignIndexStmt{Target: target, Index: idx, Value: val}, nil
 		}
+		if len(s.Assign.Field) > 0 && len(s.Assign.Index) == 0 {
+			var target Expr = &VarRef{Name: s.Assign.Name}
+			for i := 0; i < len(s.Assign.Field)-1; i++ {
+				target = &FieldExpr{Target: target, Name: s.Assign.Field[i].Name}
+			}
+			fieldName := s.Assign.Field[len(s.Assign.Field)-1].Name
+			val, err := compileExpr(s.Assign.Value)
+			if err != nil {
+				return nil, err
+			}
+			if isMapExpr(target) {
+				idx := &StringLit{Value: fieldName}
+				return &AssignIndexStmt{Target: target, Index: idx, Value: val}, nil
+			}
+			return &AssignFieldStmt{Target: target, Name: fieldName, Value: val}, nil
+		}
 		return nil, fmt.Errorf("unsupported assignment")
 	case s.Fun != nil:
 		params := make([]string, len(s.Fun.Params))
@@ -1344,13 +1465,16 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				body = append(body, st)
 			}
 		}
-		fnType := fmt.Sprintf("Func<%s>", strings.Join(append(append([]string{}, ptypes...), csType(s.Fun.Return)), ", "))
-		varTypes[s.Fun.Name] = fnType
+		varTypes[s.Fun.Name] = fmt.Sprintf("fn/%d", len(ptypes))
+		retType := csType(s.Fun.Return)
+		if s.Fun.Return == nil {
+			retType = ""
+		}
 		if prog != nil {
-			prog.Funcs = append(prog.Funcs, &Function{Name: s.Fun.Name, Params: params, ParamTypes: ptypes, ReturnType: csType(s.Fun.Return), Body: body})
+			prog.Funcs = append(prog.Funcs, &Function{Name: s.Fun.Name, Params: params, ParamTypes: ptypes, ReturnType: retType, Body: body})
 			return nil, nil
 		}
-		lit := &FunLit{Params: params, ParamTypes: ptypes, ReturnType: csType(s.Fun.Return), Body: body}
+		lit := &FunLit{Params: params, ParamTypes: ptypes, ReturnType: retType, Body: body}
 		return &LetStmt{Name: s.Fun.Name, Value: lit}, nil
 	case s.Return != nil:
 		var val Expr
@@ -1485,25 +1609,22 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			args[i] = ex
 		}
 		name := p.Call.Func
-		if sig, ok := varTypes[name]; ok && strings.HasPrefix(sig, "Func<") {
-			parts := strings.Split(strings.TrimSuffix(strings.TrimPrefix(sig, "Func<"), ">"), ",")
-			total := len(parts) - 1
-			if len(args) < total {
-				missing := total - len(args)
+		if sig, ok := varTypes[name]; ok && strings.HasPrefix(sig, "fn/") {
+			n, err := strconv.Atoi(strings.TrimPrefix(sig, "fn/"))
+			if err == nil && len(args) < n {
+				missing := n - len(args)
 				params := make([]string, missing)
 				ptypes := make([]string, missing)
 				for i := 0; i < missing; i++ {
 					params[i] = fmt.Sprintf("p%d", i)
-					ptypes[i] = strings.TrimSpace(parts[len(args)+i])
 				}
-				callArgs := make([]Expr, 0, total)
+				callArgs := make([]Expr, 0, n)
 				callArgs = append(callArgs, args...)
 				for i := 0; i < missing; i++ {
 					callArgs = append(callArgs, &VarRef{Name: params[i]})
 				}
-				retType := strings.TrimSpace(parts[len(parts)-1])
 				body := &CallExpr{Func: name, Args: callArgs}
-				return &FunLit{Params: params, ParamTypes: ptypes, ReturnType: retType, ExprBody: body}, nil
+				return &FunLit{Params: params, ParamTypes: ptypes, ReturnType: "object", ExprBody: body}, nil
 			}
 		}
 		switch name {
@@ -1615,6 +1736,20 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		usesDict = true
 		return &MapLit{Items: items}, nil
+	case p.Struct != nil:
+		st, ok := structTypes[p.Struct.Name]
+		if !ok {
+			return nil, fmt.Errorf("unknown struct %s", p.Struct.Name)
+		}
+		fields := make([]StructFieldValue, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			val, err := compileExpr(f.Value)
+			if err != nil {
+				return nil, err
+			}
+			fields[i] = StructFieldValue{Name: f.Name, Value: val}
+		}
+		return &StructLit{Name: st.Name, Fields: fields}, nil
 	case p.Query != nil:
 		return compileQueryExpr(p.Query)
 	case p.Match != nil:
@@ -1918,6 +2053,14 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("using System.Text.Json;\n")
 	}
 	buf.WriteString("\n")
+
+	for _, st := range prog.Structs {
+		fmt.Fprintf(&buf, "struct %s {\n", st.Name)
+		for _, f := range st.Fields {
+			fmt.Fprintf(&buf, "    public %s %s;\n", f.Type, f.Name)
+		}
+		buf.WriteString("}\n")
+	}
 
 	buf.WriteString("class Program {\n")
 	for _, g := range prog.Globals {

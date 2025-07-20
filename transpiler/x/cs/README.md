@@ -2,7 +2,7 @@
 
 Generated C# code for programs in `tests/vm/valid`. Each program has a `.cs` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.
 
-Compiled programs: 83/100
+Compiled programs: 84/100
 
 ## Checklist
 - [x] append_builtin
@@ -78,7 +78,7 @@ Compiled programs: 83/100
 - [ ] python_auto
 - [ ] python_math
 - [x] query_sum_select
-- [ ] record_assign
+- [x] record_assign
 - [ ] right_join
 - [ ] save_jsonl_stdout
 - [x] short_circuit
