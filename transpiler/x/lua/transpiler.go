@@ -139,7 +139,7 @@ func (c *CallExpr) emit(w io.Writer) {
 		return
 	case "len", "count":
 		if len(c.Args) > 0 && isMapExpr(c.Args[0]) {
-			io.WriteString(w, "(function(m) local c=0 for _ in pairs(m) do c=c+1 end return c end)(")
+			io.WriteString(w, "(function(m)\n  local c = 0\n  for _ in pairs(m) do\n    c = c + 1\n  end\n  return c\nend)(")
 			c.Args[0].emit(w)
 			io.WriteString(w, ")")
 		} else {
@@ -169,7 +169,7 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, ")")
 	case "append":
-		io.WriteString(w, "(function(lst, item) table.insert(lst, item); return lst end)(")
+		io.WriteString(w, "(function(lst, item)\n  local res = {table.unpack(lst)}\n  table.insert(res, item)\n  return res\nend)(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
 		}
@@ -179,20 +179,20 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, ")")
 	case "avg":
-		io.WriteString(w, "(function(lst) local sum=0 for _,v in ipairs(lst) do sum=sum+v end if #lst==0 then return 0 end return sum/#lst end)(")
+		io.WriteString(w, "(function(lst)\n  local sum = 0\n  for _, v in ipairs(lst) do\n    sum = sum + v\n  end\n  if #lst == 0 then\n    return 0\n  end\n  return sum / #lst\nend)(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
 		}
 		io.WriteString(w, ")")
 	case "sum":
-		io.WriteString(w, "(function(lst) local s=0 for _,v in ipairs(lst) do s=s+v end return s end)(")
+		io.WriteString(w, "(function(lst)\n  local s = 0\n  for _, v in ipairs(lst) do\n    s = s + v\n  end\n  return s\nend)(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
 		}
 		io.WriteString(w, ")")
 	case "contains":
 		if len(c.Args) > 0 && isMapExpr(c.Args[0]) {
-			io.WriteString(w, "(function(m,k) return m[k] ~= nil end)(")
+			io.WriteString(w, "(function(m, k)\n  return m[k] ~= nil\nend)(")
 			c.Args[0].emit(w)
 			io.WriteString(w, ", ")
 			if len(c.Args) > 1 {
@@ -208,7 +208,7 @@ func (c *CallExpr) emit(w io.Writer) {
 			}
 			io.WriteString(w, ", 1, true) ~= nil)")
 		} else {
-			io.WriteString(w, "(function(lst,v) for _,x in ipairs(lst) do if x==v then return true end end return false end)(")
+			io.WriteString(w, "(function(lst, v)\n  for _, x in ipairs(lst) do\n    if x == v then\n      return true\n    end\n  end\n  return false\nend)(")
 			if len(c.Args) > 0 {
 				c.Args[0].emit(w)
 			}
