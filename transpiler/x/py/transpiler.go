@@ -453,9 +453,10 @@ func (lc *MultiListComp) emit(w io.Writer) error {
 
 // SortedExpr represents calling `sorted` on a list with a key function.
 type SortedExpr struct {
-	List Expr
-	Var  string
-	Key  Expr
+	List    Expr
+	Var     string
+	Key     Expr
+	Reverse bool
 }
 
 func (s *SortedExpr) emit(w io.Writer) error {
@@ -470,6 +471,11 @@ func (s *SortedExpr) emit(w io.Writer) error {
 	}
 	if err := emitExpr(w, s.Key); err != nil {
 		return err
+	}
+	if s.Reverse {
+		if _, err := io.WriteString(w, ", reverse=True"); err != nil {
+			return err
+		}
 	}
 	_, err := io.WriteString(w, ")")
 	return err
@@ -2280,17 +2286,22 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	base := &MultiListComp{Vars: vars, Iters: iters, Expr: elem, Cond: cond}
 	list := Expr(base)
 	var keyExpr Expr
+	reverse := false
 	if q.Sort != nil {
 		keyExpr, err = convertExpr(q.Sort)
 		if err != nil {
 			return nil, err
+		}
+		if u, ok := keyExpr.(*UnaryExpr); ok && u.Op == "-" {
+			keyExpr = u.Expr
+			reverse = true
 		}
 		if d, ok := keyExpr.(*DictLit); ok {
 			vals := make([]Expr, len(d.Values))
 			copy(vals, d.Values)
 			keyExpr = &CallExpr{Func: &Name{Name: "tuple"}, Args: []Expr{&ListLit{Elems: vals}}}
 		}
-		list = &SortedExpr{List: list, Var: q.Var, Key: keyExpr}
+		list = &SortedExpr{List: list, Var: q.Var, Key: keyExpr, Reverse: reverse}
 	}
 
 	var start Expr
@@ -2324,7 +2335,7 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		comp := &MultiListComp{Vars: vars, Iters: iters, Expr: arg, Cond: cond, Parens: true}
 		aggList := Expr(comp)
 		if q.Sort != nil {
-			aggList = &SortedExpr{List: aggList, Var: q.Var, Key: keyExpr}
+			aggList = &SortedExpr{List: aggList, Var: q.Var, Key: keyExpr, Reverse: reverse}
 		}
 		if start != nil || end != nil {
 			aggList = &SliceExpr{Target: aggList, Start: start, End: end}
@@ -2576,6 +2587,9 @@ func exprNode(e Expr) *ast.Node {
 		n := &ast.Node{Kind: "sorted", Value: ex.Var}
 		n.Children = append(n.Children, exprNode(ex.List))
 		n.Children = append(n.Children, exprNode(ex.Key))
+		if ex.Reverse {
+			n.Children = append(n.Children, &ast.Node{Kind: "reverse"})
+		}
 		return n
 	case *CondExpr:
 		return &ast.Node{Kind: "cond", Children: []*ast.Node{exprNode(ex.Cond), exprNode(ex.Then), exprNode(ex.Else)}}
