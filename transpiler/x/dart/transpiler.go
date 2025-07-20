@@ -945,6 +945,24 @@ func (m *MaxExpr) emit(w io.Writer) error {
 type ValuesExpr struct{ Map Expr }
 
 func (v *ValuesExpr) emit(w io.Writer) error {
+	t := inferType(v.Map)
+	if fields, ok := structFields[t]; ok {
+		if _, err := io.WriteString(w, "["); err != nil {
+			return err
+		}
+		for i, f := range fields {
+			if i > 0 {
+				if _, err := io.WriteString(w, ", "); err != nil {
+					return err
+				}
+			}
+			if err := (&SelectorExpr{Receiver: v.Map, Field: f.Name}).emit(w); err != nil {
+				return err
+			}
+		}
+		_, err := io.WriteString(w, "]")
+		return err
+	}
 	if err := v.Map.emit(w); err != nil {
 		return err
 	}
