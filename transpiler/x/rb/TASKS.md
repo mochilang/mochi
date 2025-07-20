@@ -1,3 +1,9 @@
+## Progress (2025-07-20 03:34 +0000)
+- Improved Ruby emitter with indentation
+- Lists printed with brackets using FormatList
+- Avg builtin now uses integer division
+- VM valid golden test results updated
+
 ## Progress (2025-07-20 09:56 +0700)
 - VM valid golden test results updated
 - Added support for typed variable declarations with default values
