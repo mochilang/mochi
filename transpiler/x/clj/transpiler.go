@@ -647,9 +647,13 @@ func transpileWhileStmt(w *parser.WhileStmt) (Node, error) {
 	if err != nil {
 		return nil, err
 	}
-	elems := []Node{Symbol("while"), cond}
-	elems = append(elems, body...)
-	return &List{Elems: elems}, nil
+	var bodyNode Node
+	if len(body) == 1 {
+		bodyNode = body[0]
+	} else {
+		bodyNode = &List{Elems: append([]Node{Symbol("do")}, body...)}
+	}
+	return &List{Elems: []Node{Symbol("while"), cond, bodyNode}}, nil
 }
 
 func transpileForStmt(f *parser.ForStmt) (Node, error) {
@@ -676,7 +680,11 @@ func transpileForStmt(f *parser.ForStmt) (Node, error) {
 		seq = iter
 	}
 	binding := &Vector{Elems: []Node{Symbol(f.Name), seq}}
-	elems := []Node{Symbol("doseq"), binding}
-	elems = append(elems, body...)
-	return &List{Elems: elems}, nil
+	var bodyNode Node
+	if len(body) == 1 {
+		bodyNode = body[0]
+	} else {
+		bodyNode = &List{Elems: append([]Node{Symbol("do")}, body...)}
+	}
+	return &List{Elems: []Node{Symbol("doseq"), binding, bodyNode}}, nil
 }

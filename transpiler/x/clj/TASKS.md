@@ -1,3 +1,7 @@
+## Progress (2025-07-20 10:30 +0700)
+- clj: improve loop bodies and update while test
+- Regenerated golden files - 45/100 vm valid programs passing
+
 ## Progress (2025-07-20 09:31 +0700)
 - clj docs: update progress
 - Regenerated golden files - 45/100 vm valid programs passing
