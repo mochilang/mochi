@@ -198,10 +198,28 @@ type queryFrom struct {
 }
 
 // QueryExpr represents a simplified query comprehension.
+type queryJoin struct {
+	Var  string
+	Src  Expr
+	On   Expr
+	Side string
+}
+
+type queryGroup struct {
+	Key       Expr
+	Name      string
+	Having    Expr
+	ItemType  string
+	GroupType string
+	Fields    []string
+}
+
 type QueryExpr struct {
 	Var      string
 	Src      Expr
 	Froms    []queryFrom
+	Joins    []queryJoin
+	Group    *queryGroup
 	Where    Expr
 	Select   Expr
 	ElemType string
@@ -277,6 +295,9 @@ func (s *StructLit) emit(w io.Writer) {
 
 func (q *QueryExpr) emit(w io.Writer) {
 	fmt.Fprintf(w, "new java.util.ArrayList<%s>() {{", q.ElemType)
+	if q.Group != nil {
+		fmt.Fprintf(w, " java.util.LinkedHashMap<String,%s> _groups = new java.util.LinkedHashMap<>();", q.Group.GroupType)
+	}
 	fmt.Fprintf(w, " for (var %s : ", q.Var)
 	q.Src.emit(w)
 	fmt.Fprint(w, ") {")
@@ -285,21 +306,69 @@ func (q *QueryExpr) emit(w io.Writer) {
 		f.Src.emit(w)
 		fmt.Fprint(w, ") {")
 	}
+	for _, j := range q.Joins {
+		fmt.Fprintf(w, " for (var %s : ", j.Var)
+		j.Src.emit(w)
+		fmt.Fprint(w, ") {")
+		fmt.Fprint(w, " if (")
+		if j.On != nil {
+			j.On.emit(w)
+		} else {
+			fmt.Fprint(w, "true")
+		}
+		fmt.Fprint(w, ") {")
+	}
 	if q.Where != nil {
 		fmt.Fprint(w, " if (")
 		q.Where.emit(w)
 		fmt.Fprint(w, ") {")
 	}
-	fmt.Fprint(w, " add(")
-	q.Select.emit(w)
-	fmt.Fprint(w, ");")
+	if q.Group != nil {
+		fmt.Fprint(w, " var _k = ")
+		q.Group.Key.emit(w)
+		fmt.Fprint(w, "; String _ks = String.valueOf(_k);")
+		fmt.Fprintf(w, " %s g = _groups.get(_ks);", q.Group.GroupType)
+		fmt.Fprintf(w, " if (g == null) { g = new %s(_k, new java.util.ArrayList<>()); _groups.put(_ks, g); }", q.Group.GroupType)
+		fmt.Fprintf(w, " g.items.add(new %s(", q.Group.ItemType)
+		for i, fld := range q.Group.Fields {
+			if i > 0 {
+				fmt.Fprint(w, ", ")
+			}
+			fmt.Fprint(w, fld)
+		}
+		fmt.Fprint(w, "));")
+	} else {
+		fmt.Fprint(w, " add(")
+		q.Select.emit(w)
+		fmt.Fprint(w, ");")
+	}
 	if q.Where != nil {
+		fmt.Fprint(w, " }")
+	}
+	for range q.Joins {
+		fmt.Fprint(w, " }")
 		fmt.Fprint(w, " }")
 	}
 	for range q.Froms {
 		fmt.Fprint(w, " }")
 	}
 	fmt.Fprint(w, " }")
+	if q.Group != nil {
+		fmt.Fprint(w, " for (var g : _groups.values()) {")
+		fmt.Fprintf(w, " %s %s = g;", q.Group.GroupType, q.Group.Name)
+		if q.Group.Having != nil {
+			fmt.Fprint(w, " if (")
+			q.Group.Having.emit(w)
+			fmt.Fprint(w, ") {")
+		}
+		fmt.Fprint(w, " add(")
+		q.Select.emit(w)
+		fmt.Fprint(w, ");")
+		if q.Group.Having != nil {
+			fmt.Fprint(w, " }")
+		}
+		fmt.Fprint(w, " }")
+	}
 	fmt.Fprint(w, "}}")
 }
 
@@ -1546,7 +1615,7 @@ func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
 }
 
 func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
-	if q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || len(q.Joins) > 0 {
+	if q.Sort != nil || q.Skip != nil || q.Take != nil {
 		return nil, fmt.Errorf("unsupported query features")
 	}
 	src, err := compileExpr(q.Source)
@@ -1576,6 +1645,29 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			}
 		}
 		froms[i] = queryFrom{Var: f.Var, Src: fe}
+	}
+	joins := make([]queryJoin, len(q.Joins))
+	for i, j := range q.Joins {
+		je, err := compileExpr(j.Src)
+		if err != nil {
+			return nil, err
+		}
+		jt := "java.util.Map"
+		if topEnv != nil {
+			if lt, ok := types.ExprType(j.Src, topEnv).(types.ListType); ok {
+				jt = toJavaTypeFromType(lt.Elem)
+			}
+		}
+		varTypes[j.Var] = jt
+		onExpr, err := compileExpr(j.On)
+		if err != nil {
+			return nil, err
+		}
+		side := ""
+		if j.Side != nil {
+			side = *j.Side
+		}
+		joins[i] = queryJoin{Var: j.Var, Src: je, On: onExpr, Side: side}
 	}
 	var where Expr
 	if q.Where != nil {
@@ -1611,7 +1703,52 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			elemType = name
 		}
 	}
-	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Where: where, Select: sel, ElemType: elemType}, nil
+
+	var group *queryGroup
+	if q.Group != nil && len(q.Group.Exprs) > 0 {
+		keyExpr, err := compileExpr(q.Group.Exprs[0])
+		if err != nil {
+			return nil, err
+		}
+		keyType := "java.util.Map"
+		if topEnv != nil {
+			keyType = toJavaTypeFromType(types.ExprType(q.Group.Exprs[0], topEnv))
+		}
+		if keyType == "" {
+			keyType = inferType(keyExpr)
+		}
+		itemFields := append([]string{q.Var}, make([]string, 0, len(q.Froms)+len(q.Joins))...)
+		for _, f := range q.Froms {
+			itemFields = append(itemFields, f.Var)
+		}
+		for _, j := range q.Joins {
+			itemFields = append(itemFields, j.Var)
+		}
+		itemName := fmt.Sprintf("Item%d", structCount+1)
+		itemDecl := make([]Param, len(itemFields))
+		for i, n := range itemFields {
+			itemDecl[i] = Param{Name: n, Type: varTypes[n]}
+		}
+		extraDecls = append(extraDecls, &TypeDeclStmt{Name: itemName, Fields: itemDecl})
+
+		groupName := fmt.Sprintf("Group%d", structCount+1)
+		structCount++
+		gfields := []Param{
+			{Name: "key", Type: keyType},
+			{Name: "items", Type: fmt.Sprintf("java.util.List<%s>", itemName)},
+		}
+		extraDecls = append(extraDecls, &TypeDeclStmt{Name: groupName, Fields: gfields})
+		var having Expr
+		if q.Group.Having != nil {
+			having, err = compileExpr(q.Group.Having)
+			if err != nil {
+				return nil, err
+			}
+		}
+		varTypes[q.Group.Name] = groupName
+		group = &queryGroup{Key: keyExpr, Name: q.Group.Name, Having: having, ItemType: itemName, GroupType: groupName, Fields: itemFields}
+	}
+	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Group: group, Where: where, Select: sel, ElemType: elemType}, nil
 }
 
 // Emit generates formatted Java source from the AST.
