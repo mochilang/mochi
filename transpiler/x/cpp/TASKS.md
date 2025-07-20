@@ -1,5 +1,11 @@
 # C++ Transpiler Tasks
 
+## Progress (2025-07-20 11:24 +0700)
+- refactor(cpp): use env for type inference and drop debug helpers
+- strings now emitted as plain literals
+- Generated C++ for 44/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-20 10:58 +0700)
 - docs(cpp): update progress
 - Generated C++ for 44/100 programs

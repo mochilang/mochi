@@ -12,13 +12,13 @@ import (
 	"strings"
 	"time"
 
-	"mochi/ast"
 	"mochi/parser"
 	"mochi/types"
 )
 
 var version string
 var currentProgram *Program
+var currentEnv *types.Env
 
 func init() {
 	_, file, _, _ := runtime.Caller(0)
@@ -335,7 +335,7 @@ func (m *MapLit) emit(w io.Writer) {
 }
 
 func (s *StringLit) emit(w io.Writer) {
-	fmt.Fprintf(w, "std::string(%q)", s.Value)
+	fmt.Fprintf(w, "%q", s.Value)
 }
 
 func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
@@ -653,10 +653,10 @@ func (i *IfExpr) emit(w io.Writer) {
 }
 
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
-	_ = env
 	cp := &Program{Includes: []string{"<iostream>", "<string>"}}
 	currentProgram = cp
-	defer func() { currentProgram = nil }()
+	currentEnv = env
+	defer func() { currentProgram = nil; currentEnv = nil }()
 	var body []Stmt
 	for _, stmt := range prog.Statements {
 		switch {
@@ -1277,16 +1277,16 @@ func guessType(e *parser.Expr) string {
 	if e == nil {
 		return "auto"
 	}
-	if types.IsStringExpr(e, nil) {
+	if types.IsStringExpr(e, currentEnv) {
 		return "std::string"
 	}
-	if types.IsBoolExpr(e, nil) {
+	if types.IsBoolExpr(e, currentEnv) {
 		return "bool"
 	}
-	if types.IsFloatExpr(e, nil) {
+	if types.IsFloatExpr(e, currentEnv) {
 		return "double"
 	}
-	if types.IsListExpr(e, nil) {
+	if types.IsListExpr(e, currentEnv) {
 		if e.Binary != nil && e.Binary.Left != nil && e.Binary.Left.Value != nil {
 			if list := e.Binary.Left.Value.Target.List; list != nil && len(list.Elems) > 0 {
 				et := guessType(list.Elems[0])
@@ -1295,7 +1295,7 @@ func guessType(e *parser.Expr) string {
 		}
 		return "std::vector<auto>"
 	}
-	if types.IsMapExpr(e, nil) {
+	if types.IsMapExpr(e, currentEnv) {
 		if e.Binary != nil && e.Binary.Left != nil && e.Binary.Left.Value != nil {
 			if mp := e.Binary.Left.Value.Target.Map; mp != nil && len(mp.Items) > 0 {
 				kt := guessType(mp.Items[0].Key)
@@ -1342,196 +1342,4 @@ func defaultValueForType(t string) string {
 		return "\"\""
 	}
 	return "{}"
-}
-
-// print writes a Lisp-like representation of the transpiler AST to stdout.
-// It first converts the internal structs to ast.Node using the mochi/ast
-// package, then prints the result.
-func print(prog *Program) {
-	n := prog.toNode()
-	fmt.Print(n.String())
-}
-
-func (p *Program) toNode() *ast.Node {
-	root := &ast.Node{Kind: "program"}
-	for _, fn := range p.Functions {
-		root.Children = append(root.Children, fn.toNode())
-	}
-	return root
-}
-
-func (f *Func) toNode() *ast.Node {
-	n := &ast.Node{Kind: "func", Value: f.Name}
-	for _, st := range f.Body {
-		n.Children = append(n.Children, toStmtNode(st))
-	}
-	return n
-}
-
-func toStmtNode(s Stmt) *ast.Node {
-	switch st := s.(type) {
-	case *PrintStmt:
-		n := &ast.Node{Kind: "print"}
-		for _, v := range st.Values {
-			n.Children = append(n.Children, toExprNode(v))
-		}
-		return n
-	case *LetStmt:
-		n := &ast.Node{Kind: "let", Value: st.Name}
-		if st.Value != nil {
-			n.Children = []*ast.Node{toExprNode(st.Value)}
-		}
-		return n
-	case *AssignStmt:
-		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{toExprNode(st.Value)}}
-	case *AssignIndexStmt:
-		n := &ast.Node{Kind: "assign_index"}
-		n.Children = []*ast.Node{toExprNode(&IndexExpr{Target: st.Target, Index: st.Index}), toExprNode(st.Value)}
-		return n
-	case *WhileStmt:
-		n := &ast.Node{Kind: "while"}
-		n.Children = append(n.Children, toExprNode(st.Cond))
-		for _, b := range st.Body {
-			n.Children = append(n.Children, toStmtNode(b))
-		}
-		return n
-	case *ForStmt:
-		n := &ast.Node{Kind: "for", Value: st.Var}
-		n.Children = append(n.Children, toExprNode(st.Start))
-		n.Children = append(n.Children, toExprNode(st.End))
-		for _, b := range st.Body {
-			n.Children = append(n.Children, toStmtNode(b))
-		}
-		return n
-	case *IfStmt:
-		n := &ast.Node{Kind: "if"}
-		n.Children = append(n.Children, toExprNode(st.Cond))
-		then := &ast.Node{Kind: "then"}
-		for _, b := range st.Then {
-			then.Children = append(then.Children, toStmtNode(b))
-		}
-		n.Children = append(n.Children, then)
-		if st.ElseIf != nil {
-			n.Children = append(n.Children, toStmtNode(st.ElseIf))
-		}
-		if len(st.Else) > 0 {
-			els := &ast.Node{Kind: "else"}
-			for _, b := range st.Else {
-				els.Children = append(els.Children, toStmtNode(b))
-			}
-			n.Children = append(n.Children, els)
-		}
-		return n
-	case *ReturnStmt:
-		n := &ast.Node{Kind: "return"}
-		if st.Value != nil {
-			n.Children = []*ast.Node{toExprNode(st.Value)}
-		}
-		return n
-	case *BreakStmt:
-		return &ast.Node{Kind: "break"}
-	case *ContinueStmt:
-		return &ast.Node{Kind: "continue"}
-	default:
-		return &ast.Node{Kind: "stmt"}
-	}
-}
-
-func toExprNode(e Expr) *ast.Node {
-	switch ex := e.(type) {
-	case *StringLit:
-		return &ast.Node{Kind: "str", Value: ex.Value}
-	case *IntLit:
-		return &ast.Node{Kind: "int", Value: ex.Value}
-	case *BoolLit:
-		return &ast.Node{Kind: "bool", Value: ex.Value}
-	case *VarRef:
-		return &ast.Node{Kind: "var", Value: ex.Name}
-	case *BinaryExpr:
-		return &ast.Node{Kind: ex.Op, Children: []*ast.Node{toExprNode(ex.Left), toExprNode(ex.Right)}}
-	case *UnaryExpr:
-		return &ast.Node{Kind: ex.Op, Children: []*ast.Node{toExprNode(ex.Expr)}}
-	case *LenExpr:
-		return &ast.Node{Kind: "len", Children: []*ast.Node{toExprNode(ex.Value)}}
-	case *SelectorExpr:
-		n := &ast.Node{Kind: "field", Value: ex.Field}
-		n.Children = []*ast.Node{toExprNode(ex.Target)}
-		return n
-	case *IndexExpr:
-		n := &ast.Node{Kind: "index"}
-		n.Children = []*ast.Node{toExprNode(ex.Target), toExprNode(ex.Index)}
-		return n
-	case *SliceExpr:
-		n := &ast.Node{Kind: "slice"}
-		n.Children = []*ast.Node{toExprNode(ex.Target), toExprNode(ex.Start), toExprNode(ex.End)}
-		return n
-	case *ContainsExpr:
-		n := &ast.Node{Kind: "contains"}
-		n.Children = []*ast.Node{toExprNode(ex.Value), toExprNode(ex.Sub)}
-		return n
-	case *InExpr:
-		n := &ast.Node{Kind: "in"}
-		n.Children = []*ast.Node{toExprNode(ex.Value), toExprNode(ex.Coll)}
-		return n
-	case *SumExpr:
-		n := &ast.Node{Kind: "sum"}
-		n.Children = []*ast.Node{toExprNode(ex.Arg)}
-		return n
-	case *AppendExpr:
-		n := &ast.Node{Kind: "append"}
-		n.Children = []*ast.Node{toExprNode(ex.List), toExprNode(ex.Elem)}
-		return n
-	case *AvgExpr:
-		n := &ast.Node{Kind: "avg"}
-		n.Children = []*ast.Node{toExprNode(ex.List)}
-		return n
-	case *CastExpr:
-		n := &ast.Node{Kind: "cast", Value: ex.Type}
-		n.Children = []*ast.Node{toExprNode(ex.Value)}
-		return n
-	case *SubstringExpr:
-		n := &ast.Node{Kind: "substring"}
-		n.Children = []*ast.Node{toExprNode(ex.Value), toExprNode(ex.Start), toExprNode(ex.End)}
-		return n
-	case *ListLit:
-		n := &ast.Node{Kind: "list"}
-		for _, e := range ex.Elems {
-			n.Children = append(n.Children, toExprNode(e))
-		}
-		return n
-	case *MapLit:
-		n := &ast.Node{Kind: "map"}
-		for i := range ex.Keys {
-			pair := &ast.Node{Kind: "pair"}
-			pair.Children = []*ast.Node{toExprNode(ex.Keys[i]), toExprNode(ex.Values[i])}
-			n.Children = append(n.Children, pair)
-		}
-		return n
-	case *CallExpr:
-		n := &ast.Node{Kind: "call", Value: ex.Name}
-		for _, a := range ex.Args {
-			n.Children = append(n.Children, toExprNode(a))
-		}
-		return n
-	case *LambdaExpr:
-		n := &ast.Node{Kind: "lambda"}
-		for _, p := range ex.Params {
-			n.Children = append(n.Children, &ast.Node{Kind: "param", Value: p.Name})
-		}
-		n.Children = append(n.Children, toExprNode(ex.Body))
-		return n
-	case *IfExpr:
-		n := &ast.Node{Kind: "ifexpr"}
-		n.Children = append(n.Children, toExprNode(ex.Cond))
-		n.Children = append(n.Children, toExprNode(ex.Then))
-		if ex.ElseIf != nil {
-			n.Children = append(n.Children, toExprNode(ex.ElseIf))
-		}
-		if ex.Else != nil {
-			n.Children = append(n.Children, toExprNode(ex.Else))
-		}
-		return n
-	default:
-		return &ast.Node{Kind: "expr"}
-	}
 }
