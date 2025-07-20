@@ -265,18 +265,30 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 		}
 		switch ex := v.(type) {
 		case *ListLit:
-			io.WriteString(w, "([&]{ auto tmp = ")
+			if currentProgram != nil {
+				currentProgram.addInclude("<sstream>")
+			}
+			io.WriteString(w, "([&]{ std::ostringstream ss; auto tmp = ")
 			ex.emit(w)
-			io.WriteString(w, "; std::string o; for(size_t i=0;i<tmp.size();++i){ if(i>0) o += \" \"; o += std::to_string(tmp[i]); } return o; }())")
+			io.WriteString(w, "; for(size_t i=0;i<tmp.size();++i){ if(i>0) ss<<\" \"; ss<<tmp[i]; } return ss.str(); }())")
 		case *SliceExpr:
+			if currentProgram != nil {
+				currentProgram.addInclude("<sstream>")
+			}
 			io.WriteString(w, "([&]{ auto tmp = ")
 			ex.emit(w)
-			io.WriteString(w, "; if constexpr(std::is_same_v<std::decay_t<decltype(tmp)>, std::string>) return tmp; std::string o; for(size_t i=0;i<tmp.size();++i){ if(i>0) o += \" \"; o += std::to_string(tmp[i]); } return o; }())")
+			io.WriteString(w, "; if constexpr(std::is_same_v<std::decay_t<decltype(tmp)>, std::string>) return tmp; std::ostringstream ss; for(size_t i=0;i<tmp.size();++i){ if(i>0) ss<<\" \"; ss<<tmp[i]; } return ss.str(); }())")
 		case *AppendExpr:
-			io.WriteString(w, "([&]{ auto tmp = ")
+			if currentProgram != nil {
+				currentProgram.addInclude("<sstream>")
+			}
+			io.WriteString(w, "([&]{ std::ostringstream ss; auto tmp = ")
 			ex.emit(w)
-			io.WriteString(w, "; std::string o; for(size_t i=0;i<tmp.size();++i){ if(i>0) o += \" \"; o += std::to_string(tmp[i]); } return o; }())")
+			io.WriteString(w, "; for(size_t i=0;i<tmp.size();++i){ if(i>0) ss<<\" \"; ss<<tmp[i]; } return ss.str(); }())")
 		case *AvgExpr:
+			if currentProgram != nil {
+				currentProgram.addInclude("<sstream>")
+			}
 			io.WriteString(w, "([&]{ std::ostringstream ss; ss<<std::fixed<<std::setprecision(1)<<")
 			ex.emit(w)
 			io.WriteString(w, "; return ss.str(); }())")

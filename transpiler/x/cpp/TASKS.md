@@ -1,3 +1,8 @@
+## Progress (2025-07-20 11:57 +0700)
+- docs(cpp): update tasks
+- Generated C++ for 47/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-20 11:55 +0700)
 - cpp transpiler: infer map literal types
 - Generated C++ for 46/100 programs
