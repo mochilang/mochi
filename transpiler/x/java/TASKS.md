@@ -1,4 +1,22 @@
-## Progress (2025-07-20 12:53 +0700)
+## Progress (2025-07-20 13:26 +0700)
+- fix tests (a05878f0e)
+
+- fix tests (a05878f0e)
+
+- fix tests (a05878f0e)
+
+- fix tests (a05878f0e)
+
+- fix tests (a05878f0e)
+
+- fix tests (a05878f0e)
+
+- fix tests (a05878f0e)
+
+- fix tests (a05878f0e)
+
+- fix tests (a05878f0e)
+
 - java: support 'in' operator for strings (565a22891)
 
 - java transpiler: support method calls (a5791d107)
