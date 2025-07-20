@@ -71,17 +71,31 @@ func (a *AssignStmt) emit(w io.Writer) {
 }
 
 type ListAssignStmt struct {
-	Name  string
-	Index Expr
-	Expr  Expr
+        Name  string
+        Index Expr
+        Expr  Expr
 }
 
 func (l *ListAssignStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "(set! %s (list-set %s ", l.Name, l.Name)
-	l.Index.emit(w)
-	io.WriteString(w, " ")
-	l.Expr.emit(w)
-	io.WriteString(w, "))\n")
+        fmt.Fprintf(w, "(set! %s (list-set %s ", l.Name, l.Name)
+        l.Index.emit(w)
+        io.WriteString(w, " ")
+        l.Expr.emit(w)
+        io.WriteString(w, "))\n")
+}
+
+type MapAssignStmt struct {
+        Name string
+        Key  Expr
+        Expr Expr
+}
+
+func (m *MapAssignStmt) emit(w io.Writer) {
+        fmt.Fprintf(w, "(set! %s (hash-set %s ", m.Name, m.Name)
+        m.Key.emit(w)
+        io.WriteString(w, " ")
+        m.Expr.emit(w)
+        io.WriteString(w, "))\n")
 }
 
 type IfStmt struct {
@@ -384,13 +398,17 @@ func (c *CallExpr) emit(w io.Writer) {
 type LenExpr struct{ Arg Expr }
 
 func (l *LenExpr) emit(w io.Writer) {
-	io.WriteString(w, "(if (string? ")
-	l.Arg.emit(w)
-	io.WriteString(w, ") (string-length ")
-	l.Arg.emit(w)
-	io.WriteString(w, ") (length ")
-	l.Arg.emit(w)
-	io.WriteString(w, "))")
+        io.WriteString(w, "(cond [(string? ")
+        l.Arg.emit(w)
+        io.WriteString(w, ") (string-length ")
+        l.Arg.emit(w)
+        io.WriteString(w, ")] [(hash? ")
+        l.Arg.emit(w)
+        io.WriteString(w, ") (hash-count ")
+        l.Arg.emit(w)
+        io.WriteString(w, ")] [else (length ")
+        l.Arg.emit(w)
+        io.WriteString(w, ")])")
 }
 
 type AvgExpr struct{ Arg Expr }
@@ -421,9 +439,29 @@ func (s *StrExpr) emit(w io.Writer) {
 	io.WriteString(w, ")")
 }
 
+type MinExpr struct{ Arg Expr }
+
+func (m *MinExpr) emit(w io.Writer) {
+        io.WriteString(w, "(if (null? ")
+        m.Arg.emit(w)
+        io.WriteString(w, ") 0 (apply min ")
+        m.Arg.emit(w)
+        io.WriteString(w, "))")
+}
+
+type MaxExpr struct{ Arg Expr }
+
+func (m *MaxExpr) emit(w io.Writer) {
+        io.WriteString(w, "(if (null? ")
+        m.Arg.emit(w)
+        io.WriteString(w, ") 0 (apply max ")
+        m.Arg.emit(w)
+        io.WriteString(w, "))")
+}
+
 type CastExpr struct {
-	Value Expr
-	Type  string
+        Value Expr
+        Type  string
 }
 
 func (c *CastExpr) emit(w io.Writer) {
@@ -443,6 +481,36 @@ func (c *CastExpr) emit(w io.Writer) {
 	default:
 		c.Value.emit(w)
 	}
+}
+
+type InExpr struct {
+        Elem Expr
+        Set  Expr
+        IsStr bool
+        IsMap bool
+}
+
+func (i *InExpr) emit(w io.Writer) {
+        switch {
+        case i.IsStr:
+                io.WriteString(w, "(string-contains? ")
+                i.Set.emit(w)
+                io.WriteString(w, " ")
+                i.Elem.emit(w)
+                io.WriteString(w, ")")
+        case i.IsMap:
+                io.WriteString(w, "(hash-has-key? ")
+                i.Set.emit(w)
+                io.WriteString(w, " ")
+                i.Elem.emit(w)
+                io.WriteString(w, ")")
+       default:
+               io.WriteString(w, "(not (not (member ")
+               i.Elem.emit(w)
+               io.WriteString(w, " ")
+               i.Set.emit(w)
+               io.WriteString(w, ")))")
+        }
 }
 
 type LeftJoinExpr struct {
@@ -754,14 +822,19 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
-		if len(st.Assign.Index) == 1 {
-			idxExpr, err := convertExpr(st.Assign.Index[0].Start, env)
-			if err != nil {
-				return nil, err
-			}
-			return &ListAssignStmt{Name: st.Assign.Name, Index: idxExpr, Expr: e}, nil
-		}
-		return &AssignStmt{Name: st.Assign.Name, Expr: e}, nil
+               if len(st.Assign.Index) == 1 {
+                       idxExpr, err := convertExpr(st.Assign.Index[0].Start, env)
+                       if err != nil {
+                               return nil, err
+                       }
+                       if t, err2 := env.GetVar(st.Assign.Name); err2 == nil {
+                               if _, ok := t.(types.MapType); ok {
+                                       return &MapAssignStmt{Name: st.Assign.Name, Key: idxExpr, Expr: e}, nil
+                               }
+                       }
+                       return &ListAssignStmt{Name: st.Assign.Name, Index: idxExpr, Expr: e}, nil
+               }
+               return &AssignStmt{Name: st.Assign.Name, Expr: e}, nil
 	case st.Return != nil:
 		var e Expr
 		var err error
@@ -1044,16 +1117,23 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 		if op == "||" {
 			op = "or"
 		}
-		if op == "/" {
-			lt := types.TypeOfUnary(b.Left, env)
-			rt := types.TypeOfPostfix(part.Right, env)
-			if (types.IsIntType(lt) || types.IsInt64Type(lt)) && (types.IsIntType(rt) || types.IsInt64Type(rt)) {
-				op = "quotient"
-			} else {
-				op = "/"
-			}
-		}
-		if op == "<" || op == "<=" || op == ">" || op == ">=" {
+               if op == "/" {
+                       lt := types.TypeOfUnary(b.Left, env)
+                       rt := types.TypeOfPostfix(part.Right, env)
+                       if (types.IsIntType(lt) || types.IsInt64Type(lt)) && (types.IsIntType(rt) || types.IsInt64Type(rt)) {
+                               op = "quotient"
+                       } else {
+                               op = "/"
+                       }
+               }
+               if op == "in" {
+                       isStr := types.IsStringPostfix(part.Right, env)
+                       isMap := types.IsMapPostfix(part.Right, env)
+                       opExpr := &InExpr{Elem: exprs[len(exprs)-1], Set: right, IsStr: isStr, IsMap: isMap}
+                       exprs[len(exprs)-1] = opExpr
+                       continue
+               }
+               if op == "<" || op == "<=" || op == ">" || op == ">=" {
 			if types.IsStringUnary(b.Left, env) || types.IsStringPostfix(part.Right, env) {
 				switch op {
 				case "<":
@@ -1325,18 +1405,34 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		if len(args) == 1 {
 			return &SumExpr{Arg: args[0]}, nil
 		}
-	case "count":
-		if len(args) == 1 {
-			return &LenExpr{Arg: args[0]}, nil
-		}
-	case "str":
-		if len(args) == 1 {
-			return &StrExpr{Arg: args[0]}, nil
-		}
-	case "math.sqrt":
-		if len(args) == 1 {
-			return &CallExpr{Func: "sqrt", Args: args}, nil
-		}
+       case "count":
+               if len(args) == 1 {
+                       return &LenExpr{Arg: args[0]}, nil
+               }
+       case "exists":
+               if len(args) == 1 {
+                       return &CallExpr{Func: "not", Args: []Expr{&CallExpr{Func: "null?", Args: args}}}, nil
+               }
+       case "str":
+               if len(args) == 1 {
+                       return &StrExpr{Arg: args[0]}, nil
+               }
+       case "substring":
+               if len(args) == 3 {
+                       return &CallExpr{Func: "substring", Args: args}, nil
+               }
+       case "min":
+               if len(args) == 1 {
+                       return &MinExpr{Arg: args[0]}, nil
+               }
+       case "max":
+               if len(args) == 1 {
+                       return &MaxExpr{Arg: args[0]}, nil
+               }
+       case "math.sqrt":
+               if len(args) == 1 {
+                       return &CallExpr{Func: "sqrt", Args: args}, nil
+               }
 	case "math.pow":
 		if len(args) == 2 {
 			return &CallExpr{Func: "expt", Args: args}, nil
@@ -1566,36 +1662,47 @@ type OuterJoinExpr struct {
 }
 
 type CrossJoinExpr struct {
-	Vars    []string
-	Sources []Expr
-	Select  Expr
+        Vars    []string
+        Sources []Expr
+        Where   Expr
+        Select  Expr
 }
 
 func (c *CrossJoinExpr) emit(w io.Writer) {
-	io.WriteString(w, "(let ([_res '()])\n")
-	for i := range c.Vars {
-		io.WriteString(w, strings.Repeat("  ", i+1))
-		io.WriteString(w, "(for ([")
-		io.WriteString(w, c.Vars[i])
-		io.WriteString(w, " ")
-		c.Sources[i].emit(w)
-		io.WriteString(w, "])\n")
-	}
-	io.WriteString(w, strings.Repeat("  ", len(c.Vars)+1))
-	io.WriteString(w, "(set! _res (append _res (list ")
-	c.Select.emit(w)
-	io.WriteString(w, ")))\n")
-	for i := len(c.Vars); i >= 1; i-- {
-		io.WriteString(w, strings.Repeat("  ", i))
-		io.WriteString(w, ")\n")
-	}
-	io.WriteString(w, "  _res)")
+        io.WriteString(w, "(let ([_res '()])\n")
+        for i := range c.Vars {
+                io.WriteString(w, strings.Repeat("  ", i+1))
+                io.WriteString(w, "(for ([")
+                io.WriteString(w, c.Vars[i])
+                io.WriteString(w, " ")
+                c.Sources[i].emit(w)
+                io.WriteString(w, "])\n")
+        }
+        if c.Where != nil {
+                io.WriteString(w, strings.Repeat("  ", len(c.Vars)+1))
+                io.WriteString(w, "(when ")
+                c.Where.emit(w)
+                io.WriteString(w, "\n")
+        }
+        io.WriteString(w, strings.Repeat("  ", len(c.Vars)+1))
+        io.WriteString(w, "(set! _res (append _res (list ")
+        c.Select.emit(w)
+        io.WriteString(w, ")))\n")
+        if c.Where != nil {
+                io.WriteString(w, strings.Repeat("  ", len(c.Vars)+1))
+                io.WriteString(w, ")\n")
+        }
+        for i := len(c.Vars); i >= 1; i-- {
+                io.WriteString(w, strings.Repeat("  ", i))
+                io.WriteString(w, ")\n")
+        }
+        io.WriteString(w, "  _res)")
 }
 
 func convertCrossJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
-	if q == nil || len(q.Joins) != 0 || q.Distinct || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Where != nil {
-		return nil, fmt.Errorf("unsupported query")
-	}
+        if q == nil || len(q.Joins) != 0 || q.Distinct || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
+                return nil, fmt.Errorf("unsupported query")
+        }
 	vars := []string{q.Var}
 	srcs := []*parser.Expr{q.Source}
 	for _, f := range q.Froms {
@@ -1614,11 +1721,18 @@ func convertCrossJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	for _, v := range vars {
 		child.SetVar(v, types.AnyType{}, true)
 	}
-	sel, err := convertExpr(q.Select, child)
-	if err != nil {
-		return nil, err
-	}
-	return &CrossJoinExpr{Vars: vars, Sources: exprs, Select: sel}, nil
+        sel, err := convertExpr(q.Select, child)
+        if err != nil {
+                return nil, err
+        }
+        var cond Expr
+        if q.Where != nil {
+                cond, err = convertExpr(q.Where, child)
+                if err != nil {
+                        return nil, err
+                }
+        }
+        return &CrossJoinExpr{Vars: vars, Sources: exprs, Where: cond, Select: sel}, nil
 }
 
 func (o *OuterJoinExpr) emit(w io.Writer) {
@@ -1708,10 +1822,10 @@ func convertOuterJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 }
 
 func convertQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
-	if len(q.Froms) > 0 && len(q.Joins) == 0 {
-		return convertCrossJoinQuery(q, env)
-	}
-	if len(q.Joins) == 1 {
+        if len(q.Joins) == 0 {
+                return convertCrossJoinQuery(q, env)
+        }
+        if len(q.Joins) == 1 {
 		if q.Joins[0].Side != nil {
 			side := *q.Joins[0].Side
 			switch side {

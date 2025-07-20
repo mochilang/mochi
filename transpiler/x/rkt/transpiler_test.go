@@ -51,11 +51,11 @@ func TestTranspile_Golden(t *testing.T) {
 	root := repoRoot(t)
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "rkt")
 	os.MkdirAll(outDir, 0o755)
-	names := []string{
-		"print_hello",
-		"string_concat",
-		"let_and_print",
-		"var_assignment",
+        names := []string{
+                "print_hello",
+                "string_concat",
+                "let_and_print",
+                "var_assignment",
 		"binary_precedence",
 		"basic_compare",
 		"math_ops",
@@ -78,9 +78,27 @@ func TestTranspile_Golden(t *testing.T) {
 		"string_contains",
 		"string_index",
 		"list_index",
-		"list_assign",
-		"cross_join",
-	}
+                "list_assign",
+                "cross_join",
+                "dataset_where_filter",
+                "break_continue",
+                "left_join_multi",
+                "outer_join",
+                "right_join",
+                "cross_join_filter",
+                "cross_join_triple",
+                "for_loop",
+                "for_list_collection",
+                "for_map_collection",
+                "fun_call",
+                "fun_three_args",
+                "exists_builtin",
+                "membership",
+                "in_operator",
+                "in_operator_extended",
+                "min_max_builtin",
+                "substring_builtin",
+        }
 	for _, name := range names {
 		src := filepath.Join(root, "tests", "vm", "valid", name+".mochi")
 		prog, err := parser.Parse(src)
