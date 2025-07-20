@@ -1,3 +1,35 @@
+## Progress (2025-07-20 22:46 +0700)
+- scala transpiler: support cross join filter
+- Regenerated golden files - 59/100 vm valid programs passing
+
+## Progress (2025-07-20 22:46 +0700)
+- scala transpiler: support cross join filter
+- Regenerated golden files - 59/100 vm valid programs passing
+
+## Progress (2025-07-20 22:46 +0700)
+- scala transpiler: support cross join filter
+- Regenerated golden files - 71/100 vm valid programs passing
+
+## Progress (2025-07-20 22:46 +0700)
+- scala transpiler: support cross join filter
+- Regenerated golden files - 71/100 vm valid programs passing
+
+## Progress (2025-07-20 22:46 +0700)
+- scala transpiler: support cross join filter
+- Regenerated golden files - 71/100 vm valid programs passing
+
+## Progress (2025-07-20 22:46 +0700)
+- scala transpiler: support cross join filter
+- Regenerated golden files - 71/100 vm valid programs passing
+
+## Progress (2025-07-20 22:46 +0700)
+- scala transpiler: support cross join filter
+- Regenerated golden files - 71/100 vm valid programs passing
+
+## Progress (2025-07-20 22:46 +0700)
+- scala transpiler: support cross join filter
+- Regenerated golden files - 59/100 vm valid programs passing
+
 ## Progress (2025-07-20 22:17 +0700)
 - refine zig output style
 - Regenerated golden files - 59/100 vm valid programs passing

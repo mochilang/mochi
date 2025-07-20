@@ -206,7 +206,9 @@ func (f *FunStmt) emit(w io.Writer) {
 }
 
 func (r *ReturnStmt) emit(w io.Writer) {
+	fmt.Fprint(w, "return")
 	if r.Value != nil {
+		fmt.Fprint(w, " ")
 		r.Value.emit(w)
 	}
 }
