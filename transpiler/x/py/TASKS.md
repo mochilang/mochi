@@ -1,4 +1,10 @@
 # Python Transpiler Tasks
+## Recent Enhancements (2025-07-20 02:09 UTC+0700)
+
+- Added aggregate query support for simple `sum` selections.
+- Generated golden output for `query_sum_select`.
+- Updated README checklist (76/100).
+
 ## Recent Enhancements (2025-07-20 01:49 UTC+0700)
 
 - Regenerated golden files with deterministic headers.

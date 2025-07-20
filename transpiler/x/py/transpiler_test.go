@@ -371,3 +371,7 @@ func TestTranspile_OrderByMap(t *testing.T) {
 func TestTranspile_SortStable(t *testing.T) {
 	runCase(t, "sort_stable")
 }
+
+func TestTranspile_QuerySumSelect(t *testing.T) {
+	runCase(t, "query_sum_select")
+}
