@@ -171,10 +171,11 @@ func (*SaveStmt) isStmt() {}
 
 // UpdateStmt represents an `update` statement on a list of structs.
 type UpdateStmt struct {
-	Target string
-	Fields []string
-	Values []Expr
-	Cond   Expr
+	Target    string
+	Fields    []string
+	Values    []Expr
+	Cond      Expr
+	Dataclass bool
 }
 
 func (*UpdateStmt) isStmt() {}
@@ -912,8 +913,14 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 			inner += "    "
 		}
 		for i, f := range st.Fields {
-			if _, err := fmt.Fprintf(w, "%s%s[%q] = ", inner, it, f); err != nil {
-				return err
+			if st.Dataclass {
+				if _, err := fmt.Fprintf(w, "%s%s.%s = ", inner, it, f); err != nil {
+					return err
+				}
+			} else {
+				if _, err := fmt.Fprintf(w, "%s%s[%q] = ", inner, it, f); err != nil {
+					return err
+				}
 			}
 			if err := emitExpr(w, st.Values[i]); err != nil {
 				return err
@@ -1320,60 +1327,61 @@ func inferTypeFromExpr(e *parser.Expr) types.Type {
 }
 
 // substituteFields replaces Name nodes that match the given field names with
-// map access on the provided variable.
-func substituteFields(e Expr, varName string, fields map[string]bool) Expr {
+// field access on the provided variable. When attr is true, attributes are used
+// instead of map indexing.
+func substituteFields(e Expr, varName string, fields map[string]bool, attr bool) Expr {
 	switch ex := e.(type) {
 	case *Name:
 		if fields[ex.Name] {
-			return &FieldExpr{Target: &Name{Name: varName}, Name: ex.Name, MapIndex: true}
+			return &FieldExpr{Target: &Name{Name: varName}, Name: ex.Name, MapIndex: !attr}
 		}
 		return ex
 	case *BinaryExpr:
-		ex.Left = substituteFields(ex.Left, varName, fields)
-		ex.Right = substituteFields(ex.Right, varName, fields)
+		ex.Left = substituteFields(ex.Left, varName, fields, attr)
+		ex.Right = substituteFields(ex.Right, varName, fields, attr)
 		return ex
 	case *UnaryExpr:
-		ex.Expr = substituteFields(ex.Expr, varName, fields)
+		ex.Expr = substituteFields(ex.Expr, varName, fields, attr)
 		return ex
 	case *CallExpr:
-		ex.Func = substituteFields(ex.Func, varName, fields)
+		ex.Func = substituteFields(ex.Func, varName, fields, attr)
 		for i := range ex.Args {
-			ex.Args[i] = substituteFields(ex.Args[i], varName, fields)
+			ex.Args[i] = substituteFields(ex.Args[i], varName, fields, attr)
 		}
 		return ex
 	case *FieldExpr:
-		ex.Target = substituteFields(ex.Target, varName, fields)
+		ex.Target = substituteFields(ex.Target, varName, fields, attr)
 		return ex
 	case *IndexExpr:
-		ex.Target = substituteFields(ex.Target, varName, fields)
-		ex.Index = substituteFields(ex.Index, varName, fields)
+		ex.Target = substituteFields(ex.Target, varName, fields, attr)
+		ex.Index = substituteFields(ex.Index, varName, fields, attr)
 		return ex
 	case *SliceExpr:
-		ex.Target = substituteFields(ex.Target, varName, fields)
+		ex.Target = substituteFields(ex.Target, varName, fields, attr)
 		if ex.Start != nil {
-			ex.Start = substituteFields(ex.Start, varName, fields)
+			ex.Start = substituteFields(ex.Start, varName, fields, attr)
 		}
 		if ex.End != nil {
-			ex.End = substituteFields(ex.End, varName, fields)
+			ex.End = substituteFields(ex.End, varName, fields, attr)
 		}
 		if ex.Step != nil {
-			ex.Step = substituteFields(ex.Step, varName, fields)
+			ex.Step = substituteFields(ex.Step, varName, fields, attr)
 		}
 		return ex
 	case *CondExpr:
-		ex.Cond = substituteFields(ex.Cond, varName, fields)
-		ex.Then = substituteFields(ex.Then, varName, fields)
-		ex.Else = substituteFields(ex.Else, varName, fields)
+		ex.Cond = substituteFields(ex.Cond, varName, fields, attr)
+		ex.Then = substituteFields(ex.Then, varName, fields, attr)
+		ex.Else = substituteFields(ex.Else, varName, fields, attr)
 		return ex
 	case *ListLit:
 		for i := range ex.Elems {
-			ex.Elems[i] = substituteFields(ex.Elems[i], varName, fields)
+			ex.Elems[i] = substituteFields(ex.Elems[i], varName, fields, attr)
 		}
 		return ex
 	case *DictLit:
 		for i := range ex.Keys {
-			ex.Keys[i] = substituteFields(ex.Keys[i], varName, fields)
-			ex.Values[i] = substituteFields(ex.Values[i], varName, fields)
+			ex.Keys[i] = substituteFields(ex.Keys[i], varName, fields, attr)
+			ex.Values[i] = substituteFields(ex.Values[i], varName, fields, attr)
 		}
 		return ex
 	default:
@@ -2952,7 +2960,7 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 							for _, nm := range names {
 								fields[nm] = true
 							}
-							res = substituteFields(res, tn.Name, fields)
+							res = substituteFields(res, tn.Name, fields, true)
 							cond := &BinaryExpr{Left: target, Op: "!=", Right: &Name{Name: "None"}}
 							expr = &CondExpr{Cond: cond, Then: res, Else: expr}
 							continue
@@ -3224,7 +3232,7 @@ func convertUpdate(u *parser.UpdateStmt, env *types.Env) (*UpdateStmt, error) {
 			currentEnv = prev
 			return nil, err
 		}
-		val = substituteFields(val, "item", fieldSet)
+		val = substituteFields(val, "item", fieldSet, true)
 		fields = append(fields, key)
 		values = append(values, val)
 	}
@@ -3235,10 +3243,10 @@ func convertUpdate(u *parser.UpdateStmt, env *types.Env) (*UpdateStmt, error) {
 			currentEnv = prev
 			return nil, err
 		}
-		cond = substituteFields(cond, "item", fieldSet)
+		cond = substituteFields(cond, "item", fieldSet, true)
 	}
 	currentEnv = prev
-	return &UpdateStmt{Target: u.Target, Fields: fields, Values: values, Cond: cond}, nil
+	return &UpdateStmt{Target: u.Target, Fields: fields, Values: values, Cond: cond, Dataclass: true}, nil
 }
 
 func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]Stmt, error) {
