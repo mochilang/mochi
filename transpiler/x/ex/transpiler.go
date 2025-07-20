@@ -72,6 +72,26 @@ func (s *ExprStmt) emit(w io.Writer, indent int) {
 	s.Expr.emit(w)
 }
 
+// BreakStmt represents a break statement inside loops.
+type BreakStmt struct{}
+
+func (b *BreakStmt) emit(w io.Writer, indent int) {
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, "throw :break")
+}
+
+// ContinueStmt represents a continue statement inside loops.
+type ContinueStmt struct{}
+
+func (c *ContinueStmt) emit(w io.Writer, indent int) {
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, "throw :continue")
+}
+
 // ReturnStmt returns from a function optionally with a value.
 type ReturnStmt struct{ Value Expr }
 
@@ -696,6 +716,19 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		params := make([]string, len(st.Fun.Params))
 		for i, p := range st.Fun.Params {
 			params[i] = p.Name
+		}
+		if len(body) == 2 {
+			if ifs, ok := body[0].(*IfStmt); ok && len(ifs.Then) == 1 {
+				if ret1, ok := ifs.Then[0].(*ReturnStmt); ok {
+					if ret2, ok := body[1].(*ReturnStmt); ok {
+						cond := ifs.Cond
+						thenExpr := ret1.Value
+						elseExpr := ret2.Value
+						ce := &CondExpr{Cond: cond, Then: thenExpr, Else: elseExpr}
+						body = []Stmt{&ReturnStmt{Value: ce}}
+					}
+				}
+			}
 		}
 		return &FuncDecl{Name: st.Fun.Name, Params: params, Body: body}, nil
 	default:

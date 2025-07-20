@@ -2,7 +2,7 @@
 
 This directory contains a minimal transpiler that converts a very small subset of Mochi into Elixir source code. The generated files live in `tests/transpiler/x/ex`.
 
-Currently 51 of 100 programs transpile and run.
+Currently 55 of 100 programs transpile and run.
 
 The table below tracks which programs from `tests/vm/valid` successfully transpile and run. Checked items have generated `.exs` code and matching `.out` files in `tests/transpiler/x/ex`.
 - [x] append_builtin.mochi
@@ -13,7 +13,7 @@ The table below tracks which programs from `tests/vm/valid` successfully transpi
 - [ ] break_continue.mochi
 - [x] cast_string_to_int.mochi
 - [ ] cast_struct.mochi
-- [ ] closure.mochi
+- [x] closure.mochi
 - [x] count_builtin.mochi
 - [ ] cross_join.mochi
 - [ ] cross_join_filter.mochi
@@ -68,7 +68,7 @@ The table below tracks which programs from `tests/vm/valid` successfully transpi
 - [x] math_ops.mochi
 - [x] membership.mochi
 - [x] min_max_builtin.mochi
-- [ ] nested_function.mochi
+- [x] nested_function.mochi
 - [ ] order_by_map.mochi
 - [ ] outer_join.mochi
 - [ ] partial_application.mochi
@@ -93,7 +93,7 @@ The table below tracks which programs from `tests/vm/valid` successfully transpi
 - [x] string_prefix_slice.mochi
 - [x] substring_builtin.mochi
 - [x] sum_builtin.mochi
-- [ ] tail_recursion.mochi
+- [x] tail_recursion.mochi
 - [x] test_block.mochi
 - [ ] tree_sum.mochi
 - [ ] two-sum.mochi
@@ -104,4 +104,4 @@ The table below tracks which programs from `tests/vm/valid` successfully transpi
 - [ ] user_type_literal.mochi
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
-- [ ] while_loop.mochi
+- [x] while_loop.mochi
