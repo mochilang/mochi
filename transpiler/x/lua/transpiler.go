@@ -124,6 +124,7 @@ type BinaryExpr struct {
 type QueryComp struct {
 	Vars    []string
 	Sources []Expr
+	Where   Expr
 	Body    Expr
 }
 
@@ -300,15 +301,30 @@ func (qa *QueryAssignStmt) emit(w io.Writer) {
 		qa.Query.Sources[i].emit(w)
 		io.WriteString(w, ") do\n")
 	}
-	io.WriteString(w, "  table.insert(")
-	io.WriteString(w, qa.Name)
-	io.WriteString(w, ", ")
-	if qa.Query.Body != nil {
-		qa.Query.Body.emit(w)
+	if qa.Query.Where != nil {
+		io.WriteString(w, "  if ")
+		qa.Query.Where.emit(w)
+		io.WriteString(w, " then\n")
+		io.WriteString(w, "    table.insert(")
+		io.WriteString(w, qa.Name)
+		io.WriteString(w, ", ")
+		if qa.Query.Body != nil {
+			qa.Query.Body.emit(w)
+		} else {
+			io.WriteString(w, "nil")
+		}
+		io.WriteString(w, ")\n  end\n")
 	} else {
-		io.WriteString(w, "nil")
+		io.WriteString(w, "  table.insert(")
+		io.WriteString(w, qa.Name)
+		io.WriteString(w, ", ")
+		if qa.Query.Body != nil {
+			qa.Query.Body.emit(w)
+		} else {
+			io.WriteString(w, "nil")
+		}
+		io.WriteString(w, ")\n")
 	}
-	io.WriteString(w, ")\n")
 	for range qa.Query.Vars {
 		io.WriteString(w, "end\n")
 	}
@@ -777,13 +793,26 @@ func (qc *QueryComp) emit(w io.Writer) {
 		qc.Sources[i].emit(w)
 		io.WriteString(w, ") do\n")
 	}
-	io.WriteString(w, "    table.insert(_res, ")
-	if qc.Body != nil {
-		qc.Body.emit(w)
+	if qc.Where != nil {
+		io.WriteString(w, "    if ")
+		qc.Where.emit(w)
+		io.WriteString(w, " then\n")
+		io.WriteString(w, "      table.insert(_res, ")
+		if qc.Body != nil {
+			qc.Body.emit(w)
+		} else {
+			io.WriteString(w, "nil")
+		}
+		io.WriteString(w, ")\n    end\n")
 	} else {
-		io.WriteString(w, "nil")
+		io.WriteString(w, "    table.insert(_res, ")
+		if qc.Body != nil {
+			qc.Body.emit(w)
+		} else {
+			io.WriteString(w, "nil")
+		}
+		io.WriteString(w, ")\n")
 	}
-	io.WriteString(w, ")\n")
 	for range qc.Vars {
 		io.WriteString(w, "  end\n")
 	}
@@ -1230,7 +1259,7 @@ func convertIfExpr(ie *parser.IfExpr) (Expr, error) {
 }
 
 func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
-	if q.Where != nil || q.Group != nil || q.Sort != nil || len(q.Joins) > 0 || q.Skip != nil || q.Take != nil || q.Distinct {
+	if q.Group != nil || q.Sort != nil || len(q.Joins) > 0 || q.Skip != nil || q.Take != nil || q.Distinct {
 		return nil, fmt.Errorf("unsupported query")
 	}
 	vars := []string{q.Var}
@@ -1248,11 +1277,19 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		vars = append(vars, fc.Var)
 		sources = append(sources, expr)
 	}
+	var where Expr
+	if q.Where != nil {
+		w, err := convertExpr(q.Where)
+		if err != nil {
+			return nil, err
+		}
+		where = w
+	}
 	body, err := convertExpr(q.Select)
 	if err != nil {
 		return nil, err
 	}
-	return &QueryComp{Vars: vars, Sources: sources, Body: body}, nil
+	return &QueryComp{Vars: vars, Sources: sources, Where: where, Body: body}, nil
 }
 
 func convertIfStmt(is *parser.IfStmt) (Stmt, error) {
