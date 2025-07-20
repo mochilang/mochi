@@ -30,6 +30,7 @@ type Program struct {
 var (
 	currentImports map[string]bool
 	currentEnv     *types.Env
+	needYamlParser bool
 )
 
 type Stmt interface{ isStmt() }
@@ -1518,12 +1519,6 @@ func Emit(w io.Writer, p *Program) error {
 		if currentImports["json"] && !hasImport(p, "json") {
 			imports = append(imports, "import json")
 		}
-		if currentImports["yaml"] && !hasImport(p, "yaml") {
-			imports = append(imports, "import yaml")
-		}
-		if currentImports["os"] && !hasImport(p, "os") {
-			imports = append(imports, "import os")
-		}
 	}
 	for _, s := range p.Stmts {
 		if im, ok := s.(*ImportStmt); ok {
@@ -1542,6 +1537,36 @@ func Emit(w io.Writer, p *Program) error {
 	}
 	if len(imports) > 0 {
 		if _, err := io.WriteString(w, "\n"); err != nil {
+			return err
+		}
+	}
+	if needYamlParser {
+		helper := "def _load_yaml(path):\n" +
+			"    items = []\n" +
+			"    obj = None\n" +
+			"    for line in open(path):\n" +
+			"        line = line.strip()\n" +
+			"        if not line:\n" +
+			"            continue\n" +
+			"        if line.startswith('- '):\n" +
+			"            if obj is not None:\n" +
+			"                items.append(obj)\n" +
+			"            obj = {}\n" +
+			"            line = line[2:]\n" +
+			"        if not line:\n" +
+			"            continue\n" +
+			"        key, val = line.split(':', 1)\n" +
+			"        key = key.strip()\n" +
+			"        val = val.strip()\n" +
+			"        if val.isdigit():\n" +
+			"            val = int(val)\n" +
+			"        elif val.startswith('\"') and val.endswith('\"'):\n" +
+			"            val = val[1:-1]\n" +
+			"        obj[key] = val\n" +
+			"    if obj is not None:\n" +
+			"        items.append(obj)\n" +
+			"    return items\n"
+		if _, err := io.WriteString(w, helper+"\n"); err != nil {
 			return err
 		}
 	}
@@ -1737,6 +1762,7 @@ func Emit(w io.Writer, p *Program) error {
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	currentImports = map[string]bool{}
 	currentEnv = env
+	needYamlParser = false
 	p := &Program{}
 	for _, st := range prog.Statements {
 		switch {
@@ -2619,17 +2645,14 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		pathExpr := fmt.Sprintf("%q", path)
 		if path != "" && strings.HasPrefix(path, "../") {
-			if currentImports != nil {
-				currentImports["os"] = true
-			}
-			pathExpr = fmt.Sprintf("os.path.join(os.environ.get('MOCHI_ROOT', ''), 'tests', %q)", clean)
+			root := repoRoot()
+			abs := filepath.ToSlash(filepath.Join(root, "tests", clean))
+			pathExpr = fmt.Sprintf("%q", abs)
 		}
 		switch format {
 		case "yaml":
-			if currentImports != nil {
-				currentImports["yaml"] = true
-			}
-			return &RawExpr{Code: fmt.Sprintf("yaml.safe_load(open(%s))", pathExpr)}, nil
+			needYamlParser = true
+			return &RawExpr{Code: fmt.Sprintf("_load_yaml(%s)", pathExpr)}, nil
 		case "json":
 			if currentImports != nil {
 				currentImports["json"] = true
