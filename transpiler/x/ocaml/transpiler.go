@@ -545,6 +545,33 @@ func (u *UnaryMinus) emitPrint(w io.Writer) {
 	io.WriteString(w, ")")
 }
 
+// CastExpr represents a simple cast expression like string -> int.
+type CastExpr struct {
+	Expr Expr
+	Type string
+}
+
+func (c *CastExpr) emit(w io.Writer) {
+	switch c.Type {
+	case "int":
+		io.WriteString(w, "int_of_string ")
+		c.Expr.emit(w)
+	default:
+		c.Expr.emit(w)
+	}
+}
+
+func (c *CastExpr) emitPrint(w io.Writer) {
+	switch c.Type {
+	case "int":
+		io.WriteString(w, "string_of_int (int_of_string ")
+		c.Expr.emit(w)
+		io.WriteString(w, ")")
+	default:
+		c.Expr.emitPrint(w)
+	}
+}
+
 // IfExpr represents a conditional expression.
 type IfExpr struct {
 	Cond Expr
@@ -681,6 +708,8 @@ func defaultValueExpr(typ string) Expr {
 		return &BoolLit{Value: false}
 	case "string":
 		return &StringLit{Value: ""}
+	case "list":
+		return &ListLit{Elems: nil}
 	}
 	return &IntLit{Value: 0}
 }
@@ -1123,6 +1152,15 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 				typ = "int"
 			}
 			i++
+		case op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil:
+			target := *op.Cast.Type.Simple
+			if typ == "string" && target == "int" {
+				expr = &CastExpr{Expr: expr, Type: target}
+				typ = target
+				i++
+				continue
+			}
+			return nil, "", fmt.Errorf("unsupported cast")
 		default:
 			return nil, "", fmt.Errorf("postfix op not supported")
 		}
