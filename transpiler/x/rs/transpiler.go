@@ -19,6 +19,7 @@ import (
 
 var usesHashMap bool
 var mapVars map[string]bool
+var stringVars map[string]bool
 
 // Program represents a Rust program consisting of a list of statements.
 type Program struct {
@@ -219,6 +220,19 @@ func (i *IndexExpr) emit(w io.Writer) {
 	io.WriteString(w, "[")
 	i.Index.emit(w)
 	io.WriteString(w, "]")
+}
+
+// StringIndexExpr represents string[index] returning a character.
+type StringIndexExpr struct {
+	Str   Expr
+	Index Expr
+}
+
+func (s *StringIndexExpr) emit(w io.Writer) {
+	s.Str.emit(w)
+	io.WriteString(w, ".chars().nth(")
+	s.Index.emit(w)
+	io.WriteString(w, " as usize).unwrap()")
 }
 
 // FieldExpr represents `receiver.field` access.
@@ -492,6 +506,7 @@ func (fs *ForStmt) emit(w io.Writer) {}
 func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesHashMap = false
 	mapVars = make(map[string]bool)
+	stringVars = make(map[string]bool)
 	prog := &Program{}
 	for _, st := range p.Statements {
 		s, err := compileStmt(st)
@@ -526,15 +541,24 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			if _, ok := e.(*MapLit); ok {
 				mapVars[stmt.Let.Name] = true
 			}
+			if inferType(e) == "String" {
+				stringVars[stmt.Let.Name] = true
+			}
 		}
 		typ := ""
 		if stmt.Let.Type != nil && stmt.Let.Type.Simple != nil {
 			typ = rustType(*stmt.Let.Type.Simple)
+			if typ == "String" {
+				stringVars[stmt.Let.Name] = true
+			}
 		} else if e != nil {
 			typ = inferType(e)
 			if _, ok := e.(*StringLit); ok {
 				typ = ""
 			}
+		}
+		if typ == "fn" {
+			typ = ""
 		}
 		return &VarDecl{Name: stmt.Let.Name, Expr: e, Type: typ}, nil
 	case stmt.Var != nil:
@@ -548,15 +572,24 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			if _, ok := e.(*MapLit); ok {
 				mapVars[stmt.Var.Name] = true
 			}
+			if inferType(e) == "String" {
+				stringVars[stmt.Var.Name] = true
+			}
 		}
 		typ := ""
 		if stmt.Var.Type != nil && stmt.Var.Type.Simple != nil {
 			typ = rustType(*stmt.Var.Type.Simple)
+			if typ == "String" {
+				stringVars[stmt.Var.Name] = true
+			}
 		} else if e != nil {
 			typ = inferType(e)
 			if _, ok := e.(*StringLit); ok {
 				typ = ""
 			}
+		}
+		if typ == "fn" {
+			typ = ""
 		}
 		return &VarDecl{Name: stmt.Var.Name, Expr: e, Type: typ, Mutable: true}, nil
 	case stmt.Assign != nil:
@@ -574,6 +607,9 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		}
 		if _, ok := val.(*MapLit); ok {
 			mapVars[stmt.Assign.Name] = true
+		}
+		if inferType(val) == "String" {
+			stringVars[stmt.Assign.Name] = true
 		}
 		return &AssignStmt{Name: stmt.Assign.Name, Expr: val}, nil
 	case stmt.Return != nil:
@@ -705,8 +741,24 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 		params[i] = Param{Name: p.Name, Type: typ}
 	}
 	ret := ""
-	if fn.Return != nil && fn.Return.Simple != nil {
-		ret = rustType(*fn.Return.Simple)
+	if fn.Return != nil {
+		if fn.Return.Simple != nil {
+			ret = rustType(*fn.Return.Simple)
+		} else if fn.Return.Fun != nil {
+			var pts []string
+			for _, p := range fn.Return.Fun.Params {
+				t := "i64"
+				if p.Simple != nil {
+					t = rustType(*p.Simple)
+				}
+				pts = append(pts, t)
+			}
+			rt := "()"
+			if fn.Return.Fun.Return != nil && fn.Return.Fun.Return.Simple != nil {
+				rt = rustType(*fn.Return.Fun.Return.Simple)
+			}
+			ret = fmt.Sprintf("impl Fn(%s) -> %s", strings.Join(pts, ", "), rt)
+		}
 	}
 	return &FuncDecl{Name: fn.Name, Params: params, Return: ret, Body: body}, nil
 }
@@ -725,7 +777,22 @@ func applyIndexOps(base Expr, ops []*parser.IndexOp) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		base = &IndexExpr{Target: base, Index: idx}
+		if len(ops) == 1 {
+			switch b := base.(type) {
+			case *StringLit:
+				base = &StringIndexExpr{Str: b, Index: idx}
+			case *NameRef:
+				if stringVars[b.Name] {
+					base = &StringIndexExpr{Str: b, Index: idx}
+				} else {
+					base = &IndexExpr{Target: base, Index: idx}
+				}
+			default:
+				base = &IndexExpr{Target: base, Index: idx}
+			}
+		} else {
+			base = &IndexExpr{Target: base, Index: idx}
+		}
 	}
 	return base, nil
 }
@@ -821,7 +888,18 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			expr = &IndexExpr{Target: expr, Index: idx}
+			switch t := expr.(type) {
+			case *StringLit:
+				expr = &StringIndexExpr{Str: t, Index: idx}
+			case *NameRef:
+				if stringVars[t.Name] {
+					expr = &StringIndexExpr{Str: t, Index: idx}
+				} else {
+					expr = &IndexExpr{Target: expr, Index: idx}
+				}
+			default:
+				expr = &IndexExpr{Target: expr, Index: idx}
+			}
 		case op.Field != nil:
 			expr = &FieldExpr{Receiver: expr, Name: op.Field.Name}
 		case op.Call != nil:
@@ -1100,7 +1178,7 @@ func inferType(e Expr) string {
 	case *FieldExpr:
 		return inferType(ex.Receiver)
 	case *FunLit:
-		return "fn"
+		return ""
 	}
 	return ""
 }
