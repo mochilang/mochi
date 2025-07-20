@@ -1,3 +1,11 @@
+## Progress (2025-07-20 11:38 +0700)
+- go transpiler: pretty list and float printing
+- Regenerated golden files - 57/100 vm valid programs passing
+
+## Progress (2025-07-20 11:24 +0700)
+- ex: update timestamp handling
+- Regenerated golden files - 57/100 vm valid programs passing
+
 ## Progress (2025-07-20 11:04 +0700)
 - go transpiler: support values builtin
 - Regenerated golden files - 57/100 vm valid programs passing

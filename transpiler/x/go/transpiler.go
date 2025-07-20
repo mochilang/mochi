@@ -40,6 +40,7 @@ type ExprStmt struct{ Expr Expr }
 func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
 
 // PrintStmt prints a value using Go's fmt package with Mochi semantics.
+// Arguments may include helper expressions that format values as strings.
 type PrintStmt struct{ Args []Expr }
 
 func (p *PrintStmt) emit(w io.Writer) {
@@ -522,6 +523,25 @@ func (v *ValuesExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "return res }()")
 }
 
+// ListStringExpr converts a list to a string with Mochi style formatting.
+type ListStringExpr struct{ List Expr }
+
+func (ls *ListStringExpr) emit(w io.Writer) {
+	usesStrings = true
+	io.WriteString(w, "func() string { list := ")
+	ls.List.emit(w)
+	io.WriteString(w, `; out := make([]string, len(list)); for i, v := range list { out[i] = fmt.Sprint(v) }; return fmt.Sprintf("[%s]", strings.Join(out, ", ")) }()`)
+}
+
+// FloatStringExpr formats a float with a trailing decimal.
+type FloatStringExpr struct{ Value Expr }
+
+func (fs *FloatStringExpr) emit(w io.Writer) {
+	io.WriteString(w, "func() string { f := ")
+	fs.Value.emit(w)
+	io.WriteString(w, "; if f == float64(int(f)) { return fmt.Sprintf(\"%.1f\", f) }; return fmt.Sprint(f) }()")
+}
+
 type ContainsExpr struct {
 	Collection Expr
 	Value      Expr
@@ -664,12 +684,19 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				if err != nil {
 					return nil, err
 				}
-				args[i] = ex
-				if ve, ok := ex.(*ValuesExpr); ok {
+				if _, ok := ex.(*ValuesExpr); ok {
 					usesStrings = true
 					usesSort = true
-					_ = ve
+				} else {
+					t := types.TypeOfExpr(a, env)
+					switch t.(type) {
+					case types.ListType:
+						ex = &ListStringExpr{List: ex}
+					case types.FloatType:
+						ex = &FloatStringExpr{Value: ex}
+					}
 				}
+				args[i] = ex
 			}
 			usesPrint = true
 			return &PrintStmt{Args: args}, nil
@@ -1690,6 +1717,10 @@ func toNodeExpr(e Expr) *ast.Node {
 		return &ast.Node{Kind: "max", Children: []*ast.Node{toNodeExpr(ex.List)}}
 	case *ValuesExpr:
 		return &ast.Node{Kind: "values", Children: []*ast.Node{toNodeExpr(ex.Map)}}
+	case *ListStringExpr:
+		return &ast.Node{Kind: "liststr", Children: []*ast.Node{toNodeExpr(ex.List)}}
+	case *FloatStringExpr:
+		return &ast.Node{Kind: "floatstr", Children: []*ast.Node{toNodeExpr(ex.Value)}}
 	case *ContainsExpr:
 		return &ast.Node{Kind: "contains", Children: []*ast.Node{toNodeExpr(ex.Collection), toNodeExpr(ex.Value)}}
 	case *UnionExpr:
