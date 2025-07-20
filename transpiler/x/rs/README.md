@@ -3,7 +3,7 @@
 This experimental transpiler converts a subset of Mochi into readable Rust code.
 Generated sources for the golden tests live under `tests/transpiler/x/rs`.
 
-## VM Golden Test Checklist (64/100)
+## VM Golden Test Checklist (61/100)
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -11,7 +11,7 @@ Generated sources for the golden tests live under `tests/transpiler/x/rs`.
 - [x] bool_chain.mochi
 - [x] break_continue.mochi
 - [x] cast_string_to_int.mochi
-- [x] cast_struct.mochi
+- [ ] cast_struct.mochi
 - [x] closure.mochi
 - [x] count_builtin.mochi
 - [ ] cross_join.mochi
@@ -26,7 +26,7 @@ Generated sources for the golden tests live under `tests/transpiler/x/rs`.
 - [x] fun_call.mochi
 - [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
-- [x] go_auto.mochi
+- [ ] go_auto.mochi
 - [ ] group_by.mochi
 - [ ] group_by_conditional_sum.mochi
 - [ ] group_by_having.mochi
@@ -62,7 +62,7 @@ Generated sources for the golden tests live under `tests/transpiler/x/rs`.
 - [x] map_literal_dynamic.mochi
 - [x] map_membership.mochi
 - [x] map_nested_assign.mochi
-- [ ] match_expr.mochi
+- [x] match_expr.mochi
 - [ ] match_full.mochi
 - [x] math_ops.mochi
 - [x] membership.mochi
@@ -70,11 +70,11 @@ Generated sources for the golden tests live under `tests/transpiler/x/rs`.
 - [x] nested_function.mochi
 - [ ] order_by_map.mochi
 - [ ] outer_join.mochi
-- [x] partial_application.mochi
+- [ ] partial_application.mochi
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
-- [x] python_auto.mochi
+- [ ] python_auto.mochi
 - [ ] python_math.mochi
 - [ ] query_sum_select.mochi
 - [ ] record_assign.mochi
