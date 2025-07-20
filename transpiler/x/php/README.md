@@ -2,7 +2,7 @@
 
 Generated PHP code from programs in `tests/vm/valid` lives in `tests/transpiler/x/php`.
 
-## VM Golden Test Checklist (36/100)
+## VM Golden Test Checklist (40/100)
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -21,7 +21,7 @@ Generated PHP code from programs in `tests/vm/valid` lives in `tests/transpiler/
 - [ ] exists_builtin
 - [x] for_list_collection
 - [x] for_loop
-- [ ] for_map_collection
+- [x] for_map_collection
 - [x] fun_call
 - [ ] fun_expr_in_let
 - [x] fun_three_args
@@ -64,9 +64,9 @@ Generated PHP code from programs in `tests/vm/valid` lives in `tests/transpiler/
 - [ ] match_expr
 - [ ] match_full
 - [x] math_ops
-- [ ] membership
+- [x] membership
 - [x] min_max_builtin
-- [ ] nested_function
+- [x] nested_function
 - [ ] order_by_map
 - [ ] outer_join
 - [ ] partial_application
@@ -79,8 +79,8 @@ Generated PHP code from programs in `tests/vm/valid` lives in `tests/transpiler/
 - [ ] record_assign
 - [ ] right_join
 - [ ] save_jsonl_stdout
-- [ ] short_circuit
-- [ ] slice
+- [x] short_circuit
+- [x] slice
 - [ ] sort_stable
 - [x] str_builtin
 - [x] string_compare
@@ -88,7 +88,7 @@ Generated PHP code from programs in `tests/vm/valid` lives in `tests/transpiler/
 - [x] string_contains
 - [x] string_in_operator
 - [x] string_index
-- [x] string_prefix_slice
+- [ ] string_prefix_slice
 - [x] substring_builtin
 - [x] sum_builtin
 - [ ] tail_recursion
