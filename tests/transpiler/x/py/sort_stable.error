@@ -1,0 +1,9 @@
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/transpiler/x/py/sort_stable.py", line 3, in <module>
+    result = sorted([i["v"] for i in items], key=lambda i: i["n"])
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/transpiler/x/py/sort_stable.py", line 3, in <lambda>
+    result = sorted([i["v"] for i in items], key=lambda i: i["n"])
+                                                           ~^^^^^
+TypeError: string indices must be integers, not 'str'
