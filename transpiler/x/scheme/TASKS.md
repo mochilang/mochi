@@ -1,3 +1,7 @@
+## Progress (2025-07-20 08:31 GMT+7)
+- Fixed default value for typed variables to `nil`
+- Regenerated Scheme outputs (24/100 passing)
+
 ## Progress (2025-07-19 19:43 GMT+7)
 - Added support for membership operator and string `contains` method
 - Implemented string-aware `len`, `append`, `substring`, `min`, `max`, and modulo
