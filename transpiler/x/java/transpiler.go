@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"strings"
 
 	"mochi/parser"
 	"mochi/types"
@@ -81,7 +82,17 @@ func inferType(e Expr) string {
 			return "int"
 		case "-", "*", "/", "%":
 			return "int"
-		case "==", "!=", "<", "<=", ">", ">=", "&&", "||":
+		case "==", "!=", "<", "<=", ">", ">=":
+			if isStringExpr(ex.Left) || isStringExpr(ex.Right) {
+				return "boolean"
+			}
+			return "int"
+		case "&&", "||":
+			lt := inferType(ex.Left)
+			rt := inferType(ex.Right)
+			if lt == "int" || rt == "int" {
+				return "int"
+			}
 			return "boolean"
 		case "in":
 			return "boolean"
@@ -453,7 +464,14 @@ type LenExpr struct{ Value Expr }
 
 func (l *LenExpr) emit(w io.Writer) {
 	l.Value.emit(w)
-	fmt.Fprint(w, ".length()")
+	switch {
+	case isStringExpr(l.Value):
+		fmt.Fprint(w, ".length()")
+	case isMapExpr(l.Value):
+		fmt.Fprint(w, ".size()")
+	default:
+		fmt.Fprint(w, ".length")
+	}
 }
 
 type UnaryExpr struct {
@@ -561,6 +579,11 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ".charAt(")
 		ix.Index.emit(w)
 		fmt.Fprint(w, ")")
+	} else if isMapExpr(ix.Target) {
+		ix.Target.emit(w)
+		fmt.Fprint(w, ".get(")
+		ix.Index.emit(w)
+		fmt.Fprint(w, ")")
 	} else {
 		ix.Target.emit(w)
 		fmt.Fprint(w, "[")
@@ -613,6 +636,30 @@ func isStringExpr(e Expr) bool {
 		}
 	case *SliceExpr:
 		if isStringExpr(ex.Value) {
+			return true
+		}
+	}
+	return false
+}
+
+func isMapExpr(e Expr) bool {
+	switch ex := e.(type) {
+	case *MapLit:
+		return true
+	case *VarExpr:
+		if t, ok := varTypes[ex.Name]; ok && t == "map" {
+			return true
+		}
+	}
+	return false
+}
+
+func isArrayExpr(e Expr) bool {
+	switch ex := e.(type) {
+	case *ListLit:
+		return true
+	case *VarExpr:
+		if t, ok := varTypes[ex.Name]; ok && strings.HasSuffix(t, "[]") {
 			return true
 		}
 	}
