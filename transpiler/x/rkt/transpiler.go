@@ -290,6 +290,10 @@ type IntLit struct{ Value int }
 
 func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
 
+type FloatLit struct{ Value float64 }
+
+func (f *FloatLit) emit(w io.Writer) { fmt.Fprintf(w, "%g", f.Value) }
+
 type StringLit struct{ Value string }
 
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
@@ -1023,13 +1027,27 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 		case op.Field != nil:
 			expr = &IndexExpr{Target: expr, Index: &StringLit{Value: op.Field.Name}, IsMap: true}
 		case op.Call != nil:
-			if n, ok := expr.(*Name); ok {
+			switch n := expr.(type) {
+			case *Name:
 				var err error
 				expr, err = convertCall(&parser.CallExpr{Func: n.Name, Args: op.Call.Args}, env)
 				if err != nil {
 					return nil, err
 				}
-			} else {
+			case *IndexExpr:
+				if mod, ok := n.Target.(*Name); ok {
+					if lit, ok := n.Index.(*StringLit); ok {
+						fn := mod.Name + "." + lit.Value
+						var err error
+						expr, err = convertCall(&parser.CallExpr{Func: fn, Args: op.Call.Args}, env)
+						if err != nil {
+							return nil, err
+						}
+						break
+					}
+				}
+				return nil, fmt.Errorf("unsupported call")
+			default:
 				return nil, fmt.Errorf("unsupported call")
 			}
 		case op.Index != nil && op.Index.Colon == nil:
@@ -1044,6 +1062,19 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			expr = &CastExpr{Value: expr, Type: *op.Cast.Type.Simple}
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
+		}
+	}
+	// handle math constants like math['pi'] or math['e']
+	if idx, ok := expr.(*IndexExpr); ok {
+		if mod, ok2 := idx.Target.(*Name); ok2 && mod.Name == "math" {
+			if lit, ok3 := idx.Index.(*StringLit); ok3 {
+				switch lit.Value {
+				case "pi":
+					return &Name{Name: "pi"}, nil
+				case "e":
+					return &CallExpr{Func: "exp", Args: []Expr{&IntLit{Value: 1}}}, nil
+				}
+			}
 		}
 	}
 	return expr, nil
@@ -1062,7 +1093,7 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 	case p.Call != nil:
 		return convertCall(p.Call, env)
 	case p.Query != nil:
-		return convertLeftJoinQuery(p.Query, env)
+		return convertQueryExpr(p.Query, env)
 	case p.If != nil:
 		return convertIfExpr(p.If, env)
 	case p.Group != nil:
@@ -1077,6 +1108,9 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 func convertLiteral(l *parser.Literal) (Expr, error) {
 	if l.Int != nil {
 		return &IntLit{Value: int(*l.Int)}, nil
+	}
+	if l.Float != nil {
+		return &FloatLit{Value: *l.Float}, nil
 	}
 	if l.Bool != nil {
 		if *l.Bool {
@@ -1166,6 +1200,22 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		if len(args) == 1 {
 			return &StrExpr{Arg: args[0]}, nil
 		}
+	case "math.sqrt":
+		if len(args) == 1 {
+			return &CallExpr{Func: "sqrt", Args: args}, nil
+		}
+	case "math.pow":
+		if len(args) == 2 {
+			return &CallExpr{Func: "expt", Args: args}, nil
+		}
+	case "math.sin":
+		if len(args) == 1 {
+			return &CallExpr{Func: "sin", Args: args}, nil
+		}
+	case "math.log":
+		if len(args) == 1 {
+			return &CallExpr{Func: "log", Args: args}, nil
+		}
 	default:
 		return &CallExpr{Func: c.Func, Args: args}, nil
 	}
@@ -1200,4 +1250,294 @@ func convertLeftJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 		return nil, err
 	}
 	return &LeftJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel}, nil
+}
+
+type RightJoinExpr struct {
+	LeftVar  string
+	LeftSrc  Expr
+	RightVar string
+	RightSrc Expr
+	Cond     Expr
+	Select   Expr
+}
+
+func (r *RightJoinExpr) emit(w io.Writer) {
+	io.WriteString(w, "(let ([_res '()])\n")
+	io.WriteString(w, "  (for ([")
+	io.WriteString(w, r.RightVar)
+	io.WriteString(w, " ")
+	r.RightSrc.emit(w)
+	io.WriteString(w, "])\n")
+	io.WriteString(w, "    (let ([matched #f])\n")
+	io.WriteString(w, "      (for ([")
+	io.WriteString(w, r.LeftVar)
+	io.WriteString(w, " ")
+	r.LeftSrc.emit(w)
+	io.WriteString(w, "])\n")
+	io.WriteString(w, "        (when ")
+	r.Cond.emit(w)
+	io.WriteString(w, "\n")
+	io.WriteString(w, "          (set! matched #t)\n")
+	io.WriteString(w, "          (set! _res (append _res (list ")
+	r.Select.emit(w)
+	io.WriteString(w, ")))\n")
+	io.WriteString(w, "      )\n")
+	io.WriteString(w, "      (when (not matched)\n")
+	io.WriteString(w, "        (let ([")
+	io.WriteString(w, r.LeftVar)
+	io.WriteString(w, " #f])\n")
+	io.WriteString(w, "          (set! _res (append _res (list ")
+	r.Select.emit(w)
+	io.WriteString(w, ")))\n")
+	io.WriteString(w, "        )\n")
+	io.WriteString(w, "      )\n")
+	io.WriteString(w, "    ))\n")
+	io.WriteString(w, "  )\n")
+	io.WriteString(w, "  _res)")
+}
+
+func convertRightJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
+	if q == nil || len(q.Joins) != 1 || q.Distinct || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Where != nil || len(q.Froms) > 0 {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	j := q.Joins[0]
+	if j.Side == nil || *j.Side != "right" {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	leftSrc, err := convertExpr(q.Source, env)
+	if err != nil {
+		return nil, err
+	}
+	rightSrc, err := convertExpr(j.Src, env)
+	if err != nil {
+		return nil, err
+	}
+	child := types.NewEnv(env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	child.SetVar(j.Var, types.AnyType{}, true)
+	cond, err := convertExpr(j.On, child)
+	if err != nil {
+		return nil, err
+	}
+	sel, err := convertExpr(q.Select, child)
+	if err != nil {
+		return nil, err
+	}
+	return &RightJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel}, nil
+}
+
+type LeftJoinMultiExpr struct {
+	Var1   string
+	Src1   Expr
+	Var2   string
+	Src2   Expr
+	Cond2  Expr
+	Var3   string
+	Src3   Expr
+	Cond3  Expr
+	Select Expr
+}
+
+func (l *LeftJoinMultiExpr) emit(w io.Writer) {
+	io.WriteString(w, "(let ([_res '()])\n")
+	io.WriteString(w, "  (for ([")
+	io.WriteString(w, l.Var1)
+	io.WriteString(w, " ")
+	l.Src1.emit(w)
+	io.WriteString(w, "])\n")
+	io.WriteString(w, "    (for ([")
+	io.WriteString(w, l.Var2)
+	io.WriteString(w, " ")
+	l.Src2.emit(w)
+	io.WriteString(w, "])\n")
+	io.WriteString(w, "      (when ")
+	l.Cond2.emit(w)
+	io.WriteString(w, "\n")
+	io.WriteString(w, "        (let ([matched #f])\n")
+	io.WriteString(w, "          (for ([")
+	io.WriteString(w, l.Var3)
+	io.WriteString(w, " ")
+	l.Src3.emit(w)
+	io.WriteString(w, "])\n")
+	io.WriteString(w, "            (when ")
+	l.Cond3.emit(w)
+	io.WriteString(w, "\n")
+	io.WriteString(w, "              (set! matched #t)\n")
+	io.WriteString(w, "              (set! _res (append _res (list ")
+	l.Select.emit(w)
+	io.WriteString(w, ")))\n")
+	io.WriteString(w, "          )\n")
+	io.WriteString(w, "          (when (not matched)\n")
+	io.WriteString(w, "            (let ([")
+	io.WriteString(w, l.Var3)
+	io.WriteString(w, " #f])\n")
+	io.WriteString(w, "              (set! _res (append _res (list ")
+	l.Select.emit(w)
+	io.WriteString(w, ")))\n")
+	io.WriteString(w, "            )\n")
+	io.WriteString(w, "          )\n")
+	io.WriteString(w, "        )\n")
+	io.WriteString(w, "      )\n")
+	io.WriteString(w, "    )\n")
+	io.WriteString(w, "  )\n")
+	io.WriteString(w, "  _res)")
+}
+
+func convertLeftJoinMultiQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
+	if q == nil || len(q.Joins) != 2 || q.Distinct || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Where != nil || len(q.Froms) > 0 {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	j1 := q.Joins[0]
+	j2 := q.Joins[1]
+	if j1.Side != nil || j2.Side == nil || *j2.Side != "left" {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	src1, err := convertExpr(q.Source, env)
+	if err != nil {
+		return nil, err
+	}
+	src2, err := convertExpr(j1.Src, env)
+	if err != nil {
+		return nil, err
+	}
+	child := types.NewEnv(env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	child.SetVar(j1.Var, types.AnyType{}, true)
+	cond2, err := convertExpr(j1.On, child)
+	if err != nil {
+		return nil, err
+	}
+	child.SetVar(j2.Var, types.AnyType{}, true)
+	src3, err := convertExpr(j2.Src, child)
+	if err != nil {
+		return nil, err
+	}
+	cond3, err := convertExpr(j2.On, child)
+	if err != nil {
+		return nil, err
+	}
+	sel, err := convertExpr(q.Select, child)
+	if err != nil {
+		return nil, err
+	}
+	return &LeftJoinMultiExpr{Var1: q.Var, Src1: src1, Var2: j1.Var, Src2: src2, Cond2: cond2, Var3: j2.Var, Src3: src3, Cond3: cond3, Select: sel}, nil
+}
+
+type OuterJoinExpr struct {
+	LeftVar  string
+	LeftSrc  Expr
+	RightVar string
+	RightSrc Expr
+	Cond     Expr
+	Select   Expr
+}
+
+func (o *OuterJoinExpr) emit(w io.Writer) {
+	io.WriteString(w, "(let ([_res '()])\n")
+	io.WriteString(w, "  (for ([")
+	io.WriteString(w, o.LeftVar)
+	io.WriteString(w, " ")
+	o.LeftSrc.emit(w)
+	io.WriteString(w, "])\n")
+	io.WriteString(w, "    (let ([matched #f])\n")
+	io.WriteString(w, "      (for ([")
+	io.WriteString(w, o.RightVar)
+	io.WriteString(w, " ")
+	o.RightSrc.emit(w)
+	io.WriteString(w, "])\n")
+	io.WriteString(w, "        (when ")
+	o.Cond.emit(w)
+	io.WriteString(w, "\n")
+	io.WriteString(w, "          (set! matched #t)\n")
+	io.WriteString(w, "          (set! _res (append _res (list ")
+	o.Select.emit(w)
+	io.WriteString(w, ")))\n")
+	io.WriteString(w, "      )\n")
+	io.WriteString(w, "      (when (not matched)\n")
+	io.WriteString(w, "        (let ([")
+	io.WriteString(w, o.RightVar)
+	io.WriteString(w, " #f])\n")
+	io.WriteString(w, "          (set! _res (append _res (list ")
+	o.Select.emit(w)
+	io.WriteString(w, ")))\n")
+	io.WriteString(w, "        )\n")
+	io.WriteString(w, "      )\n")
+	io.WriteString(w, "    ))\n")
+	io.WriteString(w, "  )\n")
+	io.WriteString(w, "  (for ([")
+	io.WriteString(w, o.RightVar)
+	io.WriteString(w, " ")
+	o.RightSrc.emit(w)
+	io.WriteString(w, "])\n")
+	io.WriteString(w, "    (unless (for/or ([")
+	io.WriteString(w, o.LeftVar)
+	io.WriteString(w, " ")
+	o.LeftSrc.emit(w)
+	io.WriteString(w, "]) ")
+	o.Cond.emit(w)
+	io.WriteString(w, ")\n")
+	io.WriteString(w, "      (let ([")
+	io.WriteString(w, o.LeftVar)
+	io.WriteString(w, " #f])\n")
+	io.WriteString(w, "        (set! _res (append _res (list ")
+	o.Select.emit(w)
+	io.WriteString(w, ")))\n")
+	io.WriteString(w, "      )\n")
+	io.WriteString(w, "    ))\n")
+	io.WriteString(w, "  )\n")
+	io.WriteString(w, "  _res)")
+}
+
+func convertOuterJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
+	if q == nil || len(q.Joins) != 1 || q.Distinct || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Where != nil || len(q.Froms) > 0 {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	j := q.Joins[0]
+	if j.Side == nil || *j.Side != "outer" {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	leftSrc, err := convertExpr(q.Source, env)
+	if err != nil {
+		return nil, err
+	}
+	rightSrc, err := convertExpr(j.Src, env)
+	if err != nil {
+		return nil, err
+	}
+	child := types.NewEnv(env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	child.SetVar(j.Var, types.AnyType{}, true)
+	cond, err := convertExpr(j.On, child)
+	if err != nil {
+		return nil, err
+	}
+	sel, err := convertExpr(q.Select, child)
+	if err != nil {
+		return nil, err
+	}
+	return &OuterJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel}, nil
+}
+
+func convertQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
+	if len(q.Joins) == 1 {
+		if q.Joins[0].Side != nil {
+			side := *q.Joins[0].Side
+			switch side {
+			case "left":
+				return convertLeftJoinQuery(q, env)
+			case "right":
+				return convertRightJoinQuery(q, env)
+			case "outer":
+				return convertOuterJoinQuery(q, env)
+			default:
+				return nil, fmt.Errorf("unsupported query")
+			}
+		}
+	}
+	if len(q.Joins) == 2 {
+		if q.Joins[0].Side == nil && q.Joins[1].Side != nil && *q.Joins[1].Side == "left" {
+			return convertLeftJoinMultiQuery(q, env)
+		}
+	}
+	return nil, fmt.Errorf("unsupported query")
 }
