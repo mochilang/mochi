@@ -261,6 +261,15 @@ type QueryExprJS struct {
 	Select Expr
 }
 
+// AggQueryExpr represents simple aggregation queries like
+// `from x in xs where ... select sum(x)`.
+type AggQueryExpr struct {
+	Var    string
+	Source Expr
+	Where  Expr
+	Op     string
+}
+
 // IndexAssignStmt assigns to an indexed expression like x[i] = v.
 type IndexAssignStmt struct {
 	Target Expr
@@ -696,6 +705,70 @@ func (q *QueryExprJS) emit(w io.Writer) {
 	io.WriteString(iw, "})()")
 }
 
+func (a *AggQueryExpr) emit(w io.Writer) {
+	iw := &indentWriter{w: w, indent: "  "}
+	io.WriteString(iw, "(() => {\n")
+	init := "0"
+	switch a.Op {
+	case "min":
+		init = "Infinity"
+	case "max":
+		init = "-Infinity"
+	}
+	io.WriteString(iw, "  let acc = "+init+"\n")
+	if a.Op == "avg" {
+		io.WriteString(iw, "  let count = 0\n")
+	}
+	io.WriteString(iw, "  for (const ")
+	io.WriteString(iw, a.Var)
+	io.WriteString(iw, " of ")
+	a.Source.emit(iw)
+	io.WriteString(iw, ") {\n")
+	if a.Where != nil {
+		io.WriteString(iw, "    if (")
+		a.Where.emit(iw)
+		io.WriteString(iw, ") {\n")
+	}
+	switch a.Op {
+	case "sum", "avg":
+		io.WriteString(iw, "    acc += ")
+		io.WriteString(iw, a.Var)
+		io.WriteString(iw, "\n")
+		if a.Op == "avg" {
+			io.WriteString(iw, "    count++\n")
+		}
+	case "min":
+		io.WriteString(iw, "    if (")
+		io.WriteString(iw, a.Var)
+		io.WriteString(iw, " < acc) acc = ")
+		io.WriteString(iw, a.Var)
+		io.WriteString(iw, "\n")
+	case "max":
+		io.WriteString(iw, "    if (")
+		io.WriteString(iw, a.Var)
+		io.WriteString(iw, " > acc) acc = ")
+		io.WriteString(iw, a.Var)
+		io.WriteString(iw, "\n")
+	}
+	if a.Where != nil {
+		io.WriteString(iw, "    }\n")
+	}
+	io.WriteString(iw, "  }\n")
+	io.WriteString(iw, "  return ")
+	switch a.Op {
+	case "avg":
+		io.WriteString(iw, "count === 0 ? 0 : acc / count")
+	case "min":
+		io.WriteString(iw, "acc === Infinity ? 0 : acc")
+	case "max":
+		io.WriteString(iw, "acc === -Infinity ? 0 : acc")
+	default:
+		io.WriteString(iw, "acc")
+	}
+	io.WriteString(iw, "\n")
+	io.WriteString(iw, "})()")
+}
+
 func (s *IndexAssignStmt) emit(w io.Writer) {
 	s.Target.emit(w)
 	io.WriteString(w, " = ")
@@ -1044,6 +1117,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 
 func convertStmt(s *parser.Statement) (Stmt, error) {
 	switch {
+	case s.Test != nil:
+		// Ignore test blocks
+		return nil, nil
 	case s.Let != nil:
 		var e Expr
 		var err error
@@ -1274,6 +1350,25 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	sel, err := convertExpr(q.Select)
 	if err != nil {
 		return nil, err
+	}
+	if q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && len(loops) == 1 {
+		if s, ok := sel.(*SumExpr); ok {
+			if n, ok2 := s.Value.(*NameRef); ok2 && n.Name == q.Var {
+				return &AggQueryExpr{Var: loops[0].Name, Source: loops[0].Source, Where: where, Op: "sum"}, nil
+			}
+		} else if a, ok := sel.(*AvgExpr); ok {
+			if n, ok2 := a.Value.(*NameRef); ok2 && n.Name == q.Var {
+				return &AggQueryExpr{Var: loops[0].Name, Source: loops[0].Source, Where: where, Op: "avg"}, nil
+			}
+		} else if m, ok := sel.(*MinExpr); ok {
+			if n, ok2 := m.Value.(*NameRef); ok2 && n.Name == q.Var {
+				return &AggQueryExpr{Var: loops[0].Name, Source: loops[0].Source, Where: where, Op: "min"}, nil
+			}
+		} else if m, ok := sel.(*MaxExpr); ok {
+			if n, ok2 := m.Value.(*NameRef); ok2 && n.Name == q.Var {
+				return &AggQueryExpr{Var: loops[0].Name, Source: loops[0].Source, Where: where, Op: "max"}, nil
+			}
+		}
 	}
 	return &QueryExprJS{Loops: loops, Where: where, Sort: sort, Skip: skip, Take: take, Select: sel}, nil
 }
@@ -1557,13 +1652,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		switch p.Call.Func {
 		case "print":
 			if transpileEnv != nil {
-				for i, a := range p.Call.Args {
-					if _, ok := types.ExprType(a, transpileEnv).(types.BoolType); ok {
-						args[i] = &CallExpr{Func: "Number", Args: []Expr{args[i]}}
-					}
-				}
 				if len(args) == 1 {
-					if lt, ok := types.ExprType(p.Call.Args[0], transpileEnv).(types.ListType); ok {
+					// Special case printing list values
+					if v, ok := args[0].(*ValuesExpr); ok {
+						val := &CallExpr{Func: "Object.values", Args: []Expr{v.Value}}
+						sortCall := &MethodCallExpr{Target: val, Method: "sort", Args: []Expr{}}
+						args[0] = &MethodCallExpr{Target: sortCall, Method: "join", Args: []Expr{&StringLit{Value: " "}}}
+					} else if lt, ok := types.ExprType(p.Call.Args[0], transpileEnv).(types.ListType); ok {
 						switch lt.Elem.(type) {
 						case types.StringType, types.AnyType:
 							args[0] = &MethodCallExpr{Target: args[0], Method: "join", Args: []Expr{&StringLit{Value: " "}}}
@@ -1580,6 +1675,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 						default:
 							args = []Expr{&FormatListExpr{Value: args[0]}}
 						}
+					}
+				}
+				for i, a := range args {
+					if isNumericBool(a) {
+						args[i] = &CallExpr{Func: "Number", Args: []Expr{a}}
 					}
 				}
 			}
@@ -1834,6 +1934,26 @@ func tsType(t types.Type) string {
 	}
 }
 
+func isNumericBool(e Expr) bool {
+	switch ex := e.(type) {
+	case *BinaryExpr:
+		switch ex.Op {
+		case "in":
+			return false
+		case "==", "!=", "<", "<=", ">", ">=", "&&", "||":
+			return true
+		}
+		return isNumericBool(ex.Left) || isNumericBool(ex.Right)
+	case *UnaryExpr:
+		if ex.Op == "!" {
+			return true
+		}
+		return isNumericBool(ex.Expr)
+	default:
+		return false
+	}
+}
+
 // selectorToExpr converts a selector expression like a.b.c into nested index
 // expressions so the transpiler can treat it uniformly with dynamic property
 // access. It never returns nil.
@@ -2074,6 +2194,14 @@ func exprToNode(e Expr) *ast.Node {
 			n.Children = append(n.Children, &ast.Node{Kind: "take", Children: []*ast.Node{exprToNode(ex.Take)}})
 		}
 		n.Children = append(n.Children, &ast.Node{Kind: "select", Children: []*ast.Node{exprToNode(ex.Select)}})
+		return n
+	case *AggQueryExpr:
+		n := &ast.Node{Kind: "agg", Value: ex.Op}
+		n.Children = append(n.Children, &ast.Node{Kind: "var", Value: ex.Var})
+		n.Children = append(n.Children, exprToNode(ex.Source))
+		if ex.Where != nil {
+			n.Children = append(n.Children, &ast.Node{Kind: "where", Children: []*ast.Node{exprToNode(ex.Where)}})
+		}
 		return n
 	default:
 		return &ast.Node{Kind: "unknown"}

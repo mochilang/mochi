@@ -3,7 +3,7 @@
 This directory contains the experimental TypeScript transpiler.
 Generated sources for the golden tests live under `tests/transpiler/x/ts`.
 
-## VM Golden Test Checklist (76/100)
+## VM Golden Test Checklist (94/100)
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -27,25 +27,25 @@ Generated sources for the golden tests live under `tests/transpiler/x/ts`.
 - [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
 - [ ] go_auto.mochi
-- [ ] group_by.mochi
-- [ ] group_by_conditional_sum.mochi
-- [ ] group_by_having.mochi
-- [ ] group_by_join.mochi
-- [ ] group_by_left_join.mochi
-- [ ] group_by_multi_join.mochi
-- [ ] group_by_multi_join_sort.mochi
-- [ ] group_by_sort.mochi
-- [ ] group_items_iteration.mochi
+- [x] group_by.mochi
+- [x] group_by_conditional_sum.mochi
+- [x] group_by_having.mochi
+- [x] group_by_join.mochi
+- [x] group_by_left_join.mochi
+- [x] group_by_multi_join.mochi
+- [x] group_by_multi_join_sort.mochi
+- [x] group_by_sort.mochi
+- [x] group_items_iteration.mochi
 - [x] if_else.mochi
 - [x] if_then_else.mochi
 - [x] if_then_else_nested.mochi
 - [x] in_operator.mochi
-- [ ] in_operator_extended.mochi
-- [ ] inner_join.mochi
-- [ ] join_multi.mochi
+- [x] in_operator_extended.mochi
+- [x] inner_join.mochi
+- [x] join_multi.mochi
 - [x] json_builtin.mochi
-- [ ] left_join.mochi
-- [ ] left_join_multi.mochi
+- [x] left_join.mochi
+- [x] left_join_multi.mochi
 - [x] len_builtin.mochi
 - [x] len_map.mochi
 - [x] len_string.mochi
@@ -69,16 +69,16 @@ Generated sources for the golden tests live under `tests/transpiler/x/ts`.
 - [x] min_max_builtin.mochi
 - [x] nested_function.mochi
 - [x] order_by_map.mochi
-- [ ] outer_join.mochi
+- [x] outer_join.mochi
 - [x] partial_application.mochi
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
 - [ ] python_auto.mochi
 - [ ] python_math.mochi
-- [ ] query_sum_select.mochi
+- [x] query_sum_select.mochi
 - [x] record_assign.mochi
-- [ ] right_join.mochi
+- [x] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
 - [x] slice.mochi
@@ -93,7 +93,7 @@ Generated sources for the golden tests live under `tests/transpiler/x/ts`.
 - [x] substring_builtin.mochi
 - [x] sum_builtin.mochi
 - [x] tail_recursion.mochi
-- [ ] test_block.mochi
+- [x] test_block.mochi
 - [x] tree_sum.mochi
 - [x] two-sum.mochi
 - [x] typed_let.mochi
