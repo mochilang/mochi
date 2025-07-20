@@ -826,6 +826,11 @@ func (q *QueryExprJS) emit(w io.Writer) {
 			io.WriteString(iw, "    const _matched = new Array(_arr.length).fill(false)\n")
 		}
 		io.WriteString(iw, "    for (const _left of _items) {\n")
+		if len(names) > 0 {
+			io.WriteString(iw, "      const [")
+			io.WriteString(iw, strings.Join(names, ", "))
+			io.WriteString(iw, "] = _left;\n")
+		}
 		io.WriteString(iw, "      let _m = false;\n")
 		io.WriteString(iw, "      for (let _ri=0; _ri < _arr.length; _ri++) {\n")
 		io.WriteString(iw, "        const ")
@@ -843,7 +848,7 @@ func (q *QueryExprJS) emit(w io.Writer) {
 		io.WriteString(iw, " _joined.push([..._left, ")
 		io.WriteString(iw, j.Name)
 		io.WriteString(iw, "]) }\n")
-		io.WriteString(iw, "      }\n")
+
 		if j.Side == "left" || j.Side == "outer" {
 			io.WriteString(iw, "      if (!_m) _joined.push([..._left, null])\n")
 		}
@@ -853,7 +858,8 @@ func (q *QueryExprJS) emit(w io.Writer) {
 			io.WriteString(iw, "      const _undef = Array(_items[0]?.length || 0).fill(null);\n")
 			io.WriteString(iw, "      _joined.push([..._undef, _arr[_ri]]) } }\n")
 		}
-		io.WriteString(iw, "    _items = _joined }\n")
+		io.WriteString(iw, "    _items = _joined;\n")
+		io.WriteString(iw, "  }\n")
 		names = append(names, j.Name)
 	}
 

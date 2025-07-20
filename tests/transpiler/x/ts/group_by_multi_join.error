@@ -1,5 +1,6 @@
 run: exit status 1
-[0m[1m[31merror[0m: The module's source code could not be parsed: Expected ',', got '{' at file:///workspace/mochi/tests/transpiler/x/ts/group_by_multi_join.ts:23:3
-
-    { const _joined = []
-    ~
+[0m[1m[31merror[0m: Uncaught (in promise) ReferenceError: g is not defined
+    result.push({part: g["key"], total: (() => {
+[0m[31m                       ^[0m
+    at [0m[36mfile:///workspace/mochi/tests/transpiler/x/ts/group_by_multi_join.ts[0m:[0m[33m45[0m:[0m[33m24[0m
+    at [0m[36mfile:///workspace/mochi/tests/transpiler/x/ts/group_by_multi_join.ts[0m:[0m[33m56[0m:[0m[33m2[0m
