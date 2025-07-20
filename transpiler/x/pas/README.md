@@ -3,7 +3,7 @@
 This folder contains the experimental Pascal transpiler.
 Generated sources for the golden tests live under `tests/transpiler/x/pas`.
 
-## VM Golden Test Checklist (44/100)
+## VM Golden Test Checklist (45/100)
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -14,7 +14,7 @@ Generated sources for the golden tests live under `tests/transpiler/x/pas`.
 - [ ] cast_struct
 - [ ] closure
 - [x] count_builtin
-- [ ] cross_join
+- [x] cross_join
 - [ ] cross_join_filter
 - [ ] cross_join_triple
 - [ ] dataset_sort_take_limit

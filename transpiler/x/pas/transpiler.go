@@ -13,6 +13,8 @@ import (
 )
 
 var currProg *Program
+var anonCounter int
+var currentVarTypes map[string]string
 
 // Program is a minimal Pascal AST consisting of a sequence of statements.
 // VarDecl represents a simple variable declaration.
@@ -22,11 +24,22 @@ type VarDecl struct {
 	Init Expr
 }
 
+type Field struct {
+	Name string
+	Type string
+}
+
+type RecordDef struct {
+	Name   string
+	Fields []Field
+}
+
 // Program is a minimal Pascal AST consisting of a sequence of statements
 // plus optional variable declarations.
 type Program struct {
 	Funs         []FunDecl
 	Vars         []VarDecl
+	Records      []RecordDef
 	Stmts        []Stmt
 	UseSysUtils  bool
 	NeedAvg      bool
@@ -265,6 +278,30 @@ func (l *ListLit) emit(w io.Writer) {
 		e.emit(w)
 	}
 	io.WriteString(w, "]")
+}
+
+type FieldExpr struct {
+	Name string
+	Expr Expr
+}
+
+type RecordLit struct {
+	Type   string
+	Fields []FieldExpr
+}
+
+func (r *RecordLit) emit(w io.Writer) {
+	io.WriteString(w, "(")
+	for i, f := range r.Fields {
+		if i > 0 {
+			io.WriteString(w, "; ")
+		}
+		fmt.Fprintf(w, "%s: ", f.Name)
+		if f.Expr != nil {
+			f.Expr.emit(w)
+		}
+	}
+	io.WriteString(w, ")")
 }
 
 // CastExpr represents a simple cast expression, e.g. string to int.
@@ -548,6 +585,13 @@ func (p *Program) Emit() []byte {
 	if p.NeedMax {
 		buf.WriteString("function max(xs: array of integer): integer;\nvar i, m: integer;\nbegin\n  if Length(xs) = 0 then begin max := 0; exit; end;\n  m := xs[0];\n  for i := 1 to High(xs) do if xs[i] > m then m := xs[i];\n  max := m;\nend;\n")
 	}
+	for _, r := range p.Records {
+		fmt.Fprintf(&buf, "type %s = record\n", r.Name)
+		for _, f := range r.Fields {
+			fmt.Fprintf(&buf, "  %s: %s;\n", f.Name, f.Type)
+		}
+		buf.WriteString("end;\n")
+	}
 	for _, f := range p.Funs {
 		f.emit(&buf)
 	}
@@ -585,6 +629,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	pr := &Program{}
 	currProg = pr
 	varTypes := map[string]string{}
+	currentVarTypes = varTypes
 	for _, st := range prog.Statements {
 		switch {
 		case st.Expr != nil:
@@ -612,25 +657,47 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				}
 			}
 			if st.Let.Value != nil {
-				ex, err := convertExpr(env, st.Let.Value)
-				if err != nil {
-					return nil, err
-				}
-				vd.Init = ex
-				if vd.Type == "" {
-					switch t := types.ExprType(st.Let.Value, env).(type) {
-					case types.StringType:
-						vd.Type = "string"
-					case types.ListType:
-						if _, ok := t.Elem.(types.StringType); ok {
-							vd.Type = "array of string"
+				if q := queryFromExpr(st.Let.Value); q != nil {
+					stmts, typ, err := buildQuery(env, q, st.Let.Name, varTypes)
+					if err != nil {
+						return nil, err
+					}
+					vd.Type = typ
+					pr.Stmts = append(pr.Stmts, stmts...)
+				} else {
+					ex, err := convertExpr(env, st.Let.Value)
+					if err != nil {
+						return nil, err
+					}
+					vd.Init = ex
+					if vd.Type == "" {
+						if t := inferType(ex); t != "" {
+							vd.Type = t
 						} else {
-							vd.Type = "array of integer"
+							switch tt := types.ExprType(st.Let.Value, env).(type) {
+							case types.StringType:
+								vd.Type = "string"
+							case types.ListType:
+								if _, ok := tt.Elem.(types.StringType); ok {
+									vd.Type = "array of string"
+								} else {
+									vd.Type = "array of integer"
+								}
+							}
 						}
 					}
 				}
 			}
 			pr.Vars = append(pr.Vars, vd)
+			if vd.Type != "" {
+				varTypes[vd.Name] = vd.Type
+			}
+			if vd.Type != "" {
+				varTypes[vd.Name] = vd.Type
+			}
+			if vd.Type != "" {
+				varTypes[vd.Name] = vd.Type
+			}
 		case st.Var != nil:
 			vd := VarDecl{Name: st.Var.Name}
 			if st.Var.Type != nil && st.Var.Type.Simple != nil {
@@ -647,14 +714,18 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				}
 				vd.Init = ex
 				if vd.Type == "" {
-					switch t := types.ExprType(st.Var.Value, env).(type) {
-					case types.StringType:
-						vd.Type = "string"
-					case types.ListType:
-						if _, ok := t.Elem.(types.StringType); ok {
-							vd.Type = "array of string"
-						} else {
-							vd.Type = "array of integer"
+					if t := inferType(ex); t != "" {
+						vd.Type = t
+					} else {
+						switch t := types.ExprType(st.Var.Value, env).(type) {
+						case types.StringType:
+							vd.Type = "string"
+						case types.ListType:
+							if _, ok := t.Elem.(types.StringType); ok {
+								vd.Type = "array of string"
+							} else {
+								vd.Type = "array of integer"
+							}
 						}
 					}
 				}
@@ -797,6 +868,9 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 }
 
 func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]string) ([]Stmt, error) {
+	prev := currentVarTypes
+	currentVarTypes = varTypes
+	defer func() { currentVarTypes = prev }()
 	var out []Stmt
 	for _, st := range body {
 		switch {
@@ -1037,6 +1111,149 @@ func mapLitFromExpr(e *parser.Expr) *parser.MapLiteral {
 	return nil
 }
 
+func queryFromExpr(e *parser.Expr) *parser.QueryExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 {
+		return nil
+	}
+	pf := u.Value
+	if pf == nil || len(pf.Ops) > 0 {
+		return nil
+	}
+	if pf.Target != nil {
+		return pf.Target.Query
+	}
+	return nil
+}
+
+func buildQuery(env *types.Env, q *parser.QueryExpr, varName string, varTypes map[string]string) ([]Stmt, string, error) {
+	src, err := convertExpr(env, q.Source)
+	if err != nil {
+		return nil, "", err
+	}
+	loops := []struct {
+		name string
+		src  Expr
+		typ  string
+	}{{q.Var, src, typeOf(q.Source, env)}}
+	for _, f := range q.Froms {
+		ex, err := convertExpr(env, f.Src)
+		if err != nil {
+			return nil, "", err
+		}
+		loops = append(loops, struct {
+			name string
+			src  Expr
+			typ  string
+		}{f.Var, ex, typeOf(f.Src, env)})
+	}
+	for _, l := range loops {
+		if _, ok := varTypes[l.name]; !ok {
+			elem := elemType(l.typ)
+			if elem == "" {
+				elem = "integer"
+			}
+			varTypes[l.name] = elem
+		}
+	}
+	sel, err := convertExpr(env, q.Select)
+	if err != nil {
+		return nil, "", err
+	}
+	elemT := inferType(sel)
+	stmts := []Stmt{&AssignStmt{Name: varName, Expr: &ListLit{}}}
+	appendExpr := &AssignStmt{Name: varName, Expr: &CallExpr{Name: "concat", Args: []Expr{&VarRef{Name: varName}, &ListLit{Elems: []Expr{sel}}}}}
+	body := []Stmt{appendExpr}
+	for i := len(loops) - 1; i >= 0; i-- {
+		body = []Stmt{&ForEachStmt{Name: loops[i].name, Iterable: loops[i].src, Body: body}}
+	}
+	stmts = append(stmts, body...)
+	return stmts, "array of " + elemT, nil
+}
+
+func exprToIdent(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 {
+		return "", false
+	}
+	pf := u.Value
+	if pf == nil || len(pf.Ops) > 0 {
+		return "", false
+	}
+	if pf.Target != nil {
+		if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 0 {
+			return pf.Target.Selector.Root, true
+		}
+		if pf.Target.Lit != nil && pf.Target.Lit.Str != nil {
+			return *pf.Target.Lit.Str, true
+		}
+	}
+	return "", false
+}
+
+func ensureRecord(fields []Field) string {
+	for _, r := range currProg.Records {
+		if len(r.Fields) != len(fields) {
+			continue
+		}
+		match := true
+		for i := range fields {
+			if r.Fields[i] != fields[i] {
+				match = false
+				break
+			}
+		}
+		if match {
+			return r.Name
+		}
+	}
+	anonCounter++
+	name := fmt.Sprintf("Anon%d", anonCounter)
+	currProg.Records = append(currProg.Records, RecordDef{Name: name, Fields: fields})
+	return name
+}
+
+func typeOf(e *parser.Expr, env *types.Env) string {
+	if id, ok := exprToIdent(e); ok {
+		if t, ok2 := currentVarTypes[id]; ok2 {
+			return t
+		}
+	}
+	t := types.ExprType(e, env)
+	switch v := t.(type) {
+	case types.ListType:
+		if st, ok := v.Elem.(types.StructType); ok {
+			return "array of " + st.Name
+		}
+		if _, ok := v.Elem.(types.StringType); ok {
+			return "array of string"
+		}
+		return "array of integer"
+	case types.StructType:
+		return v.Name
+	case types.StringType:
+		return "string"
+	case types.IntType, types.Int64Type:
+		return "integer"
+	}
+	return ""
+}
+
+func elemType(t string) string {
+	if strings.HasPrefix(t, "array of ") {
+		return strings.TrimPrefix(t, "array of ")
+	}
+	return ""
+}
+
+func CurrentVarTypesDebug() map[string]string { return currentVarTypes }
+
 func convertUnary(env *types.Env, u *parser.Unary) (Expr, error) {
 	if u == nil {
 		return nil, fmt.Errorf("nil unary")
@@ -1219,6 +1436,24 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			elems = append(elems, ex)
 		}
 		return &ListLit{Elems: elems}, nil
+	case p.Map != nil:
+		var fields []FieldExpr
+		var rec []Field
+		for _, it := range p.Map.Items {
+			val, err := convertExpr(env, it.Value)
+			if err != nil {
+				return nil, err
+			}
+			key, ok := exprToIdent(it.Key)
+			if !ok {
+				return nil, fmt.Errorf("unsupported map key")
+			}
+			ftype := inferType(val)
+			fields = append(fields, FieldExpr{Name: key, Expr: val})
+			rec = append(rec, Field{Name: key, Type: ftype})
+		}
+		name := ensureRecord(rec)
+		return &RecordLit{Type: name, Fields: fields}, nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return &VarRef{Name: p.Selector.Root}, nil
 	case p.Selector != nil:
@@ -1280,6 +1515,11 @@ func inferType(e Expr) string {
 		return "string"
 	case *BoolLit:
 		return "boolean"
+	case *VarRef:
+		if t, ok := currentVarTypes[v.Name]; ok {
+			return t
+		}
+		return ""
 	case *BinaryExpr:
 		if v.Bool {
 			return "boolean"
@@ -1331,6 +1571,8 @@ func inferType(e Expr) string {
 			return "array of " + t
 		}
 		return ""
+	case *RecordLit:
+		return v.Type
 	case *ContainsExpr:
 		return "boolean"
 	case *IndexExpr:
@@ -1343,6 +1585,25 @@ func inferType(e Expr) string {
 			return "string"
 		}
 		return "array of integer"
+	case *SelectorExpr:
+		if t, ok := currentVarTypes[v.Root]; ok {
+			if strings.HasPrefix(t, "array of ") {
+				t = strings.TrimPrefix(t, "array of ")
+			}
+			for _, r := range currProg.Records {
+				if r.Name == t {
+					if len(v.Tail) > 0 {
+						field := v.Tail[len(v.Tail)-1]
+						for _, f := range r.Fields {
+							if f.Name == field {
+								return f.Type
+							}
+						}
+					}
+				}
+			}
+		}
+		return ""
 	case *CastExpr:
 		if v.Type == "int" {
 			return "integer"
