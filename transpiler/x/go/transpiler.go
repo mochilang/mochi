@@ -527,10 +527,9 @@ func (v *ValuesExpr) emit(w io.Writer) {
 type ListStringExpr struct{ List Expr }
 
 func (ls *ListStringExpr) emit(w io.Writer) {
-	usesStrings = true
-	io.WriteString(w, "func() string { list := ")
+	io.WriteString(w, "func() string { return fmt.Sprint(")
 	ls.List.emit(w)
-	io.WriteString(w, `; out := make([]string, len(list)); for i, v := range list { out[i] = fmt.Sprint(v) }; return fmt.Sprintf("[%s]", strings.Join(out, ", ")) }()`)
+	io.WriteString(w, ") }()")
 }
 
 // FloatStringExpr formats a float with a trailing decimal.
