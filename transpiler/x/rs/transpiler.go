@@ -415,6 +415,15 @@ func (s *SubstringExpr) emit(w io.Writer) {
 	io.WriteString(w, " as usize])")
 }
 
+// StringCastExpr converts an expression to a Rust String.
+type StringCastExpr struct{ Expr Expr }
+
+func (s *StringCastExpr) emit(w io.Writer) {
+	io.WriteString(w, "String::from(")
+	s.Expr.emit(w)
+	io.WriteString(w, ")")
+}
+
 type NameRef struct{ Name string }
 
 func (n *NameRef) emit(w io.Writer) { io.WriteString(w, n.Name) }
@@ -697,6 +706,9 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			typ = ""
 		}
 		if typ != "" {
+			if typ == "String" {
+				e = &StringCastExpr{Expr: e}
+			}
 			varTypes[stmt.Let.Name] = typ
 		}
 		return &VarDecl{Name: stmt.Let.Name, Expr: e, Type: typ}, nil
@@ -736,6 +748,9 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			typ = ""
 		}
 		if typ != "" {
+			if typ == "String" {
+				e = &StringCastExpr{Expr: e}
+			}
 			varTypes[stmt.Var.Name] = typ
 		}
 		return &VarDecl{Name: stmt.Var.Name, Expr: e, Type: typ, Mutable: true}, nil
@@ -912,6 +927,14 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 				}
 			}
 			ret = fmt.Sprintf("impl Fn(%s) -> %s", strings.Join(pts, ", "), rt)
+		}
+	}
+	if ret == "String" {
+		for i, st := range body {
+			if r, ok := st.(*ReturnStmt); ok && r.Value != nil {
+				r.Value = &StringCastExpr{Expr: r.Value}
+				body[i] = r
+			}
 		}
 	}
 	return &FuncDecl{Name: fn.Name, Params: params, Return: ret, Body: body}, nil
@@ -1396,9 +1419,6 @@ func inferType(e Expr) string {
 				}
 			}
 			if same {
-				if t == "String" {
-					return ""
-				}
 				return t
 			}
 		}

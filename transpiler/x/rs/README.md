@@ -3,7 +3,7 @@
 This experimental transpiler converts a subset of Mochi into readable Rust code.
 Generated sources for the golden tests live under `tests/transpiler/x/rs`.
 
-## VM Golden Test Checklist (65/100)
+## VM Golden Test Checklist (66/100)
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -63,7 +63,7 @@ Generated sources for the golden tests live under `tests/transpiler/x/rs`.
 - [x] map_membership.mochi
 - [x] map_nested_assign.mochi
 - [x] match_expr.mochi
-- [ ] match_full.mochi
+- [x] match_full.mochi
 - [x] math_ops.mochi
 - [x] membership.mochi
 - [x] min_max_builtin.mochi
