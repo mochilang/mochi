@@ -1,4 +1,6 @@
-## Progress (2025-07-20 08:36 +0700)
+## Progress (2025-07-20 08:59 +0700)
+- java transpiler: clean emit and improve inference (6c82586e5)
+
 - java transpiler: improve type inference and globals (7e8eb605a)
 
 # Transpiler progress

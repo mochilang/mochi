@@ -1,5 +1,5 @@
 exit status 1
-Main.java:3: error: method add in class Main cannot be applied to given types;
+Main.java:2: error: method add in class Main cannot be applied to given types;
     static int add5 = add(5);
                       ^
   required: int,int
