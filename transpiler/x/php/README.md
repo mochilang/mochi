@@ -1,10 +1,8 @@
 # PHP Transpiler Output
 
-Generated PHP code for selected Mochi programs under `tests/vm/valid`. Each program has a `.php` file and a corresponding `.out` file with the runtime output. Any execution failures are captured in a `.error` file.
+Generated PHP code from programs in `tests/vm/valid` lives in `tests/transpiler/x/php`.
 
-Compiled programs: 31/100
-
-## Checklist
+## VM Golden Test Checklist (34/100)
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -21,8 +19,8 @@ Compiled programs: 31/100
 - [ ] dataset_sort_take_limit
 - [ ] dataset_where_filter
 - [ ] exists_builtin
-- [ ] for_list_collection
-- [ ] for_loop
+- [x] for_list_collection
+- [x] for_loop
 - [ ] for_map_collection
 - [x] fun_call
 - [ ] fun_expr_in_let
@@ -104,4 +102,4 @@ Compiled programs: 31/100
 - [ ] user_type_literal
 - [ ] values_builtin
 - [x] var_assignment
-- [ ] while_loop
+- [x] while_loop
