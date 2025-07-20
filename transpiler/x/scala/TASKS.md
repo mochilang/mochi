@@ -1,3 +1,15 @@
+## Progress (2025-07-20 12:35 +0700)
+- scala: iterate map keys
+- Regenerated golden files - 55/100 vm valid programs passing
+
+## Progress (2025-07-20 12:19 +0700)
+- update scala progress
+- Regenerated golden files - 55/100 vm valid programs passing
+
+## Progress (2025-07-20 12:19 +0700)
+- update scala progress
+- Regenerated golden files - 55/100 vm valid programs passing
+
 ## Progress (2025-07-20 12:10 +0700)
 - scala transpiler: support index assignment
 - Regenerated golden files - 55/100 vm valid programs passing

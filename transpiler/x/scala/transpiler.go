@@ -950,10 +950,17 @@ func convertForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 		}
 		return &ForRangeStmt{Name: fs.Name, Start: start, End: end, Body: body}, nil
 	}
-	iter, err := convertExpr(fs.Source)
-	if err != nil {
-		return nil, err
-	}
+        iter, err := convertExpr(fs.Source)
+        if err != nil {
+                return nil, err
+        }
+        if n, ok := iter.(*Name); ok && env != nil {
+                if typ, err := env.GetVar(n.Name); err == nil {
+                        if _, ok := typ.(types.MapType); ok {
+                                iter = &FieldExpr{Receiver: iter, Name: "keys"}
+                        }
+                }
+        }
 	var body []Stmt
 	for _, st := range fs.Body {
 		s, err := convertStmt(st, env)
