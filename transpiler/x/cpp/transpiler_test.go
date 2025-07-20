@@ -80,3 +80,5 @@ func TestCPPTranspiler_SubstringBuiltin(t *testing.T)  { runExample(t, "substrin
 func TestCPPTranspiler_CastStringToInt(t *testing.T)   { runExample(t, "cast_string_to_int") }
 func TestCPPTranspiler_SumBuiltin(t *testing.T)        { runExample(t, "sum_builtin") }
 func TestCPPTranspiler_ListIndex(t *testing.T)         { runExample(t, "list_index") }
+func TestCPPTranspiler_Slice(t *testing.T)             { runExample(t, "slice") }
+func TestCPPTranspiler_StringPrefixSlice(t *testing.T) { runExample(t, "string_prefix_slice") }

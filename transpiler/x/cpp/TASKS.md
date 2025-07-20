@@ -1,5 +1,10 @@
 # C++ Transpiler Tasks
 
+## Recent Enhancements (2025-07-20 01:29 UTC)
+- Added support for slice expressions on strings and vectors using an inline generic lambda.
+- Generated golden outputs for `slice` and `string_prefix_slice`.
+- Updated README progress to 34/100 programs.
+
 ## Recent Enhancements (2025-07-19 18:24 +0000)
 - Implemented list indexing for vector values.
 - Generated golden output for `list_index` and updated README progress to 32/100 programs.

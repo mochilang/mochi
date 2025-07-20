@@ -2,7 +2,7 @@
 
 Generated C++ code for programs in `tests/vm/valid`. Each program has a `.cpp` file produced by the transpiler and a `.out` file containing its runtime output.
 Compilation or execution errors are captured in a `.error` file placed next to the source.
-## VM Golden Test Checklist (32/100)
+## VM Golden Test Checklist (34/100)
 
 - [ ] append_builtin
 - [ ] avg_builtin
@@ -81,7 +81,7 @@ Compilation or execution errors are captured in a `.error` file placed next to t
 - [ ] right_join
 - [ ] save_jsonl_stdout
 - [x] short_circuit
-- [ ] slice
+- [x] slice
 - [ ] sort_stable
 - [ ] str_builtin
 - [x] string_compare
@@ -89,7 +89,7 @@ Compilation or execution errors are captured in a `.error` file placed next to t
 - [x] string_contains
 - [x] string_in_operator
 - [x] string_index
-- [ ] string_prefix_slice
+- [x] string_prefix_slice
 - [x] substring_builtin
 - [x] sum_builtin
 - [ ] tail_recursion
