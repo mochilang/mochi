@@ -1,3 +1,7 @@
+## Progress (2025-07-20 15:28 +0000)
+- Added join and where filter support for queries.
+- Generated golden file for `cross_join_filter` and updated README checklist (62/100 tests passing).
+
 ## Progress (2025-07-20 11:01 +0000)
 - Improved Zig output style with snake_case fields and const collections.
 - Query results now emit an `Entry` struct.
