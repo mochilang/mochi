@@ -1574,7 +1574,7 @@ func convertMatch(me *parser.MatchExpr, env *types.Env, ctx *context) (Expr, err
 }
 
 func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, error) {
-	if q == nil || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct || len(q.Joins) > 0 {
+	if q == nil || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
 		return nil, fmt.Errorf("unsupported query")
 	}
 	loopCtx := ctx.clone()
@@ -1585,28 +1585,54 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, 
 	alias := loopCtx.newAlias(q.Var)
 	child := types.NewEnv(env)
 	child.SetVar(q.Var, types.AnyType{}, true)
-	froms := make([]queryFrom, len(q.Froms))
-	for i, f := range q.Froms {
+	froms := []queryFrom{}
+	for _, f := range q.Froms {
 		fe, err := convertExpr(f.Src, env, ctx)
 		if err != nil {
 			return nil, err
 		}
 		av := loopCtx.newAlias(f.Var)
 		child.SetVar(f.Var, types.AnyType{}, true)
-		froms[i] = queryFrom{Var: av, Src: fe}
+		froms = append(froms, queryFrom{Var: av, Src: fe})
 	}
-	var where Expr
-	if q.Where != nil {
-		where, err = convertExpr(q.Where, child, loopCtx)
+	var cond Expr
+	for _, j := range q.Joins {
+		if j.Side != nil {
+			return nil, fmt.Errorf("unsupported join side")
+		}
+		je, err := convertExpr(j.Src, env, ctx)
 		if err != nil {
 			return nil, err
+		}
+		jv := loopCtx.newAlias(j.Var)
+		child.SetVar(j.Var, types.AnyType{}, true)
+		froms = append(froms, queryFrom{Var: jv, Src: je})
+		jc, err := convertExpr(j.On, child, loopCtx)
+		if err != nil {
+			return nil, err
+		}
+		if cond == nil {
+			cond = jc
+		} else {
+			cond = &BinaryExpr{Left: cond, Op: "&&", Right: jc}
+		}
+	}
+	if q.Where != nil {
+		w, err := convertExpr(q.Where, child, loopCtx)
+		if err != nil {
+			return nil, err
+		}
+		if cond == nil {
+			cond = w
+		} else {
+			cond = &BinaryExpr{Left: cond, Op: "&&", Right: w}
 		}
 	}
 	sel, err := convertExpr(q.Select, child, loopCtx)
 	if err != nil {
 		return nil, err
 	}
-	return &QueryExpr{Var: alias, Src: src, Froms: froms, Where: where, Select: sel}, nil
+	return &QueryExpr{Var: alias, Src: src, Froms: froms, Where: cond, Select: sel}, nil
 }
 
 func convertLiteral(l *parser.Literal) (Expr, error) {
