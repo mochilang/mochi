@@ -1,3 +1,9 @@
+## Progress (2025-07-20 10:45 +0000)
+- Added map iteration using `keyIterator` and dereferencing pointers.
+- Fixed mutable var detection for unused vars.
+- Generated golden files for `for_map_collection`.
+- Updated README checklist (61/100 tests passing)
+
 ## Progress (2025-07-20 10:12 +0000)
 - Added function expression support for `let` declarations.
 - Generated golden files for `fun_expr_in_let`.

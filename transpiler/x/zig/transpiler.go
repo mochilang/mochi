@@ -18,6 +18,7 @@ var constLists map[string]*ListLit
 var mapVars map[string]bool
 var extraFuncs []*Func
 var funcCounter int
+var iterCounter int
 
 // Program represents a Zig source file with one or more functions.
 type Program struct {
@@ -569,6 +570,23 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 func (f *ForStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	if f.Iterable != nil {
+		if vr, ok := f.Iterable.(*VarRef); ok && mapVars[vr.Name] {
+			it := fmt.Sprintf("_tmp%d", iterCounter)
+			iterCounter++
+			fmt.Fprintf(w, "var %s = ", it)
+			vr.emit(w)
+			io.WriteString(w, ".keyIterator();\n")
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "while (%s.next()) |k_ptr| {\n", it)
+			writeIndent(w, indent+1)
+			fmt.Fprintf(w, "const %s = k_ptr.*;\n", f.Name)
+			for _, st := range f.Body {
+				st.emit(w, indent+1)
+			}
+			writeIndent(w, indent)
+			io.WriteString(w, "}\n")
+			return
+		}
 		io.WriteString(w, "for (")
 		f.Iterable.emit(w)
 		io.WriteString(w, ") |")
@@ -722,7 +740,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			continue
 		}
 		if vd, ok := s.(*VarDecl); ok {
-			vd.Mutable = mutables[vd.Name]
+			if !vd.Mutable {
+				vd.Mutable = mutables[vd.Name]
+			}
 			if !vd.Mutable {
 				if lst, ok2 := vd.Value.(*ListLit); ok2 {
 					constLists[vd.Name] = lst
