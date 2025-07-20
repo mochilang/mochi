@@ -21,6 +21,7 @@ var usesHashMap bool
 var mapVars map[string]bool
 var stringVars map[string]bool
 var varTypes map[string]string
+var funParams map[string]int
 
 // Program represents a Rust program consisting of a list of statements.
 type Program struct {
@@ -71,6 +72,15 @@ func (b *BoolLit) emit(w io.Writer) {
 	} else {
 		io.WriteString(w, "false")
 	}
+}
+
+// BoolIntExpr converts a boolean expression to 1 or 0.
+type BoolIntExpr struct{ Expr Expr }
+
+func (b *BoolIntExpr) emit(w io.Writer) {
+	io.WriteString(w, "if ")
+	b.Expr.emit(w)
+	io.WriteString(w, " { 1 } else { 0 }")
 }
 
 // BreakStmt represents a `break` statement.
@@ -453,6 +463,17 @@ type IndexAssignStmt struct {
 }
 
 func (s *IndexAssignStmt) emit(w io.Writer) {
+	if idx, ok := s.Target.(*IndexExpr); ok {
+		if strings.HasPrefix(inferType(idx.Target), "HashMap") {
+			idx.Target.emit(w)
+			io.WriteString(w, ".insert(")
+			idx.Index.emit(w)
+			io.WriteString(w, ", ")
+			s.Value.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
+	}
 	s.Target.emit(w)
 	io.WriteString(w, " = ")
 	s.Value.emit(w)
@@ -495,6 +516,13 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		if strings.HasPrefix(rt, "Vec<") {
 			b.Right.emit(w)
 			io.WriteString(w, ".contains(&")
+			b.Left.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
+		if strings.HasPrefix(rt, "HashMap") {
+			b.Right.emit(w)
+			io.WriteString(w, ".contains_key(&")
 			b.Left.emit(w)
 			io.WriteString(w, ")")
 			return
@@ -609,6 +637,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	mapVars = make(map[string]bool)
 	stringVars = make(map[string]bool)
 	varTypes = make(map[string]string)
+	funParams = make(map[string]int)
 	prog := &Program{}
 	for _, st := range p.Statements {
 		s, err := compileStmt(st)
@@ -861,6 +890,7 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 		}
 		params[i] = Param{Name: p.Name, Type: typ}
 	}
+	funParams[fn.Name] = len(fn.Params)
 	ret := ""
 	if fn.Return != nil {
 		if fn.Return.Simple != nil || fn.Return.Generic != nil {
@@ -1098,17 +1128,29 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		name := p.Call.Func
 		if name == "print" {
-			if len(args) == 1 {
-				if _, ok := args[0].(*StringLit); !ok {
-					fmtStr := "{}"
-					switch args[0].(type) {
-					case *MapLit:
-						fmtStr = "{:?}"
-					case *ValuesExpr, *AppendExpr, *ListLit, *SliceExpr:
-						args[0] = &JoinExpr{List: args[0]}
+			for i, a := range args {
+				switch be := a.(type) {
+				case *BinaryExpr:
+					if be.Op != "in" {
+						args[i] = &BoolIntExpr{Expr: a}
 					}
-					args = append([]Expr{&StringLit{Value: fmtStr}}, args...)
+				case *UnaryExpr:
+					args[i] = &BoolIntExpr{Expr: a}
 				}
+			}
+			if len(args) == 1 {
+				fmtStr := "{}"
+				switch a := args[0].(type) {
+				case *MapLit, *ValuesExpr, *AppendExpr, *ListLit:
+					fmtStr = "{:?}"
+				case *SliceExpr:
+					if inferType(a) != "String" {
+						fmtStr = "{:?}"
+					}
+				case *StringLit:
+					// no format needed
+				}
+				args = append([]Expr{&StringLit{Value: fmtStr}}, args...)
 			} else {
 				fmtStr := "{}"
 				for i := 1; i < len(args); i++ {
@@ -1148,6 +1190,19 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		if name == "substring" && len(args) == 3 {
 			return &SubstringExpr{Str: args[0], Start: args[1], End: args[2]}, nil
+		}
+		if cnt, ok := funParams[name]; ok && len(args) < cnt {
+			missing := cnt - len(args)
+			params := make([]Param, missing)
+			vars := make([]Expr, missing)
+			for i := 0; i < missing; i++ {
+				pname := fmt.Sprintf("p%d", i)
+				params[i] = Param{Name: pname}
+				vars[i] = &NameRef{Name: pname}
+			}
+			bodyArgs := append(append([]Expr{}, args...), vars...)
+			body := &CallExpr{Func: name, Args: bodyArgs}
+			return &FunLit{Params: params, Expr: body}, nil
 		}
 		return &CallExpr{Func: name, Args: args}, nil
 	case p.Lit != nil:
