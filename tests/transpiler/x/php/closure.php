@@ -5,5 +5,5 @@ $makeAdder = function($n) {
 };
 };
 $add10 = $makeAdder(10);
-echo add10(7), PHP_EOL;
+echo $add10(7), PHP_EOL;
 ?>
