@@ -1,3 +1,7 @@
+## Progress (2025-07-20 14:31 +0700)
+- Checklist updated: 46/100 tests compiled
+- Added support for `fun_expr_in_let`, `fun_three_args`, `membership`, `min_max_builtin` and `values_builtin`. Improved list printing for list outputs.
+
 ## Progress (2025-07-20 06:26 UTC)
 - Checklist updated: 41/100 tests compiled
 - Added `in` operator handling for lists, maps and strings.
