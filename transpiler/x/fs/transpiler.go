@@ -204,6 +204,11 @@ type ContinueStmt struct{}
 
 func (c *ContinueStmt) emit(w io.Writer) { io.WriteString(w, "continue") }
 
+// EmptyStmt is a no-op statement used for type declarations.
+type EmptyStmt struct{}
+
+func (e *EmptyStmt) emit(w io.Writer) {}
+
 // ListLit represents an F# list literal.
 type ListLit struct{ Elems []Expr }
 
@@ -858,18 +863,22 @@ type CastExpr struct {
 
 func (c *CastExpr) emit(w io.Writer) {
 	switch c.Type {
-	case "int":
-		io.WriteString(w, "int ")
-		if needsParen(c.Expr) {
-			io.WriteString(w, "(")
-			c.Expr.emit(w)
-			io.WriteString(w, ")")
-		} else {
-			c.Expr.emit(w)
-		}
-	default:
-		c.Expr.emit(w)
-	}
+       case "int":
+                io.WriteString(w, "int ")
+                if needsParen(c.Expr) {
+                        io.WriteString(w, "(")
+                        c.Expr.emit(w)
+                        io.WriteString(w, ")")
+                } else {
+                        c.Expr.emit(w)
+                }
+       default:
+                io.WriteString(w, "(")
+                c.Expr.emit(w)
+                io.WriteString(w, " : ")
+                io.WriteString(w, c.Type)
+                io.WriteString(w, ")")
+        }
 }
 
 // Emit generates formatted F# code from the AST.
@@ -1093,21 +1102,36 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		varTypes = save
 		return &FunDef{Name: st.Fun.Name, Params: params, Body: body}, nil
-	case st.While != nil:
-		cond, err := convertExpr(st.While.Cond)
-		if err != nil {
-			return nil, err
-		}
-		body := make([]Stmt, len(st.While.Body))
-		for i, s := range st.While.Body {
-			cs, err := convertStmt(s)
-			if err != nil {
-				return nil, err
-			}
-			body[i] = cs
-		}
-		return &WhileStmt{Cond: cond, Body: body}, nil
-	case st.For != nil:
+       case st.While != nil:
+               cond, err := convertExpr(st.While.Cond)
+               if err != nil {
+                       return nil, err
+               }
+               body := make([]Stmt, len(st.While.Body))
+               for i, s := range st.While.Body {
+                       cs, err := convertStmt(s)
+                       if err != nil {
+                               return nil, err
+                       }
+                       body[i] = cs
+               }
+               return &WhileStmt{Cond: cond, Body: body}, nil
+       case st.Type != nil:
+               def := StructDef{Name: st.Type.Name}
+               for _, m := range st.Type.Members {
+                       if m.Field == nil {
+                               continue
+                       }
+                       typ := "obj"
+                       if m.Field.Type != nil {
+                               ft := types.ResolveTypeRef(m.Field.Type, transpileEnv)
+                               typ = fsType(ft)
+                       }
+                       def.Fields = append(def.Fields, StructField{Name: m.Field.Name, Type: typ})
+               }
+               structDefs = append(structDefs, def)
+               return &EmptyStmt{}, nil
+       case st.For != nil:
 		start, err := convertExpr(st.For.Source)
 		if err != nil {
 			return nil, err
