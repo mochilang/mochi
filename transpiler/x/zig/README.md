@@ -4,7 +4,7 @@ This directory contains a minimal transpiler that converts a subset of Mochi int
 It currently supports print statements with integer or string expressions, variable declarations and assignments, unary negation and simple addition.
 
 ## Golden tests
-Programs under `tests/vm/valid` that have generated Zig code (47/100 completed):
+Programs under `tests/vm/valid` that have generated Zig code (58/100 completed):
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -14,7 +14,7 @@ Programs under `tests/vm/valid` that have generated Zig code (47/100 completed):
 - [x] cast_string_to_int
 - [ ] cast_struct
 - [ ] closure
-- [ ] count_builtin
+- [x] count_builtin
 - [ ] cross_join
 - [ ] cross_join_filter
 - [ ] cross_join_triple
@@ -48,7 +48,7 @@ Programs under `tests/vm/valid` that have generated Zig code (47/100 completed):
 - [ ] left_join
 - [ ] left_join_multi
 - [x] len_builtin
-- [ ] len_map
+- [x] len_map
 - [x] len_string
 - [x] let_and_print
 - [x] list_assign
@@ -56,13 +56,13 @@ Programs under `tests/vm/valid` that have generated Zig code (47/100 completed):
 - [x] list_nested_assign
 - [x] list_set_ops
 - [ ] load_yaml
-- [ ] map_assign
+- [x] map_assign
 - [ ] map_in_operator
-- [ ] map_index
+- [x] map_index
 - [ ] map_int_key
-- [ ] map_literal_dynamic
-- [ ] map_membership
-- [ ] map_nested_assign
+- [x] map_literal_dynamic
+- [x] map_membership
+- [x] map_nested_assign
 - [x] match_expr
 - [x] match_full
 - [x] math_ops
@@ -73,8 +73,8 @@ Programs under `tests/vm/valid` that have generated Zig code (47/100 completed):
 - [ ] outer_join
 - [ ] partial_application
 - [x] print_hello
-- [ ] pure_fold
-- [ ] pure_global_fold
+- [x] pure_fold
+- [x] pure_global_fold
 - [ ] python_auto
 - [ ] python_math
 - [ ] query_sum_select
@@ -102,6 +102,6 @@ Programs under `tests/vm/valid` that have generated Zig code (47/100 completed):
 - [x] unary_neg
 - [ ] update_stmt
 - [ ] user_type_literal
-- [ ] values_builtin
+- [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
