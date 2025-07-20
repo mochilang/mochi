@@ -116,6 +116,7 @@ func TestTranspilerGolden(t *testing.T) {
 		filepath.Join(srcDir, "for_list_collection.mochi"),
 		filepath.Join(srcDir, "len_builtin.mochi"),
 		filepath.Join(srcDir, "len_string.mochi"),
+		filepath.Join(srcDir, "len_map.mochi"),
 		filepath.Join(srcDir, "math_ops.mochi"),
 		filepath.Join(srcDir, "string_compare.mochi"),
 		filepath.Join(srcDir, "string_concat.mochi"),

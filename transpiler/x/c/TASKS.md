@@ -1,3 +1,7 @@
+## Progress (2025-07-20 12:38 +0700)
+- Added map literal handling for `len()` and new golden test `len_map`.
+- VM valid golden test results updated to 45/100
+
 ## Progress (2025-07-20 12:19 +0700)
 - Added constant folding for list set operations and new golden test `list_set_ops`.
 - VM valid golden test results updated to 44/100
