@@ -166,6 +166,7 @@ type UpdateStmt struct {
 	Fields []string
 	Values []Expr
 	Cond   Expr
+	Attr   bool
 }
 
 func (*UpdateStmt) isStmt() {}
@@ -919,8 +920,14 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 			inner += "    "
 		}
 		for i, f := range st.Fields {
-			if _, err := fmt.Fprintf(w, "%s%s[%q] = ", inner, it, f); err != nil {
-				return err
+			if st.Attr {
+				if _, err := fmt.Fprintf(w, "%s%s.%s = ", inner, it, f); err != nil {
+					return err
+				}
+			} else {
+				if _, err := fmt.Fprintf(w, "%s%s[%q] = ", inner, it, f); err != nil {
+					return err
+				}
 			}
 			if err := emitExpr(w, st.Values[i]); err != nil {
 				return err
@@ -1120,64 +1127,68 @@ func registerAutoStruct(st types.StructType, base string) string {
 	autoStructs[name] = &ClassDef{Name: name, Fields: fields}
 	structKeys[key] = name
 	currentImports["dataclasses"] = true
+	currentImports["dataclass"] = true
 	return name
 }
 
 // substituteFields replaces Name nodes that match the given field names with
 // map access on the provided variable.
-func substituteFields(e Expr, varName string, fields map[string]bool) Expr {
+func substituteFields(e Expr, varName string, fields map[string]bool, attr bool) Expr {
 	switch ex := e.(type) {
 	case *Name:
 		if fields[ex.Name] {
-			return &FieldExpr{Target: &Name{Name: varName}, Name: ex.Name}
+			if attr {
+				return &FieldExpr{Target: &Name{Name: varName}, Name: ex.Name}
+			}
+			return &FieldExpr{Target: &Name{Name: varName}, Name: ex.Name, MapIndex: true}
 		}
 		return ex
 	case *BinaryExpr:
-		ex.Left = substituteFields(ex.Left, varName, fields)
-		ex.Right = substituteFields(ex.Right, varName, fields)
+		ex.Left = substituteFields(ex.Left, varName, fields, attr)
+		ex.Right = substituteFields(ex.Right, varName, fields, attr)
 		return ex
 	case *UnaryExpr:
-		ex.Expr = substituteFields(ex.Expr, varName, fields)
+		ex.Expr = substituteFields(ex.Expr, varName, fields, attr)
 		return ex
 	case *CallExpr:
-		ex.Func = substituteFields(ex.Func, varName, fields)
+		ex.Func = substituteFields(ex.Func, varName, fields, attr)
 		for i := range ex.Args {
-			ex.Args[i] = substituteFields(ex.Args[i], varName, fields)
+			ex.Args[i] = substituteFields(ex.Args[i], varName, fields, attr)
 		}
 		return ex
 	case *FieldExpr:
-		ex.Target = substituteFields(ex.Target, varName, fields)
+		ex.Target = substituteFields(ex.Target, varName, fields, attr)
 		return ex
 	case *IndexExpr:
-		ex.Target = substituteFields(ex.Target, varName, fields)
-		ex.Index = substituteFields(ex.Index, varName, fields)
+		ex.Target = substituteFields(ex.Target, varName, fields, attr)
+		ex.Index = substituteFields(ex.Index, varName, fields, attr)
 		return ex
 	case *SliceExpr:
-		ex.Target = substituteFields(ex.Target, varName, fields)
+		ex.Target = substituteFields(ex.Target, varName, fields, attr)
 		if ex.Start != nil {
-			ex.Start = substituteFields(ex.Start, varName, fields)
+			ex.Start = substituteFields(ex.Start, varName, fields, attr)
 		}
 		if ex.End != nil {
-			ex.End = substituteFields(ex.End, varName, fields)
+			ex.End = substituteFields(ex.End, varName, fields, attr)
 		}
 		if ex.Step != nil {
-			ex.Step = substituteFields(ex.Step, varName, fields)
+			ex.Step = substituteFields(ex.Step, varName, fields, attr)
 		}
 		return ex
 	case *CondExpr:
-		ex.Cond = substituteFields(ex.Cond, varName, fields)
-		ex.Then = substituteFields(ex.Then, varName, fields)
-		ex.Else = substituteFields(ex.Else, varName, fields)
+		ex.Cond = substituteFields(ex.Cond, varName, fields, attr)
+		ex.Then = substituteFields(ex.Then, varName, fields, attr)
+		ex.Else = substituteFields(ex.Else, varName, fields, attr)
 		return ex
 	case *ListLit:
 		for i := range ex.Elems {
-			ex.Elems[i] = substituteFields(ex.Elems[i], varName, fields)
+			ex.Elems[i] = substituteFields(ex.Elems[i], varName, fields, attr)
 		}
 		return ex
 	case *DictLit:
 		for i := range ex.Keys {
-			ex.Keys[i] = substituteFields(ex.Keys[i], varName, fields)
-			ex.Values[i] = substituteFields(ex.Values[i], varName, fields)
+			ex.Keys[i] = substituteFields(ex.Keys[i], varName, fields, attr)
+			ex.Values[i] = substituteFields(ex.Values[i], varName, fields, attr)
 		}
 		return ex
 	default:
@@ -1469,6 +1480,9 @@ func Emit(w io.Writer, p *Program) error {
 		if currentImports["dataclasses"] && !hasImport(p, "dataclasses") {
 			imports = append(imports, "import dataclasses")
 		}
+		if currentImports["dataclass"] && !hasImport(p, "dataclass") {
+			imports = append(imports, "from dataclasses import dataclass")
+		}
 	}
 	for _, s := range p.Stmts {
 		if im, ok := s.(*ImportStmt); ok {
@@ -1496,7 +1510,7 @@ func Emit(w io.Writer, p *Program) error {
 			// already emitted above
 			continue
 		case *ClassDef:
-			if _, err := io.WriteString(w, "@dataclasses.dataclass\nclass "+st.Name+":\n"); err != nil {
+			if _, err := io.WriteString(w, "@dataclass\nclass "+st.Name+":\n"); err != nil {
 				return err
 			}
 			for _, f := range st.Fields {
@@ -1923,12 +1937,22 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				}
 				autoStructs[st.Type.Name] = &ClassDef{Name: st.Type.Name, Fields: fields}
 				currentImports["dataclasses"] = true
+				currentImports["dataclass"] = true
 				continue
 			}
 			for _, v := range st.Type.Variants {
 				if len(v.Fields) == 0 {
 					p.Stmts = append(p.Stmts, &LetStmt{Name: v.Name, Expr: &Name{Name: "None"}})
+					continue
 				}
+				var fields []Field
+				for _, f := range v.Fields {
+					ft := types.ResolveTypeRef(f.Type, env)
+					fields = append(fields, Field{Name: f.Name, Type: pyType(ft)})
+				}
+				autoStructs[v.Name] = &ClassDef{Name: v.Name, Fields: fields}
+				currentImports["dataclasses"] = true
+				currentImports["dataclass"] = true
 			}
 			continue
 		case st.ExternType != nil:
@@ -2735,7 +2759,7 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 							for _, nm := range names {
 								fields[nm] = true
 							}
-							res = substituteFields(res, tn.Name, fields)
+							res = substituteFields(res, tn.Name, fields, true)
 							cond := &BinaryExpr{Left: target, Op: "!=", Right: &Name{Name: "None"}}
 							expr = &CondExpr{Cond: cond, Then: res, Else: expr}
 							continue
@@ -2990,6 +3014,7 @@ func convertUpdate(u *parser.UpdateStmt, env *types.Env) (*UpdateStmt, error) {
 	currentEnv = child
 	var fields []string
 	var values []Expr
+	attr := true
 	for _, item := range u.Set.Items {
 		key, ok := isSimpleIdent(item.Key)
 		if !ok {
@@ -3004,7 +3029,7 @@ func convertUpdate(u *parser.UpdateStmt, env *types.Env) (*UpdateStmt, error) {
 			currentEnv = prev
 			return nil, err
 		}
-		val = substituteFields(val, "item", fieldSet)
+		val = substituteFields(val, "item", fieldSet, attr)
 		fields = append(fields, key)
 		values = append(values, val)
 	}
@@ -3015,10 +3040,10 @@ func convertUpdate(u *parser.UpdateStmt, env *types.Env) (*UpdateStmt, error) {
 			currentEnv = prev
 			return nil, err
 		}
-		cond = substituteFields(cond, "item", fieldSet)
+		cond = substituteFields(cond, "item", fieldSet, attr)
 	}
 	currentEnv = prev
-	return &UpdateStmt{Target: u.Target, Fields: fields, Values: values, Cond: cond}, nil
+	return &UpdateStmt{Target: u.Target, Fields: fields, Values: values, Cond: cond, Attr: attr}, nil
 }
 
 func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]Stmt, error) {
