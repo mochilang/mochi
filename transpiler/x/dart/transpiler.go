@@ -38,7 +38,7 @@ func (w *WhileStmt) emit(out io.Writer) error {
 		return err
 	}
 	for _, st := range w.Body {
-		if _, err := io.WriteString(out, "  "); err != nil {
+		if _, err := io.WriteString(out, "    "); err != nil {
 			return err
 		}
 		if err := st.emit(out); err != nil {
@@ -66,8 +66,10 @@ func (w *WhileStmt) emit(out io.Writer) error {
 			}
 		}
 	}
-	_, err := io.WriteString(out, "}")
-	return err
+	if _, err := io.WriteString(out, "  }"); err != nil {
+		return err
+	}
+	return nil
 }
 
 // ForRangeStmt represents a numeric for-loop like `for i in 0..10 {}`.
@@ -99,7 +101,7 @@ func (f *ForRangeStmt) emit(out io.Writer) error {
 		return err
 	}
 	for _, st := range f.Body {
-		if _, err := io.WriteString(out, "  "); err != nil {
+		if _, err := io.WriteString(out, "    "); err != nil {
 			return err
 		}
 		if err := st.emit(out); err != nil {
@@ -116,8 +118,10 @@ func (f *ForRangeStmt) emit(out io.Writer) error {
 			}
 		}
 	}
-	_, err := io.WriteString(out, "}")
-	return err
+	if _, err := io.WriteString(out, "  }"); err != nil {
+		return err
+	}
+	return nil
 }
 
 // ForInStmt represents iteration over an iterable expression.
@@ -140,7 +144,7 @@ func (f *ForInStmt) emit(out io.Writer) error {
 		return err
 	}
 	for _, st := range f.Body {
-		if _, err := io.WriteString(out, "  "); err != nil {
+		if _, err := io.WriteString(out, "    "); err != nil {
 			return err
 		}
 		if err := st.emit(out); err != nil {
@@ -157,8 +161,10 @@ func (f *ForInStmt) emit(out io.Writer) error {
 			}
 		}
 	}
-	_, err := io.WriteString(out, "}")
-	return err
+	if _, err := io.WriteString(out, "  }"); err != nil {
+		return err
+	}
+	return nil
 }
 
 // IfStmt represents a conditional statement with an optional else branch.
