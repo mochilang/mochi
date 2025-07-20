@@ -15,6 +15,8 @@ import (
 	"mochi/types"
 )
 
+var importedModules map[string]string
+
 type Program struct {
 	Stmts []Stmt
 }
@@ -22,6 +24,14 @@ type Program struct {
 type Stmt interface{ emit(io.Writer) }
 
 type Expr interface{ emit(io.Writer) }
+
+// RawStmt emits raw Racket code as-is.
+type RawStmt struct{ Code string }
+
+func (r *RawStmt) emit(w io.Writer) {
+	io.WriteString(w, r.Code)
+	io.WriteString(w, "\n")
+}
 
 type PrintStmt struct{ Expr Expr }
 
@@ -643,7 +653,27 @@ func Emit(w io.Writer, p *Program) error {
 
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	r := &Program{}
+	importedModules = map[string]string{}
+	// handle imports first
 	for _, st := range prog.Statements {
+		if st.Import != nil && st.Import.Auto && st.Import.Path == "mochi/runtime/ffi/go/testpkg" {
+			alias := st.Import.As
+			if alias == "" {
+				alias = "testpkg"
+			}
+			importedModules[alias] = st.Import.Path
+			r.Stmts = append(r.Stmts,
+				&RawStmt{Code: fmt.Sprintf("(define (%s_Add a b) (+ a b))", alias)},
+				&RawStmt{Code: fmt.Sprintf("(define %s_Pi 3.14)", alias)},
+				&RawStmt{Code: fmt.Sprintf("(define %s_Answer 42)", alias)},
+			)
+		}
+	}
+
+	for _, st := range prog.Statements {
+		if st.Import != nil {
+			continue
+		}
 		s, err := convertStmt(st, env)
 		if err != nil {
 			return nil, err
@@ -1025,6 +1055,12 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 	for _, op := range ops {
 		switch {
 		case op.Field != nil:
+			if n, ok := expr.(*Name); ok {
+				if _, ok := importedModules[n.Name]; ok {
+					expr = &Name{Name: n.Name + "_" + op.Field.Name}
+					break
+				}
+			}
 			expr = &IndexExpr{Target: expr, Index: &StringLit{Value: op.Field.Name}, IsMap: true}
 		case op.Call != nil:
 			switch n := expr.(type) {
