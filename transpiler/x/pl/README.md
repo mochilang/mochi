@@ -2,12 +2,12 @@
 
 This directory contains a tiny transpiler that converts a restricted subset of Mochi programs to SWI-Prolog. It is mainly used for experimentation and golden tests.
 
-## VM Golden Test Checklist (22/100)
+## VM Golden Test Checklist (23/100)
 - [x] `append_builtin`
 - [x] `avg_builtin`
 - [x] `basic_compare`
 - [x] `binary_precedence`
-- [ ] `bool_chain`
+- [x] `bool_chain`
 - [ ] `break_continue`
 - [x] `cast_string_to_int`
 - [ ] `cast_struct`
