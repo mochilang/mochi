@@ -1,0 +1,6 @@
+exit status 1
+# command-line-arguments
+../../../tests/transpiler/x/go/list_set_ops.go:12:104: syntax error: function type must have no type parameters
+../../../tests/transpiler/x/go/list_set_ops.go:29:104: syntax error: function type must have no type parameters
+../../../tests/transpiler/x/go/list_set_ops.go:42:104: syntax error: function type must have no type parameters
+../../../tests/transpiler/x/go/list_set_ops.go:55:84: syntax error: function type must have no type parameters

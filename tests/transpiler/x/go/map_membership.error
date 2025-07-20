@@ -1,0 +1,4 @@
+exit status 1
+# command-line-arguments
+../../../tests/transpiler/x/go/map_membership.go:12:80: syntax error: function type must have no type parameters
+../../../tests/transpiler/x/go/map_membership.go:16:80: syntax error: function type must have no type parameters

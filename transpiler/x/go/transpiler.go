@@ -16,10 +16,11 @@ import (
 
 // Program represents a Go program consisting of a sequence of statements.
 type Program struct {
-	Stmts              []Stmt
-	UseStrings         bool
-	UseStrconv         bool
-	UsePrint           bool
+	Stmts      []Stmt
+	UseStrings bool
+	UseStrconv bool
+	UsePrint   bool
+	// legacy fields retained for compatibility but no longer used
 	HelperAvg          bool
 	HelperSum          bool
 	HelperMin          bool
@@ -65,7 +66,9 @@ func (p *PrintStmt) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
+		io.WriteString(w, "func(v any) any { if v == nil { return \"nil\" }; return v }(")
 		e.emit(w)
+		io.WriteString(w, ")")
 	}
 	io.WriteString(w, ")")
 }
@@ -460,7 +463,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 type AvgExpr struct{ List Expr }
 
 func (a *AvgExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "avg(")
+	fmt.Fprint(w, "func(list []int) float64 {\n    sum := 0\n    for _, n := range list {\n        sum += n\n    }\n    return float64(sum) / float64(len(list))\n}(")
 	a.List.emit(w)
 	fmt.Fprint(w, ")")
 }
@@ -468,7 +471,7 @@ func (a *AvgExpr) emit(w io.Writer) {
 type SumExpr struct{ List Expr }
 
 func (s *SumExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "sum(")
+	fmt.Fprint(w, "func(list []int) int {\n    s := 0\n    for _, n := range list {\n        s += n\n    }\n    return s\n}(")
 	s.List.emit(w)
 	fmt.Fprint(w, ")")
 }
@@ -476,7 +479,7 @@ func (s *SumExpr) emit(w io.Writer) {
 type MinExpr struct{ List Expr }
 
 func (m *MinExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "min(")
+	fmt.Fprint(w, "func(list []int) int {\n    if len(list) == 0 {\n        return 0\n    }\n    min := list[0]\n    for _, n := range list[1:] {\n        if n < min {\n            min = n\n        }\n    }\n    return min\n}(")
 	m.List.emit(w)
 	fmt.Fprint(w, ")")
 }
@@ -484,7 +487,7 @@ func (m *MinExpr) emit(w io.Writer) {
 type MaxExpr struct{ List Expr }
 
 func (m *MaxExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "max(")
+	fmt.Fprint(w, "func(list []int) int {\n    if len(list) == 0 {\n        return 0\n    }\n    max := list[0]\n    for _, n := range list[1:] {\n        if n > max {\n            max = n\n        }\n    }\n    return max\n}(")
 	m.List.emit(w)
 	fmt.Fprint(w, ")")
 }
@@ -506,13 +509,13 @@ func (c *ContainsExpr) emit(w io.Writer) {
 		c.Value.emit(w)
 		fmt.Fprint(w, ")")
 	case "map":
-		fmt.Fprint(w, "containsMap(")
+		fmt.Fprint(w, "func[K comparable,V any](m map[K]V, k K) bool {\n    _, ok := m[k]\n    return ok\n}(")
 		c.Collection.emit(w)
 		fmt.Fprint(w, ", ")
 		c.Value.emit(w)
 		fmt.Fprint(w, ")")
 	default: // list
-		fmt.Fprint(w, "contains(")
+		fmt.Fprint(w, "func[T comparable](list []T, v T) bool {\n    for _, x := range list {\n        if x == v {\n            return true\n        }\n    }\n    return false\n}(")
 		c.Collection.emit(w)
 		fmt.Fprint(w, ", ")
 		c.Value.emit(w)
@@ -523,7 +526,7 @@ func (c *ContainsExpr) emit(w io.Writer) {
 type UnionExpr struct{ Left, Right Expr }
 
 func (u *UnionExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "union(")
+	fmt.Fprint(w, "func[T comparable](a, b []T) []T {\n    m := map[T]struct{}{}\n    res := []T{}\n    for _, n := range a {\n        if _, ok := m[n]; !ok {\n            m[n] = struct{}{}\n            res = append(res, n)\n        }\n    }\n    for _, n := range b {\n        if _, ok := m[n]; !ok {\n            m[n] = struct{}{}\n            res = append(res, n)\n        }\n    }\n    return res\n}(")
 	u.Left.emit(w)
 	fmt.Fprint(w, ", ")
 	u.Right.emit(w)
@@ -533,7 +536,7 @@ func (u *UnionExpr) emit(w io.Writer) {
 type UnionAllExpr struct{ Left, Right Expr }
 
 func (u *UnionAllExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "unionAll(")
+	fmt.Fprint(w, "func[T comparable](a, b []T) []T {\n    res := make([]T, len(a))\n    copy(res, a)\n    res = append(res, b...)\n    return res\n}(")
 	u.Left.emit(w)
 	fmt.Fprint(w, ", ")
 	u.Right.emit(w)
@@ -543,7 +546,7 @@ func (u *UnionAllExpr) emit(w io.Writer) {
 type ExceptExpr struct{ Left, Right Expr }
 
 func (e *ExceptExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "except(")
+	fmt.Fprint(w, "func[T comparable](a, b []T) []T {\n    m := map[T]struct{}{}\n    for _, n := range b {\n        m[n] = struct{}{}\n    }\n    res := []T{}\n    for _, n := range a {\n        if _, ok := m[n]; !ok {\n            res = append(res, n)\n        }\n    }\n    return res\n}(")
 	e.Left.emit(w)
 	fmt.Fprint(w, ", ")
 	e.Right.emit(w)
@@ -553,7 +556,7 @@ func (e *ExceptExpr) emit(w io.Writer) {
 type IntersectExpr struct{ Left, Right Expr }
 
 func (i *IntersectExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "intersect(")
+	fmt.Fprint(w, "func[T comparable](a, b []T) []T {\n    m := map[T]struct{}{}\n    for _, n := range a {\n        m[n] = struct{}{}\n    }\n    res := []T{}\n    for _, n := range b {\n        if _, ok := m[n]; ok {\n            res = append(res, n)\n        }\n    }\n    return res\n}(")
 	i.Left.emit(w)
 	fmt.Fprint(w, ", ")
 	i.Right.emit(w)
@@ -669,6 +672,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 			return &VarDecl{Name: st.Let.Name, Type: typ, Value: e}, nil
 		}
+		if typ != "" {
+			typ = "any"
+		}
 		return &VarDecl{Name: st.Let.Name, Type: typ}, nil
 	case st.Var != nil:
 		var typ string
@@ -691,6 +697,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 			}
 			return &VarDecl{Name: st.Var.Name, Type: typ, Value: e}, nil
+		}
+		if typ != "" {
+			typ = "any"
 		}
 		return &VarDecl{Name: st.Var.Name, Type: typ}, nil
 	case st.Assign != nil:
@@ -990,24 +999,17 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 					if kind == "string" {
 						usesStrings = true
 					}
-					if kind == "list" {
-						useContainsList = true
-					}
-					if kind == "map" {
-						useContainsMap = true
+					if kind == "list" || kind == "map" {
+						// handled inline
 					}
 					newExpr = &ContainsExpr{Collection: right, Value: left, Kind: kind, ElemType: et}
 				case "union":
-					useUnion = true
 					newExpr = &UnionExpr{Left: left, Right: right}
 				case "union_all":
-					useUnionAll = true
 					newExpr = &UnionAllExpr{Left: left, Right: right}
 				case "except":
-					useExcept = true
 					newExpr = &ExceptExpr{Left: left, Right: right}
 				case "intersect":
-					useIntersect = true
 					newExpr = &IntersectExpr{Left: left, Right: right}
 				default:
 					newExpr = &BinaryExpr{Left: left, Op: ops[i].Op, Right: right}
@@ -1099,11 +1101,8 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			if kind == "string" {
 				usesStrings = true
 			}
-			if kind == "list" {
-				useContainsList = true
-			}
-			if kind == "map" {
-				useContainsMap = true
+			if kind == "list" || kind == "map" {
+				// handled inline
 			}
 			return &ContainsExpr{Collection: expr, Value: args[0], Kind: kind, ElemType: et}, nil
 		default:
@@ -1192,20 +1191,16 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		name := p.Call.Func
 		switch name {
 		case "avg":
-			useAvg = true
 			return &AvgExpr{List: args[0]}, nil
 		case "count":
 			name = "len"
 		case "str":
 			name = "fmt.Sprint"
 		case "sum":
-			useSum = true
 			return &SumExpr{List: args[0]}, nil
 		case "min":
-			useMin = true
 			return &MinExpr{List: args[0]}, nil
 		case "max":
-			useMax = true
 			return &MaxExpr{List: args[0]}, nil
 		case "substring":
 			return &CallExpr{Func: "string", Args: []Expr{&SliceExpr{X: &RuneSliceExpr{Expr: args[0]}, Start: args[1], End: args[2]}}}, nil
@@ -1413,37 +1408,7 @@ func Emit(prog *Program) []byte {
 	}
 	buf.WriteString(")\n\n")
 
-	if prog.HelperContainsList {
-		buf.WriteString("func contains[T comparable](list []T, v T) bool {\n")
-		buf.WriteString("    for _, x := range list {\n        if x == v {\n            return true\n        }\n    }\n    return false\n}\n\n")
-	}
-	if prog.HelperContainsMap {
-		buf.WriteString("func containsMap[K comparable, V any](m map[K]V, k K) bool {\n    _, ok := m[k]\n    return ok\n}\n\n")
-	}
-	if prog.HelperUnion {
-		buf.WriteString("func union[T comparable](a, b []T) []T {\n    m := map[T]struct{}{}\n    res := []T{}\n    for _, n := range a {\n        if _, ok := m[n]; !ok {\n            m[n] = struct{}{}\n            res = append(res, n)\n        }\n    }\n    for _, n := range b {\n        if _, ok := m[n]; !ok {\n            m[n] = struct{}{}\n            res = append(res, n)\n        }\n    }\n    return res\n}\n\n")
-	}
-	if prog.HelperUnionAll {
-		buf.WriteString("func unionAll[T comparable](a, b []T) []T {\n    res := make([]T, len(a))\n    copy(res, a)\n    res = append(res, b...)\n    return res\n}\n\n")
-	}
-	if prog.HelperExcept {
-		buf.WriteString("func except[T comparable](a, b []T) []T {\n    m := map[T]struct{}{}\n    for _, n := range b {\n        m[n] = struct{}{}\n    }\n    res := []T{}\n    for _, n := range a {\n        if _, ok := m[n]; !ok {\n            res = append(res, n)\n        }\n    }\n    return res\n}\n\n")
-	}
-	if prog.HelperIntersect {
-		buf.WriteString("func intersect[T comparable](a, b []T) []T {\n    m := map[T]struct{}{}\n    for _, n := range a {\n        m[n] = struct{}{}\n    }\n    res := []T{}\n    for _, n := range b {\n        if _, ok := m[n]; ok {\n            res = append(res, n)\n        }\n    }\n    return res\n}\n\n")
-	}
-	if prog.HelperAvg {
-		buf.WriteString("func avg(nums []int) float64 {\n    sum := 0\n    for _, n := range nums {\n        sum += n\n    }\n    return float64(sum) / float64(len(nums))\n}\n\n")
-	}
-	if prog.HelperSum {
-		buf.WriteString("func sum(nums []int) int {\n    s := 0\n    for _, n := range nums {\n        s += n\n    }\n    return s\n}\n\n")
-	}
-	if prog.HelperMin {
-		buf.WriteString("func min(nums []int) int {\n    if len(nums) == 0 {\n        return 0\n    }\n    m := nums[0]\n    for _, n := range nums[1:] {\n        if n < m {\n            m = n\n        }\n    }\n    return m\n}\n\n")
-	}
-	if prog.HelperMax {
-		buf.WriteString("func max(nums []int) int {\n    if len(nums) == 0 {\n        return 0\n    }\n    m := nums[0]\n    for _, n := range nums[1:] {\n        if n > m {\n            m = n\n        }\n    }\n    return m\n}\n\n")
-	}
+	// helper functions removed; builtins are expanded inline
 	if prog.UseStrconv {
 		buf.WriteString("func atoi(s string) int {\n    n, _ := strconv.Atoi(s)\n    return n\n}\n\n")
 	}
