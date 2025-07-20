@@ -2,7 +2,7 @@
 
 Generated C# code for programs in `tests/vm/valid`. Each program has a `.cs` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.
 
-Compiled programs: 58/100
+Compiled programs: 59/100
 
 ## Checklist
 - [x] append_builtin
@@ -54,7 +54,7 @@ Compiled programs: 58/100
 - [x] list_assign
 - [x] list_index
 - [x] list_nested_assign
-- [ ] list_set_ops
+- [x] list_set_ops
 - [ ] load_yaml
 - [x] map_assign
 - [x] map_in_operator
