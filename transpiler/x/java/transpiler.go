@@ -83,6 +83,8 @@ func inferType(e Expr) string {
 			return "int"
 		case "==", "!=", "<", "<=", ">", ">=", "&&", "||":
 			return "boolean"
+		case "in":
+			return "boolean"
 		}
 	case *TernaryExpr:
 		t := inferType(ex.Then)
@@ -859,6 +861,12 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 		switch op.Op {
 		case "+", "-", "*", "/", "%", "==", "!=", "<", "<=", ">", ">=", "&&", "||":
 			expr = &BinaryExpr{Left: expr, Op: op.Op, Right: r}
+		case "in":
+			if isStringExpr(r) {
+				expr = &MethodCallExpr{Target: r, Name: "contains", Args: []Expr{expr}}
+			} else {
+				return nil, fmt.Errorf("unsupported binary op: %s", op.Op)
+			}
 		default:
 			return nil, fmt.Errorf("unsupported binary op: %s", op.Op)
 		}

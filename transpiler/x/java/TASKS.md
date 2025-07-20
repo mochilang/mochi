@@ -1,4 +1,6 @@
-## Progress (2025-07-20 12:37 +0700)
+## Progress (2025-07-20 12:53 +0700)
+- java: support 'in' operator for strings (565a22891)
+
 - java transpiler: support method calls (a5791d107)
 
 - java transpiler: improve formatting and inference (5540777bf)
