@@ -2,7 +2,7 @@
 
 Generated Java code for programs in `tests/vm/valid`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## VM Golden Test Checklist (70/100)
+## VM Golden Test Checklist (72/100)
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -39,7 +39,7 @@ Generated Java code for programs in `tests/vm/valid`. Each program has a `.java`
 - [x] if_then_else.mochi
 - [x] if_then_else_nested.mochi
 - [x] in_operator.mochi
-- [x] in_operator_extended.mochi
+- [ ] in_operator_extended.mochi
 - [ ] inner_join.mochi
 - [ ] join_multi.mochi
 - [x] json_builtin.mochi
@@ -75,7 +75,7 @@ Generated Java code for programs in `tests/vm/valid`. Each program has a `.java`
 - [x] pure_global_fold.mochi
 - [ ] python_auto.mochi
 - [ ] python_math.mochi
-- [x] query_sum_select.mochi
+- [ ] query_sum_select.mochi
 - [x] record_assign.mochi
 - [ ] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
@@ -93,13 +93,13 @@ Generated Java code for programs in `tests/vm/valid`. Each program has a `.java`
 - [x] sum_builtin.mochi
 - [x] tail_recursion.mochi
 - [x] test_block.mochi
-- [x] tree_sum.mochi
+- [ ] tree_sum.mochi
 - [x] two-sum.mochi
 - [x] typed_let.mochi
 - [x] typed_var.mochi
 - [x] unary_neg.mochi
 - [ ] update_stmt.mochi
-- [x] user_type_literal.mochi
+- [ ] user_type_literal.mochi
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
