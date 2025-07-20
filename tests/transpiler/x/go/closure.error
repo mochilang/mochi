@@ -1,3 +1,0 @@
-exit status 1
-# command-line-arguments
-../../../tests/transpiler/x/go/closure.go:18:14: invalid operation: cannot call non-function add10 (variable of interface type any)
