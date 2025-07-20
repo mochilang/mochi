@@ -617,6 +617,40 @@ func kotlinTypeFromType(t types.Type) string {
 	return ""
 }
 
+func guessType(e Expr) string {
+	switch v := e.(type) {
+	case *IntLit:
+		return "Int"
+	case *BoolLit:
+		return "Boolean"
+	case *StringLit:
+		return "String"
+	case *ListLit:
+		if len(v.Elems) > 0 {
+			elem := guessType(v.Elems[0])
+			if elem == "" {
+				elem = "Any"
+			}
+			return "MutableList<" + elem + ">"
+		}
+		return "MutableList<Any>"
+	case *MapLit:
+		if len(v.Items) > 0 {
+			k := guessType(v.Items[0].Key)
+			if k == "" {
+				k = "Any"
+			}
+			val := guessType(v.Items[0].Value)
+			if val == "" {
+				val = "Any"
+			}
+			return "MutableMap<" + k + ", " + val + ">"
+		}
+		return "MutableMap<Any, Any>"
+	}
+	return ""
+}
+
 // Transpile converts a Mochi program to a simple Kotlin AST.
 func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	p := &Program{}
@@ -643,6 +677,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			if typ == "" {
 				if t0, err := env.GetVar(st.Let.Name); err == nil {
 					typ = kotlinTypeFromType(t0)
+				} else {
+					typ = guessType(val)
 				}
 			}
 			p.Stmts = append(p.Stmts, &LetStmt{Name: st.Let.Name, Type: typ, Value: val})
@@ -661,6 +697,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			if typ == "" {
 				if t0, err := env.GetVar(st.Var.Name); err == nil {
 					typ = kotlinTypeFromType(t0)
+				} else {
+					typ = guessType(val)
 				}
 			}
 			p.Stmts = append(p.Stmts, &VarStmt{Name: st.Var.Name, Type: typ, Value: val})
