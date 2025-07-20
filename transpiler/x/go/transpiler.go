@@ -763,10 +763,18 @@ type queryFrom struct {
 	Src Expr
 }
 
+type queryJoin struct {
+	Var  string
+	Src  Expr
+	On   Expr
+	Side string // "", "left", "right", "outer"
+}
+
 type QueryExpr struct {
 	Var      string
 	Src      Expr
 	Froms    []queryFrom
+	Joins    []queryJoin
 	Where    Expr
 	Select   Expr
 	ElemType string
@@ -782,6 +790,18 @@ func (q *QueryExpr) emit(w io.Writer) {
 		f.Src.emit(w)
 		fmt.Fprint(w, " {")
 	}
+	for _, j := range q.Joins {
+		fmt.Fprintf(w, " for _, %s := range ", j.Var)
+		j.Src.emit(w)
+		fmt.Fprint(w, " {")
+		fmt.Fprint(w, " if ")
+		if j.On != nil {
+			j.On.emit(w)
+		} else {
+			fmt.Fprint(w, "true")
+		}
+		fmt.Fprint(w, " {")
+	}
 	if q.Where != nil {
 		fmt.Fprint(w, " if ")
 		q.Where.emit(w)
@@ -791,6 +811,10 @@ func (q *QueryExpr) emit(w io.Writer) {
 	q.Select.emit(w)
 	fmt.Fprint(w, ")")
 	if q.Where != nil {
+		fmt.Fprint(w, " }")
+	}
+	for range q.Joins {
+		fmt.Fprint(w, " }")
 		fmt.Fprint(w, " }")
 	}
 	for range q.Froms {
@@ -1154,7 +1178,7 @@ func compileMatchExpr(me *parser.MatchExpr, env *types.Env) (Expr, error) {
 }
 
 func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, error) {
-	if q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || len(q.Joins) > 0 {
+	if q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
 		return nil, fmt.Errorf("unsupported query features")
 	}
 	src, err := compileExpr(q.Source, env, "")
@@ -1191,6 +1215,34 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, e
 		}
 		child.SetVar(f.Var, felem, true)
 		froms[i] = queryFrom{Var: f.Var, Src: fe}
+	}
+
+	joins := make([]queryJoin, len(q.Joins))
+	for i, j := range q.Joins {
+		je, err := compileExpr(j.Src, child, "")
+		if err != nil {
+			return nil, err
+		}
+		jt := types.ExprType(j.Src, child)
+		var jelem types.Type
+		switch t := jt.(type) {
+		case types.ListType:
+			jelem = t.Elem
+		case types.GroupType:
+			jelem = t.Elem
+		default:
+			jelem = types.AnyType{}
+		}
+		child.SetVar(j.Var, jelem, true)
+		onExpr, err := compileExpr(j.On, child, "")
+		if err != nil {
+			return nil, err
+		}
+		side := ""
+		if j.Side != nil {
+			side = *j.Side
+		}
+		joins[i] = queryJoin{Var: j.Var, Src: je, On: onExpr, Side: side}
 	}
 	var where Expr
 	if q.Where != nil {
@@ -1237,7 +1289,7 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, e
 	if et == "" {
 		et = "any"
 	}
-	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Where: where, Select: sel, ElemType: et}, nil
+	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Where: where, Select: sel, ElemType: et}, nil
 }
 
 func zeroValueExpr(goType string) Expr {
@@ -2310,6 +2362,17 @@ func toNodeExpr(e Expr) *ast.Node {
 		for _, f := range ex.Froms {
 			fn := &ast.Node{Kind: "from", Value: f.Var, Children: []*ast.Node{toNodeExpr(f.Src)}}
 			n.Children = append(n.Children, fn)
+		}
+		for _, j := range ex.Joins {
+			jn := &ast.Node{Kind: "join", Value: j.Var}
+			jn.Children = append(jn.Children, toNodeExpr(j.Src))
+			if j.On != nil {
+				jn.Children = append(jn.Children, &ast.Node{Kind: "on", Children: []*ast.Node{toNodeExpr(j.On)}})
+			}
+			if j.Side != "" {
+				jn.Children = append(jn.Children, &ast.Node{Kind: j.Side})
+			}
+			n.Children = append(n.Children, jn)
 		}
 		if ex.Where != nil {
 			n.Children = append(n.Children, &ast.Node{Kind: "where", Children: []*ast.Node{toNodeExpr(ex.Where)}})
