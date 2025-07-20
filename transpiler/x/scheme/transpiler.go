@@ -529,9 +529,30 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 	if pf == nil {
 		return nil, fmt.Errorf("unsupported postfix")
 	}
-	node, err := convertParserPrimary(pf.Target)
-	if err != nil {
-		return nil, err
+	var node Node
+	var err error
+	// handle selector like `x.contains()` parsed as part of target
+	if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "contains" && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
+		rootPrim := &parser.Primary{Selector: &parser.SelectorExpr{Root: pf.Target.Selector.Root}}
+		node, err = convertParserPrimary(rootPrim)
+		if err != nil {
+			return nil, err
+		}
+		call := pf.Ops[0].Call
+		if len(call.Args) != 1 {
+			return nil, fmt.Errorf("contains expects 1 arg")
+		}
+		arg, err := convertParserExpr(call.Args[0])
+		if err != nil {
+			return nil, err
+		}
+		node = &List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("string-contains"), node, arg}}, BoolLit(true), BoolLit(false)}}
+		pf = &parser.PostfixExpr{Target: rootPrim, Ops: pf.Ops[1:]}
+	} else {
+		node, err = convertParserPrimary(pf.Target)
+		if err != nil {
+			return nil, err
+		}
 	}
 	for i := 0; i < len(pf.Ops); i++ {
 		op := pf.Ops[i]
