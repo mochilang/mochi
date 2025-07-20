@@ -1,7 +1,8 @@
 public class Main {
-    static java.util.Map<String, Integer> data = java.util.Map.of("outer", java.util.Map.of("inner", 1));
+    static java.util.Map data = new java.util.LinkedHashMap<>() {{ put("outer", new java.util.LinkedHashMap<>() {{ put("inner", 1); }}); }};
 
     public static void main(String[] args) {
-        System.out.println(data["outer"]["inner"]);
+data["outer"]["inner"] = 2;
+        System.out.println(data.get("outer")["inner"]);
     }
 }

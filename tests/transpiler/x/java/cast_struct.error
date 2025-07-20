@@ -1,1 +1,7 @@
-unsupported primary
+exit status 1
+Main.java:5: error: cannot find symbol
+        System.out.println(todo.title);
+                               ^
+  symbol:   variable title
+  location: variable todo of type Map
+1 error

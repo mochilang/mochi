@@ -1,7 +1,8 @@
 public class Main {
-    static java.util.Map<String, Integer> scores = java.util.Map.of("alice", 1);
+    static java.util.Map scores = new java.util.LinkedHashMap<>() {{ put("alice", 1); }};
 
     public static void main(String[] args) {
-        System.out.println(scores["bob"]);
+scores.put("bob", 2);
+        System.out.println(scores.get("bob"));
     }
 }

@@ -4,7 +4,7 @@ public class Main {
 
     public static void main(String[] args) {
         System.out.println(a);
-        System.out.println(a == 7);
-        System.out.println(b < 5);
+        System.out.println(a == 7 ? 1 : 0);
+        System.out.println(b < 5 ? 1 : 0);
     }
 }

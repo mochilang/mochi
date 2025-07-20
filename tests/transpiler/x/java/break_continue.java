@@ -9,7 +9,7 @@ public class Main {
             if (n > 7) {
                 break;
             }
-            System.out.println("odd number:" + n);
+            System.out.println("odd number:" + " " + n);
         }
     }
 }

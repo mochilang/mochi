@@ -1,6 +1,6 @@
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println(java.util.Map.of("a", 1, "b", 2).size());
+        System.out.println(new java.util.LinkedHashMap<>() {{ put("a", 1); put("b", 2); }}.size());
     }
 }

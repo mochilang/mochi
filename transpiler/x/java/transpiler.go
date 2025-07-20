@@ -31,7 +31,7 @@ func javaType(t string) string {
 	case "bool[]":
 		return "boolean[]"
 	case "map":
-		return "java.util.Map<String, Integer>"
+		return "java.util.Map"
 	default:
 		return "int"
 	}
@@ -281,6 +281,34 @@ func (s *AssignStmt) emit(w io.Writer, indent string) {
 	fmt.Fprint(w, ";\n")
 }
 
+// IndexAssignStmt represents assignments like a[0] = x or m["k"] = v.
+type IndexAssignStmt struct {
+	Target  Expr
+	Indices []Expr
+	Expr    Expr
+}
+
+func (s *IndexAssignStmt) emit(w io.Writer, indent string) {
+	if len(s.Indices) == 1 && isMapExpr(s.Target) {
+		s.Target.emit(w)
+		fmt.Fprint(w, ".put(")
+		s.Indices[0].emit(w)
+		fmt.Fprint(w, ", ")
+		s.Expr.emit(w)
+		fmt.Fprint(w, ");\n")
+		return
+	}
+	s.Target.emit(w)
+	for _, idx := range s.Indices {
+		fmt.Fprint(w, "[")
+		idx.emit(w)
+		fmt.Fprint(w, "]")
+	}
+	fmt.Fprint(w, " = ")
+	s.Expr.emit(w)
+	fmt.Fprint(w, ";\n")
+}
+
 type WhileStmt struct {
 	Cond Expr
 	Body []Stmt
@@ -378,23 +406,22 @@ func (l *ListLit) emit(w io.Writer) {
 	fmt.Fprint(w, "}")
 }
 
-// MapLit represents a simple map literal with string keys and int values.
+// MapLit represents a simple map literal.
 type MapLit struct {
 	Keys   []Expr
 	Values []Expr
 }
 
 func (m *MapLit) emit(w io.Writer) {
-	fmt.Fprint(w, "java.util.Map.of(")
+	fmt.Fprint(w, "new java.util.LinkedHashMap<>() {{")
 	for i := range m.Keys {
-		if i > 0 {
-			fmt.Fprint(w, ", ")
-		}
+		fmt.Fprint(w, " put(")
 		m.Keys[i].emit(w)
 		fmt.Fprint(w, ", ")
 		m.Values[i].emit(w)
+		fmt.Fprint(w, ");")
 	}
-	fmt.Fprint(w, ")")
+	fmt.Fprint(w, " }}")
 }
 
 type BinaryExpr struct {
@@ -666,6 +693,21 @@ func isArrayExpr(e Expr) bool {
 	return false
 }
 
+func isNumericBool(e Expr) bool {
+	switch ex := e.(type) {
+	case *BinaryExpr:
+		switch ex.Op {
+		case "&&", "||", "==", "!=", "<", "<=", ">", ">=":
+			return !isStringExpr(ex.Left) && !isStringExpr(ex.Right)
+		}
+	case *UnaryExpr:
+		if ex.Op == "!" {
+			return isNumericBool(ex.Value)
+		}
+	}
+	return false
+}
+
 // Transpile converts a Mochi AST into a simple Java AST.
 func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	var prog Program
@@ -759,6 +801,25 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				}
 			}
 			return &AssignStmt{Name: s.Assign.Name, Expr: e}, nil
+		}
+		if len(s.Assign.Index) > 0 && len(s.Assign.Field) == 0 {
+			indices := make([]Expr, len(s.Assign.Index))
+			for i, idx := range s.Assign.Index {
+				if idx.Start == nil || idx.Colon != nil {
+					return nil, fmt.Errorf("unsupported index")
+				}
+				ex, err := compileExpr(idx.Start)
+				if err != nil {
+					return nil, err
+				}
+				indices[i] = ex
+			}
+			val, err := compileExpr(s.Assign.Value)
+			if err != nil {
+				return nil, err
+			}
+			base := Expr(&VarExpr{Name: s.Assign.Name})
+			return &IndexAssignStmt{Target: base, Indices: indices, Expr: val}, nil
 		}
 	case s.If != nil:
 		cond, err := compileExpr(s.If.Cond)
@@ -911,6 +972,11 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 		case "in":
 			if isStringExpr(r) {
 				expr = &MethodCallExpr{Target: r, Name: "contains", Args: []Expr{expr}}
+			} else if isArrayExpr(r) {
+				arr := &CallExpr{Func: "java.util.Arrays.asList", Args: []Expr{r}}
+				expr = &MethodCallExpr{Target: arr, Name: "contains", Args: []Expr{expr}}
+			} else if isMapExpr(r) {
+				expr = &MethodCallExpr{Target: r, Name: "containsKey", Args: []Expr{expr}}
 			} else {
 				return nil, fmt.Errorf("unsupported binary op: %s", op.Op)
 			}
@@ -1019,10 +1085,17 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		name := p.Call.Func
 		if name == "print" {
 			name = "System.out.println"
+			for i, a := range args {
+				if isNumericBool(a) {
+					args[i] = &TernaryExpr{Cond: a, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
+				} else if isArrayExpr(a) {
+					args[i] = &CallExpr{Func: "java.util.Arrays.toString", Args: []Expr{a}}
+				}
+			}
 			if len(args) > 1 {
 				expr := args[0]
 				for i := 1; i < len(args); i++ {
-					expr = &BinaryExpr{Left: expr, Op: "+", Right: args[i]}
+					expr = &BinaryExpr{Left: &BinaryExpr{Left: expr, Op: "+", Right: &StringLit{Value: " "}}, Op: "+", Right: args[i]}
 				}
 				args = []Expr{expr}
 			}
