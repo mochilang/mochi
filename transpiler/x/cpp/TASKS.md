@@ -1,3 +1,78 @@
+## Progress (2025-07-20 13:40 +0700)
+- cpp transpiler: support str, values, min/max builtins
+- Generated C++ for 51/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:26 +0700)
+- fix tests
+- Generated C++ for 51/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:26 +0700)
+- fix tests
+- Generated C++ for 50/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:26 +0700)
+- fix tests
+- Generated C++ for 49/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:26 +0700)
+- fix tests
+- Generated C++ for 59/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:26 +0700)
+- fix tests
+- Generated C++ for 59/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:26 +0700)
+- fix tests
+- Generated C++ for 59/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:26 +0700)
+- fix tests
+- Generated C++ for 59/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:26 +0700)
+- fix tests
+- Generated C++ for 59/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:26 +0700)
+- fix tests
+- Generated C++ for 59/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:26 +0700)
+- fix tests
+- Generated C++ for 59/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:26 +0700)
+- fix tests
+- Generated C++ for 59/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:26 +0700)
+- fix tests
+- Generated C++ for 59/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:26 +0700)
+- fix tests
+- Generated C++ for 59/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:26 +0700)
+- fix tests
+- Generated C++ for 59/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-20 12:50 +0700)
 - cpp transpiler: support map iteration
 - Generated C++ for 48/100 programs
