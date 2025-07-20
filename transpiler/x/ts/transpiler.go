@@ -1379,6 +1379,21 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			return &SubstringExpr{Str: args[0], Start: args[1], End: args[2]}, nil
 		default:
+			if fn, ok := transpileEnv.GetFunc(p.Call.Func); ok {
+				if len(args) < len(fn.Params) {
+					missing := fn.Params[len(args):]
+					paramNames := make([]string, len(missing))
+					callArgs := append([]Expr{}, args...)
+					for i, pa := range missing {
+						paramNames[i] = pa.Name
+						callArgs = append(callArgs, &NameRef{Name: pa.Name})
+					}
+					return &FunExpr{
+						Params: paramNames,
+						Expr:   &CallExpr{Func: p.Call.Func, Args: callArgs},
+					}, nil
+				}
+			}
 			return &CallExpr{Func: p.Call.Func, Args: args}, nil
 		}
 	case p.If != nil:
