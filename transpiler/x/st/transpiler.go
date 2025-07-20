@@ -284,8 +284,30 @@ func evalPostfix(p *parser.PostfixExpr, vars map[string]value) (value, error) {
 	if err != nil {
 		return value{}, err
 	}
-	if len(p.Ops) > 0 {
-		return value{}, fmt.Errorf("postfix not supported")
+	for _, op := range p.Ops {
+		switch {
+		case op.Index != nil:
+			idxOp := op.Index
+			if idxOp.Colon != nil || idxOp.End != nil || idxOp.Colon2 != nil || idxOp.Step != nil {
+				return value{}, fmt.Errorf("slicing not supported")
+			}
+			idxVal, err := evalExpr(idxOp.Start, vars)
+			if err != nil {
+				return value{}, err
+			}
+			if idxVal.kind != valInt {
+				return value{}, fmt.Errorf("index must be int")
+			}
+			if v.kind != valList {
+				return value{}, fmt.Errorf("indexing non-list")
+			}
+			if idxVal.i < 0 || idxVal.i >= len(v.list) {
+				return value{}, fmt.Errorf("index out of range")
+			}
+			v = v.list[idxVal.i]
+		default:
+			return value{}, fmt.Errorf("postfix not supported")
+		}
 	}
 	return v, nil
 }
@@ -555,18 +577,52 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			vars[st.Var.Name] = v
 			p.Lines = append(p.Lines, fmt.Sprintf("%s := %s.", st.Var.Name, v))
 		case st.Assign != nil:
-			if len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0 {
+			if len(st.Assign.Field) > 0 {
 				return fmt.Errorf("unsupported assign")
 			}
-			v, err := evalExpr(st.Assign.Value, vars)
-			if err != nil {
-				return err
+			if len(st.Assign.Index) > 0 {
+				if len(st.Assign.Index) != 1 {
+					return fmt.Errorf("multi index not supported")
+				}
+				idx := st.Assign.Index[0]
+				if idx.Colon != nil || idx.End != nil || idx.Colon2 != nil || idx.Step != nil {
+					return fmt.Errorf("slicing not supported")
+				}
+				target, ok := vars[st.Assign.Name]
+				if !ok {
+					return fmt.Errorf("assign to unknown var")
+				}
+				if target.kind != valList {
+					return fmt.Errorf("index assign only for list")
+				}
+				idxVal, err := evalExpr(idx.Start, vars)
+				if err != nil {
+					return err
+				}
+				if idxVal.kind != valInt {
+					return fmt.Errorf("index must be int")
+				}
+				if idxVal.i < 0 || idxVal.i >= len(target.list) {
+					return fmt.Errorf("index out of range")
+				}
+				v, err := evalExpr(st.Assign.Value, vars)
+				if err != nil {
+					return err
+				}
+				target.list[idxVal.i] = v
+				vars[st.Assign.Name] = target
+				p.Lines = append(p.Lines, fmt.Sprintf("%s at:%d put:%s.", st.Assign.Name, idxVal.i+1, v))
+			} else {
+				v, err := evalExpr(st.Assign.Value, vars)
+				if err != nil {
+					return err
+				}
+				if _, ok := vars[st.Assign.Name]; !ok {
+					return fmt.Errorf("assign to unknown var")
+				}
+				vars[st.Assign.Name] = v
+				p.Lines = append(p.Lines, fmt.Sprintf("%s := %s.", st.Assign.Name, v))
 			}
-			if _, ok := vars[st.Assign.Name]; !ok {
-				return fmt.Errorf("assign to unknown var")
-			}
-			vars[st.Assign.Name] = v
-			p.Lines = append(p.Lines, fmt.Sprintf("%s := %s.", st.Assign.Name, v))
 		case st.If != nil:
 			cond, err := evalExpr(st.If.Cond, vars)
 			if err != nil {
