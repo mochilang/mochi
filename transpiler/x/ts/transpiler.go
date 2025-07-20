@@ -562,7 +562,13 @@ func (p *PrintExpr) emit(w io.Writer) {
 			io.WriteString(w, ", ")
 		}
 		if a != nil {
-			a.emit(w)
+			if _, ok := a.(*AvgExpr); ok {
+				io.WriteString(w, "(")
+				a.emit(w)
+				io.WriteString(w, ").toFixed(1)")
+			} else {
+				a.emit(w)
+			}
 		}
 	}
 	io.WriteString(w, ")")
