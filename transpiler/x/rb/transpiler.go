@@ -22,6 +22,119 @@ type Program struct {
 	Stmts []Stmt
 }
 
+type StructDefStmt struct {
+	Name   string
+	Fields []string
+}
+
+func (s *StructDefStmt) emit(e *emitter) {
+	io.WriteString(e.w, s.Name)
+	io.WriteString(e.w, " = Struct.new(")
+	for i, f := range s.Fields {
+		if i > 0 {
+			io.WriteString(e.w, ", ")
+		}
+		io.WriteString(e.w, ":"+f)
+	}
+	io.WriteString(e.w, ", keyword_init: true)")
+}
+
+type StructField struct {
+	Name  string
+	Value Expr
+}
+
+type StructNewExpr struct {
+	Name   string
+	Fields []StructField
+}
+
+func (s *StructNewExpr) emit(e *emitter) {
+	io.WriteString(e.w, s.Name)
+	io.WriteString(e.w, ".new(")
+	for i, f := range s.Fields {
+		if i > 0 {
+			io.WriteString(e.w, ", ")
+		}
+		io.WriteString(e.w, f.Name)
+		io.WriteString(e.w, ": ")
+		f.Value.emit(e)
+	}
+	io.WriteString(e.w, ")")
+}
+
+type queryFrom struct {
+	Var string
+	Src Expr
+}
+
+type QueryExpr struct {
+	Var    string
+	Src    Expr
+	Froms  []queryFrom
+	Where  Expr
+	Select Expr
+}
+
+func (q *QueryExpr) emit(e *emitter) {
+	io.WriteString(e.w, "(begin")
+	e.indent++
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "_res = []")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "for ")
+	io.WriteString(e.w, q.Var)
+	io.WriteString(e.w, " in ")
+	q.Src.emit(e)
+	e.nl()
+	e.indent++
+	for _, f := range q.Froms {
+		e.writeIndent()
+		io.WriteString(e.w, "for ")
+		io.WriteString(e.w, f.Var)
+		io.WriteString(e.w, " in ")
+		f.Src.emit(e)
+		e.nl()
+		e.indent++
+	}
+	if q.Where != nil {
+		e.writeIndent()
+		io.WriteString(e.w, "if ")
+		q.Where.emit(e)
+		e.nl()
+		e.indent++
+	}
+	e.writeIndent()
+	io.WriteString(e.w, "_res << ")
+	q.Select.emit(e)
+	e.nl()
+	if q.Where != nil {
+		e.indent--
+		e.writeIndent()
+		io.WriteString(e.w, "end")
+		e.nl()
+	}
+	for range q.Froms {
+		e.indent--
+		e.writeIndent()
+		io.WriteString(e.w, "end")
+		e.nl()
+	}
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end")
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "_res")
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end)")
+}
+
 var needsJSON bool
 
 // emitter maintains the current indentation level while emitting Ruby code.
@@ -836,6 +949,92 @@ func literalString(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
+func extractMapLiteral(e *parser.Expr) ([]string, []*parser.Expr, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil, nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil, nil, false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Map == nil {
+		return nil, nil, false
+	}
+	items := p.Target.Map.Items
+	keys := make([]string, len(items))
+	vals := make([]*parser.Expr, len(items))
+	for i, it := range items {
+		k, ok := literalString(it.Key)
+		if !ok {
+			return nil, nil, false
+		}
+		keys[i] = k
+		vals[i] = it.Value
+	}
+	return keys, vals, true
+}
+
+func extractListOfMaps(e *parser.Expr) ([]string, [][]*parser.Expr, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil, nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil, nil, false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.List == nil {
+		return nil, nil, false
+	}
+	list := p.Target.List
+	if len(list.Elems) == 0 {
+		return nil, nil, false
+	}
+	keys, firstVals, ok := extractMapLiteral(list.Elems[0])
+	if !ok {
+		return nil, nil, false
+	}
+	values := make([][]*parser.Expr, len(list.Elems))
+	values[0] = firstVals
+	for i := 1; i < len(list.Elems); i++ {
+		k, v, ok := extractMapLiteral(list.Elems[i])
+		if !ok || len(k) != len(keys) {
+			return nil, nil, false
+		}
+		for j := range k {
+			if k[j] != keys[j] {
+				return nil, nil, false
+			}
+		}
+		values[i] = v
+	}
+	return keys, values, true
+}
+
+func extractQueryExpr(e *parser.Expr) *parser.QueryExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Query == nil {
+		return nil
+	}
+	return p.Target.Query
+}
+
+func toStructName(varName string) string {
+	name := strings.Title(varName)
+	if strings.HasSuffix(varName, "s") {
+		return name + "Item"
+	}
+	return name
+}
+
 // global environment used for type inference during conversion
 var currentEnv *types.Env
 var funcDepth int
@@ -896,6 +1095,39 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		return nil, nil
 	case st.Let != nil:
+		if st.Let.Value != nil {
+			if keys, vals, ok := extractListOfMaps(st.Let.Value); ok {
+				structName := toStructName(st.Let.Name)
+				stmts := []Stmt{&StructDefStmt{Name: structName, Fields: keys}}
+				elems := make([]Expr, len(vals))
+				for i, fields := range vals {
+					fv := make([]StructField, len(keys))
+					for j, val := range fields {
+						ex, err := convertExpr(val)
+						if err != nil {
+							return nil, err
+						}
+						fv[j] = StructField{Name: keys[j], Value: ex}
+					}
+					elems[i] = &StructNewExpr{Name: structName, Fields: fv}
+				}
+				list := &ListLit{Elems: elems}
+				stmts = append(stmts, &LetStmt{Name: st.Let.Name, Value: list})
+				return &BlockStmt{Stmts: stmts}, nil
+			}
+			if q := extractQueryExpr(st.Let.Value); q != nil {
+				qe, def, err := convertQueryForLet(q, st.Let.Name)
+				if err != nil {
+					return nil, err
+				}
+				stmts := []Stmt{}
+				if def != nil {
+					stmts = append(stmts, def)
+				}
+				stmts = append(stmts, &LetStmt{Name: st.Let.Name, Value: qe})
+				return &BlockStmt{Stmts: stmts}, nil
+			}
+		}
 		var v Expr
 		var err error
 		if st.Let.Value != nil {
@@ -1508,6 +1740,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			expr = &IndexExpr{Target: expr, Index: &StringLit{Value: t}}
 		}
 		return expr, nil
+	case p.Query != nil:
+		return convertQueryExpr(p.Query)
 	default:
 		if p.FunExpr != nil {
 			params := make([]string, len(p.FunExpr.Params))
@@ -1604,6 +1838,62 @@ func isMembershipExpr(e *parser.Expr) bool {
 		}
 	}
 	return false
+}
+
+func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
+	if q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || len(q.Joins) > 0 {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	src, err := convertExpr(q.Source)
+	if err != nil {
+		return nil, err
+	}
+	froms := make([]queryFrom, len(q.Froms))
+	child := types.NewEnv(currentEnv)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	for i, f := range q.Froms {
+		fe, err := convertExpr(f.Src)
+		if err != nil {
+			return nil, err
+		}
+		child.SetVar(f.Var, types.AnyType{}, true)
+		froms[i] = queryFrom{Var: f.Var, Src: fe}
+	}
+	var where Expr
+	if q.Where != nil {
+		where, err = convertExpr(q.Where)
+		if err != nil {
+			return nil, err
+		}
+	}
+	sel, err := convertExpr(q.Select)
+	if err != nil {
+		return nil, err
+	}
+	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Where: where, Select: sel}, nil
+}
+
+func convertQueryForLet(q *parser.QueryExpr, name string) (Expr, Stmt, error) {
+	if keys, vals, ok := extractMapLiteral(q.Select); ok {
+		structName := toStructName(name)
+		fields := make([]StructField, len(keys))
+		for i, v := range vals {
+			ex, err := convertExpr(v)
+			if err != nil {
+				return nil, nil, err
+			}
+			fields[i] = StructField{Name: keys[i], Value: ex}
+		}
+		qe, err := convertQueryExpr(q)
+		if err != nil {
+			return nil, nil, err
+		}
+		query := qe.(*QueryExpr)
+		query.Select = &StructNewExpr{Name: structName, Fields: fields}
+		return query, &StructDefStmt{Name: structName, Fields: keys}, nil
+	}
+	qe, err := convertQueryExpr(q)
+	return qe, nil, err
 }
 
 func toNode(p *Program) *ast.Node {
