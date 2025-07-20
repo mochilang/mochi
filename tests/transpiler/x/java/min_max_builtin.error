@@ -1,1 +1,12 @@
-unsupported primary
+exit status 1
+Main.java:4: error: cannot find symbol
+        System.out.println(min(nums));
+                           ^
+  symbol:   method min(int[])
+  location: class Main
+Main.java:5: error: cannot find symbol
+        System.out.println(max(nums));
+                           ^
+  symbol:   method max(int[])
+  location: class Main
+2 errors

@@ -1,1 +1,8 @@
-unsupported primary
+exit status 1
+Main.java:4: error: incompatible types: String cannot be converted to int
+        System.out.println(scores["bob"]);
+                                  ^
+Main.java:4: error: array required, but Map<String,Integer> found
+        System.out.println(scores["bob"]);
+                                 ^
+2 errors

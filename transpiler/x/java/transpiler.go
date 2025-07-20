@@ -23,6 +23,14 @@ func javaType(t string) string {
 		return "String"
 	case "void":
 		return "void"
+	case "int[]":
+		return "int[]"
+	case "string[]":
+		return "String[]"
+	case "bool[]":
+		return "boolean[]"
+	case "map":
+		return "java.util.Map<String, Integer>"
 	default:
 		return "int"
 	}
@@ -46,6 +54,19 @@ func inferType(e Expr) string {
 		if isStringExpr(ex.Value) {
 			return "string"
 		}
+	case *ListLit:
+		if len(ex.Elems) > 0 {
+			t := inferType(ex.Elems[0])
+			switch t {
+			case "string":
+				return "string[]"
+			case "boolean":
+				return "bool[]"
+			}
+		}
+		return "int[]"
+	case *MapLit:
+		return "map"
 	case *UnaryExpr:
 		if ex.Op == "!" {
 			return "boolean"
@@ -279,6 +300,79 @@ func (fr *ForRangeStmt) emit(w io.Writer, indent string) {
 		st.emit(w, indent+"    ")
 	}
 	fmt.Fprint(w, indent+"}\n")
+}
+
+// ForEachStmt represents `for x in list {}` loops.
+type ForEachStmt struct {
+	Name     string
+	Iterable Expr
+	Body     []Stmt
+	IsMap    bool
+}
+
+func (fe *ForEachStmt) emit(w io.Writer, indent string) {
+	fmt.Fprint(w, indent+"for (var "+fe.Name+" : ")
+	fe.Iterable.emit(w)
+	if fe.IsMap {
+		fmt.Fprint(w, ".keySet()")
+	}
+	fmt.Fprint(w, ") {\n")
+	for _, st := range fe.Body {
+		st.emit(w, indent+"    ")
+	}
+	fmt.Fprint(w, indent+"}\n")
+}
+
+// BreakStmt represents a break statement.
+type BreakStmt struct{}
+
+func (b *BreakStmt) emit(w io.Writer, indent string) { fmt.Fprint(w, indent+"break;\n") }
+
+// ContinueStmt represents a continue statement.
+type ContinueStmt struct{}
+
+func (c *ContinueStmt) emit(w io.Writer, indent string) { fmt.Fprint(w, indent+"continue;\n") }
+
+// ListLit represents a list literal.
+type ListLit struct{ Elems []Expr }
+
+func (l *ListLit) emit(w io.Writer) {
+	arrType := "int"
+	if len(l.Elems) > 0 {
+		switch inferType(l.Elems[0]) {
+		case "string":
+			arrType = "String"
+		case "boolean":
+			arrType = "boolean"
+		}
+	}
+	fmt.Fprintf(w, "new %s[]{", arrType)
+	for i, e := range l.Elems {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		e.emit(w)
+	}
+	fmt.Fprint(w, "}")
+}
+
+// MapLit represents a simple map literal with string keys and int values.
+type MapLit struct {
+	Keys   []Expr
+	Values []Expr
+}
+
+func (m *MapLit) emit(w io.Writer) {
+	fmt.Fprint(w, "java.util.Map.of(")
+	for i := range m.Keys {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		m.Keys[i].emit(w)
+		fmt.Fprint(w, ", ")
+		m.Values[i].emit(w)
+	}
+	fmt.Fprint(w, ")")
 }
 
 type BinaryExpr struct {
@@ -660,6 +754,35 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			}
 		}
 		return &ForRangeStmt{Name: s.For.Name, Start: start, End: end, Body: body}, nil
+	case s.For != nil:
+		iter, err := compileExpr(s.For.Source)
+		if err != nil {
+			return nil, err
+		}
+		var body []Stmt
+		for _, b := range s.For.Body {
+			st, err := compileStmt(b)
+			if err != nil {
+				return nil, err
+			}
+			if st != nil {
+				body = append(body, st)
+			}
+		}
+		isMap := false
+		switch it := iter.(type) {
+		case *MapLit:
+			isMap = true
+		case *VarExpr:
+			if t, ok := varTypes[it.Name]; ok && t == "map" {
+				isMap = true
+			}
+		}
+		return &ForEachStmt{Name: s.For.Name, Iterable: iter, Body: body, IsMap: isMap}, nil
+	case s.Break != nil:
+		return &BreakStmt{}, nil
+	case s.Continue != nil:
+		return &ContinueStmt{}, nil
 	case s.Test == nil && s.Import == nil && s.Type == nil:
 		return nil, fmt.Errorf("unsupported statement at %d:%d", s.Pos.Line, s.Pos.Column)
 	}
@@ -783,6 +906,13 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		name := p.Call.Func
 		if name == "print" {
 			name = "System.out.println"
+			if len(args) > 1 {
+				expr := args[0]
+				for i := 1; i < len(args); i++ {
+					expr = &BinaryExpr{Left: expr, Op: "+", Right: args[i]}
+				}
+				args = []Expr{expr}
+			}
 			return &CallExpr{Func: name, Args: args}, nil
 		}
 		if name == "len" && len(args) == 1 {
@@ -811,6 +941,32 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		return &GroupExpr{Expr: e}, nil
 	case p.If != nil:
 		return compileIfExpr(p.If)
+	case p.List != nil:
+		elems := make([]Expr, len(p.List.Elems))
+		for i, e := range p.List.Elems {
+			ex, err := compileExpr(e)
+			if err != nil {
+				return nil, err
+			}
+			elems[i] = ex
+		}
+		return &ListLit{Elems: elems}, nil
+	case p.Map != nil:
+		keys := make([]Expr, len(p.Map.Items))
+		vals := make([]Expr, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			ke, err := compileExpr(it.Key)
+			if err != nil {
+				return nil, err
+			}
+			ve, err := compileExpr(it.Value)
+			if err != nil {
+				return nil, err
+			}
+			keys[i] = ke
+			vals[i] = ve
+		}
+		return &MapLit{Keys: keys, Values: vals}, nil
 	}
 	return nil, fmt.Errorf("unsupported primary")
 }
