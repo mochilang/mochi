@@ -1,0 +1,2 @@
+exit status 1
+lua: ...ace/mochi/tests/transpiler/x/lua/map_literal_dynamic.lua:8: unexpected symbol near ')'
