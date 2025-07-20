@@ -1,3 +1,13 @@
+## Progress (2025-07-20 16:53 +0700)
+- feat(cpp): support nested functions
+- Generated C++ for 59/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 16:53 +0700)
+- feat(cpp): support nested functions
+- Generated C++ for 59/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-20 16:28 +0700)
 - docs(cpp): update progress
 - Generated C++ for 58/100 programs

@@ -183,8 +183,14 @@ type CallExpr struct {
 }
 
 type LambdaExpr struct {
-	Params []Param
-	Body   Expr
+        Params []Param
+        Body   Expr
+}
+
+// BlockLambda represents a lambda with a statement body.
+type BlockLambda struct {
+        Params []Param
+        Body   []Stmt
 }
 
 type ReturnStmt struct{ Value Expr }
@@ -636,7 +642,7 @@ func (c *CallExpr) emit(w io.Writer) {
 }
 
 func (l *LambdaExpr) emit(w io.Writer) {
-	io.WriteString(w, "[=](")
+        io.WriteString(w, "[=](")
 	for i, p := range l.Params {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -648,9 +654,29 @@ func (l *LambdaExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, p.Name)
 	}
-	io.WriteString(w, ") { return ")
-	l.Body.emit(w)
-	io.WriteString(w, "; }")
+        io.WriteString(w, ") { return ")
+        l.Body.emit(w)
+        io.WriteString(w, "; }")
+}
+
+func (l *BlockLambda) emit(w io.Writer) {
+        io.WriteString(w, "[=](")
+        for i, p := range l.Params {
+                if i > 0 {
+                        io.WriteString(w, ", ")
+                }
+                if p.Type == "" {
+                        io.WriteString(w, "auto ")
+                } else {
+                        io.WriteString(w, p.Type+" ")
+                }
+                io.WriteString(w, p.Name)
+        }
+        io.WriteString(w, ") {\n")
+        for _, st := range l.Body {
+                st.emit(w, 1)
+        }
+        io.WriteString(w, "}")
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
@@ -979,8 +1005,14 @@ func extractCall(e *parser.Expr) *parser.CallExpr {
 }
 
 func convertStmt(s *parser.Statement) (Stmt, error) {
-	switch {
-	case s.Expr != nil:
+        switch {
+       case s.Fun != nil:
+               lam, err := convertFunLambda(s.Fun)
+               if err != nil {
+                       return nil, err
+               }
+               return &LetStmt{Name: s.Fun.Name, Type: "", Value: lam}, nil
+        case s.Expr != nil:
 		if call := extractCall(s.Expr.Expr); call != nil && call.Func == "print" {
 			var args []Expr
 			for _, a := range call.Args {
@@ -1278,6 +1310,26 @@ func convertFun(fn *parser.FunStmt) (*Func, error) {
 		ret = "auto"
 	}
 	return &Func{Name: fn.Name, Params: params, ReturnType: ret, Body: body}, nil
+}
+
+func convertFunLambda(fn *parser.FunStmt) (*BlockLambda, error) {
+        var body []Stmt
+        for _, st := range fn.Body {
+                s, err := convertStmt(st)
+                if err != nil {
+                        return nil, err
+                }
+                body = append(body, s)
+        }
+        var params []Param
+        for _, p := range fn.Params {
+                typ := ""
+                if p.Type != nil && p.Type.Simple != nil {
+                        typ = cppType(*p.Type.Simple)
+                }
+                params = append(params, Param{Name: p.Name, Type: typ})
+        }
+        return &BlockLambda{Params: params, Body: body}, nil
 }
 
 func convertPrimary(p *parser.Primary) (Expr, error) {
