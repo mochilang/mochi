@@ -1,8 +1,0 @@
-compile failed: exit status 1: /tmp/ctranspile2741276168/user_type_literal.mochi.c:15:45: error: incompatible types when initializing type ‘int’ using type ‘Person’
-   15 | Book book = (Book){.title = "Go", .author = (Person){.name = "Bob", .age = 42}};
-      |                                             ^
-/tmp/ctranspile2741276168/user_type_literal.mochi.c: In function ‘main’:
-/tmp/ctranspile2741276168/user_type_literal.mochi.c:18:31: error: request for member ‘name’ in something not a structure or union
-   18 |     printf("%d\n", book.author.name);
-      |                               ^
-
