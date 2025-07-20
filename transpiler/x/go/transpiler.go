@@ -541,6 +541,15 @@ func (fs *FloatStringExpr) emit(w io.Writer) {
 	io.WriteString(w, "; if f == float64(int(f)) { return fmt.Sprintf(\"%.1f\", f) }; return fmt.Sprint(f) }()")
 }
 
+// BoolIntExpr converts a boolean to an integer 1 or 0.
+type BoolIntExpr struct{ Expr Expr }
+
+func (bi *BoolIntExpr) emit(w io.Writer) {
+	io.WriteString(w, "func() int { if ")
+	bi.Expr.emit(w)
+	io.WriteString(w, " { return 1 }; return 0 }()")
+}
+
 type ContainsExpr struct {
 	Collection Expr
 	Value      Expr
@@ -693,6 +702,8 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 						ex = &ListStringExpr{List: ex}
 					case types.FloatType:
 						ex = &FloatStringExpr{Value: ex}
+					case types.BoolType:
+						ex = &BoolIntExpr{Expr: ex}
 					}
 				}
 				args[i] = ex
