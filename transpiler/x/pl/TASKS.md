@@ -1,3 +1,7 @@
+## Progress (2025-07-20 22:11 +0700)
+- docs(pl): tidy tasks list
+- 34/100 VM programs transpiled successfully
+
 ## Progress (2025-07-20 11:10 +0000)
 - pl transpiler: clean tasks and handle list loops
 - 32/100 VM programs transpiled successfully
