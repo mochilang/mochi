@@ -102,6 +102,12 @@ type IndexExpr struct {
 	Index  Expr
 }
 
+type SliceExpr struct {
+	Target Expr
+	Start  Expr
+	End    Expr
+}
+
 type ContainsExpr struct {
 	Value Expr
 	Sub   Expr
@@ -233,7 +239,18 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 		if i > 0 {
 			io.WriteString(w, " \" \" << ")
 		}
-		v.emit(w)
+		switch ex := v.(type) {
+		case *ListLit:
+			io.WriteString(w, "([&]{ auto tmp = ")
+			ex.emit(w)
+			io.WriteString(w, "; std::string o; for(size_t i=0;i<tmp.size();++i){ if(i>0) o += \" \"; o += std::to_string(tmp[i]); } return o; }())")
+		case *SliceExpr:
+			io.WriteString(w, "([&]{ auto tmp = ")
+			ex.emit(w)
+			io.WriteString(w, "; if constexpr(std::is_same_v<std::decay_t<decltype(tmp)>, std::string>) return tmp; std::string o; for(size_t i=0;i<tmp.size();++i){ if(i>0) o += \" \"; o += std::to_string(tmp[i]); } return o; }())")
+		default:
+			v.emit(w)
+		}
 	}
 	io.WriteString(w, " << std::endl;\n")
 }
@@ -300,6 +317,22 @@ func (i *IndexExpr) emit(w io.Writer) {
 	io.WriteString(w, "[")
 	i.Index.emit(w)
 	io.WriteString(w, "]")
+}
+
+func (s *SliceExpr) emit(w io.Writer) {
+	io.WriteString(w, "([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(")
+	s.Start.emit(w)
+	io.WriteString(w, ", ")
+	s.End.emit(w)
+	io.WriteString(w, " - ")
+	s.Start.emit(w)
+	io.WriteString(w, "); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+")
+	s.Start.emit(w)
+	io.WriteString(w, ", c.begin()+")
+	s.End.emit(w)
+	io.WriteString(w, "); })(")
+	s.Target.emit(w)
+	io.WriteString(w, ")")
 }
 
 func (c *ContainsExpr) emit(w io.Writer) {
@@ -779,14 +812,32 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 	for _, op := range p.Ops {
 		switch {
 		case op.Index != nil:
-			if op.Index.Colon != nil || op.Index.Colon2 != nil || op.Index.End != nil || op.Index.Step != nil {
+			if op.Index.Colon != nil {
+				if op.Index.Colon2 != nil || op.Index.Step != nil {
+					return nil, fmt.Errorf("slice not supported")
+				}
+				start, err := convertExpr(op.Index.Start)
+				if err != nil {
+					return nil, err
+				}
+				end, err := convertExpr(op.Index.End)
+				if err != nil {
+					return nil, err
+				}
+				if currentProgram != nil {
+					currentProgram.addInclude("<vector>")
+					currentProgram.addInclude("<type_traits>")
+				}
+				expr = &SliceExpr{Target: expr, Start: start, End: end}
+			} else if op.Index.Colon2 != nil || op.Index.End != nil || op.Index.Step != nil {
 				return nil, fmt.Errorf("slice not supported")
+			} else {
+				idx, err := convertExpr(op.Index.Start)
+				if err != nil {
+					return nil, err
+				}
+				expr = &IndexExpr{Target: expr, Index: idx}
 			}
-			idx, err := convertExpr(op.Index.Start)
-			if err != nil {
-				return nil, err
-			}
-			expr = &IndexExpr{Target: expr, Index: idx}
 		case op.Call != nil:
 			var args []Expr
 			for _, a := range op.Call.Args {
@@ -1159,6 +1210,10 @@ func toExprNode(e Expr) *ast.Node {
 	case *IndexExpr:
 		n := &ast.Node{Kind: "index"}
 		n.Children = []*ast.Node{toExprNode(ex.Target), toExprNode(ex.Index)}
+		return n
+	case *SliceExpr:
+		n := &ast.Node{Kind: "slice"}
+		n.Children = []*ast.Node{toExprNode(ex.Target), toExprNode(ex.Start), toExprNode(ex.End)}
 		return n
 	case *ContainsExpr:
 		n := &ast.Node{Kind: "contains"}
