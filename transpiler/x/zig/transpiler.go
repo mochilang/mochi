@@ -205,6 +205,7 @@ type QueryComp struct {
 	Sources  []Expr
 	Elem     Expr
 	ElemType string
+	Filter   Expr
 }
 
 func (qc *QueryComp) emit(w io.Writer) {
@@ -216,9 +217,17 @@ func (qc *QueryComp) emit(w io.Writer) {
 		io.WriteString(w, qc.Vars[i])
 		io.WriteString(w, "| {")
 	}
+	if qc.Filter != nil {
+		io.WriteString(w, " if (")
+		qc.Filter.emit(w)
+		io.WriteString(w, ") {")
+	}
 	io.WriteString(w, " arr.append(")
 	qc.Elem.emit(w)
 	io.WriteString(w, ") catch unreachable;")
+	if qc.Filter != nil {
+		io.WriteString(w, " }")
+	}
 	for range qc.Sources {
 		io.WriteString(w, " }")
 	}
@@ -1393,7 +1402,7 @@ func inferListStruct(varName string, list *ListLit) string {
 }
 
 func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
-	if q.Where != nil || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || len(q.Joins) > 0 {
+	if q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
 		return nil, fmt.Errorf("unsupported query features")
 	}
 	vars := []string{q.Var}
@@ -1411,6 +1420,32 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		vars = append(vars, fc.Var)
 		sources = append(sources, s)
 	}
+	var filter Expr
+	if q.Where != nil {
+		filter, err = compileExpr(q.Where)
+		if err != nil {
+			return nil, err
+		}
+	}
+	for _, jc := range q.Joins {
+		s, err := compileExpr(jc.Src)
+		if err != nil {
+			return nil, err
+		}
+		vars = append(vars, jc.Var)
+		sources = append(sources, s)
+		if jc.On != nil {
+			cond, err := compileExpr(jc.On)
+			if err != nil {
+				return nil, err
+			}
+			if filter == nil {
+				filter = cond
+			} else {
+				filter = &BinaryExpr{Left: filter, Op: "&&", Right: cond}
+			}
+		}
+	}
 	elem, err := compileExpr(q.Select)
 	if err != nil {
 		return nil, err
@@ -1423,16 +1458,21 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	if _, exists := structDefs[structName]; !exists {
 		fields := make([]Field, len(ml.Entries))
 		for i, e := range ml.Entries {
-			key, ok := e.Key.(*StringLit)
-			if !ok {
+			var name string
+			switch k := e.Key.(type) {
+			case *StringLit:
+				name = k.Value
+			case *VarRef:
+				name = k.Name
+			default:
 				return nil, fmt.Errorf("query key must be string")
 			}
-			fields[i] = Field{Name: toSnakeCase(key.Value), Type: zigTypeFromExpr(e.Value)}
+			fields[i] = Field{Name: toSnakeCase(name), Type: zigTypeFromExpr(e.Value)}
 		}
 		structDefs[structName] = &StructDef{Name: structName, Fields: fields}
 	}
 	ml.StructName = structName
-	return &QueryComp{Vars: vars, Sources: sources, Elem: ml, ElemType: structName}, nil
+	return &QueryComp{Vars: vars, Sources: sources, Elem: ml, ElemType: structName, Filter: filter}, nil
 }
 
 func toZigType(t *parser.TypeRef) string {
