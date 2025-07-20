@@ -19,6 +19,7 @@ var (
 	constLists     map[string]*ListLit
 	constStrings   map[string]string
 	structTypes    map[string]types.StructType
+	currentEnv     *types.Env
 	funcParamTypes map[string][]string
 )
 
@@ -695,6 +696,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	constLists = make(map[string]*ListLit)
 	constStrings = make(map[string]string)
 	structTypes = env.Structs()
+	currentEnv = env
 	funcParamTypes = make(map[string][]string)
 	p := &Program{}
 	mainFn := &Function{Name: "main"}
@@ -789,6 +791,11 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				tname := ""
 				if exprIsString(ex) {
 					tname = "string"
+				} else if _, ok := ex.(*FieldExpr); ok {
+					ft := inferExprType(env, ex)
+					if ft == "const char*" {
+						tname = "string"
+					}
 				} else if v, ok := ex.(*VarRef); ok {
 					if t, err := env.GetVar(v.Name); err == nil {
 						if _, ok := t.(types.StringType); ok {
@@ -1180,6 +1187,34 @@ func convertUnary(u *parser.Unary) Expr {
 		}
 		return &CallExpr{Func: "contains", Args: []Expr{base, arg}}
 	}
+	if len(u.Value.Ops) == 1 && u.Value.Ops[0].Cast != nil &&
+		u.Value.Ops[0].Cast.Type != nil && u.Value.Ops[0].Cast.Type.Simple != nil && len(u.Ops) == 0 {
+		castType := *u.Value.Ops[0].Cast.Type.Simple
+		if castType == "int" {
+			if lit := u.Value.Target.Lit; lit != nil && lit.Str != nil {
+				if n, err := strconv.Atoi(*lit.Str); err == nil {
+					return &IntLit{Value: n}
+				}
+			}
+		} else if ml := u.Value.Target.Map; ml != nil {
+			var fields []StructField
+			for _, it := range ml.Items {
+				key, ok := types.SimpleStringKey(it.Key)
+				if !ok {
+					return nil
+				}
+				val := convertExpr(it.Value)
+				if val == nil {
+					return nil
+				}
+				fields = append(fields, StructField{Name: key, Value: val})
+			}
+			return &StructLit{Name: castType, Fields: fields}
+		} else {
+			base := convertUnary(&parser.Unary{Value: &parser.PostfixExpr{Target: u.Value.Target}})
+			return base
+		}
+	}
 	if len(u.Value.Ops) >= 1 && len(u.Ops) == 0 {
 		current := convertUnary(&parser.Unary{Value: &parser.PostfixExpr{Target: u.Value.Target}})
 		if current == nil {
@@ -1252,37 +1287,6 @@ func convertUnary(u *parser.Unary) Expr {
 				return &ListLit{Elems: slice}
 			}
 		}
-	}
-	if len(u.Value.Ops) == 1 && u.Value.Ops[0].Cast != nil &&
-		u.Value.Ops[0].Cast.Type != nil && u.Value.Ops[0].Cast.Type.Simple != nil && len(u.Ops) == 0 {
-		castType := *u.Value.Ops[0].Cast.Type.Simple
-		if castType == "int" {
-			if lit := u.Value.Target.Lit; lit != nil && lit.Str != nil {
-				if n, err := strconv.Atoi(*lit.Str); err == nil {
-					return &IntLit{Value: n}
-				}
-			}
-		} else if ml := u.Value.Target.Map; ml != nil {
-			var fields []StructField
-			for _, it := range ml.Items {
-				key, ok := types.SimpleStringKey(it.Key)
-				if !ok {
-					return nil
-				}
-				val := convertExpr(it.Value)
-				if val == nil {
-					return nil
-				}
-				fields = append(fields, StructField{Name: key, Value: val})
-			}
-			return &StructLit{Name: castType, Fields: fields}
-		} else {
-			base := convertUnary(&parser.Unary{Value: &parser.PostfixExpr{Target: u.Value.Target}})
-			return base
-		}
-	} else if len(u.Value.Ops) == 1 && u.Value.Ops[0].Cast != nil {
-		base := convertUnary(&parser.Unary{Value: &parser.PostfixExpr{Target: u.Value.Target}})
-		return base
 	}
 	if call := u.Value.Target.Call; call != nil && len(u.Ops) == 0 {
 		if call.Func == "len" && len(call.Args) == 1 {
@@ -1847,6 +1851,14 @@ func exprIsString(e Expr) bool {
 	case *IndexExpr:
 		return exprIsString(v.Target)
 	case *FieldExpr:
+		tname := inferExprType(currentEnv, v.Target)
+		if st, ok := structTypes[tname]; ok {
+			if ft, ok2 := st.Fields[v.Name]; ok2 {
+				if _, ok3 := ft.(types.StringType); ok3 {
+					return true
+				}
+			}
+		}
 		return exprIsString(v.Target)
 	case *StructLit:
 		return false
@@ -1937,6 +1949,8 @@ func inferExprType(env *types.Env, e Expr) string {
 				return "int[]"
 			case types.BoolType:
 				return "int"
+			case types.StructType:
+				return tt.Name
 			}
 		}
 		if _, ok := constStrings[v.Name]; ok {
