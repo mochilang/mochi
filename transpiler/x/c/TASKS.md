@@ -1,3 +1,9 @@
+## Progress (2025-07-20 13:26 +0700)
+- Added global variable support and cast handling.
+- Skipped test blocks during C generation.
+- Added golden tests `pure_fold`, `pure_global_fold`, and `test_block`.
+- VM valid golden test results updated to 49/100
+
 ## Progress (2025-07-20 12:49 +0700)
 - Implemented short-circuit boolean evaluation using C's `&&`/`||`.
 - Added golden test `short_circuit`.
