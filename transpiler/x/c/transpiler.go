@@ -1469,13 +1469,81 @@ func exprIsString(e Expr) bool {
 	}
 }
 
-func inferCType(env *types.Env, name string, e Expr) string {
+func inferExprType(env *types.Env, e Expr) string {
+	switch v := e.(type) {
+	case *StringLit:
+		return "const char*"
+	case *IntLit:
+		return "int"
+	case *ListLit:
+		allStr := true
+		for _, it := range v.Elems {
+			if inferExprType(env, it) != "const char*" {
+				allStr = false
+			}
+		}
+		if allStr {
+			return "const char*[]"
+		}
+		return "int[]"
+	case *CondExpr:
+		t1 := inferExprType(env, v.Then)
+		t2 := inferExprType(env, v.Else)
+		if t1 != "" && t1 == t2 {
+			return t1
+		}
+	case *VarRef:
+		if t, err := env.GetVar(v.Name); err == nil {
+			switch tt := t.(type) {
+			case types.StringType:
+				return "const char*"
+			case types.ListType:
+				if _, ok := tt.Elem.(types.StringType); ok {
+					return "const char*[]"
+				}
+				return "int[]"
+			case types.BoolType:
+				return "int"
+			}
+		}
+		if _, ok := constStrings[v.Name]; ok {
+			return "const char*"
+		}
+		if l, ok := constLists[v.Name]; ok {
+			allStr := true
+			for _, it := range l.Elems {
+				if inferExprType(env, it) != "const char*" {
+					allStr = false
+				}
+			}
+			if allStr {
+				return "const char*[]"
+			}
+			return "int[]"
+		}
+	case *CallExpr:
+		switch v.Func {
+		case "str", "substring":
+			return "const char*"
+		case "len":
+			return "int"
+		}
+	case *BinaryExpr:
+		if v.Op == "+" && (exprIsString(v.Left) || exprIsString(v.Right)) {
+			return "const char*"
+		}
+		return "int"
+	case *UnaryExpr:
+		return inferExprType(env, v.Expr)
+	}
+	if _, ok := evalString(e); ok {
+		return "const char*"
+	}
 	if l, ok := evalList(e); ok {
 		allStr := true
 		for _, it := range l.Elems {
-			if !exprIsString(it) {
+			if inferExprType(env, it) != "const char*" {
 				allStr = false
-				break
 			}
 		}
 		if allStr {
@@ -1483,11 +1551,15 @@ func inferCType(env *types.Env, name string, e Expr) string {
 		}
 		return "int[]"
 	}
-	if _, ok := evalString(e); ok {
-		return "const char*"
+	if _, ok := evalInt(e); ok {
+		return "int"
 	}
-	if exprIsString(e) {
-		return "const char*"
+	return ""
+}
+
+func inferCType(env *types.Env, name string, e Expr) string {
+	if t := inferExprType(env, e); t != "" {
+		return t
 	}
 	if t, err := env.GetVar(name); err == nil {
 		switch tt := t.(type) {
