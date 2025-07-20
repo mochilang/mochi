@@ -2,7 +2,7 @@
 
 Generated C# code for programs in `tests/vm/valid`. Each program has a `.cs` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.
 
-Compiled programs: 84/100
+Compiled programs: 91/100
 
 ## Checklist
 - [x] append_builtin
@@ -32,9 +32,9 @@ Compiled programs: 84/100
 - [x] group_by_conditional_sum
 - [ ] group_by_having
 - [x] group_by_join
-- [ ] group_by_left_join
-- [ ] group_by_multi_join
-- [ ] group_by_multi_join_sort
+- [x] group_by_left_join
+- [x] group_by_multi_join
+- [x] group_by_multi_join_sort
 - [x] group_by_sort
 - [x] group_items_iteration
 - [x] if_else
@@ -45,8 +45,8 @@ Compiled programs: 84/100
 - [x] inner_join
 - [x] join_multi
 - [x] json_builtin
-- [ ] left_join
-- [ ] left_join_multi
+- [x] left_join
+- [x] left_join_multi
 - [x] len_builtin
 - [x] len_map
 - [x] len_string
@@ -70,7 +70,7 @@ Compiled programs: 84/100
 - [x] min_max_builtin
 - [x] nested_function
 - [x] order_by_map
-- [ ] outer_join
+ - [x] outer_join
 - [x] partial_application
 - [x] print_hello
 - [x] pure_fold
@@ -79,7 +79,7 @@ Compiled programs: 84/100
 - [ ] python_math
 - [x] query_sum_select
 - [x] record_assign
-- [ ] right_join
+ - [x] right_join
 - [ ] save_jsonl_stdout
 - [x] short_circuit
 - [x] slice

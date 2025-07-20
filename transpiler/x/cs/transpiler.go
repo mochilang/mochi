@@ -41,6 +41,7 @@ var stringVars map[string]bool
 var mapVars map[string]bool
 var varTypes map[string]string
 var structTypes map[string]types.StructType
+var extraStructs map[string]StructDecl
 var usesDict bool
 var usesLinq bool
 var usesJson bool
@@ -1209,6 +1210,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	mapVars = make(map[string]bool)
 	varTypes = make(map[string]string)
 	structTypes = env.Structs()
+	extraStructs = make(map[string]StructDecl)
 	usesDict = false
 	usesLinq = false
 	usesJson = false
@@ -1220,6 +1222,9 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 		if s != nil {
 			prog.Stmts = append(prog.Stmts, s)
 		}
+	}
+	for _, st := range extraStructs {
+		prog.Structs = append(prog.Structs, st)
 	}
 	_ = env // env reserved for future use
 	return prog, nil
@@ -1958,6 +1963,7 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	builder := &strings.Builder{}
 	curVar := q.Var
 	fmt.Fprintf(builder, "from %s in %s", curVar, exprString(src))
+	vars := []string{curVar}
 
 	savedVar := varTypes[curVar]
 	savedMap := mapVars[curVar]
@@ -1974,6 +1980,11 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			return nil, err
 		}
 		fmt.Fprintf(builder, " from %s in %s", f.Var, exprString(s))
+		vars = append(vars, f.Var)
+		varTypes[f.Var] = strings.TrimSuffix(typeOfExpr(s), "[]")
+		if strings.HasPrefix(varTypes[f.Var], "Dictionary<") {
+			mapVars[f.Var] = true
+		}
 	}
 
 	for _, j := range q.Joins {
@@ -2017,6 +2028,7 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		if strings.HasPrefix(varTypes[j.Var], "Dictionary<") {
 			mapVars[j.Var] = true
 		}
+		vars = append(vars, j.Var)
 	}
 
 	if q.Where != nil {
@@ -2041,10 +2053,32 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			mapVars[curVar] = savedMap
 			return nil, err
 		}
-		elemType := varTypes[curVar]
 		tmp := q.Group.Name + "Tmp"
-		fmt.Fprintf(builder, " group %s by %s into %s", curVar, exprString(keyExpr), tmp)
+		elemType := varTypes[curVar]
+		if len(vars) > 1 {
+			itemName := toStructName(q.Group.Name) + "Item"
+			fields := make([]StructField, len(vars))
+			typeFields := make(map[string]types.Type)
+			for i, v := range vars {
+				fields[i] = StructField{Name: v, Type: varTypes[v]}
+				typeFields[v] = simpleType(varTypes[v])
+			}
+			extraStructs[itemName] = StructDecl{Name: itemName, Fields: fields}
+			structTypes[itemName] = types.StructType{Name: itemName, Fields: typeFields, Order: vars}
+			elemType = itemName
+			fmt.Fprintf(builder, " group new %s{", itemName)
+			for i, v := range vars {
+				if i > 0 {
+					fmt.Fprint(builder, ", ")
+				}
+				fmt.Fprintf(builder, "%s = %s", v, v)
+			}
+			fmt.Fprintf(builder, "} by %s into %s", exprString(keyExpr), tmp)
+		} else {
+			fmt.Fprintf(builder, " group %s by %s into %s", curVar, exprString(keyExpr), tmp)
+		}
 		gStruct := toStructName(q.Group.Name) + "Group"
+		extraStructs[gStruct] = StructDecl{Name: gStruct, Fields: []StructField{{Name: "key", Type: typeOfExpr(keyExpr)}, {Name: "items", Type: fmt.Sprintf("%s[]", elemType)}}}
 		structTypes[gStruct] = types.StructType{Name: gStruct, Fields: map[string]types.Type{
 			"key":   simpleType(typeOfExpr(keyExpr)),
 			"items": types.ListType{Elem: simpleType(elemType)},
@@ -2156,6 +2190,13 @@ func Emit(prog *Program) []byte {
 	buf.WriteString("\n")
 
 	for _, st := range prog.Structs {
+		fmt.Fprintf(&buf, "struct %s {\n", st.Name)
+		for _, f := range st.Fields {
+			fmt.Fprintf(&buf, "    public %s %s;\n", f.Type, f.Name)
+		}
+		buf.WriteString("}\n")
+	}
+	for _, st := range extraStructs {
 		fmt.Fprintf(&buf, "struct %s {\n", st.Name)
 		for _, f := range st.Fields {
 			fmt.Fprintf(&buf, "    public %s %s;\n", f.Type, f.Name)

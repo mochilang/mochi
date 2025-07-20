@@ -1,3 +1,6 @@
+## Progress (2025-07-20T21:09:48+07:00)
+- cs transpiler: typed join and group by results with structs (progress 91/100)
+
 ## Progress (2025-07-20 20:47 +0700)
 - cs transpiler: typed groups and right join support (progress 84/100)
 
@@ -90,6 +93,8 @@
 ## Remaining Work
 - [x] Implement loops and conditionals
 - [ ] Support map and list mutation operations
+
+
 
 
 
