@@ -1,0 +1,3 @@
+compile: exit status 1
+/workspace/mochi/tests/transpiler/x/cobol/string_in_operator.cob:11: error: 'literal "cat"' is not a numeric value
+/workspace/mochi/tests/transpiler/x/cobol/string_in_operator.cob:13: error: 'literal "dog"' is not a numeric value
