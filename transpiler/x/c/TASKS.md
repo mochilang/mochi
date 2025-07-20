@@ -1,3 +1,7 @@
+## Progress (2025-07-20 10:53 +0700)
+- Improved type inference for conditional expressions.
+- VM valid golden test results updated to 42/100
+
 ## Progress (2025-07-20 10:35 +0700)
 - VM valid golden test results updated to 42/100
 
