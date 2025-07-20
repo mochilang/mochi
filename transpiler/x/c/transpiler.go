@@ -248,6 +248,7 @@ func (ws *WhileStmt) emit(w io.Writer, indent int) {
 func (f *ForStmt) emit(w io.Writer, indent int) {
 	if len(f.List) > 0 {
 		arrName := fmt.Sprintf("%s_arr", f.Var)
+		lenName := fmt.Sprintf("%s_len", f.Var)
 		writeIndent(w, indent)
 		io.WriteString(w, "{\n")
 		writeIndent(w, indent+1)
@@ -260,7 +261,11 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 		}
 		io.WriteString(w, "};\n")
 		writeIndent(w, indent+1)
-		fmt.Fprintf(w, "for (int i = 0; i < %d; i++) {\n", len(f.List))
+		fmt.Fprintf(w, "size_t %s = sizeof(%s) / sizeof(%s[0]);\n", lenName, arrName, arrName)
+		writeIndent(w, indent+1)
+		io.WriteString(w, "for (size_t i = 0; i < ")
+		io.WriteString(w, lenName)
+		io.WriteString(w, "; i++) {\n")
 		writeIndent(w, indent+2)
 		fmt.Fprintf(w, "int %s = %s[i];\n", f.Var, arrName)
 		for _, s := range f.Body {
@@ -1443,6 +1448,8 @@ func inferCType(env *types.Env, name string, e Expr) string {
 				return "const char*[]"
 			}
 			return "int[]"
+		case types.BoolType:
+			return "int"
 		}
 	}
 	return "int"
