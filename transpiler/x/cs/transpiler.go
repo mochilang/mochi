@@ -635,6 +635,10 @@ func isMapExpr(e Expr) bool {
 	return false
 }
 
+func isBoolExpr(e Expr) bool {
+	return typeOfExpr(e) == "bool"
+}
+
 func csType(t *parser.TypeRef) string {
 	if t == nil {
 		return "object"
@@ -1459,7 +1463,12 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		case "print":
 			name = "Console.WriteLine"
 			if len(args) == 1 {
-				return &CallExpr{Func: name, Args: args}, nil
+				arg := args[0]
+				if isBoolExpr(arg) {
+					tern := &IfExpr{Cond: arg, Then: &StringLit{Value: "true"}, Else: &StringLit{Value: "false"}}
+					return &CallExpr{Func: name, Args: []Expr{tern}}, nil
+				}
+				return &CallExpr{Func: name, Args: []Expr{arg}}, nil
 			}
 			list := &ListLit{Elems: args}
 			join := &CallExpr{Func: "string.Join", Args: []Expr{&StringLit{Value: " "}, list}}
