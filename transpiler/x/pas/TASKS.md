@@ -1,6 +1,6 @@
-## Progress (2025-07-20 09:51 +0700)
-- pas transpiler: add list assignment and update docs
-- 28/100 VM programs transpiled successfully
+## Progress (2025-07-20 03:33 UTC)
+- pas transpiler: added str_builtin and sum_builtin support, removed StrUtils
+- 30/100 VM programs transpiled successfully
 
 # Transpiler Tasks
 
@@ -10,6 +10,7 @@
 - Updated README checklist with 28/100 tests.
 
 ## Recent Updates
+- [2025-07-20T03:33:26Z] Added str and sum builtins; progress to 30/100
 - [2025-07-20T02:25:09+00:00] Added list assignment feature and updated progress to 28/100
 - [2025-07-20T08:56:36+07:00] Removed helpers and improved inference; progress 27/100
 - [2025-07-20T08:31:52+07:00] Improved formatting and added variable inference.

@@ -1,6 +1,6 @@
 {$mode objfpc}
 program Main;
-uses StrUtils;
+uses SysUtils;
 begin
   writeln(ord('a' < 'b'));
   writeln(ord('a' <= 'a'));

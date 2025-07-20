@@ -1,6 +1,6 @@
 {$mode objfpc}
 program Main;
-uses StrUtils;
+uses SysUtils;
 begin
   writeln(Length('mochi'));
 end.

@@ -1,6 +1,6 @@
 {$mode objfpc}
 program Main;
-uses StrUtils;
+uses SysUtils;
 var
   nums: array of integer;
 begin

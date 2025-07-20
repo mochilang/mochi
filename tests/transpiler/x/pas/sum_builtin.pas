@@ -1,10 +1,6 @@
 {$mode objfpc}
 program Main;
 uses SysUtils;
-var
-  x: integer;
 begin
-  x := 1;
-  x := 2;
-  writeln(x);
+  writeln((1 + 2) + 3);
 end.
