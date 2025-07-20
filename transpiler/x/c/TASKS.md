@@ -1,3 +1,10 @@
+## Progress (2025-07-20 13:59 +0700)
+- Added constant map folding for six new golden tests.
+- VM valid golden test results updated to 55/100
+
+## Progress (2025-07-20 13:59 +0700)
+- VM valid golden test results updated to 49/100
+
 ## Progress (2025-07-20 13:26 +0700)
 - Added global variable support and cast handling.
 - Skipped test blocks during C generation.

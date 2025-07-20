@@ -18,6 +18,7 @@ import (
 var (
 	constLists     map[string]*ListLit
 	constStrings   map[string]string
+	constMaps      map[string]*MapLit
 	structTypes    map[string]types.StructType
 	funcParamTypes map[string][]string
 )
@@ -399,6 +400,15 @@ func (l *ListLit) emitExpr(w io.Writer) {
 	io.WriteString(w, " }")
 }
 
+type MapLit struct {
+	Keys   []Expr
+	Values []Expr
+}
+
+func (m *MapLit) emitExpr(w io.Writer) {
+	io.WriteString(w, "{ }")
+}
+
 type IndexExpr struct {
 	Target Expr
 	Index  Expr
@@ -654,6 +664,7 @@ func (p *Program) Emit() []byte {
 func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	constLists = make(map[string]*ListLit)
 	constStrings = make(map[string]string)
+	constMaps = make(map[string]*MapLit)
 	structTypes = env.Structs()
 	funcParamTypes = make(map[string][]string)
 	p := &Program{}
@@ -769,10 +780,18 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		} else {
 			delete(constLists, s.Let.Name)
 		}
+		if m, ok := convertMapExpr(s.Let.Value); ok {
+			constMaps[s.Let.Name] = m
+		} else {
+			delete(constMaps, s.Let.Name)
+		}
 		if strVal, ok := evalString(valExpr); ok {
 			constStrings[s.Let.Name] = strVal
 		} else {
 			delete(constStrings, s.Let.Name)
+		}
+		if _, ok := constMaps[s.Let.Name]; ok {
+			return nil, nil
 		}
 		return &DeclStmt{Name: s.Let.Name, Value: valExpr, Type: declType}, nil
 	case s.Var != nil:
@@ -783,10 +802,18 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		} else {
 			delete(constLists, s.Var.Name)
 		}
+		if m, ok := convertMapExpr(s.Var.Value); ok {
+			constMaps[s.Var.Name] = m
+		} else {
+			delete(constMaps, s.Var.Name)
+		}
 		if strVal, ok := evalString(valExpr); ok {
 			constStrings[s.Var.Name] = strVal
 		} else {
 			delete(constStrings, s.Var.Name)
+		}
+		if _, ok := constMaps[s.Var.Name]; ok {
+			return nil, nil
 		}
 		return &DeclStmt{Name: s.Var.Name, Value: valExpr, Type: declType}, nil
 	case s.Assign != nil:
@@ -795,6 +822,25 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			constLists[s.Assign.Name] = &ListLit{Elems: list}
 		} else {
 			delete(constLists, s.Assign.Name)
+		}
+		if m, ok := constMaps[s.Assign.Name]; ok {
+			if len(s.Assign.Index) == 1 && s.Assign.Index[0].Colon == nil && s.Assign.Index[0].End == nil && s.Assign.Index[0].Colon2 == nil && s.Assign.Index[0].Step == nil {
+				idxExpr := convertExpr(s.Assign.Index[0].Start)
+				updated := false
+				for i, k := range m.Keys {
+					if keyEqual(k, idxExpr) {
+						m.Values[i] = valExpr
+						updated = true
+						break
+					}
+				}
+				if !updated {
+					m.Keys = append(m.Keys, idxExpr)
+					m.Values = append(m.Values, valExpr)
+				}
+				return nil, nil
+			}
+			delete(constMaps, s.Assign.Name)
 		}
 		if strVal, ok := evalString(valExpr); ok {
 			constStrings[s.Assign.Name] = strVal
@@ -1123,6 +1169,36 @@ func convertUnary(u *parser.Unary) Expr {
 				}
 				current = &IndexExpr{Target: current, Index: idx}
 			}
+			if ie, ok := current.(*IndexExpr); ok {
+				if m, ok := evalMap(ie.Target); ok {
+					if ks, ok2 := evalString(ie.Index); ok2 {
+						for i, k := range m.Keys {
+							if s, ok3 := evalString(k); ok3 && s == ks {
+								return m.Values[i]
+							}
+						}
+					}
+					if ki, ok2 := evalInt(ie.Index); ok2 {
+						for i, k := range m.Keys {
+							if n, ok3 := evalInt(k); ok3 && n == ki {
+								return m.Values[i]
+							}
+						}
+					}
+				}
+			}
+			if n, ok := evalInt(current); ok {
+				return &IntLit{Value: n}
+			}
+			if s, ok := evalString(current); ok {
+				return &StringLit{Value: s}
+			}
+			if l, ok := evalList(current); ok {
+				return l
+			}
+			if m, ok := evalMap(current); ok {
+				return &MapLit{Keys: m.Keys, Values: m.Values}
+			}
 			return current
 		}
 	}
@@ -1391,6 +1467,20 @@ func convertUnary(u *parser.Unary) Expr {
 		}
 		return &ListLit{Elems: elems}
 	}
+	if mp := u.Value.Target.Map; mp != nil && len(u.Ops) == 0 {
+		var keys []Expr
+		var vals []Expr
+		for _, it := range mp.Items {
+			k := convertExpr(it.Key)
+			v := convertExpr(it.Value)
+			if k == nil || v == nil {
+				return nil
+			}
+			keys = append(keys, k)
+			vals = append(vals, v)
+		}
+		return &MapLit{Keys: keys, Values: vals}
+	}
 	lit := u.Value.Target.Lit
 	if lit == nil {
 		return nil
@@ -1453,6 +1543,35 @@ func convertListExpr(e *parser.Expr) ([]Expr, bool) {
 	return out, true
 }
 
+func convertMapExpr(e *parser.Expr) (*MapLit, bool) {
+	if e == nil {
+		return nil, false
+	}
+	if e.Binary != nil {
+		u := e.Binary.Left
+		if u != nil && u.Value != nil && u.Value.Target != nil && u.Value.Target.Map != nil {
+			ml := u.Value.Target.Map
+			var keys []Expr
+			var vals []Expr
+			for _, it := range ml.Items {
+				k := convertExpr(it.Key)
+				v := convertExpr(it.Value)
+				if k == nil || v == nil {
+					return nil, false
+				}
+				keys = append(keys, k)
+				vals = append(vals, v)
+			}
+			return &MapLit{Keys: keys, Values: vals}, true
+		}
+	}
+	ex := convertExpr(e)
+	if m, ok := evalMap(ex); ok {
+		return m, true
+	}
+	return nil, false
+}
+
 func evalInt(e Expr) (int, bool) {
 	switch v := e.(type) {
 	case *IntLit:
@@ -1493,6 +1612,25 @@ func evalInt(e Expr) (int, bool) {
 			if ok2 && idx >= 0 && idx < len(list.Elems) {
 				return evalInt(list.Elems[idx])
 			}
+		}
+		if m, ok := evalMap(v.Target); ok {
+			if ks, ok2 := evalString(v.Index); ok2 {
+				for i, k := range m.Keys {
+					if s, ok3 := evalString(k); ok3 && s == ks {
+						return evalInt(m.Values[i])
+					}
+				}
+				return 0, true
+			}
+			if ki, ok2 := evalInt(v.Index); ok2 {
+				for i, k := range m.Keys {
+					if n, ok3 := evalInt(k); ok3 && n == ki {
+						return evalInt(m.Values[i])
+					}
+				}
+				return 0, true
+			}
+			return 0, false
 		}
 	case *UnaryExpr:
 		if v.Op == "-" {
@@ -1565,6 +1703,26 @@ func evalBool(e Expr) (bool, bool) {
 				}
 			}
 		}
+		if v.Op == "in" {
+			if m, ok := evalMap(v.Right); ok {
+				if ks, ok2 := evalString(v.Left); ok2 {
+					for _, k := range m.Keys {
+						if s, ok3 := evalString(k); ok3 && s == ks {
+							return true, true
+						}
+					}
+					return false, true
+				}
+				if ki, ok2 := evalInt(v.Left); ok2 {
+					for _, k := range m.Keys {
+						if n, ok3 := evalInt(k); ok3 && n == ki {
+							return true, true
+						}
+					}
+					return false, true
+				}
+			}
+		}
 	}
 	return false, false
 }
@@ -1578,18 +1736,37 @@ func evalString(e Expr) (string, bool) {
 		return s, ok
 	case *IndexExpr:
 		str, ok := evalString(v.Target)
-		if !ok {
+		if ok {
+			idx, ok2 := evalInt(v.Index)
+			if !ok2 {
+				return "", false
+			}
+			r := []rune(str)
+			if idx < 0 || idx >= len(r) {
+				return "", false
+			}
+			return string(r[idx]), true
+		}
+		if m, ok := evalMap(v.Target); ok {
+			if ks, ok2 := evalString(v.Index); ok2 {
+				for i, k := range m.Keys {
+					if s, ok3 := evalString(k); ok3 && s == ks {
+						return evalString(m.Values[i])
+					}
+				}
+				return "", true
+			}
+			if ki, ok2 := evalInt(v.Index); ok2 {
+				for i, k := range m.Keys {
+					if n, ok3 := evalInt(k); ok3 && n == ki {
+						return evalString(m.Values[i])
+					}
+				}
+				return "", true
+			}
 			return "", false
 		}
-		idx, ok2 := evalInt(v.Index)
-		if !ok2 {
-			return "", false
-		}
-		r := []rune(str)
-		if idx < 0 || idx >= len(r) {
-			return "", false
-		}
-		return string(r[idx]), true
+		return "", false
 	case *BinaryExpr:
 		if v.Op == "+" {
 			left, ok1 := evalString(v.Left)
@@ -1671,7 +1848,33 @@ func evalList(e Expr) (*ListLit, bool) {
 	return nil, false
 }
 
+func evalMap(e Expr) (*MapLit, bool) {
+	switch v := e.(type) {
+	case *MapLit:
+		return v, true
+	case *VarRef:
+		m, ok := constMaps[v.Name]
+		return m, ok
+	default:
+		return nil, false
+	}
+}
+
 func listElemEqual(a, b Expr) bool {
+	if ai, ok := evalInt(a); ok {
+		if bi, ok2 := evalInt(b); ok2 {
+			return ai == bi
+		}
+	}
+	if as, ok := evalString(a); ok {
+		if bs, ok2 := evalString(b); ok2 {
+			return as == bs
+		}
+	}
+	return false
+}
+
+func keyEqual(a, b Expr) bool {
 	if ai, ok := evalInt(a); ok {
 		if bi, ok2 := evalInt(b); ok2 {
 			return ai == bi
@@ -1690,6 +1893,14 @@ func isConstExpr(e Expr) bool {
 		return true
 	}
 	if _, ok := evalString(e); ok {
+		return true
+	}
+	if m, ok := evalMap(e); ok {
+		for i := range m.Keys {
+			if !isConstExpr(m.Keys[i]) || !isConstExpr(m.Values[i]) {
+				return false
+			}
+		}
 		return true
 	}
 	if l, ok := evalList(e); ok {
