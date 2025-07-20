@@ -221,6 +221,22 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintf(w, "#include %s\n", inc)
 	}
 	fmt.Fprintln(w)
+	for _, inc := range p.Includes {
+		if inc == "<vector>" {
+			fmt.Fprintln(w, "std::string join(const std::string& s) { return s; }")
+			fmt.Fprintln(w, "template<typename T>")
+			fmt.Fprintln(w, "std::string join(const std::vector<T>& v) {")
+			fmt.Fprintln(w, "    std::string o;")
+			fmt.Fprintln(w, "    for (size_t i = 0; i < v.size(); ++i) {")
+			fmt.Fprintln(w, "        if (i) o += \" \";")
+			fmt.Fprintln(w, "        o += std::to_string(v[i]);")
+			fmt.Fprintln(w, "    }")
+			fmt.Fprintln(w, "    return o;")
+			fmt.Fprintln(w, "}")
+			fmt.Fprintln(w)
+			break
+		}
+	}
 	for i, fn := range p.Functions {
 		if i > 0 {
 			fmt.Fprintln(w)
@@ -265,17 +281,17 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 		}
 		switch ex := v.(type) {
 		case *ListLit:
-			io.WriteString(w, "([&]{ auto tmp = ")
+			io.WriteString(w, "join(")
 			ex.emit(w)
-			io.WriteString(w, "; std::string o; for(size_t i=0;i<tmp.size();++i){ if(i>0) o += \" \"; o += std::to_string(tmp[i]); } return o; }())")
+			io.WriteString(w, ")")
 		case *SliceExpr:
 			io.WriteString(w, "([&]{ auto tmp = ")
 			ex.emit(w)
-			io.WriteString(w, "; if constexpr(std::is_same_v<std::decay_t<decltype(tmp)>, std::string>) return tmp; std::string o; for(size_t i=0;i<tmp.size();++i){ if(i>0) o += \" \"; o += std::to_string(tmp[i]); } return o; }())")
+			io.WriteString(w, "; if constexpr(std::is_same_v<std::decay_t<decltype(tmp)>, std::string>) { return tmp; } else { return join(tmp); } }())")
 		case *AppendExpr:
-			io.WriteString(w, "([&]{ auto tmp = ")
+			io.WriteString(w, "join(")
 			ex.emit(w)
-			io.WriteString(w, "; std::string o; for(size_t i=0;i<tmp.size();++i){ if(i>0) o += \" \"; o += std::to_string(tmp[i]); } return o; }())")
+			io.WriteString(w, ")")
 		case *AvgExpr:
 			io.WriteString(w, "([&]{ std::ostringstream ss; ss<<std::fixed<<std::setprecision(1)<<")
 			ex.emit(w)
@@ -1280,6 +1296,9 @@ func guessType(e *parser.Expr) string {
 	if lit := pf.Target.Lit; lit != nil {
 		if lit.Int != nil {
 			return "int"
+		}
+		if lit.Float != nil {
+			return "double"
 		}
 		if lit.Bool != nil {
 			return "bool"
