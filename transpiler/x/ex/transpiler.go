@@ -272,6 +272,14 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	}
+	if b.Op == "++" {
+		io.WriteString(w, "(")
+		b.Left.emit(w)
+		io.WriteString(w, " ++ ")
+		b.Right.emit(w)
+		io.WriteString(w, ")")
+		return
+	}
 	if b.Op == "in" && b.MapIn {
 		io.WriteString(w, "Map.has_key?(")
 		b.Right.emit(w)
@@ -498,6 +506,8 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				val = &BoolLit{Value: false}
 			case "list":
 				val = &ListLit{}
+			case "map":
+				val = &MapLit{}
 			}
 		}
 		return &LetStmt{Name: st.Let.Name, Value: val}, nil
@@ -519,6 +529,8 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				val = &BoolLit{Value: false}
 			case "list":
 				val = &ListLit{}
+			case "map":
+				val = &MapLit{}
 			}
 		}
 		return &LetStmt{Name: st.Var.Name, Value: val}, nil
@@ -958,7 +970,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			if len(args) == 2 {
 				list := args[0]
 				elemList := &ListLit{Elems: []Expr{args[1]}}
-				return &CallExpr{Func: "Enum.concat", Args: []Expr{list, elemList}}, nil
+				return &BinaryExpr{Left: list, Op: "++", Right: elemList}, nil
 			}
 		case "values":
 			if len(args) == 1 {
