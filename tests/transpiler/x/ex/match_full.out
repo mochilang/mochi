@@ -1,0 +1,23 @@
+two
+relaxed
+confirmed
+zero
+many
+    warning: the following clause will never match:
+
+        false
+
+    because it attempts to match on the result of:
+
+        ok
+
+    which has type:
+
+        true
+
+    typing violation found at:
+    │
+ 30 │   false -> "denied"
+    │   ~~~~~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/transpiler/x/ex/match_full.exs:30: Main.main/0

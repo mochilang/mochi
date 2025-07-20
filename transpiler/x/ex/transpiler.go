@@ -229,6 +229,36 @@ func (c *CondExpr) emit(w io.Writer) {
 	}
 }
 
+// CaseExpr represents a simple match/case expression.
+type CaseExpr struct {
+	Target  Expr
+	Clauses []CaseClause
+}
+
+// CaseClause represents a single pattern clause within a CaseExpr.
+type CaseClause struct {
+	Pattern Expr // nil represents '_'
+	Result  Expr
+}
+
+func (ce *CaseExpr) emit(w io.Writer) {
+	io.WriteString(w, "case ")
+	ce.Target.emit(w)
+	io.WriteString(w, " do\n")
+	for _, cl := range ce.Clauses {
+		io.WriteString(w, "  ")
+		if cl.Pattern != nil {
+			cl.Pattern.emit(w)
+		} else {
+			io.WriteString(w, "_")
+		}
+		io.WriteString(w, " -> ")
+		cl.Result.emit(w)
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, "end")
+}
+
 // BinaryExpr represents a binary operation such as 1 + 2.
 type BinaryExpr struct {
 	Left  Expr
@@ -764,6 +794,45 @@ func compileIfExpr(ie *parser.IfExpr, env *types.Env) (Expr, error) {
 	return &CondExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
 }
 
+func isUnderscoreExpr(e *parser.Expr) bool {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target.Selector == nil {
+		return false
+	}
+	return p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0
+}
+
+func compileMatchExpr(me *parser.MatchExpr, env *types.Env) (Expr, error) {
+	target, err := compileExpr(me.Target, env)
+	if err != nil {
+		return nil, err
+	}
+	clauses := make([]CaseClause, len(me.Cases))
+	for i, c := range me.Cases {
+		var pat Expr
+		if !isUnderscoreExpr(c.Pattern) {
+			p, err := compileExpr(c.Pattern, env)
+			if err != nil {
+				return nil, err
+			}
+			pat = p
+		}
+		res, err := compileExpr(c.Result, env)
+		if err != nil {
+			return nil, err
+		}
+		clauses[i] = CaseClause{Pattern: pat, Result: res}
+	}
+	return &CaseExpr{Target: target, Clauses: clauses}, nil
+}
+
 func compileUnary(u *parser.Unary, env *types.Env) (Expr, error) {
 	if u == nil {
 		return nil, fmt.Errorf("unsupported unary")
@@ -1027,6 +1096,8 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		return &MapLit{Items: items}, nil
 	case p.If != nil:
 		return compileIfExpr(p.If, env)
+	case p.Match != nil:
+		return compileMatchExpr(p.Match, env)
 	case p.Group != nil:
 		return compileExpr(p.Group, env)
 	}

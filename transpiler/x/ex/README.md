@@ -2,7 +2,7 @@
 
 This directory contains a minimal transpiler that converts a very small subset of Mochi into Elixir source code. The generated files live in `tests/transpiler/x/ex`.
 
-Currently 47 of 100 programs transpile and run.
+Currently 49 of 100 programs transpile and run.
 
 The table below tracks which programs from `tests/vm/valid` successfully transpile and run. Checked items have generated `.exs` code and matching `.out` files in `tests/transpiler/x/ex`.
 - [x] append_builtin.mochi
@@ -63,8 +63,8 @@ The table below tracks which programs from `tests/vm/valid` successfully transpi
 - [x] map_literal_dynamic.mochi
 - [x] map_membership.mochi
 - [x] map_nested_assign.mochi
-- [ ] match_expr.mochi
-- [ ] match_full.mochi
+- [x] match_expr.mochi
+- [x] match_full.mochi
 - [x] math_ops.mochi
 - [x] membership.mochi
 - [x] min_max_builtin.mochi
