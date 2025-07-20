@@ -1,3 +1,7 @@
+## Progress (2025-07-20 05:38 +0000)
+- pl transpiler: fold trivial functions
+- 23/100 VM programs transpiled successfully
+
 ## Progress (2025-07-20 05:06 +0000)
 - pl: support list indexing
 - 22/100 VM programs transpiled successfully

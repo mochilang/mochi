@@ -26,9 +26,14 @@ type LetStmt struct {
 	Expr Expr
 }
 
-type compileEnv struct{ vars map[string]int }
+type compileEnv struct {
+	vars  map[string]int
+	funcs map[string]Expr
+}
 
-func newCompileEnv() *compileEnv { return &compileEnv{vars: make(map[string]int)} }
+func newCompileEnv(funcs map[string]Expr) *compileEnv {
+	return &compileEnv{vars: make(map[string]int), funcs: funcs}
+}
 
 func (e *compileEnv) fresh(name string) string {
 	v, ok := e.vars[name]
@@ -53,6 +58,29 @@ func varName(name string, v int) string {
 		return cap(name)
 	}
 	return fmt.Sprintf("%s%d", cap(name), v)
+}
+
+func collectConstFuncs(p *parser.Program) map[string]Expr {
+	funcs := make(map[string]Expr)
+	ce := newCompileEnv(nil)
+	for _, st := range p.Statements {
+		if st.Fun == nil || len(st.Fun.Params) > 0 || st.Fun.Return == nil {
+			continue
+		}
+		body := st.Fun.Body
+		if len(body) == 0 {
+			continue
+		}
+		ret := body[len(body)-1].Return
+		if ret == nil || ret.Value == nil {
+			continue
+		}
+		expr, err := toExpr(ret.Value, ce)
+		if err == nil {
+			funcs[st.Fun.Name] = expr
+		}
+	}
+	return funcs
 }
 
 func (p *PrintStmt) emit(w io.Writer, idx int) {
@@ -356,10 +384,14 @@ func intValue(e Expr) (int, bool) {
 // Transpile converts a Mochi program to a Prolog AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	_ = env
-	ce := newCompileEnv()
+	constFuncs := collectConstFuncs(prog)
+	ce := newCompileEnv(constFuncs)
 	p := &Program{}
 	for _, st := range prog.Statements {
 		switch {
+		case st.Fun != nil:
+			// functions are only used for simple constant folding
+			continue
 		case st.Let != nil:
 			var expr Expr
 			if st.Let.Value != nil {
@@ -666,6 +698,11 @@ func toPrimary(p *parser.Primary, env *compileEnv) (Expr, error) {
 			}
 			return &AppendExpr{List: listArg, Elem: elemArg}, nil
 		default:
+			if len(p.Call.Args) == 0 {
+				if ex, ok := env.funcs[p.Call.Func]; ok {
+					return ex, nil
+				}
+			}
 			return nil, fmt.Errorf("unsupported call")
 		}
 	case p.List != nil:
