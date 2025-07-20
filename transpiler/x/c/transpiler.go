@@ -20,6 +20,7 @@ var (
 	constStrings   map[string]string
 	structTypes    map[string]types.StructType
 	funcParamTypes map[string][]string
+	currentEnv     *types.Env
 )
 
 const version = "0.10.32"
@@ -76,7 +77,7 @@ func (p *PrintStmt) emit(w io.Writer, indent int) {
 				io.WriteString(w, ");\n")
 			}
 		default:
-			if p.Types[i] == "string" || exprIsString(a) {
+			if p.Types[i] == "string" || exprIsString(a) || (currentEnv != nil && inferExprType(currentEnv, a) == "const char*") {
 				format = append(format, "%s")
 			} else {
 				format = append(format, "%d")
@@ -90,7 +91,7 @@ func (p *PrintStmt) emit(w io.Writer, indent int) {
 			fmt.Fprintf(w, "puts(\"%s\");\n", escape(lit.Value))
 			return
 		}
-		if p.Types[0] == "string" || exprIsString(exprs[0]) {
+		if p.Types[0] == "string" || exprIsString(exprs[0]) || (currentEnv != nil && inferExprType(currentEnv, exprs[0]) == "const char*") {
 			io.WriteString(w, "puts(")
 			exprs[0].emitExpr(w)
 			io.WriteString(w, ");\n")
@@ -637,11 +638,13 @@ func (p *Program) Emit() []byte {
 		for _, field := range st.Order {
 			typ := "int"
 			if ft, ok := st.Fields[field]; ok {
-				switch ft.(type) {
+				switch t := ft.(type) {
 				case types.StringType:
 					typ = "const char*"
 				case types.BoolType:
 					typ = "int"
+				case types.StructType:
+					typ = t.Name
 				}
 			}
 			fmt.Fprintf(&buf, "    %s %s;\n", typ, field)
@@ -695,6 +698,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	constLists = make(map[string]*ListLit)
 	constStrings = make(map[string]string)
 	structTypes = env.Structs()
+	currentEnv = env
 	funcParamTypes = make(map[string][]string)
 	p := &Program{}
 	mainFn := &Function{Name: "main"}
@@ -796,12 +800,20 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 						}
 					}
 				}
+				if tname == "" && inferExprType(env, ex) == "const char*" {
+					tname = "string"
+				}
 				args = append(args, ex)
 				typesList = append(typesList, tname)
 			}
 			return &PrintStmt{Args: args, Types: typesList}, nil
 		}
 	case s.Let != nil:
+		if cast, ok := castMapToStruct(env, s.Let.Value); ok {
+			valExpr := Expr(cast)
+			declType := inferCType(env, s.Let.Name, valExpr)
+			return &DeclStmt{Name: s.Let.Name, Value: valExpr, Type: declType}, nil
+		}
 		valExpr := convertExpr(s.Let.Value)
 		declType := inferCType(env, s.Let.Name, valExpr)
 		if list, ok := convertListExpr(s.Let.Value); ok {
@@ -816,6 +828,11 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		}
 		return &DeclStmt{Name: s.Let.Name, Value: valExpr, Type: declType}, nil
 	case s.Var != nil:
+		if cast, ok := castMapToStruct(env, s.Var.Value); ok {
+			valExpr := Expr(cast)
+			declType := inferCType(env, s.Var.Name, valExpr)
+			return &DeclStmt{Name: s.Var.Name, Value: valExpr, Type: declType}, nil
+		}
 		valExpr := convertExpr(s.Var.Value)
 		declType := inferCType(env, s.Var.Name, valExpr)
 		if list, ok := convertListExpr(s.Var.Value); ok {
@@ -1136,6 +1153,37 @@ func convertExpr(e *parser.Expr) Expr {
 		}
 	}
 	return operands[0]
+}
+
+func castMapToStruct(env *types.Env, e *parser.Expr) (*StructLit, bool) {
+	if e == nil || e.Binary == nil {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Value.Ops) != 1 {
+		return nil, false
+	}
+	cast := u.Value.Ops[0].Cast
+	if cast == nil || cast.Type == nil || cast.Type.Simple == nil {
+		return nil, false
+	}
+	m := u.Value.Target.Map
+	if m == nil {
+		return nil, false
+	}
+	var fields []StructField
+	for _, it := range m.Items {
+		key, ok := types.SimpleStringKey(it.Key)
+		if !ok {
+			return nil, false
+		}
+		val := convertExpr(it.Value)
+		if val == nil {
+			return nil, false
+		}
+		fields = append(fields, StructField{Name: key, Value: val})
+	}
+	return &StructLit{Name: *cast.Type.Simple, Fields: fields}, true
 }
 
 func convertUnary(u *parser.Unary) Expr {
@@ -1847,6 +1895,16 @@ func exprIsString(e Expr) bool {
 	case *IndexExpr:
 		return exprIsString(v.Target)
 	case *FieldExpr:
+		if currentEnv != nil {
+			tname := inferExprType(currentEnv, v.Target)
+			if st, ok := currentEnv.GetStruct(tname); ok {
+				if ft, ok2 := st.Fields[v.Name]; ok2 {
+					if _, ok3 := ft.(types.StringType); ok3 {
+						return true
+					}
+				}
+			}
+		}
 		return exprIsString(v.Target)
 	case *StructLit:
 		return false
