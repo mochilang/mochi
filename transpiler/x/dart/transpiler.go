@@ -759,17 +759,21 @@ func inferType(e Expr) string {
 			if lt == "String" || rt == "String" {
 				return "String"
 			}
-			return "int"
+			return "num"
 		case "-", "*", "/", "%":
-			return "int"
+			return "num"
 		case "<", "<=", ">", ">=", "==", "!=", "&&", "||":
 			return "bool"
 		default:
-			return "var"
+			return "dynamic"
 		}
 	case *UnaryExpr:
 		if ex.Op == "-" {
-			return "int"
+			t := inferType(ex.X)
+			if t == "int" || t == "num" {
+				return t
+			}
+			return "num"
 		}
 		return inferType(ex.X)
 	case *CondExpr:

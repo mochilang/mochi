@@ -145,11 +145,30 @@ func updateTasks() {
 
 	data, _ := os.ReadFile(taskFile)
 	var keep []string
+	found := false
 	for _, line := range strings.Split(string(data), "\n") {
+		if strings.HasPrefix(line, "# Dart Transpiler") {
+			found = true
+		}
+		if !found {
+			continue
+		}
 		if strings.HasPrefix(line, "## Recent") || strings.HasPrefix(line, "## Progress") || strings.HasPrefix(line, "- VM valid") {
 			continue
 		}
 		keep = append(keep, line)
+	}
+
+	srcDir := filepath.Join(root, "tests", "vm", "valid")
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "dart")
+	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	total := len(files)
+	compiled := 0
+	for _, f := range files {
+		name := filepath.Base(f)
+		if _, err := os.Stat(filepath.Join(outDir, strings.TrimSuffix(name, ".mochi")+".dart")); err == nil {
+			compiled++
+		}
 	}
 
 	var buf bytes.Buffer
@@ -157,6 +176,8 @@ func updateTasks() {
 	buf.WriteString("- Improved variable declarations with basic type inference.\n")
 	buf.WriteString("- Simplified `avg` builtin emission using list methods.\n")
 	buf.WriteString("- Updated README checklist with progress summary.\n\n")
+	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
+	buf.WriteString(fmt.Sprintf("- VM valid %d/%d\n\n", compiled, total))
 	buf.WriteString(strings.Join(keep, "\n"))
 	_ = os.WriteFile(taskFile, buf.Bytes(), 0o644)
 }
