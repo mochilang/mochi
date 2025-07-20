@@ -133,7 +133,11 @@ func (p *PrintStmt) emit(w io.Writer, ind int) {
 		fmt.Fprintf(w, "print '(I0)', %s\n", p.Expr)
 	case types.FloatType, types.BigRatType:
 		writeIndent(w, ind)
-		fmt.Fprintf(w, "print '(F0.6)', %s\n", p.Expr)
+		if strings.HasPrefix(p.Expr, "int(sum(") {
+			fmt.Fprintf(w, "print '(I0)', %s\n", p.Expr)
+		} else {
+			fmt.Fprintf(w, "print '(F0.1)', %s\n", p.Expr)
+		}
 	case types.BoolType:
 		writeIndent(w, ind)
 		fmt.Fprintf(w, "if (%s) then\n", p.Expr)
@@ -919,6 +923,16 @@ func toPrimary(p *parser.Primary, env *types.Env) (string, error) {
 			s := strings.ReplaceAll(*l.Str, "\"", "\"\"")
 			return fmt.Sprintf("\"%s\"", s), nil
 		}
+	case p.List != nil:
+		var elems []string
+		for _, el := range p.List.Elems {
+			v, err := toExpr(el, env)
+			if err != nil {
+				return "", err
+			}
+			elems = append(elems, v)
+		}
+		return "(/ " + strings.Join(elems, ", ") + " /)", nil
 	case p.Selector != nil:
 		name := p.Selector.Root
 		if len(p.Selector.Tail) > 0 {
@@ -939,6 +953,26 @@ func toPrimary(p *parser.Primary, env *types.Env) (string, error) {
 				return fmt.Sprintf("size(%s)", argExpr), nil
 			}
 			return "", fmt.Errorf("unsupported len argument type")
+		}
+		if p.Call.Func == "sum" && len(p.Call.Args) == 1 {
+			argExpr, err := toExpr(p.Call.Args[0], env)
+			if err != nil {
+				return "", err
+			}
+			argType := types.ExprType(p.Call.Args[0], env)
+			if lt, ok := argType.(types.ListType); ok {
+				if _, ok2 := lt.Elem.(types.IntType); ok2 {
+					return fmt.Sprintf("int(sum(%s))", argExpr), nil
+				}
+			}
+			return fmt.Sprintf("sum(%s)", argExpr), nil
+		}
+		if p.Call.Func == "avg" && len(p.Call.Args) == 1 {
+			argExpr, err := toExpr(p.Call.Args[0], env)
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("sum(%s)/real(size(%s))", argExpr, argExpr), nil
 		}
 		var args []string
 		for _, a := range p.Call.Args {
