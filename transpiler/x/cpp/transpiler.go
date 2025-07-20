@@ -19,6 +19,7 @@ import (
 var version string
 var currentProgram *Program
 var currentEnv *types.Env
+var localTypes map[string]string
 
 func init() {
 	_, file, _, _ := runtime.Caller(0)
@@ -182,6 +183,8 @@ type CallExpr struct {
 	Name string
 	Args []Expr
 }
+
+type ExistsExpr struct{ List Expr }
 
 type LambdaExpr struct {
 	Params []Param
@@ -714,6 +717,15 @@ func (lc *MultiListComp) emit(w io.Writer) {
 		io.WriteString(w, "}\n")
 	}
 	io.WriteString(w, "return __items; }())")
+}
+
+func (e *ExistsExpr) emit(w io.Writer) {
+	if currentProgram != nil {
+		currentProgram.addInclude("<vector>")
+	}
+	io.WriteString(w, "(!")
+	e.List.emit(w)
+	io.WriteString(w, ".empty())")
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
@@ -1541,6 +1553,14 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				}
 				return &SubstringExpr{Value: v0, Start: v1, End: v2}, nil
 			}
+		case "exists":
+			if len(p.Call.Args) == 1 {
+				arg, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				return &ExistsExpr{List: arg}, nil
+			}
 		}
 		var args []Expr
 		for _, a := range p.Call.Args {
@@ -1696,6 +1716,10 @@ func convertSimpleQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, s
 		}
 	}
 	var cond Expr
+	oldTypes := localTypes
+	localTypes = qTypes
+	defer func() { localTypes = oldTypes }()
+
 	if q.Where != nil {
 		cond, err = convertExpr(q.Where)
 		if err != nil {
@@ -1892,6 +1916,9 @@ func exprType(e Expr) string {
 				return cppTypeFrom(t)
 			}
 		}
+		if t, ok := localTypes[v.Name]; ok {
+			return t
+		}
 		return "auto"
 	case *StructLit:
 		return v.Name
@@ -1905,6 +1932,42 @@ func exprType(e Expr) string {
 			return fmt.Sprintf("std::map<%s, %s>", exprType(v.Keys[0]), exprType(v.Values[0]))
 		}
 		return "std::map<auto, auto>"
+	case *UnaryExpr:
+		if v.Op == "!" {
+			return "bool"
+		}
+		return exprType(v.Expr)
+	case *BinaryExpr:
+		switch v.Op {
+		case "==", "!=", "<", "<=", ">", ">=", "&&", "||", "in":
+			return "bool"
+		case "+", "-", "*", "/", "%":
+			lt := exprType(v.Left)
+			rt := exprType(v.Right)
+			if lt == "double" || rt == "double" {
+				return "double"
+			}
+			if lt == rt {
+				return lt
+			}
+			if lt == "int" && rt == "int" {
+				return "int"
+			}
+			return "auto"
+		default:
+			return "auto"
+		}
+	case *IfExpr:
+		t := exprType(v.Then)
+		e2 := exprType(v.Else)
+		if t == e2 {
+			return t
+		}
+		return "auto"
+	case *MultiListComp:
+		return fmt.Sprintf("std::vector<%s>", v.ElemType)
+	case *ExistsExpr:
+		return "bool"
 	}
 	return "auto"
 }
