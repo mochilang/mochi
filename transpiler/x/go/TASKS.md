@@ -1,3 +1,23 @@
+## Progress (2025-07-20 18:18 +0700)
+- transpiler/go: support simple joins
+- Regenerated golden files - 70/100 vm valid programs passing
+
+## Progress (2025-07-20 17:52 +0700)
+- fix tasks
+- Regenerated golden files - 75/100 vm valid programs passing
+
+## Progress (2025-07-20 17:52 +0700)
+- fix tasks
+- Regenerated golden files - 75/100 vm valid programs passing
+
+## Progress (2025-07-20 17:52 +0700)
+- fix tasks
+- Regenerated golden files - 70/100 vm valid programs passing
+
+## Progress (2025-07-20 17:52 +0700)
+- fix tasks
+- Regenerated golden files - 70/100 vm valid programs passing
+
 ## Progress (2025-07-20 17:40 +0700)
 - go transpiler: improve struct fields
 - Regenerated golden files - 70/100 vm valid programs passing
