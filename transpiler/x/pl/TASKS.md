@@ -20,3 +20,8 @@
 - Implemented `append`, `count`, `sum`, `min`, `max`, `avg` and `substring` support.
 - Generated Prolog code and outputs for additional golden tests.
 - Updated README checklist to 20/100 passing programs.
+
+## Progress (2025-07-20 08:31 +0700)
+- Added boolean operators `&&` and `||` with proper short-circuit semantics.
+- Removed the `substring/4` runtime helper and emit direct calls to `sub_string/5`.
+- Improved code generation readability and type inference.
