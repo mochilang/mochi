@@ -2,7 +2,7 @@
 
 Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (47/100)
+## Golden Test Checklist (55/100)
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -22,7 +22,7 @@ Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scal
 - [ ] exists_builtin
 - [x] for_list_collection
 - [x] for_loop
-- [ ] for_map_collection
+- [x] for_map_collection
 - [x] fun_call
 - [x] fun_expr_in_let
 - [x] fun_three_args
@@ -43,11 +43,11 @@ Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scal
 - [ ] in_operator_extended
 - [ ] inner_join
 - [ ] join_multi
-- [ ] json_builtin
+- [x] json_builtin
 - [ ] left_join
 - [ ] left_join_multi
 - [x] len_builtin
-- [ ] len_map
+- [x] len_map
 - [x] len_string
 - [x] let_and_print
 - [ ] list_assign
@@ -56,11 +56,11 @@ Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scal
 - [x] list_set_ops
 - [ ] load_yaml
 - [ ] map_assign
-- [ ] map_in_operator
-- [ ] map_index
-- [ ] map_int_key
-- [ ] map_literal_dynamic
-- [ ] map_membership
+- [x] map_in_operator
+- [x] map_index
+- [x] map_int_key
+- [x] map_literal_dynamic
+- [x] map_membership
 - [ ] map_nested_assign
 - [ ] match_expr
 - [ ] match_full

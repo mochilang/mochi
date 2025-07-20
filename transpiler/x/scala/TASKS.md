@@ -1,3 +1,7 @@
+## Progress (2025-07-20 11:51 +0700)
+- scala transpiler: add map support and builtin improvements
+- Regenerated golden files - 55/100 vm valid programs passing
+
 ## Progress (2025-07-20 10:38 +0700)
 - scala transpiler: improve code and update goldens
 - Regenerated golden files - 47/100 vm valid programs passing
