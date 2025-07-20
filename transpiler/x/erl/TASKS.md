@@ -1,3 +1,5 @@
+## Progress (2025-07-20 13:52 +0700)
+- VM valid golden test results updated to 54/100
 ## Progress (2025-07-20 13:26 +0700)
 - Added closure support and nested function declarations with captured variables.
 - Implemented short-circuit boolean operators.

@@ -197,6 +197,16 @@ func TestTranspileClosure(t *testing.T) { runGolden(t, "closure") }
 
 func TestTranspileNestedFunction(t *testing.T) { runGolden(t, "nested_function") }
 
+func TestTranspilePureFold(t *testing.T) { runGolden(t, "pure_fold") }
+
+func TestTranspilePartialApplication(t *testing.T) { runGolden(t, "partial_application") }
+
+func TestTranspileTailRecursion(t *testing.T) { runGolden(t, "tail_recursion") }
+
+func TestTranspileTwoSum(t *testing.T) { runGolden(t, "two-sum") }
+
+func TestTranspileTestBlock(t *testing.T) { runGolden(t, "test_block") }
+
 func updateEnabled() bool { return *update }
 
 func countCompiled() (int, int) {

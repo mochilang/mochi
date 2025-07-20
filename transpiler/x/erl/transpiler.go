@@ -227,11 +227,13 @@ func (p *PrintStmt) emit(w io.Writer) {
 }
 
 func (r *ReturnStmt) emit(w io.Writer) {
+	io.WriteString(w, "throw({return, ")
 	if r.Expr != nil {
 		r.Expr.emit(w)
 	} else {
 		io.WriteString(w, "nil")
 	}
+	io.WriteString(w, "})")
 }
 
 func (fd *FuncDecl) emit(w io.Writer) {
@@ -243,19 +245,19 @@ func (fd *FuncDecl) emit(w io.Writer) {
 		}
 		io.WriteString(w, p)
 	}
-	io.WriteString(w, ") ->\n")
+	io.WriteString(w, ") ->\n    try\n")
 	for _, st := range fd.Body {
-		io.WriteString(w, "    ")
+		io.WriteString(w, "        ")
 		st.emit(w)
 		io.WriteString(w, ",\n")
 	}
-	io.WriteString(w, "    ")
+	io.WriteString(w, "        ")
 	if fd.Return != nil {
 		fd.Return.emit(w)
 	} else {
 		io.WriteString(w, "nil")
 	}
-	io.WriteString(w, ".\n\n")
+	io.WriteString(w, "\n    catch\n        {return, V} -> V\n    end.\n\n")
 }
 
 func (af *AnonFunc) emit(w io.Writer) {
@@ -266,21 +268,19 @@ func (af *AnonFunc) emit(w io.Writer) {
 		}
 		io.WriteString(w, p)
 	}
-	io.WriteString(w, ") -> ")
-	if len(af.Body) > 0 {
-		io.WriteString(w, "\n")
-		for _, st := range af.Body {
-			io.WriteString(w, "    ")
-			st.emit(w)
-			io.WriteString(w, ",\n")
-		}
-		io.WriteString(w, "    ")
-		af.Return.emit(w)
-		io.WriteString(w, "\n end")
-	} else {
-		af.Return.emit(w)
-		io.WriteString(w, " end")
+	io.WriteString(w, ") ->\n    try\n")
+	for _, st := range af.Body {
+		io.WriteString(w, "        ")
+		st.emit(w)
+		io.WriteString(w, ",\n")
 	}
+	io.WriteString(w, "        ")
+	if af.Return != nil {
+		af.Return.emit(w)
+	} else {
+		io.WriteString(w, "nil")
+	}
+	io.WriteString(w, "\n    catch\n        {return, V} -> V\n    end end")
 }
 
 func isStringExpr(e Expr) bool {
@@ -769,6 +769,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 
 func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, error) {
 	switch {
+	case st.Test != nil:
+		// test blocks are ignored in transpiled output
+		return nil, nil
 	case st.Return != nil:
 		if st.Return.Value != nil {
 			val, err := convertExpr(st.Return.Value, env, ctx)
@@ -1209,6 +1212,15 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 				return nil, err
 			}
 			ce.Args = append(ce.Args, ae)
+		}
+		if fn, ok := env.GetFunc(p.Call.Func); ok && len(p.Call.Args) < len(fn.Params) {
+			remain := fn.Params[len(p.Call.Args):]
+			params := make([]string, len(remain))
+			for i, p := range remain {
+				params[i] = ctx.newAlias(p.Name)
+				ce.Args = append(ce.Args, &NameRef{Name: params[i]})
+			}
+			return &AnonFunc{Params: params, Body: nil, Return: ce}, nil
 		}
 		if ce.Func == "len" && len(ce.Args) == 1 {
 			if isMapExpr(ce.Args[0], env, ctx) {
