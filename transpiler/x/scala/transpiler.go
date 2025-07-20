@@ -141,7 +141,7 @@ type TypeDeclStmt struct {
 }
 
 func (t *TypeDeclStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "case class %s(", t.Name)
+	fmt.Fprintf(w, "class %s(", t.Name)
 	for i, f := range t.Fields {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
@@ -150,7 +150,7 @@ func (t *TypeDeclStmt) emit(w io.Writer) {
 		if typ == "" {
 			typ = "Any"
 		}
-		fmt.Fprintf(w, "%s: %s", f.Name, typ)
+		fmt.Fprintf(w, "var %s: %s", f.Name, typ)
 	}
 	fmt.Fprint(w, ")")
 }
@@ -204,7 +204,9 @@ func (f *FunStmt) emit(w io.Writer) {
 }
 
 func (r *ReturnStmt) emit(w io.Writer) {
+	fmt.Fprint(w, "return")
 	if r.Value != nil {
+		fmt.Fprint(w, " ")
 		r.Value.emit(w)
 	}
 }
@@ -307,8 +309,9 @@ type CallExpr struct {
 type LenExpr struct{ Value Expr }
 
 func (l *LenExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "(")
 	l.Value.emit(w)
-	fmt.Fprint(w, ".size")
+	fmt.Fprint(w, ").size")
 }
 
 func (c *CallExpr) emit(w io.Writer) {
@@ -382,7 +385,7 @@ type StructLit struct {
 }
 
 func (s *StructLit) emit(w io.Writer) {
-	fmt.Fprintf(w, "%s(", s.Name)
+	fmt.Fprintf(w, "new %s(", s.Name)
 	for i, f := range s.Fields {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
@@ -508,9 +511,10 @@ func Emit(p *Program) []byte {
 	buf.WriteString("object Main {\n")
 
 	for _, st := range p.Stmts {
-		if fn, ok := st.(*FunStmt); ok {
+		switch st.(type) {
+		case *FunStmt, *TypeDeclStmt:
 			buf.WriteString("  ")
-			fn.emit(&buf)
+			st.emit(&buf)
 			buf.WriteByte('\n')
 			buf.WriteByte('\n')
 		}
@@ -518,7 +522,8 @@ func Emit(p *Program) []byte {
 
 	buf.WriteString("  def main(args: Array[String]): Unit = {\n")
 	for _, st := range p.Stmts {
-		if _, ok := st.(*FunStmt); ok {
+		switch st.(type) {
+		case *FunStmt, *TypeDeclStmt:
 			continue
 		}
 		buf.WriteString("    ")
@@ -807,7 +812,21 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			expr = &CallExpr{Fn: expr, Args: args}
 		case op.Cast != nil:
 			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
-				expr = &CastExpr{Value: expr, Type: *op.Cast.Type.Simple}
+				typ := *op.Cast.Type.Simple
+				if env != nil {
+					if st, ok := env.GetStruct(typ); ok {
+						fields := make([]Expr, len(st.Order))
+						for i, name := range st.Order {
+							idx := &IndexExpr{Value: expr, Index: &StringLit{Value: name}}
+							fields[i] = idx
+						}
+						expr = &StructLit{Name: typ, Fields: fields}
+					} else {
+						expr = &CastExpr{Value: expr, Type: typ}
+					}
+				} else {
+					expr = &CastExpr{Value: expr, Type: typ}
+				}
 			} else {
 				return nil, fmt.Errorf("unsupported cast")
 			}
@@ -831,7 +850,7 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 	case p.List != nil:
 		elems := make([]Expr, len(p.List.Elems))
 		for i, e := range p.List.Elems {
-			ex, err := convertExpr(e)
+			ex, err := convertExpr(e, env)
 			if err != nil {
 				return nil, err
 			}
@@ -920,6 +939,21 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		if len(args) == 1 {
 			valCall := &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "values"}}
 			return &CallExpr{Fn: &FieldExpr{Receiver: valCall, Name: "toList"}}, nil
+		}
+	}
+	if env != nil {
+		if fn, ok := env.GetFunc(name); ok {
+			if len(args) < len(fn.Params) {
+				missing := fn.Params[len(args):]
+				params := make([]Param, len(missing))
+				vars := make([]Expr, len(missing))
+				for i, p := range missing {
+					params[i] = Param{Name: p.Name, Type: toScalaType(p.Type)}
+					vars[i] = &Name{Name: p.Name}
+				}
+				call := &CallExpr{Fn: &Name{Name: name}, Args: append(args, vars...)}
+				return &FunExpr{Params: params, Expr: call}, nil
+			}
 		}
 	}
 	return &CallExpr{Fn: &Name{Name: name}, Args: args}, nil
@@ -1161,8 +1195,9 @@ func toScalaType(t *parser.TypeRef) string {
 			return "String"
 		case "bool":
 			return "Boolean"
+		default:
+			return *t.Simple
 		}
-		return "Any"
 	}
 	if t.Fun != nil {
 		parts := make([]string, len(t.Fun.Params))
@@ -1194,6 +1229,8 @@ func toScalaTypeFromType(t types.Type) string {
 		return fmt.Sprintf("ArrayBuffer[%s]", toScalaTypeFromType(tt.Elem))
 	case types.MapType:
 		return fmt.Sprintf("Map[%s,%s]", toScalaTypeFromType(tt.Key), toScalaTypeFromType(tt.Value))
+	case types.StructType:
+		return tt.Name
 	}
 	return "Any"
 }

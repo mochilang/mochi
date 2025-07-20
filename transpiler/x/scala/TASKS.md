@@ -1,3 +1,79 @@
+## Progress (2025-07-20 15:32 +0700)
+- update scala docs
+- Regenerated golden files - 58/100 vm valid programs passing
+
+## Progress (2025-07-20 15:32 +0700)
+- update scala docs
+- Regenerated golden files - 58/100 vm valid programs passing
+
+## Progress (2025-07-20 15:32 +0700)
+- update scala docs
+- Regenerated golden files - 58/100 vm valid programs passing
+
+## Progress (2025-07-20 15:31 +0700)
+- scala: implement struct cast and partial apply
+- Regenerated golden files - 58/100 vm valid programs passing
+
+## Progress (2025-07-20 15:06 +0700)
+- scheme transpiler: map support
+- Regenerated golden files - 64/100 vm valid programs passing
+
+## Progress (2025-07-20 15:06 +0700)
+- scheme transpiler: map support
+- Regenerated golden files - 64/100 vm valid programs passing
+
+## Progress (2025-07-20 15:06 +0700)
+- scheme transpiler: map support
+- Regenerated golden files - 64/100 vm valid programs passing
+
+## Progress (2025-07-20 15:06 +0700)
+- scheme transpiler: map support
+- Regenerated golden files - 64/100 vm valid programs passing
+
+## Progress (2025-07-20 15:06 +0700)
+- scheme transpiler: map support
+- Regenerated golden files - 64/100 vm valid programs passing
+
+## Progress (2025-07-20 15:06 +0700)
+- scheme transpiler: map support
+- Regenerated golden files - 64/100 vm valid programs passing
+
+## Progress (2025-07-20 15:06 +0700)
+- scheme transpiler: map support
+- Regenerated golden files - 64/100 vm valid programs passing
+
+## Progress (2025-07-20 15:06 +0700)
+- scheme transpiler: map support
+- Regenerated golden files - 64/100 vm valid programs passing
+
+## Progress (2025-07-20 15:06 +0700)
+- scheme transpiler: map support
+- Regenerated golden files - 64/100 vm valid programs passing
+
+## Progress (2025-07-20 15:06 +0700)
+- scheme transpiler: map support
+- Regenerated golden files - 64/100 vm valid programs passing
+
+## Progress (2025-07-20 15:06 +0700)
+- scheme transpiler: map support
+- Regenerated golden files - 64/100 vm valid programs passing
+
+## Progress (2025-07-20 15:06 +0700)
+- scheme transpiler: map support
+- Regenerated golden files - 64/100 vm valid programs passing
+
+## Progress (2025-07-20 15:06 +0700)
+- scheme transpiler: map support
+- Regenerated golden files - 64/100 vm valid programs passing
+
+## Progress (2025-07-20 15:06 +0700)
+- scheme transpiler: map support
+- Regenerated golden files - 64/100 vm valid programs passing
+
+## Progress (2025-07-20 15:06 +0700)
+- scheme transpiler: map support
+- Regenerated golden files - 64/100 vm valid programs passing
+
 ## Progress (2025-07-20 14:11 +0700)
 - enhance scala transpiler for structs and match
 - Regenerated golden files - 59/100 vm valid programs passing
