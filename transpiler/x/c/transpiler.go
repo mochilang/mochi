@@ -209,7 +209,19 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 		typ = "int"
 	}
 	writeIndent(w, indent)
-	if strings.HasSuffix(typ, "[]") {
+	if strings.HasSuffix(typ, "[][]") {
+		base := strings.TrimSuffix(typ, "[][]")
+		rows, cols := 0, 0
+		if list, ok := d.Value.(*ListLit); ok {
+			rows = len(list.Elems)
+			if rows > 0 {
+				if sub, ok2 := list.Elems[0].(*ListLit); ok2 {
+					cols = len(sub.Elems)
+				}
+			}
+		}
+		fmt.Fprintf(w, "%s %s[%d][%d]", base, d.Name, rows, cols)
+	} else if strings.HasSuffix(typ, "[]") {
 		io.WriteString(w, strings.TrimSuffix(typ, "[]"))
 		io.WriteString(w, " ")
 		io.WriteString(w, d.Name)
@@ -1578,6 +1590,22 @@ func inferExprType(env *types.Env, e Expr) string {
 	case *IntLit:
 		return "int"
 	case *ListLit:
+		if len(v.Elems) > 0 {
+			elemType := inferExprType(env, v.Elems[0])
+			uniform := elemType != ""
+			for _, it := range v.Elems[1:] {
+				if inferExprType(env, it) != elemType {
+					uniform = false
+					break
+				}
+			}
+			if uniform {
+				if strings.HasSuffix(elemType, "[]") {
+					return elemType + "[]"
+				}
+				return elemType + "[]"
+			}
+		}
 		allStr := true
 		for _, it := range v.Elems {
 			if inferExprType(env, it) != "const char*" {
@@ -1612,6 +1640,22 @@ func inferExprType(env *types.Env, e Expr) string {
 			return "const char*"
 		}
 		if l, ok := constLists[v.Name]; ok {
+			if len(l.Elems) > 0 {
+				elemType := inferExprType(env, l.Elems[0])
+				uniform := elemType != ""
+				for _, it := range l.Elems[1:] {
+					if inferExprType(env, it) != elemType {
+						uniform = false
+						break
+					}
+				}
+				if uniform {
+					if strings.HasSuffix(elemType, "[]") {
+						return elemType + "[]"
+					}
+					return elemType + "[]"
+				}
+			}
 			allStr := true
 			for _, it := range l.Elems {
 				if inferExprType(env, it) != "const char*" {
