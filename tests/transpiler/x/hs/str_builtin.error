@@ -1,7 +1,7 @@
 run: exit status 1
 
-/workspace/mochi/tests/transpiler/x/hs/str_builtin.hs:5:12: error:
+/workspace/mochi/tests/transpiler/x/hs/str_builtin.hs:4:12: error:
     Variable not in scope: str :: t0 -> a0
   |
-5 |     print (str 123)
+4 |     print (str 123)
   |            ^^^

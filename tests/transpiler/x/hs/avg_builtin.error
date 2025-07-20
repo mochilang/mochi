@@ -1,7 +1,7 @@
 run: exit status 1
 
-/workspace/mochi/tests/transpiler/x/hs/avg_builtin.hs:5:12: error:
+/workspace/mochi/tests/transpiler/x/hs/avg_builtin.hs:4:12: error:
     Variable not in scope: avg :: [a0] -> a1
   |
-5 |     print (avg [1, 2, 3])
+4 |     print (avg [1, 2, 3])
   |            ^^^
