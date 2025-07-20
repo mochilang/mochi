@@ -1245,6 +1245,9 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		}
 		mutable, _ := transpileEnv.IsMutable(s.Let.Name)
 		t, _ := transpileEnv.GetVar(s.Let.Name)
+		if it, ok := inferLiteralType(s.Let.Value, transpileEnv); ok {
+			t = it
+		}
 		return &VarDecl{Name: s.Let.Name, Expr: e, Const: !mutable, Type: tsType(t)}, nil
 	case s.Var != nil:
 		var e Expr
@@ -1259,6 +1262,9 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		}
 		mutable, _ := transpileEnv.IsMutable(s.Var.Name)
 		t, _ := transpileEnv.GetVar(s.Var.Name)
+		if it, ok := inferLiteralType(s.Var.Value, transpileEnv); ok {
+			t = it
+		}
 		return &VarDecl{Name: s.Var.Name, Expr: e, Const: !mutable, Type: tsType(t)}, nil
 	case s.Assign != nil:
 		val, err := convertExpr(s.Assign.Value)
@@ -2206,6 +2212,37 @@ func zeroValue(t *parser.TypeRef, env *types.Env) Expr {
 	default:
 		return nil
 	}
+}
+
+// inferLiteralType attempts to derive a more precise type from an initializer
+// expression without relying solely on the type checker. It is used to produce
+// typed declarations for list and map literals in untyped code.
+func inferLiteralType(e *parser.Expr, env *types.Env) (types.Type, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil, false
+	}
+	p := u.Value
+	if p.Target == nil {
+		return nil, false
+	}
+	if ll := p.Target.List; ll != nil {
+		if st, ok := types.InferStructFromList(ll, env); ok {
+			return types.ListType{Elem: st}, true
+		}
+	}
+	if ml := p.Target.Map; ml != nil {
+		if st, ok := types.InferStructFromMapEnv(ml, env); ok {
+			return st, true
+		}
+		if mt, ok := types.InferSimpleMap(ml, env); ok {
+			return mt, true
+		}
+	}
+	return nil, false
 }
 
 func tsType(t types.Type) string {
