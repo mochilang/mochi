@@ -41,7 +41,10 @@ func javaType(t string) string {
 	case "fn":
 		return "java.util.function.IntUnaryOperator"
 	default:
-		return ""
+		if t == "" {
+			return ""
+		}
+		return t
 	}
 }
 
@@ -56,6 +59,24 @@ func javaBoxType(t string) string {
 	default:
 		return "Object"
 	}
+}
+
+func fieldTypeFromVar(target Expr, name string) (string, bool) {
+	v, ok := target.(*VarExpr)
+	if !ok || topEnv == nil {
+		return "", false
+	}
+	tname, ok := varTypes[v.Name]
+	if !ok {
+		return "", false
+	}
+	base := strings.TrimSuffix(tname, "[]")
+	if st, ok := topEnv.GetStruct(base); ok {
+		if ft, ok2 := st.Fields[name]; ok2 {
+			return toJavaTypeFromType(ft), true
+		}
+	}
+	return "", false
 }
 
 func inferType(e Expr) string {
@@ -77,16 +98,34 @@ func inferType(e Expr) string {
 			return "string"
 		}
 	case *ListLit:
+		if ex.ElemType != "" {
+			return ex.ElemType + "[]"
+		}
 		if len(ex.Elems) > 0 {
 			t := inferType(ex.Elems[0])
-			switch t {
-			case "string":
-				return "string[]"
-			case "boolean":
-				return "bool[]"
+			if t != "" {
+				if strings.HasSuffix(t, "[]") {
+					return t
+				}
+				switch t {
+				case "string":
+					return "string[]"
+				case "boolean":
+					return "bool[]"
+				default:
+					return t + "[]"
+				}
 			}
 		}
 		return "int[]"
+	case *StructLit:
+		if ex.Name != "" {
+			return ex.Name
+		}
+	case *FieldExpr:
+		if t, ok := fieldTypeFromVar(ex.Target, ex.Name); ok {
+			return t
+		}
 	case *MapLit:
 		return "map"
 	case *LambdaExpr:
@@ -1033,6 +1072,16 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				return nil, err
 			}
 			t := typeRefString(s.Let.Type)
+			if t == "" {
+				switch ex := e.(type) {
+				case *QueryExpr:
+					t = fmt.Sprintf("java.util.List<%s>", ex.ElemType)
+				case *ListLit:
+					if ex.ElemType != "" {
+						t = ex.ElemType + "[]"
+					}
+				}
+			}
 			if t == "" && topEnv != nil {
 				t = toJavaTypeFromType(types.ExprType(s.Let.Value, topEnv))
 			}
@@ -1061,6 +1110,16 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				return nil, err
 			}
 			t := typeRefString(s.Var.Type)
+			if t == "" {
+				switch ex := e.(type) {
+				case *QueryExpr:
+					t = fmt.Sprintf("java.util.List<%s>", ex.ElemType)
+				case *ListLit:
+					if ex.ElemType != "" {
+						t = ex.ElemType + "[]"
+					}
+				}
+			}
 			if t == "" && topEnv != nil {
 				t = toJavaTypeFromType(types.ExprType(s.Var.Value, topEnv))
 			}
@@ -1632,6 +1691,11 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		elemType = "java.util.Map"
 	}
 	varTypes[q.Var] = elemType
+	if topEnv != nil {
+		if st, ok := topEnv.GetStruct(elemType); ok {
+			topEnv.SetVar(q.Var, st, false)
+		}
+	}
 	froms := make([]queryFrom, len(q.Froms))
 	for i, f := range q.Froms {
 		fe, err := compileExpr(f.Src)
@@ -1642,6 +1706,9 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		if topEnv != nil {
 			if lt, ok := types.ExprType(f.Src, topEnv).(types.ListType); ok {
 				varTypes[f.Var] = toJavaTypeFromType(lt.Elem)
+				if st, ok := topEnv.GetStruct(varTypes[f.Var]); ok {
+					topEnv.SetVar(f.Var, st, false)
+				}
 			}
 		}
 		froms[i] = queryFrom{Var: f.Var, Src: fe}
@@ -1656,6 +1723,9 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		if topEnv != nil {
 			if lt, ok := types.ExprType(j.Src, topEnv).(types.ListType); ok {
 				jt = toJavaTypeFromType(lt.Elem)
+				if st, ok := topEnv.GetStruct(jt); ok {
+					topEnv.SetVar(j.Var, st, false)
+				}
 			}
 		}
 		varTypes[j.Var] = jt
@@ -1691,11 +1761,15 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			fieldsDecl := make([]Param, len(st.Order))
 			vals := make([]Expr, len(st.Order))
 			for i, it := range ml.Items {
-				fieldsDecl[i] = Param{Name: st.Order[i], Type: toJavaTypeFromType(st.Fields[st.Order[i]])}
 				v, err := compileExpr(it.Value)
 				if err != nil {
 					return nil, err
 				}
+				tname := inferType(v)
+				if tname == "" {
+					tname = toJavaTypeFromType(st.Fields[st.Order[i]])
+				}
+				fieldsDecl[i] = Param{Name: st.Order[i], Type: tname}
 				vals[i] = v
 			}
 			extraDecls = append(extraDecls, &TypeDeclStmt{Name: name, Fields: fieldsDecl})
