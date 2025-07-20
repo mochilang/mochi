@@ -1,4 +1,4 @@
-# Erlang Transpiler Output (49/100 generated and run)
+# Erlang Transpiler Output (54/100 generated and run)
 
 This directory contains a minimal transpiler that converts a very small
 subset of Mochi into Erlang. Generated programs are executed with
@@ -76,9 +76,9 @@ that produces the same output as the Mochi VM.
 - [x] nested_function
 - [ ] order_by_map
 - [ ] outer_join
-- [ ] partial_application
+- [x] partial_application
 - [x] print_hello
-- [ ] pure_fold
+- [x] pure_fold
 - [ ] pure_global_fold
 - [ ] python_auto
 - [ ] python_math
@@ -98,10 +98,10 @@ that produces the same output as the Mochi VM.
 - [x] string_prefix_slice
 - [x] substring_builtin
 - [x] sum_builtin
-- [ ] tail_recursion
-- [ ] test_block
+- [x] tail_recursion
+- [x] test_block
 - [ ] tree_sum
-- [ ] two-sum
+- [x] two-sum
 - [x] typed_let
 - [x] typed_var
 - [x] unary_neg
