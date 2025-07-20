@@ -1,5 +1,5 @@
-## Progress (2025-07-20 11:38 +0700)
-- cobol: add golden test suite and update checklist
+## Progress (2025-07-20 12:37 +0700)
+- swift transpiler: add fun expr support
 - Generated golden tests for 41/100 programs
 - Updated README checklist and output artifacts
 

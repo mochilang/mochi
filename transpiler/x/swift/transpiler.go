@@ -103,6 +103,36 @@ type CondExpr struct {
 	Else Expr
 }
 
+// FunExpr represents an anonymous function expression.
+type FunExpr struct {
+	Params []Param
+	Ret    string
+	Body   Expr
+}
+
+func (f *FunExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "{ (")
+	for i, p := range f.Params {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		if p.Type != "" {
+			fmt.Fprintf(w, "%s: %s", p.Name, p.Type)
+		} else {
+			fmt.Fprint(w, p.Name)
+		}
+	}
+	fmt.Fprint(w, ")")
+	if f.Ret != "" {
+		fmt.Fprintf(w, " -> %s", f.Ret)
+	}
+	fmt.Fprint(w, " in ")
+	if f.Body != nil {
+		f.Body.emit(w)
+	}
+	fmt.Fprint(w, " }")
+}
+
 func (c *CondExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "(")
 	c.Cond.emit(w)
@@ -963,6 +993,17 @@ func convertPrimary(pr *parser.Primary) (Expr, error) {
 			ce.Args = append(ce.Args, ae)
 		}
 		return ce, nil
+	case pr.FunExpr != nil && pr.FunExpr.ExprBody != nil:
+		body, err := convertExpr(pr.FunExpr.ExprBody)
+		if err != nil {
+			return nil, err
+		}
+		fn := &FunExpr{Ret: toSwiftType(pr.FunExpr.Return)}
+		for _, p := range pr.FunExpr.Params {
+			fn.Params = append(fn.Params, Param{Name: p.Name, Type: toSwiftType(p.Type)})
+		}
+		fn.Body = body
+		return fn, nil
 	case pr.Group != nil:
 		return convertExpr(pr.Group)
 	case pr.If != nil:
