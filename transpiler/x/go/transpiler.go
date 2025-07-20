@@ -656,6 +656,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					}
 				}
 			}
+			if typ == "" {
+				typ = inferGoType(st.Let.Value, env)
+			}
 			return &VarDecl{Name: st.Let.Name, Type: typ, Value: e}, nil
 		}
 		return &VarDecl{Name: st.Let.Name, Type: typ}, nil
@@ -678,6 +681,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 						ml.ValueType = toGoTypeFromType(mt.Value)
 					}
 				}
+			}
+			if typ == "" {
+				typ = inferGoType(st.Var.Value, env)
 			}
 			return &VarDecl{Name: st.Var.Name, Type: typ, Value: e}, nil
 		}
@@ -1275,6 +1281,13 @@ func toGoTypeFromType(t types.Type) string {
 		return fmt.Sprintf("map[%s]%s", toGoTypeFromType(tt.Key), toGoTypeFromType(tt.Value))
 	}
 	return "any"
+}
+
+func inferGoType(e *parser.Expr, env *types.Env) string {
+	if e == nil {
+		return ""
+	}
+	return toGoTypeFromType(types.TypeOfExprBasic(e, env))
 }
 
 func isBoolExpr(e *parser.Expr) bool { return isBoolBinary(e.Binary) }
