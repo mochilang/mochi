@@ -1,3 +1,8 @@
+## Progress (2025-07-20 08:11 +0700)
+- Improved builtin emitters for clearer code and removed helper wrappers
+- Generated TypeScript for 64/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-20 02:03 +0700)
 - Generated TypeScript for 64/100 programs
 - Updated README checklist and outputs
