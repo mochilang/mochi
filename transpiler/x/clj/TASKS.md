@@ -1,3 +1,11 @@
+## Progress (2025-07-20 17:03 +0700)
+- zig transpiler: add int-key map support
+- Regenerated golden files - 65/100 vm valid programs passing
+
+## Progress (2025-07-20 17:03 +0700)
+- zig transpiler: add int-key map support
+- Regenerated golden files - 65/100 vm valid programs passing
+
 ## Progress (2025-07-20 16:45 +0700)
 - release: v0.10.32
 - Regenerated golden files - 64/100 vm valid programs passing
