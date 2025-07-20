@@ -1,13 +1,13 @@
 fun twoSum(nums: MutableList<Int>, target: Int): MutableList<Int> {
     val n = nums.size
     for (i in 0 until n) {
-        for (j in (i + 1) until n) {
-            if (((nums[i] + nums[j]) == target)) {
+        for (j in i + 1 until n) {
+            if (nums[i] + nums[j] == target) {
                 return mutableListOf(i, j)
             }
         }
     }
-    return mutableListOf((0 - 1), (0 - 1))
+    return mutableListOf(0 - 1, 0 - 1)
 }
 
 fun main() {
