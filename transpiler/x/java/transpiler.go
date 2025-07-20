@@ -155,12 +155,15 @@ type LetStmt struct {
 }
 
 func (s *LetStmt) emit(w io.Writer, indent string) {
-	fmt.Fprint(w, indent)
-	typ := s.Type
-	if typ == "" && s.Expr != nil {
-		typ = inferType(s.Expr)
-	}
-	if typ != "" {
+        fmt.Fprint(w, indent)
+        if indent == "    " {
+                fmt.Fprint(w, "static ")
+        }
+        typ := s.Type
+        if typ == "" && s.Expr != nil {
+                typ = inferType(s.Expr)
+        }
+        if typ != "" {
 		fmt.Fprint(w, javaType(typ)+" "+s.Name)
 	} else {
 		if indent == "    " {
@@ -183,12 +186,15 @@ type VarStmt struct {
 }
 
 func (s *VarStmt) emit(w io.Writer, indent string) {
-	fmt.Fprint(w, indent)
-	typ := s.Type
-	if typ == "" && s.Expr != nil {
-		typ = inferType(s.Expr)
-	}
-	if typ != "" {
+        fmt.Fprint(w, indent)
+        if indent == "    " {
+                fmt.Fprint(w, "static ")
+        }
+        typ := s.Type
+        if typ == "" && s.Expr != nil {
+                typ = inferType(s.Expr)
+        }
+        if typ != "" {
 		fmt.Fprint(w, javaType(typ)+" "+s.Name)
 	} else {
 		if indent == "    " {

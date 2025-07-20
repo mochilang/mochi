@@ -1,5 +1,5 @@
-## Progress (2025-07-20 08:19 +0700)
-- transpiler/java: improve emitter and type inference (e38385377)
+## Progress (2025-07-20 08:36 +0700)
+- java transpiler: improve type inference and globals (7e8eb605a)
 
 # Transpiler progress
 
