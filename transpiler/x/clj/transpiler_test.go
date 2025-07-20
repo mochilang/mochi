@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"mochi/parser"
 	cljt "mochi/transpiler/x/clj"
@@ -141,4 +142,73 @@ func compileAndRunClojure(t *testing.T, srcPath, outDir, name string) {
 
 func writeCljError(dir, name string, err error) {
 	_ = os.WriteFile(filepath.Join(dir, name+".error"), []byte(err.Error()), 0o644)
+}
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	updateReadme()
+	updateTasks()
+	os.Exit(code)
+}
+
+func updateReadme() {
+	root := findRepoRoot(&testing.T{})
+	srcDir := filepath.Join(root, "tests", "vm", "valid")
+	binDir := filepath.Join(root, "tests", "transpiler", "x", "clj")
+	readmePath := filepath.Join(root, "transpiler", "x", "clj", "README.md")
+
+	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	total := len(files)
+	compiled := 0
+	var lines []string
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		mark := "[ ]"
+		if _, err := os.Stat(filepath.Join(binDir, name+".output")); err == nil {
+			compiled++
+			mark = "[x]"
+		}
+		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+	}
+
+	var buf bytes.Buffer
+	buf.WriteString("# Mochi Transpiler\n\n")
+	buf.WriteString("This directory contains experimental source translators for generating Clojure code. Each program in `tests/vm/valid` is transpiled and executed with `clojure`.\n\n")
+	fmt.Fprintf(&buf, "Compiled programs: %d/%d\n\n", compiled, total)
+	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteString("\n")
+	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
+}
+
+func updateTasks() {
+	root := findRepoRoot(&testing.T{})
+	taskFile := filepath.Join(root, "transpiler", "x", "clj", "TASKS.md")
+
+	tsRaw, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	msgRaw, _ := exec.Command("git", "log", "-1", "--format=%s").Output()
+	ts := strings.TrimSpace(string(tsRaw))
+	if t, err := time.Parse(time.RFC3339, ts); err == nil {
+		if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+			ts = t.In(loc).Format("2006-01-02 15:04 -0700")
+		} else {
+			ts = t.Format("2006-01-02 15:04 MST")
+		}
+	}
+	msg := strings.TrimSpace(string(msgRaw))
+
+	files, _ := filepath.Glob(filepath.Join(root, "tests", "vm", "valid", "*.mochi"))
+	total := len(files)
+	compiled := 0
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		if _, err := os.Stat(filepath.Join(root, "tests", "transpiler", "x", "clj", name+".output")); err == nil {
+			compiled++
+		}
+	}
+
+	entry := fmt.Sprintf("## Progress (%s)\n- %s\n- Regenerated golden files - %d/%d vm valid programs passing\n\n", ts, msg, compiled, total)
+	if prev, err := os.ReadFile(taskFile); err == nil {
+		entry += string(prev)
+	}
+	_ = os.WriteFile(taskFile, []byte(entry), 0o644)
 }

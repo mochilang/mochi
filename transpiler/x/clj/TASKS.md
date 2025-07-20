@@ -1,3 +1,11 @@
+## Progress (2025-07-20 09:27 +0700)
+- clj transpiler: enhance and update tests
+- Regenerated golden files - 41/100 vm valid programs passing
+
+## Progress (2025-07-20 09:12 +0700)
+- php transpiler: add func support and update golden
+- Regenerated golden files - 41/100 vm valid programs passing
+
 # Transpiler Tasks
 
 Progress for the experimental Clojure backend.
