@@ -238,8 +238,7 @@ func convertWhileStmt(ws *parser.WhileStmt) (Node, error) {
 
 func convertForStmt(fs *parser.ForStmt) (Node, error) {
 	loopSym := gensym("loop")
-	breakSym := gensym("break")
-	pushLoop(breakSym, loopSym)
+	pushLoop(Symbol(""), loopSym)
 	if fs.RangeEnd != nil {
 		start, err := convertParserExpr(fs.Source)
 		if err != nil {
@@ -263,12 +262,9 @@ func convertForStmt(fs *parser.ForStmt) (Node, error) {
 		cond := &List{Elems: []Node{Symbol("<"), Symbol(fs.Name), end}}
 		popLoop()
 		return &List{Elems: []Node{
-			Symbol("let/ec"), breakSym,
-			&List{Elems: []Node{
-				Symbol("let"), loopSym,
-				&List{Elems: []Node{&List{Elems: []Node{Symbol(fs.Name), start}}}},
-				&List{Elems: []Node{Symbol("if"), cond, bodyNode, voidSym()}}}},
-		}}, nil
+			Symbol("let"), loopSym,
+			&List{Elems: []Node{&List{Elems: []Node{Symbol(fs.Name), start}}}},
+			&List{Elems: []Node{Symbol("if"), cond, bodyNode, voidSym()}}}}, nil
 	}
 	iter, err := convertParserExpr(fs.Source)
 	if err != nil {
@@ -284,27 +280,12 @@ func convertForStmt(fs *parser.ForStmt) (Node, error) {
 		popLoop()
 		return nil, err
 	}
-	nextSym := gensym("it")
-	loopCall := &List{Elems: []Node{loopSym, &List{Elems: []Node{Symbol("cdr"), Symbol(nextSym)}}}}
-	body = append(body, loopCall)
-	bodyNode := &List{Elems: []Node{
-		Symbol("let"),
-		&List{Elems: []Node{&List{Elems: []Node{elemSym, &List{Elems: []Node{Symbol("car"), Symbol(nextSym)}}}}}},
-		&List{Elems: append([]Node{Symbol("begin")}, body...)},
-	}}
+	bodyNode := &List{Elems: append([]Node{Symbol("begin")}, body...)}
 	popLoop()
 	return &List{Elems: []Node{
-		Symbol("let/ec"), breakSym,
-		&List{Elems: []Node{
-			Symbol("let"), loopSym,
-			&List{Elems: []Node{&List{Elems: []Node{nextSym, iter}}}},
-			&List{Elems: []Node{
-				Symbol("if"),
-				&List{Elems: []Node{Symbol("null?"), Symbol(nextSym)}},
-				voidSym(),
-				bodyNode,
-			}},
-		}},
+		Symbol("for-each"),
+		&List{Elems: []Node{Symbol("lambda"), &List{Elems: []Node{elemSym}}, bodyNode}},
+		iter,
 	}}, nil
 }
 
@@ -616,7 +597,18 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 	case p.Lit != nil && p.Lit.Bool != nil:
 		return BoolLit(bool(*p.Lit.Bool)), nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
-		return Symbol(p.Selector.Root), nil
+		if currentEnv != nil {
+			if _, err := currentEnv.GetVar(p.Selector.Root); err == nil {
+				return Symbol(p.Selector.Root), nil
+			}
+		}
+		return StringLit(p.Selector.Root), nil
+	case p.Selector != nil:
+		var node Node = Symbol(p.Selector.Root)
+		for _, f := range p.Selector.Tail {
+			node = &List{Elems: []Node{Symbol("hash-table-ref"), node, StringLit(f)}}
+		}
+		return node, nil
 	case p.If != nil:
 		return convertIfExpr(p.If)
 	case p.Group != nil:
@@ -646,6 +638,8 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 			pairs = append(pairs, pair)
 		}
 		return &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: pairs}}}, nil
+	case p.Query != nil:
+		return convertQueryExpr(p.Query)
 	case p.FunExpr != nil:
 		return convertFunExpr(p.FunExpr)
 	case p.Call != nil:
@@ -702,6 +696,67 @@ func convertFunExpr(fe *parser.FunExpr) (Node, error) {
 		}
 	}
 	return &List{Elems: []Node{Symbol("lambda"), &List{Elems: params}, body}}, nil
+}
+
+func convertQueryExpr(q *parser.QueryExpr) (Node, error) {
+	loops := []struct {
+		name   string
+		source Node
+	}{}
+	src, err := convertParserExpr(q.Source)
+	if err != nil {
+		return nil, err
+	}
+	loops = append(loops, struct {
+		name   string
+		source Node
+	}{q.Var, src})
+	for _, f := range q.Froms {
+		src, err := convertParserExpr(f.Src)
+		if err != nil {
+			return nil, err
+		}
+		loops = append(loops, struct {
+			name   string
+			source Node
+		}{f.Var, src})
+	}
+	sel, err := convertParserExpr(q.Select)
+	if err != nil {
+		return nil, err
+	}
+	var where Node
+	if q.Where != nil {
+		where, err = convertParserExpr(q.Where)
+		if err != nil {
+			return nil, err
+		}
+	}
+	resSym := gensym("res")
+	appendNode := Node(&List{Elems: []Node{
+		Symbol("set!"), resSym,
+		&List{Elems: []Node{
+			Symbol("append"), resSym,
+			&List{Elems: []Node{Symbol("list"), sel}},
+		}},
+	}})
+	if where != nil {
+		appendNode = &List{Elems: []Node{Symbol("if"), where, appendNode, voidSym()}}
+	}
+	body := appendNode
+	for i := len(loops) - 1; i >= 0; i-- {
+		l := loops[i]
+		body = &List{Elems: []Node{
+			Symbol("for-each"),
+			&List{Elems: []Node{Symbol("lambda"), &List{Elems: []Node{Symbol(l.name)}}, body}},
+			l.source,
+		}}
+	}
+	return &List{Elems: []Node{
+		Symbol("let"),
+		&List{Elems: []Node{&List{Elems: []Node{resSym, &List{Elems: []Node{Symbol("list")}}}}}},
+		&List{Elems: []Node{Symbol("begin"), body, resSym}},
+	}}, nil
 }
 
 func makeBinary(op string, left, right Node) Node {
