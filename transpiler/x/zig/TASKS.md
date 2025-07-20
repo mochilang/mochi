@@ -1,6 +1,11 @@
- ## Progress (2025-07-20 08:31 +0700)
- - Added support for range and list based `for` loops.
- - Generated golden tests for `for_loop` and `for_list_collection` (26/100 tests passing)
+## Progress (2025-07-20 09:22 +0700)
+- Improved type inference for strings, booleans and constant lists.
+- Removed AST debug helpers and cleaned generated code format.
+- Regenerated golden files and updated README checklist (26/100 tests passing)
+
+## Progress (2025-07-20 08:31 +0700)
+- Added support for range and list based `for` loops.
+- Generated golden tests for `for_loop` and `for_list_collection` (26/100 tests passing)
 
 ## Progress (2025-07-19 19:14 +0000)
 - Improved code readability and removed unused helper functions.
