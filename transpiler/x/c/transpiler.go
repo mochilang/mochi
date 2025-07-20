@@ -557,10 +557,10 @@ func gitTimestamp() string {
 	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	if err == nil {
 		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
-			return t.Format("2006-01-02 15:04 MST")
+			return t.Format("2006-01-02 15:04 -0700")
 		}
 	}
-	return time.Now().UTC().Format("2006-01-02 15:04 MST")
+	return time.Now().Format("2006-01-02 15:04 -0700")
 }
 
 // repoRoot attempts to locate the repository root containing go.mod.
@@ -1546,7 +1546,32 @@ func exprIsString(e Expr) bool {
 	}
 }
 
+func exprIsBool(e Expr) bool {
+	switch v := e.(type) {
+	case *IntLit:
+		return v.Value == 0 || v.Value == 1
+	case *UnaryExpr:
+		if v.Op == "!" {
+			return exprIsBool(v.Expr)
+		}
+	case *BinaryExpr:
+		switch v.Op {
+		case "==", "!=", "<", "<=", ">", ">=", "&&", "||", "in":
+			return true
+		}
+	case *CondExpr:
+		return exprIsBool(v.Then) && exprIsBool(v.Else)
+	}
+	if _, ok := evalBool(e); ok {
+		return true
+	}
+	return false
+}
+
 func inferExprType(env *types.Env, e Expr) string {
+	if exprIsBool(e) {
+		return "int"
+	}
 	switch v := e.(type) {
 	case *StringLit:
 		return "const char*"
