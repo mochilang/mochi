@@ -15,8 +15,14 @@ import (
 // --- C# AST ---
 
 type Program struct {
-	Funcs []*Function
-	Stmts []Stmt
+	Globals []*Global
+	Funcs   []*Function
+	Stmts   []Stmt
+}
+
+type Global struct {
+	Name  string
+	Value Expr
 }
 
 var stringVars map[string]bool
@@ -829,9 +835,9 @@ type AppendExpr struct {
 
 func (a *AppendExpr) emit(w io.Writer) {
 	a.List.emit(w)
-	fmt.Fprint(w, ".Append(")
+	fmt.Fprint(w, ".Concat(new[]{")
 	a.Item.emit(w)
-	fmt.Fprint(w, ").ToList()")
+	fmt.Fprint(w, "}).ToArray()")
 }
 
 type StrExpr struct{ Arg Expr }
@@ -1102,6 +1108,10 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		if t := typeOfExpr(val); t != "" {
 			varTypes[s.Let.Name] = t
 		}
+		if prog != nil {
+			prog.Globals = append(prog.Globals, &Global{Name: s.Let.Name, Value: val})
+			return nil, nil
+		}
 		return &LetStmt{Name: s.Let.Name, Value: val}, nil
 	case s.Var != nil:
 		var val Expr
@@ -1133,6 +1143,10 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		}
 		if t := typeOfExpr(val); t != "" {
 			varTypes[s.Var.Name] = t
+		}
+		if prog != nil {
+			prog.Globals = append(prog.Globals, &Global{Name: s.Var.Name, Value: val})
+			return nil, nil
 		}
 		return &VarStmt{Name: s.Var.Name, Value: val}, nil
 	case s.Assign != nil:
@@ -1488,6 +1502,16 @@ func Emit(prog *Program) []byte {
 	}
 	buf.WriteString("\n")
 	buf.WriteString("class Program {\n")
+	for _, g := range prog.Globals {
+		buf.WriteString("\tstatic ")
+		if t, ok := varTypes[g.Name]; ok && t != "" {
+			fmt.Fprintf(&buf, "%s %s = ", t, g.Name)
+		} else {
+			fmt.Fprintf(&buf, "var %s = ", g.Name)
+		}
+		g.Value.emit(&buf)
+		buf.WriteString(";\n")
+	}
 	for _, fn := range prog.Funcs {
 		buf.WriteString("\t")
 		fn.emit(&buf)
