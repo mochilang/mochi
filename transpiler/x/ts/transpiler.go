@@ -1522,6 +1522,8 @@ func zeroValue(t *parser.TypeRef, env *types.Env) Expr {
 		return &MapLit{}
 	case types.OptionType:
 		return &NullLit{}
+	case types.StructType:
+		return &MapLit{}
 	default:
 		return nil
 	}
