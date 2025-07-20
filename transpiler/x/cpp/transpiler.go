@@ -40,6 +40,7 @@ type Program struct {
 	Structs   []StructDef
 	Globals   []Stmt
 	Functions []*Func
+	ListTypes map[string]string
 }
 
 func (p *Program) addInclude(inc string) {
@@ -183,14 +184,14 @@ type CallExpr struct {
 }
 
 type LambdaExpr struct {
-        Params []Param
-        Body   Expr
+	Params []Param
+	Body   Expr
 }
 
 // BlockLambda represents a lambda with a statement body.
 type BlockLambda struct {
-        Params []Param
-        Body   []Stmt
+	Params []Param
+	Body   []Stmt
 }
 
 type ReturnStmt struct{ Value Expr }
@@ -240,6 +241,16 @@ type IfExpr struct {
 	Then   Expr
 	ElseIf *IfExpr
 	Else   Expr
+}
+
+// MultiListComp represents a simple list comprehension with multiple input
+// iterators. It is used for query expressions like `[f(a,b) for a in A for b in B]`.
+type MultiListComp struct {
+	Vars     []string
+	Iters    []Expr
+	Expr     Expr
+	Cond     Expr
+	ElemType string
 }
 
 func (p *Program) Emit() []byte {
@@ -642,7 +653,7 @@ func (c *CallExpr) emit(w io.Writer) {
 }
 
 func (l *LambdaExpr) emit(w io.Writer) {
-        io.WriteString(w, "[=](")
+	io.WriteString(w, "[=](")
 	for i, p := range l.Params {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -654,29 +665,55 @@ func (l *LambdaExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, p.Name)
 	}
-        io.WriteString(w, ") { return ")
-        l.Body.emit(w)
-        io.WriteString(w, "; }")
+	io.WriteString(w, ") { return ")
+	l.Body.emit(w)
+	io.WriteString(w, "; }")
 }
 
 func (l *BlockLambda) emit(w io.Writer) {
-        io.WriteString(w, "[=](")
-        for i, p := range l.Params {
-                if i > 0 {
-                        io.WriteString(w, ", ")
-                }
-                if p.Type == "" {
-                        io.WriteString(w, "auto ")
-                } else {
-                        io.WriteString(w, p.Type+" ")
-                }
-                io.WriteString(w, p.Name)
-        }
-        io.WriteString(w, ") {\n")
-        for _, st := range l.Body {
-                st.emit(w, 1)
-        }
-        io.WriteString(w, "}")
+	io.WriteString(w, "[=](")
+	for i, p := range l.Params {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		if p.Type == "" {
+			io.WriteString(w, "auto ")
+		} else {
+			io.WriteString(w, p.Type+" ")
+		}
+		io.WriteString(w, p.Name)
+	}
+	io.WriteString(w, ") {\n")
+	for _, st := range l.Body {
+		st.emit(w, 1)
+	}
+	io.WriteString(w, "}")
+}
+
+func (lc *MultiListComp) emit(w io.Writer) {
+	io.WriteString(w, "([]{ std::vector<"+lc.ElemType+"> __items; ")
+	for i, v := range lc.Vars {
+		io.WriteString(w, "for (auto ")
+		io.WriteString(w, v)
+		io.WriteString(w, " : ")
+		lc.Iters[i].emit(w)
+		io.WriteString(w, ") {")
+	}
+	if lc.Cond != nil {
+		io.WriteString(w, " if(")
+		lc.Cond.emit(w)
+		io.WriteString(w, ") {")
+	}
+	io.WriteString(w, "__items.push_back(")
+	lc.Expr.emit(w)
+	io.WriteString(w, ");")
+	if lc.Cond != nil {
+		io.WriteString(w, " }")
+	}
+	for range lc.Vars {
+		io.WriteString(w, "}")
+	}
+	io.WriteString(w, " return __items; }())")
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
@@ -853,7 +890,7 @@ func (i *IfExpr) emit(w io.Writer) {
 }
 
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
-	cp := &Program{Includes: []string{"<iostream>", "<string>"}}
+	cp := &Program{Includes: []string{"<iostream>", "<string>"}, ListTypes: map[string]string{}}
 	currentProgram = cp
 	currentEnv = env
 	defer func() { currentProgram = nil; currentEnv = nil }()
@@ -885,7 +922,18 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			var val Expr
 			var err error
 			if stmt.Let.Value != nil {
-				val, err = convertExpr(stmt.Let.Value)
+				if q := extractQuery(stmt.Let.Value); q != nil {
+					var def *StructDef
+					val, def, _, err = convertSimpleQuery(q, stmt.Let.Name)
+					if err != nil {
+						return nil, err
+					}
+					if def != nil {
+						cp.Structs = append(cp.Structs, *def)
+					}
+				} else {
+					val, err = convertExpr(stmt.Let.Value)
+				}
 				if err != nil {
 					return nil, err
 				}
@@ -894,12 +942,33 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			if stmt.Let.Type != nil && stmt.Let.Type.Simple != nil {
 				typ = cppType(*stmt.Let.Type.Simple)
 			}
+			if typ == "" {
+				if lst, ok := val.(*ListLit); ok {
+					if def, sname, ok := inferStructFromList(stmt.Let.Name, lst); ok {
+						cp.Structs = append(cp.Structs, *def)
+						typ = fmt.Sprintf("std::vector<%s>", sname)
+					}
+				} else if comp, ok := val.(*MultiListComp); ok {
+					typ = fmt.Sprintf("std::vector<%s>", comp.ElemType)
+				}
+			}
 			globals = append(globals, &LetStmt{Name: stmt.Let.Name, Type: typ, Value: val})
 		case stmt.Var != nil:
 			var val Expr
 			var err error
 			if stmt.Var.Value != nil {
-				val, err = convertExpr(stmt.Var.Value)
+				if q := extractQuery(stmt.Var.Value); q != nil {
+					var def *StructDef
+					val, def, _, err = convertSimpleQuery(q, stmt.Var.Name)
+					if err != nil {
+						return nil, err
+					}
+					if def != nil {
+						cp.Structs = append(cp.Structs, *def)
+					}
+				} else {
+					val, err = convertExpr(stmt.Var.Value)
+				}
 				if err != nil {
 					return nil, err
 				}
@@ -907,6 +976,16 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			typ := ""
 			if stmt.Var.Type != nil && stmt.Var.Type.Simple != nil {
 				typ = cppType(*stmt.Var.Type.Simple)
+			}
+			if typ == "" {
+				if lst, ok := val.(*ListLit); ok {
+					if def, sname, ok := inferStructFromList(stmt.Var.Name, lst); ok {
+						cp.Structs = append(cp.Structs, *def)
+						typ = fmt.Sprintf("std::vector<%s>", sname)
+					}
+				} else if comp, ok := val.(*MultiListComp); ok {
+					typ = fmt.Sprintf("std::vector<%s>", comp.ElemType)
+				}
 			}
 			globals = append(globals, &LetStmt{Name: stmt.Var.Name, Type: typ, Value: val})
 		case stmt.Type != nil:
@@ -1004,15 +1083,26 @@ func extractCall(e *parser.Expr) *parser.CallExpr {
 	return u.Value.Target.Call
 }
 
+func extractQuery(e *parser.Expr) *parser.QueryExpr {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return nil
+	}
+	u := e.Binary.Left
+	if u.Value == nil || u.Value.Target == nil || u.Value.Target.Query == nil {
+		return nil
+	}
+	return u.Value.Target.Query
+}
+
 func convertStmt(s *parser.Statement) (Stmt, error) {
-        switch {
-       case s.Fun != nil:
-               lam, err := convertFunLambda(s.Fun)
-               if err != nil {
-                       return nil, err
-               }
-               return &LetStmt{Name: s.Fun.Name, Type: "", Value: lam}, nil
-        case s.Expr != nil:
+	switch {
+	case s.Fun != nil:
+		lam, err := convertFunLambda(s.Fun)
+		if err != nil {
+			return nil, err
+		}
+		return &LetStmt{Name: s.Fun.Name, Type: "", Value: lam}, nil
+	case s.Expr != nil:
 		if call := extractCall(s.Expr.Expr); call != nil && call.Func == "print" {
 			var args []Expr
 			for _, a := range call.Args {
@@ -1313,23 +1403,23 @@ func convertFun(fn *parser.FunStmt) (*Func, error) {
 }
 
 func convertFunLambda(fn *parser.FunStmt) (*BlockLambda, error) {
-        var body []Stmt
-        for _, st := range fn.Body {
-                s, err := convertStmt(st)
-                if err != nil {
-                        return nil, err
-                }
-                body = append(body, s)
-        }
-        var params []Param
-        for _, p := range fn.Params {
-                typ := ""
-                if p.Type != nil && p.Type.Simple != nil {
-                        typ = cppType(*p.Type.Simple)
-                }
-                params = append(params, Param{Name: p.Name, Type: typ})
-        }
-        return &BlockLambda{Params: params, Body: body}, nil
+	var body []Stmt
+	for _, st := range fn.Body {
+		s, err := convertStmt(st)
+		if err != nil {
+			return nil, err
+		}
+		body = append(body, s)
+	}
+	var params []Param
+	for _, p := range fn.Params {
+		typ := ""
+		if p.Type != nil && p.Type.Simple != nil {
+			typ = cppType(*p.Type.Simple)
+		}
+		params = append(params, Param{Name: p.Name, Type: typ})
+	}
+	return &BlockLambda{Params: params, Body: body}, nil
 }
 
 func convertPrimary(p *parser.Primary) (Expr, error) {
@@ -1506,6 +1596,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			vals[i] = ve
 		}
 		return &MapLit{Keys: keys, Values: vals, KeyType: kt, ValueType: vt}, nil
+	case p.Query != nil:
+		expr, _, _, err := convertSimpleQuery(p.Query, "tmp")
+		return expr, err
 	case p.FunExpr != nil && p.FunExpr.ExprBody != nil:
 		var params []Param
 		for _, pa := range p.FunExpr.Params {
@@ -1564,6 +1657,87 @@ func convertIfExpr(ie *parser.IfExpr) (*IfExpr, error) {
 		}
 	}
 	return &IfExpr{Cond: cond, Then: thenExpr, ElseIf: elseIf, Else: elseExpr}, nil
+}
+
+func convertSimpleQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, string, error) {
+	if len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+		return nil, nil, "", fmt.Errorf("unsupported query")
+	}
+	vars := []string{q.Var}
+	iters := []Expr{}
+	qTypes := map[string]string{}
+	src, err := convertExpr(q.Source)
+	if err != nil {
+		return nil, nil, "", err
+	}
+	iters = append(iters, src)
+	if vr, ok := src.(*VarRef); ok {
+		if t, ok2 := currentProgram.ListTypes[vr.Name]; ok2 {
+			qTypes[q.Var] = t
+		}
+	}
+	for _, f := range q.Froms {
+		e, err := convertExpr(f.Src)
+		if err != nil {
+			return nil, nil, "", err
+		}
+		vars = append(vars, f.Var)
+		iters = append(iters, e)
+		if vr, ok := e.(*VarRef); ok {
+			if t, ok2 := currentProgram.ListTypes[vr.Name]; ok2 {
+				qTypes[f.Var] = t
+			}
+		}
+	}
+	var cond Expr
+	if q.Where != nil {
+		cond, err = convertExpr(q.Where)
+		if err != nil {
+			return nil, nil, "", err
+		}
+	}
+	body, err := convertExpr(q.Select)
+	if err != nil {
+		return nil, nil, "", err
+	}
+	elemType := guessType(q.Select)
+	var def *StructDef
+	if ml, ok := body.(*MapLit); ok {
+		if keys := make([]string, len(ml.Keys)); true {
+			for i, k := range ml.Keys {
+				n, ok := keyName(k)
+				if !ok {
+					keys = nil
+					break
+				}
+				keys[i] = n
+			}
+			if keys != nil {
+				structName := strings.Title(target) + "Item"
+				fields := make([]Param, len(keys))
+				flds := make([]FieldLit, len(keys))
+				for i, k := range keys {
+					typ := exprType(ml.Values[i])
+					if sel, ok := ml.Values[i].(*SelectorExpr); ok {
+						if vr, ok2 := sel.Target.(*VarRef); ok2 {
+							if s, ok3 := qTypes[vr.Name]; ok3 {
+								typ = structFieldType(s, sel.Field)
+							}
+						}
+					}
+					fields[i] = Param{Name: k, Type: typ}
+					flds[i] = FieldLit{Name: k, Value: ml.Values[i]}
+				}
+				body = &StructLit{Name: structName, Fields: flds}
+				def = &StructDef{Name: structName, Fields: fields}
+				elemType = structName
+			}
+		}
+	}
+	if currentProgram != nil {
+		currentProgram.addInclude("<vector>")
+	}
+	return &MultiListComp{Vars: vars, Iters: iters, Expr: body, Cond: cond, ElemType: elemType}, def, elemType, nil
 }
 
 func cppType(t string) string {
@@ -1685,6 +1859,105 @@ func defaultValueForType(t string) string {
 		return "\"\""
 	}
 	return "{}"
+}
+
+func exprType(e Expr) string {
+	switch v := e.(type) {
+	case *IntLit:
+		return "int"
+	case *BoolLit:
+		return "bool"
+	case *StringLit:
+		return "std::string"
+	case *StructLit:
+		return v.Name
+	case *ListLit:
+		if len(v.Elems) > 0 {
+			return fmt.Sprintf("std::vector<%s>", exprType(v.Elems[0]))
+		}
+		return "std::vector<auto>"
+	case *MapLit:
+		if len(v.Keys) > 0 {
+			return fmt.Sprintf("std::map<%s, %s>", exprType(v.Keys[0]), exprType(v.Values[0]))
+		}
+		return "std::map<auto, auto>"
+	}
+	return "auto"
+}
+
+func keyName(e Expr) (string, bool) {
+	switch k := e.(type) {
+	case *StringLit:
+		return k.Value, true
+	case *VarRef:
+		return k.Name, true
+	}
+	return "", false
+}
+
+func inferStructFromList(name string, l *ListLit) (*StructDef, string, bool) {
+	if len(l.Elems) == 0 {
+		return nil, "", false
+	}
+	first, ok := l.Elems[0].(*MapLit)
+	if !ok {
+		return nil, "", false
+	}
+	keys := make([]string, len(first.Keys))
+	for i, k := range first.Keys {
+		n, ok := keyName(k)
+		if !ok {
+			return nil, "", false
+		}
+		keys[i] = n
+	}
+	for _, e := range l.Elems[1:] {
+		m, ok := e.(*MapLit)
+		if !ok || len(m.Keys) != len(keys) {
+			return nil, "", false
+		}
+		for i, k := range m.Keys {
+			n, ok := keyName(k)
+			if !ok || n != keys[i] {
+				return nil, "", false
+			}
+		}
+	}
+	sname := strings.Title(name) + "Item"
+	fields := make([]Param, len(keys))
+	for i, k := range keys {
+		fields[i] = Param{Name: k, Type: exprType(first.Values[i])}
+	}
+	for i, e := range l.Elems {
+		m := e.(*MapLit)
+		flds := make([]FieldLit, len(keys))
+		for j, k := range keys {
+			flds[j] = FieldLit{Name: k, Value: m.Values[j]}
+		}
+		l.Elems[i] = &StructLit{Name: sname, Fields: flds}
+	}
+	if currentProgram != nil {
+		if currentProgram.ListTypes == nil {
+			currentProgram.ListTypes = map[string]string{}
+		}
+		currentProgram.ListTypes[name] = sname
+	}
+	return &StructDef{Name: sname, Fields: fields}, sname, true
+}
+
+func structFieldType(stName, field string) string {
+	if currentProgram != nil {
+		for _, st := range currentProgram.Structs {
+			if st.Name == stName {
+				for _, f := range st.Fields {
+					if f.Name == field {
+						return f.Type
+					}
+				}
+			}
+		}
+	}
+	return "auto"
 }
 
 func convertTypeDecl(td *parser.TypeDecl) (*StructDef, error) {
