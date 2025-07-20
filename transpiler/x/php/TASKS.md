@@ -13,3 +13,5 @@
   avg, str) plus comparison fixes enabling binary_precedence, math_ops,
   string_compare, str_builtin, sum_builtin and avg_builtin tests
 - 2025-07-20 01:31 UTC - Added min/max builtin support enabling min_max_builtin test
+- 2025-07-20 08:53 +0700 - Added basic function support and len type inference
+  enabling fun_call, fun_three_args and bool_chain tests

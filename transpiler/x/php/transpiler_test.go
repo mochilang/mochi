@@ -203,6 +203,18 @@ func TestTranspile_AvgBuiltin(t *testing.T) {
 	runTranspileTest(t, "avg_builtin")
 }
 
+func TestTranspile_FunCall(t *testing.T) {
+	runTranspileTest(t, "fun_call")
+}
+
+func TestTranspile_FunThreeArgs(t *testing.T) {
+	runTranspileTest(t, "fun_three_args")
+}
+
+func TestTranspile_BoolChain(t *testing.T) {
+	runTranspileTest(t, "bool_chain")
+}
+
 func TestTranspile_MinMaxBuiltin(t *testing.T) {
 	runTranspileTest(t, "min_max_builtin")
 }
