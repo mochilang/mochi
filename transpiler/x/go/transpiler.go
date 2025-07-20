@@ -139,6 +139,20 @@ type ParamDecl struct {
 	Type string
 }
 
+// TypeDeclStmt declares a simple struct type.
+type TypeDeclStmt struct {
+	Name   string
+	Fields []ParamDecl
+}
+
+func (t *TypeDeclStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "type %s struct {\n", t.Name)
+	for _, f := range t.Fields {
+		fmt.Fprintf(w, "    %s %s\n", f.Name, f.Type)
+	}
+	fmt.Fprint(w, "}")
+}
+
 type FuncDecl struct {
 	Name   string
 	Params []ParamDecl
@@ -332,6 +346,25 @@ func (m *MapLit) emit(w io.Writer) {
 	fmt.Fprint(w, "}")
 }
 
+// StructLit represents a struct literal.
+type StructLit struct {
+	Name   string
+	Fields []Expr
+	Names  []string
+}
+
+func (s *StructLit) emit(w io.Writer) {
+	fmt.Fprintf(w, "%s{", s.Name)
+	for i, f := range s.Fields {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		fmt.Fprintf(w, "%s: ", s.Names[i])
+		f.emit(w)
+	}
+	fmt.Fprint(w, "}")
+}
+
 // IndexExpr represents `X[i]`.
 type IndexExpr struct {
 	X     Expr
@@ -345,6 +378,17 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		ix.Index.emit(w)
 	}
 	fmt.Fprint(w, "]")
+}
+
+// FieldExpr represents `X.f`.
+type FieldExpr struct {
+	X    Expr
+	Name string
+}
+
+func (fe *FieldExpr) emit(w io.Writer) {
+	fe.X.emit(w)
+	fmt.Fprintf(w, ".%s", fe.Name)
 }
 
 // SliceExpr represents `X[i:j]`.
@@ -834,6 +878,15 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			return &VarDecl{Name: st.Var.Name, Type: typ, Value: e, Global: env == topEnv}, nil
 		}
 		return &VarDecl{Name: st.Var.Name, Type: typ, Global: env == topEnv}, nil
+	case st.Type != nil:
+		stype, ok := env.GetStruct(st.Type.Name)
+		if ok {
+			fields := make([]ParamDecl, len(stype.Order))
+			for i, n := range stype.Order {
+				fields[i] = ParamDecl{Name: n, Type: toGoTypeFromType(stype.Fields[n])}
+			}
+			return &TypeDeclStmt{Name: st.Type.Name, Fields: fields}, nil
+		}
 	case st.Assign != nil:
 		if len(st.Assign.Index) == 1 && st.Assign.Index[0].Colon == nil && st.Assign.Index[0].Colon2 == nil && len(st.Assign.Field) == 0 {
 			idx, err := compileExpr(st.Assign.Index[0].Start, env)
@@ -1022,6 +1075,9 @@ func zeroValueExpr(goType string) Expr {
 	case strings.HasPrefix(goType, "[]"):
 		return &VarRef{Name: "nil"}
 	default:
+		if _, ok := topEnv.GetStruct(goType); ok {
+			return &StructLit{Name: goType}
+		}
 		return &VarRef{Name: "nil"}
 	}
 }
@@ -1306,25 +1362,20 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 	}
 	t := types.TypeOfPrimaryBasic(pf.Target, env)
 	if len(tail) > 0 && (len(pf.Ops) == 0 || pf.Ops[0].Call == nil) {
-		for i, f := range tail {
-			expr = &IndexExpr{X: expr, Index: &StringLit{Value: f}}
+		for _, f := range tail {
 			switch tt := t.(type) {
 			case types.MapType:
+				expr = &IndexExpr{X: expr, Index: &StringLit{Value: f}}
 				t = tt.Value
-				if !types.IsAnyType(t) {
-					expr = &AssertExpr{Expr: expr, Type: toGoTypeFromType(t)}
-				}
 			case types.StructType:
+				expr = &FieldExpr{X: expr, Name: f}
 				if ft, ok := tt.Fields[f]; ok {
 					t = ft
 				} else {
 					t = types.AnyType{}
 				}
-				expr = &AssertExpr{Expr: expr, Type: toGoTypeFromType(t)}
-				if i < len(tail)-1 {
-					expr = &AssertExpr{Expr: expr, Type: "map[string]any"}
-				}
 			default:
+				expr = &FieldExpr{X: expr, Name: f}
 				t = types.AnyType{}
 			}
 		}
@@ -1450,18 +1501,19 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				return nil, fmt.Errorf("unsupported postfix")
 			}
 		} else if op.Field != nil {
-			expr = &IndexExpr{X: expr, Index: &StringLit{Value: op.Field.Name}}
 			switch tt := t.(type) {
 			case types.MapType:
+				expr = &IndexExpr{X: expr, Index: &StringLit{Value: op.Field.Name}}
 				t = tt.Value
 			case types.StructType:
+				expr = &FieldExpr{X: expr, Name: op.Field.Name}
 				if ft, ok := tt.Fields[op.Field.Name]; ok {
 					t = ft
 				} else {
 					t = types.AnyType{}
 				}
-				expr = &AssertExpr{Expr: expr, Type: toGoTypeFromType(t)}
 			default:
+				expr = &FieldExpr{X: expr, Name: op.Field.Name}
 				t = types.AnyType{}
 			}
 		}
@@ -1564,17 +1616,31 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		mt, _ := types.TypeOfPrimaryBasic(p, env).(types.MapType)
 		return &MapLit{KeyType: toGoTypeFromType(mt.Key), ValueType: toGoTypeFromType(mt.Value), Keys: keys, Values: vals}, nil
 	case p.Struct != nil:
-		keys := make([]Expr, len(p.Struct.Fields))
-		vals := make([]Expr, len(p.Struct.Fields))
-		for i, f := range p.Struct.Fields {
-			ve, err := compileExpr(f.Value, env)
+		st, ok := env.GetStruct(p.Struct.Name)
+		if !ok {
+			return nil, fmt.Errorf("unknown struct %s", p.Struct.Name)
+		}
+		names := make([]string, len(st.Order))
+		fields := make([]Expr, len(st.Order))
+		for i, name := range st.Order {
+			names[i] = name
+			var exprNode *parser.Expr
+			for _, f := range p.Struct.Fields {
+				if f.Name == name {
+					exprNode = f.Value
+					break
+				}
+			}
+			if exprNode == nil {
+				return nil, fmt.Errorf("missing field %s", name)
+			}
+			ex, err := compileExpr(exprNode, env)
 			if err != nil {
 				return nil, err
 			}
-			keys[i] = &StringLit{Value: f.Name}
-			vals[i] = ve
+			fields[i] = ex
 		}
-		return &MapLit{KeyType: "string", ValueType: "any", Keys: keys, Values: vals}, nil
+		return &StructLit{Name: p.Struct.Name, Fields: fields, Names: names}, nil
 	case p.Lit != nil:
 		if p.Lit.Str != nil {
 			return &StringLit{Value: *p.Lit.Str}, nil
@@ -1615,7 +1681,7 @@ func toGoType(t *parser.TypeRef, env *types.Env) string {
 		default:
 			if env != nil {
 				if _, ok := env.GetStruct(*t.Simple); ok {
-					return "map[string]any"
+					return *t.Simple
 				}
 			}
 		}
@@ -1664,7 +1730,7 @@ func toGoTypeFromType(t types.Type) string {
 	case types.MapType:
 		return fmt.Sprintf("map[%s]%s", toGoTypeFromType(tt.Key), toGoTypeFromType(tt.Value))
 	case types.StructType:
-		return "map[string]any"
+		return tt.Name
 	case types.FuncType:
 		params := make([]string, len(tt.Params))
 		for i, p := range tt.Params {
@@ -1675,6 +1741,8 @@ func toGoTypeFromType(t types.Type) string {
 			return fmt.Sprintf("func(%s) %s", strings.Join(params, ", "), ret)
 		}
 		return fmt.Sprintf("func(%s)", strings.Join(params, ", "))
+	case types.VoidType:
+		return ""
 	}
 	return "any"
 }
@@ -1806,6 +1874,9 @@ func Emit(prog *Program) []byte {
 	// no runtime helper functions needed
 	for _, s := range prog.Stmts {
 		switch st := s.(type) {
+		case *TypeDeclStmt:
+			st.emit(&buf)
+			buf.WriteString("\n\n")
 		case *FuncDecl:
 			st.emit(&buf)
 			buf.WriteString("\n\n")
@@ -1822,6 +1893,9 @@ func Emit(prog *Program) []byte {
 			continue
 		}
 		if _, ok := s.(*FuncDecl); ok {
+			continue
+		}
+		if _, ok := s.(*TypeDeclStmt); ok {
 			continue
 		}
 		buf.WriteString("    ")
@@ -1955,8 +2029,19 @@ func toNodeExpr(e Expr) *ast.Node {
 			n.Children = append(n.Children, toNodeExpr(e))
 		}
 		return n
+	case *StructLit:
+		n := &ast.Node{Kind: "struct", Value: ex.Name}
+		for i, f := range ex.Fields {
+			field := &ast.Node{Kind: ex.Names[i], Children: []*ast.Node{toNodeExpr(f)}}
+			n.Children = append(n.Children, field)
+		}
+		return n
 	case *IndexExpr:
 		return &ast.Node{Kind: "index", Children: []*ast.Node{toNodeExpr(ex.X), toNodeExpr(ex.Index)}}
+	case *FieldExpr:
+		n := &ast.Node{Kind: "field", Value: ex.Name}
+		n.Children = append(n.Children, toNodeExpr(ex.X))
+		return n
 	case *SliceExpr:
 		n := &ast.Node{Kind: "slice"}
 		n.Children = append(n.Children, toNodeExpr(ex.X))
