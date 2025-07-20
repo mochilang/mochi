@@ -338,7 +338,8 @@ func isDirectNumber(e Expr) bool {
 			return isDirectNumber(v.Expr)
 		}
 	case *BinaryExpr:
-		if v.Op == "+" || v.Op == "-" {
+		switch v.Op {
+		case "+", "-", "*", "/", "%":
 			return isDirectNumber(v.Left) && isDirectNumber(v.Right)
 		}
 	}
@@ -786,6 +787,14 @@ func transpileStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 
 func convertVar(name string, t *parser.TypeRef, val *parser.Expr, env *types.Env) (VarDecl, Stmt, error) {
 	pic := "PIC 9(9)"
+	if t == nil && val != nil {
+		switch types.TypeOfExpr(val, env).(type) {
+		case types.StringType:
+			pic = "PIC X(100)"
+		case types.BoolType, types.IntType:
+			pic = "PIC 9"
+		}
+	}
 	if t != nil && t.Simple != nil {
 		switch *t.Simple {
 		case "int":
