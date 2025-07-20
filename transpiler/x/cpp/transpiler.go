@@ -1674,6 +1674,9 @@ func convertSimpleQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, s
 	if vr, ok := src.(*VarRef); ok {
 		if t, ok2 := currentProgram.ListTypes[vr.Name]; ok2 {
 			qTypes[q.Var] = t
+		} else {
+			et := elementTypeFromListType(guessType(q.Source))
+			qTypes[q.Var] = et
 		}
 	}
 	for _, f := range q.Froms {
@@ -1686,6 +1689,9 @@ func convertSimpleQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, s
 		if vr, ok := e.(*VarRef); ok {
 			if t, ok2 := currentProgram.ListTypes[vr.Name]; ok2 {
 				qTypes[f.Var] = t
+			} else {
+				et := elementTypeFromListType(guessType(f.Src))
+				qTypes[f.Var] = et
 			}
 		}
 	}
@@ -1723,6 +1729,10 @@ func convertSimpleQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, s
 							if s, ok3 := qTypes[vr.Name]; ok3 {
 								typ = structFieldType(s, sel.Field)
 							}
+						}
+					} else if vr, ok := ml.Values[i].(*VarRef); ok {
+						if t, ok2 := qTypes[vr.Name]; ok2 {
+							typ = t
 						}
 					}
 					fields[i] = Param{Name: k, Type: typ}
@@ -1849,6 +1859,13 @@ func guessType(e *parser.Expr) string {
 	return "auto"
 }
 
+func elementTypeFromListType(t string) string {
+	if strings.HasPrefix(t, "std::vector<") && strings.HasSuffix(t, ">") {
+		return strings.TrimSuffix(strings.TrimPrefix(t, "std::vector<"), ">")
+	}
+	return "auto"
+}
+
 func defaultValueForType(t string) string {
 	switch t {
 	case "int", "double":
@@ -1869,6 +1886,13 @@ func exprType(e Expr) string {
 		return "bool"
 	case *StringLit:
 		return "std::string"
+	case *VarRef:
+		if currentEnv != nil {
+			if t, err := currentEnv.GetVar(v.Name); err == nil {
+				return cppTypeFrom(t)
+			}
+		}
+		return "auto"
 	case *StructLit:
 		return v.Name
 	case *ListLit:
