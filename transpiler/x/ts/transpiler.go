@@ -536,7 +536,7 @@ func (v *VarDecl) emit(w io.Writer) {
 		io.WriteString(w, "let ")
 	}
 	io.WriteString(w, v.Name)
-	if v.Type != "" {
+	if v.Type != "" && v.Type != "any" {
 		io.WriteString(w, ": ")
 		io.WriteString(w, v.Type)
 	}
@@ -664,13 +664,13 @@ func (f *FuncDecl) emit(w io.Writer) {
 			io.WriteString(w, ", ")
 		}
 		io.WriteString(w, p)
-		if i < len(f.ParamTypes) && f.ParamTypes[i] != "" {
+		if i < len(f.ParamTypes) && f.ParamTypes[i] != "" && f.ParamTypes[i] != "any" {
 			io.WriteString(w, ": ")
 			io.WriteString(w, f.ParamTypes[i])
 		}
 	}
 	io.WriteString(w, ")")
-	if f.ReturnType != "" {
+	if f.ReturnType != "" && f.ReturnType != "any" {
 		io.WriteString(w, ": ")
 		io.WriteString(w, f.ReturnType)
 	}
@@ -750,13 +750,13 @@ func emitStmt(w *indentWriter, s Stmt, level int) {
 				io.WriteString(w, ", ")
 			}
 			io.WriteString(w, p)
-			if i < len(st.ParamTypes) && st.ParamTypes[i] != "" {
+			if i < len(st.ParamTypes) && st.ParamTypes[i] != "" && st.ParamTypes[i] != "any" {
 				io.WriteString(w, ": ")
 				io.WriteString(w, st.ParamTypes[i])
 			}
 		}
 		io.WriteString(w, ")")
-		if st.ReturnType != "" {
+		if st.ReturnType != "" && st.ReturnType != "any" {
 			io.WriteString(w, ": ")
 			io.WriteString(w, st.ReturnType)
 		}
