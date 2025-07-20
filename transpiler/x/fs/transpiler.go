@@ -104,6 +104,14 @@ func (r *ReturnStmt) emit(w io.Writer) {
 	}
 }
 
+type BreakStmt struct{}
+
+func (b *BreakStmt) emit(w io.Writer) { io.WriteString(w, "break") }
+
+type ContinueStmt struct{}
+
+func (c *ContinueStmt) emit(w io.Writer) { io.WriteString(w, "continue") }
+
 // ListLit represents an F# list literal.
 type ListLit struct{ Elems []Expr }
 
@@ -205,6 +213,17 @@ func (s *AssignStmt) emit(w io.Writer) {
 	io.WriteString(w, s.Name)
 	io.WriteString(w, " <- ")
 	s.Expr.emit(w)
+}
+
+type IndexAssignStmt struct {
+	Target Expr
+	Value  Expr
+}
+
+func (s *IndexAssignStmt) emit(w io.Writer) {
+	s.Target.emit(w)
+	io.WriteString(w, " <- ")
+	s.Value.emit(w)
 }
 
 type WhileStmt struct {
@@ -754,6 +773,49 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		varTypes[st.Assign.Name] = inferType(e)
 		return &AssignStmt{Name: st.Assign.Name, Expr: e}, nil
+	case st.Assign != nil && (len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0):
+		val, err := convertExpr(st.Assign.Value)
+		if err != nil {
+			return nil, err
+		}
+		target := Expr(&IdentExpr{Name: st.Assign.Name})
+		if len(st.Assign.Index) > 0 {
+			target, err = applyIndexOps(target, st.Assign.Index)
+			if err != nil {
+				return nil, err
+			}
+			if t := varTypes[st.Assign.Name]; t == "map" && len(st.Assign.Index) == 1 {
+				upd := &CallExpr{Func: "Map.add", Args: []Expr{target.(*IndexExpr).Index, val, &IdentExpr{Name: st.Assign.Name}}}
+				return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
+			}
+			if t := varTypes[st.Assign.Name]; t == "list" {
+				indices := make([]Expr, len(st.Assign.Index))
+				for i, ix := range st.Assign.Index {
+					idx, err := convertExpr(ix.Start)
+					if err != nil {
+						return nil, err
+					}
+					indices[i] = idx
+				}
+				list := &IdentExpr{Name: st.Assign.Name}
+				upd := buildListUpdate(list, indices, val)
+				return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
+			}
+			if t := varTypes[st.Assign.Name]; t == "map" && len(st.Assign.Index) > 1 {
+				indices := make([]Expr, len(st.Assign.Index))
+				for i, ix := range st.Assign.Index {
+					idx, err := convertExpr(ix.Start)
+					if err != nil {
+						return nil, err
+					}
+					indices[i] = idx
+				}
+				upd := buildMapUpdate(&IdentExpr{Name: st.Assign.Name}, indices, val)
+				return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
+			}
+			return &IndexAssignStmt{Target: target, Value: val}, nil
+		}
+		return nil, fmt.Errorf("field assignment not supported")
 	case st.Return != nil:
 		var e Expr
 		if st.Return.Value != nil {
@@ -764,6 +826,10 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 		}
 		return &ReturnStmt{Expr: e}, nil
+	case st.Break != nil:
+		return &BreakStmt{}, nil
+	case st.Continue != nil:
+		return &ContinueStmt{}, nil
 	case st.Fun != nil:
 		save := varTypes
 		varTypes = copyMap(varTypes)
@@ -971,7 +1037,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					return &CallExpr{Func: "printfn \"%.1f\"", Args: []Expr{args[0]}}, nil
 				case "list":
 					mapped := &CallExpr{Func: "List.map string", Args: []Expr{args[0]}}
-					concat := &CallExpr{Func: "String.concat", Args: []Expr{&StringLit{Value: " "}, mapped}}
+					concat := &CallExpr{Func: "String.concat", Args: []Expr{&StringLit{Value: ", "}, mapped}}
 					wrapped := &BinaryExpr{Left: &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: concat}, Op: "+", Right: &StringLit{Value: "]"}}
 					return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{wrapped}}, nil
 				default:
@@ -988,6 +1054,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					elems[i] = &CallExpr{Func: "sprintf \"%d\"", Args: []Expr{a}}
 				case "float":
 					elems[i] = &CallExpr{Func: "sprintf \"%.1f\"", Args: []Expr{a}}
+				case "list":
+					mapped := &CallExpr{Func: "List.map string", Args: []Expr{a}}
+					elems[i] = &BinaryExpr{Left: &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: &CallExpr{Func: "String.concat", Args: []Expr{&StringLit{Value: ", "}, mapped}}}, Op: "+", Right: &StringLit{Value: "]"}}
 				default:
 					elems[i] = &CallExpr{Func: "string", Args: []Expr{a}}
 				}
@@ -1162,4 +1231,41 @@ func convertIfStmt(in *parser.IfStmt) (Stmt, error) {
 		}
 	}
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
+}
+
+func applyIndexOps(base Expr, ops []*parser.IndexOp) (Expr, error) {
+	for _, op := range ops {
+		if op.Colon != nil || op.Colon2 != nil || op.End != nil || op.Step != nil {
+			return nil, fmt.Errorf("slice assignment not supported")
+		}
+		if op.Start == nil {
+			return nil, fmt.Errorf("nil index")
+		}
+		idx, err := convertExpr(op.Start)
+		if err != nil {
+			return nil, err
+		}
+		base = &IndexExpr{Target: base, Index: idx}
+	}
+	return base, nil
+}
+
+func buildListUpdate(list Expr, indexes []Expr, val Expr) Expr {
+	idx := indexes[0]
+	if len(indexes) == 1 {
+		lam := &LambdaExpr{Params: []string{"i", "x"}, Expr: &IfExpr{Cond: &BinaryExpr{Left: &IdentExpr{Name: "i"}, Op: "=", Right: idx}, Then: val, Else: &IdentExpr{Name: "x"}}}
+		return &CallExpr{Func: "List.mapi", Args: []Expr{lam, list}}
+	}
+	inner := buildListUpdate(&IndexExpr{Target: list, Index: idx}, indexes[1:], val)
+	lam := &LambdaExpr{Params: []string{"i", "x"}, Expr: &IfExpr{Cond: &BinaryExpr{Left: &IdentExpr{Name: "i"}, Op: "=", Right: idx}, Then: inner, Else: &IdentExpr{Name: "x"}}}
+	return &CallExpr{Func: "List.mapi", Args: []Expr{lam, list}}
+}
+
+func buildMapUpdate(m Expr, keys []Expr, val Expr) Expr {
+	key := keys[0]
+	if len(keys) == 1 {
+		return &CallExpr{Func: "Map.add", Args: []Expr{key, val, m}}
+	}
+	inner := buildMapUpdate(&IndexExpr{Target: m, Index: key}, keys[1:], val)
+	return &CallExpr{Func: "Map.add", Args: []Expr{key, inner, m}}
 }
