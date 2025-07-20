@@ -3,7 +3,7 @@
 This directory contains the experimental TypeScript transpiler.
 Generated sources for the golden tests live under `tests/transpiler/x/ts`.
 
-## VM Golden Test Checklist (64/100)
+## VM Golden Test Checklist (66/100)
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -11,7 +11,7 @@ Generated sources for the golden tests live under `tests/transpiler/x/ts`.
 - [x] bool_chain.mochi
 - [x] break_continue.mochi
 - [x] cast_string_to_int.mochi
-- [ ] cast_struct.mochi
+- [x] cast_struct.mochi
 - [x] closure.mochi
 - [x] count_builtin.mochi
 - [ ] cross_join.mochi
@@ -77,7 +77,7 @@ Generated sources for the golden tests live under `tests/transpiler/x/ts`.
 - [ ] python_auto.mochi
 - [ ] python_math.mochi
 - [ ] query_sum_select.mochi
-- [ ] record_assign.mochi
+- [x] record_assign.mochi
 - [ ] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
@@ -104,3 +104,4 @@ Generated sources for the golden tests live under `tests/transpiler/x/ts`.
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
+

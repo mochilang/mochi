@@ -887,15 +887,22 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		target := Expr(&NameRef{Name: s.Assign.Name})
 		if len(s.Assign.Index) > 0 {
-			target := Expr(&NameRef{Name: s.Assign.Name})
 			target, err = applyIndexOps(target, s.Assign.Index)
 			if err != nil {
 				return nil, err
 			}
+		}
+		for _, f := range s.Assign.Field {
+			target = &IndexExpr{Target: target, Index: &StringLit{Value: f.Name}}
+		}
+		if len(s.Assign.Index) > 0 || len(s.Assign.Field) > 0 {
 			return &IndexAssignStmt{Target: target, Value: val}, nil
 		}
 		return &AssignStmt{Name: s.Assign.Name, Expr: val}, nil
+	case s.Type != nil:
+		return nil, nil
 	case s.Expr != nil:
 		e, err := convertExpr(s.Expr.Expr)
 		if err != nil {
@@ -1015,7 +1022,9 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
-		out = append(out, st)
+		if st != nil {
+			out = append(out, st)
+		}
 	}
 	return out, nil
 }
@@ -1260,6 +1269,16 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 
 func convertPrimary(p *parser.Primary) (Expr, error) {
 	switch {
+	case p.Struct != nil:
+		entries := make([]MapEntry, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			val, err := convertExpr(f.Value)
+			if err != nil {
+				return nil, err
+			}
+			entries[i] = MapEntry{Key: &StringLit{Value: f.Name}, Value: val}
+		}
+		return &MapLit{Entries: entries}, nil
 	case p.Lit != nil:
 		return convertLiteral(p.Lit)
 	case p.Selector != nil:
