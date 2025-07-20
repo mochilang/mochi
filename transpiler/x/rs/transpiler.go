@@ -22,11 +22,17 @@ var mapVars map[string]bool
 var stringVars map[string]bool
 var varTypes map[string]string
 var funParams map[string]int
+var typeDecls []*StructDecl
+var structForMap map[*parser.MapLiteral]string
+var structForList map[*parser.ListLiteral]string
+var curEnv *types.Env
+var structTypes map[string]types.StructType
 
 // Program represents a Rust program consisting of a list of statements.
 type Program struct {
 	Stmts       []Stmt
 	UsesHashMap bool
+	Types       []*StructDecl
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -106,6 +112,39 @@ func (r *ReturnStmt) emit(w io.Writer) {
 type Param struct {
 	Name string
 	Type string
+}
+
+// StructDecl represents a Rust struct type declaration.
+type StructDecl struct {
+	Name   string
+	Fields []Param
+}
+
+func (s *StructDecl) emit(w io.Writer) {
+	fmt.Fprintf(w, "#[derive(Debug, Clone)]\nstruct %s {\n", s.Name)
+	for _, f := range s.Fields {
+		fmt.Fprintf(w, "    %s: %s,\n", f.Name, f.Type)
+	}
+	io.WriteString(w, "}\n")
+}
+
+// StructLit represents instantiation of a struct value.
+type StructLit struct {
+	Name   string
+	Fields []Expr
+	Names  []string
+}
+
+func (s *StructLit) emit(w io.Writer) {
+	fmt.Fprintf(w, "%s {", s.Name)
+	for i, f := range s.Fields {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		fmt.Fprintf(w, "%s: ", s.Names[i])
+		f.emit(w)
+	}
+	io.WriteString(w, "}")
 }
 
 type FuncDecl struct {
@@ -609,6 +648,52 @@ func (m *MatchExpr) emit(w io.Writer) {
 	io.WriteString(w, " }")
 }
 
+type queryFrom struct {
+	Var string
+	Src Expr
+}
+
+// QueryExpr represents a simple from/select query expression.
+type QueryExpr struct {
+	Var      string
+	Src      Expr
+	Froms    []queryFrom
+	Where    Expr
+	Select   Expr
+	ItemType string
+}
+
+func (q *QueryExpr) emit(w io.Writer) {
+	fmt.Fprintf(w, "{ let mut _q: Vec<%s> = Vec::new(); ", q.ItemType)
+	io.WriteString(w, "for ")
+	io.WriteString(w, q.Var)
+	io.WriteString(w, " in ")
+	q.Src.emit(w)
+	io.WriteString(w, " {")
+	for _, f := range q.Froms {
+		io.WriteString(w, " for ")
+		io.WriteString(w, f.Var)
+		io.WriteString(w, " in ")
+		f.Src.emit(w)
+		io.WriteString(w, " {")
+	}
+	if q.Where != nil {
+		io.WriteString(w, " if ")
+		q.Where.emit(w)
+		io.WriteString(w, " {")
+	}
+	io.WriteString(w, " _q.push(")
+	q.Select.emit(w)
+	io.WriteString(w, ");")
+	if q.Where != nil {
+		io.WriteString(w, " }")
+	}
+	for range q.Froms {
+		io.WriteString(w, " }")
+	}
+	io.WriteString(w, " } _q }")
+}
+
 type IfStmt struct {
 	Cond   Expr
 	Then   []Stmt
@@ -647,6 +732,11 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	stringVars = make(map[string]bool)
 	varTypes = make(map[string]string)
 	funParams = make(map[string]int)
+	typeDecls = nil
+	structForMap = make(map[*parser.MapLiteral]string)
+	structForList = make(map[*parser.ListLiteral]string)
+	structTypes = make(map[string]types.StructType)
+	curEnv = env
 	prog := &Program{}
 	for _, st := range p.Statements {
 		s, err := compileStmt(st)
@@ -657,6 +747,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 			prog.Stmts = append(prog.Stmts, s)
 		}
 	}
+	prog.Types = typeDecls
 	_ = env // reserved for future use
 	prog.UsesHashMap = usesHashMap
 	return prog, nil
@@ -674,6 +765,25 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		var e Expr
 		var err error
 		if stmt.Let.Value != nil {
+			if ll := listLiteral(stmt.Let.Value); ll != nil {
+				if st, ok := types.InferStructFromList(ll, curEnv); ok {
+					name := types.UniqueStructName(strings.Title(stmt.Let.Name)+"Item", curEnv, nil)
+					curEnv.SetStruct(name, st)
+					fields := make([]Param, len(st.Order))
+					for i, n := range st.Order {
+						fields[i] = Param{Name: n, Type: rustTypeFromType(st.Fields[n])}
+					}
+					typeDecls = append(typeDecls, &StructDecl{Name: name, Fields: fields})
+					structTypes[name] = st
+					structForList[ll] = name
+					for _, el := range ll.Elems {
+						if ml := mapLiteralExpr(el); ml != nil {
+							structForMap[ml] = name
+						}
+					}
+					varTypes[stmt.Let.Name] = fmt.Sprintf("Vec<%s>", name)
+				}
+			}
 			e, err = compileExpr(stmt.Let.Value)
 			if err != nil {
 				return nil, err
@@ -705,6 +815,9 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		if typ == "fn" {
 			typ = ""
 		}
+		if q, ok := e.(*QueryExpr); ok && typ == "" {
+			typ = fmt.Sprintf("Vec<%s>", q.ItemType)
+		}
 		if typ != "" {
 			if typ == "String" {
 				e = &StringCastExpr{Expr: e}
@@ -716,6 +829,25 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		var e Expr
 		var err error
 		if stmt.Var.Value != nil {
+			if ll := listLiteral(stmt.Var.Value); ll != nil {
+				if st, ok := types.InferStructFromList(ll, curEnv); ok {
+					name := types.UniqueStructName(strings.Title(stmt.Var.Name)+"Item", curEnv, nil)
+					curEnv.SetStruct(name, st)
+					fields := make([]Param, len(st.Order))
+					for i, n := range st.Order {
+						fields[i] = Param{Name: n, Type: rustTypeFromType(st.Fields[n])}
+					}
+					typeDecls = append(typeDecls, &StructDecl{Name: name, Fields: fields})
+					structTypes[name] = st
+					structForList[ll] = name
+					for _, el := range ll.Elems {
+						if ml := mapLiteralExpr(el); ml != nil {
+							structForMap[ml] = name
+						}
+					}
+					varTypes[stmt.Var.Name] = fmt.Sprintf("Vec<%s>", name)
+				}
+			}
 			e, err = compileExpr(stmt.Var.Value)
 			if err != nil {
 				return nil, err
@@ -746,6 +878,9 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		}
 		if typ == "fn" {
 			typ = ""
+		}
+		if q, ok := e.(*QueryExpr); ok && typ == "" {
+			typ = fmt.Sprintf("Vec<%s>", q.ItemType)
 		}
 		if typ != "" {
 			if typ == "String" {
@@ -1241,6 +1376,28 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &ListLit{Elems: elems}, nil
 	case p.Map != nil:
+		if name, ok := structForMap[p.Map]; ok {
+			fields := make([]Expr, len(p.Map.Items))
+			names := make([]string, len(p.Map.Items))
+			for i, it := range p.Map.Items {
+				if k, ok := types.SimpleStringKey(it.Key); ok {
+					names[i] = k
+				} else {
+					names[i] = fmt.Sprintf("f%d", i)
+				}
+				v, err := compileExpr(it.Value)
+				if err != nil {
+					return nil, err
+				}
+				if st, ok := structTypes[name]; ok {
+					if ft, okf := st.Fields[names[i]]; okf && rustTypeFromType(ft) == "String" {
+						v = &StringCastExpr{Expr: v}
+					}
+				}
+				fields[i] = v
+			}
+			return &StructLit{Name: name, Fields: fields, Names: names}, nil
+		}
 		entries := make([]MapEntry, len(p.Map.Items))
 		for i, it := range p.Map.Items {
 			k, err := compileExpr(it.Key)
@@ -1285,6 +1442,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		return &FunLit{Params: params, Return: ret, Expr: expr}, nil
 	case p.Match != nil:
 		return compileMatchExpr(p.Match)
+	case p.Query != nil:
+		return compileQueryExpr(p.Query)
 	case p.If != nil:
 		return compileIfExpr(p.If)
 	case p.Group != nil:
@@ -1342,6 +1501,80 @@ func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
 		arms[i] = MatchArm{Pattern: pat, Result: res}
 	}
 	return &MatchExpr{Target: target, Arms: arms}, nil
+}
+
+func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
+	if q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || len(q.Joins) > 0 {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	src, err := compileExpr(q.Source)
+	if err != nil {
+		return nil, err
+	}
+	srcT := types.ExprType(q.Source, curEnv)
+	var elemT types.Type = types.AnyType{}
+	if lt, ok := srcT.(types.ListType); ok {
+		elemT = lt.Elem
+	}
+	child := types.NewEnv(curEnv)
+	child.SetVar(q.Var, elemT, true)
+	varTypes[q.Var] = rustTypeFromType(elemT)
+	froms := make([]queryFrom, len(q.Froms))
+	for i, f := range q.Froms {
+		fe, err := compileExprWithEnv(f.Src, child)
+		if err != nil {
+			return nil, err
+		}
+		ft := types.ExprType(f.Src, child)
+		var felem types.Type = types.AnyType{}
+		if lt, ok := ft.(types.ListType); ok {
+			felem = lt.Elem
+		}
+		child.SetVar(f.Var, felem, true)
+		varTypes[f.Var] = rustTypeFromType(felem)
+		froms[i] = queryFrom{Var: f.Var, Src: fe}
+	}
+	var where Expr
+	if q.Where != nil {
+		w, err := compileExprWithEnv(q.Where, child)
+		if err != nil {
+			return nil, err
+		}
+		where = w
+	}
+	ml := mapLiteralExpr(q.Select)
+	itemType := "i64"
+	if ml != nil {
+		if st, ok := types.InferStructFromMapEnv(ml, child); ok {
+			name := types.UniqueStructName("QueryItem", curEnv, nil)
+			curEnv.SetStruct(name, st)
+			fields := make([]Param, len(st.Order))
+			for i, n := range st.Order {
+				fields[i] = Param{Name: n, Type: rustTypeFromType(st.Fields[n])}
+			}
+			typeDecls = append(typeDecls, &StructDecl{Name: name, Fields: fields})
+			structTypes[name] = st
+			structForMap[ml] = name
+			itemType = name
+		}
+	}
+	sel, err := compileExprWithEnv(q.Select, child)
+	if err != nil {
+		return nil, err
+	}
+	if itemType == "i64" {
+		if t := inferType(sel); t != "" {
+			itemType = t
+		}
+	}
+	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Where: where, Select: sel, ItemType: itemType}, nil
+}
+
+func compileExprWithEnv(e *parser.Expr, env *types.Env) (Expr, error) {
+	old := curEnv
+	curEnv = env
+	defer func() { curEnv = old }()
+	return compileExpr(e)
 }
 
 func compileLiteral(l *parser.Literal) (Expr, error) {
@@ -1455,6 +1688,10 @@ func inferType(e Expr) string {
 			return "String"
 		}
 		return ct
+	case *StructLit:
+		return ex.Name
+	case *QueryExpr:
+		return fmt.Sprintf("Vec<%s>", ex.ItemType)
 	case *MapLit:
 		usesHashMap = true
 		if len(ex.Items) > 0 {
@@ -1526,6 +1763,59 @@ func rustTypeRef(tr *parser.TypeRef) string {
 		return "fn"
 	}
 	return "i64"
+}
+
+func rustTypeFromType(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType, types.Int64Type, types.BigIntType:
+		return "i64"
+	case types.StringType:
+		return "String"
+	case types.BoolType:
+		return "bool"
+	case types.BigRatType, types.FloatType:
+		return "f64"
+	case types.ListType:
+		return fmt.Sprintf("Vec<%s>", rustTypeFromType(tt.Elem))
+	case types.MapType:
+		usesHashMap = true
+		return fmt.Sprintf("HashMap<%s, %s>", rustTypeFromType(tt.Key), rustTypeFromType(tt.Value))
+	case types.StructType:
+		return tt.Name
+	case types.VoidType:
+		return "()"
+	}
+	return "i64"
+}
+
+func mapLiteralExpr(e *parser.Expr) *parser.MapLiteral {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.Map
+}
+
+func listLiteral(e *parser.Expr) *parser.ListLiteral {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.List
 }
 
 func defaultValueForType(t string) string {
@@ -1634,6 +1924,10 @@ func Emit(prog *Program) []byte {
 	buf.WriteString(header())
 	if prog.UsesHashMap {
 		buf.WriteString("use std::collections::HashMap;\n")
+	}
+	for _, d := range prog.Types {
+		d.emit(&buf)
+		buf.WriteByte('\n')
 	}
 	for _, s := range prog.Stmts {
 		if fd, ok := s.(*FuncDecl); ok {

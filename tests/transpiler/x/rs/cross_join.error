@@ -1,1 +1,36 @@
-transpile: unsupported primary
+rustc: exit status 1
+warning: unused import: `std::collections::HashMap`
+ --> /workspace/mochi/tests/transpiler/x/rs/cross_join.rs:2:5
+  |
+2 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+error[E0608]: cannot index into a value of type `OrdersItem`
+  --> /workspace/mochi/tests/transpiler/x/rs/cross_join.rs:27:145
+   |
+27 | ...o in orders { for c in customers { _q.push(QueryItem {orderId: o["id"], orderCustomerId: o["customerId"], pairedCustomerName: c["name"...
+   |                                                                    ^^^^^^
+
+error[E0608]: cannot index into a value of type `OrdersItem`
+  --> /workspace/mochi/tests/transpiler/x/rs/cross_join.rs:27:171
+   |
+27 | ...rs { _q.push(QueryItem {orderId: o["id"], orderCustomerId: o["customerId"], pairedCustomerName: c["name"], orderTotal: o["total"]}); }...
+   |                                                                ^^^^^^^^^^^^^^
+
+error[E0608]: cannot index into a value of type `CustomersItem`
+  --> /workspace/mochi/tests/transpiler/x/rs/cross_join.rs:27:208
+   |
+27 | ...["id"], orderCustomerId: o["customerId"], pairedCustomerName: c["name"], orderTotal: o["total"]}); } } _q };
+   |                                                                   ^^^^^^^^
+
+error[E0608]: cannot index into a value of type `OrdersItem`
+  --> /workspace/mochi/tests/transpiler/x/rs/cross_join.rs:27:231
+   |
+27 | ... o["customerId"], pairedCustomerName: c["name"], orderTotal: o["total"]}); } } _q };
+   |                                                                  ^^^^^^^^^
+
+error: aborting due to 4 previous errors; 1 warning emitted
+
+For more information about this error, try `rustc --explain E0608`.
