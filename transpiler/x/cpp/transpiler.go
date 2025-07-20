@@ -1273,9 +1273,38 @@ func cppType(t string) string {
 	return "auto"
 }
 
+func cppTypeFrom(tp types.Type) string {
+	switch t := tp.(type) {
+	case types.IntType:
+		return "int"
+	case types.Int64Type:
+		return "int64_t"
+	case types.FloatType:
+		return "double"
+	case types.BoolType:
+		return "bool"
+	case types.StringType:
+		return "std::string"
+	case types.ListType:
+		return fmt.Sprintf("std::vector<%s>", cppTypeFrom(t.Elem))
+	case types.MapType:
+		return fmt.Sprintf("std::unordered_map<%s, %s>", cppTypeFrom(t.Key), cppTypeFrom(t.Value))
+	default:
+		return "auto"
+	}
+}
+
 func guessType(e *parser.Expr) string {
 	if e == nil {
 		return "auto"
+	}
+	if currentEnv != nil {
+		typ := types.TypeOfExpr(e, currentEnv)
+		if typ != nil {
+			if _, ok := typ.(types.AnyType); !ok {
+				return cppTypeFrom(typ)
+			}
+		}
 	}
 	if types.IsStringExpr(e, currentEnv) {
 		return "std::string"
