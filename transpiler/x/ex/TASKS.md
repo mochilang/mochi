@@ -1,3 +1,7 @@
+## Progress (2025-07-20 10:18 +0700)
+- Refined map indexing to use `map[key]` syntax.
+- Regenerated golden files - 47/100 vm valid programs passing
+
 ## Progress (2025-07-20 09:41 +0700)
 - Added default initialization for map variables.
 - Append builtin now uses the `++` operator.

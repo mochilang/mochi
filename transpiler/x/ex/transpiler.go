@@ -336,12 +336,20 @@ func (c *CallExpr) emit(w io.Writer) {
 
 // IndexExpr represents indexing into a list or string.
 type IndexExpr struct {
-	Target   Expr
-	Index    Expr
-	IsString bool
+	Target       Expr
+	Index        Expr
+	IsString     bool
+	UseMapSyntax bool
 }
 
 func (i *IndexExpr) emit(w io.Writer) {
+	if i.UseMapSyntax {
+		i.Target.emit(w)
+		io.WriteString(w, "[")
+		i.Index.emit(w)
+		io.WriteString(w, "]")
+		return
+	}
 	if i.IsString {
 		io.WriteString(w, "String.at(")
 	} else {
@@ -587,7 +595,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 			if outerMap, ok := t.(types.MapType); ok {
 				if _, ok := outerMap.Value.(types.MapType); ok {
-					inner := &CallExpr{Func: "Map.get", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx0}}
+					inner := &IndexExpr{Target: &VarRef{Name: st.Assign.Name}, Index: idx0, UseMapSyntax: true}
 					innerUpdate := &CallExpr{Func: "Map.put", Args: []Expr{inner, idx1, val}}
 					call := &CallExpr{Func: "Map.put", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx0, innerUpdate}}
 					return &AssignStmt{Name: st.Assign.Name, Value: call}, nil
@@ -866,7 +874,7 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				expr = &IndexExpr{Target: expr, Index: idx, IsString: false}
 				typ = tt.Elem
 			case types.MapType:
-				expr = &CallExpr{Func: "Map.get", Args: []Expr{expr, idx}}
+				expr = &IndexExpr{Target: expr, Index: idx, UseMapSyntax: true}
 				typ = tt.Value
 			default:
 				expr = &IndexExpr{Target: expr, Index: idx}
