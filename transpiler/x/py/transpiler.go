@@ -134,6 +134,20 @@ type IndexAssignStmt struct {
 
 func (*IndexAssignStmt) isStmt() {}
 
+// SaveStmt emits code to save a list of maps in various formats.
+type SaveStmt struct {
+	Src    Expr
+	Path   string
+	Format string
+}
+
+func (*SaveStmt) isStmt() {}
+
+// RawExpr is a simple expression emitted verbatim.
+type RawExpr struct{ Code string }
+
+func (r *RawExpr) emit(w io.Writer) error { _, err := io.WriteString(w, r.Code); return err }
+
 type Expr interface{ emit(io.Writer) error }
 
 type CallExpr struct {
@@ -736,6 +750,23 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 			}
 		}
 		return nil
+	case *SaveStmt:
+		if st.Format == "jsonl" && (st.Path == "" || st.Path == "-") {
+			if _, err := io.WriteString(w, indent+"for _row in "); err != nil {
+				return err
+			}
+			if err := emitExpr(w, st.Src); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, ":\n"); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, indent+"    print(json.dumps(_row))\n"); err != nil {
+				return err
+			}
+			return nil
+		}
+		return fmt.Errorf("unsupported save format")
 	default:
 		return fmt.Errorf("unsupported stmt")
 	}
@@ -868,6 +899,68 @@ func zeroValueExpr(t types.Type) Expr {
 	}
 }
 
+func parseFormat(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return ""
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Map == nil {
+		return ""
+	}
+	for _, it := range p.Target.Map.Items {
+		key, ok := isSimpleIdent(it.Key)
+		if !ok {
+			key, ok = literalString(it.Key)
+		}
+		if key == "format" {
+			if s, ok := literalString(it.Value); ok {
+				return s
+			}
+		}
+	}
+	return ""
+}
+
+func literalString(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.Save
+}
+
 func precedence(op string) int {
 	switch op {
 	case "*", "/", "%":
@@ -904,8 +997,16 @@ func Emit(w io.Writer, p *Program) error {
 		return err
 	}
 	var imports []string
-	if currentImports != nil && currentImports["json"] && !hasImport(p, "json") {
-		imports = append(imports, "import json")
+	if currentImports != nil {
+		if currentImports["json"] && !hasImport(p, "json") {
+			imports = append(imports, "import json")
+		}
+		if currentImports["yaml"] && !hasImport(p, "yaml") {
+			imports = append(imports, "import yaml")
+		}
+		if currentImports["os"] && !hasImport(p, "os") {
+			imports = append(imports, "import os")
+		}
 	}
 	for _, s := range p.Stmts {
 		if im, ok := s.(*ImportStmt); ok {
@@ -1102,6 +1203,10 @@ func Emit(w io.Writer, p *Program) error {
 					return err
 				}
 			}
+		case *SaveStmt:
+			if err := emitStmtIndent(w, st, ""); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -1115,11 +1220,27 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	for _, st := range prog.Statements {
 		switch {
 		case st.Expr != nil:
-			e, err := convertExpr(st.Expr.Expr)
-			if err != nil {
-				return nil, err
+			if se := extractSaveExpr(st.Expr.Expr); se != nil {
+				src, err := convertExpr(se.Src)
+				if err != nil {
+					return nil, err
+				}
+				format := parseFormat(se.With)
+				path := ""
+				if se.Path != nil {
+					path = strings.Trim(*se.Path, "\"")
+				}
+				if format == "jsonl" {
+					currentImports["json"] = true
+				}
+				p.Stmts = append(p.Stmts, &SaveStmt{Src: src, Path: path, Format: format})
+			} else {
+				e, err := convertExpr(st.Expr.Expr)
+				if err != nil {
+					return nil, err
+				}
+				p.Stmts = append(p.Stmts, &ExprStmt{Expr: e})
 			}
-			p.Stmts = append(p.Stmts, &ExprStmt{Expr: e})
 		case st.Let != nil:
 			var e Expr
 			var err error
@@ -1309,11 +1430,27 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 	for _, s := range list {
 		switch {
 		case s.Expr != nil:
-			e, err := convertExpr(s.Expr.Expr)
-			if err != nil {
-				return nil, err
+			if se := extractSaveExpr(s.Expr.Expr); se != nil {
+				src, err := convertExpr(se.Src)
+				if err != nil {
+					return nil, err
+				}
+				format := parseFormat(se.With)
+				path := ""
+				if se.Path != nil {
+					path = strings.Trim(*se.Path, "\"")
+				}
+				if format == "jsonl" && currentImports != nil {
+					currentImports["json"] = true
+				}
+				out = append(out, &SaveStmt{Src: src, Path: path, Format: format})
+			} else {
+				e, err := convertExpr(s.Expr.Expr)
+				if err != nil {
+					return nil, err
+				}
+				out = append(out, &ExprStmt{Expr: e})
 			}
-			out = append(out, &ExprStmt{Expr: e})
 		case s.Let != nil:
 			var e Expr
 			var err error
@@ -1815,6 +1952,43 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return convertMatchExpr(p.Match)
 	case p.Query != nil:
 		return convertQueryExpr(p.Query)
+	case p.Load != nil:
+		format := parseFormat(p.Load.With)
+		path := ""
+		if p.Load.Path != nil {
+			path = strings.Trim(*p.Load.Path, "\"")
+		}
+		clean := path
+		for strings.HasPrefix(clean, "../") {
+			clean = strings.TrimPrefix(clean, "../")
+		}
+		pathExpr := fmt.Sprintf("%q", path)
+		if path != "" && strings.HasPrefix(path, "../") {
+			if currentImports != nil {
+				currentImports["os"] = true
+			}
+			pathExpr = fmt.Sprintf("os.path.join(os.environ.get('MOCHI_ROOT', ''), 'tests', %q)", clean)
+		}
+		switch format {
+		case "yaml":
+			if currentImports != nil {
+				currentImports["yaml"] = true
+			}
+			return &RawExpr{Code: fmt.Sprintf("yaml.safe_load(open(%s))", pathExpr)}, nil
+		case "json":
+			if currentImports != nil {
+				currentImports["json"] = true
+			}
+			return &RawExpr{Code: fmt.Sprintf("json.load(open(%s))", pathExpr)}, nil
+		case "jsonl":
+			if currentImports != nil {
+				currentImports["json"] = true
+			}
+			code := fmt.Sprintf("[json.loads(line) for line in open(%s)]", pathExpr)
+			return &RawExpr{Code: code}, nil
+		default:
+			return nil, fmt.Errorf("unsupported load format")
+		}
 	case p.Group != nil:
 		return convertExpr(p.Group)
 	default:
