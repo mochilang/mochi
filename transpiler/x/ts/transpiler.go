@@ -233,6 +233,22 @@ type IfExpr struct {
 	Else Expr
 }
 
+// QueryLoop represents one iteration variable in a query expression.
+type QueryLoop struct {
+	Name   string
+	Source Expr
+}
+
+// QueryExprJS represents a simplified query comprehension.
+type QueryExprJS struct {
+	Loops  []QueryLoop
+	Where  Expr
+	Sort   Expr
+	Skip   Expr
+	Take   Expr
+	Select Expr
+}
+
 // IndexAssignStmt assigns to an indexed expression like x[i] = v.
 type IndexAssignStmt struct {
 	Target Expr
@@ -516,6 +532,83 @@ func (e *IfExpr) emit(w io.Writer) {
 		io.WriteString(w, "null")
 	}
 	io.WriteString(w, ")")
+}
+
+func (q *QueryExprJS) emit(w io.Writer) {
+	iw := &indentWriter{w: w, indent: "  "}
+	io.WriteString(iw, "(() => {\n")
+	io.WriteString(iw, "  const result = []\n")
+	var emitLoops func(int, int)
+	emitLoops = func(idx, level int) {
+		if idx >= len(q.Loops) {
+			if q.Where != nil {
+				io.WriteString(iw, strings.Repeat(iw.indent, level))
+				io.WriteString(iw, "if (")
+				q.Where.emit(iw)
+				io.WriteString(iw, ") {\n")
+				level++
+			}
+			io.WriteString(iw, strings.Repeat(iw.indent, level))
+			if q.Sort != nil {
+				io.WriteString(iw, "result.push({k: ")
+				q.Sort.emit(iw)
+				io.WriteString(iw, ", v: ")
+				q.Select.emit(iw)
+				io.WriteString(iw, "})\n")
+			} else {
+				io.WriteString(iw, "result.push(")
+				q.Select.emit(iw)
+				io.WriteString(iw, ")\n")
+			}
+			if q.Where != nil {
+				level--
+				io.WriteString(iw, strings.Repeat(iw.indent, level))
+				io.WriteString(iw, "}\n")
+			}
+			return
+		}
+		loop := q.Loops[idx]
+		io.WriteString(iw, strings.Repeat(iw.indent, level))
+		io.WriteString(iw, "for (const ")
+		io.WriteString(iw, loop.Name)
+		io.WriteString(iw, " of ")
+		loop.Source.emit(iw)
+		io.WriteString(iw, ") {\n")
+		emitLoops(idx+1, level+1)
+		io.WriteString(iw, strings.Repeat(iw.indent, level))
+		io.WriteString(iw, "}\n")
+	}
+	emitLoops(0, 1)
+	if q.Sort != nil {
+		io.WriteString(iw, "  result.sort((a, b) => a.k < b.k ? -1 : a.k > b.k ? 1 : 0)\n")
+		io.WriteString(iw, "  const out = result.map(r => r.v)\n")
+	} else {
+		io.WriteString(iw, "  const out = result\n")
+	}
+	if q.Skip != nil || q.Take != nil {
+		io.WriteString(iw, "  return out.slice(")
+		if q.Skip != nil {
+			q.Skip.emit(iw)
+		} else {
+			io.WriteString(iw, "0")
+		}
+		if q.Take != nil {
+			io.WriteString(iw, ", ")
+			if q.Skip != nil {
+				io.WriteString(iw, "(")
+				q.Skip.emit(iw)
+				io.WriteString(iw, " + ")
+				q.Take.emit(iw)
+				io.WriteString(iw, ")")
+			} else {
+				q.Take.emit(iw)
+			}
+		}
+		io.WriteString(iw, ")\n")
+	} else {
+		io.WriteString(iw, "  return out\n")
+	}
+	io.WriteString(iw, "})()")
 }
 
 func (s *IndexAssignStmt) emit(w io.Writer) {
@@ -1051,6 +1144,55 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 	return out, nil
 }
 
+func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
+	loops := []QueryLoop{{Name: q.Var}}
+	src, err := convertExpr(q.Source)
+	if err != nil {
+		return nil, err
+	}
+	loops[0].Source = src
+	for _, f := range q.Froms {
+		src, err := convertExpr(f.Src)
+		if err != nil {
+			return nil, err
+		}
+		loops = append(loops, QueryLoop{Name: f.Var, Source: src})
+	}
+	var where Expr
+	if q.Where != nil {
+		where, err = convertExpr(q.Where)
+		if err != nil {
+			return nil, err
+		}
+	}
+	var sort Expr
+	if q.Sort != nil {
+		sort, err = convertExpr(q.Sort)
+		if err != nil {
+			return nil, err
+		}
+	}
+	var skip Expr
+	if q.Skip != nil {
+		skip, err = convertExpr(q.Skip)
+		if err != nil {
+			return nil, err
+		}
+	}
+	var take Expr
+	if q.Take != nil {
+		take, err = convertExpr(q.Take)
+		if err != nil {
+			return nil, err
+		}
+	}
+	sel, err := convertExpr(q.Select)
+	if err != nil {
+		return nil, err
+	}
+	return &QueryExprJS{Loops: loops, Where: where, Sort: sort, Skip: skip, Take: take, Select: sel}, nil
+}
+
 func applyIndexOps(base Expr, ops []*parser.IndexOp) (Expr, error) {
 	var err error
 	for _, op := range ops {
@@ -1358,6 +1500,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("max expects one argument")
 			}
 			return &MaxExpr{Value: args[0]}, nil
+		case "exists":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("exists expects one argument")
+			}
+			return &BinaryExpr{Left: &LenExpr{Value: args[0]}, Op: ">", Right: &NumberLit{Value: "0"}}, nil
 		case "values":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("values expects one argument")
@@ -1444,6 +1591,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			entries[i] = MapEntry{Key: k, Value: v}
 		}
 		return &MapLit{Entries: entries}, nil
+	case p.Query != nil:
+		return convertQueryExpr(p.Query)
 	case p.FunExpr != nil:
 		var params []string
 		for _, pa := range p.FunExpr.Params {
@@ -1770,6 +1919,26 @@ func exprToNode(e Expr) *ast.Node {
 		for _, a := range ex.Args {
 			n.Children = append(n.Children, exprToNode(a))
 		}
+		return n
+	case *QueryExprJS:
+		n := &ast.Node{Kind: "query"}
+		for _, l := range ex.Loops {
+			loopNode := &ast.Node{Kind: "for", Value: l.Name, Children: []*ast.Node{exprToNode(l.Source)}}
+			n.Children = append(n.Children, loopNode)
+		}
+		if ex.Where != nil {
+			n.Children = append(n.Children, &ast.Node{Kind: "where", Children: []*ast.Node{exprToNode(ex.Where)}})
+		}
+		if ex.Sort != nil {
+			n.Children = append(n.Children, &ast.Node{Kind: "sort", Children: []*ast.Node{exprToNode(ex.Sort)}})
+		}
+		if ex.Skip != nil {
+			n.Children = append(n.Children, &ast.Node{Kind: "skip", Children: []*ast.Node{exprToNode(ex.Skip)}})
+		}
+		if ex.Take != nil {
+			n.Children = append(n.Children, &ast.Node{Kind: "take", Children: []*ast.Node{exprToNode(ex.Take)}})
+		}
+		n.Children = append(n.Children, &ast.Node{Kind: "select", Children: []*ast.Node{exprToNode(ex.Select)}})
 		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
