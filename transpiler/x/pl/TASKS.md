@@ -1,3 +1,7 @@
+## Progress (2025-07-20 05:06 +0000)
+- pl: support list indexing
+- 22/100 VM programs transpiled successfully
+
 ## Progress (2025-07-20 11:38 +0700)
 - Removed `style_check` directive and comment header for cleaner output.
 - Added constant folding for arithmetic expressions.

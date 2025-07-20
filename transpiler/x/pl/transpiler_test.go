@@ -1042,3 +1042,51 @@ func TestTranspile_SubstringBuiltin(t *testing.T) {
 		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
 	}
 }
+
+func TestTranspile_ListIndex(t *testing.T) {
+	if _, err := exec.LookPath("swipl"); err != nil {
+		t.Skip("swipl not installed")
+	}
+	root := repoRoot(t)
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "pl")
+	os.MkdirAll(outDir, 0o755)
+
+	src := filepath.Join(root, "tests", "vm", "valid", "list_index.mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type: %v", errs[0])
+	}
+	ast, err := pl.Transpile(prog, env)
+	if err != nil {
+		t.Fatalf("transpile: %v", err)
+	}
+	var buf bytes.Buffer
+	if err := pl.Emit(&buf, ast); err != nil {
+		t.Fatalf("emit: %v", err)
+	}
+	plFile := filepath.Join(outDir, "list_index.pl")
+	if err := os.WriteFile(plFile, buf.Bytes(), 0o644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+	cmd := exec.Command("swipl", "-q", "-f", plFile)
+	cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root)
+	out, err := cmd.CombinedOutput()
+	got := bytes.TrimSpace(out)
+	if err != nil {
+		_ = os.WriteFile(filepath.Join(outDir, "list_index.error"), out, 0o644)
+		t.Fatalf("run: %v", err)
+	}
+	_ = os.Remove(filepath.Join(outDir, "list_index.error"))
+	want, err := os.ReadFile(filepath.Join(outDir, "list_index.out"))
+	if err != nil {
+		t.Fatalf("read want: %v", err)
+	}
+	want = bytes.TrimSpace(want)
+	if !bytes.Equal(got, want) {
+		t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
+	}
+}

@@ -119,6 +119,13 @@ func (p *PrintStmt) emit(w io.Writer, idx int) {
 		e.Elem.emit(w)
 		fmt.Fprintf(w, "], R%d), writeln(R%d)", idx, idx)
 		return
+	case *IndexExpr:
+		fmt.Fprintf(w, "    nth0(")
+		e.Index.emit(w)
+		io.WriteString(w, ", ")
+		e.Target.emit(w)
+		fmt.Fprintf(w, ", R%d), writeln(R%d)", idx, idx)
+		return
 	case *SubstringExpr:
 		fmt.Fprintf(w, "    L%d is ", idx)
 		e.End.emit(w)
@@ -137,7 +144,11 @@ func (p *PrintStmt) emit(w io.Writer, idx int) {
 }
 
 func (l *LetStmt) emit(w io.Writer, _ int) {
-	fmt.Fprintf(w, "    %s is ", l.Name)
+	if _, ok := l.Expr.(*ListLit); ok {
+		fmt.Fprintf(w, "    %s = ", l.Name)
+	} else {
+		fmt.Fprintf(w, "    %s is ", l.Name)
+	}
 	l.Expr.emit(w)
 }
 
@@ -157,6 +168,10 @@ type MaxExpr struct{ Value Expr }
 type AppendExpr struct {
 	List Expr
 	Elem Expr
+}
+type IndexExpr struct {
+	Target Expr
+	Index  Expr
 }
 type SubstringExpr struct {
 	Str   Expr
@@ -273,6 +288,14 @@ func (a *AppendExpr) emit(w io.Writer) {
 	io.WriteString(w, ", [")
 	a.Elem.emit(w)
 	io.WriteString(w, "], R)")
+}
+
+func (i *IndexExpr) emit(w io.Writer) {
+	io.WriteString(w, "nth0(")
+	i.Index.emit(w)
+	io.WriteString(w, ", ")
+	i.Target.emit(w)
+	io.WriteString(w, ", R)")
 }
 
 func (s *SubstringExpr) emit(w io.Writer) {
@@ -540,6 +563,23 @@ func toPostfix(pf *parser.PostfixExpr, env *compileEnv) (Expr, error) {
 	}
 	for _, op := range pf.Ops {
 		switch {
+		case op.Index != nil:
+			if op.Index.Colon != nil || op.Index.End != nil || op.Index.Step != nil {
+				return nil, fmt.Errorf("unsupported slice")
+			}
+			idx, err := toExpr(op.Index.Start, env)
+			if err != nil {
+				return nil, err
+			}
+			if list, ok := expr.(*ListLit); ok {
+				if lit, ok2 := idx.(*IntLit); ok2 {
+					if lit.Value >= 0 && lit.Value < len(list.Elems) {
+						expr = list.Elems[lit.Value]
+						continue
+					}
+				}
+			}
+			expr = &IndexExpr{Target: expr, Index: idx}
 		case op.Cast != nil:
 			if op.Cast.Type == nil || op.Cast.Type.Simple == nil {
 				return nil, fmt.Errorf("unsupported cast")
@@ -682,6 +722,8 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "max", Children: []*ast.Node{exprNode(ex.Value)}}
 	case *AppendExpr:
 		return &ast.Node{Kind: "append", Children: []*ast.Node{exprNode(ex.List), exprNode(ex.Elem)}}
+	case *IndexExpr:
+		return &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(ex.Target), exprNode(ex.Index)}}
 	case *SubstringExpr:
 		return &ast.Node{Kind: "substring", Children: []*ast.Node{exprNode(ex.Str), exprNode(ex.Start), exprNode(ex.End)}}
 	case *GroupExpr:
