@@ -49,6 +49,84 @@ func (s *IfStmt) emit(w io.Writer) {
 	}
 }
 
+// WhileStmt represents a simple while loop.
+type WhileStmt struct {
+	Cond Expr
+	Body []Stmt
+}
+
+func (ws *WhileStmt) emit(w io.Writer) {
+	io.WriteString(w, "while (")
+	ws.Cond.emit(w)
+	io.WriteString(w, ") {\n")
+	for _, st := range ws.Body {
+		io.WriteString(w, "  ")
+		st.emit(w)
+		if _, ok := st.(*IfStmt); ok {
+			io.WriteString(w, "\n")
+		} else {
+			io.WriteString(w, ";\n")
+		}
+	}
+	io.WriteString(w, "}")
+}
+
+// ForRangeStmt represents iteration over numeric ranges.
+type ForRangeStmt struct {
+	Name  string
+	Start Expr
+	End   Expr
+	Body  []Stmt
+}
+
+func (fr *ForRangeStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "for ($%s = ", fr.Name)
+	fr.Start.emit(w)
+	fmt.Fprintf(w, "; $%s < ", fr.Name)
+	fr.End.emit(w)
+	fmt.Fprintf(w, "; $%s++) {\n", fr.Name)
+	for _, st := range fr.Body {
+		io.WriteString(w, "  ")
+		st.emit(w)
+		if _, ok := st.(*IfStmt); ok {
+			io.WriteString(w, "\n")
+		} else {
+			io.WriteString(w, ";\n")
+		}
+	}
+	io.WriteString(w, "}")
+}
+
+// ForEachStmt represents foreach iteration over lists or maps.
+type ForEachStmt struct {
+	Name string
+	Expr Expr
+	Keys bool
+	Body []Stmt
+}
+
+func (fe *ForEachStmt) emit(w io.Writer) {
+	io.WriteString(w, "foreach (")
+	if fe.Keys {
+		io.WriteString(w, "array_keys(")
+		fe.Expr.emit(w)
+		fmt.Fprintf(w, ") as $%s) {\n", fe.Name)
+	} else {
+		fe.Expr.emit(w)
+		fmt.Fprintf(w, " as $%s) {\n", fe.Name)
+	}
+	for _, st := range fe.Body {
+		io.WriteString(w, "  ")
+		st.emit(w)
+		if _, ok := st.(*IfStmt); ok {
+			io.WriteString(w, "\n")
+		} else {
+			io.WriteString(w, ";\n")
+		}
+	}
+	io.WriteString(w, "}")
+}
+
 type ExprStmt struct{ Expr Expr }
 
 func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
@@ -343,7 +421,7 @@ func Emit(w io.Writer, p *Program) error {
 	for _, s := range p.Stmts {
 		s.emit(w)
 		switch s.(type) {
-		case *IfStmt, *FuncDecl:
+		case *IfStmt, *FuncDecl, *WhileStmt, *ForRangeStmt, *ForEachStmt:
 			if _, err := io.WriteString(w, "\n"); err != nil {
 				return err
 			}
@@ -784,11 +862,61 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			body[i] = bs
 		}
 		return &FuncDecl{Name: st.Fun.Name, Params: params, Body: body}, nil
+	case st.While != nil:
+		cond, err := convertExpr(st.While.Cond)
+		if err != nil {
+			return nil, err
+		}
+		body, err := convertStmtList(st.While.Body)
+		if err != nil {
+			return nil, err
+		}
+		return &WhileStmt{Cond: cond, Body: body}, nil
+	case st.For != nil:
+		body, err := convertStmtList(st.For.Body)
+		if err != nil {
+			return nil, err
+		}
+		if st.For.RangeEnd != nil {
+			start, err := convertExpr(st.For.Source)
+			if err != nil {
+				return nil, err
+			}
+			end, err := convertExpr(st.For.RangeEnd)
+			if err != nil {
+				return nil, err
+			}
+			return &ForRangeStmt{Name: st.For.Name, Start: start, End: end, Body: body}, nil
+		}
+		expr, err := convertExpr(st.For.Source)
+		if err != nil {
+			return nil, err
+		}
+		keys := false
+		if transpileEnv != nil {
+			t := types.ExprType(st.For.Source, transpileEnv)
+			if types.IsMapType(t) {
+				keys = true
+			}
+		}
+		return &ForEachStmt{Name: st.For.Name, Expr: expr, Keys: keys, Body: body}, nil
 	case st.If != nil:
 		return convertIfStmt(st.If)
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
+}
+
+func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
+	out := make([]Stmt, len(list))
+	for i, s := range list {
+		st, err := convertStmt(s)
+		if err != nil {
+			return nil, err
+		}
+		out[i] = st
+	}
+	return out, nil
 }
 
 func convertIfStmt(ifst *parser.IfStmt) (Stmt, error) {
@@ -968,6 +1096,35 @@ func stmtNode(s Stmt) *ast.Node {
 		body := &ast.Node{Kind: "body"}
 		for _, bs := range st.Body {
 			body.Children = append(body.Children, stmtNode(bs))
+		}
+		n.Children = append(n.Children, body)
+		return n
+	case *WhileStmt:
+		n := &ast.Node{Kind: "while_stmt", Children: []*ast.Node{exprNode(st.Cond)}}
+		body := &ast.Node{Kind: "body"}
+		for _, s2 := range st.Body {
+			body.Children = append(body.Children, stmtNode(s2))
+		}
+		n.Children = append(n.Children, body)
+		return n
+	case *ForRangeStmt:
+		n := &ast.Node{Kind: "for_range", Value: st.Name}
+		n.Children = append(n.Children, exprNode(st.Start), exprNode(st.End))
+		body := &ast.Node{Kind: "body"}
+		for _, s2 := range st.Body {
+			body.Children = append(body.Children, stmtNode(s2))
+		}
+		n.Children = append(n.Children, body)
+		return n
+	case *ForEachStmt:
+		n := &ast.Node{Kind: "for_each", Value: st.Name}
+		n.Children = append(n.Children, exprNode(st.Expr))
+		if st.Keys {
+			n.Children = append(n.Children, &ast.Node{Kind: "keys"})
+		}
+		body := &ast.Node{Kind: "body"}
+		for _, s2 := range st.Body {
+			body.Children = append(body.Children, stmtNode(s2))
 		}
 		n.Children = append(n.Children, body)
 		return n

@@ -1,3 +1,8 @@
+## Progress (2025-07-20 11:38 +0700)
+- Generated PHP for 34/100 programs
+- Added while and for loop support using range() and foreach
+- Updated README checklist and outputs
+
 # PHP Transpiler Tasks
 
 ## Progress
