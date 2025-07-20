@@ -1,3 +1,0 @@
-exit status 1
-# command-line-arguments
-../../../tests/transpiler/x/go/basic_compare.go:15:15: invalid operation: b < 5 (operator < not defined on interface)

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"go/format"
 	"io"
+	"strings"
 
 	"mochi/ast"
 	"mochi/parser"
@@ -655,6 +656,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					t = types.TypeOfExprBasic(st.Let.Value, env)
 				}
 				typ = toGoTypeFromType(t)
+				if _, ok := t.(types.FuncType); ok {
+					typ = ""
+				}
 			}
 			return &VarDecl{Name: st.Let.Name, Type: typ, Value: e}, nil
 		}
@@ -685,6 +689,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					t = types.TypeOfExprBasic(st.Var.Value, env)
 				}
 				typ = toGoTypeFromType(t)
+				if _, ok := t.(types.FuncType); ok {
+					typ = ""
+				}
 			}
 			return &VarDecl{Name: st.Var.Name, Type: typ, Value: e}, nil
 		}
@@ -1310,18 +1317,30 @@ func toGoType(t *parser.TypeRef) string {
 
 func toGoTypeFromType(t types.Type) string {
 	switch tt := t.(type) {
-	case types.IntType, types.Int64Type:
+	case types.IntType, types.Int64Type, types.BigIntType:
 		return "int"
 	case types.StringType:
 		return "string"
 	case types.BoolType:
 		return "bool"
+	case types.BigRatType, types.FloatType:
+		return "float64"
 	case types.ListType:
 		return "[]" + toGoTypeFromType(tt.Elem)
 	case types.MapType:
 		return fmt.Sprintf("map[%s]%s", toGoTypeFromType(tt.Key), toGoTypeFromType(tt.Value))
 	case types.StructType:
 		return "map[string]any"
+	case types.FuncType:
+		params := make([]string, len(tt.Params))
+		for i, p := range tt.Params {
+			params[i] = toGoTypeFromType(p)
+		}
+		ret := toGoTypeFromType(tt.Return)
+		if ret != "" && ret != "any" {
+			return fmt.Sprintf("func(%s) %s", strings.Join(params, ", "), ret)
+		}
+		return fmt.Sprintf("func(%s)", strings.Join(params, ", "))
 	}
 	return "any"
 }
