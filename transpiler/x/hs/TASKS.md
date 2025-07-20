@@ -1,3 +1,10 @@
+# Progress (2025-07-20 14:31 +0700)
+- Added basic `for` loops and map iteration support
+- Implemented `while` loops using recursion
+- Added map indexing and `len` on maps
+- Improved type inference for map keys
+- Now 35/100 programs compile
+
 ## Progress (2025-07-20 12:47 +0700)
 - Added unsafe IO handling for boolean functions using `unsafePerformIO`
 - Boolean print statements output `1`/`0`

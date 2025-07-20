@@ -2,7 +2,7 @@
 
 This package contains experimental transpilers that convert Mochi bytecode to other programming languages. The Haskell backend currently supports a tiny subset of the language.
 
-Compiled programs: 34/100
+Compiled programs: 43/100
 
 ## Golden test checklist
 - [x] append_builtin
@@ -21,9 +21,9 @@ Compiled programs: 34/100
 - [ ] dataset_sort_take_limit
 - [ ] dataset_where_filter
 - [ ] exists_builtin
-- [ ] for_list_collection
-- [ ] for_loop
-- [ ] for_map_collection
+- [x] for_list_collection
+- [x] for_loop
+- [x] for_map_collection
 - [x] fun_call
 - [x] fun_expr_in_let
 - [x] fun_three_args
@@ -48,18 +48,18 @@ Compiled programs: 34/100
 - [ ] left_join
 - [ ] left_join_multi
 - [x] len_builtin
-- [ ] len_map
+- [x] len_map
 - [x] len_string
 - [x] let_and_print
 - [ ] list_assign
-- [ ] list_index
+- [x] list_index
 - [ ] list_nested_assign
 - [ ] list_set_ops
 - [ ] load_yaml
 - [ ] map_assign
 - [ ] map_in_operator
-- [ ] map_index
-- [ ] map_int_key
+- [x] map_index
+- [x] map_int_key
 - [ ] map_literal_dynamic
 - [ ] map_membership
 - [ ] map_nested_assign
@@ -81,7 +81,7 @@ Compiled programs: 34/100
 - [ ] record_assign
 - [ ] right_join
 - [ ] save_jsonl_stdout
-- [ ] short_circuit
+- [x] short_circuit
 - [ ] slice
 - [ ] sort_stable
 - [ ] str_builtin
@@ -89,7 +89,7 @@ Compiled programs: 34/100
 - [x] string_concat
 - [ ] string_contains
 - [x] string_in_operator
-- [ ] string_index
+- [x] string_index
 - [ ] string_prefix_slice
 - [ ] substring_builtin
 - [x] sum_builtin
