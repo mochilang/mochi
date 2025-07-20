@@ -1,17 +1,16 @@
-## Progress (2025-07-20 16:45 +0700)
+## Progress (2025-07-20 11:10 +0000)
+- pl transpiler: clean tasks and handle list loops
+- 32/100 VM programs transpiled successfully
+
+## Progress (2025-07-20 11:05 UTC)
 - VM valid golden test results updated to 32/100
 
-## Progress (2025-07-20 16:45 +0700)
-- VM valid golden test results updated to 32/100
+## Progress (2025-07-20 11:05 +0000)
+- Applying previous commit.
+- 32/100 VM programs transpiled successfully
 
-## Progress (2025-07-20 16:45 +0700)
-- VM valid golden test results updated to 32/100
-
-## Progress (2025-07-20 16:45 +0700)
-- VM valid golden test results updated to 32/100
-
-## Progress (2025-07-20 16:45 +0700)
-- VM valid golden test results updated to 31/100
+## Progress (2025-07-20 17:38 +0700)
+- VM valid golden test results updated to 33/100
 
 ## Progress (2025-07-20 16:45 +0700)
 - VM valid golden test results updated to 31/100
@@ -47,6 +46,7 @@
 - Removed `style_check` directive and comment header for cleaner output.
 - Added constant folding for arithmetic expressions.
 - README checklist regenerated (21/100 tests passing).
+
 ## Progress (2025-07-20 10:18 +0700)
 - prolog: improve readability and remove style check
 - 21/100 VM programs transpiled successfully

@@ -993,8 +993,16 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 				if err != nil {
 					return nil, err
 				}
-				list, ok := src.(*ListLit)
-				if !ok {
+				var list *ListLit
+				switch ex := src.(type) {
+				case *ListLit:
+					list = ex
+				case *Var:
+					if c, ok := env.constExpr(ex.Name).(*ListLit); ok {
+						list = c
+					}
+				}
+				if list == nil {
 					return nil, fmt.Errorf("unsupported for-loop")
 				}
 				for _, elem := range list.Elems {
