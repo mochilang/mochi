@@ -1,3 +1,10 @@
+## Progress (2025-07-20T09:22:16+07:00)
+- Added list and string indexing support
+- Implemented string contains builtin
+- Improved header timestamp format
+- Updated golden tests and README
+
+
 ## Progress (2025-07-20 08:54:03)
 - Added cast expressions and function declarations
 - Removed _div helper and improved type-based division
