@@ -15,7 +15,36 @@ import (
 
 // Program represents a simple Prolog program.
 type Program struct {
+	Funcs []*Function
 	Stmts []Stmt
+}
+
+type Function struct {
+	Name   string
+	Params []string
+	Body   []Stmt
+	Return Expr
+}
+
+func (f *Function) emit(w io.Writer) {
+	fmt.Fprintf(w, "%s(", f.Name)
+	for i, p := range f.Params {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, cap(p))
+	}
+	if len(f.Params) > 0 {
+		io.WriteString(w, ", ")
+	}
+	io.WriteString(w, "R) :-\n")
+	for i, st := range f.Body {
+		st.emit(w, i)
+		io.WriteString(w, ",\n")
+	}
+	io.WriteString(w, "    R = ")
+	f.Return.emit(w)
+	io.WriteString(w, ".\n\n")
 }
 
 type Stmt interface{ emit(io.Writer, int) }
@@ -187,6 +216,16 @@ func (p *PrintStmt) emit(w io.Writer, idx int) {
 		e.Elem.emit(w)
 		fmt.Fprintf(w, "], R%d), writeln(R%d)", idx, idx)
 		return
+	case *CallExpr:
+		fmt.Fprintf(w, "    %s(", e.Name)
+		for i, a := range e.Args {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			a.emit(w)
+		}
+		fmt.Fprintf(w, ", R%d), writeln(R%d)", idx, idx)
+		return
 	case *IndexExpr:
 		if e.IsString {
 			io.WriteString(w, "    sub_string(")
@@ -268,6 +307,17 @@ func (l *LetStmt) emit(w io.Writer, _ int) {
 		emitIfToVar(w, l.Name, ie)
 		return
 	}
+	if ce, ok := l.Expr.(*CallExpr); ok {
+		fmt.Fprintf(w, "    %s(", ce.Name)
+		for i, a := range ce.Args {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			a.emit(w)
+		}
+		fmt.Fprintf(w, ", %s)", l.Name)
+		return
+	}
 	if needsIs(l.Expr) {
 		fmt.Fprintf(w, "    %s is ", l.Name)
 	} else {
@@ -344,6 +394,10 @@ type SubstringExpr struct {
 	Str   Expr
 	Start Expr
 	End   Expr
+}
+type CallExpr struct {
+	Name string
+	Args []Expr
 }
 type BinaryExpr struct {
 	Left  Expr
@@ -544,6 +598,18 @@ func (i *InExpr) emit(w io.Writer) {
 	}
 }
 
+func (c *CallExpr) emit(w io.Writer) {
+	io.WriteString(w, c.Name)
+	io.WriteString(w, "(")
+	for i, a := range c.Args {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		a.emit(w)
+	}
+	io.WriteString(w, ")")
+}
+
 func escape(s string) string {
 	s = strings.ReplaceAll(s, "'", "''")
 	return s
@@ -632,8 +698,15 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	for _, st := range prog.Statements {
 		switch {
 		case st.Fun != nil:
-			// functions are only used for simple constant folding
-			continue
+			if len(st.Fun.Params) == 0 && st.Fun.Return != nil {
+				// used for constant folding only
+				continue
+			}
+			fn, err := compileFunction(st.Fun, ce)
+			if err != nil {
+				return nil, err
+			}
+			p.Funcs = append(p.Funcs, fn)
 		case st.Let != nil:
 			var expr Expr
 			if st.Let.Value != nil {
@@ -690,6 +763,18 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				}
 			}
 			p.Stmts = append(p.Stmts, &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts})
+		case st.For != nil:
+			loopStmts, err := compileStmts([]*parser.Statement{st}, ce)
+			if err != nil {
+				return nil, err
+			}
+			p.Stmts = append(p.Stmts, loopStmts...)
+		case st.While != nil:
+			loopStmts, err := compileStmts([]*parser.Statement{st}, ce)
+			if err != nil {
+				return nil, err
+			}
+			p.Stmts = append(p.Stmts, loopStmts...)
 		case st.Expr != nil:
 			call := st.Expr.Expr.Binary.Left.Value.Target.Call
 			if call == nil || call.Func != "print" || len(call.Args) != 1 {
@@ -709,8 +794,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 
 // Emit writes the Prolog source for the given program.
 func Emit(w io.Writer, p *Program) error {
-	io.WriteString(w, ":- style_check(-singleton).\n")
 	io.WriteString(w, ":- initialization(main).\n\n")
+	for _, fn := range p.Funcs {
+		fn.emit(w)
+	}
 	io.WriteString(w, "main :-\n")
 	for i, st := range p.Stmts {
 		st.emit(w, i)
@@ -764,6 +851,145 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 			name := env.fresh(s.Let.Name)
 			env.setConst(name, expr)
 			out = append(out, &LetStmt{Name: name, Expr: expr})
+		case s.Var != nil:
+			var expr Expr
+			if s.Var.Value != nil {
+				var err error
+				expr, err = toExpr(s.Var.Value, env)
+				if err != nil {
+					return nil, err
+				}
+			} else {
+				expr = &IntLit{Value: 0}
+			}
+			name := env.fresh(s.Var.Name)
+			env.setConst(name, expr)
+			out = append(out, &LetStmt{Name: name, Expr: expr})
+		case s.Assign != nil && len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0:
+			expr, err := toExpr(s.Assign.Value, env)
+			if err != nil {
+				return nil, err
+			}
+			name := env.fresh(s.Assign.Name)
+			env.setConst(name, expr)
+			out = append(out, &LetStmt{Name: name, Expr: expr})
+		case s.Assign != nil && len(s.Assign.Index) == 1 && s.Assign.Index[0].Colon == nil && s.Assign.Index[0].End == nil && s.Assign.Index[0].Step == nil:
+			idx, err := toExpr(s.Assign.Index[0].Start, env)
+			if err != nil {
+				return nil, err
+			}
+			val, err := toExpr(s.Assign.Value, env)
+			if err != nil {
+				return nil, err
+			}
+			listName := env.current(s.Assign.Name)
+			if listLit, ok := env.constExpr(listName).(*ListLit); ok {
+				if iv, ok2 := intValue(idx); ok2 && iv >= 0 && iv < len(listLit.Elems) {
+					newElems := make([]Expr, len(listLit.Elems))
+					copy(newElems, listLit.Elems)
+					newElems[iv] = val
+					name := env.fresh(s.Assign.Name)
+					lit := &ListLit{Elems: newElems}
+					env.setConst(name, lit)
+					out = append(out, &LetStmt{Name: name, Expr: lit})
+					break
+				}
+			}
+			return nil, fmt.Errorf("unsupported statement")
+		case s.If != nil:
+			cond, err := toExpr(s.If.Cond, env)
+			if err != nil {
+				return nil, err
+			}
+			if s.If.ElseIf != nil {
+				return nil, fmt.Errorf("unsupported elseif")
+			}
+			thenStmts, err := compileStmts(s.If.Then, env)
+			if err != nil {
+				return nil, err
+			}
+			var elseStmts []Stmt
+			if s.If.Else != nil {
+				elseStmts, err = compileStmts(s.If.Else, env)
+				if err != nil {
+					return nil, err
+				}
+			}
+			out = append(out, &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts})
+		case s.Return != nil:
+			if s.Return.Value == nil {
+				return nil, fmt.Errorf("unsupported return")
+			}
+			expr, err := toExpr(s.Return.Value, env)
+			if err != nil {
+				return nil, err
+			}
+			name := env.fresh("return")
+			env.setConst(name, expr)
+			out = append(out, &LetStmt{Name: name, Expr: expr})
+		case s.For != nil:
+			if s.For.RangeEnd != nil {
+				start, err := toExpr(s.For.Source, env)
+				if err != nil {
+					return nil, err
+				}
+				end, err := toExpr(s.For.RangeEnd, env)
+				if err != nil {
+					return nil, err
+				}
+				sv, ok1 := intValue(start)
+				ev, ok2 := intValue(end)
+				if !ok1 || !ok2 {
+					return nil, fmt.Errorf("unsupported for-loop")
+				}
+				for i := sv; i < ev; i++ {
+					vname := env.fresh(s.For.Name)
+					iv := &IntLit{Value: i}
+					env.setConst(vname, iv)
+					body, err := compileStmts(s.For.Body, env)
+					if err != nil {
+						return nil, err
+					}
+					out = append(out, body...)
+				}
+			} else {
+				src, err := toExpr(s.For.Source, env)
+				if err != nil {
+					return nil, err
+				}
+				list, ok := src.(*ListLit)
+				if !ok {
+					return nil, fmt.Errorf("unsupported for-loop")
+				}
+				for _, elem := range list.Elems {
+					vname := env.fresh(s.For.Name)
+					env.setConst(vname, elem)
+					body, err := compileStmts(s.For.Body, env)
+					if err != nil {
+						return nil, err
+					}
+					out = append(out, body...)
+				}
+			}
+		case s.While != nil:
+			for {
+				condExpr, err := toExpr(s.While.Cond, env)
+				if err != nil {
+					return nil, err
+				}
+				b, ok := condExpr.(*BoolLit)
+				if !ok {
+					return nil, fmt.Errorf("unsupported while")
+				}
+				if !b.Value {
+					break
+				}
+				body, err := compileStmts(s.While.Body, env)
+				if err != nil {
+					return nil, err
+				}
+				out = append(out, body...)
+			}
 		default:
 			return nil, fmt.Errorf("unsupported statement")
 		}
@@ -969,6 +1195,19 @@ func toPostfix(pf *parser.PostfixExpr, env *compileEnv) (Expr, error) {
 				return nil, fmt.Errorf("unsupported cast")
 			}
 			expr = &CastExpr{Expr: expr, Type: *op.Cast.Type.Simple}
+		case op.Call != nil:
+			args := make([]Expr, len(op.Call.Args))
+			for i, a := range op.Call.Args {
+				ex, err := toExpr(a, env)
+				if err != nil {
+					return nil, err
+				}
+				args[i] = ex
+			}
+			if v, ok := expr.(*Var); ok {
+				return &CallExpr{Name: v.Name, Args: args}, nil
+			}
+			return nil, fmt.Errorf("unsupported call")
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
 		}
@@ -1065,7 +1304,15 @@ func toPrimary(p *parser.Primary, env *compileEnv) (Expr, error) {
 					return ex, nil
 				}
 			}
-			return nil, fmt.Errorf("unsupported call")
+			args := make([]Expr, len(p.Call.Args))
+			for i, a := range p.Call.Args {
+				ex, err := toExpr(a, env)
+				if err != nil {
+					return nil, err
+				}
+				args[i] = ex
+			}
+			return &CallExpr{Name: p.Call.Func, Args: args}, nil
 		}
 	case p.List != nil:
 		elems := make([]Expr, len(p.List.Elems))
@@ -1138,6 +1385,22 @@ func exprNode(e Expr) *ast.Node {
 	default:
 		return &ast.Node{Kind: "expr"}
 	}
+}
+
+func compileFunction(fn *parser.FunStmt, env *compileEnv) (*Function, error) {
+	fenv := newCompileEnv(env.funcs)
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = p.Name
+		fenv.vars[p.Name] = 0
+	}
+	fenv.vars["return"] = 0
+	body, err := compileStmts(fn.Body, fenv)
+	if err != nil {
+		return nil, err
+	}
+	ret := fenv.current("return")
+	return &Function{Name: fn.Name, Params: params, Body: body, Return: &Var{Name: ret}}, nil
 }
 
 func toIfExpr(ifp *parser.IfExpr, env *compileEnv) (Expr, error) {

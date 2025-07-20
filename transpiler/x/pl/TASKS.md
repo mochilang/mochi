@@ -1,3 +1,6 @@
+## Progress (2025-07-20 14:55 +0700)
+- VM valid golden test results updated to 31/100
+
 ## Progress (2025-07-20 07:48 +0000)
 - pl: implement membership and slice features
 - 31/100 VM programs transpiled successfully
