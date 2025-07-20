@@ -25,3 +25,11 @@
 - Added boolean operators `&&` and `||` with proper short-circuit semantics.
 - Removed the `substring/4` runtime helper and emit direct calls to `sub_string/5`.
 - Improved code generation readability and type inference.
+
+## Progress (2025-07-20 09:18 +0700)
+- Switched generated output to use `writeln/1` for readability.
+- Removed timestamped header for deterministic results.
+- Updated README checklist (21/100).
+
+## Recent Updates
+- [2025-07-20T09:18:48+07:00] Clean print statements and deterministic header; progress 21/100
