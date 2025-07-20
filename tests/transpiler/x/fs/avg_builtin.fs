@@ -1,4 +1,4 @@
-// Generated 2025-07-20 10:18 +0700
+// Generated 2025-07-20 12:47 +0700
 open System
 
-printfn "%s" (string (List.averageBy float [1; 2; 3]))
+printfn "%.1f" (List.averageBy float [1; 2; 3])

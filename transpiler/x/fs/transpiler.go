@@ -115,25 +115,25 @@ func (l *ListLit) emit(w io.Writer) {
 			io.WriteString(w, "; ")
 		}
 	}
-        io.WriteString(w, "]")
+	io.WriteString(w, "]")
 }
 
 // MapLit represents an F# map literal.
 type MapLit struct{ Items [][2]Expr }
 
 func (m *MapLit) emit(w io.Writer) {
-        io.WriteString(w, "Map.ofList [")
-        for i, kv := range m.Items {
-                io.WriteString(w, "(")
-                kv[0].emit(w)
-                io.WriteString(w, ", ")
-                kv[1].emit(w)
-                io.WriteString(w, ")")
-                if i < len(m.Items)-1 {
-                        io.WriteString(w, "; ")
-                }
-        }
-        io.WriteString(w, "]")
+	io.WriteString(w, "Map.ofList [")
+	for i, kv := range m.Items {
+		io.WriteString(w, "(")
+		kv[0].emit(w)
+		io.WriteString(w, ", ")
+		kv[1].emit(w)
+		io.WriteString(w, ")")
+		if i < len(m.Items)-1 {
+			io.WriteString(w, "; ")
+		}
+	}
+	io.WriteString(w, "]")
 }
 
 // AppendExpr represents append(list, elem).
@@ -473,11 +473,11 @@ func precedence(op string) int {
 
 func needsParen(e Expr) bool {
 	switch e.(type) {
-       case *BinaryExpr, *UnaryExpr, *IfExpr, *AppendExpr, *SubstringExpr, *CallExpr, *IndexExpr, *LambdaExpr, *FieldExpr, *MethodCallExpr, *SliceExpr, *CastExpr, *MapLit:
-               return true
-       default:
-               return false
-       }
+	case *BinaryExpr, *UnaryExpr, *IfExpr, *AppendExpr, *SubstringExpr, *CallExpr, *IndexExpr, *LambdaExpr, *FieldExpr, *MethodCallExpr, *SliceExpr, *CastExpr, *MapLit:
+		return true
+	default:
+		return false
+	}
 }
 
 func inferType(e Expr) string {
@@ -488,11 +488,11 @@ func inferType(e Expr) string {
 		return "string"
 	case *BoolLit:
 		return "bool"
-       case *ListLit:
-               return "list"
-       case *MapLit:
-               return "map"
-       case *IdentExpr:
+	case *ListLit:
+		return "list"
+	case *MapLit:
+		return "map"
+	case *IdentExpr:
 		if t, ok := varTypes[v.Name]; ok {
 			return t
 		}
@@ -722,9 +722,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		varTypes[st.Let.Name] = declared
 		typ := declared
-               if typ == "list" || typ == "map" {
-                       typ = ""
-               }
+		if typ == "list" || typ == "map" {
+			typ = ""
+		}
 		return &LetStmt{Name: st.Let.Name, Expr: e, Type: typ}, nil
 	case st.Var != nil:
 		var e Expr
@@ -743,9 +743,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		varTypes[st.Var.Name] = declared
 		typ := declared
-               if typ == "list" || typ == "map" {
-                       typ = ""
-               }
+		if typ == "list" || typ == "map" {
+			typ = ""
+		}
 		return &LetStmt{Name: st.Var.Name, Expr: e, Type: typ, Mutable: true}, nil
 	case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
 		e, err := convertExpr(st.Assign.Value)
@@ -967,6 +967,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					return &CallExpr{Func: "printfn \"%b\"", Args: []Expr{args[0]}}, nil
 				case "int":
 					return &CallExpr{Func: "printfn \"%d\"", Args: []Expr{args[0]}}, nil
+				case "float":
+					return &CallExpr{Func: "printfn \"%.1f\"", Args: []Expr{args[0]}}, nil
 				case "list":
 					mapped := &CallExpr{Func: "List.map string", Args: []Expr{args[0]}}
 					concat := &CallExpr{Func: "String.concat", Args: []Expr{&StringLit{Value: " "}, mapped}}
@@ -984,6 +986,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					elems[i] = &CallExpr{Func: "sprintf \"%b\"", Args: []Expr{a}}
 				case "int":
 					elems[i] = &CallExpr{Func: "sprintf \"%d\"", Args: []Expr{a}}
+				case "float":
+					elems[i] = &CallExpr{Func: "sprintf \"%.1f\"", Args: []Expr{a}}
 				default:
 					elems[i] = &CallExpr{Func: "string", Args: []Expr{a}}
 				}
@@ -997,11 +1001,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				switch inferType(args[0]) {
 				case "list":
 					fn = "List.length"
-                               case "string":
-                                       fn = "String.length"
-                               case "map":
-                                       fn = "Seq.length"
-                               }
+				case "string":
+					fn = "String.length"
+				case "map":
+					fn = "Seq.length"
+				}
 			}
 			return &CallExpr{Func: fn, Args: args}, nil
 		case "str":
@@ -1039,31 +1043,31 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return &IntLit{Value: int(*p.Lit.Int)}, nil
 	case p.Lit != nil && p.Lit.Bool != nil:
 		return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
-       case p.List != nil:
-               elems := make([]Expr, len(p.List.Elems))
-               for i, e := range p.List.Elems {
-                       ex, err := convertExpr(e)
-                       if err != nil {
-                               return nil, err
-                       }
-                       elems[i] = ex
-               }
-               return &ListLit{Elems: elems}, nil
-       case p.Map != nil:
-               items := make([][2]Expr, len(p.Map.Items))
-               for i, it := range p.Map.Items {
-                       k, err := convertExpr(it.Key)
-                       if err != nil {
-                               return nil, err
-                       }
-                       v, err := convertExpr(it.Value)
-                       if err != nil {
-                               return nil, err
-                       }
-                       items[i] = [2]Expr{k, v}
-               }
-               return &MapLit{Items: items}, nil
-       case p.FunExpr != nil:
+	case p.List != nil:
+		elems := make([]Expr, len(p.List.Elems))
+		for i, e := range p.List.Elems {
+			ex, err := convertExpr(e)
+			if err != nil {
+				return nil, err
+			}
+			elems[i] = ex
+		}
+		return &ListLit{Elems: elems}, nil
+	case p.Map != nil:
+		items := make([][2]Expr, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			k, err := convertExpr(it.Key)
+			if err != nil {
+				return nil, err
+			}
+			v, err := convertExpr(it.Value)
+			if err != nil {
+				return nil, err
+			}
+			items[i] = [2]Expr{k, v}
+		}
+		return &MapLit{Items: items}, nil
+	case p.FunExpr != nil:
 		save := varTypes
 		varTypes = copyMap(varTypes)
 		params := make([]string, len(p.FunExpr.Params))
