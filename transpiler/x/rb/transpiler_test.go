@@ -73,6 +73,8 @@ func TestTranspilePrograms(t *testing.T) {
 		"list_index",
 		"map_index",
 		"map_assign",
+		"typed_let",
+		"typed_var",
 	}
 	root := repoRoot(t)
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "rb")
