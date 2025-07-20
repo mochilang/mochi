@@ -72,6 +72,10 @@ func TestTranspile_Golden(t *testing.T) {
 		"str_builtin",
 		"bool_chain",
 		"cast_string_to_int",
+		"string_contains",
+		"string_index",
+		"list_index",
+		"list_assign",
 	}
 	for _, name := range names {
 		src := filepath.Join(root, "tests", "vm", "valid", name+".mochi")
@@ -145,14 +149,16 @@ func updateReadme() {
 func updateTasks() {
 	root := repoRoot(&testing.T{})
 	taskPath := filepath.Join(root, "transpiler", "x", "rkt", "TASKS.md")
-	out, err := exec.Command("git", "log", "-1", "--format=%cd", "--date=format:%Y-%m-%d %H:%M:%S %Z").Output()
+	out, err := exec.Command("git", "log", "-1", "--format=%cd", "--date=iso-strict").Output()
 	ts := strings.TrimSpace(string(out))
 	if err != nil {
 		ts = ""
 	}
 	var buf bytes.Buffer
 	fmt.Fprintf(&buf, "## Progress (%s)\n", ts)
-	buf.WriteString("- Added str(), sum() and count() builtin support\n")
+	buf.WriteString("- Added list and string indexing support\n")
+	buf.WriteString("- Implemented string contains builtin\n")
+	buf.WriteString("- Improved header timestamp format\n")
 	buf.WriteString("- Updated golden tests and README\n\n")
 	if data, err := os.ReadFile(taskPath); err == nil {
 		buf.Write(data)
