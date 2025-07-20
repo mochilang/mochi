@@ -1,3 +1,7 @@
+## Progress (2025-07-20 09:53 +0000)
+- Added `count` builtin with constant folding and std.mem.len fallback.
+- Generated golden files for `count_builtin` and updated README checklist (48/100 tests passing)
+
 ## Progress (2025-07-20 08:11 +0000)
 - Added basic function support with typed parameters and return statements.
 - Implemented `return` handling and match expressions.
@@ -62,6 +66,7 @@
 
 # Zig Transpiler Tasks
 
+- 2025-07-20 09:53 +0000 - Implemented count builtin and new golden test (48/100 tests passing)
 - 2025-07-20 14:31 +0700 - Added slicing, membership operator and int casts (37/100 tests passing)
 
 - 2025-07-20 06:40 +0000 - Added multi-argument print, avg folding and new golden files (31/100 tests passing)

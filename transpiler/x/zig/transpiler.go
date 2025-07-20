@@ -525,6 +525,18 @@ func (c *CallExpr) emit(w io.Writer) {
 		} else {
 			io.WriteString(w, "0")
 		}
+	case "count":
+		if len(c.Args) > 0 {
+			if l, ok := c.Args[0].(*ListLit); ok {
+				fmt.Fprintf(w, "%d", len(l.Elems))
+			} else {
+				io.WriteString(w, "std.mem.len(")
+				c.Args[0].emit(w)
+				io.WriteString(w, ")")
+			}
+		} else {
+			io.WriteString(w, "0")
+		}
 	case "min":
 		if len(c.Args) == 1 {
 			io.WriteString(w, "blk: { var arr = ")
@@ -848,6 +860,17 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					}
 					avg := float64(total) / float64(len(list.Elems))
 					return &FloatLit{Value: avg}, nil
+				}
+			}
+		case "count":
+			if len(args) == 1 {
+				if list, ok := args[0].(*ListLit); ok {
+					return &IntLit{Value: len(list.Elems)}, nil
+				}
+				if v, ok := args[0].(*VarRef); ok {
+					if lst, ok2 := constLists[v.Name]; ok2 {
+						return &IntLit{Value: len(lst.Elems)}, nil
+					}
 				}
 			}
 		case "append":
