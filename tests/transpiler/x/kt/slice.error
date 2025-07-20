@@ -1,4 +1,0 @@
-OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-/workspace/mochi/tests/transpiler/x/kt/slice.kt:5:21: error: unresolved reference: subList
-    println("hello".subList(1, 4))
-                    ^

@@ -503,9 +503,8 @@ type AppendExpr struct {
 
 func (a *AppendExpr) emit(w io.Writer) {
 	a.List.emit(w)
-	io.WriteString(w, " + mutableListOf(")
+	io.WriteString(w, " + ")
 	a.Elem.emit(w)
-	io.WriteString(w, ")")
 }
 
 type MinExpr struct{ Value Expr }
@@ -699,6 +698,13 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				params = append(params, fmt.Sprintf("%s: %s", p0.Name, typ))
 			}
 			ret := kotlinType(st.Fun.Return)
+			if ret == "" {
+				if t, ok := env.Types()[st.Fun.Name]; ok {
+					if ft, ok := t.(types.FuncType); ok {
+						ret = kotlinTypeFromType(ft.Return)
+					}
+				}
+			}
 			p.Funcs = append(p.Funcs, &FuncDef{Name: st.Fun.Name, Params: params, Ret: ret, Body: body})
 		case st.If != nil:
 			stmt, err := convertIfStmt(env, st.If)

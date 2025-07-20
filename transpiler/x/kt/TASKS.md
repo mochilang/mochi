@@ -1,6 +1,6 @@
 # Kotlin Transpiler Tasks
 
-_Last updated: 2025-07-20 01:31 UTC_
+_Last updated: 2025-07-20T09:17:42+07:00_
 
 - Basic programs using `print` are supported.
 - Added integer and list literals.
@@ -59,3 +59,8 @@ _Last updated: 2025-07-20 01:31 UTC_
 - Improved Kotlin emitter with indentation for all statements.
 - README checklist regenerated directly from `tests/vm/valid` with 46/100 passing.
 - Documented progress using git timestamp.
+
+## VM Golden Progress (2025-07-20T09:17:42+07:00)
+- Append operations use Kotlin `+` for lists.
+- Function return types inferred from the environment.
+- README progress regenerated showing 46/100 passing.
