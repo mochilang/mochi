@@ -835,6 +835,12 @@ func transpilePrimary(p *parser.Primary) (Node, error) {
 		return transpileQueryExpr(p.Query)
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return Symbol(p.Selector.Root), nil
+	case p.Selector != nil && len(p.Selector.Tail) > 0:
+		pf := &parser.PostfixExpr{Target: &parser.Primary{Selector: &parser.SelectorExpr{Root: p.Selector.Root}}}
+		for _, t := range p.Selector.Tail {
+			pf.Ops = append(pf.Ops, &parser.PostfixOp{Field: &parser.FieldOp{Name: t}})
+		}
+		return transpilePostfix(pf)
 	case p.Group != nil:
 		return transpileExpr(p.Group)
 	default:
@@ -1024,8 +1030,12 @@ func transpileQueryExpr(q *parser.QueryExpr) (Node, error) {
 	}
 
 	vecElems := bindings
-	for _, c := range conds {
-		vecElems = append(vecElems, Keyword("when"), c)
+	if len(conds) == 1 {
+		vecElems = append(vecElems, Keyword("when"), conds[0])
+	} else if len(conds) > 1 {
+		andForm := []Node{Symbol("and")}
+		andForm = append(andForm, conds...)
+		vecElems = append(vecElems, Keyword("when"), &List{Elems: andForm})
 	}
 
 	forForm := &List{Elems: []Node{Symbol("for"), &Vector{Elems: vecElems}, sel}}

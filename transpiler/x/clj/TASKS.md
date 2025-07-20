@@ -1,3 +1,7 @@
+## Progress (2025-07-20 20:49 +0700)
+- clj: support query where and joins
+- Regenerated golden files - 72/100 vm valid programs passing
+
 ## Progress (2025-07-20 20:22 +0700)
 - clj: regenerate cross join tests
 - Regenerated golden files - 68/100 vm valid programs passing
