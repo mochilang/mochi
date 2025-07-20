@@ -306,7 +306,7 @@ func Emit(w io.Writer, p *Program) error {
 			}
 		}
 	}
-	_, err := io.WriteString(w, "?>")
+	_, err := io.WriteString(w, "?>\n")
 	return err
 }
 
@@ -422,10 +422,31 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 	if pf == nil {
 		return nil, fmt.Errorf("nil postfix")
 	}
-	if len(pf.Ops) > 0 {
-		return nil, fmt.Errorf("postfix ops not supported")
+	e, err := convertPrimary(pf.Target)
+	if err != nil {
+		return nil, err
 	}
-	return convertPrimary(pf.Target)
+	for _, op := range pf.Ops {
+		switch {
+		case op.Cast != nil:
+			if op.Cast.Type == nil || op.Cast.Type.Simple == nil {
+				return nil, fmt.Errorf("unsupported cast")
+			}
+			switch *op.Cast.Type.Simple {
+			case "int":
+				e = &CallExpr{Func: "intval", Args: []Expr{e}}
+			case "string":
+				e = &CallExpr{Func: "strval", Args: []Expr{e}}
+			case "bool":
+				e = &CallExpr{Func: "boolval", Args: []Expr{e}}
+			default:
+				return nil, fmt.Errorf("unsupported cast to %s", *op.Cast.Type.Simple)
+			}
+		default:
+			return nil, fmt.Errorf("postfix op not supported")
+		}
+	}
+	return e, nil
 }
 
 func convertPrimary(p *parser.Primary) (Expr, error) {
