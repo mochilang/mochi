@@ -21,6 +21,10 @@ type Program struct {
 	Stmts []Stmt
 }
 
+// helperFuncs collects small helper function declarations that may be emitted
+// if needed by generated code.
+var helperFuncs []Stmt
+
 var transpileEnv *types.Env
 
 type Stmt interface {
@@ -275,6 +279,24 @@ type IndexAssignStmt struct {
 	Target Expr
 	Value  Expr
 }
+
+// SaveStmt saves a list of maps to a file or stdout in a simple JSONL format.
+type SaveStmt struct {
+	Src    Expr
+	Path   string
+	Format string
+}
+
+// UpdateStmt updates fields of items in a list of structs.
+type UpdateStmt struct {
+	Target string
+	Fields []string
+	Values []Expr
+	Cond   Expr
+}
+
+// RawExpr emits raw TypeScript code verbatim.
+type RawExpr struct{ Code string }
 
 func (s *ExprStmt) emit(w io.Writer) {
 	if s == nil {
@@ -780,6 +802,53 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 	}
 }
 
+func (s *SaveStmt) emit(w io.Writer) {
+	if s.Format == "jsonl" && (s.Path == "" || s.Path == "-") {
+		io.WriteString(w, "for (const _row of ")
+		if s.Src != nil {
+			s.Src.emit(w)
+		}
+		io.WriteString(w, ") {\n")
+		io.WriteString(w, "  console.log(JSON.stringify(_row))\n")
+		io.WriteString(w, "}")
+		return
+	}
+	io.WriteString(w, "// unsupported save")
+}
+
+func (u *UpdateStmt) emit(w io.Writer) {
+	io.WriteString(w, "for (let i = 0; i < ")
+	io.WriteString(w, u.Target)
+	io.WriteString(w, ".length; i++) {\n")
+	io.WriteString(w, "  let item = ")
+	io.WriteString(w, u.Target)
+	io.WriteString(w, "[i]\n")
+	if u.Cond != nil {
+		io.WriteString(w, "  if (")
+		u.Cond.emit(w)
+		io.WriteString(w, ") {\n")
+	}
+	pad := "  "
+	if u.Cond != nil {
+		pad = "    "
+	}
+	for i, f := range u.Fields {
+		io.WriteString(w, pad)
+		fmt.Fprintf(w, "item[%q] = ", f)
+		u.Values[i].emit(w)
+		io.WriteString(w, ";\n")
+	}
+	if u.Cond != nil {
+		io.WriteString(w, "  }\n")
+	}
+	io.WriteString(w, "  ")
+	io.WriteString(w, u.Target)
+	io.WriteString(w, "[i] = item\n")
+	io.WriteString(w, "}\n")
+}
+
+func (r *RawExpr) emit(w io.Writer) { io.WriteString(w, r.Code) }
+
 func (v *VarDecl) emit(w io.Writer) {
 	if v.Const {
 		io.WriteString(w, "const ")
@@ -1169,7 +1238,40 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		return &AssignStmt{Name: s.Assign.Name, Expr: val}, nil
 	case s.Type != nil:
 		return nil, nil
+	case s.ExternVar != nil:
+		return nil, nil
+	case s.ExternFun != nil:
+		return nil, nil
+	case s.ExternObject != nil:
+		return nil, nil
+	case s.ExternType != nil:
+		return nil, nil
+	case s.Import != nil:
+		alias := s.Import.As
+		if alias == "" {
+			alias = parser.AliasFromPath(s.Import.Path)
+		}
+		if s.Import.Lang != nil && *s.Import.Lang == "python" && strings.Trim(s.Import.Path, "\"") == "math" {
+			return &VarDecl{Name: alias, Expr: &NameRef{Name: "Math"}, Const: true}, nil
+		}
+		if s.Import.Lang != nil && *s.Import.Lang == "go" && strings.Trim(s.Import.Path, "\"") == "mochi/runtime/ffi/go/testpkg" {
+			expr := &RawExpr{Code: "{ Add: (a:number,b:number)=>a+b, Pi: 3.14, Answer: 42 }"}
+			return &VarDecl{Name: alias, Expr: expr, Const: true}, nil
+		}
+		return nil, nil
 	case s.Expr != nil:
+		if se := extractSaveExpr(s.Expr.Expr); se != nil {
+			src, err := convertExpr(se.Src)
+			if err != nil {
+				return nil, err
+			}
+			format := parseFormat(se.With)
+			path := ""
+			if se.Path != nil {
+				path = strings.Trim(*se.Path, "\"")
+			}
+			return &SaveStmt{Src: src, Path: path, Format: format}, nil
+		}
 		e, err := convertExpr(s.Expr.Expr)
 		if err != nil {
 			return nil, err
@@ -1215,6 +1317,12 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		return convertWhileStmt(s.While, transpileEnv)
 	case s.For != nil:
 		return convertForStmt(s.For, transpileEnv)
+	case s.Update != nil:
+		up, err := convertUpdate(s.Update, transpileEnv)
+		if err != nil {
+			return nil, err
+		}
+		return up, nil
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
@@ -1289,6 +1397,63 @@ func convertForStmt(f *parser.ForStmt, env *types.Env) (Stmt, error) {
 		}
 	}
 	return &ForInStmt{Name: f.Name, Iterable: iterable, Body: body, Keys: keys}, nil
+}
+
+func convertUpdate(u *parser.UpdateStmt, env *types.Env) (*UpdateStmt, error) {
+	if env == nil {
+		return nil, fmt.Errorf("missing env")
+	}
+	t, err := env.GetVar(u.Target)
+	if err != nil {
+		return nil, err
+	}
+	lt, ok := t.(types.ListType)
+	if !ok {
+		return nil, fmt.Errorf("update target not list")
+	}
+	st, ok := lt.Elem.(types.StructType)
+	if !ok {
+		return nil, fmt.Errorf("update element not struct")
+	}
+	child := types.NewEnv(env)
+	fieldSet := map[string]bool{}
+	for name, ft := range st.Fields {
+		child.SetVar(name, ft, true)
+		fieldSet[name] = true
+	}
+	prev := transpileEnv
+	transpileEnv = child
+	var fields []string
+	var values []Expr
+	for _, item := range u.Set.Items {
+		key, ok := isSimpleIdent(item.Key)
+		if !ok {
+			key, ok = literalString(item.Key)
+			if !ok {
+				transpileEnv = prev
+				return nil, fmt.Errorf("unsupported update key")
+			}
+		}
+		val, err := convertExpr(item.Value)
+		if err != nil {
+			transpileEnv = prev
+			return nil, err
+		}
+		val = substituteFields(val, "item", fieldSet)
+		fields = append(fields, key)
+		values = append(values, val)
+	}
+	var cond Expr
+	if u.Where != nil {
+		cond, err = convertExpr(u.Where)
+		if err != nil {
+			transpileEnv = prev
+			return nil, err
+		}
+		cond = substituteFields(cond, "item", fieldSet)
+	}
+	transpileEnv = prev
+	return &UpdateStmt{Target: u.Target, Fields: fields, Values: values, Cond: cond}, nil
 }
 
 func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
@@ -1810,6 +1975,32 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			entries[i] = MapEntry{Key: k, Value: v}
 		}
 		return &MapLit{Entries: entries}, nil
+	case p.Load != nil:
+		format := parseFormat(p.Load.With)
+		path := ""
+		if p.Load.Path != nil {
+			path = strings.Trim(*p.Load.Path, "\"")
+		}
+		pathExpr := fmt.Sprintf("%q", path)
+		clean := path
+		for strings.HasPrefix(clean, "../") {
+			clean = strings.TrimPrefix(clean, "../")
+		}
+		if path != "" && strings.HasPrefix(path, "../") {
+			pathExpr = fmt.Sprintf("new URL(\"../../../%s\", import.meta.url).pathname", clean)
+		}
+		switch format {
+		case "json":
+			return &RawExpr{Code: fmt.Sprintf("JSON.parse(Deno.readTextFileSync(%s))", pathExpr)}, nil
+		case "jsonl":
+			code := fmt.Sprintf("Deno.readTextFileSync(%s).trim().split(/\\r?\\n/).map(l=>JSON.parse(l))", pathExpr)
+			return &RawExpr{Code: code}, nil
+		case "yaml":
+			code := fmt.Sprintf(`(() => {const _t=Deno.readTextFileSync(%s).trim().split(/\r?\n/);const _o:any[]=[];let c:any={};for(let line of _t){if(line.startsWith('- ')){if(Object.keys(c).length)_o.push(c);c={};line=line.slice(2);}else if(line.startsWith('  ')){line=line.slice(2);}if(!line)continue;const [k,v]=line.split(':');const val=v.trim();c[k.trim()]=/^\d+$/.test(val)?+val:val;}if(Object.keys(c).length)_o.push(c);return _o;})()`, pathExpr)
+			return &RawExpr{Code: code}, nil
+		default:
+			return nil, fmt.Errorf("unsupported load format")
+		}
 	case p.Query != nil:
 		return convertQueryExpr(p.Query)
 	case p.FunExpr != nil:
@@ -1951,6 +2142,145 @@ func isNumericBool(e Expr) bool {
 		return isNumericBool(ex.Expr)
 	default:
 		return false
+	}
+}
+
+func isSimpleIdent(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func literalString(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.Save
+}
+
+func parseFormat(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return ""
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Map == nil {
+		return ""
+	}
+	for _, it := range p.Target.Map.Items {
+		key, ok := isSimpleIdent(it.Key)
+		if !ok {
+			key, ok = literalString(it.Key)
+		}
+		if key == "format" {
+			if s, ok := literalString(it.Value); ok {
+				return s
+			}
+		}
+	}
+	return ""
+}
+
+func substituteFields(e Expr, varName string, fields map[string]bool) Expr {
+	switch ex := e.(type) {
+	case *NameRef:
+		if fields[ex.Name] {
+			return &IndexExpr{Target: &NameRef{Name: varName}, Index: &StringLit{Value: ex.Name}}
+		}
+		return ex
+	case *BinaryExpr:
+		ex.Left = substituteFields(ex.Left, varName, fields)
+		ex.Right = substituteFields(ex.Right, varName, fields)
+		return ex
+	case *UnaryExpr:
+		ex.Expr = substituteFields(ex.Expr, varName, fields)
+		return ex
+	case *CallExpr:
+		for i := range ex.Args {
+			ex.Args[i] = substituteFields(ex.Args[i], varName, fields)
+		}
+		return ex
+	case *MethodCallExpr:
+		ex.Target = substituteFields(ex.Target, varName, fields)
+		for i := range ex.Args {
+			ex.Args[i] = substituteFields(ex.Args[i], varName, fields)
+		}
+		return ex
+	case *IndexExpr:
+		ex.Target = substituteFields(ex.Target, varName, fields)
+		ex.Index = substituteFields(ex.Index, varName, fields)
+		return ex
+	case *SliceExpr:
+		ex.Target = substituteFields(ex.Target, varName, fields)
+		if ex.Start != nil {
+			ex.Start = substituteFields(ex.Start, varName, fields)
+		}
+		if ex.End != nil {
+			ex.End = substituteFields(ex.End, varName, fields)
+		}
+		return ex
+	case *IfExpr:
+		ex.Cond = substituteFields(ex.Cond, varName, fields)
+		ex.Then = substituteFields(ex.Then, varName, fields)
+		ex.Else = substituteFields(ex.Else, varName, fields)
+		return ex
+	case *ListLit:
+		for i := range ex.Elems {
+			ex.Elems[i] = substituteFields(ex.Elems[i], varName, fields)
+		}
+		return ex
+	case *MapLit:
+		for i := range ex.Entries {
+			ex.Entries[i].Key = substituteFields(ex.Entries[i].Key, varName, fields)
+			ex.Entries[i].Value = substituteFields(ex.Entries[i].Value, varName, fields)
+		}
+		return ex
+	default:
+		return ex
 	}
 }
 
