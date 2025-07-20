@@ -222,6 +222,8 @@ func TestTranspileCrossJoinFilter(t *testing.T) { runGolden(t, "cross_join_filte
 func TestTranspileCrossJoinTriple(t *testing.T) { runGolden(t, "cross_join_triple") }
 func TestTranspileInnerJoin(t *testing.T)       { runGolden(t, "inner_join") }
 
+func TestTranspileDatasetWhereFilter(t *testing.T) { runGolden(t, "dataset_where_filter") }
+
 func updateEnabled() bool { return *update }
 
 func countCompiled() (int, int) {
@@ -277,16 +279,21 @@ func updateTasks() {
 	root := repoRoot(&testing.T{})
 	taskFile := filepath.Join(root, "transpiler", "x", "erl", "TASKS.md")
 	compiled, total := countCompiled()
-	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
-	ts := ""
-	if err == nil {
-		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+	tsRaw, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	msgRaw, _ := exec.Command("git", "log", "-1", "--format=%s").Output()
+	ts := strings.TrimSpace(string(tsRaw))
+	if t, err := time.Parse(time.RFC3339, ts); err == nil {
+		if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+			ts = t.In(loc).Format("2006-01-02 15:04 -0700")
+		} else {
 			ts = t.Format("2006-01-02 15:04 MST")
 		}
 	}
+	msg := strings.TrimSpace(string(msgRaw))
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
-	buf.WriteString(fmt.Sprintf("- VM valid golden test results updated to %d/%d\n\n", compiled, total))
+	buf.WriteString(fmt.Sprintf("- %s\n", msg))
+	buf.WriteString(fmt.Sprintf("- Regenerated golden files - %d/%d vm valid programs passing\n\n", compiled, total))
 	if data, err := os.ReadFile(taskFile); err == nil {
 		buf.Write(data)
 	}

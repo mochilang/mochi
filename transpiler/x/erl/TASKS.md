@@ -1,3 +1,11 @@
+## Progress (2025-07-20 21:27 +0700)
+- erl transpiler: add join support
+- Regenerated golden files - 67/100 vm valid programs passing
+
+## Progress (2025-07-20 21:27 +0700)
+- erl transpiler: add join support
+- Regenerated golden files - 67/100 vm valid programs passing
+
 ## Progress (2025-07-20 21:14 +0700)
 - VM valid golden test results updated to 66/100
 
