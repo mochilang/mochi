@@ -272,9 +272,22 @@ type ForEachStmt struct {
 	Name     string
 	Iterable Expr
 	Body     []Stmt
+	Typ      string
 }
 
 func (fe *ForEachStmt) emit(w io.Writer) {
+	if strings.HasPrefix(fe.Typ, "map") {
+		io.WriteString(w, "  List.iter (fun (")
+		io.WriteString(w, fe.Name)
+		io.WriteString(w, ", _) ->\n")
+		for _, st := range fe.Body {
+			st.emit(w)
+		}
+		io.WriteString(w, "  ) ")
+		fe.Iterable.emit(w)
+		io.WriteString(w, ";\n")
+		return
+	}
 	io.WriteString(w, "  List.iter (fun ")
 	io.WriteString(w, fe.Name)
 	io.WriteString(w, " ->\n")
@@ -342,10 +355,16 @@ func (l *LenBuiltin) emit(w io.Writer) {
 	switch l.Typ {
 	case "string":
 		io.WriteString(w, "String.length ")
-	case "list", "map":
+	case "list":
+		io.WriteString(w, "List.length ")
+	case "map":
 		io.WriteString(w, "List.length ")
 	default:
-		io.WriteString(w, "List.length ")
+		if strings.HasPrefix(l.Typ, "map-") {
+			io.WriteString(w, "List.length ")
+		} else {
+			io.WriteString(w, "List.length ")
+		}
 	}
 	l.Arg.emit(w)
 }
@@ -652,6 +671,14 @@ type IndexExpr struct {
 	Typ   string
 }
 
+// SliceExpr represents col[start:end] for strings.
+type SliceExpr struct {
+	Col   Expr
+	Start Expr
+	End   Expr
+	Typ   string
+}
+
 // ListUpdateExpr updates a list at a specific index and returns the new list.
 type ListUpdateExpr struct {
 	List  Expr
@@ -696,6 +723,14 @@ func (in *InExpr) emit(w io.Writer) {
 		in.Coll.emit(w)
 		io.WriteString(w, ")")
 	default: // list
+		if strings.HasPrefix(in.Typ, "map-") {
+			io.WriteString(w, "(List.mem_assoc ")
+			in.Item.emit(w)
+			io.WriteString(w, " ")
+			in.Coll.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
 		io.WriteString(w, "(List.mem ")
 		in.Item.emit(w)
 		io.WriteString(w, " ")
@@ -766,6 +801,21 @@ func (ix *IndexExpr) emitPrint(w io.Writer) {
 		io.WriteString(w, ")")
 	}
 }
+
+func (s *SliceExpr) emit(w io.Writer) {
+	// Only string slices are supported for now
+	io.WriteString(w, "String.sub ")
+	s.Col.emit(w)
+	io.WriteString(w, " ")
+	s.Start.emit(w)
+	io.WriteString(w, " (")
+	s.End.emit(w)
+	io.WriteString(w, " - ")
+	s.Start.emit(w)
+	io.WriteString(w, ")")
+}
+
+func (s *SliceExpr) emitPrint(w io.Writer) { s.emit(w) }
 
 // UnaryMinus represents negation of an integer expression.
 type UnaryMinus struct{ Expr Expr }
@@ -1079,7 +1129,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			return nil, err
 		}
 		if len(st.Assign.Index) > 0 {
-			if info.typ == "map" && len(st.Assign.Index) == 1 {
+			if strings.HasPrefix(info.typ, "map") && len(st.Assign.Index) == 1 {
 				ix := st.Assign.Index[0]
 				if ix.Colon != nil || ix.Colon2 != nil || ix.End != nil || ix.Step != nil {
 					return nil, fmt.Errorf("slice assignment not supported")
@@ -1090,6 +1140,22 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 				}
 				mapExpr := Expr(&Name{Ident: st.Assign.Name, Typ: info.typ, Ref: true})
 				upd := &MapUpdateExpr{Map: mapExpr, Key: key, Value: valExpr}
+				return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
+			}
+			if strings.HasPrefix(info.typ, "map") {
+				keys := make([]Expr, len(st.Assign.Index))
+				for i, ix := range st.Assign.Index {
+					if ix.Colon != nil || ix.Colon2 != nil || ix.End != nil || ix.Step != nil {
+						return nil, fmt.Errorf("slice assignment not supported")
+					}
+					k, _, err := convertExpr(ix.Start, env, vars)
+					if err != nil {
+						return nil, err
+					}
+					keys[i] = k
+				}
+				mapExpr := Expr(&Name{Ident: st.Assign.Name, Typ: info.typ, Ref: true})
+				upd := buildMapUpdate(mapExpr, keys, valExpr)
 				return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
 			}
 			indices := make([]Expr, len(st.Assign.Index))
@@ -1175,17 +1241,27 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			delete(vars, st.For.Name)
 			return &ForRangeStmt{Name: st.For.Name, Start: start, End: endExpr, Body: body}, nil
 		}
-		iter, _, err := convertExpr(st.For.Source, env, vars)
+		iter, iterTyp, err := convertExpr(st.For.Source, env, vars)
 		if err != nil {
 			return nil, err
 		}
-		vars[st.For.Name] = VarInfo{typ: "int"}
+		vtyp := "int"
+		if strings.HasPrefix(iterTyp, "list") {
+			vtyp = "int"
+		}
+		if strings.HasPrefix(iterTyp, "map-") {
+			parts := strings.Split(iterTyp, "-")
+			if len(parts) >= 3 {
+				vtyp = parts[1]
+			}
+		}
+		vars[st.For.Name] = VarInfo{typ: vtyp}
 		body, err := transpileStmts(st.For.Body, env, vars)
 		if err != nil {
 			return nil, err
 		}
 		delete(vars, st.For.Name)
-		return &ForEachStmt{Name: st.For.Name, Iterable: iter, Body: body}, nil
+		return &ForEachStmt{Name: st.For.Name, Iterable: iter, Body: body, Typ: iterTyp}, nil
 	case st.Fun != nil:
 		child := types.NewEnv(env)
 		fnVars := map[string]VarInfo{}
@@ -1463,7 +1539,15 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 			if err != nil {
 				return nil, "", err
 			}
-			if typ == "map" {
+			if strings.HasPrefix(typ, "map-") {
+				parts := strings.Split(typ, "-")
+				valTyp := "int"
+				if len(parts) >= 3 {
+					valTyp = parts[2]
+				}
+				expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: valTyp}
+				typ = valTyp
+			} else if typ == "map" {
 				expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: "int"}
 				typ = "int"
 			} else {
@@ -1474,6 +1558,17 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 					typ = "int"
 				}
 			}
+			i++
+		case op.Index != nil && op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil:
+			startExpr, _, err := convertExpr(op.Index.Start, env, vars)
+			if err != nil {
+				return nil, "", err
+			}
+			endExpr, _, err := convertExpr(op.Index.End, env, vars)
+			if err != nil {
+				return nil, "", err
+			}
+			expr = &SliceExpr{Col: expr, Start: startExpr, End: endExpr, Typ: typ}
 			i++
 		case op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil:
 			target := *op.Cast.Type.Simple
@@ -1515,18 +1610,25 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 		return &ListLit{Elems: elems}, "list", nil
 	case p.Map != nil:
 		items := make([]MapEntry, len(p.Map.Items))
+		keyTyp := "int"
+		valTyp := "int"
 		for i, it := range p.Map.Items {
-			k, _, err := convertExpr(it.Key, env, vars)
+			k, kt, err := convertExpr(it.Key, env, vars)
 			if err != nil {
 				return nil, "", err
 			}
-			v, _, err := convertExpr(it.Value, env, vars)
+			v, vt, err := convertExpr(it.Value, env, vars)
 			if err != nil {
 				return nil, "", err
+			}
+			if i == 0 {
+				keyTyp = kt
+				valTyp = vt
 			}
 			items[i] = MapEntry{Key: k, Value: v}
 		}
-		return &MapLit{Items: items}, "map", nil
+		typStr := fmt.Sprintf("map-%s-%s", keyTyp, valTyp)
+		return &MapLit{Items: items}, typStr, nil
 	case p.FunExpr != nil:
 		return convertFunExpr(p.FunExpr, env, vars)
 	case p.Selector != nil:
@@ -1665,8 +1767,8 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		if err != nil {
 			return nil, "", err
 		}
-		switch typ {
-		case "string", "list", "map":
+		switch {
+		case typ == "string" || typ == "list" || typ == "map" || strings.HasPrefix(typ, "map-"):
 			return &LenBuiltin{Arg: arg, Typ: typ}, "int", nil
 		default:
 			return nil, "", fmt.Errorf("len unsupported for %s", typ)
@@ -1765,7 +1867,7 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		if err != nil {
 			return nil, "", err
 		}
-		if typ != "map" {
+		if typ != "map" && !strings.HasPrefix(typ, "map-") {
 			return nil, "", fmt.Errorf("values expects map")
 		}
 		return &ValuesBuiltin{Map: mapArg}, "list", nil
@@ -1806,4 +1908,13 @@ func buildListUpdate(list Expr, indexes []Expr, val Expr) Expr {
 	}
 	inner := buildListUpdate(&IndexExpr{Col: list, Index: idx, Typ: "list"}, indexes[1:], val)
 	return &ListUpdateExpr{List: list, Index: idx, Value: inner}
+}
+
+func buildMapUpdate(mp Expr, keys []Expr, val Expr) Expr {
+	key := keys[0]
+	if len(keys) == 1 {
+		return &MapUpdateExpr{Map: mp, Key: key, Value: val}
+	}
+	inner := buildMapUpdate(&MapIndexExpr{Map: mp, Key: key, Typ: "map"}, keys[1:], val)
+	return &MapUpdateExpr{Map: mp, Key: key, Value: inner}
 }

@@ -1,3 +1,9 @@
+## Progress (2025-07-20 08:02 UTC)
+- Checklist updated: 51/100 tests compiled
+- Added map type inference with support for integer keys and nested updates.
+- Implemented string slicing and map iteration loops.
+- Enabled golden tests for for_map_collection, map_int_key, map_nested_assign, nested_function, string_prefix_slice.
+
 ## Progress (2025-07-20 14:31 +0700)
 - Checklist updated: 46/100 tests compiled
 - Added support for `fun_expr_in_let`, `fun_three_args`, `membership`, `min_max_builtin` and `values_builtin`. Improved list printing for list outputs.
