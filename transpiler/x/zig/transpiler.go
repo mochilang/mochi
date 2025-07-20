@@ -145,8 +145,29 @@ type MapEntry struct {
 
 type MapLit struct{ Entries []MapEntry }
 
+func zigTypeFromExpr(e Expr) string {
+	switch e.(type) {
+	case *StringLit:
+		return "[]const u8"
+	case *BoolLit:
+		return "bool"
+	default:
+		return "i64"
+	}
+}
+
 func (m *MapLit) emit(w io.Writer) {
-	io.WriteString(w, "blk: { var m = std.StringHashMap(i64).init(std.heap.page_allocator);")
+	keyType := "[]const u8"
+	valType := "i64"
+	if len(m.Entries) > 0 {
+		keyType = zigTypeFromExpr(m.Entries[0].Key)
+		valType = zigTypeFromExpr(m.Entries[0].Value)
+	}
+	mapType := "std.StringHashMap(" + valType + ")"
+	if keyType != "[]const u8" {
+		mapType = fmt.Sprintf("std.AutoHashMap(%s, %s)", keyType, valType)
+	}
+	fmt.Fprintf(w, "blk: { var m = %s.init(std.heap.page_allocator);", mapType)
 	for _, e := range m.Entries {
 		io.WriteString(w, " m.put(")
 		e.Key.emit(w)
@@ -229,9 +250,16 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 	}
 	fmtSpec := make([]string, len(s.Values))
 	for i, v := range s.Values {
-		if _, ok := v.(*IndexExpr); ok {
-			fmtSpec[i] = "{c}"
-		} else {
+		switch t := v.(type) {
+		case *IndexExpr:
+			if t.Map {
+				fmtSpec[i] = "{s}"
+			} else {
+				fmtSpec[i] = "{c}"
+			}
+		case *StringLit:
+			fmtSpec[i] = "{s}"
+		default:
 			fmtSpec[i] = "{any}"
 		}
 	}
