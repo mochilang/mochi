@@ -6,10 +6,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"os"
-	"path/filepath"
-	"runtime"
-	"strings"
 	"time"
 
 	"mochi/parser"
@@ -406,6 +402,21 @@ func needsParen(e Expr) bool {
 	}
 }
 
+func inferType(e Expr) string {
+	switch e.(type) {
+	case *IntLit:
+		return "int"
+	case *StringLit:
+		return "string"
+	case *BoolLit:
+		return "bool"
+	case *ListLit:
+		return "list"
+	default:
+		return ""
+	}
+}
+
 func (c *CallExpr) emit(w io.Writer) {
 	io.WriteString(w, c.Func)
 	for _, a := range c.Args {
@@ -524,29 +535,8 @@ func Emit(prog *Program) []byte {
 }
 
 func header() string {
-	ver := readVersion()
-	ts := time.Now().Format("2006-01-02 15:04:05 MST")
-	return fmt.Sprintf("// Mochi %s - generated %s\nopen System\n\n", ver, ts)
-}
-
-func readVersion() string {
-	_, file, _, _ := runtime.Caller(0)
-	dir := filepath.Dir(file)
-	for i := 0; i < 10; i++ {
-		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
-			b, err := os.ReadFile(filepath.Join(dir, "VERSION"))
-			if err != nil {
-				return "unknown"
-			}
-			return strings.TrimSpace(string(b))
-		}
-		p := filepath.Dir(dir)
-		if p == dir {
-			break
-		}
-		dir = p
-	}
-	return "unknown"
+	ts := time.Now().Format("2006-01-02 15:04 MST")
+	return fmt.Sprintf("// Generated %s\nopen System\n\n", ts)
 }
 
 // Transpile converts a Mochi program to a simple F# AST.
@@ -583,6 +573,8 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		typ := ""
 		if st.Let.Type != nil && st.Let.Type.Simple != nil {
 			typ = *st.Let.Type.Simple
+		} else {
+			typ = inferType(e)
 		}
 		return &LetStmt{Name: st.Let.Name, Expr: e, Type: typ}, nil
 	case st.Var != nil:
@@ -597,6 +589,8 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		typ := ""
 		if st.Var.Type != nil && st.Var.Type.Simple != nil {
 			typ = *st.Var.Type.Simple
+		} else {
+			typ = inferType(e)
 		}
 		return &LetStmt{Name: st.Var.Name, Expr: e, Type: typ, Mutable: true}, nil
 	case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
