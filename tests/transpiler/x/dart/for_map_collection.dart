@@ -2,6 +2,6 @@
 void main() {
   Map<String, int> m = {"a": 1, "b": 2};
   for (var k in m) {
-  print(k);
-}
+    print(k);
+  }
 }
