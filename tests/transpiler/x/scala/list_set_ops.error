@@ -1,5 +1,10 @@
 exit status 1
 /workspace/mochi/tests/transpiler/x/scala/list_set_ops.scala:5: error: value except is not a member of List[Int]
-    println((List(1, 2, 3) except List(2)))
-                           ^
-one error found
+    println(List(1, 2, 3) except List(2))
+                          ^
+/workspace/mochi/tests/transpiler/x/scala/list_set_ops.scala:7: error: type mismatch;
+ found   : Int
+ required: scala.collection.GenSeq[?]
+    println(List(1, 2) union List(2, 3).length)
+                                        ^
+two errors found
