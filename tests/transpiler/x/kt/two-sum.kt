@@ -2,7 +2,7 @@ fun twoSum(nums: MutableList<Int>, target: Int): MutableList<Int> {
     val n = nums.size
     for (i in 0 until n) {
         for (j in i + 1 until n) {
-            if (nums[i] + nums[j] == target) {
+            if ((nums[i] + nums[j]) == target) {
                 return mutableListOf(i, j)
             }
         }
