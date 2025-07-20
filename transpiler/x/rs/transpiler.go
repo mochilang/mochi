@@ -20,6 +20,7 @@ import (
 var usesHashMap bool
 var mapVars map[string]bool
 var stringVars map[string]bool
+var varTypes map[string]string
 
 // Program represents a Rust program consisting of a list of statements.
 type Program struct {
@@ -387,6 +388,23 @@ func (m *MaxExpr) emit(w io.Writer) {
 	io.WriteString(w, ".clone(); *tmp.iter().max().unwrap_or(&0) }")
 }
 
+// SubstringExpr represents a call to the `substring` builtin.
+type SubstringExpr struct {
+	Str   Expr
+	Start Expr
+	End   Expr
+}
+
+func (s *SubstringExpr) emit(w io.Writer) {
+	io.WriteString(w, "String::from(&")
+	s.Str.emit(w)
+	io.WriteString(w, "[")
+	s.Start.emit(w)
+	io.WriteString(w, " as usize .. ")
+	s.End.emit(w)
+	io.WriteString(w, " as usize])")
+}
+
 type NameRef struct{ Name string }
 
 func (n *NameRef) emit(w io.Writer) { io.WriteString(w, n.Name) }
@@ -461,6 +479,23 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			b.Left.emit(w)
 			io.WriteString(w, ", ")
 			b.Right.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
+	}
+	if b.Op == "in" {
+		rt := inferType(b.Right)
+		if rt == "String" {
+			b.Right.emit(w)
+			io.WriteString(w, ".contains(")
+			b.Left.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
+		if strings.HasPrefix(rt, "Vec<") {
+			b.Right.emit(w)
+			io.WriteString(w, ".contains(&")
+			b.Left.emit(w)
 			io.WriteString(w, ")")
 			return
 		}
@@ -573,6 +608,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesHashMap = false
 	mapVars = make(map[string]bool)
 	stringVars = make(map[string]bool)
+	varTypes = make(map[string]string)
 	prog := &Program{}
 	for _, st := range p.Statements {
 		s, err := compileStmt(st)
@@ -612,8 +648,11 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			}
 		}
 		typ := ""
-		if stmt.Let.Type != nil && stmt.Let.Type.Simple != nil {
-			typ = rustType(*stmt.Let.Type.Simple)
+		if stmt.Let.Type != nil {
+			typ = rustTypeRef(stmt.Let.Type)
+			if strings.HasPrefix(typ, "HashMap") {
+				mapVars[stmt.Let.Name] = true
+			}
 			if typ == "String" {
 				stringVars[stmt.Let.Name] = true
 			}
@@ -627,6 +666,9 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		}
 		if typ == "fn" {
 			typ = ""
+		}
+		if typ != "" {
+			varTypes[stmt.Let.Name] = typ
 		}
 		return &VarDecl{Name: stmt.Let.Name, Expr: e, Type: typ}, nil
 	case stmt.Var != nil:
@@ -645,8 +687,11 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			}
 		}
 		typ := ""
-		if stmt.Var.Type != nil && stmt.Var.Type.Simple != nil {
-			typ = rustType(*stmt.Var.Type.Simple)
+		if stmt.Var.Type != nil {
+			typ = rustTypeRef(stmt.Var.Type)
+			if strings.HasPrefix(typ, "HashMap") {
+				mapVars[stmt.Var.Name] = true
+			}
 			if typ == "String" {
 				stringVars[stmt.Var.Name] = true
 			}
@@ -660,6 +705,9 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		}
 		if typ == "fn" {
 			typ = ""
+		}
+		if typ != "" {
+			varTypes[stmt.Var.Name] = typ
 		}
 		return &VarDecl{Name: stmt.Var.Name, Expr: e, Type: typ, Mutable: true}, nil
 	case stmt.Assign != nil:
@@ -680,6 +728,9 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		}
 		if inferType(val) == "String" {
 			stringVars[stmt.Assign.Name] = true
+		}
+		if t := inferType(val); t != "" {
+			varTypes[stmt.Assign.Name] = t
 		}
 		return &AssignStmt{Name: stmt.Assign.Name, Expr: val}, nil
 	case stmt.Return != nil:
@@ -805,27 +856,30 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 	params := make([]Param, len(fn.Params))
 	for i, p := range fn.Params {
 		typ := ""
-		if p.Type != nil && p.Type.Simple != nil {
-			typ = rustType(*p.Type.Simple)
+		if p.Type != nil {
+			typ = rustTypeRef(p.Type)
 		}
 		params[i] = Param{Name: p.Name, Type: typ}
 	}
 	ret := ""
 	if fn.Return != nil {
-		if fn.Return.Simple != nil {
-			ret = rustType(*fn.Return.Simple)
+		if fn.Return.Simple != nil || fn.Return.Generic != nil {
+			ret = rustTypeRef(fn.Return)
 		} else if fn.Return.Fun != nil {
 			var pts []string
 			for _, p := range fn.Return.Fun.Params {
 				t := "i64"
-				if p.Simple != nil {
-					t = rustType(*p.Simple)
+				if p.Simple != nil || p.Generic != nil {
+					t = rustTypeRef(p)
 				}
 				pts = append(pts, t)
 			}
 			rt := "()"
-			if fn.Return.Fun.Return != nil && fn.Return.Fun.Return.Simple != nil {
-				rt = rustType(*fn.Return.Fun.Return.Simple)
+			if fn.Return.Fun.Return != nil {
+				r := rustTypeRef(fn.Return.Fun.Return)
+				if r != "" {
+					rt = r
+				}
 			}
 			ret = fmt.Sprintf("impl Fn(%s) -> %s", strings.Join(pts, ", "), rt)
 		}
@@ -1092,6 +1146,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		if name == "max" && len(args) == 1 {
 			return &MaxExpr{List: args[0]}, nil
 		}
+		if name == "substring" && len(args) == 3 {
+			return &SubstringExpr{Str: args[0], Start: args[1], End: args[2]}, nil
+		}
 		return &CallExpr{Func: name, Args: args}, nil
 	case p.Lit != nil:
 		return compileLiteral(p.Lit)
@@ -1130,8 +1187,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		params := make([]Param, len(p.FunExpr.Params))
 		for i, pa := range p.FunExpr.Params {
 			typ := ""
-			if pa.Type != nil && pa.Type.Simple != nil {
-				typ = rustType(*pa.Type.Simple)
+			if pa.Type != nil {
+				typ = rustTypeRef(pa.Type)
 			}
 			params[i] = Param{Name: pa.Name, Type: typ}
 		}
@@ -1144,8 +1201,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			expr = e
 		}
 		ret := ""
-		if p.FunExpr.Return != nil && p.FunExpr.Return.Simple != nil {
-			ret = rustType(*p.FunExpr.Return.Simple)
+		if p.FunExpr.Return != nil {
+			ret = rustTypeRef(p.FunExpr.Return)
 		}
 		return &FunLit{Params: params, Return: ret, Expr: expr}, nil
 	case p.Match != nil:
@@ -1304,6 +1361,9 @@ func inferType(e Expr) string {
 		}
 		return "i64"
 	case *NameRef:
+		if t, ok := varTypes[ex.Name]; ok && t != "" {
+			return t
+		}
 		if stringVars[ex.Name] {
 			return "String"
 		}
@@ -1336,6 +1396,8 @@ func inferType(e Expr) string {
 			return fmt.Sprintf("HashMap<%s, %s>", kt, vt)
 		}
 		return "HashMap<String, i64>"
+	case *SubstringExpr:
+		return "String"
 	case *MethodCallExpr:
 		switch ex.Name {
 		case "contains":
@@ -1359,6 +1421,34 @@ func rustType(t string) string {
 		return "bool"
 	case "string":
 		return "String"
+	}
+	return "i64"
+}
+
+func rustTypeRef(tr *parser.TypeRef) string {
+	if tr == nil {
+		return ""
+	}
+	if tr.Simple != nil {
+		return rustType(*tr.Simple)
+	}
+	if tr.Generic != nil {
+		switch tr.Generic.Name {
+		case "list":
+			if len(tr.Generic.Args) == 1 {
+				return fmt.Sprintf("Vec<%s>", rustTypeRef(tr.Generic.Args[0]))
+			}
+		case "map":
+			usesHashMap = true
+			if len(tr.Generic.Args) == 2 {
+				kt := rustTypeRef(tr.Generic.Args[0])
+				vt := rustTypeRef(tr.Generic.Args[1])
+				return fmt.Sprintf("HashMap<%s, %s>", kt, vt)
+			}
+		}
+	}
+	if tr.Fun != nil {
+		return "fn"
 	}
 	return "i64"
 }
@@ -1657,6 +1747,12 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "max", Children: []*ast.Node{exprNode(ex.List)}}
 	case *JoinExpr:
 		return &ast.Node{Kind: "join", Children: []*ast.Node{exprNode(ex.List)}}
+	case *SubstringExpr:
+		n := &ast.Node{Kind: "substring"}
+		n.Children = append(n.Children, exprNode(ex.Str))
+		n.Children = append(n.Children, exprNode(ex.Start))
+		n.Children = append(n.Children, exprNode(ex.End))
+		return n
 	case *IndexExpr:
 		return &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(ex.Target), exprNode(ex.Index)}}
 	case *SliceExpr:
