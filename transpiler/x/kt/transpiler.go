@@ -76,6 +76,25 @@ type ParamDecl struct {
 	Type string
 }
 
+// StructLit represents instantiation of a data class.
+type StructLit struct {
+	Name   string
+	Fields []Expr
+	Names  []string
+}
+
+func (s *StructLit) emit(w io.Writer) {
+	io.WriteString(w, s.Name+"(")
+	for i, f := range s.Fields {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, s.Names[i]+" = ")
+		f.emit(w)
+	}
+	io.WriteString(w, ")")
+}
+
 func (d *DataClass) emit(w io.Writer, indentLevel int) {
 	indent(w, indentLevel)
 	io.WriteString(w, "data class "+d.Name+"(")
@@ -704,6 +723,94 @@ func (lc *MultiListComp) emit(w io.Writer) {
 	io.WriteString(w, "}")
 }
 
+// GroupQueryExpr represents a query with grouping.
+type GroupQueryExpr struct {
+	Vars      []string
+	Iters     []Expr
+	Cond      Expr
+	Key       Expr
+	Row       Expr
+	GroupVar  string
+	GroupType string
+	Select    Expr
+	Having    Expr
+	ResType   string
+}
+
+func (gq *GroupQueryExpr) emit(w io.Writer) {
+	io.WriteString(w, "run {\n")
+	indent(w, 1)
+	keyType := guessType(gq.Key)
+	if keyType == "" {
+		keyType = "Any"
+	}
+	rowType := guessType(gq.Row)
+	if rowType == "" {
+		rowType = "Any"
+	}
+	fmt.Fprintf(w, "val _groups = mutableMapOf<%s, MutableList<%s>>()\n", keyType, rowType)
+	for i, v := range gq.Vars {
+		indent(w, 1+i)
+		fmt.Fprintf(w, "for (%s in ", v)
+		gq.Iters[i].emit(w)
+		io.WriteString(w, ") {\n")
+	}
+	if gq.Cond != nil {
+		indent(w, 1+len(gq.Vars))
+		io.WriteString(w, "if (")
+		gq.Cond.emit(w)
+		io.WriteString(w, ") {\n")
+	}
+	indent(w, 1+len(gq.Vars))
+	io.WriteString(w, "val _list = _groups.getOrPut(")
+	gq.Key.emit(w)
+	io.WriteString(w, ") { mutableListOf() }\n")
+	indent(w, 1+len(gq.Vars))
+	io.WriteString(w, "_list.add(")
+	gq.Row.emit(w)
+	io.WriteString(w, ")\n")
+	if gq.Cond != nil {
+		indent(w, 1+len(gq.Vars))
+		io.WriteString(w, "}\n")
+	}
+	for i := len(gq.Vars); i > 0; i-- {
+		indent(w, i)
+		io.WriteString(w, "}\n")
+	}
+	indent(w, 1)
+	resType := gq.ResType
+	if resType == "" {
+		resType = "Any"
+	}
+	fmt.Fprintf(w, "val _res = mutableListOf<%s>()\n", resType)
+	indent(w, 1)
+	io.WriteString(w, "for ((key, items) in _groups) {\n")
+	indent(w, 2)
+	fmt.Fprintf(w, "val %s = %s(key, items)\n", gq.GroupVar, gq.GroupType)
+	if gq.Having != nil {
+		indent(w, 2)
+		io.WriteString(w, "if (")
+		gq.Having.emit(w)
+		io.WriteString(w, ") {\n")
+		indent(w, 3)
+		io.WriteString(w, "_res.add(")
+		gq.Select.emit(w)
+		io.WriteString(w, ")\n")
+		indent(w, 2)
+		io.WriteString(w, "}\n")
+	} else {
+		indent(w, 2)
+		io.WriteString(w, "_res.add(")
+		gq.Select.emit(w)
+		io.WriteString(w, ")\n")
+	}
+	indent(w, 1)
+	io.WriteString(w, "}\n")
+	indent(w, 1)
+	io.WriteString(w, "_res\n")
+	io.WriteString(w, "}")
+}
+
 // WhenExpr models Kotlin's when expression produced from a Mochi match.
 type WhenExpr struct {
 	Target Expr
@@ -903,6 +1010,14 @@ func guessType(e Expr) string {
 			elem = "Any"
 		}
 		return "MutableList<" + elem + ">"
+	case *GroupQueryExpr:
+		elem := guessType(v.Select)
+		if elem == "" {
+			elem = "Any"
+		}
+		return "MutableList<" + elem + ">"
+	case *StructLit:
+		return v.Name
 	case *FuncLit:
 		return ""
 	}
@@ -1035,6 +1150,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			return nil, fmt.Errorf("unsupported statement")
 		}
 	}
+	p.Structs = extraDecls
 	return p, nil
 }
 
@@ -1282,8 +1398,18 @@ func convertMatchExpr(env *types.Env, me *parser.MatchExpr) (Expr, error) {
 	return &WhenExpr{Target: target, Cases: cases}, nil
 }
 
+func combineAnd(a, b Expr) Expr {
+	if a == nil {
+		return b
+	}
+	if b == nil {
+		return a
+	}
+	return &BinaryExpr{Left: a, Op: "&&", Right: b}
+}
+
 func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
-	if len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
+	if q.Sort != nil || q.Skip != nil || q.Take != nil {
 		return nil, fmt.Errorf("unsupported query")
 	}
 	src, err := convertExpr(env, q.Source)
@@ -1301,18 +1427,68 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 		child.SetVar(f.Var, types.AnyType{}, true)
 		froms[i] = queryFrom{Var: f.Var, Src: fe}
 	}
-	var where Expr
+	var cond Expr
 	if q.Where != nil {
-		where, err = convertExpr(child, q.Where)
+		cond, err = convertExpr(child, q.Where)
 		if err != nil {
 			return nil, err
 		}
+	}
+	for _, j := range q.Joins {
+		je, err := convertExpr(child, j.Src)
+		if err != nil {
+			return nil, err
+		}
+		froms = append(froms, queryFrom{Var: j.Var, Src: je})
+		child.SetVar(j.Var, types.AnyType{}, true)
+		jc, err := convertExpr(child, j.On)
+		if err != nil {
+			return nil, err
+		}
+		cond = combineAnd(cond, jc)
 	}
 	sel, err := convertExpr(child, q.Select)
 	if err != nil {
 		return nil, err
 	}
-	return &MultiListComp{Vars: append([]string{q.Var}, namesFromFroms(froms)...), Iters: append([]Expr{src}, exprsFromFroms(froms)...), Expr: sel, Cond: where}, nil
+	if q.Group != nil {
+		key, err := convertExpr(child, q.Group.Exprs[0])
+		if err != nil {
+			return nil, err
+		}
+		rowExpr := sel
+		if q.Select == nil {
+			rowExpr = &VarRef{Name: q.Var}
+		}
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.AnyType{}, true)
+		having, err := convertExpr(genv, q.Group.Having)
+		if q.Group.Having != nil && err != nil {
+			return nil, err
+		}
+		sel2, err := convertExpr(genv, q.Select)
+		if err != nil {
+			return nil, err
+		}
+		gtype := strings.Title(q.Group.Name) + "Group"
+		extraDecls = append(extraDecls, &DataClass{Name: gtype, Fields: []ParamDecl{
+			{Name: "key", Type: guessType(key)},
+			{Name: "items", Type: "MutableList<" + guessType(rowExpr) + ">"},
+		}})
+		return &GroupQueryExpr{
+			Vars:      append([]string{q.Var}, namesFromFroms(froms)...),
+			Iters:     append([]Expr{src}, exprsFromFroms(froms)...),
+			Cond:      cond,
+			Key:       key,
+			Row:       rowExpr,
+			GroupVar:  q.Group.Name,
+			GroupType: gtype,
+			Select:    sel2,
+			Having:    having,
+			ResType:   guessType(sel2),
+		}, nil
+	}
+	return &MultiListComp{Vars: append([]string{q.Var}, namesFromFroms(froms)...), Iters: append([]Expr{src}, exprsFromFroms(froms)...), Expr: sel, Cond: cond}, nil
 }
 
 func namesFromFroms(f []queryFrom) []string {
