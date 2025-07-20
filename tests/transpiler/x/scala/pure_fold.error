@@ -1,8 +1,0 @@
-exit status 1
-/workspace/mochi/tests/transpiler/x/scala/pure_fold.scala:3: error: ':' expected but ')' found.
-  def triple(x) = {
-              ^
-/workspace/mochi/tests/transpiler/x/scala/pure_fold.scala:8: error: identifier expected but '}' found.
-}
-^
-two errors found
