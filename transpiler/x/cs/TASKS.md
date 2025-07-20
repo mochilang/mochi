@@ -1,3 +1,30 @@
+## Progress (2025-07-20 16:47 +0700)
+- zig: add map support and update golden tests (progress 84/100)
+
+## Progress (2025-07-20 16:47 +0700)
+- zig: add map support and update golden tests (progress 84/100)
+
+## Progress (2025-07-20 16:47 +0700)
+- zig: add map support and update golden tests (progress 84/100)
+
+## Progress (2025-07-20 16:47 +0700)
+- zig: add map support and update golden tests (progress 84/100)
+
+## Progress (2025-07-20 16:47 +0700)
+- zig: add map support and update golden tests (progress 84/100)
+
+## Progress (2025-07-20 16:47 +0700)
+- zig: add map support and update golden tests (progress 83/100)
+
+## Progress (2025-07-20 16:47 +0700)
+- zig: add map support and update golden tests (progress 83/100)
+
+## Progress (2025-07-20 16:47 +0700)
+- zig: add map support and update golden tests (progress 83/100)
+
+## Progress (2025-07-20 16:47 +0700)
+- zig: add map support and update golden tests (progress 83/100)
+
 ## Progress (2025-07-20 09:40 UTC)
 - add json builtin and query enhancements (progress 83/100)
 
@@ -51,6 +78,15 @@
 ## Remaining Work
 - [x] Implement loops and conditionals
 - [ ] Support map and list mutation operations
+
+
+
+
+
+
+
+
+
 
 
 
