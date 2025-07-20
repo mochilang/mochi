@@ -974,6 +974,9 @@ func convertExpr(e *parser.Expr) Expr {
 		if s, ok := evalString(bin); ok {
 			return &StringLit{Value: s}
 		}
+		if l, ok := evalList(bin); ok {
+			return l
+		}
 		if b, ok := evalBool(bin); ok {
 			if b {
 				return &IntLit{Value: 1}
@@ -1528,9 +1531,76 @@ func evalList(e Expr) (*ListLit, bool) {
 	case *VarRef:
 		l, ok := constLists[v.Name]
 		return l, ok
+	case *BinaryExpr:
+		left, ok1 := evalList(v.Left)
+		right, ok2 := evalList(v.Right)
+		if ok1 && ok2 {
+			switch v.Op {
+			case "union_all":
+				elems := append(append([]Expr{}, left.Elems...), right.Elems...)
+				return &ListLit{Elems: elems}, true
+			case "union":
+				elems := append([]Expr{}, left.Elems...)
+				for _, e2 := range right.Elems {
+					found := false
+					for _, e1 := range elems {
+						if listElemEqual(e1, e2) {
+							found = true
+							break
+						}
+					}
+					if !found {
+						elems = append(elems, e2)
+					}
+				}
+				return &ListLit{Elems: elems}, true
+			case "except":
+				var elems []Expr
+				for _, e1 := range left.Elems {
+					found := false
+					for _, e2 := range right.Elems {
+						if listElemEqual(e1, e2) {
+							found = true
+							break
+						}
+					}
+					if !found {
+						elems = append(elems, e1)
+					}
+				}
+				return &ListLit{Elems: elems}, true
+			case "intersect":
+				var elems []Expr
+				for _, e1 := range left.Elems {
+					for _, e2 := range right.Elems {
+						if listElemEqual(e1, e2) {
+							elems = append(elems, e1)
+							break
+						}
+					}
+				}
+				return &ListLit{Elems: elems}, true
+			}
+			return nil, false
+		}
 	default:
 		return nil, false
 	}
+	return nil, false
+}
+
+func listElemEqual(a, b Expr) bool {
+	if ai, ok := evalInt(a); ok {
+		if bi, ok2 := evalInt(b); ok2 {
+			return ai == bi
+		}
+	}
+	if as, ok := evalString(a); ok {
+		if bs, ok2 := evalString(b); ok2 {
+			return as == bs
+		}
+	}
+	return false
 }
 
 func exprIsString(e Expr) bool {
