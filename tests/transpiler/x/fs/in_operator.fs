@@ -1,6 +1,6 @@
-// Mochi 0.10.31 - generated 2025-07-19 13:09:01 UTC
+// Generated 2025-07-20 10:18 +0700
 open System
 
 let xs = [1; 2; 3]
-printfn "%s" (string (xs.Contains(2)))
-printfn "%s" (string (not (xs.Contains(5))))
+printfn "%b" (List.contains 2 xs)
+printfn "%b" (not (List.contains 5 xs))

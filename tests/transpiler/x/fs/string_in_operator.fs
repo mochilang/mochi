@@ -1,6 +1,6 @@
-// Mochi 0.10.31 - generated 2025-07-19 13:09:28 UTC
+// Generated 2025-07-20 10:18 +0700
 open System
 
-let s = "catch"
-printfn "%s" (string (s.Contains("cat")))
-printfn "%s" (string (s.Contains("dog")))
+let s: string = "catch"
+printfn "%b" (s.Contains("cat"))
+printfn "%b" (s.Contains("dog"))

@@ -1,8 +1,8 @@
-// Mochi 0.10.31 - generated 2025-07-19 13:08:38 UTC
+// Generated 2025-07-20 10:18 +0700
 open System
 
-let a = 10 - 3
-let b = 2 + 2
+let a: int = 10 - 3
+let b: int = 2 + 2
 printfn "%s" (string a)
-printfn "%s" (string (a = 7))
-printfn "%s" (string (b < 5))
+printfn "%b" (a = 7)
+printfn "%b" (b < 5)
