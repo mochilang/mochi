@@ -87,6 +87,13 @@ func (p *PrintStmt) emit(w io.Writer, indent int) {
 			fmt.Fprintf(w, "puts(\"%s\");\n", escape(lit.Value))
 			return
 		}
+		if p.Types[0] == "string" {
+			writeIndent(w, indent)
+			io.WriteString(w, "puts(")
+			exprs[0].emitExpr(w)
+			io.WriteString(w, ");\n")
+			return
+		}
 	}
 	if len(format) > 0 {
 		writeIndent(w, indent)
@@ -899,6 +906,73 @@ func convertExpr(e *parser.Expr) Expr {
 						}
 					}
 					return &IntLit{Value: 0}
+				}
+			}
+		}
+		if bin.Op == "==" || bin.Op == "!=" || bin.Op == "<" || bin.Op == "<=" || bin.Op == ">" || bin.Op == ">=" {
+			if l, ok := evalInt(bin.Left); ok {
+				if r, ok2 := evalInt(bin.Right); ok2 {
+					res := 0
+					switch bin.Op {
+					case "==":
+						if l == r {
+							res = 1
+						}
+					case "!=":
+						if l != r {
+							res = 1
+						}
+					case "<":
+						if l < r {
+							res = 1
+						}
+					case "<=":
+						if l <= r {
+							res = 1
+						}
+					case ">":
+						if l > r {
+							res = 1
+						}
+					case ">=":
+						if l >= r {
+							res = 1
+						}
+					}
+					return &IntLit{Value: res}
+				}
+			}
+			if ls, ok := evalString(bin.Left); ok {
+				if rs, ok2 := evalString(bin.Right); ok2 {
+					cmp := strings.Compare(ls, rs)
+					res := 0
+					switch bin.Op {
+					case "==":
+						if cmp == 0 {
+							res = 1
+						}
+					case "!=":
+						if cmp != 0 {
+							res = 1
+						}
+					case "<":
+						if cmp < 0 {
+							res = 1
+						}
+					case "<=":
+						if cmp <= 0 {
+							res = 1
+						}
+					case ">":
+						if cmp > 0 {
+							res = 1
+						}
+					case ">=":
+						if cmp >= 0 {
+							res = 1
+						}
+					}
+					return &IntLit{Value: res}
 				}
 			}
 		}

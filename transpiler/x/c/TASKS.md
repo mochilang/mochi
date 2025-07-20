@@ -1,3 +1,8 @@
+## Progress (2025-07-20 10:31 +0700)
+- Switched to `puts` when printing variables of type string.
+- Added constant folding for comparison expressions.
+- VM valid golden test results updated to 41/100
+
 ## Progress (2025-07-20 10:18 +0700)
 - Improved print statements with `puts` for string literals.
 - Tightened `for` loop syntax.
