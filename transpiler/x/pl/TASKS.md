@@ -31,5 +31,11 @@
 - Removed timestamped header for deterministic results.
 - Updated README checklist (21/100).
 
+## Progress (2025-07-20 09:54 +0700)
+- Dropped the `style_check/1` directive for cleaner output.
+- Implemented constant folding for integer arithmetic.
+- Regenerated the README checklist using an automated script (21/100).
+
 ## Recent Updates
 - [2025-07-20T09:18:48+07:00] Clean print statements and deterministic header; progress 21/100
+- [2025-07-20T09:54:09+07:00] Removed style_check directive and folded constants; progress 21/100
