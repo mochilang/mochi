@@ -2,10 +2,7 @@
 
 This directory contains a tiny transpiler that converts a restricted subset of Mochi programs to SWI-Prolog. It is mainly used for experimentation and golden tests.
 
-## Golden tests
-
-Programs under `tests/vm/valid` that have generated Prolog code (21/100):
-
+## VM Golden Test Checklist (21/100)
 - [x] `append_builtin`
 - [x] `avg_builtin`
 - [x] `basic_compare`
@@ -107,5 +104,4 @@ Programs under `tests/vm/valid` that have generated Prolog code (21/100):
 - [x] `var_assignment`
 - [ ] `while_loop`
 
-
-Run `go test ./transpiler/x/pl -tags slow` to regenerate the `.pl` files and verify their output.
+*Checklist generated automatically from tests/vm/valid*
