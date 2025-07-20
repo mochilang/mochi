@@ -2,6 +2,5 @@
 :- initialization(main).
 
 main :-
-    X is 1,
-    X1 is 2,
-    writeln(X1).
+    S = 'mochi',
+    sub_string(S, 1, 1, _, R1), writeln(R1).

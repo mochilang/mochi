@@ -25,14 +25,20 @@ type LetStmt struct {
 	Name string
 	Expr Expr
 }
+type IfStmt struct {
+	Cond Expr
+	Then []Stmt
+	Else []Stmt
+}
 
 type compileEnv struct {
-	vars  map[string]int
-	funcs map[string]Expr
+	vars   map[string]int
+	consts map[string]Expr
+	funcs  map[string]Expr
 }
 
 func newCompileEnv(funcs map[string]Expr) *compileEnv {
-	return &compileEnv{vars: make(map[string]int), funcs: funcs}
+	return &compileEnv{vars: make(map[string]int), consts: make(map[string]Expr), funcs: funcs}
 }
 
 func (e *compileEnv) fresh(name string) string {
@@ -51,6 +57,19 @@ func (e *compileEnv) current(name string) string {
 		return varName(name, 0)
 	}
 	return varName(name, v)
+}
+
+func (e *compileEnv) setConst(name string, ex Expr) {
+	switch ex.(type) {
+	case *IntLit, *BoolLit, *StringLit, *ListLit:
+		e.consts[name] = ex
+	default:
+		delete(e.consts, name)
+	}
+}
+
+func (e *compileEnv) constExpr(name string) Expr {
+	return e.consts[name]
 }
 
 func varName(name string, v int) string {
@@ -87,6 +106,27 @@ func (p *PrintStmt) emit(w io.Writer, idx int) {
 	switch e := p.Expr.(type) {
 	case *BinaryExpr:
 		be := e
+		if be.Op == "=" || be.Op == "\\=" {
+			if se, ok := be.Left.(*SliceExpr); ok && se.IsString {
+				fmt.Fprintf(w, "    L%d is ", idx)
+				se.End.emit(w)
+				io.WriteString(w, " - ")
+				se.Start.emit(w)
+				fmt.Fprintf(w, ", sub_string(")
+				se.Target.emit(w)
+				io.WriteString(w, ", ")
+				se.Start.emit(w)
+				fmt.Fprintf(w, ", L%d, _, T%d), ", idx, idx)
+				if be.Op == "=" {
+					fmt.Fprintf(w, "(T%d = ", idx)
+				} else {
+					fmt.Fprintf(w, "(T%d \\= ", idx)
+				}
+				be.Right.emit(w)
+				io.WriteString(w, ") -> writeln(true) ; writeln(false))")
+				return
+			}
+		}
 		if isBoolOp(be.Op) {
 			io.WriteString(w, "    (")
 			be.emit(w)
@@ -148,11 +188,34 @@ func (p *PrintStmt) emit(w io.Writer, idx int) {
 		fmt.Fprintf(w, "], R%d), writeln(R%d)", idx, idx)
 		return
 	case *IndexExpr:
-		fmt.Fprintf(w, "    nth0(")
-		e.Index.emit(w)
-		io.WriteString(w, ", ")
-		e.Target.emit(w)
-		fmt.Fprintf(w, ", R%d), writeln(R%d)", idx, idx)
+		if e.IsString {
+			io.WriteString(w, "    sub_string(")
+			e.Target.emit(w)
+			io.WriteString(w, ", ")
+			e.Index.emit(w)
+			fmt.Fprintf(w, ", 1, _, R%d), writeln(R%d)", idx, idx)
+		} else {
+			fmt.Fprintf(w, "    nth0(")
+			e.Index.emit(w)
+			io.WriteString(w, ", ")
+			e.Target.emit(w)
+			fmt.Fprintf(w, ", R%d), writeln(R%d)", idx, idx)
+		}
+		return
+	case *SliceExpr:
+		if e.IsString {
+			fmt.Fprintf(w, "    L%d is ", idx)
+			e.End.emit(w)
+			io.WriteString(w, " - ")
+			e.Start.emit(w)
+			fmt.Fprintf(w, ", sub_string(")
+			e.Target.emit(w)
+			io.WriteString(w, ", ")
+			e.Start.emit(w)
+			fmt.Fprintf(w, ", L%d, _, R%d), writeln(R%d)", idx, idx, idx)
+		} else {
+			io.WriteString(w, "    writeln(slice_not_supported)")
+		}
 		return
 	case *SubstringExpr:
 		fmt.Fprintf(w, "    L%d is ", idx)
@@ -165,6 +228,29 @@ func (p *PrintStmt) emit(w io.Writer, idx int) {
 		e.Start.emit(w)
 		fmt.Fprintf(w, ", L%d, _, R%d), writeln(R%d)", idx, idx, idx)
 		return
+	case *IfExpr:
+		io.WriteString(w, "    (")
+		e.Cond.emit(w)
+		io.WriteString(w, " -> ")
+		switch t := e.Then.(type) {
+		case *StringLit:
+			fmt.Fprintf(w, "writeln('%s')", escape(t.Value))
+		default:
+			io.WriteString(w, "writeln(")
+			e.Then.emit(w)
+			io.WriteString(w, ")")
+		}
+		io.WriteString(w, " ; ")
+		switch t := e.Else.(type) {
+		case *StringLit:
+			fmt.Fprintf(w, "writeln('%s')", escape(t.Value))
+		default:
+			io.WriteString(w, "writeln(")
+			e.Else.emit(w)
+			io.WriteString(w, ")")
+		}
+		io.WriteString(w, ")")
+		return
 	}
 	io.WriteString(w, "    writeln(")
 	p.Expr.emit(w)
@@ -172,12 +258,59 @@ func (p *PrintStmt) emit(w io.Writer, idx int) {
 }
 
 func (l *LetStmt) emit(w io.Writer, _ int) {
-	if _, ok := l.Expr.(*ListLit); ok {
-		fmt.Fprintf(w, "    %s = ", l.Name)
-	} else {
+	if ie, ok := l.Expr.(*IfExpr); ok {
+		io.WriteString(w, "    ")
+		emitIfToVar(w, l.Name, ie)
+		return
+	}
+	if needsIs(l.Expr) {
 		fmt.Fprintf(w, "    %s is ", l.Name)
+	} else {
+		fmt.Fprintf(w, "    %s = ", l.Name)
 	}
 	l.Expr.emit(w)
+}
+
+func emitIfToVar(w io.Writer, name string, ie *IfExpr) {
+	io.WriteString(w, "(")
+	ie.Cond.emit(w)
+	io.WriteString(w, " -> ")
+	if t, ok := ie.Then.(*IfExpr); ok {
+		emitIfToVar(w, name, t)
+	} else {
+		fmt.Fprintf(w, "%s = ", name)
+		ie.Then.emit(w)
+	}
+	io.WriteString(w, " ; ")
+	if e, ok := ie.Else.(*IfExpr); ok {
+		emitIfToVar(w, name, e)
+	} else {
+		fmt.Fprintf(w, "%s = ", name)
+		ie.Else.emit(w)
+	}
+	io.WriteString(w, ")")
+}
+
+func (i *IfStmt) emit(w io.Writer, idx int) {
+	io.WriteString(w, "    (")
+	i.Cond.emit(w)
+	io.WriteString(w, " ->\n")
+	for j, st := range i.Then {
+		st.emit(w, idx+j)
+		if j < len(i.Then)-1 {
+			io.WriteString(w, ",\n")
+		}
+	}
+	if len(i.Else) > 0 {
+		io.WriteString(w, " ;\n")
+		for j, st := range i.Else {
+			st.emit(w, idx+j)
+			if j < len(i.Else)-1 {
+				io.WriteString(w, ",\n")
+			}
+		}
+	}
+	io.WriteString(w, ")")
 }
 
 type Expr interface{ emit(io.Writer) }
@@ -198,8 +331,9 @@ type AppendExpr struct {
 	Elem Expr
 }
 type IndexExpr struct {
-	Target Expr
-	Index  Expr
+	Target   Expr
+	Index    Expr
+	IsString bool
 }
 type SubstringExpr struct {
 	Str   Expr
@@ -215,6 +349,17 @@ type GroupExpr struct{ Expr Expr }
 type CastExpr struct {
 	Expr Expr
 	Type string
+}
+type IfExpr struct {
+	Cond Expr
+	Then Expr
+	Else Expr
+}
+type SliceExpr struct {
+	Target   Expr
+	Start    Expr
+	End      Expr
+	IsString bool
 }
 
 func (i *IntLit) emit(w io.Writer)    { fmt.Fprintf(w, "%d", i.Value) }
@@ -319,11 +464,45 @@ func (a *AppendExpr) emit(w io.Writer) {
 }
 
 func (i *IndexExpr) emit(w io.Writer) {
-	io.WriteString(w, "nth0(")
-	i.Index.emit(w)
-	io.WriteString(w, ", ")
-	i.Target.emit(w)
-	io.WriteString(w, ", R)")
+	if i.IsString {
+		io.WriteString(w, "sub_string(")
+		i.Target.emit(w)
+		io.WriteString(w, ", ")
+		i.Index.emit(w)
+		io.WriteString(w, ", 1, _, R)")
+	} else {
+		io.WriteString(w, "nth0(")
+		i.Index.emit(w)
+		io.WriteString(w, ", ")
+		i.Target.emit(w)
+		io.WriteString(w, ", R)")
+	}
+}
+
+func (s *SliceExpr) emit(w io.Writer) {
+	if s.IsString {
+		io.WriteString(w, "(Len is ")
+		s.End.emit(w)
+		io.WriteString(w, " - ")
+		s.Start.emit(w)
+		io.WriteString(w, ", sub_string(")
+		s.Target.emit(w)
+		io.WriteString(w, ", ")
+		s.Start.emit(w)
+		io.WriteString(w, ", Len, _, R))")
+	} else {
+		io.WriteString(w, "slice_not_supported")
+	}
+}
+
+func (i *IfExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
+	i.Cond.emit(w)
+	io.WriteString(w, " -> ")
+	i.Then.emit(w)
+	io.WriteString(w, " ; ")
+	i.Else.emit(w)
+	io.WriteString(w, ")")
 }
 
 func (s *SubstringExpr) emit(w io.Writer) {
@@ -352,7 +531,7 @@ func cap(name string) string {
 
 func isBoolOp(op string) bool {
 	switch op {
-	case "=:=", "=\\=", "<", "<=", ">", ">=", "@<", "@=<", "@>", "@>=", ",", ";":
+	case "=:=", "=\\=", "=", "\\=", "<", "<=", ">", ">=", "@<", "@=<", "@>", "@>=", ",", ";":
 		return true
 	}
 	return false
@@ -366,9 +545,45 @@ func isArithOp(op string) bool {
 	return false
 }
 
+func needsIs(e Expr) bool {
+	switch ex := e.(type) {
+	case *IntLit:
+		return true
+	case *BinaryExpr:
+		return isArithOp(ex.Op) || needsIs(ex.Left) || needsIs(ex.Right)
+	case *GroupExpr:
+		return needsIs(ex.Expr)
+	case *CastExpr:
+		return ex.Type == "int"
+	default:
+		return false
+	}
+}
+
 func isStringLit(e Expr) bool {
 	_, ok := e.(*StringLit)
 	return ok
+}
+
+func isStringLike(e Expr, env *compileEnv) bool {
+	if isStringLit(e) {
+		return true
+	}
+	if v, ok := e.(*Var); ok {
+		if c, ok2 := env.constExpr(v.Name).(*StringLit); ok2 && c != nil {
+			return true
+		}
+	}
+	if _, ok := e.(*StrExpr); ok {
+		return true
+	}
+	if _, ok := e.(*SubstringExpr); ok {
+		return true
+	}
+	if _, ok := e.(*SliceExpr); ok {
+		return true
+	}
+	return false
 }
 
 func intValue(e Expr) (int, bool) {
@@ -404,6 +619,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				expr = &IntLit{Value: 0}
 			}
 			name := ce.fresh(st.Let.Name)
+			ce.setConst(name, expr)
 			p.Stmts = append(p.Stmts, &LetStmt{Name: name, Expr: expr})
 		case st.Var != nil:
 			var expr Expr
@@ -417,6 +633,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				expr = &IntLit{Value: 0}
 			}
 			name := ce.fresh(st.Var.Name)
+			ce.setConst(name, expr)
 			p.Stmts = append(p.Stmts, &LetStmt{Name: name, Expr: expr})
 		case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
 			expr, err := toExpr(st.Assign.Value, ce)
@@ -424,7 +641,28 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				return nil, err
 			}
 			name := ce.fresh(st.Assign.Name)
+			ce.setConst(name, expr)
 			p.Stmts = append(p.Stmts, &LetStmt{Name: name, Expr: expr})
+		case st.If != nil:
+			cond, err := toExpr(st.If.Cond, ce)
+			if err != nil {
+				return nil, err
+			}
+			if st.If.ElseIf != nil {
+				return nil, fmt.Errorf("unsupported elseif")
+			}
+			thenStmts, err := compileStmts(st.If.Then, ce)
+			if err != nil {
+				return nil, err
+			}
+			var elseStmts []Stmt
+			if st.If.Else != nil {
+				elseStmts, err = compileStmts(st.If.Else, ce)
+				if err != nil {
+					return nil, err
+				}
+			}
+			p.Stmts = append(p.Stmts, &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts})
 		case st.Expr != nil:
 			call := st.Expr.Expr.Binary.Left.Value.Target.Call
 			if call == nil || call.Func != "print" || len(call.Args) != 1 {
@@ -444,6 +682,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 
 // Emit writes the Prolog source for the given program.
 func Emit(w io.Writer, p *Program) error {
+	io.WriteString(w, ":- style_check(-singleton).\n")
 	io.WriteString(w, ":- initialization(main).\n\n")
 	io.WriteString(w, "main :-\n")
 	for i, st := range p.Stmts {
@@ -470,12 +709,57 @@ func toNode(p *Program) *ast.Node {
 	return n
 }
 
+func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
+	var out []Stmt
+	for _, s := range sts {
+		switch {
+		case s.Expr != nil:
+			call := s.Expr.Expr.Binary.Left.Value.Target.Call
+			if call == nil || call.Func != "print" || len(call.Args) != 1 {
+				return nil, fmt.Errorf("unsupported expression")
+			}
+			arg, err := toExpr(call.Args[0], env)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, &PrintStmt{Expr: arg})
+		case s.Let != nil:
+			var expr Expr
+			if s.Let.Value != nil {
+				var err error
+				expr, err = toExpr(s.Let.Value, env)
+				if err != nil {
+					return nil, err
+				}
+			} else {
+				expr = &IntLit{Value: 0}
+			}
+			name := env.fresh(s.Let.Name)
+			env.setConst(name, expr)
+			out = append(out, &LetStmt{Name: name, Expr: expr})
+		default:
+			return nil, fmt.Errorf("unsupported statement")
+		}
+	}
+	return out, nil
+}
+
 func stmtNode(s Stmt) *ast.Node {
 	switch st := s.(type) {
 	case *PrintStmt:
 		return &ast.Node{Kind: "print", Children: []*ast.Node{exprNode(st.Expr)}}
 	case *LetStmt:
 		return &ast.Node{Kind: "let", Value: st.Name, Children: []*ast.Node{exprNode(st.Expr)}}
+	case *IfStmt:
+		n := &ast.Node{Kind: "if"}
+		n.Children = append(n.Children, exprNode(st.Cond))
+		for _, t := range st.Then {
+			n.Children = append(n.Children, stmtNode(t))
+		}
+		for _, e := range st.Else {
+			n.Children = append(n.Children, stmtNode(e))
+		}
+		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
@@ -506,9 +790,17 @@ func toBinary(b *parser.BinaryExpr, env *compileEnv) (Expr, error) {
 		case "%":
 			opStr = "mod"
 		case "==":
-			opStr = "=:="
+			if isStringLike(left, env) || isStringLike(right, env) {
+				opStr = "="
+			} else {
+				opStr = "=:="
+			}
 		case "!=":
-			opStr = "=\\="
+			if isStringLike(left, env) || isStringLike(right, env) {
+				opStr = "\\="
+			} else {
+				opStr = "=\\="
+			}
 		case "<", "<=", ">", ">=":
 			if isStringLit(left) || isStringLit(right) {
 				switch op {
@@ -540,25 +832,6 @@ func toBinary(b *parser.BinaryExpr, env *compileEnv) (Expr, error) {
 				case ";":
 					left = &BoolLit{Value: lb.Value || rb.Value}
 					continue
-				}
-			}
-		} else if lv, lok := intValue(left); lok {
-			if rv, rok := intValue(right); rok {
-				switch opStr {
-				case "+":
-					left = &IntLit{Value: lv + rv}
-					continue
-				case "-":
-					left = &IntLit{Value: lv - rv}
-					continue
-				case "*":
-					left = &IntLit{Value: lv * rv}
-					continue
-				case "mod":
-					if rv != 0 {
-						left = &IntLit{Value: lv % rv}
-						continue
-					}
 				}
 			}
 		}
@@ -596,22 +869,43 @@ func toPostfix(pf *parser.PostfixExpr, env *compileEnv) (Expr, error) {
 	for _, op := range pf.Ops {
 		switch {
 		case op.Index != nil:
-			if op.Index.Colon != nil || op.Index.End != nil || op.Index.Step != nil {
+			if op.Index.Step != nil {
 				return nil, fmt.Errorf("unsupported slice")
 			}
-			idx, err := toExpr(op.Index.Start, env)
+			idxExpr, err := toExpr(op.Index.Start, env)
 			if err != nil {
 				return nil, err
 			}
+			if op.Index.Colon != nil || op.Index.End != nil {
+				endExpr, err := toExpr(op.Index.End, env)
+				if err != nil {
+					return nil, err
+				}
+				isStr := isStringLike(expr, env)
+				if list, ok := expr.(*ListLit); ok && !isStr {
+					if s, ok1 := idxExpr.(*IntLit); ok1 {
+						if e, ok2 := endExpr.(*IntLit); ok2 {
+							if s.Value >= 0 && e.Value <= len(list.Elems) {
+								slice := make([]Expr, e.Value-s.Value)
+								copy(slice, list.Elems[s.Value:e.Value])
+								expr = &ListLit{Elems: slice}
+								continue
+							}
+						}
+					}
+				}
+				expr = &SliceExpr{Target: expr, Start: idxExpr, End: endExpr, IsString: isStr}
+				continue
+			}
 			if list, ok := expr.(*ListLit); ok {
-				if lit, ok2 := idx.(*IntLit); ok2 {
+				if lit, ok2 := idxExpr.(*IntLit); ok2 {
 					if lit.Value >= 0 && lit.Value < len(list.Elems) {
 						expr = list.Elems[lit.Value]
 						continue
 					}
 				}
 			}
-			expr = &IndexExpr{Target: expr, Index: idx}
+			expr = &IndexExpr{Target: expr, Index: idxExpr, IsString: isStringLike(expr, env)}
 		case op.Cast != nil:
 			if op.Cast.Type == nil || op.Cast.Type.Simple == nil {
 				return nil, fmt.Errorf("unsupported cast")
@@ -653,6 +947,16 @@ func toPrimary(p *parser.Primary, env *compileEnv) (Expr, error) {
 			}
 			switch p.Call.Func {
 			case "len":
+				switch a := arg.(type) {
+				case *StringLit:
+					return &IntLit{Value: len(a.Value)}, nil
+				case *ListLit:
+					return &IntLit{Value: len(a.Elems)}, nil
+				case *Var:
+					if c, ok := env.constExpr(a.Name).(*StringLit); ok {
+						return &IntLit{Value: len(c.Value)}, nil
+					}
+				}
 				return &LenExpr{Value: arg}, nil
 			case "str":
 				return &StrExpr{Value: arg}, nil
@@ -721,6 +1025,8 @@ func toPrimary(p *parser.Primary, env *compileEnv) (Expr, error) {
 			return nil, err
 		}
 		return &GroupExpr{Expr: expr}, nil
+	case p.If != nil:
+		return toIfExpr(p.If, env)
 	}
 	return nil, fmt.Errorf("unsupported primary")
 }
@@ -767,7 +1073,37 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "group", Children: []*ast.Node{exprNode(ex.Expr)}}
 	case *CastExpr:
 		return &ast.Node{Kind: "cast", Value: ex.Type, Children: []*ast.Node{exprNode(ex.Expr)}}
+	case *IfExpr:
+		return &ast.Node{Kind: "if", Children: []*ast.Node{exprNode(ex.Cond), exprNode(ex.Then), exprNode(ex.Else)}}
+	case *SliceExpr:
+		return &ast.Node{Kind: "slice", Children: []*ast.Node{exprNode(ex.Target), exprNode(ex.Start), exprNode(ex.End)}}
 	default:
 		return &ast.Node{Kind: "expr"}
 	}
+}
+
+func toIfExpr(ifp *parser.IfExpr, env *compileEnv) (Expr, error) {
+	cond, err := toExpr(ifp.Cond, env)
+	if err != nil {
+		return nil, err
+	}
+	thenExpr, err := toExpr(ifp.Then, env)
+	if err != nil {
+		return nil, err
+	}
+	var elseExpr Expr
+	if ifp.ElseIf != nil {
+		elseExpr, err = toIfExpr(ifp.ElseIf, env)
+		if err != nil {
+			return nil, err
+		}
+	} else if ifp.Else != nil {
+		elseExpr, err = toExpr(ifp.Else, env)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		elseExpr = &IntLit{Value: 0}
+	}
+	return &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
 }

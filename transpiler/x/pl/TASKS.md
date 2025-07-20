@@ -1,3 +1,15 @@
+## Progress (2025-07-20 07:07 +0000)
+- transpiler/pl: add if expr and string index support
+- 26/100 VM programs transpiled successfully
+
+## Progress (2025-07-20 13:26 +0700)
+- fix tests
+- 27/100 VM programs transpiled successfully
+
+## Progress (2025-07-20 13:26 +0700)
+- fix tests
+- 23/100 VM programs transpiled successfully
+
 ## Progress (2025-07-20 05:38 +0000)
 - pl transpiler: fold trivial functions
 - 23/100 VM programs transpiled successfully
