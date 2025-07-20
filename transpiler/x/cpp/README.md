@@ -3,7 +3,7 @@
 This checklist is auto-generated.
 Generated C++ code for programs in `tests/vm/valid`. Each program has a `.cpp` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.
 
-## VM Golden Test Checklist (73/100)
+## VM Golden Test Checklist (69/100)
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -17,7 +17,7 @@ Generated C++ code for programs in `tests/vm/valid`. Each program has a `.cpp` f
 - [x] cross_join
 - [x] cross_join_filter
 - [x] cross_join_triple
-- [ ] dataset_sort_take_limit
+- [x] dataset_sort_take_limit
 - [x] dataset_where_filter
 - [x] exists_builtin
 - [x] for_list_collection
@@ -40,7 +40,7 @@ Generated C++ code for programs in `tests/vm/valid`. Each program has a `.cpp` f
 - [x] if_then_else
 - [x] if_then_else_nested
 - [x] in_operator
-- [x] in_operator_extended
+- [ ] in_operator_extended
 - [x] inner_join
 - [x] join_multi
 - [ ] json_builtin
@@ -53,7 +53,7 @@ Generated C++ code for programs in `tests/vm/valid`. Each program has a `.cpp` f
 - [x] list_assign
 - [x] list_index
 - [x] list_nested_assign
-- [x] list_set_ops
+- [ ] list_set_ops
 - [ ] load_yaml
 - [x] map_assign
 - [x] map_in_operator
@@ -70,13 +70,13 @@ Generated C++ code for programs in `tests/vm/valid`. Each program has a `.cpp` f
 - [x] nested_function
 - [ ] order_by_map
 - [ ] outer_join
-- [x] partial_application
+- [ ] partial_application
 - [x] print_hello
 - [x] pure_fold
 - [x] pure_global_fold
 - [ ] python_auto
 - [ ] python_math
-- [x] query_sum_select
+- [ ] query_sum_select
 - [ ] record_assign
 - [ ] right_join
 - [ ] save_jsonl_stdout
@@ -100,7 +100,7 @@ Generated C++ code for programs in `tests/vm/valid`. Each program has a `.cpp` f
 - [x] typed_var
 - [x] unary_neg
 - [ ] update_stmt
-- [x] user_type_literal
+- [ ] user_type_literal
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
