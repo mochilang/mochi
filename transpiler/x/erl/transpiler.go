@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 
@@ -205,6 +206,14 @@ type ForStmt struct {
 	End   Expr   // for range loops
 	Src   Expr   // list or map expression
 	Body  []Stmt
+}
+
+// WhileStmt represents a while loop implemented via recursion.
+type WhileStmt struct {
+	Params []string // variables carried between iterations
+	Cond   Expr
+	Body   []Stmt
+	Next   []string // variable names for next iteration
 }
 
 func (p *PrintStmt) emit(w io.Writer) {
@@ -672,6 +681,33 @@ func (f *ForStmt) emit(w io.Writer) {
 	}
 }
 
+func (ws *WhileStmt) emit(w io.Writer) {
+	io.WriteString(w, "Fun = fun(F")
+	for _, p := range ws.Params {
+		io.WriteString(w, ", ")
+		io.WriteString(w, p)
+	}
+	io.WriteString(w, ") ->\n    case ")
+	ws.Cond.emit(w)
+	io.WriteString(w, " of\n        true ->")
+	for _, st := range ws.Body {
+		io.WriteString(w, "\n            ")
+		st.emit(w)
+		io.WriteString(w, ",")
+	}
+	io.WriteString(w, "\n            F(F")
+	for _, a := range ws.Next {
+		io.WriteString(w, ", ")
+		io.WriteString(w, a)
+	}
+	io.WriteString(w, ");\n        _ -> ok\n    end\nend,\nFun(Fun")
+	for _, p := range ws.Params {
+		io.WriteString(w, ", ")
+		io.WriteString(w, p)
+	}
+	io.WriteString(w, ")")
+}
+
 func mapOp(op string) string {
 	switch op {
 	case "&&":
@@ -820,6 +856,37 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 			kind = "map"
 		}
 		return []Stmt{&ForStmt{Var: alias, Kind: kind, Src: src, Body: body}}, nil
+	case st.While != nil:
+		// parameters are current aliases sorted for stable output
+		names := make([]string, 0, len(ctx.alias))
+		for n := range ctx.alias {
+			names = append(names, n)
+		}
+		sort.Strings(names)
+		params := make([]string, len(names))
+		for i, n := range names {
+			params[i] = ctx.alias[n]
+		}
+		condCtx := ctx.clone()
+		cond, err := convertExpr(st.While.Cond, env, condCtx)
+		if err != nil {
+			return nil, err
+		}
+		loopCtx := ctx.clone()
+		body := []Stmt{}
+		for _, bs := range st.While.Body {
+			cs, err := convertStmt(bs, env, loopCtx)
+			if err != nil {
+				return nil, err
+			}
+			body = append(body, cs...)
+		}
+		next := make([]string, len(names))
+		for i, n := range names {
+			next[i] = loopCtx.alias[n]
+			ctx.alias[n] = loopCtx.alias[n]
+		}
+		return []Stmt{&WhileStmt{Params: params, Cond: cond, Body: body, Next: next}}, nil
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
