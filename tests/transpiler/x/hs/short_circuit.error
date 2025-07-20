@@ -1,21 +1,21 @@
 run: exit status 1
 
-/workspace/mochi/tests/transpiler/x/hs/short_circuit.hs:9:31: error:
+/workspace/mochi/tests/transpiler/x/hs/short_circuit.hs:9:27: error:
     • Couldn't match expected type ‘Bool’ with actual type ‘IO Bool’
     • In the second argument of ‘(&&)’, namely ‘boom 1 2’
-      In the first argument of ‘fromEnum’, namely ‘(False && boom 1 2)’
-      In the first argument of ‘print’, namely
-        ‘(fromEnum (False && boom 1 2))’
+      In the expression: False && boom 1 2
+      In the first argument of ‘putStrLn’, namely
+        ‘(if False && boom 1 2 then "true" else "false")’
   |
-9 |     print (fromEnum (False && boom 1 2))
-  |                               ^^^^^^^^
+9 |     putStrLn (if False && boom 1 2 then "true" else "false")
+  |                           ^^^^^^^^
 
-/workspace/mochi/tests/transpiler/x/hs/short_circuit.hs:10:30: error:
+/workspace/mochi/tests/transpiler/x/hs/short_circuit.hs:10:26: error:
     • Couldn't match expected type ‘Bool’ with actual type ‘IO Bool’
     • In the second argument of ‘(||)’, namely ‘boom 1 2’
-      In the first argument of ‘fromEnum’, namely ‘(True || boom 1 2)’
-      In the first argument of ‘print’, namely
-        ‘(fromEnum (True || boom 1 2))’
+      In the expression: True || boom 1 2
+      In the first argument of ‘putStrLn’, namely
+        ‘(if True || boom 1 2 then "true" else "false")’
    |
-10 |     print (fromEnum (True || boom 1 2))
-   |                              ^^^^^^^^
+10 |     putStrLn (if True || boom 1 2 then "true" else "false")
+   |                          ^^^^^^^^

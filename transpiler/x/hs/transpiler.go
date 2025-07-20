@@ -39,6 +39,8 @@ func recordType(name string, ex Expr) {
 		varTypes[name] = "string"
 	} else if isBoolExpr(ex) {
 		varTypes[name] = "bool"
+	} else if isListExpr(ex) {
+		varTypes[name] = "list"
 	}
 }
 
@@ -106,10 +108,17 @@ func (p *PrintStmt) emit(w io.Writer) {
 		return
 	}
 
-	if isBoolExpr(p.Expr) {
-		io.WriteString(w, "print (fromEnum (")
+	if isListExpr(p.Expr) {
+		io.WriteString(w, "putStrLn (\"[\" ++ unwords (map show (")
 		p.Expr.emit(w)
-		io.WriteString(w, "))")
+		io.WriteString(w, ")) ++ \"]\")")
+		return
+	}
+
+	if isBoolExpr(p.Expr) {
+		io.WriteString(w, "putStrLn (if ")
+		p.Expr.emit(w)
+		io.WriteString(w, " then \"true\" else \"false\")")
 		return
 	}
 
@@ -250,7 +259,24 @@ func isBoolExpr(e Expr) bool {
 		if len(ex.Ops) > 0 {
 			op := ex.Ops[0].Op
 			switch op {
-			case "==", "!=", "<", ">", "<=", ">=", "&&", "||":
+			case "==", "!=", "<", ">", "<=", ">=", "&&", "||", "in":
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func isListExpr(e Expr) bool {
+	switch ex := e.(type) {
+	case *ListLit:
+		return true
+	case *NameRef:
+		return varTypes[ex.Name] == "list"
+	case *BinaryExpr:
+		if len(ex.Ops) > 0 {
+			switch ex.Ops[0].Op {
+			case "++", "union", "except", "intersect":
 				return true
 			}
 		}
@@ -272,6 +298,8 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			}
 		case "%":
 			io.WriteString(w, "`mod`")
+		case "/":
+			io.WriteString(w, "`div`")
 		case "in":
 			if isStringExpr(left) || isStringExpr(op.Right) {
 				io.WriteString(w, "`isInfixOf`")
