@@ -182,14 +182,16 @@ func (c *ContinueStmt) emit(w io.Writer, ind int) {
 
 func (f *ForStmt) emit(w io.Writer, ind int) {
 	if len(f.List) > 0 {
+		arrName := fmt.Sprintf("%s_arr", f.Var)
+		idxName := fmt.Sprintf("i_%s", f.Var)
 		writeIndent(w, ind)
-		fmt.Fprintf(w, "integer, dimension(%d) :: __arr = (/ %s /)\n", len(f.List), strings.Join(f.List, ", "))
+		fmt.Fprintf(w, "integer, dimension(%d) :: %s = (/ %s /)\n", len(f.List), arrName, strings.Join(f.List, ", "))
 		writeIndent(w, ind)
-		io.WriteString(w, "integer :: __i\n")
+		fmt.Fprintf(w, "integer :: %s\n", idxName)
 		writeIndent(w, ind)
-		io.WriteString(w, "do __i = 1, size(__arr)\n")
+		fmt.Fprintf(w, "do %s = 1, size(%s)\n", idxName, arrName)
 		writeIndent(w, ind+2)
-		fmt.Fprintf(w, "%s = __arr(__i)\n", f.Var)
+		fmt.Fprintf(w, "%s = %s(%s)\n", f.Var, arrName, idxName)
 		for _, st := range f.Body {
 			st.emit(w, ind+2)
 		}
