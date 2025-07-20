@@ -15,6 +15,31 @@ import (
 )
 
 var currentEnv *types.Env
+var breakStack []Symbol
+var continueStack []Symbol
+var gensymCounter int
+
+func pushLoop(breakSym, contSym Symbol) {
+	breakStack = append(breakStack, breakSym)
+	continueStack = append(continueStack, contSym)
+}
+
+func popLoop() {
+	if len(breakStack) > 0 {
+		breakStack = breakStack[:len(breakStack)-1]
+	}
+	if len(continueStack) > 0 {
+		continueStack = continueStack[:len(continueStack)-1]
+	}
+}
+
+func currentBreak() Symbol    { return breakStack[len(breakStack)-1] }
+func currentContinue() Symbol { return continueStack[len(continueStack)-1] }
+
+func gensym(prefix string) Symbol {
+	gensymCounter++
+	return Symbol(fmt.Sprintf("%s%d", prefix, gensymCounter))
+}
 
 // Node represents a Scheme AST node.
 type Node interface{ Emit(io.Writer) }
@@ -191,60 +216,96 @@ func convertWhileStmt(ws *parser.WhileStmt) (Node, error) {
 	if err != nil {
 		return nil, err
 	}
+	loopSym := gensym("loop")
+	breakSym := gensym("break")
+	pushLoop(breakSym, loopSym)
 	body, err := convertStmts(ws.Body)
 	if err != nil {
+		popLoop()
 		return nil, err
 	}
-	loopCall := &List{Elems: []Node{Symbol("loop")}}
+	loopCall := &List{Elems: []Node{loopSym}}
 	body = append(body, loopCall)
 	bodyNode := &List{Elems: append([]Node{Symbol("begin")}, body...)}
+	popLoop()
 	return &List{Elems: []Node{
-		Symbol("let"), Symbol("loop"), &List{Elems: []Node{}},
-		&List{Elems: []Node{Symbol("if"), cond, bodyNode, voidSym()}},
+		Symbol("let/ec"), breakSym,
+		&List{Elems: []Node{
+			Symbol("let"), loopSym, &List{Elems: []Node{}},
+			&List{Elems: []Node{Symbol("if"), cond, bodyNode, voidSym()}}}},
 	}}, nil
 }
 
 func convertForStmt(fs *parser.ForStmt) (Node, error) {
+	loopSym := gensym("loop")
+	breakSym := gensym("break")
+	pushLoop(breakSym, loopSym)
 	if fs.RangeEnd != nil {
 		start, err := convertParserExpr(fs.Source)
 		if err != nil {
+			popLoop()
 			return nil, err
 		}
 		end, err := convertParserExpr(fs.RangeEnd)
 		if err != nil {
+			popLoop()
 			return nil, err
 		}
 		body, err := convertStmts(fs.Body)
 		if err != nil {
+			popLoop()
 			return nil, err
 		}
 		inc := &List{Elems: []Node{Symbol("+"), Symbol(fs.Name), IntLit(1)}}
-		loopCall := &List{Elems: []Node{Symbol("loop"), inc}}
+		loopCall := &List{Elems: []Node{loopSym, inc}}
 		body = append(body, loopCall)
 		bodyNode := &List{Elems: append([]Node{Symbol("begin")}, body...)}
 		cond := &List{Elems: []Node{Symbol("<"), Symbol(fs.Name), end}}
+		popLoop()
 		return &List{Elems: []Node{
-			Symbol("let"), Symbol("loop"),
-			&List{Elems: []Node{&List{Elems: []Node{Symbol(fs.Name), start}}}},
-			&List{Elems: []Node{Symbol("if"), cond, bodyNode, voidSym()}},
+			Symbol("let/ec"), breakSym,
+			&List{Elems: []Node{
+				Symbol("let"), loopSym,
+				&List{Elems: []Node{&List{Elems: []Node{Symbol(fs.Name), start}}}},
+				&List{Elems: []Node{Symbol("if"), cond, bodyNode, voidSym()}}}},
 		}}, nil
 	}
 	iter, err := convertParserExpr(fs.Source)
 	if err != nil {
+		popLoop()
 		return nil, err
 	}
 	if _, ok := types.ExprType(fs.Source, currentEnv).(types.MapType); ok {
 		iter = &List{Elems: []Node{Symbol("hash-table-keys"), iter}}
 	}
+	elemSym := Symbol(fs.Name)
 	body, err := convertStmts(fs.Body)
 	if err != nil {
+		popLoop()
 		return nil, err
 	}
-	bodyNode := &List{Elems: append([]Node{Symbol("begin")}, body...)}
-	lambda := &List{Elems: []Node{
-		Symbol("lambda"), &List{Elems: []Node{Symbol(fs.Name)}}, bodyNode,
+	nextSym := gensym("it")
+	loopCall := &List{Elems: []Node{loopSym, &List{Elems: []Node{Symbol("cdr"), Symbol(nextSym)}}}}
+	body = append(body, loopCall)
+	bodyNode := &List{Elems: []Node{
+		Symbol("let"),
+		&List{Elems: []Node{&List{Elems: []Node{elemSym, &List{Elems: []Node{Symbol("car"), Symbol(nextSym)}}}}}},
+		&List{Elems: append([]Node{Symbol("begin")}, body...)},
 	}}
-	return &List{Elems: []Node{Symbol("for-each"), lambda, iter}}, nil
+	popLoop()
+	return &List{Elems: []Node{
+		Symbol("let/ec"), breakSym,
+		&List{Elems: []Node{
+			Symbol("let"), loopSym,
+			&List{Elems: []Node{&List{Elems: []Node{nextSym, iter}}}},
+			&List{Elems: []Node{
+				Symbol("if"),
+				&List{Elems: []Node{Symbol("null?"), Symbol(nextSym)}},
+				voidSym(),
+				bodyNode,
+			}},
+		}},
+	}}, nil
 }
 
 func convertStmt(st *parser.Statement) (Node, error) {
@@ -307,6 +368,30 @@ func convertStmt(st *parser.Statement) (Node, error) {
 			return nil, err
 		}
 		return &List{Elems: []Node{Symbol("set!"), Symbol(st.Assign.Name), val}}, nil
+	case st.Assign != nil && len(st.Assign.Index) > 0 && len(st.Assign.Field) == 0:
+		var target Node = Symbol(st.Assign.Name)
+		for i := 0; i < len(st.Assign.Index)-1; i++ {
+			idx := st.Assign.Index[i]
+			var err error
+			target, err = convertIndex(target, &parser.Primary{Selector: &parser.SelectorExpr{Root: st.Assign.Name}}, idx)
+			if err != nil {
+				return nil, err
+			}
+		}
+		last := st.Assign.Index[len(st.Assign.Index)-1]
+		idxNode, err := convertParserExpr(last.Start)
+		if err != nil {
+			return nil, err
+		}
+		val, err := convertParserExpr(st.Assign.Value)
+		if err != nil {
+			return nil, err
+		}
+		typ, _ := currentEnv.GetVar(st.Assign.Name)
+		if _, ok := typ.(types.MapType); ok {
+			return &List{Elems: []Node{Symbol("hash-table-set!"), target, idxNode, val}}, nil
+		}
+		return &List{Elems: []Node{Symbol("list-set!"), target, idxNode, val}}, nil
 	case st.Fun != nil:
 		params := []Node{}
 		for _, p := range st.Fun.Params {
@@ -338,6 +423,18 @@ func convertStmt(st *parser.Statement) (Node, error) {
 		return convertWhileStmt(st.While)
 	case st.For != nil:
 		return convertForStmt(st.For)
+	case st.Type != nil:
+		return nil, nil
+	case st.Break != nil:
+		if len(breakStack) == 0 {
+			return nil, fmt.Errorf("break outside loop")
+		}
+		return &List{Elems: []Node{currentBreak()}}, nil
+	case st.Continue != nil:
+		if len(continueStack) == 0 {
+			return nil, fmt.Errorf("continue outside loop")
+		}
+		return &List{Elems: []Node{currentContinue()}}, nil
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
@@ -461,9 +558,7 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 				node = &List{Elems: []Node{Symbol("string->number"), node}}
 			} else if t.Simple != nil && *t.Simple == "string" {
 				node = &List{Elems: []Node{Symbol("number->string"), node}}
-			} else {
-				return nil, fmt.Errorf("unsupported cast")
-			}
+			} // ignore other casts
 		case op.Field != nil && op.Field.Name == "contains" && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil:
 			call := pf.Ops[i+1].Call
 			if len(call.Args) != 1 {
