@@ -1,1 +1,7 @@
-unsupported expression
+exit status 1
+lua: attempt to index a number value
+stack traceback:
+	[C]: in for iterator 'for iterator'
+	...kspace/mochi/tests/transpiler/x/lua/query_sum_select.lua:8: in function <...kspace/mochi/tests/transpiler/x/lua/query_sum_select.lua:6>
+	...kspace/mochi/tests/transpiler/x/lua/query_sum_select.lua:6: in main chunk
+	[C]: in ?

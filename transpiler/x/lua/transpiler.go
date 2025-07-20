@@ -125,6 +125,7 @@ type QueryComp struct {
 	Vars    []string
 	Sources []Expr
 	Body    Expr
+	Where   Expr
 }
 
 func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
@@ -777,6 +778,11 @@ func (qc *QueryComp) emit(w io.Writer) {
 		qc.Sources[i].emit(w)
 		io.WriteString(w, ") do\n")
 	}
+	if qc.Where != nil {
+		io.WriteString(w, "    if ")
+		qc.Where.emit(w)
+		io.WriteString(w, " then\n")
+	}
 	io.WriteString(w, "    table.insert(_res, ")
 	if qc.Body != nil {
 		qc.Body.emit(w)
@@ -784,6 +790,9 @@ func (qc *QueryComp) emit(w io.Writer) {
 		io.WriteString(w, "nil")
 	}
 	io.WriteString(w, ")\n")
+	if qc.Where != nil {
+		io.WriteString(w, "    end\n")
+	}
 	for range qc.Vars {
 		io.WriteString(w, "  end\n")
 	}
@@ -1230,7 +1239,7 @@ func convertIfExpr(ie *parser.IfExpr) (Expr, error) {
 }
 
 func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
-	if q.Where != nil || q.Group != nil || q.Sort != nil || len(q.Joins) > 0 || q.Skip != nil || q.Take != nil || q.Distinct {
+	if q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
 		return nil, fmt.Errorf("unsupported query")
 	}
 	vars := []string{q.Var}
@@ -1248,11 +1257,43 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		vars = append(vars, fc.Var)
 		sources = append(sources, expr)
 	}
+
+	var where Expr
+	for _, jc := range q.Joins {
+		expr, err := convertExpr(jc.Src)
+		if err != nil {
+			return nil, err
+		}
+		vars = append(vars, jc.Var)
+		sources = append(sources, expr)
+		cond, err := convertExpr(jc.On)
+		if err != nil {
+			return nil, err
+		}
+		if where == nil {
+			where = cond
+		} else {
+			where = &BinaryExpr{Left: where, Op: "&&", Right: cond}
+		}
+	}
+
+	if q.Where != nil {
+		cond, err := convertExpr(q.Where)
+		if err != nil {
+			return nil, err
+		}
+		if where == nil {
+			where = cond
+		} else {
+			where = &BinaryExpr{Left: where, Op: "&&", Right: cond}
+		}
+	}
+
 	body, err := convertExpr(q.Select)
 	if err != nil {
 		return nil, err
 	}
-	return &QueryComp{Vars: vars, Sources: sources, Body: body}, nil
+	return &QueryComp{Vars: vars, Sources: sources, Body: body, Where: where}, nil
 }
 
 func convertIfStmt(is *parser.IfStmt) (Stmt, error) {
@@ -1658,6 +1699,9 @@ func exprNode(e Expr) *ast.Node {
 			clause := &ast.Node{Kind: "from", Value: v}
 			clause.Children = append(clause.Children, exprNode(ex.Sources[i]))
 			n.Children = append(n.Children, clause)
+		}
+		if ex.Where != nil {
+			n.Children = append(n.Children, &ast.Node{Kind: "where", Children: []*ast.Node{exprNode(ex.Where)}})
 		}
 		n.Children = append(n.Children, exprNode(ex.Body))
 		return n
