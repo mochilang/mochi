@@ -1247,6 +1247,20 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			expr = &CallExpr{Func: "String.contains?", Args: []Expr{expr, arg}}
 			typ = types.BoolType{}
 			i++
+		} else if op.Field != nil {
+			expr = &IndexExpr{Target: expr, Index: &StringLit{Value: op.Field.Name}, UseMapSyntax: true}
+			switch tt := typ.(type) {
+			case types.StructType:
+				if t, ok := tt.Fields[op.Field.Name]; ok {
+					typ = t
+				} else {
+					typ = types.AnyType{}
+				}
+			case types.MapType:
+				typ = tt.Value
+			default:
+				typ = types.AnyType{}
+			}
 		} else {
 			return nil, fmt.Errorf("unsupported postfix")
 		}
@@ -1347,16 +1361,11 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 	case p.Lit != nil:
 		return compileLiteral(p.Lit)
 	case p.Selector != nil:
-		name := p.Selector.Root
+		expr := Expr(&VarRef{Name: p.Selector.Root})
 		for _, t := range p.Selector.Tail {
-			name += "." + t
+			expr = &IndexExpr{Target: expr, Index: &StringLit{Value: t}, UseMapSyntax: true}
 		}
-		if _, ok := env.Types()[name]; !ok {
-			if _, err := env.GetVar(name); err == nil {
-				return &VarRef{Name: "@" + name}, nil
-			}
-		}
-		return &VarRef{Name: name}, nil
+		return expr, nil
 	case p.List != nil:
 		elems := make([]Expr, len(p.List.Elems))
 		for i, el := range p.List.Elems {
