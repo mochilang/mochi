@@ -27,13 +27,14 @@ type Program struct {
 
 // context tracks variable aliases to emulate mutable variables.
 type context struct {
-	alias   map[string]string
-	orig    map[string]string
-	counter map[string]int
+	alias    map[string]string
+	orig     map[string]string
+	counter  map[string]int
+	strField map[string]map[string]bool
 }
 
 func newContext() *context {
-	return &context{alias: map[string]string{}, orig: map[string]string{}, counter: map[string]int{}}
+	return &context{alias: map[string]string{}, orig: map[string]string{}, counter: map[string]int{}, strField: map[string]map[string]bool{}}
 }
 
 func (c *context) clone() *context {
@@ -49,7 +50,15 @@ func (c *context) clone() *context {
 	for k, v := range c.counter {
 		counter[k] = v
 	}
-	return &context{alias: alias, orig: orig, counter: counter}
+	fields := make(map[string]map[string]bool, len(c.strField))
+	for k, v := range c.strField {
+		fm := make(map[string]bool, len(v))
+		for kk, vv := range v {
+			fm[kk] = vv
+		}
+		fields[k] = fm
+	}
+	return &context{alias: alias, orig: orig, counter: counter, strField: fields}
 }
 
 func (c *context) newAlias(name string) string {
@@ -75,6 +84,23 @@ func (c *context) original(alias string) string {
 		return o
 	}
 	return alias
+}
+
+func (c *context) setStrFields(name string, fields map[string]bool) {
+	if len(fields) == 0 {
+		return
+	}
+	if c.strField == nil {
+		c.strField = map[string]map[string]bool{}
+	}
+	c.strField[name] = fields
+}
+
+func (c *context) isStrField(name, field string) bool {
+	if m, ok := c.strField[name]; ok {
+		return m[field]
+	}
+	return false
 }
 
 func simpleIdent(e *parser.Expr) (string, bool) {
@@ -401,9 +427,70 @@ func mapValueIsString(e Expr, env *types.Env, ctx *context) bool {
 		}
 	}
 	if ml, ok := e.(*MapLit); ok && len(ml.Items) > 0 {
-		return isStringExpr(ml.Items[0].Value)
+		for _, it := range ml.Items {
+			if !isStringExpr(it.Value) {
+				return false
+			}
+		}
+		return true
 	}
 	return false
+}
+
+func stringFields(e Expr) map[string]bool {
+	switch v := e.(type) {
+	case *MapLit:
+		fields := map[string]bool{}
+		for _, it := range v.Items {
+			if k, ok := it.Key.(*AtomLit); ok {
+				if isStringExpr(it.Value) {
+					fields[k.Name] = true
+				}
+			}
+		}
+		if len(fields) > 0 {
+			return fields
+		}
+	case *ListLit:
+		accum := map[string]bool{}
+		for _, el := range v.Elems {
+			if ml, ok := el.(*MapLit); ok {
+				ff := stringFields(ml)
+				for k, b := range ff {
+					if b {
+						accum[k] = true
+					}
+				}
+			}
+		}
+		if len(accum) > 0 {
+			return accum
+		}
+	case *QueryExpr:
+		return stringFields(v.Select)
+	}
+	return nil
+}
+
+func fieldIsString(target Expr, key Expr, env *types.Env, ctx *context) bool {
+	if a, ok := key.(*AtomLit); ok {
+		switch t := target.(type) {
+		case *MapLit:
+			for _, it := range t.Items {
+				if ak, ok2 := it.Key.(*AtomLit); ok2 && ak.Name == a.Name {
+					return isStringExpr(it.Value)
+				}
+			}
+		case *NameRef:
+			if ctx != nil {
+				name := ctx.original(t.Name)
+				if ctx.isStrField(name, a.Name) {
+					return true
+				}
+			}
+		}
+	}
+	return mapValueIsString(target, env, ctx)
 }
 
 func (l *LetStmt) emit(w io.Writer) {
@@ -928,6 +1015,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 			e = &AtomLit{Name: "nil"}
 		}
 		alias := ctx.newAlias(st.Let.Name)
+		ctx.setStrFields(st.Let.Name, stringFields(e))
 		return []Stmt{&LetStmt{Name: alias, Expr: e}}, nil
 	case st.Var != nil:
 		var e Expr
@@ -941,6 +1029,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 			e = &AtomLit{Name: "nil"}
 		}
 		alias := ctx.newAlias(st.Var.Name)
+		ctx.setStrFields(st.Var.Name, stringFields(e))
 		return []Stmt{&LetStmt{Name: alias, Expr: e}}, nil
 	case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
 		val, err := convertExpr(st.Assign.Value, env, ctx)
@@ -948,6 +1037,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 			return nil, err
 		}
 		alias := ctx.newAlias(st.Assign.Name)
+		ctx.setStrFields(st.Assign.Name, stringFields(val))
 		return []Stmt{&LetStmt{Name: alias, Expr: val}}, nil
 	case st.Assign != nil && len(st.Assign.Index) == 1 && len(st.Assign.Field) == 0:
 		idx, err := convertExpr(st.Assign.Index[0].Start, env, ctx)
@@ -1051,6 +1141,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		if err != nil {
 			return nil, err
 		}
+		loopCtx.setStrFields(st.For.Name, stringFields(src))
 		kind := "list"
 		if isMapExpr(src, env, ctx) {
 			kind = "map"
@@ -1311,7 +1402,7 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 			isStr := false
 			if isMapExpr(expr, env, ctx) {
 				kind = "map"
-				if mapValueIsString(expr, env, ctx) {
+				if fieldIsString(expr, idx, env, ctx) {
 					isStr = true
 				}
 			} else if isStringExpr(expr) {
@@ -1583,6 +1674,7 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, 
 		return nil, err
 	}
 	alias := loopCtx.newAlias(q.Var)
+	loopCtx.setStrFields(q.Var, stringFields(src))
 	child := types.NewEnv(env)
 	child.SetVar(q.Var, types.AnyType{}, true)
 	froms := []queryFrom{}
@@ -1592,6 +1684,7 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, 
 			return nil, err
 		}
 		av := loopCtx.newAlias(f.Var)
+		loopCtx.setStrFields(f.Var, stringFields(fe))
 		child.SetVar(f.Var, types.AnyType{}, true)
 		froms = append(froms, queryFrom{Var: av, Src: fe})
 	}
@@ -1605,6 +1698,7 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, 
 			return nil, err
 		}
 		jv := loopCtx.newAlias(j.Var)
+		loopCtx.setStrFields(j.Var, stringFields(je))
 		child.SetVar(j.Var, types.AnyType{}, true)
 		froms = append(froms, queryFrom{Var: jv, Src: je})
 		jc, err := convertExpr(j.On, child, loopCtx)
