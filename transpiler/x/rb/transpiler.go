@@ -360,7 +360,7 @@ type AvgExpr struct{ Value Expr }
 func (a *AvgExpr) emit(w io.Writer) {
 	io.WriteString(w, "(")
 	a.Value.emit(w)
-	io.WriteString(w, ".sum.to_f / ")
+	io.WriteString(w, ".sum / ")
 	a.Value.emit(w)
 	io.WriteString(w, ".length)")
 }
@@ -834,20 +834,16 @@ func convertPrintCall(args []Expr, orig []*parser.Expr) (Expr, error) {
 	if len(args) == 1 {
 		ex := args[0]
 		t := types.ExprType(orig[0], currentEnv)
-		switch t.(type) {
-		case types.ListType:
+		if _, ok := t.(types.ListType); ok {
 			ex = &JoinExpr{List: ex}
-		case types.BoolType:
-			ex = &CondExpr{Cond: ex, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
 		}
 		return &CallExpr{Func: "puts", Args: []Expr{ex}}, nil
 	}
 	conv := make([]Expr, len(args))
 	for i, a := range args {
 		ex := a
-		t := types.ExprType(orig[i], currentEnv)
-		if _, ok := t.(types.BoolType); ok {
-			ex = &CondExpr{Cond: ex, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
+		if _, ok := types.ExprType(orig[i], currentEnv).(types.ListType); ok {
+			ex = &JoinExpr{List: ex}
 		}
 		conv[i] = ex
 	}
