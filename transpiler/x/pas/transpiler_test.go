@@ -94,7 +94,7 @@ func runCase(t *testing.T, name string) {
 }
 
 func TestPascalTranspiler(t *testing.T) {
-	for _, tc := range []string{"print_hello", "unary_neg", "math_ops", "let_and_print", "var_assignment", "typed_let", "typed_var", "string_concat", "string_compare", "while_loop", "if_else", "fun_call", "fun_three_args", "bool_chain", "basic_compare", "binary_precedence", "cast_string_to_int", "len_string", "string_contains", "substring_builtin", "short_circuit", "len_builtin", "list_index", "membership", "count_builtin", "avg_builtin", "min_max_builtin", "slice", "list_nested_assign"} {
+	for _, tc := range []string{"print_hello", "unary_neg", "math_ops", "let_and_print", "var_assignment", "typed_let", "typed_var", "string_concat", "string_compare", "while_loop", "if_else", "fun_call", "fun_three_args", "bool_chain", "basic_compare", "binary_precedence", "cast_string_to_int", "len_string", "string_contains", "substring_builtin", "short_circuit", "len_builtin", "list_index", "membership", "count_builtin", "avg_builtin", "min_max_builtin", "slice", "list_nested_assign", "append_builtin", "for_loop", "for_list_collection", "break_continue", "in_operator"} {
 		t.Run(tc, func(t *testing.T) { runCase(t, tc) })
 	}
 }
