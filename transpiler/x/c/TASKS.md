@@ -1,6 +1,6 @@
-## Progress (2025-07-20 22:34 +0700)
-- VM valid golden test results updated to 56/100
-
+## Progress (2025-07-20 22:54 +0700)
+- Added constant map indexing and new golden file `map_index`.
+- VM valid golden test results updated to 57/100
 
 ## Progress (2025-07-20 22:24 +0700)
 - Added struct dependency ordering with forward declarations for C output.

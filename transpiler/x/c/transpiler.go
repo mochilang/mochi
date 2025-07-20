@@ -1417,6 +1417,15 @@ func convertUnary(u *parser.Unary) Expr {
 			break
 		}
 		if simple {
+			if n, ok := evalInt(current); ok {
+				return &IntLit{Value: n}
+			}
+			if s, ok := evalString(current); ok {
+				return &StringLit{Value: s}
+			}
+			if l, ok := evalList(current); ok {
+				return l
+			}
 			return current
 		}
 	}
@@ -1846,6 +1855,9 @@ func evalInt(e Expr) (int, bool) {
 				return evalInt(list.Elems[idx])
 			}
 		}
+		if val, ok := evalMapEntry(v.Target, v.Index); ok {
+			return evalInt(val)
+		}
 	case *UnaryExpr:
 		if v.Op == "-" {
 			n, ok := evalInt(v.Expr)
@@ -1981,18 +1993,19 @@ func evalString(e Expr) (string, bool) {
 		return s, ok
 	case *IndexExpr:
 		str, ok := evalString(v.Target)
-		if !ok {
-			return "", false
+		if ok {
+			idx, ok2 := evalInt(v.Index)
+			if ok2 {
+				r := []rune(str)
+				if idx >= 0 && idx < len(r) {
+					return string(r[idx]), true
+				}
+			}
 		}
-		idx, ok2 := evalInt(v.Index)
-		if !ok2 {
-			return "", false
+		if val, ok := evalMapEntry(v.Target, v.Index); ok {
+			return evalString(val)
 		}
-		r := []rune(str)
-		if idx < 0 || idx >= len(r) {
-			return "", false
-		}
-		return string(r[idx]), true
+		return "", false
 	case *BinaryExpr:
 		if v.Op == "+" {
 			left, ok1 := evalString(v.Left)
@@ -2534,6 +2547,11 @@ func valueFromExpr(e Expr) (any, bool) {
 			m[ks] = val
 		}
 		return m, true
+	case *VarRef:
+		if val, err := currentEnv.GetValue(v.Name); err == nil {
+			return val, true
+		}
+		return nil, false
 	default:
 		return nil, false
 	}
@@ -2581,6 +2599,25 @@ func evalMap(e Expr) (*ListLit, bool) {
 				return &ListLit{Elems: elems}, true
 			}
 		}
+	}
+	return nil, false
+}
+
+func evalMapEntry(target Expr, key Expr) (Expr, bool) {
+	val, ok := valueFromExpr(target)
+	if !ok {
+		return nil, false
+	}
+	m, ok := val.(map[string]any)
+	if !ok {
+		return nil, false
+	}
+	ks, ok := evalString(key)
+	if !ok {
+		return nil, false
+	}
+	if v, ok := m[ks]; ok {
+		return anyToExpr(v), true
 	}
 	return nil, false
 }
