@@ -96,6 +96,10 @@ func inferType(e Expr) string {
 		switch ex.Func {
 		case "String.valueOf", "substring":
 			return "String"
+		case "Integer.parseInt":
+			return "int"
+		case "System.out.println":
+			return "void"
 		}
 	case *VarExpr:
 		if t, ok := varTypes[ex.Name]; ok {
@@ -1008,7 +1012,10 @@ func Emit(prog *Program) []byte {
 			st.emit(&buf, "    ")
 		}
 	}
-	for _, fn := range prog.Funcs {
+	if len(prog.Stmts) > 0 {
+		buf.WriteByte('\n')
+	}
+	for i, fn := range prog.Funcs {
 		ret := javaType(fn.Return)
 		if ret == "" {
 			ret = "void"
@@ -1028,7 +1035,11 @@ func Emit(prog *Program) []byte {
 		for _, s := range fn.Body {
 			s.emit(&buf, "        ")
 		}
-		buf.WriteString("    }\n\n")
+		buf.WriteString("    }")
+		buf.WriteByte('\n')
+		if i < len(prog.Funcs)-1 {
+			buf.WriteByte('\n')
+		}
 	}
 	buf.WriteString("    public static void main(String[] args) {\n")
 	for _, st := range prog.Stmts {

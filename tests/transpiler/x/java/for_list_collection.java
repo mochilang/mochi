@@ -1,4 +1,5 @@
 public class Main {
+
     public static void main(String[] args) {
         for (var n : new int[]{1, 2, 3}) {
             System.out.println(n);

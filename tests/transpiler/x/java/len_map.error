@@ -1,5 +1,5 @@
 exit status 1
-Main.java:3: error: cannot find symbol
+Main.java:4: error: cannot find symbol
         System.out.println(java.util.Map.of("a", 1, "b", 2).length());
                                                            ^
   symbol:   method length()

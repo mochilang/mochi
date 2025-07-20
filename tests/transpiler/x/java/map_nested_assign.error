@@ -7,13 +7,13 @@ Main.java:2: error: incompatible types: inference variable V has incompatible bo
   where V,K are type-variables:
     V extends Object declared in method <K,V>of(K,V)
     K extends Object declared in method <K,V>of(K,V)
-Main.java:4: error: incompatible types: String cannot be converted to int
+Main.java:5: error: incompatible types: String cannot be converted to int
         System.out.println(data["outer"]["inner"]);
                                 ^
-Main.java:4: error: array required, but Map<String,Integer> found
+Main.java:5: error: array required, but Map<String,Integer> found
         System.out.println(data["outer"]["inner"]);
                                ^
-Main.java:4: error: incompatible types: String cannot be converted to int
+Main.java:5: error: incompatible types: String cannot be converted to int
         System.out.println(data["outer"]["inner"]);
                                          ^
 4 errors
