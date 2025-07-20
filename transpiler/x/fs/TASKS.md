@@ -1,12 +1,5 @@
-## Progress (2025-07-20 12:19 +0700)
-- VM valid golden test results updated
-
-## Progress (2025-07-20 05:04 UTC)
-- VM valid golden test results updated
-
-## Progress (2025-07-20 11:53 +0700)
-- Added list slicing support using F# range syntax
-- Lists printed in bracketed form without runtime helpers
+## Progress (2025-07-20 12:47 +0700)
+- Added float printing support so `avg_builtin` passes
 - VM valid golden test results updated
 
 # Transpiler Progress
