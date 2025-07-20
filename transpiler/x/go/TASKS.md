@@ -1,3 +1,27 @@
+## Progress (2025-07-20 09:25 +0700)
+- go transpiler: inline helpers
+- Regenerated golden files - 53/100 vm valid programs passing
+
+## Progress (2025-07-20 09:12 +0700)
+- php transpiler: add func support and update golden
+- Regenerated golden files - 53/100 vm valid programs passing
+
+## Progress (2025-07-20 09:12 +0700)
+- php transpiler: add func support and update golden
+- Regenerated golden files - 53/100 vm valid programs passing
+
+## Progress (2025-07-20 09:12 +0700)
+- php transpiler: add func support and update golden
+- Regenerated golden files - 53/100 vm valid programs passing
+
+## Progress (2025-07-20 09:12 +0700)
+- php transpiler: add func support and update golden
+- Regenerated golden files - 53/100 vm valid programs passing
+
+## Progress (2025-07-20 09:12 +0700)
+- php transpiler: add func support and update golden
+- Regenerated golden files - 53/100 vm valid programs passing
+
 ## Progress (2025-07-20 08:43 +0700)
 - update go transpiler tasks
 - Regenerated golden files - 53/100 vm valid programs passing
