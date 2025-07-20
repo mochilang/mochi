@@ -109,11 +109,11 @@ func (f *FunStmt) emit(w io.Writer) {
 	}
 	fmt.Fprint(w, ") = {\n")
 	for _, st := range f.Body {
-		fmt.Fprint(w, "        ")
+		fmt.Fprint(w, "    ")
 		st.emit(w)
 		fmt.Fprint(w, "\n")
 	}
-	fmt.Fprint(w, "    }")
+	fmt.Fprint(w, "  }")
 }
 
 func (r *ReturnStmt) emit(w io.Writer) {
@@ -127,19 +127,19 @@ func (i *IfStmt) emit(w io.Writer) {
 	i.Cond.emit(w)
 	fmt.Fprint(w, ") {\n")
 	for _, st := range i.Then {
-		fmt.Fprint(w, "        ")
+		fmt.Fprint(w, "    ")
 		st.emit(w)
 		fmt.Fprint(w, "\n")
 	}
-	fmt.Fprint(w, "    }")
+	fmt.Fprint(w, "  }")
 	if len(i.Else) > 0 {
 		fmt.Fprint(w, " else {\n")
 		for _, st := range i.Else {
-			fmt.Fprint(w, "        ")
+			fmt.Fprint(w, "    ")
 			st.emit(w)
 			fmt.Fprint(w, "\n")
 		}
-		fmt.Fprint(w, "    }")
+		fmt.Fprint(w, "  }")
 	}
 }
 
@@ -336,25 +336,19 @@ func (b *BinaryExpr) emit(w io.Writer) {
 func Emit(p *Program) []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
-	buf.WriteString("object Main {\n")
+	buf.WriteString("object Main extends App {\n")
 	for _, st := range p.Stmts {
 		if fn, ok := st.(*FunStmt); ok {
 			buf.WriteString("  ")
 			fn.emit(&buf)
 			buf.WriteByte('\n')
 			buf.WriteByte('\n')
+		} else {
+			buf.WriteString("  ")
+			st.emit(&buf)
+			buf.WriteByte('\n')
 		}
 	}
-	buf.WriteString("  def main(args: Array[String]): Unit = {\n")
-	for _, st := range p.Stmts {
-		if _, ok := st.(*FunStmt); ok {
-			continue
-		}
-		buf.WriteString("    ")
-		st.emit(&buf)
-		buf.WriteByte('\n')
-	}
-	buf.WriteString("  }\n")
 	buf.WriteString("}\n")
 	return buf.Bytes()
 }
@@ -794,6 +788,15 @@ func inferType(e Expr) string {
 		return "Boolean"
 	case *ListLit:
 		return "List[Any]"
+	case *LenExpr:
+		return "Int"
+	case *BinaryExpr:
+		switch ex.Op {
+		case "+", "-", "*", "/", "%":
+			return "Int"
+		case "==", "!=", ">", "<", ">=", "<=":
+			return "Boolean"
+		}
 	default:
 		_ = ex
 	}
