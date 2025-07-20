@@ -692,6 +692,18 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 		elems = append(elems, Symbol("conj"))
 	case "sum":
 		elems = append(elems, Symbol("reduce"), Symbol("+"), IntLit(0))
+	case "avg":
+		if len(c.Args) != 1 {
+			return nil, fmt.Errorf("avg expects 1 arg")
+		}
+		coll, err := transpileExpr(c.Args[0])
+		if err != nil {
+			return nil, err
+		}
+		sum := &List{Elems: []Node{Symbol("reduce"), Symbol("+"), IntLit(0), coll}}
+		cnt := &List{Elems: []Node{Symbol("count"), coll}}
+		avg := &List{Elems: []Node{Symbol("double"), &List{Elems: []Node{Symbol("/"), sum, cnt}}}}
+		return avg, nil
 	case "values":
 		elems = append(elems, Symbol("vals"))
 	default:

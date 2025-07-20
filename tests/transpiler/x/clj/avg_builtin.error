@@ -1,6 +1,0 @@
-run error: exit status 1
-Syntax error compiling at (/workspace/mochi/tests/transpiler/x/clj/avg_builtin.clj:5:12).
-Unable to resolve symbol: avg in this context
-
-Full report at:
-/tmp/clojure-3524694074244000453.edn
