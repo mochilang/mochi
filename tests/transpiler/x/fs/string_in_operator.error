@@ -1,0 +1,7 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/transpiler/x/fs/string_in_operator.fs(5,34): error FS0001: The type 'string' is not compatible with the type 'seq<string>'
+
+/workspace/mochi/tests/transpiler/x/fs/string_in_operator.fs(6,34): error FS0001: The type 'string' is not compatible with the type 'seq<string>'

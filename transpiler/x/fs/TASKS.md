@@ -1,3 +1,8 @@
+## Progress (2025-07-20 09:43 +0700)
+- Improved `in` operator handling for lists and strings
+- Built-in `len`, `sum`, and `avg` use `List` functions when possible
+- Avoid emitting `list` type annotations
+- VM valid golden test results updated
 ## Progress (2025-07-20 09:12 +0700)
 - Adjusted print formatting for booleans and header now uses git commit time
 
