@@ -775,58 +775,7 @@ func (q *QueryExprJS) emit(w io.Writer) {
 		return
 	}
 
-	// generic join-based implementation
-	io.WriteString(iw, "  const _join = (items, arr, on, left, right) => {\n")
-	io.WriteString(iw, "    const joined = [];\n")
-	io.WriteString(iw, "    if (right && left) {\n")
-	io.WriteString(iw, "      const matched = new Array(arr.length).fill(false);\n")
-	io.WriteString(iw, "      for (const leftIt of items) {\n")
-	io.WriteString(iw, "        let m = false;\n")
-	io.WriteString(iw, "        for (let ri=0; ri < arr.length; ri++) {\n")
-	io.WriteString(iw, "          const rightIt = arr[ri];\n")
-	io.WriteString(iw, "          let keep = true;\n")
-	io.WriteString(iw, "          if (on) keep = on(...leftIt, rightIt);\n")
-	io.WriteString(iw, "          if (!keep) continue;\n")
-	io.WriteString(iw, "          m = true; matched[ri] = true;\n")
-	io.WriteString(iw, "          joined.push([...leftIt, rightIt]);\n")
-	io.WriteString(iw, "        }\n")
-	io.WriteString(iw, "        if (!m) joined.push([...leftIt, null]);\n")
-	io.WriteString(iw, "      }\n")
-	io.WriteString(iw, "      for (let ri=0; ri < arr.length; ri++) {\n")
-	io.WriteString(iw, "        if (!matched[ri]) {\n")
-	io.WriteString(iw, "          const undef = Array(items[0]?.length || 0).fill(null);\n")
-	io.WriteString(iw, "          joined.push([...undef, arr[ri]]);\n")
-	io.WriteString(iw, "        }\n")
-	io.WriteString(iw, "      }\n")
-	io.WriteString(iw, "    } else if (right) {\n")
-	io.WriteString(iw, "      for (const rightIt of arr) {\n")
-	io.WriteString(iw, "        let m = false;\n")
-	io.WriteString(iw, "        for (const leftIt of items) {\n")
-	io.WriteString(iw, "          let keep = true;\n")
-	io.WriteString(iw, "          if (on) keep = on(...leftIt, rightIt);\n")
-	io.WriteString(iw, "          if (!keep) continue;\n")
-	io.WriteString(iw, "          m = true; joined.push([...leftIt, rightIt]);\n")
-	io.WriteString(iw, "        }\n")
-	io.WriteString(iw, "        if (!m) {\n")
-	io.WriteString(iw, "          const undef = Array(items[0]?.length || 0).fill(null);\n")
-	io.WriteString(iw, "          joined.push([...undef, rightIt]);\n")
-	io.WriteString(iw, "        }\n")
-	io.WriteString(iw, "      }\n")
-	io.WriteString(iw, "    } else {\n")
-	io.WriteString(iw, "      for (const leftIt of items) {\n")
-	io.WriteString(iw, "        let m = false;\n")
-	io.WriteString(iw, "        for (const rightIt of arr) {\n")
-	io.WriteString(iw, "          let keep = true;\n")
-	io.WriteString(iw, "          if (on) keep = on(...leftIt, rightIt);\n")
-	io.WriteString(iw, "          if (!keep) continue;\n")
-	io.WriteString(iw, "          m = true; joined.push([...leftIt, rightIt]);\n")
-	io.WriteString(iw, "        }\n")
-	io.WriteString(iw, "        if (left && !m) joined.push([...leftIt, null]);\n")
-	io.WriteString(iw, "      }\n")
-	io.WriteString(iw, "    }\n")
-	io.WriteString(iw, "    return joined;\n")
-	io.WriteString(iw, "  }\n")
-
+	// cross joins for additional loops
 	io.WriteString(iw, "  let _items = ")
 	if len(q.Loops) > 0 {
 		q.Loops[0].Source.emit(iw)
@@ -840,36 +789,58 @@ func (q *QueryExprJS) emit(w io.Writer) {
 		names = append(names, q.Loops[0].Name)
 	}
 	for i := 1; i < len(q.Loops); i++ {
-		j := q.Loops[i]
-		io.WriteString(iw, "  _items = _join(_items, ")
-		j.Source.emit(iw)
-		io.WriteString(iw, ", null, false, false)\n")
-		names = append(names, j.Name)
+		loop := q.Loops[i]
+		io.WriteString(iw, "  { const _next = []\n")
+		io.WriteString(iw, "    for (const it of _items) {\n")
+		io.WriteString(iw, "      for (const ")
+		io.WriteString(iw, loop.Name)
+		io.WriteString(iw, " of ")
+		loop.Source.emit(iw)
+		io.WriteString(iw, ") { _next.push([...it, ")
+		io.WriteString(iw, loop.Name)
+		io.WriteString(iw, "]) }\n")
+		io.WriteString(iw, "    }\n")
+		io.WriteString(iw, "    _items = _next }\n")
+		names = append(names, loop.Name)
 	}
+
 	for _, j := range q.Joins {
-		io.WriteString(iw, "  _items = _join(_items, ")
+		io.WriteString(iw, "  { const _joined = []\n")
+		io.WriteString(iw, "    const _arr = ")
 		j.Source.emit(iw)
-		io.WriteString(iw, ", (")
-		params := append(append([]string{}, names...), j.Name)
-		io.WriteString(iw, strings.Join(params, ", "))
-		io.WriteString(iw, ") => (")
-		if j.On != nil {
-			j.On.emit(iw)
-		} else {
-			io.WriteString(iw, "true")
-		}
-		io.WriteString(iw, "), ")
-		if j.Side == "left" || j.Side == "outer" {
-			io.WriteString(iw, "true, ")
-		} else {
-			io.WriteString(iw, "false, ")
-		}
+		io.WriteString(iw, "\n")
 		if j.Side == "right" || j.Side == "outer" {
-			io.WriteString(iw, "true")
-		} else {
-			io.WriteString(iw, "false")
+			io.WriteString(iw, "    const _matched = new Array(_arr.length).fill(false)\n")
 		}
-		io.WriteString(iw, ")\n")
+		io.WriteString(iw, "    for (const _left of _items) {\n")
+		io.WriteString(iw, "      let _m = false;\n")
+		io.WriteString(iw, "      for (let _ri=0; _ri < _arr.length; _ri++) {\n")
+		io.WriteString(iw, "        const ")
+		io.WriteString(iw, j.Name)
+		io.WriteString(iw, " = _arr[_ri];\n")
+		if j.On != nil {
+			io.WriteString(iw, "        if (!(")
+			j.On.emit(iw)
+			io.WriteString(iw, ")) continue;\n")
+		}
+		io.WriteString(iw, "        _m = true;")
+		if j.Side == "right" || j.Side == "outer" {
+			io.WriteString(iw, " _matched[_ri] = true;")
+		}
+		io.WriteString(iw, " _joined.push([..._left, ")
+		io.WriteString(iw, j.Name)
+		io.WriteString(iw, "]) }\n")
+		io.WriteString(iw, "      }\n")
+		if j.Side == "left" || j.Side == "outer" {
+			io.WriteString(iw, "      if (!_m) _joined.push([..._left, null])\n")
+		}
+		io.WriteString(iw, "    }\n")
+		if j.Side == "right" || j.Side == "outer" {
+			io.WriteString(iw, "    for (let _ri=0; _ri < _arr.length; _ri++) { if (!_matched[_ri]) {\n")
+			io.WriteString(iw, "      const _undef = Array(_items[0]?.length || 0).fill(null);\n")
+			io.WriteString(iw, "      _joined.push([..._undef, _arr[_ri]]) } }\n")
+		}
+		io.WriteString(iw, "    _items = _joined }\n")
 		names = append(names, j.Name)
 	}
 
