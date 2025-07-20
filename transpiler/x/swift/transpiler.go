@@ -378,27 +378,33 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 	case st.Let != nil:
 		var ex Expr
 		var err error
+		var typ string
 		if st.Let.Value != nil {
 			ex, err = convertExpr(st.Let.Value)
 			if err != nil {
 				return nil, err
 			}
+			typ = toSwiftType(st.Let.Type)
 		} else if st.Let.Type != nil {
 			ex = zeroValue(st.Let.Type)
+			typ = toSwiftOptionalType(st.Let.Type)
 		}
-		return &VarDecl{Name: st.Let.Name, Const: true, Type: toSwiftType(st.Let.Type), Expr: ex}, nil
+		return &VarDecl{Name: st.Let.Name, Const: true, Type: typ, Expr: ex}, nil
 	case st.Var != nil:
 		var ex Expr
 		var err error
+		var typ string
 		if st.Var.Value != nil {
 			ex, err = convertExpr(st.Var.Value)
 			if err != nil {
 				return nil, err
 			}
+			typ = toSwiftType(st.Var.Type)
 		} else if st.Var.Type != nil {
 			ex = zeroValue(st.Var.Type)
+			typ = toSwiftOptionalType(st.Var.Type)
 		}
-		return &VarDecl{Name: st.Var.Name, Const: false, Type: toSwiftType(st.Var.Type), Expr: ex}, nil
+		return &VarDecl{Name: st.Var.Name, Const: false, Type: typ, Expr: ex}, nil
 	case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
 		ex, err := convertExpr(st.Assign.Value)
 		if err != nil {
@@ -526,9 +532,9 @@ func evalPrintArg(arg *parser.Expr) (val string, isString bool, ok bool) {
 					res = left >= right
 				}
 				if res {
-					return "1", false, true
+					return "true", false, true
 				}
-				return "0", false, true
+				return "false", false, true
 			}
 		}
 	}
@@ -807,18 +813,9 @@ func evalLenConst(e *parser.Expr) (int, bool) {
 
 func zeroValue(t *parser.TypeRef) Expr {
 	if t == nil || t.Simple == nil {
-		return &LitExpr{Value: "0", IsString: false}
+		return &LitExpr{Value: "nil", IsString: false}
 	}
-	switch *t.Simple {
-	case "int":
-		return &LitExpr{Value: "0", IsString: false}
-	case "string":
-		return &LitExpr{Value: "", IsString: true}
-	case "bool":
-		return &LitExpr{Value: "false", IsString: false}
-	default:
-		return &LitExpr{Value: "0", IsString: false}
-	}
+	return &LitExpr{Value: "nil", IsString: false}
 }
 
 func toSwiftType(t *parser.TypeRef) string {
@@ -834,6 +831,22 @@ func toSwiftType(t *parser.TypeRef) string {
 		return "Bool"
 	default:
 		return "Any"
+	}
+}
+
+func toSwiftOptionalType(t *parser.TypeRef) string {
+	if t == nil || t.Simple == nil {
+		return "Any?"
+	}
+	switch *t.Simple {
+	case "int":
+		return "Int?"
+	case "string":
+		return "String?"
+	case "bool":
+		return "Bool?"
+	default:
+		return "Any?"
 	}
 }
 
