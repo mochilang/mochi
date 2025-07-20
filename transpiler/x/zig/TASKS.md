@@ -1,9 +1,15 @@
+ ## Progress (2025-07-20 08:31 +0700)
+ - Added support for range and list based `for` loops.
+ - Generated golden tests for `for_loop` and `for_list_collection` (26/100 tests passing)
+
 ## Progress (2025-07-19 19:14 +0000)
 - Improved code readability and removed unused helper functions.
 - Updated header timestamp format and README checklist.
 - Regenerated golden files - 24/100 vm valid programs passing
 
 # Zig Transpiler Tasks
+
+- 2025-07-20 08:31 +0700 - Added for-loop support and generated golden tests for new loops (26/100 tests passing)
 
 - 2025-07-19 19:14 +0000 - Improved code generation and cleaned up helper logic (24/100 tests passing)
 - 2025-07-19 20:15 +0700 - Added constant folding for `min`, `max` and `substring`; generated golden tests for substring_builtin and min_max_builtin (24/100 tests passing)

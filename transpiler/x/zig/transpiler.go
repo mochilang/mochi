@@ -48,6 +48,15 @@ type WhileStmt struct {
 	Body []Stmt
 }
 
+// ForStmt represents iteration over a range or iterable collection.
+type ForStmt struct {
+	Name     string
+	Start    Expr // used for numeric ranges
+	End      Expr // end of range (exclusive)
+	Iterable Expr // used for foreach loops
+	Body     []Stmt
+}
+
 // IfExpr represents an if expression returning a value.
 type IfExpr struct {
 	Cond Expr
@@ -172,7 +181,7 @@ func writeIndent(w io.Writer, n int) {
 
 func (s *PrintStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
-	io.WriteString(w, "std.debug.print(\"{any}\n\", .{")
+	io.WriteString(w, "std.debug.print(\"{any}\\n\", .{")
 	s.Value.emit(w)
 	io.WriteString(w, "});\n")
 }
@@ -183,7 +192,16 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 	if v.Mutable {
 		kw = "var"
 	}
-	fmt.Fprintf(w, "%s %s = ", kw, v.Name)
+	typ := ""
+	switch v.Value.(type) {
+	case *IntLit, nil:
+		typ = "i64"
+	}
+	if typ != "" {
+		fmt.Fprintf(w, "%s %s: %s = ", kw, v.Name, typ)
+	} else {
+		fmt.Fprintf(w, "%s %s = ", kw, v.Name)
+	}
 	if v.Value != nil {
 		v.Value.emit(w)
 	} else {
@@ -238,7 +256,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 }
 
 func (l *ListLit) emit(w io.Writer) {
-	io.WriteString(w, ".{")
+	fmt.Fprintf(w, "[%d]i64{", len(l.Elems))
 	for i, e := range l.Elems {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -303,6 +321,30 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "    ")
 	}
+	io.WriteString(w, "}\n")
+}
+
+func (f *ForStmt) emit(w io.Writer, indent int) {
+	writeIndent(w, indent)
+	if f.Iterable != nil {
+		io.WriteString(w, "for (")
+		f.Iterable.emit(w)
+		io.WriteString(w, ") |")
+		io.WriteString(w, f.Name)
+		io.WriteString(w, "| {\n")
+	} else {
+		io.WriteString(w, "for (")
+		f.Start.emit(w)
+		io.WriteString(w, "..")
+		f.End.emit(w)
+		io.WriteString(w, ") |")
+		io.WriteString(w, f.Name)
+		io.WriteString(w, "| {\n")
+	}
+	for _, st := range f.Body {
+		st.emit(w, indent+1)
+	}
+	writeIndent(w, indent)
 	io.WriteString(w, "}\n")
 }
 
@@ -413,6 +455,19 @@ func toStmtNode(s Stmt) *ast.Node {
 		return n
 	case *WhileStmt:
 		n := &ast.Node{Kind: "while", Children: []*ast.Node{toExprNode(st.Cond)}}
+		body := &ast.Node{Kind: "body"}
+		for _, c := range st.Body {
+			body.Children = append(body.Children, toStmtNode(c))
+		}
+		n.Children = append(n.Children, body)
+		return n
+	case *ForStmt:
+		n := &ast.Node{Kind: "for", Value: st.Name}
+		if st.Iterable != nil {
+			n.Children = []*ast.Node{toExprNode(st.Iterable)}
+		} else {
+			n.Children = []*ast.Node{toExprNode(st.Start), toExprNode(st.End)}
+		}
 		body := &ast.Node{Kind: "body"}
 		for _, c := range st.Body {
 			body.Children = append(body.Children, toStmtNode(c))
@@ -744,6 +799,35 @@ func compileWhileStmt(ws *parser.WhileStmt, prog *parser.Program) (Stmt, error) 
 	return &WhileStmt{Cond: cond, Body: body}, nil
 }
 
+func compileForStmt(fs *parser.ForStmt, prog *parser.Program) (Stmt, error) {
+	var start, end, iter Expr
+	var err error
+	if fs.RangeEnd != nil {
+		start, err = compileExpr(fs.Source)
+		if err != nil {
+			return nil, err
+		}
+		end, err = compileExpr(fs.RangeEnd)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		iter, err = compileExpr(fs.Source)
+		if err != nil {
+			return nil, err
+		}
+	}
+	body := make([]Stmt, 0, len(fs.Body))
+	for _, s := range fs.Body {
+		st, err := compileStmt(s, prog)
+		if err != nil {
+			return nil, err
+		}
+		body = append(body, st)
+	}
+	return &ForStmt{Name: fs.Name, Start: start, End: end, Iterable: iter, Body: body}, nil
+}
+
 func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 	switch {
 	case s.Expr != nil:
@@ -814,6 +898,8 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		return compileIfStmt(s.If, prog)
 	case s.While != nil:
 		return compileWhileStmt(s.While, prog)
+	case s.For != nil:
+		return compileForStmt(s.For, prog)
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
