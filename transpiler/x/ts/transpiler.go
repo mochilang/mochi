@@ -349,16 +349,16 @@ func (e *AvgExpr) emit(w io.Writer) {
 	if e.Value != nil {
 		e.Value.emit(w)
 	}
-	io.WriteString(w, "; let sum = 0; for (const v of arr) { sum += v; } ")
-	io.WriteString(w, "return sum / arr.length; })()")
+	io.WriteString(w, "; return arr.reduce((a, b) => a + b, 0) / arr.length; })()")
 }
 
 func (e *SumExpr) emit(w io.Writer) {
-	io.WriteString(w, "(() => { let s = 0; for (const n of ")
 	if e.Value != nil {
 		e.Value.emit(w)
+		io.WriteString(w, ".reduce((a, b) => a + b, 0)")
+	} else {
+		io.WriteString(w, "0")
 	}
-	io.WriteString(w, ") { s += n; } return s; })()")
 }
 
 func (e *MinExpr) emit(w io.Writer) {
@@ -366,8 +366,7 @@ func (e *MinExpr) emit(w io.Writer) {
 	if e.Value != nil {
 		e.Value.emit(w)
 	}
-	io.WriteString(w, "; if (arr.length === 0) return 0; let m = arr[0];")
-	io.WriteString(w, " for (const v of arr) { if (v < m) m = v; } return m; })()")
+	io.WriteString(w, "; return arr.length === 0 ? 0 : Math.min(...arr); })()")
 }
 
 func (e *MaxExpr) emit(w io.Writer) {
@@ -375,8 +374,7 @@ func (e *MaxExpr) emit(w io.Writer) {
 	if e.Value != nil {
 		e.Value.emit(w)
 	}
-	io.WriteString(w, "; if (arr.length === 0) return 0; let m = arr[0];")
-	io.WriteString(w, " for (const v of arr) { if (v > m) m = v; } return m; })()")
+	io.WriteString(w, "; return arr.length === 0 ? 0 : Math.max(...arr); })()")
 }
 
 func (e *ValuesExpr) emit(w io.Writer) {
