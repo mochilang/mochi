@@ -1,1 +1,11 @@
-unsupported statement
+exit status 1
+/workspace/mochi/tests/transpiler/x/fortran/short_circuit.f90:3:17:
+
+    3 |   print *, merge('true','false', (.false. .and. boom(1, 2)))
+      |                 1
+Error: Unequal character lengths (4/5) in MERGE intrinsic at (1)
+/workspace/mochi/tests/transpiler/x/fortran/short_circuit.f90:4:17:
+
+    4 |   print *, merge('true','false', (.true. .or. boom(1, 2)))
+      |                 1
+Error: Unequal character lengths (4/5) in MERGE intrinsic at (1)
