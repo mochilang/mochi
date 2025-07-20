@@ -1,9 +1,14 @@
 # Python Transpiler Tasks
+## Recent Enhancements (2025-07-20 08:50 UTC+0700)
+
+- Added cross join and skip/take query support using multi-level list comprehensions.
+- Updated README checklist (82/100).
+
 ## Recent Enhancements (2025-07-20 08:11 UTC+0700)
 
 - Added YAML dataset loading and JSONL saving without runtime helpers.
 - Generated golden outputs for `load_yaml` and `save_jsonl_stdout`.
-- Updated README checklist (78/100).
+- Updated README checklist (82/100).
 
 ## Recent Enhancements (2025-07-20 02:09 UTC+0700)
 
