@@ -663,7 +663,7 @@ func (c *Comprehension) emit(w io.Writer) {
 		g.Src.emit(w)
 	}
 	if c.Filter != nil {
-		io.WriteString(w, ", filter: ")
+		io.WriteString(w, ", ")
 		c.Filter.emit(w)
 	}
 	io.WriteString(w, " do\n")
