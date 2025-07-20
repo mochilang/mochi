@@ -176,6 +176,43 @@ func (iw *indentWriter) writeIndent() {
 	io.WriteString(iw.w, strings.Repeat(" ", iw.indent))
 }
 
+func inferStructLiteral(e *parser.Expr, env *types.Env) (types.StructType, bool) {
+	if env == nil || e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return types.StructType{}, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || u.Value.Target == nil {
+		return types.StructType{}, false
+	}
+	p := u.Value.Target
+	if ll := p.List; ll != nil {
+		if st, ok := types.InferStructFromList(ll, env); ok {
+			return st, true
+		}
+	}
+	if ml := p.Map; ml != nil {
+		if st, ok := types.InferStructFromMapEnv(ml, env); ok {
+			return st, true
+		}
+	}
+	return types.StructType{}, false
+}
+
+func addRecordDef(p *Program, name string, fields []string) {
+	elems := []Node{Symbol("defrecord"), Symbol(name), &Vector{}}
+	vec := elems[2].(*Vector)
+	for _, f := range fields {
+		vec.Elems = append(vec.Elems, Symbol(f))
+	}
+	form := &List{Elems: elems}
+	// insert before other forms after ns/require
+	if len(p.Forms) > 2 {
+		p.Forms = append(p.Forms[:2], append([]Node{form}, p.Forms[2:]...)...)
+	} else {
+		p.Forms = append(p.Forms, form)
+	}
+}
+
 // Program is a sequence of top-level forms.
 type Program struct {
 	Forms []Node
@@ -217,6 +254,8 @@ func Format(src []byte) []byte {
 var transpileEnv *types.Env
 var currentSeqVar string
 var groupVars map[string]bool
+var structCount int
+var currentProgram *Program
 
 // Transpile converts a Mochi program into a Clojure AST. The implementation
 // is intentionally minimal and currently only supports very small programs used
@@ -228,9 +267,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 
 	transpileEnv = env
 	groupVars = make(map[string]bool)
-	defer func() { transpileEnv = nil; groupVars = nil }()
-
+	structCount = 0
 	pr := &Program{}
+	currentProgram = pr
+	defer func() { transpileEnv = nil; groupVars = nil; currentProgram = nil }()
 
 	// emit (ns main)
 	pr.Forms = append(pr.Forms, &List{Elems: []Node{Symbol("ns"), Symbol("main")}})
@@ -280,6 +320,13 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 			if err != nil {
 				return nil, err
 			}
+			if st, ok := inferStructLiteral(s.Let.Value, transpileEnv); ok {
+				structCount++
+				name := fmt.Sprintf("Anon%d", structCount)
+				if currentProgram != nil {
+					addRecordDef(currentProgram, name, st.Order)
+				}
+			}
 		} else {
 			if s.Let.Type != nil {
 				v = defaultValue(s.Let.Type)
@@ -295,6 +342,13 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 			v, err = transpileExpr(s.Var.Value)
 			if err != nil {
 				return nil, err
+			}
+			if st, ok := inferStructLiteral(s.Var.Value, transpileEnv); ok {
+				structCount++
+				name := fmt.Sprintf("Anon%d", structCount)
+				if currentProgram != nil {
+					addRecordDef(currentProgram, name, st.Order)
+				}
 			}
 		} else {
 			if s.Var.Type != nil {
@@ -1004,20 +1058,32 @@ func transpileQueryExpr(q *parser.QueryExpr) (Node, error) {
 	}
 
 	for _, j := range q.Joins {
-		if j.Side != nil {
-			return nil, fmt.Errorf("unsupported join type")
-		}
 		je, err := transpileExpr(j.Src)
 		if err != nil {
 			return nil, err
 		}
-		bindings = append(bindings, Symbol(j.Var), je)
-		if j.On != nil {
+		if j.Side != nil && *j.Side == "left" && j.On != nil {
 			onExpr, err := transpileExpr(j.On)
 			if err != nil {
 				return nil, err
 			}
-			conds = append(conds, onExpr)
+			tmp := j.Var + "_tmp"
+			filterFn := &List{Elems: []Node{Symbol("fn"), &Vector{Elems: []Node{Symbol(j.Var)}}, onExpr}}
+			filtered := &List{Elems: []Node{Symbol("filter"), filterFn, je}}
+			joinSeq := &List{Elems: []Node{Symbol("let"), &Vector{Elems: []Node{Symbol(tmp), filtered}},
+				&List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("seq"), Symbol(tmp)}}, Symbol(tmp), &Vector{Elems: []Node{Symbol("nil")}}}}}}
+			bindings = append(bindings, Symbol(j.Var), joinSeq)
+		} else if j.Side != nil {
+			return nil, fmt.Errorf("unsupported join type")
+		} else {
+			bindings = append(bindings, Symbol(j.Var), je)
+			if j.On != nil {
+				onExpr, err := transpileExpr(j.On)
+				if err != nil {
+					return nil, err
+				}
+				conds = append(conds, onExpr)
+			}
 		}
 	}
 

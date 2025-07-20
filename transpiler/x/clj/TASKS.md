@@ -1,3 +1,11 @@
+## Progress (2025-07-20 21:35 +0700)
+- clj: add group-by support
+- Regenerated golden files - 76/100 vm valid programs passing
+
+## Progress (2025-07-20 21:35 +0700)
+- clj: add group-by support
+- Regenerated golden files - 76/100 vm valid programs passing
+
 ## Progress (2025-07-20 21:09 +0700)
 - clj: support more queries and update docs
 - Regenerated golden files - 76/100 vm valid programs passing
