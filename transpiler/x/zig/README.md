@@ -4,12 +4,12 @@ This directory contains a minimal transpiler that converts a subset of Mochi int
 It currently supports print statements with integer or string expressions, variable declarations and assignments, unary negation and simple addition.
 
 ## Golden tests
-Programs under `tests/vm/valid` that have generated Zig code (37/100 completed):
+Programs under `tests/vm/valid` that have generated Zig code (47/100 completed):
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
 - [x] binary_precedence
-- [ ] bool_chain
+- [x] bool_chain
 - [x] break_continue
 - [x] cast_string_to_int
 - [ ] cast_struct
@@ -24,9 +24,9 @@ Programs under `tests/vm/valid` that have generated Zig code (37/100 completed):
 - [x] for_list_collection
 - [x] for_loop
 - [ ] for_map_collection
-- [ ] fun_call
+- [x] fun_call
 - [ ] fun_expr_in_let
-- [ ] fun_three_args
+- [x] fun_three_args
 - [ ] go_auto
 - [ ] group_by
 - [ ] group_by_conditional_sum
@@ -54,7 +54,7 @@ Programs under `tests/vm/valid` that have generated Zig code (37/100 completed):
 - [x] list_assign
 - [x] list_index
 - [x] list_nested_assign
-- [ ] list_set_ops
+- [x] list_set_ops
 - [ ] load_yaml
 - [ ] map_assign
 - [ ] map_in_operator
@@ -63,8 +63,8 @@ Programs under `tests/vm/valid` that have generated Zig code (37/100 completed):
 - [ ] map_literal_dynamic
 - [ ] map_membership
 - [ ] map_nested_assign
-- [ ] match_expr
-- [ ] match_full
+- [x] match_expr
+- [x] match_full
 - [x] math_ops
 - [x] membership
 - [x] min_max_builtin
@@ -81,7 +81,7 @@ Programs under `tests/vm/valid` that have generated Zig code (37/100 completed):
 - [ ] record_assign
 - [ ] right_join
 - [ ] save_jsonl_stdout
-- [ ] short_circuit
+- [x] short_circuit
 - [x] slice
 - [ ] sort_stable
 - [x] str_builtin
@@ -93,10 +93,10 @@ Programs under `tests/vm/valid` that have generated Zig code (37/100 completed):
 - [x] string_prefix_slice
 - [x] substring_builtin
 - [x] sum_builtin
-- [ ] tail_recursion
-- [ ] test_block
+- [x] tail_recursion
+- [x] test_block
 - [ ] tree_sum
-- [ ] two-sum
+- [x] two-sum
 - [x] typed_let
 - [x] typed_var
 - [x] unary_neg

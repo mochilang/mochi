@@ -1,3 +1,9 @@
+## Progress (2025-07-20 08:11 +0000)
+- Added basic function support with typed parameters and return statements.
+- Implemented `return` handling and match expressions.
+- Constant folded list union/intersect/except operations.
+- Generated golden files for 10 additional tests and updated README checklist (47/100 tests passing)
+
 ## Progress (2025-07-20 14:31 +0700)
 - Added list and string slicing with `[..]` notation.
 - Implemented membership operator `in` for lists and strings.
