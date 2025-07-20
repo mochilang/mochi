@@ -982,6 +982,7 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 					vname := env.fresh(s.For.Name)
 					iv := &IntLit{Value: i}
 					env.setConst(vname, iv)
+					out = append(out, &LetStmt{Name: vname, Expr: iv})
 					body, err := compileStmts(s.For.Body, env)
 					if err != nil {
 						return nil, err
@@ -1008,6 +1009,7 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 				for _, elem := range list.Elems {
 					vname := env.fresh(s.For.Name)
 					env.setConst(vname, elem)
+					out = append(out, &LetStmt{Name: vname, Expr: elem})
 					body, err := compileStmts(s.For.Body, env)
 					if err != nil {
 						return nil, err
