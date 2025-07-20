@@ -1,3 +1,6 @@
+## Progress (2025-07-20 10:26 +0700)
+- fortran transpiler: improve loop variable names
+
 ## Progress (2025-07-20 09:44 +0700)
 - docs(fortran): update tasks
 
