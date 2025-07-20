@@ -1,3 +1,7 @@
+## Progress (2025-07-20 10:59 +0700)
+- clj transpiler: add float literals and dotimes support
+- Regenerated golden files - 45/100 vm valid programs passing
+
 ## Progress (2025-07-20 10:41 +0700)
 - clj transpiler: simplify 'in' check and when-if
 - Regenerated golden files - 45/100 vm valid programs passing
