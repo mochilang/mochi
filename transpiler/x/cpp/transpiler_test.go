@@ -89,3 +89,6 @@ func TestCPPTranspiler_AvgBuiltin(t *testing.T)        { runExample(t, "avg_buil
 func TestCPPTranspiler_CountBuiltin(t *testing.T)      { runExample(t, "count_builtin") }
 func TestCPPTranspiler_ListAssign(t *testing.T)        { runExample(t, "list_assign") }
 func TestCPPTranspiler_ListNestedAssign(t *testing.T)  { runExample(t, "list_nested_assign") }
+func TestCPPTranspiler_InOperator(t *testing.T)        { runExample(t, "in_operator") }
+func TestCPPTranspiler_MapInOperator(t *testing.T)     { runExample(t, "map_in_operator") }
+func TestCPPTranspiler_LenMap(t *testing.T)            { runExample(t, "len_map") }
