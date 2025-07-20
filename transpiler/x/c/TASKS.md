@@ -1,3 +1,8 @@
+## Progress (2025-07-20 22:24 +0700)
+- Added struct dependency ordering with forward declarations for C output.
+- Inferred field types from constant data to support join results.
+- VM valid golden test results updated to 55/100
+
 ## Progress (2025-07-20 21:59 +0700)
 - Fixed function return type inference for strings.
 - Updated `match_full` golden output.
