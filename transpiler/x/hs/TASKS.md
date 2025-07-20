@@ -1,3 +1,10 @@
+## Progress (2025-07-20 22:38 +0700)
+- VM valid golden test results updated
+- Improved list printing using `intercalate`
+- Float division now handled for `avg`
+- Allowed multi-argument prints inside loops
+- Regenerated README checklist from golden tests
+
 ## Progress (2025-07-20 22:09 +0700)
 - VM valid golden test results updated
 - Added escaping for Haskell reserved keywords
