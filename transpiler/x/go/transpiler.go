@@ -727,6 +727,48 @@ func (i *IntersectExpr) emit(w io.Writer) {
 	fmt.Fprint(w, " { if _, ok := m[v]; ok { res = append(res, v) } } return res }()")
 }
 
+type queryFrom struct {
+	Var string
+	Src Expr
+}
+
+type QueryExpr struct {
+	Var      string
+	Src      Expr
+	Froms    []queryFrom
+	Where    Expr
+	Select   Expr
+	ElemType string
+}
+
+func (q *QueryExpr) emit(w io.Writer) {
+	fmt.Fprintf(w, "func() []%s { _res := []%s{}; ", q.ElemType, q.ElemType)
+	fmt.Fprintf(w, "for _, %s := range ", q.Var)
+	q.Src.emit(w)
+	fmt.Fprint(w, " {")
+	for _, f := range q.Froms {
+		fmt.Fprintf(w, " for _, %s := range ", f.Var)
+		f.Src.emit(w)
+		fmt.Fprint(w, " {")
+	}
+	if q.Where != nil {
+		fmt.Fprint(w, " if ")
+		q.Where.emit(w)
+		fmt.Fprint(w, " {")
+	}
+	fmt.Fprint(w, " _res = append(_res, ")
+	q.Select.emit(w)
+	fmt.Fprint(w, ")")
+	if q.Where != nil {
+		fmt.Fprint(w, " }")
+	}
+	for range q.Froms {
+		fmt.Fprint(w, " }")
+	}
+	fmt.Fprint(w, " }")
+	fmt.Fprint(w, "; return _res }()")
+}
+
 type AtoiExpr struct{ Expr Expr }
 
 func (a *AtoiExpr) emit(w io.Writer) {
@@ -1060,6 +1102,63 @@ func compileMatchExpr(me *parser.MatchExpr, env *types.Env) (Expr, error) {
 	}
 	setType(expr)
 	return expr, nil
+}
+
+func compileQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
+	if q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || len(q.Joins) > 0 {
+		return nil, fmt.Errorf("unsupported query features")
+	}
+	src, err := compileExpr(q.Source, env)
+	if err != nil {
+		return nil, err
+	}
+	srcT := types.ExprType(q.Source, env)
+	var elemT types.Type
+	switch t := srcT.(type) {
+	case types.ListType:
+		elemT = t.Elem
+	case types.GroupType:
+		elemT = t.Elem
+	default:
+		elemT = types.AnyType{}
+	}
+	child := types.NewEnv(env)
+	child.SetVar(q.Var, elemT, true)
+	froms := make([]queryFrom, len(q.Froms))
+	for i, f := range q.Froms {
+		fe, err := compileExpr(f.Src, child)
+		if err != nil {
+			return nil, err
+		}
+		ft := types.ExprType(f.Src, child)
+		var felem types.Type
+		switch t := ft.(type) {
+		case types.ListType:
+			felem = t.Elem
+		case types.GroupType:
+			felem = t.Elem
+		default:
+			felem = types.AnyType{}
+		}
+		child.SetVar(f.Var, felem, true)
+		froms[i] = queryFrom{Var: f.Var, Src: fe}
+	}
+	var where Expr
+	if q.Where != nil {
+		where, err = compileExpr(q.Where, child)
+		if err != nil {
+			return nil, err
+		}
+	}
+	sel, err := compileExpr(q.Select, child)
+	if err != nil {
+		return nil, err
+	}
+	et := toGoTypeFromType(types.ExprType(q.Select, child))
+	if et == "" {
+		et = "any"
+	}
+	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Where: where, Select: sel, ElemType: et}, nil
 }
 
 func zeroValueExpr(goType string) Expr {
@@ -1549,6 +1648,8 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		case "values":
 			mt, _ := types.TypeOfExpr(p.Call.Args[0], env).(types.MapType)
 			return &ValuesExpr{Map: args[0], ValueType: toGoTypeFromType(mt.Value)}, nil
+		case "exists":
+			return &BinaryExpr{Left: &CallExpr{Func: "len", Args: []Expr{args[0]}}, Op: ">", Right: &IntLit{Value: 0}}, nil
 		case "substring":
 			return &CallExpr{Func: "string", Args: []Expr{&SliceExpr{X: &RuneSliceExpr{Expr: args[0]}, Start: args[1], End: args[2]}}}, nil
 		}
@@ -1586,6 +1687,9 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				if err != nil {
 					return nil, err
 				}
+				if ml, ok := ex.(*MapLit); ok {
+					updateMapLitTypes(ml, types.ExprType(e, env))
+				}
 				elems[i] = ex
 				if i > 0 {
 					if !types.EqualTypes(t, types.ExprType(e, env)) {
@@ -1602,9 +1706,15 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		keys := make([]Expr, len(p.Map.Items))
 		vals := make([]Expr, len(p.Map.Items))
 		for i, it := range p.Map.Items {
-			ke, err := compileExpr(it.Key, env)
-			if err != nil {
-				return nil, err
+			var ke Expr
+			if k, ok := types.SimpleStringKey(it.Key); ok {
+				ke = &StringLit{Value: k}
+			} else {
+				var err error
+				ke, err = compileExpr(it.Key, env)
+				if err != nil {
+					return nil, err
+				}
 			}
 			ve, err := compileExpr(it.Value, env)
 			if err != nil {
@@ -1658,6 +1768,8 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		return compileExpr(p.Group, env)
 	case p.Match != nil:
 		return compileMatchExpr(p.Match, env)
+	case p.Query != nil:
+		return compileQueryExpr(p.Query, env)
 	case p.FunExpr != nil:
 		return compileFunExpr(p.FunExpr, env)
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
@@ -2082,6 +2194,18 @@ func toNodeExpr(e Expr) *ast.Node {
 		return &ast.Node{Kind: "intersect", Children: []*ast.Node{toNodeExpr(ex.Left), toNodeExpr(ex.Right)}}
 	case *AtoiExpr:
 		return &ast.Node{Kind: "atoi", Children: []*ast.Node{toNodeExpr(ex.Expr)}}
+	case *QueryExpr:
+		n := &ast.Node{Kind: "query"}
+		n.Children = append(n.Children, toNodeExpr(ex.Src))
+		for _, f := range ex.Froms {
+			fn := &ast.Node{Kind: "from", Value: f.Var, Children: []*ast.Node{toNodeExpr(f.Src)}}
+			n.Children = append(n.Children, fn)
+		}
+		if ex.Where != nil {
+			n.Children = append(n.Children, &ast.Node{Kind: "where", Children: []*ast.Node{toNodeExpr(ex.Where)}})
+		}
+		n.Children = append(n.Children, &ast.Node{Kind: "select", Children: []*ast.Node{toNodeExpr(ex.Select)}})
+		return n
 	case *AssertExpr:
 		n := &ast.Node{Kind: "assert", Value: ex.Type}
 		n.Children = append(n.Children, toNodeExpr(ex.Expr))
