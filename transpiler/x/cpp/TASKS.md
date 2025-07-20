@@ -1,3 +1,38 @@
+## Progress (2025-07-20 11:55 +0700)
+- cpp transpiler: infer map literal types
+- Generated C++ for 46/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 11:47 +0700)
+- cs transpiler: improve emission and type inference
+- Generated C++ for 46/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 11:47 +0700)
+- cs transpiler: improve emission and type inference
+- Generated C++ for 46/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 11:47 +0700)
+- cs transpiler: improve emission and type inference
+- Generated C++ for 46/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 11:47 +0700)
+- cs transpiler: improve emission and type inference
+- Generated C++ for 45/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 11:47 +0700)
+- cs transpiler: improve emission and type inference
+- Generated C++ for 44/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 11:47 +0700)
+- cs transpiler: improve emission and type inference
+- Generated C++ for 44/100 programs
+- Updated README checklist and outputs
+
 # C++ Transpiler Tasks
 
 ## Progress (2025-07-20 11:24 +0700)
