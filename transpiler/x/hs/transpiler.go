@@ -34,6 +34,9 @@ var needDataList bool
 // needDataMap reports whether Data.Map functions are required.
 var needDataMap bool
 
+// needUnsafe reports whether unsafePerformIO is required.
+var needUnsafe bool
+
 // vars holds the last computed expression of each variable at the top level.
 var vars map[string]Expr
 
@@ -127,7 +130,7 @@ func (p *PrintStmt) emit(w io.Writer) {
 	if isBoolExpr(p.Expr) {
 		io.WriteString(w, "putStrLn (if ")
 		p.Expr.emit(w)
-		io.WriteString(w, " then \"true\" else \"false\")")
+		io.WriteString(w, " then \"1\" else \"0\")")
 		return
 	}
 
@@ -201,8 +204,9 @@ type ListLit struct{ Elems []Expr }
 // MapLit represents a simple map literal.
 type MapLit struct{ Keys, Values []Expr }
 type CallExpr struct {
-	Fun  Expr
-	Args []Expr
+	Fun    Expr
+	Args   []Expr
+	Impure bool
 }
 type LambdaExpr struct {
 	Params []string
@@ -385,10 +389,17 @@ func (g *GroupExpr) emit(w io.Writer) {
 	io.WriteString(w, ")")
 }
 func (c *CallExpr) emit(w io.Writer) {
+	if c.Impure {
+		needUnsafe = true
+		io.WriteString(w, "unsafePerformIO (")
+	}
 	c.Fun.emit(w)
 	for _, a := range c.Args {
 		io.WriteString(w, " ")
 		a.emit(w)
+	}
+	if c.Impure {
+		io.WriteString(w, ")")
 	}
 }
 func (l *LambdaExpr) emit(w io.Writer) {
@@ -441,7 +452,7 @@ func version() string {
 	return strings.TrimSpace(string(b))
 }
 
-func header(withList bool, withMap bool) string {
+func header(withList bool, withMap bool, withUnsafe bool) string {
 	out, err := exec.Command("git", "log", "-1", "--date=iso-strict", "--format=%cd").Output()
 	ts := time.Now()
 	if err == nil {
@@ -457,13 +468,16 @@ func header(withList bool, withMap bool) string {
 	if withMap {
 		h += "import qualified Data.Map as Map\n"
 	}
+	if withUnsafe {
+		h += "import System.IO.Unsafe (unsafePerformIO)\n"
+	}
 	return h
 }
 
 // Emit generates formatted Haskell code.
 func Emit(p *Program) []byte {
 	var buf bytes.Buffer
-	buf.WriteString(header(needDataList, needDataMap))
+	buf.WriteString(header(needDataList, needDataMap, needUnsafe))
 	for _, f := range p.Funcs {
 		f.emit(&buf)
 		buf.WriteByte('\n')
@@ -490,13 +504,16 @@ func Emit(p *Program) []byte {
 }
 
 // Transpile converts a Mochi program into a simple Haskell AST.
+var envInfo *types.Env
+
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
-	_ = env
+	envInfo = env
 	h := &Program{}
 	vars = map[string]Expr{}
 	varTypes = map[string]string{}
 	needDataList = false
 	needDataMap = false
+	needUnsafe = false
 	for _, st := range prog.Statements {
 		switch {
 		case st.Let != nil:
@@ -846,7 +863,18 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			args = append(args, ex)
 		}
-		return &CallExpr{Fun: fun, Args: args}, nil
+		impure := false
+		if envInfo != nil {
+			if t, err := envInfo.GetVar(p.Call.Func); err == nil {
+				if ft, ok := t.(types.FuncType); ok && !ft.Pure {
+					if _, ok := ft.Return.(types.BoolType); ok {
+						impure = true
+						needUnsafe = true
+					}
+				}
+			}
+		}
+		return &CallExpr{Fun: fun, Args: args, Impure: impure}, nil
 	default:
 		return nil, fmt.Errorf("unsupported primary")
 	}

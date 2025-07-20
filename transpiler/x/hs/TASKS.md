@@ -1,3 +1,8 @@
+## Progress (2025-07-20 12:47 +0700)
+- Added unsafe IO handling for boolean functions using `unsafePerformIO`
+- Boolean print statements output `1`/`0`
+- Updated README checklist via golden tests
+
 ## Progress (2025-07-20 12:19 +0700)
 - VM valid golden test results updated
 - Added map literals and `values` builtin using `Data.Map`
