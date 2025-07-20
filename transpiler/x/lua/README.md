@@ -2,7 +2,7 @@
 
 Generated Lua code for programs in `tests/vm/valid`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-Transpiled programs: 59/100
+Transpiled programs: 51/100
 
 Checklist:
 
