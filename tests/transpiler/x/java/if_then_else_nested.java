@@ -2,7 +2,7 @@
 public class Main {
     public static void main(String[] args) {
         int x = 8;
-        var msg = x > 10 ? "big" : x > 5 ? "medium" : "small";
+        Object msg = x > 10 ? "big" : x > 5 ? "medium" : "small";
         System.out.println(msg);
     }
 }

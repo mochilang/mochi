@@ -1,0 +1,5 @@
+exit status 1
+Main.java:6: error: illegal start of expression
+        ]}
+        ^
+1 error
