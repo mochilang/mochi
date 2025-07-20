@@ -3,9 +3,9 @@
 This folder contains the experimental Pascal transpiler.
 Generated sources for the golden tests live under `tests/transpiler/x/pas`.
 
-## VM Golden Test Checklist (32/100)
+## VM Golden Test Checklist (38/100)
 - [ ] append_builtin.mochi
-- [ ] avg_builtin.mochi
+- [x] avg_builtin.mochi
 - [x] basic_compare.mochi
 - [x] binary_precedence.mochi
 - [x] bool_chain.mochi
@@ -13,7 +13,7 @@ Generated sources for the golden tests live under `tests/transpiler/x/pas`.
 - [x] cast_string_to_int.mochi
 - [ ] cast_struct.mochi
 - [ ] closure.mochi
-- [ ] count_builtin.mochi
+- [x] count_builtin.mochi
 - [ ] cross_join.mochi
 - [ ] cross_join_filter.mochi
 - [ ] cross_join_triple.mochi
@@ -52,7 +52,7 @@ Generated sources for the golden tests live under `tests/transpiler/x/pas`.
 - [x] let_and_print.mochi
 - [x] list_assign.mochi
 - [x] list_index.mochi
-- [ ] list_nested_assign.mochi
+- [x] list_nested_assign.mochi
 - [ ] list_set_ops.mochi
 - [ ] load_yaml.mochi
 - [ ] map_assign.mochi
@@ -65,8 +65,8 @@ Generated sources for the golden tests live under `tests/transpiler/x/pas`.
 - [ ] match_expr.mochi
 - [ ] match_full.mochi
 - [x] math_ops.mochi
-- [ ] membership.mochi
-- [ ] min_max_builtin.mochi
+- [x] membership.mochi
+- [x] min_max_builtin.mochi
 - [ ] nested_function.mochi
 - [ ] order_by_map.mochi
 - [ ] outer_join.mochi
@@ -81,7 +81,7 @@ Generated sources for the golden tests live under `tests/transpiler/x/pas`.
 - [ ] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
-- [ ] slice.mochi
+- [x] slice.mochi
 - [ ] sort_stable.mochi
 - [x] str_builtin.mochi
 - [x] string_compare.mochi
@@ -104,5 +104,3 @@ Generated sources for the golden tests live under `tests/transpiler/x/pas`.
 - [ ] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
-
-*Checklist generated automatically from tests/vm/valid*
