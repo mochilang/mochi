@@ -401,7 +401,10 @@ func (b *BinaryExpr) emit(w io.Writer) {
 type AvgExpr struct{ List Expr }
 
 func (a *AvgExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "func(nums []int) float64 { sum := 0; for _, n := range nums { sum += n }; return float64(sum)/float64(len(nums)) }(")
+	fmt.Fprint(w, "func(nums []int) float64 {\n")
+	fmt.Fprint(w, "    sum := 0\n")
+	fmt.Fprint(w, "    for _, n := range nums {\n        sum += n\n    }\n")
+	fmt.Fprint(w, "    return float64(sum) / float64(len(nums))\n}(")
 	a.List.emit(w)
 	fmt.Fprint(w, ")")
 }
@@ -409,7 +412,10 @@ func (a *AvgExpr) emit(w io.Writer) {
 type SumExpr struct{ List Expr }
 
 func (s *SumExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "func(nums []int) int { s := 0; for _, n := range nums { s += n }; return s }(")
+	fmt.Fprint(w, "func(nums []int) int {\n")
+	fmt.Fprint(w, "    sum := 0\n")
+	fmt.Fprint(w, "    for _, n := range nums {\n        sum += n\n    }\n")
+	fmt.Fprint(w, "    return sum\n}(")
 	s.List.emit(w)
 	fmt.Fprint(w, ")")
 }
@@ -417,7 +423,11 @@ func (s *SumExpr) emit(w io.Writer) {
 type MinExpr struct{ List Expr }
 
 func (m *MinExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "func(nums []int) int { if len(nums)==0 { return 0 }; min := nums[0]; for _, n := range nums[1:] { if n < min { min = n } }; return min }(")
+	fmt.Fprint(w, "func(nums []int) int {\n")
+	fmt.Fprint(w, "    if len(nums) == 0 {\n        return 0\n    }\n")
+	fmt.Fprint(w, "    min := nums[0]\n")
+	fmt.Fprint(w, "    for _, n := range nums[1:] {\n        if n < min {\n            min = n\n        }\n    }\n")
+	fmt.Fprint(w, "    return min\n}(")
 	m.List.emit(w)
 	fmt.Fprint(w, ")")
 }
@@ -425,7 +435,11 @@ func (m *MinExpr) emit(w io.Writer) {
 type MaxExpr struct{ List Expr }
 
 func (m *MaxExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "func(nums []int) int { if len(nums)==0 { return 0 }; max := nums[0]; for _, n := range nums[1:] { if n > max { max = n } }; return max }(")
+	fmt.Fprint(w, "func(nums []int) int {\n")
+	fmt.Fprint(w, "    if len(nums) == 0 {\n        return 0\n    }\n")
+	fmt.Fprint(w, "    max := nums[0]\n")
+	fmt.Fprint(w, "    for _, n := range nums[1:] {\n        if n > max {\n            max = n\n        }\n    }\n")
+	fmt.Fprint(w, "    return max\n}(")
 	m.List.emit(w)
 	fmt.Fprint(w, ")")
 }
@@ -447,24 +461,28 @@ func (c *ContainsExpr) emit(w io.Writer) {
 		c.Value.emit(w)
 		fmt.Fprint(w, ")")
 	case "map":
-		fmt.Fprint(w, "func() bool { _, ok := ")
+		fmt.Fprint(w, "func() bool {\n    _, ok := ")
 		c.Collection.emit(w)
 		fmt.Fprint(w, "[")
 		c.Value.emit(w)
-		fmt.Fprint(w, "]; return ok }()")
+		fmt.Fprint(w, "]\n    return ok\n}()")
 	default: // list
-		fmt.Fprint(w, "func() bool { for _, v := range ")
+		fmt.Fprint(w, "func() bool {\n    for _, v := range ")
 		c.Collection.emit(w)
-		fmt.Fprint(w, " { if v == ")
+		fmt.Fprint(w, " {\n        if v == ")
 		c.Value.emit(w)
-		fmt.Fprint(w, " { return true } }; return false }()")
+		fmt.Fprint(w, " {\n            return true\n        }\n    }\n    return false\n}()")
 	}
 }
 
 type UnionExpr struct{ Left, Right Expr }
 
 func (u *UnionExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "func(a, b []int) []int { m := map[int]bool{}; res := []int{}; for _, n := range a { if !m[n] { m[n]=true; res=append(res,n) } }; for _, n := range b { if !m[n] { m[n]=true; res=append(res,n) } }; return res }(")
+	fmt.Fprint(w, "func(a, b []int) []int {\n")
+	fmt.Fprint(w, "    m := map[int]bool{}\n    res := []int{}\n")
+	fmt.Fprint(w, "    for _, n := range a {\n        if !m[n] {\n            m[n] = true\n            res = append(res, n)\n        }\n    }\n")
+	fmt.Fprint(w, "    for _, n := range b {\n        if !m[n] {\n            m[n] = true\n            res = append(res, n)\n        }\n    }\n")
+	fmt.Fprint(w, "    return res\n}(")
 	u.Left.emit(w)
 	fmt.Fprint(w, ", ")
 	u.Right.emit(w)
@@ -474,7 +492,9 @@ func (u *UnionExpr) emit(w io.Writer) {
 type UnionAllExpr struct{ Left, Right Expr }
 
 func (u *UnionAllExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "func(a, b []int) []int { res := make([]int, len(a)); copy(res, a); res = append(res, b...); return res }(")
+	fmt.Fprint(w, "func(a, b []int) []int {\n")
+	fmt.Fprint(w, "    res := make([]int, len(a))\n    copy(res, a)\n")
+	fmt.Fprint(w, "    res = append(res, b...)\n    return res\n}(")
 	u.Left.emit(w)
 	fmt.Fprint(w, ", ")
 	u.Right.emit(w)
@@ -484,7 +504,11 @@ func (u *UnionAllExpr) emit(w io.Writer) {
 type ExceptExpr struct{ Left, Right Expr }
 
 func (e *ExceptExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "func(a, b []int) []int { m := map[int]bool{}; for _, n := range b { m[n]=true }; res := []int{}; for _, n := range a { if !m[n] { res=append(res,n) } }; return res }(")
+	fmt.Fprint(w, "func(a, b []int) []int {\n")
+	fmt.Fprint(w, "    m := map[int]bool{}\n")
+	fmt.Fprint(w, "    for _, n := range b {\n        m[n] = true\n    }\n")
+	fmt.Fprint(w, "    res := []int{}\n    for _, n := range a {\n        if !m[n] {\n            res = append(res, n)\n        }\n    }\n")
+	fmt.Fprint(w, "    return res\n}(")
 	e.Left.emit(w)
 	fmt.Fprint(w, ", ")
 	e.Right.emit(w)
@@ -494,7 +518,10 @@ func (e *ExceptExpr) emit(w io.Writer) {
 type IntersectExpr struct{ Left, Right Expr }
 
 func (i *IntersectExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "func(a, b []int) []int { m := map[int]bool{}; for _, n := range a { m[n]=true }; res := []int{}; for _, n := range b { if m[n] { res=append(res,n) } }; return res }(")
+	fmt.Fprint(w, "func(a, b []int) []int {\n")
+	fmt.Fprint(w, "    m := map[int]bool{}\n    for _, n := range a {\n        m[n] = true\n    }\n")
+	fmt.Fprint(w, "    res := []int{}\n    for _, n := range b {\n        if m[n] {\n            res = append(res, n)\n        }\n    }\n")
+	fmt.Fprint(w, "    return res\n}(")
 	i.Left.emit(w)
 	fmt.Fprint(w, ", ")
 	i.Right.emit(w)
@@ -504,9 +531,9 @@ func (i *IntersectExpr) emit(w io.Writer) {
 type AtoiExpr struct{ Expr Expr }
 
 func (a *AtoiExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "func() int { n, _ := strconv.Atoi(")
+	fmt.Fprint(w, "func() int {\n    n, _ := strconv.Atoi(")
 	a.Expr.emit(w)
-	fmt.Fprint(w, "); return n }()")
+	fmt.Fprint(w, ")\n    return n\n}()")
 }
 
 // Transpile converts a Mochi program to a minimal Go AST.
