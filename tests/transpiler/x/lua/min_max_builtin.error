@@ -1,5 +1,0 @@
-exit status 1
-lua: /workspace/mochi/tests/transpiler/x/lua/min_max_builtin.lua:4: attempt to call a nil value (global 'min')
-stack traceback:
-	/workspace/mochi/tests/transpiler/x/lua/min_max_builtin.lua:4: in main chunk
-	[C]: in ?
