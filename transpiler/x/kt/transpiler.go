@@ -499,7 +499,14 @@ type NotExpr struct{ Value Expr }
 
 func (n *NotExpr) emit(w io.Writer) {
 	io.WriteString(w, "!")
-	n.Value.emit(w)
+	switch n.Value.(type) {
+	case *BoolLit, *VarRef, *CallExpr, *IndexExpr, *FieldExpr:
+		n.Value.emit(w)
+	default:
+		io.WriteString(w, "(")
+		n.Value.emit(w)
+		io.WriteString(w, ")")
+	}
 }
 
 type AppendExpr struct {
