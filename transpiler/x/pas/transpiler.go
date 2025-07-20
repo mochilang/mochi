@@ -12,7 +12,6 @@ import (
 	"mochi/types"
 )
 
-
 // Program is a minimal Pascal AST consisting of a sequence of statements.
 // VarDecl represents a simple variable declaration.
 type VarDecl struct {
@@ -184,8 +183,8 @@ func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
 type StringLit struct{ Value string }
 
 func (s *StringLit) emit(w io.Writer) {
-        escaped := strings.ReplaceAll(s.Value, "'", "''")
-        fmt.Fprintf(w, "'%s'", escaped)
+	escaped := strings.ReplaceAll(s.Value, "'", "''")
+	fmt.Fprintf(w, "'%s'", escaped)
 }
 
 // ListLit is a simple list literal using Pascal's open array syntax.
@@ -411,7 +410,7 @@ func (a *AssignStmt) emit(w io.Writer) {
 // Emit renders Pascal code for the program with a deterministic header.
 func (p *Program) Emit() []byte {
 	var buf bytes.Buffer
-	buf.WriteString("{$mode objfpc}\nprogram Main;\nuses StrUtils;\n")
+	buf.WriteString("{$mode objfpc}\nprogram Main;\nuses SysUtils;\n")
 	for _, f := range p.Funs {
 		f.emit(&buf)
 	}
@@ -881,6 +880,23 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			name = "Length"
 		} else if name == "substring" && len(args) == 3 {
 			return &SliceExpr{Target: args[0], Start: args[1], End: args[2], String: true}, nil
+		} else if name == "str" && len(args) == 1 {
+			name = "IntToStr"
+		} else if name == "sum" && len(args) == 1 {
+			if l, ok := args[0].(*ListLit); ok {
+				var sum Expr
+				for i, el := range l.Elems {
+					if i == 0 {
+						sum = el
+					} else {
+						sum = &BinaryExpr{Op: "+", Left: sum, Right: el}
+					}
+				}
+				if sum == nil {
+					sum = &IntLit{Value: 0}
+				}
+				return sum, nil
+			}
 		}
 		return &CallExpr{Name: name, Args: args}, nil
 	case p.List != nil:
@@ -947,7 +963,7 @@ func convertIfExpr(env *types.Env, ie *parser.IfExpr) (*IfExpr, error) {
 }
 
 func inferType(e Expr) string {
-        switch v := e.(type) {
+	switch v := e.(type) {
 	case *IntLit:
 		return "integer"
 	case *StringLit:
@@ -967,41 +983,41 @@ func inferType(e Expr) string {
 			return lt
 		}
 		return rt
-        case *CallExpr:
-                if v.Name == "Length" {
-                        return "integer"
-                }
-                return ""
-        case *IfExpr:
-                thenT := inferType(v.Then)
-                elseT := ""
-                if v.ElseIf != nil {
-                        elseT = inferType(v.ElseIf)
-                } else if v.Else != nil {
-                        elseT = inferType(v.Else)
-                }
-                if thenT == elseT {
-                        return thenT
-                }
-                if thenT != "" {
-                        return thenT
-                }
-                return elseT
-        case *ListLit:
-                if len(v.Elems) == 0 {
-                        return ""
-                }
-                t := inferType(v.Elems[0])
-                for _, el := range v.Elems[1:] {
-                        if inferType(el) != t {
-                                return ""
-                        }
-                }
-                if t != "" {
-                        return "array of " + t
-                }
-                return ""
-        default:
-                return ""
-        }
+	case *CallExpr:
+		if v.Name == "Length" {
+			return "integer"
+		}
+		return ""
+	case *IfExpr:
+		thenT := inferType(v.Then)
+		elseT := ""
+		if v.ElseIf != nil {
+			elseT = inferType(v.ElseIf)
+		} else if v.Else != nil {
+			elseT = inferType(v.Else)
+		}
+		if thenT == elseT {
+			return thenT
+		}
+		if thenT != "" {
+			return thenT
+		}
+		return elseT
+	case *ListLit:
+		if len(v.Elems) == 0 {
+			return ""
+		}
+		t := inferType(v.Elems[0])
+		for _, el := range v.Elems[1:] {
+			if inferType(el) != t {
+				return ""
+			}
+		}
+		if t != "" {
+			return "array of " + t
+		}
+		return ""
+	default:
+		return ""
+	}
 }

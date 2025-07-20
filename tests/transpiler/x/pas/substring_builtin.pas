@@ -1,6 +1,6 @@
 {$mode objfpc}
 program Main;
-uses StrUtils;
+uses SysUtils;
 begin
   writeln(copy('mochi', 1+1, (4 - (1))));
 end.
