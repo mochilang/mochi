@@ -143,6 +143,37 @@ func (fd *FuncDecl) emit(w io.Writer) {
 	fmt.Fprint(w, "}")
 }
 
+type FuncLit struct {
+	Params []ParamDecl
+	Return string
+	Body   []Stmt
+}
+
+func (fl *FuncLit) emit(w io.Writer) {
+	fmt.Fprint(w, "func(")
+	for i, p := range fl.Params {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		if p.Type != "" {
+			fmt.Fprintf(w, "%s %s", p.Name, p.Type)
+		} else {
+			fmt.Fprint(w, p.Name)
+		}
+	}
+	fmt.Fprint(w, ")")
+	if fl.Return != "" {
+		fmt.Fprintf(w, " %s", fl.Return)
+	}
+	fmt.Fprint(w, " {\n")
+	for _, st := range fl.Body {
+		fmt.Fprint(w, "    ")
+		st.emit(w)
+		fmt.Fprint(w, "\n")
+	}
+	fmt.Fprint(w, "}")
+}
+
 type IfExpr struct {
 	Cond Expr
 	Then Expr
@@ -839,6 +870,38 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 	return &FuncDecl{Name: fn.Name, Params: params, Return: ret, Body: body}, nil
 }
 
+func compileFunExpr(fn *parser.FunExpr, env *types.Env) (Expr, error) {
+	child := types.NewEnv(env)
+	var body []*parser.Statement
+	var stmts []Stmt
+	var err error
+	if fn.BlockBody != nil {
+		body = fn.BlockBody
+		stmts, err = compileStmts(body, child)
+		if err != nil {
+			return nil, err
+		}
+	} else if fn.ExprBody != nil {
+		ex, err := compileExpr(fn.ExprBody, child)
+		if err != nil {
+			return nil, err
+		}
+		stmts = []Stmt{&ReturnStmt{Value: ex}}
+	}
+	params := make([]ParamDecl, len(fn.Params))
+	for i, p := range fn.Params {
+		typ := toGoType(p.Type)
+		if typ == "" {
+			if t, err := child.GetVar(p.Name); err == nil {
+				typ = toGoTypeFromType(t)
+			}
+		}
+		params[i] = ParamDecl{Name: p.Name, Type: typ}
+	}
+	ret := toGoType(fn.Return)
+	return &FuncLit{Params: params, Return: ret, Body: stmts}, nil
+}
+
 func compileBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 	first, err := compileUnary(b.Left, env)
 	if err != nil {
@@ -1142,6 +1205,8 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		return compileIfExpr(p.If, env)
 	case p.Group != nil:
 		return compileExpr(p.Group, env)
+	case p.FunExpr != nil:
+		return compileFunExpr(p.FunExpr, env)
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return &VarRef{Name: p.Selector.Root}, nil
 	}
@@ -1481,6 +1546,18 @@ func toNodeExpr(e Expr) *ast.Node {
 		if ex.Else != nil {
 			n.Children = append(n.Children, toNodeExpr(ex.Else))
 		}
+		return n
+	case *FuncLit:
+		n := &ast.Node{Kind: "funclit"}
+		params := &ast.Node{Kind: "params"}
+		for _, p := range ex.Params {
+			params.Children = append(params.Children, &ast.Node{Kind: "param", Value: p.Name})
+		}
+		body := &ast.Node{Kind: "body"}
+		for _, b := range ex.Body {
+			body.Children = append(body.Children, toNodeStmt(b))
+		}
+		n.Children = append(n.Children, params, body)
 		return n
 	default:
 		return &ast.Node{Kind: "unknown"}

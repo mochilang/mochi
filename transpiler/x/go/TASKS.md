@@ -1,3 +1,11 @@
+## Progress (2025-07-20 08:19 +0700)
+- go transpiler: support function literals
+- Regenerated golden files - 52/100 vm valid programs passing
+
+## Progress (2025-07-20 08:10 +0700)
+- go transpiler: update golden files
+- Regenerated golden files - 52/100 vm valid programs passing
+
 ## Progress (2025-07-20 02:22 +0700)
 - go transpiler: simpler loops
 - Regenerated golden files - 52/100 vm valid programs passing
