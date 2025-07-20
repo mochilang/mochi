@@ -14,6 +14,8 @@ import (
 	"mochi/types"
 )
 
+var currentEnv *types.Env
+
 // Node represents a Scheme AST node.
 type Node interface{ Emit(io.Writer) }
 
@@ -272,7 +274,7 @@ func convertStmt(st *parser.Statement) (Node, error) {
 // Transpile converts a Mochi AST into a minimal Scheme AST supporting
 // print statements with string literals.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
-	_ = env
+	currentEnv = env
 	p := &Program{}
 	for _, st := range prog.Statements {
 		form, err := convertStmt(st)
@@ -373,7 +375,11 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 			}
 		case op.Index != nil:
 			var err error
-			node, err = convertIndex(node, op.Index)
+			var orig *parser.Primary
+			if i == 0 {
+				orig = pf.Target
+			}
+			node, err = convertIndex(node, orig, op.Index)
 			if err != nil {
 				return nil, err
 			}
@@ -386,12 +392,16 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 			if err != nil {
 				return nil, err
 			}
-			node = &List{Elems: []Node{
-				Symbol("if"),
-				&List{Elems: []Node{Symbol("string?"), node}},
-				&List{Elems: []Node{Symbol("string-contains"), node, arg}},
-				&List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("member"), arg, node}}, BoolLit(true), BoolLit(false)}},
-			}}
+			if i == 0 && types.IsStringPrimary(pf.Target, currentEnv) {
+				node = &List{Elems: []Node{Symbol("string-contains"), node, arg}}
+			} else {
+				node = &List{Elems: []Node{
+					Symbol("if"),
+					&List{Elems: []Node{Symbol("string?"), node}},
+					&List{Elems: []Node{Symbol("string-contains"), node, arg}},
+					&List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("member"), arg, node}}, BoolLit(true), BoolLit(false)}},
+				}}
+			}
 			i++
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
@@ -547,15 +557,25 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 		if len(args) != 1 {
 			return nil, fmt.Errorf("len expects 1 arg")
 		}
-		return &List{Elems: []Node{
-			Symbol("if"),
-			&List{Elems: []Node{Symbol("string?"), args[0]}},
-			&List{Elems: []Node{Symbol("string-length"), args[0]}},
-			&List{Elems: []Node{Symbol("length"), args[0]}},
-		}}, nil
+		switch types.ExprType(call.Args[0], currentEnv).(type) {
+		case types.StringType:
+			return &List{Elems: []Node{Symbol("string-length"), args[0]}}, nil
+		case types.ListType:
+			return &List{Elems: []Node{Symbol("length"), args[0]}}, nil
+		default:
+			return &List{Elems: []Node{
+				Symbol("if"),
+				&List{Elems: []Node{Symbol("string?"), args[0]}},
+				&List{Elems: []Node{Symbol("string-length"), args[0]}},
+				&List{Elems: []Node{Symbol("length"), args[0]}},
+			}}, nil
+		}
 	case "append":
 		if len(args) != 2 {
 			return nil, fmt.Errorf("append expects 2 args")
+		}
+		if _, ok := types.ExprType(call.Args[0], currentEnv).(types.StringType); ok {
+			return &List{Elems: []Node{Symbol("string-append"), args[0], args[1]}}, nil
 		}
 		return &List{Elems: []Node{Symbol("append"), args[0], &List{Elems: []Node{Symbol("list"), args[1]}}}}, nil
 	case "sum":
@@ -596,7 +616,7 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 	}
 }
 
-func convertIndex(target Node, idx *parser.IndexOp) (Node, error) {
+func convertIndex(target Node, orig *parser.Primary, idx *parser.IndexOp) (Node, error) {
 	if idx.Colon != nil || idx.Colon2 != nil || idx.End != nil || idx.Step != nil {
 		var start Node = IntLit(0)
 		if idx.Start != nil {
@@ -617,6 +637,14 @@ func convertIndex(target Node, idx *parser.IndexOp) (Node, error) {
 			end = &List{Elems: []Node{Symbol("length"), target}}
 		}
 		lenNode := &List{Elems: []Node{Symbol("-"), end, start}}
+		if orig != nil {
+			switch types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: orig}}}}, currentEnv).(type) {
+			case types.StringType:
+				return &List{Elems: []Node{Symbol("substring"), target, start, end}}, nil
+			case types.ListType:
+				return &List{Elems: []Node{Symbol("take"), &List{Elems: []Node{Symbol("drop"), target, start}}, lenNode}}, nil
+			}
+		}
 		return &List{Elems: []Node{
 			Symbol("if"),
 			&List{Elems: []Node{Symbol("string?"), target}},
@@ -630,6 +658,14 @@ func convertIndex(target Node, idx *parser.IndexOp) (Node, error) {
 	in, err := convertParserExpr(idx.Start)
 	if err != nil {
 		return nil, err
+	}
+	if orig != nil {
+		switch types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: orig}}}}, currentEnv).(type) {
+		case types.StringType:
+			return &List{Elems: []Node{Symbol("string-ref"), target, in}}, nil
+		case types.ListType:
+			return &List{Elems: []Node{Symbol("list-ref"), target, in}}, nil
+		}
 	}
 	return &List{Elems: []Node{
 		Symbol("if"),
