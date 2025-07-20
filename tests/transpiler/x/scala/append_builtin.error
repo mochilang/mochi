@@ -1,5 +1,5 @@
 exit status 1
-/workspace/mochi/tests/transpiler/x/scala/append_builtin.scala:4: error: not found: value append
-  println(append(a, 3))
-          ^
+/workspace/mochi/tests/transpiler/x/scala/append_builtin.scala:5: error: not found: value append
+    println(append(a, 3))
+            ^
 one error found

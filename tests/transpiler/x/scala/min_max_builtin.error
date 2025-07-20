@@ -1,8 +1,8 @@
 exit status 1
-/workspace/mochi/tests/transpiler/x/scala/min_max_builtin.scala:4: error: not found: value min
-  println(min(nums))
-          ^
-/workspace/mochi/tests/transpiler/x/scala/min_max_builtin.scala:5: error: not found: value max
-  println(max(nums))
-          ^
+/workspace/mochi/tests/transpiler/x/scala/min_max_builtin.scala:5: error: not found: value min
+    println(min(nums))
+            ^
+/workspace/mochi/tests/transpiler/x/scala/min_max_builtin.scala:6: error: not found: value max
+    println(max(nums))
+            ^
 two errors found
