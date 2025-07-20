@@ -164,11 +164,12 @@ type WhileStmt struct {
 }
 
 type ForStmt struct {
-	Var   string
-	Start Expr
-	End   Expr
-	List  []Expr
-	Body  []Stmt
+	Var      string
+	Start    Expr
+	End      Expr
+	List     []Expr
+	ElemType string
+	Body     []Stmt
 }
 
 func (c *CallStmt) emit(w io.Writer, indent int) {
@@ -291,7 +292,11 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 		writeIndent(w, indent)
 		io.WriteString(w, "{\n")
 		writeIndent(w, indent+1)
-		fmt.Fprintf(w, "int %s[] = {", arrName)
+		typ := f.ElemType
+		if typ == "" {
+			typ = "int"
+		}
+		fmt.Fprintf(w, "%s %s[] = {", typ, arrName)
 		for i, e := range f.List {
 			if i > 0 {
 				io.WriteString(w, ", ")
@@ -306,7 +311,7 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, lenName)
 		io.WriteString(w, "; i++) {\n")
 		writeIndent(w, indent+2)
-		fmt.Fprintf(w, "int %s = %s[i];\n", f.Var, arrName)
+		fmt.Fprintf(w, "%s %s = %s[i];\n", typ, f.Var, arrName)
 		for _, s := range f.Body {
 			s.emit(w, indent+2)
 		}
@@ -906,7 +911,11 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		}
 		list, ok := convertListExpr(s.For.Source)
 		if ok {
-			return &ForStmt{Var: s.For.Name, List: list, Body: body}, nil
+			elemType := "int"
+			if len(list) > 0 {
+				elemType = inferExprType(env, list[0])
+			}
+			return &ForStmt{Var: s.For.Name, List: list, ElemType: elemType, Body: body}, nil
 		}
 		return nil, fmt.Errorf("unsupported for-loop")
 	case s.If != nil:
