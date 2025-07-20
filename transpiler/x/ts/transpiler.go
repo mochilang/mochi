@@ -24,6 +24,8 @@ type Program struct {
 
 // TranspileEnv is used for type inference during conversion.
 var transpileEnv *types.Env
+var generatedTypes map[string]bool
+var prelude []Stmt
 
 type Stmt interface {
 	emit(io.Writer)
@@ -1369,7 +1371,9 @@ func emitStmt(w *indentWriter, s Stmt, level int) {
 // call to the builtin `print` with a string literal argument.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	transpileEnv = env
-	defer func() { transpileEnv = nil }()
+	generatedTypes = map[string]bool{}
+	prelude = nil
+	defer func() { transpileEnv = nil; generatedTypes = nil; prelude = nil }()
 	tsProg := &Program{}
 
 	for _, st := range prog.Statements {
@@ -1378,6 +1382,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			return nil, err
 		}
 		tsProg.Stmts = append(tsProg.Stmts, stmt)
+	}
+	if len(prelude) > 0 {
+		tsProg.Stmts = append(prelude, tsProg.Stmts...)
 	}
 	return tsProg, nil
 }
@@ -1403,6 +1410,19 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		if it, ok := inferLiteralType(s.Let.Value, transpileEnv); ok {
 			t = it
 		}
+		switch tt := t.(type) {
+		case types.StructType:
+			name := ensureNamedStruct(tt, s.Let.Name)
+			tt.Name = name
+			t = tt
+		case types.ListType:
+			if st, ok := tt.Elem.(types.StructType); ok {
+				name := ensureNamedStruct(st, strings.TrimSuffix(s.Let.Name, "s"))
+				st.Name = name
+				tt.Elem = st
+				t = tt
+			}
+		}
 		return &VarDecl{Name: s.Let.Name, Expr: e, Const: !mutable, Type: tsType(t)}, nil
 	case s.Var != nil:
 		var e Expr
@@ -1419,6 +1439,19 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		t, _ := transpileEnv.GetVar(s.Var.Name)
 		if it, ok := inferLiteralType(s.Var.Value, transpileEnv); ok {
 			t = it
+		}
+		switch tt := t.(type) {
+		case types.StructType:
+			name := ensureNamedStruct(tt, s.Var.Name)
+			tt.Name = name
+			t = tt
+		case types.ListType:
+			if st, ok := tt.Elem.(types.StructType); ok {
+				name := ensureNamedStruct(st, strings.TrimSuffix(s.Var.Name, "s"))
+				st.Name = name
+				tt.Elem = st
+				t = tt
+			}
 		}
 		return &VarDecl{Name: s.Var.Name, Expr: e, Const: !mutable, Type: tsType(t)}, nil
 	case s.Assign != nil:
@@ -2463,6 +2496,25 @@ func tsType(t types.Type) string {
 	default:
 		return "any"
 	}
+}
+
+func ensureNamedStruct(st types.StructType, hint string) string {
+	if st.Name != "" {
+		return st.Name
+	}
+	name := types.UniqueStructName(strings.Title(hint), transpileEnv, nil)
+	if generatedTypes == nil {
+		generatedTypes = map[string]bool{}
+	}
+	if !generatedTypes[name] {
+		fields := make([]string, len(st.Order))
+		for i, f := range st.Order {
+			fields[i] = fmt.Sprintf("%s: %s", f, tsType(st.Fields[f]))
+		}
+		prelude = append(prelude, &InterfaceDecl{Name: name, Fields: fields})
+		generatedTypes[name] = true
+	}
+	return name
 }
 
 func isNumericBool(e Expr) bool {
