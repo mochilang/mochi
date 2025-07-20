@@ -1,10 +1,10 @@
-## Recent Enhancements (2025-07-20 14:31 +0700)
-- Improved variable declarations with basic type inference.
-- Simplified `avg` builtin emission using list methods.
-- Updated README checklist with progress summary.
+## Recent Enhancements (2025-07-20 16:47 +0700)
+- Added query cross join support using collection `for` loops.
+- Removed `where`/`map` helpers for cleaner output.
+- Enhanced type inference for query results.
 
-## Progress (2025-07-20 14:31 +0700)
-- VM valid 73/100
+## Progress (2025-07-20 16:47 +0700)
+- VM valid 69/100
 
 # Dart Transpiler Tasks
 - Added boolean literals and logical operators.

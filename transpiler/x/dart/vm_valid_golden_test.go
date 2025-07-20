@@ -173,9 +173,9 @@ func updateTasks() {
 
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Recent Enhancements (%s)\n", ts))
-	buf.WriteString("- Improved variable declarations with basic type inference.\n")
-	buf.WriteString("- Simplified `avg` builtin emission using list methods.\n")
-	buf.WriteString("- Updated README checklist with progress summary.\n\n")
+	buf.WriteString("- Added query cross join support using collection `for` loops.\n")
+	buf.WriteString("- Removed `where`/`map` helpers for cleaner output.\n")
+	buf.WriteString("- Enhanced type inference for query results.\n\n")
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
 	buf.WriteString(fmt.Sprintf("- VM valid %d/%d\n\n", compiled, total))
 	buf.WriteString(strings.Join(keep, "\n"))
