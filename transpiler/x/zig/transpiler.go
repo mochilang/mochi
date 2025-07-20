@@ -15,6 +15,7 @@ import (
 )
 
 var constLists map[string]*ListLit
+var mapVars map[string]bool
 
 // Program represents a Zig source file with one or more functions.
 type Program struct {
@@ -107,7 +108,10 @@ type IntLit struct{ Value int }
 // FloatLit represents a floating point literal.
 type FloatLit struct{ Value float64 }
 
-type VarRef struct{ Name string }
+type VarRef struct {
+	Name string
+	Map  bool
+}
 
 type BinaryExpr struct {
 	Left  Expr
@@ -134,10 +138,30 @@ type NotExpr struct{ Expr Expr }
 // ListLit represents a list literal of integer expressions.
 type ListLit struct{ Elems []Expr }
 
+type MapEntry struct {
+	Key   Expr
+	Value Expr
+}
+
+type MapLit struct{ Entries []MapEntry }
+
+func (m *MapLit) emit(w io.Writer) {
+	io.WriteString(w, "blk: { var m = std.StringHashMap(i64).init(std.heap.page_allocator);")
+	for _, e := range m.Entries {
+		io.WriteString(w, " m.put(")
+		e.Key.emit(w)
+		io.WriteString(w, ", ")
+		e.Value.emit(w)
+		io.WriteString(w, ") catch unreachable;")
+	}
+	io.WriteString(w, " break :blk m; }")
+}
+
 // IndexExpr represents list indexing like `xs[i]`.
 type IndexExpr struct {
 	Target Expr
 	Index  Expr
+	Map    bool
 }
 
 // BreakStmt exits the nearest loop.
@@ -253,10 +277,15 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 
 func (a *IndexAssignStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
-	a.Target.emit(w)
-	io.WriteString(w, " = ")
-	a.Value.emit(w)
-	io.WriteString(w, ";\n")
+	if idx, ok := a.Target.(*IndexExpr); ok && idx.Map {
+		emitMapPut(w, idx, a.Value)
+		io.WriteString(w, "\n")
+	} else {
+		a.Target.emit(w)
+		io.WriteString(w, " = ")
+		a.Value.emit(w)
+		io.WriteString(w, ";\n")
+	}
 }
 
 func (e *ExprStmt) emit(w io.Writer, indent int) {
@@ -333,6 +362,11 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			io.WriteString(w, ", ")
 			b.Left.emit(w)
 			io.WriteString(w, ") != null")
+		} else if vr, ok := b.Right.(*VarRef); ok && mapVars[vr.Name] {
+			vr.emit(w)
+			io.WriteString(w, ".contains(")
+			b.Left.emit(w)
+			io.WriteString(w, ")")
 		} else {
 			io.WriteString(w, "std.mem.indexOfScalar(i64, ")
 			b.Right.emit(w)
@@ -369,10 +403,49 @@ func (l *ListLit) emit(w io.Writer) {
 }
 
 func (i *IndexExpr) emit(w io.Writer) {
-	i.Target.emit(w)
-	io.WriteString(w, "[")
-	i.Index.emit(w)
-	io.WriteString(w, "]")
+	if i.Map {
+		i.Target.emit(w)
+		io.WriteString(w, ".get(")
+		i.Index.emit(w)
+		io.WriteString(w, ").?")
+	} else {
+		i.Target.emit(w)
+		io.WriteString(w, "[")
+		i.Index.emit(w)
+		io.WriteString(w, "]")
+	}
+}
+
+func emitMapPut(w io.Writer, idx *IndexExpr, val Expr) {
+	if inner, ok := idx.Target.(*IndexExpr); ok && inner.Map {
+		emitMapGet(w, inner)
+		io.WriteString(w, ".put(")
+		idx.Index.emit(w)
+		io.WriteString(w, ", ")
+		val.emit(w)
+		io.WriteString(w, ") catch unreachable;")
+		return
+	}
+	idx.Target.emit(w)
+	io.WriteString(w, ".put(")
+	idx.Index.emit(w)
+	io.WriteString(w, ", ")
+	val.emit(w)
+	io.WriteString(w, ") catch unreachable;")
+}
+
+func emitMapGet(w io.Writer, idx *IndexExpr) {
+	if inner, ok := idx.Target.(*IndexExpr); ok && inner.Map {
+		emitMapGet(w, inner)
+		io.WriteString(w, ".get(")
+		idx.Index.emit(w)
+		io.WriteString(w, ").?")
+		return
+	}
+	idx.Target.emit(w)
+	io.WriteString(w, ".get(")
+	idx.Index.emit(w)
+	io.WriteString(w, ").?")
 }
 
 func (sli *SliceExpr) emit(w io.Writer) {
@@ -511,12 +584,15 @@ func (i *IfExpr) emit(w io.Writer) {
 
 func (c *CallExpr) emit(w io.Writer) {
 	switch c.Func {
-	case "len":
+	case "len", "count":
 		if len(c.Args) > 0 {
 			if s, ok := c.Args[0].(*StringLit); ok {
 				fmt.Fprintf(w, "%q.len", s.Value)
 			} else if l, ok := c.Args[0].(*ListLit); ok {
 				fmt.Fprintf(w, "%d", len(l.Elems))
+			} else if v, ok := c.Args[0].(*VarRef); ok && mapVars[v.Name] {
+				v.emit(w)
+				io.WriteString(w, ".count()")
 			} else {
 				io.WriteString(w, "std.mem.len(")
 				c.Args[0].emit(w)
@@ -551,6 +627,24 @@ func (c *CallExpr) emit(w io.Writer) {
 		} else {
 			io.WriteString(w, "false")
 		}
+	case "values":
+		if len(c.Args) == 1 {
+			if m, ok := c.Args[0].(*MapLit); ok {
+				vals := make([]Expr, len(m.Entries))
+				for i, e := range m.Entries {
+					vals[i] = e.Value
+				}
+				(&ListLit{Elems: vals}).emit(w)
+			} else if v, ok := c.Args[0].(*VarRef); ok && mapVars[v.Name] {
+				io.WriteString(w, "blk: { var it = ")
+				v.emit(w)
+				io.WriteString(w, ".iterator(); var arr = std.ArrayList(i64).init(std.heap.page_allocator); while (it.next()) |kv| { arr.append(kv.value) catch unreachable; } break :blk arr.toOwnedSlice(); }")
+			} else {
+				io.WriteString(w, "[]i64{}")
+			}
+		} else {
+			io.WriteString(w, "[]i64{}")
+		}
 	default:
 		io.WriteString(w, c.Func)
 		io.WriteString(w, "(")
@@ -571,6 +665,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	mutables := map[string]bool{}
 	collectMutables(prog.Statements, mutables)
 	constLists = map[string]*ListLit{}
+	mapVars = map[string]bool{}
 	for _, st := range prog.Statements {
 		if st.Fun != nil {
 			fn, err := compileFunStmt(st.Fun, prog)
@@ -754,7 +849,18 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 				if err != nil {
 					return nil, err
 				}
-				expr = &IndexExpr{Target: expr, Index: idx}
+				imap := false
+				switch t := expr.(type) {
+				case *MapLit:
+					imap = true
+				case *VarRef:
+					if mapVars[t.Name] {
+						imap = true
+					}
+				case *IndexExpr:
+					imap = t.Map
+				}
+				expr = &IndexExpr{Target: expr, Index: idx, Map: imap}
 				continue
 			}
 			if op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil {
@@ -890,6 +996,20 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			elems[i] = ex
 		}
 		return &ListLit{Elems: elems}, nil
+	case p.Map != nil:
+		entries := make([]MapEntry, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			k, err := compileExpr(it.Key)
+			if err != nil {
+				return nil, err
+			}
+			v, err := compileExpr(it.Value)
+			if err != nil {
+				return nil, err
+			}
+			entries[i] = MapEntry{Key: k, Value: v}
+		}
+		return &MapLit{Entries: entries}, nil
 	case p.If != nil:
 		return compileIfExpr(p.If)
 	case p.Match != nil:
@@ -1111,6 +1231,9 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		} else {
 			expr = &IntLit{Value: 0}
 		}
+		if _, ok := expr.(*MapLit); ok {
+			mapVars[s.Let.Name] = true
+		}
 		return &VarDecl{Name: s.Let.Name, Value: expr}, nil
 	case s.Var != nil:
 		var expr Expr
@@ -1123,21 +1246,27 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		} else {
 			expr = &IntLit{Value: 0}
 		}
+		if _, ok := expr.(*MapLit); ok {
+			mapVars[s.Var.Name] = true
+		}
 		return &VarDecl{Name: s.Var.Name, Value: expr, Mutable: true}, nil
 	case s.Assign != nil && len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0:
 		expr, err := compileExpr(s.Assign.Value)
 		if err != nil {
 			return nil, err
 		}
+		if _, ok := expr.(*MapLit); ok {
+			mapVars[s.Assign.Name] = true
+		}
 		return &AssignStmt{Name: s.Assign.Name, Value: expr}, nil
 	case s.Assign != nil && len(s.Assign.Index) > 0 && len(s.Assign.Field) == 0:
-		target := Expr(&VarRef{Name: s.Assign.Name})
+		target := Expr(&VarRef{Name: s.Assign.Name, Map: mapVars[s.Assign.Name]})
 		for _, idx := range s.Assign.Index {
 			ix, err := compileExpr(idx.Start)
 			if err != nil {
 				return nil, err
 			}
-			target = &IndexExpr{Target: target, Index: ix}
+			target = &IndexExpr{Target: target, Index: ix, Map: true}
 		}
 		val, err := compileExpr(s.Assign.Value)
 		if err != nil {

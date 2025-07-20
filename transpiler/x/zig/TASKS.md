@@ -1,3 +1,8 @@
+## Progress (2025-07-20 09:40 +0000)
+- Added basic map support using `std.StringHashMap` and value extraction.
+- Implemented `count` builtin and constant `values` folding.
+- Generated golden files for 11 additional tests and updated README checklist (58/100 tests passing)
+
 ## Progress (2025-07-20 08:11 +0000)
 - Added basic function support with typed parameters and return statements.
 - Implemented `return` handling and match expressions.
@@ -61,6 +66,8 @@
 - Regenerated golden files - 24/100 vm valid programs passing
 
 # Zig Transpiler Tasks
+
+- 2025-07-20 09:40 +0000 - Added map literals and assignment plus `count` builtin (58/100 tests passing)
 
 - 2025-07-20 14:31 +0700 - Added slicing, membership operator and int casts (37/100 tests passing)
 
