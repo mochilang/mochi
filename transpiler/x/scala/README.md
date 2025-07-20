@@ -2,7 +2,7 @@
 
 Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (54/100)
+## Golden Test Checklist (59/100)
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -11,7 +11,7 @@ Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scal
 - [x] bool_chain
 - [ ] break_continue
 - [x] cast_string_to_int
-- [ ] cast_struct
+- [x] cast_struct
 - [x] closure
 - [x] count_builtin
 - [ ] cross_join
@@ -62,8 +62,8 @@ Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scal
 - [x] map_literal_dynamic
 - [x] map_membership
 - [x] map_nested_assign
-- [ ] match_expr
-- [ ] match_full
+- [x] match_expr
+- [x] match_full
 - [x] math_ops
 - [x] membership
 - [x] min_max_builtin
@@ -77,7 +77,7 @@ Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scal
 - [ ] python_auto
 - [ ] python_math
 - [ ] query_sum_select
-- [ ] record_assign
+- [x] record_assign
 - [ ] right_join
 - [ ] save_jsonl_stdout
 - [x] short_circuit
@@ -100,7 +100,7 @@ Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scal
 - [x] typed_var
 - [x] unary_neg
 - [ ] update_stmt
-- [ ] user_type_literal
-- [ ] values_builtin
+- [x] user_type_literal
+- [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
