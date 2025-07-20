@@ -152,9 +152,39 @@ func updateTasks() {
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
 	fmt.Fprintf(&buf, "- Generated TypeScript for %d/%d programs\n", compiled, total)
-	buf.WriteString("- Updated README checklist and outputs\n\n")
+	buf.WriteString("- Updated README checklist and outputs\n")
+	buf.WriteString("- Enhanced readability and type inference\n")
+	buf.WriteString("- Removed runtime helper functions\n\n")
+
 	if data, err := os.ReadFile(taskFile); err == nil {
-		buf.Write(data)
+		sections := strings.Split(string(data), "\n## Progress ")
+		for i, sec := range sections {
+			if strings.TrimSpace(sec) == "" {
+				continue
+			}
+			if i > 0 {
+				sec = "## Progress " + sec
+			}
+			lines := strings.Split(sec, "\n")
+			useful := false
+			for _, l := range lines[1:] {
+				if strings.TrimSpace(l) != "" &&
+					!strings.HasPrefix(l, "- Generated TypeScript") &&
+					!strings.HasPrefix(l, "- Updated README") {
+					useful = true
+					break
+				}
+			}
+			if useful {
+				buf.WriteString(sec)
+				if !strings.HasSuffix(sec, "\n") {
+					buf.WriteByte('\n')
+				}
+			}
+			if useful && bytes.Count(buf.Bytes(), []byte("## Progress")) > 5 {
+				break
+			}
+		}
 	}
 	_ = os.WriteFile(taskFile, buf.Bytes(), 0o644)
 }
