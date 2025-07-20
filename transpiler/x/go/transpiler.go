@@ -34,6 +34,26 @@ var (
 	structCount int
 )
 
+func toPascalCase(s string) string {
+	parts := strings.Split(s, "_")
+	for i, p := range parts {
+		if len(p) == 0 {
+			continue
+		}
+		parts[i] = strings.ToUpper(p[:1]) + p[1:]
+	}
+	return strings.Join(parts, "")
+}
+
+func structNameFromVar(name string) string {
+	if strings.HasSuffix(name, "ies") && len(name) > 3 {
+		name = name[:len(name)-3] + "y"
+	} else if strings.HasSuffix(name, "s") && len(name) > 1 {
+		name = name[:len(name)-1]
+	}
+	return toPascalCase(name)
+}
+
 type Stmt interface{ emit(io.Writer) }
 
 type Expr interface{ emit(io.Writer) }
@@ -821,12 +841,12 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	return gp, nil
 }
 
-func compileExpr(e *parser.Expr, env *types.Env) (Expr, error) {
+func compileExpr(e *parser.Expr, env *types.Env, base string) (Expr, error) {
 	if e == nil {
 		return nil, fmt.Errorf("unsupported expression")
 	}
 	if e.Binary != nil {
-		return compileBinary(e.Binary, env)
+		return compileBinary(e.Binary, env, base)
 	}
 	return nil, fmt.Errorf("unsupported expression")
 }
@@ -837,7 +857,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		if call := extractCall(st.Expr.Expr); call != nil && call.Func == "print" {
 			args := make([]Expr, len(call.Args))
 			for i, a := range call.Args {
-				ex, err := compileExpr(a, env)
+				ex, err := compileExpr(a, env, "")
 				if err != nil {
 					return nil, err
 				}
@@ -863,7 +883,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			usesPrint = true
 			return &PrintStmt{Args: args}, nil
 		}
-		e, err := compileExpr(st.Expr.Expr, env)
+		e, err := compileExpr(st.Expr.Expr, env, "")
 		if err != nil {
 			return nil, err
 		}
@@ -876,7 +896,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			typ = toGoTypeFromType(t)
 		}
 		if st.Let.Value != nil {
-			e, err := compileExpr(st.Let.Value, env)
+			e, err := compileExpr(st.Let.Value, env, st.Let.Name)
 			if err != nil {
 				return nil, err
 			}
@@ -912,7 +932,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			typ = toGoTypeFromType(t)
 		}
 		if st.Var.Value != nil {
-			e, err := compileExpr(st.Var.Value, env)
+			e, err := compileExpr(st.Var.Value, env, st.Var.Name)
 			if err != nil {
 				return nil, err
 			}
@@ -951,18 +971,18 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		}
 	case st.Assign != nil:
 		if len(st.Assign.Index) == 1 && st.Assign.Index[0].Colon == nil && st.Assign.Index[0].Colon2 == nil && len(st.Assign.Field) == 0 {
-			idx, err := compileExpr(st.Assign.Index[0].Start, env)
+			idx, err := compileExpr(st.Assign.Index[0].Start, env, "")
 			if err != nil {
 				return nil, err
 			}
-			val, err := compileExpr(st.Assign.Value, env)
+			val, err := compileExpr(st.Assign.Value, env, "")
 			if err != nil {
 				return nil, err
 			}
 			return &IndexAssignStmt{Name: st.Assign.Name, Index: idx, Value: val}, nil
 		}
 		if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
-			e, err := compileExpr(st.Assign.Value, env)
+			e, err := compileExpr(st.Assign.Value, env, "")
 			if err != nil {
 				return nil, err
 			}
@@ -976,14 +996,14 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		for _, f := range st.Assign.Field {
 			pf.Ops = append(pf.Ops, &parser.PostfixOp{Field: f})
 		}
-		target, err := compilePostfix(pf, env)
+		target, err := compilePostfix(pf, env, "")
 		if err != nil {
 			return nil, err
 		}
 		if as, ok := target.(*AssertExpr); ok {
 			target = as.Expr
 		}
-		val, err := compileExpr(st.Assign.Value, env)
+		val, err := compileExpr(st.Assign.Value, env, "")
 		if err != nil {
 			return nil, err
 		}
@@ -1036,7 +1056,7 @@ func extractCall(e *parser.Expr) *parser.CallExpr {
 }
 
 func compileIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
-	cond, err := compileExpr(is.Cond, env)
+	cond, err := compileExpr(is.Cond, env, "")
 	if err != nil {
 		return nil, err
 	}
@@ -1061,11 +1081,11 @@ func compileIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
 }
 
 func compileIfExpr(ie *parser.IfExpr, env *types.Env) (Expr, error) {
-	cond, err := compileExpr(ie.Cond, env)
+	cond, err := compileExpr(ie.Cond, env, "")
 	if err != nil {
 		return nil, err
 	}
-	thenExpr, err := compileExpr(ie.Then, env)
+	thenExpr, err := compileExpr(ie.Then, env, "")
 	if err != nil {
 		return nil, err
 	}
@@ -1076,7 +1096,7 @@ func compileIfExpr(ie *parser.IfExpr, env *types.Env) (Expr, error) {
 			return nil, err
 		}
 	} else if ie.Else != nil {
-		elseExpr, err = compileExpr(ie.Else, env)
+		elseExpr, err = compileExpr(ie.Else, env, "")
 		if err != nil {
 			return nil, err
 		}
@@ -1086,7 +1106,7 @@ func compileIfExpr(ie *parser.IfExpr, env *types.Env) (Expr, error) {
 }
 
 func compileMatchExpr(me *parser.MatchExpr, env *types.Env) (Expr, error) {
-	target, err := compileExpr(me.Target, env)
+	target, err := compileExpr(me.Target, env, "")
 	if err != nil {
 		return nil, err
 	}
@@ -1095,11 +1115,11 @@ func compileMatchExpr(me *parser.MatchExpr, env *types.Env) (Expr, error) {
 	var expr Expr = zeroValueExpr(typ)
 	for i := len(me.Cases) - 1; i >= 0; i-- {
 		c := me.Cases[i]
-		res, err := compileExpr(c.Result, env)
+		res, err := compileExpr(c.Result, env, "")
 		if err != nil {
 			return nil, err
 		}
-		pat, err := compileExpr(c.Pattern, env)
+		pat, err := compileExpr(c.Pattern, env, "")
 		if err != nil {
 			return nil, err
 		}
@@ -1124,11 +1144,11 @@ func compileMatchExpr(me *parser.MatchExpr, env *types.Env) (Expr, error) {
 	return expr, nil
 }
 
-func compileQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
+func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, error) {
 	if q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || len(q.Joins) > 0 {
 		return nil, fmt.Errorf("unsupported query features")
 	}
-	src, err := compileExpr(q.Source, env)
+	src, err := compileExpr(q.Source, env, "")
 	if err != nil {
 		return nil, err
 	}
@@ -1146,7 +1166,7 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	child.SetVar(q.Var, elemT, true)
 	froms := make([]queryFrom, len(q.Froms))
 	for i, f := range q.Froms {
-		fe, err := compileExpr(f.Src, child)
+		fe, err := compileExpr(f.Src, child, "")
 		if err != nil {
 			return nil, err
 		}
@@ -1165,12 +1185,12 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	}
 	var where Expr
 	if q.Where != nil {
-		where, err = compileExpr(q.Where, child)
+		where, err = compileExpr(q.Where, child, "")
 		if err != nil {
 			return nil, err
 		}
 	}
-	sel, err := compileExpr(q.Select, child)
+	sel, err := compileExpr(q.Select, child, "")
 	if err != nil {
 		return nil, err
 	}
@@ -1178,7 +1198,11 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	if ml := mapLiteral(q.Select); ml != nil {
 		if st, ok := types.InferStructFromMapEnv(ml, child); ok {
 			structCount++
-			name := types.UniqueStructName(fmt.Sprintf("Result%d", structCount), topEnv, nil)
+			baseName := fmt.Sprintf("Result%d", structCount)
+			if base != "" {
+				baseName = structNameFromVar(base)
+			}
+			name := types.UniqueStructName(baseName, topEnv, nil)
 			st.Name = name
 			if topEnv != nil {
 				topEnv.SetStruct(name, st)
@@ -1187,7 +1211,7 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 			vals := make([]Expr, len(st.Order))
 			for i, it := range ml.Items {
 				fieldsDecl[i] = ParamDecl{Name: st.Order[i], Type: toGoTypeFromType(st.Fields[st.Order[i]])}
-				v, err := compileExpr(it.Value, child)
+				v, err := compileExpr(it.Value, child, "")
 				if err != nil {
 					return nil, err
 				}
@@ -1228,7 +1252,7 @@ func zeroValueExpr(goType string) Expr {
 }
 
 func compileWhileStmt(ws *parser.WhileStmt, env *types.Env) (Stmt, error) {
-	cond, err := compileExpr(ws.Cond, env)
+	cond, err := compileExpr(ws.Cond, env, "")
 	if err != nil {
 		return nil, err
 	}
@@ -1241,11 +1265,11 @@ func compileWhileStmt(ws *parser.WhileStmt, env *types.Env) (Stmt, error) {
 
 func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 	if fs.RangeEnd != nil {
-		start, err := compileExpr(fs.Source, env)
+		start, err := compileExpr(fs.Source, env, "")
 		if err != nil {
 			return nil, err
 		}
-		end, err := compileExpr(fs.RangeEnd, env)
+		end, err := compileExpr(fs.RangeEnd, env, "")
 		if err != nil {
 			return nil, err
 		}
@@ -1257,7 +1281,7 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 		}
 		return &ForRangeStmt{Name: fs.Name, Start: start, End: end, Body: body}, nil
 	}
-	iter, err := compileExpr(fs.Source, env)
+	iter, err := compileExpr(fs.Source, env, "")
 	if err != nil {
 		return nil, err
 	}
@@ -1287,7 +1311,7 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 	if rs.Value == nil {
 		return &ReturnStmt{}, nil
 	}
-	val, err := compileExpr(rs.Value, env)
+	val, err := compileExpr(rs.Value, env, "")
 	if err != nil {
 		return nil, err
 	}
@@ -1337,7 +1361,7 @@ func compileFunExpr(fn *parser.FunExpr, env *types.Env) (Expr, error) {
 			return nil, err
 		}
 	} else if fn.ExprBody != nil {
-		ex, err := compileExpr(fn.ExprBody, child)
+		ex, err := compileExpr(fn.ExprBody, child, "")
 		if err != nil {
 			return nil, err
 		}
@@ -1357,8 +1381,8 @@ func compileFunExpr(fn *parser.FunExpr, env *types.Env) (Expr, error) {
 	return &FuncLit{Params: params, Return: ret, Body: stmts}, nil
 }
 
-func compileBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
-	first, err := compileUnary(b.Left, env)
+func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, error) {
+	first, err := compileUnary(b.Left, env, base)
 	if err != nil {
 		return nil, err
 	}
@@ -1367,7 +1391,7 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 	typesList := []types.Type{firstType}
 	ops := make([]*parser.BinaryOp, len(b.Right))
 	for i, op := range b.Right {
-		expr, err := compilePostfix(op.Right, env)
+		expr, err := compilePostfix(op.Right, env, base)
 		if err != nil {
 			return nil, err
 		}
@@ -1465,11 +1489,11 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 	return operands[0], nil
 }
 
-func compileUnary(u *parser.Unary, env *types.Env) (Expr, error) {
+func compileUnary(u *parser.Unary, env *types.Env, base string) (Expr, error) {
 	if u == nil {
 		return nil, fmt.Errorf("nil unary")
 	}
-	expr, err := compilePostfix(u.Value, env)
+	expr, err := compilePostfix(u.Value, env, base)
 	if err != nil {
 		return nil, err
 	}
@@ -1487,11 +1511,11 @@ func compileUnary(u *parser.Unary, env *types.Env) (Expr, error) {
 	return expr, nil
 }
 
-func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
+func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, error) {
 	if pf == nil {
 		return nil, fmt.Errorf("nil postfix")
 	}
-	expr, err := compilePrimary(pf.Target, env)
+	expr, err := compilePrimary(pf.Target, env, base)
 	if err != nil {
 		// allow selector with tail handled here
 		if pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) > 0 {
@@ -1532,7 +1556,7 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 		method := tail[0]
 		args := make([]Expr, len(pf.Ops[0].Call.Args))
 		for i, a := range pf.Ops[0].Call.Args {
-			ex, err := compileExpr(a, env)
+			ex, err := compileExpr(a, env, "")
 			if err != nil {
 				return nil, err
 			}
@@ -1573,7 +1597,7 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				if idx.Start == nil {
 					return nil, fmt.Errorf("unsupported index")
 				}
-				iex, err := compileExpr(idx.Start, env)
+				iex, err := compileExpr(idx.Start, env, "")
 				if err != nil {
 					return nil, err
 				}
@@ -1594,13 +1618,13 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			} else {
 				var start, end Expr
 				if idx.Start != nil {
-					start, err = compileExpr(idx.Start, env)
+					start, err = compileExpr(idx.Start, env, "")
 					if err != nil {
 						return nil, err
 					}
 				}
 				if idx.End != nil {
-					end, err = compileExpr(idx.End, env)
+					end, err = compileExpr(idx.End, env, "")
 					if err != nil {
 						return nil, err
 					}
@@ -1666,12 +1690,12 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 	return expr, nil
 }
 
-func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
+func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error) {
 	switch {
 	case p.Call != nil:
 		args := make([]Expr, len(p.Call.Args))
 		for i, a := range p.Call.Args {
-			ex, err := compileExpr(a, env)
+			ex, err := compileExpr(a, env, "")
 			if err != nil {
 				return nil, err
 			}
@@ -1725,7 +1749,11 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 	case p.List != nil:
 		if st, ok := types.InferStructFromList(p.List, env); ok {
 			structCount++
-			name := types.UniqueStructName(fmt.Sprintf("Data%d", structCount), topEnv, nil)
+			baseName := fmt.Sprintf("Data%d", structCount)
+			if base != "" {
+				baseName = structNameFromVar(base)
+			}
+			name := types.UniqueStructName(baseName, topEnv, nil)
 			st.Name = name
 			if topEnv != nil {
 				topEnv.SetStruct(name, st)
@@ -1740,7 +1768,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				ml := e.Binary.Left.Value.Target.Map
 				vals := make([]Expr, len(st.Order))
 				for j, it := range ml.Items {
-					ve, err := compileExpr(it.Value, env)
+					ve, err := compileExpr(it.Value, env, "")
 					if err != nil {
 						return nil, err
 					}
@@ -1756,7 +1784,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			t := types.ExprType(p.List.Elems[0], env)
 			same := true
 			for i, e := range p.List.Elems {
-				ex, err := compileExpr(e, env)
+				ex, err := compileExpr(e, env, "")
 				if err != nil {
 					return nil, err
 				}
@@ -1784,12 +1812,12 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				ke = &StringLit{Value: k}
 			} else {
 				var err error
-				ke, err = compileExpr(it.Key, env)
+				ke, err = compileExpr(it.Key, env, "")
 				if err != nil {
 					return nil, err
 				}
 			}
-			ve, err := compileExpr(it.Value, env)
+			ve, err := compileExpr(it.Value, env, "")
 			if err != nil {
 				return nil, err
 			}
@@ -1817,7 +1845,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			if exprNode == nil {
 				return nil, fmt.Errorf("missing field %s", name)
 			}
-			ex, err := compileExpr(exprNode, env)
+			ex, err := compileExpr(exprNode, env, "")
 			if err != nil {
 				return nil, err
 			}
@@ -1838,11 +1866,11 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 	case p.If != nil:
 		return compileIfExpr(p.If, env)
 	case p.Group != nil:
-		return compileExpr(p.Group, env)
+		return compileExpr(p.Group, env, "")
 	case p.Match != nil:
 		return compileMatchExpr(p.Match, env)
 	case p.Query != nil:
-		return compileQueryExpr(p.Query, env)
+		return compileQueryExpr(p.Query, env, base)
 	case p.FunExpr != nil:
 		return compileFunExpr(p.FunExpr, env)
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
