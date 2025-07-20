@@ -132,7 +132,6 @@ func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
 func (c *CallExpr) emit(w io.Writer) {
 	switch c.Func {
 	case "print":
-		io.WriteString(w, "print(string.format(")
 		var fmtBuf strings.Builder
 		var exprs []Expr
 		for i, a := range c.Args {
@@ -141,17 +140,33 @@ func (c *CallExpr) emit(w io.Writer) {
 			}
 			if s, ok := a.(*StringLit); ok {
 				fmtBuf.WriteString(s.Value)
+			} else if isIntExpr(a) {
+				fmtBuf.WriteString("%d")
+				exprs = append(exprs, a)
 			} else {
 				fmtBuf.WriteString("%s")
 				exprs = append(exprs, a)
 			}
 		}
-		fmt.Fprintf(w, "%q", fmtBuf.String())
-		for _, a := range exprs {
-			io.WriteString(w, ", ")
-			a.emit(w)
+
+		switch {
+		case len(exprs) == 0:
+			io.WriteString(w, "print(")
+			fmt.Fprintf(w, "%q", fmtBuf.String())
+			io.WriteString(w, ")")
+		case len(exprs) == 1 && (fmtBuf.String() == "%s" || fmtBuf.String() == "%d"):
+			io.WriteString(w, "print(")
+			exprs[0].emit(w)
+			io.WriteString(w, ")")
+		default:
+			io.WriteString(w, "print(string.format(")
+			fmt.Fprintf(w, "%q", fmtBuf.String())
+			for _, a := range exprs {
+				io.WriteString(w, ", ")
+				a.emit(w)
+			}
+			io.WriteString(w, "))")
 		}
-		io.WriteString(w, "))")
 		return
 	case "len", "count":
 		if len(c.Args) > 0 && isMapExpr(c.Args[0]) {
@@ -639,6 +654,27 @@ func isLuaIdent(s string) bool {
 		}
 	}
 	return true
+}
+
+func isIntExpr(e Expr) bool {
+	switch ex := e.(type) {
+	case *IntLit:
+		return true
+	case *Ident:
+		if currentEnv != nil {
+			if t, err := currentEnv.GetVar(ex.Name); err == nil {
+				if _, ok := t.(types.IntType); ok {
+					return true
+				}
+			}
+		}
+	case *BinaryExpr:
+		switch ex.Op {
+		case "+", "-", "*", "/", "%", "<", "<=", ">", ">=", "==", "!=":
+			return isIntExpr(ex.Left) && isIntExpr(ex.Right)
+		}
+	}
+	return false
 }
 
 func isMapExpr(e Expr) bool {
