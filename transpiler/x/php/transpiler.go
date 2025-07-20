@@ -5,6 +5,7 @@ package php
 import (
 	"fmt"
 	"io"
+	"strings"
 
 	"mochi/ast"
 	"mochi/parser"
@@ -164,6 +165,19 @@ func (s *VarStmt) emit(w io.Writer) {
 	} else {
 		io.WriteString(w, "null")
 	}
+}
+
+// QueryLetStmt assigns the result of a query expression without wrapping it in
+// an anonymous function. It expands the query into nested loops that append
+// directly into the target slice.
+type QueryLetStmt struct {
+	Name  string
+	Query *QueryExpr
+}
+
+func (s *QueryLetStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "$%s = [];%s", s.Name, "\n")
+	s.Query.emitInto(w, s.Name, 0)
 }
 
 // FuncDecl represents a simple function declaration.
@@ -352,6 +366,55 @@ type MatchExpr struct {
 	Arms   []MatchArm
 }
 
+type QueryLoop struct {
+	Name   string
+	Source Expr
+}
+
+type QueryExpr struct {
+	Loops  []QueryLoop
+	Where  Expr
+	Select Expr
+	Uses   []string
+}
+
+// emitInto expands the query into nested foreach loops and appends the
+// selected value into the provided result variable.
+func (q *QueryExpr) emitInto(w io.Writer, res string, level int) {
+	if len(q.Loops) == 0 {
+		return
+	}
+	var emitLoops func(int, int)
+	emitLoops = func(idx int, lvl int) {
+		ind := strings.Repeat("  ", lvl)
+		if idx >= len(q.Loops) {
+			if q.Where != nil {
+				fmt.Fprintf(w, "%sif (", ind)
+				q.Where.emit(w)
+				fmt.Fprint(w, ") {\n")
+				lvl++
+				ind = strings.Repeat("  ", lvl)
+			}
+			fmt.Fprintf(w, "%s$%s[] = ", ind, res)
+			q.Select.emit(w)
+			fmt.Fprint(w, ";\n")
+			if q.Where != nil {
+				lvl--
+				ind = strings.Repeat("  ", lvl)
+				fmt.Fprintf(w, "%s}\n", ind)
+			}
+			return
+		}
+		loop := q.Loops[idx]
+		fmt.Fprintf(w, "%sforeach (", ind)
+		loop.Source.emit(w)
+		fmt.Fprintf(w, " as $%s) {\n", loop.Name)
+		emitLoops(idx+1, lvl+1)
+		fmt.Fprintf(w, "%s}\n", ind)
+	}
+	emitLoops(0, level)
+}
+
 // CondExpr represents a conditional expression using PHP's ternary operator.
 type CondExpr struct {
 	Cond Expr
@@ -408,6 +471,58 @@ func (c *CallExpr) emit(w io.Writer) {
 		a.emit(w)
 	}
 	fmt.Fprint(w, ")")
+}
+
+func (q *QueryExpr) emit(w io.Writer) {
+	io.WriteString(w, "(function()")
+	if len(q.Uses) > 0 {
+		io.WriteString(w, " use (")
+		for i, u := range q.Uses {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			fmt.Fprintf(w, "$%s", u)
+		}
+		io.WriteString(w, ")")
+	}
+	io.WriteString(w, " {\n")
+	io.WriteString(w, "  $result = [];\n")
+	var emitLoops func(int, int)
+	emitLoops = func(idx, level int) {
+		indent := strings.Repeat("  ", level)
+		if idx >= len(q.Loops) {
+			if q.Where != nil {
+				io.WriteString(w, indent)
+				io.WriteString(w, "if (")
+				q.Where.emit(w)
+				io.WriteString(w, ") {\n")
+				level++
+				indent = strings.Repeat("  ", level)
+			}
+			io.WriteString(w, indent)
+			io.WriteString(w, "$result[] = ")
+			q.Select.emit(w)
+			io.WriteString(w, ";\n")
+			if q.Where != nil {
+				level--
+				indent = strings.Repeat("  ", level)
+				io.WriteString(w, indent)
+				io.WriteString(w, "}\n")
+			}
+			return
+		}
+		loop := q.Loops[idx]
+		io.WriteString(w, indent)
+		io.WriteString(w, "foreach (")
+		loop.Source.emit(w)
+		fmt.Fprintf(w, " as $%s) {\n", loop.Name)
+		emitLoops(idx+1, level+1)
+		io.WriteString(w, indent)
+		io.WriteString(w, "}\n")
+	}
+	emitLoops(0, 1)
+	io.WriteString(w, "  return $result;\n")
+	io.WriteString(w, "})()")
 }
 
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
@@ -539,7 +654,7 @@ func Emit(w io.Writer, p *Program) error {
 	for _, s := range p.Stmts {
 		s.emit(w)
 		switch s.(type) {
-		case *IfStmt, *FuncDecl, *WhileStmt, *ForRangeStmt, *ForEachStmt:
+		case *IfStmt, *FuncDecl, *WhileStmt, *ForRangeStmt, *ForEachStmt, *QueryLetStmt:
 			if _, err := io.WriteString(w, "\n"); err != nil {
 				return err
 			}
@@ -897,6 +1012,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
+			if v, ok := k.(*Var); ok {
+				if transpileEnv != nil {
+					if _, err := transpileEnv.GetVar(v.Name); err != nil {
+						k = &StringLit{Value: v.Name}
+					}
+				} else {
+					k = &StringLit{Value: v.Name}
+				}
+			}
 			v, err := convertExpr(it.Value)
 			if err != nil {
 				return nil, err
@@ -957,6 +1081,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return &GroupExpr{X: ex}, nil
 	case p.Match != nil:
 		return convertMatchExpr(p.Match)
+	case p.Query != nil:
+		return convertQueryExpr(p.Query)
 	default:
 		return nil, fmt.Errorf("unsupported primary")
 	}
@@ -988,6 +1114,12 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			v, err := convertExpr(st.Let.Value)
 			if err != nil {
 				return nil, err
+			}
+			if q, ok := v.(*QueryExpr); ok {
+				if len(funcStack) == 0 {
+					globalNames = append(globalNames, st.Let.Name)
+				}
+				return &QueryLetStmt{Name: st.Let.Name, Query: q}, nil
 			}
 			val = v
 		} else if st.Let.Type != nil && st.Let.Type.Simple != nil {
@@ -1222,6 +1354,48 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 		arms[i] = MatchArm{Pattern: pat, Result: res}
 	}
 	return &MatchExpr{Target: target, Arms: arms}, nil
+}
+
+func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
+	loops := []QueryLoop{{Name: q.Var}}
+	src, err := convertExpr(q.Source)
+	if err != nil {
+		return nil, err
+	}
+	loops[0].Source = src
+	for _, f := range q.Froms {
+		ex, err := convertExpr(f.Src)
+		if err != nil {
+			return nil, err
+		}
+		loops = append(loops, QueryLoop{Name: f.Var, Source: ex})
+	}
+	funcStack = append(funcStack, nil)
+	for _, lp := range loops {
+		funcStack[len(funcStack)-1] = append(funcStack[len(funcStack)-1], lp.Name)
+	}
+	var where Expr
+	if q.Where != nil {
+		where, err = convertExpr(q.Where)
+		if err != nil {
+			funcStack = funcStack[:len(funcStack)-1]
+			return nil, err
+		}
+	}
+	sel, err := convertExpr(q.Select)
+	if err != nil {
+		funcStack = funcStack[:len(funcStack)-1]
+		return nil, err
+	}
+	funcStack = funcStack[:len(funcStack)-1]
+	uses := []string{}
+	for _, frame := range funcStack {
+		uses = append(uses, frame...)
+	}
+	if len(funcStack) == 0 {
+		uses = append(uses, globalNames...)
+	}
+	return &QueryExpr{Loops: loops, Where: where, Select: sel, Uses: uses}, nil
 }
 
 func isListArg(e Expr) bool {
